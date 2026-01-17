@@ -9,6 +9,8 @@ struct ChartData {
     values: Vec<f64>,
     title: String,
     hover_data: Vec<HashMap<String, String>>,
+    tooltip_bg_color: (u8, u8, u8, u8),
+    tooltip_text_color: (u8, u8, u8, u8),
 }
 
 struct ChartApp {
@@ -68,6 +70,9 @@ impl eframe::App for ChartApp {
         egui::CentralPanel::default().show(ctx, |ui| {
             let data = self.data.lock().unwrap();
             if let Some(d) = data.as_ref() {
+                let tooltip_bg_color = d.tooltip_bg_color;
+                let tooltip_text_color = d.tooltip_text_color;
+                
                 ui.vertical_centered(|ui| {
                     ui.heading(&d.title);
                 });
@@ -79,7 +84,25 @@ impl eframe::App for ChartApp {
                     let max_val = d.values.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
                     let bar_height = 300.0_f32;
                     let bar_width = 40.0_f32;
-                    let item_width = (bar_width + 25.0) * self.zoom;
+                    
+                    let font_size = if self.zoom < 0.8 { 10.0 } else if self.zoom > 1.5 { 13.0 } else { 12.0 };
+                    let font_id = egui::FontId::proportional(font_size);
+                    
+                    let mut max_content_width: f32 = 100.0;
+                    for hover in &d.hover_data {
+                        for (key, val) in hover.iter() {
+                            if key != "image" {
+                                let display = format!("{}: {}", key, val);
+                                let galley = ctx.fonts(|f| f.layout_no_wrap(display, font_id.clone(), egui::Color32::WHITE));
+                                max_content_width = max_content_width.max(galley.rect.width());
+                            }
+                        }
+                    }
+                    
+                    let padding = 80.0 * self.zoom;
+                    let image_width = 140.0 * self.zoom;
+                    let tooltip_width = max_content_width.max(image_width) + padding;
+                    let item_width = tooltip_width.max(100.0 * self.zoom);
                     
                     egui::ScrollArea::horizontal()
                         .auto_shrink([false; 2])
@@ -97,8 +120,17 @@ impl eframe::App for ChartApp {
                                         let h = if max_val > 0.0 { (*value / max_val) * bar_height as f64 } else { 0.0 } as f32;
                                         let scaled_h = h * self.zoom;
                                         
+                                        let field_count = if idx < d.hover_data.len() { d.hover_data[idx].iter().filter(|(k, _)| k.as_str() != "image").count() as f32 } else { 0.0 };
+                                        let has_image = if idx < d.hover_data.len() { d.hover_data[idx].contains_key("image") } else { false };
+                                        
+                                        let actual_image_height = if has_image { 120.0 * self.zoom } else { 0.0 };
+                                        let field_height = 32.0 * self.zoom;
+                                        let padding_internal = 30.0 * self.zoom;
+                                        let actual_content_height = actual_image_height + (field_count * field_height) + padding_internal;
+                                        let painter_height = (bar_height + actual_content_height + 100.0) * self.zoom;
+                                        
                                         let (response, painter) = ui.allocate_painter(
-                                            egui::Vec2::new(item_width, (bar_height + 400.0) * self.zoom),
+                                            egui::Vec2::new(item_width, painter_height),
                                             egui::Sense::hover()
                                         );
                                         
@@ -114,7 +146,7 @@ impl eframe::App for ChartApp {
                                         let bar_color = if is_hovered { hover_color } else { color };
                                         
                                         let bar_rect = egui::Rect::from_min_size(
-                                            response.rect.left_bottom() - egui::Vec2::new(0.0, scaled_h),
+                                            response.rect.center_bottom() - egui::Vec2::new(bar_width * self.zoom / 2.0, scaled_h),
                                             egui::Vec2::new(bar_width * self.zoom, scaled_h)
                                         );
                                         
@@ -134,42 +166,43 @@ impl eframe::App for ChartApp {
                                         );
                                         
                                         if is_hovered {
-                                            let has_image = if idx < d.hover_data.len() { d.hover_data[idx].contains_key("image") } else { false };
-                                            let field_count = if idx < d.hover_data.len() { d.hover_data[idx].iter().filter(|(k, _)| k.as_str() != "image").count() as f32 } else { 0.0 };
-                                            let base_height = if has_image { 120.0 } else { 80.0 };
-                                            let field_height = 28.0;
-                                            let tooltip_h = (base_height + (field_count * field_height) + 50.0) * self.zoom;
-                                            let tooltip_w = 380.0 * self.zoom;
-                                            let tooltip_y = bar_rect.top() - 10.0 * self.zoom - tooltip_h;
+                                            let actual_image_height = if has_image { 120.0 * self.zoom } else { 0.0 };
+                                            let field_height = 32.0 * self.zoom;
+                                            let padding_internal = 30.0 * self.zoom;
+                                            let actual_content_height = actual_image_height + (field_count * field_height) + padding_internal;
                                             
+                                            let tooltip_w = item_width;
+                                            let tooltip_h = actual_content_height.max(180.0 * self.zoom);
+                                            let tooltip_y = bar_rect.top() - 15.0 * self.zoom - tooltip_h;
+                                            
+                                            let (bg_r, bg_g, bg_b, bg_a) = tooltip_bg_color;
                                             painter.rect_filled(
                                                 egui::Rect::from_min_size(
                                                     egui::pos2(bar_rect.center().x - tooltip_w / 2.0, tooltip_y),
                                                     egui::vec2(tooltip_w, tooltip_h)
                                                 ),
                                                 6.0,
-                                                egui::Color32::from_rgba_unmultiplied(44, 62, 80, 250)
+                                                egui::Color32::from_rgba_unmultiplied(bg_r, bg_g, bg_b, bg_a)
                                             );
                                             
                                             painter.rect_filled(
                                                 egui::Rect::from_min_size(
-                                                    egui::pos2(bar_rect.center().x - tooltip_w / 2.0 + 8.0, tooltip_y + 8.0),
-                                                    egui::vec2(tooltip_w - 16.0, tooltip_h - 16.0)
+                                                    egui::pos2(bar_rect.center().x - tooltip_w / 2.0 + 10.0, tooltip_y + 10.0),
+                                                    egui::vec2(tooltip_w - 20.0, tooltip_h - 20.0)
                                                 ),
                                                 4.0,
                                                 egui::Color32::from_rgba_unmultiplied(255, 255, 255, 15)
                                             );
                                             
-                                            let font_size = if self.zoom < 0.8 { 10.0 } else if self.zoom > 1.5 { 13.0 } else { 12.0 };
-                                            let mut field_offset = if has_image { 110.0 } else { 25.0 };
+                                            let mut field_offset = if has_image { 130.0 * self.zoom } else { 25.0 * self.zoom };
                                             
                                             if has_image && idx < d.hover_data.len() {
                                                 if let Some(img_path) = d.hover_data[idx].get("image") {
                                                     if let Some(color_img) = self.image_loader.load_image(img_path) {
-                                                        let img_w = 80.0 * self.zoom;
-                                                        let img_h = 80.0 * self.zoom;
+                                                        let img_w = 120.0 * self.zoom;
+                                                        let img_h = 120.0 * self.zoom;
                                                         let img_x = bar_rect.center().x - img_w / 2.0;
-                                                        let img_y = tooltip_y + 10.0;
+                                                        let img_y = tooltip_y + 15.0 * self.zoom;
                                                         
                                                         let texture = ctx.load_texture("hover_img", color_img, Default::default());
                                                         painter.image(
@@ -180,10 +213,10 @@ impl eframe::App for ChartApp {
                                                         );
                                                     } else {
                                                         painter.text(
-                                                            egui::pos2(bar_rect.center().x, tooltip_y + 35.0),
+                                                            egui::pos2(bar_rect.center().x, tooltip_y + 50.0 * self.zoom),
                                                             egui::Align2::CENTER_TOP,
                                                             "🖼",
-                                                            egui::FontId::proportional(font_size * 2.0),
+                                                            egui::FontId::proportional(font_size * 3.0),
                                                             egui::Color32::WHITE
                                                         );
                                                     }
@@ -191,43 +224,43 @@ impl eframe::App for ChartApp {
                                             }
                                             
                                             if idx < d.hover_data.len() {
+                                                let (txt_r, txt_g, txt_b, txt_a) = tooltip_text_color;
+                                                let text_color = egui::Color32::from_rgba_unmultiplied(txt_r, txt_g, txt_b, txt_a);
                                                 for (key, val) in d.hover_data[idx].iter() {
                                                     if key != "image" {
-                                                        let max_len = if self.zoom > 1.2 { 50 } else { 45 };
-                                                        let val_short = if val.len() > max_len {
-                                                            format!("{}...", &val[..max_len.min(val.len() - 1)])
-                                                        } else {
-                                                            val.clone()
-                                                        };
-                                                        let display = format!("{}: {}", key, val_short);
+                                                        let display = format!("{}: {}", key, val);
                                                         painter.text(
                                                             egui::pos2(bar_rect.center().x, tooltip_y + field_offset),
                                                             egui::Align2::CENTER_TOP,
                                                             display,
                                                             egui::FontId::proportional(font_size),
-                                                            egui::Color32::WHITE
+                                                            text_color
                                                         );
                                                         field_offset += field_height;
                                                     }
                                                 }
                                             }
                                             
-                                            painter.text(
-                                                egui::pos2(bar_rect.center().x, tooltip_y + tooltip_h - 42.0),
-                                                egui::Align2::CENTER_TOP,
-                                                label,
-                                                egui::FontId::proportional(font_size * 1.2),
-                                                egui::Color32::WHITE
-                                            );
-                                            
-                                            let value_text = format!("{}", *value as i32);
-                                            painter.text(
-                                                egui::pos2(bar_rect.center().x, tooltip_y + tooltip_h - 15.0),
-                                                egui::Align2::CENTER_TOP,
-                                                value_text,
-                                                egui::FontId::proportional(font_size * 1.4),
-                                                egui::Color32::from_rgb(26, 188, 156)
-                                            );
+                                            if idx < d.hover_data.len() {
+                                                let (txt_r, txt_g, txt_b, txt_a) = tooltip_text_color;
+                                                let text_color = egui::Color32::from_rgba_unmultiplied(txt_r, txt_g, txt_b, txt_a);
+                                                painter.text(
+                                                    egui::pos2(bar_rect.center().x, tooltip_y + tooltip_h - 42.0),
+                                                    egui::Align2::CENTER_TOP,
+                                                    label,
+                                                    egui::FontId::proportional(font_size * 1.2),
+                                                    text_color
+                                                );
+                                                
+                                                let value_text = format!("{}", *value as i32);
+                                                painter.text(
+                                                    egui::pos2(bar_rect.center().x, tooltip_y + tooltip_h - 15.0),
+                                                    egui::Align2::CENTER_TOP,
+                                                    value_text,
+                                                    egui::FontId::proportional(font_size * 1.4),
+                                                    text_color
+                                                );
+                                            }
                                         }
                                     });
                                     ui.add_space(5.0);
@@ -270,16 +303,6 @@ fn hsv_to_rgb(h: f32, s: f32, v: f32) -> egui::Color32 {
 static _CHART_DATA: Mutex<Option<ChartData>> = Mutex::new(None);
 
 #[no_mangle]
-pub extern "C" fn sera_show_chart_data(
-    labels: *const *const c_char,
-    values: *const f64,
-    count: u32,
-    title: *const c_char,
-) -> bool {
-    sera_show_chart_data_with_hover(labels, values, std::ptr::null(), std::ptr::null(), count, title)
-}
-
-#[no_mangle]
 pub extern "C" fn sera_show_chart_data_with_hover(
     labels: *const *const c_char,
     values: *const f64,
@@ -287,6 +310,26 @@ pub extern "C" fn sera_show_chart_data_with_hover(
     descriptions: *const *const c_char,
     count: u32,
     title: *const c_char,
+) -> bool {
+    sera_show_chart_data_with_hover_colors(labels, values, images, descriptions, count, title, 0, 0, 0, 250, 255, 255, 255, 255)
+}
+
+#[no_mangle]
+pub extern "C" fn sera_show_chart_data_with_hover_colors(
+    labels: *const *const c_char,
+    values: *const f64,
+    images: *const *const c_char,
+    descriptions: *const *const c_char,
+    count: u32,
+    title: *const c_char,
+    bg_r: u8,
+    bg_g: u8,
+    bg_b: u8,
+    bg_a: u8,
+    txt_r: u8,
+    txt_g: u8,
+    txt_b: u8,
+    txt_a: u8,
 ) -> bool {
     if labels.is_null() || values.is_null() || title.is_null() {
         return false;
@@ -336,6 +379,8 @@ pub extern "C" fn sera_show_chart_data_with_hover(
         values: value_vec,
         title: title_str,
         hover_data: hover_data_vec,
+        tooltip_bg_color: (bg_r, bg_g, bg_b, bg_a),
+        tooltip_text_color: (txt_r, txt_g, txt_b, txt_a),
     };
 
     let app = ChartApp {
