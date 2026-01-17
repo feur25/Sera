@@ -21,6 +21,7 @@ struct ChartApp {
     visible_elements: Vec<bool>,
     show_list: bool,
     image_loader: ImageLoader,
+    orientation: bool,
 }
 
 impl eframe::App for ChartApp {
@@ -39,6 +40,9 @@ impl eframe::App for ChartApp {
                 }
                 if ui.button("📋 Elements").clicked() {
                     self.show_list = !self.show_list;
+                }
+                if ui.button(if self.orientation { "📊 Vertical" } else { "📈 Horizontal" }).clicked() {
+                    self.orientation = !self.orientation;
                 }
                 ui.label(format!("Zoom: {:.1}x", self.zoom));
             });
@@ -83,18 +87,16 @@ impl eframe::App for ChartApp {
                 } else {
                     let max_val = d.values.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
                     let bar_height = 300.0_f32;
-                    let bar_width = 40.0_f32;
-                    let bar_spacing = 15.0_f32;
                     
                     let visible_count = d.labels.iter().enumerate()
                         .filter(|(idx, _)| idx < &self.visible_elements.len() && self.visible_elements[*idx])
                         .count() as f32;
                     
-                    let available_width = 1200.0_f32 - 40.0;
+                    let available_width = 1200.0_f32 - 30.0;
                     let item_width = if visible_count > 0.0 {
-                        (available_width / visible_count).max(bar_width * self.zoom + bar_spacing)
+                        available_width / visible_count
                     } else {
-                        bar_width * self.zoom + bar_spacing
+                        50.0
                     };
                     
                     let font_size = if self.zoom < 0.8 { 10.0 } else if self.zoom > 1.5 { 13.0 } else { 12.0 };
@@ -115,7 +117,7 @@ impl eframe::App for ChartApp {
                         .auto_shrink([false; 2])
                         .show(ui, |ui| {
                             ui.horizontal(|ui| {
-                                ui.add_space(10.0);
+                                ui.add_space(1.0);
                                 for (idx, (label, value)) in d.labels.iter().zip(d.values.iter()).enumerate() {
                                     if idx >= self.visible_elements.len() || !self.visible_elements[idx] {
                                         continue;
@@ -126,6 +128,8 @@ impl eframe::App for ChartApp {
                                         
                                         let h = if max_val > 0.0 { (*value / max_val) * bar_height as f64 } else { 0.0 } as f32;
                                         let scaled_h = h * self.zoom;
+                                        
+                                        let bar_width = (item_width * 0.55).max(3.0);
                                         
                                         let field_count = if idx < d.hover_data.len() { d.hover_data[idx].iter().filter(|(k, _)| k.as_str() != "image").count() as f32 } else { 0.0 };
                                         let has_image = if idx < d.hover_data.len() { d.hover_data[idx].contains_key("image") } else { false };
@@ -191,7 +195,7 @@ impl eframe::App for ChartApp {
                                             
                                             let tooltip_w = (max_text_width * 1.5 + 60.0 * self.zoom).max(140.0 * self.zoom);
                                             let tooltip_h = actual_content_height.max(180.0 * self.zoom);
-                                            let tooltip_y = bar_rect.top() - 15.0 * self.zoom - tooltip_h;
+                                            let tooltip_y = bar_rect.top() - 20.0 * self.zoom - tooltip_h;
                                             
                                             let tooltip_rect = egui::Rect::from_min_size(
                                                 egui::pos2(bar_rect.center().x - tooltip_w / 2.0, tooltip_y),
@@ -241,7 +245,7 @@ impl eframe::App for ChartApp {
                                                             egui::FontId::proportional(font_size),
                                                             text_color
                                                         );
-                                                        field_offset += field_height;
+                                                        field_offset += field_height + 8.0 * self.zoom;
                                                     }
                                                 }
                                             }
@@ -268,9 +272,9 @@ impl eframe::App for ChartApp {
                                             }
                                         }
                                     });
-                                    ui.add_space(5.0);
+                                    ui.add_space(0.0);
                                 }
-                                ui.add_space(10.0);
+                                ui.add_space(1.0);
                             });
                         });
                 }
@@ -396,6 +400,7 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         visible_elements: vec![true; num_elements],
         show_list: false,
         image_loader: ImageLoader::new(),
+        orientation: true,
     };
 
     let native_options = eframe::NativeOptions {
