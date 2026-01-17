@@ -1,19 +1,12 @@
 use std::collections::HashMap;
 
 #[derive(Clone, Debug)]
-pub struct HoverData {
-    pub image_url: Option<String>,
-    pub description: String,
-    pub extra_info: HashMap<String, String>,
-}
-
-#[derive(Clone, Debug)]
 pub struct InteractiveElement {
     pub id: String,
     pub label: String,
     pub value: f64,
     pub metadata: HashMap<String, String>,
-    pub hover_data: Option<HoverData>,
+    pub hover_data: HashMap<String, String>,
 }
 
 pub struct InteractiveSvgRenderer {
@@ -83,7 +76,7 @@ impl InteractiveSvgRenderer {
             label: label.into(),
             value,
             metadata,
-            hover_data: None,
+            hover_data: HashMap::new(),
         });
     }
 
@@ -98,17 +91,17 @@ impl InteractiveSvgRenderer {
     ) {
         let mut metadata = HashMap::new();
         metadata.insert("color".to_string(), color.into());
-        let hover = HoverData {
-            image_url,
-            description: description.into(),
-            extra_info: HashMap::new(),
-        };
+        let mut hover = HashMap::new();
+        if let Some(img) = image_url {
+            hover.insert("image".to_string(), img);
+        }
+        hover.insert("description".to_string(), description.into());
         self.elements.push(InteractiveElement {
             id: id.into(),
             label: label.into(),
             value,
             metadata,
-            hover_data: Some(hover),
+            hover_data: hover,
         });
     }
 
@@ -189,8 +182,8 @@ impl InteractiveSvgRenderer {
                     element.label.clone()
                 };
 
-                let tooltip_width = if element.hover_data.is_some() { 240.0 } else { 160.0 };
-                let tooltip_height = if element.hover_data.is_some() { 140.0 } else { 50.0 };
+                let tooltip_width = if element.hover_data.is_empty() { 160.0 } else { 240.0 };
+                let tooltip_height = if element.hover_data.is_empty() { 50.0 } else { 50.0 + (element.hover_data.len() as f32 * 18.0) };
 
                 svg.push_str(&format!(
                     "    <rect class=\"tooltip-box\" x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"rgba(44, 62, 80, 0.95)\" rx=\"5\" />\n",
@@ -198,24 +191,26 @@ impl InteractiveSvgRenderer {
                     tooltip_width, tooltip_height
                 ));
 
-                if let Some(ref hover) = element.hover_data {
-                    if let Some(ref img_url) = hover.image_url {
+                let mut hover_offset = 15.0;
+                for (key, val) in &element.hover_data {
+                    if key == "image" {
                         svg.push_str(&format!(
-                            "    <image x=\"{}\" y=\"{}\" width=\"50\" height=\"50\" href=\"{}\" />\n",
-                            tooltip_x - tooltip_width / 2.0 + 5.0,
-                            tooltip_y - 50.0 - (tooltip_height - 50.0),
-                            img_url
+                            "    <text class=\"tooltip-text\" x=\"{}\" y=\"{}\" text-anchor=\"middle\" font-size=\"10\">[img]</text>\n",
+                            tooltip_x, tooltip_y - 35.0 - (tooltip_height - 50.0) + hover_offset
+                        ));
+                    } else {
+                        let text_val = if val.len() > 25 {
+                            format!("{}...", &val[..22])
+                        } else {
+                            val.clone()
+                        };
+                        svg.push_str(&format!(
+                            "    <text class=\"tooltip-text\" x=\"{}\" y=\"{}\" text-anchor=\"middle\" font-size=\"9\">{}: {}</text>\n",
+                            tooltip_x, tooltip_y - 35.0 - (tooltip_height - 50.0) + hover_offset,
+                            key, text_val
                         ));
                     }
-                    let desc_short = if hover.description.len() > 25 {
-                        format!("{}...", &hover.description[..22])
-                    } else {
-                        hover.description.clone()
-                    };
-                    svg.push_str(&format!(
-                        "    <text class=\"tooltip-text\" x=\"{}\" y=\"{}\" text-anchor=\"middle\" font-size=\"11\">{}</text>\n",
-                        tooltip_x, tooltip_y - 35.0 - (tooltip_height - 50.0), desc_short
-                    ));
+                    hover_offset += 18.0;
                 }
 
                 svg.push_str(&format!(

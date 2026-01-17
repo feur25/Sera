@@ -1,13 +1,13 @@
 use std::sync::{Arc, Mutex};
 use std::ffi::CStr;
 use std::os::raw::c_char;
+use std::collections::HashMap;
 
 struct ChartData {
     labels: Vec<String>,
     values: Vec<f64>,
     title: String,
-    images: Vec<String>,
-    descriptions: Vec<String>,
+    hover_data: Vec<HashMap<String, String>>,
 }
 
 struct ChartApp {
@@ -132,8 +132,11 @@ impl eframe::App for ChartApp {
                                         );
                                         
                                         if is_hovered {
-                                            let tooltip_w = 130.0 * self.zoom;
-                                            let tooltip_h = 90.0 * self.zoom;
+                                            let hover_count = if idx < d.hover_data.len() { d.hover_data[idx].len() } else { 0 };
+                                            let base_height = 50.0;
+                                            let field_height = 18.0;
+                                            let tooltip_h = (base_height + (hover_count as f32 * field_height)) * self.zoom;
+                                            let tooltip_w = if hover_count > 0 { 200.0 } else { 130.0 } * self.zoom;
                                             let tooltip_y = bar_rect.top() - 10.0 * self.zoom - tooltip_h;
                                             
                                             painter.rect_filled(
@@ -147,45 +150,49 @@ impl eframe::App for ChartApp {
                                             
                                             let font_size = if self.zoom < 0.8 { 8.0 } else if self.zoom > 1.5 { 11.0 } else { 9.0 };
                                             let line_height = font_size * 1.3;
+                                            let mut field_offset = 0.0;
                                             
-                                            if idx < d.images.len() && !d.images[idx].is_empty() {
-                                                painter.text(
-                                                    egui::pos2(bar_rect.center().x - tooltip_w / 2.0 + 5.0, tooltip_y + 5.0),
-                                                    egui::Align2::LEFT_TOP,
-                                                    "[img]",
-                                                    egui::FontId::proportional(font_size * 0.85),
-                                                    egui::Color32::LIGHT_GRAY
-                                                );
-                                            }
-                                            
-                                            if idx < d.descriptions.len() {
-                                                let desc = &d.descriptions[idx];
-                                                let max_len = if self.zoom > 1.2 { 28 } else { 20 };
-                                                let desc_short = if desc.len() > max_len {
-                                                    format!("{}...", &desc[..max_len.min(desc.len() - 1)])
-                                                } else {
-                                                    desc.clone()
-                                                };
-                                                painter.text(
-                                                    egui::pos2(bar_rect.center().x, tooltip_y + line_height * 0.8),
-                                                    egui::Align2::CENTER_TOP,
-                                                    desc_short,
-                                                    egui::FontId::proportional(font_size * 0.9),
-                                                    egui::Color32::LIGHT_GRAY
-                                                );
+                                            if idx < d.hover_data.len() {
+                                                for (key, val) in d.hover_data[idx].iter() {
+                                                    if key == "image" {
+                                                        painter.text(
+                                                            egui::pos2(bar_rect.center().x - tooltip_w / 2.0 + 5.0, tooltip_y + 5.0 + field_offset),
+                                                            egui::Align2::LEFT_TOP,
+                                                            "[img]",
+                                                            egui::FontId::proportional(font_size * 0.85),
+                                                            egui::Color32::LIGHT_GRAY
+                                                        );
+                                                    } else {
+                                                        let max_len = if self.zoom > 1.2 { 22 } else { 18 };
+                                                        let val_short = if val.len() > max_len {
+                                                            format!("{}...", &val[..max_len.min(val.len() - 1)])
+                                                        } else {
+                                                            val.clone()
+                                                        };
+                                                        let display = format!("{}: {}", key, val_short);
+                                                        painter.text(
+                                                            egui::pos2(bar_rect.center().x, tooltip_y + 8.0 + field_offset),
+                                                            egui::Align2::CENTER_TOP,
+                                                            display,
+                                                            egui::FontId::proportional(font_size * 0.8),
+                                                            egui::Color32::LIGHT_GRAY
+                                                        );
+                                                    }
+                                                    field_offset += field_height;
+                                                }
                                             }
                                             
                                             painter.text(
-                                                egui::pos2(bar_rect.center().x, tooltip_y + line_height * 1.8),
+                                                egui::pos2(bar_rect.center().x, tooltip_y + 8.0 + field_offset + line_height * 0.5),
                                                 egui::Align2::CENTER_TOP,
                                                 label,
-                                                egui::FontId::proportional(font_size),
+                                                egui::FontId::proportional(font_size * 1.1),
                                                 egui::Color32::WHITE
                                             );
                                             
                                             let value_text = format!("{}", *value as i32);
                                             painter.text(
-                                                egui::pos2(bar_rect.center().x, tooltip_y + line_height * 2.8),
+                                                egui::pos2(bar_rect.center().x, tooltip_y + 8.0 + field_offset + line_height * 1.8),
                                                 egui::Align2::CENTER_TOP,
                                                 value_text,
                                                 egui::FontId::proportional(font_size * 1.2),
@@ -258,8 +265,7 @@ pub extern "C" fn sera_show_chart_data_with_hover(
     let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().into_owned() };
     let mut label_vec = Vec::new();
     let mut value_vec = Vec::new();
-    let mut image_vec = Vec::new();
-    let mut desc_vec = Vec::new();
+    let mut hover_data_vec = Vec::new();
 
     for i in 0..count as usize {
         let label_ptr = unsafe { *(labels.add(i)) };
@@ -268,27 +274,29 @@ pub extern "C" fn sera_show_chart_data_with_hover(
         }
         value_vec.push(unsafe { *(values.add(i)) });
         
+        let mut hover = HashMap::new();
+        
         if !images.is_null() {
             let img_ptr = unsafe { *(images.add(i)) };
             if !img_ptr.is_null() {
-                image_vec.push(unsafe { CStr::from_ptr(img_ptr).to_string_lossy().into_owned() });
-            } else {
-                image_vec.push(String::new());
+                let img = unsafe { CStr::from_ptr(img_ptr).to_string_lossy().into_owned() };
+                if !img.is_empty() {
+                    hover.insert("image".to_string(), img);
+                }
             }
-        } else {
-            image_vec.push(String::new());
         }
         
         if !descriptions.is_null() {
             let desc_ptr = unsafe { *(descriptions.add(i)) };
             if !desc_ptr.is_null() {
-                desc_vec.push(unsafe { CStr::from_ptr(desc_ptr).to_string_lossy().into_owned() });
-            } else {
-                desc_vec.push(String::new());
+                let desc = unsafe { CStr::from_ptr(desc_ptr).to_string_lossy().into_owned() };
+                if !desc.is_empty() {
+                    hover.insert("description".to_string(), desc);
+                }
             }
-        } else {
-            desc_vec.push(String::new());
         }
+        
+        hover_data_vec.push(hover);
     }
 
     let num_elements = label_vec.len();
@@ -297,8 +305,7 @@ pub extern "C" fn sera_show_chart_data_with_hover(
         labels: label_vec,
         values: value_vec,
         title: title_str,
-        images: image_vec,
-        descriptions: desc_vec,
+        hover_data: hover_data_vec,
     };
 
     let app = ChartApp {
