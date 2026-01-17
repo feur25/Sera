@@ -22,10 +22,15 @@ struct ChartApp {
     show_list: bool,
     image_loader: ImageLoader,
     orientation: bool,
+    sort_mode: i32,
 }
 
 impl eframe::App for ChartApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+        if let Ok(sort) = CHART_SORT.lock() {
+            self.sort_mode = *sort;
+        }
+        
         egui::TopBottomPanel::top("controls").show(ctx, |ui| {
             ui.horizontal(|ui| {
                 if ui.button("🔍 Zoom In").clicked() {
@@ -43,6 +48,17 @@ impl eframe::App for ChartApp {
                 }
                 if ui.button(if self.orientation { "📊 Vertical" } else { "📈 Horizontal" }).clicked() {
                     self.orientation = !self.orientation;
+                }
+                let sort_label = match self.sort_mode {
+                    1 => "↑ Asc",
+                    2 => "↓ Desc",
+                    _ => "⊙ None",
+                };
+                if ui.button(sort_label).clicked() {
+                    self.sort_mode = (self.sort_mode + 1) % 3;
+                    if let Ok(mut sort) = CHART_SORT.lock() {
+                        *sort = self.sort_mode;
+                    }
                 }
                 ui.label(format!("Zoom: {:.1}x", self.zoom));
             });
@@ -83,7 +99,27 @@ impl eframe::App for ChartApp {
             });
             drop(data);
             
-            if let Some(d) = d_clone {
+            if let Some(mut d) = d_clone {
+                let mut indices: Vec<usize> = (0..d.values.len()).collect();
+                
+                if self.sort_mode == 1 {
+                    indices.sort_by(|&a, &b| {
+                        d.values[a].partial_cmp(&d.values[b]).unwrap_or(std::cmp::Ordering::Equal)
+                    });
+                } else if self.sort_mode == 2 {
+                    indices.sort_by(|&a, &b| {
+                        d.values[b].partial_cmp(&d.values[a]).unwrap_or(std::cmp::Ordering::Equal)
+                    });
+                }
+                
+                let sorted_labels: Vec<_> = indices.iter().map(|&i| d.labels[i].clone()).collect();
+                let sorted_values: Vec<_> = indices.iter().map(|&i| d.values[i]).collect();
+                let sorted_hover_data: Vec<_> = indices.iter().map(|&i| d.hover_data[i].clone()).collect();
+                
+                d.labels = sorted_labels;
+                d.values = sorted_values;
+                d.hover_data = sorted_hover_data;
+                
                 ui.vertical_centered(|ui| {
                     ui.heading(&d.title);
                 });
@@ -540,6 +576,7 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         show_list: false,
         image_loader: ImageLoader::new(),
         orientation: true,
+        sort_mode: 0,
     };
 
     let native_options = eframe::NativeOptions {
@@ -574,6 +611,20 @@ pub extern "C" fn sera_set_chart_orientation(vertical: bool) {
 #[no_mangle]
 pub extern "C" fn sera_get_chart_orientation() -> bool {
     CHART_ORIENTATION.lock().map(|o| *o).unwrap_or(true)
+}
+
+static CHART_SORT: Mutex<i32> = Mutex::new(0);
+
+#[no_mangle]
+pub extern "C" fn sera_set_chart_sort(mode: i32) {
+    if let Ok(mut sort) = CHART_SORT.lock() {
+        *sort = mode.clamp(0, 2);
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_get_chart_sort() -> i32 {
+    CHART_SORT.lock().map(|s| *s).unwrap_or(0)
 }
 
 
