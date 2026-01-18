@@ -9,6 +9,7 @@ pub use core::types::{self, Layout};
 pub use core::math::{self, mean, median, std_dev};
 pub use data::loader;
 pub use data::processor;
+pub use data::conversion;
 pub use data::index;
 pub use plot::builder;
 pub use plot::plot as plot_module;

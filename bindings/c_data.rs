@@ -424,3 +424,105 @@ pub extern "C" fn sera_set_plot_show_selector(show: bool) {
 pub extern "C" fn sera_get_plot_show_selector() -> bool {
     get_plot_show_selector().lock().map(|s| *s).unwrap_or(false)
 }
+
+#[no_mangle]
+pub extern "C" fn sera_processor_filter(values: *const f64, count: usize, threshold: f64, output: *mut f64, output_count: *mut usize) {
+    if values.is_null() || output.is_null() || output_count.is_null() {
+        return;
+    }
+
+    unsafe {
+        let input_slice = std::slice::from_raw_parts(values, count);
+        let output_slice = std::slice::from_raw_parts_mut(output, count);
+        
+        let filtered: Vec<f64> = input_slice.iter().copied().filter(|&v| v > threshold).collect();
+        let len = filtered.len();
+        
+        for (i, &val) in filtered.iter().enumerate() {
+            output_slice[i] = val;
+        }
+        
+        *output_count = len;
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_processor_sum(values: *const f64, count: usize) -> f64 {
+    if values.is_null() {
+        return 0.0;
+    }
+
+    unsafe {
+        let slice = std::slice::from_raw_parts(values, count);
+        slice.iter().sum()
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_processor_mean(values: *const f64, count: usize) -> f64 {
+    if values.is_null() || count == 0 {
+        return 0.0;
+    }
+
+    unsafe {
+        let slice = std::slice::from_raw_parts(values, count);
+        slice.iter().sum::<f64>() / count as f64
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_processor_median(values: *const f64, count: usize) -> f64 {
+    if values.is_null() || count == 0 {
+        return 0.0;
+    }
+
+    unsafe {
+        let slice = std::slice::from_raw_parts(values, count);
+        let mut sorted: Vec<f64> = slice.to_vec();
+        sorted.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        
+        if sorted.len() % 2 == 0 {
+            (sorted[sorted.len() / 2 - 1] + sorted[sorted.len() / 2]) / 2.0
+        } else {
+            sorted[sorted.len() / 2]
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_processor_stddev(values: *const f64, count: usize) -> f64 {
+    if values.is_null() || count == 0 {
+        return 0.0;
+    }
+
+    unsafe {
+        let slice = std::slice::from_raw_parts(values, count);
+        let mean = slice.iter().sum::<f64>() / count as f64;
+        let variance = slice.iter().map(|&v| (v - mean).powi(2)).sum::<f64>() / count as f64;
+        variance.sqrt()
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_processor_min(values: *const f64, count: usize) -> f64 {
+    if values.is_null() || count == 0 {
+        return 0.0;
+    }
+
+    unsafe {
+        let slice = std::slice::from_raw_parts(values, count);
+        slice.iter().copied().fold(f64::INFINITY, f64::min)
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_processor_max(values: *const f64, count: usize) -> f64 {
+    if values.is_null() || count == 0 {
+        return 0.0;
+    }
+
+    unsafe {
+        let slice = std::slice::from_raw_parts(values, count);
+        slice.iter().copied().fold(f64::NEG_INFINITY, f64::max)
+    }
+}

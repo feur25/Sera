@@ -1,5 +1,6 @@
 use crate::core::*;
 use crate::data::loader::CsvData;
+use crate::data::processor::{Dataset, DataPoint, DataProcessor, PipelineBuilder};
 use crate::plot::Canvas;
 use egui_plot::{Plot, Line, PlotPoints};
 
@@ -60,6 +61,44 @@ impl ViewerState {
 
                 self.traces = vec![trace];
                 self.rebuild_canvas();
+            }
+        }
+    }
+
+    pub fn update_traces_filtered<F>(&mut self, predicate: F) 
+    where
+        F: Fn(f64, f64) -> bool,
+    {
+        if let (Some(ref data), Some(ref x_col), Some(ref y_col)) = (&self.csv_data, &self.selected_x_col, &self.selected_y_col) {
+            let x = data.get_numeric_column(x_col);
+            let y = data.get_numeric_column(y_col);
+
+            if !x.is_empty() && !y.is_empty() {
+                let len = x.len().min(y.len());
+                let mut x_filtered = Vec::new();
+                let mut y_filtered = Vec::new();
+
+                for i in 0..len {
+                    if predicate(x[i], y[i]) {
+                        x_filtered.push(x[i]);
+                        y_filtered.push(y[i]);
+                    }
+                }
+
+                if !x_filtered.is_empty() {
+                    let mut trace = Trace::new(
+                        "filtered_data".to_string(),
+                        format!("Filtered: {} vs {}", x_col, y_col),
+                        self.chart_type,
+                        x_filtered,
+                        y_filtered,
+                    );
+                    trace.marker.color = Color { r: 31, g: 119, b: 180, a: 255 };
+                    trace.line.color = Color { r: 31, g: 119, b: 180, a: 255 };
+
+                    self.traces = vec![trace];
+                    self.rebuild_canvas();
+                }
             }
         }
     }
