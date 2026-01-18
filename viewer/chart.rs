@@ -3,17 +3,7 @@ use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::collections::HashMap;
 use super::image_loader::ImageLoader;
-use super::plot_renderers::{TooltipRenderer, PointRenderer, BarRenderer};
-use super::plot_template::{PlotConfigBuilder, ConfigStore};
-use super::plot_generic::{DataPoint, RenderPayload, normalize_to_rect, filter_by_property};
-use crate::data::processor::{Dataset, DataProcessor, AggregationBuilder};
-use crate::data::conversion::ChartDataProcessor;
-
-#[derive(Clone)]
-struct PlotVariant {
-    kind: u8,
-    title: String,
-}
+use super::plot_template::PlotConfigBuilder;
 
 struct ChartData {
     labels: Vec<String>,
@@ -35,61 +25,38 @@ struct ChartApp {
     orientation: bool,
     sort_mode: i32,
     current_chart_kind: u8,
-    variants: Vec<PlotVariant>,
-    show_variant_selector: bool,
-    show_transform_menu: bool,
-    config_store: Arc<ConfigStore>,
-    plot_config: Arc<Mutex<super::plot_template::PlotConfig>>,
-    current_sort_indices: Vec<usize>,
     processor_mode: u8,
     filter_threshold: f64,
     show_stats: bool,
     show_processor_menu: bool,
+    show_transform_menu: bool,
     aggregation_results: HashMap<String, f64>,
     limit_value: usize,
 }
 
 impl eframe::App for ChartApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        self.sort_mode = crate::bindings::c_data::sera_get_plot_sort();
-        self.orientation = crate::bindings::c_data::sera_get_plot_orientation();
-        self.zoom = crate::bindings::c_data::sera_get_plot_zoom();
-        self.pan_x = crate::bindings::c_data::sera_get_plot_pan_x();
-        self.current_chart_kind = crate::bindings::c_data::sera_get_plot_chart_kind();
+        if let Ok(sort) = CHART_SORT.lock() {
+            self.sort_mode = *sort;
+        }
         
         egui::TopBottomPanel::top("controls").show(ctx, |ui| {
             ui.horizontal(|ui| {
                 if ui.button("🔍 Zoom In").clicked() {
                     self.zoom *= 1.2;
-                    crate::bindings::c_data::sera_set_plot_zoom(self.zoom);
                 }
                 if ui.button("🔍 Zoom Out").clicked() {
                     self.zoom /= 1.2;
-                    crate::bindings::c_data::sera_set_plot_zoom(self.zoom);
                 }
                 if ui.button("⬜ Fit All").clicked() {
                     self.zoom = 1.0;
                     self.pan_x = 0.0;
-                    crate::bindings::c_data::sera_set_plot_zoom(1.0);
-                    crate::bindings::c_data::sera_set_plot_pan_x(0.0);
                 }
                 if ui.button("📋 Elements").clicked() {
                     self.show_list = !self.show_list;
                 }
-                
-                if self.show_variant_selector && self.variants.len() > 1 {
-                    if ui.button("📊 Transform").clicked() {
-                        self.show_transform_menu = !self.show_transform_menu;
-                    }
-                }
-
-                if ui.button("⚙ Processor").clicked() {
-                    self.show_processor_menu = !self.show_processor_menu;
-                }
-                
                 if ui.button(if self.orientation { "📊 Vertical" } else { "📈 Horizontal" }).clicked() {
                     self.orientation = !self.orientation;
-                    crate::bindings::c_data::sera_set_plot_orientation(self.orientation);
                 }
                 let sort_label = match self.sort_mode {
                     1 => "↑ Asc",
@@ -98,7 +65,16 @@ impl eframe::App for ChartApp {
                 };
                 if ui.button(sort_label).clicked() {
                     self.sort_mode = (self.sort_mode + 1) % 3;
-                    crate::bindings::c_data::sera_set_plot_sort(self.sort_mode);
+                    if let Ok(mut sort) = CHART_SORT.lock() {
+                        *sort = self.sort_mode;
+                    }
+                }
+                ui.separator();
+                if ui.button("⚙ Processor").clicked() {
+                    self.show_processor_menu = !self.show_processor_menu;
+                }
+                if ui.button("🔄 Transform").clicked() {
+                    self.show_transform_menu = !self.show_transform_menu;
                 }
                 ui.label(format!("Zoom: {:.1}x", self.zoom));
             });
@@ -118,11 +94,8 @@ impl eframe::App for ChartApp {
                             let data = self.data.lock().unwrap();
                             if let Some(d) = data.as_ref() {
                                 for (idx, label) in d.labels.iter().enumerate() {
-                                    if idx < self.current_sort_indices.len() {
-                                        let orig_idx = self.current_sort_indices[idx];
-                                        if orig_idx < self.visible_elements.len() {
-                                            ui.checkbox(&mut self.visible_elements[orig_idx], label);
-                                        }
+                                    if idx < self.visible_elements.len() {
+                                        ui.checkbox(&mut self.visible_elements[idx], label);
                                     }
                                 }
                             }
@@ -130,118 +103,8 @@ impl eframe::App for ChartApp {
                 });
         }
 
-        if self.show_transform_menu {
-            let mut should_close = false;
-            let current_kind = self.current_chart_kind;
-            let variants = self.variants.clone();
-            
-            egui::Window::new("Transform Chart")
-                .open(&mut self.show_transform_menu)
-                .show(ctx, |ui| {
-                    ui.heading("Available transformations:");
-                    for variant in &variants {
-                        let is_current = variant.kind == current_kind;
-                        let label = if is_current {
-                            format!("✓ {}", variant.title)
-                        } else {
-                            variant.title.clone()
-                        };
-                        
-                        if !is_current && ui.button(&label).clicked() {
-                            self.current_chart_kind = variant.kind;
-                            crate::bindings::c_data::sera_set_plot_chart_kind(variant.kind);
-                            should_close = true;
-                        } else if is_current {
-                            ui.label(&label);
-                        }
-                    }
-                });
-            
-            if should_close {
-                self.show_transform_menu = false;
-            }
-        }
-
-        let mut action_type = 0;
-        
-        if self.show_processor_menu {
-            egui::Window::new("Data Processor")
-                .open(&mut self.show_processor_menu)
-                .show(ctx, |ui| {
-                    ui.heading("Processor Operations");
-                    
-                    if ui.button("🔽 Filter by Threshold").clicked() {
-                        self.processor_mode = 1;
-                    }
-                    if ui.button("✂ Limit Items").clicked() {
-                        self.processor_mode = 2;
-                    }
-                    if ui.button("📊 Show Statistics").clicked() {
-                        self.processor_mode = 3;
-                        self.show_stats = true;
-                        action_type = 1;
-                    }
-                    if ui.button("🔄 Reset").clicked() {
-                        self.processor_mode = 0;
-                        for visible in self.visible_elements.iter_mut() {
-                            *visible = true;
-                        }
-                    }
-
-                    ui.separator();
-
-                    match self.processor_mode {
-                        1 => {
-                            ui.label("Filter Threshold:");
-                            ui.add(egui::Slider::new(&mut self.filter_threshold, 0.0..=100.0));
-                            if ui.button("Apply Filter").clicked() {
-                                action_type = 2;
-                            }
-                        }
-                        2 => {
-                            ui.label("Item Limit:");
-                            let limit_str = self.limit_value.to_string();
-                            let mut limit_input = limit_str.clone();
-                            if ui.text_edit_singleline(&mut limit_input).changed() {
-                                if let Ok(val) = limit_input.parse::<usize>() {
-                                    self.limit_value = val;
-                                }
-                            }
-                            if ui.button("Apply Limit").clicked() {
-                                action_type = 3;
-                            }
-                        }
-                        3 => {
-                            ui.label("Computing statistics...");
-                        }
-                        _ => {}
-                    }
-                });
-        }
-        
-        match action_type {
-            1 => self.compute_statistics(),
-            2 => self.apply_processor_filter(),
-            3 => self.apply_processor_limit(),
-            _ => {}
-        }
-
-        if self.show_stats {
-            egui::Window::new("Statistics")
-                .open(&mut self.show_stats)
-                .show(ctx, |ui| {
-                    ui.heading("Data Statistics");
-                    ui.separator();
-
-                    for (key, value) in &self.aggregation_results {
-                        ui.label(format!("{}: {:.2}", key, value));
-                    }
-                });
-        }
-
         egui::CentralPanel::default().show(ctx, |ui| {
             let data = self.data.lock().unwrap();
-            
             let d_clone = data.as_ref().map(|d| ChartData {
                 labels: d.labels.clone(),
                 values: d.values.clone(),
@@ -250,7 +113,6 @@ impl eframe::App for ChartApp {
                 tooltip_bg_color: d.tooltip_bg_color,
                 tooltip_text_color: d.tooltip_text_color,
             });
-            
             drop(data);
             
             if let Some(mut d) = d_clone {
@@ -274,8 +136,6 @@ impl eframe::App for ChartApp {
                 d.values = sorted_values;
                 d.hover_data = sorted_hover_data;
                 
-                let original_indices = indices;
-                
                 ui.vertical_centered(|ui| {
                     ui.heading(&d.title);
                 });
@@ -284,8 +144,29 @@ impl eframe::App for ChartApp {
                 if d.values.is_empty() {
                     ui.label("No data");
                 } else {
-                    self.render_chart(ctx, ui, &d);
-                    self.current_sort_indices = original_indices;
+                    match self.current_chart_kind {
+                        0 => {
+                            if self.orientation {
+                                self.render_line_vertical(ctx, ui, &d);
+                            } else {
+                                self.render_line_horizontal(ctx, ui, &d);
+                            }
+                        }
+                        1 => {
+                            if self.orientation {
+                                self.render_scatter_vertical(ctx, ui, &d);
+                            } else {
+                                self.render_scatter_horizontal(ctx, ui, &d);
+                            }
+                        }
+                        _ => {
+                            if self.orientation {
+                                self.render_vertical_bars(ctx, ui, &d);
+                            } else {
+                                self.render_horizontal_bars(ctx, ui, &d);
+                            }
+                        }
+                    }
                 }
             } else {
                 ui.label("Waiting for data...");
@@ -293,387 +174,131 @@ impl eframe::App for ChartApp {
             
             ctx.request_repaint();
         });
+
+        if self.show_processor_menu {
+            let mut filter_threshold = self.filter_threshold;
+            let mut limit_value = self.limit_value;
+            let mut apply_filter = false;
+            let mut apply_limit = false;
+            let mut compute_stats = false;
+            let mut reset_all = false;
+            
+            egui::Window::new("⚙ Processor")
+                .open(&mut self.show_processor_menu)
+                .default_width(350.0)
+                .show(ctx, |ui| {
+                    ui.label("Data Processing Operations");
+                    ui.separator();
+                    
+                    ui.label("Filter");
+                    ui.horizontal(|ui| {
+                        ui.add(egui::Slider::new(&mut filter_threshold, 0.0..=100.0).text("Threshold %"));
+                        if ui.button("Apply").clicked() {
+                            apply_filter = true;
+                        }
+                    });
+                    
+                    ui.separator();
+                    ui.label("Limit");
+                    ui.horizontal(|ui| {
+                        let mut limit_str = format!("{}", limit_value);
+                        if ui.text_edit_singleline(&mut limit_str).changed() {
+                            if let Ok(val) = limit_str.parse::<usize>() {
+                                limit_value = val;
+                            }
+                        }
+                        if ui.button("Apply").clicked() {
+                            apply_limit = true;
+                        }
+                    });
+                    
+                    ui.separator();
+                    ui.label("Statistics");
+                    if ui.button("Compute").clicked() {
+                        compute_stats = true;
+                    }
+                    
+                    ui.separator();
+                    if ui.button("Reset All").clicked() {
+                        reset_all = true;
+                    }
+                });
+            
+            self.filter_threshold = filter_threshold;
+            self.limit_value = limit_value;
+            
+            if apply_filter {
+                self.apply_processor_filter();
+            }
+            if apply_limit {
+                self.apply_processor_limit();
+            }
+            if compute_stats {
+                self.show_stats = true;
+                self.compute_statistics();
+            }
+            if reset_all {
+                let data = self.data.lock().unwrap();
+                if let Some(d) = data.as_ref() {
+                    self.visible_elements = vec![true; d.labels.len()];
+                }
+            }
+        }
+
+        if self.show_stats {
+            egui::Window::new("📊 Statistics")
+                .open(&mut self.show_stats)
+                .default_width(300.0)
+                .show(ctx, |ui| {
+                    if self.aggregation_results.is_empty() {
+                        ui.label("No statistics computed");
+                    } else {
+                        for (key, value) in &self.aggregation_results {
+                            ui.label(format!("{}: {:.2}", key, value));
+                        }
+                    }
+                });
+        }
+
+        if self.show_transform_menu {
+            let chart_types = [
+                (0u8, "Line"),
+                (1u8, "Scatter"),
+                (2u8, "Bar"),
+            ];
+            
+            egui::Window::new("🔄 Transform")
+                .open(&mut self.show_transform_menu)
+                .default_width(250.0)
+                .show(ctx, |ui| {
+                    ui.label("Select Chart Type");
+                    ui.separator();
+                    
+                    for (kind, name) in &chart_types {
+                        let is_selected = self.current_chart_kind == *kind;
+                        let button_text = if is_selected {
+                            format!("✓ {}", name)
+                        } else {
+                            name.to_string()
+                        };
+                        
+                        if ui.button(&button_text).clicked() {
+                            self.current_chart_kind = *kind;
+                        }
+                    }
+                });
+        }
     }
 }
 
 impl ChartApp {
-    fn render_chart(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        match self.current_chart_kind {
-            1 => {
-                if self.orientation {
-                    self.render_scatter_vertical(ctx, ui, d);
-                } else {
-                    self.render_scatter_horizontal(ctx, ui, d);
-                }
-            }
-            2 => {
-                if self.orientation {
-                    self.render_vertical_bars(ctx, ui, d);
-                } else {
-                    self.render_horizontal_bars(ctx, ui, d);
-                }
-            }
-            _ => {
-                if self.orientation {
-                    self.render_vertical_bars(ctx, ui, d);
-                } else {
-                    self.render_horizontal_bars(ctx, ui, d);
-                }
-            }
-        }
-    }
-    
-    fn is_visible(&self, sort_idx: usize) -> bool {
-        if sort_idx >= self.current_sort_indices.len() {
-            return false;
-        }
-        let orig_idx = self.current_sort_indices[sort_idx];
-        orig_idx < self.visible_elements.len() && self.visible_elements[orig_idx]
-    }
-    
-    fn get_original_idx(&self, sort_idx: usize) -> Option<usize> {
-        if sort_idx < self.current_sort_indices.len() {
-            Some(self.current_sort_indices[sort_idx])
-        } else {
-            None
-        }
-    }
-
-    fn compute_statistics(&mut self) {
-        let data = self.data.lock().unwrap();
-        if let Some(d) = data.as_ref() {
-            let values = d.values.clone();
-            let results = AggregationBuilder::new(values)
-                .sum()
-                .mean()
-                .min()
-                .max()
-                .count()
-                .median()
-                .stddev()
-                .build();
-            
-            self.aggregation_results.clear();
-            if let Some(v) = results.get("sum") {
-                self.aggregation_results.insert("Sum".to_string(), v);
-            }
-            if let Some(v) = results.get("mean") {
-                self.aggregation_results.insert("Mean".to_string(), v);
-            }
-            if let Some(v) = results.get("min") {
-                self.aggregation_results.insert("Min".to_string(), v);
-            }
-            if let Some(v) = results.get("max") {
-                self.aggregation_results.insert("Max".to_string(), v);
-            }
-            if let Some(v) = results.get("count") {
-                self.aggregation_results.insert("Count".to_string(), v);
-            }
-            if let Some(v) = results.get("median") {
-                self.aggregation_results.insert("Median".to_string(), v);
-            }
-            if let Some(v) = results.get("stddev") {
-                self.aggregation_results.insert("StdDev".to_string(), v);
-            }
-        }
-    }
-
-    fn apply_processor_filter(&mut self) {
-        let data = self.data.lock().unwrap();
-        if let Some(d) = data.as_ref() {
-            for (idx, &val) in d.values.iter().enumerate() {
-                if idx < self.visible_elements.len() {
-                    self.visible_elements[idx] = val >= self.filter_threshold;
-                }
-            }
-        }
-    }
-
-    fn apply_processor_limit(&mut self) {
-        for (idx, visible) in self.visible_elements.iter_mut().enumerate() {
-            *visible = idx < self.limit_value;
-        }
-    }
-
-    fn render_scatter_vertical(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        let (tooltip_bg_color, tooltip_text_color) = (d.tooltip_bg_color, d.tooltip_text_color);
-        let config = PlotConfigBuilder::new()
-            .width(1400.0)
-            .height(600.0)
-            .zoom(self.zoom)
-            .padding(80.0, 20.0, 20.0, 100.0)
-            .build();
-        
-        let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
-        let plot_width = config.width * config.zoom;
-        let plot_height = config.height * config.zoom;
-        
-        let mut payload = RenderPayload::<f64>::new();
-        for (idx, (label, val)) in d.labels.iter().zip(d.values.iter()).enumerate() {
-            let norm_x = if d.labels.len() > 1 { idx as f64 / (d.labels.len() as f64 - 1.0) } else { 0.5 };
-            let mut point = DataPoint::new(norm_x, *val, *val);
-            point.add_metadata("label", label.clone());
-            point.add_metadata("idx", idx.to_string());
-            payload = payload.add_point(point);
-        }
-        payload = payload.with_bounds(0.0, 1.0, 0.0, max_val).with_labels(d.labels.clone());
-        
-        let point_renderer = PointRenderer::new(5.5, 7.0);
-        
-        egui::ScrollArea::both()
-            .auto_shrink([false; 2])
-            .show(ui, |ui| {
-                let (response, painter) = ui.allocate_painter(
-                    egui::Vec2::new(plot_width + config.padding_left + config.padding_right, plot_height + config.padding_top + config.padding_bottom),
-                    egui::Sense::hover()
-                );
-                
-                let plot_rect = egui::Rect::from_min_size(
-                    response.rect.min + egui::Vec2::new(config.padding_left, config.padding_top),
-                    egui::Vec2::new(plot_width, plot_height)
-                );
-                
-                painter.line_segment(
-                    [egui::pos2(plot_rect.left(), plot_rect.bottom()), egui::pos2(plot_rect.right(), plot_rect.bottom())],
-                    egui::Stroke::new(1.5, egui::Color32::from_gray(200))
-                );
-                painter.line_segment(
-                    [egui::pos2(plot_rect.left(), plot_rect.top()), egui::pos2(plot_rect.left(), plot_rect.bottom())],
-                    egui::Stroke::new(1.5, egui::Color32::from_gray(200))
-                );
-                
-                let font_size = if self.zoom < 0.8 { 9.0 } else if self.zoom > 1.5 { 12.0 } else { 11.0 };
-                
-                for i in 0..=5 {
-                    let y = plot_rect.bottom() - (plot_height / 5.0) * i as f32;
-                    let val = (max_val / 5.0) * i as f64;
-                    painter.text(
-                        egui::pos2(plot_rect.left() - 15.0, y),
-                        egui::Align2::RIGHT_CENTER,
-                        &format!("{:.1}", val),
-                        egui::FontId::proportional(font_size),
-                        egui::Color32::from_gray(100)
-                    );
-                    painter.line_segment(
-                        [egui::pos2(plot_rect.left() - 5.0, y), egui::pos2(plot_rect.left(), y)],
-                        egui::Stroke::new(0.8, egui::Color32::from_gray(180))
-                    );
-                }
-                
-                for (i, label) in d.labels.iter().enumerate() {
-                    let x = plot_rect.left() + (plot_width / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
-                    
-                    painter.text(
-                        egui::pos2(x, plot_rect.bottom() + 25.0),
-                        egui::Align2::CENTER_TOP,
-                        label,
-                        egui::FontId::proportional(font_size * 0.85),
-                        egui::Color32::from_gray(70)
-                    );
-                }
-                
-                let normalized_pts = normalize_to_rect(&payload, plot_rect);
-                let visible_pts = filter_by_property(&payload.points, |pt| {
-                    let idx_str = pt.metadata.get("idx").map(|s| s.as_str()).unwrap_or("0");
-                    if let Ok(display_idx) = idx_str.parse::<usize>() {
-                        self.is_visible(display_idx)
-                    } else {
-                        false
-                    }
-                });
-                
-                for point in &visible_pts {
-                    let idx_str = point.metadata.get("idx").map(|s| s.as_str()).unwrap_or("0");
-                    let idx: usize = idx_str.parse().unwrap_or(0);
-                    
-                    let norm_pt = normalized_pts.iter().find(|(_, pt)| {
-                        pt.metadata.get("idx").map(|s| s.as_str()) == Some(idx_str)
-                    });
-                    
-                    if let Some((screen_pt, _)) = norm_pt {
-                        let mouse_pos = ctx.input(|i| i.pointer.latest_pos().unwrap_or(egui::pos2(-10000.0, -10000.0)));
-                        let is_hovered = response.hovered() && 
-                            ((screen_pt.x - mouse_pos.x).abs() < 12.0 &&
-                            (screen_pt.y - mouse_pos.y).abs() < 12.0);
-                        
-                        point_renderer.render_point(&painter, *screen_pt, idx, is_hovered);
-                        
-                        if is_hovered {
-                            self.hovered_idx = Some(idx);
-                            
-                            let tooltip_width = 200.0 * self.zoom;
-                            let field_count = if idx < d.hover_data.len() { 
-                                d.hover_data[idx].iter().filter(|(k, _)| k.as_str() != "image").count() as f32 
-                            } else { 0.0 };
-                            let has_image = if idx < d.hover_data.len() { d.hover_data[idx].contains_key("image") } else { false };
-                            let base_height = if has_image { 120.0 } else { 85.0 };
-                            let tooltip_height = base_height + (field_count * 35.0) + 65.0;
-                            
-                            let mut tooltip_x = if screen_pt.x + 120.0 > plot_rect.right() { screen_pt.x - tooltip_width - 15.0 } else { screen_pt.x + 15.0 };
-                            let tooltip_y = if screen_pt.y - (tooltip_height * self.zoom) < plot_rect.top() { screen_pt.y + 15.0 } else { screen_pt.y - (tooltip_height * self.zoom) };
-                            
-                            if tooltip_x < plot_rect.left() { tooltip_x = plot_rect.left() + 5.0; }
-                            if tooltip_x + tooltip_width > plot_rect.right() { tooltip_x = plot_rect.right() - tooltip_width - 5.0; }
-                            
-                            let label = point.metadata.get("label").map(|s| s.as_str()).unwrap_or("");
-                            if idx < d.hover_data.len() {
-                                TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, label, &d.hover_data[idx], tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
-                            } else {
-                                TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, label, &HashMap::new(), tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
-                            }
-                        }
-                    }
-                }
-            });
-    }
-
-    fn render_scatter_horizontal(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        let (tooltip_bg_color, tooltip_text_color) = (d.tooltip_bg_color, d.tooltip_text_color);
-        let config = PlotConfigBuilder::new()
-            .width(600.0)
-            .height(1400.0)
-            .zoom(self.zoom)
-            .padding(80.0, 20.0, 20.0, 80.0)
-            .build();
-        
-        let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
-        let plot_width = config.width * config.zoom;
-        let plot_height = config.height * config.zoom;
-        
-        let mut payload = RenderPayload::<f64>::new();
-        for (idx, (label, val)) in d.labels.iter().zip(d.values.iter()).enumerate() {
-            let norm_y = if d.labels.len() > 1 { idx as f64 / (d.labels.len() as f64 - 1.0) } else { 0.5 };
-            let norm_x = if max_val > 0.0 { *val / max_val } else { 0.0 };
-            let mut point = DataPoint::new(norm_x, norm_y, *val);
-            point.add_metadata("label", label.clone());
-            point.add_metadata("idx", idx.to_string());
-            payload = payload.add_point(point);
-        }
-        payload = payload.with_bounds(0.0, 1.0, 0.0, 1.0).with_labels(d.labels.clone());
-        
-        let point_renderer = PointRenderer::new(5.5, 7.0);
-        
-        egui::ScrollArea::both()
-            .auto_shrink([false; 2])
-            .show(ui, |ui| {
-                let (response, painter) = ui.allocate_painter(
-                    egui::Vec2::new(plot_width + config.padding_left + config.padding_right, plot_height + config.padding_top + config.padding_bottom),
-                    egui::Sense::hover()
-                );
-                
-                let plot_rect = egui::Rect::from_min_size(
-                    response.rect.min + egui::Vec2::new(config.padding_left, config.padding_top),
-                    egui::Vec2::new(plot_width, plot_height)
-                );
-                
-                painter.line_segment(
-                    [egui::pos2(plot_rect.left(), plot_rect.bottom()), egui::pos2(plot_rect.right(), plot_rect.bottom())],
-                    egui::Stroke::new(1.5, egui::Color32::from_gray(200))
-                );
-                painter.line_segment(
-                    [egui::pos2(plot_rect.left(), plot_rect.top()), egui::pos2(plot_rect.left(), plot_rect.bottom())],
-                    egui::Stroke::new(1.5, egui::Color32::from_gray(200))
-                );
-                
-                let font_size = if self.zoom < 0.8 { 9.0 } else if self.zoom > 1.5 { 12.0 } else { 11.0 };
-                
-                for i in 0..=5 {
-                    let x = plot_rect.left() + (plot_width / 5.0) * i as f32;
-                    let val = (max_val / 5.0) * i as f64;
-                    painter.text(
-                        egui::pos2(x, plot_rect.bottom() + 20.0),
-                        egui::Align2::CENTER_TOP,
-                        &format!("{:.1}", val),
-                        egui::FontId::proportional(font_size),
-                        egui::Color32::from_gray(100)
-                    );
-                    painter.line_segment(
-                        [egui::pos2(x, plot_rect.bottom()), egui::pos2(x, plot_rect.bottom() + 5.0)],
-                        egui::Stroke::new(0.8, egui::Color32::from_gray(180))
-                    );
-                }
-                
-                for (i, label) in d.labels.iter().enumerate() {
-                    let y = plot_rect.top() + (plot_height / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
-                    
-                    painter.text(
-                        egui::pos2(plot_rect.left() - 15.0, y),
-                        egui::Align2::RIGHT_CENTER,
-                        label,
-                        egui::FontId::proportional(font_size * 0.85),
-                        egui::Color32::from_gray(70)
-                    );
-                }
-                
-                let normalized_pts = normalize_to_rect(&payload, plot_rect);
-                let visible_pts = filter_by_property(&payload.points, |pt| {
-                    let idx_str = pt.metadata.get("idx").map(|s| s.as_str()).unwrap_or("0");
-                    if let Ok(display_idx) = idx_str.parse::<usize>() {
-                        self.is_visible(display_idx)
-                    } else {
-                        false
-                    }
-                });
-                
-                for point in &visible_pts {
-                    let idx_str = point.metadata.get("idx").map(|s| s.as_str()).unwrap_or("0");
-                    let idx: usize = idx_str.parse().unwrap_or(0);
-                    
-                    let norm_pt = normalized_pts.iter().find(|(_, pt)| {
-                        pt.metadata.get("idx").map(|s| s.as_str()) == Some(idx_str)
-                    });
-                    
-                    if let Some((screen_pt, _)) = norm_pt {
-                        let mouse_pos = ctx.input(|i| i.pointer.latest_pos().unwrap_or(egui::pos2(-10000.0, -10000.0)));
-                        let is_hovered = response.hovered() && 
-                            ((screen_pt.x - mouse_pos.x).abs() < 12.0 &&
-                            (screen_pt.y - mouse_pos.y).abs() < 12.0);
-                        
-                        point_renderer.render_point(&painter, *screen_pt, idx, is_hovered);
-                        
-                        if is_hovered {
-                            self.hovered_idx = Some(idx);
-                            
-                            let tooltip_width = 200.0 * self.zoom;
-                            let field_count = if idx < d.hover_data.len() { 
-                                d.hover_data[idx].iter().filter(|(k, _)| k.as_str() != "image").count() as f32 
-                            } else { 0.0 };
-                            let has_image = if idx < d.hover_data.len() { d.hover_data[idx].contains_key("image") } else { false };
-                            let base_height = if has_image { 120.0 } else { 85.0 };
-                            let tooltip_height = base_height + (field_count * 35.0) + 65.0;
-                            
-                            let mut tooltip_x = if screen_pt.x - tooltip_width < plot_rect.left() { screen_pt.x + 15.0 } else { screen_pt.x - tooltip_width - 15.0 };
-                            let tooltip_y = if screen_pt.y - (tooltip_height * self.zoom) < plot_rect.top() { screen_pt.y + 15.0 } else { screen_pt.y - (tooltip_height * self.zoom) };
-                            
-                            if tooltip_x < plot_rect.left() { tooltip_x = plot_rect.left() + 5.0; }
-                            if tooltip_x + tooltip_width > plot_rect.right() { tooltip_x = plot_rect.right() - tooltip_width - 5.0; }
-                            
-                            let label = point.metadata.get("label").map(|s| s.as_str()).unwrap_or("");
-                            if idx < d.hover_data.len() {
-                                TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, label, &d.hover_data[idx], tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
-                            } else {
-                                TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, label, &HashMap::new(), tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
-                            }
-                        }
-                    }
-                }
-            });
-    }
-
     fn render_vertical_bars(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
         let (tooltip_bg_color, tooltip_text_color) = (d.tooltip_bg_color, d.tooltip_text_color);
-        let config = PlotConfigBuilder::new()
-            .width(1400.0)
-            .height(600.0)
-            .zoom(self.zoom)
-            .padding(60.0, 20.0, 20.0, 120.0)
-            .build();
-        
         let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
         let bar_height = 300.0_f32;
         
         let visible_count = d.labels.iter().enumerate()
-            .filter(|(idx, _)| self.is_visible(*idx))
+            .filter(|(idx, _)| idx < &self.visible_elements.len() && self.visible_elements[*idx])
             .count() as f32;
         
         let available_width = 1200.0_f32 - 30.0;
@@ -685,7 +310,6 @@ impl ChartApp {
         
         let font_size = if self.zoom < 0.8 { 10.0 } else if self.zoom > 1.5 { 13.0 } else { 12.0 };
         let font_id = egui::FontId::proportional(font_size);
-        let bar_renderer = BarRenderer::new(0.55);
         
         let mut max_content_width: f32 = 100.0;
         for hover in &d.hover_data {
@@ -698,13 +322,13 @@ impl ChartApp {
             }
         }
         
-        egui::ScrollArea::both()
+        egui::ScrollArea::horizontal()
             .auto_shrink([false; 2])
             .show(ui, |ui| {
                 ui.horizontal(|ui| {
                     ui.add_space(1.0);
                     for (idx, (label, value)) in d.labels.iter().zip(d.values.iter()).enumerate() {
-                        if !self.is_visible(idx) {
+                        if idx >= self.visible_elements.len() || !self.visible_elements[idx] {
                             continue;
                         }
                         
@@ -730,17 +354,27 @@ impl ChartApp {
                                 egui::Sense::hover()
                             );
                             
+                            let hue = (idx as f32 * 0.1) % 1.0;
+                            let color = hsv_to_rgb(hue, 0.8, 0.9);
+                            let hover_color = hsv_to_rgb(hue, 1.0, 1.0);
+                            
                             let is_hovered = response.hovered();
                             if is_hovered {
                                 self.hovered_idx = Some(idx);
                             }
+                            
+                            let bar_color = if is_hovered { hover_color } else { color };
                             
                             let bar_rect = egui::Rect::from_min_size(
                                 response.rect.center_bottom() - egui::Vec2::new(bar_width * self.zoom / 2.0, scaled_h),
                                 egui::Vec2::new(bar_width * self.zoom, scaled_h)
                             );
                             
-                            bar_renderer.render_bar(&painter, bar_rect, idx, is_hovered);
+                            painter.rect_filled(bar_rect, 4.0, bar_color);
+                            
+                            if is_hovered {
+                                painter.rect_stroke(bar_rect, 2.0, egui::Stroke::new(2.0, egui::Color32::WHITE));
+                            }
                             
                             let label_font = if self.zoom < 0.8 { 8.0 } else { 9.0 };
                             painter.text(
@@ -856,18 +490,11 @@ impl ChartApp {
 
     fn render_horizontal_bars(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
         let (tooltip_bg_color, tooltip_text_color) = (d.tooltip_bg_color, d.tooltip_text_color);
-        let config = PlotConfigBuilder::new()
-            .width(600.0)
-            .height(1400.0)
-            .zoom(self.zoom)
-            .padding(60.0, 20.0, 20.0, 80.0)
-            .build();
-        
         let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
         let bar_max_width = 350.0_f32;
         
         let visible_count = d.labels.iter().enumerate()
-            .filter(|(idx, _)| self.is_visible(*idx))
+            .filter(|(idx, _)| idx < &self.visible_elements.len() && self.visible_elements[*idx])
             .count() as f32;
         
         let available_height = 500.0_f32;
@@ -878,14 +505,13 @@ impl ChartApp {
         };
         
         let font_size = if self.zoom < 0.8 { 10.0 } else if self.zoom > 1.5 { 13.0 } else { 12.0 };
-        let bar_renderer = BarRenderer::new(0.5);
         
-        egui::ScrollArea::both()
+        egui::ScrollArea::vertical()
             .auto_shrink([false; 2])
             .show(ui, |ui| {
                 ui.vertical(|ui| {
                     for (idx, (label, value)) in d.labels.iter().zip(d.values.iter()).enumerate() {
-                        if !self.is_visible(idx) {
+                        if idx >= self.visible_elements.len() || !self.visible_elements[idx] {
                             continue;
                         }
                         
@@ -903,10 +529,16 @@ impl ChartApp {
                         
                         let painter = ui.painter_at(rect);
                         
+                        let hue = (idx as f32 * 0.1) % 1.0;
+                        let color = hsv_to_rgb(hue, 0.8, 0.9);
+                        let hover_color = hsv_to_rgb(hue, 1.0, 1.0);
+                        
                         let is_hovered = rect.contains(ctx.input(|i| i.pointer.hover_pos()).unwrap_or_default());
                         if is_hovered {
                             self.hovered_idx = Some(idx);
                         }
+                        
+                        let bar_color = if is_hovered { hover_color } else { color };
                         
                         let label_rect = egui::Rect::from_min_size(
                             rect.left_top() + egui::Vec2::new(5.0, 0.0),
@@ -929,7 +561,11 @@ impl ChartApp {
                             egui::vec2(scaled_w, bar_h * self.zoom)
                         );
                         
-                        bar_renderer.render_bar(&painter, bar_rect, idx, is_hovered);
+                        painter.rect_filled(bar_rect, 3.0, bar_color);
+                        
+                        if is_hovered {
+                            painter.rect_stroke(bar_rect, 2.0, egui::Stroke::new(2.0, egui::Color32::WHITE));
+                        }
                         
                         let value_text = format!("{}", *value as i32);
                         painter.text(
@@ -976,8 +612,583 @@ impl ChartApp {
                 });
             });
     }
+
+    fn render_scatter_vertical(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
+        let plot_width = 600.0 * self.zoom;
+        let plot_height = 400.0 * self.zoom;
+        
+        if ui.button("🏠 Reset Zoom").clicked() {
+            self.zoom = 1.0;
+            self.pan_x = 0.0;
+        }
+        ui.add(egui::Slider::new(&mut self.zoom, 0.5..=3.0).text("Zoom"));
+        
+        let (response, painter) = ui.allocate_painter(
+            egui::Vec2::new(plot_width + 80.0, plot_height + 80.0),
+            egui::Sense::hover()
+        );
+        
+        let plot_rect = egui::Rect::from_min_size(
+            response.rect.min + egui::Vec2::new(40.0, 20.0),
+            egui::Vec2::new(plot_width, plot_height)
+        );
+        
+        painter.line_segment(
+            [egui::pos2(plot_rect.left(), plot_rect.bottom()), egui::pos2(plot_rect.right(), plot_rect.bottom())],
+            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
+        );
+        painter.line_segment(
+            [egui::pos2(plot_rect.left(), plot_rect.top()), egui::pos2(plot_rect.left(), plot_rect.bottom())],
+            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
+        );
+        
+        let font_size = 11.0;
+        let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
+        
+        for i in 0..=5 {
+            let y = plot_rect.bottom() - (plot_height / 5.0) * i as f32;
+            let val = (max_val / 5.0) * i as f64;
+            painter.text(
+                egui::pos2(plot_rect.left() - 15.0, y),
+                egui::Align2::RIGHT_CENTER,
+                &format!("{:.1}", val),
+                egui::FontId::proportional(font_size),
+                egui::Color32::from_gray(100)
+            );
+        }
+        
+        let visible_indices: Vec<usize> = (0..d.labels.len())
+            .filter(|i| i < &self.visible_elements.len() && self.visible_elements[*i])
+            .collect();
+        
+        for &i in &visible_indices {
+            let x = plot_rect.left() + (plot_width / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
+            let norm_y = (d.values[i] / max_val.max(1.0)) as f32;
+            let y = plot_rect.bottom() - norm_y * plot_height;
+            
+            let is_hovered = self.hovered_idx.map(|h| h == i).unwrap_or(false);
+            let radius = if is_hovered { 7.0 } else { 5.0 };
+            let color = if is_hovered {
+                egui::Color32::from_rgb(255, 200, 0)
+            } else {
+                let hue = (i as f32 * 0.1) % 1.0;
+                hsv_to_rgb(hue, 0.8, 0.9)
+            };
+            
+            painter.circle_filled(egui::pos2(x, y), radius, color);
+            painter.circle_stroke(egui::pos2(x, y), radius, egui::Stroke::new(1.0, egui::Color32::WHITE));
+            
+            if is_hovered {
+                let tooltip_y = y - 20.0 * self.zoom - 100.0 * self.zoom;
+                draw_hover_tooltip(
+                    &painter,
+                    ctx,
+                    &d.labels[i],
+                    d.values[i],
+                    &d.hover_data[i],
+                    egui::pos2(x, tooltip_y),
+                    d.tooltip_bg_color,
+                    d.tooltip_text_color,
+                    self.zoom,
+                );
+            }
+        }
+        
+        if response.hovered() {
+            if let Some(pos) = ctx.pointer_latest_pos() {
+                let rel_pos = pos - plot_rect.min;
+                if rel_pos.x >= 0.0 && rel_pos.x <= plot_width && rel_pos.y >= 0.0 && rel_pos.y <= plot_height {
+                    let norm_x = rel_pos.x / plot_width;
+                    let closest_idx = ((norm_x * (d.labels.len() as f32 - 1.0)).round() as usize)
+                        .min(d.labels.len().saturating_sub(1));
+                    if visible_indices.contains(&closest_idx) {
+                        self.hovered_idx = Some(closest_idx);
+                    }
+                }
+            }
+        }
+    }
+
+    fn render_scatter_horizontal(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
+        let plot_width = 400.0 * self.zoom;
+        let plot_height = 600.0 * self.zoom;
+        
+        if ui.button("🏠 Reset Zoom").clicked() {
+            self.zoom = 1.0;
+            self.pan_x = 0.0;
+        }
+        ui.add(egui::Slider::new(&mut self.zoom, 0.5..=3.0).text("Zoom"));
+        
+        let (response, painter) = ui.allocate_painter(
+            egui::Vec2::new(plot_width + 100.0, plot_height + 80.0),
+            egui::Sense::hover()
+        );
+        
+        let plot_rect = egui::Rect::from_min_size(
+            response.rect.min + egui::Vec2::new(80.0, 20.0),
+            egui::Vec2::new(plot_width, plot_height)
+        );
+        
+        painter.line_segment(
+            [egui::pos2(plot_rect.left(), plot_rect.bottom()), egui::pos2(plot_rect.right(), plot_rect.bottom())],
+            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
+        );
+        painter.line_segment(
+            [egui::pos2(plot_rect.left(), plot_rect.top()), egui::pos2(plot_rect.left(), plot_rect.bottom())],
+            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
+        );
+        
+        let font_size = 11.0;
+        let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
+        
+        for i in 0..=5 {
+            let x = plot_rect.left() + (plot_width / 5.0) * i as f32;
+            let val = (max_val / 5.0) * i as f64;
+            painter.text(
+                egui::pos2(x, plot_rect.bottom() + 15.0),
+                egui::Align2::CENTER_TOP,
+                &format!("{:.1}", val),
+                egui::FontId::proportional(font_size),
+                egui::Color32::from_gray(100)
+            );
+        }
+        
+        let visible_indices: Vec<usize> = (0..d.labels.len())
+            .filter(|i| i < &self.visible_elements.len() && self.visible_elements[*i])
+            .collect();
+        
+        for &i in &visible_indices {
+            let norm_x = (d.values[i] / max_val.max(1.0)) as f32;
+            let x = plot_rect.left() + norm_x * plot_width;
+            let y = plot_rect.top() + (plot_height / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
+            
+            let is_hovered = self.hovered_idx.map(|h| h == i).unwrap_or(false);
+            let radius = if is_hovered { 7.0 } else { 5.0 };
+            let color = if is_hovered {
+                egui::Color32::from_rgb(255, 200, 0)
+            } else {
+                let hue = (i as f32 * 0.1) % 1.0;
+                hsv_to_rgb(hue, 0.8, 0.9)
+            };
+            
+            painter.circle_filled(egui::pos2(x, y), radius, color);
+            painter.circle_stroke(egui::pos2(x, y), radius, egui::Stroke::new(1.0, egui::Color32::WHITE));
+            
+            if is_hovered {
+                let tooltip_x = x + 20.0 * self.zoom;
+                draw_hover_tooltip(
+                    &painter,
+                    ctx,
+                    &d.labels[i],
+                    d.values[i],
+                    &d.hover_data[i],
+                    egui::pos2(tooltip_x, y),
+                    d.tooltip_bg_color,
+                    d.tooltip_text_color,
+                    self.zoom,
+                );
+            }
+        }
+        
+        if response.hovered() {
+            if let Some(pos) = ctx.pointer_latest_pos() {
+                let rel_pos = pos - plot_rect.min;
+                if rel_pos.x >= 0.0 && rel_pos.x <= plot_width && rel_pos.y >= 0.0 && rel_pos.y <= plot_height {
+                    let norm_y = rel_pos.y / plot_height;
+                    let closest_idx = ((norm_y * (d.labels.len() as f32 - 1.0)).round() as usize)
+                        .min(d.labels.len().saturating_sub(1));
+                    if visible_indices.contains(&closest_idx) {
+                        self.hovered_idx = Some(closest_idx);
+                    }
+                }
+            }
+        }
+    }
+
+    fn render_line_vertical(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
+        let config = PlotConfigBuilder::new().build();
+        let plot_width = 600.0 * self.zoom;
+        let plot_height = 400.0 * self.zoom;
+        
+        if ui.button("🏠 Reset Zoom").clicked() {
+            self.zoom = 1.0;
+            self.pan_x = 0.0;
+        }
+        ui.add(egui::Slider::new(&mut self.zoom, 0.5..=3.0).text("Zoom"));
+        
+        let (response, painter) = ui.allocate_painter(
+            egui::Vec2::new(plot_width + config.padding_left + config.padding_right, plot_height + config.padding_top + config.padding_bottom),
+            egui::Sense::hover()
+        );
+        
+        let plot_rect = egui::Rect::from_min_size(
+            response.rect.min + egui::Vec2::new(config.padding_left, config.padding_top),
+            egui::Vec2::new(plot_width, plot_height)
+        );
+        
+        painter.line_segment(
+            [egui::pos2(plot_rect.left(), plot_rect.bottom()), egui::pos2(plot_rect.right(), plot_rect.bottom())],
+            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
+        );
+        painter.line_segment(
+            [egui::pos2(plot_rect.left(), plot_rect.top()), egui::pos2(plot_rect.left(), plot_rect.bottom())],
+            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
+        );
+        
+        let font_size = if self.zoom < 0.8 { 9.0 } else if self.zoom > 1.5 { 12.0 } else { 11.0 };
+        let max_val = d.values.iter().fold(0.0_f64, |a: f64, &b| a.max(b));
+        
+        for i in 0..=5 {
+            let y = plot_rect.bottom() - (plot_height / 5.0) * i as f32;
+            let val = (max_val / 5.0) * i as f64;
+            painter.text(
+                egui::pos2(plot_rect.left() - 15.0, y),
+                egui::Align2::RIGHT_CENTER,
+                &format!("{:.1}", val),
+                egui::FontId::proportional(font_size),
+                egui::Color32::from_gray(100)
+            );
+            painter.line_segment(
+                [egui::pos2(plot_rect.left() - 5.0, y), egui::pos2(plot_rect.left(), y)],
+                egui::Stroke::new(0.8, egui::Color32::from_gray(180))
+            );
+        }
+        
+        for (i, label) in d.labels.iter().enumerate() {
+            let x = plot_rect.left() + (plot_width / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
+            painter.text(
+                egui::pos2(x, plot_rect.bottom() + 25.0),
+                egui::Align2::CENTER_TOP,
+                label,
+                egui::FontId::proportional(font_size * 0.85),
+                egui::Color32::from_gray(70)
+            );
+        }
+        
+        let visible_indices: Vec<usize> = (0..d.labels.len())
+            .filter(|i| i < &self.visible_elements.len() && self.visible_elements[*i])
+            .collect();
+        
+        if visible_indices.len() > 1 {
+            let mut line_points = Vec::new();
+            for &i in &visible_indices {
+                let x = plot_rect.left() + (plot_width / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
+                let norm_y = (d.values[i] / max_val.max(1.0)) as f32;
+                let y = plot_rect.bottom() - norm_y * plot_height;
+                line_points.push(egui::pos2(x, y));
+            }
+            
+            for window in line_points.windows(2) {
+                painter.line_segment(
+                    [window[0], window[1]],
+                    egui::Stroke::new(2.0, egui::Color32::from_rgb(100, 150, 255))
+                );
+            }
+            
+            for (idx, &pt) in line_points.iter().enumerate() {
+                let orig_idx = visible_indices[idx];
+                let is_hovered = self.hovered_idx.map(|h| h == orig_idx).unwrap_or(false);
+                let radius = if is_hovered { 6.0 } else { 4.0 };
+                let color = if is_hovered { egui::Color32::from_rgb(255, 200, 0) } else { egui::Color32::from_rgb(100, 150, 255) };
+                painter.circle_filled(pt, radius, color);
+                painter.circle_stroke(pt, radius, egui::Stroke::new(1.0, egui::Color32::WHITE));
+                
+                if is_hovered {
+                    let tooltip_y = pt.y - 20.0 * self.zoom - 100.0 * self.zoom;
+                    draw_hover_tooltip(
+                        &painter,
+                        ctx,
+                        &d.labels[orig_idx],
+                        d.values[orig_idx],
+                        &d.hover_data[orig_idx],
+                        egui::pos2(pt.x, tooltip_y),
+                        d.tooltip_bg_color,
+                        d.tooltip_text_color,
+                        self.zoom,
+                    );
+                }
+            }
+        }
+        
+        if response.hovered() {
+            if let Some(pos) = ctx.pointer_latest_pos() {
+                let rel_pos = pos - plot_rect.min;
+                if rel_pos.x >= 0.0 && rel_pos.x <= plot_width && rel_pos.y >= 0.0 && rel_pos.y <= plot_height {
+                    let norm_x = rel_pos.x / plot_width;
+                    let closest_idx = ((norm_x * (d.labels.len() as f32 - 1.0)).round() as usize).min(d.labels.len() - 1);
+                    if visible_indices.contains(&closest_idx) {
+                        self.hovered_idx = Some(closest_idx);
+                    }
+                }
+            }
+        }
+    }
+
+    fn render_line_horizontal(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
+        let config = PlotConfigBuilder::new().build();
+        let plot_width = 400.0 * self.zoom;
+        let plot_height = 600.0 * self.zoom;
+        
+        if ui.button("🏠 Reset Zoom").clicked() {
+            self.zoom = 1.0;
+            self.pan_x = 0.0;
+        }
+        ui.add(egui::Slider::new(&mut self.zoom, 0.5..=3.0).text("Zoom"));
+        
+        let (response, painter) = ui.allocate_painter(
+            egui::Vec2::new(plot_width + config.padding_left + config.padding_right, plot_height + config.padding_top + config.padding_bottom),
+            egui::Sense::hover()
+        );
+        
+        let plot_rect = egui::Rect::from_min_size(
+            response.rect.min + egui::Vec2::new(config.padding_left, config.padding_top),
+            egui::Vec2::new(plot_width, plot_height)
+        );
+        
+        painter.line_segment(
+            [egui::pos2(plot_rect.left(), plot_rect.bottom()), egui::pos2(plot_rect.right(), plot_rect.bottom())],
+            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
+        );
+        painter.line_segment(
+            [egui::pos2(plot_rect.left(), plot_rect.top()), egui::pos2(plot_rect.left(), plot_rect.bottom())],
+            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
+        );
+        
+        let font_size = if self.zoom < 0.8 { 9.0 } else if self.zoom > 1.5 { 12.0 } else { 11.0 };
+        let max_val = d.values.iter().fold(0.0_f64, |a: f64, &b| a.max(b));
+        
+        for i in 0..=5 {
+            let x = plot_rect.left() + (plot_width / 5.0) * i as f32;
+            let val = (max_val / 5.0) * i as f64;
+            painter.text(
+                egui::pos2(x, plot_rect.bottom() + 15.0),
+                egui::Align2::CENTER_TOP,
+                &format!("{:.1}", val),
+                egui::FontId::proportional(font_size),
+                egui::Color32::from_gray(100)
+            );
+            painter.line_segment(
+                [egui::pos2(x, plot_rect.bottom()), egui::pos2(x, plot_rect.bottom() + 5.0)],
+                egui::Stroke::new(0.8, egui::Color32::from_gray(180))
+            );
+        }
+        
+        for (i, label) in d.labels.iter().enumerate() {
+            let y = plot_rect.top() + (plot_height / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
+            painter.text(
+                egui::pos2(plot_rect.left() - 50.0, y),
+                egui::Align2::RIGHT_CENTER,
+                label,
+                egui::FontId::proportional(font_size * 0.85),
+                egui::Color32::from_gray(70)
+            );
+        }
+        
+        let visible_indices: Vec<usize> = (0..d.labels.len())
+            .filter(|i| i < &self.visible_elements.len() && self.visible_elements[*i])
+            .collect();
+        
+        if visible_indices.len() > 1 {
+            let mut line_points = Vec::new();
+            for &i in &visible_indices {
+                let norm_x = (d.values[i] / max_val.max(1.0)) as f32;
+                let x = plot_rect.left() + norm_x * plot_width;
+                let y = plot_rect.top() + (plot_height / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
+                line_points.push(egui::pos2(x, y));
+            }
+            
+            for window in line_points.windows(2) {
+                painter.line_segment(
+                    [window[0], window[1]],
+                    egui::Stroke::new(2.0, egui::Color32::from_rgb(100, 150, 255))
+                );
+            }
+            
+            for (idx, &pt) in line_points.iter().enumerate() {
+                let orig_idx = visible_indices[idx];
+                let is_hovered = self.hovered_idx.map(|h| h == orig_idx).unwrap_or(false);
+                let radius = if is_hovered { 6.0 } else { 4.0 };
+                let color = if is_hovered { egui::Color32::from_rgb(255, 200, 0) } else { egui::Color32::from_rgb(100, 150, 255) };
+                painter.circle_filled(pt, radius, color);
+                painter.circle_stroke(pt, radius, egui::Stroke::new(1.0, egui::Color32::WHITE));
+                
+                if is_hovered {
+                    let tooltip_x = pt.x + 20.0 * self.zoom;
+                    draw_hover_tooltip(
+                        &painter,
+                        ctx,
+                        &d.labels[orig_idx],
+                        d.values[orig_idx],
+                        &d.hover_data[orig_idx],
+                        egui::pos2(tooltip_x, pt.y),
+                        d.tooltip_bg_color,
+                        d.tooltip_text_color,
+                        self.zoom,
+                    );
+                }
+            }
+        }
+        
+        if response.hovered() {
+            if let Some(pos) = ctx.pointer_latest_pos() {
+                let rel_pos = pos - plot_rect.min;
+                if rel_pos.x >= 0.0 && rel_pos.x <= plot_width && rel_pos.y >= 0.0 && rel_pos.y <= plot_height {
+                    let norm_y = rel_pos.y / plot_height;
+                    let closest_idx = ((norm_y * (d.labels.len() as f32 - 1.0)).round() as usize).min(d.labels.len() - 1);
+                    if visible_indices.contains(&closest_idx) {
+                        self.hovered_idx = Some(closest_idx);
+                    }
+                }
+            }
+        }
+    }
+
+    fn apply_processor_filter(&mut self) {
+        let threshold = self.filter_threshold / 100.0;
+        let data = self.data.lock().unwrap();
+        if let Some(d) = data.as_ref() {
+            let max_val = d.values.iter().fold(0.0_f64, |a: f64, &b| a.max(b));
+            let threshold_val = max_val * threshold;
+            for (i, &val) in d.values.iter().enumerate() {
+                self.visible_elements[i] = val >= threshold_val;
+            }
+        }
+    }
+
+    fn apply_processor_limit(&mut self) {
+        let data = self.data.lock().unwrap();
+        if let Some(d) = data.as_ref() {
+            let mut indices: Vec<usize> = (0..d.values.len()).collect();
+            indices.sort_by(|&a, &b| {
+                d.values[b].partial_cmp(&d.values[a]).unwrap_or(std::cmp::Ordering::Equal)
+            });
+            for (idx, &i) in indices.iter().enumerate() {
+                self.visible_elements[i] = idx < self.limit_value;
+            }
+        }
+    }
+
+    fn compute_statistics(&mut self) {
+        let data = self.data.lock().unwrap();
+        if let Some(d) = data.as_ref() {
+            let visible_values: Vec<f64> = d.values.iter().enumerate()
+                .filter(|(i, _)| *i < self.visible_elements.len() && self.visible_elements[*i])
+                .map(|(_, &v)| v)
+                .collect();
+            
+            self.aggregation_results.clear();
+            
+            if !visible_values.is_empty() {
+                let sum: f64 = visible_values.iter().sum();
+                let mean = sum / visible_values.len() as f64;
+                let max = visible_values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
+                let min = visible_values.iter().fold(f64::INFINITY, |a, &b| a.min(b));
+                
+                self.aggregation_results.insert("Sum".to_string(), sum);
+                self.aggregation_results.insert("Mean".to_string(), mean);
+                self.aggregation_results.insert("Max".to_string(), max);
+                self.aggregation_results.insert("Min".to_string(), min);
+                self.aggregation_results.insert("Count".to_string(), visible_values.len() as f64);
+            }
+        }
+    }
 }
 
+fn hsv_to_rgb(h: f32, s: f32, v: f32) -> egui::Color32 {
+    let c = v * s;
+    let h_prime = (h * 6.0) % 6.0;
+    let x = c * (1.0 - ((h_prime % 2.0) - 1.0).abs());
+    
+    let (r, g, b) = match h_prime as i32 {
+        0 => (c, x, 0.0),
+        1 => (x, c, 0.0),
+        2 => (0.0, c, x),
+        3 => (0.0, x, c),
+        4 => (x, 0.0, c),
+        _ => (c, 0.0, x),
+    };
+    
+    let m = v - c;
+    egui::Color32::from_rgb(
+        ((r + m) * 255.0) as u8,
+        ((g + m) * 255.0) as u8,
+        ((b + m) * 255.0) as u8,
+    )
+}
+
+fn draw_hover_tooltip(
+    painter: &egui::Painter,
+    ctx: &egui::Context,
+    label: &str,
+    value: f64,
+    hover_data: &HashMap<String, String>,
+    tooltip_pos: egui::Pos2,
+    tooltip_bg: (u8, u8, u8, u8),
+    tooltip_text: (u8, u8, u8, u8),
+    zoom: f32,
+) {
+    let field_count = hover_data.iter().filter(|(k, _)| k.as_str() != "image").count() as f32;
+    let has_image = hover_data.contains_key("image");
+    
+    let actual_image_height = if has_image { 80.0 * zoom } else { 0.0 };
+    let field_height = 18.0 * zoom;
+    let padding = 20.0 * zoom;
+    let content_height = actual_image_height + (field_count * field_height) + padding;
+    
+    let font_size = 11.0;
+    let mut max_width: f32 = 100.0;
+    for (key, val) in hover_data.iter() {
+        if key != "image" {
+            let display = format!("{}: {}", key, val);
+            let galley = ctx.fonts(|f| f.layout_no_wrap(display, egui::FontId::proportional(font_size), egui::Color32::WHITE));
+            max_width = max_width.max(galley.rect.width());
+        }
+    }
+    
+    let w = (max_width * 1.2 + 40.0 * zoom).max(120.0 * zoom);
+    let h = (content_height + 40.0 * zoom).max(100.0 * zoom);
+    let rect = egui::Rect::from_min_size(
+        egui::pos2(tooltip_pos.x - w / 2.0, tooltip_pos.y - h / 2.0),
+        egui::vec2(w, h)
+    );
+    
+    let (bg_r, bg_g, bg_b, bg_a) = tooltip_bg;
+    painter.rect_filled(rect, 4.0, egui::Color32::from_rgba_unmultiplied(bg_r, bg_g, bg_b, bg_a));
+    
+    let (txt_r, txt_g, txt_b, txt_a) = tooltip_text;
+    let text_color = egui::Color32::from_rgba_unmultiplied(txt_r, txt_g, txt_b, txt_a);
+    
+    let mut offset = if has_image { 90.0 * zoom } else { 8.0 * zoom };
+    for (key, val) in hover_data.iter() {
+        if key != "image" {
+            let display = format!("{}: {}", key, val);
+            painter.text(
+                egui::pos2(rect.min.x + 8.0, rect.min.y + offset),
+                egui::Align2::LEFT_TOP,
+                display,
+                egui::FontId::proportional(font_size * 0.85),
+                text_color,
+            );
+            offset += field_height + 3.0 * zoom;
+        }
+    }
+    
+    painter.text(
+        egui::pos2(rect.center().x, rect.max.y - 20.0),
+        egui::Align2::CENTER_TOP,
+        label,
+        egui::FontId::proportional(font_size),
+        text_color,
+    );
+    
+    painter.text(
+        egui::pos2(rect.center().x, rect.max.y - 8.0),
+        egui::Align2::CENTER_TOP,
+        &format!("{:.1}", value),
+        egui::FontId::proportional(font_size * 1.1),
+        text_color,
+    );
+}
 
 #[no_mangle]
 pub extern "C" fn sera_show_chart_data_with_hover(
@@ -1060,16 +1271,6 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         tooltip_text_color: (txt_r, txt_g, txt_b, txt_a),
     };
 
-    let variants = {
-        let chart_variants = crate::bindings::c_data::get_chart_variants_internal();
-        chart_variants.iter().map(|(kind, title)| PlotVariant {
-            kind: *kind,
-            title: title.clone(),
-        }).collect::<Vec<_>>()
-    };
-
-    let show_selector = variants.len() > 1;
-
     let app = ChartApp {
         data: Arc::new(Mutex::new(Some(data))),
         hovered_idx: None,
@@ -1080,17 +1281,12 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         image_loader: ImageLoader::new(),
         orientation: true,
         sort_mode: 0,
-        current_chart_kind: if !variants.is_empty() { variants[0].kind } else { 2 },
-        variants,
-        show_variant_selector: show_selector,
-        show_transform_menu: false,
-        config_store: Arc::new(ConfigStore::new()),
-        plot_config: Arc::new(Mutex::new(PlotConfigBuilder::new().width(1400.0).height(600.0).build())),
-        current_sort_indices: (0..num_elements).collect(),
+        current_chart_kind: 1,
         processor_mode: 0,
         filter_threshold: 0.0,
         show_stats: false,
         show_processor_menu: false,
+        show_transform_menu: false,
         aggregation_results: HashMap::new(),
         limit_value: 50,
     };
@@ -1115,24 +1311,48 @@ pub extern "C" fn sera_show_chart(_svg: *const c_char, _title: *const c_char, _w
     true
 }
 
+static CHART_ORIENTATION: Mutex<bool> = Mutex::new(true);
+
 #[no_mangle]
 pub extern "C" fn sera_set_chart_orientation(vertical: bool) {
-    crate::bindings::c_data::sera_set_plot_orientation(vertical);
+    if let Ok(mut orientation) = CHART_ORIENTATION.lock() {
+        *orientation = vertical;
+    }
 }
 
 #[no_mangle]
 pub extern "C" fn sera_get_chart_orientation() -> bool {
-    crate::bindings::c_data::sera_get_plot_orientation()
+    CHART_ORIENTATION.lock().map(|o| *o).unwrap_or(true)
 }
+
+static CHART_SORT: Mutex<i32> = Mutex::new(0);
 
 #[no_mangle]
 pub extern "C" fn sera_set_chart_sort(mode: i32) {
-    crate::bindings::c_data::sera_set_plot_sort(mode.clamp(0, 2));
+    if let Ok(mut sort) = CHART_SORT.lock() {
+        *sort = mode.clamp(0, 2);
+    }
 }
 
 #[no_mangle]
 pub extern "C" fn sera_get_chart_sort() -> i32 {
-    crate::bindings::c_data::sera_get_plot_sort()
+    CHART_SORT.lock().map(|s| *s).unwrap_or(0)
+}
+
+static CHART_KIND: std::sync::Mutex<u8> = std::sync::Mutex::new(1);
+static VARIANT_REGISTRY: std::sync::LazyLock<std::sync::Mutex<std::collections::HashMap<u8, String>>> = std::sync::LazyLock::new(|| std::sync::Mutex::new(std::collections::HashMap::new()));
+static VARIANT_SELECTOR_ENABLED: std::sync::Mutex<bool> = std::sync::Mutex::new(false);
+
+#[no_mangle]
+pub extern "C" fn sera_set_current_chart_kind(kind: u8) {
+    if let Ok(mut k) = CHART_KIND.lock() {
+        *k = kind;
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_get_current_chart_kind() -> u8 {
+    CHART_KIND.lock().map(|k| *k).unwrap_or(1)
 }
 
 #[no_mangle]
@@ -1140,83 +1360,31 @@ pub extern "C" fn sera_add_chart_variant(kind: u8, title: *const c_char) -> bool
     if title.is_null() {
         return false;
     }
-    crate::bindings::c_data::sera_add_plot_variant(kind, title);
-    true
-}
-
-#[no_mangle]
-pub extern "C" fn sera_set_current_chart_kind(kind: u8) {
-    crate::bindings::c_data::sera_set_plot_chart_kind(kind);
-}
-
-#[no_mangle]
-pub extern "C" fn sera_get_current_chart_kind() -> u8 {
-    crate::bindings::c_data::sera_get_plot_chart_kind()
+    let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().to_string() };
+    if let Ok(mut registry) = VARIANT_REGISTRY.lock() {
+        registry.insert(kind, title_str);
+        true
+    } else {
+        false
+    }
 }
 
 #[no_mangle]
 pub extern "C" fn sera_enable_variant_selector(enable: bool) {
-    crate::bindings::c_data::sera_set_plot_show_selector(enable);
+    if let Ok(mut sel) = VARIANT_SELECTOR_ENABLED.lock() {
+        *sel = enable;
+    }
 }
 
 #[no_mangle]
 pub extern "C" fn sera_is_variant_selector_enabled() -> bool {
-    crate::bindings::c_data::sera_get_plot_show_selector()
+    VARIANT_SELECTOR_ENABLED.lock().map(|sel| *sel).unwrap_or(false)
 }
 
 #[no_mangle]
-pub extern "C" fn sera_show_with_variants(
-    enable_variants: bool,
-    default_kind: u8,
-) -> bool {
-    crate::bindings::c_data::sera_set_plot_show_selector(enable_variants);
-    crate::bindings::c_data::sera_set_plot_chart_kind(default_kind);
-
-    let variants = {
-        let chart_variants = crate::bindings::c_data::get_chart_variants_internal();
-        chart_variants.iter().map(|(kind, title)| PlotVariant {
-            kind: *kind,
-            title: title.clone(),
-        }).collect::<Vec<_>>()
-    };
-
-    let app = ChartApp {
-        data: Arc::new(Mutex::new(None)),
-        hovered_idx: None,
-        zoom: 1.0,
-        pan_x: 0.0,
-        visible_elements: vec![],
-        show_list: false,
-        image_loader: ImageLoader::new(),
-        orientation: true,
-        sort_mode: 0,
-        current_chart_kind: default_kind,
-        variants,
-        show_variant_selector: enable_variants,
-        show_transform_menu: false,
-        config_store: Arc::new(ConfigStore::new()),
-        plot_config: Arc::new(Mutex::new(PlotConfigBuilder::new().width(1400.0).height(600.0).build())),
-        current_sort_indices: vec![],
-        processor_mode: 0,
-        filter_threshold: 0.0,
-        show_stats: false,
-        show_processor_menu: false,
-        aggregation_results: HashMap::new(),
-        limit_value: 50,
-    };
-
-    let native_options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default()
-            .with_inner_size([1200.0, 600.0]),
-        ..Default::default()
-    };
-
-    let _ = eframe::run_native(
-        "SeraPlot",
-        native_options,
-        Box::new(|_| Box::new(app)),
-    );
-
+pub extern "C" fn sera_show_with_variants(enable_transform: bool, default_kind: u8) -> bool {
+    sera_enable_variant_selector(enable_transform);
+    sera_set_current_chart_kind(default_kind);
     true
 }
 
