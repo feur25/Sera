@@ -229,9 +229,9 @@ impl ChartApp {
         let plot_width = 1400.0_f32 * self.zoom;
         let plot_height = 600.0_f32 * self.zoom;
         let padding_left = 80.0_f32;
-        let padding_bottom = 120.0_f32;
-        let padding_top = 40.0_f32;
-        let padding_right = 40.0_f32;
+        let padding_bottom = 140.0_f32;
+        let padding_top = 20.0_f32;
+        let padding_right = 20.0_f32;
         
         egui::ScrollArea::both()
             .auto_shrink([false; 2])
@@ -268,12 +268,17 @@ impl ChartApp {
                 
                 for (i, label) in d.labels.iter().enumerate() {
                     let x = plot_rect.left() + (plot_width / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
+                    let char_offset = 8.0;
+                    let angle_step = font_size * 0.65;
                     
                     for (char_idx, ch) in label.chars().enumerate() {
-                        let y_offset = plot_rect.bottom() + 10.0 + (char_idx as f32 * font_size * 0.7);
+                        let offset = char_idx as f32 * angle_step;
+                        let x_pos = x + offset * 0.707;
+                        let y_pos = plot_rect.bottom() + 15.0 + offset * 0.707;
+                        
                         painter.text(
-                            egui::pos2(x, y_offset),
-                            egui::Align2::CENTER_TOP,
+                            egui::pos2(x_pos, y_pos),
+                            egui::Align2::CENTER_CENTER,
                             &ch.to_string(),
                             egui::FontId::proportional(font_size * 0.85),
                             egui::Color32::from_gray(70)
@@ -361,8 +366,8 @@ impl ChartApp {
         let plot_height = 1400.0_f32 * self.zoom;
         let padding_left = 120.0_f32;
         let padding_bottom = 80.0_f32;
-        let padding_top = 40.0_f32;
-        let padding_right = 40.0_f32;
+        let padding_top = 20.0_f32;
+        let padding_right = 20.0_f32;
         
         egui::ScrollArea::both()
             .auto_shrink([false; 2])
@@ -399,11 +404,15 @@ impl ChartApp {
                 
                 for (i, label) in d.labels.iter().enumerate() {
                     let y = plot_rect.top() + (plot_height / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
+                    let angle_step = font_size * 0.65;
                     
                     for (char_idx, ch) in label.chars().enumerate() {
-                        let x_offset = plot_rect.left() - 95.0 + (char_idx as f32 * font_size * 0.6);
+                        let offset = char_idx as f32 * angle_step;
+                        let x_pos = plot_rect.left() - 110.0 + offset * 0.707;
+                        let y_pos = y - offset * 0.707;
+                        
                         painter.text(
-                            egui::pos2(x_offset, y - font_size / 2.0),
+                            egui::pos2(x_pos, y_pos),
                             egui::Align2::CENTER_CENTER,
                             &ch.to_string(),
                             egui::FontId::proportional(font_size * 0.85),
