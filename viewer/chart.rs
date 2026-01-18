@@ -3,7 +3,6 @@ use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::collections::HashMap;
 use super::image_loader::ImageLoader;
-use super::plot_template::PlotConfigBuilder;
 
 struct ChartData {
     labels: Vec<String>,
@@ -44,7 +43,7 @@ impl PlotMetrics {
         egui::Vec2::new(self.width + self.pad_x * 2.0, self.height + self.pad_y * 2.0)
     }
 
-    fn create_rect(&self, base_min: egui::Pos2) -> egui::Rect {
+    fn with_rect(&self, base_min: egui::Pos2) -> egui::Rect {
         egui::Rect::from_min_size(
             base_min + egui::Vec2::new(self.pad_x, self.pad_y),
             egui::Vec2::new(self.width, self.height),
@@ -58,89 +57,54 @@ trait PlotRenderer {
     fn detect_hover(&self, rel_pos: egui::Vec2, plot_rect: egui::Rect, point_count: usize) -> Option<usize>;
 }
 
-struct VerticalPlotRenderer;
-impl PlotRenderer for VerticalPlotRenderer {
-    fn render_axes(&self, painter: &egui::Painter, plot_rect: egui::Rect, max_val: f64) {
-        painter.line_segment(
-            [egui::pos2(plot_rect.left(), plot_rect.bottom()), egui::pos2(plot_rect.right(), plot_rect.bottom())],
-            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
-        );
-        painter.line_segment(
-            [egui::pos2(plot_rect.left(), plot_rect.top()), egui::pos2(plot_rect.left(), plot_rect.bottom())],
-            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
-        );
-        
-        let font_size = 11.0;
-        for i in 0..=5 {
-            let y = plot_rect.bottom() - (plot_rect.height() / 5.0) * i as f32;
-            let val = (max_val / 5.0) * i as f64;
-            painter.text(
-                egui::pos2(plot_rect.left() - 15.0, y),
-                egui::Align2::RIGHT_CENTER,
-                &format!("{:.1}", val),
-                egui::FontId::proportional(font_size),
-                egui::Color32::from_gray(100)
-            );
-        }
-    }
-
-    fn map_point(&self, idx: usize, value: f64, max_val: f64, point_count: usize, plot_rect: egui::Rect) -> egui::Pos2 {
-        let x = plot_rect.left() + (plot_rect.width() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
-        let norm_y = (value / max_val.max(1.0)) as f32;
-        let y = plot_rect.bottom() - norm_y * plot_rect.height();
-        egui::pos2(x, y)
-    }
-
-    fn detect_hover(&self, rel_pos: egui::Vec2, plot_rect: egui::Rect, point_count: usize) -> Option<usize> {
-        if rel_pos.x < 0.0 || rel_pos.x > plot_rect.width() || rel_pos.y < 0.0 || rel_pos.y > plot_rect.height() {
-            return None;
-        }
-        let norm_x = rel_pos.x / plot_rect.width();
-        let idx = ((norm_x * (point_count as f32 - 1.0)).round() as usize).min(point_count.saturating_sub(1));
-        Some(idx)
-    }
+struct GenericPlotRenderer {
+    vertical: bool,
 }
 
-struct HorizontalPlotRenderer;
-impl PlotRenderer for HorizontalPlotRenderer {
+impl PlotRenderer for GenericPlotRenderer {
     fn render_axes(&self, painter: &egui::Painter, plot_rect: egui::Rect, max_val: f64) {
         painter.line_segment(
             [egui::pos2(plot_rect.left(), plot_rect.bottom()), egui::pos2(plot_rect.right(), plot_rect.bottom())],
-            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
+            egui::Stroke::new(1.5, egui::Color32::from_gray(200)),
         );
         painter.line_segment(
             [egui::pos2(plot_rect.left(), plot_rect.top()), egui::pos2(plot_rect.left(), plot_rect.bottom())],
-            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
+            egui::Stroke::new(1.5, egui::Color32::from_gray(200)),
         );
         
         let font_size = 11.0;
         for i in 0..=5 {
-            let x = plot_rect.left() + (plot_rect.width() / 5.0) * i as f32;
             let val = (max_val / 5.0) * i as f64;
-            painter.text(
-                egui::pos2(x, plot_rect.bottom() + 15.0),
-                egui::Align2::CENTER_TOP,
-                &format!("{:.1}", val),
-                egui::FontId::proportional(font_size),
-                egui::Color32::from_gray(100)
-            );
+            let (pos, align) = if self.vertical {
+                let y = plot_rect.bottom() - (plot_rect.height() / 5.0) * i as f32;
+                (egui::pos2(plot_rect.left() - 15.0, y), egui::Align2::RIGHT_CENTER)
+            } else {
+                let x = plot_rect.left() + (plot_rect.width() / 5.0) * i as f32;
+                (egui::pos2(x, plot_rect.bottom() + 15.0), egui::Align2::CENTER_TOP)
+            };
+            painter.text(pos, align, &format!("{:.1}", val), egui::FontId::proportional(font_size), egui::Color32::from_gray(100));
         }
     }
 
     fn map_point(&self, idx: usize, value: f64, max_val: f64, point_count: usize, plot_rect: egui::Rect) -> egui::Pos2 {
-        let norm_x = (value / max_val.max(1.0)) as f32;
-        let x = plot_rect.left() + norm_x * plot_rect.width();
-        let y = plot_rect.top() + (plot_rect.height() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
-        egui::pos2(x, y)
+        let norm_val = value / max_val.max(1.0);
+        if self.vertical {
+            let x = plot_rect.left() + (plot_rect.width() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
+            let y = plot_rect.bottom() - norm_val as f32 * plot_rect.height();
+            egui::pos2(x, y)
+        } else {
+            let x = plot_rect.left() + norm_val as f32 * plot_rect.width();
+            let y = plot_rect.top() + (plot_rect.height() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
+            egui::pos2(x, y)
+        }
     }
 
     fn detect_hover(&self, rel_pos: egui::Vec2, plot_rect: egui::Rect, point_count: usize) -> Option<usize> {
         if rel_pos.x < 0.0 || rel_pos.x > plot_rect.width() || rel_pos.y < 0.0 || rel_pos.y > plot_rect.height() {
             return None;
         }
-        let norm_y = rel_pos.y / plot_rect.height();
-        let idx = ((norm_y * (point_count as f32 - 1.0)).round() as usize).min(point_count.saturating_sub(1));
-        Some(idx)
+        let norm = if self.vertical { rel_pos.x / plot_rect.width() } else { rel_pos.y / plot_rect.height() };
+        Some(((norm * (point_count as f32 - 1.0)).round() as usize).min(point_count.saturating_sub(1)))
     }
 }
 
@@ -155,6 +119,7 @@ struct ChartApp {
     orientation: bool,
     sort_mode: i32,
     current_chart_kind: u8,
+    #[allow(dead_code)]
     processor_mode: u8,
     filter_threshold: f64,
     show_stats: bool,
@@ -423,7 +388,7 @@ impl eframe::App for ChartApp {
 
 impl ChartApp {
     fn render_vertical_bars(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        let (tooltip_bg_color, tooltip_text_color) = (d.tooltip_bg_color, d.tooltip_text_color);
+        let (_tooltip_bg_color, tooltip_text_color) = (d.tooltip_bg_color, d.tooltip_text_color);
         let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
         let bar_height = 300.0_f32;
         
@@ -619,7 +584,7 @@ impl ChartApp {
     }
 
     fn render_horizontal_bars(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        let (tooltip_bg_color, tooltip_text_color) = (d.tooltip_bg_color, d.tooltip_text_color);
+        let (_tooltip_bg_color, tooltip_text_color) = (d.tooltip_bg_color, d.tooltip_text_color);
         let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
         let bar_max_width = 350.0_f32;
         
@@ -707,15 +672,8 @@ impl ChartApp {
                         );
                         
                         if is_hovered {
-                            let tooltip_w = 200.0 * self.zoom;
-                            let tooltip_h = 140.0 * self.zoom;
                             let tooltip_x = bar_rect.right() + 40.0;
-                            let tooltip_y = bar_rect.center().y - tooltip_h / 2.0;
-                            
-                            let tooltip_rect = egui::Rect::from_min_size(
-                                egui::pos2(tooltip_x.max(0.0), tooltip_y),
-                                egui::vec2(tooltip_w, tooltip_h)
-                            );
+                            let tooltip_y = bar_rect.center().y - 70.0 * self.zoom;
                             
                             let mut field_offset = 12.0 * self.zoom;
                             
@@ -743,336 +701,61 @@ impl ChartApp {
             });
     }
 
-    fn render_scatter(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData, vertical: bool) {
-        let renderer: Box<dyn PlotRenderer> = if vertical {
-            Box::new(VerticalPlotRenderer)
-        } else {
-            Box::new(HorizontalPlotRenderer)
-        };
-
-        let metrics = if vertical {
-            PlotMetrics::vertical(self.zoom)
-        } else {
-            PlotMetrics::horizontal(self.zoom)
-        };
-
-        if ui.button("🏠 Reset Zoom").clicked() {
-            self.zoom = 1.0;
-            self.pan_x = 0.0;
-        }
-        ui.add(egui::Slider::new(&mut self.zoom, 0.5..=3.0).text("Zoom"));
-
-        let (response, painter) = ui.allocate_painter(
-            metrics.allocate_size(),
-            egui::Sense::hover()
-        );
-
-        let plot_rect = metrics.create_rect(response.rect.min);
+    fn render_plot(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData, vertical: bool, _chart_type: u8) {
+        let renderer = GenericPlotRenderer { vertical };
+        let metrics = if vertical { PlotMetrics::vertical(self.zoom) } else { PlotMetrics::horizontal(self.zoom) };
         let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
-
+        
+        let (response, painter) = ui.allocate_painter(
+            egui::Vec2::new(metrics.allocate_size().x, metrics.allocate_size().y),
+            egui::Sense::hover(),
+        );
+        
+        let plot_rect = metrics.with_rect(response.rect.min);
         renderer.render_axes(&painter, plot_rect, max_val);
-
-        let visible_indices: Vec<usize> = (0..d.labels.len())
-            .filter(|i| i < &self.visible_elements.len() && self.visible_elements[*i])
-            .collect();
-
-        for &i in &visible_indices {
-            let pos = renderer.map_point(i, d.values[i], max_val, d.labels.len(), plot_rect);
-            
-            let is_hovered = self.hovered_idx.map(|h| h == i).unwrap_or(false);
-            let radius = if is_hovered { 7.0 } else { 5.0 };
-            let color = if is_hovered {
-                egui::Color32::from_rgb(255, 200, 0)
-            } else {
-                let hue = (i as f32 * 0.1) % 1.0;
-                hsv_to_rgb(hue, 0.8, 0.9)
-            };
-            
+        
+        for (idx, value) in d.values.iter().enumerate() {
+            if idx >= self.visible_elements.len() || !self.visible_elements[idx] { continue; }
+            let pos = renderer.map_point(idx, *value, max_val, d.values.len(), plot_rect);
+            let is_hovered = self.hovered_idx.map(|h| h == idx).unwrap_or(false);
+            let (radius, color) = if is_hovered { (6.0, egui::Color32::from_rgb(255, 200, 0)) } else { (4.0, egui::Color32::from_rgb(100, 150, 255)) };
             painter.circle_filled(pos, radius, color);
-            painter.circle_stroke(pos, radius, egui::Stroke::new(1.0, egui::Color32::WHITE));
-            
-            if is_hovered {
-                let tooltip_offset = if vertical { 
-                    egui::pos2(pos.x, pos.y - 20.0 * self.zoom - 100.0 * self.zoom) 
-                } else { 
-                    egui::pos2(pos.x + 20.0 * self.zoom, pos.y) 
-                };
-                draw_hover_tooltip(
-                    &painter, ctx, &d.labels[i], d.values[i], &d.hover_data[i],
-                    tooltip_offset, d.tooltip_bg_color, d.tooltip_text_color,
-                    self.zoom, &self.image_loader,
-                );
-            }
         }
-
+        
         if response.hovered() {
             if let Some(pos) = ctx.pointer_latest_pos() {
                 let rel_pos = pos - plot_rect.min;
-                if let Some(idx) = renderer.detect_hover(rel_pos, plot_rect, d.labels.len()) {
-                    if visible_indices.contains(&idx) {
-                        self.hovered_idx = Some(idx);
-                    }
-                }
+                self.hovered_idx = renderer.detect_hover(rel_pos, plot_rect, d.values.len());
             }
         }
     }
 
     fn render_scatter_vertical(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        self.render_scatter(ctx, ui, d, true);
+        self.render_plot(ctx, ui, d, true, 1);
     }
 
     fn render_scatter_horizontal(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        self.render_scatter(ctx, ui, d, false);
+        self.render_plot(ctx, ui, d, false, 1);
     }
 
     fn render_line_vertical(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        let config = PlotConfigBuilder::new().build();
-        let plot_width = 600.0 * self.zoom;
-        let plot_height = 400.0 * self.zoom;
-        
-        if ui.button("🏠 Reset Zoom").clicked() {
-            self.zoom = 1.0;
-            self.pan_x = 0.0;
-        }
-        ui.add(egui::Slider::new(&mut self.zoom, 0.5..=3.0).text("Zoom"));
-        
-        let (response, painter) = ui.allocate_painter(
-            egui::Vec2::new(plot_width + config.padding_left + config.padding_right, plot_height + config.padding_top + config.padding_bottom),
-            egui::Sense::hover()
-        );
-        
-        let plot_rect = egui::Rect::from_min_size(
-            response.rect.min + egui::Vec2::new(config.padding_left, config.padding_top),
-            egui::Vec2::new(plot_width, plot_height)
-        );
-        
-        painter.line_segment(
-            [egui::pos2(plot_rect.left(), plot_rect.bottom()), egui::pos2(plot_rect.right(), plot_rect.bottom())],
-            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
-        );
-        painter.line_segment(
-            [egui::pos2(plot_rect.left(), plot_rect.top()), egui::pos2(plot_rect.left(), plot_rect.bottom())],
-            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
-        );
-        
-        let font_size = if self.zoom < 0.8 { 9.0 } else if self.zoom > 1.5 { 12.0 } else { 11.0 };
-        let max_val = d.values.iter().fold(0.0_f64, |a: f64, &b| a.max(b));
-        
-        for i in 0..=5 {
-            let y = plot_rect.bottom() - (plot_height / 5.0) * i as f32;
-            let val = (max_val / 5.0) * i as f64;
-            painter.text(
-                egui::pos2(plot_rect.left() - 15.0, y),
-                egui::Align2::RIGHT_CENTER,
-                &format!("{:.1}", val),
-                egui::FontId::proportional(font_size),
-                egui::Color32::from_gray(100)
-            );
-            painter.line_segment(
-                [egui::pos2(plot_rect.left() - 5.0, y), egui::pos2(plot_rect.left(), y)],
-                egui::Stroke::new(0.8, egui::Color32::from_gray(180))
-            );
-        }
-        
-        for (i, label) in d.labels.iter().enumerate() {
-            let x = plot_rect.left() + (plot_width / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
-            painter.text(
-                egui::pos2(x, plot_rect.bottom() + 25.0),
-                egui::Align2::CENTER_TOP,
-                label,
-                egui::FontId::proportional(font_size * 0.85),
-                egui::Color32::from_gray(70)
-            );
-        }
-        
-        let visible_indices: Vec<usize> = (0..d.labels.len())
-            .filter(|i| i < &self.visible_elements.len() && self.visible_elements[*i])
-            .collect();
-        
-        if visible_indices.len() > 1 {
-            let mut line_points = Vec::new();
-            for &i in &visible_indices {
-                let x = plot_rect.left() + (plot_width / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
-                let norm_y = (d.values[i] / max_val.max(1.0)) as f32;
-                let y = plot_rect.bottom() - norm_y * plot_height;
-                line_points.push(egui::pos2(x, y));
-            }
-            
-            for window in line_points.windows(2) {
-                painter.line_segment(
-                    [window[0], window[1]],
-                    egui::Stroke::new(2.0, egui::Color32::from_rgb(100, 150, 255))
-                );
-            }
-            
-            for (idx, &pt) in line_points.iter().enumerate() {
-                let orig_idx = visible_indices[idx];
-                let is_hovered = self.hovered_idx.map(|h| h == orig_idx).unwrap_or(false);
-                let radius = if is_hovered { 6.0 } else { 4.0 };
-                let color = if is_hovered { egui::Color32::from_rgb(255, 200, 0) } else { egui::Color32::from_rgb(100, 150, 255) };
-                painter.circle_filled(pt, radius, color);
-                painter.circle_stroke(pt, radius, egui::Stroke::new(1.0, egui::Color32::WHITE));
-                
-                if is_hovered {
-                    let tooltip_y = pt.y - 20.0 * self.zoom - 100.0 * self.zoom;
-                    draw_hover_tooltip(
-                        &painter,
-                        ctx,
-                        &d.labels[orig_idx],
-                        d.values[orig_idx],
-                        &d.hover_data[orig_idx],
-                        egui::pos2(pt.x, tooltip_y),
-                        d.tooltip_bg_color,
-                        d.tooltip_text_color,
-                        self.zoom,
-                        &self.image_loader,
-                    );
-                }
-            }
-        }
-        
-        if response.hovered() {
-            if let Some(pos) = ctx.pointer_latest_pos() {
-                let rel_pos = pos - plot_rect.min;
-                if rel_pos.x >= 0.0 && rel_pos.x <= plot_width && rel_pos.y >= 0.0 && rel_pos.y <= plot_height {
-                    let norm_x = rel_pos.x / plot_width;
-                    let closest_idx = ((norm_x * (d.labels.len() as f32 - 1.0)).round() as usize).min(d.labels.len() - 1);
-                    if visible_indices.contains(&closest_idx) {
-                        self.hovered_idx = Some(closest_idx);
-                    }
-                }
-            }
-        }
+        self.render_plot(ctx, ui, d, true, 0);
     }
 
     fn render_line_horizontal(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        let config = PlotConfigBuilder::new().build();
-        let plot_width = 400.0 * self.zoom;
-        let plot_height = 600.0 * self.zoom;
-        
-        if ui.button("🏠 Reset Zoom").clicked() {
-            self.zoom = 1.0;
-            self.pan_x = 0.0;
-        }
-        ui.add(egui::Slider::new(&mut self.zoom, 0.5..=3.0).text("Zoom"));
-        
-        let (response, painter) = ui.allocate_painter(
-            egui::Vec2::new(plot_width + config.padding_left + config.padding_right, plot_height + config.padding_top + config.padding_bottom),
-            egui::Sense::hover()
-        );
-        
-        let plot_rect = egui::Rect::from_min_size(
-            response.rect.min + egui::Vec2::new(config.padding_left, config.padding_top),
-            egui::Vec2::new(plot_width, plot_height)
-        );
-        
-        painter.line_segment(
-            [egui::pos2(plot_rect.left(), plot_rect.bottom()), egui::pos2(plot_rect.right(), plot_rect.bottom())],
-            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
-        );
-        painter.line_segment(
-            [egui::pos2(plot_rect.left(), plot_rect.top()), egui::pos2(plot_rect.left(), plot_rect.bottom())],
-            egui::Stroke::new(1.5, egui::Color32::from_gray(200))
-        );
-        
-        let font_size = if self.zoom < 0.8 { 9.0 } else if self.zoom > 1.5 { 12.0 } else { 11.0 };
-        let max_val = d.values.iter().fold(0.0_f64, |a: f64, &b| a.max(b));
-        
-        for i in 0..=5 {
-            let x = plot_rect.left() + (plot_width / 5.0) * i as f32;
-            let val = (max_val / 5.0) * i as f64;
-            painter.text(
-                egui::pos2(x, plot_rect.bottom() + 15.0),
-                egui::Align2::CENTER_TOP,
-                &format!("{:.1}", val),
-                egui::FontId::proportional(font_size),
-                egui::Color32::from_gray(100)
-            );
-            painter.line_segment(
-                [egui::pos2(x, plot_rect.bottom()), egui::pos2(x, plot_rect.bottom() + 5.0)],
-                egui::Stroke::new(0.8, egui::Color32::from_gray(180))
-            );
-        }
-        
-        for (i, label) in d.labels.iter().enumerate() {
-            let y = plot_rect.top() + (plot_height / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
-            painter.text(
-                egui::pos2(plot_rect.left() - 50.0, y),
-                egui::Align2::RIGHT_CENTER,
-                label,
-                egui::FontId::proportional(font_size * 0.85),
-                egui::Color32::from_gray(70)
-            );
-        }
-        
-        let visible_indices: Vec<usize> = (0..d.labels.len())
-            .filter(|i| i < &self.visible_elements.len() && self.visible_elements[*i])
-            .collect();
-        
-        if visible_indices.len() > 1 {
-            let mut line_points = Vec::new();
-            for &i in &visible_indices {
-                let norm_x = (d.values[i] / max_val.max(1.0)) as f32;
-                let x = plot_rect.left() + norm_x * plot_width;
-                let y = plot_rect.top() + (plot_height / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
-                line_points.push(egui::pos2(x, y));
-            }
-            
-            for window in line_points.windows(2) {
-                painter.line_segment(
-                    [window[0], window[1]],
-                    egui::Stroke::new(2.0, egui::Color32::from_rgb(100, 150, 255))
-                );
-            }
-            
-            for (idx, &pt) in line_points.iter().enumerate() {
-                let orig_idx = visible_indices[idx];
-                let is_hovered = self.hovered_idx.map(|h| h == orig_idx).unwrap_or(false);
-                let radius = if is_hovered { 6.0 } else { 4.0 };
-                let color = if is_hovered { egui::Color32::from_rgb(255, 200, 0) } else { egui::Color32::from_rgb(100, 150, 255) };
-                painter.circle_filled(pt, radius, color);
-                painter.circle_stroke(pt, radius, egui::Stroke::new(1.0, egui::Color32::WHITE));
-                
-                if is_hovered {
-                    let tooltip_x = pt.x + 20.0 * self.zoom;
-                    draw_hover_tooltip(
-                        &painter,
-                        ctx,
-                        &d.labels[orig_idx],
-                        d.values[orig_idx],
-                        &d.hover_data[orig_idx],
-                        egui::pos2(tooltip_x, pt.y),
-                        d.tooltip_bg_color,
-                        d.tooltip_text_color,
-                        self.zoom,
-                        &self.image_loader,
-                    );
-                }
-            }
-        }
-        
-        if response.hovered() {
-            if let Some(pos) = ctx.pointer_latest_pos() {
-                let rel_pos = pos - plot_rect.min;
-                if rel_pos.x >= 0.0 && rel_pos.x <= plot_width && rel_pos.y >= 0.0 && rel_pos.y <= plot_height {
-                    let norm_y = rel_pos.y / plot_height;
-                    let closest_idx = ((norm_y * (d.labels.len() as f32 - 1.0)).round() as usize).min(d.labels.len() - 1);
-                    if visible_indices.contains(&closest_idx) {
-                        self.hovered_idx = Some(closest_idx);
-                    }
-                }
-            }
-        }
+        self.render_plot(ctx, ui, d, false, 0);
     }
 
     fn apply_processor_filter(&mut self) {
-        let threshold = self.filter_threshold / 100.0;
         let data = self.data.lock().unwrap();
         if let Some(d) = data.as_ref() {
-            let max_val = d.values.iter().fold(0.0_f64, |a: f64, &b| a.max(b));
-            let threshold_val = max_val * threshold;
-            for (i, &val) in d.values.iter().enumerate() {
-                self.visible_elements[i] = val >= threshold_val;
+            let threshold = self.filter_threshold.max(0.0).min(100.0) / 100.0;
+            let max_val = d.values.iter().copied().fold(0.0_f64, f64::max);
+            let cutoff = max_val * threshold;
+            for (idx, &value) in d.values.iter().enumerate() {
+                if idx < self.visible_elements.len() {
+                    self.visible_elements[idx] = value >= cutoff;
+                }
             }
         }
     }
@@ -1081,11 +764,11 @@ impl ChartApp {
         let data = self.data.lock().unwrap();
         if let Some(d) = data.as_ref() {
             let mut indices: Vec<usize> = (0..d.values.len()).collect();
-            indices.sort_by(|&a, &b| {
-                d.values[b].partial_cmp(&d.values[a]).unwrap_or(std::cmp::Ordering::Equal)
-            });
+            indices.sort_by(|&a, &b| d.values[b].partial_cmp(&d.values[a]).unwrap_or(std::cmp::Ordering::Equal));
             for (idx, &i) in indices.iter().enumerate() {
-                self.visible_elements[i] = idx < self.limit_value;
+                if i < self.visible_elements.len() {
+                    self.visible_elements[i] = idx < self.limit_value;
+                }
             }
         }
     }
@@ -1099,13 +782,11 @@ impl ChartApp {
                 .collect();
             
             self.aggregation_results.clear();
-            
             if !visible_values.is_empty() {
                 let sum: f64 = visible_values.iter().sum();
                 let mean = sum / visible_values.len() as f64;
                 let max = visible_values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
                 let min = visible_values.iter().fold(f64::INFINITY, |a, &b| a.min(b));
-                
                 self.aggregation_results.insert("Sum".to_string(), sum);
                 self.aggregation_results.insert("Mean".to_string(), mean);
                 self.aggregation_results.insert("Max".to_string(), max);
@@ -1118,10 +799,9 @@ impl ChartApp {
 
 fn hsv_to_rgb(h: f32, s: f32, v: f32) -> egui::Color32 {
     let c = v * s;
-    let h_prime = (h * 6.0) % 6.0;
-    let x = c * (1.0 - ((h_prime % 2.0) - 1.0).abs());
-    
-    let (r, g, b) = match h_prime as i32 {
+    let h_p = (h * 6.0) % 6.0;
+    let x = c * (1.0 - ((h_p % 2.0) - 1.0).abs());
+    let (r, g, b) = match h_p as i32 {
         0 => (c, x, 0.0),
         1 => (x, c, 0.0),
         2 => (0.0, c, x),
@@ -1129,115 +809,8 @@ fn hsv_to_rgb(h: f32, s: f32, v: f32) -> egui::Color32 {
         4 => (x, 0.0, c),
         _ => (c, 0.0, x),
     };
-    
     let m = v - c;
-    egui::Color32::from_rgb(
-        ((r + m) * 255.0) as u8,
-        ((g + m) * 255.0) as u8,
-        ((b + m) * 255.0) as u8,
-    )
-}
-
-fn draw_hover_tooltip(
-    painter: &egui::Painter,
-    ctx: &egui::Context,
-    label: &str,
-    value: f64,
-    hover_data: &HashMap<String, String>,
-    tooltip_pos: egui::Pos2,
-    tooltip_bg: (u8, u8, u8, u8),
-    tooltip_text: (u8, u8, u8, u8),
-    zoom: f32,
-    image_loader: &ImageLoader,
-) {
-    let field_count = hover_data.iter().filter(|(k, _)| k.as_str() != "image").count() as f32;
-    let has_image = hover_data.contains_key("image");
-    
-    let actual_image_height = if has_image { 80.0 * zoom } else { 0.0 };
-    let field_height = 18.0 * zoom;
-    let padding = 20.0 * zoom;
-    let content_height = actual_image_height + (field_count * field_height) + padding;
-    
-    let font_size = 11.0;
-    let mut max_width: f32 = 100.0;
-    for (key, val) in hover_data.iter() {
-        if key != "image" {
-            let display = format!("{}: {}", key, val);
-            let galley = ctx.fonts(|f| f.layout_no_wrap(display, egui::FontId::proportional(font_size), egui::Color32::WHITE));
-            max_width = max_width.max(galley.rect.width());
-        }
-    }
-    
-    let w = (max_width * 1.2 + 40.0 * zoom).max(120.0 * zoom);
-    let h = (content_height + 40.0 * zoom).max(100.0 * zoom);
-    let rect = egui::Rect::from_min_size(
-        egui::pos2(tooltip_pos.x - w / 2.0, tooltip_pos.y - h / 2.0),
-        egui::vec2(w, h)
-    );
-    
-    let (bg_r, bg_g, bg_b, bg_a) = tooltip_bg;
-    painter.rect_filled(rect, 4.0, egui::Color32::from_rgba_unmultiplied(bg_r, bg_g, bg_b, bg_a));
-    
-    let (txt_r, txt_g, txt_b, txt_a) = tooltip_text;
-    let text_color = egui::Color32::from_rgba_unmultiplied(txt_r, txt_g, txt_b, txt_a);
-    
-    if has_image {
-        if let Some(img_path) = hover_data.get("image") {
-            if let Some(color_img) = image_loader.load_image(img_path) {
-                let img_w = 80.0 * zoom;
-                let img_h = 80.0 * zoom;
-                let img_x = rect.center().x - img_w / 2.0;
-                let img_y = rect.min.y + 10.0 * zoom;
-                
-                let texture = ctx.load_texture("hover_img", color_img, Default::default());
-                painter.image(
-                    texture.id(),
-                    egui::Rect::from_min_size(egui::pos2(img_x, img_y), egui::vec2(img_w, img_h)),
-                    egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)),
-                    egui::Color32::WHITE
-                );
-            } else {
-                painter.text(
-                    egui::pos2(rect.center().x, rect.min.y + 30.0 * zoom),
-                    egui::Align2::CENTER_TOP,
-                    "🖼",
-                    egui::FontId::proportional(font_size * 2.0),
-                    text_color,
-                );
-            }
-        }
-    }
-    
-    let mut offset = if has_image { 90.0 * zoom } else { 8.0 * zoom };
-    for (key, val) in hover_data.iter() {
-        if key != "image" {
-            let display = format!("{}: {}", key, val);
-            painter.text(
-                egui::pos2(rect.min.x + 8.0, rect.min.y + offset),
-                egui::Align2::LEFT_TOP,
-                display,
-                egui::FontId::proportional(font_size * 0.85),
-                text_color,
-            );
-            offset += field_height + 3.0 * zoom;
-        }
-    }
-    
-    painter.text(
-        egui::pos2(rect.center().x, rect.max.y - 20.0),
-        egui::Align2::CENTER_TOP,
-        label,
-        egui::FontId::proportional(font_size),
-        text_color,
-    );
-    
-    painter.text(
-        egui::pos2(rect.center().x, rect.max.y - 8.0),
-        egui::Align2::CENTER_TOP,
-        &format!("{:.1}", value),
-        egui::FontId::proportional(font_size * 1.1),
-        text_color,
-    );
+    egui::Color32::from_rgb(((r + m) * 255.0) as u8, ((g + m) * 255.0) as u8, ((b + m) * 255.0) as u8)
 }
 
 #[no_mangle]

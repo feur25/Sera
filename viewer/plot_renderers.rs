@@ -93,7 +93,7 @@ impl AxisRenderer {
         plot_rect: Rect,
         max_val: f64,
         font_size: f32,
-        config: &PlotConfig,
+        _config: &PlotConfig,
     ) {
         for i in 0..=5 {
             let x = plot_rect.left() + (plot_rect.width() / 5.0) * i as f32;

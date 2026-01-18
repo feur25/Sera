@@ -31,32 +31,15 @@ pub struct Color {
 }
 
 impl Color {
-    pub fn new(r: u8, g: u8, b: u8) -> Self {
-        Self { r, g, b, a: 255 }
-    }
-
-    pub fn with_alpha(r: u8, g: u8, b: u8, a: u8) -> Self {
-        Self { r, g, b, a }
-    }
-
+    pub fn new(r: u8, g: u8, b: u8) -> Self { Self { r, g, b, a: 255 } }
+    pub fn with_alpha(r: u8, g: u8, b: u8, a: u8) -> Self { Self { r, g, b, a } }
     pub fn from_hex(hex: &str) -> Self {
-        let hex = hex.trim_start_matches('#');
-        let val = u32::from_str_radix(hex, 16).unwrap_or(0);
-        Self {
-            r: ((val >> 16) & 0xFF) as u8,
-            g: ((val >> 8) & 0xFF) as u8,
-            b: (val & 0xFF) as u8,
-            a: if hex.len() == 8 { ((val >> 24) & 0xFF) as u8 } else { 255 },
-        }
+        let h = hex.trim_start_matches('#');
+        let val = u32::from_str_radix(h, 16).unwrap_or(0);
+        Self { r: ((val >> 16) & 0xFF) as u8, g: ((val >> 8) & 0xFF) as u8, b: (val & 0xFF) as u8, a: if h.len() == 8 { ((val >> 24) & 0xFF) as u8 } else { 255 } }
     }
-
-    pub fn to_hex(&self) -> String {
-        format!("#{:02x}{:02x}{:02x}{:02x}", self.r, self.g, self.b, self.a)
-    }
-
-    pub fn transparent() -> Self {
-        Self { r: 0, g: 0, b: 0, a: 0 }
-    }
+    pub fn to_hex(&self) -> String { format!("#{:02x}{:02x}{:02x}{:02x}", self.r, self.g, self.b, self.a) }
+    pub fn transparent() -> Self { Self { r: 0, g: 0, b: 0, a: 0 } }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -79,36 +62,16 @@ pub struct Range {
 }
 
 impl Range {
-    pub fn new(min: f64, max: f64) -> Self {
-        Self { min, max }
-    }
-
+    pub fn new(min: f64, max: f64) -> Self { Self { min, max } }
     pub fn from_slice(values: &[f64]) -> Option<Self> {
-        if values.is_empty() {
-            return None;
-        }
-        let min = values.iter().cloned().fold(f64::INFINITY, f64::min);
-        let max = values.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+        if values.is_empty() { return None; }
+        let (min, max) = (values.iter().cloned().fold(f64::INFINITY, f64::min), values.iter().cloned().fold(f64::NEG_INFINITY, f64::max));
         Some(Self { min, max })
     }
-
-    pub fn width(&self) -> f64 {
-        self.max - self.min
-    }
-
-    pub fn center(&self) -> f64 {
-        (self.min + self.max) / 2.0
-    }
-
-    pub fn pad(&mut self, percent: f64) {
-        let w = self.width() * percent;
-        self.min -= w;
-        self.max += w;
-    }
-
-    pub fn contains(&self, value: f64) -> bool {
-        self.min <= value && value <= self.max
-    }
+    pub fn width(&self) -> f64 { self.max - self.min }
+    pub fn center(&self) -> f64 { (self.min + self.max) / 2.0 }
+    pub fn pad(&mut self, percent: f64) { let w = self.width() * percent; self.min -= w; self.max += w; }
+    pub fn contains(&self, value: f64) -> bool { self.min <= value && value <= self.max }
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -135,18 +98,7 @@ pub enum AxisKind {
 
 impl Default for Axis {
     fn default() -> Self {
-        Self {
-            title: String::new(),
-            kind: AxisKind::Linear,
-            range: None,
-            color: Color::new(0, 0, 0),
-            width: 1.0,
-            label_size: 12,
-            title_size: 14,
-            show_grid: true,
-            grid_color: Color::new(200, 200, 200),
-            grid_width: 0.5,
-        }
+        Self { title: String::new(), kind: AxisKind::Linear, range: None, color: Color::new(0, 0, 0), width: 1.0, label_size: 12, title_size: 14, show_grid: true, grid_color: Color::new(200, 200, 200), grid_width: 0.5 }
     }
 }
 
@@ -175,14 +127,7 @@ pub enum MarkerSymbol {
 
 impl Default for Marker {
     fn default() -> Self {
-        Self {
-            size: 8,
-            symbol: MarkerSymbol::Circle,
-            color: Color::new(31, 119, 180),
-            opacity: 1.0,
-            line_width: 1.0,
-            line_color: Color::new(0, 0, 0),
-        }
+        Self { size: 8, symbol: MarkerSymbol::Circle, color: Color::new(31, 119, 180), opacity: 1.0, line_width: 1.0, line_color: Color::new(0, 0, 0) }
     }
 }
 
@@ -204,12 +149,7 @@ pub enum LineDash {
 
 impl Default for Line {
     fn default() -> Self {
-        Self {
-            width: 2.0,
-            color: Color::new(31, 119, 180),
-            dash: LineDash::Solid,
-            opacity: 1.0,
-        }
+        Self { width: 2.0, color: Color::new(31, 119, 180), dash: LineDash::Solid, opacity: 1.0 }
     }
 }
 
@@ -253,12 +193,7 @@ pub struct Margin {
 
 impl Default for Margin {
     fn default() -> Self {
-        Self {
-            left: 60,
-            right: 40,
-            top: 40,
-            bottom: 60,
-        }
+        Self { left: 60, right: 40, top: 40, bottom: 60 }
     }
 }
 

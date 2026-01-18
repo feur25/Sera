@@ -145,7 +145,7 @@ impl ChartDataProcessor {
                 new_values.push(val);
 
                 for (key, col) in &self.metadata {
-                    let mut entry = new_metadata.entry(key.clone()).or_insert_with(Vec::new);
+                    let entry = new_metadata.entry(key.clone()).or_insert_with(Vec::new);
                     if i < col.len() {
                         entry.push(col[i].clone());
                     }
@@ -178,7 +178,7 @@ impl ChartDataProcessor {
         self.labels = indices.iter().map(|&i| self.labels[i].clone()).collect();
         self.values = indices.iter().map(|&i| self.values[i]).collect();
 
-        for (key, col) in &mut self.metadata {
+        for (_key, col) in &mut self.metadata {
             *col = indices.iter().map(|&i| col[i].clone()).collect();
         }
 

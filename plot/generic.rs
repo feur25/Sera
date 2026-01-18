@@ -1,5 +1,4 @@
 use super::renderers::{ChartConfig, ChartPoint, hsv_to_rgb};
-use std::marker::PhantomData;
 
 pub struct PlotState {
     pub dims: PlotDimensions,
@@ -15,22 +14,16 @@ pub struct PlotDimensions {
 }
 
 impl PlotDimensions {
+    pub fn new(width: f32, height: f32, pad_x: f32, pad_y: f32) -> Self {
+        Self { width, height, pad_x, pad_y }
+    }
+
     pub fn vertical(zoom: f32) -> Self {
-        PlotDimensions {
-            width: 600.0 * zoom,
-            height: 400.0 * zoom,
-            pad_x: 40.0,
-            pad_y: 20.0,
-        }
+        Self::new(600.0 * zoom, 400.0 * zoom, 40.0, 20.0)
     }
 
     pub fn horizontal(zoom: f32) -> Self {
-        PlotDimensions {
-            width: 400.0 * zoom,
-            height: 600.0 * zoom,
-            pad_x: 80.0,
-            pad_y: 20.0,
-        }
+        Self::new(400.0 * zoom, 600.0 * zoom, 80.0, 20.0)
     }
 
     pub fn total_width(&self) -> f32 {
@@ -39,6 +32,13 @@ impl PlotDimensions {
 
     pub fn total_height(&self) -> f32 {
         self.height + self.pad_y * 2.0
+    }
+
+    pub fn plot_rect(&self, base: egui::Pos2) -> egui::Rect {
+        egui::Rect::from_min_size(
+            base + egui::Vec2::new(self.pad_x, self.pad_y),
+            egui::Vec2::new(self.width, self.height),
+        )
     }
 }
 
@@ -329,31 +329,28 @@ pub fn create_plot_rect(response_rect: egui::Rect, dims: &PlotDimensions) -> egu
     )
 }
 
-pub struct GenericRenderer<M: PointMapper, S: RenderStrategy, T: TooltipHandler = DefaultTooltipHandler> {
+pub struct GenericRenderer<M: PointMapper, S: RenderStrategy, T: TooltipHandler> {
     mapper: M,
     strategy: S,
     tooltip: T,
-    _marker: PhantomData<(M, S, T)>,
 }
 
 impl<M: PointMapper, S: RenderStrategy> GenericRenderer<M, S, DefaultTooltipHandler> {
     pub fn new(mapper: M, strategy: S) -> Self {
-        GenericRenderer {
+        Self {
             mapper,
             strategy,
             tooltip: DefaultTooltipHandler,
-            _marker: PhantomData,
         }
     }
 }
 
 impl<M: PointMapper, S: RenderStrategy, T: TooltipHandler> GenericRenderer<M, S, T> {
     pub fn with_tooltip(mapper: M, strategy: S, tooltip: T) -> Self {
-        GenericRenderer {
+        Self {
             mapper,
             strategy,
             tooltip,
-            _marker: PhantomData,
         }
     }
 
@@ -371,19 +368,16 @@ impl<M: PointMapper, S: RenderStrategy, T: TooltipHandler> GenericRenderer<M, S,
             egui::Sense::hover(),
         );
 
-        let plot_rect = create_plot_rect(response.rect, &dims);
+        let plot_rect = dims.plot_rect(response.rect.min);
 
         draw_axes(&painter, plot_rect);
         draw_scale(&painter, plot_rect, max_val, dims.width > dims.height);
 
         for (idx, point) in config.points.iter().enumerate() {
-            if !point.visible {
-                continue;
-            }
+            if !point.visible { continue; }
             let pos = self.mapper.map(idx, point, max_val, plot_rect);
             let is_hovered = hovered_idx.map(|h| h == idx).unwrap_or(false);
             self.strategy.draw_point(&painter, pos, idx, is_hovered);
-            
             if is_hovered {
                 self.tooltip.render_tooltip(&painter, ctx, point, pos, config.zoom);
             }
@@ -406,16 +400,7 @@ pub struct ChartBuilder<M: PointMapper, S: RenderStrategy> {
 
 impl<M: PointMapper, S: RenderStrategy> ChartBuilder<M, S> {
     pub fn new(mapper: M, strategy: S) -> Self {
-        Self {
-            mapper,
-            strategy,
-            tooltip_style: None,
-        }
-    }
-
-    pub fn with_tooltip_style(mut self, style: TooltipStyle) -> Self {
-        self.tooltip_style = Some(style);
-        self
+        Self { mapper, strategy, tooltip_style: None }
     }
 
     pub fn with_default_tooltip(mut self) -> Self {

@@ -6,9 +6,8 @@ impl RenderStrategy for LineStrategy {
     fn draw_geometry(&self, painter: &egui::Painter, config: &ChartConfig, state: &PlotState, plot_rect: egui::Rect) {
         let visible: Vec<_> = config.points.iter().filter(|p| p.visible).collect();
         if visible.len() > 1 {
-            let mut positions = Vec::new();
             let is_vertical = plot_rect.width() > plot_rect.height();
-            
+            let mut positions = Vec::new();
             for (idx, point) in visible.iter().enumerate() {
                 let pos = if is_vertical {
                     VerticalMapper.map(idx, point, state.max_val, plot_rect)
@@ -17,12 +16,8 @@ impl RenderStrategy for LineStrategy {
                 };
                 positions.push(pos);
             }
-
             for window in positions.windows(2) {
-                painter.line_segment(
-                    [window[0], window[1]],
-                    egui::Stroke::new(2.0, egui::Color32::from_rgb(100, 150, 255)),
-                );
+                painter.line_segment([window[0], window[1]], egui::Stroke::new(2.0, egui::Color32::from_rgb(100, 150, 255)));
             }
         }
     }
@@ -38,26 +33,16 @@ impl RenderStrategy for LineStrategy {
     }
 }
 
-pub fn render_line_vertical(
-    config: &ChartConfig,
-    ctx: &egui::Context,
-    ui: &mut egui::Ui,
-    hovered_idx: &mut Option<usize>,
-) {
-    let renderer = ChartBuilder::new(VerticalMapper, LineStrategy)
-        .with_default_tooltip()
-        .build();
-    renderer.render(config, ctx, ui, PlotDimensions::vertical(config.zoom), hovered_idx);
+fn render_line<M: PointMapper>(config: &ChartConfig, ctx: &egui::Context, ui: &mut egui::Ui, hovered_idx: &mut Option<usize>, mapper: M) {
+    let dims = if config.orientation { PlotDimensions::vertical(config.zoom) } else { PlotDimensions::horizontal(config.zoom) };
+    let renderer = GenericRenderer::new(mapper, LineStrategy);
+    renderer.render(config, ctx, ui, dims, hovered_idx);
 }
 
-pub fn render_line_horizontal(
-    config: &ChartConfig,
-    ctx: &egui::Context,
-    ui: &mut egui::Ui,
-    hovered_idx: &mut Option<usize>,
-) {
-    let renderer = ChartBuilder::new(HorizontalMapper, LineStrategy)
-        .with_default_tooltip()
-        .build();
-    renderer.render(config, ctx, ui, PlotDimensions::horizontal(config.zoom), hovered_idx);
+pub fn render_line_vertical(config: &ChartConfig, ctx: &egui::Context, ui: &mut egui::Ui, hovered_idx: &mut Option<usize>,) {
+    render_line(config, ctx, ui, hovered_idx, VerticalMapper);
+}
+
+pub fn render_line_horizontal(config: &ChartConfig, ctx: &egui::Context, ui: &mut egui::Ui, hovered_idx: &mut Option<usize>,) {
+    render_line(config, ctx, ui, hovered_idx, HorizontalMapper);
 }

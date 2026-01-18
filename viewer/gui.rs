@@ -1,6 +1,5 @@
 use crate::core::*;
 use crate::data::loader::CsvData;
-use crate::data::processor::{Dataset, DataPoint};
 use crate::plot::Canvas;
 use egui_plot::{Plot, Line, PlotPoints};
 

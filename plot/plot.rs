@@ -8,14 +8,14 @@ pub struct Plot {
 
 impl Plot {
     pub fn new(title: impl Into<String>, layout: Layout) -> Self {
-        Self {
-            title: title.into(),
-            traces: Vec::new(),
-            layout,
-        }
+        Self { title: title.into(), traces: Vec::new(), layout }
     }
 
-    pub fn add_trace(&mut self, trace: Trace) {
+    pub fn add_trace(mut self, trace: Trace) -> Self {
+        self.traces.push(trace); self
+    }
+
+    pub fn add_trace_mut(&mut self, trace: Trace) {
         self.traces.push(trace);
     }
 
@@ -24,9 +24,7 @@ impl Plot {
     }
 
     pub fn get_bounds(&self) -> Option<(Range, Range)> {
-        if self.traces.is_empty() {
-            return None;
-        }
+        if self.traces.is_empty() { return None; }
 
         let mut x_min = f64::INFINITY;
         let mut x_max = f64::NEG_INFINITY;

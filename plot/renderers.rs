@@ -30,12 +30,7 @@ impl ChartConfig {
     }
 
     pub fn add_point(&mut self, label: String, value: f64, hover_data: HashMap<String, String>) {
-        self.points.push(ChartPoint {
-            label,
-            value,
-            hover_data,
-            visible: true,
-        });
+        self.points.push(ChartPoint { label, value, hover_data, visible: true });
     }
 
     pub fn visible_points(&self) -> Vec<&ChartPoint> {
@@ -43,9 +38,7 @@ impl ChartConfig {
     }
 
     pub fn max_value(&self) -> f64 {
-        self.points.iter()
-            .filter(|p| p.visible)
-            .fold(0.0_f64, |a, p| a.max(p.value))
+        self.points.iter().filter(|p| p.visible).fold(0.0_f64, |a, p| a.max(p.value))
     }
 
     pub fn visible_count(&self) -> usize {
@@ -59,19 +52,15 @@ pub struct ChartConfigBuilder {
 
 impl ChartConfigBuilder {
     pub fn new(title: impl Into<String>) -> Self {
-        Self {
-            config: ChartConfig::new(title),
-        }
+        Self { config: ChartConfig::new(title) }
     }
 
     pub fn zoom(mut self, zoom: f32) -> Self {
-        self.config.zoom = zoom;
-        self
+        self.config.zoom = zoom; self
     }
 
     pub fn orientation(mut self, vertical: bool) -> Self {
-        self.config.orientation = vertical;
-        self
+        self.config.orientation = vertical; self
     }
 
     pub fn tooltip_colors(mut self, bg: (u8, u8, u8, u8), text: (u8, u8, u8, u8)) -> Self {
@@ -81,8 +70,7 @@ impl ChartConfigBuilder {
     }
 
     pub fn add_point(mut self, label: String, value: f64, hover_data: HashMap<String, String>) -> Self {
-        self.config.add_point(label, value, hover_data);
-        self
+        self.config.add_point(label, value, hover_data); self
     }
 
     pub fn build(self) -> ChartConfig {
@@ -90,66 +78,22 @@ impl ChartConfigBuilder {
     }
 }
 
-pub trait ChartRenderer {
-    fn render_vertical(&self, ctx: &egui::Context, ui: &mut egui::Ui);
-    fn render_horizontal(&self, ctx: &egui::Context, ui: &mut egui::Ui);
-}
-
-pub struct BarChart {
+pub struct GenericChart {
     config: ChartConfig,
     hovered_idx: Option<usize>,
 }
 
-impl BarChart {
+impl GenericChart {
     pub fn new(config: ChartConfig) -> Self {
-        Self {
-            config,
-            hovered_idx: None,
-        }
+        Self { config, hovered_idx: None }
     }
 
     pub fn with_hovered(mut self, idx: Option<usize>) -> Self {
-        self.hovered_idx = idx;
-        self
-    }
-}
-
-pub struct ScatterChart {
-    config: ChartConfig,
-    hovered_idx: Option<usize>,
-}
-
-impl ScatterChart {
-    pub fn new(config: ChartConfig) -> Self {
-        Self {
-            config,
-            hovered_idx: None,
-        }
+        self.hovered_idx = idx; self
     }
 
-    pub fn with_hovered(mut self, idx: Option<usize>) -> Self {
-        self.hovered_idx = idx;
-        self
-    }
-}
-
-pub struct LineChart {
-    config: ChartConfig,
-    hovered_idx: Option<usize>,
-}
-
-impl LineChart {
-    pub fn new(config: ChartConfig) -> Self {
-        Self {
-            config,
-            hovered_idx: None,
-        }
-    }
-
-    pub fn with_hovered(mut self, idx: Option<usize>) -> Self {
-        self.hovered_idx = idx;
-        self
-    }
+    pub fn config(&self) -> &ChartConfig { &self.config }
+    pub fn hovered(&self) -> Option<usize> { self.hovered_idx }
 }
 
 pub enum ChartKind {
@@ -183,18 +127,13 @@ impl ChartKind {
             ChartKind::Bar => "Bar",
         }
     }
-
-    pub fn is_valid(&self) -> bool {
-        true
-    }
 }
 
 pub fn hsv_to_rgb(h: f32, s: f32, v: f32) -> egui::Color32 {
     let c = v * s;
-    let h_prime = (h * 6.0) % 6.0;
-    let x = c * (1.0 - ((h_prime % 2.0) - 1.0).abs());
-    
-    let (r, g, b) = match h_prime as i32 {
+    let h_p = (h * 6.0) % 6.0;
+    let x = c * (1.0 - ((h_p % 2.0) - 1.0).abs());
+    let (r, g, b) = match h_p as i32 {
         0 => (c, x, 0.0),
         1 => (x, c, 0.0),
         2 => (0.0, c, x),
@@ -202,11 +141,6 @@ pub fn hsv_to_rgb(h: f32, s: f32, v: f32) -> egui::Color32 {
         4 => (x, 0.0, c),
         _ => (c, 0.0, x),
     };
-    
     let m = v - c;
-    egui::Color32::from_rgb(
-        ((r + m) * 255.0) as u8,
-        ((g + m) * 255.0) as u8,
-        ((b + m) * 255.0) as u8,
-    )
+    egui::Color32::from_rgb(((r + m) * 255.0) as u8, ((g + m) * 255.0) as u8, ((b + m) * 255.0) as u8)
 }
