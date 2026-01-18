@@ -4,6 +4,7 @@ use std::os::raw::c_char;
 use std::collections::HashMap;
 use super::image_loader::ImageLoader;
 use crate::plot::types::{BarRenderContext, render_plot_by_type, render_plot_3d_by_type};
+use crate::plot::Camera3D;
 
 struct ChartData {
     labels: Vec<String>,
@@ -121,6 +122,7 @@ struct ChartApp {
     sort_mode: i32,
     current_chart_kind: u8,
     is_3d_mode: bool,
+    camera_3d: Camera3D,
     #[allow(dead_code)]
     processor_mode: u8,
     filter_threshold: f64,
@@ -168,6 +170,14 @@ impl eframe::App for ChartApp {
                     if let Ok(mut sort) = CHART_SORT.lock() {
                         *sort = self.sort_mode;
                     }
+                }
+                ui.separator();
+                let btn_3d_text = if self.is_3d_mode { "🎯 2D" } else { "📦 3D" };
+                if ui.button(btn_3d_text).clicked() {
+                    self.is_3d_mode = !self.is_3d_mode;
+                }
+                if self.is_3d_mode && ui.button("🔃 Perspective").clicked() {
+                    self.camera_3d.next_perspective();
                 }
                 ui.separator();
                 if ui.button("⚙ Processor").clicked() {
@@ -506,6 +516,7 @@ impl ChartApp {
                         max_val,
                         &visible_indices,
                         vertical,
+                        &self.camera_3d,
                     );
                 }
                 
@@ -760,6 +771,7 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         sort_mode: 0,
         current_chart_kind: 1,
         is_3d_mode: false,
+        camera_3d: Camera3D::new(),
         processor_mode: 0,
         filter_threshold: 0.0,
         show_stats: false,

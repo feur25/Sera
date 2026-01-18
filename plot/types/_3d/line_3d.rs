@@ -1,4 +1,5 @@
 use super::super::super::generic::*;
+use super::super::super::camera::Camera3D;
 
 pub struct Line3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -9,6 +10,7 @@ pub struct Line3DRenderContext<'a> {
     pub max_val: f64,
     pub visible_indices: &'a [usize],
     pub vertical: bool,
+    pub camera: &'a Camera3D,
 }
 
 pub fn render_lines_3d(ctx: Line3DRenderContext) {
@@ -17,7 +19,7 @@ pub fn render_lines_3d(ctx: Line3DRenderContext) {
     }
     
     let visible_count = ctx.visible_indices.len();
-    let depth = 0.12;
+    let depth = ctx.camera.depth_scale;
     
     let mut prev_pos: Option<egui::Pos2> = None;
     let mut prev_back_pos: Option<egui::Pos2> = None;
@@ -30,8 +32,9 @@ pub fn render_lines_3d(ctx: Line3DRenderContext) {
         let y = ctx.plot_rect.bottom() - norm_val as f32 * ctx.plot_rect.height();
         
         let pos = egui::pos2(x, y);
-        let back_x = x + depth * ctx.plot_rect.width();
-        let back_y = y + depth * ctx.plot_rect.height() * 0.3;
+        let (offset_x, offset_y) = ctx.camera.back_offset(depth * ctx.plot_rect.width());
+        let back_x = x + offset_x;
+        let back_y = y + offset_y;
         let back_pos = egui::pos2(back_x, back_y);
         
         let color = ctx.colors[actual_idx % ctx.colors.len()];

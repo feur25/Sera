@@ -1,4 +1,5 @@
 use super::super::super::generic::*;
+use super::super::super::camera::Camera3D;
 
 pub struct Scatter3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -9,6 +10,7 @@ pub struct Scatter3DRenderContext<'a> {
     pub max_val: f64,
     pub visible_indices: &'a [usize],
     pub vertical: bool,
+    pub camera: &'a Camera3D,
 }
 
 pub fn render_points_3d(ctx: Scatter3DRenderContext) {

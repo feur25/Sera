@@ -3,6 +3,7 @@ pub mod line_3d;
 pub mod scatter_3d;
 
 use super::super::generic::*;
+use super::super::camera::Camera3D;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
@@ -50,6 +51,7 @@ pub fn render_plot_3d_by_type(
     max_val: f64,
     visible_indices: &[usize],
     vertical: bool,
+    camera: &Camera3D,
 ) {
     match chart_type {
         3 if visible_count > 1 => {
@@ -62,6 +64,7 @@ pub fn render_plot_3d_by_type(
                 max_val,
                 visible_indices,
                 vertical,
+                camera,
             });
         }
         4 => {
@@ -74,6 +77,7 @@ pub fn render_plot_3d_by_type(
                 max_val,
                 visible_indices,
                 vertical,
+                camera,
             });
         }
         5 => {
@@ -86,6 +90,7 @@ pub fn render_plot_3d_by_type(
                 max_val,
                 visible_indices,
                 vertical,
+                camera,
             });
         }
         _ => {}

@@ -1,4 +1,5 @@
 use super::super::super::generic::*;
+use super::super::super::camera::Camera3D;
 
 pub struct Bar3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -9,11 +10,12 @@ pub struct Bar3DRenderContext<'a> {
     pub max_val: f64,
     pub visible_indices: &'a [usize],
     pub vertical: bool,
+    pub camera: &'a Camera3D,
 }
 
 pub fn render_bars_3d(ctx: Bar3DRenderContext) {
     let visible_count = ctx.visible_indices.len();
-    let depth_scale = 0.15;
+    let depth_scale = ctx.camera.depth_scale;
     
     for (vis_idx, &actual_idx) in ctx.visible_indices.iter().enumerate() {
         let value = ctx.values[actual_idx];
@@ -40,8 +42,7 @@ pub fn render_bars_3d(ctx: Bar3DRenderContext) {
         let front_bottom_left = egui::pos2(x - bar_width / 2.0, base_y);
         let front_bottom_right = egui::pos2(x + bar_width / 2.0, base_y);
         
-        let back_offset_x = bar_depth * 0.6;
-        let back_offset_y = bar_depth * 0.3;
+        let (back_offset_x, back_offset_y) = ctx.camera.back_offset(bar_depth);
         
         let back_left = egui::pos2(front_left.x + back_offset_x, front_left.y + back_offset_y);
         let back_right = egui::pos2(front_right.x + back_offset_x, front_right.y + back_offset_y);
