@@ -38,6 +38,7 @@ struct ChartApp {
     show_transform_menu: bool,
     config_store: Arc<ConfigStore>,
     plot_config: Arc<Mutex<super::plot_template::PlotConfig>>,
+    current_sort_indices: Vec<usize>,
 }
 
 impl eframe::App for ChartApp {
@@ -105,8 +106,11 @@ impl eframe::App for ChartApp {
                             let data = self.data.lock().unwrap();
                             if let Some(d) = data.as_ref() {
                                 for (idx, label) in d.labels.iter().enumerate() {
-                                    if idx < self.visible_elements.len() {
-                                        ui.checkbox(&mut self.visible_elements[idx], label);
+                                    if idx < self.current_sort_indices.len() {
+                                        let orig_idx = self.current_sort_indices[idx];
+                                        if orig_idx < self.visible_elements.len() {
+                                            ui.checkbox(&mut self.visible_elements[orig_idx], label);
+                                        }
                                     }
                                 }
                             }
@@ -181,6 +185,8 @@ impl eframe::App for ChartApp {
                 d.values = sorted_values;
                 d.hover_data = sorted_hover_data;
                 
+                let original_indices = indices;
+                
                 ui.vertical_centered(|ui| {
                     ui.heading(&d.title);
                 });
@@ -190,6 +196,7 @@ impl eframe::App for ChartApp {
                     ui.label("No data");
                 } else {
                     self.render_chart(ctx, ui, &d);
+                    self.current_sort_indices = original_indices;
                 }
             } else {
                 ui.label("Waiting for data...");
@@ -224,6 +231,22 @@ impl ChartApp {
                     self.render_horizontal_bars(ctx, ui, d);
                 }
             }
+        }
+    }
+    
+    fn is_visible(&self, sort_idx: usize) -> bool {
+        if sort_idx >= self.current_sort_indices.len() {
+            return false;
+        }
+        let orig_idx = self.current_sort_indices[sort_idx];
+        orig_idx < self.visible_elements.len() && self.visible_elements[orig_idx]
+    }
+    
+    fn get_original_idx(&self, sort_idx: usize) -> Option<usize> {
+        if sort_idx < self.current_sort_indices.len() {
+            Some(self.current_sort_indices[sort_idx])
+        } else {
+            None
         }
     }
 
@@ -307,8 +330,8 @@ impl ChartApp {
                 let normalized_pts = normalize_to_rect(&payload, plot_rect);
                 let visible_pts = filter_by_property(&payload.points, |pt| {
                     let idx_str = pt.metadata.get("idx").map(|s| s.as_str()).unwrap_or("0");
-                    if let Ok(idx) = idx_str.parse::<usize>() {
-                        idx < self.visible_elements.len() && self.visible_elements[idx]
+                    if let Ok(display_idx) = idx_str.parse::<usize>() {
+                        self.is_visible(display_idx)
                     } else {
                         false
                     }
@@ -440,8 +463,8 @@ impl ChartApp {
                 let normalized_pts = normalize_to_rect(&payload, plot_rect);
                 let visible_pts = filter_by_property(&payload.points, |pt| {
                     let idx_str = pt.metadata.get("idx").map(|s| s.as_str()).unwrap_or("0");
-                    if let Ok(idx) = idx_str.parse::<usize>() {
-                        idx < self.visible_elements.len() && self.visible_elements[idx]
+                    if let Ok(display_idx) = idx_str.parse::<usize>() {
+                        self.is_visible(display_idx)
                     } else {
                         false
                     }
@@ -505,7 +528,7 @@ impl ChartApp {
         let bar_height = 300.0_f32;
         
         let visible_count = d.labels.iter().enumerate()
-            .filter(|(idx, _)| idx < &self.visible_elements.len() && self.visible_elements[*idx])
+            .filter(|(idx, _)| self.is_visible(*idx))
             .count() as f32;
         
         let available_width = 1200.0_f32 - 30.0;
@@ -536,7 +559,7 @@ impl ChartApp {
                 ui.horizontal(|ui| {
                     ui.add_space(1.0);
                     for (idx, (label, value)) in d.labels.iter().zip(d.values.iter()).enumerate() {
-                        if idx >= self.visible_elements.len() || !self.visible_elements[idx] {
+                        if !self.is_visible(idx) {
                             continue;
                         }
                         
@@ -699,7 +722,7 @@ impl ChartApp {
         let bar_max_width = 350.0_f32;
         
         let visible_count = d.labels.iter().enumerate()
-            .filter(|(idx, _)| idx < &self.visible_elements.len() && self.visible_elements[*idx])
+            .filter(|(idx, _)| self.is_visible(*idx))
             .count() as f32;
         
         let available_height = 500.0_f32;
@@ -717,7 +740,7 @@ impl ChartApp {
             .show(ui, |ui| {
                 ui.vertical(|ui| {
                     for (idx, (label, value)) in d.labels.iter().zip(d.values.iter()).enumerate() {
-                        if idx >= self.visible_elements.len() || !self.visible_elements[idx] {
+                        if !self.is_visible(idx) {
                             continue;
                         }
                         
@@ -918,6 +941,7 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         show_transform_menu: false,
         config_store: Arc::new(ConfigStore::new()),
         plot_config: Arc::new(Mutex::new(PlotConfigBuilder::new().width(1400.0).height(600.0).build())),
+        current_sort_indices: (0..num_elements).collect(),
     };
 
     let native_options = eframe::NativeOptions {
@@ -1021,6 +1045,7 @@ pub extern "C" fn sera_show_with_variants(
         show_transform_menu: false,
         config_store: Arc::new(ConfigStore::new()),
         plot_config: Arc::new(Mutex::new(PlotConfigBuilder::new().width(1400.0).height(600.0).build())),
+        current_sort_indices: vec![],
     };
 
     let native_options = eframe::NativeOptions {
