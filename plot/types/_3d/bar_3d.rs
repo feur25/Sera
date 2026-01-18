@@ -1,5 +1,6 @@
 use super::super::super::containers_3d::{CameraController, Cube3DContainer};
 use super::super::super::camera::Point3D;
+use super::scale_renderer::render_scale_labels;
 
 pub struct Bar3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -23,6 +24,7 @@ pub fn render_bars_3d(ctx: Bar3DRenderContext) {
     let cube = Cube3DContainer::new(Point3D::new(0.0, 0.0, 0.0), container_size);
     
     render_container_frame(ctx.painter, ctx.plot_rect, ctx.camera_controller);
+    render_scale_labels(ctx.painter, ctx.plot_rect, max_val);
     
     let mut bars_to_render: Vec<(egui::Pos2, egui::Pos2, egui::Color32, usize, f32, f32)> = Vec::new();
     
@@ -67,16 +69,16 @@ pub fn render_bars_3d(ctx: Bar3DRenderContext) {
     for (screen_base, screen_top, color, actual_idx, norm_val, _) in bars_to_render {
         let is_hovered = ctx.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
         let display_color = if is_hovered {
-            egui::Color32::from_rgb(255, 200, 0)
+            egui::Color32::from_rgb(255, 220, 0)
         } else {
             color
         };
         
-        let stroke_width = 3.0 + norm_val * 4.0;
+        let stroke_width = if is_hovered { 5.5 } else { 4.0 + norm_val * 3.5 };
         ctx.painter.line_segment([screen_base, screen_top], egui::Stroke::new(stroke_width, display_color));
         
-        let base_radius = 3.0 + norm_val * 2.0;
-        let top_radius = 4.0 + norm_val * 3.0;
+        let base_radius = if is_hovered { 5.0 } else { 3.5 + norm_val * 2.5 };
+        let top_radius = if is_hovered { 6.5 } else { 5.0 + norm_val * 3.5 };
         
         ctx.painter.circle_filled(screen_base, base_radius, display_color);
         ctx.painter.circle_filled(screen_top, top_radius, display_color);
@@ -124,12 +126,4 @@ fn render_container_frame(
             painter.line_segment([start, end], egui::Stroke::new(2.0, color));
         }
     }
-}
-
-fn shade_color(color: egui::Color32, factor: f32) -> egui::Color32 {
-    egui::Color32::from_rgb(
-        (color.r() as f32 * factor) as u8,
-        (color.g() as f32 * factor) as u8,
-        (color.b() as f32 * factor) as u8,
-    )
 }

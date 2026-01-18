@@ -1,5 +1,6 @@
 use super::super::super::containers_3d::{CameraController, Cube3DContainer};
 use super::super::super::camera::Point3D;
+use super::scale_renderer::render_scale_labels;
 
 pub struct Line3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -23,6 +24,8 @@ pub fn render_lines_3d(ctx: Line3DRenderContext) {
     
     let container_size = 10.0;
     let cube = Cube3DContainer::new(Point3D::new(0.0, 0.0, 0.0), container_size);
+    
+    render_scale_labels(ctx.painter, ctx.plot_rect, max_val);
     
     let mut line_points: Vec<(egui::Pos2, egui::Color32, usize, f32)> = Vec::new();
     
@@ -52,22 +55,22 @@ pub fn render_lines_3d(ctx: Line3DRenderContext) {
         let (screen, color, actual_idx, _) = line_points[i];
         let is_hovered = ctx.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
         let display_color = if is_hovered {
-            egui::Color32::from_rgb(255, 200, 0)
+            egui::Color32::from_rgb(255, 220, 0)
         } else {
             color
         };
         
-        let radius = if is_hovered { 6.0 } else { 4.0 };
+        let radius = if is_hovered { 7.0 } else { 5.0 };
         ctx.painter.circle_filled(screen, radius, display_color);
         
         if i > 0 {
             let (prev_screen, _, _, _) = line_points[i - 1];
-            let line_color = if is_hovered {
-                egui::Color32::from_rgb(255, 200, 0)
-            } else {
-                color
-            };
-            ctx.painter.line_segment([prev_screen, screen], egui::Stroke::new(2.0, line_color));
+            let line_width = if is_hovered { 3.5 } else { 2.8 };
+            ctx.painter.line_segment([prev_screen, screen], egui::Stroke::new(line_width, display_color));
+        }
+        
+        if is_hovered {
+            ctx.painter.circle_stroke(screen, radius + 2.0, egui::Stroke::new(1.5, egui::Color32::WHITE));
         }
     }
 }

@@ -1,6 +1,7 @@
 pub mod bar_3d;
 pub mod line_3d;
 pub mod scatter_3d;
+pub mod scale_renderer;
 
 use super::super::containers_3d::CameraController;
 use std::collections::HashMap;
