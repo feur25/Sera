@@ -3,8 +3,9 @@ use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::collections::HashMap;
 use super::image_loader::ImageLoader;
-use super::plot_renderers::{TooltipRenderer};
-use super::plot_template::{hsv_to_rgb, PlotConfigBuilder, ConfigStore};
+use super::plot_renderers::{TooltipRenderer, PointRenderer, BarRenderer};
+use super::plot_template::{PlotConfigBuilder, ConfigStore};
+use super::plot_generic::{DataPoint, RenderPayload, normalize_to_rect, filter_by_property};
 
 #[derive(Clone)]
 struct PlotVariant {
@@ -239,6 +240,18 @@ impl ChartApp {
         let plot_width = config.width * config.zoom;
         let plot_height = config.height * config.zoom;
         
+        let mut payload = RenderPayload::<f64>::new();
+        for (idx, (label, val)) in d.labels.iter().zip(d.values.iter()).enumerate() {
+            let norm_x = if d.labels.len() > 1 { idx as f64 / (d.labels.len() as f64 - 1.0) } else { 0.5 };
+            let mut point = DataPoint::new(norm_x, *val, *val);
+            point.add_metadata("label", label.clone());
+            point.add_metadata("idx", idx.to_string());
+            payload = payload.add_point(point);
+        }
+        payload = payload.with_bounds(0.0, 1.0, 0.0, max_val).with_labels(d.labels.clone());
+        
+        let point_renderer = PointRenderer::new(5.5, 7.0);
+        
         egui::ScrollArea::both()
             .auto_shrink([false; 2])
             .show(ui, |ui| {
@@ -291,56 +304,55 @@ impl ChartApp {
                     );
                 }
                 
-                for (idx, (x, y)) in d.labels.iter().zip(d.values.iter()).enumerate() {
-                    if idx >= self.visible_elements.len() || !self.visible_elements[idx] {
-                        continue;
+                let normalized_pts = normalize_to_rect(&payload, plot_rect);
+                let visible_pts = filter_by_property(&payload.points, |pt| {
+                    let idx_str = pt.metadata.get("idx").map(|s| s.as_str()).unwrap_or("0");
+                    if let Ok(idx) = idx_str.parse::<usize>() {
+                        idx < self.visible_elements.len() && self.visible_elements[idx]
+                    } else {
+                        false
                     }
+                });
+                
+                for point in &visible_pts {
+                    let idx_str = point.metadata.get("idx").map(|s| s.as_str()).unwrap_or("0");
+                    let idx: usize = idx_str.parse().unwrap_or(0);
                     
-                    let norm_x = if d.labels.len() > 1 { idx as f64 / (d.labels.len() as f64 - 1.0) } else { 0.5 };
-                    let norm_y = if max_val > 0.0 { y / max_val } else { 0.0 };
+                    let norm_pt = normalized_pts.iter().find(|(_, pt)| {
+                        pt.metadata.get("idx").map(|s| s.as_str()) == Some(idx_str)
+                    });
                     
-                    let screen_x = plot_rect.left() + (plot_width as f64 * norm_x) as f32;
-                    let screen_y = plot_rect.bottom() - (plot_height as f64 * norm_y) as f32;
-                    
-                    let point = egui::pos2(screen_x, screen_y);
-                    let hue = (idx as f32 * 0.1) % 1.0;
-                    let color = hsv_to_rgb(hue, 0.75, 0.85);
-                    
-                    let mouse_pos = ctx.input(|i| i.pointer.latest_pos().unwrap_or(egui::pos2(-10000.0, -10000.0)));
-                    let is_hovered = response.hovered() && 
-                        ((point.x - mouse_pos.x).abs() < 12.0 &&
-                        (point.y - mouse_pos.y).abs() < 12.0);
-                    
-                    let point_color = if is_hovered { hsv_to_rgb(hue, 0.95, 1.0) } else { color };
-                    let point_size = if is_hovered { 7.0 } else { 5.5 };
-                    
-                    painter.circle_filled(point, point_size, point_color);
-                    
-                    if is_hovered {
-                        painter.circle_stroke(point, point_size + 2.0, egui::Stroke::new(1.5, egui::Color32::WHITE));
-                    }
-                    
-                    if is_hovered {
-                        self.hovered_idx = Some(idx);
+                    if let Some((screen_pt, _)) = norm_pt {
+                        let mouse_pos = ctx.input(|i| i.pointer.latest_pos().unwrap_or(egui::pos2(-10000.0, -10000.0)));
+                        let is_hovered = response.hovered() && 
+                            ((screen_pt.x - mouse_pos.x).abs() < 12.0 &&
+                            (screen_pt.y - mouse_pos.y).abs() < 12.0);
                         
-                        let tooltip_width = 200.0 * self.zoom;
-                        let field_count = if idx < d.hover_data.len() { 
-                            d.hover_data[idx].iter().filter(|(k, _)| k.as_str() != "image").count() as f32 
-                        } else { 0.0 };
-                        let has_image = if idx < d.hover_data.len() { d.hover_data[idx].contains_key("image") } else { false };
-                        let base_height = if has_image { 120.0 } else { 85.0 };
-                        let tooltip_height = base_height + (field_count * 35.0) + 65.0;
+                        point_renderer.render_point(&painter, *screen_pt, idx, is_hovered);
                         
-                        let mut tooltip_x = if screen_x + 120.0 > plot_rect.right() { screen_x - tooltip_width - 15.0 } else { screen_x + 15.0 };
-                        let tooltip_y = if screen_y - (tooltip_height * self.zoom) < plot_rect.top() { screen_y + 15.0 } else { screen_y - (tooltip_height * self.zoom) };
-                        
-                        if tooltip_x < plot_rect.left() { tooltip_x = plot_rect.left() + 5.0; }
-                        if tooltip_x + tooltip_width > plot_rect.right() { tooltip_x = plot_rect.right() - tooltip_width - 5.0; }
-                        
-                        if idx < d.hover_data.len() {
-                            TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, x, &d.hover_data[idx], tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
-                        } else {
-                            TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, x, &HashMap::new(), tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
+                        if is_hovered {
+                            self.hovered_idx = Some(idx);
+                            
+                            let tooltip_width = 200.0 * self.zoom;
+                            let field_count = if idx < d.hover_data.len() { 
+                                d.hover_data[idx].iter().filter(|(k, _)| k.as_str() != "image").count() as f32 
+                            } else { 0.0 };
+                            let has_image = if idx < d.hover_data.len() { d.hover_data[idx].contains_key("image") } else { false };
+                            let base_height = if has_image { 120.0 } else { 85.0 };
+                            let tooltip_height = base_height + (field_count * 35.0) + 65.0;
+                            
+                            let mut tooltip_x = if screen_pt.x + 120.0 > plot_rect.right() { screen_pt.x - tooltip_width - 15.0 } else { screen_pt.x + 15.0 };
+                            let tooltip_y = if screen_pt.y - (tooltip_height * self.zoom) < plot_rect.top() { screen_pt.y + 15.0 } else { screen_pt.y - (tooltip_height * self.zoom) };
+                            
+                            if tooltip_x < plot_rect.left() { tooltip_x = plot_rect.left() + 5.0; }
+                            if tooltip_x + tooltip_width > plot_rect.right() { tooltip_x = plot_rect.right() - tooltip_width - 5.0; }
+                            
+                            let label = point.metadata.get("label").map(|s| s.as_str()).unwrap_or("");
+                            if idx < d.hover_data.len() {
+                                TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, label, &d.hover_data[idx], tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
+                            } else {
+                                TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, label, &HashMap::new(), tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
+                            }
                         }
                     }
                 }
@@ -359,6 +371,19 @@ impl ChartApp {
         let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
         let plot_width = config.width * config.zoom;
         let plot_height = config.height * config.zoom;
+        
+        let mut payload = RenderPayload::<f64>::new();
+        for (idx, (label, val)) in d.labels.iter().zip(d.values.iter()).enumerate() {
+            let norm_y = if d.labels.len() > 1 { idx as f64 / (d.labels.len() as f64 - 1.0) } else { 0.5 };
+            let norm_x = if max_val > 0.0 { *val / max_val } else { 0.0 };
+            let mut point = DataPoint::new(norm_x, norm_y, *val);
+            point.add_metadata("label", label.clone());
+            point.add_metadata("idx", idx.to_string());
+            payload = payload.add_point(point);
+        }
+        payload = payload.with_bounds(0.0, 1.0, 0.0, 1.0).with_labels(d.labels.clone());
+        
+        let point_renderer = PointRenderer::new(5.5, 7.0);
         
         egui::ScrollArea::both()
             .auto_shrink([false; 2])
@@ -412,56 +437,55 @@ impl ChartApp {
                     );
                 }
                 
-                for (idx, (x, y)) in d.labels.iter().zip(d.values.iter()).enumerate() {
-                    if idx >= self.visible_elements.len() || !self.visible_elements[idx] {
-                        continue;
+                let normalized_pts = normalize_to_rect(&payload, plot_rect);
+                let visible_pts = filter_by_property(&payload.points, |pt| {
+                    let idx_str = pt.metadata.get("idx").map(|s| s.as_str()).unwrap_or("0");
+                    if let Ok(idx) = idx_str.parse::<usize>() {
+                        idx < self.visible_elements.len() && self.visible_elements[idx]
+                    } else {
+                        false
                     }
+                });
+                
+                for point in &visible_pts {
+                    let idx_str = point.metadata.get("idx").map(|s| s.as_str()).unwrap_or("0");
+                    let idx: usize = idx_str.parse().unwrap_or(0);
                     
-                    let norm_x = if max_val > 0.0 { y / max_val } else { 0.0 };
-                    let norm_y = if d.labels.len() > 1 { idx as f64 / (d.labels.len() as f64 - 1.0) } else { 0.5 };
+                    let norm_pt = normalized_pts.iter().find(|(_, pt)| {
+                        pt.metadata.get("idx").map(|s| s.as_str()) == Some(idx_str)
+                    });
                     
-                    let screen_x = plot_rect.left() + (plot_width as f64 * norm_x) as f32;
-                    let screen_y = plot_rect.top() + (plot_height as f64 * norm_y) as f32;
-                    
-                    let point = egui::pos2(screen_x, screen_y);
-                    let hue = (idx as f32 * 0.1) % 1.0;
-                    let color = hsv_to_rgb(hue, 0.75, 0.85);
-                    
-                    let mouse_pos = ctx.input(|i| i.pointer.latest_pos().unwrap_or(egui::pos2(-10000.0, -10000.0)));
-                    let is_hovered = response.hovered() && 
-                        ((point.x - mouse_pos.x).abs() < 12.0 &&
-                        (point.y - mouse_pos.y).abs() < 12.0);
-                    
-                    let point_color = if is_hovered { hsv_to_rgb(hue, 0.95, 1.0) } else { color };
-                    let point_size = if is_hovered { 7.0 } else { 5.5 };
-                    
-                    painter.circle_filled(point, point_size, point_color);
-                    
-                    if is_hovered {
-                        painter.circle_stroke(point, point_size + 2.0, egui::Stroke::new(1.5, egui::Color32::WHITE));
-                    }
-                    
-                    if is_hovered {
-                        self.hovered_idx = Some(idx);
+                    if let Some((screen_pt, _)) = norm_pt {
+                        let mouse_pos = ctx.input(|i| i.pointer.latest_pos().unwrap_or(egui::pos2(-10000.0, -10000.0)));
+                        let is_hovered = response.hovered() && 
+                            ((screen_pt.x - mouse_pos.x).abs() < 12.0 &&
+                            (screen_pt.y - mouse_pos.y).abs() < 12.0);
                         
-                        let tooltip_width = 200.0 * self.zoom;
-                        let field_count = if idx < d.hover_data.len() { 
-                            d.hover_data[idx].iter().filter(|(k, _)| k.as_str() != "image").count() as f32 
-                        } else { 0.0 };
-                        let has_image = if idx < d.hover_data.len() { d.hover_data[idx].contains_key("image") } else { false };
-                        let base_height = if has_image { 120.0 } else { 85.0 };
-                        let tooltip_height = base_height + (field_count * 35.0) + 65.0;
+                        point_renderer.render_point(&painter, *screen_pt, idx, is_hovered);
                         
-                        let mut tooltip_x = if screen_x - tooltip_width < plot_rect.left() { screen_x + 15.0 } else { screen_x - tooltip_width - 15.0 };
-                        let tooltip_y = if screen_y - (tooltip_height * self.zoom) < plot_rect.top() { screen_y + 15.0 } else { screen_y - (tooltip_height * self.zoom) };
-                        
-                        if tooltip_x < plot_rect.left() { tooltip_x = plot_rect.left() + 5.0; }
-                        if tooltip_x + tooltip_width > plot_rect.right() { tooltip_x = plot_rect.right() - tooltip_width - 5.0; }
-                        
-                        if idx < d.hover_data.len() {
-                            TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, x, &d.hover_data[idx], tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
-                        } else {
-                            TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, x, &HashMap::new(), tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
+                        if is_hovered {
+                            self.hovered_idx = Some(idx);
+                            
+                            let tooltip_width = 200.0 * self.zoom;
+                            let field_count = if idx < d.hover_data.len() { 
+                                d.hover_data[idx].iter().filter(|(k, _)| k.as_str() != "image").count() as f32 
+                            } else { 0.0 };
+                            let has_image = if idx < d.hover_data.len() { d.hover_data[idx].contains_key("image") } else { false };
+                            let base_height = if has_image { 120.0 } else { 85.0 };
+                            let tooltip_height = base_height + (field_count * 35.0) + 65.0;
+                            
+                            let mut tooltip_x = if screen_pt.x - tooltip_width < plot_rect.left() { screen_pt.x + 15.0 } else { screen_pt.x - tooltip_width - 15.0 };
+                            let tooltip_y = if screen_pt.y - (tooltip_height * self.zoom) < plot_rect.top() { screen_pt.y + 15.0 } else { screen_pt.y - (tooltip_height * self.zoom) };
+                            
+                            if tooltip_x < plot_rect.left() { tooltip_x = plot_rect.left() + 5.0; }
+                            if tooltip_x + tooltip_width > plot_rect.right() { tooltip_x = plot_rect.right() - tooltip_width - 5.0; }
+                            
+                            let label = point.metadata.get("label").map(|s| s.as_str()).unwrap_or("");
+                            if idx < d.hover_data.len() {
+                                TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, label, &d.hover_data[idx], tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
+                            } else {
+                                TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, label, &HashMap::new(), tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
+                            }
                         }
                     }
                 }
@@ -493,6 +517,7 @@ impl ChartApp {
         
         let font_size = if self.zoom < 0.8 { 10.0 } else if self.zoom > 1.5 { 13.0 } else { 12.0 };
         let font_id = egui::FontId::proportional(font_size);
+        let bar_renderer = BarRenderer::new(0.55);
         
         let mut max_content_width: f32 = 100.0;
         for hover in &d.hover_data {
@@ -537,27 +562,17 @@ impl ChartApp {
                                 egui::Sense::hover()
                             );
                             
-                            let hue = (idx as f32 * 0.1) % 1.0;
-                            let color = hsv_to_rgb(hue, 0.8, 0.9);
-                            let hover_color = hsv_to_rgb(hue, 1.0, 1.0);
-                            
                             let is_hovered = response.hovered();
                             if is_hovered {
                                 self.hovered_idx = Some(idx);
                             }
-                            
-                            let bar_color = if is_hovered { hover_color } else { color };
                             
                             let bar_rect = egui::Rect::from_min_size(
                                 response.rect.center_bottom() - egui::Vec2::new(bar_width * self.zoom / 2.0, scaled_h),
                                 egui::Vec2::new(bar_width * self.zoom, scaled_h)
                             );
                             
-                            painter.rect_filled(bar_rect, 4.0, bar_color);
-                            
-                            if is_hovered {
-                                painter.rect_stroke(bar_rect, 2.0, egui::Stroke::new(2.0, egui::Color32::WHITE));
-                            }
+                            bar_renderer.render_bar(&painter, bar_rect, idx, is_hovered);
                             
                             let label_font = if self.zoom < 0.8 { 8.0 } else { 9.0 };
                             painter.text(
@@ -695,6 +710,7 @@ impl ChartApp {
         };
         
         let font_size = if self.zoom < 0.8 { 10.0 } else if self.zoom > 1.5 { 13.0 } else { 12.0 };
+        let bar_renderer = BarRenderer::new(0.5);
         
         egui::ScrollArea::both()
             .auto_shrink([false; 2])
@@ -719,16 +735,10 @@ impl ChartApp {
                         
                         let painter = ui.painter_at(rect);
                         
-                        let hue = (idx as f32 * 0.1) % 1.0;
-                        let color = hsv_to_rgb(hue, 0.8, 0.9);
-                        let hover_color = hsv_to_rgb(hue, 1.0, 1.0);
-                        
                         let is_hovered = rect.contains(ctx.input(|i| i.pointer.hover_pos()).unwrap_or_default());
                         if is_hovered {
                             self.hovered_idx = Some(idx);
                         }
-                        
-                        let bar_color = if is_hovered { hover_color } else { color };
                         
                         let label_rect = egui::Rect::from_min_size(
                             rect.left_top() + egui::Vec2::new(5.0, 0.0),
@@ -751,11 +761,7 @@ impl ChartApp {
                             egui::vec2(scaled_w, bar_h * self.zoom)
                         );
                         
-                        painter.rect_filled(bar_rect, 3.0, bar_color);
-                        
-                        if is_hovered {
-                            painter.rect_stroke(bar_rect, 2.0, egui::Stroke::new(2.0, egui::Color32::WHITE));
-                        }
+                        bar_renderer.render_bar(&painter, bar_rect, idx, is_hovered);
                         
                         let value_text = format!("{}", *value as i32);
                         painter.text(
