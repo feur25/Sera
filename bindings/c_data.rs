@@ -1,3 +1,5 @@
+use std::ffi::{CStr, c_char};
+
 #[no_mangle]
 pub extern "C" fn sera_trace_new(id: *const u8, name: *const u8, kind: u8) -> *mut crate::core::Trace {
     let id_str = unsafe { std::ffi::CStr::from_ptr(id as *const i8).to_string_lossy().to_string() };
@@ -286,4 +288,139 @@ pub extern "C" fn sera_chart_can_transform(from_kind: u8, to_kind: u8) -> bool {
         else { 99 };
 
     from_cat == to_cat
+}
+
+use std::sync::Mutex;
+
+static PLOT_SORT: std::sync::OnceLock<Mutex<i32>> = std::sync::OnceLock::new();
+static PLOT_ZOOM: std::sync::OnceLock<Mutex<f32>> = std::sync::OnceLock::new();
+static PLOT_ORIENTATION: std::sync::OnceLock<Mutex<bool>> = std::sync::OnceLock::new();
+static PLOT_PAN_X: std::sync::OnceLock<Mutex<f32>> = std::sync::OnceLock::new();
+static PLOT_CHART_KIND: std::sync::OnceLock<Mutex<u8>> = std::sync::OnceLock::new();
+static PLOT_VARIANTS: std::sync::OnceLock<Mutex<Vec<(u8, String)>>> = std::sync::OnceLock::new();
+static PLOT_SHOW_SELECTOR: std::sync::OnceLock<Mutex<bool>> = std::sync::OnceLock::new();
+
+fn get_plot_sort() -> &'static Mutex<i32> {
+    PLOT_SORT.get_or_init(|| Mutex::new(0))
+}
+
+fn get_plot_zoom() -> &'static Mutex<f32> {
+    PLOT_ZOOM.get_or_init(|| Mutex::new(1.0))
+}
+
+fn get_plot_orientation() -> &'static Mutex<bool> {
+    PLOT_ORIENTATION.get_or_init(|| Mutex::new(true))
+}
+
+fn get_plot_pan_x() -> &'static Mutex<f32> {
+    PLOT_PAN_X.get_or_init(|| Mutex::new(0.0))
+}
+
+fn get_plot_chart_kind() -> &'static Mutex<u8> {
+    PLOT_CHART_KIND.get_or_init(|| Mutex::new(2))
+}
+
+fn get_plot_variants() -> &'static Mutex<Vec<(u8, String)>> {
+    PLOT_VARIANTS.get_or_init(|| Mutex::new(Vec::new()))
+}
+
+fn get_plot_show_selector() -> &'static Mutex<bool> {
+    PLOT_SHOW_SELECTOR.get_or_init(|| Mutex::new(false))
+}
+
+#[no_mangle]
+pub extern "C" fn sera_set_plot_sort(mode: i32) {
+    if let Ok(mut s) = get_plot_sort().lock() {
+        *s = mode;
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_get_plot_sort() -> i32 {
+    get_plot_sort().lock().map(|s| *s).unwrap_or(0)
+}
+
+#[no_mangle]
+pub extern "C" fn sera_set_plot_zoom(zoom: f32) {
+    if let Ok(mut z) = get_plot_zoom().lock() {
+        *z = zoom;
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_get_plot_zoom() -> f32 {
+    get_plot_zoom().lock().map(|z| *z).unwrap_or(1.0)
+}
+
+#[no_mangle]
+pub extern "C" fn sera_set_plot_orientation(vertical: bool) {
+    if let Ok(mut o) = get_plot_orientation().lock() {
+        *o = vertical;
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_get_plot_orientation() -> bool {
+    get_plot_orientation().lock().map(|o| *o).unwrap_or(true)
+}
+
+#[no_mangle]
+pub extern "C" fn sera_set_plot_pan_x(pan: f32) {
+    if let Ok(mut p) = get_plot_pan_x().lock() {
+        *p = pan;
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_get_plot_pan_x() -> f32 {
+    get_plot_pan_x().lock().map(|p| *p).unwrap_or(0.0)
+}
+
+#[no_mangle]
+pub extern "C" fn sera_set_plot_chart_kind(kind: u8) {
+    if let Ok(mut k) = get_plot_chart_kind().lock() {
+        *k = kind;
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_get_plot_chart_kind() -> u8 {
+    get_plot_chart_kind().lock().map(|k| *k).unwrap_or(2)
+}
+
+#[no_mangle]
+pub extern "C" fn sera_add_plot_variant(kind: u8, title: *const c_char) {
+    if let Ok(title_str) = unsafe { CStr::from_ptr(title as *const i8).to_str() } {
+        if let Ok(mut variants) = get_plot_variants().lock() {
+            variants.push((kind, title_str.to_string()));
+        }
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_clear_plot_variants() {
+    if let Ok(mut variants) = get_plot_variants().lock() {
+        variants.clear();
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_get_plot_variants_count() -> usize {
+    get_plot_variants().lock().map(|v| v.len()).unwrap_or(0)
+}
+
+pub fn get_chart_variants_internal() -> Vec<(u8, String)> {
+    get_plot_variants().lock().map(|v| v.clone()).unwrap_or_default()
+}
+
+#[no_mangle]
+pub extern "C" fn sera_set_plot_show_selector(show: bool) {
+    if let Ok(mut s) = get_plot_show_selector().lock() {
+        *s = show;
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn sera_get_plot_show_selector() -> bool {
+    get_plot_show_selector().lock().map(|s| *s).unwrap_or(false)
 }
