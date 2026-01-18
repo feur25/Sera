@@ -522,7 +522,7 @@ impl ChartApp {
             }
         }
         
-        egui::ScrollArea::horizontal()
+        egui::ScrollArea::both()
             .auto_shrink([false; 2])
             .show(ui, |ui| {
                 ui.horizontal(|ui| {
@@ -706,7 +706,7 @@ impl ChartApp {
         
         let font_size = if self.zoom < 0.8 { 10.0 } else if self.zoom > 1.5 { 13.0 } else { 12.0 };
         
-        egui::ScrollArea::vertical()
+        egui::ScrollArea::both()
             .auto_shrink([false; 2])
             .show(ui, |ui| {
                 ui.vertical(|ui| {
