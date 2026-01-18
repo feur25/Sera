@@ -5,7 +5,7 @@ pub mod plot_template;
 pub mod plot_renderers;
 pub mod plot_generic;
 pub mod cache;
-pub mod surface_viewer;
+pub mod viewer_3d;
 
 pub use chart::*;
 pub use gui::*;
@@ -14,4 +14,4 @@ pub use cache::*;
 pub use plot_template::*;
 pub use plot_renderers::*;
 pub use plot_generic::*;
-pub use surface_viewer::*;
+pub use viewer_3d::*;

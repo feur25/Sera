@@ -4,8 +4,9 @@ use std::os::raw::c_char;
 use std::collections::HashMap;
 use super::image_loader::ImageLoader;
 use super::cache::{RenderCache, ColorCache, CacheKey};
+use super::viewer_3d::AdvancedViewer3D;
 use crate::plot::types::{BarRenderContext, render_plot_by_type, render_plot_3d_by_type};
-use crate::plot::Camera3D;
+use crate::plot::CameraController;
 
 struct ChartData {
     labels: Vec<String>,
@@ -123,7 +124,8 @@ struct ChartApp {
     sort_mode: i32,
     current_chart_kind: u8,
     is_3d_mode: bool,
-    camera_3d: Camera3D,
+    camera_controller: CameraController,
+    advanced_viewer_3d: AdvancedViewer3D,
     render_cache: RenderCache,
     color_cache: ColorCache,
     last_data_hash: u64,
@@ -179,9 +181,9 @@ impl eframe::App for ChartApp {
                 let btn_3d_text = if self.is_3d_mode { "🎯 2D" } else { "📦 3D" };
                 if ui.button(btn_3d_text).clicked() {
                     self.is_3d_mode = !self.is_3d_mode;
-                }
-                if self.is_3d_mode && ui.button("🔃 Perspective").clicked() {
-                    self.camera_3d.next_perspective();
+                    if self.is_3d_mode {
+                        self.advanced_viewer_3d.camera_controller.set_viewport(800.0, 600.0);
+                    }
                 }
                 ui.separator();
                 if ui.button("⚙ Processor").clicked() {
@@ -274,6 +276,8 @@ impl eframe::App for ChartApp {
                 
                 if d.values.is_empty() {
                     ui.label("No data");
+                } else if self.is_3d_mode {
+                    self.render_3d_viewer(ctx, ui, &d);
                 } else {
                     match self.current_chart_kind {
                         0 => {
@@ -497,7 +501,6 @@ impl ChartApp {
                     let chart_3d = chart_type + 3;
                     render_plot_3d_by_type(
                         chart_3d,
-                        visible_count,
                         &painter,
                         plot_rect,
                         &colors,
@@ -505,8 +508,7 @@ impl ChartApp {
                         &d.values,
                         max_val,
                         &visible_indices,
-                        vertical,
-                        &self.camera_3d,
+                        &self.camera_controller,
                     );
                 }
                 
@@ -613,6 +615,59 @@ impl ChartApp {
                 } else {
                     self.hovered_idx = None;
                 }
+            });
+    }
+
+    fn render_3d_viewer(&mut self, _ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
+        self.advanced_viewer_3d.render_controls(ui);
+        
+        egui::ScrollArea::both()
+            .auto_shrink([false; 2])
+            .show(ui, |ui| {
+                self.advanced_viewer_3d.handle_input(ui);
+                
+                let (response, painter) = ui.allocate_painter(
+                    egui::Vec2::new(800.0, 600.0),
+                    egui::Sense::hover(),
+                );
+                
+                let rect_width = response.rect.width();
+                let rect_height = response.rect.height();
+                self.advanced_viewer_3d.camera_controller.set_viewport(rect_width, rect_height);
+                
+                let center = response.rect.center();
+                painter.circle_filled(center, 5.0, egui::Color32::RED);
+                
+                let mut test_values = d.values.clone();
+                if test_values.is_empty() {
+                    test_values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+                }
+                
+                let text = format!("Data: {} | Kind: {}", test_values.len(), self.current_chart_kind);
+                painter.text(
+                    center + egui::vec2(0.0, 50.0),
+                    egui::Align2::CENTER_CENTER,
+                    text,
+                    egui::FontId::proportional(12.0),
+                    egui::Color32::WHITE,
+                );
+                
+                let mut visible_indices: Vec<usize> = (0..test_values.len()).collect();
+                let max_val = test_values.iter().copied().fold(0.0_f64, f64::max).max(1.0);
+                let colors = self.color_cache.colors();
+                
+                let chart_type = self.current_chart_kind;
+                render_plot_3d_by_type(
+                    chart_type + 3,
+                    &painter,
+                    response.rect,
+                    colors,
+                    None,
+                    &test_values,
+                    max_val,
+                    &visible_indices,
+                    &self.advanced_viewer_3d.camera_controller,
+                );
             });
     }
 
@@ -761,7 +816,8 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         sort_mode: 0,
         current_chart_kind: 1,
         is_3d_mode: false,
-        camera_3d: Camera3D::new(),
+        camera_controller: CameraController::default(),
+        advanced_viewer_3d: AdvancedViewer3D::new(),
         processor_mode: 0,
         filter_threshold: 0.0,
         show_stats: false,

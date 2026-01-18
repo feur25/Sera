@@ -2,8 +2,7 @@ pub mod bar_3d;
 pub mod line_3d;
 pub mod scatter_3d;
 
-use super::super::generic::*;
-use super::super::camera::Camera3D;
+use super::super::containers_3d::CameraController;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
@@ -42,7 +41,6 @@ pub static PLOT_3D_REGISTRY: LazyLock<Plot3DRegistry> = LazyLock::new(Plot3DRegi
 
 pub fn render_plot_3d_by_type(
     chart_type: u8,
-    visible_count: usize,
     painter: &egui::Painter,
     plot_rect: egui::Rect,
     colors: &[egui::Color32],
@@ -50,11 +48,10 @@ pub fn render_plot_3d_by_type(
     values: &[f64],
     max_val: f64,
     visible_indices: &[usize],
-    vertical: bool,
-    camera: &Camera3D,
+    camera_controller: &CameraController,
 ) {
     match chart_type {
-        3 if visible_count > 1 => {
+        3 if visible_indices.len() > 1 => {
             render_lines_3d(Line3DRenderContext {
                 painter,
                 plot_rect,
@@ -63,8 +60,7 @@ pub fn render_plot_3d_by_type(
                 values,
                 max_val,
                 visible_indices,
-                vertical,
-                camera,
+                camera_controller,
             });
         }
         4 => {
@@ -76,8 +72,7 @@ pub fn render_plot_3d_by_type(
                 values,
                 max_val,
                 visible_indices,
-                vertical,
-                camera,
+                camera_controller,
             });
         }
         5 => {
@@ -89,8 +84,7 @@ pub fn render_plot_3d_by_type(
                 values,
                 max_val,
                 visible_indices,
-                vertical,
-                camera,
+                camera_controller,
             });
         }
         _ => {}

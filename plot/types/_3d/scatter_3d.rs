@@ -1,5 +1,5 @@
-use super::super::super::generic::*;
-use super::super::super::camera::{Camera3D, Point3D};
+use super::super::super::containers_3d::{CameraController, Cube3DContainer};
+use super::super::super::camera::Point3D;
 
 pub struct Scatter3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -9,61 +9,55 @@ pub struct Scatter3DRenderContext<'a> {
     pub values: &'a [f64],
     pub max_val: f64,
     pub visible_indices: &'a [usize],
-    pub vertical: bool,
-    pub camera: &'a Camera3D,
+    pub camera_controller: &'a CameraController,
 }
 
 pub fn render_points_3d(ctx: Scatter3DRenderContext) {
-    let norm_height = ctx.plot_rect.height();
-    let center_x = ctx.plot_rect.center().x;
-    let center_y = ctx.plot_rect.center().y;
+    let visible_count = ctx.visible_indices.len();
+    let max_val = ctx.max_val.max(1.0);
+    let center = ctx.plot_rect.center();
     
-    let mut sorted: Vec<_> = ctx.visible_indices.iter().enumerate()
-        .map(|(vis_idx, &actual_idx)| {
-            let value = ctx.values[actual_idx];
-            let norm_val = value / ctx.max_val.max(1.0);
-            let height = norm_val as f32 * norm_height;
-            
-            let p = Point3D::new(
-                vis_idx as f32,
-                0.5 + (actual_idx as f32 % 5.0) * 0.1,
-                height,
-            );
-            
-            (vis_idx, actual_idx, height, p)
-        })
-        .collect();
+    let grid_size = (visible_count as f32).sqrt().ceil() as usize;
+    let container_size = 10.0;
+    let cube = Cube3DContainer::new(Point3D::new(0.0, 0.0, 0.0), container_size);
     
-    sorted.sort_by(|a, b| a.2.partial_cmp(&b.2).unwrap_or(std::cmp::Ordering::Equal));
+    let mut points_to_render: Vec<(egui::Pos2, egui::Color32, usize, f32)> = Vec::new();
     
-    for (_, actual_idx, _, p) in sorted {
-        let proj = ctx.camera.project(p);
-        let screen = egui::pos2(center_x + proj.x, center_y - proj.y);
+    for (vis_idx, &actual_idx) in ctx.visible_indices.iter().enumerate() {
+        let value = ctx.values[actual_idx];
+        let norm_val = ((value / max_val).min(1.0).max(0.0)) as f32;
         
-        let color = ctx.colors[actual_idx % ctx.colors.len()];
+        let x_idx = (vis_idx % grid_size) as f32;
+        let y_idx = (vis_idx / grid_size) as f32;
+        
+        let u = (x_idx + 0.5) / grid_size as f32;
+        let v = (y_idx + 0.5) / grid_size as f32;
+        let w = 0.3 + norm_val * 0.4;
+        
+        let point_3d = cube.point_normalized(u, v, w);
+        
+        if let Some(proj) = ctx.camera_controller.camera.project(point_3d) {
+            let scale = 0.5 / (point_3d.x.abs() + point_3d.y.abs() + point_3d.z.abs() + 1.0).max(1.0);
+            let screen_x = center.x + proj.x * ctx.plot_rect.width() * 0.2 * scale;
+            let screen_y = center.y + proj.y * ctx.plot_rect.height() * 0.2 * scale;
+            let screen = egui::pos2(screen_x, screen_y);
+            
+            let color = ctx.colors[actual_idx % ctx.colors.len()];
+            let depth = point_3d.x + point_3d.y + point_3d.z;
+            points_to_render.push((screen, color, actual_idx, depth));
+        }
+    }
+    
+    points_to_render.sort_by(|a, b| a.3.partial_cmp(&b.3).unwrap_or(std::cmp::Ordering::Equal));
+    
+    for (screen, color, actual_idx, _) in points_to_render {
         let is_hovered = ctx.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
         let display_color = if is_hovered {
             egui::Color32::from_rgb(255, 200, 0)
         } else {
             color
         };
-        
-        let radius = if is_hovered { 6.5 } else { 5.0 };
-        let shadow_color = egui::Color32::from_rgba_unmultiplied(0, 0, 0, 40);
-        
-        ctx.painter.circle_filled(
-            egui::pos2(screen.x + 2.5, screen.y + 2.5),
-            radius * 0.9,
-            shadow_color,
-        );
+        let radius = if is_hovered { 7.0 } else { 4.0 };
         ctx.painter.circle_filled(screen, radius, display_color);
-        
-        let highlight = egui::Color32::from_rgb(255, 255, 255);
-        let offset = radius * 0.3;
-        ctx.painter.circle_filled(
-            egui::pos2(screen.x - offset, screen.y - offset),
-            radius * 0.25,
-            highlight,
-        );
     }
 }

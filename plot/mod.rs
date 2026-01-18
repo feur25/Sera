@@ -5,8 +5,8 @@ pub mod renderers;
 pub mod generic;
 pub mod types;
 pub mod camera;
-pub mod surface;
-pub mod surface_builder;
+pub mod projection;
+pub mod containers_3d;
 
 pub use builder::*;
 pub use types::*;
@@ -15,6 +15,6 @@ pub use canvas::*;
 pub use renderers::*;
 pub use generic::*;
 pub use camera::*;
-pub use surface::*;
-pub use surface_builder::*;
+pub use projection::*;
+pub use containers_3d::*;
 
