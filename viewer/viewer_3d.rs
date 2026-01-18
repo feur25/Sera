@@ -102,7 +102,7 @@ impl AdvancedViewer3D {
         if self.show_info {
             ui.horizontal(|ui| {
                 ui.label(format!(
-                    "🎮 Drag: Rotation | Scroll: Zoom | WASD/Arrows: Pan | Orbite: {:.2}° Élévation: {:.2}° | Zoom: {:.2}x | Pan: ({:.2}, {:.2})",
+                    "Drag: Rotation | Scroll: Zoom | WASD/Arrows: Pan | Orbite: {:.2}° Élévation: {:.2}° | Zoom: {:.2}x | Pan: ({:.2}, {:.2})",
                     self.camera_controller.orbit_yaw.to_degrees(),
                     self.camera_controller.orbit_pitch.to_degrees(),
                     self.camera_controller.zoom,

@@ -459,6 +459,83 @@ impl eframe::App for ChartApp {
 }
 
 impl ChartApp {
+    fn render_tooltip(&mut self, ctx: &egui::Context, painter: &egui::Painter, pos: egui::Pos2, rect: egui::Rect, actual_idx: usize, d: &ChartData) {
+        if !d.hover_data[actual_idx].is_empty() {
+            let hover = &d.hover_data[actual_idx];
+            let mut image_url = String::new();
+            let mut text_lines = Vec::new();
+            
+            for (k, v) in hover {
+                if k == "image" {
+                    image_url = v.clone();
+                } else {
+                    text_lines.push(format!("{}: {}", k, v));
+                }
+            }
+            
+            let img_size = 60.0;
+            let line_height = 15.0;
+            let padding = 8.0;
+            let mut tooltip_height = 0.0;
+            
+            if !image_url.is_empty() {
+                tooltip_height += img_size + padding;
+            }
+            tooltip_height += (text_lines.len() as f32) * line_height;
+
+            let max_line_width = text_lines.iter()
+                .map(|line| line.len() as f32 * 6.5)
+                .fold(img_size, f32::max);
+            
+            let mut tooltip_x = pos.x + 15.0;
+            let mut tooltip_y = pos.y - 80.0;
+            
+            if tooltip_x + max_line_width > rect.right() {
+                tooltip_x = (pos.x - max_line_width - 10.0).max(rect.left());
+            }
+            
+            if tooltip_y + tooltip_height > rect.bottom() {
+                tooltip_y = (pos.y + 20.0).min(rect.bottom() - tooltip_height - 5.0);
+            }
+            
+            if tooltip_y < rect.top() {
+                tooltip_y = rect.top() + 5.0;
+            }
+            
+            let mut current_y = tooltip_y;
+            
+            if !image_url.is_empty() {
+                if let Some(color_img) = self.image_loader.load_image(&image_url) {
+                    let img_rect = egui::Rect::from_min_size(
+                        egui::pos2(tooltip_x, current_y),
+                        egui::vec2(img_size, img_size),
+                    );
+                    let texture = ctx.load_texture("tooltip_img", color_img, egui::TextureOptions::LINEAR);
+                    painter.image(texture.id(), img_rect, egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)), egui::Color32::WHITE);
+                    current_y += img_size + padding;
+                }
+            }
+            
+            let text_color = egui::Color32::from_rgba_unmultiplied(
+                d.tooltip_text_color.0, 
+                d.tooltip_text_color.1, 
+                d.tooltip_text_color.2, 
+                d.tooltip_text_color.3
+            );
+            
+            for line in text_lines {
+                painter.text(
+                    egui::pos2(tooltip_x, current_y), 
+                    egui::Align2::LEFT_TOP, 
+                    &line, 
+                    egui::FontId::proportional(11.0), 
+                    text_color
+                );
+                current_y += line_height;
+            }
+        }
+    }
+
     fn render_bar_vertical(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
         self.render_plot(ctx, ui, d, true, 2);
     }
@@ -560,79 +637,8 @@ impl ChartApp {
                     
                     let is_hovered = self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
                     
-                    if is_hovered && !d.hover_data[actual_idx].is_empty() {
-                        let hover = &d.hover_data[actual_idx];
-                        let mut image_url = String::new();
-                        let mut text_lines = Vec::new();
-                        
-                        for (k, v) in hover {
-                            if k == "image" {
-                                image_url = v.clone();
-                            } else {
-                                text_lines.push(format!("{}: {}", k, v));
-                            }
-                        }
-                        
-                        let img_size = 60.0;
-                        let line_height = 15.0;
-                        let padding = 8.0;
-                        let mut tooltip_height = 0.0;
-                        
-                        if !image_url.is_empty() {
-                            tooltip_height += img_size + padding;
-                        }
-                        tooltip_height += (text_lines.len() as f32) * line_height;
-
-                        let max_line_width = text_lines.iter()
-                            .map(|line| line.len() as f32 * 6.5)
-                            .fold(img_size, f32::max);
-                        
-                        let mut tooltip_x = pos.x + 15.0;
-                        let mut tooltip_y = pos.y - 80.0;
-                        
-                        if tooltip_x + max_line_width > plot_rect.right() {
-                            tooltip_x = (pos.x - max_line_width - 10.0).max(plot_rect.left());
-                        }
-                        
-                        if tooltip_y + tooltip_height > plot_rect.bottom() {
-                            tooltip_y = (pos.y + 20.0).min(plot_rect.bottom() - tooltip_height - 5.0);
-                        }
-                        
-                        if tooltip_y < plot_rect.top() {
-                            tooltip_y = plot_rect.top() + 5.0;
-                        }
-                        
-                        let mut current_y = tooltip_y;
-                        
-                        if !image_url.is_empty() {
-                            if let Some(color_img) = self.image_loader.load_image(&image_url) {
-                                let img_rect = egui::Rect::from_min_size(
-                                    egui::pos2(tooltip_x, current_y),
-                                    egui::vec2(img_size, img_size),
-                                );
-                                let texture = ctx.load_texture("tooltip_img", color_img, egui::TextureOptions::LINEAR);
-                                painter.image(texture.id(), img_rect, egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)), egui::Color32::WHITE);
-                                current_y += img_size + padding;
-                            }
-                        }
-                        
-                        let text_color = egui::Color32::from_rgba_unmultiplied(
-                            d.tooltip_text_color.0, 
-                            d.tooltip_text_color.1, 
-                            d.tooltip_text_color.2, 
-                            d.tooltip_text_color.3
-                        );
-                        
-                        for line in text_lines {
-                            painter.text(
-                                egui::pos2(tooltip_x, current_y), 
-                                egui::Align2::LEFT_TOP, 
-                                &line, 
-                                egui::FontId::proportional(11.0), 
-                                text_color
-                            );
-                            current_y += line_height;
-                        }
+                    if is_hovered {
+                        self.render_tooltip(ctx, &painter, pos, plot_rect, actual_idx, d);
                     }
                 }
                 
@@ -721,38 +727,9 @@ impl ChartApp {
         );
         
         for &actual_idx in &visible_indices {
-            if self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false) && !d.hover_data[actual_idx].is_empty() {
-                let hover_data = &d.hover_data[actual_idx];
-                let mut tooltip_text = String::new();
-                for (key, value) in hover_data {
-                    tooltip_text.push_str(&format!("{}: {}\n", key, value));
-                }
-                
+            if self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false) {
                 if let Some(pos) = ctx.pointer_latest_pos() {
-                    let bg_color = egui::Color32::from_rgba_unmultiplied(
-                        d.tooltip_bg_color.0,
-                        d.tooltip_bg_color.1,
-                        d.tooltip_bg_color.2,
-                        d.tooltip_bg_color.3,
-                    );
-                    let text_color = egui::Color32::from_rgba_unmultiplied(
-                        d.tooltip_text_color.0,
-                        d.tooltip_text_color.1,
-                        d.tooltip_text_color.2,
-                        d.tooltip_text_color.3,
-                    );
-                    let job = egui::text::LayoutJob::single_section(
-                        tooltip_text.trim().to_string(),
-                        egui::TextFormat {
-                            font_id: egui::FontId::monospace(11.0),
-                            color: text_color,
-                            ..Default::default()
-                        },
-                    );
-                    let galley = ctx.fonts(|f| f.layout_job(job));
-                    let rect = egui::Rect::from_min_size(pos + egui::vec2(10.0, 10.0), galley.size());
-                    painter.rect_filled(rect.expand(5.0), 3.0, bg_color);
-                    painter.galley(rect.min, galley, text_color);
+                    self.render_tooltip(ctx, &painter, pos, response.rect, actual_idx, d);
                 }
             }
         }
