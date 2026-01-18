@@ -1,6 +1,7 @@
 pub mod bar;
 pub mod line;
 pub mod scatter;
+pub mod _3d;
 
 use std::collections::HashMap;
 use std::sync::LazyLock;
@@ -8,6 +9,8 @@ use std::sync::LazyLock;
 pub use bar::{render_bars, BarRenderContext};
 pub use line::{render_lines, LineRenderContext};
 pub use scatter::{render_points, ScatterRenderContext};
+pub use _3d::{render_plot_3d_by_type, Bar3DRenderContext, Line3DRenderContext, Scatter3DRenderContext};
+pub use _3d::{render_bars_3d, render_lines_3d, render_points_3d};
 
 pub struct PlotRegistry {
     renderers: HashMap<u8, &'static str>,
@@ -19,6 +22,9 @@ impl PlotRegistry {
         renderers.insert(0, "line");
         renderers.insert(1, "scatter");
         renderers.insert(2, "bar");
+        renderers.insert(3, "line_3d");
+        renderers.insert(4, "scatter_3d");
+        renderers.insert(5, "bar_3d");
         
         Self { renderers }
     }

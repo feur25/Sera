@@ -3,7 +3,7 @@ use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::collections::HashMap;
 use super::image_loader::ImageLoader;
-use crate::plot::types::{BarRenderContext, render_plot_by_type};
+use crate::plot::types::{BarRenderContext, render_plot_by_type, render_plot_3d_by_type};
 
 struct ChartData {
     labels: Vec<String>,
@@ -120,6 +120,7 @@ struct ChartApp {
     orientation: bool,
     sort_mode: i32,
     current_chart_kind: u8,
+    is_3d_mode: bool,
     #[allow(dead_code)]
     processor_mode: u8,
     filter_threshold: f64,
@@ -366,23 +367,50 @@ impl eframe::App for ChartApp {
                 (2u8, "Bar"),
             ];
             
-            egui::Window::new("🔄 Transform")
+            let chart_types_3d = [
+                (3u8, "Line 3D"),
+                (4u8, "Scatter 3D"),
+                (5u8, "Bar 3D"),
+            ];
+            
+            egui::Window::new("Transform")
                 .open(&mut self.show_transform_menu)
                 .default_width(250.0)
                 .show(ctx, |ui| {
-                    ui.label("Select Chart Type");
+                    ui.label("2D Charts");
                     ui.separator();
                     
                     for (kind, name) in &chart_types {
-                        let is_selected = self.current_chart_kind == *kind;
+                        let is_selected = self.current_chart_kind == *kind && !self.is_3d_mode;
                         let button_text = if is_selected {
-                            format!("✓ {}", name)
+                            format!("[{}]", name)
                         } else {
                             name.to_string()
                         };
                         
                         if ui.button(&button_text).clicked() {
                             self.current_chart_kind = *kind;
+                            self.is_3d_mode = false;
+                            sera_set_current_chart_kind(*kind);
+                        }
+                    }
+                    
+                    ui.separator();
+                    ui.label("3D Charts");
+                    ui.separator();
+                    
+                    for (kind, name) in &chart_types_3d {
+                        let base_kind = *kind - 3;
+                        let is_selected = self.current_chart_kind == base_kind && self.is_3d_mode;
+                        let button_text = if is_selected {
+                            format!("[{}]", name)
+                        } else {
+                            name.to_string()
+                        };
+                        
+                        if ui.button(&button_text).clicked() {
+                            self.current_chart_kind = base_kind;
+                            self.is_3d_mode = true;
                             sera_set_current_chart_kind(*kind);
                         }
                     }
@@ -464,6 +492,22 @@ impl ChartApp {
                         vertical,
                     }
                 );
+                
+                if self.is_3d_mode {
+                    let chart_3d = chart_type + 3;
+                    render_plot_3d_by_type(
+                        chart_3d,
+                        visible_count,
+                        &painter,
+                        plot_rect,
+                        &colors,
+                        self.hovered_idx,
+                        &d.values,
+                        max_val,
+                        &visible_indices,
+                        vertical,
+                    );
+                }
                 
                 for &actual_idx in &visible_indices {
                     let value = d.values[actual_idx];
@@ -715,6 +759,7 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         orientation: true,
         sort_mode: 0,
         current_chart_kind: 1,
+        is_3d_mode: false,
         processor_mode: 0,
         filter_threshold: 0.0,
         show_stats: false,
