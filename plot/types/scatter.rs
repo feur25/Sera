@@ -1,5 +1,5 @@
-use super::generic::*;
-use super::renderers::ChartConfig;
+use super::super::generic::*;
+use super::super::renderers::ChartConfig;
 
 pub struct ScatterRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -53,4 +53,3 @@ pub fn render_scatter_vertical(config: &ChartConfig, ctx: &egui::Context, ui: &m
 pub fn render_scatter_horizontal(config: &ChartConfig, ctx: &egui::Context, ui: &mut egui::Ui, hovered_idx: &mut Option<usize>) {
     render_scatter(config, ctx, ui, hovered_idx, HorizontalMapper);
 }
-

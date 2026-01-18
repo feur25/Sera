@@ -1,5 +1,5 @@
-use super::generic::*;
-use super::renderers::ChartConfig;
+use super::super::generic::*;
+use super::super::renderers::ChartConfig;
 
 pub struct BarRenderContext<'a> {
     pub painter: &'a egui::Painter,

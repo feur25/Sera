@@ -3,8 +3,7 @@ use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::collections::HashMap;
 use super::image_loader::ImageLoader;
-use crate::plot::{bar::BarRenderContext, line::LineRenderContext, scatter::ScatterRenderContext};
-use crate::plot::{bar::render_bars, line::render_lines, scatter::render_points};
+use crate::plot::types::{BarRenderContext, render_plot_by_type};
 
 struct ChartData {
     labels: Vec<String>,
@@ -451,44 +450,20 @@ impl ChartApp {
                     egui::Color32::from_rgb(23, 190, 207),
                 ];
                 
-                match chart_type {
-                    0 if visible_count > 1 => {
-                        render_lines(LineRenderContext {
-                            painter: &painter,
-                            plot_rect,
-                            colors: &colors,
-                            hovered_idx: self.hovered_idx,
-                            values: &d.values,
-                            max_val,
-                            visible_indices: &visible_indices,
-                            vertical,
-                        });
-                    },
-                    2 => {
-                        render_bars(BarRenderContext {
-                            painter: &painter,
-                            plot_rect,
-                            colors: &colors,
-                            hovered_idx: self.hovered_idx,
-                            values: &d.values,
-                            max_val,
-                            visible_indices: &visible_indices,
-                            vertical,
-                        });
-                    },
-                    _ => {
-                        render_points(ScatterRenderContext {
-                            painter: &painter,
-                            plot_rect,
-                            colors: &colors,
-                            hovered_idx: self.hovered_idx,
-                            values: &d.values,
-                            max_val,
-                            visible_indices: &visible_indices,
-                            vertical,
-                        });
+                render_plot_by_type(
+                    chart_type,
+                    visible_count,
+                    BarRenderContext {
+                        painter: &painter,
+                        plot_rect,
+                        colors: &colors,
+                        hovered_idx: self.hovered_idx,
+                        values: &d.values,
+                        max_val,
+                        visible_indices: &visible_indices,
+                        vertical,
                     }
-                }
+                );
                 
                 for &actual_idx in &visible_indices {
                     let value = d.values[actual_idx];

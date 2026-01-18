@@ -2,12 +2,11 @@ pub mod builder;
 pub mod plot;
 pub mod canvas;
 pub mod renderers;
-pub mod bar;
-pub mod scatter;
-pub mod line;
 pub mod generic;
+pub mod types;
 
 pub use builder::*;
+pub use types::*;
 pub use plot::*;
 pub use canvas::*;
 pub use renderers::*;
