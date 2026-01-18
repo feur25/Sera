@@ -3,6 +3,8 @@ use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::collections::HashMap;
 use super::image_loader::ImageLoader;
+use super::plot_renderers::{TooltipRenderer};
+use super::plot_template::{hsv_to_rgb, PlotConfigBuilder, ConfigStore};
 
 #[derive(Clone)]
 struct PlotVariant {
@@ -33,6 +35,8 @@ struct ChartApp {
     variants: Vec<PlotVariant>,
     show_variant_selector: bool,
     show_transform_menu: bool,
+    config_store: Arc<ConfigStore>,
+    plot_config: Arc<Mutex<super::plot_template::PlotConfig>>,
 }
 
 impl eframe::App for ChartApp {
@@ -224,25 +228,27 @@ impl ChartApp {
 
     fn render_scatter_vertical(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
         let (tooltip_bg_color, tooltip_text_color) = (d.tooltip_bg_color, d.tooltip_text_color);
-        let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
+        let config = PlotConfigBuilder::new()
+            .width(1400.0)
+            .height(600.0)
+            .zoom(self.zoom)
+            .padding(80.0, 20.0, 20.0, 100.0)
+            .build();
         
-        let plot_width = 1400.0_f32 * self.zoom;
-        let plot_height = 600.0_f32 * self.zoom;
-        let padding_left = 80.0_f32;
-        let padding_bottom = 100.0_f32;
-        let padding_top = 20.0_f32;
-        let padding_right = 20.0_f32;
+        let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
+        let plot_width = config.width * config.zoom;
+        let plot_height = config.height * config.zoom;
         
         egui::ScrollArea::both()
             .auto_shrink([false; 2])
             .show(ui, |ui| {
-                let (response, mut painter) = ui.allocate_painter(
-                    egui::Vec2::new(plot_width + padding_left + padding_right, plot_height + padding_top + padding_bottom),
+                let (response, painter) = ui.allocate_painter(
+                    egui::Vec2::new(plot_width + config.padding_left + config.padding_right, plot_height + config.padding_top + config.padding_bottom),
                     egui::Sense::hover()
                 );
                 
                 let plot_rect = egui::Rect::from_min_size(
-                    response.rect.min + egui::Vec2::new(padding_left, padding_top),
+                    response.rect.min + egui::Vec2::new(config.padding_left, config.padding_top),
                     egui::Vec2::new(plot_width, plot_height)
                 );
                 
@@ -326,15 +332,15 @@ impl ChartApp {
                         let tooltip_height = base_height + (field_count * 35.0) + 65.0;
                         
                         let mut tooltip_x = if screen_x + 120.0 > plot_rect.right() { screen_x - tooltip_width - 15.0 } else { screen_x + 15.0 };
-                        let mut tooltip_y = if screen_y - (tooltip_height * self.zoom) < plot_rect.top() { screen_y + 15.0 } else { screen_y - (tooltip_height * self.zoom) };
+                        let tooltip_y = if screen_y - (tooltip_height * self.zoom) < plot_rect.top() { screen_y + 15.0 } else { screen_y - (tooltip_height * self.zoom) };
                         
                         if tooltip_x < plot_rect.left() { tooltip_x = plot_rect.left() + 5.0; }
                         if tooltip_x + tooltip_width > plot_rect.right() { tooltip_x = plot_rect.right() - tooltip_width - 5.0; }
                         
                         if idx < d.hover_data.len() {
-                            render_tooltip(ctx, &painter, tooltip_x, tooltip_y, x, &d.hover_data[idx], tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
+                            TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, x, &d.hover_data[idx], tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
                         } else {
-                            render_tooltip(ctx, &painter, tooltip_x, tooltip_y, x, &HashMap::new(), tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
+                            TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, x, &HashMap::new(), tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
                         }
                     }
                 }
@@ -343,25 +349,27 @@ impl ChartApp {
 
     fn render_scatter_horizontal(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
         let (tooltip_bg_color, tooltip_text_color) = (d.tooltip_bg_color, d.tooltip_text_color);
-        let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
+        let config = PlotConfigBuilder::new()
+            .width(600.0)
+            .height(1400.0)
+            .zoom(self.zoom)
+            .padding(80.0, 20.0, 20.0, 80.0)
+            .build();
         
-        let plot_width = 600.0_f32 * self.zoom;
-        let plot_height = 1400.0_f32 * self.zoom;
-        let padding_left = 80.0_f32;
-        let padding_bottom = 80.0_f32;
-        let padding_top = 20.0_f32;
-        let padding_right = 20.0_f32;
+        let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
+        let plot_width = config.width * config.zoom;
+        let plot_height = config.height * config.zoom;
         
         egui::ScrollArea::both()
             .auto_shrink([false; 2])
             .show(ui, |ui| {
-                let (response, mut painter) = ui.allocate_painter(
-                    egui::Vec2::new(plot_width + padding_left + padding_right, plot_height + padding_top + padding_bottom),
+                let (response, painter) = ui.allocate_painter(
+                    egui::Vec2::new(plot_width + config.padding_left + config.padding_right, plot_height + config.padding_top + config.padding_bottom),
                     egui::Sense::hover()
                 );
                 
                 let plot_rect = egui::Rect::from_min_size(
-                    response.rect.min + egui::Vec2::new(padding_left, padding_top),
+                    response.rect.min + egui::Vec2::new(config.padding_left, config.padding_top),
                     egui::Vec2::new(plot_width, plot_height)
                 );
                 
@@ -445,15 +453,15 @@ impl ChartApp {
                         let tooltip_height = base_height + (field_count * 35.0) + 65.0;
                         
                         let mut tooltip_x = if screen_x - tooltip_width < plot_rect.left() { screen_x + 15.0 } else { screen_x - tooltip_width - 15.0 };
-                        let mut tooltip_y = if screen_y - (tooltip_height * self.zoom) < plot_rect.top() { screen_y + 15.0 } else { screen_y - (tooltip_height * self.zoom) };
+                        let tooltip_y = if screen_y - (tooltip_height * self.zoom) < plot_rect.top() { screen_y + 15.0 } else { screen_y - (tooltip_height * self.zoom) };
                         
                         if tooltip_x < plot_rect.left() { tooltip_x = plot_rect.left() + 5.0; }
                         if tooltip_x + tooltip_width > plot_rect.right() { tooltip_x = plot_rect.right() - tooltip_width - 5.0; }
                         
                         if idx < d.hover_data.len() {
-                            render_tooltip(ctx, &painter, tooltip_x, tooltip_y, x, &d.hover_data[idx], tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
+                            TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, x, &d.hover_data[idx], tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
                         } else {
-                            render_tooltip(ctx, &painter, tooltip_x, tooltip_y, x, &HashMap::new(), tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
+                            TooltipRenderer::render(ctx, &painter, tooltip_x, tooltip_y, x, &HashMap::new(), tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
                         }
                     }
                 }
@@ -462,6 +470,13 @@ impl ChartApp {
 
     fn render_vertical_bars(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
         let (tooltip_bg_color, tooltip_text_color) = (d.tooltip_bg_color, d.tooltip_text_color);
+        let config = PlotConfigBuilder::new()
+            .width(1400.0)
+            .height(600.0)
+            .zoom(self.zoom)
+            .padding(60.0, 20.0, 20.0, 120.0)
+            .build();
+        
         let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
         let bar_height = 300.0_f32;
         
@@ -658,6 +673,13 @@ impl ChartApp {
 
     fn render_horizontal_bars(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
         let (tooltip_bg_color, tooltip_text_color) = (d.tooltip_bg_color, d.tooltip_text_color);
+        let config = PlotConfigBuilder::new()
+            .width(600.0)
+            .height(1400.0)
+            .zoom(self.zoom)
+            .padding(60.0, 20.0, 20.0, 80.0)
+            .build();
+        
         let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
         let bar_max_width = 350.0_f32;
         
@@ -782,99 +804,6 @@ impl ChartApp {
     }
 }
 
-fn hsv_to_rgb(h: f32, s: f32, v: f32) -> egui::Color32 {
-    let c = v * s;
-    let h_prime = (h * 6.0) % 6.0;
-    let x = c * (1.0 - ((h_prime % 2.0) - 1.0).abs());
-    
-    let (r, g, b) = match h_prime as i32 {
-        0 => (c, x, 0.0),
-        1 => (x, c, 0.0),
-        2 => (0.0, c, x),
-        3 => (0.0, x, c),
-        4 => (x, 0.0, c),
-        _ => (c, 0.0, x),
-    };
-    
-    let m = v - c;
-    egui::Color32::from_rgb(
-        ((r + m) * 255.0) as u8,
-        ((g + m) * 255.0) as u8,
-        ((b + m) * 255.0) as u8,
-    )
-}
-
-fn render_tooltip(
-    ctx: &egui::Context,
-    painter: &egui::Painter,
-    tooltip_x: f32,
-    tooltip_y: f32,
-    label: &str,
-    hover_data: &HashMap<String, String>,
-    bg_color: (u8, u8, u8, u8),
-    text_color: (u8, u8, u8, u8),
-    font_size: f32,
-    zoom: f32,
-    image_loader: &ImageLoader,
-) {
-    let field_count = hover_data.iter().filter(|(k, _)| k.as_str() != "image").count() as f32;
-    let has_image = hover_data.contains_key("image");
-    let tooltip_width = 200.0 * zoom;
-    let base_height = if has_image { 120.0 } else { 85.0 };
-    let tooltip_height = base_height + (field_count * 35.0) + 65.0;
-    
-    let tooltip_rect = egui::Rect::from_min_size(
-        egui::pos2(tooltip_x, tooltip_y),
-        egui::vec2(tooltip_width, tooltip_height * zoom)
-    );
-    
-    painter.rect_filled(tooltip_rect, 6.0, egui::Color32::from_rgba_unmultiplied(
-        bg_color.0, bg_color.1, bg_color.2, bg_color.3
-    ));
-    painter.rect_stroke(tooltip_rect, 1.5, egui::Stroke::new(1.0, egui::Color32::WHITE));
-    
-    let mut hover_offset = 15.0;
-    
-    if has_image {
-        if let Some(img_url) = hover_data.get("image") {
-            if let Some(color_img) = image_loader.load_image(img_url) {
-                let texture_handle = ctx.load_texture("image", color_img, egui::TextureOptions::default());
-                let img_rect = egui::Rect::from_min_size(
-                    egui::pos2(tooltip_x + tooltip_width / 2.0 - 45.0, tooltip_y + 15.0),
-                    egui::Vec2::new(90.0, 90.0)
-                );
-                painter.image(texture_handle.id(), img_rect, egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)), egui::Color32::WHITE);
-            }
-        }
-        hover_offset = 110.0;
-    }
-    
-    for (key, val) in hover_data.iter() {
-        if key != "image" {
-            let text_val = if val.len() > 55 {
-                format!("{}...", &val[..52])
-            } else {
-                val.clone()
-            };
-            painter.text(
-                egui::pos2(tooltip_x + 10.0, tooltip_y + hover_offset),
-                egui::Align2::LEFT_TOP,
-                &format!("{}: {}", key, text_val),
-                egui::FontId::proportional(font_size * 0.9),
-                egui::Color32::from_rgb(text_color.0, text_color.1, text_color.2)
-            );
-            hover_offset += 35.0 * zoom;
-        }
-    }
-    
-    painter.text(
-        egui::pos2(tooltip_x + tooltip_width / 2.0, tooltip_y + tooltip_height * zoom - 38.0),
-        egui::Align2::CENTER_CENTER,
-        label,
-        egui::FontId::proportional(font_size),
-        egui::Color32::from_rgb(text_color.0, text_color.1, text_color.2)
-    );
-}
 
 #[no_mangle]
 pub extern "C" fn sera_show_chart_data_with_hover(
@@ -981,6 +910,8 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         variants,
         show_variant_selector: show_selector,
         show_transform_menu: false,
+        config_store: Arc::new(ConfigStore::new()),
+        plot_config: Arc::new(Mutex::new(PlotConfigBuilder::new().width(1400.0).height(600.0).build())),
     };
 
     let native_options = eframe::NativeOptions {
@@ -1082,6 +1013,8 @@ pub extern "C" fn sera_show_with_variants(
         variants,
         show_variant_selector: enable_variants,
         show_transform_menu: false,
+        config_store: Arc::new(ConfigStore::new()),
+        plot_config: Arc::new(Mutex::new(PlotConfigBuilder::new().width(1400.0).height(600.0).build())),
     };
 
     let native_options = eframe::NativeOptions {
