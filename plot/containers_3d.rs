@@ -28,8 +28,8 @@ impl CameraController {
             ),
             target,
             orbit_radius: 8.0,
-            orbit_yaw: 0.7,
-            orbit_pitch: 0.6,
+            orbit_yaw: 0.0,
+            orbit_pitch: 0.0,
             zoom: 1.0,
             pan_x: 0.0,
             pan_y: 0.0,
@@ -65,8 +65,8 @@ impl CameraController {
     }
 
     pub fn reset(&mut self) {
-        self.orbit_yaw = 0.7;
-        self.orbit_pitch = 0.6;
+        self.orbit_yaw = 0.0;
+        self.orbit_pitch = 0.0;
         self.zoom = 1.0;
         self.pan_x = 0.0;
         self.pan_y = 0.0;

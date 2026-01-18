@@ -621,54 +621,80 @@ impl ChartApp {
     fn render_3d_viewer(&mut self, _ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
         self.advanced_viewer_3d.render_controls(ui);
         
-        egui::ScrollArea::both()
-            .auto_shrink([false; 2])
-            .show(ui, |ui| {
-                self.advanced_viewer_3d.handle_input(ui);
-                
-                let (response, painter) = ui.allocate_painter(
-                    egui::Vec2::new(800.0, 600.0),
-                    egui::Sense::hover(),
-                );
-                
-                let rect_width = response.rect.width();
-                let rect_height = response.rect.height();
-                self.advanced_viewer_3d.camera_controller.set_viewport(rect_width, rect_height);
-                
-                let center = response.rect.center();
-                painter.circle_filled(center, 5.0, egui::Color32::RED);
-                
-                let mut test_values = d.values.clone();
-                if test_values.is_empty() {
-                    test_values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        let (response, painter) = ui.allocate_painter(
+            egui::Vec2::new(800.0, 600.0),
+            egui::Sense::click_and_drag(),
+        );
+        
+        if response.drag_started() {
+            self.advanced_viewer_3d.is_dragging = true;
+            self.advanced_viewer_3d.last_mouse_pos = response.interact_pointer_pos();
+        }
+        
+        if self.advanced_viewer_3d.is_dragging {
+            if let Some(curr_pos) = response.interact_pointer_pos() {
+                if let Some(last_pos) = self.advanced_viewer_3d.last_mouse_pos {
+                    let delta_x = (curr_pos.x - last_pos.x) * 0.01;
+                    let delta_y = (curr_pos.y - last_pos.y) * 0.01;
+                    self.advanced_viewer_3d.camera_controller.rotate_orbit(delta_x, -delta_y);
                 }
-                
-                let text = format!("Data: {} | Kind: {}", test_values.len(), self.current_chart_kind);
-                painter.text(
-                    center + egui::vec2(0.0, 50.0),
-                    egui::Align2::CENTER_CENTER,
-                    text,
-                    egui::FontId::proportional(12.0),
-                    egui::Color32::WHITE,
-                );
-                
-                let mut visible_indices: Vec<usize> = (0..test_values.len()).collect();
-                let max_val = test_values.iter().copied().fold(0.0_f64, f64::max).max(1.0);
-                let colors = self.color_cache.colors();
-                
-                let chart_type = self.current_chart_kind;
-                render_plot_3d_by_type(
-                    chart_type + 3,
-                    &painter,
-                    response.rect,
-                    colors,
-                    None,
-                    &test_values,
-                    max_val,
-                    &visible_indices,
-                    &self.advanced_viewer_3d.camera_controller,
-                );
-            });
+                self.advanced_viewer_3d.last_mouse_pos = Some(curr_pos);
+            }
+        }
+        
+        if response.drag_stopped() {
+            self.advanced_viewer_3d.is_dragging = false;
+            self.advanced_viewer_3d.last_mouse_pos = None;
+        }
+        
+        let scroll = ui.input(|i| i.raw_scroll_delta.y);
+        if scroll != 0.0 {
+            let zoom_factor = if scroll > 0.0 { 0.85 } else { 1.15 };
+            self.advanced_viewer_3d.camera_controller.zoom(zoom_factor);
+        }
+        
+        let rect_width = response.rect.width();
+        let rect_height = response.rect.height();
+        self.advanced_viewer_3d.camera_controller.set_viewport(rect_width, rect_height);
+        
+        let center = response.rect.center();
+        painter.circle_filled(center, 5.0, egui::Color32::RED);
+        
+        let mut test_values = d.values.clone();
+        if test_values.is_empty() {
+            test_values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        }
+        
+        let text = format!("Data: {} | Kind: {}", test_values.len(), self.current_chart_kind);
+        painter.text(
+            center + egui::vec2(0.0, 50.0),
+            egui::Align2::CENTER_CENTER,
+            text,
+            egui::FontId::proportional(12.0),
+            egui::Color32::WHITE,
+        );
+        
+        let mut test_values = d.values.clone();
+        if test_values.is_empty() {
+            test_values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
+        }
+        
+        let mut visible_indices: Vec<usize> = (0..test_values.len()).collect();
+        let max_val = test_values.iter().copied().fold(0.0_f64, f64::max).max(1.0);
+        let colors = self.color_cache.colors();
+        
+        let chart_type = self.current_chart_kind;
+        render_plot_3d_by_type(
+            chart_type + 3,
+            &painter,
+            response.rect,
+            colors,
+            None,
+            &test_values,
+            max_val,
+            &visible_indices,
+            &self.advanced_viewer_3d.camera_controller,
+        );
     }
 
     fn apply_processor_filter(&mut self) {
