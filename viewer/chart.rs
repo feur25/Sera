@@ -317,40 +317,24 @@ impl ChartApp {
                     if is_hovered {
                         self.hovered_idx = Some(idx);
                         
-                        let mut tooltip_lines = vec![x.clone()];
-                        if idx < d.hover_data.len() {
-                            for (key, val) in d.hover_data[idx].iter() {
-                                if key != "image" {
-                                    tooltip_lines.push(format!("{}: {}", key, val));
-                                }
-                            }
-                        }
-                        
                         let tooltip_width = 200.0 * self.zoom;
-                        let tooltip_height = (tooltip_lines.len() as f32 * 22.0) * self.zoom;
-                        let tooltip_x = if screen_x + 120.0 > plot_rect.right() { screen_x - tooltip_width - 15.0 } else { screen_x + 15.0 };
-                        let tooltip_y = if screen_y - tooltip_height < plot_rect.top() { screen_y + 15.0 } else { screen_y - tooltip_height };
+                        let field_count = if idx < d.hover_data.len() { 
+                            d.hover_data[idx].iter().filter(|(k, _)| k.as_str() != "image").count() as f32 
+                        } else { 0.0 };
+                        let has_image = if idx < d.hover_data.len() { d.hover_data[idx].contains_key("image") } else { false };
+                        let base_height = if has_image { 120.0 } else { 85.0 };
+                        let tooltip_height = base_height + (field_count * 35.0) + 65.0;
                         
-                        let tooltip_rect = egui::Rect::from_min_size(
-                            egui::pos2(tooltip_x, tooltip_y),
-                            egui::vec2(tooltip_width, tooltip_height)
-                        );
+                        let mut tooltip_x = if screen_x + 120.0 > plot_rect.right() { screen_x - tooltip_width - 15.0 } else { screen_x + 15.0 };
+                        let mut tooltip_y = if screen_y - (tooltip_height * self.zoom) < plot_rect.top() { screen_y + 15.0 } else { screen_y - (tooltip_height * self.zoom) };
                         
-                        painter.rect_filled(tooltip_rect, 6.0, egui::Color32::from_rgba_unmultiplied(
-                            tooltip_bg_color.0, tooltip_bg_color.1, tooltip_bg_color.2, tooltip_bg_color.3
-                        ));
-                        painter.rect_stroke(tooltip_rect, 1.5, egui::Stroke::new(1.0, egui::Color32::WHITE));
+                        if tooltip_x < plot_rect.left() { tooltip_x = plot_rect.left() + 5.0; }
+                        if tooltip_x + tooltip_width > plot_rect.right() { tooltip_x = plot_rect.right() - tooltip_width - 5.0; }
                         
-                        for (line_idx, line) in tooltip_lines.iter().enumerate() {
-                            painter.text(
-                                egui::pos2(tooltip_x + 10.0, tooltip_y + 6.0 + (line_idx as f32 * 22.0)),
-                                egui::Align2::LEFT_TOP,
-                                line,
-                                egui::FontId::proportional(font_size),
-                                egui::Color32::from_rgb(
-                                    tooltip_text_color.0, tooltip_text_color.1, tooltip_text_color.2
-                                )
-                            );
+                        if idx < d.hover_data.len() {
+                            render_tooltip(ctx, &painter, tooltip_x, tooltip_y, x, &d.hover_data[idx], tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
+                        } else {
+                            render_tooltip(ctx, &painter, tooltip_x, tooltip_y, x, &HashMap::new(), tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
                         }
                     }
                 }
@@ -452,40 +436,24 @@ impl ChartApp {
                     if is_hovered {
                         self.hovered_idx = Some(idx);
                         
-                        let mut tooltip_lines = vec![x.clone()];
-                        if idx < d.hover_data.len() {
-                            for (key, val) in d.hover_data[idx].iter() {
-                                if key != "image" {
-                                    tooltip_lines.push(format!("{}: {}", key, val));
-                                }
-                            }
-                        }
-                        
                         let tooltip_width = 200.0 * self.zoom;
-                        let tooltip_height = (tooltip_lines.len() as f32 * 22.0) * self.zoom;
-                        let tooltip_x = if screen_x - tooltip_width < plot_rect.left() { screen_x + 15.0 } else { screen_x - tooltip_width - 15.0 };
-                        let tooltip_y = if screen_y - tooltip_height < plot_rect.top() { screen_y + 15.0 } else { screen_y - tooltip_height };
+                        let field_count = if idx < d.hover_data.len() { 
+                            d.hover_data[idx].iter().filter(|(k, _)| k.as_str() != "image").count() as f32 
+                        } else { 0.0 };
+                        let has_image = if idx < d.hover_data.len() { d.hover_data[idx].contains_key("image") } else { false };
+                        let base_height = if has_image { 120.0 } else { 85.0 };
+                        let tooltip_height = base_height + (field_count * 35.0) + 65.0;
                         
-                        let tooltip_rect = egui::Rect::from_min_size(
-                            egui::pos2(tooltip_x, tooltip_y),
-                            egui::vec2(tooltip_width, tooltip_height)
-                        );
+                        let mut tooltip_x = if screen_x - tooltip_width < plot_rect.left() { screen_x + 15.0 } else { screen_x - tooltip_width - 15.0 };
+                        let mut tooltip_y = if screen_y - (tooltip_height * self.zoom) < plot_rect.top() { screen_y + 15.0 } else { screen_y - (tooltip_height * self.zoom) };
                         
-                        painter.rect_filled(tooltip_rect, 6.0, egui::Color32::from_rgba_unmultiplied(
-                            tooltip_bg_color.0, tooltip_bg_color.1, tooltip_bg_color.2, tooltip_bg_color.3
-                        ));
-                        painter.rect_stroke(tooltip_rect, 1.5, egui::Stroke::new(1.0, egui::Color32::WHITE));
+                        if tooltip_x < plot_rect.left() { tooltip_x = plot_rect.left() + 5.0; }
+                        if tooltip_x + tooltip_width > plot_rect.right() { tooltip_x = plot_rect.right() - tooltip_width - 5.0; }
                         
-                        for (line_idx, line) in tooltip_lines.iter().enumerate() {
-                            painter.text(
-                                egui::pos2(tooltip_x + 10.0, tooltip_y + 6.0 + (line_idx as f32 * 22.0)),
-                                egui::Align2::LEFT_TOP,
-                                line,
-                                egui::FontId::proportional(font_size),
-                                egui::Color32::from_rgb(
-                                    tooltip_text_color.0, tooltip_text_color.1, tooltip_text_color.2
-                                )
-                            );
+                        if idx < d.hover_data.len() {
+                            render_tooltip(ctx, &painter, tooltip_x, tooltip_y, x, &d.hover_data[idx], tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
+                        } else {
+                            render_tooltip(ctx, &painter, tooltip_x, tooltip_y, x, &HashMap::new(), tooltip_bg_color, tooltip_text_color, font_size, self.zoom, &self.image_loader);
                         }
                     }
                 }
@@ -834,6 +802,78 @@ fn hsv_to_rgb(h: f32, s: f32, v: f32) -> egui::Color32 {
         ((g + m) * 255.0) as u8,
         ((b + m) * 255.0) as u8,
     )
+}
+
+fn render_tooltip(
+    ctx: &egui::Context,
+    painter: &egui::Painter,
+    tooltip_x: f32,
+    tooltip_y: f32,
+    label: &str,
+    hover_data: &HashMap<String, String>,
+    bg_color: (u8, u8, u8, u8),
+    text_color: (u8, u8, u8, u8),
+    font_size: f32,
+    zoom: f32,
+    image_loader: &ImageLoader,
+) {
+    let field_count = hover_data.iter().filter(|(k, _)| k.as_str() != "image").count() as f32;
+    let has_image = hover_data.contains_key("image");
+    let tooltip_width = 200.0 * zoom;
+    let base_height = if has_image { 120.0 } else { 85.0 };
+    let tooltip_height = base_height + (field_count * 35.0) + 65.0;
+    
+    let tooltip_rect = egui::Rect::from_min_size(
+        egui::pos2(tooltip_x, tooltip_y),
+        egui::vec2(tooltip_width, tooltip_height * zoom)
+    );
+    
+    painter.rect_filled(tooltip_rect, 6.0, egui::Color32::from_rgba_unmultiplied(
+        bg_color.0, bg_color.1, bg_color.2, bg_color.3
+    ));
+    painter.rect_stroke(tooltip_rect, 1.5, egui::Stroke::new(1.0, egui::Color32::WHITE));
+    
+    let mut hover_offset = 15.0;
+    
+    if has_image {
+        if let Some(img_url) = hover_data.get("image") {
+            if let Some(color_img) = image_loader.load_image(img_url) {
+                let texture_handle = ctx.load_texture("image", color_img, egui::TextureOptions::default());
+                let img_rect = egui::Rect::from_min_size(
+                    egui::pos2(tooltip_x + tooltip_width / 2.0 - 45.0, tooltip_y + 15.0),
+                    egui::Vec2::new(90.0, 90.0)
+                );
+                painter.image(texture_handle.id(), img_rect, egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)), egui::Color32::WHITE);
+            }
+        }
+        hover_offset = 110.0;
+    }
+    
+    for (key, val) in hover_data.iter() {
+        if key != "image" {
+            let text_val = if val.len() > 55 {
+                format!("{}...", &val[..52])
+            } else {
+                val.clone()
+            };
+            painter.text(
+                egui::pos2(tooltip_x + 10.0, tooltip_y + hover_offset),
+                egui::Align2::LEFT_TOP,
+                &format!("{}: {}", key, text_val),
+                egui::FontId::proportional(font_size * 0.9),
+                egui::Color32::from_rgb(text_color.0, text_color.1, text_color.2)
+            );
+            hover_offset += 35.0 * zoom;
+        }
+    }
+    
+    painter.text(
+        egui::pos2(tooltip_x + tooltip_width / 2.0, tooltip_y + tooltip_height * zoom - 38.0),
+        egui::Align2::CENTER_CENTER,
+        label,
+        egui::FontId::proportional(font_size),
+        egui::Color32::from_rgb(text_color.0, text_color.1, text_color.2)
+    );
 }
 
 #[no_mangle]
