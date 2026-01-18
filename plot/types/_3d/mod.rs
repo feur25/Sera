@@ -7,9 +7,9 @@ use super::super::containers_3d::CameraController;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
-pub use bar_3d::{render_bars_3d, Bar3DRenderContext};
-pub use line_3d::{render_lines_3d, Line3DRenderContext};
-pub use scatter_3d::{render_points_3d, Scatter3DRenderContext, render_3d_grid};
+pub use bar_3d::{render_bars_3d, Bar3DRenderContext, get_3d_bar_positions};
+pub use line_3d::{render_lines_3d, Line3DRenderContext, get_3d_line_positions};
+pub use scatter_3d::{render_points_3d, Scatter3DRenderContext, render_3d_grid, get_3d_point_positions};
 
 pub struct Plot3DRegistry {
     renderers: HashMap<u8, (&'static str, u8)>,

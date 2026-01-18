@@ -8,6 +8,37 @@ use super::viewer_3d::AdvancedViewer3D;
 use crate::plot::types::{BarRenderContext, render_plot_by_type, render_plot_3d_by_type};
 use crate::plot::CameraController;
 
+struct Hover3DDetector {
+    positions: Vec<(egui::Pos2, usize)>,
+    threshold: f32,
+}
+
+impl Hover3DDetector {
+    fn new(positions: Vec<(egui::Pos2, usize)>) -> Self {
+        Self {
+            positions,
+            threshold: 15.0,
+        }
+    }
+    
+    fn detect(&self, mouse_pos: egui::Pos2) -> Option<usize> {
+        let mut closest_idx = None;
+        let mut closest_dist = self.threshold;
+        
+        for &(screen_pos, actual_idx) in &self.positions {
+            let delta = mouse_pos - screen_pos;
+            let dist = (delta.x * delta.x + delta.y * delta.y).sqrt();
+            
+            if dist < closest_dist {
+                closest_dist = dist;
+                closest_idx = Some(actual_idx);
+            }
+        }
+        
+        closest_idx
+    }
+}
+
 struct ChartData {
     labels: Vec<String>,
     values: Vec<f64>,
@@ -727,15 +758,34 @@ impl ChartApp {
         }
         
         if response.hovered() {
-            if let Some(pos) = ctx.pointer_latest_pos() {
-                let rel_pos = pos - response.rect.min;
-                let rect_width = response.rect.width();
-                let norm_x = rel_pos.x / rect_width;
-                let num_visible = visible_indices.len() as f32;
-                let idx = ((norm_x * num_visible).floor() as usize).min(visible_indices.len().saturating_sub(1));
-                if idx < visible_indices.len() {
-                    self.hovered_idx = Some(visible_indices[idx]);
-                }
+            if let Some(mouse_pos) = ctx.pointer_latest_pos() {
+                let positions = match self.current_chart_kind {
+                    0 => crate::plot::types::get_3d_line_positions(
+                        &d.values,
+                        max_val,
+                        &visible_indices,
+                        &self.advanced_viewer_3d.camera_controller,
+                        response.rect,
+                    ),
+                    1 => crate::plot::types::get_3d_point_positions(
+                        &d.values,
+                        max_val,
+                        &visible_indices,
+                        &self.advanced_viewer_3d.camera_controller,
+                        response.rect,
+                    ),
+                    2 => crate::plot::types::get_3d_bar_positions(
+                        &d.values,
+                        max_val,
+                        &visible_indices,
+                        &self.advanced_viewer_3d.camera_controller,
+                        response.rect,
+                    ),
+                    _ => Vec::new(),
+                };
+                
+                let detector = Hover3DDetector::new(positions);
+                self.hovered_idx = detector.detect(mouse_pos);
             }
         } else {
             self.hovered_idx = None;

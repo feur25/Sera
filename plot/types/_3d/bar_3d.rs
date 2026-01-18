@@ -99,6 +99,50 @@ pub fn render_bars_3d(ctx: Bar3DRenderContext) {
     }
 }
 
+pub fn get_3d_bar_positions(
+    values: &[f64],
+    max_val: f64,
+    visible_indices: &[usize],
+    camera_controller: &CameraController,
+    plot_rect: egui::Rect,
+) -> Vec<(egui::Pos2, usize)> {
+    let visible_count = visible_indices.len();
+    if visible_count == 0 {
+        return Vec::new();
+    }
+    
+    let max_val = max_val.max(1.0);
+    let grid_size = (visible_count as f32).sqrt().ceil() as usize;
+    let cube = Cube3DContainer::new(Point3D::new(0.0, 0.0, 0.0), 0.5);
+    
+    let center = plot_rect.center();
+    let half_width = plot_rect.width() / 2.0;
+    let half_height = plot_rect.height() / 2.0;
+    
+    let mut positions = Vec::new();
+    
+    for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
+        let value = values[actual_idx];
+        let norm_val = ((value / max_val).min(1.0).max(0.0)) as f32;
+        
+        let x_idx = (vis_idx % grid_size) as f32;
+        let y_idx = (vis_idx / grid_size) as f32;
+        
+        let u = x_idx / ((grid_size - 1).max(1) as f32);
+        let v = y_idx / ((grid_size - 1).max(1) as f32);
+        
+        let top_3d = cube.point_normalized(u, v, norm_val);
+        
+        if let Some(proj_top) = camera_controller.camera.project(top_3d) {
+            let screen_x = center.x + proj_top.x * half_width;
+            let screen_y = center.y - proj_top.y * half_height;
+            positions.push((egui::pos2(screen_x, screen_y), actual_idx));
+        }
+    }
+    
+    positions
+}
+
 fn render_container_frame(
     painter: &egui::Painter,
     plot_rect: egui::Rect,
