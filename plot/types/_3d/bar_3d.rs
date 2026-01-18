@@ -19,14 +19,13 @@ pub fn render_bars_3d(ctx: Bar3DRenderContext) {
     let center = ctx.plot_rect.center();
     
     let grid_size = (visible_count as f32).sqrt().ceil() as usize;
-    let container_size = 10.0;
     
-    let cube = Cube3DContainer::new(Point3D::new(0.0, 0.0, 0.0), container_size);
+    let cube = Cube3DContainer::new(Point3D::new(0.0, 0.0, 0.0), 0.5);
     
     render_container_frame(ctx.painter, ctx.plot_rect, ctx.camera_controller);
     render_scale_labels(ctx.painter, ctx.plot_rect, max_val);
     
-    let mut bars_to_render: Vec<(egui::Pos2, egui::Pos2, egui::Color32, usize, f32, f32)> = Vec::new();
+    let mut bars_to_render: Vec<(egui::Pos2, egui::Pos2, egui::Color32, usize, f32)> = Vec::new();
     
     for (vis_idx, &actual_idx) in ctx.visible_indices.iter().enumerate() {
         let value = ctx.values[actual_idx];
@@ -35,38 +34,39 @@ pub fn render_bars_3d(ctx: Bar3DRenderContext) {
         let x_idx = (vis_idx % grid_size) as f32;
         let y_idx = (vis_idx / grid_size) as f32;
         
-        let u = (x_idx + 0.5) / grid_size as f32;
-        let v = (y_idx + 0.5) / grid_size as f32;
+        let u = x_idx / ((grid_size - 1).max(1) as f32);
+        let v = y_idx / ((grid_size - 1).max(1) as f32);
         
-        let base_3d = cube.point_normalized(u, v, 0.3);
-        let top_3d = cube.point_normalized(u, v, 0.3 + norm_val * 0.4);
+        let base_3d = cube.point_normalized(u, v, 0.0);
+        let top_3d = cube.point_normalized(u, v, norm_val);
+        
+        let half_width = ctx.plot_rect.width() / 2.0;
+        let half_height = ctx.plot_rect.height() / 2.0;
         
         if let (Some(proj_base), Some(proj_top)) = (
             ctx.camera_controller.camera.project(base_3d),
             ctx.camera_controller.camera.project(top_3d),
         ) {
-            let scale_base = 0.5 / (base_3d.x.abs() + base_3d.y.abs() + base_3d.z.abs() + 1.0).max(1.0);
-            let scale_top = 0.5 / (top_3d.x.abs() + top_3d.y.abs() + top_3d.z.abs() + 1.0).max(1.0);
-            
             let screen_base = egui::pos2(
-                center.x + proj_base.x * ctx.plot_rect.width() * 0.2 * scale_base,
-                center.y + proj_base.y * ctx.plot_rect.height() * 0.2 * scale_base,
+                center.x + proj_base.x * half_width,
+                center.y - proj_base.y * half_height,
             );
             let screen_top = egui::pos2(
-                center.x + proj_top.x * ctx.plot_rect.width() * 0.2 * scale_top,
-                center.y + proj_top.y * ctx.plot_rect.height() * 0.2 * scale_top,
+                center.x + proj_top.x * half_width,
+                center.y - proj_top.y * half_height,
             );
             
-            let color = ctx.colors[actual_idx % ctx.colors.len()];
-            let depth = top_3d.x + top_3d.y + top_3d.z;
-            
-            bars_to_render.push((screen_base, screen_top, color, actual_idx, norm_val, depth));
+            if screen_base.x.is_finite() && screen_base.y.is_finite() && screen_top.x.is_finite() && screen_top.y.is_finite() {
+                let color = ctx.colors[actual_idx % ctx.colors.len()];
+                let depth = top_3d.z;
+                bars_to_render.push((screen_base, screen_top, color, actual_idx, depth));
+            }
         }
     }
     
-    bars_to_render.sort_by(|a, b| a.5.partial_cmp(&b.5).unwrap_or(std::cmp::Ordering::Equal));
+    bars_to_render.sort_by(|a, b| a.4.partial_cmp(&b.4).unwrap_or(std::cmp::Ordering::Equal));
     
-    for (screen_base, screen_top, color, actual_idx, norm_val, _) in bars_to_render {
+    for (screen_base, screen_top, color, actual_idx, _) in bars_to_render {
         let is_hovered = ctx.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
         let display_color = if is_hovered {
             egui::Color32::from_rgb(255, 220, 0)
@@ -74,11 +74,11 @@ pub fn render_bars_3d(ctx: Bar3DRenderContext) {
             color
         };
         
-        let stroke_width = if is_hovered { 5.5 } else { 4.0 + norm_val * 3.5 };
+        let stroke_width = if is_hovered { 8.0 } else { 5.5 };
         ctx.painter.line_segment([screen_base, screen_top], egui::Stroke::new(stroke_width, display_color));
         
-        let base_radius = if is_hovered { 5.0 } else { 3.5 + norm_val * 2.5 };
-        let top_radius = if is_hovered { 6.5 } else { 5.0 + norm_val * 3.5 };
+        let base_radius = if is_hovered { 6.0 } else { 4.5 };
+        let top_radius = if is_hovered { 7.5 } else { 5.5 };
         
         ctx.painter.circle_filled(screen_base, base_radius, display_color);
         ctx.painter.circle_filled(screen_top, top_radius, display_color);
@@ -87,7 +87,12 @@ pub fn render_bars_3d(ctx: Bar3DRenderContext) {
             ctx.painter.circle_stroke(
                 screen_top,
                 top_radius + 2.0,
-                egui::Stroke::new(1.5, egui::Color32::from_rgb(255, 200, 0)),
+                egui::Stroke::new(2.0, egui::Color32::from_rgb(255, 200, 0)),
+            );
+            ctx.painter.circle_stroke(
+                screen_base,
+                base_radius + 2.0,
+                egui::Stroke::new(2.0, egui::Color32::from_rgb(255, 200, 0)),
             );
         }
     }
@@ -99,31 +104,29 @@ fn render_container_frame(
     camera_controller: &CameraController,
 ) {
     let center = plot_rect.center();
-    let container_size = 10.0;
     let container_center = Point3D::new(0.0, 0.0, 0.0);
     
-    let cube = Cube3DContainer::new(container_center, container_size);
+    let cube = Cube3DContainer::new(container_center, 8.0);
     let vertices = cube.vertices();
     
     let mut projected = Vec::new();
     for v in &vertices {
         if let Some(p) = camera_controller.camera.project(*v) {
-            let scale = 0.5 / (v.x.abs() + v.y.abs() + v.z.abs() + 1.0).max(1.0);
-            let screen_x = center.x + p.x * plot_rect.width() * 0.2 * scale;
-            let screen_y = center.y + p.y * plot_rect.height() * 0.2 * scale;
+            let screen_x = center.x + p.x * plot_rect.width() * 0.35;
+            let screen_y = center.y - p.y * plot_rect.height() * 0.35;
             projected.push(egui::pos2(screen_x, screen_y));
         } else {
             projected.push(egui::Pos2::ZERO);
         }
     }
     
-    let color = egui::Color32::from_rgb(180, 180, 220);
+    let color = egui::Color32::from_rgb(150, 150, 170);
     
     for edge in cube.edges() {
         let start = projected[edge[0]];
         let end = projected[edge[1]];
         if start != egui::Pos2::ZERO && end != egui::Pos2::ZERO {
-            painter.line_segment([start, end], egui::Stroke::new(2.0, color));
+            painter.line_segment([start, end], egui::Stroke::new(1.5, color));
         }
     }
 }

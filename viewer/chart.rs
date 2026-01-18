@@ -626,6 +626,9 @@ impl ChartApp {
             egui::Sense::click_and_drag(),
         );
         
+        let center = response.rect.center();
+        painter.circle_filled(center, 5.0, egui::Color32::RED);
+        
         if response.drag_started() {
             self.advanced_viewer_3d.is_dragging = true;
             self.advanced_viewer_3d.last_mouse_pos = response.interact_pointer_pos();
@@ -657,31 +660,22 @@ impl ChartApp {
         let rect_height = response.rect.height();
         self.advanced_viewer_3d.camera_controller.set_viewport(rect_width, rect_height);
         
-        let center = response.rect.center();
-        painter.circle_filled(center, 5.0, egui::Color32::RED);
+        // eprintln!("[RENDER_3D] d.values.len()={}, visible_elements.len()={}", d.values.len(), self.visible_elements.len());
         
-        let mut test_values = d.values.clone();
-        if test_values.is_empty() {
-            test_values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        }
+        let visible_indices: Vec<usize> = (0..d.values.len())
+            .filter(|&i| i < self.visible_elements.len() && self.visible_elements[i])
+            .collect();
         
-        let text = format!("Data: {} | Kind: {}", test_values.len(), self.current_chart_kind);
-        painter.text(
-            center + egui::vec2(0.0, 50.0),
-            egui::Align2::CENTER_CENTER,
-            text,
-            egui::FontId::proportional(12.0),
-            egui::Color32::WHITE,
-        );
+        let visible_indices = if visible_indices.is_empty() {
+            (0..d.values.len()).collect()
+        } else {
+            visible_indices
+        };
         
-        let mut test_values = d.values.clone();
-        if test_values.is_empty() {
-            test_values = vec![1.0, 2.0, 3.0, 4.0, 5.0];
-        }
-        
-        let mut visible_indices: Vec<usize> = (0..test_values.len()).collect();
-        let max_val = test_values.iter().copied().fold(0.0_f64, f64::max).max(1.0);
+        let max_val = d.values.iter().copied().fold(0.0_f64, f64::max).max(1.0);
         let colors = self.color_cache.colors();
+        
+        // eprintln!("[RENDER_3D] max_val={}, colors.len()={}", max_val, colors.len());
         
         let chart_type = self.current_chart_kind;
         render_plot_3d_by_type(
@@ -689,8 +683,8 @@ impl ChartApp {
             &painter,
             response.rect,
             colors,
-            None,
-            &test_values,
+            self.hovered_idx,
+            &d.values,
             max_val,
             &visible_indices,
             &self.advanced_viewer_3d.camera_controller,
@@ -841,7 +835,7 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         orientation: true,
         sort_mode: 0,
         current_chart_kind: 1,
-        is_3d_mode: false,
+        is_3d_mode: true,
         camera_controller: CameraController::default(),
         advanced_viewer_3d: AdvancedViewer3D::new(),
         processor_mode: 0,

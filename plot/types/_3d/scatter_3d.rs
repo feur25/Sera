@@ -1,6 +1,7 @@
 use super::super::super::containers_3d::{CameraController, Cube3DContainer};
 use super::super::super::camera::Point3D;
 use super::scale_renderer::render_scale_labels;
+use super::sphere_renderer::render_sphere_3d;
 
 pub struct Scatter3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -15,56 +16,160 @@ pub struct Scatter3DRenderContext<'a> {
 
 pub fn render_points_3d(ctx: Scatter3DRenderContext) {
     let visible_count = ctx.visible_indices.len();
+    if visible_count == 0 {
+        return;
+    }
+    
     let max_val = ctx.max_val.max(1.0);
+    let cube = Cube3DContainer::new(Point3D::new(0.0, 0.0, 0.0), 0.5);
+    
     let center = ctx.plot_rect.center();
+    let half_width = ctx.plot_rect.width() / 2.0;
+    let half_height = ctx.plot_rect.height() / 2.0;
     
-    let grid_size = (visible_count as f32).sqrt().ceil() as usize;
-    let container_size = 10.0;
-    let cube = Cube3DContainer::new(Point3D::new(0.0, 0.0, 0.0), container_size);
-    
-    render_scale_labels(ctx.painter, ctx.plot_rect, max_val);
-    
-    let mut points_to_render: Vec<(egui::Pos2, egui::Color32, usize, f32)> = Vec::new();
+    let mut to_render: Vec<(egui::Pos2, egui::Color32, usize, f32)> = Vec::new();
     
     for (vis_idx, &actual_idx) in ctx.visible_indices.iter().enumerate() {
         let value = ctx.values[actual_idx];
         let norm_val = ((value / max_val).min(1.0).max(0.0)) as f32;
         
-        let x_idx = (vis_idx % grid_size) as f32;
-        let y_idx = (vis_idx / grid_size) as f32;
+        let cube_size = (visible_count as f32).cbrt().ceil() as usize;
+        let x_idx = (vis_idx % (cube_size * cube_size)) % cube_size;
+        let y_idx = (vis_idx % (cube_size * cube_size)) / cube_size;
+        let z_idx = vis_idx / (cube_size * cube_size);
         
-        let u = (x_idx + 0.5) / grid_size as f32;
-        let v = (y_idx + 0.5) / grid_size as f32;
-        let w = 0.3 + norm_val * 0.4;
+        let u = if cube_size > 1 { x_idx as f32 / (cube_size - 1) as f32 } else { 0.5 };
+        let v = if cube_size > 1 { y_idx as f32 / (cube_size - 1) as f32 } else { 0.5 };
+        let w = if cube_size > 1 { z_idx as f32 / (cube_size - 1) as f32 } else { norm_val };
         
         let point_3d = cube.point_normalized(u, v, w);
         
         if let Some(proj) = ctx.camera_controller.camera.project(point_3d) {
-            let scale = 0.5 / (point_3d.x.abs() + point_3d.y.abs() + point_3d.z.abs() + 1.0).max(1.0);
-            let screen_x = center.x + proj.x * ctx.plot_rect.width() * 0.2 * scale;
-            let screen_y = center.y + proj.y * ctx.plot_rect.height() * 0.2 * scale;
-            let screen = egui::pos2(screen_x, screen_y);
+            let screen_x = center.x + proj.x * half_width;
+            let screen_y = center.y - proj.y * half_height;
             
             let color = ctx.colors[actual_idx % ctx.colors.len()];
-            let depth = point_3d.x + point_3d.y + point_3d.z;
-            points_to_render.push((screen, color, actual_idx, depth));
+            let is_hovered = ctx.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
+            let display_color = if is_hovered {
+                egui::Color32::from_rgb(255, 220, 0)
+            } else {
+                color
+            };
+            
+            to_render.push((egui::pos2(screen_x, screen_y), display_color, actual_idx, point_3d.z));
         }
     }
     
-    points_to_render.sort_by(|a, b| a.3.partial_cmp(&b.3).unwrap_or(std::cmp::Ordering::Equal));
+    to_render.sort_by(|a, b| a.3.partial_cmp(&b.3).unwrap_or(std::cmp::Ordering::Equal));
     
-    for (screen, color, actual_idx, _) in points_to_render {
-        let is_hovered = ctx.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
-        let display_color = if is_hovered {
-            egui::Color32::from_rgb(255, 220, 0)
-        } else {
-            color
-        };
-        let radius = if is_hovered { 8.0 } else { 5.5 };
-        ctx.painter.circle_filled(screen, radius, display_color);
+    for (pos, color, _, _) in to_render {
+        ctx.painter.circle_filled(pos, 3.0, color);
+    }
+}
+
+fn render_grid_3d(
+    painter: &egui::Painter,
+    cube: &Cube3DContainer,
+    camera_controller: &CameraController,
+    plot_rect: egui::Rect,
+) {
+    let center = plot_rect.center();
+    let half_width = plot_rect.width() / 2.0;
+    let half_height = plot_rect.height() / 2.0;
+    let grid_divisions = 5;
+    let grid_color = egui::Color32::from_rgba_unmultiplied(120, 120, 140, 100);
+    let grid_stroke = egui::Stroke::new(1.0, grid_color);
+    
+    for i in 0..=grid_divisions {
+        let t = i as f32 / grid_divisions as f32;
+        for j in 0..=grid_divisions {
+            let s = j as f32 / grid_divisions as f32;
+            let p1 = cube.point_normalized(t, s, 0.0);
+            let p2 = cube.point_normalized(t, s, 1.0);
+            if let (Some(proj1), Some(proj2)) = (camera_controller.camera.project(p1), camera_controller.camera.project(p2)) {
+                let screen1 = egui::pos2(center.x + proj1.x * half_width, center.y - proj1.y * half_height);
+                let screen2 = egui::pos2(center.x + proj2.x * half_width, center.y - proj2.y * half_height);
+                painter.line_segment([screen1, screen2], grid_stroke);
+            }
+        }
+    }
+    
+    for i in 0..=grid_divisions {
+        let t = i as f32 / grid_divisions as f32;
+        for j in 0..=grid_divisions {
+            let s = j as f32 / grid_divisions as f32;
+            let p1 = cube.point_normalized(t, 0.0, s);
+            let p2 = cube.point_normalized(t, 1.0, s);
+            if let (Some(proj1), Some(proj2)) = (camera_controller.camera.project(p1), camera_controller.camera.project(p2)) {
+                let screen1 = egui::pos2(center.x + proj1.x * half_width, center.y - proj1.y * half_height);
+                let screen2 = egui::pos2(center.x + proj2.x * half_width, center.y - proj2.y * half_height);
+                painter.line_segment([screen1, screen2], grid_stroke);
+            }
+        }
+    }
+    
+    for i in 0..=grid_divisions {
+        let t = i as f32 / grid_divisions as f32;
+        for j in 0..=grid_divisions {
+            let s = j as f32 / grid_divisions as f32;
+            let p1 = cube.point_normalized(0.0, t, s);
+            let p2 = cube.point_normalized(1.0, t, s);
+            if let (Some(proj1), Some(proj2)) = (camera_controller.camera.project(p1), camera_controller.camera.project(p2)) {
+                let screen1 = egui::pos2(center.x + proj1.x * half_width, center.y - proj1.y * half_height);
+                let screen2 = egui::pos2(center.x + proj2.x * half_width, center.y - proj2.y * half_height);
+                painter.line_segment([screen1, screen2], grid_stroke);
+            }
+        }
+    }
+    
+    let axis_length = 0.15;
+    let axis_stroke_x = egui::Stroke::new(2.0, egui::Color32::from_rgb(255, 0, 0));
+    let axis_stroke_y = egui::Stroke::new(2.0, egui::Color32::from_rgb(0, 255, 0));
+    let axis_stroke_z = egui::Stroke::new(2.0, egui::Color32::from_rgb(0, 0, 255));
+    
+    let origin = cube.center;
+    if let Some(proj_origin) = camera_controller.camera.project(origin) {
+        let screen_origin = egui::pos2(center.x + proj_origin.x * half_width, center.y - proj_origin.y * half_height);
         
-        if is_hovered {
-            ctx.painter.circle_stroke(screen, radius + 2.0, egui::Stroke::new(1.5, egui::Color32::WHITE));
+        let x_end = origin.offset(axis_length, 0.0, 0.0);
+        if let Some(proj_x) = camera_controller.camera.project(x_end) {
+            let screen_x = egui::pos2(center.x + proj_x.x * half_width, center.y - proj_x.y * half_height);
+            painter.line_segment([screen_origin, screen_x], axis_stroke_x);
+        }
+        
+        let y_end = origin.offset(0.0, axis_length, 0.0);
+        if let Some(proj_y) = camera_controller.camera.project(y_end) {
+            let screen_y = egui::pos2(center.x + proj_y.x * half_width, center.y - proj_y.y * half_height);
+            painter.line_segment([screen_origin, screen_y], axis_stroke_y);
+        }
+        
+        let z_end = origin.offset(0.0, 0.0, axis_length);
+        if let Some(proj_z) = camera_controller.camera.project(z_end) {
+            let screen_z = egui::pos2(center.x + proj_z.x * half_width, center.y - proj_z.y * half_height);
+            painter.line_segment([screen_origin, screen_z], axis_stroke_z);
+        }
+    }
+    
+    let label_font = egui::FontId::monospace(12.0);
+    if let Some(proj_origin) = camera_controller.camera.project(origin) {
+        let screen_origin = egui::pos2(center.x + proj_origin.x * half_width, center.y - proj_origin.y * half_height);
+        
+        let x_end = origin.offset(axis_length, 0.0, 0.0);
+        if let Some(proj_x) = camera_controller.camera.project(x_end) {
+            let screen_x = egui::pos2(center.x + proj_x.x * half_width, center.y - proj_x.y * half_height);
+            painter.text(screen_x + egui::vec2(5.0, -10.0), egui::Align2::LEFT_CENTER, "X", label_font.clone(), egui::Color32::from_rgb(255, 100, 100));
+        }
+        
+        let y_end = origin.offset(0.0, axis_length, 0.0);
+        if let Some(proj_y) = camera_controller.camera.project(y_end) {
+            let screen_y = egui::pos2(center.x + proj_y.x * half_width, center.y - proj_y.y * half_height);
+            painter.text(screen_y + egui::vec2(5.0, -10.0), egui::Align2::LEFT_CENTER, "Y", label_font.clone(), egui::Color32::from_rgb(100, 255, 100));
+        }
+        
+        let z_end = origin.offset(0.0, 0.0, axis_length);
+        if let Some(proj_z) = camera_controller.camera.project(z_end) {
+            let screen_z = egui::pos2(center.x + proj_z.x * half_width, center.y - proj_z.y * half_height);
+            painter.text(screen_z + egui::vec2(5.0, -10.0), egui::Align2::LEFT_CENTER, "Z", label_font.clone(), egui::Color32::from_rgb(100, 100, 255));
         }
     }
 }

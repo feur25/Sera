@@ -46,6 +46,28 @@ impl AdvancedViewer3D {
             let zoom_factor = if scroll > 0.0 { 0.85 } else { 1.15 };
             self.camera_controller.zoom(zoom_factor);
         }
+        
+        let mut pan_dx = 0.0;
+        let mut pan_dy = 0.0;
+        
+        ui.input(|i| {
+            if i.key_pressed(egui::Key::ArrowLeft) || i.key_pressed(egui::Key::A) {
+                pan_dx -= 0.3;
+            }
+            if i.key_pressed(egui::Key::ArrowRight) || i.key_pressed(egui::Key::D) {
+                pan_dx += 0.3;
+            }
+            if i.key_pressed(egui::Key::ArrowUp) || i.key_pressed(egui::Key::W) {
+                pan_dy += 0.3;
+            }
+            if i.key_pressed(egui::Key::ArrowDown) || i.key_pressed(egui::Key::S) {
+                pan_dy -= 0.3;
+            }
+        });
+        
+        if pan_dx != 0.0 || pan_dy != 0.0 {
+            self.camera_controller.pan(pan_dx, pan_dy);
+        }
     }
 
     pub fn render_controls(&mut self, ui: &mut egui::Ui) {
@@ -80,10 +102,12 @@ impl AdvancedViewer3D {
         if self.show_info {
             ui.horizontal(|ui| {
                 ui.label(format!(
-                    "🎮 Souris: Cliquer+Glisser pour rotation | Molette pour zoom | Orbite: {:.2}° Élévation: {:.2}° | Zoom: {:.2}x",
+                    "🎮 Drag: Rotation | Scroll: Zoom | WASD/Arrows: Pan | Orbite: {:.2}° Élévation: {:.2}° | Zoom: {:.2}x | Pan: ({:.2}, {:.2})",
                     self.camera_controller.orbit_yaw.to_degrees(),
                     self.camera_controller.orbit_pitch.to_degrees(),
                     self.camera_controller.zoom,
+                    self.camera_controller.pan_x,
+                    self.camera_controller.pan_y,
                 ));
             });
         }

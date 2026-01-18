@@ -21,9 +21,10 @@ pub fn render_lines_3d(ctx: Line3DRenderContext) {
     let visible_count = ctx.visible_indices.len();
     let max_val = ctx.max_val.max(1.0);
     let center = ctx.plot_rect.center();
+    let half_width = ctx.plot_rect.width() / 2.0;
+    let half_height = ctx.plot_rect.height() / 2.0;
     
-    let container_size = 10.0;
-    let cube = Cube3DContainer::new(Point3D::new(0.0, 0.0, 0.0), container_size);
+    let cube = Cube3DContainer::new(Point3D::new(0.0, 0.0, 0.0), 0.5);
     
     render_scale_labels(ctx.painter, ctx.plot_rect, max_val);
     
@@ -33,23 +34,26 @@ pub fn render_lines_3d(ctx: Line3DRenderContext) {
         let value = ctx.values[actual_idx];
         let norm_val = ((value / max_val).min(1.0).max(0.0)) as f32;
         
-        let u = vis_idx as f32 / (visible_count as f32).max(1.0);
+        let u = vis_idx as f32 / ((visible_count - 1).max(1) as f32);
         let v = 0.5;
-        let w = 0.3 + norm_val * 0.4;
+        let w = norm_val;
         
         let point_3d = cube.point_normalized(u, v, w);
         
         if let Some(proj) = ctx.camera_controller.camera.project(point_3d) {
-            let scale = 0.5 / (point_3d.x.abs() + point_3d.y.abs() + point_3d.z.abs() + 1.0).max(1.0);
-            let screen_x = center.x + proj.x * ctx.plot_rect.width() * 0.2 * scale;
-            let screen_y = center.y + proj.y * ctx.plot_rect.height() * 0.2 * scale;
+            let screen_x = center.x + proj.x * half_width;
+            let screen_y = center.y - proj.y * half_height;
             let screen = egui::pos2(screen_x, screen_y);
             
-            let color = ctx.colors[actual_idx % ctx.colors.len()];
-            let depth = point_3d.x + point_3d.y + point_3d.z;
-            line_points.push((screen, color, actual_idx, depth));
+            if screen_x.is_finite() && screen_y.is_finite() {
+                let color = ctx.colors[actual_idx % ctx.colors.len()];
+                let depth = point_3d.z;
+                line_points.push((screen, color, actual_idx, depth));
+            }
         }
     }
+    
+    line_points.sort_by(|a, b| a.3.partial_cmp(&b.3).unwrap_or(std::cmp::Ordering::Equal));
     
     for i in 0..line_points.len() {
         let (screen, color, actual_idx, _) = line_points[i];
@@ -60,17 +64,17 @@ pub fn render_lines_3d(ctx: Line3DRenderContext) {
             color
         };
         
-        let radius = if is_hovered { 7.0 } else { 5.0 };
-        ctx.painter.circle_filled(screen, radius, display_color);
-        
         if i > 0 {
             let (prev_screen, _, _, _) = line_points[i - 1];
-            let line_width = if is_hovered { 3.5 } else { 2.8 };
+            let line_width = if is_hovered { 4.5 } else { 3.5 };
             ctx.painter.line_segment([prev_screen, screen], egui::Stroke::new(line_width, display_color));
         }
         
+        let radius = if is_hovered { 8.0 } else { 6.0 };
+        ctx.painter.circle_filled(screen, radius, display_color);
+        
         if is_hovered {
-            ctx.painter.circle_stroke(screen, radius + 2.0, egui::Stroke::new(1.5, egui::Color32::WHITE));
+            ctx.painter.circle_stroke(screen, radius + 2.0, egui::Stroke::new(2.0, egui::Color32::WHITE));
         }
     }
 }

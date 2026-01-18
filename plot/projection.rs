@@ -133,12 +133,20 @@ impl Matrix4x4 {
             }
         }
         
-        if result[3] != 0.0 {
-            let w = result[3];
-            Point3D::new(result[0] / w, result[1] / w, result[2] / w)
-        } else {
-            Point3D::new(result[0], result[1], result[2])
+        Point3D::new(result[0], result[1], result[2])
+    }
+
+    pub fn mul_vec_homo(&self, p: Point3D) -> [f32; 4] {
+        let v = [p.x, p.y, p.z, 1.0];
+        let mut result = [0.0; 4];
+        
+        for i in 0..4 {
+            for j in 0..4 {
+                result[i] += self.data[i][j] * v[j];
+            }
         }
+        
+        result
     }
 }
 
@@ -160,75 +168,65 @@ impl PerspectiveCamera {
             up: Point3D::new(0.0, 0.0, 1.0),
             fov,
             aspect,
-            near: 0.1,
-            far: 100.0,
+            near: 0.001,
+            far: 1000.0,
         }
-    }
-
-    pub fn view_matrix(&self) -> Matrix4x4 {
-        let f = Point3D::new(
-            self.target.x - self.eye.x,
-            self.target.y - self.eye.y,
-            self.target.z - self.eye.z,
-        );
-        
-        let f_len = (f.x * f.x + f.y * f.y + f.z * f.z).sqrt().max(0.001);
-        let f = Point3D::new(f.x / f_len, f.y / f_len, f.z / f_len);
-        
-        let s = Point3D::new(
-            f.y * self.up.z - f.z * self.up.y,
-            f.z * self.up.x - f.x * self.up.z,
-            f.x * self.up.y - f.y * self.up.x,
-        );
-        
-        let s_len = (s.x * s.x + s.y * s.y + s.z * s.z).sqrt().max(0.001);
-        let s = Point3D::new(s.x / s_len, s.y / s_len, s.z / s_len);
-        
-        let u = Point3D::new(
-            s.y * f.z - s.z * f.y,
-            s.z * f.x - s.x * f.z,
-            s.x * f.y - s.y * f.x,
-        );
-        
-        Matrix4x4 {
-            data: [
-                [s.x, u.x, -f.x, 0.0],
-                [s.y, u.y, -f.y, 0.0],
-                [s.z, u.z, -f.z, 0.0],
-                [
-                    -(s.x * self.eye.x + s.y * self.eye.y + s.z * self.eye.z),
-                    -(u.x * self.eye.x + u.y * self.eye.y + u.z * self.eye.z),
-                    f.x * self.eye.x + f.y * self.eye.y + f.z * self.eye.z,
-                    1.0,
-                ],
-            ],
-        }
-    }
-
-    pub fn projection_matrix(&self) -> Matrix4x4 {
-        Matrix4x4::perspective(self.fov, self.aspect, self.near, self.far)
     }
 
     pub fn project(&self, p: Point3D) -> Option<Point2D> {
-        let view = self.view_matrix();
-        let proj = self.projection_matrix();
-        let mvp = proj.mul(&view);
+        let f_x = self.target.x - self.eye.x;
+        let f_y = self.target.y - self.eye.y;
+        let f_z = self.target.z - self.eye.z;
+        let f_len = (f_x * f_x + f_y * f_y + f_z * f_z).sqrt();
         
-        let p_proj = mvp.mul_vec(p);
-        
-        let denom = p_proj.z.abs();
-        if denom < 0.01 {
+        if f_len < 0.0001 {
             return None;
         }
         
-        let x = p_proj.x / denom;
-        let y = p_proj.y / denom;
+        let f_x_n = f_x / f_len;
+        let f_y_n = f_y / f_len;
+        let f_z_n = f_z / f_len;
         
-        if x.is_nan() || y.is_nan() || x.is_infinite() || y.is_infinite() {
+        let r_x = self.up.y * f_z_n - self.up.z * f_y_n;
+        let r_y = self.up.z * f_x_n - self.up.x * f_z_n;
+        let r_z = self.up.x * f_y_n - self.up.y * f_x_n;
+        let r_len = (r_x * r_x + r_y * r_y + r_z * r_z).sqrt();
+        
+        let r_x = r_x / r_len.max(0.0001);
+        let r_y = r_y / r_len.max(0.0001);
+        let r_z = r_z / r_len.max(0.0001);
+        
+        let u_x = f_y_n * r_z - f_z_n * r_y;
+        let u_y = f_z_n * r_x - f_x_n * r_z;
+        let u_z = f_x_n * r_y - f_y_n * r_x;
+        
+        let p_x = p.x - self.eye.x;
+        let p_y = p.y - self.eye.y;
+        let p_z = p.z - self.eye.z;
+        
+        let depth = p_x * f_x_n + p_y * f_y_n + p_z * f_z_n;
+        
+        if depth < self.near || depth > self.far {
             return None;
         }
         
-        Some(Point2D::new(x, y))
+        let x_cam = p_x * r_x + p_y * r_y + p_z * r_z;
+        let y_cam = p_x * u_x + p_y * u_y + p_z * u_z;
+        
+        let tan_half = (self.fov / 2.0).tan();
+        let scale = tan_half * self.aspect;
+        let x_screen = (x_cam / depth) / scale;
+        let y_screen = (y_cam / depth) / tan_half;
+        
+        if !x_screen.is_finite() || !y_screen.is_finite() {
+            return None;
+        }
+        
+        if x_screen.abs() > 2.0 || y_screen.abs() > 2.0 {
+            return None;
+        }
+        
+        Some(Point2D::new(x_screen, y_screen))
     }
 }
 
