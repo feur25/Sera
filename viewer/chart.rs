@@ -229,7 +229,7 @@ impl ChartApp {
         let plot_width = 1400.0_f32 * self.zoom;
         let plot_height = 600.0_f32 * self.zoom;
         let padding_left = 80.0_f32;
-        let padding_bottom = 140.0_f32;
+        let padding_bottom = 100.0_f32;
         let padding_top = 20.0_f32;
         let padding_right = 20.0_f32;
         
@@ -246,7 +246,14 @@ impl ChartApp {
                     egui::Vec2::new(plot_width, plot_height)
                 );
                 
-                painter.rect_stroke(plot_rect, 1.0, egui::Stroke::new(1.5, egui::Color32::from_gray(200)));
+                painter.line_segment(
+                    [egui::pos2(plot_rect.left(), plot_rect.bottom()), egui::pos2(plot_rect.right(), plot_rect.bottom())],
+                    egui::Stroke::new(1.5, egui::Color32::from_gray(200))
+                );
+                painter.line_segment(
+                    [egui::pos2(plot_rect.left(), plot_rect.top()), egui::pos2(plot_rect.left(), plot_rect.bottom())],
+                    egui::Stroke::new(1.5, egui::Color32::from_gray(200))
+                );
                 
                 let font_size = if self.zoom < 0.8 { 9.0 } else if self.zoom > 1.5 { 12.0 } else { 11.0 };
                 
@@ -268,22 +275,14 @@ impl ChartApp {
                 
                 for (i, label) in d.labels.iter().enumerate() {
                     let x = plot_rect.left() + (plot_width / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
-                    let char_offset = 8.0;
-                    let angle_step = font_size * 0.65;
                     
-                    for (char_idx, ch) in label.chars().enumerate() {
-                        let offset = char_idx as f32 * angle_step;
-                        let x_pos = x + offset * 0.707;
-                        let y_pos = plot_rect.bottom() + 15.0 + offset * 0.707;
-                        
-                        painter.text(
-                            egui::pos2(x_pos, y_pos),
-                            egui::Align2::CENTER_CENTER,
-                            &ch.to_string(),
-                            egui::FontId::proportional(font_size * 0.85),
-                            egui::Color32::from_gray(70)
-                        );
-                    }
+                    painter.text(
+                        egui::pos2(x, plot_rect.bottom() + 25.0),
+                        egui::Align2::CENTER_TOP,
+                        label,
+                        egui::FontId::proportional(font_size * 0.85),
+                        egui::Color32::from_gray(70)
+                    );
                 }
                 
                 for (idx, (x, y)) in d.labels.iter().zip(d.values.iter()).enumerate() {
@@ -364,7 +363,7 @@ impl ChartApp {
         
         let plot_width = 600.0_f32 * self.zoom;
         let plot_height = 1400.0_f32 * self.zoom;
-        let padding_left = 120.0_f32;
+        let padding_left = 80.0_f32;
         let padding_bottom = 80.0_f32;
         let padding_top = 20.0_f32;
         let padding_right = 20.0_f32;
@@ -382,7 +381,14 @@ impl ChartApp {
                     egui::Vec2::new(plot_width, plot_height)
                 );
                 
-                painter.rect_stroke(plot_rect, 1.0, egui::Stroke::new(1.5, egui::Color32::from_gray(200)));
+                painter.line_segment(
+                    [egui::pos2(plot_rect.left(), plot_rect.bottom()), egui::pos2(plot_rect.right(), plot_rect.bottom())],
+                    egui::Stroke::new(1.5, egui::Color32::from_gray(200))
+                );
+                painter.line_segment(
+                    [egui::pos2(plot_rect.left(), plot_rect.top()), egui::pos2(plot_rect.left(), plot_rect.bottom())],
+                    egui::Stroke::new(1.5, egui::Color32::from_gray(200))
+                );
                 
                 let font_size = if self.zoom < 0.8 { 9.0 } else if self.zoom > 1.5 { 12.0 } else { 11.0 };
                 
@@ -404,21 +410,14 @@ impl ChartApp {
                 
                 for (i, label) in d.labels.iter().enumerate() {
                     let y = plot_rect.top() + (plot_height / (d.labels.len() as f32 - 1.0).max(1.0)) * i as f32;
-                    let angle_step = font_size * 0.65;
                     
-                    for (char_idx, ch) in label.chars().enumerate() {
-                        let offset = char_idx as f32 * angle_step;
-                        let x_pos = plot_rect.left() - 110.0 + offset * 0.707;
-                        let y_pos = y - offset * 0.707;
-                        
-                        painter.text(
-                            egui::pos2(x_pos, y_pos),
-                            egui::Align2::CENTER_CENTER,
-                            &ch.to_string(),
-                            egui::FontId::proportional(font_size * 0.85),
-                            egui::Color32::from_gray(70)
-                        );
-                    }
+                    painter.text(
+                        egui::pos2(plot_rect.left() - 15.0, y),
+                        egui::Align2::RIGHT_CENTER,
+                        label,
+                        egui::FontId::proportional(font_size * 0.85),
+                        egui::Color32::from_gray(70)
+                    );
                 }
                 
                 for (idx, (x, y)) in d.labels.iter().zip(d.values.iter()).enumerate() {
