@@ -618,7 +618,7 @@ impl ChartApp {
             });
     }
 
-    fn render_3d_viewer(&mut self, _ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
+    fn render_3d_viewer(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
         self.advanced_viewer_3d.render_controls(ui);
         
         let (response, painter) = ui.allocate_painter(
@@ -627,7 +627,6 @@ impl ChartApp {
         );
         
         let center = response.rect.center();
-        painter.circle_filled(center, 5.0, egui::Color32::RED);
         
         if response.drag_started() {
             self.advanced_viewer_3d.is_dragging = true;
@@ -689,6 +688,58 @@ impl ChartApp {
             &visible_indices,
             &self.advanced_viewer_3d.camera_controller,
         );
+        
+        for &actual_idx in &visible_indices {
+            if self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false) && !d.hover_data[actual_idx].is_empty() {
+                let hover_data = &d.hover_data[actual_idx];
+                let mut tooltip_text = String::new();
+                for (key, value) in hover_data {
+                    tooltip_text.push_str(&format!("{}: {}\n", key, value));
+                }
+                
+                if let Some(pos) = ctx.pointer_latest_pos() {
+                    let bg_color = egui::Color32::from_rgba_unmultiplied(
+                        d.tooltip_bg_color.0,
+                        d.tooltip_bg_color.1,
+                        d.tooltip_bg_color.2,
+                        d.tooltip_bg_color.3,
+                    );
+                    let text_color = egui::Color32::from_rgba_unmultiplied(
+                        d.tooltip_text_color.0,
+                        d.tooltip_text_color.1,
+                        d.tooltip_text_color.2,
+                        d.tooltip_text_color.3,
+                    );
+                    let job = egui::text::LayoutJob::single_section(
+                        tooltip_text.trim().to_string(),
+                        egui::TextFormat {
+                            font_id: egui::FontId::monospace(11.0),
+                            color: text_color,
+                            ..Default::default()
+                        },
+                    );
+                    let galley = ctx.fonts(|f| f.layout_job(job));
+                    let rect = egui::Rect::from_min_size(pos + egui::vec2(10.0, 10.0), galley.size());
+                    painter.rect_filled(rect.expand(5.0), 3.0, bg_color);
+                    painter.galley(rect.min, galley, text_color);
+                }
+            }
+        }
+        
+        if response.hovered() {
+            if let Some(pos) = ctx.pointer_latest_pos() {
+                let rel_pos = pos - response.rect.min;
+                let rect_width = response.rect.width();
+                let norm_x = rel_pos.x / rect_width;
+                let num_visible = visible_indices.len() as f32;
+                let idx = ((norm_x * num_visible).floor() as usize).min(visible_indices.len().saturating_sub(1));
+                if idx < visible_indices.len() {
+                    self.hovered_idx = Some(visible_indices[idx]);
+                }
+            }
+        } else {
+            self.hovered_idx = None;
+        }
     }
 
     fn apply_processor_filter(&mut self) {
@@ -835,7 +886,7 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         orientation: true,
         sort_mode: 0,
         current_chart_kind: 1,
-        is_3d_mode: true,
+        is_3d_mode: false,
         camera_controller: CameraController::default(),
         advanced_viewer_3d: AdvancedViewer3D::new(),
         processor_mode: 0,

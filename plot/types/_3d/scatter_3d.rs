@@ -1,7 +1,6 @@
 use super::super::super::containers_3d::{CameraController, Cube3DContainer};
 use super::super::super::camera::Point3D;
 use super::scale_renderer::render_scale_labels;
-use super::sphere_renderer::render_sphere_3d;
 
 pub struct Scatter3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -63,7 +62,7 @@ pub fn render_points_3d(ctx: Scatter3DRenderContext) {
     to_render.sort_by(|a, b| a.3.partial_cmp(&b.3).unwrap_or(std::cmp::Ordering::Equal));
     
     for (pos, color, _, _) in to_render {
-        ctx.painter.circle_filled(pos, 3.0, color);
+        ctx.painter.circle_filled(pos, 9.0, color);
     }
 }
 
