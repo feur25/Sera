@@ -50,8 +50,7 @@ pub trait PointMapper: Sized {
 pub struct VerticalMapper;
 impl PointMapper for VerticalMapper {
     fn map(&self, idx: usize, point: &ChartPoint, max_val: f64, plot_rect: egui::Rect) -> egui::Pos2 {
-        let frac = if idx == 0 { 0.0 } else { idx as f32 / 5.0f32.max(1.0) };
-        let x = plot_rect.left() + frac * plot_rect.width();
+        let x = plot_rect.left() + ((idx as f32 + 0.5) / 10.0) * plot_rect.width();
         let norm_y = (point.value / max_val.max(1.0)) as f32;
         let y = plot_rect.bottom() - norm_y * plot_rect.height();
         egui::pos2(x, y)
@@ -61,10 +60,11 @@ impl PointMapper for VerticalMapper {
         if rel_pos.x < 0.0 || rel_pos.x > plot_rect.width() || rel_pos.y < 0.0 || rel_pos.y > plot_rect.height() {
             return None;
         }
+        let visible_count = config.visible_points().len();
+        if visible_count == 0 { return None; }
         let norm_x = rel_pos.x / plot_rect.width();
-        let idx = ((norm_x * (config.points.len() as f32 - 1.0)).round() as usize)
-            .min(config.points.len().saturating_sub(1));
-        config.points.get(idx).and_then(|p| if p.visible { Some(idx) } else { None })
+        let vis_idx = ((norm_x * visible_count as f32) as usize).min(visible_count - 1);
+        Some(vis_idx)
     }
 }
 
@@ -73,8 +73,7 @@ impl PointMapper for HorizontalMapper {
     fn map(&self, idx: usize, point: &ChartPoint, max_val: f64, plot_rect: egui::Rect) -> egui::Pos2 {
         let norm_x = (point.value / max_val.max(1.0)) as f32;
         let x = plot_rect.left() + norm_x * plot_rect.width();
-        let frac = if idx == 0 { 0.0 } else { idx as f32 / 5.0f32.max(1.0) };
-        let y = plot_rect.top() + frac * plot_rect.height();
+        let y = plot_rect.top() + ((idx as f32 + 0.5) / 10.0) * plot_rect.height();
         egui::pos2(x, y)
     }
 
@@ -82,10 +81,11 @@ impl PointMapper for HorizontalMapper {
         if rel_pos.x < 0.0 || rel_pos.x > plot_rect.width() || rel_pos.y < 0.0 || rel_pos.y > plot_rect.height() {
             return None;
         }
+        let visible_count = config.visible_points().len();
+        if visible_count == 0 { return None; }
         let norm_y = rel_pos.y / plot_rect.height();
-        let idx = ((norm_y * (config.points.len() as f32 - 1.0)).round() as usize)
-            .min(config.points.len().saturating_sub(1));
-        config.points.get(idx).and_then(|p| if p.visible { Some(idx) } else { None })
+        let vis_idx = ((norm_y * visible_count as f32) as usize).min(visible_count - 1);
+        Some(vis_idx)
     }
 }
 
@@ -373,11 +373,17 @@ impl<M: PointMapper, S: RenderStrategy, T: TooltipHandler> GenericRenderer<M, S,
         draw_axes(&painter, plot_rect);
         draw_scale(&painter, plot_rect, max_val, dims.width > dims.height);
 
-        for (idx, point) in config.points.iter().enumerate() {
-            if !point.visible { continue; }
-            let pos = self.mapper.map(idx, point, max_val, plot_rect);
-            let is_hovered = hovered_idx.map(|h| h == idx).unwrap_or(false);
-            self.strategy.draw_point(&painter, pos, idx, is_hovered);
+        let visible_indices: Vec<usize> = config.points.iter()
+            .enumerate()
+            .filter(|(_, p)| p.visible)
+            .map(|(i, _)| i)
+            .collect();
+
+        for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
+            let point = &config.points[actual_idx];
+            let pos = self.mapper.map(vis_idx, point, max_val, plot_rect);
+            let is_hovered = hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
+            self.strategy.draw_point(&painter, pos, actual_idx, is_hovered);
             if is_hovered {
                 self.tooltip.render_tooltip(&painter, ctx, point, pos, config.zoom);
             }
@@ -386,7 +392,9 @@ impl<M: PointMapper, S: RenderStrategy, T: TooltipHandler> GenericRenderer<M, S,
         if response.hovered() {
             if let Some(pos) = ctx.pointer_latest_pos() {
                 let rel_pos = pos - plot_rect.min;
-                *hovered_idx = self.mapper.detect(rel_pos, plot_rect, config);
+                if let Some(vis_idx) = self.mapper.detect(rel_pos, plot_rect, config) {
+                    *hovered_idx = Some(visible_indices[vis_idx]);
+                }
             }
         }
     }

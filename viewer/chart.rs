@@ -134,6 +134,9 @@ impl eframe::App for ChartApp {
         if let Ok(sort) = CHART_SORT.lock() {
             self.sort_mode = *sort;
         }
+        if let Ok(kind) = CHART_KIND.lock() {
+            self.current_chart_kind = *kind;
+        }
         
         egui::TopBottomPanel::top("controls").show(ctx, |ui| {
             ui.horizontal(|ui| {
@@ -379,6 +382,7 @@ impl eframe::App for ChartApp {
                         
                         if ui.button(&button_text).clicked() {
                             self.current_chart_kind = *kind;
+                            sera_set_current_chart_kind(*kind);
                         }
                     }
                 });
@@ -411,7 +415,7 @@ impl ChartApp {
         self.render_plot(ctx, ui, d, false, 0);
     }
 
-    fn render_plot(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData, vertical: bool, _chart_type: u8) {
+    fn render_plot(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData, vertical: bool, chart_type: u8) {
         let renderer = GenericPlotRenderer { vertical };
         let metrics = if vertical { PlotMetrics::vertical(self.zoom) } else { PlotMetrics::horizontal(self.zoom) };
         let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
@@ -424,19 +428,153 @@ impl ChartApp {
         let plot_rect = metrics.with_rect(response.rect.min);
         renderer.render_axes(&painter, plot_rect, max_val);
         
-        for (idx, value) in d.values.iter().enumerate() {
-            if idx >= self.visible_elements.len() || !self.visible_elements[idx] { continue; }
-            let pos = renderer.map_point(idx, *value, max_val, d.values.len(), plot_rect);
-            let is_hovered = self.hovered_idx.map(|h| h == idx).unwrap_or(false);
-            let (radius, color) = if is_hovered { (6.0, egui::Color32::from_rgb(255, 200, 0)) } else { (4.0, egui::Color32::from_rgb(100, 150, 255)) };
-            painter.circle_filled(pos, radius, color);
+        let visible_indices: Vec<usize> = (0..d.values.len())
+            .filter(|&i| i < self.visible_elements.len() && self.visible_elements[i])
+            .collect();
+        let visible_count = visible_indices.len();
+        
+        let colors = vec![
+            egui::Color32::from_rgb(31, 119, 180),
+            egui::Color32::from_rgb(255, 127, 14),
+            egui::Color32::from_rgb(44, 160, 44),
+            egui::Color32::from_rgb(214, 39, 40),
+            egui::Color32::from_rgb(148, 103, 189),
+            egui::Color32::from_rgb(140, 86, 75),
+            egui::Color32::from_rgb(227, 119, 194),
+            egui::Color32::from_rgb(127, 127, 127),
+            egui::Color32::from_rgb(188, 143, 143),
+            egui::Color32::from_rgb(23, 190, 207),
+        ];
+        
+        if chart_type == 0 && visible_count > 1 {
+            let mut prev_pos: Option<egui::Pos2> = None;
+            for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
+                let value = d.values[actual_idx];
+                let pos = renderer.map_point(vis_idx, value, max_val, visible_count, plot_rect);
+                
+                let color = colors[actual_idx % colors.len()];
+                if let Some(p) = prev_pos {
+                    painter.line_segment([p, pos], egui::Stroke::new(2.0, color));
+                }
+                
+                let is_hovered = self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
+                let (radius, display_color) = if is_hovered { 
+                    (6.0, egui::Color32::from_rgb(255, 200, 0)) 
+                } else { 
+                    (4.0, color) 
+                };
+                painter.circle_filled(pos, radius, display_color);
+                prev_pos = Some(pos);
+            }
+        } else if chart_type == 2 {
+            for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
+                let value = d.values[actual_idx];
+                let pos = renderer.map_point(vis_idx, value, max_val, visible_count, plot_rect);
+                
+                let color = colors[actual_idx % colors.len()];
+                let is_hovered = self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
+                let bar_width = (plot_rect.width() / visible_count as f32) * 0.6;
+                let bar_height = pos.y - plot_rect.bottom();
+                
+                let rect = if vertical {
+                    egui::Rect::from_min_size(
+                        egui::pos2(pos.x - bar_width / 2.0, plot_rect.bottom()),
+                        egui::vec2(bar_width, -bar_height),
+                    )
+                } else {
+                    egui::Rect::from_min_size(
+                        egui::pos2(plot_rect.left(), pos.y - bar_width / 2.0),
+                        egui::vec2(bar_height, bar_width),
+                    )
+                };
+                
+                let display_color = if is_hovered { 
+                    egui::Color32::from_rgb(255, 200, 0) 
+                } else { 
+                    color 
+                };
+                painter.rect_filled(rect, 0.0, display_color);
+            }
+        } else {
+            for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
+                let value = d.values[actual_idx];
+                let pos = renderer.map_point(vis_idx, value, max_val, visible_count, plot_rect);
+                let is_hovered = self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
+                
+                let color = colors[actual_idx % colors.len()];
+                let (radius, display_color) = if is_hovered { 
+                    (6.0, egui::Color32::from_rgb(255, 200, 0)) 
+                } else { 
+                    (4.0, color) 
+                };
+                painter.circle_filled(pos, radius, display_color);
+            }
+        }
+        
+        for &actual_idx in &visible_indices {
+            let value = d.values[actual_idx];
+            let vis_idx = visible_indices.iter().position(|&i| i == actual_idx).unwrap();
+            let pos = renderer.map_point(vis_idx, value, max_val, visible_count, plot_rect);
+            let is_hovered = self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
+            
+            if is_hovered && !d.hover_data[actual_idx].is_empty() {
+                let hover = &d.hover_data[actual_idx];
+                let mut image_url = String::new();
+                let mut text_lines = Vec::new();
+                
+                for (k, v) in hover {
+                    if k == "image" {
+                        image_url = v.clone();
+                    } else {
+                        text_lines.push(format!("{}: {}", k, v));
+                    }
+                }
+                
+                let tooltip_x = pos.x + 15.0;
+                let mut tooltip_y = pos.y - 80.0;
+                
+                if !image_url.is_empty() {
+                    if let Some(color_img) = self.image_loader.load_image(&image_url) {
+                        let img_size = 60.0;
+                        let img_rect = egui::Rect::from_min_size(
+                            egui::pos2(tooltip_x, tooltip_y),
+                            egui::vec2(img_size, img_size),
+                        );
+                        let texture = ctx.load_texture("tooltip_img", color_img, egui::TextureOptions::LINEAR);
+                        painter.image(texture.id(), img_rect, egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)), egui::Color32::WHITE);
+                        tooltip_y += img_size + 8.0;
+                    }
+                }
+                
+                let text_color = egui::Color32::from_rgba_unmultiplied(
+                    d.tooltip_text_color.0, 
+                    d.tooltip_text_color.1, 
+                    d.tooltip_text_color.2, 
+                    d.tooltip_text_color.3
+                );
+                
+                for line in text_lines {
+                    painter.text(
+                        egui::pos2(tooltip_x, tooltip_y), 
+                        egui::Align2::LEFT_TOP, 
+                        &line, 
+                        egui::FontId::proportional(11.0), 
+                        text_color
+                    );
+                    tooltip_y += 15.0;
+                }
+            }
         }
         
         if response.hovered() {
             if let Some(pos) = ctx.pointer_latest_pos() {
                 let rel_pos = pos - plot_rect.min;
-                self.hovered_idx = renderer.detect_hover(rel_pos, plot_rect, d.values.len());
+                if let Some(vis_idx) = renderer.detect_hover(rel_pos, plot_rect, visible_count) {
+                    self.hovered_idx = Some(visible_indices[vis_idx]);
+                }
             }
+        } else {
+            self.hovered_idx = None;
         }
     }
 
