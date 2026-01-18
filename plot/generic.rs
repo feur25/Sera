@@ -1,6 +1,5 @@
 use super::renderers::{ChartConfig, ChartPoint, hsv_to_rgb};
 use std::marker::PhantomData;
-use std::collections::HashMap;
 
 pub struct PlotState {
     pub dims: PlotDimensions,
@@ -152,10 +151,38 @@ impl TooltipHandler for DefaultTooltipHandler {
     }
 }
 
+pub struct TooltipStyle {
+    pub bg: (u8, u8, u8, u8),
+    pub text: (u8, u8, u8, u8),
+}
+
+impl TooltipStyle {
+    pub fn default_dark() -> Self {
+        Self {
+            bg: (30, 30, 40, 220),
+            text: (255, 255, 255, 255),
+        }
+    }
+
+    pub fn new(bg: (u8, u8, u8, u8), text: (u8, u8, u8, u8)) -> Self {
+        Self { bg, text }
+    }
+}
+
 pub struct RichTooltipHandler {
     pub tooltip_bg: (u8, u8, u8, u8),
     pub tooltip_text: (u8, u8, u8, u8),
     pub image_loader: Option<std::sync::Arc<dyn std::any::Any>>,
+}
+
+impl RichTooltipHandler {
+    pub fn with_style(style: TooltipStyle) -> Self {
+        Self {
+            tooltip_bg: style.bg,
+            tooltip_text: style.text,
+            image_loader: None,
+        }
+    }
 }
 
 impl TooltipHandler for RichTooltipHandler {
@@ -212,7 +239,7 @@ impl TooltipHandler for RichTooltipHandler {
         let mut field_offset = if has_image { 130.0 * zoom } else { 15.0 * zoom };
 
         if has_image {
-            if let Some(img_path) = point.hover_data.get("image") {
+            if let Some(_img_path) = point.hover_data.get("image") {
                 painter.text(
                     egui::pos2(tooltip_x + tooltip_w / 2.0, tooltip_y + 10.0 * zoom),
                     egui::Align2::CENTER_TOP,
@@ -368,5 +395,41 @@ impl<M: PointMapper, S: RenderStrategy, T: TooltipHandler> GenericRenderer<M, S,
                 *hovered_idx = self.mapper.detect(rel_pos, plot_rect, config);
             }
         }
+    }
+}
+
+pub struct ChartBuilder<M: PointMapper, S: RenderStrategy> {
+    mapper: M,
+    strategy: S,
+    tooltip_style: Option<TooltipStyle>,
+}
+
+impl<M: PointMapper, S: RenderStrategy> ChartBuilder<M, S> {
+    pub fn new(mapper: M, strategy: S) -> Self {
+        Self {
+            mapper,
+            strategy,
+            tooltip_style: None,
+        }
+    }
+
+    pub fn with_tooltip_style(mut self, style: TooltipStyle) -> Self {
+        self.tooltip_style = Some(style);
+        self
+    }
+
+    pub fn with_default_tooltip(mut self) -> Self {
+        self.tooltip_style = Some(TooltipStyle::default_dark());
+        self
+    }
+
+    pub fn build(self) -> GenericRenderer<M, S, RichTooltipHandler> {
+        let tooltip_style = self.tooltip_style.unwrap_or_else(TooltipStyle::default_dark);
+        let tooltip = RichTooltipHandler::with_style(tooltip_style);
+        GenericRenderer::with_tooltip(self.mapper, self.strategy, tooltip)
+    }
+
+    pub fn build_default(self) -> GenericRenderer<M, S, DefaultTooltipHandler> {
+        GenericRenderer::new(self.mapper, self.strategy)
     }
 }

@@ -1,6 +1,6 @@
 use crate::core::*;
 use crate::data::loader::CsvData;
-use crate::data::processor::{Dataset, DataPoint, DataProcessor, PipelineBuilder};
+use crate::data::processor::{Dataset, DataPoint};
 use crate::plot::Canvas;
 use egui_plot::{Plot, Line, PlotPoints};
 
@@ -297,7 +297,7 @@ impl eframe::App for ViewerApp {
 pub fn run_viewer() -> Result<(), eframe::Error> {
     let options = eframe::NativeOptions::default();
     eframe::run_native(
-        "SeraPlot - CSV Viewer",
+        "seraplot",
         options,
         Box::new(|cc| Box::new(ViewerApp::new(cc))),
     )

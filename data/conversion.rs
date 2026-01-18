@@ -1,5 +1,5 @@
 use super::loader::CsvData;
-use super::processor::{Dataset, DataPoint, DataProcessor, PipelineBuilder, AggregationBuilder};
+use super::processor::{Dataset, DataPoint, DataProcessor, AggregationBuilder};
 use std::collections::HashMap;
 
 pub trait ToCsvDataset {

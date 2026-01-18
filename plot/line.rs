@@ -27,7 +27,7 @@ impl RenderStrategy for LineStrategy {
         }
     }
 
-    fn draw_point(&self, painter: &egui::Painter, pos: egui::Pos2, idx: usize, is_hovered: bool) {
+    fn draw_point(&self, painter: &egui::Painter, pos: egui::Pos2, _idx: usize, is_hovered: bool) {
         let (radius, color) = if is_hovered {
             (6.0, egui::Color32::from_rgb(255, 200, 0))
         } else {
@@ -44,14 +44,10 @@ pub fn render_line_vertical(
     ui: &mut egui::Ui,
     hovered_idx: &mut Option<usize>,
 ) {
-    let dims = PlotDimensions::vertical(config.zoom);
-    let tooltip = RichTooltipHandler {
-        tooltip_bg: (30, 30, 40, 220),
-        tooltip_text: (255, 255, 255, 255),
-        image_loader: None,
-    };
-    let renderer = GenericRenderer::with_tooltip(VerticalMapper, LineStrategy, tooltip);
-    renderer.render(config, ctx, ui, dims, hovered_idx);
+    let renderer = ChartBuilder::new(VerticalMapper, LineStrategy)
+        .with_default_tooltip()
+        .build();
+    renderer.render(config, ctx, ui, PlotDimensions::vertical(config.zoom), hovered_idx);
 }
 
 pub fn render_line_horizontal(
@@ -60,12 +56,8 @@ pub fn render_line_horizontal(
     ui: &mut egui::Ui,
     hovered_idx: &mut Option<usize>,
 ) {
-    let dims = PlotDimensions::horizontal(config.zoom);
-    let tooltip = RichTooltipHandler {
-        tooltip_bg: (30, 30, 40, 220),
-        tooltip_text: (255, 255, 255, 255),
-        image_loader: None,
-    };
-    let renderer = GenericRenderer::with_tooltip(HorizontalMapper, LineStrategy, tooltip);
-    renderer.render(config, ctx, ui, dims, hovered_idx);
+    let renderer = ChartBuilder::new(HorizontalMapper, LineStrategy)
+        .with_default_tooltip()
+        .build();
+    renderer.render(config, ctx, ui, PlotDimensions::horizontal(config.zoom), hovered_idx);
 }

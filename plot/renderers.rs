@@ -53,6 +53,43 @@ impl ChartConfig {
     }
 }
 
+pub struct ChartConfigBuilder {
+    config: ChartConfig,
+}
+
+impl ChartConfigBuilder {
+    pub fn new(title: impl Into<String>) -> Self {
+        Self {
+            config: ChartConfig::new(title),
+        }
+    }
+
+    pub fn zoom(mut self, zoom: f32) -> Self {
+        self.config.zoom = zoom;
+        self
+    }
+
+    pub fn orientation(mut self, vertical: bool) -> Self {
+        self.config.orientation = vertical;
+        self
+    }
+
+    pub fn tooltip_colors(mut self, bg: (u8, u8, u8, u8), text: (u8, u8, u8, u8)) -> Self {
+        self.config.tooltip_bg = bg;
+        self.config.tooltip_text = text;
+        self
+    }
+
+    pub fn add_point(mut self, label: String, value: f64, hover_data: HashMap<String, String>) -> Self {
+        self.config.add_point(label, value, hover_data);
+        self
+    }
+
+    pub fn build(self) -> ChartConfig {
+        self.config
+    }
+}
+
 pub trait ChartRenderer {
     fn render_vertical(&self, ctx: &egui::Context, ui: &mut egui::Ui);
     fn render_horizontal(&self, ctx: &egui::Context, ui: &mut egui::Ui);
