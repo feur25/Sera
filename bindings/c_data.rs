@@ -240,3 +240,50 @@ pub extern "C" fn sera_math_moving_average(values: *const f64, len: usize, windo
 pub extern "C" fn sera_version() -> *const u8 {
     crate::VERSION.as_ptr()
 }
+
+#[no_mangle]
+pub extern "C" fn sera_chart_kind_name(kind: u8) -> *const u8 {
+    let name = match kind {
+        0 => "Line",
+        1 => "Scatter",
+        2 => "Bar",
+        3 => "Area",
+        4 => "Histogram",
+        5 => "Box",
+        6 => "Violin",
+        7 => "Heatmap",
+        8 => "Contour",
+        9 => "Surface",
+        10 => "Bubble",
+        11 => "Candlestick",
+        12 => "Waterfall",
+        13 => "Funnel",
+        14 => "Sunburst",
+        15 => "Treemap",
+        16 => "Sankey",
+        _ => "Unknown",
+    };
+    name.as_ptr()
+}
+
+#[no_mangle]
+pub extern "C" fn sera_chart_can_transform(from_kind: u8, to_kind: u8) -> bool {
+    let compatible_1d = [0, 1, 2, 3, 4, 5, 6, 12, 13];
+    let compatible_2d = [7, 8, 9, 15, 16];
+    let compatible_dist = [4, 5, 6];
+    let compatible_special = [10, 11, 14];
+
+    let from_cat = if compatible_1d.contains(&from_kind) { 0 }
+        else if compatible_2d.contains(&from_kind) { 1 }
+        else if compatible_dist.contains(&from_kind) { 2 }
+        else if compatible_special.contains(&from_kind) { 3 }
+        else { 99 };
+
+    let to_cat = if compatible_1d.contains(&to_kind) { 0 }
+        else if compatible_2d.contains(&to_kind) { 1 }
+        else if compatible_dist.contains(&to_kind) { 2 }
+        else if compatible_special.contains(&to_kind) { 3 }
+        else { 99 };
+
+    from_cat == to_cat
+}
