@@ -1,5 +1,5 @@
 use super::super::super::generic::*;
-use super::super::super::camera::Camera3D;
+use super::super::super::camera::{Camera3D, Point3D};
 
 pub struct Line3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -18,53 +18,55 @@ pub fn render_lines_3d(ctx: Line3DRenderContext) {
         return;
     }
     
-    let visible_count = ctx.visible_indices.len();
-    let depth = ctx.camera.depth_scale;
+    let norm_height = ctx.plot_rect.height();
+    let center_x = ctx.plot_rect.center().x;
+    let center_y = ctx.plot_rect.center().y;
     
-    let mut prev_pos: Option<egui::Pos2> = None;
-    let mut prev_back_pos: Option<egui::Pos2> = None;
+    let points: Vec<_> = ctx.visible_indices.iter().enumerate()
+        .map(|(vis_idx, &actual_idx)| {
+            let value = ctx.values[actual_idx];
+            let norm_val = value / ctx.max_val.max(1.0);
+            let height = norm_val * norm_height as f64;
+            
+            let p_front = Point3D::new(vis_idx as f32, 0.5, height as f32);
+            let p_back = Point3D::new(vis_idx as f32, 0.8, height as f32);
+            
+            let proj_front = ctx.camera.project(p_front);
+            let proj_back = ctx.camera.project(p_back);
+            
+            let screen_front = egui::pos2(center_x + proj_front.x, center_y - proj_front.y);
+            let screen_back = egui::pos2(center_x + proj_back.x, center_y - proj_back.y);
+            
+            let color = ctx.colors[actual_idx % ctx.colors.len()];
+            let is_hovered = ctx.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
+            let display_color = if is_hovered {
+                egui::Color32::from_rgb(255, 200, 0)
+            } else {
+                color
+            };
+            
+            (screen_front, screen_back, display_color, actual_idx)
+        })
+        .collect();
     
-    for (vis_idx, &actual_idx) in ctx.visible_indices.iter().enumerate() {
-        let value = ctx.values[actual_idx];
-        let norm_val = value / ctx.max_val.max(1.0);
+    for i in 0..points.len() {
+        let (front, back, color, _) = points[i];
         
-        let x = ctx.plot_rect.left() + (ctx.plot_rect.width() / (visible_count as f32 - 1.0).max(1.0)) * vis_idx as f32;
-        let y = ctx.plot_rect.bottom() - norm_val as f32 * ctx.plot_rect.height();
+        ctx.painter.circle_filled(front, 4.0, color);
+        ctx.painter.circle_filled(back, 3.5, shade_color(color, 0.8));
+        ctx.painter.line_segment([front, back], egui::Stroke::new(1.5, shade_color(color, 0.6)));
         
-        let pos = egui::pos2(x, y);
-        let (offset_x, offset_y) = ctx.camera.back_offset(depth * ctx.plot_rect.width());
-        let back_x = x + offset_x;
-        let back_y = y + offset_y;
-        let back_pos = egui::pos2(back_x, back_y);
-        
-        let color = ctx.colors[actual_idx % ctx.colors.len()];
-        let is_hovered = ctx.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
-        let display_color = if is_hovered {
-            egui::Color32::from_rgb(255, 200, 0)
-        } else {
-            color
-        };
-        
-        let darker_color = egui::Color32::from_rgb(
-            (color.r() as f32 * 0.6) as u8,
-            (color.g() as f32 * 0.6) as u8,
-            (color.b() as f32 * 0.6) as u8,
-        );
-        
-        if let Some(p) = prev_pos {
-            let prev_back = prev_back_pos.unwrap();
-            
-            ctx.painter.line_segment([p, pos], egui::Stroke::new(2.5, display_color));
-            ctx.painter.line_segment([prev_back, back_pos], egui::Stroke::new(2.5, darker_color));
-            
-            ctx.painter.line_segment([p, prev_back], egui::Stroke::new(1.5, darker_color));
+        if i > 0 {
+            let (prev_front, _, _, _) = points[i - 1];
+            ctx.painter.line_segment([prev_front, front], egui::Stroke::new(2.0, color));
         }
-        
-        ctx.painter.circle_filled(pos, 5.0, display_color);
-        ctx.painter.circle_filled(back_pos, 4.0, darker_color);
-        ctx.painter.line_segment([pos, back_pos], egui::Stroke::new(1.0, darker_color));
-        
-        prev_pos = Some(pos);
-        prev_back_pos = Some(back_pos);
     }
+}
+
+fn shade_color(color: egui::Color32, factor: f32) -> egui::Color32 {
+    egui::Color32::from_rgb(
+        (color.r() as f32 * factor) as u8,
+        (color.g() as f32 * factor) as u8,
+        (color.b() as f32 * factor) as u8,
+    )
 }

@@ -1,5 +1,5 @@
 use super::super::super::generic::*;
-use super::super::super::camera::Camera3D;
+use super::super::super::camera::{Camera3D, Point3D, Cube3D};
 
 pub struct Bar3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -15,19 +15,28 @@ pub struct Bar3DRenderContext<'a> {
 
 pub fn render_bars_3d(ctx: Bar3DRenderContext) {
     let visible_count = ctx.visible_indices.len();
-    let depth_scale = ctx.camera.depth_scale;
+    let bar_width = ctx.plot_rect.width() / (visible_count as f32).max(1.0) * 0.6;
+    let norm_height = ctx.plot_rect.height();
     
     for (vis_idx, &actual_idx) in ctx.visible_indices.iter().enumerate() {
         let value = ctx.values[actual_idx];
         let norm_val = value / ctx.max_val.max(1.0);
+        let height = norm_val as f32 * norm_height;
         
-        let x = ctx.plot_rect.left() + (ctx.plot_rect.width() / (visible_count as f32 - 1.0).max(1.0)) * vis_idx as f32;
-        let bar_width = (ctx.plot_rect.width() / visible_count as f32) * 0.5;
-        let bar_height = norm_val as f32 * ctx.plot_rect.height();
-        let bar_depth = bar_width * depth_scale;
+        let cube = Cube3D::new(
+            Point3D::new(vis_idx as f32, 0.25, height / 2.0),
+            bar_width,
+            0.5,
+            height,
+        );
         
-        let top_y = ctx.plot_rect.bottom() - bar_height;
-        let base_y = ctx.plot_rect.bottom();
+        let projected = cube.project_all(ctx.camera);
+        let center_x = ctx.plot_rect.center().x;
+        let center_y = ctx.plot_rect.center().y;
+        
+        let screen_pts: [egui::Pos2; 8] = projected.map(|p| {
+            egui::pos2(center_x + p.x, center_y - p.y)
+        });
         
         let color = ctx.colors[actual_idx % ctx.colors.len()];
         let is_hovered = ctx.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
@@ -37,50 +46,37 @@ pub fn render_bars_3d(ctx: Bar3DRenderContext) {
             color
         };
         
-        let front_left = egui::pos2(x - bar_width / 2.0, top_y);
-        let front_right = egui::pos2(x + bar_width / 2.0, top_y);
-        let front_bottom_left = egui::pos2(x - bar_width / 2.0, base_y);
-        let front_bottom_right = egui::pos2(x + bar_width / 2.0, base_y);
-        
-        let (back_offset_x, back_offset_y) = ctx.camera.back_offset(bar_depth);
-        
-        let back_left = egui::pos2(front_left.x + back_offset_x, front_left.y + back_offset_y);
-        let back_right = egui::pos2(front_right.x + back_offset_x, front_right.y + back_offset_y);
-        let back_bottom_left = egui::pos2(front_bottom_left.x + back_offset_x, front_bottom_left.y + back_offset_y);
-        let back_bottom_right = egui::pos2(front_bottom_right.x + back_offset_x, front_bottom_right.y + back_offset_y);
-        
-        let darker_color = egui::Color32::from_rgb(
-            (display_color.r() as f32 * 0.7) as u8,
-            (display_color.g() as f32 * 0.7) as u8,
-            (display_color.b() as f32 * 0.7) as u8,
-        );
-        
-        let darkest_color = egui::Color32::from_rgb(
-            (display_color.r() as f32 * 0.5) as u8,
-            (display_color.g() as f32 * 0.5) as u8,
-            (display_color.b() as f32 * 0.5) as u8,
-        );
-        
-        ctx.painter.rect_filled(
-            egui::Rect::from_two_pos(front_left, front_bottom_right),
-            0.0,
-            display_color,
-        );
-        
-        let top_face = [front_left, front_right, back_right, back_left];
-        ctx.painter.rect_filled(
-            egui::Rect::from_two_pos(top_face[0], back_right),
-            0.0,
-            darker_color,
-        );
-        
-        ctx.painter.line_segment([front_left, back_left], egui::Stroke::new(1.0, darkest_color));
-        ctx.painter.line_segment([front_right, back_right], egui::Stroke::new(1.0, darkest_color));
-        ctx.painter.line_segment([front_bottom_left, back_bottom_left], egui::Stroke::new(1.0, darkest_color));
-        ctx.painter.line_segment([front_bottom_right, back_bottom_right], egui::Stroke::new(1.0, darkest_color));
-        
-        ctx.painter.line_segment([back_left, back_right], egui::Stroke::new(1.0, darkest_color));
-        ctx.painter.line_segment([back_left, back_bottom_left], egui::Stroke::new(1.0, darkest_color));
-        ctx.painter.line_segment([back_right, back_bottom_right], egui::Stroke::new(1.0, darkest_color));
+        render_cube_faces(ctx.painter, &screen_pts, display_color);
     }
+}
+
+fn render_cube_faces(painter: &egui::Painter, pts: &[egui::Pos2; 8], color: egui::Color32) {
+    let darker = shade_color(color, 0.7);
+    let darkest = shade_color(color, 0.5);
+    
+    render_quad(painter, [pts[0], pts[1], pts[5], pts[4]], color);
+    render_quad(painter, [pts[1], pts[2], pts[6], pts[5]], darker);
+    render_quad(painter, [pts[3], pts[7], pts[6], pts[2]], darker);
+    render_quad(painter, [pts[0], pts[4], pts[7], pts[3]], darkest);
+    
+    for edge in &[[pts[4], pts[5]], [pts[5], pts[6]], [pts[6], pts[7]], [pts[7], pts[4]]] {
+        painter.line_segment(*edge, egui::Stroke::new(1.0, darkest));
+    }
+}
+
+fn render_quad(painter: &egui::Painter, points: [egui::Pos2; 4], color: egui::Color32) {
+    for i in 0..4 {
+        painter.line_segment(
+            [points[i], points[(i + 1) % 4]],
+            egui::Stroke::new(1.0, color),
+        );
+    }
+}
+
+fn shade_color(color: egui::Color32, factor: f32) -> egui::Color32 {
+    egui::Color32::from_rgb(
+        (color.r() as f32 * factor) as u8,
+        (color.g() as f32 * factor) as u8,
+        (color.b() as f32 * factor) as u8,
+    )
 }

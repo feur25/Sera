@@ -377,21 +377,15 @@ impl eframe::App for ChartApp {
                 (2u8, "Bar"),
             ];
             
-            let chart_types_3d = [
-                (3u8, "Line 3D"),
-                (4u8, "Scatter 3D"),
-                (5u8, "Bar 3D"),
-            ];
-            
             egui::Window::new("Transform")
                 .open(&mut self.show_transform_menu)
-                .default_width(250.0)
+                .default_width(200.0)
                 .show(ctx, |ui| {
-                    ui.label("2D Charts");
+                    ui.label("Chart Types");
                     ui.separator();
                     
                     for (kind, name) in &chart_types {
-                        let is_selected = self.current_chart_kind == *kind && !self.is_3d_mode;
+                        let is_selected = self.current_chart_kind == *kind;
                         let button_text = if is_selected {
                             format!("[{}]", name)
                         } else {
@@ -400,27 +394,6 @@ impl eframe::App for ChartApp {
                         
                         if ui.button(&button_text).clicked() {
                             self.current_chart_kind = *kind;
-                            self.is_3d_mode = false;
-                            sera_set_current_chart_kind(*kind);
-                        }
-                    }
-                    
-                    ui.separator();
-                    ui.label("3D Charts");
-                    ui.separator();
-                    
-                    for (kind, name) in &chart_types_3d {
-                        let base_kind = *kind - 3;
-                        let is_selected = self.current_chart_kind == base_kind && self.is_3d_mode;
-                        let button_text = if is_selected {
-                            format!("[{}]", name)
-                        } else {
-                            name.to_string()
-                        };
-                        
-                        if ui.button(&button_text).clicked() {
-                            self.current_chart_kind = base_kind;
-                            self.is_3d_mode = true;
                             sera_set_current_chart_kind(*kind);
                         }
                     }
