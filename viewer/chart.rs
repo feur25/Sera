@@ -3,6 +3,7 @@ use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::collections::HashMap;
 use super::image_loader::ImageLoader;
+use super::cache::{RenderCache, ColorCache, CacheKey};
 use crate::plot::types::{BarRenderContext, render_plot_by_type, render_plot_3d_by_type};
 use crate::plot::Camera3D;
 
@@ -123,6 +124,9 @@ struct ChartApp {
     current_chart_kind: u8,
     is_3d_mode: bool,
     camera_3d: Camera3D,
+    render_cache: RenderCache,
+    color_cache: ColorCache,
+    last_data_hash: u64,
     #[allow(dead_code)]
     processor_mode: u8,
     filter_threshold: f64,
@@ -224,6 +228,23 @@ impl eframe::App for ChartApp {
                 tooltip_text_color: d.tooltip_text_color,
             });
             drop(data);
+            
+            if let Some(ref d) = d_clone {
+                let mut data_hash = 0u64;
+                for &val in &d.values {
+                    data_hash = data_hash.wrapping_mul(31).wrapping_add(val.to_bits() as u64);
+                }
+                
+                if data_hash != self.last_data_hash {
+                    self.last_data_hash = data_hash;
+                    let new_cache_key = CacheKey {
+                        chart_type: self.current_chart_kind,
+                        is_3d: false,
+                        vertical: self.orientation,
+                    };
+                    self.render_cache.invalidate_except(new_cache_key);
+                }
+            }
             
             if let Some(mut d) = d_clone {
                 let mut indices: Vec<usize> = (0..d.values.len()).collect();
@@ -432,6 +453,13 @@ impl ChartApp {
         let metrics = if vertical { PlotMetrics::vertical(self.zoom) } else { PlotMetrics::horizontal(self.zoom) };
         let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
         
+        let cache_key = CacheKey {
+            chart_type,
+            is_3d: self.is_3d_mode,
+            vertical,
+        };
+        self.render_cache.update_active(cache_key);
+        
         egui::ScrollArea::both()
             .auto_shrink([false; 2])
             .show(ui, |ui| {
@@ -448,18 +476,7 @@ impl ChartApp {
                     .collect();
                 let visible_count = visible_indices.len();
                 
-                let colors = vec![
-                    egui::Color32::from_rgb(31, 119, 180),
-                    egui::Color32::from_rgb(255, 127, 14),
-                    egui::Color32::from_rgb(44, 160, 44),
-                    egui::Color32::from_rgb(214, 39, 40),
-                    egui::Color32::from_rgb(148, 103, 189),
-                    egui::Color32::from_rgb(140, 86, 75),
-                    egui::Color32::from_rgb(227, 119, 194),
-                    egui::Color32::from_rgb(127, 127, 127),
-                    egui::Color32::from_rgb(188, 143, 143),
-                    egui::Color32::from_rgb(23, 190, 207),
-                ];
+                let colors = self.color_cache.colors().to_vec();
                 
                 render_plot_by_type(
                     chart_type,
@@ -752,6 +769,9 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         show_transform_menu: false,
         aggregation_results: HashMap::new(),
         limit_value: 50,
+        render_cache: RenderCache::new(),
+        color_cache: ColorCache::new(),
+        last_data_hash: 0,
     };
 
     let native_options = eframe::NativeOptions {
