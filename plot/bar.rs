@@ -1,6 +1,5 @@
 use super::generic::*;
 use super::renderers::ChartConfig;
-use std::collections::HashMap;
 
 pub struct BarRenderContext<'a> {
     pub painter: &'a egui::Painter,

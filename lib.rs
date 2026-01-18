@@ -4,6 +4,7 @@ pub mod plot;
 pub mod render;
 pub mod viewer;
 pub mod bindings;
+pub mod wiki;
 
 pub use core::types::{self, Layout};
 pub use core::math::{self, mean, median, std_dev};
@@ -21,6 +22,7 @@ pub use render::dim3d;
 pub use viewer::chart;
 pub use viewer::gui;
 pub use bindings::c;
+pub use wiki::{WikiExport, MethodDoc, ModuleDoc, WikiExtractor};
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
