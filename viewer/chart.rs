@@ -690,6 +690,7 @@ impl ChartApp {
                     d.tooltip_bg_color,
                     d.tooltip_text_color,
                     self.zoom,
+                    &self.image_loader,
                 );
             }
         }
@@ -786,6 +787,7 @@ impl ChartApp {
                     d.tooltip_bg_color,
                     d.tooltip_text_color,
                     self.zoom,
+                    &self.image_loader,
                 );
             }
         }
@@ -905,6 +907,7 @@ impl ChartApp {
                         d.tooltip_bg_color,
                         d.tooltip_text_color,
                         self.zoom,
+                        &self.image_loader,
                     );
                 }
             }
@@ -1024,6 +1027,7 @@ impl ChartApp {
                         d.tooltip_bg_color,
                         d.tooltip_text_color,
                         self.zoom,
+                        &self.image_loader,
                     );
                 }
             }
@@ -1126,6 +1130,7 @@ fn draw_hover_tooltip(
     tooltip_bg: (u8, u8, u8, u8),
     tooltip_text: (u8, u8, u8, u8),
     zoom: f32,
+    image_loader: &ImageLoader,
 ) {
     let field_count = hover_data.iter().filter(|(k, _)| k.as_str() != "image").count() as f32;
     let has_image = hover_data.contains_key("image");
@@ -1157,6 +1162,33 @@ fn draw_hover_tooltip(
     
     let (txt_r, txt_g, txt_b, txt_a) = tooltip_text;
     let text_color = egui::Color32::from_rgba_unmultiplied(txt_r, txt_g, txt_b, txt_a);
+    
+    if has_image {
+        if let Some(img_path) = hover_data.get("image") {
+            if let Some(color_img) = image_loader.load_image(img_path) {
+                let img_w = 80.0 * zoom;
+                let img_h = 80.0 * zoom;
+                let img_x = rect.center().x - img_w / 2.0;
+                let img_y = rect.min.y + 10.0 * zoom;
+                
+                let texture = ctx.load_texture("hover_img", color_img, Default::default());
+                painter.image(
+                    texture.id(),
+                    egui::Rect::from_min_size(egui::pos2(img_x, img_y), egui::vec2(img_w, img_h)),
+                    egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)),
+                    egui::Color32::WHITE
+                );
+            } else {
+                painter.text(
+                    egui::pos2(rect.center().x, rect.min.y + 30.0 * zoom),
+                    egui::Align2::CENTER_TOP,
+                    "🖼",
+                    egui::FontId::proportional(font_size * 2.0),
+                    text_color,
+                );
+            }
+        }
+    }
     
     let mut offset = if has_image { 90.0 * zoom } else { 8.0 * zoom };
     for (key, val) in hover_data.iter() {
