@@ -22,6 +22,9 @@ pub fn render_points_3d(ctx: Scatter3DRenderContext) {
     let max_val = ctx.max_val.max(1.0);
     let cube = Cube3DContainer::new(Point3D::new(0.0, 0.0, 0.0), 0.5);
     
+    render_grid_3d(&ctx.painter, &cube, ctx.camera_controller, ctx.plot_rect);
+    render_scale_labels(&ctx.painter, ctx.plot_rect, max_val);
+    
     let center = ctx.plot_rect.center();
     let half_width = ctx.plot_rect.width() / 2.0;
     let half_height = ctx.plot_rect.height() / 2.0;
@@ -64,6 +67,15 @@ pub fn render_points_3d(ctx: Scatter3DRenderContext) {
     for (pos, color, _, _) in to_render {
         ctx.painter.circle_filled(pos, 9.0, color);
     }
+}
+
+pub fn render_3d_grid(
+    painter: &egui::Painter,
+    cube: &Cube3DContainer,
+    camera_controller: &CameraController,
+    plot_rect: egui::Rect,
+) {
+    render_grid_3d(painter, cube, camera_controller, plot_rect);
 }
 
 fn render_grid_3d(

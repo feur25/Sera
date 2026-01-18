@@ -1,6 +1,7 @@
 use super::super::super::containers_3d::{CameraController, Cube3DContainer};
 use super::super::super::camera::Point3D;
 use super::scale_renderer::render_scale_labels;
+use super::scatter_3d::render_3d_grid;
 
 pub struct Bar3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -22,7 +23,7 @@ pub fn render_bars_3d(ctx: Bar3DRenderContext) {
     
     let cube = Cube3DContainer::new(Point3D::new(0.0, 0.0, 0.0), 0.5);
     
-    render_container_frame(ctx.painter, ctx.plot_rect, ctx.camera_controller);
+    render_3d_grid(ctx.painter, &cube, ctx.camera_controller, ctx.plot_rect);
     render_scale_labels(ctx.painter, ctx.plot_rect, max_val);
     
     let mut bars_to_render: Vec<(egui::Pos2, egui::Pos2, egui::Color32, usize, f32)> = Vec::new();

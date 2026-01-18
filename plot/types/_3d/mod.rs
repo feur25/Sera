@@ -9,7 +9,7 @@ use std::sync::LazyLock;
 
 pub use bar_3d::{render_bars_3d, Bar3DRenderContext};
 pub use line_3d::{render_lines_3d, Line3DRenderContext};
-pub use scatter_3d::{render_points_3d, Scatter3DRenderContext};
+pub use scatter_3d::{render_points_3d, Scatter3DRenderContext, render_3d_grid};
 
 pub struct Plot3DRegistry {
     renderers: HashMap<u8, (&'static str, u8)>,
