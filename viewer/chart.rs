@@ -6,6 +6,8 @@ use super::image_loader::ImageLoader;
 use super::plot_renderers::{TooltipRenderer, PointRenderer, BarRenderer};
 use super::plot_template::{PlotConfigBuilder, ConfigStore};
 use super::plot_generic::{DataPoint, RenderPayload, normalize_to_rect, filter_by_property};
+use crate::data::processor::{Dataset, DataProcessor, AggregationBuilder};
+use crate::data::conversion::ChartDataProcessor;
 
 #[derive(Clone)]
 struct PlotVariant {
@@ -39,6 +41,12 @@ struct ChartApp {
     config_store: Arc<ConfigStore>,
     plot_config: Arc<Mutex<super::plot_template::PlotConfig>>,
     current_sort_indices: Vec<usize>,
+    processor_mode: u8,
+    filter_threshold: f64,
+    show_stats: bool,
+    show_processor_menu: bool,
+    aggregation_results: HashMap<String, f64>,
+    limit_value: usize,
 }
 
 impl eframe::App for ChartApp {
@@ -73,6 +81,10 @@ impl eframe::App for ChartApp {
                     if ui.button("📊 Transform").clicked() {
                         self.show_transform_menu = !self.show_transform_menu;
                     }
+                }
+
+                if ui.button("⚙ Processor").clicked() {
+                    self.show_processor_menu = !self.show_processor_menu;
                 }
                 
                 if ui.button(if self.orientation { "📊 Vertical" } else { "📈 Horizontal" }).clicked() {
@@ -148,6 +160,83 @@ impl eframe::App for ChartApp {
             if should_close {
                 self.show_transform_menu = false;
             }
+        }
+
+        let mut action_type = 0;
+        
+        if self.show_processor_menu {
+            egui::Window::new("Data Processor")
+                .open(&mut self.show_processor_menu)
+                .show(ctx, |ui| {
+                    ui.heading("Processor Operations");
+                    
+                    if ui.button("🔽 Filter by Threshold").clicked() {
+                        self.processor_mode = 1;
+                    }
+                    if ui.button("✂ Limit Items").clicked() {
+                        self.processor_mode = 2;
+                    }
+                    if ui.button("📊 Show Statistics").clicked() {
+                        self.processor_mode = 3;
+                        self.show_stats = true;
+                        action_type = 1;
+                    }
+                    if ui.button("🔄 Reset").clicked() {
+                        self.processor_mode = 0;
+                        for visible in self.visible_elements.iter_mut() {
+                            *visible = true;
+                        }
+                    }
+
+                    ui.separator();
+
+                    match self.processor_mode {
+                        1 => {
+                            ui.label("Filter Threshold:");
+                            ui.add(egui::Slider::new(&mut self.filter_threshold, 0.0..=100.0));
+                            if ui.button("Apply Filter").clicked() {
+                                action_type = 2;
+                            }
+                        }
+                        2 => {
+                            ui.label("Item Limit:");
+                            let limit_str = self.limit_value.to_string();
+                            let mut limit_input = limit_str.clone();
+                            if ui.text_edit_singleline(&mut limit_input).changed() {
+                                if let Ok(val) = limit_input.parse::<usize>() {
+                                    self.limit_value = val;
+                                }
+                            }
+                            if ui.button("Apply Limit").clicked() {
+                                action_type = 3;
+                            }
+                        }
+                        3 => {
+                            ui.label("Computing statistics...");
+                        }
+                        _ => {}
+                    }
+                });
+        }
+        
+        match action_type {
+            1 => self.compute_statistics(),
+            2 => self.apply_processor_filter(),
+            3 => self.apply_processor_limit(),
+            _ => {}
+        }
+
+        if self.show_stats {
+            egui::Window::new("Statistics")
+                .open(&mut self.show_stats)
+                .show(ctx, |ui| {
+                    ui.heading("Data Statistics");
+                    ui.separator();
+
+                    for (key, value) in &self.aggregation_results {
+                        ui.label(format!("{}: {:.2}", key, value));
+                    }
+                });
         }
 
         egui::CentralPanel::default().show(ctx, |ui| {
@@ -247,6 +336,62 @@ impl ChartApp {
             Some(self.current_sort_indices[sort_idx])
         } else {
             None
+        }
+    }
+
+    fn compute_statistics(&mut self) {
+        let data = self.data.lock().unwrap();
+        if let Some(d) = data.as_ref() {
+            let values = d.values.clone();
+            let results = AggregationBuilder::new(values)
+                .sum()
+                .mean()
+                .min()
+                .max()
+                .count()
+                .median()
+                .stddev()
+                .build();
+            
+            self.aggregation_results.clear();
+            if let Some(v) = results.get("sum") {
+                self.aggregation_results.insert("Sum".to_string(), v);
+            }
+            if let Some(v) = results.get("mean") {
+                self.aggregation_results.insert("Mean".to_string(), v);
+            }
+            if let Some(v) = results.get("min") {
+                self.aggregation_results.insert("Min".to_string(), v);
+            }
+            if let Some(v) = results.get("max") {
+                self.aggregation_results.insert("Max".to_string(), v);
+            }
+            if let Some(v) = results.get("count") {
+                self.aggregation_results.insert("Count".to_string(), v);
+            }
+            if let Some(v) = results.get("median") {
+                self.aggregation_results.insert("Median".to_string(), v);
+            }
+            if let Some(v) = results.get("stddev") {
+                self.aggregation_results.insert("StdDev".to_string(), v);
+            }
+        }
+    }
+
+    fn apply_processor_filter(&mut self) {
+        let data = self.data.lock().unwrap();
+        if let Some(d) = data.as_ref() {
+            for (idx, &val) in d.values.iter().enumerate() {
+                if idx < self.visible_elements.len() {
+                    self.visible_elements[idx] = val >= self.filter_threshold;
+                }
+            }
+        }
+    }
+
+    fn apply_processor_limit(&mut self) {
+        for (idx, visible) in self.visible_elements.iter_mut().enumerate() {
+            *visible = idx < self.limit_value;
         }
     }
 
@@ -942,6 +1087,12 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         config_store: Arc::new(ConfigStore::new()),
         plot_config: Arc::new(Mutex::new(PlotConfigBuilder::new().width(1400.0).height(600.0).build())),
         current_sort_indices: (0..num_elements).collect(),
+        processor_mode: 0,
+        filter_threshold: 0.0,
+        show_stats: false,
+        show_processor_menu: false,
+        aggregation_results: HashMap::new(),
+        limit_value: 50,
     };
 
     let native_options = eframe::NativeOptions {
@@ -1046,6 +1197,12 @@ pub extern "C" fn sera_show_with_variants(
         config_store: Arc::new(ConfigStore::new()),
         plot_config: Arc::new(Mutex::new(PlotConfigBuilder::new().width(1400.0).height(600.0).build())),
         current_sort_indices: vec![],
+        processor_mode: 0,
+        filter_threshold: 0.0,
+        show_stats: false,
+        show_processor_menu: false,
+        aggregation_results: HashMap::new(),
+        limit_value: 50,
     };
 
     let native_options = eframe::NativeOptions {
