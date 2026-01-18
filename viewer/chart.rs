@@ -3,6 +3,8 @@ use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::collections::HashMap;
 use super::image_loader::ImageLoader;
+use crate::plot::{bar::BarRenderContext, line::LineRenderContext, scatter::ScatterRenderContext};
+use crate::plot::{bar::render_bars, line::render_lines, scatter::render_points};
 
 struct ChartData {
     labels: Vec<String>,
@@ -446,75 +448,60 @@ impl ChartApp {
             egui::Color32::from_rgb(23, 190, 207),
         ];
         
-        if chart_type == 0 && visible_count > 1 {
-            let mut prev_pos: Option<egui::Pos2> = None;
-            for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
-                let value = d.values[actual_idx];
-                let pos = renderer.map_point(vis_idx, value, max_val, visible_count, plot_rect);
-                
-                let color = colors[actual_idx % colors.len()];
-                if let Some(p) = prev_pos {
-                    painter.line_segment([p, pos], egui::Stroke::new(2.0, color));
-                }
-                
-                let is_hovered = self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
-                let (radius, display_color) = if is_hovered { 
-                    (6.0, egui::Color32::from_rgb(255, 200, 0)) 
-                } else { 
-                    (4.0, color) 
-                };
-                painter.circle_filled(pos, radius, display_color);
-                prev_pos = Some(pos);
-            }
-        } else if chart_type == 2 {
-            for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
-                let value = d.values[actual_idx];
-                let pos = renderer.map_point(vis_idx, value, max_val, visible_count, plot_rect);
-                
-                let color = colors[actual_idx % colors.len()];
-                let is_hovered = self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
-                let bar_width = (plot_rect.width() / visible_count as f32) * 0.6;
-                let bar_height = pos.y - plot_rect.bottom();
-                
-                let rect = if vertical {
-                    egui::Rect::from_min_size(
-                        egui::pos2(pos.x - bar_width / 2.0, plot_rect.bottom()),
-                        egui::vec2(bar_width, -bar_height),
-                    )
-                } else {
-                    egui::Rect::from_min_size(
-                        egui::pos2(plot_rect.left(), pos.y - bar_width / 2.0),
-                        egui::vec2(bar_height, bar_width),
-                    )
-                };
-                
-                let display_color = if is_hovered { 
-                    egui::Color32::from_rgb(255, 200, 0) 
-                } else { 
-                    color 
-                };
-                painter.rect_filled(rect, 0.0, display_color);
-            }
-        } else {
-            for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
-                let value = d.values[actual_idx];
-                let pos = renderer.map_point(vis_idx, value, max_val, visible_count, plot_rect);
-                let is_hovered = self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
-                
-                let color = colors[actual_idx % colors.len()];
-                let (radius, display_color) = if is_hovered { 
-                    (6.0, egui::Color32::from_rgb(255, 200, 0)) 
-                } else { 
-                    (4.0, color) 
-                };
-                painter.circle_filled(pos, radius, display_color);
+        match chart_type {
+            0 if visible_count > 1 => {
+                render_lines(LineRenderContext {
+                    painter: &painter,
+                    plot_rect,
+                    colors: &colors,
+                    hovered_idx: self.hovered_idx,
+                    values: &d.values,
+                    max_val,
+                    visible_indices: &visible_indices,
+                    vertical,
+                });
+            },
+            2 => {
+                render_bars(BarRenderContext {
+                    painter: &painter,
+                    plot_rect,
+                    colors: &colors,
+                    hovered_idx: self.hovered_idx,
+                    values: &d.values,
+                    max_val,
+                    visible_indices: &visible_indices,
+                    vertical,
+                });
+            },
+            _ => {
+                render_points(ScatterRenderContext {
+                    painter: &painter,
+                    plot_rect,
+                    colors: &colors,
+                    hovered_idx: self.hovered_idx,
+                    values: &d.values,
+                    max_val,
+                    visible_indices: &visible_indices,
+                    vertical,
+                });
             }
         }
         
         for &actual_idx in &visible_indices {
             let value = d.values[actual_idx];
             let vis_idx = visible_indices.iter().position(|&i| i == actual_idx).unwrap();
-            let pos = renderer.map_point(vis_idx, value, max_val, visible_count, plot_rect);
+            let norm_val = value / max_val.max(1.0);
+            
+            let pos = if vertical {
+                let x = plot_rect.left() + (plot_rect.width() / (visible_count as f32 - 1.0).max(1.0)) * vis_idx as f32;
+                let y = plot_rect.bottom() - norm_val as f32 * plot_rect.height();
+                egui::pos2(x, y)
+            } else {
+                let x = plot_rect.left() + norm_val as f32 * plot_rect.width();
+                let y = plot_rect.top() + (plot_rect.height() / (visible_count as f32 - 1.0).max(1.0)) * vis_idx as f32;
+                egui::pos2(x, y)
+            };
+            
             let is_hovered = self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
             
             if is_hovered && !d.hover_data[actual_idx].is_empty() {
