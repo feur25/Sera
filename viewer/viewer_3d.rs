@@ -72,29 +72,29 @@ impl AdvancedViewer3D {
 
     pub fn render_controls(&mut self, ui: &mut egui::Ui) {
         ui.horizontal(|ui| {
-            if ui.button("🔄 Rotation X").clicked() {
+            if ui.button("Rotation X").clicked() {
                 self.camera_controller.rotate_orbit(0.2, 0.0);
             }
-            if ui.button("🔄 Rotation Y").clicked() {
+            if ui.button("Rotation Y").clicked() {
                 self.camera_controller.rotate_orbit(0.0, 0.2);
             }
-            if ui.button("🔄 Rotation Z").clicked() {
+            if ui.button("Rotation Z").clicked() {
                 self.camera_controller.rotate_orbit(0.2, 0.2);
             }
             
             ui.separator();
             
-            if ui.button("🔍+ Zoom In").clicked() {
+            if ui.button("Zoom In").clicked() {
                 self.camera_controller.zoom(0.8);
             }
-            if ui.button("🔍- Zoom Out").clicked() {
+            if ui.button("Zoom Out").clicked() {
                 self.camera_controller.zoom(1.2);
             }
             if ui.button("↺ Reset").clicked() {
                 self.camera_controller.reset();
             }
             
-            if ui.button("ℹ️ Info").clicked() {
+            if ui.button("ℹInfo").clicked() {
                 self.show_info = !self.show_info;
             }
         });

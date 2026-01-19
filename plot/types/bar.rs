@@ -1,18 +1,4 @@
-use super::super::generic::*;
-use super::super::renderers::ChartConfig;
-
-pub struct BarRenderContext<'a> {
-    pub painter: &'a egui::Painter,
-    pub plot_rect: egui::Rect,
-    pub colors: &'a [egui::Color32],
-    pub hovered_idx: Option<usize>,
-    pub values: &'a [f64],
-    pub max_val: f64,
-    pub visible_indices: &'a [usize],
-    pub vertical: bool,
-}
-
-pub fn render_bars(ctx: BarRenderContext) {
+pub fn render_bars(ctx: super::PlotRenderContext) {
     let visible_count = ctx.visible_indices.len();
     
     for (vis_idx, &actual_idx) in ctx.visible_indices.iter().enumerate() {
@@ -53,38 +39,4 @@ pub fn render_bars(ctx: BarRenderContext) {
         };
         ctx.painter.rect_filled(rect, 0.0, display_color);
     }
-}
-
-fn render_bar_generic<M: PointMapper>(
-    config: &ChartConfig,
-    ctx: &egui::Context,
-    ui: &mut egui::Ui,
-    hovered_idx: &mut Option<usize>,
-    mapper: M,
-) {
-    let dims = if config.orientation {
-        PlotDimensions::vertical(config.zoom)
-    } else {
-        PlotDimensions::horizontal(config.zoom)
-    };
-    let renderer = GenericRenderer::new(mapper, BarRenderer);
-    renderer.render(config, ctx, ui, dims, hovered_idx);
-}
-
-pub fn render_bar_vertical(
-    config: &ChartConfig,
-    ctx: &egui::Context,
-    ui: &mut egui::Ui,
-    hovered_idx: &mut Option<usize>,
-) {
-    render_bar_generic(config, ctx, ui, hovered_idx, VerticalMapper);
-}
-
-pub fn render_bar_horizontal(
-    config: &ChartConfig,
-    ctx: &egui::Context,
-    ui: &mut egui::Ui,
-    hovered_idx: &mut Option<usize>,
-) {
-    render_bar_generic(config, ctx, ui, hovered_idx, HorizontalMapper);
 }

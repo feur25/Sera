@@ -6,11 +6,22 @@ pub mod _3d;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
-pub use bar::{render_bars, BarRenderContext};
-pub use line::{render_lines, LineRenderContext};
-pub use scatter::{render_points, ScatterRenderContext};
+pub use bar::render_bars;
+pub use line::render_lines;
+pub use scatter::render_points;
 pub use _3d::{render_plot_3d_by_type, Bar3DRenderContext, Line3DRenderContext, Scatter3DRenderContext};
 pub use _3d::{render_bars_3d, render_lines_3d, render_points_3d, get_3d_point_positions, get_3d_bar_positions, get_3d_line_positions};
+
+pub struct PlotRenderContext<'a> {
+    pub painter: &'a egui::Painter,
+    pub plot_rect: egui::Rect,
+    pub colors: &'a [egui::Color32],
+    pub hovered_idx: Option<usize>,
+    pub values: &'a [f64],
+    pub max_val: f64,
+    pub visible_indices: &'a [usize],
+    pub vertical: bool,
+}
 
 pub struct PlotRegistry {
     renderers: HashMap<u8, &'static str>,
@@ -44,38 +55,10 @@ impl PlotRegistry {
 
 pub static PLOT_REGISTRY: LazyLock<PlotRegistry> = LazyLock::new(PlotRegistry::new);
 
-pub fn render_plot_by_type(
-    chart_type: u8,
-    visible_count: usize,
-    ctx: BarRenderContext,
-) {
+pub fn render_plot_by_type(chart_type: u8, ctx: PlotRenderContext) {
     match chart_type {
-        0 if visible_count > 1 => {
-            render_lines(LineRenderContext {
-                painter: ctx.painter,
-                plot_rect: ctx.plot_rect,
-                colors: ctx.colors,
-                hovered_idx: ctx.hovered_idx,
-                values: ctx.values,
-                max_val: ctx.max_val,
-                visible_indices: ctx.visible_indices,
-                vertical: ctx.vertical,
-            });
-        }
-        2 => {
-            render_bars(ctx);
-        }
-        _ => {
-            render_points(ScatterRenderContext {
-                painter: ctx.painter,
-                plot_rect: ctx.plot_rect,
-                colors: ctx.colors,
-                hovered_idx: ctx.hovered_idx,
-                values: ctx.values,
-                max_val: ctx.max_val,
-                visible_indices: ctx.visible_indices,
-                vertical: ctx.vertical,
-            });
-        }
+        0 => render_lines(ctx),
+        2 => render_bars(ctx),
+        _ => render_points(ctx),
     }
 }

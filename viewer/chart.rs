@@ -5,7 +5,7 @@ use std::collections::HashMap;
 use super::image_loader::ImageLoader;
 use super::cache::{RenderCache, ColorCache, CacheKey};
 use super::viewer_3d::AdvancedViewer3D;
-use crate::plot::types::{BarRenderContext, render_plot_by_type, render_plot_3d_by_type};
+use crate::plot::types::{PlotRenderContext, render_plot_by_type, render_plot_3d_by_type};
 use crate::plot::CameraController;
 
 struct Hover3DDetector {
@@ -279,27 +279,7 @@ impl eframe::App for ChartApp {
                 }
             }
             
-            if let Some(mut d) = d_clone {
-                let mut indices: Vec<usize> = (0..d.values.len()).collect();
-                
-                if self.sort_mode == 1 {
-                    indices.sort_by(|&a, &b| {
-                        d.values[a].partial_cmp(&d.values[b]).unwrap_or(std::cmp::Ordering::Equal)
-                    });
-                } else if self.sort_mode == 2 {
-                    indices.sort_by(|&a, &b| {
-                        d.values[b].partial_cmp(&d.values[a]).unwrap_or(std::cmp::Ordering::Equal)
-                    });
-                }
-                
-                let sorted_labels: Vec<_> = indices.iter().map(|&i| d.labels[i].clone()).collect();
-                let sorted_values: Vec<_> = indices.iter().map(|&i| d.values[i]).collect();
-                let sorted_hover_data: Vec<_> = indices.iter().map(|&i| d.hover_data[i].clone()).collect();
-                
-                d.labels = sorted_labels;
-                d.values = sorted_values;
-                d.hover_data = sorted_hover_data;
-                
+            if let Some(d) = d_clone {
                 ui.vertical_centered(|ui| {
                     ui.heading(&d.title);
                 });
@@ -560,6 +540,23 @@ impl ChartApp {
         self.render_plot(ctx, ui, d, false, 0);
     }
 
+    fn get_sorted_visible_indices(&self, d: &ChartData) -> Vec<usize> {
+        let mut visible_indices: Vec<usize> = (0..d.values.len())
+            .filter(|i| i < &self.visible_elements.len() && self.visible_elements[*i])
+            .collect();
+
+        if self.sort_mode == 1 {
+            visible_indices.sort_by(|&a, &b| {
+                d.values[a].partial_cmp(&d.values[b]).unwrap_or(std::cmp::Ordering::Equal)
+            });
+        } else if self.sort_mode == 2 {
+            visible_indices.sort_by(|&a, &b| {
+                d.values[b].partial_cmp(&d.values[a]).unwrap_or(std::cmp::Ordering::Equal)
+            });
+        }
+        visible_indices
+    }
+
     fn render_plot(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData, vertical: bool, chart_type: u8) {
         let renderer = GenericPlotRenderer { vertical };
         let metrics = if vertical { PlotMetrics::vertical(self.zoom) } else { PlotMetrics::horizontal(self.zoom) };
@@ -583,17 +580,14 @@ impl ChartApp {
                 let plot_rect = metrics.with_rect(response.rect.min);
                 renderer.render_axes(&painter, plot_rect, max_val);
                 
-                let visible_indices: Vec<usize> = (0..d.values.len())
-                    .filter(|&i| i < self.visible_elements.len() && self.visible_elements[i])
-                    .collect();
+                let visible_indices = self.get_sorted_visible_indices(d);
                 let visible_count = visible_indices.len();
                 
                 let colors = self.color_cache.colors().to_vec();
                 
                 render_plot_by_type(
                     chart_type,
-                    visible_count,
-                    BarRenderContext {
+                    PlotRenderContext {
                         painter: &painter,
                         plot_rect,
                         colors: &colors,
@@ -663,8 +657,6 @@ impl ChartApp {
             egui::Sense::click_and_drag(),
         );
         
-        let center = response.rect.center();
-        
         if response.drag_started() {
             self.advanced_viewer_3d.is_dragging = true;
             self.advanced_viewer_3d.last_mouse_pos = response.interact_pointer_pos();
@@ -696,22 +688,10 @@ impl ChartApp {
         let rect_height = response.rect.height();
         self.advanced_viewer_3d.camera_controller.set_viewport(rect_width, rect_height);
         
-        // eprintln!("[RENDER_3D] d.values.len()={}, visible_elements.len()={}", d.values.len(), self.visible_elements.len());
-        
-        let visible_indices: Vec<usize> = (0..d.values.len())
-            .filter(|&i| i < self.visible_elements.len() && self.visible_elements[i])
-            .collect();
-        
-        let visible_indices = if visible_indices.is_empty() {
-            (0..d.values.len()).collect()
-        } else {
-            visible_indices
-        };
+        let visible_indices = self.get_sorted_visible_indices(d);
         
         let max_val = d.values.iter().copied().fold(0.0_f64, f64::max).max(1.0);
         let colors = self.color_cache.colors();
-        
-        // eprintln!("[RENDER_3D] max_val={}, colors.len()={}", max_val, colors.len());
         
         let chart_type = self.current_chart_kind;
         render_plot_3d_by_type(
