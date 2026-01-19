@@ -41,12 +41,14 @@ impl WikiExtractor {
     }
 
     pub fn export_markdown<P: AsRef<Path>>(&self, path: P, export: &crate::wiki::WikiExport) -> std::io::Result<()> {
-        let md = export.to_markdown();
+        let lang = crate::wiki::ProgrammingLanguage::Python;
+        let md = export.to_markdown(&lang);
         fs::write(path, md)
     }
 
     pub fn export_html<P: AsRef<Path>>(&self, path: P, export: &crate::wiki::WikiExport) -> std::io::Result<()> {
-        let html = export.to_html();
+        let lang = crate::wiki::ProgrammingLanguage::Python;
+        let html = export.to_html(&lang);
         fs::write(path, html)
     }
 
@@ -64,19 +66,21 @@ impl Default for WikiExtractor {
 pub fn create_method_doc(
     name: &str,
     module: &str,
-    signature: &str,
+    python_sig: &str,
     description: &str,
 ) -> MethodDoc {
     MethodDoc {
         name: name.to_string(),
         module: module.to_string(),
-        signature: signature.to_string(),
         description: description.to_string(),
         parameters: Vec::new(),
         returns: None,
         examples: Vec::new(),
         since_version: None,
         deprecated: false,
+        python_signature: python_sig.to_string(),
+        csharp_signature: String::new(),
+        cpp_signature: String::new(),
     }
 }
 

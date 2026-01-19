@@ -1,9 +1,10 @@
-use crate::wiki::WikiExport;
+use crate::wiki::{WikiExport, ProgrammingLanguage};
 
 pub struct WikiViewer {
     expanded_modules: Vec<bool>,
     expanded_methods: Vec<Vec<bool>>,
     wiki_data: Option<WikiExport>,
+    selected_language: ProgrammingLanguage,
 }
 
 impl WikiViewer {
@@ -21,12 +22,22 @@ impl WikiViewer {
             expanded_modules: vec![false; num_modules],
             expanded_methods,
             wiki_data: Some(wiki_data),
+            selected_language: ProgrammingLanguage::Python,
         }
     }
 
     pub fn render(&mut self, ui: &mut egui::Ui) {
         if let Some(wiki) = &self.wiki_data {
             ui.heading(format!("{} v{} - API Documentation", wiki.framework_name, wiki.version));
+            
+            ui.horizontal(|ui| {
+                ui.label("Language:");
+                for lang in ProgrammingLanguage::all() {
+                    if ui.selectable_value(&mut self.selected_language, lang.clone(), lang.name()).clicked() {
+                        self.selected_language = lang;
+                    }
+                }
+            });
             ui.separator();
 
             egui::ScrollArea::vertical()
@@ -77,7 +88,12 @@ impl WikiViewer {
 
         if is_expanded {
             ui.indent("method_content", |ui| {
-                ui.monospace(&method.signature);
+                let sig = match &self.selected_language {
+                    ProgrammingLanguage::Python => &method.python_signature,
+                    ProgrammingLanguage::CSharp => &method.csharp_signature,
+                    ProgrammingLanguage::Cpp => &method.cpp_signature,
+                };
+                ui.monospace(sig);
 
                 ui.label(&method.description);
 
@@ -98,7 +114,8 @@ impl WikiViewer {
                     ui.label("Examples:");
                     ui.indent("examples", |ui| {
                         for example in &method.examples {
-                            ui.monospace(example);
+                            let code = example.get(&self.selected_language);
+                            ui.monospace(code);
                         }
                     });
                 }
@@ -133,6 +150,7 @@ impl WikiViewerBuilder {
                 expanded_modules: Vec::new(),
                 expanded_methods: Vec::new(),
                 wiki_data: None,
+                selected_language: ProgrammingLanguage::Python,
             }
         }
     }
