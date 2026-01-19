@@ -7,6 +7,7 @@ use super::cache::{RenderCache, ColorCache, CacheKey};
 use super::viewer_3d::AdvancedViewer3D;
 use super::wiki_viewer::WikiViewer;
 use super::manager::button_manager::{ButtonManager, ButtonId};
+use super::fast_render_gui::BatchRenderer;
 use crate::plot::types::{PlotRenderContext, render_plot_by_type, render_plot_3d_by_type};
 use crate::plot::CameraController;
 
@@ -162,6 +163,7 @@ struct ChartApp {
     render_cache: RenderCache,
     color_cache: ColorCache,
     last_data_hash: u64,
+    last_render_state: (bool, u8, i32, bool),
     #[allow(dead_code)]
     processor_mode: u8,
     filter_threshold: f64,
@@ -174,6 +176,7 @@ struct ChartApp {
     button_manager: ButtonManager,
     aggregation_results: HashMap<String, f64>,
     limit_value: usize,
+    batch_renderer: BatchRenderer,
 }
 
 impl eframe::App for ChartApp {
@@ -285,8 +288,11 @@ impl eframe::App for ChartApp {
                     data_hash = data_hash.wrapping_mul(31).wrapping_add(val.to_bits() as u64);
                 }
                 
-                if data_hash != self.last_data_hash {
+                let render_state = (self.orientation, self.current_chart_kind, self.sort_mode, self.is_3d_mode);
+                
+                if data_hash != self.last_data_hash || render_state != self.last_render_state {
                     self.last_data_hash = data_hash;
+                    self.last_render_state = render_state;
                     let new_cache_key = CacheKey {
                         chart_type: self.current_chart_kind,
                         is_3d: false,
@@ -336,7 +342,7 @@ impl eframe::App for ChartApp {
                 ui.label("Waiting for data...");
             }
             
-            ctx.request_repaint();
+            ctx.request_repaint_after(std::time::Duration::from_millis(16));
         });
 
         if self.show_processor_menu {
@@ -590,7 +596,7 @@ impl ChartApp {
     fn render_plot(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData, vertical: bool, chart_type: u8) {
         let renderer = GenericPlotRenderer { vertical };
         let metrics = if vertical { PlotMetrics::vertical(self.zoom) } else { PlotMetrics::horizontal(self.zoom) };
-        let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b));
+        let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b)).max(1.0);
         
         let cache_key = CacheKey {
             chart_type,
@@ -600,9 +606,18 @@ impl ChartApp {
         };
         self.render_cache.update_active(cache_key);
         
+        let visible_indices = self.get_sorted_visible_indices(d);
+        let visible_count = visible_indices.len();
+        
+        if visible_count == 0 {
+            ui.label("No visible data");
+            return;
+        }
+        
+        let scroll_id = egui::Id::new((chart_type, vertical, self.sort_mode));
         egui::ScrollArea::both()
             .auto_shrink([false; 2])
-            .id_source((chart_type, vertical, self.sort_mode))
+            .id_source(scroll_id)
             .show(ui, |ui| {
                 let (response, painter) = ui.allocate_painter(
                     egui::Vec2::new(metrics.allocate_size().x, metrics.allocate_size().y),
@@ -610,62 +625,43 @@ impl ChartApp {
                 );
                 
                 let plot_rect = metrics.with_rect(response.rect.min);
-                renderer.render_axes(&painter, plot_rect, max_val);
+                renderer.render_axes(&painter, plot_rect, max_val as f64);
                 
-                let visible_indices = self.get_sorted_visible_indices(d);
-                let visible_count = visible_indices.len();
+                let colors = self.color_cache.colors();
+                let max_val_f64 = max_val as f64;
+                let plot_width = plot_rect.width();
+                let plot_height = plot_rect.height();
+                let plot_left = plot_rect.left();
+                let plot_bottom = plot_rect.bottom();
+                let plot_top = plot_rect.top();
                 
-                let colors = self.color_cache.colors().to_vec();
+                self.batch_renderer.clear();
+                let mut points: Vec<egui::Pos2> = Vec::with_capacity(visible_count);
                 
-                render_plot_by_type(
-                    chart_type,
-                    PlotRenderContext {
-                        painter: &painter,
-                        plot_rect,
-                        colors: &colors,
-                        hovered_idx: self.hovered_idx,
-                        values: &d.values,
-                        max_val,
-                        visible_indices: &visible_indices,
-                        vertical,
-                        labels: &d.labels,
-                    }
-                );
-                
-                if self.is_3d_mode {
-                    let chart_3d = chart_type + 3;
-                    render_plot_3d_by_type(
-                        chart_3d,
-                        &painter,
-                        plot_rect,
-                        &colors,
-                        self.hovered_idx,
-                        &d.values,
-                        max_val,
-                        &visible_indices,
-                        &self.camera_controller,
-                    );
-                }
-                
-                for &actual_idx in &visible_indices {
+                for (idx, &actual_idx) in visible_indices.iter().enumerate() {
                     let value = d.values[actual_idx];
-                    let vis_idx = visible_indices.iter().position(|&i| i == actual_idx).unwrap();
-                    let norm_val = value / max_val.max(1.0);
+                    let norm_val = (value / max_val_f64) as f32;
+                    let color_idx = actual_idx % colors.len();
                     
                     let pos = if vertical {
-                        let x = plot_rect.left() + (plot_rect.width() / (visible_count as f32 - 1.0).max(1.0)) * vis_idx as f32;
-                        let y = plot_rect.bottom() - norm_val as f32 * plot_rect.height();
+                        let x = plot_left + (plot_width / (visible_count as f32 - 1.0).max(1.0)) * idx as f32;
+                        let y = plot_bottom - norm_val * plot_height;
                         egui::pos2(x, y)
                     } else {
-                        let x = plot_rect.left() + norm_val as f32 * plot_rect.width();
-                        let y = plot_rect.top() + (plot_rect.height() / (visible_count as f32 - 1.0).max(1.0)) * vis_idx as f32;
+                        let x = plot_left + norm_val * plot_width;
+                        let y = plot_top + (plot_height / (visible_count as f32 - 1.0).max(1.0)) * idx as f32;
                         egui::pos2(x, y)
                     };
                     
-                    let is_hovered = self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
-                    
-                    if is_hovered {
-                        self.render_tooltip(ctx, &painter, pos, plot_rect, actual_idx, d);
+                    points.push(pos);
+                    self.batch_renderer.add_circle(pos, 4.0, colors[color_idx]);
+                }
+                
+                self.batch_renderer.flush(&painter);
+                
+                for (actual_idx, &point) in visible_indices.iter().zip(points.iter()) {
+                    if self.hovered_idx.map(|h| h == *actual_idx).unwrap_or(false) {
+                        self.render_tooltip(ctx, &painter, point, plot_rect, *actual_idx, d);
                     }
                 }
                 
@@ -943,6 +939,8 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         render_cache: RenderCache::new(),
         color_cache: ColorCache::new(),
         last_data_hash: 0,
+        last_render_state: (true, 1, 0, false),
+        batch_renderer: BatchRenderer::new(),
     };
 
     let native_options = eframe::NativeOptions {
