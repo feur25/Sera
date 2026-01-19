@@ -91,12 +91,26 @@ impl PlotMetrics {
 
 trait PlotRenderer {
     fn render_axes(&self, painter: &egui::Painter, plot_rect: egui::Rect, max_val: f64);
-    fn map_point(&self, idx: usize, value: f64, max_val: f64, point_count: usize, plot_rect: egui::Rect) -> egui::Pos2;
     fn detect_hover(&self, rel_pos: egui::Vec2, plot_rect: egui::Rect, point_count: usize) -> Option<usize>;
 }
 
 struct GenericPlotRenderer {
     vertical: bool,
+}
+
+impl GenericPlotRenderer {
+    fn map_point(&self, idx: usize, value: f64, max_val: f64, point_count: usize, plot_rect: egui::Rect) -> egui::Pos2 {
+        let norm_val = value / max_val.max(1.0);
+        if self.vertical {
+            let x = plot_rect.left() + (plot_rect.width() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
+            let y = plot_rect.bottom() - norm_val as f32 * plot_rect.height();
+            egui::pos2(x, y)
+        } else {
+            let x = plot_rect.left() + norm_val as f32 * plot_rect.width();
+            let y = plot_rect.top() + (plot_rect.height() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
+            egui::pos2(x, y)
+        }
+    }
 }
 
 impl PlotRenderer for GenericPlotRenderer {
@@ -121,19 +135,6 @@ impl PlotRenderer for GenericPlotRenderer {
                 (egui::pos2(x, plot_rect.bottom() + 15.0), egui::Align2::CENTER_TOP)
             };
             painter.text(pos, align, &format!("{:.1}", val), egui::FontId::proportional(font_size), egui::Color32::from_gray(100));
-        }
-    }
-
-    fn map_point(&self, idx: usize, value: f64, max_val: f64, point_count: usize, plot_rect: egui::Rect) -> egui::Pos2 {
-        let norm_val = value / max_val.max(1.0);
-        if self.vertical {
-            let x = plot_rect.left() + (plot_rect.width() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
-            let y = plot_rect.bottom() - norm_val as f32 * plot_rect.height();
-            egui::pos2(x, y)
-        } else {
-            let x = plot_rect.left() + norm_val as f32 * plot_rect.width();
-            let y = plot_rect.top() + (plot_rect.height() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
-            egui::pos2(x, y)
         }
     }
 
@@ -164,8 +165,6 @@ struct ChartApp {
     color_cache: ColorCache,
     last_data_hash: u64,
     last_render_state: (bool, u8, i32, bool),
-    #[allow(dead_code)]
-    processor_mode: u8,
     filter_threshold: f64,
     show_stats: bool,
     show_processor_menu: bool,
@@ -178,7 +177,6 @@ struct ChartApp {
     limit_value: usize,
     batch_renderer: AdvancedBatchRenderer,
     render_state: RenderState,
-    data_cache: DataCache,
 }
 
 impl eframe::App for ChartApp {
@@ -318,29 +316,7 @@ impl eframe::App for ChartApp {
                 } else if self.is_3d_mode {
                     self.render_3d_viewer(ctx, ui, &d);
                 } else {
-                    match self.current_chart_kind {
-                        0 => {
-                            if self.orientation {
-                                self.render_line_vertical(ctx, ui, &d);
-                            } else {
-                                self.render_line_horizontal(ctx, ui, &d);
-                            }
-                        }
-                        1 => {
-                            if self.orientation {
-                                self.render_scatter_vertical(ctx, ui, &d);
-                            } else {
-                                self.render_scatter_horizontal(ctx, ui, &d);
-                            }
-                        }
-                        _ => {
-                            if self.orientation {
-                                self.render_bar_vertical(ctx, ui, &d);
-                            } else {
-                                self.render_bar_horizontal(ctx, ui, &d);
-                            }
-                        }
-                    }
+                    self.render_plot(ctx, ui, &d, self.orientation, self.current_chart_kind);
                 }
             } else {
                 ui.label("Waiting for data...");
@@ -559,49 +535,17 @@ impl ChartApp {
         }
     }
 
-    fn render_bar_vertical(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        self.render_plot(ctx, ui, d, true, 2);
-    }
-
-    fn render_bar_horizontal(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        self.render_plot(ctx, ui, d, false, 2);
-    }
-
-    fn render_scatter_vertical(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        self.render_plot(ctx, ui, d, true, 1);
-    }
-
-    fn render_scatter_horizontal(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        self.render_plot(ctx, ui, d, false, 1);
-    }
-
-    fn render_line_vertical(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        self.render_plot(ctx, ui, d, true, 0);
-    }
-
-    fn render_line_horizontal(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
-        self.render_plot(ctx, ui, d, false, 0);
-    }
-
     fn get_sorted_visible_indices(&self, d: &ChartData) -> Vec<usize> {
-        let mut visible_indices: Vec<usize> = (0..d.values.len())
+        let mut visible = (0..d.values.len())
             .filter(|i| i < &self.visible_elements.len() && self.visible_elements[*i])
-            .collect();
+            .collect::<Vec<_>>();
 
         match self.sort_mode {
-            1 => {
-                visible_indices.sort_by(|&a, &b| {
-                    d.values[a].partial_cmp(&d.values[b]).unwrap_or(std::cmp::Ordering::Equal)
-                });
-            }
-            2 => {
-                visible_indices.sort_by(|&a, &b| {
-                    d.values[b].partial_cmp(&d.values[a]).unwrap_or(std::cmp::Ordering::Equal)
-                });
-            }
+            1 => visible.sort_by(|&a, &b| d.values[a].partial_cmp(&d.values[b]).unwrap_or(std::cmp::Ordering::Equal)),
+            2 => visible.sort_by(|&a, &b| d.values[b].partial_cmp(&d.values[a]).unwrap_or(std::cmp::Ordering::Equal)),
             _ => {}
         }
-        visible_indices
+        visible
     }
 
     fn render_plot(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData, vertical: bool, chart_type: u8) {
@@ -800,52 +744,48 @@ impl ChartApp {
     }
 
     fn apply_processor_filter(&mut self) {
-        let data = self.data.lock().unwrap();
-        if let Some(d) = data.as_ref() {
-            let threshold = self.filter_threshold.max(0.0).min(100.0) / 100.0;
-            let max_val = d.values.iter().copied().fold(0.0_f64, f64::max);
-            let cutoff = max_val * threshold;
-            for (idx, &value) in d.values.iter().enumerate() {
-                if idx < self.visible_elements.len() {
-                    self.visible_elements[idx] = value >= cutoff;
-                }
+        if let Ok(data) = self.data.lock() {
+            if let Some(d) = data.as_ref() {
+                let cutoff = d.values.iter().copied().fold(0.0_f64, f64::max) * self.filter_threshold.clamp(0.0, 100.0) / 100.0;
+                self.visible_elements = d.values.iter().enumerate()
+                    .map(|(idx, &value)| idx >= self.visible_elements.len() || value >= cutoff)
+                    .collect();
             }
         }
     }
 
     fn apply_processor_limit(&mut self) {
-        let data = self.data.lock().unwrap();
-        if let Some(d) = data.as_ref() {
-            let mut indices: Vec<usize> = (0..d.values.len()).collect();
-            indices.sort_by(|&a, &b| d.values[b].partial_cmp(&d.values[a]).unwrap_or(std::cmp::Ordering::Equal));
-            for (idx, &i) in indices.iter().enumerate() {
-                if i < self.visible_elements.len() {
-                    self.visible_elements[i] = idx < self.limit_value;
-                }
+        if let Ok(data) = self.data.lock() {
+            if let Some(d) = data.as_ref() {
+                let mut indices: Vec<usize> = (0..d.values.len()).collect();
+                indices.sort_by(|&a, &b| d.values[b].partial_cmp(&d.values[a]).unwrap_or(std::cmp::Ordering::Equal));
+                self.visible_elements = indices.iter().enumerate()
+                    .map(|(idx, &i)| i >= self.visible_elements.len() || idx < self.limit_value)
+                    .collect();
             }
         }
     }
 
     fn compute_statistics(&mut self) {
-        let data = self.data.lock().unwrap();
-        if let Some(d) = data.as_ref() {
-            let visible_values: Vec<f64> = d.values.iter().enumerate()
-                .filter(|(i, _)| *i < self.visible_elements.len() && self.visible_elements[*i])
-                .map(|(_, &v)| v)
-                .collect();
-            
-            self.aggregation_results.clear();
-            if !visible_values.is_empty() {
-                let sum: f64 = visible_values.iter().sum();
-                let mean = sum / visible_values.len() as f64;
-                let max = visible_values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b));
-                let min = visible_values.iter().fold(f64::INFINITY, |a, &b| a.min(b));
+        if let Ok(data) = self.data.lock() {
+            if let Some(d) = data.as_ref() {
+                let visible: Vec<f64> = d.values.iter().enumerate()
+                    .filter(|(i, _)| *i < self.visible_elements.len() && self.visible_elements[*i])
+                    .map(|(_, &v)| v)
+                    .collect();
                 
-                self.aggregation_results.insert("Sum".to_string(), sum);
-                self.aggregation_results.insert("Mean".to_string(), mean);
-                self.aggregation_results.insert("Max".to_string(), max);
-                self.aggregation_results.insert("Min".to_string(), min);
-                self.aggregation_results.insert("Count".to_string(), visible_values.len() as f64);
+                self.aggregation_results.clear();
+                if !visible.is_empty() {
+                    let sum: f64 = visible.iter().sum();
+                    let len = visible.len() as f64;
+                    [("Sum", sum),
+                     ("Mean", sum / len),
+                     ("Max", visible.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b))),
+                     ("Min", visible.iter().fold(f64::INFINITY, |a, &b| a.min(b))),
+                     ("Count", len)]
+                        .into_iter()
+                        .for_each(|(k, v)| { self.aggregation_results.insert(k.to_string(), v); });
+                }
             }
         }
     }
@@ -946,7 +886,6 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         is_3d_mode: false,
         camera_controller: CameraController::default(),
         advanced_viewer_3d: AdvancedViewer3D::new(),
-        processor_mode: 0,
         filter_threshold: 0.0,
         show_stats: false,
         show_processor_menu: false,
@@ -963,7 +902,6 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         last_render_state: (true, 1, 0, false),
         batch_renderer: AdvancedBatchRendererBuilder::new().with_capacity(100000).build(),
         render_state: RenderState::new(1200.0, 600.0),
-        data_cache: DataCache::new(),
     };
 
     let native_options = eframe::NativeOptions {
@@ -986,32 +924,39 @@ pub extern "C" fn sera_show_chart(_svg: *const c_char, _title: *const c_char, _w
     true
 }
 
-static CHART_ORIENTATION: Mutex<bool> = Mutex::new(true);
+static CHART_ORIENTATION: std::sync::OnceLock<Mutex<bool>> = std::sync::OnceLock::new();
+static CHART_SORT: std::sync::OnceLock<Mutex<i32>> = std::sync::OnceLock::new();
+
+fn get_orientation() -> &'static Mutex<bool> {
+    CHART_ORIENTATION.get_or_init(|| Mutex::new(true))
+}
+
+fn get_sort() -> &'static Mutex<i32> {
+    CHART_SORT.get_or_init(|| Mutex::new(0))
+}
 
 #[no_mangle]
 pub extern "C" fn sera_set_chart_orientation(vertical: bool) {
-    if let Ok(mut orientation) = CHART_ORIENTATION.lock() {
-        *orientation = vertical;
+    if let Ok(mut o) = get_orientation().lock() {
+        *o = vertical;
     }
 }
 
 #[no_mangle]
 pub extern "C" fn sera_get_chart_orientation() -> bool {
-    CHART_ORIENTATION.lock().ok().map(|o| *o).unwrap_or(true)
+    get_orientation().lock().ok().map(|o| *o).unwrap_or(true)
 }
-
-static CHART_SORT: Mutex<i32> = Mutex::new(0);
 
 #[no_mangle]
 pub extern "C" fn sera_set_chart_sort(mode: i32) {
-    if let Ok(mut sort) = CHART_SORT.lock() {
-        *sort = mode.clamp(0, 2);
+    if let Ok(mut s) = get_sort().lock() {
+        *s = mode.clamp(0, 2);
     }
 }
 
 #[no_mangle]
 pub extern "C" fn sera_get_chart_sort() -> i32 {
-    CHART_SORT.lock().ok().map(|s| *s).unwrap_or(0)
+    get_sort().lock().ok().map(|s| *s).unwrap_or(0)
 }
 
 static CHART_KIND: std::sync::Mutex<u8> = std::sync::Mutex::new(1);
