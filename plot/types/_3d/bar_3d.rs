@@ -142,36 +142,3 @@ pub fn get_3d_bar_positions(
     
     positions
 }
-
-fn render_container_frame(
-    painter: &egui::Painter,
-    plot_rect: egui::Rect,
-    camera_controller: &CameraController,
-) {
-    let center = plot_rect.center();
-    let container_center = Point3D::new(0.0, 0.0, 0.0);
-    
-    let cube = Cube3DContainer::new(container_center, 8.0);
-    let vertices = cube.vertices();
-    
-    let mut projected = Vec::new();
-    for v in &vertices {
-        if let Some(p) = camera_controller.camera.project(*v) {
-            let screen_x = center.x + p.x * plot_rect.width() * 0.35;
-            let screen_y = center.y - p.y * plot_rect.height() * 0.35;
-            projected.push(egui::pos2(screen_x, screen_y));
-        } else {
-            projected.push(egui::Pos2::ZERO);
-        }
-    }
-    
-    let color = egui::Color32::from_rgb(150, 150, 170);
-    
-    for edge in cube.edges() {
-        let start = projected[edge[0]];
-        let end = projected[edge[1]];
-        if start != egui::Pos2::ZERO && end != egui::Pos2::ZERO {
-            painter.line_segment([start, end], egui::Stroke::new(1.5, color));
-        }
-    }
-}
