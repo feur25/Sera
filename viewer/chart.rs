@@ -469,8 +469,9 @@ impl eframe::App for ChartApp {
         if self.show_wiki {
             egui::Window::new("📚 SeraPlot Wiki - API Documentation")
                 .open(&mut self.show_wiki)
-                .default_width(800.0)
+                .default_width(400.0)
                 .default_height(600.0)
+                .default_pos([1200.0 - 400.0 - 10.0, 50.0])
                 .show(ctx, |ui| {
                     if let Some(ref mut wiki_viewer) = self.wiki_viewer {
                         wiki_viewer.render(ui);
