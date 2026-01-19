@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use egui::{Painter, Rect, Color32, Pos2};
-use super::image_loader::ImageLoader;
+use super::super::image_loader::ImageLoader;
 use super::plot_template::{PlotConfig, hsv_to_rgb};
 
 pub trait AxisRenderStrategy {

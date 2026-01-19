@@ -6,6 +6,7 @@ use super::image_loader::ImageLoader;
 use super::cache::{RenderCache, ColorCache, CacheKey};
 use super::viewer_3d::AdvancedViewer3D;
 use super::wiki_viewer::WikiViewer;
+use super::manager::button_manager::{ButtonManager, ButtonId};
 use crate::plot::types::{PlotRenderContext, render_plot_by_type, render_plot_3d_by_type};
 use crate::plot::CameraController;
 
@@ -168,72 +169,78 @@ struct ChartApp {
     show_processor_menu: bool,
     show_transform_menu: bool,
     show_wiki: bool,
+    show_info: bool,
     wiki_viewer: Option<WikiViewer>,
+    button_manager: ButtonManager,
     aggregation_results: HashMap<String, f64>,
     limit_value: usize,
 }
 
 impl eframe::App for ChartApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        if let Ok(sort) = CHART_SORT.lock() {
-            self.sort_mode = *sort;
-        }
         if let Ok(kind) = CHART_KIND.lock() {
             self.current_chart_kind = *kind;
         }
         
         egui::TopBottomPanel::top("controls").show(ctx, |ui| {
             ui.horizontal(|ui| {
-                if ui.button("🔍 Zoom In").clicked() {
+                let zoom_label = if self.zoom >= 1.0 {
+                    format!("🔍 {:.1}x", self.zoom)
+                } else {
+                    format!("🔍 1/{:.1}", 1.0 / self.zoom)
+                };
+
+                if ui.button("➕").clicked() {
                     self.zoom *= 1.2;
                 }
-                if ui.button("🔍 Zoom Out").clicked() {
+                if ui.button("➖").clicked() {
                     self.zoom /= 1.2;
                 }
-                if ui.button("⬜ Fit All").clicked() {
+                if ui.button("⬜").clicked() {
                     self.zoom = 1.0;
                     self.pan_x = 0.0;
                 }
-                if ui.button("📋 Elements").clicked() {
+
+                ui.separator();
+
+                let clicked = self.button_manager.render_with_descriptions(ui);
+
+                if clicked.contains_key(&ButtonId::Elements) {
                     self.show_list = !self.show_list;
                 }
-                if ui.button(if self.orientation { "📊 Vertical" } else { "📈 Horizontal" }).clicked() {
-                    self.orientation = !self.orientation;
-                }
-                let sort_label = match self.sort_mode {
-                    1 => "↑ Asc",
-                    2 => "↓ Desc",
-                    _ => "⊙ None",
-                };
-                if ui.button(sort_label).clicked() {
-                    self.sort_mode = (self.sort_mode + 1) % 3;
-                    if let Ok(mut sort) = CHART_SORT.lock() {
-                        *sort = self.sort_mode;
-                    }
-                }
-                ui.separator();
-                let btn_3d_text = if self.is_3d_mode { "🎯 2D" } else { "📦 3D" };
-                if ui.button(btn_3d_text).clicked() {
-                    self.is_3d_mode = !self.is_3d_mode;
-                    if self.is_3d_mode {
-                        self.advanced_viewer_3d.camera_controller.set_viewport(800.0, 600.0);
-                    }
-                }
-                ui.separator();
-                if ui.button("⚙ Processor").clicked() {
+                if clicked.contains_key(&ButtonId::Processor) {
                     self.show_processor_menu = !self.show_processor_menu;
                 }
-                if ui.button("🔄 Transform").clicked() {
+                if clicked.contains_key(&ButtonId::Transform) {
                     self.show_transform_menu = !self.show_transform_menu;
                 }
-                if ui.button("📚 Wiki").clicked() {
+                // if clicked.contains_key(&ButtonId::Stats) {
+                //     self.show_stats = !self.show_stats;
+                // }
+                if clicked.contains_key(&ButtonId::Info) {
+                    self.show_info = !self.show_info;
+                    self.button_manager.show_info(self.show_info);
+                }
+                if clicked.contains_key(&ButtonId::Orientation) {
+                    self.orientation = !self.orientation;
+                }
+                if clicked.contains_key(&ButtonId::Sort) {
+                    self.sort_mode = (self.sort_mode + 1) % 3;
+                }
+                if clicked.contains_key(&ButtonId::Mode3D) {
+                    self.is_3d_mode = !self.is_3d_mode;
+                }
+
+                if clicked.contains_key(&ButtonId::Wiki) {
                     self.show_wiki = !self.show_wiki;
                     if self.show_wiki && self.wiki_viewer.is_none() {
                         let wiki = crate::wiki::generate_seraplot_docs();
                         self.wiki_viewer = Some(WikiViewer::builder().with_wiki(wiki).build());
                     }
                 }
-                ui.label(format!("Zoom: {:.1}x", self.zoom));
+
+                ui.separator();
+                ui.label(&zoom_label);
             });
         });
 
@@ -928,7 +935,9 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         show_processor_menu: false,
         show_transform_menu: false,
         show_wiki: false,
+        show_info: false,
         wiki_viewer: None,
+        button_manager: ButtonManager::new(),
         aggregation_results: HashMap::new(),
         limit_value: 50,
         render_cache: RenderCache::new(),
