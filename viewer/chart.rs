@@ -7,7 +7,7 @@ use super::cache::{RenderCache, ColorCache, CacheKey};
 use super::viewer_3d::AdvancedViewer3D;
 use super::wiki_viewer::WikiViewer;
 use super::manager::button_manager::{ButtonManager, ButtonId};
-use super::fast_render_gui::BatchRenderer;
+use super::render::{AdvancedBatchRenderer, AdvancedBatchRendererBuilder, RenderState, DataCache, PointComputeBuilder, ChunkRenderBuilder, RenderPipeline, VisibilityOptimizer};
 use crate::plot::types::{PlotRenderContext, render_plot_by_type, render_plot_3d_by_type};
 use crate::plot::CameraController;
 
@@ -176,13 +176,17 @@ struct ChartApp {
     button_manager: ButtonManager,
     aggregation_results: HashMap<String, f64>,
     limit_value: usize,
-    batch_renderer: BatchRenderer,
+    batch_renderer: AdvancedBatchRenderer,
+    render_state: RenderState,
+    data_cache: DataCache,
 }
 
 impl eframe::App for ChartApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        if let Ok(kind) = CHART_KIND.lock() {
-            self.current_chart_kind = *kind;
+        if self.is_3d_mode {
+            if let Ok(kind) = CHART_KIND.lock() {
+                self.current_chart_kind = *kind;
+            }
         }
         
         egui::TopBottomPanel::top("controls").show(ctx, |ui| {
@@ -455,6 +459,8 @@ impl eframe::App for ChartApp {
                         if ui.button(&button_text).clicked() {
                             self.current_chart_kind = *kind;
                             sera_set_current_chart_kind(*kind);
+                            self.last_render_state = (false, 255, -1, false);
+                            ctx.request_repaint();
                         }
                     }
                 });
@@ -581,14 +587,18 @@ impl ChartApp {
             .filter(|i| i < &self.visible_elements.len() && self.visible_elements[*i])
             .collect();
 
-        if self.sort_mode == 1 {
-            visible_indices.sort_by(|&a, &b| {
-                d.values[a].partial_cmp(&d.values[b]).unwrap_or(std::cmp::Ordering::Equal)
-            });
-        } else if self.sort_mode == 2 {
-            visible_indices.sort_by(|&a, &b| {
-                d.values[b].partial_cmp(&d.values[a]).unwrap_or(std::cmp::Ordering::Equal)
-            });
+        match self.sort_mode {
+            1 => {
+                visible_indices.sort_by(|&a, &b| {
+                    d.values[a].partial_cmp(&d.values[b]).unwrap_or(std::cmp::Ordering::Equal)
+                });
+            }
+            2 => {
+                visible_indices.sort_by(|&a, &b| {
+                    d.values[b].partial_cmp(&d.values[a]).unwrap_or(std::cmp::Ordering::Equal)
+                });
+            }
+            _ => {}
         }
         visible_indices
     }
@@ -614,6 +624,12 @@ impl ChartApp {
             return;
         }
         
+        let render_pipeline = RenderPipeline::builder().build();
+        let chunk_renderer = ChunkRenderBuilder::new()
+            .with_chunk_size(render_pipeline.get_optimal_batch_size(visible_count))
+            .build();
+        let mut vis_optimizer = VisibilityOptimizer::new();
+        
         let scroll_id = egui::Id::new((chart_type, vertical, self.sort_mode));
         egui::ScrollArea::both()
             .auto_shrink([false; 2])
@@ -624,44 +640,48 @@ impl ChartApp {
                     egui::Sense::hover(),
                 );
                 
+                self.render_state.update_viewport(response.rect.width(), response.rect.height());
+                self.render_state.update_zoom(self.zoom);
+                
                 let plot_rect = metrics.with_rect(response.rect.min);
                 renderer.render_axes(&painter, plot_rect, max_val as f64);
                 
                 let colors = self.color_cache.colors();
-                let max_val_f64 = max_val as f64;
-                let plot_width = plot_rect.width();
-                let plot_height = plot_rect.height();
-                let plot_left = plot_rect.left();
-                let plot_bottom = plot_rect.bottom();
-                let plot_top = plot_rect.top();
+                let point_computer = PointComputeBuilder::new().build();
+                let points = point_computer.compute_points(
+                    &d.values,
+                    &visible_indices,
+                    max_val,
+                    plot_rect,
+                    vertical,
+                );
+                
+                vis_optimizer.set_padding(20.0);
+                let _visible_point_indices = vis_optimizer.filter_visible(&points, plot_rect);
                 
                 self.batch_renderer.clear();
-                let mut points: Vec<egui::Pos2> = Vec::with_capacity(visible_count);
                 
-                for (idx, &actual_idx) in visible_indices.iter().enumerate() {
-                    let value = d.values[actual_idx];
-                    let norm_val = (value / max_val_f64) as f32;
-                    let color_idx = actual_idx % colors.len();
-                    
-                    let pos = if vertical {
-                        let x = plot_left + (plot_width / (visible_count as f32 - 1.0).max(1.0)) * idx as f32;
-                        let y = plot_bottom - norm_val * plot_height;
-                        egui::pos2(x, y)
-                    } else {
-                        let x = plot_left + norm_val * plot_width;
-                        let y = plot_top + (plot_height / (visible_count as f32 - 1.0).max(1.0)) * idx as f32;
-                        egui::pos2(x, y)
-                    };
-                    
-                    points.push(pos);
-                    self.batch_renderer.add_circle(pos, 4.0, colors[color_idx]);
-                }
+                let plot_ctx = PlotRenderContext {
+                    painter: &painter,
+                    plot_rect,
+                    colors,
+                    hovered_idx: self.hovered_idx,
+                    values: &d.values,
+                    max_val,
+                    visible_indices: &visible_indices,
+                    vertical,
+                    labels: &d.labels,
+                };
                 
-                self.batch_renderer.flush(&painter);
+                render_plot_by_type(chart_type, plot_ctx);
                 
-                for (actual_idx, &point) in visible_indices.iter().zip(points.iter()) {
-                    if self.hovered_idx.map(|h| h == *actual_idx).unwrap_or(false) {
-                        self.render_tooltip(ctx, &painter, point, plot_rect, *actual_idx, d);
+                chunk_renderer.render(&painter, &points, colors, 4.0);
+                
+                for (i, &point) in points.iter().enumerate() {
+                    if let Some(&actual_idx) = visible_indices.get(i) {
+                        if self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false) {
+                            self.render_tooltip(ctx, &painter, point, plot_rect, actual_idx, d);
+                        }
                     }
                 }
                 
@@ -669,7 +689,9 @@ impl ChartApp {
                     if let Some(pos) = ctx.pointer_latest_pos() {
                         let rel_pos = pos - plot_rect.min;
                         if let Some(vis_idx) = renderer.detect_hover(rel_pos, plot_rect, visible_count) {
-                            self.hovered_idx = Some(visible_indices[vis_idx]);
+                            if let Some(&actual_idx) = visible_indices.get(vis_idx) {
+                                self.hovered_idx = Some(actual_idx);
+                            }
                         }
                     }
                 } else {
@@ -940,7 +962,9 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         color_cache: ColorCache::new(),
         last_data_hash: 0,
         last_render_state: (true, 1, 0, false),
-        batch_renderer: BatchRenderer::new(),
+        batch_renderer: AdvancedBatchRendererBuilder::new().with_capacity(100000).build(),
+        render_state: RenderState::new(1200.0, 600.0),
+        data_cache: DataCache::new(),
     };
 
     let native_options = eframe::NativeOptions {
