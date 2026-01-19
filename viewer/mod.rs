@@ -6,6 +6,7 @@ pub mod plot_renderers;
 pub mod plot_generic;
 pub mod cache;
 pub mod viewer_3d;
+pub mod hybrid;
 
 pub use chart::*;
 pub use gui::*;
@@ -13,5 +14,6 @@ pub use image_loader::*;
 pub use cache::*;
 pub use plot_template::*;
 pub use plot_renderers::*;
+pub use hybrid::*;
 pub use plot_generic::*;
 pub use viewer_3d::*;
