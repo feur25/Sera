@@ -997,7 +997,7 @@ pub extern "C" fn sera_set_chart_orientation(vertical: bool) {
 
 #[no_mangle]
 pub extern "C" fn sera_get_chart_orientation() -> bool {
-    CHART_ORIENTATION.lock().map(|o| *o).unwrap_or(true)
+    CHART_ORIENTATION.lock().ok().map(|o| *o).unwrap_or(true)
 }
 
 static CHART_SORT: Mutex<i32> = Mutex::new(0);
@@ -1011,7 +1011,7 @@ pub extern "C" fn sera_set_chart_sort(mode: i32) {
 
 #[no_mangle]
 pub extern "C" fn sera_get_chart_sort() -> i32 {
-    CHART_SORT.lock().map(|s| *s).unwrap_or(0)
+    CHART_SORT.lock().ok().map(|s| *s).unwrap_or(0)
 }
 
 static CHART_KIND: std::sync::Mutex<u8> = std::sync::Mutex::new(1);
@@ -1027,7 +1027,7 @@ pub extern "C" fn sera_set_current_chart_kind(kind: u8) {
 
 #[no_mangle]
 pub extern "C" fn sera_get_current_chart_kind() -> u8 {
-    CHART_KIND.lock().map(|k| *k).unwrap_or(1)
+    CHART_KIND.lock().ok().map(|k| *k).unwrap_or(1)
 }
 
 #[no_mangle]
@@ -1036,12 +1036,10 @@ pub extern "C" fn sera_add_chart_variant(kind: u8, title: *const c_char) -> bool
         return false;
     }
     let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().to_string() };
-    if let Ok(mut registry) = VARIANT_REGISTRY.lock() {
+    VARIANT_REGISTRY.lock().ok().map_or(false, |mut registry| {
         registry.insert(kind, title_str);
         true
-    } else {
-        false
-    }
+    })
 }
 
 #[no_mangle]
@@ -1053,7 +1051,7 @@ pub extern "C" fn sera_enable_variant_selector(enable: bool) {
 
 #[no_mangle]
 pub extern "C" fn sera_is_variant_selector_enabled() -> bool {
-    VARIANT_SELECTOR_ENABLED.lock().map(|sel| *sel).unwrap_or(false)
+    VARIANT_SELECTOR_ENABLED.lock().ok().map(|sel| *sel).unwrap_or(false)
 }
 
 #[no_mangle]

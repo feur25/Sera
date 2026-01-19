@@ -19,61 +19,82 @@ pub struct TextCommand {
     pub color: egui::Color32,
 }
 
+trait CommandBuffer<T> {
+    fn acquire(&self) -> Vec<T>;
+    fn release(&self, buffer: Vec<T>);
+}
+
+struct GenericCommandBuffer<T> {
+    pool: RefCell<Vec<Vec<T>>>,
+    default_capacity: usize,
+}
+
+impl<T> GenericCommandBuffer<T> {
+    fn new(default_capacity: usize) -> Self {
+        Self {
+            pool: RefCell::new(vec![]),
+            default_capacity,
+        }
+    }
+
+    fn acquire(&self) -> Vec<T> {
+        self.pool
+            .borrow_mut()
+            .pop()
+            .unwrap_or_else(|| Vec::with_capacity(self.default_capacity))
+    }
+
+    fn release(&self, mut buffer: Vec<T>, max_cached: usize) {
+        if self.pool.borrow().len() < max_cached {
+            buffer.clear();
+            self.pool.borrow_mut().push(buffer);
+        }
+    }
+}
+
 pub struct VectorPool {
-    circle_pool: RefCell<Vec<Vec<DrawCommand>>>,
-    line_pool: RefCell<Vec<Vec<LineCommand>>>,
-    text_pool: RefCell<Vec<Vec<TextCommand>>>,
+    circle_pool: GenericCommandBuffer<DrawCommand>,
+    line_pool: GenericCommandBuffer<LineCommand>,
+    text_pool: GenericCommandBuffer<TextCommand>,
 }
 
 impl VectorPool {
     pub fn new() -> Self {
         Self {
-            circle_pool: RefCell::new(vec![]),
-            line_pool: RefCell::new(vec![]),
-            text_pool: RefCell::new(vec![]),
+            circle_pool: GenericCommandBuffer::new(50000),
+            line_pool: GenericCommandBuffer::new(25000),
+            text_pool: GenericCommandBuffer::new(1000),
         }
     }
 
     pub fn acquire_circles(&self) -> Vec<DrawCommand> {
-        self.circle_pool
-            .borrow_mut()
-            .pop()
-            .unwrap_or_else(|| Vec::with_capacity(50000))
+        self.circle_pool.acquire()
     }
 
     pub fn acquire_lines(&self) -> Vec<LineCommand> {
-        self.line_pool
-            .borrow_mut()
-            .pop()
-            .unwrap_or_else(|| Vec::with_capacity(25000))
+        self.line_pool.acquire()
     }
 
     pub fn acquire_text(&self) -> Vec<TextCommand> {
-        self.text_pool
-            .borrow_mut()
-            .pop()
-            .unwrap_or_else(|| Vec::with_capacity(1000))
+        self.text_pool.acquire()
     }
 
-    pub fn release_circles(&self, mut v: Vec<DrawCommand>) {
-        if self.circle_pool.borrow().len() < 3 {
-            v.clear();
-            self.circle_pool.borrow_mut().push(v);
-        }
+    pub fn release_circles(&self, v: Vec<DrawCommand>) {
+        self.circle_pool.release(v, 3);
     }
 
-    pub fn release_lines(&self, mut v: Vec<LineCommand>) {
-        if self.line_pool.borrow().len() < 3 {
-            v.clear();
-            self.line_pool.borrow_mut().push(v);
-        }
+    pub fn release_lines(&self, v: Vec<LineCommand>) {
+        self.line_pool.release(v, 3);
     }
 
-    pub fn release_text(&self, mut v: Vec<TextCommand>) {
-        if self.text_pool.borrow().len() < 3 {
-            v.clear();
-            self.text_pool.borrow_mut().push(v);
-        }
+    pub fn release_text(&self, v: Vec<TextCommand>) {
+        self.text_pool.release(v, 3);
+    }
+}
+
+impl Default for VectorPool {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -123,28 +144,33 @@ impl AdvancedBatchRenderer {
         self.text_items.push(TextCommand { pos, text, color });
     }
 
+    fn render_batch<T, F>(&self, painter: &egui::Painter, items: &[T], renderer: F)
+    where
+        F: Fn(&egui::Painter, &T),
+    {
+        for chunk in items.chunks(self.batch_size) {
+            chunk.iter().for_each(|cmd| renderer(painter, cmd));
+        }
+    }
+
     pub fn flush(&self, painter: &egui::Painter) {
-        for chunk in self.circles.chunks(self.batch_size) {
-            for cmd in chunk {
-                painter.circle_filled(cmd.pos, cmd.radius, cmd.color);
-            }
-        }
+        self.render_batch(painter, &self.circles, |p, cmd| {
+            p.circle_filled(cmd.pos, cmd.radius, cmd.color);
+        });
 
-        for chunk in self.lines.chunks(self.batch_size) {
-            for cmd in chunk {
-                painter.line_segment([cmd.from, cmd.to], egui::Stroke::new(cmd.width, cmd.color));
-            }
-        }
+        self.render_batch(painter, &self.lines, |p, cmd| {
+            p.line_segment([cmd.from, cmd.to], egui::Stroke::new(cmd.width, cmd.color));
+        });
 
-        for cmd in &self.text_items {
-            painter.text(
+        self.render_batch(painter, &self.text_items, |p, cmd| {
+            p.text(
                 cmd.pos,
                 egui::Align2::CENTER_CENTER,
                 &cmd.text,
                 egui::FontId::proportional(10.0),
                 cmd.color,
             );
-        }
+        });
     }
 
     pub fn clear(&mut self) {

@@ -292,40 +292,27 @@ pub extern "C" fn sera_chart_can_transform(from_kind: u8, to_kind: u8) -> bool {
 
 use std::sync::Mutex;
 
-static PLOT_SORT: std::sync::OnceLock<Mutex<i32>> = std::sync::OnceLock::new();
-static PLOT_ZOOM: std::sync::OnceLock<Mutex<f32>> = std::sync::OnceLock::new();
-static PLOT_ORIENTATION: std::sync::OnceLock<Mutex<bool>> = std::sync::OnceLock::new();
-static PLOT_PAN_X: std::sync::OnceLock<Mutex<f32>> = std::sync::OnceLock::new();
-static PLOT_CHART_KIND: std::sync::OnceLock<Mutex<u8>> = std::sync::OnceLock::new();
+macro_rules! define_state {
+    ($name:ident, $mutex_name:ident, $type:ty, $default:expr) => {
+        static $mutex_name: std::sync::OnceLock<Mutex<$type>> = std::sync::OnceLock::new();
+
+        fn $name() -> &'static Mutex<$type> {
+            $mutex_name.get_or_init(|| Mutex::new($default))
+        }
+    };
+}
+
+define_state!(get_plot_sort, PLOT_SORT, i32, 0);
+define_state!(get_plot_zoom, PLOT_ZOOM, f32, 1.0);
+define_state!(get_plot_orientation, PLOT_ORIENTATION, bool, true);
+define_state!(get_plot_pan_x, PLOT_PAN_X, f32, 0.0);
+define_state!(get_plot_chart_kind, PLOT_CHART_KIND, u8, 2);
+define_state!(get_plot_show_selector, PLOT_SHOW_SELECTOR, bool, false);
+
 static PLOT_VARIANTS: std::sync::OnceLock<Mutex<Vec<(u8, String)>>> = std::sync::OnceLock::new();
-static PLOT_SHOW_SELECTOR: std::sync::OnceLock<Mutex<bool>> = std::sync::OnceLock::new();
-
-fn get_plot_sort() -> &'static Mutex<i32> {
-    PLOT_SORT.get_or_init(|| Mutex::new(0))
-}
-
-fn get_plot_zoom() -> &'static Mutex<f32> {
-    PLOT_ZOOM.get_or_init(|| Mutex::new(1.0))
-}
-
-fn get_plot_orientation() -> &'static Mutex<bool> {
-    PLOT_ORIENTATION.get_or_init(|| Mutex::new(true))
-}
-
-fn get_plot_pan_x() -> &'static Mutex<f32> {
-    PLOT_PAN_X.get_or_init(|| Mutex::new(0.0))
-}
-
-fn get_plot_chart_kind() -> &'static Mutex<u8> {
-    PLOT_CHART_KIND.get_or_init(|| Mutex::new(2))
-}
 
 fn get_plot_variants() -> &'static Mutex<Vec<(u8, String)>> {
     PLOT_VARIANTS.get_or_init(|| Mutex::new(Vec::new()))
-}
-
-fn get_plot_show_selector() -> &'static Mutex<bool> {
-    PLOT_SHOW_SELECTOR.get_or_init(|| Mutex::new(false))
 }
 
 #[no_mangle]
@@ -337,7 +324,7 @@ pub extern "C" fn sera_set_plot_sort(mode: i32) {
 
 #[no_mangle]
 pub extern "C" fn sera_get_plot_sort() -> i32 {
-    get_plot_sort().lock().map(|s| *s).unwrap_or(0)
+    get_plot_sort().lock().ok().map_or(0, |s| *s)
 }
 
 #[no_mangle]
@@ -349,7 +336,7 @@ pub extern "C" fn sera_set_plot_zoom(zoom: f32) {
 
 #[no_mangle]
 pub extern "C" fn sera_get_plot_zoom() -> f32 {
-    get_plot_zoom().lock().map(|z| *z).unwrap_or(1.0)
+    get_plot_zoom().lock().ok().map_or(1.0, |z| *z)
 }
 
 #[no_mangle]
@@ -361,7 +348,7 @@ pub extern "C" fn sera_set_plot_orientation(vertical: bool) {
 
 #[no_mangle]
 pub extern "C" fn sera_get_plot_orientation() -> bool {
-    get_plot_orientation().lock().map(|o| *o).unwrap_or(true)
+    get_plot_orientation().lock().ok().map_or(true, |o| *o)
 }
 
 #[no_mangle]
@@ -373,7 +360,7 @@ pub extern "C" fn sera_set_plot_pan_x(pan: f32) {
 
 #[no_mangle]
 pub extern "C" fn sera_get_plot_pan_x() -> f32 {
-    get_plot_pan_x().lock().map(|p| *p).unwrap_or(0.0)
+    get_plot_pan_x().lock().ok().map_or(0.0, |p| *p)
 }
 
 #[no_mangle]
@@ -385,7 +372,7 @@ pub extern "C" fn sera_set_plot_chart_kind(kind: u8) {
 
 #[no_mangle]
 pub extern "C" fn sera_get_plot_chart_kind() -> u8 {
-    get_plot_chart_kind().lock().map(|k| *k).unwrap_or(2)
+    get_plot_chart_kind().lock().ok().map_or(2, |k| *k)
 }
 
 #[no_mangle]
@@ -406,11 +393,11 @@ pub extern "C" fn sera_clear_plot_variants() {
 
 #[no_mangle]
 pub extern "C" fn sera_get_plot_variants_count() -> usize {
-    get_plot_variants().lock().map(|v| v.len()).unwrap_or(0)
+    get_plot_variants().lock().ok().map_or(0, |v| v.len())
 }
 
 pub fn get_chart_variants_internal() -> Vec<(u8, String)> {
-    get_plot_variants().lock().map(|v| v.clone()).unwrap_or_default()
+    get_plot_variants().lock().ok().map_or_else(Vec::new, |v| v.clone())
 }
 
 #[no_mangle]
@@ -422,7 +409,7 @@ pub extern "C" fn sera_set_plot_show_selector(show: bool) {
 
 #[no_mangle]
 pub extern "C" fn sera_get_plot_show_selector() -> bool {
-    get_plot_show_selector().lock().map(|s| *s).unwrap_or(false)
+    get_plot_show_selector().lock().ok().map_or(false, |s| *s)
 }
 
 #[no_mangle]

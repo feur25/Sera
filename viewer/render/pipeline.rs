@@ -1,16 +1,16 @@
-pub struct PointComputeBuilder {
+pub struct PointCompute {
     batch_size: usize,
     cache_threshold: usize,
     use_simd: bool,
 }
 
-impl Default for PointComputeBuilder {
+impl Default for PointCompute {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl PointComputeBuilder {
+impl PointCompute {
     pub fn new() -> Self {
         Self {
             batch_size: 10000,
@@ -35,11 +35,7 @@ impl PointComputeBuilder {
     }
 
     pub fn build(self) -> PointCompute {
-        PointCompute {
-            batch_size: self.batch_size,
-            cache_threshold: self.cache_threshold,
-            use_simd: self.use_simd,
-        }
+        self
     }
 
     pub fn compute_points(
@@ -50,142 +46,58 @@ impl PointComputeBuilder {
         plot_rect: egui::Rect,
         vertical: bool,
     ) -> Vec<egui::Pos2> {
-        let point_count = indices.len();
-        let mut points = Vec::with_capacity(point_count);
-
-        if point_count > self.cache_threshold && self.use_simd {
-            self.compute_points_simd(&mut points, values, indices, max_val, plot_rect, vertical);
-        } else {
-            self.compute_points_standard(&mut points, values, indices, max_val, plot_rect, vertical);
-        }
-
-        points
+        indices
+            .iter()
+            .enumerate()
+            .filter_map(|(idx, &actual_idx)| {
+                values.get(actual_idx).map(|&value| {
+                    self.map_single_point(idx, value, max_val, plot_rect, vertical, indices.len())
+                })
+            })
+            .collect()
     }
 
-    fn compute_points_standard(
+    fn map_single_point(
         &self,
-        points: &mut Vec<egui::Pos2>,
-        values: &[f64],
-        indices: &[usize],
+        idx: usize,
+        value: f64,
         max_val: f64,
         plot_rect: egui::Rect,
         vertical: bool,
-    ) {
+        total_count: usize,
+    ) -> egui::Pos2 {
         let max_val_f64 = max_val.max(1.0);
-        let plot_width = plot_rect.width();
-        let plot_height = plot_rect.height();
-        let plot_left = plot_rect.left();
-        let plot_bottom = plot_rect.bottom();
-        let plot_top = plot_rect.top();
-        let point_count = indices.len() as f32;
+        let norm_val = (value / max_val_f64) as f32;
+        let point_count = total_count as f32;
+        let spacing = (point_count - 1.0).max(1.0);
 
-        for (idx, &actual_idx) in indices.iter().enumerate() {
-            if actual_idx < values.len() {
-                let value = values[actual_idx];
-                let norm_val = (value / max_val_f64) as f32;
-
-                let pos = if vertical {
-                    let x = plot_left + (plot_width / (point_count - 1.0).max(1.0)) * idx as f32;
-                    let y = plot_bottom - norm_val * plot_height;
-                    egui::pos2(x, y)
-                } else {
-                    let x = plot_left + norm_val * plot_width;
-                    let y = plot_top + (plot_height / (point_count - 1.0).max(1.0)) * idx as f32;
-                    egui::pos2(x, y)
-                };
-
-                points.push(pos);
-            }
+        if vertical {
+            let x = plot_rect.left() + (plot_rect.width() / spacing) * idx as f32;
+            let y = plot_rect.bottom() - norm_val * plot_rect.height();
+            egui::pos2(x, y)
+        } else {
+            let x = plot_rect.left() + norm_val * plot_rect.width();
+            let y = plot_rect.top() + (plot_rect.height() / spacing) * idx as f32;
+            egui::pos2(x, y)
         }
-    }
-
-    fn compute_points_simd(
-        &self,
-        points: &mut Vec<egui::Pos2>,
-        values: &[f64],
-        indices: &[usize],
-        max_val: f64,
-        plot_rect: egui::Rect,
-        vertical: bool,
-    ) {
-        self.compute_points_standard(points, values, indices, max_val, plot_rect, vertical);
     }
 }
 
-pub struct PointCompute {
-    batch_size: usize,
-    cache_threshold: usize,
-    use_simd: bool,
+pub struct PointComputeBuilder;
+
+impl Default for PointComputeBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
 }
 
-impl PointCompute {
-    pub fn compute_points(
-        &self,
-        values: &[f64],
-        indices: &[usize],
-        max_val: f64,
-        plot_rect: egui::Rect,
-        vertical: bool,
-    ) -> Vec<egui::Pos2> {
-        let point_count = indices.len();
-        let mut points = Vec::with_capacity(point_count);
-
-        if point_count > self.cache_threshold && self.use_simd {
-            self.compute_points_simd(&mut points, values, indices, max_val, plot_rect, vertical);
-        } else {
-            self.compute_points_standard(&mut points, values, indices, max_val, plot_rect, vertical);
-        }
-
-        points
+impl PointComputeBuilder {
+    pub fn new() -> Self {
+        Self
     }
 
-    fn compute_points_standard(
-        &self,
-        points: &mut Vec<egui::Pos2>,
-        values: &[f64],
-        indices: &[usize],
-        max_val: f64,
-        plot_rect: egui::Rect,
-        vertical: bool,
-    ) {
-        let max_val_f64 = max_val.max(1.0);
-        let plot_width = plot_rect.width();
-        let plot_height = plot_rect.height();
-        let plot_left = plot_rect.left();
-        let plot_bottom = plot_rect.bottom();
-        let plot_top = plot_rect.top();
-        let point_count = indices.len() as f32;
-
-        for (idx, &actual_idx) in indices.iter().enumerate() {
-            if actual_idx < values.len() {
-                let value = values[actual_idx];
-                let norm_val = (value / max_val_f64) as f32;
-
-                let pos = if vertical {
-                    let x = plot_left + (plot_width / (point_count - 1.0).max(1.0)) * idx as f32;
-                    let y = plot_bottom - norm_val * plot_height;
-                    egui::pos2(x, y)
-                } else {
-                    let x = plot_left + norm_val * plot_width;
-                    let y = plot_top + (plot_height / (point_count - 1.0).max(1.0)) * idx as f32;
-                    egui::pos2(x, y)
-                };
-
-                points.push(pos);
-            }
-        }
-    }
-
-    fn compute_points_simd(
-        &self,
-        points: &mut Vec<egui::Pos2>,
-        values: &[f64],
-        indices: &[usize],
-        max_val: f64,
-        plot_rect: egui::Rect,
-        vertical: bool,
-    ) {
-        self.compute_points_standard(points, values, indices, max_val, plot_rect, vertical);
+    pub fn build(self) -> PointCompute {
+        PointCompute::new()
     }
 }
 
