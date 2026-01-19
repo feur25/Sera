@@ -675,8 +675,6 @@ impl ChartApp {
                 
                 render_plot_by_type(chart_type, plot_ctx);
                 
-                chunk_renderer.render(&painter, &points, colors, 4.0);
-                
                 for (i, &point) in points.iter().enumerate() {
                     if let Some(&actual_idx) = visible_indices.get(i) {
                         if self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false) {
