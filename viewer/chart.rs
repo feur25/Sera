@@ -5,6 +5,7 @@ use std::collections::HashMap;
 use super::image_loader::ImageLoader;
 use super::cache::{RenderCache, ColorCache, CacheKey};
 use super::viewer_3d::AdvancedViewer3D;
+use super::wiki_viewer::WikiViewer;
 use crate::plot::types::{PlotRenderContext, render_plot_by_type, render_plot_3d_by_type};
 use crate::plot::CameraController;
 
@@ -166,6 +167,8 @@ struct ChartApp {
     show_stats: bool,
     show_processor_menu: bool,
     show_transform_menu: bool,
+    show_wiki: bool,
+    wiki_viewer: Option<WikiViewer>,
     aggregation_results: HashMap<String, f64>,
     limit_value: usize,
 }
@@ -222,6 +225,13 @@ impl eframe::App for ChartApp {
                 }
                 if ui.button("🔄 Transform").clicked() {
                     self.show_transform_menu = !self.show_transform_menu;
+                }
+                if ui.button("📚 Wiki").clicked() {
+                    self.show_wiki = !self.show_wiki;
+                    if self.show_wiki && self.wiki_viewer.is_none() {
+                        let wiki = crate::wiki::generate_seraplot_docs();
+                        self.wiki_viewer = Some(WikiViewer::builder().with_wiki(wiki).build());
+                    }
                 }
                 ui.label(format!("Zoom: {:.1}x", self.zoom));
             });
@@ -433,6 +443,18 @@ impl eframe::App for ChartApp {
                             self.current_chart_kind = *kind;
                             sera_set_current_chart_kind(*kind);
                         }
+                    }
+                });
+        }
+
+        if self.show_wiki {
+            egui::Window::new("📚 SeraPlot Wiki - API Documentation")
+                .open(&mut self.show_wiki)
+                .default_width(800.0)
+                .default_height(600.0)
+                .show(ctx, |ui| {
+                    if let Some(ref mut wiki_viewer) = self.wiki_viewer {
+                        wiki_viewer.render(ui);
                     }
                 });
         }
@@ -905,6 +927,8 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         show_stats: false,
         show_processor_menu: false,
         show_transform_menu: false,
+        show_wiki: false,
+        wiki_viewer: None,
         aggregation_results: HashMap::new(),
         limit_value: 50,
         render_cache: RenderCache::new(),
