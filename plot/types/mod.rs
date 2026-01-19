@@ -21,6 +21,7 @@ pub struct PlotRenderContext<'a> {
     pub max_val: f64,
     pub visible_indices: &'a [usize],
     pub vertical: bool,
+    pub labels: &'a [String],
 }
 
 pub struct PlotRegistry {

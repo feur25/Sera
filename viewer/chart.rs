@@ -274,6 +274,7 @@ impl eframe::App for ChartApp {
                         chart_type: self.current_chart_kind,
                         is_3d: false,
                         vertical: self.orientation,
+                        sort_mode: self.sort_mode,
                     };
                     self.render_cache.invalidate_except(new_cache_key);
                 }
@@ -566,11 +567,13 @@ impl ChartApp {
             chart_type,
             is_3d: self.is_3d_mode,
             vertical,
+            sort_mode: self.sort_mode,
         };
         self.render_cache.update_active(cache_key);
         
         egui::ScrollArea::both()
             .auto_shrink([false; 2])
+            .id_source((chart_type, vertical, self.sort_mode))
             .show(ui, |ui| {
                 let (response, painter) = ui.allocate_painter(
                     egui::Vec2::new(metrics.allocate_size().x, metrics.allocate_size().y),
@@ -596,6 +599,7 @@ impl ChartApp {
                         max_val,
                         visible_indices: &visible_indices,
                         vertical,
+                        labels: &d.labels,
                     }
                 );
                 

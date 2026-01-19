@@ -6,6 +6,7 @@ pub struct CacheKey {
     pub chart_type: u8,
     pub is_3d: bool,
     pub vertical: bool,
+    pub sort_mode: i32,
 }
 
 pub struct ProjectionCache {
