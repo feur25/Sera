@@ -5,6 +5,7 @@ pub struct WikiViewer {
     expanded_methods: Vec<Vec<bool>>,
     wiki_data: Option<WikiExport>,
     selected_language: ProgrammingLanguage,
+    search_query: String,
 }
 
 impl WikiViewer {
@@ -23,12 +24,21 @@ impl WikiViewer {
             expanded_methods,
             wiki_data: Some(wiki_data),
             selected_language: ProgrammingLanguage::Python,
+            search_query: String::new(),
         }
     }
 
     pub fn render(&mut self, ui: &mut egui::Ui) {
         if let Some(wiki) = &self.wiki_data {
             ui.heading(format!("{} v{} - API Documentation", wiki.framework_name, wiki.version));
+            
+            ui.horizontal(|ui| {
+                ui.label("🔍");
+                ui.text_edit_singleline(&mut self.search_query);
+                if ui.button("🗑️").clicked() {
+                    self.search_query.clear();
+                }
+            });
             
             ui.horizontal(|ui| {
                 ui.label("Language:");
@@ -44,13 +54,22 @@ impl WikiViewer {
                 .auto_shrink([false; 2])
                 .show(ui, |ui| {
                     for (mod_idx, module) in self.wiki_data.as_ref().unwrap().modules.clone().iter().enumerate() {
-                        self.render_module(ui, mod_idx, module);
+                        let module_matches = module.name.to_lowercase().contains(&self.search_query.to_lowercase());
+                        let methods_match: Vec<bool> = module.methods.iter()
+                            .map(|m| m.name.to_lowercase().contains(&self.search_query.to_lowercase())
+                                || m.description.to_lowercase().contains(&self.search_query.to_lowercase()))
+                            .collect();
+                        let has_matches = module_matches || methods_match.iter().any(|&m| m);
+                        
+                        if self.search_query.is_empty() || has_matches {
+                            self.render_module(ui, mod_idx, module, &methods_match);
+                        }
                     }
                 });
         }
     }
 
-    fn render_module(&mut self, ui: &mut egui::Ui, mod_idx: usize, module: &crate::wiki::ModuleDoc) {
+    fn render_module(&mut self, ui: &mut egui::Ui, mod_idx: usize, module: &crate::wiki::ModuleDoc, methods_match: &[bool]) {
         let is_expanded = mod_idx < self.expanded_modules.len() && self.expanded_modules[mod_idx];
 
         ui.horizontal(|ui| {
@@ -67,7 +86,9 @@ impl WikiViewer {
                 ui.separator();
 
                 for (method_idx, method) in module.methods.iter().enumerate() {
-                    self.render_method(ui, mod_idx, method_idx, method);
+                    if self.search_query.is_empty() || (method_idx < methods_match.len() && methods_match[method_idx]) {
+                        self.render_method(ui, mod_idx, method_idx, method);
+                    }
                 }
             });
         }
@@ -151,6 +172,7 @@ impl WikiViewerBuilder {
                 expanded_methods: Vec::new(),
                 wiki_data: None,
                 selected_language: ProgrammingLanguage::Python,
+                search_query: String::new(),
             }
         }
     }
