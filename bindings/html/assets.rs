@@ -92,6 +92,14 @@ svg {
   display: block;
 }
 
+.selection-rect {
+  position: absolute;
+  border: 2px solid #1f77b4;
+  background: rgba(31, 119, 180, 0.1);
+  pointer-events: none;
+  z-index: 999;
+}
+
 .zoom-btn {
   width: 40px;
   height: 40px;
@@ -301,6 +309,12 @@ let currentZoom = 1;
 const svg = document.querySelector('svg');
 const zoomContainer = document.querySelector('.chart-container');
 
+let selectionStart = null;
+let selectionEnd = null;
+let selectionRect = null;
+let isSelecting = false;
+let originalVisibility = {};
+
 function updateZoom() {
   if (svg) {
     svg.style.transform = `scale(${currentZoom})`;
@@ -384,7 +398,122 @@ function attachHoverListenersToSvg(targetSvg) {
   });
 }
 
+function getElementsInSelection(minX, maxX, minY, maxY) {
+  const elements = [];
+  if (!svg) return elements;
+  
+  const svgRect = svg.getBoundingClientRect();
+  const viewport = svg.getBBox();
+  
+  Array.from(svg.querySelectorAll('rect[data-index], circle[data-index], path[data-index]')).forEach(el => {
+    const bbox = el.getBBox ? el.getBBox() : el.getBoundingClientRect();
+    const elemX = bbox.x || bbox.left - svgRect.left;
+    const elemY = bbox.y || bbox.top - svgRect.top;
+    const elemWidth = bbox.width;
+    const elemHeight = bbox.height;
+    
+    const elemCenterX = elemX + elemWidth / 2;
+    const elemCenterY = elemY + elemHeight / 2;
+    
+    if (elemCenterX >= minX && elemCenterX <= maxX && 
+        elemCenterY >= minY && elemCenterY <= maxY) {
+      elements.push(parseInt(el.getAttribute('data-index')));
+    }
+  });
+  
+  return elements;
+}
+
+function applyBoxSelection() {
+  if (!svg || !selectionStart || !selectionEnd) return;
+  
+  const svgRect = svg.getBoundingClientRect();
+  const minX = Math.min(selectionStart.x, selectionEnd.x) - svgRect.left;
+  const maxX = Math.max(selectionStart.x, selectionEnd.x) - svgRect.left;
+  const minY = Math.min(selectionStart.y, selectionEnd.y) - svgRect.top;
+  const maxY = Math.max(selectionStart.y, selectionEnd.y) - svgRect.top;
+  
+  const threshold = 5;
+  if ((maxX - minX) > threshold && (maxY - minY) > threshold) {
+    const selectedIndices = getElementsInSelection(minX, maxX, minY, maxY);
+    
+    Array.from(svg.querySelectorAll('[data-index]')).forEach(el => {
+      const idx = parseInt(el.getAttribute('data-index'));
+      if (selectedIndices.includes(idx)) {
+        el.style.opacity = '1';
+      } else {
+        el.style.opacity = '0.1';
+      }
+    });
+  }
+}
+
+function resetBoxSelection() {
+  if (!svg) return;
+  
+  Array.from(svg.querySelectorAll('[data-index]')).forEach(el => {
+    el.style.opacity = '1';
+  });
+  
+  selectionStart = null;
+  selectionEnd = null;
+  isSelecting = false;
+  
+  if (selectionRect) {
+    selectionRect.remove();
+    selectionRect = null;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  if (svg) {
+    svg.addEventListener('mousedown', (e) => {
+      if (e.button === 0) {
+        selectionStart = { x: e.clientX, y: e.clientY };
+        selectionEnd = { x: e.clientX, y: e.clientY };
+        isSelecting = true;
+        
+        if (!selectionRect) {
+          selectionRect = document.createElement('div');
+          selectionRect.className = 'selection-rect';
+          svg.parentNode.appendChild(selectionRect);
+        }
+      }
+    });
+    
+    svg.addEventListener('mousemove', (e) => {
+      if (!isSelecting || !selectionStart) return;
+      
+      selectionEnd = { x: e.clientX, y: e.clientY };
+      
+      const minX = Math.min(selectionStart.x, selectionEnd.x);
+      const maxX = Math.max(selectionStart.x, selectionEnd.x);
+      const minY = Math.min(selectionStart.y, selectionEnd.y);
+      const maxY = Math.max(selectionStart.y, selectionEnd.y);
+      
+      if (selectionRect) {
+        selectionRect.style.left = minX + 'px';
+        selectionRect.style.top = minY + 'px';
+        selectionRect.style.width = (maxX - minX) + 'px';
+        selectionRect.style.height = (maxY - minY) + 'px';
+      }
+    });
+    
+    svg.addEventListener('mouseup', (e) => {
+      if (isSelecting) {
+        applyBoxSelection();
+        isSelecting = false;
+      }
+    });
+    
+    svg.addEventListener('mouseleave', () => {
+      if (isSelecting) {
+        applyBoxSelection();
+        isSelecting = false;
+      }
+    });
+  }
+  
   const modal = document.getElementById('seraplot-modal');
   if (modal) {
     modal.addEventListener('click', (e) => {
@@ -401,7 +530,11 @@ document.addEventListener('DOMContentLoaded', () => {
   
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      closePopup();
+      if (isSelecting) {
+        resetBoxSelection();
+      } else {
+        closePopup();
+      }
     }
   });
 });

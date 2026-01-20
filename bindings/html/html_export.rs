@@ -139,6 +139,7 @@ impl HtmlExporter {
       <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">−</button>
       <button class="zoom-btn" onclick="resetZoom()" title="Reset">⊙</button>
       <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">+</button>
+      <button class="zoom-btn" onclick="resetBoxSelection()" title="Reset Selection">✕</button>
       <button class="zoom-btn" onclick="openPopup()" title="Fullscreen">⛶</button>
     </div>
     {}

@@ -180,6 +180,9 @@ struct ChartApp {
     limit_value: usize,
     batch_renderer: AdvancedBatchRenderer,
     render_state: RenderState,
+    selection_start: Option<egui::Pos2>,
+    selection_end: Option<egui::Pos2>,
+    selection_active: bool,
 }
 
 impl eframe::App for ChartApp {
@@ -207,6 +210,17 @@ impl eframe::App for ChartApp {
                 if ui.button("⬜").clicked() {
                     self.zoom = 1.0;
                     self.pan_x = 0.0;
+                }
+                
+                if ui.button("🔄 Reset Selection").clicked() {
+                    if let Ok(data) = self.data.lock() {
+                        if let Some(d) = data.as_ref() {
+                            self.visible_elements = vec![true; d.labels.len()];
+                            self.selection_start = None;
+                            self.selection_end = None;
+                            self.selection_active = false;
+                        }
+                    }
                 }
 
                 ui.separator();
@@ -603,7 +617,7 @@ impl ChartApp {
             .show(ui, |ui| {
                 let (response, painter) = ui.allocate_painter(
                     egui::Vec2::new(metrics.allocate_size().x, metrics.allocate_size().y),
-                    egui::Sense::hover(),
+                    egui::Sense::click_and_drag(),
                 );
                 
                 self.render_state.update_viewport(response.rect.width(), response.rect.height());
@@ -627,6 +641,42 @@ impl ChartApp {
                 
                 self.batch_renderer.clear();
                 
+                if response.drag_started() {
+                    let pos = response.interact_pointer_pos().unwrap_or(plot_rect.center());
+                    self.selection_start = Some(pos);
+                    self.selection_end = Some(pos);
+                    self.selection_active = true;
+                }
+                
+                if self.selection_active {
+                    if let Some(pos) = response.interact_pointer_pos() {
+                        self.selection_end = Some(pos);
+                    }
+                }
+                
+                if response.drag_stopped() {
+                    if let (Some(start), Some(end)) = (self.selection_start, self.selection_end) {
+                        let min_x = start.x.min(end.x);
+                        let max_x = start.x.max(end.x);
+                        let min_y = start.y.min(end.y);
+                        let max_y = start.y.max(end.y);
+                        
+                        let threshold = 5.0;
+                        if (max_x - min_x) > threshold && (max_y - min_y) > threshold {
+                            for (i, &point) in points.iter().enumerate() {
+                                if let Some(&actual_idx) = visible_indices.get(i) {
+                                    let inside = point.x >= min_x && point.x <= max_x && 
+                                               point.y >= min_y && point.y <= max_y;
+                                    self.visible_elements[actual_idx] = inside;
+                                }
+                            }
+                        }
+                    }
+                    self.selection_start = None;
+                    self.selection_end = None;
+                    self.selection_active = false;
+                }
+                
                 let plot_ctx = PlotRenderContext {
                     painter: &painter,
                     plot_rect,
@@ -641,6 +691,23 @@ impl ChartApp {
                 
                 render_plot_by_type(chart_type, plot_ctx);
                 
+                if self.selection_active {
+                    if let (Some(start), Some(end)) = (self.selection_start, self.selection_end) {
+                        let min_x = start.x.min(end.x);
+                        let max_x = start.x.max(end.x);
+                        let min_y = start.y.min(end.y);
+                        let max_y = start.y.max(end.y);
+                        
+                        let rect = egui::Rect::from_min_max(
+                            egui::pos2(min_x, min_y),
+                            egui::pos2(max_x, max_y),
+                        );
+                        
+                        painter.rect_stroke(rect, 0.0, egui::Stroke::new(2.0, egui::Color32::from_rgb(31, 119, 180)));
+                        painter.rect_filled(rect, 0.0, egui::Color32::from_rgba_premultiplied(31, 119, 180, 20));
+                    }
+                }
+                
                 for (i, &point) in points.iter().enumerate() {
                     if let Some(&actual_idx) = visible_indices.get(i) {
                         if self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false) {
@@ -649,7 +716,7 @@ impl ChartApp {
                     }
                 }
                 
-                if response.hovered() {
+                if response.hovered() && !self.selection_active {
                     if let Some(pos) = ctx.pointer_latest_pos() {
                         let rel_pos = pos - plot_rect.min;
                         if let Some(vis_idx) = renderer.detect_hover(rel_pos, plot_rect, visible_count) {
@@ -1009,6 +1076,9 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
         last_render_state: (true, 1, 0, false),
         batch_renderer: AdvancedBatchRendererBuilder::new().with_capacity(100000).build(),
         render_state: RenderState::new(1200.0, 600.0),
+        selection_start: None,
+        selection_end: None,
+        selection_active: false,
     };
 
     let native_options = eframe::NativeOptions {
