@@ -113,6 +113,7 @@ impl WikiViewer {
                     ProgrammingLanguage::Python => &method.python_signature,
                     ProgrammingLanguage::CSharp => &method.csharp_signature,
                     ProgrammingLanguage::Cpp => &method.cpp_signature,
+                    ProgrammingLanguage::Rust => &method.rust_signature,
                 };
                 ui.monospace(sig);
 

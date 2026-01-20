@@ -81,6 +81,7 @@ pub fn create_method_doc(
         python_signature: python_sig.to_string(),
         csharp_signature: String::new(),
         cpp_signature: String::new(),
+        rust_signature: String::new(),
     }
 }
 

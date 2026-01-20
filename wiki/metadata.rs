@@ -14,6 +14,7 @@ pub struct MethodDoc {
     pub python_signature: String,
     pub csharp_signature: String,
     pub cpp_signature: String,
+    pub rust_signature: String,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize)]
@@ -67,6 +68,7 @@ impl WikiExport {
                     super::language::ProgrammingLanguage::Python => &method.python_signature,
                     super::language::ProgrammingLanguage::CSharp => &method.csharp_signature,
                     super::language::ProgrammingLanguage::Cpp => &method.cpp_signature,
+                    super::language::ProgrammingLanguage::Rust => &method.rust_signature,
                 };
                 
                 md.push_str(&format!("**Signature:**\n```{}\n{}\n```\n\n", lang.file_extension(), signature));
@@ -160,6 +162,7 @@ impl WikiExport {
                     super::language::ProgrammingLanguage::Python => &method.python_signature,
                     super::language::ProgrammingLanguage::CSharp => &method.csharp_signature,
                     super::language::ProgrammingLanguage::Cpp => &method.cpp_signature,
+                    super::language::ProgrammingLanguage::Rust => &method.rust_signature,
                 };
                 
                 html.push_str(&format!("<div class=\"signature\">{}</div>\n", html_escape(signature)));

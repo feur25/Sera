@@ -5,11 +5,12 @@ pub enum ProgrammingLanguage {
     Python,
     CSharp,
     Cpp,
+    Rust,
 }
 
 impl ProgrammingLanguage {
     pub fn all() -> Vec<Self> {
-        vec![Self::Python, Self::CSharp, Self::Cpp]
+        vec![Self::Python, Self::CSharp, Self::Cpp, Self::Rust]
     }
 
     pub fn name(&self) -> &'static str {
@@ -17,6 +18,7 @@ impl ProgrammingLanguage {
             Self::Python => "Python",
             Self::CSharp => "C#",
             Self::Cpp => "C++",
+            Self::Rust => "Rust",
         }
     }
 
@@ -25,6 +27,7 @@ impl ProgrammingLanguage {
             Self::Python => "py",
             Self::CSharp => "cs",
             Self::Cpp => "cpp",
+            Self::Rust => "rs",
         }
     }
 }
@@ -34,14 +37,16 @@ pub struct CodeExample {
     pub python: String,
     pub csharp: String,
     pub cpp: String,
+    pub rust: String,
 }
 
 impl CodeExample {
-    pub fn new(python: &str, csharp: &str, cpp: &str) -> Self {
+    pub fn new(python: &str, csharp: &str, cpp: &str, rust: &str) -> Self {
         Self {
             python: python.to_string(),
             csharp: csharp.to_string(),
             cpp: cpp.to_string(),
+            rust: rust.to_string(),
         }
     }
 
@@ -50,6 +55,7 @@ impl CodeExample {
             ProgrammingLanguage::Python => &self.python,
             ProgrammingLanguage::CSharp => &self.csharp,
             ProgrammingLanguage::Cpp => &self.cpp,
+            ProgrammingLanguage::Rust => &self.rust,
         }
     }
 }
