@@ -185,8 +185,9 @@ impl HtmlTemplate {
         margin-bottom: 20px;
     }}
     svg {{
-        width: 100%;
+        width: auto;
         height: auto;
+        max-width: 100%;
     }}
     .stats {{
         display: grid;

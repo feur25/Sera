@@ -35,32 +35,12 @@ impl FastChartConfig {
         }
     }
 
-    pub fn bar_vertical() -> Self {
+    pub fn vertical(chart_type: u8) -> Self {
         Self {
-            chart_type: 0,
-            width: 800.0,
-            height: 600.0,
-            padding: 60.0,
-            vertical: true,
-        }
-    }
-
-    pub fn scatter() -> Self {
-        Self {
-            chart_type: 1,
-            width: 800.0,
-            height: 600.0,
-            padding: 60.0,
-            vertical: true,
-        }
-    }
-
-    pub fn line() -> Self {
-        Self {
-            chart_type: 2,
-            width: 800.0,
-            height: 600.0,
-            padding: 60.0,
+            chart_type,
+            width: 1600.0,
+            height: 900.0,
+            padding: 80.0,
             vertical: true,
         }
     }
@@ -174,9 +154,7 @@ pub extern "C" fn sera_create_fast_chart(
 
     let config = match chart_type {
         0 => FastChartConfig::bar_horizontal(),
-        1 => FastChartConfig::bar_vertical(),
-        2 => FastChartConfig::scatter(),
-        _ => FastChartConfig::line(),
+        _ => FastChartConfig::vertical(chart_type as u8),
     };
 
     let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().to_string() };
