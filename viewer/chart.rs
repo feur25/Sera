@@ -101,15 +101,17 @@ struct GenericPlotRenderer {
 impl GenericPlotRenderer {
     fn map_point(&self, idx: usize, value: f64, max_val: f64, point_count: usize, plot_rect: egui::Rect) -> egui::Pos2 {
         let norm_val = value / max_val.max(1.0);
+        let (mut x, mut y);
+        
         if self.vertical {
-            let x = plot_rect.left() + (plot_rect.width() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
-            let y = plot_rect.bottom() - norm_val as f32 * plot_rect.height();
-            egui::pos2(x, y)
+            x = plot_rect.left() + (plot_rect.width() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
+            y = plot_rect.bottom() - norm_val as f32 * plot_rect.height();
         } else {
-            let x = plot_rect.left() + norm_val as f32 * plot_rect.width();
-            let y = plot_rect.top() + (plot_rect.height() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
-            egui::pos2(x, y)
+            x = plot_rect.left() + norm_val as f32 * plot_rect.width();
+            y = plot_rect.top() + (plot_rect.height() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
         }
+        
+        egui::pos2(x, y)
     }
 }
 
