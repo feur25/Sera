@@ -761,11 +761,16 @@ impl ChartApp {
     fn apply_processor_limit(&mut self) {
         if let Ok(data) = self.data.lock() {
             if let Some(d) = data.as_ref() {
-                let mut indices: Vec<usize> = (0..d.values.len()).collect();
-                indices.sort_by(|&a, &b| d.values[b].partial_cmp(&d.values[a]).unwrap_or(std::cmp::Ordering::Equal));
-                self.visible_elements = indices.iter().enumerate()
-                    .map(|(idx, &i)| i >= self.visible_elements.len() || idx < self.limit_value)
-                    .collect();
+                let sorted_indices = self.get_sorted_visible_indices(d);
+                let mut new_visible = vec![false; d.values.len()];
+                
+                for (count, &idx) in sorted_indices.iter().enumerate() {
+                    if count < self.limit_value {
+                        new_visible[idx] = true;
+                    }
+                }
+                
+                self.visible_elements = new_visible;
             }
         }
     }
