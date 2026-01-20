@@ -387,14 +387,16 @@ impl eframe::App for ChartApp {
             }
             if compute_stats {
                 self.show_stats = true;
-                self.compute_statistics();
             }
             if reset_all {
-                let data = self.data.lock().unwrap();
-                if let Some(d) = data.as_ref() {
-                    self.visible_elements = vec![true; d.labels.len()];
+                {
+                    let data = self.data.lock().unwrap();
+                    if let Some(d) = data.as_ref() {
+                        self.visible_elements = vec![true; d.labels.len()];
+                    }
                 }
             }
+            self.compute_statistics();
         }
 
         if self.show_stats {
@@ -752,26 +754,32 @@ impl ChartApp {
     }
 
     fn compute_statistics(&mut self) {
-        if let Ok(data) = self.data.lock() {
-            if let Some(d) = data.as_ref() {
-                let visible: Vec<f64> = d.values.iter().enumerate()
-                    .filter(|(i, _)| *i < self.visible_elements.len() && self.visible_elements[*i])
-                    .map(|(_, &v)| v)
-                    .collect();
-                
-                self.aggregation_results.clear();
-                if !visible.is_empty() {
-                    let sum: f64 = visible.iter().sum();
-                    let len = visible.len() as f64;
-                    [("Sum", sum),
-                     ("Mean", sum / len),
-                     ("Max", visible.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b))),
-                     ("Min", visible.iter().fold(f64::INFINITY, |a, &b| a.min(b))),
-                     ("Count", len)]
-                        .into_iter()
-                        .for_each(|(k, v)| { self.aggregation_results.insert(k.to_string(), v); });
+        let visible = {
+            if let Ok(data) = self.data.lock() {
+                if let Some(d) = data.as_ref() {
+                    d.values.iter().enumerate()
+                        .filter(|(i, _)| *i < self.visible_elements.len() && self.visible_elements[*i])
+                        .map(|(_, &v)| v)
+                        .collect::<Vec<f64>>()
+                } else {
+                    Vec::new()
                 }
+            } else {
+                Vec::new()
             }
+        };
+        
+        self.aggregation_results.clear();
+        if !visible.is_empty() {
+            let sum: f64 = visible.iter().sum();
+            let len = visible.len() as f64;
+            [("Sum", sum),
+             ("Mean", sum / len),
+             ("Max", visible.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b))),
+             ("Min", visible.iter().fold(f64::INFINITY, |a, &b| a.min(b))),
+             ("Count", len)]
+                .into_iter()
+                .for_each(|(k, v)| { self.aggregation_results.insert(k.to_string(), v); });
         }
     }
 }
