@@ -804,18 +804,35 @@ impl ChartApp {
         use crate::bindings::FastChartRenderer;
         use crate::bindings::FastChartConfig;
 
-        let chart_width = 800.0;
-        let chart_height = 600.0;
+        let visible_indices = self.get_sorted_visible_indices(d);
+        
+        let filtered_labels: Vec<String> = visible_indices.iter()
+            .map(|&idx| d.labels.get(idx).cloned().unwrap_or_default())
+            .collect();
+        
+        let filtered_values: Vec<f64> = visible_indices.iter()
+            .map(|&idx| d.values.get(idx).copied().unwrap_or(0.0))
+            .collect();
+
+        let chart_type = self.current_chart_kind;
+        let vertical = self.orientation;
+        
+        let (width, height, padding) = if vertical {
+            (800.0, 600.0, 60.0)
+        } else {
+            (1000.0, 800.0, 300.0)
+        };
         
         let config = FastChartConfig {
-            width: chart_width,
-            height: chart_height,
-            padding: 60.0,
-            chart_type: self.current_chart_kind,
+            chart_type,
+            width,
+            height,
+            padding,
+            vertical,
         };
 
         let renderer = FastChartRenderer::new(config, &d.title)
-            .with_data(d.labels.clone(), d.values.clone());
+            .with_data(filtered_labels, filtered_values);
         
         renderer.render_svg()
     }
@@ -843,8 +860,9 @@ impl ChartApp {
             .values(d.values.clone())
             .title(d.title.clone())
             .hover_data(d.hover_data.clone())
+            .tooltip_colors(d.tooltip_bg_color, d.tooltip_text_color)
             .orientation(self.orientation)
-            .sort_mode(self.sort_mode as i32)
+            .sort_mode(self.sort_mode)
             .chart_kind(self.current_chart_kind)
             .is_3d(self.is_3d_mode)
             .zoom(self.zoom)

@@ -7,6 +7,7 @@ pub struct FastChartConfig {
     pub width: f32,
     pub height: f32,
     pub padding: f32,
+    pub vertical: bool,
 }
 
 impl FastChartConfig {
@@ -16,6 +17,7 @@ impl FastChartConfig {
             width: 1000.0,
             height: 800.0,
             padding: 300.0,
+            vertical: false,
         }
     }
 
@@ -25,6 +27,7 @@ impl FastChartConfig {
             width: 800.0,
             height: 600.0,
             padding: 60.0,
+            vertical: true,
         }
     }
 
@@ -34,6 +37,7 @@ impl FastChartConfig {
             width: 800.0,
             height: 600.0,
             padding: 60.0,
+            vertical: true,
         }
     }
 
@@ -43,6 +47,7 @@ impl FastChartConfig {
             width: 800.0,
             height: 600.0,
             padding: 60.0,
+            vertical: true,
         }
     }
 }
@@ -98,8 +103,15 @@ impl FastChartRenderer {
         let plot_height = (self.config.height - self.config.padding * 2.0).max(1.0);
 
         match self.config.chart_type {
-            0 => self.render_bars_horizontal(&mut svg, pad, plot_width as i32, plot_height as i32, max_val),
+            0 => self.render_lines(&mut svg, pad, plot_width as i32, plot_height as i32, max_val),
             1 => self.render_scatter(&mut svg, pad, plot_width as i32, plot_height as i32, max_val),
+            2 => {
+                if self.config.vertical {
+                    self.render_bars_vertical(&mut svg, pad, plot_width as i32, plot_height as i32, max_val)
+                } else {
+                    self.render_bars_horizontal(&mut svg, pad, plot_width as i32, plot_height as i32, max_val)
+                }
+            },
             _ => self.render_lines(&mut svg, pad, plot_width as i32, plot_height as i32, max_val),
         }
 
@@ -154,6 +166,44 @@ impl FastChartRenderer {
                     pad - 8, y_center + 4, label_text
                 ));
             }
+        }
+    }
+
+    fn render_bars_vertical(
+        &self,
+        svg: &mut String,
+        pad: i32,
+        plot_width: i32,
+        plot_height: i32,
+        max_val: f64,
+    ) {
+        let bar_spacing = plot_width as f64 / (self.values.len() as f64).max(1.0);
+        let bar_thickness = (bar_spacing * 0.7).min(20.0);
+
+        for i in 0..=5 {
+            let y = pad + plot_height - (i as f64 / 5.0 * plot_height as f64) as i32;
+            let val = (max_val / 5.0) * i as f64;
+            svg.push_str(&format!(
+                "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"grid\"/><text x=\"{}\" y=\"{}\" class=\"label\" text-anchor=\"end\">{:.1}</text>",
+                pad, y, pad + plot_width, y, pad - 8, y + 4, val
+            ));
+        }
+
+        svg.push_str(&format!(
+            "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"axis\"/><line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"axis\"/>",
+            pad, pad, pad, pad + plot_height, pad, pad + plot_height, pad + plot_width, pad + plot_height
+        ));
+
+        for (idx, &val) in self.values.iter().enumerate() {
+            let norm = (val / max_val).min(1.0);
+            let bar_height = (norm * plot_height as f64) as i32;
+            let x_center = pad + (idx as f64 * bar_spacing + bar_spacing / 2.0) as i32;
+            let color = self.colors[idx % self.colors.len()];
+
+            svg.push_str(&format!(
+                "<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\" stroke=\"#ccc\" stroke-width=\"0.5\" class=\"interactive-bar\" data-index=\"{}\"/>",
+                x_center - (bar_thickness as i32 / 2), pad + plot_height - bar_height, bar_thickness as i32, bar_height, color, idx
+            ));
         }
     }
 
