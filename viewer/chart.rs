@@ -665,9 +665,10 @@ impl ChartApp {
                         if (max_x - min_x) > threshold && (max_y - min_y) > threshold {
                             for (i, &point) in points.iter().enumerate() {
                                 if let Some(&actual_idx) = visible_indices.get(i) {
-                                    let inside = point.x >= min_x && point.x <= max_x && 
-                                               point.y >= min_y && point.y <= max_y;
-                                    self.visible_elements[actual_idx] = inside;
+                                    let tolerance = 15.0;
+                                    let intersects = point.x >= min_x - tolerance && point.x <= max_x + tolerance && 
+                                                   point.y >= min_y - tolerance && point.y <= max_y + tolerance;
+                                    self.visible_elements[actual_idx] = intersects;
                                 }
                             }
                         }
