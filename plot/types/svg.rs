@@ -35,9 +35,9 @@ impl SvgChart for super::line::Line {
         plot_width: i32,
         plot_height: i32,
         max_val: f64,
-        _vertical: bool,
+        vertical: bool,
     ) {
-        super::line::render_svg_lines(svg, values, colors, pad, plot_width, plot_height, max_val);
+        super::line::render_svg_lines(svg, values, colors, pad, plot_width, plot_height, max_val, vertical);
     }
 }
 
@@ -50,8 +50,8 @@ impl SvgChart for super::scatter::Scatter {
         plot_width: i32,
         plot_height: i32,
         max_val: f64,
-        _vertical: bool,
+        vertical: bool,
     ) {
-        super::scatter::render_svg_scatter(svg, values, colors, pad, plot_width, plot_height, max_val);
+        super::scatter::render_svg_scatter(svg, values, colors, pad, plot_width, plot_height, max_val, vertical);
     }
 }
