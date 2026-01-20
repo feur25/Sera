@@ -10,7 +10,7 @@ pub use bar::render_bars;
 pub use line::render_lines;
 pub use scatter::render_points;
 pub use _3d::{render_plot_3d_by_type, Bar3DRenderContext, Line3DRenderContext, Scatter3DRenderContext};
-pub use _3d::{render_bars_3d, render_lines_3d, render_points_3d, get_3d_point_positions, get_3d_bar_positions, get_3d_line_positions};
+pub use _3d::*;
 
 pub struct PlotRenderContext<'a> {
     pub painter: &'a egui::Painter,

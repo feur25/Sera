@@ -110,7 +110,7 @@ impl GenericPlotRenderer {
             x = plot_rect.left() + norm_val as f32 * plot_rect.width();
             y = plot_rect.top() + (plot_rect.height() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
         }
-        
+
         egui::pos2(x, y)
     }
 }
@@ -572,9 +572,9 @@ impl ChartApp {
         }
         
         let render_pipeline = RenderPipeline::builder().build();
-        let chunk_renderer = ChunkRenderBuilder::new()
-            .with_chunk_size(render_pipeline.get_optimal_batch_size(visible_count))
-            .build();
+        // let chunk_renderer = ChunkRenderBuilder::new()
+        //     .with_chunk_size(render_pipeline.get_optimal_batch_size(visible_count))
+        //     .build();
         let mut vis_optimizer = VisibilityOptimizer::new();
         
         let scroll_id = egui::Id::new((chart_type, vertical, self.sort_mode));
@@ -712,31 +712,14 @@ impl ChartApp {
         
         if response.hovered() {
             if let Some(mouse_pos) = ctx.pointer_latest_pos() {
-                let positions = match self.current_chart_kind {
-                    0 => crate::plot::types::get_3d_line_positions(
-                        &d.values,
-                        max_val,
-                        &visible_indices,
-                        &self.advanced_viewer_3d.camera_controller,
-                        response.rect,
-                    ),
-                    1 => crate::plot::types::get_3d_point_positions(
-                        &d.values,
-                        max_val,
-                        &visible_indices,
-                        &self.advanced_viewer_3d.camera_controller,
-                        response.rect,
-                    ),
-                    2 => crate::plot::types::get_3d_bar_positions(
-                        &d.values,
-                        max_val,
-                        &visible_indices,
-                        &self.advanced_viewer_3d.camera_controller,
-                        response.rect,
-                    ),
-                    _ => Vec::new(),
-                };
-                
+                let positions = crate::plot::types::_3d::get_3d_positions(
+                    self.current_chart_kind + 3,
+                    &d.values,
+                    max_val,
+                    &visible_indices,
+                    &self.advanced_viewer_3d.camera_controller,
+                    response.rect,
+                );
                 let detector = Hover3DDetector::new(positions);
                 self.hovered_idx = detector.detect(mouse_pos);
             }

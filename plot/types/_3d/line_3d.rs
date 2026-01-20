@@ -81,7 +81,7 @@ pub fn render_lines_3d(ctx: Line3DRenderContext) {
     }
 }
 
-pub fn get_3d_line_positions(
+pub fn get_3d_positions(
     values: &[f64],
     max_val: f64,
     visible_indices: &[usize],

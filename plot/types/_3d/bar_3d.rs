@@ -99,7 +99,7 @@ pub fn render_bars_3d(ctx: Bar3DRenderContext) {
     }
 }
 
-pub fn get_3d_bar_positions(
+pub fn get_3d_positions(
     values: &[f64],
     max_val: f64,
     visible_indices: &[usize],

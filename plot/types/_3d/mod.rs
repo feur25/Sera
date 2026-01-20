@@ -7,9 +7,25 @@ use super::super::containers_3d::CameraController;
 use std::collections::HashMap;
 use std::sync::LazyLock;
 
-pub use bar_3d::{render_bars_3d, Bar3DRenderContext, get_3d_bar_positions};
-pub use line_3d::{render_lines_3d, Line3DRenderContext, get_3d_line_positions};
-pub use scatter_3d::{render_points_3d, Scatter3DRenderContext, render_3d_grid, get_3d_point_positions};
+pub use bar_3d::*;
+pub use line_3d::*;
+pub use scatter_3d::*;
+
+pub fn get_3d_positions(
+    chart_type: u8,
+    values: &[f64],
+    max_val: f64,
+    visible_indices: &[usize],
+    camera_controller: &CameraController,
+    plot_rect: egui::Rect,
+) -> Vec<(egui::Pos2, usize)> {
+    match chart_type {
+        3 => line_3d::get_3d_positions(values, max_val, visible_indices, camera_controller, plot_rect),
+        4 => scatter_3d::get_3d_positions(values, max_val, visible_indices, camera_controller, plot_rect),
+        5 => bar_3d::get_3d_positions(values, max_val, visible_indices, camera_controller, plot_rect),
+        _ => Vec::new(),
+    }
+}
 
 pub struct Plot3DRegistry {
     renderers: HashMap<u8, (&'static str, u8)>,

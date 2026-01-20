@@ -82,7 +82,7 @@ pub fn render_3d_grid(
     render_grid_3d(painter, cube, camera_controller, plot_rect);
 }
 
-pub fn get_3d_point_positions(
+pub fn get_3d_positions(
     values: &[f64],
     max_val: f64,
     visible_indices: &[usize],
