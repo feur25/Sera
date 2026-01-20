@@ -1,6 +1,20 @@
 use std::ffi::{CStr, CString};
 use std::os::raw::{c_char, c_uint};
 
+pub struct SvgRenderContext<'a> {
+    pub chart_type: u8,
+    pub title: &'a str,
+    pub labels: &'a [String],
+    pub values: &'a [f64],
+    pub colors: &'a [&'static str],
+    pub max_val: f64,
+    pub visible_indices: &'a [usize],
+    pub vertical: bool,
+    pub width: f32,
+    pub height: f32,
+    pub padding: f32,
+}
+
 #[repr(C)]
 pub struct FastChartConfig {
     pub chart_type: u8,
@@ -80,6 +94,41 @@ impl FastChartRenderer {
         self
     }
 
+    fn render_svg_axes(&self, svg: &mut String, pad: i32, plot_width: i32, plot_height: i32, max_val: f64) {
+        for i in 0..=5 {
+            let y = pad + ((1.0 - i as f64 / 5.0) * plot_height as f64) as i32;
+            let val = (max_val / 5.0) * i as f64;
+            svg.push_str(&format!(
+                "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"grid\"/><text x=\"{}\" y=\"{}\" class=\"label\" text-anchor=\"end\">{:.1}</text>",
+                pad - 5, y, pad + plot_width, y, pad - 10, y + 4, val
+            ));
+        }
+
+        svg.push_str(&format!(
+            "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"axis\"/><line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"axis\"/>",
+            pad, pad, pad, pad + plot_height, pad, pad + plot_height, pad + plot_width, pad + plot_height
+        ));
+    }
+
+    fn render_chart(&self, svg: &mut String, pad: i32, plot_width: i32, plot_height: i32, max_val: f64) {
+        use super::super::plot::types::SvgChart;
+        
+        match self.config.chart_type {
+            0 => super::super::plot::types::line::Line::render_svg(
+                svg, &self.values, &self.colors, pad, plot_width, plot_height, max_val, self.config.vertical
+            ),
+            1 => super::super::plot::types::scatter::Scatter::render_svg(
+                svg, &self.values, &self.colors, pad, plot_width, plot_height, max_val, self.config.vertical
+            ),
+            2 => super::super::plot::types::bar::Bar::render_svg(
+                svg, &self.values, &self.colors, pad, plot_width, plot_height, max_val, self.config.vertical
+            ),
+            _ => super::super::plot::types::line::Line::render_svg(
+                svg, &self.values, &self.colors, pad, plot_width, plot_height, max_val, self.config.vertical
+            ),
+        }
+    }
+
     pub fn render_svg(&self) -> String {
         let w = self.config.width as i32;
         let h = self.config.height as i32;
@@ -102,203 +151,13 @@ impl FastChartRenderer {
         let plot_width = (self.config.width - self.config.padding * 2.0).max(1.0);
         let plot_height = (self.config.height - self.config.padding * 2.0).max(1.0);
 
-        match self.config.chart_type {
-            0 => self.render_lines(&mut svg, pad, plot_width as i32, plot_height as i32, max_val),
-            1 => self.render_scatter(&mut svg, pad, plot_width as i32, plot_height as i32, max_val),
-            2 => {
-                if self.config.vertical {
-                    self.render_bars_vertical(&mut svg, pad, plot_width as i32, plot_height as i32, max_val)
-                } else {
-                    self.render_bars_horizontal(&mut svg, pad, plot_width as i32, plot_height as i32, max_val)
-                }
-            },
-            _ => self.render_lines(&mut svg, pad, plot_width as i32, plot_height as i32, max_val),
-        }
+        self.render_svg_axes(&mut svg, pad, plot_width as i32, plot_height as i32, max_val);
+        self.render_chart(&mut svg, pad, plot_width as i32, plot_height as i32, max_val);
 
         svg.push_str("</svg>");
         svg
     }
 
-    fn render_bars_horizontal(
-        &self,
-        svg: &mut String,
-        pad: i32,
-        plot_width: i32,
-        plot_height: i32,
-        max_val: f64,
-    ) {
-        let bar_spacing = plot_height as f64 / (self.values.len() as f64).max(1.0);
-        let bar_thickness = (bar_spacing * 0.7).min(20.0);
-
-        for i in 0..=5 {
-            let x = pad + (i as f64 / 5.0 * plot_width as f64) as i32;
-            let val = (max_val / 5.0) * i as f64;
-            svg.push_str(&format!(
-                "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"grid\"/><text x=\"{}\" y=\"{}\" class=\"label\" text-anchor=\"middle\">{:.1}</text>",
-                x, pad, x, pad + plot_height, x, pad + plot_height + 20, val
-            ));
-        }
-
-        svg.push_str(&format!(
-            "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"axis\"/><line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"axis\"/>",
-            pad, pad, pad, pad + plot_height, pad, pad + plot_height, pad + plot_width, pad + plot_height
-        ));
-
-        for (idx, &val) in self.values.iter().enumerate() {
-            let norm = (val / max_val).min(1.0);
-            let bar_length = (norm * plot_width as f64) as i32;
-            let y_center = pad + (idx as f64 * bar_spacing + bar_spacing / 2.0) as i32;
-            let color = self.colors[idx % self.colors.len()];
-
-            svg.push_str(&format!(
-                "<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\" stroke=\"#ccc\" stroke-width=\"0.5\" class=\"interactive-bar\" data-index=\"{}\"/>",
-                pad, y_center - (bar_thickness as i32 / 2), bar_length, bar_thickness as i32, color, idx
-            ));
-
-            if let Some(label) = self.labels.get(idx) {
-                let label_text = if label.len() > 35 {
-                    format!("{}...", &label[..32])
-                } else {
-                    label.clone()
-                };
-                svg.push_str(&format!(
-                    "<text x=\"{}\" y=\"{}\" class=\"label\" text-anchor=\"end\">{}</text>",
-                    pad - 8, y_center + 4, label_text
-                ));
-            }
-        }
-    }
-
-    fn render_bars_vertical(
-        &self,
-        svg: &mut String,
-        pad: i32,
-        plot_width: i32,
-        plot_height: i32,
-        max_val: f64,
-    ) {
-        let bar_spacing = plot_width as f64 / (self.values.len() as f64).max(1.0);
-        let bar_thickness = (bar_spacing * 0.7).min(20.0);
-
-        for i in 0..=5 {
-            let y = pad + plot_height - (i as f64 / 5.0 * plot_height as f64) as i32;
-            let val = (max_val / 5.0) * i as f64;
-            svg.push_str(&format!(
-                "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"grid\"/><text x=\"{}\" y=\"{}\" class=\"label\" text-anchor=\"end\">{:.1}</text>",
-                pad, y, pad + plot_width, y, pad - 8, y + 4, val
-            ));
-        }
-
-        svg.push_str(&format!(
-            "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"axis\"/><line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"axis\"/>",
-            pad, pad, pad, pad + plot_height, pad, pad + plot_height, pad + plot_width, pad + plot_height
-        ));
-
-        for (idx, &val) in self.values.iter().enumerate() {
-            let norm = (val / max_val).min(1.0);
-            let bar_height = (norm * plot_height as f64) as i32;
-            let x_center = pad + (idx as f64 * bar_spacing + bar_spacing / 2.0) as i32;
-            let color = self.colors[idx % self.colors.len()];
-
-            svg.push_str(&format!(
-                "<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\" stroke=\"#ccc\" stroke-width=\"0.5\" class=\"interactive-bar\" data-index=\"{}\"/>",
-                x_center - (bar_thickness as i32 / 2), pad + plot_height - bar_height, bar_thickness as i32, bar_height, color, idx
-            ));
-        }
-    }
-
-    fn render_scatter(
-        &self,
-        svg: &mut String,
-        pad: i32,
-        plot_width: i32,
-        plot_height: i32,
-        max_val: f64,
-    ) {
-        for i in 0..=5 {
-            let y = pad + ((1.0 - i as f64 / 5.0) * plot_height as f64) as i32;
-            let val = (max_val / 5.0) * i as f64;
-            svg.push_str(&format!(
-                "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"grid\"/><text x=\"{}\" y=\"{}\" class=\"label\" text-anchor=\"end\">{:.1}</text>",
-                pad - 5, y, pad + plot_width, y, pad - 10, y + 4, val
-            ));
-        }
-
-        svg.push_str(&format!(
-            "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"axis\"/><line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"axis\"/>",
-            pad, pad, pad, pad + plot_height, pad, pad + plot_height, pad + plot_width, pad + plot_height
-        ));
-
-        let step = (self.values.len() as f64 / plot_width as f64).max(1.0) as usize;
-        for (idx, &val) in self.values.iter().enumerate().step_by(step.max(1)) {
-            let norm_x = (idx as f64) / (self.values.len() as f64).max(1.0);
-            let norm_y = (val / max_val).min(1.0);
-            let x = pad + (norm_x * plot_width as f64) as i32;
-            let y = pad + plot_height - (norm_y * plot_height as f64) as i32;
-            let color = self.colors[idx % self.colors.len()];
-
-            svg.push_str(&format!(
-                "<circle cx=\"{}\" cy=\"{}\" r=\"4\" fill=\"{}\" stroke=\"white\" stroke-width=\"1\" class=\"interactive-point\" data-index=\"{}\"/>",
-                x, y, color, idx
-            ));
-        }
-    }
-
-    fn render_lines(
-        &self,
-        svg: &mut String,
-        pad: i32,
-        plot_width: i32,
-        plot_height: i32,
-        max_val: f64,
-    ) {
-        for i in 0..=5 {
-            let y = pad + ((1.0 - i as f64 / 5.0) * plot_height as f64) as i32;
-            let val = (max_val / 5.0) * i as f64;
-            svg.push_str(&format!(
-                "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"grid\"/><text x=\"{}\" y=\"{}\" class=\"label\" text-anchor=\"end\">{:.1}</text>",
-                pad - 5, y, pad + plot_width, y, pad - 10, y + 4, val
-            ));
-        }
-
-        svg.push_str(&format!(
-            "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"axis\"/><line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" class=\"axis\"/>",
-            pad, pad, pad, pad + plot_height, pad, pad + plot_height, pad + plot_width, pad + plot_height
-        ));
-
-        if self.values.len() > 1 {
-            let mut path = String::with_capacity(4096);
-            for (idx, &val) in self.values.iter().enumerate() {
-                let norm_x = (idx as f64) / (self.values.len() as f64 - 1.0).max(1.0);
-                let norm_y = (val / max_val).min(1.0);
-                let x = pad + (norm_x * plot_width as f64) as i32;
-                let y = pad + plot_height - (norm_y * plot_height as f64) as i32;
-
-                if idx == 0 {
-                    path.push_str(&format!("M{},{}", x, y));
-                } else {
-                    path.push_str(&format!("L{},{}", x, y));
-                }
-            }
-            svg.push_str(&format!(
-                "<path d=\"{}\" stroke=\"{}\" stroke-width=\"2\" fill=\"none\" class=\"interactive-line\" data-index=\"0\"/>",
-                path, self.colors[0]
-            ));
-        }
-
-        let step = (self.values.len() as f64 / 50.0).max(1.0) as usize;
-        for (idx, &val) in self.values.iter().enumerate().step_by(step.max(1)) {
-            let norm_x = (idx as f64) / (self.values.len() as f64).max(1.0);
-            let norm_y = (val / max_val).min(1.0);
-            let x = pad + (norm_x * plot_width as f64) as i32;
-            let y = pad + plot_height - (norm_y * plot_height as f64) as i32;
-
-            svg.push_str(&format!(
-                "<circle cx=\"{}\" cy=\"{}\" r=\"3\" fill=\"{}\" stroke=\"white\" stroke-width=\"1\" class=\"interactive-point\" data-index=\"{}\"/>",
-                x, y, self.colors[0], idx
-            ));
-        }
-    }
 }
 
 #[no_mangle]

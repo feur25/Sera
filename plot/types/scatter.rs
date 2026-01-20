@@ -1,3 +1,5 @@
+pub struct Scatter;
+
 pub fn render_points(ctx: super::PlotRenderContext) {
     let visible_count = ctx.visible_indices.len();
     
@@ -23,5 +25,30 @@ pub fn render_points(ctx: super::PlotRenderContext) {
             (4.0, color) 
         };
         ctx.painter.circle_filled(pos, radius, display_color);
+    }
+}
+
+pub fn render_svg_scatter(
+    svg: &mut String,
+    values: &[f64],
+    colors: &[&'static str],
+    pad: i32,
+    plot_width: i32,
+    plot_height: i32,
+    max_val: f64,
+) {
+    let visible_count = values.len();
+    let step = ((visible_count as f64) / (plot_width as f64)).max(1.0) as usize;
+
+    for (vis_idx, &val) in values.iter().enumerate().step_by(step.max(1)) {
+        let norm_val = val / max_val.max(1.0);
+        let x_pos = pad as f64 + (plot_width as f64 / (visible_count as f64 - 1.0).max(1.0)) * vis_idx as f64;
+        let y = pad + plot_height - (norm_val * plot_height as f64) as i32;
+        let color = colors[vis_idx % colors.len()];
+
+        svg.push_str(&format!(
+            "<circle cx=\"{}\" cy=\"{}\" r=\"4\" fill=\"{}\" stroke=\"white\" stroke-width=\"1\" class=\"interactive-point\" data-index=\"{}\"/>",
+            x_pos as i32, y, color, vis_idx
+        ));
     }
 }

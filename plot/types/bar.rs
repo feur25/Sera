@@ -1,3 +1,5 @@
+pub struct Bar;
+
 pub fn render_bars(ctx: super::PlotRenderContext) {
     let visible_count = ctx.visible_indices.len();
     
@@ -69,6 +71,46 @@ pub fn render_bars(ctx: super::PlotRenderContext) {
                 egui::FontId::proportional(10.0),
                 egui::Color32::from_gray(100),
             );
+        }
+    }
+}
+
+pub fn render_svg_bars(
+    svg: &mut String,
+    values: &[f64],
+    colors: &[&'static str],
+    pad: i32,
+    plot_width: i32,
+    plot_height: i32,
+    max_val: f64,
+    vertical: bool,
+) {
+    let visible_count = values.len();
+
+    for (vis_idx, &val) in values.iter().enumerate() {
+        let norm_val = val / max_val.max(1.0);
+        let color = colors[vis_idx % colors.len()];
+
+        if vertical {
+            let bar_spacing = plot_width as f64 / visible_count as f64;
+            let x = pad as f64 + bar_spacing * vis_idx as f64;
+            let bar_width = bar_spacing * 0.6;
+            let bar_height = (norm_val * plot_height as f64) as i32;
+
+            svg.push_str(&format!(
+                "<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\" stroke=\"#ccc\" stroke-width=\"0.5\" class=\"interactive-bar\" data-index=\"{}\"/>",
+                (x - bar_width / 2.0) as i32, pad + plot_height - bar_height, bar_width as i32, bar_height, color, vis_idx
+            ));
+        } else {
+            let bar_spacing = plot_height as f64 / visible_count as f64;
+            let y = pad as f64 + bar_spacing * vis_idx as f64;
+            let bar_length = (norm_val * plot_width as f64) as i32;
+            let bar_thickness = bar_spacing * 0.6;
+
+            svg.push_str(&format!(
+                "<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\" stroke=\"#ccc\" stroke-width=\"0.5\" class=\"interactive-bar\" data-index=\"{}\"/>",
+                pad, (y - bar_thickness / 2.0) as i32, bar_length, bar_thickness as i32, color, vis_idx
+            ));
         }
     }
 }

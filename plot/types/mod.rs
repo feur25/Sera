@@ -2,6 +2,7 @@ pub mod bar;
 pub mod line;
 pub mod scatter;
 pub mod _3d;
+pub mod svg;
 
 use std::collections::HashMap;
 use std::sync::LazyLock;
@@ -11,6 +12,7 @@ pub use line::render_lines;
 pub use scatter::render_points;
 pub use _3d::{render_plot_3d_by_type, Bar3DRenderContext, Line3DRenderContext, Scatter3DRenderContext};
 pub use _3d::*;
+pub use svg::SvgChart;
 
 pub struct PlotRenderContext<'a> {
     pub painter: &'a egui::Painter,
