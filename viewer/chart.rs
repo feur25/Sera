@@ -10,6 +10,7 @@ use super::manager::button_manager::{ButtonManager, ButtonId};
 use super::render::{AdvancedBatchRenderer, AdvancedBatchRendererBuilder, RenderState, DataCache, PointComputeBuilder, ChunkRenderBuilder, RenderPipeline, VisibilityOptimizer};
 use crate::plot::types::{PlotRenderContext, render_plot_by_type, render_plot_3d_by_type};
 use crate::plot::CameraController;
+use crate::bindings::{HtmlExporter, HtmlExportConfig, HtmlTheme, ChartStateBuilder};
 
 struct Hover3DDetector {
     positions: Vec<(egui::Pos2, usize)>,
@@ -246,7 +247,23 @@ impl eframe::App for ChartApp {
                     }
                 }
 
-                ui.separator();
+                if clicked.contains_key(&ButtonId::Html) {
+                    if let Ok(data) = self.data.lock() {
+                        if let Some(d) = data.as_ref() {
+                            let d_clone = ChartData {
+                                labels: d.labels.clone(),
+                                values: d.values.clone(),
+                                title: d.title.clone(),
+                                hover_data: d.hover_data.clone(),
+                                tooltip_bg_color: d.tooltip_bg_color,
+                                tooltip_text_color: d.tooltip_text_color,
+                            };
+                            drop(data);
+                            self.export_html(&d_clone);
+                        }
+                    }
+
+                }
                 ui.label(&zoom_label);
             });
         });
@@ -781,6 +798,80 @@ impl ChartApp {
                 .into_iter()
                 .for_each(|(k, v)| { self.aggregation_results.insert(k.to_string(), v); });
         }
+    }
+
+    fn generate_svg(&self, d: &ChartData) -> String {
+        use crate::bindings::FastChartRenderer;
+        use crate::bindings::FastChartConfig;
+
+        let chart_width = 800.0;
+        let chart_height = 600.0;
+        
+        let config = FastChartConfig {
+            width: chart_width,
+            height: chart_height,
+            padding: 60.0,
+            chart_type: self.current_chart_kind,
+        };
+
+        let renderer = FastChartRenderer::new(config, &d.title)
+            .with_data(d.labels.clone(), d.values.clone());
+        
+        renderer.render_svg()
+    }
+
+    fn export_html(&self, d: &ChartData) {
+        use crate::bindings::ImageProcessor;
+        
+        let svg = self.generate_svg(d);
+        
+        let mut images_base64 = Vec::new();
+        for hover in &d.hover_data {
+            if let Some(image_path) = hover.get("image") {
+                if let Some(data_url) = ImageProcessor::to_data_url(image_path) {
+                    images_base64.push(data_url);
+                } else {
+                    images_base64.push(String::new());
+                }
+            } else {
+                images_base64.push(String::new());
+            }
+        }
+        
+        let state = ChartStateBuilder::new()
+            .labels(d.labels.clone())
+            .values(d.values.clone())
+            .title(d.title.clone())
+            .hover_data(d.hover_data.clone())
+            .orientation(self.orientation)
+            .sort_mode(self.sort_mode as i32)
+            .chart_kind(self.current_chart_kind)
+            .is_3d(self.is_3d_mode)
+            .zoom(self.zoom)
+            .filter_threshold(self.filter_threshold)
+            .visible_elements(self.visible_elements.clone())
+            .limit_value(self.limit_value)
+            .images_base64(images_base64)
+            .build();
+
+        let config = HtmlExportConfig::default()
+            .with_title(&d.title)
+            .with_theme(HtmlTheme::Professional)
+            .with_state_export(true)
+            .with_controls(true);
+
+        let exporter = HtmlExporter::new(config)
+            .with_state(state)
+            .with_data(d.labels.clone(), d.values.clone())
+            .with_svg(svg);
+
+        let timestamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .map(|d| d.as_secs())
+            .unwrap_or(0);
+
+        let filepath = format!("seraplot_export_{}.html", timestamp);
+        exporter.export_to_file_background(filepath);
     }
 }
 

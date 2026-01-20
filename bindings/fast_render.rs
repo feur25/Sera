@@ -139,8 +139,8 @@ impl FastChartRenderer {
             let color = self.colors[idx % self.colors.len()];
 
             svg.push_str(&format!(
-                "<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\" stroke=\"#ccc\" stroke-width=\"0.5\"/>",
-                pad, y_center - (bar_thickness as i32 / 2), bar_length, bar_thickness as i32, color
+                "<rect x=\"{}\" y=\"{}\" width=\"{}\" height=\"{}\" fill=\"{}\" stroke=\"#ccc\" stroke-width=\"0.5\" class=\"interactive-bar\" data-index=\"{}\"/>",
+                pad, y_center - (bar_thickness as i32 / 2), bar_length, bar_thickness as i32, color, idx
             ));
 
             if let Some(label) = self.labels.get(idx) {
@@ -188,8 +188,8 @@ impl FastChartRenderer {
             let color = self.colors[idx % self.colors.len()];
 
             svg.push_str(&format!(
-                "<circle cx=\"{}\" cy=\"{}\" r=\"4\" fill=\"{}\" stroke=\"white\" stroke-width=\"1\"/>",
-                x, y, color
+                "<circle cx=\"{}\" cy=\"{}\" r=\"4\" fill=\"{}\" stroke=\"white\" stroke-width=\"1\" class=\"interactive-point\" data-index=\"{}\"/>",
+                x, y, color, idx
             ));
         }
     }
@@ -231,7 +231,7 @@ impl FastChartRenderer {
                 }
             }
             svg.push_str(&format!(
-                "<path d=\"{}\" stroke=\"{}\" stroke-width=\"2\" fill=\"none\"/>",
+                "<path d=\"{}\" stroke=\"{}\" stroke-width=\"2\" fill=\"none\" class=\"interactive-line\" data-index=\"0\"/>",
                 path, self.colors[0]
             ));
         }
@@ -244,8 +244,8 @@ impl FastChartRenderer {
             let y = pad + plot_height - (norm_y * plot_height as f64) as i32;
 
             svg.push_str(&format!(
-                "<circle cx=\"{}\" cy=\"{}\" r=\"3\" fill=\"{}\" stroke=\"white\" stroke-width=\"1\"/>",
-                x, y, self.colors[0]
+                "<circle cx=\"{}\" cy=\"{}\" r=\"3\" fill=\"{}\" stroke=\"white\" stroke-width=\"1\" class=\"interactive-point\" data-index=\"{}\"/>",
+                x, y, self.colors[0], idx
             ));
         }
     }

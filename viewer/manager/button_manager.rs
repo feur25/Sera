@@ -8,8 +8,8 @@ const BUTTON_ORDER: &[(ButtonId, &str, &str)] = &[
     (ButtonId::Processor, "⚙", "Traitement avancé"),
     (ButtonId::Transform, "🔀", "Transformer les données"),
     (ButtonId::Wiki, "📚", "Documentation API"),
-    (ButtonId::Stats, "📈", "Statistiques"),
-    (ButtonId::Info, "ℹ️", "Information système"),
+    (ButtonId::Html, "🌐", "Exporter en HTML"),
+    (ButtonId::Info, "ℹ", "Information système"),
 ];
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
@@ -23,7 +23,7 @@ pub enum ButtonId {
     Processor,
     Transform,
     Wiki,
-    Stats,
+    Html,
     Info,
     Custom(String),
 }
