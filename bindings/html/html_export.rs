@@ -135,8 +135,27 @@ impl HtmlExporter {
 </head>
 <body>
   <div class="chart-container">
+    <div class="zoom-controls">
+      <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">−</button>
+      <button class="zoom-btn" onclick="resetZoom()" title="Reset">⊙</button>
+      <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">+</button>
+      <button class="zoom-btn" onclick="openPopup()" title="Fullscreen">⛶</button>
+    </div>
     {}
   </div>
+  
+  <div id="seraplot-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>SeraPlot Chart</h2>
+        <button id="modal-close-btn" class="modal-close">&times;</button>
+      </div>
+      <div class="modal-body">
+        <svg id="modal-svg"></svg>
+      </div>
+    </div>
+  </div>
+  
   <script>
     window.__SERAPLOT_STATE__ = {};
   </script>
