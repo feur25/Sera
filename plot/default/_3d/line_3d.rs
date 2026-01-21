@@ -1,7 +1,7 @@
 use super::super::super::containers_3d::{CameraController, Cube3DContainer};
 use super::super::super::camera::Point3D;
-use super::super::scale_renderer::render_scale_labels;
-use super::scatter_3d::render_3d_grid;
+use super::super::super::scale_renderer::render_scale_labels;
+use super::super::super::containers_3d::render_3d_grid;
 
 pub struct Line3DRenderContext<'a> {
     pub painter: &'a egui::Painter,

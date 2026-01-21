@@ -1,6 +1,7 @@
 use super::super::super::containers_3d::{CameraController, Cube3DContainer};
 use super::super::super::camera::Point3D;
-use super::super::scale_renderer::render_scale_labels;
+use super::super::super::scale_renderer::render_scale_labels;
+use super::super::super::containers_3d::render_3d_grid;
 
 pub struct Scatter3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -22,7 +23,7 @@ pub fn render_points_3d(ctx: Scatter3DRenderContext) {
     let max_val = ctx.max_val.max(1.0);
     let cube = Cube3DContainer::new(Point3D::new(0.0, 0.0, 0.0), 0.5);
     
-    render_grid_3d(&ctx.painter, &cube, ctx.camera_controller, ctx.plot_rect);
+    render_3d_grid(&ctx.painter, &cube, ctx.camera_controller, ctx.plot_rect);
     render_scale_labels(&ctx.painter, ctx.plot_rect, max_val);
     
     let center = ctx.plot_rect.center();
@@ -73,15 +74,6 @@ pub fn render_points_3d(ctx: Scatter3DRenderContext) {
     }
 }
 
-pub fn render_3d_grid(
-    painter: &egui::Painter,
-    cube: &Cube3DContainer,
-    camera_controller: &CameraController,
-    plot_rect: egui::Rect,
-) {
-    render_grid_3d(painter, cube, camera_controller, plot_rect);
-}
-
 pub fn get_3d_positions(
     values: &[f64],
     max_val: f64,
@@ -126,111 +118,4 @@ pub fn get_3d_positions(
     }
     
     positions
-}
-
-fn render_grid_3d(
-    painter: &egui::Painter,
-    cube: &Cube3DContainer,
-    camera_controller: &CameraController,
-    plot_rect: egui::Rect,
-) {
-    let center = plot_rect.center();
-    let half_width = plot_rect.width() / 2.0;
-    let half_height = plot_rect.height() / 2.0;
-    let grid_divisions = 5;
-    let grid_color = egui::Color32::from_rgba_unmultiplied(120, 120, 140, 100);
-    let grid_stroke = egui::Stroke::new(1.0, grid_color);
-    
-    for i in 0..=grid_divisions {
-        let t = i as f32 / grid_divisions as f32;
-        for j in 0..=grid_divisions {
-            let s = j as f32 / grid_divisions as f32;
-            let p1 = cube.point_normalized(t, s, 0.0);
-            let p2 = cube.point_normalized(t, s, 1.0);
-            if let (Some(proj1), Some(proj2)) = (camera_controller.camera.project(p1), camera_controller.camera.project(p2)) {
-                let screen1 = egui::pos2(center.x + proj1.x * half_width, center.y - proj1.y * half_height);
-                let screen2 = egui::pos2(center.x + proj2.x * half_width, center.y - proj2.y * half_height);
-                painter.line_segment([screen1, screen2], grid_stroke);
-            }
-        }
-    }
-    
-    for i in 0..=grid_divisions {
-        let t = i as f32 / grid_divisions as f32;
-        for j in 0..=grid_divisions {
-            let s = j as f32 / grid_divisions as f32;
-            let p1 = cube.point_normalized(t, 0.0, s);
-            let p2 = cube.point_normalized(t, 1.0, s);
-            if let (Some(proj1), Some(proj2)) = (camera_controller.camera.project(p1), camera_controller.camera.project(p2)) {
-                let screen1 = egui::pos2(center.x + proj1.x * half_width, center.y - proj1.y * half_height);
-                let screen2 = egui::pos2(center.x + proj2.x * half_width, center.y - proj2.y * half_height);
-                painter.line_segment([screen1, screen2], grid_stroke);
-            }
-        }
-    }
-    
-    for i in 0..=grid_divisions {
-        let t = i as f32 / grid_divisions as f32;
-        for j in 0..=grid_divisions {
-            let s = j as f32 / grid_divisions as f32;
-            let p1 = cube.point_normalized(0.0, t, s);
-            let p2 = cube.point_normalized(1.0, t, s);
-            if let (Some(proj1), Some(proj2)) = (camera_controller.camera.project(p1), camera_controller.camera.project(p2)) {
-                let screen1 = egui::pos2(center.x + proj1.x * half_width, center.y - proj1.y * half_height);
-                let screen2 = egui::pos2(center.x + proj2.x * half_width, center.y - proj2.y * half_height);
-                painter.line_segment([screen1, screen2], grid_stroke);
-            }
-        }
-    }
-    
-    let axis_length = 0.15;
-    let axis_stroke_x = egui::Stroke::new(2.0, egui::Color32::from_rgb(255, 0, 0));
-    let axis_stroke_y = egui::Stroke::new(2.0, egui::Color32::from_rgb(0, 255, 0));
-    let axis_stroke_z = egui::Stroke::new(2.0, egui::Color32::from_rgb(0, 0, 255));
-    
-    let origin = cube.center;
-    if let Some(proj_origin) = camera_controller.camera.project(origin) {
-        let screen_origin = egui::pos2(center.x + proj_origin.x * half_width, center.y - proj_origin.y * half_height);
-        
-        let x_end = origin.offset(axis_length, 0.0, 0.0);
-        if let Some(proj_x) = camera_controller.camera.project(x_end) {
-            let screen_x = egui::pos2(center.x + proj_x.x * half_width, center.y - proj_x.y * half_height);
-            painter.line_segment([screen_origin, screen_x], axis_stroke_x);
-        }
-        
-        let y_end = origin.offset(0.0, axis_length, 0.0);
-        if let Some(proj_y) = camera_controller.camera.project(y_end) {
-            let screen_y = egui::pos2(center.x + proj_y.x * half_width, center.y - proj_y.y * half_height);
-            painter.line_segment([screen_origin, screen_y], axis_stroke_y);
-        }
-        
-        let z_end = origin.offset(0.0, 0.0, axis_length);
-        if let Some(proj_z) = camera_controller.camera.project(z_end) {
-            let screen_z = egui::pos2(center.x + proj_z.x * half_width, center.y - proj_z.y * half_height);
-            painter.line_segment([screen_origin, screen_z], axis_stroke_z);
-        }
-    }
-    
-    let label_font = egui::FontId::monospace(12.0);
-    if let Some(_) = camera_controller.camera.project(origin) {
-        // let screen_origin = egui::pos2(center.x + proj_origin.x * half_width, center.y - proj_origin.y * half_height);
-        
-        let x_end = origin.offset(axis_length, 0.0, 0.0);
-        if let Some(proj_x) = camera_controller.camera.project(x_end) {
-            let screen_x = egui::pos2(center.x + proj_x.x * half_width, center.y - proj_x.y * half_height);
-            painter.text(screen_x + egui::vec2(5.0, -10.0), egui::Align2::LEFT_CENTER, "X", label_font.clone(), egui::Color32::from_rgb(255, 100, 100));
-        }
-        
-        let y_end = origin.offset(0.0, axis_length, 0.0);
-        if let Some(proj_y) = camera_controller.camera.project(y_end) {
-            let screen_y = egui::pos2(center.x + proj_y.x * half_width, center.y - proj_y.y * half_height);
-            painter.text(screen_y + egui::vec2(5.0, -10.0), egui::Align2::LEFT_CENTER, "Y", label_font.clone(), egui::Color32::from_rgb(100, 255, 100));
-        }
-        
-        let z_end = origin.offset(0.0, 0.0, axis_length);
-        if let Some(proj_z) = camera_controller.camera.project(z_end) {
-            let screen_z = egui::pos2(center.x + proj_z.x * half_width, center.y - proj_z.y * half_height);
-            painter.text(screen_z + egui::vec2(5.0, -10.0), egui::Align2::LEFT_CENTER, "Z", label_font.clone(), egui::Color32::from_rgb(100, 100, 255));
-        }
-    }
 }

@@ -4,7 +4,6 @@ pub mod scatter;
 pub mod _3d;
 pub mod svg;
 pub mod chart;
-pub mod scale_renderer;
 
 pub use bar::render_bars;
 pub use line::render_lines;
@@ -14,7 +13,7 @@ pub use _3d::*;
 pub use svg::SvgChart;
 pub use chart::register_default_types;
 pub use crate::plot::controller::chart_controller::{ChartTypeBuilder, ChartGroupBuilder, render_by_type, get_current_group_types, set_current_chart_group};
-pub use scale_renderer::*;
+
 pub struct PlotRenderContext<'a> {
     pub painter: &'a egui::Painter,
     pub plot_rect: egui::Rect,
