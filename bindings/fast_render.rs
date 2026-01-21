@@ -91,19 +91,19 @@ impl FastChartRenderer {
     }
 
     fn render_chart(&self, svg: &mut String, pad: i32, plot_width: i32, plot_height: i32, max_val: f64) {
-        use super::super::plot::types::SvgChart;
+        use super::super::plot::default::SvgChart;
         
         match self.config.chart_type {
-            0 => super::super::plot::types::line::Line::render_svg(
+            0 => super::super::plot::default::line::Line::render_svg(
                 svg, &self.values, &self.colors, pad, plot_width, plot_height, max_val, self.config.vertical
             ),
-            1 => super::super::plot::types::scatter::Scatter::render_svg(
+            1 => super::super::plot::default::scatter::Scatter::render_svg(
                 svg, &self.values, &self.colors, pad, plot_width, plot_height, max_val, self.config.vertical
             ),
-            2 => super::super::plot::types::bar::Bar::render_svg(
+            2 => super::super::plot::default::bar::Bar::render_svg(
                 svg, &self.values, &self.colors, pad, plot_width, plot_height, max_val, self.config.vertical
             ),
-            _ => super::super::plot::types::line::Line::render_svg(
+            _ => super::super::plot::default::line::Line::render_svg(
                 svg, &self.values, &self.colors, pad, plot_width, plot_height, max_val, self.config.vertical
             ),
         }

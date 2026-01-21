@@ -7,7 +7,7 @@ pub mod camera;
 pub mod projection;
 pub mod containers_3d;
 pub mod controller;
-pub mod types;
+pub mod default;
 
 pub use builder::*;
 pub use plot::*;

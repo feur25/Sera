@@ -3,7 +3,7 @@ use std::sync::{Mutex, OnceLock};
 use std::ffi::CStr;
 use std::os::raw::c_char;
 
-pub type ChartRenderer = fn(crate::plot::types::PlotRenderContext);
+pub type ChartRenderer = fn(crate::plot::default::PlotRenderContext);
 
 struct ChartRegistry {
     entries: HashMap<u8, (String, ChartRenderer)>,
@@ -242,7 +242,7 @@ pub extern "C" fn sera_get_chart_type(id: u8) -> bool {
     }
 }
 
-pub fn render_by_type(id: u8, ctx: crate::plot::types::PlotRenderContext) {
+pub fn render_by_type(id: u8, ctx: crate::plot::default::PlotRenderContext) {
     if let Ok(reg) = get_registry().lock() {
         if let Some((_, renderer)) = reg.get(id) {
             renderer(ctx);

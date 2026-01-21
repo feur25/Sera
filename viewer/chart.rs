@@ -8,7 +8,7 @@ use super::viewer_3d::AdvancedViewer3D;
 use super::wiki_viewer::WikiViewer;
 use super::manager::button_manager::{ButtonManager, ButtonId};
 use super::render::{AdvancedBatchRenderer, AdvancedBatchRendererBuilder, RenderState, DataCache, PointComputeBuilder, ChunkRenderBuilder, RenderPipeline, VisibilityOptimizer};
-use crate::plot::types::{PlotRenderContext, render_plot_by_type};
+use crate::plot::default::{PlotRenderContext, render_plot_by_type};
 use crate::plot::controller::plot_3d_controller::{Plot3DRenderContext, render_by_type as render_3d_by_type};
 use crate::plot::CameraController;
 use crate::bindings::{HtmlExporter, HtmlExportConfig, HtmlTheme, ChartStateBuilder};
@@ -447,7 +447,7 @@ impl eframe::App for ChartApp {
         }
 
         if self.show_transform_menu {
-            let chart_types = crate::plot::types::get_current_group_types();
+            let chart_types = crate::plot::default::get_current_group_types();
             
             egui::Window::new("Transform")
                 .open(&mut self.show_transform_menu)
@@ -797,7 +797,7 @@ impl ChartApp {
         
         if response.hovered() {
             if let Some(mouse_pos) = ctx.pointer_latest_pos() {
-                let positions = crate::plot::types::_3d::get_3d_positions(
+                let positions = crate::plot::default::_3d::get_3d_positions(
                     self.current_chart_kind,
                     &d.values,
                     max_val,
@@ -1022,7 +1022,7 @@ pub extern "C" fn sera_show_chart_data_with_group_colors(
 
     if !group_name.is_null() {
         let group = unsafe { CStr::from_ptr(group_name).to_string_lossy().into_owned() };
-        crate::plot::types::chart::set_current_chart_group(&group);
+        crate::plot::default::chart::set_current_chart_group(&group);
     }
 
     let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().into_owned() };

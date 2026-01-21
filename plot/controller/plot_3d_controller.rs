@@ -256,7 +256,7 @@ pub extern "C" fn sera_list_plot_3d_groups(count: *mut u32) -> *const *const c_c
 }
 
 pub fn get_renderer(id: u32) -> Option<Plot3DRenderer> {
-    crate::plot::types::_3d::plot_3d_types::get_renderers()
+    crate::plot::default::_3d::plot_3d_types::get_renderers()
         .iter()
         .find(|(rid, _)| *rid == id)
         .map(|(_, renderer)| *renderer)

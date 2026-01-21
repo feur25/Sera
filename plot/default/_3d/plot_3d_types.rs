@@ -1,7 +1,7 @@
 use crate::plot::controller::plot_3d_controller::{Plot3DRenderContext, Plot3DTypeBuilder, Plot3DGroupBuilder, get_group_registry};
 
 fn render_lines_3d_wrapper(ctx: Plot3DRenderContext) {
-    crate::plot::types::_3d::render_lines_3d(crate::plot::types::_3d::Line3DRenderContext {
+    crate::plot::default::_3d::render_lines_3d(crate::plot::default::_3d::Line3DRenderContext {
         painter: ctx.painter,
         plot_rect: ctx.plot_rect,
         colors: ctx.colors,
@@ -14,7 +14,7 @@ fn render_lines_3d_wrapper(ctx: Plot3DRenderContext) {
 }
 
 fn render_points_3d_wrapper(ctx: Plot3DRenderContext) {
-    crate::plot::types::_3d::render_points_3d(crate::plot::types::_3d::Scatter3DRenderContext {
+    crate::plot::default::_3d::render_points_3d(crate::plot::default::_3d::Scatter3DRenderContext {
         painter: ctx.painter,
         plot_rect: ctx.plot_rect,
         colors: ctx.colors,
@@ -27,7 +27,7 @@ fn render_points_3d_wrapper(ctx: Plot3DRenderContext) {
 }
 
 fn render_bars_3d_wrapper(ctx: Plot3DRenderContext) {
-    crate::plot::types::_3d::render_bars_3d(crate::plot::types::_3d::Bar3DRenderContext {
+    crate::plot::default::_3d::render_bars_3d(crate::plot::default::_3d::Bar3DRenderContext {
         painter: ctx.painter,
         plot_rect: ctx.plot_rect,
         colors: ctx.colors,

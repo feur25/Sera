@@ -1,8 +1,8 @@
-use crate::plot::types::register_default_types;
-use crate::plot::types::_3d::register_default_3d_types;
+use crate::plot::default::register_default_types;
+use crate::plot::default::_3d::register_default_3d_types;
 use std::sync::OnceLock;
 
-pub use crate::plot::types::chart::*;
+pub use crate::plot::default::chart::*;
 
 static INIT: OnceLock<()> = OnceLock::new();
 
