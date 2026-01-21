@@ -1,7 +1,6 @@
 pub mod core;
 pub mod data;
 pub mod plot;
-pub mod render;
 pub mod viewer;
 pub mod bindings;
 pub mod wiki;
@@ -15,13 +14,8 @@ pub use data::index;
 pub use plot::builder;
 pub use plot::plot as plot_module;
 pub use plot::canvas::Canvas;
-pub use render::svg;
-pub use render::json;
-pub use render::interactive;
-pub use render::dim3d;
 pub use viewer::chart;
 pub use viewer::gui;
-pub use bindings::c;
 pub use wiki::{WikiExport, MethodDoc, ModuleDoc, WikiExtractor};
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
