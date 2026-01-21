@@ -1008,7 +1008,7 @@ pub extern "C" fn sera_show_chart_data_full(
     };
     
     crate::bindings::load_group(&group);
-    crate::plot::default::chart::set_current_chart_group(&group);
+    crate::plot::controller::set_current_chart_group(&group);
 
     let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().into_owned() };
     let mut label_vec = Vec::new();

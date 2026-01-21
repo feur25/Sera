@@ -2,8 +2,6 @@ use std::ffi::CStr;
 use std::os::raw::c_char;
 use crate::plot::controller::chart_controller::*;
 
-pub use crate::plot::controller::chart_controller::set_current_chart_group;
-
 pub fn register_default_types() {
     let _ = ChartTypeBuilder::new(0)
         .with_name("line")
