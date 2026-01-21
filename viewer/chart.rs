@@ -9,7 +9,7 @@ use super::wiki_viewer::WikiViewer;
 use super::manager::button_manager::{ButtonManager, ButtonId};
 use super::render::{AdvancedBatchRenderer, AdvancedBatchRendererBuilder, RenderState, DataCache, PointComputeBuilder, ChunkRenderBuilder, RenderPipeline, VisibilityOptimizer};
 use crate::plot::types::{PlotRenderContext, render_plot_by_type};
-use crate::plot::types::_3d::render_plot_3d_by_type;
+use crate::plot::controller::plot_3d_controller::{Plot3DRenderContext, render_by_type as render_3d_by_type};
 use crate::plot::CameraController;
 use crate::bindings::{HtmlExporter, HtmlExportConfig, HtmlTheme, ChartStateBuilder};
 
@@ -774,17 +774,18 @@ impl ChartApp {
         let colors = self.color_cache.colors();
         
         let chart_type = self.current_chart_kind;
-        render_plot_3d_by_type(
-            chart_type + 3,
-            &painter,
-            response.rect,
+        let chart_id = chart_type + 3;
+        let ctx_3d = Plot3DRenderContext {
+            painter: &painter,
+            plot_rect: response.rect,
             colors,
-            self.hovered_idx,
-            &d.values,
+            hovered_idx: self.hovered_idx,
+            values: &d.values,
             max_val,
-            &visible_indices,
-            &self.advanced_viewer_3d.camera_controller,
-        );
+            visible_indices: &visible_indices,
+            camera_controller: &self.advanced_viewer_3d.camera_controller,
+        };
+        render_3d_by_type(chart_id, ctx_3d);
         
         for &actual_idx in &visible_indices {
             if self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false) {
@@ -797,7 +798,7 @@ impl ChartApp {
         if response.hovered() {
             if let Some(mouse_pos) = ctx.pointer_latest_pos() {
                 let positions = crate::plot::types::_3d::get_3d_positions(
-                    self.current_chart_kind + 3,
+                    self.current_chart_kind,
                     &d.values,
                     max_val,
                     &visible_indices,

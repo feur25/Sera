@@ -8,7 +8,7 @@ pub mod chart;
 pub use bar::render_bars;
 pub use line::render_lines;
 pub use scatter::render_points;
-pub use _3d::{render_plot_3d_by_type, Bar3DRenderContext, Line3DRenderContext, Scatter3DRenderContext};
+pub use _3d::{Bar3DRenderContext, Line3DRenderContext, Scatter3DRenderContext};
 pub use _3d::*;
 pub use svg::SvgChart;
 pub use chart::register_default_types;
