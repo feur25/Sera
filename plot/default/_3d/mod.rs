@@ -1,7 +1,6 @@
 pub mod bar_3d;
 pub mod line_3d;
 pub mod scatter_3d;
-pub mod scale_renderer;
 pub mod plot_3d_types;
 
 use super::super::containers_3d::CameraController;

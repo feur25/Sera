@@ -1,6 +1,6 @@
 use super::super::super::containers_3d::{CameraController, Cube3DContainer};
 use super::super::super::camera::Point3D;
-use super::scale_renderer::render_scale_labels;
+use super::super::scale_renderer::render_scale_labels;
 
 pub struct Scatter3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
