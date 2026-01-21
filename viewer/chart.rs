@@ -973,7 +973,7 @@ pub extern "C" fn sera_show_chart_data_with_hover(
     count: u32,
     title: *const c_char,
 ) -> bool {
-    sera_show_chart_data_with_group_colors(labels, values, images, descriptions, count, title, b"default\0".as_ptr() as *const c_char, 0, 0, 0, 0, 0, 0, 0, 255)
+    sera_show_chart_data_with_group_colors(labels, values, images, descriptions, count, title, b"default\0".as_ptr() as *const c_char, 255, 255, 255, 255, 0, 0, 0, 255)
 }
 
 #[no_mangle]
