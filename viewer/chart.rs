@@ -965,39 +965,20 @@ impl ChartApp {
 }
 
 #[no_mangle]
-pub extern "C" fn sera_show_chart_data_with_hover(
+pub extern "C" fn sera_show_chart_data(
     labels: *const *const c_char,
     values: *const f64,
     images: *const *const c_char,
     descriptions: *const *const c_char,
     count: u32,
     title: *const c_char,
+    group_name: *const c_char,
 ) -> bool {
-    sera_show_chart_data_with_group_colors(labels, values, images, descriptions, count, title, b"default\0".as_ptr() as *const c_char, 255, 255, 255, 255, 0, 0, 0, 255)
+    sera_show_chart_data_full(labels, values, images, descriptions, count, title, group_name, 255, 255, 255, 255, 0, 0, 0, 255)
 }
 
 #[no_mangle]
-pub extern "C" fn sera_show_chart_data_with_hover_colors(
-    labels: *const *const c_char,
-    values: *const f64,
-    images: *const *const c_char,
-    descriptions: *const *const c_char,
-    count: u32,
-    title: *const c_char,
-    bg_r: u8,
-    bg_g: u8,
-    bg_b: u8,
-    bg_a: u8,
-    txt_r: u8,
-    txt_g: u8,
-    txt_b: u8,
-    txt_a: u8,
-) -> bool {
-    sera_show_chart_data_with_group_colors(labels, values, images, descriptions, count, title, b"default\0".as_ptr() as *const c_char, bg_r, bg_g, bg_b, bg_a, txt_r, txt_g, txt_b, txt_a)
-}
-
-#[no_mangle]
-pub extern "C" fn sera_show_chart_data_with_group_colors(
+pub extern "C" fn sera_show_chart_data_full(
     labels: *const *const c_char,
     values: *const f64,
     images: *const *const c_char,
@@ -1020,10 +1001,14 @@ pub extern "C" fn sera_show_chart_data_with_group_colors(
         return false;
     }
 
-    if !group_name.is_null() {
-        let group = unsafe { CStr::from_ptr(group_name).to_string_lossy().into_owned() };
-        crate::plot::default::chart::set_current_chart_group(&group);
-    }
+    let group = if group_name.is_null() {
+        "default".to_string()
+    } else {
+        unsafe { CStr::from_ptr(group_name).to_string_lossy().into_owned() }
+    };
+    
+    crate::bindings::load_group(&group);
+    crate::plot::default::chart::set_current_chart_group(&group);
 
     let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().into_owned() };
     let mut label_vec = Vec::new();
