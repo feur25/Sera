@@ -601,7 +601,7 @@ impl ChartApp {
             return;
         }
         
-        let render_pipeline = RenderPipeline::builder().build();
+        // let render_pipeline = RenderPipeline::builder().build();
         // let chunk_renderer = ChunkRenderBuilder::new()
         //     .with_chunk_size(render_pipeline.get_optimal_batch_size(visible_count))
         //     .build();
