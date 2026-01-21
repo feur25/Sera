@@ -13,6 +13,14 @@ use crate::plot::controller::plot_3d_controller::{Plot3DRenderContext, render_by
 use crate::plot::CameraController;
 use crate::bindings::{HtmlExporter, HtmlExportConfig, HtmlTheme, ChartStateBuilder};
 
+#[repr(C)]
+#[derive(Copy, Clone)]
+pub struct HoverItem {
+    pub index: u32,
+    pub key: *const c_char,
+    pub value: *const c_char,
+}
+
 struct Hover3DDetector {
     positions: Vec<(egui::Pos2, usize)>,
     threshold: f32,
@@ -48,7 +56,7 @@ struct ChartData {
     labels: Vec<String>,
     values: Vec<f64>,
     title: String,
-    hover_data: Vec<HashMap<String, String>>,
+    hover_data: Vec<Vec<(String, String)>>,
     tooltip_bg_color: (u8, u8, u8, u8),
     tooltip_text_color: (u8, u8, u8, u8),
 }
@@ -93,7 +101,7 @@ impl PlotMetrics {
 
 trait PlotRenderer {
     fn render_axes(&self, painter: &egui::Painter, plot_rect: egui::Rect, max_val: f64);
-    fn detect_hover(&self, rel_pos: egui::Vec2, plot_rect: egui::Rect, point_count: usize) -> Option<usize>;
+    fn detect_hover(&self, rel_pos: egui::Vec2, plot_rect: egui::Rect, point_count: usize, values: &[f64], max_val: f64) -> Option<usize>;
 }
 
 struct GenericPlotRenderer {
@@ -142,12 +150,27 @@ impl PlotRenderer for GenericPlotRenderer {
         }
     }
 
-    fn detect_hover(&self, rel_pos: egui::Vec2, plot_rect: egui::Rect, point_count: usize) -> Option<usize> {
+    fn detect_hover(&self, rel_pos: egui::Vec2, plot_rect: egui::Rect, point_count: usize, values: &[f64], max_val: f64) -> Option<usize> {
         if rel_pos.x < 0.0 || rel_pos.x > plot_rect.width() || rel_pos.y < 0.0 || rel_pos.y > plot_rect.height() {
             return None;
         }
-        let norm = if self.vertical { rel_pos.x / plot_rect.width() } else { rel_pos.y / plot_rect.height() };
-        Some(((norm * (point_count as f32 - 1.0)).round() as usize).min(point_count.saturating_sub(1)))
+        
+        let threshold = 12.0;
+        let mut closest_idx = None;
+        let mut closest_dist = threshold;
+        
+        for idx in 0..point_count {
+            let point = self.map_point(idx, values.get(idx).copied().unwrap_or(0.0), max_val, point_count, plot_rect);
+            let delta = egui::Vec2::new(point.x - (plot_rect.left() + rel_pos.x), point.y - (plot_rect.top() + rel_pos.y));
+            let dist = (delta.x * delta.x + delta.y * delta.y).sqrt();
+            
+            if dist < closest_dist {
+                closest_dist = dist;
+                closest_idx = Some(idx);
+            }
+        }
+        
+        closest_idx
     }
 }
 
@@ -491,52 +514,58 @@ impl eframe::App for ChartApp {
 
 impl ChartApp {
     fn render_tooltip(&mut self, ctx: &egui::Context, painter: &egui::Painter, pos: egui::Pos2, rect: egui::Rect, actual_idx: usize, d: &ChartData) {
-        if !d.hover_data[actual_idx].is_empty() {
-            let hover = &d.hover_data[actual_idx];
-            let mut image_url = String::new();
-            let mut text_lines = Vec::new();
-            
-            for (k, v) in hover {
-                if k == "image" {
-                    image_url = v.clone();
-                } else {
-                    text_lines.push(format!("{}: {}", k, v));
-                }
-            }
-            
-            let img_size = 60.0;
-            let line_height = 15.0;
-            let padding = 8.0;
-            let mut tooltip_height = 0.0;
-            
-            if !image_url.is_empty() {
+        let hover = &d.hover_data[actual_idx];
+        
+        if hover.is_empty() {
+            return;
+        }
+        
+        let img_size = 60.0;
+        let line_height = 15.0;
+        let padding = 8.0;
+        let mut tooltip_height = 0.0;
+        
+        for (k, _) in hover {
+            if k == "image" {
                 tooltip_height += img_size + padding;
+            } else {
+                tooltip_height += line_height;
             }
-            tooltip_height += (text_lines.len() as f32) * line_height;
+        }
 
-            let max_line_width = text_lines.iter()
-                .map(|line| line.len() as f32 * 6.5)
-                .fold(img_size, f32::max);
-            
-            let mut tooltip_x = pos.x + 15.0;
-            let mut tooltip_y = pos.y - 80.0;
-            
-            if tooltip_x + max_line_width > rect.right() {
-                tooltip_x = (pos.x - max_line_width - 10.0).max(rect.left());
-            }
-            
-            if tooltip_y + tooltip_height > rect.bottom() {
-                tooltip_y = (pos.y + 20.0).min(rect.bottom() - tooltip_height - 5.0);
-            }
-            
-            if tooltip_y < rect.top() {
-                tooltip_y = rect.top() + 5.0;
-            }
-            
-            let mut current_y = tooltip_y;
-            
-            if !image_url.is_empty() {
-                if let Some(color_img) = self.image_loader.load_image(&image_url) {
+        let max_line_width = hover.iter()
+            .filter(|(k, _)| k != "image")
+            .map(|(_, v)| v.len() as f32 * 6.5)
+            .fold(0.0, f32::max)
+            .max(img_size);
+        
+        let mut tooltip_x = pos.x + 15.0;
+        let mut tooltip_y = pos.y - 80.0;
+        
+        if tooltip_x + max_line_width > rect.right() {
+            tooltip_x = (pos.x - max_line_width - 10.0).max(rect.left());
+        }
+        
+        if tooltip_y + tooltip_height > rect.bottom() {
+            tooltip_y = (pos.y + 20.0).min(rect.bottom() - tooltip_height - 5.0);
+        }
+        
+        if tooltip_y < rect.top() {
+            tooltip_y = rect.top() + 5.0;
+        }
+        
+        let mut current_y = tooltip_y;
+        
+        let text_color = egui::Color32::from_rgba_unmultiplied(
+            d.tooltip_text_color.0, 
+            d.tooltip_text_color.1, 
+            d.tooltip_text_color.2, 
+            d.tooltip_text_color.3
+        );
+        
+        for (k, v) in hover {
+            if k == "image" {
+                if let Some(color_img) = self.image_loader.load_image(v) {
                     let img_rect = egui::Rect::from_min_size(
                         egui::pos2(tooltip_x, current_y),
                         egui::vec2(img_size, img_size),
@@ -545,22 +574,14 @@ impl ChartApp {
                     painter.image(texture.id(), img_rect, egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)), egui::Color32::WHITE);
                     current_y += img_size + padding;
                 }
-            }
-            
-            let text_color = egui::Color32::from_rgba_unmultiplied(
-                d.tooltip_text_color.0, 
-                d.tooltip_text_color.1, 
-                d.tooltip_text_color.2, 
-                d.tooltip_text_color.3
-            );
-            
-            for line in text_lines {
+            } else {
+                let line = format!("{}: {}", k, v);
                 painter.text(
-                    egui::pos2(tooltip_x, current_y), 
-                    egui::Align2::LEFT_TOP, 
-                    &line, 
-                    egui::FontId::proportional(11.0), 
-                    text_color
+                    egui::pos2(tooltip_x, current_y),
+                    egui::Align2::LEFT_TOP,
+                    &line,
+                    egui::FontId::proportional(11.0),
+                    text_color,
                 );
                 current_y += line_height;
             }
@@ -716,11 +737,18 @@ impl ChartApp {
                 
                 if response.hovered() && !self.selection_active {
                     if let Some(pos) = ctx.pointer_latest_pos() {
-                        let rel_pos = pos - plot_rect.min;
-                        if let Some(vis_idx) = renderer.detect_hover(rel_pos, plot_rect, visible_count) {
-                            if let Some(&actual_idx) = visible_indices.get(vis_idx) {
-                                self.hovered_idx = Some(actual_idx);
+                        if plot_rect.contains(pos) {
+                            let rel_pos = pos - plot_rect.min;
+                            let visible_values: Vec<f64> = visible_indices.iter().map(|&i| d.values.get(i).copied().unwrap_or(0.0)).collect();
+                            if let Some(vis_idx) = renderer.detect_hover(rel_pos, plot_rect, visible_count, &visible_values, max_val) {
+                                if let Some(&actual_idx) = visible_indices.get(vis_idx) {
+                                    self.hovered_idx = Some(actual_idx);
+                                }
+                            } else {
+                                self.hovered_idx = None;
                             }
+                        } else {
+                            self.hovered_idx = None;
                         }
                     }
                 } else {
@@ -797,16 +825,20 @@ impl ChartApp {
         
         if response.hovered() {
             if let Some(mouse_pos) = ctx.pointer_latest_pos() {
-                let positions = crate::plot::default::_3d::get_3d_positions(
-                    self.current_chart_kind,
-                    &d.values,
-                    max_val,
-                    &visible_indices,
-                    &self.advanced_viewer_3d.camera_controller,
-                    response.rect,
-                );
-                let detector = Hover3DDetector::new(positions);
-                self.hovered_idx = detector.detect(mouse_pos);
+                if response.rect.contains(mouse_pos) {
+                    let positions = crate::plot::default::_3d::get_3d_positions(
+                        self.current_chart_kind,
+                        &d.values,
+                        max_val,
+                        &visible_indices,
+                        &self.advanced_viewer_3d.camera_controller,
+                        response.rect,
+                    );
+                    let detector = Hover3DDetector::new(positions);
+                    self.hovered_idx = detector.detect(mouse_pos);
+                } else {
+                    self.hovered_idx = None;
+                }
             }
         } else {
             self.hovered_idx = None;
@@ -915,22 +947,33 @@ impl ChartApp {
         
         let mut images_base64 = Vec::new();
         for hover in &d.hover_data {
-            if let Some(image_path) = hover.get("image") {
-                if let Some(data_url) = ImageProcessor::to_data_url(image_path) {
-                    images_base64.push(data_url);
-                } else {
-                    images_base64.push(String::new());
+            let mut image_data_url = String::new();
+            for (k, v) in hover {
+                if k == "image" {
+                    if let Some(data_url) = ImageProcessor::to_data_url(v) {
+                        image_data_url = data_url;
+                    }
+                    break;
                 }
-            } else {
-                images_base64.push(String::new());
             }
+            images_base64.push(image_data_url);
         }
+        
+        let hover_as_maps: Vec<HashMap<String, String>> = d.hover_data.iter()
+            .map(|pairs| {
+                let mut map = HashMap::new();
+                for (k, v) in pairs {
+                    map.insert(k.clone(), v.clone());
+                }
+                map
+            })
+            .collect();
         
         let state = ChartStateBuilder::new()
             .labels(d.labels.clone())
             .values(d.values.clone())
             .title(d.title.clone())
-            .hover_data(d.hover_data.clone())
+            .hover_data(hover_as_maps)
             .tooltip_colors(d.tooltip_bg_color, d.tooltip_text_color)
             .orientation(self.orientation)
             .sort_mode(self.sort_mode)
@@ -968,24 +1011,37 @@ impl ChartApp {
 pub extern "C" fn sera_show_chart_data(
     labels: *const *const c_char,
     values: *const f64,
-    images: *const *const c_char,
-    descriptions: *const *const c_char,
     count: u32,
     title: *const c_char,
     group_name: *const c_char,
+    hover_items: *const HoverItem,
 ) -> bool {
-    sera_show_chart_data_full(labels, values, images, descriptions, count, title, group_name, 255, 255, 255, 255, 0, 0, 0, 255)
+    sera_show_chart_data_full(
+        labels,
+        values,
+        count,
+        title,
+        group_name,
+        hover_items,
+        255,
+        255,
+        255,
+        255,
+        0,
+        0,
+        0,
+        255,
+    )
 }
 
 #[no_mangle]
 pub extern "C" fn sera_show_chart_data_full(
     labels: *const *const c_char,
     values: *const f64,
-    images: *const *const c_char,
-    descriptions: *const *const c_char,
     count: u32,
     title: *const c_char,
     group_name: *const c_char,
+    hover_items: *const HoverItem,
     bg_r: u8,
     bg_g: u8,
     bg_b: u8,
@@ -1015,6 +1071,38 @@ pub extern "C" fn sera_show_chart_data_full(
     let mut value_vec = Vec::new();
     let mut hover_data_vec = Vec::new();
 
+    let mut hover_map: std::collections::HashMap<u32, Vec<(String, String)>> = std::collections::HashMap::new();
+    
+    if !hover_items.is_null() {
+        let mut j = 0;
+        loop {
+            let item = unsafe { *hover_items.add(j) };
+            if item.index == u32::MAX {
+                break;
+            }
+            if item.index >= count {
+                j += 1;
+                continue;
+            }
+            let key = if item.key.is_null() {
+                String::new()
+            } else {
+                unsafe { CStr::from_ptr(item.key).to_string_lossy().into_owned() }
+            };
+            let value = if item.value.is_null() {
+                String::new()
+            } else {
+                unsafe { CStr::from_ptr(item.value).to_string_lossy().into_owned() }
+            };
+            
+            if !key.is_empty() && !value.is_empty() {
+                hover_map.entry(item.index).or_insert_with(Vec::new).push((key, value));
+            }
+            
+            j += 1;
+        }
+    }
+
     for i in 0..count as usize {
         let label_ptr = unsafe { *(labels.add(i)) };
         if !label_ptr.is_null() {
@@ -1022,29 +1110,8 @@ pub extern "C" fn sera_show_chart_data_full(
         }
         value_vec.push(unsafe { *(values.add(i)) });
         
-        let mut hover = HashMap::new();
-        
-        if !images.is_null() {
-            let img_ptr = unsafe { *(images.add(i)) };
-            if !img_ptr.is_null() {
-                let img = unsafe { CStr::from_ptr(img_ptr).to_string_lossy().into_owned() };
-                if !img.is_empty() {
-                    hover.insert("image".to_string(), img);
-                }
-            }
-        }
-        
-        if !descriptions.is_null() {
-            let desc_ptr = unsafe { *(descriptions.add(i)) };
-            if !desc_ptr.is_null() {
-                let desc = unsafe { CStr::from_ptr(desc_ptr).to_string_lossy().into_owned() };
-                if !desc.is_empty() {
-                    hover.insert("description".to_string(), desc);
-                }
-            }
-        }
-        
-        hover_data_vec.push(hover);
+        let hover_pairs = hover_map.remove(&(i as u32)).unwrap_or_default();
+        hover_data_vec.push(hover_pairs);
     }
 
     let num_elements = label_vec.len();
@@ -1110,6 +1177,276 @@ pub extern "C" fn sera_show_chart_data_full(
 
 #[no_mangle]
 pub extern "C" fn sera_show_chart(_svg: *const c_char, _title: *const c_char, _width: u32, _height: u32) -> bool {
+    true
+}
+
+#[no_mangle]
+pub extern "C" fn sera_show_chart_data_json(
+    labels: *const *const c_char,
+    values: *const f64,
+    count: u32,
+    title: *const c_char,
+    group_name: *const c_char,
+    hover_json: *const c_char,
+) -> bool {
+    crate::bindings::init_chart_types();
+    
+    if labels.is_null() || values.is_null() || title.is_null() {
+        return false;
+    }
+
+    let group = if group_name.is_null() {
+        "default".to_string()
+    } else {
+        unsafe { CStr::from_ptr(group_name).to_string_lossy().into_owned() }
+    };
+    
+    crate::bindings::load_group(&group);
+    crate::plot::controller::set_current_chart_group(&group);
+
+    let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().into_owned() };
+    let mut label_vec = Vec::new();
+    let mut value_vec = Vec::new();
+    let mut hover_data_vec = Vec::new();
+
+    for i in 0..count as usize {
+        let label_ptr = unsafe { *(labels.add(i)) };
+        if !label_ptr.is_null() {
+            label_vec.push(unsafe { CStr::from_ptr(label_ptr).to_string_lossy().into_owned() });
+        }
+        value_vec.push(unsafe { *(values.add(i)) });
+    }
+
+    let mut hover_map: std::collections::HashMap<u32, Vec<(String, String)>> = std::collections::HashMap::new();
+    
+    if !hover_json.is_null() {
+        let json_str = unsafe { CStr::from_ptr(hover_json).to_string_lossy().into_owned() };
+        if let Ok(serde_json::Value::Array(items)) = serde_json::from_str::<serde_json::Value>(&json_str) {
+            for item in items {
+                if let serde_json::Value::Object(obj) = item {
+                    if let Some(serde_json::Value::Number(idx)) = obj.get("index") {
+                        if let Some(idx_u64) = idx.as_u64() {
+                            let index = idx_u64 as u32;
+                            if index >= count {
+                                continue;
+                            }
+                            for (k, v) in obj.iter() {
+                                if k != "index" {
+                                    if let serde_json::Value::String(val) = v {
+                                        hover_map.entry(index).or_insert_with(Vec::new).push((k.clone(), val.clone()));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for i in 0..count as usize {
+        let hover_pairs = hover_map.remove(&(i as u32)).unwrap_or_default();
+        hover_data_vec.push(hover_pairs);
+    }
+
+    let num_elements = label_vec.len();
+    
+    let data = ChartData {
+        labels: label_vec,
+        values: value_vec,
+        title: title_str,
+        hover_data: hover_data_vec,
+        tooltip_bg_color: (255, 255, 255, 255),
+        tooltip_text_color: (0, 0, 0, 255),
+    };
+
+    let app = ChartApp {
+        data: Arc::new(Mutex::new(Some(data))),
+        hovered_idx: None,
+        zoom: 1.0,
+        pan_x: 0.0,
+        visible_elements: vec![true; num_elements],
+        show_list: false,
+        image_loader: ImageLoader::new(),
+        orientation: true,
+        sort_mode: 0,
+        current_chart_kind: 1,
+        is_3d_mode: false,
+        camera_controller: CameraController::default(),
+        advanced_viewer_3d: AdvancedViewer3D::new(),
+        filter_threshold: 0.0,
+        show_stats: false,
+        show_processor_menu: false,
+        show_transform_menu: false,
+        show_wiki: false,
+        show_info: false,
+        wiki_viewer: None,
+        button_manager: ButtonManager::new(),
+        aggregation_results: HashMap::new(),
+        limit_value: 50,
+        render_cache: RenderCache::new(),
+        color_cache: ColorCache::new(),
+        last_data_hash: 0,
+        last_render_state: (true, 1, 0, false),
+        batch_renderer: AdvancedBatchRendererBuilder::new().with_capacity(100000).build(),
+        render_state: RenderState::new(1200.0, 600.0),
+        selection_start: None,
+        selection_end: None,
+        selection_active: false,
+    };
+
+    let native_options = eframe::NativeOptions {
+        viewport: egui::ViewportBuilder::default()
+            .with_inner_size([1200.0, 600.0]),
+        ..Default::default()
+    };
+    
+    let _ = eframe::run_native(
+        "SeraPlot",
+        native_options,
+        Box::new(|_| Box::new(app)),
+    );
+
+    true
+}
+
+#[no_mangle]
+pub extern "C" fn sera_show_chart_value(chart_json: *const c_char) -> bool {
+    crate::bindings::init_chart_types();
+    
+    if chart_json.is_null() {
+        return false;
+    }
+
+    let json_str = unsafe { CStr::from_ptr(chart_json).to_string_lossy().into_owned() };
+    let Ok(root) = serde_json::from_str::<serde_json::Value>(&json_str) else {
+        return false;
+    };
+    
+    let obj = match root {
+        serde_json::Value::Object(o) => o,
+        _ => return false,
+    };
+
+    let title_str = obj.get("title")
+        .and_then(|v| v.as_str())
+        .unwrap_or("Chart")
+        .to_string();
+    
+    let group = obj.get("group")
+        .and_then(|v| v.as_str())
+        .unwrap_or("default")
+        .to_string();
+
+    crate::bindings::load_group(&group);
+    crate::plot::controller::set_current_chart_group(&group);
+
+    let mut label_vec = Vec::new();
+    let mut value_vec = Vec::new();
+    let mut hover_data_vec = Vec::new();
+
+    if let Some(serde_json::Value::Array(labels)) = obj.get("labels") {
+        for label in labels {
+            if let Some(s) = label.as_str() {
+                label_vec.push(s.to_string());
+            }
+        }
+    }
+
+    if let Some(serde_json::Value::Array(values)) = obj.get("values") {
+        for val in values {
+            if let Some(n) = val.as_f64() {
+                value_vec.push(n);
+            }
+        }
+    }
+
+    let mut hover_map: std::collections::HashMap<u32, Vec<(String, String)>> = std::collections::HashMap::new();
+    
+    if let Some(serde_json::Value::Array(hover_items)) = obj.get("hover") {
+        for item in hover_items {
+            if let serde_json::Value::Object(item_obj) = item {
+                if let Some(serde_json::Value::Number(idx_num)) = item_obj.get("index") {
+                    if let Some(idx) = idx_num.as_u64() {
+                        let index = idx as u32;
+                        for (key, val) in item_obj.iter() {
+                            if key != "index" {
+                                if let Some(v_str) = val.as_str() {
+                                    hover_map.entry(index)
+                                        .or_insert_with(Vec::new)
+                                        .push((key.clone(), v_str.to_string()));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    for i in 0..label_vec.len() {
+        let hover_pairs = hover_map.remove(&(i as u32)).unwrap_or_default();
+        hover_data_vec.push(hover_pairs);
+    }
+
+    let num_elements = label_vec.len();
+    
+    let data = ChartData {
+        labels: label_vec,
+        values: value_vec,
+        title: title_str,
+        hover_data: hover_data_vec,
+        tooltip_bg_color: (255, 255, 255, 255),
+        tooltip_text_color: (0, 0, 0, 255),
+    };
+
+    let app = ChartApp {
+        data: Arc::new(Mutex::new(Some(data))),
+        hovered_idx: None,
+        zoom: 1.0,
+        pan_x: 0.0,
+        visible_elements: vec![true; num_elements],
+        show_list: false,
+        image_loader: ImageLoader::new(),
+        orientation: true,
+        sort_mode: 0,
+        current_chart_kind: 1,
+        is_3d_mode: false,
+        camera_controller: CameraController::default(),
+        advanced_viewer_3d: AdvancedViewer3D::new(),
+        filter_threshold: 0.0,
+        show_stats: false,
+        show_processor_menu: false,
+        show_transform_menu: false,
+        show_wiki: false,
+        show_info: false,
+        wiki_viewer: None,
+        button_manager: ButtonManager::new(),
+        aggregation_results: HashMap::new(),
+        limit_value: 50,
+        render_cache: RenderCache::new(),
+        color_cache: ColorCache::new(),
+        last_data_hash: 0,
+        last_render_state: (true, 1, 0, false),
+        batch_renderer: AdvancedBatchRendererBuilder::new().with_capacity(100000).build(),
+        render_state: RenderState::new(1200.0, 600.0),
+        selection_start: None,
+        selection_end: None,
+        selection_active: false,
+    };
+
+    let native_options = eframe::NativeOptions {
+        viewport: egui::ViewportBuilder::default()
+            .with_inner_size([1200.0, 600.0]),
+        ..Default::default()
+    };
+    
+    let _ = eframe::run_native(
+        "SeraPlot",
+        native_options,
+        Box::new(|_| Box::new(app)),
+    );
+
     true
 }
 
