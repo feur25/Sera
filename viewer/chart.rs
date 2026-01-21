@@ -180,6 +180,7 @@ struct ChartApp {
     zoom: f32,
     pan_x: f32,
     visible_elements: Vec<bool>,
+    selected_elements: Vec<bool>,
     show_list: bool,
     image_loader: ImageLoader,
     orientation: bool,
@@ -207,6 +208,75 @@ struct ChartApp {
     selection_start: Option<egui::Pos2>,
     selection_end: Option<egui::Pos2>,
     selection_active: bool,
+}
+
+struct ChartAppBuilder {
+    data: Arc<Mutex<Option<ChartData>>>,
+    num_elements: usize,
+}
+
+impl ChartAppBuilder {
+    fn new(data: ChartData) -> Self {
+        let num_elements = data.labels.len();
+        Self {
+            data: Arc::new(Mutex::new(Some(data))),
+            num_elements,
+        }
+    }
+
+    fn build(self) -> ChartApp {
+        ChartApp {
+            data: self.data,
+            hovered_idx: None,
+            zoom: 1.0,
+            pan_x: 0.0,
+            visible_elements: vec![true; self.num_elements],
+            selected_elements: vec![true; self.num_elements],
+            show_list: false,
+            image_loader: ImageLoader::new(),
+            orientation: true,
+            sort_mode: 0,
+            current_chart_kind: 1,
+            is_3d_mode: false,
+            camera_controller: CameraController::default(),
+            advanced_viewer_3d: AdvancedViewer3D::new(),
+            filter_threshold: 0.0,
+            show_stats: false,
+            show_processor_menu: false,
+            show_transform_menu: false,
+            show_wiki: false,
+            show_info: false,
+            wiki_viewer: None,
+            button_manager: ButtonManager::new(),
+            aggregation_results: HashMap::new(),
+            limit_value: 50,
+            render_cache: RenderCache::new(),
+            color_cache: ColorCache::new(),
+            last_data_hash: 0,
+            last_render_state: (true, 1, 0, false),
+            batch_renderer: AdvancedBatchRendererBuilder::new().with_capacity(100000).build(),
+            render_state: RenderState::new(1200.0, 600.0),
+            selection_start: None,
+            selection_end: None,
+            selection_active: false,
+        }
+    }
+}
+
+fn launch_chart_app(app: ChartApp) -> bool {
+    let native_options = eframe::NativeOptions {
+        viewport: egui::ViewportBuilder::default()
+            .with_inner_size([1200.0, 600.0]),
+        ..Default::default()
+    };
+    
+    let _ = eframe::run_native(
+        "SeraPlot",
+        native_options,
+        Box::new(|_| Box::new(app)),
+    );
+
+    true
 }
 
 impl eframe::App for ChartApp {
@@ -240,6 +310,7 @@ impl eframe::App for ChartApp {
                     if let Ok(data) = self.data.lock() {
                         if let Some(d) = data.as_ref() {
                             self.visible_elements = vec![true; d.labels.len()];
+                            self.selected_elements = vec![true; d.labels.len()];
                             self.selection_start = None;
                             self.selection_end = None;
                             self.selection_active = false;
@@ -448,6 +519,7 @@ impl eframe::App for ChartApp {
                     let data = self.data.lock().unwrap();
                     if let Some(d) = data.as_ref() {
                         self.visible_elements = vec![true; d.labels.len()];
+                        self.selected_elements = vec![true; d.labels.len()];
                     }
                 }
             }
@@ -590,7 +662,11 @@ impl ChartApp {
 
     fn get_sorted_visible_indices(&self, d: &ChartData) -> Vec<usize> {
         let mut visible = (0..d.values.len())
-            .filter(|i| i < &self.visible_elements.len() && self.visible_elements[*i])
+            .filter(|i| {
+                let visible_ok = i < &self.visible_elements.len() && self.visible_elements[*i];
+                let selected_ok = i < &self.selected_elements.len() && self.selected_elements[*i];
+                visible_ok && selected_ok
+            })
             .collect::<Vec<_>>();
 
         match self.sort_mode {
@@ -599,6 +675,38 @@ impl ChartApp {
             _ => {}
         }
         visible
+    }
+
+    fn get_bar_bounds(&self, vis_idx: usize, value: f64, max_val: f64, visible_count: usize, plot_rect: egui::Rect, vertical: bool) -> (f32, f32, f32, f32) {
+        let element_size = if visible_count > 1 {
+            if vertical {
+                plot_rect.width() / visible_count as f32
+            } else {
+                plot_rect.height() / visible_count as f32
+            }
+        } else {
+            if vertical { plot_rect.width() } else { plot_rect.height() }
+        };
+
+        let norm_val = (value as f32 / max_val as f32).min(1.0).max(0.0);
+        let margin_x = element_size * 0.15;
+        let margin_y = element_size * 0.05;
+
+        if vertical {
+            let bar_left = plot_rect.left() + (element_size * vis_idx as f32);
+            let bar_right = bar_left + element_size;
+            let bar_top = plot_rect.bottom() - norm_val * plot_rect.height();
+            let bar_bottom = plot_rect.bottom();
+
+            (bar_left - margin_x, bar_right + margin_x, bar_top - margin_y, bar_bottom + margin_y)
+        } else {
+            let bar_top = plot_rect.top() + (element_size * vis_idx as f32);
+            let bar_bottom = bar_top + element_size;
+            let bar_left = plot_rect.left();
+            let bar_right = plot_rect.left() + norm_val * plot_rect.width();
+
+            (bar_left - margin_x, bar_right + margin_x, bar_top - margin_y, bar_bottom + margin_y)
+        }
     }
 
     fn render_plot(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData, vertical: bool, chart_type: u8) {
@@ -622,10 +730,6 @@ impl ChartApp {
             return;
         }
         
-        // let render_pipeline = RenderPipeline::builder().build();
-        // let chunk_renderer = ChunkRenderBuilder::new()
-        //     .with_chunk_size(render_pipeline.get_optimal_batch_size(visible_count))
-        //     .build();
         let mut vis_optimizer = VisibilityOptimizer::new();
         
         let scroll_id = egui::Id::new((chart_type, vertical, self.sort_mode));
@@ -659,6 +763,12 @@ impl ChartApp {
                 
                 self.batch_renderer.clear();
                 
+                let element_width = if visible_count > 1 {
+                    plot_rect.width() / visible_count as f32
+                } else {
+                    plot_rect.width()
+                };
+                
                 if response.drag_started() {
                     let pos = response.interact_pointer_pos().unwrap_or(plot_rect.center());
                     self.selection_start = Some(pos);
@@ -674,19 +784,22 @@ impl ChartApp {
                 
                 if response.drag_stopped() {
                     if let (Some(start), Some(end)) = (self.selection_start, self.selection_end) {
-                        let min_x = start.x.min(end.x);
-                        let max_x = start.x.max(end.x);
-                        let min_y = start.y.min(end.y);
-                        let max_y = start.y.max(end.y);
+                        let sel_min_x = start.x.min(end.x);
+                        let sel_max_x = start.x.max(end.x);
+                        let sel_min_y = start.y.min(end.y);
+                        let sel_max_y = start.y.max(end.y);
                         
                         let threshold = 5.0;
-                        if (max_x - min_x) > threshold && (max_y - min_y) > threshold {
-                            for (i, &point) in points.iter().enumerate() {
-                                if let Some(&actual_idx) = visible_indices.get(i) {
-                                    let tolerance = 15.0;
-                                    let intersects = point.x >= min_x - tolerance && point.x <= max_x + tolerance && 
-                                                   point.y >= min_y - tolerance && point.y <= max_y + tolerance;
-                                    self.visible_elements[actual_idx] = intersects;
+                        if (sel_max_x - sel_min_x) > threshold && (sel_max_y - sel_min_y) > threshold {
+                            for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
+                                let value = d.values.get(actual_idx).copied().unwrap_or(0.0);
+                                let (bar_min_x, bar_max_x, bar_min_y, bar_max_y) = self.get_bar_bounds(vis_idx, value, max_val, visible_count, plot_rect, vertical);
+                                
+                                let intersects = sel_min_x < bar_max_x && sel_max_x > bar_min_x && 
+                                               sel_min_y < bar_max_y && sel_max_y > bar_min_y;
+                                
+                                if actual_idx < self.selected_elements.len() {
+                                    self.selected_elements[actual_idx] = intersects;
                                 }
                             }
                         }
@@ -738,15 +851,18 @@ impl ChartApp {
                 if response.hovered() && !self.selection_active {
                     if let Some(pos) = ctx.pointer_latest_pos() {
                         if plot_rect.contains(pos) {
-                            let rel_pos = pos - plot_rect.min;
-                            let visible_values: Vec<f64> = visible_indices.iter().map(|&i| d.values.get(i).copied().unwrap_or(0.0)).collect();
-                            if let Some(vis_idx) = renderer.detect_hover(rel_pos, plot_rect, visible_count, &visible_values, max_val) {
-                                if let Some(&actual_idx) = visible_indices.get(vis_idx) {
-                                    self.hovered_idx = Some(actual_idx);
+                            let mut hovered = None;
+                            for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
+                                let value = d.values.get(actual_idx).copied().unwrap_or(0.0);
+                                let (bar_min_x, bar_max_x, bar_min_y, bar_max_y) = self.get_bar_bounds(vis_idx, value, max_val, visible_count, plot_rect, vertical);
+                                
+                                if pos.x >= bar_min_x && pos.x <= bar_max_x && 
+                                   pos.y >= bar_min_y && pos.y <= bar_max_y {
+                                    hovered = Some(actual_idx);
+                                    break;
                                 }
-                            } else {
-                                self.hovered_idx = None;
                             }
+                            self.hovered_idx = hovered;
                         } else {
                             self.hovered_idx = None;
                         }
@@ -1114,8 +1230,6 @@ pub extern "C" fn sera_show_chart_data_full(
         hover_data_vec.push(hover_pairs);
     }
 
-    let num_elements = label_vec.len();
-    
     let data = ChartData {
         labels: label_vec,
         values: value_vec,
@@ -1125,54 +1239,8 @@ pub extern "C" fn sera_show_chart_data_full(
         tooltip_text_color: (txt_r, txt_g, txt_b, txt_a),
     };
 
-    let app = ChartApp {
-        data: Arc::new(Mutex::new(Some(data))),
-        hovered_idx: None,
-        zoom: 1.0,
-        pan_x: 0.0,
-        visible_elements: vec![true; num_elements],
-        show_list: false,
-        image_loader: ImageLoader::new(),
-        orientation: true,
-        sort_mode: 0,
-        current_chart_kind: 1,
-        is_3d_mode: false,
-        camera_controller: CameraController::default(),
-        advanced_viewer_3d: AdvancedViewer3D::new(),
-        filter_threshold: 0.0,
-        show_stats: false,
-        show_processor_menu: false,
-        show_transform_menu: false,
-        show_wiki: false,
-        show_info: false,
-        wiki_viewer: None,
-        button_manager: ButtonManager::new(),
-        aggregation_results: HashMap::new(),
-        limit_value: 50,
-        render_cache: RenderCache::new(),
-        color_cache: ColorCache::new(),
-        last_data_hash: 0,
-        last_render_state: (true, 1, 0, false),
-        batch_renderer: AdvancedBatchRendererBuilder::new().with_capacity(100000).build(),
-        render_state: RenderState::new(1200.0, 600.0),
-        selection_start: None,
-        selection_end: None,
-        selection_active: false,
-    };
-
-    let native_options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default()
-            .with_inner_size([1200.0, 600.0]),
-        ..Default::default()
-    };
-    
-    let _ = eframe::run_native(
-        "SeraPlot",
-        native_options,
-        Box::new(|_| Box::new(app)),
-    );
-
-    true
+    let app = ChartAppBuilder::new(data).build();
+    launch_chart_app(app)
 }
 
 #[no_mangle]
@@ -1249,8 +1317,6 @@ pub extern "C" fn sera_show_chart_data_json(
         hover_data_vec.push(hover_pairs);
     }
 
-    let num_elements = label_vec.len();
-    
     let data = ChartData {
         labels: label_vec,
         values: value_vec,
@@ -1260,54 +1326,8 @@ pub extern "C" fn sera_show_chart_data_json(
         tooltip_text_color: (0, 0, 0, 255),
     };
 
-    let app = ChartApp {
-        data: Arc::new(Mutex::new(Some(data))),
-        hovered_idx: None,
-        zoom: 1.0,
-        pan_x: 0.0,
-        visible_elements: vec![true; num_elements],
-        show_list: false,
-        image_loader: ImageLoader::new(),
-        orientation: true,
-        sort_mode: 0,
-        current_chart_kind: 1,
-        is_3d_mode: false,
-        camera_controller: CameraController::default(),
-        advanced_viewer_3d: AdvancedViewer3D::new(),
-        filter_threshold: 0.0,
-        show_stats: false,
-        show_processor_menu: false,
-        show_transform_menu: false,
-        show_wiki: false,
-        show_info: false,
-        wiki_viewer: None,
-        button_manager: ButtonManager::new(),
-        aggregation_results: HashMap::new(),
-        limit_value: 50,
-        render_cache: RenderCache::new(),
-        color_cache: ColorCache::new(),
-        last_data_hash: 0,
-        last_render_state: (true, 1, 0, false),
-        batch_renderer: AdvancedBatchRendererBuilder::new().with_capacity(100000).build(),
-        render_state: RenderState::new(1200.0, 600.0),
-        selection_start: None,
-        selection_end: None,
-        selection_active: false,
-    };
-
-    let native_options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default()
-            .with_inner_size([1200.0, 600.0]),
-        ..Default::default()
-    };
-    
-    let _ = eframe::run_native(
-        "SeraPlot",
-        native_options,
-        Box::new(|_| Box::new(app)),
-    );
-
-    true
+    let app = ChartAppBuilder::new(data).build();
+    launch_chart_app(app)
 }
 
 #[no_mangle]
@@ -1369,12 +1389,16 @@ pub extern "C" fn sera_show_chart_value(chart_json: *const c_char) -> bool {
                 if let Some(serde_json::Value::Number(idx_num)) = item_obj.get("index") {
                     if let Some(idx) = idx_num.as_u64() {
                         let index = idx as u32;
-                        for (key, val) in item_obj.iter() {
-                            if key != "index" {
-                                if let Some(v_str) = val.as_str() {
-                                    hover_map.entry(index)
-                                        .or_insert_with(Vec::new)
-                                        .push((key.clone(), v_str.to_string()));
+                        if let Some(serde_json::Value::Array(fields)) = item_obj.get("fields") {
+                            for field in fields {
+                                if let serde_json::Value::Array(pair) = field {
+                                    if pair.len() == 2 {
+                                        if let (Some(serde_json::Value::String(key)), Some(serde_json::Value::String(val))) = (pair.get(0), pair.get(1)) {
+                                            hover_map.entry(index)
+                                                .or_insert_with(Vec::new)
+                                                .push((key.clone(), val.clone()));
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -1389,8 +1413,6 @@ pub extern "C" fn sera_show_chart_value(chart_json: *const c_char) -> bool {
         hover_data_vec.push(hover_pairs);
     }
 
-    let num_elements = label_vec.len();
-    
     let data = ChartData {
         labels: label_vec,
         values: value_vec,
@@ -1400,58 +1422,15 @@ pub extern "C" fn sera_show_chart_value(chart_json: *const c_char) -> bool {
         tooltip_text_color: (0, 0, 0, 255),
     };
 
-    let app = ChartApp {
-        data: Arc::new(Mutex::new(Some(data))),
-        hovered_idx: None,
-        zoom: 1.0,
-        pan_x: 0.0,
-        visible_elements: vec![true; num_elements],
-        show_list: false,
-        image_loader: ImageLoader::new(),
-        orientation: true,
-        sort_mode: 0,
-        current_chart_kind: 1,
-        is_3d_mode: false,
-        camera_controller: CameraController::default(),
-        advanced_viewer_3d: AdvancedViewer3D::new(),
-        filter_threshold: 0.0,
-        show_stats: false,
-        show_processor_menu: false,
-        show_transform_menu: false,
-        show_wiki: false,
-        show_info: false,
-        wiki_viewer: None,
-        button_manager: ButtonManager::new(),
-        aggregation_results: HashMap::new(),
-        limit_value: 50,
-        render_cache: RenderCache::new(),
-        color_cache: ColorCache::new(),
-        last_data_hash: 0,
-        last_render_state: (true, 1, 0, false),
-        batch_renderer: AdvancedBatchRendererBuilder::new().with_capacity(100000).build(),
-        render_state: RenderState::new(1200.0, 600.0),
-        selection_start: None,
-        selection_end: None,
-        selection_active: false,
-    };
-
-    let native_options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default()
-            .with_inner_size([1200.0, 600.0]),
-        ..Default::default()
-    };
-    
-    let _ = eframe::run_native(
-        "SeraPlot",
-        native_options,
-        Box::new(|_| Box::new(app)),
-    );
-
-    true
+    let app = ChartAppBuilder::new(data).build();
+    launch_chart_app(app)
 }
 
 static CHART_ORIENTATION: std::sync::OnceLock<Mutex<bool>> = std::sync::OnceLock::new();
 static CHART_SORT: std::sync::OnceLock<Mutex<i32>> = std::sync::OnceLock::new();
+static CHART_KIND: std::sync::Mutex<u8> = std::sync::Mutex::new(1);
+static VARIANT_REGISTRY: std::sync::LazyLock<std::sync::Mutex<std::collections::HashMap<u8, String>>> = std::sync::LazyLock::new(|| std::sync::Mutex::new(std::collections::HashMap::new()));
+static VARIANT_SELECTOR_ENABLED: std::sync::Mutex<bool> = std::sync::Mutex::new(false);
 
 fn get_orientation() -> &'static Mutex<bool> {
     CHART_ORIENTATION.get_or_init(|| Mutex::new(true))
@@ -1461,44 +1440,48 @@ fn get_sort() -> &'static Mutex<i32> {
     CHART_SORT.get_or_init(|| Mutex::new(0))
 }
 
+macro_rules! mutex_setter {
+    ($val:expr, $lock:expr) => {
+        if let Ok(mut guard) = $lock {
+            *guard = $val;
+        }
+    };
+}
+
+macro_rules! mutex_getter {
+    ($lock:expr, $default:expr) => {
+        $lock.ok().map(|g| *g).unwrap_or($default)
+    };
+}
+
 #[no_mangle]
 pub extern "C" fn sera_set_chart_orientation(vertical: bool) {
-    if let Ok(mut o) = get_orientation().lock() {
-        *o = vertical;
-    }
+    mutex_setter!(vertical, get_orientation().lock());
 }
 
 #[no_mangle]
 pub extern "C" fn sera_get_chart_orientation() -> bool {
-    get_orientation().lock().ok().map(|o| *o).unwrap_or(true)
+    mutex_getter!(get_orientation().lock(), true)
 }
 
 #[no_mangle]
 pub extern "C" fn sera_set_chart_sort(mode: i32) {
-    if let Ok(mut s) = get_sort().lock() {
-        *s = mode.clamp(0, 2);
-    }
+    mutex_setter!(mode.clamp(0, 2), get_sort().lock());
 }
 
 #[no_mangle]
 pub extern "C" fn sera_get_chart_sort() -> i32 {
-    get_sort().lock().ok().map(|s| *s).unwrap_or(0)
+    mutex_getter!(get_sort().lock(), 0)
 }
-
-static CHART_KIND: std::sync::Mutex<u8> = std::sync::Mutex::new(1);
-static VARIANT_REGISTRY: std::sync::LazyLock<std::sync::Mutex<std::collections::HashMap<u8, String>>> = std::sync::LazyLock::new(|| std::sync::Mutex::new(std::collections::HashMap::new()));
-static VARIANT_SELECTOR_ENABLED: std::sync::Mutex<bool> = std::sync::Mutex::new(false);
 
 #[no_mangle]
 pub extern "C" fn sera_set_current_chart_kind(kind: u8) {
-    if let Ok(mut k) = CHART_KIND.lock() {
-        *k = kind;
-    }
+    mutex_setter!(kind, CHART_KIND.lock());
 }
 
 #[no_mangle]
 pub extern "C" fn sera_get_current_chart_kind() -> u8 {
-    CHART_KIND.lock().ok().map(|k| *k).unwrap_or(1)
+    mutex_getter!(CHART_KIND.lock(), 1)
 }
 
 #[no_mangle]
@@ -1515,14 +1498,12 @@ pub extern "C" fn sera_add_chart_variant(kind: u8, title: *const c_char) -> bool
 
 #[no_mangle]
 pub extern "C" fn sera_enable_variant_selector(enable: bool) {
-    if let Ok(mut sel) = VARIANT_SELECTOR_ENABLED.lock() {
-        *sel = enable;
-    }
+    mutex_setter!(enable, VARIANT_SELECTOR_ENABLED.lock());
 }
 
 #[no_mangle]
 pub extern "C" fn sera_is_variant_selector_enabled() -> bool {
-    VARIANT_SELECTOR_ENABLED.lock().ok().map(|sel| *sel).unwrap_or(false)
+    mutex_getter!(VARIANT_SELECTOR_ENABLED.lock(), false)
 }
 
 #[no_mangle]

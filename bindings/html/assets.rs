@@ -434,56 +434,31 @@ function getElementsInSelection(minX, maxX, minY, maxY) {
   if (!svg) return elements;
   
   const svgRect = svg.getBoundingClientRect();
+  const ctm = svg.getScreenCTM();
+  if (!ctm) return elements;
   
-  Array.from(svg.querySelectorAll('rect[data-index], circle[data-index], path[data-index]')).forEach(el => {
-    if (el.style.display === 'none') return;
-    
+  const visibleElements = Array.from(svg.querySelectorAll('rect[data-index]')).filter(el => 
+    el.style.display !== 'none'
+  );
+  
+  visibleElements.forEach(el => {
     try {
       const bbox = el.getBBox();
-      const ctm = svg.getScreenCTM();
-      if (!ctm) return;
+      const pt = svg.createSVGPoint();
+      pt.x = bbox.x;
+      pt.y = bbox.y;
+      const screenPt = pt.matrixTransform(ctm);
+      const barScreenX = screenPt.x - svgRect.left;
+      const barScreenY = screenPt.y - svgRect.top;
+      const barScreenW = bbox.width * ctm.a;
+      const barScreenH = bbox.height * ctm.d;
       
-      const corners = [
-        { x: bbox.x, y: bbox.y },
-        { x: bbox.x + bbox.width, y: bbox.y },
-        { x: bbox.x, y: bbox.y + bbox.height },
-        { x: bbox.x + bbox.width, y: bbox.y + bbox.height }
-      ];
+      const barMinX = barScreenX;
+      const barMaxX = barScreenX + barScreenW;
+      const barMinY = barScreenY;
+      const barMaxY = barScreenY + barScreenH;
       
-      let intersects = false;
-      
-      for (let corner of corners) {
-        const pt = svg.createSVGPoint();
-        pt.x = corner.x;
-        pt.y = corner.y;
-        const screenPt = pt.matrixTransform(ctm);
-        const screenX = screenPt.x - svgRect.left;
-        const screenY = screenPt.y - svgRect.top;
-        
-        if (screenX >= minX - 10 && screenX <= maxX + 10 && 
-            screenY >= minY - 10 && screenY <= maxY + 10) {
-          intersects = true;
-          break;
-        }
-      }
-      
-      if (!intersects) {
-        const elemCenterX = bbox.x + bbox.width / 2;
-        const elemCenterY = bbox.y + bbox.height / 2;
-        const pt = svg.createSVGPoint();
-        pt.x = elemCenterX;
-        pt.y = elemCenterY;
-        const screenPt = pt.matrixTransform(ctm);
-        const screenX = screenPt.x - svgRect.left;
-        const screenY = screenPt.y - svgRect.top;
-        
-        if (screenX >= minX - 20 && screenX <= maxX + 20 && 
-            screenY >= minY - 20 && screenY <= maxY + 20) {
-          intersects = true;
-        }
-      }
-      
-      if (intersects) {
+      if (minX < barMaxX && maxX > barMinX && minY < barMaxY && maxY > barMinY) {
         elements.push(parseInt(el.getAttribute('data-index')));
       }
     } catch (e) {
