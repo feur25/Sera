@@ -3,9 +3,7 @@ pub mod line;
 pub mod scatter;
 pub mod _3d;
 pub mod svg;
-
-use std::collections::HashMap;
-use std::sync::LazyLock;
+pub mod chart;
 
 pub use bar::render_bars;
 pub use line::render_lines;
@@ -13,6 +11,8 @@ pub use scatter::render_points;
 pub use _3d::{render_plot_3d_by_type, Bar3DRenderContext, Line3DRenderContext, Scatter3DRenderContext};
 pub use _3d::*;
 pub use svg::SvgChart;
+pub use chart::register_default_types;
+pub use crate::plot::controller::chart_controller::{ChartTypeBuilder, ChartGroupBuilder, render_by_type, get_current_group_types, set_current_chart_group};
 
 pub struct PlotRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -26,42 +26,6 @@ pub struct PlotRenderContext<'a> {
     pub labels: &'a [String],
 }
 
-pub struct PlotRegistry {
-    renderers: HashMap<u8, &'static str>,
-}
-
-impl PlotRegistry {
-    fn new() -> Self {
-        let mut renderers = HashMap::new();
-        renderers.insert(0, "line");
-        renderers.insert(1, "scatter");
-        renderers.insert(2, "bar");
-        renderers.insert(3, "line_3d");
-        renderers.insert(4, "scatter_3d");
-        renderers.insert(5, "bar_3d");
-        
-        Self { renderers }
-    }
-    
-    pub fn get(&self, kind: u8) -> Option<&'static str> {
-        self.renderers.get(&kind).copied()
-    }
-    
-    pub fn list(&self) -> Vec<(u8, &'static str)> {
-        let mut items: Vec<_> = self.renderers.iter()
-            .map(|(&k, &v)| (k, v))
-            .collect();
-        items.sort_by_key(|&(k, _)| k);
-        items
-    }
-}
-
-pub static PLOT_REGISTRY: LazyLock<PlotRegistry> = LazyLock::new(PlotRegistry::new);
-
 pub fn render_plot_by_type(chart_type: u8, ctx: PlotRenderContext) {
-    match chart_type {
-        0 => render_lines(ctx),
-        2 => render_bars(ctx),
-        _ => render_points(ctx),
-    }
+    render_by_type(chart_type, ctx);
 }

@@ -3,13 +3,13 @@ pub mod plot;
 pub mod canvas;
 pub mod renderers;
 pub mod generic;
-pub mod types;
 pub mod camera;
 pub mod projection;
 pub mod containers_3d;
+pub mod controller;
+pub mod types;
 
 pub use builder::*;
-pub use types::*;
 pub use plot::*;
 pub use canvas::*;
 pub use renderers::*;

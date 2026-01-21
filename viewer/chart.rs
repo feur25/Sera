@@ -8,7 +8,8 @@ use super::viewer_3d::AdvancedViewer3D;
 use super::wiki_viewer::WikiViewer;
 use super::manager::button_manager::{ButtonManager, ButtonId};
 use super::render::{AdvancedBatchRenderer, AdvancedBatchRendererBuilder, RenderState, DataCache, PointComputeBuilder, ChunkRenderBuilder, RenderPipeline, VisibilityOptimizer};
-use crate::plot::types::{PlotRenderContext, render_plot_by_type, render_plot_3d_by_type};
+use crate::plot::types::{PlotRenderContext, render_plot_by_type};
+use crate::plot::types::_3d::render_plot_3d_by_type;
 use crate::plot::CameraController;
 use crate::bindings::{HtmlExporter, HtmlExportConfig, HtmlTheme, ChartStateBuilder};
 
@@ -446,11 +447,7 @@ impl eframe::App for ChartApp {
         }
 
         if self.show_transform_menu {
-            let chart_types = [
-                (0u8, "Line"),
-                (1u8, "Scatter"),
-                (2u8, "Bar"),
-            ];
+            let chart_types = crate::plot::types::get_current_group_types();
             
             egui::Window::new("Transform")
                 .open(&mut self.show_transform_menu)
@@ -975,7 +972,7 @@ pub extern "C" fn sera_show_chart_data_with_hover(
     count: u32,
     title: *const c_char,
 ) -> bool {
-    sera_show_chart_data_with_hover_colors(labels, values, images, descriptions, count, title, 0, 0, 0, 0, 0, 0, 0, 255)
+    sera_show_chart_data_with_group_colors(labels, values, images, descriptions, count, title, b"default\0".as_ptr() as *const c_char, 0, 0, 0, 0, 0, 0, 0, 255)
 }
 
 #[no_mangle]
@@ -995,8 +992,36 @@ pub extern "C" fn sera_show_chart_data_with_hover_colors(
     txt_b: u8,
     txt_a: u8,
 ) -> bool {
+    sera_show_chart_data_with_group_colors(labels, values, images, descriptions, count, title, b"default\0".as_ptr() as *const c_char, bg_r, bg_g, bg_b, bg_a, txt_r, txt_g, txt_b, txt_a)
+}
+
+#[no_mangle]
+pub extern "C" fn sera_show_chart_data_with_group_colors(
+    labels: *const *const c_char,
+    values: *const f64,
+    images: *const *const c_char,
+    descriptions: *const *const c_char,
+    count: u32,
+    title: *const c_char,
+    group_name: *const c_char,
+    bg_r: u8,
+    bg_g: u8,
+    bg_b: u8,
+    bg_a: u8,
+    txt_r: u8,
+    txt_g: u8,
+    txt_b: u8,
+    txt_a: u8,
+) -> bool {
+    crate::bindings::init_chart_types();
+    
     if labels.is_null() || values.is_null() || title.is_null() {
         return false;
+    }
+
+    if !group_name.is_null() {
+        let group = unsafe { CStr::from_ptr(group_name).to_string_lossy().into_owned() };
+        crate::plot::types::chart::set_current_chart_group(&group);
     }
 
     let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().into_owned() };
