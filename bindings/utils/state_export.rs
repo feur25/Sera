@@ -22,7 +22,59 @@ pub struct ChartState {
 
 impl ChartState {
     pub fn to_json(&self) -> Result<String, serde_json::Error> {
-        serde_json::to_string(self)
+        use std::fmt::Write;
+        let mut json = String::with_capacity(self.labels.len() * 50 + self.values.len() * 20);
+        json.push('{');
+        json.push_str("\"labels\":[");
+        for (i, label) in self.labels.iter().enumerate() {
+            if i > 0 { json.push(','); }
+            json.push('"');
+            for c in label.chars() {
+                match c {
+                    '"' => json.push_str("\\\""),
+                    '\\' => json.push_str("\\\\"),
+                    '\n' => json.push_str("\\n"),
+                    '\r' => json.push_str("\\r"),
+                    '\t' => json.push_str("\\t"),
+                    c if c.is_control() => { let _ = write!(json, "\\u{:04x}", c as u32); },
+                    c => json.push(c),
+                }
+            }
+            json.push('"');
+        }
+        json.push_str("],\"values\":[");
+        for (i, v) in self.values.iter().enumerate() {
+            if i > 0 { json.push(','); }
+            let _ = write!(json, "{}", v);
+        }
+        json.push(']');
+        if !self.hover_data.is_empty() {
+            json.push_str(",\"hover_data\":{");
+            let mut first = true;
+            for (i, hd) in self.hover_data.iter().enumerate() {
+                if !first { json.push(','); }
+                let _ = write!(json, "\"{}\":{{", i);
+                let mut hdfirst = true;
+                for (k, v) in hd.iter() {
+                    if !hdfirst { json.push(','); }
+                    json.push_str("\"");
+                    for c in k.chars() {
+                        if c == '"' { json.push_str("\\\""); } else { json.push(c); }
+                    }
+                    json.push_str("\":\"");
+                    for c in v.chars() {
+                        if c == '"' { json.push_str("\\\""); } else if c == '\\' { json.push_str("\\\\"); } else { json.push(c); }
+                    }
+                    json.push_str("\"");
+                    hdfirst = false;
+                }
+                json.push('}');
+                first = false;
+            }
+            json.push('}');
+        }
+        json.push('}');
+        Ok(json)
     }
 
     pub fn from_json(json: &str) -> Result<Self, serde_json::Error> {

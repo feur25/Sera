@@ -7,11 +7,13 @@ use super::cache::{RenderCache, ColorCache, CacheKey};
 use super::viewer_3d::AdvancedViewer3D;
 use super::wiki_viewer::WikiViewer;
 use super::manager::button_manager::{ButtonManager, ButtonId};
-use super::render::{AdvancedBatchRenderer, AdvancedBatchRendererBuilder, RenderState, DataCache, PointComputeBuilder, ChunkRenderBuilder, RenderPipeline, VisibilityOptimizer};
+use super::render::{AdvancedBatchRenderer, AdvancedBatchRendererBuilder, RenderState, PointComputeBuilder, VisibilityOptimizer};
 use crate::plot::default::{PlotRenderContext, render_plot_by_type};
 use crate::plot::controller::plot_3d_controller::{Plot3DRenderContext, render_by_type as render_3d_by_type};
 use crate::plot::CameraController;
-use crate::bindings::{HtmlExporter, HtmlExportConfig, HtmlTheme, ChartStateBuilder};
+use crate::bindings::{HtmlExporter, HtmlExportConfig, HtmlTheme};
+use crate::html::HtmlTemplate;
+use crate::bindings::utils::{BitSet, DataProcessor, simd_ops};
 
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -179,8 +181,8 @@ struct ChartApp {
     hovered_idx: Option<usize>,
     zoom: f32,
     pan_x: f32,
-    visible_elements: Vec<bool>,
-    selected_elements: Vec<bool>,
+    visible_elements: BitSet,
+    selected_elements: BitSet,
     show_list: bool,
     image_loader: ImageLoader,
     orientation: bool,
@@ -230,8 +232,8 @@ impl ChartAppBuilder {
             hovered_idx: None,
             zoom: 1.0,
             pan_x: 0.0,
-            visible_elements: vec![true; self.num_elements],
-            selected_elements: vec![true; self.num_elements],
+            visible_elements: BitSet::new(self.num_elements),
+            selected_elements: BitSet::new(self.num_elements),
             show_list: false,
             image_loader: ImageLoader::new(),
             orientation: true,
@@ -279,6 +281,20 @@ fn launch_chart_app(app: ChartApp) -> bool {
     true
 }
 
+fn render_svg_by_type(chart_type: u8, _labels: &[String], values: &[f64], colors: &[u32], indices: &[usize], orientation: bool, pad_left: f32, _pad_top: f32, _pad_right: f32, _pad_bottom: f32, plot_w: f32, plot_h: f32, scale_max: f32, _width: f32, _height: f32, svg: &mut String) {
+    let hex_colors: Vec<&'static str> = colors.iter().map(|&c| {
+        let r = ((c >> 16) & 0xFF) as u8;
+        let g = ((c >> 8) & 0xFF) as u8;
+        let b = (c & 0xFF) as u8;
+        let hex = format!("#{:02x}{:02x}{:02x}", r, g, b);
+        Box::leak(hex.into_boxed_str()) as &'static str
+    }).collect();
+    
+    if let Some(renderer) = crate::plot::controller::chart_controller::get_svg_renderer(chart_type) {
+        renderer(svg, values, &hex_colors, pad_left as i32, plot_w as i32, plot_h as i32, scale_max as f64, orientation);
+    }
+}
+
 impl eframe::App for ChartApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         if self.is_3d_mode {
@@ -307,15 +323,11 @@ impl eframe::App for ChartApp {
                 }
                 
                 if ui.button("🔄 Reset Selection").clicked() {
-                    if let Ok(data) = self.data.lock() {
-                        if let Some(d) = data.as_ref() {
-                            self.visible_elements = vec![true; d.labels.len()];
-                            self.selected_elements = vec![true; d.labels.len()];
-                            self.selection_start = None;
-                            self.selection_end = None;
-                            self.selection_active = false;
-                        }
-                    }
+                    self.visible_elements.set_all();
+                    self.selected_elements.set_all();
+                    self.selection_start = None;
+                    self.selection_end = None;
+                    self.selection_active = false;
                 }
 
                 ui.separator();
@@ -357,27 +369,118 @@ impl eframe::App for ChartApp {
                 }
 
                 if clicked.contains_key(&ButtonId::Html) {
-                    if let Ok(data) = self.data.lock() {
+                    let (labels, values, title, hover_data, orientation, sort_mode, chart_type, visible) = {
+                        let data = self.data.lock().unwrap();
                         if let Some(d) = data.as_ref() {
-                            let d_clone = ChartData {
-                                labels: d.labels.clone(),
-                                values: d.values.clone(),
-                                title: d.title.clone(),
-                                hover_data: d.hover_data.clone(),
-                                tooltip_bg_color: d.tooltip_bg_color,
-                                tooltip_text_color: d.tooltip_text_color,
-                            };
-                            drop(data);
-                            self.export_html(&d_clone);
+                            let mut vis = vec![true; d.labels.len()];
+                            for i in 0..d.labels.len() {
+                                vis[i] = self.visible_elements.get(i);
+                            }
+                            (d.labels.clone(), d.values.clone(), d.title.clone(), d.hover_data.clone(), self.orientation, self.sort_mode, self.current_chart_kind, vis)
+                        } else {
+                            return;
                         }
-                    }
+                    };
 
+                    std::thread::spawn(move || {
+                        use crate::bindings::HtmlExporter;
+                        use crate::bindings::utils::simd_ops;
+
+                        let mut indexed_data: Vec<(usize, f64, String, Vec<(String, String)>)> = values.iter().enumerate()
+                            .map(|(i, &v)| (i, v, labels.get(i).cloned().unwrap_or_default(), hover_data.get(i).cloned().unwrap_or_default()))
+                            .collect();
+
+                        indexed_data.retain(|(idx, _, _, _)| visible.get(*idx).copied().unwrap_or(true));
+
+                        if sort_mode == 1 {
+                            indexed_data.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
+                        } else if sort_mode == 2 {
+                            indexed_data.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+                        }
+
+                        let filtered_labels: Vec<String> = indexed_data.iter().map(|(_, _, l, _)| l.clone()).collect();
+                        let filtered_values: Vec<f64> = indexed_data.iter().map(|(_, v, _, _)| *v).collect();
+                        let filtered_hover: Vec<Vec<(String, String)>> = indexed_data.iter().map(|(_, _, _, h)| h.clone()).collect();
+                        let original_indices: Vec<usize> = indexed_data.iter().map(|(idx, _, _, _)| *idx).collect();
+
+                        let (_, max_val) = simd_ops::find_minmax(&filtered_values);
+                        let max_val = max_val.max(1.0);
+                        let scale_max = ((max_val as i32 + 20) / 10) as f32 * 10.0;
+
+                        let (width, height) = if orientation { (1200.0f32, 700.0f32) } else { (1200.0f32, 700.0f32) };
+                        let (pad_left, pad_right, pad_top, pad_bottom) = (80.0, 40.0, 40.0, 80.0);
+
+                        let plot_w = width - pad_left - pad_right;
+                        let plot_h = height - pad_top - pad_bottom;
+
+                        let mut svg = String::with_capacity(filtered_values.len() * 250 + 4096);
+                        svg.push_str(&format!("<svg viewBox=\"0 0 {} {}\" xmlns=\"http://www.w3.org/2000/svg\" width=\"{}\" height=\"{}\" style=\"background:white\">", width as i32, height as i32, width as i32, height as i32));
+
+                        let colors = [0x1f77b4u32, 0xff7f0e, 0x2ca02c, 0xd62728, 0x9467bd, 0x8c564b, 0xe377c2, 0x7f7f7f, 0xbcbd22, 0x17becf];
+                        
+                        render_svg_by_type(chart_type, &filtered_labels, &filtered_values, &colors, &original_indices, orientation, pad_left, pad_top, pad_right, pad_bottom, plot_w, plot_h, scale_max, width, height, &mut svg);
+
+                        svg.push_str(&format!("<line x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\" stroke=\"#000\" stroke-width=\"2\"/>", pad_left, pad_top + plot_h, pad_left, pad_top));
+                        svg.push_str(&format!("<line x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\" stroke=\"#000\" stroke-width=\"2\"/>", pad_left, pad_top + plot_h, width - pad_right, pad_top + plot_h));
+
+                        let tick_count = 5i32;
+                        let tick_step = scale_max / tick_count as f32;
+                        
+                        for i in 0..=tick_count {
+                            let val = i as f32 * tick_step;
+                            let y = pad_top + plot_h - (val * (plot_h / scale_max));
+                            svg.push_str(&format!("<line x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\" stroke=\"#ccc\" stroke-width=\"1\"/>", pad_left - 5.0, y, width - pad_right, y));
+                            svg.push_str(&format!("<text x=\"{:.1}\" y=\"{:.1}\" text-anchor=\"end\" font-size=\"12\" fill=\"#666\">{:.0}</text>", pad_left - 10.0, y + 4.0, val));
+                        }
+
+                        for (i, label) in filtered_labels.iter().enumerate() {
+                            let x_step = plot_w / (filtered_labels.len().max(1) as f32 - 1.0).max(1.0);
+                            let x = pad_left + (i as f32 * x_step);
+                            svg.push_str(&format!("<text x=\"{:.1}\" y=\"{:.1}\" text-anchor=\"middle\" font-size=\"10\" fill=\"#666\" transform=\"rotate(-45 {:.1} {:.1})\">{}</text>", x, pad_top + plot_h + 20.0, x, pad_top + plot_h + 20.0, label));
+                        }
+
+                        svg.push_str("</svg>");
+
+                        let mut hover_json = serde_json::json!({});
+                        for (new_idx, pairs) in filtered_hover.iter().enumerate() {
+                            let fields: Vec<Vec<String>> = pairs.iter().map(|(k, v)| vec![k.clone(), v.clone()]).collect();
+                            hover_json[new_idx.to_string()] = serde_json::json!({"fields": fields});
+                        }
+
+                        let state_json = serde_json::json!({
+                            "labels": filtered_labels,
+                            "values": filtered_values,
+                            "hover_data": hover_json,
+                            "visible_count": filtered_labels.len()
+                        });
+
+                        let exporter = HtmlExporter::new(crate::bindings::HtmlExportConfig {
+                            width: width as i32,
+                            height: height as i32,
+                            title: title.clone(),
+                            theme: crate::bindings::HtmlTheme::Light,
+                        }).with_svg(svg).with_hover(state_json).title(&title);
+
+                        let html = exporter.build_html();
+
+                        let timestamp = std::time::SystemTime::now()
+                            .duration_since(std::time::UNIX_EPOCH)
+                            .map(|d| d.as_secs())
+                            .unwrap_or(0);
+                        let filepath = format!("seraplot_export_{}.html", timestamp);
+                        let _ = std::fs::write(&filepath, html);
+                    });
                 }
                 ui.label(&zoom_label);
             });
         });
 
         if self.show_list {
+            let elements_data = {
+                let data = self.data.lock().unwrap();
+                data.as_ref().map(|d| d.labels.clone()).unwrap_or_default()
+            };
+
             egui::SidePanel::left("element_list")
                 .resizable(true)
                 .default_width(180.0)
@@ -388,11 +491,15 @@ impl eframe::App for ChartApp {
                     egui::ScrollArea::vertical()
                         .auto_shrink([false; 2])
                         .show(ui, |ui| {
-                            let data = self.data.lock().unwrap();
-                            if let Some(d) = data.as_ref() {
-                                for (idx, label) in d.labels.iter().enumerate() {
-                                    if idx < self.visible_elements.len() {
-                                        ui.checkbox(&mut self.visible_elements[idx], label);
+                            for (idx, label) in elements_data.iter().enumerate() {
+                                if idx < self.visible_elements.capacity() {
+                                    let mut checked = self.visible_elements.get(idx);
+                                    if ui.checkbox(&mut checked, label).changed() {
+                                        if checked {
+                                            self.visible_elements.set(idx);
+                                        } else {
+                                            self.visible_elements.clear(idx);
+                                        }
                                     }
                                 }
                             }
@@ -400,17 +507,19 @@ impl eframe::App for ChartApp {
                 });
         }
 
-        egui::CentralPanel::default().show(ctx, |ui| {
+        let d_clone = {
             let data = self.data.lock().unwrap();
-            let d_clone = data.as_ref().map(|d| ChartData {
+            data.as_ref().map(|d| ChartData {
                 labels: d.labels.clone(),
                 values: d.values.clone(),
                 title: d.title.clone(),
                 hover_data: d.hover_data.clone(),
                 tooltip_bg_color: d.tooltip_bg_color,
                 tooltip_text_color: d.tooltip_text_color,
-            });
-            drop(data);
+            })
+        };
+
+        egui::CentralPanel::default().show(ctx, |ui| {
             
             if let Some(ref d) = d_clone {
                 let mut data_hash = 0u64;
@@ -516,11 +625,8 @@ impl eframe::App for ChartApp {
             }
             if reset_all {
                 {
-                    let data = self.data.lock().unwrap();
-                    if let Some(d) = data.as_ref() {
-                        self.visible_elements = vec![true; d.labels.len()];
-                        self.selected_elements = vec![true; d.labels.len()];
-                    }
+                    self.visible_elements.set_all();
+                    self.selected_elements.set_all();
                 }
             }
             self.compute_statistics();
@@ -661,13 +767,13 @@ impl ChartApp {
     }
 
     fn get_sorted_visible_indices(&self, d: &ChartData) -> Vec<usize> {
-        let mut visible = (0..d.values.len())
-            .filter(|i| {
-                let visible_ok = i < &self.visible_elements.len() && self.visible_elements[*i];
-                let selected_ok = i < &self.selected_elements.len() && self.selected_elements[*i];
-                visible_ok && selected_ok
-            })
-            .collect::<Vec<_>>();
+        let mut visible = Vec::with_capacity(d.values.len());
+        
+        for i in self.visible_elements.iter_set() {
+            if i < d.values.len() && self.selected_elements.get(i) {
+                visible.push(i);
+            }
+        }
 
         match self.sort_mode {
             1 => visible.sort_by(|&a, &b| d.values[a].partial_cmp(&d.values[b]).unwrap_or(std::cmp::Ordering::Equal)),
@@ -712,7 +818,8 @@ impl ChartApp {
     fn render_plot(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData, vertical: bool, chart_type: u8) {
         let renderer = GenericPlotRenderer { vertical };
         let metrics = if vertical { PlotMetrics::vertical(self.zoom) } else { PlotMetrics::horizontal(self.zoom) };
-        let max_val = d.values.iter().fold(0.0_f64, |a, &b| a.max(b)).max(1.0);
+        let (_, max_val) = simd_ops::find_minmax(&d.values);
+        let max_val = max_val.max(1.0);
         
         let cache_key = CacheKey {
             chart_type,
@@ -791,6 +898,7 @@ impl ChartApp {
                         
                         let threshold = 5.0;
                         if (sel_max_x - sel_min_x) > threshold && (sel_max_y - sel_min_y) > threshold {
+                            self.selected_elements.clear_all();
                             for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
                                 let value = d.values.get(actual_idx).copied().unwrap_or(0.0);
                                 let (bar_min_x, bar_max_x, bar_min_y, bar_max_y) = self.get_bar_bounds(vis_idx, value, max_val, visible_count, plot_rect, vertical);
@@ -798,8 +906,8 @@ impl ChartApp {
                                 let intersects = sel_min_x < bar_max_x && sel_max_x > bar_min_x && 
                                                sel_min_y < bar_max_y && sel_max_y > bar_min_y;
                                 
-                                if actual_idx < self.selected_elements.len() {
-                                    self.selected_elements[actual_idx] = intersects;
+                                if intersects {
+                                    self.selected_elements.set(actual_idx);
                                 }
                             }
                         }
@@ -962,57 +1070,85 @@ impl ChartApp {
     }
 
     fn apply_processor_filter(&mut self) {
-        if let Ok(data) = self.data.lock() {
-            if let Some(d) = data.as_ref() {
-                let cutoff = d.values.iter().copied().fold(0.0_f64, f64::max) * self.filter_threshold.clamp(0.0, 100.0) / 100.0;
-                self.visible_elements = d.values.iter().enumerate()
-                    .map(|(idx, &value)| idx >= self.visible_elements.len() || value >= cutoff)
-                    .collect();
+        let (values, count) = {
+            if let Ok(data) = self.data.lock() {
+                if let Some(d) = data.as_ref() {
+                    (d.values.clone(), d.values.len())
+                } else {
+                    return;
+                }
+            } else {
+                return;
+            }
+        };
+
+        let (_, max_val) = simd_ops::find_minmax(&values);
+        let cutoff = max_val * self.filter_threshold.clamp(0.0, 100.0) / 100.0;
+        
+        self.visible_elements.clear_all();
+        for (idx, &value) in values.iter().enumerate() {
+            if value >= cutoff {
+                self.visible_elements.set(idx);
             }
         }
     }
 
     fn apply_processor_limit(&mut self) {
-        if let Ok(data) = self.data.lock() {
-            if let Some(d) = data.as_ref() {
-                let sorted_indices = self.get_sorted_visible_indices(d);
-                let mut new_visible = vec![false; d.values.len()];
-                
-                for (count, &idx) in sorted_indices.iter().enumerate() {
-                    if count < self.limit_value {
-                        new_visible[idx] = true;
-                    }
+        let (labels, values) = {
+            if let Ok(data) = self.data.lock() {
+                if let Some(d) = data.as_ref() {
+                    (d.labels.clone(), d.values.clone())
+                } else {
+                    return;
                 }
-                
-                self.visible_elements = new_visible;
+            } else {
+                return;
+            }
+        };
+
+        let temp_d = ChartData {
+            labels: labels,
+            values: values,
+            title: String::new(),
+            hover_data: Vec::new(),
+            tooltip_bg_color: (0, 0, 0, 0),
+            tooltip_text_color: (0, 0, 0, 0),
+        };
+
+        let sorted_indices = self.get_sorted_visible_indices(&temp_d);
+        
+        self.visible_elements.clear_all();
+        for (count, &idx) in sorted_indices.iter().enumerate() {
+            if count < self.limit_value {
+                self.visible_elements.set(idx);
             }
         }
     }
 
     fn compute_statistics(&mut self) {
-        let visible = {
-            if let Ok(data) = self.data.lock() {
-                if let Some(d) = data.as_ref() {
-                    d.values.iter().enumerate()
-                        .filter(|(i, _)| *i < self.visible_elements.len() && self.visible_elements[*i])
-                        .map(|(_, &v)| v)
-                        .collect::<Vec<f64>>()
-                } else {
-                    Vec::new()
+        let values = {
+            let data = self.data.lock().unwrap();
+            if let Some(d) = data.as_ref() {
+                let mut v = Vec::with_capacity(d.values.len());
+                for idx in self.visible_elements.iter_set() {
+                    if idx < d.values.len() {
+                        v.push(d.values[idx]);
+                    }
                 }
+                v
             } else {
                 Vec::new()
             }
         };
         
         self.aggregation_results.clear();
-        if !visible.is_empty() {
-            let sum: f64 = visible.iter().sum();
-            let len = visible.len() as f64;
+        if !values.is_empty() {
+            let sum: f64 = values.iter().sum();
+            let len = values.len() as f64;
             [("Sum", sum),
              ("Mean", sum / len),
-             ("Max", visible.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b))),
-             ("Min", visible.iter().fold(f64::INFINITY, |a, &b| a.min(b))),
+             ("Max", values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b))),
+             ("Min", values.iter().fold(f64::INFINITY, |a, &b| a.min(b))),
              ("Count", len)]
                 .into_iter()
                 .for_each(|(k, v)| { self.aggregation_results.insert(k.to_string(), v); });
@@ -1054,72 +1190,6 @@ impl ChartApp {
             .with_data(filtered_labels, filtered_values);
         
         renderer.render_svg()
-    }
-
-    fn export_html(&self, d: &ChartData) {
-        use crate::bindings::ImageProcessor;
-        
-        let svg = self.generate_svg(d);
-        
-        let mut images_base64 = Vec::new();
-        for hover in &d.hover_data {
-            let mut image_data_url = String::new();
-            for (k, v) in hover {
-                if k == "image" {
-                    if let Some(data_url) = ImageProcessor::to_data_url(v) {
-                        image_data_url = data_url;
-                    }
-                    break;
-                }
-            }
-            images_base64.push(image_data_url);
-        }
-        
-        let hover_as_maps: Vec<HashMap<String, String>> = d.hover_data.iter()
-            .map(|pairs| {
-                let mut map = HashMap::new();
-                for (k, v) in pairs {
-                    map.insert(k.clone(), v.clone());
-                }
-                map
-            })
-            .collect();
-        
-        let state = ChartStateBuilder::new()
-            .labels(d.labels.clone())
-            .values(d.values.clone())
-            .title(d.title.clone())
-            .hover_data(hover_as_maps)
-            .tooltip_colors(d.tooltip_bg_color, d.tooltip_text_color)
-            .orientation(self.orientation)
-            .sort_mode(self.sort_mode)
-            .chart_kind(self.current_chart_kind)
-            .is_3d(self.is_3d_mode)
-            .zoom(self.zoom)
-            .filter_threshold(self.filter_threshold)
-            .visible_elements(self.visible_elements.clone())
-            .limit_value(self.limit_value)
-            .images_base64(images_base64)
-            .build();
-
-        let config = HtmlExportConfig::default()
-            .with_title(&d.title)
-            .with_theme(HtmlTheme::Professional)
-            .with_state_export(true)
-            .with_controls(true);
-
-        let exporter = HtmlExporter::new(config)
-            .with_state(state)
-            .with_data(d.labels.clone(), d.values.clone())
-            .with_svg(svg);
-
-        let timestamp = std::time::SystemTime::now()
-            .duration_since(std::time::UNIX_EPOCH)
-            .map(|d| d.as_secs())
-            .unwrap_or(0);
-
-        let filepath = format!("seraplot_export_{}.html", timestamp);
-        exporter.export_to_file_background(filepath);
     }
 }
 
@@ -1183,10 +1253,11 @@ pub extern "C" fn sera_show_chart_data_full(
     crate::plot::controller::set_current_chart_group(&group);
 
     let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().into_owned() };
-    let mut label_vec = Vec::new();
-    let mut value_vec = Vec::new();
-    let mut hover_data_vec = Vec::new();
-
+    let interner = crate::bindings::utils::get_interner();
+    
+    let mut label_vec = Vec::with_capacity(count as usize);
+    let mut value_vec = Vec::with_capacity(count as usize);
+    let mut hover_data_vec = Vec::with_capacity(count as usize);
     let mut hover_map: std::collections::HashMap<u32, Vec<(String, String)>> = std::collections::HashMap::new();
     
     if !hover_items.is_null() {
@@ -1196,38 +1267,36 @@ pub extern "C" fn sera_show_chart_data_full(
             if item.index == u32::MAX {
                 break;
             }
-            if item.index >= count {
-                j += 1;
-                continue;
+            if item.index < count {
+                let key = if !item.key.is_null() {
+                    unsafe { CStr::from_ptr(item.key).to_string_lossy().into_owned() }
+                } else {
+                    String::new()
+                };
+                let value = if !item.value.is_null() {
+                    unsafe { CStr::from_ptr(item.value).to_string_lossy().into_owned() }
+                } else {
+                    String::new()
+                };
+                
+                if !key.is_empty() && !value.is_empty() {
+                    hover_map.entry(item.index).or_insert_with(Vec::new).push((key, value));
+                }
             }
-            let key = if item.key.is_null() {
-                String::new()
-            } else {
-                unsafe { CStr::from_ptr(item.key).to_string_lossy().into_owned() }
-            };
-            let value = if item.value.is_null() {
-                String::new()
-            } else {
-                unsafe { CStr::from_ptr(item.value).to_string_lossy().into_owned() }
-            };
-            
-            if !key.is_empty() && !value.is_empty() {
-                hover_map.entry(item.index).or_insert_with(Vec::new).push((key, value));
-            }
-            
             j += 1;
         }
     }
 
     for i in 0..count as usize {
         let label_ptr = unsafe { *(labels.add(i)) };
-        if !label_ptr.is_null() {
-            label_vec.push(unsafe { CStr::from_ptr(label_ptr).to_string_lossy().into_owned() });
-        }
+        let label_str = if !label_ptr.is_null() {
+            unsafe { CStr::from_ptr(label_ptr).to_string_lossy() }
+        } else {
+            std::borrow::Cow::Borrowed("")
+        };
+        label_vec.push(interner.intern(&label_str).to_string());
         value_vec.push(unsafe { *(values.add(i)) });
-        
-        let hover_pairs = hover_map.remove(&(i as u32)).unwrap_or_default();
-        hover_data_vec.push(hover_pairs);
+        hover_data_vec.push(hover_map.remove(&(i as u32)).unwrap_or_default());
     }
 
     let data = ChartData {

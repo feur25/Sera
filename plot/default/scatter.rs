@@ -1,5 +1,51 @@
 pub struct Scatter;
 
+pub fn render_scatter_fast(
+    values: &[f64],
+    labels: &[String],
+    width: i32,
+    height: i32,
+) -> String {
+    let n = values.len().min(labels.len());
+    if n == 0 { return String::new(); }
+    
+    let (_, max_val) = crate::bindings::utils::simd_ops::find_minmax(values);
+    let max_val = max_val.max(1.0);
+    let radius = 4;
+    let scale_x = width as f64 / n as f64;
+    let scale_y = height as f64 / max_val;
+    
+    let mut svg = String::with_capacity(n * 100 + 256);
+    svg.push_str("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    svg.push_str(&width.to_string());
+    svg.push_str("\" height=\"");
+    svg.push_str(&height.to_string());
+    svg.push_str("\"><defs><style>.s{fill-opacity:0.8}</style></defs>");
+    
+    let colors = [0x1f77b4, 0xff7f0e, 0x2ca02c, 0xd62728, 0x9467bd, 0x8c564b, 0xe377c2, 0x7f7f7f];
+    
+    for i in 0..n {
+        let x = (i as f64 * scale_x + scale_x / 2.0) as i32;
+        let y = height - (values[i] * scale_y) as i32;
+        let hex = format!("{:06x}", colors[i % colors.len()]);
+        
+        svg.push_str("<circle cx=\"");
+        svg.push_str(&x.to_string());
+        svg.push_str("\" cy=\"");
+        svg.push_str(&y.to_string());
+        svg.push_str("\" r=\"");
+        svg.push_str(&radius.to_string());
+        svg.push_str("\" fill=\"#");
+        svg.push_str(&hex);
+        svg.push_str("\" data-index=\"");
+        svg.push_str(&i.to_string());
+        svg.push_str("\"/>");
+    }
+    
+    svg.push_str("</svg>");
+    svg
+}
+
 pub fn render_points(ctx: super::PlotRenderContext) {
     let visible_count = ctx.visible_indices.len();
     

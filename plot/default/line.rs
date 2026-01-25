@@ -1,5 +1,68 @@
 pub struct Line;
 
+pub fn render_lines_fast(
+    values: &[f64],
+    labels: &[String],
+    width: i32,
+    height: i32,
+) -> String {
+    let n = values.len().min(labels.len());
+    if n < 2 { return String::new(); }
+    
+    let (_, max_val) = crate::bindings::utils::simd_ops::find_minmax(values);
+    let max_val = max_val.max(1.0);
+    let scale_x = width as f64 / n as f64;
+    let scale_y = height as f64 / max_val;
+    
+    let mut svg = String::with_capacity(n * 180 + 512);
+    svg.push_str("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    svg.push_str(&width.to_string());
+    svg.push_str("\" height=\"");
+    svg.push_str(&height.to_string());
+    svg.push_str("\" viewBox=\"0 0 ");
+    svg.push_str(&width.to_string());
+    svg.push(' ');
+    svg.push_str(&height.to_string());
+    svg.push_str("\"><defs><style>.l{stroke-width:2;fill:none}.p{fill:#fff;stroke-width:1}</style></defs>");
+    
+    let color = 0x1f77b4;
+    svg.push_str("<polyline class=\"l\" stroke=\"#");
+    svg.push_str(&format!("{:06x}", color));
+    svg.push_str("\" points=\"");
+    
+    for i in 0..n {
+        let x = (i as f64 * scale_x) as i32;
+        let y = height - (values[i] * scale_y) as i32;
+        
+        if i > 0 { svg.push(' '); }
+        svg.push_str(&x.to_string());
+        svg.push(',');
+        svg.push_str(&y.to_string());
+    }
+    
+    svg.push_str("\"/>");
+    
+    let colors = [0x1f77b4, 0xff7f0e, 0x2ca02c, 0xd62728];
+    for i in 0..n {
+        let x = (i as f64 * scale_x) as i32;
+        let y = height - (values[i] * scale_y) as i32;
+        let hex = format!("{:06x}", colors[i % colors.len()]);
+        
+        svg.push_str("<circle cx=\"");
+        svg.push_str(&x.to_string());
+        svg.push_str("\" cy=\"");
+        svg.push_str(&y.to_string());
+        svg.push_str("\" r=\"3\" fill=\"#");
+        svg.push_str(&hex);
+        svg.push_str("\" data-index=\"");
+        svg.push_str(&i.to_string());
+        svg.push_str("\"/>");
+    }
+    
+    svg.push_str("</svg>");
+    svg
+}
+
 pub fn render_lines(ctx: super::PlotRenderContext) {
     if ctx.visible_indices.len() < 2 {
         return;

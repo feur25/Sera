@@ -1,14 +1,11 @@
-use crate::core::*;
 use crate::data::loader::CsvData;
 use crate::plot::Canvas;
-use egui_plot::{Plot, Line, PlotPoints};
 
 pub struct ViewerState {
     csv_data: Option<CsvData>,
     selected_x_col: Option<String>,
     selected_y_col: Option<String>,
-    chart_type: ChartKind,
-    traces: Vec<Trace>,
+    selected_chart_type: u8,
     canvas: Option<Canvas>,
 }
 
@@ -18,8 +15,7 @@ impl ViewerState {
             csv_data: None,
             selected_x_col: None,
             selected_y_col: None,
-            chart_type: ChartKind::Line,
-            traces: Vec::new(),
+            selected_chart_type: 0,
             canvas: None,
         }
     }
@@ -34,110 +30,38 @@ impl ViewerState {
                 }
             }
         }
-        self.update_traces();
+        self.rebuild_canvas();
         Ok(())
     }
 
-    pub fn update_traces(&mut self) {
+    pub fn rebuild_canvas(&mut self) {
         if let (Some(ref data), Some(ref x_col), Some(ref y_col)) = (&self.csv_data, &self.selected_x_col, &self.selected_y_col) {
             let x = data.get_numeric_column(x_col);
             let y = data.get_numeric_column(y_col);
 
             if !x.is_empty() && !y.is_empty() {
                 let len = x.len().min(y.len());
-                let x_trimmed = x[..len].to_vec();
-                let y_trimmed = y[..len].to_vec();
+                let labels: Vec<String> = (0..len).map(|i| i.to_string()).collect();
+                let values: Vec<f64> = y[..len].to_vec();
 
-                let mut trace = Trace::new(
-                    "data".to_string(),
-                    format!("{} vs {}", x_col, y_col),
-                    self.chart_type,
-                    x_trimmed,
-                    y_trimmed,
-                );
-                trace.marker.color = Color { r: 31, g: 119, b: 180, a: 255 };
-                trace.line.color = Color { r: 31, g: 119, b: 180, a: 255 };
-
-                self.traces = vec![trace];
-                self.rebuild_canvas();
+                self.canvas = Some(Canvas::new_with_data(&labels, &values, self.selected_chart_type));
             }
         }
     }
 
-    pub fn update_traces_filtered<F>(&mut self, predicate: F) 
-    where
-        F: Fn(f64, f64) -> bool,
-    {
-        if let (Some(ref data), Some(ref x_col), Some(ref y_col)) = (&self.csv_data, &self.selected_x_col, &self.selected_y_col) {
-            let x = data.get_numeric_column(x_col);
-            let y = data.get_numeric_column(y_col);
-
-            if !x.is_empty() && !y.is_empty() {
-                let len = x.len().min(y.len());
-                let mut x_filtered = Vec::new();
-                let mut y_filtered = Vec::new();
-
-                for i in 0..len {
-                    if predicate(x[i], y[i]) {
-                        x_filtered.push(x[i]);
-                        y_filtered.push(y[i]);
-                    }
-                }
-
-                if !x_filtered.is_empty() {
-                    let mut trace = Trace::new(
-                        "filtered_data".to_string(),
-                        format!("Filtered: {} vs {}", x_col, y_col),
-                        self.chart_type,
-                        x_filtered,
-                        y_filtered,
-                    );
-                    trace.marker.color = Color { r: 31, g: 119, b: 180, a: 255 };
-                    trace.line.color = Color { r: 31, g: 119, b: 180, a: 255 };
-
-                    self.traces = vec![trace];
-                    self.rebuild_canvas();
-                }
-            }
-        }
-    }
-
-    fn rebuild_canvas(&mut self) {
-        if self.traces.is_empty() {
-            return;
-        }
-
-        let mut layout = Layout::default();
-        layout.width = 1000;
-        layout.height = 600;
-        if let Some(ref x_col) = self.selected_x_col {
-            layout.x_axis.title = x_col.clone();
-        }
-        if let Some(ref y_col) = self.selected_y_col {
-            layout.y_axis.title = y_col.clone();
-        }
-
-        let mut canvas = Canvas::new(1000.0, 600.0, layout);
-        for trace in self.traces.clone() {
-            canvas = canvas.add_trace(trace);
-        }
-        canvas.auto_scale();
-        self.canvas = Some(canvas);
-    }
-
-    pub fn set_chart_type(&mut self, chart_type: ChartKind) {
-        self.chart_type = chart_type;
-        self.update_traces();
+    pub fn set_chart_type(&mut self, chart_type: u8) {
+        self.selected_chart_type = chart_type;
+        self.rebuild_canvas();
     }
 
     pub fn set_x_column(&mut self, col: String) {
         self.selected_x_col = Some(col);
-        self.update_traces();
+        self.rebuild_canvas();
     }
 
     pub fn set_y_column(&mut self, col: String) {
         self.selected_y_col = Some(col);
-        self.update_traces();
+        self.rebuild_canvas();
     }
 
     pub fn get_numeric_columns(&self) -> Vec<String> {
@@ -158,11 +82,8 @@ impl ViewerState {
             .unwrap_or(0)
     }
 
-    pub fn export_trace_json(&self) -> Option<String> {
-        if self.traces.is_empty() {
-            return None;
-        }
-        serde_json::to_string_pretty(&self.traces).ok()
+    pub fn export_chart_svg(&self) -> Option<String> {
+        self.canvas.as_ref().map(|c| c.render_svg())
     }
 }
 
@@ -204,21 +125,18 @@ impl ViewerApp {
 
         ui.horizontal(|ui| {
             ui.label("Chart Type:");
-            let chart_name = format!("{:?}", self.state.chart_type);
+            let chart_types = crate::plot::default::get_current_group_types();
+            let current_name = chart_types.iter()
+                .find(|(id, _)| *id == self.state.selected_chart_type)
+                .map(|(_, name)| name.clone())
+                .unwrap_or_else(|| "Unknown".to_string());
+            
             egui::ComboBox::from_label("")
-                .selected_text(&chart_name)
+                .selected_text(&current_name)
                 .show_ui(ui, |ui| {
-                    let types = [
-                        ChartKind::Line,
-                        ChartKind::Scatter,
-                        ChartKind::Bar,
-                        ChartKind::Area,
-                        ChartKind::Histogram,
-                        ChartKind::Box,
-                    ];
-                    for t in types {
-                        if ui.selectable_value(&mut self.state.chart_type, t, format!("{:?}", t)).changed() {
-                            self.state.set_chart_type(t);
+                    for (type_id, type_name) in &chart_types {
+                        if ui.selectable_value(&mut self.state.selected_chart_type, *type_id, type_name).changed() {
+                            self.state.set_chart_type(*type_id);
                         }
                     }
                 });
@@ -234,7 +152,7 @@ impl ViewerApp {
                     .show_ui(ui, |ui| {
                         for col in &numeric_cols {
                             if ui.selectable_value(&mut self.state.selected_x_col, Some(col.clone()), col).changed() {
-                                self.state.update_traces();
+                                self.state.rebuild_canvas();
                             }
                         }
                     });
@@ -248,7 +166,7 @@ impl ViewerApp {
                     .show_ui(ui, |ui| {
                         for col in &numeric_cols {
                             if ui.selectable_value(&mut self.state.selected_y_col, Some(col.clone()), col).changed() {
-                                self.state.update_traces();
+                                self.state.rebuild_canvas();
                             }
                         }
                     });
@@ -260,25 +178,12 @@ impl ViewerApp {
     }
 
     fn render_plot(&self, ui: &mut egui::Ui) {
-        if self.state.traces.is_empty() {
+        if self.state.canvas.is_none() {
             ui.label("No data to display");
             return;
         }
 
-        let trace = &self.state.traces[0];
-        let points: PlotPoints = trace.x.iter()
-            .zip(trace.y.iter())
-            .map(|(x, y)| [*x, *y])
-            .collect();
-
-        let line = Line::new(points)
-            .color(egui::Color32::from_rgb(31, 119, 180));
-
-        Plot::new("plot")
-            .view_aspect(2.0)
-            .show(ui, |plot_ui| {
-                plot_ui.line(line);
-            });
+        ui.label("Chart renders via canvas");
     }
 }
 

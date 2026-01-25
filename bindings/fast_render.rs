@@ -1,20 +1,6 @@
 use std::ffi::{CStr, CString};
 use std::os::raw::{c_char, c_uint};
 
-pub struct SvgRenderContext<'a> {
-    pub chart_type: u8,
-    pub title: &'a str,
-    pub labels: &'a [String],
-    pub values: &'a [f64],
-    pub colors: &'a [&'static str],
-    pub max_val: f64,
-    pub visible_indices: &'a [usize],
-    pub vertical: bool,
-    pub width: f32,
-    pub height: f32,
-    pub padding: f32,
-}
-
 #[repr(C)]
 pub struct FastChartConfig {
     pub chart_type: u8,
@@ -91,22 +77,17 @@ impl FastChartRenderer {
     }
 
     fn render_chart(&self, svg: &mut String, pad: i32, plot_width: i32, plot_height: i32, max_val: f64) {
-        use super::super::plot::default::SvgChart;
-        
-        match self.config.chart_type {
-            0 => super::super::plot::default::line::Line::render_svg(
-                svg, &self.values, &self.colors, pad, plot_width, plot_height, max_val, self.config.vertical
-            ),
-            1 => super::super::plot::default::scatter::Scatter::render_svg(
-                svg, &self.values, &self.colors, pad, plot_width, plot_height, max_val, self.config.vertical
-            ),
-            2 => super::super::plot::default::bar::Bar::render_svg(
-                svg, &self.values, &self.colors, pad, plot_width, plot_height, max_val, self.config.vertical
-            ),
-            _ => super::super::plot::default::line::Line::render_svg(
-                svg, &self.values, &self.colors, pad, plot_width, plot_height, max_val, self.config.vertical
-            ),
-        }
+        crate::plot::default::render_chart_by_type(
+            self.config.chart_type,
+            svg,
+            &self.values,
+            &self.colors,
+            pad,
+            plot_width,
+            plot_height,
+            max_val,
+            self.config.vertical,
+        );
     }
 
     pub fn render_svg(&self) -> String {

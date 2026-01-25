@@ -1,5 +1,6 @@
 use crate::core::*;
 use std::f64;
+use serde::{Serialize, Deserialize};
 
 pub fn mean(values: &[f64]) -> Option<f64> {
     if values.is_empty() {
@@ -265,4 +266,36 @@ pub fn group_by_bins(x: &[f64], y: &[f64], bins: usize, op: AggOp) -> (Vec<f64>,
         .collect();
 
     (bin_centers, agg_vals)
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub enum AggOp {
+    Sum,
+    Avg,
+    Min,
+    Max,
+    Count,
+    Median,
+    Std,
+    Var,
+    Percentile(f64),
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize)]
+pub struct Range {
+    pub min: f64,
+    pub max: f64,
+}
+
+impl Range {
+    pub fn new(min: f64, max: f64) -> Self { Self { min, max } }
+    pub fn from_slice(values: &[f64]) -> Option<Self> {
+        if values.is_empty() { return None; }
+        let (min, max) = (values.iter().cloned().fold(f64::INFINITY, f64::min), values.iter().cloned().fold(f64::NEG_INFINITY, f64::max));
+        Some(Self { min, max })
+    }
+    pub fn width(&self) -> f64 { self.max - self.min }
+    pub fn center(&self) -> f64 { (self.min + self.max) / 2.0 }
+    pub fn pad(&mut self, percent: f64) { let w = self.width() * percent; self.min -= w; self.max += w; }
+    pub fn contains(&self, value: f64) -> bool { self.min <= value && value <= self.max }
 }

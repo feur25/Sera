@@ -1,5 +1,58 @@
 pub struct Bar;
 
+pub fn render_bars_fast(
+    values: &[f64],
+    labels: &[String],
+    width: i32,
+    height: i32,
+) -> String {
+    let n = values.len().min(labels.len());
+    if n == 0 { return String::new(); }
+    
+    let (_, max_val) = crate::bindings::utils::simd_ops::find_minmax(values);
+    let max_val = max_val.max(1.0);
+    let bar_width = width as f64 / n as f64;
+    let scale = height as f64 / max_val;
+    
+    let mut svg = String::with_capacity(n * 120 + 256);
+    svg.push_str("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    svg.push_str(&width.to_string());
+    svg.push_str("\" height=\"");
+    svg.push_str(&height.to_string());
+    svg.push_str("\" viewBox=\"0 0 ");
+    svg.push_str(&width.to_string());
+    svg.push(' ');
+    svg.push_str(&height.to_string());
+    svg.push_str("\"><defs><style>.b{font:10px sans-serif}.v{fill:#1f77b4}.l{fill:#666;font-size:9px}</style></defs>");
+    
+    let colors = [0x1f77b4, 0xff7f0e, 0x2ca02c, 0xd62728, 0x9467bd, 0x8c564b, 0xe377c2, 0x7f7f7f];
+    
+    for i in 0..n {
+        let bar_height = (values[i] * scale) as i32;
+        let x = (i as f64 * bar_width) as i32;
+        let y = height - bar_height;
+        let w = bar_width.max(1.0) as i32;
+        let color = colors[i % colors.len()];
+        
+        svg.push_str("<rect x=\"");
+        svg.push_str(&x.to_string());
+        svg.push_str("\" y=\"");
+        svg.push_str(&y.to_string());
+        svg.push_str("\" width=\"");
+        svg.push_str(&w.to_string());
+        svg.push_str("\" height=\"");
+        svg.push_str(&bar_height.to_string());
+        svg.push_str("\" fill=\"#");
+        svg.push_str(&format!("{:06x}", color));
+        svg.push_str("\" data-index=\"");
+        svg.push_str(&i.to_string());
+        svg.push_str("\"/>");
+    }
+    
+    svg.push_str("</svg>");
+    svg
+}
+
 pub fn render_bars(ctx: super::PlotRenderContext) {
     let visible_count = ctx.visible_indices.len();
     

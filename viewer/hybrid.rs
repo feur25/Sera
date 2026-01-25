@@ -1,5 +1,5 @@
 use std::sync::{Arc, Mutex};
-use crate::bindings::{FastChartRenderer, FastChartConfig, ChartBuilder};
+use crate::bindings::{FastChartRenderer, FastChartConfig};
 
 lazy_static::lazy_static! {
     static ref CHART_SORT: Mutex<usize> = Mutex::new(0);

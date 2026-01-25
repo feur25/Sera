@@ -1,5 +1,10 @@
 use std::collections::HashMap;
 
+pub struct RendererConfig {
+    pub colors: Vec<u32>,
+    pub use_fast_path: bool,
+}
+
 #[derive(Clone)]
 pub struct ChartPoint {
     pub label: String,
@@ -55,24 +60,29 @@ impl ChartConfigBuilder {
         Self { config: ChartConfig::new(title) }
     }
 
+    #[inline]
     pub fn zoom(mut self, zoom: f32) -> Self {
         self.config.zoom = zoom; self
     }
 
+    #[inline]
     pub fn orientation(mut self, vertical: bool) -> Self {
         self.config.orientation = vertical; self
     }
 
+    #[inline]
     pub fn tooltip_colors(mut self, bg: (u8, u8, u8, u8), text: (u8, u8, u8, u8)) -> Self {
         self.config.tooltip_bg = bg;
         self.config.tooltip_text = text;
         self
     }
 
+    #[inline]
     pub fn add_point(mut self, label: String, value: f64, hover_data: HashMap<String, String>) -> Self {
         self.config.add_point(label, value, hover_data); self
     }
 
+    #[inline]
     pub fn build(self) -> ChartConfig {
         self.config
     }
@@ -88,45 +98,16 @@ impl GenericChart {
         Self { config, hovered_idx: None }
     }
 
+    #[inline]
     pub fn with_hovered(mut self, idx: Option<usize>) -> Self {
         self.hovered_idx = idx; self
     }
 
+    #[inline]
     pub fn config(&self) -> &ChartConfig { &self.config }
+    
+    #[inline]
     pub fn hovered(&self) -> Option<usize> { self.hovered_idx }
-}
-
-pub enum ChartKind {
-    Line,
-    Scatter,
-    Bar,
-}
-
-impl ChartKind {
-    pub fn from_u8(kind: u8) -> Option<Self> {
-        match kind {
-            0 => Some(ChartKind::Line),
-            1 => Some(ChartKind::Scatter),
-            2 => Some(ChartKind::Bar),
-            _ => None,
-        }
-    }
-
-    pub fn to_u8(&self) -> u8 {
-        match self {
-            ChartKind::Line => 0,
-            ChartKind::Scatter => 1,
-            ChartKind::Bar => 2,
-        }
-    }
-
-    pub fn name(&self) -> &'static str {
-        match self {
-            ChartKind::Line => "Line",
-            ChartKind::Scatter => "Scatter",
-            ChartKind::Bar => "Bar",
-        }
-    }
 }
 
 pub fn hsv_to_rgb(h: f32, s: f32, v: f32) -> egui::Color32 {

@@ -1,5 +1,4 @@
 pub mod builder;
-pub mod plot;
 pub mod canvas;
 pub mod renderers;
 pub mod generic;
@@ -11,7 +10,6 @@ pub mod default;
 pub mod scale_renderer;
 
 pub use builder::*;
-pub use plot::*;
 pub use canvas::*;
 pub use renderers::*;
 pub use generic::*;

@@ -18,10 +18,7 @@ pub fn get_3d_positions(
     camera_controller: &CameraController,
     plot_rect: egui::Rect,
 ) -> Vec<(egui::Pos2, usize)> {
-    match chart_type {
-        0 => line_3d::get_3d_positions(values, max_val, visible_indices, camera_controller, plot_rect),
-        1 => scatter_3d::get_3d_positions(values, max_val, visible_indices, camera_controller, plot_rect),
-        2 => bar_3d::get_3d_positions(values, max_val, visible_indices, camera_controller, plot_rect),
-        _ => Vec::new(),
-    }
+    crate::plot::controller::plot_3d_controller::get_3d_positions(
+        chart_type, values, max_val, visible_indices, camera_controller, plot_rect
+    )
 }

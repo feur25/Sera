@@ -15,15 +15,18 @@ pub struct Plot3DRenderContext<'a> {
 }
 
 pub type Plot3DRenderer = fn(Plot3DRenderContext);
+pub type Plot3DPositioner = fn(&[f64], f64, &[usize], &crate::plot::containers_3d::CameraController, egui::Rect) -> Vec<(egui::Pos2, usize)>;
 
 struct Plot3DRegistry {
     entries: HashMap<u8, (String, Plot3DRenderer)>,
+    positioners: HashMap<u8, Plot3DPositioner>,
 }
 
 impl Plot3DRegistry {
     fn new() -> Self {
         Self {
             entries: HashMap::new(),
+            positioners: HashMap::new(),
         }
     }
 
@@ -31,8 +34,16 @@ impl Plot3DRegistry {
         self.entries.insert(id, (name, renderer));
     }
 
+    pub fn register_positioner(&mut self, id: u8, positioner: Plot3DPositioner) {
+        self.positioners.insert(id, positioner);
+    }
+
     fn get(&self, id: u8) -> Option<(String, Plot3DRenderer)> {
         self.entries.get(&id).map(|(n, r)| (n.clone(), *r))
+    }
+
+    fn get_positioner(&self, id: u8) -> Option<Plot3DPositioner> {
+        self.positioners.get(&id).copied()
     }
 
     fn list(&self) -> Vec<(u8, String)> {
@@ -72,7 +83,7 @@ impl Plot3DGroupRegistry {
         }
     }
 
-    fn get_current(&self) -> &str {
+    pub fn get_current(&self) -> &str {
         &self.current
     }
 
@@ -84,7 +95,7 @@ impl Plot3DGroupRegistry {
 static REGISTRY: OnceLock<Mutex<Plot3DRegistry>> = OnceLock::new();
 static GROUP_REGISTRY: OnceLock<Mutex<Plot3DGroupRegistry>> = OnceLock::new();
 
-fn get_registry() -> &'static Mutex<Plot3DRegistry> {
+pub fn get_registry() -> &'static Mutex<Plot3DRegistry> {
     REGISTRY.get_or_init(|| Mutex::new(Plot3DRegistry::new()))
 }
 
@@ -152,23 +163,8 @@ impl Plot3DGroupBuilder {
 }
 
 #[no_mangle]
-pub extern "C" fn sera_register_plot_3d_type(id: u8, name: *const c_char, renderer_id: u32) -> bool {
-    if name.is_null() {
-        return false;
-    }
-
-    let name_str = unsafe { CStr::from_ptr(name).to_string_lossy().into_owned() };
-
-    let renderer = match get_renderer(renderer_id) {
-        Some(r) => r,
-        None => return false,
-    };
-
-    Plot3DTypeBuilder::new(id)
-        .with_name(&name_str)
-        .with_renderer(renderer)
-        .build()
-        .is_ok()
+pub extern "C" fn sera_register_plot_3d_type(id: u8, name: *const c_char, _renderer_id: u32) -> bool {
+    false
 }
 
 #[no_mangle]
@@ -255,11 +251,26 @@ pub extern "C" fn sera_list_plot_3d_groups(count: *mut u32) -> *const *const c_c
     }
 }
 
-pub fn get_renderer(id: u32) -> Option<Plot3DRenderer> {
-    crate::plot::default::_3d::plot_3d_types::get_renderers()
-        .iter()
-        .find(|(rid, _)| *rid == id)
-        .map(|(_, renderer)| *renderer)
+pub fn get_3d_positions(
+    chart_type: u8,
+    values: &[f64],
+    max_val: f64,
+    visible_indices: &[usize],
+    camera_controller: &crate::plot::containers_3d::CameraController,
+    plot_rect: egui::Rect,
+) -> Vec<(egui::Pos2, usize)> {
+    if let Ok(reg) = get_registry().lock() {
+        if let Some(positioner) = reg.get_positioner(chart_type) {
+            return positioner(values, max_val, visible_indices, camera_controller, plot_rect);
+        }
+    }
+    Vec::new()
+}
+
+pub fn register_positioner_for_type(chart_type: u8, positioner: Plot3DPositioner) {
+    if let Ok(mut reg) = get_registry().lock() {
+        reg.register_positioner(chart_type, positioner);
+    }
 }
 
 #[no_mangle]

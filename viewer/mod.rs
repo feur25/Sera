@@ -1,7 +1,6 @@
 pub mod chart;
 pub mod gui;
 pub mod utils;
-pub mod plot;
 pub mod cache;
 pub mod render;
 pub mod hybrid;

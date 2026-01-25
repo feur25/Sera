@@ -4,15 +4,20 @@ use std::ffi::CStr;
 use std::os::raw::c_char;
 
 pub type ChartRenderer = fn(crate::plot::default::PlotRenderContext);
+pub type SvgChartRenderer = fn(&mut String, &[f64], &[&'static str], i32, i32, i32, f64, bool);
 
-struct ChartRegistry {
+pub struct ChartRegistry {
     entries: HashMap<u8, (String, ChartRenderer)>,
+    svg_renderers: HashMap<u8, SvgChartRenderer>,
+    colors: HashMap<u8, u32>,
 }
 
 impl ChartRegistry {
     fn new() -> Self {
         Self {
             entries: HashMap::new(),
+            svg_renderers: HashMap::new(),
+            colors: HashMap::new(),
         }
     }
 
@@ -20,14 +25,33 @@ impl ChartRegistry {
         self.entries.insert(id, (name, renderer));
     }
 
+    pub fn register_color(&mut self, id: u8, color: u32) {
+        self.colors.insert(id, color);
+    }
+
+    pub fn register_svg(&mut self, id: u8, renderer: SvgChartRenderer) {
+        self.svg_renderers.insert(id, renderer);
+    }
+
     fn get(&self, id: u8) -> Option<(String, ChartRenderer)> {
         self.entries.get(&id).map(|(n, r)| (n.clone(), *r))
     }
 
-    fn list(&self) -> Vec<(u8, String)> {
+    pub fn get_svg(&self, id: u8) -> Option<SvgChartRenderer> {
+        self.svg_renderers.get(&id).copied()
+    }
+
+    fn list(&self) -> Vec<(u8, String, u32)> {
         self.entries.iter()
-            .map(|(&id, (name, _))| (id, name.clone()))
+            .map(|(&id, (name, _))| {
+                let color = self.colors.get(&id).copied().unwrap_or(0x4a90e2);
+                (id, name.clone(), color)
+            })
             .collect()
+    }
+
+    pub fn get_color(&self, id: u8) -> u32 {
+        self.colors.get(&id).copied().unwrap_or(0x4a90e2)
     }
 }
 
@@ -61,7 +85,7 @@ impl ChartGroupRegistry {
         }
     }
 
-    fn get_current(&self) -> &str {
+    pub fn get_current(&self) -> &str {
         &self.current
     }
 
@@ -73,8 +97,16 @@ impl ChartGroupRegistry {
 static REGISTRY: OnceLock<Mutex<ChartRegistry>> = OnceLock::new();
 static GROUP_REGISTRY: OnceLock<Mutex<ChartGroupRegistry>> = OnceLock::new();
 
-fn get_registry() -> &'static Mutex<ChartRegistry> {
+pub fn get_registry() -> &'static Mutex<ChartRegistry> {
     REGISTRY.get_or_init(|| Mutex::new(ChartRegistry::new()))
+}
+
+pub fn get_svg_renderer(id: u8) -> Option<SvgChartRenderer> {
+    get_registry().lock().ok().and_then(|reg| reg.get_svg(id))
+}
+
+pub fn list_dataset_types() -> Vec<(u8, String, u32)> {
+    get_registry().lock().ok().map(|reg| reg.list()).unwrap_or_default()
 }
 
 pub fn get_group_registry() -> &'static Mutex<ChartGroupRegistry> {
@@ -85,6 +117,7 @@ pub struct ChartTypeBuilder {
     id: u8,
     name: String,
     renderer: Option<ChartRenderer>,
+    svg_renderer: Option<SvgChartRenderer>,
 }
 
 impl ChartTypeBuilder {
@@ -93,6 +126,7 @@ impl ChartTypeBuilder {
             id,
             name: String::new(),
             renderer: None,
+            svg_renderer: None,
         }
     }
 
@@ -106,6 +140,11 @@ impl ChartTypeBuilder {
         self
     }
 
+    pub fn with_svg_renderer(mut self, renderer: SvgChartRenderer) -> Self {
+        self.svg_renderer = Some(renderer);
+        self
+    }
+
     pub fn build(self) -> Result<(), String> {
         if self.name.is_empty() {
             return Err("Name required".to_string());
@@ -115,6 +154,9 @@ impl ChartTypeBuilder {
         
         if let Ok(mut reg) = get_registry().lock() {
             reg.register(self.id, self.name.clone(), renderer);
+            if let Some(svg_rend) = self.svg_renderer {
+                reg.register_svg(self.id, svg_rend);
+            }
         }
         
         Ok(())

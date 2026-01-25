@@ -2,24 +2,48 @@ use std::ffi::CStr;
 use std::os::raw::c_char;
 use crate::plot::controller::chart_controller::*;
 
+const DEFAULT_RENDERERS: &[(u8, &str, ChartRenderer)] = &[
+    (0, "line", super::render_lines as ChartRenderer),
+    (1, "scatter", super::render_points as ChartRenderer),
+    (2, "bar", super::render_bars as ChartRenderer),
+];
+
+const DEFAULT_SVG_RENDERERS: &[(u8, crate::plot::controller::chart_controller::SvgChartRenderer)] = &[
+    (0, super::line::render_svg_lines as crate::plot::controller::chart_controller::SvgChartRenderer),
+    (1, super::scatter::render_svg_scatter as crate::plot::controller::chart_controller::SvgChartRenderer),
+    (2, super::bar::render_svg_bars as crate::plot::controller::chart_controller::SvgChartRenderer),
+];
+
+const DEFAULT_COLORS: &[(u8, u32)] = &[
+    (0, 0x50c878),
+    (1, 0xf39c12),
+    (2, 0x4a90e2),
+];
+
 pub fn register_default_types() {
-    let _ = ChartTypeBuilder::new(0)
-        .with_name("line")
-        .with_renderer(super::render_lines)
-        .build();
-
-    let _ = ChartTypeBuilder::new(1)
-        .with_name("scatter")
-        .with_renderer(super::render_points)
-        .build();
-
-    let _ = ChartTypeBuilder::new(2)
-        .with_name("bar")
-        .with_renderer(super::render_bars)
-        .build();
+    let mut ids = Vec::new();
+    for (id, name, renderer) in DEFAULT_RENDERERS {
+        let _ = ChartTypeBuilder::new(*id)
+            .with_name(name)
+            .with_renderer(*renderer)
+            .build();
+        ids.push(*id);
+    }
+    
+    for (id, svg_renderer) in DEFAULT_SVG_RENDERERS {
+        if let Ok(mut reg) = crate::plot::controller::chart_controller::get_registry().lock() {
+            reg.register_svg(*id, *svg_renderer);
+        }
+    }
+    
+    for (id, color) in DEFAULT_COLORS {
+        if let Ok(mut reg) = crate::plot::controller::chart_controller::get_registry().lock() {
+            reg.register_color(*id, *color);
+        }
+    }
     
     if let Ok(mut grp_reg) = get_group_registry().lock() {
-        grp_reg.register_group("default".to_string(), vec![0, 1, 2]);
+        grp_reg.register_group("default".to_string(), ids);
     }
 }
 

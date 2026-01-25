@@ -3,8 +3,6 @@ use crate::plot::default::_3d::register_default_3d_types;
 use std::sync::{OnceLock, Mutex};
 use std::collections::HashMap;
 
-pub use crate::plot::default::chart::*;
-
 type GroupLoader = fn();
 
 static LOADERS: OnceLock<Mutex<HashMap<String, GroupLoader>>> = OnceLock::new();
