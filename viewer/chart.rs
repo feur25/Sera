@@ -32,15 +32,23 @@ impl Hover3DDetector {
     fn new(positions: Vec<(egui::Pos2, usize)>) -> Self {
         Self {
             positions,
-            threshold: 15.0,
+            threshold: 25.0,
         }
     }
     
     fn detect(&self, mouse_pos: egui::Pos2) -> Option<usize> {
+        if !mouse_pos.is_finite() {
+            return None;
+        }
+        
         let mut closest_idx = None;
         let mut closest_dist = self.threshold;
         
         for &(screen_pos, actual_idx) in &self.positions {
+            if !screen_pos.is_finite() {
+                continue;
+            }
+            
             let delta = mouse_pos - screen_pos;
             let dist = (delta.x * delta.x + delta.y * delta.y).sqrt();
             
@@ -1051,7 +1059,7 @@ impl ChartApp {
             if let Some(mouse_pos) = ctx.pointer_latest_pos() {
                 if response.rect.contains(mouse_pos) {
                     let positions = crate::plot::default::_3d::get_3d_positions(
-                        self.current_chart_kind,
+                        chart_id,
                         &d.values,
                         max_val,
                         &visible_indices,
