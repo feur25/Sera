@@ -2,6 +2,7 @@ use std::sync::{Arc, Mutex};
 use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::collections::HashMap;
+use image::ImageDecoder;
 use super::image_loader::ImageLoader;
 use super::cache::{RenderCache, ColorCache, CacheKey};
 use super::viewer_3d::AdvancedViewer3D;
@@ -274,9 +275,30 @@ impl ChartAppBuilder {
 }
 
 fn launch_chart_app(app: ChartApp) -> bool {
+    let mut viewport = egui::ViewportBuilder::default()
+        .with_inner_size([1200.0, 600.0]);
+    
+    let icon_paths = vec![
+        "src/asset/logo.png",
+        "../src/asset/logo.png",
+        "../../v2/src/asset/logo.png",
+    ];
+    
+    for path in icon_paths {
+        if let Ok(img) = image::open(path) {
+            let rgba = img.to_rgba8();
+            let (w, h) = rgba.dimensions();
+            viewport = viewport.with_icon(egui::IconData {
+                rgba: rgba.into_raw(),
+                width: w,
+                height: h,
+            });
+            break;
+        }
+    }
+    
     let native_options = eframe::NativeOptions {
-        viewport: egui::ViewportBuilder::default()
-            .with_inner_size([1200.0, 600.0]),
+        viewport,
         ..Default::default()
     };
     
