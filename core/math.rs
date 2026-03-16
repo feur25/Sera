@@ -299,3 +299,84 @@ impl Range {
     pub fn pad(&mut self, percent: f64) { let w = self.width() * percent; self.min -= w; self.max += w; }
     pub fn contains(&self, value: f64) -> bool { self.min <= value && value <= self.max }
 }
+
+// ── Map projections ────────────────────────────────────────────────────
+
+pub fn mercator_project(lat: f64, lon: f64) -> (f64, f64) {
+    let x = (lon + 180.0) / 360.0;
+    let lat_rad = lat.to_radians();
+    let y = 0.5 - ((lat_rad.tan() + 1.0 / lat_rad.cos()).ln()) / (2.0 * std::f64::consts::PI);
+    (x.clamp(0.0, 1.0), y.clamp(0.0, 1.0))
+}
+
+pub fn equirectangular_project(lat: f64, lon: f64) -> (f64, f64) {
+    let x = (lon + 180.0) / 360.0;
+    let y = (90.0 - lat) / 180.0;
+    (x.clamp(0.0, 1.0), y.clamp(0.0, 1.0))
+}
+
+pub fn spherical_to_cartesian(lat: f64, lon: f64) -> (f64, f64, f64) {
+    let lat_rad = lat.to_radians();
+    let lon_rad = lon.to_radians();
+    let x = lat_rad.cos() * lon_rad.cos();
+    let y = lat_rad.cos() * lon_rad.sin();
+    let z = lat_rad.sin();
+    (x, y, z)
+}
+
+pub fn haversine_distance(lat1: f64, lon1: f64, lat2: f64, lon2: f64) -> f64 {
+    const R: f64 = 6371.0;
+    let dlat = (lat2 - lat1).to_radians();
+    let dlon = (lon2 - lon1).to_radians();
+    let a = (dlat / 2.0).sin().powi(2)
+        + lat1.to_radians().cos() * lat2.to_radians().cos() * (dlon / 2.0).sin().powi(2);
+    let c = 2.0 * a.sqrt().asin();
+    R * c
+}
+
+pub fn region_centroid(region: &str) -> (f64, f64) {
+    match region {
+        "Africa" => (1.5, 20.0),
+        "Americas" => (15.0, -80.0),
+        "Asia" => (35.0, 100.0),
+        "Europe" => (50.0, 15.0),
+        "Oceania" => (-25.0, 135.0),
+        _ => (0.0, 0.0),
+    }
+}
+
+pub fn sub_region_centroid(sub_region: &str) -> (f64, f64) {
+    match sub_region {
+        "Northern Africa" => (30.0, 10.0),
+        "Sub-Saharan Africa" | "Eastern Africa" => (-5.0, 35.0),
+        "Western Africa" => (10.0, -5.0),
+        "Middle Africa" => (0.0, 20.0),
+        "Southern Africa" => (-30.0, 25.0),
+        "Northern America" => (45.0, -100.0),
+        "Latin America and the Caribbean" | "Caribbean" => (15.0, -70.0),
+        "Central America" => (15.0, -87.0),
+        "South America" => (-15.0, -60.0),
+        "Eastern Asia" => (35.0, 115.0),
+        "South-eastern Asia" => (5.0, 110.0),
+        "Southern Asia" => (25.0, 78.0),
+        "Western Asia" => (30.0, 45.0),
+        "Central Asia" => (42.0, 65.0),
+        "Northern Europe" => (60.0, 15.0),
+        "Western Europe" => (48.0, 5.0),
+        "Eastern Europe" => (52.0, 30.0),
+        "Southern Europe" => (42.0, 15.0),
+        "Australia and New Zealand" => (-30.0, 145.0),
+        "Melanesia" => (-8.0, 155.0),
+        "Micronesia" => (8.0, 155.0),
+        "Polynesia" => (-15.0, -170.0),
+        _ => (0.0, 0.0),
+    }
+}
+
+pub fn heat_color(value: f64, max_val: f64) -> (u8, u8, u8) {
+    let t = (value / max_val.max(1.0)).clamp(0.0, 1.0);
+    let r = (255.0 * (2.0 * t - 0.5).clamp(0.0, 1.0)) as u8;
+    let g = (255.0 * (1.0 - (2.0 * t - 1.0).abs()).clamp(0.0, 1.0)) as u8;
+    let b = (255.0 * (1.0 - 2.0 * t).clamp(0.0, 1.0)) as u8;
+    (r, g, b)
+}

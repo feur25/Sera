@@ -24,6 +24,14 @@ pub struct HoverItem {
     pub value: *const c_char,
 }
 
+fn get_3d_type_for_2d(chart_2d_id: u8) -> u8 {
+    let group_3d_types = crate::plot::controller::plot_3d_controller::get_current_group_types();
+    if !group_3d_types.is_empty() {
+        return group_3d_types[0].0;
+    }
+    chart_2d_id + 3
+}
+
 struct Hover3DDetector {
     positions: Vec<(egui::Pos2, usize)>,
     threshold: f32,
@@ -219,6 +227,8 @@ struct ChartApp {
     selection_start: Option<egui::Pos2>,
     selection_end: Option<egui::Pos2>,
     selection_active: bool,
+    show_region_filter: bool,
+    active_regions: Vec<bool>,
 }
 
 struct ChartAppBuilder {
@@ -247,7 +257,7 @@ impl ChartAppBuilder {
             image_loader: ImageLoader::new(),
             orientation: true,
             sort_mode: 0,
-            current_chart_kind: 1,
+            current_chart_kind: CHART_KIND.lock().map(|k| *k).unwrap_or(1),
             is_3d_mode: false,
             camera_controller: CameraController::default(),
             advanced_viewer_3d: AdvancedViewer3D::new(),
@@ -270,6 +280,8 @@ impl ChartAppBuilder {
             selection_start: None,
             selection_end: None,
             selection_active: false,
+            show_region_filter: false,
+            active_regions: vec![true; 5],
         }
     }
 }
@@ -327,10 +339,8 @@ fn render_svg_by_type(chart_type: u8, _labels: &[String], values: &[f64], colors
 
 impl eframe::App for ChartApp {
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        if self.is_3d_mode {
-            if let Ok(kind) = CHART_KIND.lock() {
-                self.current_chart_kind = *kind;
-            }
+        if let Ok(kind) = CHART_KIND.lock() {
+            self.current_chart_kind = *kind;
         }
         
         egui::TopBottomPanel::top("controls").show(ctx, |ui| {
@@ -388,6 +398,10 @@ impl eframe::App for ChartApp {
                 }
                 if clicked.contains_key(&ButtonId::Mode3D) {
                     self.is_3d_mode = !self.is_3d_mode;
+                }
+
+                if clicked.contains_key(&ButtonId::Region) {
+                    self.show_region_filter = !self.show_region_filter;
                 }
 
                 if clicked.contains_key(&ButtonId::Wiki) {
@@ -717,6 +731,53 @@ impl eframe::App for ChartApp {
                     }
                 });
         }
+
+        if self.show_region_filter {
+            let regions = crate::plot::map::world_data::all_regions();
+            let mut apply_region_filter = false;
+            let mut select_all = false;
+            let mut deselect_all = false;
+
+            egui::Window::new("🗺 Region Filter")
+                .open(&mut self.show_region_filter)
+                .default_width(250.0)
+                .show(ctx, |ui| {
+                    ui.horizontal(|ui| {
+                        if ui.button("All").clicked() {
+                            select_all = true;
+                        }
+                        if ui.button("None").clicked() {
+                            deselect_all = true;
+                        }
+                        if ui.button("Apply").clicked() {
+                            apply_region_filter = true;
+                        }
+                    });
+                    ui.separator();
+
+                    for (i, &region) in regions.iter().enumerate() {
+                        if i < self.active_regions.len() {
+                            ui.checkbox(&mut self.active_regions[i], region);
+                        }
+                    }
+
+                    ui.separator();
+                    ui.label("Click a country on the map to toggle it");
+                });
+
+            if select_all {
+                for v in self.active_regions.iter_mut() { *v = true; }
+                apply_region_filter = true;
+            }
+            if deselect_all {
+                for v in self.active_regions.iter_mut() { *v = false; }
+                apply_region_filter = true;
+            }
+
+            if apply_region_filter {
+                self.apply_region_filter(&regions);
+            }
+        }
     }
 }
 
@@ -985,22 +1046,55 @@ impl ChartApp {
                         }
                     }
                 }
+
+                if chart_type == 20 || chart_type == 21 {
+                    if let Some(idx) = self.hovered_idx {
+                        if let Some(pos) = ctx.pointer_latest_pos() {
+                            self.render_tooltip(ctx, &painter, pos, plot_rect, idx, d);
+                        }
+                    }
+                }
+                
+                let is_map_type = chart_type == 20 || chart_type == 21;
+
+                if is_map_type && response.clicked() {
+                    if let Some(pos) = ctx.pointer_latest_pos() {
+                        if plot_rect.contains(pos) {
+                            let nx = (pos.x - plot_rect.left()) / plot_rect.width();
+                            let ny = (pos.y - plot_rect.top()) / plot_rect.height();
+                            let all_indices: Vec<usize> = (0..d.labels.len()).collect();
+                            if let Some(idx) = crate::plot::map::world_data::detect_hovered_country(
+                                nx, ny, &d.labels, &all_indices,
+                            ) {
+                                self.toggle_country_visibility(idx);
+                            }
+                        }
+                    }
+                }
                 
                 if response.hovered() && !self.selection_active {
                     if let Some(pos) = ctx.pointer_latest_pos() {
                         if plot_rect.contains(pos) {
-                            let mut hovered = None;
-                            for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
-                                let value = d.values.get(actual_idx).copied().unwrap_or(0.0);
-                                let (bar_min_x, bar_max_x, bar_min_y, bar_max_y) = self.get_bar_bounds(vis_idx, value, max_val, visible_count, plot_rect, vertical);
-                                
-                                if pos.x >= bar_min_x && pos.x <= bar_max_x && 
-                                   pos.y >= bar_min_y && pos.y <= bar_max_y {
-                                    hovered = Some(actual_idx);
-                                    break;
+                            if is_map_type {
+                                let nx = (pos.x - plot_rect.left()) / plot_rect.width();
+                                let ny = (pos.y - plot_rect.top()) / plot_rect.height();
+                                self.hovered_idx = crate::plot::map::world_data::detect_hovered_country(
+                                    nx, ny, &d.labels, &visible_indices,
+                                );
+                            } else {
+                                let mut hovered = None;
+                                for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
+                                    let value = d.values.get(actual_idx).copied().unwrap_or(0.0);
+                                    let (bar_min_x, bar_max_x, bar_min_y, bar_max_y) = self.get_bar_bounds(vis_idx, value, max_val, visible_count, plot_rect, vertical);
+                                    
+                                    if pos.x >= bar_min_x && pos.x <= bar_max_x && 
+                                       pos.y >= bar_min_y && pos.y <= bar_max_y {
+                                        hovered = Some(actual_idx);
+                                        break;
+                                    }
                                 }
+                                self.hovered_idx = hovered;
                             }
-                            self.hovered_idx = hovered;
                         } else {
                             self.hovered_idx = None;
                         }
@@ -1056,7 +1150,7 @@ impl ChartApp {
         let colors = self.color_cache.colors();
         
         let chart_type = self.current_chart_kind;
-        let chart_id = chart_type + 3;
+        let chart_id = get_3d_type_for_2d(chart_type);
         let ctx_3d = Plot3DRenderContext {
             painter: &painter,
             plot_rect: response.rect,
@@ -1066,6 +1160,7 @@ impl ChartApp {
             max_val,
             visible_indices: &visible_indices,
             camera_controller: &self.advanced_viewer_3d.camera_controller,
+            labels: &d.labels,
         };
         render_3d_by_type(chart_id, ctx_3d);
         
@@ -1080,14 +1175,26 @@ impl ChartApp {
         if response.hovered() {
             if let Some(mouse_pos) = ctx.pointer_latest_pos() {
                 if response.rect.contains(mouse_pos) {
-                    let positions = crate::plot::default::_3d::get_3d_positions(
-                        chart_id,
-                        &d.values,
-                        max_val,
-                        &visible_indices,
-                        &self.advanced_viewer_3d.camera_controller,
-                        response.rect,
-                    );
+                    let is_map_3d = chart_id == 23;
+                    let positions = if is_map_3d {
+                        crate::plot::map::_3d::get_globe_3d_positions_with_labels(
+                            &d.values,
+                            max_val,
+                            &visible_indices,
+                            &d.labels,
+                            &self.advanced_viewer_3d.camera_controller,
+                            response.rect,
+                        )
+                    } else {
+                        crate::plot::default::_3d::get_3d_positions(
+                            chart_id,
+                            &d.values,
+                            max_val,
+                            &visible_indices,
+                            &self.advanced_viewer_3d.camera_controller,
+                            response.rect,
+                        )
+                    };
                     let detector = Hover3DDetector::new(positions);
                     self.hovered_idx = detector.detect(mouse_pos);
                 } else {
@@ -1182,6 +1289,46 @@ impl ChartApp {
              ("Count", len)]
                 .into_iter()
                 .for_each(|(k, v)| { self.aggregation_results.insert(k.to_string(), v); });
+        }
+    }
+
+    fn apply_region_filter(&mut self, regions: &[&str]) {
+        let labels = {
+            let data = self.data.lock().unwrap();
+            if let Some(d) = data.as_ref() {
+                d.labels.clone()
+            } else {
+                return;
+            }
+        };
+
+        let mut enabled_codes: std::collections::HashSet<String> = std::collections::HashSet::new();
+        for (i, &region) in regions.iter().enumerate() {
+            if i < self.active_regions.len() && self.active_regions[i] {
+                for code in crate::plot::map::world_data::countries_in_region(region) {
+                    enabled_codes.insert(code.to_uppercase());
+                }
+            }
+        }
+
+        for (idx, label) in labels.iter().enumerate() {
+            if enabled_codes.contains(&label.to_uppercase()) {
+                self.visible_elements.set(idx);
+                self.selected_elements.set(idx);
+            } else {
+                self.visible_elements.clear(idx);
+                self.selected_elements.clear(idx);
+            }
+        }
+    }
+
+    fn toggle_country_visibility(&mut self, idx: usize) {
+        if self.visible_elements.get(idx) {
+            self.visible_elements.clear(idx);
+            self.selected_elements.clear(idx);
+        } else {
+            self.visible_elements.set(idx);
+            self.selected_elements.set(idx);
         }
     }
 
@@ -1281,6 +1428,13 @@ pub extern "C" fn sera_show_chart_data_full(
     
     crate::bindings::load_group(&group);
     crate::plot::controller::set_current_chart_group(&group);
+    {
+        let group_types = crate::plot::default::get_current_group_types();
+        if let Some(&(first_id, _)) = group_types.first() {
+            sera_set_current_chart_kind(first_id);
+        }
+        crate::plot::controller::plot_3d_controller::set_current_group(&group);
+    }
 
     let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().into_owned() };
     let interner = crate::bindings::utils::get_interner();
@@ -1370,6 +1524,13 @@ pub extern "C" fn sera_show_chart_data_json(
     
     crate::bindings::load_group(&group);
     crate::plot::controller::set_current_chart_group(&group);
+    {
+        let group_types = crate::plot::default::get_current_group_types();
+        if let Some(&(first_id, _)) = group_types.first() {
+            sera_set_current_chart_kind(first_id);
+        }
+        crate::plot::controller::plot_3d_controller::set_current_group(&group);
+    }
 
     let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().into_owned() };
     let mut label_vec = Vec::new();
@@ -1459,6 +1620,13 @@ pub extern "C" fn sera_show_chart_value(chart_json: *const c_char) -> bool {
 
     crate::bindings::load_group(&group);
     crate::plot::controller::set_current_chart_group(&group);
+    {
+        let group_types = crate::plot::default::get_current_group_types();
+        if let Some(&(first_id, _)) = group_types.first() {
+            sera_set_current_chart_kind(first_id);
+        }
+        crate::plot::controller::plot_3d_controller::set_current_group(&group);
+    }
 
     let mut label_vec = Vec::new();
     let mut value_vec = Vec::new();

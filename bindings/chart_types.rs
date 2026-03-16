@@ -1,5 +1,7 @@
 use crate::plot::default::register_default_types;
 use crate::plot::default::_3d::register_default_3d_types;
+use crate::plot::map::register_map_types;
+use crate::plot::map::register_map_3d_types;
 use std::sync::{OnceLock, Mutex};
 use std::collections::HashMap;
 
@@ -15,6 +17,11 @@ fn get_loaders() -> &'static Mutex<HashMap<String, GroupLoader>> {
 fn default_group_loader() {
     register_default_types();
     register_default_3d_types();
+}
+
+fn map_group_loader() {
+    register_map_types();
+    register_map_3d_types();
 }
 
 pub fn register_group_loader(name: &str, loader: GroupLoader) {
@@ -34,5 +41,6 @@ pub fn load_group(name: &str) {
 pub fn init_chart_types() {
     INIT.get_or_init(|| {
         register_group_loader("default", default_group_loader);
+        register_group_loader("map", map_group_loader);
     });
 }

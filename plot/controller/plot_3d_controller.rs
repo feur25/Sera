@@ -12,6 +12,7 @@ pub struct Plot3DRenderContext<'a> {
     pub max_val: f64,
     pub visible_indices: &'a [usize],
     pub camera_controller: &'a crate::plot::containers_3d::CameraController,
+    pub labels: &'a [String],
 }
 
 pub type Plot3DRenderer = fn(Plot3DRenderContext);

@@ -7,6 +7,7 @@ pub mod containers_3d;
 pub mod controller;
 pub mod default;
 pub mod scale_renderer;
+pub mod map;
 
 pub use canvas::*;
 pub use renderers::*;
