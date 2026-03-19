@@ -2,6 +2,7 @@ use crate::plot::default::register_default_types;
 use crate::plot::default::_3d::register_default_3d_types;
 use crate::plot::map::register_map_types;
 use crate::plot::map::register_map_3d_types;
+
 use std::sync::{OnceLock, Mutex};
 use std::collections::HashMap;
 
@@ -9,6 +10,11 @@ type GroupLoader = fn();
 
 static LOADERS: OnceLock<Mutex<HashMap<String, GroupLoader>>> = OnceLock::new();
 static INIT: OnceLock<()> = OnceLock::new();
+
+static LIST_PLOT: &[(&str, GroupLoader)] = &[
+    ("default", default_group_loader),
+    ("map", map_group_loader),
+];
 
 fn get_loaders() -> &'static Mutex<HashMap<String, GroupLoader>> {
     LOADERS.get_or_init(|| Mutex::new(HashMap::new()))
@@ -22,6 +28,10 @@ fn default_group_loader() {
 fn map_group_loader() {
     register_map_types();
     register_map_3d_types();
+}
+
+fn register_chart_type(name: &str, loader: GroupLoader) {
+    register_group_loader(name, loader);
 }
 
 pub fn register_group_loader(name: &str, loader: GroupLoader) {
@@ -40,7 +50,8 @@ pub fn load_group(name: &str) {
 
 pub fn init_chart_types() {
     INIT.get_or_init(|| {
-        register_group_loader("default", default_group_loader);
-        register_group_loader("map", map_group_loader);
+        for (name, loader) in LIST_PLOT {
+            register_chart_type(name, *loader);
+        }
     });
 }

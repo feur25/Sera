@@ -26,10 +26,18 @@ pub struct HoverItem {
 
 fn get_3d_type_for_2d(chart_2d_id: u8) -> u8 {
     let group_3d_types = crate::plot::controller::plot_3d_controller::get_current_group_types();
-    if !group_3d_types.is_empty() {
-        return group_3d_types[0].0;
+    if group_3d_types.is_empty() {
+        return chart_2d_id + 3;
     }
-    chart_2d_id + 3
+
+    let group_2d_types = crate::plot::default::get_current_group_types();
+    if let Some(pos) = group_2d_types.iter().position(|(id, _)| *id == chart_2d_id) {
+        if pos < group_3d_types.len() {
+            return group_3d_types[pos].0;
+        }
+    }
+
+    group_3d_types[0].0
 }
 
 struct Hover3DDetector {
@@ -342,6 +350,13 @@ impl eframe::App for ChartApp {
         if let Ok(kind) = CHART_KIND.lock() {
             self.current_chart_kind = *kind;
         }
+
+        let is_map_group = if let Ok(grp_reg) = crate::plot::controller::get_group_registry().lock() {
+            grp_reg.get_current() == "map"
+        } else {
+            false
+        };
+        self.button_manager.set_hidden(ButtonId::Region, !is_map_group);
         
         egui::TopBottomPanel::top("controls").show(ctx, |ui| {
             ui.horizontal(|ui| {

@@ -1,16 +1,16 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 const BUTTON_ORDER: &[(ButtonId, &str, &str)] = &[
-    (ButtonId::Elements, "📋", "Afficher les éléments"),
-    (ButtonId::Orientation, "🔄", "Changer l'orientation"),
-    (ButtonId::Sort, "📊", "Trier les données"),
-    (ButtonId::Mode3D, "🎲", "Mode 3D"),
-    (ButtonId::Region, "🗺", "Filtrer par région"),
-    (ButtonId::Processor, "⚙", "Traitement avancé"),
-    (ButtonId::Transform, "🔀", "Transformer les données"),
-    (ButtonId::Wiki, "📚", "Documentation API"),
-    (ButtonId::Html, "🌐", "Exporter en HTML"),
-    (ButtonId::Info, "ℹ", "Information système"),
+    (ButtonId::Elements, "📋", "Display Elements"),
+    (ButtonId::Orientation, "🔄", "Change Orientation"),
+    (ButtonId::Sort, "📊", "Sort Data"),
+    (ButtonId::Mode3D, "🎲", "3D Mode"),
+    (ButtonId::Region, "🗺", "Filter by Region"),
+    (ButtonId::Processor, "⚙", "Advanced Processing"),
+    (ButtonId::Transform, "🔀", "Transform Data"),
+    (ButtonId::Wiki, "📚", "API Documentation"),
+    (ButtonId::Html, "🌐", "Export to HTML"),
+    (ButtonId::Info, "ℹ", "System Information"),
 ];
 
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
@@ -40,6 +40,7 @@ pub struct ButtonDefinition {
 pub struct ButtonManager {
     buttons: Vec<ButtonDefinition>,
     states: HashMap<ButtonId, bool>,
+    hidden_buttons: HashSet<ButtonId>,
     show_info: bool,
 }
 
@@ -52,6 +53,7 @@ impl ButtonManager {
         Self {
             buttons: Self::default_buttons(),
             states: HashMap::new(),
+            hidden_buttons: HashSet::new(),
             show_info: false,
         }
     }
@@ -77,12 +79,23 @@ impl ButtonManager {
         self.states.get(id).copied().unwrap_or(false)
     }
 
+    pub fn set_hidden(&mut self, id: ButtonId, hidden: bool) {
+        if hidden {
+            self.hidden_buttons.insert(id);
+        } else {
+            self.hidden_buttons.remove(&id);
+        }
+    }
+
     pub fn render_with_descriptions(&mut self, ui: &mut egui::Ui) -> HashMap<ButtonId, bool> {
         let mut clicked = HashMap::new();
         let buttons = self.buttons.clone();
 
         ui.horizontal_wrapped(|ui| {
             for button_def in buttons {
+                if self.hidden_buttons.contains(&button_def.id) {
+                    continue;
+                }
                 if ui.button(&button_def.icon).clicked() {
                     self.toggle_state(&button_def.id);
                     clicked.insert(button_def.id, true);
@@ -123,6 +136,7 @@ impl ButtonManagerBuilder {
         ButtonManager {
             buttons: self.buttons,
             states: HashMap::new(),
+            hidden_buttons: HashSet::new(),
             show_info: false,
         }
     }
