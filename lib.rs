@@ -37,8 +37,73 @@ impl SeraPlot {
 use pyo3::prelude::*;
 
 #[cfg(feature = "python")]
+#[pyclass(module = "seraplot")]
+pub struct Chart {
+    html: String,
+}
+
+#[cfg(feature = "python")]
+#[pymethods]
+impl Chart {
+    #[getter]
+    fn html(&self) -> &str {
+        &self.html
+    }
+
+    fn _repr_html_(&self) -> &str {
+        &self.html
+    }
+
+    fn __str__(&self) -> &str {
+        &self.html
+    }
+
+    fn __repr__(&self) -> String {
+        format!("SeraPlot.Chart({} bytes)", self.html.len())
+    }
+
+    fn __len__(&self) -> usize {
+        self.html.len()
+    }
+
+    fn __bool__(&self) -> bool {
+        !self.html.is_empty()
+    }
+
+    fn show(&self, py: Python<'_>) -> PyResult<()> {
+        let ipython = py.import("IPython.display")?;
+        let html_cls = ipython.getattr("HTML")?;
+        let display_fn = ipython.getattr("display")?;
+        let html_obj = html_cls.call1((self.html.as_str(),))?;
+        display_fn.call1((html_obj,))?;
+        Ok(())
+    }
+
+    #[pyo3(signature = (path))]
+    fn save(&self, path: &str) -> PyResult<()> {
+        std::fs::write(path, &self.html)?;
+        Ok(())
+    }
+
+    #[pyo3(signature = (color=None))]
+    fn set_bg(&self, color: Option<&str>) -> Chart {
+        Chart {
+            html: crate::html::hover::apply_bg(self.html.clone(), color),
+        }
+    }
+}
+
+#[cfg(feature = "python")]
+impl Chart {
+    fn new(html: String) -> Self {
+        Self { html }
+    }
+}
+
+#[cfg(feature = "python")]
 #[pymodule]
 fn seraplot(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+    m.add_class::<Chart>()?;
     m.add("__version__", VERSION)?;
     m.add("__doc__", r#"SeraPlot - Rust-Powered Data Visualization Framework
 
@@ -108,24 +173,23 @@ Simple Usage
     m.add_function(wrap_pyfunction!(build_violin, m)?)?;
     m.add_function(wrap_pyfunction!(build_slope, m)?)?;
     m.add_function(wrap_pyfunction!(build_bullet, m)?)?;
+    m.add_function(wrap_pyfunction!(set_bg_fn, m)?)?;
     m.add_function(wrap_pyfunction!(bench_pure_rust, m)?)?;
     Ok(())
 }
 
-/// Run internal benchmarks to measure rendering performance.
-///
-/// Returns a tuple of (histogram_ms, bar_ms, scatter_ms, heatmap_ms) representing
-/// the average time in milliseconds for each chart type over n iterations.
-///
-/// Args:
-///     n (int): Number of iterations per chart type. Default: 2000.
-///
-/// Returns:
-///     tuple[float, float, float, float]: Average render time in ms for (histogram, bar, scatter, heatmap).
-///
-/// Example:
-///     >>> hist, bar, scatter, hm = seraplot.bench_pure_rust(1000)
-///     >>> print(f"Bar: {bar:.4f}ms  Scatter: {scatter:.4f}ms")
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(name = "set_bg", signature = (html, color=None), text_signature = "(html, color=None)")]
+fn set_bg_fn(html: &PyAny, color: Option<&str>) -> PyResult<Chart> {
+    let raw: String = if let Ok(chart) = html.extract::<PyRef<Chart>>() {
+        chart.html.clone()
+    } else {
+        html.extract::<String>()?
+    };
+    Ok(Chart::new(crate::html::hover::apply_bg(raw, color)))
+}
+
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (n=2000))]
@@ -176,22 +240,6 @@ fn bench_pure_rust(n: usize) -> (f64, f64, f64, f64) {
     (hist_ms, bar_ms, scatter_ms, heatmap_ms)
 }
 
-/// Display a chart in the native SeraPlot viewer window.
-///
-/// Opens a native GUI window rendering the chart described by the JSON payload.
-///
-/// Args:
-///     chart_json (str): JSON string describing the chart (title, labels, values, hover, group).
-///
-/// Returns:
-///     bool: True if the viewer launched successfully.
-///
-/// Example:
-///     >>> import seraplot, json
-///     >>> seraplot.show_chart_value(json.dumps({
-///     ...     'title': 'Sales', 'labels': ['Q1','Q2'], 'values': [100,200],
-///     ...     'hover': [], 'group': 'default'
-///     ... }))
 #[cfg(feature = "python")]
 #[pyfunction]
 fn show_chart_value(chart_json: &str) -> bool {
@@ -201,28 +249,12 @@ fn show_chart_value(chart_json: &str) -> bool {
     }
 }
 
-/// Validate chart JSON without rendering.
-///
-/// Parses the JSON string to check if it is valid. Useful for pre-validation before rendering.
-///
-/// Args:
-///     chart_json (str): JSON string to validate.
-///
-/// Returns:
-///     bool: True if the JSON is valid.
 #[cfg(feature = "python")]
 #[pyfunction]
 fn bench_chart_value(chart_json: &str) -> bool {
     serde_json::from_str::<serde_json::Value>(chart_json).is_ok()
 }
 
-/// Set the chart kind for the native viewer.
-///
-/// Args:
-///     kind (int): Chart type identifier (0=bar, 1=line, 2=pie, 3=scatter, etc.).
-///
-/// Returns:
-///     bool: Always True.
 #[cfg(feature = "python")]
 #[pyfunction]
 fn set_chart_kind(kind: u8) -> bool {
@@ -230,13 +262,6 @@ fn set_chart_kind(kind: u8) -> bool {
     true
 }
 
-/// Set chart orientation for the native viewer.
-///
-/// Args:
-///     vertical (bool): True for vertical, False for horizontal.
-///
-/// Returns:
-///     bool: Always True.
 #[cfg(feature = "python")]
 #[pyfunction]
 fn set_chart_orientation(vertical: bool) -> bool {
@@ -244,22 +269,6 @@ fn set_chart_orientation(vertical: bool) -> bool {
     true
 }
 
-/// Build a basic HTML chart using the fast HTML exporter.
-///
-/// Generates a standalone HTML string containing an SVG chart with hover interactivity.
-///
-/// Args:
-///     title (str): Chart title displayed at the top.
-///     labels (list[str]): Category labels for the X axis.
-///     values (list[float]): Numeric values corresponding to each label.
-///     width (int): SVG width in pixels. Default: 900.
-///     height (int): SVG height in pixels. Default: 480.
-///
-/// Returns:
-///     str: Complete HTML string with embedded SVG and JavaScript hover logic.
-///
-/// Example:
-///     >>> html = seraplot.build_html_chart("Revenue", ["Jan","Feb","Mar"], [100, 150, 130])
 #[cfg(feature = "python")]
 #[pyfunction]
 fn build_html_chart(
@@ -268,33 +277,13 @@ fn build_html_chart(
     values: Vec<f64>,
     width: i32,
     height: i32,
-) -> String {
+) -> Chart {
+    Chart::new({
     let exporter = crate::html::FastHtmlExporter::new(width, height, title.to_string());
     exporter.build_optimized(labels, values)
+    })
 }
 
-/// Build a pie chart as a standalone HTML string.
-///
-/// Renders a circular pie chart with optional percentage labels, custom palette,
-/// and interactive hover tooltips.
-///
-/// Args:
-///     title (str): Chart title.
-///     labels (list[str]): Slice labels.
-///     values (list[float]): Slice values (positive numbers).
-///     palette (list[int] | None): Custom colors as hex integers (e.g. [0xFF0000, 0x00FF00]). Default: built-in palette.
-///     show_pct (bool): Show percentage text on each slice. Default: True.
-///     sort_order (str): Sort slices — "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width in pixels. Default: 720.
-///     height (int): SVG height in pixels. Default: 440.
-///     hover_json (str | None): JSON string for custom hover tooltips.
-///
-/// Returns:
-///     str: HTML string with the pie chart.
-///
-/// Example:
-///     >>> html = seraplot.build_pie_chart("Market Share", ["Chrome","Firefox","Safari"], [65, 20, 15])
-///     >>> html = seraplot.build_pie_chart("Sorted", ["A","B","C"], [30,10,60], sort_order="desc")
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (title, labels, values, palette=None, show_pct=true, sort_order="none", width=720, height=440, hover_json=None), text_signature = "(title, labels, values, palette=None, show_pct=True, sort_order='none', width=720, height=440, hover_json=None)")]
@@ -308,7 +297,8 @@ fn build_pie_chart(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{PieConfig, render_pie_html, parse_hover_json};
     use crate::plot::statistical::common::PALETTE;
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
@@ -326,29 +316,9 @@ fn build_pie_chart(
         sort_order,
         ..PieConfig::default()
     })
+    })
 }
 
-/// Build a donut chart (pie chart with a hole) as a standalone HTML string.
-///
-/// Same as build_pie_chart but with an inner radius creating a donut shape.
-///
-/// Args:
-///     title (str): Chart title.
-///     labels (list[str]): Slice labels.
-///     values (list[float]): Slice values.
-///     inner_radius_ratio (float): Ratio of inner hole (0.0 to 0.9). Default: 0.55.
-///     palette (list[int] | None): Custom hex color palette.
-///     show_pct (bool): Show percentage on slices. Default: True.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 720.
-///     height (int): SVG height. Default: 440.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with the donut chart.
-///
-/// Example:
-///     >>> html = seraplot.build_donut_chart("OS Share", ["Windows","Mac","Linux"], [75, 15, 10])
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (title, labels, values, inner_radius_ratio=0.55, palette=None, show_pct=true, sort_order="none", width=720, height=440, hover_json=None), text_signature = "(title, labels, values, inner_radius_ratio=0.55, palette=None, show_pct=True, sort_order='none', width=720, height=440, hover_json=None)")]
@@ -363,7 +333,8 @@ fn build_donut_chart(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{PieConfig, render_pie_html, parse_hover_json};
     use crate::plot::statistical::common::PALETTE;
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
@@ -382,34 +353,12 @@ fn build_donut_chart(
         sort_order,
         ..PieConfig::default()
     })
+    })
 }
 
-/// Build a heatmap chart as a standalone HTML string.
-///
-/// Renders a color-coded matrix with diverging color scale.
-///
-/// Args:
-///     title (str): Chart title.
-///     labels (list[str]): Row labels.
-///     flat_matrix (list[float]): Flat array of values (row-major order, len = rows * cols).
-///     col_labels (list[str] | None): Column labels. If None, uses row labels.
-///     show_values (bool): Display numeric values in each cell. Default: True.
-///     color_low (int): Hex color for minimum values. Default: 0x2166ac (blue).
-///     color_mid (int): Hex color for midpoint values. Default: 0xffffff (white).
-///     color_high (int): Hex color for maximum values. Default: 0xd6604d (red).
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 720.
-///     height (int): SVG height. Default: 440.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with the heatmap.
-///
-/// Example:
-///     >>> html = seraplot.build_heatmap("Correlation", ["A","B","C"], [1, 0.5, -0.3, 0.5, 1, 0.8, -0.3, 0.8, 1])
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, flat_matrix, col_labels=None, show_values=true, color_low=0x6366F1, color_mid=0xfafbfc, color_high=0xF43F5E, sort_order="none", width=720, height=440, hover_json=None), text_signature = "(title, labels, flat_matrix, col_labels=None, show_values=True, color_low=0x6366F1, color_mid=0xfafbfc, color_high=0xF43F5E, sort_order='none', width=720, height=440, hover_json=None)")]
+#[pyo3(signature = (title, labels, flat_matrix, col_labels=None, show_values=true, color_low=0x6366F1, color_mid=0xfafbfc, color_high=0xF43F5E, sort_order="none", width=720, height=440, hover_json=None, bg_color=None), text_signature = "(title, labels, flat_matrix, col_labels=None, show_values=True, color_low=0x6366F1, color_mid=0xfafbfc, color_high=0xF43F5E, sort_order='none', width=720, height=440, hover_json=None, bg_color=None)")]
 fn build_heatmap(
     title: &str,
     labels: Vec<String>,
@@ -423,11 +372,13 @@ fn build_heatmap(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{HeatmapConfig, render_heatmap_html, parse_hover_json};
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
     let cl = col_labels.unwrap_or_default();
-    render_heatmap_html(&HeatmapConfig {
+    crate::html::hover::apply_bg(render_heatmap_html(&HeatmapConfig {
         title,
         row_labels: &labels,
         col_labels: if cl.is_empty() { &[] } else { &cl },
@@ -440,35 +391,13 @@ fn build_heatmap(
         height,
         hover: &hover_slots,
         ..HeatmapConfig::default()
+    }), bg_color.as_deref())
     })
 }
 
-/// Build a histogram as a standalone HTML string.
-///
-/// Automatically bins continuous data into equal-width intervals.
-///
-/// Args:
-///     title (str): Chart title.
-///     values (list[float]): Raw numeric data to bin.
-///     bins (int): Number of bins. 0 = auto (Sturges' rule). Default: 0.
-///     color_hex (int): Bar color as hex integer. Default: 0x4C72B0.
-///     x_label (str): X-axis label. Default: "".
-///     y_label (str): Y-axis label. Default: "Count".
-///     show_counts (bool): Display count on top of each bar. Default: False.
-///     gridlines (bool): Show horizontal gridlines. Default: True.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 860.
-///     height (int): SVG height. Default: 380.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with the histogram.
-///
-/// Example:
-///     >>> html = seraplot.build_histogram("Age Distribution", ages, bins=20)
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, values, bins=0, color_hex=0x6366F1, x_label="", y_label="Count", show_counts=false, gridlines=true, sort_order="none", width=860, height=380, hover_json=None), text_signature = "(title, values, bins=0, color_hex=0x6366F1, x_label='', y_label='Count', show_counts=False, gridlines=True, sort_order='none', width=860, height=380, hover_json=None)")]
+#[pyo3(signature = (title, values, bins=0, color_hex=0x6366F1, x_label="", y_label="Count", show_counts=false, gridlines=true, sort_order="none", width=860, height=380, hover_json=None, bg_color=None), text_signature = "(title, values, bins=0, color_hex=0x6366F1, x_label='', y_label='Count', show_counts=False, gridlines=True, sort_order='none', width=860, height=380, hover_json=None, bg_color=None)")]
 fn build_histogram(
     title: &str,
     values: Vec<f64>,
@@ -482,10 +411,12 @@ fn build_histogram(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{HistogramConfig, render_histogram_html, parse_hover_json};
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
-    render_histogram_html(&HistogramConfig {
+    crate::html::hover::apply_bg(render_histogram_html(&HistogramConfig {
         title,
         values: &values,
         bins,
@@ -498,33 +429,13 @@ fn build_histogram(
         height,
         hover: &hover_slots,
         ..HistogramConfig::default()
+    }), bg_color.as_deref())
     })
 }
 
-/// Build an overlay histogram comparing two distributions.
-///
-/// Renders two semi-transparent histograms on the same axes for visual comparison.
-///
-/// Args:
-///     title (str): Chart title.
-///     values (list[float]): Primary distribution data.
-///     overlay_values (list[float]): Secondary distribution data.
-///     bins (int): Number of bins. 0 = auto. Default: 0.
-///     color_hex (int): Primary color. Default: 0x4C72B0.
-///     overlay_color_hex (int): Overlay color. Default: 0xC44E52.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 860.
-///     height (int): SVG height. Default: 380.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with both histograms overlaid.
-///
-/// Example:
-///     >>> html = seraplot.build_histogram_overlay("Age by Gender", male_ages, female_ages, bins=15)
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, values, overlay_values, bins=0, color_hex=0x6366F1, overlay_color_hex=0xF43F5E, sort_order="none", width=860, height=380, hover_json=None), text_signature = "(title, values, overlay_values, bins=0, color_hex=0x6366F1, overlay_color_hex=0xF43F5E, sort_order='none', width=860, height=380, hover_json=None)")]
+#[pyo3(signature = (title, values, overlay_values, bins=0, color_hex=0x6366F1, overlay_color_hex=0xF43F5E, sort_order="none", width=860, height=380, hover_json=None, bg_color=None), text_signature = "(title, values, overlay_values, bins=0, color_hex=0x6366F1, overlay_color_hex=0xF43F5E, sort_order='none', width=860, height=380, hover_json=None, bg_color=None)")]
 fn build_histogram_overlay(
     title: &str,
     values: Vec<f64>,
@@ -536,10 +447,12 @@ fn build_histogram_overlay(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{HistogramConfig, render_histogram_html, parse_hover_json};
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
-    render_histogram_html(&HistogramConfig {
+    crate::html::hover::apply_bg(render_histogram_html(&HistogramConfig {
         title,
         values: &values,
         bins,
@@ -550,37 +463,13 @@ fn build_histogram_overlay(
         height,
         hover: &hover_slots,
         ..HistogramConfig::default()
+    }), bg_color.as_deref())
     })
 }
 
-/// Build a grouped bar chart as a standalone HTML string.
-///
-/// Renders multiple series as side-by-side bars for each category. Supports sorting
-/// categories by total value or alphabetically.
-///
-/// Args:
-///     title (str): Chart title.
-///     category_labels (list[str]): Category names for the X axis.
-///     series_names (list[str]): Name of each series (appears in legend).
-///     series_values (list[float]): Flat array of values. Layout: [series0_cat0, series0_cat1, ..., series1_cat0, ...].
-///     palette (list[int] | None): Custom hex colors. Default: built-in palette.
-///     x_label (str): X-axis label. Default: "".
-///     y_label (str): Y-axis label. Default: "".
-///     show_values (bool): Display values above bars. Default: False.
-///     gridlines (bool): Show horizontal gridlines. Default: True.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 1100.
-///     height (int): SVG height. Default: 480.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with the grouped bar chart.
-///
-/// Example:
-///     >>> html = seraplot.build_grouped_bar("Sales", ["Q1","Q2"], ["Product A","Product B"], [10,20,15,25])
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, category_labels, series_names, series_values, palette=None, x_label="", y_label="", show_values=false, gridlines=true, sort_order="none", width=1100, height=480, hover_json=None), text_signature = "(title, category_labels, series_names, series_values, palette=None, x_label='', y_label='', show_values=False, gridlines=True, sort_order='none', width=1100, height=480, hover_json=None)")]
+#[pyo3(signature = (title, category_labels, series_names, series_values, palette=None, x_label="", y_label="", show_values=false, gridlines=true, sort_order="none", width=1100, height=480, hover_json=None, bg_color=None), text_signature = "(title, category_labels, series_names, series_values, palette=None, x_label='', y_label='', show_values=False, gridlines=True, sort_order='none', width=1100, height=480, hover_json=None, bg_color=None)")]
 fn build_grouped_bar(
     title: &str,
     category_labels: Vec<String>,
@@ -595,12 +484,14 @@ fn build_grouped_bar(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{GroupedBarConfig, render_grouped_bar_html, parse_hover_json};
     use crate::plot::statistical::common::PALETTE;
     let n_cats = category_labels.len();
     let n_ser = series_names.len();
-    if n_cats == 0 || n_ser == 0 { return String::new(); }
+    if n_cats == 0 || n_ser == 0 { return Chart::new(String::new()); }
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
     let pal = palette.unwrap_or_default();
     let pal_ref: &[u32] = if pal.is_empty() { PALETTE } else { &pal };
@@ -618,7 +509,7 @@ fn build_grouped_bar(
             (name, vals)
         })
         .collect();
-    render_grouped_bar_html(&GroupedBarConfig {
+    crate::html::hover::apply_bg(render_grouped_bar_html(&GroupedBarConfig {
         title,
         x_label,
         y_label,
@@ -632,36 +523,13 @@ fn build_grouped_bar(
         hover: &hover_slots,
         sort_order,
         ..GroupedBarConfig::default()
+    }), bg_color.as_deref())
     })
 }
 
-/// Build a stacked bar chart as a standalone HTML string.
-///
-/// Same layout as build_grouped_bar but with bars stacked on top of each other.
-///
-/// Args:
-///     title (str): Chart title.
-///     category_labels (list[str]): Category names.
-///     series_names (list[str]): Series names (legend entries).
-///     series_values (list[float]): Flat value array [s0_c0, s0_c1, ..., s1_c0, ...].
-///     palette (list[int] | None): Custom hex colors.
-///     x_label (str): X-axis label. Default: "".
-///     y_label (str): Y-axis label. Default: "".
-///     show_values (bool): Display values on bars. Default: False.
-///     gridlines (bool): Show gridlines. Default: True.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 1100.
-///     height (int): SVG height. Default: 480.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with the stacked bar chart.
-///
-/// Example:
-///     >>> html = seraplot.build_stacked_bar("Revenue", ["2022","2023"], ["Online","Store"], [50,60,40,55])
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, category_labels, series_names, series_values, palette=None, x_label="", y_label="", show_values=false, gridlines=true, sort_order="none", width=1100, height=480, hover_json=None), text_signature = "(title, category_labels, series_names, series_values, palette=None, x_label='', y_label='', show_values=False, gridlines=True, sort_order='none', width=1100, height=480, hover_json=None)")]
+#[pyo3(signature = (title, category_labels, series_names, series_values, palette=None, x_label="", y_label="", show_values=false, gridlines=true, sort_order="none", width=1100, height=480, hover_json=None, bg_color=None), text_signature = "(title, category_labels, series_names, series_values, palette=None, x_label='', y_label='', show_values=False, gridlines=True, sort_order='none', width=1100, height=480, hover_json=None, bg_color=None)")]
 fn build_stacked_bar(
     title: &str,
     category_labels: Vec<String>,
@@ -676,12 +544,14 @@ fn build_stacked_bar(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{GroupedBarConfig, render_grouped_bar_html, parse_hover_json};
     use crate::plot::statistical::common::PALETTE;
     let n_cats = category_labels.len();
     let n_ser = series_names.len();
-    if n_cats == 0 || n_ser == 0 { return String::new(); }
+    if n_cats == 0 || n_ser == 0 { return Chart::new(String::new()); }
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
     let pal = palette.unwrap_or_default();
     let pal_ref: &[u32] = if pal.is_empty() { PALETTE } else { &pal };
@@ -699,7 +569,7 @@ fn build_stacked_bar(
             (name, vals)
         })
         .collect();
-    render_grouped_bar_html(&GroupedBarConfig {
+    crate::html::hover::apply_bg(render_grouped_bar_html(&GroupedBarConfig {
         title,
         x_label,
         y_label,
@@ -714,41 +584,13 @@ fn build_stacked_bar(
         hover: &hover_slots,
         sort_order,
         ..GroupedBarConfig::default()
+    }), bg_color.as_deref())
     })
 }
 
-/// Build a bar chart (vertical or horizontal) as a standalone HTML string.
-///
-/// Supports single-color bars, color groups (one color per group), optional value labels,
-/// axis labels, gridlines, and data sorting.
-///
-/// Args:
-///     title (str): Chart title.
-///     labels (list[str]): Category labels.
-///     values (list[float]): Numeric values for each bar.
-///     orientation (str): "v" for vertical (default), "h" for horizontal.
-///     color_groups (list[str] | None): Group name per bar for automatic coloring.
-///     show_text (bool): Show value text on bars. Default: False.
-///     x_label (str): X-axis label. Default: "".
-///     y_label (str): Y-axis label. Default: "".
-///     palette (list[int] | None): Custom hex color palette.
-///     color_hex (int): Single color for all bars if no groups. Default: 0 (auto).
-///     gridlines (bool): Show gridlines. Default: True.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 900.
-///     height (int): SVG height. Default: 480.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with the bar chart.
-///
-/// Example:
-///     >>> html = seraplot.build_bar_chart("Top Cities", ["Paris","London","NYC"], [2.1, 8.9, 8.3])
-///     >>> html = seraplot.build_bar_chart("Sorted", labels, values, sort_order="desc")
-///     >>> html = seraplot.build_bar_chart("Horizontal", labels, values, orientation="h")
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, orientation="v", color_groups=None, show_text=false, x_label="", y_label="", palette=None, color_hex=0, gridlines=true, sort_order="none", width=900, height=480, hover_json=None), text_signature = "(title, labels, values, orientation='v', color_groups=None, show_text=False, x_label='', y_label='', palette=None, color_hex=0, gridlines=True, sort_order='none', width=900, height=480, hover_json=None)")]
+#[pyo3(signature = (title, labels, values, orientation="v", color_groups=None, show_text=false, x_label="", y_label="", palette=None, color_hex=0, gridlines=true, sort_order="none", width=900, height=480, hover_json=None, bg_color=None), text_signature = "(title, labels, values, orientation='v', color_groups=None, show_text=False, x_label='', y_label='', palette=None, color_hex=0, gridlines=True, sort_order='none', width=900, height=480, hover_json=None, bg_color=None)")]
 fn build_bar_chart(
     title: &str,
     labels: Vec<String>,
@@ -765,44 +607,24 @@ fn build_bar_chart(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     use crate::html::hover::parse_hover_json;
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
     let pal = palette.unwrap_or_default();
     let cg = color_groups.unwrap_or_default();
     let ori = if orientation.starts_with('h') || orientation.starts_with('H') { b'h' } else { b'v' };
-    crate::plot::default::render_bars_html(
+    crate::html::hover::apply_bg(crate::plot::default::render_bars_html(
         title, &labels, &values, width, height, &hover_slots,
         ori, &cg, show_text, x_label, y_label, &pal, color_hex, gridlines, sort_order,
-    )
+    ), bg_color.as_deref())
+    })
 }
 
-/// Build a single-series line chart as a standalone HTML string.
-///
-/// Renders a connected line with optional data points and gridlines.
-///
-/// Args:
-///     title (str): Chart title.
-///     labels (list[str]): X-axis labels (typically dates or categories).
-///     values (list[float]): Y values for each point.
-///     color_hex (int): Line color as hex. Default: 0x4C72B0.
-///     x_label (str): X-axis label. Default: "".
-///     y_label (str): Y-axis label. Default: "".
-///     gridlines (bool): Show gridlines. Default: True.
-///     show_points (bool): Show circles at data points. Default: True.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 900.
-///     height (int): SVG height. Default: 480.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with the line chart.
-///
-/// Example:
-///     >>> html = seraplot.build_line_chart("Temperature", months, temps, color_hex=0xDD8452)
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, color_hex=0x6366F1, x_label="", y_label="", gridlines=true, show_points=true, sort_order="none", width=900, height=480, hover_json=None), text_signature = "(title, labels, values, color_hex=0x6366F1, x_label='', y_label='', gridlines=True, show_points=True, sort_order='none', width=900, height=480, hover_json=None)")]
+#[pyo3(signature = (title, labels, values, color_hex=0x6366F1, x_label="", y_label="", gridlines=true, show_points=true, sort_order="none", width=900, height=480, hover_json=None, bg_color=None), text_signature = "(title, labels, values, color_hex=0x6366F1, x_label='', y_label='', gridlines=True, show_points=True, sort_order='none', width=900, height=480, hover_json=None, bg_color=None)")]
 fn build_line_chart(
     title: &str,
     labels: Vec<String>,
@@ -816,42 +638,18 @@ fn build_line_chart(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     use crate::html::hover::parse_hover_json;
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
-    crate::plot::default::render_lines_html(title, &labels, &values, width, height, &hover_slots, color_hex, x_label, y_label, gridlines, show_points)
+    crate::html::hover::apply_bg(crate::plot::default::render_lines_html(title, &labels, &values, width, height, &hover_slots, color_hex, x_label, y_label, gridlines, show_points), bg_color.as_deref())
+    })
 }
 
-/// Build a scatter chart as a standalone HTML string.
-///
-/// Renders points at (x, y) coordinates with optional sizes, color groups, and labels.
-///
-/// Args:
-///     title (str): Chart title.
-///     x_values (list[float]): X coordinates.
-///     y_values (list[float]): Y coordinates.
-///     labels (list[str] | None): Point labels for hover. Default: None.
-///     palette (list[int] | None): Custom hex color palette.
-///     x_label (str): X-axis label. Default: "".
-///     y_label (str): Y-axis label. Default: "".
-///     color_hex (int): Single color for all points. Default: 0 (auto).
-///     gridlines (bool): Show gridlines. Default: True.
-///     show_text (bool): Display labels next to each point. Default: False.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 900.
-///     height (int): SVG height. Default: 540.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///     sizes (list[float] | None): Bubble sizes for each point.
-///     color_groups (list[str] | None): Group name per point for coloring.
-///
-/// Returns:
-///     str: HTML string with the scatter chart.
-///
-/// Example:
-///     >>> html = seraplot.build_scatter_chart("Height vs Weight", heights, weights, x_label="Height", y_label="Weight")
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_values, y_values, labels=None, palette=None, x_label="", y_label="", color_hex=0, gridlines=true, show_text=false, sort_order="none", width=900, height=540, hover_json=None, sizes=None, color_groups=None), text_signature = "(title, x_values, y_values, labels=None, palette=None, x_label='', y_label='', color_hex=0, gridlines=True, show_text=False, sort_order='none', width=900, height=540, hover_json=None, sizes=None, color_groups=None)")]
+#[pyo3(signature = (title, x_values, y_values, labels=None, palette=None, x_label="", y_label="", color_hex=0, gridlines=true, show_text=false, sort_order="none", width=900, height=540, hover_json=None, sizes=None, color_groups=None, bg_color=None), text_signature = "(title, x_values, y_values, labels=None, palette=None, x_label='', y_label='', color_hex=0, gridlines=True, show_text=False, sort_order='none', width=900, height=540, hover_json=None, sizes=None, color_groups=None, bg_color=None)")]
 fn build_scatter_chart(
     title: &str,
     x_values: Vec<f64>,
@@ -869,7 +667,9 @@ fn build_scatter_chart(
     hover_json: Option<String>,
     sizes: Option<Vec<f64>>,
     color_groups: Option<Vec<String>>,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     use crate::html::hover::parse_hover_json;
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
     let empty_labels: Vec<String> = Vec::new();
@@ -879,35 +679,13 @@ fn build_scatter_chart(
     let empty_groups: Vec<String> = Vec::new();
     let groups_ref = color_groups.as_deref().unwrap_or(&empty_groups);
     let pal = palette.unwrap_or_default();
-    crate::plot::default::render_scatter_html(title, &x_values, &y_values, labels_ref, width, height, &hover_slots, sizes_ref, groups_ref, &pal, x_label, y_label, color_hex, gridlines, show_text)
+    crate::html::hover::apply_bg(crate::plot::default::render_scatter_html(title, &x_values, &y_values, labels_ref, width, height, &hover_slots, sizes_ref, groups_ref, &pal, x_label, y_label, color_hex, gridlines, show_text), bg_color.as_deref())
+    })
 }
 
-/// Build a 3D scatter chart as a standalone HTML string.
-///
-/// Renders an interactive 3D scatter plot using WebGL with rotation and zoom controls.
-///
-/// Args:
-///     title (str): Chart title.
-///     x_values (list[float]): X coordinates.
-///     y_values (list[float]): Y coordinates.
-///     z_values (list[float]): Z coordinates.
-///     x_label (str): X-axis label. Default: "X".
-///     y_label (str): Y-axis label. Default: "Y".
-///     z_label (str): Z-axis label. Default: "Z".
-///     color_values (list[float] | None): Values for color mapping.
-///     color_labels (list[str] | None): Labels for color legend.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): Canvas width. Default: 900.
-///     height (int): Canvas height. Default: 560.
-///
-/// Returns:
-///     str: HTML string with the 3D scatter chart.
-///
-/// Example:
-///     >>> html = seraplot.build_scatter3d_chart("3D Clusters", x, y, z)
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_values, y_values, z_values, x_label="X", y_label="Y", z_label="Z", color_values=None, color_labels=None, sort_order="none", width=900, height=560), text_signature = "(title, x_values, y_values, z_values, x_label='X', y_label='Y', z_label='Z', color_values=None, color_labels=None, sort_order='none', width=900, height=560)")]
+#[pyo3(signature = (title, x_values, y_values, z_values, x_label="X", y_label="Y", z_label="Z", color_values=None, color_labels=None, sort_order="none", width=900, height=560, bg_color=None), text_signature = "(title, x_values, y_values, z_values, x_label='X', y_label='Y', z_label='Z', color_values=None, color_labels=None, sort_order='none', width=900, height=560, bg_color=None)")]
 fn build_scatter3d_chart(
     title: &str,
     x_values: Vec<f64>,
@@ -921,7 +699,9 @@ fn build_scatter3d_chart(
     sort_order: &str,
     width: i32,
     height: i32,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     let cv = color_values.unwrap_or_default();
     let cl = color_labels.unwrap_or_default();
     crate::plot::default::render_scatter3d_html(
@@ -929,33 +709,14 @@ fn build_scatter3d_chart(
         &x_values, &y_values, &z_values,
         (x_label, y_label, z_label),
         &cv, &cl,
-        width, height,
+        width, height, bg_color.as_deref(),
     )
+    })
 }
 
-/// Build a 3D bar chart as a standalone HTML string.
-///
-/// Renders 3D bars using WebGL with rotation and zoom.
-///
-/// Args:
-///     title (str): Chart title.
-///     x_values (list[float]): X positions.
-///     y_values (list[float]): Y positions.
-///     z_values (list[float]): Bar heights (Z axis).
-///     x_label (str): X-axis label. Default: "X".
-///     y_label (str): Y-axis label. Default: "Y".
-///     z_label (str): Z-axis label. Default: "Z".
-///     color_values (list[float] | None): Values for color mapping.
-///     color_labels (list[str] | None): Labels for color legend.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): Canvas width. Default: 900.
-///     height (int): Canvas height. Default: 560.
-///
-/// Returns:
-///     str: HTML string with the 3D bar chart.
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_values, y_values, z_values, x_label="X", y_label="Y", z_label="Z", color_values=None, color_labels=None, sort_order="none", width=900, height=560), text_signature = "(title, x_values, y_values, z_values, x_label='X', y_label='Y', z_label='Z', color_values=None, color_labels=None, sort_order='none', width=900, height=560)")]
+#[pyo3(signature = (title, x_values, y_values, z_values, x_label="X", y_label="Y", z_label="Z", color_values=None, color_labels=None, sort_order="none", width=900, height=560, bg_color=None), text_signature = "(title, x_values, y_values, z_values, x_label='X', y_label='Y', z_label='Z', color_values=None, color_labels=None, sort_order='none', width=900, height=560, bg_color=None)")]
 fn build_bar3d_chart(
     title: &str,
     x_values: Vec<f64>,
@@ -969,7 +730,9 @@ fn build_bar3d_chart(
     sort_order: &str,
     width: i32,
     height: i32,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     let cv = color_values.unwrap_or_default();
     let cl = color_labels.unwrap_or_default();
     crate::plot::default::render_bar3d_html(
@@ -977,33 +740,14 @@ fn build_bar3d_chart(
         &x_values, &y_values, &z_values,
         (x_label, y_label, z_label),
         &cv, &cl,
-        width, height,
+        width, height, bg_color.as_deref(),
     )
+    })
 }
 
-/// Build a 3D line chart as a standalone HTML string.
-///
-/// Renders a 3D line path using WebGL with rotation and zoom.
-///
-/// Args:
-///     title (str): Chart title.
-///     x_values (list[float]): X coordinates.
-///     y_values (list[float]): Y coordinates.
-///     z_values (list[float]): Z coordinates.
-///     x_label (str): X-axis label. Default: "X".
-///     y_label (str): Y-axis label. Default: "Y".
-///     z_label (str): Z-axis label. Default: "Z".
-///     color_values (list[float] | None): Values for color mapping.
-///     color_labels (list[str] | None): Labels for color legend.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): Canvas width. Default: 900.
-///     height (int): Canvas height. Default: 560.
-///
-/// Returns:
-///     str: HTML string with the 3D line chart.
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_values, y_values, z_values, x_label="X", y_label="Y", z_label="Z", color_values=None, color_labels=None, sort_order="none", width=900, height=560), text_signature = "(title, x_values, y_values, z_values, x_label='X', y_label='Y', z_label='Z', color_values=None, color_labels=None, sort_order='none', width=900, height=560)")]
+#[pyo3(signature = (title, x_values, y_values, z_values, x_label="X", y_label="Y", z_label="Z", color_values=None, color_labels=None, sort_order="none", width=900, height=560, bg_color=None), text_signature = "(title, x_values, y_values, z_values, x_label='X', y_label='Y', z_label='Z', color_values=None, color_labels=None, sort_order='none', width=900, height=560, bg_color=None)")]
 fn build_line3d_chart(
     title: &str,
     x_values: Vec<f64>,
@@ -1017,7 +761,9 @@ fn build_line3d_chart(
     sort_order: &str,
     width: i32,
     height: i32,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     let cv = color_values.unwrap_or_default();
     let cl = color_labels.unwrap_or_default();
     crate::plot::default::render_line3d_html(
@@ -1025,38 +771,14 @@ fn build_line3d_chart(
         &x_values, &y_values, &z_values,
         (x_label, y_label, z_label),
         &cv, &cl,
-        width, height,
+        width, height, bg_color.as_deref(),
     )
+    })
 }
 
-/// Build a multi-series line chart as a standalone HTML string.
-///
-/// Renders multiple lines on the same axes with a legend. Supports toggle-to-hide series
-/// via the interactive legend (with spRescale for Y-axis auto-rescaling).
-///
-/// Args:
-///     title (str): Chart title.
-///     x_labels (list[str]): Shared X-axis labels.
-///     series_names (list[str]): Name for each line series.
-///     series_values (list[float]): Flat array [s0_x0, s0_x1, ..., s1_x0, ...].
-///     palette (list[int] | None): Custom hex colors.
-///     x_label (str): X-axis label. Default: "".
-///     y_label (str): Y-axis label. Default: "".
-///     show_points (bool): Show circles on data points. Default: True.
-///     gridlines (bool): Show gridlines. Default: True.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 1100.
-///     height (int): SVG height. Default: 480.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with the multiline chart.
-///
-/// Example:
-///     >>> html = seraplot.build_multiline_chart("Trends", months, ["2022","2023"], values_flat)
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_labels, series_names, series_values, palette=None, x_label="", y_label="", show_points=true, gridlines=true, sort_order="none", width=1100, height=480, hover_json=None), text_signature = "(title, x_labels, series_names, series_values, palette=None, x_label='', y_label='', show_points=True, gridlines=True, sort_order='none', width=1100, height=480, hover_json=None)")]
+#[pyo3(signature = (title, x_labels, series_names, series_values, palette=None, x_label="", y_label="", show_points=true, gridlines=true, sort_order="none", width=1100, height=480, hover_json=None, bg_color=None), text_signature = "(title, x_labels, series_names, series_values, palette=None, x_label='', y_label='', show_points=True, gridlines=True, sort_order='none', width=1100, height=480, hover_json=None, bg_color=None)")]
 fn build_multiline_chart(
     title: &str,
     x_labels: Vec<String>,
@@ -1071,12 +793,14 @@ fn build_multiline_chart(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{MultiLineConfig, render_multiline_html, parse_hover_json};
     use crate::plot::statistical::common::PALETTE;
     let n_pts = x_labels.len();
     let n_ser = series_names.len();
-    if n_pts == 0 || n_ser == 0 { return String::new(); }
+    if n_pts == 0 || n_ser == 0 { return Chart::new(String::new()); }
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
     let pal = palette.unwrap_or_default();
     let pal_ref: &[u32] = if pal.is_empty() { PALETTE } else { &pal };
@@ -1094,7 +818,7 @@ fn build_multiline_chart(
             (name, vals)
         })
         .collect();
-    render_multiline_html(&MultiLineConfig {
+    crate::html::hover::apply_bg(render_multiline_html(&MultiLineConfig {
         title,
         x_label,
         y_label,
@@ -1107,34 +831,10 @@ fn build_multiline_chart(
         height,
         hover: &hover_slots,
         ..MultiLineConfig::default()
+    }), bg_color.as_deref())
     })
 }
 
-/// Build an area chart as a standalone HTML string.
-///
-/// Renders filled areas under each series line. Supports stacked mode where areas
-/// are layered on top of each other.
-///
-/// Args:
-///     title (str): Chart title.
-///     x_labels (list[str]): Shared X-axis labels.
-///     series_names (list[str]): Name for each area series.
-///     series_values (list[float]): Flat array [s0_x0, s0_x1, ..., s1_x0, ...].
-///     stacked (bool): If True, areas are stacked. Default: False.
-///     palette (list[int] | None): Custom hex colors.
-///     x_label (str): X-axis label. Default: "".
-///     y_label (str): Y-axis label. Default: "".
-///     gridlines (bool): Show gridlines. Default: True.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 1100.
-///     height (int): SVG height. Default: 480.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with the area chart.
-///
-/// Example:
-///     >>> html = seraplot.build_area_chart("Traffic", months, ["Desktop","Mobile"], vals, stacked=True)
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (title, x_labels, series_names, series_values, stacked=false, palette=None, x_label="", y_label="", gridlines=true, sort_order="none", width=1100, height=480, hover_json=None), text_signature = "(title, x_labels, series_names, series_values, stacked=False, palette=None, x_label='', y_label='', gridlines=True, sort_order='none', width=1100, height=480, hover_json=None)")]
@@ -1152,12 +852,13 @@ fn build_area_chart(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{AreaConfig, render_area_html, parse_hover_json};
     use crate::plot::statistical::common::PALETTE;
     let n_pts = x_labels.len();
     let n_ser = series_names.len();
-    if n_pts == 0 || n_ser == 0 { return String::new(); }
+    if n_pts == 0 || n_ser == 0 { return Chart::new(String::new()); }
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
     let pal = palette.unwrap_or_default();
     let pal_ref: &[u32] = if pal.is_empty() { PALETTE } else { &pal };
@@ -1189,30 +890,9 @@ fn build_area_chart(
         hover: &hover_slots,
         ..AreaConfig::default()
     })
+    })
 }
 
-/// Build a treemap chart as a standalone HTML string.
-///
-/// Renders a squarify treemap layout with nested rectangles proportional to values.
-/// Supports parent-child hierarchy for color grouping.
-///
-/// Args:
-///     title (str): Chart title.
-///     labels (list[str]): Node labels.
-///     values (list[float]): Node values (positive numbers).
-///     parents (list[str] | None): Parent group for each node (for color grouping).
-///     palette (list[int] | None): Custom hex colors.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 1100.
-///     height (int): SVG height. Default: 520.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with the treemap.
-///
-/// Example:
-///     >>> html = seraplot.build_treemap("Disk Usage", ["Photos","Videos","Docs"], [4500,2300,800])
-///     >>> html = seraplot.build_treemap("Files", labels, values, parents=categories, sort_order="desc")
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (title, labels, values, parents=None, palette=None, sort_order="none", width=1100, height=520, hover_json=None), text_signature = "(title, labels, values, parents=None, palette=None, sort_order='none', width=1100, height=520, hover_json=None)")]
@@ -1226,7 +906,8 @@ fn build_treemap(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{TreemapConfig, render_treemap_html, parse_hover_json};
     use crate::plot::statistical::common::PALETTE;
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
@@ -1245,28 +926,9 @@ fn build_treemap(
         sort_order,
         ..TreemapConfig::default()
     })
+    })
 }
 
-/// Build a box plot as a standalone HTML string.
-///
-/// Computes quartiles, median, whiskers, and outliers for each category automatically.
-/// Values are split evenly across categories.
-///
-/// Args:
-///     title (str): Chart title.
-///     category_labels (list[str]): Category names for the X axis.
-///     values (list[float]): Flat array of all values, split evenly across categories.
-///     palette (list[int] | None): Custom hex colors per category.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 900.
-///     height (int): SVG height. Default: 500.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with the box plot.
-///
-/// Example:
-///     >>> html = seraplot.build_boxplot("Score by Class", ["A","B","C"], all_scores)
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (title, category_labels, values, palette=None, sort_order="none", width=900, height=500, hover_json=None), text_signature = "(title, category_labels, values, palette=None, sort_order='none', width=900, height=500, hover_json=None)")]
@@ -1279,39 +941,17 @@ fn build_boxplot(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{render_boxplot_html, parse_hover_json};
     use crate::plot::statistical::common::PALETTE;
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
     let pal = palette.unwrap_or_default();
     let pal_ref: &[u32] = if pal.is_empty() { PALETTE } else { &pal };
     render_boxplot_html(title, &category_labels, &values, width, height, pal_ref, &hover_slots)
+    })
 }
 
-/// Build a horizontal bar chart as a standalone HTML string.
-///
-/// Shortcut for build_bar_chart with orientation="h". Kept for backward compatibility.
-///
-/// Args:
-///     title (str): Chart title.
-///     labels (list[str]): Category labels (Y axis for horizontal bars).
-///     values (list[float]): Bar values.
-///     color_groups (list[str] | None): Group name per bar for coloring.
-///     show_text (bool): Show value text on bars. Default: True.
-///     x_label (str): X-axis label (value axis). Default: "".
-///     palette (list[int] | None): Custom hex colors.
-///     color_hex (int): Single color. Default: 0 (auto).
-///     gridlines (bool): Show gridlines. Default: True.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 900.
-///     height (int): SVG height. Default: 500.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with the horizontal bar chart.
-///
-/// Example:
-///     >>> html = seraplot.build_hbar("Top Languages", langs, popularity, sort_order="desc")
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (title, labels, values, color_groups=None, show_text=true, x_label="", palette=None, color_hex=0, gridlines=true, sort_order="none", width=900, height=500, hover_json=None), text_signature = "(title, labels, values, color_groups=None, show_text=True, x_label='', palette=None, color_hex=0, gridlines=True, sort_order='none', width=900, height=500, hover_json=None)")]
@@ -1329,7 +969,8 @@ fn build_hbar(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+) -> Chart {
+    Chart::new({
     use crate::html::hover::parse_hover_json;
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
     let pal = palette.unwrap_or_default();
@@ -1338,26 +979,9 @@ fn build_hbar(
         title, &labels, &values, width, height, &hover_slots,
         b'h', &cg, show_text, x_label, "", &pal, color_hex, gridlines, sort_order,
     )
+    })
 }
 
-/// Build a choropleth world map as a standalone HTML string.
-///
-/// Colors countries based on values using a diverging color scale.
-///
-/// Args:
-///     title (str): Map title.
-///     labels (list[str]): Country names or ISO codes.
-///     values (list[float]): Values per country.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 1200.
-///     height (int): SVG height. Default: 600.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with the choropleth map.
-///
-/// Example:
-///     >>> html = seraplot.build_choropleth("GDP per Capita", countries, gdp_values)
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (title, labels, values, sort_order="none", width=1200, height=600, hover_json=None), text_signature = "(title, labels, values, sort_order='none', width=1200, height=600, hover_json=None)")]
@@ -1369,30 +993,14 @@ fn build_choropleth(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+) -> Chart {
+    Chart::new({
     use crate::html::hover::parse_hover_json;
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
     crate::plot::map::render_choropleth_html(title, &labels, &values, width, height, &hover_slots)
+    })
 }
 
-/// Build a bubble map as a standalone HTML string.
-///
-/// Places sized bubbles on a world map at country locations.
-///
-/// Args:
-///     title (str): Map title.
-///     labels (list[str]): Country names or ISO codes.
-///     values (list[float]): Values controlling bubble size.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     width (int): SVG width. Default: 1200.
-///     height (int): SVG height. Default: 600.
-///     hover_json (str | None): Custom hover tooltips JSON.
-///
-/// Returns:
-///     str: HTML string with the bubble map.
-///
-/// Example:
-///     >>> html = seraplot.build_bubble_map("Population", countries, populations)
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (title, labels, values, sort_order="none", width=1200, height=600, hover_json=None), text_signature = "(title, labels, values, sort_order='none', width=1200, height=600, hover_json=None)")]
@@ -1404,36 +1012,17 @@ fn build_bubble_map(
     width: i32,
     height: i32,
     hover_json: Option<String>,
-) -> String {
+) -> Chart {
+    Chart::new({
     use crate::html::hover::parse_hover_json;
     let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
     crate::plot::map::render_bubble_map_html(title, &labels, &values, width, height, &hover_slots)
+    })
 }
 
-/// Build a funnel chart as a standalone HTML string.
-///
-/// Displays stages of a process as a tapering funnel, ideal for conversion analysis.
-///
-/// Args:
-///     title (str): Chart title.
-///     labels (list[str]): Stage labels from top (largest) to bottom.
-///     values (list[float]): Numeric value for each stage.
-///     sort_order (str): "asc", "desc", "alpha", "alpha_desc", or "none". Default: "none".
-///     show_text (bool): Show percentage and value labels. Default: True.
-///     palette (list[int] | None): Custom RGBA color palette.
-///     width (int): SVG width. Default: 800.
-///     height (int): SVG height. Default: 480.
-///
-/// Returns:
-///     str: HTML string with the funnel chart.
-///
-/// Example:
-///     >>> html = seraplot.build_funnel("Sales Funnel",
-///     ...     ["Leads","Qualified","Proposals","Won"],
-///     ...     [5000.0, 2500.0, 1200.0, 400.0])
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, sort_order="none", show_text=true, palette=None, width=800, height=480), text_signature = "(title, labels, values, sort_order='none', show_text=True, palette=None, width=800, height=480)")]
+#[pyo3(signature = (title, labels, values, sort_order="none", show_text=true, palette=None, width=800, height=480, bg_color=None), text_signature = "(title, labels, values, sort_order='none', show_text=True, palette=None, width=800, height=480, bg_color=None)")]
 fn build_funnel(
     title: &str,
     labels: Vec<String>,
@@ -1443,13 +1032,15 @@ fn build_funnel(
     palette: Option<Vec<u32>>,
     width: i32,
     height: i32,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{FunnelConfig, render_funnel_html};
     use crate::plot::statistical::common::{apply_sort, PALETTE};
     let (labels, values) = apply_sort(&labels, &values, sort_order);
     let pal = palette.unwrap_or_default();
     let pal_ref: &[u32] = if pal.is_empty() { PALETTE } else { &pal };
-    render_funnel_html(&FunnelConfig {
+    crate::html::hover::apply_bg(render_funnel_html(&FunnelConfig {
         title,
         labels: &labels,
         values: &values,
@@ -1457,33 +1048,13 @@ fn build_funnel(
         show_text,
         width,
         height,
+    }), bg_color.as_deref())
     })
 }
 
-/// Build a sunburst chart as a standalone HTML string.
-///
-/// Visualizes hierarchical data as nested arcs (ring chart). Each node must have
-/// a parent except for top-level nodes which have empty parent strings.
-///
-/// Args:
-///     title (str): Chart title.
-///     labels (list[str]): Node labels.
-///     parents (list[str]): Parent label for each node. Use "" for root nodes.
-///     values (list[float]): Numeric value for each leaf node.
-///     width (int): SVG width. Default: 700.
-///     height (int): SVG height. Default: 700.
-///
-/// Returns:
-///     str: HTML string with the sunburst chart.
-///
-/// Example:
-///     >>> html = seraplot.build_sunburst("World Population",
-///     ...     ["Americas","Europe","Asia","Brazil","France","China"],
-///     ...     ["","","","Americas","Europe","Asia"],
-///     ...     [0.0, 0.0, 0.0, 214.0, 68.0, 1412.0])
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, parents, values, width=700, height=700), text_signature = "(title, labels, parents, values, width=700, height=700)")]
+#[pyo3(signature = (title, labels, parents, values, width=700, height=700, bg_color=None), text_signature = "(title, labels, parents, values, width=700, height=700, bg_color=None)")]
 fn build_sunburst(
     title: &str,
     labels: Vec<String>,
@@ -1491,41 +1062,21 @@ fn build_sunburst(
     values: Vec<f64>,
     width: i32,
     height: i32,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{SunburstConfig, render_sunburst_html};
-    render_sunburst_html(&SunburstConfig {
+    crate::html::hover::apply_bg(render_sunburst_html(&SunburstConfig {
         title,
         labels: &labels,
         parents: &parents,
         values: &values,
         width,
         height,
+    }), bg_color.as_deref())
     })
 }
 
-/// Build a waterfall chart as a standalone HTML string.
-///
-/// Shows cumulative effect of sequential positive and negative values.
-/// Labels containing "total", "net", or "final" are rendered as full bars.
-///
-/// Args:
-///     title (str): Chart title.
-///     labels (list[str]): Category labels.
-///     values (list[float]): Delta values (positive = up, negative = down).
-///     x_label (str): X-axis label. Default: "".
-///     y_label (str): Y-axis label. Default: "".
-///     show_text (bool): Show value labels above bars. Default: True.
-///     gridlines (bool): Show horizontal gridlines. Default: True.
-///     width (int): SVG width. Default: 900.
-///     height (int): SVG height. Default: 480.
-///
-/// Returns:
-///     str: HTML string with the waterfall chart.
-///
-/// Example:
-///     >>> html = seraplot.build_waterfall("Revenue Bridge",
-///     ...     ["Start","Q1","Q2","Q3","Q4","Total"],
-///     ...     [100.0, 25.0, -10.0, 30.0, -5.0, 0.0])
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (title, labels, values, x_label="", y_label="", show_text=true, gridlines=true, width=900, height=480), text_signature = "(title, labels, values, x_label='', y_label='', show_text=True, gridlines=True, width=900, height=480)")]
@@ -1539,7 +1090,8 @@ fn build_waterfall(
     gridlines: bool,
     width: i32,
     height: i32,
-) -> String {
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{WaterfallConfig, render_waterfall_html};
     render_waterfall_html(&WaterfallConfig {
         title,
@@ -1552,33 +1104,12 @@ fn build_waterfall(
         width,
         height,
     })
+    })
 }
 
-/// Build a violin plot as a standalone HTML string.
-///
-/// Displays the probability density of values per category using kernel density estimation.
-/// Includes IQR box and median line overlay.
-///
-/// Args:
-///     title (str): Chart title.
-///     categories (list[str]): Category label for each data point.
-///     values (list[float]): Numeric values (one per data point).
-///     x_label (str): X-axis label. Default: "".
-///     y_label (str): Y-axis label. Default: "".
-///     palette (list[int] | None): Custom RGBA color palette.
-///     gridlines (bool): Show horizontal gridlines. Default: True.
-///     width (int): SVG width. Default: 900.
-///     height (int): SVG height. Default: 500.
-///
-/// Returns:
-///     str: HTML string with the violin plot.
-///
-/// Example:
-///     >>> html = seraplot.build_violin("Score Distribution",
-///     ...     ["A","A","B","B","C"], [88.0, 92.0, 75.0, 80.0, 95.0])
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, categories, values, x_label="", y_label="", palette=None, gridlines=true, width=900, height=500), text_signature = "(title, categories, values, x_label='', y_label='', palette=None, gridlines=True, width=900, height=500)")]
+#[pyo3(signature = (title, categories, values, x_label="", y_label="", palette=None, gridlines=true, width=900, height=500, bg_color=None), text_signature = "(title, categories, values, x_label='', y_label='', palette=None, gridlines=True, width=900, height=500, bg_color=None)")]
 fn build_violin(
     title: &str,
     categories: Vec<String>,
@@ -1589,12 +1120,14 @@ fn build_violin(
     gridlines: bool,
     width: i32,
     height: i32,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{ViolinConfig, render_violin_html};
     use crate::plot::statistical::common::PALETTE;
     let pal = palette.unwrap_or_default();
     let pal_ref: &[u32] = if pal.is_empty() { PALETTE } else { &pal };
-    render_violin_html(&ViolinConfig {
+    crate::html::hover::apply_bg(render_violin_html(&ViolinConfig {
         title,
         categories: &categories,
         values: &values,
@@ -1604,35 +1137,13 @@ fn build_violin(
         gridlines,
         width,
         height,
+    }), bg_color.as_deref())
     })
 }
 
-/// Build a slope chart as a standalone HTML string.
-///
-/// Compares values of multiple items between two time points or conditions.
-/// Rising lines are green, falling lines are red.
-///
-/// Args:
-///     title (str): Chart title.
-///     labels (list[str]): Item labels.
-///     values_left (list[float]): Values at the left (start) point.
-///     values_right (list[float]): Values at the right (end) point.
-///     left_label (str): Label for the left axis. Default: "Before".
-///     right_label (str): Label for the right axis. Default: "After".
-///     palette (list[int] | None): Custom color palette.
-///     show_text (bool): Show labels and values at each endpoint. Default: True.
-///     width (int): SVG width. Default: 700.
-///     height (int): SVG height. Default: 500.
-///
-/// Returns:
-///     str: HTML string with the slope chart.
-///
-/// Example:
-///     >>> html = seraplot.build_slope("Country Rank Change",
-///     ...     ["US","China","India"], [1.0,2.0,3.0], [1.0,2.0,3.0])
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values_left, values_right, left_label="Before", right_label="After", palette=None, show_text=true, width=700, height=500), text_signature = "(title, labels, values_left, values_right, left_label='Before', right_label='After', palette=None, show_text=True, width=700, height=500)")]
+#[pyo3(signature = (title, labels, values_left, values_right, left_label="Before", right_label="After", palette=None, show_text=true, width=700, height=500, bg_color=None), text_signature = "(title, labels, values_left, values_right, left_label='Before', right_label='After', palette=None, show_text=True, width=700, height=500, bg_color=None)")]
 fn build_slope(
     title: &str,
     labels: Vec<String>,
@@ -1644,12 +1155,14 @@ fn build_slope(
     show_text: bool,
     width: i32,
     height: i32,
-) -> String {
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{SlopeConfig, render_slope_html};
     use crate::plot::statistical::common::PALETTE;
     let pal = palette.unwrap_or_default();
     let pal_ref: &[u32] = if pal.is_empty() { PALETTE } else { &pal };
-    render_slope_html(&SlopeConfig {
+    crate::html::hover::apply_bg(render_slope_html(&SlopeConfig {
         title,
         labels: &labels,
         values_left: &values_left,
@@ -1660,32 +1173,10 @@ fn build_slope(
         show_text,
         width,
         height,
+    }), bg_color.as_deref())
     })
 }
 
-/// Build a bullet chart as a standalone HTML string.
-///
-/// A compact bar chart showing actual values versus targets and performance ranges.
-/// Useful for KPI dashboards.
-///
-/// Args:
-///     title (str): Chart title.
-///     labels (list[str]): KPI labels.
-///     values (list[float]): Actual values (the bullet bars).
-///     targets (list[float]): Target values shown as vertical markers. Default: [].
-///     max_vals (list[float]): Maximum scale per row. Auto if empty. Default: [].
-///     ranges (list[float]): Qualitative range value (shows a lighter shaded region). Default: [].
-///     width (int): SVG width. Default: 800.
-///     height (int): SVG height. Default: 300.
-///
-/// Returns:
-///     str: HTML string with the bullet chart.
-///
-/// Example:
-///     >>> html = seraplot.build_bullet("KPIs",
-///     ...     ["Revenue","Users","NPS"],
-///     ...     [820.0, 7400.0, 42.0],
-///     ...     targets=[1000.0, 8000.0, 50.0])
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (title, labels, values, targets=None, max_vals=None, ranges=None, width=800, height=300), text_signature = "(title, labels, values, targets=None, max_vals=None, ranges=None, width=800, height=300)")]
@@ -1698,7 +1189,8 @@ fn build_bullet(
     ranges: Option<Vec<f64>>,
     width: i32,
     height: i32,
-) -> String {
+) -> Chart {
+    Chart::new({
     use crate::plot::statistical::{BulletConfig, render_bullet_html};
     let targets = targets.unwrap_or_default();
     let max_vals = max_vals.unwrap_or_default();
@@ -1712,5 +1204,6 @@ fn build_bullet(
         ranges: &ranges,
         width,
         height,
+    })
     })
 }
