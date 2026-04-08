@@ -398,9 +398,6 @@ impl eframe::App for ChartApp {
                 if clicked.contains_key(&ButtonId::Transform) {
                     self.show_transform_menu = !self.show_transform_menu;
                 }
-                // if clicked.contains_key(&ButtonId::Stats) {
-                //     self.show_stats = !self.show_stats;
-                // }
                 if clicked.contains_key(&ButtonId::Info) {
                     self.show_info = !self.show_info;
                     self.button_manager.show_info(self.show_info);

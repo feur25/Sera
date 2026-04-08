@@ -8,6 +8,9 @@ use super::super::containers_3d::CameraController;
 pub use bar_3d::*;
 pub use line_3d::*;
 pub use scatter_3d::*;
+pub use scatter_3d::render_scatter3d_html;
+pub use bar_3d::render_bar3d_html;
+pub use line_3d::render_line3d_html;
 pub use plot_3d_types::register_default_3d_types;
 
 pub fn get_3d_positions(

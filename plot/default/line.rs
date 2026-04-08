@@ -146,3 +146,65 @@ pub fn render_svg_lines(
         prev_pos = Some((x, y));
     }
 }
+
+pub fn render_lines_html(
+    title: &str,
+    labels: &[String],
+    values: &[f64],
+    width: i32,
+    height: i32,
+    hover: &[crate::html::hover::HoverSlot],
+) -> String {
+    use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+    let n = values.len().min(labels.len());
+    if n < 2 { return String::new(); }
+    let (_, max_val) = crate::bindings::utils::simd_ops::find_minmax(values);
+    let max_val = max_val.max(1.0);
+    let pad_l = 52i32; let pad_t = 36i32; let pad_b = 48i32; let pad_r = 20i32;
+    let plot_w = width - pad_l - pad_r;
+    let plot_h = height - pad_t - pad_b;
+    let step_x = plot_w as f64 / (n - 1).max(1) as f64;
+    const PALETTE: &[u32] = &[0x4C72B0, 0xDD8452, 0x55A868, 0xC44E52, 0x8172B3, 0x64B5CD, 0xDA8BC3, 0xCCB974, 0x937860, 0x8C8C8C];
+    let auto = hover.is_empty();
+    let mut auto_slots: Vec<HoverSlot> = if auto { Vec::with_capacity(n) } else { Vec::new() };
+    let mut buf = String::with_capacity(n * 200 + 2048);
+    buf.push_str(&format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{width}\" height=\"{height}\" viewBox=\"0 0 {width} {height}\">"));
+    buf.push_str("<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
+    if !title.is_empty() {
+        buf.push_str(&format!("<text x=\"{}\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#1a202c\">{}</text>", width / 2, line_xml_esc(title)));
+    }
+    for i in 0..=5 {
+        let frac = i as f64 / 5.0;
+        let y = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
+        let val = frac * max_val;
+        if i > 0 {
+            buf.push_str(&format!("<line x1=\"{pad_l}\" y1=\"{y}\" x2=\"{}\" y2=\"{y}\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>", pad_l + plot_w));
+        }
+        let lbl = if val >= 1000.0 { format!("{:.0}", val) } else if val >= 1.0 { format!("{:.1}", val) } else { format!("{:.2}", val) };
+        buf.push_str(&format!("<text x=\"{}\" y=\"{}\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">{lbl}</text>", pad_l - 4, y + 3));
+    }
+    buf.push_str(&format!("<line x1=\"{pad_l}\" y1=\"{pad_t}\" x2=\"{pad_l}\" y2=\"{}\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>", pad_t + plot_h));
+    buf.push_str(&format!("<line x1=\"{pad_l}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>", pad_t + plot_h, pad_l + plot_w, pad_t + plot_h));
+    buf.push_str("<polyline fill=\"none\" stroke=\"#4C72B0\" stroke-width=\"2\" points=\"");
+    for i in 0..n {
+        let x = pad_l + (i as f64 * step_x) as i32;
+        let y = pad_t + plot_h - ((values[i] / max_val) * plot_h as f64) as i32;
+        if i > 0 { buf.push(' '); }
+        buf.push_str(&format!("{x},{y}"));
+    }
+    buf.push_str("\"/>");
+    for i in 0..n {
+        let x = pad_l + (i as f64 * step_x) as i32;
+        let y = pad_t + plot_h - ((values[i] / max_val) * plot_h as f64) as i32;
+        let color = PALETTE[i % PALETTE.len()];
+        buf.push_str(&format!("<circle data-idx=\"{i}\" cx=\"{x}\" cy=\"{y}\" r=\"4\" fill=\"#{color:06x}\" stroke=\"#fff\" stroke-width=\"1.5\"/>"));
+        buf.push_str(&format!("<text x=\"{x}\" y=\"{}\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">{}</text>", pad_t + plot_h + 14, line_xml_esc(line_trunc(&labels[i], 10))));
+        if auto { auto_slots.push(HoverSlot::new(labels[i].clone()).kv("Valeur", format!("{:.2}", values[i]))); }
+    }
+    buf.push_str("</svg>");
+    let slots = if auto { &auto_slots } else { hover };
+    build_chart_html(title, &buf, &slots_to_json(slots))
+}
+
+#[inline] fn line_xml_esc(s: &str) -> String { s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;") }
+#[inline] fn line_trunc(s: &str, max: usize) -> &str { if s.len() <= max { s } else { &s[..max] } }

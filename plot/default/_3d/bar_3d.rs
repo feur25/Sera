@@ -142,3 +142,20 @@ pub fn get_3d_positions(
     
     positions
 }
+
+pub fn render_bar3d_html(
+    title: &str,
+    x_values: &[f64],
+    y_values: &[f64],
+    z_values: &[f64],
+    axis_labels: (&str, &str, &str),
+    color_values: &[f64],
+    color_labels: &[String],
+    width: i32,
+    height: i32,
+) -> String {
+    crate::html::js_3d::render_3d_html(
+        1, title, x_values, y_values, z_values,
+        axis_labels, color_values, color_labels, width, height,
+    )
+}

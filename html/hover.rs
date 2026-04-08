@@ -1,0 +1,365 @@
+use std::sync::atomic::{AtomicU64, Ordering};
+static CHART_ID: AtomicU64 = AtomicU64::new(1);
+
+#[derive(Clone)]
+pub struct HoverSlot {
+    pub title: String,
+    pub kv: Vec<(String, String)>,
+    pub image: Option<String>,
+    pub video: Option<String>,
+    pub html: Option<String>,
+}
+
+impl Default for HoverSlot {
+    fn default() -> Self {
+        HoverSlot { title: String::new(), kv: Vec::new(), image: None, video: None, html: None }
+    }
+}
+
+impl HoverSlot {
+    pub fn new(title: impl Into<String>) -> Self {
+        HoverSlot { title: title.into(), ..Default::default() }
+    }
+    pub fn kv(mut self, k: impl Into<String>, v: impl Into<String>) -> Self {
+        self.kv.push((k.into(), v.into())); self
+    }
+    pub fn image(mut self, url: impl Into<String>) -> Self { self.image = Some(url.into()); self }
+    pub fn video(mut self, url: impl Into<String>) -> Self { self.video = Some(url.into()); self }
+    pub fn html(mut self, h: impl Into<String>) -> Self { self.html = Some(h.into()); self }
+}
+
+pub fn slots_to_json(slots: &[HoverSlot]) -> String {
+    let mut buf = Vec::with_capacity(slots.len() * 128 + 4);
+    buf.push(b'[');
+    for (i, s) in slots.iter().enumerate() {
+        if i > 0 { buf.push(b','); }
+        buf.push(b'{');
+        buf.extend_from_slice(b"\"title\":");
+        json_str(&mut buf, &s.title);
+        buf.extend_from_slice(b",\"kv\":[");
+        for (ki, (k, v)) in s.kv.iter().enumerate() {
+            if ki > 0 { buf.push(b','); }
+            buf.push(b'[');
+            json_str(&mut buf, k);
+            buf.push(b',');
+            json_str(&mut buf, v);
+            buf.push(b']');
+        }
+        buf.push(b']');
+        if let Some(ref img) = s.image {
+            buf.extend_from_slice(b",\"image\":");
+            json_str(&mut buf, img);
+        }
+        if let Some(ref vid) = s.video {
+            buf.extend_from_slice(b",\"video\":");
+            json_str(&mut buf, vid);
+        }
+        if let Some(ref h) = s.html {
+            buf.extend_from_slice(b",\"html\":");
+            json_str(&mut buf, h);
+        }
+        buf.push(b'}');
+    }
+    buf.push(b']');
+    unsafe { String::from_utf8_unchecked(buf) }
+}
+
+fn json_str(buf: &mut Vec<u8>, s: &str) {
+    buf.push(b'"');
+    for byte in s.bytes() {
+        match byte {
+            b'"'  => buf.extend_from_slice(b"\\\""),
+            b'\\' => buf.extend_from_slice(b"\\\\"),
+            b'\n' => buf.extend_from_slice(b"\\n"),
+            b'\r' => buf.extend_from_slice(b"\\r"),
+            b'\t' => buf.extend_from_slice(b"\\t"),
+            0x00..=0x1f => {
+                let h = b"0123456789abcdef";
+                buf.extend_from_slice(b"\\u00");
+                buf.push(h[(byte >> 4) as usize]);
+                buf.push(h[(byte & 0xf) as usize]);
+            }
+            _ => buf.push(byte),
+        }
+    }
+    buf.push(b'"');
+}
+
+pub fn parse_hover_json(json: &str) -> Vec<HoverSlot> {
+    if json.is_empty() { return Vec::new(); }
+    let Ok(arr) = serde_json::from_str::<serde_json::Value>(json) else { return Vec::new(); };
+    let serde_json::Value::Array(arr) = arr else { return Vec::new(); };
+    arr.into_iter().map(|obj| {
+        let mut slot = HoverSlot::default();
+        if let serde_json::Value::Object(map) = obj {
+            if let Some(serde_json::Value::String(t)) = map.get("title") { slot.title = t.clone(); }
+            if let Some(serde_json::Value::Array(kv)) = map.get("kv") {
+                slot.kv = kv.iter().filter_map(|pair| {
+                    let serde_json::Value::Array(p) = pair else { return None; };
+                    let k = p.first().and_then(|v| v.as_str()).unwrap_or("").to_string();
+                    let v = p.get(1).and_then(|v| v.as_str()).unwrap_or("").to_string();
+                    Some((k, v))
+                }).collect();
+            }
+            if let Some(serde_json::Value::String(s)) = map.get("image") { slot.image = Some(s.clone()); }
+            if let Some(serde_json::Value::String(s)) = map.get("video") { slot.video = Some(s.clone()); }
+            if let Some(serde_json::Value::String(s)) = map.get("html")  { slot.html  = Some(s.clone()); }
+        }
+        slot
+    }).collect()
+}
+
+pub const HOVER_CSS: &str = "";
+pub const HOVER_JS:  &str = "";
+
+
+
+const JS_P1: &str = "<script>(function(){\nvar wrap=document.getElementById('";
+
+const JS_P2: &str = "');if(!wrap)return;wrap.removeAttribute('id');\nvar svg=wrap.querySelector('svg');var data=";
+
+const JS_P3: &str = r#";
+
+var tip=document.getElementById('sp-tip');
+if(!tip){tip=document.createElement('div');tip.id='sp-tip';document.body.appendChild(tip);}
+var tipIdxs=[],tipPos=0,lastE=null;
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function cardHTML(d){
+ var h='';if(d.title)h+='<div class="sp-head">'+esc(d.title)+'</div>';
+ var rows='';(d.kv||[]).forEach(function(p){
+  rows+='<div class="sp-row"><span class="sp-key">'+esc(p[0])+'</span><span class="sp-val">'+esc(p[1])+'</span></div>';});
+ if(rows)h+='<div class="sp-body">'+rows+'</div>';
+ if(d.image)h+='<img src="'+esc(d.image)+'" alt="" loading="lazy">';
+ if(d.video)h+='<video src="'+esc(d.video)+'" controls muted playsinline></video>';
+ if(d.html)h+='<div class="sp-html">'+d.html+'</div>';
+ return h;}
+function placeTip(e){
+ var sx=window.scrollX||0,sy=window.scrollY||0;
+ var x=e.pageX+16,y=e.pageY-14;
+ var tw=tip.offsetWidth||220,th=tip.offsetHeight||60;
+ if(x+tw>sx+window.innerWidth-6)x=e.pageX-tw-16;
+ if(x<sx+4)x=sx+4;
+ if(y<sy+6)y=e.pageY+20;
+ if(y+th>sy+window.innerHeight-6)y=sy+window.innerHeight-th-6;
+ tip.style.left=x+'px';tip.style.top=y+'px';}
+
+function getSlot(idx){
+ var d=data[idx];if(d)return d;
+ var el=svg.querySelector('[data-idx="'+idx+'"]');if(!el)return null;
+ var kv=[];
+ var x=el.getAttribute('data-x'),y=el.getAttribute('data-y');
+ if(x!=null&&y!=null){kv.push(['X',parseFloat(x).toFixed(2)],['Y',parseFloat(y).toFixed(2)]);}
+ var v=el.getAttribute('data-v');
+ if(v!=null){
+  var r=el.getAttribute('data-r'),c=el.getAttribute('data-c');
+  kv.push(['Valeur',parseFloat(v).toFixed(3)]);
+  if(r)kv.push(['Ligne',r]);if(c)kv.push(['Colonne',c]);}
+ var z=el.getAttribute('data-z');
+ if(z!=null&&x!=null&&y!=null){kv.push(['Z',parseFloat(z).toFixed(2)]);}
+ else if(z!=null){kv.push(['Z',parseFloat(z).toFixed(2)]);}
+ var lbl=el.getAttribute('data-lbl');
+ var title=lbl||(v!=null&&el.getAttribute('data-r')!=null?el.getAttribute('data-r')+' \u00d7 '+el.getAttribute('data-c'):'Point '+(idx+1));
+ return{title:title,kv:kv};}
+function renderTip(){
+ if(!tipIdxs.length){tip.classList.remove('sp-vis');return;}
+ var d=getSlot(tipIdxs[tipPos]);if(!d){tip.classList.remove('sp-vis');return;}
+ var h=cardHTML(d);
+ if(tipIdxs.length>1){
+  var p=tipPos,n=tipIdxs.length;
+  h+='<div class="sp-nav">'
+   +'<span class="sp-nav-btn'+(p>0?'':' sp-nav-dis')+'" data-d="-1">&#8249;</span>'
+   +'<span class="sp-nav-ctr">'+(p+1)+' / '+n+'</span>'
+   +'<span class="sp-nav-btn'+(p<n-1?'':' sp-nav-dis')+'" data-d="1">&#8250;</span>'
+   +'</div>';}
+ tip.innerHTML=h;tip.classList.add('sp-vis');
+ if(lastE)placeTip(lastE);
+ tip.querySelectorAll('.sp-nav-btn:not(.sp-nav-dis)').forEach(function(btn){
+  btn.onclick=function(ev){ev.stopPropagation();
+   var nd=tipPos+parseInt(btn.getAttribute('data-d'),10);
+   if(nd>=0&&nd<tipIdxs.length){tipPos=nd;renderTip();}};});}
+var dragging=false,dsx=0,dsy=0,moved=false,pinned=false;
+
+wrap.addEventListener('mouseleave',function(e){
+ if(pinned)return;
+ var rt=e.relatedTarget;
+ if(rt&&(rt===tip||tip.contains(rt)))return;
+ tip.classList.remove('sp-vis');tipIdxs=[];});
+wrap.addEventListener('mousemove',function(e){
+ if(dragging||pinned)return;
+ lastE=e;
+
+ var hits=[];
+ document.elementsFromPoint(e.clientX,e.clientY).forEach(function(el){
+  if(el===tip||tip.contains(el))return;
+  var found=null;
+  for(var n=el;n&&n!==document.body;n=n.parentElement){
+   if(found===null&&n.getAttribute&&n.getAttribute('data-idx')!==null)found=n;
+   if(n===wrap){
+    if(found!==null){var idx=parseInt(found.getAttribute('data-idx'),10);
+     if(hits.indexOf(idx)===-1)hits.push(idx);}
+    return;}
+  }
+ });
+ if(hits.length){
+  var same=hits.length===tipIdxs.length&&hits.every(function(v,i){return v===tipIdxs[i];});
+  if(!same){tipIdxs=hits;tipPos=0;renderTip();}else placeTip(e);
+ }else{tip.classList.remove('sp-vis');tipIdxs=[];}});
+
+var origVB=svg.getAttribute('viewBox')||'';
+function parseVB(s){return s.split(/[\s,]+/).map(Number);}
+function animateVB(x,y,w,h){
+ svg.style.transition='all 0.5s cubic-bezier(.4,0,.2,1)';
+ svg.setAttribute('viewBox',x+' '+y+' '+w+' '+h);}
+function resetVB(){
+ svg.style.transition='all 0.45s cubic-bezier(.4,0,.2,1)';
+ if(origVB)svg.setAttribute('viewBox',origVB);
+ setTimeout(function(){svg.style.transition='';},500);}
+
+var ov=wrap.querySelector('.sp-sel-ov');var panel=wrap.querySelector('.sp-cpanel');
+wrap.addEventListener('mousedown',function(e){
+ if(e.button!==0)return;
+ var t=e.target;if(t===panel||panel.contains(t))return;if(t===tip||tip.contains(t))return;
+ dragging=true;moved=false;
+ var r=wrap.getBoundingClientRect();dsx=e.clientX-r.left;dsy=e.clientY-r.top;
+ ov.style.cssText='display:none;position:absolute;pointer-events:none;border:2px solid #4C72B0;background:rgba(76,114,176,.10);box-sizing:border-box;border-radius:2px;z-index:10';
+ e.preventDefault();});
+document.addEventListener('mousemove',function(e){if(!dragging)return;
+ var r=wrap.getBoundingClientRect();var cx=e.clientX-r.left,cy=e.clientY-r.top;
+ if(!moved&&Math.abs(cx-dsx)<8&&Math.abs(cy-dsy)<8)return;
+ if(!moved){pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}
+ moved=true;ov.style.display='block';
+ ov.style.left=Math.min(dsx,cx)+'px';ov.style.top=Math.min(dsy,cy)+'px';
+ ov.style.width=Math.abs(cx-dsx)+'px';ov.style.height=Math.abs(cy-dsy)+'px';});
+document.addEventListener('mouseup',function(e){if(!dragging)return;dragging=false;
+ ov.style.display='none';if(!moved){
+ var ch=[];document.elementsFromPoint(e.clientX,e.clientY).forEach(function(el){if(el===tip||tip.contains(el))return;var fd=null;for(var n2=el;n2&&n2!==document.body;n2=n2.parentElement){if(fd===null&&n2.getAttribute&&n2.getAttribute('data-idx')!==null)fd=n2;if(n2===wrap){if(fd!==null){var idx=parseInt(fd.getAttribute('data-idx'),10);if(ch.indexOf(idx)===-1)ch.push(idx);}return;}}});
+ if(ch.length){pinned=true;tipIdxs=ch;tipPos=0;lastE=e;renderTip();}else{pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}return;}
+ var r=wrap.getBoundingClientRect();var cx=e.clientX-r.left,cy=e.clientY-r.top;
+ var rx1=Math.min(dsx,cx),ry1=Math.min(dsy,cy),rx2=Math.max(dsx,cx),ry2=Math.max(dsy,cy);
+ if(rx2-rx1<8&&ry2-ry1<8)return;
+ var ctm=svg.getScreenCTM();if(!ctm)return;var inv=ctm.inverse();
+ function toS(px,py){var pt=svg.createSVGPoint();pt.x=px+r.left;pt.y=py+r.top;return pt.matrixTransform(inv);}
+ var p1=toS(rx1,ry1),p2=toS(rx2,ry2);
+ var bx1=Math.min(p1.x,p2.x),by1=Math.min(p1.y,p2.y),bx2=Math.max(p1.x,p2.x),by2=Math.max(p1.y,p2.y);
+ var pts=svg.querySelectorAll('[data-idx]');var sel=[],unsel=[];
+ pts.forEach(function(el){try{var bb=el.getBBox();var ecx=bb.x+bb.width/2,ecy=bb.y+bb.height/2;
+  if(ecx>=bx1&&ecx<=bx2&&ecy>=by1&&ecy<=by2)sel.push(el);else unsel.push(el);}catch(ex){unsel.push(el);}});
+ if(!sel.length)return;
+ sel.forEach(function(el){el.style.stroke='#F59E0B';el.style.strokeWidth='2.5';el.style.opacity='';});
+ unsel.forEach(function(el){el.style.opacity='0';
+  setTimeout(function(){if(el.style.opacity==='0')el.style.display='none';},370);});
+
+ var mnx=Infinity,mny=Infinity,mxx=-Infinity,mxy=-Infinity;
+ sel.forEach(function(el){try{var bb=el.getBBox();
+  mnx=Math.min(mnx,bb.x);mny=Math.min(mny,bb.y);
+  mxx=Math.max(mxx,bb.x+bb.width);mxy=Math.max(mxy,bb.y+bb.height);}catch(ex){}});
+ var vb=parseVB(origVB.length?origVB:(svg.getAttribute('viewBox')||'0 0 800 500'));
+ var axL=mnx-vb[0],axT=mny-vb[1],axR=(vb[0]+vb[2])-mxx,axB=(vb[1]+vb[3])-mxy;
+ var sw=mxx-mnx||1,sh=mxy-mny||1;
+ var pL=Math.max(sw*0.12,axL>0?axL*0.7:sw*0.12);
+ var pR=Math.max(sw*0.08,axR>0?axR*0.5:sw*0.08);
+ var pT=Math.max(sh*0.12,axT>0?axT*0.7:sh*0.12);
+ var pB=Math.max(sh*0.20,axB>0?axB*0.8:sh*0.20);
+ animateVB(mnx-pL,mny-pT,(mxx+pR)-(mnx-pL),(mxy+pB)-(mny-pT));
+
+ var xs=sel.map(function(el){return parseFloat(el.getAttribute('data-x'));}).filter(Number.isFinite);
+ var ys=sel.map(function(el){return parseFloat(el.getAttribute('data-y'));}).filter(Number.isFinite);
+ var s='<span style="color:#F59E0B;font-weight:700">'+sel.length+' pts</span>';
+ if(xs.length&&ys.length){
+  var mx=xs.reduce(function(a,b){return a+b;})/xs.length;
+  var my=ys.reduce(function(a,b){return a+b;})/ys.length;
+  var vX=xs.map(function(v){return(v-mx)*(v-mx);}).reduce(function(a,b){return a+b;})/xs.length;
+  var vY=ys.map(function(v){return(v-my)*(v-my);}).reduce(function(a,b){return a+b;})/ys.length;
+  s+=' &middot; X&#772; <b>'+mx.toFixed(2)+'</b> &plusmn;'+Math.sqrt(vX).toFixed(2);
+  s+=' &middot; Y&#772; <b>'+my.toFixed(2)+'</b> &plusmn;'+Math.sqrt(vY).toFixed(2);}
+ s+=' <span class="sp-cls-x">&#10005;</span>';
+ panel.innerHTML=s;panel.style.display='block';
+ panel.querySelector('.sp-cls-x').addEventListener('click',clearSel);});
+function clearSel(){panel.style.display='none';resetVB();
+ svg.querySelectorAll('[data-idx]').forEach(function(el){
+  el.style.display='';el.style.opacity='';el.style.stroke='';el.style.strokeWidth='';});}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&pinned){pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}});
+})();</script>"#;
+
+pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
+    let id = CHART_ID.fetch_add(1, Ordering::Relaxed);
+    let pid = format!("spp{id}");
+
+    const CSS: &str = concat!(
+        "<style>",
+        "#sp-tip{position:absolute;z-index:999999;pointer-events:none;opacity:0;",
+          "transition:opacity .15s,transform .15s;transform:translateY(6px) scale(.97);",
+          "background:#0b0e18;color:#f1f5f9;",
+          "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;",
+          "font-size:13px;border-radius:10px;min-width:160px;max-width:340px;",
+          "box-shadow:0 4px 20px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.08);",
+          "overflow:hidden}",
+        "#sp-tip.sp-vis{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}",
+        ".sp-nav{display:flex;align-items:center;justify-content:space-between;",
+          "padding:5px 10px;border-top:1px solid rgba(255,255,255,.08)}",
+        ".sp-nav-btn{cursor:pointer;padding:0 10px;border-radius:5px;height:22px;",
+          "line-height:22px;font-size:18px;",
+          "background:rgba(255,255,255,.10);color:#e2e8f0;user-select:none;flex-shrink:0}",
+        ".sp-nav-btn:hover{background:rgba(255,255,255,.22)}",
+        ".sp-nav-dis{opacity:.25;pointer-events:none}",
+        ".sp-nav-ctr{flex:1;text-align:center;font-size:11px;color:#94a3b8}",
+        ".sp-head{padding:10px 14px 6px;font-weight:700;font-size:14px;color:#e2e8f0;",
+          "border-bottom:1px solid rgba(255,255,255,.08)}",
+        ".sp-body{padding:8px 14px 12px}",
+        ".sp-row{display:flex;justify-content:space-between;align-items:baseline;",
+          "gap:14px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}",
+        ".sp-row:last-child{border-bottom:none}",
+        ".sp-key{color:#94a3b8;font-size:12px;white-space:nowrap}",
+        ".sp-val{font-weight:600;font-size:12px;color:#f8fafc;text-align:right;word-break:break-all}",
+        "#sp-tip img{display:block;width:100%;max-height:210px;object-fit:contain;",
+          "border-top:1px solid rgba(255,255,255,.07)}",
+        "#sp-tip video{display:block;width:100%;border-top:1px solid rgba(255,255,255,.07)}",
+        ".sp-html{padding:8px 14px;font-size:12px;border-top:1px solid rgba(255,255,255,.07)}",
+        "[data-idx]{cursor:pointer;transition:opacity .35s,filter .15s}",
+        "[data-idx]:hover{filter:brightness(1.22)}",
+        ".sp-cpanel{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);",
+          "background:#0b0e18;color:#f1f5f9;",
+          "border-radius:10px;padding:8px 16px;font-size:12px;",
+          "font-family:-apple-system,Arial,sans-serif;",
+          "box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:20;white-space:nowrap;display:none}",
+        ".sp-cls-x{cursor:pointer;color:#94a3b8;margin-left:6px;font-size:13px}",
+        ".sp-cls-x:hover{color:#f87171}",
+        "</style>"
+    );
+
+    // Zero-copy JS injection: write P1 + pid + P2 + hover_json + P3
+    // Eliminates 2 runtime String allocations vs the old .replace() approach.
+    let mut buf = Vec::with_capacity(
+        128 + title.len() + CSS.len() + svg.len()
+            + JS_P1.len() + pid.len() + JS_P2.len() + hover_json.len() + JS_P3.len() + 64,
+    );
+    buf.extend_from_slice(b"<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>");
+    buf.extend_from_slice(html_attr_esc(title).as_bytes());
+    buf.extend_from_slice(b"</title>");
+    buf.extend_from_slice(CSS.as_bytes());
+    buf.extend_from_slice(b"<style>body{margin:0;background:#fff}</style></head><body>");
+    buf.extend_from_slice(b"<div id=\"");
+    buf.extend_from_slice(pid.as_bytes());
+    buf.extend_from_slice(b"\" style=\"position:relative;display:inline-block\">");
+    buf.extend_from_slice(svg.as_bytes());
+    buf.extend_from_slice(b"<div class=\"sp-sel-ov\" style=\"display:none\"></div>");
+    buf.extend_from_slice(b"<div class=\"sp-cpanel\"></div>");
+    buf.extend_from_slice(JS_P1.as_bytes());
+    buf.extend_from_slice(pid.as_bytes());
+    buf.extend_from_slice(JS_P2.as_bytes());
+    buf.extend_from_slice(hover_json.as_bytes());
+    buf.extend_from_slice(JS_P3.as_bytes());
+    buf.extend_from_slice(b"</div></body></html>");
+    unsafe { String::from_utf8_unchecked(buf) }
+}
+
+#[inline]
+fn html_attr_esc(s: &str) -> std::borrow::Cow<'_, str> {
+    if s.bytes().any(|b| b == b'<' || b == b'>' || b == b'&' || b == b'"') {
+        std::borrow::Cow::Owned(
+            s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;").replace('"', "&quot;"),
+        )
+    } else {
+        std::borrow::Cow::Borrowed(s)
+    }
+}

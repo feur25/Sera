@@ -8,6 +8,8 @@ pub mod controller;
 pub mod default;
 pub mod scale_renderer;
 pub mod map;
+pub mod seaborn;
+pub mod statistical;
 
 pub use canvas::*;
 pub use renderers::*;
@@ -16,3 +18,5 @@ pub use camera::*;
 pub use projection::*;
 pub use containers_3d::*;
 pub use scale_renderer::*;
+pub use seaborn::*;
+pub use statistical::*;

@@ -226,8 +226,6 @@ fn render_grid_3d(
     
     let label_font = egui::FontId::monospace(12.0);
     if let Some(_) = camera_controller.camera.project(origin) {
-        // let screen_origin = egui::pos2(center.x + proj_origin.x * half_width, center.y - proj_origin.y * half_height);
-        
         let x_end = origin.offset(axis_length, 0.0, 0.0);
         if let Some(proj_x) = camera_controller.camera.project(x_end) {
             let screen_x = egui::pos2(center.x + proj_x.x * half_width, center.y - proj_x.y * half_height);

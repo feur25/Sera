@@ -5,9 +5,12 @@ pub mod _3d;
 pub mod svg;
 pub mod chart;
 
-pub use bar::{render_bars, render_bars_fast};
-pub use line::{render_lines, render_lines_fast};
-pub use scatter::{render_points, render_scatter_fast};
+pub use bar::{render_bars, render_bars_fast, render_bars_html};
+pub use line::{render_lines, render_lines_fast, render_lines_html};
+pub use scatter::{render_points, render_scatter_fast, render_scatter_html};
+pub use _3d::render_scatter3d_html;
+pub use _3d::render_bar3d_html;
+pub use _3d::render_line3d_html;
 pub use _3d::{Bar3DRenderContext, Line3DRenderContext, Scatter3DRenderContext};
 pub use _3d::*;
 pub use svg::SvgChart;

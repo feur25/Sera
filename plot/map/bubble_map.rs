@@ -205,3 +205,27 @@ fn parse_label_coords(label: &str) -> (f64, f64) {
     if centroid != (0.0, 0.0) { return centroid; }
     crate::core::math::region_centroid(label)
 }
+
+pub fn render_bubble_map_html(
+    title: &str,
+    labels: &[String],
+    values: &[f64],
+    width: i32,
+    height: i32,
+    hover: &[crate::html::hover::HoverSlot],
+) -> String {
+    use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+    let n = values.len().min(labels.len());
+    if n == 0 { return String::new(); }
+    let auto = hover.is_empty();
+    let mut auto_slots: Vec<HoverSlot> = if auto { Vec::with_capacity(n) } else { Vec::new() };
+    if auto {
+        for i in 0..n {
+            auto_slots.push(HoverSlot::new(labels[i].clone()).kv("Valeur", format!("{:.2}", values[i])));
+        }
+    }
+    let mut svg = render_bubble_map_fast(values, labels, width, height);
+    svg = svg.replace("data-index=\"", "data-idx=\"");
+    let slots = if auto { &auto_slots } else { hover };
+    build_chart_html(title, &svg, &slots_to_json(slots))
+}

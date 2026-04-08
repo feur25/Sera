@@ -300,8 +300,6 @@ impl Range {
     pub fn contains(&self, value: f64) -> bool { self.min <= value && value <= self.max }
 }
 
-// ── Map projections ────────────────────────────────────────────────────
-
 pub fn mercator_project(lat: f64, lon: f64) -> (f64, f64) {
     let x = (lon + 180.0) / 360.0;
     let lat_rad = lat.to_radians();

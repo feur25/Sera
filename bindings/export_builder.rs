@@ -1,4 +1,3 @@
-use crate::plot::controller::chart_controller::get_group_registry;
 use crate::html::HtmlExporter;
 use crate::html::{HtmlExportConfig, HtmlTheme};
 
