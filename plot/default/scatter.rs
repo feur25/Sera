@@ -22,7 +22,7 @@ pub fn render_scatter_fast(
     svg.push_str(&height.to_string());
     svg.push_str("\"><defs><style>.s{fill-opacity:0.8}</style></defs>");
     
-    let colors = [0x1f77b4, 0xff7f0e, 0x2ca02c, 0xd62728, 0x9467bd, 0x8c564b, 0xe377c2, 0x7f7f7f];
+    let colors = [0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B, 0x8B5CF6, 0x06B6D4, 0xEC4899, 0x84CC16];
     
     for i in 0..n {
         let x = (i as f64 * scale_x + scale_x / 2.0) as i32;
@@ -178,7 +178,7 @@ pub fn render_scatter_html(
             push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, y);
             push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
             push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, y);
-            push_b(&mut buf, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>");
+            push_b(&mut buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
         }
         push_b(&mut buf, b"<text x=\""); push_i(&mut buf, pad_l - 4);
         push_b(&mut buf, b"\" y=\""); push_i(&mut buf, y + 3);
@@ -197,12 +197,12 @@ pub fn render_scatter_html(
     push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t);
     push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l);
     push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
     push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
     push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t + plot_h);
     push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
     push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
     if !y_label.is_empty() {
         push_b(&mut buf, b"<text x=\"14\" y=\""); push_i(&mut buf, pad_t + plot_h / 2);
         push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#374151\" transform=\"rotate(-90,14,");

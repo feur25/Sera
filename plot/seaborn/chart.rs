@@ -13,9 +13,9 @@ const SEABORN_SVG_RENDERERS: &[(u8, SvgChartRenderer)] = &[
 ];
 
 const SEABORN_COLORS: &[(u8, u32)] = &[
-    (40, 0x4C72B0),
-    (41, 0x55A868),
-    (42, 0xC44E52),
+    (40, 0x6366F1),
+    (41, 0x10B981),
+    (42, 0xF43F5E),
 ];
 
 pub fn register_seaborn_types() {

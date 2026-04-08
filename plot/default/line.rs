@@ -25,7 +25,7 @@ pub fn render_lines_fast(
     svg.push_str(&height.to_string());
     svg.push_str("\"><defs><style>.l{stroke-width:2;fill:none}.p{fill:#fff;stroke-width:1}</style></defs>");
     
-    let color = 0x1f77b4;
+    let color = 0x6366F1;
     svg.push_str("<polyline class=\"l\" stroke=\"#");
     svg.push_str(&format!("{:06x}", color));
     svg.push_str("\" points=\"");
@@ -42,7 +42,7 @@ pub fn render_lines_fast(
     
     svg.push_str("\"/>");
     
-    let colors = [0x1f77b4, 0xff7f0e, 0x2ca02c, 0xd62728];
+    let colors = [0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B];
     for i in 0..n {
         let x = (i as f64 * scale_x) as i32;
         let y = height - (values[i] * scale_y) as i32;
@@ -170,7 +170,7 @@ pub fn render_lines_html(
     let plot_w = width - pad_l - pad_r;
     let plot_h = height - pad_t - pad_b;
     let step_x = plot_w as f64 / (n - 1).max(1) as f64;
-    let line_color = if color_hex != 0 { color_hex } else { 0x4C72B0 };
+    let line_color = if color_hex != 0 { color_hex } else { 0x6366F1 };
     let auto = hover.is_empty();
     let mut b = Vec::<u8>::with_capacity(n * 200 + 2048);
     push_b(&mut b, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
@@ -194,7 +194,7 @@ pub fn render_lines_html(
             push_b(&mut b, b"\" y1=\""); push_i(&mut b, y);
             push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
             push_b(&mut b, b"\" y2=\""); push_i(&mut b, y);
-            push_b(&mut b, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>");
+            push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
         }
         push_b(&mut b, b"<text x=\""); push_i(&mut b, pad_l - 4);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, y + 3);
@@ -207,12 +207,12 @@ pub fn render_lines_html(
     push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t);
     push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l);
     push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
     push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
     push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t + plot_h);
     push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
     push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
     if !y_label.is_empty() {
         let ym = pad_t + plot_h / 2;
         push_b(&mut b, b"<text x=\"14\" y=\""); push_i(&mut b, ym);
@@ -231,7 +231,7 @@ pub fn render_lines_html(
     let hx = hex6(line_color);
     push_b(&mut b, b"<polyline fill=\"none\" stroke=\"#");
     b.extend_from_slice(&hx);
-    push_b(&mut b, b"\" stroke-width=\"2\" points=\"");
+    push_b(&mut b, b"\" stroke-width=\"2\" stroke-linecap=\"round\" points=\"");
     for i in 0..n {
         let x = pad_l + (i as f64 * step_x) as i32;
         let y = pad_t + plot_h - ((values[i] / max_val) * plot_h as f64) as i32;

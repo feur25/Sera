@@ -11,8 +11,8 @@ const MAP_SVG_RENDERERS: &[(u8, SvgChartRenderer)] = &[
 ];
 
 const MAP_COLORS: &[(u8, u32)] = &[
-    (20, 0xe74c3c),
-    (21, 0x3498db),
+    (20, 0xF43F5E),
+    (21, 0x6366F1),
 ];
 
 pub fn register_map_types() {
