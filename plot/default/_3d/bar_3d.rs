@@ -153,9 +153,10 @@ pub fn render_bar3d_html(
     color_labels: &[String],
     width: i32,
     height: i32,
+    bg_color: Option<&str>,
 ) -> String {
     crate::html::js_3d::render_3d_html(
         1, title, x_values, y_values, z_values,
-        axis_labels, color_values, color_labels, width, height,
+        axis_labels, color_values, color_labels, width, height, bg_color,
     )
 }
