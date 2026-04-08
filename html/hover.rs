@@ -112,6 +112,22 @@ pub fn parse_hover_json(json: &str) -> Vec<HoverSlot> {
 pub const HOVER_CSS: &str = "";
 pub const HOVER_JS:  &str = "";
 
+/// Default page background colour used in every chart wrapper.
+pub const DEFAULT_BG: &str = "#f0f2f5";
+
+/// Replace the page background in a rendered chart HTML string.
+/// Pass `None` to get a transparent background.
+#[inline]
+pub fn apply_bg(html: String, bg: Option<&str>) -> String {
+    match bg {
+        None => html.replacen("background:#f0f2f5", "background:transparent", 1),
+        Some(c) if c.is_empty() || c == "none" || c == "transparent" => {
+            html.replacen("background:#f0f2f5", "background:transparent", 1)
+        }
+        Some(c) => html.replacen("background:#f0f2f5", &format!("background:{c}"), 1),
+    }
+}
+
 
 
 const JS_P1: &str = "<script>(function(){\nvar wrap=document.getElementById('";
@@ -357,7 +373,7 @@ pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
           "border-top:1px solid rgba(255,255,255,.07)}",
         "#sp-tip video{display:block;width:100%;border-top:1px solid rgba(255,255,255,.07)}",
         ".sp-html{padding:8px 14px;font-size:12px;border-top:1px solid rgba(255,255,255,.07)}",
-        "[data-idx]{cursor:pointer;transition:opacity .3s,filter .2s}",
+        "[data-idx]{cursor:pointer;transition:opacity .25s,filter .2s,transform .25s}",
         "[data-idx]:hover{filter:brightness(1.12) saturate(1.08)}",
         ".sp-cpanel{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);",
           "background:#0b0e18;color:#f1f5f9;",
@@ -379,7 +395,7 @@ pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
     buf.extend_from_slice(html_attr_esc(title).as_bytes());
     buf.extend_from_slice(b"</title>");
     buf.extend_from_slice(CSS.as_bytes());
-    buf.extend_from_slice(b"<style>body{margin:0;background:#f0f2f5;display:flex;justify-content:center;padding:16px 0}@keyframes spi{from{opacity:0;transform:translateY(6px) scale(.96)}}svg [data-idx]{animation:spi .4s cubic-bezier(.22,.61,.36,1) both}</style></head><body>");
+    buf.extend_from_slice(b"<style>body{margin:0;background:#f0f2f5;display:flex;justify-content:center;padding:16px 0}@keyframes sp-i{from{opacity:0;transform:translateY(8px) scale(.94)}}@keyframes sp-bar{from{opacity:0;transform:scaleY(0)}}@keyframes sp-pop{0%{opacity:0;transform:scale(0)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}@keyframes sp-arc{from{opacity:0;transform:scale(.82) rotate(-6deg)}}@keyframes sp-fn{from{opacity:0;transform:scaleX(.7) translateY(8px)}}svg rect[data-idx]{transform-box:fill-box;transform-origin:bottom center;animation:sp-bar .5s cubic-bezier(.22,.61,.36,1) both}svg circle[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-pop .42s cubic-bezier(.34,1.56,.64,1) both}svg path[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-arc .48s cubic-bezier(.22,.61,.36,1) both}svg polygon[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-fn .48s cubic-bezier(.22,.61,.36,1) both}svg line[data-idx]{animation:sp-i .45s cubic-bezier(.22,.61,.36,1) both}svg rect[data-idx]:hover{transform:scaleY(1.03);filter:brightness(1.12) saturate(1.1)}svg circle[data-idx]:hover{transform:scale(1.3);filter:brightness(1.15)}svg path[data-idx]:hover{filter:brightness(1.1) drop-shadow(0 2px 8px rgba(0,0,0,.2))}</style></head><body>");
     buf.extend_from_slice(b"<div id=\"");
     buf.extend_from_slice(pid.as_bytes());
     buf.extend_from_slice(b"\" style=\"position:relative;display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)\">");
