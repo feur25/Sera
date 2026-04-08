@@ -1,4 +1,4 @@
-use super::common::{palette_color, push, push_b, escape_xml, truncate};
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate};
 use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
 
 pub struct GroupedBar;
@@ -17,6 +17,7 @@ pub struct GroupedBarConfig<'a> {
     pub value_min_height: i32,
     pub gridlines: bool,
     pub hover: &'a [HoverSlot],
+    pub sort_order: &'a str,
 }
 
 impl<'a> Default for GroupedBarConfig<'a> {
@@ -35,6 +36,7 @@ impl<'a> Default for GroupedBarConfig<'a> {
             value_min_height: 16,
             gridlines: true,
             hover: &[],
+            sort_order: "",
         }
     }
 }
@@ -43,15 +45,44 @@ pub fn render_grouped_bar_html(cfg: &GroupedBarConfig) -> String {
     let n_cats = cfg.category_labels.len();
     let n_ser = cfg.series.len();
     if n_cats == 0 || n_ser == 0 { return String::new(); }
+    let so = cfg.sort_order;
+    let (cat_labels, sorted_series) = if !so.is_empty() && so != "none" {
+        let mut idx: Vec<usize> = (0..n_cats).collect();
+        match so {
+            "asc" | "ascending" => idx.sort_by(|&a, &b| {
+                let ta: f64 = cfg.series.iter().filter_map(|(_, v)| v.get(a).copied()).sum();
+                let tb: f64 = cfg.series.iter().filter_map(|(_, v)| v.get(b).copied()).sum();
+                ta.partial_cmp(&tb).unwrap_or(std::cmp::Ordering::Equal)
+            }),
+            "desc" | "descending" => idx.sort_by(|&a, &b| {
+                let ta: f64 = cfg.series.iter().filter_map(|(_, v)| v.get(a).copied()).sum();
+                let tb: f64 = cfg.series.iter().filter_map(|(_, v)| v.get(b).copied()).sum();
+                tb.partial_cmp(&ta).unwrap_or(std::cmp::Ordering::Equal)
+            }),
+            "alpha" | "alphabetical" => idx.sort_by(|&a, &b| cfg.category_labels[a].cmp(&cfg.category_labels[b])),
+            "alpha_desc" => idx.sort_by(|&a, &b| cfg.category_labels[b].cmp(&cfg.category_labels[a])),
+            _ => {}
+        }
+        let sl: Vec<String> = idx.iter().map(|&i| cfg.category_labels[i].clone()).collect();
+        let ss: Vec<(String, Vec<f64>)> = cfg.series.iter().map(|(name, vals)| {
+            let sv: Vec<f64> = idx.iter().map(|&i| vals.get(i).copied().unwrap_or(0.0)).collect();
+            (name.clone(), sv)
+        }).collect();
+        (sl, ss)
+    } else {
+        (cfg.category_labels.to_vec(), cfg.series.to_vec())
+    };
+    let series_ref: Vec<(String, Vec<f64>)> = sorted_series;
+    let n_cats = cat_labels.len();
     let max_val = if cfg.stacked {
         (0..n_cats).map(|ci| {
-            cfg.series.iter()
+            series_ref.iter()
                 .filter_map(|(_, vals)| vals.get(ci).copied())
                 .filter(|v| v.is_finite())
                 .sum::<f64>()
         }).fold(0.0_f64, f64::max)
     } else {
-        cfg.series.iter()
+        series_ref.iter()
             .flat_map(|(_, vals)| vals.iter().copied())
             .filter(|v| v.is_finite())
             .fold(0.0_f64, f64::max)
@@ -69,22 +100,18 @@ pub fn render_grouped_bar_html(cfg: &GroupedBarConfig) -> String {
     } else {
         group_w / (n_ser as f64 + 0.8) * 0.88
     };
-    let auto_hover = cfg.hover.is_empty();
     let n_total = n_cats * n_ser;
-    let mut auto_slots: Vec<HoverSlot> = if auto_hover { Vec::with_capacity(n_total) } else { Vec::new() };
     let mut buf = Vec::<u8>::with_capacity(n_total * 260 + 4096);
-    push(&mut buf, &format!(
-        "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{w}\" height=\"{h}\" viewBox=\"0 0 {w} {h}\">",
-        w=cfg.width, h=cfg.height,
-    ));
+    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_i(&mut buf, cfg.width); push_b(&mut buf, b"\" height=\"");
+    push_i(&mut buf, cfg.height); push_b(&mut buf, b"\" viewBox=\"0 0 ");
+    push_i(&mut buf, cfg.width); push_b(&mut buf, b" ");
+    push_i(&mut buf, cfg.height); push_b(&mut buf, b"\">");
     push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
     if !cfg.title.is_empty() {
-        push(&mut buf, &format!(
-            "<text x=\"{tx}\" y=\"26\" text-anchor=\"middle\" \
-             font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" \
-             font-weight=\"700\" fill=\"#1a202c\">",
-            tx = (cfg.width - legend_w) / 2 + pad_l,
-        ));
+        let tx = (cfg.width - legend_w) / 2 + pad_l;
+        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, tx);
+        push_b(&mut buf, b"\" y=\"26\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\">");
         escape_xml(&mut buf, cfg.title);
         push_b(&mut buf, b"</text>");
     }
@@ -94,146 +121,132 @@ pub fn render_grouped_bar_html(cfg: &GroupedBarConfig) -> String {
         let y = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
         let vval = frac * max_val;
         if cfg.gridlines && i > 0 {
-            push(&mut buf, &format!(
-                "<line x1=\"{x1}\" y1=\"{y}\" x2=\"{x2}\" y2=\"{y}\" \
-                 stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>",
-                x1=pad_l, x2=pad_l+plot_w, y=y,
-            ));
+            push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
+            push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, y);
+            push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
+            push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, y);
+            push_b(&mut buf, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>");
         }
-        let label = if vval >= 1000.0 { format!("{:.0}", vval) }
-            else if vval >= 1.0 { format!("{:.1}", vval) }
-            else { format!("{:.2}", vval) };
-        push(&mut buf, &format!(
-            "<text x=\"{x}\" y=\"{ty}\" text-anchor=\"end\" \
-             font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">{v}</text>",
-            x=pad_l-4, ty=y+3, v=label,
-        ));
+        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, pad_l - 4);
+        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, y + 3);
+        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+        if vval >= 1000.0 { push_i(&mut buf, vval as i32); }
+        else { push_f2(&mut buf, vval); }
+        push_b(&mut buf, b"</text>");
     }
     if !cfg.y_label.is_empty() {
-        push(&mut buf, &format!(
-            "<text x=\"14\" y=\"{y}\" text-anchor=\"middle\" \
-             font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" \
-             transform=\"rotate(-90,14,{y})\">",
-            y = pad_t + plot_h / 2,
-        ));
+        let ym = pad_t + plot_h / 2;
+        push_b(&mut buf, b"<text x=\"14\" y=\""); push_i(&mut buf, ym);
+        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" transform=\"rotate(-90,14,");
+        push_i(&mut buf, ym); push_b(&mut buf, b")\">");
         escape_xml(&mut buf, cfg.y_label);
         push_b(&mut buf, b"</text>");
     }
-    push(&mut buf, &format!(
-        "<line x1=\"{x}\" y1=\"{y1}\" x2=\"{x}\" y2=\"{y2}\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>",
-        x=pad_l, y1=pad_t, y2=pad_t+plot_h,
-    ));
-    push(&mut buf, &format!(
-        "<line x1=\"{x1}\" y1=\"{y}\" x2=\"{x2}\" y2=\"{y}\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>",
-        x1=pad_l, x2=pad_l+plot_w, y=pad_t+plot_h,
-    ));
-    for (ci, cat) in cfg.category_labels.iter().enumerate() {
+    push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
+    push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t);
+    push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l);
+    push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
+    push_b(&mut buf, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
+    push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t + plot_h);
+    push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
+    push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
+    push_b(&mut buf, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    for (ci, cat) in cat_labels.iter().enumerate() {
         let gx = pad_l as f64 + ci as f64 * group_w;
         let base_y = (pad_t + plot_h) as f64;
         let label_x = gx + group_w / 2.0;
-        push(&mut buf, &format!(
-            "<text x=\"{tx:.1}\" y=\"{ty}\" text-anchor=\"middle\" \
-             font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">",
-            tx=label_x, ty=pad_t+plot_h+16,
-        ));
+        push_b(&mut buf, b"<text x=\"");
+        push_f2(&mut buf, label_x);
+        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, pad_t + plot_h + 16);
+        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">");
         escape_xml(&mut buf, truncate(cat, 16));
         push_b(&mut buf, b"</text>");
         if cfg.stacked {
             let mut stack_y = base_y;
-            for (si, (sname, svals)) in cfg.series.iter().enumerate() {
+            for (si, (sname, svals)) in series_ref.iter().enumerate() {
                 let val = svals.get(ci).copied().unwrap_or(0.0).max(0.0);
                 let bh = (val / max_val * plot_h as f64).max(0.0);
                 let bx = gx + (group_w - bar_w) / 2.0;
                 let by = stack_y - bh;
                 let color = palette_color(cfg.palette, si);
-                let hx = {
-                    let h = super::common::hex6(color);
-                    unsafe { std::str::from_utf8_unchecked(&h).to_string() }
-                };
+                let hx = hex6(color);
                 let hover_idx = ci * n_ser + si;
-                push(&mut buf, &format!(
-                    "<rect data-idx=\"{idx}\" x=\"{bx:.1}\" y=\"{by:.1}\" width=\"{bw:.1}\" height=\"{bh:.1}\" \
-                     fill=\"#{hx}\" stroke=\"#fff\" stroke-width=\"0.5\"/>",
-                    idx=hover_idx, bx=bx, by=by, bw=bar_w, bh=bh, hx=hx,
-                ));
-                if auto_hover {
-                    auto_slots.push(
-                        HoverSlot::new(format!("{} \u{2014} {}", cat, sname))
-                            .kv("Valeur", format!("{:.2}", val))
-                            .kv("Cat\u{e9}gorie", cat.clone())
-                            .kv("S\u{e9}rie", sname.clone())
-                    );
-                }
+                push_b(&mut buf, b"<rect data-idx=\""); push_i(&mut buf, hover_idx as i32);
+                push_b(&mut buf, b"\" data-series=\""); push_i(&mut buf, si as i32);
+                push_b(&mut buf, b"\" data-v=\""); push_f2(&mut buf, val);
+                push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, sname);
+                push_b(&mut buf, b" \xe2\x80\x94 "); escape_xml(&mut buf, cat);
+                push_b(&mut buf, b"\" x=\""); push_f2(&mut buf, bx);
+                push_b(&mut buf, b"\" y=\""); push_f2(&mut buf, by);
+                push_b(&mut buf, b"\" width=\""); push_f2(&mut buf, bar_w);
+                push_b(&mut buf, b"\" height=\""); push_f2(&mut buf, bh);
+                push_b(&mut buf, b"\" fill=\"#"); buf.extend_from_slice(&hx);
+                push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"0.5\"/>");
                 stack_y -= bh;
             }
         } else {
             let offset_start = (group_w - bar_w * n_ser as f64) / 2.0;
-            for (si, (sname, svals)) in cfg.series.iter().enumerate() {
+            for (si, (sname, svals)) in series_ref.iter().enumerate() {
                 let val = svals.get(ci).copied().unwrap_or(0.0).max(0.0);
                 let bh = (val / max_val * plot_h as f64).max(0.0);
                 let bx = gx + offset_start + si as f64 * bar_w;
                 let by = base_y - bh;
                 let color = palette_color(cfg.palette, si);
-                let hx = {
-                    let h = super::common::hex6(color);
-                    unsafe { std::str::from_utf8_unchecked(&h).to_string() }
-                };
+                let hx = hex6(color);
                 let hover_idx = ci * n_ser + si;
-                push(&mut buf, &format!(
-                    "<rect data-idx=\"{idx}\" x=\"{bx:.1}\" y=\"{by:.1}\" width=\"{bw:.1}\" height=\"{bh:.1}\" \
-                     fill=\"#{hx}\" fill-opacity=\"0.88\" stroke=\"#fff\" stroke-width=\"0.4\"/>",
-                    idx=hover_idx, bx=bx, by=by, bw=bar_w.max(1.0), bh=bh, hx=hx,
-                ));
+                push_b(&mut buf, b"<rect data-idx=\""); push_i(&mut buf, hover_idx as i32);
+                push_b(&mut buf, b"\" data-series=\""); push_i(&mut buf, si as i32);
+                push_b(&mut buf, b"\" data-v=\""); push_f2(&mut buf, val);
+                push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, sname);
+                push_b(&mut buf, b" \xe2\x80\x94 "); escape_xml(&mut buf, cat);
+                push_b(&mut buf, b"\" x=\""); push_f2(&mut buf, bx);
+                push_b(&mut buf, b"\" y=\""); push_f2(&mut buf, by);
+                push_b(&mut buf, b"\" width=\""); push_f2(&mut buf, bar_w.max(1.0));
+                push_b(&mut buf, b"\" height=\""); push_f2(&mut buf, bh);
+                push_b(&mut buf, b"\" fill=\"#"); buf.extend_from_slice(&hx);
+                push_b(&mut buf, b"\" fill-opacity=\"0.88\" stroke=\"#fff\" stroke-width=\"0.4\"/>");
                 if cfg.show_values && bh as i32 >= cfg.value_min_height {
-                    let vlabel = if val >= 1.0 { format!("{:.1}", val) } else { format!("{:.2}", val) };
-                    push(&mut buf, &format!(
-                        "<text x=\"{tx:.1}\" y=\"{ty:.1}\" text-anchor=\"middle\" \
-                         font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#1a202c\">{v}</text>",
-                        tx = bx + bar_w / 2.0, ty = by - 2.0, v = vlabel,
-                    ));
-                }
-                if auto_hover {
-                    auto_slots.push(
-                        HoverSlot::new(format!("{} \u{2014} {}", cat, sname))
-                            .kv("Valeur", format!("{:.2}", val))
-                            .kv("Cat\u{e9}gorie", cat.clone())
-                            .kv("S\u{e9}rie", sname.clone())
-                    );
+                    push_b(&mut buf, b"<text x=\"");
+                    push_f2(&mut buf, bx + bar_w / 2.0);
+                    push_b(&mut buf, b"\" y=\"");
+                    push_f2(&mut buf, by - 2.0);
+                    push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#1a202c\">");
+                    push_f2(&mut buf, val);
+                    push_b(&mut buf, b"</text>");
                 }
             }
         }
     }
     let leg_x = pad_l + plot_w + 12;
     let leg_top = pad_t + 8;
-    for (si, (sname, _)) in cfg.series.iter().enumerate() {
+    for (si, (sname, _)) in series_ref.iter().enumerate() {
         let color = palette_color(cfg.palette, si);
-        let hx = {
-            let h = super::common::hex6(color);
-            unsafe { std::str::from_utf8_unchecked(&h).to_string() }
-        };
+        let hx = hex6(color);
         let ly = leg_top + si as i32 * 22;
-        push(&mut buf, &format!(
-            "<rect x=\"{lx}\" y=\"{ly}\" width=\"13\" height=\"13\" rx=\"3\" fill=\"#{hx}\"/>",
-            lx=leg_x, ly=ly, hx=hx,
-        ));
-        push(&mut buf, &format!(
-            "<text x=\"{tx}\" y=\"{ty}\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#374151\">",
-            tx=leg_x+17, ty=ly+11,
-        ));
+        push_b(&mut buf, b"<g data-legend=\"1\" data-series=\"");
+        push_i(&mut buf, si as i32);
+        push_b(&mut buf, b"\">");
+        push_b(&mut buf, b"<rect x=\""); push_i(&mut buf, leg_x);
+        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, ly);
+        push_b(&mut buf, b"\" width=\"13\" height=\"13\" rx=\"3\" fill=\"#");
+        buf.extend_from_slice(&hx);
+        push_b(&mut buf, b"\"/>");
+        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, leg_x + 17);
+        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, ly + 11);
+        push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#374151\">");
         escape_xml(&mut buf, truncate(sname, 20));
-        push_b(&mut buf, b"</text>");
+        push_b(&mut buf, b"</text></g>");
     }
     if !cfg.x_label.is_empty() {
-        push(&mut buf, &format!(
-            "<text x=\"{tx}\" y=\"{ty}\" text-anchor=\"middle\" \
-             font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">",
-            tx = pad_l + plot_w / 2, ty = cfg.height - 6,
-        ));
+        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, pad_l + plot_w / 2);
+        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, cfg.height - 6);
+        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
         escape_xml(&mut buf, cfg.x_label);
         push_b(&mut buf, b"</text>");
     }
     push_b(&mut buf, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(buf) };
-    let slots: &[HoverSlot] = if auto_hover { &auto_slots } else { cfg.hover };
+    let slots: &[HoverSlot] = cfg.hover;
     build_chart_html(cfg.title, &svg, &slots_to_json(slots))
 }

@@ -154,8 +154,14 @@ pub fn render_lines_html(
     width: i32,
     height: i32,
     hover: &[crate::html::hover::HoverSlot],
+    color_hex: u32,
+    x_label: &str,
+    y_label: &str,
+    gridlines: bool,
+    show_points: bool,
 ) -> String {
-    use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+    use crate::html::hover::{slots_to_json, build_chart_html};
+    use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, palette_color, truncate, PALETTE};
     let n = values.len().min(labels.len());
     if n < 2 { return String::new(); }
     let (_, max_val) = crate::bindings::utils::simd_ops::find_minmax(values);
@@ -164,46 +170,100 @@ pub fn render_lines_html(
     let plot_w = width - pad_l - pad_r;
     let plot_h = height - pad_t - pad_b;
     let step_x = plot_w as f64 / (n - 1).max(1) as f64;
-    const PALETTE: &[u32] = &[0x4C72B0, 0xDD8452, 0x55A868, 0xC44E52, 0x8172B3, 0x64B5CD, 0xDA8BC3, 0xCCB974, 0x937860, 0x8C8C8C];
+    let line_color = if color_hex != 0 { color_hex } else { 0x4C72B0 };
     let auto = hover.is_empty();
-    let mut auto_slots: Vec<HoverSlot> = if auto { Vec::with_capacity(n) } else { Vec::new() };
-    let mut buf = String::with_capacity(n * 200 + 2048);
-    buf.push_str(&format!("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{width}\" height=\"{height}\" viewBox=\"0 0 {width} {height}\">"));
-    buf.push_str("<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
+    let mut b = Vec::<u8>::with_capacity(n * 200 + 2048);
+    push_b(&mut b, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_i(&mut b, width); push_b(&mut b, b"\" height=\"");
+    push_i(&mut b, height); push_b(&mut b, b"\" viewBox=\"0 0 ");
+    push_i(&mut b, width); push_b(&mut b, b" ");
+    push_i(&mut b, height); push_b(&mut b, b"\">");
+    push_b(&mut b, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
     if !title.is_empty() {
-        buf.push_str(&format!("<text x=\"{}\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#1a202c\">{}</text>", width / 2, line_xml_esc(title)));
+        push_b(&mut b, b"<text x=\""); push_i(&mut b, width / 2);
+        push_b(&mut b, b"\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#1a202c\">");
+        escape_xml(&mut b, title);
+        push_b(&mut b, b"</text>");
     }
     for i in 0..=5 {
         let frac = i as f64 / 5.0;
         let y = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
         let val = frac * max_val;
-        if i > 0 {
-            buf.push_str(&format!("<line x1=\"{pad_l}\" y1=\"{y}\" x2=\"{}\" y2=\"{y}\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>", pad_l + plot_w));
+        if gridlines && i > 0 {
+            push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
+            push_b(&mut b, b"\" y1=\""); push_i(&mut b, y);
+            push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
+            push_b(&mut b, b"\" y2=\""); push_i(&mut b, y);
+            push_b(&mut b, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>");
         }
-        let lbl = if val >= 1000.0 { format!("{:.0}", val) } else if val >= 1.0 { format!("{:.1}", val) } else { format!("{:.2}", val) };
-        buf.push_str(&format!("<text x=\"{}\" y=\"{}\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">{lbl}</text>", pad_l - 4, y + 3));
+        push_b(&mut b, b"<text x=\""); push_i(&mut b, pad_l - 4);
+        push_b(&mut b, b"\" y=\""); push_i(&mut b, y + 3);
+        push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+        if val >= 1000.0 { push_i(&mut b, val as i32); }
+        else { push_f2(&mut b, val); }
+        push_b(&mut b, b"</text>");
     }
-    buf.push_str(&format!("<line x1=\"{pad_l}\" y1=\"{pad_t}\" x2=\"{pad_l}\" y2=\"{}\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>", pad_t + plot_h));
-    buf.push_str(&format!("<line x1=\"{pad_l}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>", pad_t + plot_h, pad_l + plot_w, pad_t + plot_h));
-    buf.push_str("<polyline fill=\"none\" stroke=\"#4C72B0\" stroke-width=\"2\" points=\"");
+    push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
+    push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t);
+    push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l);
+    push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
+    push_b(&mut b, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
+    push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t + plot_h);
+    push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
+    push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
+    push_b(&mut b, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    if !y_label.is_empty() {
+        let ym = pad_t + plot_h / 2;
+        push_b(&mut b, b"<text x=\"14\" y=\""); push_i(&mut b, ym);
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#374151\" transform=\"rotate(-90,14,");
+        push_i(&mut b, ym); push_b(&mut b, b")\">");
+        escape_xml(&mut b, y_label);
+        push_b(&mut b, b"</text>");
+    }
+    if !x_label.is_empty() {
+        push_b(&mut b, b"<text x=\""); push_i(&mut b, pad_l + plot_w / 2);
+        push_b(&mut b, b"\" y=\""); push_i(&mut b, height - 4);
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#374151\">");
+        escape_xml(&mut b, x_label);
+        push_b(&mut b, b"</text>");
+    }
+    let hx = hex6(line_color);
+    push_b(&mut b, b"<polyline fill=\"none\" stroke=\"#");
+    b.extend_from_slice(&hx);
+    push_b(&mut b, b"\" stroke-width=\"2\" points=\"");
     for i in 0..n {
         let x = pad_l + (i as f64 * step_x) as i32;
         let y = pad_t + plot_h - ((values[i] / max_val) * plot_h as f64) as i32;
-        if i > 0 { buf.push(' '); }
-        buf.push_str(&format!("{x},{y}"));
+        if i > 0 { b.push(b' '); }
+        push_i(&mut b, x); b.push(b','); push_i(&mut b, y);
     }
-    buf.push_str("\"/>");
+    push_b(&mut b, b"\"/>");
     for i in 0..n {
         let x = pad_l + (i as f64 * step_x) as i32;
         let y = pad_t + plot_h - ((values[i] / max_val) * plot_h as f64) as i32;
-        let color = PALETTE[i % PALETTE.len()];
-        buf.push_str(&format!("<circle data-idx=\"{i}\" cx=\"{x}\" cy=\"{y}\" r=\"4\" fill=\"#{color:06x}\" stroke=\"#fff\" stroke-width=\"1.5\"/>"));
-        buf.push_str(&format!("<text x=\"{x}\" y=\"{}\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">{}</text>", pad_t + plot_h + 14, line_xml_esc(line_trunc(&labels[i], 10))));
-        if auto { auto_slots.push(HoverSlot::new(labels[i].clone()).kv("Valeur", format!("{:.2}", values[i]))); }
+        if show_points {
+            let color = palette_color(&[], i);
+            let chx = hex6(color);
+            push_b(&mut b, b"<circle data-idx=\""); push_i(&mut b, i as i32);
+            push_b(&mut b, b"\" data-y=\""); push_f2(&mut b, values[i]);
+            push_b(&mut b, b"\" data-lbl=\""); escape_xml(&mut b, &labels[i]);
+            push_b(&mut b, b"\" cx=\""); push_i(&mut b, x);
+            push_b(&mut b, b"\" cy=\""); push_i(&mut b, y);
+            push_b(&mut b, b"\" r=\"4\" fill=\"#"); b.extend_from_slice(&chx);
+            push_b(&mut b, b"\" stroke=\"#fff\" stroke-width=\"1.5\"/>");
+        }
+        push_b(&mut b, b"<text x=\""); push_i(&mut b, x);
+        push_b(&mut b, b"\" y=\""); push_i(&mut b, pad_t + plot_h + 14);
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">");
+        escape_xml(&mut b, truncate(&labels[i], 10));
+        push_b(&mut b, b"</text>");
     }
-    buf.push_str("</svg>");
-    let slots = if auto { &auto_slots } else { hover };
-    build_chart_html(title, &buf, &slots_to_json(slots))
+    push_b(&mut b, b"</svg>");
+    let svg = unsafe { String::from_utf8_unchecked(b) };
+    let slots_json;
+    let json: &str = if auto { "[]" } else { slots_json = slots_to_json(hover); &slots_json };
+    build_chart_html(title, &svg, json)
 }
 
 #[inline] fn line_xml_esc(s: &str) -> String { s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;") }

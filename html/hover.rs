@@ -148,17 +148,18 @@ function getSlot(idx){
  var el=svg.querySelector('[data-idx="'+idx+'"]');if(!el)return null;
  var kv=[];
  var x=el.getAttribute('data-x'),y=el.getAttribute('data-y');
- if(x!=null&&y!=null){kv.push(['X',parseFloat(x).toFixed(2)],['Y',parseFloat(y).toFixed(2)]);}
- var v=el.getAttribute('data-v');
+ if(x!=null){var xf=parseFloat(x);kv.push(['X',xf===xf?xf.toFixed(2):x]);}
+ if(y!=null){kv.push(['Valeur',parseFloat(y).toFixed(2)]);}
+ else{var v=el.getAttribute('data-v');
  if(v!=null){
   var r=el.getAttribute('data-r'),c=el.getAttribute('data-c');
   kv.push(['Valeur',parseFloat(v).toFixed(3)]);
-  if(r)kv.push(['Ligne',r]);if(c)kv.push(['Colonne',c]);}
+  if(r)kv.push(['Ligne',r]);if(c)kv.push(['Colonne',c]);}}
  var z=el.getAttribute('data-z');
- if(z!=null&&x!=null&&y!=null){kv.push(['Z',parseFloat(z).toFixed(2)]);}
- else if(z!=null){kv.push(['Z',parseFloat(z).toFixed(2)]);}
+ if(z!=null){kv.push(['Z',parseFloat(z).toFixed(2)]);}
  var lbl=el.getAttribute('data-lbl');
- var title=lbl||(v!=null&&el.getAttribute('data-r')!=null?el.getAttribute('data-r')+' \u00d7 '+el.getAttribute('data-c'):'Point '+(idx+1));
+ var an=el.attributes;if(an){for(var ai=0;ai<an.length;ai++){var a=an[ai];if(a.name.substring(0,8)==='data-kv-'){kv.push([a.name.substring(8),a.value]);}}}
+ var title=lbl||(el.getAttribute('data-v')!=null&&el.getAttribute('data-r')!=null?el.getAttribute('data-r')+' \u00d7 '+el.getAttribute('data-c'):'Point '+(idx+1));
  return{title:title,kv:kv};}
 function renderTip(){
  if(!tipIdxs.length){tip.classList.remove('sp-vis');return;}
@@ -279,6 +280,26 @@ function clearSel(){panel.style.display='none';resetVB();
  svg.querySelectorAll('[data-idx]').forEach(function(el){
   el.style.display='';el.style.opacity='';el.style.stroke='';el.style.strokeWidth='';});}
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&pinned){pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}});
+var legs=svg.querySelectorAll('[data-legend]');
+legs.forEach(function(lg){lg.style.cursor='pointer';
+lg.addEventListener('click',function(){
+ var s=lg.getAttribute('data-series');if(!s)return;
+ var h=lg.getAttribute('data-hidden')==='1';
+ var els=svg.querySelectorAll('[data-series="'+s+'"]:not([data-legend])');
+ if(h){els.forEach(function(el){el.style.display='';el.style.opacity='';});lg.style.opacity='';lg.removeAttribute('data-hidden');}
+ else{els.forEach(function(el){el.style.display='none';});lg.style.opacity='0.3';lg.setAttribute('data-hidden','1');}spRescale();});});
+function spRescale(){
+ var m=svg.getAttribute('data-sp');if(!m)return;
+ var p=m.split(',').map(Number),pL=p[0],pT=p[1],pW=p[2],pH=p[3];
+ var vals=[];svg.querySelectorAll('[data-pts]').forEach(function(el){if(el.style.display==='none')return;el.getAttribute('data-pts').split(',').forEach(function(v){var f=parseFloat(v);if(isFinite(f))vals.push(f);});});
+ if(!vals.length){svg.querySelectorAll('circle[data-y]').forEach(function(el){if(el.style.display==='none')return;var f=parseFloat(el.getAttribute('data-y'));if(isFinite(f))vals.push(f);});}
+ if(!vals.length)return;
+ var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);if(mn>0)mn=0;var rg=mx-mn;if(rg<1e-12)rg=1;
+ svg.querySelectorAll('polyline[data-pts]').forEach(function(el){if(el.style.display==='none')return;var vs=el.getAttribute('data-pts').split(','),n=vs.length,sx=pW/Math.max(n-1,1),r='';for(var i=0;i<n;i++){var f=(parseFloat(vs[i])-mn)/rg;if(i>0)r+=' ';r+=(pL+Math.round(i*sx))+','+(pT+Math.round((1-f)*pH));}el.setAttribute('points',r);});
+ svg.querySelectorAll('circle[data-y]').forEach(function(el){if(el.style.display==='none')return;var f=(parseFloat(el.getAttribute('data-y'))-mn)/rg;el.setAttribute('cy',pT+Math.round((1-f)*pH));});
+ var tks=svg.querySelectorAll('.sp-yt'),nT=tks.length;if(nT>1)for(var i=0;i<nT;i++){var f=i/(nT-1);var v=mn+f*rg;tks[i].textContent=v>=1000?Math.round(v)+'':v.toFixed(2);tks[i].setAttribute('y',pT+Math.round((1-f)*pH)+3);}
+ var gls=svg.querySelectorAll('.sp-gl');if(gls.length&&nT>1)for(var j=0;j<gls.length;j++){var f=(j+1)/(nT-1);var gy=pT+Math.round((1-f)*pH);gls[j].setAttribute('y1',gy);gls[j].setAttribute('y2',gy);}
+}
 })();</script>"#;
 
 pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {

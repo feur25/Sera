@@ -9,6 +9,137 @@ pub fn palette_color(custom: &[u32], i: usize) -> u32 {
     p[i % p.len()]
 }
 
+pub fn apply_sort(labels: &[String], values: &[f64], order: &str) -> (Vec<String>, Vec<f64>) {
+    if order.is_empty() || order == "none" { return (labels.to_vec(), values.to_vec()); }
+    let n = labels.len().min(values.len());
+    let mut idx: Vec<usize> = (0..n).collect();
+    match order {
+        "asc" | "ascending" => idx.sort_by(|&a, &b| values[a].partial_cmp(&values[b]).unwrap_or(std::cmp::Ordering::Equal)),
+        "desc" | "descending" => idx.sort_by(|&a, &b| values[b].partial_cmp(&values[a]).unwrap_or(std::cmp::Ordering::Equal)),
+        "alpha" | "alphabetical" => idx.sort_by(|&a, &b| labels[a].cmp(&labels[b])),
+        "alpha_desc" => idx.sort_by(|&a, &b| labels[b].cmp(&labels[a])),
+        _ => {}
+    }
+    let sl: Vec<String> = idx.iter().map(|&i| labels[i].clone()).collect();
+    let sv: Vec<f64> = idx.iter().map(|&i| values[i]).collect();
+    (sl, sv)
+}
+
+pub fn apply_sort_groups(labels: &[String], values: &[f64], groups: &[String], order: &str) -> (Vec<String>, Vec<f64>, Vec<String>) {
+    if order.is_empty() || order == "none" { return (labels.to_vec(), values.to_vec(), groups.to_vec()); }
+    let n = labels.len().min(values.len()).min(groups.len());
+    let mut idx: Vec<usize> = (0..n).collect();
+    match order {
+        "asc" | "ascending" => idx.sort_by(|&a, &b| values[a].partial_cmp(&values[b]).unwrap_or(std::cmp::Ordering::Equal)),
+        "desc" | "descending" => idx.sort_by(|&a, &b| values[b].partial_cmp(&values[a]).unwrap_or(std::cmp::Ordering::Equal)),
+        "alpha" | "alphabetical" => idx.sort_by(|&a, &b| labels[a].cmp(&labels[b])),
+        "alpha_desc" => idx.sort_by(|&a, &b| labels[b].cmp(&labels[a])),
+        _ => {}
+    }
+    let sl: Vec<String> = idx.iter().map(|&i| labels[i].clone()).collect();
+    let sv: Vec<f64> = idx.iter().map(|&i| values[i]).collect();
+    let sg: Vec<String> = idx.iter().map(|&i| groups[i].clone()).collect();
+    (sl, sv, sg)
+}
+
+pub fn svg_open(buf: &mut Vec<u8>, w: i32, h: i32) {
+    push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_i(buf, w); push_b(buf, b"\" height=\"");
+    push_i(buf, h); push_b(buf, b"\" viewBox=\"0 0 ");
+    push_i(buf, w); push_b(buf, b" ");
+    push_i(buf, h); push_b(buf, b"\">");
+    push_b(buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
+}
+
+pub fn svg_title(buf: &mut Vec<u8>, title: &str, cx: i32) {
+    if title.is_empty() { return; }
+    push_b(buf, b"<text x=\""); push_i(buf, cx);
+    push_b(buf, b"\" y=\"24\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\">");
+    escape_xml(buf, title);
+    push_b(buf, b"</text>");
+}
+
+pub fn svg_axis_lines(buf: &mut Vec<u8>, pad_l: i32, pad_t: i32, plot_w: i32, plot_h: i32) {
+    push_b(buf, b"<line x1=\""); push_i(buf, pad_l);
+    push_b(buf, b"\" y1=\""); push_i(buf, pad_t);
+    push_b(buf, b"\" x2=\""); push_i(buf, pad_l);
+    push_b(buf, b"\" y2=\""); push_i(buf, pad_t + plot_h);
+    push_b(buf, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(buf, b"<line x1=\""); push_i(buf, pad_l);
+    push_b(buf, b"\" y1=\""); push_i(buf, pad_t + plot_h);
+    push_b(buf, b"\" x2=\""); push_i(buf, pad_l + plot_w);
+    push_b(buf, b"\" y2=\""); push_i(buf, pad_t + plot_h);
+    push_b(buf, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+}
+
+pub fn svg_x_label(buf: &mut Vec<u8>, label: &str, cx: i32, y: i32) {
+    if label.is_empty() { return; }
+    push_b(buf, b"<text x=\""); push_i(buf, cx);
+    push_b(buf, b"\" y=\""); push_i(buf, y);
+    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#6b7280\">");
+    escape_xml(buf, label);
+    push_b(buf, b"</text>");
+}
+
+pub fn svg_y_label(buf: &mut Vec<u8>, label: &str, pad_t: i32, plot_h: i32) {
+    if label.is_empty() { return; }
+    let ym = pad_t + plot_h / 2;
+    push_b(buf, b"<text x=\"14\" y=\""); push_i(buf, ym);
+    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#6b7280\" transform=\"rotate(-90 14 ");
+    push_i(buf, ym); push_b(buf, b")\">");
+    escape_xml(buf, label);
+    push_b(buf, b"</text>");
+}
+
+pub fn svg_legend_item(buf: &mut Vec<u8>, si: i32, name: &str, color: u32, x: i32, y: i32, max_len: usize) {
+    let hx = hex6(color);
+    push_b(buf, b"<g data-legend=\"1\" data-series=\""); push_i(buf, si);
+    push_b(buf, b"\">");
+    push_b(buf, b"<rect x=\""); push_i(buf, x);
+    push_b(buf, b"\" y=\""); push_i(buf, y);
+    push_b(buf, b"\" width=\"12\" height=\"12\" rx=\"2\" fill=\"#"); buf.extend_from_slice(&hx);
+    push_b(buf, b"\"/>");
+    push_b(buf, b"<text x=\""); push_i(buf, x + 16);
+    push_b(buf, b"\" y=\""); push_i(buf, y + 10);
+    push_b(buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\">");
+    escape_xml(buf, truncate(name, max_len));
+    push_b(buf, b"</text></g>");
+}
+
+pub fn svg_hgrid(buf: &mut Vec<u8>, x1: i32, x2: i32, y: i32) {
+    push_b(buf, b"<line x1=\""); push_i(buf, x1);
+    push_b(buf, b"\" y1=\""); push_i(buf, y);
+    push_b(buf, b"\" x2=\""); push_i(buf, x2);
+    push_b(buf, b"\" y2=\""); push_i(buf, y);
+    push_b(buf, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>");
+}
+
+pub fn svg_vgrid(buf: &mut Vec<u8>, x: i32, y1: i32, y2: i32) {
+    push_b(buf, b"<line x1=\""); push_i(buf, x);
+    push_b(buf, b"\" y1=\""); push_i(buf, y1);
+    push_b(buf, b"\" x2=\""); push_i(buf, x);
+    push_b(buf, b"\" y2=\""); push_i(buf, y2);
+    push_b(buf, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>");
+}
+
+pub fn svg_tick_y(buf: &mut Vec<u8>, x: i32, y: i32, val: f64) {
+    push_b(buf, b"<text x=\""); push_i(buf, x);
+    push_b(buf, b"\" y=\""); push_i(buf, y);
+    push_b(buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+    if val.abs() >= 1000.0 { push_i(buf, val as i32); } else { push_f2(buf, val); }
+    push_b(buf, b"</text>");
+}
+
+pub fn svg_tick_x(buf: &mut Vec<u8>, x: i32, y: i32, val: f64) {
+    push_b(buf, b"<text x=\""); push_i(buf, x);
+    push_b(buf, b"\" y=\""); push_i(buf, y);
+    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+    if val >= 10000.0 { push_i(buf, (val / 1000.0) as i32); push_b(buf, b"k"); }
+    else if val >= 1000.0 { push_i(buf, val as i32); }
+    else { push_f2(buf, val); }
+    push_b(buf, b"</text>");
+}
+
 #[inline(always)]
 pub fn push(buf: &mut Vec<u8>, s: &str) {
     buf.extend_from_slice(s.as_bytes());
@@ -35,6 +166,10 @@ pub fn push_hex(buf: &mut Vec<u8>, c: u32) {
 }
 
 pub fn escape_xml(buf: &mut Vec<u8>, s: &str) {
+    if !s.bytes().any(|b| b == b'&' || b == b'<' || b == b'>' || b == b'"' || b == b'\'') {
+        buf.extend_from_slice(s.as_bytes());
+        return;
+    }
     for ch in s.chars() {
         match ch {
             '&'  => buf.extend_from_slice(b"&amp;"),

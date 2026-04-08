@@ -115,9 +115,17 @@ pub fn render_scatter_html(
     width: i32,
     height: i32,
     hover: &[crate::html::hover::HoverSlot],
+    sizes: &[f64],
+    color_groups: &[String],
+    palette: &[u32],
+    x_label: &str,
+    y_label: &str,
+    color_hex: u32,
+    gridlines: bool,
+    show_text: bool,
 ) -> String {
     use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
-    use std::fmt::Write as FmtWrite;
+    use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, palette_color};
     let n = x_values.len().min(y_values.len());
     if n == 0 { return String::new(); }
     let (_, max_x) = crate::bindings::utils::simd_ops::find_minmax(x_values);
@@ -127,78 +135,151 @@ pub fn render_scatter_html(
     let range_x = (max_x - min_x).max(1.0);
     let range_y = (max_y - min_y).max(1.0);
     let pad_l = 56i32; let pad_t = 36i32; let pad_b = 48i32; let pad_r = 20i32;
-    let plot_w = width - pad_l - pad_r;
+    let has_groups = !color_groups.is_empty();
+    let has_sizes = !sizes.is_empty();
+    let (legend_w, group_names, group_map) = if has_groups {
+        let mut names: Vec<String> = Vec::new();
+        let mut map: Vec<usize> = Vec::with_capacity(n);
+        for g in color_groups.iter().take(n) {
+            let idx = names.iter().position(|x| x == g).unwrap_or_else(|| { names.push(g.clone()); names.len() - 1 });
+            map.push(idx);
+        }
+        (160i32, names, map)
+    } else {
+        (0i32, Vec::new(), Vec::new())
+    };
+    let pad_r_actual = pad_r + legend_w;
+    let plot_w = width - pad_l - pad_r_actual;
     let plot_h = height - pad_t - pad_b;
-    const PALETTE: &[u32] = &[0x4C72B0, 0xDD8452, 0x55A868, 0xC44E52, 0x8172B3, 0x64B5CD, 0xDA8BC3, 0xCCB974, 0x937860, 0x8C8C8C];
-    let use_lazy = hover.is_empty() && labels.is_empty();
-    let mut auto_slots: Vec<HoverSlot> = if !use_lazy && hover.is_empty() { Vec::with_capacity(n) } else { Vec::new() };
-    let mut buf = String::with_capacity(n * 160 + 2048);
-    let _ = write!(buf, "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{}\" height=\"{}\" viewBox=\"0 0 {} {}\">",
-        width, height, width, height);
-    buf.push_str("<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
+    let (size_min, size_max) = if has_sizes {
+        let mn = sizes.iter().cloned().fold(f64::INFINITY, f64::min);
+        let mx = sizes.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+        (mn, (mx - mn).max(1.0))
+    } else { (0.0, 1.0) };
+    let mut buf = Vec::<u8>::with_capacity(n * 200 + 4096);
+    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_i(&mut buf, width); push_b(&mut buf, b"\" height=\"");
+    push_i(&mut buf, height); push_b(&mut buf, b"\" viewBox=\"0 0 ");
+    push_i(&mut buf, width); push_b(&mut buf, b" ");
+    push_i(&mut buf, height); push_b(&mut buf, b"\">");
+    push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
     if !title.is_empty() {
-        let _ = write!(buf, "<text x=\"{}\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#1a202c\">{}</text>",
-            width / 2, scat_xml_esc(title));
+        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, width / 2);
+        push_b(&mut buf, b"\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#1a202c\">");
+        escape_xml(&mut buf, title);
+        push_b(&mut buf, b"</text>");
     }
     for i in 0..=5 {
         let frac = i as f64 / 5.0;
         let y = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
         let val = min_y + frac * range_y;
-        let x2 = pad_l + plot_w;
-        if i > 0 {
-            let _ = write!(buf, "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>",
-                pad_l, y, x2, y);
+        if gridlines && i > 0 {
+            push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
+            push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, y);
+            push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
+            push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, y);
+            push_b(&mut buf, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>");
         }
-        let lbl = if val.abs() >= 1000.0 { format!("{:.0}", val) } else if val.abs() >= 1.0 { format!("{:.1}", val) } else { format!("{:.2}", val) };
-        let _ = write!(buf, "<text x=\"{}\" y=\"{}\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">{}</text>",
-            pad_l - 4, y + 3, lbl);
+        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, pad_l - 4);
+        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, y + 3);
+        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+        push_f2(&mut buf, val);
+        push_b(&mut buf, b"</text>");
         let xval = min_x + frac * range_x;
         let xi = pad_l + (frac * plot_w as f64) as i32;
-        let xlbl = if xval.abs() >= 1000.0 { format!("{:.0}", xval) } else if xval.abs() >= 1.0 { format!("{:.1}", xval) } else { format!("{:.2}", xval) };
-        let _ = write!(buf, "<text x=\"{}\" y=\"{}\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">{}</text>",
-            xi, pad_t + plot_h + 14, xlbl);
+        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, xi);
+        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, pad_t + plot_h + 14);
+        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+        push_f2(&mut buf, xval);
+        push_b(&mut buf, b"</text>");
     }
-    let _ = write!(buf, "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>",
-        pad_l, pad_t, pad_l, pad_t + plot_h);
-    let _ = write!(buf, "<line x1=\"{}\" y1=\"{}\" x2=\"{}\" y2=\"{}\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>",
-        pad_l, pad_t + plot_h, pad_l + plot_w, pad_t + plot_h);
+    push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
+    push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t);
+    push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l);
+    push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
+    push_b(&mut buf, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
+    push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t + plot_h);
+    push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
+    push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
+    push_b(&mut buf, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    if !y_label.is_empty() {
+        push_b(&mut buf, b"<text x=\"14\" y=\""); push_i(&mut buf, pad_t + plot_h / 2);
+        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#374151\" transform=\"rotate(-90,14,");
+        push_i(&mut buf, pad_t + plot_h / 2);
+        push_b(&mut buf, b")\">");
+        escape_xml(&mut buf, y_label);
+        push_b(&mut buf, b"</text>");
+    }
+    if !x_label.is_empty() {
+        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, pad_l + plot_w / 2);
+        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, height - 4);
+        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#374151\">");
+        escape_xml(&mut buf, x_label);
+        push_b(&mut buf, b"</text>");
+    }
     for i in 0..n {
         let cx = pad_l + ((x_values[i] - min_x) / range_x * plot_w as f64) as i32;
         let cy = pad_t + plot_h - ((y_values[i] - min_y) / range_y * plot_h as f64) as i32;
-        let color = PALETTE[i % PALETTE.len()];
-        let lbl = if i < labels.len() { labels[i].as_str() } else { "" };
-        let _ = write!(buf,
-            "<circle data-idx=\"{}\" data-x=\"{:.2}\" data-y=\"{:.2}\"",
-            i, x_values[i], y_values[i]);
-        if !lbl.is_empty() {
-            buf.push_str(" data-lbl=\"");
-            buf.push_str(&scat_xml_esc(lbl));
-            buf.push('"');
+        let color = if has_groups && i < group_map.len() {
+            palette_color(palette, group_map[i])
+        } else if color_hex != 0 {
+            color_hex
+        } else {
+            palette_color(palette, i)
+        };
+        let hx = hex6(color);
+        let r = if has_sizes && i < sizes.len() {
+            ((sizes[i] - size_min) / size_max * 18.0 + 3.0) as i32
+        } else { 5 };
+        push_b(&mut buf, b"<circle data-idx=\""); push_i(&mut buf, i as i32);
+        if has_groups { push_b(&mut buf, b"\" data-series=\""); push_i(&mut buf, group_map[i] as i32); }
+        push_b(&mut buf, b"\" data-kv-X=\""); push_f2(&mut buf, x_values[i]);
+        push_b(&mut buf, b"\" data-kv-Y=\""); push_f2(&mut buf, y_values[i]);
+        if i < labels.len() && !labels[i].is_empty() {
+            push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, &labels[i]);
         }
-        let h = b"0123456789abcdef";
-        let hex = [
-            h[((color >> 20) & 0xf) as usize], h[((color >> 16) & 0xf) as usize],
-            h[((color >> 12) & 0xf) as usize], h[((color >> 8)  & 0xf) as usize],
-            h[((color >> 4)  & 0xf) as usize], h[(color & 0xf) as usize],
-        ];
-        let _ = write!(buf,
-            " cx=\"{}\" cy=\"{}\" r=\"5\" fill=\"#{}{}{}{}{}{}\" fill-opacity=\"0.8\" stroke=\"#fff\" stroke-width=\"1\"/>",
-            cx, cy, hex[0] as char, hex[1] as char, hex[2] as char,
-            hex[3] as char, hex[4] as char, hex[5] as char);
-        if !use_lazy && hover.is_empty() {
-            auto_slots.push(HoverSlot::new(if lbl.is_empty() { format!("Point {}", i + 1) } else { lbl.to_string() })
-                .kv("X", format!("{:.2}", x_values[i])).kv("Y", format!("{:.2}", y_values[i])));
+        push_b(&mut buf, b"\" cx=\""); push_i(&mut buf, cx);
+        push_b(&mut buf, b"\" cy=\""); push_i(&mut buf, cy);
+        push_b(&mut buf, b"\" r=\""); push_i(&mut buf, r);
+        push_b(&mut buf, b"\" fill=\"#"); buf.extend_from_slice(&hx);
+        push_b(&mut buf, b"\" fill-opacity=\"0.75\" stroke=\"#fff\" stroke-width=\"1\"/>");
+        if show_text && i < labels.len() && !labels[i].is_empty() {
+            push_b(&mut buf, b"<text x=\""); push_i(&mut buf, cx);
+            push_b(&mut buf, b"\" y=\""); push_i(&mut buf, cy - r - 3);
+            push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#374151\">");
+            escape_xml(&mut buf, if labels[i].len() <= 14 { &labels[i] } else { &labels[i][..14] });
+            push_b(&mut buf, b"</text>");
         }
     }
-    buf.push_str("</svg>");
-    let hover_json = if use_lazy {
+    if has_groups {
+        let leg_x = pad_l + plot_w + 12;
+        let leg_top = pad_t + 8;
+        for (gi, name) in group_names.iter().enumerate() {
+            let hx = hex6(palette_color(palette, gi));
+            let ly = leg_top + gi as i32 * 22;
+            push_b(&mut buf, b"<g data-legend=\"1\" data-series=\"");
+            push_i(&mut buf, gi as i32);
+            push_b(&mut buf, b"\">");
+            push_b(&mut buf, b"<circle cx=\""); push_i(&mut buf, leg_x + 6);
+            push_b(&mut buf, b"\" cy=\""); push_i(&mut buf, ly + 6);
+            push_b(&mut buf, b"\" r=\"6\" fill=\"#"); buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\"/>");
+            push_b(&mut buf, b"<text x=\""); push_i(&mut buf, leg_x + 17);
+            push_b(&mut buf, b"\" y=\""); push_i(&mut buf, ly + 11);
+            push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#374151\">");
+            escape_xml(&mut buf, if name.len() <= 20 { name } else { &name[..20] });
+            push_b(&mut buf, b"</text></g>");
+        }
+    }
+    push_b(&mut buf, b"</svg>");
+    let svg = unsafe { String::from_utf8_unchecked(buf) };
+    let hover_json = if hover.is_empty() {
         "[]".to_string()
-    } else if hover.is_empty() {
-        slots_to_json(&auto_slots)
     } else {
         slots_to_json(hover)
     };
-    build_chart_html(title, &buf, &hover_json)
+    build_chart_html(title, &svg, &hover_json)
 }
 
 #[inline] fn scat_xml_esc(s: &str) -> String { s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;") }

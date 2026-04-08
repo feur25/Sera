@@ -3,11 +3,19 @@ pub mod pie;
 pub mod heatmap;
 pub mod histogram;
 pub mod grouped_bar;
+pub mod multiline;
+pub mod area;
+pub mod treemap;
+pub mod boxplot;
 
 pub use pie::{Pie, PieConfig, render_pie_html};
 pub use heatmap::{Heatmap, HeatmapConfig, render_heatmap_html};
 pub use histogram::{Histogram, HistogramConfig, render_histogram_html, compute_bins};
 pub use grouped_bar::{GroupedBar, GroupedBarConfig, render_grouped_bar_html};
+pub use multiline::{MultiLine, MultiLineConfig, render_multiline_html};
+pub use area::{Area, AreaConfig, render_area_html};
+pub use treemap::{Treemap, TreemapConfig, render_treemap_html};
+pub use boxplot::render_boxplot_html;
 pub use crate::html::hover::{HoverSlot, slots_to_json, parse_hover_json};
 
 use crate::plot::controller::chart_controller::{ChartTypeBuilder, get_group_registry};

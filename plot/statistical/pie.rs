@@ -1,4 +1,4 @@
-use super::common::{palette_color, push, push_b, hex6, escape_xml, truncate};
+use super::common::{palette_color, push_b, push_i, push_f2, hex6, escape_xml, truncate, apply_sort};
 use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
 
 pub struct Pie;
@@ -14,6 +14,7 @@ pub struct PieConfig<'a> {
     pub min_label_frac: f64,
     pub palette: &'a [u32],
     pub hover: &'a [HoverSlot],
+    pub sort_order: &'a str,
 }
 
 impl<'a> Default for PieConfig<'a> {
@@ -29,15 +30,19 @@ impl<'a> Default for PieConfig<'a> {
             min_label_frac: 0.04,
             palette: &[],
             hover: &[],
+            sort_order: "",
         }
     }
 }
 
 pub fn render_pie_html(cfg: &PieConfig) -> String {
     use std::f64::consts::PI;
-    let n = cfg.labels.len().min(cfg.values.len());
+    let (sorted_labels, sorted_values) = apply_sort(cfg.labels, cfg.values, cfg.sort_order);
+    let labels = &sorted_labels;
+    let values = &sorted_values;
+    let n = labels.len().min(values.len());
     if n == 0 { return String::new(); }
-    let total: f64 = cfg.values[..n].iter().sum();
+    let total: f64 = values[..n].iter().sum();
     if total <= 0.0 { return String::new(); }
     let w = cfg.width;
     let h = cfg.height;
@@ -47,30 +52,25 @@ pub fn render_pie_html(cfg: &PieConfig) -> String {
     let r = (cx.min(cy * 0.90) * 0.84).max(1.0);
     let r_inner = if cfg.donut > 0.0 { r * cfg.donut.clamp(0.0, 0.90) } else { 0.0 };
     let mut buf = Vec::<u8>::with_capacity(n * 380 + 1024);
-    push(&mut buf, &format!(
-        "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{w}\" height=\"{h}\" viewBox=\"0 0 {w} {h}\">",
-    ));
+    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_i(&mut buf, w); push_b(&mut buf, b"\" height=\"");
+    push_i(&mut buf, h); push_b(&mut buf, b"\" viewBox=\"0 0 ");
+    push_i(&mut buf, w); push_b(&mut buf, b" ");
+    push_i(&mut buf, h); push_b(&mut buf, b"\">");
     push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
     if !cfg.title.is_empty() {
-        push(&mut buf, &format!(
-            "<text x=\"{tx}\" y=\"22\" text-anchor=\"middle\" \
-             font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" \
-             font-weight=\"700\" fill=\"#1a202c\">",
-            tx = w / 2,
-        ));
+        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, w / 2);
+        push_b(&mut buf, b"\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\">");
         escape_xml(&mut buf, cfg.title);
         push_b(&mut buf, b"</text>");
     }
-    let auto_hover = cfg.hover.is_empty();
-    let mut auto_slots: Vec<HoverSlot> = if auto_hover { Vec::with_capacity(n) } else { Vec::new() };
     let mut angle = -PI / 2.0;
     for i in 0..n {
-        let frac = cfg.values[i] / total;
+        let frac = values[i] / total;
         let sweep = frac * 2.0 * PI;
         let end_angle = angle + sweep;
         let c = palette_color(cfg.palette, i);
         let hx = hex6(c);
-        let hx_str = unsafe { std::str::from_utf8_unchecked(&hx) };
         let large_arc: u8 = if sweep > PI { 1 } else { 0 };
         let x1 = cx + r * angle.cos();
         let y1 = cy + r * angle.sin();
@@ -81,69 +81,80 @@ pub fn render_pie_html(cfg: &PieConfig) -> String {
             let yi1 = cy + r_inner * angle.sin();
             let xi2 = cx + r_inner * end_angle.cos();
             let yi2 = cy + r_inner * end_angle.sin();
-            push(&mut buf, &format!(
-                "<path data-idx=\"{i}\" \
-                 d=\"M{x1:.2},{y1:.2} A{r:.2},{r:.2} 0 {la},1 {x2:.2},{y2:.2} \
-                 L{xi2:.2},{yi2:.2} A{ri:.2},{ri:.2} 0 {la},0 {xi1:.2},{yi1:.2} Z\" \
-                 fill=\"#{hx}\" stroke=\"#fff\" stroke-width=\"1.5\"/>",
-                i=i, x1=x1, y1=y1, r=r, la=large_arc, x2=x2, y2=y2,
-                xi2=xi2, yi2=yi2, ri=r_inner, xi1=xi1, yi1=yi1, hx=hx_str,
-            ));
+            push_b(&mut buf, b"<path data-idx=\""); push_i(&mut buf, i as i32);
+            push_b(&mut buf, b"\" d=\"M"); push_f2(&mut buf, x1);
+            push_b(&mut buf, b","); push_f2(&mut buf, y1);
+            push_b(&mut buf, b" A"); push_f2(&mut buf, r);
+            push_b(&mut buf, b","); push_f2(&mut buf, r);
+            push_b(&mut buf, b" 0 "); buf.push(large_arc + b'0');
+            push_b(&mut buf, b",1 "); push_f2(&mut buf, x2);
+            push_b(&mut buf, b","); push_f2(&mut buf, y2);
+            push_b(&mut buf, b" L"); push_f2(&mut buf, xi2);
+            push_b(&mut buf, b","); push_f2(&mut buf, yi2);
+            push_b(&mut buf, b" A"); push_f2(&mut buf, r_inner);
+            push_b(&mut buf, b","); push_f2(&mut buf, r_inner);
+            push_b(&mut buf, b" 0 "); buf.push(large_arc + b'0');
+            push_b(&mut buf, b",0 "); push_f2(&mut buf, xi1);
+            push_b(&mut buf, b","); push_f2(&mut buf, yi1);
+            push_b(&mut buf, b" Z\" data-lbl=\""); escape_xml(&mut buf, &labels[i]);
+            push_b(&mut buf, b"\" data-v=\""); push_f2(&mut buf, values[i]);
+            push_b(&mut buf, b"\" data-kv-Part=\""); push_f2(&mut buf, frac * 100.0);
+            push_b(&mut buf, b"%\" fill=\"#"); buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"1.5\"/>");
         } else {
-            push(&mut buf, &format!(
-                "<path data-idx=\"{i}\" \
-                 d=\"M{cx:.2},{cy:.2} L{x1:.2},{y1:.2} A{r:.2},{r:.2} 0 {la},1 {x2:.2},{y2:.2} Z\" \
-                 fill=\"#{hx}\" stroke=\"#fff\" stroke-width=\"1.8\"/>",
-                i=i, cx=cx, cy=cy, x1=x1, y1=y1, r=r, la=large_arc, x2=x2, y2=y2, hx=hx_str,
-            ));
+            push_b(&mut buf, b"<path data-idx=\""); push_i(&mut buf, i as i32);
+            push_b(&mut buf, b"\" d=\"M"); push_f2(&mut buf, cx);
+            push_b(&mut buf, b","); push_f2(&mut buf, cy);
+            push_b(&mut buf, b" L"); push_f2(&mut buf, x1);
+            push_b(&mut buf, b","); push_f2(&mut buf, y1);
+            push_b(&mut buf, b" A"); push_f2(&mut buf, r);
+            push_b(&mut buf, b","); push_f2(&mut buf, r);
+            push_b(&mut buf, b" 0 "); buf.push(large_arc + b'0');
+            push_b(&mut buf, b",1 "); push_f2(&mut buf, x2);
+            push_b(&mut buf, b","); push_f2(&mut buf, y2);
+            push_b(&mut buf, b" Z\" data-lbl=\""); escape_xml(&mut buf, &labels[i]);
+            push_b(&mut buf, b"\" data-v=\""); push_f2(&mut buf, values[i]);
+            push_b(&mut buf, b"\" data-kv-Part=\""); push_f2(&mut buf, frac * 100.0);
+            push_b(&mut buf, b"%\" fill=\"#"); buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"1.8\"/>");
         }
         if cfg.show_pct && frac >= cfg.min_label_frac {
             let mid = angle + sweep / 2.0;
             let lr = if r_inner > 0.0 { (r + r_inner) / 2.0 } else { r * 0.66 };
-            push(&mut buf, &format!(
-                "<text x=\"{lx:.1}\" y=\"{ly:.1}\" text-anchor=\"middle\" \
-                 dominant-baseline=\"central\" font-family=\"Arial,sans-serif\" \
-                 font-size=\"11\" font-weight=\"700\" fill=\"#fff\">{pct:.0}%</text>",
-                lx = cx + lr * mid.cos(), ly = cy + lr * mid.sin(), pct = frac * 100.0,
-            ));
-        }
-        if auto_hover {
-            auto_slots.push(
-                HoverSlot::new(cfg.labels[i].clone())
-                    .kv("Valeur", format!("{:.1}", cfg.values[i]))
-                    .kv("Part", format!("{:.1}%", frac * 100.0))
-            );
+            push_b(&mut buf, b"<text x=\""); push_f2(&mut buf, cx + lr * mid.cos());
+            push_b(&mut buf, b"\" y=\""); push_f2(&mut buf, cy + lr * mid.sin());
+            push_b(&mut buf, b"\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"Arial,sans-serif\" font-size=\"11\" font-weight=\"700\" fill=\"#fff\">");
+            push_i(&mut buf, (frac * 100.0 + 0.5) as i32);
+            push_b(&mut buf, b"%</text>");
         }
         angle = end_angle;
     }
     if r_inner > 0.0 {
-        push(&mut buf, &format!(
-            "<circle cx=\"{cx:.1}\" cy=\"{cy:.1}\" r=\"{ri:.1}\" fill=\"#fff\"/>",
-            cx=cx, cy=cy, ri=r_inner - 1.0,
-        ));
+        push_b(&mut buf, b"<circle cx=\""); push_f2(&mut buf, cx);
+        push_b(&mut buf, b"\" cy=\""); push_f2(&mut buf, cy);
+        push_b(&mut buf, b"\" r=\""); push_f2(&mut buf, r_inner - 1.0);
+        push_b(&mut buf, b"\" fill=\"#fff\"/>");
     }
     let leg_x = (w as f64 * 0.66) as i32;
     let leg_top = ((h as f64 - n as f64 * 22.0) / 2.0).max(30.0) as i32;
     for i in 0..n {
-        let frac = cfg.values[i] / total;
+        let frac = values[i] / total;
         let c = palette_color(cfg.palette, i);
         let hx = hex6(c);
-        let hx_str = unsafe { std::str::from_utf8_unchecked(&hx) };
         let ly = leg_top + i as i32 * 22;
-        push(&mut buf, &format!(
-            "<rect x=\"{lx}\" y=\"{ly}\" width=\"13\" height=\"13\" rx=\"3\" fill=\"#{hx}\"/>",
-            lx=leg_x, ly=ly, hx=hx_str,
-        ));
-        push(&mut buf, &format!(
-            "<text x=\"{tx}\" y=\"{ty}\" font-family=\"Arial,sans-serif\" \
-             font-size=\"11\" fill=\"#374151\">",
-            tx=leg_x+17, ty=ly+11,
-        ));
-        escape_xml(&mut buf, truncate(&cfg.labels[i], 22));
-        push(&mut buf, &format!(" ({:.1}%)</text>", frac * 100.0));
+        push_b(&mut buf, b"<g data-legend=\"1\" data-series=\""); push_i(&mut buf, i as i32);
+        push_b(&mut buf, b"\"><rect x=\""); push_i(&mut buf, leg_x);
+        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, ly);
+        push_b(&mut buf, b"\" width=\"13\" height=\"13\" rx=\"3\" fill=\"#");
+        buf.extend_from_slice(&hx); push_b(&mut buf, b"\"/>");
+        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, leg_x + 17);
+        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, ly + 11);
+        push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#374151\">");
+        escape_xml(&mut buf, truncate(&labels[i], 22));
+        push_b(&mut buf, b" ("); push_f2(&mut buf, frac * 100.0);
+        push_b(&mut buf, b"%)</text></g>");
     }
     push_b(&mut buf, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(buf) };
-    let slots = if auto_hover { &auto_slots } else { cfg.hover };
-    build_chart_html(cfg.title, &svg, &slots_to_json(slots))
+    build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }
