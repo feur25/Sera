@@ -28,12 +28,12 @@ impl<'a> Default for HistogramConfig<'a> {
             y_label: "Count",
             values: &[],
             bins: 0,
-            color: 0x4C72B0,
+            color: 0x6366F1,
             opacity: 204,
             width: 860,
             height: 380,
             overlay_values: None,
-            overlay_color: 0xC44E52,
+            overlay_color: 0xF43F5E,
             gridlines: true,
             show_counts: false,
             hover: &[],
@@ -93,7 +93,7 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
             push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, y);
             push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
             push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, y);
-            push_b(&mut buf, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>");
+            push_b(&mut buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
         }
         push_b(&mut buf, b"<text x=\""); push_i(&mut buf, pad_l - 4);
         push_b(&mut buf, b"\" y=\""); push_i(&mut buf, y + 3);
@@ -105,12 +105,12 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
     push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t);
     push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l);
     push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
     push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
     push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t + plot_h);
     push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
     push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
     let op_i = (cfg.opacity as f64 / 255.0 * 100.0 + 0.5) as i32;
     let hx_main = hex6(cfg.color);
     for (i, &cnt) in bin_counts.iter().enumerate() {
@@ -129,7 +129,7 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
         push_b(&mut buf, b"\" height=\""); push_i(&mut buf, bh);
         push_b(&mut buf, b"\" fill=\"#"); buf.extend_from_slice(&hx_main);
         push_b(&mut buf, b"\" fill-opacity=\"0."); push_i(&mut buf, op_i);
-        push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"0.4\"/>");
+        push_b(&mut buf, b"\" rx=\"2\" stroke=\"#fff\" stroke-width=\"0.4\"/>");
         if cfg.show_counts && bh > 14 {
             push_b(&mut buf, b"<text x=\""); push_i(&mut buf, x + w_px / 2);
             push_b(&mut buf, b"\" y=\""); push_i(&mut buf, y + 11);
@@ -153,7 +153,7 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
             push_b(&mut buf, b"\" width=\""); push_i(&mut buf, w_px);
             push_b(&mut buf, b"\" height=\""); push_i(&mut buf, bh);
             push_b(&mut buf, b"\" fill=\"#"); buf.extend_from_slice(&hx2);
-            push_b(&mut buf, b"\" fill-opacity=\"0.60\" stroke=\"#fff\" stroke-width=\"0.4\"/>");
+            push_b(&mut buf, b"\" fill-opacity=\"0.60\" rx=\"2\" stroke=\"#fff\" stroke-width=\"0.4\"/>");
         }
     }
     let tick_step = ((n_bins as f64 / 8.0).ceil() as usize).max(1);

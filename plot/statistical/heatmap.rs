@@ -31,9 +31,9 @@ impl<'a> Default for HeatmapConfig<'a> {
             height: 0,
             show_values: true,
             value_min_cell: 26,
-            color_low:  0x2166ac,
-            color_mid:  0xffffff,
-            color_high: 0xd6604d,
+            color_low:  0x6366F1,
+            color_mid:  0xfafbfc,
+            color_high: 0xF43F5E,
             value_decimals: 2,
             col_label_angle: 40,
             hover: &[],
@@ -134,7 +134,7 @@ pub fn render_heatmap_html(cfg: &HeatmapConfig) -> String {
             push_i(&mut buf, cell_h);
             push_b(&mut buf, b"\" fill=\"#");
             buf.extend_from_slice(&hx);
-            push_b(&mut buf, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.4\"/>");
+            push_b(&mut buf, b"\" rx=\"2\" stroke=\"#e2e8f0\" stroke-width=\"0.4\"/>");
             if cfg.show_values && cell_w >= cfg.value_min_cell {
                 let lum = 0.299 * ((color >> 16 & 0xFF) as f64)
                     + 0.587 * ((color >> 8 & 0xFF) as f64)

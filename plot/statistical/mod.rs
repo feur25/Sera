@@ -7,6 +7,12 @@ pub mod multiline;
 pub mod area;
 pub mod treemap;
 pub mod boxplot;
+pub mod funnel;
+pub mod sunburst;
+pub mod waterfall;
+pub mod violin;
+pub mod slope;
+pub mod bullet;
 
 pub use pie::{Pie, PieConfig, render_pie_html};
 pub use heatmap::{Heatmap, HeatmapConfig, render_heatmap_html};
@@ -16,6 +22,12 @@ pub use multiline::{MultiLine, MultiLineConfig, render_multiline_html};
 pub use area::{Area, AreaConfig, render_area_html};
 pub use treemap::{Treemap, TreemapConfig, render_treemap_html};
 pub use boxplot::render_boxplot_html;
+pub use funnel::{FunnelConfig, render_funnel_html};
+pub use sunburst::{SunburstConfig, render_sunburst_html};
+pub use waterfall::{WaterfallConfig, render_waterfall_html};
+pub use violin::{ViolinConfig, render_violin_html};
+pub use slope::{SlopeConfig, render_slope_html};
+pub use bullet::{BulletConfig, render_bullet_html};
 pub use crate::html::hover::{HoverSlot, slots_to_json, parse_hover_json};
 
 use crate::plot::controller::chart_controller::{ChartTypeBuilder, get_group_registry};

@@ -211,10 +211,10 @@ pub fn render_treemap_html(cfg: &TreemapConfig) -> String {
         push_f2(&mut buf, r.w);
         push_b(&mut buf, b"\" height=\"");
         push_f2(&mut buf, r.h);
-        push_b(&mut buf, b"\" rx=\"2\" fill=\"#");
+        push_b(&mut buf, b"\" rx=\"4\" fill=\"#");
         let hx = hex6(color);
         buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"1.5\"/>");
+        push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"2\"/>");
         let max_chars = ((r.w / 7.0) as usize).max(1);
         if r.w > 30.0 && r.h > 18.0 {
             let font_size: i32 = if r.w > 100.0 && r.h > 40.0 { 12 }

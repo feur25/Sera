@@ -279,7 +279,26 @@ document.addEventListener('mouseup',function(e){if(!dragging)return;dragging=fal
 function clearSel(){panel.style.display='none';resetVB();
  svg.querySelectorAll('[data-idx]').forEach(function(el){
   el.style.display='';el.style.opacity='';el.style.stroke='';el.style.strokeWidth='';});}
-document.addEventListener('keydown',function(e){if(e.key==='Escape'&&pinned){pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(dblZoomed){dblZoomed=false;resetVB();svg.querySelectorAll('[data-idx]').forEach(function(el){el.style.opacity='';el.style.display='';});}if(pinned){pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}}});
+var dblZoomed=false;
+svg.addEventListener('dblclick',function(e){
+ if(dblZoomed){dblZoomed=false;resetVB();svg.querySelectorAll('[data-idx]').forEach(function(el){el.style.opacity='';el.style.display='';});return;}
+ var found=null;
+ for(var nd=e.target;nd&&nd!==svg;nd=nd.parentElement){if(nd.getAttribute&&nd.getAttribute('data-idx')!==null){found=nd;break;}}
+ if(!found)return;
+ e.stopPropagation();
+ var idx=parseInt(found.getAttribute('data-idx'),10);
+ var bb;try{bb=found.getBBox();}catch(ex){return;}
+ var pad=Math.max(bb.width,bb.height)*1.5+30;
+ svg.querySelectorAll('[data-idx]').forEach(function(el){
+  var eli=parseInt(el.getAttribute('data-idx'),10);
+  if(eli===idx){el.style.opacity='1';}else{el.style.opacity='0.08';}});
+ var vb=parseVB(origVB.length?origVB:(svg.getAttribute('viewBox')||'0 0 800 500'));
+ var nx=Math.max(vb[0],bb.x-pad),ny=Math.max(vb[1],bb.y-pad);
+ var nw=Math.min(vb[2],bb.width+pad*2),nh=Math.min(vb[3],bb.height+pad*2);
+ animateVB(nx,ny,nw,nh);
+ dblZoomed=true;
+},false);
 var legs=svg.querySelectorAll('[data-legend]');
 legs.forEach(function(lg){lg.style.cursor='pointer';
 lg.addEventListener('click',function(){
@@ -300,6 +319,7 @@ function spRescale(){
  var tks=svg.querySelectorAll('.sp-yt'),nT=tks.length;if(nT>1)for(var i=0;i<nT;i++){var f=i/(nT-1);var v=mn+f*rg;tks[i].textContent=v>=1000?Math.round(v)+'':v.toFixed(2);tks[i].setAttribute('y',pT+Math.round((1-f)*pH)+3);}
  var gls=svg.querySelectorAll('.sp-gl');if(gls.length&&nT>1)for(var j=0;j<gls.length;j++){var f=(j+1)/(nT-1);var gy=pT+Math.round((1-f)*pH);gls[j].setAttribute('y1',gy);gls[j].setAttribute('y2',gy);}
 }
+svg.querySelectorAll('[data-idx]').forEach(function(el,i){el.style.animationDelay=(i*18)+'ms';});
 })();</script>"#;
 
 pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
@@ -336,8 +356,8 @@ pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
           "border-top:1px solid rgba(255,255,255,.07)}",
         "#sp-tip video{display:block;width:100%;border-top:1px solid rgba(255,255,255,.07)}",
         ".sp-html{padding:8px 14px;font-size:12px;border-top:1px solid rgba(255,255,255,.07)}",
-        "[data-idx]{cursor:pointer;transition:opacity .35s,filter .15s}",
-        "[data-idx]:hover{filter:brightness(1.22)}",
+        "[data-idx]{cursor:pointer;transition:opacity .3s,filter .2s}",
+        "[data-idx]:hover{filter:brightness(1.12) saturate(1.08)}",
         ".sp-cpanel{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);",
           "background:#0b0e18;color:#f1f5f9;",
           "border-radius:10px;padding:8px 16px;font-size:12px;",
@@ -358,10 +378,10 @@ pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
     buf.extend_from_slice(html_attr_esc(title).as_bytes());
     buf.extend_from_slice(b"</title>");
     buf.extend_from_slice(CSS.as_bytes());
-    buf.extend_from_slice(b"<style>body{margin:0;background:#fff}</style></head><body>");
+    buf.extend_from_slice(b"<style>body{margin:0;background:#f0f2f5;display:flex;justify-content:center;padding:16px 0}@keyframes spi{from{opacity:0;transform:translateY(4px)}}svg [data-idx]{animation:spi .5s ease both}</style></head><body>");
     buf.extend_from_slice(b"<div id=\"");
     buf.extend_from_slice(pid.as_bytes());
-    buf.extend_from_slice(b"\" style=\"position:relative;display:inline-block\">");
+    buf.extend_from_slice(b"\" style=\"position:relative;display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)\">");
     buf.extend_from_slice(svg.as_bytes());
     buf.extend_from_slice(b"<div class=\"sp-sel-ov\" style=\"display:none\"></div>");
     buf.extend_from_slice(b"<div class=\"sp-cpanel\"></div>");

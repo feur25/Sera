@@ -91,7 +91,7 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
             push_b(&mut b, b"\" y1=\""); push_i(&mut b, y);
             push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
             push_b(&mut b, b"\" y2=\""); push_i(&mut b, y);
-            push_b(&mut b, b"\" stroke=\"#e5e7eb\" stroke-width=\".6\" stroke-dasharray=\"3,3\" class=\"sp-gl\"/>");
+            push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\".5\" class=\"sp-gl\"/>");
         }
         push_b(&mut b, b"<text x=\""); push_i(&mut b, pad_l - 4);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, y + 3);
@@ -111,12 +111,12 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
     push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t);
     push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l);
     push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
     push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
     push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t + plot_h);
     push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
     push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
     for si in (0..n_ser).rev() {
         let color = palette_color(cfg.palette, si);
         let hx = hex6(color);

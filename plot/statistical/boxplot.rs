@@ -104,7 +104,7 @@ pub fn render_boxplot_html(
         push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, ty);
         push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
         push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, ty);
-        push_b(&mut buf, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>");
+        push_b(&mut buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
         push_b(&mut buf, b"<text x=\""); push_i(&mut buf, pad_l - 4);
         push_b(&mut buf, b"\" y=\""); push_i(&mut buf, ty + 4);
         push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
@@ -117,12 +117,12 @@ pub fn render_boxplot_html(
     push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t);
     push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l);
     push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
     push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
     push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t + plot_h);
     push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
     push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
 
     for (ci, (cat, st)) in cats.iter().zip(stats.iter()).enumerate() {
         let cx = pad_l + (ci as f64 * slot_w + slot_w / 2.0) as i32;
@@ -176,7 +176,7 @@ pub fn render_boxplot_html(
         push_b(&mut buf, b"\" width=\""); push_i(&mut buf, box_hw * 2);
         push_b(&mut buf, b"\" height=\""); push_i(&mut buf, box_h);
         push_b(&mut buf, b"\" fill=\"#"); buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" fill-opacity=\"0.28\" stroke=\"#");
+        push_b(&mut buf, b"\" fill-opacity=\"0.28\" rx=\"3\" stroke=\"#");
         buf.extend_from_slice(&hx);
         push_b(&mut buf, b"\" stroke-width=\"1.6\"/>");
 

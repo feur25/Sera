@@ -86,7 +86,7 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
             push_b(&mut b, b"\" y1=\""); push_i(&mut b, y);
             push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
             push_b(&mut b, b"\" y2=\""); push_i(&mut b, y);
-            push_b(&mut b, b"\" stroke=\"#e5e7eb\" stroke-width=\".6\" stroke-dasharray=\"3,3\" class=\"sp-gl\"/>");
+            push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\".5\" class=\"sp-gl\"/>");
         }
         push_b(&mut b, b"<text x=\""); push_i(&mut b, pad_l - 4);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, y + 3);
@@ -106,12 +106,12 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
     push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t);
     push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l);
     push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
     push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
     push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t + plot_h);
     push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
     push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
     let tick_step = ((n_pts as f64 / 12.0).ceil() as usize).max(1);
     for i in (0..n_pts).step_by(tick_step) {
         let x = pad_l + (i as f64 * step_x) as i32;
@@ -142,7 +142,7 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
         }
         push_b(&mut b, b"\" fill=\"none\" stroke=\"#");
         b.extend_from_slice(&hx);
-        push_b(&mut b, b"\" stroke-width=\"2\" stroke-linejoin=\"round\" points=\"");
+        push_b(&mut b, b"\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" points=\"");
         for i in 0..n_pts {
             let val = svals.get(i).copied().unwrap_or(0.0);
             let frac = if val.is_finite() { (val - min_val) / range } else { 0.0 };

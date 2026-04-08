@@ -1,6 +1,6 @@
 pub const PALETTE: &[u32] = &[
-    0x4C72B0, 0xDD8452, 0x55A868, 0xC44E52, 0x8172B3,
-    0x64B5CD, 0xDA8BC3, 0xCCB974, 0x937860, 0x8C8C8C,
+    0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B, 0x8B5CF6,
+    0x06B6D4, 0xEC4899, 0x84CC16, 0xEF4444, 0x14B8A6,
 ];
 
 #[inline(always)]
@@ -64,12 +64,12 @@ pub fn svg_axis_lines(buf: &mut Vec<u8>, pad_l: i32, pad_t: i32, plot_w: i32, pl
     push_b(buf, b"\" y1=\""); push_i(buf, pad_t);
     push_b(buf, b"\" x2=\""); push_i(buf, pad_l);
     push_b(buf, b"\" y2=\""); push_i(buf, pad_t + plot_h);
-    push_b(buf, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
     push_b(buf, b"<line x1=\""); push_i(buf, pad_l);
     push_b(buf, b"\" y1=\""); push_i(buf, pad_t + plot_h);
     push_b(buf, b"\" x2=\""); push_i(buf, pad_l + plot_w);
     push_b(buf, b"\" y2=\""); push_i(buf, pad_t + plot_h);
-    push_b(buf, b"\" stroke=\"#9ca3af\" stroke-width=\"1.2\"/>");
+    push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
 }
 
 pub fn svg_x_label(buf: &mut Vec<u8>, label: &str, cx: i32, y: i32) {
@@ -111,7 +111,7 @@ pub fn svg_hgrid(buf: &mut Vec<u8>, x1: i32, x2: i32, y: i32) {
     push_b(buf, b"\" y1=\""); push_i(buf, y);
     push_b(buf, b"\" x2=\""); push_i(buf, x2);
     push_b(buf, b"\" y2=\""); push_i(buf, y);
-    push_b(buf, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>");
+    push_b(buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
 }
 
 pub fn svg_vgrid(buf: &mut Vec<u8>, x: i32, y1: i32, y2: i32) {
@@ -119,7 +119,7 @@ pub fn svg_vgrid(buf: &mut Vec<u8>, x: i32, y1: i32, y2: i32) {
     push_b(buf, b"\" y1=\""); push_i(buf, y1);
     push_b(buf, b"\" x2=\""); push_i(buf, x);
     push_b(buf, b"\" y2=\""); push_i(buf, y2);
-    push_b(buf, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"3,3\"/>");
+    push_b(buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
 }
 
 pub fn svg_tick_y(buf: &mut Vec<u8>, x: i32, y: i32, val: f64) {
