@@ -102,7 +102,7 @@ impl Chart {
 
 #[cfg(feature = "python")]
 #[pymodule]
-fn seraplot(_py: Python<'_>, m: &PyModule) -> PyResult<()> {
+fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Chart>()?;
     m.add("__version__", VERSION)?;
     m.add("__doc__", r#"SeraPlot - Rust-Powered Data Visualization Framework
@@ -116,37 +116,83 @@ updated, offering superior speed and significantly lower memory consumption comp
  COVER: src/asset/cover.png
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-Why Choose SeraPlot
-  • More fast than plotly; generation across all dataset sizes
-  • Minimal memory footprint - ideal for resource-constrained environments
-  • Production-ready with enterprise-grade stability
-  • Multi-language support (Python, C#, C++, JavaScript, and more if necessary send me a message)
-  • Regularly updated with new plots - new features and improvements
-  • Perfect for real-time dashboards and batch processing
+Submodules
+  seraplot.charts   — bar, line, scatter, hbar
+  seraplot.stats    — histogram, grouped_bar, violin, heatmap, pie, …
+  seraplot.geo      — choropleth, bubble_map
+  seraplot.three_d  — scatter3d, bar3d, line3d
+  seraplot.engine   — show_chart_value, bench, set_bg, …
 
-Install Command
-Seraplot may be installed using pip
-    >>> pip install seraplot
-
-or you can also install in conda
-    >>> conda install -c conda-forge seraplot
-
-Simple Usage 
-  >>> import seraplot, json
-  >>> seraplot.show_chart_value(json.dumps({
-  ...     'title': 'My Chart',
-  ...     'labels': ['A', 'B', 'C', 'D'],
-  ...     'values': [45.2, 38.9, 52.1, 41.7],
-  ...     'hover': [{'index': i} for i in range(4)],
-  ...     'group': 'default'
-  ... }))
+Usage
+  >>> from seraplot.stats import build_histogram
+  >>> from seraplot.charts import build_bar_chart
+  >>> import seraplot          # backward compatible — all functions at top level
 "#)?;
+
+    let charts = PyModule::new(py, "charts")?;
+    charts.add_class::<Chart>()?;
+    charts.add_function(wrap_pyfunction!(build_bar_chart, charts)?)?;
+    charts.add_function(wrap_pyfunction!(build_line_chart, charts)?)?;
+    charts.add_function(wrap_pyfunction!(build_scatter_chart, charts)?)?;
+    charts.add_function(wrap_pyfunction!(build_hbar, charts)?)?;
+    m.add_submodule(charts)?;
+
+    let stats = PyModule::new(py, "stats")?;
+    stats.add_class::<Chart>()?;
+    stats.add_function(wrap_pyfunction!(build_pie_chart, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_donut_chart, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_heatmap, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_histogram, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_histogram_overlay, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_grouped_bar, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_stacked_bar, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_multiline_chart, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_area_chart, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_treemap, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_boxplot, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_funnel, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_sunburst, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_waterfall, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_violin, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_slope, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_bullet, stats)?)?;
+    m.add_submodule(stats)?;
+
+    let geo = PyModule::new(py, "geo")?;
+    geo.add_class::<Chart>()?;
+    geo.add_function(wrap_pyfunction!(build_choropleth, geo)?)?;
+    geo.add_function(wrap_pyfunction!(build_bubble_map, geo)?)?;
+    m.add_submodule(geo)?;
+
+    let three_d = PyModule::new(py, "three_d")?;
+    three_d.add_class::<Chart>()?;
+    three_d.add_function(wrap_pyfunction!(build_scatter3d_chart, three_d)?)?;
+    three_d.add_function(wrap_pyfunction!(build_bar3d_chart, three_d)?)?;
+    three_d.add_function(wrap_pyfunction!(build_line3d_chart, three_d)?)?;
+    m.add_submodule(three_d)?;
+
+    let engine = PyModule::new(py, "engine")?;
+    engine.add_function(wrap_pyfunction!(show_chart_value, engine)?)?;
+    engine.add_function(wrap_pyfunction!(bench_chart_value, engine)?)?;
+    engine.add_function(wrap_pyfunction!(set_chart_kind, engine)?)?;
+    engine.add_function(wrap_pyfunction!(set_chart_orientation, engine)?)?;
+    engine.add_function(wrap_pyfunction!(build_html_chart, engine)?)?;
+    engine.add_function(wrap_pyfunction!(set_bg_fn, engine)?)?;
+    engine.add_function(wrap_pyfunction!(bench_pure_rust, engine)?)?;
+    m.add_submodule(engine)?;
+
+    let sys_modules = py.import("sys")?.getattr("modules")?;
+    sys_modules.set_item("seraplot.charts", charts)?;
+    sys_modules.set_item("seraplot.stats", stats)?;
+    sys_modules.set_item("seraplot.geo", geo)?;
+    sys_modules.set_item("seraplot.three_d", three_d)?;
+    sys_modules.set_item("seraplot.engine", engine)?;
+
     m.add_function(wrap_pyfunction!(show_chart_value, m)?)?;
     m.add_function(wrap_pyfunction!(bench_chart_value, m)?)?;
     m.add_function(wrap_pyfunction!(set_chart_kind, m)?)?;
     m.add_function(wrap_pyfunction!(set_chart_orientation, m)?)?;
     m.add_function(wrap_pyfunction!(build_html_chart, m)?)?;
-    
     m.add_function(wrap_pyfunction!(build_pie_chart, m)?)?;
     m.add_function(wrap_pyfunction!(build_donut_chart, m)?)?;
     m.add_function(wrap_pyfunction!(build_heatmap, m)?)?;
