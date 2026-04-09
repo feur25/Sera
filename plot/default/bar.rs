@@ -221,7 +221,7 @@ pub fn render_bars_html(
 
     let mut buf = Vec::<u8>::with_capacity(n * 280 + 2048);
     svg_open(&mut buf, width, height);
-    svg_title(&mut buf, title, pad_l + plot_w / 2);
+    svg_title(&mut buf, title, pad_l + plot_w / 2, 24);
 
     if horizontal {
         let n_xticks = 5i32;
@@ -244,7 +244,7 @@ pub fn render_bars_html(
 
     svg_axis_lines(&mut buf, pad_l, pad_t, plot_w, plot_h);
     svg_x_label(&mut buf, x_label, pad_l + plot_w / 2, pad_t + plot_h + if horizontal { 38 } else { 42 });
-    svg_y_label(&mut buf, y_label, pad_t, plot_h);
+    svg_y_label(&mut buf, y_label, 14, pad_t, plot_h);
 
     if horizontal {
         let pitch = plot_h as f64 / n as f64;

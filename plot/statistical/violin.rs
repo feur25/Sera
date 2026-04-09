@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6};
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_open, svg_title, svg_axis_lines, svg_y_label, svg_x_label};
 use crate::html::hover::build_chart_html;
 
 pub struct ViolinConfig<'a> {
@@ -81,18 +81,8 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
     };
 
     let mut b = Vec::<u8>::with_capacity(n_cats * 600 + 2048);
-    push_b(&mut b, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
-    push_i(&mut b, cfg.width); push_b(&mut b, b"\" height=\"");
-    push_i(&mut b, cfg.height); push_b(&mut b, b"\" viewBox=\"0 0 ");
-    push_i(&mut b, cfg.width); push_b(&mut b, b" ");
-    push_i(&mut b, cfg.height); push_b(&mut b, b"\">");
-    push_b(&mut b, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
-    if !cfg.title.is_empty() {
-        push_b(&mut b, b"<text x=\""); push_i(&mut b, (cfg.width) / 2);
-        push_b(&mut b, b"\" y=\"26\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\">");
-        escape_xml(&mut b, cfg.title);
-        push_b(&mut b, b"</text>");
-    }
+    svg_open(&mut b, cfg.width, cfg.height);
+    svg_title(&mut b, cfg.title, cfg.width / 2, 26);
 
     let n_yticks: i32 = 6;
     for ti in 0..=n_yticks {
@@ -115,16 +105,7 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
         push_b(&mut b, b"</text>");
     }
 
-    push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
-    push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t);
-    push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l);
-    push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
-    push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
-    push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
-    push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    svg_axis_lines(&mut b, pad_l, pad_t, plot_w, plot_h);
 
     for (ci, cat) in cat_set.iter().enumerate() {
         let vals = &cat_vals[ci];
@@ -196,22 +177,8 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
         push_b(&mut b, b"</text>");
     }
 
-    if !cfg.y_label.is_empty() {
-        let ym = pad_t + plot_h / 2;
-        push_b(&mut b, b"<text x=\"14\" y=\""); push_i(&mut b, ym);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" transform=\"rotate(-90 14 ");
-        push_i(&mut b, ym); push_b(&mut b, b")\">");
-        escape_xml(&mut b, cfg.y_label);
-        push_b(&mut b, b"</text>");
-    }
-
-    if !cfg.x_label.is_empty() {
-        push_b(&mut b, b"<text x=\""); push_i(&mut b, pad_l + plot_w / 2);
-        push_b(&mut b, b"\" y=\""); push_i(&mut b, cfg.height - 4);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#6b7280\">");
-        escape_xml(&mut b, cfg.x_label);
-        push_b(&mut b, b"</text>");
-    }
+    svg_y_label(&mut b, cfg.y_label, 14, pad_t, plot_h);
+    svg_x_label(&mut b, cfg.x_label, pad_l + plot_w / 2, cfg.height - 4);
 
     push_b(&mut b, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(b) };

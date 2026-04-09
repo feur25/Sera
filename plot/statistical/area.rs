@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate};
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_open, svg_title, svg_axis_lines, svg_y_label, svg_x_label};
 use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
 
 pub struct Area;
@@ -68,19 +68,8 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
     let auto_hover = cfg.hover.is_empty();
     let n_total = n_pts * n_ser;
     let mut b = Vec::<u8>::with_capacity(n_total * 60 + 2048);
-    push_b(&mut b, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
-    push_i(&mut b, cfg.width); push_b(&mut b, b"\" height=\"");
-    push_i(&mut b, cfg.height); push_b(&mut b, b"\" viewBox=\"0 0 ");
-    push_i(&mut b, cfg.width); push_b(&mut b, b" ");
-    push_i(&mut b, cfg.height); push_b(&mut b, b"\">");
-    push_b(&mut b, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
-    if !cfg.title.is_empty() {
-        push_b(&mut b, b"<text x=\"");
-        push_i(&mut b, (cfg.width - legend_w) / 2 + pad_l);
-        push_b(&mut b, b"\" y=\"26\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\">");
-        escape_xml(&mut b, cfg.title);
-        push_b(&mut b, b"</text>");
-    }
+    svg_open(&mut b, cfg.width, cfg.height);
+    svg_title(&mut b, cfg.title, (cfg.width - legend_w) / 2 + pad_l, 26);
     let n_yticks: i32 = 6;
     for i in 0..=n_yticks {
         let frac = i as f64 / n_yticks as f64;
@@ -99,24 +88,8 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
         push_f2(&mut b, vval);
         push_b(&mut b, b"</text>");
     }
-    if !cfg.y_label.is_empty() {
-        let ym = pad_t + plot_h / 2;
-        push_b(&mut b, b"<text x=\"14\" y=\""); push_i(&mut b, ym);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" transform=\"rotate(-90,14,");
-        push_i(&mut b, ym); push_b(&mut b, b")\">");
-        escape_xml(&mut b, cfg.y_label);
-        push_b(&mut b, b"</text>");
-    }
-    push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
-    push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t);
-    push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l);
-    push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
-    push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
-    push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
-    push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    svg_y_label(&mut b, cfg.y_label, 14, pad_t, plot_h);
+    svg_axis_lines(&mut b, pad_l, pad_t, plot_w, plot_h);
     for si in (0..n_ser).rev() {
         let color = palette_color(cfg.palette, si);
         let hx = hex6(color);
@@ -177,13 +150,7 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
         escape_xml(&mut b, truncate(&cfg.x_labels[i], 12));
         push_b(&mut b, b"</text>");
     }
-    if !cfg.x_label.is_empty() {
-        push_b(&mut b, b"<text x=\""); push_i(&mut b, pad_l + plot_w / 2);
-        push_b(&mut b, b"\" y=\""); push_i(&mut b, cfg.height - 6);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
-        escape_xml(&mut b, cfg.x_label);
-        push_b(&mut b, b"</text>");
-    }
+    svg_x_label(&mut b, cfg.x_label, pad_l + plot_w / 2, cfg.height - 6);
     let leg_x = cfg.width - legend_w + 14;
     for (si, (sname, _)) in cfg.series.iter().enumerate() {
         let color = palette_color(cfg.palette, si);

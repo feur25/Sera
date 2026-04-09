@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate};
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_open, svg_title, svg_hgrid, svg_tick_y, svg_axis_lines, svg_y_label, svg_x_label, svg_legend_item};
 use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
 
 pub struct GroupedBar;
@@ -102,56 +102,20 @@ pub fn render_grouped_bar_html(cfg: &GroupedBarConfig) -> String {
     };
     let n_total = n_cats * n_ser;
     let mut buf = Vec::<u8>::with_capacity(n_total * 260 + 4096);
-    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
-    push_i(&mut buf, cfg.width); push_b(&mut buf, b"\" height=\"");
-    push_i(&mut buf, cfg.height); push_b(&mut buf, b"\" viewBox=\"0 0 ");
-    push_i(&mut buf, cfg.width); push_b(&mut buf, b" ");
-    push_i(&mut buf, cfg.height); push_b(&mut buf, b"\">");
-    push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
-    if !cfg.title.is_empty() {
-        let tx = (cfg.width - legend_w) / 2 + pad_l;
-        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, tx);
-        push_b(&mut buf, b"\" y=\"26\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\">");
-        escape_xml(&mut buf, cfg.title);
-        push_b(&mut buf, b"</text>");
-    }
+    svg_open(&mut buf, cfg.width, cfg.height);
+    svg_title(&mut buf, cfg.title, (cfg.width - legend_w) / 2 + pad_l, 26);
     let n_yticks: i32 = 6;
     for i in 0..=n_yticks {
         let frac = i as f64 / n_yticks as f64;
         let y = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
         let vval = frac * max_val;
         if cfg.gridlines && i > 0 {
-            push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
-            push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, y);
-            push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
-            push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, y);
-            push_b(&mut buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
+            svg_hgrid(&mut buf, pad_l, pad_l + plot_w, y);
         }
-        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, pad_l - 4);
-        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, y + 3);
-        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
-        if vval >= 1000.0 { push_i(&mut buf, vval as i32); }
-        else { push_f2(&mut buf, vval); }
-        push_b(&mut buf, b"</text>");
+        svg_tick_y(&mut buf, pad_l - 4, y + 3, vval);
     }
-    if !cfg.y_label.is_empty() {
-        let ym = pad_t + plot_h / 2;
-        push_b(&mut buf, b"<text x=\"14\" y=\""); push_i(&mut buf, ym);
-        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" transform=\"rotate(-90,14,");
-        push_i(&mut buf, ym); push_b(&mut buf, b")\">");
-        escape_xml(&mut buf, cfg.y_label);
-        push_b(&mut buf, b"</text>");
-    }
-    push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
-    push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t);
-    push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l);
-    push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
-    push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
-    push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
-    push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    svg_y_label(&mut buf, cfg.y_label, 14, pad_t, plot_h);
+    svg_axis_lines(&mut buf, pad_l, pad_t, plot_w, plot_h);
     for (ci, cat) in cat_labels.iter().enumerate() {
         let gx = pad_l as f64 + ci as f64 * group_w;
         let base_y = (pad_t + plot_h) as f64;
@@ -222,29 +186,9 @@ pub fn render_grouped_bar_html(cfg: &GroupedBarConfig) -> String {
     let leg_top = pad_t + 8;
     for (si, (sname, _)) in series_ref.iter().enumerate() {
         let color = palette_color(cfg.palette, si);
-        let hx = hex6(color);
-        let ly = leg_top + si as i32 * 22;
-        push_b(&mut buf, b"<g data-legend=\"1\" data-series=\"");
-        push_i(&mut buf, si as i32);
-        push_b(&mut buf, b"\">");
-        push_b(&mut buf, b"<rect x=\""); push_i(&mut buf, leg_x);
-        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, ly);
-        push_b(&mut buf, b"\" width=\"13\" height=\"13\" rx=\"3\" fill=\"#");
-        buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\"/>");
-        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, leg_x + 17);
-        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, ly + 11);
-        push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#374151\">");
-        escape_xml(&mut buf, truncate(sname, 20));
-        push_b(&mut buf, b"</text></g>");
+        svg_legend_item(&mut buf, si as i32, sname, color, leg_x, leg_top + si as i32 * 22, 20);
     }
-    if !cfg.x_label.is_empty() {
-        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, pad_l + plot_w / 2);
-        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, cfg.height - 6);
-        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
-        escape_xml(&mut buf, cfg.x_label);
-        push_b(&mut buf, b"</text>");
-    }
+    svg_x_label(&mut buf, cfg.x_label, pad_l + plot_w / 2, cfg.height - 6);
     push_b(&mut buf, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(buf) };
     let slots: &[HoverSlot] = cfg.hover;

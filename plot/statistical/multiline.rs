@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, push_hex, truncate};
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_title, svg_axis_lines, svg_y_label, svg_x_label, svg_legend_item};
 use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
 
 pub struct MultiLine;
@@ -69,13 +69,7 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
     b.push(b','); push_i(&mut b, plot_w); b.push(b','); push_i(&mut b, plot_h);
     push_b(&mut b, b"\">");
     push_b(&mut b, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
-    if !cfg.title.is_empty() {
-        push_b(&mut b, b"<text x=\"");
-        push_i(&mut b, (cfg.width - legend_w) / 2 + pad_l);
-        push_b(&mut b, b"\" y=\"26\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\">");
-        escape_xml(&mut b, cfg.title);
-        push_b(&mut b, b"</text>");
-    }
+    svg_title(&mut b, cfg.title, (cfg.width - legend_w) / 2 + pad_l, 26);
     let n_yticks: i32 = 6;
     for i in 0..=n_yticks {
         let frac = i as f64 / n_yticks as f64;
@@ -94,24 +88,8 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
         push_f2(&mut b, vval);
         push_b(&mut b, b"</text>");
     }
-    if !cfg.y_label.is_empty() {
-        let ym = pad_t + plot_h / 2;
-        push_b(&mut b, b"<text x=\"14\" y=\""); push_i(&mut b, ym);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" transform=\"rotate(-90,14,");
-        push_i(&mut b, ym); push_b(&mut b, b")\">");
-        escape_xml(&mut b, cfg.y_label);
-        push_b(&mut b, b"</text>");
-    }
-    push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
-    push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t);
-    push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l);
-    push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
-    push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
-    push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
-    push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    svg_y_label(&mut b, cfg.y_label, 14, pad_t, plot_h);
+    svg_axis_lines(&mut b, pad_l, pad_t, plot_w, plot_h);
     let tick_step = ((n_pts as f64 / 12.0).ceil() as usize).max(1);
     for i in (0..n_pts).step_by(tick_step) {
         let x = pad_l + (i as f64 * step_x) as i32;
@@ -121,13 +99,7 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
         escape_xml(&mut b, truncate(&cfg.x_labels[i], 12));
         push_b(&mut b, b"</text>");
     }
-    if !cfg.x_label.is_empty() {
-        push_b(&mut b, b"<text x=\""); push_i(&mut b, pad_l + plot_w / 2);
-        push_b(&mut b, b"\" y=\""); push_i(&mut b, cfg.height - 6);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
-        escape_xml(&mut b, cfg.x_label);
-        push_b(&mut b, b"</text>");
-    }
+    svg_x_label(&mut b, cfg.x_label, pad_l + plot_w / 2, cfg.height - 6);
     for (si, (sname, svals)) in cfg.series.iter().enumerate() {
         let color = palette_color(cfg.palette, si);
         let hx = hex6(color);
@@ -173,18 +145,7 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
     let leg_x = cfg.width - legend_w + 14;
     for (si, (sname, _)) in cfg.series.iter().enumerate() {
         let color = palette_color(cfg.palette, si);
-        let hx = hex6(color);
-        let ly = pad_t + 6 + si as i32 * 18;
-        push_b(&mut b, b"<g data-legend=\"1\" data-series=\""); push_i(&mut b, si as i32);
-        push_b(&mut b, b"\"><rect x=\""); push_i(&mut b, leg_x);
-        push_b(&mut b, b"\" y=\""); push_i(&mut b, ly);
-        push_b(&mut b, b"\" width=\"12\" height=\"12\" rx=\"2\" fill=\"#");
-        b.extend_from_slice(&hx); push_b(&mut b, b"\"/>");
-        push_b(&mut b, b"<text x=\""); push_i(&mut b, leg_x + 16);
-        push_b(&mut b, b"\" y=\""); push_i(&mut b, ly + 10);
-        push_b(&mut b, b"\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#374151\">");
-        escape_xml(&mut b, truncate(sname, 18));
-        push_b(&mut b, b"</text></g>");
+        svg_legend_item(&mut b, si as i32, sname, color, leg_x, pad_t + 6 + si as i32 * 18, 18);
     }
     push_b(&mut b, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(b) };

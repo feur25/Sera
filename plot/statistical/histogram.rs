@@ -1,4 +1,4 @@
-use super::common::{push_b, push_i, push_f2, escape_xml, hex6};
+use super::common::{push_b, push_i, push_f2, escape_xml, hex6, svg_open, svg_hgrid, svg_axis_lines, svg_y_label, svg_x_label};
 use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
 
 pub struct Histogram;
@@ -63,37 +63,21 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
     let bw = plot_w as f64 / n_bins as f64;
     let auto_hover = cfg.hover.is_empty();
     let mut buf = Vec::<u8>::with_capacity(n_bins * 240 + 2048);
-    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
-    push_i(&mut buf, cfg.width); push_b(&mut buf, b"\" height=\"");
-    push_i(&mut buf, cfg.height); push_b(&mut buf, b"\" viewBox=\"0 0 ");
-    push_i(&mut buf, cfg.width); push_b(&mut buf, b" ");
-    push_i(&mut buf, cfg.height); push_b(&mut buf, b"\">");
-    push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
+    svg_open(&mut buf, cfg.width, cfg.height);
     if !cfg.title.is_empty() {
         push_b(&mut buf, b"<text x=\""); push_i(&mut buf, cfg.width / 2);
         push_b(&mut buf, b"\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#1a202c\">");
         escape_xml(&mut buf, cfg.title);
         push_b(&mut buf, b"</text>");
     }
-    if !cfg.y_label.is_empty() {
-        let ym = pad_t + plot_h / 2;
-        push_b(&mut buf, b"<text x=\"12\" y=\""); push_i(&mut buf, ym);
-        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" transform=\"rotate(-90,12,");
-        push_i(&mut buf, ym); push_b(&mut buf, b")\">");
-        escape_xml(&mut buf, cfg.y_label);
-        push_b(&mut buf, b"</text>");
-    }
+    svg_y_label(&mut buf, cfg.y_label, 12, pad_t, plot_h);
     let n_yticks = 5;
     for i in 0..=n_yticks {
         let frac = i as f64 / n_yticks as f64;
         let y = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
         let count_val = (frac * max_count).round() as i32;
         if cfg.gridlines && i > 0 {
-            push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
-            push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, y);
-            push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
-            push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, y);
-            push_b(&mut buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
+            svg_hgrid(&mut buf, pad_l, pad_l + plot_w, y);
         }
         push_b(&mut buf, b"<text x=\""); push_i(&mut buf, pad_l - 4);
         push_b(&mut buf, b"\" y=\""); push_i(&mut buf, y + 3);
@@ -101,16 +85,7 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
         push_i(&mut buf, count_val);
         push_b(&mut buf, b"</text>");
     }
-    push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
-    push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t);
-    push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l);
-    push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
-    push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
-    push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
-    push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    svg_axis_lines(&mut buf, pad_l, pad_t, plot_w, plot_h);
     let op_i = (cfg.opacity as f64 / 255.0 * 100.0 + 0.5) as i32;
     let hx_main = hex6(cfg.color);
     for (i, &cnt) in bin_counts.iter().enumerate() {
@@ -166,13 +141,7 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
         push_f2(&mut buf, val);
         push_b(&mut buf, b"</text>");
     }
-    if !cfg.x_label.is_empty() {
-        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, pad_l + plot_w / 2);
-        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, cfg.height - 4);
-        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
-        escape_xml(&mut buf, cfg.x_label);
-        push_b(&mut buf, b"</text>");
-    }
+    svg_x_label(&mut buf, cfg.x_label, pad_l + plot_w / 2, cfg.height - 4);
     push_b(&mut buf, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(buf) };
     let slots_json;

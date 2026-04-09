@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6};
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_open, svg_title, svg_hgrid, svg_tick_y, svg_axis_lines};
 use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
 
 fn quartile(sorted: &[f64], q: f64) -> f64 {
@@ -80,49 +80,18 @@ pub fn render_boxplot_html(
     let box_hw = (slot_w * 0.28) as i32;
 
     let mut buf = Vec::<u8>::with_capacity(n_cats * 500 + 2048);
-
-    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
-    push_i(&mut buf, width); push_b(&mut buf, b"\" height=\"");
-    push_i(&mut buf, height); push_b(&mut buf, b"\" viewBox=\"0 0 ");
-    push_i(&mut buf, width); push_b(&mut buf, b" ");
-    push_i(&mut buf, height); push_b(&mut buf, b"\">");
-    push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
-
-    if !title.is_empty() {
-        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, width / 2);
-        push_b(&mut buf, b"\" y=\"28\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\">");
-        escape_xml(&mut buf, title);
-        push_b(&mut buf, b"</text>");
-    }
+    svg_open(&mut buf, width, height);
+    svg_title(&mut buf, title, width / 2, 28);
 
     let n_yticks = 5i32;
     for ti in 0..=n_yticks {
         let frac = ti as f64 / n_yticks as f64;
         let ty = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
         let val = y_min + frac * range_y;
-        push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
-        push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, ty);
-        push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
-        push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, ty);
-        push_b(&mut buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
-        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, pad_l - 4);
-        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, ty + 4);
-        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
-        if val.abs() >= 1000.0 { push_i(&mut buf, val as i32); }
-        else { push_f2(&mut buf, val); }
-        push_b(&mut buf, b"</text>");
+        svg_hgrid(&mut buf, pad_l, pad_l + plot_w, ty);
+        svg_tick_y(&mut buf, pad_l - 4, ty + 4, val);
     }
-
-    push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
-    push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t);
-    push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l);
-    push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
-    push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, pad_l);
-    push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, pad_l + plot_w);
-    push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, pad_t + plot_h);
-    push_b(&mut buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    svg_axis_lines(&mut buf, pad_l, pad_t, plot_w, plot_h);
 
     for (ci, (cat, st)) in cats.iter().zip(stats.iter()).enumerate() {
         let cx = pad_l + (ci as f64 * slot_w + slot_w / 2.0) as i32;

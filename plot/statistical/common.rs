@@ -51,10 +51,11 @@ pub fn svg_open(buf: &mut Vec<u8>, w: i32, h: i32) {
     push_b(buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
 }
 
-pub fn svg_title(buf: &mut Vec<u8>, title: &str, cx: i32) {
+pub fn svg_title(buf: &mut Vec<u8>, title: &str, cx: i32, y: i32) {
     if title.is_empty() { return; }
     push_b(buf, b"<text x=\""); push_i(buf, cx);
-    push_b(buf, b"\" y=\"24\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\">");
+    push_b(buf, b"\" y=\""); push_i(buf, y);
+    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\">");
     escape_xml(buf, title);
     push_b(buf, b"</text>");
 }
@@ -76,17 +77,18 @@ pub fn svg_x_label(buf: &mut Vec<u8>, label: &str, cx: i32, y: i32) {
     if label.is_empty() { return; }
     push_b(buf, b"<text x=\""); push_i(buf, cx);
     push_b(buf, b"\" y=\""); push_i(buf, y);
-    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#6b7280\">");
+    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
     escape_xml(buf, label);
     push_b(buf, b"</text>");
 }
 
-pub fn svg_y_label(buf: &mut Vec<u8>, label: &str, pad_t: i32, plot_h: i32) {
+pub fn svg_y_label(buf: &mut Vec<u8>, label: &str, x: i32, pad_t: i32, plot_h: i32) {
     if label.is_empty() { return; }
     let ym = pad_t + plot_h / 2;
-    push_b(buf, b"<text x=\"14\" y=\""); push_i(buf, ym);
-    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#6b7280\" transform=\"rotate(-90 14 ");
-    push_i(buf, ym); push_b(buf, b")\">");
+    push_b(buf, b"<text x=\""); push_i(buf, x);
+    push_b(buf, b"\" y=\""); push_i(buf, ym);
+    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" transform=\"rotate(-90,");
+    push_i(buf, x); push_b(buf, b","); push_i(buf, ym); push_b(buf, b")\">");
     escape_xml(buf, label);
     push_b(buf, b"</text>");
 }
