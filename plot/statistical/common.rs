@@ -51,6 +51,19 @@ pub fn svg_open(buf: &mut Vec<u8>, w: i32, h: i32) {
     push_b(buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
 }
 
+pub fn svg_open_rescalable(buf: &mut Vec<u8>, w: i32, h: i32, pad_l: i32, pad_t: i32, plot_w: i32, plot_h: i32) {
+    push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_i(buf, w); push_b(buf, b"\" height=\"");
+    push_i(buf, h); push_b(buf, b"\" viewBox=\"0 0 ");
+    push_i(buf, w); push_b(buf, b" ");
+    push_i(buf, h); push_b(buf, b"\" data-sp=\"");
+    push_i(buf, pad_l); push_b(buf, b",");
+    push_i(buf, pad_t); push_b(buf, b",");
+    push_i(buf, plot_w); push_b(buf, b",");
+    push_i(buf, plot_h); push_b(buf, b"\">");
+    push_b(buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
+}
+
 pub fn svg_title(buf: &mut Vec<u8>, title: &str, cx: i32, y: i32) {
     if title.is_empty() { return; }
     push_b(buf, b"<text x=\""); push_i(buf, cx);

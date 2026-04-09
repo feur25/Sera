@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_open, svg_title, svg_hgrid, svg_tick_y, svg_axis_lines, svg_y_label, svg_x_label, svg_legend_item};
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_open_rescalable, svg_title, svg_hgrid, svg_tick_y, svg_axis_lines, svg_y_label, svg_x_label, svg_legend_item};
 use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
 
 pub struct GroupedBar;
@@ -102,7 +102,7 @@ pub fn render_grouped_bar_html(cfg: &GroupedBarConfig) -> String {
     };
     let n_total = n_cats * n_ser;
     let mut buf = Vec::<u8>::with_capacity(n_total * 260 + 4096);
-    svg_open(&mut buf, cfg.width, cfg.height);
+    svg_open_rescalable(&mut buf, cfg.width, cfg.height, pad_l, pad_t, plot_w, plot_h);
     svg_title(&mut buf, cfg.title, (cfg.width - legend_w) / 2 + pad_l, 26);
     let n_yticks: i32 = 6;
     for i in 0..=n_yticks {
