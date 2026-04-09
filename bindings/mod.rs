@@ -7,9 +7,11 @@ pub mod builder_template;
 pub mod unified_config;
 pub mod unified_builder;
 pub mod export_builder;
+pub mod python;
 
 pub use fast_render::*;
 pub use utils::*;
+pub use python::*;
 pub use crate::html::{FastHtmlExporter, HtmlExporter, HtmlExportConfig, HtmlTheme};
 pub use chart_types::*;
 pub use fast_export_c::*;
