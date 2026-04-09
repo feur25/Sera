@@ -18,6 +18,8 @@ pub mod radar;
 pub mod lollipop;
 pub mod kde;
 pub mod ridgeline;
+pub mod candlestick;
+pub mod dumbbell;
 
 pub use pie::{Pie, PieConfig, render_pie_html};
 pub use heatmap::{Heatmap, HeatmapConfig, render_heatmap_html};

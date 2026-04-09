@@ -1009,3 +1009,79 @@ pub fn build_ridgeline3d_chart(
         ..RidgelineConfig::default()
     }))
 }
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, words, frequencies, palette=None, width=900, height=500, min_font=12.0, max_font=72.0, bg_color=None))]
+pub fn build_wordcloud(
+    title: &str,
+    words: Vec<String>,
+    frequencies: Vec<f64>,
+    palette: Option<Vec<u32>>,
+    width: i32,
+    height: i32,
+    min_font: f64,
+    max_font: f64,
+    bg_color: Option<&str>,
+) -> Chart {
+    use crate::plot::statistical::wordcloud::{WordCloudConfig, render_wordcloud_html};
+    let pal = parse_palette(palette);
+    Chart::new(render_wordcloud_html(&WordCloudConfig {
+        title, words: &words, frequencies: &frequencies,
+        palette: &pal, width, height, min_font, max_font,
+        bg_color, ..WordCloudConfig::default()
+    }))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, labels, open, high, low, close, palette=None, width=1100, height=500, x_label="Date", y_label="Price", gridlines=true))]
+pub fn build_candlestick(
+    title: &str,
+    labels: Vec<String>,
+    open: Vec<f64>,
+    high: Vec<f64>,
+    low: Vec<f64>,
+    close: Vec<f64>,
+    palette: Option<Vec<u32>>,
+    width: i32,
+    height: i32,
+    x_label: &str,
+    y_label: &str,
+    gridlines: bool,
+) -> Chart {
+    use crate::plot::statistical::candlestick::{CandlestickConfig, render_candlestick_html};
+    let pal = parse_palette(palette);
+    Chart::new(render_candlestick_html(&CandlestickConfig {
+        title, labels: &labels, open: &open, high: &high, low: &low, close: &close,
+        palette: &pal, width, height, x_label, y_label, gridlines,
+        ..CandlestickConfig::default()
+    }))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, labels, values_start, values_end, series_labels=None, palette=None, width=1000, height=500, x_label="", y_label="", gridlines=true))]
+pub fn build_dumbbell(
+    title: &str,
+    labels: Vec<String>,
+    values_start: Vec<f64>,
+    values_end: Vec<f64>,
+    series_labels: Option<(String, String)>,
+    palette: Option<Vec<u32>>,
+    width: i32,
+    height: i32,
+    x_label: &str,
+    y_label: &str,
+    gridlines: bool,
+) -> Chart {
+    use crate::plot::statistical::dumbbell::{DumbbellConfig, render_dumbbell_html};
+    let pal = parse_palette(palette);
+    let sl = series_labels.unwrap_or(("Start".to_string(), "End".to_string()));
+    Chart::new(render_dumbbell_html(&DumbbellConfig {
+        title, labels: &labels, values_start: &values_start, values_end: &values_end,
+        series_labels: (&sl.0, &sl.1),
+        palette: &pal, width, height, x_label, y_label, gridlines,
+        ..DumbbellConfig::default()
+    }))
+}
