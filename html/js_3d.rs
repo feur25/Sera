@@ -257,7 +257,7 @@ function R(){
   lp=pj(0.5,0,-0.5);if(lp){g.textAlign='center';g.textBaseline='top';g.fillStyle=AY;g.fillText(yl,mx+lp.x*sc,my-lp.y*sc+17);}
   lp=pj(-0.5,-0.5,0);if(lp){g.textAlign='right';g.textBaseline='middle';g.fillStyle=AZ;g.fillText(zl,mx+lp.x*sc-10,my-lp.y*sc);}
   pp=[];
-  if(M===0)rS(mx,my,sc);else if(M===1)rB(mx,my,sc);else rL(mx,my,sc);
+  if(M===0)rS(mx,my,sc);else if(M===1)rB(mx,my,sc);else if(M===2)rL(mx,my,sc);else if(M===3)rRdr(mx,my,sc);else if(M===4)rLol(mx,my,sc);else if(M===5)rKde(mx,my,sc);else rRdg(mx,my,sc);
   drawLgd();
   g.font='9.5px -apple-system,sans-serif';g.fillStyle=isDark?'rgba(100,116,139,0.4)':'rgba(0,0,0,0.18)';
   g.textAlign='center';g.textBaseline='bottom';
@@ -390,6 +390,115 @@ function rL(mx,my,sc){
   }
   if(piI>=0&&selP)drawHalo(selP.sx,selP.sy,4.5,PAL[selP.ci]);
 }
+function rRdr(mx,my,sc){
+  var groups={};
+  for(var i=0;i<N;i++){var ci=uc?C[i]%PAL.length:0;if(!groups[ci])groups[ci]=[];groups[ci].push(i);}
+  var gkeys=Object.keys(groups).sort(function(a,b){return parseInt(a)-parseInt(b);});
+  for(var gi=0;gi<gkeys.length;gi++){
+    var ci=parseInt(gkeys[gi]),idxs=groups[ci];
+    idxs.sort(function(a,b){return Math.atan2(Z[a],X[a])-Math.atan2(Z[b],X[b]);});
+    var col=PAL[ci%PAL.length],rgb=hx2rgb(col);
+    var pts2d=[];
+    for(var k=0;k<idxs.length;k++){
+      var ii=idxs[k];
+      var nx=(X[ii]-xmn)/xr-0.5,ny=(Y[ii]-ymn)/yr-0.5,nz=(Z[ii]-zmn)/zr-0.5;
+      var p=pj(nx,ny,nz);if(p)pts2d.push({sx:mx+p.x*sc,sy:my-p.y*sc,d:p.d});
+    }
+    if(pts2d.length<3)continue;
+    g.beginPath();g.moveTo(pts2d[0].sx,pts2d[0].sy);
+    for(var k=1;k<pts2d.length;k++)g.lineTo(pts2d[k].sx,pts2d[k].sy);
+    g.closePath();
+    g.fillStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.22)';g.fill();
+    g.strokeStyle=col;g.lineWidth=2;g.stroke();
+    for(var k=0;k<pts2d.length;k++){
+      var col2=PAL[ci%PAL.length];
+      g.fillStyle=col2;g.beginPath();g.arc(pts2d[k].sx,pts2d[k].sy,3,0,TAU);g.fill();
+      pp.push({sx:pts2d[k].sx,sy:pts2d[k].sy,i:idxs[k],r:5});
+    }
+  }
+}
+function rLol(mx,my,sc){
+  var lols=[];
+  for(var i=0;i<N;i++){
+    var nx=(X[i]-xmn)/xr-0.5,ny=(Y[i]-ymn)/yr-0.5,nz=(Z[i]-zmn)/zr-0.5;
+    var pb=pj(nx,ny,-0.5),pt=pj(nx,ny,nz);
+    if(!pb||!pt)continue;
+    lols.push({bx:mx+pb.x*sc,by:my-pb.y*sc,tx:mx+pt.x*sc,ty:my-pt.y*sc,d:pt.d,ci:uc?C[i]%PAL.length:i%PAL.length,i:i});
+  }
+  lols.sort(function(a,b){return a.d-b.d;});
+  var selL=null;
+  for(var j=0;j<lols.length;j++){
+    var l=lols[j],col=PAL[l.ci],rgb=hx2rgb(col);
+    var lr2=Math.min(255,rgb[0]+60),lg2=Math.min(255,rgb[1]+60),lb2=Math.min(255,rgb[2]+60);
+    g.strokeStyle=col;g.lineWidth=1.5;g.lineCap='round';g.globalAlpha=0.65;
+    g.beginPath();g.moveTo(l.bx,l.by);g.lineTo(l.tx,l.ty);g.stroke();g.globalAlpha=1;
+    var sr=7;
+    var cg=g.createRadialGradient(l.tx-sr*0.3,l.ty-sr*0.3,0,l.tx,l.ty,sr);
+    cg.addColorStop(0,'rgb('+lr2+','+lg2+','+lb2+')');cg.addColorStop(0.7,col);cg.addColorStop(1,'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.55)');
+    g.fillStyle=cg;g.beginPath();g.arc(l.tx,l.ty,sr,0,TAU);g.fill();
+    g.fillStyle='rgba(255,255,255,0.5)';g.beginPath();g.arc(l.tx-sr*0.3,l.ty-sr*0.3,sr*0.28,0,TAU);g.fill();
+    pp.push({sx:l.tx,sy:l.ty,i:l.i,r:sr+2});
+    if(l.i===piI)selL=l;
+  }
+  if(piI>=0&&selL)drawHalo(selL.tx,selL.ty,7,PAL[selL.ci]);
+}
+function rKde(mx,my,sc){
+  var ymap={};
+  for(var i=0;i<N;i++){var yk=Math.round(Y[i]*1000)/1000;if(!ymap[yk])ymap[yk]=[];ymap[yk].push(i);}
+  var ykeys=Object.keys(ymap).sort(function(a,b){return parseFloat(a)-parseFloat(b);});
+  for(var gi=0;gi<ykeys.length;gi++){
+    var idxs=ymap[ykeys[gi]];idxs.sort(function(a,b){return X[a]-X[b];});
+    var col=PAL[gi%PAL.length],rgb=hx2rgb(col);
+    var pts2d=[],pBase=[];
+    for(var k=0;k<idxs.length;k++){
+      var ii=idxs[k];
+      var nx=(X[ii]-xmn)/xr-0.5,ny=(Y[ii]-ymn)/yr-0.5,nz=(Z[ii]-zmn)/zr-0.5;
+      var p=pj(nx,ny,nz);if(p)pts2d.push({sx:mx+p.x*sc,sy:my-p.y*sc});
+      var pb2=pj(nx,ny,-0.5);if(pb2)pBase.push({sx:mx+pb2.x*sc,sy:my-pb2.y*sc});
+    }
+    if(pts2d.length<2)continue;
+    if(pBase.length===pts2d.length){
+      g.beginPath();g.moveTo(pBase[0].sx,pBase[0].sy);
+      for(var k=1;k<pBase.length;k++)g.lineTo(pBase[k].sx,pBase[k].sy);
+      for(var k=pts2d.length-1;k>=0;k--)g.lineTo(pts2d[k].sx,pts2d[k].sy);
+      g.closePath();g.fillStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.18)';g.fill();
+    }
+    g.strokeStyle=col;g.lineWidth=2;g.lineCap='round';g.lineJoin='round';
+    g.beginPath();g.moveTo(pts2d[0].sx,pts2d[0].sy);
+    for(var k=1;k<pts2d.length;k++)g.lineTo(pts2d[k].sx,pts2d[k].sy);g.stroke();
+  }
+}
+function rRdg(mx,my,sc){
+  var ymap={};
+  for(var i=0;i<N;i++){var yk=Math.round(Y[i]*1000)/1000;if(!ymap[yk])ymap[yk]=[];ymap[yk].push(i);}
+  var ykeys=Object.keys(ymap).sort(function(a,b){return parseFloat(a)-parseFloat(b);});
+  for(var gi=ykeys.length-1;gi>=0;gi--){
+    var idxs=ymap[ykeys[gi]];idxs.sort(function(a,b){return X[a]-X[b];});
+    var col=PAL[gi%PAL.length],rgb=hx2rgb(col);
+    var pts2d=[],pBase=[];
+    for(var k=0;k<idxs.length;k++){
+      var ii=idxs[k];
+      var nx=(X[ii]-xmn)/xr-0.5,ny=(Y[ii]-ymn)/yr-0.5,nz=(Z[ii]-zmn)/zr-0.5;
+      var p=pj(nx,ny,nz);if(p)pts2d.push({sx:mx+p.x*sc,sy:my-p.y*sc});
+      var pb2=pj(nx,ny,-0.5);if(pb2)pBase.push({sx:mx+pb2.x*sc,sy:my-pb2.y*sc});
+    }
+    if(pts2d.length<2)continue;
+    if(pBase.length===pts2d.length){
+      g.beginPath();g.moveTo(pBase[0].sx,pBase[0].sy);
+      for(var k=1;k<pBase.length;k++)g.lineTo(pBase[k].sx,pBase[k].sy);
+      for(var k=pts2d.length-1;k>=0;k--)g.lineTo(pts2d[k].sx,pts2d[k].sy);
+      g.closePath();
+      g.fillStyle=isDark?'rgba(13,17,23,0.82)':'rgba(248,250,252,0.82)';g.fill();
+      g.beginPath();g.moveTo(pBase[0].sx,pBase[0].sy);
+      for(var k=1;k<pBase.length;k++)g.lineTo(pBase[k].sx,pBase[k].sy);
+      for(var k=pts2d.length-1;k>=0;k--)g.lineTo(pts2d[k].sx,pts2d[k].sy);
+      g.closePath();g.fillStyle='rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+',0.3)';g.fill();
+    }
+    g.strokeStyle=col;g.lineWidth=2;g.lineCap='round';g.lineJoin='round';
+    g.beginPath();g.moveTo(pts2d[0].sx,pts2d[0].sy);
+    for(var k=1;k<pts2d.length;k++)g.lineTo(pts2d[k].sx,pts2d[k].sy);g.stroke();
+  }
+}
 function ht(ex,ey){var bi=-1,bd=900;for(var i=pp.length-1;i>=0;i--){var dx=pp[i].sx-ex,dy=pp[i].sy-ey,d2=dx*dx+dy*dy,hr=(pp[i].r+10)*(pp[i].r+10);if(d2<bd&&d2<hr){bd=d2;bi=pp[i].i;}}return bi;}
 function sT(idx,ex,ey){
   var lbl=CL.length>0&&uc?CL[C[idx]%CL.length]:'Point '+(idx+1);
@@ -429,3 +538,51 @@ wrap.addEventListener('touchstart',function(e){if(e.touches.length===1){dg=true;
 wrap.addEventListener('touchmove',function(e){if(!dg||e.touches.length!==1)return;var dx=e.touches[0].clientX-lx,dy=e.touches[0].clientY-ly;if(Math.abs(e.touches[0].clientX-dwX)>3||Math.abs(e.touches[0].clientY-dwY)>3)mv=true;yaw+=dx*0.008;pitch=Math.max(-1.47,Math.min(1.47,pitch+dy*0.008));lx=e.touches[0].clientX;ly=e.touches[0].clientY;if(!raf)raf=requestAnimationFrame(function(){raf=0;R();});e.preventDefault();},{passive:false});
 wrap.addEventListener('touchend',function(){dg=false;if(!mv){var bx=wrap.getBoundingClientRect(),ex=dwX-bx.left,ey=dwY-bx.top;var idx=ht(ex,ey);if(idx>=0){pin=true;piI=idx;sT(idx,dwX,dwY);R();}else{pin=false;piI=-1;tip.className='c3t';}}});
 "##;
+
+pub fn render_radar3d_html(
+    title: &str,
+    x: &[f64], y: &[f64], z: &[f64],
+    axis_labels: (&str, &str, &str),
+    colors: &[f64],
+    color_labels: &[String],
+    w: i32, h: i32,
+    bg_color: Option<&str>,
+) -> String {
+    render_3d_html(3, title, x, y, z, axis_labels, colors, color_labels, w, h, bg_color)
+}
+
+pub fn render_lollipop3d_html(
+    title: &str,
+    x: &[f64], y: &[f64], z: &[f64],
+    axis_labels: (&str, &str, &str),
+    colors: &[f64],
+    color_labels: &[String],
+    w: i32, h: i32,
+    bg_color: Option<&str>,
+) -> String {
+    render_3d_html(4, title, x, y, z, axis_labels, colors, color_labels, w, h, bg_color)
+}
+
+pub fn render_kde3d_html(
+    title: &str,
+    x: &[f64], y: &[f64], z: &[f64],
+    axis_labels: (&str, &str, &str),
+    colors: &[f64],
+    color_labels: &[String],
+    w: i32, h: i32,
+    bg_color: Option<&str>,
+) -> String {
+    render_3d_html(5, title, x, y, z, axis_labels, colors, color_labels, w, h, bg_color)
+}
+
+pub fn render_ridgeline3d_html(
+    title: &str,
+    x: &[f64], y: &[f64], z: &[f64],
+    axis_labels: (&str, &str, &str),
+    colors: &[f64],
+    color_labels: &[String],
+    w: i32, h: i32,
+    bg_color: Option<&str>,
+) -> String {
+    render_3d_html(6, title, x, y, z, axis_labels, colors, color_labels, w, h, bg_color)
+}

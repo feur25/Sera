@@ -13,6 +13,11 @@ pub mod waterfall;
 pub mod violin;
 pub mod slope;
 pub mod bullet;
+pub mod wordcloud;
+pub mod radar;
+pub mod lollipop;
+pub mod kde;
+pub mod ridgeline;
 
 pub use pie::{Pie, PieConfig, render_pie_html};
 pub use heatmap::{Heatmap, HeatmapConfig, render_heatmap_html};
@@ -28,6 +33,11 @@ pub use waterfall::{WaterfallConfig, render_waterfall_html};
 pub use violin::{ViolinConfig, render_violin_html};
 pub use slope::{SlopeConfig, render_slope_html};
 pub use bullet::{BulletConfig, render_bullet_html};
+pub use wordcloud::{WordCloudConfig, render_wordcloud_html};
+pub use radar::{RadarConfig, render_radar_html};
+pub use lollipop::{LollipopConfig, render_lollipop_html};
+pub use kde::{KdeConfig, render_kde_html, scott_bw, kde_eval};
+pub use ridgeline::{RidgelineConfig, render_ridgeline_html};
 pub use crate::html::hover::{HoverSlot, slots_to_json, parse_hover_json};
 
 use crate::plot::controller::chart_controller::{ChartTypeBuilder, get_group_registry};

@@ -114,8 +114,7 @@ pub fn render_heatmap_html(cfg: &HeatmapConfig) -> String {
             let hx = hex6(color);
             let hx_str = unsafe { std::str::from_utf8_unchecked(&hx) };
             let cx = pad_left + col as i32 * cell_w;
-            // <rect data-idx=N data-v=V data-r=ROW data-c=COL .../>
-            // data-v/data-r/data-c enable JS lazy hover (no Rust JSON needed)
+            
             push_b(&mut buf, b"<rect data-idx=\"");
             push_i(&mut buf, idx as i32);
             push_b(&mut buf, b"\" data-v=\"");

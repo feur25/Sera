@@ -156,6 +156,11 @@ Usage
     stats.add_function(wrap_pyfunction!(build_violin, stats)?)?;
     stats.add_function(wrap_pyfunction!(build_slope, stats)?)?;
     stats.add_function(wrap_pyfunction!(build_bullet, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_wordcloud, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_radar_chart, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_lollipop_chart, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_kde_chart, stats)?)?;
+    stats.add_function(wrap_pyfunction!(build_ridgeline_chart, stats)?)?;
     m.add_submodule(stats)?;
 
     let geo = PyModule::new(py, "geo")?;
@@ -169,6 +174,10 @@ Usage
     three_d.add_function(wrap_pyfunction!(build_scatter3d_chart, three_d)?)?;
     three_d.add_function(wrap_pyfunction!(build_bar3d_chart, three_d)?)?;
     three_d.add_function(wrap_pyfunction!(build_line3d_chart, three_d)?)?;
+    three_d.add_function(wrap_pyfunction!(build_radar3d_chart, three_d)?)?;
+    three_d.add_function(wrap_pyfunction!(build_lollipop3d_chart, three_d)?)?;
+    three_d.add_function(wrap_pyfunction!(build_kde3d_chart, three_d)?)?;
+    three_d.add_function(wrap_pyfunction!(build_ridgeline3d_chart, three_d)?)?;
     m.add_submodule(three_d)?;
 
     let engine = PyModule::new(py, "engine")?;
@@ -219,6 +228,15 @@ Usage
     m.add_function(wrap_pyfunction!(build_violin, m)?)?;
     m.add_function(wrap_pyfunction!(build_slope, m)?)?;
     m.add_function(wrap_pyfunction!(build_bullet, m)?)?;
+    m.add_function(wrap_pyfunction!(build_wordcloud, m)?)?;
+    m.add_function(wrap_pyfunction!(build_radar_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_radar3d_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_lollipop_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_lollipop3d_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_kde_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_kde3d_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_ridgeline_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_ridgeline3d_chart, m)?)?;
     m.add_function(wrap_pyfunction!(set_bg_fn, m)?)?;
     m.add_function(wrap_pyfunction!(bench_pure_rust, m)?)?;
     Ok(())
@@ -1251,5 +1269,349 @@ fn build_bullet(
         width,
         height,
     })
+    })
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, words, frequencies, palette=None, sort_order="none", width=900, height=500, min_font=12.0, max_font=72.0, bg_color=None, hover_json=None), text_signature = "(title, words, frequencies, palette=None, sort_order='none', width=900, height=500, min_font=12.0, max_font=72.0, bg_color=None, hover_json=None)")]
+fn build_wordcloud(
+    title: &str,
+    words: Vec<String>,
+    frequencies: Vec<f64>,
+    palette: Option<Vec<u32>>,
+    sort_order: &str,
+    width: i32,
+    height: i32,
+    min_font: f64,
+    max_font: f64,
+    bg_color: Option<String>,
+    hover_json: Option<String>,
+) -> Chart {
+    Chart::new({
+    use crate::plot::statistical::{WordCloudConfig, render_wordcloud_html, parse_hover_json};
+    use crate::plot::statistical::common::PALETTE;
+    let hover_slots = hover_json.as_deref().map(parse_hover_json).unwrap_or_default();
+    let pal = palette.unwrap_or_default();
+    let pal_ref: &[u32] = if pal.is_empty() { PALETTE } else { &pal };
+    render_wordcloud_html(&WordCloudConfig {
+        title,
+        words: &words,
+        frequencies: &frequencies,
+        palette: pal_ref,
+        width,
+        height,
+        min_font,
+        max_font,
+        bg_color: bg_color.as_deref(),
+        hover: &hover_slots,
+        sort_order,
+        ..WordCloudConfig::default()
+    })
+    })
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, axes, series_names, series_values, palette=None, filled=true, fill_opacity=50, width=700, height=560, bg_color=None), text_signature = "(title, axes, series_names, series_values, palette=None, filled=True, fill_opacity=50, width=700, height=560, bg_color=None)")]
+fn build_radar_chart(
+    title: &str,
+    axes: Vec<String>,
+    series_names: Vec<String>,
+    series_values: Vec<Vec<f64>>,
+    palette: Option<Vec<u32>>,
+    filled: bool,
+    fill_opacity: u8,
+    width: i32,
+    height: i32,
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
+    use crate::plot::statistical::{RadarConfig, render_radar_html};
+    use crate::plot::statistical::common::PALETTE;
+    let n_axes = axes.len();
+    let n_ser = series_names.len();
+    if n_axes < 3 || n_ser == 0 { return Chart::new(String::new()); }
+    let pal = palette.unwrap_or_default();
+    let pal_ref: &[u32] = if pal.is_empty() { PALETTE } else { &pal };
+    let series: Vec<(String, Vec<f64>)> = series_names.into_iter().zip(series_values.into_iter()).map(|(name, vals)| (name, vals)).collect();
+    crate::html::hover::apply_bg(render_radar_html(&RadarConfig {
+        title, axes: &axes, series: &series, palette: pal_ref,
+        width, height, filled, fill_opacity,
+    }), bg_color.as_deref())
+    })
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, axes, series_names, series_values, x_label="Axis", y_label="Series", z_label="Value", color_labels=None, width=900, height=560, bg_color=None), text_signature = "(title, axes, series_names, series_values, x_label='Axis', y_label='Series', z_label='Value', color_labels=None, width=900, height=560, bg_color=None)")]
+fn build_radar3d_chart(
+    title: &str,
+    axes: Vec<String>,
+    series_names: Vec<String>,
+    series_values: Vec<Vec<f64>>,
+    x_label: &str,
+    y_label: &str,
+    z_label: &str,
+    color_labels: Option<Vec<String>>,
+    width: i32,
+    height: i32,
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
+    use std::f64::consts::PI;
+    let n_axes = axes.len();
+    let n_ser = series_names.len();
+    if n_axes < 3 || n_ser == 0 { return Chart::new(String::new()); }
+    let global_max = series_values.iter().flat_map(|v| v.iter().copied()).fold(0.0_f64, f64::max).max(1.0);
+    let n_total = n_ser * n_axes;
+    let mut xv = Vec::with_capacity(n_total);
+    let mut yv = Vec::with_capacity(n_total);
+    let mut zv = Vec::with_capacity(n_total);
+    let mut cv = Vec::with_capacity(n_total);
+    for (si, sv) in series_values.iter().enumerate() {
+        for ai in 0..n_axes {
+            let v = sv.get(ai).copied().unwrap_or(0.0);
+            let frac = (v / global_max).clamp(0.0, 1.0);
+            let angle = PI / 2.0 - 2.0 * PI * ai as f64 / n_axes as f64;
+            xv.push(angle.cos() * frac);
+            yv.push(si as f64);
+            zv.push(angle.sin() * frac);
+            cv.push(si as f64);
+        }
+    }
+    let cl = color_labels.unwrap_or_else(|| series_names.clone());
+    crate::html::js_3d::render_radar3d_html(title, &xv, &yv, &zv, (x_label, y_label, z_label), &cv, &cl, width, height, bg_color.as_deref())
+    })
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, labels, values, orientation="v", x_label="", y_label="", palette=None, color_hex=0, gridlines=true, show_values=false, sort_order="none", width=900, height=480, bg_color=None), text_signature = "(title, labels, values, orientation='v', x_label='', y_label='', palette=None, color_hex=0, gridlines=True, show_values=False, sort_order='none', width=900, height=480, bg_color=None)")]
+fn build_lollipop_chart(
+    title: &str,
+    labels: Vec<String>,
+    values: Vec<f64>,
+    orientation: &str,
+    x_label: &str,
+    y_label: &str,
+    palette: Option<Vec<u32>>,
+    color_hex: u32,
+    gridlines: bool,
+    show_values: bool,
+    sort_order: &str,
+    width: i32,
+    height: i32,
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
+    use crate::plot::statistical::{LollipopConfig, render_lollipop_html};
+    use crate::plot::statistical::common::PALETTE;
+    let pal = palette.unwrap_or_default();
+    let pal_ref: &[u32] = if pal.is_empty() { PALETTE } else { &pal };
+    let ori = if orientation.starts_with('h') || orientation.starts_with('H') { b'h' } else { b'v' };
+    crate::html::hover::apply_bg(render_lollipop_html(&LollipopConfig {
+        title, labels: &labels, values: &values, x_label, y_label,
+        palette: pal_ref, color_hex, gridlines, show_values,
+        orientation: ori, sort_order, width, height,
+    }), bg_color.as_deref())
+    })
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, x_values, y_values, z_values, x_label="X", y_label="Y", z_label="Value", color_labels=None, width=900, height=560, bg_color=None), text_signature = "(title, x_values, y_values, z_values, x_label='X', y_label='Y', z_label='Value', color_labels=None, width=900, height=560, bg_color=None)")]
+fn build_lollipop3d_chart(
+    title: &str,
+    x_values: Vec<f64>,
+    y_values: Vec<f64>,
+    z_values: Vec<f64>,
+    x_label: &str,
+    y_label: &str,
+    z_label: &str,
+    color_labels: Option<Vec<String>>,
+    width: i32,
+    height: i32,
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
+    let cl = color_labels.unwrap_or_default();
+    crate::html::js_3d::render_lollipop3d_html(title, &x_values, &y_values, &z_values, (x_label, y_label, z_label), &[], &cl, width, height, bg_color.as_deref())
+    })
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, values, categories, bandwidth=0.0, x_label="", y_label="Density", filled=true, gridlines=true, palette=None, width=900, height=420, bg_color=None), text_signature = "(title, values, categories, bandwidth=0.0, x_label='', y_label='Density', filled=True, gridlines=True, palette=None, width=900, height=420, bg_color=None)")]
+fn build_kde_chart(
+    title: &str,
+    values: Vec<f64>,
+    categories: Vec<String>,
+    bandwidth: f64,
+    x_label: &str,
+    y_label: &str,
+    filled: bool,
+    gridlines: bool,
+    palette: Option<Vec<u32>>,
+    width: i32,
+    height: i32,
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
+    use crate::plot::statistical::{KdeConfig, render_kde_html};
+    use crate::plot::statistical::common::PALETTE;
+    let pal = palette.unwrap_or_default();
+    let pal_ref: &[u32] = if pal.is_empty() { PALETTE } else { &pal };
+    let n = values.len().min(categories.len());
+    let mut group_order: Vec<String> = Vec::new();
+    for cat in categories[..n].iter() {
+        if !group_order.contains(cat) { group_order.push(cat.clone()); }
+    }
+    let mut group_vals: Vec<Vec<f64>> = vec![Vec::new(); group_order.len()];
+    for i in 0..n {
+        if let Some(gi) = group_order.iter().position(|g| g == &categories[i]) {
+            group_vals[gi].push(values[i]);
+        }
+    }
+    let series: Vec<(String, Vec<f64>)> = group_order.into_iter().zip(group_vals.into_iter()).collect();
+    crate::html::hover::apply_bg(render_kde_html(&KdeConfig {
+        title, series: &series, palette: pal_ref, x_label, y_label,
+        bandwidth, filled, gridlines, width, height, ..KdeConfig::default()
+    }), bg_color.as_deref())
+    })
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, values, categories, bandwidth=0.0, x_label="Value", y_label="Group", z_label="Density", width=900, height=560, bg_color=None), text_signature = "(title, values, categories, bandwidth=0.0, x_label='Value', y_label='Group', z_label='Density', width=900, height=560, bg_color=None)")]
+fn build_kde3d_chart(
+    title: &str,
+    values: Vec<f64>,
+    categories: Vec<String>,
+    bandwidth: f64,
+    x_label: &str,
+    y_label: &str,
+    z_label: &str,
+    width: i32,
+    height: i32,
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
+    use crate::plot::statistical::kde::{scott_bw, kde_eval};
+    let n = values.len().min(categories.len());
+    let mut group_order: Vec<String> = Vec::new();
+    for cat in categories[..n].iter() {
+        if !group_order.contains(cat) { group_order.push(cat.clone()); }
+    }
+    let n_groups = group_order.len();
+    let mut group_vals: Vec<Vec<f64>> = vec![Vec::new(); n_groups];
+    for i in 0..n {
+        if let Some(gi) = group_order.iter().position(|g| g == &categories[i]) {
+            group_vals[gi].push(values[i]);
+        }
+    }
+    let all_vals: Vec<f64> = values[..n].to_vec();
+    let x_min = all_vals.iter().copied().fold(f64::INFINITY, f64::min);
+    let x_max = all_vals.iter().copied().fold(f64::NEG_INFINITY, f64::max);
+    let xr = (x_max - x_min).max(1e-12);
+    let x_pad = xr * 0.12;
+    let x0 = x_min - x_pad;
+    let x1 = x_max + x_pad;
+    let n_pts = 80usize;
+    let xs: Vec<f64> = (0..n_pts).map(|i| x0 + (x1 - x0) * i as f64 / (n_pts - 1) as f64).collect();
+    let mut xv: Vec<f64> = Vec::with_capacity(n_groups * n_pts);
+    let mut yv: Vec<f64> = Vec::with_capacity(n_groups * n_pts);
+    let mut zv: Vec<f64> = Vec::with_capacity(n_groups * n_pts);
+    let mut cv: Vec<f64> = Vec::with_capacity(n_groups * n_pts);
+    for (gi, gvals) in group_vals.iter().enumerate() {
+        let bw = if bandwidth > 0.0 { bandwidth } else { scott_bw(gvals).max(1e-12) };
+        for (xi, &x) in xs.iter().enumerate() {
+            let d = if gvals.is_empty() { 0.0 } else { kde_eval(gvals, x, bw) };
+            xv.push(x);
+            yv.push(gi as f64);
+            zv.push(d);
+            cv.push(gi as f64);
+        }
+    }
+    crate::html::js_3d::render_kde3d_html(title, &xv, &yv, &zv, (x_label, y_label, z_label), &cv, &group_order, width, height, bg_color.as_deref())
+    })
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, values, categories, bandwidth=0.0, overlap=0.5, x_label="", palette=None, width=900, height=520, bg_color=None), text_signature = "(title, values, categories, bandwidth=0.0, overlap=0.5, x_label='', palette=None, width=900, height=520, bg_color=None)")]
+fn build_ridgeline_chart(
+    title: &str,
+    values: Vec<f64>,
+    categories: Vec<String>,
+    bandwidth: f64,
+    overlap: f64,
+    x_label: &str,
+    palette: Option<Vec<u32>>,
+    width: i32,
+    height: i32,
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
+    use crate::plot::statistical::{RidgelineConfig, render_ridgeline_html};
+    use crate::plot::statistical::common::PALETTE;
+    let pal = palette.unwrap_or_default();
+    let pal_ref: &[u32] = if pal.is_empty() { PALETTE } else { &pal };
+    crate::html::hover::apply_bg(render_ridgeline_html(&RidgelineConfig {
+        title, values: &values, categories: &categories, palette: pal_ref,
+        x_label, overlap, bandwidth, width, height, ..RidgelineConfig::default()
+    }), bg_color.as_deref())
+    })
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, values, categories, bandwidth=0.0, x_label="Value", y_label="Group", z_label="Density", width=900, height=560, bg_color=None), text_signature = "(title, values, categories, bandwidth=0.0, x_label='Value', y_label='Group', z_label='Density', width=900, height=560, bg_color=None)")]
+fn build_ridgeline3d_chart(
+    title: &str,
+    values: Vec<f64>,
+    categories: Vec<String>,
+    bandwidth: f64,
+    x_label: &str,
+    y_label: &str,
+    z_label: &str,
+    width: i32,
+    height: i32,
+    bg_color: Option<String>,
+) -> Chart {
+    Chart::new({
+    use crate::plot::statistical::kde::{scott_bw, kde_eval};
+    let n = values.len().min(categories.len());
+    let mut group_order: Vec<String> = Vec::new();
+    for cat in categories[..n].iter() {
+        if !group_order.contains(cat) { group_order.push(cat.clone()); }
+    }
+    let n_groups = group_order.len();
+    let mut group_vals: Vec<Vec<f64>> = vec![Vec::new(); n_groups];
+    for i in 0..n {
+        if let Some(gi) = group_order.iter().position(|g| g == &categories[i]) {
+            group_vals[gi].push(values[i]);
+        }
+    }
+    let all_vals: Vec<f64> = values[..n].to_vec();
+    let x_min = all_vals.iter().copied().fold(f64::INFINITY, f64::min);
+    let x_max = all_vals.iter().copied().fold(f64::NEG_INFINITY, f64::max);
+    let x_pad = (x_max - x_min).max(1e-12) * 0.12;
+    let x0 = x_min - x_pad;
+    let x1 = x_max + x_pad;
+    let n_pts = 80usize;
+    let xs: Vec<f64> = (0..n_pts).map(|i| x0 + (x1 - x0) * i as f64 / (n_pts - 1) as f64).collect();
+    let mut xv: Vec<f64> = Vec::with_capacity(n_groups * n_pts);
+    let mut yv: Vec<f64> = Vec::with_capacity(n_groups * n_pts);
+    let mut zv: Vec<f64> = Vec::with_capacity(n_groups * n_pts);
+    let mut cv: Vec<f64> = Vec::with_capacity(n_groups * n_pts);
+    for (gi, gvals) in group_vals.iter().enumerate() {
+        let bw = if bandwidth > 0.0 { bandwidth } else { scott_bw(gvals).max(1e-12) };
+        for &x in xs.iter() {
+            let d = if gvals.is_empty() { 0.0 } else { kde_eval(gvals, x, bw) };
+            xv.push(x); yv.push(gi as f64); zv.push(d); cv.push(gi as f64);
+        }
+    }
+    crate::html::js_3d::render_ridgeline3d_html(title, &xv, &yv, &zv, (x_label, y_label, z_label), &cv, &group_order, width, height, bg_color.as_deref())
     })
 }
