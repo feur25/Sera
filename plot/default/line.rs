@@ -173,7 +173,7 @@ pub fn render_lines_html(
     let line_color = if color_hex != 0 { color_hex } else { 0x6366F1 };
     let auto = hover.is_empty();
     let hid = html_id();
-    let mut b = Vec::<u8>::with_capacity(n * 160 + 16_000);
+    let mut b = Vec::<u8>::with_capacity(n * 80 + 24_000);
     html_prefix(&mut b, title, hid);
     push_b(&mut b, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
     push_i(&mut b, width); push_b(&mut b, b"\" height=\"");
@@ -241,10 +241,11 @@ pub fn render_lines_html(
         push_i(&mut b, x); b.push(b','); push_i(&mut b, y);
     }
     push_b(&mut b, b"\"/>");
-    for i in 0..n {
-        let x = pad_l + (i as f64 * step_x) as i32;
-        let y = pad_t + plot_h - ((values[i] / max_val) * plot_h as f64) as i32;
-        if show_points {
+    if show_points {
+        let circ_step = ((n as f64 / 30.0).ceil() as usize).max(1);
+        for i in (0..n).step_by(circ_step) {
+            let x = pad_l + (i as f64 * step_x) as i32;
+            let y = pad_t + plot_h - ((values[i] / max_val) * plot_h as f64) as i32;
             let color = palette_color(&[], i);
             let chx = hex6(color);
             push_b(&mut b, b"<circle data-idx=\""); push_i(&mut b, i as i32);
@@ -255,6 +256,10 @@ pub fn render_lines_html(
             push_b(&mut b, b"\" r=\"4\" fill=\"#"); b.extend_from_slice(&chx);
             push_b(&mut b, b"\" stroke=\"#fff\" stroke-width=\"1.5\"/>");
         }
+    }
+    let tick_step = ((n as f64 / 12.0).ceil() as usize).max(1);
+    for i in (0..n).step_by(tick_step) {
+        let x = pad_l + (i as f64 * step_x) as i32;
         push_b(&mut b, b"<text x=\""); push_i(&mut b, x);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, pad_t + plot_h + 14);
         push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">");

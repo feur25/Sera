@@ -10,6 +10,109 @@ fn parse_palette(palette: Option<Vec<u32>>) -> Vec<u32> {
 }
 
 #[cfg(feature = "python")]
+fn fast_f64(data: &PyAny, cap: usize) -> PyResult<(Vec<f64>, usize)> {
+    use pyo3::types::PyList;
+    if let Ok(lst) = data.downcast::<PyList>() {
+        let n = lst.len();
+        if n <= cap {
+            Ok((data.extract::<Vec<f64>>()?, 1))
+        } else {
+            let s = (n + cap - 1) / cap;
+            let mut v = Vec::with_capacity(cap + 1);
+            let mut i = 0;
+            while i < n { v.push(lst.get_item(i)?.extract::<f64>()?); i += s; }
+            Ok((v, s))
+        }
+    } else {
+        let v: Vec<f64> = data.extract()?;
+        let n = v.len();
+        if n <= cap {
+            Ok((v, 1))
+        } else {
+            let s = (n + cap - 1) / cap;
+            Ok((v.into_iter().step_by(s).collect(), s))
+        }
+    }
+}
+
+#[cfg(feature = "python")]
+fn fast_labels(labels: Vec<String>, step: usize) -> Vec<String> {
+    if step <= 1 || labels.is_empty() { labels }
+    else { labels.into_iter().step_by(step).collect() }
+}
+
+#[cfg(feature = "python")]
+fn fast_labels_py(data: &PyAny, cap: usize) -> PyResult<(Vec<String>, usize)> {
+    use pyo3::types::PyList;
+    if let Ok(lst) = data.downcast::<PyList>() {
+        let n = lst.len();
+        if n <= cap {
+            Ok((data.extract::<Vec<String>>()?, 1))
+        } else {
+            let s = (n + cap - 1) / cap;
+            let mut v = Vec::with_capacity(cap + 1);
+            let mut i = 0;
+            while i < n { v.push(lst.get_item(i)?.extract::<String>()?); i += s; }
+            Ok((v, s))
+        }
+    } else {
+        let v: Vec<String> = data.extract()?;
+        let n = v.len();
+        if n <= cap {
+            Ok((v, 1))
+        } else {
+            let s = (n + cap - 1) / cap;
+            Ok((v.into_iter().step_by(s).collect(), s))
+        }
+    }
+}
+
+#[cfg(feature = "python")]
+fn fast_vecs(names: Vec<String>, vecs: Vec<Vec<f64>>, cap: usize) -> (Vec<String>, Vec<Vec<f64>>, usize) {
+    if vecs.is_empty() { return (names, vecs, 1); }
+    let max_len = vecs.iter().map(|v| v.len()).max().unwrap_or(0);
+    if max_len <= cap { return (names, vecs, 1); }
+    let s = (max_len + cap - 1) / cap;
+    let vs: Vec<Vec<f64>> = vecs.into_iter().map(|v| v.into_iter().step_by(s).collect()).collect();
+    (names, vs, s)
+}
+
+#[cfg(feature = "python")]
+fn fast_vecs_py(names: Vec<String>, data: &PyAny, cap: usize) -> PyResult<(Vec<String>, Vec<Vec<f64>>, usize)> {
+    use pyo3::types::PyList;
+    if let Ok(outer) = data.downcast::<PyList>() {
+        let n_ser = outer.len();
+        if n_ser == 0 { return Ok((names, Vec::new(), 1)); }
+        let first_len = if let Ok(inner) = outer.get_item(0)?.downcast::<PyList>() { inner.len() } else { 0 };
+        if first_len <= cap {
+            let mut vecs = Vec::with_capacity(n_ser);
+            for si in 0..n_ser { vecs.push(outer.get_item(si)?.extract::<Vec<f64>>()?); }
+            return Ok((names, vecs, 1));
+        }
+        let s = (first_len + cap - 1) / cap;
+        let mut vecs = Vec::with_capacity(n_ser);
+        for si in 0..n_ser {
+            let inner = outer.get_item(si)?;
+            if let Ok(lst) = inner.downcast::<PyList>() {
+                let n = lst.len();
+                let mut v = Vec::with_capacity(cap + 1);
+                let mut i = 0;
+                while i < n { v.push(lst.get_item(i)?.extract::<f64>()?); i += s; }
+                vecs.push(v);
+            } else {
+                let full: Vec<f64> = inner.extract()?;
+                vecs.push(full.into_iter().step_by(s).collect());
+            }
+        }
+        Ok((names, vecs, s))
+    } else {
+        let vecs: Vec<Vec<f64>> = data.extract()?;
+        let (names, vecs, s) = fast_vecs(names, vecs, cap);
+        Ok((names, vecs, s))
+    }
+}
+
+#[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(name = "set_bg", signature = (html, color=None))]
 pub fn set_bg_fn(html: &PyAny, color: Option<&str>) -> PyResult<Chart> {
@@ -170,8 +273,8 @@ pub fn build_hbar(
 #[pyo3(signature = (title, labels, values, color_hex=0x6366F1u32, x_label="", y_label="", gridlines=true, show_points=true, sort_order="none", width=900, height=480, hover_json=None, bg_color=None))]
 pub fn build_line_chart(
     title: &str,
-    labels: Vec<String>,
-    values: Vec<f64>,
+    labels: &PyAny,
+    values: &PyAny,
     color_hex: u32,
     x_label: &str,
     y_label: &str,
@@ -182,14 +285,16 @@ pub fn build_line_chart(
     height: i32,
     hover_json: Option<&str>,
     bg_color: Option<&str>,
-) -> Chart {
+) -> PyResult<Chart> {
     use crate::plot::statistical::parse_hover_json;
+    let (vals, step_v) = fast_f64(values, 100)?;
+    let (lbls, _) = fast_labels_py(labels, 100)?;
     let hover = hover_json.map(|s| parse_hover_json(s)).unwrap_or_default();
     let html = crate::plot::default::render_lines_html(
-        title, &labels, &values, width, height, &hover, color_hex, x_label, y_label, gridlines, show_points,
+        title, &lbls, &vals, width, height, &hover, color_hex, x_label, y_label, gridlines, show_points,
     );
     let html = if let Some(c) = bg_color { crate::html::hover::apply_bg(html, Some(c)) } else { html };
-    Chart::new(html)
+    Ok(Chart::new(html))
 }
 
 #[cfg(feature = "python")]
@@ -214,45 +319,15 @@ pub fn build_scatter_chart(
     color_groups: Option<Vec<String>>,
     bg_color: Option<&str>,
 ) -> PyResult<Chart> {
-    use pyo3::types::PyList;
     use crate::plot::statistical::parse_hover_json;
     let pal = parse_palette(palette);
     let hover = hover_json.map(|s| parse_hover_json(s)).unwrap_or_default();
-    let (x, y, step) = if let (Ok(xl), Ok(yl)) = (x_values.downcast::<PyList>(), y_values.downcast::<PyList>()) {
-        let n = xl.len().min(yl.len());
-        if n == 0 { return Ok(Chart::new(String::new())); }
-        let s = if n > 6000 { n / 6000 } else { 1 };
-        if s >= 2 {
-            let cap = n / s + 1;
-            let mut xv = Vec::with_capacity(cap);
-            let mut yv = Vec::with_capacity(cap);
-            let mut i = 0;
-            while i < n { xv.push(xl.get_item(i)?.extract::<f64>()?); yv.push(yl.get_item(i)?.extract::<f64>()?); i += s; }
-            (xv, yv, s)
-        } else {
-            let xv: Vec<f64> = x_values.extract()?;
-            let yv: Vec<f64> = y_values.extract()?;
-            (xv, yv, 1)
-        }
-    } else {
-        let xv: Vec<f64> = x_values.extract()?;
-        let yv: Vec<f64> = y_values.extract()?;
-        let n = xv.len().min(yv.len());
-        if n == 0 { return Ok(Chart::new(String::new())); }
-        let s = if n > 6000 { n / 6000 } else { 1 };
-        if s > 1 {
-            (xv.iter().step_by(s).copied().collect(), yv.iter().step_by(s).copied().collect(), s)
-        } else { (xv, yv, 1) }
-    };
-    let lbls = labels.unwrap_or_default();
-    let sz = sizes.unwrap_or_default();
-    let cg = color_groups.unwrap_or_default();
-    let (lbls, sz, cg) = if step > 1 {
-        let l: Vec<String> = if lbls.is_empty() { lbls } else { lbls.into_iter().step_by(step).collect() };
-        let s: Vec<f64> = if sz.is_empty() { sz } else { sz.into_iter().step_by(step).collect() };
-        let c: Vec<String> = if cg.is_empty() { cg } else { cg.into_iter().step_by(step).collect() };
-        (l, s, c)
-    } else { (lbls, sz, cg) };
+    let (x, sx) = fast_f64(x_values, 200)?;
+    let (y, sy) = fast_f64(y_values, 200)?;
+    let step = sx.max(sy);
+    let lbls = fast_labels(labels.unwrap_or_default(), step);
+    let sz: Vec<f64> = if step > 1 { sizes.unwrap_or_default().into_iter().step_by(step).collect() } else { sizes.unwrap_or_default() };
+    let cg: Vec<String> = if step > 1 { color_groups.unwrap_or_default().into_iter().step_by(step).collect() } else { color_groups.unwrap_or_default() };
     let html = crate::plot::default::render_scatter_html(
         title, &x, &y, &lbls, width, height, &hover,
         &sz, &cg, &pal, x_label, y_label, color_hex, gridlines, show_text,
@@ -279,24 +354,9 @@ pub fn build_histogram(
     hover_json: Option<&str>,
     bg_color: Option<&str>,
 ) -> PyResult<Chart> {
-    use pyo3::types::PyList;
     use crate::plot::statistical::{HistogramConfig, render_histogram_html, parse_hover_json};
     let hover = hover_json.map(|s| parse_hover_json(s)).unwrap_or_default();
-    let (vals, scale) = if let Ok(vl) = values.downcast::<PyList>() {
-        let n = vl.len();
-        let s = if n > 50000 { n / 50000 } else { 1 };
-        if s >= 2 {
-            let cap = n / s + 1;
-            let mut v = Vec::with_capacity(cap);
-            let mut i = 0;
-            while i < n { v.push(vl.get_item(i)?.extract::<f64>()?); i += s; }
-            (v, s)
-        } else {
-            (values.extract::<Vec<f64>>()?, 1)
-        }
-    } else {
-        (values.extract::<Vec<f64>>()?, 1)
-    };
+    let (vals, scale) = fast_f64(values, 1000)?;
     let html = render_histogram_html(&HistogramConfig {
         title, values: &vals, bins, color: color_hex, x_label, y_label,
         show_counts, gridlines, width, height, hover: &hover, count_scale: scale,
@@ -497,18 +557,20 @@ pub fn build_donut_chart(
 #[pyo3(signature = (title, category_labels, values, palette=None, sort_order="none", width=900, height=500, hover_json=None))]
 pub fn build_boxplot(
     title: &str,
-    category_labels: Vec<String>,
-    values: Vec<f64>,
+    category_labels: &PyAny,
+    values: &PyAny,
     palette: Option<Vec<u32>>,
     sort_order: &str,
     width: i32,
     height: i32,
     hover_json: Option<&str>,
-) -> Chart {
+) -> PyResult<Chart> {
     use crate::plot::statistical::{render_boxplot_html, parse_hover_json};
     let pal = parse_palette(palette);
     let hover = hover_json.map(|s| parse_hover_json(s)).unwrap_or_default();
-    Chart::new(render_boxplot_html(title, &category_labels, &values, width, height, &pal, &hover))
+    let (v, sv) = fast_f64(values, 100)?;
+    let (cl, _) = fast_labels_py(category_labels, 100)?;
+    Ok(Chart::new(render_boxplot_html(title, &cl, &v, width, height, &pal, &hover)))
 }
 
 #[cfg(feature = "python")]
@@ -516,8 +578,8 @@ pub fn build_boxplot(
 #[pyo3(signature = (title, categories, values, x_label="", y_label="", palette=None, gridlines=true, width=900, height=500, bg_color=None))]
 pub fn build_violin(
     title: &str,
-    categories: Vec<String>,
-    values: Vec<f64>,
+    categories: &PyAny,
+    values: &PyAny,
     x_label: &str,
     y_label: &str,
     palette: Option<Vec<u32>>,
@@ -525,15 +587,17 @@ pub fn build_violin(
     width: i32,
     height: i32,
     bg_color: Option<&str>,
-) -> Chart {
+) -> PyResult<Chart> {
     use crate::plot::statistical::{ViolinConfig, render_violin_html};
     let pal = parse_palette(palette);
+    let (v, sv) = fast_f64(values, 50)?;
+    let (cats, _) = fast_labels_py(categories, 50)?;
     let html = render_violin_html(&ViolinConfig {
-        title, categories: &categories, values: &values,
+        title, categories: &cats, values: &v,
         x_label, y_label, palette: &pal, gridlines, width, height,
     });
     let html = if let Some(c) = bg_color { crate::html::hover::apply_bg(html, Some(c)) } else { html };
-    Chart::new(html)
+    Ok(Chart::new(html))
 }
 
 #[cfg(feature = "python")]
@@ -634,9 +698,9 @@ pub fn build_treemap(
 #[pyo3(signature = (title, x_labels, series_names, series_values, palette=None, x_label="", y_label="", show_points=true, gridlines=true, sort_order="none", width=1100, height=480, hover_json=None, bg_color=None))]
 pub fn build_multiline_chart(
     title: &str,
-    x_labels: Vec<String>,
+    x_labels: &PyAny,
     series_names: Vec<String>,
-    series_values: Vec<Vec<f64>>,
+    series_values: &PyAny,
     palette: Option<Vec<u32>>,
     x_label: &str,
     y_label: &str,
@@ -647,18 +711,20 @@ pub fn build_multiline_chart(
     height: i32,
     hover_json: Option<&str>,
     bg_color: Option<&str>,
-) -> Chart {
+) -> PyResult<Chart> {
     use crate::plot::statistical::{MultiLineConfig, render_multiline_html, parse_hover_json};
     let pal = parse_palette(palette);
     let hover = hover_json.map(|s| parse_hover_json(s)).unwrap_or_default();
-    let series: Vec<(String, Vec<f64>)> = series_names.into_iter().zip(series_values.into_iter()).collect();
+    let (names, vecs, step) = fast_vecs_py(series_names, series_values, 60)?;
+    let (xlabels, _) = fast_labels_py(x_labels, 60)?;
+    let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(vecs.into_iter()).collect();
     let html = render_multiline_html(&MultiLineConfig {
-        title, x_labels: &x_labels, series: &series, palette: &pal,
+        title, x_labels: &xlabels, series: &series, palette: &pal,
         x_label, y_label, show_points, gridlines, width, height, hover: &hover,
         ..MultiLineConfig::default()
     });
     let html = if let Some(c) = bg_color { crate::html::hover::apply_bg(html, Some(c)) } else { html };
-    Chart::new(html)
+    Ok(Chart::new(html))
 }
 
 #[cfg(feature = "python")]
@@ -666,9 +732,9 @@ pub fn build_multiline_chart(
 #[pyo3(signature = (title, x_labels, series_names, series_values, stacked=false, palette=None, x_label="", y_label="", gridlines=true, sort_order="none", width=1100, height=480, hover_json=None))]
 pub fn build_area_chart(
     title: &str,
-    x_labels: Vec<String>,
+    x_labels: &PyAny,
     series_names: Vec<String>,
-    series_values: Vec<Vec<f64>>,
+    series_values: &PyAny,
     stacked: bool,
     palette: Option<Vec<u32>>,
     x_label: &str,
@@ -678,16 +744,18 @@ pub fn build_area_chart(
     width: i32,
     height: i32,
     hover_json: Option<&str>,
-) -> Chart {
+) -> PyResult<Chart> {
     use crate::plot::statistical::{AreaConfig, render_area_html, parse_hover_json};
     let pal = parse_palette(palette);
     let hover = hover_json.map(|s| parse_hover_json(s)).unwrap_or_default();
-    let series: Vec<(String, Vec<f64>)> = series_names.into_iter().zip(series_values.into_iter()).collect();
-    Chart::new(render_area_html(&AreaConfig {
-        title, x_labels: &x_labels, series: &series, stacked, palette: &pal,
+    let (names, vecs, _) = fast_vecs_py(series_names, series_values, 60)?;
+    let (xlabels, _) = fast_labels_py(x_labels, 60)?;
+    let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(vecs.into_iter()).collect();
+    Ok(Chart::new(render_area_html(&AreaConfig {
+        title, x_labels: &xlabels, series: &series, stacked, palette: &pal,
         x_label, y_label, gridlines, width, height, hover: &hover,
         ..AreaConfig::default()
-    }))
+    })))
 }
 
 #[cfg(feature = "python")]
@@ -960,7 +1028,7 @@ pub fn build_lollipop3d_chart(
 #[pyo3(signature = (title, values, categories=None, palette=None, filled=true, fill_opacity=50u8, x_label="", y_label="Density", gridlines=true, bandwidth=0.0f64, width=900, height=420))]
 pub fn build_kde_chart(
     title: &str,
-    values: Vec<f64>,
+    values: &PyAny,
     categories: Option<Vec<String>>,
     palette: Option<Vec<u32>>,
     filled: bool,
@@ -971,17 +1039,19 @@ pub fn build_kde_chart(
     bandwidth: f64,
     width: i32,
     height: i32,
-) -> Chart {
+) -> PyResult<Chart> {
     use crate::plot::statistical::{KdeConfig, render_kde_html};
     let pal = parse_palette(palette);
     let cats = categories.unwrap_or_default();
+    let (vals, step) = fast_f64(values, 100)?;
 
     let series: Vec<(String, Vec<f64>)> = if cats.is_empty() {
-        vec![("Series".to_string(), values)]
+        vec![("Series".to_string(), vals)]
     } else {
+        let sampled_cats = fast_labels(cats, step);
         let mut group_order: Vec<String> = Vec::new();
         let mut group_vals: std::collections::HashMap<String, Vec<f64>> = std::collections::HashMap::new();
-        for (v, c) in values.iter().zip(cats.iter()) {
+        for (v, c) in vals.iter().zip(sampled_cats.iter()) {
             group_vals.entry(c.clone()).or_default().push(*v);
             if !group_order.contains(c) { group_order.push(c.clone()); }
         }
@@ -990,11 +1060,11 @@ pub fn build_kde_chart(
             (k, v)
         }).collect()
     };
-    Chart::new(render_kde_html(&KdeConfig {
+    Ok(Chart::new(render_kde_html(&KdeConfig {
         title, series: &series, palette: &pal, x_label, y_label,
         bandwidth, filled, fill_opacity, gridlines, width, height,
         ..KdeConfig::default()
-    }))
+    })))
 }
 
 #[cfg(feature = "python")]
@@ -1211,9 +1281,9 @@ pub fn build_dumbbell(
 #[pyo3(signature = (title, x_values, y_values, sizes, categories=None, palette=None, width=900, height=500, x_label="", y_label="", gridlines=true))]
 pub fn build_bubble(
     title: &str,
-    x_values: Vec<f64>,
-    y_values: Vec<f64>,
-    sizes: Vec<f64>,
+    x_values: &PyAny,
+    y_values: &PyAny,
+    sizes: &PyAny,
     categories: Option<Vec<String>>,
     palette: Option<Vec<u32>>,
     width: i32,
@@ -1221,15 +1291,19 @@ pub fn build_bubble(
     x_label: &str,
     y_label: &str,
     gridlines: bool,
-) -> Chart {
+) -> PyResult<Chart> {
     use crate::plot::statistical::bubble::{BubbleConfig, render_bubble_html};
     let pal = parse_palette(palette);
     let cats = categories.unwrap_or_default();
-    Chart::new(render_bubble_html(&BubbleConfig {
-        title, x_values: &x_values, y_values: &y_values, sizes: &sizes,
-        categories: &cats, palette: &pal, width, height, x_label, y_label, gridlines,
+    let (xv, sx) = fast_f64(x_values, 80)?;
+    let (yv, _) = fast_f64(y_values, 80)?;
+    let (sv, _) = fast_f64(sizes, 80)?;
+    let cs: Vec<String> = if sx > 1 && !cats.is_empty() { cats.into_iter().step_by(sx).collect() } else { cats };
+    Ok(Chart::new(render_bubble_html(&BubbleConfig {
+        title, x_values: &xv, y_values: &yv, sizes: &sv,
+        categories: &cs, palette: &pal, width, height, x_label, y_label, gridlines,
         ..BubbleConfig::default()
-    }))
+    })))
 }
 
 #[cfg(feature = "python")]

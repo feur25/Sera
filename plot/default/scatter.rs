@@ -154,8 +154,8 @@ pub fn render_scatter_html(
         let mx = sizes.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
         (mn, (mx - mn).max(1.0))
     } else { (0.0, 1.0) };
-    let max_pts = if n > 6000 { 6000 } else { n };
-    let step = if n > 6000 { n / 6000 } else { 1 };
+    let max_pts = if n > 200 { 200 } else { n };
+    let step = if n > 200 { n / 200 } else { 1 };
     let hid = html_id();
     let mut buf = Vec::<u8>::with_capacity(max_pts * 120 + 18_000);
     html_prefix(&mut buf, title, hid);

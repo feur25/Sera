@@ -73,12 +73,6 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
         let mut sname_esc = Vec::with_capacity(sname.len() + 8);
         escape_xml(&mut sname_esc, sname);
         push_b(&mut f.buf, b"<polyline data-series=\""); push_i(&mut f.buf, si as i32);
-        push_b(&mut f.buf, b"\" data-pts=\"");
-        for i in 0..n_pts {
-            let val = svals.get(i).copied().unwrap_or(0.0);
-            if i > 0 { f.buf.push(b','); }
-            push_f2(&mut f.buf, val);
-        }
         push_b(&mut f.buf, b"\" fill=\"none\" stroke=\"#");
         f.buf.extend_from_slice(&hx);
         push_b(&mut f.buf, b"\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" points=\"");
@@ -92,7 +86,8 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
         }
         push_b(&mut f.buf, b"\"/>");
         if cfg.show_points {
-            for i in 0..n_pts {
+            let pt_step = ((n_pts as f64 / 20.0).ceil() as usize).max(1);
+            for i in (0..n_pts).step_by(pt_step) {
                 let val = svals.get(i).copied().unwrap_or(0.0);
                 let frac = if val.is_finite() { (val - min_val) / range } else { 0.0 };
                 let x = f.pl + (i as f64 * step_x) as i32;

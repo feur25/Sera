@@ -95,13 +95,14 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
         push_b(&mut f.buf, b"\" fill-opacity=\".35\" stroke=\"#"); f.buf.extend_from_slice(&hx);
         push_b(&mut f.buf, b"\" stroke-width=\"1.5\"/>");
     }
+    let hover_step = ((n_pts as f64 / 30.0).ceil() as usize).max(1);
     for si in 0..n_ser {
         let (sname, svals) = &cfg.series[si];
         let color = palette_color(cfg.palette, si);
         let hx = hex6(color);
         let mut sname_esc = Vec::with_capacity(sname.len() + 8);
         escape_xml(&mut sname_esc, sname);
-        for i in 0..n_pts {
+        for i in (0..n_pts).step_by(hover_step) {
             let val = if cfg.stacked { stacked_sums[si][i] } else { svals.get(i).copied().unwrap_or(0.0) };
             let frac = (val / max_val).clamp(0.0, 1.0);
             let x = f.pl + (i as f64 * step_x) as i32;

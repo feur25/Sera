@@ -29,7 +29,7 @@ impl<'a> Default for KdeConfig<'a> {
             gridlines: true,
             width: 900,
             height: 420,
-            n_points: 200,
+            n_points: 40,
         }
     }
 }
@@ -43,8 +43,15 @@ pub fn scott_bw(vals: &[f64]) -> f64 {
 }
 
 pub fn kde_eval(vals: &[f64], x: f64, bw: f64) -> f64 {
-    let c = 1.0 / (bw * (2.0 * std::f64::consts::PI).sqrt() * vals.len() as f64);
-    vals.iter().map(|&v| { let u = (x - v) / bw; c * (-0.5 * u * u).exp() }).sum()
+    let inv_n_bw = 1.0 / (bw * vals.len() as f64);
+    let c = 0.3989422804014327 * inv_n_bw;
+    let mut sum = 0.0f64;
+    for &v in vals {
+        let u = (x - v) / bw;
+        let uu = u * u;
+        if uu < 16.0 { sum += c * (-0.5 * uu).exp(); }
+    }
+    sum
 }
 
 pub fn render_kde_html(cfg: &KdeConfig) -> String {
@@ -52,7 +59,7 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
     if n_ser == 0 { return String::new(); }
 
     let legend_w: i32 = if n_ser > 1 { 140 } else { 20 };
-    let n_pts = cfg.n_points.max(80);
+    let n_pts = cfg.n_points.max(30);
 
     let all_vals: Vec<f64> = cfg.series.iter().flat_map(|(_, v)| v.iter().copied()).collect();
     if all_vals.is_empty() { return String::new(); }
@@ -69,7 +76,10 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
 
     let curves: Vec<Vec<f64>> = cfg.series.iter().map(|(_, vals)| {
         let bw = if cfg.bandwidth > 0.0 { cfg.bandwidth } else { scott_bw(vals).max(1e-12) };
-        xs.iter().map(|&x| kde_eval(vals, x, bw)).collect()
+        let cap = 40usize;
+        let step = if vals.len() > cap { vals.len() / cap } else { 1 };
+        let sampled: Vec<f64> = if step > 1 { vals.iter().step_by(step).copied().collect() } else { vals.to_vec() };
+        xs.iter().map(|&x| kde_eval(&sampled, x, bw) * step as f64).collect()
     }).collect();
 
     let y_max = curves.iter().flat_map(|c| c.iter().copied()).fold(0.0_f64, f64::max).max(1e-12);

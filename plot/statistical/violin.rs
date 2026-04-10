@@ -39,10 +39,16 @@ fn percentile(sorted: &[f64], p: f64) -> f64 {
 
 fn density_at(points: &[f64], x: f64, bw: f64) -> f64 {
     let inv_bw = 1.0 / bw;
-    let c = 1.0 / (bw * (2.0 * std::f64::consts::PI).sqrt());
-    points.iter()
-        .map(|&p| { let z = (x - p) * inv_bw; c * (-0.5 * z * z).exp() })
-        .sum::<f64>()
+    let c = inv_bw * 0.3989422804014327;
+    let mut sum = 0.0f64;
+    for &p in points {
+        let z = (x - p) * inv_bw;
+        let zz = z * z;
+        if zz < 16.0 {
+            sum += c * (-0.5 * zz).exp();
+        }
+    }
+    sum
 }
 
 pub fn render_violin_html(cfg: &ViolinConfig) -> String {
@@ -108,19 +114,23 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
         let mut sorted = vals.clone();
         sorted.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
         let n_v = sorted.len();
-        let bw = 1.06 * sorted.iter().copied()
-            .map(|x| (x - sorted[n_v / 2]).powi(2))
+        let kde_pts: Vec<f64> = if n_v > 30 {
+            let step = n_v / 30;
+            sorted.iter().step_by(step).copied().collect()
+        } else { sorted.clone() };
+        let bw = 1.06 * kde_pts.iter().copied()
+            .map(|x| (x - kde_pts[kde_pts.len() / 2]).powi(2))
             .sum::<f64>().sqrt()
-            / (n_v as f64).powf(0.2)
+            / (kde_pts.len() as f64).powf(0.2)
             .max(range * 0.05);
         let cx = f.pl + ci as i32 * col_w + col_w / 2;
-        let n_steps = 40usize;
+        let n_steps = 12usize;
         let color = palette_color(cfg.palette, ci);
         let hx = hex6(color);
         let dens: Vec<f64> = (0..=n_steps).map(|si| {
             let frac = si as f64 / n_steps as f64;
             let v = global_min + frac * range;
-            density_at(&sorted, v, bw)
+            density_at(&kde_pts, v, bw)
         }).collect();
         let max_dens = dens.iter().copied().fold(0.0_f64, f64::max).max(1e-10);
         let mut pts_r: Vec<(i32, i32)> = Vec::with_capacity(n_steps + 2);

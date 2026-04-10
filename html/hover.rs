@@ -443,7 +443,11 @@ fn push_pid(buf: &mut Vec<u8>, id: u64) {
 }
 
 pub fn html_prefix(buf: &mut Vec<u8>, title: &str, id: u64) {
-    const CSS: &str = concat!(
+    const TPL: &[u8] = concat!(
+        "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>",
+    ).as_bytes();
+    const TPL2: &[u8] = concat!(
+        "</title>",
         "<style>",
         "#sp-tip{position:absolute;z-index:999999;pointer-events:none;opacity:0;",
           "transition:opacity .15s,transform .15s;transform:translateY(6px) scale(.97);",
@@ -482,21 +486,34 @@ pub fn html_prefix(buf: &mut Vec<u8>, title: &str, id: u64) {
           "box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:20;white-space:nowrap;display:none}",
         ".sp-cls-x{cursor:pointer;color:#94a3b8;margin-left:6px;font-size:13px}",
         ".sp-cls-x:hover{color:#f87171}",
-        "</style>"
-    );
-    buf.extend_from_slice(b"<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>");
+        "</style>",
+        "<style>body{margin:0;background:#f0f2f5;display:flex;justify-content:center;padding:16px 0}",
+        "@keyframes sp-i{from{opacity:0;transform:translateY(8px) scale(.94)}}",
+        "@keyframes sp-bar{from{opacity:0;transform:scaleY(0)}}",
+        "@keyframes sp-pop{0%{opacity:0;transform:scale(0)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}",
+        "@keyframes sp-arc{from{opacity:0;transform:scale(.82) rotate(-6deg)}}",
+        "@keyframes sp-fn{from{opacity:0;transform:scaleX(.7) translateY(8px)}}",
+        "svg rect[data-idx]{transform-box:fill-box;transform-origin:bottom center;animation:sp-bar .5s cubic-bezier(.22,.61,.36,1) both}",
+        "svg circle[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-pop .42s cubic-bezier(.34,1.56,.64,1) both}",
+        "svg path[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-arc .48s cubic-bezier(.22,.61,.36,1) both}",
+        "svg polygon[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-fn .48s cubic-bezier(.22,.61,.36,1) both}",
+        "svg line[data-idx]{animation:sp-i .45s cubic-bezier(.22,.61,.36,1) both}",
+        "svg rect[data-idx]:hover{transform:scaleY(1.03);filter:brightness(1.12) saturate(1.1)}",
+        "svg circle[data-idx]:hover{transform:scale(1.3);filter:brightness(1.15)}",
+        "svg path[data-idx]:hover{filter:brightness(1.1) drop-shadow(0 2px 8px rgba(0,0,0,.2))}",
+        "</style></head><body><div id=\"",
+    ).as_bytes();
+    const TPL3: &[u8] = b"\" style=\"position:relative;display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)\">";
+    buf.extend_from_slice(TPL);
     buf.extend_from_slice(html_attr_esc(title).as_bytes());
-    buf.extend_from_slice(b"</title>");
-    buf.extend_from_slice(CSS.as_bytes());
-    buf.extend_from_slice(b"<style>body{margin:0;background:#f0f2f5;display:flex;justify-content:center;padding:16px 0}@keyframes sp-i{from{opacity:0;transform:translateY(8px) scale(.94)}}@keyframes sp-bar{from{opacity:0;transform:scaleY(0)}}@keyframes sp-pop{0%{opacity:0;transform:scale(0)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}@keyframes sp-arc{from{opacity:0;transform:scale(.82) rotate(-6deg)}}@keyframes sp-fn{from{opacity:0;transform:scaleX(.7) translateY(8px)}}svg rect[data-idx]{transform-box:fill-box;transform-origin:bottom center;animation:sp-bar .5s cubic-bezier(.22,.61,.36,1) both}svg circle[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-pop .42s cubic-bezier(.34,1.56,.64,1) both}svg path[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-arc .48s cubic-bezier(.22,.61,.36,1) both}svg polygon[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-fn .48s cubic-bezier(.22,.61,.36,1) both}svg line[data-idx]{animation:sp-i .45s cubic-bezier(.22,.61,.36,1) both}svg rect[data-idx]:hover{transform:scaleY(1.03);filter:brightness(1.12) saturate(1.1)}svg circle[data-idx]:hover{transform:scale(1.3);filter:brightness(1.15)}svg path[data-idx]:hover{filter:brightness(1.1) drop-shadow(0 2px 8px rgba(0,0,0,.2))}</style></head><body>");
-    buf.extend_from_slice(b"<div id=\"");
+    buf.extend_from_slice(TPL2);
     push_pid(buf, id);
-    buf.extend_from_slice(b"\" style=\"position:relative;display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)\">");
+    buf.extend_from_slice(TPL3);
 }
 
 pub fn html_suffix(buf: &mut Vec<u8>, id: u64, hover_json: &str) {
-    buf.extend_from_slice(b"<div class=\"sp-sel-ov\" style=\"display:none\"></div>");
-    buf.extend_from_slice(b"<div class=\"sp-cpanel\"></div>");
+    const SUFF1: &[u8] = b"<div class=\"sp-sel-ov\" style=\"display:none\"></div><div class=\"sp-cpanel\"></div>";
+    buf.extend_from_slice(SUFF1);
     buf.extend_from_slice(JS_P1.as_bytes());
     push_pid(buf, id);
     buf.extend_from_slice(JS_P2.as_bytes());
