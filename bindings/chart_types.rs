@@ -5,6 +5,7 @@ use crate::plot::map::register_map_3d_types;
 use crate::plot::seaborn::register_seaborn_types;
 use crate::plot::seaborn::register_seaborn_3d_types;
 use crate::plot::statistical::register_statistical_types;
+use crate::plot::statistical::register_statistical_3d_types;
 
 use std::sync::{OnceLock, Mutex};
 use std::collections::HashMap;
@@ -42,6 +43,7 @@ fn seaborn_group_loader() {
 
 fn statistical_group_loader() {
     register_statistical_types();
+    register_statistical_3d_types();
 }
 
 fn register_chart_type(name: &str, loader: GroupLoader) {

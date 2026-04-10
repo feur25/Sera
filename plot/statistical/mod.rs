@@ -1,4 +1,5 @@
 pub mod common;
+pub mod _3d;
 pub mod pie;
 pub mod heatmap;
 pub mod histogram;
@@ -44,6 +45,7 @@ pub use lollipop::{LollipopConfig, render_lollipop_html};
 pub use kde::{KdeConfig, render_kde_html, scott_bw, kde_eval};
 pub use ridgeline::{RidgelineConfig, render_ridgeline_html};
 pub use crate::html::hover::{HoverSlot, slots_to_json, parse_hover_json};
+pub use _3d::register_statistical_3d_types;
 
 use crate::plot::controller::chart_controller::{ChartTypeBuilder, get_group_registry};
 
