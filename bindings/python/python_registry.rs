@@ -64,6 +64,9 @@ pub fn register_submodules(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(build_wordcloud, m)?)?;
     m.add_function(wrap_pyfunction!(build_candlestick, m)?)?;
     m.add_function(wrap_pyfunction!(build_dumbbell, m)?)?;
+    m.add_function(wrap_pyfunction!(build_bubble, m)?)?;
+    m.add_function(wrap_pyfunction!(build_gauge, m)?)?;
+    m.add_function(wrap_pyfunction!(build_parallel, m)?)?;
     
     Ok(())
 }

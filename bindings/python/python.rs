@@ -831,12 +831,30 @@ pub fn build_radar3d_chart(
     width: i32,
     height: i32,
 ) -> Chart {
-    use crate::plot::statistical::{RadarConfig, render_radar_html};
-    let pal = parse_palette(palette);
-    let series: Vec<(String, Vec<f64>)> = series_names.into_iter().zip(series_values.into_iter()).collect();
-    Chart::new(render_radar_html(&RadarConfig {
-        title, axes: &axes, series: &series, palette: &pal, filled: true, fill_opacity: 40, width, height,
-    }))
+    let n_axes = axes.len();
+    if n_axes == 0 { return Chart::new(String::new()); }
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    let n_series = series_names.len().min(series_values.len());
+    for si in 0..n_series {
+        let vals = &series_values[si];
+        let max_val = vals.iter().cloned().fold(0.0f64, f64::max).max(1e-9);
+        for ai in 0..n_axes.min(vals.len()) {
+            let angle = std::f64::consts::TAU * ai as f64 / n_axes as f64;
+            let r = vals[ai] / max_val;
+            xv.push(angle.cos() * r);
+            yv.push(si as f64);
+            zv.push(angle.sin() * r);
+            cv.push(si as f64);
+        }
+    }
+    Chart::new(crate::html::js_3d::render_radar3d_html(
+        title, &xv, &yv, &zv,
+        ("Axis", "Series", "Axis"),
+        &cv, &series_names, width, height, None,
+    ))
 }
 
 #[cfg(feature = "python")]
@@ -882,7 +900,7 @@ pub fn build_lollipop3d_chart(
     height: i32,
 ) -> Chart {
     let cl = color_labels.unwrap_or_default();
-    Chart::new(crate::plot::default::render_scatter3d_html(
+    Chart::new(crate::html::js_3d::render_lollipop3d_html(
         title, &x_values, &y_values, &z_values,
         (x_label, y_label, z_label), &[], &cl, width, height, None,
     ))
@@ -943,7 +961,7 @@ pub fn build_kde3d_chart(
     width: i32,
     height: i32,
 ) -> Chart {
-    use crate::plot::statistical::{KdeConfig, render_kde_html};
+    use crate::plot::statistical::kde::{scott_bw, kde_eval};
     let cats = categories.unwrap_or_default();
     let series: Vec<(String, Vec<f64>)> = if cats.is_empty() {
         vec![("Series".to_string(), values)]
@@ -959,11 +977,35 @@ pub fn build_kde3d_chart(
             (k, v)
         }).collect()
     };
-    Chart::new(render_kde_html(&KdeConfig {
-        title, series: &series, x_label: x_label, y_label: z_label,
-        filled: true, fill_opacity: 50, width, height,
-        ..KdeConfig::default()
-    }))
+    let all_vals: Vec<f64> = series.iter().flat_map(|(_, v)| v.iter().copied()).collect();
+    if all_vals.is_empty() { return Chart::new(String::new()); }
+    let xmin = all_vals.iter().cloned().fold(f64::INFINITY, f64::min);
+    let xmax = all_vals.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    let pad = (xmax - xmin).max(1.0) * 0.12;
+    let lo = xmin - pad;
+    let hi = xmax + pad;
+    let n_pts: usize = 120;
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    let names: Vec<String> = series.iter().map(|(n,_)| n.clone()).collect();
+    for (si, (_name, vals)) in series.iter().enumerate() {
+        let bw = scott_bw(vals);
+        for k in 0..n_pts {
+            let t = lo + (hi - lo) * k as f64 / (n_pts - 1).max(1) as f64;
+            let d = kde_eval(vals, t, bw);
+            xv.push(t);
+            yv.push(si as f64);
+            zv.push(d);
+            cv.push(si as f64);
+        }
+    }
+    Chart::new(crate::html::js_3d::render_kde3d_html(
+        title, &xv, &yv, &zv,
+        (x_label, y_label, z_label),
+        &cv, &names, width, height, None,
+    ))
 }
 
 #[cfg(feature = "python")]
@@ -1002,12 +1044,41 @@ pub fn build_ridgeline3d_chart(
     width: i32,
     height: i32,
 ) -> Chart {
-    use crate::plot::statistical::{RidgelineConfig, render_ridgeline_html};
-    Chart::new(render_ridgeline_html(&RidgelineConfig {
-        title, values: &values, categories: &categories,
-        x_label, width, height,
-        ..RidgelineConfig::default()
-    }))
+    use crate::plot::statistical::kde::{scott_bw, kde_eval};
+    let mut group_order: Vec<String> = Vec::new();
+    let mut group_vals: std::collections::HashMap<String, Vec<f64>> = std::collections::HashMap::new();
+    for (v, c) in values.iter().zip(categories.iter()) {
+        group_vals.entry(c.clone()).or_default().push(*v);
+        if !group_order.contains(c) { group_order.push(c.clone()); }
+    }
+    if group_order.is_empty() { return Chart::new(String::new()); }
+    let xmin = values.iter().cloned().fold(f64::INFINITY, f64::min);
+    let xmax = values.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    let pad = (xmax - xmin).max(1.0) * 0.12;
+    let lo = xmin - pad;
+    let hi = xmax + pad;
+    let n_pts: usize = 120;
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    for (gi, name) in group_order.iter().enumerate() {
+        let vals = group_vals.get(name).map(|v| v.as_slice()).unwrap_or(&[]);
+        let bw = scott_bw(vals);
+        for k in 0..n_pts {
+            let t = lo + (hi - lo) * k as f64 / (n_pts - 1).max(1) as f64;
+            let d = kde_eval(vals, t, bw);
+            xv.push(t);
+            yv.push(gi as f64);
+            zv.push(d);
+            cv.push(gi as f64);
+        }
+    }
+    Chart::new(crate::html::js_3d::render_ridgeline3d_html(
+        title, &xv, &yv, &zv,
+        (x_label, y_label, z_label),
+        &cv, &group_order, width, height, None,
+    ))
 }
 
 #[cfg(feature = "python")]
@@ -1083,5 +1154,71 @@ pub fn build_dumbbell(
         series_labels: (&sl.0, &sl.1),
         palette: &pal, width, height, x_label, y_label, gridlines,
         ..DumbbellConfig::default()
+    }))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, x_values, y_values, sizes, categories=None, palette=None, width=900, height=500, x_label="", y_label="", gridlines=true))]
+pub fn build_bubble(
+    title: &str,
+    x_values: Vec<f64>,
+    y_values: Vec<f64>,
+    sizes: Vec<f64>,
+    categories: Option<Vec<String>>,
+    palette: Option<Vec<u32>>,
+    width: i32,
+    height: i32,
+    x_label: &str,
+    y_label: &str,
+    gridlines: bool,
+) -> Chart {
+    use crate::plot::statistical::bubble::{BubbleConfig, render_bubble_html};
+    let pal = parse_palette(palette);
+    let cats = categories.unwrap_or_default();
+    Chart::new(render_bubble_html(&BubbleConfig {
+        title, x_values: &x_values, y_values: &y_values, sizes: &sizes,
+        categories: &cats, palette: &pal, width, height, x_label, y_label, gridlines,
+        ..BubbleConfig::default()
+    }))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, value, min_val=0.0f64, max_val=100.0f64, label="", width=400, height=300))]
+pub fn build_gauge(
+    title: &str,
+    value: f64,
+    min_val: f64,
+    max_val: f64,
+    label: &str,
+    width: i32,
+    height: i32,
+) -> Chart {
+    use crate::plot::statistical::gauge::{GaugeConfig, render_gauge_html};
+    Chart::new(render_gauge_html(&GaugeConfig {
+        title, value, min_val, max_val, label, width, height,
+        ..GaugeConfig::default()
+    }))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, axes, series_names, series_values, palette=None, width=1000, height=500))]
+pub fn build_parallel(
+    title: &str,
+    axes: Vec<String>,
+    series_names: Vec<String>,
+    series_values: Vec<Vec<f64>>,
+    palette: Option<Vec<u32>>,
+    width: i32,
+    height: i32,
+) -> Chart {
+    use crate::plot::statistical::parallel::{ParallelConfig, render_parallel_html};
+    let pal = parse_palette(palette);
+    Chart::new(render_parallel_html(&ParallelConfig {
+        title, axes: &axes, series_names: &series_names, series_values: &series_values,
+        palette: &pal, width, height,
+        ..ParallelConfig::default()
     }))
 }

@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_open, svg_title, svg_axis_lines, svg_y_label, svg_x_label, svg_hgrid, svg_vgrid, svg_tick_y, truncate, apply_sort};
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_open_rescalable, svg_title, svg_axis_lines, svg_y_label, svg_x_label, svg_hgrid, svg_vgrid, svg_tick_y, truncate, apply_sort};
 use crate::html::hover::build_chart_html;
 
 pub struct LollipopConfig<'a> {
@@ -53,7 +53,7 @@ pub fn render_lollipop_html(cfg: &LollipopConfig) -> String {
     let plot_h = cfg.height - pad_t - pad_b;
 
     let mut b = Vec::<u8>::with_capacity(n * 180 + 2048);
-    svg_open(&mut b, cfg.width, cfg.height);
+    svg_open_rescalable(&mut b, cfg.width, cfg.height, pad_l, pad_t, plot_w, plot_h);
     svg_title(&mut b, cfg.title, cfg.width / 2, 26);
 
     if !horiz {
@@ -83,9 +83,13 @@ pub fn render_lollipop_html(cfg: &LollipopConfig) -> String {
             push_b(&mut b, b"\" y1=\""); push_i(&mut b, base_y);
             push_b(&mut b, b"\" x2=\""); push_i(&mut b, cx);
             push_b(&mut b, b"\" y2=\""); push_i(&mut b, top_y);
+            push_b(&mut b, b"\" data-idx=\""); push_i(&mut b, i as i32);
             push_b(&mut b, b"\" stroke=\"#"); b.extend_from_slice(&hx);
             push_b(&mut b, b"\" stroke-width=\"1.8\"/>");
-            push_b(&mut b, b"<circle cx=\""); push_i(&mut b, cx);
+            push_b(&mut b, b"<circle data-idx=\""); push_i(&mut b, i as i32);
+            push_b(&mut b, b"\" data-y=\""); push_f2(&mut b, sorted_values[i]);
+            push_b(&mut b, b"\" data-lbl=\""); escape_xml(&mut b, &sorted_labels[i]);
+            push_b(&mut b, b"\" cx=\""); push_i(&mut b, cx);
             push_b(&mut b, b"\" cy=\""); push_i(&mut b, top_y);
             push_b(&mut b, b"\" r=\"5\" fill=\"#"); b.extend_from_slice(&hx);
             push_b(&mut b, b"\"/>");
@@ -126,9 +130,13 @@ pub fn render_lollipop_html(cfg: &LollipopConfig) -> String {
             push_b(&mut b, b"\" y1=\""); push_i(&mut b, cy);
             push_b(&mut b, b"\" x2=\""); push_i(&mut b, rx);
             push_b(&mut b, b"\" y2=\""); push_i(&mut b, cy);
+            push_b(&mut b, b"\" data-idx=\""); push_i(&mut b, i as i32);
             push_b(&mut b, b"\" stroke=\"#"); b.extend_from_slice(&hx);
             push_b(&mut b, b"\" stroke-width=\"1.8\"/>");
-            push_b(&mut b, b"<circle cx=\""); push_i(&mut b, rx);
+            push_b(&mut b, b"<circle data-idx=\""); push_i(&mut b, i as i32);
+            push_b(&mut b, b"\" data-y=\""); push_f2(&mut b, sorted_values[i]);
+            push_b(&mut b, b"\" data-lbl=\""); escape_xml(&mut b, &sorted_labels[i]);
+            push_b(&mut b, b"\" cx=\""); push_i(&mut b, rx);
             push_b(&mut b, b"\" cy=\""); push_i(&mut b, cy);
             push_b(&mut b, b"\" r=\"5\" fill=\"#"); b.extend_from_slice(&hx);
             push_b(&mut b, b"\"/>");

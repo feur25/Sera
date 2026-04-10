@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_open, svg_title, svg_axis_lines, svg_y_label, svg_x_label};
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_open_rescalable, svg_title, svg_axis_lines, svg_y_label, svg_x_label};
 use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
 
 pub struct Area;
@@ -68,7 +68,7 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
     let auto_hover = cfg.hover.is_empty();
     let n_total = n_pts * n_ser;
     let mut b = Vec::<u8>::with_capacity(n_total * 60 + 2048);
-    svg_open(&mut b, cfg.width, cfg.height);
+    svg_open_rescalable(&mut b, cfg.width, cfg.height, pad_l, pad_t, plot_w, plot_h);
     svg_title(&mut b, cfg.title, (cfg.width - legend_w) / 2 + pad_l, 26);
     let n_yticks: i32 = 6;
     for i in 0..=n_yticks {
