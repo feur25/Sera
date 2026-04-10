@@ -21,7 +21,7 @@ impl<'a> Default for BubbleConfig<'a> {
         Self {
             title: "", x_values: &[], y_values: &[], sizes: &[],
             categories: &[], palette: &[], width: 900, height: 500,
-            x_label: "", y_label: "", gridlines: true, hover: &[],
+            x_label: "", y_label: "", gridlines: false, hover: &[],
         }
     }
 }

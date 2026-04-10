@@ -26,7 +26,7 @@ impl<'a> Default for KdeConfig<'a> {
             bandwidth: 0.0,
             filled: true,
             fill_opacity: 50,
-            gridlines: true,
+            gridlines: false,
             width: 900,
             height: 420,
             n_points: 40,

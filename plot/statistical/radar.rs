@@ -63,7 +63,7 @@ pub fn render_radar_html(cfg: &RadarConfig) -> String {
             b.push(b',');
             push_f2(&mut b, plot_cy as f64 - rr * angle.sin());
         }
-        push_b(&mut b, b"\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"0.9\"/>");
+        push_b(&mut b, b"\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"0.9\" class=\"sp-gl\"/>");
         let lx = plot_cx as f64 + 4.0;
         let ly = plot_cy as f64 - rr - 2.0;
         push_b(&mut b, b"<text x=\"");
@@ -88,7 +88,7 @@ pub fn render_radar_html(cfg: &RadarConfig) -> String {
         push_f2(&mut b, epx);
         push_b(&mut b, b"\" y2=\"");
         push_f2(&mut b, epy);
-        push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"0.8\"/>");
+        push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"0.8\" class=\"sp-ax-y\"/>");
         let anchor = if angle.cos().abs() < 0.12 { "middle" } else if angle.cos() > 0.0 { "start" } else { "end" };
         let lx = plot_cx as f64 + (r + label_pad) * angle.cos();
         let ly = plot_cy as f64 - (r + label_pad) * angle.sin();

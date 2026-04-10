@@ -22,7 +22,7 @@ impl<'a> Default for WaterfallConfig<'a> {
             x_label: "",
             y_label: "",
             show_text: true,
-            gridlines: true,
+            gridlines: false,
             width: 900,
             height: 480,
         }
@@ -99,11 +99,11 @@ pub fn render_waterfall_html(cfg: &WaterfallConfig) -> String {
             push_b(&mut b, b"\" y1=\""); push_i(&mut b, y);
             push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
             push_b(&mut b, b"\" y2=\""); push_i(&mut b, y);
-            push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
+            push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"/>");
         }
         push_b(&mut b, b"<text x=\""); push_i(&mut b, pad_l - 4);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, y + 4);
-        push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+        push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
         if v.abs() >= 1_000_000.0 { push_f2(&mut b, v / 1_000_000.0); push_b(&mut b, b"M"); }
         else if v.abs() >= 1_000.0 { push_i(&mut b, v as i32); }
         else { push_f2(&mut b, v); }
@@ -121,7 +121,7 @@ pub fn render_waterfall_html(cfg: &WaterfallConfig) -> String {
     push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t);
     push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l);
     push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-y\"/>");
 
     for i in 0..n {
         let bx = pad_l + i as i32 * bar_step + bar_step / 2 - bar_w / 2;
@@ -158,7 +158,7 @@ pub fn render_waterfall_html(cfg: &WaterfallConfig) -> String {
         let lbl_y = pad_t + plot_h + 14;
         push_b(&mut b, b"<text x=\""); push_i(&mut b, bx + bar_w / 2);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, lbl_y);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">");
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-xt\">");
         let lbl = &cfg.labels[i];
         let short = if lbl.len() > 10 { &lbl[..10] } else { lbl };
         escape_xml(&mut b, short);

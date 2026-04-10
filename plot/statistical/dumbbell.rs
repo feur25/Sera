@@ -23,7 +23,7 @@ impl<'a> Default for DumbbellConfig<'a> {
             series_labels: ("Start", "End"),
             palette: &[], width: 1000, height: 500,
             x_label: "", y_label: "",
-            gridlines: true, hover: &[],
+            gridlines: false, hover: &[],
         }
     }
 }

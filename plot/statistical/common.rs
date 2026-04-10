@@ -78,19 +78,19 @@ pub fn svg_axis_lines(buf: &mut Vec<u8>, pad_l: i32, pad_t: i32, plot_w: i32, pl
     push_b(buf, b"\" y1=\""); push_i(buf, pad_t);
     push_b(buf, b"\" x2=\""); push_i(buf, pad_l);
     push_b(buf, b"\" y2=\""); push_i(buf, pad_t + plot_h);
-    push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-y\"/>");
     push_b(buf, b"<line x1=\""); push_i(buf, pad_l);
     push_b(buf, b"\" y1=\""); push_i(buf, pad_t + plot_h);
     push_b(buf, b"\" x2=\""); push_i(buf, pad_l + plot_w);
     push_b(buf, b"\" y2=\""); push_i(buf, pad_t + plot_h);
-    push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-x\"/>");
 }
 
 pub fn svg_x_label(buf: &mut Vec<u8>, label: &str, cx: i32, y: i32) {
     if label.is_empty() { return; }
     push_b(buf, b"<text x=\""); push_i(buf, cx);
     push_b(buf, b"\" y=\""); push_i(buf, y);
-    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
+    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" class=\"sp-xl\">");
     escape_xml(buf, label);
     push_b(buf, b"</text>");
 }
@@ -101,7 +101,7 @@ pub fn svg_y_label(buf: &mut Vec<u8>, label: &str, x: i32, pad_t: i32, plot_h: i
     push_b(buf, b"<text x=\""); push_i(buf, x);
     push_b(buf, b"\" y=\""); push_i(buf, ym);
     push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" transform=\"rotate(-90,");
-    push_i(buf, x); push_b(buf, b","); push_i(buf, ym); push_b(buf, b")\">");
+    push_i(buf, x); push_b(buf, b","); push_i(buf, ym); push_b(buf, b")\" class=\"sp-yl\">");
     escape_xml(buf, label);
     push_b(buf, b"</text>");
 }
@@ -126,7 +126,7 @@ pub fn svg_hgrid(buf: &mut Vec<u8>, x1: i32, x2: i32, y: i32) {
     push_b(buf, b"\" y1=\""); push_i(buf, y);
     push_b(buf, b"\" x2=\""); push_i(buf, x2);
     push_b(buf, b"\" y2=\""); push_i(buf, y);
-    push_b(buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
+    push_b(buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"/>");
 }
 
 pub fn svg_vgrid(buf: &mut Vec<u8>, x: i32, y1: i32, y2: i32) {
@@ -134,13 +134,13 @@ pub fn svg_vgrid(buf: &mut Vec<u8>, x: i32, y1: i32, y2: i32) {
     push_b(buf, b"\" y1=\""); push_i(buf, y1);
     push_b(buf, b"\" x2=\""); push_i(buf, x);
     push_b(buf, b"\" y2=\""); push_i(buf, y2);
-    push_b(buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
+    push_b(buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"/>");
 }
 
 pub fn svg_tick_y(buf: &mut Vec<u8>, x: i32, y: i32, val: f64) {
     push_b(buf, b"<text x=\""); push_i(buf, x);
     push_b(buf, b"\" y=\""); push_i(buf, y);
-    push_b(buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+    push_b(buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
     if val.abs() >= 1000.0 { push_i(buf, val as i32); } else { push_f2(buf, val); }
     push_b(buf, b"</text>");
 }
@@ -148,7 +148,7 @@ pub fn svg_tick_y(buf: &mut Vec<u8>, x: i32, y: i32, val: f64) {
 pub fn svg_tick_x(buf: &mut Vec<u8>, x: i32, y: i32, val: f64) {
     push_b(buf, b"<text x=\""); push_i(buf, x);
     push_b(buf, b"\" y=\""); push_i(buf, y);
-    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-xt\">");
     if val >= 10000.0 { push_i(buf, (val / 1000.0) as i32); push_b(buf, b"k"); }
     else if val >= 1000.0 { push_i(buf, val as i32); }
     else { push_f2(buf, val); }
@@ -340,7 +340,7 @@ impl Frame {
             if grid && i > 0 { svg_hgrid(&mut self.buf, self.pl, self.pl + self.pw, y); }
             push_b(&mut self.buf, b"<text x=\""); push_i(&mut self.buf, self.pl - 4);
             push_b(&mut self.buf, b"\" y=\""); push_i(&mut self.buf, y + 3);
-            push_b(&mut self.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+            push_b(&mut self.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
             push_i(&mut self.buf, v);
             push_b(&mut self.buf, b"</text>");
         }

@@ -28,7 +28,7 @@ impl<'a> Default for MultiLineConfig<'a> {
             palette: &[],
             width: 1100,
             height: 480,
-            gridlines: true,
+            gridlines: false,
             show_points: true,
             hover: &[],
         }

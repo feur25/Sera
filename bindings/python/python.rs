@@ -1,4 +1,4 @@
-﻿#[cfg(feature = "python")]
+#[cfg(feature = "python")]
 use pyo3::prelude::*;
 
 #[cfg(feature = "python")]
@@ -208,7 +208,7 @@ pub fn build_html_chart(title: &str, labels: Vec<String>, values: Vec<f64>, widt
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, orientation="v", color_groups=None, show_text=false, x_label="", y_label="", palette=None, color_hex=0u32, gridlines=true, sort_order="none", width=900, height=480, hover_json=None, bg_color=None))]
+#[pyo3(signature = (title, labels, values, orientation="v", color_groups=None, show_text=false, x_label="", y_label="", palette=None, color_hex=0u32, gridlines=false, sort_order="none", width=900, height=480, hover_json=None, bg_color=None))]
 pub fn build_bar_chart(
     title: &str,
     labels: Vec<String>,
@@ -242,7 +242,7 @@ pub fn build_bar_chart(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, color_groups=None, show_text=true, x_label="", palette=None, color_hex=0u32, gridlines=true, sort_order="none", width=900, height=500, hover_json=None))]
+#[pyo3(signature = (title, labels, values, color_groups=None, show_text=true, x_label="", palette=None, color_hex=0u32, gridlines=false, sort_order="none", width=900, height=500, hover_json=None))]
 pub fn build_hbar(
     title: &str,
     labels: Vec<String>,
@@ -270,7 +270,7 @@ pub fn build_hbar(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, color_hex=0x6366F1u32, x_label="", y_label="", gridlines=true, show_points=true, sort_order="none", width=900, height=480, hover_json=None, bg_color=None))]
+#[pyo3(signature = (title, labels, values, color_hex=0x6366F1u32, x_label="", y_label="", gridlines=false, show_points=true, sort_order="none", width=900, height=480, hover_json=None, bg_color=None))]
 pub fn build_line_chart(
     title: &str,
     labels: &PyAny,
@@ -299,7 +299,7 @@ pub fn build_line_chart(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_values, y_values, labels=None, palette=None, x_label="", y_label="", color_hex=0u32, gridlines=true, show_text=false, sort_order="none", width=900, height=540, hover_json=None, sizes=None, color_groups=None, bg_color=None))]
+#[pyo3(signature = (title, x_values, y_values, labels=None, palette=None, x_label="", y_label="", color_hex=0u32, gridlines=false, show_text=false, sort_order="none", width=900, height=540, hover_json=None, sizes=None, color_groups=None, bg_color=None))]
 pub fn build_scatter_chart(
     title: &str,
     x_values: &PyAny,
@@ -338,7 +338,7 @@ pub fn build_scatter_chart(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, values, bins=0usize, color_hex=0x6366F1u32, x_label="", y_label="Count", show_counts=false, gridlines=true, sort_order="none", width=860, height=380, hover_json=None, bg_color=None))]
+#[pyo3(signature = (title, values, bins=0usize, color_hex=0x6366F1u32, x_label="", y_label="Count", show_counts=false, gridlines=false, sort_order="none", width=860, height=380, hover_json=None, bg_color=None))]
 pub fn build_histogram(
     title: &str,
     values: &PyAny,
@@ -395,7 +395,7 @@ pub fn build_histogram_overlay(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, category_labels, series_names, series_values, palette=None, x_label="", y_label="", show_values=false, gridlines=true, sort_order="none", width=1100, height=480, hover_json=None, bg_color=None))]
+#[pyo3(signature = (title, category_labels, series_names, series_values, palette=None, x_label="", y_label="", show_values=false, gridlines=false, sort_order="none", width=1100, height=480, hover_json=None, bg_color=None))]
 pub fn build_grouped_bar(
     title: &str,
     category_labels: Vec<String>,
@@ -435,7 +435,7 @@ pub fn build_grouped_bar(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, category_labels, series_names, series_values, palette=None, x_label="", y_label="", show_values=false, gridlines=true, sort_order="none", width=1100, height=480, hover_json=None, bg_color=None))]
+#[pyo3(signature = (title, category_labels, series_names, series_values, palette=None, x_label="", y_label="", show_values=false, gridlines=false, sort_order="none", width=1100, height=480, hover_json=None, bg_color=None))]
 pub fn build_stacked_bar(
     title: &str,
     category_labels: Vec<String>,
@@ -575,7 +575,7 @@ pub fn build_boxplot(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, categories, values, x_label="", y_label="", palette=None, gridlines=true, width=900, height=500, bg_color=None))]
+#[pyo3(signature = (title, categories, values, x_label="", y_label="", palette=None, gridlines=false, width=900, height=500, bg_color=None))]
 pub fn build_violin(
     title: &str,
     categories: &PyAny,
@@ -695,7 +695,7 @@ pub fn build_treemap(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_labels, series_names, series_values, palette=None, x_label="", y_label="", show_points=true, gridlines=true, sort_order="none", width=1100, height=480, hover_json=None, bg_color=None))]
+#[pyo3(signature = (title, x_labels, series_names, series_values, palette=None, x_label="", y_label="", show_points=true, gridlines=false, sort_order="none", width=1100, height=480, hover_json=None, bg_color=None))]
 pub fn build_multiline_chart(
     title: &str,
     x_labels: &PyAny,
@@ -729,7 +729,7 @@ pub fn build_multiline_chart(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_labels, series_names, series_values, stacked=false, palette=None, x_label="", y_label="", gridlines=true, sort_order="none", width=1100, height=480, hover_json=None))]
+#[pyo3(signature = (title, x_labels, series_names, series_values, stacked=false, palette=None, x_label="", y_label="", gridlines=false, sort_order="none", width=1100, height=480, hover_json=None))]
 pub fn build_area_chart(
     title: &str,
     x_labels: &PyAny,
@@ -760,7 +760,7 @@ pub fn build_area_chart(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, x_label="", y_label="", show_text=true, gridlines=true, width=900, height=480))]
+#[pyo3(signature = (title, labels, values, x_label="", y_label="", show_text=true, gridlines=false, width=900, height=480))]
 pub fn build_waterfall(
     title: &str,
     labels: Vec<String>,
@@ -976,7 +976,7 @@ pub fn build_radar3d_chart(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, orientation="v", x_label="", y_label="", palette=None, color_hex=0u32, gridlines=true, show_values=false, sort_order="none", width=900, height=480))]
+#[pyo3(signature = (title, labels, values, orientation="v", x_label="", y_label="", palette=None, color_hex=0u32, gridlines=false, show_values=false, sort_order="none", width=900, height=480))]
 pub fn build_lollipop_chart(
     title: &str,
     labels: Vec<String>,
@@ -1025,7 +1025,7 @@ pub fn build_lollipop3d_chart(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, values, categories=None, palette=None, filled=true, fill_opacity=50u8, x_label="", y_label="Density", gridlines=true, bandwidth=0.0f64, width=900, height=420))]
+#[pyo3(signature = (title, values, categories=None, palette=None, filled=true, fill_opacity=50u8, x_label="", y_label="Density", gridlines=false, bandwidth=0.0f64, width=900, height=420))]
 pub fn build_kde_chart(
     title: &str,
     values: &PyAny,
@@ -1232,7 +1232,7 @@ pub fn build_wordcloud(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, open, high, low, close, palette=None, width=1100, height=500, x_label="Date", y_label="Price", gridlines=true))]
+#[pyo3(signature = (title, labels, open, high, low, close, palette=None, width=1100, height=500, x_label="Date", y_label="Price", gridlines=false))]
 pub fn build_candlestick(
     title: &str,
     labels: Vec<String>,
@@ -1258,7 +1258,7 @@ pub fn build_candlestick(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values_start, values_end, series_labels=None, palette=None, width=1000, height=500, x_label="", y_label="", gridlines=true))]
+#[pyo3(signature = (title, labels, values_start, values_end, series_labels=None, palette=None, width=1000, height=500, x_label="", y_label="", gridlines=false))]
 pub fn build_dumbbell(
     title: &str,
     labels: Vec<String>,
@@ -1285,7 +1285,7 @@ pub fn build_dumbbell(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_values, y_values, sizes, categories=None, palette=None, width=900, height=500, x_label="", y_label="", gridlines=true))]
+#[pyo3(signature = (title, x_values, y_values, sizes, categories=None, palette=None, width=900, height=500, x_label="", y_label="", gridlines=false))]
 pub fn build_bubble(
     title: &str,
     x_values: &PyAny,

@@ -68,12 +68,12 @@ pub fn render_slope_html(cfg: &SlopeConfig) -> String {
     push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t);
     push_b(&mut b, b"\" x2=\""); push_i(&mut b, x_left);
     push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1.2\"/>");
+    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1.2\" class=\"sp-ax-y\"/>");
     push_b(&mut b, b"<line x1=\""); push_i(&mut b, x_right);
     push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t);
     push_b(&mut b, b"\" x2=\""); push_i(&mut b, x_right);
     push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1.2\"/>");
+    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1.2\" class=\"sp-ax-y\"/>");
     push_b(&mut b, b"<text x=\""); push_i(&mut b, x_left);
     push_b(&mut b, b"\" y=\""); push_i(&mut b, pad_t - 10);
     push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"#374151\">");

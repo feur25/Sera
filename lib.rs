@@ -91,6 +91,50 @@ impl Chart {
             html: crate::html::hover::apply_bg(self.html.clone(), color),
         }
     }
+
+    #[pyo3(signature = (css))]
+    fn inject_css(&self, css: &str) -> Chart {
+        Chart {
+            html: self.html.replacen("</head>", &format!("<style>{css}</style></head>"), 1),
+        }
+    }
+
+    #[pyo3(signature = (js))]
+    fn inject_js(&self, js: &str) -> Chart {
+        Chart {
+            html: self.html.replacen("</body>", &format!("<script>{js}</script></body>"), 1),
+        }
+    }
+
+    fn no_x_axis(&self) -> Chart {
+        Chart {
+            html: self.html.replacen("</head>", "<style>.sp-ax-x,.sp-xt,.sp-xl{display:none}</style></head>", 1),
+        }
+    }
+
+    fn no_y_axis(&self) -> Chart {
+        Chart {
+            html: self.html.replacen("</head>", "<style>.sp-ax-y,.sp-yt,.sp-yl{display:none}</style></head>", 1),
+        }
+    }
+
+    fn no_axes(&self) -> Chart {
+        Chart {
+            html: self.html.replacen("</head>", "<style>.sp-ax-x,.sp-ax-y,.sp-xt,.sp-yt,.sp-xl,.sp-yl{display:none}</style></head>", 1),
+        }
+    }
+
+    fn show_grid(&self) -> Chart {
+        Chart {
+            html: self.html.replacen("</head>", "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>", 1),
+        }
+    }
+
+    fn hide_grid(&self) -> Chart {
+        Chart {
+            html: self.html.replacen("</head>", "<style>.sp-gl{display:none!important}</style></head>", 1),
+        }
+    }
 }
 
 #[cfg(feature = "python")]

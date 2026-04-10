@@ -196,11 +196,11 @@ pub fn render_lines_html(
             push_b(&mut b, b"\" y1=\""); push_i(&mut b, y);
             push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
             push_b(&mut b, b"\" y2=\""); push_i(&mut b, y);
-            push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
+            push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"/>");
         }
         push_b(&mut b, b"<text x=\""); push_i(&mut b, pad_l - 4);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, y + 3);
-        push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+        push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
         if val >= 1000.0 { push_i(&mut b, val as i32); }
         else { push_f2(&mut b, val); }
         push_b(&mut b, b"</text>");
@@ -209,24 +209,24 @@ pub fn render_lines_html(
     push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t);
     push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l);
     push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-y\"/>");
     push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
     push_b(&mut b, b"\" y1=\""); push_i(&mut b, pad_t + plot_h);
     push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
     push_b(&mut b, b"\" y2=\""); push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-x\"/>");
     if !y_label.is_empty() {
         let ym = pad_t + plot_h / 2;
         push_b(&mut b, b"<text x=\"14\" y=\""); push_i(&mut b, ym);
         push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#374151\" transform=\"rotate(-90,14,");
-        push_i(&mut b, ym); push_b(&mut b, b")\">");
+        push_i(&mut b, ym); push_b(&mut b, b")\" class=\"sp-yl\">");
         escape_xml(&mut b, y_label);
         push_b(&mut b, b"</text>");
     }
     if !x_label.is_empty() {
         push_b(&mut b, b"<text x=\""); push_i(&mut b, pad_l + plot_w / 2);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, height - 4);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#374151\">");
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#374151\" class=\"sp-xl\">");
         escape_xml(&mut b, x_label);
         push_b(&mut b, b"</text>");
     }

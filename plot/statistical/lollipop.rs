@@ -27,7 +27,7 @@ impl<'a> Default for LollipopConfig<'a> {
             y_label: "",
             palette: &[],
             color_hex: 0x6366F1,
-            gridlines: true,
+            gridlines: false,
             show_values: false,
             orientation: b'v',
             sort_order: "none",

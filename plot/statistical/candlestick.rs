@@ -23,7 +23,7 @@ impl<'a> Default for CandlestickConfig<'a> {
             title: "", labels: &[], open: &[], high: &[], low: &[], close: &[],
             palette: &[], width: 1100, height: 500,
             x_label: "Date", y_label: "Price",
-            gridlines: true, hover: &[],
+            gridlines: false, hover: &[],
         }
     }
 }

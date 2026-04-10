@@ -34,7 +34,7 @@ impl<'a> Default for GroupedBarConfig<'a> {
             stacked: false,
             show_values: false,
             value_min_height: 16,
-            gridlines: true,
+            gridlines: false,
             hover: &[],
             sort_order: "",
         }

@@ -92,7 +92,7 @@ pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
     push_b(&mut b, b"\" y1=\""); push_i(&mut b, axis_y);
     push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
     push_b(&mut b, b"\" y2=\""); push_i(&mut b, axis_y);
-    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-x\"/>");
 
     for ti in 0..=n_xticks {
         let frac = ti as f64 / n_xticks as f64;
@@ -102,10 +102,10 @@ pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
         push_b(&mut b, b"\" y1=\""); push_i(&mut b, title_h);
         push_b(&mut b, b"\" x2=\""); push_i(&mut b, x);
         push_b(&mut b, b"\" y2=\""); push_i(&mut b, axis_y);
-        push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
+        push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"/>");
         push_b(&mut b, b"<text x=\""); push_i(&mut b, x);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, axis_y + 14);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#9ca3af\">");
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#9ca3af\" class=\"sp-xt\">");
         push_f2(&mut b, val);
         push_b(&mut b, b"</text>");
     }

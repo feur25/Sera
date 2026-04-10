@@ -21,7 +21,7 @@ impl<'a> Default for ViolinConfig<'a> {
             x_label: "",
             y_label: "",
             palette: &[],
-            gridlines: true,
+            gridlines: false,
             width: 900,
             height: 500,
         }
@@ -95,11 +95,11 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
             push_b(&mut f.buf, b"\" y1=\""); push_i(&mut f.buf, y);
             push_b(&mut f.buf, b"\" x2=\""); push_i(&mut f.buf, f.pl + f.pw);
             push_b(&mut f.buf, b"\" y2=\""); push_i(&mut f.buf, y);
-            push_b(&mut f.buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
+            push_b(&mut f.buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"/>");
         }
         push_b(&mut f.buf, b"<text x=\""); push_i(&mut f.buf, f.pl - 4);
         push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, y + 4);
-        push_b(&mut f.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+        push_b(&mut f.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
         if v.abs() >= 1_000_000.0 { push_f2(&mut f.buf, v / 1_000_000.0); push_b(&mut f.buf, b"M"); }
         else if v.abs() >= 1000.0 { push_i(&mut f.buf, v as i32); }
         else { push_f2(&mut f.buf, v); }

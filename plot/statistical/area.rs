@@ -29,7 +29,7 @@ impl<'a> Default for AreaConfig<'a> {
             width: 1100,
             height: 480,
             stacked: false,
-            gridlines: true,
+            gridlines: false,
             hover: &[],
         }
     }

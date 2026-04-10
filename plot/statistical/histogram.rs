@@ -35,7 +35,7 @@ impl<'a> Default for HistogramConfig<'a> {
             height: 380,
             overlay_values: None,
             overlay_color: 0xF43F5E,
-            gridlines: true,
+            gridlines: false,
             show_counts: false,
             hover: &[],
             count_scale: 1,
@@ -117,7 +117,7 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
         let val = if i < edges.len() { edges[i] } else { *edges.last().unwrap_or(&0.0) };
         push_b(&mut f.buf, b"<text x=\""); push_i(&mut f.buf, x);
         push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, f.pt + f.ph + 14);
-        push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+        push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-xt\">");
         push_f2(&mut f.buf, val);
         push_b(&mut f.buf, b"</text>");
     }
