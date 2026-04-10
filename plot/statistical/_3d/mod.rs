@@ -1,3 +1,27 @@
 pub mod plot_3d_types;
+pub mod radar3d;
+pub mod lollipop3d;
+pub mod kde3d;
+pub mod ridgeline3d;
+pub mod pie3d;
+pub mod violin3d;
+pub mod heatmap3d;
+pub mod candlestick3d;
+pub mod dumbbell3d;
+pub mod funnel3d;
+pub mod sunburst3d;
+pub mod stacked_bar3d;
 
 pub use plot_3d_types::register_statistical_3d_types;
+pub use radar3d::render_radar3d_html;
+pub use lollipop3d::render_lollipop3d_html;
+pub use kde3d::render_kde3d_html;
+pub use ridgeline3d::render_ridgeline3d_html;
+pub use pie3d::render_pie3d_html;
+pub use violin3d::render_violin3d_html;
+pub use heatmap3d::render_heatmap3d_html;
+pub use candlestick3d::render_candlestick3d_html;
+pub use dumbbell3d::render_dumbbell3d_html;
+pub use funnel3d::render_funnel3d_html;
+pub use sunburst3d::render_sunburst3d_html;
+pub use stacked_bar3d::render_stacked_bar3d_html;

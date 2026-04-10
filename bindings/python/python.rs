@@ -967,7 +967,7 @@ pub fn build_radar3d_chart(
             cv.push(si as f64);
         }
     }
-    Chart::new(crate::html::js_3d::render_radar3d_html(
+    Chart::new(crate::plot::statistical::_3d::render_radar3d_html(
         title, &xv, &yv, &zv,
         ("Axis", "Series", "Axis"),
         &cv, &series_names, width, height, None,
@@ -1017,7 +1017,7 @@ pub fn build_lollipop3d_chart(
     height: i32,
 ) -> Chart {
     let cl = color_labels.unwrap_or_default();
-    Chart::new(crate::html::js_3d::render_lollipop3d_html(
+    Chart::new(crate::plot::statistical::_3d::render_lollipop3d_html(
         title, &x_values, &y_values, &z_values,
         (x_label, y_label, z_label), &[], &cl, width, height, None,
     ))
@@ -1120,7 +1120,7 @@ pub fn build_kde3d_chart(
             cv.push(si as f64);
         }
     }
-    Chart::new(crate::html::js_3d::render_kde3d_html(
+    Chart::new(crate::plot::statistical::_3d::render_kde3d_html(
         title, &xv, &yv, &zv,
         (x_label, y_label, z_label),
         &cv, &names, width, height, None,
@@ -1200,7 +1200,7 @@ pub fn build_ridgeline3d_chart(
             cv.push(gi as f64);
         }
     }
-    Ok(Chart::new(crate::html::js_3d::render_ridgeline3d_html(
+    Ok(Chart::new(crate::plot::statistical::_3d::render_ridgeline3d_html(
         title, &xv, &yv, &zv,
         (x_label, y_label, z_label),
         &cv, &group_order, width, height, None,
@@ -1222,7 +1222,7 @@ pub fn build_pie3d_chart(
     let xv: Vec<f64> = (0..n).map(|i| i as f64).collect();
     let yv: Vec<f64> = (0..n).map(|i| i as f64).collect();
     let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
-    Chart::new(crate::html::js_3d::render_pie3d_html(
+    Chart::new(crate::plot::statistical::_3d::render_pie3d_html(
         title, &xv, &yv, &values[..n],
         ("", "", ""), &cv, &labels[..n].to_vec(), width, height, bg_color,
     ))
@@ -1278,7 +1278,7 @@ pub fn build_violin3d_chart(
             cv.push(gi as f64);
         }
     }
-    Chart::new(crate::html::js_3d::render_violin3d_html(
+    Chart::new(crate::plot::statistical::_3d::render_violin3d_html(
         title, &xv, &yv, &zv,
         (x_label, y_label, z_label), &cv, &group_order, width, height, None,
     ))
@@ -1316,7 +1316,7 @@ pub fn build_heatmap3d_chart(
             cl.push(format!("{}/{}", y_labels[r], x_labels[c2]));
         }
     }
-    Chart::new(crate::html::js_3d::render_heatmap3d_html(
+    Chart::new(crate::plot::statistical::_3d::render_heatmap3d_html(
         title, &xv, &yv, &zv,
         (x_label, y_label, z_label), &cv, &cl, width, height, bg_color,
     ))
@@ -1345,7 +1345,7 @@ pub fn build_candlestick3d_chart(
         yv.push(i as f64); yv.push(i as f64); yv.push(i as f64); yv.push(i as f64);
         zv.push(0.0); zv.push(0.0); zv.push(0.0); zv.push(0.0);
     }
-    Chart::new(crate::html::js_3d::render_candlestick3d_html(
+    Chart::new(crate::plot::statistical::_3d::render_candlestick3d_html(
         title, &xv, &yv, &zv,
         ("Price", "Bar", ""), &[], &labels, width, height, bg_color,
     ))
@@ -1376,7 +1376,7 @@ pub fn build_dumbbell3d_chart(
         zv.push(values_end[i]);
         cv.push(i as f64);
     }
-    Chart::new(crate::html::js_3d::render_dumbbell3d_html(
+    Chart::new(crate::plot::statistical::_3d::render_dumbbell3d_html(
         title, &xv, &yv, &zv,
         ("Start", "Item", "End"), &cv, &labels, width, height, bg_color,
     ))
@@ -1397,7 +1397,7 @@ pub fn build_funnel3d_chart(
     let xv: Vec<f64> = (0..n).map(|i| i as f64).collect();
     let yv: Vec<f64> = (0..n).map(|i| i as f64).collect();
     let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
-    Chart::new(crate::html::js_3d::render_funnel3d_html(
+    Chart::new(crate::plot::statistical::_3d::render_funnel3d_html(
         title, &xv, &yv, &values[..n],
         ("", "Stage", "Value"), &cv, &labels[..n].to_vec(), width, height, bg_color,
     ))
@@ -1434,7 +1434,7 @@ pub fn build_sunburst3d_chart(
         cv.push(i as f64);
         cl.push(labels[i].clone());
     }
-    Chart::new(crate::html::js_3d::render_sunburst3d_html(
+    Chart::new(crate::plot::statistical::_3d::render_sunburst3d_html(
         title, &xv, &yv, &zv,
         ("", "Ring", "Value"), &cv, &cl, width, height, bg_color,
     ))
@@ -1478,7 +1478,7 @@ pub fn build_stacked_bar3d_chart(
             cl.push(format!("{}/{}", category_labels[ci], series_names[si]));
         }
     }
-    Chart::new(crate::html::js_3d::render_stacked_bar3d_html(
+    Chart::new(crate::plot::statistical::_3d::render_stacked_bar3d_html(
         title, &xv, &yv, &zv,
         ("Category", "Series", "Value"), &cv, &series_names, width, height, bg_color,
     ))
@@ -1500,7 +1500,7 @@ pub fn build_globe3d_chart(
     let n = latitudes.len().min(longitudes.len()).min(values.len());
     let cl = labels.unwrap_or_else(|| (0..n).map(|i| format!("Point {}", i + 1)).collect());
     let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
-    Chart::new(crate::html::js_3d::render_globe3d_html(
+    Chart::new(crate::plot::map::_3d::render_globe3d_html(
         title, &longitudes[..n], &latitudes[..n], &values[..n],
         ("Longitude", "Latitude", "Value"), &cv, &cl, width, height, bg_color,
     ))
