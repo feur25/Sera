@@ -27,7 +27,7 @@ impl<'a> Default for RidgelineConfig<'a> {
             bandwidth: 0.0,
             width: 900,
             height: 520,
-            n_points: 200,
+            n_points: 60,
         }
     }
 }
@@ -59,13 +59,16 @@ pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
     let x1 = x_max + x_pad;
     let xr = x1 - x0;
 
-    let n_pts = cfg.n_points.max(80);
+    let n_pts = cfg.n_points.max(40);
     let xs: Vec<f64> = (0..n_pts).map(|i| x0 + xr * i as f64 / (n_pts - 1) as f64).collect();
 
     let curves: Vec<Vec<f64>> = group_vals.iter().map(|vals| {
         if vals.is_empty() { return vec![0.0; n_pts]; }
-        let bw = if cfg.bandwidth > 0.0 { cfg.bandwidth } else { scott_bw(vals).max(1e-12) };
-        xs.iter().map(|&x| kde_eval(vals, x, bw)).collect()
+        let cap = 40usize;
+        let step = if vals.len() > cap { (vals.len() + cap - 1) / cap } else { 1 };
+        let sampled: Vec<f64> = if step > 1 { vals.iter().step_by(step).copied().collect() } else { vals.to_vec() };
+        let bw = if cfg.bandwidth > 0.0 { cfg.bandwidth } else { scott_bw(&sampled).max(1e-12) };
+        xs.iter().map(|&x| kde_eval(&sampled, x, bw) * step as f64).collect()
     }).collect();
 
     let global_max = curves.iter().flat_map(|c| c.iter().copied()).fold(0.0_f64, f64::max).max(1e-12);

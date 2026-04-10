@@ -1029,7 +1029,7 @@ pub fn build_lollipop3d_chart(
 pub fn build_kde_chart(
     title: &str,
     values: &PyAny,
-    categories: Option<Vec<String>>,
+    categories: Option<&PyAny>,
     palette: Option<Vec<u32>>,
     filled: bool,
     fill_opacity: u8,
@@ -1042,12 +1042,10 @@ pub fn build_kde_chart(
 ) -> PyResult<Chart> {
     use crate::plot::statistical::{KdeConfig, render_kde_html};
     let pal = parse_palette(palette);
-    let cats = categories.unwrap_or_default();
     let (vals, step) = fast_f64(values, 100)?;
 
-    let series: Vec<(String, Vec<f64>)> = if cats.is_empty() {
-        vec![("Series".to_string(), vals)]
-    } else {
+    let series: Vec<(String, Vec<f64>)> = if let Some(cat_any) = categories {
+        let (cats, _) = fast_labels_py(cat_any, 100)?;
         let sampled_cats = fast_labels(cats, step);
         let mut group_order: Vec<String> = Vec::new();
         let mut group_vals: std::collections::HashMap<String, Vec<f64>> = std::collections::HashMap::new();
@@ -1059,6 +1057,8 @@ pub fn build_kde_chart(
             let v = group_vals.remove(&k).unwrap_or_default();
             (k, v)
         }).collect()
+    } else {
+        vec![("Series".to_string(), vals)]
     };
     Ok(Chart::new(render_kde_html(&KdeConfig {
         title, series: &series, palette: &pal, x_label, y_label,
@@ -1132,22 +1132,24 @@ pub fn build_kde3d_chart(
 #[pyo3(signature = (title, values, categories, overlap=0.5f64, palette=None, x_label="", bandwidth=0.0f64, width=900, height=520))]
 pub fn build_ridgeline_chart(
     title: &str,
-    values: Vec<f64>,
-    categories: Vec<String>,
+    values: &PyAny,
+    categories: &PyAny,
     overlap: f64,
     palette: Option<Vec<u32>>,
     x_label: &str,
     bandwidth: f64,
     width: i32,
     height: i32,
-) -> Chart {
+) -> PyResult<Chart> {
     use crate::plot::statistical::{RidgelineConfig, render_ridgeline_html};
     let pal = parse_palette(palette);
-    Chart::new(render_ridgeline_html(&RidgelineConfig {
-        title, values: &values, categories: &categories, palette: &pal,
+    let (vals, _) = fast_f64(values, 200)?;
+    let (cats, _) = fast_labels_py(categories, 200)?;
+    Ok(Chart::new(render_ridgeline_html(&RidgelineConfig {
+        title, values: &vals, categories: &cats, palette: &pal,
         x_label, overlap, bandwidth, width, height,
         ..RidgelineConfig::default()
-    }))
+    })))
 }
 
 #[cfg(feature = "python")]
@@ -1155,49 +1157,54 @@ pub fn build_ridgeline_chart(
 #[pyo3(signature = (title, values, categories, x_label="", y_label="Category", z_label="Density", width=900, height=560))]
 pub fn build_ridgeline3d_chart(
     title: &str,
-    values: Vec<f64>,
-    categories: Vec<String>,
+    values: &PyAny,
+    categories: &PyAny,
     x_label: &str,
     y_label: &str,
     z_label: &str,
     width: i32,
     height: i32,
-) -> Chart {
+) -> PyResult<Chart> {
     use crate::plot::statistical::kde::{scott_bw, kde_eval};
+    let (vals, _) = fast_f64(values, 200)?;
+    let (cats, _) = fast_labels_py(categories, 200)?;
     let mut group_order: Vec<String> = Vec::new();
     let mut group_vals: std::collections::HashMap<String, Vec<f64>> = std::collections::HashMap::new();
-    for (v, c) in values.iter().zip(categories.iter()) {
+    for (v, c) in vals.iter().zip(cats.iter()) {
         group_vals.entry(c.clone()).or_default().push(*v);
         if !group_order.contains(c) { group_order.push(c.clone()); }
     }
-    if group_order.is_empty() { return Chart::new(String::new()); }
-    let xmin = values.iter().cloned().fold(f64::INFINITY, f64::min);
-    let xmax = values.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    if group_order.is_empty() { return Ok(Chart::new(String::new())); }
+    let xmin = vals.iter().cloned().fold(f64::INFINITY, f64::min);
+    let xmax = vals.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
     let pad = (xmax - xmin).max(1.0) * 0.12;
     let lo = xmin - pad;
     let hi = xmax + pad;
-    let n_pts: usize = 120;
+    let n_pts: usize = 60;
     let mut xv = Vec::new();
     let mut yv = Vec::new();
     let mut zv = Vec::new();
     let mut cv = Vec::new();
     for (gi, name) in group_order.iter().enumerate() {
-        let vals = group_vals.get(name).map(|v| v.as_slice()).unwrap_or(&[]);
-        let bw = scott_bw(vals);
+        let gvals = group_vals.get(name).map(|v| v.as_slice()).unwrap_or(&[]);
+        let cap = 40usize;
+        let step = if gvals.len() > cap { (gvals.len() + cap - 1) / cap } else { 1 };
+        let sampled: Vec<f64> = if step > 1 { gvals.iter().step_by(step).copied().collect() } else { gvals.to_vec() };
+        let bw = scott_bw(&sampled);
         for k in 0..n_pts {
             let t = lo + (hi - lo) * k as f64 / (n_pts - 1).max(1) as f64;
-            let d = kde_eval(vals, t, bw);
+            let d = kde_eval(&sampled, t, bw) * step as f64;
             xv.push(t);
             yv.push(gi as f64);
             zv.push(d);
             cv.push(gi as f64);
         }
     }
-    Chart::new(crate::html::js_3d::render_ridgeline3d_html(
+    Ok(Chart::new(crate::html::js_3d::render_ridgeline3d_html(
         title, &xv, &yv, &zv,
         (x_label, y_label, z_label),
         &cv, &group_order, width, height, None,
-    ))
+    )))
 }
 
 #[cfg(feature = "python")]
