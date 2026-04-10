@@ -5,12 +5,24 @@ use pyo3::prelude::*;
 use crate::Chart;
 
 #[cfg(feature = "python")]
+use pyo3::types::PyList;
+
+#[cfg(feature = "python")]
 fn parse_palette(palette: Option<Vec<u32>>) -> Vec<u32> {
     palette.unwrap_or_default()
 }
 
 #[cfg(feature = "python")]
+fn coerce_pyany<'a>(data: &'a PyAny) -> &'a PyAny {
+    use pyo3::types::PyList;
+    if data.downcast::<PyList>().is_ok() { return data; }
+    if let Ok(lst) = data.call_method0("tolist") { return lst; }
+    data
+}
+
+#[cfg(feature = "python")]
 fn fast_f64(data: &PyAny, cap: usize) -> PyResult<(Vec<f64>, usize)> {
+    let data = coerce_pyany(data);
     use pyo3::types::PyList;
     if let Ok(lst) = data.downcast::<PyList>() {
         let n = lst.len();
@@ -43,6 +55,7 @@ fn fast_labels(labels: Vec<String>, step: usize) -> Vec<String> {
 
 #[cfg(feature = "python")]
 fn fast_labels_py(data: &PyAny, cap: usize) -> PyResult<(Vec<String>, usize)> {
+    let data = coerce_pyany(data);
     use pyo3::types::PyList;
     if let Ok(lst) = data.downcast::<PyList>() {
         let n = lst.len();
@@ -1650,4 +1663,138 @@ pub fn build_parallel(
         palette: &pal, width, height,
         ..ParallelConfig::default()
     }))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (charts, cols=2, gap=16, bg=None, cell_height=520))]
+pub fn build_grid(
+    charts: Vec<PyRef<Chart>>,
+    cols: usize,
+    gap: i32,
+    bg: Option<&str>,
+    cell_height: i32,
+) -> Chart {
+    let bg_color = bg.unwrap_or("#f0f2f5");
+    let cols = cols.max(1);
+    let mut buf = format!(
+        "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><style>\
+        *{{box-sizing:border-box}}body{{margin:0;padding:{gap}px;background:{bg_color}}}\
+        .spg{{display:grid;grid-template-columns:repeat({cols},1fr);gap:{gap}px}}\
+        .spg-c iframe{{width:100%;height:{cell_height}px;border:none;display:block;\
+        border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07)}}\
+        </style></head><body><div class=\"spg\">"
+    );
+    for c in charts.iter() {
+        let esc = c.html.replace('&', "&amp;").replace('"', "&quot;");
+        buf.push_str("<div class=\"spg-c\"><iframe srcdoc=\"");
+        buf.push_str(&esc);
+        buf.push_str("\"></iframe></div>");
+    }
+    buf.push_str("</div></body></html>");
+    Chart::new(buf)
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (charts, interval_ms=2500, title="", width=900, height=520))]
+pub fn build_slideshow(
+    charts: Vec<PyRef<Chart>>,
+    interval_ms: u32,
+    title: &str,
+    width: i32,
+    height: i32,
+) -> Chart {
+    if charts.is_empty() { return Chart::new(String::new()); }
+    let svgs: Vec<String> = charts.iter().map(|c| {
+        let h = &c.html;
+        let start = h.find("<svg").unwrap_or(0);
+        let end = h.rfind("</svg>").map(|i| i + 6).unwrap_or(h.len());
+        if start < end { h[start..end].to_string() }
+        else { "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\"></svg>".to_string() }
+    }).collect();
+    let json_array = format!("[{}]", svgs.iter()
+        .map(|s| serde_json::to_string(s).unwrap_or_else(|_| "\"\"".to_string()))
+        .collect::<Vec<_>>().join(","));
+    let n = charts.len();
+    let ivms = interval_ms;
+    let title_html = if title.is_empty() { String::new() } else {
+        format!("<div style=\"color:#1e293b;font-family:system-ui;font-size:22px;font-weight:700;text-align:center;margin-bottom:16px\">{}</div>", title)
+    };
+    Chart::new(format!(
+        "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><style>\
+        body{{margin:0;padding:24px;background:#f0f2f5;display:flex;flex-direction:column;align-items:center;font-family:system-ui}}\
+        .sp-frm{{border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.1);background:#fff}}\
+        .sp-frm svg{{width:{width}px;height:{height}px;display:block}}\
+        .sp-ctrl{{display:flex;gap:10px;margin-top:14px;align-items:center}}\
+        .sp-btn{{cursor:pointer;background:#6366f1;color:#fff;border:none;border-radius:8px;padding:7px 20px;font-size:14px;font-weight:600}}\
+        .sp-btn:hover{{background:#4f46e5}}\
+        .sp-ctr{{color:#64748b;font-size:13px;min-width:64px;text-align:center}}\
+        .sp-prog{{width:{width}px;height:4px;background:#e2e8f0;border-radius:2px;margin-top:10px;overflow:hidden}}\
+        .sp-bar{{height:100%;background:#6366f1;border-radius:2px;width:0%}}\
+        </style></head><body>\
+        {title_html}\
+        <div class=\"sp-frm\" id=\"sp-frm\"></div>\
+        <div class=\"sp-ctrl\">\
+        <button class=\"sp-btn\" id=\"sp-p\">&#9664;</button>\
+        <div class=\"sp-ctr\" id=\"sp-c\">1 / {n}</div>\
+        <button class=\"sp-btn\" id=\"sp-n\">&#9654;</button>\
+        </div>\
+        <div class=\"sp-prog\"><div class=\"sp-bar\" id=\"sp-b\"></div></div>\
+        <script type=\"application/json\" id=\"sp-d\">{json_array}</script>\
+        <script>\
+        const frames=JSON.parse(document.getElementById('sp-d').textContent);\
+        let idx=0,timer;\
+        function show(i){{idx=((i%frames.length)+frames.length)%frames.length;\
+          document.getElementById('sp-frm').innerHTML=frames[idx];\
+          document.getElementById('sp-c').textContent=(idx+1)+' / '+frames.length;\
+          const b=document.getElementById('sp-b');\
+          b.style.transition='none';b.style.width='0%';\
+          setTimeout(()=>{{b.style.transition='width {ivms}ms linear';b.style.width='100%';}},20);}}\
+        function play(){{clearInterval(timer);timer=setInterval(()=>{{show(idx+1);}},{ivms});}}\
+        show(0);play();\
+        document.getElementById('sp-p').onclick=()=>{{clearInterval(timer);show(idx-1);play();}};\
+        document.getElementById('sp-n').onclick=()=>{{clearInterval(timer);show(idx+1);play();}};\
+        </script></body></html>"
+    ))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+pub fn build_hover_json(
+    labels: Vec<String>,
+    images: Option<Vec<Option<String>>>,
+    descriptions: Option<&PyAny>,
+) -> PyResult<String> {
+    use crate::html::hover::{HoverSlot, slots_to_json};
+    let mut slots = Vec::new();
+    let n = labels.len();
+    
+    for i in 0..n {
+        let mut slot = HoverSlot::new(&labels.get(i).cloned().unwrap_or_default());
+        
+        // Add image if provided
+        if let Some(ref imgs) = images {
+            if i < imgs.len() {
+                if let Some(ref img_url) = imgs[i] {
+                    slot = slot.image(img_url.clone());
+                }
+            }
+        }
+        
+        // Add descriptions (key-value pairs) if provided
+        if let Some(descs_py) = descriptions {
+            if let Ok(descs_list) = descs_py.extract::<Vec<Vec<(String, String)>>>() {
+                if i < descs_list.len() {
+                    for (k, v) in &descs_list[i] {
+                        slot = slot.kv(k.clone(), v.clone());
+                    }
+                }
+            }
+        }
+        
+        slots.push(slot);
+    }
+    
+    Ok(slots_to_json(&slots))
 }

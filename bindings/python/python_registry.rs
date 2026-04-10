@@ -77,6 +77,10 @@ pub fn register_submodules(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(build_bubble, m)?)?;
     m.add_function(wrap_pyfunction!(build_gauge, m)?)?;
     m.add_function(wrap_pyfunction!(build_parallel, m)?)?;
+    m.add_function(wrap_pyfunction!(build_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(build_slideshow, m)?)?;
+    
+    m.add_function(wrap_pyfunction!(build_hover_json, m)?)?;
     
     Ok(())
 }

@@ -68,7 +68,7 @@ pub fn svg_title(buf: &mut Vec<u8>, title: &str, cx: i32, y: i32) {
     if title.is_empty() { return; }
     push_b(buf, b"<text x=\""); push_i(buf, cx);
     push_b(buf, b"\" y=\""); push_i(buf, y);
-    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\">");
+    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\" class=\"sp-ttl\">");
     escape_xml(buf, title);
     push_b(buf, b"</text>");
 }

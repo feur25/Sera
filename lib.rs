@@ -135,6 +135,60 @@ impl Chart {
             html: self.html.replacen("</head>", "<style>.sp-gl{display:none!important}</style></head>", 1),
         }
     }
+
+    fn no_legend(&self) -> Chart {
+        Chart {
+            html: self.html.replacen("</head>", "<style>g[data-legend]{display:none!important}</style></head>", 1),
+        }
+    }
+
+    fn no_title(&self) -> Chart {
+        Chart {
+            html: self.html.replacen("</head>", "<style>.sp-ttl{display:none!important}</style></head>", 1),
+        }
+    }
+
+    #[pyo3(signature = (px))]
+    fn set_font_size(&self, px: u32) -> Chart {
+        let style = format!("<style>svg text{{font-size:{}px!important}}</style></head>", px);
+        Chart { html: self.html.replacen("</head>", &style, 1) }
+    }
+
+    #[pyo3(signature = (factor))]
+    fn scale(&self, factor: f64) -> Chart {
+        let style = format!("<style>svg{{transform:scale({});transform-origin:top left}}</style></head>", factor);
+        Chart { html: self.html.replacen("</head>", &style, 1) }
+    }
+
+    fn to_svg(&self) -> PyResult<String> {
+        let h = &self.html;
+        let start = h.find("<svg").ok_or_else(|| pyo3::exceptions::PyValueError::new_err("No SVG in chart"))?;
+        let end = h.rfind("</svg>").ok_or_else(|| pyo3::exceptions::PyValueError::new_err("Malformed SVG"))? + 6;
+        Ok(h[start..end].to_string())
+    }
+
+    #[pyo3(signature = (path))]
+    fn export_svg(&self, path: &str) -> PyResult<()> {
+        let svg = self.to_svg()?;
+        std::fs::write(path, svg).map_err(|e| pyo3::exceptions::PyOSError::new_err(e.to_string()))
+    }
+
+    #[pyo3(signature = (path, scale=2.0))]
+    fn export_png(&self, py: Python<'_>, path: &str, scale: f64) -> PyResult<()> {
+        let svg = self.to_svg()?;
+        match py.import("cairosvg") {
+            Ok(m) => {
+                let kwargs = pyo3::types::PyDict::new(py);
+                kwargs.set_item("write_to", path)?;
+                kwargs.set_item("scale", scale)?;
+                m.call_method("svg2png", (svg.as_str(),), Some(kwargs))?;
+                Ok(())
+            }
+            Err(_) => Err(pyo3::exceptions::PyImportError::new_err(
+                "PNG export requires cairosvg: pip install cairosvg"
+            ))
+        }
+    }
 }
 
 #[cfg(feature = "python")]
