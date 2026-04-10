@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_open, svg_title, svg_axis_lines, svg_y_label, svg_x_label};
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_axis_lines, Frame};
 use crate::html::hover::build_chart_html;
 
 pub struct ViolinConfig<'a> {
@@ -68,44 +68,40 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
     let global_max = cfg.values.iter().copied().fold(f64::NEG_INFINITY, f64::max);
     let range = (global_max - global_min).max(1e-12);
 
-    let pad_l: i32 = 60;
-    let pad_t: i32 = 46;
-    let pad_b: i32 = 52;
-    let plot_w = cfg.width - pad_l - 20;
-    let plot_h = cfg.height - pad_t - pad_b;
-    let col_w = plot_w / n_cats as i32;
+    let mut f = Frame::new(cfg.width, cfg.height, 60, 46, 52, 20, n_cats * 600 + 2048);
+    let col_w = f.pw / n_cats as i32;
     let violin_half = (col_w as f64 * 0.38) as i32;
+    let f_pt = f.pt;
+    let f_ph = f.ph;
 
     let val_to_y = |v: f64| -> i32 {
-        pad_t + ((1.0 - (v - global_min) / range) * plot_h as f64) as i32
+        f_pt + ((1.0 - (v - global_min) / range) * f_ph as f64) as i32
     };
 
-    let mut b = Vec::<u8>::with_capacity(n_cats * 600 + 2048);
-    svg_open(&mut b, cfg.width, cfg.height);
-    svg_title(&mut b, cfg.title, cfg.width / 2, 26);
+    f.open(cfg.title, false);
 
     let n_yticks: i32 = 6;
     for ti in 0..=n_yticks {
         let frac = ti as f64 / n_yticks as f64;
         let v = global_min + frac * range;
-        let y = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
+        let y = f.pt + ((1.0 - frac) * f.ph as f64) as i32;
         if cfg.gridlines && ti > 0 {
-            push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
-            push_b(&mut b, b"\" y1=\""); push_i(&mut b, y);
-            push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
-            push_b(&mut b, b"\" y2=\""); push_i(&mut b, y);
-            push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
+            push_b(&mut f.buf, b"<line x1=\""); push_i(&mut f.buf, f.pl);
+            push_b(&mut f.buf, b"\" y1=\""); push_i(&mut f.buf, y);
+            push_b(&mut f.buf, b"\" x2=\""); push_i(&mut f.buf, f.pl + f.pw);
+            push_b(&mut f.buf, b"\" y2=\""); push_i(&mut f.buf, y);
+            push_b(&mut f.buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
         }
-        push_b(&mut b, b"<text x=\""); push_i(&mut b, pad_l - 4);
-        push_b(&mut b, b"\" y=\""); push_i(&mut b, y + 4);
-        push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
-        if v.abs() >= 1_000_000.0 { push_f2(&mut b, v / 1_000_000.0); push_b(&mut b, b"M"); }
-        else if v.abs() >= 1000.0 { push_i(&mut b, v as i32); }
-        else { push_f2(&mut b, v); }
-        push_b(&mut b, b"</text>");
+        push_b(&mut f.buf, b"<text x=\""); push_i(&mut f.buf, f.pl - 4);
+        push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, y + 4);
+        push_b(&mut f.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+        if v.abs() >= 1_000_000.0 { push_f2(&mut f.buf, v / 1_000_000.0); push_b(&mut f.buf, b"M"); }
+        else if v.abs() >= 1000.0 { push_i(&mut f.buf, v as i32); }
+        else { push_f2(&mut f.buf, v); }
+        push_b(&mut f.buf, b"</text>");
     }
 
-    svg_axis_lines(&mut b, pad_l, pad_t, plot_w, plot_h);
+    svg_axis_lines(&mut f.buf, f.pl, f.pt, f.pw, f.ph);
 
     for (ci, cat) in cat_set.iter().enumerate() {
         let vals = &cat_vals[ci];
@@ -118,7 +114,7 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
             .sum::<f64>().sqrt()
             / (n_v as f64).powf(0.2)
             .max(range * 0.05);
-        let cx = pad_l + ci as i32 * col_w + col_w / 2;
+        let cx = f.pl + ci as i32 * col_w + col_w / 2;
         let n_steps = 40usize;
         let color = palette_color(cfg.palette, ci);
         let hx = hex6(color);
@@ -138,20 +134,20 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
             pts_r.push((cx + w, y));
             pts_l.push((cx - w, y));
         }
-        push_b(&mut b, b"<path data-idx=\"");
-        push_i(&mut b, ci as i32);
-        push_b(&mut b, b"\" data-lbl=\""); escape_xml(&mut b, cat);
-        push_b(&mut b, b"\" d=\"M ");
-        push_i(&mut b, pts_r[0].0); b.push(b' '); push_i(&mut b, pts_r[0].1);
+        push_b(&mut f.buf, b"<path data-idx=\"");
+        push_i(&mut f.buf, ci as i32);
+        push_b(&mut f.buf, b"\" data-lbl=\""); escape_xml(&mut f.buf, cat);
+        push_b(&mut f.buf, b"\" d=\"M ");
+        push_i(&mut f.buf, pts_r[0].0); f.buf.push(b' '); push_i(&mut f.buf, pts_r[0].1);
         for (px, py) in &pts_r[1..] {
-            push_b(&mut b, b" L "); push_i(&mut b, *px); b.push(b' '); push_i(&mut b, *py);
+            push_b(&mut f.buf, b" L "); push_i(&mut f.buf, *px); f.buf.push(b' '); push_i(&mut f.buf, *py);
         }
         for (px, py) in pts_l.iter().rev() {
-            push_b(&mut b, b" L "); push_i(&mut b, *px); b.push(b' '); push_i(&mut b, *py);
+            push_b(&mut f.buf, b" L "); push_i(&mut f.buf, *px); f.buf.push(b' '); push_i(&mut f.buf, *py);
         }
-        push_b(&mut b, b" Z\" fill=\"#"); b.extend_from_slice(&hx);
-        push_b(&mut b, b"\" opacity=\"0.7\" stroke=\"#"); b.extend_from_slice(&hx);
-        push_b(&mut b, b"\" stroke-width=\"1\"/>");
+        push_b(&mut f.buf, b" Z\" fill=\"#"); f.buf.extend_from_slice(&hx);
+        push_b(&mut f.buf, b"\" opacity=\"0.7\" stroke=\"#"); f.buf.extend_from_slice(&hx);
+        push_b(&mut f.buf, b"\" stroke-width=\"1\"/>");
         let q1 = percentile(&sorted, 0.25);
         let q3 = percentile(&sorted, 0.75);
         let med = percentile(&sorted, 0.5);
@@ -159,28 +155,26 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
         let y_q1 = val_to_y(q1);
         let y_q3 = val_to_y(q3);
         let y_med = val_to_y(med);
-        push_b(&mut b, b"<rect x=\""); push_i(&mut b, cx - iqr_half_w);
-        push_b(&mut b, b"\" y=\""); push_i(&mut b, y_q3);
-        push_b(&mut b, b"\" width=\""); push_i(&mut b, iqr_half_w * 2);
-        push_b(&mut b, b"\" height=\""); push_i(&mut b, (y_q1 - y_q3).abs().max(2));
-        push_b(&mut b, b"\" fill=\"#fff\" opacity=\"0.75\" rx=\"2\"/>");
-        push_b(&mut b, b"<line x1=\""); push_i(&mut b, cx - iqr_half_w);
-        push_b(&mut b, b"\" y1=\""); push_i(&mut b, y_med);
-        push_b(&mut b, b"\" x2=\""); push_i(&mut b, cx + iqr_half_w);
-        push_b(&mut b, b"\" y2=\""); push_i(&mut b, y_med);
-        push_b(&mut b, b"\" stroke=\"#1a202c\" stroke-width=\"2\"/>");
-        push_b(&mut b, b"<text x=\""); push_i(&mut b, cx);
-        push_b(&mut b, b"\" y=\""); push_i(&mut b, pad_t + plot_h + 14);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">");
+        push_b(&mut f.buf, b"<rect x=\""); push_i(&mut f.buf, cx - iqr_half_w);
+        push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, y_q3);
+        push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, iqr_half_w * 2);
+        push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, (y_q1 - y_q3).abs().max(2));
+        push_b(&mut f.buf, b"\" fill=\"#fff\" opacity=\"0.75\" rx=\"2\"/>");
+        push_b(&mut f.buf, b"<line x1=\""); push_i(&mut f.buf, cx - iqr_half_w);
+        push_b(&mut f.buf, b"\" y1=\""); push_i(&mut f.buf, y_med);
+        push_b(&mut f.buf, b"\" x2=\""); push_i(&mut f.buf, cx + iqr_half_w);
+        push_b(&mut f.buf, b"\" y2=\""); push_i(&mut f.buf, y_med);
+        push_b(&mut f.buf, b"\" stroke=\"#1a202c\" stroke-width=\"2\"/>");
+        push_b(&mut f.buf, b"<text x=\""); push_i(&mut f.buf, cx);
+        push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, f.pt + f.ph + 14);
+        push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">");
         let short = if cat.len() > 10 { &cat[..10] } else { cat };
-        escape_xml(&mut b, short);
-        push_b(&mut b, b"</text>");
+        escape_xml(&mut f.buf, short);
+        push_b(&mut f.buf, b"</text>");
     }
 
-    svg_y_label(&mut b, cfg.y_label, 14, pad_t, plot_h);
-    svg_x_label(&mut b, cfg.x_label, pad_l + plot_w / 2, cfg.height - 4);
+    f.axes(cfg.x_label, cfg.y_label);
 
-    push_b(&mut b, b"</svg>");
-    let svg = unsafe { String::from_utf8_unchecked(b) };
+    let svg = f.svg();
     build_chart_html(cfg.title, &svg, "[]")
 }

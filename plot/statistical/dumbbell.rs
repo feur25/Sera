@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_open_rescalable, svg_title, svg_hgrid, svg_vgrid, svg_tick_y, svg_tick_x, svg_axis_lines, svg_x_label, svg_y_label, svg_legend_item};
+use super::common::{push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
 use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
 
 pub struct DumbbellConfig<'a> {
@@ -46,75 +46,55 @@ pub fn render_dumbbell_html(cfg: &DumbbellConfig) -> String {
     let c1 = if !cfg.palette.is_empty() { cfg.palette[0] } else { 0x6366F1 };
     let c2 = if cfg.palette.len() >= 2 { cfg.palette[1] } else { 0x22D3EE };
 
-    let pad_l: i32 = 132;
-    let pad_t: i32 = 38;
-    let pad_b: i32 = 52;
-    let pad_r: i32 = 20;
-    let plot_w = cfg.width - pad_l - pad_r;
-    let plot_h = cfg.height - pad_t - pad_b;
+    let mut f = Frame::new(cfg.width, cfg.height, 132, 38, 52, 20, n * 400 + 2048);
+    f.open(cfg.title, true);
+    f.x_grid(6, global_min, global_min + val_range, cfg.gridlines);
+    f.axes(cfg.x_label, cfg.y_label);
 
-    let mut buf = Vec::<u8>::with_capacity(n * 400 + 2048);
-    svg_open_rescalable(&mut buf, cfg.width, cfg.height, pad_l, pad_t, plot_w, plot_h);
-    svg_title(&mut buf, cfg.title, pad_l + plot_w / 2, 26);
-
-    let n_xticks = 6i32;
-    for i in 0..=n_xticks {
-        let frac = i as f64 / n_xticks as f64;
-        let x = pad_l + (frac * plot_w as f64) as i32;
-        let val = global_min + frac * val_range;
-        if cfg.gridlines && i > 0 { svg_vgrid(&mut buf, x, pad_t, pad_t + plot_h); }
-        svg_tick_x(&mut buf, x, pad_t + plot_h + 14, val);
-    }
-
-    svg_axis_lines(&mut buf, pad_l, pad_t, plot_w, plot_h);
-    svg_x_label(&mut buf, cfg.x_label, pad_l + plot_w / 2, pad_t + plot_h + 42);
-    svg_y_label(&mut buf, cfg.y_label, 14, pad_t, plot_h);
-
-    let pitch = plot_h as f64 / n as f64;
+    let pitch = f.ph as f64 / n as f64;
     let hx1 = hex6(c1);
     let hx2 = hex6(c2);
 
     for i in 0..n {
-        let cy = pad_t + (i as f64 * pitch + pitch / 2.0) as i32;
-        let x1 = pad_l + (((cfg.values_start[i] - global_min) / val_range) * plot_w as f64) as i32;
-        let x2 = pad_l + (((cfg.values_end[i] - global_min) / val_range) * plot_w as f64) as i32;
+        let cy = f.pt + (i as f64 * pitch + pitch / 2.0) as i32;
+        let x1 = f.pl + (((cfg.values_start[i] - global_min) / val_range) * f.pw as f64) as i32;
+        let x2 = f.pl + (((cfg.values_end[i] - global_min) / val_range) * f.pw as f64) as i32;
 
-        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, pad_l - 6);
-        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, cy + 3);
-        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\">");
-        escape_xml(&mut buf, truncate(&cfg.labels[i], 18));
-        push_b(&mut buf, b"</text>");
+        push_b(&mut f.buf, b"<text x=\""); push_i(&mut f.buf, f.pl - 6);
+        push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, cy + 3);
+        push_b(&mut f.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\">");
+        escape_xml(&mut f.buf, truncate(&cfg.labels[i], 18));
+        push_b(&mut f.buf, b"</text>");
 
-        push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, x1);
-        push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, cy);
-        push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, x2);
-        push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, cy);
-        push_b(&mut buf, b"\" stroke=\"#9ca3af\" stroke-width=\"2\" stroke-linecap=\"round\"/>");
+        push_b(&mut f.buf, b"<line x1=\""); push_i(&mut f.buf, x1);
+        push_b(&mut f.buf, b"\" y1=\""); push_i(&mut f.buf, cy);
+        push_b(&mut f.buf, b"\" x2=\""); push_i(&mut f.buf, x2);
+        push_b(&mut f.buf, b"\" y2=\""); push_i(&mut f.buf, cy);
+        push_b(&mut f.buf, b"\" stroke=\"#9ca3af\" stroke-width=\"2\" stroke-linecap=\"round\"/>");
 
-        push_b(&mut buf, b"<circle data-idx=\""); push_i(&mut buf, (i * 2) as i32);
-        push_b(&mut buf, b"\" data-series=\"0\" data-y=\""); push_f2(&mut buf, cfg.values_start[i]);
-        push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, &cfg.labels[i]);
-        push_b(&mut buf, b" ("); escape_xml(&mut buf, cfg.series_labels.0);
-        push_b(&mut buf, b")\" cx=\""); push_i(&mut buf, x1);
-        push_b(&mut buf, b"\" cy=\""); push_i(&mut buf, cy);
-        push_b(&mut buf, b"\" r=\"6\" fill=\"#"); buf.extend_from_slice(&hx1);
-        push_b(&mut buf, b"\"/>");
+        push_b(&mut f.buf, b"<circle data-idx=\""); push_i(&mut f.buf, (i * 2) as i32);
+        push_b(&mut f.buf, b"\" data-series=\"0\" data-y=\""); push_f2(&mut f.buf, cfg.values_start[i]);
+        push_b(&mut f.buf, b"\" data-lbl=\""); escape_xml(&mut f.buf, &cfg.labels[i]);
+        push_b(&mut f.buf, b" ("); escape_xml(&mut f.buf, cfg.series_labels.0);
+        push_b(&mut f.buf, b")\" cx=\""); push_i(&mut f.buf, x1);
+        push_b(&mut f.buf, b"\" cy=\""); push_i(&mut f.buf, cy);
+        push_b(&mut f.buf, b"\" r=\"6\" fill=\"#"); f.buf.extend_from_slice(&hx1);
+        push_b(&mut f.buf, b"\"/>");
 
-        push_b(&mut buf, b"<circle data-idx=\""); push_i(&mut buf, (i * 2 + 1) as i32);
-        push_b(&mut buf, b"\" data-series=\"1\" data-y=\""); push_f2(&mut buf, cfg.values_end[i]);
-        push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, &cfg.labels[i]);
-        push_b(&mut buf, b" ("); escape_xml(&mut buf, cfg.series_labels.1);
-        push_b(&mut buf, b")\" cx=\""); push_i(&mut buf, x2);
-        push_b(&mut buf, b"\" cy=\""); push_i(&mut buf, cy);
-        push_b(&mut buf, b"\" r=\"6\" fill=\"#"); buf.extend_from_slice(&hx2);
-        push_b(&mut buf, b"\"/>");
+        push_b(&mut f.buf, b"<circle data-idx=\""); push_i(&mut f.buf, (i * 2 + 1) as i32);
+        push_b(&mut f.buf, b"\" data-series=\"1\" data-y=\""); push_f2(&mut f.buf, cfg.values_end[i]);
+        push_b(&mut f.buf, b"\" data-lbl=\""); escape_xml(&mut f.buf, &cfg.labels[i]);
+        push_b(&mut f.buf, b" ("); escape_xml(&mut f.buf, cfg.series_labels.1);
+        push_b(&mut f.buf, b")\" cx=\""); push_i(&mut f.buf, x2);
+        push_b(&mut f.buf, b"\" cy=\""); push_i(&mut f.buf, cy);
+        push_b(&mut f.buf, b"\" r=\"6\" fill=\"#"); f.buf.extend_from_slice(&hx2);
+        push_b(&mut f.buf, b"\"/>");
     }
 
-    svg_legend_item(&mut buf, 0, cfg.series_labels.0, c1, cfg.width - 140, pad_t + 4, 20);
-    svg_legend_item(&mut buf, 1, cfg.series_labels.1, c2, cfg.width - 140, pad_t + 22, 20);
+    svg_legend_item(&mut f.buf, 0, cfg.series_labels.0, c1, cfg.width - 140, f.pt + 4, 20);
+    svg_legend_item(&mut f.buf, 1, cfg.series_labels.1, c2, cfg.width - 140, f.pt + 22, 20);
 
-    push_b(&mut buf, b"</svg>");
-    let svg = unsafe { String::from_utf8_unchecked(buf) };
+    let svg = f.svg();
     let slots_json;
     let json: &str = if cfg.hover.is_empty() { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
     build_chart_html(cfg.title, &svg, json)

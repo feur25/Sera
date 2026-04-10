@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_title, svg_axis_lines, svg_y_label, svg_x_label, svg_legend_item};
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
 use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
 
 pub struct MultiLine;
@@ -51,104 +51,70 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
         .min(0.0);
     let range = (max_val - min_val).max(1e-12);
     let legend_w: i32 = 160;
-    let pad_l: i32 = 56;
-    let pad_t: i32 = 42;
-    let pad_b: i32 = 52;
-    let plot_w = cfg.width - pad_l - legend_w;
-    let plot_h = cfg.height - pad_t - pad_b;
-    let step_x = plot_w as f64 / (n_pts - 1).max(1) as f64;
     let auto_hover = cfg.hover.is_empty();
     let n_total = n_pts * n_ser;
-    let mut b = Vec::<u8>::with_capacity(n_total * 80 + 2048);
-    push_b(&mut b, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
-    push_i(&mut b, cfg.width); push_b(&mut b, b"\" height=\"");
-    push_i(&mut b, cfg.height); push_b(&mut b, b"\" viewBox=\"0 0 ");
-    push_i(&mut b, cfg.width); push_b(&mut b, b" ");
-    push_i(&mut b, cfg.height); push_b(&mut b, b"\" data-sp=\"");
-    push_i(&mut b, pad_l); b.push(b','); push_i(&mut b, pad_t);
-    b.push(b','); push_i(&mut b, plot_w); b.push(b','); push_i(&mut b, plot_h);
-    push_b(&mut b, b"\">");
-    push_b(&mut b, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
-    svg_title(&mut b, cfg.title, (cfg.width - legend_w) / 2 + pad_l, 26);
-    let n_yticks: i32 = 6;
-    for i in 0..=n_yticks {
-        let frac = i as f64 / n_yticks as f64;
-        let y = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
-        let vval = min_val + frac * range;
-        if cfg.gridlines && i > 0 {
-            push_b(&mut b, b"<line x1=\""); push_i(&mut b, pad_l);
-            push_b(&mut b, b"\" y1=\""); push_i(&mut b, y);
-            push_b(&mut b, b"\" x2=\""); push_i(&mut b, pad_l + plot_w);
-            push_b(&mut b, b"\" y2=\""); push_i(&mut b, y);
-            push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\".5\" class=\"sp-gl\"/>");
-        }
-        push_b(&mut b, b"<text x=\""); push_i(&mut b, pad_l - 4);
-        push_b(&mut b, b"\" y=\""); push_i(&mut b, y + 3);
-        push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
-        push_f2(&mut b, vval);
-        push_b(&mut b, b"</text>");
-    }
-    svg_y_label(&mut b, cfg.y_label, 14, pad_t, plot_h);
-    svg_axis_lines(&mut b, pad_l, pad_t, plot_w, plot_h);
+    let mut f = Frame::new(cfg.width, cfg.height, 56, 42, 52, legend_w, n_total * 80 + 2048);
+    let step_x = f.pw as f64 / (n_pts - 1).max(1) as f64;
+    f.open(cfg.title, true);
+    f.y_grid_rc(6, min_val, max_val, cfg.gridlines);
+    f.axes(cfg.x_label, cfg.y_label);
     let tick_step = ((n_pts as f64 / 12.0).ceil() as usize).max(1);
     for i in (0..n_pts).step_by(tick_step) {
-        let x = pad_l + (i as f64 * step_x) as i32;
-        push_b(&mut b, b"<text x=\""); push_i(&mut b, x);
-        push_b(&mut b, b"\" y=\""); push_i(&mut b, pad_t + plot_h + 14);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#6b7280\">");
-        escape_xml(&mut b, truncate(&cfg.x_labels[i], 12));
-        push_b(&mut b, b"</text>");
+        let x = f.pl + (i as f64 * step_x) as i32;
+        push_b(&mut f.buf, b"<text x=\""); push_i(&mut f.buf, x);
+        push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, f.pt + f.ph + 14);
+        push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#6b7280\">");
+        escape_xml(&mut f.buf, truncate(&cfg.x_labels[i], 12));
+        push_b(&mut f.buf, b"</text>");
     }
-    svg_x_label(&mut b, cfg.x_label, pad_l + plot_w / 2, cfg.height - 6);
     for (si, (sname, svals)) in cfg.series.iter().enumerate() {
         let color = palette_color(cfg.palette, si);
         let hx = hex6(color);
         let mut sname_esc = Vec::with_capacity(sname.len() + 8);
         escape_xml(&mut sname_esc, sname);
-        push_b(&mut b, b"<polyline data-series=\""); push_i(&mut b, si as i32);
-        push_b(&mut b, b"\" data-pts=\"");
+        push_b(&mut f.buf, b"<polyline data-series=\""); push_i(&mut f.buf, si as i32);
+        push_b(&mut f.buf, b"\" data-pts=\"");
         for i in 0..n_pts {
             let val = svals.get(i).copied().unwrap_or(0.0);
-            if i > 0 { b.push(b','); }
-            push_f2(&mut b, val);
+            if i > 0 { f.buf.push(b','); }
+            push_f2(&mut f.buf, val);
         }
-        push_b(&mut b, b"\" fill=\"none\" stroke=\"#");
-        b.extend_from_slice(&hx);
-        push_b(&mut b, b"\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" points=\"");
+        push_b(&mut f.buf, b"\" fill=\"none\" stroke=\"#");
+        f.buf.extend_from_slice(&hx);
+        push_b(&mut f.buf, b"\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" points=\"");
         for i in 0..n_pts {
             let val = svals.get(i).copied().unwrap_or(0.0);
             let frac = if val.is_finite() { (val - min_val) / range } else { 0.0 };
-            let x = pad_l + (i as f64 * step_x) as i32;
-            let y = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
-            if i > 0 { b.push(b' '); }
-            push_i(&mut b, x); b.push(b','); push_i(&mut b, y);
+            let x = f.pl + (i as f64 * step_x) as i32;
+            let y = f.pt + ((1.0 - frac) * f.ph as f64) as i32;
+            if i > 0 { f.buf.push(b' '); }
+            push_i(&mut f.buf, x); f.buf.push(b','); push_i(&mut f.buf, y);
         }
-        push_b(&mut b, b"\"/>");
+        push_b(&mut f.buf, b"\"/>");
         if cfg.show_points {
             for i in 0..n_pts {
                 let val = svals.get(i).copied().unwrap_or(0.0);
                 let frac = if val.is_finite() { (val - min_val) / range } else { 0.0 };
-                let x = pad_l + (i as f64 * step_x) as i32;
-                let y = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
+                let x = f.pl + (i as f64 * step_x) as i32;
+                let y = f.pt + ((1.0 - frac) * f.ph as f64) as i32;
                 let idx = (si * n_pts + i) as i32;
-                push_b(&mut b, b"<circle data-series=\""); push_i(&mut b, si as i32);
-                push_b(&mut b, b"\" data-idx=\""); push_i(&mut b, idx);
-                push_b(&mut b, b"\" data-y=\""); push_f2(&mut b, val);
-                push_b(&mut b, b"\" data-lbl=\""); b.extend_from_slice(&sname_esc);
-                push_b(&mut b, b"\" cx=\""); push_i(&mut b, x);
-                push_b(&mut b, b"\" cy=\""); push_i(&mut b, y);
-                push_b(&mut b, b"\" r=\"3\" fill=\"#"); b.extend_from_slice(&hx);
-                push_b(&mut b, b"\" stroke=\"#fff\" stroke-width=\"1\"/>");
+                push_b(&mut f.buf, b"<circle data-series=\""); push_i(&mut f.buf, si as i32);
+                push_b(&mut f.buf, b"\" data-idx=\""); push_i(&mut f.buf, idx);
+                push_b(&mut f.buf, b"\" data-y=\""); push_f2(&mut f.buf, val);
+                push_b(&mut f.buf, b"\" data-lbl=\""); f.buf.extend_from_slice(&sname_esc);
+                push_b(&mut f.buf, b"\" cx=\""); push_i(&mut f.buf, x);
+                push_b(&mut f.buf, b"\" cy=\""); push_i(&mut f.buf, y);
+                push_b(&mut f.buf, b"\" r=\"3\" fill=\"#"); f.buf.extend_from_slice(&hx);
+                push_b(&mut f.buf, b"\" stroke=\"#fff\" stroke-width=\"1\"/>");
             }
         }
     }
     let leg_x = cfg.width - legend_w + 14;
     for (si, (sname, _)) in cfg.series.iter().enumerate() {
         let color = palette_color(cfg.palette, si);
-        svg_legend_item(&mut b, si as i32, sname, color, leg_x, pad_t + 6 + si as i32 * 18, 18);
+        svg_legend_item(&mut f.buf, si as i32, sname, color, leg_x, f.pt + 6 + si as i32 * 18, 18);
     }
-    push_b(&mut b, b"</svg>");
-    let svg = unsafe { String::from_utf8_unchecked(b) };
+    let svg = f.svg();
     let slots_json;
     let json: &str = if auto_hover { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
     build_chart_html(cfg.title, &svg, json)

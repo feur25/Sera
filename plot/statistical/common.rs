@@ -272,3 +272,104 @@ pub fn lerp_color(t: f64, low: u32, mid: u32, high: u32) -> u32 {
     };
     (lerp_ch(16) << 16) | (lerp_ch(8) << 8) | lerp_ch(0)
 }
+
+pub struct Frame {
+    pub buf: Vec<u8>,
+    pub w: i32,
+    pub h: i32,
+    pub pl: i32,
+    pub pt: i32,
+    pub pw: i32,
+    pub ph: i32,
+}
+
+impl Frame {
+    #[inline]
+    pub fn new(w: i32, h: i32, pl: i32, pt: i32, pb: i32, pr: i32, cap: usize) -> Self {
+        Self { buf: Vec::with_capacity(cap), w, h, pl, pt, pw: w - pl - pr, ph: h - pt - pb }
+    }
+
+    pub fn open(&mut self, title: &str, rescalable: bool) {
+        if rescalable {
+            svg_open_rescalable(&mut self.buf, self.w, self.h, self.pl, self.pt, self.pw, self.ph);
+        } else {
+            svg_open(&mut self.buf, self.w, self.h);
+        }
+        svg_title(&mut self.buf, title, self.pl + self.pw / 2, 26);
+    }
+
+    pub fn y_grid(&mut self, n: i32, y_min: f64, y_max: f64, grid: bool) {
+        let rng = y_max - y_min;
+        for i in 0..=n {
+            let f = i as f64 / n as f64;
+            let y = self.pt + ((1.0 - f) * self.ph as f64) as i32;
+            let v = y_min + f * rng;
+            if grid && i > 0 { svg_hgrid(&mut self.buf, self.pl, self.pl + self.pw, y); }
+            svg_tick_y(&mut self.buf, self.pl - 4, y + 4, v);
+        }
+    }
+
+    /// Y-grid + ticks with CSS classes sp-gl / sp-yt for spRescale
+    pub fn y_grid_rc(&mut self, n: i32, y_min: f64, y_max: f64, grid: bool) {
+        let rng = y_max - y_min;
+        for i in 0..=n {
+            let f = i as f64 / n as f64;
+            let y = self.pt + ((1.0 - f) * self.ph as f64) as i32;
+            let v = y_min + f * rng;
+            if grid && i > 0 {
+                push_b(&mut self.buf, b"<line x1=\""); push_i(&mut self.buf, self.pl);
+                push_b(&mut self.buf, b"\" y1=\""); push_i(&mut self.buf, y);
+                push_b(&mut self.buf, b"\" x2=\""); push_i(&mut self.buf, self.pl + self.pw);
+                push_b(&mut self.buf, b"\" y2=\""); push_i(&mut self.buf, y);
+                push_b(&mut self.buf, b"\" stroke=\"#e2e8f0\" stroke-width=\".5\" class=\"sp-gl\"/>");
+            }
+            push_b(&mut self.buf, b"<text x=\""); push_i(&mut self.buf, self.pl - 4);
+            push_b(&mut self.buf, b"\" y=\""); push_i(&mut self.buf, y + 3);
+            push_b(&mut self.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
+            push_f2(&mut self.buf, v);
+            push_b(&mut self.buf, b"</text>");
+        }
+    }
+
+    pub fn y_grid_int(&mut self, n: i32, max_count: f64, grid: bool) {
+        for i in 0..=n {
+            let f = i as f64 / n as f64;
+            let y = self.pt + ((1.0 - f) * self.ph as f64) as i32;
+            let v = (f * max_count).round() as i32;
+            if grid && i > 0 { svg_hgrid(&mut self.buf, self.pl, self.pl + self.pw, y); }
+            push_b(&mut self.buf, b"<text x=\""); push_i(&mut self.buf, self.pl - 4);
+            push_b(&mut self.buf, b"\" y=\""); push_i(&mut self.buf, y + 3);
+            push_b(&mut self.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+            push_i(&mut self.buf, v);
+            push_b(&mut self.buf, b"</text>");
+        }
+    }
+
+    pub fn x_grid(&mut self, n: i32, x_min: f64, x_max: f64, grid: bool) {
+        let rng = x_max - x_min;
+        for i in 0..=n {
+            let f = i as f64 / n as f64;
+            let x = self.pl + (f * self.pw as f64) as i32;
+            let v = x_min + f * rng;
+            if grid && i > 0 { svg_vgrid(&mut self.buf, x, self.pt, self.pt + self.ph); }
+            svg_tick_x(&mut self.buf, x, self.pt + self.ph + 14, v);
+        }
+    }
+
+    pub fn axes(&mut self, xl: &str, yl: &str) {
+        svg_axis_lines(&mut self.buf, self.pl, self.pt, self.pw, self.ph);
+        svg_x_label(&mut self.buf, xl, self.pl + self.pw / 2, self.h - 4);
+        svg_y_label(&mut self.buf, yl, 14, self.pt, self.ph);
+    }
+
+    pub fn legend(&mut self, names: &[&str], palette: &[u32], x: i32) {
+        for (i, name) in names.iter().enumerate() {
+            svg_legend_item(&mut self.buf, i as i32, name, palette_color(palette, i), x, self.pt + i as i32 * 22, 14);
+        }
+    }
+
+    pub fn svg(mut self) -> String {
+        push_b(&mut self.buf, b"</svg>");
+        unsafe { String::from_utf8_unchecked(self.buf) }
+    }
+}

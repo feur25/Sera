@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_open, svg_title, svg_hgrid, svg_tick_y, svg_axis_lines};
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_axis_lines, Frame};
 use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
 
 fn quartile(sorted: &[f64], q: f64) -> f64 {
@@ -70,109 +70,96 @@ pub fn render_boxplot_html(
     let range_y = (y_max - y_min).max(1.0);
 
     let pad_l: i32 = 62;
-    let pad_t: i32 = 44;
-    let pad_b: i32 = 54;
-    let pad_r: i32 = 20;
-    let plot_w = width - pad_l - pad_r;
-    let plot_h = height - pad_t - pad_b;
+    let plot_w = width - pad_l - 20;
+    let plot_h = height - 44 - 54;
 
     let slot_w = plot_w as f64 / n_cats as f64;
     let box_hw = (slot_w * 0.28) as i32;
 
-    let mut buf = Vec::<u8>::with_capacity(n_cats * 500 + 2048);
-    svg_open(&mut buf, width, height);
-    svg_title(&mut buf, title, width / 2, 28);
-
-    let n_yticks = 5i32;
-    for ti in 0..=n_yticks {
-        let frac = ti as f64 / n_yticks as f64;
-        let ty = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
-        let val = y_min + frac * range_y;
-        svg_hgrid(&mut buf, pad_l, pad_l + plot_w, ty);
-        svg_tick_y(&mut buf, pad_l - 4, ty + 4, val);
-    }
-    svg_axis_lines(&mut buf, pad_l, pad_t, plot_w, plot_h);
+    let mut f = Frame::new(width, height, 62, 44, 54, 20, n_cats * 500 + 2048);
+    f.open(title, false);
+    f.y_grid(5, y_min, y_max, true);
+    svg_axis_lines(&mut f.buf, f.pl, f.pt, f.pw, f.ph);
 
     for (ci, (cat, st)) in cats.iter().zip(stats.iter()).enumerate() {
-        let cx = pad_l + (ci as f64 * slot_w + slot_w / 2.0) as i32;
+        let cx = f.pl + (ci as f64 * slot_w + slot_w / 2.0) as i32;
         let color = palette_color(palette, ci);
         let hx = hex6(color);
 
-        let y_q1    = pad_t + plot_h - ((st.q1 - y_min) / range_y * plot_h as f64) as i32;
-        let y_med   = pad_t + plot_h - ((st.median - y_min) / range_y * plot_h as f64) as i32;
-        let y_q3    = pad_t + plot_h - ((st.q3 - y_min) / range_y * plot_h as f64) as i32;
-        let y_wlo   = pad_t + plot_h - ((st.whisker_lo - y_min) / range_y * plot_h as f64) as i32;
-        let y_whi   = pad_t + plot_h - ((st.whisker_hi - y_min) / range_y * plot_h as f64) as i32;
+        let y_q1    = f.pt + f.ph - ((st.q1 - y_min) / range_y * f.ph as f64) as i32;
+        let y_med   = f.pt + f.ph - ((st.median - y_min) / range_y * f.ph as f64) as i32;
+        let y_q3    = f.pt + f.ph - ((st.q3 - y_min) / range_y * f.ph as f64) as i32;
+        let y_wlo   = f.pt + f.ph - ((st.whisker_lo - y_min) / range_y * f.ph as f64) as i32;
+        let y_whi   = f.pt + f.ph - ((st.whisker_hi - y_min) / range_y * f.ph as f64) as i32;
 
         let box_top = y_q3.min(y_q1);
         let box_bot = y_q3.max(y_q1);
         let box_h = (box_bot - box_top).max(2);
 
-        push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, cx);
-        push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, y_whi);
-        push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, cx);
-        push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, box_top);
-        push_b(&mut buf, b"\" stroke=\"#6b7280\" stroke-width=\"1.4\"/>");
+        push_b(&mut f.buf, b"<line x1=\""); push_i(&mut f.buf, cx);
+        push_b(&mut f.buf, b"\" y1=\""); push_i(&mut f.buf, y_whi);
+        push_b(&mut f.buf, b"\" x2=\""); push_i(&mut f.buf, cx);
+        push_b(&mut f.buf, b"\" y2=\""); push_i(&mut f.buf, box_top);
+        push_b(&mut f.buf, b"\" stroke=\"#6b7280\" stroke-width=\"1.4\"/>");
 
-        push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, cx);
-        push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, box_bot);
-        push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, cx);
-        push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, y_wlo);
-        push_b(&mut buf, b"\" stroke=\"#6b7280\" stroke-width=\"1.4\"/>");
+        push_b(&mut f.buf, b"<line x1=\""); push_i(&mut f.buf, cx);
+        push_b(&mut f.buf, b"\" y1=\""); push_i(&mut f.buf, box_bot);
+        push_b(&mut f.buf, b"\" x2=\""); push_i(&mut f.buf, cx);
+        push_b(&mut f.buf, b"\" y2=\""); push_i(&mut f.buf, y_wlo);
+        push_b(&mut f.buf, b"\" stroke=\"#6b7280\" stroke-width=\"1.4\"/>");
 
-        push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, cx - box_hw / 2);
-        push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, y_whi);
-        push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, cx + box_hw / 2);
-        push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, y_whi);
-        push_b(&mut buf, b"\" stroke=\"#6b7280\" stroke-width=\"1.4\"/>");
+        push_b(&mut f.buf, b"<line x1=\""); push_i(&mut f.buf, cx - box_hw / 2);
+        push_b(&mut f.buf, b"\" y1=\""); push_i(&mut f.buf, y_whi);
+        push_b(&mut f.buf, b"\" x2=\""); push_i(&mut f.buf, cx + box_hw / 2);
+        push_b(&mut f.buf, b"\" y2=\""); push_i(&mut f.buf, y_whi);
+        push_b(&mut f.buf, b"\" stroke=\"#6b7280\" stroke-width=\"1.4\"/>");
 
-        push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, cx - box_hw / 2);
-        push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, y_wlo);
-        push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, cx + box_hw / 2);
-        push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, y_wlo);
-        push_b(&mut buf, b"\" stroke=\"#6b7280\" stroke-width=\"1.4\"/>");
+        push_b(&mut f.buf, b"<line x1=\""); push_i(&mut f.buf, cx - box_hw / 2);
+        push_b(&mut f.buf, b"\" y1=\""); push_i(&mut f.buf, y_wlo);
+        push_b(&mut f.buf, b"\" x2=\""); push_i(&mut f.buf, cx + box_hw / 2);
+        push_b(&mut f.buf, b"\" y2=\""); push_i(&mut f.buf, y_wlo);
+        push_b(&mut f.buf, b"\" stroke=\"#6b7280\" stroke-width=\"1.4\"/>");
 
-        push_b(&mut buf, b"<rect data-idx=\""); push_i(&mut buf, ci as i32);
-        push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, cat);
-        push_b(&mut buf, b"\" data-kv-Median=\""); push_f2(&mut buf, st.median);
-        push_b(&mut buf, b"\" data-kv-Q1=\""); push_f2(&mut buf, st.q1);
-        push_b(&mut buf, b"\" data-kv-Q3=\""); push_f2(&mut buf, st.q3);
-        push_b(&mut buf, b"\" data-kv-Min=\""); push_f2(&mut buf, st.whisker_lo);
-        push_b(&mut buf, b"\" data-kv-Max=\""); push_f2(&mut buf, st.whisker_hi);
-        push_b(&mut buf, b"\" data-kv-Outliers=\""); push_i(&mut buf, st.outliers.len() as i32);
-        push_b(&mut buf, b"\" x=\""); push_i(&mut buf, cx - box_hw);
-        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, box_top);
-        push_b(&mut buf, b"\" width=\""); push_i(&mut buf, box_hw * 2);
-        push_b(&mut buf, b"\" height=\""); push_i(&mut buf, box_h);
-        push_b(&mut buf, b"\" fill=\"#"); buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" fill-opacity=\"0.28\" rx=\"3\" stroke=\"#");
-        buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" stroke-width=\"1.6\"/>");
+        push_b(&mut f.buf, b"<rect data-idx=\""); push_i(&mut f.buf, ci as i32);
+        push_b(&mut f.buf, b"\" data-lbl=\""); escape_xml(&mut f.buf, cat);
+        push_b(&mut f.buf, b"\" data-kv-Median=\""); push_f2(&mut f.buf, st.median);
+        push_b(&mut f.buf, b"\" data-kv-Q1=\""); push_f2(&mut f.buf, st.q1);
+        push_b(&mut f.buf, b"\" data-kv-Q3=\""); push_f2(&mut f.buf, st.q3);
+        push_b(&mut f.buf, b"\" data-kv-Min=\""); push_f2(&mut f.buf, st.whisker_lo);
+        push_b(&mut f.buf, b"\" data-kv-Max=\""); push_f2(&mut f.buf, st.whisker_hi);
+        push_b(&mut f.buf, b"\" data-kv-Outliers=\""); push_i(&mut f.buf, st.outliers.len() as i32);
+        push_b(&mut f.buf, b"\" x=\""); push_i(&mut f.buf, cx - box_hw);
+        push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, box_top);
+        push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, box_hw * 2);
+        push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, box_h);
+        push_b(&mut f.buf, b"\" fill=\"#"); f.buf.extend_from_slice(&hx);
+        push_b(&mut f.buf, b"\" fill-opacity=\"0.28\" rx=\"3\" stroke=\"#");
+        f.buf.extend_from_slice(&hx);
+        push_b(&mut f.buf, b"\" stroke-width=\"1.6\"/>");
 
-        push_b(&mut buf, b"<line x1=\""); push_i(&mut buf, cx - box_hw);
-        push_b(&mut buf, b"\" y1=\""); push_i(&mut buf, y_med);
-        push_b(&mut buf, b"\" x2=\""); push_i(&mut buf, cx + box_hw);
-        push_b(&mut buf, b"\" y2=\""); push_i(&mut buf, y_med);
-        push_b(&mut buf, b"\" stroke=\"#"); buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" stroke-width=\"2.4\"/>");
+        push_b(&mut f.buf, b"<line x1=\""); push_i(&mut f.buf, cx - box_hw);
+        push_b(&mut f.buf, b"\" y1=\""); push_i(&mut f.buf, y_med);
+        push_b(&mut f.buf, b"\" x2=\""); push_i(&mut f.buf, cx + box_hw);
+        push_b(&mut f.buf, b"\" y2=\""); push_i(&mut f.buf, y_med);
+        push_b(&mut f.buf, b"\" stroke=\"#"); f.buf.extend_from_slice(&hx);
+        push_b(&mut f.buf, b"\" stroke-width=\"2.4\"/>");
 
         for &ov in &st.outliers {
-            let oy = pad_t + plot_h - ((ov - y_min) / range_y * plot_h as f64) as i32;
-            push_b(&mut buf, b"<circle cx=\""); push_i(&mut buf, cx);
-            push_b(&mut buf, b"\" cy=\""); push_i(&mut buf, oy);
-            push_b(&mut buf, b"\" r=\"3\" fill=\"#"); buf.extend_from_slice(&hx);
-            push_b(&mut buf, b"\" fill-opacity=\"0.7\" stroke=\"#fff\" stroke-width=\"0.8\"/>");
+            let oy = f.pt + f.ph - ((ov - y_min) / range_y * f.ph as f64) as i32;
+            push_b(&mut f.buf, b"<circle cx=\""); push_i(&mut f.buf, cx);
+            push_b(&mut f.buf, b"\" cy=\""); push_i(&mut f.buf, oy);
+            push_b(&mut f.buf, b"\" r=\"3\" fill=\"#"); f.buf.extend_from_slice(&hx);
+            push_b(&mut f.buf, b"\" fill-opacity=\"0.7\" stroke=\"#fff\" stroke-width=\"0.8\"/>");
         }
 
-        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, cx);
-        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, pad_t + plot_h + 16);
-        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
-        escape_xml(&mut buf, if cat.len() <= 14 { cat } else { &cat[..14] });
-        push_b(&mut buf, b"</text>");
+        push_b(&mut f.buf, b"<text x=\""); push_i(&mut f.buf, cx);
+        push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, f.pt + f.ph + 16);
+        push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
+        escape_xml(&mut f.buf, if cat.len() <= 14 { cat } else { &cat[..14] });
+        push_b(&mut f.buf, b"</text>");
 
     }
 
-    push_b(&mut buf, b"</svg>");
-    let svg = unsafe { String::from_utf8_unchecked(buf) };
+    let svg = f.svg();
     build_chart_html(title, &svg, &slots_to_json(hover))
 }
