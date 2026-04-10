@@ -61,6 +61,16 @@ pub fn register_submodules(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(build_ridgeline_chart, m)?)?;
     m.add_function(wrap_pyfunction!(build_ridgeline3d_chart, m)?)?;
 
+    m.add_function(wrap_pyfunction!(build_pie3d_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_violin3d_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_heatmap3d_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_candlestick3d_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_dumbbell3d_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_funnel3d_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_sunburst3d_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_stacked_bar3d_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_globe3d_chart, m)?)?;
+
     m.add_function(wrap_pyfunction!(build_wordcloud, m)?)?;
     m.add_function(wrap_pyfunction!(build_candlestick, m)?)?;
     m.add_function(wrap_pyfunction!(build_dumbbell, m)?)?;

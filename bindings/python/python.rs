@@ -1,4 +1,4 @@
-#[cfg(feature = "python")]
+﻿#[cfg(feature = "python")]
 use pyo3::prelude::*;
 
 #[cfg(feature = "python")]
@@ -1205,6 +1205,305 @@ pub fn build_ridgeline3d_chart(
         (x_label, y_label, z_label),
         &cv, &group_order, width, height, None,
     )))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, labels, values, width=700, height=560, bg_color=None))]
+pub fn build_pie3d_chart(
+    title: &str,
+    labels: Vec<String>,
+    values: Vec<f64>,
+    width: i32,
+    height: i32,
+    bg_color: Option<&str>,
+) -> Chart {
+    let n = labels.len().min(values.len());
+    let xv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    let yv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    Chart::new(crate::html::js_3d::render_pie3d_html(
+        title, &xv, &yv, &values[..n],
+        ("", "", ""), &cv, &labels[..n].to_vec(), width, height, bg_color,
+    ))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, values, categories=None, x_label="Value", y_label="Category", z_label="Density", width=900, height=560))]
+pub fn build_violin3d_chart(
+    title: &str,
+    values: Vec<f64>,
+    categories: Option<Vec<String>>,
+    x_label: &str,
+    y_label: &str,
+    z_label: &str,
+    width: i32,
+    height: i32,
+) -> Chart {
+    use crate::plot::statistical::kde::{scott_bw, kde_eval};
+    let cats = categories.unwrap_or_default();
+    let mut group_order: Vec<String> = Vec::new();
+    let mut group_vals: std::collections::HashMap<String, Vec<f64>> = std::collections::HashMap::new();
+    if cats.is_empty() {
+        group_order.push("Series".to_string());
+        group_vals.insert("Series".to_string(), values);
+    } else {
+        for (v, c) in values.iter().zip(cats.iter()) {
+            group_vals.entry(c.clone()).or_default().push(*v);
+            if !group_order.contains(c) { group_order.push(c.clone()); }
+        }
+    }
+    let all: Vec<f64> = group_vals.values().flat_map(|v| v.iter().copied()).collect();
+    if all.is_empty() { return Chart::new(String::new()); }
+    let xmin = all.iter().cloned().fold(f64::INFINITY, f64::min);
+    let xmax = all.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    let pad = (xmax - xmin).max(1.0) * 0.12;
+    let lo = xmin - pad;
+    let hi = xmax + pad;
+    let n_pts: usize = 80;
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    for (gi, name) in group_order.iter().enumerate() {
+        let gv = group_vals.get(name).map(|v| v.as_slice()).unwrap_or(&[]);
+        let bw = scott_bw(gv);
+        for k in 0..n_pts {
+            let t = lo + (hi - lo) * k as f64 / (n_pts - 1).max(1) as f64;
+            let d = kde_eval(gv, t, bw);
+            xv.push(t);
+            yv.push(gi as f64);
+            zv.push(d);
+            cv.push(gi as f64);
+        }
+    }
+    Chart::new(crate::html::js_3d::render_violin3d_html(
+        title, &xv, &yv, &zv,
+        (x_label, y_label, z_label), &cv, &group_order, width, height, None,
+    ))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, x_labels, y_labels, values, x_label="X", y_label="Y", z_label="Value", width=900, height=560, bg_color=None))]
+pub fn build_heatmap3d_chart(
+    title: &str,
+    x_labels: Vec<String>,
+    y_labels: Vec<String>,
+    values: Vec<Vec<f64>>,
+    x_label: &str,
+    y_label: &str,
+    z_label: &str,
+    width: i32,
+    height: i32,
+    bg_color: Option<&str>,
+) -> Chart {
+    let nr = y_labels.len().min(values.len());
+    let nc = x_labels.len();
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    let mut cl = Vec::new();
+    for r in 0..nr {
+        let row = &values[r];
+        for c2 in 0..nc.min(row.len()) {
+            xv.push(c2 as f64);
+            yv.push(r as f64);
+            zv.push(row[c2]);
+            cv.push(0.0);
+            cl.push(format!("{}/{}", y_labels[r], x_labels[c2]));
+        }
+    }
+    Chart::new(crate::html::js_3d::render_heatmap3d_html(
+        title, &xv, &yv, &zv,
+        (x_label, y_label, z_label), &cv, &cl, width, height, bg_color,
+    ))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, labels, open, high, low, close, width=900, height=560, bg_color=None))]
+pub fn build_candlestick3d_chart(
+    title: &str,
+    labels: Vec<String>,
+    open: Vec<f64>,
+    high: Vec<f64>,
+    low: Vec<f64>,
+    close: Vec<f64>,
+    width: i32,
+    height: i32,
+    bg_color: Option<&str>,
+) -> Chart {
+    let n = labels.len().min(open.len()).min(high.len()).min(low.len()).min(close.len());
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    for i in 0..n {
+        xv.push(open[i]); xv.push(high[i]); xv.push(low[i]); xv.push(close[i]);
+        yv.push(i as f64); yv.push(i as f64); yv.push(i as f64); yv.push(i as f64);
+        zv.push(0.0); zv.push(0.0); zv.push(0.0); zv.push(0.0);
+    }
+    Chart::new(crate::html::js_3d::render_candlestick3d_html(
+        title, &xv, &yv, &zv,
+        ("Price", "Bar", ""), &[], &labels, width, height, bg_color,
+    ))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, labels, values_start, values_end, series_labels=None, width=900, height=560, bg_color=None))]
+pub fn build_dumbbell3d_chart(
+    title: &str,
+    labels: Vec<String>,
+    values_start: Vec<f64>,
+    values_end: Vec<f64>,
+    series_labels: Option<(String, String)>,
+    width: i32,
+    height: i32,
+    bg_color: Option<&str>,
+) -> Chart {
+    let _sl = series_labels.unwrap_or(("Start".to_string(), "End".to_string()));
+    let n = labels.len().min(values_start.len()).min(values_end.len());
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    for i in 0..n {
+        xv.push(values_start[i]);
+        yv.push(i as f64);
+        zv.push(values_end[i]);
+        cv.push(i as f64);
+    }
+    Chart::new(crate::html::js_3d::render_dumbbell3d_html(
+        title, &xv, &yv, &zv,
+        ("Start", "Item", "End"), &cv, &labels, width, height, bg_color,
+    ))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, labels, values, width=700, height=560, bg_color=None))]
+pub fn build_funnel3d_chart(
+    title: &str,
+    labels: Vec<String>,
+    values: Vec<f64>,
+    width: i32,
+    height: i32,
+    bg_color: Option<&str>,
+) -> Chart {
+    let n = labels.len().min(values.len());
+    let xv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    let yv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    Chart::new(crate::html::js_3d::render_funnel3d_html(
+        title, &xv, &yv, &values[..n],
+        ("", "Stage", "Value"), &cv, &labels[..n].to_vec(), width, height, bg_color,
+    ))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, labels, parents, values, width=700, height=560, bg_color=None))]
+pub fn build_sunburst3d_chart(
+    title: &str,
+    labels: Vec<String>,
+    parents: Vec<String>,
+    values: Vec<f64>,
+    width: i32,
+    height: i32,
+    bg_color: Option<&str>,
+) -> Chart {
+    let n = labels.len().min(parents.len()).min(values.len());
+    let mut ring_map: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    ring_map.insert(String::new(), 0);
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    let mut cl = Vec::new();
+    for i in 0..n {
+        let parent = &parents[i];
+        let parent_ring = ring_map.get(parent).copied().unwrap_or(0);
+        let my_ring = parent_ring + 1;
+        ring_map.insert(labels[i].clone(), my_ring);
+        xv.push(i as f64);
+        yv.push(my_ring as f64);
+        zv.push(values[i]);
+        cv.push(i as f64);
+        cl.push(labels[i].clone());
+    }
+    Chart::new(crate::html::js_3d::render_sunburst3d_html(
+        title, &xv, &yv, &zv,
+        ("", "Ring", "Value"), &cv, &cl, width, height, bg_color,
+    ))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, category_labels, series_names, series_values, width=900, height=560, bg_color=None))]
+pub fn build_stacked_bar3d_chart(
+    title: &str,
+    category_labels: Vec<String>,
+    series_names: Vec<String>,
+    series_values: Vec<Vec<f64>>,
+    width: i32,
+    height: i32,
+    bg_color: Option<&str>,
+) -> Chart {
+    let n_cat = category_labels.len();
+    let n_ser = series_names.len().min(series_values.len());
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    let mut cl = Vec::new();
+    let mut z_max = 0.0f64;
+    for ci in 0..n_cat {
+        let mut cum = 0.0;
+        for si in 0..n_ser {
+            let v = series_values[si].get(ci).copied().unwrap_or(0.0);
+            cum += v;
+        }
+        if cum > z_max { z_max = cum; }
+    }
+    for ci in 0..n_cat {
+        for si in 0..n_ser {
+            let v = series_values[si].get(ci).copied().unwrap_or(0.0);
+            xv.push(ci as f64);
+            yv.push(si as f64);
+            zv.push(v);
+            cv.push(si as f64);
+            cl.push(format!("{}/{}", category_labels[ci], series_names[si]));
+        }
+    }
+    Chart::new(crate::html::js_3d::render_stacked_bar3d_html(
+        title, &xv, &yv, &zv,
+        ("Category", "Series", "Value"), &cv, &series_names, width, height, bg_color,
+    ))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, latitudes, longitudes, values, labels=None, width=800, height=600, bg_color=None))]
+pub fn build_globe3d_chart(
+    title: &str,
+    latitudes: Vec<f64>,
+    longitudes: Vec<f64>,
+    values: Vec<f64>,
+    labels: Option<Vec<String>>,
+    width: i32,
+    height: i32,
+    bg_color: Option<&str>,
+) -> Chart {
+    let n = latitudes.len().min(longitudes.len()).min(values.len());
+    let cl = labels.unwrap_or_else(|| (0..n).map(|i| format!("Point {}", i + 1)).collect());
+    let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    Chart::new(crate::html::js_3d::render_globe3d_html(
+        title, &longitudes[..n], &latitudes[..n], &values[..n],
+        ("Longitude", "Latitude", "Value"), &cv, &cl, width, height, bg_color,
+    ))
 }
 
 #[cfg(feature = "python")]
