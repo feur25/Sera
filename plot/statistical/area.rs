@@ -1,5 +1,5 @@
 use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, Frame};
-use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+use crate::html::hover::{HoverSlot, slots_to_json};
 
 pub struct Area;
 
@@ -60,7 +60,7 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
     let legend_w: i32 = 160;
     let auto_hover = cfg.hover.is_empty();
     let n_total = n_pts * n_ser;
-    let mut f = Frame::new(cfg.width, cfg.height, 56, 42, 52, legend_w, n_total * 60 + 2048);
+    let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, 56, 42, 52, legend_w, n_total * 60 + 2048);
     let step_x = f.pw as f64 / (n_pts - 1).max(1) as f64;
     let base_y = f.pt + f.ph;
     f.open(cfg.title, true);
@@ -142,8 +142,7 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
         escape_xml(&mut f.buf, truncate(sname, 18));
         push_b(&mut f.buf, b"</text></g>");
     }
-    let svg = f.svg();
     let slots_json;
     let json: &str = if auto_hover { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
-    build_chart_html(cfg.title, &svg, json)
+    f.html(json)
 }

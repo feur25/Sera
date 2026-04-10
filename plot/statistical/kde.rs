@@ -1,5 +1,4 @@
 use super::common::{palette_color, push_b, push_f2, hex6, Frame};
-use crate::html::hover::build_chart_html;
 
 pub struct KdeConfig<'a> {
     pub title: &'a str,
@@ -75,7 +74,7 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
 
     let y_max = curves.iter().flat_map(|c| c.iter().copied()).fold(0.0_f64, f64::max).max(1e-12);
 
-    let mut f = Frame::new(cfg.width, cfg.height, 56, 42, 52, legend_w, n_ser * n_pts * 24 + 2048);
+    let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, 56, 42, 52, legend_w, n_ser * n_pts * 24 + 2048);
     f.open(cfg.title, false);
     f.y_grid(5, 0.0, y_max, cfg.gridlines);
     f.axes(cfg.x_label, cfg.y_label);
@@ -118,6 +117,5 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
         f.legend(&names, cfg.palette, cfg.width - legend_w + 12);
     }
 
-    let svg = f.svg();
-    build_chart_html(cfg.title, &svg, "[]")
+    f.html("[]")
 }

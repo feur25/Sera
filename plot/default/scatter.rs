@@ -124,14 +124,12 @@ pub fn render_scatter_html(
     gridlines: bool,
     show_text: bool,
 ) -> String {
-    use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+    use crate::html::hover::{slots_to_json, html_id, html_prefix, html_suffix};
     use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, palette_color};
     let n = x_values.len().min(y_values.len());
     if n == 0 { return String::new(); }
-    let (_, max_x) = crate::bindings::utils::simd_ops::find_minmax(x_values);
-    let (_, max_y) = crate::bindings::utils::simd_ops::find_minmax(y_values);
-    let min_x = x_values.iter().cloned().fold(f64::INFINITY, f64::min);
-    let min_y = y_values.iter().cloned().fold(f64::INFINITY, f64::min);
+    let (min_x, max_x) = crate::bindings::utils::simd_ops::find_minmax(x_values);
+    let (min_y, max_y) = crate::bindings::utils::simd_ops::find_minmax(y_values);
     let range_x = (max_x - min_x).max(1.0);
     let range_y = (max_y - min_y).max(1.0);
     let pad_l = 56i32; let pad_t = 36i32; let pad_b = 48i32; let pad_r = 20i32;
@@ -156,7 +154,11 @@ pub fn render_scatter_html(
         let mx = sizes.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
         (mn, (mx - mn).max(1.0))
     } else { (0.0, 1.0) };
-    let mut buf = Vec::<u8>::with_capacity(n * 200 + 4096);
+    let max_pts = if n > 6000 { 6000 } else { n };
+    let step = if n > 6000 { n / 6000 } else { 1 };
+    let hid = html_id();
+    let mut buf = Vec::<u8>::with_capacity(max_pts * 120 + 18_000);
+    html_prefix(&mut buf, title, hid);
     push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
     push_i(&mut buf, width); push_b(&mut buf, b"\" height=\"");
     push_i(&mut buf, height); push_b(&mut buf, b"\" viewBox=\"0 0 ");
@@ -166,6 +168,7 @@ pub fn render_scatter_html(
     push_i(&mut buf, pad_t); push_b(&mut buf, b",");
     push_i(&mut buf, plot_w); push_b(&mut buf, b",");
     push_i(&mut buf, plot_h); push_b(&mut buf, b"\">");
+    push_b(&mut buf, b"<defs><style>.sp{fill-opacity:.75;stroke:#fff;stroke-width:1}</style></defs>");
     push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
     if !title.is_empty() {
         push_b(&mut buf, b"<text x=\""); push_i(&mut buf, width / 2);
@@ -222,9 +225,12 @@ pub fn render_scatter_html(
         escape_xml(&mut buf, x_label);
         push_b(&mut buf, b"</text>");
     }
-    for i in 0..n {
-        let cx = pad_l + ((x_values[i] - min_x) / range_x * plot_w as f64) as i32;
-        let cy = pad_t + plot_h - ((y_values[i] - min_y) / range_y * plot_h as f64) as i32;
+    let inv_rx = plot_w as f64 / range_x;
+    let inv_ry = plot_h as f64 / range_y;
+    let mut di = 0i32;
+    for i in (0..n).step_by(step) {
+        let cx = pad_l + ((x_values[i] - min_x) * inv_rx) as i32;
+        let cy = pad_t + plot_h - ((y_values[i] - min_y) * inv_ry) as i32;
         let color = if has_groups && i < group_map.len() {
             palette_color(palette, group_map[i])
         } else if color_hex != 0 {
@@ -236,11 +242,10 @@ pub fn render_scatter_html(
         let r = if has_sizes && i < sizes.len() {
             ((sizes[i] - size_min) / size_max * 18.0 + 3.0) as i32
         } else { 5 };
-        push_b(&mut buf, b"<circle data-idx=\""); push_i(&mut buf, i as i32);
+        push_b(&mut buf, b"<circle data-idx=\""); push_i(&mut buf, di);
         if has_groups { push_b(&mut buf, b"\" data-series=\""); push_i(&mut buf, group_map[i] as i32); }
+        push_b(&mut buf, b"\" data-x=\""); push_f2(&mut buf, x_values[i]);
         push_b(&mut buf, b"\" data-y=\""); push_f2(&mut buf, y_values[i]);
-        push_b(&mut buf, b"\" data-kv-X=\""); push_f2(&mut buf, x_values[i]);
-        push_b(&mut buf, b"\" data-kv-Y=\""); push_f2(&mut buf, y_values[i]);
         if i < labels.len() && !labels[i].is_empty() {
             push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, &labels[i]);
         }
@@ -248,7 +253,8 @@ pub fn render_scatter_html(
         push_b(&mut buf, b"\" cy=\""); push_i(&mut buf, cy);
         push_b(&mut buf, b"\" r=\""); push_i(&mut buf, r);
         push_b(&mut buf, b"\" fill=\"#"); buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" fill-opacity=\"0.75\" stroke=\"#fff\" stroke-width=\"1\"/>");
+        push_b(&mut buf, b"\" class=\"sp\"/>");
+        di += 1;
         if show_text && i < labels.len() && !labels[i].is_empty() {
             push_b(&mut buf, b"<text x=\""); push_i(&mut buf, cx);
             push_b(&mut buf, b"\" y=\""); push_i(&mut buf, cy - r - 3);
@@ -278,13 +284,10 @@ pub fn render_scatter_html(
         }
     }
     push_b(&mut buf, b"</svg>");
-    let svg = unsafe { String::from_utf8_unchecked(buf) };
-    let hover_json = if hover.is_empty() {
-        "[]".to_string()
-    } else {
-        slots_to_json(hover)
-    };
-    build_chart_html(title, &svg, &hover_json)
+    let slots_json;
+    let json: &str = if hover.is_empty() { "[]" } else { slots_json = slots_to_json(hover); &slots_json };
+    html_suffix(&mut buf, hid, json);
+    unsafe { String::from_utf8_unchecked(buf) }
 }
 
 #[inline] fn scat_xml_esc(s: &str) -> String { s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;") }

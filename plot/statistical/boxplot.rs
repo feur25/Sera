@@ -1,5 +1,5 @@
 use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_axis_lines, Frame};
-use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+use crate::html::hover::{HoverSlot, slots_to_json};
 
 fn quartile(sorted: &[f64], q: f64) -> f64 {
     if sorted.is_empty() { return 0.0; }
@@ -76,7 +76,7 @@ pub fn render_boxplot_html(
     let slot_w = plot_w as f64 / n_cats as f64;
     let box_hw = (slot_w * 0.28) as i32;
 
-    let mut f = Frame::new(width, height, 62, 44, 54, 20, n_cats * 500 + 2048);
+    let mut f = Frame::new_html(title, width, height, 62, 44, 54, 20, n_cats * 500 + 2048);
     f.open(title, false);
     f.y_grid(5, y_min, y_max, true);
     svg_axis_lines(&mut f.buf, f.pl, f.pt, f.pw, f.ph);
@@ -160,6 +160,5 @@ pub fn render_boxplot_html(
 
     }
 
-    let svg = f.svg();
-    build_chart_html(title, &svg, &slots_to_json(hover))
+    f.html(&slots_to_json(hover))
 }

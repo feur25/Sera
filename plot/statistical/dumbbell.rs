@@ -1,5 +1,5 @@
 use super::common::{push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
-use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+use crate::html::hover::{HoverSlot, slots_to_json};
 
 pub struct DumbbellConfig<'a> {
     pub title: &'a str,
@@ -46,7 +46,7 @@ pub fn render_dumbbell_html(cfg: &DumbbellConfig) -> String {
     let c1 = if !cfg.palette.is_empty() { cfg.palette[0] } else { 0x6366F1 };
     let c2 = if cfg.palette.len() >= 2 { cfg.palette[1] } else { 0x22D3EE };
 
-    let mut f = Frame::new(cfg.width, cfg.height, 132, 38, 52, 20, n * 400 + 2048);
+    let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, 132, 38, 52, 20, n * 400 + 2048);
     f.open(cfg.title, true);
     f.x_grid(6, global_min, global_min + val_range, cfg.gridlines);
     f.axes(cfg.x_label, cfg.y_label);
@@ -94,8 +94,7 @@ pub fn render_dumbbell_html(cfg: &DumbbellConfig) -> String {
     svg_legend_item(&mut f.buf, 0, cfg.series_labels.0, c1, cfg.width - 140, f.pt + 4, 20);
     svg_legend_item(&mut f.buf, 1, cfg.series_labels.1, c2, cfg.width - 140, f.pt + 22, 20);
 
-    let svg = f.svg();
     let slots_json;
     let json: &str = if cfg.hover.is_empty() { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
-    build_chart_html(cfg.title, &svg, json)
+    f.html(json)
 }

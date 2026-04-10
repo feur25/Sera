@@ -281,12 +281,13 @@ pub struct Frame {
     pub pt: i32,
     pub pw: i32,
     pub ph: i32,
+    pub hid: u64,
 }
 
 impl Frame {
     #[inline]
     pub fn new(w: i32, h: i32, pl: i32, pt: i32, pb: i32, pr: i32, cap: usize) -> Self {
-        Self { buf: Vec::with_capacity(cap), w, h, pl, pt, pw: w - pl - pr, ph: h - pt - pb }
+        Self { buf: Vec::with_capacity(cap), w, h, pl, pt, pw: w - pl - pr, ph: h - pt - pb, hid: 0 }
     }
 
     pub fn open(&mut self, title: &str, rescalable: bool) {
@@ -371,5 +372,18 @@ impl Frame {
     pub fn svg(mut self) -> String {
         push_b(&mut self.buf, b"</svg>");
         unsafe { String::from_utf8_unchecked(self.buf) }
+    }
+
+    pub fn html(mut self, hover_json: &str) -> String {
+        push_b(&mut self.buf, b"</svg>");
+        crate::html::hover::html_suffix(&mut self.buf, self.hid, hover_json);
+        unsafe { String::from_utf8_unchecked(self.buf) }
+    }
+
+    pub fn new_html(title: &str, w: i32, h: i32, pl: i32, pt: i32, pb: i32, pr: i32, cap: usize) -> Self {
+        let hid = crate::html::hover::html_id();
+        let mut buf = Vec::with_capacity(cap + 14_000);
+        crate::html::hover::html_prefix(&mut buf, title, hid);
+        Self { buf, w, h, pl, pt, pw: w - pl - pr, ph: h - pt - pb, hid }
     }
 }

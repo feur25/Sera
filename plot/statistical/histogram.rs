@@ -1,5 +1,5 @@
 use super::common::{push_b, push_i, push_f2, escape_xml, hex6, Frame};
-use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+use crate::html::hover::{HoverSlot, slots_to_json};
 
 pub struct Histogram;
 
@@ -18,6 +18,7 @@ pub struct HistogramConfig<'a> {
     pub gridlines: bool,
     pub show_counts: bool,
     pub hover: &'a [HoverSlot],
+    pub count_scale: usize,
 }
 
 impl<'a> Default for HistogramConfig<'a> {
@@ -37,13 +38,15 @@ impl<'a> Default for HistogramConfig<'a> {
             gridlines: true,
             show_counts: false,
             hover: &[],
+            count_scale: 1,
         }
     }
 }
 
 pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
     if cfg.values.is_empty() { return String::new(); }
-    let (bin_counts, edges) = compute_bins(cfg.values, cfg.bins);
+    let (mut bin_counts, edges) = compute_bins(cfg.values, cfg.bins);
+    if cfg.count_scale > 1 { for c in bin_counts.iter_mut() { *c *= cfg.count_scale as u64; } }
     let overlay_counts = cfg.overlay_values.map(|v| {
         let (oc, _) = bin_to_edges(v, &edges);
         oc
@@ -59,7 +62,7 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
     let plot_w = cfg.width - pad_l - pad_r;
     let bw = plot_w as f64 / n_bins as f64;
     let auto_hover = cfg.hover.is_empty();
-    let mut f = Frame::new(cfg.width, cfg.height, 52, 36, 46, 20, n_bins * 240 + 2048);
+    let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, 52, 36, 46, 20, n_bins * 240 + 2048);
     f.open(cfg.title, false);
     f.y_grid_int(5, max_count, cfg.gridlines);
     f.axes(cfg.x_label, cfg.y_label);
@@ -118,27 +121,32 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
         push_f2(&mut f.buf, val);
         push_b(&mut f.buf, b"</text>");
     }
-    let svg = f.svg();
     let slots_json;
     let json: &str = if auto_hover { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
-    build_chart_html(cfg.title, &svg, json)
+    f.html(json)
 }
 
 pub fn compute_bins(values: &[f64], n_bins: usize) -> (Vec<u64>, Vec<f64>) {
-    let valid: Vec<f64> = values.iter().cloned().filter(|v| v.is_finite()).collect();
-    if valid.is_empty() { return (vec![], vec![]); }
-    let min = valid.iter().cloned().fold(f64::INFINITY, f64::min);
-    let max = valid.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    if values.is_empty() { return (vec![], vec![]); }
+    let (min, max) = crate::bindings::utils::simd_ops::find_minmax(values);
+    if !min.is_finite() || !max.is_finite() { return (vec![], vec![]); }
     let n = if n_bins == 0 {
-        ((valid.len() as f64).log2().ceil() as usize + 1).clamp(5, 128)
+        ((values.len() as f64).log2().ceil() as usize + 1).clamp(5, 128)
     } else {
         n_bins.clamp(2, 512)
     };
     let range = (max - min).max(1e-12);
     let step = range / n as f64;
+    let inv_step = 1.0 / step;
     let mut edges = Vec::with_capacity(n + 1);
     for i in 0..=n { edges.push(min + i as f64 * step); }
-    bin_to_edges(&valid, &edges)
+    let mut counts = vec![0u64; n];
+    for &v in values {
+        if !v.is_finite() { continue; }
+        let idx = ((v - min) * inv_step) as usize;
+        counts[idx.min(n - 1)] += 1;
+    }
+    (counts, edges)
 }
 
 pub fn bin_to_edges(values: &[f64], edges: &[f64]) -> (Vec<u64>, Vec<f64>) {

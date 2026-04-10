@@ -1,5 +1,4 @@
 use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_axis_lines, Frame};
-use crate::html::hover::build_chart_html;
 
 pub struct ViolinConfig<'a> {
     pub title: &'a str,
@@ -68,7 +67,7 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
     let global_max = cfg.values.iter().copied().fold(f64::NEG_INFINITY, f64::max);
     let range = (global_max - global_min).max(1e-12);
 
-    let mut f = Frame::new(cfg.width, cfg.height, 60, 46, 52, 20, n_cats * 600 + 2048);
+    let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, 60, 46, 52, 20, n_cats * 600 + 2048);
     let col_w = f.pw / n_cats as i32;
     let violin_half = (col_w as f64 * 0.38) as i32;
     let f_pt = f.pt;
@@ -175,6 +174,5 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
 
     f.axes(cfg.x_label, cfg.y_label);
 
-    let svg = f.svg();
-    build_chart_html(cfg.title, &svg, "[]")
+    f.html("[]")
 }

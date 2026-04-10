@@ -1,5 +1,5 @@
 use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_legend_item, Frame};
-use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+use crate::html::hover::{HoverSlot, slots_to_json};
 
 pub struct BubbleConfig<'a> {
     pub title: &'a str,
@@ -62,7 +62,7 @@ pub fn render_bubble_html(cfg: &BubbleConfig) -> String {
     let min_r = 4.0f64;
     let max_r = 40.0f64;
 
-    let mut f = Frame::new(cfg.width, cfg.height, 56, 38, 52, legend_w, n * 300 + 4096);
+    let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, 56, 38, 52, legend_w, n * 300 + 4096);
     f.open(cfg.title, true);
     f.x_grid(6, xmin2, xmax2, cfg.gridlines);
     f.y_grid(5, ymin2, ymax2, cfg.gridlines);
@@ -106,8 +106,7 @@ pub fn render_bubble_html(cfg: &BubbleConfig) -> String {
         }
     }
 
-    let svg = f.svg();
     let slots_json;
     let json: &str = if cfg.hover.is_empty() { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
-    build_chart_html(cfg.title, &svg, json)
+    f.html(json)
 }

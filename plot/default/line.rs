@@ -160,7 +160,7 @@ pub fn render_lines_html(
     gridlines: bool,
     show_points: bool,
 ) -> String {
-    use crate::html::hover::{slots_to_json, build_chart_html};
+    use crate::html::hover::{slots_to_json, html_id, html_prefix, html_suffix};
     use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, palette_color, truncate, PALETTE};
     let n = values.len().min(labels.len());
     if n < 2 { return String::new(); }
@@ -172,7 +172,9 @@ pub fn render_lines_html(
     let step_x = plot_w as f64 / (n - 1).max(1) as f64;
     let line_color = if color_hex != 0 { color_hex } else { 0x6366F1 };
     let auto = hover.is_empty();
-    let mut b = Vec::<u8>::with_capacity(n * 200 + 2048);
+    let hid = html_id();
+    let mut b = Vec::<u8>::with_capacity(n * 160 + 16_000);
+    html_prefix(&mut b, title, hid);
     push_b(&mut b, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
     push_i(&mut b, width); push_b(&mut b, b"\" height=\"");
     push_i(&mut b, height); push_b(&mut b, b"\" viewBox=\"0 0 ");
@@ -260,10 +262,10 @@ pub fn render_lines_html(
         push_b(&mut b, b"</text>");
     }
     push_b(&mut b, b"</svg>");
-    let svg = unsafe { String::from_utf8_unchecked(b) };
     let slots_json;
     let json: &str = if auto { "[]" } else { slots_json = slots_to_json(hover); &slots_json };
-    build_chart_html(title, &svg, json)
+    html_suffix(&mut b, hid, json);
+    unsafe { String::from_utf8_unchecked(b) }
 }
 
 #[inline] fn line_xml_esc(s: &str) -> String { s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;") }

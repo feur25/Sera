@@ -1,5 +1,5 @@
 use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
-use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+use crate::html::hover::{HoverSlot, slots_to_json};
 
 pub struct GroupedBar;
 
@@ -89,7 +89,7 @@ pub fn render_grouped_bar_html(cfg: &GroupedBarConfig) -> String {
     }.max(1.0);
     let legend_w: i32 = 160;
     let n_total = n_cats * n_ser;
-    let mut f = Frame::new(cfg.width, cfg.height, 56, 42, 52, legend_w, n_total * 260 + 4096);
+    let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, 56, 42, 52, legend_w, n_total * 260 + 4096);
     let group_w = f.pw as f64 / n_cats as f64;
     let bar_w = if cfg.stacked {
         group_w * 0.62
@@ -171,7 +171,6 @@ pub fn render_grouped_bar_html(cfg: &GroupedBarConfig) -> String {
         let color = palette_color(cfg.palette, si);
         svg_legend_item(&mut f.buf, si as i32, sname, color, leg_x, leg_top + si as i32 * 22, 20);
     }
-    let svg = f.svg();
     let slots: &[HoverSlot] = cfg.hover;
-    build_chart_html(cfg.title, &svg, &slots_to_json(slots))
+    f.html(&slots_to_json(slots))
 }

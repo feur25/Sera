@@ -197,8 +197,8 @@ pub fn build_line_chart(
 #[pyo3(signature = (title, x_values, y_values, labels=None, palette=None, x_label="", y_label="", color_hex=0u32, gridlines=true, show_text=false, sort_order="none", width=900, height=540, hover_json=None, sizes=None, color_groups=None, bg_color=None))]
 pub fn build_scatter_chart(
     title: &str,
-    x_values: Vec<f64>,
-    y_values: Vec<f64>,
+    x_values: &PyAny,
+    y_values: &PyAny,
     labels: Option<Vec<String>>,
     palette: Option<Vec<u32>>,
     x_label: &str,
@@ -213,19 +213,52 @@ pub fn build_scatter_chart(
     sizes: Option<Vec<f64>>,
     color_groups: Option<Vec<String>>,
     bg_color: Option<&str>,
-) -> Chart {
+) -> PyResult<Chart> {
+    use pyo3::types::PyList;
     use crate::plot::statistical::parse_hover_json;
     let pal = parse_palette(palette);
+    let hover = hover_json.map(|s| parse_hover_json(s)).unwrap_or_default();
+    let (x, y, step) = if let (Ok(xl), Ok(yl)) = (x_values.downcast::<PyList>(), y_values.downcast::<PyList>()) {
+        let n = xl.len().min(yl.len());
+        if n == 0 { return Ok(Chart::new(String::new())); }
+        let s = if n > 6000 { n / 6000 } else { 1 };
+        if s >= 2 {
+            let cap = n / s + 1;
+            let mut xv = Vec::with_capacity(cap);
+            let mut yv = Vec::with_capacity(cap);
+            let mut i = 0;
+            while i < n { xv.push(xl.get_item(i)?.extract::<f64>()?); yv.push(yl.get_item(i)?.extract::<f64>()?); i += s; }
+            (xv, yv, s)
+        } else {
+            let xv: Vec<f64> = x_values.extract()?;
+            let yv: Vec<f64> = y_values.extract()?;
+            (xv, yv, 1)
+        }
+    } else {
+        let xv: Vec<f64> = x_values.extract()?;
+        let yv: Vec<f64> = y_values.extract()?;
+        let n = xv.len().min(yv.len());
+        if n == 0 { return Ok(Chart::new(String::new())); }
+        let s = if n > 6000 { n / 6000 } else { 1 };
+        if s > 1 {
+            (xv.iter().step_by(s).copied().collect(), yv.iter().step_by(s).copied().collect(), s)
+        } else { (xv, yv, 1) }
+    };
     let lbls = labels.unwrap_or_default();
     let sz = sizes.unwrap_or_default();
     let cg = color_groups.unwrap_or_default();
-    let hover = hover_json.map(|s| parse_hover_json(s)).unwrap_or_default();
+    let (lbls, sz, cg) = if step > 1 {
+        let l: Vec<String> = if lbls.is_empty() { lbls } else { lbls.into_iter().step_by(step).collect() };
+        let s: Vec<f64> = if sz.is_empty() { sz } else { sz.into_iter().step_by(step).collect() };
+        let c: Vec<String> = if cg.is_empty() { cg } else { cg.into_iter().step_by(step).collect() };
+        (l, s, c)
+    } else { (lbls, sz, cg) };
     let html = crate::plot::default::render_scatter_html(
-        title, &x_values, &y_values, &lbls, width, height, &hover,
+        title, &x, &y, &lbls, width, height, &hover,
         &sz, &cg, &pal, x_label, y_label, color_hex, gridlines, show_text,
     );
     let html = if let Some(c) = bg_color { crate::html::hover::apply_bg(html, Some(c)) } else { html };
-    Chart::new(html)
+    Ok(Chart::new(html))
 }
 
 #[cfg(feature = "python")]
@@ -233,7 +266,7 @@ pub fn build_scatter_chart(
 #[pyo3(signature = (title, values, bins=0usize, color_hex=0x6366F1u32, x_label="", y_label="Count", show_counts=false, gridlines=true, sort_order="none", width=860, height=380, hover_json=None, bg_color=None))]
 pub fn build_histogram(
     title: &str,
-    values: Vec<f64>,
+    values: &PyAny,
     bins: usize,
     color_hex: u32,
     x_label: &str,
@@ -245,16 +278,32 @@ pub fn build_histogram(
     height: i32,
     hover_json: Option<&str>,
     bg_color: Option<&str>,
-) -> Chart {
+) -> PyResult<Chart> {
+    use pyo3::types::PyList;
     use crate::plot::statistical::{HistogramConfig, render_histogram_html, parse_hover_json};
     let hover = hover_json.map(|s| parse_hover_json(s)).unwrap_or_default();
+    let (vals, scale) = if let Ok(vl) = values.downcast::<PyList>() {
+        let n = vl.len();
+        let s = if n > 50000 { n / 50000 } else { 1 };
+        if s >= 2 {
+            let cap = n / s + 1;
+            let mut v = Vec::with_capacity(cap);
+            let mut i = 0;
+            while i < n { v.push(vl.get_item(i)?.extract::<f64>()?); i += s; }
+            (v, s)
+        } else {
+            (values.extract::<Vec<f64>>()?, 1)
+        }
+    } else {
+        (values.extract::<Vec<f64>>()?, 1)
+    };
     let html = render_histogram_html(&HistogramConfig {
-        title, values: &values, bins, color: color_hex, x_label, y_label,
-        show_counts, gridlines, width, height, hover: &hover,
+        title, values: &vals, bins, color: color_hex, x_label, y_label,
+        show_counts, gridlines, width, height, hover: &hover, count_scale: scale,
         ..HistogramConfig::default()
     });
     let html = if let Some(c) = bg_color { crate::html::hover::apply_bg(html, Some(c)) } else { html };
-    Chart::new(html)
+    Ok(Chart::new(html))
 }
 
 #[cfg(feature = "python")]

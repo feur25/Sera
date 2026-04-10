@@ -1,5 +1,5 @@
 use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
-use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+use crate::html::hover::{HoverSlot, slots_to_json};
 
 pub struct MultiLine;
 
@@ -53,7 +53,7 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
     let legend_w: i32 = 160;
     let auto_hover = cfg.hover.is_empty();
     let n_total = n_pts * n_ser;
-    let mut f = Frame::new(cfg.width, cfg.height, 56, 42, 52, legend_w, n_total * 80 + 2048);
+    let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, 56, 42, 52, legend_w, n_total * 80 + 2048);
     let step_x = f.pw as f64 / (n_pts - 1).max(1) as f64;
     f.open(cfg.title, true);
     f.y_grid_rc(6, min_val, max_val, cfg.gridlines);
@@ -114,8 +114,7 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
         let color = palette_color(cfg.palette, si);
         svg_legend_item(&mut f.buf, si as i32, sname, color, leg_x, f.pt + 6 + si as i32 * 18, 18);
     }
-    let svg = f.svg();
     let slots_json;
     let json: &str = if auto_hover { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
-    build_chart_html(cfg.title, &svg, json)
+    f.html(json)
 }

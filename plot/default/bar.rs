@@ -185,7 +185,7 @@ pub fn render_bars_html(
     gridlines: bool,
     sort_order: &str,
 ) -> String {
-    use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+    use crate::html::hover::{slots_to_json, html_id, html_prefix, html_suffix};
     use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, palette_color, truncate, PALETTE as DEFAULT_PAL, apply_sort, apply_sort_groups, svg_open_rescalable, svg_title, svg_axis_lines, svg_x_label, svg_y_label, svg_hgrid, svg_vgrid, svg_tick_y, svg_tick_x, svg_legend_item};
     let n = values.len().min(labels.len());
     if n == 0 { return String::new(); }
@@ -219,7 +219,9 @@ pub fn render_bars_html(
     let plot_w = width - pad_l - pad_r;
     let plot_h = height - pad_t - pad_b;
 
-    let mut buf = Vec::<u8>::with_capacity(n * 280 + 2048);
+    let hid = html_id();
+    let mut buf = Vec::<u8>::with_capacity(n * 280 + 16_000);
+    html_prefix(&mut buf, title, hid);
     svg_open_rescalable(&mut buf, width, height, pad_l, pad_t, plot_w, plot_h);
     svg_title(&mut buf, title, pad_l + plot_w / 2, 24);
 
@@ -352,6 +354,6 @@ pub fn render_bars_html(
     }
 
     push_b(&mut buf, b"</svg>");
-    let svg = unsafe { String::from_utf8_unchecked(buf) };
-    build_chart_html(title, &svg, &slots_to_json(hover))
+    html_suffix(&mut buf, hid, &slots_to_json(hover));
+    unsafe { String::from_utf8_unchecked(buf) }
 }

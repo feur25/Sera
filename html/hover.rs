@@ -345,8 +345,7 @@ svg.querySelectorAll('[data-idx]').forEach(function(el,i){el.style.animationDela
 })();</script>"#;
 
 pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
-    let id = CHART_ID.fetch_add(1, Ordering::Relaxed);
-    let pid = format!("spp{id}");
+    let id = html_id();
 
     const CSS: &str = concat!(
         "<style>",
@@ -390,25 +389,22 @@ pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
         "</style>"
     );
 
-    // Zero-copy JS injection: write P1 + pid + P2 + hover_json + P3
-    // Eliminates 2 runtime String allocations vs the old .replace() approach.
-    let mut buf = Vec::with_capacity(
-        128 + title.len() + CSS.len() + svg.len()
-            + JS_P1.len() + pid.len() + JS_P2.len() + hover_json.len() + JS_P3.len() + 64,
-    );
+    let cap = 256 + title.len() + CSS.len() + svg.len()
+        + JS_P1.len() + JS_P2.len() + hover_json.len() + JS_P3.len();
+    let mut buf = Vec::with_capacity(cap);
     buf.extend_from_slice(b"<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>");
     buf.extend_from_slice(html_attr_esc(title).as_bytes());
     buf.extend_from_slice(b"</title>");
     buf.extend_from_slice(CSS.as_bytes());
     buf.extend_from_slice(b"<style>body{margin:0;background:#f0f2f5;display:flex;justify-content:center;padding:16px 0}@keyframes sp-i{from{opacity:0;transform:translateY(8px) scale(.94)}}@keyframes sp-bar{from{opacity:0;transform:scaleY(0)}}@keyframes sp-pop{0%{opacity:0;transform:scale(0)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}@keyframes sp-arc{from{opacity:0;transform:scale(.82) rotate(-6deg)}}@keyframes sp-fn{from{opacity:0;transform:scaleX(.7) translateY(8px)}}svg rect[data-idx]{transform-box:fill-box;transform-origin:bottom center;animation:sp-bar .5s cubic-bezier(.22,.61,.36,1) both}svg circle[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-pop .42s cubic-bezier(.34,1.56,.64,1) both}svg path[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-arc .48s cubic-bezier(.22,.61,.36,1) both}svg polygon[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-fn .48s cubic-bezier(.22,.61,.36,1) both}svg line[data-idx]{animation:sp-i .45s cubic-bezier(.22,.61,.36,1) both}svg rect[data-idx]:hover{transform:scaleY(1.03);filter:brightness(1.12) saturate(1.1)}svg circle[data-idx]:hover{transform:scale(1.3);filter:brightness(1.15)}svg path[data-idx]:hover{filter:brightness(1.1) drop-shadow(0 2px 8px rgba(0,0,0,.2))}</style></head><body>");
     buf.extend_from_slice(b"<div id=\"");
-    buf.extend_from_slice(pid.as_bytes());
+    push_pid(&mut buf, id);
     buf.extend_from_slice(b"\" style=\"position:relative;display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)\">");
     buf.extend_from_slice(svg.as_bytes());
     buf.extend_from_slice(b"<div class=\"sp-sel-ov\" style=\"display:none\"></div>");
     buf.extend_from_slice(b"<div class=\"sp-cpanel\"></div>");
     buf.extend_from_slice(JS_P1.as_bytes());
-    buf.extend_from_slice(pid.as_bytes());
+    push_pid(&mut buf, id);
     buf.extend_from_slice(JS_P2.as_bytes());
     buf.extend_from_slice(hover_json.as_bytes());
     buf.extend_from_slice(JS_P3.as_bytes());
@@ -425,4 +421,86 @@ fn html_attr_esc(s: &str) -> std::borrow::Cow<'_, str> {
     } else {
         std::borrow::Cow::Borrowed(s)
     }
+}
+
+pub fn html_id() -> u64 {
+    CHART_ID.fetch_add(1, Ordering::Relaxed)
+}
+
+#[inline(always)]
+fn push_u64(buf: &mut Vec<u8>, mut n: u64) {
+    if n == 0 { buf.push(b'0'); return; }
+    let mut d = [0u8; 20];
+    let mut len = 0;
+    while n > 0 { d[len] = (n % 10) as u8 + b'0'; n /= 10; len += 1; }
+    for &b in d[..len].iter().rev() { buf.push(b); }
+}
+
+#[inline(always)]
+fn push_pid(buf: &mut Vec<u8>, id: u64) {
+    buf.extend_from_slice(b"spp");
+    push_u64(buf, id);
+}
+
+pub fn html_prefix(buf: &mut Vec<u8>, title: &str, id: u64) {
+    const CSS: &str = concat!(
+        "<style>",
+        "#sp-tip{position:absolute;z-index:999999;pointer-events:none;opacity:0;",
+          "transition:opacity .15s,transform .15s;transform:translateY(6px) scale(.97);",
+          "background:#0b0e18;color:#f1f5f9;",
+          "font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;",
+          "font-size:13px;border-radius:10px;min-width:160px;max-width:340px;",
+          "box-shadow:0 4px 20px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.08);",
+          "overflow:hidden}",
+        "#sp-tip.sp-vis{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}",
+        ".sp-nav{display:flex;align-items:center;justify-content:space-between;",
+          "padding:5px 10px;border-top:1px solid rgba(255,255,255,.08)}",
+        ".sp-nav-btn{cursor:pointer;padding:0 10px;border-radius:5px;height:22px;",
+          "line-height:22px;font-size:18px;",
+          "background:rgba(255,255,255,.10);color:#e2e8f0;user-select:none;flex-shrink:0}",
+        ".sp-nav-btn:hover{background:rgba(255,255,255,.22)}",
+        ".sp-nav-dis{opacity:.25;pointer-events:none}",
+        ".sp-nav-ctr{flex:1;text-align:center;font-size:11px;color:#94a3b8}",
+        ".sp-head{padding:10px 14px 6px;font-weight:700;font-size:14px;color:#e2e8f0;",
+          "border-bottom:1px solid rgba(255,255,255,.08)}",
+        ".sp-body{padding:8px 14px 12px}",
+        ".sp-row{display:flex;justify-content:space-between;align-items:baseline;",
+          "gap:14px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}",
+        ".sp-row:last-child{border-bottom:none}",
+        ".sp-key{color:#94a3b8;font-size:12px;white-space:nowrap}",
+        ".sp-val{font-weight:600;font-size:12px;color:#f8fafc;text-align:right;word-break:break-all}",
+        "#sp-tip img{display:block;width:100%;max-height:210px;object-fit:contain;",
+          "border-top:1px solid rgba(255,255,255,.07)}",
+        "#sp-tip video{display:block;width:100%;border-top:1px solid rgba(255,255,255,.07)}",
+        ".sp-html{padding:8px 14px;font-size:12px;border-top:1px solid rgba(255,255,255,.07)}",
+        "[data-idx]{cursor:pointer;transition:opacity .25s,filter .2s,transform .25s}",
+        "[data-idx]:hover{filter:brightness(1.12) saturate(1.08)}",
+        ".sp-cpanel{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);",
+          "background:#0b0e18;color:#f1f5f9;",
+          "border-radius:10px;padding:8px 16px;font-size:12px;",
+          "font-family:-apple-system,Arial,sans-serif;",
+          "box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:20;white-space:nowrap;display:none}",
+        ".sp-cls-x{cursor:pointer;color:#94a3b8;margin-left:6px;font-size:13px}",
+        ".sp-cls-x:hover{color:#f87171}",
+        "</style>"
+    );
+    buf.extend_from_slice(b"<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>");
+    buf.extend_from_slice(html_attr_esc(title).as_bytes());
+    buf.extend_from_slice(b"</title>");
+    buf.extend_from_slice(CSS.as_bytes());
+    buf.extend_from_slice(b"<style>body{margin:0;background:#f0f2f5;display:flex;justify-content:center;padding:16px 0}@keyframes sp-i{from{opacity:0;transform:translateY(8px) scale(.94)}}@keyframes sp-bar{from{opacity:0;transform:scaleY(0)}}@keyframes sp-pop{0%{opacity:0;transform:scale(0)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}@keyframes sp-arc{from{opacity:0;transform:scale(.82) rotate(-6deg)}}@keyframes sp-fn{from{opacity:0;transform:scaleX(.7) translateY(8px)}}svg rect[data-idx]{transform-box:fill-box;transform-origin:bottom center;animation:sp-bar .5s cubic-bezier(.22,.61,.36,1) both}svg circle[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-pop .42s cubic-bezier(.34,1.56,.64,1) both}svg path[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-arc .48s cubic-bezier(.22,.61,.36,1) both}svg polygon[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-fn .48s cubic-bezier(.22,.61,.36,1) both}svg line[data-idx]{animation:sp-i .45s cubic-bezier(.22,.61,.36,1) both}svg rect[data-idx]:hover{transform:scaleY(1.03);filter:brightness(1.12) saturate(1.1)}svg circle[data-idx]:hover{transform:scale(1.3);filter:brightness(1.15)}svg path[data-idx]:hover{filter:brightness(1.1) drop-shadow(0 2px 8px rgba(0,0,0,.2))}</style></head><body>");
+    buf.extend_from_slice(b"<div id=\"");
+    push_pid(buf, id);
+    buf.extend_from_slice(b"\" style=\"position:relative;display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)\">");
+}
+
+pub fn html_suffix(buf: &mut Vec<u8>, id: u64, hover_json: &str) {
+    buf.extend_from_slice(b"<div class=\"sp-sel-ov\" style=\"display:none\"></div>");
+    buf.extend_from_slice(b"<div class=\"sp-cpanel\"></div>");
+    buf.extend_from_slice(JS_P1.as_bytes());
+    push_pid(buf, id);
+    buf.extend_from_slice(JS_P2.as_bytes());
+    buf.extend_from_slice(hover_json.as_bytes());
+    buf.extend_from_slice(JS_P3.as_bytes());
+    buf.extend_from_slice(b"</div></body></html>");
 }
