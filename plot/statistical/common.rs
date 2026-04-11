@@ -155,6 +155,7 @@ pub fn svg_y_label(buf: &mut Vec<u8>, label: &str, x: i32, pad_t: i32, plot_h: i
 }
 
 pub fn svg_legend_item(buf: &mut Vec<u8>, si: i32, name: &str, color: u32, x: i32, y: i32, max_len: usize) {
+    if name.is_empty() { return; }
     let hx = hex6(color);
     push_b(buf, b"<g data-legend=\"1\" data-series=\""); push_i(buf, si);
     push_b(buf, b"\">");

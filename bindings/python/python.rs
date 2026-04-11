@@ -488,7 +488,7 @@ pub fn build_grouped_bar(title: &str, category_labels: Vec<String>, series_value
         let sn = kw_vec_str(kwargs, "series_names");
         let n_cats = category_labels.len();
         let n_series = if !sn.is_empty() { sn.len() } else if n_cats > 0 { (series_values.len() + n_cats - 1) / n_cats } else { 0 };
-        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_series).map(|i| format!("Series {}", i + 1)).collect() };
+        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_series).map(|_| String::new()).collect() };
         let series: Vec<(String, Vec<f64>)> = names.iter().enumerate().map(|(si, name)| {
             let vals: Vec<f64> = (0..n_cats).map(|ci| {
                 series_values.get(si * n_cats + ci).copied().unwrap_or(0.0)
@@ -523,7 +523,7 @@ pub fn build_stacked_bar(title: &str, category_labels: Vec<String>, series_value
         let sn = kw_vec_str(kwargs, "series_names");
         let n_cats = category_labels.len();
         let n_series = if !sn.is_empty() { sn.len() } else if n_cats > 0 { (series_values.len() + n_cats - 1) / n_cats } else { 0 };
-        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_series).map(|i| format!("Series {}", i + 1)).collect() };
+        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_series).map(|_| String::new()).collect() };
         let series: Vec<(String, Vec<f64>)> = names.iter().enumerate().map(|(si, name)| {
             let vals: Vec<f64> = (0..n_cats).map(|ci| {
                 series_values.get(si * n_cats + ci).copied().unwrap_or(0.0)
@@ -786,7 +786,7 @@ pub fn build_multiline_chart(title: &str, x_labels: &PyAny, series_values: &PyAn
         let sn = kw_vec_str(kwargs, "series_names");
         let (names, vecs, _) = fast_vecs_py(sn, series_values, 60)?;
         let (xlabels, _) = fast_labels_py(x_labels, 60)?;
-        let names: Vec<String> = if names.is_empty() { (0..vecs.len()).map(|i| format!("Series {}", i + 1)).collect() } else { names };
+        let names: Vec<String> = if names.is_empty() { (0..vecs.len()).map(|_| String::new()).collect() } else { names };
         let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(vecs.into_iter()).collect();
         let html = render_multiline_html(&MultiLineConfig {
             title, x_labels: &xlabels, series: &series, palette: &o.pal,
@@ -816,7 +816,7 @@ pub fn build_area_chart(title: &str, x_labels: &PyAny, series_values: &PyAny, kw
         let sn = kw_vec_str(kwargs, "series_names");
         let (names, vecs, _) = fast_vecs_py(sn, series_values, 60)?;
         let (xlabels, _) = fast_labels_py(x_labels, 60)?;
-        let names: Vec<String> = if names.is_empty() { (0..vecs.len()).map(|i| format!("Series {}", i + 1)).collect() } else { names };
+        let names: Vec<String> = if names.is_empty() { (0..vecs.len()).map(|_| String::new()).collect() } else { names };
         let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(vecs.into_iter()).collect();
         Ok(Chart::new(render_area_html(&AreaConfig {
             title, x_labels: &xlabels, series: &series, stacked, palette: &o.pal,
@@ -994,7 +994,7 @@ pub fn build_radar_chart(title: &str, axes: Vec<String>, series_values: Vec<Vec<
         let series_names: Option<Vec<String>> = kwargs.and_then(|k| k.get_item("series_names").ok().flatten()).and_then(|v| v.extract().ok());
         let filled = kw_bool(kwargs, "filled", true);
         let fill_opacity = kw_u8(kwargs, "fill_opacity", 50);
-        let names = series_names.unwrap_or_else(|| (0..series_values.len()).map(|i| format!("Series {}", i + 1)).collect());
+        let names = series_names.unwrap_or_else(|| (0..series_values.len()).map(|_| String::new()).collect());
         let hover = o.hover();
         let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(series_values.into_iter()).collect();
         Ok(Chart::new(render_radar_html(&RadarConfig {
@@ -1020,7 +1020,7 @@ pub fn build_radar3d_chart(title: &str, axes: Vec<String>, series_values: Vec<Ve
         let n_axes = axes.len();
         if n_axes == 0 { return Ok(Chart::new(String::new())); }
         let n_series = series_values.len();
-        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_series).map(|i| format!("Series {}", i + 1)).collect() };
+        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_series).map(|_| String::new()).collect() };
         let mut xv = Vec::new();
         let mut yv = Vec::new();
         let mut zv = Vec::new();
@@ -1514,7 +1514,7 @@ pub fn build_stacked_bar3d_chart(title: &str, category_labels: Vec<String>, seri
         let sn = kw_vec_str(kwargs, "series_names");
         let n_cat = category_labels.len();
         let n_ser = series_values.len();
-        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_ser).map(|i| format!("Series {}", i + 1)).collect() };
+        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_ser).map(|_| String::new()).collect() };
         let mut xv = Vec::new();
         let mut yv = Vec::new();
         let mut zv = Vec::new();
@@ -1698,7 +1698,7 @@ pub fn build_parallel(title: &str, axes: Vec<String>, series_values: Vec<Vec<f64
 
         use crate::plot::statistical::parallel::{ParallelConfig, render_parallel_html};
         let sn = kw_vec_str(kwargs, "series_names");
-        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..series_values.len()).map(|i| format!("Series {}", i + 1)).collect() };
+        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..series_values.len()).map(|_| String::new()).collect() };
         let hover = o.hover();
         Ok(Chart::new(render_parallel_html(&ParallelConfig {
             title, axes: &axes, series_names: &names, series_values: &series_values,

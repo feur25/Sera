@@ -22,12 +22,20 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
     let n_pts = cfg.x_labels.len();
     let n_ser = cfg.series.len();
     if n_pts < 2 || n_ser == 0 { return String::new(); }
-    let max_val = cfg.series.iter()
+    let series: Vec<(String, Vec<f64>)> = if cfg.sort_order != "none" && !cfg.sort_order.is_empty() && n_ser > 1 {
+        let totals: Vec<f64> = cfg.series.iter().map(|(_, v)| v.iter().sum::<f64>()).collect();
+        let names: Vec<String> = cfg.series.iter().map(|(n, _)| n.clone()).collect();
+        let idx = super::common::sort_indices(n_ser, &totals, &names, cfg.sort_order);
+        idx.iter().map(|&i| cfg.series[i].clone()).collect()
+    } else {
+        cfg.series.to_vec()
+    };
+    let max_val = series.iter()
         .flat_map(|(_, v)| v.iter().copied())
         .filter(|v| v.is_finite())
         .fold(0.0_f64, f64::max)
         .max(1.0);
-    let min_val = cfg.series.iter()
+    let min_val = series.iter()
         .flat_map(|(_, v)| v.iter().copied())
         .filter(|v| v.is_finite())
         .fold(f64::INFINITY, f64::min)
@@ -50,7 +58,7 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
         escape_xml(&mut f.buf, truncate(&cfg.x_labels[i], 12));
         push_b(&mut f.buf, b"</text>");
     }
-    for (si, (sname, svals)) in cfg.series.iter().enumerate() {
+    for (si, (sname, svals)) in series.iter().enumerate() {
         let color = palette_color(cfg.palette, si);
         let hx = hex6(color);
         let mut sname_esc = Vec::with_capacity(sname.len() + 8);
@@ -88,7 +96,7 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
         }
     }
     let leg_x = cfg.width - legend_w + 14;
-    for (si, (sname, _)) in cfg.series.iter().enumerate() {
+    for (si, (sname, _)) in series.iter().enumerate() {
         let color = palette_color(cfg.palette, si);
         svg_legend_item(&mut f.buf, si as i32, sname, color, leg_x, f.pt + 6 + si as i32 * 18, 18);
     }

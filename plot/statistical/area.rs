@@ -22,10 +22,18 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
     let n_pts = cfg.x_labels.len();
     let n_ser = cfg.series.len();
     if n_pts < 2 || n_ser == 0 { return String::new(); }
+    let series: Vec<(String, Vec<f64>)> = if cfg.sort_order != "none" && !cfg.sort_order.is_empty() && n_ser > 1 {
+        let totals: Vec<f64> = cfg.series.iter().map(|(_, v)| v.iter().sum::<f64>()).collect();
+        let names: Vec<String> = cfg.series.iter().map(|(n, _)| n.clone()).collect();
+        let idx = super::common::sort_indices(n_ser, &totals, &names, cfg.sort_order);
+        idx.iter().map(|&i| cfg.series[i].clone()).collect()
+    } else {
+        cfg.series.to_vec()
+    };
     let mut stacked_sums: Vec<Vec<f64>> = Vec::with_capacity(n_ser);
     if cfg.stacked {
         let mut running = vec![0.0_f64; n_pts];
-        for (_, svals) in cfg.series.iter() {
+        for (_, svals) in series.iter() {
             for i in 0..n_pts {
                 running[i] += svals.get(i).copied().unwrap_or(0.0).max(0.0);
             }
@@ -35,7 +43,7 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
     let max_val = if cfg.stacked {
         stacked_sums.last().map(|s| s.iter().copied().fold(0.0_f64, f64::max)).unwrap_or(1.0)
     } else {
-        cfg.series.iter()
+        series.iter()
             .flat_map(|(_, v)| v.iter().copied())
             .filter(|v| v.is_finite())
             .fold(0.0_f64, f64::max)
@@ -80,7 +88,7 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
     }
     let hover_step = ((n_pts as f64 / 30.0).ceil() as usize).max(1);
     for si in 0..n_ser {
-        let (sname, svals) = &cfg.series[si];
+        let (sname, svals) = &series[si];
         let color = palette_color(cfg.palette, si);
         let hx = hex6(color);
         let mut sname_esc = Vec::with_capacity(sname.len() + 8);
@@ -111,7 +119,7 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
         push_b(&mut f.buf, b"</text>");
     }
     let leg_x = cfg.width - legend_w + 14;
-    for (si, (sname, _)) in cfg.series.iter().enumerate() {
+    for (si, (sname, _)) in series.iter().enumerate() {
         let color = palette_color(cfg.palette, si);
         let hx = hex6(color);
         let ly = f.pt + 6 + si as i32 * 18;

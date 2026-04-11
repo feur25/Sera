@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_open, svg_title, svg_hgrid, svg_tick_y, svg_tick_x, svg_axis_lines, svg_x_label, svg_y_label};
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_open, svg_title, svg_hgrid, svg_tick_y, svg_tick_x, svg_axis_lines, svg_x_label, svg_y_label, sort_indices};
 use crate::html::hover::{slots_to_json, build_chart_html};
 
 crate::chart_config!(CandlestickConfig, 1100, 500;
@@ -23,12 +23,18 @@ crate::chart_config!(CandlestickConfig, 1100, 500;
 pub fn render_candlestick_html(cfg: &CandlestickConfig) -> String {
     let n = cfg.labels.len().min(cfg.open.len()).min(cfg.high.len()).min(cfg.low.len()).min(cfg.close.len());
     if n == 0 { return String::new(); }
+    let idx = sort_indices(n, cfg.close, cfg.labels, cfg.sort_order);
+    let labels: Vec<String> = idx.iter().map(|&i| cfg.labels[i].clone()).collect();
+    let open: Vec<f64> = idx.iter().map(|&i| cfg.open[i]).collect();
+    let high: Vec<f64> = idx.iter().map(|&i| cfg.high[i]).collect();
+    let low: Vec<f64> = idx.iter().map(|&i| cfg.low[i]).collect();
+    let close: Vec<f64> = idx.iter().map(|&i| cfg.close[i]).collect();
 
     let mut global_min = f64::INFINITY;
     let mut global_max = f64::NEG_INFINITY;
     for i in 0..n {
-        if cfg.low[i] < global_min { global_min = cfg.low[i]; }
-        if cfg.high[i] > global_max { global_max = cfg.high[i]; }
+        if low[i] < global_min { global_min = low[i]; }
+        if high[i] > global_max { global_max = high[i]; }
     }
     let pad_val = (global_max - global_min) * 0.08;
     global_min -= pad_val;
@@ -76,17 +82,17 @@ pub fn render_candlestick_html(cfg: &CandlestickConfig) -> String {
     let body_w = (candle_pitch * 0.6).max(3.0).min(20.0) as i32;
 
     for i in 0..n {
-        let is_up = cfg.close[i] >= cfg.open[i];
+        let is_up = close[i] >= open[i];
         let color = if is_up { up_color } else { dn_color };
         let hx = hex6(color);
 
         let cx = pad_l + (i as f64 * candle_pitch + candle_pitch / 2.0) as i32;
 
-        let wick_top = pad_t + ((1.0 - (cfg.high[i] - global_min) / val_range) * plot_h as f64) as i32;
-        let wick_bot = pad_t + ((1.0 - (cfg.low[i] - global_min) / val_range) * plot_h as f64) as i32;
+        let wick_top = pad_t + ((1.0 - (high[i] - global_min) / val_range) * plot_h as f64) as i32;
+        let wick_bot = pad_t + ((1.0 - (low[i] - global_min) / val_range) * plot_h as f64) as i32;
 
-        let body_top_val = if is_up { cfg.close[i] } else { cfg.open[i] };
-        let body_bot_val = if is_up { cfg.open[i] } else { cfg.close[i] };
+        let body_top_val = if is_up { close[i] } else { open[i] };
+        let body_bot_val = if is_up { open[i] } else { close[i] };
         let body_top = pad_t + ((1.0 - (body_top_val - global_min) / val_range) * plot_h as f64) as i32;
         let body_bot = pad_t + ((1.0 - (body_bot_val - global_min) / val_range) * plot_h as f64) as i32;
         let body_h = (body_bot - body_top).max(1);
@@ -99,11 +105,11 @@ pub fn render_candlestick_html(cfg: &CandlestickConfig) -> String {
         push_b(&mut buf, b"\" stroke-width=\"1.5\"/>");
 
         push_b(&mut buf, b"<rect data-idx=\""); push_i(&mut buf, i as i32);
-        push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, &cfg.labels[i]);
-        push_b(&mut buf, b"\" data-kv-Open=\""); push_f2(&mut buf, cfg.open[i]);
-        push_b(&mut buf, b"\" data-kv-High=\""); push_f2(&mut buf, cfg.high[i]);
-        push_b(&mut buf, b"\" data-kv-Low=\""); push_f2(&mut buf, cfg.low[i]);
-        push_b(&mut buf, b"\" data-kv-Close=\""); push_f2(&mut buf, cfg.close[i]);
+        push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, &labels[i]);
+        push_b(&mut buf, b"\" data-kv-Open=\""); push_f2(&mut buf, open[i]);
+        push_b(&mut buf, b"\" data-kv-High=\""); push_f2(&mut buf, high[i]);
+        push_b(&mut buf, b"\" data-kv-Low=\""); push_f2(&mut buf, low[i]);
+        push_b(&mut buf, b"\" data-kv-Close=\""); push_f2(&mut buf, close[i]);
         push_b(&mut buf, b"\" x=\""); push_i(&mut buf, cx - body_w / 2);
         push_b(&mut buf, b"\" y=\""); push_i(&mut buf, body_top);
         push_b(&mut buf, b"\" width=\""); push_i(&mut buf, body_w);
@@ -121,7 +127,7 @@ pub fn render_candlestick_html(cfg: &CandlestickConfig) -> String {
             push_b(&mut buf, b"<text x=\""); push_i(&mut buf, cx);
             push_b(&mut buf, b"\" y=\""); push_i(&mut buf, pad_t + plot_h + 14);
             push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#6b7280\">");
-            escape_xml(&mut buf, truncate(&cfg.labels[i], 10));
+            escape_xml(&mut buf, truncate(&labels[i], 10));
             push_b(&mut buf, b"</text>");
         }
     }

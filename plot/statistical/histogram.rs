@@ -30,13 +30,29 @@ crate::chart_config!(HistogramConfig, 860, 380;
 
 pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
     if cfg.values.is_empty() { return String::new(); }
-    let (mut bin_counts, edges) = compute_bins(cfg.values, cfg.bins);
+    let (mut bin_counts, mut edges) = compute_bins(cfg.values, cfg.bins);
     if cfg.count_scale > 1 { for c in bin_counts.iter_mut() { *c *= cfg.count_scale as u64; } }
-    let overlay_counts = cfg.overlay_values.map(|v| {
+    let mut overlay_counts = cfg.overlay_values.map(|v| {
         let (oc, _) = bin_to_edges(v, &edges);
         oc
     });
     let n_bins = bin_counts.len();
+    if n_bins > 0 && cfg.sort_order != "none" && !cfg.sort_order.is_empty() {
+        let mut idx: Vec<usize> = (0..n_bins).collect();
+        match cfg.sort_order {
+            "asc" | "ascending" => idx.sort_by(|&a, &b| bin_counts[a].cmp(&bin_counts[b])),
+            "desc" | "descending" => idx.sort_by(|&a, &b| bin_counts[b].cmp(&bin_counts[a])),
+            _ => {}
+        }
+        let sorted_counts: Vec<u64> = idx.iter().map(|&i| bin_counts[i]).collect();
+        let sorted_edges: Vec<f64> = idx.iter().map(|&i| edges[i]).chain(std::iter::once(*edges.last().unwrap_or(&0.0))).collect();
+        if let Some(ref oc) = overlay_counts {
+            let sorted_oc: Vec<u64> = idx.iter().map(|&i| oc[i]).collect();
+            overlay_counts = Some(sorted_oc);
+        }
+        bin_counts = sorted_counts;
+        edges = sorted_edges;
+    }
     let max_count = {
         let mut m = *bin_counts.iter().max().unwrap_or(&1) as f64;
         if let Some(ref oc) = overlay_counts { m = m.max(*oc.iter().max().unwrap_or(&0) as f64); }

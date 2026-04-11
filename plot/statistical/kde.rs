@@ -44,10 +44,19 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
     let n_ser = cfg.series.len();
     if n_ser == 0 { return String::new(); }
 
+    let series: Vec<(String, Vec<f64>)> = if cfg.sort_order != "none" && !cfg.sort_order.is_empty() && n_ser > 1 {
+        let means: Vec<f64> = cfg.series.iter().map(|(_, v)| if v.is_empty() { 0.0 } else { v.iter().sum::<f64>() / v.len() as f64 }).collect();
+        let names: Vec<String> = cfg.series.iter().map(|(n, _)| n.clone()).collect();
+        let idx = super::common::sort_indices(n_ser, &means, &names, cfg.sort_order);
+        idx.iter().map(|&i| cfg.series[i].clone()).collect()
+    } else {
+        cfg.series.to_vec()
+    };
+
     let legend_w: i32 = if n_ser > 1 { 140 } else { 20 };
     let n_pts = cfg.n_points.max(30);
 
-    let all_vals: Vec<f64> = cfg.series.iter().flat_map(|(_, v)| v.iter().copied()).collect();
+    let all_vals: Vec<f64> = series.iter().flat_map(|(_, v)| v.iter().copied()).collect();
     if all_vals.is_empty() { return String::new(); }
 
     let x_min = all_vals.iter().copied().fold(f64::INFINITY, f64::min);
@@ -60,7 +69,7 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
 
     let xs: Vec<f64> = (0..n_pts).map(|i| x0 + xr * i as f64 / (n_pts - 1) as f64).collect();
 
-    let curves: Vec<Vec<f64>> = cfg.series.iter().map(|(_, vals)| {
+    let curves: Vec<Vec<f64>> = series.iter().map(|(_, vals)| {
         let bw = if cfg.bandwidth > 0.0 { cfg.bandwidth } else { scott_bw(vals).max(1e-12) };
         let cap = 40usize;
         let step = if vals.len() > cap { vals.len() / cap } else { 1 };
@@ -111,7 +120,7 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
     f.x_grid(6, x0, x1, false);
 
     if n_ser > 1 {
-        let names: Vec<&str> = cfg.series.iter().map(|(s, _)| s.as_str()).collect();
+        let names: Vec<&str> = series.iter().map(|(s, _)| s.as_str()).collect();
         f.legend(&names, cfg.palette, cfg.width - legend_w + 12);
     }
 

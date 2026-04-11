@@ -60,9 +60,14 @@ pub fn render_bubble_html(cfg: &BubbleConfig) -> String {
     f.y_grid(5, ymin2, ymax2, cfg.gridlines);
     f.axes(cfg.x_label, cfg.y_label);
 
-    // Bubbles (sorted by size desc so smaller ones are on top)
+    // Bubbles (sorted by size: larger behind smaller; sort_order overrides direction)
     let mut indices: Vec<usize> = (0..n).collect();
-    indices.sort_by(|&a, &b| cfg.sizes[b].partial_cmp(&cfg.sizes[a]).unwrap_or(std::cmp::Ordering::Equal));
+    let sort_desc = cfg.sort_order == "asc" || cfg.sort_order == "ascending";
+    if sort_desc {
+        indices.sort_by(|&a, &b| cfg.sizes[a].partial_cmp(&cfg.sizes[b]).unwrap_or(std::cmp::Ordering::Equal));
+    } else {
+        indices.sort_by(|&a, &b| cfg.sizes[b].partial_cmp(&cfg.sizes[a]).unwrap_or(std::cmp::Ordering::Equal));
+    }
 
     for &i in &indices {
         let cx = f.pl + (((cfg.x_values[i] - xmin2) / xr2) * f.pw as f64) as i32;

@@ -1,4 +1,4 @@
-use super::common::{push_b, push_i, push_f2, escape_xml, hex6};
+use super::common::{push_b, push_i, push_f2, escape_xml, hex6, sort_indices};
 use crate::html::hover::{build_chart_html, slots_to_json};
 
 crate::chart_config!(WaterfallConfig, 900, 480;
@@ -22,10 +22,14 @@ pub fn render_waterfall_html(cfg: &WaterfallConfig) -> String {
     let n = cfg.labels.len().min(cfg.values.len());
     if n == 0 { return String::new(); }
 
+    let idx = sort_indices(n, cfg.values, cfg.labels, cfg.sort_order);
+    let labels: Vec<String> = idx.iter().map(|&i| cfg.labels[i].clone()).collect();
+    let values: Vec<f64> = idx.iter().map(|&i| cfg.values[i]).collect();
+
     let mut running = 0.0_f64;
     let mut starts: Vec<f64> = Vec::with_capacity(n);
     let mut ends: Vec<f64> = Vec::with_capacity(n);
-    let is_total: Vec<bool> = cfg.labels.iter()
+    let is_total: Vec<bool> = labels.iter()
         .map(|l| {
             let lo = l.to_lowercase();
             lo.contains("total") || lo.contains("net") || lo.contains("final")
@@ -38,7 +42,7 @@ pub fn render_waterfall_html(cfg: &WaterfallConfig) -> String {
             ends.push(running);
         } else {
             starts.push(running);
-            running += cfg.values[i];
+            running += values[i];
             ends.push(running);
         }
     }
@@ -115,13 +119,13 @@ pub fn render_waterfall_html(cfg: &WaterfallConfig) -> String {
         let bar_top  = y_start.min(y_end);
         let bar_ht   = (y_start - y_end).abs().max(2);
         let color = if is_total[i] { COLOR_TOTAL }
-                    else if cfg.values[i] >= 0.0 { COLOR_POS }
+                    else if values[i] >= 0.0 { COLOR_POS }
                     else { COLOR_NEG };
         let hx = hex6(color);
         push_b(&mut b, b"<rect data-idx=\"");
         push_i(&mut b, i as i32);
-        push_b(&mut b, b"\" data-y=\""); push_f2(&mut b, cfg.values[i]);
-        push_b(&mut b, b"\" data-lbl=\""); escape_xml(&mut b, &cfg.labels[i]);
+        push_b(&mut b, b"\" data-y=\""); push_f2(&mut b, values[i]);
+        push_b(&mut b, b"\" data-lbl=\""); escape_xml(&mut b, &labels[i]);
         push_b(&mut b, b"\" x=\""); push_i(&mut b, bx);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, bar_top);
         push_b(&mut b, b"\" width=\""); push_i(&mut b, bar_w);
@@ -144,13 +148,13 @@ pub fn render_waterfall_html(cfg: &WaterfallConfig) -> String {
         push_b(&mut b, b"<text x=\""); push_i(&mut b, bx + bar_w / 2);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, lbl_y);
         push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-xt\">");
-        let lbl = &cfg.labels[i];
+        let lbl = &labels[i];
         let short = if lbl.len() > 10 { &lbl[..10] } else { lbl };
         escape_xml(&mut b, short);
         push_b(&mut b, b"</text>");
 
         if cfg.show_text && bar_ht > 10 {
-            let v = if is_total[i] { ends[i] } else { cfg.values[i] };
+            let v = if is_total[i] { ends[i] } else { values[i] };
             let txt_y = bar_top - 3;
             push_b(&mut b, b"<text x=\""); push_i(&mut b, bx + bar_w / 2);
             push_b(&mut b, b"\" y=\""); push_i(&mut b, txt_y);
