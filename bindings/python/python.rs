@@ -381,7 +381,7 @@ pub fn build_histogram(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, values, overlay_values, bins=0usize, color_hex=0x6366F1u32, overlay_color_hex=0xF43F5Eu32, sort_order="none", width=860, height=380, hover_json=None, bg_color=None))]
+#[pyo3(signature = (title, values, overlay_values, bins=0usize, color_hex=0x6366F1u32, overlay_color_hex=0xF43F5Eu32, labels=None, sort_order="none", width=860, height=380, hover_json=None, bg_color=None))]
 pub fn build_histogram_overlay(
     title: &str,
     values: Vec<f64>,
@@ -389,6 +389,7 @@ pub fn build_histogram_overlay(
     bins: usize,
     color_hex: u32,
     overlay_color_hex: u32,
+    labels: Option<Vec<String>>,
     sort_order: &str,
     width: i32,
     height: i32,
@@ -397,9 +398,15 @@ pub fn build_histogram_overlay(
 ) -> Chart {
     use crate::plot::statistical::{HistogramConfig, render_histogram_html, parse_hover_json};
     let hover = hover_json.map(|s| parse_hover_json(s)).unwrap_or_default();
+    let names: Option<(String, String)> = labels.and_then(|v| {
+        let a = v.get(0).cloned().unwrap_or_default();
+        let b = v.get(1).cloned().unwrap_or_default();
+        if a.is_empty() && b.is_empty() { None } else { Some((a, b)) }
+    });
     let html = render_histogram_html(&HistogramConfig {
         title, values: &values, bins, color: color_hex, overlay_color: overlay_color_hex,
         overlay_values: Some(&overlay_values), width, height, hover: &hover,
+        series_names: names.as_ref().map(|(a, b)| (a.as_str(), b.as_str())),
         ..HistogramConfig::default()
     });
     let html = if let Some(c) = bg_color { crate::html::hover::apply_bg(html, Some(c)) } else { html };
@@ -929,12 +936,12 @@ pub fn build_line3d_chart(
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, axes, series_names, series_values, palette=None, filled=true, fill_opacity=50u8, width=700, height=560))]
+#[pyo3(signature = (title, axes, series_values, series_names=None, palette=None, filled=true, fill_opacity=50u8, width=700, height=560))]
 pub fn build_radar_chart(
     title: &str,
     axes: Vec<String>,
-    series_names: Vec<String>,
     series_values: Vec<Vec<f64>>,
+    series_names: Option<Vec<String>>,
     palette: Option<Vec<u32>>,
     filled: bool,
     fill_opacity: u8,
@@ -943,7 +950,8 @@ pub fn build_radar_chart(
 ) -> Chart {
     use crate::plot::statistical::{RadarConfig, render_radar_html};
     let pal = parse_palette(palette);
-    let series: Vec<(String, Vec<f64>)> = series_names.into_iter().zip(series_values.into_iter()).collect();
+    let names = series_names.unwrap_or_else(|| (0..series_values.len()).map(|i| format!("Series {}", i + 1)).collect());
+    let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(series_values.into_iter()).collect();
     Chart::new(render_radar_html(&RadarConfig {
         title, axes: &axes, series: &series, palette: &pal, filled, fill_opacity, width, height,
     }))

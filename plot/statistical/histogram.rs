@@ -1,4 +1,4 @@
-use super::common::{push_b, push_i, push_f2, escape_xml, hex6, Frame};
+use super::common::{push_b, push_i, push_f2, escape_xml, hex6, Frame, svg_legend_item};
 use crate::html::hover::{HoverSlot, slots_to_json};
 
 pub struct Histogram;
@@ -19,6 +19,7 @@ pub struct HistogramConfig<'a> {
     pub show_counts: bool,
     pub hover: &'a [HoverSlot],
     pub count_scale: usize,
+    pub series_names: Option<(&'a str, &'a str)>,
 }
 
 impl<'a> Default for HistogramConfig<'a> {
@@ -39,6 +40,7 @@ impl<'a> Default for HistogramConfig<'a> {
             show_counts: false,
             hover: &[],
             count_scale: 1,
+            series_names: None,
         }
     }
 }
@@ -120,6 +122,13 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
         push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-xt\">");
         push_f2(&mut f.buf, val);
         push_b(&mut f.buf, b"</text>");
+    }
+    if let Some((n0, n1)) = cfg.series_names {
+        let lx = f.w - 130;
+        svg_legend_item(&mut f.buf, 0, n0, cfg.color, lx, f.pt + 5, 16);
+        if cfg.overlay_values.is_some() {
+            svg_legend_item(&mut f.buf, 1, n1, cfg.overlay_color, lx, f.pt + 22, 16);
+        }
     }
     let slots_json;
     let json: &str = if auto_hover { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };

@@ -43,53 +43,85 @@ pub struct Chart {
 }
 
 #[cfg(feature = "python")]
-fn label_btn_script(ap: Option<&str>) -> String {
-    let ap_val = match ap {
-        Some(p) => format!("'{}'", p),
-        None => "null".to_string(),
+fn build_labels_js(pos: &str, forced: &str) -> String {
+    let p = match pos {
+        "top" | "left" | "right" | "bottom" => pos,
+        _ => "bottom",
     };
     let mut s = String::with_capacity(4096);
     s.push_str("<script>(function(){");
-    s.push_str("if(window.__SLB__)return;window.__SLB__=1;");
-    s.push_str(&format!("var AP={};", ap_val));
-    s.push_str("var ST='idle',DIS=[],OV=null,MB,PK;");
-    s.push_str("var CRN={'top-left':{top:'8px',right:'auto',bottom:'auto',left:'8px'},'top-right':{top:'8px',right:'8px',bottom:'auto',left:'auto'},'bottom-left':{top:'auto',right:'auto',bottom:'8px',left:'8px'},'bottom-right':{top:'auto',right:'8px',bottom:'8px',left:'auto'}};");
-    s.push_str("function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}");
-    s.push_str("function gl2d(svg){var arr=[];svg.querySelectorAll('[data-legend]').forEach(function(lg){var rc=lg.querySelector('rect');var tx=lg.querySelector('text');var lbl=tx?tx.textContent:'';if(!lbl)return;arr.push({lb:lbl,co:rc?rc.getAttribute('fill'):'',se:lg.getAttribute('data-series')});});return arr;}");
+    s.push_str("if(window.__SL__)return;window.__SL__=1;");
+    s.push_str("function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');}");
+    s.push_str("function gl2d(svg){var a=[];svg.querySelectorAll('[data-legend]').forEach(function(lg){var rc=lg.querySelector('rect');var tx=lg.querySelector('text');var l=tx?tx.textContent:'';if(!l)return;a.push({lb:l,co:rc?rc.getAttribute('fill'):'',se:lg.getAttribute('data-series')});});return a;}");
     s.push_str("function gl3d(){var sc=document.querySelectorAll('script'),cl=null,pl=[];for(var i=0;i<sc.length;i++){var m=sc[i].textContent.match(/var CL=\\[([\\s\\S]*?)\\];/);if(m){try{cl=JSON.parse('['+m[1]+']');}catch(e){var a=m[1].match(/'([^']*)'/g)||[];cl=a.map(function(x){return x.slice(1,-1);});}break;}}if(!cl||!cl.length)return[];for(var j=0;j<sc.length;j++){var pm=sc[j].textContent.match(/var PAL=\\[([\\s\\S]*?)\\];/);if(pm){try{pl=JSON.parse('['+pm[1]+']');}catch(e){}break;}}var seen={},arr=[];cl.forEach(function(l){if(!seen[l]){seen[l]=1;arr.push({lb:l,co:pl[arr.length%pl.length]||'',se:null});}});return arr;}");
-    s.push_str("function mkOv(pos,cont,items,svg){if(OV){try{OV.parentNode.removeChild(OV);}catch(e){}OV=null;}DIS=[];var c=CRN[pos]||CRN['bottom-right'];OV=document.createElement('div');OV.style.cssText='position:absolute;z-index:200;display:flex;flex-wrap:wrap;gap:6px;padding:6px;';Object.keys(c).forEach(function(k){OV.style[k]=c[k];});");
-    s.push_str("items.forEach(function(it){var b=document.createElement('span');b.style.cssText='display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;user-select:none;transition:opacity .2s;background:rgba(0,0,0,.55);color:#f1f5f9;border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(4px);';");
-    s.push_str("if(it.co){var d=document.createElement('span');d.style.cssText='width:8px;height:8px;border-radius:50%;background:'+it.co+';flex-shrink:0;';b.appendChild(d);}b.appendChild(document.createTextNode(esc(it.lb)));b.title='Click to dismiss';");
-    s.push_str("b.onclick=function(){b.style.opacity='0';setTimeout(function(){b.style.display='none';},200);DIS.push({b:b,se:it.se,sv:svg});ubtn();};OV.appendChild(b);});cont.appendChild(OV);}");
-    s.push_str("function rst(){DIS.forEach(function(x){x.b.style.display='';setTimeout(function(){x.b.style.opacity='1';},10);if(x.se!=null&&x.sv){x.sv.querySelectorAll('[data-series=\"'+x.se+'\"]:not([data-legend])').forEach(function(e){e.style.display='';});}});DIS=[];ubtn();}");
-    s.push_str("function clOv(){if(OV){try{OV.parentNode.removeChild(OV);}catch(e){}OV=null;}DIS=[];ST='idle';ubtn();}");
-    s.push_str("function ubtn(){if(ST==='idle'){MB.textContent='\u{1F3F7}';MB.title='Show series labels';}else if(ST==='pick'){MB.textContent='\u{D7}';MB.title='Cancel';}else{MB.textContent=DIS.length>0?'\u{21BA}':'\u{D7}';MB.title=DIS.length>0?'Reset dismissed':'Close labels';}PK.style.display=ST==='pick'?'flex':'none';}");
+    s.push_str("function glColors(svg){var pal=[];if(!svg)return pal;var seen={};svg.querySelectorAll('rect[fill],path[fill],circle[fill]').forEach(function(e){var f=e.getAttribute('fill');if(f&&f!=='none'&&f!=='#fff'&&f!=='#ffffff'&&!seen[f]){seen[f]=1;pal.push(f);}});return pal;}");
+    s.push_str(&format!("var POS='{}';", p));
+    if !forced.is_empty() {
+        s.push_str("var FRC=");
+        s.push_str(forced);
+        s.push_str(";");
+    } else {
+        s.push_str("var FRC=null;");
+    }
     s.push_str("document.addEventListener('DOMContentLoaded',function(){");
     s.push_str("var cont=document.querySelector('.chart-container')||document.querySelector('.c3w');if(!cont)return;");
     s.push_str("if(getComputedStyle(cont).position==='static')cont.style.position='relative';");
-    s.push_str("var svg=cont.querySelector('svg');var items=svg?gl2d(svg):gl3d();if(!items.length)return;");
-    s.push_str("var wrap=document.createElement('div');wrap.style.cssText='position:absolute;top:10px;left:20px;z-index:300;opacity:0;pointer-events:none;transition:opacity .2s;';");
-    s.push_str("var col=document.createElement('div');col.style.cssText='display:flex;flex-direction:column;align-items:flex-start;';");
-    s.push_str("var row=document.createElement('div');row.style.cssText='display:flex;gap:4px;align-items:center;';");
-    s.push_str("MB=document.createElement('button');MB.style.cssText='background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.15);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;line-height:1;box-shadow:0 2px 6px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;padding:0;';");
-    s.push_str("MB.addEventListener('click',function(){if(ST==='idle'){ST='pick';ubtn();}else if(ST==='pick'){ST='idle';ubtn();}else{if(DIS.length>0)rst();else clOv();}});");
-    s.push_str("PK=document.createElement('div');PK.style.cssText='display:none;gap:4px;margin-top:4px;flex-wrap:wrap;';");
-    s.push_str("[['\u{2196}','top-left'],['\u{2197}','top-right'],['\u{2199}','bottom-left'],['\u{2198}','bottom-right']].forEach(function(p){var pb=document.createElement('button');pb.textContent=p[0];pb.title=p[1];pb.style.cssText='background:rgba(255,255,255,.92);border:1px solid rgba(0,0,0,.15);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,.12);padding:0;';pb.addEventListener('click',function(){mkOv(p[1],cont,items,svg);ST='on';ubtn();});PK.appendChild(pb);});");
-    s.push_str("row.appendChild(MB);col.appendChild(row);col.appendChild(PK);wrap.appendChild(col);cont.appendChild(wrap);");
-    s.push_str("cont.addEventListener('mouseenter',function(){wrap.style.opacity='1';wrap.style.pointerEvents='auto';});");
-    s.push_str("cont.addEventListener('mouseleave',function(){if(ST!=='on'){wrap.style.opacity='0';wrap.style.pointerEvents='none';}});");
-    s.push_str(&format!("if(AP){{mkOv(AP,cont,items,svg);ST='on';wrap.style.opacity='1';wrap.style.pointerEvents='auto';}}"));
-    s.push_str("ubtn();});})();</script></body>");
+    s.push_str("var svg=cont.querySelector('svg');");
+    s.push_str("var items;if(FRC){var ac=glColors(svg);items=FRC.map(function(f,i){return{lb:f.l,co:f.c||(ac[i%ac.length]||''),se:f.s};});}else{items=svg?gl2d(svg):gl3d();}");
+    s.push_str("if(!items.length)return;");
+    s.push_str("var ov=document.createElement('div');");
+    s.push_str("var isH=POS==='top'||POS==='bottom';");
+    s.push_str("ov.style.cssText='position:absolute;z-index:200;display:flex;gap:6px;padding:6px 10px;pointer-events:auto;align-items:center;'+(isH?'flex-direction:row;flex-wrap:wrap;justify-content:center;':'flex-direction:column;');");
+    s.push_str("if(POS==='top'){ov.style.top='4px';ov.style.left='50%';ov.style.transform='translateX(-50%)';}");
+    s.push_str("else if(POS==='bottom'){ov.style.bottom='4px';ov.style.left='50%';ov.style.transform='translateX(-50%)';}");
+    s.push_str("else if(POS==='left'){ov.style.left='4px';ov.style.top='50%';ov.style.transform='translateY(-50%)';}");
+    s.push_str("else{ov.style.right='4px';ov.style.top='50%';ov.style.transform='translateY(-50%)';}");
+    s.push_str("var dis=[];");
+    s.push_str("var rb=document.createElement('span');rb.textContent='\\u21BA';rb.title='Show all';");
+    s.push_str("rb.style.cssText='display:none;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.6);color:#f1f5f9;font-size:13px;cursor:pointer;border:1px solid rgba(255,255,255,.2);align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(4px);';");
+    s.push_str("rb.addEventListener('click',function(){dis.forEach(function(d){d.b.style.display='';setTimeout(function(){d.b.style.opacity='1';},10);if(d.se!=null&&svg){svg.querySelectorAll('[data-series=\"'+d.se+'\"]:not([data-legend])').forEach(function(e){e.style.display='';});}});dis=[];rb.style.display='none';});");
+    s.push_str("items.forEach(function(it){");
+    s.push_str("var b=document.createElement('span');");
+    s.push_str("b.style.cssText='display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;user-select:none;transition:opacity .2s;background:rgba(0,0,0,.55);color:#f1f5f9;border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(4px);white-space:nowrap;';");
+    s.push_str("if(it.co){var d=document.createElement('span');d.style.cssText='width:8px;height:8px;border-radius:50%;flex-shrink:0;background:'+it.co+';';b.appendChild(d);}");
+    s.push_str("b.appendChild(document.createTextNode(esc(it.lb)));");
+    s.push_str("b.addEventListener('click',function(){b.style.opacity='0';setTimeout(function(){b.style.display='none';},200);dis.push({b:b,se:it.se});rb.style.display='inline-flex';if(it.se!=null&&svg){svg.querySelectorAll('[data-series=\"'+it.se+'\"]:not([data-legend])').forEach(function(e){e.style.display='none';});}});");
+    s.push_str("ov.appendChild(b);});");
+    s.push_str("ov.appendChild(rb);cont.appendChild(ov);");
+    s.push_str("});})();</script></body>");
     s
 }
 
 #[cfg(feature = "python")]
-fn inject_label_btn(html: &str, ap: Option<&str>) -> String {
-    if html.contains("window.__SLB__") {
+fn encode_forced(labels: &[String], colors: &[String]) -> String {
+    let mut j = String::from("[");
+    for (i, lb) in labels.iter().enumerate() {
+        if i > 0 { j.push(','); }
+        j.push_str("{l:'");
+        for ch in lb.chars() {
+            match ch { '\'' => j.push_str("\\'"), '\\' => j.push_str("\\\\"), _ => j.push(ch) }
+        }
+        j.push_str("',c:'");
+        if let Some(c) = colors.get(i) {
+            for ch in c.chars() {
+                match ch { '\'' => j.push_str("\\'"), '\\' => j.push_str("\\\\"), _ => j.push(ch) }
+            }
+        }
+        j.push_str("',s:");
+        j.push_str(&i.to_string());
+        j.push('}');
+    }
+    j.push(']');
+    j
+}
+
+#[cfg(feature = "python")]
+fn inject_labels(html: &str, pos: &str, labels: &[String], colors: &[String]) -> String {
+    if html.contains("window.__SL__") {
         return html.to_string();
     }
-    let script = label_btn_script(ap);
-    html.replacen("</body>", &script, 1)
+    let forced = if labels.is_empty() { String::new() } else { encode_forced(labels, colors) };
+    html.replacen("</body>", &build_labels_js(pos, &forced), 1)
 }
 
 #[cfg(feature = "python")]
@@ -100,8 +132,8 @@ impl Chart {
         &self.html
     }
 
-    fn _repr_html_(&self) -> String {
-        inject_label_btn(&self.html, None)
+    fn _repr_html_(&self) -> &str {
+        &self.html
     }
 
     fn __str__(&self) -> &str {
@@ -220,9 +252,11 @@ impl Chart {
         Chart { html: self.html.replacen("</head>", &style, 1) }
     }
 
-    #[pyo3(signature = (position="bottom-right"))]
-    fn show_labels(&self, position: &str) -> Chart {
-        Chart { html: inject_label_btn(&self.html, Some(position)) }
+    #[pyo3(signature = (position="bottom", labels=None, colors=None))]
+    fn show_labels(&self, position: &str, labels: Option<Vec<String>>, colors: Option<Vec<String>>) -> Chart {
+        let lb = labels.unwrap_or_default();
+        let co = colors.unwrap_or_default();
+        Chart { html: inject_labels(&self.html, position, &lb, &co) }
     }
 
     fn to_svg(&self) -> PyResult<String> {
