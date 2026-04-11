@@ -1,26 +1,22 @@
 use super::common::{push_b, push_i, push_f2, hex6, PALETTE};
-use crate::html::hover::build_chart_html;
+use crate::html::hover::{build_chart_html, slots_to_json};
 
-pub struct GaugeConfig<'a> {
-    pub title: &'a str,
-    pub value: f64,
-    pub min_val: f64,
-    pub max_val: f64,
-    pub label: &'a str,
-    pub thresholds: &'a [(f64, u32)],
-    pub width: i32,
-    pub height: i32,
-}
-
-impl<'a> Default for GaugeConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "", value: 0.0, min_val: 0.0, max_val: 100.0,
-            label: "", thresholds: &[],
-            width: 400, height: 300,
-        }
+crate::chart_config!(GaugeConfig, 400, 300;
+    struct {
+        pub value: f64,
+        pub min_val: f64,
+        pub max_val: f64,
+        pub label: &'a str,
+        pub thresholds: &'a [(f64, u32)],
     }
-}
+    defaults {
+        value: 0.0,
+        min_val: 0.0,
+        max_val: 100.0,
+        label: "",
+        thresholds: &[],
+    }
+);
 
 pub fn render_gauge_html(cfg: &GaugeConfig) -> String {
     let range = (cfg.max_val - cfg.min_val).max(1e-9);
@@ -185,5 +181,5 @@ pub fn render_gauge_html(cfg: &GaugeConfig) -> String {
 
     push_b(&mut buf, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(buf) };
-    build_chart_html(cfg.title, &svg, "[]")
+    build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }

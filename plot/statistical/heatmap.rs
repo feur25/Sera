@@ -1,45 +1,34 @@
 use super::common::{push_b, hex6, escape_xml, truncate, lerp_color, push_i, push_f2};
-use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+use crate::html::hover::{slots_to_json, build_chart_html};
 
 pub struct Heatmap;
 
-pub struct HeatmapConfig<'a> {
-    pub title: &'a str,
-    pub row_labels: &'a [String],
-    pub col_labels: &'a [String],
-    pub flat_matrix: &'a [f64],
-    pub width: i32,
-    pub height: i32,
-    pub show_values: bool,
-    pub value_min_cell: i32,
-    pub color_low: u32,
-    pub color_mid: u32,
-    pub color_high: u32,
-    pub value_decimals: usize,
-    pub col_label_angle: i32,
-    pub hover: &'a [HoverSlot],
-}
-
-impl<'a> Default for HeatmapConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            row_labels: &[],
-            col_labels: &[],
-            flat_matrix: &[],
-            width: 900,
-            height: 0,
-            show_values: true,
-            value_min_cell: 26,
-            color_low:  0x6366F1,
-            color_mid:  0xfafbfc,
-            color_high: 0xF43F5E,
-            value_decimals: 2,
-            col_label_angle: 40,
-            hover: &[],
-        }
+crate::chart_config!(HeatmapConfig, 900, 0;
+    struct {
+        pub row_labels: &'a [String],
+        pub col_labels: &'a [String],
+        pub flat_matrix: &'a [f64],
+        pub show_values: bool,
+        pub value_min_cell: i32,
+        pub color_low: u32,
+        pub color_mid: u32,
+        pub color_high: u32,
+        pub value_decimals: usize,
+        pub col_label_angle: i32,
     }
-}
+    defaults {
+        row_labels: &[],
+        col_labels: &[],
+        flat_matrix: &[],
+        show_values: true,
+        value_min_cell: 26,
+        color_low: 0x6366F1,
+        color_mid: 0xfafbfc,
+        color_high: 0xF43F5E,
+        value_decimals: 2,
+        col_label_angle: 40,
+    }
+);
 
 pub fn render_heatmap_html(cfg: &HeatmapConfig) -> String {
     let n_rows = cfg.row_labels.len();

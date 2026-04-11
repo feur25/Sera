@@ -1,41 +1,24 @@
 use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_open_rescalable, svg_title, svg_axis_lines, svg_y_label, svg_x_label, svg_hgrid, svg_vgrid, svg_tick_y, truncate, apply_sort};
-use crate::html::hover::build_chart_html;
+use crate::html::hover::{build_chart_html, slots_to_json};
 
-pub struct LollipopConfig<'a> {
-    pub title: &'a str,
-    pub labels: &'a [String],
-    pub values: &'a [f64],
-    pub x_label: &'a str,
-    pub y_label: &'a str,
-    pub palette: &'a [u32],
-    pub color_hex: u32,
-    pub gridlines: bool,
-    pub show_values: bool,
-    pub orientation: u8,
-    pub sort_order: &'a str,
-    pub width: i32,
-    pub height: i32,
-}
-
-impl<'a> Default for LollipopConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            labels: &[],
-            values: &[],
-            x_label: "",
-            y_label: "",
-            palette: &[],
-            color_hex: 0x6366F1,
-            gridlines: false,
-            show_values: false,
-            orientation: b'v',
-            sort_order: "none",
-            width: 900,
-            height: 480,
-        }
+crate::chart_config!(LollipopConfig, 900, 480;
+    struct {
+        pub labels: &'a [String],
+        pub values: &'a [f64],
+        pub palette: &'a [u32],
+        pub color_hex: u32,
+        pub show_values: bool,
+        pub orientation: u8,
     }
-}
+    defaults {
+        labels: &[],
+        values: &[],
+        palette: &[],
+        color_hex: 0x6366F1,
+        show_values: false,
+        orientation: b'v',
+    }
+);
 
 pub fn render_lollipop_html(cfg: &LollipopConfig) -> String {
     if cfg.labels.is_empty() || cfg.values.is_empty() { return String::new(); }
@@ -168,5 +151,5 @@ pub fn render_lollipop_html(cfg: &LollipopConfig) -> String {
 
     push_b(&mut b, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(b) };
-    build_chart_html(cfg.title, &svg, "[]")
+    build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }

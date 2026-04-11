@@ -1,34 +1,26 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6};
-use crate::html::hover::build_chart_html;
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, apply_sort};
+use crate::html::hover::{build_chart_html, slots_to_json};
 
-pub struct FunnelConfig<'a> {
-    pub title: &'a str,
-    pub labels: &'a [String],
-    pub values: &'a [f64],
-    pub palette: &'a [u32],
-    pub show_text: bool,
-    pub width: i32,
-    pub height: i32,
-}
-
-impl<'a> Default for FunnelConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            labels: &[],
-            values: &[],
-            palette: &[],
-            show_text: true,
-            width: 800,
-            height: 480,
-        }
+crate::chart_config!(FunnelConfig, 800, 480;
+    struct {
+        pub labels: &'a [String],
+        pub values: &'a [f64],
+        pub palette: &'a [u32],
+        pub show_text: bool,
     }
-}
+    defaults {
+        labels: &[],
+        values: &[],
+        palette: &[],
+        show_text: true,
+    }
+);
 
 pub fn render_funnel_html(cfg: &FunnelConfig) -> String {
     let n = cfg.labels.len().min(cfg.values.len());
     if n == 0 { return String::new(); }
-    let max_val = cfg.values[..n].iter().copied().fold(0.0_f64, f64::max).max(1.0);
+    let (labels, values) = apply_sort(&cfg.labels[..n], &cfg.values[..n], cfg.sort_order);
+    let max_val = values.iter().copied().fold(0.0_f64, f64::max).max(1.0);
     let pad_l: i32 = 80;
     let pad_r: i32 = 80;
     let pad_t: i32 = 46;
@@ -52,10 +44,10 @@ pub fn render_funnel_html(cfg: &FunnelConfig) -> String {
     }
     let cx = cfg.width / 2;
     for i in 0..n {
-        let ratio = cfg.values[i] / max_val;
+        let ratio = values[i] / max_val;
         let row_w = (plot_w as f64 * ratio) as i32;
         let top_w = if i > 0 {
-            let prev_ratio = cfg.values[i - 1] / max_val;
+            let prev_ratio = values[i - 1] / max_val;
             (plot_w as f64 * prev_ratio) as i32
         } else {
             row_w
@@ -70,8 +62,8 @@ pub fn render_funnel_html(cfg: &FunnelConfig) -> String {
         let hx = hex6(color);
         push_b(&mut b, b"<polygon data-idx=\"");
         push_i(&mut b, i as i32);
-        push_b(&mut b, b"\" data-y=\""); push_f2(&mut b, cfg.values[i]);
-        push_b(&mut b, b"\" data-lbl=\""); escape_xml(&mut b, &cfg.labels[i]);
+        push_b(&mut b, b"\" data-y=\""); push_f2(&mut b, values[i]);
+        push_b(&mut b, b"\" data-lbl=\""); escape_xml(&mut b, &labels[i]);
         push_b(&mut b, b"\" points=\"");
         push_i(&mut b, x_top_l); b.push(b','); push_i(&mut b, y_top);
         b.push(b' ');
@@ -86,31 +78,31 @@ pub fn render_funnel_html(cfg: &FunnelConfig) -> String {
         push_b(&mut b, b"<text x=\""); push_i(&mut b, cx);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, label_y);
         push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"12\" font-weight=\"600\" fill=\"#fff\" pointer-events=\"none\">");
-        escape_xml(&mut b, &cfg.labels[i]);
+        escape_xml(&mut b, &labels[i]);
         push_b(&mut b, b"</text>");
         if cfg.show_text {
             push_b(&mut b, b"<text x=\""); push_i(&mut b, cx - row_w / 2 - 6);
             push_b(&mut b, b"\" y=\""); push_i(&mut b, label_y);
             push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\" pointer-events=\"none\">");
-            let pct = cfg.values[i] / max_val * 100.0;
+            let pct = values[i] / max_val * 100.0;
             push_f2(&mut b, pct); push_b(&mut b, b"%");
             push_b(&mut b, b"</text>");
             push_b(&mut b, b"<text x=\""); push_i(&mut b, cx + row_w / 2 + 6);
             push_b(&mut b, b"\" y=\""); push_i(&mut b, label_y);
             push_b(&mut b, b"\" text-anchor=\"start\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\" pointer-events=\"none\">");
-            if cfg.values[i] >= 1_000_000.0 {
-                push_f2(&mut b, cfg.values[i] / 1_000_000.0);
+            if values[i] >= 1_000_000.0 {
+                push_f2(&mut b, values[i] / 1_000_000.0);
                 push_b(&mut b, b"M");
-            } else if cfg.values[i] >= 1_000.0 {
-                push_f2(&mut b, cfg.values[i] / 1_000.0);
+            } else if values[i] >= 1_000.0 {
+                push_f2(&mut b, values[i] / 1_000.0);
                 push_b(&mut b, b"k");
             } else {
-                push_f2(&mut b, cfg.values[i]);
+                push_f2(&mut b, values[i]);
             }
             push_b(&mut b, b"</text>");
         }
     }
     push_b(&mut b, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(b) };
-    build_chart_html(cfg.title, &svg, "[]")
+    build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }

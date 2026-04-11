@@ -1,31 +1,22 @@
 use super::common::{push_b, push_i, push_f2, escape_xml, hex6};
-use crate::html::hover::build_chart_html;
+use crate::html::hover::{build_chart_html, slots_to_json};
 
-pub struct BulletConfig<'a> {
-    pub title: &'a str,
-    pub labels: &'a [String],
-    pub values: &'a [f64],
-    pub targets: &'a [f64],
-    pub max_vals: &'a [f64],
-    pub ranges: &'a [f64],
-    pub width: i32,
-    pub height: i32,
-}
-
-impl<'a> Default for BulletConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            labels: &[],
-            values: &[],
-            targets: &[],
-            max_vals: &[],
-            ranges: &[],
-            width: 800,
-            height: 300,
-        }
+crate::chart_config!(BulletConfig, 800, 300;
+    struct {
+        pub labels: &'a [String],
+        pub values: &'a [f64],
+        pub targets: &'a [f64],
+        pub max_vals: &'a [f64],
+        pub ranges: &'a [f64],
     }
-}
+    defaults {
+        labels: &[],
+        values: &[],
+        targets: &[],
+        max_vals: &[],
+        ranges: &[],
+    }
+);
 
 pub fn render_bullet_html(cfg: &BulletConfig) -> String {
     let n = cfg.labels.len().min(cfg.values.len());
@@ -118,5 +109,5 @@ pub fn render_bullet_html(cfg: &BulletConfig) -> String {
     }
     push_b(&mut b, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(b) };
-    build_chart_html(cfg.title, &svg, "[]")
+    build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }

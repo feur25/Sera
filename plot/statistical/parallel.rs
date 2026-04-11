@@ -1,24 +1,20 @@
 use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_open, svg_title, svg_legend_item};
-use crate::html::hover::build_chart_html;
+use crate::html::hover::{build_chart_html, slots_to_json};
 
-pub struct ParallelConfig<'a> {
-    pub title: &'a str,
-    pub axes: &'a [String],
-    pub series_names: &'a [String],
-    pub series_values: &'a [Vec<f64>],
-    pub palette: &'a [u32],
-    pub width: i32,
-    pub height: i32,
-}
-
-impl<'a> Default for ParallelConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "", axes: &[], series_names: &[], series_values: &[],
-            palette: &[], width: 1000, height: 500,
-        }
+crate::chart_config!(ParallelConfig, 1000, 500;
+    struct {
+        pub axes: &'a [String],
+        pub series_names: &'a [String],
+        pub series_values: &'a [Vec<f64>],
+        pub palette: &'a [u32],
     }
-}
+    defaults {
+        axes: &[],
+        series_names: &[],
+        series_values: &[],
+        palette: &[],
+    }
+);
 
 pub fn render_parallel_html(cfg: &ParallelConfig) -> String {
     let n_axes = cfg.axes.len();
@@ -153,5 +149,5 @@ pub fn render_parallel_html(cfg: &ParallelConfig) -> String {
 
     push_b(&mut buf, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(buf) };
-    build_chart_html(cfg.title, &svg, "[]")
+    build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }

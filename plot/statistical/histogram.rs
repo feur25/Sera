@@ -1,49 +1,32 @@
 use super::common::{push_b, push_i, push_f2, escape_xml, hex6, Frame, svg_legend_item};
-use crate::html::hover::{HoverSlot, slots_to_json};
+use crate::html::hover::slots_to_json;
 
 pub struct Histogram;
 
-pub struct HistogramConfig<'a> {
-    pub title: &'a str,
-    pub x_label: &'a str,
-    pub y_label: &'a str,
-    pub values: &'a [f64],
-    pub bins: usize,
-    pub color: u32,
-    pub opacity: u8,
-    pub width: i32,
-    pub height: i32,
-    pub overlay_values: Option<&'a [f64]>,
-    pub overlay_color: u32,
-    pub gridlines: bool,
-    pub show_counts: bool,
-    pub hover: &'a [HoverSlot],
-    pub count_scale: usize,
-    pub series_names: Option<(&'a str, &'a str)>,
-}
-
-impl<'a> Default for HistogramConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            x_label: "",
-            y_label: "Count",
-            values: &[],
-            bins: 0,
-            color: 0x6366F1,
-            opacity: 204,
-            width: 860,
-            height: 380,
-            overlay_values: None,
-            overlay_color: 0xF43F5E,
-            gridlines: false,
-            show_counts: false,
-            hover: &[],
-            count_scale: 1,
-            series_names: None,
-        }
+crate::chart_config!(HistogramConfig, 860, 380;
+    struct {
+        pub values: &'a [f64],
+        pub bins: usize,
+        pub color: u32,
+        pub opacity: u8,
+        pub overlay_values: Option<&'a [f64]>,
+        pub overlay_color: u32,
+        pub show_counts: bool,
+        pub count_scale: usize,
+        pub series_names: Option<(&'a str, &'a str)>,
     }
-}
+    defaults {
+        values: &[],
+        bins: 0,
+        color: 0x6366F1,
+        opacity: 204,
+        overlay_values: None,
+        overlay_color: 0xF43F5E,
+        show_counts: false,
+        count_scale: 1,
+        series_names: None,
+    }
+);
 
 pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
     if cfg.values.is_empty() { return String::new(); }
@@ -76,7 +59,7 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
         let y = f.pt + f.ph - bh;
         let w_px = (bw as i32).max(1) - 1;
         push_b(&mut f.buf, b"<rect data-idx=\""); push_i(&mut f.buf, i as i32);
-        push_b(&mut f.buf, b"\" data-lbl=\""); push_f2(&mut f.buf, edges[i]); f.buf.extend_from_slice("\u{2013}".as_bytes()); push_f2(&mut f.buf, edges.get(i+1).copied().unwrap_or(edges[i]));
+        push_b(&mut f.buf, b"\" data-series=\"0\" data-lbl=\""); push_f2(&mut f.buf, edges[i]); f.buf.extend_from_slice("\u{2013}".as_bytes()); push_f2(&mut f.buf, edges.get(i+1).copied().unwrap_or(edges[i]));
         push_b(&mut f.buf, b"\" data-kv-Count=\""); push_i(&mut f.buf, cnt as i32);
         push_b(&mut f.buf, b"\" data-kv-Min=\""); push_f2(&mut f.buf, edges[i]);
         push_b(&mut f.buf, b"\" data-kv-Max=\""); push_f2(&mut f.buf, edges.get(i+1).copied().unwrap_or(edges[i]));
@@ -105,7 +88,7 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
             let y = f.pt + f.ph - bh;
             let w_px = (bw as i32).max(1) - 1;
             push_b(&mut f.buf, b"<rect data-idx=\""); push_i(&mut f.buf, (base_idx + i) as i32);
-            push_b(&mut f.buf, b"\" x=\""); push_i(&mut f.buf, x);
+            push_b(&mut f.buf, b"\" data-series=\"1\" x=\""); push_i(&mut f.buf, x);
             push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, y);
             push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, w_px);
             push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, bh);

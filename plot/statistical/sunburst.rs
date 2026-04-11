@@ -1,21 +1,19 @@
 use super::common::{push_b, push_i, push_f2, escape_xml, hex6};
-use crate::html::hover::build_chart_html;
+use crate::html::hover::{build_chart_html, slots_to_json};
 use std::collections::HashMap;
 
-pub struct SunburstConfig<'a> {
-    pub title: &'a str,
-    pub labels: &'a [String],
-    pub parents: &'a [String],
-    pub values: &'a [f64],
-    pub width: i32,
-    pub height: i32,
-}
-
-impl<'a> Default for SunburstConfig<'a> {
-    fn default() -> Self {
-        Self { title: "", labels: &[], parents: &[], values: &[], width: 700, height: 700 }
+crate::chart_config!(SunburstConfig, 700, 700;
+    struct {
+        pub labels: &'a [String],
+        pub parents: &'a [String],
+        pub values: &'a [f64],
     }
-}
+    defaults {
+        labels: &[],
+        parents: &[],
+        values: &[],
+    }
+);
 
 const SB_PALETTE: &[u32] = &[
     0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B, 0x8B5CF6,
@@ -210,5 +208,5 @@ pub fn render_sunburst_html(cfg: &SunburstConfig) -> String {
     push_b(&mut b, b"\" fill=\"#fff\"/>");
     push_b(&mut b, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(b) };
-    build_chart_html(cfg.title, &svg, "[]")
+    build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }

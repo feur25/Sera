@@ -1,35 +1,22 @@
 use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, apply_sort};
-use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+use crate::html::hover::{slots_to_json, build_chart_html};
 
 pub struct Treemap;
 
-pub struct TreemapConfig<'a> {
-    pub title: &'a str,
-    pub labels: &'a [String],
-    pub values: &'a [f64],
-    pub parents: &'a [String],
-    pub palette: &'a [u32],
-    pub width: i32,
-    pub height: i32,
-    pub hover: &'a [HoverSlot],
-    pub sort_order: &'a str,
-}
-
-impl<'a> Default for TreemapConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            labels: &[],
-            values: &[],
-            parents: &[],
-            palette: &[],
-            width: 1100,
-            height: 520,
-            hover: &[],
-            sort_order: "",
-        }
+crate::chart_config!(TreemapConfig, 1100, 520;
+    struct {
+        pub labels: &'a [String],
+        pub values: &'a [f64],
+        pub parents: &'a [String],
+        pub palette: &'a [u32],
     }
-}
+    defaults {
+        labels: &[],
+        values: &[],
+        parents: &[],
+        palette: &[],
+    }
+);
 
 #[derive(Clone)]
 struct Rect {

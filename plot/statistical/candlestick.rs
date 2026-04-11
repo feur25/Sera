@@ -1,32 +1,24 @@
 use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_open, svg_title, svg_hgrid, svg_tick_y, svg_tick_x, svg_axis_lines, svg_x_label, svg_y_label};
-use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+use crate::html::hover::{slots_to_json, build_chart_html};
 
-pub struct CandlestickConfig<'a> {
-    pub title: &'a str,
-    pub labels: &'a [String],
-    pub open: &'a [f64],
-    pub high: &'a [f64],
-    pub low: &'a [f64],
-    pub close: &'a [f64],
-    pub palette: &'a [u32],
-    pub width: i32,
-    pub height: i32,
-    pub x_label: &'a str,
-    pub y_label: &'a str,
-    pub gridlines: bool,
-    pub hover: &'a [HoverSlot],
-}
-
-impl<'a> Default for CandlestickConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "", labels: &[], open: &[], high: &[], low: &[], close: &[],
-            palette: &[], width: 1100, height: 500,
-            x_label: "Date", y_label: "Price",
-            gridlines: false, hover: &[],
-        }
+crate::chart_config!(CandlestickConfig, 1100, 500;
+    struct {
+        pub labels: &'a [String],
+        pub open: &'a [f64],
+        pub high: &'a [f64],
+        pub low: &'a [f64],
+        pub close: &'a [f64],
+        pub palette: &'a [u32],
     }
-}
+    defaults {
+        labels: &[],
+        open: &[],
+        high: &[],
+        low: &[],
+        close: &[],
+        palette: &[],
+    }
+);
 
 pub fn render_candlestick_html(cfg: &CandlestickConfig) -> String {
     let n = cfg.labels.len().min(cfg.open.len()).min(cfg.high.len()).min(cfg.low.len()).min(cfg.close.len());

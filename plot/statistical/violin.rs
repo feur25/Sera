@@ -1,32 +1,18 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_axis_lines, Frame};
+use super::common::{sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_axis_lines, svg_legend_item, Frame};
+use crate::html::hover::slots_to_json;
 
-pub struct ViolinConfig<'a> {
-    pub title: &'a str,
-    pub categories: &'a [String],
-    pub values: &'a [f64],
-    pub x_label: &'a str,
-    pub y_label: &'a str,
-    pub palette: &'a [u32],
-    pub gridlines: bool,
-    pub width: i32,
-    pub height: i32,
-}
-
-impl<'a> Default for ViolinConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            categories: &[],
-            values: &[],
-            x_label: "",
-            y_label: "",
-            palette: &[],
-            gridlines: false,
-            width: 900,
-            height: 500,
-        }
+crate::chart_config!(ViolinConfig, 900, 500;
+    struct {
+        pub categories: &'a [String],
+        pub values: &'a [f64],
+        pub palette: &'a [u32],
     }
-}
+    defaults {
+        categories: &[],
+        values: &[],
+        palette: &[],
+    }
+);
 
 fn percentile(sorted: &[f64], p: f64) -> f64 {
     if sorted.is_empty() { return 0.0; }
@@ -59,21 +45,29 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
     for cat in cfg.categories.iter() {
         if !cat_set.contains(cat) { cat_set.push(cat.clone()); }
     }
-    cat_set.sort();
     let n_cats = cat_set.len();
-
     let mut cat_vals: Vec<Vec<f64>> = vec![Vec::new(); n_cats];
     for i in 0..n_vals.min(cfg.categories.len()) {
         if let Some(ci) = cat_set.iter().position(|c| c == &cfg.categories[i]) {
             cat_vals[ci].push(cfg.values[i]);
         }
     }
+    let medians: Vec<f64> = cat_vals.iter().map(|v| {
+        let mut s = v.clone();
+        s.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
+        percentile(&s, 0.5)
+    }).collect();
+    let sort_idx = sort_indices(n_cats, &medians, &cat_set, cfg.sort_order);
+    let cat_set: Vec<String> = sort_idx.iter().map(|&i| cat_set[i].clone()).collect();
+    let cat_vals: Vec<Vec<f64>> = sort_idx.iter().map(|&i| cat_vals[i].clone()).collect();
+    let n_cats = cat_set.len();
 
     let global_min = cfg.values.iter().copied().fold(f64::INFINITY, f64::min);
     let global_max = cfg.values.iter().copied().fold(f64::NEG_INFINITY, f64::max);
     let range = (global_max - global_min).max(1e-12);
 
-    let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, 60, 46, 52, 20, n_cats * 600 + 2048);
+    let legend_w: i32 = if n_cats > 1 { 130 } else { 20 };
+    let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, 60, 46, 52, legend_w, n_cats * 600 + 2048);
     let col_w = f.pw / n_cats as i32;
     let violin_half = (col_w as f64 * 0.38) as i32;
     let f_pt = f.pt;
@@ -111,6 +105,7 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
     for (ci, cat) in cat_set.iter().enumerate() {
         let vals = &cat_vals[ci];
         if vals.is_empty() { continue; }
+        push_b(&mut f.buf, b"<g data-series=\""); push_i(&mut f.buf, ci as i32); push_b(&mut f.buf, b"\">");
         let mut sorted = vals.clone();
         sorted.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
         let n_v = sorted.len();
@@ -180,9 +175,17 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
         let short = if cat.len() > 10 { &cat[..10] } else { cat };
         escape_xml(&mut f.buf, short);
         push_b(&mut f.buf, b"</text>");
+        push_b(&mut f.buf, b"</g>");
+    }
+
+    if n_cats > 1 {
+        let lx = cfg.width - legend_w + 12;
+        for (ci, cat) in cat_set.iter().enumerate() {
+            svg_legend_item(&mut f.buf, ci as i32, cat, palette_color(cfg.palette, ci), lx, f.pt + ci as i32 * 22, 14);
+        }
     }
 
     f.axes(cfg.x_label, cfg.y_label);
 
-    f.html("[]")
+    f.html(&slots_to_json(cfg.hover))
 }

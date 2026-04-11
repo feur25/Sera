@@ -159,11 +159,15 @@ pub fn render_lines_html(
     y_label: &str,
     gridlines: bool,
     show_points: bool,
+    sort_order: &str,
 ) -> String {
     use crate::html::hover::{slots_to_json, html_id, html_prefix, html_suffix};
-    use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, palette_color, truncate, PALETTE};
+    use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, palette_color, truncate, PALETTE, apply_sort};
     let n = values.len().min(labels.len());
     if n < 2 { return String::new(); }
+    let (labels, values) = apply_sort(&labels[..n], &values[..n], sort_order);
+    let labels = &labels[..];
+    let values = &values[..];
     let (_, max_val) = crate::bindings::utils::simd_ops::find_minmax(values);
     let max_val = max_val.max(1.0);
     let pad_l = 52i32; let pad_t = 36i32; let pad_b = 48i32; let pad_r = 20i32;

@@ -1,38 +1,24 @@
-use super::common::{palette_color, push_b, push_f2, hex6, Frame};
+use super::common::{palette_color, push_b, push_i, push_f2, hex6, Frame};
+use crate::html::hover::slots_to_json;
 
-pub struct KdeConfig<'a> {
-    pub title: &'a str,
-    pub series: &'a [(String, Vec<f64>)],
-    pub palette: &'a [u32],
-    pub x_label: &'a str,
-    pub y_label: &'a str,
-    pub bandwidth: f64,
-    pub filled: bool,
-    pub fill_opacity: u8,
-    pub gridlines: bool,
-    pub width: i32,
-    pub height: i32,
-    pub n_points: usize,
-}
-
-impl<'a> Default for KdeConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            series: &[],
-            palette: &[],
-            x_label: "",
-            y_label: "Density",
-            bandwidth: 0.0,
-            filled: true,
-            fill_opacity: 50,
-            gridlines: false,
-            width: 900,
-            height: 420,
-            n_points: 40,
-        }
+crate::chart_config!(KdeConfig, 900, 420;
+    struct {
+        pub series: &'a [(String, Vec<f64>)],
+        pub palette: &'a [u32],
+        pub bandwidth: f64,
+        pub filled: bool,
+        pub fill_opacity: u8,
+        pub n_points: usize,
     }
-}
+    defaults {
+        series: &[],
+        palette: &[],
+        bandwidth: 0.0,
+        filled: true,
+        fill_opacity: 50,
+        n_points: 40,
+    }
+);
 
 pub fn scott_bw(vals: &[f64]) -> f64 {
     let n = vals.len();
@@ -93,6 +79,7 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
     for (si, ys) in curves.iter().enumerate() {
         let color = palette_color(cfg.palette, si);
         let hx = hex6(color);
+        push_b(&mut f.buf, b"<g data-series=\""); push_i(&mut f.buf, si as i32); push_b(&mut f.buf, b"\">");
         let pts: Vec<(f64, f64)> = xs.iter().zip(ys.iter()).map(|(&x, &y)| {
             let sx = f.pl as f64 + (x - x0) / xr * f.pw as f64;
             let sy = f.pt as f64 + f.ph as f64 - y / y_max * f.ph as f64;
@@ -118,6 +105,7 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
         }
         push_b(&mut f.buf, b"\" fill=\"none\" stroke=\"#"); f.buf.extend_from_slice(&hx);
         push_b(&mut f.buf, b"\" stroke-width=\"2\" stroke-linejoin=\"round\"/>");
+        push_b(&mut f.buf, b"</g>");
     }
 
     f.x_grid(6, x0, x1, false);
@@ -127,5 +115,5 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
         f.legend(&names, cfg.palette, cfg.width - legend_w + 12);
     }
 
-    f.html("[]")
+    f.html(&slots_to_json(cfg.hover))
 }

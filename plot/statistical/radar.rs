@@ -1,32 +1,23 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_open, svg_title, truncate};
-use crate::html::hover::build_chart_html;
+use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_open, svg_title, svg_legend_item, truncate};
+use crate::html::hover::{build_chart_html, slots_to_json};
 use std::f64::consts::PI;
 
-pub struct RadarConfig<'a> {
-    pub title: &'a str,
-    pub axes: &'a [String],
-    pub series: &'a [(String, Vec<f64>)],
-    pub palette: &'a [u32],
-    pub width: i32,
-    pub height: i32,
-    pub filled: bool,
-    pub fill_opacity: u8,
-}
-
-impl<'a> Default for RadarConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            axes: &[],
-            series: &[],
-            palette: &[],
-            width: 700,
-            height: 560,
-            filled: true,
-            fill_opacity: 50,
-        }
+crate::chart_config!(RadarConfig, 700, 560;
+    struct {
+        pub axes: &'a [String],
+        pub series: &'a [(String, Vec<f64>)],
+        pub palette: &'a [u32],
+        pub filled: bool,
+        pub fill_opacity: u8,
     }
-}
+    defaults {
+        axes: &[],
+        series: &[],
+        palette: &[],
+        filled: true,
+        fill_opacity: 50,
+    }
+);
 
 pub fn render_radar_html(cfg: &RadarConfig) -> String {
     let n_axes = cfg.axes.len();
@@ -107,6 +98,7 @@ pub fn render_radar_html(cfg: &RadarConfig) -> String {
     for (si, (_, vals)) in cfg.series.iter().enumerate() {
         let color = palette_color(cfg.palette, si);
         let hx = hex6(color);
+        push_b(&mut b, b"<g data-series=\""); push_i(&mut b, si as i32); push_b(&mut b, b"\">");
         let points: Vec<(f64, f64)> = (0..n_axes).map(|ai| {
             let v = vals.get(ai).copied().unwrap_or(0.0).max(0.0);
             let frac = (v / global_max).min(1.0);
@@ -141,27 +133,18 @@ pub fn render_radar_html(cfg: &RadarConfig) -> String {
             push_b(&mut b, b"\" r=\"3.5\" fill=\"#"); b.extend_from_slice(&hx);
             push_b(&mut b, b"\"/>");
         }
+        push_b(&mut b, b"</g>");
     }
 
     if n_ser > 1 {
         let lx = cfg.width - legend_w + 10;
         let lt = (cfg.height / 2 - n_ser as i32 * 11).max(title_h + 10);
         for (si, (sname, _)) in cfg.series.iter().enumerate() {
-            let color = palette_color(cfg.palette, si);
-            let hx = hex6(color);
-            let ly = lt + si as i32 * 24;
-            push_b(&mut b, b"<rect x=\""); push_i(&mut b, lx);
-            push_b(&mut b, b"\" y=\""); push_i(&mut b, ly - 5);
-            push_b(&mut b, b"\" width=\"10\" height=\"10\" rx=\"2\" fill=\"#"); b.extend_from_slice(&hx); push_b(&mut b, b"\"/>");
-            push_b(&mut b, b"<text x=\""); push_i(&mut b, lx + 14);
-            push_b(&mut b, b"\" y=\""); push_i(&mut b, ly + 5);
-            push_b(&mut b, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" fill=\"#374151\">");
-            escape_xml(&mut b, truncate(sname, 16));
-            push_b(&mut b, b"</text>");
+            svg_legend_item(&mut b, si as i32, sname, palette_color(cfg.palette, si), lx, lt + si as i32 * 24, 16);
         }
     }
 
     push_b(&mut b, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(b) };
-    build_chart_html(cfg.title, &svg, "[]")
+    build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }

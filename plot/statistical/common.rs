@@ -9,6 +9,42 @@ pub fn palette_color(custom: &[u32], i: usize) -> u32 {
     p[i % p.len()]
 }
 
+#[macro_export]
+macro_rules! chart_config {
+    ($name:ident, $dw:expr, $dh:expr;
+     struct { $($s:tt)* }
+     defaults { $($d:tt)* }) => {
+        pub struct $name<'a> {
+            pub title: &'a str,
+            pub x_label: &'a str,
+            pub y_label: &'a str,
+            pub gridlines: bool,
+            pub sort_order: &'a str,
+            pub hover: &'a [crate::html::hover::HoverSlot],
+            pub legend_position: &'a str,
+            pub width: i32,
+            pub height: i32,
+            $($s)*
+        }
+        impl<'a> Default for $name<'a> {
+            fn default() -> Self {
+                Self {
+                    title: "",
+                    x_label: "",
+                    y_label: "",
+                    gridlines: false,
+                    sort_order: "none",
+                    hover: &[],
+                    legend_position: "right",
+                    width: $dw,
+                    height: $dh,
+                    $($d)*
+                }
+            }
+        }
+    };
+}
+
 pub fn apply_sort(labels: &[String], values: &[f64], order: &str) -> (Vec<String>, Vec<f64>) {
     if order.is_empty() || order == "none" { return (labels.to_vec(), values.to_vec()); }
     let n = labels.len().min(values.len());
@@ -40,6 +76,18 @@ pub fn apply_sort_groups(labels: &[String], values: &[f64], groups: &[String], o
     let sv: Vec<f64> = idx.iter().map(|&i| values[i]).collect();
     let sg: Vec<String> = idx.iter().map(|&i| groups[i].clone()).collect();
     (sl, sv, sg)
+}
+
+pub fn sort_indices<L: Ord>(n: usize, vals: &[f64], labels: &[L], order: &str) -> Vec<usize> {
+    let mut idx: Vec<usize> = (0..n).collect();
+    match order {
+        "asc" | "ascending" => idx.sort_by(|&a, &b| vals[a].partial_cmp(&vals[b]).unwrap_or(std::cmp::Ordering::Equal)),
+        "desc" | "descending" => idx.sort_by(|&a, &b| vals[b].partial_cmp(&vals[a]).unwrap_or(std::cmp::Ordering::Equal)),
+        "alpha" | "alphabetical" => idx.sort_by(|&a, &b| labels[a].cmp(&labels[b])),
+        "alpha_desc" => idx.sort_by(|&a, &b| labels[b].cmp(&labels[a])),
+        _ => {}
+    }
+    idx
 }
 
 pub fn svg_open(buf: &mut Vec<u8>, w: i32, h: i32) {
@@ -366,6 +414,21 @@ impl Frame {
     pub fn legend(&mut self, names: &[&str], palette: &[u32], x: i32) {
         for (i, name) in names.iter().enumerate() {
             svg_legend_item(&mut self.buf, i as i32, name, palette_color(palette, i), x, self.pt + i as i32 * 22, 14);
+        }
+    }
+
+    pub fn legend_pos(&mut self, names: &[&str], palette: &[u32], pos: &str) {
+        let n = names.len() as i32;
+        let (x, y_start, anchor) = match pos {
+            "left" | "top-left" => (self.pl + 8, self.pt + 4, "start"),
+            "bottom-left" => (self.pl + 8, self.pt + self.ph - n * 22, "start"),
+            "bottom" | "bottom-right" => (self.pl + self.pw - 4, self.pt + self.ph - n * 22, "end"),
+            "top" | "top-right" => (self.pl + self.pw - 4, self.pt + 4, "end"),
+            _ => (self.pl + self.pw + 14, self.pt, "start"),
+        };
+        let _ = anchor;
+        for (i, name) in names.iter().enumerate() {
+            svg_legend_item(&mut self.buf, i as i32, name, palette_color(palette, i), x, y_start + i as i32 * 22, 14);
         }
     }
 

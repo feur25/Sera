@@ -1,78 +1,38 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
-use crate::html::hover::{HoverSlot, slots_to_json};
+use super::common::{sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
+use crate::html::hover::slots_to_json;
 
 pub struct GroupedBar;
 
-pub struct GroupedBarConfig<'a> {
-    pub title: &'a str,
-    pub x_label: &'a str,
-    pub y_label: &'a str,
-    pub category_labels: &'a [String],
-    pub series: &'a [(String, Vec<f64>)],
-    pub palette: &'a [u32],
-    pub width: i32,
-    pub height: i32,
-    pub stacked: bool,
-    pub show_values: bool,
-    pub value_min_height: i32,
-    pub gridlines: bool,
-    pub hover: &'a [HoverSlot],
-    pub sort_order: &'a str,
-}
-
-impl<'a> Default for GroupedBarConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            x_label: "",
-            y_label: "",
-            category_labels: &[],
-            series: &[],
-            palette: &[],
-            width: 1100,
-            height: 480,
-            stacked: false,
-            show_values: false,
-            value_min_height: 16,
-            gridlines: false,
-            hover: &[],
-            sort_order: "",
-        }
+crate::chart_config!(GroupedBarConfig, 1100, 480;
+    struct {
+        pub category_labels: &'a [String],
+        pub series: &'a [(String, Vec<f64>)],
+        pub palette: &'a [u32],
+        pub stacked: bool,
+        pub show_values: bool,
+        pub value_min_height: i32,
     }
-}
+    defaults {
+        category_labels: &[],
+        series: &[],
+        palette: &[],
+        stacked: false,
+        show_values: false,
+        value_min_height: 16,
+    }
+);
 
 pub fn render_grouped_bar_html(cfg: &GroupedBarConfig) -> String {
     let n_cats = cfg.category_labels.len();
     let n_ser = cfg.series.len();
     if n_cats == 0 || n_ser == 0 { return String::new(); }
-    let so = cfg.sort_order;
-    let (cat_labels, sorted_series) = if !so.is_empty() && so != "none" {
-        let mut idx: Vec<usize> = (0..n_cats).collect();
-        match so {
-            "asc" | "ascending" => idx.sort_by(|&a, &b| {
-                let ta: f64 = cfg.series.iter().filter_map(|(_, v)| v.get(a).copied()).sum();
-                let tb: f64 = cfg.series.iter().filter_map(|(_, v)| v.get(b).copied()).sum();
-                ta.partial_cmp(&tb).unwrap_or(std::cmp::Ordering::Equal)
-            }),
-            "desc" | "descending" => idx.sort_by(|&a, &b| {
-                let ta: f64 = cfg.series.iter().filter_map(|(_, v)| v.get(a).copied()).sum();
-                let tb: f64 = cfg.series.iter().filter_map(|(_, v)| v.get(b).copied()).sum();
-                tb.partial_cmp(&ta).unwrap_or(std::cmp::Ordering::Equal)
-            }),
-            "alpha" | "alphabetical" => idx.sort_by(|&a, &b| cfg.category_labels[a].cmp(&cfg.category_labels[b])),
-            "alpha_desc" => idx.sort_by(|&a, &b| cfg.category_labels[b].cmp(&cfg.category_labels[a])),
-            _ => {}
-        }
-        let sl: Vec<String> = idx.iter().map(|&i| cfg.category_labels[i].clone()).collect();
-        let ss: Vec<(String, Vec<f64>)> = cfg.series.iter().map(|(name, vals)| {
-            let sv: Vec<f64> = idx.iter().map(|&i| vals.get(i).copied().unwrap_or(0.0)).collect();
-            (name.clone(), sv)
-        }).collect();
-        (sl, ss)
-    } else {
-        (cfg.category_labels.to_vec(), cfg.series.to_vec())
-    };
-    let series_ref: Vec<(String, Vec<f64>)> = sorted_series;
+    let sums: Vec<f64> = (0..n_cats).map(|i| cfg.series.iter().filter_map(|(_, v)| v.get(i).copied()).sum()).collect();
+    let idx = sort_indices(n_cats, &sums, cfg.category_labels, cfg.sort_order);
+    let cat_labels: Vec<String> = idx.iter().map(|&i| cfg.category_labels[i].clone()).collect();
+    let series_ref: Vec<(String, Vec<f64>)> = cfg.series.iter().map(|(name, vals)| {
+        let sv: Vec<f64> = idx.iter().map(|&i| vals.get(i).copied().unwrap_or(0.0)).collect();
+        (name.clone(), sv)
+    }).collect();
     let n_cats = cat_labels.len();
     let max_val = if cfg.stacked {
         (0..n_cats).map(|ci| {
@@ -171,6 +131,6 @@ pub fn render_grouped_bar_html(cfg: &GroupedBarConfig) -> String {
         let color = palette_color(cfg.palette, si);
         svg_legend_item(&mut f.buf, si as i32, sname, color, leg_x, leg_top + si as i32 * 22, 20);
     }
-    let slots: &[HoverSlot] = cfg.hover;
+    let slots = cfg.hover;
     f.html(&slots_to_json(slots))
 }

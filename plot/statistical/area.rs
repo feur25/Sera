@@ -1,39 +1,22 @@
 use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, Frame};
-use crate::html::hover::{HoverSlot, slots_to_json};
+use crate::html::hover::slots_to_json;
 
 pub struct Area;
 
-pub struct AreaConfig<'a> {
-    pub title: &'a str,
-    pub x_label: &'a str,
-    pub y_label: &'a str,
-    pub x_labels: &'a [String],
-    pub series: &'a [(String, Vec<f64>)],
-    pub palette: &'a [u32],
-    pub width: i32,
-    pub height: i32,
-    pub stacked: bool,
-    pub gridlines: bool,
-    pub hover: &'a [HoverSlot],
-}
-
-impl<'a> Default for AreaConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            x_label: "",
-            y_label: "",
-            x_labels: &[],
-            series: &[],
-            palette: &[],
-            width: 1100,
-            height: 480,
-            stacked: false,
-            gridlines: false,
-            hover: &[],
-        }
+crate::chart_config!(AreaConfig, 1100, 480;
+    struct {
+        pub x_labels: &'a [String],
+        pub series: &'a [(String, Vec<f64>)],
+        pub palette: &'a [u32],
+        pub stacked: bool,
     }
-}
+    defaults {
+        x_labels: &[],
+        series: &[],
+        palette: &[],
+        stacked: false,
+    }
+);
 
 pub fn render_area_html(cfg: &AreaConfig) -> String {
     let n_pts = cfg.x_labels.len();

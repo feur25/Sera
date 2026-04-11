@@ -1,30 +1,22 @@
 use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_legend_item, Frame};
-use crate::html::hover::{HoverSlot, slots_to_json};
+use crate::html::hover::slots_to_json;
 
-pub struct BubbleConfig<'a> {
-    pub title: &'a str,
-    pub x_values: &'a [f64],
-    pub y_values: &'a [f64],
-    pub sizes: &'a [f64],
-    pub categories: &'a [String],
-    pub palette: &'a [u32],
-    pub width: i32,
-    pub height: i32,
-    pub x_label: &'a str,
-    pub y_label: &'a str,
-    pub gridlines: bool,
-    pub hover: &'a [HoverSlot],
-}
-
-impl<'a> Default for BubbleConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "", x_values: &[], y_values: &[], sizes: &[],
-            categories: &[], palette: &[], width: 900, height: 500,
-            x_label: "", y_label: "", gridlines: false, hover: &[],
-        }
+crate::chart_config!(BubbleConfig, 900, 500;
+    struct {
+        pub x_values: &'a [f64],
+        pub y_values: &'a [f64],
+        pub sizes: &'a [f64],
+        pub categories: &'a [String],
+        pub palette: &'a [u32],
     }
-}
+    defaults {
+        x_values: &[],
+        y_values: &[],
+        sizes: &[],
+        categories: &[],
+        palette: &[],
+    }
+);
 
 pub fn render_bubble_html(cfg: &BubbleConfig) -> String {
     let n = cfg.x_values.len().min(cfg.y_values.len()).min(cfg.sizes.len());

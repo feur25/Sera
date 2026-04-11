@@ -1,39 +1,26 @@
 use super::common::{palette_color, push_b, push_i, push_f2, hex6, escape_xml, truncate, apply_sort};
-use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+use crate::html::hover::{slots_to_json, build_chart_html};
 
 pub struct Pie;
 
-pub struct PieConfig<'a> {
-    pub title: &'a str,
-    pub labels: &'a [String],
-    pub values: &'a [f64],
-    pub width: i32,
-    pub height: i32,
-    pub donut: f64,
-    pub show_pct: bool,
-    pub min_label_frac: f64,
-    pub palette: &'a [u32],
-    pub hover: &'a [HoverSlot],
-    pub sort_order: &'a str,
-}
-
-impl<'a> Default for PieConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            labels: &[],
-            values: &[],
-            width: 720,
-            height: 440,
-            donut: 0.0,
-            show_pct: true,
-            min_label_frac: 0.04,
-            palette: &[],
-            hover: &[],
-            sort_order: "",
-        }
+crate::chart_config!(PieConfig, 720, 440;
+    struct {
+        pub labels: &'a [String],
+        pub values: &'a [f64],
+        pub donut: f64,
+        pub show_pct: bool,
+        pub min_label_frac: f64,
+        pub palette: &'a [u32],
     }
-}
+    defaults {
+        labels: &[],
+        values: &[],
+        donut: 0.0,
+        show_pct: true,
+        min_label_frac: 0.04,
+        palette: &[],
+    }
+);
 
 pub fn render_pie_html(cfg: &PieConfig) -> String {
     use std::f64::consts::PI;

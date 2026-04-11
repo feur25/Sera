@@ -1,37 +1,24 @@
 use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, apply_sort};
-use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+use crate::html::hover::{slots_to_json, build_chart_html};
 
-pub struct WordCloudConfig<'a> {
-    pub title: &'a str,
-    pub words: &'a [String],
-    pub frequencies: &'a [f64],
-    pub palette: &'a [u32],
-    pub width: i32,
-    pub height: i32,
-    pub min_font: f64,
-    pub max_font: f64,
-    pub hover: &'a [HoverSlot],
-    pub sort_order: &'a str,
-    pub bg_color: Option<&'a str>,
-}
-
-impl<'a> Default for WordCloudConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            words: &[],
-            frequencies: &[],
-            palette: &[],
-            width: 900,
-            height: 500,
-            min_font: 12.0,
-            max_font: 72.0,
-            hover: &[],
-            sort_order: "",
-            bg_color: None,
-        }
+crate::chart_config!(WordCloudConfig, 900, 500;
+    struct {
+        pub words: &'a [String],
+        pub frequencies: &'a [f64],
+        pub palette: &'a [u32],
+        pub min_font: f64,
+        pub max_font: f64,
+        pub bg_color: Option<&'a str>,
     }
-}
+    defaults {
+        words: &[],
+        frequencies: &[],
+        palette: &[],
+        min_font: 12.0,
+        max_font: 72.0,
+        bg_color: None,
+    }
+);
 
 struct PlacedWord {
     x: f64,

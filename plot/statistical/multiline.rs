@@ -1,39 +1,22 @@
 use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
-use crate::html::hover::{HoverSlot, slots_to_json};
+use crate::html::hover::slots_to_json;
 
 pub struct MultiLine;
 
-pub struct MultiLineConfig<'a> {
-    pub title: &'a str,
-    pub x_label: &'a str,
-    pub y_label: &'a str,
-    pub x_labels: &'a [String],
-    pub series: &'a [(String, Vec<f64>)],
-    pub palette: &'a [u32],
-    pub width: i32,
-    pub height: i32,
-    pub gridlines: bool,
-    pub show_points: bool,
-    pub hover: &'a [HoverSlot],
-}
-
-impl<'a> Default for MultiLineConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            x_label: "",
-            y_label: "",
-            x_labels: &[],
-            series: &[],
-            palette: &[],
-            width: 1100,
-            height: 480,
-            gridlines: false,
-            show_points: true,
-            hover: &[],
-        }
+crate::chart_config!(MultiLineConfig, 1100, 480;
+    struct {
+        pub x_labels: &'a [String],
+        pub series: &'a [(String, Vec<f64>)],
+        pub palette: &'a [u32],
+        pub show_points: bool,
     }
-}
+    defaults {
+        x_labels: &[],
+        series: &[],
+        palette: &[],
+        show_points: true,
+    }
+);
 
 pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
     let n_pts = cfg.x_labels.len();

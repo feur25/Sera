@@ -1,36 +1,25 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_open, svg_title, svg_x_label, truncate};
-use crate::html::hover::build_chart_html;
+use super::common::{sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_open, svg_title, svg_x_label, svg_y_label, svg_legend_item, truncate};
+use crate::html::hover::{build_chart_html, slots_to_json};
 use super::kde::{scott_bw, kde_eval};
 
-pub struct RidgelineConfig<'a> {
-    pub title: &'a str,
-    pub values: &'a [f64],
-    pub categories: &'a [String],
-    pub palette: &'a [u32],
-    pub x_label: &'a str,
-    pub overlap: f64,
-    pub bandwidth: f64,
-    pub width: i32,
-    pub height: i32,
-    pub n_points: usize,
-}
-
-impl<'a> Default for RidgelineConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            values: &[],
-            categories: &[],
-            palette: &[],
-            x_label: "",
-            overlap: 0.5,
-            bandwidth: 0.0,
-            width: 900,
-            height: 520,
-            n_points: 60,
-        }
+crate::chart_config!(RidgelineConfig, 900, 520;
+    struct {
+        pub values: &'a [f64],
+        pub categories: &'a [String],
+        pub palette: &'a [u32],
+        pub overlap: f64,
+        pub bandwidth: f64,
+        pub n_points: usize,
     }
-}
+    defaults {
+        values: &[],
+        categories: &[],
+        palette: &[],
+        overlap: 0.5,
+        bandwidth: 0.0,
+        n_points: 60,
+    }
+);
 
 pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
     let n = cfg.values.len().min(cfg.categories.len());
@@ -49,6 +38,11 @@ pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
             group_vals[gi].push(cfg.values[i]);
         }
     }
+    let means: Vec<f64> = group_vals.iter().map(|v| if v.is_empty() { 0.0 } else { v.iter().sum::<f64>() / v.len() as f64 }).collect();
+    let sort_idx = sort_indices(n_groups, &means, &group_order, cfg.sort_order);
+    let group_order: Vec<String> = sort_idx.iter().map(|&i| group_order[i].clone()).collect();
+    let group_vals: Vec<Vec<f64>> = sort_idx.iter().map(|&i| group_vals[i].clone()).collect();
+    let n_groups = group_order.len();
 
     let all_vals: Vec<f64> = cfg.values[..n].to_vec();
     let x_min = all_vals.iter().copied().fold(f64::INFINITY, f64::min);
@@ -76,7 +70,7 @@ pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
     let title_h: i32 = if cfg.title.is_empty() { 0 } else { 36 };
     let pad_l: i32 = 130;
     let pad_b: i32 = 44;
-    let pad_r: i32 = 20;
+    let pad_r: i32 = if n_groups > 1 { 130 } else { 20 };
     let plot_w = cfg.width - pad_l - pad_r;
     let plot_area_h = cfg.height - title_h - pad_b;
     let row_h = plot_area_h / n_groups as i32;
@@ -98,11 +92,13 @@ pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
         let frac = ti as f64 / n_xticks as f64;
         let x = pad_l + (plot_w as f64 * frac) as i32;
         let val = x0 + xr * frac;
-        push_b(&mut b, b"<line x1=\""); push_i(&mut b, x);
-        push_b(&mut b, b"\" y1=\""); push_i(&mut b, title_h);
-        push_b(&mut b, b"\" x2=\""); push_i(&mut b, x);
-        push_b(&mut b, b"\" y2=\""); push_i(&mut b, axis_y);
-        push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"/>");
+        if cfg.gridlines {
+            push_b(&mut b, b"<line x1=\""); push_i(&mut b, x);
+            push_b(&mut b, b"\" y1=\""); push_i(&mut b, title_h);
+            push_b(&mut b, b"\" x2=\""); push_i(&mut b, x);
+            push_b(&mut b, b"\" y2=\""); push_i(&mut b, axis_y);
+            push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"/>");
+        }
         push_b(&mut b, b"<text x=\""); push_i(&mut b, x);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, axis_y + 14);
         push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#9ca3af\" class=\"sp-xt\">");
@@ -114,6 +110,8 @@ pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
         let color = palette_color(cfg.palette, gi);
         let hx = hex6(color);
         let base_y = title_h + (gi + 1) as i32 * row_h;
+
+        push_b(&mut b, b"<g data-series=\""); push_i(&mut b, gi as i32); push_b(&mut b, b"\">");
 
         let pts: Vec<(f64, f64)> = xs.iter().zip(ys.iter()).map(|(&x, &y)| {
             let sx = pad_l as f64 + (x - x0) / xr * plot_w as f64;
@@ -159,11 +157,17 @@ pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
         push_b(&mut b, b"\" y=\""); push_i(&mut b, base_y - row_h / 2 + 4);
         push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" font-weight=\"600\" fill=\"#374151\">");
         escape_xml(&mut b, truncate(&group_order[gi], 14));
-        push_b(&mut b, b"</text>");
+        push_b(&mut b, b"</text>");        push_b(&mut b, b"</g>");
     }
 
+    // Legend
+    let legend_x = pad_l + plot_w + 8;
+    for (gi, name) in group_order.iter().enumerate() {
+        svg_legend_item(&mut b, gi as i32, name, palette_color(cfg.palette, gi), legend_x, title_h + 10 + gi as i32 * 22, 12);    }
+
     svg_x_label(&mut b, cfg.x_label, pad_l + plot_w / 2, cfg.height - 4);
+    svg_y_label(&mut b, cfg.y_label, 14, title_h, plot_area_h);
     push_b(&mut b, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(b) };
-    build_chart_html(cfg.title, &svg, "[]")
+    build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }

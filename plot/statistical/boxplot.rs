@@ -1,5 +1,18 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_axis_lines, Frame};
-use crate::html::hover::{HoverSlot, slots_to_json};
+use super::common::{sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_axis_lines, svg_x_label, svg_y_label, svg_legend_item, Frame};
+use crate::html::hover::slots_to_json;
+
+crate::chart_config!(BoxplotConfig, 900, 500;
+    struct {
+        pub category_labels: &'a [String],
+        pub values: &'a [f64],
+        pub palette: &'a [u32],
+    }
+    defaults {
+        category_labels: &[],
+        values: &[],
+        palette: &[],
+    }
+);
 
 fn quartile(sorted: &[f64], q: f64) -> f64 {
     if sorted.is_empty() { return 0.0; }
@@ -34,15 +47,18 @@ fn compute_box(vals: &[f64]) -> BoxStats {
     BoxStats { q1, median, q3, whisker_lo, whisker_hi, outliers }
 }
 
-pub fn render_boxplot_html(
-    title: &str,
-    category_labels: &[String],
-    values: &[f64],
-    width: i32,
-    height: i32,
-    palette: &[u32],
-    hover: &[HoverSlot],
-) -> String {
+pub fn render_boxplot_html(cfg: &BoxplotConfig) -> String {
+    let title = cfg.title;
+    let category_labels = cfg.category_labels;
+    let values = cfg.values;
+    let width = cfg.width;
+    let height = cfg.height;
+    let palette = cfg.palette;
+    let hover = cfg.hover;
+    let x_label = cfg.x_label;
+    let y_label = cfg.y_label;
+    let gridlines = cfg.gridlines;
+
     let n = category_labels.len().min(values.len());
     if n == 0 { return String::new(); }
 
@@ -57,6 +73,10 @@ pub fn render_boxplot_html(
     }
     let n_cats = cats.len();
     let stats: Vec<BoxStats> = groups.iter().map(|v| compute_box(v)).collect();
+    let medians: Vec<f64> = stats.iter().map(|s| s.median).collect();
+    let sort_idx = sort_indices(n_cats, &medians, &cats, cfg.sort_order);
+    let cats: Vec<String> = sort_idx.iter().map(|&i| cats[i].clone()).collect();
+    let stats: Vec<BoxStats> = sort_idx.iter().map(|&i| BoxStats { q1: stats[i].q1, median: stats[i].median, q3: stats[i].q3, whisker_lo: stats[i].whisker_lo, whisker_hi: stats[i].whisker_hi, outliers: stats[i].outliers.clone() }).collect();
 
     let global_min = stats.iter().fold(f64::INFINITY, |acc, s| {
         acc.min(s.whisker_lo).min(s.outliers.iter().cloned().fold(s.whisker_lo, f64::min))
@@ -69,22 +89,25 @@ pub fn render_boxplot_html(
     let y_max = global_max + pad_v;
     let range_y = (y_max - y_min).max(1.0);
 
+    let legend_w: i32 = if n_cats > 1 { 130 } else { 20 };
     let pad_l: i32 = 62;
-    let plot_w = width - pad_l - 20;
+    let plot_w = width - pad_l - legend_w;
     let plot_h = height - 44 - 54;
 
     let slot_w = plot_w as f64 / n_cats as f64;
     let box_hw = (slot_w * 0.28) as i32;
 
-    let mut f = Frame::new_html(title, width, height, 62, 44, 54, 20, n_cats * 500 + 2048);
+    let mut f = Frame::new_html(title, width, height, 62, 44, 54, legend_w, n_cats * 500 + 2048);
     f.open(title, false);
-    f.y_grid(5, y_min, y_max, true);
+    f.y_grid(5, y_min, y_max, gridlines);
     svg_axis_lines(&mut f.buf, f.pl, f.pt, f.pw, f.ph);
 
     for (ci, (cat, st)) in cats.iter().zip(stats.iter()).enumerate() {
         let cx = f.pl + (ci as f64 * slot_w + slot_w / 2.0) as i32;
         let color = palette_color(palette, ci);
         let hx = hex6(color);
+
+        push_b(&mut f.buf, b"<g data-series=\""); push_i(&mut f.buf, ci as i32); push_b(&mut f.buf, b"\">");
 
         let y_q1    = f.pt + f.ph - ((st.q1 - y_min) / range_y * f.ph as f64) as i32;
         let y_med   = f.pt + f.ph - ((st.median - y_min) / range_y * f.ph as f64) as i32;
@@ -157,8 +180,19 @@ pub fn render_boxplot_html(
         push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
         escape_xml(&mut f.buf, if cat.len() <= 14 { cat } else { &cat[..14] });
         push_b(&mut f.buf, b"</text>");
+        push_b(&mut f.buf, b"</g>");
 
     }
+
+    if n_cats > 1 {
+        let lx = width - legend_w + 12;
+        for (ci, cat) in cats.iter().enumerate() {
+            svg_legend_item(&mut f.buf, ci as i32, cat, palette_color(palette, ci), lx, f.pt + ci as i32 * 22, 14);
+        }
+    }
+
+    svg_x_label(&mut f.buf, x_label, f.pl + f.pw / 2, f.h - 4);
+    svg_y_label(&mut f.buf, y_label, 14, f.pt, f.ph);
 
     f.html(&slots_to_json(hover))
 }

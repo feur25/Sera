@@ -1,33 +1,18 @@
 use super::common::{push_b, push_i, push_f2, escape_xml, hex6};
-use crate::html::hover::build_chart_html;
+use crate::html::hover::{build_chart_html, slots_to_json};
 
-pub struct WaterfallConfig<'a> {
-    pub title: &'a str,
-    pub labels: &'a [String],
-    pub values: &'a [f64],
-    pub x_label: &'a str,
-    pub y_label: &'a str,
-    pub show_text: bool,
-    pub gridlines: bool,
-    pub width: i32,
-    pub height: i32,
-}
-
-impl<'a> Default for WaterfallConfig<'a> {
-    fn default() -> Self {
-        Self {
-            title: "",
-            labels: &[],
-            values: &[],
-            x_label: "",
-            y_label: "",
-            show_text: true,
-            gridlines: false,
-            width: 900,
-            height: 480,
-        }
+crate::chart_config!(WaterfallConfig, 900, 480;
+    struct {
+        pub labels: &'a [String],
+        pub values: &'a [f64],
+        pub show_text: bool,
     }
-}
+    defaults {
+        labels: &[],
+        values: &[],
+        show_text: true,
+    }
+);
 
 const COLOR_POS: u32 = 0x10B981;
 const COLOR_NEG: u32 = 0xF43F5E;
@@ -196,5 +181,5 @@ pub fn render_waterfall_html(cfg: &WaterfallConfig) -> String {
 
     push_b(&mut b, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(b) };
-    build_chart_html(cfg.title, &svg, "[]")
+    build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }
