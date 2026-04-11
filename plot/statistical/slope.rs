@@ -1,4 +1,4 @@
-use super::common::{sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6};
+use super::common::{sorted, sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6};
 use crate::html::hover::{build_chart_html, slots_to_json};
 
 crate::chart_config!(SlopeConfig, 700, 500;
@@ -26,9 +26,9 @@ pub fn render_slope_html(cfg: &SlopeConfig) -> String {
     let n = cfg.labels.len().min(cfg.values_left.len()).min(cfg.values_right.len());
     if n == 0 { return String::new(); }
     let sort_idx = sort_indices(n, cfg.values_left, cfg.labels, cfg.sort_order);
-    let labels: Vec<String> = sort_idx.iter().map(|&i| cfg.labels[i].clone()).collect();
-    let values_left: Vec<f64> = sort_idx.iter().map(|&i| cfg.values_left[i]).collect();
-    let values_right: Vec<f64> = sort_idx.iter().map(|&i| cfg.values_right[i]).collect();
+    let labels       = sorted(&sort_idx, cfg.labels);
+    let values_left  = sorted(&sort_idx, cfg.values_left);
+    let values_right = sorted(&sort_idx, cfg.values_right);
     let all: Vec<f64> = values_left.iter().chain(values_right.iter()).copied().collect();
     let min_val = all.iter().copied().fold(f64::INFINITY, f64::min);
     let max_val = all.iter().copied().fold(f64::NEG_INFINITY, f64::max);

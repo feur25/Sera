@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, hex6, Frame};
+use super::common::{sorted, sort_indices, palette_color, push_b, push_i, push_f2, hex6, Frame};
 use crate::html::hover::slots_to_json;
 
 crate::chart_config!(KdeConfig, 900, 420;
@@ -47,8 +47,7 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
     let series: Vec<(String, Vec<f64>)> = if cfg.sort_order != "none" && !cfg.sort_order.is_empty() && n_ser > 1 {
         let means: Vec<f64> = cfg.series.iter().map(|(_, v)| if v.is_empty() { 0.0 } else { v.iter().sum::<f64>() / v.len() as f64 }).collect();
         let names: Vec<String> = cfg.series.iter().map(|(n, _)| n.clone()).collect();
-        let idx = super::common::sort_indices(n_ser, &means, &names, cfg.sort_order);
-        idx.iter().map(|&i| cfg.series[i].clone()).collect()
+        sorted(&sort_indices(n_ser, &means, &names, cfg.sort_order), cfg.series)
     } else {
         cfg.series.to_vec()
     };

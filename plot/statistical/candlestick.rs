@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_open, svg_title, svg_hgrid, svg_tick_y, svg_tick_x, svg_axis_lines, svg_x_label, svg_y_label, sort_indices};
+use super::common::{sorted, palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_open, svg_title, svg_hgrid, svg_tick_y, svg_tick_x, svg_axis_lines, svg_x_label, svg_y_label, sort_indices};
 use crate::html::hover::{slots_to_json, build_chart_html};
 
 crate::chart_config!(CandlestickConfig, 1100, 500;
@@ -24,11 +24,11 @@ pub fn render_candlestick_html(cfg: &CandlestickConfig) -> String {
     let n = cfg.labels.len().min(cfg.open.len()).min(cfg.high.len()).min(cfg.low.len()).min(cfg.close.len());
     if n == 0 { return String::new(); }
     let idx = sort_indices(n, cfg.close, cfg.labels, cfg.sort_order);
-    let labels: Vec<String> = idx.iter().map(|&i| cfg.labels[i].clone()).collect();
-    let open: Vec<f64> = idx.iter().map(|&i| cfg.open[i]).collect();
-    let high: Vec<f64> = idx.iter().map(|&i| cfg.high[i]).collect();
-    let low: Vec<f64> = idx.iter().map(|&i| cfg.low[i]).collect();
-    let close: Vec<f64> = idx.iter().map(|&i| cfg.close[i]).collect();
+    let labels = sorted(&idx, cfg.labels);
+    let open  = sorted(&idx, cfg.open);
+    let high  = sorted(&idx, cfg.high);
+    let low   = sorted(&idx, cfg.low);
+    let close = sorted(&idx, cfg.close);
 
     let mut global_min = f64::INFINITY;
     let mut global_max = f64::NEG_INFINITY;

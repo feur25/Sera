@@ -1,4 +1,4 @@
-use super::common::{sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_open, svg_title, svg_x_label, svg_y_label, svg_legend_item, truncate};
+use super::common::{sorted, sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_open, svg_title, svg_x_label, svg_y_label, svg_legend_item, truncate};
 use crate::html::hover::{build_chart_html, slots_to_json};
 use super::kde::{scott_bw, kde_eval};
 
@@ -40,8 +40,8 @@ pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
     }
     let means: Vec<f64> = group_vals.iter().map(|v| if v.is_empty() { 0.0 } else { v.iter().sum::<f64>() / v.len() as f64 }).collect();
     let sort_idx = sort_indices(n_groups, &means, &group_order, cfg.sort_order);
-    let group_order: Vec<String> = sort_idx.iter().map(|&i| group_order[i].clone()).collect();
-    let group_vals: Vec<Vec<f64>> = sort_idx.iter().map(|&i| group_vals[i].clone()).collect();
+    let group_order = sorted(&sort_idx, &group_order);
+    let group_vals  = sorted(&sort_idx, &group_vals);
     let n_groups = group_order.len();
 
     let all_vals: Vec<f64> = cfg.values[..n].to_vec();

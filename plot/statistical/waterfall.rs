@@ -1,4 +1,4 @@
-use super::common::{push_b, push_i, push_f2, escape_xml, hex6, sort_indices};
+use super::common::{sorted, push_b, push_i, push_f2, escape_xml, hex6, sort_indices};
 use crate::html::hover::{build_chart_html, slots_to_json};
 
 crate::chart_config!(WaterfallConfig, 900, 480;
@@ -23,8 +23,8 @@ pub fn render_waterfall_html(cfg: &WaterfallConfig) -> String {
     if n == 0 { return String::new(); }
 
     let idx = sort_indices(n, cfg.values, cfg.labels, cfg.sort_order);
-    let labels: Vec<String> = idx.iter().map(|&i| cfg.labels[i].clone()).collect();
-    let values: Vec<f64> = idx.iter().map(|&i| cfg.values[i]).collect();
+    let labels = sorted(&idx, cfg.labels);
+    let values = sorted(&idx, cfg.values);
 
     let mut running = 0.0_f64;
     let mut starts: Vec<f64> = Vec::with_capacity(n);

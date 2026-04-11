@@ -1,4 +1,4 @@
-use super::common::{sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_axis_lines, svg_x_label, svg_y_label, svg_legend_item, Frame};
+use super::common::{sorted, sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_axis_lines, svg_x_label, svg_y_label, svg_legend_item, Frame};
 use crate::html::hover::slots_to_json;
 
 crate::chart_config!(BoxplotConfig, 900, 500;
@@ -22,6 +22,7 @@ fn quartile(sorted: &[f64], q: f64) -> f64 {
     if lo == hi { sorted[lo] } else { sorted[lo] + (sorted[hi] - sorted[lo]) * (pos - lo as f64) }
 }
 
+#[derive(Clone)]
 struct BoxStats {
     q1: f64, median: f64, q3: f64,
     whisker_lo: f64, whisker_hi: f64,
@@ -75,8 +76,8 @@ pub fn render_boxplot_html(cfg: &BoxplotConfig) -> String {
     let stats: Vec<BoxStats> = groups.iter().map(|v| compute_box(v)).collect();
     let medians: Vec<f64> = stats.iter().map(|s| s.median).collect();
     let sort_idx = sort_indices(n_cats, &medians, &cats, cfg.sort_order);
-    let cats: Vec<String> = sort_idx.iter().map(|&i| cats[i].clone()).collect();
-    let stats: Vec<BoxStats> = sort_idx.iter().map(|&i| BoxStats { q1: stats[i].q1, median: stats[i].median, q3: stats[i].q3, whisker_lo: stats[i].whisker_lo, whisker_hi: stats[i].whisker_hi, outliers: stats[i].outliers.clone() }).collect();
+    let cats  = sorted(&sort_idx, &cats);
+    let stats = sorted(&sort_idx, &stats);
 
     let global_min = stats.iter().fold(f64::INFINITY, |acc, s| {
         acc.min(s.whisker_lo).min(s.outliers.iter().cloned().fold(s.whisker_lo, f64::min))

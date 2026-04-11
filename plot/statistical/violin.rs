@@ -1,4 +1,4 @@
-use super::common::{sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_axis_lines, svg_legend_item, Frame};
+use super::common::{sorted, sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, svg_axis_lines, svg_legend_item, Frame};
 use crate::html::hover::slots_to_json;
 
 crate::chart_config!(ViolinConfig, 900, 500;
@@ -58,8 +58,8 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
         percentile(&s, 0.5)
     }).collect();
     let sort_idx = sort_indices(n_cats, &medians, &cat_set, cfg.sort_order);
-    let cat_set: Vec<String> = sort_idx.iter().map(|&i| cat_set[i].clone()).collect();
-    let cat_vals: Vec<Vec<f64>> = sort_idx.iter().map(|&i| cat_vals[i].clone()).collect();
+    let cat_set  = sorted(&sort_idx, &cat_set);
+    let cat_vals = sorted(&sort_idx, &cat_vals);
     let n_cats = cat_set.len();
 
     let global_min = cfg.values.iter().copied().fold(f64::INFINITY, f64::min);

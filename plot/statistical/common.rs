@@ -48,34 +48,15 @@ macro_rules! chart_config {
 pub fn apply_sort(labels: &[String], values: &[f64], order: &str) -> (Vec<String>, Vec<f64>) {
     if order.is_empty() || order == "none" { return (labels.to_vec(), values.to_vec()); }
     let n = labels.len().min(values.len());
-    let mut idx: Vec<usize> = (0..n).collect();
-    match order {
-        "asc" | "ascending" => idx.sort_by(|&a, &b| values[a].partial_cmp(&values[b]).unwrap_or(std::cmp::Ordering::Equal)),
-        "desc" | "descending" => idx.sort_by(|&a, &b| values[b].partial_cmp(&values[a]).unwrap_or(std::cmp::Ordering::Equal)),
-        "alpha" | "alphabetical" => idx.sort_by(|&a, &b| labels[a].cmp(&labels[b])),
-        "alpha_desc" => idx.sort_by(|&a, &b| labels[b].cmp(&labels[a])),
-        _ => {}
-    }
-    let sl: Vec<String> = idx.iter().map(|&i| labels[i].clone()).collect();
-    let sv: Vec<f64> = idx.iter().map(|&i| values[i]).collect();
-    (sl, sv)
+    let idx = sort_indices(n, values, labels, order);
+    (sorted(&idx, labels), sorted(&idx, values))
 }
 
 pub fn apply_sort_groups(labels: &[String], values: &[f64], groups: &[String], order: &str) -> (Vec<String>, Vec<f64>, Vec<String>) {
     if order.is_empty() || order == "none" { return (labels.to_vec(), values.to_vec(), groups.to_vec()); }
     let n = labels.len().min(values.len()).min(groups.len());
-    let mut idx: Vec<usize> = (0..n).collect();
-    match order {
-        "asc" | "ascending" => idx.sort_by(|&a, &b| values[a].partial_cmp(&values[b]).unwrap_or(std::cmp::Ordering::Equal)),
-        "desc" | "descending" => idx.sort_by(|&a, &b| values[b].partial_cmp(&values[a]).unwrap_or(std::cmp::Ordering::Equal)),
-        "alpha" | "alphabetical" => idx.sort_by(|&a, &b| labels[a].cmp(&labels[b])),
-        "alpha_desc" => idx.sort_by(|&a, &b| labels[b].cmp(&labels[a])),
-        _ => {}
-    }
-    let sl: Vec<String> = idx.iter().map(|&i| labels[i].clone()).collect();
-    let sv: Vec<f64> = idx.iter().map(|&i| values[i]).collect();
-    let sg: Vec<String> = idx.iter().map(|&i| groups[i].clone()).collect();
-    (sl, sv, sg)
+    let idx = sort_indices(n, values, labels, order);
+    (sorted(&idx, labels), sorted(&idx, values), sorted(&idx, groups))
 }
 
 pub fn sort_indices<L: Ord>(n: usize, vals: &[f64], labels: &[L], order: &str) -> Vec<usize> {
@@ -88,6 +69,10 @@ pub fn sort_indices<L: Ord>(n: usize, vals: &[f64], labels: &[L], order: &str) -
         _ => {}
     }
     idx
+}
+
+pub fn sorted<T: Clone>(idx: &[usize], data: &[T]) -> Vec<T> {
+    idx.iter().map(|&i| data[i].clone()).collect()
 }
 
 pub fn svg_open(buf: &mut Vec<u8>, w: i32, h: i32) {

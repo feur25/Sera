@@ -1,4 +1,4 @@
-use super::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
+use super::common::{sorted, sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
 use crate::html::hover::slots_to_json;
 
 pub struct MultiLine;
@@ -25,8 +25,7 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
     let series: Vec<(String, Vec<f64>)> = if cfg.sort_order != "none" && !cfg.sort_order.is_empty() && n_ser > 1 {
         let totals: Vec<f64> = cfg.series.iter().map(|(_, v)| v.iter().sum::<f64>()).collect();
         let names: Vec<String> = cfg.series.iter().map(|(n, _)| n.clone()).collect();
-        let idx = super::common::sort_indices(n_ser, &totals, &names, cfg.sort_order);
-        idx.iter().map(|&i| cfg.series[i].clone()).collect()
+        sorted(&sort_indices(n_ser, &totals, &names, cfg.sort_order), cfg.series)
     } else {
         cfg.series.to_vec()
     };

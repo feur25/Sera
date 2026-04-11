@@ -1,4 +1,4 @@
-use super::common::{push_b, push_i, push_f2, escape_xml, hex6, sort_indices};
+use super::common::{sorted, push_b, push_i, push_f2, escape_xml, hex6, sort_indices};
 use crate::html::hover::{build_chart_html, slots_to_json};
 
 crate::chart_config!(BulletConfig, 800, 300;
@@ -22,8 +22,8 @@ pub fn render_bullet_html(cfg: &BulletConfig) -> String {
     let n = cfg.labels.len().min(cfg.values.len());
     if n == 0 { return String::new(); }
     let idx = sort_indices(n, cfg.values, cfg.labels, cfg.sort_order);
-    let labels: Vec<String> = idx.iter().map(|&i| cfg.labels[i].clone()).collect();
-    let values: Vec<f64> = idx.iter().map(|&i| cfg.values[i]).collect();
+    let labels = sorted(&idx, cfg.labels);
+    let values = sorted(&idx, cfg.values);
     let targets: Vec<f64> = idx.iter().map(|&i| cfg.targets.get(i).copied().unwrap_or(0.0)).collect();
     let max_vals: Vec<f64> = idx.iter().map(|&i| cfg.max_vals.get(i).copied().unwrap_or(0.0)).collect();
     let ranges: Vec<f64> = idx.iter().map(|&i| cfg.ranges.get(i).copied().unwrap_or(0.0)).collect();

@@ -1,4 +1,4 @@
-use super::common::{sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
+use super::common::{sorted, sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
 use crate::html::hover::slots_to_json;
 
 pub struct GroupedBar;
@@ -28,7 +28,7 @@ pub fn render_grouped_bar_html(cfg: &GroupedBarConfig) -> String {
     if n_cats == 0 || n_ser == 0 { return String::new(); }
     let sums: Vec<f64> = (0..n_cats).map(|i| cfg.series.iter().filter_map(|(_, v)| v.get(i).copied()).sum()).collect();
     let idx = sort_indices(n_cats, &sums, cfg.category_labels, cfg.sort_order);
-    let cat_labels: Vec<String> = idx.iter().map(|&i| cfg.category_labels[i].clone()).collect();
+    let cat_labels = sorted(&idx, cfg.category_labels);
     let series_ref: Vec<(String, Vec<f64>)> = cfg.series.iter().map(|(name, vals)| {
         let sv: Vec<f64> = idx.iter().map(|&i| vals.get(i).copied().unwrap_or(0.0)).collect();
         (name.clone(), sv)

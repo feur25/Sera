@@ -1,4 +1,4 @@
-use super::common::{sort_indices, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
+use super::common::{sorted, sort_indices, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
 use crate::html::hover::slots_to_json;
 
 crate::chart_config!(DumbbellConfig, 1000, 500;
@@ -22,9 +22,9 @@ pub fn render_dumbbell_html(cfg: &DumbbellConfig) -> String {
     let n = cfg.labels.len().min(cfg.values_start.len()).min(cfg.values_end.len());
     if n == 0 { return String::new(); }
     let sort_idx = sort_indices(n, cfg.values_start, cfg.labels, cfg.sort_order);
-    let s_labels: Vec<&String> = sort_idx.iter().map(|&i| &cfg.labels[i]).collect();
-    let s_start: Vec<f64> = sort_idx.iter().map(|&i| cfg.values_start[i]).collect();
-    let s_end: Vec<f64> = sort_idx.iter().map(|&i| cfg.values_end[i]).collect();
+    let s_labels = sorted(&sort_idx, cfg.labels);
+    let s_start  = sorted(&sort_idx, cfg.values_start);
+    let s_end    = sorted(&sort_idx, cfg.values_end);
 
     let mut global_min = f64::INFINITY;
     let mut global_max = f64::NEG_INFINITY;
@@ -57,7 +57,7 @@ pub fn render_dumbbell_html(cfg: &DumbbellConfig) -> String {
         push_b(&mut f.buf, b"<text x=\""); push_i(&mut f.buf, f.pl - 6);
         push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, cy + 3);
         push_b(&mut f.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\">");
-        escape_xml(&mut f.buf, truncate(s_labels[i], 18));
+        escape_xml(&mut f.buf, truncate(&s_labels[i], 18));
         push_b(&mut f.buf, b"</text>");
 
         push_b(&mut f.buf, b"<line x1=\""); push_i(&mut f.buf, x1);
@@ -68,7 +68,7 @@ pub fn render_dumbbell_html(cfg: &DumbbellConfig) -> String {
 
         push_b(&mut f.buf, b"<circle data-idx=\""); push_i(&mut f.buf, (i * 2) as i32);
         push_b(&mut f.buf, b"\" data-series=\"0\" data-y=\""); push_f2(&mut f.buf, s_start[i]);
-        push_b(&mut f.buf, b"\" data-lbl=\""); escape_xml(&mut f.buf, s_labels[i]);
+        push_b(&mut f.buf, b"\" data-lbl=\""); escape_xml(&mut f.buf, &s_labels[i]);
         push_b(&mut f.buf, b" ("); escape_xml(&mut f.buf, cfg.series_names.0);
         push_b(&mut f.buf, b")\" cx=\""); push_i(&mut f.buf, x1);
         push_b(&mut f.buf, b"\" cy=\""); push_i(&mut f.buf, cy);
@@ -77,7 +77,7 @@ pub fn render_dumbbell_html(cfg: &DumbbellConfig) -> String {
 
         push_b(&mut f.buf, b"<circle data-idx=\""); push_i(&mut f.buf, (i * 2 + 1) as i32);
         push_b(&mut f.buf, b"\" data-series=\"1\" data-y=\""); push_f2(&mut f.buf, s_end[i]);
-        push_b(&mut f.buf, b"\" data-lbl=\""); escape_xml(&mut f.buf, s_labels[i]);
+        push_b(&mut f.buf, b"\" data-lbl=\""); escape_xml(&mut f.buf, &s_labels[i]);
         push_b(&mut f.buf, b" ("); escape_xml(&mut f.buf, cfg.series_names.1);
         push_b(&mut f.buf, b")\" cx=\""); push_i(&mut f.buf, x2);
         push_b(&mut f.buf, b"\" cy=\""); push_i(&mut f.buf, cy);

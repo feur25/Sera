@@ -1,4 +1,4 @@
-use super::common::{push_b, push_i, push_f2, escape_xml, hex6, Frame, svg_legend_item};
+use super::common::{sorted, push_b, push_i, push_f2, escape_xml, hex6, Frame, svg_legend_item};
 use crate::html::hover::slots_to_json;
 
 pub struct Histogram;
@@ -44,14 +44,11 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
             "desc" | "descending" => idx.sort_by(|&a, &b| bin_counts[b].cmp(&bin_counts[a])),
             _ => {}
         }
-        let sorted_counts: Vec<u64> = idx.iter().map(|&i| bin_counts[i]).collect();
-        let sorted_edges: Vec<f64> = idx.iter().map(|&i| edges[i]).chain(std::iter::once(*edges.last().unwrap_or(&0.0))).collect();
-        if let Some(ref oc) = overlay_counts {
-            let sorted_oc: Vec<u64> = idx.iter().map(|&i| oc[i]).collect();
-            overlay_counts = Some(sorted_oc);
-        }
-        bin_counts = sorted_counts;
-        edges = sorted_edges;
+        if let Some(ref oc) = overlay_counts { overlay_counts = Some(sorted(&idx, oc)); }
+        let mut se = sorted(&idx, &edges[..n_bins]);
+        se.push(*edges.last().unwrap_or(&0.0));
+        bin_counts = sorted(&idx, &bin_counts);
+        edges = se;
     }
     let max_count = {
         let mut m = *bin_counts.iter().max().unwrap_or(&1) as f64;
