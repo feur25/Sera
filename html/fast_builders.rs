@@ -9,7 +9,7 @@ impl SvgBuilder {
     #[inline(always)]
     pub fn new(width: f32, height: f32, capacity: usize) -> Self {
         let mut buf = Vec::with_capacity(capacity * 90 + 256);
-        buf.extend_from_slice(b"<svg viewBox=\"0 0 1200 600\" xmlns=\"http://www.w3.org/2000/svg\"><rect width=\"1200\" height=\"600\" fill=\"#fff\"/>");
+        buf.extend_from_slice(b"<svg viewBox=\"0 0 1200 600\" xmlns=\"http://www.w3.org/2000/svg\"><rect class=\"sp-bg\" width=\"1200\" height=\"600\"/>");
         
         Self {
             buf,

@@ -47,7 +47,7 @@ pub fn render_gauge_html(cfg: &GaugeConfig) -> String {
     push_i(&mut buf, cfg.width);
     push_b(&mut buf, b" ");
     push_i(&mut buf, cfg.height);
-    push_b(&mut buf, b"\"><rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
+    push_b(&mut buf, b"\"><rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
 
     // Title
     if !cfg.title.is_empty() {

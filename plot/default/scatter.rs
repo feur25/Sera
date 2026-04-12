@@ -169,7 +169,7 @@ pub fn render_scatter_html(
     push_i(&mut buf, plot_w); push_b(&mut buf, b",");
     push_i(&mut buf, plot_h); push_b(&mut buf, b"\">");
     push_b(&mut buf, b"<defs><style>.sp{fill-opacity:.75;stroke:#fff;stroke-width:1}</style></defs>");
-    push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
+    push_b(&mut buf, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
     if !title.is_empty() {
         push_b(&mut buf, b"<text x=\""); push_i(&mut buf, width / 2);
         push_b(&mut buf, b"\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#1a202c\">");

@@ -112,20 +112,43 @@ pub fn parse_hover_json(json: &str) -> Vec<HoverSlot> {
 pub const HOVER_CSS: &str = "";
 pub const HOVER_JS:  &str = "";
 
-/// Default page background colour used in every chart wrapper.
-pub const DEFAULT_BG: &str = "#f0f2f5";
+pub const DEFAULT_BG: &str = "#fff";
 
-/// Replace the page background in a rendered chart HTML string.
-/// Pass `None` to get a transparent background.
+#[inline]
+fn resolve_named_color(c: &str) -> &str {
+    match c {
+        "none" | "transparent" => "transparent",
+        "red"    => "#e63946",
+        "blue"   => "#1d7ce7",
+        "green"  => "#2a9d8f",
+        "yellow" => "#ffd166",
+        "orange" => "#f4a261",
+        "purple" => "#9d4edd",
+        "pink"   => "#e91e8c",
+        "grey" | "gray" => "#6c757d",
+        "white"  => "#ffffff",
+        "black"  => "#1a1a2e",
+        other => other,
+    }
+}
+
 #[inline]
 pub fn apply_bg(html: String, bg: Option<&str>) -> String {
-    match bg {
-        None => html.replacen("background:#f0f2f5", "background:transparent", 1),
-        Some(c) if c.is_empty() || c == "none" || c == "transparent" => {
-            html.replacen("background:#f0f2f5", "background:transparent", 1)
-        }
-        Some(c) => html.replacen("background:#f0f2f5", &format!("background:{c}"), 1),
-    }
+    let raw = match bg {
+        None | Some("") => return html,
+        Some(c) => c,
+    };
+    let color = resolve_named_color(raw);
+    let h = html.replacen(".sp-bg{fill:#fff}", &format!(".sp-bg{{fill:{color}}}"), 1);
+    h.replacen("</head>", &format!("<style>html,body{{background:{color}!important}}</style></head>"), 1)
+}
+
+#[inline]
+pub fn apply_opts(html: String, bg: Option<&str>, show_x: bool, show_y: bool) -> String {
+    let mut h = apply_bg(html, bg);
+    if !show_x { h = h.replacen("</head>", "<style>.sp-ax-x,.sp-xt,.sp-xl{display:none}</style></head>", 1); }
+    if !show_y { h = h.replacen("</head>", "<style>.sp-ax-y,.sp-yt,.sp-yl{display:none}</style></head>", 1); }
+    h
 }
 
 
@@ -396,7 +419,7 @@ pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
     buf.extend_from_slice(html_attr_esc(title).as_bytes());
     buf.extend_from_slice(b"</title>");
     buf.extend_from_slice(CSS.as_bytes());
-    buf.extend_from_slice(b"<style>body{margin:0;background:#f0f2f5;display:flex;justify-content:center;padding:16px 0}@keyframes sp-i{from{opacity:0;transform:translateY(8px) scale(.94)}}@keyframes sp-bar{from{opacity:0;transform:scaleY(0)}}@keyframes sp-pop{0%{opacity:0;transform:scale(0)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}@keyframes sp-arc{from{opacity:0;transform:scale(.82) rotate(-6deg)}}@keyframes sp-fn{from{opacity:0;transform:scaleX(.7) translateY(8px)}}svg rect[data-idx]{transform-box:fill-box;transform-origin:bottom center;animation:sp-bar .5s cubic-bezier(.22,.61,.36,1) both}svg circle[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-pop .42s cubic-bezier(.34,1.56,.64,1) both}svg path[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-arc .48s cubic-bezier(.22,.61,.36,1) both}svg polygon[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-fn .48s cubic-bezier(.22,.61,.36,1) both}svg line[data-idx]{animation:sp-i .45s cubic-bezier(.22,.61,.36,1) both}svg rect[data-idx]:hover{transform:scaleY(1.03);filter:brightness(1.12) saturate(1.1)}svg circle[data-idx]:hover{transform:scale(1.3);filter:brightness(1.15)}svg path[data-idx]:hover{filter:brightness(1.1) drop-shadow(0 2px 8px rgba(0,0,0,.2))}</style></head><body>");
+    buf.extend_from_slice(b"<style>body{margin:0;background:#fff;display:flex;justify-content:center;padding:0}@keyframes sp-i{from{opacity:0;transform:translateY(8px) scale(.94)}}@keyframes sp-bar{from{opacity:0;transform:scaleY(0)}}@keyframes sp-pop{0%{opacity:0;transform:scale(0)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}@keyframes sp-arc{from{opacity:0;transform:scale(.82) rotate(-6deg)}}@keyframes sp-fn{from{opacity:0;transform:scaleX(.7) translateY(8px)}}svg rect[data-idx]{transform-box:fill-box;transform-origin:bottom center;animation:sp-bar .5s cubic-bezier(.22,.61,.36,1) both}svg circle[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-pop .42s cubic-bezier(.34,1.56,.64,1) both}svg path[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-arc .48s cubic-bezier(.22,.61,.36,1) both}svg polygon[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-fn .48s cubic-bezier(.22,.61,.36,1) both}svg line[data-idx]{animation:sp-i .45s cubic-bezier(.22,.61,.36,1) both}svg rect[data-idx]:hover{transform:scaleY(1.03);filter:brightness(1.12) saturate(1.1)}svg circle[data-idx]:hover{transform:scale(1.3);filter:brightness(1.15)}svg path[data-idx]:hover{filter:brightness(1.1) drop-shadow(0 2px 8px rgba(0,0,0,.2))}.sp-bg{fill:#fff}</style></head><body>");
     buf.extend_from_slice(b"<div id=\"");
     push_pid(&mut buf, id);
     buf.extend_from_slice(b"\" style=\"position:relative;display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)\">");
@@ -487,7 +510,7 @@ pub fn html_prefix(buf: &mut Vec<u8>, title: &str, id: u64) {
         ".sp-cls-x{cursor:pointer;color:#94a3b8;margin-left:6px;font-size:13px}",
         ".sp-cls-x:hover{color:#f87171}",
         "</style>",
-        "<style>body{margin:0;background:#f0f2f5;display:flex;justify-content:center;padding:16px 0}",
+        "<style>body{margin:0;background:#fff;display:flex;justify-content:center;padding:0}",
         "@keyframes sp-i{from{opacity:0;transform:translateY(8px) scale(.94)}}",
         "@keyframes sp-bar{from{opacity:0;transform:scaleY(0)}}",
         "@keyframes sp-pop{0%{opacity:0;transform:scale(0)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}",
@@ -501,6 +524,7 @@ pub fn html_prefix(buf: &mut Vec<u8>, title: &str, id: u64) {
         "svg rect[data-idx]:hover{transform:scaleY(1.03);filter:brightness(1.12) saturate(1.1)}",
         "svg circle[data-idx]:hover{transform:scale(1.3);filter:brightness(1.15)}",
         "svg path[data-idx]:hover{filter:brightness(1.1) drop-shadow(0 2px 8px rgba(0,0,0,.2))}",
+        ".sp-bg{fill:#fff}",
         "</style></head><body><div id=\"",
     ).as_bytes();
     const TPL3: &[u8] = b"\" style=\"position:relative;display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)\">";

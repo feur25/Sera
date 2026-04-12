@@ -1,60 +1,11 @@
-﻿#[cfg(feature = "python")]
+#[cfg(feature = "python")]
 use pyo3::prelude::*;
 
 #[cfg(feature = "python")]
 use crate::Chart;
 
 #[cfg(feature = "python")]
-use pyo3::types::{PyDict, PyList};
-
-#[cfg(feature = "python")]
-fn parse_palette(palette: Option<Vec<u32>>) -> Vec<u32> {
-    palette.unwrap_or_default()
-}
-
-#[cfg(feature = "python")]
-fn kw_i32(kw: Option<&PyDict>, key: &str, d: i32) -> i32 {
-    kw.and_then(|k| k.get_item(key).ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or(d)
-}
-#[cfg(feature = "python")]
-fn kw_u32(kw: Option<&PyDict>, key: &str, d: u32) -> u32 {
-    kw.and_then(|k| k.get_item(key).ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or(d)
-}
-#[cfg(feature = "python")]
-fn kw_u8(kw: Option<&PyDict>, key: &str, d: u8) -> u8 {
-    kw.and_then(|k| k.get_item(key).ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or(d)
-}
-#[cfg(feature = "python")]
-fn kw_f64(kw: Option<&PyDict>, key: &str, d: f64) -> f64 {
-    kw.and_then(|k| k.get_item(key).ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or(d)
-}
-#[cfg(feature = "python")]
-fn kw_bool(kw: Option<&PyDict>, key: &str, d: bool) -> bool {
-    kw.and_then(|k| k.get_item(key).ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or(d)
-}
-#[cfg(feature = "python")]
-fn kw_str(kw: Option<&PyDict>, key: &str, d: &str) -> String {
-    kw.and_then(|k| k.get_item(key).ok().flatten()).and_then(|v| v.extract::<String>().ok()).unwrap_or_else(|| d.to_string())
-}
-#[cfg(feature = "python")]
-fn kw_opt_str(kw: Option<&PyDict>, key: &str) -> Option<String> {
-    kw.and_then(|k| k.get_item(key).ok().flatten()).and_then(|v| v.extract().ok())
-}
-#[cfg(feature = "python")]
-fn kw_pal(kw: Option<&PyDict>) -> Vec<u32> {
-    kw.and_then(|k| k.get_item("palette").ok().flatten()).and_then(|v| v.extract::<Vec<u32>>().ok()).unwrap_or_default()
-}
-#[cfg(feature = "python")]
-fn kw_vec_str(kw: Option<&PyDict>, key: &str) -> Vec<String> {
-    kw.and_then(|k| k.get_item(key).ok().flatten()).and_then(|v| v.extract::<Vec<String>>().ok()).unwrap_or_default()
-}
-#[cfg(feature = "python")]
-fn kw_bg(kw: Option<&PyDict>, html: String) -> String {
-    match kw_opt_str(kw, "bg_color") {
-        Some(c) => crate::html::hover::apply_bg(html, Some(&c)),
-        None => html,
-    }
-}
+use pyo3::types::PyAny;
 
 #[cfg(feature = "python")]
 pub(crate) struct ChartOpts {
@@ -72,135 +23,11 @@ pub(crate) struct ChartOpts {
 
 #[cfg(feature = "python")]
 impl ChartOpts {
-    fn new(kw: Option<&PyDict>, dw: i32, dh: i32) -> Self {
-        Self {
-            w: kw_i32(kw, "width", dw),
-            h: kw_i32(kw, "height", dh),
-            pal: kw_pal(kw),
-            xl: kw_str(kw, "x_label", ""),
-            yl: kw_str(kw, "y_label", ""),
-            zl: kw_str(kw, "z_label", "Z"),
-            grid: kw_bool(kw, "gridlines", false),
-            srt: kw_str(kw, "sort_order", "none"),
-            lp: kw_str(kw, "legend_position", "right"),
-            hj: kw_opt_str(kw, "hover_json"),
-        }
-    }
     fn hover(&self) -> Vec<crate::html::hover::HoverSlot> {
         self.hj.as_ref().map(|s| crate::plot::statistical::parse_hover_json(s)).unwrap_or_default()
     }
-}
-
-#[cfg(feature = "python")]
-fn coerce_pyany<'a>(data: &'a PyAny) -> &'a PyAny {
-    use pyo3::types::PyList;
-    if data.downcast::<PyList>().is_ok() { return data; }
-    if let Ok(lst) = data.call_method0("tolist") { return lst; }
-    data
-}
-
-#[cfg(feature = "python")]
-fn fast_f64(data: &PyAny, cap: usize) -> PyResult<(Vec<f64>, usize)> {
-    let data = coerce_pyany(data);
-    use pyo3::types::PyList;
-    if let Ok(lst) = data.downcast::<PyList>() {
-        let n = lst.len();
-        if n <= cap {
-            Ok((data.extract::<Vec<f64>>()?, 1))
-        } else {
-            let s = (n + cap - 1) / cap;
-            let mut v = Vec::with_capacity(cap + 1);
-            let mut i = 0;
-            while i < n { v.push(lst.get_item(i)?.extract::<f64>()?); i += s; }
-            Ok((v, s))
-        }
-    } else {
-        let v: Vec<f64> = data.extract()?;
-        let n = v.len();
-        if n <= cap {
-            Ok((v, 1))
-        } else {
-            let s = (n + cap - 1) / cap;
-            Ok((v.into_iter().step_by(s).collect(), s))
-        }
-    }
-}
-
-#[cfg(feature = "python")]
-fn fast_labels(labels: Vec<String>, step: usize) -> Vec<String> {
-    if step <= 1 || labels.is_empty() { labels }
-    else { labels.into_iter().step_by(step).collect() }
-}
-
-#[cfg(feature = "python")]
-fn fast_labels_py(data: &PyAny, cap: usize) -> PyResult<(Vec<String>, usize)> {
-    let data = coerce_pyany(data);
-    use pyo3::types::PyList;
-    if let Ok(lst) = data.downcast::<PyList>() {
-        let n = lst.len();
-        if n <= cap {
-            Ok((data.extract::<Vec<String>>()?, 1))
-        } else {
-            let s = (n + cap - 1) / cap;
-            let mut v = Vec::with_capacity(cap + 1);
-            let mut i = 0;
-            while i < n { v.push(lst.get_item(i)?.extract::<String>()?); i += s; }
-            Ok((v, s))
-        }
-    } else {
-        let v: Vec<String> = data.extract()?;
-        let n = v.len();
-        if n <= cap {
-            Ok((v, 1))
-        } else {
-            let s = (n + cap - 1) / cap;
-            Ok((v.into_iter().step_by(s).collect(), s))
-        }
-    }
-}
-
-#[cfg(feature = "python")]
-fn fast_vecs(names: Vec<String>, vecs: Vec<Vec<f64>>, cap: usize) -> (Vec<String>, Vec<Vec<f64>>, usize) {
-    if vecs.is_empty() { return (names, vecs, 1); }
-    let max_len = vecs.iter().map(|v| v.len()).max().unwrap_or(0);
-    if max_len <= cap { return (names, vecs, 1); }
-    let s = (max_len + cap - 1) / cap;
-    let vs: Vec<Vec<f64>> = vecs.into_iter().map(|v| v.into_iter().step_by(s).collect()).collect();
-    (names, vs, s)
-}
-
-#[cfg(feature = "python")]
-fn fast_vecs_py(names: Vec<String>, data: &PyAny, cap: usize) -> PyResult<(Vec<String>, Vec<Vec<f64>>, usize)> {
-    use pyo3::types::PyList;
-    if let Ok(outer) = data.downcast::<PyList>() {
-        let n_ser = outer.len();
-        if n_ser == 0 { return Ok((names, Vec::new(), 1)); }
-        let first_len = if let Ok(inner) = outer.get_item(0)?.downcast::<PyList>() { inner.len() } else { 0 };
-        if first_len <= cap {
-            let mut vecs = Vec::with_capacity(n_ser);
-            for si in 0..n_ser { vecs.push(outer.get_item(si)?.extract::<Vec<f64>>()?); }
-            return Ok((names, vecs, 1));
-        }
-        let s = (first_len + cap - 1) / cap;
-        let mut vecs = Vec::with_capacity(n_ser);
-        for si in 0..n_ser {
-            let inner = outer.get_item(si)?;
-            if let Ok(lst) = inner.downcast::<PyList>() {
-                let n = lst.len();
-                let mut v = Vec::with_capacity(cap + 1);
-                let mut i = 0;
-                while i < n { v.push(lst.get_item(i)?.extract::<f64>()?); i += s; }
-                vecs.push(v);
-            } else {
-                let full: Vec<f64> = inner.extract()?;
-                vecs.push(full.into_iter().step_by(s).collect());
-            }
-        }
-        Ok((names, vecs, s))
-    } else {
-        let vecs: Vec<Vec<f64>> = data.extract()?;
-        let (names, vecs, s) = fast_vecs(names, vecs, cap);
-        Ok((names, vecs, s))
+    fn from_params(w: i32, h: i32, palette: Option<Vec<u32>>, xl: &str, yl: &str, grid: bool, srt: &str, hj: &str, lp: &str) -> Self {
+        Self { w, h, pal: palette.unwrap_or_default(), xl: xl.to_string(), yl: yl.to_string(), zl: "Z".to_string(), grid, srt: srt.to_string(), lp: lp.to_string(), hj: if hj.is_empty() { None } else { Some(hj.to_string()) } }
     }
 }
 
@@ -300,861 +127,750 @@ pub fn build_html_chart(title: &str, labels: Vec<String>, values: Vec<f64>, widt
 }
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values, *, color_hex=0_u32, orientation="v", show_text=false, color_groups=None, width=900_i32, height=480_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Bar chart.
 ///
 /// Args: title, labels, values.
 ///
 /// Kwargs: color_hex (int), orientation ("v"/"h"), show_text (bool), color_groups (list[str]),
-/// bg_color (str), width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_bar_chart(title: &str, labels: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 480);
-
-        let clr = kw_u32(kwargs, "color_hex", 0);
-        let orient = if kw_str(kwargs, "orientation", "v") == "h" { b'h' } else { b'v' };
-        let show_text = kw_bool(kwargs, "show_text", false);
-        let groups = kw_vec_str(kwargs, "color_groups");
-        let hover = o.hover();
-        let html = crate::plot::default::render_bars_html(
-            title, &labels, &values, o.w, o.h, &hover, orient, &groups, show_text, &o.xl, &o.yl, &o.pal, clr, o.grid, &o.srt,
-        );
-        Ok(Chart::new(kw_bg(kwargs, html)))
-    
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_bar_chart(title: &str, labels: Vec<String>, values: Vec<f64>, color_hex: u32, orientation: &str, show_text: bool, color_groups: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    let orient = if orientation == "h" { b'h' } else { b'v' };
+    let groups = color_groups.unwrap_or_default();
+    let hover = o.hover();
+    let html = crate::plot::default::render_bars_html(
+        title, &labels, &values, o.w, o.h, &hover, orient, &groups, show_text, &o.xl, &o.yl, &o.pal, color_hex, o.grid, &o.srt,
+    );
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values, *, color_hex=0_u32, show_text=true, color_groups=None, width=900_i32, height=500_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Horizontal bar chart.
 ///
 /// Args: title, labels, values.
 ///
 /// Kwargs: color_hex (int), show_text (bool, default true), color_groups (list[str]),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_hbar(title: &str, labels: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 500);
-
-        let clr = kw_u32(kwargs, "color_hex", 0);
-        let show_text = kw_bool(kwargs, "show_text", true);
-        let groups = kw_vec_str(kwargs, "color_groups");
-        let hover = o.hover();
-        let html = crate::plot::default::render_bars_html(
-            title, &labels, &values, o.w, o.h, &hover, b'h', &groups, show_text, &o.xl, "", &o.pal, clr, o.grid, &o.srt,
-        );
-        Ok(Chart::new(html))
-    
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_hbar(title: &str, labels: Vec<String>, values: Vec<f64>, color_hex: u32, show_text: bool, color_groups: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    let groups = color_groups.unwrap_or_default();
+    let hover = o.hover();
+    let html = crate::plot::default::render_bars_html(
+        title, &labels, &values, o.w, o.h, &hover, b'h', &groups, show_text, &o.xl, "", &o.pal, color_hex, o.grid, &o.srt,
+    );
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values, *, color_hex=0x6366F1_u32, show_points=true, width=900_i32, height=480_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Line chart.
 ///
 /// Args: title, labels, values.
 ///
-/// Kwargs: color_hex (int), show_points (bool, default true), bg_color (str),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_line_chart(title: &str, labels: &PyAny, values: &PyAny, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 480);
-
-        let clr = kw_u32(kwargs, "color_hex", 0x6366F1);
-        let show_points = kw_bool(kwargs, "show_points", true);
-        let (vals, _) = fast_f64(values, 100)?;
-        let (lbls, _) = fast_labels_py(labels, 100)?;
-        let hover = o.hover();
-        let html = crate::plot::default::render_lines_html(
-            title, &lbls, &vals, o.w, o.h, &hover, clr, &o.xl, &o.yl, o.grid, show_points, &o.srt,
-        );
-        Ok(Chart::new(kw_bg(kwargs, html)))
-    
+/// Kwargs: color_hex (int), show_points (bool, default true),
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_line_chart(title: &str, labels: Vec<String>, values: Vec<f64>, color_hex: u32, show_points: bool, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    let cap = 100usize;
+    let (vals, step) = if values.len() > cap { let s = (values.len() + cap - 1) / cap; (values.into_iter().step_by(s).collect::<Vec<_>>(), s) } else { (values, 1) };
+    let lbls: Vec<String> = if step <= 1 || labels.is_empty() { labels } else { labels.into_iter().step_by(step).collect() };
+    let hover = o.hover();
+    let html = crate::plot::default::render_lines_html(
+        title, &lbls, &vals, o.w, o.h, &hover, color_hex, &o.xl, &o.yl, o.grid, show_points, &o.srt,
+    );
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_values, y_values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, x_values, y_values, *, color_hex=0_u32, show_text=false, labels=None, sizes=None, color_groups=None, width=900_i32, height=540_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Scatter plot.
 ///
 /// Args: title, x_values, y_values.
 ///
 /// Kwargs: color_hex (int), show_text (bool), labels (list[str]), sizes (list[float]),
-/// color_groups (list[str]), bg_color (str),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_scatter_chart(title: &str, x_values: &PyAny, y_values: &PyAny, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 540);
-
-        let clr = kw_u32(kwargs, "color_hex", 0);
-        let show_text = kw_bool(kwargs, "show_text", false);
-        let hover = o.hover();
-        let lbl: Vec<String> = kwargs.and_then(|k| k.get_item("labels").ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or_default();
-        let sizes: Vec<f64> = kwargs.and_then(|k| k.get_item("sizes").ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or_default();
-        let cg: Vec<String> = kw_vec_str(kwargs, "color_groups");
-        let (x, sx) = fast_f64(x_values, 200)?;
-        let (y, sy) = fast_f64(y_values, 200)?;
-        let step = sx.max(sy);
-        let lbls = fast_labels(lbl, step);
-        let sz: Vec<f64> = if step > 1 { sizes.into_iter().step_by(step).collect() } else { sizes };
-        let cgs: Vec<String> = if step > 1 { cg.into_iter().step_by(step).collect() } else { cg };
-        let html = crate::plot::default::render_scatter_html(
-            title, &x, &y, &lbls, o.w, o.h, &hover, &sz, &cgs, &o.pal, &o.xl, &o.yl, clr, o.grid, show_text,
-        );
-        Ok(Chart::new(kw_bg(kwargs, html)))
-    
+/// color_groups (list[str]),
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_scatter_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, color_hex: u32, show_text: bool, labels: Option<Vec<String>>, sizes: Option<Vec<f64>>, color_groups: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    let cap = 200usize;
+    let step = { let n = x_values.len().max(y_values.len()); if n > cap { (n + cap - 1) / cap } else { 1 } };
+    let x: Vec<f64> = if step > 1 { x_values.into_iter().step_by(step).collect() } else { x_values };
+    let y: Vec<f64> = if step > 1 { y_values.into_iter().step_by(step).collect() } else { y_values };
+    let lbls: Vec<String> = { let l = labels.unwrap_or_default(); if step <= 1 || l.is_empty() { l } else { l.into_iter().step_by(step).collect() } };
+    let sz: Vec<f64> = { let s = sizes.unwrap_or_default(); if step > 1 { s.into_iter().step_by(step).collect() } else { s } };
+    let cgs: Vec<String> = { let c = color_groups.unwrap_or_default(); if step > 1 { c.into_iter().step_by(step).collect() } else { c } };
+    let hover = o.hover();
+    let html = crate::plot::default::render_scatter_html(
+        title, &x, &y, &lbls, o.w, o.h, &hover, &sz, &cgs, &o.pal, &o.xl, &o.yl, color_hex, o.grid, show_text,
+    );
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, values, *, color_hex=0x6366F1_u32, bins=0_i32, show_counts=false, width=860_i32, height=380_i32, x_label="", y_label="Count", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Histogram.
 ///
 /// Args: title, values.
 ///
-/// Kwargs: color_hex (int), bins (int, 0=auto), show_counts (bool), bg_color (str),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_histogram(title: &str, values: &PyAny, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 860, 380);
-
-        use crate::plot::statistical::{HistogramConfig, render_histogram_html};
-        let clr = kw_u32(kwargs, "color_hex", 0x6366F1);
-        let yl = kw_str(kwargs, "y_label", "Count");
-        let show_counts = kw_bool(kwargs, "show_counts", false);
-        let bins = kw_i32(kwargs, "bins", 0) as usize;
-        let hover = o.hover();
-        let (vals, scale) = fast_f64(values, 1000)?;
-        let html = render_histogram_html(&HistogramConfig {
-            title, values: &vals, bins, color: clr, x_label: &o.xl, y_label: &o.yl,
-            show_counts, gridlines: o.grid, width: o.w, height: o.h, hover: &hover, count_scale: scale,
-            sort_order: &o.srt, ..HistogramConfig::default()
-        });
-        Ok(Chart::new(kw_bg(kwargs, html)))
-    
+/// Kwargs: color_hex (int), bins (int, 0=auto), show_counts (bool),
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_histogram(title: &str, values: Vec<f64>, color_hex: u32, bins: i32, show_counts: bool, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{HistogramConfig, render_histogram_html};
+    let cap = 1000usize;
+    let (vals, scale) = if values.len() > cap { let s = (values.len() + cap - 1) / cap; (values.into_iter().step_by(s).collect::<Vec<_>>(), s) } else { (values, 1) };
+    let hover = o.hover();
+    let html = render_histogram_html(&HistogramConfig {
+        title, values: &vals, bins: bins as usize, color: color_hex, x_label: &o.xl, y_label: &o.yl,
+        show_counts, gridlines: o.grid, width: o.w, height: o.h, hover: &hover, count_scale: scale,
+        sort_order: &o.srt, ..HistogramConfig::default()
+    });
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, values, overlay_values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, values, overlay_values, *, color_hex=0x6366F1_u32, overlay_color_hex=0xF43F5E_u32, bins=0_i32, series_names=None, width=860_i32, height=380_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Overlaid histogram (two distributions).
 ///
 /// Args: title, values, overlay_values.
 ///
 /// Kwargs: color_hex (int), overlay_color_hex (int), bins (int, 0=auto),
-/// series_names (list[str] of 2 names), bg_color (str),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_histogram_overlay(title: &str, values: Vec<f64>, overlay_values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 860, 380);
-
-        use crate::plot::statistical::{HistogramConfig, render_histogram_html};
-        let clr = kw_u32(kwargs, "color_hex", 0x6366F1);
-        let overlay_clr = kw_u32(kwargs, "overlay_color_hex", 0xF43F5E);
-        let bins = kw_i32(kwargs, "bins", 0) as usize;
-        let labels: Option<Vec<String>> = kwargs.and_then(|k| k.get_item("series_names").ok().flatten()).and_then(|v| v.extract().ok());
-        let hover = o.hover();
-        let names: Option<(String, String)> = labels.and_then(|v| {
-            let a = v.get(0).cloned().unwrap_or_default();
-            let b = v.get(1).cloned().unwrap_or_default();
-            if a.is_empty() && b.is_empty() { None } else { Some((a, b)) }
-        });
-        let html = render_histogram_html(&HistogramConfig {
-            title, values: &values, bins, color: clr, overlay_color: overlay_clr,
-            overlay_values: Some(&overlay_values), width: o.w, height: o.h, hover: &hover,
-            series_names: names.as_ref().map(|(a, b)| (a.as_str(), b.as_str())),
-            x_label: &o.xl, y_label: &o.yl, gridlines: o.grid,
-            sort_order: &o.srt, ..HistogramConfig::default()
-        });
-        Ok(Chart::new(kw_bg(kwargs, html)))
+/// series_names (list[str] of 2 names),
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// background (str|None, default None=transparent).
+pub fn build_histogram_overlay(title: &str, values: Vec<f64>, overlay_values: Vec<f64>, color_hex: u32, overlay_color_hex: u32, bins: i32, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{HistogramConfig, render_histogram_html};
+    let hover = o.hover();
+    let names: Option<(String, String)> = series_names.and_then(|v| {
+        let a = v.get(0).cloned().unwrap_or_default();
+        let b = v.get(1).cloned().unwrap_or_default();
+        if a.is_empty() && b.is_empty() { None } else { Some((a, b)) }
+    });
+    let html = render_histogram_html(&HistogramConfig {
+        title, values: &values, bins: bins as usize, color: color_hex, overlay_color: overlay_color_hex,
+        overlay_values: Some(&overlay_values), width: o.w, height: o.h, hover: &hover,
+        series_names: names.as_ref().map(|(a, b)| (a.as_str(), b.as_str())),
+        x_label: &o.xl, y_label: &o.yl, gridlines: o.grid,
+        sort_order: &o.srt, ..HistogramConfig::default()
+    });
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, category_labels, series_values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, category_labels, series_values, *, show_values=false, series_names=None, width=1100_i32, height=480_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Grouped bar chart.
 ///
 /// Args: title, category_labels, series_values (flat, num_series inferred from series_names).
 ///
-/// Kwargs: show_values (bool), series_names (list[str]), bg_color (str),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_grouped_bar(title: &str, category_labels: Vec<String>, series_values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 1100, 480);
-
-        use crate::plot::statistical::{GroupedBarConfig, render_grouped_bar_html};
-        let show_values = kw_bool(kwargs, "show_values", false);
-        let hover = o.hover();
-        let sn = kw_vec_str(kwargs, "series_names");
-        let n_cats = category_labels.len();
-        let n_series = if !sn.is_empty() { sn.len() } else if n_cats > 0 { (series_values.len() + n_cats - 1) / n_cats } else { 0 };
-        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_series).map(|_| String::new()).collect() };
-        let series: Vec<(String, Vec<f64>)> = names.iter().enumerate().map(|(si, name)| {
-            let vals: Vec<f64> = (0..n_cats).map(|ci| {
-                series_values.get(si * n_cats + ci).copied().unwrap_or(0.0)
-            }).collect();
-            (name.clone(), vals)
-        }).collect();
-        let html = render_grouped_bar_html(&GroupedBarConfig {
-            title, category_labels: &category_labels, series: &series,
-            palette: &o.pal, x_label: &o.xl, y_label: &o.yl, show_values, gridlines: o.grid, sort_order: &o.srt,
-            hover: &hover, ..GroupedBarConfig::default()
-        });
-        Ok(Chart::new(kw_bg(kwargs, html)))
-    
+/// Kwargs: show_values (bool), series_names (list[str]),
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// background (str|None, default None=transparent).
+pub fn build_grouped_bar(title: &str, category_labels: Vec<String>, series_values: Vec<f64>, show_values: bool, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{GroupedBarConfig, render_grouped_bar_html};
+    let hover = o.hover();
+    let sn = series_names.unwrap_or_default();
+    let n_cats = category_labels.len();
+    let n_series = if !sn.is_empty() { sn.len() } else if n_cats > 0 { (series_values.len() + n_cats - 1) / n_cats } else { 0 };
+    let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_series).map(|_| String::new()).collect() };
+    let series: Vec<(String, Vec<f64>)> = names.iter().enumerate().map(|(si, name)| {
+        let vals: Vec<f64> = (0..n_cats).map(|ci| series_values.get(si * n_cats + ci).copied().unwrap_or(0.0)).collect();
+        (name.clone(), vals)
+    }).collect();
+    let html = render_grouped_bar_html(&GroupedBarConfig {
+        title, category_labels: &category_labels, series: &series,
+        palette: &o.pal, x_label: &o.xl, y_label: &o.yl, show_values, gridlines: o.grid, sort_order: &o.srt,
+        hover: &hover, ..GroupedBarConfig::default()
+    });
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, category_labels, series_values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, category_labels, series_values, *, show_values=false, series_names=None, width=1100_i32, height=480_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Stacked bar chart.
 ///
 /// Args: title, category_labels, series_values (flat, num_series inferred from series_names).
 ///
-/// Kwargs: show_values (bool), series_names (list[str]), bg_color (str),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_stacked_bar(title: &str, category_labels: Vec<String>, series_values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 1100, 480);
-
-        use crate::plot::statistical::{GroupedBarConfig, render_grouped_bar_html};
-        let show_values = kw_bool(kwargs, "show_values", false);
-        let hover = o.hover();
-        let sn = kw_vec_str(kwargs, "series_names");
-        let n_cats = category_labels.len();
-        let n_series = if !sn.is_empty() { sn.len() } else if n_cats > 0 { (series_values.len() + n_cats - 1) / n_cats } else { 0 };
-        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_series).map(|_| String::new()).collect() };
-        let series: Vec<(String, Vec<f64>)> = names.iter().enumerate().map(|(si, name)| {
-            let vals: Vec<f64> = (0..n_cats).map(|ci| {
-                series_values.get(si * n_cats + ci).copied().unwrap_or(0.0)
-            }).collect();
-            (name.clone(), vals)
-        }).collect();
-        let html = render_grouped_bar_html(&GroupedBarConfig {
-            title, category_labels: &category_labels, series: &series,
-            palette: &o.pal, x_label: &o.xl, y_label: &o.yl, show_values, gridlines: o.grid, sort_order: &o.srt,
-            hover: &hover, stacked: true, ..GroupedBarConfig::default()
-        });
-        Ok(Chart::new(kw_bg(kwargs, html)))
-    
+/// Kwargs: show_values (bool), series_names (list[str]),
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// background (str|None, default None=transparent).
+pub fn build_stacked_bar(title: &str, category_labels: Vec<String>, series_values: Vec<f64>, show_values: bool, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{GroupedBarConfig, render_grouped_bar_html};
+    let hover = o.hover();
+    let sn = series_names.unwrap_or_default();
+    let n_cats = category_labels.len();
+    let n_series = if !sn.is_empty() { sn.len() } else if n_cats > 0 { (series_values.len() + n_cats - 1) / n_cats } else { 0 };
+    let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_series).map(|_| String::new()).collect() };
+    let series: Vec<(String, Vec<f64>)> = names.iter().enumerate().map(|(si, name)| {
+        let vals: Vec<f64> = (0..n_cats).map(|ci| series_values.get(si * n_cats + ci).copied().unwrap_or(0.0)).collect();
+        (name.clone(), vals)
+    }).collect();
+    let html = render_grouped_bar_html(&GroupedBarConfig {
+        title, category_labels: &category_labels, series: &series,
+        palette: &o.pal, x_label: &o.xl, y_label: &o.yl, show_values, gridlines: o.grid, sort_order: &o.srt,
+        hover: &hover, stacked: true, ..GroupedBarConfig::default()
+    });
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, flat_matrix, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, flat_matrix, *, show_values=true, color_low=0x6366F1_u32, color_mid=0xfafbfc_u32, color_high=0xF43F5E_u32, col_labels=None, width=720_i32, height=440_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Heatmap.
 ///
 /// Args: title, labels (row labels), flat_matrix (row-major flat values).
 ///
 /// Kwargs: show_values (bool, default true), color_low/color_mid/color_high (int),
-/// col_labels (list[str]), bg_color (str),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_heatmap(title: &str, labels: Vec<String>, flat_matrix: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 720, 440);
-
-        use crate::plot::statistical::{HeatmapConfig, render_heatmap_html};
-        let show_values = kw_bool(kwargs, "show_values", true);
-        let color_low = kw_u32(kwargs, "color_low", 0x6366F1);
-        let color_mid = kw_u32(kwargs, "color_mid", 0xfafbfc);
-        let color_high = kw_u32(kwargs, "color_high", 0xF43F5E);
-        let col_labels = kw_vec_str(kwargs, "col_labels");
-        let hover = o.hover();
-        let html = render_heatmap_html(&HeatmapConfig {
-            title, row_labels: &labels, col_labels: &col_labels, flat_matrix: &flat_matrix,
-            show_values, color_low, color_mid, color_high, width: o.w, height: o.h, hover: &hover,
-            sort_order: &o.srt, ..HeatmapConfig::default()
-        });
-        Ok(Chart::new(kw_bg(kwargs, html)))
-    
+/// col_labels (list[str]),
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_heatmap(title: &str, labels: Vec<String>, flat_matrix: Vec<f64>, show_values: bool, color_low: u32, color_mid: u32, color_high: u32, col_labels: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{HeatmapConfig, render_heatmap_html};
+    let col_lbl = col_labels.unwrap_or_default();
+    let hover = o.hover();
+    let html = render_heatmap_html(&HeatmapConfig {
+        title, row_labels: &labels, col_labels: &col_lbl, flat_matrix: &flat_matrix,
+        show_values, color_low, color_mid, color_high, width: o.w, height: o.h, hover: &hover,
+        sort_order: &o.srt, ..HeatmapConfig::default()
+    });
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values, *, show_pct=true, width=720_i32, height=440_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Pie chart.
 ///
 /// Args: title, labels, values.
 ///
 /// Kwargs: show_pct (bool, default true),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_pie_chart(title: &str, labels: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 720, 440);
-
-        use crate::plot::statistical::{PieConfig, render_pie_html};
-        let show_pct = kw_bool(kwargs, "show_pct", true);
-        let hover = o.hover();
-        Ok(Chart::new(render_pie_html(&PieConfig {
-            title, labels: &labels, values: &values, palette: &o.pal,
-            show_pct, sort_order: &o.srt, width: o.w, height: o.h, hover: &hover,
-            ..PieConfig::default()
-        })))
-    
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_pie_chart(title: &str, labels: Vec<String>, values: Vec<f64>, show_pct: bool, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{PieConfig, render_pie_html};
+    let hover = o.hover();
+    Ok(Chart::new(crate::html::hover::apply_opts(render_pie_html(&PieConfig {
+        title, labels: &labels, values: &values, palette: &o.pal,
+        show_pct, sort_order: &o.srt, width: o.w, height: o.h, hover: &hover,
+        ..PieConfig::default()
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values, *, show_pct=true, inner_radius_ratio=0.55_f64, width=720_i32, height=440_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Donut chart.
 ///
 /// Args: title, labels, values.
 ///
 /// Kwargs: show_pct (bool, default true), inner_radius_ratio (float, default 0.55),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_donut_chart(title: &str, labels: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 720, 440);
-
-        use crate::plot::statistical::{PieConfig, render_pie_html};
-        let show_pct = kw_bool(kwargs, "show_pct", true);
-        let inner = kw_f64(kwargs, "inner_radius_ratio", 0.55);
-        let hover = o.hover();
-        Ok(Chart::new(render_pie_html(&PieConfig {
-            title, labels: &labels, values: &values, palette: &o.pal,
-            show_pct, sort_order: &o.srt, width: o.w, height: o.h, hover: &hover,
-            donut: inner.clamp(0.0, 0.9),
-            ..PieConfig::default()
-        })))
-    
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_donut_chart(title: &str, labels: Vec<String>, values: Vec<f64>, show_pct: bool, inner_radius_ratio: f64, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{PieConfig, render_pie_html};
+    let hover = o.hover();
+    Ok(Chart::new(crate::html::hover::apply_opts(render_pie_html(&PieConfig {
+        title, labels: &labels, values: &values, palette: &o.pal,
+        show_pct, sort_order: &o.srt, width: o.w, height: o.h, hover: &hover,
+        donut: inner_radius_ratio.clamp(0.0, 0.9),
+        ..PieConfig::default()
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, category_labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, category_labels, values, *, width=900_i32, height=500_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Box plot.
 ///
 /// Args: title, category_labels, values (flat, auto-split by categories).
 ///
-/// Kwargs: width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_boxplot(title: &str, category_labels: &PyAny, values: &PyAny, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 500);
-
-        let hover = o.hover();
-        let (v, _) = fast_f64(values, 100)?;
-        let (cl, _) = fast_labels_py(category_labels, 100)?;
-        Ok(Chart::new(crate::plot::statistical::render_boxplot_html(&crate::plot::statistical::BoxplotConfig {
-            title, category_labels: &cl, values: &v, palette: &o.pal, hover: &hover,
-            x_label: &o.xl, y_label: &o.yl, gridlines: o.grid, width: o.w, height: o.h,
-            sort_order: &o.srt, legend_position: &o.lp,
-        })))
-    
+/// Kwargs: width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_boxplot(title: &str, category_labels: Vec<String>, values: Vec<f64>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    let hover = o.hover();
+    Ok(Chart::new(crate::html::hover::apply_opts(crate::plot::statistical::render_boxplot_html(&crate::plot::statistical::BoxplotConfig {
+        title, category_labels: &category_labels, values: &values, palette: &o.pal, hover: &hover,
+        x_label: &o.xl, y_label: &o.yl, gridlines: o.grid, width: o.w, height: o.h,
+        sort_order: &o.srt, legend_position: &o.lp,
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, categories, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, categories, values, *, width=900_i32, height=500_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Violin plot.
 ///
 /// Args: title, categories, values (flat, auto-split by categories).
 ///
-/// Kwargs: bg_color (str),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_violin(title: &str, categories: &PyAny, values: &PyAny, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 500);
-
-        use crate::plot::statistical::{ViolinConfig, render_violin_html};
-        let hover = o.hover();
-        let (v, _) = fast_f64(values, 50)?;
-        let (cats, _) = fast_labels_py(categories, 50)?;
-        let html = render_violin_html(&ViolinConfig {
-            title, categories: &cats, values: &v,
-            x_label: &o.xl, y_label: &o.yl, palette: &o.pal, gridlines: o.grid, width: o.w, height: o.h,
-            sort_order: &o.srt, hover: &hover, legend_position: &o.lp,
-        });
-        Ok(Chart::new(kw_bg(kwargs, html)))
-    
+/// Kwargs: width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_violin(title: &str, categories: Vec<String>, values: Vec<f64>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{ViolinConfig, render_violin_html};
+    let hover = o.hover();
+    let html = render_violin_html(&ViolinConfig {
+        title, categories: &categories, values: &values,
+        x_label: &o.xl, y_label: &o.yl, palette: &o.pal, gridlines: o.grid, width: o.w, height: o.h,
+        sort_order: &o.srt, hover: &hover, legend_position: &o.lp,
+    });
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values_left, values_right, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values_left, values_right, *, left_label="Before", right_label="After", show_text=true, width=700_i32, height=500_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Slope chart (before/after comparison).
 ///
 /// Args: title, labels, values_left, values_right.
 ///
 /// Kwargs: left_label (str, default "Before"), right_label (str, default "After"),
-/// show_text (bool, default true), bg_color (str),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_slope(title: &str, labels: Vec<String>, values_left: Vec<f64>, values_right: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 700, 500);
-
-        use crate::plot::statistical::{SlopeConfig, render_slope_html};
-        let left_label = kw_str(kwargs, "left_label", "Before");
-        let right_label = kw_str(kwargs, "right_label", "After");
-        let show_text = kw_bool(kwargs, "show_text", true);
-        let hover = o.hover();
-        let html = render_slope_html(&SlopeConfig {
-            title, labels: &labels, values_left: &values_left, values_right: &values_right,
-            left_label: &left_label, right_label: &right_label, palette: &o.pal, show_text, width: o.w, height: o.h,
-            sort_order: &o.srt, hover: &hover, ..SlopeConfig::default()
-        });
-        Ok(Chart::new(kw_bg(kwargs, html)))
-    
+/// show_text (bool, default true),
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_slope(title: &str, labels: Vec<String>, values_left: Vec<f64>, values_right: Vec<f64>, left_label: &str, right_label: &str, show_text: bool, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{SlopeConfig, render_slope_html};
+    let hover = o.hover();
+    let html = render_slope_html(&SlopeConfig {
+        title, labels: &labels, values_left: &values_left, values_right: &values_right,
+        left_label, right_label, palette: &o.pal, show_text, width: o.w, height: o.h,
+        sort_order: &o.srt, hover: &hover, ..SlopeConfig::default()
+    });
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, parents, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, parents, values, *, width=700_i32, height=700_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Sunburst chart (hierarchical).
 ///
 /// Args: title, labels, parents (parent label per node), values.
 ///
-/// Kwargs: bg_color (str),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_sunburst(title: &str, labels: Vec<String>, parents: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 700, 700);
-
-        use crate::plot::statistical::{SunburstConfig, render_sunburst_html};
-        let hover = o.hover();
-        let html = render_sunburst_html(&SunburstConfig {
-            title, labels: &labels, parents: &parents, values: &values, width: o.w, height: o.h,
-            hover: &hover, ..SunburstConfig::default()
-        });
-        Ok(Chart::new(kw_bg(kwargs, html)))
-    
+/// Kwargs: width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_sunburst(title: &str, labels: Vec<String>, parents: Vec<String>, values: Vec<f64>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{SunburstConfig, render_sunburst_html};
+    let hover = o.hover();
+    let html = render_sunburst_html(&SunburstConfig {
+        title, labels: &labels, parents: &parents, values: &values, width: o.w, height: o.h,
+        hover: &hover, ..SunburstConfig::default()
+    });
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values, *, show_text=true, width=800_i32, height=480_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Funnel chart.
 ///
 /// Args: title, labels, values.
 ///
-/// Kwargs: show_text (bool, default true), bg_color (str),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_funnel(title: &str, labels: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 800, 480);
-
-        use crate::plot::statistical::{FunnelConfig, render_funnel_html};
-        let show_text = kw_bool(kwargs, "show_text", true);
-        let hover = o.hover();
-        let html = render_funnel_html(&FunnelConfig {
-            title, labels: &labels, values: &values, palette: &o.pal, show_text, width: o.w, height: o.h,
-            sort_order: &o.srt, hover: &hover, ..FunnelConfig::default()
-        });
-        Ok(Chart::new(kw_bg(kwargs, html)))
-    
+/// Kwargs: show_text (bool, default true),
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_funnel(title: &str, labels: Vec<String>, values: Vec<f64>, show_text: bool, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{FunnelConfig, render_funnel_html};
+    let hover = o.hover();
+    let html = render_funnel_html(&FunnelConfig {
+        title, labels: &labels, values: &values, palette: &o.pal, show_text, width: o.w, height: o.h,
+        sort_order: &o.srt, hover: &hover, ..FunnelConfig::default()
+    });
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values, *, parents=None, width=1100_i32, height=520_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Treemap.
 ///
 /// Args: title, labels, values.
 ///
 /// Kwargs: parents (list[str]),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_treemap(title: &str, labels: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 1100, 520);
-
-        use crate::plot::statistical::{TreemapConfig, render_treemap_html};
-        let pars = kw_vec_str(kwargs, "parents");
-        let hover = o.hover();
-        Ok(Chart::new(render_treemap_html(&TreemapConfig {
-            title, labels: &labels, values: &values, parents: &pars,
-            palette: &o.pal, sort_order: &o.srt, width: o.w, height: o.h, hover: &hover,
-            ..TreemapConfig::default()
-        })))
-    
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_treemap(title: &str, labels: Vec<String>, values: Vec<f64>, parents: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{TreemapConfig, render_treemap_html};
+    let pars = parents.unwrap_or_default();
+    let hover = o.hover();
+    Ok(Chart::new(crate::html::hover::apply_opts(render_treemap_html(&TreemapConfig {
+        title, labels: &labels, values: &values, parents: &pars,
+        palette: &o.pal, sort_order: &o.srt, width: o.w, height: o.h, hover: &hover,
+        ..TreemapConfig::default()
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_labels, series_values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, x_labels, series_values, *, show_points=true, series_names=None, width=1100_i32, height=480_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Multi-line chart (multiple series).
 ///
 /// Args: title, x_labels, series_values (list of list[float]).
 ///
-/// Kwargs: show_points (bool, default true), series_names (list[str]), bg_color (str),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_multiline_chart(title: &str, x_labels: &PyAny, series_values: &PyAny, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 1100, 480);
-
-        use crate::plot::statistical::{MultiLineConfig, render_multiline_html};
-        let show_points = kw_bool(kwargs, "show_points", true);
-        let hover = o.hover();
-        let sn = kw_vec_str(kwargs, "series_names");
-        let (names, vecs, _) = fast_vecs_py(sn, series_values, 60)?;
-        let (xlabels, _) = fast_labels_py(x_labels, 60)?;
-        let names: Vec<String> = if names.is_empty() { (0..vecs.len()).map(|_| String::new()).collect() } else { names };
-        let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(vecs.into_iter()).collect();
-        let html = render_multiline_html(&MultiLineConfig {
-            title, x_labels: &xlabels, series: &series, palette: &o.pal,
-            x_label: &o.xl, y_label: &o.yl, show_points, gridlines: o.grid, width: o.w, height: o.h, hover: &hover,
-            sort_order: &o.srt, ..MultiLineConfig::default()
-        });
-        Ok(Chart::new(kw_bg(kwargs, html)))
-    
+/// Kwargs: show_points (bool, default true), series_names (list[str]),
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// background (str|None, default None=transparent).
+pub fn build_multiline_chart(title: &str, x_labels: Vec<String>, series_values: Vec<Vec<f64>>, show_points: bool, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{MultiLineConfig, render_multiline_html};
+    let hover = o.hover();
+    let sn = series_names.unwrap_or_default();
+    let names: Vec<String> = if sn.is_empty() { (0..series_values.len()).map(|_| String::new()).collect() } else { sn };
+    let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(series_values.into_iter()).collect();
+    let html = render_multiline_html(&MultiLineConfig {
+        title, x_labels: &x_labels, series: &series, palette: &o.pal,
+        x_label: &o.xl, y_label: &o.yl, show_points, gridlines: o.grid, width: o.w, height: o.h, hover: &hover,
+        sort_order: &o.srt, ..MultiLineConfig::default()
+    });
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_labels, series_values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, x_labels, series_values, *, stacked=false, series_names=None, width=1100_i32, height=480_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Area chart.
 ///
 /// Args: title, x_labels, series_values (list of list[float]).
 ///
 /// Kwargs: stacked (bool), series_names (list[str]),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_area_chart(title: &str, x_labels: &PyAny, series_values: &PyAny, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 1100, 480);
-
-        use crate::plot::statistical::{AreaConfig, render_area_html};
-        let stacked = kw_bool(kwargs, "stacked", false);
-        let hover = o.hover();
-        let sn = kw_vec_str(kwargs, "series_names");
-        let (names, vecs, _) = fast_vecs_py(sn, series_values, 60)?;
-        let (xlabels, _) = fast_labels_py(x_labels, 60)?;
-        let names: Vec<String> = if names.is_empty() { (0..vecs.len()).map(|_| String::new()).collect() } else { names };
-        let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(vecs.into_iter()).collect();
-        Ok(Chart::new(render_area_html(&AreaConfig {
-            title, x_labels: &xlabels, series: &series, stacked, palette: &o.pal,
-            x_label: &o.xl, y_label: &o.yl, gridlines: o.grid, width: o.w, height: o.h, hover: &hover,
-            sort_order: &o.srt, ..AreaConfig::default()
-        })))
-    
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// background (str|None, default None=transparent).
+pub fn build_area_chart(title: &str, x_labels: Vec<String>, series_values: Vec<Vec<f64>>, stacked: bool, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{AreaConfig, render_area_html};
+    let hover = o.hover();
+    let sn = series_names.unwrap_or_default();
+    let names: Vec<String> = if sn.is_empty() { (0..series_values.len()).map(|_| String::new()).collect() } else { sn };
+    let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(series_values.into_iter()).collect();
+    Ok(Chart::new(crate::html::hover::apply_opts(render_area_html(&AreaConfig {
+        title, x_labels: &x_labels, series: &series, stacked, palette: &o.pal,
+        x_label: &o.xl, y_label: &o.yl, gridlines: o.grid, width: o.w, height: o.h, hover: &hover,
+        sort_order: &o.srt, ..AreaConfig::default()
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values, *, show_text=true, width=900_i32, height=480_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Waterfall chart.
 ///
 /// Args: title, labels, values (positive=up, negative=down).
 ///
 /// Kwargs: show_text (bool, default true),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_waterfall(title: &str, labels: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 480);
-
-        use crate::plot::statistical::{WaterfallConfig, render_waterfall_html};
-        let show_text = kw_bool(kwargs, "show_text", true);
-        let hover = o.hover();
-        Ok(Chart::new(render_waterfall_html(&WaterfallConfig {
-            title, labels: &labels, values: &values, x_label: &o.xl, y_label: &o.yl, show_text, gridlines: o.grid, width: o.w, height: o.h,
-            sort_order: &o.srt, hover: &hover, legend_position: &o.lp,
-        })))
-    
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_waterfall(title: &str, labels: Vec<String>, values: Vec<f64>, show_text: bool, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{WaterfallConfig, render_waterfall_html};
+    let hover = o.hover();
+    Ok(Chart::new(crate::html::hover::apply_opts(render_waterfall_html(&WaterfallConfig {
+        title, labels: &labels, values: &values, x_label: &o.xl, y_label: &o.yl, show_text, gridlines: o.grid, width: o.w, height: o.h,
+        sort_order: &o.srt, hover: &hover, legend_position: &o.lp,
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values, *, targets=None, max_vals=None, ranges=None, width=800_i32, height=300_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Bullet chart.
 ///
 /// Args: title, labels, values.
 ///
 /// Kwargs: targets (list[float]), max_vals (list[float]), ranges (list[float]),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_bullet(title: &str, labels: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 800, 300);
-
-        use crate::plot::statistical::{BulletConfig, render_bullet_html};
-        let targets: Vec<f64> = kwargs.and_then(|k| k.get_item("targets").ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or_default();
-        let max_vals: Vec<f64> = kwargs.and_then(|k| k.get_item("max_vals").ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or_default();
-        let ranges: Vec<f64> = kwargs.and_then(|k| k.get_item("ranges").ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or_default();
-        let hover = o.hover();
-        Ok(Chart::new(render_bullet_html(&BulletConfig {
-            title, labels: &labels, values: &values, targets: &targets, max_vals: &max_vals, ranges: &ranges, width: o.w, height: o.h,
-            hover: &hover, ..BulletConfig::default()
-        })))
-    
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_bullet(title: &str, labels: Vec<String>, values: Vec<f64>, targets: Option<Vec<f64>>, max_vals: Option<Vec<f64>>, ranges: Option<Vec<f64>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{BulletConfig, render_bullet_html};
+    let targets = targets.unwrap_or_default();
+    let max_vals = max_vals.unwrap_or_default();
+    let ranges = ranges.unwrap_or_default();
+    let hover = o.hover();
+    Ok(Chart::new(crate::html::hover::apply_opts(render_bullet_html(&BulletConfig {
+        title, labels: &labels, values: &values, targets: &targets, max_vals: &max_vals, ranges: &ranges, width: o.w, height: o.h,
+        hover: &hover, ..BulletConfig::default()
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values, *, width=1200_i32, height=600_i32, hover_json="", series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Bubble map (world map with sized bubbles).
 ///
 /// Args: title, labels (country names/codes), values.
 ///
-/// Kwargs: width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_bubble_map(title: &str, labels: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 1200, 600);
-
-        let hover = o.hover();
-        Ok(Chart::new(crate::plot::map::render_bubble_map_html(title, &labels, &values, o.w, o.h, &hover)))
-    
+/// Kwargs: width, height, hover_json, series_names (list[str], reserved),
+/// background (str|None, default None=transparent).
+pub fn build_bubble_map(title: &str, labels: Vec<String>, values: Vec<f64>, width: i32, height: i32, hover_json: &str, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { Vec::new() };
+    Ok(Chart::new(crate::html::hover::apply_opts(crate::plot::map::render_bubble_map_html(title, &labels, &values, width, height, &hover), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values, *, width=1200_i32, height=600_i32, hover_json="", series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Choropleth map (colored regions).
 ///
 /// Args: title, labels (country names/codes), values.
 ///
-/// Kwargs: width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_choropleth(title: &str, labels: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 1200, 600);
-
-        let hover = o.hover();
-        Ok(Chart::new(crate::plot::map::render_choropleth_html(title, &labels, &values, o.w, o.h, &hover)))
-    
+/// Kwargs: width, height, hover_json, series_names (list[str], reserved),
+/// background (str|None, default None=transparent).
+pub fn build_choropleth(title: &str, labels: Vec<String>, values: Vec<f64>, width: i32, height: i32, hover_json: &str, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { Vec::new() };
+    Ok(Chart::new(crate::html::hover::apply_opts(crate::plot::map::render_choropleth_html(title, &labels, &values, width, height, &hover), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_values, y_values, z_values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, x_values, y_values, z_values, *, color_values=None, color_labels=None, series_names=None, bg_color="", width=900_i32, height=560_i32, x_label="", y_label="", z_label="Z", hover_json=""))]
 /// 3D scatter plot (WebGL).
 ///
 /// Args: title, x_values, y_values, z_values.
 ///
-/// Kwargs: color_values (list[float]), color_labels (list[str]), bg_color (str),
-/// width, height, x_label, y_label, z_label.
-pub fn build_scatter3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 560);
-
-        let cv: Vec<f64> = kwargs.and_then(|k| k.get_item("color_values").ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or_default();
-        let cl = kw_vec_str(kwargs, "color_labels");
-        let bg = kw_opt_str(kwargs, "bg_color");
-        Ok(Chart::new(crate::plot::default::render_scatter3d_html(
-            title, &x_values, &y_values, &z_values,
-            (&o.xl, &o.yl, &o.zl), &cv, &cl, o.w, o.h, bg.as_deref(),
-        )))
-    
+/// Kwargs: color_values (list[float]), color_labels (list[str]), series_names (list[str]), bg_color (str),
+/// width, height, x_label, y_label, z_label, hover_json.
+pub fn build_scatter3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, color_values: Option<Vec<f64>>, color_labels: Option<Vec<String>>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _ = series_names;
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    let cv = color_values.unwrap_or_default();
+    let cl = color_labels.unwrap_or_default();
+    let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
+    Ok(Chart::new(crate::plot::default::render_scatter3d_html(
+        title, &x_values, &y_values, &z_values,
+        (x_label, y_label, z_label), &cv, &cl, width, height, bg,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_values, y_values, z_values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, x_values, y_values, z_values, *, color_values=None, color_labels=None, series_names=None, bg_color="", width=900_i32, height=560_i32, x_label="", y_label="", z_label="Z", hover_json=""))]
 /// 3D bar chart (WebGL).
 ///
 /// Args: title, x_values, y_values, z_values.
 ///
-/// Kwargs: color_values (list[float]), color_labels (list[str]), bg_color (str),
-/// width, height, x_label, y_label, z_label.
-pub fn build_bar3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 560);
-
-        let cv: Vec<f64> = kwargs.and_then(|k| k.get_item("color_values").ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or_default();
-        let cl = kw_vec_str(kwargs, "color_labels");
-        let bg = kw_opt_str(kwargs, "bg_color");
-        Ok(Chart::new(crate::plot::default::render_bar3d_html(
-            title, &x_values, &y_values, &z_values,
-            (&o.xl, &o.yl, &o.zl), &cv, &cl, o.w, o.h, bg.as_deref(),
-        )))
-    
+/// Kwargs: color_values (list[float]), color_labels (list[str]), series_names (list[str]), bg_color (str),
+/// width, height, x_label, y_label, z_label, hover_json.
+pub fn build_bar3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, color_values: Option<Vec<f64>>, color_labels: Option<Vec<String>>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _ = series_names;
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    let cv = color_values.unwrap_or_default();
+    let cl = color_labels.unwrap_or_default();
+    let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
+    Ok(Chart::new(crate::plot::default::render_bar3d_html(
+        title, &x_values, &y_values, &z_values,
+        (x_label, y_label, z_label), &cv, &cl, width, height, bg,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_values, y_values, z_values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, x_values, y_values, z_values, *, color_values=None, color_labels=None, series_names=None, bg_color="", width=900_i32, height=560_i32, x_label="", y_label="", z_label="Z", hover_json=""))]
 /// 3D line chart (WebGL).
 ///
 /// Args: title, x_values, y_values, z_values.
 ///
-/// Kwargs: color_values (list[float]), color_labels (list[str]), bg_color (str),
-/// width, height, x_label, y_label, z_label.
-pub fn build_line3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 560);
-
-        let cv: Vec<f64> = kwargs.and_then(|k| k.get_item("color_values").ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or_default();
-        let cl = kw_vec_str(kwargs, "color_labels");
-        let bg = kw_opt_str(kwargs, "bg_color");
-        Ok(Chart::new(crate::plot::default::render_line3d_html(
-            title, &x_values, &y_values, &z_values,
-            (&o.xl, &o.yl, &o.zl), &cv, &cl, o.w, o.h, bg.as_deref(),
-        )))
-    
+/// Kwargs: color_values (list[float]), color_labels (list[str]), series_names (list[str]), bg_color (str),
+/// width, height, x_label, y_label, z_label, hover_json.
+pub fn build_line3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, color_values: Option<Vec<f64>>, color_labels: Option<Vec<String>>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _ = series_names;
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    let cv = color_values.unwrap_or_default();
+    let cl = color_labels.unwrap_or_default();
+    let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
+    Ok(Chart::new(crate::plot::default::render_line3d_html(
+        title, &x_values, &y_values, &z_values,
+        (x_label, y_label, z_label), &cv, &cl, width, height, bg,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, axes, series_values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, axes, series_values, *, series_names=None, filled=true, fill_opacity=50_i32, width=700_i32, height=560_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Radar/spider chart.
 ///
 /// Args: title, axes, series_values (list of list[float]).
 ///
 /// Kwargs: series_names (list[str]), filled (bool, default true), fill_opacity (int 0-255, default 50),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_radar_chart(title: &str, axes: Vec<String>, series_values: Vec<Vec<f64>>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 700, 560);
-
-        use crate::plot::statistical::{RadarConfig, render_radar_html};
-        let series_names: Option<Vec<String>> = kwargs.and_then(|k| k.get_item("series_names").ok().flatten()).and_then(|v| v.extract().ok());
-        let filled = kw_bool(kwargs, "filled", true);
-        let fill_opacity = kw_u8(kwargs, "fill_opacity", 50);
-        let names = series_names.unwrap_or_else(|| (0..series_values.len()).map(|_| String::new()).collect());
-        let hover = o.hover();
-        let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(series_values.into_iter()).collect();
-        Ok(Chart::new(render_radar_html(&RadarConfig {
-            title, axes: &axes, series: &series, palette: &o.pal, filled, fill_opacity, width: o.w, height: o.h,
-            hover: &hover, ..RadarConfig::default()
-        })))
-    
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// background (str|None, default None=transparent).
+pub fn build_radar_chart(title: &str, axes: Vec<String>, series_values: Vec<Vec<f64>>, series_names: Option<Vec<String>>, filled: bool, fill_opacity: i32, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{RadarConfig, render_radar_html};
+    let names = series_names.unwrap_or_else(|| (0..series_values.len()).map(|_| String::new()).collect());
+    let hover = o.hover();
+    let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(series_values.into_iter()).collect();
+    Ok(Chart::new(crate::html::hover::apply_opts(render_radar_html(&RadarConfig {
+        title, axes: &axes, series: &series, palette: &o.pal, filled, fill_opacity: fill_opacity as u8, width: o.w, height: o.h,
+        hover: &hover, ..RadarConfig::default()
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, axes, series_values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, axes, series_values, *, series_names=None, width=700_i32, height=560_i32, x_label="", y_label="", z_label="Z", hover_json=""))]
 /// 3D radar chart (WebGL).
 ///
 /// Args: title, axes, series_values (list of list[float]).
 ///
-/// Kwargs: series_names (list[str]), width, height, x_label, y_label, z_label.
-pub fn build_radar3d_chart(title: &str, axes: Vec<String>, series_values: Vec<Vec<f64>>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 700, 560);
-
-        let sn = kw_vec_str(kwargs, "series_names");
-        let n_axes = axes.len();
-        if n_axes == 0 { return Ok(Chart::new(String::new())); }
-        let n_series = series_values.len();
-        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_series).map(|_| String::new()).collect() };
-        let mut xv = Vec::new();
-        let mut yv = Vec::new();
-        let mut zv = Vec::new();
-        let mut cv = Vec::new();
-        let n_series = names.len().min(series_values.len());
-        for si in 0..n_series {
-            let vals = &series_values[si];
-            let max_val = vals.iter().cloned().fold(0.0f64, f64::max).max(1e-9);
-            for ai in 0..n_axes.min(vals.len()) {
-                let angle = std::f64::consts::TAU * ai as f64 / n_axes as f64;
-                let r = vals[ai] / max_val;
-                xv.push(angle.cos() * r);
-                yv.push(si as f64);
-                zv.push(angle.sin() * r);
-                cv.push(si as f64);
-            }
+/// Kwargs: series_names (list[str]), width, height, x_label, y_label, z_label, hover_json.
+pub fn build_radar3d_chart(title: &str, axes: Vec<String>, series_values: Vec<Vec<f64>>, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    let n_axes = axes.len();
+    if n_axes == 0 { return Ok(Chart::new(String::new())); }
+    let n_series = series_values.len();
+    let names: Vec<String> = series_names.unwrap_or_else(|| (0..n_series).map(|_| String::new()).collect());
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    let n_series = names.len().min(series_values.len());
+    for si in 0..n_series {
+        let vals = &series_values[si];
+        let max_val = vals.iter().cloned().fold(0.0f64, f64::max).max(1e-9);
+        for ai in 0..n_axes.min(vals.len()) {
+            let angle = std::f64::consts::TAU * ai as f64 / n_axes as f64;
+            let r = vals[ai] / max_val;
+            xv.push(angle.cos() * r);
+            yv.push(si as f64);
+            zv.push(angle.sin() * r);
+            cv.push(si as f64);
         }
-        Ok(Chart::new(crate::plot::statistical::_3d::render_radar3d_html(
-            title, &xv, &yv, &zv,
-            ("Axis", "Series", "Axis"),
-            &cv, &names, o.w, o.h, None,
-        )))
+    }
+    Ok(Chart::new(crate::plot::statistical::_3d::render_radar3d_html(
+        title, &xv, &yv, &zv,
+        (x_label, y_label, z_label),
+        &cv, &names, width, height, None,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values, *, color_hex=0_u32, orientation="v", show_values=false, width=900_i32, height=480_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Lollipop chart.
 ///
 /// Args: title, labels, values.
 ///
 /// Kwargs: color_hex (int), orientation ("v"/"h"), show_values (bool),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_lollipop_chart(title: &str, labels: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 480);
-
-        use crate::plot::statistical::{LollipopConfig, render_lollipop_html};
-        let clr = kw_u32(kwargs, "color_hex", 0);
-        let orient = if kw_str(kwargs, "orientation", "v") == "h" { b'h' } else { b'v' };
-        let show_values = kw_bool(kwargs, "show_values", false);
-        let hover = o.hover();
-        Ok(Chart::new(render_lollipop_html(&LollipopConfig {
-            title, labels: &labels, values: &values, x_label: &o.xl, y_label: &o.yl,
-            palette: &o.pal, color_hex: clr, gridlines: o.grid, show_values, orientation: orient, sort_order: &o.srt, width: o.w, height: o.h, hover: &hover, legend_position: &o.lp,
-        })))
-    
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_lollipop_chart(title: &str, labels: Vec<String>, values: Vec<f64>, color_hex: u32, orientation: &str, show_values: bool, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{LollipopConfig, render_lollipop_html};
+    let orient = if orientation == "h" { b'h' } else { b'v' };
+    let hover = o.hover();
+    Ok(Chart::new(crate::html::hover::apply_opts(render_lollipop_html(&LollipopConfig {
+        title, labels: &labels, values: &values, x_label: &o.xl, y_label: &o.yl,
+        palette: &o.pal, color_hex, gridlines: o.grid, show_values, orientation: orient, sort_order: &o.srt, width: o.w, height: o.h, hover: &hover, legend_position: &o.lp,
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_values, y_values, z_values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, x_values, y_values, z_values, *, color_labels=None, series_names=None, width=900_i32, height=560_i32, x_label="", y_label="", z_label="Z", hover_json=""))]
 /// 3D lollipop chart (WebGL).
 ///
 /// Args: title, x_values, y_values, z_values.
 ///
-/// Kwargs: color_labels (list[str]), width, height, x_label, y_label, z_label.
-pub fn build_lollipop3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 560);
-
-        let xl = kw_str(kwargs, "x_label", "Feature Index");
-        let yl = kw_str(kwargs, "y_label", "|Correlation|");
-        let zl = kw_str(kwargs, "z_label", "Correlation");
-        let cl = kw_vec_str(kwargs, "color_labels");
-        Ok(Chart::new(crate::plot::statistical::_3d::render_lollipop3d_html(
-            title, &x_values, &y_values, &z_values,
-            (&o.xl, &o.yl, &o.zl), &[], &cl, o.w, o.h, None,
-        )))
-    
+/// Kwargs: color_labels (list[str]), series_names (list[str]), width, height, x_label, y_label, z_label, hover_json.
+pub fn build_lollipop3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, color_labels: Option<Vec<String>>, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _ = series_names;
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    let cl = color_labels.unwrap_or_default();
+    Ok(Chart::new(crate::plot::statistical::_3d::render_lollipop3d_html(
+        title, &x_values, &y_values, &z_values,
+        (x_label, y_label, z_label), &[], &cl, width, height, None,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, values, *, categories=None, filled=true, fill_opacity=50_i32, bandwidth=0.0_f64, width=900_i32, height=420_i32, x_label="", y_label="Density", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// KDE (kernel density estimation) plot.
 ///
 /// Args: title, values.
 ///
-/// Kwargs: filled (bool, default true), fill_opacity (int 0-255, default 50),
-/// bandwidth (float, 0=auto), categories (list[str] for multi-kde),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_kde_chart(title: &str, values: &PyAny, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 420);
-
-        use crate::plot::statistical::{KdeConfig, render_kde_html};
-        let yl = kw_str(kwargs, "y_label", "Density");
-        let filled = kw_bool(kwargs, "filled", true);
-        let fill_opacity = kw_u8(kwargs, "fill_opacity", 50);
-        let bandwidth = kw_f64(kwargs, "bandwidth", 0.0);
-        let categories: Option<&PyAny> = kwargs.and_then(|k| k.get_item("categories").ok().flatten());
-        let (vals, step) = fast_f64(values, 100)?;
-        let series: Vec<(String, Vec<f64>)> = if let Some(cat_any) = categories {
-            let (cats, _) = fast_labels_py(cat_any, 100)?;
-            let sampled_cats = fast_labels(cats, step);
-            let mut group_order: Vec<String> = Vec::new();
-            let mut group_vals: std::collections::HashMap<String, Vec<f64>> = std::collections::HashMap::new();
-            for (v, c) in vals.iter().zip(sampled_cats.iter()) {
-                group_vals.entry(c.clone()).or_default().push(*v);
-                if !group_order.contains(c) { group_order.push(c.clone()); }
-            }
-            group_order.into_iter().map(|k| {
-                let v = group_vals.remove(&k).unwrap_or_default();
-                (k, v)
-            }).collect()
-        } else {
-            vec![("Series".to_string(), vals)]
-        };
-        let hover = o.hover();
-        Ok(Chart::new(render_kde_html(&KdeConfig {
-            title, series: &series, palette: &o.pal, x_label: &o.xl, y_label: &o.yl,
-            bandwidth, filled, fill_opacity, gridlines: o.grid, width: o.w, height: o.h,
-            sort_order: &o.srt, hover: &hover, ..KdeConfig::default()
-        })))
+/// Kwargs: categories (list[str] for multi-kde), filled (bool, default true), fill_opacity (int 0-255, default 50),
+/// bandwidth (float, 0=auto),
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_kde_chart(title: &str, values: Vec<f64>, categories: Option<Vec<String>>, filled: bool, fill_opacity: i32, bandwidth: f64, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{KdeConfig, render_kde_html};
+    let series: Vec<(String, Vec<f64>)> = if let Some(cats) = categories {
+        let mut group_order: Vec<String> = Vec::new();
+        let mut group_vals: std::collections::HashMap<String, Vec<f64>> = std::collections::HashMap::new();
+        for (v, c) in values.iter().zip(cats.iter()) {
+            group_vals.entry(c.clone()).or_default().push(*v);
+            if !group_order.contains(c) { group_order.push(c.clone()); }
+        }
+        group_order.into_iter().map(|k| { let v = group_vals.remove(&k).unwrap_or_default(); (k, v) }).collect()
+    } else {
+        vec![("Series".to_string(), values)]
+    };
+    let hover = o.hover();
+    Ok(Chart::new(crate::html::hover::apply_opts(render_kde_html(&KdeConfig {
+        title, series: &series, palette: &o.pal, x_label: &o.xl, y_label: &o.yl,
+        bandwidth, filled, fill_opacity: fill_opacity as u8, gridlines: o.grid, width: o.w, height: o.h,
+        sort_order: &o.srt, hover: &hover, ..KdeConfig::default()
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, values, *, categories=None, series_names=None, width=900_i32, height=560_i32, x_label="", y_label="Category", z_label="Density", hover_json=""))]
 /// 3D KDE chart (WebGL).
 ///
 /// Args: title, values.
 ///
-/// Kwargs: categories (list[str]), width, height, x_label, y_label, z_label.
-pub fn build_kde3d_chart(title: &str, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 560);
-
-        use crate::plot::statistical::kde::{scott_bw, kde_eval};
-        let yl = kw_str(kwargs, "y_label", "Outcome");
-        let zl = kw_str(kwargs, "z_label", "Density");
-        let cats: Vec<String> = kwargs.and_then(|k| k.get_item("categories").ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or_default();
-        let series: Vec<(String, Vec<f64>)> = if cats.is_empty() {
+/// Kwargs: categories (list[str]), series_names (list[str]), width, height, x_label, y_label, z_label, hover_json.
+pub fn build_kde3d_chart(title: &str, values: Vec<f64>, categories: Option<Vec<String>>, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _ = series_names;
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    use crate::plot::statistical::kde::{scott_bw, kde_eval};
+    let cats: Vec<String> = categories.unwrap_or_default();
+    let series: Vec<(String, Vec<f64>)> = if cats.is_empty() {
             vec![("Series".to_string(), values)]
         } else {
             let mut group_order: Vec<String> = Vec::new();
@@ -1165,547 +881,529 @@ pub fn build_kde3d_chart(title: &str, values: Vec<f64>, kwargs: Option<&PyDict>)
             }
             group_order.into_iter().map(|k| { let v = group_vals.remove(&k).unwrap_or_default(); (k, v) }).collect()
         };
-        let all_vals: Vec<f64> = series.iter().flat_map(|(_, v)| v.iter().copied()).collect();
-        if all_vals.is_empty() { return Ok(Chart::new(String::new())); }
-        let xmin = all_vals.iter().cloned().fold(f64::INFINITY, f64::min);
-        let xmax = all_vals.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
-        let pad = (xmax - xmin).max(1.0) * 0.12;
-        let lo = xmin - pad;
-        let hi = xmax + pad;
-        let n_pts: usize = 120;
-        let mut xv = Vec::new();
-        let mut yv = Vec::new();
-        let mut zv = Vec::new();
-        let mut cv = Vec::new();
-        let names: Vec<String> = series.iter().map(|(n,_)| n.clone()).collect();
-        for (si, (_name, vals)) in series.iter().enumerate() {
-            let bw = scott_bw(vals);
-            for k in 0..n_pts {
-                let t = lo + (hi - lo) * k as f64 / (n_pts - 1).max(1) as f64;
-                let d = kde_eval(vals, t, bw);
-                xv.push(t); yv.push(si as f64); zv.push(d); cv.push(si as f64);
-            }
+    let all_vals: Vec<f64> = series.iter().flat_map(|(_, v)| v.iter().copied()).collect();
+    if all_vals.is_empty() { return Ok(Chart::new(String::new())); }
+    let xmin = all_vals.iter().cloned().fold(f64::INFINITY, f64::min);
+    let xmax = all_vals.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    let pad = (xmax - xmin).max(1.0) * 0.12;
+    let lo = xmin - pad;
+    let hi = xmax + pad;
+    let n_pts: usize = 120;
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    let names: Vec<String> = series.iter().map(|(n,_)| n.clone()).collect();
+    for (si, (_name, vals)) in series.iter().enumerate() {
+        let bw = scott_bw(vals);
+        for k in 0..n_pts {
+            let t = lo + (hi - lo) * k as f64 / (n_pts - 1).max(1) as f64;
+            let d = kde_eval(vals, t, bw);
+            xv.push(t); yv.push(si as f64); zv.push(d); cv.push(si as f64);
         }
-        Ok(Chart::new(crate::plot::statistical::_3d::render_kde3d_html(
-            title, &xv, &yv, &zv, (&o.xl, &o.yl, &o.zl), &cv, &names, o.w, o.h, None,
-        )))
+    }
+    Ok(Chart::new(crate::plot::statistical::_3d::render_kde3d_html(
+        title, &xv, &yv, &zv, (x_label, y_label, z_label), &cv, &names, width, height, None,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, values, categories, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, values, categories, *, overlap=0.5_f64, bandwidth=0.0_f64, width=900_i32, height=520_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Ridgeline (joy) plot.
 ///
 /// Args: title, values (flat), categories (one per value).
 ///
 /// Kwargs: overlap (float, default 0.5), bandwidth (float, 0=auto),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_ridgeline_chart(title: &str, values: &PyAny, categories: &PyAny, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 520);
-
-        use crate::plot::statistical::{RidgelineConfig, render_ridgeline_html};
-        let overlap = kw_f64(kwargs, "overlap", 0.5);
-        let bandwidth = kw_f64(kwargs, "bandwidth", 0.0);
-        let (vals, _) = fast_f64(values, 200)?;
-        let (cats, _) = fast_labels_py(categories, 200)?;
-        let hover = o.hover();
-        Ok(Chart::new(render_ridgeline_html(&RidgelineConfig {
-            title, values: &vals, categories: &cats, palette: &o.pal,
-            x_label: &o.xl, y_label: &o.yl, overlap, bandwidth, width: o.w, height: o.h, gridlines: o.grid,
-            sort_order: &o.srt, hover: &hover, ..RidgelineConfig::default()
-        })))
-    
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_ridgeline_chart(title: &str, values: Vec<f64>, categories: Vec<String>, overlap: f64, bandwidth: f64, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::{RidgelineConfig, render_ridgeline_html};
+    let hover = o.hover();
+    Ok(Chart::new(crate::html::hover::apply_opts(render_ridgeline_html(&RidgelineConfig {
+        title, values: &values, categories: &categories, palette: &o.pal,
+        x_label: &o.xl, y_label: &o.yl, overlap, bandwidth, width: o.w, height: o.h, gridlines: o.grid,
+        sort_order: &o.srt, hover: &hover, ..RidgelineConfig::default()
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, values, categories, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, values, categories, *, series_names=None, width=900_i32, height=560_i32, x_label="", y_label="Category", z_label="Density", hover_json=""))]
 /// 3D ridgeline chart (WebGL).
 ///
 /// Args: title, values (flat), categories (one per value).
 ///
-/// Kwargs: width, height, x_label, y_label, z_label.
-pub fn build_ridgeline3d_chart(title: &str, values: &PyAny, categories: &PyAny, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 560);
-
-        use crate::plot::statistical::kde::{scott_bw, kde_eval};
-        let yl = kw_str(kwargs, "y_label", "Category");
-        let zl = kw_str(kwargs, "z_label", "Density");
-        let (vals, _) = fast_f64(values, 200)?;
-        let (cats, _) = fast_labels_py(categories, 200)?;
-        let mut group_order: Vec<String> = Vec::new();
-        let mut group_vals: std::collections::HashMap<String, Vec<f64>> = std::collections::HashMap::new();
-        for (v, c) in vals.iter().zip(cats.iter()) {
-            group_vals.entry(c.clone()).or_default().push(*v);
-            if !group_order.contains(c) { group_order.push(c.clone()); }
+/// Kwargs: series_names (list[str]), width, height, x_label, y_label, z_label, hover_json.
+pub fn build_ridgeline3d_chart(title: &str, values: Vec<f64>, categories: Vec<String>, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _ = series_names;
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    use crate::plot::statistical::kde::{scott_bw, kde_eval};
+    let mut group_order: Vec<String> = Vec::new();
+    let mut group_vals: std::collections::HashMap<String, Vec<f64>> = std::collections::HashMap::new();
+    for (v, c) in values.iter().zip(categories.iter()) {
+        group_vals.entry(c.clone()).or_default().push(*v);
+        if !group_order.contains(c) { group_order.push(c.clone()); }
+    }
+    if group_order.is_empty() { return Ok(Chart::new(String::new())); }
+    let xmin = values.iter().cloned().fold(f64::INFINITY, f64::min);
+    let xmax = values.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    let pad = (xmax - xmin).max(1.0) * 0.12;
+    let lo = xmin - pad;
+    let hi = xmax + pad;
+    let n_pts: usize = 60;
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    for (gi, name) in group_order.iter().enumerate() {
+        let gvals = group_vals.get(name).map(|v| v.as_slice()).unwrap_or(&[]);
+        let cap = 40usize;
+        let step = if gvals.len() > cap { (gvals.len() + cap - 1) / cap } else { 1 };
+        let sampled: Vec<f64> = if step > 1 { gvals.iter().step_by(step).copied().collect() } else { gvals.to_vec() };
+        let bw = scott_bw(&sampled);
+        for k in 0..n_pts {
+            let t = lo + (hi - lo) * k as f64 / (n_pts - 1).max(1) as f64;
+            let d = kde_eval(&sampled, t, bw) * step as f64;
+            xv.push(t); yv.push(gi as f64); zv.push(d); cv.push(gi as f64);
         }
-        if group_order.is_empty() { return Ok(Chart::new(String::new())); }
-        let xmin = vals.iter().cloned().fold(f64::INFINITY, f64::min);
-        let xmax = vals.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
-        let pad = (xmax - xmin).max(1.0) * 0.12;
-        let lo = xmin - pad;
-        let hi = xmax + pad;
-        let n_pts: usize = 60;
-        let mut xv = Vec::new();
-        let mut yv = Vec::new();
-        let mut zv = Vec::new();
-        let mut cv = Vec::new();
-        for (gi, name) in group_order.iter().enumerate() {
-            let gvals = group_vals.get(name).map(|v| v.as_slice()).unwrap_or(&[]);
-            let cap = 40usize;
-            let step = if gvals.len() > cap { (gvals.len() + cap - 1) / cap } else { 1 };
-            let sampled: Vec<f64> = if step > 1 { gvals.iter().step_by(step).copied().collect() } else { gvals.to_vec() };
-            let bw = scott_bw(&sampled);
-            for k in 0..n_pts {
-                let t = lo + (hi - lo) * k as f64 / (n_pts - 1).max(1) as f64;
-                let d = kde_eval(&sampled, t, bw) * step as f64;
-                xv.push(t); yv.push(gi as f64); zv.push(d); cv.push(gi as f64);
-            }
-        }
-        Ok(Chart::new(crate::plot::statistical::_3d::render_ridgeline3d_html(
-            title, &xv, &yv, &zv, (&o.xl, &o.yl, &o.zl), &cv, &group_order, o.w, o.h, None,
-        )))
+    }
+    Ok(Chart::new(crate::plot::statistical::_3d::render_ridgeline3d_html(
+        title, &xv, &yv, &zv, (x_label, y_label, z_label), &cv, &group_order, width, height, None,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, x_values, y_values, z_values, size_values, *, color_values=None, color_labels=None, series_names=None, width=900_i32, height=560_i32, x_label="", y_label="", z_label="Z", hover_json=""))]
+/// 3D bubble chart (WebGL) — variable-size spheres with realistic 3D shading.
+///
+/// Args: title, x_values, y_values, z_values, size_values (controls sphere radius).
+///
+/// Kwargs: color_values (list[float]), color_labels (list[str]), series_names (list[str]),
+/// width, height, x_label, y_label, z_label, hover_json.
+pub fn build_bubble3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, size_values: Vec<f64>, color_values: Option<Vec<f64>>, color_labels: Option<Vec<String>>, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _ = series_names;
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    let cv = color_values.unwrap_or_default();
+    let cl = color_labels.unwrap_or_default();
+    let n = x_values.len().min(y_values.len()).min(z_values.len()).min(size_values.len());
+    let smn = size_values[..n].iter().cloned().fold(f64::INFINITY, f64::min);
+    let smx = size_values[..n].iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    let sr = (smx - smn).max(1e-9);
+    let size_js = format!("var S=[{}];",
+        size_values[..n].iter().map(|&s| format!("{:.3}", (s - smn) / sr)).collect::<Vec<_>>().join(","));
+    Ok(Chart::new(crate::html::js_3d::render_3d_html_impl(
+        16, title, &x_values[..n], &y_values[..n], &z_values[..n],
+        (x_label, y_label, z_label), &cv, &cl, width, height, None, size_js.as_bytes(),
+    )))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, labels, values, *, series_names=None, bg_color="", sort_order="none", width=700_i32, height=560_i32, palette=None, hover_json=""))]
 /// 3D pie chart (WebGL).
 ///
 /// Args: title, labels, values.
 ///
-/// Kwargs: bg_color (str), width, height, palette.
-pub fn build_pie3d_chart(title: &str, labels: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 700, 560);
-
-        let bg = kw_opt_str(kwargs, "bg_color");
-        use crate::plot::statistical::common::apply_sort;
-        let (labels, values) = apply_sort(&labels, &values, &o.srt);
-        let n = labels.len().min(values.len());
-        let xv: Vec<f64> = (0..n).map(|i| i as f64).collect();
-        let yv: Vec<f64> = (0..n).map(|i| i as f64).collect();
-        let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
-        Ok(Chart::new(crate::plot::statistical::_3d::render_pie3d_html(
-            title, &xv, &yv, &values[..n], ("", "", ""), &cv, &labels[..n].to_vec(), o.w, o.h, bg.as_deref(),
-        )))
-    
+/// Kwargs: series_names (list[str]), bg_color (str), sort_order (str), width, height, palette, hover_json.
+pub fn build_pie3d_chart(title: &str, labels: Vec<String>, values: Vec<f64>, series_names: Option<Vec<String>>, bg_color: &str, sort_order: &str, width: i32, height: i32, palette: Option<Vec<u32>>, hover_json: &str) -> PyResult<Chart> {
+    let _ = series_names;
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    let pal = palette.unwrap_or_default();
+    let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
+    use crate::plot::statistical::common::apply_sort;
+    let (labels, values) = apply_sort(&labels, &values, sort_order);
+    let n = labels.len().min(values.len());
+    let xv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    let yv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    let _ = pal;
+    Ok(Chart::new(crate::plot::statistical::_3d::render_pie3d_html(
+        title, &xv, &yv, &values[..n], ("", "", ""), &cv, &labels[..n].to_vec(), width, height, bg,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, values, *, categories=None, series_names=None, width=900_i32, height=560_i32, x_label="Value", y_label="Category", z_label="Density", hover_json=""))]
 /// 3D violin chart (WebGL).
 ///
 /// Args: title, values (flat).
 ///
-/// Kwargs: categories (list[str]), width, height, x_label, y_label, z_label.
-pub fn build_violin3d_chart(title: &str, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 560);
-
-        use crate::plot::statistical::kde::{scott_bw, kde_eval};
-        let xl = kw_str(kwargs, "x_label", "Value");
-        let yl = kw_str(kwargs, "y_label", "Category");
-        let zl = kw_str(kwargs, "z_label", "Density");
-        let cats: Vec<String> = kwargs.and_then(|k| k.get_item("categories").ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or_default();
-        let mut group_order: Vec<String> = Vec::new();
-        let mut group_vals: std::collections::HashMap<String, Vec<f64>> = std::collections::HashMap::new();
-        if cats.is_empty() {
-            group_order.push("Series".to_string());
-            group_vals.insert("Series".to_string(), values);
-        } else {
-            for (v, c) in values.iter().zip(cats.iter()) {
-                group_vals.entry(c.clone()).or_default().push(*v);
-                if !group_order.contains(c) { group_order.push(c.clone()); }
+/// Kwargs: categories (list[str]), series_names (list[str]), width, height, x_label, y_label, z_label, hover_json.
+pub fn build_violin3d_chart(title: &str, values: Vec<f64>, categories: Option<Vec<String>>, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _ = series_names;
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    use crate::plot::statistical::kde::{scott_bw, kde_eval};
+    let xl = x_label;
+    let yl = y_label;
+    let zl = z_label;
+    let cats: Vec<String> = categories.unwrap_or_default();
+    let mut group_order: Vec<String> = Vec::new();
+    let mut group_vals: std::collections::HashMap<String, Vec<f64>> = std::collections::HashMap::new();
+    if cats.is_empty() {
+        group_order.push("Series".to_string());
+        group_vals.insert("Series".to_string(), values);
+    } else {
+        for (v, c) in values.iter().zip(cats.iter()) {
+            group_vals.entry(c.clone()).or_default().push(*v);
+            if !group_order.contains(c) { group_order.push(c.clone()); }
             }
         }
-        let all: Vec<f64> = group_vals.values().flat_map(|v| v.iter().copied()).collect();
-        if all.is_empty() { return Ok(Chart::new(String::new())); }
-        let xmin = all.iter().cloned().fold(f64::INFINITY, f64::min);
-        let xmax = all.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
-        let pad = (xmax - xmin).max(1.0) * 0.12;
-        let lo = xmin - pad;
-        let hi = xmax + pad;
-        let n_pts: usize = 80;
-        let mut xv = Vec::new();
-        let mut yv = Vec::new();
-        let mut zv = Vec::new();
-        let mut cv = Vec::new();
-        for (gi, name) in group_order.iter().enumerate() {
-            let gv = group_vals.get(name).map(|v| v.as_slice()).unwrap_or(&[]);
-            let bw = scott_bw(gv);
-            for k in 0..n_pts {
-                let t = lo + (hi - lo) * k as f64 / (n_pts - 1).max(1) as f64;
-                let d = kde_eval(gv, t, bw);
-                xv.push(t); yv.push(gi as f64); zv.push(d); cv.push(gi as f64);
-            }
+    let all: Vec<f64> = group_vals.values().flat_map(|v| v.iter().copied()).collect();
+    if all.is_empty() { return Ok(Chart::new(String::new())); }
+    let xmin = all.iter().cloned().fold(f64::INFINITY, f64::min);
+    let xmax = all.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    let pad = (xmax - xmin).max(1.0) * 0.12;
+    let lo = xmin - pad;
+    let hi = xmax + pad;
+    let n_pts: usize = 80;
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    for (gi, name) in group_order.iter().enumerate() {
+        let gv = group_vals.get(name).map(|v| v.as_slice()).unwrap_or(&[]);
+        let bw = scott_bw(gv);
+        for k in 0..n_pts {
+            let t = lo + (hi - lo) * k as f64 / (n_pts - 1).max(1) as f64;
+            let d = kde_eval(gv, t, bw);
+            xv.push(t); yv.push(gi as f64); zv.push(d); cv.push(gi as f64);
         }
-        Ok(Chart::new(crate::plot::statistical::_3d::render_violin3d_html(
-            title, &xv, &yv, &zv, (&o.xl, &o.yl, &o.zl), &cv, &group_order, o.w, o.h, None,
-        )))
+    }
+    Ok(Chart::new(crate::plot::statistical::_3d::render_violin3d_html(
+        title, &xv, &yv, &zv, (xl, yl, zl), &cv, &group_order, width, height, None,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_labels, y_labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, x_labels, y_labels, values, *, series_names=None, bg_color="", width=900_i32, height=560_i32, x_label="", y_label="", z_label="Z", hover_json=""))]
 /// 3D heatmap (WebGL).
 ///
 /// Args: title, x_labels, y_labels, values (list of list[float]).
 ///
-/// Kwargs: bg_color (str), width, height, x_label, y_label, z_label.
-pub fn build_heatmap3d_chart(title: &str, x_labels: Vec<String>, y_labels: Vec<String>, values: Vec<Vec<f64>>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 560);
-
-        let bg = kw_opt_str(kwargs, "bg_color");
-        let nr = y_labels.len().min(values.len());
-        let nc = x_labels.len();
-        let mut xv = Vec::new();
-        let mut yv = Vec::new();
-        let mut zv = Vec::new();
-        let mut cv = Vec::new();
-        let mut cl = Vec::new();
-        for r in 0..nr {
-            let row = &values[r];
-            for c2 in 0..nc.min(row.len()) {
-                xv.push(c2 as f64); yv.push(r as f64); zv.push(row[c2]);
-                cv.push(0.0); cl.push(format!("{}/{}", y_labels[r], x_labels[c2]));
-            }
+/// Kwargs: series_names (list[str]), bg_color (str), width, height, x_label, y_label, z_label, hover_json.
+pub fn build_heatmap3d_chart(title: &str, x_labels: Vec<String>, y_labels: Vec<String>, values: Vec<Vec<f64>>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _ = series_names;
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
+    let nr = y_labels.len().min(values.len());
+    let nc = x_labels.len();
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    let mut cl = Vec::new();
+    for r in 0..nr {
+        let row = &values[r];
+        for c2 in 0..nc.min(row.len()) {
+            xv.push(c2 as f64); yv.push(r as f64); zv.push(row[c2]);
+            cv.push(0.0); cl.push(format!("{}/{}", y_labels[r], x_labels[c2]));
         }
-        Ok(Chart::new(crate::plot::statistical::_3d::render_heatmap3d_html(
-            title, &xv, &yv, &zv, (&o.xl, &o.yl, &o.zl), &cv, &cl, o.w, o.h, bg.as_deref(),
-        )))
+    }
+    Ok(Chart::new(crate::plot::statistical::_3d::render_heatmap3d_html(
+        title, &xv, &yv, &zv, (x_label, y_label, z_label), &cv, &cl, width, height, bg,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, open, high, low, close, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, open, high, low, close, *, series_names=None, bg_color="", width=900_i32, height=560_i32, x_label="Price", y_label="Bar", z_label="", hover_json=""))]
 /// 3D candlestick chart (WebGL).
 ///
 /// Args: title, labels, open, high, low, close.
 ///
-/// Kwargs: bg_color (str), width, height, x_label, y_label, z_label.
-pub fn build_candlestick3d_chart(title: &str, labels: Vec<String>, open: Vec<f64>, high: Vec<f64>, low: Vec<f64>, close: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 560);
-
-        let bg = kw_opt_str(kwargs, "bg_color");
-        let n = labels.len().min(open.len()).min(high.len()).min(low.len()).min(close.len());
-        let mut xv = Vec::new();
-        let mut yv = Vec::new();
-        let mut zv = Vec::new();
-        for i in 0..n {
-            xv.push(open[i]); xv.push(high[i]); xv.push(low[i]); xv.push(close[i]);
-            yv.push(i as f64); yv.push(i as f64); yv.push(i as f64); yv.push(i as f64);
-            zv.push(0.0); zv.push(0.0); zv.push(0.0); zv.push(0.0);
-        }
-        Ok(Chart::new(crate::plot::statistical::_3d::render_candlestick3d_html(
-            title, &xv, &yv, &zv, ("Price", "Bar", ""), &[], &labels, o.w, o.h, bg.as_deref(),
-        )))
-    
+/// Kwargs: series_names (list[str]), bg_color (str), width, height, x_label, y_label, z_label, hover_json.
+pub fn build_candlestick3d_chart(title: &str, labels: Vec<String>, open: Vec<f64>, high: Vec<f64>, low: Vec<f64>, close: Vec<f64>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _ = series_names;
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
+    let n = labels.len().min(open.len()).min(high.len()).min(low.len()).min(close.len());
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    for i in 0..n {
+        xv.push(open[i]); xv.push(high[i]); xv.push(low[i]); xv.push(close[i]);
+        yv.push(i as f64); yv.push(i as f64); yv.push(i as f64); yv.push(i as f64);
+        zv.push(0.0); zv.push(0.0); zv.push(0.0); zv.push(0.0);
+    }
+    Ok(Chart::new(crate::plot::statistical::_3d::render_candlestick3d_html(
+        title, &xv, &yv, &zv, (x_label, y_label, z_label), &[], &labels, width, height, bg,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values_start, values_end, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values_start, values_end, *, series_names=None, bg_color="", width=900_i32, height=560_i32, x_label="Start", y_label="Item", z_label="End", hover_json=""))]
 /// 3D dumbbell chart (WebGL).
 ///
 /// Args: title, labels, values_start, values_end.
 ///
 /// Kwargs: series_names (tuple[str,str], default ("Start","End")), bg_color (str),
-/// width, height, x_label, y_label, z_label.
-pub fn build_dumbbell3d_chart(title: &str, labels: Vec<String>, values_start: Vec<f64>, values_end: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 560);
-
-        let bg = kw_opt_str(kwargs, "bg_color");
-        let sl: Option<(String, String)> = kwargs.and_then(|k| k.get_item("series_names").ok().flatten()).and_then(|v| v.extract().ok());
-        let axis_names = sl.as_ref().map(|(a, b)| (a.as_str(), "Item", b.as_str())).unwrap_or(("Start", "Item", "End"));
-        let n = labels.len().min(values_start.len()).min(values_end.len());
-        let mut xv = Vec::new();
-        let mut yv = Vec::new();
-        let mut zv = Vec::new();
-        let mut cv = Vec::new();
-        for i in 0..n {
-            xv.push(values_start[i]); yv.push(i as f64); zv.push(values_end[i]); cv.push(i as f64);
-        }
-        Ok(Chart::new(crate::plot::statistical::_3d::render_dumbbell3d_html(
-            title, &xv, &yv, &zv, axis_names, &cv, &labels, o.w, o.h, bg.as_deref(),
-        )))
-    
+/// width, height, x_label, y_label, z_label, hover_json.
+pub fn build_dumbbell3d_chart(title: &str, labels: Vec<String>, values_start: Vec<f64>, values_end: Vec<f64>, series_names: Option<(String, String)>, bg_color: &str, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
+    let sl = series_names.unwrap_or(("Start".to_string(), "End".to_string()));
+    let axis_names = (sl.0.as_str(), y_label, sl.1.as_str());
+    let n = labels.len().min(values_start.len()).min(values_end.len());
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    for i in 0..n {
+        xv.push(values_start[i]); yv.push(i as f64); zv.push(values_end[i]); cv.push(i as f64);
+    }
+    let _ = x_label;
+    let _ = z_label;
+    Ok(Chart::new(crate::plot::statistical::_3d::render_dumbbell3d_html(
+        title, &xv, &yv, &zv, axis_names, &cv, &labels, width, height, bg,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values, *, series_names=None, bg_color="", sort_order="none", width=700_i32, height=560_i32, hover_json=""))]
 /// 3D funnel chart (WebGL).
 ///
 /// Args: title, labels, values.
 ///
-/// Kwargs: bg_color (str), width, height.
-pub fn build_funnel3d_chart(title: &str, labels: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 700, 560);
-
-        let bg = kw_opt_str(kwargs, "bg_color");
-        use crate::plot::statistical::common::apply_sort;
-        let (labels, values) = apply_sort(&labels, &values, &o.srt);
-        let n = labels.len().min(values.len());
-        let xv: Vec<f64> = (0..n).map(|i| i as f64).collect();
-        let yv: Vec<f64> = (0..n).map(|i| i as f64).collect();
-        let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
-        Ok(Chart::new(crate::plot::statistical::_3d::render_funnel3d_html(
-            title, &xv, &yv, &values[..n], ("", "Stage", "Value"), &cv, &labels[..n].to_vec(), o.w, o.h, bg.as_deref(),
-        )))
-    
+/// Kwargs: series_names (list[str]), bg_color (str), sort_order (str), width, height, hover_json.
+pub fn build_funnel3d_chart(title: &str, labels: Vec<String>, values: Vec<f64>, series_names: Option<Vec<String>>, bg_color: &str, sort_order: &str, width: i32, height: i32, hover_json: &str) -> PyResult<Chart> {
+    let _ = series_names;
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
+    use crate::plot::statistical::common::apply_sort;
+    let (labels, values) = apply_sort(&labels, &values, sort_order);
+    let n = labels.len().min(values.len());
+    let xv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    let yv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    Ok(Chart::new(crate::plot::statistical::_3d::render_funnel3d_html(
+        title, &xv, &yv, &values[..n], ("", "Stage", "Value"), &cv, &labels[..n].to_vec(), width, height, bg,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, parents, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, parents, values, *, series_names=None, bg_color="", width=700_i32, height=560_i32, hover_json=""))]
 /// 3D sunburst chart (WebGL).
 ///
 /// Args: title, labels, parents, values.
 ///
-/// Kwargs: bg_color (str), width, height.
-pub fn build_sunburst3d_chart(title: &str, labels: Vec<String>, parents: Vec<String>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 700, 560);
-
-        let bg = kw_opt_str(kwargs, "bg_color");
-        let n = labels.len().min(parents.len()).min(values.len());
-        let mut ring_map: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
-        ring_map.insert(String::new(), 0);
-        let mut xv = Vec::new();
-        let mut yv = Vec::new();
-        let mut zv = Vec::new();
-        let mut cv = Vec::new();
-        let mut cl = Vec::new();
-        for i in 0..n {
-            let parent = &parents[i];
-            let parent_ring = ring_map.get(parent).copied().unwrap_or(0);
-            let my_ring = parent_ring + 1;
-            ring_map.insert(labels[i].clone(), my_ring);
-            xv.push(i as f64); yv.push(my_ring as f64); zv.push(values[i]);
-            cv.push(i as f64); cl.push(labels[i].clone());
-        }
-        Ok(Chart::new(crate::plot::statistical::_3d::render_sunburst3d_html(
-            title, &xv, &yv, &zv, ("", "Ring", "Value"), &cv, &cl, o.w, o.h, bg.as_deref(),
-        )))
-    
+/// Kwargs: series_names (list[str]), bg_color (str), width, height, hover_json.
+pub fn build_sunburst3d_chart(title: &str, labels: Vec<String>, parents: Vec<String>, values: Vec<f64>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, hover_json: &str) -> PyResult<Chart> {
+    let _ = series_names;
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
+    let n = labels.len().min(parents.len()).min(values.len());
+    let mut ring_map: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    ring_map.insert(String::new(), 0);
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    let mut cl = Vec::new();
+    for i in 0..n {
+        let parent = &parents[i];
+        let parent_ring = ring_map.get(parent).copied().unwrap_or(0);
+        let my_ring = parent_ring + 1;
+        ring_map.insert(labels[i].clone(), my_ring);
+        xv.push(i as f64); yv.push(my_ring as f64); zv.push(values[i]);
+        cv.push(i as f64); cl.push(labels[i].clone());
+    }
+    Ok(Chart::new(crate::plot::statistical::_3d::render_sunburst3d_html(
+        title, &xv, &yv, &zv, ("", "Ring", "Value"), &cv, &cl, width, height, bg,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, category_labels, series_values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, category_labels, series_values, *, series_names=None, bg_color="", width=900_i32, height=560_i32, x_label="Category", y_label="Series", z_label="Value", hover_json=""))]
 /// 3D stacked bar chart (WebGL).
 ///
 /// Args: title, category_labels, series_values (list of list[float]).
 ///
-/// Kwargs: series_names (list[str]), bg_color (str), width, height, x_label, y_label, z_label.
-pub fn build_stacked_bar3d_chart(title: &str, category_labels: Vec<String>, series_values: Vec<Vec<f64>>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 560);
-
-        let bg = kw_opt_str(kwargs, "bg_color");
-        let sn = kw_vec_str(kwargs, "series_names");
-        let n_cat = category_labels.len();
-        let n_ser = series_values.len();
-        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_ser).map(|_| String::new()).collect() };
-        let mut xv = Vec::new();
-        let mut yv = Vec::new();
-        let mut zv = Vec::new();
-        let mut cv = Vec::new();
-        let mut cl = Vec::new();
-        for ci in 0..n_cat {
-            for si in 0..n_ser {
-                let v = series_values[si].get(ci).copied().unwrap_or(0.0);
-                xv.push(ci as f64); yv.push(si as f64); zv.push(v);
-                cv.push(si as f64); cl.push(format!("{}/{}", category_labels[ci], names[si]));
-            }
+/// Kwargs: series_names (list[str]), bg_color (str), width, height, x_label, y_label, z_label, hover_json.
+pub fn build_stacked_bar3d_chart(title: &str, category_labels: Vec<String>, series_values: Vec<Vec<f64>>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
+    let n_cat = category_labels.len();
+    let n_ser = series_values.len();
+    let names: Vec<String> = series_names.unwrap_or_else(|| (0..n_ser).map(|_| String::new()).collect());
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    let mut cl = Vec::new();
+    for ci in 0..n_cat {
+        for si in 0..n_ser {
+            let v = series_values[si].get(ci).copied().unwrap_or(0.0);
+            xv.push(ci as f64); yv.push(si as f64); zv.push(v);
+            cv.push(si as f64); cl.push(format!("{}/{}", category_labels[ci], names[si]));
         }
-        Ok(Chart::new(crate::plot::statistical::_3d::render_stacked_bar3d_html(
-            title, &xv, &yv, &zv, ("Category", "Series", "Value"), &cv, &names, o.w, o.h, bg.as_deref(),
-        )))
+    }
+    Ok(Chart::new(crate::plot::statistical::_3d::render_stacked_bar3d_html(
+        title, &xv, &yv, &zv, (x_label, y_label, z_label), &cv, &names, width, height, bg,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, latitudes, longitudes, values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, latitudes, longitudes, values, *, labels=None, series_names=None, bg_color="", width=800_i32, height=600_i32, hover_json=""))]
 /// 3D globe chart (WebGL).
 ///
 /// Args: title, latitudes, longitudes, values.
 ///
-/// Kwargs: labels (list[str]), bg_color (str), width, height.
-pub fn build_globe3d_chart(title: &str, latitudes: Vec<f64>, longitudes: Vec<f64>, values: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 800, 600);
-
-        let bg = kw_opt_str(kwargs, "bg_color");
-        let labels: Vec<String> = kwargs.and_then(|k| k.get_item("labels").ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or_default();
-        let n = latitudes.len().min(longitudes.len()).min(values.len());
-        let cl = if labels.is_empty() { (0..n).map(|i| format!("Point {}", i + 1)).collect() } else { labels };
-        let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
-        Ok(Chart::new(crate::plot::map::_3d::render_globe3d_html(
-            title, &longitudes[..n], &latitudes[..n], &values[..n],
-            ("Longitude", "Latitude", "Value"), &cv, &cl, o.w, o.h, bg.as_deref(),
-        )))
-    
+/// Kwargs: labels (list[str]), series_names (list[str]), bg_color (str), width, height, hover_json.
+pub fn build_globe3d_chart(title: &str, latitudes: Vec<f64>, longitudes: Vec<f64>, values: Vec<f64>, labels: Option<Vec<String>>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, hover_json: &str) -> PyResult<Chart> {
+    let _ = series_names;
+    let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
+    let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
+    let n = latitudes.len().min(longitudes.len()).min(values.len());
+    let lbl = labels.unwrap_or_default();
+    let cl = if lbl.is_empty() { (0..n).map(|i| format!("Point {}", i + 1)).collect() } else { lbl };
+    let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    Ok(Chart::new(crate::plot::map::_3d::render_globe3d_html(
+        title, &longitudes[..n], &latitudes[..n], &values[..n],
+        ("Longitude", "Latitude", "Value"), &cv, &cl, width, height, bg,
+    )))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, words, frequencies, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, words, frequencies, *, min_font=12.0_f64, max_font=72.0_f64, background=None, width=900_i32, height=500_i32, sort_order="none", hover_json="", palette=None, series_names=None))]
 /// Word cloud.
 ///
 /// Args: title, words, frequencies.
 ///
-/// Kwargs: min_font (float, default 12), max_font (float, default 72), bg_color (str),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_wordcloud(title: &str, words: Vec<String>, frequencies: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 500);
-
-        use crate::plot::statistical::wordcloud::{WordCloudConfig, render_wordcloud_html};
-        let min_font = kw_f64(kwargs, "min_font", 12.0);
-        let max_font = kw_f64(kwargs, "max_font", 72.0);
-        let bg = kw_opt_str(kwargs, "bg_color");
-        let hover = o.hover();
-        Ok(Chart::new(render_wordcloud_html(&WordCloudConfig {
-            title, words: &words, frequencies: &frequencies,
-            palette: &o.pal, width: o.w, height: o.h, min_font, max_font,
-            bg_color: bg.as_deref(), sort_order: &o.srt, hover: &hover, ..WordCloudConfig::default()
-        })))
-    
+/// Kwargs: min_font (float, default 12), max_font (float, default 72), background (str|None, default None=transparent),
+/// width, height, palette, sort_order, hover_json, series_names (list[str], reserved).
+pub fn build_wordcloud(title: &str, words: Vec<String>, frequencies: Vec<f64>, min_font: f64, max_font: f64, background: Option<&str>, width: i32, height: i32, sort_order: &str, hover_json: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>) -> PyResult<Chart> {
+    let _ = series_names;
+    let pal = palette.unwrap_or_default();
+    let hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { Vec::new() };
+    use crate::plot::statistical::wordcloud::{WordCloudConfig, render_wordcloud_html};
+    Ok(Chart::new(render_wordcloud_html(&WordCloudConfig {
+        title, words: &words, frequencies: &frequencies,
+        palette: &pal, width, height, min_font, max_font,
+        bg_color: background, sort_order, hover: &hover, ..WordCloudConfig::default()
+    })))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, open, high, low, close, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, open, high, low, close, *, width=1100_i32, height=500_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Candlestick (OHLC) chart.
 ///
 /// Args: title, labels, open, high, low, close.
 ///
-/// Kwargs: width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_candlestick(title: &str, labels: Vec<String>, open: Vec<f64>, high: Vec<f64>, low: Vec<f64>, close: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 1100, 500);
-
-        use crate::plot::statistical::candlestick::{CandlestickConfig, render_candlestick_html};
-        let hover = o.hover();
-        Ok(Chart::new(render_candlestick_html(&CandlestickConfig {
-            title, labels: &labels, open: &open, high: &high, low: &low, close: &close,
-            palette: &o.pal, width: o.w, height: o.h, x_label: &o.xl, y_label: &o.yl, gridlines: o.grid,
-            sort_order: &o.srt, hover: &hover, ..CandlestickConfig::default()
-        })))
+/// Kwargs: width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_candlestick(title: &str, labels: Vec<String>, open: Vec<f64>, high: Vec<f64>, low: Vec<f64>, close: Vec<f64>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::candlestick::{CandlestickConfig, render_candlestick_html};
+    let hover = o.hover();
+    Ok(Chart::new(crate::html::hover::apply_opts(render_candlestick_html(&CandlestickConfig {
+        title, labels: &labels, open: &open, high: &high, low: &low, close: &close,
+        palette: &o.pal, width: o.w, height: o.h, x_label: &o.xl, y_label: &o.yl, gridlines: o.grid,
+        sort_order: &o.srt, hover: &hover, ..CandlestickConfig::default()
+    }), background, !no_x_axis, !no_y_axis)))
     
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, labels, values_start, values_end, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, labels, values_start, values_end, *, series_names=None, width=1000_i32, height=500_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Dumbbell chart (start-end comparison).
 ///
 /// Args: title, labels, values_start, values_end.
 ///
 /// Kwargs: series_names (tuple[str,str], default ("Start","End")),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_dumbbell(title: &str, labels: Vec<String>, values_start: Vec<f64>, values_end: Vec<f64>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 1000, 500);
-
-        use crate::plot::statistical::dumbbell::{DumbbellConfig, render_dumbbell_html};
-        let sl: Option<(String, String)> = kwargs.and_then(|k| k.get_item("series_names").ok().flatten()).and_then(|v| v.extract().ok());
-        let sl = sl.unwrap_or(("Start".to_string(), "End".to_string()));
-        let hover = o.hover();
-        Ok(Chart::new(render_dumbbell_html(&DumbbellConfig {
-            title, labels: &labels, values_start: &values_start, values_end: &values_end,
-            series_names: (&sl.0, &sl.1),
-            palette: &o.pal, width: o.w, height: o.h, x_label: &o.xl, y_label: &o.yl, gridlines: o.grid,
-            sort_order: &o.srt, hover: &hover, ..DumbbellConfig::default()
-        })))
-    
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// background (str|None, default None=transparent).
+pub fn build_dumbbell(title: &str, labels: Vec<String>, values_start: Vec<f64>, values_end: Vec<f64>, series_names: Option<(String, String)>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::dumbbell::{DumbbellConfig, render_dumbbell_html};
+    let sl = series_names.unwrap_or(("Start".to_string(), "End".to_string()));
+    let hover = o.hover();
+    Ok(Chart::new(crate::html::hover::apply_opts(render_dumbbell_html(&DumbbellConfig {
+        title, labels: &labels, values_start: &values_start, values_end: &values_end,
+        series_names: (&sl.0, &sl.1),
+        palette: &o.pal, width: o.w, height: o.h, x_label: &o.xl, y_label: &o.yl, gridlines: o.grid,
+        sort_order: &o.srt, hover: &hover, ..DumbbellConfig::default()
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_values, y_values, sizes, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, x_values, y_values, sizes, *, categories=None, width=900_i32, height=500_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Bubble chart.
 ///
 /// Args: title, x_values, y_values, sizes.
 ///
 /// Kwargs: categories (list[str]),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_bubble(title: &str, x_values: &PyAny, y_values: &PyAny, sizes: &PyAny, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 900, 500);
-
-        use crate::plot::statistical::bubble::{BubbleConfig, render_bubble_html};
-        let cats: Vec<String> = kwargs.and_then(|k| k.get_item("categories").ok().flatten()).and_then(|v| v.extract().ok()).unwrap_or_default();
-        let (xv, sx) = fast_f64(x_values, 80)?;
-        let (yv, _) = fast_f64(y_values, 80)?;
-        let (sv, _) = fast_f64(sizes, 80)?;
-        let cs: Vec<String> = if sx > 1 && !cats.is_empty() { cats.into_iter().step_by(sx).collect() } else { cats };
-        let hover = o.hover();
-        Ok(Chart::new(render_bubble_html(&BubbleConfig {
-            title, x_values: &xv, y_values: &yv, sizes: &sv,
-            categories: &cs, palette: &o.pal, width: o.w, height: o.h, x_label: &o.xl, y_label: &o.yl, gridlines: o.grid,
-            sort_order: &o.srt, hover: &hover, ..BubbleConfig::default()
-        })))
-    
+/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
+/// series_names (list[str], reserved), background (str|None, default None=transparent).
+pub fn build_bubble(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, sizes: Vec<f64>, categories: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
+    use crate::plot::statistical::bubble::{BubbleConfig, render_bubble_html};
+    let cs = categories.unwrap_or_default();
+    let hover = o.hover();
+    Ok(Chart::new(crate::html::hover::apply_opts(render_bubble_html(&BubbleConfig {
+        title, x_values: &x_values, y_values: &y_values, sizes: &sizes,
+        categories: &cs, palette: &o.pal, width: o.w, height: o.h, x_label: &o.xl, y_label: &o.yl, gridlines: o.grid,
+        sort_order: &o.srt, hover: &hover, ..BubbleConfig::default()
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, value, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, value, *, min_val=0.0_f64, max_val=100.0_f64, label="", width=400_i32, height=300_i32, hover_json="", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Gauge chart.
 ///
 /// Args: title, value (float).
 ///
 /// Kwargs: min_val (float, default 0), max_val (float, default 100), label (str),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_gauge(title: &str, value: f64, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 400, 300);
-
-        use crate::plot::statistical::gauge::{GaugeConfig, render_gauge_html};
-        let min_val = kw_f64(kwargs, "min_val", 0.0);
-        let max_val = kw_f64(kwargs, "max_val", 100.0);
-        let label = kw_str(kwargs, "label", "");
-        let hover = o.hover();
-        Ok(Chart::new(render_gauge_html(&GaugeConfig {
-            title, value, min_val, max_val, label: &label, width: o.w, height: o.h,
-            hover: &hover, ..GaugeConfig::default()
-        })))
-    
+/// width, height, palette, hover_json, series_names (list[str], reserved),
+/// background (str|None, default None=transparent).
+pub fn build_gauge(title: &str, value: f64, min_val: f64, max_val: f64, label: &str, width: i32, height: i32, hover_json: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _ = series_names;
+    let _pal = palette.unwrap_or_default();
+    let hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { Vec::new() };
+    use crate::plot::statistical::gauge::{GaugeConfig, render_gauge_html};
+    Ok(Chart::new(crate::html::hover::apply_opts(render_gauge_html(&GaugeConfig {
+        title, value, min_val, max_val, label, width, height,
+        hover: &hover, ..GaugeConfig::default()
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, axes, series_values, **kwargs))]
-#[allow(unused_variables, unused_mut)]
+#[pyo3(signature = (title, axes, series_values, *, series_names=None, width=1000_i32, height=500_i32, hover_json="", legend_position="right", palette=None, background=None, no_x_axis=false, no_y_axis=false))]
 /// Parallel coordinates chart.
 ///
 /// Args: title, axes, series_values (list of list[float]).
 ///
 /// Kwargs: series_names (list[str]),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position.
-pub fn build_parallel(title: &str, axes: Vec<String>, series_values: Vec<Vec<f64>>, kwargs: Option<&PyDict>) -> PyResult<Chart> {
-    let o = ChartOpts::new(kwargs, 1000, 500);
-
-        use crate::plot::statistical::parallel::{ParallelConfig, render_parallel_html};
-        let sn = kw_vec_str(kwargs, "series_names");
-        let names: Vec<String> = if !sn.is_empty() { sn } else { (0..series_values.len()).map(|_| String::new()).collect() };
-        let hover = o.hover();
-        Ok(Chart::new(render_parallel_html(&ParallelConfig {
-            title, axes: &axes, series_names: &names, series_values: &series_values,
-            palette: &o.pal, width: o.w, height: o.h,
-            hover: &hover, ..ParallelConfig::default()
-        })))
-    
+/// width, height, palette, hover_json, legend_position,
+/// background (str|None, default None=transparent).
+pub fn build_parallel(title: &str, axes: Vec<String>, series_values: Vec<Vec<f64>>, series_names: Option<Vec<String>>, width: i32, height: i32, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let pal = palette.unwrap_or_default();
+    let hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { Vec::new() };
+    use crate::plot::statistical::parallel::{ParallelConfig, render_parallel_html};
+    let names: Vec<String> = series_names.unwrap_or_else(|| (0..series_values.len()).map(|_| String::new()).collect());
+    Ok(Chart::new(crate::html::hover::apply_opts(render_parallel_html(&ParallelConfig {
+        title, axes: &axes, series_names: &names, series_values: &series_values,
+        palette: &pal, width, height,
+        hover: &hover, ..ParallelConfig::default()
+    }), background, !no_x_axis, !no_y_axis)))
 }
 
 

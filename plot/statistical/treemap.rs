@@ -156,7 +156,7 @@ pub fn render_treemap_html(cfg: &TreemapConfig) -> String {
     push_b(&mut buf, b" ");
     push_i(&mut buf, cfg.height);
     push_b(&mut buf, b"\">");
-    push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
+    push_b(&mut buf, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
     if !cfg.title.is_empty() {
         push_b(&mut buf, b"<text x=\"");
         push_i(&mut buf, cfg.width / 2);

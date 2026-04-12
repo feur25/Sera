@@ -132,8 +132,19 @@ impl Chart {
         &self.html
     }
 
-    fn _repr_html_(&self) -> &str {
-        &self.html
+    fn _repr_html_(&self) -> String {
+        self.chart_iframe()
+    }
+
+    #[pyo3(signature = (**kwargs))]
+    fn _ipython_display_(&self, py: Python<'_>, kwargs: Option<&pyo3::types::PyDict>) -> PyResult<()> {
+        let _ = kwargs;
+        let ipython = py.import("IPython.display")?;
+        let html_cls = ipython.getattr("HTML")?;
+        let display_fn = ipython.getattr("display")?;
+        let html_obj = html_cls.call1((self.chart_iframe().as_str(),))?;
+        display_fn.call1((html_obj,))?;
+        Ok(())
     }
 
     fn __str__(&self) -> &str {
@@ -156,7 +167,7 @@ impl Chart {
         let ipython = py.import("IPython.display")?;
         let html_cls = ipython.getattr("HTML")?;
         let display_fn = ipython.getattr("display")?;
-        let html_obj = html_cls.call1((self.html.as_str(),))?;
+        let html_obj = html_cls.call1((self.chart_iframe().as_str(),))?;
         display_fn.call1((html_obj,))?;
         Ok(())
     }
@@ -294,6 +305,35 @@ impl Chart {
 impl Chart {
     fn new(html: String) -> Self {
         Self { html }
+    }
+
+    fn chart_iframe(&self) -> String {
+        let h: u32 = {
+            let mut found = 560u32;
+            let s = &self.html;
+            let mut start = 0usize;
+            loop {
+                match s[start..].find("height=\"") {
+                    None => break,
+                    Some(rel) => {
+                        let abs = start + rel + 8;
+                        if let Some(end) = s[abs..].find('"') {
+                            if let Ok(v) = s[abs..abs+end].parse::<u32>() {
+                                if v >= 150 && v <= 1600 { found = v; break; }
+                            }
+                        }
+                        start += rel + 1;
+                    }
+                }
+            }
+            found + 24
+        };
+        let clean = self.html.replace(
+            "border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)",
+            "border-radius:0;overflow:hidden",
+        );
+        let esc = clean.replace('&', "&amp;").replace('"', "&quot;");
+        format!(r#"<iframe srcdoc="{esc}" style="width:100%;height:{h}px;border:none;display:block;border-radius:8px;overflow:hidden" frameborder="0"></iframe>"#)
     }
 }
 

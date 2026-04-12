@@ -60,6 +60,7 @@ pub fn register_submodules(py: Python<'_>, m: &PyModule) -> PyResult<()> {
 
     m.add_function(wrap_pyfunction!(build_ridgeline_chart, m)?)?;
     m.add_function(wrap_pyfunction!(build_ridgeline3d_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_bubble3d_chart, m)?)?;
 
     m.add_function(wrap_pyfunction!(build_pie3d_chart, m)?)?;
     m.add_function(wrap_pyfunction!(build_violin3d_chart, m)?)?;

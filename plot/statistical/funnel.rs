@@ -35,7 +35,7 @@ pub fn render_funnel_html(cfg: &FunnelConfig) -> String {
     push_i(&mut b, cfg.height); push_b(&mut b, b"\" viewBox=\"0 0 ");
     push_i(&mut b, cfg.width); push_b(&mut b, b" ");
     push_i(&mut b, cfg.height); push_b(&mut b, b"\">");
-    push_b(&mut b, b"<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>");
+    push_b(&mut b, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
     if !cfg.title.is_empty() {
         push_b(&mut b, b"<text x=\""); push_i(&mut b, cfg.width / 2);
         push_b(&mut b, b"\" y=\"26\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\">");
