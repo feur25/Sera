@@ -41,14 +41,25 @@ jobs:
           chmod +x /usr/local/bin/mdbook
           mdbook --version
 
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: tools
+
+      - name: Build tools
+        run: cargo build --release --manifest-path tools/Cargo.toml
+
       - name: Install SeraPlot
         run: pip install seraplot==2.3.47
 
       - name: Generate chart previews
-        run: python3 scripts/gen_previews.py
+        run: ./tools/target/release/gen_previews
 
       - name: Generate API index
-        run: python3 scripts/gen_index.py
+        run: ./tools/target/release/gen_index
 
       - name: Build docs
         run: mdbook build -d book/html
