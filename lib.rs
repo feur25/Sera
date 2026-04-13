@@ -205,6 +205,12 @@ impl Chart {
         }
     }
 
+    fn no_hover(&self) -> Chart {
+        Chart {
+            html: self.html.replacen("</head>", "<style>#sp-tip{display:none!important}[data-idx]{pointer-events:none!important}[data-idx]:hover{filter:none!important}</style></head>", 1),
+        }
+    }
+
     fn no_y_axis(&self) -> Chart {
         Chart {
             html: self.html.replacen("</head>", "<style>.sp-ax-y,.sp-yt,.sp-yl{display:none}</style></head>", 1),

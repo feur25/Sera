@@ -107,6 +107,328 @@ pub fn render_svg_scatter(
     }
 }
 
+fn push_js_str(buf: &mut Vec<u8>, s: &str) {
+    for b in s.bytes() {
+        match b {
+            b'\'' => { buf.push(b'\\'); buf.push(b'\''); }
+            b'\\' => { buf.push(b'\\'); buf.push(b'\\'); }
+            b'\n' => { buf.push(b'\\'); buf.push(b'n'); }
+            _ => buf.push(b),
+        }
+    }
+}
+
+fn b64_encode(data: &[u8]) -> String {
+    use base64::Engine;
+    base64::engine::general_purpose::STANDARD.encode(data)
+}
+
+fn scatter_reg_curve(x_values: &[f64], y_values: &[f64], regression_type: &str, min_x: f64, max_x: f64, min_y: f64, range_y: f64, pad_l: i32, pad_t: i32, plot_w: i32, plot_h: i32) -> Option<Vec<(i32, i32)>> {
+    let n = x_values.len().min(y_values.len());
+    if n < 2 { return None; }
+    let nf = n as f64;
+    let steps = 80usize;
+    let inv_rx = plot_w as f64 / (max_x - min_x).max(1e-12);
+    let inv_ry = plot_h as f64 / range_y.max(1e-12);
+    match regression_type {
+        "linear" => {
+            let (sx, sy, sxx, sxy) = x_values.iter().zip(y_values.iter())
+                .fold((0.0f64,0.0,0.0,0.0), |(sx,sy,sxx,sxy),(&xi,&yi)| (sx+xi,sy+yi,sxx+xi*xi,sxy+xi*yi));
+            let denom = nf * sxx - sx * sx;
+            if denom.abs() < 1e-12 { return None; }
+            let slope = (nf * sxy - sx * sy) / denom;
+            let intercept = (sy - slope * sx) / nf;
+            let pts: Vec<(i32,i32)> = (0..=steps).map(|k| {
+                let xv = min_x + k as f64 / steps as f64 * (max_x - min_x);
+                let yv = intercept + slope * xv;
+                let px = pad_l + ((xv - min_x) * inv_rx) as i32;
+                let py = (pad_t + plot_h - ((yv - min_y) * inv_ry) as i32).clamp(0, pad_t + plot_h + 100);
+                (px, py)
+            }).collect();
+            Some(pts)
+        }
+        "polynomial2" => {
+            let (sx, sy, sx2, sx3, sx4, sxy, sx2y) = x_values.iter().zip(y_values.iter())
+                .fold((0.0f64,0.0,0.0,0.0,0.0,0.0,0.0), |(sx,sy,sx2,sx3,sx4,sxy,sx2y),(&xi,&yi)| {
+                    let x2=xi*xi; (sx+xi,sy+yi,sx2+x2,sx3+x2*xi,sx4+x2*x2,sxy+xi*yi,sx2y+x2*yi)
+                });
+            let a = [[nf,sx,sx2],[sx,sx2,sx3],[sx2,sx3,sx4]];
+            let b = [sy,sxy,sx2y];
+            fn det3(m: [[f64;3];3]) -> f64 {
+                m[0][0]*(m[1][1]*m[2][2]-m[1][2]*m[2][1])
+                -m[0][1]*(m[1][0]*m[2][2]-m[1][2]*m[2][0])
+                +m[0][2]*(m[1][0]*m[2][1]-m[1][1]*m[2][0])
+            }
+            let d = det3(a);
+            if d.abs() < 1e-12 { return None; }
+            let c0 = det3([[b[0],a[0][1],a[0][2]],[b[1],a[1][1],a[1][2]],[b[2],a[2][1],a[2][2]]]) / d;
+            let c1 = det3([[a[0][0],b[0],a[0][2]],[a[1][0],b[1],a[1][2]],[a[2][0],b[2],a[2][2]]]) / d;
+            let c2 = det3([[a[0][0],a[0][1],b[0]],[a[1][0],a[1][1],b[1]],[a[2][0],a[2][1],b[2]]]) / d;
+            let pts: Vec<(i32,i32)> = (0..=steps).map(|k| {
+                let xv = min_x + k as f64 / steps as f64 * (max_x - min_x);
+                let yv = c0 + c1 * xv + c2 * xv * xv;
+                let px = pad_l + ((xv - min_x) * inv_rx) as i32;
+                let py = (pad_t + plot_h - ((yv - min_y) * inv_ry) as i32).clamp(0, pad_t + plot_h + 100);
+                (px, py)
+            }).collect();
+            Some(pts)
+        }
+        "log" => {
+            let valid: Vec<(f64,f64)> = x_values.iter().zip(y_values.iter())
+                .filter(|(&xi,_)| xi > 0.0).map(|(&xi,&yi)| (xi.ln(),yi)).collect();
+            let m = valid.len(); if m < 2 { return None; }
+            let mf = m as f64;
+            let (slx, sy, slxx, slxy) = valid.iter()
+                .fold((0.0f64,0.0,0.0,0.0), |(a,b,c,d),(lx,y)| (a+lx,b+y,c+lx*lx,d+lx*y));
+            let denom = mf * slxx - slx * slx;
+            if denom.abs() < 1e-12 { return None; }
+            let slope = (mf * slxy - slx * sy) / denom;
+            let intercept = (sy - slope * slx) / mf;
+            let x0 = x_values.iter().cloned().filter(|&v| v > 0.0).fold(f64::INFINITY, f64::min).max(1e-9);
+            let pts: Vec<(i32,i32)> = (0..=steps).map(|k| {
+                let xv = x0 + k as f64 / steps as f64 * (max_x - x0).max(1e-12);
+                let yv = intercept + slope * xv.ln();
+                let px = pad_l + ((xv - min_x) * inv_rx) as i32;
+                let py = (pad_t + plot_h - ((yv - min_y) * inv_ry) as i32).clamp(0, pad_t + plot_h + 100);
+                (px, py)
+            }).collect();
+            Some(pts)
+        }
+        "exp" => {
+            let valid: Vec<(f64,f64)> = x_values.iter().zip(y_values.iter())
+                .filter(|(_,&yi)| yi > 0.0).map(|(&xi,&yi)| (xi, yi.ln())).collect();
+            let m = valid.len(); if m < 2 { return None; }
+            let mf = m as f64;
+            let (sx2, sly, sxx2, sx2ly) = valid.iter()
+                .fold((0.0f64,0.0,0.0,0.0), |(a,b,c,d),(x,ly)| (a+x,b+ly,c+x*x,d+x*ly));
+            let denom = mf * sxx2 - sx2 * sx2;
+            if denom.abs() < 1e-12 { return None; }
+            let b = (mf * sx2ly - sx2 * sly) / denom;
+            let a = ((sly - b * sx2) / mf).exp();
+            let pts: Vec<(i32,i32)> = (0..=steps).map(|k| {
+                let xv = min_x + k as f64 / steps as f64 * (max_x - min_x);
+                let yv = a * (b * xv).exp();
+                let px = pad_l + ((xv - min_x) * inv_rx) as i32;
+                let py = (pad_t + plot_h - ((yv - min_y) * inv_ry) as i32).clamp(0, pad_t + plot_h + 100);
+                (px, py)
+            }).collect();
+            Some(pts)
+        }
+        _ => None,
+    }
+}
+
+fn render_scatter_canvas_html(
+    title: &str,
+    x_values: &[f64],
+    y_values: &[f64],
+    color_groups: &[String],
+    palette: &[u32],
+    x_label: &str,
+    y_label: &str,
+    color_hex: u32,
+    width: i32,
+    height: i32,
+    gridlines: bool,
+    show_regression: bool,
+    regression_type: &str,
+) -> String {
+    use crate::html::hover::{html_id, html_prefix, html_suffix};
+    use crate::plot::statistical::common::{push_b, push_i, push_f2, hex6, palette_color};
+    let n = x_values.len().min(y_values.len());
+    let (min_x, max_x) = crate::bindings::utils::simd_ops::find_minmax(x_values);
+    let (min_y, max_y) = crate::bindings::utils::simd_ops::find_minmax(y_values);
+    let range_x = (max_x - min_x).max(1e-12);
+    let range_y = (max_y - min_y).max(1e-12);
+    let has_groups = !color_groups.is_empty();
+    let legend_w = if has_groups { 170i32 } else { 0i32 };
+    let pad_l = 56i32; let pad_t = 36i32; let pad_b = 48i32;
+    let pad_r_actual = 20i32 + legend_w;
+    let plot_w = width - pad_l - pad_r_actual;
+    let plot_h = height - pad_t - pad_b;
+    let (group_names, group_colors, group_color_hex, group_map) = if has_groups {
+        let mut names: Vec<String> = Vec::new();
+        let mut map: Vec<usize> = Vec::with_capacity(n);
+        for g in color_groups.iter().take(n) {
+            let idx = names.iter().position(|x| x == g).unwrap_or_else(|| { names.push(g.clone()); names.len() - 1 });
+            map.push(idx);
+        }
+        let colors: Vec<String> = names.iter().enumerate().map(|(i,_)| {
+            let hx = hex6(palette_color(palette, i));
+            format!("#{}{}{}{}{}{}", hx[0] as char, hx[1] as char, hx[2] as char, hx[3] as char, hx[4] as char, hx[5] as char)
+        }).collect();
+        (names, colors, Vec::<String>::new(), map)
+    } else {
+        let c = if color_hex != 0 { color_hex } else { palette_color(palette, 0) };
+        let hx = hex6(c);
+        let cs = format!("#{}{}{}{}{}{}", hx[0] as char, hx[1] as char, hx[2] as char, hx[3] as char, hx[4] as char, hx[5] as char);
+        (Vec::new(), Vec::new(), vec![cs], Vec::new())
+    };
+    let ng = if has_groups { group_names.len().max(1) } else { 1 };
+    let inv_rx = plot_w as f64 / range_x;
+    let inv_ry = plot_h as f64 / range_y;
+    let mut group_raw: Vec<Vec<(i16, i16, f32, f32)>> = vec![Vec::with_capacity(n / ng + 8); ng];
+    for i in 0..n {
+        let px = ((x_values[i] - min_x) * inv_rx).clamp(0.0, (plot_w - 1) as f64) as i16;
+        let py = (plot_h as f64 - (y_values[i] - min_y) * inv_ry).clamp(0.0, (plot_h - 1) as f64) as i16;
+        let gi = if has_groups && i < group_map.len() { group_map[i].min(ng - 1) } else { 0 };
+        group_raw[gi].push((px, py, x_values[i] as f32, y_values[i] as f32));
+    }
+    let group_b64: Vec<String> = group_raw.iter().map(|pts| {
+        let mut raw = Vec::with_capacity(pts.len() * 4);
+        for &(px, py, _, _) in pts {
+            raw.extend_from_slice(&px.to_le_bytes());
+            raw.extend_from_slice(&py.to_le_bytes());
+        }
+        b64_encode(&raw)
+    }).collect();
+    let reg_curve = if show_regression {
+        scatter_reg_curve(x_values, y_values, regression_type, min_x, max_x, min_y, range_y, pad_l, pad_t, plot_w, plot_h)
+    } else { None };
+    let hid = html_id();
+    let cv_id = format!("spcv{}", hid);
+    let tip_id = format!("sptip{}", hid);
+    let mut buf = Vec::<u8>::with_capacity(n / 4 + 12_000);
+    html_prefix(&mut buf, title, hid);
+    push_b(&mut buf, b"<div style=\"position:relative;display:inline-block\">");
+    push_b(&mut buf, b"<canvas id=\""); buf.extend_from_slice(cv_id.as_bytes());
+    push_b(&mut buf, b"\" width=\""); push_i(&mut buf, width);
+    push_b(&mut buf, b"\" height=\""); push_i(&mut buf, height);
+    push_b(&mut buf, b"\" style=\"display:block\"></canvas>");
+    push_b(&mut buf, b"<div id=\""); buf.extend_from_slice(tip_id.as_bytes());
+    push_b(&mut buf, b"\" style=\"position:absolute;pointer-events:none;opacity:0;transition:opacity .15s;background:#0b0e18;color:#f1f5f9;font:12px -apple-system,Arial,sans-serif;border-radius:8px;padding:6px 10px;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4);z-index:10\"></div>");
+    push_b(&mut buf, b"</div><script>(function(){");
+    push_b(&mut buf, b"var cv=document.getElementById('"); buf.extend_from_slice(cv_id.as_bytes()); push_b(&mut buf, b"'),ctx=cv.getContext('2d');");
+    push_b(&mut buf, b"var tip=document.getElementById('"); buf.extend_from_slice(tip_id.as_bytes()); push_b(&mut buf, b"');");
+    push_b(&mut buf, b"var pL="); push_i(&mut buf, pad_l); push_b(&mut buf, b",pT="); push_i(&mut buf, pad_t);
+    push_b(&mut buf, b",pW="); push_i(&mut buf, plot_w); push_b(&mut buf, b",pH="); push_i(&mut buf, plot_h);
+    push_b(&mut buf, b",W="); push_i(&mut buf, width); push_b(&mut buf, b",H="); push_i(&mut buf, height);
+    push_b(&mut buf, b",minX="); push_f2(&mut buf, min_x);
+    push_b(&mut buf, b",minY="); push_f2(&mut buf, min_y);
+    push_b(&mut buf, b",rX="); push_f2(&mut buf, range_x);
+    push_b(&mut buf, b",rY="); push_f2(&mut buf, range_y);
+    push_b(&mut buf, b",N="); buf.extend_from_slice(format!("{}", n).as_bytes()); push_b(&mut buf, b";");
+    push_b(&mut buf, b"var hidden={};");
+    push_b(&mut buf, b"function b64(s){var b=atob(s),n=b.length,a=new Int16Array(n/2);for(var i=0;i<n;i+=2)a[i/2]=b.charCodeAt(i)|(b.charCodeAt(i+1)<<8);return a;}");
+    push_b(&mut buf, b"var GD=[");
+    for (gi, b64) in group_b64.iter().enumerate() {
+        if gi > 0 { buf.push(b','); }
+        buf.push(b'\'');
+        buf.extend_from_slice(b64.as_bytes());
+        buf.push(b'\'');
+    }
+    push_b(&mut buf, b"];");
+    push_b(&mut buf, b"var GC=[");
+    if has_groups {
+        for (gi, c) in group_colors.iter().enumerate() {
+            if gi > 0 { buf.push(b','); }
+            buf.push(b'\''); push_js_str(&mut buf, c); buf.push(b'\'');
+        }
+    } else {
+        for (gi, c) in group_color_hex.iter().enumerate() {
+            if gi > 0 { buf.push(b','); }
+            buf.push(b'\''); push_js_str(&mut buf, c); buf.push(b'\'');
+        }
+    }
+    push_b(&mut buf, b"];");
+    push_b(&mut buf, b"var GN=[");
+    if has_groups {
+        for (gi, nm) in group_names.iter().enumerate() {
+            if gi > 0 { buf.push(b','); }
+            buf.push(b'\''); push_js_str(&mut buf, if nm.len() > 22 { &nm[..22] } else { nm }); buf.push(b'\'');
+        }
+    }
+    push_b(&mut buf, b"];");
+    let gridlines_js = if gridlines { b"1" as &[u8] } else { b"0" };
+    push_b(&mut buf, b"var GL="); buf.extend_from_slice(gridlines_js); push_b(&mut buf, b";");
+    push_b(&mut buf, b"function draw(){");
+    push_b(&mut buf, b"ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);");
+    push_b(&mut buf, b"if(GL){ctx.strokeStyle='#e2e8f0';ctx.lineWidth=0.5;for(var i=1;i<=5;i++){var gy=pT+Math.round((1-i/5)*pH);ctx.beginPath();ctx.moveTo(pL,gy);ctx.lineTo(pL+pW,gy);ctx.stroke();}}");
+    push_b(&mut buf, b"ctx.strokeStyle='#cbd5e1';ctx.lineWidth=1;");
+    push_b(&mut buf, b"ctx.beginPath();ctx.moveTo(pL,pT);ctx.lineTo(pL,pT+pH);ctx.stroke();");
+    push_b(&mut buf, b"ctx.beginPath();ctx.moveTo(pL,pT+pH);ctx.lineTo(pL+pW,pT+pH);ctx.stroke();");
+    push_b(&mut buf, b"ctx.fillStyle='#9ca3af';ctx.font='9px Arial';ctx.textAlign='end';");
+    push_b(&mut buf, b"for(var i=0;i<=5;i++){var f=i/5,yp=pT+Math.round((1-f)*pH),yv=minY+f*rY;ctx.fillText(yv>=1000?Math.round(yv)+'':yv.toFixed(2),pL-4,yp+3);}");
+    push_b(&mut buf, b"ctx.textAlign='center';");
+    push_b(&mut buf, b"for(var i=0;i<=5;i++){var f=i/5,xp=pL+Math.round(f*pW),xv=minX+f*rX;ctx.fillText(xv>=1000?Math.round(xv)+'':xv.toFixed(2),xp,pT+pH+14);}");
+    if !y_label.is_empty() {
+        push_b(&mut buf, b"ctx.save();ctx.translate(14,pT+pH/2);ctx.rotate(-Math.PI/2);ctx.font='11px Arial';ctx.fillStyle='#374151';ctx.textAlign='center';ctx.fillText('");
+        push_js_str(&mut buf, y_label); push_b(&mut buf, b"',0,0);ctx.restore();");
+    }
+    if !x_label.is_empty() {
+        push_b(&mut buf, b"ctx.font='11px Arial';ctx.fillStyle='#374151';ctx.textAlign='center';ctx.fillText('");
+        push_js_str(&mut buf, x_label); push_b(&mut buf, b"',pL+pW/2,H-4);");
+    }
+    if !title.is_empty() {
+        push_b(&mut buf, b"ctx.font='700 14px -apple-system,Arial,sans-serif';ctx.fillStyle='#1a202c';ctx.textAlign='center';ctx.fillText('");
+        push_js_str(&mut buf, title); push_b(&mut buf, b"',W/2,22);");
+    }
+    push_b(&mut buf, b"for(var gi=0;gi<GD.length;gi++){if(hidden[gi])continue;var a=b64(GD[gi]);ctx.fillStyle=GC[gi]||GC[0];for(var i=0;i<a.length;i+=2)ctx.fillRect(pL+a[i],pT+a[i+1],2,2);}");
+    if let Some(curve) = &reg_curve {
+        push_b(&mut buf, b"ctx.strokeStyle='#ef4444';ctx.lineWidth=2;ctx.setLineDash([8,4]);ctx.beginPath();");
+        for (k, &(px, py)) in curve.iter().enumerate() {
+            if k == 0 {
+                push_b(&mut buf, b"ctx.moveTo("); push_i(&mut buf, px); buf.push(b','); push_i(&mut buf, py); push_b(&mut buf, b");");
+            } else {
+                push_b(&mut buf, b"ctx.lineTo("); push_i(&mut buf, px); buf.push(b','); push_i(&mut buf, py); push_b(&mut buf, b");");
+            }
+        }
+        push_b(&mut buf, b"ctx.stroke();ctx.setLineDash([]);");
+    }
+    push_b(&mut buf, b"ctx.fillStyle='#9ca3af';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText('n=");
+    buf.extend_from_slice(format!("{}", n).as_bytes());
+    push_b(&mut buf, b"',pL+4,pT+pH-8);");
+    if has_groups {
+        let leg_x = pad_l + plot_w + 12;
+        let leg_top = pad_t + 8;
+        push_b(&mut buf, b"ctx.textAlign='left';ctx.font='11px Arial';");
+        for gi in 0..group_names.len() {
+            let c = &group_colors[gi];
+            let ly = leg_top + gi as i32 * 22;
+            push_b(&mut buf, b"if(!hidden["); push_i(&mut buf, gi as i32); push_b(&mut buf, b"]){");
+            push_b(&mut buf, b"ctx.globalAlpha=1;}else{ctx.globalAlpha=0.28;}");
+            push_b(&mut buf, b"ctx.fillStyle='"); push_js_str(&mut buf, c); push_b(&mut buf, b"';");
+            push_b(&mut buf, b"ctx.beginPath();ctx.arc("); push_i(&mut buf, leg_x + 6); buf.push(b','); push_i(&mut buf, ly + 6);
+            push_b(&mut buf, b",6,0,2*Math.PI);ctx.fill();");
+            push_b(&mut buf, b"ctx.globalAlpha=1;ctx.fillStyle='#374151';ctx.fillText(GN["); push_i(&mut buf, gi as i32); push_b(&mut buf, b"]||'',");
+            push_i(&mut buf, leg_x + 17); buf.push(b','); push_i(&mut buf, ly + 11); push_b(&mut buf, b");");
+        }
+        push_b(&mut buf, b"ctx.globalAlpha=1;");
+    }
+    push_b(&mut buf, b"}");
+    push_b(&mut buf, b"draw();");
+    if has_groups {
+        let leg_x = pad_l + plot_w + 12;
+        let leg_top = pad_t + 8;
+        let ng_js = group_names.len();
+        push_b(&mut buf, b"cv.addEventListener('click',function(e){");
+        push_b(&mut buf, b"var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;");
+        push_b(&mut buf, b"var lx="); push_i(&mut buf, leg_x); push_b(&mut buf, b",lt="); push_i(&mut buf, leg_top); push_b(&mut buf, b",ng="); push_i(&mut buf, ng_js as i32); push_b(&mut buf, b";");
+        push_b(&mut buf, b"for(var gi=0;gi<ng;gi++){var ly=lt+gi*22;if(mx>=lx&&mx<=lx+150&&my>=ly&&my<=ly+18){hidden[gi]=!hidden[gi];draw();return;}}");
+        push_b(&mut buf, b"});");
+    }
+    push_b(&mut buf, b"var _hx=-1,_hy=-1,_htimer=0;");
+    push_b(&mut buf, b"var allPts=[];for(var gi=0;gi<GD.length;gi++){if(!GD[gi])continue;var a=b64(GD[gi]);for(var i=0;i<a.length;i+=2)allPts.push([gi,pL+a[i],pT+a[i+1]]);}");
+    push_b(&mut buf, b"cv.addEventListener('mousemove',function(e){");
+    push_b(&mut buf, b"var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;");
+    push_b(&mut buf, b"if(mx<pL||mx>pL+pW||my<pT||my>pT+pH){tip.style.opacity=0;return;}");
+    push_b(&mut buf, b"clearTimeout(_htimer);_htimer=setTimeout(function(){");
+    push_b(&mut buf, b"var best=null,bd=1e9;");
+    push_b(&mut buf, b"for(var i=0;i<allPts.length;i++){var p=allPts[i];if(hidden[p[0]])continue;var dx=p[1]-mx,dy=p[2]-my,d=dx*dx+dy*dy;if(d<bd){bd=d;best=p;}}");
+    push_b(&mut buf, b"if(!best||bd>400){tip.style.opacity=0;return;}");
+    push_b(&mut buf, b"var xv=(best[1]-pL)/pW*rX+minX,yv=(1-(best[2]-pT)/pH)*rY+minY;");
+    push_b(&mut buf, b"var gname=GN[best[0]]?'<br><span style=\"color:#94a3b8\">'+GN[best[0]]+'</span>':'';");
+    push_b(&mut buf, b"tip.innerHTML='<b>x:</b> '+xv.toFixed(2)+'&nbsp;&nbsp;<b>y:</b> '+yv.toFixed(2)+gname;");
+    push_b(&mut buf, b"var tx=best[1]+12,ty=best[2]-28;");
+    push_b(&mut buf, b"if(tx+160>W)tx=best[1]-170;if(ty<0)ty=best[2]+8;");
+    push_b(&mut buf, b"tip.style.left=tx+'px';tip.style.top=ty+'px';tip.style.opacity=1;");
+    push_b(&mut buf, b"},60);});");
+    push_b(&mut buf, b"cv.addEventListener('mouseleave',function(){tip.style.opacity=0;});");
+    push_b(&mut buf, b"})();</script>");
+    html_suffix(&mut buf, hid, "[]");
+    unsafe { String::from_utf8_unchecked(buf) }
+}
+
 pub fn render_scatter_html(
     title: &str,
     x_values: &[f64],
@@ -123,11 +445,19 @@ pub fn render_scatter_html(
     color_hex: u32,
     gridlines: bool,
     show_text: bool,
+    show_regression: bool,
+    regression_type: &str,
 ) -> String {
     use crate::html::hover::{slots_to_json, html_id, html_prefix, html_suffix};
     use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, palette_color};
     let n = x_values.len().min(y_values.len());
     if n == 0 { return String::new(); }
+    if n > 3_000 {
+        return render_scatter_canvas_html(
+            title, x_values, y_values, color_groups, palette,
+            x_label, y_label, color_hex, width, height, gridlines, show_regression, regression_type,
+        );
+    }
     let (min_x, max_x) = crate::bindings::utils::simd_ops::find_minmax(x_values);
     let (min_y, max_y) = crate::bindings::utils::simd_ops::find_minmax(y_values);
     let range_x = (max_x - min_x).max(1.0);
@@ -154,10 +484,8 @@ pub fn render_scatter_html(
         let mx = sizes.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
         (mn, (mx - mn).max(1.0))
     } else { (0.0, 1.0) };
-    let max_pts = if n > 200 { 200 } else { n };
-    let step = if n > 200 { n / 200 } else { 1 };
     let hid = html_id();
-    let mut buf = Vec::<u8>::with_capacity(max_pts * 120 + 18_000);
+    let mut buf = Vec::<u8>::with_capacity(n * 120 + 18_000);
     html_prefix(&mut buf, title, hid);
     push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
     push_i(&mut buf, width); push_b(&mut buf, b"\" height=\"");
@@ -228,7 +556,7 @@ pub fn render_scatter_html(
     let inv_rx = plot_w as f64 / range_x;
     let inv_ry = plot_h as f64 / range_y;
     let mut di = 0i32;
-    for i in (0..n).step_by(step) {
+    for i in 0..n {
         let cx = pad_l + ((x_values[i] - min_x) * inv_rx) as i32;
         let cy = pad_t + plot_h - ((y_values[i] - min_y) * inv_ry) as i32;
         let color = if has_groups && i < group_map.len() {
@@ -263,6 +591,16 @@ pub fn render_scatter_html(
             push_b(&mut buf, b"</text>");
         }
     }
+    if show_regression {
+        if let Some(curve) = scatter_reg_curve(x_values, y_values, regression_type, min_x, max_x, min_y, range_y, pad_l, pad_t, plot_w, plot_h) {
+            push_b(&mut buf, b"<polyline points=\"");
+            for (k, &(px, py)) in curve.iter().enumerate() {
+                if k > 0 { buf.push(b' '); }
+                push_i(&mut buf, px); buf.push(b','); push_i(&mut buf, py);
+            }
+            push_b(&mut buf, b"\" fill=\"none\" stroke=\"#ef4444\" stroke-width=\"2\" stroke-dasharray=\"8,4\" opacity=\"0.85\"/>");
+        }
+    }
     if has_groups {
         let leg_x = pad_l + plot_w + 12;
         let leg_top = pad_t + 8;
@@ -291,3 +629,392 @@ pub fn render_scatter_html(
 }
 
 #[inline] fn scat_xml_esc(s: &str) -> String { s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;") }
+
+fn dbscan_core(x: &[f64], y: &[f64], eps: f64, min_samples: usize) -> (Vec<i32>, usize) {
+    use std::sync::atomic::{AtomicU32, Ordering};
+
+    fn uf_find(uf: &[AtomicU32], mut x: usize) -> usize {
+        loop {
+            let p = uf[x].load(Ordering::Relaxed) as usize;
+            if p == x { return x; }
+            let gp = uf[p].load(Ordering::Relaxed) as usize;
+            let _ = uf[x].compare_exchange_weak(p as u32, gp as u32, Ordering::Relaxed, Ordering::Relaxed);
+            x = p;
+        }
+    }
+
+    fn uf_union(uf: &[AtomicU32], a: usize, b: usize) {
+        loop {
+            let (ra, rb) = (uf_find(uf, a), uf_find(uf, b));
+            if ra == rb { return; }
+            let (lo, hi) = if ra < rb { (ra, rb) } else { (rb, ra) };
+            if uf[hi].compare_exchange_weak(hi as u32, lo as u32, Ordering::AcqRel, Ordering::Relaxed).is_ok() { return; }
+        }
+    }
+
+    let n = x.len().min(y.len());
+    if n == 0 { return (Vec::new(), 0); }
+
+    let eps_f = eps as f32;
+    let eps2 = eps_f * eps_f;
+    let sub = 3u32;
+    let cell_sz = eps_f / sub as f32;
+    let inv_cell = 1.0f32 / cell_sz;
+    let reach = sub as usize;
+
+    let xf: Vec<f32> = x[..n].iter().map(|&v| v as f32).collect();
+    let yf: Vec<f32> = y[..n].iter().map(|&v| v as f32).collect();
+
+    let (mut xmin, mut xmax, mut ymin, mut ymax) = (xf[0], xf[0], yf[0], yf[0]);
+    for i in 1..n {
+        if xf[i] < xmin { xmin = xf[i]; } if xf[i] > xmax { xmax = xf[i]; }
+        if yf[i] < ymin { ymin = yf[i]; } if yf[i] > ymax { ymax = yf[i]; }
+    }
+
+    let gw = (((xmax - xmin) * inv_cell).ceil() as usize).max(1) + 1;
+    let gh = (((ymax - ymin) * inv_cell).ceil() as usize).max(1) + 1;
+    let tc = gw * gh;
+
+    let mut co = vec![0u32; n];
+    let mut cc = vec![0u32; tc];
+    for i in 0..n {
+        let c = (((yf[i] - ymin) * inv_cell) as usize).min(gh - 1) * gw
+              + (((xf[i] - xmin) * inv_cell) as usize).min(gw - 1);
+        co[i] = c as u32; cc[c] += 1;
+    }
+    let mut cs = vec![0u32; tc + 1];
+    for i in 0..tc { cs[i + 1] = cs[i] + cc[i]; }
+
+    let mut sx = vec![0.0f32; n];
+    let mut sy = vec![0.0f32; n];
+    let mut si = vec![0u32; n];
+    let mut p = cs[..tc].to_vec();
+    for i in 0..n {
+        let c = co[i] as usize;
+        let j = p[c] as usize;
+        sx[j] = xf[i]; sy[j] = yf[i]; si[j] = i as u32;
+        p[c] += 1;
+    }
+
+
+    let area_ratio = ((2 * sub + 1) * (2 * sub + 1)) as f32 / (std::f32::consts::PI * (sub * sub) as f32);
+    let adj_min = (min_samples as f32 * area_ratio).ceil() as u32;
+
+    let mut core_cell = vec![false; tc];
+    for c in 0..tc {
+        let gy = c / gw; let gx = c % gw;
+        let mut total = 0u32;
+        for cy in gy.saturating_sub(reach)..=(gy + reach).min(gh - 1) {
+            for cx in gx.saturating_sub(reach)..=(gx + reach).min(gw - 1) {
+                total += cc[cy * gw + cx];
+            }
+        }
+        core_cell[c] = total >= adj_min;
+    }
+
+    let uf: Vec<AtomicU32> = (0..n).map(|i| AtomicU32::new(i as u32)).collect();
+
+    let mut crep = vec![u32::MAX; tc];
+    for c in 0..tc {
+        if !core_cell[c] { continue; }
+        let (s, e) = (cs[c] as usize, cs[c + 1] as usize);
+        for k in s..e {
+            let i = si[k] as usize;
+            if crep[c] == u32::MAX { crep[c] = i as u32; }
+            else { uf_union(&uf, crep[c] as usize, i); }
+        }
+    }
+
+    let close_limit = (sub as f32 - std::f32::consts::SQRT_2).floor() as i32;
+    for c in 0..tc {
+        if crep[c] == u32::MAX { continue; }
+        let r = crep[c] as usize;
+        let (gy, gx) = (c / gw, c % gw);
+        for dy in 0..=(close_limit.min(gh as i32 - 1 - gy as i32)) {
+            for dx in (-(close_limit.min(gx as i32)))..=(close_limit.min(gw as i32 - 1 - gx as i32)) {
+                if dy == 0 && dx <= 0 { continue; }
+                let c2 = (gy as i32 + dy) as usize * gw + (gx as i32 + dx) as usize;
+                if crep[c2] == u32::MAX { continue; }
+                uf_union(&uf, r, crep[c2] as usize);
+            }
+        }
+    }
+
+    for c in 0..tc {
+        if crep[c] == u32::MAX { continue; }
+        let r = crep[c] as usize;
+        let (xi, yi) = (xf[r], yf[r]);
+        let (gy, gx) = (c / gw, c % gw);
+        for cy in gy.saturating_sub(reach)..=(gy + reach).min(gh - 1) {
+            for cx in gx.saturating_sub(reach)..=(gx + reach).min(gw - 1) {
+                let c2 = cy * gw + cx;
+                if c2 <= c { continue; }
+                if crep[c2] == u32::MAX { continue; }
+                let dy = if cy >= gy { cy - gy } else { gy - cy } as i32;
+                let dx = if cx >= gx { cx - gx } else { gx - cx } as i32;
+                if dy <= close_limit && dx <= close_limit { continue; }
+                let r2 = crep[c2] as usize;
+                let ddx = xi - xf[r2]; let ddy = yi - yf[r2];
+                if ddx * ddx + ddy * ddy <= eps2 { uf_union(&uf, r, r2); }
+            }
+        }
+    }
+
+    let mut labels = vec![-1i32; n];
+
+    for i in 0..n {
+        if core_cell[co[i] as usize] {
+            labels[i] = uf_find(&uf, i) as i32;
+        }
+    }
+
+    for i in 0..n {
+        if labels[i] >= 0 { continue; }
+        let (xi, yi) = (xf[i], yf[i]);
+        let c = co[i] as usize;
+        let (gy, gx) = (c / gw, c % gw);
+        let mut best = u32::MAX;
+        let mut bd = f32::INFINITY;
+        for cy in gy.saturating_sub(reach)..=(gy + reach).min(gh - 1) {
+            for cx in gx.saturating_sub(reach)..=(gx + reach).min(gw - 1) {
+                let ci = cy * gw + cx;
+                if !core_cell[ci] { continue; }
+                let (a, b) = (cs[ci] as usize, cs[ci + 1] as usize);
+                for k in a..b {
+                    let dx = xi - sx[k]; let dy = yi - sy[k];
+                    let d = dx * dx + dy * dy;
+                    if d <= eps2 && d < bd { bd = d; best = si[k]; }
+                }
+            }
+        }
+        if best != u32::MAX {
+            labels[i] = uf_find(&uf, best as usize) as i32;
+        }
+    }
+
+    let mut rm = std::collections::HashMap::<i32, i32>::new();
+    let mut cid = 0i32;
+    for l in labels.iter_mut() {
+        if *l >= 0 {
+            let e = rm.entry(*l).or_insert_with(|| { let v = cid; cid += 1; v });
+            *l = *e;
+        }
+    }
+
+    (labels, cid as usize)
+}
+
+fn render_dbscan_canvas(
+    title: &str,
+    x_values: &[f64],
+    y_values: &[f64],
+    labels: &[i32],
+    n_clusters: usize,
+    palette: &[u32],
+    x_label: &str,
+    y_label: &str,
+    width: i32,
+    height: i32,
+    gridlines: bool,
+) -> String {
+    use crate::html::hover::{html_id, html_prefix, html_suffix};
+    use crate::plot::statistical::common::{push_b, push_i, push_f2, hex6, palette_color};
+    let n = x_values.len().min(y_values.len()).min(labels.len());
+    if n == 0 { return String::new(); }
+
+    let (min_x, max_x) = crate::bindings::utils::simd_ops::find_minmax(x_values);
+    let (min_y, max_y) = crate::bindings::utils::simd_ops::find_minmax(y_values);
+    let range_x = (max_x - min_x).max(1e-12);
+    let range_y = (max_y - min_y).max(1e-12);
+
+    let ng = n_clusters + 1;
+    let legend_w = 170i32;
+    let pad_l = 56i32; let pad_t = 36i32; let pad_b = 48i32;
+    let pad_r_actual = 20i32 + legend_w;
+    let plot_w = width - pad_l - pad_r_actual;
+    let plot_h = height - pad_t - pad_b;
+
+    let mut group_names: Vec<String> = Vec::with_capacity(ng);
+    for i in 0..n_clusters { group_names.push(format!("Cluster {}", i)); }
+    group_names.push("Bruit (Noise)".into());
+
+    let group_colors: Vec<String> = (0..ng).map(|i| {
+        let hx = hex6(palette_color(palette, i));
+        format!("#{}{}{}{}{}{}", hx[0] as char, hx[1] as char, hx[2] as char, hx[3] as char, hx[4] as char, hx[5] as char)
+    }).collect();
+
+    let inv_rx = plot_w as f64 / range_x;
+    let inv_ry = plot_h as f64 / range_y;
+
+    let noise_gi = n_clusters;
+    let mut group_raw: Vec<Vec<(i16, i16)>> = vec![Vec::new(); ng];
+    for gi in 0..ng {
+        let est = n / ng + 64;
+        group_raw[gi].reserve(est);
+    }
+    for i in 0..n {
+        let px = ((x_values[i] - min_x) * inv_rx).clamp(0.0, (plot_w - 1) as f64) as i16;
+        let py = (plot_h as f64 - (y_values[i] - min_y) * inv_ry).clamp(0.0, (plot_h - 1) as f64) as i16;
+        let gi = if labels[i] < 0 { noise_gi } else { labels[i] as usize };
+        group_raw[gi.min(ng - 1)].push((px, py));
+    }
+
+    let group_b64: Vec<String> = group_raw.iter().map(|pts| {
+        let mut raw = Vec::with_capacity(pts.len() * 4);
+        for &(px, py) in pts {
+            raw.extend_from_slice(&px.to_le_bytes());
+            raw.extend_from_slice(&py.to_le_bytes());
+        }
+        b64_encode(&raw)
+    }).collect();
+
+    let hid = html_id();
+    let cv_id = format!("spcv{}", hid);
+    let tip_id = format!("sptip{}", hid);
+    let mut buf = Vec::<u8>::with_capacity(n / 4 + 12_000);
+    html_prefix(&mut buf, title, hid);
+    push_b(&mut buf, b"<div style=\"position:relative;display:inline-block\">");
+    push_b(&mut buf, b"<canvas id=\""); buf.extend_from_slice(cv_id.as_bytes());
+    push_b(&mut buf, b"\" width=\""); push_i(&mut buf, width);
+    push_b(&mut buf, b"\" height=\""); push_i(&mut buf, height);
+    push_b(&mut buf, b"\" style=\"display:block\"></canvas>");
+    push_b(&mut buf, b"<div id=\""); buf.extend_from_slice(tip_id.as_bytes());
+    push_b(&mut buf, b"\" style=\"position:absolute;pointer-events:none;opacity:0;transition:opacity .15s;background:#0b0e18;color:#f1f5f9;font:12px -apple-system,Arial,sans-serif;border-radius:8px;padding:6px 10px;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,.4);z-index:10\"></div>");
+    push_b(&mut buf, b"</div><script>(function(){");
+    push_b(&mut buf, b"var cv=document.getElementById('"); buf.extend_from_slice(cv_id.as_bytes()); push_b(&mut buf, b"'),ctx=cv.getContext('2d');");
+    push_b(&mut buf, b"var tip=document.getElementById('"); buf.extend_from_slice(tip_id.as_bytes()); push_b(&mut buf, b"');");
+    push_b(&mut buf, b"var pL="); push_i(&mut buf, pad_l); push_b(&mut buf, b",pT="); push_i(&mut buf, pad_t);
+    push_b(&mut buf, b",pW="); push_i(&mut buf, plot_w); push_b(&mut buf, b",pH="); push_i(&mut buf, plot_h);
+    push_b(&mut buf, b",W="); push_i(&mut buf, width); push_b(&mut buf, b",H="); push_i(&mut buf, height);
+    push_b(&mut buf, b",minX="); push_f2(&mut buf, min_x);
+    push_b(&mut buf, b",minY="); push_f2(&mut buf, min_y);
+    push_b(&mut buf, b",rX="); push_f2(&mut buf, range_x);
+    push_b(&mut buf, b",rY="); push_f2(&mut buf, range_y);
+    push_b(&mut buf, b",N="); buf.extend_from_slice(format!("{}", n).as_bytes()); push_b(&mut buf, b";");
+    push_b(&mut buf, b"var hidden={};");
+    push_b(&mut buf, b"function b64(s){var b=atob(s),n=b.length,a=new Int16Array(n/2);for(var i=0;i<n;i+=2)a[i/2]=b.charCodeAt(i)|(b.charCodeAt(i+1)<<8);return a;}");
+    push_b(&mut buf, b"var GD=[");
+    for (gi, b64) in group_b64.iter().enumerate() {
+        if gi > 0 { buf.push(b','); }
+        buf.push(b'\'');
+        buf.extend_from_slice(b64.as_bytes());
+        buf.push(b'\'');
+    }
+    push_b(&mut buf, b"];");
+    push_b(&mut buf, b"var GC=[");
+    for (gi, c) in group_colors.iter().enumerate() {
+        if gi > 0 { buf.push(b','); }
+        buf.push(b'\''); push_js_str(&mut buf, c); buf.push(b'\'');
+    }
+    push_b(&mut buf, b"];");
+    push_b(&mut buf, b"var GN=[");
+    for (gi, nm) in group_names.iter().enumerate() {
+        if gi > 0 { buf.push(b','); }
+        buf.push(b'\''); push_js_str(&mut buf, if nm.len() > 22 { &nm[..22] } else { nm }); buf.push(b'\'');
+    }
+    push_b(&mut buf, b"];");
+    let gridlines_js = if gridlines { b"1" as &[u8] } else { b"0" };
+    push_b(&mut buf, b"var GL="); buf.extend_from_slice(gridlines_js); push_b(&mut buf, b";");
+    push_b(&mut buf, b"function draw(){");
+    push_b(&mut buf, b"ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);");
+    push_b(&mut buf, b"if(GL){ctx.strokeStyle='#e2e8f0';ctx.lineWidth=0.5;for(var i=1;i<=5;i++){var gy=pT+Math.round((1-i/5)*pH);ctx.beginPath();ctx.moveTo(pL,gy);ctx.lineTo(pL+pW,gy);ctx.stroke();}}");
+    push_b(&mut buf, b"ctx.strokeStyle='#cbd5e1';ctx.lineWidth=1;");
+    push_b(&mut buf, b"ctx.beginPath();ctx.moveTo(pL,pT);ctx.lineTo(pL,pT+pH);ctx.stroke();");
+    push_b(&mut buf, b"ctx.beginPath();ctx.moveTo(pL,pT+pH);ctx.lineTo(pL+pW,pT+pH);ctx.stroke();");
+    push_b(&mut buf, b"ctx.fillStyle='#9ca3af';ctx.font='9px Arial';ctx.textAlign='end';");
+    push_b(&mut buf, b"for(var i=0;i<=5;i++){var f=i/5,yp=pT+Math.round((1-f)*pH),yv=minY+f*rY;ctx.fillText(yv>=1000?Math.round(yv)+'':yv.toFixed(2),pL-4,yp+3);}");
+    push_b(&mut buf, b"ctx.textAlign='center';");
+    push_b(&mut buf, b"for(var i=0;i<=5;i++){var f=i/5,xp=pL+Math.round(f*pW),xv=minX+f*rX;ctx.fillText(xv>=1000?Math.round(xv)+'':xv.toFixed(2),xp,pT+pH+14);}");
+    if !y_label.is_empty() {
+        push_b(&mut buf, b"ctx.save();ctx.translate(14,pT+pH/2);ctx.rotate(-Math.PI/2);ctx.font='11px Arial';ctx.fillStyle='#374151';ctx.textAlign='center';ctx.fillText('");
+        push_js_str(&mut buf, y_label); push_b(&mut buf, b"',0,0);ctx.restore();");
+    }
+    if !x_label.is_empty() {
+        push_b(&mut buf, b"ctx.font='11px Arial';ctx.fillStyle='#374151';ctx.textAlign='center';ctx.fillText('");
+        push_js_str(&mut buf, x_label); push_b(&mut buf, b"',pL+pW/2,H-4);");
+    }
+    if !title.is_empty() {
+        push_b(&mut buf, b"ctx.font='700 14px -apple-system,Arial,sans-serif';ctx.fillStyle='#1a202c';ctx.textAlign='center';ctx.fillText('");
+        push_js_str(&mut buf, title); push_b(&mut buf, b"',W/2,22);");
+    }
+    push_b(&mut buf, b"for(var gi=0;gi<GD.length;gi++){if(hidden[gi])continue;var a=b64(GD[gi]);ctx.fillStyle=GC[gi]||GC[0];for(var i=0;i<a.length;i+=2)ctx.fillRect(pL+a[i],pT+a[i+1],2,2);}");
+    let leg_x = pad_l + plot_w + 12;
+    let leg_top = pad_t + 8;
+    push_b(&mut buf, b"ctx.textAlign='left';ctx.font='11px Arial';");
+    for gi in 0..group_names.len() {
+        let ly = leg_top + gi as i32 * 22;
+        push_b(&mut buf, b"if(!hidden["); push_i(&mut buf, gi as i32); push_b(&mut buf, b"]){");
+        push_b(&mut buf, b"ctx.globalAlpha=1;}else{ctx.globalAlpha=0.28;}");
+        push_b(&mut buf, b"ctx.fillStyle='"); push_js_str(&mut buf, &group_colors[gi]); push_b(&mut buf, b"';");
+        push_b(&mut buf, b"ctx.beginPath();ctx.arc("); push_i(&mut buf, leg_x + 6); buf.push(b','); push_i(&mut buf, leg_top + gi as i32 * 22 + 6);
+        push_b(&mut buf, b",6,0,2*Math.PI);ctx.fill();");
+        push_b(&mut buf, b"ctx.globalAlpha=1;ctx.fillStyle='#374151';ctx.fillText(GN["); push_i(&mut buf, gi as i32); push_b(&mut buf, b"]||'',");
+        push_i(&mut buf, leg_x + 17); buf.push(b','); push_i(&mut buf, ly + 11); push_b(&mut buf, b");");
+    }
+    push_b(&mut buf, b"ctx.globalAlpha=1;");
+    push_b(&mut buf, b"}");
+    push_b(&mut buf, b"draw();");
+    push_b(&mut buf, b"cv.addEventListener('click',function(e){");
+    push_b(&mut buf, b"var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;");
+    push_b(&mut buf, b"var lx="); push_i(&mut buf, leg_x); push_b(&mut buf, b",lt="); push_i(&mut buf, leg_top); push_b(&mut buf, b",ng="); push_i(&mut buf, ng as i32); push_b(&mut buf, b";");
+    push_b(&mut buf, b"for(var gi=0;gi<ng;gi++){var ly=lt+gi*22;if(mx>=lx&&mx<=lx+150&&my>=ly&&my<=ly+18){hidden[gi]=!hidden[gi];draw();return;}}");
+    push_b(&mut buf, b"});");
+    push_b(&mut buf, b"var allPts=[];for(var gi=0;gi<GD.length;gi++){if(!GD[gi])continue;var a=b64(GD[gi]);for(var i=0;i<a.length;i+=2)allPts.push([gi,pL+a[i],pT+a[i+1]]);}");
+    push_b(&mut buf, b"cv.addEventListener('mousemove',function(e){");
+    push_b(&mut buf, b"var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;");
+    push_b(&mut buf, b"if(mx<pL||mx>pL+pW||my<pT||my>pT+pH){tip.style.opacity=0;return;}");
+    push_b(&mut buf, b"var best=null,bd=1e9;");
+    push_b(&mut buf, b"for(var i=0;i<allPts.length;i++){var p=allPts[i];if(hidden[p[0]])continue;var dx=p[1]-mx,dy=p[2]-my,d=dx*dx+dy*dy;if(d<bd){bd=d;best=p;}}");
+    push_b(&mut buf, b"if(!best||bd>400){tip.style.opacity=0;return;}");
+    push_b(&mut buf, b"var xv=(best[1]-pL)/pW*rX+minX,yv=(1-(best[2]-pT)/pH)*rY+minY;");
+    push_b(&mut buf, b"var gname=GN[best[0]]?'<br><span style=\"color:#94a3b8\">'+GN[best[0]]+'</span>':'';");
+    push_b(&mut buf, b"tip.innerHTML='<b>x:</b> '+xv.toFixed(2)+'&nbsp;&nbsp;<b>y:</b> '+yv.toFixed(2)+gname;");
+    push_b(&mut buf, b"var tx=best[1]+12,ty=best[2]-28;");
+    push_b(&mut buf, b"if(tx+160>W)tx=best[1]-170;if(ty<0)ty=best[2]+8;");
+    push_b(&mut buf, b"tip.style.left=tx+'px';tip.style.top=ty+'px';tip.style.opacity=1;");
+    push_b(&mut buf, b"});");
+    push_b(&mut buf, b"cv.addEventListener('mouseleave',function(){tip.style.opacity=0;});");
+    push_b(&mut buf, b"})();</script>");
+    html_suffix(&mut buf, hid, "[]");
+    unsafe { String::from_utf8_unchecked(buf) }
+}
+
+pub fn render_dbscan_html(
+    title: &str,
+    x_values: &[f64],
+    y_values: &[f64],
+    eps: f64,
+    min_samples: usize,
+    x_label: &str,
+    y_label: &str,
+    width: i32,
+    height: i32,
+    gridlines: bool,
+    normalize: bool,
+    palette: &[u32],
+) -> String {
+    let n = x_values.len().min(y_values.len());
+    if n == 0 { return String::new(); }
+
+    let (xn, yn) = if normalize {
+        let (xmin, xmax) = crate::bindings::utils::simd_ops::find_minmax(x_values);
+        let (ymin, ymax) = crate::bindings::utils::simd_ops::find_minmax(y_values);
+        let rx = (xmax - xmin).max(1e-12);
+        let ry = (ymax - ymin).max(1e-12);
+        let xn: Vec<f64> = x_values.iter().map(|&v| (v - xmin) / rx).collect();
+        let yn: Vec<f64> = y_values.iter().map(|&v| (v - ymin) / ry).collect();
+        (xn, yn)
+    } else {
+        (x_values.to_vec(), y_values.to_vec())
+    };
+
+    let (labels, n_clusters) = dbscan_core(&xn, &yn, eps, min_samples);
+    let n_noise = labels.iter().filter(|&&l| l < 0).count();
+
+    let full_title = format!("{} \u{2014} {} clusters, {} pts bruit ({n} total)", title, n_clusters, n_noise);
+
+    render_dbscan_canvas(
+        &full_title, x_values, y_values, &labels, n_clusters, palette,
+        x_label, y_label, width, height, gridlines,
+    )
+}

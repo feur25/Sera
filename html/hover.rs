@@ -285,9 +285,12 @@ document.addEventListener('mouseup',function(e){if(!dragging)return;dragging=fal
  pts.forEach(function(el){try{var bb=el.getBBox();var ecx=bb.x+bb.width/2,ecy=bb.y+bb.height/2;
   if(ecx>=bx1&&ecx<=bx2&&ecy>=by1&&ecy<=by2)sel.push(el);else unsel.push(el);}catch(ex){unsel.push(el);}});
  if(!sel.length)return;
- sel.forEach(function(el){el.style.stroke='#6366F1';el.style.strokeWidth='2.5';el.style.opacity='';});
- unsel.forEach(function(el){el.style.opacity='0';
-  setTimeout(function(){if(el.style.opacity==='0')el.style.display='none';},370);});
+ sel.forEach(function(el){el.style.stroke='#6366F1';el.style.strokeWidth='2.5';el.style.opacity='';el.style.transform='';});
+ unsel.forEach(function(el){
+  el.style.transformBox='fill-box';el.style.transformOrigin='center';
+  el.style.transition='transform 0.28s cubic-bezier(.4,0,.2,1),opacity 0.28s';
+  el.style.transform='scale(0,0)';el.style.opacity='0';
+  setTimeout(function(){el.style.display='none';el.style.transition='';},300);});
 
  var mnx=Infinity,mny=Infinity,mxx=-Infinity,mxy=-Infinity;
  sel.forEach(function(el){try{var bb=el.getBBox();
@@ -317,12 +320,13 @@ document.addEventListener('mouseup',function(e){if(!dragging)return;dragging=fal
  panel.querySelector('.sp-cls-x').addEventListener('click',clearSel);});
 function clearSel(){panel.style.display='none';resetVB();
  svg.querySelectorAll('[data-idx]').forEach(function(el){
-  el.style.display='';el.style.opacity='';el.style.stroke='';el.style.strokeWidth='';el.style.filter='';});
+  el.style.display='';el.style.opacity='';el.style.stroke='';el.style.strokeWidth='';el.style.filter='';
+  el.style.transform='';el.style.transition='';el.style.transformBox='';el.style.transformOrigin='';});
  reAnim();}
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(dblZoomed){dblZoomed=false;resetVB();svg.querySelectorAll('[data-idx]').forEach(function(el){el.style.opacity='';el.style.display='';});reAnim();}if(pinned){pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(dblZoomed){dblZoomed=false;resetVB();svg.querySelectorAll('[data-idx]').forEach(function(el){el.style.opacity='';el.style.display='';el.style.transform='';el.style.transition='';});reAnim();}if(pinned){pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}}});
 var dblZoomed=false;
 svg.addEventListener('dblclick',function(e){
- if(dblZoomed){dblZoomed=false;resetVB();svg.querySelectorAll('[data-idx]').forEach(function(el){el.style.opacity='';el.style.display='';});reAnim();return;}
+ if(dblZoomed){dblZoomed=false;resetVB();svg.querySelectorAll('[data-idx]').forEach(function(el){el.style.opacity='';el.style.display='';el.style.transform='';el.style.transition='';el.style.filter='';});reAnim();return;}
  var found=null;
  for(var nd=e.target;nd&&nd!==svg;nd=nd.parentElement){if(nd.getAttribute&&nd.getAttribute('data-idx')!==null){found=nd;break;}}
  if(!found)return;
@@ -345,8 +349,13 @@ lg.addEventListener('click',function(){
  var s=lg.getAttribute('data-series');if(!s)return;
  var h=lg.getAttribute('data-hidden')==='1';
  var els=svg.querySelectorAll('[data-series="'+s+'"]:not([data-legend])');
- if(h){els.forEach(function(el){el.style.display='';el.style.opacity='';});lg.style.opacity='';lg.removeAttribute('data-hidden');}
- else{els.forEach(function(el){el.style.display='none';});lg.style.opacity='0.3';lg.setAttribute('data-hidden','1');}spRescale();});});
+ if(h){els.forEach(function(el){el.style.display='';el.style.opacity='';el.style.transform='';el.style.transformBox='';el.style.transformOrigin='';el.style.transition='';});lg.style.opacity='';lg.removeAttribute('data-hidden');}
+ else{els.forEach(function(el){
+  el.style.transformBox='fill-box';el.style.transformOrigin='center';
+  el.style.transition='transform 0.3s cubic-bezier(.4,0,.2,1),opacity 0.3s';
+  el.style.transform='scale(0,0)';el.style.opacity='0';
+  setTimeout(function(){el.style.display='none';el.style.transition='';},320);});
+  lg.style.opacity='0.3';lg.setAttribute('data-hidden','1');}spRescale();});});
 function spRescale(){
  var m=svg.getAttribute('data-sp');if(!m)return;
  var p=m.split(',').map(Number),pL=p[0],pT=p[1],pW=p[2],pH=p[3];

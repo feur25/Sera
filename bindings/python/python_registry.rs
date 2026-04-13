@@ -21,6 +21,7 @@ pub fn register_submodules(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(build_hbar, m)?)?;
     m.add_function(wrap_pyfunction!(build_line_chart, m)?)?;
     m.add_function(wrap_pyfunction!(build_scatter_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(build_dbscan_chart, m)?)?;;
 
     m.add_function(wrap_pyfunction!(build_histogram, m)?)?;
     m.add_function(wrap_pyfunction!(build_histogram_overlay, m)?)?;

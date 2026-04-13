@@ -102,7 +102,7 @@ pub fn bench_pure_rust(n: usize) -> (f64, f64, f64, f64) {
     let bar_ms = t0.elapsed().as_secs_f64() * 1000.0 / n as f64;
     let t0 = Instant::now();
     for _ in 0..n {
-        let _ = crate::plot::default::render_scatter_html("B", &ages100, &fare100, &[], 900, 540, &[], &[], &[], &[], "", "", 0, true, false);
+        let _ = crate::plot::default::render_scatter_html("B", &ages100, &fare100, &[], 900, 540, &[], &[], &[], &[], "", "", 0, true, false, false, "linear");
     }
     let scatter_ms = t0.elapsed().as_secs_f64() * 1000.0 / n as f64;
     let t0 = Instant::now();
@@ -193,19 +193,23 @@ pub fn build_line_chart(title: &str, labels: Vec<String>, values: Vec<f64>, colo
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (title, x_values, y_values, *, color_hex=0_u32, show_text=false, labels=None, sizes=None, color_groups=None, width=900_i32, height=540_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false))]
-/// Scatter plot.
-///
-/// Args: title, x_values, y_values.
-///
-/// Kwargs: color_hex (int), show_text (bool), labels (list[str]), sizes (list[float]),
-/// color_groups (list[str]),
-/// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
-/// series_names (list[str], reserved), background (str|None, default None=transparent).
-pub fn build_scatter_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, color_hex: u32, show_text: bool, labels: Option<Vec<String>>, sizes: Option<Vec<f64>>, color_groups: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+#[pyo3(signature = (title, x_values, y_values, *, eps=0.02_f64, min_samples=10_usize, width=1000_i32, height=580_i32, x_label="", y_label="", gridlines=false, palette=None, background=None, normalize=true))]
+pub fn build_dbscan_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, eps: f64, min_samples: usize, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, palette: Option<Vec<u32>>, background: Option<&str>, normalize: bool) -> PyResult<Chart> {
+    let pal: Vec<u32> = palette.unwrap_or_default();
+    let html = crate::plot::default::render_dbscan_html(
+        title, &x_values, &y_values, eps, min_samples,
+        x_label, y_label, width, height, gridlines, normalize, &pal,
+    );
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, true, true)))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, x_values, y_values, *, color_hex=0_u32, show_text=false, labels=None, sizes=None, color_groups=None, width=900_i32, height=540_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false, show_regression=false, regression_type="linear"))]
+pub fn build_scatter_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, color_hex: u32, show_text: bool, labels: Option<Vec<String>>, sizes: Option<Vec<f64>>, color_groups: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool, show_regression: bool, regression_type: &str) -> PyResult<Chart> {
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
-    let cap = 200usize;
+    let cap = 200_000usize;
     let step = { let n = x_values.len().max(y_values.len()); if n > cap { (n + cap - 1) / cap } else { 1 } };
     let x: Vec<f64> = if step > 1 { x_values.into_iter().step_by(step).collect() } else { x_values };
     let y: Vec<f64> = if step > 1 { y_values.into_iter().step_by(step).collect() } else { y_values };
@@ -214,7 +218,7 @@ pub fn build_scatter_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, 
     let cgs: Vec<String> = { let c = color_groups.unwrap_or_default(); if step > 1 { c.into_iter().step_by(step).collect() } else { c } };
     let hover = o.hover();
     let html = crate::plot::default::render_scatter_html(
-        title, &x, &y, &lbls, o.w, o.h, &hover, &sz, &cgs, &o.pal, &o.xl, &o.yl, color_hex, o.grid, show_text,
+        title, &x, &y, &lbls, o.w, o.h, &hover, &sz, &cgs, &o.pal, &o.xl, &o.yl, color_hex, o.grid, show_text, show_regression, regression_type,
     );
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
