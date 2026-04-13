@@ -15,7 +15,7 @@
 
 # Charts
 
-- [2D Charts](charts/2d/bar.md)
+- [2D Charts](charts/2d/index.md)
   - [Bar Chart](charts/2d/bar.md)
   - [Horizontal Bar](charts/2d/hbar.md)
   - [Line Chart](charts/2d/line.md)
@@ -50,7 +50,7 @@
   - [Grid Layout](charts/2d/grid.md)
   - [Slideshow](charts/2d/slideshow.md)
 
-- [3D Charts](charts/3d/scatter3d.md)
+- [3D Charts](charts/3d/index.md)
   - [Scatter 3D](charts/3d/scatter3d.md)
   - [Bar 3D](charts/3d/bar3d.md)
   - [Line 3D](charts/3d/line3d.md)
@@ -69,7 +69,7 @@
   - [Stacked Bar 3D](charts/3d/stacked-bar3d.md)
   - [Globe 3D](charts/3d/globe3d.md)
 
-- [Map Charts](charts/map/bubble-map.md)
+- [Map Charts](charts/map/index.md)
   - [Bubble Map](charts/map/bubble-map.md)
   - [Choropleth](charts/map/choropleth.md)
 
