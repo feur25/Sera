@@ -365,8 +365,6 @@ impl Chart {
     }
 }
 
-/// Silently attempt to display a chart in Jupyter/IPython.
-/// Does nothing if not running inside an IPython kernel.
 #[cfg(feature = "python")]
 fn auto_show_in_jupyter(py: Python<'_>, chart: &Chart) {
     let _ = (|| -> PyResult<()> {
@@ -382,8 +380,6 @@ fn auto_show_in_jupyter(py: Python<'_>, chart: &Chart) {
     })();
 }
 
-/// Set a background color applied to every chart created from now on.
-/// Accepts any CSS color string, e.g. `"#0f172a"`, `"black"`, `"rgb(15,23,42)"`.
 #[cfg(feature = "python")]
 #[pyfunction]
 pub fn set_global_background(color: &str) {
@@ -392,7 +388,6 @@ pub fn set_global_background(color: &str) {
     }
 }
 
-/// Remove the previously set global background.
 #[cfg(feature = "python")]
 #[pyfunction]
 pub fn reset_global_background() {
@@ -401,7 +396,6 @@ pub fn reset_global_background() {
     }
 }
 
-/// Enable or disable auto-display of charts in Jupyter notebooks (default: enabled).
 #[cfg(feature = "python")]
 #[pyfunction]
 pub fn set_auto_display(enabled: bool) {
