@@ -37,18 +37,33 @@ fn extract_first_example(content: &str) -> Option<String> {
 }
 
 fn find_chart_var(code: &str) -> String {
+    let mut best: Option<String> = None;
     for line in code.lines() {
+        // Match "chart = sp.build_..." OR "chart = ("  (parenthesized chain starting on next line)
+        let trimmed = line.trim();
+        let is_paren = trimmed.ends_with("= (") || trimmed.ends_with("=(");
         if let Some(idx) = line.find("= sp.") {
+            if line.contains("build_hover_json") {
+                continue;
+            }
             let before = line[..idx].trim();
             if let Some(var) = before.split_whitespace().last() {
                 let v: String = var.chars().filter(|c| c.is_alphanumeric() || *c == '_').collect();
                 if !v.is_empty() {
-                    return v;
+                    best = Some(v);
                 }
+            }
+        } else if is_paren {
+            // e.g. "chart = ("
+            let lhs = trimmed.trim_end_matches(|c| c == '(' || c == ' ' || c == '=');
+            let var = lhs.split_whitespace().last().unwrap_or("").to_string();
+            let v: String = var.chars().filter(|c| c.is_alphanumeric() || *c == '_').collect();
+            if !v.is_empty() {
+                best = Some(v);
             }
         }
     }
-    "chart".to_string()
+    best.unwrap_or_else(|| "chart".to_string())
 }
 
 fn python_bin() -> &'static str {
@@ -60,8 +75,18 @@ fn python_bin() -> &'static str {
 }
 
 fn run_example(code: &str, chart_var: &str) -> Option<String> {
+    // Dark-theme CSS injected into every preview so charts blend with the navy docs.
+    let dark_css = concat!(
+        ".sp-bg{{fill:transparent!important}}",
+        ".sp-ttl{{fill:#e2e8f0!important}}",
+        "svg text{{fill:#cbd5e1!important}}",
+        ".sp-ax-x,.sp-ax-y{{stroke:#475569!important}}",
+        ".sp-gl{{stroke:#2d3748!important}}",
+        ".sp-xl,.sp-yl{{fill:#94a3b8!important}}",
+        "[id^='spp']{{box-shadow:none!important;border-radius:0!important}}"
+    );
     let wrapper = format!(
-        "import seraplot as _sp\n_sp.set_auto_display(False)\n{code}\nimport sys\nsys.stdout.buffer.write({chart_var}.html.encode('utf-8'))\n"
+        "import seraplot as _sp\n_sp.set_auto_display(False)\n{code}\nimport sys\n_c={chart_var}.set_bg(None).inject_css(\"{dark_css}\")\nsys.stdout.buffer.write(_c.html.encode('utf-8'))\n"
     );
 
     let tmp = std::env::temp_dir().join("seraplot_preview.py");
@@ -84,7 +109,7 @@ fn run_example(code: &str, chart_var: &str) -> Option<String> {
 
 fn inject_preview(content: &str, chart_html: &str) -> String {
     let preview = format!(
-        "\n\n<details open>\n<summary style=\"cursor:pointer;font-weight:600;padding:4px 0\">&#9654; Live Preview</summary>\n\n<div style=\"width:100%;overflow:auto;border-radius:6px;margin:8px 0\">\n{}\n</div>\n\n</details>\n",
+        "\n\n<details open>\n<summary style=\"cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8\">&#9654;&nbsp;Live Preview</summary>\n\n<div style=\"width:100%;overflow:auto;border-radius:8px;margin:12px 0;background:#0d1117\">\n{}\n</div>\n\n</details>\n",
         chart_html.trim()
     );
 
@@ -118,6 +143,28 @@ fn inject_preview(content: &str, chart_html: &str) -> String {
     }
 }
 
+fn strip_preview(content: &str) -> String {
+    // Remove everything from "\n\n<details" up to and including the closing "</details>\n"
+    let mut out = String::with_capacity(content.len());
+    let mut rest = content;
+    while let Some(start) = rest.find("\n\n<details") {
+        out.push_str(&rest[..start]);
+        let after = &rest[start + 2..]; // skip the two leading newlines
+        if let Some(end) = after.find("</details>") {
+            rest = &after[end + 10..]; // skip "</details>"
+            if rest.starts_with('\n') {
+                rest = &rest[1..];
+            }
+        } else {
+            // malformed — keep remainder as-is
+            out.push_str(&rest[start..]);
+            return out;
+        }
+    }
+    out.push_str(rest);
+    out
+}
+
 fn process_dir(docs: &Path, rel_dir: &str) {
     let d = docs.join(rel_dir);
     if !d.is_dir() {
@@ -137,10 +184,18 @@ fn process_dir(docs: &Path, rel_dir: &str) {
         let raw = fs::read_to_string(path).unwrap_or_default();
         let content = raw.strip_prefix('\u{feff}').unwrap_or(&raw).to_string();
 
-        if content.contains("<details") {
+        let force = std::env::args().any(|a| a == "--force");
+        if !force && content.contains("<details") {
             println!("  skip (preview exists): {}", path.file_name().unwrap_or_default().to_string_lossy());
             continue;
         }
+
+        // Strip existing preview block before regenerating.
+        let content = if content.contains("<details") {
+            strip_preview(&content)
+        } else {
+            content
+        };
 
         let Some(code) = extract_first_example(&content) else {
             println!("  skip (no example): {}", path.file_name().unwrap_or_default().to_string_lossy());

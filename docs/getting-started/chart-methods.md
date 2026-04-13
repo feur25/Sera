@@ -258,6 +258,44 @@ chart.export_png("chart.png", scale=3.0)  # 3× resolution
 
 ---
 
+## Hover tooltips
+
+### `build_hover_json(labels, images=None, descriptions=None)`
+
+Builds a rich hover tooltip JSON string to pass as `hover_json=` to any chart function.
+
+| Parameter | Type | Description |
+|---|---|---|
+| `labels` | `list[str]` | Tooltip title for each data point |
+| `images` | `list[str \| None]` | Optional image URL per point (shown in tooltip) |
+| `descriptions` | `list[str \| None]` | Reserved for future use |
+
+```python
+import seraplot as sp
+
+countries = ["France", "Germany", "Spain", "Italy"]
+gdp = [2.9, 4.2, 1.4, 2.1]
+
+hover = sp.build_hover_json(
+    countries,
+    images=[
+        "https://flagcdn.com/w40/fr.png",
+        "https://flagcdn.com/w40/de.png",
+        "https://flagcdn.com/w40/es.png",
+        "https://flagcdn.com/w40/it.png",
+    ],
+)
+
+chart = sp.build_bar_chart(
+    "GDP by Country (trillion $)",
+    labels=countries,
+    values=gdp,
+    hover_json=hover,
+)
+```
+
+---
+
 ## Complete chaining example
 
 ```python
@@ -266,21 +304,20 @@ import seraplot as sp
 labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
 values = [41.2, 38.5, 55.1, 62.0, 58.7, 71.4]
 
-hover = sp.build_hover_json({
-    "Month":  labels,
-    "Revenue (k$)": [str(v) for v in values],
-    "image":  ["https://cdn.example.com/" + m.lower() + ".png" for m in labels],
-})
+hover = sp.build_hover_json(
+    labels,
+    images=["https://placehold.co/120x60?text=" + m for m in labels],
+)
 
 chart = (
     sp.build_bar_chart("Monthly Revenue", labels, values,
                        hover_json=hover, gridlines=True)
-    .set_bg("#0f172a")
+    .set_bg(None)
     .show_grid()
     .show_labels(position="top")
     .set_font_size(13)
     .inject_css("""
-        rect.sp-bg  { fill: #0f172a !important; }
+        .sp-bg  { fill: #0f172a !important; }
         svg text    { fill: #e2e8f0 !important; }
         .sp-gl      { stroke: #1e293b !important; }
     """)
@@ -288,3 +325,4 @@ chart = (
 
 chart.save("revenue.html")
 ```
+

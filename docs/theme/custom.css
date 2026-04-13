@@ -1,0 +1,24 @@
+/* ── Full-width content ──────────────────────────────────────────────────── */
+.content {
+  max-width: none !important;
+  padding: 0 40px;
+}
+.content main {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ── Live preview containers ─────────────────────────────────────────────── */
+details[open] > div {
+  overflow-x: auto;
+}
+details summary {
+  outline: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── Code blocks ─────────────────────────────────────────────────────────── */
+pre code {
+  font-size: 13px;
+}
