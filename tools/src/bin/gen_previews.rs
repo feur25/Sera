@@ -77,13 +77,13 @@ fn python_bin() -> &'static str {
 fn run_example(code: &str, chart_var: &str) -> Option<String> {
     // Dark-theme CSS injected so charts blend with the navy docs inside the iframe.
     let dark_css = concat!(
-        ".sp-bg{{fill:transparent!important}}",
-        ".sp-ttl{{fill:#e2e8f0!important}}",
-        "svg text{{fill:#cbd5e1!important}}",
-        ".sp-ax-x,.sp-ax-y{{stroke:#475569!important}}",
-        ".sp-gl{{stroke:#2d3748!important}}",
-        ".sp-xl,.sp-yl{{fill:#94a3b8!important}}",
-        "[id^='spp']{{box-shadow:none!important;border-radius:0!important}}"
+        ".sp-bg{fill:transparent!important}",
+        ".sp-ttl{fill:#e2e8f0!important}",
+        "svg text{fill:#cbd5e1!important}",
+        ".sp-ax-x,.sp-ax-y{stroke:#475569!important}",
+        ".sp-gl{stroke:#2d3748!important}",
+        ".sp-xl,.sp-yl{fill:#94a3b8!important}",
+        "[id^='spp']{box-shadow:none!important;border-radius:0!important}"
     );
     let logo = "https://raw.githubusercontent.com/feur25/seraplot/main/asset/logo.png";
     let wrapper = format!(
