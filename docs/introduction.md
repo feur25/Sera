@@ -140,20 +140,22 @@ The Python API is a thin binding layer — it validates inputs, calls into the R
 - 55+ chart types including 17 WebGL 3D charts and a Rust-native DBSCAN that runs 600× faster than scikit-learn
 
 ---
-## Pourquoi SeraPlot
+## Why SeraPlot
 
-### Contrôle total du rendu — sans exception
+### Full render control — no exceptions
 
-Chaque graphique SeraPlot est un document HTML autonome. Cela signifie que chaque propriété visuelle est contrôlable via CSS appliqué directement au SVG rendu. SeraPlot expose cela en première classe via une chaîne de méthodes sur l'objet `Chart` :
+Every SeraPlot chart is a standalone HTML document. That means every visual
+property is controllable via CSS applied directly to the rendered SVG. SeraPlot
+exposes this as a first-class method chain on the `Chart` object:
 
 ```python
 chart = (
-    sp.build_bar_chart("Revenus mensuels", labels, values)
-    .set_bg("#0f172a")                        # fond sombre
-    .show_grid()                               # grille visible
-    .no_axes()                                 # supprimer X et Y
-    .show_labels(position="top")               # labels au-dessus des barres
-    .set_font_size(13)                         # taille de police globale
+    sp.build_bar_chart("Monthly Revenue", labels, values)
+    .set_bg("#0f172a")                       # dark background
+    .show_grid()                              # visible grid
+    .no_axes()                                # hide X and Y axes
+    .show_labels(position="top")              # value labels above bars
+    .set_font_size(13)                        # global font size
     .inject_css("""
         .sp-gl { stroke: #334155 !important; }
         svg text { fill: #e2e8f0 !important; }
@@ -162,144 +164,166 @@ chart = (
 )
 ```
 
-Surface de contrôle complète :
+Full control surface:
 
-| Méthode | Effet |
-|---------|-------|
-| `set_bg(color)` | Couleur de fond du HTML entier |
-| `set_global_background(color)` | Applique à tous les graphiques de la session |
-| `set_frame(color)` | Fond du canvas SVG indépendamment du wrapper HTML |
-| `show_grid()` / `hide_grid()` | Activer ou désactiver les lignes de grille |
-| `no_x_axis()` / `no_y_axis()` / `no_axes()` | Supprimer les axes sélectivement |
-| `show_labels(position, labels, colors)` | Faire apparaître des labels sur chaque élément (top, bottom, left, right) |
-| `no_legend()` | Supprimer la légende |
-| `no_title()` | Supprimer le titre |
-| `set_font_size(px)` | Remplacer toutes les tailles de texte dans le SVG |
-| `scale(factor)` | Mettre à l'échelle le graphique entier |
-| `inject_css(css)` | Injecter du CSS arbitraire dans le `<head>` — accès complet au DOM |
-| `inject_js(js)` | Injecter du JavaScript arbitraire avant `</body>` — comportement illimité |
+| Method | Effect |
+|--------|--------|
+| `set_bg(color)` | Background color of the entire HTML wrapper |
+| `set_global_background(color)` | Applied to all charts in the current session |
+| `set_frame(color)` | SVG canvas background, independent of the HTML wrapper |
+| `show_grid()` / `hide_grid()` | Enable or disable gridlines |
+| `no_x_axis()` / `no_y_axis()` / `no_axes()` | Remove axes selectively |
+| `show_labels(position, labels, colors)` | Show value labels on each element (top/bottom/left/right) |
+| `no_legend()` | Remove the legend |
+| `no_title()` | Remove the title |
+| `set_font_size(px)` | Override all text sizes in the SVG |
+| `scale(factor)` | Scale the entire chart |
+| `inject_css(css)` | Inject arbitrary CSS into `<head>` — full DOM access |
+| `inject_js(js)` | Inject arbitrary JavaScript before `</body>` — unlimited behaviour |
 
-`inject_css` et `inject_js` ne sont pas des issues de secours. Ce sont des API de premier rang. Ils donnent un accès direct au SVG DOM rendu : remplacer n'importe quelle classe interne, attacher des écouteurs d'événements, animer des éléments, intégrer des systèmes externes — tout ce qu'un navigateur peut faire.
+`inject_css` and `inject_js` are not escape hatches. They are first-class APIs.
+They give direct access to the rendered SVG DOM: override any internal class,
+attach event listeners, animate elements, integrate external systems — anything
+a browser can do.
 
 ---
 
-### Tooltips enrichis : images, vidéos, HTML
+### Rich tooltips: images, videos, HTML
 
-Le survol SeraPlot n'est pas un attribut `title`. C'est un moteur de tooltip structuré. Chaque point de données possède son propre tooltip indépendant :
+SeraPlot hover is not a `title` attribute. It is a structured tooltip engine.
+Each data point has its own independent tooltip:
 
 ```python
 import seraplot as sp
 
 hover = sp.build_hover_json({
-    "Produit":  ["Widget A",              "Widget B",    "Widget C"   ],
-    "Revenu":   ["€142 000",              "€98 500",     "€210 000"   ],
-    "Unités":   ["1 420",                 "985",          "2 100"     ],
-    "image":    ["https://cdn.acme.com/a.png", "...",     "..."       ],
+    "Product":  ["Widget A",                   "Widget B",  "Widget C"],
+    "Revenue":  ["$142,000",                   "$98,500",   "$210,000"],
+    "Units":    ["1,420",                       "985",       "2,100"  ],
+    "image":    ["https://cdn.acme.com/a.png", "...",       "..."    ],
 })
 
-chart = sp.build_bar_chart("Revenus produit", labels, values, hover_json=hover)
+chart = sp.build_bar_chart("Product Revenue", labels, values, hover_json=hover)
 ```
 
-Contenu disponible par point de données :
+Content available per data point:
 
-- **Lignes clé/valeur** — nombre illimité de champs étiquetés
-- **Image inline** — champ `image` : photo affichée dans le tooltip
-- **Vidéo inline** — champ `video` : lecteur vidéo intégré dans le tooltip
-- **HTML arbitraire** — champ `html` : contenu HTML brut injecté dans le tooltip
+- **Key/value rows** — unlimited labelled fields
+- **Inline image** — `image` key: photo displayed inside the tooltip
+- **Inline video** — `video` key: video player embedded in the tooltip
+- **Arbitrary HTML** — `html` key: raw HTML injected into the tooltip body
 
-Le tooltip est entièrement rendu dans le HTML autonome — aucune requête réseau supplémentaire si les assets sont locaux.
+The tooltip is fully self-contained in the HTML output — no extra network
+requests if your assets are local.
 
 ---
 
-### Architecture cross-langage : un moteur Rust, toutes les surfaces
+### Cross-language architecture: one Rust engine, every surface
 
-Le cœur Rust de SeraPlot expose un ABI C stable (fonctions cdecl `#[no_mangle]`). Le même `.dll`/`.so`/`.dylib` compilé est directement appelable depuis :
+The SeraPlot Rust core exposes a stable C ABI (`#[no_mangle]` cdecl functions).
+The same compiled `.dll`/`.so`/`.dylib` is directly callable from:
 
-- **Python** — via des wheels PyO3 (zéro overhead, zéro marshaling)
-- **C / C++** — FFI directe
-- **Node.js** — via `ffi-napi` ou `node-addon-api`
+- **Python** — via PyO3 wheels (zero overhead, zero marshaling)
+- **C / C++** — direct FFI
+- **Node.js** — via `ffi-napi` or `node-addon-api`
 - **Julia** — via `ccall`
 - **Go** — via `cgo`
 - **R** — via `.Call`
-- **Tout langage disposant d'un FFI C**
+- **Any language with a C FFI**
 
-Ce n'est pas une bibliothèque Python avec des internals Rust. C'est une bibliothèque Rust avec une surface Python — et une surface C — et toute autre surface que vous souhaitez lier. Vous obtenez la même latence de rendu en microsecondes dans n'importe quel langage.
-
----
-
-### Débit qui rend de nouveaux produits possibles
-
-L'avantage en vitesse n'est pas académique. À 2–90 µs par graphique, SeraPlot rend réalisables des catégories entières de produits qui ne sont pas faisables avec d'autres bibliothèques Python :
-
-| Cas d'usage | À 18 µs par scatter chart |
-|-------------|---------------------------|
-| 1 000 graphiques personnalisés par requête HTTP | **18 ms** — inline dans la réponse |
-| 100 000 graphiques par run CI | **1,8 seconde** — faisable à chaque commit |
-| 1 000 000 variantes A/B test | **18 secondes** — une ligne de commande |
-| Graphique par ligne, export DataFrame 10 000 lignes | **180 ms** — zéro infrastructure supplémentaire |
-
-Ce n'est pas être plus rapide pour la même charge de travail. C'est que la charge de travail devient le produit.
+This is not a Python library with Rust internals. It is a Rust library with a
+Python surface — and a C surface — and any other surface you want to bind.
+You get the same microsecond render latency from any language.
 
 ---
 
-### Fichiers conçus pour le déploiement réel
+### Throughput that unlocks new products
 
-Un graphique qui pèse 19 Ko au lieu de 4,7 Mo n'est pas une amélioration cosmétique. Cela change ce que vous pouvez en faire :
+The speed advantage is not academic. At 2–90 µs per chart, SeraPlot makes
+entire product categories feasible that are not possible with other Python
+libraries:
 
-- **Pièces jointes email** : les serveurs rejettent généralement les PJ au-delà de 10–25 Mo. Un lot de 500 graphiques SeraPlot (~10 Mo) serait un export Plotly de 2 350 Mo.
-- **Contrôle de version** : des fichiers HTML de 20 Ko sont lisibles dans `git diff`. Des blobs binaires de 4,7 Mo ne le sont pas.
-- **CDN statique** : 100 000 graphiques à 20 Ko = 2 Go. À 4,7 Mo = 470 Go. La différence est une ligne de facture AWS.
-- **Déploiement hors-ligne** : le HTML s'ouvre dans n'importe quel navigateur sans connexion internet — aucun CDN, aucune police distante, aucun script externe, jamais.
-- **Notebooks Jupyter** : 50 graphiques Plotly inline gonflent le `.ipynb` à plus de 235 Mo. Avec SeraPlot, il reste sous 5 Mo.
+| Use case | At 18 µs per scatter chart |
+|----------|---------------------------|
+| 1,000 custom charts per HTTP request | **18 ms** — inline in the response |
+| 100,000 charts per CI run | **1.8 seconds** — feasible on every commit |
+| 1,000,000 A/B test variants | **18 seconds** — a single command |
+| One chart per row, 10,000-row DataFrame export | **180 ms** — no extra infrastructure |
 
----
-
-### Types de graphiques exclusifs
-
-SeraPlot implémente des types de graphiques absents de toute autre bibliothèque Python :
-
-| Type de graphique | Pourquoi il n'existe pas ailleurs |
-|-------------------|-----------------------------------|
-| **Ridgeline** | Courbes KDE superposées pour comparer plusieurs distributions simultanément — aucun équivalent Plotly, pas de natif Matplotlib |
-| **Dumbbell** | Delta avant/après par catégorie — uniquement disponible comme contournement manuel ailleurs |
-| **Slope** | Changement de rang entre deux instants — pas un type de graphique standard |
-| **Bullet** | Jauge KPI avec zones de performance et ligne cible — absent de Plotly et Matplotlib |
-| **Globe 3D** | Sphère WebGL 3D avec données géospatiales — impossible en Python sans D3/Deck.gl |
-| **Slideshow** | Carrousel multi-graphiques dans un seul fichier HTML — unique à SeraPlot |
-| **GPU Scatter 3D** | Nuage de points WebGL pour des millions de points sans sous-échantillonnage |
+This is not being faster for the same workload. It is the workload becoming the product.
 
 ---
 
-### Machine learning natif dans le même pipeline de rendu
+### Files built for real deployment
 
-SeraPlot embarque un DBSCAN écrit en Rust avec indexation spatiale KD-tree et accélération SIMD. Ce n'est pas un wrapper autour de scikit-learn :
+A chart that weighs 19 KB instead of 4.7 MB is not a cosmetic improvement.
+It changes what you can do with it:
 
-| Points | scikit-learn | SeraPlot DBSCAN | Facteur |
-|--------|-------------|-----------------|---------|
-| 1 000 | 3,2 ms | 0,18 ms | **18×** |
-| 10 000 | 54 ms | 1,1 ms | **49×** |
-| 100 000 | 1 340 ms | 8,4 ms | **160×** |
-| 500 000 | 21 000 ms | 38 ms | **553×** |
-
-Vous clusterisez et rendez dans la même bibliothèque — sans installer scikit-learn, sans format de données intermédiaire, sans étape de conversion.
+- **Email attachments** — servers typically reject attachments above 10–25 MB.
+  A batch of 500 SeraPlot charts (~10 MB) would be a 2,350 MB Plotly export.
+- **Version control** — 20 KB HTML files are readable in `git diff`.
+  4.7 MB binary blobs are not.
+- **Static CDN** — 100,000 charts at 20 KB = 2 GB. At 4.7 MB = 470 GB.
+  The difference is a line item on an AWS bill.
+- **Offline deployment** — the HTML opens in any browser with no internet
+  connection — no CDN, no remote fonts, no external scripts, ever.
+- **Jupyter notebooks** — 50 Plotly charts inline bloat the `.ipynb` past
+  235 MB. With SeraPlot, it stays under 5 MB.
 
 ---
 
-### Zéro dépendances
+### Exclusive chart types
 
-SeraPlot n'a aucune dépendance Python requise. Pas de numpy, pas de pandas, pas de scipy, pas de requests, pas de PIL. Un `pip install seraplot` — c'est tout.
+SeraPlot implements chart types absent from every other Python library:
 
-Dans les environnements où la gestion des dépendances est une contrainte — réseaux d'entreprise, serveurs isolés, images Docker minimales, environnements conda avec conflits de versions — SeraPlot s'installe sans toucher à quoi que ce soit d'autre.
+| Chart type | Why it does not exist elsewhere |
+|------------|---------------------------------|
+| **Ridgeline** | Overlapping KDE curves to compare multiple distributions at once — no Plotly equivalent, no native Matplotlib |
+| **Dumbbell** | Before/after delta by category — only available as a manual workaround elsewhere |
+| **Slope** | Rank change between two time points — not a standard chart type |
+| **Bullet** | KPI gauge with performance zones and a target line — absent from Plotly and Matplotlib |
+| **Globe 3D** | WebGL 3D sphere with geospatial data — impossible in Python without D3/Deck.gl |
+| **Slideshow** | Multi-chart carousel in a single HTML file — unique to SeraPlot |
+| **GPU Scatter 3D** | WebGL point cloud for millions of points without downsampling |
 
-Le wheel fait 2 Mo. Plotly fait 15 Mo avec ses propres dépendances.
+---
+
+### Native machine learning in the same render pipeline
+
+SeraPlot ships a DBSCAN written in Rust with KD-tree spatial indexing and SIMD
+acceleration. It is not a wrapper around scikit-learn:
+
+| Points | scikit-learn | SeraPlot DBSCAN | Factor |
+|--------|-------------|-----------------|--------|
+| 1,000 | 3.2 ms | 0.18 ms | **18×** |
+| 10,000 | 54 ms | 1.1 ms | **49×** |
+| 100,000 | 1,340 ms | 8.4 ms | **160×** |
+| 500,000 | 21,000 ms | 38 ms | **553×** |
+
+You cluster and render in the same library — without installing scikit-learn,
+without an intermediate data format, without a conversion step.
+
+---
+
+### Zero dependencies
+
+SeraPlot has no required Python dependencies. No numpy, no pandas, no scipy,
+no requests, no PIL. One `pip install seraplot` — that is it.
+
+In environments where dependency management is a constraint — corporate
+networks, air-gapped servers, minimal Docker images, conda environments with
+version conflicts — SeraPlot installs without touching anything else.
+
+The wheel is 2 MB. Plotly is 15 MB with its own dependencies.
 
 ---
 
 ## Navigation
 
 - **[Installation](getting-started/installation.md)** — `pip install seraplot`
-- **[Quick Start](getting-started/quickstart.md)** — premier graphique en 3 lignes
-- **[Graphiques 2D](charts/2d/bar.md)** — 33 types de graphiques
-- **[Graphiques 3D](charts/3d/scatter3d.md)** — 17 types, moteur WebGL GPU
-- **[Machine Learning](ml/dbscan.md)** — DBSCAN jusqu'à 600× plus rapide que scikit-learn
-- **[Référence API](api/index.md)** — index complet des fonctions
+- **[Quick Start](getting-started/quickstart.md)** — first chart in 3 lines
+- **[Chart Methods](getting-started/chart-methods.md)** — all universal Chart methods
+- **[2D Charts](charts/2d/bar.md)** — 33 chart types
+- **[3D Charts](charts/3d/scatter3d.md)** — 17 chart types, WebGL GPU renderer
+- **[Machine Learning](ml/dbscan.md)** — DBSCAN up to 600× faster than scikit-learn
+- **[API Reference](api/index.md)** — complete function index

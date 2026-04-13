@@ -4,11 +4,12 @@
 
 ---
 
-# Getting Started / Démarrage
+# Getting Started
 
 - [Installation](getting-started/installation.md)
-- [Quick Start / Démarrage rapide](getting-started/quickstart.md)
-- [Chart Object / Objet Chart](getting-started/chart-object.md)
+- [Quick Start](getting-started/quickstart.md)
+- [Chart Object](getting-started/chart-object.md)
+- [Chart Methods](getting-started/chart-methods.md)
 
 ---
 

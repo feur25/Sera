@@ -1,43 +1,41 @@
-# Chart Object / Objet Chart
+# Chart Object
 
-Every SeraPlot function returns a `Chart` object.
-
-Chaque fonction SeraPlot retourne un objet `Chart`.
+Every SeraPlot function returns a `Chart` object — a thin wrapper around a
+complete, standalone HTML string.
 
 ---
 
-## Properties / Propriétés
+## Properties
 
 | Property | Type | Description |
 |----------|------|-------------|
-| `html` | `str` | Full self-contained HTML string / Chaîne HTML complète autonome |
+| `html` | `str` | Full self-contained HTML string |
 
 ```python
-chart = sp.build_bar_chart("Title", labels=["A"], values=[1.0])
-
-print(type(chart.html))
-print(len(chart.html), "bytes")
+chart = sp.build_bar_chart("Title", labels=["A", "B"], values=[1.0, 2.0])
+print(type(chart.html))   # <class 'str'>
+print(len(chart.html))    # typically 20,000–90,000 bytes
 ```
 
 ---
 
-## Auto-display in Jupyter / Affichage automatique dans Jupyter
+## Auto-display in Jupyter
 
-Charts display automatically when created inside a Jupyter cell.
+Charts display automatically when created inside a Jupyter cell. No `display()`
+call needed — SeraPlot detects the Jupyter environment and renders the chart
+inline.
 
-Les graphiques s'affichent automatiquement quand ils sont créés dans une cellule Jupyter.
-
-To disable auto-display / Pour désactiver l'affichage automatique :
+To disable auto-display:
 
 ```python
 sp.set_auto_display(False)
-
 chart = sp.build_bar_chart("My Chart", labels=["A"], values=[1.0])
+# chart is returned silently — display it manually when ready
 ```
 
 ---
 
-## Manual display / Affichage manuel
+## Manual display
 
 ```python
 from IPython.display import HTML, display
@@ -48,11 +46,34 @@ display(HTML(chart.html))
 
 ---
 
-## Export to file / Export vers un fichier
+## Export to file
 
 ```python
 chart = sp.build_pie_chart("Distribution", labels=["X", "Y", "Z"], values=[30.0, 40.0, 30.0])
+chart.save("output.html")
+```
 
+Or write the HTML string directly:
+
+```python
 with open("output.html", "w", encoding="utf-8") as f:
     f.write(chart.html)
 ```
+
+---
+
+## Method chaining
+
+Every method on `Chart` returns a new `Chart`, so calls can be chained:
+
+```python
+chart = (
+    sp.build_bar_chart("Sales", labels, values)
+    .set_bg("#1e1e2e")
+    .show_grid()
+    .no_legend()
+    .set_font_size(14)
+)
+```
+
+See **[Chart Methods](chart-methods.md)** for the full reference.
