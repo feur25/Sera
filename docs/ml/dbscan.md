@@ -61,6 +61,23 @@ Le DBSCAN de SeraPlot s'exécute jusqu'à **600× plus vite** que scikit-learn s
 
 ---
 
+## Performance vs scikit-learn
+
+SeraPlot's DBSCAN is implemented entirely in Rust with spatial indexing. On the same hardware and dataset it runs **up to 600× faster** than scikit-learn's implementation.
+
+| Dataset size | SeraPlot | scikit-learn | Speedup |
+|-------------|----------|-------------|---------|
+| 1,000 pts | ~0.2 ms | ~5 ms | ~25× |
+| 10,000 pts | ~1.5 ms | ~200 ms | ~130× |
+| 100,000 pts | ~50 ms | ~30,000 ms | ~600× |
+| 500,000 pts | ~280 ms | timeout | — |
+
+The gap widens with dataset size because SeraPlot uses a KD-tree with SIMD acceleration internally, while scikit-learn's pure Python overhead dominates at high point counts.
+
+`build_dbscan_chart` runs the algorithm and renders the chart in a single call. If you only need the cluster labels (no chart), use the [`DBSCAN` class](dbscan-class.md) which is sklearn-compatible (`fit`, `labels_`, `n_clusters_`, `n_noise_`).
+
+---
+
 ## Choosing eps and min_samples
 
 - **`eps`**: Start with a k-distance graph. A good `eps` is where the sorted k-nearest-neighbor distances show a "knee". Too small → everything is noise. Too large → everything is one cluster.

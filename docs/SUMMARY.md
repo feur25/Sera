@@ -4,7 +4,7 @@
 
 ---
 
-# 🚀 Getting Started / Démarrage
+# Getting Started / Démarrage
 
 - [Installation](getting-started/installation.md)
 - [Quick Start / Démarrage rapide](getting-started/quickstart.md)
@@ -12,7 +12,7 @@
 
 ---
 
-# 📊 2D Charts / Graphiques 2D
+# 2D Charts / Graphiques 2D
 
 - [Bar Chart](charts/2d/bar.md)
 - [Horizontal Bar](charts/2d/hbar.md)
@@ -50,7 +50,7 @@
 
 ---
 
-# 🌐 3D Charts / Graphiques 3D
+# 3D Charts / Graphiques 3D
 
 - [Scatter 3D](charts/3d/scatter3d.md)
 - [Bar 3D](charts/3d/bar3d.md)
@@ -72,14 +72,14 @@
 
 ---
 
-# 🗺️ Map Charts / Cartes
+# Map Charts / Cartes
 
 - [Bubble Map](charts/map/bubble-map.md)
 - [Choropleth](charts/map/choropleth.md)
 
 ---
 
-# 🤖 Machine Learning / ML
+# Machine Learning / ML
 
 - [DBSCAN 2D](ml/dbscan.md)
 - [DBSCAN 3D](ml/dbscan3d.md)
@@ -87,7 +87,7 @@
 
 ---
 
-# ⚙️ Configuration / Configuration
+# Configuration
 
 - [Global Background](config/background.md)
 - [Auto Display](config/auto-display.md)
@@ -96,6 +96,6 @@
 
 ---
 
-# 📖 API Reference
+# API Reference
 
 - [Full Function Index](api/index.md)
