@@ -28,8 +28,6 @@ html, body {
 
 .content main {
   max-width: var(--content-max-width);
-  margin-inline-start: 0 !important;
-  margin-inline-end: auto !important;
 }
 
 /* ── Right nav arrow — dark background ───────────────────────────────────── */
