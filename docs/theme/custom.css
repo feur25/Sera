@@ -1,11 +1,42 @@
-/* ── Full-width content ──────────────────────────────────────────────────── */
-.content {
-  max-width: none !important;
-  padding: 0 40px;
+/* ── Override mdBook layout variables ────────────────────────────────────── */
+:root {
+  --content-max-width: 1400px;
+  --page-padding: 24px;
 }
+
+/* ── Force full-width at every layer ─────────────────────────────────────── */
+html, body {
+  background-color: var(--bg) !important;
+}
+
+.page-wrapper {
+  width: 100% !important;
+  box-sizing: border-box !important;
+  min-height: 100vh;
+  background-color: var(--bg) !important;
+}
+
+.page {
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.content {
+  padding: 0 24px 60px !important;
+  max-width: 100% !important;
+}
+
 .content main {
-  max-width: 1100px;
-  margin: 0 auto;
+  max-width: var(--content-max-width);
+  margin-inline-start: 0 !important;
+  margin-inline-end: auto !important;
+}
+
+/* ── Right nav arrow — dark background ───────────────────────────────────── */
+.nav-chapters,
+.nav-chapters.next,
+.nav-chapters.previous {
+  background-color: var(--bg) !important;
 }
 
 /* ── Live preview containers ─────────────────────────────────────────────── */
