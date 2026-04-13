@@ -82,7 +82,7 @@ fn run_example(code: &str, chart_var: &str) -> Option<String> {
         ".sp-xl,.sp-yl{fill:#94a3b8!important}",
         "[id^='spp']{box-shadow:none!important;border-radius:0!important}"
     );
-    let logo = "https://raw.githubusercontent.com/feur25/seraplot/main/asset/logo.png";
+    let logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png";
     let wrapper = format!(
         "import seraplot as _sp\n_sp.set_auto_display(False)\n{code}\nimport sys\n_c={chart_var}.set_bg(None).inject_css(\"{dark_css}\")\nsys.stdout.buffer.write(_c.html.encode('utf-8'))\n"
     );
