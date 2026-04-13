@@ -1,39 +1,15 @@
-/* ── Override mdBook layout variables ────────────────────────────────────── */
+/* ── Wider content — only override the max-width variable ───────────────── */
 :root {
-  --content-max-width: 1400px;
+  --content-max-width: 1200px;
   --page-padding: 24px;
 }
 
-/* ── Force full-width at every layer ─────────────────────────────────────── */
+/* ── Background fills edge-to-edge ──────────────────────────────────────── */
 html, body {
   background-color: var(--bg) !important;
 }
 
 .page-wrapper {
-  width: 100% !important;
-  box-sizing: border-box !important;
-  min-height: 100vh;
-  background-color: var(--bg) !important;
-}
-
-.page {
-  width: 100% !important;
-  box-sizing: border-box !important;
-}
-
-.content {
-  padding: 0 24px 60px !important;
-  max-width: 100% !important;
-}
-
-.content main {
-  max-width: var(--content-max-width);
-}
-
-/* ── Right nav arrow — dark background ───────────────────────────────────── */
-.nav-chapters,
-.nav-chapters.next,
-.nav-chapters.previous {
   background-color: var(--bg) !important;
 }
 
