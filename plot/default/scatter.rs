@@ -657,10 +657,8 @@ fn dbscan_core(x: &[f64], y: &[f64], eps: f64, min_samples: usize) -> (Vec<i32>,
 
     let eps_f = eps as f32;
     let eps2 = eps_f * eps_f;
-    let sub = 3u32;
-    let cell_sz = eps_f / sub as f32;
+    let cell_sz = eps_f * 0.5f32;
     let inv_cell = 1.0f32 / cell_sz;
-    let reach = sub as usize;
 
     let xf: Vec<f32> = x[..n].iter().map(|&v| v as f32).collect();
     let yf: Vec<f32> = y[..n].iter().map(|&v| v as f32).collect();
@@ -696,100 +694,321 @@ fn dbscan_core(x: &[f64], y: &[f64], eps: f64, min_samples: usize) -> (Vec<i32>,
         p[c] += 1;
     }
 
+    let ncpu = std::thread::available_parallelism().map(|v| v.get()).unwrap_or(4).min(16);
+    let ms = min_samples as u32;
 
-    let area_ratio = ((2 * sub + 1) * (2 * sub + 1)) as f32 / (std::f32::consts::PI * (sub * sub) as f32);
-    let adj_min = (min_samples as f32 * area_ratio).ceil() as u32;
-
-    let mut core_cell = vec![false; tc];
-    for c in 0..tc {
-        let gy = c / gw; let gx = c % gw;
-        let mut total = 0u32;
-        for cy in gy.saturating_sub(reach)..=(gy + reach).min(gh - 1) {
-            for cx in gx.saturating_sub(reach)..=(gx + reach).min(gw - 1) {
-                total += cc[cy * gw + cx];
-            }
+    // For each cell, precompute the count of points in the cross-shaped 5-cell neighborhood
+    // (the cell itself + 4 direct neighbors: up/down/left/right). With cell_sz = eps/2,
+    // the maximum distance between any two points in this cross is exactly eps (horizontal/
+    // vertical only), so they are guaranteed to be within the eps-ball. This allows us to
+    // skip per-point distance checks for clearly dense cells.
+    let mut cell_cross_cnt = vec![0u32; tc];
+    for cy in 0..gh {
+        for cx in 0..gw {
+            let c = cy * gw + cx;
+            if cc[c] == 0 { continue; }
+            let mut sum = cc[c];
+            if cy > 0 { sum += cc[(cy - 1) * gw + cx]; }
+            if cy + 1 < gh { sum += cc[(cy + 1) * gw + cx]; }
+            if cx > 0 { sum += cc[cy * gw + cx - 1]; }
+            if cx + 1 < gw { sum += cc[cy * gw + cx + 1]; }
+            cell_cross_cnt[c] = sum;
         }
-        core_cell[c] = total >= adj_min;
     }
+
+    let is_core: Vec<std::sync::atomic::AtomicU8> = (0..n).map(|_| std::sync::atomic::AtomicU8::new(0)).collect();
+    let task = std::sync::atomic::AtomicUsize::new(0);
+
+    std::thread::scope(|scope| {
+        for _ in 0..ncpu {
+            let (xf, yf, sx, sy, si, cs, co, is_core, cell_cross_cnt, task) =
+                (&xf, &yf, &sx, &sy, &si, &cs, &co, &is_core, &cell_cross_cnt, &task);
+            scope.spawn(move || {
+                loop {
+                    let oi = task.fetch_add(1, Ordering::Relaxed);
+                    if oi >= n { break; }
+                    let c = co[oi] as usize;
+                    if cell_cross_cnt[c] >= ms {
+                        is_core[oi].store(1, Ordering::Relaxed);
+                        continue;
+                    }
+                    let (xi, yi) = (xf[oi], yf[oi]);
+                    let (gy, gx) = (c / gw, c % gw);
+                    let mut cnt = 0u32;
+                    'outer: for cy in gy.saturating_sub(2)..=(gy + 2).min(gh - 1) {
+                        for cx in gx.saturating_sub(2)..=(gx + 2).min(gw - 1) {
+                            let (a, b) = (cs[cy * gw + cx] as usize, cs[cy * gw + cx + 1] as usize);
+                            for k in a..b {
+                                let ddx = xi - sx[k]; let ddy = yi - sy[k];
+                                if ddx * ddx + ddy * ddy <= eps2 {
+                                    cnt += 1;
+                                    if cnt >= ms {
+                                        is_core[oi].store(1, Ordering::Relaxed);
+                                        break 'outer;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
 
     let uf: Vec<AtomicU32> = (0..n).map(|i| AtomicU32::new(i as u32)).collect();
 
-    let mut crep = vec![u32::MAX; tc];
-    for c in 0..tc {
-        if !core_cell[c] { continue; }
-        let (s, e) = (cs[c] as usize, cs[c + 1] as usize);
-        for k in s..e {
-            let i = si[k] as usize;
-            if crep[c] == u32::MAX { crep[c] = i as u32; }
-            else { uf_union(&uf, crep[c] as usize, i); }
-        }
-    }
+    // Phase 2: connect core points via union-find.
+    // Key insight with cell_sz = eps/2:
+    //   - Same cell or cross-adjacent (|dx|+|dy|<=1): any two points <= eps apart. Guaranteed.
+    //   - Diagonal adjacent (|dx|=|dy|=1): max dist = sqrt(2)*eps > eps. Need exact check.
+    //   - Outer ring (max(|dx|,|dy|)=2): max dist up to sqrt(8)*eps. Need exact check.
+    //
+    // Optimization: for guaranteed pairs, we only need to connect ONE representative per
+    // cell (the first core in CSR order). All other cores in the cell are then chained to
+    // it in a second O(n) pass. This reduces Phase 2 from O(pts_per_cell^2) to O(n_cells*25).
 
-    let close_limit = (sub as f32 - std::f32::consts::SQRT_2).floor() as i32;
+    // cell_rep[c] = index into CSR of first core point in cell c, or u32::MAX if none.
+    let mut cell_rep = vec![u32::MAX; tc];
     for c in 0..tc {
-        if crep[c] == u32::MAX { continue; }
-        let r = crep[c] as usize;
-        let (gy, gx) = (c / gw, c % gw);
-        for dy in 0..=(close_limit.min(gh as i32 - 1 - gy as i32)) {
-            for dx in (-(close_limit.min(gx as i32)))..=(close_limit.min(gw as i32 - 1 - gx as i32)) {
-                if dy == 0 && dx <= 0 { continue; }
-                let c2 = (gy as i32 + dy) as usize * gw + (gx as i32 + dx) as usize;
-                if crep[c2] == u32::MAX { continue; }
-                uf_union(&uf, r, crep[c2] as usize);
+        let (a, b) = (cs[c] as usize, cs[c + 1] as usize);
+        for k in a..b {
+            let oi = si[k] as usize;
+            if is_core[oi].load(Ordering::Relaxed) == 1 {
+                cell_rep[c] = k as u32;
+                break;
             }
         }
     }
 
+    // Connect all cores within same cell to the cell representative (intra-cell).
     for c in 0..tc {
-        if crep[c] == u32::MAX { continue; }
-        let r = crep[c] as usize;
-        let (xi, yi) = (xf[r], yf[r]);
-        let (gy, gx) = (c / gw, c % gw);
-        for cy in gy.saturating_sub(reach)..=(gy + reach).min(gh - 1) {
-            for cx in gx.saturating_sub(reach)..=(gx + reach).min(gw - 1) {
-                let c2 = cy * gw + cx;
-                if c2 <= c { continue; }
-                if crep[c2] == u32::MAX { continue; }
-                let dy = if cy >= gy { cy - gy } else { gy - cy } as i32;
-                let dx = if cx >= gx { cx - gx } else { gx - cx } as i32;
-                if dy <= close_limit && dx <= close_limit { continue; }
-                let r2 = crep[c2] as usize;
-                let ddx = xi - xf[r2]; let ddy = yi - yf[r2];
-                if ddx * ddx + ddy * ddy <= eps2 { uf_union(&uf, r, r2); }
-            }
+        let kr = cell_rep[c];
+        if kr == u32::MAX { continue; }
+        let (a, b) = (cs[c] as usize, cs[c + 1] as usize);
+        let or_ = si[kr as usize] as usize;
+        for k in a..b {
+            let oi = si[k] as usize;
+            if oi == or_ { continue; }
+            if is_core[oi].load(Ordering::Relaxed) == 1 { uf_union(&uf, or_, oi); }
         }
     }
+
+    // Connect representative cores across neighboring cells, parallelized by column strips.
+    // uf_union is atomic so safe to call from multiple threads simultaneously.
+    let task3 = std::sync::atomic::AtomicUsize::new(0);
+    std::thread::scope(|scope| {
+        for _ in 0..ncpu {
+            let (sx, sy, si, cs, co, is_core, uf, cell_rep, task3) =
+                (&sx, &sy, &si, &cs, &co, &is_core, &uf, &cell_rep, &task3);
+            scope.spawn(move || {
+                loop {
+                    let cy = task3.fetch_add(1, Ordering::Relaxed);
+                    if cy >= gh { break; }
+                    for cx in 0..gw {
+                        let c = cy * gw + cx;
+                        let kr0 = cell_rep[c];
+                        if kr0 == u32::MAX { continue; }
+                        let oi = si[kr0 as usize] as usize;
+                        let (xi, yi) = (sx[kr0 as usize], sy[kr0 as usize]);
+                        for ny in cy.saturating_sub(2)..=(cy + 2).min(gh - 1) {
+                            for nx in cx.saturating_sub(2)..=(cx + 2).min(gw - 1) {
+                                let nc = ny * gw + nx;
+                                if nc <= c { continue; }
+                                let kr1 = cell_rep[nc];
+                                if kr1 == u32::MAX { continue; }
+                                let oj = si[kr1 as usize] as usize;
+                                let dcy = (ny as isize - cy as isize).unsigned_abs();
+                                let dcx = (nx as isize - cx as isize).unsigned_abs();
+                                if dcy + dcx <= 1 {
+                                    uf_union(uf, oi, oj);
+                                } else {
+                                    let (a0, b0) = (cs[c] as usize, cs[c + 1] as usize);
+                                    let (an, bn) = (cs[nc] as usize, cs[nc + 1] as usize);
+                                    'outer: for k0 in a0..b0 {
+                                        let pi = si[k0] as usize;
+                                        if is_core[pi].load(Ordering::Relaxed) == 0 { continue; }
+                                        let (pxi, pyi) = (sx[k0], sy[k0]);
+                                        for k1 in an..bn {
+                                            let pj = si[k1] as usize;
+                                            if is_core[pj].load(Ordering::Relaxed) == 0 { continue; }
+                                            let ddx = pxi - sx[k1]; let ddy = pyi - sy[k1];
+                                            if ddx * ddx + ddy * ddy <= eps2 {
+                                                uf_union(uf, pi, pj);
+                                                break 'outer;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    });
 
     let mut labels = vec![-1i32; n];
 
     for i in 0..n {
-        if core_cell[co[i] as usize] {
+        if is_core[i].load(Ordering::Relaxed) == 1 {
             labels[i] = uf_find(&uf, i) as i32;
         }
     }
 
     for i in 0..n {
         if labels[i] >= 0 { continue; }
-        let (xi, yi) = (xf[i], yf[i]);
         let c = co[i] as usize;
         let (gy, gx) = (c / gw, c % gw);
+        let (xi, yi) = (xf[i], yf[i]);
         let mut best = u32::MAX;
         let mut bd = f32::INFINITY;
-        for cy in gy.saturating_sub(reach)..=(gy + reach).min(gh - 1) {
-            for cx in gx.saturating_sub(reach)..=(gx + reach).min(gw - 1) {
-                let ci = cy * gw + cx;
-                if !core_cell[ci] { continue; }
-                let (a, b) = (cs[ci] as usize, cs[ci + 1] as usize);
+        for cy in gy.saturating_sub(2)..=(gy + 2).min(gh - 1) {
+            for cx in gx.saturating_sub(2)..=(gx + 2).min(gw - 1) {
+                let (a, b) = (cs[cy * gw + cx] as usize, cs[cy * gw + cx + 1] as usize);
                 for k in a..b {
+                    let oj = si[k] as usize;
+                    if is_core[oj].load(Ordering::Relaxed) == 0 { continue; }
                     let dx = xi - sx[k]; let dy = yi - sy[k];
                     let d = dx * dx + dy * dy;
-                    if d <= eps2 && d < bd { bd = d; best = si[k]; }
+                    if d <= eps2 && d < bd { bd = d; best = oj as u32; }
                 }
             }
         }
         if best != u32::MAX {
             labels[i] = uf_find(&uf, best as usize) as i32;
         }
+    }
+
+    let mut rm = std::collections::HashMap::<i32, i32>::new();
+    let mut cid = 0i32;
+    for l in labels.iter_mut() {
+        if *l >= 0 {
+            let e = rm.entry(*l).or_insert_with(|| { let v = cid; cid += 1; v });
+            *l = *e;
+        }
+    }
+
+    (labels, cid as usize)
+}
+
+pub fn dbscan_core_nd(data: &[Vec<f64>], eps: f64, min_samples: usize) -> (Vec<i32>, usize) {
+    use std::sync::atomic::{AtomicU32, AtomicU8, Ordering};
+
+    let n = data.len();
+    if n == 0 { return (Vec::new(), 0); }
+    let d = data[0].len();
+    if d == 0 { return (vec![-1; n], 0); }
+
+    if d == 2 {
+        let x: Vec<f64> = data.iter().map(|p| p[0]).collect();
+        let y: Vec<f64> = data.iter().map(|p| p[1]).collect();
+        return dbscan_core(&x, &y, eps, min_samples);
+    }
+
+    let eps2 = eps * eps;
+    let ms = min_samples as u32;
+    let ncpu = std::thread::available_parallelism().map(|v| v.get()).unwrap_or(4).min(16);
+
+    fn uf_find(uf: &[AtomicU32], mut x: usize) -> usize {
+        loop {
+            let p = uf[x].load(Ordering::Relaxed) as usize;
+            if p == x { return x; }
+            let gp = uf[p].load(Ordering::Relaxed) as usize;
+            let _ = uf[x].compare_exchange_weak(p as u32, gp as u32, Ordering::Relaxed, Ordering::Relaxed);
+            x = p;
+        }
+    }
+    fn uf_union(uf: &[AtomicU32], a: usize, b: usize) {
+        loop {
+            let (ra, rb) = (uf_find(uf, a), uf_find(uf, b));
+            if ra == rb { return; }
+            let (lo, hi) = if ra < rb { (ra, rb) } else { (rb, ra) };
+            if uf[hi].compare_exchange_weak(hi as u32, lo as u32, Ordering::AcqRel, Ordering::Relaxed).is_ok() { return; }
+        }
+    }
+
+    let mut order: Vec<usize> = (0..n).collect();
+    order.sort_unstable_by(|&a, &b| data[a][0].partial_cmp(&data[b][0]).unwrap_or(std::cmp::Ordering::Equal));
+
+    let sorted_c0: Vec<f64> = order.iter().map(|&oi| data[oi][0]).collect();
+
+    let mut inv_order = vec![0usize; n];
+    for (si, &oi) in order.iter().enumerate() { inv_order[oi] = si; }
+
+    let is_core: Vec<AtomicU8> = (0..n).map(|_| AtomicU8::new(0)).collect();
+    let task1 = AtomicU32::new(0);
+    std::thread::scope(|s| {
+        for _ in 0..ncpu {
+            let (data, order, sorted_c0, is_core, task1) =
+                (&data, &order, &sorted_c0, &is_core, &task1);
+            s.spawn(move || loop {
+                let si = task1.fetch_add(1, Ordering::Relaxed) as usize;
+                if si >= n { break; }
+                let oi = order[si];
+                let pt = &data[oi];
+                let lo = sorted_c0.partition_point(|&v| v < pt[0] - eps);
+                let hi = sorted_c0.partition_point(|&v| v <= pt[0] + eps);
+                let mut cnt = 0u32;
+                for sj in lo..hi {
+                    let oj = order[sj];
+                    let d2: f64 = pt.iter().zip(data[oj].iter()).map(|(&a, &b)| (a - b) * (a - b)).sum();
+                    if d2 <= eps2 {
+                        cnt += 1;
+                        if cnt >= ms { is_core[oi].store(1, Ordering::Relaxed); break; }
+                    }
+                }
+            });
+        }
+    });
+
+    let uf: Vec<AtomicU32> = (0..n).map(|i| AtomicU32::new(i as u32)).collect();
+    let task2 = AtomicU32::new(0);
+    std::thread::scope(|s| {
+        for _ in 0..ncpu {
+            let (data, order, sorted_c0, is_core, uf, task2) =
+                (&data, &order, &sorted_c0, &is_core, &uf, &task2);
+            s.spawn(move || loop {
+                let si = task2.fetch_add(1, Ordering::Relaxed) as usize;
+                if si >= n { break; }
+                let oi = order[si];
+                if is_core[oi].load(Ordering::Relaxed) == 0 { continue; }
+                let pt = &data[oi];
+                let lo = sorted_c0.partition_point(|&v| v < pt[0] - eps);
+                let hi = sorted_c0.partition_point(|&v| v <= pt[0] + eps);
+                for sj in lo..hi {
+                    if sj <= si { continue; } // process each pair once
+                    let oj = order[sj];
+                    if is_core[oj].load(Ordering::Relaxed) == 0 { continue; }
+                    let d2: f64 = pt.iter().zip(data[oj].iter()).map(|(&a, &b)| (a - b) * (a - b)).sum();
+                    if d2 <= eps2 { uf_union(&uf, oi, oj); }
+                }
+            });
+        }
+    });
+
+    let mut labels = vec![-1i32; n];
+    for i in 0..n {
+        if is_core[i].load(Ordering::Relaxed) == 1 {
+            labels[i] = uf_find(&uf, i) as i32;
+        }
+    }
+
+    for i in 0..n {
+        if labels[i] >= 0 { continue; }
+        let pt = &data[i];
+        let si = inv_order[i];
+        let lo = sorted_c0.partition_point(|&v| v < pt[0] - eps);
+        let hi = sorted_c0.partition_point(|&v| v <= pt[0] + eps);
+        let mut best_root = u32::MAX;
+        let mut best_d = f64::INFINITY;
+        for sj in lo..hi {
+            if sj == si { continue; }
+            let oj = order[sj];
+            if is_core[oj].load(Ordering::Relaxed) == 0 { continue; }
+            let d2: f64 = pt.iter().zip(data[oj].iter()).map(|(&a, &b)| (a - b) * (a - b)).sum();
+            if d2 <= eps2 && d2 < best_d { best_d = d2; best_root = uf_find(&uf, oj) as u32; }
+        }
+        if best_root != u32::MAX { labels[i] = best_root as i32; }
     }
 
     let mut rm = std::collections::HashMap::<i32, i32>::new();
@@ -852,11 +1071,23 @@ fn render_dbscan_canvas(
         let est = n / ng + 64;
         group_raw[gi].reserve(est);
     }
+    // Deduplicate at pixel level for large datasets: no visual difference,
+    // but drastically reduces HTML size and encoding time.
+    let dedup = n > 50_000;
+    let mut seen: std::collections::HashSet<u64> = if dedup {
+        std::collections::HashSet::with_capacity((plot_w * plot_h) as usize)
+    } else {
+        std::collections::HashSet::new()
+    };
     for i in 0..n {
-        let px = ((x_values[i] - min_x) * inv_rx).clamp(0.0, (plot_w - 1) as f64) as i16;
-        let py = (plot_h as f64 - (y_values[i] - min_y) * inv_ry).clamp(0.0, (plot_h - 1) as f64) as i16;
-        let gi = if labels[i] < 0 { noise_gi } else { labels[i] as usize };
-        group_raw[gi.min(ng - 1)].push((px, py));
+        let px = ((x_values[i] - min_x) * inv_rx).clamp(0.0, (plot_w - 1) as f64) as u32;
+        let py = (plot_h as f64 - (y_values[i] - min_y) * inv_ry).clamp(0.0, (plot_h - 1) as f64) as u32;
+        let gi = if labels[i] < 0 { noise_gi } else { labels[i] as usize }.min(ng - 1);
+        if dedup {
+            let key = ((gi as u64) << 40) | ((px as u64) << 20) | (py as u64);
+            if !seen.insert(key) { continue; }
+        }
+        group_raw[gi].push((px as i16, py as i16));
     }
 
     let group_b64: Vec<String> = group_raw.iter().map(|pts| {

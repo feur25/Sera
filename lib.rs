@@ -37,6 +37,17 @@ impl SeraPlot {
 use pyo3::prelude::*;
 
 #[cfg(feature = "python")]
+static GLOBAL_BACKGROUND: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+
+#[cfg(feature = "python")]
+static AUTO_DISPLAY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
+
+#[cfg(feature = "python")]
+pub fn get_global_background() -> Option<String> {
+    GLOBAL_BACKGROUND.lock().ok().and_then(|g| g.clone())
+}
+
+#[cfg(feature = "python")]
 #[pyclass(module = "seraplot")]
 pub struct Chart {
     html: String,
@@ -310,7 +321,18 @@ impl Chart {
 #[cfg(feature = "python")]
 impl Chart {
     fn new(html: String) -> Self {
-        Self { html }
+        // Apply global background if one was set via sp.set_global_background(...)
+        let html = if let Some(bg) = get_global_background() {
+            crate::html::hover::apply_bg(html, Some(&bg))
+        } else {
+            html
+        };
+        let chart = Self { html };
+        // Auto-display in Jupyter when the flag is enabled (default: true)
+        if AUTO_DISPLAY.load(std::sync::atomic::Ordering::Relaxed) {
+            Python::with_gil(|py| auto_show_in_jupyter(py, &chart));
+        }
+        chart
     }
 
     fn chart_iframe(&self) -> String {
@@ -343,12 +365,58 @@ impl Chart {
     }
 }
 
+/// Silently attempt to display a chart in Jupyter/IPython.
+/// Does nothing if not running inside an IPython kernel.
+#[cfg(feature = "python")]
+fn auto_show_in_jupyter(py: Python<'_>, chart: &Chart) {
+    let _ = (|| -> PyResult<()> {
+        let ipython = py.import("IPython")?;
+        let ip = ipython.getattr("get_ipython")?.call0()?;
+        if ip.is_none() { return Ok(()); }
+        let display_mod = py.import("IPython.display")?;
+        let html_cls = display_mod.getattr("HTML")?;
+        let display_fn = display_mod.getattr("display")?;
+        let html_obj = html_cls.call1((chart.chart_iframe().as_str(),))?;
+        display_fn.call1((html_obj,))?;
+        Ok(())
+    })();
+}
+
+/// Set a background color applied to every chart created from now on.
+/// Accepts any CSS color string, e.g. `"#0f172a"`, `"black"`, `"rgb(15,23,42)"`.
+#[cfg(feature = "python")]
+#[pyfunction]
+pub fn set_global_background(color: &str) {
+    if let Ok(mut bg) = GLOBAL_BACKGROUND.lock() {
+        *bg = Some(color.to_string());
+    }
+}
+
+/// Remove the previously set global background.
+#[cfg(feature = "python")]
+#[pyfunction]
+pub fn reset_global_background() {
+    if let Ok(mut bg) = GLOBAL_BACKGROUND.lock() {
+        *bg = None;
+    }
+}
+
+/// Enable or disable auto-display of charts in Jupyter notebooks (default: enabled).
+#[cfg(feature = "python")]
+#[pyfunction]
+pub fn set_auto_display(enabled: bool) {
+    AUTO_DISPLAY.store(enabled, std::sync::atomic::Ordering::Relaxed);
+}
+
 #[cfg(feature = "python")]
 #[pymodule]
 fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Chart>()?;
     m.add("__version__", VERSION)?;
     m.add("__doc__", "SeraPlot - Rust-Powered Data Visualization Framework\n\nSubmodules:\n  seraplot.charts   - bar, line, scatter, hbar\n  seraplot.stats    - histogram, grouped_bar, violin, heatmap, pie, ...\n  seraplot.geo      - choropleth, bubble_map\n  seraplot.three_d  - scatter3d, bar3d, line3d\n  seraplot.engine   - show_chart_value, bench, set_bg, ...")?;
+    m.add_function(wrap_pyfunction!(set_global_background, m)?)?;
+    m.add_function(wrap_pyfunction!(reset_global_background, m)?)?;
+    m.add_function(wrap_pyfunction!(set_auto_display, m)?)?;
     bindings::python::python_registry::register_submodules(py, m)?;
     Ok(())
 }

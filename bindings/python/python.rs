@@ -203,6 +203,116 @@ pub fn build_dbscan_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, e
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, true, true)))
 }
 
+/// DBSCAN model — sklearn-compatible API.
+///
+/// Supports N-dimensional data (2-D uses the blazing-fast grid CSR engine; 3+-D uses
+/// a parallel 1-D-sort-filtered exact DBSCAN).
+///
+/// ## Usage
+/// ```python
+/// model = sp.DBSCAN(eps=0.5, min_samples=10)
+/// labels = model.fit_predict(X)   # X: list[list[float]]
+/// print(model.n_clusters_, model.n_noise_)
+/// ```
+#[cfg(feature = "python")]
+#[pyclass(module = "seraplot", name = "DBSCAN")]
+pub struct DbscanModel {
+    eps: f64,
+    min_samples: usize,
+    labels_: Vec<i32>,
+    n_clusters_: usize,
+    n_noise_: usize,
+}
+
+#[cfg(feature = "python")]
+#[pymethods]
+impl DbscanModel {
+    #[new]
+    #[pyo3(signature = (eps=0.5, min_samples=5))]
+    pub fn py_new(eps: f64, min_samples: usize) -> Self {
+        DbscanModel { eps, min_samples, labels_: Vec::new(), n_clusters_: 0, n_noise_: 0 }
+    }
+
+    #[pyo3(signature = (x))]
+    pub fn fit(&mut self, x: Vec<Vec<f64>>) -> PyResult<()> {
+        let (labels, n_clusters) = crate::plot::default::scatter::dbscan_core_nd(&x, self.eps, self.min_samples);
+        self.n_noise_ = labels.iter().filter(|&&l| l < 0).count();
+        self.labels_ = labels;
+        self.n_clusters_ = n_clusters;
+        Ok(())
+    }
+
+    #[pyo3(signature = (x))]
+    pub fn fit_predict(&mut self, x: Vec<Vec<f64>>) -> PyResult<Vec<i32>> {
+        self.fit(x)?;
+        Ok(self.labels_.clone())
+    }
+
+    #[getter]
+    pub fn labels_(&self) -> Vec<i32> { self.labels_.clone() }
+
+    #[getter]
+    pub fn n_clusters_(&self) -> usize { self.n_clusters_ }
+
+    #[getter]
+    pub fn n_noise_(&self) -> usize { self.n_noise_ }
+
+    #[getter]
+    pub fn eps(&self) -> f64 { self.eps }
+
+    #[getter]
+    pub fn min_samples(&self) -> usize { self.min_samples }
+
+    fn __repr__(&self) -> String {
+        format!(
+            "DBSCAN(eps={}, min_samples={}) — {} clusters, {} noise",
+            self.eps, self.min_samples, self.n_clusters_, self.n_noise_
+        )
+    }
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (title, x_values, y_values, z_values, *, eps=0.5_f64, min_samples=5_usize, width=900_i32, height=560_i32, x_label="X", y_label="Y", z_label="Z", bg_color="", normalize=false, palette=None))]
+/// 3-D DBSCAN scatter visualisation.
+///
+/// Runs DBSCAN on (x, y, z), colours each point by its cluster, and renders a 3-D interactive chart.
+/// Noise points are labelled "Bruit".
+///
+/// Args: title, x_values, y_values, z_values.
+///
+/// Kwargs: eps, min_samples, width, height, x_label, y_label, z_label, bg_color, normalize, palette.
+pub fn build_dbscan_chart_3d(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, eps: f64, min_samples: usize, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, bg_color: &str, normalize: bool, palette: Option<Vec<u32>>) -> PyResult<Chart> {
+    let n = x_values.len().min(y_values.len()).min(z_values.len());
+    let (xn, yn, zn) = if normalize && n > 0 {
+        let (xmn, xmx) = x_values[..n].iter().fold((f64::INFINITY, f64::NEG_INFINITY), |(a,b),&v| (a.min(v),b.max(v)));
+        let (ymn, ymx) = y_values[..n].iter().fold((f64::INFINITY, f64::NEG_INFINITY), |(a,b),&v| (a.min(v),b.max(v)));
+        let (zmn, zmx) = z_values[..n].iter().fold((f64::INFINITY, f64::NEG_INFINITY), |(a,b),&v| (a.min(v),b.max(v)));
+        let xr = (xmx - xmn).max(1e-12); let yr = (ymx - ymn).max(1e-12); let zr = (zmx - zmn).max(1e-12);
+        (
+            x_values[..n].iter().map(|&v| (v - xmn) / xr).collect::<Vec<_>>(),
+            y_values[..n].iter().map(|&v| (v - ymn) / yr).collect::<Vec<_>>(),
+            z_values[..n].iter().map(|&v| (v - zmn) / zr).collect::<Vec<_>>(),
+        )
+    } else {
+        (x_values[..n].to_vec(), y_values[..n].to_vec(), z_values[..n].to_vec())
+    };
+
+    let data: Vec<Vec<f64>> = (0..n).map(|i| vec![xn[i], yn[i], zn[i]]).collect();
+    let (labels, _n_clusters) = crate::plot::default::scatter::dbscan_core_nd(&data, eps, min_samples);
+
+    let color_labels: Vec<String> = labels.iter().map(|&l| {
+        if l < 0 { "Bruit".to_string() } else { format!("Cluster {}", l + 1) }
+    }).collect();
+
+    let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
+    let _ = palette;
+    Ok(Chart::new(crate::plot::default::render_scatter3d_html(
+        title, &xn, &yn, &zn,
+        (x_label, y_label, z_label), &[], &color_labels, width, height, bg,
+    )))
+}
+
 #[cfg(feature = "python")]
 #[pyfunction]
 #[pyo3(signature = (title, x_values, y_values, *, color_hex=0_u32, show_text=false, labels=None, sizes=None, color_groups=None, width=900_i32, height=540_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false, show_regression=false, regression_type="linear"))]
