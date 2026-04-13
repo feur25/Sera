@@ -1,4 +1,4 @@
-﻿# Stacked Bar Chart 3D
+# Stacked Bar Chart 3D
 
 ## Signature
 

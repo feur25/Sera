@@ -1,4 +1,4 @@
-﻿# Bar Chart / Graphique en barres
+# Bar Chart
 
 ## Signature
 
@@ -42,25 +42,25 @@ Affiche un graphique en barres vertical ou horizontal.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `title` | `str` | required | Chart title / Titre du graphique |
+| `title` | `str` | required | Chart title|
 | `labels` | `list[str]` | required | Category labels|
-| `values` | `list[float]` | required | Bar values / Valeurs des barres |
-| `color_hex` | `int` | `0` | Single bar color as hex int (e.g. `0xFF5733`) / Couleur unique en hex |
+| `values` | `list[float]` | required | Bar values|
+| `color_hex` | `int` | `0` | Single bar color as hex int (e.g. `0xFF5733`)|
 | `orientation` | `str` | `"v"` | `"v"` = vertical, `"h"` = horizontal |
-| `show_text` | `bool` | `False` | Show value labels on bars / Afficher les valeurs sur les barres |
-| `color_groups` | `list[str] \| None` | `None` | Per-bar group name for coloring / Groupe par barre pour la couleur |
-| `width` | `int` | `900` | Canvas width in pixels / Largeur en pixels |
-| `height` | `int` | `480` | Canvas height in pixels / Hauteur en pixels |
+| `show_text` | `bool` | `False` | Show value labels on bars|
+| `color_groups` | `list[str] \| None` | `None` | Per-bar group name for coloring|
+| `width` | `int` | `900` | Canvas width in pixels|
+| `height` | `int` | `480` | Canvas height in pixels|
 | `x_label` | `str` | `""` | X-axis label|
 | `y_label` | `str` | `""` | Y-axis label|
-| `gridlines` | `bool` | `False` | Show gridlines / Afficher la grille |
+| `gridlines` | `bool` | `False` | Show gridlines|
 | `sort_order` | `str` | `"none"` | `"asc"`, `"desc"`, or `"none"` |
 | `hover_json` | `str` | `""` | Custom hover tooltip JSON|
 | `legend_position` | `str` | `"right"` | `"right"`, `"left"`, `"top"`, `"bottom"` |
 | `palette` | `list[int] \| None` | `None` | Custom color palette as list of hex ints |
 | `background` | `str \| None` | `None` | Background color (e.g. `"#0f172a"`) or `None` = transparent |
-| `no_x_axis` | `bool` | `False` | Hide X axis / Masquer l'axe X |
-| `no_y_axis` | `bool` | `False` | Hide Y axis / Masquer l'axe Y |
+| `no_x_axis` | `bool` | `False` | Hide X axis|
+| `no_y_axis` | `bool` | `False` | Hide Y axis|
 
 ---
 

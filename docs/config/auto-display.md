@@ -1,4 +1,4 @@
-﻿# Auto Display (Jupyter)
+# Auto Display (Jupyter)
 
 ## Signature
 

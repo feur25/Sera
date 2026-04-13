@@ -1,4 +1,4 @@
-﻿# Bubble Map
+# Bubble Map
 
 ## Signature
 

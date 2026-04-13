@@ -65,8 +65,6 @@ out = f"""\
 
 Complete alphabetical index of every public symbol exported by `seraplot`.
 
-Index alphabétique complet de tous les symboles publics exportés par `seraplot`.
-
 ---
 
 ## Module: `seraplot`

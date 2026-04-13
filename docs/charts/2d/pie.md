@@ -1,4 +1,4 @@
-﻿# Pie Chart
+# Pie Chart
 
 ## Signature
 

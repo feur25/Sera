@@ -1,4 +1,4 @@
-﻿# Radar Chart 3D
+# Radar Chart 3D
 
 ## Signature
 

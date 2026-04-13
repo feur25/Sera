@@ -1,4 +1,4 @@
-﻿# Funnel Chart 3D
+# Funnel Chart 3D
 
 ## Signature
 

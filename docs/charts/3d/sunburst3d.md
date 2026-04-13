@@ -1,4 +1,4 @@
-﻿# Sunburst Chart 3D
+# Sunburst Chart 3D
 
 ## Signature
 

@@ -1,4 +1,4 @@
-﻿# Candlestick Chart
+# Candlestick Chart
 
 ## Signature
 

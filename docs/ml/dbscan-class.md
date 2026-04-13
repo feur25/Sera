@@ -1,4 +1,4 @@
-﻿# DBSCAN Class
+# DBSCAN Class
 
 ## Signature
 

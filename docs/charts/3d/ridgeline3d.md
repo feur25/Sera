@@ -1,4 +1,4 @@
-﻿# Ridgeline Chart 3D
+# Ridgeline Chart 3D
 
 ## Signature
 

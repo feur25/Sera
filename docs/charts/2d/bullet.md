@@ -1,4 +1,4 @@
-﻿# Bullet Chart
+# Bullet Chart
 
 ## Signature
 

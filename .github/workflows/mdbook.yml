@@ -41,6 +41,12 @@ jobs:
           chmod +x /usr/local/bin/mdbook
           mdbook --version
 
+      - name: Install SeraPlot
+        run: pip install seraplot==2.3.47
+
+      - name: Generate chart previews
+        run: python3 scripts/gen_previews.py
+
       - name: Generate API index
         run: python3 scripts/gen_index.py
 

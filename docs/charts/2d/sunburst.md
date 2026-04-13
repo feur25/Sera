@@ -1,4 +1,4 @@
-﻿# Sunburst Chart
+# Sunburst Chart
 
 ## Signature
 

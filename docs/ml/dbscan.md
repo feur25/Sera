@@ -1,4 +1,4 @@
-﻿# DBSCAN Chart
+# DBSCAN Chart
 
 ## Signature
 

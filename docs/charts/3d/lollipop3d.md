@@ -1,4 +1,4 @@
-﻿# Lollipop Chart 3D
+# Lollipop Chart 3D
 
 ## Signature
 

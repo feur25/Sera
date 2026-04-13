@@ -1,4 +1,4 @@
-﻿# Treemap
+# Treemap
 
 ## Signature
 

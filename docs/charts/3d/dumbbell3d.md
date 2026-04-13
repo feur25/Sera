@@ -1,4 +1,4 @@
-﻿# Dumbbell Chart 3D
+# Dumbbell Chart 3D
 
 ## Signature
 

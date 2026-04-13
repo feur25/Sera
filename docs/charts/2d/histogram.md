@@ -1,4 +1,4 @@
-﻿# Histogram / Histogramme
+# Histogram
 
 ## Signature
 

@@ -1,4 +1,4 @@
-﻿# Installation
+# Installation
 
 ## Requirements
 
@@ -43,7 +43,7 @@ uv sync
 
 ---
 
-## conda / mamba
+## conda
 
 ```bash
 conda install -c conda-forge seraplot

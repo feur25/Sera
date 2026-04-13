@@ -1,4 +1,4 @@
-﻿# Horizontal Bar Chart / Barres horizontales
+# Horizontal Bar Chart
 
 ## Signature
 

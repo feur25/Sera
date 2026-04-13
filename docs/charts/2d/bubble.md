@@ -1,4 +1,4 @@
-﻿# Bubble Chart
+# Bubble Chart
 
 ## Signature
 

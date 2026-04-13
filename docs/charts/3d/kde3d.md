@@ -1,4 +1,4 @@
-﻿# KDE Chart 3D
+# KDE Chart 3D
 
 ## Signature
 

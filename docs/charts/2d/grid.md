@@ -1,4 +1,4 @@
-﻿# Grid Layout
+# Grid Layout
 
 ## Signature
 

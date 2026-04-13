@@ -1,4 +1,4 @@
-﻿# Waterfall Chart
+# Waterfall Chart
 
 ## Signature
 

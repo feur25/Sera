@@ -1,4 +1,4 @@
-﻿# Parallel Coordinates
+# Parallel Coordinates
 
 ## Signature
 

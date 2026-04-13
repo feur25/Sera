@@ -1,4 +1,4 @@
-﻿# Ridgeline Chart
+# Ridgeline Chart
 
 ## Signature
 

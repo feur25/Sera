@@ -1,4 +1,4 @@
-﻿# Lollipop Chart
+# Lollipop Chart
 
 ## Signature
 

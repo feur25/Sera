@@ -1,4 +1,4 @@
-﻿# Violin Chart
+# Violin Chart
 
 ## Signature
 

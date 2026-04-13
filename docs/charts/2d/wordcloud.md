@@ -1,4 +1,4 @@
-﻿# Word Cloud
+# Word Cloud
 
 ## Signature
 
@@ -31,7 +31,7 @@ Words with higher `weights` are displayed larger. Layout is computed via a spira
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `title` | `str` | required | Chart title |
-| `words` | `list[str]` | required | Word / tag strings |
+| `words` | `list[str]` | required | Word|
 | `weights` | `list[float]` | required | Weight per word (higher = larger) |
 | `width` | `int` | `900` | Canvas width |
 | `height` | `int` | `480` | Canvas height |

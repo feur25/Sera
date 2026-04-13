@@ -1,4 +1,4 @@
-﻿# Heatmap 3D
+# Heatmap 3D
 
 ## Signature
 

@@ -1,4 +1,4 @@
-﻿# Candlestick Chart 3D
+# Candlestick Chart 3D
 
 ## Signature
 

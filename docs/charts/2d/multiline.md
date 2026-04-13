@@ -1,4 +1,4 @@
-﻿# Multi-Line Chart
+# Multi-Line Chart
 
 ## Signature
 

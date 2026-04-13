@@ -1,4 +1,4 @@
-﻿# Bubble Chart 3D
+# Bubble Chart 3D
 
 ## Signature
 

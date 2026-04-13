@@ -1,4 +1,4 @@
-﻿# Violin Chart 3D
+# Violin Chart 3D
 
 ## Signature
 

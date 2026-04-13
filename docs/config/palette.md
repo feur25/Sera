@@ -1,4 +1,4 @@
-﻿# Palette & Colors
+# Palette & Colors
 
 ## Overview
 

@@ -1,4 +1,4 @@
-﻿# Radar Chart
+# Radar Chart
 
 ## Signature
 

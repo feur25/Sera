@@ -1,4 +1,4 @@
-﻿# Gauge Chart
+# Gauge Chart
 
 ## Signature
 

@@ -1,4 +1,4 @@
-﻿# Donut Chart
+# Donut Chart
 
 ## Signature
 

@@ -1,4 +1,4 @@
-﻿# Area Chart
+# Area Chart
 
 ## Signature
 

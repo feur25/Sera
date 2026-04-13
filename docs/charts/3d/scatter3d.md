@@ -1,4 +1,4 @@
-﻿# Scatter 3D
+# Scatter 3D
 
 ## Signature
 

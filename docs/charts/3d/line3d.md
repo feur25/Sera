@@ -1,4 +1,4 @@
-﻿# Line Chart 3D
+# Line Chart 3D
 
 ## Signature
 

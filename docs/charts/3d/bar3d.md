@@ -1,4 +1,4 @@
-﻿# Bar Chart 3D
+# Bar Chart 3D
 
 ## Signature
 

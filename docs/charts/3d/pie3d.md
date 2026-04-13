@@ -1,4 +1,4 @@
-﻿# Pie Chart 3D
+# Pie Chart 3D
 
 ## Signature
 

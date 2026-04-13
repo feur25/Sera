@@ -1,4 +1,4 @@
-﻿# Choropleth Map
+# Choropleth Map
 
 ## Signature
 
@@ -36,7 +36,7 @@ Countries without data receive the `null_color`. Provide `iso_codes` (ISO-3166 a
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `title` | `str` | required | Chart title |
-| `labels` | `list[str]` | required | Country / region names |
+| `labels` | `list[str]` | required | Country|
 | `values` | `list[float]` | required | Values to color by |
 | `iso_codes` | `list[str] \| None` | `None` | ISO-3166 alpha-3 codes |
 | `color_low` | `int` | auto | Low value color |

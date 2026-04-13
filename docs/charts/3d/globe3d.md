@@ -1,4 +1,4 @@
-﻿# Globe 3D
+# Globe 3D
 
 ## Signature
 

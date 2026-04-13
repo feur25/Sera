@@ -171,8 +171,8 @@ Full control surface:
 | `set_bg(color)` | Background color of the entire HTML wrapper |
 | `set_global_background(color)` | Applied to all charts in the current session |
 | `set_frame(color)` | SVG canvas background, independent of the HTML wrapper |
-| `show_grid()` / `hide_grid()` | Enable or disable gridlines |
-| `no_x_axis()` / `no_y_axis()` / `no_axes()` | Remove axes selectively |
+| `show_grid()`| Enable or disable gridlines |
+| `no_x_axis()`| Remove axes selectively |
 | `show_labels(position, labels, colors)` | Show value labels on each element (top/bottom/left/right) |
 | `no_legend()` | Remove the legend |
 | `no_title()` | Remove the title |

@@ -1,4 +1,4 @@
-﻿# Scatter Chart / Nuage de points
+# Scatter Chart
 
 ## Signature
 

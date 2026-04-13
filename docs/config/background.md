@@ -1,4 +1,4 @@
-﻿# Background Configuration
+# Background Configuration
 
 ## Functions
 

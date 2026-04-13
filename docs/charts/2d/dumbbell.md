@@ -1,4 +1,4 @@
-﻿# Dumbbell Chart
+# Dumbbell Chart
 
 ## Signature
 

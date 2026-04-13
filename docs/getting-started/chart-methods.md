@@ -1,4 +1,4 @@
-﻿# Chart Methods
+# Chart Methods
 
 These methods are available on every `Chart` object returned by any SeraPlot
 function. They all return a new `Chart`, so they can be chained freely.
@@ -160,7 +160,7 @@ SVG DOM — override any internal class, change colors, animations, fonts.
 
 SeraPlot's internal CSS classes:
 
-| Class / selector | Target |
+| Class| Target |
 |-----------------|--------|
 | `svg text` | All text in the chart |
 | `.sp-gl` | Gridlines |

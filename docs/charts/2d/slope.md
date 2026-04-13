@@ -1,4 +1,4 @@
-﻿# Slope Chart
+# Slope Chart
 
 ## Signature
 

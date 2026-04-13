@@ -1,4 +1,4 @@
-﻿# Funnel Chart
+# Funnel Chart
 
 ## Signature
 

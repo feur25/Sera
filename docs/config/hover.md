@@ -1,4 +1,4 @@
-﻿# Custom Hover Tooltips
+# Custom Hover Tooltips
 
 ## Signature
 

@@ -1,4 +1,4 @@
-﻿# Box Plot
+# Box Plot
 
 ## Signature
 
