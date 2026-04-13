@@ -66,7 +66,7 @@ values = [
     140.0, 120.0, 175.0,
 ]
 
-logo = "https://raw.githubusercontent.com/feur25/seraplot/main/asset/logo.png"
+logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 hover = sp.build_hover_json(categories * 3, images=[logo] * len(categories * 3))
 
 chart = (

@@ -276,7 +276,7 @@ import seraplot as sp
 countries = ["France", "Germany", "Spain", "Italy"]
 gdp = [2.9, 4.2, 1.4, 2.1]
 
-logo = "https://raw.githubusercontent.com/feur25/seraplot/main/asset/logo.png"
+logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 hover = sp.build_hover_json(countries, images=[logo] * len(countries))
 
 chart = sp.build_bar_chart(
@@ -297,7 +297,7 @@ import seraplot as sp
 labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
 values = [41.2, 38.5, 55.1, 62.0, 58.7, 71.4]
 
-logo = "https://raw.githubusercontent.com/feur25/seraplot/main/asset/logo.png"
+logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 hover = sp.build_hover_json(labels, images=[logo] * len(labels))
 
 chart = (

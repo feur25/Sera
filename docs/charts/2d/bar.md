@@ -80,7 +80,7 @@ import seraplot as sp
 labels = ["Jan", "Feb", "Mar", "Apr", "May"]
 values = [1200.0, 1850.0, 2100.0, 1750.0, 2400.0]
 
-logo = "https://raw.githubusercontent.com/feur25/seraplot/main/asset/logo.png"
+logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 hover = sp.build_hover_json(labels, images=[logo] * len(labels))
 
 chart = (
