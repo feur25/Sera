@@ -1,0 +1,85 @@
+# Histogram / Histogramme
+
+## Signature
+
+```python
+sp.build_histogram(
+    title: str,
+    values: list[float],
+    *,
+    color_hex: int = 0,
+    bins: int = 20,
+    show_counts: bool = False,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+    sort_order: str = "none",
+    hover_json: str = "",
+    legend_position: str = "right",
+    palette: list[int] | None = None,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+) -> Chart
+```
+
+---
+
+## Description
+
+Distribution histogram with configurable bin count.
+
+Histogramme de distribution avec nombre de bins configurable.
+
+---
+
+## Parameters / Paramètres
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `title` | `str` | required | Chart title |
+| `values` | `list[float]` | required | Raw numerical data |
+| `bins` | `int` | `20` | Number of histogram bins |
+| `show_counts` | `bool` | `False` | Show count labels above each bar |
+| `color_hex` | `int` | `0` | Bar color as hex int |
+| `width` | `int` | `900` | Width in pixels |
+| `height` | `int` | `480` | Height in pixels |
+
+---
+
+## Returns / Retour
+
+`Chart`
+
+---
+
+## Examples / Exemples
+
+### Normal distribution
+
+```python
+import seraplot as sp
+import numpy as np
+
+data = np.random.normal(0, 1, 5000).tolist()
+
+chart = sp.build_histogram(
+    "Normal Distribution — N(0,1)",
+    values=data,
+    bins=40,
+    x_label="Value",
+    y_label="Count",
+    gridlines=True,
+    show_counts=False,
+)
+```
+
+---
+
+## See also / Voir aussi
+
+- [Histogram Overlay](histogram-overlay.md) — compare two distributions
+- [KDE](kde.md) — smooth density estimate
+- [Violin](violin.md) — distribution by category

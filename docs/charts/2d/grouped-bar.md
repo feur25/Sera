@@ -1,0 +1,90 @@
+# Grouped Bar / Barres groupées
+
+## Signature
+
+```python
+sp.build_grouped_bar(
+    title: str,
+    category_labels: list[str],
+    series_values: list[float],
+    *,
+    show_values: bool = False,
+    series_names: list[str] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+    sort_order: str = "none",
+    hover_json: str = "",
+    legend_position: str = "right",
+    palette: list[int] | None = None,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+) -> Chart
+```
+
+---
+
+## Description
+
+Grouped bar chart for comparing multiple series across categories.
+
+Barres groupées pour comparer plusieurs séries entre catégories.
+
+`series_values` must be a **flat list** of length `n_categories × n_series`, row-major (category-first).
+
+`series_values` doit être une **liste plate** de taille `n_catégories × n_séries`, en ordre ligne-par-ligne.
+
+---
+
+## Parameters / Paramètres
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `title` | `str` | required | Chart title |
+| `category_labels` | `list[str]` | required | Category names on X axis |
+| `series_values` | `list[float]` | required | Flat values: `[cat0_s0, cat0_s1, cat1_s0, cat1_s1, ...]` |
+| `show_values` | `bool` | `False` | Show value labels |
+| `series_names` | `list[str] \| None` | `None` | Series names for legend |
+| `palette` | `list[int] \| None` | `None` | Custom color palette |
+
+---
+
+## Returns / Retour
+
+`Chart`
+
+---
+
+## Examples / Exemples
+
+```python
+import seraplot as sp
+
+categories = ["Q1", "Q2", "Q3", "Q4"]
+values = [
+    120.0, 90.0, 150.0,
+    130.0, 110.0, 140.0,
+    100.0, 95.0,  160.0,
+    140.0, 120.0, 175.0,
+]
+
+chart = sp.build_grouped_bar(
+    "Quarterly Sales by Product",
+    category_labels=categories,
+    series_values=values,
+    series_names=["Product A", "Product B", "Product C"],
+    show_values=True,
+    gridlines=True,
+    legend_position="bottom",
+)
+```
+
+---
+
+## See also / Voir aussi
+
+- [Stacked Bar](stacked-bar.md) — `sp.build_stacked_bar()`
+- [Bar Chart](bar.md)

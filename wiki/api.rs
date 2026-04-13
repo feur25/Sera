@@ -1,377 +1,145 @@
-use crate::wiki::{WikiExport, MethodDoc, ModuleDoc, ParamDoc, CodeExample};
+﻿use crate::wiki::{WikiExport, MethodDoc, ModuleDoc, ParamDoc, CodeExample};
+
+fn p(name: &str, t: &str, desc: &str) -> ParamDoc {
+    ParamDoc {
+        name: name.to_string(),
+        param_type: t.to_string(),
+        description: desc.to_string(),
+    }
+}
+
+fn ex(py: &str) -> CodeExample {
+    CodeExample::new(py, "", "", "")
+}
+
+fn method(
+    name: &str,
+    module: &str,
+    desc: &str,
+    params: Vec<ParamDoc>,
+    returns: &str,
+    sig: &str,
+    example: &str,
+) -> MethodDoc {
+    MethodDoc {
+        name: name.to_string(),
+        module: module.to_string(),
+        description: desc.to_string(),
+        parameters: params,
+        returns: Some(returns.to_string()),
+        examples: vec![ex(example)],
+        since_version: Some("2.0.0".to_string()),
+        deprecated: false,
+        python_signature: sig.to_string(),
+        csharp_signature: String::new(),
+        cpp_signature: String::new(),
+        rust_signature: String::new(),
+    }
+}
 
 pub fn generate_seraplot_docs() -> WikiExport {
     let mut export = WikiExport::new("SeraPlot", env!("CARGO_PKG_VERSION"));
-    
-    let core_methods = vec![
-        MethodDoc {
-            name: "version".to_string(),
-            module: "Core".to_string(),
-            description: "Returns the current version of SeraPlot".to_string(),
-            parameters: vec![],
-            returns: Some("String".to_string()),
-            examples: vec![CodeExample::new(
-                "print(seraplot.version())",
-                "Console.WriteLine(SeraPlot.Version());",
-                "std::cout << sera_version() << std::endl;",
-                "println!(\"{}\", SeraPlot::version());",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "def version() -> str".to_string(),
-            csharp_signature: "public static string Version()".to_string(),
-            cpp_signature: "const char* sera_version()".to_string(),
-            rust_signature: "pub fn version() -> String".to_string(),
-        },
-        MethodDoc {
-            name: "load_csv".to_string(),
-            module: "Core".to_string(),
-            description: "Loads CSV file with type detection".to_string(),
-            parameters: vec![
-                ParamDoc { name: "path".to_string(), param_type: "str".to_string(), description: "Path to CSV".to_string() },
-            ],
-            returns: Some("CsvData".to_string()),
-            examples: vec![CodeExample::new(
-                "data = seraplot.load_csv('data.csv')",
-                "var data = SeraPlot.LoadCsv(\"data.csv\");",
-                "auto data = sera_load_csv(\"data.csv\");",
-                "let data = SeraPlot::load_csv(\"data.csv\");",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "def load_csv(path: str) -> CsvData".to_string(),
-            csharp_signature: "public static CsvData LoadCsv(string path)".to_string(),
-            cpp_signature: "sera_csv_data_t* sera_load_csv(const char* path)".to_string(),
-            rust_signature: "pub fn load_csv<P: AsRef<Path>>(path: P) -> Result<CsvData>".to_string(),
-        },
+
+    let charts_2d = vec![
+        method("build_bar_chart","Charts2D","Vertical or horizontal bar chart.",vec![p("title","str","Chart title"),p("labels","list[str]","Category labels"),p("values","list[float]","Bar values"),p("color_hex","int","Fill color 0xRRGGBB (default: 0x6366F1)"),p("orientation","str","\"v\" vertical, \"h\" horizontal (default: \"v\")"),p("show_text","bool","Overlay value labels (default: False)"),p("color_groups","list[str] | None","Group names for palette coloring"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("x_label","str","X-axis label"),p("y_label","str","Y-axis label"),p("gridlines","bool","Horizontal gridlines (default: True)"),p("sort_order","str","\"asc\", \"desc\", or \"\""),p("hover_json","str | None","Custom hover tooltip JSON"),p("legend_position","str","\"right\", \"bottom\", \"top\""),p("palette","list[int] | None","Custom hex palette"),p("background","str | None","Background color"),p("no_x_axis","bool","Hide X axis (default: False)"),p("no_y_axis","bool","Hide Y axis (default: False)")],"Chart","build_bar_chart(title, labels, values, *, color_hex=0x6366F1, orientation=\"v\", ...) -> Chart","import seraplot as sp\nchart = sp.build_bar_chart(\"Monthly Sales\", labels=[\"Jan\",\"Feb\",\"Mar\"], values=[4200.0,5100.0,4800.0], y_label=\"Revenue ($)\", show_text=True)"),
+        method("build_hbar","Charts2D","Horizontal bar chart.",vec![p("title","str","Chart title"),p("labels","list[str]","Category labels"),p("values","list[float]","Bar values"),p("color_hex","int","Fill color (default: 0x6366F1)"),p("show_text","bool","Value labels (default: True)"),p("color_groups","list[str] | None","Group names"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("sort_order","str","\"asc\", \"desc\", or \"\""),p("palette","list[int] | None","Custom palette"),p("background","str | None","Background")],"Chart","build_hbar(title, labels, values, *, show_text=True, ...) -> Chart","chart = sp.build_hbar(\"Top Countries\", labels=[\"USA\",\"Canada\",\"UK\"], values=[500.0,320.0,280.0])"),
+        method("build_line_chart","Charts2D","Line chart connecting ordered data points.",vec![p("title","str","Chart title"),p("labels","list[str]","X-axis tick labels"),p("values","list[float]","Y values"),p("color_hex","int","Line color (default: 0x6366F1)"),p("show_points","bool","Point markers (default: True)"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("x_label","str","X-axis label"),p("y_label","str","Y-axis label"),p("gridlines","bool","Gridlines (default: True)"),p("background","str | None","Background color"),p("hover_json","str | None","Custom hover JSON")],"Chart","build_line_chart(title, labels, values, *, show_points=True, ...) -> Chart","chart = sp.build_line_chart(\"Temperature\", labels=[\"Mon\",\"Tue\",\"Wed\"], values=[18.0,21.0,19.0], y_label=\"C\")"),
+        method("build_scatter_chart","Charts2D","2D scatter plot with optional regression line.",vec![p("title","str","Chart title"),p("x_values","list[float]","X coordinates"),p("y_values","list[float]","Y coordinates"),p("color_hex","int","Point color (default: 0x6366F1)"),p("show_text","bool","Overlay labels on points"),p("labels","list[str] | None","Per-point text labels"),p("sizes","list[float] | None","Per-point marker sizes"),p("color_groups","list[str] | None","Group names for auto-coloring"),p("show_regression","bool","Fit regression line (default: False)"),p("regression_type","str","\"linear\", \"polynomial2\", \"polynomial3\""),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("x_label","str","X-axis label"),p("y_label","str","Y-axis label"),p("gridlines","bool","Gridlines (default: True)"),p("palette","list[int] | None","Custom palette"),p("background","str | None","Background"),p("hover_json","str | None","Custom hover JSON")],"Chart","build_scatter_chart(title, x_values, y_values, *, show_regression=False, ...) -> Chart","import random\nx=[random.gauss(0,1) for _ in range(200)]\ny=[xi*0.8+random.gauss(0,0.4) for xi in x]\nchart=sp.build_scatter_chart(\"Correlation\",x_values=x,y_values=y,show_regression=True)"),
+        method("build_histogram","Charts2D","Frequency histogram.",vec![p("title","str","Chart title"),p("values","list[float]","Raw data to bin"),p("color_hex","int","Bar color (default: 0x6366F1)"),p("bins","int","Number of bins (default: 20)"),p("show_counts","bool","Count labels above bars (default: False)"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("x_label","str","X-axis label"),p("y_label","str","Y-axis label"),p("gridlines","bool","Gridlines (default: True)"),p("background","str | None","Background")],"Chart","build_histogram(title, values, *, bins=20, show_counts=False, ...) -> Chart","import random\ndata=[random.gauss(50,10) for _ in range(1000)]\nchart=sp.build_histogram(\"Scores\",values=data,bins=30)"),
+        method("build_histogram_overlay","Charts2D","Two overlapping histograms for comparison.",vec![p("title","str","Chart title"),p("values","list[float]","Primary series"),p("overlay_values","list[float]","Secondary series"),p("color_hex","int","Primary color"),p("overlay_color_hex","int","Secondary color"),p("bins","int","Bin count (default: 20)"),p("series_names","list[str] | None","Legend names")],"Chart","build_histogram_overlay(title, values, overlay_values, *, ...) -> Chart","import random\na=[random.gauss(45,8) for _ in range(500)]\nb=[random.gauss(55,10) for _ in range(500)]\nchart=sp.build_histogram_overlay(\"A vs B\",values=a,overlay_values=b,series_names=[\"Control\",\"Treatment\"])"),
+        method("build_grouped_bar","Charts2D","Grouped bar chart with multiple series per category.",vec![p("title","str","Chart title"),p("category_labels","list[str]","Group labels"),p("series_values","list[float]","Flat row-major values: series0_cat0, series0_cat1, ..., series1_cat0, ..."),p("show_values","bool","Value labels on bars (default: False)"),p("series_names","list[str] | None","Legend names"),p("palette","list[int] | None","Color per series"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("x_label","str","X-axis label"),p("y_label","str","Y-axis label"),p("gridlines","bool","Gridlines (default: True)")],"Chart","build_grouped_bar(title, category_labels, series_values, *, ...) -> Chart","chart=sp.build_grouped_bar(\"Quarterly\",category_labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"],series_values=[12000,14000,13000,16000,8000,9000,8500,10000],series_names=[\"Product A\",\"Product B\"])"),
+        method("build_stacked_bar","Charts2D","Stacked bar chart showing composition per category.",vec![p("title","str","Chart title"),p("category_labels","list[str]","Bar labels"),p("series_values","list[float]","Flat row-major values"),p("show_values","bool","Segment labels (default: False)"),p("series_names","list[str] | None","Legend names"),p("palette","list[int] | None","Segment colors"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)")],"Chart","build_stacked_bar(title, category_labels, series_values, *, ...) -> Chart","chart=sp.build_stacked_bar(\"Mix\",category_labels=[\"Jan\",\"Feb\",\"Mar\"],series_values=[30,20,10,15,25,35,5,5,5],series_names=[\"A\",\"B\",\"C\"])"),
+        method("build_heatmap","Charts2D","Color-coded matrix heatmap.",vec![p("title","str","Chart title"),p("labels","list[str]","Row labels"),p("flat_matrix","list[float]","Row-major matrix values (n_rows x n_cols)"),p("show_values","bool","Overlay cell values (default: True)"),p("color_low","int","Low-value color (hex)"),p("color_mid","int","Mid-value color (hex)"),p("color_high","int","High-value color (hex)"),p("col_labels","list[str] | None","Column labels (defaults to row labels)"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)")],"Chart","build_heatmap(title, labels, flat_matrix, *, show_values=True, ...) -> Chart","import numpy as np\nfeatures=[\"Age\",\"Income\",\"Score\"]\nmat=np.corrcoef(np.random.randn(3,100)).flatten().tolist()\nchart=sp.build_heatmap(\"Correlation\",labels=features,flat_matrix=mat)"),
+        method("build_pie_chart","Charts2D","Pie chart with optional percentage labels.",vec![p("title","str","Chart title"),p("labels","list[str]","Slice labels"),p("values","list[float]","Slice values (auto-normalized to 100%)"),p("show_pct","bool","Percentage text (default: True)"),p("width","int","Canvas width (default: 700)"),p("height","int","Canvas height (default: 480)"),p("palette","list[int] | None","Custom palette"),p("background","str | None","Background"),p("hover_json","str | None","Custom hover JSON"),p("legend_position","str","\"right\", \"bottom\", \"top\"")],"Chart","build_pie_chart(title, labels, values, *, show_pct=True, ...) -> Chart","chart=sp.build_pie_chart(\"Market Share\",labels=[\"Chrome\",\"Safari\",\"Firefox\"],values=[65.0,19.0,4.0])"),
+        method("build_donut_chart","Charts2D","Donut chart — pie with a circular hole.",vec![p("title","str","Chart title"),p("labels","list[str]","Slice labels"),p("values","list[float]","Slice values"),p("show_pct","bool","Percentage labels (default: True)"),p("inner_radius_ratio","float","Hole fraction 0–0.9 (default: 0.55)"),p("width","int","Canvas width (default: 700)"),p("height","int","Canvas height (default: 480)"),p("palette","list[int] | None","Custom palette"),p("background","str | None","Background")],"Chart","build_donut_chart(title, labels, values, *, inner_radius_ratio=0.55, ...) -> Chart","chart=sp.build_donut_chart(\"Budget\",labels=[\"R&D\",\"Mkt\",\"Ops\"],values=[35.0,25.0,40.0],inner_radius_ratio=0.6)"),
+        method("build_boxplot","Charts2D","Box-and-whisker plot per category.",vec![p("title","str","Chart title"),p("category_labels","list[str]","Box labels"),p("values","list[float]","Flat samples (same count per category)"),p("color_hex","int","Box fill color (default: 0x6366F1)"),p("palette","list[int] | None","Per-category colors"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("x_label","str","X-axis label"),p("y_label","str","Y-axis label"),p("gridlines","bool","Gridlines (default: True)")],"Chart","build_boxplot(title, category_labels, values, *, ...) -> Chart","import random\nn=60\nvals=[random.gauss(72,10) for _ in range(n)]+[random.gauss(80,8) for _ in range(n)]\nchart=sp.build_boxplot(\"Scores\",category_labels=[\"Class A\",\"Class B\"],values=vals)"),
+        method("build_violin","Charts2D","Violin chart: KDE density + box-plot summary.",vec![p("title","str","Chart title"),p("categories","list[str]","Category labels"),p("values","list[float]","Flat sample data"),p("color_hex","int","Fill color (default: 0x6366F1)"),p("palette","list[int] | None","Per-category colors"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("bandwidth","float","KDE smoothing bandwidth (default: 1.0)"),p("gridlines","bool","Gridlines (default: True)")],"Chart","build_violin(title, categories, values, *, bandwidth=1.0, ...) -> Chart","import random\nvals=[random.gauss(95000,15000) for _ in range(60)]+[random.gauss(75000,12000) for _ in range(60)]\nchart=sp.build_violin(\"Salaries\",categories=[\"Engineer\",\"Analyst\"],values=vals)"),
+        method("build_slope","Charts2D","Slope chart comparing two values per entity.",vec![p("title","str","Chart title"),p("labels","list[str]","Entity labels"),p("values_left","list[float]","Left-axis values"),p("values_right","list[float]","Right-axis values"),p("left_label","str","Left axis label (e.g. \"2020\")"),p("right_label","str","Right axis label (e.g. \"2024\")"),p("show_text","bool","Endpoint labels (default: True)"),p("color_hex","int","Line color (default: 0x6366F1)"),p("palette","list[int] | None","Per-entity colors"),p("width","int","Canvas width (default: 600)"),p("height","int","Canvas height (default: 480)")],"Chart","build_slope(title, labels, values_left, values_right, left_label, right_label, *, ...) -> Chart","chart=sp.build_slope(\"HDI\",labels=[\"Germany\",\"Japan\",\"Brazil\"],values_left=[0.926,0.909,0.694],values_right=[0.950,0.920,0.760],left_label=\"2000\",right_label=\"2023\")"),
+        method("build_sunburst","Charts2D","Hierarchical sunburst in concentric rings.",vec![p("title","str","Chart title"),p("labels","list[str]","Node labels"),p("parents","list[str]","Parent label per node (\"\" = root)"),p("values","list[float]","Node sizes"),p("width","int","Canvas width (default: 700)"),p("height","int","Canvas height (default: 480)"),p("palette","list[int] | None","Custom colors"),p("hover_json","str | None","Custom hover JSON")],"Chart","build_sunburst(title, labels, parents, values, *, ...) -> Chart","labels=[\"Corp\",\"Sales\",\"Tech\",\"B2B\",\"B2C\"]\nparents=[\"\",\"Corp\",\"Corp\",\"Sales\",\"Sales\"]\nchart=sp.build_sunburst(\"Org\",labels=labels,parents=parents,values=[1,40,50,25,15])"),
+        method("build_funnel","Charts2D","Funnel chart for conversion pipeline.",vec![p("title","str","Chart title"),p("labels","list[str]","Stage labels"),p("values","list[float]","Stage values"),p("show_text","bool","Value + drop-off labels (default: True)"),p("width","int","Canvas width (default: 700)"),p("height","int","Canvas height (default: 480)"),p("palette","list[int] | None","Per-stage colors")],"Chart","build_funnel(title, labels, values, *, show_text=True, ...) -> Chart","chart=sp.build_funnel(\"Pipeline\",labels=[\"Leads\",\"Qualified\",\"Proposal\",\"Closed\"],values=[5000,2800,1200,250])"),
+        method("build_treemap","Charts2D","Treemap with proportional tiles.",vec![p("title","str","Chart title"),p("labels","list[str]","Tile labels"),p("values","list[float]","Tile sizes"),p("parents","list[str] | None","Parent labels for hierarchy"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("palette","list[int] | None","Custom colors")],"Chart","build_treemap(title, labels, values, *, parents=None, ...) -> Chart","chart=sp.build_treemap(\"Market Cap\",labels=[\"AAPL\",\"MSFT\",\"AMZN\",\"NVDA\"],values=[2900,2800,1700,1600])"),
+        method("build_multiline_chart","Charts2D","Multiple line series on a shared axis.",vec![p("title","str","Chart title"),p("x_labels","list[str]","Shared X-axis labels"),p("series_values","list[list[float]]","One inner list per series"),p("show_points","bool","Markers at data points (default: True)"),p("series_names","list[str] | None","Legend names"),p("palette","list[int] | None","Color per series"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("y_label","str","Y-axis label"),p("gridlines","bool","Gridlines (default: True)"),p("legend_position","str","\"top\", \"bottom\", \"right\"")],"Chart","build_multiline_chart(title, x_labels, series_values, *, ...) -> Chart","chart=sp.build_multiline_chart(\"Revenue\",x_labels=[\"Jan\",\"Feb\",\"Mar\"],series_values=[[12200,13400,15100],[8100,9200,9800]],series_names=[\"A\",\"B\"])"),
+        method("build_area_chart","Charts2D","Filled area chart, optionally stacked.",vec![p("title","str","Chart title"),p("x_labels","list[str]","X-axis labels"),p("series_values","list[list[float]]","One list per series"),p("stacked","bool","Stack areas (default: False)"),p("series_names","list[str] | None","Legend names"),p("palette","list[int] | None","Custom colors"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("gridlines","bool","Gridlines (default: True)")],"Chart","build_area_chart(title, x_labels, series_values, *, stacked=False, ...) -> Chart","chart=sp.build_area_chart(\"Traffic\",x_labels=[\"Jan\",\"Feb\",\"Mar\"],series_values=[[4200,5100,5800],[2100,2400,2800]],stacked=True,series_names=[\"Organic\",\"Paid\"])"),
+        method("build_waterfall","Charts2D","Waterfall chart for sequential contributions.",vec![p("title","str","Chart title"),p("labels","list[str]","Step labels"),p("values","list[float]","Step values (positive or negative)"),p("show_text","bool","Value labels (default: True)"),p("color_pos","int","Positive bar color (default: 0x22c55e)"),p("color_neg","int","Negative bar color (default: 0xef4444)"),p("color_total","int","Total bar color (default: 0x6366f1)"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("gridlines","bool","Gridlines (default: True)")],"Chart","build_waterfall(title, labels, values, *, show_text=True, ...) -> Chart","chart=sp.build_waterfall(\"P&L\",labels=[\"Revenue\",\"COGS\",\"Gross\",\"OpEx\",\"Net\"],values=[100000,-45000,0,-30000,0])"),
+        method("build_bullet","Charts2D","Bullet chart (Tufte-style): actual vs target vs qualitative ranges.",vec![p("title","str","Chart title"),p("labels","list[str]","Metric labels"),p("values","list[float]","Actual values"),p("targets","list[float] | None","Target lines"),p("max_vals","list[float] | None","Scale maximums"),p("ranges","list[list[float]] | None","Qualitative ranges [[poor,ok,good],...]"),p("show_text","bool","Value labels (default: True)"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)")],"Chart","build_bullet(title, labels, values, *, targets=None, max_vals=None, ranges=None, ...) -> Chart","chart=sp.build_bullet(\"KPIs\",labels=[\"Revenue\",\"Satisfaction\"],values=[87500,4.2],targets=[100000,4.5],max_vals=[120000,5.0])"),
+        method("build_wordcloud","Charts2D","Word cloud where font size reflects word weight.",vec![p("title","str","Chart title"),p("words","list[str]","Words/tags"),p("weights","list[float]","Weight per word (higher = larger)"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("palette","list[int] | None","Custom palette"),p("max_words","int","Max words rendered (default: 200)")],"Chart","build_wordcloud(title, words, weights, *, max_words=200, ...) -> Chart","from collections import Counter\ncounts=Counter(\"python rust go python rust rust data ml\".split())\nchart=sp.build_wordcloud(\"Buzz\",words=list(counts.keys()),weights=list(counts.values()))"),
+        method("build_candlestick","Charts2D","Financial OHLC candlestick chart.",vec![p("title","str","Chart title"),p("dates","list[str]","Date labels"),p("opens","list[float]","Open prices"),p("highs","list[float]","High prices"),p("lows","list[float]","Low prices"),p("closes","list[float]","Close prices"),p("color_up","int","Bullish color (default: 0x22c55e)"),p("color_down","int","Bearish color (default: 0xef4444)"),p("width","int","Canvas width (default: 1000)"),p("height","int","Canvas height (default: 480)"),p("gridlines","bool","Gridlines (default: True)")],"Chart","build_candlestick(title, dates, opens, highs, lows, closes, *, ...) -> Chart","chart=sp.build_candlestick(\"AAPL\",dates=[\"Jan 2\",\"Jan 3\",\"Jan 4\"],opens=[185.0,184.2,182.5],highs=[186.5,185.0,183.8],lows=[183.5,182.0,180.5],closes=[184.2,182.5,181.0])"),
+        method("build_dumbbell","Charts2D","Dumbbell chart connecting two values per category.",vec![p("title","str","Chart title"),p("labels","list[str]","Category labels"),p("values_start","list[float]","Start values"),p("values_end","list[float]","End values"),p("show_text","bool","Endpoint labels (default: True)"),p("color_start","int","Start-point color (default: 0x6366f1)"),p("color_end","int","End-point color (default: 0xf43f5e)"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("gridlines","bool","Gridlines (default: True)")],"Chart","build_dumbbell(title, labels, values_start, values_end, *, ...) -> Chart","chart=sp.build_dumbbell(\"Life Exp\",labels=[\"Japan\",\"Germany\",\"Brazil\"],values_start=[81.2,78.1,70.4],values_end=[84.3,81.5,75.2])"),
+        method("build_bubble","Charts2D","Bubble chart where area encodes a third dimension.",vec![p("title","str","Chart title"),p("x_values","list[float]","X positions"),p("y_values","list[float]","Y positions"),p("sizes","list[float]","Bubble radii"),p("labels","list[str] | None","Per-bubble labels"),p("color_groups","list[str] | None","Group names"),p("color_hex","int","Default color (default: 0x6366F1)"),p("palette","list[int] | None","Custom palette"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("hover_json","str | None","Custom hover JSON")],"Chart","build_bubble(title, x_values, y_values, sizes, *, ...) -> Chart","chart=sp.build_bubble(\"Countries\",x_values=[65000,12500,48000],y_values=[78.5,77.1,81.3],sizes=[33,141,8],labels=[\"USA\",\"China\",\"Germany\"])"),
+        method("build_gauge","Charts2D","Semicircular gauge chart with threshold zones.",vec![p("title","str","Chart title"),p("value","float","Current reading"),p("min_val","float","Scale minimum (default: 0.0)"),p("max_val","float","Scale maximum (default: 100.0)"),p("thresholds","list[float] | None","Zone boundaries"),p("threshold_colors","list[int] | None","Color per zone"),p("color_hex","int","Needle color (default: 0x6366F1)"),p("width","int","Canvas width (default: 500)"),p("height","int","Canvas height (default: 350)"),p("show_value","bool","Display numeric value (default: True)"),p("label","str","Unit label under the value")],"Chart","build_gauge(title, value, *, min_val=0.0, max_val=100.0, thresholds=None, ...) -> Chart","chart=sp.build_gauge(\"CPU Usage\",value=73.5,thresholds=[50,80,100],threshold_colors=[0x22c55e,0xf59e0b,0xef4444],label=\"%\")"),
+        method("build_parallel","Charts2D","Parallel coordinates chart.",vec![p("title","str","Chart title"),p("axes","list[str]","Axis names"),p("series","list[list[float]]","One inner list per entity"),p("series_names","list[str] | None","Legend names"),p("color_groups","list[str] | None","Group names for auto-coloring"),p("palette","list[int] | None","Custom palette"),p("width","int","Canvas width (default: 1000)"),p("height","int","Canvas height (default: 480)"),p("line_opacity","float","Line transparency 0–1 (default: 0.6)")],"Chart","build_parallel(title, axes, series, *, ...) -> Chart","chart=sp.build_parallel(\"Iris\",axes=[\"SepalL\",\"SepalW\",\"PetalL\",\"PetalW\"],series=[[5.1,3.5,1.4,0.2],[4.9,3.0,1.4,0.2],[6.3,3.3,6.0,2.5]])"),
+        method("build_lollipop_chart","Charts2D","Lollipop chart — stem + circle per value.",vec![p("title","str","Chart title"),p("labels","list[str]","Category labels"),p("values","list[float]","Values"),p("color_hex","int","Stem/circle color (default: 0x6366F1)"),p("show_text","bool","Value labels at tips (default: False)"),p("orientation","str","\"v\" or \"h\" (default: \"v\")"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("gridlines","bool","Gridlines (default: True)")],"Chart","build_lollipop_chart(title, labels, values, *, ...) -> Chart","chart=sp.build_lollipop_chart(\"Scores\",labels=[\"Alice\",\"Bob\",\"Carol\"],values=[88.0,74.0,95.0],show_text=True)"),
+        method("build_kde_chart","Charts2D","Kernel Density Estimate curve.",vec![p("title","str","Chart title"),p("values","list[float]","Raw data"),p("color_hex","int","Curve color (default: 0x6366F1)"),p("bandwidth","float","Smoothing bandwidth (default: 1.0)"),p("fill","bool","Fill under curve (default: True)"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("x_label","str","X-axis label"),p("y_label","str","Y-axis label (default: \"Density\")")],"Chart","build_kde_chart(title, values, *, bandwidth=1.0, fill=True, ...) -> Chart","import random\ndata=[random.gauss(0,1) for _ in range(1000)]\nchart=sp.build_kde_chart(\"Normal Dist\",values=data,fill=True)"),
+        method("build_ridgeline_chart","Charts2D","Ridgeline plot — overlapping KDE curves per category.",vec![p("title","str","Chart title"),p("categories","list[str]","Category labels"),p("values","list[float]","Flat samples (same count per category)"),p("bandwidth","float","KDE bandwidth (default: 1.0)"),p("overlap","float","Ridge overlap factor 0–1 (default: 0.5)"),p("palette","list[int] | None","Per-ridge colors"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)")],"Chart","build_ridgeline_chart(title, categories, values, *, ...) -> Chart","import random\nn=200\nvals=[random.gauss(i*5,8) for i in range(5) for _ in range(n)]\nchart=sp.build_ridgeline_chart(\"by Year\",categories=[\"2020\",\"2021\",\"2022\",\"2023\",\"2024\"],values=vals)"),
+        method("build_radar_chart","Charts2D","Radar (spider) chart.",vec![p("title","str","Chart title"),p("axes","list[str]","Axis names"),p("series","list[list[float]]","One list per entity"),p("series_names","list[str] | None","Legend names"),p("palette","list[int] | None","Fill colors"),p("fill_opacity","float","Fill transparency 0–1 (default: 0.2)"),p("width","int","Canvas width (default: 700)"),p("height","int","Canvas height (default: 480)")],"Chart","build_radar_chart(title, axes, series, *, series_names=None, ...) -> Chart","chart=sp.build_radar_chart(\"Stats\",axes=[\"HP\",\"Attack\",\"Defense\",\"Speed\",\"Special\"],series=[[45,49,49,45,65],[60,62,63,60,80]],series_names=[\"Bulbasaur\",\"Squirtle\"])"),
+        method("build_grid","Charts2D","Grid layout compositing multiple charts.",vec![p("charts","list[Chart]","Charts to arrange"),p("cols","int","Number of columns (default: 2)"),p("width","int","Total width (default: 1200)"),p("height","int","Total height (default: 800)"),p("background","str | None","Grid background"),p("gap","int","Gap between cells in pixels (default: 12)"),p("title","str","Optional grid title")],"Chart","build_grid(charts, *, cols=2, width=1200, height=800, ...) -> Chart","c1=sp.build_bar_chart(\"A\",labels=[\"X\",\"Y\"],values=[1,2])\nc2=sp.build_line_chart(\"B\",labels=[\"X\",\"Y\"],values=[3,4])\ngrid=sp.build_grid([c1,c2],cols=2)"),
+        method("build_slideshow","Charts2D","Navigable HTML carousel of multiple charts.",vec![p("charts","list[Chart]","Charts as slides"),p("width","int","Width per slide (default: 900)"),p("height","int","Height per slide (default: 480)"),p("auto_play","bool","Auto-advance slides (default: False)"),p("interval_ms","int","Auto-play interval ms (default: 3000)"),p("background","str | None","Background")],"Chart","build_slideshow(charts, *, auto_play=False, interval_ms=3000, ...) -> Chart","slides=[sp.build_bar_chart(f\"Slide {i}\",labels=[\"A\",\"B\"],values=[i,i+1]) for i in range(4)]\nshow=sp.build_slideshow(slides,auto_play=True,interval_ms=2500)"),
     ];
-    
-    let canvas_methods = vec![
-        MethodDoc {
-            name: "new".to_string(),
-            module: "Canvas".to_string(),
-            description: "Creates canvas with dimensions".to_string(),
-            parameters: vec![
-                ParamDoc { name: "width".to_string(), param_type: "float".to_string(), description: "Width".to_string() },
-                ParamDoc { name: "height".to_string(), param_type: "float".to_string(), description: "Height".to_string() },
-            ],
-            returns: Some("Canvas".to_string()),
-            examples: vec![CodeExample::new(
-                "canvas = seraplot.Canvas(1200, 600)",
-                "var canvas = new Canvas(1200, 600);",
-                "auto canvas = sera_canvas_create(1200, 600);",
-                "let canvas = SeraPlot::new(1200, 600);",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "def __init__(self, width: float, height: float)".to_string(),
-            csharp_signature: "public Canvas(float width, float height)".to_string(),
-            cpp_signature: "sera_canvas_t* sera_canvas_create(float w, float h)".to_string(),
-            rust_signature: "pub fn new(width: f32, height: f32) -> Canvas".to_string(),
-        },
-        MethodDoc {
-            name: "add_trace".to_string(),
-            module: "Canvas".to_string(),
-            description: "Adds trace to canvas".to_string(),
-            parameters: vec![
-                ParamDoc { name: "trace".to_string(), param_type: "Trace".to_string(), description: "Trace".to_string() },
-            ],
-            returns: Some("Canvas".to_string()),
-            examples: vec![CodeExample::new(
-                "canvas = canvas.add_trace(trace)",
-                "canvas = canvas.AddTrace(trace);",
-                "canvas = sera_canvas_add_trace(canvas, trace);",
-                "canvas = canvas.add_trace(trace);",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "def add_trace(self, trace: Trace) -> Canvas".to_string(),
-            csharp_signature: "public Canvas AddTrace(Trace trace)".to_string(),
-            cpp_signature: "sera_canvas_t* sera_canvas_add_trace(sera_canvas_t* c, sera_trace_t* t)".to_string(),
-            rust_signature: "pub fn add_trace(mut self, trace: Trace) -> Self".to_string(),
-        },
-        MethodDoc {
-            name: "set_title".to_string(),
-            module: "Canvas".to_string(),
-            description: "Sets chart title".to_string(),
-            parameters: vec![
-                ParamDoc { name: "title".to_string(), param_type: "str".to_string(), description: "Title".to_string() },
-            ],
-            returns: Some("Canvas".to_string()),
-            examples: vec![CodeExample::new(
-                "canvas = canvas.set_title('My Chart')",
-                "canvas = canvas.SetTitle(\"My Chart\");",
-                "canvas = sera_canvas_set_title(canvas, \"My Chart\");",
-                "canvas = canvas.set_title(\"My Chart\");",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "def set_title(self, title: str) -> Canvas".to_string(),
-            csharp_signature: "public Canvas SetTitle(string title)".to_string(),
-            cpp_signature: "sera_canvas_t* sera_canvas_set_title(sera_canvas_t* c, const char* t)".to_string(),
-            rust_signature: "pub fn set_title(mut self, title: &str) -> Self".to_string(),
-        },
-        MethodDoc {
-            name: "render".to_string(),
-            module: "Canvas".to_string(),
-            description: "Renders to SVG".to_string(),
-            parameters: vec![],
-            returns: Some("String".to_string()),
-            examples: vec![CodeExample::new(
-                "svg = canvas.render()",
-                "string svg = canvas.Render();",
-                "const char* svg = sera_canvas_render(canvas);",
-                "let svg = canvas.render();",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "def render(self) -> str".to_string(),
-            csharp_signature: "public string Render()".to_string(),
-            cpp_signature: "const char* sera_canvas_render(sera_canvas_t* c)".to_string(),
-            rust_signature: "pub fn render(&self) -> String".to_string(),
-        },
+
+    let charts_3d = vec![
+        method("build_scatter3d_chart","Charts3D","3D scatter plot — WebGL GPU renderer.",vec![p("title","str","Chart title"),p("x","list[float]","X coords"),p("y","list[float]","Y coords"),p("z","list[float]","Z coords"),p("color_values","list[float] | None","Continuous color scale values"),p("color_labels","list[str] | None","Discrete group labels"),p("series_names","list[str] | None","Legend labels"),p("bg_color","str","Background (default: \"#1a1a2e\")"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)"),p("x_label","str","X label"),p("y_label","str","Y label"),p("z_label","str","Z label"),p("hover_json","str | None","Hover JSON"),p("palette","list[int] | None","Custom palette")],"Chart","build_scatter3d_chart(title, x, y, z, *, bg_color=\"#1a1a2e\", ...) -> Chart","import random\nx=[random.gauss(0,1) for _ in range(500)]\ny=[random.gauss(0,1) for _ in range(500)]\nz=[random.gauss(0,1) for _ in range(500)]\nchart=sp.build_scatter3d_chart(\"3D Cloud\",x=x,y=y,z=z)"),
+        method("build_bar3d_chart","Charts3D","3D bar chart.",vec![p("title","str","Chart title"),p("x","list[float]","X positions"),p("y","list[float]","Y positions"),p("z","list[float]","Bar heights"),p("color_labels","list[str] | None","Group labels"),p("bg_color","str","Background color"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)"),p("palette","list[int] | None","Custom palette")],"Chart","build_bar3d_chart(title, x, y, z, *, ...) -> Chart","chart=sp.build_bar3d_chart(\"Sales 3D\",x=[0,1,2],y=[0,1,2],z=[10.0,25.0,15.0])"),
+        method("build_line3d_chart","Charts3D","3D line chart.",vec![p("title","str","Chart title"),p("x","list[float]","X coords"),p("y","list[float]","Y coords"),p("z","list[float]","Z coords"),p("color_labels","list[str] | None","Series groups"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)")],"Chart","build_line3d_chart(title, x, y, z, *, ...) -> Chart","import math\nt=[i/50*math.pi*4 for i in range(200)]\nchart=sp.build_line3d_chart(\"Helix\",x=[math.cos(ti) for ti in t],y=[math.sin(ti) for ti in t],z=[ti/10 for ti in t])"),
+        method("build_radar3d_chart","Charts3D","3D radar chart.",vec![p("title","str","Chart title"),p("axes","list[str]","Axis names"),p("series","list[list[float]]","One list per entity"),p("series_names","list[str] | None","Legend names"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)")],"Chart","build_radar3d_chart(title, axes, series, *, ...) -> Chart","chart=sp.build_radar3d_chart(\"Skills\",axes=[\"Speed\",\"Power\",\"Defense\",\"Agility\"],series=[[80,70,60,90],[50,90,80,40]])"),
+        method("build_bubble3d_chart","Charts3D","3D bubble chart.",vec![p("title","str","Chart title"),p("x","list[float]","X positions"),p("y","list[float]","Y positions"),p("z","list[float]","Z positions"),p("sizes","list[float]","Bubble radii"),p("color_labels","list[str] | None","Group labels"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)")],"Chart","build_bubble3d_chart(title, x, y, z, sizes, *, ...) -> Chart","chart=sp.build_bubble3d_chart(\"Planets\",x=[1,5,10],y=[2,3,1],z=[0,1,2],sizes=[5,12,30])"),
+        method("build_lollipop3d_chart","Charts3D","3D lollipop chart.",vec![p("title","str","Chart title"),p("x","list[float]","X positions"),p("y","list[float]","Y positions"),p("z","list[float]","Heights"),p("color_labels","list[str] | None","Group labels"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)")],"Chart","build_lollipop3d_chart(title, x, y, z, *, ...) -> Chart","chart=sp.build_lollipop3d_chart(\"Spikes\",x=[0,1,2,3],y=[0,0,1,1],z=[5.0,8.0,3.0,10.0])"),
+        method("build_kde3d_chart","Charts3D","3D KDE surface from 2D samples.",vec![p("title","str","Chart title"),p("x","list[float]","X samples"),p("y","list[float]","Y samples"),p("bandwidth","float","KDE bandwidth (default: 1.0)"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)")],"Chart","build_kde3d_chart(title, x, y, *, bandwidth=1.0, ...) -> Chart","import random\nx=[random.gauss(0,1) for _ in range(500)]\ny=[random.gauss(0,1) for _ in range(500)]\nchart=sp.build_kde3d_chart(\"Density\",x=x,y=y)"),
+        method("build_ridgeline3d_chart","Charts3D","3D ridgeline — KDE ribbons.",vec![p("title","str","Chart title"),p("categories","list[str]","Category labels"),p("values","list[float]","Flat samples"),p("bandwidth","float","KDE bandwidth (default: 1.0)"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)")],"Chart","build_ridgeline3d_chart(title, categories, values, *, ...) -> Chart","import random\nvals=[random.gauss(i*5,8) for i in range(4) for _ in range(200)]\nchart=sp.build_ridgeline3d_chart(\"Ridges\",categories=[\"A\",\"B\",\"C\",\"D\"],values=vals)"),
+        method("build_pie3d_chart","Charts3D","3D pie chart.",vec![p("title","str","Chart title"),p("labels","list[str]","Slice labels"),p("values","list[float]","Slice values"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)"),p("palette","list[int] | None","Custom palette")],"Chart","build_pie3d_chart(title, labels, values, *, ...) -> Chart","chart=sp.build_pie3d_chart(\"Share\",labels=[\"A\",\"B\",\"C\"],values=[40,35,25])"),
+        method("build_violin3d_chart","Charts3D","3D violin chart.",vec![p("title","str","Chart title"),p("categories","list[str]","Category labels"),p("values","list[float]","Flat samples"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)")],"Chart","build_violin3d_chart(title, categories, values, *, ...) -> Chart","import random\nvals=[random.gauss(i*10,5) for i in range(3) for _ in range(100)]\nchart=sp.build_violin3d_chart(\"Violin\",categories=[\"A\",\"B\",\"C\"],values=vals)"),
+        method("build_heatmap3d_chart","Charts3D","3D heatmap surface.",vec![p("title","str","Chart title"),p("labels","list[str]","Row labels"),p("flat_matrix","list[float]","Row-major matrix"),p("col_labels","list[str] | None","Column labels"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)")],"Chart","build_heatmap3d_chart(title, labels, flat_matrix, *, ...) -> Chart","import numpy as np\nm=np.random.rand(4,4).flatten().tolist()\nchart=sp.build_heatmap3d_chart(\"Matrix\",labels=[\"A\",\"B\",\"C\",\"D\"],flat_matrix=m)"),
+        method("build_candlestick3d_chart","Charts3D","3D OHLC candlestick.",vec![p("title","str","Chart title"),p("dates","list[str]","Date labels"),p("opens","list[float]","Open prices"),p("highs","list[float]","High prices"),p("lows","list[float]","Low prices"),p("closes","list[float]","Close prices"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)")],"Chart","build_candlestick3d_chart(title, dates, opens, highs, lows, closes, *, ...) -> Chart","chart=sp.build_candlestick3d_chart(\"AAPL\",dates=[\"Mon\",\"Tue\",\"Wed\"],opens=[185,184,182],highs=[187,186,184],lows=[183,182,180],closes=[184,182,181])"),
+        method("build_dumbbell3d_chart","Charts3D","3D dumbbell chart.",vec![p("title","str","Chart title"),p("labels","list[str]","Category labels"),p("values_start","list[float]","Start values"),p("values_end","list[float]","End values"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)")],"Chart","build_dumbbell3d_chart(title, labels, values_start, values_end, *, ...) -> Chart","chart=sp.build_dumbbell3d_chart(\"HDI\",labels=[\"JP\",\"DE\",\"BR\"],values_start=[0.90,0.92,0.69],values_end=[0.92,0.95,0.76])"),
+        method("build_funnel3d_chart","Charts3D","3D funnel.",vec![p("title","str","Chart title"),p("labels","list[str]","Stage labels"),p("values","list[float]","Stage values"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)")],"Chart","build_funnel3d_chart(title, labels, values, *, ...) -> Chart","chart=sp.build_funnel3d_chart(\"Pipeline\",labels=[\"Leads\",\"Qualified\",\"Closed\"],values=[5000,2800,250])"),
+        method("build_sunburst3d_chart","Charts3D","3D sunburst.",vec![p("title","str","Chart title"),p("labels","list[str]","Node labels"),p("parents","list[str]","Parent per node"),p("values","list[float]","Node sizes"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)")],"Chart","build_sunburst3d_chart(title, labels, parents, values, *, ...) -> Chart","chart=sp.build_sunburst3d_chart(\"Org\",labels=[\"Corp\",\"Sales\",\"Tech\"],parents=[\"\",\"Corp\",\"Corp\"],values=[1,40,50])"),
+        method("build_stacked_bar3d_chart","Charts3D","3D stacked bar chart.",vec![p("title","str","Chart title"),p("category_labels","list[str]","Category labels"),p("series_values","list[float]","Flat row-major values"),p("series_names","list[str] | None","Legend labels"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)")],"Chart","build_stacked_bar3d_chart(title, category_labels, series_values, *, ...) -> Chart","chart=sp.build_stacked_bar3d_chart(\"Revenue\",category_labels=[\"Q1\",\"Q2\",\"Q3\"],series_values=[30,20,25,15,10,20,5,5,5],series_names=[\"A\",\"B\",\"C\"])"),
+        method("build_globe3d_chart","Charts3D","Interactive 3D globe chart.",vec![p("title","str","Chart title"),p("labels","list[str]","Location labels"),p("lats","list[float]","Latitudes"),p("lons","list[float]","Longitudes"),p("values","list[float]","Point values"),p("bg_color","str","Background"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)"),p("palette","list[int] | None","Custom palette")],"Chart","build_globe3d_chart(title, labels, lats, lons, values, *, ...) -> Chart","chart=sp.build_globe3d_chart(\"Airports\",labels=[\"CDG\",\"JFK\",\"HND\"],lats=[49.0,40.6,35.5],lons=[2.5,-73.7,139.7],values=[70,85,95])"),
     ];
-    
-    let trace_methods = vec![
-        MethodDoc {
-            name: "new".to_string(),
-            module: "Trace".to_string(),
-            description: "Creates trace with values".to_string(),
-            parameters: vec![
-                ParamDoc { name: "label".to_string(), param_type: "str".to_string(), description: "Label".to_string() },
-                ParamDoc { name: "values".to_string(), param_type: "List[float]".to_string(), description: "Values".to_string() },
-            ],
-            returns: Some("Trace".to_string()),
-            examples: vec![CodeExample::new(
-                "trace = seraplot.Trace('Data', [1, 2, 3])",
-                "var trace = new Trace(\"Data\", new[] {1f, 2f, 3f});",
-                "auto trace = sera_trace_create(\"Data\");",
-                "let trace = SeraPlot::new(\"Data\", vec![1.0, 2.0, 3.0]);",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "class Trace:\n    def __init__(self, label: str, values: List[float])".to_string(),
-            csharp_signature: "public class Trace {\n    public Trace(string label, float[] values)".to_string(),
-            cpp_signature: "typedef struct sera_trace sera_trace_t;".to_string(),
-            rust_signature: "pub fn new(label: &str, values: Vec<f64>) -> Trace".to_string(),
-        },
-        MethodDoc {
-            name: "add_value".to_string(),
-            module: "Trace".to_string(),
-            description: "Adds value to trace".to_string(),
-            parameters: vec![
-                ParamDoc { name: "value".to_string(), param_type: "float".to_string(), description: "Value".to_string() },
-            ],
-            returns: Some("Trace".to_string()),
-            examples: vec![CodeExample::new(
-                "trace = trace.add_value(4.0)",
-                "trace = trace.AddValue(4.0f);",
-                "sera_trace_add_value(trace, 4.0f);",
-                "trace = trace.add_value(4.0);",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "def add_value(self, value: float) -> Trace".to_string(),
-            csharp_signature: "public Trace AddValue(float value)".to_string(),
-            cpp_signature: "void sera_trace_add_value(sera_trace_t* t, float v)".to_string(),
-            rust_signature: "pub fn add_value(mut self, value: f64) -> Self".to_string(),
-        },
+
+    let charts_map = vec![
+        method("build_bubble_map","ChartsMap","Geographic bubble map.",vec![p("title","str","Chart title"),p("labels","list[str]","Location labels"),p("values","list[float]","Bubble size values"),p("width","int","Canvas width (default: 1000)"),p("height","int","Canvas height (default: 600)"),p("hover_json","str | None","Hover JSON"),p("palette","list[int] | None","Custom palette"),p("background","str | None","Background")],"Chart","build_bubble_map(title, labels, values, *, ...) -> Chart","chart=sp.build_bubble_map(\"Population\",labels=[\"France\",\"USA\",\"India\"],values=[68,331,1380])"),
+        method("build_choropleth","ChartsMap","Choropleth map — regions colored by value.",vec![p("title","str","Chart title"),p("labels","list[str]","ISO-3 codes or region names"),p("values","list[float]","Values per region"),p("width","int","Canvas width (default: 1000)"),p("height","int","Canvas height (default: 600)"),p("color_low","int","Low color (hex)"),p("color_high","int","High color (hex)"),p("hover_json","str | None","Hover JSON")],"Chart","build_choropleth(title, labels, values, *, ...) -> Chart","chart=sp.build_choropleth(\"GDP\",labels=[\"USA\",\"DEU\",\"IND\",\"BRA\"],values=[65000,48000,2100,8800],color_low=0xfef9c3,color_high=0x7c3aed)"),
     ];
-    
-    let csv_methods = vec![
-        MethodDoc {
-            name: "get_column".to_string(),
-            module: "CsvData".to_string(),
-            description: "Gets column as strings".to_string(),
-            parameters: vec![
-                ParamDoc { name: "name".to_string(), param_type: "str".to_string(), description: "Column".to_string() },
-            ],
-            returns: Some("List[str]".to_string()),
-            examples: vec![CodeExample::new(
-                "names = data.get_column('name')",
-                "var names = data.GetColumn(\"name\");",
-                "auto names = sera_csv_get_column(data, \"name\");",
-                "let names = data.get_column(\"name\");",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "def get_column(self, name: str) -> List[str]".to_string(),
-            csharp_signature: "public List<string> GetColumn(string name)".to_string(),
-            cpp_signature: "sera_string_array_t sera_csv_get_column(sera_csv_data_t* d, const char* n)".to_string(),
-            rust_signature: "pub fn get_column(&self, name: &str) -> Option<Vec<String>>".to_string(),
-        },
-        MethodDoc {
-            name: "get_numeric_column".to_string(),
-            module: "CsvData".to_string(),
-            description: "Gets numeric column".to_string(),
-            parameters: vec![
-                ParamDoc { name: "name".to_string(), param_type: "str".to_string(), description: "Column".to_string() },
-            ],
-            returns: Some("List[float]".to_string()),
-            examples: vec![CodeExample::new(
-                "values = data.get_numeric_column('price')",
-                "var values = data.GetNumericColumn(\"price\");",
-                "auto values = sera_csv_get_numeric(data, \"price\");",
-                "let values = data.get_numeric_column(\"price\");",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "def get_numeric_column(self, name: str) -> List[float]".to_string(),
-            csharp_signature: "public List<float> GetNumericColumn(string name)".to_string(),
-            cpp_signature: "sera_float_array_t sera_csv_get_numeric(sera_csv_data_t* d, const char* n)".to_string(),
-            rust_signature: "pub fn get_numeric_column(&self, name: &str) -> Option<Vec<f64>>".to_string(),
-        },
+
+    let ml_module = vec![
+        method("build_dbscan_chart","ML","2D DBSCAN clustering chart (~600x faster than sklearn).",vec![p("title","str","Chart title"),p("x_values","list[float]","X coordinates"),p("y_values","list[float]","Y coordinates"),p("eps","float","Neighborhood radius ε (default: 0.5)"),p("min_samples","int","Core point threshold (default: 5)"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 480)"),p("x_label","str","X-axis label"),p("y_label","str","Y-axis label"),p("gridlines","bool","Gridlines (default: True)"),p("palette","list[int] | None","Cluster colors"),p("background","str | None","Background"),p("normalize","bool","Normalize inputs (default: False)")],"Chart","build_dbscan_chart(title, x_values, y_values, *, eps=0.5, min_samples=5, ...) -> Chart","from sklearn import datasets\nX,_=datasets.make_blobs(n_samples=500,centers=4,random_state=0)\nchart=sp.build_dbscan_chart(\"DBSCAN\",x_values=X[:,0].tolist(),y_values=X[:,1].tolist(),eps=0.8)"),
+        method("build_dbscan_chart_3d","ML","3D DBSCAN clustering with WebGL GPU renderer.",vec![p("title","str","Chart title"),p("x","list[float]","X coordinates"),p("y","list[float]","Y coordinates"),p("z","list[float]","Z coordinates"),p("eps","float","Neighborhood radius ε (default: 0.5)"),p("min_samples","int","Core point threshold (default: 5)"),p("width","int","Canvas width (default: 900)"),p("height","int","Canvas height (default: 600)"),p("x_label","str","X-axis label"),p("y_label","str","Y-axis label"),p("z_label","str","Z-axis label"),p("bg_color","str","Background (default: \"#1a1a2e\")"),p("normalize","bool","Normalize inputs (default: False)"),p("palette","list[int] | None","Cluster colors")],"Chart","build_dbscan_chart_3d(title, x, y, z, *, eps=0.5, min_samples=5, ...) -> Chart","import random\nx=[random.gauss(i,0.3) for i in range(3) for _ in range(300)]\nchart=sp.build_dbscan_chart_3d(\"3D Clusters\",x=x,y=x[::-1],z=[v*0.5 for v in x],eps=0.4)"),
+        method("DBSCAN","ML","sklearn-compatible DBSCAN class (~600x faster than sklearn).",vec![p("eps","float","Neighborhood radius ε (default: 0.5)"),p("min_samples","int","Core point threshold (default: 5)")],"DBSCAN","class DBSCAN(eps=0.5, min_samples=5)","import seraplot as sp\nimport numpy as np\nfrom sklearn import datasets\nX,_=datasets.make_blobs(n_samples=1000,centers=5,random_state=42)\ndb=sp.DBSCAN(eps=0.8,min_samples=10)\ndb.fit(X.tolist())\nprint(f\"Clusters: {db.n_clusters_}, Noise: {db.n_noise_}\")\nlabels=db.labels_"),
     ];
-    
-    let processor_methods = vec![
-        MethodDoc {
-            name: "filter".to_string(),
-            module: "Processor".to_string(),
-            description: "Filters data by threshold".to_string(),
-            parameters: vec![
-                ParamDoc { name: "data".to_string(), param_type: "List[float]".to_string(), description: "Values".to_string() },
-                ParamDoc { name: "threshold".to_string(), param_type: "float".to_string(), description: "Threshold".to_string() },
-            ],
-            returns: Some("List[float]".to_string()),
-            examples: vec![CodeExample::new(
-                "filtered = seraplot.processor.filter(values, 10.0)",
-                "var filtered = SeraPlot.Processor.Filter(values, 10.0f);",
-                "auto filtered = sera_processor_filter(values, 10.0f);",
-                "let filtered = SeraPlot::filter(&values, 10.0);",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "def filter(data: List[float], threshold: float) -> List[float]".to_string(),
-            csharp_signature: "public static List<float> Filter(List<float> data, float t)".to_string(),
-            cpp_signature: "sera_float_array_t sera_processor_filter(sera_float_array_t d, float t)".to_string(),
-            rust_signature: "pub fn filter(data: &[f64], threshold: f64) -> Vec<f64>".to_string(),
-        },
-        MethodDoc {
-            name: "sort".to_string(),
-            module: "Processor".to_string(),
-            description: "Sorts data ascending or descending".to_string(),
-            parameters: vec![
-                ParamDoc { name: "data".to_string(), param_type: "List[float]".to_string(), description: "Values".to_string() },
-                ParamDoc { name: "order".to_string(), param_type: "str".to_string(), description: "'asc' or 'desc'".to_string() },
-            ],
-            returns: Some("List[float]".to_string()),
-            examples: vec![CodeExample::new(
-                "sorted = seraplot.processor.sort(values, 'asc')",
-                "var sorted = SeraPlot.Processor.Sort(values, \"asc\");",
-                "auto sorted = sera_processor_sort(values, 1);",
-                "let sorted = SeraPlot::sort(&values, \"asc\");",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "def sort(data: List[float], order: str) -> List[float]".to_string(),
-            csharp_signature: "public static List<float> Sort(List<float> data, string order)".to_string(),
-            cpp_signature: "sera_float_array_t sera_processor_sort(sera_float_array_t d, int o)".to_string(),
-            rust_signature: "pub fn sort(data: &mut [f64], order: &str)".to_string(),
-        },
+
+    let config_module = vec![
+        method("set_global_background","Config","Set background for all subsequent charts.",vec![p("color","str","CSS color string (e.g. \"#1a1a2e\", \"black\")")],"None","set_global_background(color: str) -> None","sp.set_global_background(\"#1a1a2e\")\nchart=sp.build_bar_chart(\"Dark\",labels=[\"A\",\"B\"],values=[10,20])"),
+        method("reset_global_background","Config","Clear the global background.",vec![],"None","reset_global_background() -> None","sp.reset_global_background()"),
+        method("set_auto_display","Config","Enable/disable automatic Jupyter display.",vec![p("enabled","bool","True to auto-display in Jupyter (default: True)")],"None","set_auto_display(enabled: bool) -> None","sp.set_auto_display(False)"),
+        method("build_hover_json","Config","Build a custom hover tooltip JSON string.",vec![p("fields","dict[str, list]","Field name → list of values, one per point"),p("template","str | None","Optional HTML template with {field} placeholders")],"str","build_hover_json(fields, *, template=None) -> str","hover=sp.build_hover_json({\"Company\":[\"AAPL\",\"MSFT\"],\"PE\":[28.5,32.1]})\nchart=sp.build_scatter_chart(\"Stocks\",x_values=[1,2],y_values=[3,4],hover_json=hover)"),
+        method("set_bg_fn","Config","Apply background color to an existing chart HTML string.",vec![p("html","str","Chart HTML string"),p("color","str","CSS color")],"str","set_bg_fn(html: str, color: str) -> str","chart=sp.build_bar_chart(\"A\",labels=[\"X\"],values=[1])\nhtml=sp.set_bg_fn(chart.to_html(),\"#0f0f1a\")"),
     ];
-    
-    let render_methods = vec![
-        MethodDoc {
-            name: "to_svg".to_string(),
-            module: "Renderer".to_string(),
-            description: "Renders to SVG format".to_string(),
-            parameters: vec![
-                ParamDoc { name: "canvas".to_string(), param_type: "Canvas".to_string(), description: "Canvas".to_string() },
-            ],
-            returns: Some("String".to_string()),
-            examples: vec![CodeExample::new(
-                "svg = seraplot.render.to_svg(canvas)",
-                "string svg = SeraPlot.Renderer.ToSvg(canvas);",
-                "const char* svg = sera_render_svg(canvas);",
-                "let svg = canvas.render();",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "def to_svg(canvas: Canvas) -> str".to_string(),
-            csharp_signature: "public static string ToSvg(Canvas canvas)".to_string(),
-            cpp_signature: "const char* sera_render_svg(sera_canvas_t* c)".to_string(),
-            rust_signature: "pub fn to_svg(canvas: &Canvas) -> String".to_string(),
-        },
-        MethodDoc {
-            name: "to_html".to_string(),
-            module: "Renderer".to_string(),
-            description: "Renders to standalone HTML".to_string(),
-            parameters: vec![
-                ParamDoc { name: "canvas".to_string(), param_type: "Canvas".to_string(), description: "Canvas".to_string() },
-                ParamDoc { name: "title".to_string(), param_type: "str".to_string(), description: "Title".to_string() },
-            ],
-            returns: Some("String".to_string()),
-            examples: vec![CodeExample::new(
-                "html = seraplot.render.to_html(canvas, 'Page')",
-                "string html = SeraPlot.Renderer.ToHtml(canvas, \"Page\");",
-                "const char* html = sera_render_html(canvas, \"Page\");",
-                "let html = canvas.render_html(\"Page\");",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "def to_html(canvas: Canvas, title: str) -> str".to_string(),
-            csharp_signature: "public static string ToHtml(Canvas c, string title)".to_string(),
-            cpp_signature: "const char* sera_render_html(sera_canvas_t* c, const char* t)".to_string(),
-            rust_signature: "pub fn to_html(canvas: &Canvas, title: &str) -> String".to_string(),
-        },
-        MethodDoc {
-            name: "to_json".to_string(),
-            module: "Renderer".to_string(),
-            description: "Renders to JSON (Plotly compatible)".to_string(),
-            parameters: vec![
-                ParamDoc { name: "canvas".to_string(), param_type: "Canvas".to_string(), description: "Canvas".to_string() },
-            ],
-            returns: Some("String".to_string()),
-            examples: vec![CodeExample::new(
-                "json = seraplot.render.to_json(canvas)",
-                "string json = SeraPlot.Renderer.ToJson(canvas);",
-                "const char* json = sera_render_json(canvas);",
-                "let json = canvas.to_json();",
-            )],
-            since_version: Some("0.1.0".to_string()),
-            deprecated: false,
-            python_signature: "def to_json(canvas: Canvas) -> str".to_string(),
-            csharp_signature: "public static string ToJson(Canvas canvas)".to_string(),
-            cpp_signature: "const char* sera_render_json(sera_canvas_t* c)".to_string(),
-            rust_signature: "pub fn to_json(canvas: &Canvas) -> Result<String>".to_string(),
-        },
-    ];
-    
+
     export.add_module(ModuleDoc {
-        name: "Core".to_string(),
-        description: "Version and CSV loading".to_string(),
-        methods: core_methods,
+        name: "Charts2D".to_string(),
+        description: "2D chart builders — bar, line, scatter, histogram, pie, and more.".to_string(),
+        methods: charts_2d,
     });
-    
     export.add_module(ModuleDoc {
-        name: "Canvas".to_string(),
-        description: "Main drawing surface".to_string(),
-        methods: canvas_methods,
+        name: "Charts3D".to_string(),
+        description: "3D chart builders — WebGL GPU accelerated.".to_string(),
+        methods: charts_3d,
     });
-    
     export.add_module(ModuleDoc {
-        name: "Trace".to_string(),
-        description: "Dataset representation".to_string(),
-        methods: trace_methods,
+        name: "ChartsMap".to_string(),
+        description: "Geographic map charts — bubble map and choropleth.".to_string(),
+        methods: charts_map,
     });
-    
     export.add_module(ModuleDoc {
-        name: "CsvData".to_string(),
-        description: "CSV operations".to_string(),
-        methods: csv_methods,
+        name: "ML".to_string(),
+        description: "Machine learning — DBSCAN clustering (2D and 3D).".to_string(),
+        methods: ml_module,
     });
-    
     export.add_module(ModuleDoc {
-        name: "Processor".to_string(),
-        description: "Data filtering and sorting".to_string(),
-        methods: processor_methods,
+        name: "Config".to_string(),
+        description: "Global configuration — background, auto-display, hover JSON.".to_string(),
+        methods: config_module,
     });
-    
-    export.add_module(ModuleDoc {
-        name: "Renderer".to_string(),
-        description: "Multi-format rendering".to_string(),
-        methods: render_methods,
-    });
-    
+
     export
 }

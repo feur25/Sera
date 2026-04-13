@@ -1,0 +1,24 @@
+[book]
+title = "SeraPlot Documentation"
+authors = ["SeraPlot Team"]
+description = "High-performance data visualization — Rust/Python"
+src = "docs"
+language = "en"
+
+[output.html]
+default-theme = "navy"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/feur25/seraplot"
+edit-url-template = "https://github.com/feur25/seraplot/edit/main/{path}"
+no-section-label = false
+
+[output.html.fold]
+enable = true
+level = 1
+
+[output.html.search]
+enable = true
+limit-results = 30
+use-boolean-and = true
+boost-title = 2
+boost-hierarchy = 1
