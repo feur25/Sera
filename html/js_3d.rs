@@ -197,6 +197,7 @@ var AX='#f472b6',AY='#22d3ee',AZ='#fbbf24';
 var autoR=false,velY=0,velP=0,panX=0,panY=0,keys={};
 var fric=0.95,kSpd=0.03;
 var _rc={};
+var _glcv=null,_gl=null,_glP=null,_glB=null;
 function hx2rgb(h){if(_rc[h])return _rc[h];var r=[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];_rc[h]=r;return r;}
 function pj(px,py,pz){var ex=zoom*Math.cos(yaw)*Math.cos(pitch),ey=zoom*Math.sin(yaw)*Math.cos(pitch),ez=zoom*Math.sin(pitch);var fx=-ex,fy=-ey,fz=-ez,fl=Math.sqrt(fx*fx+fy*fy+fz*fz);fx/=fl;fy/=fl;fz/=fl;var rx=-fy,ry=fx,rz=0,rl=Math.sqrt(rx*rx+ry*ry)||1e-6;rx/=rl;ry/=rl;var u2x=fy*rz-fz*ry,u2y=fz*rx-fx*rz,u2z=fx*ry-fy*rx;var dx=px-ex,dy=py-ey,dz=pz-ez;var dp=dx*fx+dy*fy+dz*fz;if(dp<0.001)return null;var cx2=dx*rx+dy*ry+dz*rz,cy2=dx*u2x+dy*u2y+dz*u2z;var th=Math.tan(fov/2),asp=W/H;return{x:cx2/(dp*th*asp)+panX/sc,y:cy2/(dp*th)+panY/sc,d:dp};}
 var cV=[[-0.5,-0.5,-0.5],[0.5,-0.5,-0.5],[0.5,0.5,-0.5],[-0.5,0.5,-0.5],[-0.5,-0.5,0.5],[0.5,-0.5,0.5],[0.5,0.5,0.5],[-0.5,0.5,0.5]];
@@ -322,7 +323,7 @@ function R(){
   lp=pj(-0.5,-0.5,0);if(lp){g.textAlign='right';g.textBaseline='middle';g.fillStyle=AZ;g.fillText(zl,mx+lp.x*sc-10,my-lp.y*sc);}
   }
   pp=[];
-  if(M===0)rS(mx,my,sc);else if(M===1)rB(mx,my,sc);else if(M===2)rL(mx,my,sc);else if(M===3)rRdr(mx,my,sc);else if(M===4)rLol(mx,my,sc);else if(M===5)rKde(mx,my,sc);else if(M===6)rRdg(mx,my,sc);else if(M===7)rPie(mx,my,sc);else if(M===8)rVio(mx,my,sc);else if(M===9)rHm(mx,my,sc);else if(M===10)rCd(mx,my,sc);else if(M===11)rDu(mx,my,sc);else if(M===12)rFn(mx,my,sc);else if(M===13)rSb(mx,my,sc);else if(M===14)rStk(mx,my,sc);else if(M===15)rGlb(mx,my,sc);else if(M===16)rBb(mx,my,sc);
+  if(M===0)rSgl(mx,my,sc);else if(M===1)rB(mx,my,sc);else if(M===2)rL(mx,my,sc);else if(M===3)rRdr(mx,my,sc);else if(M===4)rLol(mx,my,sc);else if(M===5)rKde(mx,my,sc);else if(M===6)rRdg(mx,my,sc);else if(M===7)rPie(mx,my,sc);else if(M===8)rVio(mx,my,sc);else if(M===9)rHm(mx,my,sc);else if(M===10)rCd(mx,my,sc);else if(M===11)rDu(mx,my,sc);else if(M===12)rFn(mx,my,sc);else if(M===13)rSb(mx,my,sc);else if(M===14)rStk(mx,my,sc);else if(M===15)rGlb(mx,my,sc);else if(M===16)rBb(mx,my,sc);
   drawLgd();
   g.font='9.5px -apple-system,sans-serif';g.fillStyle=isDark?'rgba(100,116,139,0.4)':'rgba(0,0,0,0.18)';
   g.textAlign='center';g.textBaseline='bottom';
@@ -385,6 +386,58 @@ function rS(mx,my,sc){
     if(p.i===piI){selSx=p.sx;selSy=p.sy;selR=r;selCol=col;}
   }
   if(piI>=0&&selCol)drawHalo(selSx,selSy,selR,selCol);
+}
+function _iGL(){
+  if(_glcv)return _gl!=null;
+  _glcv=document.createElement('canvas');
+  _glcv.width=W*dpr;_glcv.height=H*dpr;
+  var gl=_glcv.getContext('webgl',{alpha:true,antialias:false,premultipliedAlpha:false})||_glcv.getContext('experimental-webgl',{alpha:true,premultipliedAlpha:false});
+  if(!gl)return false;
+  var vs=gl.createShader(gl.VERTEX_SHADER);
+  gl.shaderSource(vs,'attribute vec3 aP,aC;uniform vec3 uE,uF,uR,uU;uniform float uT,uA,uSX,uSY,uPS;uniform vec2 uPN;varying vec3 vC;void main(){vec3 d=aP-uE;float dp=dot(d,uF);if(dp<0.001){gl_Position=vec4(0,0,9,1);gl_PointSize=1.;vC=aC;return;}float cx=dot(d,uR);float cy=dot(d,uU);float nx=(cx/(dp*uT*uA)+uPN.x)*uSX;float ny=(cy/(dp*uT)+uPN.y)*uSY;gl_Position=vec4(nx,ny,0.,1.);gl_PointSize=clamp(uPS/dp,1.5,20.);vC=aC;}');
+  gl.compileShader(vs);
+  var fs=gl.createShader(gl.FRAGMENT_SHADER);
+  gl.shaderSource(fs,'precision mediump float;varying vec3 vC;void main(){vec2 c=gl_PointCoord-0.5;float d=length(c);float edge=smoothstep(0.5,0.42,d);if(edge<0.001)discard;float h=max(0.,1.-d*2.);gl_FragColor=vec4(vC+vec3(0.22*h*h),edge*(0.88+0.12*h));}');
+  gl.compileShader(fs);
+  var prog=gl.createProgram();gl.attachShader(prog,vs);gl.attachShader(prog,fs);gl.linkProgram(prog);
+  if(!gl.getProgramParameter(prog,gl.LINK_STATUS))return false;
+  _gl=gl;_glP=prog;
+  var pos=new Float32Array(N*3),col=new Float32Array(N*3);
+  for(var i=0;i<N;i++){
+    pos[i*3]=(X[i]-xmn)/xr-0.5;pos[i*3+1]=(Y[i]-ymn)/yr-0.5;pos[i*3+2]=(Z[i]-zmn)/zr-0.5;
+    var ci=(uc?C[i]:i)%PAL.length,rgb=hx2rgb(PAL[ci]);
+    col[i*3]=rgb[0]/255;col[i*3+1]=rgb[1]/255;col[i*3+2]=rgb[2]/255;
+  }
+  var pb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,pb);gl.bufferData(gl.ARRAY_BUFFER,pos,gl.STATIC_DRAW);
+  var cb=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,cb);gl.bufferData(gl.ARRAY_BUFFER,col,gl.STATIC_DRAW);
+  _glB={pb:pb,cb:cb,aP:gl.getAttribLocation(prog,'aP'),aC:gl.getAttribLocation(prog,'aC'),
+    uE:gl.getUniformLocation(prog,'uE'),uF:gl.getUniformLocation(prog,'uF'),
+    uR:gl.getUniformLocation(prog,'uR'),uU:gl.getUniformLocation(prog,'uU'),
+    uT:gl.getUniformLocation(prog,'uT'),uA:gl.getUniformLocation(prog,'uA'),
+    uSX:gl.getUniformLocation(prog,'uSX'),uSY:gl.getUniformLocation(prog,'uSY'),
+    uPS:gl.getUniformLocation(prog,'uPS'),uPN:gl.getUniformLocation(prog,'uPN')};
+  return true;
+}
+function rSgl(mx,my,sc){
+  if(!_iGL()){rS(mx,my,sc);return;}
+  var gl=_gl,b=_glB;
+  gl.viewport(0,0,W*dpr,H*dpr);gl.clearColor(0,0,0,0);gl.clear(gl.COLOR_BUFFER_BIT);
+  gl.enable(gl.BLEND);gl.blendFunc(gl.SRC_ALPHA,gl.ONE_MINUS_SRC_ALPHA);
+  gl.useProgram(_glP);
+  var ex=zoom*Math.cos(yaw)*Math.cos(pitch),ey=zoom*Math.sin(yaw)*Math.cos(pitch),ez=zoom*Math.sin(pitch);
+  var fl=Math.sqrt(ex*ex+ey*ey+ez*ez)||1;
+  var fx=-ex/fl,fy=-ey/fl,fz=-ez/fl;
+  var rx=-fy,ry=fx,rz=0,rl=Math.sqrt(rx*rx+ry*ry)||1e-6;rx/=rl;ry/=rl;
+  var ux=fy*rz-fz*ry,uy=fz*rx-fx*rz,uz=fx*ry-fy*rx;
+  gl.uniform3f(b.uE,ex,ey,ez);gl.uniform3f(b.uF,fx,fy,fz);
+  gl.uniform3f(b.uR,rx,ry,0);gl.uniform3f(b.uU,ux,uy,uz);
+  gl.uniform1f(b.uT,Math.tan(fov/2));gl.uniform1f(b.uA,W/H);
+  gl.uniform1f(b.uSX,2*sc/W);gl.uniform1f(b.uSY,2*sc/H);
+  gl.uniform1f(b.uPS,6*dpr);gl.uniform2f(b.uPN,panX/sc,panY/sc);
+  gl.bindBuffer(gl.ARRAY_BUFFER,b.pb);gl.enableVertexAttribArray(b.aP);gl.vertexAttribPointer(b.aP,3,gl.FLOAT,false,0,0);
+  gl.bindBuffer(gl.ARRAY_BUFFER,b.cb);gl.enableVertexAttribArray(b.aC);gl.vertexAttribPointer(b.aC,3,gl.FLOAT,false,0,0);
+  gl.drawArrays(gl.POINTS,0,N);
+  g.save();g.globalCompositeOperation='source-over';g.drawImage(_glcv,0,0,W,H);g.restore();
 }
 function rB(mx,my,sc){
   var bars=[];
