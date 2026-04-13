@@ -1,4 +1,4 @@
-# Treemap
+﻿# Treemap
 
 ## Signature
 
@@ -24,14 +24,12 @@ sp.build_treemap(
 Treemap — square-based space-filling hierarchy visualization.
 Tiles are sized proportionally to their value.
 
-Treemap — visualisation hiérarchique en rectangles proportionnels.
-
 When `parents` is provided, the hierarchy is rendered as nested rectangles.
 Without `parents`, a flat treemap is drawn.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -47,13 +45,13 @@ Without `parents`, a flat treemap is drawn.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Flat treemap (market cap)
 
@@ -86,7 +84,7 @@ chart = sp.build_treemap(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Sunburst](sunburst.md)
 - [Bar Chart](bar.md)

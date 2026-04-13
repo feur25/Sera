@@ -1,4 +1,4 @@
-# Scatter Chart / Nuage de points
+﻿# Scatter Chart / Nuage de points
 
 ## Signature
 
@@ -36,11 +36,9 @@ sp.build_scatter_chart(
 
 2D scatter plot with optional per-point sizing, grouping, labels, and regression line.
 
-Nuage de points 2D avec taille, groupes, étiquettes et droite de régression optionnels.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -63,13 +61,13 @@ Nuage de points 2D avec taille, groupes, étiquettes et droite de régression op
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Basic scatter
 
@@ -117,7 +115,7 @@ chart = sp.build_scatter_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [DBSCAN 2D](../../ml/dbscan.md) — automatic clustering on scatter data
 - [Bubble](bubble.md) — scatter with third size dimension

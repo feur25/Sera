@@ -1,4 +1,4 @@
-# Sunburst Chart 3D
+﻿# Sunburst Chart 3D
 
 ## Signature
 
@@ -24,11 +24,9 @@ sp.build_sunburst3d_chart(
 
 3D sunburst chart — concentric extruded arc rings in a WebGL scene.
 
-Sunburst 3D — anneaux d'arcs extrudés concentriques dans une scène WebGL.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -45,13 +43,13 @@ Sunburst 3D — anneaux d'arcs extrudés concentriques dans une scène WebGL.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -68,7 +66,7 @@ chart = sp.build_sunburst3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Sunburst 2D](../2d/sunburst.md)
 - [Pie 3D](pie3d.md)

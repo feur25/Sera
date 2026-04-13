@@ -1,4 +1,4 @@
-# KDE Chart 3D
+﻿# KDE Chart 3D
 
 ## Signature
 
@@ -27,12 +27,9 @@ sp.build_kde3d_chart(
 2D Kernel Density Estimation rendered as a 3D surface mesh over a grid.
 Visualizes the joint density of two variables.
 
-Estimation par noyau 2D rendue sous forme de surface maillée 3D sur une grille.
-Visualise la densité jointe de deux variables.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -51,13 +48,13 @@ Visualise la densité jointe de deux variables.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -76,7 +73,7 @@ chart = sp.build_kde3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [KDE 2D](../2d/kde.md)
 - [Scatter 3D](scatter3d.md)

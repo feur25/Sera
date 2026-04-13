@@ -1,4 +1,4 @@
-# Bubble Map
+﻿# Bubble Map
 
 ## Signature
 
@@ -30,12 +30,9 @@ sp.build_bubble_map(
 World map with proportional bubbles at geographic coordinates.
 Use `iso_codes` for country-level data (the library resolves centroids automatically), or pass explicit `latitudes` / `longitudes`.
 
-Carte du monde avec bulles proportionnelles aux coordonnées géographiques.
-Utilisez `iso_codes` pour les données au niveau pays (les centroïdes sont résolus automatiquement).
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -56,13 +53,13 @@ Utilisez `iso_codes` pour les données au niveau pays (les centroïdes sont rés
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### GDP per country (ISO code lookup)
 
@@ -95,7 +92,7 @@ chart = sp.build_bubble_map(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Choropleth](choropleth.md)
 - [Globe 3D](../3d/globe3d.md)

@@ -1,4 +1,4 @@
-# Stacked Bar Chart 3D
+﻿# Stacked Bar Chart 3D
 
 ## Signature
 
@@ -26,13 +26,11 @@ sp.build_stacked_bar3d_chart(
 
 3D stacked bar chart — each bar is segmented into series, rendered as stacked prisms.
 
-Graphique à barres empilées 3D — chaque barre est segmentée en séries rendues sous forme de prismes empilés.
-
 `series_values` is a flat list in row-major order: `[cat0_s0, cat0_s1, …, cat1_s0, …]`.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -48,13 +46,13 @@ Graphique à barres empilées 3D — chaque barre est segmentée en séries rend
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -77,7 +75,7 @@ chart = sp.build_stacked_bar3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Stacked Bar 2D](../2d/stacked-bar.md)
 - [Bar 3D](bar3d.md)

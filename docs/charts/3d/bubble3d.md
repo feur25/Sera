@@ -1,4 +1,4 @@
-# Bubble Chart 3D
+﻿# Bubble Chart 3D
 
 ## Signature
 
@@ -29,11 +29,9 @@ sp.build_bubble3d_chart(
 
 3D bubble chart — scatter in XYZ space where bubble radius encodes a fourth dimension.
 
-Nuage de bulles 3D — nuage de points dans l'espace XYZ où le rayon encode une quatrième dimension.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -52,13 +50,13 @@ Nuage de bulles 3D — nuage de points dans l'espace XYZ où le rayon encode une
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -77,7 +75,7 @@ chart = sp.build_bubble3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Scatter 3D](scatter3d.md)
 - [Bubble 2D](../2d/bubble.md)

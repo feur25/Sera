@@ -1,4 +1,4 @@
-# Dumbbell Chart
+﻿# Dumbbell Chart
 
 ## Signature
 
@@ -29,12 +29,9 @@ sp.build_dumbbell(
 Dumbbell chart — a horizontal line connecting two data points per category,
 ideal for showing the gap or change between two states.
 
-Graphique haltère — une ligne horizontale reliant deux points par catégorie,
-idéal pour montrer l'écart ou le changement entre deux états.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -52,13 +49,13 @@ idéal pour montrer l'écart ou le changement entre deux états.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Life expectancy 2000 vs 2023
 
@@ -78,7 +75,7 @@ chart = sp.build_dumbbell(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Slope](slope.md)
 - [Dumbbell 3D](../3d/dumbbell3d.md)

@@ -1,4 +1,4 @@
-# Bar Chart / Graphique en barres
+﻿# Bar Chart / Graphique en barres
 
 ## Signature
 
@@ -38,12 +38,12 @@ Affiche un graphique en barres vertical ou horizontal.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `title` | `str` | required | Chart title / Titre du graphique |
-| `labels` | `list[str]` | required | Category labels / Étiquettes des catégories |
+| `labels` | `list[str]` | required | Category labels|
 | `values` | `list[float]` | required | Bar values / Valeurs des barres |
 | `color_hex` | `int` | `0` | Single bar color as hex int (e.g. `0xFF5733`) / Couleur unique en hex |
 | `orientation` | `str` | `"v"` | `"v"` = vertical, `"h"` = horizontal |
@@ -51,11 +51,11 @@ Affiche un graphique en barres vertical ou horizontal.
 | `color_groups` | `list[str] \| None` | `None` | Per-bar group name for coloring / Groupe par barre pour la couleur |
 | `width` | `int` | `900` | Canvas width in pixels / Largeur en pixels |
 | `height` | `int` | `480` | Canvas height in pixels / Hauteur en pixels |
-| `x_label` | `str` | `""` | X-axis label / Étiquette axe X |
-| `y_label` | `str` | `""` | Y-axis label / Étiquette axe Y |
+| `x_label` | `str` | `""` | X-axis label|
+| `y_label` | `str` | `""` | Y-axis label|
 | `gridlines` | `bool` | `False` | Show gridlines / Afficher la grille |
 | `sort_order` | `str` | `"none"` | `"asc"`, `"desc"`, or `"none"` |
-| `hover_json` | `str` | `""` | Custom hover tooltip JSON / JSON de tooltip personnalisé |
+| `hover_json` | `str` | `""` | Custom hover tooltip JSON|
 | `legend_position` | `str` | `"right"` | `"right"`, `"left"`, `"top"`, `"bottom"` |
 | `palette` | `list[int] \| None` | `None` | Custom color palette as list of hex ints |
 | `background` | `str \| None` | `None` | Background color (e.g. `"#0f172a"`) or `None` = transparent |
@@ -64,13 +64,13 @@ Affiche un graphique en barres vertical ou horizontal.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart` — object with `.html` property containing the full self-contained HTML.
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Basic bar chart
 
@@ -115,7 +115,7 @@ chart = sp.build_bar_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Horizontal Bar](hbar.md) — `sp.build_hbar()`
 - [Grouped Bar](grouped-bar.md) — `sp.build_grouped_bar()`

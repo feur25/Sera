@@ -1,4 +1,4 @@
-# Parallel Coordinates
+﻿# Parallel Coordinates
 
 ## Signature
 
@@ -25,12 +25,9 @@ sp.build_parallel(
 Parallel coordinates chart — each axis is a dimension, each line is an observation.
 Ideal for detecting patterns in high-dimensional data.
 
-Coordonnées parallèles — chaque axe est une dimension, chaque ligne est une observation.
-Idéal pour détecter des patterns dans des données multidimensionnelles.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -47,13 +44,13 @@ Idéal pour détecter des patterns dans des données multidimensionnelles.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Iris dataset parallel coordinates
 
@@ -80,7 +77,7 @@ chart = sp.build_parallel(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Scatter](scatter.md)
 - [Radar Chart](radar.md)

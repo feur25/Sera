@@ -1,4 +1,4 @@
-# Chart Methods
+﻿# Chart Methods
 
 These methods are available on every `Chart` object returned by any SeraPlot
 function. They all return a new `Chart`, so they can be chained freely.
@@ -33,7 +33,7 @@ chart = sp.build_bar_chart("Title", labels, values).set_frame("transparent")
 
 ---
 
-### `set_global_background(color)` / `reset_global_background()`
+### `set_global_background(color)`
 
 Module-level functions that apply a background to **all** charts created after
 the call — useful for notebook sessions with a consistent theme.
@@ -50,7 +50,7 @@ sp.reset_global_background()          # restore per-chart default
 
 ## Grid and axes
 
-### `show_grid()` / `hide_grid()`
+### `show_grid()`
 
 Force gridlines on or off regardless of the `gridlines` parameter used at
 chart creation.
@@ -62,7 +62,7 @@ chart = sp.build_line_chart("Trend", labels, values, gridlines=True).hide_grid()
 
 ---
 
-### `no_x_axis()` / `no_y_axis()` / `no_axes()`
+### `no_x_axis()`
 
 Remove axis lines, ticks, and labels selectively:
 

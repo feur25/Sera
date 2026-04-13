@@ -1,4 +1,4 @@
-# Bar Chart 3D
+﻿# Bar Chart 3D
 
 ## Signature
 
@@ -26,11 +26,9 @@ sp.build_bar3d_chart(
 
 3D bar chart rendering bars as extruded rectangular prisms on a WebGL canvas.
 
-Graphique en barres 3D — chaque barre est un prisme rectangulaire extrudé sur un canvas WebGL.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -49,13 +47,13 @@ Graphique en barres 3D — chaque barre est un prisme rectangulaire extrudé sur
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -70,7 +68,7 @@ chart = sp.build_bar3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Bar Chart 2D](../2d/bar.md)
 - [Stacked Bar 3D](stacked-bar3d.md)

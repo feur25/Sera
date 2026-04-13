@@ -1,4 +1,4 @@
-# Waterfall Chart
+﻿# Waterfall Chart
 
 ## Signature
 
@@ -29,13 +29,11 @@ sp.build_waterfall(
 Waterfall chart showing sequential positive and negative contributions to a running total.
 The last bar can act as the cumulative total.
 
-Graphique cascade montrant les contributions positives et négatives à un total cumulé.
-
 Positive values rise, negative values fall. The last bar typically represents the final total.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -53,13 +51,13 @@ Positive values rise, negative values fall. The last bar typically represents th
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### P&L breakdown
 
@@ -77,7 +75,7 @@ chart = sp.build_waterfall(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Bar Chart](bar.md)
 - [Funnel](funnel.md)

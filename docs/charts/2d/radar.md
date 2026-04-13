@@ -1,4 +1,4 @@
-# Radar Chart
+﻿# Radar Chart
 
 ## Signature
 
@@ -25,12 +25,9 @@ sp.build_radar_chart(
 Spider / radar chart — polygon per series across radial axes.
 Useful for profiling entities across multiple dimensions simultaneously.
 
-Graphique araignée / radar — polygone par série sur des axes radiaux.
-Utile pour profiler des entités sur plusieurs dimensions simultanément.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -47,13 +44,13 @@ Utile pour profiler des entités sur plusieurs dimensions simultanément.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Player comparison
 
@@ -74,7 +71,7 @@ chart = sp.build_radar_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Parallel Coordinates](parallel.md)
 - [Radar 3D](../3d/radar3d.md)

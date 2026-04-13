@@ -1,4 +1,4 @@
-# Ridgeline Chart
+﻿# Ridgeline Chart
 
 ## Signature
 
@@ -27,14 +27,13 @@ sp.build_ridgeline_chart(
 Ridgeline (joy) chart — stacked KDE curves per category.
 Excellent for comparing distributional shapes across many groups.
 
-Ridgeline chart — courbes KDE empilées par catégorie.
 Excellent pour comparer les formes de distribution entre de nombreux groupes.
 
 `values` is a flat list. The number of values must be divisible by `len(categories)` (equal samples per group).
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -52,13 +51,13 @@ Excellent pour comparer les formes de distribution entre de nombreux groupes.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Daily temperature ridgeline
 
@@ -82,7 +81,7 @@ chart = sp.build_ridgeline_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [KDE](kde.md)
 - [Violin](violin.md)

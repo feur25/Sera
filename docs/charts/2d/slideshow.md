@@ -1,4 +1,4 @@
-# Slideshow
+﻿# Slideshow
 
 ## Signature
 
@@ -22,12 +22,9 @@ sp.build_slideshow(
 Wraps multiple charts in an interactive slideshow with Previous / Next navigation controls.
 All charts are pre-rendered; switching slides requires no server round-trip.
 
-Encapsule plusieurs graphiques dans un diaporama interactif avec contrôles Précédent / Suivant.
-Tous les graphiques sont pré-rendus.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -41,13 +38,13 @@ Tous les graphiques sont pré-rendus.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart` (composite)
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Quarterly report slideshow
 
@@ -65,6 +62,6 @@ deck = sp.build_slideshow(slides, title="Q1 Board Deck", autoplay=False)
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Grid Layout](grid.md)

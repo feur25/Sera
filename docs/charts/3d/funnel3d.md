@@ -1,4 +1,4 @@
-# Funnel Chart 3D
+﻿# Funnel Chart 3D
 
 ## Signature
 
@@ -23,11 +23,9 @@ sp.build_funnel3d_chart(
 
 3D funnel chart where each stage is a truncated cone (frustum) in a WebGL scene.
 
-Entonnoir 3D où chaque étape est un cône tronqué (frustum) dans une scène WebGL.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -43,13 +41,13 @@ Entonnoir 3D où chaque étape est un cône tronqué (frustum) dans une scène W
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -63,6 +61,6 @@ chart = sp.build_funnel3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Funnel 2D](../2d/funnel.md)

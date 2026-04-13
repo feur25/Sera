@@ -1,6 +1,5 @@
-# Quick Start / Démarrage rapide
 
-## Your first chart / Votre premier graphique
+## Your first chart
 
 ```python
 import seraplot as sp
@@ -16,7 +15,7 @@ chart = sp.build_bar_chart(
 
 ---
 
-## Save to HTML / Exporter en HTML
+## Save to HTML
 
 ```python
 with open("chart.html", "w", encoding="utf-8") as f:
@@ -25,7 +24,7 @@ with open("chart.html", "w", encoding="utf-8") as f:
 
 ---
 
-## Common patterns / Patterns courants
+## Common patterns
 
 ### Scatter plot with colored groups
 

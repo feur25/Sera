@@ -1,4 +1,4 @@
-# Heatmap 3D
+﻿# Heatmap 3D
 
 ## Signature
 
@@ -28,11 +28,9 @@ sp.build_heatmap3d_chart(
 3D heatmap where cell values are extruded as bars rising from a flat grid.
 Higher values produce taller columns.
 
-Heatmap 3D où les valeurs de cellules sont extrudées sous forme de barres émergeant d'une grille plate.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -49,13 +47,13 @@ Heatmap 3D où les valeurs de cellules sont extrudées sous forme de barres éme
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -75,7 +73,7 @@ chart = sp.build_heatmap3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Heatmap 2D](../2d/heatmap.md)
 - [Bar 3D](bar3d.md)

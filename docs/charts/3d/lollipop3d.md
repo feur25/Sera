@@ -1,4 +1,4 @@
-# Lollipop Chart 3D
+﻿# Lollipop Chart 3D
 
 ## Signature
 
@@ -26,11 +26,9 @@ sp.build_lollipop3d_chart(
 
 3D lollipop chart — stems and spheres rendered in a WebGL scene.
 
-Lollipop 3D — tiges et sphères rendues dans une scène WebGL.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -46,13 +44,13 @@ Lollipop 3D — tiges et sphères rendues dans une scène WebGL.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -67,7 +65,7 @@ chart = sp.build_lollipop3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Lollipop 2D](../2d/lollipop.md)
 - [Bar 3D](bar3d.md)

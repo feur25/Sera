@@ -1,4 +1,4 @@
-# Scatter 3D
+﻿# Scatter 3D
 
 ## Signature
 
@@ -30,14 +30,11 @@ sp.build_scatter3d_chart(
 GPU-accelerated 3D scatter plot rendered via WebGL.
 Handles millions of points at interactive frame rates.
 
-Nuage de points 3D accéléré GPU via WebGL.
-Gère des millions de points à des fréquences d'images interactives.
-
 Use `color_values` for a continuous color scale, or `color_labels` for categorical coloring.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -59,7 +56,7 @@ Use `color_values` for a continuous color scale, or `color_labels` for categoric
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
@@ -70,12 +67,9 @@ Use `color_values` for a continuous color scale, or `color_labels` for categoric
 The renderer uses a single `gl.drawArrays(POINTS, …)` call per frame.
 Tested at 10 million points at 60 fps on a mid-range GPU.
 
-Le rendu utilise un seul appel `gl.drawArrays(POINTS, …)` par frame.
-Testé à 10 millions de points à 60 fps sur un GPU d'entrée de gamme.
-
 ---
 
-## Examples / Exemples
+## Examples
 
 ### 3D scatter with categorical colors
 
@@ -99,7 +93,7 @@ chart = sp.build_scatter3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Scatter 2D](../2d/scatter.md)
 - [DBSCAN 3D](../../ml/dbscan.md)

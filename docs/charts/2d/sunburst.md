@@ -1,4 +1,4 @@
-# Sunburst Chart
+﻿# Sunburst Chart
 
 ## Signature
 
@@ -24,15 +24,12 @@ sp.build_sunburst(
 Hierarchical sunburst chart. Nodes are arranged in concentric rings
 radiating outward from the root.
 
-Graphique sunburst hiérarchique. Les nœuds sont disposés en anneaux
-concentriques rayonnant à partir de la racine.
-
 The `labels` and `parents` lists define a tree: each entry in `labels[i]` has
 `parents[i]` as its parent (`""` for root nodes). `values` controls arc size.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -48,13 +45,13 @@ The `labels` and `parents` lists define a tree: each entry in `labels[i]` has
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Company org chart
 
@@ -75,7 +72,7 @@ chart = sp.build_sunburst(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Treemap](treemap.md)
 - [Pie Chart](pie.md)

@@ -1,4 +1,4 @@
-# Candlestick Chart
+﻿# Candlestick Chart
 
 ## Signature
 
@@ -29,13 +29,11 @@ sp.build_candlestick(
 
 Financial candlestick chart for OHLC (Open / High / Low / Close) price data.
 
-Graphique en chandeliers japonais pour données OHLC (Ouverture / Haut / Bas / Clôture).
-
 Green candles indicate a price rise (close > open), red candles a fall.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -55,13 +53,13 @@ Green candles indicate a price rise (close > open), red candles a fall.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Stock price chart
 
@@ -81,7 +79,7 @@ chart = sp.build_candlestick(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Dumbbell](dumbbell.md)
 - [Candlestick 3D](../3d/candlestick3d.md)

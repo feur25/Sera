@@ -1,4 +1,4 @@
-# Gauge Chart
+﻿# Gauge Chart
 
 ## Signature
 
@@ -26,11 +26,9 @@ sp.build_gauge(
 
 Semicircular gauge (speedometer) chart. Colored arcs can indicate thresholds (danger / warning / ok).
 
-Jauge semi-circulaire (compteur de vitesse). Des arcs colorés peuvent indiquer des seuils (danger / avertissement / ok).
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -48,13 +46,13 @@ Jauge semi-circulaire (compteur de vitesse). Des arcs colorés peuvent indiquer 
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### CPU usage gauge
 
@@ -75,7 +73,7 @@ chart = sp.build_gauge(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Bullet](bullet.md)
 - [Bar Chart](bar.md)

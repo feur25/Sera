@@ -1,4 +1,4 @@
-# DBSCAN Class
+﻿# DBSCAN Class
 
 ## Signature
 
@@ -20,15 +20,12 @@ model.n_noise_     -> int
 Low-level DBSCAN class for programmatic access to cluster labels.
 `-1` labels indicate noise points (not part of any cluster).
 
-Classe DBSCAN bas niveau pour un accès programmatique aux labels de clusters.
-Un label `-1` indique un point de bruit (n'appartenant à aucun cluster).
-
 This class runs the same Rust-native DBSCAN as `build_dbscan_chart` but returns raw labels
 instead of producing a chart.
 
 ---
 
-## Constructor Parameters / Paramètres du constructeur
+## Constructor Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -37,7 +34,7 @@ instead of producing a chart.
 
 ---
 
-## Methods / Méthodes
+## Methods
 
 ### `fit(x, y)`
 
@@ -54,7 +51,7 @@ Equivalent to calling `fit(x, y)` then returning `labels_`.
 
 ---
 
-## Attributes / Attributs
+## Attributes
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
@@ -64,7 +61,7 @@ Equivalent to calling `fit(x, y)` then returning `labels_`.
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Accessing labels
 
@@ -102,7 +99,7 @@ chart = sp.build_scatter_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [DBSCAN Chart](dbscan.md)
 - [DBSCAN 3D](dbscan3d.md)

@@ -1,4 +1,4 @@
-# Custom Hover Tooltips
+﻿# Custom Hover Tooltips
 
 ## Signature
 
@@ -18,12 +18,9 @@ sp.build_hover_json(
 Builds a JSON string suitable for the `hover_json` parameter accepted by most chart functions.
 The JSON format drives the interactive tooltip rendered on mouse hover.
 
-Génère une chaîne JSON adaptée au paramètre `hover_json` accepté par la plupart des fonctions de graphique.
-Ce JSON pilote les infobulles interactives affichées au survol de la souris.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -33,13 +30,13 @@ Ce JSON pilote les infobulles interactives affichées au survol de la souris.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `str` — JSON string to pass to `hover_json=` parameters.
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Bar chart with rich tooltip
 
@@ -68,7 +65,7 @@ chart = sp.build_bar_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Background](background.md)
 - [Palette & Colors](palette.md)

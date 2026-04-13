@@ -1,4 +1,4 @@
-# Grid Layout
+﻿# Grid Layout
 
 ## Signature
 
@@ -27,7 +27,7 @@ Charts are placed left-to-right, top-to-bottom. When `len(charts)` is not divisi
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -41,13 +41,13 @@ Charts are placed left-to-right, top-to-bottom. When `len(charts)` is not divisi
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart` (composite)
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Dashboard with 4 charts
 
@@ -68,6 +68,6 @@ dashboard = sp.build_grid(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Slideshow](slideshow.md)

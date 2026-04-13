@@ -1,4 +1,3 @@
-# Line Chart / Graphique linéaire
 
 ## Signature
 
@@ -31,13 +30,11 @@ sp.build_line_chart(
 
 Single-series line chart with optional data points.
 
-Graphique linéaire à une série avec points de données optionnels.
-
 For **multiple series**, use [`build_multiline_chart`](multiline.md).
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -53,13 +50,13 @@ For **multiple series**, use [`build_multiline_chart`](multiline.md).
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Time series
 
@@ -84,7 +81,7 @@ chart = sp.build_line_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Multi-line](multiline.md) — `sp.build_multiline_chart()` for multiple series
 - [Area Chart](area.md) — `sp.build_area_chart()`

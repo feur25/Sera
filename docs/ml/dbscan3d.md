@@ -1,4 +1,4 @@
-# DBSCAN 3D Chart
+﻿# DBSCAN 3D Chart
 
 ## Signature
 
@@ -33,7 +33,7 @@ Clustering DBSCAN 3D — rendu via WebGL GPU pour des performances maximales.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -54,13 +54,13 @@ Clustering DBSCAN 3D — rendu via WebGL GPU pour des performances maximales.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### 3D clusters
 
@@ -85,7 +85,7 @@ chart = sp.build_dbscan_chart_3d(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [DBSCAN 2D](dbscan.md)
 - [DBSCAN Class](dbscan-class.md)

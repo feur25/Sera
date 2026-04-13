@@ -1,4 +1,4 @@
-# Violin Chart
+﻿# Violin Chart
 
 ## Signature
 
@@ -27,12 +27,9 @@ sp.build_violin(
 Violin chart combining KDE density estimation with box-plot summary.
 The mirrored shape shows the full probability distribution of each group.
 
-Violon combinant estimation KDE et résumé de boîte à moustaches.
-La forme miroir montre la distribution probabiliste complète de chaque groupe.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -50,13 +47,13 @@ La forme miroir montre la distribution probabiliste complète de chaque groupe.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Comparing salary distributions
 
@@ -81,7 +78,7 @@ chart = sp.build_violin(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Box Plot](boxplot.md)
 - [KDE](kde.md)

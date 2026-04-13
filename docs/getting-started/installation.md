@@ -1,6 +1,6 @@
-# Installation
+﻿# Installation
 
-## Requirements / Prérequis
+## Requirements
 
 - Python **3.8+**
 - pip 21+
@@ -9,7 +9,7 @@ SeraPlot ships as a compiled Rust extension (`.pyd` / `.so`) bundled in the whee
 
 ---
 
-## From PyPI / Depuis PyPI
+## pip
 
 ```bash
 pip install seraplot
@@ -21,6 +21,44 @@ pip install seraplot==2.3.47
 
 ```bash
 pip install --upgrade seraplot
+```
+
+---
+
+## uv
+
+[uv](https://github.com/astral-sh/uv) is a fast Python package manager written in Rust.
+
+```bash
+uv add seraplot
+```
+
+```bash
+uv add seraplot==2.3.47
+```
+
+```bash
+uv sync
+```
+
+---
+
+## conda / mamba
+
+```bash
+conda install -c conda-forge seraplot
+```
+
+```bash
+mamba install -c conda-forge seraplot
+```
+
+Or add it to your `environment.yml`:
+
+```yaml
+dependencies:
+  - pip:
+    - seraplot
 ```
 
 ---
@@ -40,11 +78,9 @@ For comparison, `pip install plotly` downloads ~15 MB. `pip install seraplot` do
 
 ---
 
-## Jupyter / Notebook
+## Jupyter
 
 SeraPlot displays charts **automatically** in Jupyter without any `display()` call.
-
-SeraPlot affiche les graphiques **automatiquement** dans Jupyter sans appel `display()`.
 
 ```python
 import seraplot as sp
@@ -74,7 +110,7 @@ These are only needed if you want to compare SeraPlot against scikit-learn's DBS
 
 ---
 
-## Build from source / Compiler depuis les sources
+## Build from source
 
 ```bash
 git clone https://github.com/feur25/seraplot.git

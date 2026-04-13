@@ -1,4 +1,4 @@
-# Horizontal Bar Chart / Barres horizontales
+﻿# Horizontal Bar Chart / Barres horizontales
 
 ## Signature
 
@@ -32,11 +32,9 @@ sp.build_hbar(
 
 Horizontal bar chart. Best for long category labels or ranking comparisons.
 
-Graphique en barres horizontales. Idéal pour les étiquettes longues ou les classements.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -53,13 +51,13 @@ Graphique en barres horizontales. Idéal pour les étiquettes longues ou les cla
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Top 10 ranking
 
@@ -80,7 +78,7 @@ chart = sp.build_hbar(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Bar Chart](bar.md) — `sp.build_bar_chart()`
 - [Lollipop](lollipop.md) — `sp.build_lollipop_chart()`

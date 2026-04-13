@@ -1,4 +1,3 @@
-# Stacked Bar / Barres empilées
 
 ## Signature
 
@@ -31,13 +30,11 @@ sp.build_stacked_bar(
 
 Stacked bar chart. Each bar is split into segments representing series contributions.
 
-Barres empilées. Chaque barre est divisée en segments représentant les contributions de chaque série.
-
 Same flat `series_values` layout as `build_grouped_bar`.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -49,13 +46,13 @@ Same flat `series_values` layout as `build_grouped_bar`.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -79,7 +76,7 @@ chart = sp.build_stacked_bar(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Grouped Bar](grouped-bar.md)
 - [Stacked Bar 3D](../3d/stacked-bar3d.md)

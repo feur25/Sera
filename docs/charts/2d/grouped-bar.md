@@ -1,4 +1,3 @@
-# Grouped Bar / Barres groupées
 
 ## Signature
 
@@ -31,15 +30,11 @@ sp.build_grouped_bar(
 
 Grouped bar chart for comparing multiple series across categories.
 
-Barres groupées pour comparer plusieurs séries entre catégories.
-
 `series_values` must be a **flat list** of length `n_categories × n_series`, row-major (category-first).
-
-`series_values` doit être une **liste plate** de taille `n_catégories × n_séries`, en ordre ligne-par-ligne.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -52,13 +47,13 @@ Barres groupées pour comparer plusieurs séries entre catégories.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -84,7 +79,7 @@ chart = sp.build_grouped_bar(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Stacked Bar](stacked-bar.md) — `sp.build_stacked_bar()`
 - [Bar Chart](bar.md)

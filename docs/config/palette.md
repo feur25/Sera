@@ -1,10 +1,8 @@
-# Palette & Colors
+﻿# Palette & Colors
 
 ## Overview
 
 SeraPlot represents colors as 24-bit RGB integers (`int`) or CSS strings (`str`).
-
-SeraPlot représente les couleurs sous forme d'entiers RGB 24 bits (`int`) ou de chaînes CSS (`str`).
 
 | Format | Example | Usage |
 |--------|---------|-------|
@@ -60,7 +58,7 @@ chart = sp.build_bar_chart(
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Purple gradient heatmap
 
@@ -79,7 +77,7 @@ chart = sp.build_heatmap(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Background Config](background.md)
 - [Hover Tooltips](hover.md)

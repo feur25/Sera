@@ -1,4 +1,4 @@
-# Pie Chart
+﻿# Pie Chart
 
 ## Signature
 
@@ -24,11 +24,9 @@ sp.build_pie_chart(
 
 Standard pie chart with optional percentage labels.
 
-Camembert standard avec étiquettes de pourcentage optionnelles.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -45,13 +43,13 @@ Camembert standard avec étiquettes de pourcentage optionnelles.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Market share
 
@@ -82,7 +80,7 @@ chart = sp.build_pie_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Donut Chart](donut.md)
 - [Pie 3D](../3d/pie3d.md)

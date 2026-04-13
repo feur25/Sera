@@ -1,4 +1,4 @@
-# Word Cloud
+﻿# Word Cloud
 
 ## Signature
 
@@ -22,13 +22,11 @@ sp.build_wordcloud(
 
 Word cloud (tag cloud) where font size reflects the weight of each word.
 
-Nuage de mots où la taille de la police reflète le poids de chaque mot.
-
 Words with higher `weights` are displayed larger. Layout is computed via a spiral placement algorithm.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -43,13 +41,13 @@ Words with higher `weights` are displayed larger. Layout is computed via a spira
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Technology popularity
 
@@ -70,6 +68,6 @@ chart = sp.build_wordcloud(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Bar Chart](bar.md)

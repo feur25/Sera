@@ -1,4 +1,4 @@
-# DBSCAN Chart
+﻿# DBSCAN Chart
 
 ## Signature
 
@@ -27,15 +27,11 @@ sp.build_dbscan_chart(
 
 2D DBSCAN clustering chart. Runs the DBSCAN algorithm (implemented in Rust) and plots each point colored by cluster membership. Noise points are shown in grey.
 
-Graphique de clustering DBSCAN 2D. Exécute l'algorithme DBSCAN (implémenté en Rust) et trace chaque point coloré selon son appartenance à un cluster. Les points de bruit sont affichés en gris.
-
 SeraPlot's DBSCAN runs up to **600× faster** than scikit-learn on large datasets.
-
-Le DBSCAN de SeraPlot s'exécute jusqu'à **600× plus vite** que scikit-learn sur de grands jeux de données.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -55,7 +51,7 @@ Le DBSCAN de SeraPlot s'exécute jusqu'à **600× plus vite** que scikit-learn s
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
@@ -85,7 +81,7 @@ The gap widens with dataset size because SeraPlot uses a KD-tree with SIMD accel
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Synthetic blobs
 
@@ -127,7 +123,7 @@ chart = sp.build_dbscan_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [DBSCAN Class](dbscan-class.md) — for accessing labels and cluster metadata
 - [DBSCAN 3D](dbscan3d.md)

@@ -1,4 +1,4 @@
-# Multi-Line Chart
+﻿# Multi-Line Chart
 
 ## Signature
 
@@ -32,14 +32,11 @@ sp.build_multiline_chart(
 Multiple line series plotted on a shared axis.
 Unlike `build_line_chart`, this accepts several series in one call.
 
-Plusieurs séries de courbes sur un axe commun.
-Contrairement à `build_line_chart`, cette fonction accepte plusieurs séries en un seul appel.
-
 Each inner list in `series_values` must have the same length as `x_labels`.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -59,13 +56,13 @@ Each inner list in `series_values` must have the same length as `x_labels`.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Monthly revenue by product
 
@@ -90,7 +87,7 @@ chart = sp.build_multiline_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Line Chart](line.md)
 - [Area Chart](area.md)

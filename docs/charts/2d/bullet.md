@@ -1,4 +1,4 @@
-# Bullet Chart
+﻿# Bullet Chart
 
 ## Signature
 
@@ -26,13 +26,11 @@ sp.build_bullet(
 
 Bullet chart — a compact bar that shows a value against a target and qualitative ranges (poor / acceptable / good).
 
-Graphique à puces — barre compacte montrant une valeur par rapport à une cible et des plages qualitatives.
-
 Inspired by Tufte's bullet graph design.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -48,13 +46,13 @@ Inspired by Tufte's bullet graph design.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### KPI dashboard
 
@@ -78,7 +76,7 @@ chart = sp.build_bullet(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Bar Chart](bar.md)
 - [Gauge](gauge.md)

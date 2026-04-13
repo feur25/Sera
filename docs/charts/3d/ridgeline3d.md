@@ -1,4 +1,4 @@
-# Ridgeline Chart 3D
+﻿# Ridgeline Chart 3D
 
 ## Signature
 
@@ -25,11 +25,9 @@ sp.build_ridgeline3d_chart(
 
 Ridgeline chart in 3D — KDE surfaces per category arranged along the Y axis in a WebGL scene.
 
-Ridgeline 3D — surfaces KDE par catégorie disposées le long de l'axe Y dans une scène WebGL.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -45,13 +43,13 @@ Ridgeline 3D — surfaces KDE par catégorie disposées le long de l'axe Y dans 
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -70,7 +68,7 @@ chart = sp.build_ridgeline3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Ridgeline 2D](../2d/ridgeline.md)
 - [KDE 3D](kde3d.md)

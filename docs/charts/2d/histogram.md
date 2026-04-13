@@ -1,4 +1,4 @@
-# Histogram / Histogramme
+﻿# Histogram / Histogramme
 
 ## Signature
 
@@ -35,7 +35,7 @@ Histogramme de distribution avec nombre de bins configurable.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -49,13 +49,13 @@ Histogramme de distribution avec nombre de bins configurable.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Normal distribution
 
@@ -78,7 +78,7 @@ chart = sp.build_histogram(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Histogram Overlay](histogram-overlay.md) — compare two distributions
 - [KDE](kde.md) — smooth density estimate

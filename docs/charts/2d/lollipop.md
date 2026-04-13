@@ -1,4 +1,4 @@
-# Lollipop Chart
+﻿# Lollipop Chart
 
 ## Signature
 
@@ -31,11 +31,9 @@ sp.build_lollipop_chart(
 Lollipop chart — a cleaner alternative to bar charts using a thin stem and a circle at the end.
 Reduces ink-to-data ratio compared to filled bars.
 
-Graphique lollipop — alternative épurée au graphique en barres utilisant une tige fine et un cercle à l'extrémité.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -55,13 +53,13 @@ Graphique lollipop — alternative épurée au graphique en barres utilisant une
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Sorted lollipop
 
@@ -81,7 +79,7 @@ chart = sp.build_lollipop_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Bar Chart](bar.md)
 - [Dumbbell](dumbbell.md)

@@ -1,4 +1,4 @@
-# Heatmap
+﻿# Heatmap
 
 ## Signature
 
@@ -31,15 +31,13 @@ sp.build_heatmap(
 
 Color-coded matrix heatmap. Values are automatically normalized for color mapping.
 
-Matrice heatmap avec code couleur. Les valeurs sont normalisées automatiquement.
-
 `flat_matrix` must contain `n_rows × n_cols` values in row-major order.
 
 `labels` = row labels. `col_labels` = column labels (if different from rows).
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -54,13 +52,13 @@ Matrice heatmap avec code couleur. Les valeurs sont normalisées automatiquement
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Correlation matrix
 
@@ -85,6 +83,6 @@ chart = sp.build_heatmap(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Heatmap 3D](../3d/heatmap3d.md)

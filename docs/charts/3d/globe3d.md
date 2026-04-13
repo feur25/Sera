@@ -1,4 +1,4 @@
-# Globe 3D
+﻿# Globe 3D
 
 ## Signature
 
@@ -28,12 +28,9 @@ sp.build_globe3d_chart(
 Interactive 3D globe — geo data plotted as vertical bars or spikes on a sphere.
 Drag to rotate, scroll to zoom.
 
-Globe 3D interactif — données géographiques représentées sous forme de barres verticales sur une sphère.
-Faites glisser pour tourner, faites défiler pour zoomer.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -53,13 +50,13 @@ Faites glisser pour tourner, faites défiler pour zoomer.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### World population
 
@@ -78,7 +75,7 @@ chart = sp.build_globe3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Bubble Map](../map/bubble-map.md)
 - [Choropleth](../map/choropleth.md)

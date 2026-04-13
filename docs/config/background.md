@@ -1,12 +1,10 @@
-# Background Configuration
+﻿# Background Configuration
 
 ## Functions
 
 ### `set_global_background(color: str) -> None`
 
 Sets a global background color applied to all subsequently created charts.
-
-Définit une couleur de fond globale appliquée à tous les graphiques créés ultérieurement.
 
 ```python
 sp.set_global_background("#1a1a2e")
@@ -22,8 +20,6 @@ sp.set_global_background("#1a1a2e")
 
 Clears the global background, reverting to the per-chart default.
 
-Efface le fond global et revient à la valeur par défaut par graphique.
-
 ```python
 sp.reset_global_background()
 ```
@@ -34,8 +30,6 @@ sp.reset_global_background()
 
 Applies a background color to an existing HTML chart string.
 Returns the modified HTML string.
-
-Applique une couleur de fond à une chaîne HTML de graphique existante.
 
 ```python
 html_str = chart.to_html()
@@ -51,7 +45,7 @@ html_with_bg = sp.set_bg_fn(html_str, "#0f172a")
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Dark theme dashboard
 
@@ -68,7 +62,7 @@ sp.reset_global_background()
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Palette & Colors](palette.md)
 - [Auto Display](auto-display.md)

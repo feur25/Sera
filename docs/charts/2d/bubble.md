@@ -1,4 +1,4 @@
-# Bubble Chart
+﻿# Bubble Chart
 
 ## Signature
 
@@ -29,11 +29,9 @@ sp.build_bubble(
 
 Bubble chart: scatter plot where each point's area encodes a third dimension (`sizes`).
 
-Graphique à bulles : nuage de points où la surface de chaque point encode une troisième dimension (`sizes`).
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -54,13 +52,13 @@ Graphique à bulles : nuage de points où la surface de chaque point encode une 
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Gapminder-style chart
 
@@ -85,7 +83,7 @@ chart = sp.build_bubble(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Scatter](scatter.md)
 - [Bubble Map](../map/bubble-map.md)

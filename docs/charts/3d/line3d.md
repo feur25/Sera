@@ -1,4 +1,4 @@
-# Line Chart 3D
+﻿# Line Chart 3D
 
 ## Signature
 
@@ -29,12 +29,9 @@ sp.build_line3d_chart(
 3D line chart connecting sequential points in 3D space.
 Useful for trajectories, time-series in 3D space, and parametric curves.
 
-Graphique en courbes 3D reliant des points séquentiels dans l'espace 3D.
-Utile pour les trajectoires, les séries temporelles 3D et les courbes paramétriques.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -55,13 +52,13 @@ Utile pour les trajectoires, les séries temporelles 3D et les courbes paramétr
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Helix trajectory
 
@@ -83,7 +80,7 @@ chart = sp.build_line3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Line Chart 2D](../2d/line.md)
 - [Scatter 3D](scatter3d.md)

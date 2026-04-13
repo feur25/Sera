@@ -1,4 +1,4 @@
-# Dumbbell Chart 3D
+﻿# Dumbbell Chart 3D
 
 ## Signature
 
@@ -27,11 +27,9 @@ sp.build_dumbbell3d_chart(
 
 Dumbbell chart in 3D — connects start and end spheres with a 3D tube.
 
-Haltère 3D — relie des sphères de départ et d'arrivée avec un tube 3D.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -48,13 +46,13 @@ Haltère 3D — relie des sphères de départ et d'arrivée avec un tube 3D.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -69,7 +67,7 @@ chart = sp.build_dumbbell3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Dumbbell 2D](../2d/dumbbell.md)
 - [Slope](../2d/slope.md)

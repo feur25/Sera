@@ -1,4 +1,4 @@
-# Box Plot
+﻿# Box Plot
 
 ## Signature
 
@@ -28,14 +28,11 @@ sp.build_boxplot(
 Box-and-whisker plot showing statistical distribution per category.
 Each box displays Q1, median, Q3, and IQR whiskers.
 
-Boîte à moustaches montrant la distribution statistique par catégorie.
-Chaque boîte affiche Q1, médiane, Q3 et les moustaches IQR.
-
 `values` is a flat list concatenating all category samples; the lengths must be equal across categories (same number of values per category).
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -52,13 +49,13 @@ Chaque boîte affiche Q1, médiane, Q3 et les moustaches IQR.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Test scores by class
 
@@ -87,7 +84,7 @@ chart = sp.build_boxplot(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Violin](violin.md)
 - [Histogram](histogram.md)

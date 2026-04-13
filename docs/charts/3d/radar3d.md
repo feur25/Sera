@@ -1,4 +1,4 @@
-# Radar Chart 3D
+﻿# Radar Chart 3D
 
 ## Signature
 
@@ -24,11 +24,9 @@ sp.build_radar3d_chart(
 
 3D rendered radar (spider) chart. Same concept as the 2D radar but rendered in a WebGL 3D scene.
 
-Radar 3D — même concept que le radar 2D mais rendu dans une scène WebGL 3D.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -45,13 +43,13 @@ Radar 3D — même concept que le radar 2D mais rendu dans une scène WebGL 3D.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -70,6 +68,6 @@ chart = sp.build_radar3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Radar 2D](../2d/radar.md)

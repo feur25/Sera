@@ -1,4 +1,4 @@
-# Violin Chart 3D
+﻿# Violin Chart 3D
 
 ## Signature
 
@@ -25,11 +25,9 @@ sp.build_violin3d_chart(
 
 3D violin chart — KDE-based distribution surfaces per category rendered in WebGL.
 
-Violon 3D — surfaces de distribution KDE par catégorie rendues en WebGL.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -44,13 +42,13 @@ Violon 3D — surfaces de distribution KDE par catégorie rendues en WebGL.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -69,7 +67,7 @@ chart = sp.build_violin3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Violin 2D](../2d/violin.md)
 - [KDE 3D](kde3d.md)

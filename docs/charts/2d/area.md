@@ -1,4 +1,4 @@
-# Area Chart
+﻿# Area Chart
 
 ## Signature
 
@@ -28,11 +28,9 @@ sp.build_area_chart(
 
 Filled area chart, optionally stacked. Ideal for showing cumulative part-to-whole over time.
 
-Graphique en surface remplie, optionnellement empilé. Idéal pour montrer une composition cumulative dans le temps.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -52,13 +50,13 @@ Graphique en surface remplie, optionnellement empilé. Idéal pour montrer une c
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Overlapping areas
 
@@ -101,7 +99,7 @@ chart = sp.build_area_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Multi-Line Chart](multiline.md)
 - [Line Chart](line.md)

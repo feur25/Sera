@@ -1,4 +1,4 @@
-# Choropleth Map
+﻿# Choropleth Map
 
 ## Signature
 
@@ -27,13 +27,11 @@ sp.build_choropleth(
 
 Choropleth (filled map) — country or region polygons colored by a scalar value.
 
-Carte choroplèthe — polygones de pays ou régions colorés selon une valeur scalaire.
-
 Countries without data receive the `null_color`. Provide `iso_codes` (ISO-3166 alpha-3) to match countries automatically.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -51,13 +49,13 @@ Countries without data receive the `null_color`. Provide `iso_codes` (ISO-3166 a
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Unemployment rate choropleth
 
@@ -76,7 +74,7 @@ chart = sp.build_choropleth(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Bubble Map](bubble-map.md)
 - [Globe 3D](../3d/globe3d.md)

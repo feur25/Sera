@@ -1,4 +1,4 @@
-# Slope Chart
+﻿# Slope Chart
 
 ## Signature
 
@@ -27,12 +27,9 @@ sp.build_slope(
 Slope chart comparing two values per entity (before/after, period A vs B).
 Parallel vertical axes are connected by slope lines — rising or falling.
 
-Graphique de pente comparant deux valeurs par entité (avant/après, période A vs B).
-Des lignes de pente relient les deux axes verticaux parallèles.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -51,13 +48,13 @@ Des lignes de pente relient les deux axes verticaux parallèles.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Country ranking change
 
@@ -77,7 +74,7 @@ chart = sp.build_slope(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Line Chart](line.md)
 - [Dumbbell](dumbbell.md)

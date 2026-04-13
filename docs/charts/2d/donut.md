@@ -1,4 +1,4 @@
-# Donut Chart
+﻿# Donut Chart
 
 ## Signature
 
@@ -31,7 +31,7 @@ The `inner_radius_ratio` controls what fraction of the radius is the hole (0.0 =
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -49,13 +49,13 @@ The `inner_radius_ratio` controls what fraction of the radius is the hole (0.0 =
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Basic donut
 
@@ -73,7 +73,7 @@ chart = sp.build_donut_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Pie Chart](pie.md)
 - [Sunburst](sunburst.md)

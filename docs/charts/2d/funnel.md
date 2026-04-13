@@ -1,4 +1,4 @@
-# Funnel Chart
+﻿# Funnel Chart
 
 ## Signature
 
@@ -23,13 +23,11 @@ sp.build_funnel(
 
 Funnel chart visualizing progressive reduction through stages (sales pipeline, conversion funnel…).
 
-Graphique en entonnoir visualisant une réduction progressive par étape (pipeline commercial, entonnoir de conversion…).
-
 Bars are stacked and centered; each bar's width is proportional to its value.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -45,13 +43,13 @@ Bars are stacked and centered; each bar's width is proportional to its value.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Sales pipeline
 
@@ -69,7 +67,7 @@ chart = sp.build_funnel(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Waterfall](waterfall.md)
 - [Funnel 3D](../3d/funnel3d.md)

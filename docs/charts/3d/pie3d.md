@@ -1,4 +1,4 @@
-# Pie Chart 3D
+﻿# Pie Chart 3D
 
 ## Signature
 
@@ -24,11 +24,9 @@ sp.build_pie3d_chart(
 
 3D pie chart rendered as extruded arc segments in a WebGL scene.
 
-Camembert 3D rendu sous forme de segments d'arc extrudés dans une scène WebGL.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -45,13 +43,13 @@ Camembert 3D rendu sous forme de segments d'arc extrudés dans une scène WebGL.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -66,7 +64,7 @@ chart = sp.build_pie3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Pie 2D](../2d/pie.md)
 - [Sunburst 3D](sunburst3d.md)

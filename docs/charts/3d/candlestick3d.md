@@ -1,4 +1,4 @@
-# Candlestick Chart 3D
+﻿# Candlestick Chart 3D
 
 ## Signature
 
@@ -29,11 +29,9 @@ sp.build_candlestick3d_chart(
 
 OHLC candlestick chart rendered in 3D WebGL. Candles are extruded as 3D prisms.
 
-Chandeliers OHLC rendus en WebGL 3D. Les bougies sont extrudées sous forme de prismes 3D.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -51,13 +49,13 @@ Chandeliers OHLC rendus en WebGL 3D. Les bougies sont extrudées sous forme de p
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -74,6 +72,6 @@ chart = sp.build_candlestick3d_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Candlestick 2D](../2d/candlestick.md)

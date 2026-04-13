@@ -1,4 +1,4 @@
-# Auto Display (Jupyter)
+﻿# Auto Display (Jupyter)
 
 ## Signature
 
@@ -13,9 +13,6 @@ sp.set_auto_display(enabled: bool) -> None
 Controls whether `Chart` objects are automatically rendered inline in Jupyter notebooks
 when they are the last expression of a cell.
 
-Contrôle si les objets `Chart` sont automatiquement affichés en ligne dans les notebooks Jupyter
-lorsqu'ils sont la dernière expression d'une cellule.
-
 | State | Behavior |
 |-------|----------|
 | `True` (default) | `chart` at end of cell → rendered immediately |
@@ -23,7 +20,7 @@ lorsqu'ils sont la dernière expression d'une cellule.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
@@ -31,7 +28,7 @@ lorsqu'ils sont la dernière expression d'une cellule.
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Disable auto-display to batch charts
 
@@ -56,7 +53,7 @@ sp.set_auto_display(True)
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Chart Object](../getting-started/chart-object.md)
 - [Background](background.md)

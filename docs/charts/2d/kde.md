@@ -1,4 +1,4 @@
-# KDE Chart
+﻿# KDE Chart
 
 ## Signature
 
@@ -28,13 +28,11 @@ sp.build_kde_chart(
 Kernel Density Estimation (KDE) curve — a smooth, continuous estimate of a probability distribution.
 Better than histograms for identifying the underlying shape of data.
 
-Courbe KDE (Kernel Density Estimation) — estimation lisse et continue d'une distribution de probabilité.
-
 When multiple series are provided via a flat `values` list with matching `series_names`, several overlaid density curves are drawn.
 
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -53,13 +51,13 @@ When multiple series are provided via a flat `values` list with matching `series
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ### Single distribution
 
@@ -80,7 +78,7 @@ chart = sp.build_kde_chart(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Histogram](histogram.md)
 - [Violin](violin.md)

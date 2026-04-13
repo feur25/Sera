@@ -1,4 +1,3 @@
-# Histogram Overlay / Histogramme superposé
 
 ## Signature
 
@@ -30,11 +29,9 @@ sp.build_histogram_overlay(
 
 Overlaid histogram comparing two distributions side-by-side with transparency.
 
-Histogramme superposé comparant deux distributions avec transparence.
-
 ---
 
-## Parameters / Paramètres
+## Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -48,13 +45,13 @@ Histogramme superposé comparant deux distributions avec transparence.
 
 ---
 
-## Returns / Retour
+## Returns
 
 `Chart`
 
 ---
 
-## Examples / Exemples
+## Examples
 
 ```python
 import seraplot as sp
@@ -78,7 +75,7 @@ chart = sp.build_histogram_overlay(
 
 ---
 
-## See also / Voir aussi
+## See also
 
 - [Histogram](histogram.md)
 - [KDE](kde.md)
