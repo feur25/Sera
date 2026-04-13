@@ -273,17 +273,11 @@ fn extract_body_content(html: String) -> String {
     if out.is_empty() { html } else { out }
 }
 
-/// Escapes HTML content for use as an iframe `srcdoc` attribute value.
-fn escape_for_srcdoc(html: &str) -> String {
-    html.replace('&', "&amp;").replace('"', "&quot;")
-}
-
-/// Injects an `<iframe srcdoc>` live-preview block after the first code fence in the Examples section.
-/// The full chart HTML is embedded inline so the preview is exactly the output of the code above it.
-fn inject_preview(content: &str, chart_html: &str) -> String {
-    let srcdoc = escape_for_srcdoc(chart_html);
+/// Injects an `<iframe src>` live-preview block after the first code fence in the Examples section.
+/// Points to the standalone .html file — markdown stays small and readable.
+fn inject_preview(content: &str, iframe_src: &str) -> String {
     let preview = format!(
-        "\n\n<details open>\n<summary style=\"cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8\">&#9654;&nbsp;Live Preview</summary>\n\n<iframe srcdoc=\"{srcdoc}\" style=\"width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117\"></iframe>\n\n</details>\n"
+        "\n\n<details open>\n<summary style=\"cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8\">&#9654;&nbsp;Live Preview</summary>\n\n<iframe src=\"{iframe_src}\" style=\"width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117\" loading=\"lazy\"></iframe>\n\n</details>\n"
     );
 
     let mut in_examples = false;
@@ -391,12 +385,13 @@ fn process_dir(docs: &Path, rel_dir: &str) {
         let _ = std::io::stdout().flush();
 
         if let Some(html) = run_example(&code, &chart_var) {
-            // Also write standalone chart HTML for direct access / debugging
+            // Write standalone chart HTML into docs/previews/{name}.html
             let preview_file = previews_dir.join(format!("{}.html", chart_name));
             let _ = fs::write(&preview_file, html.as_bytes());
 
-            // Embed the full chart HTML inline as srcdoc — preview = exact output of the code above
-            let new_content = inject_preview(&content, &html);
+            // Inject a clean <iframe src> into the markdown — no HTML bloat in .md files
+            let iframe_src = format!("{}{}.html", preview_rel, chart_name);
+            let new_content = inject_preview(&content, &iframe_src);
             let _ = fs::write(path, new_content.as_bytes());
             println!(" OK ({} chars)", html.len());
         } else {
