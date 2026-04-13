@@ -1,4 +1,4 @@
-﻿use crate::wiki::{WikiExport, MethodDoc, ModuleDoc, ParamDoc, CodeExample};
+use crate::wiki::{WikiExport, MethodDoc, ModuleDoc, ParamDoc, CodeExample};
 
 fn p(name: &str, t: &str, desc: &str) -> ParamDoc {
     ParamDoc {

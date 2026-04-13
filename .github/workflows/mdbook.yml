@@ -38,11 +38,16 @@ jobs:
       - name: Install mdbook
         run: cargo install mdbook --version ${{ env.MDBOOK_VERSION }}
 
+      - name: Generate API index
+        run: python scripts/gen_index.py
+
       - name: Build docs
         run: mdbook build -d book/html
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
