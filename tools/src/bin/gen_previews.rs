@@ -85,6 +85,7 @@ fn run_example(code: &str, chart_var: &str) -> Option<String> {
         ".sp-xl,.sp-yl{{fill:#94a3b8!important}}",
         "[id^='spp']{{box-shadow:none!important;border-radius:0!important}}"
     );
+    let logo = "https://raw.githubusercontent.com/feur25/seraplot/main/asset/logo.png";
     let wrapper = format!(
         "import seraplot as _sp\n_sp.set_auto_display(False)\n{code}\nimport sys\n_c={chart_var}.set_bg(None).inject_css(\"{dark_css}\")\nsys.stdout.buffer.write(_c.html.encode('utf-8'))\n"
     );
@@ -97,7 +98,15 @@ fn run_example(code: &str, chart_var: &str) -> Option<String> {
 
     let output = result.ok()?;
     if output.status.success() && !output.stdout.is_empty() {
-        String::from_utf8(output.stdout).ok()
+        let html = String::from_utf8(output.stdout).ok()?;
+        // Fix inline-embedding issues: these body styles corrupt the mdBook page layout
+        // when the chart HTML is embedded directly (not in an iframe).
+        let html = html
+            .replace("background:#fff;", "background:transparent;")
+            .replace(";display:flex;justify-content:center", "");
+        // Inject SeraPlot logo into hover tooltip entries
+        let html = inject_logo_into_hover(html, logo);
+        Some(html)
     } else {
         if !output.stderr.is_empty() {
             let err = String::from_utf8_lossy(&output.stderr);
@@ -105,6 +114,127 @@ fn run_example(code: &str, chart_var: &str) -> Option<String> {
         }
         None
     }
+}
+
+/// Adds a logo image to every hover tooltip entry in `var data=[...]`.
+/// If the array is empty, builds entries from `data-lbl` attributes on SVG elements.
+fn inject_logo_into_hover(html: String, logo: &str) -> String {
+    let marker = "var data=[";
+    let Some(s) = html.find(marker) else { return html; };
+    let b = s + marker.len() - 1; // points to '['
+
+    // Walk balanced brackets to find the end of the array
+    let bytes = html.as_bytes();
+    let mut depth = 0i32;
+    let mut end = b;
+    for (i, &ch) in bytes[b..].iter().enumerate() {
+        match ch {
+            b'[' => depth += 1,
+            b']' => {
+                depth -= 1;
+                if depth == 0 {
+                    end = b + i + 1;
+                    break;
+                }
+            }
+            _ => {}
+        }
+    }
+
+    let old_array = &html[b..end];
+    let esc = |s: &str| s.replace('\\', "\\\\").replace('"', "\\\"");
+
+    let new_array = if old_array == "[]" {
+        // No hover data — synthesise entries from SVG data-lbl attributes.
+        let mut max_idx: i32 = -1;
+        let mut pos = 0;
+        while let Some(p) = html[pos..].find("data-idx=\"") {
+            let start = pos + p + 10;
+            if let Some(q) = html[start..].find('"') {
+                let end_n = start + q;
+                if let Ok(idx) = html[start..end_n].parse::<i32>() {
+                    max_idx = max_idx.max(idx);
+                }
+                pos = end_n + 1;
+            } else {
+                break;
+            }
+        }
+        if max_idx < 0 {
+            return html;
+        }
+        let mut entries = Vec::new();
+        for idx in 0..=(max_idx as usize) {
+            let needle = format!("data-idx=\"{}\"", idx);
+            let lbl = html.find(&needle).and_then(|p| {
+                let win = &html[p..html.len().min(p + 300)];
+                let lp = win.find("data-lbl=\"")?;
+                let ls = p + lp + 10;
+                let le = html[ls..].find('"')? + ls;
+                Some(html[ls..le].to_string())
+            });
+            let title = lbl.unwrap_or_else(|| (idx + 1).to_string());
+            entries.push(format!(
+                "{{\"title\":\"{}\",\"kv\":[],\"image\":\"{}\"}}",
+                esc(&title),
+                esc(logo)
+            ));
+        }
+        format!("[{}]", entries.join(","))
+    } else {
+        // Existing entries — add/replace "image" field in each object.
+        // Simple string manipulation: insert `,"image":"<logo>"` before each object's `}`.
+        // We walk depth-1 objects (top-level array items).
+        let mut result = String::with_capacity(old_array.len() + 64 * 20);
+        let ab = old_array.as_bytes();
+        let mut depth2 = 0i32;
+        let mut obj_start = 0usize;
+        let image_kv = format!(",\"image\":\"{}\"", esc(logo));
+        for (i, &ch) in ab.iter().enumerate() {
+            match ch {
+                b'[' | b'{' => {
+                    if depth2 == 0 { result.push(ch as char); }
+                    else if depth2 == 1 && ch == b'{' { obj_start = result.len(); result.push(ch as char); }
+                    else { result.push(ch as char); }
+                    depth2 += 1;
+                }
+                b']' | b'}' => {
+                    depth2 -= 1;
+                    if depth2 == 1 && ch == b'}' {
+                        // End of a top-level object — inject image before closing `}`
+                        // Only add if "image" key not already present in this object slice
+                        let obj_slice = &result[obj_start..];
+                        if !obj_slice.contains("\"image\"") {
+                            result.push_str(&image_kv);
+                        } else {
+                            // Replace existing image value
+                            // Find last "image":" in result from obj_start
+                            if let Some(ip) = result[obj_start..].rfind("\"image\":\"") {
+                                let vs = obj_start + ip + 9;
+                                if let Some(ve) = result[vs..].find('"') {
+                                    let ve = vs + ve;
+                                    result.replace_range(vs..ve, &esc(logo));
+                                }
+                            }
+                        }
+                        result.push('}');
+                    } else {
+                        result.push(ch as char);
+                    }
+                }
+                b',' if depth2 == 1 => result.push(','),
+                _ if depth2 >= 1 => result.push(ch as char),
+                _ => {}
+            }
+        }
+        result
+    };
+
+    let mut out = String::with_capacity(html.len() + new_array.len());
+    out.push_str(&html[..b]);
+    out.push_str(&new_array);
+    out.push_str(&html[end..]);
+    out
 }
 
 fn inject_preview(content: &str, chart_html: &str) -> String {
