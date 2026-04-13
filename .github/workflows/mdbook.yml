@@ -32,8 +32,14 @@ jobs:
 
       - name: Install mdBook (pre-built binary)
         run: |
-          curl -sSL "https://github.com/rust-lang/mdBook/releases/download/v${{ env.MDBOOK_VERSION }}/mdbook-v${{ env.MDBOOK_VERSION }}-x86_64-unknown-linux-gnu.tar.gz" \
-            | tar xz -C /usr/local/bin
+          set -e
+          MDBOOK_URL="https://github.com/rust-lang/mdBook/releases/download/v${{ env.MDBOOK_VERSION }}/mdbook-v${{ env.MDBOOK_VERSION }}-x86_64-unknown-linux-gnu.tar.gz"
+          echo "Downloading from: $MDBOOK_URL"
+          curl -sSL -f "$MDBOOK_URL" -o /tmp/mdbook.tar.gz
+          tar xzf /tmp/mdbook.tar.gz -C /tmp/
+          mv /tmp/mdbook /usr/local/bin/
+          chmod +x /usr/local/bin/mdbook
+          mdbook --version
 
       - name: Generate API index
         run: python3 scripts/gen_index.py
@@ -43,6 +49,19 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+
+      - name: Verify build output
+        run: |
+          if [ ! -d "book/html" ]; then
+            echo "ERROR: book/html directory was not created"
+            exit 1
+          fi
+          if [ ! -f "book/html/index.html" ]; then
+            echo "ERROR: book/html/index.html was not created"
+            ls -la book/
+            exit 1
+          fi
+          echo "Build output verified: $(du -sh book/html)"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
