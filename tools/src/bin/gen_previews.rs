@@ -75,7 +75,7 @@ fn python_bin() -> &'static str {
 }
 
 fn run_example(code: &str, chart_var: &str) -> Option<String> {
-    // Dark-theme CSS injected into every preview so charts blend with the navy docs.
+    // Dark-theme CSS injected so charts blend with the navy docs inside the iframe.
     let dark_css = concat!(
         ".sp-bg{{fill:transparent!important}}",
         ".sp-ttl{{fill:#e2e8f0!important}}",
@@ -99,17 +99,10 @@ fn run_example(code: &str, chart_var: &str) -> Option<String> {
     let output = result.ok()?;
     if output.status.success() && !output.stdout.is_empty() {
         let html = String::from_utf8(output.stdout).ok()?;
-        // Fix inline-embedding issues: these body styles corrupt the mdBook page layout
-        // when the chart HTML is embedded directly (not in an iframe).
-        let html = html
-            .replace("background:#fff;", "background:transparent;")
-            .replace(";display:flex;justify-content:center", "");
+        // Match docs dark background inside the iframe
+        let html = html.replace("background:#fff;", "background:#0d1117;");
         // Inject SeraPlot logo into hover tooltip entries
         let html = inject_logo_into_hover(html, logo);
-        // Strip the HTML document wrapper tags (<html>,<head>,<body>,</body>,</html>)
-        // so they don't disrupt the mdBook page's DOM, particularly </body></html>
-        // which breaks fixed-position nav arrows on chart pages.
-        let html = extract_body_content(html);
         Some(html)
     } else {
         if !output.stderr.is_empty() {
@@ -278,10 +271,10 @@ fn extract_body_content(html: String) -> String {
     if out.is_empty() { html } else { out }
 }
 
-fn inject_preview(content: &str, chart_html: &str) -> String {
+/// Injects an `<iframe>` live-preview block after the first code fence in the Examples section.
+fn inject_preview(content: &str, iframe_src: &str) -> String {
     let preview = format!(
-        "\n\n<details open>\n<summary style=\"cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8\">&#9654;&nbsp;Live Preview</summary>\n\n<div style=\"width:100%;overflow:auto;border-radius:8px;margin:12px 0;background:#0d1117\">\n{}\n</div>\n\n</details>\n",
-        chart_html.trim()
+        "\n\n<details open>\n<summary style=\"cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8\">&#9654;&nbsp;Live Preview</summary>\n\n<iframe src=\"{iframe_src}\" style=\"width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117\" loading=\"lazy\"></iframe>\n\n</details>\n"
     );
 
     let mut in_examples = false;
@@ -342,6 +335,16 @@ fn process_dir(docs: &Path, rel_dir: &str) {
         return;
     }
 
+    // Create the previews output directory
+    let previews_dir = docs.join("previews");
+    fs::create_dir_all(&previews_dir).ok();
+
+    // Compute relative path from the chart page back to /previews/
+    // e.g. "charts/2d" (depth 2) → "../../previews/"
+    //      "ml"         (depth 1) → "../previews/"
+    let depth = rel_dir.split('/').count();
+    let preview_rel: String = "../".repeat(depth) + "previews/";
+
     let mut files: Vec<PathBuf> = fs::read_dir(&d)
         .unwrap()
         .filter_map(|e| e.ok())
@@ -374,11 +377,18 @@ fn process_dir(docs: &Path, rel_dir: &str) {
         };
 
         let chart_var = find_chart_var(&code);
+        let chart_name = path.file_stem().unwrap_or_default().to_string_lossy().to_string();
         print!("  {} ...", path.file_name().unwrap_or_default().to_string_lossy());
         let _ = std::io::stdout().flush();
 
         if let Some(html) = run_example(&code, &chart_var) {
-            let new_content = inject_preview(&content, &html);
+            // Write standalone chart HTML into docs/previews/{name}.html
+            let preview_file = previews_dir.join(format!("{}.html", chart_name));
+            let _ = fs::write(&preview_file, html.as_bytes());
+
+            // Inject iframe reference into the markdown
+            let iframe_src = format!("{}{}.html", preview_rel, chart_name);
+            let new_content = inject_preview(&content, &iframe_src);
             let _ = fs::write(path, new_content.as_bytes());
             println!(" OK ({} chars)", html.len());
         } else {

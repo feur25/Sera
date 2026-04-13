@@ -1,0 +1,220 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Monthly Temperature Distribution</title><style>#sp-tip{position:absolute;z-index:999999;pointer-events:none;opacity:0;transition:opacity .15s,transform .15s;transform:translateY(6px) scale(.97);background:#0b0e18;color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px;border-radius:10px;min-width:160px;max-width:340px;box-shadow:0 4px 20px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.08);overflow:hidden}#sp-tip.sp-vis{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}.sp-nav{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;border-top:1px solid rgba(255,255,255,.08)}.sp-nav-btn{cursor:pointer;padding:0 10px;border-radius:5px;height:22px;line-height:22px;font-size:18px;background:rgba(255,255,255,.10);color:#e2e8f0;user-select:none;flex-shrink:0}.sp-nav-btn:hover{background:rgba(255,255,255,.22)}.sp-nav-dis{opacity:.25;pointer-events:none}.sp-nav-ctr{flex:1;text-align:center;font-size:11px;color:#94a3b8}.sp-head{padding:10px 14px 6px;font-weight:700;font-size:14px;color:#e2e8f0;border-bottom:1px solid rgba(255,255,255,.08)}.sp-body{padding:8px 14px 12px}.sp-row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}.sp-row:last-child{border-bottom:none}.sp-key{color:#94a3b8;font-size:12px;white-space:nowrap}.sp-val{font-weight:600;font-size:12px;color:#f8fafc;text-align:right;word-break:break-all}#sp-tip img{display:block;width:100%;max-height:210px;object-fit:contain;border-top:1px solid rgba(255,255,255,.07)}#sp-tip video{display:block;width:100%;border-top:1px solid rgba(255,255,255,.07)}.sp-html{padding:8px 14px;font-size:12px;border-top:1px solid rgba(255,255,255,.07)}[data-idx]{cursor:pointer;transition:opacity .25s,filter .2s,transform .25s}[data-idx]:hover{filter:brightness(1.12) saturate(1.08)}.sp-cpanel{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:#0b0e18;color:#f1f5f9;border-radius:10px;padding:8px 16px;font-size:12px;font-family:-apple-system,Arial,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:20;white-space:nowrap;display:none}.sp-cls-x{cursor:pointer;color:#94a3b8;margin-left:6px;font-size:13px}.sp-cls-x:hover{color:#f87171}</style><style>body{margin:0;background:#0d1117;display:flex;justify-content:center;padding:0}@keyframes sp-i{from{opacity:0;transform:translateY(8px) scale(.94)}}@keyframes sp-bar{from{opacity:0;transform:scaleY(0)}}@keyframes sp-pop{0%{opacity:0;transform:scale(0)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}@keyframes sp-arc{from{opacity:0;transform:scale(.82) rotate(-6deg)}}@keyframes sp-fn{from{opacity:0;transform:scaleX(.7) translateY(8px)}}svg rect[data-idx]{transform-box:fill-box;transform-origin:bottom center;animation:sp-bar .5s cubic-bezier(.22,.61,.36,1) both}svg circle[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-pop .42s cubic-bezier(.34,1.56,.64,1) both}svg path[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-arc .48s cubic-bezier(.22,.61,.36,1) both}svg polygon[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-fn .48s cubic-bezier(.22,.61,.36,1) both}svg line[data-idx]{animation:sp-i .45s cubic-bezier(.22,.61,.36,1) both}svg rect[data-idx]:hover{transform:scaleY(1.03);filter:brightness(1.12) saturate(1.1)}svg circle[data-idx]:hover{transform:scale(1.3);filter:brightness(1.15)}svg path[data-idx]:hover{filter:brightness(1.1) drop-shadow(0 2px 8px rgba(0,0,0,.2))}.sp-bg{fill:#fff}</style><style>.sp-bg{{fill:transparent!important}}.sp-ttl{{fill:#e2e8f0!important}}svg text{{fill:#cbd5e1!important}}.sp-ax-x,.sp-ax-y{{stroke:#475569!important}}.sp-gl{{stroke:#2d3748!important}}.sp-xl,.sp-yl{{fill:#94a3b8!important}}[id^='spp']{{box-shadow:none!important;border-radius:0!important}}</style></head><body><div id="spp1" style="position:relative;display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)"><svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520"><rect class="sp-bg" width="100%" height="100%"/><text x="450" y="24" text-anchor="middle" font-family="-apple-system,Arial,sans-serif" font-size="15" font-weight="700" fill="#1a202c" class="sp-ttl">Monthly Temperature Distribution</text><line x1="130" y1="476" x2="770" y2="476" stroke="#cbd5e1" stroke-width="1" class="sp-ax-x"/><text x="130" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">-1.20</text><text x="236" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">1.53</text><text x="343" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">4.26</text><text x="450" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">6.99</text><text x="556" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">9.72</text><text x="663" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">12.45</text><text x="770" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">15.18</text><g data-series="3"><path d="M130.00,476.00 L130.00,476.00 L140.85,476.00 L151.69,476.00 L162.54,476.00 L173.39,476.00 L184.24,476.00 L195.08,476.00 L205.93,476.00 L216.78,476.00 L227.63,476.00 L238.47,476.00 L249.32,476.00 L260.17,476.00 L271.02,475.83 L281.86,475.55 L292.71,474.86 L303.56,473.35 L314.41,470.30 L325.25,464.65 L336.10,455.08 L346.95,440.28 L357.80,419.53 L368.64,393.37 L379.49,364.06 L390.34,335.59 L401.19,312.96 L412.03,300.73 L422.88,301.56 L433.73,315.27 L444.58,338.89 L455.42,367.72 L466.27,396.83 L477.12,422.41 L487.97,442.42 L498.81,456.52 L509.66,465.53 L520.51,470.80 L531.36,473.60 L542.20,474.98 L553.05,475.60 L563.90,475.85 L574.75,476.00 L585.59,476.00 L596.44,476.00 L607.29,476.00 L618.14,476.00 L628.98,476.00 L639.83,476.00 L650.68,476.00 L661.53,476.00 L672.37,476.00 L683.22,476.00 L694.07,476.00 L704.92,476.00 L715.76,476.00 L726.61,476.00 L737.46,476.00 L748.31,476.00 L759.15,476.00 L770.00,476.00 L770.00,476.00 Z" fill="#ffffff"/><path d="M130.00,476.00 L130.00,476.00 L140.85,476.00 L151.69,476.00 L162.54,476.00 L173.39,476.00 L184.24,476.00 L195.08,476.00 L205.93,476.00 L216.78,476.00 L227.63,476.00 L238.47,476.00 L249.32,476.00 L260.17,476.00 L271.02,475.83 L281.86,475.55 L292.71,474.86 L303.56,473.35 L314.41,470.30 L325.25,464.65 L336.10,455.08 L346.95,440.28 L357.80,419.53 L368.64,393.37 L379.49,364.06 L390.34,335.59 L401.19,312.96 L412.03,300.73 L422.88,301.56 L433.73,315.27 L444.58,338.89 L455.42,367.72 L466.27,396.83 L477.12,422.41 L487.97,442.42 L498.81,456.52 L509.66,465.53 L520.51,470.80 L531.36,473.60 L542.20,474.98 L553.05,475.60 L563.90,475.85 L574.75,476.00 L585.59,476.00 L596.44,476.00 L607.29,476.00 L618.14,476.00 L628.98,476.00 L639.83,476.00 L650.68,476.00 L661.53,476.00 L672.37,476.00 L683.22,476.00 L694.07,476.00 L704.92,476.00 L715.76,476.00 L726.61,476.00 L737.46,476.00 L748.31,476.00 L759.15,476.00 L770.00,476.00 L770.00,476.00 Z" fill="#f59e0b" fill-opacity="0.22"/><polyline points="130.00,476.00 140.85,476.00 151.69,476.00 162.54,476.00 173.39,476.00 184.24,476.00 195.08,476.00 205.93,476.00 216.78,476.00 227.63,476.00 238.47,476.00 249.32,476.00 260.17,476.00 271.02,475.83 281.86,475.55 292.71,474.86 303.56,473.35 314.41,470.30 325.25,464.65 336.10,455.08 346.95,440.28 357.80,419.53 368.64,393.37 379.49,364.06 390.34,335.59 401.19,312.96 412.03,300.73 422.88,301.56 433.73,315.27 444.58,338.89 455.42,367.72 466.27,396.83 477.12,422.41 487.97,442.42 498.81,456.52 509.66,465.53 520.51,470.80 531.36,473.60 542.20,474.98 553.05,475.60 563.90,475.85 574.75,476.00 585.59,476.00 596.44,476.00 607.29,476.00 618.14,476.00 628.98,476.00 639.83,476.00 650.68,476.00 661.53,476.00 672.37,476.00 683.22,476.00 694.07,476.00 704.92,476.00 715.76,476.00 726.61,476.00 737.46,476.00 748.31,476.00 759.15,476.00 770.00,476.00" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/><line x1="126" y1="476" x2="770" y2="476" stroke="#e2e8f0" stroke-width="0.6"/><text x="122" y="425" text-anchor="end" font-family="-apple-system,Arial,sans-serif" font-size="11" font-weight="600" fill="#374151">Oct</text></g><g data-series="2"><path d="M130.00,366.00 L130.00,366.00 L140.85,366.00 L151.69,366.00 L162.54,366.00 L173.39,366.00 L184.24,366.00 L195.08,366.00 L205.93,366.00 L216.78,366.00 L227.63,366.00 L238.47,366.00 L249.32,366.00 L260.17,366.00 L271.02,366.00 L281.86,366.00 L292.71,366.00 L303.56,366.00 L314.41,366.00 L325.25,366.00 L336.10,366.00 L346.95,366.00 L357.80,366.00 L368.64,366.00 L379.49,366.00 L390.34,365.94 L401.19,365.82 L412.03,365.50 L422.88,364.76 L433.73,363.14 L444.58,359.89 L455.42,353.92 L466.27,343.89 L477.12,328.53 L487.97,307.22 L498.81,280.62 L509.66,251.19 L520.51,223.07 L531.36,201.27 L542.20,190.22 L553.05,192.35 L563.90,207.19 L574.75,231.53 L585.59,260.59 L596.44,289.50 L607.29,314.60 L618.14,334.03 L628.98,347.59 L639.83,356.18 L650.68,361.16 L661.53,363.79 L672.37,365.06 L683.22,365.63 L694.07,365.87 L704.92,366.00 L715.76,366.00 L726.61,366.00 L737.46,366.00 L748.31,366.00 L759.15,366.00 L770.00,366.00 L770.00,366.00 Z" fill="#ffffff"/><path d="M130.00,366.00 L130.00,366.00 L140.85,366.00 L151.69,366.00 L162.54,366.00 L173.39,366.00 L184.24,366.00 L195.08,366.00 L205.93,366.00 L216.78,366.00 L227.63,366.00 L238.47,366.00 L249.32,366.00 L260.17,366.00 L271.02,366.00 L281.86,366.00 L292.71,366.00 L303.56,366.00 L314.41,366.00 L325.25,366.00 L336.10,366.00 L346.95,366.00 L357.80,366.00 L368.64,366.00 L379.49,366.00 L390.34,365.94 L401.19,365.82 L412.03,365.50 L422.88,364.76 L433.73,363.14 L444.58,359.89 L455.42,353.92 L466.27,343.89 L477.12,328.53 L487.97,307.22 L498.81,280.62 L509.66,251.19 L520.51,223.07 L531.36,201.27 L542.20,190.22 L553.05,192.35 L563.90,207.19 L574.75,231.53 L585.59,260.59 L596.44,289.50 L607.29,314.60 L618.14,334.03 L628.98,347.59 L639.83,356.18 L650.68,361.16 L661.53,363.79 L672.37,365.06 L683.22,365.63 L694.07,365.87 L704.92,366.00 L715.76,366.00 L726.61,366.00 L737.46,366.00 L748.31,366.00 L759.15,366.00 L770.00,366.00 L770.00,366.00 Z" fill="#10b981" fill-opacity="0.22"/><polyline points="130.00,366.00 140.85,366.00 151.69,366.00 162.54,366.00 173.39,366.00 184.24,366.00 195.08,366.00 205.93,366.00 216.78,366.00 227.63,366.00 238.47,366.00 249.32,366.00 260.17,366.00 271.02,366.00 281.86,366.00 292.71,366.00 303.56,366.00 314.41,366.00 325.25,366.00 336.10,366.00 346.95,366.00 357.80,366.00 368.64,366.00 379.49,366.00 390.34,365.94 401.19,365.82 412.03,365.50 422.88,364.76 433.73,363.14 444.58,359.89 455.42,353.92 466.27,343.89 477.12,328.53 487.97,307.22 498.81,280.62 509.66,251.19 520.51,223.07 531.36,201.27 542.20,190.22 553.05,192.35 563.90,207.19 574.75,231.53 585.59,260.59 596.44,289.50 607.29,314.60 618.14,334.03 628.98,347.59 639.83,356.18 650.68,361.16 661.53,363.79 672.37,365.06 683.22,365.63 694.07,365.87 704.92,366.00 715.76,366.00 726.61,366.00 737.46,366.00 748.31,366.00 759.15,366.00 770.00,366.00" fill="none" stroke="#10b981" stroke-width="2" stroke-linejoin="round"/><line x1="126" y1="366" x2="770" y2="366" stroke="#e2e8f0" stroke-width="0.6"/><text x="122" y="315" text-anchor="end" font-family="-apple-system,Arial,sans-serif" font-size="11" font-weight="600" fill="#374151">Jul</text></g><g data-series="1"><path d="M130.00,256.00 L130.00,205.75 L140.85,180.91 L151.69,152.12 L162.54,122.95 L173.39,98.24 L184.24,82.82 L195.08,80.00 L205.93,90.40 L216.78,111.75 L227.63,139.67 L238.47,169.15 L249.32,195.97 L260.17,217.58 L271.02,233.24 L281.86,243.52 L292.71,249.66 L303.56,253.02 L314.41,254.70 L325.25,255.48 L336.10,255.81 L346.95,255.93 L357.80,256.00 L368.64,256.00 L379.49,256.00 L390.34,256.00 L401.19,256.00 L412.03,256.00 L422.88,256.00 L433.73,256.00 L444.58,256.00 L455.42,256.00 L466.27,256.00 L477.12,256.00 L487.97,256.00 L498.81,256.00 L509.66,256.00 L520.51,256.00 L531.36,256.00 L542.20,256.00 L553.05,256.00 L563.90,256.00 L574.75,256.00 L585.59,256.00 L596.44,256.00 L607.29,256.00 L618.14,256.00 L628.98,256.00 L639.83,256.00 L650.68,256.00 L661.53,256.00 L672.37,256.00 L683.22,256.00 L694.07,256.00 L704.92,256.00 L715.76,256.00 L726.61,256.00 L737.46,256.00 L748.31,256.00 L759.15,256.00 L770.00,256.00 L770.00,256.00 Z" fill="#ffffff"/><path d="M130.00,256.00 L130.00,205.75 L140.85,180.91 L151.69,152.12 L162.54,122.95 L173.39,98.24 L184.24,82.82 L195.08,80.00 L205.93,90.40 L216.78,111.75 L227.63,139.67 L238.47,169.15 L249.32,195.97 L260.17,217.58 L271.02,233.24 L281.86,243.52 L292.71,249.66 L303.56,253.02 L314.41,254.70 L325.25,255.48 L336.10,255.81 L346.95,255.93 L357.80,256.00 L368.64,256.00 L379.49,256.00 L390.34,256.00 L401.19,256.00 L412.03,256.00 L422.88,256.00 L433.73,256.00 L444.58,256.00 L455.42,256.00 L466.27,256.00 L477.12,256.00 L487.97,256.00 L498.81,256.00 L509.66,256.00 L520.51,256.00 L531.36,256.00 L542.20,256.00 L553.05,256.00 L563.90,256.00 L574.75,256.00 L585.59,256.00 L596.44,256.00 L607.29,256.00 L618.14,256.00 L628.98,256.00 L639.83,256.00 L650.68,256.00 L661.53,256.00 L672.37,256.00 L683.22,256.00 L694.07,256.00 L704.92,256.00 L715.76,256.00 L726.61,256.00 L737.46,256.00 L748.31,256.00 L759.15,256.00 L770.00,256.00 L770.00,256.00 Z" fill="#f43f5e" fill-opacity="0.22"/><polyline points="130.00,205.75 140.85,180.91 151.69,152.12 162.54,122.95 173.39,98.24 184.24,82.82 195.08,80.00 205.93,90.40 216.78,111.75 227.63,139.67 238.47,169.15 249.32,195.97 260.17,217.58 271.02,233.24 281.86,243.52 292.71,249.66 303.56,253.02 314.41,254.70 325.25,255.48 336.10,255.81 346.95,255.93 357.80,256.00 368.64,256.00 379.49,256.00 390.34,256.00 401.19,256.00 412.03,256.00 422.88,256.00 433.73,256.00 444.58,256.00 455.42,256.00 466.27,256.00 477.12,256.00 487.97,256.00 498.81,256.00 509.66,256.00 520.51,256.00 531.36,256.00 542.20,256.00 553.05,256.00 563.90,256.00 574.75,256.00 585.59,256.00 596.44,256.00 607.29,256.00 618.14,256.00 628.98,256.00 639.83,256.00 650.68,256.00 661.53,256.00 672.37,256.00 683.22,256.00 694.07,256.00 704.92,256.00 715.76,256.00 726.61,256.00 737.46,256.00 748.31,256.00 759.15,256.00 770.00,256.00" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linejoin="round"/><line x1="126" y1="256" x2="770" y2="256" stroke="#e2e8f0" stroke-width="0.6"/><text x="122" y="205" text-anchor="end" font-family="-apple-system,Arial,sans-serif" font-size="11" font-weight="600" fill="#374151">Apr</text></g><g data-series="0"><path d="M130.00,146.00 L130.00,146.00 L140.85,146.00 L151.69,146.00 L162.54,146.00 L173.39,146.00 L184.24,146.00 L195.08,146.00 L205.93,146.00 L216.78,146.00 L227.63,146.00 L238.47,146.00 L249.32,146.00 L260.17,146.00 L271.02,146.00 L281.86,146.00 L292.71,146.00 L303.56,146.00 L314.41,146.00 L325.25,146.00 L336.10,146.00 L346.95,146.00 L357.80,146.00 L368.64,146.00 L379.49,146.00 L390.34,146.00 L401.19,146.00 L412.03,146.00 L422.88,146.00 L433.73,146.00 L444.58,146.00 L455.42,146.00 L466.27,146.00 L477.12,146.00 L487.97,146.00 L498.81,146.00 L509.66,146.00 L520.51,146.00 L531.36,146.00 L542.20,146.00 L553.05,145.93 L563.90,145.81 L574.75,145.48 L585.59,144.70 L596.44,143.02 L607.29,139.66 L618.14,133.52 L628.98,123.24 L639.83,107.58 L650.68,85.97 L661.53,59.15 L672.37,29.67 L683.22,1.75 L694.07,-19.60 L704.92,-30.00 L715.76,-27.18 L726.61,-11.76 L737.46,12.95 L748.31,42.12 L759.15,70.91 L770.00,95.75 L770.00,146.00 Z" fill="#ffffff"/><path d="M130.00,146.00 L130.00,146.00 L140.85,146.00 L151.69,146.00 L162.54,146.00 L173.39,146.00 L184.24,146.00 L195.08,146.00 L205.93,146.00 L216.78,146.00 L227.63,146.00 L238.47,146.00 L249.32,146.00 L260.17,146.00 L271.02,146.00 L281.86,146.00 L292.71,146.00 L303.56,146.00 L314.41,146.00 L325.25,146.00 L336.10,146.00 L346.95,146.00 L357.80,146.00 L368.64,146.00 L379.49,146.00 L390.34,146.00 L401.19,146.00 L412.03,146.00 L422.88,146.00 L433.73,146.00 L444.58,146.00 L455.42,146.00 L466.27,146.00 L477.12,146.00 L487.97,146.00 L498.81,146.00 L509.66,146.00 L520.51,146.00 L531.36,146.00 L542.20,146.00 L553.05,145.93 L563.90,145.81 L574.75,145.48 L585.59,144.70 L596.44,143.02 L607.29,139.66 L618.14,133.52 L628.98,123.24 L639.83,107.58 L650.68,85.97 L661.53,59.15 L672.37,29.67 L683.22,1.75 L694.07,-19.60 L704.92,-30.00 L715.76,-27.18 L726.61,-11.76 L737.46,12.95 L748.31,42.12 L759.15,70.91 L770.00,95.75 L770.00,146.00 Z" fill="#6366f1" fill-opacity="0.22"/><polyline points="130.00,146.00 140.85,146.00 151.69,146.00 162.54,146.00 173.39,146.00 184.24,146.00 195.08,146.00 205.93,146.00 216.78,146.00 227.63,146.00 238.47,146.00 249.32,146.00 260.17,146.00 271.02,146.00 281.86,146.00 292.71,146.00 303.56,146.00 314.41,146.00 325.25,146.00 336.10,146.00 346.95,146.00 357.80,146.00 368.64,146.00 379.49,146.00 390.34,146.00 401.19,146.00 412.03,146.00 422.88,146.00 433.73,146.00 444.58,146.00 455.42,146.00 466.27,146.00 477.12,146.00 487.97,146.00 498.81,146.00 509.66,146.00 520.51,146.00 531.36,146.00 542.20,146.00 553.05,145.93 563.90,145.81 574.75,145.48 585.59,144.70 596.44,143.02 607.29,139.66 618.14,133.52 628.98,123.24 639.83,107.58 650.68,85.97 661.53,59.15 672.37,29.67 683.22,1.75 694.07,-19.60 704.92,-30.00 715.76,-27.18 726.61,-11.76 737.46,12.95 748.31,42.12 759.15,70.91 770.00,95.75" fill="none" stroke="#6366f1" stroke-width="2" stroke-linejoin="round"/><line x1="126" y1="146" x2="770" y2="146" stroke="#e2e8f0" stroke-width="0.6"/><text x="122" y="95" text-anchor="end" font-family="-apple-system,Arial,sans-serif" font-size="11" font-weight="600" fill="#374151">Jan</text></g><g data-legend="1" data-series="0"><rect x="778" y="46" width="12" height="12" rx="2" fill="#6366f1"/><text x="794" y="56" font-family="Arial,sans-serif" font-size="10" fill="#374151">Jan</text></g><g data-legend="1" data-series="1"><rect x="778" y="68" width="12" height="12" rx="2" fill="#f43f5e"/><text x="794" y="78" font-family="Arial,sans-serif" font-size="10" fill="#374151">Apr</text></g><g data-legend="1" data-series="2"><rect x="778" y="90" width="12" height="12" rx="2" fill="#10b981"/><text x="794" y="100" font-family="Arial,sans-serif" font-size="10" fill="#374151">Jul</text></g><g data-legend="1" data-series="3"><rect x="778" y="112" width="12" height="12" rx="2" fill="#f59e0b"/><text x="794" y="122" font-family="Arial,sans-serif" font-size="10" fill="#374151">Oct</text></g><text x="450" y="516" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#6b7280" class="sp-xl">°C</text></svg><div class="sp-sel-ov" style="display:none"></div><div class="sp-cpanel"></div><script>(function(){
+var wrap=document.getElementById('spp1');if(!wrap)return;wrap.removeAttribute('id');
+var svg=wrap.querySelector('svg');var data=[];
+
+var tip=document.getElementById('sp-tip');
+if(!tip){tip=document.createElement('div');tip.id='sp-tip';document.body.appendChild(tip);}
+var tipIdxs=[],tipPos=0,lastE=null;
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function cardHTML(d){
+ var h='';if(d.title)h+='<div class="sp-head">'+esc(d.title)+'</div>';
+ var rows='';(d.kv||[]).forEach(function(p){
+  rows+='<div class="sp-row"><span class="sp-key">'+esc(p[0])+'</span><span class="sp-val">'+esc(p[1])+'</span></div>';});
+ if(rows)h+='<div class="sp-body">'+rows+'</div>';
+ if(d.image)h+='<img src="'+esc(d.image)+'" alt="" loading="lazy">';
+ if(d.video)h+='<video src="'+esc(d.video)+'" controls muted playsinline></video>';
+ if(d.html)h+='<div class="sp-html">'+d.html+'</div>';
+ return h;}
+function placeTip(e){
+ var sx=window.scrollX||0,sy=window.scrollY||0;
+ var x=e.pageX+16,y=e.pageY-14;
+ var tw=tip.offsetWidth||220,th=tip.offsetHeight||60;
+ if(x+tw>sx+window.innerWidth-6)x=e.pageX-tw-16;
+ if(x<sx+4)x=sx+4;
+ if(y<sy+6)y=e.pageY+20;
+ if(y+th>sy+window.innerHeight-6)y=sy+window.innerHeight-th-6;
+ tip.style.left=x+'px';tip.style.top=y+'px';}
+
+function getSlot(idx){
+ var d=data[idx];if(d)return d;
+ var el=svg.querySelector('[data-idx="'+idx+'"]');if(!el)return null;
+ var kv=[];
+ var x=el.getAttribute('data-x'),y=el.getAttribute('data-y');
+ if(x!=null){var xf=parseFloat(x);kv.push(['X',xf===xf?xf.toFixed(2):x]);}
+ if(y!=null){kv.push(['Valeur',parseFloat(y).toFixed(2)]);}
+ else{var v=el.getAttribute('data-v');
+ if(v!=null){
+  var r=el.getAttribute('data-r'),c=el.getAttribute('data-c');
+  kv.push(['Valeur',parseFloat(v).toFixed(3)]);
+  if(r)kv.push(['Ligne',r]);if(c)kv.push(['Colonne',c]);}}
+ var z=el.getAttribute('data-z');
+ if(z!=null){kv.push(['Z',parseFloat(z).toFixed(2)]);}
+ var lbl=el.getAttribute('data-lbl');
+ var an=el.attributes;if(an){for(var ai=0;ai<an.length;ai++){var a=an[ai];if(a.name.substring(0,8)==='data-kv-'){kv.push([a.name.substring(8),a.value]);}}}
+ var title=lbl||(el.getAttribute('data-v')!=null&&el.getAttribute('data-r')!=null?el.getAttribute('data-r')+' \u00d7 '+el.getAttribute('data-c'):'Point '+(idx+1));
+ return{title:title,kv:kv};}
+function renderTip(){
+ if(!tipIdxs.length){tip.classList.remove('sp-vis');return;}
+ var d=getSlot(tipIdxs[tipPos]);if(!d){tip.classList.remove('sp-vis');return;}
+ var h=cardHTML(d);
+ if(tipIdxs.length>1){
+  var p=tipPos,n=tipIdxs.length;
+  h+='<div class="sp-nav">'
+   +'<span class="sp-nav-btn'+(p>0?'':' sp-nav-dis')+'" data-d="-1">&#8249;</span>'
+   +'<span class="sp-nav-ctr">'+(p+1)+' / '+n+'</span>'
+   +'<span class="sp-nav-btn'+(p<n-1?'':' sp-nav-dis')+'" data-d="1">&#8250;</span>'
+   +'</div>';}
+ tip.innerHTML=h;tip.classList.add('sp-vis');
+ if(lastE)placeTip(lastE);
+ tip.querySelectorAll('.sp-nav-btn:not(.sp-nav-dis)').forEach(function(btn){
+  btn.onclick=function(ev){ev.stopPropagation();
+   var nd=tipPos+parseInt(btn.getAttribute('data-d'),10);
+   if(nd>=0&&nd<tipIdxs.length){tipPos=nd;renderTip();}};});}
+var dragging=false,dsx=0,dsy=0,moved=false,pinned=false;
+
+wrap.addEventListener('mouseleave',function(e){
+ if(pinned)return;
+ var rt=e.relatedTarget;
+ if(rt&&(rt===tip||tip.contains(rt)))return;
+ tip.classList.remove('sp-vis');tipIdxs=[];});
+wrap.addEventListener('mousemove',function(e){
+ if(dragging||pinned)return;
+ lastE=e;
+
+ var hits=[];
+ document.elementsFromPoint(e.clientX,e.clientY).forEach(function(el){
+  if(el===tip||tip.contains(el))return;
+  var found=null;
+  for(var n=el;n&&n!==document.body;n=n.parentElement){
+   if(found===null&&n.getAttribute&&n.getAttribute('data-idx')!==null)found=n;
+   if(n===wrap){
+    if(found!==null){var idx=parseInt(found.getAttribute('data-idx'),10);
+     if(hits.indexOf(idx)===-1)hits.push(idx);}
+    return;}
+  }
+ });
+ if(hits.length){
+  var same=hits.length===tipIdxs.length&&hits.every(function(v,i){return v===tipIdxs[i];});
+  if(!same){tipIdxs=hits;tipPos=0;renderTip();}else placeTip(e);
+ }else{tip.classList.remove('sp-vis');tipIdxs=[];}});
+
+var origVB=svg.getAttribute('viewBox')||'';
+function parseVB(s){return s.split(/[\s,]+/).map(Number);}
+function animateVB(x,y,w,h){
+ svg.style.transition='all 0.5s cubic-bezier(.4,0,.2,1)';
+ svg.setAttribute('viewBox',x+' '+y+' '+w+' '+h);}
+function resetVB(){
+ svg.style.transition='all 0.45s cubic-bezier(.4,0,.2,1)';
+ if(origVB)svg.setAttribute('viewBox',origVB);
+ setTimeout(function(){svg.style.transition='';},500);}
+function reAnim(){var els=svg.querySelectorAll('[data-idx]');els.forEach(function(el){el.style.animation='none';el.style.filter='';});void svg.offsetHeight;els.forEach(function(el,i){el.style.animation='';el.style.animationDelay=(i*14)+'ms';});}
+var ov=wrap.querySelector('.sp-sel-ov');var panel=wrap.querySelector('.sp-cpanel');
+wrap.addEventListener('mousedown',function(e){
+ if(e.button!==0)return;
+ var t=e.target;if(t===panel||panel.contains(t))return;if(t===tip||tip.contains(t))return;
+ dragging=true;moved=false;
+ var r=wrap.getBoundingClientRect();dsx=e.clientX-r.left;dsy=e.clientY-r.top;
+ ov.style.cssText='display:none;position:absolute;pointer-events:none;border:2px solid #6366F1;background:rgba(99,102,241,.12);box-sizing:border-box;border-radius:3px;z-index:10';
+ e.preventDefault();});
+document.addEventListener('mousemove',function(e){if(!dragging)return;
+ var r=wrap.getBoundingClientRect();var cx=e.clientX-r.left,cy=e.clientY-r.top;
+ if(!moved&&Math.abs(cx-dsx)<8&&Math.abs(cy-dsy)<8)return;
+ if(!moved){pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}
+ moved=true;ov.style.display='block';
+ ov.style.left=Math.min(dsx,cx)+'px';ov.style.top=Math.min(dsy,cy)+'px';
+ ov.style.width=Math.abs(cx-dsx)+'px';ov.style.height=Math.abs(cy-dsy)+'px';});
+document.addEventListener('mouseup',function(e){if(!dragging)return;dragging=false;
+ ov.style.display='none';if(!moved){
+ var ch=[];document.elementsFromPoint(e.clientX,e.clientY).forEach(function(el){if(el===tip||tip.contains(el))return;var fd=null;for(var n2=el;n2&&n2!==document.body;n2=n2.parentElement){if(fd===null&&n2.getAttribute&&n2.getAttribute('data-idx')!==null)fd=n2;if(n2===wrap){if(fd!==null){var idx=parseInt(fd.getAttribute('data-idx'),10);if(ch.indexOf(idx)===-1)ch.push(idx);}return;}}});
+ if(ch.length){pinned=true;tipIdxs=ch;tipPos=0;lastE=e;renderTip();}else{pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}return;}
+ var r=wrap.getBoundingClientRect();var cx=e.clientX-r.left,cy=e.clientY-r.top;
+ var rx1=Math.min(dsx,cx),ry1=Math.min(dsy,cy),rx2=Math.max(dsx,cx),ry2=Math.max(dsy,cy);
+ if(rx2-rx1<8&&ry2-ry1<8)return;
+ var ctm=svg.getScreenCTM();if(!ctm)return;var inv=ctm.inverse();
+ function toS(px,py){var pt=svg.createSVGPoint();pt.x=px+r.left;pt.y=py+r.top;return pt.matrixTransform(inv);}
+ var p1=toS(rx1,ry1),p2=toS(rx2,ry2);
+ var bx1=Math.min(p1.x,p2.x),by1=Math.min(p1.y,p2.y),bx2=Math.max(p1.x,p2.x),by2=Math.max(p1.y,p2.y);
+ var pts=svg.querySelectorAll('[data-idx]');var sel=[],unsel=[];
+ pts.forEach(function(el){try{var bb=el.getBBox();var ecx=bb.x+bb.width/2,ecy=bb.y+bb.height/2;
+  if(ecx>=bx1&&ecx<=bx2&&ecy>=by1&&ecy<=by2)sel.push(el);else unsel.push(el);}catch(ex){unsel.push(el);}});
+ if(!sel.length)return;
+ sel.forEach(function(el){el.style.stroke='#6366F1';el.style.strokeWidth='2.5';el.style.opacity='';el.style.transform='';});
+ unsel.forEach(function(el){
+  el.style.transformBox='fill-box';el.style.transformOrigin='center';
+  el.style.transition='transform 0.28s cubic-bezier(.4,0,.2,1),opacity 0.28s';
+  el.style.transform='scale(0,0)';el.style.opacity='0';
+  setTimeout(function(){el.style.display='none';el.style.transition='';},300);});
+
+ var mnx=Infinity,mny=Infinity,mxx=-Infinity,mxy=-Infinity;
+ sel.forEach(function(el){try{var bb=el.getBBox();
+  mnx=Math.min(mnx,bb.x);mny=Math.min(mny,bb.y);
+  mxx=Math.max(mxx,bb.x+bb.width);mxy=Math.max(mxy,bb.y+bb.height);}catch(ex){}});
+ var vb=parseVB(origVB.length?origVB:(svg.getAttribute('viewBox')||'0 0 800 500'));
+ var axL=mnx-vb[0],axT=mny-vb[1],axR=(vb[0]+vb[2])-mxx,axB=(vb[1]+vb[3])-mxy;
+ var sw=mxx-mnx||1,sh=mxy-mny||1;
+ var pL=Math.max(sw*0.12,axL>0?axL*0.7:sw*0.12);
+ var pR=Math.max(sw*0.08,axR>0?axR*0.5:sw*0.08);
+ var pT=Math.max(sh*0.12,axT>0?axT*0.7:sh*0.12);
+ var pB=Math.max(sh*0.20,axB>0?axB*0.8:sh*0.20);
+ animateVB(mnx-pL,mny-pT,(mxx+pR)-(mnx-pL),(mxy+pB)-(mny-pT));
+
+ var xs=sel.map(function(el){return parseFloat(el.getAttribute('data-x'));}).filter(Number.isFinite);
+ var ys=sel.map(function(el){return parseFloat(el.getAttribute('data-y'));}).filter(Number.isFinite);
+ var s='<span style="color:#6366F1;font-weight:700">'+sel.length+' pts</span>';
+ if(xs.length&&ys.length){
+  var mx=xs.reduce(function(a,b){return a+b;})/xs.length;
+  var my=ys.reduce(function(a,b){return a+b;})/ys.length;
+  var vX=xs.map(function(v){return(v-mx)*(v-mx);}).reduce(function(a,b){return a+b;})/xs.length;
+  var vY=ys.map(function(v){return(v-my)*(v-my);}).reduce(function(a,b){return a+b;})/ys.length;
+  s+=' &middot; X&#772; <b>'+mx.toFixed(2)+'</b> &plusmn;'+Math.sqrt(vX).toFixed(2);
+  s+=' &middot; Y&#772; <b>'+my.toFixed(2)+'</b> &plusmn;'+Math.sqrt(vY).toFixed(2);}
+ s+=' <span class="sp-cls-x">&#10005;</span>';
+ panel.innerHTML=s;panel.style.display='block';
+ panel.querySelector('.sp-cls-x').addEventListener('click',clearSel);});
+function clearSel(){panel.style.display='none';resetVB();
+ svg.querySelectorAll('[data-idx]').forEach(function(el){
+  el.style.display='';el.style.opacity='';el.style.stroke='';el.style.strokeWidth='';el.style.filter='';
+  el.style.transform='';el.style.transition='';el.style.transformBox='';el.style.transformOrigin='';});
+ reAnim();}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(dblZoomed){dblZoomed=false;resetVB();svg.querySelectorAll('[data-idx]').forEach(function(el){el.style.opacity='';el.style.display='';el.style.transform='';el.style.transition='';});reAnim();}if(pinned){pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}}});
+var dblZoomed=false;
+svg.addEventListener('dblclick',function(e){
+ if(dblZoomed){dblZoomed=false;resetVB();svg.querySelectorAll('[data-idx]').forEach(function(el){el.style.opacity='';el.style.display='';el.style.transform='';el.style.transition='';el.style.filter='';});reAnim();return;}
+ var found=null;
+ for(var nd=e.target;nd&&nd!==svg;nd=nd.parentElement){if(nd.getAttribute&&nd.getAttribute('data-idx')!==null){found=nd;break;}}
+ if(!found)return;
+ e.stopPropagation();
+ var idx=parseInt(found.getAttribute('data-idx'),10);
+ var bb;try{bb=found.getBBox();}catch(ex){return;}
+ var pad=Math.max(bb.width,bb.height)*1.5+30;
+ svg.querySelectorAll('[data-idx]').forEach(function(el){
+  var eli=parseInt(el.getAttribute('data-idx'),10);
+  if(eli===idx){el.style.opacity='1';el.style.filter='drop-shadow(0 0 6px rgba(99,102,241,.45))';}else{el.style.display='none';}});
+ var vb=parseVB(origVB.length?origVB:(svg.getAttribute('viewBox')||'0 0 800 500'));
+ var nx=Math.max(vb[0],bb.x-pad),ny=Math.max(vb[1],bb.y-pad);
+ var nw=Math.min(vb[2],bb.width+pad*2),nh=Math.min(vb[3],bb.height+pad*2);
+ animateVB(nx,ny,nw,nh);
+ dblZoomed=true;
+},false);
+var legs=svg.querySelectorAll('[data-legend]');
+legs.forEach(function(lg){lg.style.cursor='pointer';
+lg.addEventListener('click',function(){
+ var s=lg.getAttribute('data-series');if(!s)return;
+ var h=lg.getAttribute('data-hidden')==='1';
+ var els=svg.querySelectorAll('[data-series="'+s+'"]:not([data-legend])');
+ if(h){els.forEach(function(el){el.style.display='';el.style.opacity='';el.style.transform='';el.style.transformBox='';el.style.transformOrigin='';el.style.transition='';});lg.style.opacity='';lg.removeAttribute('data-hidden');}
+ else{els.forEach(function(el){
+  el.style.transformBox='fill-box';el.style.transformOrigin='center';
+  el.style.transition='transform 0.3s cubic-bezier(.4,0,.2,1),opacity 0.3s';
+  el.style.transform='scale(0,0)';el.style.opacity='0';
+  setTimeout(function(){el.style.display='none';el.style.transition='';},320);});
+  lg.style.opacity='0.3';lg.setAttribute('data-hidden','1');}spRescale();});});
+function spRescale(){
+ var m=svg.getAttribute('data-sp');if(!m)return;
+ var p=m.split(',').map(Number),pL=p[0],pT=p[1],pW=p[2],pH=p[3];
+ var vals=[];
+ svg.querySelectorAll('[data-pts]').forEach(function(el){if(el.style.display==='none')return;el.getAttribute('data-pts').split(',').forEach(function(v){var f=parseFloat(v);if(isFinite(f))vals.push(f);});});
+ svg.querySelectorAll('circle[data-y]').forEach(function(el){if(el.style.display==='none')return;var f=parseFloat(el.getAttribute('data-y'));if(isFinite(f))vals.push(f);});
+ svg.querySelectorAll('rect[data-y]').forEach(function(el){if(el.style.display==='none')return;var f=parseFloat(el.getAttribute('data-y'));if(isFinite(f))vals.push(f);});
+ svg.querySelectorAll('rect[data-v]').forEach(function(el){if(el.style.display==='none')return;if(el.hasAttribute('data-y'))return;var f=parseFloat(el.getAttribute('data-v'));if(isFinite(f))vals.push(f);});
+ if(!vals.length)return;
+ var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);if(mn>0)mn=0;var rg=mx-mn;if(rg<1e-12)rg=1;
+ svg.querySelectorAll('polyline[data-pts]').forEach(function(el){if(el.style.display==='none')return;var vs=el.getAttribute('data-pts').split(','),n=vs.length,sx=pW/Math.max(n-1,1),r='';for(var i=0;i<n;i++){var f=(parseFloat(vs[i])-mn)/rg;if(i>0)r+=' ';r+=(pL+Math.round(i*sx))+','+(pT+Math.round((1-f)*pH));}el.setAttribute('points',r);});
+ svg.querySelectorAll('circle[data-y]').forEach(function(el){if(el.style.display==='none')return;var f=(parseFloat(el.getAttribute('data-y'))-mn)/rg;el.setAttribute('cy',pT+Math.round((1-f)*pH));});
+ svg.querySelectorAll('rect[data-y]').forEach(function(el){if(el.style.display==='none')return;var v=parseFloat(el.getAttribute('data-y'));if(!isFinite(v))return;var f=(v-mn)/rg;var ny=pT+Math.round((1-f)*pH);var base=pT+pH;if(mn<0){base=pT+Math.round((0-mn)/rg*pH);}if(v>=0){el.setAttribute('y',ny);el.setAttribute('height',Math.max(1,base-ny));}else{el.setAttribute('y',base);el.setAttribute('height',Math.max(1,ny-base));}});
+ svg.querySelectorAll('rect[data-v]').forEach(function(el){if(el.style.display==='none')return;if(el.hasAttribute('data-y'))return;var v=parseFloat(el.getAttribute('data-v'));if(!isFinite(v))return;var f=(v-mn)/rg;var ny=pT+Math.round((1-f)*pH);var base=pT+pH;if(mn<0){base=pT+Math.round((0-mn)/rg*pH);}if(v>=0){el.setAttribute('y',ny);el.setAttribute('height',Math.max(1,base-ny));}else{el.setAttribute('y',base);el.setAttribute('height',Math.max(1,ny-base));}});
+ var tks=svg.querySelectorAll('.sp-yt'),nT=tks.length;if(nT>1)for(var i=0;i<nT;i++){var f=i/(nT-1);var v=mn+f*rg;tks[i].textContent=v>=1000?Math.round(v)+'':v.toFixed(2);tks[i].setAttribute('y',pT+Math.round((1-f)*pH)+3);}
+ var gls=svg.querySelectorAll('.sp-gl');if(gls.length&&nT>1)for(var j=0;j<gls.length;j++){var f=(j+1)/(nT-1);var gy=pT+Math.round((1-f)*pH);gls[j].setAttribute('y1',gy);gls[j].setAttribute('y2',gy);}
+}
+svg.querySelectorAll('[data-idx]').forEach(function(el,i){el.style.animationDelay=(i*18)+'ms';});
+})();</script></div></body></html>
