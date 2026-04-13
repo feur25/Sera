@@ -11,7 +11,7 @@ function cardHTML(d){
  var rows='';(d.kv||[]).forEach(function(p){
   rows+='<div class=&quot;sp-row&quot;><span class=&quot;sp-key&quot;>'+esc(p[0])+'</span><span class=&quot;sp-val&quot;>'+esc(p[1])+'</span></div>';});
  if(rows)h+='<div class=&quot;sp-body&quot;>'+rows+'</div>';
- if(d.image)h+='<img src=&quot;'+esc(d.image)+'&quot; alt=&quot;&quot; loading=&quot;lazy&quot;>';
+ if(d.image)h+='<img src=&quot;'+esc(d.image)+'&quot; alt=&quot;&quot; loading=&quot;eager&quot;>';
  if(d.video)h+='<video src=&quot;'+esc(d.video)+'&quot; controls muted playsinline></video>';
  if(d.html)h+='<div class=&quot;sp-html&quot;>'+d.html+'</div>';
  return h;}
@@ -230,7 +230,7 @@ function cardHTML(d){
  var rows='';(d.kv||[]).forEach(function(p){
   rows+='<div class=&quot;sp-row&quot;><span class=&quot;sp-key&quot;>'+esc(p[0])+'</span><span class=&quot;sp-val&quot;>'+esc(p[1])+'</span></div>';});
  if(rows)h+='<div class=&quot;sp-body&quot;>'+rows+'</div>';
- if(d.image)h+='<img src=&quot;'+esc(d.image)+'&quot; alt=&quot;&quot; loading=&quot;lazy&quot;>';
+ if(d.image)h+='<img src=&quot;'+esc(d.image)+'&quot; alt=&quot;&quot; loading=&quot;eager&quot;>';
  if(d.video)h+='<video src=&quot;'+esc(d.video)+'&quot; controls muted playsinline></video>';
  if(d.html)h+='<div class=&quot;sp-html&quot;>'+d.html+'</div>';
  return h;}
@@ -449,7 +449,7 @@ function cardHTML(d){
  var rows='';(d.kv||[]).forEach(function(p){
   rows+='<div class=&quot;sp-row&quot;><span class=&quot;sp-key&quot;>'+esc(p[0])+'</span><span class=&quot;sp-val&quot;>'+esc(p[1])+'</span></div>';});
  if(rows)h+='<div class=&quot;sp-body&quot;>'+rows+'</div>';
- if(d.image)h+='<img src=&quot;'+esc(d.image)+'&quot; alt=&quot;&quot; loading=&quot;lazy&quot;>';
+ if(d.image)h+='<img src=&quot;'+esc(d.image)+'&quot; alt=&quot;&quot; loading=&quot;eager&quot;>';
  if(d.video)h+='<video src=&quot;'+esc(d.video)+'&quot; controls muted playsinline></video>';
  if(d.html)h+='<div class=&quot;sp-html&quot;>'+d.html+'</div>';
  return h;}
@@ -668,7 +668,7 @@ function cardHTML(d){
  var rows='';(d.kv||[]).forEach(function(p){
   rows+='<div class=&quot;sp-row&quot;><span class=&quot;sp-key&quot;>'+esc(p[0])+'</span><span class=&quot;sp-val&quot;>'+esc(p[1])+'</span></div>';});
  if(rows)h+='<div class=&quot;sp-body&quot;>'+rows+'</div>';
- if(d.image)h+='<img src=&quot;'+esc(d.image)+'&quot; alt=&quot;&quot; loading=&quot;lazy&quot;>';
+ if(d.image)h+='<img src=&quot;'+esc(d.image)+'&quot; alt=&quot;&quot; loading=&quot;eager&quot;>';
  if(d.video)h+='<video src=&quot;'+esc(d.video)+'&quot; controls muted playsinline></video>';
  if(d.html)h+='<div class=&quot;sp-html&quot;>'+d.html+'</div>';
  return h;}

@@ -168,7 +168,7 @@ function cardHTML(d){
  var rows='';(d.kv||[]).forEach(function(p){
   rows+='<div class="sp-row"><span class="sp-key">'+esc(p[0])+'</span><span class="sp-val">'+esc(p[1])+'</span></div>';});
  if(rows)h+='<div class="sp-body">'+rows+'</div>';
- if(d.image)h+='<img src="'+esc(d.image)+'" alt="" loading="lazy">';
+ if(d.image)h+='<img src="'+esc(d.image)+'" alt="" loading="eager">';
  if(d.video)h+='<video src="'+esc(d.video)+'" controls muted playsinline></video>';
  if(d.html)h+='<div class="sp-html">'+d.html+'</div>';
  return h;}

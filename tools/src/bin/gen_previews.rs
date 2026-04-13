@@ -39,7 +39,6 @@ fn extract_first_example(content: &str) -> Option<String> {
 fn find_chart_var(code: &str) -> String {
     let mut best: Option<String> = None;
     for line in code.lines() {
-        // Match "chart = sp.build_..." OR "chart = ("  (parenthesized chain starting on next line)
         let trimmed = line.trim();
         let is_paren = trimmed.ends_with("= (") || trimmed.ends_with("=(");
         if let Some(idx) = line.find("= sp.") {
@@ -54,7 +53,6 @@ fn find_chart_var(code: &str) -> String {
                 }
             }
         } else if is_paren {
-            // e.g. "chart = ("
             let lhs = trimmed.trim_end_matches(|c| c == '(' || c == ' ' || c == '=');
             let var = lhs.split_whitespace().last().unwrap_or("").to_string();
             let v: String = var.chars().filter(|c| c.is_alphanumeric() || *c == '_').collect();
@@ -75,7 +73,6 @@ fn python_bin() -> &'static str {
 }
 
 fn run_example(code: &str, chart_var: &str) -> Option<String> {
-    // Dark-theme CSS injected so charts blend with the navy docs inside the iframe.
     let dark_css = concat!(
         ".sp-bg{fill:transparent!important}",
         ".sp-ttl{fill:#e2e8f0!important}",
@@ -99,11 +96,8 @@ fn run_example(code: &str, chart_var: &str) -> Option<String> {
     let output = result.ok()?;
     if output.status.success() && !output.stdout.is_empty() {
         let html = String::from_utf8(output.stdout).ok()?;
-        // Match docs dark background inside the iframe
         let html = html.replace("background:#fff;", "background:#0d1117;");
-        // Eager loading so images appear immediately when the tooltip shows
         let html = html.replace("loading=\"lazy\"", "loading=\"eager\"");
-        // Inject SeraPlot logo into hover tooltip entries
         let html = inject_logo_into_hover(html, logo);
         Some(html)
     } else {
@@ -115,14 +109,10 @@ fn run_example(code: &str, chart_var: &str) -> Option<String> {
     }
 }
 
-/// Adds a logo image to every hover tooltip entry in `var data=[...]`.
-/// If the array is empty, builds entries from `data-lbl` attributes on SVG elements.
 fn inject_logo_into_hover(html: String, logo: &str) -> String {
     let marker = "var data=[";
     let Some(s) = html.find(marker) else { return html; };
-    let b = s + marker.len() - 1; // points to '['
-
-    // Walk balanced brackets to find the end of the array
+    let b = s + marker.len() - 1;
     let bytes = html.as_bytes();
     let mut depth = 0i32;
     let mut end = b;
@@ -144,7 +134,6 @@ fn inject_logo_into_hover(html: String, logo: &str) -> String {
     let esc = |s: &str| s.replace('\\', "\\\\").replace('"', "\\\"");
 
     let new_array = if old_array == "[]" {
-        // No hover data — synthesise entries from SVG data-lbl attributes.
         let mut max_idx: i32 = -1;
         let mut pos = 0;
         while let Some(p) = html[pos..].find("data-idx=\"") {
@@ -181,9 +170,6 @@ fn inject_logo_into_hover(html: String, logo: &str) -> String {
         }
         format!("[{}]", entries.join(","))
     } else {
-        // Existing entries — add/replace "image" field in each object.
-        // Simple string manipulation: insert `,"image":"<logo>"` before each object's `}`.
-        // We walk depth-1 objects (top-level array items).
         let mut result = String::with_capacity(old_array.len() + 64 * 20);
         let ab = old_array.as_bytes();
         let mut depth2 = 0i32;
@@ -200,14 +186,10 @@ fn inject_logo_into_hover(html: String, logo: &str) -> String {
                 b']' | b'}' => {
                     depth2 -= 1;
                     if depth2 == 1 && ch == b'}' {
-                        // End of a top-level object — inject image before closing `}`
-                        // Only add if "image" key not already present in this object slice
                         let obj_slice = &result[obj_start..];
                         if !obj_slice.contains("\"image\"") {
                             result.push_str(&image_kv);
                         } else {
-                            // Replace existing image value
-                            // Find last "image":" in result from obj_start
                             if let Some(ip) = result[obj_start..].rfind("\"image\":\"") {
                                 let vs = obj_start + ip + 9;
                                 if let Some(ve) = result[vs..].find('"') {
@@ -236,12 +218,7 @@ fn inject_logo_into_hover(html: String, logo: &str) -> String {
     out
 }
 
-/// Strips the outer `<!DOCTYPE>/<html>/<head>/<body>` wrapper from chart HTML.
-/// Keeps all `<style>` tags from `<head>` and the full `<body>` content.
-/// This prevents the closing `</body></html>` from disrupting the mdBook page's
-/// DOM structure, which was causing nav arrows to be mispositioned.
 fn extract_body_content(html: String) -> String {
-    // Collect all <style>...</style> blocks from the <head> section
     let head_end = html.find("</head>").unwrap_or(0);
     let head = &html[..head_end];
     let mut out = String::new();
@@ -249,7 +226,7 @@ fn extract_body_content(html: String) -> String {
     while let Some(rel) = head[hpos..].find("<style") {
         let abs = hpos + rel;
         if let Some(end_rel) = head[abs..].find("</style>") {
-            let abs_end = abs + end_rel + 8; // 8 = "</style>".len()
+            let abs_end = abs + end_rel + 8;
             out.push_str(&head[abs..abs_end]);
             hpos = abs_end;
         } else {
@@ -257,7 +234,6 @@ fn extract_body_content(html: String) -> String {
         }
     }
 
-    // Extract content inside <body>...</body>
     if let Some(body_open) = html.find("<body") {
         let after_tag = &html[body_open..];
         if let Some(gt) = after_tag.find('>') {
@@ -273,8 +249,6 @@ fn extract_body_content(html: String) -> String {
     if out.is_empty() { html } else { out }
 }
 
-/// Injects an `<iframe src>` live-preview block after the first code fence in the Examples section.
-/// Points to the standalone .html file — markdown stays small and readable.
 fn inject_preview(content: &str, iframe_src: &str) -> String {
     let preview = format!(
         "\n\n<details open>\n<summary style=\"cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8\">&#9654;&nbsp;Live Preview</summary>\n\n<iframe src=\"{iframe_src}\" style=\"width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117\" loading=\"lazy\"></iframe>\n\n</details>\n"
@@ -311,19 +285,17 @@ fn inject_preview(content: &str, iframe_src: &str) -> String {
 }
 
 fn strip_preview(content: &str) -> String {
-    // Remove everything from "\n\n<details" up to and including the closing "</details>\n"
     let mut out = String::with_capacity(content.len());
     let mut rest = content;
     while let Some(start) = rest.find("\n\n<details") {
         out.push_str(&rest[..start]);
-        let after = &rest[start + 2..]; // skip the two leading newlines
+        let after = &rest[start + 2..];
         if let Some(end) = after.find("</details>") {
-            rest = &after[end + 10..]; // skip "</details>"
+            rest = &after[end + 10..];
             if rest.starts_with('\n') {
                 rest = &rest[1..];
             }
         } else {
-            // malformed — keep remainder as-is
             out.push_str(&rest[start..]);
             return out;
         }
@@ -338,13 +310,8 @@ fn process_dir(docs: &Path, rel_dir: &str) {
         return;
     }
 
-    // Create the previews output directory
     let previews_dir = docs.join("previews");
     fs::create_dir_all(&previews_dir).ok();
-
-    // Compute relative path from the chart page back to /previews/
-    // e.g. "charts/2d" (depth 2) → "../../previews/"
-    //      "ml"         (depth 1) → "../previews/"
     let depth = rel_dir.split('/').count();
     let preview_rel: String = "../".repeat(depth) + "previews/";
 
@@ -367,7 +334,6 @@ fn process_dir(docs: &Path, rel_dir: &str) {
             continue;
         }
 
-        // Strip existing preview block before regenerating.
         let content = if content.contains("<details") {
             strip_preview(&content)
         } else {
@@ -385,11 +351,8 @@ fn process_dir(docs: &Path, rel_dir: &str) {
         let _ = std::io::stdout().flush();
 
         if let Some(html) = run_example(&code, &chart_var) {
-            // Write standalone chart HTML into docs/previews/{name}.html
             let preview_file = previews_dir.join(format!("{}.html", chart_name));
             let _ = fs::write(&preview_file, html.as_bytes());
-
-            // Inject a clean <iframe src> into the markdown — no HTML bloat in .md files
             let iframe_src = format!("{}{}.html", preview_rel, chart_name);
             let new_content = inject_preview(&content, &iframe_src);
             let _ = fs::write(path, new_content.as_bytes());
