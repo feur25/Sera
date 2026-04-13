@@ -106,6 +106,10 @@ fn run_example(code: &str, chart_var: &str) -> Option<String> {
             .replace(";display:flex;justify-content:center", "");
         // Inject SeraPlot logo into hover tooltip entries
         let html = inject_logo_into_hover(html, logo);
+        // Strip the HTML document wrapper tags (<html>,<head>,<body>,</body>,</html>)
+        // so they don't disrupt the mdBook page's DOM, particularly </body></html>
+        // which breaks fixed-position nav arrows on chart pages.
+        let html = extract_body_content(html);
         Some(html)
     } else {
         if !output.stderr.is_empty() {
@@ -235,6 +239,43 @@ fn inject_logo_into_hover(html: String, logo: &str) -> String {
     out.push_str(&new_array);
     out.push_str(&html[end..]);
     out
+}
+
+/// Strips the outer `<!DOCTYPE>/<html>/<head>/<body>` wrapper from chart HTML.
+/// Keeps all `<style>` tags from `<head>` and the full `<body>` content.
+/// This prevents the closing `</body></html>` from disrupting the mdBook page's
+/// DOM structure, which was causing nav arrows to be mispositioned.
+fn extract_body_content(html: String) -> String {
+    // Collect all <style>...</style> blocks from the <head> section
+    let head_end = html.find("</head>").unwrap_or(0);
+    let head = &html[..head_end];
+    let mut out = String::new();
+    let mut hpos = 0;
+    while let Some(rel) = head[hpos..].find("<style") {
+        let abs = hpos + rel;
+        if let Some(end_rel) = head[abs..].find("</style>") {
+            let abs_end = abs + end_rel + 8; // 8 = "</style>".len()
+            out.push_str(&head[abs..abs_end]);
+            hpos = abs_end;
+        } else {
+            break;
+        }
+    }
+
+    // Extract content inside <body>...</body>
+    if let Some(body_open) = html.find("<body") {
+        let after_tag = &html[body_open..];
+        if let Some(gt) = after_tag.find('>') {
+            let body_start = body_open + gt + 1;
+            let body_end = html[body_start..]
+                .rfind("</body>")
+                .map(|p| body_start + p)
+                .unwrap_or(html.len());
+            out.push_str(&html[body_start..body_end]);
+        }
+    }
+
+    if out.is_empty() { html } else { out }
 }
 
 fn inject_preview(content: &str, chart_html: &str) -> String {
