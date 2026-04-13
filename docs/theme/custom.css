@@ -1,7 +1,6 @@
 /* ── Wider content — only override the max-width variable ───────────────── */
 :root {
   --content-max-width: 1200px;
-  --page-padding: 24px;
 }
 
 /* ── Background fills edge-to-edge ──────────────────────────────────────── */
@@ -11,6 +10,12 @@ html, body {
 
 .page-wrapper {
   background-color: var(--bg) !important;
+}
+
+/* ── Nav arrows: smaller so they don't eat into content ─────────────────── */
+.nav-chapters {
+  min-width: 40px !important;
+  max-width: 50px !important;
 }
 
 /* ── Live preview containers ─────────────────────────────────────────────── */
