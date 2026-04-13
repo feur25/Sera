@@ -51,6 +51,14 @@ fn find_chart_var(code: &str) -> String {
     "chart".to_string()
 }
 
+fn python_bin() -> &'static str {
+    if Command::new("python3").arg("--version").output().map(|o| o.status.success()).unwrap_or(false) {
+        "python3"
+    } else {
+        "python"
+    }
+}
+
 fn run_example(code: &str, chart_var: &str) -> Option<String> {
     let wrapper = format!(
         "import seraplot as _sp\n_sp.set_auto_display(False)\n{code}\nimport sys\nsys.stdout.buffer.write({chart_var}.html.encode('utf-8'))\n"
@@ -59,7 +67,7 @@ fn run_example(code: &str, chart_var: &str) -> Option<String> {
     let tmp = std::env::temp_dir().join("seraplot_preview.py");
     fs::write(&tmp, wrapper).ok()?;
 
-    let result = Command::new("python3").arg(&tmp).output();
+    let result = Command::new(python_bin()).arg(&tmp).output();
     let _ = fs::remove_file(&tmp);
 
     let output = result.ok()?;
@@ -154,7 +162,7 @@ fn process_dir(docs: &Path, rel_dir: &str) {
 }
 
 fn main() {
-    let check = Command::new("python3")
+    let check = Command::new(python_bin())
         .args(["-c", "import seraplot"])
         .output();
     if check.map(|o| !o.status.success()).unwrap_or(true) {
