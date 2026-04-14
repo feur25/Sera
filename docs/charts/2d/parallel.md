@@ -58,6 +58,7 @@ Ideal for detecting patterns in high-dimensional data.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -101,7 +102,7 @@ const data = [
 ]
 const groups = ["Setosa", "Versicolor", "Virginica"]
 
-const chart = sp.buildParallel("Iris Parallel Coordinates",
+const chart = sp.build_parallel("Iris Parallel Coordinates",
 axes,
 {
     series_values: data,
@@ -118,7 +119,7 @@ const data: number[] = [
 ]
 const groups: string[] = ["Setosa", "Versicolor", "Virginica"]
 
-const chart = sp.buildParallel("Iris Parallel Coordinates",
+const chart = sp.build_parallel("Iris Parallel Coordinates",
 axes,
 {
     series_values: data,

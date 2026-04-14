@@ -63,6 +63,7 @@ Each box displays Q1, median, Q3, and IQR whiskers.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -111,7 +112,7 @@ const groups = {
 const labels = list(groups.keys())
 const values = [v for g in groups.values() for v in g]
 
-const chart = sp.buildBoxplot("Test Score Distribution by Class",
+const chart = sp.build_boxplot("Test Score Distribution by Class",
 labels,
 {
     values: values,
@@ -131,7 +132,7 @@ const groups = {
 const labels = list(groups.keys())
 const values: number[] = [v for g in groups.values() for v in g]
 
-const chart = sp.buildBoxplot("Test Score Distribution by Class",
+const chart = sp.build_boxplot("Test Score Distribution by Class",
 labels,
 {
     values: values,

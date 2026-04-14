@@ -52,6 +52,7 @@ sp.build_funnel3d_chart(
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -76,14 +77,14 @@ chart = sp.build_funnel3d_chart(
 )</code></pre></div>
 <div id="funnel3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildFunnel3dChart("Conversion Funnel 3D",
+const chart = sp.build_funnel3d_chart("Conversion Funnel 3D",
 ["Visitors", "Leads", "Opportunities", "Proposals", "Won"],
 {
     values: [10000, 3200, 1100, 450, 120]
 })</code></pre></div>
 <div id="funnel3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildFunnel3dChart("Conversion Funnel 3D",
+const chart = sp.build_funnel3d_chart("Conversion Funnel 3D",
 ["Visitors", "Leads", "Opportunities", "Proposals", "Won"],
 {
     values: [10000, 3200, 1100, 450, 120]

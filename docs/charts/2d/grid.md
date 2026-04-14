@@ -55,6 +55,7 @@ Charts are placed left-to-right, top-to-bottom. When `len(charts)` is not divisi
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -83,51 +84,51 @@ dashboard = sp.build_grid(
 )</code></pre></div>
 <div id="grid-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const bar   = sp.buildBarChart("Revenue",
+const bar   = sp.build_bar_chart("Revenue",
 ["A", "B", "C"],
 {
     values: [100, 200, 150]
 })
-const pie   = sp.buildPieChart("Share",
+const pie   = sp.build_pie_chart("Share",
 ["A", "B"],
 {
     values: [60, 40]
 })
-const line  = sp.buildLineChart("Trend",
+const line  = sp.build_line_chart("Trend",
 ["Jan", "Feb", "Mar"],
 {
     values: [10, 20, 15]
 })
-const hist  = sp.buildHistogram("Dist",
+const hist  = sp.build_histogram("Dist",
 {
     values: [1, 2, 2, 3, 3, 3, 4, 4, 5]
 })
 
-const dashboard = sp.buildGrid([bar, pie, line, hist],
+const dashboard = sp.build_grid([bar, pie, line, hist],
 2)</code></pre></div>
 <div id="grid-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const bar   = sp.buildBarChart("Revenue",
+const bar   = sp.build_bar_chart("Revenue",
 ["A", "B", "C"],
 {
     values: [100, 200, 150]
 })
-const pie   = sp.buildPieChart("Share",
+const pie   = sp.build_pie_chart("Share",
 ["A", "B"],
 {
     values: [60, 40]
 })
-const line  = sp.buildLineChart("Trend",
+const line  = sp.build_line_chart("Trend",
 ["Jan", "Feb", "Mar"],
 {
     values: [10, 20, 15]
 })
-const hist  = sp.buildHistogram("Dist",
+const hist  = sp.build_histogram("Dist",
 {
     values: [1, 2, 2, 3, 3, 3, 4, 4, 5]
 })
 
-const dashboard = sp.buildGrid([bar, pie, line, hist],
+const dashboard = sp.build_grid([bar, pie, line, hist],
 2)</code></pre></div>
 </div>
 

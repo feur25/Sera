@@ -62,6 +62,7 @@ Countries without data receive the `null_color`. Provide `iso_codes` (ISO-3166 a
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -86,14 +87,14 @@ chart = sp.build_choropleth(
 )</code></pre></div>
 <div id="choropleth-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildChoropleth("Unemployment Rate by Country",
+const chart = sp.build_choropleth("Unemployment Rate by Country",
 ["FRA", "DEU", "ESP", "ITA", "PRT"],
 {
     values: [7.1, 3.0, 11.8, 6.7, 6.2]
 })</code></pre></div>
 <div id="choropleth-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildChoropleth("Unemployment Rate by Country",
+const chart = sp.build_choropleth("Unemployment Rate by Country",
 ["FRA", "DEU", "ESP", "ITA", "PRT"],
 {
     values: [7.1, 3.0, 11.8, 6.7, 6.2]

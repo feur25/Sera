@@ -57,6 +57,7 @@ sp.build_stacked_bar3d_chart(
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -96,7 +97,7 @@ const series_data = [
     [50, 25, 30, 20],
 ]
 
-const chart = sp.buildStackedBar3dChart("Quarterly Revenue 3D",
+const chart = sp.build_stacked_bar3d_chart("Quarterly Revenue 3D",
 categories,
 {
     series_values: series_data,
@@ -111,7 +112,7 @@ const series_data: number[] = [
     [50, 25, 30, 20],
 ]
 
-const chart = sp.buildStackedBar3dChart("Quarterly Revenue 3D",
+const chart = sp.build_stacked_bar3d_chart("Quarterly Revenue 3D",
 categories,
 {
     series_values: series_data,

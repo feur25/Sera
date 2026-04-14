@@ -54,6 +54,7 @@ Ridgeline chart in 3D — KDE surfaces per category arranged along the Y axis in
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -88,7 +89,7 @@ const cats   = ["Low", "Medium", "High"]
 const means  = [10, 50, 90]
 const values = [v for m in means for v in [random.gauss(m, 8) for _ in range(150)]]
 
-const chart = sp.buildRidgeline3dChart("Score Distribution by Group",
+const chart = sp.build_ridgeline3d_chart("Score Distribution by Group",
 cats,
 {
     values: values
@@ -100,7 +101,7 @@ const cats: string[] = ["Low", "Medium", "High"]
 const means: number[] = [10, 50, 90]
 const values: number[] = [v for m in means for v in [random.gauss(m, 8) for _ in range(150)]]
 
-const chart = sp.buildRidgeline3dChart("Score Distribution by Group",
+const chart = sp.build_ridgeline3d_chart("Score Distribution by Group",
 cats,
 {
     values: values

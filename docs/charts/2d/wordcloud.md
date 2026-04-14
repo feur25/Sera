@@ -54,6 +54,7 @@ Words with higher `weights` are displayed larger. Layout is computed via a spira
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -87,7 +88,7 @@ from collections import Counter
 const text = "python python rust rust rust go go java javascript python data ml deep learning neural"
 const counts = Counter(text.split())
 
-const chart = sp.buildWordcloud("Tech Mentions",
+const chart = sp.build_wordcloud("Tech Mentions",
 list(counts.keys()),
 {
     frequencies: list(counts.values()),
@@ -99,7 +100,7 @@ from collections import Counter
 const text: string = "python python rust rust rust go go java javascript python data ml deep learning neural"
 const counts = Counter(text.split())
 
-const chart = sp.buildWordcloud("Tech Mentions",
+const chart = sp.build_wordcloud("Tech Mentions",
 list(counts.keys()),
 {
     frequencies: list(counts.values()),

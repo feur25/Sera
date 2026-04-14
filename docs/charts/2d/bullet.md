@@ -60,6 +60,7 @@ Inspired by Tufte's bullet graph design.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -87,7 +88,7 @@ chart = sp.build_bullet(
 </code></pre></div>
 <div id="bullet-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildBullet("KPI Dashboard",
+const chart = sp.build_bullet("KPI Dashboard",
 ["Revenue", "Satisfaction", "New Users"],
 {
     values: [87500, 4.2, 1340],
@@ -96,7 +97,7 @@ const chart = sp.buildBullet("KPI Dashboard",
 })</code></pre></div>
 <div id="bullet-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildBullet("KPI Dashboard",
+const chart = sp.build_bullet("KPI Dashboard",
 ["Revenue", "Satisfaction", "New Users"],
 {
     values: [87500, 4.2, 1340],

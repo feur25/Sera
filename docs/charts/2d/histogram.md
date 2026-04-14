@@ -63,6 +63,7 @@ Histogramme de distribution avec nombre de bins configurable.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -97,7 +98,7 @@ import numpy as np
 
 const data = np.random.normal(0, 1, 5000).tolist()
 
-const chart = sp.buildHistogram("Normal Distribution — N(0,1)",
+const chart = sp.build_histogram("Normal Distribution — N(0,1)",
 {
     values: data,
     bins: 40,
@@ -111,7 +112,7 @@ import numpy as np
 
 const data = np.random.normal(0, 1, 5000).tolist()
 
-const chart = sp.buildHistogram("Normal Distribution — N(0,1)",
+const chart = sp.build_histogram("Normal Distribution — N(0,1)",
 {
     values: data,
     bins: 40,

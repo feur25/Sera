@@ -59,6 +59,7 @@ Visualizes the joint density of two variables.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -99,7 +100,7 @@ const values = (
 )
 const categories = ["Group A"] * 200 + ["Group B"] * 200 + ["Group C"] * 200
 
-const chart = sp.buildKde3dChart("Density by Group",
+const chart = sp.build_kde3d_chart("Density by Group",
 values,
 {
     categories: categories
@@ -114,7 +115,7 @@ const values = (
 )
 const categories: string[] = ["Group A"] * 200 + ["Group B"] * 200 + ["Group C"] * 200
 
-const chart = sp.buildKde3dChart("Density by Group",
+const chart = sp.build_kde3d_chart("Density by Group",
 values,
 {
     categories: categories

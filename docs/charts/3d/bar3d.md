@@ -58,6 +58,7 @@ sp.build_bar3d_chart(
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -86,7 +87,7 @@ chart = sp.build_bar3d_chart(
 )</code></pre></div>
 <div id="bar3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildBar3dChart("Sales by Product",
+const chart = sp.build_bar3d_chart("Sales by Product",
 [0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0],
 [0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
 {
@@ -97,7 +98,7 @@ const chart = sp.buildBar3dChart("Sales by Product",
 })</code></pre></div>
 <div id="bar3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildBar3dChart("Sales by Product",
+const chart = sp.build_bar3d_chart("Sales by Product",
 [0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0],
 [0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
 {

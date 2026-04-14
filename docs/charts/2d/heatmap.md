@@ -66,6 +66,7 @@ Color-coded matrix heatmap. Values are automatically normalized for color mappin
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -104,7 +105,7 @@ const features = ["Age", "Income", "Score", "Visits"]
 const n = len(features)
 const matrix = np.corrcoef(np.random.randn(4, 100)).flatten().tolist()
 
-const chart = sp.buildHeatmap("Feature Correlation Matrix",
+const chart = sp.build_heatmap("Feature Correlation Matrix",
 features,
 {
     flat_matrix: matrix,
@@ -120,7 +121,7 @@ const features: string[] = ["Age", "Income", "Score", "Visits"]
 const n = len(features)
 const matrix = np.corrcoef(np.random.randn(4, 100)).flatten().tolist()
 
-const chart = sp.buildHeatmap("Feature Correlation Matrix",
+const chart = sp.build_heatmap("Feature Correlation Matrix",
 features,
 {
     flat_matrix: matrix,

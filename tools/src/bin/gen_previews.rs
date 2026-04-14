@@ -148,7 +148,7 @@ fn translate_build_call_body(fn_name: &str, args_text: &str) -> String {
 }
 
 fn convert_sp_fn_name_js(name: &str) -> String {
-    format!("sp.{}", snake_to_camel(name))
+    format!("sp.{}", name)
 }
 
 fn py_to_js(py: &str) -> String {
@@ -230,15 +230,6 @@ fn py_to_js(py: &str) -> String {
             }
         }
 
-        if rest.starts_with(".set_bg(") { result.push_str(".setBg("); i += 8; continue; }
-        if rest.starts_with(".show_labels(") { result.push_str(".showLabels("); i += 13; continue; }
-        if rest.starts_with(".inject_css(") { result.push_str(".injectCss("); i += 12; continue; }
-        if rest.starts_with(".inject_js(") { result.push_str(".injectJs("); i += 11; continue; }
-        if rest.starts_with(".no_x_axis()") { result.push_str(".noXAxis()"); i += 12; continue; }
-        if rest.starts_with(".no_y_axis()") { result.push_str(".noYAxis()"); i += 12; continue; }
-        if rest.starts_with(".hide_grid()") { result.push_str(".hideGrid()"); i += 12; continue; }
-        if rest.starts_with(".show_grid()") { result.push_str(".showGrid()"); i += 12; continue; }
-        if rest.starts_with(".no_legend()") { result.push_str(".noLegend()"); i += 12; continue; }
         if rest.starts_with(".save(") { result.push_str("// save("); i += 6; continue; }
 
         if chars[i] == '\n' {

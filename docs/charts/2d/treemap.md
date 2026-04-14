@@ -62,6 +62,7 @@ Without `parents`, a flat treemap is drawn.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -95,7 +96,7 @@ const labels  = ["Electronics", "Phones", "Laptops", "Clothing", "Shirts", "Pant
 const parents = ["",            "Electronics","Electronics","","Clothing","Clothing"]
 const values  = [1, 400, 350, 1, 200, 150]
 
-const chart = sp.buildTreemap("Revenue by Category",
+const chart = sp.build_treemap("Revenue by Category",
 labels,
 {
     values: values,
@@ -107,7 +108,7 @@ const labels: string[] = ["Electronics", "Phones", "Laptops", "Clothing", "Shirt
 const parents: string[] = ["",            "Electronics","Electronics","","Clothing","Clothing"]
 const values: number[] = [1, 400, 350, 1, 200, 150]
 
-const chart = sp.buildTreemap("Revenue by Category",
+const chart = sp.build_treemap("Revenue by Category",
 labels,
 {
     values: values,

@@ -59,6 +59,7 @@ The `labels` and `parents` lists define a tree: each entry in `labels[i]` has
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -92,7 +93,7 @@ const labels  = ["Corp", "Sales", "Tech", "HR", "B2B", "B2C", "Frontend", "Backe
 const parents = ["",       "Corp", "Corp","Corp","Sales","Sales","Tech",    "Tech"]
 const values  = [1,        40,     50,    10,    25,     15,     30,        20]
 
-const chart = sp.buildSunburst("Headcount by Department",
+const chart = sp.build_sunburst("Headcount by Department",
 labels,
 parents,
 {
@@ -104,7 +105,7 @@ const labels: string[] = ["Corp", "Sales", "Tech", "HR", "B2B", "B2C", "Frontend
 const parents: string[] = ["",       "Corp", "Corp","Corp","Sales","Sales","Tech",    "Tech"]
 const values: number[] = [1,        40,     50,    10,    25,     15,     30,        20]
 
-const chart = sp.buildSunburst("Headcount by Department",
+const chart = sp.build_sunburst("Headcount by Department",
 labels,
 parents,
 {

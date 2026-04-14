@@ -64,6 +64,7 @@ For **multiple series**, use [`build_multiline_chart`](multiline.md).
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -111,11 +112,11 @@ const revenue = [1200.0, 1350.0, 1100.0, 1600.0, 1800.0, 2100.0,
            1950.0, 2300.0, 2000.0, 2500.0, 2200.0, 2800.0]
 
 const logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
-const hover = sp.buildHoverJson(months,
+const hover = sp.build_hover_json(months,
 [logo])
 
 const chart = (
-    sp.buildLineChart("Annual Revenue",
+    sp.build_line_chart("Annual Revenue",
 months,
 {
     values: revenue,
@@ -125,8 +126,8 @@ months,
     color_hex: 0x22d3ee,
     hover_json: hover
 })
-    .setBg(null)
-    .showGrid()
+    .set_bg(null)
+    .show_grid()
 )</code></pre></div>
 <div id="line-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
@@ -136,11 +137,11 @@ const revenue: number[] = [1200.0, 1350.0, 1100.0, 1600.0, 1800.0, 2100.0,
            1950.0, 2300.0, 2000.0, 2500.0, 2200.0, 2800.0]
 
 const logo: string = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
-const hover = sp.buildHoverJson(months,
+const hover = sp.build_hover_json(months,
 [logo])
 
 const chart = (
-    sp.buildLineChart("Annual Revenue",
+    sp.build_line_chart("Annual Revenue",
 months,
 {
     values: revenue,
@@ -150,8 +151,8 @@ months,
     color_hex: 0x22d3ee,
     hover_json: hover
 })
-    .setBg(null)
-    .showGrid()
+    .set_bg(null)
+    .show_grid()
 )</code></pre></div>
 </div>
 

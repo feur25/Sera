@@ -65,6 +65,7 @@ When multiple series are provided via a flat `values` list with matching `series
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -97,7 +98,7 @@ import random
 
 const values = [random.gauss(50, 10) for _ in range(500)]
 
-const chart = sp.buildKdeChart("Score Distribution",
+const chart = sp.build_kde_chart("Score Distribution",
 {
     values: values,
     x_label: "Score",
@@ -109,7 +110,7 @@ import random
 
 const values: number[] = [random.gauss(50, 10) for _ in range(500)]
 
-const chart = sp.buildKdeChart("Score Distribution",
+const chart = sp.build_kde_chart("Score Distribution",
 {
     values: values,
     x_label: "Score",

@@ -53,6 +53,7 @@ sp.build_violin3d_chart(
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -87,7 +88,7 @@ const groups = ["Control", "Treatment A", "Treatment B"]
 const means  = [50, 65, 72]
 const values = [v for m in means for v in [random.gauss(m, 8) for _ in range(80)]]
 
-const chart = sp.buildViolin3dChart("Trial Results",
+const chart = sp.build_violin3d_chart("Trial Results",
 {
     categories: groups,
     values: values
@@ -99,7 +100,7 @@ const groups: string[] = ["Control", "Treatment A", "Treatment B"]
 const means: number[] = [50, 65, 72]
 const values: number[] = [v for m in means for v in [random.gauss(m, 8) for _ in range(80)]]
 
-const chart = sp.buildViolin3dChart("Trial Results",
+const chart = sp.build_violin3d_chart("Trial Results",
 {
     categories: groups,
     values: values

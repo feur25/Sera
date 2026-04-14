@@ -65,6 +65,7 @@ Horizontal bar chart. Best for long category labels or ranking comparisons.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -94,7 +95,7 @@ chart = sp.build_hbar(
 )</code></pre></div>
 <div id="hbar-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildHbar("Top Countries by GDP",
+const chart = sp.build_hbar("Top Countries by GDP",
 ["USA", "China", "Germany", "Japan", "India", "UK", "France", "Brazil", "Canada", "Korea"],
 {
     values: [25.0, 18.0, 4.1, 4.2, 3.7, 3.1, 2.9, 2.1, 2.0, 1.7],
@@ -106,7 +107,7 @@ const chart = sp.buildHbar("Top Countries by GDP",
 })</code></pre></div>
 <div id="hbar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildHbar("Top Countries by GDP",
+const chart = sp.build_hbar("Top Countries by GDP",
 ["USA", "China", "Germany", "Japan", "India", "UK", "France", "Brazil", "Canada", "Korea"],
 {
     values: [25.0, 18.0, 4.1, 4.2, 3.7, 3.1, 2.9, 2.1, 2.0, 1.7],

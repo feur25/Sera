@@ -57,6 +57,7 @@ Dumbbell chart in 3D — connects start and end spheres with a 3D tube.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -82,7 +83,7 @@ chart = sp.build_dumbbell3d_chart(
 )</code></pre></div>
 <div id="dumbbell3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildDumbbell3dChart("Before vs After 3D",
+const chart = sp.build_dumbbell3d_chart("Before vs After 3D",
 ["Group A", "Group B", "Group C"],
 [40, 55, 70],
 {
@@ -90,7 +91,7 @@ const chart = sp.buildDumbbell3dChart("Before vs After 3D",
 })</code></pre></div>
 <div id="dumbbell3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildDumbbell3dChart("Before vs After 3D",
+const chart = sp.build_dumbbell3d_chart("Before vs After 3D",
 ["Group A", "Group B", "Group C"],
 [40, 55, 70],
 {

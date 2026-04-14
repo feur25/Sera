@@ -58,6 +58,7 @@ Useful for profiling entities across multiple dimensions simultaneously.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -84,7 +85,7 @@ chart = sp.build_radar_chart(
 )</code></pre></div>
 <div id="radar-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildRadarChart("Player Stats Comparison",
+const chart = sp.build_radar_chart("Player Stats Comparison",
 ["Speed", "Strength", "Defense", "Dribbling", "Shooting", "Passing"],
 {
     series_values: [[85, 70, 65, 90, 88, 82], [72, 88, 79, 68, 75, 85]],
@@ -93,7 +94,7 @@ const chart = sp.buildRadarChart("Player Stats Comparison",
 })</code></pre></div>
 <div id="radar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildRadarChart("Player Stats Comparison",
+const chart = sp.build_radar_chart("Player Stats Comparison",
 ["Speed", "Strength", "Defense", "Dribbling", "Shooting", "Passing"],
 {
     series_values: [[85, 70, 65, 90, 88, 82], [72, 88, 79, 68, 75, 85]],

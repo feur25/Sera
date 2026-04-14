@@ -88,6 +88,7 @@ The gap widens with dataset size because SeraPlot uses a KD-tree with SIMD accel
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -130,7 +131,7 @@ def make_blob(cx, cy, {n: 150, s: 0.5}):
 const pts  = make_blob(0, 0) + make_blob(5, 5) + make_blob(10, 0)
 x, y = zip(*pts)
 
-const chart = sp.buildDbscanChart("DBSCAN Clustering",
+const chart = sp.build_dbscan_chart("DBSCAN Clustering",
 list(x),
 {
     y_values: list(y),
@@ -148,7 +149,7 @@ def make_blob(cx, cy, {n: 150, s: 0.5}):
 const pts  = make_blob(0, 0) + make_blob(5, 5) + make_blob(10, 0)
 x, y = zip(*pts)
 
-const chart = sp.buildDbscanChart("DBSCAN Clustering",
+const chart = sp.build_dbscan_chart("DBSCAN Clustering",
 list(x),
 {
     y_values: list(y),

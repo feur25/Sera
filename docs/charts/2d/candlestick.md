@@ -67,6 +67,7 @@ Green candles indicate a price rise (close > open), red candles a fall.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -95,7 +96,7 @@ chart = sp.build_candlestick(
 )</code></pre></div>
 <div id="candlestick-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildCandlestick("AAPL - January 2024",
+const chart = sp.build_candlestick("AAPL - January 2024",
 ["Jan 2", "Jan 3", "Jan 4", "Jan 5", "Jan 8", "Jan 9", "Jan 10"],
 [185.0, 184.2, 182.5, 181.0, 183.5, 185.0, 186.0],
 [186.5, 185.0, 183.8, 183.5, 186.0, 187.2, 188.0],
@@ -106,7 +107,7 @@ const chart = sp.buildCandlestick("AAPL - January 2024",
 })</code></pre></div>
 <div id="candlestick-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildCandlestick("AAPL - January 2024",
+const chart = sp.build_candlestick("AAPL - January 2024",
 ["Jan 2", "Jan 3", "Jan 4", "Jan 5", "Jan 8", "Jan 9", "Jan 10"],
 [185.0, 184.2, 182.5, 181.0, 183.5, 185.0, 186.0],
 [186.5, 185.0, 183.8, 183.5, 186.0, 187.2, 188.0],

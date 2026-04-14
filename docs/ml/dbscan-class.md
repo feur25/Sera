@@ -68,6 +68,7 @@ Equivalent to calling `fit(x, y)` then returning `labels_`.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -111,7 +112,7 @@ const xy = [[xi, yi] for xi, yi in zip(x, y)]
 const model = DBSCAN({eps: 0.5, min_samples: 2})
 const labels = model.fit_predict(xy)
 
-const chart = sp.buildScatterChart(f"DBSCAN ({model.n_clusters_} clusters)",
+const chart = sp.build_scatter_chart(f"DBSCAN ({model.n_clusters_} clusters)",
 x,
 {
     y_values: y,
@@ -128,7 +129,7 @@ const xy: number[] = [[xi, yi] for xi, yi in zip(x, y)]
 const model = DBSCAN({eps: 0.5, min_samples: 2})
 const labels = model.fit_predict(xy)
 
-const chart = sp.buildScatterChart(f"DBSCAN ({model.n_clusters_} clusters)",
+const chart = sp.build_scatter_chart(f"DBSCAN ({model.n_clusters_} clusters)",
 x,
 {
     y_values: y,

@@ -54,6 +54,7 @@ sp.build_sunburst3d_chart(
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -85,7 +86,7 @@ const labels  = ["Root", "A", "B", "A1", "A2", "B1"]
 const parents = ["", "Root", "Root", "A", "A", "B"]
 const values  = [1, 40, 60, 25, 15, 60]
 
-const chart = sp.buildSunburst3dChart("Org Chart 3D",
+const chart = sp.build_sunburst3d_chart("Org Chart 3D",
 labels,
 parents,
 {
@@ -97,7 +98,7 @@ const labels: string[] = ["Root", "A", "B", "A1", "A2", "B1"]
 const parents: string[] = ["", "Root", "Root", "A", "A", "B"]
 const values: number[] = [1, 40, 60, 25, 15, 60]
 
-const chart = sp.buildSunburst3dChart("Org Chart 3D",
+const chart = sp.build_sunburst3d_chart("Org Chart 3D",
 labels,
 parents,
 {

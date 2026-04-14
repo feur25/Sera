@@ -67,6 +67,7 @@ Filled area chart, optionally stacked. Ideal for showing cumulative part-to-whol
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -98,7 +99,7 @@ chart = sp.build_area_chart(
 )</code></pre></div>
 <div id="area-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildAreaChart("Revenue Stacked by Region",
+const chart = sp.build_area_chart("Revenue Stacked by Region",
 ["Q1", "Q2", "Q3", "Q4"],
 {
     series_values: [[12000, 14000, 13500, 16000], [8000, 9200, 10000, 11500], [4500, 5000, 5200, 6000]],
@@ -108,7 +109,7 @@ const chart = sp.buildAreaChart("Revenue Stacked by Region",
 })</code></pre></div>
 <div id="area-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildAreaChart("Revenue Stacked by Region",
+const chart = sp.build_area_chart("Revenue Stacked by Region",
 ["Q1", "Q2", "Q3", "Q4"],
 {
     series_values: [[12000, 14000, 13500, 16000], [8000, 9200, 10000, 11500], [4500, 5000, 5200, 6000]],

@@ -60,6 +60,7 @@ The mirrored shape shows the full probability distribution of each group.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -100,7 +101,7 @@ const roles = {
     "Analyst":  [random.gauss(75000, 12000) for _ in range(60)],
 }
 
-const chart = sp.buildViolin("Salary Distribution by Role",
+const chart = sp.build_violin("Salary Distribution by Role",
 list(roles.keys()),
 {
     values: [v for g in roles.values() for v in g],
@@ -116,7 +117,7 @@ const roles = {
     "Analyst":  [random.gauss(75000, 12000) for _ in range(60)],
 }
 
-const chart = sp.buildViolin("Salary Distribution by Role",
+const chart = sp.build_violin("Salary Distribution by Role",
 list(roles.keys()),
 {
     values: [v for g in roles.values() for v in g],

@@ -70,6 +70,7 @@ Each inner list in `series_values` must have the same length as `x_labels`.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -105,7 +106,7 @@ chart = sp.build_multiline_chart(
 
 const months = ["Jan","Feb","Mar","Apr","May","Jun"]
 
-const chart = sp.buildMultilineChart("Monthly Revenue by Product",
+const chart = sp.build_multiline_chart("Monthly Revenue by Product",
 months,
 {
     series_values: [[12200, 13400, 15100, 14800, 16200, 17500], [8100, 9200, 9800, 10200, 11000, 12400], [3200, 3600, 4100, 4500, 4800, 5200]],
@@ -117,7 +118,7 @@ months,
 
 const months: string[] = ["Jan","Feb","Mar","Apr","May","Jun"]
 
-const chart = sp.buildMultilineChart("Monthly Revenue by Product",
+const chart = sp.build_multiline_chart("Monthly Revenue by Product",
 months,
 {
     series_values: [[12200, 13400, 15100, 14800, 16200, 17500], [8100, 9200, 9800, 10200, 11000, 12400], [3200, 3600, 4100, 4500, 4800, 5200]],

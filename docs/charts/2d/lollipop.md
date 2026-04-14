@@ -67,6 +67,7 @@ Reduces ink-to-data ratio compared to filled bars.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -95,7 +96,7 @@ chart = sp.build_lollipop_chart(
 )</code></pre></div>
 <div id="lollipop-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildLollipopChart("Top Countries by GDP per Capita",
+const chart = sp.build_lollipop_chart("Top Countries by GDP per Capita",
 ["Luxembourg", "Switzerland", "USA", "Germany", "France"],
 {
     values: [135605, 92434, 76398, 50802, 42409],
@@ -106,7 +107,7 @@ const chart = sp.buildLollipopChart("Top Countries by GDP per Capita",
 })</code></pre></div>
 <div id="lollipop-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildLollipopChart("Top Countries by GDP per Capita",
+const chart = sp.build_lollipop_chart("Top Countries by GDP per Capita",
 ["Luxembourg", "Switzerland", "USA", "Germany", "France"],
 {
     values: [135605, 92434, 76398, 50802, 42409],

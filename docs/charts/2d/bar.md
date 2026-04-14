@@ -78,6 +78,7 @@ Affiche un graphique en barres vertical ou horizontal.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -120,11 +121,11 @@ const labels = ["Jan", "Feb", "Mar", "Apr", "May"]
 const values = [1200.0, 1850.0, 2100.0, 1750.0, 2400.0]
 
 const logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
-const hover = sp.buildHoverJson(labels,
+const hover = sp.build_hover_json(labels,
 [logo])
 
 const chart = (
-    sp.buildBarChart("Monthly Revenue",
+    sp.build_bar_chart("Monthly Revenue",
 labels,
 {
     values: values,
@@ -133,8 +134,8 @@ labels,
     gridlines: true,
     hover_json: hover
 })
-    .setBg(null)
-    .showLabels(position="top")
+    .set_bg(null)
+    .show_labels(position="top")
 )</code></pre></div>
 <div id="bar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
@@ -142,11 +143,11 @@ const labels: string[] = ["Jan", "Feb", "Mar", "Apr", "May"]
 const values: number[] = [1200.0, 1850.0, 2100.0, 1750.0, 2400.0]
 
 const logo: string = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
-const hover = sp.buildHoverJson(labels,
+const hover = sp.build_hover_json(labels,
 [logo])
 
 const chart = (
-    sp.buildBarChart("Monthly Revenue",
+    sp.build_bar_chart("Monthly Revenue",
 labels,
 {
     values: values,
@@ -155,8 +156,8 @@ labels,
     gridlines: true,
     hover_json: hover
 })
-    .setBg(null)
-    .showLabels(position="top")
+    .set_bg(null)
+    .show_labels(position="top")
 )</code></pre></div>
 </div>
 

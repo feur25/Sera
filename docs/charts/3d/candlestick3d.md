@@ -60,6 +60,7 @@ OHLC candlestick chart rendered in 3D WebGL. Candles are extruded as 3D prisms.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -87,7 +88,7 @@ chart = sp.build_candlestick3d_chart(
 )</code></pre></div>
 <div id="candlestick3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildCandlestick3dChart("BTC/USD 3D",
+const chart = sp.build_candlestick3d_chart("BTC/USD 3D",
 ["Mon", "Tue", "Wed", "Thu", "Fri"],
 [42000, 43500, 41800, 44000, 45200],
 [44000, 44200, 43500, 46000, 47000],
@@ -97,7 +98,7 @@ const chart = sp.buildCandlestick3dChart("BTC/USD 3D",
 })</code></pre></div>
 <div id="candlestick3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildCandlestick3dChart("BTC/USD 3D",
+const chart = sp.build_candlestick3d_chart("BTC/USD 3D",
 ["Mon", "Tue", "Wed", "Thu", "Fri"],
 [42000, 43500, 41800, 44000, 45200],
 [44000, 44200, 43500, 46000, 47000],

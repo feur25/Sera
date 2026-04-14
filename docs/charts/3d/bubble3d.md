@@ -61,6 +61,7 @@ sp.build_bubble3d_chart(
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -92,7 +93,7 @@ chart = sp.build_bubble3d_chart(
 import random
 
 const n = 200
-const chart = sp.buildBubble3dChart("4D Dataset",
+const chart = sp.build_bubble3d_chart("4D Dataset",
 [random.gauss(0,1) for _ in range(n)],
 [random.gauss(0,1) for _ in range(n)],
 [random.gauss(0,1) for _ in range(n)],
@@ -104,7 +105,7 @@ const chart = sp.buildBubble3dChart("4D Dataset",
 import random
 
 const n: number = 200
-const chart = sp.buildBubble3dChart("4D Dataset",
+const chart = sp.build_bubble3d_chart("4D Dataset",
 [random.gauss(0,1) for _ in range(n)],
 [random.gauss(0,1) for _ in range(n)],
 [random.gauss(0,1) for _ in range(n)],

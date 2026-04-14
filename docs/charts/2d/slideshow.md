@@ -52,6 +52,7 @@ All charts are pre-rendered; switching slides requires no server round-trip.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -79,46 +80,46 @@ deck = sp.build_slideshow(slides, title="Q1 Board Deck")</code></pre></div>
 <div id="slideshow-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
 const slides = [
-    sp.buildBarChart("Q1 Revenue",
+    sp.build_bar_chart("Q1 Revenue",
 ["A", "B", "C"],
 {
     values: [120, 80, 95]
 }),
-    sp.buildLineChart("Growth Trend",
+    sp.build_line_chart("Growth Trend",
 ["Jan", "Feb", "Mar"],
 {
     values: [10, 14, 18]
 }),
-    sp.buildPieChart("Market Share",
+    sp.build_pie_chart("Market Share",
 ["Us", "Them"],
 {
     values: [55, 45]
 }),
 ]
 
-const deck = sp.buildSlideshow(slides,
+const deck = sp.build_slideshow(slides,
 "Q1 Board Deck")</code></pre></div>
 <div id="slideshow-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
 const slides: number[] = [
-    sp.buildBarChart("Q1 Revenue",
+    sp.build_bar_chart("Q1 Revenue",
 ["A", "B", "C"],
 {
     values: [120, 80, 95]
 }),
-    sp.buildLineChart("Growth Trend",
+    sp.build_line_chart("Growth Trend",
 ["Jan", "Feb", "Mar"],
 {
     values: [10, 14, 18]
 }),
-    sp.buildPieChart("Market Share",
+    sp.build_pie_chart("Market Share",
 ["Us", "Them"],
 {
     values: [55, 45]
 }),
 ]
 
-const deck = sp.buildSlideshow(slides,
+const deck = sp.build_slideshow(slides,
 "Q1 Board Deck")</code></pre></div>
 </div>
 

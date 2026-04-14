@@ -67,6 +67,7 @@ Clustering DBSCAN 3D — rendu via WebGL GPU pour des performances maximales.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -108,7 +109,7 @@ def blob3d(cx, cy, cz, {n: 200, s: 0.4}):
 const pts = blob3d(0,0,0) + blob3d(5,5,5) + blob3d(10,0,5)
 x, y, z = zip(*pts)
 
-const chart = sp.buildDbscanChart3d("3D DBSCAN",
+const chart = sp.build_dbscan_chart_3d("3D DBSCAN",
 list(x),
 list(y),
 {
@@ -126,7 +127,7 @@ def blob3d(cx, cy, cz, {n: 200, s: 0.4}):
 const pts = blob3d(0,0,0) + blob3d(5,5,5) + blob3d(10,0,5)
 x, y, z = zip(*pts)
 
-const chart = sp.buildDbscanChart3d("3D DBSCAN",
+const chart = sp.build_dbscan_chart_3d("3D DBSCAN",
 list(x),
 list(y),
 {

@@ -65,6 +65,7 @@ Excellent pour comparer les formes de distribution entre de nombreux groupes.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -103,7 +104,7 @@ const means  = [5, 15, 28, 16]
 
 const values = [v for m in means for v in [random.gauss(m, 4) for _ in range(100)]]
 
-const chart = sp.buildRidgelineChart("Monthly Temperature Distribution",
+const chart = sp.build_ridgeline_chart("Monthly Temperature Distribution",
 months,
 {
     values: values,
@@ -118,7 +119,7 @@ const means: number[] = [5, 15, 28, 16]
 
 const values: number[] = [v for m in means for v in [random.gauss(m, 4) for _ in range(100)]]
 
-const chart = sp.buildRidgelineChart("Monthly Temperature Distribution",
+const chart = sp.build_ridgeline_chart("Monthly Temperature Distribution",
 months,
 {
     values: values,

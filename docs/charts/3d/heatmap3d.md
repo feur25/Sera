@@ -58,6 +58,7 @@ Higher values produce taller columns.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -91,7 +92,7 @@ const features = ["A", "B", "C", "D"]
 const n = len(features)
 const matrix = [[abs(i - j) * 0.25 for j in range(n)] for i in range(n)]
 
-const chart = sp.buildHeatmap3dChart("Distance Matrix 3D",
+const chart = sp.build_heatmap3d_chart("Distance Matrix 3D",
 features,
 features,
 {
@@ -103,7 +104,7 @@ const features: string[] = ["A", "B", "C", "D"]
 const n = len(features)
 const matrix: number[] = [[abs(i - j) * 0.25 for j in range(n)] for i in range(n)]
 
-const chart = sp.buildHeatmap3dChart("Distance Matrix 3D",
+const chart = sp.build_heatmap3d_chart("Distance Matrix 3D",
 features,
 features,
 {

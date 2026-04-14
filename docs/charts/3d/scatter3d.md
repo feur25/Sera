@@ -76,6 +76,7 @@ Tested at 10 million points at 60 fps on a mid-range GPU.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -115,7 +116,7 @@ const y = [random.gauss(0, 1) for _ in range(n)]
 const z = [random.gauss(0, 1) for _ in range(n)]
 const groups = [random.choice(["A", "B", "C"]) for _ in range(n)]
 
-const chart = sp.buildScatter3dChart("3D Point Cloud",
+const chart = sp.build_scatter3d_chart("3D Point Cloud",
 x,
 y,
 {
@@ -134,7 +135,7 @@ const y: number[] = [random.gauss(0, 1) for _ in range(n)]
 const z: number[] = [random.gauss(0, 1) for _ in range(n)]
 const groups: string[] = [random.choice(["A", "B", "C"]) for _ in range(n)]
 
-const chart = sp.buildScatter3dChart("3D Point Cloud",
+const chart = sp.build_scatter3d_chart("3D Point Cloud",
 x,
 y,
 {

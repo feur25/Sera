@@ -62,6 +62,7 @@ Parallel vertical axes are connected by slope lines — rising or falling.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -90,7 +91,7 @@ chart = sp.build_slope(
 )</code></pre></div>
 <div id="slope-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildSlope("HDI Change 2000 to 2023",
+const chart = sp.build_slope("HDI Change 2000 to 2023",
 ["Germany", "Japan", "Brazil", "India", "Nigeria"],
 [0.926, 0.909, 0.694, 0.493, 0.452],
 {
@@ -101,7 +102,7 @@ const chart = sp.buildSlope("HDI Change 2000 to 2023",
 })</code></pre></div>
 <div id="slope-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildSlope("HDI Change 2000 to 2023",
+const chart = sp.build_slope("HDI Change 2000 to 2023",
 ["Germany", "Japan", "Brazil", "India", "Nigeria"],
 [0.926, 0.909, 0.694, 0.493, 0.452],
 {

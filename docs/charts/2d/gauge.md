@@ -60,6 +60,7 @@ Semicircular gauge (speedometer) chart. Colored arcs can indicate thresholds (da
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -86,7 +87,7 @@ chart = sp.build_gauge(
 )</code></pre></div>
 <div id="gauge-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildGauge("CPU Usage",
+const chart = sp.build_gauge("CPU Usage",
 {
     value: 73.5,
     min_val: 0,
@@ -95,7 +96,7 @@ const chart = sp.buildGauge("CPU Usage",
 })</code></pre></div>
 <div id="gauge-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildGauge("CPU Usage",
+const chart = sp.build_gauge("CPU Usage",
 {
     value: 73.5,
     min_val: 0,

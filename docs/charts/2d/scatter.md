@@ -78,6 +78,7 @@ sp.build_scatter_chart(
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -121,7 +122,7 @@ const y_a = [xi * 1.5 + rng.normal() for xi in x_a]
 const x_b = rng.normal(3, 1, 200).tolist()
 const y_b = [xi * 0.5 + rng.normal() for xi in x_b]
 
-const chart = sp.buildScatterChart("Two Populations",
+const chart = sp.build_scatter_chart("Two Populations",
 x_a + x_b,
 {
     y_values: y_a + y_b,
@@ -140,7 +141,7 @@ const y_a: number[] = [xi * 1.5 + rng.normal() for xi in x_a]
 const x_b = rng.normal(3, 1, 200).tolist()
 const y_b: number[] = [xi * 0.5 + rng.normal() for xi in x_b]
 
-const chart = sp.buildScatterChart("Two Populations",
+const chart = sp.build_scatter_chart("Two Populations",
 x_a + x_b,
 {
     y_values: y_a + y_b,

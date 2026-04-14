@@ -57,6 +57,7 @@ Bars are stacked and centered; each bar's width is proportional to its value.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -83,7 +84,7 @@ chart = sp.build_funnel(
 )</code></pre></div>
 <div id="funnel-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildFunnel("Sales Pipeline Q1",
+const chart = sp.build_funnel("Sales Pipeline Q1",
 ["Leads", "Qualified", "Proposal", "Negotiation", "Closed"],
 {
     values: [5000, 2800, 1200, 600, 250],
@@ -92,7 +93,7 @@ const chart = sp.buildFunnel("Sales Pipeline Q1",
 })</code></pre></div>
 <div id="funnel-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildFunnel("Sales Pipeline Q1",
+const chart = sp.build_funnel("Sales Pipeline Q1",
 ["Leads", "Qualified", "Proposal", "Negotiation", "Closed"],
 {
     values: [5000, 2800, 1200, 600, 250],

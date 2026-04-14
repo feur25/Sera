@@ -54,6 +54,7 @@ sp.build_pie3d_chart(
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -79,14 +80,14 @@ chart = sp.build_pie3d_chart(
 </code></pre></div>
 <div id="pie3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildPie3dChart("Market Share 3D",
+const chart = sp.build_pie3d_chart("Market Share 3D",
 ["Chrome", "Safari", "Firefox", "Edge"],
 {
     values: [65, 19, 4, 4]
 })</code></pre></div>
 <div id="pie3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildPie3dChart("Market Share 3D",
+const chart = sp.build_pie3d_chart("Market Share 3D",
 ["Chrome", "Safari", "Firefox", "Edge"],
 {
     values: [65, 19, 4, 4]

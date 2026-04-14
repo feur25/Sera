@@ -63,6 +63,7 @@ The `inner_radius_ratio` controls what fraction of the radius is the hole (0.0 =
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -89,7 +90,7 @@ chart = sp.build_donut_chart(
 )</code></pre></div>
 <div id="donut-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildDonutChart("Budget Allocation",
+const chart = sp.build_donut_chart("Budget Allocation",
 ["R&amp;D", "Marketing", "Operations", "Support"],
 {
     values: [35, 25, 30, 10],
@@ -98,7 +99,7 @@ const chart = sp.buildDonutChart("Budget Allocation",
 })</code></pre></div>
 <div id="donut-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildDonutChart("Budget Allocation",
+const chart = sp.build_donut_chart("Budget Allocation",
 ["R&amp;D", "Marketing", "Operations", "Support"],
 {
     values: [35, 25, 30, 10],

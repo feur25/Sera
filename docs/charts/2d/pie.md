@@ -60,6 +60,7 @@ Standard pie chart with optional percentage labels.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -86,7 +87,7 @@ chart = sp.build_pie_chart(
 )</code></pre></div>
 <div id="pie-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildPieChart("Revenue by Region",
+const chart = sp.build_pie_chart("Revenue by Region",
 ["North", "South", "East", "West"],
 {
     values: [30, 25, 20, 25],
@@ -95,7 +96,7 @@ const chart = sp.buildPieChart("Revenue by Region",
 })</code></pre></div>
 <div id="pie-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildPieChart("Revenue by Region",
+const chart = sp.build_pie_chart("Revenue by Region",
 ["North", "South", "East", "West"],
 {
     values: [30, 25, 20, 25],

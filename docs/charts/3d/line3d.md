@@ -65,6 +65,7 @@ Useful for trajectories, time-series in 3D space, and parametric curves.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -101,7 +102,7 @@ const x = [math.cos(v) for v in t]
 const y = [math.sin(v) for v in t]
 const z = t
 
-const chart = sp.buildLine3dChart("Helix",
+const chart = sp.build_line3d_chart("Helix",
 x,
 y,
 {
@@ -118,7 +119,7 @@ const x: number[] = [math.cos(v) for v in t]
 const y: number[] = [math.sin(v) for v in t]
 const z = t
 
-const chart = sp.buildLine3dChart("Helix",
+const chart = sp.build_line3d_chart("Helix",
 x,
 y,
 {

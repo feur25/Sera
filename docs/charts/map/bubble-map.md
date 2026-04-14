@@ -66,6 +66,7 @@ Use `iso_codes` for country-level data (the library resolves centroids automatic
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -90,14 +91,14 @@ chart = sp.build_bubble_map(
 )</code></pre></div>
 <div id="bubble-map-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildBubbleMap("GDP by Country",
+const chart = sp.build_bubble_map("GDP by Country",
 ["USA", "CHN", "DEU", "JPN", "FRA"],
 {
     values: [25500, 17700, 4400, 4200, 3100]
 })</code></pre></div>
 <div id="bubble-map-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildBubbleMap("GDP by Country",
+const chart = sp.build_bubble_map("GDP by Country",
 ["USA", "CHN", "DEU", "JPN", "FRA"],
 {
     values: [25500, 17700, 4400, 4200, 3100]

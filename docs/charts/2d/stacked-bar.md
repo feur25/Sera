@@ -58,6 +58,7 @@ Same flat `series_values` layout as `build_grouped_bar`.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -99,7 +100,7 @@ const costs = [
     420.0, 160.0, 90.0,
 ]
 
-const chart = sp.buildStackedBar("Monthly Costs",
+const chart = sp.build_stacked_bar("Monthly Costs",
 months,
 {
     series_values: costs,
@@ -116,7 +117,7 @@ const costs: number[] = [
     420.0, 160.0, 90.0,
 ]
 
-const chart = sp.buildStackedBar("Monthly Costs",
+const chart = sp.build_stacked_bar("Monthly Costs",
 months,
 {
     series_values: costs,

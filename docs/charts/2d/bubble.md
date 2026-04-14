@@ -66,6 +66,7 @@ Bubble chart: scatter plot where each point's area encodes a third dimension (`s
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -104,7 +105,7 @@ const gdp       = [65000, 12500, 48000, 2100, 8800]
 const life_exp  = [78.5, 77.1, 81.3, 69.7, 75.2]
 const population= [331, 1412, 83, 1380, 212]
 
-const chart = sp.buildBubble("GDP vs Life Expectancy (2023)",
+const chart = sp.build_bubble("GDP vs Life Expectancy (2023)",
 gdp,
 life_exp,
 {
@@ -120,7 +121,7 @@ const gdp: number[] = [65000, 12500, 48000, 2100, 8800]
 const life_exp: number[] = [78.5, 77.1, 81.3, 69.7, 75.2]
 const population= [331, 1412, 83, 1380, 212]
 
-const chart = sp.buildBubble("GDP vs Life Expectancy (2023)",
+const chart = sp.build_bubble("GDP vs Life Expectancy (2023)",
 gdp,
 life_exp,
 {

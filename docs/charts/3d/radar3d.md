@@ -54,6 +54,7 @@ sp.build_radar3d_chart(
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -82,7 +83,7 @@ chart = sp.build_radar3d_chart(
 )</code></pre></div>
 <div id="radar3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 
-const chart = sp.buildRadar3dChart("Skills Comparison 3D",
+const chart = sp.build_radar3d_chart("Skills Comparison 3D",
 ["Python", "Rust", "SQL", "ML", "DevOps"],
 {
     series_values: [[9, 7, 8, 8, 6], [5, 10, 6, 4, 9]],
@@ -90,7 +91,7 @@ const chart = sp.buildRadar3dChart("Skills Comparison 3D",
 })</code></pre></div>
 <div id="radar3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
-const chart = sp.buildRadar3dChart("Skills Comparison 3D",
+const chart = sp.build_radar3d_chart("Skills Comparison 3D",
 ["Python", "Rust", "SQL", "ML", "DevOps"],
 {
     series_values: [[9, 7, 8, 8, 6], [5, 10, 6, 4, 9]],

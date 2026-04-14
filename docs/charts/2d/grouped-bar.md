@@ -59,6 +59,7 @@ Grouped bar chart for comparing multiple series across categories.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -111,11 +112,11 @@ const values = [
 ]
 
 const logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
-const hover = sp.buildHoverJson(categories * 3,
+const hover = sp.build_hover_json(categories * 3,
 [logo])
 
 const chart = (
-    sp.buildGroupedBar("Quarterly Sales by Product",
+    sp.build_grouped_bar("Quarterly Sales by Product",
 categories,
 {
     series_values: values,
@@ -125,7 +126,7 @@ categories,
     legend_position: "bottom",
     hover_json: hover
 })
-    .setBg(null)
+    .set_bg(null)
 )</code></pre></div>
 <div id="grouped-bar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 
@@ -138,11 +139,11 @@ const values: number[] = [
 ]
 
 const logo: string = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
-const hover = sp.buildHoverJson(categories * 3,
+const hover = sp.build_hover_json(categories * 3,
 [logo])
 
 const chart = (
-    sp.buildGroupedBar("Quarterly Sales by Product",
+    sp.build_grouped_bar("Quarterly Sales by Product",
 categories,
 {
     series_values: values,
@@ -152,7 +153,7 @@ categories,
     legend_position: "bottom",
     hover_json: hover
 })
-    .setBg(null)
+    .set_bg(null)
 )</code></pre></div>
 </div>
 

@@ -57,6 +57,7 @@ Overlaid histogram comparing two distributions side-by-side with transparency.
 
 
 
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
@@ -96,7 +97,7 @@ const rng = np.random.default_rng(42)
 const control = rng.normal(5.0, 1.0, 1000).tolist()
 const treatment = rng.normal(5.8, 1.2, 1000).tolist()
 
-const chart = sp.buildHistogramOverlay("Control vs Treatment",
+const chart = sp.build_histogram_overlay("Control vs Treatment",
 control,
 {
     overlay_values: treatment,
@@ -113,7 +114,7 @@ const rng = np.random.default_rng(42)
 const control = rng.normal(5.0, 1.0, 1000).tolist()
 const treatment = rng.normal(5.8, 1.2, 1000).tolist()
 
-const chart = sp.buildHistogramOverlay("Control vs Treatment",
+const chart = sp.build_histogram_overlay("Control vs Treatment",
 control,
 {
     overlay_values: treatment,
