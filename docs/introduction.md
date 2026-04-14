@@ -38,20 +38,15 @@ One function call. One self-contained HTML file. Zero config, zero dependencies,
 <div id="g1a" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 sp.build_bar_chart("Revenue by Product", labels, values).save("chart.html")</code></pre></div>
 <div id="g1b" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-python">import plotly.express as px
-
 fig = px.bar(x=labels, y=values, title="Revenue by Product")
 fig.update_layout(template="plotly_white")
 fig.write_html("chart.html")</code></pre></div>
 <div id="g1c" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-python">import matplotlib.pyplot as plt
-
 fig, ax = plt.subplots(figsize=(9, 5))
-
 ax.bar(labels, values, color="#6366f1")
 ax.set_title("Revenue by Product")
 ax.set_ylabel("Revenue")
-
 plt.tight_layout()
-
 plt.savefig("chart.png")</code></pre></div>
 </div>
 
