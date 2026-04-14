@@ -60,8 +60,26 @@ For **multiple series**, use [`build_multiline_chart`](multiline.md).
 
 ### Time series
 
-```python
-import seraplot as sp
+
+
+
+
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
+.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
+</script>
+<div class="sp-tabs" id="line">
+<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('line','line-py',this)">Python</button><button class="sp-tb" onclick="spTab('line','line-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('line','line-ts',this)">TypeScript</button></div>
+<div id="line-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 
 months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
@@ -84,8 +102,58 @@ chart = (
     )
     .set_bg(None)
     .show_grid()
-)
-```
+)</code></pre></div>
+<div id="line-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
+
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+const revenue = [1200.0, 1350.0, 1100.0, 1600.0, 1800.0, 2100.0,
+           1950.0, 2300.0, 2000.0, 2500.0, 2200.0, 2800.0]
+
+const logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
+const hover = sp.buildHoverJson(months,
+[logo])
+
+const chart = (
+    sp.buildLineChart("Annual Revenue",
+months,
+{
+    values: revenue,
+    x_label: "Month",
+    y_label: "Revenue (€)",
+    gridlines: true,
+    color_hex: 0x22d3ee,
+    hover_json: hover
+})
+    .setBg(null)
+    .showGrid()
+)</code></pre></div>
+<div id="line-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
+
+const months: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+const revenue: number[] = [1200.0, 1350.0, 1100.0, 1600.0, 1800.0, 2100.0,
+           1950.0, 2300.0, 2000.0, 2500.0, 2200.0, 2800.0]
+
+const logo: string = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
+const hover = sp.buildHoverJson(months,
+[logo])
+
+const chart = (
+    sp.buildLineChart("Annual Revenue",
+months,
+{
+    values: revenue,
+    x_label: "Month",
+    y_label: "Revenue (€)",
+    gridlines: true,
+    color_hex: 0x22d3ee,
+    hover_json: hover
+})
+    .setBg(null)
+    .showGrid()
+)</code></pre></div>
+</div>
 
 
 <details open>

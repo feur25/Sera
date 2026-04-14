@@ -55,8 +55,26 @@ Grouped bar chart for comparing multiple series across categories.
 
 ## Examples
 
-```python
-import seraplot as sp
+
+
+
+
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
+.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
+</script>
+<div class="sp-tabs" id="grouped-bar">
+<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('grouped-bar','grouped-bar-py',this)">Python</button><button class="sp-tb" onclick="spTab('grouped-bar','grouped-bar-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('grouped-bar','grouped-bar-ts',this)">TypeScript</button></div>
+<div id="grouped-bar-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 
 categories = ["Q1", "Q2", "Q3", "Q4"]
 values = [
@@ -81,8 +99,62 @@ chart = (
         hover_json=hover,
     )
     .set_bg(None)
-)
-```
+)</code></pre></div>
+<div id="grouped-bar-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
+
+const categories = ["Q1", "Q2", "Q3", "Q4"]
+const values = [
+    120.0, 90.0, 150.0,
+    130.0, 110.0, 140.0,
+    100.0, 95.0,  160.0,
+    140.0, 120.0, 175.0,
+]
+
+const logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
+const hover = sp.buildHoverJson(categories * 3,
+[logo])
+
+const chart = (
+    sp.buildGroupedBar("Quarterly Sales by Product",
+categories,
+{
+    series_values: values,
+    series_names: ["Product A", "Product B", "Product C"],
+    show_values: true,
+    gridlines: true,
+    legend_position: "bottom",
+    hover_json: hover
+})
+    .setBg(null)
+)</code></pre></div>
+<div id="grouped-bar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
+
+const categories: string[] = ["Q1", "Q2", "Q3", "Q4"]
+const values: number[] = [
+    120.0, 90.0, 150.0,
+    130.0, 110.0, 140.0,
+    100.0, 95.0,  160.0,
+    140.0, 120.0, 175.0,
+]
+
+const logo: string = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
+const hover = sp.buildHoverJson(categories * 3,
+[logo])
+
+const chart = (
+    sp.buildGroupedBar("Quarterly Sales by Product",
+categories,
+{
+    series_values: values,
+    series_names: ["Product A", "Product B", "Product C"],
+    show_values: true,
+    gridlines: true,
+    legend_position: "bottom",
+    hover_json: hover
+})
+    .setBg(null)
+)</code></pre></div>
+</div>
 
 
 <details open>

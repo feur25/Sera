@@ -63,8 +63,26 @@ Green candles indicate a price rise (close > open), red candles a fall.
 
 ### Stock price chart
 
-```python
-import seraplot as sp
+
+
+
+
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
+.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
+</script>
+<div class="sp-tabs" id="candlestick">
+<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('candlestick','candlestick-py',this)">Python</button><button class="sp-tb" onclick="spTab('candlestick','candlestick-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('candlestick','candlestick-ts',this)">TypeScript</button></div>
+<div id="candlestick-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 
 chart = sp.build_candlestick(
     "AAPL - January 2024",
@@ -74,8 +92,30 @@ chart = sp.build_candlestick(
     [183.5, 182.0, 180.5, 180.0, 183.0, 184.5, 185.5],
     [184.2, 182.5, 181.0, 183.5, 185.0, 186.0, 187.5],
     y_label="Price ($)",
-)
-```
+)</code></pre></div>
+<div id="candlestick-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
+
+const chart = sp.buildCandlestick("AAPL - January 2024",
+["Jan 2", "Jan 3", "Jan 4", "Jan 5", "Jan 8", "Jan 9", "Jan 10"],
+[185.0, 184.2, 182.5, 181.0, 183.5, 185.0, 186.0],
+[186.5, 185.0, 183.8, 183.5, 186.0, 187.2, 188.0],
+[183.5, 182.0, 180.5, 180.0, 183.0, 184.5, 185.5],
+[184.2, 182.5, 181.0, 183.5, 185.0, 186.0, 187.5],
+{
+    y_label: "Price ($)"
+})</code></pre></div>
+<div id="candlestick-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
+
+const chart = sp.buildCandlestick("AAPL - January 2024",
+["Jan 2", "Jan 3", "Jan 4", "Jan 5", "Jan 8", "Jan 9", "Jan 10"],
+[185.0, 184.2, 182.5, 181.0, 183.5, 185.0, 186.0],
+[186.5, 185.0, 183.8, 183.5, 186.0, 187.2, 188.0],
+[183.5, 182.0, 180.5, 180.0, 183.0, 184.5, 185.5],
+[184.2, 182.5, 181.0, 183.5, 185.0, 186.0, 187.5],
+{
+    y_label: "Price ($)"
+})</code></pre></div>
+</div>
 
 
 <details open>

@@ -85,8 +85,25 @@ The gap widens with dataset size because SeraPlot uses a KD-tree with SIMD accel
 
 ### Synthetic blobs
 
-```python
-import seraplot as sp
+
+
+
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
+.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
+</script>
+<div class="sp-tabs" id="dbscan">
+<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('dbscan','dbscan-py',this)">Python</button><button class="sp-tb" onclick="spTab('dbscan','dbscan-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('dbscan','dbscan-ts',this)">TypeScript</button></div>
+<div id="dbscan-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
 
 def make_blob(cx, cy, n=150, s=0.5):
@@ -103,8 +120,44 @@ chart = sp.build_dbscan_chart(
     min_samples=5,
     x_label="Feature 1",
     y_label="Feature 2",
-)
-```
+)</code></pre></div>
+<div id="dbscan-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
+import random
+
+def make_blob(cx, cy, {n: 150, s: 0.5}):
+    return [(cx + random.gauss(0, s), cy + random.gauss(0, s)) for _ in range(n)]
+
+const pts  = make_blob(0, 0) + make_blob(5, 5) + make_blob(10, 0)
+x, y = zip(*pts)
+
+const chart = sp.buildDbscanChart("DBSCAN Clustering",
+list(x),
+{
+    y_values: list(y),
+    eps: 1.0,
+    min_samples: 5,
+    x_label: "Feature 1",
+    y_label: "Feature 2"
+})</code></pre></div>
+<div id="dbscan-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
+import random
+
+def make_blob(cx, cy, {n: 150, s: 0.5}):
+    return [(cx + random.gauss(0, s), cy + random.gauss(0, s)) for _ in range(n)]
+
+const pts  = make_blob(0, 0) + make_blob(5, 5) + make_blob(10, 0)
+x, y = zip(*pts)
+
+const chart = sp.buildDbscanChart("DBSCAN Clustering",
+list(x),
+{
+    y_values: list(y),
+    eps: 1.0,
+    min_samples: 5,
+    x_label: "Feature 1",
+    y_label: "Feature 2"
+})</code></pre></div>
+</div>
 
 
 <details open>

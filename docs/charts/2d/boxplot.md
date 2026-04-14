@@ -59,8 +59,26 @@ Each box displays Q1, median, Q3, and IQR whiskers.
 
 ### Test scores by class
 
-```python
-import seraplot as sp
+
+
+
+
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
+.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
+</script>
+<div class="sp-tabs" id="boxplot">
+<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('boxplot','boxplot-py',this)">Python</button><button class="sp-tb" onclick="spTab('boxplot','boxplot-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('boxplot','boxplot-ts',this)">TypeScript</button></div>
+<div id="boxplot-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
 
 n = 50
@@ -79,8 +97,48 @@ chart = sp.build_boxplot(
     values=values,
     y_label="Score",
     gridlines=True,
-)
-```
+)</code></pre></div>
+<div id="boxplot-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
+import random
+
+const n = 50
+const groups = {
+    "Class A": [random.gauss(72, 10) for _ in range(n)],
+    "Class B": [random.gauss(68, 15) for _ in range(n)],
+    "Class C": [random.gauss(80, 8)  for _ in range(n)],
+}
+
+const labels = list(groups.keys())
+const values = [v for g in groups.values() for v in g]
+
+const chart = sp.buildBoxplot("Test Score Distribution by Class",
+labels,
+{
+    values: values,
+    y_label: "Score",
+    gridlines: true
+})</code></pre></div>
+<div id="boxplot-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
+import random
+
+const n: number = 50
+const groups = {
+    "Class A": [random.gauss(72, 10) for _ in range(n)],
+    "Class B": [random.gauss(68, 15) for _ in range(n)],
+    "Class C": [random.gauss(80, 8)  for _ in range(n)],
+}
+
+const labels = list(groups.keys())
+const values: number[] = [v for g in groups.values() for v in g]
+
+const chart = sp.buildBoxplot("Test Score Distribution by Class",
+labels,
+{
+    values: values,
+    y_label: "Score",
+    gridlines: true
+})</code></pre></div>
+</div>
 
 
 <details open>

@@ -8,6 +8,8 @@ pub mod unified_config;
 pub mod unified_builder;
 pub mod export_builder;
 pub mod python;
+#[cfg(feature = "js")]
+pub mod js;
 
 pub use fast_render::*;
 pub use utils::*;

@@ -1,6 +1,7 @@
 ﻿pub mod core;
 pub mod data;
 pub mod plot;
+#[cfg(any(feature = "python", feature = "gui"))]
 pub mod viewer;
 pub mod bindings;
 pub mod wiki;
@@ -12,6 +13,7 @@ pub use data::processor;
 pub use data::conversion;
 pub use data::index;
 pub use plot::canvas::Canvas;
+#[cfg(any(feature = "python", feature = "gui"))]
 pub use viewer::gui;
 pub use wiki::{WikiExport, MethodDoc, ModuleDoc, WikiExtractor};
 

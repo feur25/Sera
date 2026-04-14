@@ -72,7 +72,6 @@ plt.savefig("chart.png")</code></pre></div>
 import seraplot as sp
 
 app = FastAPI()
-
 @app.get("/chart")
 def revenue_chart():
     return sp.build_bar_chart("Revenue", labels, values).html</code></pre></div>
@@ -81,7 +80,6 @@ from fastapi.responses import HTMLResponse
 import plotly.express as px
 
 app = FastAPI()
-
 @app.get("/chart", response_class=HTMLResponse)
 def revenue_chart():
     fig = px.bar(x=labels, y=values, title="Revenue")
@@ -94,7 +92,6 @@ import matplotlib.pyplot as plt
 import tempfile
 
 app = FastAPI()
-
 @app.get("/chart")
 def revenue_chart():
     fig, ax = plt.subplots(figsize=(9, 5))
