@@ -2,16 +2,125 @@
 
 # SeraPlot
 
-**High-performance data visualization — Rust core, Python API**
+**Rust rendering engine. Python surface. Charts in microseconds.**
 
 [![PyPI](https://img.shields.io/pypi/v/seraplot)](https://pypi.org/project/seraplot/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/feur25/seraplot/blob/main/LICENSE)
 
 </div>
 
-SeraPlot is a Python visualization library with a Rust rendering engine. You call Python functions, SeraPlot returns a self-contained HTML file — 20 to 90 KB, no CDN, no external JavaScript, works offline.
+```bash
+pip install seraplot
+```
 
-The entire render pipeline runs in compiled Rust. There is no Python overhead on the hot path, no JavaScript runtime at build time, and no network call at display time. The result: render times measured in **microseconds**, not milliseconds.
+One function call. One self-contained HTML file. Zero config, zero dependencies, 20 KB output.
+
+---
+
+## Same chart — three libraries
+
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
+.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+</style>
+
+<div class="sp-tabs" id="g1">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('g1','g1a',this)">SeraPlot — 2 lines</button>
+<button class="sp-tb" onclick="spTab('g1','g1b',this)">Plotly — 4 lines</button>
+<button class="sp-tb" onclick="spTab('g1','g1c',this)">Matplotlib — 7 lines</button>
+</div>
+<div id="g1a" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+sp.build_bar_chart("Revenue by Product", labels, values).save("chart.html")</code></pre></div>
+<div id="g1b" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-python">import plotly.express as px
+fig = px.bar(x=labels, y=values, title="Revenue by Product")
+fig.update_layout(template="plotly_white")
+fig.write_html("chart.html")</code></pre></div>
+<div id="g1c" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-python">import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(9, 5))
+ax.bar(labels, values, color="#6366f1")
+ax.set_title("Revenue by Product")
+ax.set_ylabel("Revenue")
+plt.tight_layout()
+plt.savefig("chart.png")</code></pre></div>
+</div>
+
+| | SeraPlot | Plotly | Matplotlib |
+|---|:---:|:---:|:---:|
+| **Lines of code** | **2** | 4 | 7 |
+| **Output** | HTML | HTML | PNG |
+| **File size** | **21 KB** | 4.7 MB | ~150 KB |
+| **Render time** | **2.8 µs** | 18,166 µs | 13,596 µs |
+| **Python deps** | **0** | 6+ | 3+ |
+
+---
+
+## Deploy from an API
+
+<div class="sp-tabs" id="g2">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('g2','g2a',this)">SeraPlot — 7 lines</button>
+<button class="sp-tb" onclick="spTab('g2','g2b',this)">Plotly — 10 lines</button>
+<button class="sp-tb" onclick="spTab('g2','g2c',this)">Matplotlib — 14 lines</button>
+</div>
+<div id="g2a" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">from fastapi import FastAPI
+import seraplot as sp
+
+app = FastAPI()
+
+@app.get("/chart")
+def revenue_chart():
+    return sp.build_bar_chart("Revenue", labels, values).html</code></pre></div>
+<div id="g2b" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-python">from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+import plotly.express as px
+
+app = FastAPI()
+
+@app.get("/chart", response_class=HTMLResponse)
+def revenue_chart():
+    fig = px.bar(x=labels, y=values, title="Revenue")
+    return fig.to_html(full_html=True)</code></pre></div>
+<div id="g2c" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-python">from fastapi import FastAPI
+from fastapi.responses import FileResponse
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import tempfile
+
+app = FastAPI()
+
+@app.get("/chart")
+def revenue_chart():
+    fig, ax = plt.subplots(figsize=(9, 5))
+    ax.bar(labels, values)
+    ax.set_title("Revenue")
+    path = tempfile.mktemp(suffix=".png")
+    plt.savefig(path)
+    plt.close()
+    return FileResponse(path, media_type="image/png")</code></pre></div>
+</div>
+
+<script>
+function spTab(g, id, btn) {
+  var root = document.getElementById(g);
+  root.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on');});
+  root.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act');});
+  document.getElementById(id).classList.add('sp-on');
+  btn.classList.add('sp-act');
+  if (window.hljs) document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c);});
+}
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.hljs) document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c);});
+});
+</script>
+
+Plotly returns 4.7 MB per request. Matplotlib cannot return interactive HTML and requires disk I/O. SeraPlot returns 21 KB of interactive HTML directly from RAM.
 
 ---
 
@@ -151,11 +260,11 @@ exposes this as a first-class method chain on the `Chart` object:
 ```python
 chart = (
     sp.build_bar_chart("Monthly Revenue", labels, values)
-    .set_bg("#0f172a")                       # dark background
-    .show_grid()                              # visible grid
-    .no_axes()                                # hide X and Y axes
-    .show_labels(position="top")              # value labels above bars
-    .set_font_size(13)                        # global font size
+    .set_bg("#0f172a")
+    .show_grid()
+    .no_axes()
+    .show_labels(position="top")
+    .set_font_size(13)
     .inject_css("""
         .sp-gl { stroke: #334155 !important; }
         svg text { fill: #e2e8f0 !important; }
@@ -171,8 +280,8 @@ Full control surface:
 | `set_bg(color)` | Background color of the entire HTML wrapper |
 | `set_global_background(color)` | Applied to all charts in the current session |
 | `set_frame(color)` | SVG canvas background, independent of the HTML wrapper |
-| `show_grid()`| Enable or disable gridlines |
-| `no_x_axis()`| Remove axes selectively |
+| `show_grid()` / `hide_grid()` | Force gridlines on / off |
+| `no_x_axis()` / `no_y_axis()` / `no_axes()` | Remove axes selectively |
 | `show_labels(position, labels, colors)` | Show value labels on each element (top/bottom/left/right) |
 | `no_legend()` | Remove the legend |
 | `no_title()` | Remove the title |
