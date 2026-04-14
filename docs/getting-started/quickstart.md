@@ -22,20 +22,17 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-tb" onclick="spTab('qs-bar','qs-bar-ts',this)">TypeScript</button>
 </div>
 <div id="qs-bar-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_bar_chart(
     "Sales by Region",
     labels=["North", "South", "East", "West"],
     values=[120.0, 85.0, 200.0, 140.0],
 )</code></pre></div>
 <div id="qs-bar-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
-const chart = sp.buildBarChart("Sales by Region", ["North", "South", "East", "West"], {
+const chart = sp.build_bar_chart("Sales by Region", ["North", "South", "East", "West"], {
     values: [120.0, 85.0, 200.0, 140.0],
 });</code></pre></div>
 <div id="qs-bar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
-const chart = sp.buildBarChart("Sales by Region", ["North", "South", "East", "West"], {
+const chart = sp.build_bar_chart("Sales by Region", ["North", "South", "East", "West"], {
     values: [120.0, 85.0, 200.0, 140.0],
 });</code></pre></div>
 </div>
@@ -73,11 +70,9 @@ fs.writeFileSync("chart.html", chart.html);</code></pre></div>
 <button class="sp-tb" onclick="spTab('qs-scatter','qs-scatter-ts',this)">TypeScript</button>
 </div>
 <div id="qs-scatter-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import numpy as np
-
 x = np.random.randn(500).tolist()
 y = np.random.randn(500).tolist()
 groups = (["A"] * 250) + (["B"] * 250)
-
 chart = sp.build_scatter_chart(
     "Two Clusters",
     x_values=x,
@@ -85,22 +80,18 @@ chart = sp.build_scatter_chart(
     color_groups=groups,
 )</code></pre></div>
 <div id="qs-scatter-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const x = Array.from({ length: 500 }, () => (Math.random() * 6) - 3);
 const y = Array.from({ length: 500 }, () => (Math.random() * 6) - 3);
 const groups = [...Array(250).fill("A"), ...Array(250).fill("B")];
-
-const chart = sp.buildScatterChart("Two Clusters", x, {
+const chart = sp.build_scatter_chart("Two Clusters", x, {
     y_values: y,
     color_groups: groups,
 });</code></pre></div>
 <div id="qs-scatter-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const x: number[] = Array.from({ length: 500 }, () => (Math.random() * 6) - 3);
 const y: number[] = Array.from({ length: 500 }, () => (Math.random() * 6) - 3);
 const groups: string[] = [...Array(250).fill("A"), ...Array(250).fill("B")];
-
-const chart = sp.buildScatterChart("Two Clusters", x, {
+const chart = sp.build_scatter_chart("Two Clusters", x, {
     y_values: y,
     color_groups: groups,
 });</code></pre></div>
@@ -117,10 +108,8 @@ const chart = sp.buildScatterChart("Two Clusters", x, {
 <button class="sp-tb" onclick="spTab('qs-dbscan','qs-dbscan-ts',this)">TypeScript</button>
 </div>
 <div id="qs-dbscan-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import numpy as np
-
 x = np.random.randn(10_000).tolist()
 y = np.random.randn(10_000).tolist()
-
 chart = sp.build_dbscan_chart(
     "DBSCAN",
     x_values=x,
@@ -129,21 +118,17 @@ chart = sp.build_dbscan_chart(
     min_samples=10,
 )</code></pre></div>
 <div id="qs-dbscan-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const x = Array.from({ length: 10000 }, () => (Math.random() * 8) - 4);
 const y = Array.from({ length: 10000 }, () => (Math.random() * 8) - 4);
-
-const chart = sp.buildDbscanChart("DBSCAN", x, {
+const chart = sp.build_dbscan_chart("DBSCAN", x, {
     y_values: y,
     eps: 0.3,
     min_samples: 10,
 });</code></pre></div>
 <div id="qs-dbscan-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const x: number[] = Array.from({ length: 10000 }, () => (Math.random() * 8) - 4);
 const y: number[] = Array.from({ length: 10000 }, () => (Math.random() * 8) - 4);
-
-const chart = sp.buildDbscanChart("DBSCAN", x, {
+const chart = sp.build_dbscan_chart("DBSCAN", x, {
     y_values: y,
     eps: 0.3,
     min_samples: 10,
@@ -161,28 +146,24 @@ const chart = sp.buildDbscanChart("DBSCAN", x, {
 <button class="sp-tb" onclick="spTab('qs-bg','qs-bg-ts',this)">TypeScript</button>
 </div>
 <div id="qs-bg-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">sp.set_global_background("#0f172a")
-
 chart1 = sp.build_bar_chart("Chart 1", labels=["A", "B"], values=[10.0, 20.0])
 chart2 = sp.build_line_chart("Chart 2", labels=["x1", "x2"], values=[5.0, 15.0])
-
 sp.reset_global_background()</code></pre></div>
 <div id="qs-bg-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
-const chart1 = sp.buildBarChart("Chart 1", ["A", "B"], {
+const chart1 = sp.build_bar_chart("Chart 1", ["A", "B"], {
     values: [10.0, 20.0],
     background: "#0f172a",
 });
-const chart2 = sp.buildLineChart("Chart 2", ["x1", "x2"], {
+const chart2 = sp.build_line_chart("Chart 2", ["x1", "x2"], {
     values: [5.0, 15.0],
     background: "#0f172a",
 });</code></pre></div>
 <div id="qs-bg-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
-const chart1 = sp.buildBarChart("Chart 1", ["A", "B"], {
+const chart1 = sp.build_bar_chart("Chart 1", ["A", "B"], {
     values: [10.0, 20.0],
     background: "#0f172a",
 });
-const chart2 = sp.buildLineChart("Chart 2", ["x1", "x2"], {
+const chart2 = sp.build_line_chart("Chart 2", ["x1", "x2"], {
     values: [5.0, 15.0],
     background: "#0f172a",
 });</code></pre></div>
@@ -199,11 +180,9 @@ const chart2 = sp.buildLineChart("Chart 2", ["x1", "x2"], {
 <button class="sp-tb" onclick="spTab('qs-scatter3d','qs-scatter3d-ts',this)">TypeScript</button>
 </div>
 <div id="qs-scatter3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import numpy as np
-
 x = np.random.randn(1000).tolist()
 y = np.random.randn(1000).tolist()
 z = np.random.randn(1000).tolist()
-
 chart = sp.build_scatter3d_chart(
     "3D Scatter",
     x_values=x,
@@ -212,12 +191,10 @@ chart = sp.build_scatter3d_chart(
     x_label="X", y_label="Y", z_label="Z",
 )</code></pre></div>
 <div id="qs-scatter3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const x = Array.from({ length: 1000 }, () => (Math.random() * 8) - 4);
 const y = Array.from({ length: 1000 }, () => (Math.random() * 8) - 4);
 const z = Array.from({ length: 1000 }, () => (Math.random() * 8) - 4);
-
-const chart = sp.buildScatter3dChart("3D Scatter", x, {
+const chart = sp.build_scatter3d_chart("3D Scatter", x, {
     y_values: y,
     z_values: z,
     x_label: "X",
@@ -225,12 +202,10 @@ const chart = sp.buildScatter3dChart("3D Scatter", x, {
     z_label: "Z",
 });</code></pre></div>
 <div id="qs-scatter3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const x: number[] = Array.from({ length: 1000 }, () => (Math.random() * 8) - 4);
 const y: number[] = Array.from({ length: 1000 }, () => (Math.random() * 8) - 4);
 const z: number[] = Array.from({ length: 1000 }, () => (Math.random() * 8) - 4);
-
-const chart = sp.buildScatter3dChart("3D Scatter", x, {
+const chart = sp.build_scatter3d_chart("3D Scatter", x, {
     y_values: y,
     z_values: z,
     x_label: "X",
