@@ -52,11 +52,19 @@ sp.reset_global_background()          # restore per-chart default
 
 ### `show_grid()`
 
-Force gridlines on or off regardless of the `gridlines` parameter used at
-chart creation.
+Force gridlines on regardless of the `gridlines` parameter used at chart creation.
 
 ```python
 chart = sp.build_histogram("Ages", values).show_grid()
+```
+
+---
+
+### `hide_grid()`
+
+Force gridlines off regardless of the `gridlines` parameter used at chart creation.
+
+```python
 chart = sp.build_line_chart("Trend", labels, values, gridlines=True).hide_grid()
 ```
 
@@ -64,11 +72,30 @@ chart = sp.build_line_chart("Trend", labels, values, gridlines=True).hide_grid()
 
 ### `no_x_axis()`
 
-Remove axis lines, ticks, and labels selectively:
+Removes the X-axis lines, ticks, and labels.
 
 ```python
 chart = sp.build_bar_chart("", labels, values).no_x_axis()   # keep Y only
-chart = sp.build_scatter_chart("", x, y).no_axes()           # remove both
+```
+
+---
+
+### `no_y_axis()`
+
+Removes the Y-axis lines, ticks, and labels.
+
+```python
+chart = sp.build_bar_chart("", labels, values).no_y_axis()   # keep X only
+```
+
+---
+
+### `no_axes()`
+
+Removes both axes at once.
+
+```python
+chart = sp.build_scatter_chart("", x, y).no_axes()           # remove both axes
 ```
 
 ---
