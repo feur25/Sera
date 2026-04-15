@@ -121,7 +121,7 @@ These are the real reasons people stop using Plotly and matplotlib:
 .sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
 .sp-tc{display:none}
 .sp-tc.sp-on{display:block}
-.sp-tc pre{margin:0;border-radius:0;overflow:auto;padding:14px 16px;box-sizing:border-box}
+.sp-tc pre{margin:0;border-radius:0;overflow-x:auto;overflow-y:hidden;padding:14px 16px;box-sizing:border-box}
 .sp-tc code{display:block;line-height:1.45}
 </style>
 
@@ -131,13 +131,13 @@ These are the real reasons people stop using Plotly and matplotlib:
 <button class="sp-tb" onclick="spTab('g1','g1b',this)">Plotly — 4 lines</button>
 <button class="sp-tb" onclick="spTab('g1','g1c',this)">Matplotlib — 7 lines</button>
 </div>
-<div id="g1a" class="sp-tc sp-on"><pre style="margin:0;border-radius:0;overflow:auto;padding:14px 16px;box-sizing:border-box"><code class="language-python">import seraplot as sp
+<div id="g1a" class="sp-tc sp-on"><pre style="margin:0;border-radius:0;overflow-x:auto;overflow-y:hidden;padding:14px 16px;box-sizing:border-box"><code class="language-python">import seraplot as sp
 sp.bar("Revenue by Product", labels, values).save("chart.html")</code></pre></div>
-<div id="g1b" class="sp-tc"><pre style="margin:0;border-radius:0;overflow:auto;padding:14px 16px;box-sizing:border-box"><code class="language-python">import plotly.express as px
+<div id="g1b" class="sp-tc"><pre style="margin:0;border-radius:0;overflow-x:auto;overflow-y:hidden;padding:14px 16px;box-sizing:border-box"><code class="language-python">import plotly.express as px
 fig = px.bar(x=labels, y=values, title="Revenue by Product")
 fig.update_layout(template="plotly_white")
 fig.write_html("chart.html")</code></pre></div>
-<div id="g1c" class="sp-tc"><pre style="margin:0;border-radius:0;overflow:auto;padding:14px 16px;box-sizing:border-box"><code class="language-python">import matplotlib.pyplot as plt
+<div id="g1c" class="sp-tc"><pre style="margin:0;border-radius:0;overflow-x:auto;overflow-y:hidden;padding:14px 16px;box-sizing:border-box"><code class="language-python">import matplotlib.pyplot as plt
 fig, ax = plt.subplots(figsize=(9, 5))
 ax.bar(labels, values, color="#6366f1")
 ax.set_title("Revenue by Product")
@@ -169,14 +169,14 @@ plt.savefig("chart.png")</code></pre></div>
 <button class="sp-tb" onclick="spTab('g2','g2b',this)">Plotly — 10 lines</button>
 <button class="sp-tb" onclick="spTab('g2','g2c',this)">Matplotlib — 14 lines</button>
 </div>
-<div id="g2a" class="sp-tc sp-on"><pre style="margin:0;border-radius:0;overflow:auto;padding:14px 16px;box-sizing:border-box"><code class="language-python">from fastapi import FastAPI
+<div id="g2a" class="sp-tc sp-on"><pre style="margin:0;border-radius:0;overflow-x:auto;overflow-y:hidden;padding:14px 16px;box-sizing:border-box"><code class="language-python">from fastapi import FastAPI
 import seraplot as sp
 
 app = FastAPI()
 @app.get("/chart")
 def revenue_chart():
     return sp.bar("Revenue", labels, values).html</code></pre></div>
-<div id="g2b" class="sp-tc"><pre style="margin:0;border-radius:0;overflow:auto;padding:14px 16px;box-sizing:border-box"><code class="language-python">from fastapi import FastAPI
+<div id="g2b" class="sp-tc"><pre style="margin:0;border-radius:0;overflow-x:auto;overflow-y:hidden;padding:14px 16px;box-sizing:border-box"><code class="language-python">from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 import plotly.express as px
 
@@ -185,7 +185,7 @@ app = FastAPI()
 def revenue_chart():
     fig = px.bar(x=labels, y=values, title="Revenue")
     return fig.to_html(full_html=True)</code></pre></div>
-<div id="g2c" class="sp-tc"><pre style="margin:0;border-radius:0;overflow:auto;padding:14px 16px;box-sizing:border-box"><code class="language-python">from fastapi import FastAPI
+<div id="g2c" class="sp-tc"><pre style="margin:0;border-radius:0;overflow-x:auto;overflow-y:hidden;padding:14px 16px;box-sizing:border-box"><code class="language-python">from fastapi import FastAPI
 from fastapi.responses import FileResponse
 import matplotlib
 matplotlib.use("Agg")
