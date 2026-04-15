@@ -42,11 +42,30 @@ use pyo3::prelude::*;
 static GLOBAL_BACKGROUND: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 
 #[cfg(feature = "python")]
+static GLOBAL_PALETTE: std::sync::Mutex<Option<Vec<u32>>> = std::sync::Mutex::new(None);
+
+#[cfg(feature = "python")]
+static GLOBAL_GRIDLINES: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+#[cfg(feature = "python")]
+static GLOBAL_THEME_NAME: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+
+#[cfg(feature = "python")]
 static AUTO_DISPLAY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
 
 #[cfg(feature = "python")]
 pub fn get_global_background() -> Option<String> {
     GLOBAL_BACKGROUND.lock().ok().and_then(|g| g.clone())
+}
+
+#[cfg(feature = "python")]
+pub fn get_global_palette() -> Option<Vec<u32>> {
+    GLOBAL_PALETTE.lock().ok().and_then(|g| g.clone())
+}
+
+#[cfg(feature = "python")]
+pub fn get_global_gridlines() -> bool {
+    GLOBAL_GRIDLINES.load(std::sync::atomic::Ordering::Relaxed)
 }
 
 #[cfg(feature = "python")]
@@ -405,14 +424,509 @@ pub fn set_auto_display(enabled: bool) {
 }
 
 #[cfg(feature = "python")]
+struct ThemePreset {
+    bg: Option<&'static str>,
+    palette: &'static [u32],
+    gridlines: bool,
+}
+
+#[cfg(feature = "python")]
+const THEME_DARK: ThemePreset = ThemePreset {
+    bg: Some("#0f172a"),
+    palette: &[0x818CF8, 0xFB7185, 0x34D399, 0xFBBF24, 0xA78BFA, 0x22D3EE, 0xF472B6, 0xA3E635, 0xF87171, 0x2DD4BF],
+    gridlines: true,
+};
+
+#[cfg(feature = "python")]
+const THEME_LIGHT: ThemePreset = ThemePreset {
+    bg: None,
+    palette: &[0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B, 0x8B5CF6, 0x06B6D4, 0xEC4899, 0x84CC16, 0xEF4444, 0x14B8A6],
+    gridlines: false,
+};
+
+#[cfg(feature = "python")]
+const THEME_SCIENTIFIC: ThemePreset = ThemePreset {
+    bg: Some("#fafafa"),
+    palette: &[0x1F77B4, 0xFF7F0E, 0x2CA02C, 0xD62728, 0x9467BD, 0x8C564B, 0xE377C2, 0x7F7F7F, 0xBCBD22, 0x17BECF],
+    gridlines: true,
+};
+
+#[cfg(feature = "python")]
+const THEME_APPLE: ThemePreset = ThemePreset {
+    bg: Some("#000000"),
+    palette: &[0x0A84FF, 0x30D158, 0xFF453A, 0xFFD60A, 0xBF5AF2, 0x64D2FF, 0xFF9F0A, 0xFF375F, 0xAC8E68, 0x63E6E2],
+    gridlines: false,
+};
+
+#[cfg(feature = "python")]
+const THEME_NOTION: ThemePreset = ThemePreset {
+    bg: Some("#191919"),
+    palette: &[0x529CCA, 0xD08B65, 0x6C9B7D, 0xCB7C7A, 0x9A6DD7, 0x868686, 0xCCAA55, 0x75B5AA, 0xD477A8, 0x507AA6],
+    gridlines: false,
+};
+
+#[cfg(feature = "python")]
+const THEME_MINIMAL: ThemePreset = ThemePreset {
+    bg: None,
+    palette: &[0x374151, 0x6B7280, 0x9CA3AF, 0xD1D5DB, 0x111827, 0x4B5563, 0x1F2937, 0xE5E7EB, 0x030712, 0x6B7280],
+    gridlines: false,
+};
+
+#[cfg(feature = "python")]
+const THEME_NEON: ThemePreset = ThemePreset {
+    bg: Some("#0a0a0a"),
+    palette: &[0x00FF87, 0xFF006E, 0x00B4D8, 0xFFBE0B, 0xE500A4, 0x8338EC, 0x3A86FF, 0xFB5607, 0xFF006E, 0x06D6A0],
+    gridlines: false,
+};
+
+#[cfg(feature = "python")]
+fn resolve_theme(name: &str) -> Option<&'static ThemePreset> {
+    match name {
+        "dark" => Some(&THEME_DARK),
+        "light" => Some(&THEME_LIGHT),
+        "scientific" => Some(&THEME_SCIENTIFIC),
+        "apple" => Some(&THEME_APPLE),
+        "notion" => Some(&THEME_NOTION),
+        "minimal" => Some(&THEME_MINIMAL),
+        "neon" => Some(&THEME_NEON),
+        _ => None,
+    }
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (name))]
+pub fn theme(name: &str) -> PyResult<()> {
+    let preset = resolve_theme(name)
+        .ok_or_else(|| pyo3::exceptions::PyValueError::new_err(
+            format!("Unknown theme '{}'. Available: dark, light, scientific, apple, notion, minimal, neon", name)
+        ))?;
+    if let Ok(mut bg) = GLOBAL_BACKGROUND.lock() {
+        *bg = preset.bg.map(|s| s.to_string());
+    }
+    if let Ok(mut pal) = GLOBAL_PALETTE.lock() {
+        *pal = Some(preset.palette.to_vec());
+    }
+    GLOBAL_GRIDLINES.store(preset.gridlines, std::sync::atomic::Ordering::Relaxed);
+    if let Ok(mut tn) = GLOBAL_THEME_NAME.lock() {
+        *tn = Some(name.to_string());
+    }
+    Ok(())
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+pub fn reset_theme() {
+    if let Ok(mut bg) = GLOBAL_BACKGROUND.lock() { *bg = None; }
+    if let Ok(mut pal) = GLOBAL_PALETTE.lock() { *pal = None; }
+    GLOBAL_GRIDLINES.store(false, std::sync::atomic::Ordering::Relaxed);
+    if let Ok(mut tn) = GLOBAL_THEME_NAME.lock() { *tn = None; }
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+pub fn themes() -> Vec<String> {
+    vec!["dark", "light", "scientific", "apple", "notion", "minimal", "neon"]
+        .into_iter().map(String::from).collect()
+}
+
+#[cfg(feature = "python")]
+fn py_to_f64_vec(_py: Python<'_>, obj: &PyAny) -> PyResult<Vec<f64>> {
+    if let Ok(list) = obj.extract::<Vec<f64>>() {
+        return Ok(list);
+    }
+    if let Ok(arr) = obj.getattr("tolist") {
+        if let Ok(list) = arr.call0()?.extract::<Vec<f64>>() {
+            return Ok(list);
+        }
+    }
+    if let Ok(series) = obj.getattr("values") {
+        if let Ok(arr) = series.getattr("tolist") {
+            if let Ok(list) = arr.call0()?.extract::<Vec<f64>>() {
+                return Ok(list);
+            }
+        }
+    }
+    Err(pyo3::exceptions::PyTypeError::new_err("Expected list, numpy array, or pandas Series of numbers"))
+}
+
+#[cfg(feature = "python")]
+fn py_to_str_vec(_py: Python<'_>, obj: &PyAny) -> PyResult<Vec<String>> {
+    if let Ok(list) = obj.extract::<Vec<String>>() {
+        return Ok(list);
+    }
+    if let Ok(arr) = obj.getattr("tolist") {
+        if let Ok(list) = arr.call0()?.extract::<Vec<String>>() {
+            return Ok(list);
+        }
+    }
+    if let Ok(series) = obj.getattr("values") {
+        if let Ok(arr) = series.getattr("tolist") {
+            if let Ok(list) = arr.call0()?.extract::<Vec<String>>() {
+                return Ok(list);
+            }
+        }
+    }
+    if let Ok(list) = obj.extract::<Vec<f64>>() {
+        return Ok(list.into_iter().map(|v| v.to_string()).collect());
+    }
+    Err(pyo3::exceptions::PyTypeError::new_err("Expected list, numpy array, or pandas Series of strings"))
+}
+
+#[cfg(feature = "python")]
+fn merge_global_opts(background: Option<&str>, palette: Option<Vec<u32>>, gridlines: bool) -> (Option<String>, Vec<u32>, bool) {
+    let bg = background.map(|s| s.to_string()).or_else(get_global_background);
+    let pal = if palette.as_ref().map(|p| !p.is_empty()).unwrap_or(false) {
+        palette.unwrap()
+    } else {
+        get_global_palette().unwrap_or_default()
+    };
+    let grid = gridlines || get_global_gridlines();
+    (bg, pal, grid)
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(name = "plot", signature = (x, y=None, *, title="", kind="line", color_hex=0x6366F1_u32, width=900_i32, height=480_i32, x_label="", y_label="", gridlines=false, palette=None, background=None, show_points=true))]
+pub fn plot_chart(
+    py: Python<'_>,
+    x: &PyAny,
+    y: Option<&PyAny>,
+    title: &str,
+    kind: &str,
+    color_hex: u32,
+    width: i32, height: i32,
+    x_label: &str, y_label: &str,
+    gridlines: bool,
+    palette: Option<Vec<u32>>,
+    background: Option<&str>,
+    show_points: bool,
+) -> PyResult<Chart> {
+    let (bg, pal, grid) = merge_global_opts(background, palette, gridlines);
+    let bg_ref = bg.as_deref();
+
+    if let Ok(df) = x.getattr("columns") {
+        let cols: Vec<String> = df.extract()?;
+        if cols.len() >= 2 {
+            let xcol = x.get_item(&cols[0])?;
+            let ycol = x.get_item(&cols[1])?;
+            let xv = py_to_f64_vec(py, xcol)?;
+            let yv = py_to_f64_vec(py, ycol)?;
+            let hover = vec![];
+            let auto_title = if title.is_empty() { format!("{} vs {}", cols[0], cols[1]) } else { String::new() };
+            let t = if title.is_empty() { &auto_title } else { title };
+            let html = crate::plot::default::render_scatter_html(
+                t, &xv, &yv, &[], width, height, &hover, &[], &[], &pal,
+                x_label, y_label, color_hex, grid, false, false, "linear",
+            );
+            return Ok(Chart::new(crate::html::hover::apply_opts(html, bg_ref, true, true)));
+        }
+    }
+
+    let xv = py_to_f64_vec(py, x)?;
+
+    if let Some(yobj) = y {
+        let yv = py_to_f64_vec(py, yobj)?;
+        match kind {
+            "scatter" => {
+                let hover = vec![];
+                let html = crate::plot::default::render_scatter_html(
+                    title, &xv, &yv, &[], width, height, &hover, &[], &[], &pal,
+                    x_label, y_label, color_hex, grid, false, false, "linear",
+                );
+                Ok(Chart::new(crate::html::hover::apply_opts(html, bg_ref, true, true)))
+            }
+            _ => {
+                let labels: Vec<String> = (0..xv.len()).map(|i| xv[i].to_string()).collect();
+                let hover = vec![];
+                let html = crate::plot::default::render_lines_html(
+                    title, &labels, &yv, width, height, &hover, color_hex, x_label, y_label, grid, show_points, "none",
+                );
+                Ok(Chart::new(crate::html::hover::apply_opts(html, bg_ref, true, true)))
+            }
+        }
+    } else {
+        let labels: Vec<String> = (0..xv.len()).map(|i| i.to_string()).collect();
+        let hover = vec![];
+        let html = crate::plot::default::render_lines_html(
+            title, &labels, &xv, width, height, &hover, color_hex, x_label, y_label, grid, show_points, "none",
+        );
+        Ok(Chart::new(crate::html::hover::apply_opts(html, bg_ref, true, true)))
+    }
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (x, y=None, *, title="", color_hex=0x6366F1_u32, width=900_i32, height=480_i32, x_label="", y_label="", gridlines=false, palette=None, background=None, color_groups=None))]
+pub fn scatter(
+    py: Python<'_>,
+    x: &PyAny,
+    y: Option<&PyAny>,
+    title: &str,
+    color_hex: u32,
+    width: i32, height: i32,
+    x_label: &str, y_label: &str,
+    gridlines: bool,
+    palette: Option<Vec<u32>>,
+    background: Option<&str>,
+    color_groups: Option<Vec<String>>,
+) -> PyResult<Chart> {
+    let (bg, pal, grid) = merge_global_opts(background, palette, gridlines);
+    let bg_ref = bg.as_deref();
+
+    let (xv, yv) = if let Some(yobj) = y {
+        (py_to_f64_vec(py, x)?, py_to_f64_vec(py, yobj)?)
+    } else if let Ok(df) = x.getattr("columns") {
+        let cols: Vec<String> = df.extract()?;
+        if cols.len() >= 2 {
+            (py_to_f64_vec(py, x.get_item(&cols[0])?)?, py_to_f64_vec(py, x.get_item(&cols[1])?)?)
+        } else {
+            return Err(pyo3::exceptions::PyValueError::new_err("DataFrame needs at least 2 columns"));
+        }
+    } else {
+        return Err(pyo3::exceptions::PyValueError::new_err("scatter() needs x and y"));
+    };
+
+    let cg = color_groups.unwrap_or_default();
+    let hover = vec![];
+    let html = crate::plot::default::render_scatter_html(
+        title, &xv, &yv, &[], width, height, &hover, &[], &cg, &pal,
+        x_label, y_label, color_hex, grid, false, false, "linear",
+    );
+    Ok(Chart::new(crate::html::hover::apply_opts(html, bg_ref, true, true)))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (x=None, *, labels=None, values=None, title="", color_hex=0_u32, width=900_i32, height=480_i32, x_label="", y_label="", gridlines=false, palette=None, background=None, orientation="v", show_text=false))]
+pub fn bar(
+    py: Python<'_>,
+    x: Option<&PyAny>,
+    labels: Option<&PyAny>,
+    values: Option<&PyAny>,
+    title: &str,
+    color_hex: u32,
+    width: i32, height: i32,
+    x_label: &str, y_label: &str,
+    gridlines: bool,
+    palette: Option<Vec<u32>>,
+    background: Option<&str>,
+    orientation: &str,
+    show_text: bool,
+) -> PyResult<Chart> {
+    let (bg, pal, grid) = merge_global_opts(background, palette, gridlines);
+    let bg_ref = bg.as_deref();
+
+    let (lb, vals) = if let Some(df) = x {
+        if let Ok(cols_obj) = df.getattr("columns") {
+            let cols: Vec<String> = cols_obj.extract()?;
+            if cols.len() >= 2 {
+                (py_to_str_vec(py, df.get_item(&cols[0])?)?, py_to_f64_vec(py, df.get_item(&cols[1])?)?)
+            } else {
+                return Err(pyo3::exceptions::PyValueError::new_err("DataFrame needs at least 2 columns"));
+            }
+        } else if let (Some(l), Some(v)) = (labels, values) {
+            (py_to_str_vec(py, l)?, py_to_f64_vec(py, v)?)
+        } else {
+            return Err(pyo3::exceptions::PyValueError::new_err("bar() needs labels and values, or a DataFrame"));
+        }
+    } else if let (Some(l), Some(v)) = (labels, values) {
+        (py_to_str_vec(py, l)?, py_to_f64_vec(py, v)?)
+    } else {
+        return Err(pyo3::exceptions::PyValueError::new_err("bar() needs labels and values"));
+    };
+
+    let orient = if orientation == "h" { b'h' } else { b'v' };
+    let hover = vec![];
+    let html = crate::plot::default::render_bars_html(
+        title, &lb, &vals, width, height, &hover, orient, &[], show_text, x_label, y_label, &pal, color_hex, grid, "none",
+    );
+    Ok(Chart::new(crate::html::hover::apply_opts(html, bg_ref, true, true)))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (x=None, *, labels=None, values=None, title="", width=900_i32, height=480_i32, palette=None, background=None, show_pct=true))]
+pub fn pie(
+    py: Python<'_>,
+    x: Option<&PyAny>,
+    labels: Option<&PyAny>,
+    values: Option<&PyAny>,
+    title: &str,
+    width: i32, height: i32,
+    palette: Option<Vec<u32>>,
+    background: Option<&str>,
+    show_pct: bool,
+) -> PyResult<Chart> {
+    let (bg, pal, _grid) = merge_global_opts(background, palette, false);
+    let bg_ref = bg.as_deref();
+
+    let (lb, vals) = if let Some(df) = x {
+        if let Ok(cols_obj) = df.getattr("columns") {
+            let cols: Vec<String> = cols_obj.extract()?;
+            if cols.len() >= 2 {
+                (py_to_str_vec(py, df.get_item(&cols[0])?)?, py_to_f64_vec(py, df.get_item(&cols[1])?)?)
+            } else {
+                return Err(pyo3::exceptions::PyValueError::new_err("DataFrame needs at least 2 columns"));
+            }
+        } else {
+            return Err(pyo3::exceptions::PyValueError::new_err("pie() needs labels and values"));
+        }
+    } else if let (Some(l), Some(v)) = (labels, values) {
+        (py_to_str_vec(py, l)?, py_to_f64_vec(py, v)?)
+    } else {
+        return Err(pyo3::exceptions::PyValueError::new_err("pie() needs labels and values"));
+    };
+
+    use crate::plot::statistical::{PieConfig, render_pie_html};
+    let html = render_pie_html(&PieConfig {
+        title, labels: &lb, values: &vals, palette: &pal,
+        show_pct, width, height,
+        ..PieConfig::default()
+    });
+    Ok(Chart::new(crate::html::hover::apply_opts(html, bg_ref, true, true)))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (data, *, title="", bins=0_i32, color_hex=0x6366F1_u32, width=860_i32, height=380_i32, x_label="", y_label="", gridlines=false, background=None))]
+pub fn hist(
+    py: Python<'_>,
+    data: &PyAny,
+    title: &str,
+    bins: i32,
+    color_hex: u32,
+    width: i32, height: i32,
+    x_label: &str, y_label: &str,
+    gridlines: bool,
+    background: Option<&str>,
+) -> PyResult<Chart> {
+    let (bg, _pal, grid) = merge_global_opts(background, None, gridlines);
+    let bg_ref = bg.as_deref();
+    let values = py_to_f64_vec(py, data)?;
+
+    use crate::plot::statistical::{HistogramConfig, render_histogram_html};
+    let html = render_histogram_html(&HistogramConfig {
+        title, values: &values, bins: bins as usize,
+        color: color_hex, x_label, y_label,
+        show_counts: false, gridlines: grid,
+        width, height, hover: &[], sort_order: "none",
+        ..HistogramConfig::default()
+    });
+    Ok(Chart::new(crate::html::hover::apply_opts(html, bg_ref, true, true)))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (data, *, title="", width=900_i32, height=480_i32, palette=None, background=None))]
+pub fn heatmap(
+    py: Python<'_>,
+    data: &PyAny,
+    title: &str,
+    width: i32, height: i32,
+    palette: Option<Vec<u32>>,
+    background: Option<&str>,
+) -> PyResult<Chart> {
+    let (bg, pal, _grid) = merge_global_opts(background, palette, false);
+    let bg_ref = bg.as_deref();
+
+    if let Ok(df) = data.getattr("columns") {
+        let cols: Vec<String> = df.extract()?;
+        let mut matrix: Vec<f64> = Vec::new();
+        let mut row_labels: Vec<String> = Vec::new();
+        if let Ok(idx) = data.getattr("index") {
+            if let Ok(labels_fn) = idx.getattr("tolist") {
+                row_labels = labels_fn.call0()?.extract().unwrap_or_default();
+            }
+        }
+        for col in &cols {
+            let col_data = py_to_f64_vec(py, data.get_item(col)?)?;
+            matrix.extend(col_data);
+        }
+        let rlabels = if row_labels.is_empty() {
+            cols.clone()
+        } else {
+            row_labels
+        };
+        use crate::plot::statistical::{HeatmapConfig, render_heatmap_html};
+        let html = render_heatmap_html(&HeatmapConfig {
+            title, row_labels: &rlabels, col_labels: &cols,
+            flat_matrix: &matrix,
+            show_values: true, width, height,
+            ..HeatmapConfig::default()
+        });
+        return Ok(Chart::new(crate::html::hover::apply_opts(html, bg_ref, true, true)));
+    }
+
+    if let Ok(flat) = py_to_f64_vec(py, data) {
+        let n = (flat.len() as f64).sqrt() as usize;
+        let rlabels: Vec<String> = (0..n).map(|i| i.to_string()).collect();
+        use crate::plot::statistical::{HeatmapConfig, render_heatmap_html};
+        let html = render_heatmap_html(&HeatmapConfig {
+            title, row_labels: &rlabels, col_labels: &rlabels,
+            flat_matrix: &flat,
+            show_values: true, width, height,
+            ..HeatmapConfig::default()
+        });
+        return Ok(Chart::new(crate::html::hover::apply_opts(html, bg_ref, true, true)));
+    }
+
+    Err(pyo3::exceptions::PyTypeError::new_err("heatmap() expects a DataFrame or flat matrix"))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (charts, *, cols=2_usize, gap=12_i32, cell_height=400_i32))]
+pub fn grid(charts: Vec<PyRef<Chart>>, cols: usize, gap: i32, cell_height: i32) -> Chart {
+    let htmls: Vec<&str> = charts.iter().map(|c| c.html.as_str()).collect();
+    let n = htmls.len();
+    let mut out = String::with_capacity(n * 60000);
+    out.push_str("<!DOCTYPE html><html><head><meta charset=\"UTF-8\"><style>");
+    out.push_str(&format!(
+        "html,body{{margin:0;padding:0}}
+.sp-grid{{display:grid;grid-template-columns:repeat({cols},1fr);gap:{gap}px;padding:{gap}px}}
+.sp-grid-cell{{border-radius:8px;overflow:hidden;height:{cell_height}px}}
+.sp-grid-cell iframe{{width:100%;height:100%;border:none}}"
+    ));
+    if let Some(bg) = get_global_background() {
+        out.push_str(&format!("html,body{{background:{}!important}}", bg));
+    }
+    out.push_str("</style></head><body><div class=\"sp-grid\">");
+    for h in &htmls {
+        let esc = h.replace('&', "&amp;").replace('"', "&quot;");
+        out.push_str(&format!("<div class=\"sp-grid-cell\"><iframe srcdoc=\"{esc}\" frameborder=\"0\"></iframe></div>"));
+    }
+    out.push_str("</div></body></html>");
+    Chart::new(out)
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (chart, path))]
+pub fn savefig(chart: &Chart, path: &str) -> PyResult<()> {
+    std::fs::write(path, &chart.html)?;
+    Ok(())
+}
+
+#[cfg(feature = "python")]
 #[pymodule]
 fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Chart>()?;
     m.add("__version__", VERSION)?;
-    m.add("__doc__", "SeraPlot - Rust-Powered Data Visualization Framework\n\nSubmodules:\n  seraplot.charts   - bar, line, scatter, hbar\n  seraplot.stats    - histogram, grouped_bar, violin, heatmap, pie, ...\n  seraplot.geo      - choropleth, bubble_map\n  seraplot.three_d  - scatter3d, bar3d, line3d\n  seraplot.engine   - show_chart_value, bench, set_bg, ...")?;
     m.add_function(wrap_pyfunction!(set_global_background, m)?)?;
     m.add_function(wrap_pyfunction!(reset_global_background, m)?)?;
     m.add_function(wrap_pyfunction!(set_auto_display, m)?)?;
+    m.add_function(wrap_pyfunction!(theme, m)?)?;
+    m.add_function(wrap_pyfunction!(reset_theme, m)?)?;
+    m.add_function(wrap_pyfunction!(themes, m)?)?;
+    m.add_function(wrap_pyfunction!(plot_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(scatter, m)?)?;
+    m.add_function(wrap_pyfunction!(bar, m)?)?;
+    m.add_function(wrap_pyfunction!(pie, m)?)?;
+    m.add_function(wrap_pyfunction!(hist, m)?)?;
+    m.add_function(wrap_pyfunction!(heatmap, m)?)?;
+    m.add_function(wrap_pyfunction!(grid, m)?)?;
+    m.add_function(wrap_pyfunction!(savefig, m)?)?;
     bindings::python::python_registry::register_submodules(py, m)?;
     Ok(())
 }

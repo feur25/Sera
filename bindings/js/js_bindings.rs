@@ -4,10 +4,20 @@ use std::cell::RefCell;
 
 thread_local! {
     static GLOBAL_BG: RefCell<Option<String>> = RefCell::new(None);
+    static GLOBAL_PAL: RefCell<Vec<u32>> = RefCell::new(Vec::new());
+    static GLOBAL_GRID: std::cell::Cell<bool> = std::cell::Cell::new(false);
 }
 
 fn get_global_bg() -> Option<String> {
     GLOBAL_BG.with(|bg| bg.borrow().clone())
+}
+
+fn get_global_pal() -> Vec<u32> {
+    GLOBAL_PAL.with(|p| p.borrow().clone())
+}
+
+fn get_global_grid() -> bool {
+    GLOBAL_GRID.with(|g| g.get())
 }
 
 #[derive(Deserialize, Default)]
@@ -85,10 +95,13 @@ impl JsOpts {
     fn xl(&self) -> String { self.x_label.clone().unwrap_or_default() }
     fn yl(&self) -> String { self.y_label.clone().unwrap_or_default() }
     fn zl(&self) -> String { self.z_label.clone().unwrap_or_else(|| "Z".to_string()) }
-    fn grid(&self) -> bool { self.gridlines.unwrap_or(false) }
+    fn grid(&self) -> bool { self.gridlines.unwrap_or(false) || get_global_grid() }
     fn srt(&self) -> String { self.sort_order.clone().unwrap_or_else(|| "none".to_string()) }
     fn lp(&self) -> String { self.legend_position.clone().unwrap_or_else(|| "right".to_string()) }
-    fn pal(&self) -> Vec<u32> { self.palette.clone().unwrap_or_default() }
+    fn pal(&self) -> Vec<u32> {
+        if let Some(p) = &self.palette { if !p.is_empty() { return p.clone(); } }
+        let g = get_global_pal(); if !g.is_empty() { g } else { Vec::new() }
+    }
     fn hj(&self) -> Vec<crate::html::hover::HoverSlot> {
         self.hover_json.as_ref()
             .filter(|s| !s.is_empty())
@@ -1072,4 +1085,34 @@ pub fn set_global_background(color: &str) {
 #[wasm_bindgen(js_name = "resetGlobalBackground")]
 pub fn reset_global_background() {
     GLOBAL_BG.with(|bg| *bg.borrow_mut() = None);
+}
+
+#[wasm_bindgen(js_name = "setTheme")]
+pub fn set_theme(name: &str) {
+    let (bg, pal, grid): (Option<&str>, &[u32], bool) = match name {
+        "dark"       => (Some("#0f172a"), &[0x818CF8,0x34D399,0xFBBF24,0xF87171,0x60A5FA,0xA78BFA,0xFB7185,0x2DD4BF,0xF472B6,0xFACC15], true),
+        "light"      => (None,            &[0x6366F1,0x10B981,0xF59E0B,0xEF4444,0x3B82F6,0x8B5CF6,0xEC4899,0x14B8A6,0xF97316,0xEAB308], false),
+        "scientific" => (Some("#fafafa"),  &[0x1F77B4,0xFF7F0E,0x2CA02C,0xD62728,0x9467BD,0x8C564B,0xE377C2,0x7F7F7F,0xBCBD22,0x17BECF], true),
+        "apple"      => (Some("#000000"),  &[0xFF375F,0x30D158,0x0A84FF,0xFFD60A,0xFF9F0A,0x5E5CE6,0x64D2FF,0xBF5AF2,0xFF6961,0x32ADE6], false),
+        "notion"     => (Some("#191919"),  &[0xE3E3E3,0xA0A0A0,0xCB9D6D,0x7C9E7E,0x7B8FC4,0xC17B7B,0xD4A76A,0x8BA4B0,0xB39DDB,0x80CBC4], false),
+        "minimal"    => (None,            &[0x222222,0x444444,0x666666,0x888888,0xAAAAAA,0xCCCCCC,0x111111,0x333333,0x555555,0x777777], false),
+        "neon"       => (Some("#0a0a0a"),  &[0x00FFF0,0xFF00FF,0x00FF41,0xFF6B00,0xFFFF00,0xFF1493,0x00BFFF,0xFF4500,0x7FFF00,0xDA70D6], false),
+        _ => return,
+    };
+    GLOBAL_BG.with(|b| *b.borrow_mut() = bg.map(|s| s.to_string()));
+    GLOBAL_PAL.with(|p| *p.borrow_mut() = pal.to_vec());
+    GLOBAL_GRID.with(|g| g.set(grid));
+}
+
+#[wasm_bindgen(js_name = "resetTheme")]
+pub fn reset_theme() {
+    GLOBAL_BG.with(|b| *b.borrow_mut() = None);
+    GLOBAL_PAL.with(|p| p.borrow_mut().clear());
+    GLOBAL_GRID.with(|g| g.set(false));
+}
+
+#[wasm_bindgen(js_name = "themes")]
+pub fn themes() -> js_sys::Array {
+    ["dark","light","scientific","apple","notion","minimal","neon"]
+        .iter().map(|s| JsValue::from_str(s)).collect()
 }
