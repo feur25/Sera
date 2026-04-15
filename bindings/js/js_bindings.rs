@@ -1,5 +1,14 @@
 use wasm_bindgen::prelude::*;
 use serde::Deserialize;
+use std::cell::RefCell;
+
+thread_local! {
+    static GLOBAL_BG: RefCell<Option<String>> = RefCell::new(None);
+}
+
+fn get_global_bg() -> Option<String> {
+    GLOBAL_BG.with(|bg| bg.borrow().clone())
+}
 
 #[derive(Deserialize, Default)]
 struct JsOpts {
@@ -99,13 +108,13 @@ fn parse_opts(opts_json: &str) -> JsOpts {
 }
 
 fn apply(html: String, o: &JsOpts) -> String {
-    let bg_str = o.bg_str();
+    let bg_str = o.bg_str().or_else(get_global_bg);
     let bg = bg_str.as_deref();
     crate::html::hover::apply_opts(html, bg, !o.no_x(), !o.no_y())
 }
 
 fn apply_bg3d(html: String, o: &JsOpts) -> String {
-    let bg_str = o.bg_str();
+    let bg_str = o.bg_str().or_else(get_global_bg);
     if let Some(bg) = bg_str.as_deref() {
         crate::html::hover::apply_bg(html, Some(bg))
     } else {
@@ -1053,4 +1062,14 @@ pub fn build_hover_json(labels_json: &str, opts_json: &str) -> String {
         slots.push(slot);
     }
     slots_to_json(&slots)
+}
+
+#[wasm_bindgen(js_name = "setGlobalBackground")]
+pub fn set_global_background(color: &str) {
+    GLOBAL_BG.with(|bg| *bg.borrow_mut() = Some(color.to_string()));
+}
+
+#[wasm_bindgen(js_name = "resetGlobalBackground")]
+pub fn reset_global_background() {
+    GLOBAL_BG.with(|bg| *bg.borrow_mut() = None);
 }

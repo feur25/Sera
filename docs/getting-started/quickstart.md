@@ -150,23 +150,21 @@ chart1 = sp.build_bar_chart("Chart 1", labels=["A", "B"], values=[10.0, 20.0])
 chart2 = sp.build_line_chart("Chart 2", labels=["x1", "x2"], values=[5.0, 15.0])
 sp.reset_global_background()</code></pre></div>
 <div id="qs-bg-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-const chart1 = sp.build_bar_chart("Chart 1", ["A", "B"], {
-    values: [10.0, 20.0],
-    background: "#0f172a",
-});
-const chart2 = sp.build_line_chart("Chart 2", ["x1", "x2"], {
-    values: [5.0, 15.0],
-    background: "#0f172a",
-});</code></pre></div>
+
+sp.set_global_background("#0f172a");
+
+const chart1 = sp.build_bar_chart("Chart 1", ["A", "B"], { values: [10.0, 20.0] });
+const chart2 = sp.build_line_chart("Chart 2", ["x1", "x2"], { values: [5.0, 15.0] });
+
+sp.reset_global_background();</code></pre></div>
 <div id="qs-bg-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-const chart1 = sp.build_bar_chart("Chart 1", ["A", "B"], {
-    values: [10.0, 20.0],
-    background: "#0f172a",
-});
-const chart2 = sp.build_line_chart("Chart 2", ["x1", "x2"], {
-    values: [5.0, 15.0],
-    background: "#0f172a",
-});</code></pre></div>
+
+sp.set_global_background("#0f172a");
+
+const chart1 = sp.build_bar_chart("Chart 1", ["A", "B"], { values: [10.0, 20.0] });
+const chart2 = sp.build_line_chart("Chart 2", ["x1", "x2"], { values: [5.0, 15.0] });
+
+sp.reset_global_background();</code></pre></div>
 </div>
 
 ---
