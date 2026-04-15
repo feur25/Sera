@@ -95,19 +95,6 @@ Auto-display can be disabled if you are building charts in batch without a noteb
 ```python
 sp.set_auto_display(False)
 ```
-
----
-
-## Optional dependencies
-
-For ML comparisons or loading data in notebooks:
-
-```bash
-pip install numpy scikit-learn matplotlib
-```
-
-These are only needed if you want to compare SeraPlot against scikit-learn's DBSCAN or load CSV data via pandas. They are never required by SeraPlot itself.
-
 ---
 
 ## Build from source
