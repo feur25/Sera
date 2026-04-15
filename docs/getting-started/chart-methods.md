@@ -3,6 +3,103 @@
 These methods are available on every `Chart` object returned by any SeraPlot
 function. They all return a new `Chart`, so they can be chained freely.
 
+---
+
+## Global config (automatic inheritance)
+
+### `sp.config(**kwargs)`
+
+Set once, **every chart** created after inherits the configuration automatically. No per-chart override needed.
+
+| Parameter | Type | Effect |
+|-----------|------|--------|
+| `font` | str | Font family for all text (e.g., `"Inter"`, `"Roboto"`) |
+| `font_size` | int | Base font size in px |
+| `title_size` | int | Title font size in px |
+| `crosshair` | bool | Crosshair lines follow mouse hover |
+| `zoom` | bool | Mouse wheel zoom + pan (double-click resets) |
+| `animation` | bool | Fade-in animation on chart elements |
+| `animation_duration` | int | Duration (ms), default 300 |
+| `export_button` | bool | Download button on each chart |
+| `responsive` | bool | Auto-resize to container width |
+| `border_radius` | int | Container border radius (px) |
+| `margin` | int | Container padding (px) |
+| `opacity` | float | Element opacity `0.0`–`1.0` |
+| `background` | str | Background color (any CSS color) |
+| `gridlines` | bool | Show grid lines in chart |
+| `palette` | list[int] | Color palette as hex ints (e.g., `[0x6366F1, 0xFB7185]`) |
+| `locale` | str | Number formatting locale |
+| `thousands_sep` | str | Thousands separator char |
+| `tooltip` | str | Tooltip mode |
+
+```python
+import seraplot as sp
+
+sp.config(
+    font="Inter",
+    font_size=14,
+    title_size=22,
+    crosshair=True,
+    zoom=True,
+    animation=True,
+    animation_duration=500,
+    export_button=True,
+    responsive=True,
+    border_radius=12,
+    margin=16,
+    opacity=0.85,
+    background="#0f172a",
+    gridlines=True,
+    palette=[0x818CF8, 0xFB7185, 0x34D399, 0xFBBF24],
+)
+
+chart1 = sp.bar("Revenue", ["Q1", "Q2", "Q3"], [120, 180, 140])     # inherits ALL config
+chart2 = sp.line("Trend", ["Jan", "Feb", "Mar"], [100, 110, 105])   # same config
+chart3 = sp.scatter("Correlation", [1, 2, 3], [10, 20, 30])         # same config
+```
+
+---
+
+### `sp.reset_config()`
+
+Reset all global config to defaults (no background, no crosshair, no zoom, etc.).
+
+```python
+sp.reset_config()
+chart = sp.bar("Clean", labels, values)  # back to defaults
+```
+
+---
+
+## Per-chart override (method chaining)
+
+Override global config for individual charts:
+
+| Method | Effect |
+|--------|--------|
+| `.font("Inter")` | Override font family |
+| `.title_size(22)` | Override title size |
+| `.set_font_size(14)` | Override base font size |
+| `.crosshair()` | Enable/add crosshair on this chart |
+| `.zoom()` | Enable/add zoom on this chart |
+| `.animate(300)` | Add animation (ms) |
+| `.export_button()` | Add download button |
+| `.responsive()` | Make responsive |
+| `.border_radius(12)` | Set border radius |
+| `.set_opacity(0.85)` | Set element opacity |
+| `.set_margin(16)` | Set padding |
+| `.set_bg("#color")` | Override background |
+
+```python
+import seraplot as sp
+
+sp.config(font="Inter", background="#0f172a", gridlines=True)
+
+chart1 = sp.bar("Default", labels, values)           # uses config
+chart2 = sp.bar("Override", labels, values).font("Roboto").border_radius(20)  # different font + radius
+chart3 = sp.line("Clean", dates, values).zoom()       # adds zoom on top of config
+```
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
