@@ -75,30 +75,38 @@ Return HTML directly from a FastAPI endpoint. 21 KB in the response body, no tem
 
 ## Same chart — three libraries
 
-```python
-import seraplot as sp
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;overflow-x:auto}
+.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap;flex:0 0 auto}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+.sp-tc pre{margin:0;border-radius:0;overflow-x:auto;overflow-y:hidden;padding:14px 16px;box-sizing:border-box}
+.sp-tc code{display:block;line-height:1.45}
+</style>
 
-sp.bar("Revenue by Product", labels, values).save("chart.html")
-```
-
-```python
-import plotly.express as px
-
+<div class="sp-tabs" id="g1">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('g1','g1a',this)">SeraPlot — 2 lines</button>
+<button class="sp-tb" onclick="spTab('g1','g1b',this)">Plotly — 4 lines</button>
+<button class="sp-tb" onclick="spTab('g1','g1c',this)">Matplotlib — 7 lines</button>
+</div>
+<div id="g1a" class="sp-tc sp-on"><pre><code class="language-python">import seraplot as sp
+sp.bar("Revenue by Product", labels, values).save("chart.html")</code></pre></div>
+<div id="g1b" class="sp-tc"><pre><code class="language-python">import plotly.express as px
 fig = px.bar(x=labels, y=values, title="Revenue by Product")
 fig.update_layout(template="plotly_white")
-fig.write_html("chart.html")
-```
-
-```python
-import matplotlib.pyplot as plt
-
+fig.write_html("chart.html")</code></pre></div>
+<div id="g1c" class="sp-tc"><pre><code class="language-python">import matplotlib.pyplot as plt
 fig, ax = plt.subplots(figsize=(9, 5))
 ax.bar(labels, values, color="#6366f1")
 ax.set_title("Revenue by Product")
 ax.set_ylabel("Revenue")
 plt.tight_layout()
-plt.savefig("chart.png")
-```
+plt.savefig("chart.png")</code></pre></div>
+</div>
 
 |               |  SeraPlot | Plotly | Matplotlib |
 | ------------- | :-------: | :----: | :--------: |
@@ -115,61 +123,48 @@ plt.savefig("chart.png")
 
 Same code, same random data, same machine. Full HTML output timed.
 
-### SeraPlot
-
-```python
-import seraplot as sp
-
+<div class="sp-tabs" id="g-bench">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('g-bench','gb-sp',this)">SeraPlot — 6 ms</button>
+<button class="sp-tb" onclick="spTab('g-bench','gb-pl',this)">Plotly — 37 s</button>
+<button class="sp-tb" onclick="spTab('g-bench','gb-mp',this)">Matplotlib — 60 s</button>
+</div>
+<div id="gb-sp" class="sp-tc sp-on">
+<pre><code class="language-python">import seraplot as sp
 categories = ["Electronics", "Clothing", "Food", "Books", "Sports", "Toys", "Health", "Auto"]
 data = [...]  # 1000 pre-generated lists
-
 for i in range(1000):
-    sp.bar(f"Report #{i+1}", categories, data[i]).html
-```
-
-**1000 charts in 6 ms — 6 µs/chart**
-
-<iframe src="previews/bench-seraplot.html" style="width:100%;height:540px;border:1px solid #334155;border-radius:8px" loading="lazy"></iframe>
-
-### Plotly
-
-```python
-import plotly.graph_objects as go
-
+    sp.bar(f"Report #{i+1}", categories, data[i]).html</code></pre>
+<p style="padding:10px 16px;margin:0;color:#6366f1;font-weight:700">1000 charts in 6 ms — 6 µs/chart</p>
+<iframe src="previews/bench-seraplot.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
+</div>
+<div id="gb-pl" class="sp-tc">
+<pre><code class="language-python">import plotly.graph_objects as go
 categories = ["Electronics", "Clothing", "Food", "Books", "Sports", "Toys", "Health", "Auto"]
 data = [...]  # same 1000 pre-generated lists
-
 for i in range(1000):
     fig = go.Figure(data=[go.Bar(x=categories, y=data[i])])
     fig.update_layout(title=f"Report #{i+1}", template="plotly_dark")
-    fig.to_html(full_html=True, include_plotlyjs="cdn")
-```
-
-**1000 charts in 37,023 ms — 6,170× slower**
-
-<iframe src="previews/bench-plotly.html" style="width:100%;height:540px;border:1px solid #334155;border-radius:8px" loading="lazy"></iframe>
-
-### Matplotlib
-
-```python
-import matplotlib
+    fig.to_html(full_html=True, include_plotlyjs="cdn")</code></pre>
+<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1000 charts in 37,023 ms — 6,170× slower</p>
+<iframe src="previews/bench-plotly.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
+</div>
+<div id="gb-mp" class="sp-tc">
+<pre><code class="language-python">import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-
 categories = ["Electronics", "Clothing", "Food", "Books", "Sports", "Toys", "Health", "Auto"]
 data = [...]  # same 1000 pre-generated lists
-
 for i in range(1000):
     fig, ax = plt.subplots(figsize=(9, 5))
     ax.bar(categories, data[i])
     ax.set_title(f"Report #{i+1}")
     fig.savefig(f"chart_{i}.png")
-    plt.close()
-```
-
-**1000 charts in 60,352 ms — 10,058× slower**
-
-<iframe src="previews/bench-matplotlib.html" style="width:100%;height:540px;border:1px solid #334155;border-radius:8px" loading="lazy"></iframe>
+    plt.close()</code></pre>
+<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1000 charts in 60,352 ms — 10,058× slower</p>
+<iframe src="previews/bench-matplotlib.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
+</div>
+</div>
 
 | Scale | SeraPlot | Plotly | Matplotlib |
 |-------|:--------:|:------:|:----------:|
@@ -324,40 +319,33 @@ sp.reset_theme()
 
 ## Deploy from an API
 
-```python
-from fastapi import FastAPI
+<div class="sp-tabs" id="g2">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('g2','g2a',this)">SeraPlot — 7 lines</button>
+<button class="sp-tb" onclick="spTab('g2','g2b',this)">Plotly — 10 lines</button>
+<button class="sp-tb" onclick="spTab('g2','g2c',this)">Matplotlib — 14 lines</button>
+</div>
+<div id="g2a" class="sp-tc sp-on"><pre><code class="language-python">from fastapi import FastAPI
 import seraplot as sp
-
 app = FastAPI()
-
 @app.get("/chart")
 def revenue_chart():
-    return sp.bar("Revenue", labels, values).html
-```
-
-```python
-from fastapi import FastAPI
+    return sp.bar("Revenue", labels, values).html</code></pre></div>
+<div id="g2b" class="sp-tc"><pre><code class="language-python">from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 import plotly.express as px
-
 app = FastAPI()
-
 @app.get("/chart", response_class=HTMLResponse)
 def revenue_chart():
     fig = px.bar(x=labels, y=values, title="Revenue")
-    return fig.to_html(full_html=True)
-```
-
-```python
-from fastapi import FastAPI
+    return fig.to_html(full_html=True)</code></pre></div>
+<div id="g2c" class="sp-tc"><pre><code class="language-python">from fastapi import FastAPI
 from fastapi.responses import FileResponse
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import tempfile
-
 app = FastAPI()
-
 @app.get("/chart")
 def revenue_chart():
     fig, ax = plt.subplots(figsize=(9, 5))
@@ -366,8 +354,22 @@ def revenue_chart():
     path = tempfile.mktemp(suffix=".png")
     plt.savefig(path)
     plt.close()
-    return FileResponse(path, media_type="image/png")
-```
+    return FileResponse(path, media_type="image/png")</code></pre></div>
+</div>
+
+<script>
+function spTab(g, id, btn) {
+  var root = document.getElementById(g);
+  root.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on');});
+  root.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act');});
+  document.getElementById(id).classList.add('sp-on');
+  btn.classList.add('sp-act');
+  if (window.hljs) document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c);});
+}
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.hljs) document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c);});
+});
+</script>
 
 Plotly returns 4.7 MB per request. Matplotlib requires disk I/O and returns a static PNG.
 SeraPlot returns 21 KB of interactive HTML directly from RAM.
