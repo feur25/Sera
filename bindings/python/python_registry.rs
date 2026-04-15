@@ -85,6 +85,89 @@ pub fn register_submodules(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(build_slideshow, m)?)?;
     
     m.add_function(wrap_pyfunction!(build_hover_json, m)?)?;
-    
+    m.add_function(wrap_pyfunction!(plot_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(savefig, m)?)?;
+
+    // ── Command aliases ────────────────────────────────────────────────────────
+    // Every build_* function is also reachable under intuitive short names.
+    // The pairs are (alias, canonical_name_already_registered_above).
+    let aliases: &[(&str, &str)] = &[
+        // 2-D charts
+        ("bar",            "build_bar_chart"),
+        ("bar_chart",      "build_bar_chart"),
+        ("bars",           "build_bar_chart"),
+        ("hbar",           "build_hbar"),
+        ("barh",           "build_hbar"),
+        ("horizontal_bar", "build_hbar"),
+        ("line",           "build_line_chart"),
+        ("line_chart",     "build_line_chart"),
+        ("scatter",        "build_scatter_chart"),
+        ("scatter_chart",  "build_scatter_chart"),
+        ("hist",           "build_histogram"),
+        ("histogram",      "build_histogram"),
+        ("pie",            "build_pie_chart"),
+        ("pie_chart",      "build_pie_chart"),
+        ("donut",          "build_donut_chart"),
+        ("donut_chart",    "build_donut_chart"),
+        ("heatmap",        "build_heatmap"),
+        ("boxplot",        "build_boxplot"),
+        ("box_plot",       "build_boxplot"),
+        ("violin",         "build_violin"),
+        ("radar",          "build_radar_chart"),
+        ("radar_chart",    "build_radar_chart"),
+        ("lollipop",       "build_lollipop_chart"),
+        ("kde",            "build_kde_chart"),
+        ("ridgeline",      "build_ridgeline_chart"),
+        ("bubble",         "build_bubble"),
+        ("candlestick",    "build_candlestick"),
+        ("dumbbell",       "build_dumbbell"),
+        ("funnel",         "build_funnel"),
+        ("waterfall",      "build_waterfall"),
+        ("treemap",        "build_treemap"),
+        ("sunburst",       "build_sunburst"),
+        ("gauge",          "build_gauge"),
+        ("parallel",       "build_parallel"),
+        ("grouped_bar",    "build_grouped_bar"),
+        ("stacked_bar",    "build_stacked_bar"),
+        ("slope",          "build_slope"),
+        ("bullet",         "build_bullet"),
+        ("area",           "build_area_chart"),
+        ("area_chart",     "build_area_chart"),
+        ("multiline",      "build_multiline_chart"),
+        ("bubble_map",     "build_bubble_map"),
+        ("choropleth",     "build_choropleth"),
+        ("wordcloud",      "build_wordcloud"),
+        ("dbscan",         "build_dbscan_chart"),
+        // 3-D charts
+        ("scatter3d",      "build_scatter3d_chart"),
+        ("bar3d",          "build_bar3d_chart"),
+        ("line3d",         "build_line3d_chart"),
+        ("radar3d",        "build_radar3d_chart"),
+        ("lollipop3d",     "build_lollipop3d_chart"),
+        ("kde3d",          "build_kde3d_chart"),
+        ("ridgeline3d",    "build_ridgeline3d_chart"),
+        ("bubble3d",       "build_bubble3d_chart"),
+        ("pie3d",          "build_pie3d_chart"),
+        ("violin3d",       "build_violin3d_chart"),
+        ("heatmap3d",      "build_heatmap3d_chart"),
+        ("candlestick3d",  "build_candlestick3d_chart"),
+        ("dumbbell3d",     "build_dumbbell3d_chart"),
+        ("funnel3d",       "build_funnel3d_chart"),
+        ("sunburst3d",     "build_sunburst3d_chart"),
+        ("stacked_bar3d",  "build_stacked_bar3d_chart"),
+        ("globe3d",        "build_globe3d_chart"),
+        ("dbscan3d",       "build_dbscan_chart_3d"),
+        // Convenience aliases
+        ("plot",           "plot"),
+        ("grid",           "build_grid"),
+        ("save",           "savefig"),
+        ("save_fig",       "savefig"),
+    ];
+    for (alias, canonical) in aliases {
+        if let Ok(func) = m.getattr(*canonical) {
+            let _ = m.add(*alias, func);
+        }
+    }
+
     Ok(())
 }

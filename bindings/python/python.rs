@@ -1535,7 +1535,10 @@ pub fn build_grid(
     bg: Option<&str>,
     cell_height: i32,
 ) -> Chart {
-    let bg_color = bg.unwrap_or("#f0f2f5");
+    let bg_color = bg
+        .map(|s| s.to_string())
+        .or_else(crate::get_global_background)
+        .unwrap_or_else(|| "#f0f2f5".to_string());
     let cols = cols.max(1);
     let mut buf = format!(
         "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><style>\
@@ -1663,4 +1666,89 @@ pub fn build_hover_json(
     }
     
     Ok(slots_to_json(&slots))
+}
+
+// ── Convenience / high-level functions ─────────────────────────────────────
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(name = "plot", signature = (x, y=None, *, title="", kind="line", color_hex=0x6366F1_u32, width=900_i32, height=480_i32, x_label="", y_label="", gridlines=false, palette=None, background=None, show_points=true))]
+/// Smart plot dispatcher: auto-detects line vs scatter, handles DataFrames.
+///
+/// Args: x (list | numpy array | DataFrame), y (list | numpy array, optional).
+///
+/// Kwargs: title, kind ("line"/"scatter"), color_hex, width, height,
+/// x_label, y_label, gridlines, palette, background, show_points.
+pub fn plot_chart(
+    py: Python<'_>,
+    x: &PyAny,
+    y: Option<&PyAny>,
+    title: &str,
+    kind: &str,
+    color_hex: u32,
+    width: i32,
+    height: i32,
+    x_label: &str,
+    y_label: &str,
+    gridlines: bool,
+    palette: Option<Vec<u32>>,
+    background: Option<&str>,
+    show_points: bool,
+) -> PyResult<Chart> {
+    let (bg, pal, grid) = crate::merge_global_opts(background, palette, gridlines);
+    let pal_opt = if pal.is_empty() { None } else { Some(pal) };
+
+    // DataFrame path
+    if let Ok(df) = x.getattr("columns") {
+        let cols: Vec<String> = df.extract()?;
+        if cols.len() >= 2 {
+            let xv = crate::py_to_f64_vec(py, x.get_item(&cols[0])?)?;
+            let yv = crate::py_to_f64_vec(py, x.get_item(&cols[1])?)?;
+            let auto_title = if title.is_empty() { format!("{} vs {}", cols[0], cols[1]) } else { String::new() };
+            let t = if title.is_empty() { &auto_title } else { title };
+            return build_scatter_chart(
+                t, xv, yv, color_hex, false, None, None, None,
+                width, height, x_label, y_label, grid, "none", "", "right",
+                pal_opt, None, bg.as_deref(), false, false, false, "linear",
+            );
+        }
+    }
+
+    // Array/list path
+    let xv = crate::py_to_f64_vec(py, x)?;
+    if let Some(yobj) = y {
+        let yv = crate::py_to_f64_vec(py, yobj)?;
+        match kind {
+            "scatter" => build_scatter_chart(
+                title, xv, yv, color_hex, false, None, None, None,
+                width, height, x_label, y_label, grid, "none", "", "right",
+                pal_opt, None, bg.as_deref(), false, false, false, "linear",
+            ),
+            _ => {
+                let labels: Vec<String> = xv.iter().map(|v| v.to_string()).collect();
+                build_line_chart(
+                    title, labels, yv, color_hex, show_points,
+                    width, height, x_label, y_label, grid, "none", "", "right",
+                    pal_opt, None, bg.as_deref(), false, false,
+                )
+            }
+        }
+    } else {
+        let labels: Vec<String> = (0..xv.len()).map(|i| i.to_string()).collect();
+        build_line_chart(
+            title, labels, xv, color_hex, show_points,
+            width, height, x_label, y_label, grid, "none", "", "right",
+            pal_opt, None, bg.as_deref(), false, false,
+        )
+    }
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (chart, path))]
+/// Save a chart to an HTML file.
+///
+/// Args: chart (Chart), path (str).
+pub fn savefig(chart: &Chart, path: &str) -> PyResult<()> {
+    std::fs::write(path, &chart.html).map_err(|e| pyo3::exceptions::PyIOError::new_err(e.to_string()))
 }
