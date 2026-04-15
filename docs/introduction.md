@@ -387,6 +387,87 @@ If all you need is 3 charts in a notebook, matplotlib works fine.
 
 ---
 
+## Global config
+
+Set once, every chart inherits:
+
+```python
+sp.config(
+    font="Inter",
+    font_size=14,
+    title_size=22,
+    crosshair=True,
+    zoom=True,
+    animation=True,
+    export_button=True,
+    responsive=True,
+    border_radius=12,
+    margin=16,
+    opacity=0.85,
+    background="#0f172a",
+    palette=[0x818CF8, 0xFB7185, 0x34D399],
+    gridlines=True,
+)
+
+sp.bar("Revenue", labels, values)   # inherits everything
+sp.line("Trend", dates, values)     # same config
+sp.scatter("Clusters", x, y)        # same config
+```
+
+Per-chart override with method chaining:
+
+```python
+sp.bar("Revenue", labels, values).font("Roboto").zoom(False)
+```
+
+Reset everything:
+
+```python
+sp.reset_config()
+```
+
+| Parameter | Type | Effect |
+|-----------|------|--------|
+| `font` | str | Font family for all text |
+| `font_size` | int | Base font size (px) |
+| `title_size` | int | Title font size (px) |
+| `crosshair` | bool | Crosshair lines on hover |
+| `zoom` | bool | Mouse wheel zoom + pan |
+| `animation` | bool | Fade-in animation on elements |
+| `animation_duration` | int | Animation duration (ms) |
+| `export_button` | bool | Download button on each chart |
+| `responsive` | bool | Auto-resize to container width |
+| `border_radius` | int | Chart container border radius (px) |
+| `margin` | int | Chart container padding (px) |
+| `opacity` | float | Element opacity (0.0–1.0) |
+| `background` | str | Background color |
+| `palette` | list[int] | Color palette (hex ints) |
+| `gridlines` | bool | Show grid lines |
+| `locale` | str | Number formatting locale |
+| `thousands_sep` | str | Thousands separator character |
+| `tooltip` | str | Tooltip mode |
+
+### Chain methods (per-chart)
+
+| Method | Effect |
+|--------|--------|
+| `.font("Inter")` | Override font family |
+| `.title_size(22)` | Override title font size |
+| `.set_font_size(14)` | Override base font size |
+| `.crosshair()` | Enable crosshair |
+| `.zoom()` | Enable zoom + pan |
+| `.animate(300)` | Enable animation (ms) |
+| `.export_button()` | Add download button |
+| `.responsive()` | Auto-resize |
+| `.border_radius(12)` | Set border radius |
+| `.set_opacity(0.85)` | Set element opacity |
+| `.set_margin(16)` | Set chart padding |
+| `.set_bg("#0f172a")` | Set background color |
+| `.inject_css("...")` | Inject custom CSS |
+| `.inject_js("...")` | Inject custom JS |
+
+---
+
 ## Native machine learning
 
 Rust-native DBSCAN with KD-tree spatial indexing:
@@ -406,6 +487,7 @@ Rust-native DBSCAN with KD-tree spatial indexing:
 - **Drop-in matplotlib API** — `import seraplot.matplotlib as plt`
 - **Pandas & NumPy native** — pass DataFrames directly
 - **7 built-in themes** — dark, light, scientific, apple, notion, minimal, neon
+- **Global config** — `sp.config()` sets font, zoom, crosshair, animation across all charts
 - **Zero dependencies** — pure Rust renderer
 - **200× smaller files** — no bundled JS runtime
 - **Multi-language** — Python, JavaScript/TypeScript (npm), Rust

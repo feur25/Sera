@@ -1,7 +1,9 @@
 ﻿pub mod core;
 pub mod data;
 pub mod plot;
+
 #[cfg(any(feature = "python", feature = "gui"))]
+
 pub mod viewer;
 pub mod bindings;
 pub mod wiki;
@@ -13,8 +15,10 @@ pub use data::processor;
 pub use data::conversion;
 pub use data::index;
 pub use plot::canvas::Canvas;
+
 #[cfg(any(feature = "python", feature = "gui"))]
 pub use viewer::gui;
+
 pub use wiki::{WikiExport, MethodDoc, ModuleDoc, WikiExtractor};
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -52,6 +56,37 @@ static GLOBAL_THEME_NAME: std::sync::Mutex<Option<String>> = std::sync::Mutex::n
 
 #[cfg(feature = "python")]
 static AUTO_DISPLAY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
+
+#[cfg(feature = "python")]
+static GLOBAL_FONT: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+#[cfg(feature = "python")]
+static GLOBAL_FONT_SIZE: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
+#[cfg(feature = "python")]
+static GLOBAL_TITLE_SIZE: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
+#[cfg(feature = "python")]
+static GLOBAL_BORDER_RADIUS: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
+#[cfg(feature = "python")]
+static GLOBAL_OPACITY: std::sync::Mutex<Option<f64>> = std::sync::Mutex::new(None);
+#[cfg(feature = "python")]
+static GLOBAL_RESPONSIVE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+#[cfg(feature = "python")]
+static GLOBAL_ANIMATION: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+#[cfg(feature = "python")]
+static GLOBAL_ANIMATION_DURATION: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(300);
+#[cfg(feature = "python")]
+static GLOBAL_CROSSHAIR: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+#[cfg(feature = "python")]
+static GLOBAL_ZOOM: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+#[cfg(feature = "python")]
+static GLOBAL_TOOLTIP: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+#[cfg(feature = "python")]
+static GLOBAL_LOCALE: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+#[cfg(feature = "python")]
+static GLOBAL_THOUSANDS_SEP: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+#[cfg(feature = "python")]
+static GLOBAL_MARGIN: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
+#[cfg(feature = "python")]
+static GLOBAL_EXPORT_BTN: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
 #[cfg(feature = "python")]
 pub fn get_global_background() -> Option<String> {
@@ -337,19 +372,113 @@ impl Chart {
             ))
         }
     }
+
+    #[pyo3(signature = (name))]
+    fn font(&self, name: &str) -> Chart {
+        Chart { html: self.html.replacen("</head>", &format!("<style>svg text,body{{font-family:'{}',system-ui,sans-serif!important}}</style></head>", name), 1) }
+    }
+
+    #[pyo3(signature = (px))]
+    fn title_size(&self, px: i32) -> Chart {
+        Chart { html: self.html.replacen("</head>", &format!("<style>.sp-ttl{{font-size:{}px!important}}</style></head>", px), 1) }
+    }
+
+    fn crosshair(&self) -> Chart {
+        Chart { html: self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_CROSSHAIR_JS), 1) }
+    }
+
+    fn zoom(&self) -> Chart {
+        Chart { html: self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_ZOOM_JS), 1) }
+    }
+
+    fn responsive(&self) -> Chart {
+        Chart { html: self.html.replacen("</head>", "<style>svg{width:100%!important;height:auto!important}</style></head>", 1) }
+    }
+
+    #[pyo3(signature = (duration=300))]
+    fn animate(&self, duration: i32) -> Chart {
+        let css = format!("<style>@keyframes sp-in{{from{{opacity:0;transform:translateY(8px)}}to{{opacity:1;transform:none}}}}svg rect[data-idx],svg circle[data-idx],svg path.sp-area{{animation:sp-in {}ms ease-out both}}</style></head>", duration);
+        let js = "<script>(function(){if(window.__spa__)return;window.__spa__=1;var els=document.querySelectorAll('svg [data-idx]');for(var i=0;i<els.length;i++)els[i].style.animationDelay=i*30+'ms';})();</script></body>";
+        Chart { html: self.html.replacen("</head>", &css, 1).replacen("</body>", js, 1) }
+    }
+
+    #[pyo3(signature = (px))]
+    fn border_radius(&self, px: i32) -> Chart {
+        Chart { html: self.html.replacen("</head>", &format!("<style>.chart-container,.c3w{{border-radius:{}px!important;overflow:hidden}}</style></head>", px), 1) }
+    }
+
+    #[pyo3(signature = (value))]
+    fn set_opacity(&self, value: f64) -> Chart {
+        let v = value.clamp(0.0, 1.0);
+        Chart { html: self.html.replacen("</head>", &format!("<style>svg rect[data-idx],svg circle[data-idx],svg path.sp-area{{opacity:{}!important}}</style></head>", v), 1) }
+    }
+
+    #[pyo3(signature = (px))]
+    fn set_margin(&self, px: i32) -> Chart {
+        Chart { html: self.html.replacen("</head>", &format!("<style>.chart-container,.c3w{{padding:{}px}}</style></head>", px), 1) }
+    }
+
+    fn export_button(&self) -> Chart {
+        Chart { html: self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_EXPORT_JS), 1) }
+    }
+}
+
+#[cfg(feature = "python")]
+const SP_CROSSHAIR_JS: &str = "(function(){if(window.__spc__)return;window.__spc__=1;var svg=document.querySelector('svg');if(!svg)return;var ns='http://www.w3.org/2000/svg';var vl=document.createElementNS(ns,'line');var hl=document.createElementNS(ns,'line');[vl,hl].forEach(function(l){l.setAttribute('stroke','#6366f1');l.setAttribute('stroke-width','1');l.setAttribute('stroke-dasharray','4,4');l.setAttribute('opacity','0.5');l.style.display='none';l.style.pointerEvents='none';svg.appendChild(l);});svg.addEventListener('mousemove',function(e){var r=svg.getBoundingClientRect();var x=e.clientX-r.left;var y=e.clientY-r.top;vl.setAttribute('x1',x);vl.setAttribute('x2',x);vl.setAttribute('y1',0);vl.setAttribute('y2',r.height);hl.setAttribute('x1',0);hl.setAttribute('x2',r.width);hl.setAttribute('y1',y);hl.setAttribute('y2',y);vl.style.display='';hl.style.display='';});svg.addEventListener('mouseleave',function(){vl.style.display='none';hl.style.display='none';});})()";
+
+#[cfg(feature = "python")]
+const SP_ZOOM_JS: &str = "(function(){if(window.__spz__)return;window.__spz__=1;var svg=document.querySelector('svg');if(!svg)return;var s=1,tx=0,ty=0,dr=false,sx,sy;svg.style.cursor='grab';svg.addEventListener('wheel',function(e){e.preventDefault();var z=e.deltaY<0?1.1:0.9;s=Math.min(Math.max(s*z,0.5),10);svg.style.transform='scale('+s+') translate('+tx+'px,'+ty+'px)';svg.style.transformOrigin='center center';},{passive:false});svg.addEventListener('mousedown',function(e){dr=true;sx=e.clientX-tx;sy=e.clientY-ty;svg.style.cursor='grabbing';});window.addEventListener('mouseup',function(){dr=false;if(svg)svg.style.cursor='grab';});svg.addEventListener('mousemove',function(e){if(!dr)return;tx=e.clientX-sx;ty=e.clientY-sy;svg.style.transform='scale('+s+') translate('+tx+'px,'+ty+'px)';});svg.addEventListener('dblclick',function(){s=1;tx=0;ty=0;svg.style.transform='';});})()";
+
+#[cfg(feature = "python")]
+const SP_EXPORT_JS: &str = "(function(){if(window.__spe__)return;window.__spe__=1;var c=document.querySelector('.chart-container')||document.querySelector('.c3w')||document.body;if(getComputedStyle(c).position==='static')c.style.position='relative';var b=document.createElement('button');b.textContent='\u{2B07}';b.title='Download chart';b.style.cssText='position:absolute;top:8px;right:8px;z-index:300;background:#6366f1;color:#fff;border:none;border-radius:6px;width:32px;height:32px;font-size:16px;cursor:pointer;opacity:0.6;transition:opacity .2s';b.onmouseenter=function(){b.style.opacity='1';};b.onmouseleave=function(){b.style.opacity='0.6';};b.onclick=function(){var bl=new Blob([document.documentElement.outerHTML],{type:'text/html'});var a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='chart.html';a.click();};c.appendChild(b);})()";
+
+#[cfg(feature = "python")]
+fn inject_global_cfg(html: String) -> String {
+    use std::sync::atomic::Ordering::Relaxed;
+    let mut css = String::new();
+    let mut js = String::new();
+    if let Ok(f) = GLOBAL_FONT.lock() {
+        if let Some(ref font) = *f {
+            css.push_str(&format!("svg text,body{{font-family:'{}',system-ui,sans-serif!important}}", font));
+        }
+    }
+    let fs = GLOBAL_FONT_SIZE.load(Relaxed);
+    if fs > 0 { css.push_str(&format!("svg text{{font-size:{}px!important}}", fs)); }
+    let ts = GLOBAL_TITLE_SIZE.load(Relaxed);
+    if ts > 0 { css.push_str(&format!(".sp-ttl{{font-size:{}px!important}}", ts)); }
+    let br = GLOBAL_BORDER_RADIUS.load(Relaxed);
+    if br > 0 { css.push_str(&format!(".chart-container,.c3w{{border-radius:{}px!important;overflow:hidden}}", br)); }
+    if let Ok(op) = GLOBAL_OPACITY.lock() {
+        if let Some(o) = *op { if o < 1.0 { css.push_str(&format!("svg rect[data-idx],svg circle[data-idx],svg path.sp-area{{opacity:{}!important}}", o)); } }
+    }
+    if GLOBAL_RESPONSIVE.load(Relaxed) { css.push_str("svg{width:100%!important;height:auto!important}"); }
+    let mg = GLOBAL_MARGIN.load(Relaxed);
+    if mg > 0 { css.push_str(&format!(".chart-container,.c3w{{padding:{}px}}", mg)); }
+    if GLOBAL_ANIMATION.load(Relaxed) {
+        let dur = GLOBAL_ANIMATION_DURATION.load(Relaxed);
+        css.push_str(&format!("@keyframes sp-in{{from{{opacity:0;transform:translateY(8px)}}to{{opacity:1;transform:none}}}}svg rect[data-idx],svg circle[data-idx],svg path.sp-area{{animation:sp-in {}ms ease-out both}}", dur));
+        js.push_str("(function(){if(window.__spa__)return;window.__spa__=1;var els=document.querySelectorAll('svg [data-idx]');for(var i=0;i<els.length;i++)els[i].style.animationDelay=i*30+'ms';})();");
+    }
+    if GLOBAL_CROSSHAIR.load(Relaxed) { js.push_str(SP_CROSSHAIR_JS); js.push(';'); }
+    if GLOBAL_ZOOM.load(Relaxed) { js.push_str(SP_ZOOM_JS); js.push(';'); }
+    if GLOBAL_EXPORT_BTN.load(Relaxed) { js.push_str(SP_EXPORT_JS); js.push(';'); }
+    if css.is_empty() && js.is_empty() { return html; }
+    let mut out = html;
+    if !css.is_empty() { out = out.replacen("</head>", &format!("<style>{}</style></head>", css), 1); }
+    if !js.is_empty() { out = out.replacen("</body>", &format!("<script>{}</script></body>", js), 1); }
+    out
 }
 
 #[cfg(feature = "python")]
 impl Chart {
     fn new(html: String) -> Self {
-        // Apply global background if one was set via sp.set_global_background(...)
         let html = if let Some(bg) = get_global_background() {
             crate::html::hover::apply_bg(html, Some(&bg))
         } else {
             html
         };
+        let html = inject_global_cfg(html);
         let chart = Self { html };
-        // Auto-display in Jupyter when the flag is enabled (default: true)
         if AUTO_DISPLAY.load(std::sync::atomic::Ordering::Relaxed) {
             Python::with_gil(|py| auto_show_in_jupyter(py, &chart));
         }
@@ -531,6 +660,56 @@ pub fn themes() -> Vec<String> {
 }
 
 #[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (*, font=None, font_size=None, title_size=None, border_radius=None, opacity=None, responsive=None, animation=None, animation_duration=None, crosshair=None, zoom=None, tooltip=None, locale=None, thousands_sep=None, margin=None, export_button=None, palette=None, background=None, gridlines=None))]
+pub fn config(font: Option<&str>, font_size: Option<i32>, title_size: Option<i32>, border_radius: Option<i32>, opacity: Option<f64>, responsive: Option<bool>, animation: Option<bool>, animation_duration: Option<i32>, crosshair: Option<bool>, zoom: Option<bool>, tooltip: Option<&str>, locale: Option<&str>, thousands_sep: Option<&str>, margin: Option<i32>, export_button: Option<bool>, palette: Option<Vec<u32>>, background: Option<&str>, gridlines: Option<bool>) {
+    use std::sync::atomic::Ordering::Relaxed;
+    if let Some(v) = font { if let Ok(mut f) = GLOBAL_FONT.lock() { *f = Some(v.to_string()); } }
+    if let Some(v) = font_size { GLOBAL_FONT_SIZE.store(v, Relaxed); }
+    if let Some(v) = title_size { GLOBAL_TITLE_SIZE.store(v, Relaxed); }
+    if let Some(v) = border_radius { GLOBAL_BORDER_RADIUS.store(v, Relaxed); }
+    if let Some(v) = opacity { if let Ok(mut o) = GLOBAL_OPACITY.lock() { *o = if v < 1.0 { Some(v) } else { None }; } }
+    if let Some(v) = responsive { GLOBAL_RESPONSIVE.store(v, Relaxed); }
+    if let Some(v) = animation { GLOBAL_ANIMATION.store(v, Relaxed); }
+    if let Some(v) = animation_duration { GLOBAL_ANIMATION_DURATION.store(v, Relaxed); }
+    if let Some(v) = crosshair { GLOBAL_CROSSHAIR.store(v, Relaxed); }
+    if let Some(v) = zoom { GLOBAL_ZOOM.store(v, Relaxed); }
+    if let Some(v) = tooltip { if let Ok(mut t) = GLOBAL_TOOLTIP.lock() { *t = Some(v.to_string()); } }
+    if let Some(v) = locale { if let Ok(mut l) = GLOBAL_LOCALE.lock() { *l = Some(v.to_string()); } }
+    if let Some(v) = thousands_sep { if let Ok(mut s) = GLOBAL_THOUSANDS_SEP.lock() { *s = Some(v.to_string()); } }
+    if let Some(v) = margin { GLOBAL_MARGIN.store(v, Relaxed); }
+    if let Some(v) = export_button { GLOBAL_EXPORT_BTN.store(v, Relaxed); }
+    if let Some(v) = background { if let Ok(mut b) = GLOBAL_BACKGROUND.lock() { *b = Some(v.to_string()); } }
+    if let Some(p) = palette { if let Ok(mut pl) = GLOBAL_PALETTE.lock() { *pl = Some(p); } }
+    if let Some(v) = gridlines { GLOBAL_GRIDLINES.store(v, Relaxed); }
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+pub fn reset_config() {
+    use std::sync::atomic::Ordering::Relaxed;
+    if let Ok(mut f) = GLOBAL_FONT.lock() { *f = None; }
+    GLOBAL_FONT_SIZE.store(0, Relaxed);
+    GLOBAL_TITLE_SIZE.store(0, Relaxed);
+    GLOBAL_BORDER_RADIUS.store(0, Relaxed);
+    if let Ok(mut o) = GLOBAL_OPACITY.lock() { *o = None; }
+    GLOBAL_RESPONSIVE.store(false, Relaxed);
+    GLOBAL_ANIMATION.store(false, Relaxed);
+    GLOBAL_ANIMATION_DURATION.store(300, Relaxed);
+    GLOBAL_CROSSHAIR.store(false, Relaxed);
+    GLOBAL_ZOOM.store(false, Relaxed);
+    if let Ok(mut t) = GLOBAL_TOOLTIP.lock() { *t = None; }
+    if let Ok(mut l) = GLOBAL_LOCALE.lock() { *l = None; }
+    if let Ok(mut s) = GLOBAL_THOUSANDS_SEP.lock() { *s = None; }
+    GLOBAL_MARGIN.store(0, Relaxed);
+    GLOBAL_EXPORT_BTN.store(false, Relaxed);
+    if let Ok(mut bg) = GLOBAL_BACKGROUND.lock() { *bg = None; }
+    if let Ok(mut pal) = GLOBAL_PALETTE.lock() { *pal = None; }
+    GLOBAL_GRIDLINES.store(false, Relaxed);
+    if let Ok(mut tn) = GLOBAL_THEME_NAME.lock() { *tn = None; }
+}
+
+#[cfg(feature = "python")]
 pub(crate) fn py_to_f64_vec(_py: Python<'_>, obj: &PyAny) -> PyResult<Vec<f64>> {
     if let Ok(list) = obj.extract::<Vec<f64>>() {
         return Ok(list);
@@ -590,12 +769,16 @@ pub(crate) fn merge_global_opts(background: Option<&str>, palette: Option<Vec<u3
 fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_class::<Chart>()?;
     m.add("__version__", VERSION)?;
+
     m.add_function(wrap_pyfunction!(set_global_background, m)?)?;
     m.add_function(wrap_pyfunction!(reset_global_background, m)?)?;
     m.add_function(wrap_pyfunction!(set_auto_display, m)?)?;
     m.add_function(wrap_pyfunction!(theme, m)?)?;
     m.add_function(wrap_pyfunction!(reset_theme, m)?)?;
     m.add_function(wrap_pyfunction!(themes, m)?)?;
+    m.add_function(wrap_pyfunction!(config, m)?)?;
+    m.add_function(wrap_pyfunction!(reset_config, m)?)?;
+
     bindings::python::python_registry::register_submodules(py, m)?;
     Ok(())
 }

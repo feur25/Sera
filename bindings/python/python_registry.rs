@@ -7,8 +7,6 @@ use crate::Chart;
 #[cfg(feature = "python")]
 use super::python::*;
 
-/// Short-name alias map — add rows freely, order does not matter.
-/// Each entry is ("alias", "canonical_function_name_as_registered_in_python").
 #[cfg(feature = "python")]
 const CHART_ALIASES: &[(&str, &str)] = &[
     ("bar",            "build_bar_chart"),
@@ -56,7 +54,6 @@ const CHART_ALIASES: &[(&str, &str)] = &[
     ("choropleth",     "build_choropleth"),
     ("wordcloud",      "build_wordcloud"),
     ("dbscan",         "build_dbscan_chart"),
-    // ── 3-D variants ──────────────────────────────────────────────────────────
     ("scatter3d",      "build_scatter3d_chart"),
     ("bar3d",          "build_bar3d_chart"),
     ("line3d",         "build_line3d_chart"),
@@ -75,7 +72,6 @@ const CHART_ALIASES: &[(&str, &str)] = &[
     ("stacked_bar3d",  "build_stacked_bar3d_chart"),
     ("globe3d",        "build_globe3d_chart"),
     ("dbscan3d",       "build_dbscan_chart_3d"),
-    // ── High-level helpers ────────────────────────────────────────────────────
     ("plot",           "plot"),
     ("grid",           "build_grid"),
     ("save",           "savefig"),
