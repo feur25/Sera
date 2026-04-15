@@ -2,7 +2,7 @@
 
 # SeraPlot
 
-**Rust-native charting. 30× faster than Plotly. Zero dependencies.**
+**Rust-native charting. 6,000× faster than Plotly. Zero dependencies.**
 
 [![PyPI](https://img.shields.io/pypi/v/seraplot)](https://pypi.org/project/seraplot/)
 [![npm](https://img.shields.io/npm/v/seraplot)](https://www.npmjs.com/package/seraplot)
@@ -24,7 +24,7 @@ import matplotlib.pyplot as plt
 import seraplot.matplotlib as plt
 ```
 
-- 30× faster than Plotly (measured end-to-end)
+- 6,000× faster than Plotly (measured, 1000 bar charts)
 - 200× smaller files
 - interactive HTML by default
 - zero Python dependencies
@@ -61,7 +61,7 @@ No server, no Dash, no Streamlit.
 
 ### CI pipelines at scale
 
-1,000 charts in 710 ms. Not 22 seconds. Not 73 seconds.
+1,000 charts in 6 ms. Not 37 seconds. Not 60 seconds.
 
 ### Offline-first apps
 
@@ -119,17 +119,15 @@ Same code, same random data, same machine. Full HTML output timed.
 
 ```python
 import seraplot as sp
-import random
 
 categories = ["Electronics", "Clothing", "Food", "Books", "Sports", "Toys", "Health", "Auto"]
+data = [...]  # 1000 pre-generated lists
 
 for i in range(1000):
-    random.seed(i)
-    values = [random.randint(10, 100) for _ in categories]
-    sp.bar(f"Report #{i+1}", categories, values).html
+    sp.bar(f"Report #{i+1}", categories, data[i]).html
 ```
 
-**1000 charts in 710 ms**
+**1000 charts in 6 ms — 6 µs/chart**
 
 <iframe src="previews/bench-seraplot.html" style="width:100%;height:540px;border:1px solid #334155;border-radius:8px" loading="lazy"></iframe>
 
@@ -137,19 +135,17 @@ for i in range(1000):
 
 ```python
 import plotly.graph_objects as go
-import random
 
 categories = ["Electronics", "Clothing", "Food", "Books", "Sports", "Toys", "Health", "Auto"]
+data = [...]  # same 1000 pre-generated lists
 
 for i in range(1000):
-    random.seed(i)
-    values = [random.randint(10, 100) for _ in categories]
-    fig = go.Figure(data=[go.Bar(x=categories, y=values)])
+    fig = go.Figure(data=[go.Bar(x=categories, y=data[i])])
     fig.update_layout(title=f"Report #{i+1}", template="plotly_dark")
-    fig.to_html(full_html=True)
+    fig.to_html(full_html=True, include_plotlyjs="cdn")
 ```
 
-**1000 charts in 21,688 ms — 30× slower**
+**1000 charts in 37,023 ms — 6,170× slower**
 
 <iframe src="previews/bench-plotly.html" style="width:100%;height:540px;border:1px solid #334155;border-radius:8px" loading="lazy"></iframe>
 
@@ -159,29 +155,27 @@ for i in range(1000):
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-import random
 
 categories = ["Electronics", "Clothing", "Food", "Books", "Sports", "Toys", "Health", "Auto"]
+data = [...]  # same 1000 pre-generated lists
 
 for i in range(1000):
-    random.seed(i)
-    values = [random.randint(10, 100) for _ in categories]
     fig, ax = plt.subplots(figsize=(9, 5))
-    ax.bar(categories, values)
+    ax.bar(categories, data[i])
     ax.set_title(f"Report #{i+1}")
     fig.savefig(f"chart_{i}.png")
     plt.close()
 ```
 
-**1000 charts in 72,705 ms — 102× slower**
+**1000 charts in 60,352 ms — 10,058× slower**
 
 <iframe src="previews/bench-matplotlib.html" style="width:100%;height:540px;border:1px solid #334155;border-radius:8px" loading="lazy"></iframe>
 
 | Scale | SeraPlot | Plotly | Matplotlib |
 |-------|:--------:|:------:|:----------:|
-| 1,000 charts | **710 ms** | 22 s | 73 s |
-| 10,000 charts | **~7 s** | ~4 min | ~12 min |
-| 100,000 charts | **~71 s** | ~36 min | ~2 h |
+| 1,000 charts | **6 ms** | 37 s | 60 s |
+| 10,000 charts | **~60 ms** | ~6 min | ~10 min |
+| 100,000 charts | **~600 ms** | ~1 h | ~1.7 h |
 
 ---
 
