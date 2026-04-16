@@ -334,18 +334,15 @@ pub fn build_kmeans_chart(
     background: Option<&str>,
 ) -> PyResult<Chart> {
     let pal: Vec<u32> = palette.unwrap_or_default();
-    let n = x_values.len().min(y_values.len());
-    let use_mini = mini_batch || n > 100_000;
-    let (labels, cx, cy, inertia) = if use_mini {
-        crate::plot::default::minibatch_kmeans_core_2d(&x_values[..n], &y_values[..n], k, max_iter, batch_size)
-    } else {
-        crate::plot::default::kmeans_core_2d(&x_values[..n], &y_values[..n], k, max_iter, tol)
-    };
-    let k_actual = cx.len();
-    let html = crate::plot::default::render_kmeans_html(
-        title, &x_values[..n], &y_values[..n], &labels, &cx, &cy,
-        k_actual, inertia, &pal, x_label, y_label, width, height, gridlines,
-    );
+    let html = crate::plot::default::render_kmeans_html(&crate::plot::default::KMeansConfig {
+        title,
+        x_values: &x_values,
+        y_values: &y_values,
+        k, max_iter, tol, mini_batch, batch_size,
+        width, height, x_label, y_label, gridlines,
+        palette: &pal,
+        ..Default::default()
+    });
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, true, true)))
 }
 
