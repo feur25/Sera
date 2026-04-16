@@ -53,6 +53,8 @@ const CHART_ALIASES: &[(&str, &str)] = &[
     ("bubble_map",     "build_bubble_map"),
     ("choropleth",     "build_choropleth"),
     ("wordcloud",      "build_wordcloud"),
+    ("kmeans",          "build_kmeans_chart"),
+    ("kmeans_chart",    "build_kmeans_chart"),
     ("dbscan",         "build_dbscan_chart"),
     ("scatter3d",      "build_scatter3d_chart"),
     ("bar3d",          "build_bar3d_chart"),
@@ -95,6 +97,8 @@ pub fn register_submodules(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(build_dbscan_chart, m)?)?;;
     m.add_class::<DbscanModel>()?;
     m.add_function(wrap_pyfunction!(build_dbscan_chart_3d, m)?)?;
+    m.add_function(wrap_pyfunction!(build_kmeans_chart, m)?)?;
+    m.add_class::<KMeansModel>()?;
 
     m.add_function(wrap_pyfunction!(build_histogram, m)?)?;
     m.add_function(wrap_pyfunction!(build_histogram_overlay, m)?)?;

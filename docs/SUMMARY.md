@@ -80,6 +80,8 @@
 - [DBSCAN 2D](ml/dbscan.md)
 - [DBSCAN 3D](ml/dbscan3d.md)
 - [DBSCAN Class](ml/dbscan-class.md)
+- [K-Means](ml/kmeans.md)
+- [K-Means Class](ml/kmeans-class.md)
 
 ---
 

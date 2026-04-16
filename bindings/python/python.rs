@@ -315,6 +315,121 @@ pub fn build_dbscan_chart_3d(title: &str, x_values: Vec<f64>, y_values: Vec<f64>
 
 #[cfg(feature = "python")]
 #[pyfunction]
+#[pyo3(signature = (title, x_values, y_values, *, k=3_usize, max_iter=300_usize, tol=1e-4_f64, mini_batch=false, batch_size=1000_usize, width=1000_i32, height=580_i32, x_label="", y_label="", gridlines=true, palette=None, background=None))]
+pub fn build_kmeans_chart(
+    title: &str,
+    x_values: Vec<f64>,
+    y_values: Vec<f64>,
+    k: usize,
+    max_iter: usize,
+    tol: f64,
+    mini_batch: bool,
+    batch_size: usize,
+    width: i32,
+    height: i32,
+    x_label: &str,
+    y_label: &str,
+    gridlines: bool,
+    palette: Option<Vec<u32>>,
+    background: Option<&str>,
+) -> PyResult<Chart> {
+    let pal: Vec<u32> = palette.unwrap_or_default();
+    let n = x_values.len().min(y_values.len());
+    let use_mini = mini_batch || n > 100_000;
+    let (labels, cx, cy, inertia) = if use_mini {
+        crate::plot::default::minibatch_kmeans_core_2d(&x_values[..n], &y_values[..n], k, max_iter, batch_size)
+    } else {
+        crate::plot::default::kmeans_core_2d(&x_values[..n], &y_values[..n], k, max_iter, tol)
+    };
+    let k_actual = cx.len();
+    let html = crate::plot::default::render_kmeans_html(
+        title, &x_values[..n], &y_values[..n], &labels, &cx, &cy,
+        k_actual, inertia, &pal, x_label, y_label, width, height, gridlines,
+    );
+    Ok(Chart::new(crate::html::hover::apply_opts(html, background, true, true)))
+}
+
+#[cfg(feature = "python")]
+#[pyclass(module = "seraplot", name = "KMeans")]
+pub struct KMeansModel {
+    k: usize,
+    max_iter: usize,
+    tol: f64,
+    mini_batch: bool,
+    batch_size: usize,
+    labels_: Vec<i32>,
+    centroids_: Vec<Vec<f64>>,
+    inertia_: f64,
+    n_iter_: usize,
+}
+
+#[cfg(feature = "python")]
+#[pymethods]
+impl KMeansModel {
+    #[new]
+    #[pyo3(signature = (k=3, max_iter=300, tol=1e-4, mini_batch=false, batch_size=1000))]
+    pub fn py_new(k: usize, max_iter: usize, tol: f64, mini_batch: bool, batch_size: usize) -> Self {
+        KMeansModel { k, max_iter, tol, mini_batch, batch_size, labels_: Vec::new(), centroids_: Vec::new(), inertia_: 0.0, n_iter_: 0 }
+    }
+
+    #[pyo3(signature = (x))]
+    pub fn fit(&mut self, x: Vec<Vec<f64>>) -> PyResult<()> {
+        let n = x.len();
+        let use_mini = self.mini_batch || n > 100_000;
+        if use_mini {
+            let (labels, centroids, inertia) = crate::plot::default::minibatch_kmeans_core_nd(&x, self.k, self.max_iter, self.batch_size);
+            self.labels_ = labels;
+            self.centroids_ = centroids;
+            self.inertia_ = inertia;
+            self.n_iter_ = self.max_iter;
+        } else {
+            let (labels, centroids, inertia) = crate::plot::default::kmeans_core_nd(&x, self.k, self.max_iter, self.tol);
+            self.labels_ = labels;
+            self.centroids_ = centroids;
+            self.inertia_ = inertia;
+            self.n_iter_ = self.max_iter;
+        }
+        Ok(())
+    }
+
+    #[pyo3(signature = (x))]
+    pub fn fit_predict(&mut self, x: Vec<Vec<f64>>) -> PyResult<Vec<i32>> {
+        self.fit(x)?;
+        Ok(self.labels_.clone())
+    }
+
+    #[pyo3(signature = (x))]
+    pub fn transform(&self, x: Vec<Vec<f64>>) -> PyResult<Vec<Vec<f64>>> {
+        Ok(x.iter().map(|pt| {
+            self.centroids_.iter().map(|c| crate::plot::default::kmeans::sq_dist_nd(pt, c).sqrt()).collect()
+        }).collect())
+    }
+
+    #[pyo3(signature = (x))]
+    pub fn predict(&self, x: Vec<Vec<f64>>) -> PyResult<Vec<i32>> {
+        Ok(x.iter().map(|pt| {
+            self.centroids_.iter().enumerate()
+                .map(|(i, c)| (i, crate::plot::default::kmeans::sq_dist_nd(pt, c)))
+                .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+                .map(|(i, _)| i as i32)
+                .unwrap_or(0)
+        }).collect())
+    }
+
+    #[getter] pub fn labels_(&self) -> Vec<i32> { self.labels_.clone() }
+    #[getter] pub fn centroids_(&self) -> Vec<Vec<f64>> { self.centroids_.clone() }
+    #[getter] pub fn inertia_(&self) -> f64 { self.inertia_ }
+    #[getter] pub fn n_iter_(&self) -> usize { self.n_iter_ }
+    #[getter] pub fn n_clusters(&self) -> usize { self.centroids_.len() }
+    #[getter] pub fn k(&self) -> usize { self.k }
+
+    fn __repr__(&self) -> String {
+        format!("KMeans(k={}, max_iter={}, mini_batch={}) — inertia={:.2}", self.k, self.max_iter, self.mini_batch, self.inertia_)
+    }
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
 #[pyo3(signature = (title, x_values, y_values, *, color_hex=0_u32, show_text=false, labels=None, sizes=None, color_groups=None, width=900_i32, height=540_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false, show_regression=false, regression_type="linear"))]
 pub fn build_scatter_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, color_hex: u32, show_text: bool, labels: Option<Vec<String>>, sizes: Option<Vec<f64>>, color_groups: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool, show_regression: bool, regression_type: &str) -> PyResult<Chart> {
     let _ = series_names;
