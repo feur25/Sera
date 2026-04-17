@@ -110,13 +110,13 @@ import seraplot as sp
 
 <div class="lang-fr">
 
-## R\u00e9f\u00e9rence API
+## Référence API
 
-Index alphab\u00e9tique complet de tous les symboles publics export\u00e9s par `seraplot`.
+Index alphabétique complet de tous les symboles publics exportés par `seraplot`.
 
 ---
 
-## Module\u00a0: `seraplot`
+## Module : `seraplot`
 
 ```python
 import seraplot as sp
@@ -124,38 +124,38 @@ import seraplot as sp
 
 ---
 
-## Fonctions graphiques \u2014 2D
+## Fonctions graphiques — 2D
 
 | Fonction | Description |
 |----------|-------------|
 | [`build_area_chart`](../charts/2d/area.md) | Graphique en aire |
 | [`build_bar_chart`](../charts/2d/bar.md) | Graphique en barres |
-| [`build_boxplot`](../charts/2d/boxplot.md) | Bo\u00eete \u00e0 moustaches |
-| [`build_bubble`](../charts/2d/bubble.md) | Graphique \u00e0 bulles |
+| [`build_boxplot`](../charts/2d/boxplot.md) | Boîte à moustaches |
+| [`build_bubble`](../charts/2d/bubble.md) | Graphique à bulles |
 | [`build_bullet`](../charts/2d/bullet.md) | Graphique bullet |
 | [`build_candlestick`](../charts/2d/candlestick.md) | Graphique en bougie |
 | [`build_donut_chart`](../charts/2d/donut.md) | Graphique en anneau |
-| [`build_dumbbell`](../charts/2d/dumbbell.md) | Graphique halt\u00e8re |
+| [`build_dumbbell`](../charts/2d/dumbbell.md) | Graphique haltère |
 | [`build_funnel`](../charts/2d/funnel.md) | Graphique en entonnoir |
 | [`build_gauge`](../charts/2d/gauge.md) | Jauge |
 | [`build_grid`](../charts/2d/grid.md) | Grille de graphiques |
-| [`build_grouped_bar`](../charts/2d/grouped-bar.md) | Barres group\u00e9es |
+| [`build_grouped_bar`](../charts/2d/grouped-bar.md) | Barres groupées |
 | [`build_hbar`](../charts/2d/hbar.md) | Barres horizontales |
 | [`build_heatmap`](../charts/2d/heatmap.md) | Carte de chaleur |
-| [`build_histogram_overlay`](../charts/2d/histogram-overlay.md) | Histogramme superpos\u00e9 |
+| [`build_histogram_overlay`](../charts/2d/histogram-overlay.md) | Histogramme superposé |
 | [`build_histogram`](../charts/2d/histogram.md) | Histogramme |
 | [`build_kde_chart`](../charts/2d/kde.md) | Estimation par noyau |
 | [`build_line_chart`](../charts/2d/line.md) | Graphique en courbe |
 | [`build_lollipop_chart`](../charts/2d/lollipop.md) | Graphique en sucette |
 | [`build_multiline_chart`](../charts/2d/multiline.md) | Courbes multiples |
-| [`build_parallel`](../charts/2d/parallel.md) | Coordonn\u00e9es parall\u00e8les |
+| [`build_parallel`](../charts/2d/parallel.md) | Coordonnées parallèles |
 | [`build_pie_chart`](../charts/2d/pie.md) | Camembert |
 | [`build_radar_chart`](../charts/2d/radar.md) | Graphique radar |
 | [`build_ridgeline_chart`](../charts/2d/ridgeline.md) | Ridgeline |
 | [`build_scatter_chart`](../charts/2d/scatter.md) | Nuage de points |
 | [`build_slideshow`](../charts/2d/slideshow.md) | Diaporama |
 | [`build_slope`](../charts/2d/slope.md) | Graphique de pente |
-| [`build_stacked_bar`](../charts/2d/stacked-bar.md) | Barres empil\u00e9es |
+| [`build_stacked_bar`](../charts/2d/stacked-bar.md) | Barres empilées |
 | [`build_sunburst`](../charts/2d/sunburst.md) | Sunburst |
 | [`build_treemap`](../charts/2d/treemap.md) | Treemap |
 | [`build_violin`](../charts/2d/violin.md) | Graphique en violon |
@@ -164,14 +164,14 @@ import seraplot as sp
 
 ---
 
-## Fonctions graphiques \u2014 3D
+## Fonctions graphiques — 3D
 
 | Fonction | Description |
 |----------|-------------|
 | [`build_bar3d_chart`](../charts/3d/bar3d.md) | Barres 3D |
 | [`build_bubble3d_chart`](../charts/3d/bubble3d.md) | Bulles 3D |
 | [`build_candlestick3d_chart`](../charts/3d/candlestick3d.md) | Bougie 3D |
-| [`build_dumbbell3d_chart`](../charts/3d/dumbbell3d.md) | Halt\u00e8re 3D |
+| [`build_dumbbell3d_chart`](../charts/3d/dumbbell3d.md) | Haltère 3D |
 | [`build_funnel3d_chart`](../charts/3d/funnel3d.md) | Entonnoir 3D |
 | [`build_globe3d_chart`](../charts/3d/globe3d.md) | Globe 3D |
 | [`build_heatmap3d_chart`](../charts/3d/heatmap3d.md) | Carte de chaleur 3D |
@@ -182,18 +182,18 @@ import seraplot as sp
 | [`build_radar3d_chart`](../charts/3d/radar3d.md) | Radar 3D |
 | [`build_ridgeline3d_chart`](../charts/3d/ridgeline3d.md) | Ridgeline 3D |
 | [`build_scatter3d_chart`](../charts/3d/scatter3d.md) | Nuage de points 3D |
-| [`build_stacked_bar3d_chart`](../charts/3d/stacked-bar3d.md) | Barres empil\u00e9es 3D |
+| [`build_stacked_bar3d_chart`](../charts/3d/stacked-bar3d.md) | Barres empilées 3D |
 | [`build_sunburst3d_chart`](../charts/3d/sunburst3d.md) | Sunburst 3D |
 | [`build_violin3d_chart`](../charts/3d/violin3d.md) | Violon 3D |
 
 ---
 
-## Fonctions graphiques \u2014 Carte
+## Fonctions graphiques — Carte
 
 | Fonction | Description |
 |----------|-------------|
-| [`build_bubble_map`](../charts/map/bubble-map.md) | Carte \u00e0 bulles |
-| [`build_choropleth`](../charts/map/choropleth.md) | Choro-pl\u00e8the |
+| [`build_bubble_map`](../charts/map/bubble-map.md) | Carte à bulles |
+| [`build_choropleth`](../charts/map/choropleth.md) | Choro-plèthe |
 
 ---
 
@@ -213,7 +213,7 @@ import seraplot as sp
 |----------|-------------|
 | [`set_auto_display`](../config/auto-display.md) | Affichage automatique (Jupyter) |
 | [`background`](../config/background.md) | Configuration du fond |
-| [`build_hover_json`](../config/hover.md) | Infobulles personnalis\u00e9es |
+| [`build_hover_json`](../config/hover.md) | Infobulles personnalisées |
 | [`palette`](../config/palette.md) | Palette & Couleurs |
 
 </div>

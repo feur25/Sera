@@ -3,10 +3,6 @@
 
 <div class="lang-en">
 
-# Démarrage rapide
-
-<div class="lang-en">
-
 ## Your first chart
 
 <style>
