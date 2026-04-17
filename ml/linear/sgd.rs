@@ -1,4 +1,5 @@
 use crate::ml::linalg::{dot, sigmoid, col_means, col_std};
+use rayon::prelude::*;
 
 pub struct SGDClassifier {
     pub coef: Vec<f64>,
@@ -39,22 +40,33 @@ impl SGDClassifier {
         let mut w = vec![0.0; p];
         let mut b = 0.0;
         let mut rng = 0xDEADBEEFCAFEu64;
+        let mut indices: Vec<usize> = (0..n).collect();
+        let mut shuf_x = vec![0.0; n * p];
+        let mut shuf_y = vec![0.0; n];
+        let alpha_eta0 = self.alpha * self.learning_rate;
+        let mut global_t = 0usize;
+        let mut best_loss = f64::MAX;
+        let mut no_change = 0usize;
 
         for epoch in 0..self.max_iter {
-            let mut indices: Vec<usize> = (0..n).collect();
             for i in (1..n).rev() {
                 rng ^= rng << 13; rng ^= rng >> 7; rng ^= rng << 17;
                 let j = rng as usize % (i + 1);
                 indices.swap(i, j);
             }
+            for (si, &idx) in indices.iter().enumerate() {
+                shuf_x[si * p..(si + 1) * p].copy_from_slice(&x[idx * p..(idx + 1) * p]);
+                shuf_y[si] = yf[idx];
+            }
 
-            let eta = self.learning_rate / (1.0 + self.alpha * self.learning_rate * epoch as f64);
+            let eta = self.learning_rate / (1.0 + alpha_eta0 * global_t as f64);
+            global_t += n;
             let mut total_loss = 0.0;
 
-            for &idx in &indices {
-                let row = &x[idx * p..(idx + 1) * p];
+            for i in 0..n {
+                let row = &shuf_x[i * p..(i + 1) * p];
                 let z = dot(row, &w) + b;
-                let yi = yf[idx];
+                let yi = shuf_y[i];
 
                 let (dloss, loss_val) = match self.loss {
                     SGDLoss::Hinge => {
@@ -84,7 +96,15 @@ impl SGDClassifier {
             }
 
             self.n_iter = epoch + 1;
-            if total_loss / (n as f64) < self.tol { break; }
+            let avg_loss = total_loss / n as f64;
+            if avg_loss < self.tol { break; }
+            if avg_loss < best_loss - self.tol {
+                best_loss = avg_loss;
+                no_change = 0;
+            } else {
+                no_change += 1;
+                if no_change >= 5 { break; }
+            }
         }
 
         self.coef = w;
@@ -92,14 +112,29 @@ impl SGDClassifier {
     }
 
     pub fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> {
-        (0..n).map(|i| {
-            let z = dot(&x[i * p..(i + 1) * p], &self.coef) + self.intercept;
-            if z >= 0.0 { self.classes[self.classes.len() - 1] } else { self.classes[0] }
-        }).collect()
+        let pos = self.classes[self.classes.len() - 1];
+        let neg = self.classes[0];
+        let coef = &self.coef;
+        let b = self.intercept;
+        if n >= 512 {
+            (0..n).into_par_iter().map(|i| {
+                if dot(&x[i * p..(i + 1) * p], coef) + b >= 0.0 { pos } else { neg }
+            }).collect()
+        } else {
+            (0..n).map(|i| {
+                if dot(&x[i * p..(i + 1) * p], coef) + b >= 0.0 { pos } else { neg }
+            }).collect()
+        }
     }
 
     pub fn decision_function(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
-        (0..n).map(|i| dot(&x[i * p..(i + 1) * p], &self.coef) + self.intercept).collect()
+        let coef = &self.coef;
+        let b = self.intercept;
+        if n >= 512 {
+            (0..n).into_par_iter().map(|i| dot(&x[i * p..(i + 1) * p], coef) + b).collect()
+        } else {
+            (0..n).map(|i| dot(&x[i * p..(i + 1) * p], coef) + b).collect()
+        }
     }
 }
 
@@ -123,29 +158,48 @@ impl SGDRegressor {
         let mut w = vec![0.0; p];
         let mut b = 0.0;
         let mut rng = 0xDEADBEEFCAFEu64;
+        let mut indices: Vec<usize> = (0..n).collect();
+        let mut shuf_x = vec![0.0; n * p];
+        let mut shuf_y = vec![0.0; n];
+        let alpha_eta0 = self.alpha * self.learning_rate;
+        let mut global_t = 0usize;
+        let mut best_loss = f64::MAX;
+        let mut no_change = 0usize;
 
         for epoch in 0..self.max_iter {
-            let mut indices: Vec<usize> = (0..n).collect();
             for i in (1..n).rev() {
                 rng ^= rng << 13; rng ^= rng >> 7; rng ^= rng << 17;
                 let j = rng as usize % (i + 1);
                 indices.swap(i, j);
             }
+            for (si, &idx) in indices.iter().enumerate() {
+                shuf_x[si * p..(si + 1) * p].copy_from_slice(&x[idx * p..(idx + 1) * p]);
+                shuf_y[si] = y[idx];
+            }
 
-            let eta = self.learning_rate / (1.0 + self.alpha * self.learning_rate * epoch as f64);
+            let eta = self.learning_rate / (1.0 + alpha_eta0 * global_t as f64);
+            global_t += n;
             let mut total_loss = 0.0;
 
-            for &idx in &indices {
-                let row = &x[idx * p..(idx + 1) * p];
+            for i in 0..n {
+                let row = &shuf_x[i * p..(i + 1) * p];
                 let pred = dot(row, &w) + b;
-                let err = pred - y[idx];
+                let err = pred - shuf_y[i];
                 total_loss += err * err;
                 for j in 0..p { w[j] -= eta * (err * row[j] + self.alpha * w[j]); }
                 if self.fit_intercept { b -= eta * err; }
             }
 
             self.n_iter = epoch + 1;
-            if total_loss / (n as f64) < self.tol { break; }
+            let avg_loss = total_loss / n as f64;
+            if avg_loss < self.tol { break; }
+            if avg_loss < best_loss - self.tol {
+                best_loss = avg_loss;
+                no_change = 0;
+            } else {
+                no_change += 1;
+                if no_change >= 5 { break; }
+            }
         }
 
         self.coef = w;
@@ -153,6 +207,12 @@ impl SGDRegressor {
     }
 
     pub fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
-        (0..n).map(|i| dot(&x[i * p..(i + 1) * p], &self.coef) + self.intercept).collect()
+        let coef = &self.coef;
+        let b = self.intercept;
+        if n >= 512 {
+            (0..n).into_par_iter().map(|i| dot(&x[i * p..(i + 1) * p], coef) + b).collect()
+        } else {
+            (0..n).map(|i| dot(&x[i * p..(i + 1) * p], coef) + b).collect()
+        }
     }
 }

@@ -1,5 +1,6 @@
 use crate::ml::tree::decision_tree::{DecisionTreeClassifier, DecisionTreeRegressor, compute_bins, bin_data_with_edges, BinInfo};
 use crate::ml::linalg::{discover_classes, weighted_bootstrap};
+use rayon::prelude::*;
 
 pub struct AdaBoostClassifier {
     pub n_estimators: usize,
@@ -19,13 +20,11 @@ impl AdaBoostClassifier {
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) {
-        let mut classes: Vec<i32> = discover_classes(y);
+        let classes: Vec<i32> = discover_classes(y);
         self.classes = classes.clone();
         let k = classes.len();
         let kf = k as f64;
-        let eps = 1e-15f64;
 
-        let y_idx: Vec<usize> = y.iter().map(|&v| classes.iter().position(|&c| c == v).unwrap()).collect();
         let mut weights = vec![1.0 / n as f64; n];
         self.trees.clear();
         self.alphas.clear();
@@ -46,103 +45,90 @@ impl AdaBoostClassifier {
             let bins = BinInfo { edges: master_bins.edges.clone(), n_bins: master_bins.n_bins.clone(), binned, p, n: sn };
             tree.fit_with_bins(&sampled_y, &bins);
 
-            let tree_nc = tree.n_classes();
-            let inv_km1 = -1.0 / (kf - 1.0);
+            let mut err = 0.0;
+            let preds: Vec<i32> = (0..n).map(|i| tree.predict_single(&x[i * p..(i + 1) * p])).collect();
             for i in 0..n {
-                let row = &x[i * p..(i + 1) * p];
-                let dist = tree.leaf_dist(row);
-                let dist_sum: f64 = dist.iter().sum();
-                let smooth_total = dist_sum + kf;
+                if preds[i] != y[i] { err += weights[i]; }
+            }
 
-                let mut score = 0.0;
-                for ci in 0..k {
-                    let cnt = if ci < tree_nc { dist[ci] } else { 0.0 };
-                    let pk = (cnt + 1.0) / smooth_total;
-                    let coding = if ci == y_idx[i] { 1.0 } else { inv_km1 };
-                    score += coding * pk.ln();
-                }
-                weights[i] *= (-self.learning_rate * (kf - 1.0) / kf * score).exp();
+            if err >= 1.0 - 1.0 / kf { break; }
+            if err <= 1e-15 {
+                self.alphas.push(1.0);
+                self.trees.push(tree);
+                break;
+            }
+
+            let alpha = self.learning_rate * ((1.0 - err) / err).ln() + (kf - 1.0).ln();
+            let exp_alpha = alpha.exp();
+            for i in 0..n {
+                if preds[i] != y[i] { weights[i] *= exp_alpha; }
             }
             let wsum: f64 = weights.iter().sum();
             if wsum <= 0.0 { break; }
             for w in weights.iter_mut() { *w /= wsum; }
 
+            self.alphas.push(alpha);
             self.trees.push(tree);
         }
     }
 
     pub fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> {
         let k = self.classes.len();
-        let kf = k as f64;
-        let eps = 1e-15f64;
-        let mut scores = vec![0.0; n * k];
-        for tree in &self.trees {
-            let tree_nc = tree.n_classes();
-            for i in 0..n {
-                let row = &x[i * p..(i + 1) * p];
-                let dist = tree.leaf_dist(row);
-                let dist_sum: f64 = dist.iter().sum();
-                let smooth_total = dist_sum + kf;
+        let trees = &self.trees;
+        let alphas = &self.alphas;
+        let classes = &self.classes;
 
-                let mut mean_log = 0.0;
-                for ci in 0..k {
-                    let cnt = if ci < tree_nc { dist[ci] } else { 0.0 };
-                    let pk = (cnt + 1.0) / smooth_total;
-                    mean_log += pk.ln();
-                }
-                mean_log /= kf;
-
-                for ci in 0..k {
-                    let cnt = if ci < tree_nc { dist[ci] } else { 0.0 };
-                    let pk = (cnt + 1.0) / smooth_total;
-                    scores[i * k + ci] += self.learning_rate * (kf - 1.0) * (pk.ln() - mean_log);
+        let predict_one = |i: usize| -> i32 {
+            let row = &x[i * p..(i + 1) * p];
+            let mut scores = vec![0.0; k];
+            for (t, tree) in trees.iter().enumerate() {
+                let pred = tree.predict_single(row);
+                if let Some(ci) = classes.iter().position(|&c| c == pred) {
+                    scores[ci] += alphas[t];
                 }
             }
+            let best = scores.iter().enumerate().max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap()).map(|(i, _)| i).unwrap_or(0);
+            classes[best]
+        };
+
+        if n >= 64 {
+            (0..n).into_par_iter().map(predict_one).collect()
+        } else {
+            (0..n).map(predict_one).collect()
         }
-        (0..n).map(|i| {
-            let row = &scores[i * k..(i + 1) * k];
-            let best = row.iter().enumerate().max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap()).map(|(i, _)| i).unwrap_or(0);
-            self.classes[best]
-        }).collect()
     }
 
     pub fn predict_proba(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
         let k = self.classes.len();
-        let kf = k as f64;
-        let mut scores = vec![0.0; n * k];
-        for tree in &self.trees {
-            let tree_nc = tree.n_classes();
-            for i in 0..n {
-                let row = &x[i * p..(i + 1) * p];
-                let dist = tree.leaf_dist(row);
-                let dist_sum: f64 = dist.iter().sum();
-                let smooth_total = dist_sum + kf;
-                let mut mean_log = 0.0;
-                for ci in 0..k {
-                    let cnt = if ci < tree_nc { dist[ci] } else { 0.0 };
-                    let pk = (cnt + 1.0) / smooth_total;
-                    mean_log += pk.ln();
-                }
-                mean_log /= kf;
-                for ci in 0..k {
-                    let cnt = if ci < tree_nc { dist[ci] } else { 0.0 };
-                    let pk = (cnt + 1.0) / smooth_total;
-                    scores[i * k + ci] += self.learning_rate * (kf - 1.0) * (pk.ln() - mean_log);
+        let trees = &self.trees;
+        let alphas = &self.alphas;
+        let classes = &self.classes;
+
+        let compute_row = |i: usize| -> Vec<f64> {
+            let row_x = &x[i * p..(i + 1) * p];
+            let mut scores = vec![0.0; k];
+            for (t, tree) in trees.iter().enumerate() {
+                let pred = tree.predict_single(row_x);
+                if let Some(ci) = classes.iter().position(|&c| c == pred) {
+                    scores[ci] += alphas[t];
                 }
             }
-        }
-        for i in 0..n {
-            let row = &mut scores[i * k..(i + 1) * k];
-            let mx = row.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+            let mx = scores.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
             let mut sum = 0.0;
-            for v in row.iter_mut() {
+            for v in scores.iter_mut() {
                 *v = (*v - mx).exp();
                 sum += *v;
             }
             let inv = 1.0 / sum;
-            for v in row.iter_mut() { *v *= inv; }
+            for v in scores.iter_mut() { *v *= inv; }
+            scores
+        };
+
+        if n >= 64 {
+            (0..n).into_par_iter().flat_map(compute_row).collect()
+        } else {
+            (0..n).flat_map(compute_row).collect()
         }
-        scores
     }
 }
 
@@ -209,12 +195,20 @@ impl AdaBoostRegressor {
         if self.trees.is_empty() { return vec![0.0; n]; }
         let all_preds: Vec<Vec<f64>> = self.trees.iter().map(|t| t.predict(x, n, p)).collect();
         let wsum: f64 = self.weights.iter().sum();
-        (0..n).map(|i| {
-            let mut s = 0.0;
-            for (t, w) in self.weights.iter().enumerate() {
-                s += w * all_preds[t][i];
-            }
-            s / wsum
-        }).collect()
+        let inv_wsum = 1.0 / wsum;
+        let weights = &self.weights;
+        if n >= 64 {
+            (0..n).into_par_iter().map(|i| {
+                let mut s = 0.0;
+                for (t, w) in weights.iter().enumerate() { s += w * all_preds[t][i]; }
+                s * inv_wsum
+            }).collect()
+        } else {
+            (0..n).map(|i| {
+                let mut s = 0.0;
+                for (t, w) in weights.iter().enumerate() { s += w * all_preds[t][i]; }
+                s * inv_wsum
+            }).collect()
+        }
     }
 }

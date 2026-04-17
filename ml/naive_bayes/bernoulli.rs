@@ -1,3 +1,5 @@
+use rayon::prelude::*;
+
 pub struct BernoulliNB {
     pub classes: Vec<i32>,
     log_priors: Vec<f64>,
@@ -49,7 +51,7 @@ impl BernoulliNB {
     }
 
     pub fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> {
-        (0..n).map(|i| {
+        let predict_one = |i: usize| -> i32 {
             let xi = &x[i * p..(i + 1) * p];
             let mut best = 0;
             let mut best_s = f64::NEG_INFINITY;
@@ -62,13 +64,17 @@ impl BernoulliNB {
                 if s > best_s { best_s = s; best = c; }
             }
             self.classes[best]
-        }).collect()
+        };
+        if n >= 512 {
+            (0..n).into_par_iter().map(predict_one).collect()
+        } else {
+            (0..n).map(predict_one).collect()
+        }
     }
 
     pub fn predict_proba(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
         let k = self.classes.len();
-        let mut out = vec![0.0; n * k];
-        for i in 0..n {
+        let compute_row = |i: usize| -> Vec<f64> {
             let xi = &x[i * p..(i + 1) * p];
             let scores: Vec<f64> = (0..k).map(|c| {
                 let mut s = self.log_priors[c];
@@ -79,10 +85,17 @@ impl BernoulliNB {
                 s
             }).collect();
             let max_s = scores.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+            let mut row = vec![0.0; k];
             let mut sum = 0.0;
-            for c in 0..k { out[i * k + c] = (scores[c] - max_s).exp(); sum += out[i * k + c]; }
-            for c in 0..k { out[i * k + c] /= sum; }
+            for c in 0..k { row[c] = (scores[c] - max_s).exp(); sum += row[c]; }
+            let inv = 1.0 / sum;
+            for v in row.iter_mut() { *v *= inv; }
+            row
+        };
+        if n >= 512 {
+            (0..n).into_par_iter().flat_map(compute_row).collect()
+        } else {
+            (0..n).flat_map(compute_row).collect()
         }
-        out
     }
 }

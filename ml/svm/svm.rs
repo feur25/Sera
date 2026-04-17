@@ -1,4 +1,4 @@
-use crate::ml::linalg::{dot, splitmix64};
+use crate::ml::linalg::{dot, splitmix64, solve_spd};
 use rayon::prelude::*;
 
 pub struct LinearSVC {
@@ -124,29 +124,38 @@ impl LinearSVR {
         let mut rng = 0xCAFEBABEu64;
         let mut idx: Vec<usize> = (0..n).collect();
         let mut init_pv = 0.0f64;
+        let mut shuf_x = vec![0.0; n * p];
+        let mut shuf_y = vec![0.0; n];
+        let mut shuf_qd = vec![0.0; n];
 
         for iter in 0..self.max_iter {
             for i in (1..n).rev() {
                 rng = splitmix64(rng);
                 idx.swap(i, rng as usize % (i + 1));
             }
+            for (si, &oi) in idx.iter().enumerate() {
+                shuf_x[si * p..(si + 1) * p].copy_from_slice(&x[oi * p..(oi + 1) * p]);
+                shuf_y[si] = y[oi];
+                shuf_qd[si] = qd[oi];
+            }
 
             let mut max_pv = 0.0f64;
 
-            for &i in &idx {
-                let xi = unsafe { x.get_unchecked(i * p..(i + 1) * p) };
+            for si in 0..n {
+                let oi = idx[si];
+                let xi = unsafe { shuf_x.get_unchecked(si * p..(si + 1) * p) };
                 let pred = dot(xi, &w) + b;
 
                 {
-                    let g = pred - y[i] + eps;
-                    let ai = ap[i];
+                    let g = pred - shuf_y[si] + eps;
+                    let ai = ap[oi];
                     let pg = if ai <= 0.0 { g.min(0.0) } else if ai >= c { g.max(0.0) } else { g };
                     let a = pg.abs();
                     if a > max_pv { max_pv = a; }
                     if a > 1e-12 {
-                        let na = (ai - g / unsafe { *qd.get_unchecked(i) }).clamp(0.0, c);
+                        let na = (ai - g / shuf_qd[si]).clamp(0.0, c);
                         let d = na - ai;
-                        ap[i] = na;
+                        ap[oi] = na;
                         for j in 0..p { unsafe { *w.get_unchecked_mut(j) += d * *xi.get_unchecked(j); } }
                         b += d;
                     }
@@ -155,15 +164,15 @@ impl LinearSVR {
                 let pred2 = dot(xi, &w) + b;
 
                 {
-                    let g = y[i] - pred2 + eps;
-                    let ai = an[i];
+                    let g = shuf_y[si] - pred2 + eps;
+                    let ai = an[oi];
                     let pg = if ai <= 0.0 { g.min(0.0) } else if ai >= c { g.max(0.0) } else { g };
                     let a = pg.abs();
                     if a > max_pv { max_pv = a; }
                     if a > 1e-12 {
-                        let na = (ai - g / unsafe { *qd.get_unchecked(i) }).clamp(0.0, c);
+                        let na = (ai - g / shuf_qd[si]).clamp(0.0, c);
                         let d = na - ai;
-                        an[i] = na;
+                        an[oi] = na;
                         for j in 0..p { unsafe { *w.get_unchecked_mut(j) -= d * *xi.get_unchecked(j); } }
                         b -= d;
                     }
@@ -194,45 +203,89 @@ impl LinearSVR {
 }
 
 fn train_linear_svm(x: &[f64], n: usize, p: usize, y: &[f64], c: f64, max_iter: usize, tol: f64) -> (Vec<f64>, f64) {
-    let mut w = vec![0.0; p];
-    let mut b = 0.0;
-    let mut alpha = vec![0.0; n];
-    let inv_2c = 0.5 / c;
-    let mut qd = vec![0.0; n];
-    for i in 0..n {
-        let xi = &x[i * p..(i + 1) * p];
-        let mut s = 1.0 + inv_2c;
-        for j in 0..p { s += xi[j] * xi[j]; }
-        qd[i] = s;
-    }
-    let mut init_pv = 0.0f64;
-    let mut rng = 0xDEADCAFEu64;
-    let mut idx: Vec<usize> = (0..n).collect();
-    for iter in 0..max_iter {
-        for i in (1..n).rev() {
-            rng ^= rng << 13; rng ^= rng >> 7; rng ^= rng << 17;
-            idx.swap(i, rng as usize % (i + 1));
+    let pb = p + 1;
+    let mut w = vec![0.0; pb];
+    let mut gnorm_init = 0.0f64;
+
+    for iter in 0..max_iter.min(100) {
+        let (mut grad, mut hess) = if n >= 4096 {
+            let ww = &w;
+            (0..n).into_par_iter().fold(
+                || (vec![0.0; pb], vec![0.0; pb * pb]),
+                |(mut g, mut h), i| {
+                    let xi = &x[i * p..(i + 1) * p];
+                    let yi = y[i];
+                    let mut dp = ww[p];
+                    for j in 0..p { dp += ww[j] * xi[j]; }
+                    let m = yi * dp;
+                    if m < 1.0 {
+                        let loss = 1.0 - m;
+                        let gc = -2.0 * c * loss * yi;
+                        for j in 0..p { g[j] += gc * xi[j]; }
+                        g[p] += gc;
+                        let hc = 2.0 * c;
+                        for j in 0..p {
+                            let xj = xi[j] * hc;
+                            for k in j..p { h[j * pb + k] += xj * xi[k]; }
+                            h[j * pb + p] += xj;
+                        }
+                        h[p * pb + p] += hc;
+                    }
+                    (g, h)
+                },
+            ).reduce(
+                || (vec![0.0; pb], vec![0.0; pb * pb]),
+                |(mut g1, mut h1), (g2, h2)| {
+                    for j in 0..pb { g1[j] += g2[j]; }
+                    for j in 0..(pb * pb) { h1[j] += h2[j]; }
+                    (g1, h1)
+                },
+            )
+        } else {
+            let mut g = vec![0.0; pb];
+            let mut h = vec![0.0; pb * pb];
+            for i in 0..n {
+                let xi = &x[i * p..(i + 1) * p];
+                let yi = y[i];
+                let mut dp = w[p];
+                for j in 0..p { dp += w[j] * xi[j]; }
+                let m = yi * dp;
+                if m < 1.0 {
+                    let loss = 1.0 - m;
+                    let gc = -2.0 * c * loss * yi;
+                    for j in 0..p { g[j] += gc * xi[j]; }
+                    g[p] += gc;
+                    let hc = 2.0 * c;
+                    for j in 0..p {
+                        let xj = xi[j] * hc;
+                        for k in j..p { h[j * pb + k] += xj * xi[k]; }
+                        h[j * pb + p] += xj;
+                    }
+                    h[p * pb + p] += hc;
+                }
+            }
+            (g, h)
+        };
+
+        for j in 0..p {
+            grad[j] += w[j];
+            hess[j * pb + j] += 1.0;
         }
-        let mut max_pv = 0.0f64;
-        for &i in &idx {
-            let xi = unsafe { x.get_unchecked(i * p..(i + 1) * p) };
-            let mut dp = b;
-            for j in 0..p { dp += unsafe { *w.get_unchecked(j) * *xi.get_unchecked(j) }; }
-            let yi = unsafe { *y.get_unchecked(i) };
-            let ai = unsafe { *alpha.get_unchecked(i) };
-            let gi = yi * dp + ai * inv_2c - 1.0;
-            let pg = if ai <= 0.0 { gi.min(0.0) } else { gi };
-            let apg = pg.abs();
-            if apg > max_pv { max_pv = apg; }
-            if apg < 1e-12 { continue; }
-            let new_ai = (ai - gi / unsafe { *qd.get_unchecked(i) }).max(0.0);
-            unsafe { *alpha.get_unchecked_mut(i) = new_ai; }
-            let d = (new_ai - ai) * yi;
-            for j in 0..p { unsafe { *w.get_unchecked_mut(j) += d * *xi.get_unchecked(j); } }
-            b += d;
+        hess[p * pb + p] += 1e-8;
+        for j in 0..pb { for k in (j + 1)..pb { hess[k * pb + j] = hess[j * pb + k]; } }
+
+        let gnorm: f64 = grad.iter().map(|g| g * g).sum::<f64>().sqrt();
+        if iter == 0 { gnorm_init = gnorm; }
+        if gnorm < tol * gnorm_init.max(1.0) { break; }
+
+        let neg_grad: Vec<f64> = grad.iter().map(|g| -g).collect();
+        match solve_spd(&hess, pb, &neg_grad) {
+            Some(d) => { for j in 0..pb { w[j] += d[j]; } }
+            None => break,
         }
-        if iter == 0 { init_pv = max_pv; if init_pv < 1e-15 { break; } }
-        if max_pv < tol * init_pv { break; }
     }
+
+    let b = w[p];
+    w.truncate(p);
     (w, b)
 }

@@ -134,11 +134,36 @@ impl MinMaxScaler {
         self.p = p;
         let mut mins = vec![f64::MAX; p];
         let mut maxs = vec![f64::MIN; p];
-        for i in 0..n {
-            for j in 0..p {
-                let v = x[i * p + j];
-                if v < mins[j] { mins[j] = v; }
-                if v > maxs[j] { maxs[j] = v; }
+        if n * p >= 50_000 {
+            let chunk = 4096usize.max(1);
+            let nc = (n + chunk - 1) / chunk;
+            let partials: Vec<(Vec<f64>, Vec<f64>)> = (0..nc).into_par_iter().map(|c| {
+                let s = c * chunk;
+                let e = (s + chunk).min(n);
+                let mut lmin = vec![f64::MAX; p];
+                let mut lmax = vec![f64::MIN; p];
+                for i in s..e {
+                    for j in 0..p {
+                        let v = x[i * p + j];
+                        if v < lmin[j] { lmin[j] = v; }
+                        if v > lmax[j] { lmax[j] = v; }
+                    }
+                }
+                (lmin, lmax)
+            }).collect();
+            for (lmin, lmax) in &partials {
+                for j in 0..p {
+                    if lmin[j] < mins[j] { mins[j] = lmin[j]; }
+                    if lmax[j] > maxs[j] { maxs[j] = lmax[j]; }
+                }
+            }
+        } else {
+            for i in 0..n {
+                for j in 0..p {
+                    let v = x[i * p + j];
+                    if v < mins[j] { mins[j] = v; }
+                    if v > maxs[j] { maxs[j] = v; }
+                }
             }
         }
         self.min = mins.clone();
@@ -148,10 +173,20 @@ impl MinMaxScaler {
     pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
         let (lo, hi) = self.feature_range;
         let span = hi - lo;
+        let inv_range: Vec<f64> = self.range.iter().map(|&r| span / r).collect();
+        let min = &self.min;
         let mut out = vec![0.0; n * p];
-        for i in 0..n {
-            for j in 0..p {
-                out[i * p + j] = (x[i * p + j] - self.min[j]) / self.range[j] * span + lo;
+        if n * p >= 50_000 {
+            out.par_chunks_mut(p).enumerate().for_each(|(i, row)| {
+                for j in 0..p {
+                    row[j] = (x[i * p + j] - min[j]) * inv_range[j] + lo;
+                }
+            });
+        } else {
+            for i in 0..n {
+                for j in 0..p {
+                    out[i * p + j] = (x[i * p + j] - min[j]) * inv_range[j] + lo;
+                }
             }
         }
         out
@@ -165,10 +200,20 @@ impl MinMaxScaler {
     pub fn inverse_transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
         let (lo, hi) = self.feature_range;
         let span = hi - lo;
+        let inv_span: Vec<f64> = self.range.iter().map(|&r| r / span).collect();
+        let min = &self.min;
         let mut out = vec![0.0; n * p];
-        for i in 0..n {
-            for j in 0..p {
-                out[i * p + j] = (x[i * p + j] - lo) / span * self.range[j] + self.min[j];
+        if n * p >= 50_000 {
+            out.par_chunks_mut(p).enumerate().for_each(|(i, row)| {
+                for j in 0..p {
+                    row[j] = (x[i * p + j] - lo) * inv_span[j] + min[j];
+                }
+            });
+        } else {
+            for i in 0..n {
+                for j in 0..p {
+                    out[i * p + j] = (x[i * p + j] - lo) * inv_span[j] + min[j];
+                }
             }
         }
         out
@@ -193,29 +238,61 @@ impl RobustScaler {
         self.center = vec![0.0; p];
         self.scale = vec![1.0; p];
 
-        for j in 0..p {
-            let mut col: Vec<f64> = (0..n).map(|i| x[i * p + j]).collect();
-            col.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
-
-            if self.with_centering {
-                self.center[j] = percentile_sorted(&col, 50.0);
+        if p >= 4 && n >= 1000 {
+            let results: Vec<(f64, f64)> = (0..p).into_par_iter().map(|j| {
+                let mut col: Vec<f64> = (0..n).map(|i| x[i * p + j]).collect();
+                col.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
+                let c = if self.with_centering { percentile_sorted(&col, 50.0) } else { 0.0 };
+                let s = if self.with_scaling {
+                    let q25 = percentile_sorted(&col, 25.0);
+                    let q75 = percentile_sorted(&col, 75.0);
+                    (q75 - q25).max(1e-15)
+                } else { 1.0 };
+                (c, s)
+            }).collect();
+            for j in 0..p {
+                self.center[j] = results[j].0;
+                self.scale[j] = results[j].1;
             }
-            if self.with_scaling {
-                let q25 = percentile_sorted(&col, 25.0);
-                let q75 = percentile_sorted(&col, 75.0);
-                self.scale[j] = (q75 - q25).max(1e-15);
+        } else {
+            for j in 0..p {
+                let mut col: Vec<f64> = (0..n).map(|i| x[i * p + j]).collect();
+                col.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
+                if self.with_centering {
+                    self.center[j] = percentile_sorted(&col, 50.0);
+                }
+                if self.with_scaling {
+                    let q25 = percentile_sorted(&col, 25.0);
+                    let q75 = percentile_sorted(&col, 75.0);
+                    self.scale[j] = (q75 - q25).max(1e-15);
+                }
             }
         }
     }
 
     pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        let center = &self.center;
+        let inv_scale: Vec<f64> = self.scale.iter().map(|&s| 1.0 / s).collect();
+        let wc = self.with_centering;
+        let ws = self.with_scaling;
         let mut out = vec![0.0; n * p];
-        for i in 0..n {
-            for j in 0..p {
-                let mut v = x[i * p + j];
-                if self.with_centering { v -= self.center[j]; }
-                if self.with_scaling { v /= self.scale[j]; }
-                out[i * p + j] = v;
+        if n * p >= 50_000 {
+            out.par_chunks_mut(p).enumerate().for_each(|(i, row)| {
+                for j in 0..p {
+                    let mut v = x[i * p + j];
+                    if wc { v -= center[j]; }
+                    if ws { v *= inv_scale[j]; }
+                    row[j] = v;
+                }
+            });
+        } else {
+            for i in 0..n {
+                for j in 0..p {
+                    let mut v = x[i * p + j];
+                    if wc { v -= center[j]; }
+                    if ws { v *= inv_scale[j]; }
+                    out[i * p + j] = v;
+                }
             }
         }
         out
@@ -240,19 +317,48 @@ impl MaxAbsScaler {
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize) {
         self.p = p;
         self.max_abs = vec![0.0; p];
-        for i in 0..n {
-            for j in 0..p {
-                let v = x[i * p + j].abs();
-                if v > self.max_abs[j] { self.max_abs[j] = v; }
+        if n * p >= 50_000 {
+            let chunk = 4096usize.max(1);
+            let nc = (n + chunk - 1) / chunk;
+            let partials: Vec<Vec<f64>> = (0..nc).into_par_iter().map(|c| {
+                let s = c * chunk;
+                let e = (s + chunk).min(n);
+                let mut lmax = vec![0.0; p];
+                for i in s..e {
+                    for j in 0..p {
+                        let v = x[i * p + j].abs();
+                        if v > lmax[j] { lmax[j] = v; }
+                    }
+                }
+                lmax
+            }).collect();
+            for lmax in &partials {
+                for j in 0..p {
+                    if lmax[j] > self.max_abs[j] { self.max_abs[j] = lmax[j]; }
+                }
+            }
+        } else {
+            for i in 0..n {
+                for j in 0..p {
+                    let v = x[i * p + j].abs();
+                    if v > self.max_abs[j] { self.max_abs[j] = v; }
+                }
             }
         }
         for j in 0..p { if self.max_abs[j] < 1e-15 { self.max_abs[j] = 1.0; } }
     }
 
     pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        let inv: Vec<f64> = self.max_abs.iter().map(|&m| 1.0 / m).collect();
         let mut out = vec![0.0; n * p];
-        for i in 0..n {
-            for j in 0..p { out[i * p + j] = x[i * p + j] / self.max_abs[j]; }
+        if n * p >= 50_000 {
+            out.par_chunks_mut(p).enumerate().for_each(|(i, row)| {
+                for j in 0..p { row[j] = x[i * p + j] * inv[j]; }
+            });
+        } else {
+            for i in 0..n {
+                for j in 0..p { out[i * p + j] = x[i * p + j] * inv[j]; }
+            }
         }
         out
     }
@@ -277,14 +383,26 @@ impl Normalizer {
 
     pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
         let mut out = vec![0.0; n * p];
-        for i in 0..n {
-            let row = &x[i * p..(i + 1) * p];
-            let scale = match self.norm {
-                NormType::L1 => { let s: f64 = row.iter().map(|v| v.abs()).sum(); s.max(1e-15) }
-                NormType::L2 => { let s: f64 = row.iter().map(|v| v * v).sum(); s.sqrt().max(1e-15) }
-                NormType::Max => { let s = row.iter().map(|v| v.abs()).fold(0.0f64, f64::max); s.max(1e-15) }
-            };
-            for j in 0..p { out[i * p + j] = row[j] / scale; }
+        if n * p >= 50_000 {
+            out.par_chunks_mut(p).enumerate().for_each(|(i, row)| {
+                let xi = &x[i * p..(i + 1) * p];
+                let scale = match self.norm {
+                    NormType::L1 => { let s: f64 = xi.iter().map(|v| v.abs()).sum(); s.max(1e-15) }
+                    NormType::L2 => { let s: f64 = xi.iter().map(|v| v * v).sum(); s.sqrt().max(1e-15) }
+                    NormType::Max => { let s = xi.iter().map(|v| v.abs()).fold(0.0f64, f64::max); s.max(1e-15) }
+                };
+                for j in 0..p { row[j] = xi[j] / scale; }
+            });
+        } else {
+            for i in 0..n {
+                let row = &x[i * p..(i + 1) * p];
+                let scale = match self.norm {
+                    NormType::L1 => { let s: f64 = row.iter().map(|v| v.abs()).sum(); s.max(1e-15) }
+                    NormType::L2 => { let s: f64 = row.iter().map(|v| v * v).sum(); s.sqrt().max(1e-15) }
+                    NormType::Max => { let s = row.iter().map(|v| v.abs()).fold(0.0f64, f64::max); s.max(1e-15) }
+                };
+                for j in 0..p { out[i * p + j] = row[j] / scale; }
+            }
         }
         out
     }
