@@ -1,5 +1,7 @@
 # DBSCAN 3D Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -26,10 +28,8 @@ sp.build_dbscan_chart_3d(
 
 ## Description
 
-DBSCAN clustering in 3D — rendered via GPU WebGL for maximum performance.
+DBSCAN clustering in 3D — rendered via GPU WebGL.
 Each cluster is assigned a distinct color; noise points are grey.
-
-Clustering DBSCAN 3D — rendu via WebGL GPU pour des performances maximales.
 
 ---
 
@@ -152,3 +152,25 @@ list(y),
 - [DBSCAN 2D](dbscan.md)
 - [DBSCAN Class](dbscan-class.md)
 - [Scatter 3D](../charts/3d/scatter3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Clustering DBSCAN en 3D — rendu via WebGL GPU. Chaque cluster est coloré distinctement ; les points bruit sont gris.
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `x` | `list[float]` | requis | Coordonnées X |
+| `y` | `list[float]` | requis | Coordonnées Y |
+| `z` | `list[float]` | requis | Coordonnées Z |
+| `eps` | `float` | `0.5` | Distance maximale de voisinage |
+| `min_samples` | `int` | `5` | Minimum de points pour une région dense |
+| `normalize` | `bool` | `False` | Normaliser les variables avant le clustering |
+
+</div>

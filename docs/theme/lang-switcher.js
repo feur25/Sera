@@ -55,9 +55,16 @@
     init();
   }
 
+  var debounceTimer = null;
   var observer = new MutationObserver(function () {
-    injectButton();
-    applyLang(getLang());
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function () {
+      debounceTimer = null;
+      observer.disconnect();
+      injectButton();
+      applyLang(getLang());
+      observer.observe(document.body, { childList: true, subtree: true });
+    }, 80);
   });
   observer.observe(document.body, { childList: true, subtree: true });
 })();

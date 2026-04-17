@@ -1,5 +1,7 @@
 # KMeans Class
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -28,8 +30,6 @@ model.n_clusters  -> int
 ## Description
 
 High-performance K-Means class for N-dimensional data with a scikit-learn-compatible API.
-
-Supports any number of dimensions via the N-D engine (parallel scoped threads, 4-way unrolled distance). Automatically switches to mini-batch mode when `n > 100 000`.
 
 ---
 
@@ -186,3 +186,42 @@ for i, row in enumerate(distances):
 
 </div>
 </div>
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Classe K-Means haute performance pour données N-dimensionnelles, compatible avec l'API scikit-learn. Passe automatiquement en mode mini-batch pour `n > 100 000`.
+
+## Constructeur
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `k` | `int` | `3` | Nombre de clusters |
+| `max_iter` | `int` | `300` | Nombre maximum d'itérations |
+| `tol` | `float` | `1e-4` | Tolérance de convergence |
+| `mini_batch` | `bool` | `False` | Forcer le mode mini-batch |
+| `batch_size` | `int` | `1000` | Taille du mini-batch |
+
+## Méthodes
+
+| Méthode | Description |
+|---------|-------------|
+| `fit(x)` | Ajuste le modèle |
+| `fit_predict(x)` | Ajuste et retourne les labels |
+| `predict(x)` | Prédit les clusters |
+| `transform(x)` | Distances aux centroïdes |
+
+## Attributs
+
+| Attribut | Description |
+|---------|-------------|
+| `labels_` | Labels par point |
+| `centroids_` | Coordonnées des centroïdes |
+| `inertia_` | Inertie finale |
+| `n_iter_` | Nombre d'itérations |
+
+</div>
+

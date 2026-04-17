@@ -1,5 +1,7 @@
 # 3D Charts
 
+<div class="lang-en">
+
 SeraPlot provides 17 three-dimensional chart types rendered with full WebGL acceleration.
 
 | Chart | Function |
@@ -21,3 +23,13 @@ SeraPlot provides 17 three-dimensional chart types rendered with full WebGL acce
 | [Sunburst 3D](sunburst3d.md) | `sunburst3d()` |
 | [Stacked Bar 3D](stacked-bar3d.md) | `stacked_bar3d()` |
 | [Globe 3D](globe3d.md) | `globe3d()` |
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+SeraPlot propose 17 types de graphiques 3D rendus avec accélération WebGL complète.
+
+</div>

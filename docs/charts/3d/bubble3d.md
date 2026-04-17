@@ -1,5 +1,7 @@
 # Bubble Chart 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -129,3 +131,13 @@ const chart = sp.build_bubble3d_chart("4D Dataset",
 
 - [Scatter 3D](scatter3d.md)
 - [Bubble 2D](../2d/bubble.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique à bulles 3D — nuage de points XYZ où le rayon des bulles encode une quatrième dimension.
+
+</div>

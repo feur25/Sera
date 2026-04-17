@@ -1,5 +1,7 @@
 # Ridgeline Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -143,3 +145,13 @@ months,
 - [KDE](kde.md)
 - [Violin](violin.md)
 - [Ridgeline 3D](../3d/ridgeline3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique ridgeline (joy plot) — courbes KDE empilées par catégorie. Excellent pour comparer les formes de distribution entre de nombreux groupes.
+
+</div>

@@ -1,5 +1,7 @@
 # Radar Chart 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -112,3 +114,13 @@ const chart = sp.build_radar3d_chart("Skills Comparison 3D",
 ## See also
 
 - [Radar 2D](../2d/radar.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique radar 3D (toile d'araignée). Même concept que le radar 2D mais rendu dans une scène WebGL.
+
+</div>

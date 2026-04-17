@@ -1,5 +1,7 @@
 # 2D Charts
 
+<div class="lang-en">
+
 SeraPlot provides 33 two-dimensional chart types, from basic bar and line charts to specialized plots like ridgeline, dumbbell, and slideshow.
 
 | Chart | Function |
@@ -37,3 +39,14 @@ SeraPlot provides 33 two-dimensional chart types, from basic bar and line charts
 | [Radar](radar.md) | `radar()` |
 | [Grid Layout](grid.md) | `grid()` |
 | [Slideshow](slideshow.md) | `slideshow()` |
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+SeraPlot propose 33 types de graphiques 2D, des barres et courbes basiques aux graphiques spécialisés (ridgeline, haltère, slideshow…).
+
+</div>
+

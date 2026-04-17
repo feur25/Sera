@@ -1,5 +1,7 @@
 # Stacked Bar Chart 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -134,3 +136,13 @@ categories,
 
 - [Stacked Bar 2D](../2d/stacked-bar.md)
 - [Bar 3D](bar3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en barres empilées 3D — chaque barre est segmentée en séries, rendues comme des prismes empilés.
+
+</div>

@@ -1,5 +1,7 @@
 # Word Cloud
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -121,3 +123,13 @@ list(counts.keys()),
 ## See also
 
 - [Bar Chart](bar.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Nuage de mots où la taille de la police reflète le poids de chaque mot. Les mots avec un `weights` plus élevé sont affichés en plus grand.
+
+</div>

@@ -1,5 +1,7 @@
 # Scatter 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -162,3 +164,13 @@ y,
 - [Scatter 2D](../2d/scatter.md)
 - [DBSCAN 3D](../../ml/dbscan.md)
 - [Bubble 3D](bubble3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Nuage de points 3D accéléré GPU via WebGL. Gère des millions de points à des fréquences d'images interactives.
+
+</div>

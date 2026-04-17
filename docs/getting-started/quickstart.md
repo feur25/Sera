@@ -1,4 +1,12 @@
 
+# Démarrage rapide
+
+<div class="lang-en">
+
+# Démarrage rapide
+
+<div class="lang-en">
+
 ## Your first chart
 
 <style>
@@ -210,3 +218,64 @@ const chart = sp.build_scatter3d_chart("3D Scatter", x, {
 });</code></pre></div>
 </div>
 ```
+
+</div>
+
+<div class="lang-fr">
+
+## Votre premier graphique
+
+```python
+import seraplot as sp
+chart = sp.build_bar_chart(
+    "Ventes par région",
+    labels=["Nord", "Sud", "Est", "Ouest"],
+    values=[120.0, 85.0, 200.0, 140.0],
+)
+```
+
+> Dans Jupyter, le graphique s'affiche automatiquement.
+
+---
+
+## Enregistrer en HTML
+
+```python
+with open("graphique.html", "w", encoding="utf-8") as f:
+    f.write(chart.html)
+```
+
+---
+
+## Modèles courants
+
+### Nuage de points avec groupes colorés
+
+```python
+import numpy as np
+x = np.random.randn(500).tolist()
+y = np.random.randn(500).tolist()
+groupes = (["A"] * 250) + (["B"] * 250)
+chart = sp.build_scatter_chart("Deux clusters", x_values=x, y_values=y, color_groups=groupes)
+```
+
+### Fond sombre global pour tous les graphiques
+
+```python
+sp.set_global_background("#0f172a")
+chart1 = sp.build_bar_chart("Graphique 1", labels=["A", "B"], values=[10.0, 20.0])
+sp.reset_global_background()
+```
+
+### Nuage de points 3D
+
+```python
+import numpy as np
+x = np.random.randn(1000).tolist()
+y = np.random.randn(1000).tolist()
+z = np.random.randn(1000).tolist()
+chart = sp.build_scatter3d_chart("Nuage 3D", x_values=x, y_values=y, z_values=z)
+```
+
+</div>
+

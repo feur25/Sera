@@ -1,5 +1,7 @@
 # KDE Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -135,3 +137,13 @@ const chart = sp.build_kde_chart("Score Distribution",
 - [Violin](violin.md)
 - [Ridgeline](ridgeline.md)
 - [KDE 3D](../3d/kde3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Courbe d'estimation par noyau (KDE) — estimation lissée et continue d'une distribution de probabilité. Plusieurs séries peuvent être superposées.
+
+</div>

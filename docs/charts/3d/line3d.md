@@ -1,5 +1,7 @@
 # Line Chart 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -144,3 +146,13 @@ y,
 
 - [Line Chart 2D](../2d/line.md)
 - [Scatter 3D](scatter3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en courbe 3D connectant des points séquentiels dans l'espace 3D. Utile pour les trajectoires et les courbes paramétriques.
+
+</div>

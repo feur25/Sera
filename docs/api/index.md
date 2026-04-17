@@ -1,5 +1,7 @@
 # API Reference
 
+<div class="lang-en">
+
 Complete alphabetical index of every public symbol exported by `seraplot`.
 
 ---
@@ -103,3 +105,14 @@ import seraplot as sp
 | [`background`](../config/background.md) | Background Configuration |
 | [`build_hover_json`](../config/hover.md) | Custom Hover Tooltips |
 | [`palette`](../config/palette.md) | Palette & Colors |
+
+</div>
+
+<div class="lang-fr">
+
+## Référence API
+
+Index alphabétique complet de tous les symboles publics exportés par `seraplot`.
+
+</div>
+

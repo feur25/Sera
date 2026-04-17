@@ -1,5 +1,7 @@
 # Histogram
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -138,3 +140,13 @@ const chart = sp.build_histogram("Normal Distribution — N(0,1)",
 - [Histogram Overlay](histogram-overlay.md) — compare two distributions
 - [KDE](kde.md) — smooth density estimate
 - [Violin](violin.md) — distribution by category
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Histogramme de distribution avec nombre de bins configurable.
+
+</div>

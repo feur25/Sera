@@ -1,5 +1,7 @@
 # Donut Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -122,3 +124,13 @@ const chart = sp.build_donut_chart("Budget Allocation",
 
 - [Pie Chart](pie.md)
 - [Sunburst](sunburst.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Diagramme en anneau — identique à un camembert avec un trou circulaire central. `inner_radius_ratio` contrôle la taille du trou.
+
+</div>

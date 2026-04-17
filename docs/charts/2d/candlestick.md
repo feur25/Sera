@@ -1,5 +1,7 @@
 # Candlestick Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -132,3 +134,13 @@ const chart = sp.build_candlestick("AAPL - January 2024",
 
 - [Dumbbell](dumbbell.md)
 - [Candlestick 3D](../3d/candlestick3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique bougie financier pour données OHLC (Ouverture / Haut / Bas / Fermeture). Bougies vertes = hausse, rouges = baisse.
+
+</div>

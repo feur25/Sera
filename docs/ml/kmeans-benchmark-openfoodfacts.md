@@ -183,3 +183,17 @@ Estimated runtime:
 
 For **interactive exploration of nutritional data** or **any use case with <500k points**, SeraPlot is now a **clear winner**.
 
+<div class="lang-fr">
+
+## Résultats clés
+
+SeraPlot K-Means sur Open Food Facts (1,79M produits, 7 dimensions nutritionnelles) :
+
+- **10–14× plus rapide** que scikit-learn (comparaison équitable, n_init=10)
+- **21–33× plus rapide** en mode ultra (n_init=1 vs sklearn n_init=10)
+- Qualité identique (ratio inertie ≤ 1.03)
+- Visualisation intégrée : HTML interactif de 509 Ko, 1,79M points cliquables
+
+</div>
+
+

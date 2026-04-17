@@ -1,5 +1,7 @@
 # Bar Chart 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -123,3 +125,13 @@ const chart = sp.build_bar3d_chart("Sales by Product",
 
 - [Bar Chart 2D](../2d/bar.md)
 - [Stacked Bar 3D](stacked-bar3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en barres 3D rendant les barres comme des prismes rectangulaires extrudes sur un canvas WebGL.
+
+</div>

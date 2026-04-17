@@ -1,5 +1,7 @@
 # DBSCAN Class
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -19,9 +21,6 @@ model.n_noise_     -> int
 
 Low-level DBSCAN class for programmatic access to cluster labels.
 `-1` labels indicate noise points (not part of any cluster).
-
-This class runs the same Rust-native DBSCAN as `build_dbscan_chart` but returns raw labels
-instead of producing a chart.
 
 ---
 
@@ -170,3 +169,35 @@ chart = sp.build_scatter_chart(
 - [DBSCAN Chart](dbscan.md)
 - [DBSCAN 3D](dbscan3d.md)
 - [Scatter Chart](../charts/2d/scatter.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Classe DBSCAN bas niveau pour un accès programmatique aux labels de cluster. Les points bruit ont le label `-1`.
+
+## Constructeur
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `eps` | `float` | `0.5` | Distance maximale de voisinage |
+| `min_samples` | `int` | `5` | Nombre minimum de points pour une région dense |
+
+## Méthodes
+
+| Méthode | Description |
+|---------|-------------|
+| `fit(x, y)` | Ajuste le modèle |
+| `fit_predict(x, y)` | Ajuste et retourne les labels |
+
+## Attributs
+
+| Attribut | Description |
+|---------|-------------|
+| `labels_` | Liste des labels par point (−1 = bruit) |
+| `n_clusters_` | Nombre de clusters trouvés |
+| `n_noise_` | Nombre de points bruit |
+
+</div>

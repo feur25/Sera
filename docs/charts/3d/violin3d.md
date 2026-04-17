@@ -1,5 +1,7 @@
 # Violin Chart 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -121,3 +123,13 @@ const chart = sp.build_violin3d_chart("Trial Results",
 
 - [Violin 2D](../2d/violin.md)
 - [KDE 3D](kde3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en violon 3D — surfaces de distribution basées sur KDE par catégorie rendues en WebGL.
+
+</div>

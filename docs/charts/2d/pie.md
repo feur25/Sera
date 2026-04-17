@@ -1,5 +1,7 @@
 # Pie Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -120,3 +122,13 @@ const chart = sp.build_pie_chart("Revenue by Region",
 - [Donut Chart](donut.md)
 - [Pie 3D](../3d/pie3d.md)
 - [Sunburst](sunburst.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Camembert standard avec étiquettes de pourcentage optionnelles.
+
+</div>

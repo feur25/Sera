@@ -1,5 +1,7 @@
 # Lollipop Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -133,3 +135,13 @@ const chart = sp.build_lollipop_chart("Top Countries by GDP per Capita",
 - [Bar Chart](bar.md)
 - [Dumbbell](dumbbell.md)
 - [Lollipop 3D](../3d/lollipop3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en sucette — alternative épurée aux barres : tige fine avec cercle au bout. Réduit le ratio encre/données.
+
+</div>

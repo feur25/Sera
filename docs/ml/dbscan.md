@@ -1,5 +1,7 @@
 # DBSCAN Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -190,3 +192,32 @@ chart = sp.build_dbscan_chart(
 - [DBSCAN Class](dbscan-class.md) — for accessing labels and cluster metadata
 - [DBSCAN 3D](dbscan3d.md)
 - [Scatter Chart](../charts/2d/scatter.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique de clustering DBSCAN 2D. Exécute l'algorithme DBSCAN natif Rust et trace chaque point coloré selon son appartenance à un cluster. Les points de bruit sont affichés en gris.
+
+SeraPlot's DBSCAN tourne jusqu'à **600× plus vite** que scikit-learn sur de grands jeux de données.
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `x_values` | `list[float]` | requis | Coordonnées X |
+| `y_values` | `list[float]` | requis | Coordonnées Y |
+| `eps` | `float` | `0.5` | Distance maximale de voisinage |
+| `min_samples` | `int` | `5` | Points minimum pour former une région dense |
+| `normalize` | `bool` | `False` | Normaliser les variables avant le clustering |
+
+## Voir aussi
+
+- [Classe DBSCAN](dbscan-class.md)
+- [DBSCAN 3D](dbscan3d.md)
+
+</div>
+

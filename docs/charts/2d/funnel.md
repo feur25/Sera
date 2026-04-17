@@ -1,5 +1,7 @@
 # Funnel Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -116,3 +118,13 @@ const chart = sp.build_funnel("Sales Pipeline Q1",
 
 - [Waterfall](waterfall.md)
 - [Funnel 3D](../3d/funnel3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en entonnoir visualisant la réduction progressive par étapes (pipeline de vente, entonnoir de conversion). Les barres sont centrées et proportionnelles à leur valeur.
+
+</div>

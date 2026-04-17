@@ -1,5 +1,7 @@
 # Lollipop Chart 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -111,3 +113,13 @@ const chart = sp.build_lollipop3d_chart("Monthly Sales 3D",
 
 - [Lollipop 2D](../2d/lollipop.md)
 - [Bar 3D](bar3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en sucette 3D — tiges et sphères rendus dans une scène WebGL.
+
+</div>

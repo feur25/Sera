@@ -1,5 +1,7 @@
 # Heatmap 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -126,3 +128,13 @@ features,
 
 - [Heatmap 2D](../2d/heatmap.md)
 - [Bar 3D](bar3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Heatmap 3D où les valeurs sont extrudes comme des barres s'élevant d'une grille plate. Les valeurs plus hautes produisent des colonnes plus élevées.
+
+</div>

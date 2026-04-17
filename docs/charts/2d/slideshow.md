@@ -1,5 +1,7 @@
 # Slideshow
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -136,3 +138,13 @@ const deck = sp.build_slideshow(slides,
 ## See also
 
 - [Grid Layout](grid.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Emballe plusieurs graphiques dans un diaporama interactif avec navigation Précédent/Suivant. Tous les graphiques sont pré-rendus.
+
+</div>

@@ -1,5 +1,7 @@
 # Bar Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -201,3 +203,13 @@ chart = sp.build_bar_chart(
 - [Horizontal Bar](hbar.md) — `sp.build_hbar()`
 - [Grouped Bar](grouped-bar.md) — `sp.build_grouped_bar()`
 - [Stacked Bar](stacked-bar.md) — `sp.build_stacked_bar()`
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Affiche un graphique en barres vertical ou horizontal.
+
+</div>

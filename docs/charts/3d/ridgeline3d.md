@@ -1,5 +1,7 @@
 # Ridgeline Chart 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -122,3 +124,13 @@ cats,
 
 - [Ridgeline 2D](../2d/ridgeline.md)
 - [KDE 3D](kde3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Ridgeline 3D — surfaces KDE par catégorie arrangées le long de l'axe Y dans une scène WebGL.
+
+</div>

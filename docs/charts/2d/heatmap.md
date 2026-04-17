@@ -1,5 +1,7 @@
 # Heatmap
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -145,3 +147,13 @@ features,
 ## See also
 
 - [Heatmap 3D](../3d/heatmap3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Matrice colorée (heatmap). Les valeurs sont normalisées automatiquement pour le mappage de couleurs.
+
+</div>

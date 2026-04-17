@@ -1,5 +1,7 @@
 # Sunburst Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -128,3 +130,13 @@ parents,
 - [Treemap](treemap.md)
 - [Pie Chart](pie.md)
 - [Sunburst 3D](../3d/sunburst3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique sunburst hiérarchique. Les nœuds sont disposés en anneaux concentriques rayonnant depuis la racine.
+
+</div>

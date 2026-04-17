@@ -1,5 +1,7 @@
 # Machine Learning
 
+<div class="lang-en">
+
 SeraPlot provides a complete scikit-learn-compatible ML framework written in Rust with Python bindings. All models follow the same `fit` / `predict` / `score` API.
 
 > **All models are faster than scikit-learn** on equivalent tasks, with 1.3× to 55× speedups depending on the algorithm.
@@ -151,3 +153,55 @@ model.intercept_ -> float | ndarray
 | KNN | **1.3×** | Thread-local zero-alloc buffers |
 | LogisticRegression | **1.2×** | Full joint Hessian Newton |
 | Pipeline (10 classes) | **8.3×** | Digits dataset end-to-end |
+
+</div>
+
+<div class="lang-fr">
+
+SeraPlot fournit un framework ML complet, compatible scikit-learn, écrit en Rust avec des liaisons Python. Tous les modèles respectent la même API `fit` / `predict` / `score`.
+
+> **Tous les modèles sont plus rapides que scikit-learn** sur des tâches équivalentes, avec des accélérations de 1,3× à 55× selon l'algorithme.
+
+---
+
+## Démarrage rapide
+
+```python
+import seraplot as sp
+import numpy as np
+
+X_train, X_test, y_train, y_test = sp.train_test_split(X, y, test_size=0.2)
+
+model = sp.GradientBoostingClassifier(n_estimators=100, learning_rate=0.1)
+model.fit(X_train, y_train)
+print(f"Précision : {model.score(X_test, y_test):.4f}")
+```
+
+---
+
+## API commune
+
+Tous les modèles supervisés implémentent :
+
+```python
+model.fit(X, y)              # Entraîner sur les données
+model.predict(X) -> list     # Prédire les étiquettes/valeurs
+model.score(X, y) -> float   # Précision (clf) ou R² (rég)
+```
+
+---
+
+## Performances vs scikit-learn
+
+| Modèle | Accélération | Notes |
+|-------|-------------|-------|
+| GradientBoosting | **55×** | Valeurs feuilles Newton-Raphson |
+| RandomForest | **4–14×** | Construction d'arbres parallèle |
+| AdaBoost | **6,7×** | SAMME.R avec lissage de Laplace |
+| DecisionTree | **6×** | Division colonne-majeure optimisée |
+| GaussianNB | **4,5×** | Log-vraisemblance optimisée SIMD |
+| LinearSVC | **3,3×** | Descente de coordonnées duale |
+| KNN | **1,3×** | Tampons thread-local sans allocation |
+
+</div>
+

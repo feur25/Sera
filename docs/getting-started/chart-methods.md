@@ -1,5 +1,7 @@
 # Chart Methods
 
+<div class="lang-en">
+
 These methods are available on every `Chart` object returned by any SeraPlot
 function. They all return a new `Chart`, so they can be chained freely.
 
@@ -399,6 +401,110 @@ chart.export_svg("chart.svg")
 ```
 
 ---
+
+</div>
+
+<div class="lang-fr">
+
+Ces méthodes sont disponibles sur tout objet `Chart` retourné par n'importe quelle fonction SeraPlot. Elles retournent toutes un nouveau `Chart` — elles peuvent donc être chaînées librement.
+
+---
+
+## Configuration globale (héritage automatique)
+
+### `sp.config(**kwargs)`
+
+Définir une fois, **tous les graphiques** créés ensuite héritent automatiquement de la configuration.
+
+| Paramètre | Type | Effet |
+|-----------|------|-------|
+| `font` | str | Police pour tout le texte |
+| `font_size` | int | Taille de base en px |
+| `title_size` | int | Taille du titre en px |
+| `crosshair` | bool | Réticule qui suit la souris |
+| `zoom` | bool | Zoom molette + panoramique |
+| `animation` | bool | Animation d'apparition |
+| `export_button` | bool | Bouton de téléchargement |
+| `responsive` | bool | Redimensionnement automatique |
+| `border_radius` | int | Rayon des coins (px) |
+| `background` | str | Couleur de fond |
+| `gridlines` | bool | Afficher les lignes de grille |
+| `palette` | list[int] | Palette de couleurs (hex) |
+
+### `sp.reset_config()`
+
+Remet toute la configuration globale aux valeurs par défaut.
+
+---
+
+## Surcharge par graphique (chaînage de méthodes)
+
+| Méthode | Effet |
+|---------|-------|
+| `.font("Inter")` | Surcharge la police |
+| `.set_font_size(14)` | Surcharge la taille du texte |
+| `.crosshair()` | Activer le réticule |
+| `.zoom()` | Activer le zoom |
+| `.animate(300)` | Ajouter une animation (ms) |
+| `.export_button()` | Ajouter un bouton de téléchargement |
+| `.set_bg("#couleur")` | Surcharger le fond |
+
+---
+
+## Fond et cadre
+
+- **`.set_bg(color)`** — Fond du wrapper HTML
+- **`.set_frame(color)`** — Fond du canevas SVG
+- **`.set_global_background(color)`** — Fond pour tous les graphiques suivants
+
+---
+
+## Grille et axes
+
+- **`.show_grid()`** — Forcer les lignes de grille
+- **`.hide_grid()`** — Masquer les lignes de grille
+- **`.no_x_axis()`** — Supprimer l'axe X
+- **`.no_y_axis()`** — Supprimer l'axe Y
+- **`.no_axes()`** — Supprimer les deux axes
+
+---
+
+## Étiquettes et texte
+
+- **`.show_labels(position, labels, colors)`** — Afficher une étiquette sur chaque élément
+- **`.no_title()`** — Supprimer le titre
+- **`.no_legend()`** — Supprimer la légende
+- **`.set_font_size(px)`** — Taille du texte
+
+---
+
+## Taille
+
+- **`.scale(factor)`** — Mettre à l'échelle tout le graphique
+
+---
+
+## Survol
+
+- **`.no_hover()`** — Désactiver les infobulles
+
+---
+
+## Injection CSS / JS
+
+- **`.inject_css(css)`** — Injecter un bloc `<style>` dans le `<head>`
+- **`.inject_js(js)`** — Injecter un bloc `<script>` avant `</body>`
+
+---
+
+## Export
+
+- **`.save(path)`** — Écrire le HTML dans un fichier
+- **`.to_svg()`** — Extraire la chaîne SVG brute
+- **`.export_svg(path)`** — Écrire uniquement le SVG dans un fichier
+
+</div>
+
 
 ### `export_png(path, scale=2.0)`
 

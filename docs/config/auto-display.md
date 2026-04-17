@@ -1,4 +1,6 @@
-# Auto Display (Jupyter)
+# Affichage automatique (Jupyter)
+
+<div class="lang-en">
 
 ## Signature
 
@@ -30,30 +32,33 @@ when they are the last expression of a cell.
 
 ## Examples
 
-### Disable auto-display to batch charts
-
 ```python
-import seraplot as sp
-
 sp.set_auto_display(False)
-
 charts = []
 for name, values in datasets.items():
     charts.append(sp.build_bar_chart(name, labels=["A","B","C"], values=values))
-
 for c in charts:
     c.show()
 ```
 
-### Re-enable
+</div>
 
-```python
-sp.set_auto_display(True)
-```
+<div class="lang-fr">
 
----
+## Description
 
-## See also
+Contrôle si les objets `Chart` sont automatiquement rendus dans les cellules Jupyter.
 
-- [Chart Object](../getting-started/chart-object.md)
-- [Background](background.md)
+| État | Comportement |
+|------|-------------|
+| `True` (défaut) | Le graphique en fin de cellule est rendu immédiatement |
+| `False` | Il faut appeler `display(chart)` ou `chart.show()` explicitement |
+
+## Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `enabled` | `bool` | `True` pour activer, `False` pour désactiver |
+
+</div>
+

@@ -1,5 +1,7 @@
 # Slope Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -127,3 +129,13 @@ const chart = sp.build_slope("HDI Change 2000 to 2023",
 
 - [Line Chart](line.md)
 - [Dumbbell](dumbbell.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique de pente comparant deux valeurs par entité (avant/après). Les axes verticaux parallèles sont reliés par des lignes de pente.
+
+</div>

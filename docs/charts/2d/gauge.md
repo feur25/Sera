@@ -1,5 +1,7 @@
 # Gauge Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -119,3 +121,13 @@ const chart = sp.build_gauge("CPU Usage",
 
 - [Bullet](bullet.md)
 - [Bar Chart](bar.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Jauge semicirculaire (tachymètre). Les arcs colorés indiquent les seuils (danger / avertissement / ok).
+
+</div>

@@ -1,5 +1,7 @@
 # Dumbbell Chart 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -113,3 +115,13 @@ const chart = sp.build_dumbbell3d_chart("Before vs After 3D",
 
 - [Dumbbell 2D](../2d/dumbbell.md)
 - [Slope](../2d/slope.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique haltère 3D — connecte les sphères de début et de fin avec un tube 3D.
+
+</div>

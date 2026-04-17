@@ -1,5 +1,7 @@
 # Treemap
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -130,3 +132,13 @@ labels,
 
 - [Sunburst](sunburst.md)
 - [Bar Chart](bar.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Treemap — visualisation hiérarchique en rectangles. Les cases sont proportionnelles à leur valeur. Avec `parents`, rendu en rectangles imbriqués.
+
+</div>

@@ -1,5 +1,7 @@
 # KDE Chart 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -136,3 +138,13 @@ values,
 
 - [KDE 2D](../2d/kde.md)
 - [Scatter 3D](scatter3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Estimation par noyau 2D rendue comme une surface maillage 3D. Visualise la densité jointe de deux variables.
+
+</div>

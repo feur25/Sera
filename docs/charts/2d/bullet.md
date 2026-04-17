@@ -1,5 +1,7 @@
 # Bullet Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -121,3 +123,13 @@ const chart = sp.build_bullet("KPI Dashboard",
 - [Bar Chart](bar.md)
 - [Gauge](gauge.md)
 - [Waterfall](waterfall.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en barres compactes montrant une valeur face à une cible et des zones qualitatives (mauvais / acceptable / bon). Inspiré du bullet graph de Tufte.
+
+</div>

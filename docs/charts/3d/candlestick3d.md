@@ -1,5 +1,7 @@
 # Candlestick Chart 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -121,3 +123,13 @@ const chart = sp.build_candlestick3d_chart("BTC/USD 3D",
 ## See also
 
 - [Candlestick 2D](../2d/candlestick.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique bougie OHLC rendu en WebGL 3D. Les bougies sont extrudes comme des prismes 3D.
+
+</div>

@@ -1,8 +1,8 @@
+# Histogram Overlay
+
+<div class="lang-en">
 
 ## Signature
-
-```python
-sp.build_histogram_overlay(
     title: str,
     values: list[float],
     overlay_values: list[float],
@@ -140,3 +140,13 @@ control,
 
 - [Histogram](histogram.md)
 - [KDE](kde.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Histogramme superposé comparant deux distributions avec transparence.
+
+</div>

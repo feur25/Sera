@@ -1,8 +1,8 @@
+# Grouped Bar Chart
+
+<div class="lang-en">
 
 ## Signature
-
-```python
-sp.build_grouped_bar(
     title: str,
     category_labels: list[str],
     series_values: list[float],
@@ -171,3 +171,13 @@ categories,
 
 - [Stacked Bar](stacked-bar.md) — `sp.build_stacked_bar()`
 - [Bar Chart](bar.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en barres groupées pour comparer plusieurs séries par catégorie.
+
+</div>

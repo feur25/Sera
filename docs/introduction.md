@@ -10,6 +10,8 @@
 
 </div>
 
+<div class="lang-en">
+
 ```bash
 pip install seraplot
 ```
@@ -505,3 +507,28 @@ Rust-native DBSCAN with KD-tree spatial indexing:
 - **[3D Charts](charts/3d/scatter3d.md)** — 17 chart types, WebGL GPU renderer
 - **[Machine Learning](ml/dbscan.md)** — DBSCAN up to 600x faster than scikit-learn
 - **[API Reference](api/index.md)** — complete function index
+
+</div>
+
+<div class="lang-fr">
+
+## SeraPlot
+
+Visualisation de données native Rust. **6 000× plus rapide que Plotly.** Aucune dépendance.
+
+```bash
+pip install seraplot
+```
+
+Chaque graphique est un fichier HTML autonome de ~20 Ko. Pas de serveur, pas de Dash, pas de Streamlit.
+
+## Par où commencer
+
+- **[Installation](getting-started/installation.md)**
+- **[Démarrage rapide](getting-started/quickstart.md)**
+- **[Graphiques 2D](charts/2d/bar.md)** — 33 types
+- **[Graphiques 3D](charts/3d/scatter3d.md)** — 17 types, rendu WebGL GPU
+- **[Machine Learning](ml/dbscan.md)** — DBSCAN jusqu'à 600× plus rapide que scikit-learn
+- **[Référence API](api/index.md)** — index complet des fonctions
+
+</div>

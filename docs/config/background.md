@@ -1,5 +1,7 @@
 # Background Configuration
 
+<div class="lang-en">
+
 ## Functions
 
 ### `set_global_background(color)`
@@ -117,3 +119,35 @@ sp.reset_global_background();</code></pre></div>
 
 - [Palette & Colors](palette.md)
 - [Auto Display](auto-display.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Fonctions
+
+### `set_global_background(color)`
+
+Définit une couleur de fond globale appliquée à tous les graphiques créés après l'appel.
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `color` | `str` | Couleur CSS (hex `"#rrggbb"`, `"rgb(\u2026)"`, nom de couleur) |
+
+### `reset_global_background()`
+
+Efface le fond global, revenant à la valeur par défaut de chaque graphique.
+
+### `set_bg_fn(html, color)`
+
+Applique une couleur de fond à une chaîne HTML existante. Retourne la chaîne HTML modifiée.
+
+---
+
+## Voir aussi
+
+- [Palette & Couleurs](palette.md)
+- [Affichage automatique](auto-display.md)
+
+</div>
+

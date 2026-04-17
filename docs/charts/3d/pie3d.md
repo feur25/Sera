@@ -1,5 +1,7 @@
 # Pie Chart 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -108,3 +110,13 @@ const chart = sp.build_pie3d_chart("Market Share 3D",
 
 - [Pie 2D](../2d/pie.md)
 - [Sunburst 3D](sunburst3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Camembert 3D rendu comme des segments d'arc extrudes dans une scène WebGL.
+
+</div>

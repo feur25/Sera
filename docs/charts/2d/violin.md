@@ -1,5 +1,7 @@
 # Violin Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -142,3 +144,13 @@ list(roles.keys()),
 - [KDE](kde.md)
 - [Ridgeline](ridgeline.md)
 - [Violin 3D](../3d/violin3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en violon combinant estimation KDE et résumé de boîte à moustaches. La forme miroir montre la distribution complète de chaque groupe.
+
+</div>

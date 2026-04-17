@@ -1,5 +1,7 @@
 # Waterfall Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -124,3 +126,13 @@ const chart = sp.build_waterfall("Annual P&amp;L Waterfall",
 - [Bar Chart](bar.md)
 - [Funnel](funnel.md)
 - [Bullet](bullet.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en cascade montrant les contributions positives et négatives séquentielles à un total cumulatif.
+
+</div>

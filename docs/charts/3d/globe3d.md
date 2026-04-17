@@ -1,5 +1,7 @@
 # Globe 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -123,3 +125,13 @@ const chart = sp.build_globe3d_chart("World Population Spikes",
 
 - [Bubble Map](../map/bubble-map.md)
 - [Choropleth](../map/choropleth.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Globe interactif 3D — données géographiques tracées comme des barres verticales sur une sphère. Faites glisser pour tourner, défilez pour zoomer.
+
+</div>

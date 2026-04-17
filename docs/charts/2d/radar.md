@@ -1,5 +1,7 @@
 # Radar Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -117,3 +119,13 @@ const chart = sp.build_radar_chart("Player Stats Comparison",
 
 - [Parallel Coordinates](parallel.md)
 - [Radar 3D](../3d/radar3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique radar (toile d'araignée) — un polygone par série sur des axes radiaux. Idéal pour profiler des entités sur plusieurs dimensions.
+
+</div>

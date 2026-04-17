@@ -1,5 +1,7 @@
 # Box Plot
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -156,3 +158,13 @@ labels,
 - [Violin](violin.md)
 - [Histogram](histogram.md)
 - [KDE](kde.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Boite à moustaches montrant la distribution statistique par catégorie. Affiche Q1, médiane, Q3 et les moustaches.
+
+</div>

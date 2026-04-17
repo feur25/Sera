@@ -1,5 +1,7 @@
 # Area Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -134,3 +136,13 @@ const chart = sp.build_area_chart("Revenue Stacked by Region",
 - [Multi-Line Chart](multiline.md)
 - [Line Chart](line.md)
 - [Stacked Bar](stacked-bar.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en aires remplies, optionnellement empilées. Idéal pour montrer les évolutions cumulatives.
+
+</div>

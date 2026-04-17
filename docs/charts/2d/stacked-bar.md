@@ -1,3 +1,6 @@
+# Stacked Bar Chart
+
+<div class="lang-en">
 
 ## Signature
 
@@ -141,3 +144,13 @@ months,
 
 - [Grouped Bar](grouped-bar.md)
 - [Stacked Bar 3D](../3d/stacked-bar3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en barres empilées. Chaque barre est divisée en segments représentant les contributions des séries.
+
+</div>

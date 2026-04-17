@@ -1,3 +1,6 @@
+# Line Chart
+
+<div class="lang-en">
 
 ## Signature
 
@@ -170,3 +173,13 @@ months,
 
 - [Multi-line](multiline.md) — `sp.build_multiline_chart()` for multiple series
 - [Area Chart](area.md) — `sp.build_area_chart()`
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en courbe simple avec points de données optionnels. Pour plusieurs séries, utilisez [`build_multiline_chart`](multiline.md).
+
+</div>

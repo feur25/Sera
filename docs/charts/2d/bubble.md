@@ -1,5 +1,7 @@
 # Bubble Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -147,3 +149,13 @@ life_exp,
 - [Scatter](scatter.md)
 - [Bubble Map](../map/bubble-map.md)
 - [Bubble 3D](../3d/bubble3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique à bulles : nuage de points où la surface de chaque point encode une troisième dimension (`sizes`).
+
+</div>

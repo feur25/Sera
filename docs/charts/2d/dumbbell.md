@@ -1,5 +1,7 @@
 # Dumbbell Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -122,3 +124,13 @@ const chart = sp.build_dumbbell("Life Expectancy: 2000 vs 2023",
 
 - [Slope](slope.md)
 - [Dumbbell 3D](../3d/dumbbell3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique haltère — une ligne horizontale reliant deux valeurs par catégorie, idéal pour montrer une évolution ou un écart entre deux états.
+
+</div>

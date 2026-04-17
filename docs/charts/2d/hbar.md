@@ -1,5 +1,7 @@
 # Horizontal Bar Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -133,3 +135,13 @@ const chart = sp.build_hbar("Top Countries by GDP",
 
 - [Bar Chart](bar.md) — `sp.build_bar_chart()`
 - [Lollipop](lollipop.md) — `sp.build_lollipop_chart()`
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique en barres horizontal. Idéal pour les étiquettes longues ou les comparaisons de classement.
+
+</div>

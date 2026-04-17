@@ -1,5 +1,7 @@
 # Parallel Coordinates
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -141,3 +143,13 @@ axes,
 
 - [Scatter](scatter.md)
 - [Radar Chart](radar.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Coordonnées parallèles — chaque axe est une dimension, chaque ligne est une observation. Idéal pour détecter des patterns dans des données multidimensionnelles.
+
+</div>

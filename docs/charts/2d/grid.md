@@ -1,5 +1,7 @@
 # Grid Layout
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -145,3 +147,13 @@ const dashboard = sp.build_grid([bar, pie, line, hist],
 ## See also
 
 - [Slideshow](slideshow.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Dispose plusieurs graphiques dans une grille responsive au sein d'un seul fichier HTML. Les graphiques sont placés de gauche à droite et de haut en bas.
+
+</div>

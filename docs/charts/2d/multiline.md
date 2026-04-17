@@ -1,5 +1,7 @@
 # Multi-Line Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -142,3 +144,13 @@ months,
 
 - [Line Chart](line.md)
 - [Area Chart](area.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique multi-courbes : plusieurs séries sur un axe commun. Chaque liste dans `series_values` doit avoir la même longueur que `x_labels`.
+
+</div>

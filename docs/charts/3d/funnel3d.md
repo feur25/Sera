@@ -1,5 +1,7 @@
 # Funnel Chart 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -104,3 +106,13 @@ const chart = sp.build_funnel3d_chart("Conversion Funnel 3D",
 ## See also
 
 - [Funnel 2D](../2d/funnel.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Entonnoir 3D où chaque étape est un cône tronqué (frustum) dans une scène WebGL.
+
+</div>

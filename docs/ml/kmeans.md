@@ -1,5 +1,7 @@
 # K-Means Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -147,3 +149,41 @@ chart.show()
 
 </div>
 </div>
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Graphique de clustering K-Means en 2D. Exécute l'initialisation K-Means++ suivie d'une assignation parallèle des centroïdes. Chaque cluster est affiché dans une couleur distincte avec son centroïde marqué par un `+` gras.
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `x_values` | `list[float]` | requis | Coordonnées X |
+| `y_values` | `list[float]` | requis | Coordonnées Y |
+| `k` | `int` | `3` | Nombre de clusters |
+| `max_iter` | `int` | `300` | Nombre maximum d'itérations EM |
+| `mini_batch` | `bool` | `False` | Forcer le mode mini-batch |
+
+## Exemple
+
+```python
+import seraplot as sp
+import numpy as np
+
+rng = np.random.default_rng(42)
+centres = [(-2, -2), (2, -2), (0, 2)]
+pts = [(cx + rng.normal(0, 0.4), cy + rng.normal(0, 0.4))
+       for cx, cy in centres for _ in range(400)]
+x, y = zip(*pts)
+
+chart = sp.kmeans("K-Means", list(x), list(y), k=3)
+chart.show()
+```
+
+</div>
+

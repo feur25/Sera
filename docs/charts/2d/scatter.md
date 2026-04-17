@@ -1,5 +1,7 @@
 # Scatter Chart
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -168,3 +170,13 @@ x_a + x_b,
 - [DBSCAN 2D](../../ml/dbscan.md) — automatic clustering on scatter data
 - [Bubble](bubble.md) — scatter with third size dimension
 - [Scatter 3D](../3d/scatter3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Nuage de points 2D avec taille par point, regroupement, étiquettes et droite de régression optionnels.
+
+</div>

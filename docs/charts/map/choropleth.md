@@ -1,5 +1,7 @@
 # Choropleth Map
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -115,3 +117,13 @@ const chart = sp.build_choropleth("Unemployment Rate by Country",
 
 - [Bubble Map](bubble-map.md)
 - [Globe 3D](../3d/globe3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Carte choroplèthe — polygones de pays/régions colorés par une valeur scalaire. Fournissez des `iso_codes` (ISO-3166 alpha-3) pour associer les pays automatiquement.
+
+</div>

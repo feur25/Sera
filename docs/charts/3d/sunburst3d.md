@@ -1,5 +1,7 @@
 # Sunburst Chart 3D
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -120,3 +122,13 @@ parents,
 
 - [Sunburst 2D](../2d/sunburst.md)
 - [Pie 3D](pie3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Sunburst 3D — anneaux d'arc extrudes concentriques dans une scène WebGL.
+
+</div>
