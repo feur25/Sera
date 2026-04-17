@@ -149,8 +149,88 @@ list(roles.keys()),
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_violin(
+    title: str,
+    categories: list[str],
+    values: list[float],
+    *,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    color_hex: int = 0x6366F1,
+    palette: list[int] | None = None,
+    background: str | None = None,
+    gridlines: bool = True,
+    bandwidth: float = 1.0,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique en violon combinant estimation KDE et résumé de boîte à moustaches. La forme miroir montre la distribution complète de chaque groupe.
+Graphique en violon combinant estimation KDE et résumé de boîte à moustaches. La forme en miroir montre la distribution complète de chaque groupe.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `categories` | `list[str]` | requis | Étiquettes des catégories |
+| `values` | `list[float]` | requis | Liste plate de tous les échantillons par catégorie |
+| `color_hex` | `int` | `0x6366F1` | Couleur de remplissage unique |
+| `palette` | `list[int] \| None` | `None` | Couleurs par catégorie |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `x_label` | `str` | `""` | Étiquette de l'axe X |
+| `y_label` | `str` | `""` | Étiquette de l'axe Y |
+| `gridlines` | `bool` | `True` | Lignes de grille horizontales |
+| `bandwidth` | `float` | `1.0` | Multiplicateur de bande passante KDE |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+### Comparaison des distributions de salaires
+
+```python
+import seraplot as sp
+import random
+
+postes = {
+    "Ingénieur":  [random.gauss(95000, 15000) for _ in range(60)],
+    "Manager":    [random.gauss(110000, 20000) for _ in range(60)],
+    "Analyste":   [random.gauss(75000, 12000) for _ in range(60)],
+}
+
+chart = sp.build_violin(
+    "Distribution des salaires par poste",
+    categories=list(postes.keys()),
+    values=[v for g in postes.values() for v in g],
+    y_label="Salaire (€)",
+    palette=[0x6366f1, 0x22d3ee, 0xf43f5e],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Boîte à moustaches](boxplot.md)
+- [KDE](kde.md)
+- [Ridgeline](ridgeline.md)
+- [Violon 3D](../3d/violin3d.md)
 
 </div>

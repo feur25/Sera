@@ -120,8 +120,76 @@ const chart = sp.build_dumbbell3d_chart("Before vs After 3D",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_dumbbell3d_chart(
+    title: str,
+    labels: list[str],
+    values_start: list[float],
+    values_end: list[float],
+    *,
+    color_start: int = 0x6366f1,
+    color_end: int = 0xf43f5e,
+    bg_color: str = "#1a1a2e",
+    width: int = 900,
+    height: int = 600,
+    x_label: str = "",
+    y_label: str = "",
+    z_label: str = "",
+    show_text: bool = False,
+) -> Chart
+```
+
+---
+
 ## Description
 
 Graphique haltère 3D — connecte les sphères de début et de fin avec un tube 3D.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des catégories |
+| `values_start` | `list[float]` | requis | Valeurs de départ |
+| `values_end` | `list[float]` | requis | Valeurs d'arrivée |
+| `color_start` | `int` | `0x6366f1` | Couleur de la sphère de départ |
+| `color_end` | `int` | `0xf43f5e` | Couleur de la sphère d'arrivée |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+| `show_text` | `bool` | `False` | Afficher les étiquettes de valeur |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_dumbbell3d_chart(
+    "Avant vs Après 3D",
+    labels=["Groupe A", "Groupe B", "Groupe C"],
+    values_start=[40, 55, 70],
+    values_end=[60, 75, 85],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Haltère 2D](../2d/dumbbell.md)
+- [Pente](../2d/slope.md)
 
 </div>

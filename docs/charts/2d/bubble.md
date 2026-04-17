@@ -154,8 +154,93 @@ life_exp,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_bubble(
+    title: str,
+    x_values: list[float],
+    y_values: list[float],
+    sizes: list[float],
+    *,
+    labels: list[str] | None = None,
+    color_groups: list[str] | None = None,
+    color_hex: int = 0x6366F1,
+    palette: list[int] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = True,
+    background: str | None = None,
+    hover_json: str | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
 Graphique à bulles : nuage de points où la surface de chaque point encode une troisième dimension (`sizes`).
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `x_values` | `list[float]` | requis | Positions sur l'axe X |
+| `y_values` | `list[float]` | requis | Positions sur l'axe Y |
+| `sizes` | `list[float]` | requis | Valeurs déterminant le rayon des bulles |
+| `labels` | `list[str] \| None` | `None` | Étiquettes textuelles par bulle |
+| `color_groups` | `list[str] \| None` | `None` | Noms de groupe pour la coloration |
+| `color_hex` | `int` | `0x6366F1` | Couleur par défaut des bulles |
+| `palette` | `list[int] \| None` | `None` | Palette personnalisée par groupe |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `x_label` | `str` | `""` | Étiquette de l'axe X |
+| `y_label` | `str` | `""` | Étiquette de l'axe Y |
+| `gridlines` | `bool` | `True` | Lignes de grille |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+### Style Gapminder
+
+```python
+import seraplot as sp
+
+pays = ["USA", "Chine", "Allemagne", "Inde", "Brésil"]
+pib       = [65000, 12500, 48000, 2100, 8800]
+esp_vie   = [78.5, 77.1, 81.3, 69.7, 75.2]
+population= [331, 1412, 83, 1380, 212]
+
+chart = sp.build_bubble(
+    "PIB vs Espérance de vie (2023)",
+    x_values=pib,
+    y_values=esp_vie,
+    sizes=[p / 10 for p in population],
+    color_groups=pays,
+    x_label="PIB par habitant ($)",
+    y_label="Espérance de vie (ans)",
+)
+```
+
+---
+
+## Voir aussi
+
+- [Nuage de points](scatter.md)
+- [Carte à bulles](../map/bubble-map.md)
+- [Bulles 3D](../3d/bubble3d.md)
 
 </div>

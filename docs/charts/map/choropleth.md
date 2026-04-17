@@ -122,8 +122,76 @@ const chart = sp.build_choropleth("Unemployment Rate by Country",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_choropleth(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    iso_codes: list[str] | None = None,
+    color_low: int = 0,
+    color_high: int = 0,
+    palette: list[int] | None = None,
+    width: int = 1000,
+    height: int = 600,
+    background: str | None = None,
+    hover_json: str | None = None,
+    show_legend: bool = True,
+    null_color: int = 0xdddddd,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Carte choroplèthe — polygones de pays/régions colorés par une valeur scalaire. Fournissez des `iso_codes` (ISO-3166 alpha-3) pour associer les pays automatiquement.
+Carte choro-plèthe — polygones de pays/régions colorés par une valeur scalaire. Les pays sans données reçoivent la `null_color`. Fournissez des `iso_codes` (ISO-3166 alpha-3) pour associer les pays automatiquement.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Pays |
+| `values` | `list[float]` | requis | Valeurs pour la colorisation |
+| `iso_codes` | `list[str] \| None` | `None` | Codes ISO-3166 alpha-3 |
+| `color_low` | `int` | auto | Couleur pour les valeurs basses |
+| `color_high` | `int` | auto | Couleur pour les valeurs hautes |
+| `null_color` | `int` | `0xdddddd` | Couleur des pays sans données |
+| `width` | `int` | `1000` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+| `show_legend` | `bool` | `True` | Afficher l'échelle de couleur |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_choropleth(
+    "Taux de chômage par pays",
+    labels=["FRA", "DEU", "ESP", "ITA", "PRT"],
+    values=[7.1, 3.0, 11.8, 6.7, 6.2],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Carte à bulles](bubble-map.md)
+- [Globe 3D](../3d/globe3d.md)
 
 </div>

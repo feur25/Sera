@@ -152,8 +152,69 @@ const dashboard = sp.build_grid([bar, pie, line, hist],
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_grid(
+    charts: list[Chart],
+    *,
+    cols: int = 2,
+    width: int = 1200,
+    height: int = 800,
+    background: str | None = None,
+    gap: int = 12,
+    title: str = "",
+) -> Chart
+```
+
+---
+
 ## Description
 
-Dispose plusieurs graphiques dans une grille responsive au sein d'un seul fichier HTML. Les graphiques sont placés de gauche à droite et de haut en bas.
+Dispose plusieurs graphiques dans une grille responsive au sein d'un seul fichier HTML. Les graphiques sont placés de gauche à droite et de haut en bas. Si `len(charts)` n'est pas divisible par `cols`, la dernière ligne est alignée à gauche.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `charts` | `list[Chart]` | requis | Objets Chart à intégrer |
+| `cols` | `int` | `2` | Nombre de colonnes |
+| `width` | `int` | `1200` | Largeur totale du conteneur en pixels |
+| `height` | `int` | `800` | Hauteur totale du conteneur en pixels |
+| `background` | `str \| None` | `None` | Couleur de fond de la grille |
+| `gap` | `int` | `12` | Espacement en pixels entre les cellules |
+| `title` | `str` | `""` | En-tête optionnel au-dessus de la grille |
+
+---
+
+## Retourne
+
+`Chart` (composite)
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+bar   = sp.build_bar_chart("Chiffre d'affaires", labels=["A","B","C"], values=[100,200,150])
+pie   = sp.build_pie_chart("Parts", labels=["A","B"], values=[60,40])
+line  = sp.build_line_chart("Tendance", labels=["Jan","Fév","Mar"], values=[10,20,15])
+hist  = sp.build_histogram("Distribution", values=[1,2,2,3,3,3,4,4,5])
+
+tableau = sp.build_grid(
+    [bar, pie, line, hist],
+    cols=2,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Diaporama](slideshow.md)
 
 </div>

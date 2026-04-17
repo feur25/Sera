@@ -140,8 +140,85 @@ const chart = sp.build_hbar("Top Countries by GDP",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_hbar(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    color_hex: int = 0,
+    show_text: bool = True,
+    color_groups: list[str] | None = None,
+    width: int = 900,
+    height: int = 500,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+    sort_order: str = "none",
+    hover_json: str = "",
+    legend_position: str = "right",
+    palette: list[int] | None = None,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique en barres horizontal. Idéal pour les étiquettes longues ou les comparaisons de classement.
+Graphique en barres horizontales. Particulièrement adapté aux longues étiquettes de catégories ou aux classements.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des catégories |
+| `values` | `list[float]` | requis | Valeurs des barres |
+| `show_text` | `bool` | `True` | Afficher les valeurs sur les barres |
+| `sort_order` | `str` | `"none"` | `"asc"`, `"desc"` ou `"none"` |
+| `color_groups` | `list[str] \| None` | `None` | Noms de groupe pour la coloration |
+| `palette` | `list[int] \| None` | `None` | Palette de couleurs hex |
+| `background` | `str \| None` | `None` | Couleur de fond CSS |
+| `width` | `int` | `900` | Largeur en pixels |
+| `height` | `int` | `500` | Hauteur en pixels |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+### Top 10 classement
+
+```python
+import seraplot as sp
+
+chart = sp.build_hbar(
+    "Top pays par PIB",
+    labels=["USA", "Chine", "Allemagne", "Japon", "Inde", "UK", "France", "Brésil", "Canada", "Corée"],
+    values=[25.0, 18.0, 4.1, 4.2, 3.7, 3.1, 2.9, 2.1, 2.0, 1.7],
+    sort_order="desc",
+    x_label="PIB (billions USD)",
+    show_text=True,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Graphique en barres](bar.md) — `sp.build_bar_chart()`
+- [Lollipop](lollipop.md) — `sp.build_lollipop_chart()`
 
 </div>

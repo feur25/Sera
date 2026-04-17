@@ -45,6 +45,14 @@ for c in charts:
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.set_auto_display(enabled: bool) -> None
+```
+
+---
+
 ## Description
 
 Contrôle si les objets `Chart` sont automatiquement rendus dans les cellules Jupyter.
@@ -54,11 +62,26 @@ Contrôle si les objets `Chart` sont automatiquement rendus dans les cellules Ju
 | `True` (défaut) | Le graphique en fin de cellule est rendu immédiatement |
 | `False` | Il faut appeler `display(chart)` ou `chart.show()` explicitement |
 
+---
+
 ## Paramètres
 
 | Paramètre | Type | Description |
 |-----------|------|-------------|
 | `enabled` | `bool` | `True` pour activer, `False` pour désactiver |
+
+---
+
+## Exemples
+
+```python
+sp.set_auto_display(False)
+graphiques = []
+for nom, valeurs in jeux_de_donnees.items():
+    graphiques.append(sp.build_bar_chart(nom, labels=["A","B","C"], values=valeurs))
+for g in graphiques:
+    g.show()
+```
 
 </div>
 

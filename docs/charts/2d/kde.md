@@ -142,8 +142,87 @@ const chart = sp.build_kde_chart("Score Distribution",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_kde_chart(
+    title: str,
+    values: list[float],
+    *,
+    color_hex: int = 0x6366F1,
+    bandwidth: float = 1.0,
+    fill: bool = True,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "Density",
+    gridlines: bool = True,
+    background: str | None = None,
+    palette: list[int] | None = None,
+    series_names: list[str] | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Courbe d'estimation par noyau (KDE) — estimation lissée et continue d'une distribution de probabilité. Plusieurs séries peuvent être superposées.
+Courbe d'estimation par noyau (KDE) — estimation lissée et continue d'une distribution de probabilité. Plus informative qu'un histogramme pour identifier la forme sous-jacente des données.
+
+Plusieurs séries peuvent être superposées via `series_names`.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `values` | `list[float]` | requis | Échantillons de données |
+| `color_hex` | `int` | `0x6366F1` | Couleur de la courbe |
+| `bandwidth` | `float` | `1.0` | Facteur de lissage de la bande passante |
+| `fill` | `bool` | `True` | Remplir l'aire sous la courbe |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `x_label` | `str` | `""` | Étiquette de l'axe X |
+| `y_label` | `str` | `"Density"` | Étiquette de l'axe Y |
+| `gridlines` | `bool` | `True` | Lignes de grille horizontales |
+| `palette` | `list[int] \| None` | `None` | Palette multi-séries |
+| `series_names` | `list[str] \| None` | `None` | Noms des séries pour la légende |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+### Distribution simple
+
+```python
+import seraplot as sp
+import random
+
+valeurs = [random.gauss(50, 10) for _ in range(500)]
+
+chart = sp.build_kde_chart(
+    "Distribution des scores",
+    values=valeurs,
+    x_label="Score",
+    bandwidth=1.0,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Histogramme](histogram.md)
+- [Violon](violin.md)
+- [Ridgeline](ridgeline.md)
+- [KDE 3D](../3d/kde3d.md)
 
 </div>

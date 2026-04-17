@@ -128,8 +128,74 @@ list(counts.keys()),
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_wordcloud(
+    title: str,
+    words: list[str],
+    weights: list[float],
+    *,
+    width: int = 900,
+    height: int = 480,
+    palette: list[int] | None = None,
+    background: str | None = None,
+    max_words: int = 200,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Nuage de mots où la taille de la police reflète le poids de chaque mot. Les mots avec un `weights` plus élevé sont affichés en plus grand.
+Nuage de mots où la taille de la police reflète le poids de chaque mot. Les mots avec un `weights` plus élevé sont affichés en plus grand. La disposition est calculée via un algorithme de placement en spirale.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `words` | `list[str]` | requis | Liste des mots |
+| `weights` | `list[float]` | requis | Poids par mot (plus élevé = plus grand) |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `palette` | `list[int] \| None` | `None` | Palette de couleurs |
+| `background` | `str \| None` | `None` | Couleur de fond |
+| `max_words` | `int` | `200` | Nombre maximum de mots affichés |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+### Popularité des technologies
+
+```python
+import seraplot as sp
+from collections import Counter
+
+texte = "python python rust rust rust go go java javascript python data ml deep learning neural"
+counts = Counter(texte.split())
+
+chart = sp.build_wordcloud(
+    "Mentions technologiques",
+    words=list(counts.keys()),
+    weights=list(counts.values()),
+    palette=[0x6366f1, 0x22d3ee, 0xf43f5e, 0xf59e0b, 0x10b981],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Graphique en barres](bar.md)
 
 </div>

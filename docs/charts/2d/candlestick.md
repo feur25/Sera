@@ -139,8 +139,84 @@ const chart = sp.build_candlestick("AAPL - January 2024",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_candlestick(
+    title: str,
+    dates: list[str],
+    opens: list[float],
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    *,
+    width: int = 1000,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    color_up: int = 0x22c55e,
+    color_down: int = 0xef4444,
+    background: str | None = None,
+    gridlines: bool = True,
+    hover_json: str | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique bougie financier pour données OHLC (Ouverture / Haut / Bas / Fermeture). Bougies vertes = hausse, rouges = baisse.
+Graphique bougie financier pour données OHLC (Ouverture / Haut / Bas / Fermeture). Bougies vertes = hausse (clôture > ouverture), bougies rouges = baisse.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `dates` | `list[str]` | requis | Étiquettes dates/heures pour l'axe X |
+| `opens` | `list[float]` | requis | Prix d'ouverture |
+| `highs` | `list[float]` | requis | Prix hauts de séance |
+| `lows` | `list[float]` | requis | Prix bas de séance |
+| `closes` | `list[float]` | requis | Prix de clôture |
+| `color_up` | `int` | `0x22c55e` | Couleur de la bougie haussiere |
+| `color_down` | `int` | `0xef4444` | Couleur de la bougie baissière |
+| `width` | `int` | `1000` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `y_label` | `str` | `""` | Étiquette de l'axe Y |
+| `gridlines` | `bool` | `True` | Lignes de grille horizontales |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_candlestick(
+    "AAPL - Janvier 2024",
+    ["2 jan","3 jan","4 jan","5 jan","8 jan","9 jan","10 jan"],
+    [185.0, 184.2, 182.5, 181.0, 183.5, 185.0, 186.0],
+    [186.5, 185.0, 183.8, 183.5, 186.0, 187.2, 188.0],
+    [183.5, 182.0, 180.5, 180.0, 183.0, 184.5, 185.5],
+    [184.2, 182.5, 181.0, 183.5, 185.0, 186.0, 187.5],
+    y_label="Prix ($)",
+)
+```
+
+---
+
+## Voir aussi
+
+- [Haltère](dumbbell.md)
+- [Bougie 3D](../3d/candlestick3d.md)
 
 </div>

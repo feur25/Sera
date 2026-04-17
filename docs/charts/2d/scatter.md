@@ -175,8 +175,103 @@ x_a + x_b,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_scatter_chart(
+    title: str,
+    x_values: list[float],
+    y_values: list[float],
+    *,
+    color_hex: int = 0,
+    show_text: bool = False,
+    labels: list[str] | None = None,
+    sizes: list[float] | None = None,
+    color_groups: list[str] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+    sort_order: str = "none",
+    hover_json: str = "",
+    legend_position: str = "right",
+    palette: list[int] | None = None,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+    show_regression: bool = False,
+    regression_type: str = "linear",
+) -> Chart
+```
+
+---
+
 ## Description
 
 Nuage de points 2D avec taille par point, regroupement, étiquettes et droite de régression optionnels.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `x_values` | `list[float]` | requis | Coordonnées X |
+| `y_values` | `list[float]` | requis | Coordonnées Y |
+| `color_hex` | `int` | `0` | Couleur uniforme des points |
+| `show_text` | `bool` | `False` | Afficher les étiquettes de points sur le graphique |
+| `labels` | `list[str] \| None` | `None` | Texte d'étiquette par point |
+| `sizes` | `list[float] \| None` | `None` | Taille relative par point (0.0–1.0) |
+| `color_groups` | `list[str] \| None` | `None` | Nom de groupe par point pour la couleur |
+| `show_regression` | `bool` | `False` | Superposer une droite de régression |
+| `regression_type` | `str` | `"linear"` | `"linear"` ou `"polynomial"` |
+| `width` | `int` | `900` | Largeur en pixels |
+| `height` | `int` | `480` | Hauteur en pixels |
+| `x_label` | `str` | `""` | Étiquette de l'axe X |
+| `y_label` | `str` | `""` | Étiquette de l'axe Y |
+| `gridlines` | `bool` | `False` | Lignes de grille |
+| `background` | `str \| None` | `None` | Couleur de fond |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+import numpy as np
+
+rng = np.random.default_rng(0)
+x_a = rng.normal(0, 1, 200).tolist()
+y_a = [xi * 1.5 + rng.normal() for xi in x_a]
+x_b = rng.normal(3, 1, 200).tolist()
+y_b = [xi * 0.5 + rng.normal() for xi in x_b]
+
+chart = sp.build_scatter_chart(
+    "Deux populations",
+    x_values=x_a + x_b,
+    y_values=y_a + y_b,
+    color_groups=["Groupe A"] * 200 + ["Groupe B"] * 200,
+    show_regression=True,
+    regression_type="linear",
+    x_label="X",
+    y_label="Y",
+)
+```
+
+---
+
+## Voir aussi
+
+- [DBSCAN 2D](../../ml/dbscan.md) — clustering automatique sur données de nuage de points
+- [Bulles](bubble.md) — nuage de points avec troisième dimension de taille
+- [Nuage de points 3D](../3d/scatter3d.md)
 
 </div>

@@ -128,8 +128,80 @@ const chart = sp.build_candlestick3d_chart("BTC/USD 3D",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_candlestick3d_chart(
+    title: str,
+    dates: list[str],
+    opens: list[float],
+    highs: list[float],
+    lows: list[float],
+    closes: list[float],
+    *,
+    color_up: int = 0x22c55e,
+    color_down: int = 0xef4444,
+    bg_color: str = "#1a1a2e",
+    width: int = 1000,
+    height: int = 600,
+    x_label: str = "",
+    y_label: str = "",
+    z_label: str = "",
+    hover_json: str | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique bougie OHLC rendu en WebGL 3D. Les bougies sont extrudes comme des prismes 3D.
+Graphique bougie OHLC rendu en WebGL 3D. Les bougies sont extrudées comme des prismes 3D.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `dates` | `list[str]` | requis | Étiquettes de dates |
+| `opens` | `list[float]` | requis | Prix d'ouverture |
+| `highs` | `list[float]` | requis | Prix hauts |
+| `lows` | `list[float]` | requis | Prix bas |
+| `closes` | `list[float]` | requis | Prix de clôture |
+| `color_up` | `int` | `0x22c55e` | Couleur des bougies haussières |
+| `color_down` | `int` | `0xef4444` | Couleur des bougies baissières |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `width` | `int` | `1000` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_candlestick3d_chart(
+    "BTC/USD 3D",
+    labels=["Lun", "Mar", "Mer", "Jeu", "Ven"],
+    open= [42000, 43500, 41800, 44000, 45200],
+    high= [44000, 44200, 43500, 46000, 47000],
+    low=  [41500, 43000, 40000, 43500, 44800],
+    close=[43500, 41800, 44000, 45200, 46500],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Bougie 2D](../2d/candlestick.md)
 
 </div>

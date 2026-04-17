@@ -141,8 +141,89 @@ const chart = sp.build_area_chart("Revenue Stacked by Region",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_area_chart(
+    title: str,
+    x_labels: list[str],
+    series_values: list[list[float]],
+    *,
+    stacked: bool = False,
+    series_names: list[str] | None = None,
+    palette: list[int] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = True,
+    background: str | None = None,
+    legend_position: str = "top",
+    hover_json: str | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique en aires remplies, optionnellement empilées. Idéal pour montrer les évolutions cumulatives.
+Graphique en aires remplies, optionnellement empilées. Idéal pour visualiser les évolutions cumulatives au fil du temps.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `x_labels` | `list[str]` | requis | Étiquettes de graduation de l'axe X |
+| `series_values` | `list[list[float]]` | requis | Une liste par série |
+| `stacked` | `bool` | `False` | Empiler les aires au lieu de les superposer |
+| `series_names` | `list[str] \| None` | `None` | Noms des séries pour la légende |
+| `palette` | `list[int] \| None` | `None` | Couleurs personnalisées |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `x_label` | `str` | `""` | Étiquette de l'axe X |
+| `y_label` | `str` | `""` | Étiquette de l'axe Y |
+| `gridlines` | `bool` | `True` | Lignes de grille horizontales |
+| `legend_position` | `str` | `"top"` | Position de la légende |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+### Aires empilées
+
+```python
+import seraplot as sp
+
+chart = sp.build_area_chart(
+    "Chiffre d'affaires empiлé par région",
+    x_labels=["T1","T2","T3","T4"],
+    series_values=[
+        [12000, 14000, 13500, 16000],
+        [8000,  9200,  10000, 11500],
+        [4500,  5000,  5200,  6000],
+    ],
+    series_names=["Nord", "Sud", "Est"],
+    stacked=True,
+    y_label="Chiffre d'affaires (€)",
+)
+```
+
+---
+
+## Voir aussi
+
+- [Graphique multi-courbes](multiline.md)
+- [Graphique en courbe](line.md)
+- [Barres empilées](stacked-bar.md)
 
 </div>

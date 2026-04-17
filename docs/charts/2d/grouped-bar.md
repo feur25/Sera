@@ -176,8 +176,96 @@ categories,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_grouped_bar(
+    title: str,
+    category_labels: list[str],
+    series_values: list[float],
+    *,
+    show_values: bool = False,
+    series_names: list[str] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+    sort_order: str = "none",
+    hover_json: str = "",
+    legend_position: str = "right",
+    palette: list[int] | None = None,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique en barres groupées pour comparer plusieurs séries par catégorie.
+Graphique en barres groupées pour comparer plusieurs séries sur les mêmes catégories.
+
+`series_values` doit être une **liste plate** de longueur `n_catégories × n_séries`, en ordre catégorie-major.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `category_labels` | `list[str]` | requis | Noms des catégories sur l'axe X |
+| `series_values` | `list[float]` | requis | Valeurs plates : `[cat0_s0, cat0_s1, cat1_s0, cat1_s1, ...]` |
+| `show_values` | `bool` | `False` | Afficher les étiquettes de valeur |
+| `series_names` | `list[str] \| None` | `None` | Noms des séries pour la légende |
+| `palette` | `list[int] \| None` | `None` | Palette de couleurs personnalisée |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `legend_position` | `str` | `"right"` | Position de la légende |
+| `gridlines` | `bool` | `False` | Lignes de grille |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+categories = ["T1", "T2", "T3", "T4"]
+valeurs = [
+    120.0, 90.0, 150.0,
+    130.0, 110.0, 140.0,
+    100.0, 95.0,  160.0,
+    140.0, 120.0, 175.0,
+]
+
+chart = (
+    sp.build_grouped_bar(
+        "Ventes trimestrielles par produit",
+        category_labels=categories,
+        series_values=valeurs,
+        series_names=["Produit A", "Produit B", "Produit C"],
+        show_values=True,
+        gridlines=True,
+        legend_position="bottom",
+    )
+    .set_bg(None)
+)
+```
+
+---
+
+## Voir aussi
+
+- [Barres empilées](stacked-bar.md) — `sp.build_stacked_bar()`
+- [Graphique en barres](bar.md)
 
 </div>

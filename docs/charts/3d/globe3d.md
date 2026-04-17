@@ -130,8 +130,80 @@ const chart = sp.build_globe3d_chart("World Population Spikes",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_globe3d_chart(
+    title: str,
+    labels: list[str],
+    latitudes: list[float],
+    longitudes: list[float],
+    values: list[float],
+    *,
+    color_hex: int = 0x6366F1,
+    palette: list[int] | None = None,
+    bg_color: str = "#0f172a",
+    width: int = 900,
+    height: int = 700,
+    hover_json: str | None = None,
+    bar_height_scale: float = 1.0,
+    show_graticule: bool = True,
+) -> Chart
+```
+
+---
+
 ## Description
 
 Globe interactif 3D — données géographiques tracées comme des barres verticales sur une sphère. Faites glisser pour tourner, défilez pour zoomer.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Noms des lieux |
+| `latitudes` | `list[float]` | requis | Latitudes décimales |
+| `longitudes` | `list[float]` | requis | Longitudes décimales |
+| `values` | `list[float]` | requis | Hauteurs des barres par lieu |
+| `color_hex` | `int` | `0x6366F1` | Couleur par défaut des barres |
+| `palette` | `list[int] \| None` | `None` | Palette personnalisée |
+| `bg_color` | `str` | `"#0f172a"` | Couleur de fond |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `700` | Hauteur du canvas |
+| `bar_height_scale` | `float` | `1.0` | Multiplicateur global de hauteur |
+| `show_graticule` | `bool` | `True` | Dessiner les lignes de latitude/longitude |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_globe3d_chart(
+    "Population mondiale",
+    labels=["Chine", "Inde", "USA", "Brésil", "Nigéria"],
+    latitudes=[35.86, 20.59, 37.09, -14.23, 9.08],
+    longitudes=[104.19, 78.96, -95.71, -51.92, 8.67],
+    values=[1412, 1380, 331, 212, 218],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Carte à bulles](../map/bubble-map.md)
+- [Choro-plèthe](../map/choropleth.md)
 
 </div>

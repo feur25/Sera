@@ -143,8 +143,80 @@ values,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_kde3d_chart(
+    title: str,
+    x: list[float],
+    y: list[float],
+    *,
+    bandwidth: float = 1.0,
+    resolution: int = 50,
+    palette: list[int] | None = None,
+    bg_color: str = "#1a1a2e",
+    width: int = 900,
+    height: int = 600,
+    x_label: str = "X",
+    y_label: str = "Y",
+    z_label: str = "Density",
+) -> Chart
+```
+
+---
+
 ## Description
 
 Estimation par noyau 2D rendue comme une surface maillage 3D. Visualise la densité jointe de deux variables.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `x` | `list[float]` | requis | Données X |
+| `y` | `list[float]` | requis | Données Y |
+| `bandwidth` | `float` | `1.0` | Facteur de bande passante KDE |
+| `resolution` | `int` | `50` | Résolution de la grille (n × n) |
+| `palette` | `list[int] \| None` | `None` | Palette de gradient de couleur |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+| `x_label` | `str` | `"X"` | Étiquette de l'axe X |
+| `y_label` | `str` | `"Y"` | Étiquette de l'axe Y |
+| `z_label` | `str` | `"Density"` | Étiquette de l'axe Z |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+import random
+
+x = [random.gauss(0, 1) for _ in range(400)]
+y = [xi * 0.5 + random.gauss(0, 0.5) for xi in x]
+
+chart = sp.build_kde3d_chart(
+    "Densité jointe X vs Y",
+    x=x, y=y,
+    x_label="X", y_label="Y", z_label="Densité",
+)
+```
+
+---
+
+## Voir aussi
+
+- [KDE 2D](../2d/kde.md)
+- [Nuage de points 3D](scatter3d.md)
 
 </div>

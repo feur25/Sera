@@ -140,8 +140,86 @@ const chart = sp.build_lollipop_chart("Top Countries by GDP per Capita",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_lollipop_chart(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    color_hex: int = 0x6366F1,
+    palette: list[int] | None = None,
+    orientation: str = "v",
+    show_text: bool = False,
+    sort_order: str = "none",
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = True,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique en sucette — alternative épurée aux barres : tige fine avec cercle au bout. Réduit le ratio encre/données.
+Graphique en sucette — alternative épurée aux barres avec une tige fine et un cercle au bout. Réduit le ratio encre/données par rapport aux barres remplies.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des catégories |
+| `values` | `list[float]` | requis | Valeurs par catégorie |
+| `color_hex` | `int` | `0x6366F1` | Couleur de la tige et du point |
+| `palette` | `list[int] \| None` | `None` | Couleurs par catégorie |
+| `orientation` | `str` | `"v"` | `"v"` (vertical) ou `"h"` (horizontal) |
+| `show_text` | `bool` | `False` | Afficher les étiquettes de valeur |
+| `sort_order` | `str` | `"none"` | `"asc"`, `"desc"` ou `"none"` |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `x_label` | `str` | `""` | Étiquette de l'axe X |
+| `y_label` | `str` | `""` | Étiquette de l'axe Y |
+| `gridlines` | `bool` | `True` | Afficher les lignes de grille |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_lollipop_chart(
+    "Top pays par PIB par habitant",
+    labels=["Luxembourg", "Suisse", "USA", "Allemagne", "France"],
+    values=[135605, 92434, 76398, 50802, 42409],
+    orientation="h",
+    sort_order="desc",
+    show_text=True,
+    x_label="PIB par habitant ($)",
+)
+```
+
+---
+
+## Voir aussi
+
+- [Graphique en barres](bar.md)
+- [Haltère](dumbbell.md)
+- [Sucette 3D](../3d/lollipop3d.md)
 
 </div>

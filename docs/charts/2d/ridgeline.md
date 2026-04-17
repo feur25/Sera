@@ -150,8 +150,86 @@ months,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_ridgeline_chart(
+    title: str,
+    categories: list[str],
+    values: list[float],
+    *,
+    bandwidth: float = 1.0,
+    overlap: float = 0.5,
+    color_hex: int = 0x6366F1,
+    palette: list[int] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    background: str | None = None,
+    gridlines: bool = False,
+) -> Chart
+```
+
+---
+
 ## Description
 
 Graphique ridgeline (joy plot) — courbes KDE empilées par catégorie. Excellent pour comparer les formes de distribution entre de nombreux groupes.
+
+`values` est une liste plate. Le nombre de valeurs doit être divisible par `len(categories)` (échantillons égaux par groupe).
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `categories` | `list[str]` | requis | Étiquettes des catégories (une crête par catégorie) |
+| `values` | `list[float]` | requis | Échantillons concaténés en liste plate |
+| `bandwidth` | `float` | `1.0` | Facteur de bande passante KDE |
+| `overlap` | `float` | `0.5` | Chevauchement des crêtes (0 = aucun, 1 = complet) |
+| `color_hex` | `int` | `0x6366F1` | Couleur de remplissage unique |
+| `palette` | `list[int] \| None` | `None` | Couleurs par crête |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `x_label` | `str` | `""` | Étiquette de l'axe X |
+| `gridlines` | `bool` | `False` | Lignes de grille verticales |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+import random
+
+mois = ["Jan", "Avr", "Jul", "Oct"]
+moyennes = [5, 15, 28, 16]
+
+valeurs = [v for m in moyennes for v in [random.gauss(m, 4) for _ in range(100)]]
+
+chart = sp.build_ridgeline_chart(
+    "Distribution de température mensuelle",
+    categories=mois,
+    values=valeurs,
+    overlap=0.6,
+    x_label="°C",
+)
+```
+
+---
+
+## Voir aussi
+
+- [KDE](kde.md)
+- [Violon](violin.md)
+- [Ridgeline 3D](../3d/ridgeline3d.md)
 
 </div>

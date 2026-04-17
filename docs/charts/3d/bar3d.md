@@ -130,8 +130,80 @@ const chart = sp.build_bar3d_chart("Sales by Product",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_bar3d_chart(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    color_hex: int = 0x6366F1,
+    palette: list[int] | None = None,
+    bg_color: str = "#1a1a2e",
+    width: int = 900,
+    height: int = 600,
+    x_label: str = "",
+    y_label: str = "",
+    z_label: str = "",
+    show_text: bool = False,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique en barres 3D rendant les barres comme des prismes rectangulaires extrudes sur un canvas WebGL.
+Graphique en barres 3D rendant les barres comme des prismes rectangulaires extrudés sur un canvas WebGL.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des barres |
+| `values` | `list[float]` | requis | Hauteurs des barres |
+| `color_hex` | `int` | `0x6366F1` | Couleur unique des barres |
+| `palette` | `list[int] \| None` | `None` | Couleurs par barre |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+| `x_label` | `str` | `""` | Étiquette de l'axe X |
+| `y_label` | `str` | `""` | Étiquette de l'axe Y |
+| `z_label` | `str` | `""` | Étiquette de l'axe Z |
+| `show_text` | `bool` | `False` | Afficher les étiquettes de valeur |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_bar3d_chart(
+    "Ventes par produit",
+    x_values=[0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0],
+    y_values=[0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
+    z_values=[420.0, 380.0, 290.0, 510.0, 480.0, 420.0, 350.0, 590.0],
+    x_label="Produit",
+    y_label="Année",
+    z_label="Unités",
+)
+```
+
+---
+
+## Voir aussi
+
+- [Graphique en barres 2D](../2d/bar.md)
+- [Barres empilées 3D](stacked-bar3d.md)
 
 </div>

@@ -128,8 +128,76 @@ const chart = sp.build_violin3d_chart("Trial Results",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_violin3d_chart(
+    title: str,
+    categories: list[str],
+    values: list[float],
+    *,
+    bandwidth: float = 1.0,
+    palette: list[int] | None = None,
+    bg_color: str = "#1a1a2e",
+    width: int = 900,
+    height: int = 600,
+    x_label: str = "",
+    y_label: str = "",
+    z_label: str = "Density",
+) -> Chart
+```
+
+---
+
 ## Description
 
 Graphique en violon 3D — surfaces de distribution basées sur KDE par catégorie rendues en WebGL.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `categories` | `list[str]` | requis | Étiquettes des catégories |
+| `values` | `list[float]` | requis | Données échantillon plates (nombre égal par catégorie) |
+| `bandwidth` | `float` | `1.0` | Bande passante KDE |
+| `palette` | `list[int] \| None` | `None` | Couleurs par catégorie |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+import random
+
+groupes = ["Contrôle", "Traitement A", "Traitement B"]
+means  = [50, 65, 72]
+values = [v for m in means for v in [random.gauss(m, 8) for _ in range(80)]]
+
+chart = sp.build_violin3d_chart(
+    "Résultats de l'essai",
+    categories=groupes,
+    values=values,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Violon 2D](../2d/violin.md)
+- [KDE 3D](kde3d.md)
 
 </div>

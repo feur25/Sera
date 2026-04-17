@@ -115,8 +115,72 @@ const chart = sp.build_pie3d_chart("Market Share 3D",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_pie3d_chart(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    show_pct: bool = True,
+    extrusion: float = 0.2,
+    bg_color: str = "#1a1a2e",
+    palette: list[int] | None = None,
+    width: int = 700,
+    height: int = 600,
+    hover_json: str | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Camembert 3D rendu comme des segments d'arc extrudes dans une scène WebGL.
+Camembert 3D rendu comme des segments d'arc extrudés dans une scène WebGL.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des parts |
+| `values` | `list[float]` | requis | Valeurs des parts |
+| `show_pct` | `bool` | `True` | Afficher les pourcentages |
+| `extrusion` | `float` | `0.2` | Profondeur d'extrusion |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `palette` | `list[int] \| None` | `None` | Palette personnalisée |
+| `width` | `int` | `700` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_pie3d_chart(
+    "Parts de marché 3D",
+    labels=["Chrome", "Safari", "Firefox", "Edge"],
+    values=[65, 19, 4, 4],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Camembert 2D](../2d/pie.md)
+- [Sunburst 3D](sunburst3d.md)
 
 </div>

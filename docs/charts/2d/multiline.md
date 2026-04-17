@@ -149,8 +149,91 @@ months,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_multiline_chart(
+    title: str,
+    x_labels: list[str],
+    series_values: list[list[float]],
+    *,
+    show_points: bool = True,
+    series_names: list[str] | None = None,
+    color_hex: int = 0x6366F1,
+    palette: list[int] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = True,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+    legend_position: str = "top",
+    hover_json: str | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique multi-courbes : plusieurs séries sur un axe commun. Chaque liste dans `series_values` doit avoir la même longueur que `x_labels`.
+Graphique multi-courbes — plusieurs séries tracées sur un axe commun. Chaque liste dans `series_values` doit avoir la même longueur que `x_labels`.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `x_labels` | `list[str]` | requis | Étiquettes de l'axe X commun |
+| `series_values` | `list[list[float]]` | requis | Une liste par série |
+| `show_points` | `bool` | `True` | Afficher les marqueurs aux points de données |
+| `series_names` | `list[str] \| None` | `None` | Noms des séries pour la légende |
+| `palette` | `list[int] \| None` | `None` | Couleurs personnalisées par série |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `x_label` | `str` | `""` | Étiquette de l'axe X |
+| `y_label` | `str` | `""` | Étiquette de l'axe Y |
+| `gridlines` | `bool` | `True` | Lignes de grille horizontales |
+| `legend_position` | `str` | `"top"` | `"top"`, `"bottom"`, `"right"` |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+mois = ["Jan","Fév","Mar","Avr","Mai","Jun"]
+
+chart = sp.build_multiline_chart(
+    "Chiffre d'affaires mensuel par produit",
+    x_labels=mois,
+    series_values=[
+        [12200, 13400, 15100, 14800, 16200, 17500],
+        [8100,  9200,  9800,  10200, 11000, 12400],
+        [3200,  3600,  4100,  4500,  4800,  5200],
+    ],
+    series_names=["Produit A", "Produit B", "Produit C"],
+    show_points=True,
+    y_label="Chiffre d'affaires (€)",
+)
+```
+
+---
+
+## Voir aussi
+
+- [Graphique en courbe](line.md)
+- [Graphique en aires](area.md)
 
 </div>

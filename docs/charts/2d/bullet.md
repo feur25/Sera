@@ -128,8 +128,78 @@ const chart = sp.build_bullet("KPI Dashboard",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_bullet(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    targets: list[float] | None = None,
+    max_vals: list[float] | None = None,
+    ranges: list[list[float]] | None = None,
+    show_text: bool = True,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    background: str | None = None,
+    palette: list[int] | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
 Graphique en barres compactes montrant une valeur face à une cible et des zones qualitatives (mauvais / acceptable / bon). Inspiré du bullet graph de Tufte.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des indicateurs |
+| `values` | `list[float]` | requis | Valeurs mesurées |
+| `targets` | `list[float] \| None` | `None` | Lignes cibles par indicateur |
+| `max_vals` | `list[float] \| None` | `None` | Maximum de l'échelle par indicateur |
+| `ranges` | `list[list[float]] \| None` | `None` | Zones qualitatives `[[mauvais, ok, bon], ...]` |
+| `show_text` | `bool` | `True` | Afficher les valeurs |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+### Tableau de bord KPI
+
+```python
+import seraplot as sp
+
+chart = sp.build_bullet(
+    "Tableau de bord KPI",
+    labels=["Chiffre d'affaires", "Satisfaction", "Nouveaux utilisateurs"],
+    values=[87500, 4.2, 1340],
+    targets=[100000, 4.5, 1500],
+    max_vals=[120000, 5.0, 2000],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Graphique en barres](bar.md)
+- [Jauge](gauge.md)
+- [Cascade](waterfall.md)
 
 </div>

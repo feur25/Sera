@@ -133,8 +133,81 @@ features,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_heatmap3d_chart(
+    title: str,
+    labels: list[str],
+    flat_matrix: list[float],
+    *,
+    col_labels: list[str] | None = None,
+    color_low: int = 0,
+    color_high: int = 0,
+    extrusion_scale: float = 1.0,
+    bg_color: str = "#1a1a2e",
+    width: int = 900,
+    height: int = 600,
+    x_label: str = "",
+    y_label: str = "",
+    z_label: str = "",
+) -> Chart
+```
+
+---
+
 ## Description
 
-Heatmap 3D où les valeurs sont extrudes comme des barres s'élevant d'une grille plate. Les valeurs plus hautes produisent des colonnes plus élevées.
+Heatmap 3D où les valeurs sont extrudées comme des barres s'élevant d'une grille plate. Les valeurs plus hautes produisent des colonnes plus élevées.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des lignes |
+| `flat_matrix` | `list[float]` | requis | Valeurs de la matrice, en ligne-major |
+| `col_labels` | `list[str] \| None` | `None` | Étiquettes de colonnes |
+| `color_low` | `int` | auto | Couleur pour les valeurs basses |
+| `color_high` | `int` | auto | Couleur pour les valeurs hautes |
+| `extrusion_scale` | `float` | `1.0` | Multiplicateur de hauteur des barres |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+features = ["A", "B", "C", "D"]
+n = len(features)
+matrice = [[abs(i - j) * 0.25 for j in range(n)] for i in range(n)]
+flat = [v for row in matrice for v in row]
+
+chart = sp.build_heatmap3d_chart(
+    "Matrice de distance 3D",
+    labels=features,
+    flat_matrix=flat,
+    col_labels=features,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Heatmap 2D](../2d/heatmap.md)
+- [Barres 3D](bar3d.md)
 
 </div>

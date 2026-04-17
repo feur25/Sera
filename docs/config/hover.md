@@ -33,9 +33,24 @@ Builds a JSON string suitable for the `hover_json` parameter accepted by most ch
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_hover_json(
+    *,
+    fields: list[str],
+    values: list[list[str | float]],
+    format: str = "table",
+) -> str
+```
+
+---
+
 ## Description
 
 Construit une chaîne JSON adaptée au paramètre `hover_json` accepté par la plupart des fonctions graphiques.
+
+---
 
 ## Paramètres
 
@@ -45,7 +60,15 @@ Construit une chaîne JSON adaptée au paramètre `hover_json` accepté par la p
 | `values` | `list[list[str \| float]]` | requis | Une liste par point de données |
 | `format` | `str` | `"table"` | Mise en page : `"table"` ou `"list"` |
 
-## Exemple
+---
+
+## Retourne
+
+`str` — Chaîne JSON à passer au paramètre `hover_json=`.
+
+---
+
+## Exemples
 
 ```python
 import seraplot as sp
@@ -66,6 +89,13 @@ chart = sp.build_bar_chart(
     hover_json=hover,
 )
 ```
+
+---
+
+## Voir aussi
+
+- [Fond du graphique](background.md)
+- [Palette & Couleurs](palette.md)
 
 </div>
 

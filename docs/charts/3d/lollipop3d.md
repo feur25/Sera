@@ -118,8 +118,74 @@ const chart = sp.build_lollipop3d_chart("Monthly Sales 3D",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_lollipop3d_chart(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    color_hex: int = 0x6366F1,
+    palette: list[int] | None = None,
+    bg_color: str = "#1a1a2e",
+    width: int = 900,
+    height: int = 600,
+    x_label: str = "",
+    y_label: str = "",
+    z_label: str = "",
+    show_text: bool = False,
+) -> Chart
+```
+
+---
+
 ## Description
 
 Graphique en sucette 3D — tiges et sphères rendus dans une scène WebGL.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des catégories |
+| `values` | `list[float]` | requis | Valeurs par catégorie |
+| `color_hex` | `int` | `0x6366F1` | Couleur des tiges et sphères |
+| `palette` | `list[int] \| None` | `None` | Couleurs par catégorie |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+| `show_text` | `bool` | `False` | Afficher les étiquettes de valeur |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_lollipop3d_chart(
+    "Ventes mensuelles 3D",
+    x_values=[1.0, 2.0, 3.0, 4.0, 5.0],
+    y_values=[0.0, 0.0, 0.0, 0.0, 0.0],
+    z_values=[120.0, 95.0, 140.0, 110.0, 160.0],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Sucette 2D](../2d/lollipop.md)
+- [Barres 3D](bar3d.md)
 
 </div>

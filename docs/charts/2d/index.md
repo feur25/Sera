@@ -44,9 +44,43 @@ SeraPlot provides 33 two-dimensional chart types, from basic bar and line charts
 
 <div class="lang-fr">
 
-## Description
-
 SeraPlot propose 33 types de graphiques 2D, des barres et courbes basiques aux graphiques spécialisés (ridgeline, haltère, slideshow…).
+
+| Graphique | Fonction |
+|---|---|
+| [Graphique en barres](bar.md) | `bar()` |
+| [Barres horizontales](hbar.md) | `hbar()` |
+| [Courbe](line.md) | `line()` |
+| [Nuage de points](scatter.md) | `scatter()` |
+| [Histogramme](histogram.md) | `histogram()` |
+| [Histogramme superposé](histogram-overlay.md) | `histogram_overlay()` |
+| [Barres groupées](grouped-bar.md) | `grouped_bar()` |
+| [Barres empilées](stacked-bar.md) | `stacked_bar()` |
+| [Heatmap](heatmap.md) | `heatmap()` |
+| [Camembert](pie.md) | `pie()` |
+| [Anneau](donut.md) | `donut()` |
+| [Boîte à moustaches](boxplot.md) | `boxplot()` |
+| [Violon](violin.md) | `violin()` |
+| [Pente](slope.md) | `slope()` |
+| [Sunburst](sunburst.md) | `sunburst()` |
+| [Entonnoir](funnel.md) | `funnel()` |
+| [Treemap](treemap.md) | `treemap()` |
+| [Multi-courbes](multiline.md) | `multiline()` |
+| [Aires](area.md) | `area()` |
+| [Cascade](waterfall.md) | `waterfall()` |
+| [Bullet](bullet.md) | `bullet()` |
+| [Nuage de mots](wordcloud.md) | `wordcloud()` |
+| [Bougie](candlestick.md) | `candlestick()` |
+| [Haltère](dumbbell.md) | `dumbbell()` |
+| [Bulles](bubble.md) | `bubble()` |
+| [Jauge](gauge.md) | `gauge()` |
+| [Coordonnées parallèles](parallel.md) | `parallel()` |
+| [Sucette](lollipop.md) | `lollipop()` |
+| [KDE](kde.md) | `kde()` |
+| [Ridgeline](ridgeline.md) | `ridgeline()` |
+| [Radar](radar.md) | `radar()` |
+| [Grille](grid.md) | `grid()` |
+| [Diaporama](slideshow.md) | `slideshow()` |
 
 </div>
 

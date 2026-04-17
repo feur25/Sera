@@ -178,8 +178,92 @@ months,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_line_chart(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    color_hex: int = 0x6366F1,
+    show_points: bool = True,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+    sort_order: str = "none",
+    hover_json: str = "",
+    legend_position: str = "right",
+    palette: list[int] | None = None,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique en courbe simple avec points de données optionnels. Pour plusieurs séries, utilisez [`build_multiline_chart`](multiline.md).
+Graphique en courbe simple avec points de données optionnels.
+
+Pour **plusieurs séries**, utilisez [`build_multiline_chart`](multiline.md).
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes de l'axe X |
+| `values` | `list[float]` | requis | Valeurs Y |
+| `color_hex` | `int` | `0x6366F1` | Couleur de la courbe (hex int) |
+| `show_points` | `bool` | `True` | Dessiner des cercles aux points de données |
+| `gridlines` | `bool` | `False` | Lignes de grille horizontales |
+| `sort_order` | `str` | `"none"` | `"asc"`, `"desc"` ou `"none"` |
+| `width` | `int` | `900` | Largeur en pixels |
+| `height` | `int` | `480` | Hauteur en pixels |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+mois = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun",
+        "Jul", "Aoû", "Sep", "Oct", "Nov", "Déc"]
+revenu = [1200.0, 1350.0, 1100.0, 1600.0, 1800.0, 2100.0,
+          1950.0, 2300.0, 2000.0, 2500.0, 2200.0, 2800.0]
+
+chart = (
+    sp.build_line_chart(
+        "Chiffre d'affaires annuel",
+        labels=mois,
+        values=revenu,
+        x_label="Mois",
+        y_label="Chiffre d'affaires (€)",
+        gridlines=True,
+        color_hex=0x22d3ee,
+    )
+    .set_bg(None)
+)
+```
+
+---
+
+## Voir aussi
+
+- [Multi-courbes](multiline.md) — `sp.build_multiline_chart()` pour plusieurs séries
+- [Graphique en aires](area.md) — `sp.build_area_chart()`
 
 </div>

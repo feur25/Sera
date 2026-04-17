@@ -127,8 +127,75 @@ const chart = sp.build_pie_chart("Revenue by Region",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_pie_chart(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    show_pct: bool = True,
+    width: int = 700,
+    height: int = 480,
+    palette: list[int] | None = None,
+    background: str | None = None,
+    hover_json: str | None = None,
+    legend_position: str = "right",
+) -> Chart
+```
+
+---
+
 ## Description
 
 Camembert standard avec étiquettes de pourcentage optionnelles.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des tranches |
+| `values` | `list[float]` | requis | Valeurs des tranches (normalisées automatiquement à 100 %) |
+| `show_pct` | `bool` | `True` | Afficher les pourcentages dans les tranches |
+| `width` | `int` | `700` | Largeur du canvas en pixels |
+| `height` | `int` | `480` | Hauteur du canvas en pixels |
+| `palette` | `list[int] \| None` | `None` | Palette de couleurs hex |
+| `background` | `str \| None` | `None` | Couleur de fond |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+| `legend_position` | `str` | `"right"` | `"right"`, `"bottom"`, `"top"` |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_pie_chart(
+    "Chiffre d'affaires par région",
+    labels=["Nord", "Sud", "Est", "Ouest"],
+    values=[30, 25, 20, 25],
+    palette=[0x6366f1, 0x22d3ee, 0xf43f5e, 0xf59e0b],
+    legend_position="bottom",
+)
+```
+
+---
+
+## Voir aussi
+
+- [Anneau](donut.md)
+- [Camembert 3D](../3d/pie3d.md)
+- [Sunburst](sunburst.md)
 
 </div>

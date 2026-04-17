@@ -131,8 +131,82 @@ const chart = sp.build_waterfall("Annual P&amp;L Waterfall",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_waterfall(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    show_text: bool = True,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    color_pos: int = 0x22c55e,
+    color_neg: int = 0xef4444,
+    color_total: int = 0x6366f1,
+    palette: list[int] | None = None,
+    background: str | None = None,
+    gridlines: bool = True,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique en cascade montrant les contributions positives et négatives séquentielles à un total cumulatif.
+Graphique en cascade montrant les contributions positives et négatives séquentielles à un total cumulatif. Les valeurs positives montent, les négatives descendent. La dernière barre représente généralement le total final.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des étapes |
+| `values` | `list[float]` | requis | Valeurs des étapes (positives ou négatives) |
+| `show_text` | `bool` | `True` | Afficher les valeurs sur les barres |
+| `color_pos` | `int` | `0x22c55e` | Couleur des barres positives |
+| `color_neg` | `int` | `0xef4444` | Couleur des barres négatives |
+| `color_total` | `int` | `0x6366f1` | Couleur des barres total |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `y_label` | `str` | `""` | Étiquette de l'axe Y |
+| `gridlines` | `bool` | `True` | Lignes de grille horizontales |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+### Compte de résultat
+
+```python
+import seraplot as sp
+
+chart = sp.build_waterfall(
+    "Cascade Résultat annuel",
+    labels=["Chiffre d'affaires", "Coût des ventes", "Marge brute", "Charges", "EBITDA", "D&A", "Résultat net"],
+    values=[100000, -45000, 0, -30000, 0, -5000, 0],
+    show_text=True,
+    y_label="€",
+)
+```
+
+---
+
+## Voir aussi
+
+- [Graphique en barres](bar.md)
+- [Entonnoir](funnel.md)
+- [Bullet](bullet.md)
 
 </div>

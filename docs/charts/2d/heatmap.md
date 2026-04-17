@@ -152,8 +152,88 @@ features,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_heatmap(
+    title: str,
+    labels: list[str],
+    flat_matrix: list[float],
+    *,
+    show_values: bool = True,
+    color_low: int = 0,
+    color_mid: int = 0,
+    color_high: int = 0,
+    col_labels: list[str] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+    palette: list[int] | None = None,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+) -> Chart
+```
+
+---
+
 ## Description
 
 Matrice colorée (heatmap). Les valeurs sont normalisées automatiquement pour le mappage de couleurs.
+
+`flat_matrix` doit contenir `n_lignes × n_colonnes` valeurs en ordre ligne-major. `labels` = étiquettes de lignes. `col_labels` = étiquettes de colonnes.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des lignes |
+| `flat_matrix` | `list[float]` | requis | Valeurs de la matrice, en ligne-major |
+| `show_values` | `bool` | `True` | Afficher les valeurs numériques dans les cellules |
+| `color_low` | `int` | auto | Couleur pour les valeurs basses (hex int) |
+| `color_mid` | `int` | auto | Couleur pour les valeurs médianes |
+| `color_high` | `int` | auto | Couleur pour les valeurs hautes |
+| `col_labels` | `list[str] \| None` | `None` | Étiquettes de colonnes (par défaut = `labels`) |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+### Matrice de corrélation
+
+```python
+import seraplot as sp
+import numpy as np
+
+features = ["Age", "Revenu", "Score", "Visites"]
+matrice = np.corrcoef(np.random.randn(4, 100)).flatten().tolist()
+
+chart = sp.build_heatmap(
+    "Matrice de corrélation des variables",
+    labels=features,
+    flat_matrix=matrice,
+    color_low=0x3b82f6,
+    color_mid=0xffffff,
+    color_high=0xef4444,
+    show_values=True,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Carte de chaleur 3D](../3d/heatmap3d.md)
 
 </div>

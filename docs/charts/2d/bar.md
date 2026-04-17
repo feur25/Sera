@@ -208,8 +208,116 @@ chart = sp.build_bar_chart(
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_bar_chart(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    color_hex: int = 0,
+    orientation: str = "v",
+    show_text: bool = False,
+    color_groups: list[str] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+    sort_order: str = "none",
+    hover_json: str = "",
+    legend_position: str = "right",
+    palette: list[int] | None = None,
+    series_names: list[str] | None = None,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+) -> Chart
+```
+
+---
+
 ## Description
 
 Affiche un graphique en barres vertical ou horizontal.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des catégories |
+| `values` | `list[float]` | requis | Valeurs des barres |
+| `color_hex` | `int` | `0` | Couleur unique (ex. `0xFF5733`) |
+| `orientation` | `str` | `"v"` | `"v"` = vertical, `"h"` = horizontal |
+| `show_text` | `bool` | `False` | Afficher les valeurs sur les barres |
+| `color_groups` | `list[str] \| None` | `None` | Groupe par barre pour la coloration |
+| `width` | `int` | `900` | Largeur du canvas en pixels |
+| `height` | `int` | `480` | Hauteur du canvas en pixels |
+| `x_label` | `str` | `""` | Étiquette de l'axe X |
+| `y_label` | `str` | `""` | Étiquette de l'axe Y |
+| `gridlines` | `bool` | `False` | Afficher les lignes de grille |
+| `sort_order` | `str` | `"none"` | `"asc"`, `"desc"` ou `"none"` |
+| `hover_json` | `str` | `""` | JSON d'infobulle personnalisée |
+| `legend_position` | `str` | `"right"` | `"right"`, `"left"`, `"top"`, `"bottom"` |
+| `palette` | `list[int] \| None` | `None` | Palette de couleurs personnalisée |
+| `background` | `str \| None` | `None` | Couleur de fond ou `None` = transparent |
+| `no_x_axis` | `bool` | `False` | Masquer l'axe X |
+| `no_y_axis` | `bool` | `False` | Masquer l'axe Y |
+
+---
+
+## Retourne
+
+`Chart` — objet avec la propriété `.html` contenant le HTML autonome complet.
+
+---
+
+## Exemples
+
+### Graphique en barres simple
+
+```python
+import seraplot as sp
+
+labels = ["Jan", "Fév", "Mar", "Avr", "Mai"]
+values = [1200.0, 1850.0, 2100.0, 1750.0, 2400.0]
+
+chart = (
+    sp.build_bar_chart(
+        "Chiffre d'affaires mensuel",
+        labels=labels,
+        values=values,
+        x_label="Mois",
+        y_label="Chiffre d'affaires (€)",
+        gridlines=True,
+    )
+    .set_bg(None)
+    .show_labels(position="top")
+)
+```
+
+### Groupes colorés
+
+```python
+chart = sp.build_bar_chart(
+    "Produits par catégorie",
+    labels=["A1", "A2", "B1", "B2", "C1"],
+    values=[10.0, 15.0, 8.0, 12.0, 20.0],
+    color_groups=["Cat A", "Cat A", "Cat B", "Cat B", "Cat C"],
+    legend_position="bottom",
+)
+```
+
+---
+
+## Voir aussi
+
+- [Barres horizontales](hbar.md) — `sp.build_hbar()`
+- [Barres groupées](grouped-bar.md) — `sp.build_grouped_bar()`
+- [Barres empilées](stacked-bar.md) — `sp.build_stacked_bar()`
 
 </div>

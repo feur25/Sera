@@ -119,8 +119,75 @@ const chart = sp.build_radar3d_chart("Skills Comparison 3D",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_radar3d_chart(
+    title: str,
+    axes: list[str],
+    series: list[list[float]],
+    *,
+    series_names: list[str] | None = None,
+    palette: list[int] | None = None,
+    bg_color: str = "#1a1a2e",
+    width: int = 700,
+    height: int = 600,
+    max_val: float | None = None,
+    fill_opacity: float = 0.25,
+) -> Chart
+```
+
+---
+
 ## Description
 
 Graphique radar 3D (toile d'araignée). Même concept que le radar 2D mais rendu dans une scène WebGL.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `axes` | `list[str]` | requis | Étiquettes des axes |
+| `series` | `list[list[float]]` | requis | Valeurs par série par axe |
+| `series_names` | `list[str] \| None` | `None` | Noms de légende |
+| `palette` | `list[int] \| None` | `None` | Couleurs des séries |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `width` | `int` | `700` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+| `max_val` | `float \| None` | `None` | Maximum de l'échelle commune |
+| `fill_opacity` | `float` | `0.25` | Opacité du remplissage |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_radar3d_chart(
+    "Comparaison de compétences 3D",
+    axes=["Python", "Rust", "SQL", "ML", "DevOps"],
+    series_values=[
+        [9, 7, 8, 8, 6],
+        [5, 10, 6, 4, 9],
+    ],
+    series_names=["Alice", "Bob"],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Radar 2D](../2d/radar.md)
 
 </div>

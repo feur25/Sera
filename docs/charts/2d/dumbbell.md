@@ -129,8 +129,79 @@ const chart = sp.build_dumbbell("Life Expectancy: 2000 vs 2023",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_dumbbell(
+    title: str,
+    labels: list[str],
+    values_start: list[float],
+    values_end: list[float],
+    *,
+    show_text: bool = True,
+    color_start: int = 0x6366f1,
+    color_end: int = 0xf43f5e,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    background: str | None = None,
+    gridlines: bool = True,
+    hover_json: str | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique haltère — une ligne horizontale reliant deux valeurs par catégorie, idéal pour montrer une évolution ou un écart entre deux états.
+Graphique haltère — une ligne horizontale reliant deux valeurs par catégorie, idéal pour montrer l'écart ou l'évolution entre deux états.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des catégories |
+| `values_start` | `list[float]` | requis | Valeurs de départ (gauche) |
+| `values_end` | `list[float]` | requis | Valeurs d'arrivée (droite) |
+| `show_text` | `bool` | `True` | Afficher les valeurs aux extrémités |
+| `color_start` | `int` | `0x6366f1` | Couleur du point de départ |
+| `color_end` | `int` | `0xf43f5e` | Couleur du point d'arrivée |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `gridlines` | `bool` | `True` | Lignes de grille verticales |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_dumbbell(
+    "Espérance de vie : 2000 vs 2023",
+    labels=["Japon", "Allemagne", "Brésil", "Inde", "Nigéria"],
+    values_start=[81.2, 78.1, 70.4, 62.8, 46.5],
+    values_end=[84.3, 81.5, 75.2, 70.8, 54.9],
+    x_label="Âge (ans)",
+)
+```
+
+---
+
+## Voir aussi
+
+- [Pente](slope.md)
+- [Haltère 3D](../3d/dumbbell3d.md)
 
 </div>

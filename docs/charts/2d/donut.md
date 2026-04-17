@@ -129,8 +129,76 @@ const chart = sp.build_donut_chart("Budget Allocation",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_donut_chart(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    show_pct: bool = True,
+    inner_radius_ratio: float = 0.55,
+    width: int = 700,
+    height: int = 480,
+    palette: list[int] | None = None,
+    background: str | None = None,
+    hover_json: str | None = None,
+    legend_position: str = "right",
+) -> Chart
+```
+
+---
+
 ## Description
 
-Diagramme en anneau — identique à un camembert avec un trou circulaire central. `inner_radius_ratio` contrôle la taille du trou.
+Diagramme en anneau — identique à un camembert avec un trou circulaire central. `inner_radius_ratio` contrôle la taille du trou (0.0 = camembert plein, 1.0 = anneau invisible).
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des tranches |
+| `values` | `list[float]` | requis | Valeurs des tranches |
+| `show_pct` | `bool` | `True` | Afficher les pourcentages |
+| `inner_radius_ratio` | `float` | `0.55` | Taille du trou (0.0–0.9) |
+| `width` | `int` | `700` | Largeur du canvas en pixels |
+| `height` | `int` | `480` | Hauteur du canvas en pixels |
+| `palette` | `list[int] \| None` | `None` | Palette de couleurs hex |
+| `background` | `str \| None` | `None` | Fond du graphique |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+| `legend_position` | `str` | `"right"` | Position de la légende |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_donut_chart(
+    "Répartition du budget",
+    labels=["R&D", "Marketing", "Opérations", "Support"],
+    values=[35, 25, 30, 10],
+    inner_radius_ratio=0.55,
+    show_pct=True,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Camembert](pie.md)
+- [Sunburst](sunburst.md)
 
 </div>

@@ -129,8 +129,77 @@ cats,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_ridgeline3d_chart(
+    title: str,
+    categories: list[str],
+    values: list[float],
+    *,
+    bandwidth: float = 1.0,
+    palette: list[int] | None = None,
+    bg_color: str = "#1a1a2e",
+    width: int = 900,
+    height: int = 600,
+    x_label: str = "",
+    y_label: str = "",
+    z_label: str = "Density",
+) -> Chart
+```
+
+---
+
 ## Description
 
 Ridgeline 3D — surfaces KDE par catégorie arrangées le long de l'axe Y dans une scène WebGL.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `categories` | `list[str]` | requis | Étiquettes des catégories |
+| `values` | `list[float]` | requis | Données concaténées en plat |
+| `bandwidth` | `float` | `1.0` | Bande passante KDE |
+| `palette` | `list[int] \| None` | `None` | Couleurs par ridge |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+| `z_label` | `str` | `"Density"` | Étiquette de l'axe Z |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+import random
+
+cats   = ["Faible", "Moyen", "Haut"]
+means  = [10, 50, 90]
+values = [v for m in means for v in [random.gauss(m, 8) for _ in range(150)]]
+
+chart = sp.build_ridgeline3d_chart(
+    "Distribution des scores par groupe",
+    categories=cats,
+    values=values,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Ridgeline 2D](../2d/ridgeline.md)
+- [KDE 3D](kde3d.md)
 
 </div>

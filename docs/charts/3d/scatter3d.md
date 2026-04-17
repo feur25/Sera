@@ -169,8 +169,93 @@ y,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_scatter3d_chart(
+    title: str,
+    x: list[float],
+    y: list[float],
+    z: list[float],
+    *,
+    color_values: list[float] | None = None,
+    color_labels: list[str] | None = None,
+    series_names: list[str] | None = None,
+    bg_color: str = "#1a1a2e",
+    width: int = 900,
+    height: int = 600,
+    x_label: str = "X",
+    y_label: str = "Y",
+    z_label: str = "Z",
+    hover_json: str | None = None,
+    palette: list[int] | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
 Nuage de points 3D accéléré GPU via WebGL. Gère des millions de points à des fréquences d'images interactives.
+
+Utilisez `color_values` pour une échelle de couleur continue, ou `color_labels` pour un coloriage catégoriel.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `x` | `list[float]` | requis | Coordonnées X |
+| `y` | `list[float]` | requis | Coordonnées Y |
+| `z` | `list[float]` | requis | Coordonnées Z |
+| `color_values` | `list[float] \| None` | `None` | Valeurs de colormap continues |
+| `color_labels` | `list[str] \| None` | `None` | Groupes de couleur catégoriels |
+| `series_names` | `list[str] \| None` | `None` | Noms des séries pour la légende |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+| `x_label` | `str` | `"X"` | Étiquette de l'axe X |
+| `y_label` | `str` | `"Y"` | Étiquette de l'axe Y |
+| `z_label` | `str` | `"Z"` | Étiquette de l'axe Z |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+| `palette` | `list[int] \| None` | `None` | Palette de couleurs |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+import random
+
+n = 1000
+x = [random.gauss(0, 1) for _ in range(n)]
+y = [random.gauss(0, 1) for _ in range(n)]
+z = [random.gauss(0, 1) for _ in range(n)]
+groupes = [random.choice(["A", "B", "C"]) for _ in range(n)]
+
+chart = sp.build_scatter3d_chart(
+    "Nuage de points 3D",
+    x_values=x, y_values=y, z_values=z,
+    color_labels=groupes,
+    x_label="X", y_label="Y", z_label="Z",
+)
+```
+
+---
+
+## Voir aussi
+
+- [Nuage de points 2D](../2d/scatter.md)
+- [DBSCAN 3D](../../ml/dbscan.md)
+- [Bulles 3D](bubble3d.md)
 
 </div>

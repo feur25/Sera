@@ -151,8 +151,86 @@ y,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_line3d_chart(
+    title: str,
+    x: list[float],
+    y: list[float],
+    z: list[float],
+    *,
+    color_hex: int = 0x6366F1,
+    palette: list[int] | None = None,
+    bg_color: str = "#1a1a2e",
+    width: int = 900,
+    height: int = 600,
+    x_label: str = "X",
+    y_label: str = "Y",
+    z_label: str = "Z",
+    series_names: list[str] | None = None,
+    show_points: bool = True,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique en courbe 3D connectant des points séquentiels dans l'espace 3D. Utile pour les trajectoires et les courbes paramétriques.
+Graphique en courbe 3D connectant des points séquentiels dans l'espace 3D. Utile pour les trajectoires, les séries temporelles 3D et les courbes paramétriques.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `x` | `list[float]` | requis | Coordonnées X |
+| `y` | `list[float]` | requis | Coordonnées Y |
+| `z` | `list[float]` | requis | Coordonnées Z |
+| `color_hex` | `int` | `0x6366F1` | Couleur de la courbe |
+| `palette` | `list[int] \| None` | `None` | Couleurs multi-séries |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+| `x_label` | `str` | `"X"` | Étiquette de l'axe X |
+| `y_label` | `str` | `"Y"` | Étiquette de l'axe Y |
+| `z_label` | `str` | `"Z"` | Étiquette de l'axe Z |
+| `series_names` | `list[str] \| None` | `None` | Noms des séries pour la légende |
+| `show_points` | `bool` | `True` | Afficher les marqueurs de points |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+import math
+
+t = [i * 0.1 for i in range(100)]
+x = [math.cos(v) for v in t]
+y = [math.sin(v) for v in t]
+z = t
+
+chart = sp.build_line3d_chart(
+    "Hélice",
+    x_values=x, y_values=y, z_values=z,
+    x_label="cos(t)", y_label="sin(t)", z_label="t",
+)
+```
+
+---
+
+## Voir aussi
+
+- [Courbe 2D](../2d/line.md)
+- [Nuage de points 3D](scatter3d.md)
 
 </div>

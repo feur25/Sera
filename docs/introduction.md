@@ -512,23 +512,147 @@ Rust-native DBSCAN with KD-tree spatial indexing:
 
 <div class="lang-fr">
 
-## SeraPlot
+# SeraPlot
 
-Visualisation de données native Rust. **6 000× plus rapide que Plotly.** Aucune dépendance.
+Visualisation de donn\u00e9es native Rust. **6\u202f000\u00d7 plus rapide que Plotly. Z\u00e9ro d\u00e9pendance.**
 
 ```bash
 pip install seraplot
 ```
 
-Chaque graphique est un fichier HTML autonome de ~20 Ko. Pas de serveur, pas de Dash, pas de Streamlit.
+## Le d\u00e9clencheur
 
-## Par où commencer
+```python
+import seraplot as sp
+
+sp.scatter("1M points", list(range(1_000_000)), [x**0.5 for x in range(1_000_000)]).show()
+```
+
+**1 million de points. Interactif. Dans Jupyter.**
+
+Aucune configuration. Aucun backend. Aucune attente.
+
+---
+
+## Pourquoi les gens changent vraiment
+
+#### Tableaux de bord sans backend
+Chaque graphique est un fichier HTML autonome. D\u00e9posez-le o\u00f9 vous voulez \u2014 S3, e-mail, Git, Notion. Pas de serveur, pas de Dash, pas de Streamlit.
+
+#### Graphiques par e-mail
+21\u202fKo de HTML interactif contre 4,7\u202fMo de blob statique Plotly.
+
+#### Pipelines CI \u00e0 grande \u00e9chelle
+1\u202f000 graphiques en 6\u202fms. Pas 37 secondes. Pas 60 secondes.
+
+#### Applications hors ligne
+Pas de CDN. Pas de framework JS. Pas d'internet au rendu. Fonctionne en environnement isol\u00e9.
+
+#### APIs qui retournent des graphiques
+Retournez du HTML directement depuis un endpoint FastAPI. 21\u202fKo dans le corps de la r\u00e9ponse, pas de fichiers temporaires.
+
+---
+
+## M\u00eame graphique \u2014 trois biblioth\u00e8ques
+
+| | SeraPlot | Plotly | Matplotlib |
+|---|:---:|:---:|:---:|
+| Lignes de code | **2** | 4 | 7 |
+| Sortie | HTML | HTML | PNG |
+| Taille du fichier | **21\u202fKo** | 4,7\u202fMo | ~150\u202fKo |
+| Interactif | \u2705 | \u2705 | \u274c |
+| D\u00e9pendances | **0** | 6+ | 3+ |
+| Migration 1\u202fligne | \u2705 | \u2014 | \u2014 |
+
+---
+
+## 1\u202f000 graphiques. Mesur\u00e9s.
+
+M\u00eame code, m\u00eames donn\u00e9es al\u00e9atoires, m\u00eame machine. Sortie HTML compl\u00e8te chronom\u00e9tr\u00e9e.
+
+| \u00c9chelle | SeraPlot | Plotly | Matplotlib |
+|-------|:--------:|:------:|:----------:|
+| 1\u202f000 graphiques | **6\u202fms** | 37\u202fs | 60\u202fs |
+| 10\u202f000 graphiques | **~60\u202fms** | ~6\u202fmin | ~10\u202fmin |
+| 100\u202f000 graphiques | **~600\u202fms** | ~1\u202fh | ~1,7\u202fh |
+
+---
+
+## Taille des fichiers de sortie
+
+Plotly embarque tout son bundle JavaScript dans chaque fichier HTML. SeraPlot n'inclut que le JS n\u00e9cessaire au type de graphique sp\u00e9cifique.
+
+| Graphique | SeraPlot | Plotly | Ratio |
+|-----------|:--------:|:------:|:-----:|
+| Camembert | 19\u202fKo | 4\u202f733\u202fKo | 246\u00d7 |
+| Barres | 21\u202fKo | 4\u202f733\u202fKo | 225\u00d7 |
+| Nuage de points | 39\u202fKo | 4\u202f740\u202fKo | 121\u00d7 |
+| Radar | 23\u202fKo | 4\u202f733\u202fKo | 205\u00d7 |
+
+---
+
+## Configuration globale
+
+D\u00e9finir une fois, tous les graphiques h\u00e9ritent\u00a0:
+
+```python
+sp.config(
+    font="Inter",
+    font_size=14,
+    title_size=22,
+    crosshair=True,
+    zoom=True,
+    animation=True,
+    export_button=True,
+    responsive=True,
+    border_radius=12,
+    margin=16,
+    opacity=0.85,
+    background="#0f172a",
+    palette=[0x818CF8, 0xFB7185, 0x34D399],
+    gridlines=True,
+)
+
+sp.bar("Revenus", labels, values)   # h\u00e9rite de tout
+sp.line("Tendance", dates, values)  # m\u00eame config
+sp.scatter("Clusters", x, y)        # m\u00eame config
+```
+
+---
+
+## 7 th\u00e8mes
+
+```python
+sp.theme("dark")
+sp.theme("apple")
+sp.theme("notion")
+sp.theme("scientific")
+sp.theme("neon")
+sp.theme("minimal")
+sp.theme("light")
+
+sp.reset_theme()
+```
+
+---
+
+## Migration en une ligne
+
+```python
+import seraplot.matplotlib as plt
+```
+
+Tout le reste reste identique. `plt.bar()`, `plt.scatter()`, `plt.hist()`, `plt.show()`, `plt.savefig()` \u2014 inchang\u00e9s.
+
+---
+
+## Par o\u00f9 commencer
 
 - **[Installation](getting-started/installation.md)**
-- **[Démarrage rapide](getting-started/quickstart.md)**
-- **[Graphiques 2D](charts/2d/bar.md)** — 33 types
-- **[Graphiques 3D](charts/3d/scatter3d.md)** — 17 types, rendu WebGL GPU
-- **[Machine Learning](ml/dbscan.md)** — DBSCAN jusqu'à 600× plus rapide que scikit-learn
-- **[Référence API](api/index.md)** — index complet des fonctions
+- **[D\u00e9marrage rapide](getting-started/quickstart.md)**
+- **[Graphiques 2D](charts/2d/bar.md)** \u2014 33 types
+- **[Graphiques 3D](charts/3d/scatter3d.md)** \u2014 17 types, rendu WebGL GPU
+- **[Machine Learning](ml/dbscan.md)** \u2014 DBSCAN jusqu'\u00e0 600\u00d7 plus rapide que scikit-learn
+- **[R\u00e9f\u00e9rence API](api/index.md)** \u2014 index complet des fonctions
 
 </div>

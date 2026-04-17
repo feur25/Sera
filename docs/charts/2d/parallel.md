@@ -148,8 +148,83 @@ axes,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_parallel(
+    title: str,
+    axes: list[str],
+    series: list[list[float]],
+    *,
+    series_names: list[str] | None = None,
+    color_groups: list[str] | None = None,
+    palette: list[int] | None = None,
+    width: int = 1000,
+    height: int = 480,
+    background: str | None = None,
+    line_opacity: float = 0.6,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Coordonnées parallèles — chaque axe est une dimension, chaque ligne est une observation. Idéal pour détecter des patterns dans des données multidimensionnelles.
+Coordonnées parallèles — chaque axe est une dimension, chaque ligne est une observation. Idéal pour détecter des motifs dans des données multidimensionnelles.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `axes` | `list[str]` | requis | Étiquettes des axes (une par dimension) |
+| `series` | `list[list[float]]` | requis | Une liste par observation (même longueur que `axes`) |
+| `series_names` | `list[str] \| None` | `None` | Étiquette par observation |
+| `color_groups` | `list[str] \| None` | `None` | Noms de groupe pour la coloration des lignes |
+| `palette` | `list[int] \| None` | `None` | Couleurs personnalisées par groupe |
+| `width` | `int` | `1000` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `background` | `str \| None` | `None` | Couleur de fond |
+| `line_opacity` | `float` | `0.6` | Opacité des lignes (0.0–1.0) |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+axes = ["Long. sépale", "Larg. sépale", "Long. pétale", "Larg. pétale"]
+
+data = [
+    [5.1, 3.5, 1.4, 0.2],
+    [6.7, 3.1, 4.7, 1.5],
+    [6.3, 3.3, 6.0, 2.5],
+]
+groupes = ["Setosa", "Versicolor", "Virginica"]
+
+chart = sp.build_parallel(
+    "Coordonnées parallèles — Iris",
+    axes=axes,
+    series=data,
+    color_groups=groupes,
+    palette=[0x6366f1, 0x22d3ee, 0xf43f5e],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Nuage de points](scatter.md)
+- [Graphique radar](radar.md)
 
 </div>

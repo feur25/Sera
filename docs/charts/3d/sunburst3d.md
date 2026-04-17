@@ -127,8 +127,75 @@ parents,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_sunburst3d_chart(
+    title: str,
+    labels: list[str],
+    parents: list[str],
+    values: list[float],
+    *,
+    extrusion: float = 0.15,
+    bg_color: str = "#1a1a2e",
+    palette: list[int] | None = None,
+    width: int = 700,
+    height: int = 600,
+    hover_json: str | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Sunburst 3D — anneaux d'arc extrudes concentriques dans une scène WebGL.
+Sunburst 3D — anneaux d'arc extrudés concentriques dans une scène WebGL.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des nœuds |
+| `parents` | `list[str]` | requis | Étiquettes des parents |
+| `values` | `list[float]` | requis | Tailles des nœuds |
+| `extrusion` | `float` | `0.15` | Profondeur d'extrusion des arcs |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `palette` | `list[int] \| None` | `None` | Palette personnalisée |
+| `width` | `int` | `700` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+labels  = ["Racine", "A", "B", "A1", "A2", "B1"]
+parents = ["", "Racine", "Racine", "A", "A", "B"]
+values  = [1, 40, 60, 25, 15, 60]
+
+chart = sp.build_sunburst3d_chart(
+    "Organigramme 3D",
+    labels=labels, parents=parents, values=values,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Sunburst 2D](../2d/sunburst.md)
+- [Camembert 3D](pie3d.md)
 
 </div>

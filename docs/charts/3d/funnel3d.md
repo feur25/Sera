@@ -111,8 +111,69 @@ const chart = sp.build_funnel3d_chart("Conversion Funnel 3D",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_funnel3d_chart(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    show_text: bool = True,
+    palette: list[int] | None = None,
+    bg_color: str = "#1a1a2e",
+    width: int = 700,
+    height: int = 600,
+    hover_json: str | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
 Entonnoir 3D où chaque étape est un cône tronqué (frustum) dans une scène WebGL.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des étapes |
+| `values` | `list[float]` | requis | Valeurs des étapes |
+| `show_text` | `bool` | `True` | Afficher les étiquettes de valeur |
+| `palette` | `list[int] \| None` | `None` | Couleurs par étape |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `width` | `int` | `700` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_funnel3d_chart(
+    "Entonnoir de conversion 3D",
+    labels=["Visiteurs", "Prospects", "Opportunités", "Propositions", "Conclus"],
+    values=[10000, 3200, 1100, 450, 120],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Entonnoir 2D](../2d/funnel.md)
 
 </div>

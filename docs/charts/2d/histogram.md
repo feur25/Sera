@@ -145,8 +145,86 @@ const chart = sp.build_histogram("Normal Distribution — N(0,1)",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_histogram(
+    title: str,
+    values: list[float],
+    *,
+    color_hex: int = 0,
+    bins: int = 20,
+    show_counts: bool = False,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+    sort_order: str = "none",
+    hover_json: str = "",
+    legend_position: str = "right",
+    palette: list[int] | None = None,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Histogramme de distribution avec nombre de bins configurable.
+Histogramme de distribution avec nombre de classes (bins) configurable.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `values` | `list[float]` | requis | Données numériques brutes |
+| `bins` | `int` | `20` | Nombre de classes |
+| `show_counts` | `bool` | `False` | Afficher les effectifs au-dessus de chaque barre |
+| `color_hex` | `int` | `0` | Couleur des barres (hex int) |
+| `width` | `int` | `900` | Largeur en pixels |
+| `height` | `int` | `480` | Hauteur en pixels |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+### Distribution normale
+
+```python
+import seraplot as sp
+import numpy as np
+
+data = np.random.normal(0, 1, 5000).tolist()
+
+chart = sp.build_histogram(
+    "Distribution normale — N(0,1)",
+    values=data,
+    bins=40,
+    x_label="Valeur",
+    y_label="Effectif",
+    gridlines=True,
+    show_counts=False,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Histogramme superposé](histogram-overlay.md) — comparer deux distributions
+- [KDE](kde.md) — estimation de densité lisse
+- [Violon](violin.md) — distribution par catégorie
 
 </div>

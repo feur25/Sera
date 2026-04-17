@@ -142,6 +142,28 @@ Efface le fond global, revenant à la valeur par défaut de chaque graphique.
 
 Applique une couleur de fond à une chaîne HTML existante. Retourne la chaîne HTML modifiée.
 
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `html` | `str` | Chaîne HTML de `Chart.to_html()` |
+| `color` | `str` | Couleur de fond CSS |
+
+**Retourne** : `str` — Chaîne HTML modifiée.
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+sp.set_global_background("#0f172a")
+
+barre = sp.build_bar_chart("Revenus", labels=["A", "B"], values=[300, 200])
+camembert = sp.build_pie_chart("Parts",   labels=["A", "B"], values=[60, 40])
+
+sp.reset_global_background()
+```
+
 ---
 
 ## Voir aussi

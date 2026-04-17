@@ -124,8 +124,74 @@ const chart = sp.build_radar_chart("Player Stats Comparison",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_radar_chart(
+    title: str,
+    axes: list[str],
+    series: list[list[float]],
+    *,
+    series_names: list[str] | None = None,
+    palette: list[int] | None = None,
+    fill_opacity: float = 0.25,
+    width: int = 600,
+    height: int = 500,
+    background: str | None = None,
+    max_val: float | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique radar (toile d'araignée) — un polygone par série sur des axes radiaux. Idéal pour profiler des entités sur plusieurs dimensions.
+Graphique radar (toile d'araignée) — un polygone par série sur des axes radiaux. Idéal pour profiler des entités sur plusieurs dimensions simultanément.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `axes` | `list[str]` | requis | Étiquettes des axes (noms des dimensions) |
+| `series` | `list[list[float]]` | requis | Une liste par série (même longueur que `axes`) |
+| `series_names` | `list[str] \| None` | `None` | Noms des séries pour la légende |
+| `palette` | `list[int] \| None` | `None` | Couleurs de remplissage par série |
+| `fill_opacity` | `float` | `0.25` | Opacité du remplissage du polygone (0.0–1.0) |
+| `width` | `int` | `600` | Largeur du canvas |
+| `height` | `int` | `500` | Hauteur du canvas |
+| `background` | `str \| None` | `None` | Couleur de fond |
+| `max_val` | `float \| None` | `None` | Valeur maximale commune (auto si `None`) |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_radar_chart(
+    "Comparaison des statistiques joueurs",
+    axes=["Vitesse", "Force", "Défense", "Dribble", "Tir", "Passe"],
+    series=[[85, 70, 65, 90, 88, 82], [72, 88, 79, 68, 75, 85]],
+    series_names=["Joueur A", "Joueur B"],
+    palette=[0x6366f1, 0xf43f5e],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Coordonnées parallèles](parallel.md)
+- [Radar 3D](../3d/radar3d.md)
 
 </div>

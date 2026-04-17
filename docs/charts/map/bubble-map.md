@@ -135,3 +135,98 @@ chart = sp.build_bubble_map(
 
 - [Choropleth](choropleth.md)
 - [Globe 3D](../3d/globe3d.md)
+
+</div>
+
+<div class="lang-fr">
+
+## Signature
+
+```python
+sp.build_bubble_map(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    latitudes: list[float] | None = None,
+    longitudes: list[float] | None = None,
+    iso_codes: list[str] | None = None,
+    color_hex: int = 0x6366F1,
+    palette: list[int] | None = None,
+    width: int = 1000,
+    height: int = 600,
+    background: str | None = None,
+    hover_json: str | None = None,
+    bubble_opacity: float = 0.6,
+    min_bubble_size: float = 5.0,
+    max_bubble_size: float = 50.0,
+) -> Chart
+```
+
+---
+
+## Description
+
+Carte mondiale avec des bulles proportionnelles aux coordonnées géographiques. Utilisez `iso_codes` pour les données par pays (la bibliothèque résout les centroïdes automatiquement), ou passez des `latitudes` / `longitudes` explicites.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Noms des lieux |
+| `values` | `list[float]` | requis | Tailles des bulles |
+| `latitudes` | `list[float] \| None` | `None` | Latitudes manuelles |
+| `longitudes` | `list[float] \| None` | `None` | Longitudes manuelles |
+| `iso_codes` | `list[str] \| None` | `None` | Codes ISO-3166 alpha-3 des pays |
+| `color_hex` | `int` | `0x6366F1` | Couleur des bulles |
+| `palette` | `list[int] \| None` | `None` | Palette multi-groupes |
+| `width` | `int` | `1000` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+| `bubble_opacity` | `float` | `0.6` | Transparence des bulles (0–1) |
+| `min_bubble_size` | `float` | `5.0` | Rayon minimal des bulles en pixels |
+| `max_bubble_size` | `float` | `50.0` | Rayon maximal des bulles en pixels |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_bubble_map(
+    "PIB par pays",
+    labels=["USA", "CHN", "DEU", "JPN", "FRA"],
+    values=[25500, 17700, 4400, 4200, 3100],
+)
+```
+
+```python
+import seraplot as sp
+
+chart = sp.build_bubble_map(
+    "Populations urbaines",
+    labels=["Paris", "Tokyo", "New York", "Lagos"],
+    values=[11, 37, 20, 15],
+    latitudes=[48.85, 35.68, 40.71, 6.52],
+    longitudes=[2.35, 139.69, -74.01, 3.38],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Choro-plèthe](choropleth.md)
+- [Globe 3D](../3d/globe3d.md)
+
+</div>

@@ -126,8 +126,77 @@ const chart = sp.build_gauge("CPU Usage",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_gauge(
+    title: str,
+    value: float,
+    *,
+    min_val: float = 0.0,
+    max_val: float = 100.0,
+    thresholds: list[float] | None = None,
+    threshold_colors: list[int] | None = None,
+    color_hex: int = 0x6366F1,
+    width: int = 500,
+    height: int = 350,
+    show_value: bool = True,
+    background: str | None = None,
+    label: str = "",
+) -> Chart
+```
+
+---
+
 ## Description
 
 Jauge semicirculaire (tachymètre). Les arcs colorés indiquent les seuils (danger / avertissement / ok).
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `value` | `float` | requis | Valeur actuelle |
+| `min_val` | `float` | `0.0` | Minimum de l'échelle |
+| `max_val` | `float` | `100.0` | Maximum de l'échelle |
+| `thresholds` | `list[float] \| None` | `None` | Limites de zones dans [min,max] |
+| `threshold_colors` | `list[int] \| None` | `None` | Couleurs par zone de seuil |
+| `color_hex` | `int` | `0x6366F1` | Couleur de l'aiguille |
+| `width` | `int` | `500` | Largeur du canvas |
+| `height` | `int` | `350` | Hauteur du canvas |
+| `show_value` | `bool` | `True` | Afficher la valeur numérique sous l'aiguille |
+| `label` | `str` | `""` | Étiquette d'unité sous la valeur |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_gauge(
+    "Utilisation CPU",
+    value=73.5,
+    min_val=0,
+    max_val=100,
+    label="%",
+)
+```
+
+---
+
+## Voir aussi
+
+- [Bullet](bullet.md)
+- [Graphique en barres](bar.md)
 
 </div>

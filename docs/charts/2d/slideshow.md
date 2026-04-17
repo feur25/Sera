@@ -143,8 +143,67 @@ const deck = sp.build_slideshow(slides,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_slideshow(
+    charts: list[Chart],
+    *,
+    title: str = "",
+    width: int = 1000,
+    height: int = 600,
+    background: str | None = None,
+    autoplay: bool = False,
+    interval_ms: int = 3000,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Emballe plusieurs graphiques dans un diaporama interactif avec navigation Précédent/Suivant. Tous les graphiques sont pré-rendus.
+Emballe plusieurs graphiques dans un diaporama interactif avec navigation Précédent/Suivant. Tous les graphiques sont pré-rendus ; la navigation ne nécessite aucun aller-retour serveur.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `charts` | `list[Chart]` | requis | Objets Chart à afficher |
+| `title` | `str` | `""` | Titre du diaporama |
+| `width` | `int` | `1000` | Largeur du conteneur en pixels |
+| `height` | `int` | `600` | Hauteur du conteneur en pixels |
+| `background` | `str \| None` | `None` | Couleur de fond |
+| `autoplay` | `bool` | `False` | Avance automatique des diapositives |
+| `interval_ms` | `int` | `3000` | Intervalle d'avance automatique en millisecondes |
+
+---
+
+## Retourne
+
+`Chart` (composite)
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+diapositives = [
+    sp.build_bar_chart("CA T1", labels=["A","B","C"], values=[120,80,95]),
+    sp.build_line_chart("Tendance", labels=["Jan","Fév","Mar"], values=[10,14,18]),
+    sp.build_pie_chart("Parts de marché", labels=["Nous","Eux"], values=[55,45]),
+]
+
+presentation = sp.build_slideshow(diapositives, title="Rapport T1")
+```
+
+---
+
+## Voir aussi
+
+- [Grille](grid.md)
 
 </div>

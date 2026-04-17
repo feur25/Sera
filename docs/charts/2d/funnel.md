@@ -123,8 +123,72 @@ const chart = sp.build_funnel("Sales Pipeline Q1",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_funnel(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    show_text: bool = True,
+    width: int = 700,
+    height: int = 480,
+    palette: list[int] | None = None,
+    background: str | None = None,
+    hover_json: str | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
 Graphique en entonnoir visualisant la réduction progressive par étapes (pipeline de vente, entonnoir de conversion). Les barres sont centrées et proportionnelles à leur valeur.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des étapes (haut → bas) |
+| `values` | `list[float]` | requis | Valeur à chaque étape |
+| `show_text` | `bool` | `True` | Afficher les valeurs et le % de chute |
+| `width` | `int` | `700` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `palette` | `list[int] \| None` | `None` | Couleurs par étape |
+| `background` | `str \| None` | `None` | Couleur de fond |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_funnel(
+    "Pipeline commercial T1",
+    labels=["Prospects", "Qualifiés", "Proposition", "Négociation", "Conclus"],
+    values=[5000, 2800, 1200, 600, 250],
+    show_text=True,
+    palette=[0x6366f1, 0x8b5cf6, 0xa78bfa, 0xc4b5fd, 0xddd6fe],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Cascade](waterfall.md)
+- [Entonnoir 3D](../3d/funnel3d.md)
 
 </div>

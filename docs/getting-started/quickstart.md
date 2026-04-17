@@ -277,5 +277,20 @@ z = np.random.randn(1000).tolist()
 chart = sp.build_scatter3d_chart("Nuage 3D", x_values=x, y_values=y, z_values=z)
 ```
 
+### Clustering DBSCAN en un appel
+
+```python
+import numpy as np
+x = np.random.randn(10_000).tolist()
+y = np.random.randn(10_000).tolist()
+chart = sp.build_dbscan_chart(
+    "DBSCAN",
+    x_values=x,
+    y_values=y,
+    eps=0.3,
+    min_samples=10,
+)
+```
+
 </div>
 

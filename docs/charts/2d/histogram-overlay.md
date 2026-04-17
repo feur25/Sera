@@ -145,8 +145,85 @@ control,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_histogram_overlay(
+    title: str,
+    values: list[float],
+    overlay_values: list[float],
+    *,
+    color_hex: int = 0,
+    overlay_color_hex: int = 0,
+    bins: int = 20,
+    series_names: list[str] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+    palette: list[int] | None = None,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Histogramme superposé comparant deux distributions avec transparence.
+Histogramme superposé pour comparer deux distributions avec transparence.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `values` | `list[float]` | requis | Données de la première distribution |
+| `overlay_values` | `list[float]` | requis | Données de la deuxième distribution |
+| `bins` | `int` | `20` | Nombre de classes |
+| `series_names` | `list[str] \| None` | `None` | Noms pour la légende `["Série A", "Série B"]` |
+| `color_hex` | `int` | `0` | Couleur de la première série |
+| `overlay_color_hex` | `int` | `0` | Couleur de la deuxième série |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+import numpy as np
+
+rng = np.random.default_rng(42)
+controle   = rng.normal(5.0, 1.0, 1000).tolist()
+traitement = rng.normal(5.8, 1.2, 1000).tolist()
+
+chart = sp.build_histogram_overlay(
+    "Contrôle vs Traitement",
+    values=controle,
+    overlay_values=traitement,
+    bins=30,
+    series_names=["Contrôle", "Traitement"],
+    x_label="Mesure",
+    y_label="Fréquence",
+    gridlines=True,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Histogramme](histogram.md)
+- [KDE](kde.md)
 
 </div>

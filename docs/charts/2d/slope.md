@@ -134,8 +134,80 @@ const chart = sp.build_slope("HDI Change 2000 to 2023",
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_slope(
+    title: str,
+    labels: list[str],
+    values_left: list[float],
+    values_right: list[float],
+    left_label: str,
+    right_label: str,
+    *,
+    show_text: bool = True,
+    color_hex: int = 0x6366F1,
+    palette: list[int] | None = None,
+    width: int = 600,
+    height: int = 480,
+    background: str | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Graphique de pente comparant deux valeurs par entité (avant/après). Les axes verticaux parallèles sont reliés par des lignes de pente.
+Graphique de pente comparant deux valeurs par entité (avant/après, période A vs B). Les axes verticaux parallèles sont reliés par des lignes de pente montantes ou descendantes.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Noms des entités (une par ligne) |
+| `values_left` | `list[float]` | requis | Valeurs sur l'axe gauche |
+| `values_right` | `list[float]` | requis | Valeurs sur l'axe droit |
+| `left_label` | `str` | requis | Titre de l'axe gauche (ex. `"2020"`) |
+| `right_label` | `str` | requis | Titre de l'axe droit (ex. `"2024"`) |
+| `show_text` | `bool` | `True` | Afficher les valeurs aux extrémités |
+| `color_hex` | `int` | `0x6366F1` | Couleur des lignes (unique) |
+| `palette` | `list[int] \| None` | `None` | Couleurs par entité |
+| `width` | `int` | `600` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `background` | `str \| None` | `None` | Couleur de fond |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+chart = sp.build_slope(
+    "IDH : Évolution 2000–2023",
+    labels=["Allemagne", "Japon", "Brésil", "Inde", "Nigéria"],
+    values_left=[0.926, 0.909, 0.694, 0.493, 0.452],
+    values_right=[0.950, 0.920, 0.760, 0.644, 0.548],
+    left_label="2000",
+    right_label="2023",
+    show_text=True,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Graphique en courbe](line.md)
+- [Haltère](dumbbell.md)
 
 </div>

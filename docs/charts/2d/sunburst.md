@@ -135,8 +135,78 @@ parents,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_sunburst(
+    title: str,
+    labels: list[str],
+    parents: list[str],
+    values: list[float],
+    *,
+    width: int = 700,
+    height: int = 480,
+    palette: list[int] | None = None,
+    background: str | None = None,
+    hover_json: str | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
 Graphique sunburst hiérarchique. Les nœuds sont disposés en anneaux concentriques rayonnant depuis la racine.
+
+`labels[i]` a `parents[i]` comme parent (`""` pour les nœuds racine). `values` contrôle la taille des arcs.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des nœuds |
+| `parents` | `list[str]` | requis | Parent de chaque nœud (`""` = racine) |
+| `values` | `list[float]` | requis | Valeurs de taille des nœuds |
+| `width` | `int` | `700` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `palette` | `list[int] \| None` | `None` | Couleurs personnalisées |
+| `background` | `str \| None` | `None` | Couleur de fond |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+labels  = ["Société", "Ventes", "Tech", "RH", "B2B", "B2C", "Frontend", "Backend"]
+parents = ["",         "Société", "Société", "Société", "Ventes", "Ventes", "Tech", "Tech"]
+values  = [1,           40,       50,     10,   25,     15,     30,        20]
+
+chart = sp.build_sunburst(
+    "Effectifs par département",
+    labels=labels,
+    parents=parents,
+    values=values,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Treemap](treemap.md)
+- [Camembert](pie.md)
+- [Sunburst 3D](../3d/sunburst3d.md)
 
 </div>

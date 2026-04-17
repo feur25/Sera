@@ -137,8 +137,77 @@ labels,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_treemap(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    parents: list[str] | None = None,
+    width: int = 900,
+    height: int = 480,
+    palette: list[int] | None = None,
+    background: str | None = None,
+    hover_json: str | None = None,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Treemap — visualisation hiérarchique en rectangles. Les cases sont proportionnelles à leur valeur. Avec `parents`, rendu en rectangles imbriqués.
+Treemap — visualisation hiérarchique à base de rectangles. Les tuiles sont proportionnelles à leur valeur. Avec `parents`, rendu en rectangles imbriqués. Sans `parents`, treemap plat.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `labels` | `list[str]` | requis | Étiquettes des tuiles |
+| `values` | `list[float]` | requis | Tailles des tuiles |
+| `parents` | `list[str] \| None` | `None` | Étiquettes parents optionnelles pour la hiérarchie |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `480` | Hauteur du canvas |
+| `palette` | `list[int] \| None` | `None` | Palette de couleurs |
+| `background` | `str \| None` | `None` | Couleur de fond |
+| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+### Treemap hiérarchique
+
+```python
+import seraplot as sp
+
+labels  = ["Electronique", "Téléphones", "Portables", "Vêtements", "Chemises", "Pantalons"]
+parents = ["",             "Electronique","Electronique","","Vêtements","Vêtements"]
+values  = [1, 400, 350, 1, 200, 150]
+
+chart = sp.build_treemap(
+    "Chiffre d'affaires par catégorie",
+    labels=labels,
+    values=values,
+    parents=parents,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Sunburst](sunburst.md)
+- [Graphique en barres](bar.md)
 
 </div>

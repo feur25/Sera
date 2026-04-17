@@ -163,8 +163,93 @@ labels,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_boxplot(
+    title: str,
+    category_labels: list[str],
+    values: list[float],
+    *,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    color_hex: int = 0x6366F1,
+    palette: list[int] | None = None,
+    background: str | None = None,
+    gridlines: bool = True,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+) -> Chart
+```
+
+---
+
 ## Description
 
-Boite à moustaches montrant la distribution statistique par catégorie. Affiche Q1, médiane, Q3 et les moustaches.
+Boite à moustaches montrant la distribution statistique par catégorie. Chaque boîte affiche Q1, la médiane, Q3 et les moustaches IQR.
+
+`values` est une liste plate concaténant tous les échantillons de toutes les catégories (même nombre de valeurs par catégorie).
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `category_labels` | `list[str]` | requis | Une étiquette par boîte |
+| `values` | `list[float]` | requis | Liste plate de tous les échantillons |
+| `color_hex` | `int` | `0x6366F1` | Couleur de remplissage unique |
+| `palette` | `list[int] \| None` | `None` | Couleurs par catégorie |
+| `width` | `int` | `900` | Largeur du canvas en pixels |
+| `height` | `int` | `480` | Hauteur du canvas en pixels |
+| `x_label` | `str` | `""` | Étiquette de l'axe X |
+| `y_label` | `str` | `""` | Étiquette de l'axe Y |
+| `gridlines` | `bool` | `True` | Afficher les lignes de grille horizontales |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+### Résultats de tests par classe
+
+```python
+import seraplot as sp
+import random
+
+n = 50
+groupes = {
+    "Classe A": [random.gauss(72, 10) for _ in range(n)],
+    "Classe B": [random.gauss(68, 15) for _ in range(n)],
+    "Classe C": [random.gauss(80, 8)  for _ in range(n)],
+}
+
+labels = list(groupes.keys())
+values = [v for g in groupes.values() for v in g]
+
+chart = sp.build_boxplot(
+    "Distribution des scores par classe",
+    category_labels=labels,
+    values=values,
+    y_label="Score",
+    gridlines=True,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Violon](violin.md)
+- [Histogramme](histogram.md)
+- [KDE](kde.md)
 
 </div>

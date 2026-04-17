@@ -141,8 +141,83 @@ categories,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_stacked_bar3d_chart(
+    title: str,
+    category_labels: list[str],
+    series_values: list[float],
+    *,
+    series_names: list[str] | None = None,
+    show_values: bool = False,
+    palette: list[int] | None = None,
+    bg_color: str = "#1a1a2e",
+    width: int = 900,
+    height: int = 600,
+    x_label: str = "",
+    y_label: str = "",
+    z_label: str = "",
+) -> Chart
+```
+
+---
+
 ## Description
 
 Graphique en barres empilées 3D — chaque barre est segmentée en séries, rendues comme des prismes empilés.
+
+`series_values` est une liste plate en ordre ligne-major : `[cat0_s0, cat0_s1, …, cat1_s0, …]`.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `category_labels` | `list[str]` | requis | Étiquettes des catégories |
+| `series_values` | `list[float]` | requis | Données en ligne-major |
+| `series_names` | `list[str] \| None` | `None` | Noms de légende |
+| `show_values` | `bool` | `False` | Étiquettes sur les segments |
+| `palette` | `list[int] \| None` | `None` | Couleurs par série |
+| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
+| `width` | `int` | `900` | Largeur du canvas |
+| `height` | `int` | `600` | Hauteur du canvas |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+categories = ["T1", "T2", "T3", "T4"]
+données = [
+    [30, 40, 25, 50],
+    [20, 35, 45, 30],
+    [50, 25, 30, 20],
+]
+
+chart = sp.build_stacked_bar3d_chart(
+    "Revenus trimestriels 3D",
+    category_labels=categories,
+    series_values=données,
+    series_names=["Produit A", "Produit B", "Produit C"],
+)
+```
+
+---
+
+## Voir aussi
+
+- [Barres empilées 2D](../2d/stacked-bar.md)
+- [Barres 3D](bar3d.md)
 
 </div>

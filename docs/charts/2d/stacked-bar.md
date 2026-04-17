@@ -149,8 +149,86 @@ months,
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_stacked_bar(
+    title: str,
+    category_labels: list[str],
+    series_values: list[float],
+    *,
+    show_values: bool = False,
+    series_names: list[str] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+    sort_order: str = "none",
+    hover_json: str = "",
+    legend_position: str = "right",
+    palette: list[int] | None = None,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+) -> Chart
+```
+
+---
+
 ## Description
 
 Graphique en barres empilées. Chaque barre est divisée en segments représentant les contributions des séries.
+
+Même disposition plate `series_values` que `build_grouped_bar`.
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `title` | `str` | requis | Titre du graphique |
+| `category_labels` | `list[str]` | requis | Catégories sur l'axe X |
+| `series_values` | `list[float]` | requis | Valeurs plates ligne-major `[cat0_s0, cat0_s1, ...]` |
+| `show_values` | `bool` | `False` | Afficher les étiquettes de valeur sur les segments |
+| `series_names` | `list[str] \| None` | `None` | Noms des séries pour la légende |
+
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+```python
+import seraplot as sp
+
+mois = ["Jan", "Fév", "Mar"]
+coûts = [
+    400.0, 150.0, 80.0,
+    380.0, 170.0, 95.0,
+    420.0, 160.0, 90.0,
+]
+
+chart = sp.build_stacked_bar(
+    "Coûts mensuels",
+    category_labels=mois,
+    series_values=coûts,
+    series_names=["Main-d\'oeuvre", "Matériaux", "Frais généraux"],
+    legend_position="right",
+    gridlines=True,
+)
+```
+
+---
+
+## Voir aussi
+
+- [Barres groupées](grouped-bar.md)
+- [Barres empilées 3D](../3d/stacked-bar3d.md)
 
 </div>
