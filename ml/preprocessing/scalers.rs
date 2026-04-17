@@ -1,0 +1,304 @@
+use rayon::prelude::*;
+
+pub struct StandardScaler {
+    pub mean: Vec<f64>,
+    pub scale: Vec<f64>,
+    pub with_mean: bool,
+    pub with_std: bool,
+    inv_scale: Vec<f64>,
+    p: usize,
+}
+
+impl StandardScaler {
+    pub fn new(with_mean: bool, with_std: bool) -> Self {
+        Self { mean: Vec::new(), scale: Vec::new(), with_mean, with_std, inv_scale: Vec::new(), p: 0 }
+    }
+
+    pub fn fit(&mut self, x: &[f64], n: usize, p: usize) {
+        self.p = p;
+        self.mean = vec![0.0; p];
+        self.scale = vec![1.0; p];
+
+        if self.with_std {
+            let chunk = 4096usize.max(p);
+            let nc = (n + chunk - 1) / chunk;
+            if nc >= 2 {
+                let partials: Vec<(Vec<f64>, Vec<f64>)> = (0..nc).into_par_iter().map(|c| {
+                    let s = c * chunk;
+                    let e = (s + chunk).min(n);
+                    let mut ps = vec![0.0; p];
+                    let mut ps2 = vec![0.0; p];
+                    for i in s..e {
+                        let row = &x[i * p..i * p + p];
+                        for j in 0..p { ps[j] += row[j]; ps2[j] += row[j] * row[j]; }
+                    }
+                    (ps, ps2)
+                }).collect();
+                let mut sum2 = vec![0.0; p];
+                for (ps, ps2) in &partials {
+                    for j in 0..p { self.mean[j] += ps[j]; sum2[j] += ps2[j]; }
+                }
+                let inv = 1.0 / n as f64;
+                for j in 0..p {
+                    self.mean[j] *= inv;
+                    self.scale[j] = (sum2[j] * inv - self.mean[j] * self.mean[j]).max(0.0).sqrt().max(1e-15);
+                }
+            } else {
+                let mut sum2 = vec![0.0; p];
+                for i in 0..n {
+                    let row = &x[i * p..i * p + p];
+                    for j in 0..p { self.mean[j] += row[j]; sum2[j] += row[j] * row[j]; }
+                }
+                let inv = 1.0 / n as f64;
+                for j in 0..p {
+                    self.mean[j] *= inv;
+                    self.scale[j] = (sum2[j] * inv - self.mean[j] * self.mean[j]).max(0.0).sqrt().max(1e-15);
+                }
+            }
+        } else if self.with_mean {
+            for i in 0..n { for j in 0..p { self.mean[j] += x[i * p + j]; } }
+            let inv = 1.0 / n as f64;
+            for j in 0..p { self.mean[j] *= inv; }
+        }
+        self.inv_scale = self.scale.iter().map(|&s| 1.0 / s).collect();
+    }
+
+    pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        let mut out = vec![0.0; n * p];
+        if self.with_mean && self.with_std {
+            let mean = &self.mean;
+            let inv = &self.inv_scale;
+            if n * p >= 50_000 {
+                out.par_chunks_mut(p).enumerate().for_each(|(i, row)| {
+                    let xi = &x[i * p..i * p + p];
+                    for j in 0..p { row[j] = (xi[j] - mean[j]) * inv[j]; }
+                });
+            } else {
+                for i in 0..n {
+                    let xi = &x[i * p..i * p + p];
+                    let row = &mut out[i * p..i * p + p];
+                    for j in 0..p { row[j] = (xi[j] - mean[j]) * inv[j]; }
+                }
+            }
+        } else if self.with_mean {
+            for i in 0..n {
+                let xi = &x[i * p..i * p + p];
+                let row = &mut out[i * p..i * p + p];
+                for j in 0..p { row[j] = xi[j] - self.mean[j]; }
+            }
+        } else if self.with_std {
+            let inv = &self.inv_scale;
+            for i in 0..n {
+                let xi = &x[i * p..i * p + p];
+                let row = &mut out[i * p..i * p + p];
+                for j in 0..p { row[j] = xi[j] * inv[j]; }
+            }
+        } else {
+            out.copy_from_slice(&x[..n * p]);
+        }
+        out
+    }
+
+    pub fn fit_transform(&mut self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        self.fit(x, n, p);
+        self.transform(x, n, p)
+    }
+
+    pub fn inverse_transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        let mut out = vec![0.0; n * p];
+        for i in 0..n {
+            for j in 0..p {
+                let mut v = x[i * p + j];
+                if self.with_std { v *= self.scale[j]; }
+                if self.with_mean { v += self.mean[j]; }
+                out[i * p + j] = v;
+            }
+        }
+        out
+    }
+}
+
+pub struct MinMaxScaler {
+    pub min: Vec<f64>,
+    pub range: Vec<f64>,
+    pub feature_range: (f64, f64),
+    p: usize,
+}
+
+impl MinMaxScaler {
+    pub fn new(feature_range: (f64, f64)) -> Self {
+        Self { min: Vec::new(), range: Vec::new(), feature_range, p: 0 }
+    }
+
+    pub fn fit(&mut self, x: &[f64], n: usize, p: usize) {
+        self.p = p;
+        let mut mins = vec![f64::MAX; p];
+        let mut maxs = vec![f64::MIN; p];
+        for i in 0..n {
+            for j in 0..p {
+                let v = x[i * p + j];
+                if v < mins[j] { mins[j] = v; }
+                if v > maxs[j] { maxs[j] = v; }
+            }
+        }
+        self.min = mins.clone();
+        self.range = (0..p).map(|j| (maxs[j] - mins[j]).max(1e-15)).collect();
+    }
+
+    pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        let (lo, hi) = self.feature_range;
+        let span = hi - lo;
+        let mut out = vec![0.0; n * p];
+        for i in 0..n {
+            for j in 0..p {
+                out[i * p + j] = (x[i * p + j] - self.min[j]) / self.range[j] * span + lo;
+            }
+        }
+        out
+    }
+
+    pub fn fit_transform(&mut self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        self.fit(x, n, p);
+        self.transform(x, n, p)
+    }
+
+    pub fn inverse_transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        let (lo, hi) = self.feature_range;
+        let span = hi - lo;
+        let mut out = vec![0.0; n * p];
+        for i in 0..n {
+            for j in 0..p {
+                out[i * p + j] = (x[i * p + j] - lo) / span * self.range[j] + self.min[j];
+            }
+        }
+        out
+    }
+}
+
+pub struct RobustScaler {
+    pub center: Vec<f64>,
+    pub scale: Vec<f64>,
+    pub with_centering: bool,
+    pub with_scaling: bool,
+    p: usize,
+}
+
+impl RobustScaler {
+    pub fn new(with_centering: bool, with_scaling: bool) -> Self {
+        Self { center: Vec::new(), scale: Vec::new(), with_centering, with_scaling, p: 0 }
+    }
+
+    pub fn fit(&mut self, x: &[f64], n: usize, p: usize) {
+        self.p = p;
+        self.center = vec![0.0; p];
+        self.scale = vec![1.0; p];
+
+        for j in 0..p {
+            let mut col: Vec<f64> = (0..n).map(|i| x[i * p + j]).collect();
+            col.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
+
+            if self.with_centering {
+                self.center[j] = percentile_sorted(&col, 50.0);
+            }
+            if self.with_scaling {
+                let q25 = percentile_sorted(&col, 25.0);
+                let q75 = percentile_sorted(&col, 75.0);
+                self.scale[j] = (q75 - q25).max(1e-15);
+            }
+        }
+    }
+
+    pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        let mut out = vec![0.0; n * p];
+        for i in 0..n {
+            for j in 0..p {
+                let mut v = x[i * p + j];
+                if self.with_centering { v -= self.center[j]; }
+                if self.with_scaling { v /= self.scale[j]; }
+                out[i * p + j] = v;
+            }
+        }
+        out
+    }
+
+    pub fn fit_transform(&mut self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        self.fit(x, n, p);
+        self.transform(x, n, p)
+    }
+}
+
+pub struct MaxAbsScaler {
+    pub max_abs: Vec<f64>,
+    p: usize,
+}
+
+impl MaxAbsScaler {
+    pub fn new() -> Self {
+        Self { max_abs: Vec::new(), p: 0 }
+    }
+
+    pub fn fit(&mut self, x: &[f64], n: usize, p: usize) {
+        self.p = p;
+        self.max_abs = vec![0.0; p];
+        for i in 0..n {
+            for j in 0..p {
+                let v = x[i * p + j].abs();
+                if v > self.max_abs[j] { self.max_abs[j] = v; }
+            }
+        }
+        for j in 0..p { if self.max_abs[j] < 1e-15 { self.max_abs[j] = 1.0; } }
+    }
+
+    pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        let mut out = vec![0.0; n * p];
+        for i in 0..n {
+            for j in 0..p { out[i * p + j] = x[i * p + j] / self.max_abs[j]; }
+        }
+        out
+    }
+
+    pub fn fit_transform(&mut self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        self.fit(x, n, p);
+        self.transform(x, n, p)
+    }
+}
+
+pub struct Normalizer {
+    pub norm: NormType,
+}
+
+#[derive(Clone, Copy)]
+pub enum NormType { L1, L2, Max }
+
+impl Normalizer {
+    pub fn new(norm: NormType) -> Self {
+        Self { norm }
+    }
+
+    pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        let mut out = vec![0.0; n * p];
+        for i in 0..n {
+            let row = &x[i * p..(i + 1) * p];
+            let scale = match self.norm {
+                NormType::L1 => { let s: f64 = row.iter().map(|v| v.abs()).sum(); s.max(1e-15) }
+                NormType::L2 => { let s: f64 = row.iter().map(|v| v * v).sum(); s.sqrt().max(1e-15) }
+                NormType::Max => { let s = row.iter().map(|v| v.abs()).fold(0.0f64, f64::max); s.max(1e-15) }
+            };
+            for j in 0..p { out[i * p + j] = row[j] / scale; }
+        }
+        out
+    }
+}
+
+fn percentile_sorted(sorted: &[f64], pct: f64) -> f64 {
+    let n = sorted.len();
+    if n == 0 { return 0.0; }
+    let idx = (pct / 100.0) * (n - 1) as f64;
+    let lo = idx.floor() as usize;
+    let hi = idx.ceil() as usize;
+    if lo == hi { sorted[lo.min(n - 1)] }
+    else {
+        let frac = idx - lo as f64;
+        sorted[lo.min(n - 1)] * (1.0 - frac) + sorted[hi.min(n - 1)] * frac
+    }
+}

@@ -1,0 +1,88 @@
+pub struct BernoulliNB {
+    pub classes: Vec<i32>,
+    log_priors: Vec<f64>,
+    log_probs: Vec<f64>,
+    log_neg_probs: Vec<f64>,
+    pub alpha: f64,
+    pub binarize: f64,
+    p: usize,
+}
+
+impl BernoulliNB {
+    pub fn new(alpha: f64, binarize: f64) -> Self {
+        Self {
+            classes: Vec::new(), log_priors: Vec::new(), log_probs: Vec::new(),
+            log_neg_probs: Vec::new(), alpha, binarize, p: 0,
+        }
+    }
+
+    pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) {
+        self.p = p;
+        let mut cls = y.to_vec();
+        cls.sort_unstable();
+        cls.dedup();
+        self.classes = cls;
+        let k = self.classes.len();
+
+        let mut feature_counts = vec![0.0; k * p];
+        let mut class_counts = vec![0.0; k];
+
+        for i in 0..n {
+            let c = self.classes.iter().position(|&v| v == y[i]).unwrap();
+            class_counts[c] += 1.0;
+            for j in 0..p {
+                if x[i * p + j] > self.binarize { feature_counts[c * p + j] += 1.0; }
+            }
+        }
+
+        self.log_priors = class_counts.iter().map(|&c| (c / n as f64).ln()).collect();
+
+        self.log_probs = vec![0.0; k * p];
+        self.log_neg_probs = vec![0.0; k * p];
+        for c in 0..k {
+            for j in 0..p {
+                let prob = (feature_counts[c * p + j] + self.alpha) / (class_counts[c] + 2.0 * self.alpha);
+                self.log_probs[c * p + j] = prob.ln();
+                self.log_neg_probs[c * p + j] = (1.0 - prob).ln();
+            }
+        }
+    }
+
+    pub fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> {
+        (0..n).map(|i| {
+            let xi = &x[i * p..(i + 1) * p];
+            let mut best = 0;
+            let mut best_s = f64::NEG_INFINITY;
+            for c in 0..self.classes.len() {
+                let mut s = self.log_priors[c];
+                for j in 0..p {
+                    if xi[j] > self.binarize { s += self.log_probs[c * p + j]; }
+                    else { s += self.log_neg_probs[c * p + j]; }
+                }
+                if s > best_s { best_s = s; best = c; }
+            }
+            self.classes[best]
+        }).collect()
+    }
+
+    pub fn predict_proba(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        let k = self.classes.len();
+        let mut out = vec![0.0; n * k];
+        for i in 0..n {
+            let xi = &x[i * p..(i + 1) * p];
+            let scores: Vec<f64> = (0..k).map(|c| {
+                let mut s = self.log_priors[c];
+                for j in 0..p {
+                    if xi[j] > self.binarize { s += self.log_probs[c * p + j]; }
+                    else { s += self.log_neg_probs[c * p + j]; }
+                }
+                s
+            }).collect();
+            let max_s = scores.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+            let mut sum = 0.0;
+            for c in 0..k { out[i * k + c] = (scores[c] - max_s).exp(); sum += out[i * k + c]; }
+            for c in 0..k { out[i * k + c] /= sum; }
+        }
+        out
+    }
+}

@@ -2,6 +2,9 @@
 use pyo3::prelude::*;
 
 #[cfg(feature = "python")]
+use numpy::{PyReadonlyArray2, PyUntypedArrayMethods, PyArrayMethods};
+
+#[cfg(feature = "python")]
 use crate::Chart;
 
 #[cfg(feature = "python")]
@@ -347,6 +350,40 @@ pub fn build_kmeans_chart(
 }
 
 #[cfg(feature = "python")]
+fn extract_flat(x: &PyAny) -> PyResult<(Vec<f64>, usize, usize)> {
+    if let Ok(arr) = x.extract::<PyReadonlyArray2<f64>>() {
+        let shape = arr.shape();
+        let n = shape[0]; let dims = shape[1];
+        let view = arr.as_array();
+        if view.is_standard_layout() {
+            return Ok((view.as_slice().unwrap().to_vec(), n, dims));
+        }
+        // F-order (e.g. from StandardScaler): convert to C-order
+        let c = view.as_standard_layout();
+        return Ok((c.as_slice().unwrap().to_vec(), n, dims));
+    }
+    if let Ok(arr) = x.extract::<PyReadonlyArray2<f32>>() {
+        let shape = arr.shape();
+        let n = shape[0]; let dims = shape[1];
+        let view = arr.as_array();
+        if view.is_standard_layout() {
+            return Ok((view.as_slice().unwrap().iter().map(|&v| v as f64).collect(), n, dims));
+        }
+        let c = view.as_standard_layout();
+        return Ok((c.as_slice().unwrap().iter().map(|&v| v as f64).collect(), n, dims));
+    }
+    let rows: Vec<Vec<f64>> = x.extract()?;
+    let n = rows.len();
+    if n == 0 { return Ok((Vec::new(), 0, 0)); }
+    let dims = rows[0].len();
+    let mut flat = vec![0.0f64; n * dims];
+    for (i, row) in rows.iter().enumerate() {
+        flat[i*dims..(i+1)*dims].copy_from_slice(row);
+    }
+    Ok((flat, n, dims))
+}
+
+#[cfg(feature = "python")]
 #[pyclass(module = "seraplot", name = "KMeans")]
 pub struct KMeansModel {
     k: usize,
@@ -354,6 +391,7 @@ pub struct KMeansModel {
     tol: f64,
     mini_batch: bool,
     batch_size: usize,
+    n_init: usize,
     labels_: Vec<i32>,
     centroids_: Vec<Vec<f64>>,
     inertia_: f64,
@@ -364,25 +402,24 @@ pub struct KMeansModel {
 #[pymethods]
 impl KMeansModel {
     #[new]
-    #[pyo3(signature = (k=3, max_iter=300, tol=1e-4, mini_batch=false, batch_size=1000))]
-    pub fn py_new(k: usize, max_iter: usize, tol: f64, mini_batch: bool, batch_size: usize) -> Self {
-        KMeansModel { k, max_iter, tol, mini_batch, batch_size, labels_: Vec::new(), centroids_: Vec::new(), inertia_: 0.0, n_iter_: 0 }
+    #[pyo3(signature = (k=3, max_iter=300, tol=1e-4, mini_batch=false, batch_size=1000, n_init=10))]
+    pub fn py_new(k: usize, max_iter: usize, tol: f64, mini_batch: bool, batch_size: usize, n_init: usize) -> Self {
+        KMeansModel { k, max_iter, tol, mini_batch, batch_size, n_init, labels_: Vec::new(), centroids_: Vec::new(), inertia_: 0.0, n_iter_: 0 }
     }
 
     #[pyo3(signature = (x))]
-    pub fn fit(&mut self, x: Vec<Vec<f64>>) -> PyResult<()> {
-        let n = x.len();
-        let use_mini = self.mini_batch || n > 100_000;
-        if use_mini {
-            let (labels, centroids, inertia) = crate::plot::default::minibatch_kmeans_core_nd(&x, self.k, self.max_iter, self.batch_size);
+    pub fn fit(&mut self, x: &PyAny) -> PyResult<()> {
+        let (flat, n, dims) = extract_flat(x)?;
+        if self.mini_batch {
+            let (labels, flat_c, inertia) = crate::plot::default::minibatch_kmeans_core_flat(&flat, n, dims, self.k, self.max_iter, self.batch_size);
             self.labels_ = labels;
-            self.centroids_ = centroids;
+            self.centroids_ = (0..self.k.min(n)).map(|ki| flat_c[ki*dims..(ki+1)*dims].to_vec()).collect();
             self.inertia_ = inertia;
             self.n_iter_ = self.max_iter;
         } else {
-            let (labels, centroids, inertia) = crate::plot::default::kmeans_core_nd(&x, self.k, self.max_iter, self.tol);
+            let (labels, flat_c, inertia) = crate::plot::default::kmeans_core_flat_ninit(&flat, n, dims, self.k, self.max_iter, self.tol, self.n_init);
             self.labels_ = labels;
-            self.centroids_ = centroids;
+            self.centroids_ = (0..self.k.min(n)).map(|ki| flat_c[ki*dims..(ki+1)*dims].to_vec()).collect();
             self.inertia_ = inertia;
             self.n_iter_ = self.max_iter;
         }
@@ -390,26 +427,27 @@ impl KMeansModel {
     }
 
     #[pyo3(signature = (x))]
-    pub fn fit_predict(&mut self, x: Vec<Vec<f64>>) -> PyResult<Vec<i32>> {
+    pub fn fit_predict(&mut self, x: &PyAny) -> PyResult<Vec<i32>> {
         self.fit(x)?;
         Ok(self.labels_.clone())
     }
 
     #[pyo3(signature = (x))]
-    pub fn transform(&self, x: Vec<Vec<f64>>) -> PyResult<Vec<Vec<f64>>> {
-        Ok(x.iter().map(|pt| {
-            self.centroids_.iter().map(|c| crate::plot::default::kmeans::sq_dist_nd(pt, c).sqrt()).collect()
+    pub fn transform(&self, x: &PyAny) -> PyResult<Vec<Vec<f64>>> {
+        let (flat, n, dims) = extract_flat(x)?;
+        Ok((0..n).map(|i| {
+            self.centroids_.iter().map(|c| crate::plot::default::kmeans::sq_dist_flat(&flat[i*dims..(i+1)*dims], c).sqrt()).collect()
         }).collect())
     }
 
     #[pyo3(signature = (x))]
-    pub fn predict(&self, x: Vec<Vec<f64>>) -> PyResult<Vec<i32>> {
-        Ok(x.iter().map(|pt| {
+    pub fn predict(&self, x: &PyAny) -> PyResult<Vec<i32>> {
+        let (flat, n, dims) = extract_flat(x)?;
+        Ok((0..n).map(|i| {
             self.centroids_.iter().enumerate()
-                .map(|(i, c)| (i, crate::plot::default::kmeans::sq_dist_nd(pt, c)))
+                .map(|(ki, c)| (ki, crate::plot::default::kmeans::sq_dist_flat(&flat[i*dims..(i+1)*dims], c)))
                 .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
-                .map(|(i, _)| i as i32)
-                .unwrap_or(0)
+                .map(|(ki, _)| ki as i32).unwrap_or(0)
         }).collect())
     }
 
@@ -421,7 +459,7 @@ impl KMeansModel {
     #[getter] pub fn k(&self) -> usize { self.k }
 
     fn __repr__(&self) -> String {
-        format!("KMeans(k={}, max_iter={}, mini_batch={}) — inertia={:.2}", self.k, self.max_iter, self.mini_batch, self.inertia_)
+        format!("KMeans(k={}, max_iter={}, n_init={}, mini_batch={}) — inertia={:.2}", self.k, self.max_iter, self.n_init, self.mini_batch, self.inertia_)
     }
 }
 

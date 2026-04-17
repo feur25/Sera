@@ -169,5 +169,7 @@ pub fn register_submodules(py: Python<'_>, m: &PyModule) -> PyResult<()> {
         }
     }
 
+    super::python_ml::register_ml_classes(m)?;
+
     Ok(())
 }
