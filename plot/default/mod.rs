@@ -9,7 +9,7 @@ pub use bar::{render_bars, render_bars_fast, render_bars_html};
 pub use line::{render_lines, render_lines_fast, render_lines_html};
 pub mod kmeans;
 pub use scatter::{render_points, render_scatter_fast, render_scatter_html, render_dbscan_html};
-pub use kmeans::{KMeansConfig, render_kmeans_html, kmeans_core_2d, minibatch_kmeans_core_2d, kmeans_core_nd, minibatch_kmeans_core_nd};
+pub use kmeans::{KMeansConfig, render_kmeans_html, kmeans_core_2d, minibatch_kmeans_core_2d, kmeans_core_nd, minibatch_kmeans_core_nd, kmeans_core_flat, kmeans_core_flat_ninit, minibatch_kmeans_core_flat};
 pub use _3d::render_scatter3d_html;
 pub use _3d::render_bar3d_html;
 pub use _3d::render_line3d_html;

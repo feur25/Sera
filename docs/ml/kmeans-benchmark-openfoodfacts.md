@@ -9,6 +9,69 @@
 | **Valid Products** | 1,793,362 (40.4%) |
 | **Features** | 7 nutritional dimensions (energy, fats, carbs, proteins, sugars, salt, fiber) |
 | **Preprocessing** | StandardScaler normalization |
+| **SeraPlot** | v2.5.0 (Hamerly + coreset + parallel multi-init) |
+| **scikit-learn** | v1.8.0 |
+| **Python** | 3.11.9 |
+
+---
+
+## Performance Results
+
+### SeraPlot Performance (n_init=10 default)
+
+| Dataset Size | k=5 | k=10 | k=20 | k=40 |
+|-------------|-----|------|------|------|
+| **50k pts** | 0.038s | 0.051s | 0.083s | 0.268s |
+| **200k pts** | 0.078s | 0.128s | 0.275s | 0.612s |
+| **500k pts** | 0.165s | 0.245s | 0.551s | 1.331s |
+| **1.79M pts** | 0.476s | 0.812s | 1.920s | 4.241s |
+
+### FAIR Mode — n_init=10 Both Sides
+
+| Size | k | SeraPlot | sklearn | Speedup | Inertia Ratio |
+|------|---|----------|---------|---------|---------------|
+| **50k** | 10 | 0.051s | 0.504s | **9.8×** | 1.0000 |
+| **50k** | 20 | 0.083s | 0.834s | **10.0×** | 1.0085 |
+| **50k** | 40 | 0.268s | 2.004s | **7.5×** | 1.0064 |
+| **200k** | 10 | 0.128s | 1.641s | **12.8×** | 1.0000 |
+| **200k** | 20 | 0.275s | 3.224s | **11.7×** | 1.0000 |
+| **200k** | 40 | 0.612s | 6.636s | **10.8×** | 1.0068 |
+| **500k** | 10 | 0.245s | 3.417s | **13.9×** | 1.0000 |
+| **500k** | 20 | 0.551s | 5.854s | **10.6×** | 1.0229 |
+| **500k** | 40 | 1.331s | 15.986s | **12.0×** | 1.0225 |
+| **1.79M** | 10 | 0.812s | 10.692s | **13.2×** | 1.0000 |
+| **1.79M** | 20 | 1.920s | 22.560s | **11.8×** | 1.0000 |
+| **1.79M** | 40 | 4.241s | 50.188s | **11.8×** | 1.0116 |
+
+### ULTRA Mode — SP n_init=1 vs SK n_init=10
+
+| Size | k | SeraPlot | sklearn | Speedup | Inertia Ratio |
+|------|---|----------|---------|---------|---------------|
+| **50k** | 10 | 0.042s | 0.504s | **12.0×** | 1.0211 |
+| **200k** | 10 | 0.069s | 1.641s | **23.9×** | 1.0259 |
+| **500k** | 10 | 0.103s | 3.417s | **33.3×** | 1.0196 |
+| **1.79M** | 20 | 0.699s | 22.560s | **32.3×** | 1.0000 |
+| **1.79M** | 40 | 2.371s | 50.188s | **21.2×** | 1.0116 |
+
+### Full Dataset: 1.79M pts × 7D, k=15
+
+| Metric | SeraPlot | sklearn |
+|--------|----------|---------|
+| **Time (n_init=10)** | 1.282s | 13.950s |
+| **Speedup** | **10.9×** | — |
+| **Inertia** | 2,203,185 | 2,203,284 |
+| **Inertia Ratio** | 1.0000 | — |
+# K-Means Performance — Real-World Benchmark
+
+## Test Setup: Open Food Facts Dataset
+
+| Aspect | Details |
+|--------|---------|
+| **Dataset** | en.openfoodfacts.org.products.csv.gz (1.25 GB) |
+| **Total Products** | 4,438,077 rows |
+| **Valid Products** | 1,793,362 (40.4%) |
+| **Features** | 7 nutritional dimensions (energy, fats, carbs, proteins, sugars, salt, fiber) |
+| **Preprocessing** | StandardScaler normalization |
 | **Load Time** | 159.4s (pandas chunking) |
 
 ---

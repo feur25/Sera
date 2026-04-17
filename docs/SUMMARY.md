@@ -77,11 +77,57 @@
 
 # Machine Learning
 
+- [Overview](ml/index.md)
+
+## Unsupervised — Clustering
+
+- [K-Means](ml/kmeans.md)
+- [K-Means Class](ml/kmeans-class.md)
+- [K-Means Benchmark](ml/kmeans-benchmark-openfoodfacts.md)
 - [DBSCAN 2D](ml/dbscan.md)
 - [DBSCAN 3D](ml/dbscan3d.md)
 - [DBSCAN Class](ml/dbscan-class.md)
-- [K-Means](ml/kmeans.md)
-- [K-Means Class](ml/kmeans-class.md)
+
+## Supervised — Linear Models
+
+- [LinearRegression](ml/linear-regression.md)
+- [Ridge / RidgeClassifier](ml/ridge.md)
+- [Lasso](ml/lasso.md)
+- [ElasticNet](ml/elastic-net.md)
+- [LogisticRegression](ml/logistic-regression.md)
+- [SGDClassifier / SGDRegressor](ml/sgd.md)
+
+## Supervised — Tree-Based
+
+- [DecisionTree](ml/decision-tree.md)
+- [RandomForest](ml/random-forest.md)
+- [GradientBoosting](ml/gradient-boosting.md)
+- [AdaBoost](ml/adaboost.md)
+
+## Supervised — Neighbors
+
+- [KNN / NearestCentroid](ml/knn.md)
+
+## Supervised — Naive Bayes
+
+- [GaussianNB / MultinomialNB / BernoulliNB](ml/naive-bayes.md)
+
+## Supervised — SVM
+
+- [LinearSVC / LinearSVR](ml/svm.md)
+
+## Preprocessing
+
+- [StandardScaler / MinMaxScaler / RobustScaler / MaxAbsScaler / Normalizer](ml/preprocessing.md)
+
+## Decomposition
+
+- [PCA / TruncatedSVD](ml/decomposition.md)
+
+## Evaluation
+
+- [Metrics](ml/metrics.md)
+- [train_test_split](ml/train-test-split.md)
 
 ---
 

@@ -1,6 +1,7 @@
 ﻿pub mod core;
 pub mod data;
 pub mod plot;
+pub mod ml;
 
 #[cfg(any(feature = "python", feature = "gui"))]
 
