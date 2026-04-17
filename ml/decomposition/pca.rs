@@ -1,4 +1,4 @@
-use crate::ml::linalg::{dot, svd_truncated, svd_randomized, col_means};
+use crate::ml::linalg::{dot, svd_truncated, svd_randomized, col_means, symeig};
 use rayon::prelude::*;
 
 pub struct PCA {
@@ -125,41 +125,20 @@ impl PCA {
                 }
             }
 
-            let mut eigenvalues = vec![0.0; k];
-            let mut eigenvectors = vec![0.0; k * p];
-            let mut rng = 0x123456789ABCDEFu64;
-            for comp in 0..k {
-                let mut v = vec![0.0; p];
-                for j in 0..p {
-                    rng ^= rng << 13; rng ^= rng >> 7; rng ^= rng << 17;
-                    v[j] = (rng as f64) / (u64::MAX as f64) - 0.5;
-                }
-                for _ in 0..200 {
-                    let mut av = vec![0.0; p];
-                    for i in 0..p { av[i] = dot(&cov[i * p..i * p + p], &v); }
-                    for prev in 0..comp {
-                        let d = dot(&av, &eigenvectors[prev * p..(prev + 1) * p]);
-                        for j in 0..p { av[j] -= d * eigenvectors[prev * p + j]; }
-                    }
-                    let norm = dot(&av, &av).sqrt();
-                    if norm < 1e-15 { break; }
-                    let inv = 1.0 / norm;
-                    let mut diff = 0.0f64;
-                    for j in 0..p { av[j] *= inv; diff += (av[j] - v[j]).abs(); }
-                    v = av;
-                    if diff < 1e-10 { break; }
-                }
-                let mut lambda = 0.0;
-                for i in 0..p {
-                    lambda += v[i] * dot(&cov[i * p..i * p + p], &v);
-                }
-                eigenvalues[comp] = lambda;
-                for j in 0..p { eigenvectors[comp * p + j] = v[j]; }
-            }
-            self.components = eigenvectors;
-            self.explained_variance = eigenvalues.clone();
-            self.singular_values = eigenvalues.iter().map(|&e| (e.max(0.0) * (n as f64 - 1.0)).sqrt()).collect();
             let total_var: f64 = (0..p).map(|i| cov[i * p + i]).sum();
+            let (evals, evecs) = symeig(&cov, p);
+            let mut idx: Vec<usize> = (0..p).collect();
+            idx.sort_unstable_by(|&a, &b| evals[b].partial_cmp(&evals[a]).unwrap_or(std::cmp::Ordering::Equal));
+            let mut components = vec![0.0; k * p];
+            let mut eigenvalues = vec![0.0; k];
+            for c in 0..k {
+                let ei = idx[c];
+                for j in 0..p { components[c * p + j] = evecs[j * p + ei]; }
+                eigenvalues[c] = evals[ei].max(0.0);
+            }
+            self.components = components;
+            self.explained_variance = eigenvalues.clone();
+            self.singular_values = eigenvalues.iter().map(|&e| (e * nm1).sqrt()).collect();
             self.explained_variance_ratio = eigenvalues.iter().map(|&v| v / total_var.max(1e-15)).collect();
         } else {
             let mut centered = vec![0.0; n * p];
@@ -184,19 +163,21 @@ impl PCA {
         let mut out = vec![0.0; n * k];
         let comps = &self.components;
         let bias = &self.bias;
-        if n >= 512 {
-            out.par_chunks_mut(k).enumerate().for_each(|(i, row)| {
-                let xi = &x[i * p..i * p + p];
-                for c in 0..k {
-                    row[c] = dot(xi, &comps[c * p..(c + 1) * p]) - bias[c];
+        if n * p >= 200_000 {
+            let grain = 512usize;
+            out.par_chunks_mut(k * grain).enumerate().for_each(|(ci, block)| {
+                let s = ci * grain;
+                let rows = block.len() / k;
+                for r in 0..rows {
+                    let i = s + r;
+                    let xi = &x[i * p..i * p + p];
+                    for c in 0..k { block[r * k + c] = dot(xi, &comps[c * p..(c + 1) * p]) - bias[c]; }
                 }
             });
         } else {
             for i in 0..n {
                 let xi = &x[i * p..i * p + p];
-                for c in 0..k {
-                    out[i * k + c] = dot(xi, &comps[c * p..(c + 1) * p]) - bias[c];
-                }
+                for c in 0..k { out[i * k + c] = dot(xi, &comps[c * p..(c + 1) * p]) - bias[c]; }
             }
         }
         out

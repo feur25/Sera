@@ -260,6 +260,46 @@ pub fn svd_truncated(a: &[f64], n: usize, p: usize, k: usize, max_iter: usize) -
     (u, s, vt)
 }
 
+pub fn symeig(a_in: &[f64], p: usize) -> (Vec<f64>, Vec<f64>) {
+    let mut a = a_in.to_vec();
+    let mut v = vec![0.0; p * p];
+    for i in 0..p { v[i * p + i] = 1.0; }
+    for _ in 0..100 {
+        let mut max_off = 0.0f64;
+        for i in 0..p { for j in (i + 1)..p { let x = a[i * p + j].abs(); if x > max_off { max_off = x; } } }
+        if max_off < 1e-14 { break; }
+        for i in 0..p {
+            for j in (i + 1)..p {
+                let aij = a[i * p + j];
+                if aij.abs() < 1e-15 { continue; }
+                let theta = (a[j * p + j] - a[i * p + i]) / (2.0 * aij);
+                let t = if theta >= 0.0 { 1.0 / (theta + (1.0 + theta * theta).sqrt()) }
+                        else { -1.0 / (-theta + (1.0 + theta * theta).sqrt()) };
+                let c = 1.0 / (1.0 + t * t).sqrt();
+                let s = t * c;
+                let aii = a[i * p + i]; let ajj = a[j * p + j];
+                a[i * p + i] = aii - t * aij;
+                a[j * p + j] = ajj + t * aij;
+                a[i * p + j] = 0.0; a[j * p + i] = 0.0;
+                for k in 0..p {
+                    if k != i && k != j {
+                        let aki = a[k * p + i]; let akj = a[k * p + j];
+                        a[k * p + i] = c * aki - s * akj; a[i * p + k] = a[k * p + i];
+                        a[k * p + j] = s * aki + c * akj; a[j * p + k] = a[k * p + j];
+                    }
+                }
+                for k in 0..p {
+                    let vki = v[k * p + i]; let vkj = v[k * p + j];
+                    v[k * p + i] = c * vki - s * vkj;
+                    v[k * p + j] = s * vki + c * vkj;
+                }
+            }
+        }
+    }
+    let evals: Vec<f64> = (0..p).map(|i| a[i * p + i]).collect();
+    (evals, v)
+}
+
 pub fn soft_threshold(x: f64, lambda: f64) -> f64 {
     if x > lambda { x - lambda }
     else if x < -lambda { x + lambda }
