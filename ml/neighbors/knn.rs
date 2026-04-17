@@ -23,6 +23,7 @@ fn dist_sq(a: &[f64], b: &[f64], p: usize) -> f64 {
 
 const BT_LEAF: usize = 40;
 const TREE_THRESH: usize = 5000;
+const TREE_MAX_DIM: usize = 12;
 
 struct BtNode {
     radius: f64,
@@ -195,7 +196,7 @@ impl KNeighborsClassifier {
         c.dedup();
         self.classes = c;
         self.label_idx = y.iter().map(|&v| self.classes.iter().position(|&c| c == v).unwrap() as u8).collect();
-        if n >= TREE_THRESH && p <= 12 {
+        if n >= TREE_THRESH && p <= TREE_MAX_DIM {
             self.tree = Some(BallTree::build(x, n, p));
         } else {
             self.tree = None;
@@ -408,7 +409,7 @@ impl KNeighborsRegressor {
         self.targets = y.to_vec();
         self.n = n;
         self.p = p;
-        if n >= TREE_THRESH && p <= 12 {
+        if n >= TREE_THRESH && p <= TREE_MAX_DIM {
             self.tree = Some(BallTree::build(x, n, p));
         } else {
             self.tree = None;

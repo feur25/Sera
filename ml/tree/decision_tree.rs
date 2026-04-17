@@ -6,6 +6,7 @@ const MAX_NC: usize = 64;
 
 thread_local! {
     static CLS_WORK: RefCell<Vec<u32>> = RefCell::new(vec![0u32; MAX_BINS * MAX_NC]);
+    static CLS_WWORK: RefCell<Vec<f64>> = RefCell::new(vec![0.0; MAX_BINS * MAX_NC]);
     static REG_WORK: RefCell<(Vec<f64>, Vec<f64>, Vec<u32>)> = RefCell::new((
         vec![0.0f64; MAX_BINS], vec![0.0f64; MAX_BINS], vec![0u32; MAX_BINS]
     ));
@@ -261,6 +262,150 @@ impl DecisionTreeClassifier {
         let (left_sl, right_sl) = indices.split_at_mut(lo);
         let left = self.build_node(bins, y, left_sl, depth + 1, rng);
         let right = self.build_node(bins, y, right_sl, depth + 1, rng);
+        self.nodes[idx].kind = NodeKind::Split { feature: best_feat, threshold: best_thr, left, right };
+        idx
+    }
+
+    pub fn fit_weighted(&mut self, y: &[i32], bins: &BinInfo, weights: &[f64]) {
+        let n = bins.n;
+        let p = bins.p;
+        let classes = crate::ml::linalg::discover_classes(y);
+        self.classes = classes;
+        self.n_classes = self.classes.len();
+        let cmin = *self.classes.iter().min().unwrap_or(&0);
+        let cmax = *self.classes.iter().max().unwrap_or(&0);
+        let crange = (cmax - cmin + 1) as usize;
+        let mut cmap = vec![0u8; crange];
+        for (i, &c) in self.classes.iter().enumerate() { cmap[(c - cmin) as usize] = i as u8; }
+        let y_idx: Vec<u8> = y.iter().map(|&v| cmap[(v - cmin) as usize]).collect();
+        self.nodes.clear();
+        self.feature_importances = vec![0.0; p];
+        let mut rng = 0x123456789ABCDEFu64;
+        let mut indices: Vec<usize> = (0..n).collect();
+        self.build_node_weighted(bins, &y_idx, weights, &mut indices, 0, &mut rng);
+        let sum: f64 = self.feature_importances.iter().sum();
+        if sum > 0.0 { for v in &mut self.feature_importances { *v /= sum; } }
+    }
+
+    fn build_node_weighted(&mut self, bins: &BinInfo, y: &[u8], weights: &[f64], indices: &mut [usize], depth: usize, rng: &mut u64) -> usize {
+        let nc = self.n_classes;
+        let n = indices.len();
+        let p = bins.p;
+        let bn = bins.n;
+        let idx = self.nodes.len();
+        self.nodes.push(TreeNode { kind: NodeKind::Leaf { value: 0.0, class: 0, dist: Vec::new() }, n_samples: n });
+
+        let mut cwts = [0.0f64; MAX_NC];
+        let mut total_w = 0.0f64;
+        for &i in indices.iter() {
+            let w = unsafe { *weights.get_unchecked(i) };
+            unsafe { *cwts.get_unchecked_mut(*y.get_unchecked(i) as usize) += w; }
+            total_w += w;
+        }
+        let majority = cwts[..nc].iter().enumerate()
+            .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+            .map(|(i, _)| i).unwrap_or(0);
+
+        if depth >= self.max_depth || n < self.min_samples_split || cwts[..nc].iter().filter(|&&v| v > 1e-15).count() <= 1 {
+            let dist: Vec<f64> = cwts[..nc].to_vec();
+            self.nodes[idx].kind = NodeKind::Leaf { value: cwts[majority], class: self.classes[majority], dist };
+            return idx;
+        }
+
+        let max_f = self.max_features.unwrap_or(p);
+        let features: Vec<usize> = if max_f >= p {
+            (0..p).collect()
+        } else {
+            let mut fs = Vec::with_capacity(max_f);
+            while fs.len() < max_f {
+                *rng ^= *rng << 13; *rng ^= *rng >> 7; *rng ^= *rng << 17;
+                let f = *rng as usize % p;
+                if !fs.contains(&f) { fs.push(f); }
+            }
+            fs
+        };
+
+        let parent_impurity = gini_weighted(&cwts[..nc], total_w);
+        let mut best_gain = 0.0;
+        let mut best_feat = 0;
+        let mut best_bin = 0usize;
+
+        let scan_feat = |feat: usize| -> (f64, usize) {
+            let nb = unsafe { *bins.n_bins.get_unchecked(feat) };
+            CLS_WWORK.with(|ws| {
+                let mut ws = ws.borrow_mut();
+                let len = nb * nc;
+                ws[..len].fill(0.0);
+                let col_off = feat * bn;
+                for &i in indices.iter() {
+                    let b = unsafe { *bins.binned.get_unchecked(col_off + i) } as usize;
+                    let ci = unsafe { *y.get_unchecked(i) } as usize;
+                    let w = unsafe { *weights.get_unchecked(i) };
+                    unsafe { *ws.get_unchecked_mut(b * nc + ci) += w; }
+                }
+                let mut lwts = [0.0f64; MAX_NC];
+                let mut rwts = [0.0f64; MAX_NC];
+                rwts[..nc].copy_from_slice(&cwts[..nc]);
+                let mut wl = 0.0f64;
+                let mut bg = 0.0f64;
+                let mut bb = 0usize;
+                for b in 0..nb.saturating_sub(1) {
+                    let row = unsafe { ws.get_unchecked(b * nc..(b + 1) * nc) };
+                    let bw: f64 = row[..nc].iter().sum();
+                    if bw <= 0.0 { continue; }
+                    for c in 0..nc { lwts[c] += row[c]; rwts[c] -= row[c]; }
+                    wl += bw;
+                    let wr = total_w - wl;
+                    if wl < 1e-15 || wr < 1e-15 { continue; }
+                    let il = gini_weighted(&lwts[..nc], wl);
+                    let ir = gini_weighted(&rwts[..nc], wr);
+                    let gain = parent_impurity - (wl / total_w) * il - (wr / total_w) * ir;
+                    if gain > bg { bg = gain; bb = b; }
+                }
+                (bg, bb)
+            })
+        };
+
+        if features.len() >= 8 && n >= 1000 {
+            let results: Vec<(f64, usize, usize)> = features.par_iter().map(|&feat| {
+                let (g, b) = scan_feat(feat);
+                (g, feat, b)
+            }).collect();
+            for (g, f, b) in results {
+                if g > best_gain { best_gain = g; best_feat = f; best_bin = b; }
+            }
+        } else {
+            for &feat in &features {
+                let (g, b) = scan_feat(feat);
+                if g > best_gain { best_gain = g; best_feat = feat; best_bin = b; }
+            }
+        }
+
+        if best_gain <= 0.0 {
+            let dist: Vec<f64> = cwts[..nc].to_vec();
+            self.nodes[idx].kind = NodeKind::Leaf { value: cwts[majority], class: self.classes[majority], dist };
+            return idx;
+        }
+
+        let best_thr = bins.edges[best_feat][best_bin];
+        self.feature_importances[best_feat] += best_gain * total_w;
+
+        let split_bin = best_bin as u8;
+        let col = &bins.binned[best_feat * bn..];
+        let mut lo = 0usize;
+        let mut hi = n;
+        while lo < hi {
+            if unsafe { *col.get_unchecked(indices[lo]) } <= split_bin {
+                lo += 1;
+            } else {
+                hi -= 1;
+                indices.swap(lo, hi);
+            }
+        }
+
+        let (left_sl, right_sl) = indices.split_at_mut(lo);
+        let left = self.build_node_weighted(bins, y, weights, left_sl, depth + 1, rng);
+        let right = self.build_node_weighted(bins, y, weights, right_sl, depth + 1, rng);
         self.nodes[idx].kind = NodeKind::Split { feature: best_feat, threshold: best_thr, left, right };
         idx
     }
@@ -536,5 +681,14 @@ fn gini_from_counts(cnts: &[u32], n: usize) -> f64 {
     let inv = 1.0 / n as f64;
     let mut s = 1.0;
     for &c in cnts { let p = c as f64 * inv; s -= p * p; }
+    s
+}
+
+#[inline(always)]
+fn gini_weighted(cnts: &[f64], total: f64) -> f64 {
+    if total <= 0.0 { return 0.0; }
+    let inv = 1.0 / total;
+    let mut s = 1.0;
+    for &c in cnts { let p = c * inv; s -= p * p; }
     s
 }

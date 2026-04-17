@@ -14,24 +14,24 @@ impl Ridge {
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) {
-        let (xw, yw, means, y_mean) = if self.fit_intercept {
-            let means = col_means(x, n, p);
-            let ym = y.iter().sum::<f64>() / n as f64;
-            let mut xc = vec![0.0; n * p];
-            let mut yc = vec![0.0; n];
-            for i in 0..n {
-                for j in 0..p { xc[i * p + j] = x[i * p + j] - means[j]; }
-                yc[i] = y[i] - ym;
-            }
-            (xc, yc, means, ym)
+        let (means, y_mean) = if self.fit_intercept {
+            (col_means(x, n, p), y.iter().sum::<f64>() / n as f64)
         } else {
-            (x.to_vec(), y.to_vec(), vec![0.0; p], 0.0)
+            (vec![0.0; p], 0.0)
         };
         let mut ata = vec![0.0; p * p];
-        mat_t_mat(&xw, n, p, &mut ata);
+        mat_t_mat(x, n, p, &mut ata);
+        if self.fit_intercept {
+            let nf = n as f64;
+            for i in 0..p { for j in 0..p { ata[i * p + j] -= nf * means[i] * means[j]; } }
+        }
         for j in 0..p { ata[j * p + j] += self.alpha; }
         let mut atb = vec![0.0; p];
-        mat_t_y(&xw, n, p, &yw, &mut atb);
+        mat_t_y(x, n, p, y, &mut atb);
+        if self.fit_intercept {
+            let nf = n as f64;
+            for j in 0..p { atb[j] -= nf * y_mean * means[j]; }
+        }
         self.coef = solve_spd(&ata, p, &atb).unwrap_or_else(|| vec![0.0; p]);
         self.intercept = if self.fit_intercept { y_mean - dot(&self.coef, &means) } else { 0.0 };
     }

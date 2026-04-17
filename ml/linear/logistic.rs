@@ -87,15 +87,38 @@ impl LogisticRegression {
         let mut loss = compute_probs_loss(&w, &mut probs, x, n, p, k, pp, y_idx, reg, inv_n);
 
         for iter in 0..max_iter {
-            let mut grad = vec![0.0; dim];
-            for i in 0..n {
-                for ci in 0..k {
-                    let diff = probs[i * k + ci] - if y_idx[i] == ci { 1.0 } else { 0.0 };
-                    let off = ci * pp;
-                    for j in 0..p { grad[off + j] += diff * x[i * p + j]; }
-                    grad[off + p] += diff;
+            let mut grad = if n >= 4096 {
+                let chunk = 2048usize;
+                let nc = (n + chunk - 1) / chunk;
+                let partials: Vec<Vec<f64>> = (0..nc).into_par_iter().map(|c| {
+                    let s = c * chunk;
+                    let e = (s + chunk).min(n);
+                    let mut g = vec![0.0; dim];
+                    for i in s..e {
+                        for ci in 0..k {
+                            let diff = probs[i * k + ci] - if y_idx[i] == ci { 1.0 } else { 0.0 };
+                            let off = ci * pp;
+                            for j in 0..p { g[off + j] += diff * x[i * p + j]; }
+                            g[off + p] += diff;
+                        }
+                    }
+                    g
+                }).collect();
+                let mut grad = vec![0.0; dim];
+                for part in &partials { for j in 0..dim { grad[j] += part[j]; } }
+                grad
+            } else {
+                let mut grad = vec![0.0; dim];
+                for i in 0..n {
+                    for ci in 0..k {
+                        let diff = probs[i * k + ci] - if y_idx[i] == ci { 1.0 } else { 0.0 };
+                        let off = ci * pp;
+                        for j in 0..p { grad[off + j] += diff * x[i * p + j]; }
+                        grad[off + p] += diff;
+                    }
                 }
-            }
+                grad
+            };
             let mut gnorm = 0.0f64;
             for ci in 0..k {
                 let off = ci * pp;

@@ -16,13 +16,25 @@ impl LinearRegression {
         if self.fit_intercept {
             let means = col_means(x, n, p);
             let y_mean = y.iter().sum::<f64>() / n as f64;
-            let mut xc = vec![0.0; n * p];
-            let mut yc = vec![0.0; n];
-            for i in 0..n {
-                for j in 0..p { xc[i * p + j] = x[i * p + j] - means[j]; }
-                yc[i] = y[i] - y_mean;
-            }
-            self.coef = solve_normal(&xc, n, p, &yc);
+            let nf = n as f64;
+            let mut ata = vec![0.0; p * p];
+            mat_t_mat(x, n, p, &mut ata);
+            for i in 0..p { for j in 0..p { ata[i * p + j] -= nf * means[i] * means[j]; } }
+            let mut atb = vec![0.0; p];
+            mat_t_y(x, n, p, y, &mut atb);
+            for j in 0..p { atb[j] -= nf * y_mean * means[j]; }
+            self.coef = match solve_spd(&ata, p, &atb) {
+                Some(w) => w,
+                None => {
+                    let mut xc = vec![0.0; n * p];
+                    let mut yc = vec![0.0; n];
+                    for i in 0..n {
+                        for j in 0..p { xc[i * p + j] = x[i * p + j] - means[j]; }
+                        yc[i] = y[i] - y_mean;
+                    }
+                    qr_solve(&xc, n, p, &yc)
+                }
+            };
             self.intercept = y_mean - dot(&self.coef, &means);
         } else {
             self.coef = solve_normal(x, n, p, y);

@@ -1,4 +1,5 @@
-use crate::ml::linalg::{dot, col_means, col_std, soft_threshold};
+use crate::ml::linalg::{dot, col_means, col_std, soft_threshold, mat_vec};
+use rayon::prelude::*;
 
 pub struct ElasticNet {
     pub coef: Vec<f64>,
@@ -26,19 +27,33 @@ impl ElasticNet {
             let ym = y.iter().sum::<f64>() * inv_n;
             let mut xc = vec![0.0; n * p];
             let mut yn = vec![0.0; n];
-            for j in 0..p {
-                let inv_s = 1.0 / s[j];
-                let mj = m[j];
-                let col = &mut xc[j * n..(j + 1) * n];
-                for i in 0..n { col[i] = (x[i * p + j] - mj) * inv_s; }
+            if n * p >= 100_000 {
+                xc.par_chunks_mut(n).enumerate().for_each(|(j, col)| {
+                    let inv_s = 1.0 / s[j];
+                    let mj = m[j];
+                    for i in 0..n { col[i] = (x[i * p + j] - mj) * inv_s; }
+                });
+            } else {
+                for j in 0..p {
+                    let inv_s = 1.0 / s[j];
+                    let mj = m[j];
+                    let col = &mut xc[j * n..(j + 1) * n];
+                    for i in 0..n { col[i] = (x[i * p + j] - mj) * inv_s; }
+                }
             }
             for i in 0..n { yn[i] = y[i] - ym; }
             (xc, yn, m, s, ym)
         } else {
             let mut xc = vec![0.0; n * p];
-            for j in 0..p {
-                let col = &mut xc[j * n..(j + 1) * n];
-                for i in 0..n { col[i] = x[i * p + j]; }
+            if n * p >= 100_000 {
+                xc.par_chunks_mut(n).enumerate().for_each(|(j, col)| {
+                    for i in 0..n { col[i] = x[i * p + j]; }
+                });
+            } else {
+                for j in 0..p {
+                    let col = &mut xc[j * n..(j + 1) * n];
+                    for i in 0..n { col[i] = x[i * p + j]; }
+                }
             }
             (xc, y.to_vec(), vec![0.0; p], vec![1.0; p], 0.0)
         };
@@ -91,8 +106,10 @@ impl ElasticNet {
     }
 
     pub fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
-        let mut out = vec![self.intercept; n];
-        for i in 0..n { out[i] += dot(&x[i * p..(i + 1) * p], &self.coef); }
+        let mut out = vec![0.0; n];
+        mat_vec(x, n, p, &self.coef, &mut out);
+        let b = self.intercept;
+        for v in out.iter_mut() { *v += b; }
         out
     }
 }

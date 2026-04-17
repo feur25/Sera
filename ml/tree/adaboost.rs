@@ -28,7 +28,6 @@ impl AdaBoostClassifier {
         let mut weights = vec![1.0 / n as f64; n];
         self.trees.clear();
         self.alphas.clear();
-        let mut rng = 0x123456789ABCDEFu64;
         let master_bins = compute_bins(x, n, p);
 
         for _ in 0..self.n_estimators {
@@ -37,16 +36,15 @@ impl AdaBoostClassifier {
                 crate::ml::tree::decision_tree::TreeCriterion::Gini,
             );
 
-            let sample = weighted_bootstrap(n, &weights, &mut rng);
-            let sampled_x: Vec<f64> = sample.iter().flat_map(|&i| x[i * p..(i + 1) * p].iter().copied()).collect();
-            let sampled_y: Vec<i32> = sample.iter().map(|&i| y[i]).collect();
-            let sn = sample.len();
-            let binned = bin_data_with_edges(&sampled_x, sn, p, &master_bins.edges);
-            let bins = BinInfo { edges: master_bins.edges.clone(), n_bins: master_bins.n_bins.clone(), binned, p, n: sn };
-            tree.fit_with_bins(&sampled_y, &bins);
+            tree.fit_weighted(y, &master_bins, &weights);
+
+            let preds: Vec<i32> = if n >= 256 {
+                (0..n).into_par_iter().map(|i| tree.predict_single(&x[i * p..(i + 1) * p])).collect()
+            } else {
+                (0..n).map(|i| tree.predict_single(&x[i * p..(i + 1) * p])).collect()
+            };
 
             let mut err = 0.0;
-            let preds: Vec<i32> = (0..n).map(|i| tree.predict_single(&x[i * p..(i + 1) * p])).collect();
             for i in 0..n {
                 if preds[i] != y[i] { err += weights[i]; }
             }

@@ -99,12 +99,28 @@ pub fn mat_t_mat(a: &[f64], n: usize, p: usize, out: &mut [f64]) {
 }
 
 pub fn mat_t_y(a: &[f64], n: usize, p: usize, y: &[f64], out: &mut [f64]) {
-    for j in 0..p {
-        let mut s = 0.0;
+    for j in 0..p { out[j] = 0.0; }
+    if n >= 8192 {
+        let chunk = 2048usize.min(n);
+        let nc = (n + chunk - 1) / chunk;
+        let partials: Vec<Vec<f64>> = (0..nc).into_par_iter().map(|c| {
+            let s = c * chunk;
+            let e = (s + chunk).min(n);
+            let mut part = vec![0.0; p];
+            for i in s..e {
+                let yi = y[i];
+                let row = &a[i * p..(i + 1) * p];
+                for j in 0..p { part[j] += row[j] * yi; }
+            }
+            part
+        }).collect();
+        for part in &partials { for j in 0..p { out[j] += part[j]; } }
+    } else {
         for i in 0..n {
-            s += a[i * p + j] * y[i];
+            let yi = y[i];
+            let row = &a[i * p..(i + 1) * p];
+            for j in 0..p { out[j] += row[j] * yi; }
         }
-        out[j] = s;
     }
 }
 
