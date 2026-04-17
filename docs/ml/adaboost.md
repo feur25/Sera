@@ -1,5 +1,7 @@
 # AdaBoostClassifier / AdaBoostRegressor
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -15,13 +17,49 @@ reg = sp.AdaBoostRegressor(
     max_depth: int = 3,
 )
 
-model.fit(x, y)
-model.predict(x) -> list[int] | list[float]
-model.score(x, y) -> float
+clf.classes_        -> list[int]
+clf.n_estimators_   -> int
+clf.learning_rate_  -> float
+clf.max_depth_      -> int
 
-clf.predict_proba(x) -> ndarray (n, n_classes)
-clf.classes_ -> list[int]
+reg.n_estimators_   -> int
+reg.learning_rate_  -> float
+reg.max_depth_      -> int
 ```
+
+---
+
+## Description
+
+Adaptive Boosting. Reweights samples at each stage so that subsequent trees focus on previously misclassified examples.
+
+---
+
+## Constructor Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `n_estimators` | `int` | `50` | Number of weak learners |
+| `learning_rate` | `float` | `1.0` | Weight shrinkage per stage |
+| `max_depth` | `int` | `1`/`3` | Depth of each base tree |
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Boosting adaptatif. Repondère les échantillons à chaque étape pour que les arbres suivants se concentrent sur les exemples mal classés.
+
+## Paramètres du constructeur
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `n_estimators` | `int` | `50` | Nombre d'apprenants faibles |
+| `learning_rate` | `float` | `1.0` | Réduction du poids par étape |
+| `max_depth` | `int` | `1`/`3` | Profondeur de chaque arbre de base |
+
+</div>
 
 ---
 

@@ -1,5 +1,7 @@
 # GradientBoostingClassifier / GradientBoostingRegressor
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -19,9 +21,56 @@ reg = sp.GradientBoostingRegressor(
     min_samples_leaf: int = 1,
 )
 
-model.fit(x, y)
-model.predict(x) -> list[int] | list[float]
-model.score(x, y) -> float
+clf.n_estimators_       -> int
+clf.learning_rate_      -> float
+clf.max_depth_          -> int
+clf.min_samples_split_  -> int
+clf.min_samples_leaf_   -> int
+
+reg.n_estimators_       -> int
+reg.learning_rate_      -> float
+reg.max_depth_          -> int
+reg.min_samples_split_  -> int
+reg.min_samples_leaf_   -> int
+```
+
+---
+
+## Description
+
+Sequential ensemble: each tree fits residuals of previous. Uses negative gradient of loss function (MSE for regression, log-loss for classification).
+
+---
+
+## Constructor Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `n_estimators` | `int` | `100` | Number of boosting stages |
+| `learning_rate` | `float` | `0.1` | Shrinkage factor per stage |
+| `max_depth` | `int` | `3` | Maximum depth of each tree |
+| `min_samples_split` | `int` | `2` | Min samples to split |
+| `min_samples_leaf` | `int` | `1` | Min samples in leaf |
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Ensemble séquentiel : chaque arbre ajuste les résidus du précédent. Utilise le gradient négatif de la fonction de perte (MSE pour la régression, log-loss pour la classification).
+
+## Paramètres du constructeur
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `n_estimators` | `int` | `100` | Nombre d'étapes de boosting |
+| `learning_rate` | `float` | `0.1` | Facteur de réduction par étape |
+| `max_depth` | `int` | `3` | Profondeur maximale de chaque arbre |
+| `min_samples_split` | `int` | `2` | Minimum d'échantillons pour diviser |
+| `min_samples_leaf` | `int` | `1` | Minimum d'échantillons en feuille |
+
+</div>
 
 clf.predict_proba(x) -> ndarray (n, n_classes)
 clf.classes_ -> list[int]

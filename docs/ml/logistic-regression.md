@@ -1,5 +1,7 @@
 # LogisticRegression
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -10,14 +12,52 @@ model = sp.LogisticRegression(
     fit_intercept: bool = True,
 )
 
-model.fit(x, y)
-model.predict(x) -> list[int]
-model.predict_proba(x) -> ndarray (n, n_classes)
-model.score(x, y) -> float
+model.classes_        -> list[int]
+model.coef_           -> ndarray
+model.intercept_      -> float | ndarray
+model.n_iter_         -> int
+model.C_              -> float
+model.max_iter_       -> int
+model.tol_            -> float
+model.fit_intercept_  -> bool
+```
 
-model.classes_    -> list[int]
-model.coef_       -> ndarray
-model.intercept_  -> float | ndarray
+---
+
+## Description
+
+Multinomial logistic regression via Newton's method. For binary problems uses a single weight vector; for multiclass uses One-vs-Rest.
+
+---
+
+## Constructor Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `c` | `float` | `1.0` | Inverse of regularization strength |
+| `max_iter` | `int` | `1000` | Maximum Newton iterations |
+| `tol` | `float` | `1e-4` | Convergence tolerance |
+| `fit_intercept` | `bool` | `True` | Add bias term |
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Régression logistique multinomiale via la méthode de Newton. Pour les problèmes binaires, un seul vecteur de poids ; pour la classification multi-classes, stratégie One-vs-Rest.
+
+## Paramètres du constructeur
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `c` | `float` | `1.0` | Inverse de la force de régularisation |
+| `max_iter` | `int` | `1000` | Nombre maximum d'itérations Newton |
+| `tol` | `float` | `1e-4` | Tolérance de convergence |
+| `fit_intercept` | `bool` | `True` | Ajouter un biais |
+
+</div>
+
 model.n_iter_     -> int
 ```
 

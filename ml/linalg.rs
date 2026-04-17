@@ -27,7 +27,15 @@ pub fn dot(a: &[f64], b: &[f64]) -> f64 {
 }
 
 pub fn mat_vec(a: &[f64], rows: usize, cols: usize, x: &[f64], out: &mut [f64]) {
-    if rows * cols >= PAR_THRESHOLD {
+    if rows >= 2048 {
+        let grain = 1024usize;
+        out.par_chunks_mut(grain).enumerate().for_each(|(ci, block)| {
+            let base = ci * grain;
+            for r in 0..block.len() {
+                block[r] = dot(&a[(base + r) * cols..(base + r + 1) * cols], x);
+            }
+        });
+    } else if rows * cols >= PAR_THRESHOLD {
         out.par_iter_mut().enumerate().for_each(|(i, o)| {
             *o = dot(&a[i * cols..(i + 1) * cols], x);
         });
@@ -74,12 +82,28 @@ pub fn mat_t_mat(a: &[f64], n: usize, p: usize, out: &mut [f64]) {
             let s = c * chunk;
             let e = (s + chunk).min(n);
             let mut part = vec![0.0; p * p];
-            for r in s..e {
+            let mut r = s;
+            while r + 4 <= e {
+                let r0 = &a[r * p..(r + 1) * p];
+                let r1 = &a[(r + 1) * p..(r + 2) * p];
+                let r2 = &a[(r + 2) * p..(r + 3) * p];
+                let r3 = &a[(r + 3) * p..(r + 4) * p];
+                for i in 0..p {
+                    let (a0, a1, a2, a3) = (r0[i], r1[i], r2[i], r3[i]);
+                    let base = i * p;
+                    for j in i..p {
+                        part[base + j] += a0 * r0[j] + a1 * r1[j] + a2 * r2[j] + a3 * r3[j];
+                    }
+                }
+                r += 4;
+            }
+            while r < e {
                 let row = &a[r * p..r * p + p];
                 for i in 0..p {
                     let ai = row[i];
                     for j in i..p { part[i * p + j] += ai * row[j]; }
                 }
+                r += 1;
             }
             part
         }).collect();

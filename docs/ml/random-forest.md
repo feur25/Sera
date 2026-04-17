@@ -1,5 +1,7 @@
 # RandomForestClassifier / RandomForestRegressor
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -19,15 +21,60 @@ reg = sp.RandomForestRegressor(
     max_features: str = "sqrt",
 )
 
-model.fit(x, y)
-model.predict(x) -> list[int] | list[float]
-model.score(x, y) -> float
-
-# Classifier only
-clf.predict_proba(x) -> list[list[float]]
 clf.classes_             -> list[int]
+clf.feature_importances_ -> list[float]
+clf.n_estimators_        -> int
+clf.max_depth_           -> int
+clf.min_samples_split_   -> int
+clf.min_samples_leaf_    -> int
+clf.max_features_        -> str
 
-# Both
+reg.feature_importances_ -> list[float]
+reg.n_estimators_        -> int
+reg.max_depth_           -> int
+reg.min_samples_split_   -> int
+reg.min_samples_leaf_    -> int
+reg.max_features_        -> str
+```
+
+---
+
+## Description
+
+Ensemble of decision trees trained on bootstrapped samples. Each tree uses a random subset of features for splits. Parallelized with Rayon.
+
+---
+
+## Constructor Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `n_estimators` | `int` | `100` | Number of trees |
+| `max_depth` | `int` | `10` | Maximum depth per tree |
+| `min_samples_split` | `int` | `2` | Min samples to split |
+| `min_samples_leaf` | `int` | `1` | Min samples in leaf |
+| `max_features` | `str` | `"sqrt"` | `"sqrt"`, `"log2"`, `"all"` |
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Ensemble d'arbres de décision entraînés sur des échantillons bootstrap. Chaque arbre utilise un sous-ensemble aléatoire de variables pour les divisions. Parallélisé avec Rayon.
+
+## Paramètres du constructeur
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `n_estimators` | `int` | `100` | Nombre d'arbres |
+| `max_depth` | `int` | `10` | Profondeur maximale par arbre |
+| `min_samples_split` | `int` | `2` | Minimum d'échantillons pour diviser |
+| `min_samples_leaf` | `int` | `1` | Minimum d'échantillons en feuille |
+| `max_features` | `str` | `"sqrt"` | `"sqrt"`, `"log2"`, `"all"` |
+
+</div>
+
 model.feature_importances_ -> list[float]
 ```
 

@@ -1,26 +1,21 @@
 # Ridge / RidgeClassifier
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
 reg = sp.Ridge(alpha: float = 1.0, fit_intercept: bool = True)
 clf = sp.RidgeClassifier(alpha: float = 1.0)
 
-reg.fit(x, y)
-reg.predict(x) -> list[float]
-reg.score(x, y) -> float
+reg.coef_           -> list[float]
+reg.intercept_      -> float
+reg.alpha_          -> float
+reg.fit_intercept_  -> bool
 
-reg.coef_      -> list[float]
-reg.intercept_ -> float
-reg.alpha_     -> float
-
-clf.fit(x, y)
-clf.predict(x) -> list[int]
-clf.score(x, y) -> float
-
-clf.coef_      -> list[float]
-clf.intercept_ -> float
-clf.classes_   -> list[int]
+clf.coef_           -> list[float]
+clf.intercept_      -> float
+clf.classes_        -> list[int]
 ```
 
 ---
@@ -28,6 +23,33 @@ clf.classes_   -> list[int]
 ## Description
 
 L2-regularized linear model (Tikhonov regularization). Solved via Cholesky on `(X^T X + alpha * I)`.
+
+---
+
+## Constructor Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `alpha` | `float` | `1.0` | Regularization strength |
+| `fit_intercept` | `bool` | `True` | Add a bias term |
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Modèle linéaire avec régularisation L2 (régularisation de Tikhonov). Résolu via Cholesky sur `(X^T X + alpha * I)`.
+
+## Paramètres du constructeur
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `alpha` | `float` | `1.0` | Force de régularisation |
+| `fit_intercept` | `bool` | `True` | Ajouter un terme de biais |
+
+</div>
+
 
 - **Ridge** — regression with L2 penalty.
 - **RidgeClassifier** — classification by rounding Ridge regression predictions to nearest class label.

@@ -1,5 +1,7 @@
 # GaussianNB / MultinomialNB / BernoulliNB
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -7,17 +9,18 @@ gnb = sp.GaussianNB(var_smoothing: float = 1e-9)
 mnb = sp.MultinomialNB(alpha: float = 1.0)
 bnb = sp.BernoulliNB(alpha: float = 1.0, binarize: float = 0.0)
 
-model.fit(x, y)
-model.predict(x) -> list[int]
-model.predict_proba(x) -> ndarray (n, n_classes)
-model.score(x, y) -> float
+gnb.theta_          -> list[list[float]]
+gnb.var_            -> list[list[float]]
+gnb.class_prior_    -> list[float]
+gnb.classes_        -> list[int]
+gnb.var_smoothing_  -> float
 
-model.classes_ -> list[int]
+mnb.classes_        -> list[int]
+mnb.alpha_          -> float
 
-# GaussianNB only
-gnb.theta_       -> list[list[float]]   # per-class feature means
-gnb.var_         -> list[list[float]]   # per-class feature variances
-gnb.class_prior_ -> list[float]         # class prior probabilities
+bnb.classes_        -> list[int]
+bnb.alpha_          -> float
+bnb.binarize_       -> float
 ```
 
 ---
@@ -27,12 +30,41 @@ gnb.class_prior_ -> list[float]         # class prior probabilities
 Naive Bayes classifiers assuming feature independence given the class.
 
 - **GaussianNB** — continuous features, models each feature as a normal distribution per class.
-- **MultinomialNB** — count features (e.g. word counts), with Laplace smoothing (`alpha`).
-- **BernoulliNB** — binary features. Continuous values are binarized at threshold `binarize`.
+- **MultinomialNB** — count features (word counts), with Laplace smoothing (`alpha`).
+- **BernoulliNB** — binary features. Continuous values binarized at threshold `binarize`.
 
 ---
 
 ## Constructor Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `var_smoothing` | `float` | `1e-9` | Added to variance for stability (GaussianNB) |
+| `alpha` | `float` | `1.0` | Laplace smoothing parameter |
+| `binarize` | `float` | `0.0` | Binarization threshold (BernoulliNB) |
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Classificateurs Naive Bayes supposant l'indépendance des variables conditionnellement à la classe.
+
+- **GaussianNB** — variables continues, modélise chaque variable comme une distribution normale par classe.
+- **MultinomialNB** — variables de comptage (fréquences de mots), avec lissage de Laplace (`alpha`).
+- **BernoulliNB** — variables binaires. Les valeurs continues sont binarisées au seuil `binarize`.
+
+## Paramètres du constructeur
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `var_smoothing` | `float` | `1e-9` | Ajouté à la variance pour la stabilité (GaussianNB) |
+| `alpha` | `float` | `1.0` | Paramètre de lissage de Laplace |
+| `binarize` | `float` | `0.0` | Seuil de binarisation (BernoulliNB) |
+
+</div>
+
 
 ### GaussianNB
 

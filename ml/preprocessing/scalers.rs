@@ -69,9 +69,16 @@ impl StandardScaler {
             let mean = &self.mean;
             let inv = &self.inv_scale;
             if n * p >= 50_000 {
-                out.par_chunks_mut(p).enumerate().for_each(|(i, row)| {
-                    let xi = &x[i * p..i * p + p];
-                    for j in 0..p { row[j] = (xi[j] - mean[j]) * inv[j]; }
+                let grain = 2048usize;
+                out.par_chunks_mut(p * grain).enumerate().for_each(|(ci, block)| {
+                    let base = ci * grain;
+                    let rows = block.len() / p;
+                    for r in 0..rows {
+                        let i = base + r;
+                        let xi = &x[i * p..i * p + p];
+                        let row = &mut block[r * p..(r + 1) * p];
+                        for j in 0..p { row[j] = (xi[j] - mean[j]) * inv[j]; }
+                    }
                 });
             } else {
                 for i in 0..n {
@@ -177,9 +184,15 @@ impl MinMaxScaler {
         let min = &self.min;
         let mut out = vec![0.0; n * p];
         if n * p >= 50_000 {
-            out.par_chunks_mut(p).enumerate().for_each(|(i, row)| {
-                for j in 0..p {
-                    row[j] = (x[i * p + j] - min[j]) * inv_range[j] + lo;
+            let grain = 2048usize;
+            out.par_chunks_mut(p * grain).enumerate().for_each(|(ci, block)| {
+                let base = ci * grain;
+                let rows = block.len() / p;
+                for r in 0..rows {
+                    let i = base + r;
+                    for j in 0..p {
+                        block[r * p + j] = (x[i * p + j] - min[j]) * inv_range[j] + lo;
+                    }
                 }
             });
         } else {
@@ -204,9 +217,15 @@ impl MinMaxScaler {
         let min = &self.min;
         let mut out = vec![0.0; n * p];
         if n * p >= 50_000 {
-            out.par_chunks_mut(p).enumerate().for_each(|(i, row)| {
-                for j in 0..p {
-                    row[j] = (x[i * p + j] - lo) * inv_span[j] + min[j];
+            let grain = 2048usize;
+            out.par_chunks_mut(p * grain).enumerate().for_each(|(ci, block)| {
+                let base = ci * grain;
+                let rows = block.len() / p;
+                for r in 0..rows {
+                    let i = base + r;
+                    for j in 0..p {
+                        block[r * p + j] = (x[i * p + j] - lo) * inv_span[j] + min[j];
+                    }
                 }
             });
         } else {
@@ -225,18 +244,24 @@ pub struct RobustScaler {
     pub scale: Vec<f64>,
     pub with_centering: bool,
     pub with_scaling: bool,
+    pub quantile_range: (f64, f64),
     p: usize,
 }
 
 impl RobustScaler {
     pub fn new(with_centering: bool, with_scaling: bool) -> Self {
-        Self { center: Vec::new(), scale: Vec::new(), with_centering, with_scaling, p: 0 }
+        Self { center: Vec::new(), scale: Vec::new(), with_centering, with_scaling, quantile_range: (25.0, 75.0), p: 0 }
+    }
+
+    pub fn with_quantile_range(with_centering: bool, with_scaling: bool, quantile_range: (f64, f64)) -> Self {
+        Self { center: Vec::new(), scale: Vec::new(), with_centering, with_scaling, quantile_range, p: 0 }
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize) {
         self.p = p;
         self.center = vec![0.0; p];
         self.scale = vec![1.0; p];
+        let (q_lo, q_hi) = self.quantile_range;
 
         if p >= 4 && n >= 1000 {
             let results: Vec<(f64, f64)> = (0..p).into_par_iter().map(|j| {
@@ -244,9 +269,9 @@ impl RobustScaler {
                 col.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
                 let c = if self.with_centering { percentile_sorted(&col, 50.0) } else { 0.0 };
                 let s = if self.with_scaling {
-                    let q25 = percentile_sorted(&col, 25.0);
-                    let q75 = percentile_sorted(&col, 75.0);
-                    (q75 - q25).max(1e-15)
+                    let qlo = percentile_sorted(&col, q_lo);
+                    let qhi = percentile_sorted(&col, q_hi);
+                    (qhi - qlo).max(1e-15)
                 } else { 1.0 };
                 (c, s)
             }).collect();
@@ -262,9 +287,9 @@ impl RobustScaler {
                     self.center[j] = percentile_sorted(&col, 50.0);
                 }
                 if self.with_scaling {
-                    let q25 = percentile_sorted(&col, 25.0);
-                    let q75 = percentile_sorted(&col, 75.0);
-                    self.scale[j] = (q75 - q25).max(1e-15);
+                    let qlo = percentile_sorted(&col, q_lo);
+                    let qhi = percentile_sorted(&col, q_hi);
+                    self.scale[j] = (qhi - qlo).max(1e-15);
                 }
             }
         }
@@ -277,12 +302,18 @@ impl RobustScaler {
         let ws = self.with_scaling;
         let mut out = vec![0.0; n * p];
         if n * p >= 50_000 {
-            out.par_chunks_mut(p).enumerate().for_each(|(i, row)| {
-                for j in 0..p {
-                    let mut v = x[i * p + j];
-                    if wc { v -= center[j]; }
-                    if ws { v *= inv_scale[j]; }
-                    row[j] = v;
+            let grain = 2048usize;
+            out.par_chunks_mut(p * grain).enumerate().for_each(|(ci, block)| {
+                let base = ci * grain;
+                let rows = block.len() / p;
+                for r in 0..rows {
+                    let i = base + r;
+                    for j in 0..p {
+                        let mut v = x[i * p + j];
+                        if wc { v -= center[j]; }
+                        if ws { v *= inv_scale[j]; }
+                        block[r * p + j] = v;
+                    }
                 }
             });
         } else {
@@ -352,8 +383,14 @@ impl MaxAbsScaler {
         let inv: Vec<f64> = self.max_abs.iter().map(|&m| 1.0 / m).collect();
         let mut out = vec![0.0; n * p];
         if n * p >= 50_000 {
-            out.par_chunks_mut(p).enumerate().for_each(|(i, row)| {
-                for j in 0..p { row[j] = x[i * p + j] * inv[j]; }
+            let grain = 2048usize;
+            out.par_chunks_mut(p * grain).enumerate().for_each(|(ci, block)| {
+                let base = ci * grain;
+                let rows = block.len() / p;
+                for r in 0..rows {
+                    let i = base + r;
+                    for j in 0..p { block[r * p + j] = x[i * p + j] * inv[j]; }
+                }
             });
         } else {
             for i in 0..n {
@@ -384,14 +421,22 @@ impl Normalizer {
     pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
         let mut out = vec![0.0; n * p];
         if n * p >= 50_000 {
-            out.par_chunks_mut(p).enumerate().for_each(|(i, row)| {
-                let xi = &x[i * p..(i + 1) * p];
-                let scale = match self.norm {
-                    NormType::L1 => { let s: f64 = xi.iter().map(|v| v.abs()).sum(); s.max(1e-15) }
-                    NormType::L2 => { let s: f64 = xi.iter().map(|v| v * v).sum(); s.sqrt().max(1e-15) }
-                    NormType::Max => { let s = xi.iter().map(|v| v.abs()).fold(0.0f64, f64::max); s.max(1e-15) }
-                };
-                for j in 0..p { row[j] = xi[j] / scale; }
+            let norm = self.norm;
+            let grain = 2048usize;
+            out.par_chunks_mut(p * grain).enumerate().for_each(|(ci, block)| {
+                let base = ci * grain;
+                let rows = block.len() / p;
+                for r in 0..rows {
+                    let i = base + r;
+                    let xi = &x[i * p..(i + 1) * p];
+                    let scale = match norm {
+                        NormType::L1 => { let s: f64 = xi.iter().map(|v| v.abs()).sum(); s.max(1e-15) }
+                        NormType::L2 => { let s: f64 = xi.iter().map(|v| v * v).sum(); s.sqrt().max(1e-15) }
+                        NormType::Max => { let s = xi.iter().map(|v| v.abs()).fold(0.0f64, f64::max); s.max(1e-15) }
+                    };
+                    let inv = 1.0 / scale;
+                    for j in 0..p { block[r * p + j] = xi[j] * inv; }
+                }
             });
         } else {
             for i in 0..n {

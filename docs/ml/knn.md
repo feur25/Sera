@@ -1,5 +1,7 @@
 # KNeighborsClassifier / KNeighborsRegressor / NearestCentroid
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -7,22 +9,56 @@ clf = sp.KNeighborsClassifier(n_neighbors: int = 5, weights: str = "uniform")
 reg = sp.KNeighborsRegressor(n_neighbors: int = 5, weights: str = "uniform")
 nc  = sp.NearestCentroid()
 
-model.fit(x, y)
-model.predict(x) -> list[int] | list[float]
-model.score(x, y) -> float
+clf.classes_       -> list[int]
+clf.n_neighbors_   -> int
+clf.weights_       -> str
 
-clf.predict_proba(x) -> ndarray (n, n_classes)
-clf.classes_             -> list[int]
-nc.classes_              -> list[int]
+reg.n_neighbors_   -> int
+reg.weights_       -> str
+
+nc.classes_        -> list[int]
 ```
 
 ---
 
 ## Description
 
-K-Nearest Neighbors with brute-force distance computation and partial sort (`select_nth_unstable`) for O(n) neighbor selection. Prediction is parallelized via Rayon when `n >= 256`. Uses thread-local buffers for zero-allocation queries.
+K-Nearest Neighbors with brute-force distance computation and partial sort for O(n) neighbor selection. Parallelized via Rayon when `n >= 256`.
 
-**NearestCentroid** computes the centroid of each class and classifies by nearest centroid.
+`weights` options: `"uniform"` (all neighbors equal weight), `"distance"` (inverse distance weighting).
+
+**NearestCentroid** classifies by computing the centroid of each class, then assigning the nearest.
+
+---
+
+## Constructor Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `n_neighbors` | `int` | `5` | Number of neighbors |
+| `weights` | `str` | `"uniform"` | `"uniform"` or `"distance"` |
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+K plus proches voisins avec calcul brute-force et tri partiel pour la sélection en O(n). Parallélisé via Rayon lorsque `n >= 256`.
+
+Options pour `weights` : `"uniform"` (poids égaux), `"distance"` (pondération inverse par la distance).
+
+**NearestCentroid** classifie en calculant le centroïde de chaque classe puis en assignant au plus proche.
+
+## Paramètres du constructeur
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `n_neighbors` | `int` | `5` | Nombre de voisins |
+| `weights` | `str` | `"uniform"` | `"uniform"` ou `"distance"` |
+
+</div>
+
 
 ---
 

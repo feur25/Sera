@@ -25,17 +25,49 @@ impl BernoulliNB {
         cls.dedup();
         self.classes = cls;
         let k = self.classes.len();
+        let kp = k * p;
+        let binarize = self.binarize;
 
-        let mut feature_counts = vec![0.0; k * p];
-        let mut class_counts = vec![0.0; k];
+        let class_map: Vec<usize> = y.iter().map(|&v| self.classes.iter().position(|&c| c == v).unwrap()).collect();
 
-        for i in 0..n {
-            let c = self.classes.iter().position(|&v| v == y[i]).unwrap();
-            class_counts[c] += 1.0;
-            for j in 0..p {
-                if x[i * p + j] > self.binarize { feature_counts[c * p + j] += 1.0; }
+        let chunk = 4096usize;
+        let (feature_counts_f, class_counts_v) = if n >= 8192 {
+            let nc = (n + chunk - 1) / chunk;
+            (0..nc).into_par_iter().fold(
+                || (vec![0.0f64; kp], vec![0.0f64; k]),
+                |(mut fc, mut cc), ci| {
+                    let start = ci * chunk;
+                    let end = (start + chunk).min(n);
+                    for i in start..end {
+                        let c = class_map[i];
+                        cc[c] += 1.0;
+                        for j in 0..p {
+                            if x[i * p + j] > binarize { fc[c * p + j] += 1.0; }
+                        }
+                    }
+                    (fc, cc)
+                }
+            ).reduce(
+                || (vec![0.0f64; kp], vec![0.0f64; k]),
+                |(mut a, mut b), (a2, b2)| {
+                    for i in 0..kp { a[i] += a2[i]; }
+                    for i in 0..k { b[i] += b2[i]; }
+                    (a, b)
+                }
+            )
+        } else {
+            let mut fc = vec![0.0f64; kp];
+            let mut cc = vec![0.0f64; k];
+            for i in 0..n {
+                let c = class_map[i];
+                cc[c] += 1.0;
+                for j in 0..p { if x[i * p + j] > binarize { fc[c * p + j] += 1.0; } }
             }
-        }
+            (fc, cc)
+        };
+
+        let feature_counts = feature_counts_f;
+        let class_counts = class_counts_v;
 
         self.log_priors = class_counts.iter().map(|&c| (c / n as f64).ln()).collect();
 

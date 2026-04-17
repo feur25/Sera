@@ -31,43 +31,68 @@ impl GaussianNB {
         cls.dedup();
         self.classes = cls;
         let k = self.classes.len();
+        let kp = k * p;
 
-        let mut class_map = vec![0usize; n];
-        let mut counts = vec![0usize; k];
-        for i in 0..n {
-            let c = self.classes.iter().position(|&v| v == y[i]).unwrap();
-            class_map[i] = c;
-            counts[c] += 1;
-        }
+        let class_map: Vec<usize> = y.iter().map(|&v| self.classes.iter().position(|&c| c == v).unwrap()).collect();
 
-        self.means = vec![0.0; k * p];
-        self.vars = vec![0.0; k * p];
+        let chunk = 4096usize;
+        let (sums, sq_sums, counts) = if n >= 8192 {
+            let nc = (n + chunk - 1) / chunk;
+            (0..nc).into_par_iter().fold(
+                || (vec![0.0f64; kp], vec![0.0f64; kp], vec![0usize; k]),
+                |(mut s, mut sq, mut cnt), ci| {
+                    let start = ci * chunk;
+                    let end = (start + chunk).min(n);
+                    for i in start..end {
+                        let c = class_map[i];
+                        cnt[c] += 1;
+                        for j in 0..p {
+                            let v = x[i * p + j];
+                            s[c * p + j] += v;
+                            sq[c * p + j] += v * v;
+                        }
+                    }
+                    (s, sq, cnt)
+                }
+            ).reduce(
+                || (vec![0.0f64; kp], vec![0.0f64; kp], vec![0usize; k]),
+                |(mut a, mut b, mut c), (a2, b2, c2)| {
+                    for i in 0..kp { a[i] += a2[i]; b[i] += b2[i]; }
+                    for i in 0..k { c[i] += c2[i]; }
+                    (a, b, c)
+                }
+            )
+        } else {
+            let mut s = vec![0.0f64; kp];
+            let mut sq = vec![0.0f64; kp];
+            let mut cnt = vec![0usize; k];
+            for i in 0..n {
+                let c = class_map[i];
+                cnt[c] += 1;
+                for j in 0..p { let v = x[i * p + j]; s[c * p + j] += v; sq[c * p + j] += v * v; }
+            }
+            (s, sq, cnt)
+        };
+
+        self.means = vec![0.0; kp];
+        self.vars = vec![0.0; kp];
         self.priors = vec![0.0; k];
-
-        for i in 0..n {
-            let c = class_map[i];
-            for j in 0..p { self.means[c * p + j] += x[i * p + j]; }
-        }
         for c in 0..k {
             let inv = 1.0 / counts[c].max(1) as f64;
-            for j in 0..p { self.means[c * p + j] *= inv; }
+            for j in 0..p { self.means[c * p + j] = sums[c * p + j] * inv; }
             self.priors[c] = counts[c] as f64 / n as f64;
         }
-        for i in 0..n {
-            let c = class_map[i];
-            for j in 0..p {
-                let d = x[i * p + j] - self.means[c * p + j];
-                self.vars[c * p + j] += d * d;
-            }
-        }
         for c in 0..k {
             let inv = 1.0 / counts[c].max(1) as f64;
-            for j in 0..p { self.vars[c * p + j] = self.vars[c * p + j] * inv + self.var_smoothing; }
+            for j in 0..p {
+                let m = self.means[c * p + j];
+                self.vars[c * p + j] = (sq_sums[c * p + j] * inv - m * m).max(0.0) + self.var_smoothing;
+            }
         }
 
         self.log_prior = self.priors.iter().map(|&p| p.ln()).collect();
-        self.log_norm = vec![0.0; k * p];
-        self.inv_2var = vec![0.0; k * p];
+        self.log_norm = vec![0.0; kp];
+        self.inv_2var = vec![0.0; kp];
         for c in 0..k {
             for j in 0..p {
                 let v = self.vars[c * p + j];

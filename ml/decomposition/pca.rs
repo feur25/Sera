@@ -8,6 +8,8 @@ pub struct PCA {
     pub explained_variance_ratio: Vec<f64>,
     pub singular_values: Vec<f64>,
     pub mean: Vec<f64>,
+    pub whiten: bool,
+    pub svd_solver: String,
     bias: Vec<f64>,
     p: usize,
 }
@@ -17,7 +19,17 @@ impl PCA {
         Self {
             n_components, components: Vec::new(), explained_variance: Vec::new(),
             explained_variance_ratio: Vec::new(), singular_values: Vec::new(),
-            mean: Vec::new(), bias: Vec::new(), p: 0,
+            mean: Vec::new(), whiten: false, svd_solver: "auto".to_string(),
+            bias: Vec::new(), p: 0,
+        }
+    }
+
+    pub fn with_options(n_components: usize, svd_solver: String, whiten: bool) -> Self {
+        Self {
+            n_components, components: Vec::new(), explained_variance: Vec::new(),
+            explained_variance_ratio: Vec::new(), singular_values: Vec::new(),
+            mean: Vec::new(), whiten, svd_solver,
+            bias: Vec::new(), p: 0,
         }
     }
 
@@ -28,7 +40,17 @@ impl PCA {
         self.mean = col_means(x, n, p);
         let nm1 = (n as f64 - 1.0).max(1.0);
 
-        if p >= 200 && k * 3 < p && n >= p * 4 {
+        let use_randomized = match self.svd_solver.as_str() {
+            "randomized" => true,
+            "full" | "covariance_eigh" => false,
+            _ => p >= 200 && k * 3 < p && n >= p * 4,
+        };
+        let use_covariance = !use_randomized && match self.svd_solver.as_str() {
+            "full" => false,
+            _ => n >= p * 4,
+        };
+
+        if use_randomized {
             let mut centered = vec![0.0; n * p];
             if n * p >= 100_000 {
                 centered.par_chunks_mut(p).enumerate().for_each(|(i, row)| {
@@ -58,7 +80,7 @@ impl PCA {
                 total_var /= nm1;
             }
             self.explained_variance_ratio = self.explained_variance.iter().map(|&v| v / total_var.max(1e-15)).collect();
-        } else if n >= p * 4 {
+        } else if use_covariance {
             let chunk = 4096usize.min(n);
             let xtx = if n >= 1024 {
                 let nc = (n + chunk - 1) / chunk;
@@ -163,6 +185,11 @@ impl PCA {
         let mut out = vec![0.0; n * k];
         let comps = &self.components;
         let bias = &self.bias;
+        let whiten_scale: Vec<f64> = if self.whiten {
+            self.explained_variance.iter().map(|&v| 1.0 / v.max(1e-15).sqrt()).collect()
+        } else {
+            vec![1.0; k]
+        };
         if n * p >= 200_000 {
             let grain = 512usize;
             out.par_chunks_mut(k * grain).enumerate().for_each(|(ci, block)| {
@@ -171,13 +198,13 @@ impl PCA {
                 for r in 0..rows {
                     let i = s + r;
                     let xi = &x[i * p..i * p + p];
-                    for c in 0..k { block[r * k + c] = dot(xi, &comps[c * p..(c + 1) * p]) - bias[c]; }
+                    for c in 0..k { block[r * k + c] = (dot(xi, &comps[c * p..(c + 1) * p]) - bias[c]) * whiten_scale[c]; }
                 }
             });
         } else {
             for i in 0..n {
                 let xi = &x[i * p..i * p + p];
-                for c in 0..k { out[i * k + c] = dot(xi, &comps[c * p..(c + 1) * p]) - bias[c]; }
+                for c in 0..k { out[i * k + c] = (dot(xi, &comps[c * p..(c + 1) * p]) - bias[c]) * whiten_scale[c]; }
             }
         }
         out

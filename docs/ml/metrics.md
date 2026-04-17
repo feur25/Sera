@@ -1,5 +1,7 @@
 # Metrics
 
+<div class="lang-en">
+
 ## Functions
 
 ```python
@@ -28,6 +30,58 @@ Fraction of correct predictions.
 |----------|------|-------------|
 | `y_true` | `list[int]` | Ground truth labels |
 | `y_pred` | `list[int]` | Predicted labels |
+
+</div>
+
+<div class="lang-fr">
+
+## Fonctions
+
+```python
+sp.accuracy_score(y_true, y_pred) -> float
+sp.mean_squared_error(y_true, y_pred) -> float
+sp.mean_absolute_error(y_true, y_pred) -> float
+sp.r2_score(y_true, y_pred) -> float
+sp.classification_report(y_true, y_pred) -> str
+```
+
+---
+
+## Description
+
+Fonctions d'évaluation autonomes pour la classification et la régression. Disponibles également via `.score()` sur chaque modèle — les classificateurs utilisent la précision, les régresseurs le R².
+
+---
+
+## Référence des fonctions
+
+### `accuracy_score(y_true, y_pred) -> float`
+
+Fraction de prédictions correctes.
+
+| Argument | Type | Description |
+|----------|------|-------------|
+| `y_true` | `list[int]` | Étiquettes réelles |
+| `y_pred` | `list[int]` | Étiquettes prédites |
+
+### `mean_squared_error(y_true, y_pred) -> float`
+
+Erreur quadratique moyenne : $\frac{1}{n}\sum(y_i - \hat{y}_i)^2$
+
+### `mean_absolute_error(y_true, y_pred) -> float`
+
+Erreur absolue moyenne : $\frac{1}{n}\sum|y_i - \hat{y}_i|$
+
+### `r2_score(y_true, y_pred) -> float`
+
+Coefficient de détermination R².
+
+### `classification_report(y_true, y_pred) -> str`
+
+Rapport texte avec précision, rappel et F1 par classe.
+
+</div>
+
 
 ### `mean_squared_error(y_true, y_pred) -> float`
 

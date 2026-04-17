@@ -1,5 +1,7 @@
 # DecisionTreeClassifier / DecisionTreeRegressor
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -18,16 +20,59 @@ reg = sp.DecisionTreeRegressor(
     max_features: int | None = None,
 )
 
-model.fit(x, y)
-model.predict(x) -> list[int] | list[float]
-model.score(x, y) -> float
+clf.classes_              -> list[int]
+clf.feature_importances_  -> list[float]
+clf.max_depth_            -> int
+clf.min_samples_split_    -> int
+clf.min_samples_leaf_     -> int
+clf.max_features_         -> int | None
+clf.criterion_            -> str
 
-# Classifier only
-clf.predict_proba(x) -> list[list[float]]
-clf.classes_             -> list[int]
+reg.feature_importances_  -> list[float]
+reg.max_depth_            -> int
+reg.min_samples_split_    -> int
+reg.min_samples_leaf_     -> int
+reg.max_features_         -> int | None
+```
 
-# Both
-model.feature_importances_ -> list[float]
+---
+
+## Description
+
+Decision tree with histogram-based binning for fast splits. Supports `gini` and `entropy` for classification.
+
+---
+
+## Constructor Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `max_depth` | `int` | `10` | Maximum tree depth |
+| `min_samples_split` | `int` | `2` | Min samples to split a node |
+| `min_samples_leaf` | `int` | `1` | Min samples in a leaf |
+| `max_features` | `int\|None` | `None` | Number of features to consider per split |
+| `criterion` | `str` | `"gini"` | `"gini"` or `"entropy"` (classifier only) |
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Arbre de décision avec binning histogramme pour des divisions rapides. Supporte `gini` et `entropy` pour la classification.
+
+## Paramètres du constructeur
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `max_depth` | `int` | `10` | Profondeur maximale de l'arbre |
+| `min_samples_split` | `int` | `2` | Minimum d'échantillons pour diviser un nœud |
+| `min_samples_leaf` | `int` | `1` | Minimum d'échantillons dans une feuille |
+| `max_features` | `int\|None` | `None` | Nombre de variables considérées par division |
+| `criterion` | `str` | `"gini"` | `"gini"` ou `"entropy"` (classifieur seulement) |
+
+</div>
+
 ```
 
 ---

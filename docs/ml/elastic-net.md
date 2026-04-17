@@ -1,5 +1,7 @@
 # ElasticNet
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -11,13 +13,54 @@ model = sp.ElasticNet(
     fit_intercept: bool = True,
 )
 
-model.fit(x, y)
-model.predict(x) -> list[float]
-model.score(x, y) -> float
-
-model.coef_      -> list[float]
-model.intercept_ -> float
+model.coef_           -> list[float]
+model.intercept_      -> float
+model.n_iter_         -> int
+model.alpha_          -> float
+model.l1_ratio_       -> float
+model.max_iter_       -> int
+model.tol_            -> float
+model.fit_intercept_  -> bool
 ```
+
+---
+
+## Description
+
+Combines L1 and L2 penalties. `l1_ratio=1` → Lasso, `l1_ratio=0` → Ridge. Solved via coordinate descent.
+
+---
+
+## Constructor Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `alpha` | `float` | `1.0` | Overall penalty strength |
+| `l1_ratio` | `float` | `0.5` | Mix between L1 and L2 |
+| `max_iter` | `int` | `1000` | Maximum iterations |
+| `tol` | `float` | `1e-4` | Convergence tolerance |
+| `fit_intercept` | `bool` | `True` | Add bias term |
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Combine les pénalités L1 et L2. `l1_ratio=1` → Lasso, `l1_ratio=0` → Ridge. Résolu par descente de coordonnées.
+
+## Paramètres du constructeur
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `alpha` | `float` | `1.0` | Force globale de pénalité |
+| `l1_ratio` | `float` | `0.5` | Mélange entre L1 et L2 |
+| `max_iter` | `int` | `1000` | Nombre maximum d'itérations |
+| `tol` | `float` | `1e-4` | Tolérance de convergence |
+| `fit_intercept` | `bool` | `True` | Ajouter un biais |
+
+</div>
+
 
 ---
 

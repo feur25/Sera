@@ -1,5 +1,7 @@
 # Lasso
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -10,13 +12,48 @@ model = sp.Lasso(
     fit_intercept: bool = True,
 )
 
-model.fit(x, y)
-model.predict(x) -> list[float]
-model.score(x, y) -> float
-
 model.coef_      -> list[float]
 model.intercept_ -> float
+model.alpha_     -> float
+model.n_iter_    -> int
 ```
+
+---
+
+## Description
+
+L1-regularized regression via coordinate descent. Produces sparse solutions.
+
+---
+
+## Constructor Parameters
+
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| `alpha` | `float` | `1.0` | L1 penalty strength |
+| `max_iter` | `int` | `1000` | Maximum iterations |
+| `tol` | `float` | `1e-4` | Convergence tolerance |
+| `fit_intercept` | `bool` | `True` | Add bias term |
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Régression avec régularisation L1 par descente de coordonnées. Produit des solutions creuses.
+
+## Paramètres du constructeur
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `alpha` | `float` | `1.0` | Force de pénalité L1 |
+| `max_iter` | `int` | `1000` | Nombre maximum d'itérations |
+| `tol` | `float` | `1e-4` | Tolérance de convergence |
+| `fit_intercept` | `bool` | `True` | Ajouter un biais |
+
+</div>
+
 
 ---
 

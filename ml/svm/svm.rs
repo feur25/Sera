@@ -5,6 +5,7 @@ pub struct LinearSVC {
     pub c: f64,
     pub max_iter: usize,
     pub tol: f64,
+    pub fit_intercept: bool,
     pub classes: Vec<i32>,
     coefs: Vec<Vec<f64>>,
     intercepts: Vec<f64>,
@@ -13,7 +14,11 @@ pub struct LinearSVC {
 
 impl LinearSVC {
     pub fn new(c: f64, max_iter: usize, tol: f64) -> Self {
-        Self { c, max_iter, tol, classes: Vec::new(), coefs: Vec::new(), intercepts: Vec::new(), p: 0 }
+        Self { c, max_iter, tol, fit_intercept: true, classes: Vec::new(), coefs: Vec::new(), intercepts: Vec::new(), p: 0 }
+    }
+
+    pub fn with_fit_intercept(c: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> Self {
+        Self { c, max_iter, tol, fit_intercept, classes: Vec::new(), coefs: Vec::new(), intercepts: Vec::new(), p: 0 }
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) {
@@ -25,16 +30,17 @@ impl LinearSVC {
 
         if self.classes.len() == 2 {
             let labels: Vec<f64> = y.iter().map(|&yi| if yi == self.classes[1] { 1.0 } else { -1.0 }).collect();
-            let (w, b) = train_linear_svm(x, n, p, &labels, self.c, self.max_iter, self.tol);
+            let (w, b) = train_linear_svm(x, n, p, &labels, self.c, self.max_iter, self.tol, self.fit_intercept);
             self.coefs = vec![w];
             self.intercepts = vec![b];
         } else {
             let c = self.c;
             let mi = self.max_iter;
             let tol = self.tol;
+            let fi = self.fit_intercept;
             let results: Vec<(Vec<f64>, f64)> = cls.par_iter().map(|&ci| {
                 let labels: Vec<f64> = y.iter().map(|&yi| if yi == ci { 1.0 } else { -1.0 }).collect();
-                train_linear_svm(x, n, p, &labels, c, mi, tol)
+                train_linear_svm(x, n, p, &labels, c, mi, tol, fi)
             }).collect();
             self.coefs = results.iter().map(|r| r.0.clone()).collect();
             self.intercepts = results.iter().map(|r| r.1).collect();
@@ -92,13 +98,18 @@ pub struct LinearSVR {
     pub epsilon: f64,
     pub max_iter: usize,
     pub tol: f64,
+    pub fit_intercept: bool,
     w: Vec<f64>,
     b: f64,
 }
 
 impl LinearSVR {
     pub fn new(c: f64, epsilon: f64, max_iter: usize, tol: f64) -> Self {
-        Self { c, epsilon, max_iter, tol, w: Vec::new(), b: 0.0 }
+        Self { c, epsilon, max_iter, tol, fit_intercept: true, w: Vec::new(), b: 0.0 }
+    }
+
+    pub fn with_fit_intercept(c: f64, epsilon: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> Self {
+        Self { c, epsilon, max_iter, tol, fit_intercept, w: Vec::new(), b: 0.0 }
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) {
@@ -157,7 +168,7 @@ impl LinearSVR {
                         let d = na - ai;
                         ap[oi] = na;
                         for j in 0..p { unsafe { *w.get_unchecked_mut(j) += d * *xi.get_unchecked(j); } }
-                        b += d;
+                        if self.fit_intercept { b += d; }
                     }
                 }
 
@@ -174,7 +185,7 @@ impl LinearSVR {
                         let d = na - ai;
                         an[oi] = na;
                         for j in 0..p { unsafe { *w.get_unchecked_mut(j) -= d * *xi.get_unchecked(j); } }
-                        b -= d;
+                        if self.fit_intercept { b -= d; }
                     }
                 }
             }
@@ -202,8 +213,8 @@ impl LinearSVR {
     pub fn intercept(&self) -> f64 { self.b }
 }
 
-fn train_linear_svm(x: &[f64], n: usize, p: usize, y: &[f64], c: f64, max_iter: usize, tol: f64) -> (Vec<f64>, f64) {
-    let pb = p + 1;
+fn train_linear_svm(x: &[f64], n: usize, p: usize, y: &[f64], c: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> (Vec<f64>, f64) {
+    let pb = if fit_intercept { p + 1 } else { p };
     let mut w = vec![0.0; pb];
     let mut gnorm_init = 0.0f64;
 
@@ -215,21 +226,21 @@ fn train_linear_svm(x: &[f64], n: usize, p: usize, y: &[f64], c: f64, max_iter: 
                 |(mut g, mut h), i| {
                     let xi = &x[i * p..(i + 1) * p];
                     let yi = y[i];
-                    let mut dp = ww[p];
+                    let mut dp = if fit_intercept { ww[p] } else { 0.0 };
                     for j in 0..p { dp += ww[j] * xi[j]; }
                     let m = yi * dp;
                     if m < 1.0 {
                         let loss = 1.0 - m;
                         let gc = -2.0 * c * loss * yi;
                         for j in 0..p { g[j] += gc * xi[j]; }
-                        g[p] += gc;
+                        if fit_intercept { g[p] += gc; }
                         let hc = 2.0 * c;
                         for j in 0..p {
                             let xj = xi[j] * hc;
                             for k in j..p { h[j * pb + k] += xj * xi[k]; }
-                            h[j * pb + p] += xj;
+                            if fit_intercept { h[j * pb + p] += xj; }
                         }
-                        h[p * pb + p] += hc;
+                        if fit_intercept { h[p * pb + p] += hc; }
                     }
                     (g, h)
                 },
@@ -247,21 +258,21 @@ fn train_linear_svm(x: &[f64], n: usize, p: usize, y: &[f64], c: f64, max_iter: 
             for i in 0..n {
                 let xi = &x[i * p..(i + 1) * p];
                 let yi = y[i];
-                let mut dp = w[p];
+                let mut dp = if fit_intercept { w[p] } else { 0.0 };
                 for j in 0..p { dp += w[j] * xi[j]; }
                 let m = yi * dp;
                 if m < 1.0 {
                     let loss = 1.0 - m;
                     let gc = -2.0 * c * loss * yi;
                     for j in 0..p { g[j] += gc * xi[j]; }
-                    g[p] += gc;
+                    if fit_intercept { g[p] += gc; }
                     let hc = 2.0 * c;
                     for j in 0..p {
                         let xj = xi[j] * hc;
                         for k in j..p { h[j * pb + k] += xj * xi[k]; }
-                        h[j * pb + p] += xj;
+                        if fit_intercept { h[j * pb + p] += xj; }
                     }
-                    h[p * pb + p] += hc;
+                    if fit_intercept { h[p * pb + p] += hc; }
                 }
             }
             (g, h)
@@ -271,7 +282,7 @@ fn train_linear_svm(x: &[f64], n: usize, p: usize, y: &[f64], c: f64, max_iter: 
             grad[j] += w[j];
             hess[j * pb + j] += 1.0;
         }
-        hess[p * pb + p] += 1e-8;
+        if fit_intercept { hess[p * pb + p] += 1e-8; }
         for j in 0..pb { for k in (j + 1)..pb { hess[k * pb + j] = hess[j * pb + k]; } }
 
         let gnorm: f64 = grad.iter().map(|g| g * g).sum::<f64>().sqrt();
@@ -285,7 +296,6 @@ fn train_linear_svm(x: &[f64], n: usize, p: usize, y: &[f64], c: f64, max_iter: 
         }
     }
 
-    let b = w[p];
-    w.truncate(p);
+    let b = if fit_intercept { let bv = w[p]; w.truncate(p); bv } else { w.truncate(p); 0.0 };
     (w, b)
 }

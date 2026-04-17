@@ -22,6 +22,13 @@ pub enum SGDLoss {
     SquaredHinge,
 }
 
+#[derive(Clone, Copy)]
+pub enum SGDRegLoss {
+    SquaredError,
+    Huber,
+    EpsilonInsensitive,
+}
+
 impl SGDClassifier {
     pub fn new(loss: SGDLoss, alpha: f64, max_iter: usize, tol: f64, learning_rate: f64, fit_intercept: bool) -> Self {
         Self {
@@ -40,59 +47,85 @@ impl SGDClassifier {
         let mut w = vec![0.0; p];
         let mut b = 0.0;
         let mut rng = 0xDEADBEEFCAFEu64;
-        let mut indices: Vec<usize> = (0..n).collect();
-        let mut shuf_x = vec![0.0; n * p];
-        let mut shuf_y = vec![0.0; n];
         let alpha_eta0 = self.alpha * self.learning_rate;
         let mut global_t = 0usize;
         let mut best_loss = f64::MAX;
         let mut no_change = 0usize;
+        let use_par = n >= 8192;
+        let block_size = 4096usize.min(n);
+        let n_blocks = (n + block_size - 1) / block_size;
+        let mut block_order: Vec<usize> = (0..n_blocks).collect();
+        let loss_fn = self.loss;
+        let alpha = self.alpha;
 
         for epoch in 0..self.max_iter {
-            for i in (1..n).rev() {
+            for i in (1..n_blocks).rev() {
                 rng ^= rng << 13; rng ^= rng >> 7; rng ^= rng << 17;
                 let j = rng as usize % (i + 1);
-                indices.swap(i, j);
-            }
-            for (si, &idx) in indices.iter().enumerate() {
-                shuf_x[si * p..(si + 1) * p].copy_from_slice(&x[idx * p..(idx + 1) * p]);
-                shuf_y[si] = yf[idx];
+                block_order.swap(i, j);
             }
 
             let eta = self.learning_rate / (1.0 + alpha_eta0 * global_t as f64);
             global_t += n;
             let mut total_loss = 0.0;
 
-            for i in 0..n {
-                let row = &shuf_x[i * p..(i + 1) * p];
-                let z = dot(row, &w) + b;
-                let yi = shuf_y[i];
-
-                let (dloss, loss_val) = match self.loss {
-                    SGDLoss::Hinge => {
-                        let m = yi * z;
-                        if m < 1.0 { (-yi, (1.0 - m).max(0.0)) } else { (0.0, 0.0) }
-                    }
-                    SGDLoss::Log => {
-                        let p = sigmoid(yi * z);
-                        (-yi * (1.0 - p), -(p.max(1e-15).ln()))
-                    }
-                    SGDLoss::ModifiedHuber => {
-                        let m = yi * z;
-                        if m < -1.0 { (-4.0 * yi, (1.0 - m) * (1.0 - m)) }
-                        else if m < 1.0 { (-2.0 * yi * (1.0 - m), (1.0 - m) * (1.0 - m)) }
-                        else { (0.0, 0.0) }
-                    }
-                    SGDLoss::SquaredHinge => {
-                        let m = yi * z;
-                        if m < 1.0 { (-2.0 * yi * (1.0 - m), (1.0 - m) * (1.0 - m)) }
-                        else { (0.0, 0.0) }
-                    }
-                };
-
-                total_loss += loss_val;
-                for j in 0..p { w[j] -= eta * (dloss * row[j] + self.alpha * w[j]); }
-                if self.fit_intercept { b -= eta * dloss; }
+            if use_par {
+                for &bi in &block_order {
+                    let start = bi * block_size;
+                    let end = (start + block_size).min(n);
+                    let bs = end - start;
+                    let w_ref = &w;
+                    let b_val = b;
+                    let chunk_sz = 256usize.max(bs / (rayon::current_num_threads() * 2));
+                    let (gw, gb, bloss) = (start..end).into_par_iter()
+                        .with_min_len(chunk_sz)
+                        .fold(|| (vec![0.0; p], 0.0f64, 0.0f64),
+                            |(mut gw, mut gb, mut loss), idx| {
+                                let row = &x[idx * p..(idx + 1) * p];
+                                let yi = yf[idx];
+                                let z = dot(row, w_ref) + b_val;
+                                let (dl, lv) = match loss_fn {
+                                    SGDLoss::Hinge => { let m = yi * z; if m < 1.0 { (-yi, (1.0 - m).max(0.0)) } else { (0.0, 0.0) } }
+                                    SGDLoss::Log => { let p = sigmoid(yi * z); (-yi * (1.0 - p), -(p.max(1e-15).ln())) }
+                                    SGDLoss::ModifiedHuber => { let m = yi * z; if m < -1.0 { (-4.0 * yi, (1.0 - m) * (1.0 - m)) } else if m < 1.0 { (-2.0 * yi * (1.0 - m), (1.0 - m) * (1.0 - m)) } else { (0.0, 0.0) } }
+                                    SGDLoss::SquaredHinge => { let m = yi * z; if m < 1.0 { (-2.0 * yi * (1.0 - m), (1.0 - m) * (1.0 - m)) } else { (0.0, 0.0) } }
+                                };
+                                for j in 0..p { gw[j] += dl * row[j]; }
+                                gb += dl;
+                                loss += lv;
+                                (gw, gb, loss)
+                            })
+                        .reduce(|| (vec![0.0; p], 0.0, 0.0),
+                            |(mut a, ab, al), (bv, bb, bl)| {
+                                for j in 0..p { a[j] += bv[j]; }
+                                (a, ab + bb, al + bl)
+                            });
+                    total_loss += bloss;
+                    let inv_bs = eta / bs as f64;
+                    for j in 0..p { w[j] -= inv_bs * gw[j] + eta * alpha * w[j]; }
+                    if self.fit_intercept { b -= inv_bs * gb; }
+                }
+            } else {
+                let mut indices: Vec<usize> = (0..n).collect();
+                for i in (1..n).rev() {
+                    rng ^= rng << 13; rng ^= rng >> 7; rng ^= rng << 17;
+                    let j = rng as usize % (i + 1);
+                    indices.swap(i, j);
+                }
+                for &idx in &indices {
+                    let row = &x[idx * p..(idx + 1) * p];
+                    let yi = yf[idx];
+                    let z = dot(row, &w) + b;
+                    let (dloss, loss_val) = match loss_fn {
+                        SGDLoss::Hinge => { let m = yi * z; if m < 1.0 { (-yi, (1.0 - m).max(0.0)) } else { (0.0, 0.0) } }
+                        SGDLoss::Log => { let p = sigmoid(yi * z); (-yi * (1.0 - p), -(p.max(1e-15).ln())) }
+                        SGDLoss::ModifiedHuber => { let m = yi * z; if m < -1.0 { (-4.0 * yi, (1.0 - m) * (1.0 - m)) } else if m < 1.0 { (-2.0 * yi * (1.0 - m), (1.0 - m) * (1.0 - m)) } else { (0.0, 0.0) } }
+                        SGDLoss::SquaredHinge => { let m = yi * z; if m < 1.0 { (-2.0 * yi * (1.0 - m), (1.0 - m) * (1.0 - m)) } else { (0.0, 0.0) } }
+                    };
+                    total_loss += loss_val;
+                    for j in 0..p { w[j] -= eta * (dloss * row[j] + alpha * w[j]); }
+                    if self.fit_intercept { b -= eta * dloss; }
+                }
             }
 
             self.n_iter = epoch + 1;
@@ -147,47 +180,111 @@ pub struct SGDRegressor {
     pub learning_rate: f64,
     pub fit_intercept: bool,
     pub n_iter: usize,
+    pub loss: SGDRegLoss,
+    pub epsilon: f64,
 }
 
 impl SGDRegressor {
     pub fn new(alpha: f64, max_iter: usize, tol: f64, learning_rate: f64, fit_intercept: bool) -> Self {
-        Self { coef: Vec::new(), intercept: 0.0, alpha, max_iter, tol, learning_rate, fit_intercept, n_iter: 0 }
+        Self { coef: Vec::new(), intercept: 0.0, alpha, max_iter, tol, learning_rate, fit_intercept, n_iter: 0, loss: SGDRegLoss::SquaredError, epsilon: 0.1 }
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) {
         let mut w = vec![0.0; p];
         let mut b = 0.0;
         let mut rng = 0xDEADBEEFCAFEu64;
-        let mut indices: Vec<usize> = (0..n).collect();
-        let mut shuf_x = vec![0.0; n * p];
-        let mut shuf_y = vec![0.0; n];
         let alpha_eta0 = self.alpha * self.learning_rate;
         let mut global_t = 0usize;
         let mut best_loss = f64::MAX;
         let mut no_change = 0usize;
+        let use_par = n >= 8192;
+        let block_size = 4096usize.min(n);
+        let n_blocks = (n + block_size - 1) / block_size;
+        let mut block_order: Vec<usize> = (0..n_blocks).collect();
+        let alpha = self.alpha;
+        let loss_fn = self.loss;
+        let epsilon = self.epsilon;
 
         for epoch in 0..self.max_iter {
-            for i in (1..n).rev() {
+            for i in (1..n_blocks).rev() {
                 rng ^= rng << 13; rng ^= rng >> 7; rng ^= rng << 17;
                 let j = rng as usize % (i + 1);
-                indices.swap(i, j);
-            }
-            for (si, &idx) in indices.iter().enumerate() {
-                shuf_x[si * p..(si + 1) * p].copy_from_slice(&x[idx * p..(idx + 1) * p]);
-                shuf_y[si] = y[idx];
+                block_order.swap(i, j);
             }
 
             let eta = self.learning_rate / (1.0 + alpha_eta0 * global_t as f64);
             global_t += n;
             let mut total_loss = 0.0;
 
-            for i in 0..n {
-                let row = &shuf_x[i * p..(i + 1) * p];
-                let pred = dot(row, &w) + b;
-                let err = pred - shuf_y[i];
-                total_loss += err * err;
-                for j in 0..p { w[j] -= eta * (err * row[j] + self.alpha * w[j]); }
-                if self.fit_intercept { b -= eta * err; }
+            if use_par {
+                for &bi in &block_order {
+                    let start = bi * block_size;
+                    let end = (start + block_size).min(n);
+                    let bs = end - start;
+                    let w_ref = &w;
+                    let b_val = b;
+                    let chunk_sz = 256usize.max(bs / (rayon::current_num_threads() * 2));
+                    let (gw, gb, bloss) = (start..end).into_par_iter()
+                        .with_min_len(chunk_sz)
+                        .fold(|| (vec![0.0; p], 0.0f64, 0.0f64),
+                            |(mut gw, mut gb, mut loss), idx| {
+                                let row = &x[idx * p..(idx + 1) * p];
+                                let pred = dot(row, w_ref) + b_val;
+                                let err = pred - y[idx];
+                                let (grad, lv) = match loss_fn {
+                                    SGDRegLoss::SquaredError => (err, err * err),
+                                    SGDRegLoss::Huber => {
+                                        if err.abs() <= epsilon { (err, 0.5 * err * err) }
+                                        else { (epsilon * err.signum(), epsilon * (err.abs() - 0.5 * epsilon)) }
+                                    }
+                                    SGDRegLoss::EpsilonInsensitive => {
+                                        let a = err.abs();
+                                        if a <= epsilon { (0.0, 0.0) }
+                                        else { (err.signum(), a - epsilon) }
+                                    }
+                                };
+                                for j in 0..p { gw[j] += grad * row[j]; }
+                                gb += grad;
+                                loss += lv;
+                                (gw, gb, loss)
+                            })
+                        .reduce(|| (vec![0.0; p], 0.0, 0.0),
+                            |(mut a, ab, al), (bv, bb, bl)| {
+                                for j in 0..p { a[j] += bv[j]; }
+                                (a, ab + bb, al + bl)
+                            });
+                    total_loss += bloss;
+                    let inv_bs = eta / bs as f64;
+                    for j in 0..p { w[j] -= inv_bs * gw[j] + eta * alpha * w[j]; }
+                    if self.fit_intercept { b -= inv_bs * gb; }
+                }
+            } else {
+                let mut indices: Vec<usize> = (0..n).collect();
+                for i in (1..n).rev() {
+                    rng ^= rng << 13; rng ^= rng >> 7; rng ^= rng << 17;
+                    let j = rng as usize % (i + 1);
+                    indices.swap(i, j);
+                }
+                for &idx in &indices {
+                    let row = &x[idx * p..(idx + 1) * p];
+                    let pred = dot(row, &w) + b;
+                    let err = pred - y[idx];
+                    let (grad, lv) = match loss_fn {
+                        SGDRegLoss::SquaredError => (err, err * err),
+                        SGDRegLoss::Huber => {
+                            if err.abs() <= epsilon { (err, 0.5 * err * err) }
+                            else { (epsilon * err.signum(), epsilon * (err.abs() - 0.5 * epsilon)) }
+                        }
+                        SGDRegLoss::EpsilonInsensitive => {
+                            let a = err.abs();
+                            if a <= epsilon { (0.0, 0.0) }
+                            else { (err.signum(), a - epsilon) }
+                        }
+                    };
+                    total_loss += lv;
+                    for j in 0..p { w[j] -= eta * (grad * row[j] + alpha * w[j]); }
+                    if self.fit_intercept { b -= eta * grad; }
+                }
             }
 
             self.n_iter = epoch + 1;

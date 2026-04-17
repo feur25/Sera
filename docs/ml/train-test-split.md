@@ -1,5 +1,7 @@
 # train_test_split
 
+<div class="lang-en">
+
 ## Signature
 
 ```python
@@ -24,9 +26,29 @@ Splits data into training and test sets using a Fisher-Yates shuffle seeded by `
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `x` | `ndarray (n, p)` | — | Feature matrix |
-| `y` | `ndarray (n,)` | — | Target vector (float) |
+| `y` | `ndarray (n,)` | — | Target vector |
 | `test_size` | `float` | `0.2` | Fraction of data in the test set |
 | `random_state` | `int` | `42` | Random seed |
+
+</div>
+
+<div class="lang-fr">
+
+## Description
+
+Divise les données en ensembles d'entraînement et de test via un mélange Fisher-Yates seeded par `random_state` (PRNG splitmix64). Déterministe pour la même graine.
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Description |
+|-----------|------|--------|-------------|
+| `x` | `ndarray (n, p)` | — | Matrice des variables |
+| `y` | `ndarray (n,)` | — | Vecteur cible |
+| `test_size` | `float` | `0.2` | Fraction des données pour le test |
+| `random_state` | `int` | `42` | Graine aléatoire |
+
+</div>
+
 
 ---
 
