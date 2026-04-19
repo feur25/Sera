@@ -165,6 +165,16 @@ impl GradientBoostingRegressor {
     }
 }
 
+impl crate::ml::MlClassifier for GradientBoostingClassifier {
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) { self.fit(x, n, p, y); }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> { self.predict(x, n, p) }
+}
+
+impl crate::ml::MlRegressor for GradientBoostingRegressor {
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) { self.fit(x, n, p, y); }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> { self.predict(x, n, p) }
+}
+
 fn softmax_rows(scores: &[f64], n: usize, k: usize) -> Vec<f64> {
     let mut out = vec![0.0; n * k];
     for i in 0..n {

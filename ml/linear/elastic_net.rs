@@ -17,9 +17,7 @@ impl ElasticNet {
         Self { coef: Vec::new(), intercept: 0.0, alpha, l1_ratio, max_iter, tol, fit_intercept, n_iter: 0 }
     }
 
-    pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) {
-        self.fit_resumable(x, n, p, y, None);
-    }
+    pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) { self.fit_resumable(x, n, p, y, None); }
 
     pub fn fit_resumable(&mut self, x: &[f64], n: usize, p: usize, y: &[f64], checkpoint_id: Option<u64>) {
         let l1 = self.alpha * self.l1_ratio;
@@ -126,4 +124,9 @@ impl ElasticNet {
         for v in out.iter_mut() { *v += b; }
         out
     }
+}
+
+impl crate::ml::MlRegressor for ElasticNet {
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) { self.fit(x, n, p, y); }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> { self.predict(x, n, p) }
 }

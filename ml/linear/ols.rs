@@ -117,6 +117,12 @@ impl LinearRegression {
     }
 }
 
+impl crate::ml::MlRegressor for LinearRegression {
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) { self.fit(x, n, p, y); }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> { self.predict(x, n, p) }
+    fn score(&self, x: &[f64], n: usize, p: usize, y: &[f64]) -> f64 { self.score(x, n, p, y) }
+}
+
 fn solve_normal(x: &[f64], n: usize, p: usize, y: &[f64]) -> Vec<f64> {
     if n >= p * 4 {
         let mut ata = vec![0.0; p * p];

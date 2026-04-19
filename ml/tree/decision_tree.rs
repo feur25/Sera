@@ -676,6 +676,16 @@ impl DecisionTreeRegressor {
     }
 }
 
+impl crate::ml::MlClassifier for DecisionTreeClassifier {
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) { self.fit(x, n, p, y); }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> { self.predict(x, n, p) }
+}
+
+impl crate::ml::MlRegressor for DecisionTreeRegressor {
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) { self.fit(x, n, p, y); }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> { self.predict(x, n, p) }
+}
+
 #[inline(always)]
 fn gini_from_counts(cnts: &[u32], n: usize) -> f64 {
     let inv = 1.0 / n as f64;

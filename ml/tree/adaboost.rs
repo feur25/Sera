@@ -384,3 +384,13 @@ impl AdaBoostRegressor {
         }
     }
 }
+
+impl crate::ml::MlClassifier for AdaBoostClassifier {
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) { self.fit(x, n, p, y); }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> { self.predict(x, n, p) }
+}
+
+impl crate::ml::MlRegressor for AdaBoostRegressor {
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) { self.fit(x, n, p, y); }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> { self.predict(x, n, p) }
+}

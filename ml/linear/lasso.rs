@@ -18,3 +18,8 @@ impl Lasso {
     pub fn alpha(&self) -> f64 { self.inner.alpha }
     pub fn n_iter(&self) -> usize { self.inner.n_iter }
 }
+
+impl crate::ml::MlRegressor for Lasso {
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) { self.fit(x, n, p, y); }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> { self.predict(x, n, p) }
+}
