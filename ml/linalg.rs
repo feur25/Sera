@@ -1,6 +1,6 @@
 use rayon::prelude::*;
 
-const PAR_THRESHOLD: usize = 10_000;
+const PAR_THRESHOLD: usize = 16_384;
 
 #[inline(always)]
 pub fn splitmix64(state: u64) -> u64 {
@@ -14,16 +14,21 @@ pub fn splitmix64(state: u64) -> u64 {
 pub fn dot(a: &[f64], b: &[f64]) -> f64 {
     let n = a.len().min(b.len());
     let (mut s0, mut s1, mut s2, mut s3) = (0.0, 0.0, 0.0, 0.0);
+    let (mut s4, mut s5, mut s6, mut s7) = (0.0, 0.0, 0.0, 0.0);
     let mut i = 0;
-    while i + 4 <= n {
+    while i + 8 <= n {
         s0 += a[i] * b[i];
         s1 += a[i + 1] * b[i + 1];
         s2 += a[i + 2] * b[i + 2];
         s3 += a[i + 3] * b[i + 3];
-        i += 4;
+        s4 += a[i + 4] * b[i + 4];
+        s5 += a[i + 5] * b[i + 5];
+        s6 += a[i + 6] * b[i + 6];
+        s7 += a[i + 7] * b[i + 7];
+        i += 8;
     }
     while i < n { s0 += a[i] * b[i]; i += 1; }
-    s0 + s1 + s2 + s3
+    (s0 + s1 + s2 + s3) + (s4 + s5 + s6 + s7)
 }
 
 pub fn mat_vec(a: &[f64], rows: usize, cols: usize, x: &[f64], out: &mut [f64]) {

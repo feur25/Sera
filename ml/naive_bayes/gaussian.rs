@@ -26,53 +26,34 @@ impl GaussianNB {
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) {
         self.p = p;
-        let mut cls = y.to_vec();
-        cls.sort_unstable();
-        cls.dedup();
-        self.classes = cls;
+        let classes = crate::ml::linalg::discover_classes(y);
+        self.classes = classes;
         let k = self.classes.len();
         let kp = k * p;
 
-        let class_map: Vec<usize> = y.iter().map(|&v| self.classes.iter().position(|&c| c == v).unwrap()).collect();
+        let cmin = *self.classes.iter().min().unwrap();
+        let cmax = *self.classes.iter().max().unwrap();
+        let crange = (cmax - cmin + 1) as usize;
+        let mut cmap = vec![0u8; crange];
+        for (i, &c) in self.classes.iter().enumerate() { cmap[(c - cmin) as usize] = i as u8; }
 
-        let chunk = 4096usize;
-        let (sums, sq_sums, counts) = if n >= 8192 {
-            let nc = (n + chunk - 1) / chunk;
-            (0..nc).into_par_iter().fold(
-                || (vec![0.0f64; kp], vec![0.0f64; kp], vec![0usize; k]),
-                |(mut s, mut sq, mut cnt), ci| {
-                    let start = ci * chunk;
-                    let end = (start + chunk).min(n);
-                    for i in start..end {
-                        let c = class_map[i];
-                        cnt[c] += 1;
-                        for j in 0..p {
-                            let v = x[i * p + j];
-                            s[c * p + j] += v;
-                            sq[c * p + j] += v * v;
-                        }
-                    }
-                    (s, sq, cnt)
-                }
-            ).reduce(
-                || (vec![0.0f64; kp], vec![0.0f64; kp], vec![0usize; k]),
-                |(mut a, mut b, mut c), (a2, b2, c2)| {
-                    for i in 0..kp { a[i] += a2[i]; b[i] += b2[i]; }
-                    for i in 0..k { c[i] += c2[i]; }
-                    (a, b, c)
-                }
-            )
-        } else {
-            let mut s = vec![0.0f64; kp];
-            let mut sq = vec![0.0f64; kp];
-            let mut cnt = vec![0usize; k];
-            for i in 0..n {
-                let c = class_map[i];
-                cnt[c] += 1;
-                for j in 0..p { let v = x[i * p + j]; s[c * p + j] += v; sq[c * p + j] += v * v; }
+        let mut sums = vec![0.0f64; kp];
+        let mut sq_sums = vec![0.0f64; kp];
+        let mut counts = vec![0usize; k];
+        for i in 0..n {
+            let c = cmap[(y[i] - cmin) as usize] as usize;
+            counts[c] += 1;
+            let row = &x[i * p..(i + 1) * p];
+            let base = c * p;
+            let mut j = 0;
+            while j + 4 <= p {
+                let v0 = row[j]; let v1 = row[j+1]; let v2 = row[j+2]; let v3 = row[j+3];
+                sums[base+j] += v0; sums[base+j+1] += v1; sums[base+j+2] += v2; sums[base+j+3] += v3;
+                sq_sums[base+j] += v0*v0; sq_sums[base+j+1] += v1*v1; sq_sums[base+j+2] += v2*v2; sq_sums[base+j+3] += v3*v3;
+                j += 4;
             }
-            (s, sq, cnt)
-        };
+            while j < p { let v = row[j]; sums[base+j] += v; sq_sums[base+j] += v*v; j += 1; }
+        }
 
         self.means = vec![0.0; kp];
         self.vars = vec![0.0; kp];

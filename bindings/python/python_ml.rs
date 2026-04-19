@@ -182,10 +182,11 @@ impl PyLasso {
         Self { inner: crate::ml::linear::lasso::Lasso::new(alpha, max_iter, tol, fit_intercept) }
     }
 
-    fn fit(&mut self, x: &PyAny, y: &PyAny) -> PyResult<()> {
+    #[pyo3(signature = (x, y, checkpoint_id=None))]
+    fn fit(&mut self, x: &PyAny, y: &PyAny, checkpoint_id: Option<u64>) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
         let yt = extract_targets(y)?;
-        self.inner.fit(&xf, n, p, &yt);
+        self.inner.fit_resumable(&xf, n, p, &yt, checkpoint_id);
         Ok(())
     }
 
@@ -224,10 +225,11 @@ impl PyElasticNet {
         Self { inner: crate::ml::linear::elastic_net::ElasticNet::new(alpha, l1_ratio, max_iter, tol, fit_intercept) }
     }
 
-    fn fit(&mut self, x: &PyAny, y: &PyAny) -> PyResult<()> {
+    #[pyo3(signature = (x, y, checkpoint_id=None))]
+    fn fit(&mut self, x: &PyAny, y: &PyAny, checkpoint_id: Option<u64>) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
         let yt = extract_targets(y)?;
-        self.inner.fit(&xf, n, p, &yt);
+        self.inner.fit_resumable(&xf, n, p, &yt, checkpoint_id);
         Ok(())
     }
 
@@ -270,10 +272,11 @@ impl PyLogisticRegression {
         Self { inner: crate::ml::linear::logistic::LogisticRegression::new(c, max_iter, tol, fit_intercept) }
     }
 
-    fn fit(&mut self, x: &PyAny, y: &PyAny) -> PyResult<()> {
+    #[pyo3(signature = (x, y, checkpoint_id=None))]
+    fn fit(&mut self, x: &PyAny, y: &PyAny, checkpoint_id: Option<u64>) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
         let yl = extract_labels(y)?;
-        self.inner.fit(&xf, n, p, &yl);
+        self.inner.fit_resumable(&xf, n, p, &yl, checkpoint_id);
         Ok(())
     }
 
@@ -339,10 +342,11 @@ impl PySGDClassifier {
         Self { inner: crate::ml::linear::sgd::SGDClassifier::new(l, alpha, max_iter, tol, eta0, fit_intercept) }
     }
 
-    fn fit(&mut self, x: &PyAny, y: &PyAny) -> PyResult<()> {
+    #[pyo3(signature = (x, y, checkpoint_id=None))]
+    fn fit(&mut self, x: &PyAny, y: &PyAny, checkpoint_id: Option<u64>) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
         let yl = extract_labels(y)?;
-        self.inner.fit(&xf, n, p, &yl);
+        self.inner.fit_resumable(&xf, n, p, &yl, checkpoint_id);
         Ok(())
     }
 
@@ -407,10 +411,11 @@ impl PySGDRegressor {
         Self { inner }
     }
 
-    fn fit(&mut self, x: &PyAny, y: &PyAny) -> PyResult<()> {
+    #[pyo3(signature = (x, y, checkpoint_id=None))]
+    fn fit(&mut self, x: &PyAny, y: &PyAny, checkpoint_id: Option<u64>) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
         let yt = extract_targets(y)?;
-        self.inner.fit(&xf, n, p, &yt);
+        self.inner.fit_resumable(&xf, n, p, &yt, checkpoint_id);
         Ok(())
     }
 
@@ -1528,6 +1533,111 @@ pub fn classification_report(y_true: Vec<i32>, y_pred: Vec<i32>) -> String {
 
 #[cfg(feature = "python")]
 #[pyfunction]
+#[pyo3(signature = (y_true, y_pred, average="weighted"))]
+pub fn f1_score(y_true: Vec<i32>, y_pred: Vec<i32>, average: &str) -> f64 {
+    let avg = match average {
+        "macro" => crate::ml::metrics::classification::Average::Macro,
+        "weighted" => crate::ml::metrics::classification::Average::Weighted,
+        _ => {
+            let classes = {
+                let mut c: Vec<i32> = y_true.iter().chain(y_pred.iter()).copied().collect();
+                c.sort_unstable(); c.dedup(); c
+            };
+            crate::ml::metrics::classification::Average::Binary(*classes.last().unwrap_or(&1))
+        }
+    };
+    crate::ml::metrics::classification::f1_score(&y_true, &y_pred, avg)
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred, average="weighted"))]
+pub fn precision_score(y_true: Vec<i32>, y_pred: Vec<i32>, average: &str) -> f64 {
+    let avg = match average {
+        "macro" => crate::ml::metrics::classification::Average::Macro,
+        "weighted" => crate::ml::metrics::classification::Average::Weighted,
+        _ => {
+            let classes = {
+                let mut c: Vec<i32> = y_true.iter().chain(y_pred.iter()).copied().collect();
+                c.sort_unstable(); c.dedup(); c
+            };
+            crate::ml::metrics::classification::Average::Binary(*classes.last().unwrap_or(&1))
+        }
+    };
+    crate::ml::metrics::classification::precision_score(&y_true, &y_pred, avg)
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred, average="weighted"))]
+pub fn recall_score(y_true: Vec<i32>, y_pred: Vec<i32>, average: &str) -> f64 {
+    let avg = match average {
+        "macro" => crate::ml::metrics::classification::Average::Macro,
+        "weighted" => crate::ml::metrics::classification::Average::Weighted,
+        _ => {
+            let classes = {
+                let mut c: Vec<i32> = y_true.iter().chain(y_pred.iter()).copied().collect();
+                c.sort_unstable(); c.dedup(); c
+            };
+            crate::ml::metrics::classification::Average::Binary(*classes.last().unwrap_or(&1))
+        }
+    };
+    crate::ml::metrics::classification::recall_score(&y_true, &y_pred, avg)
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred))]
+pub fn confusion_matrix(y_true: Vec<i32>, y_pred: Vec<i32>) -> (Vec<i32>, Vec<usize>) {
+    crate::ml::metrics::classification::confusion_matrix(&y_true, &y_pred)
+}
+
+#[cfg(feature = "python")]
+#[pyclass(module = "seraplot", name = "LabelEncoder")]
+pub struct PyLabelEncoder {
+    inner: crate::ml::preprocessing::encoders::LabelEncoder,
+}
+
+#[cfg(feature = "python")]
+#[pymethods]
+impl PyLabelEncoder {
+    #[new]
+    fn py_new() -> Self {
+        Self { inner: crate::ml::preprocessing::encoders::LabelEncoder::new() }
+    }
+
+    fn fit(&mut self, y: Vec<String>) {
+        self.inner.fit(&y);
+    }
+
+    fn transform(&self, y: Vec<String>) -> Vec<i32> {
+        self.inner.transform(&y)
+    }
+
+    fn fit_transform(&mut self, py: Python<'_>, y: &PyAny) -> PyResult<PyObject> {
+        use pyo3::types::PyDict;
+        let np = py.import("numpy")?;
+        let kw = PyDict::new(py);
+        kw.set_item("return_inverse", true)?;
+        let result: &PyAny = np.call_method("unique", (y,), Some(kw))?;
+        let unique: Vec<String> = result.get_item(0)?.call_method0("tolist")?.extract()?;
+        self.inner.fit(&unique);
+        let inv_any: &PyAny = result.get_item(1)?;
+        Ok(inv_any.call_method1("astype", (np.getattr("int32")?,))?.into_py(py))
+    }
+
+    fn inverse_transform(&self, y: Vec<i32>) -> Vec<String> {
+        self.inner.inverse_transform(&y)
+    }
+
+    #[getter]
+    fn classes_(&self) -> Vec<String> { self.inner.classes.clone() }
+
+    fn __repr__(&self) -> String { "LabelEncoder()".to_string() }
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
 #[pyo3(signature = (x, y, test_size=0.2, random_state=42))]
 pub fn train_test_split(py: Python<'_>, x: &PyAny, y: &PyAny, test_size: f64, random_state: u64) -> PyResult<(PyObject, PyObject, Vec<f64>, Vec<f64>)> {
     let (xf, n, p) = extract_flat(x)?;
@@ -1654,6 +1764,114 @@ impl PyNormalizer {
 }
 
 #[cfg(feature = "python")]
+#[pyclass(module = "seraplot", name = "StratifiedKFold")]
+pub struct PyStratifiedKFold {
+    n_splits: usize,
+    shuffle: bool,
+    random_state: u64,
+}
+
+#[cfg(feature = "python")]
+#[pymethods]
+impl PyStratifiedKFold {
+    #[new]
+    #[pyo3(signature = (n_splits=5, shuffle=false, random_state=0))]
+    fn py_new(n_splits: usize, shuffle: bool, random_state: u64) -> Self {
+        Self { n_splits, shuffle, random_state }
+    }
+
+    fn split(&self, _x: &PyAny, y: &PyAny) -> PyResult<Vec<(Vec<usize>, Vec<usize>)>> {
+        let yl = extract_labels(y)?;
+        let n = yl.len();
+        let k = self.n_splits;
+        let mut classes: Vec<i32> = yl.clone();
+        classes.sort_unstable();
+        classes.dedup();
+        let mut class_indices: Vec<Vec<usize>> = classes.iter().map(|&c| {
+            yl.iter().enumerate().filter(|(_, &v)| v == c).map(|(i, _)| i).collect()
+        }).collect();
+        if self.shuffle {
+            let mut rng = if self.random_state == 0 { 0xDEADBEEFCAFEu64 } else { self.random_state };
+            for indices in &mut class_indices {
+                for i in (1..indices.len()).rev() {
+                    rng ^= rng << 13; rng ^= rng >> 7; rng ^= rng << 17;
+                    let j = rng as usize % (i + 1);
+                    indices.swap(i, j);
+                }
+            }
+        }
+        let mut folds: Vec<Vec<usize>> = (0..k).map(|_| Vec::new()).collect();
+        for indices in &class_indices {
+            for (i, &idx) in indices.iter().enumerate() {
+                folds[i % k].push(idx);
+            }
+        }
+        let result: Vec<(Vec<usize>, Vec<usize>)> = (0..k).map(|fold_i| {
+            let test_idx: Vec<usize> = folds[fold_i].clone();
+            let mut train_idx: Vec<usize> = (0..k)
+                .filter(|&fi| fi != fold_i)
+                .flat_map(|fi| folds[fi].iter().copied())
+                .collect();
+            train_idx.sort_unstable();
+            (train_idx, test_idx)
+        }).collect();
+        Ok(result)
+    }
+
+    fn get_n_splits(&self, _x: Option<&PyAny>, _y: Option<&PyAny>, _groups: Option<&PyAny>) -> usize {
+        self.n_splits
+    }
+
+    #[getter] fn n_splits_(&self) -> usize { self.n_splits }
+    #[getter] fn shuffle_(&self) -> bool { self.shuffle }
+    #[getter] fn random_state_(&self) -> u64 { self.random_state }
+
+    fn __repr__(&self) -> String { format!("StratifiedKFold(n_splits={})", self.n_splits) }
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (x, y, folds, c=1.0, max_iter=1000, tol=1e-4, fit_intercept=true))]
+pub fn parallel_cv_cls(x: &PyAny, y: &PyAny, folds: Vec<(Vec<usize>, Vec<usize>)>, c: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> PyResult<Vec<f64>> {
+    use rayon::prelude::*;
+    let (xf, _n, p) = extract_flat(x)?;
+    let yl = extract_labels(y)?;
+    let scores: Vec<f64> = folds.into_par_iter().map(|(train_idx, test_idx)| {
+        let n_tr = train_idx.len();
+        let n_te = test_idx.len();
+        let mut x_tr = vec![0.0f64; n_tr * p];
+        let mut y_tr = vec![0i32; n_tr];
+        let mut x_te = vec![0.0f64; n_te * p];
+        let mut y_te = vec![0i32; n_te];
+        for (i, &idx) in train_idx.iter().enumerate() {
+            x_tr[i * p..(i + 1) * p].copy_from_slice(&xf[idx * p..(idx + 1) * p]);
+            y_tr[i] = yl[idx];
+        }
+        for (i, &idx) in test_idx.iter().enumerate() {
+            x_te[i * p..(i + 1) * p].copy_from_slice(&xf[idx * p..(idx + 1) * p]);
+            y_te[i] = yl[idx];
+        }
+        let mut lr = crate::ml::linear::logistic::LogisticRegression::new(c, max_iter, tol, fit_intercept);
+        lr.fit(&x_tr, n_tr, p, &y_tr);
+        let preds = lr.predict(&x_te, n_te, p);
+        crate::ml::metrics::classification::accuracy_score(&y_te, &preds)
+    }).collect();
+    Ok(scores)
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+pub fn ml_checkpoint_clear(id: u64) {
+    crate::ml::cache::checkpoint_clear(id);
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+pub fn ml_checkpoint_list() -> Vec<u64> {
+    crate::ml::cache::checkpoint_list()
+}
+
+#[cfg(feature = "python")]
 pub fn register_ml_classes(m: &PyModule) -> PyResult<()> {
     m.add_class::<PyLinearRegression>()?;
     m.add_class::<PyRidge>()?;
@@ -1687,17 +1905,28 @@ pub fn register_ml_classes(m: &PyModule) -> PyResult<()> {
     m.add_class::<PyMaxAbsScaler>()?;
     m.add_class::<PyNormalizer>()?;
 
+    m.add_class::<PyLabelEncoder>()?;
+
     m.add_class::<PyPCA>()?;
     m.add_class::<PyTruncatedSVD>()?;
+
+    m.add_class::<PyStratifiedKFold>()?;
 
     m.add_function(wrap_pyfunction!(accuracy_score, m)?)?;
     m.add_function(wrap_pyfunction!(mean_squared_error, m)?)?;
     m.add_function(wrap_pyfunction!(mean_absolute_error, m)?)?;
     m.add_function(wrap_pyfunction!(r2_score, m)?)?;
     m.add_function(wrap_pyfunction!(classification_report, m)?)?;
+    m.add_function(wrap_pyfunction!(f1_score, m)?)?;
+    m.add_function(wrap_pyfunction!(precision_score, m)?)?;
+    m.add_function(wrap_pyfunction!(recall_score, m)?)?;
+    m.add_function(wrap_pyfunction!(confusion_matrix, m)?)?;
     m.add_function(wrap_pyfunction!(train_test_split, m)?)?;
 
     m.add_function(wrap_pyfunction!(ml_registry, m)?)?;
+    m.add_function(wrap_pyfunction!(parallel_cv_cls, m)?)?;
+    m.add_function(wrap_pyfunction!(ml_checkpoint_clear, m)?)?;
+    m.add_function(wrap_pyfunction!(ml_checkpoint_list, m)?)?;
 
     Ok(())
 }
@@ -1720,16 +1949,18 @@ fn ml_registry(py: Python<'_>) -> PyResult<PyObject> {
     ];
     let preprocessing: Vec<&str> = vec![
         "StandardScaler", "MinMaxScaler", "RobustScaler", "MaxAbsScaler", "Normalizer",
+        "LabelEncoder",
     ];
     let dimensionality_reduction: Vec<&str> = vec![
         "PCA", "TruncatedSVD",
     ];
     let model_selection: Vec<&str> = vec![
-        "train_test_split",
+        "train_test_split", "StratifiedKFold",
     ];
     let metrics: Vec<&str> = vec![
         "accuracy_score", "mean_squared_error", "mean_absolute_error",
-        "r2_score", "classification_report",
+        "r2_score", "f1_score", "precision_score", "recall_score",
+        "confusion_matrix", "classification_report",
     ];
 
     dict.set_item("regression", regression)?;

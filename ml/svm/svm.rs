@@ -30,7 +30,7 @@ impl LinearSVC {
 
         if self.classes.len() == 2 {
             let labels: Vec<f64> = y.iter().map(|&yi| if yi == self.classes[1] { 1.0 } else { -1.0 }).collect();
-            let (w, b) = train_linear_svm(x, n, p, &labels, self.c, self.max_iter, self.tol, self.fit_intercept);
+            let (w, b) = train_linear_svm(x, n, p, &labels, self.c, self.max_iter, self.tol, self.fit_intercept, true);
             self.coefs = vec![w];
             self.intercepts = vec![b];
         } else {
@@ -40,7 +40,7 @@ impl LinearSVC {
             let fi = self.fit_intercept;
             let results: Vec<(Vec<f64>, f64)> = cls.par_iter().map(|&ci| {
                 let labels: Vec<f64> = y.iter().map(|&yi| if yi == ci { 1.0 } else { -1.0 }).collect();
-                train_linear_svm(x, n, p, &labels, c, mi, tol, fi)
+                train_linear_svm(x, n, p, &labels, c, mi, tol, fi, false)
             }).collect();
             self.coefs = results.iter().map(|r| r.0.clone()).collect();
             self.intercepts = results.iter().map(|r| r.1).collect();
@@ -213,13 +213,13 @@ impl LinearSVR {
     pub fn intercept(&self) -> f64 { self.b }
 }
 
-fn train_linear_svm(x: &[f64], n: usize, p: usize, y: &[f64], c: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> (Vec<f64>, f64) {
+fn train_linear_svm(x: &[f64], n: usize, p: usize, y: &[f64], c: f64, max_iter: usize, tol: f64, fit_intercept: bool, parallel_inner: bool) -> (Vec<f64>, f64) {
     let pb = if fit_intercept { p + 1 } else { p };
     let mut w = vec![0.0; pb];
     let mut gnorm_init = 0.0f64;
 
     for iter in 0..max_iter.min(100) {
-        let (mut grad, mut hess) = if n >= 4096 {
+        let (mut grad, mut hess) = if parallel_inner && n >= 4096 {
             let ww = &w;
             (0..n).into_par_iter().fold(
                 || (vec![0.0; pb], vec![0.0; pb * pb]),

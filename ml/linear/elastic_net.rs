@@ -18,6 +18,10 @@ impl ElasticNet {
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) {
+        self.fit_resumable(x, n, p, y, None);
+    }
+
+    pub fn fit_resumable(&mut self, x: &[f64], n: usize, p: usize, y: &[f64], checkpoint_id: Option<u64>) {
         let l1 = self.alpha * self.l1_ratio;
         let l2 = self.alpha * (1.0 - self.l1_ratio);
         let inv_n = 1.0 / n as f64;
@@ -68,9 +72,15 @@ impl ElasticNet {
         }).collect();
 
         let mut w = vec![0.0; p];
+        let start_iter = if let Some(id) = checkpoint_id {
+            if let Some(entry) = crate::ml::cache::checkpoint_load(id) {
+                if entry.weights.len() == p { w.copy_from_slice(&entry.weights); }
+                entry.iteration.min(self.max_iter)
+            } else { 0 }
+        } else { 0 };
         let mut r = yw;
 
-        for iter in 0..self.max_iter {
+        for iter in start_iter..self.max_iter {
             let mut max_change = 0.0f64;
             for j in 0..p {
                 if xj_sq[j] < 1e-15 { continue; }
@@ -94,7 +104,11 @@ impl ElasticNet {
             }
             self.n_iter = iter + 1;
             if max_change < self.tol { break; }
+            if let Some(id) = checkpoint_id {
+                if (iter + 1) % 20 == 0 { crate::ml::cache::checkpoint_save(id, &w, iter + 1); }
+            }
         }
+        if let Some(id) = checkpoint_id { crate::ml::cache::checkpoint_clear(id); }
 
         if self.fit_intercept {
             self.coef = (0..p).map(|j| w[j] / stds[j]).collect();

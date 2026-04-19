@@ -10,6 +10,7 @@ impl Lasso {
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) { self.inner.fit(x, n, p, y); }
+    pub fn fit_resumable(&mut self, x: &[f64], n: usize, p: usize, y: &[f64], checkpoint_id: Option<u64>) { self.inner.fit_resumable(x, n, p, y, checkpoint_id); }
     pub fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> { self.inner.predict(x, n, p) }
 
     pub fn coef(&self) -> &[f64] { &self.inner.coef }

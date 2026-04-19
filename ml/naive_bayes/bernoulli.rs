@@ -28,7 +28,12 @@ impl BernoulliNB {
         let kp = k * p;
         let binarize = self.binarize;
 
-        let class_map: Vec<usize> = y.iter().map(|&v| self.classes.iter().position(|&c| c == v).unwrap()).collect();
+        let cmin = *self.classes.iter().min().unwrap();
+        let cmax = *self.classes.iter().max().unwrap();
+        let crange = (cmax - cmin + 1) as usize;
+        let mut cmap = vec![0u8; crange];
+        for (i, &c) in self.classes.iter().enumerate() { cmap[(c - cmin) as usize] = i as u8; }
+        let class_map: Vec<usize> = y.iter().map(|&v| cmap[(v - cmin) as usize] as usize).collect();
 
         let chunk = 4096usize;
         let (feature_counts_f, class_counts_v) = if n >= 8192 {

@@ -1,9 +1,4 @@
 use rayon::prelude::*;
-use std::cell::RefCell;
-
-thread_local! {
-    static KNN_BUF: RefCell<Vec<(f64, u32)>> = RefCell::new(Vec::new());
-}
 
 #[inline(always)]
 fn dist_sq(a: &[f64], b: &[f64], p: usize) -> f64 {
@@ -37,6 +32,7 @@ struct BallTree {
     nodes: Vec<BtNode>,
     centers: Vec<f64>,
     perm: Vec<u32>,
+    perm_data: Vec<f64>,
     p: usize,
 }
 
@@ -47,7 +43,11 @@ impl BallTree {
         let mut nodes = Vec::with_capacity(est);
         let mut centers = Vec::with_capacity(est * p);
         Self::build_rec(data, &mut perm, 0, n, p, &mut nodes, &mut centers);
-        BallTree { nodes, centers, perm, p }
+        let mut perm_data = vec![0.0f64; n * p];
+        for (i, &idx) in perm.iter().enumerate() {
+            perm_data[i * p..(i + 1) * p].copy_from_slice(&data[idx as usize * p..(idx as usize + 1) * p]);
+        }
+        BallTree { nodes, centers, perm, perm_data, p }
     }
 
     fn build_rec(data: &[f64], perm: &mut [u32], s: usize, e: usize, p: usize, nodes: &mut Vec<BtNode>, centers: &mut Vec<f64>) -> u32 {
@@ -97,31 +97,30 @@ impl BallTree {
     }
 
     #[inline]
-    fn query_k(&self, data: &[f64], q: &[f64], k: usize, heap: &mut Vec<(f64, u32)>) {
+    fn query_k(&self, q: &[f64], k: usize, heap: &mut Vec<(f64, u32)>) {
         heap.clear();
-        self.query_rec(data, q, 0, k, heap);
+        self.query_rec(q, 0, k, heap);
     }
 
-    fn query_rec(&self, data: &[f64], q: &[f64], ni: u32, k: usize, heap: &mut Vec<(f64, u32)>) {
+    fn query_rec(&self, q: &[f64], ni: u32, k: usize, heap: &mut Vec<(f64, u32)>) {
         let node = &self.nodes[ni as usize];
         let p = self.p;
         let co = ni as usize * p;
         let mut dc = 0.0;
         for j in 0..p { let d = q[j] - self.centers[co + j]; dc += d * d; }
-        let dc_sqrt = dc.sqrt();
-        let closest = (dc_sqrt - node.radius).max(0.0);
-        if heap.len() >= k && closest * closest >= heap[0].0 {
-            return;
+        if heap.len() >= k {
+            let bound = heap[0].0.sqrt() + node.radius;
+            if dc >= bound * bound { return; }
         }
         if node.left == u32::MAX {
             for i in node.start..node.end {
-                let idx = self.perm[i as usize];
-                let d = dist_sq(q, &data[idx as usize * p..(idx as usize + 1) * p], p);
+                let i_us = i as usize;
+                let d = dist_sq(q, unsafe { self.perm_data.get_unchecked(i_us * p..(i_us + 1) * p) }, p);
                 if heap.len() < k {
-                    heap.push((d, idx));
+                    heap.push((d, i));
                     if heap.len() == k { heap_build(heap); }
                 } else if d < heap[0].0 {
-                    heap[0] = (d, idx);
+                    heap[0] = (d, i);
                     heap_sift_down(heap, 0);
                 }
             }
@@ -136,11 +135,11 @@ impl BallTree {
             let rd = q[j] - self.centers[rco + j]; dr += rd * rd;
         }
         if dl <= dr {
-            self.query_rec(data, q, node.left, k, heap);
-            self.query_rec(data, q, node.right, k, heap);
+            self.query_rec(q, node.left, k, heap);
+            self.query_rec(q, node.right, k, heap);
         } else {
-            self.query_rec(data, q, node.right, k, heap);
-            self.query_rec(data, q, node.left, k, heap);
+            self.query_rec(q, node.right, k, heap);
+            self.query_rec(q, node.left, k, heap);
         }
     }
 }
@@ -211,30 +210,28 @@ impl KNeighborsClassifier {
         if let Some(ref tree) = self.tree {
             let predict_one = |i: usize| -> i32 {
                 let xi = &x[i * p..(i + 1) * p];
-                KNN_BUF.with(|buf| {
-                    let mut buf = buf.borrow_mut();
-                    tree.query_k(&self.data, xi, k, &mut buf);
-                    if use_dist {
-                        let mut wts = [0.0f64; 256];
-                        for &(d, idx) in buf.iter() {
-                            let dist = d.sqrt().max(1e-10);
-                            wts[self.label_idx[idx as usize] as usize] += 1.0 / dist;
-                        }
-                        let mut best = 0;
-                        let mut best_w = 0.0;
-                        for c in 0..nc { if wts[c] > best_w { best_w = wts[c]; best = c; } }
-                        self.classes[best]
-                    } else {
-                        let mut counts = [0u32; 256];
-                        for &(_, idx) in buf.iter() {
-                            counts[self.label_idx[idx as usize] as usize] += 1;
-                        }
-                        let mut best = 0;
-                        let mut best_c = 0u32;
-                        for c in 0..nc { if counts[c] > best_c { best_c = counts[c]; best = c; } }
-                        self.classes[best]
+                let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
+                tree.query_k(xi, k, &mut heap);
+                if use_dist {
+                    let mut wts = [0.0f64; 256];
+                    for &(d, idx) in heap.iter() {
+                        let dist = d.sqrt().max(1e-10);
+                        wts[self.label_idx[tree.perm[idx as usize] as usize] as usize] += 1.0 / dist;
                     }
-                })
+                    let mut best = 0;
+                    let mut best_w = 0.0;
+                    for c in 0..nc { if wts[c] > best_w { best_w = wts[c]; best = c; } }
+                    self.classes[best]
+                } else {
+                    let mut counts = [0u32; 256];
+                    for &(_, idx) in heap.iter() {
+                        counts[self.label_idx[tree.perm[idx as usize] as usize] as usize] += 1;
+                    }
+                    let mut best = 0;
+                    let mut best_c = 0u32;
+                    for c in 0..nc { if counts[c] > best_c { best_c = counts[c]; best = c; } }
+                    self.classes[best]
+                }
             };
             if n >= 64 {
                 (0..n).into_par_iter().map(predict_one).collect()
@@ -246,40 +243,37 @@ impl KNeighborsClassifier {
             let n_train = self.n;
             let predict_one = |i: usize| -> i32 {
                 let xi = &x[i * p..(i + 1) * p];
-                KNN_BUF.with(|buf| {
-                    let mut buf = buf.borrow_mut();
-                    buf.clear();
-                    for j in 0..n_train {
-                        let d = dist_sq(xi, unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) }, p_);
-                        if buf.len() < k {
-                            buf.push((d, j as u32));
-                            if buf.len() == k { heap_build(&mut buf); }
-                        } else if d < buf[0].0 {
-                            buf[0] = (d, j as u32);
-                            heap_sift_down(&mut buf, 0);
-                        }
+                let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
+                for j in 0..n_train {
+                    let d = dist_sq(xi, unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) }, p_);
+                    if heap.len() < k {
+                        heap.push((d, j as u32));
+                        if heap.len() == k { heap_build(&mut heap); }
+                    } else if d < heap[0].0 {
+                        heap[0] = (d, j as u32);
+                        heap_sift_down(&mut heap, 0);
                     }
-                    if use_dist {
-                        let mut wts = [0.0f64; 256];
-                        for &(d, idx) in buf.iter() {
-                            let dist = d.sqrt().max(1e-10);
-                            wts[self.label_idx[idx as usize] as usize] += 1.0 / dist;
-                        }
-                        let mut best = 0;
-                        let mut best_w = 0.0;
-                        for c in 0..nc { if wts[c] > best_w { best_w = wts[c]; best = c; } }
-                        self.classes[best]
-                    } else {
-                        let mut counts = [0u32; 256];
-                        for &(_, idx) in buf.iter() {
-                            counts[self.label_idx[idx as usize] as usize] += 1;
-                        }
-                        let mut best = 0;
-                        let mut best_c = 0u32;
-                        for c in 0..nc { if counts[c] > best_c { best_c = counts[c]; best = c; } }
-                        self.classes[best]
+                }
+                if use_dist {
+                    let mut wts = [0.0f64; 256];
+                    for &(d, idx) in heap.iter() {
+                        let dist = d.sqrt().max(1e-10);
+                        wts[self.label_idx[idx as usize] as usize] += 1.0 / dist;
                     }
-                })
+                    let mut best = 0;
+                    let mut best_w = 0.0;
+                    for c in 0..nc { if wts[c] > best_w { best_w = wts[c]; best = c; } }
+                    self.classes[best]
+                } else {
+                    let mut counts = [0u32; 256];
+                    for &(_, idx) in heap.iter() {
+                        counts[self.label_idx[idx as usize] as usize] += 1;
+                    }
+                    let mut best = 0;
+                    let mut best_c = 0u32;
+                    for c in 0..nc { if counts[c] > best_c { best_c = counts[c]; best = c; } }
+                    self.classes[best]
+                }
             };
             if n >= 64 {
                 (0..n).into_par_iter().map(predict_one).collect()
@@ -298,27 +292,25 @@ impl KNeighborsClassifier {
         if let Some(ref tree) = self.tree {
             let proba_one = |i: usize| -> Vec<f64> {
                 let xi = &x[i * p..(i + 1) * p];
-                KNN_BUF.with(|buf| {
-                    let mut buf = buf.borrow_mut();
-                    tree.query_k(&self.data, xi, k, &mut buf);
-                    let mut probs = vec![0.0; nc];
-                    if use_dist {
-                        let mut wsum = 0.0;
-                        for &(d, idx) in buf.iter() {
-                            let dist = d.sqrt().max(1e-10);
-                            let w = 1.0 / dist;
-                            probs[self.label_idx[idx as usize] as usize] += w;
-                            wsum += w;
-                        }
-                        let inv_w = 1.0 / wsum;
-                        for v in probs.iter_mut() { *v *= inv_w; }
-                    } else {
-                        for &(_, idx) in buf.iter() {
-                            probs[self.label_idx[idx as usize] as usize] += inv;
-                        }
+                let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
+                tree.query_k(xi, k, &mut heap);
+                let mut probs = vec![0.0; nc];
+                if use_dist {
+                    let mut wsum = 0.0;
+                    for &(d, idx) in heap.iter() {
+                        let dist = d.sqrt().max(1e-10);
+                        let w = 1.0 / dist;
+                        probs[self.label_idx[tree.perm[idx as usize] as usize] as usize] += w;
+                        wsum += w;
                     }
-                    probs
-                })
+                    let inv_w = 1.0 / wsum;
+                    for v in probs.iter_mut() { *v *= inv_w; }
+                } else {
+                    for &(_, idx) in heap.iter() {
+                        probs[self.label_idx[tree.perm[idx as usize] as usize] as usize] += inv;
+                    }
+                }
+                probs
             };
             if n >= 64 {
                 let results: Vec<Vec<f64>> = (0..n).into_par_iter().map(proba_one).collect();
@@ -340,35 +332,32 @@ impl KNeighborsClassifier {
             let n_train = self.n;
             let proba_one = |i: usize| -> Vec<f64> {
                 let xi = &x[i * p..(i + 1) * p];
-                KNN_BUF.with(|buf| {
-                    let mut buf = buf.borrow_mut();
-                    buf.clear();
-                    for j in 0..n_train {
-                        let d = dist_sq(xi, unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) }, p_);
-                        if buf.len() < k {
-                            buf.push((d, j as u32));
-                            if buf.len() == k { heap_build(&mut buf); }
-                        } else if d < buf[0].0 {
-                            buf[0] = (d, j as u32);
-                            heap_sift_down(&mut buf, 0);
-                        }
+                let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
+                for j in 0..n_train {
+                    let d = dist_sq(xi, unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) }, p_);
+                    if heap.len() < k {
+                        heap.push((d, j as u32));
+                        if heap.len() == k { heap_build(&mut heap); }
+                    } else if d < heap[0].0 {
+                        heap[0] = (d, j as u32);
+                        heap_sift_down(&mut heap, 0);
                     }
-                    let mut probs = vec![0.0; nc];
-                    if use_dist {
-                        let mut wsum = 0.0;
-                        for &(d, idx) in buf.iter() {
-                            let dist = d.sqrt().max(1e-10);
-                            let w = 1.0 / dist;
-                            probs[self.label_idx[idx as usize] as usize] += w;
-                            wsum += w;
-                        }
-                        let inv_w = 1.0 / wsum;
-                        for v in probs.iter_mut() { *v *= inv_w; }
-                    } else {
-                        for &(_, idx) in buf.iter() { probs[self.label_idx[idx as usize] as usize] += inv; }
+                }
+                let mut probs = vec![0.0; nc];
+                if use_dist {
+                    let mut wsum = 0.0;
+                    for &(d, idx) in heap.iter() {
+                        let dist = d.sqrt().max(1e-10);
+                        let w = 1.0 / dist;
+                        probs[self.label_idx[idx as usize] as usize] += w;
+                        wsum += w;
                     }
-                    probs
-                })
+                    let inv_w = 1.0 / wsum;
+                    for v in probs.iter_mut() { *v *= inv_w; }
+                } else {
+                    for &(_, idx) in heap.iter() { probs[self.label_idx[idx as usize] as usize] += inv; }
+                }
+                probs
             };
             if n >= 64 {
                 let results: Vec<Vec<f64>> = (0..n).into_par_iter().map(proba_one).collect();
@@ -423,25 +412,23 @@ impl KNeighborsRegressor {
         if let Some(ref tree) = self.tree {
             let predict_one = |i: usize| -> f64 {
                 let xi = &x[i * p..(i + 1) * p];
-                KNN_BUF.with(|buf| {
-                    let mut buf = buf.borrow_mut();
-                    tree.query_k(&self.data, xi, k, &mut buf);
-                    if use_dist {
-                        let mut wsum = 0.0;
-                        let mut vsum = 0.0;
-                        for &(d, idx) in buf.iter() {
-                            let dist = d.sqrt().max(1e-10);
-                            let w = 1.0 / dist;
-                            vsum += w * self.targets[idx as usize];
-                            wsum += w;
-                        }
-                        vsum / wsum
-                    } else {
-                        let mut sum = 0.0;
-                        for &(_, idx) in buf.iter() { sum += self.targets[idx as usize]; }
-                        sum / k as f64
+                let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
+                tree.query_k(xi, k, &mut heap);
+                if use_dist {
+                    let mut wsum = 0.0;
+                    let mut vsum = 0.0;
+                    for &(d, idx) in heap.iter() {
+                        let dist = d.sqrt().max(1e-10);
+                        let w = 1.0 / dist;
+                        vsum += w * self.targets[tree.perm[idx as usize] as usize];
+                        wsum += w;
                     }
-                })
+                    vsum / wsum
+                } else {
+                    let mut sum = 0.0;
+                    for &(_, idx) in heap.iter() { sum += self.targets[tree.perm[idx as usize] as usize]; }
+                    sum / k as f64
+                }
             };
             if n >= 64 {
                 (0..n).into_par_iter().map(predict_one).collect()
@@ -453,36 +440,33 @@ impl KNeighborsRegressor {
             let n_train = self.n;
             let predict_one = |i: usize| -> f64 {
                 let xi = &x[i * p..(i + 1) * p];
-                KNN_BUF.with(|buf| {
-                    let mut buf = buf.borrow_mut();
-                    buf.clear();
-                    let k_ = k.min(n_train);
-                    for j in 0..n_train {
-                        let d = dist_sq(xi, unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) }, p_);
-                        if buf.len() < k_ {
-                            buf.push((d, j as u32));
-                            if buf.len() == k_ { heap_build(&mut buf); }
-                        } else if d < buf[0].0 {
-                            buf[0] = (d, j as u32);
-                            heap_sift_down(&mut buf, 0);
-                        }
+                let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
+                let k_ = k.min(n_train);
+                for j in 0..n_train {
+                    let d = dist_sq(xi, unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) }, p_);
+                    if heap.len() < k_ {
+                        heap.push((d, j as u32));
+                        if heap.len() == k_ { heap_build(&mut heap); }
+                    } else if d < heap[0].0 {
+                        heap[0] = (d, j as u32);
+                        heap_sift_down(&mut heap, 0);
                     }
-                    if use_dist {
-                        let mut wsum = 0.0;
-                        let mut vsum = 0.0;
-                        for &(d, idx) in buf.iter() {
-                            let dist = d.sqrt().max(1e-10);
-                            let w = 1.0 / dist;
-                            vsum += w * self.targets[idx as usize];
-                            wsum += w;
-                        }
-                        vsum / wsum
-                    } else {
-                        let mut sum = 0.0;
-                        for &(_, idx) in buf.iter() { sum += self.targets[idx as usize]; }
-                        sum / buf.len() as f64
+                }
+                if use_dist {
+                    let mut wsum = 0.0;
+                    let mut vsum = 0.0;
+                    for &(d, idx) in heap.iter() {
+                        let dist = d.sqrt().max(1e-10);
+                        let w = 1.0 / dist;
+                        vsum += w * self.targets[idx as usize];
+                        wsum += w;
                     }
-                })
+                    vsum / wsum
+                } else {
+                    let mut sum = 0.0;
+                    for &(_, idx) in heap.iter() { sum += self.targets[idx as usize]; }
+                    sum / heap.len() as f64
+                }
             };
             if n >= 64 {
                 (0..n).into_par_iter().map(predict_one).collect()

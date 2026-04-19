@@ -22,7 +22,7 @@ impl StandardScaler {
         if self.with_std {
             let chunk = 4096usize.max(p);
             let nc = (n + chunk - 1) / chunk;
-            if nc >= 2 {
+            if n >= 50_000 && nc >= 2 {
                 let partials: Vec<(Vec<f64>, Vec<f64>)> = (0..nc).into_par_iter().map(|c| {
                     let s = c * chunk;
                     let e = (s + chunk).min(n);
@@ -68,8 +68,8 @@ impl StandardScaler {
         if self.with_mean && self.with_std {
             let mean = &self.mean;
             let inv = &self.inv_scale;
-            if n * p >= 50_000 {
-                let grain = 2048usize;
+            if n >= 50_000 {
+                let grain = 1024usize;
                 out.par_chunks_mut(p * grain).enumerate().for_each(|(ci, block)| {
                     let base = ci * grain;
                     let rows = block.len() / p;
@@ -141,7 +141,7 @@ impl MinMaxScaler {
         self.p = p;
         let mut mins = vec![f64::MAX; p];
         let mut maxs = vec![f64::MIN; p];
-        if n * p >= 50_000 {
+        if n >= 50_000 {
             let chunk = 4096usize.max(1);
             let nc = (n + chunk - 1) / chunk;
             let partials: Vec<(Vec<f64>, Vec<f64>)> = (0..nc).into_par_iter().map(|c| {
@@ -183,7 +183,7 @@ impl MinMaxScaler {
         let inv_range: Vec<f64> = self.range.iter().map(|&r| span / r).collect();
         let min = &self.min;
         let mut out = vec![0.0; n * p];
-        if n * p >= 50_000 {
+        if n >= 50_000 {
             let grain = 2048usize;
             out.par_chunks_mut(p * grain).enumerate().for_each(|(ci, block)| {
                 let base = ci * grain;
@@ -216,7 +216,7 @@ impl MinMaxScaler {
         let inv_span: Vec<f64> = self.range.iter().map(|&r| r / span).collect();
         let min = &self.min;
         let mut out = vec![0.0; n * p];
-        if n * p >= 50_000 {
+        if n >= 50_000 {
             let grain = 2048usize;
             out.par_chunks_mut(p * grain).enumerate().for_each(|(ci, block)| {
                 let base = ci * grain;
@@ -301,7 +301,7 @@ impl RobustScaler {
         let wc = self.with_centering;
         let ws = self.with_scaling;
         let mut out = vec![0.0; n * p];
-        if n * p >= 50_000 {
+        if n >= 50_000 {
             let grain = 2048usize;
             out.par_chunks_mut(p * grain).enumerate().for_each(|(ci, block)| {
                 let base = ci * grain;
@@ -348,7 +348,7 @@ impl MaxAbsScaler {
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize) {
         self.p = p;
         self.max_abs = vec![0.0; p];
-        if n * p >= 50_000 {
+        if n >= 50_000 {
             let chunk = 4096usize.max(1);
             let nc = (n + chunk - 1) / chunk;
             let partials: Vec<Vec<f64>> = (0..nc).into_par_iter().map(|c| {
@@ -382,7 +382,7 @@ impl MaxAbsScaler {
     pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
         let inv: Vec<f64> = self.max_abs.iter().map(|&m| 1.0 / m).collect();
         let mut out = vec![0.0; n * p];
-        if n * p >= 50_000 {
+        if n >= 50_000 {
             let grain = 2048usize;
             out.par_chunks_mut(p * grain).enumerate().for_each(|(ci, block)| {
                 let base = ci * grain;
@@ -420,7 +420,7 @@ impl Normalizer {
 
     pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
         let mut out = vec![0.0; n * p];
-        if n * p >= 50_000 {
+        if n >= 50_000 {
             let norm = self.norm;
             let grain = 2048usize;
             out.par_chunks_mut(p * grain).enumerate().for_each(|(ci, block)| {

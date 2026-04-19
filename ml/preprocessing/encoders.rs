@@ -11,18 +11,25 @@ impl LabelEncoder {
     }
 
     pub fn fit(&mut self, y: &[String]) {
-        let mut cls: Vec<String> = y.to_vec();
-        cls.sort();
-        cls.dedup();
-        self.classes = cls;
+        let mut seen = HashMap::with_capacity(64);
+        for s in y {
+            if !seen.contains_key(s.as_str()) {
+                let idx = seen.len();
+                seen.insert(s.as_str(), idx);
+            }
+        }
+        let mut cls: Vec<&str> = seen.keys().copied().collect();
+        cls.sort_unstable();
+        self.classes = cls.iter().map(|&s| s.to_string()).collect();
         self.map.clear();
+        self.map.reserve(self.classes.len());
         for (i, c) in self.classes.iter().enumerate() {
             self.map.insert(c.clone(), i as i32);
         }
     }
 
     pub fn transform(&self, y: &[String]) -> Vec<i32> {
-        y.iter().map(|s| *self.map.get(s).unwrap_or(&-1)).collect()
+        y.iter().map(|s| *self.map.get(s.as_str()).unwrap_or(&-1)).collect()
     }
 
     pub fn fit_transform(&mut self, y: &[String]) -> Vec<i32> {
