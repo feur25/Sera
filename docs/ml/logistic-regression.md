@@ -7,34 +7,40 @@
 **Signature**
 
 ```python
-model = sp.LogisticRegression(c=1.0, max_iter=1000, tol=1e-4, fit_intercept=True)
+model = sp.LogisticRegression(
+    C=1.0,
+    max_iter=100,
+    tol=1e-4,
+    fit_intercept=True,
+    multi_class="ovr",
+)
 
-model.fit(X, y, checkpoint_id=None)
+model.fit(X, y)
 model.predict(X)        -> list[int]
-model.predict_proba(X)  -> ndarray (n, K)
+model.predict_proba(X)  -> list[list[float]]
 model.score(X, y)       -> float
 model.get_params()      -> dict
-model.set_params(C=..., max_iter=..., tol=..., fit_intercept=...)
+model.set_params(C=..., max_iter=..., tol=..., fit_intercept=..., multi_class=...)
 ```
 
 **Constructor parameters**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `c` | `float` | `1.0` | Inverse regularisation strength — larger values = less regularisation |
-| `max_iter` | `int` | `1000` | Maximum L-BFGS iterations |
-| `tol` | `float` | `1e-4` | Gradient norm convergence tolerance |
+| `C` | `float` | `1.0` | Inverse regularisation strength (larger = less regularisation) |
+| `max_iter` | `int` | `100` | Maximum L-BFGS iterations |
+| `tol` | `float` | `1e-4` | Convergence tolerance |
 | `fit_intercept` | `bool` | `True` | Fit a bias term |
+| `multi_class` | `str` | `"ovr"` | Strategy for multi-class: `"ovr"` (One-vs-Rest) |
 
 **Attributes**
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
-| `coef_` | `ndarray` | Coefficients — shape $(p,)$ for binary, $(K, p)$ for multiclass |
-| `intercept_` | `float \| ndarray` | Bias — scalar for binary, $(K,)$ for multiclass |
+| `coef_` | `list[float]` | Fitted coefficients |
+| `intercept_` | `float` | Bias term |
 | `classes_` | `list[int]` | Unique class labels |
-| `n_iter_` | `int` | Iterations run |
-| `C_` | `float` | Inverse regularisation strength |
+| `n_iter_` | `int` | Actual iterations performed |
 
 <details>
 <summary><strong>Example</strong></summary>
@@ -46,11 +52,11 @@ import numpy as np
 X = np.random.randn(400, 4)
 y = (X[:, 0] + X[:, 1] > 0).astype(int)
 
-model = sp.LogisticRegression(c=1.0)
+model = sp.LogisticRegression(C=1.0, max_iter=200)
 model.fit(X, y)
 print(f"Accuracy: {model.score(X, y):.4f}")
 proba = model.predict_proba(X)
-print(f"Proba shape: {proba.shape}")
+print(f"P(class=1) sample 0: {proba[0][1]:.4f}")
 ```
 
 </details>
@@ -59,29 +65,21 @@ print(f"Proba shape: {proba.shape}")
 
 ## Algorithmic Functioning
 
-Logistic regression models the **log-odds** of class membership as a linear function:
+Logistic Regression fits a linear decision boundary using the **sigmoid** function:
 
-$$\log\frac{P(y=1 \mid x)}{P(y=0 \mid x)} = x^T\beta + \beta_0$$
+$$\sigma(z) = \frac{1}{1 + e^{-z}}, \qquad z = x^T\beta + \beta_0$$
 
-which implies the **sigmoid** link:
+The model minimises the **cross-entropy loss** with L2 regularisation:
 
-$$P(y=1 \mid x) = \sigma(x^T\beta) = \frac{1}{1 + e^{-x^T\beta}}$$
+$$\mathcal{L}(\beta) = -\frac{1}{n}\sum_{i=1}^n \left[y_i \log \hat{p}_i + (1-y_i)\log(1-\hat{p}_i)\right] + \frac{1}{2C}\|\beta\|_2^2$$
 
-**Regularised log-likelihood objective** (L2, binary case):
+**Optimiser** — parameters are updated via **L-BFGS** (Limited-memory Broyden-Fletcher-Goldfarb-Shanno), a quasi-Newton method that approximates the inverse Hessian using the last $m$ gradient differences.
 
-$$\mathcal{L}(\beta) = \sum_{i=1}^n \bigl[y_i \log \sigma(x_i^T\beta) + (1-y_i) \log(1 - \sigma(x_i^T\beta))\bigr] - \frac{1}{2C}\|\beta\|_2^2$$
+**Multiclass** (OvR) — for $K > 2$ classes, $K$ binary classifiers are trained independently. Class $k$ vs rest:
 
-**Optimisation** — The gradient is:
+$$\hat{p}_k(x) = \sigma\!\left(x^T\beta_k + \beta_{0,k}\right)$$
 
-$$\nabla_\beta \mathcal{L} = X^T(y - \hat{p}) - \frac{\beta}{C}, \qquad \hat{p}_i = \sigma(x_i^T\beta)$$
-
-This is maximised via **L-BFGS** (Limited-memory Broyden–Fletcher–Goldfarb–Shanno), a quasi-Newton method that maintains a low-rank approximation of the Hessian inverse using the last $m$ gradient differences.
-
-**Multiclass (OvR)** — For $K > 2$ classes, $K$ independent binary classifiers are trained (One-vs-Rest). Probabilities are normalised:
-
-$$P(y=k \mid x) = \frac{\sigma(x^T\beta_k)}{\sum_{j=1}^K \sigma(x^T\beta_j)}$$
-
-**Prediction** assigns the class with highest probability:
+**Prediction** assigns the class with the highest probability:
 
 $$\hat{y} = \underset{k}{\arg\max}\ \sigma(x^T\beta_k)$$
 
@@ -94,34 +92,40 @@ $$\hat{y} = \underset{k}{\arg\max}\ \sigma(x^T\beta_k)$$
 **Signature**
 
 ```python
-model = sp.LogisticRegression(c=1.0, max_iter=1000, tol=1e-4, fit_intercept=True)
+model = sp.LogisticRegression(
+    C=1.0,
+    max_iter=100,
+    tol=1e-4,
+    fit_intercept=True,
+    multi_class="ovr",
+)
 
-model.fit(X, y, checkpoint_id=None)
+model.fit(X, y)
 model.predict(X)        -> list[int]
-model.predict_proba(X)  -> ndarray (n, K)
+model.predict_proba(X)  -> list[list[float]]
 model.score(X, y)       -> float
 model.get_params()      -> dict
-model.set_params(C=..., max_iter=..., tol=..., fit_intercept=...)
+model.set_params(C=..., max_iter=..., tol=..., fit_intercept=..., multi_class=...)
 ```
 
 **Paramètres du constructeur**
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
-| `c` | `float` | `1.0` | Inverse de la force de régularisation — plus grand = moins de régularisation |
-| `max_iter` | `int` | `1000` | Nombre maximum d'itérations L-BFGS |
-| `tol` | `float` | `1e-4` | Tolérance de convergence sur la norme du gradient |
+| `C` | `float` | `1.0` | Inverse de la force de régularisation (plus grand = moins de régularisation) |
+| `max_iter` | `int` | `100` | Nombre maximum d'itérations L-BFGS |
+| `tol` | `float` | `1e-4` | Tolérance de convergence |
 | `fit_intercept` | `bool` | `True` | Ajuster un terme de biais |
+| `multi_class` | `str` | `"ovr"` | Stratégie multi-classe : `"ovr"` (Un-contre-Tous) |
 
 **Attributs**
 
 | Attribut | Type | Description |
 |----------|------|-------------|
-| `coef_` | `ndarray` | Coefficients — forme $(p,)$ binaire, $(K, p)$ multiclasse |
-| `intercept_` | `float \| ndarray` | Biais — scalaire binaire, $(K,)$ multiclasse |
+| `coef_` | `list[float]` | Coefficients ajustés |
+| `intercept_` | `float` | Terme de biais |
 | `classes_` | `list[int]` | Labels de classes uniques |
-| `n_iter_` | `int` | Itérations effectuées |
-| `C_` | `float` | Inverse de la force de régularisation |
+| `n_iter_` | `int` | Nombre d'itérations réalisées |
 
 <details>
 <summary><strong>Exemple</strong></summary>
@@ -133,11 +137,11 @@ import numpy as np
 X = np.random.randn(400, 4)
 y = (X[:, 0] + X[:, 1] > 0).astype(int)
 
-model = sp.LogisticRegression(c=1.0)
+model = sp.LogisticRegression(C=1.0, max_iter=200)
 model.fit(X, y)
 print(f"Précision : {model.score(X, y):.4f}")
 proba = model.predict_proba(X)
-print(f"Forme proba : {proba.shape}")
+print(f"P(classe=1) échantillon 0 : {proba[0][1]:.4f}")
 ```
 
 </details>
@@ -146,147 +150,22 @@ print(f"Forme proba : {proba.shape}")
 
 ## Fonctionnement algorithmique
 
-La régression logistique modélise le **log-odds** d'appartenance à une classe comme une fonction linéaire :
+La régression logistique ajuste une frontière de décision linéaire à l'aide de la fonction **sigmoïde** :
 
-$$\log\frac{P(y=1 \mid x)}{P(y=0 \mid x)} = x^T\beta + \beta_0$$
+$$\sigma(z) = \frac{1}{1 + e^{-z}}, \qquad z = x^T\beta + \beta_0$$
 
-ce qui implique la **fonction sigmoïde** :
+Le modèle minimise la **perte d'entropie croisée** avec régularisation L2 :
 
-$$P(y=1 \mid x) = \sigma(x^T\beta) = \frac{1}{1 + e^{-x^T\beta}}$$
+$$\mathcal{L}(\beta) = -\frac{1}{n}\sum_{i=1}^n \left[y_i \log \hat{p}_i + (1-y_i)\log(1-\hat{p}_i)\right] + \frac{1}{2C}\|\beta\|_2^2$$
 
-**Objectif log-vraisemblance régularisé** (L2, cas binaire) :
+**Optimiseur** — les paramètres sont mis à jour via **L-BFGS** (Limited-memory Broyden-Fletcher-Goldfarb-Shanno), une méthode quasi-Newton qui approxime l'inverse de la Hessienne à partir des $m$ dernières différences de gradient.
 
-$$\mathcal{L}(\beta) = \sum_{i=1}^n \bigl[y_i \log \sigma(x_i^T\beta) + (1-y_i) \log(1 - \sigma(x_i^T\beta))\bigr] - \frac{1}{2C}\|\beta\|_2^2$$
+**Multi-classe** (OvR) — pour $K > 2$ classes, $K$ classificateurs binaires sont entraînés indépendamment. Classe $k$ contre le reste :
 
-**Optimisation** — Le gradient est :
-
-$$\nabla_\beta \mathcal{L} = X^T(y - \hat{p}) - \frac{\beta}{C}, \qquad \hat{p}_i = \sigma(x_i^T\beta)$$
-
-Maximisé via **L-BFGS** (Limited-memory Broyden–Fletcher–Goldfarb–Shanno), une méthode quasi-Newton qui maintient une approximation rang réduit de l'inverse du Hessien à partir des $m$ dernières différences de gradients.
-
-**Multiclasse (OvR)** — Pour $K > 2$ classes, $K$ classificateurs binaires indépendants sont entraînés (One-vs-Rest). Les probabilités sont normalisées :
-
-$$P(y=k \mid x) = \frac{\sigma(x^T\beta_k)}{\sum_{j=1}^K \sigma(x^T\beta_j)}$$
+$$\hat{p}_k(x) = \sigma\!\left(x^T\beta_k + \beta_{0,k}\right)$$
 
 **Prédiction** affecte la classe avec la probabilité la plus haute :
 
 $$\hat{y} = \underset{k}{\arg\max}\ \sigma(x^T\beta_k)$$
 
 </div>
-# LogisticRegression
-
-<div class="lang-en">
-
-## Signature
-
-```python
-model = sp.LogisticRegression(
-    c: float = 1.0,
-    max_iter: int = 1000,
-    tol: float = 1e-4,
-    fit_intercept: bool = True,
-)
-
-model.classes_        -> list[int]
-model.coef_           -> ndarray
-model.intercept_      -> float | ndarray
-model.n_iter_         -> int
-model.C_              -> float
-model.max_iter_       -> int
-model.tol_            -> float
-model.fit_intercept_  -> bool
-```
-
----
-
-## Description
-
-Multinomial logistic regression via Newton's method. For binary problems uses a single weight vector; for multiclass uses One-vs-Rest.
-
----
-
-## Constructor Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `c` | `float` | `1.0` | Inverse of regularization strength |
-| `max_iter` | `int` | `1000` | Maximum Newton iterations |
-| `tol` | `float` | `1e-4` | Convergence tolerance |
-| `fit_intercept` | `bool` | `True` | Add bias term |
-
-</div>
-
-<div class="lang-fr">
-
-## Description
-
-Régression logistique multinomiale via la méthode de Newton. Pour les problèmes binaires, un seul vecteur de poids ; pour la classification multi-classes, stratégie One-vs-Rest.
-
-## Paramètres du constructeur
-
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `c` | `float` | `1.0` | Inverse de la force de régularisation |
-| `max_iter` | `int` | `1000` | Nombre maximum d'itérations Newton |
-| `tol` | `float` | `1e-4` | Tolérance de convergence |
-| `fit_intercept` | `bool` | `True` | Ajouter un biais |
-
-</div>
-
-model.n_iter_     -> int
-```
-
----
-
-## Description
-
-Logistic regression with Newton-Raphson optimization. Binary uses a 2-class softmax; multiclass uses a **full joint Hessian** Newton solver with **backtracking line search** for robust convergence on 10+ class problems.
-
-`c` is the inverse regularization strength (higher = less regularization), matching sklearn's `C` parameter.
-
----
-
-## Constructor Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `c` | `float` | `1.0` | Inverse regularization (like sklearn `C`) |
-| `max_iter` | `int` | `1000` | Maximum Newton iterations |
-| `tol` | `float` | `1e-4` | Convergence tolerance |
-| `fit_intercept` | `bool` | `True` | Add a bias term |
-
----
-
-## Attributes
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `classes_` | `list[int]` | Unique sorted class labels |
-| `coef_` | `ndarray` | Coefficient matrix (n_classes, n_features) or (n_features,) for binary |
-| `intercept_` | `float` or `ndarray` | Intercept(s) |
-| `n_iter_` | `int` | Number of Newton iterations run |
-
----
-
-## Example
-
-<details>
-<summary><strong>Binary classification</strong></summary>
-
-```python
-import seraplot as sp
-import numpy as np
-
-X = np.random.randn(400, 4)
-y = (X[:, 0] + X[:, 1] > 0).astype(np.int32)
-
-model = sp.LogisticRegression(c=1.0)
-model.fit(X, y)
-
-print(f"Accuracy: {model.score(X, y):.4f}")
-print(f"Coef: {model.coef_}")
-print(f"Intercept: {model.intercept_}")
-print(f"Converged in {model.n_iter_} iterations")
-```
-
-</details>

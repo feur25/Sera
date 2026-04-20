@@ -21,7 +21,7 @@ model.set_params(alpha=..., fit_intercept=...)
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `alpha` | `float` | `1.0` | L2 regularisation strength — larger values penalise larger coefficients |
+| `alpha` | `float` | `1.0` | L2 regularisation strength — larger values shrink coefficients more |
 | `fit_intercept` | `bool` | `True` | Fit a bias term (Ridge only) |
 
 **Attributes — Ridge**
@@ -53,7 +53,7 @@ y = X @ np.array([1.0, -2.0, 0.5, 1.5, -0.8]) + np.random.randn(300)
 
 reg = sp.Ridge(alpha=0.5)
 reg.fit(X, y)
-print(f"R²: {reg.score(X, y):.4f}")
+print(f"R2: {reg.score(X, y):.4f}")
 
 clf = sp.RidgeClassifier(alpha=1.0)
 clf.fit(X, (y > 0).astype(int))
@@ -74,9 +74,9 @@ The closed-form solution is:
 
 $$\hat{\beta} = (X^TX + \alpha I)^{-1}X^T y$$
 
-The ridge term $\alpha I$ shifts all eigenvalues of $X^TX$ upward by $\alpha$, guaranteeing the matrix is positive-definite and thus invertible regardless of multicollinearity. The solution is computed via **Cholesky decomposition** of $(X^TX + \alpha I)$.
+The ridge term $\alpha I$ shifts all eigenvalues of $X^TX$ upward by $\alpha$, guaranteeing the matrix is positive-definite and invertible regardless of multicollinearity. The solution is computed via **Cholesky decomposition** of $(X^TX + \alpha I)$.
 
-When `fit_intercept=True`, $X$ is centered before regularisation. The augmented normal equations become:
+When `fit_intercept=True`, $X$ is centered before regularisation:
 
 $$\hat{\beta} = (X^TX + \alpha I_p)^{-1}X^T y, \qquad \hat{\beta}_0 = \bar{y} - \bar{x}^T\hat{\beta}$$
 
@@ -141,7 +141,7 @@ y = X @ np.array([1.0, -2.0, 0.5, 1.5, -0.8]) + np.random.randn(300)
 
 reg = sp.Ridge(alpha=0.5)
 reg.fit(X, y)
-print(f"R² : {reg.score(X, y):.4f}")
+print(f"R2 : {reg.score(X, y):.4f}")
 
 clf = sp.RidgeClassifier(alpha=1.0)
 clf.fit(X, (y > 0).astype(int))
@@ -175,115 +175,3 @@ $$\hat{y} = \underset{k}{\arg\max}\ \hat{Y}_{:,k}$$
 Le compromis biais-variance est contrôlé par $\alpha$ : un $\alpha$ plus grand augmente le biais mais réduit la variance.
 
 </div>
-# Ridge / RidgeClassifier
-
-<div class="lang-en">
-
-## Signature
-
-```python
-reg = sp.Ridge(alpha: float = 1.0, fit_intercept: bool = True)
-clf = sp.RidgeClassifier(alpha: float = 1.0)
-
-reg.coef_           -> list[float]
-reg.intercept_      -> float
-reg.alpha_          -> float
-reg.fit_intercept_  -> bool
-
-clf.coef_           -> list[float]
-clf.intercept_      -> float
-clf.classes_        -> list[int]
-```
-
----
-
-## Description
-
-L2-regularized linear model (Tikhonov regularization). Solved via Cholesky on `(X^T X + alpha * I)`.
-
----
-
-## Constructor Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `alpha` | `float` | `1.0` | Regularization strength |
-| `fit_intercept` | `bool` | `True` | Add a bias term |
-
-</div>
-
-<div class="lang-fr">
-
-## Description
-
-Modèle linéaire avec régularisation L2 (régularisation de Tikhonov). Résolu via Cholesky sur `(X^T X + alpha * I)`.
-
-## Paramètres du constructeur
-
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `alpha` | `float` | `1.0` | Force de régularisation |
-| `fit_intercept` | `bool` | `True` | Ajouter un terme de biais |
-
-</div>
-
-
-- **Ridge** — regression with L2 penalty.
-- **RidgeClassifier** — classification by rounding Ridge regression predictions to nearest class label.
-
----
-
-## Constructor Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `alpha` | `float` | `1.0` | Regularization strength |
-| `fit_intercept` | `bool` | `True` | Add a bias term |
-
----
-
-## Methods
-
-### `fit(x, y)`
-
-| Argument | Type | Description |
-|----------|------|-------------|
-| `x` | `ndarray (n, p)` | Feature matrix |
-| `y` | `ndarray (n,)` | Target values |
-
-### `predict(x) -> list[float]`
-
-### `score(x, y) -> float`
-
-R² coefficient of determination.
-
----
-
-## Attributes
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `coef_` | `list[float]` | Fitted coefficients |
-| `intercept_` | `float` | Bias term |
-
----
-
-## Example
-
-<details>
-<summary><strong>Ridge with regularization</strong></summary>
-
-```python
-import seraplot as sp
-import numpy as np
-
-X = np.random.randn(200, 10)
-y = X @ np.random.randn(10) + np.random.randn(200) * 0.5
-
-model = sp.Ridge(alpha=0.5)
-model.fit(X, y)
-print(f"R²: {model.score(X, y):.4f}")
-print(f"Max coef magnitude: {max(abs(c) for c in model.coef_):.4f}")
-```
-
-</details>
