@@ -16,6 +16,13 @@ impl Lasso {
     pub fn coef(&self) -> &[f64] { &self.inner.coef }
     pub fn intercept(&self) -> f64 { self.inner.intercept }
     pub fn alpha(&self) -> f64 { self.inner.alpha }
+    pub fn set_alpha(&mut self, v: f64) { self.inner.alpha = v; }
+    pub fn max_iter(&self) -> usize { self.inner.max_iter }
+    pub fn set_max_iter(&mut self, v: usize) { self.inner.max_iter = v; }
+    pub fn tol(&self) -> f64 { self.inner.tol }
+    pub fn set_tol(&mut self, v: f64) { self.inner.tol = v; }
+    pub fn fit_intercept(&self) -> bool { self.inner.fit_intercept }
+    pub fn set_fit_intercept(&mut self, v: bool) { self.inner.fit_intercept = v; }
     pub fn n_iter(&self) -> usize { self.inner.n_iter }
 }
 

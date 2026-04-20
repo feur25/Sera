@@ -556,7 +556,7 @@ pub fn compute_knn_dist_cache(fold: &FoldData, max_k: usize) -> KnnDistCache {
 }
 
 pub fn needs_gram_cache(estimator: &str) -> bool {
-    matches!(estimator, "Ridge" | "Lasso" | "ElasticNet" | "LinearRegression")
+    matches!(estimator, "Lasso" | "ElasticNet" | "LinearRegression")
 }
 
 pub fn needs_knn_cache(estimator: &str) -> bool {
@@ -883,4 +883,168 @@ where F: Fn(usize, &FoldData, &ModelCache) -> f64 + Send + Sync,
             .collect::<Vec<f64>>())
         .collect();
     finalise_results(all_scores, Some(combo_indices))
+}
+
+fn score_reg(y_true: &[f64], y_pred: &[f64], scoring: &str) -> f64 {
+    match scoring {
+        "neg_mean_squared_error" => -crate::ml::metrics::regression::mean_squared_error(y_true, y_pred),
+        "neg_mean_absolute_error" => -crate::ml::metrics::regression::mean_absolute_error(y_true, y_pred),
+        _ => crate::ml::metrics::regression::r2_score(y_true, y_pred),
+    }
+}
+
+fn score_cls(y_true: &[i32], y_pred: &[i32], scoring: &str) -> f64 {
+    match scoring {
+        "f1" | "f1_weighted" => crate::ml::metrics::classification::f1_score(y_true, y_pred, crate::ml::metrics::classification::Average::Weighted),
+        "f1_macro" => crate::ml::metrics::classification::f1_score(y_true, y_pred, crate::ml::metrics::classification::Average::Macro),
+        "precision" | "precision_weighted" => crate::ml::metrics::classification::precision_score(y_true, y_pred, crate::ml::metrics::classification::Average::Weighted),
+        "precision_macro" => crate::ml::metrics::classification::precision_score(y_true, y_pred, crate::ml::metrics::classification::Average::Macro),
+        "recall" | "recall_weighted" => crate::ml::metrics::classification::recall_score(y_true, y_pred, crate::ml::metrics::classification::Average::Weighted),
+        "recall_macro" => crate::ml::metrics::classification::recall_score(y_true, y_pred, crate::ml::metrics::classification::Average::Macro),
+        _ => crate::ml::metrics::classification::accuracy_score(y_true, y_pred),
+    }
+}
+
+fn is_default_scoring(scoring: &str) -> bool {
+    matches!(scoring, "" | "auto" | "r2" | "accuracy")
+}
+
+fn eval_model_generic_reg(fold: &FoldData, model: &mut dyn crate::ml::MlRegressor, scoring: &str) -> f64 {
+    model.fit(&fold.x_train, fold.n_train, fold.p, &fold.y_train_f);
+    let preds = model.predict(&fold.x_test, fold.n_test, fold.p);
+    score_reg(&fold.y_test_f, &preds, scoring)
+}
+
+fn eval_model_generic_cls(fold: &FoldData, model: &mut dyn crate::ml::MlClassifier, scoring: &str) -> f64 {
+    model.fit(&fold.x_train, fold.n_train, fold.p, &fold.y_train_i);
+    let preds = model.predict(&fold.x_test, fold.n_test, fold.p);
+    score_cls(&fold.y_test_i, &preds, scoring)
+}
+
+pub fn eval_model_scored(
+    estimator: &str,
+    param_names: &[String],
+    param_values: &[Vec<String>],
+    param_sizes: &[usize],
+    combo_idx: usize,
+    fold: &FoldData,
+    cache: &ModelCache,
+    scoring: &str,
+) -> f64 {
+    if is_default_scoring(scoring) {
+        return eval_model_cached(estimator, param_names, param_values, param_sizes, combo_idx, fold, cache);
+    }
+    let indices = decode_combo(combo_idx, param_sizes);
+    let vals: Vec<String> = indices.iter().enumerate()
+        .map(|(i, &idx)| param_values[i][idx].clone()).collect();
+    let n = param_names;
+    let v = &vals;
+    match estimator {
+        "Ridge" => {
+            let mut m = crate::ml::linear::ridge::Ridge::new(gf(n, v, "alpha", 1.0), gb(n, v, "fit_intercept", true));
+            eval_model_generic_reg(fold, &mut m, scoring)
+        }
+        "Lasso" => {
+            let mut m = crate::ml::linear::lasso::Lasso::new(gf(n, v, "alpha", 1.0), gu(n, v, "max_iter", 1000), gf(n, v, "tol", 1e-4), gb(n, v, "fit_intercept", true));
+            eval_model_generic_reg(fold, &mut m, scoring)
+        }
+        "ElasticNet" => {
+            let mut m = crate::ml::linear::elastic_net::ElasticNet::new(gf(n, v, "alpha", 1.0), gf(n, v, "l1_ratio", 0.5), gu(n, v, "max_iter", 1000), gf(n, v, "tol", 1e-4), gb(n, v, "fit_intercept", true));
+            eval_model_generic_reg(fold, &mut m, scoring)
+        }
+        "LinearRegression" => {
+            let mut m = crate::ml::linear::ols::LinearRegression::new(gb(n, v, "fit_intercept", true));
+            eval_model_generic_reg(fold, &mut m, scoring)
+        }
+        "LogisticRegression" => {
+            let mut m = crate::ml::linear::logistic::LogisticRegression::new(gf(n, v, "C", 1.0), gu(n, v, "max_iter", 100), gf(n, v, "tol", 1e-4), gb(n, v, "fit_intercept", true));
+            eval_model_generic_cls(fold, &mut m, scoring)
+        }
+        "RidgeClassifier" => {
+            let mut m = crate::ml::linear::ridge::RidgeClassifier::new(gf(n, v, "alpha", 1.0));
+            eval_model_generic_cls(fold, &mut m, scoring)
+        }
+        "SGDClassifier" => {
+            let loss = match gs(n, v, "loss", "hinge") {
+                "log" | "log_loss" => crate::ml::linear::sgd::SGDLoss::Log,
+                "modified_huber" => crate::ml::linear::sgd::SGDLoss::ModifiedHuber,
+                "squared_hinge" => crate::ml::linear::sgd::SGDLoss::SquaredHinge,
+                _ => crate::ml::linear::sgd::SGDLoss::Hinge,
+            };
+            let mut m = crate::ml::linear::sgd::SGDClassifier::new(loss, gf(n, v, "alpha", 0.0001), gu(n, v, "max_iter", 1000), gf(n, v, "tol", 1e-3), gf(n, v, "eta0", 0.01), gb(n, v, "fit_intercept", true));
+            eval_model_generic_cls(fold, &mut m, scoring)
+        }
+        "SGDRegressor" => {
+            let mut m = crate::ml::linear::sgd::SGDRegressor::new(gf(n, v, "alpha", 0.0001), gu(n, v, "max_iter", 1000), gf(n, v, "tol", 1e-3), gf(n, v, "eta0", 0.01), gb(n, v, "fit_intercept", true));
+            eval_model_generic_reg(fold, &mut m, scoring)
+        }
+        "DecisionTreeClassifier" => {
+            let criterion = if gs(n, v, "criterion", "gini") == "entropy" { crate::ml::tree::decision_tree::TreeCriterion::Entropy } else { crate::ml::tree::decision_tree::TreeCriterion::Gini };
+            let mf = n.iter().position(|k| k == "max_features").and_then(|i| vals[i].parse::<usize>().ok());
+            let mut m = crate::ml::tree::decision_tree::DecisionTreeClassifier::new(gu(n, v, "max_depth", 10), gu(n, v, "min_samples_split", 2), gu(n, v, "min_samples_leaf", 1), mf, criterion);
+            eval_model_generic_cls(fold, &mut m, scoring)
+        }
+        "DecisionTreeRegressor" => {
+            let mf = n.iter().position(|k| k == "max_features").and_then(|i| vals[i].parse::<usize>().ok());
+            let mut m = crate::ml::tree::decision_tree::DecisionTreeRegressor::new(gu(n, v, "max_depth", 10), gu(n, v, "min_samples_split", 2), gu(n, v, "min_samples_leaf", 1), mf);
+            eval_model_generic_reg(fold, &mut m, scoring)
+        }
+        "RandomForestClassifier" => {
+            let mf = match gs(n, v, "max_features", "sqrt") {
+                "log2" => crate::ml::tree::random_forest::MaxFeatures::Log2,
+                "all" | "none" => crate::ml::tree::random_forest::MaxFeatures::All,
+                s => s.parse::<usize>().map(crate::ml::tree::random_forest::MaxFeatures::Fixed).unwrap_or(crate::ml::tree::random_forest::MaxFeatures::Sqrt),
+            };
+            let mut m = crate::ml::tree::random_forest::RandomForestClassifier::new(gu(n, v, "n_estimators", 100), gu(n, v, "max_depth", 10), gu(n, v, "min_samples_split", 2), gu(n, v, "min_samples_leaf", 1), mf);
+            eval_model_generic_cls(fold, &mut m, scoring)
+        }
+        "RandomForestRegressor" => {
+            let mf = match gs(n, v, "max_features", "sqrt") {
+                "log2" => crate::ml::tree::random_forest::MaxFeatures::Log2,
+                "all" | "none" => crate::ml::tree::random_forest::MaxFeatures::All,
+                s => s.parse::<usize>().map(crate::ml::tree::random_forest::MaxFeatures::Fixed).unwrap_or(crate::ml::tree::random_forest::MaxFeatures::Sqrt),
+            };
+            let mut m = crate::ml::tree::random_forest::RandomForestRegressor::new(gu(n, v, "n_estimators", 100), gu(n, v, "max_depth", 10), gu(n, v, "min_samples_split", 2), gu(n, v, "min_samples_leaf", 1), mf);
+            eval_model_generic_reg(fold, &mut m, scoring)
+        }
+        "GradientBoostingClassifier" => {
+            let mut m = crate::ml::tree::gradient_boosting::GradientBoostingClassifier::new(gu(n, v, "n_estimators", 100), gf(n, v, "learning_rate", 0.1), gu(n, v, "max_depth", 3), gu(n, v, "min_samples_split", 2), gu(n, v, "min_samples_leaf", 1));
+            eval_model_generic_cls(fold, &mut m, scoring)
+        }
+        "GradientBoostingRegressor" => {
+            let mut m = crate::ml::tree::gradient_boosting::GradientBoostingRegressor::new(gu(n, v, "n_estimators", 100), gf(n, v, "learning_rate", 0.1), gu(n, v, "max_depth", 3), gu(n, v, "min_samples_split", 2), gu(n, v, "min_samples_leaf", 1));
+            eval_model_generic_reg(fold, &mut m, scoring)
+        }
+        "AdaBoostClassifier" => {
+            let mut m = crate::ml::tree::adaboost::AdaBoostClassifier::new(gu(n, v, "n_estimators", 50), gf(n, v, "learning_rate", 1.0), gu(n, v, "max_depth", 1));
+            eval_model_generic_cls(fold, &mut m, scoring)
+        }
+        "AdaBoostRegressor" => {
+            let mut m = crate::ml::tree::adaboost::AdaBoostRegressor::new(gu(n, v, "n_estimators", 50), gf(n, v, "learning_rate", 1.0), gu(n, v, "max_depth", 1));
+            eval_model_generic_reg(fold, &mut m, scoring)
+        }
+        "KNeighborsClassifier" => {
+            let w = if gs(n, v, "weights", "uniform") == "distance" { crate::ml::neighbors::knn::KnnWeights::Distance } else { crate::ml::neighbors::knn::KnnWeights::Uniform };
+            let mut m = crate::ml::neighbors::knn::KNeighborsClassifier::new(gu(n, v, "n_neighbors", 5), w);
+            eval_model_generic_cls(fold, &mut m, scoring)
+        }
+        "KNeighborsRegressor" => {
+            let w = if gs(n, v, "weights", "uniform") == "distance" { crate::ml::neighbors::knn::KnnWeights::Distance } else { crate::ml::neighbors::knn::KnnWeights::Uniform };
+            let mut m = crate::ml::neighbors::knn::KNeighborsRegressor::new(gu(n, v, "n_neighbors", 5), w);
+            eval_model_generic_reg(fold, &mut m, scoring)
+        }
+        "GaussianNB" => {
+            let mut m = crate::ml::naive_bayes::gaussian::GaussianNB::new();
+            eval_model_generic_cls(fold, &mut m, scoring)
+        }
+        "LinearSVC" => {
+            let mut m = crate::ml::svm::svm::LinearSVC::new(gf(n, v, "C", 1.0), gu(n, v, "max_iter", 1000), gf(n, v, "tol", 1e-4));
+            eval_model_generic_cls(fold, &mut m, scoring)
+        }
+        "LinearSVR" => {
+            let mut m = crate::ml::svm::svm::LinearSVR::new(gf(n, v, "C", 1.0), gf(n, v, "epsilon", 0.1), gu(n, v, "max_iter", 1000), gf(n, v, "tol", 1e-4));
+            eval_model_generic_reg(fold, &mut m, scoring)
+        }
+        _ => f64::NEG_INFINITY,
+    }
 }

@@ -115,6 +115,9 @@
 - [Decomposition]()
   - [PCA / TruncatedSVD](ml/decomposition.md)
 
+- [Model Selection]()
+  - [GridSearchCV / RandomizedSearchCV / Halving](ml/grid-search.md)
+
 - [Evaluation]()
   - [Metrics](ml/metrics.md)
   - [train_test_split](ml/train-test-split.md)

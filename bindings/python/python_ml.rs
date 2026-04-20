@@ -187,13 +187,27 @@ impl PyLasso {
         let mut m = std::collections::HashMap::new();
         Python::with_gil(|py| {
             m.insert("alpha".to_string(), self.inner.alpha().into_py(py));
+            m.insert("max_iter".to_string(), self.inner.max_iter().into_py(py));
+            m.insert("tol".to_string(), self.inner.tol().into_py(py));
+            m.insert("fit_intercept".to_string(), self.inner.fit_intercept().into_py(py));
         });
         Ok(m)
     }
-    fn set_params(&mut self, _params: std::collections::HashMap<String, PyObject>) -> PyResult<()> { Ok(()) }
+    fn set_params(&mut self, params: std::collections::HashMap<String, PyObject>) -> PyResult<()> {
+        Python::with_gil(|py| {
+            if let Some(v) = params.get("alpha") { if let Ok(val) = v.extract::<f64>(py) { self.inner.set_alpha(val); } }
+            if let Some(v) = params.get("max_iter") { if let Ok(val) = v.extract::<usize>(py) { self.inner.set_max_iter(val); } }
+            if let Some(v) = params.get("tol") { if let Ok(val) = v.extract::<f64>(py) { self.inner.set_tol(val); } }
+            if let Some(v) = params.get("fit_intercept") { if let Ok(val) = v.extract::<bool>(py) { self.inner.set_fit_intercept(val); } }
+        });
+        Ok(())
+    }
     #[getter] fn coef_(&self) -> Vec<f64> { self.inner.coef().to_vec() }
     #[getter] fn intercept_(&self) -> f64 { self.inner.intercept() }
     #[getter] fn alpha_(&self) -> f64 { self.inner.alpha() }
+    #[getter] fn max_iter_(&self) -> usize { self.inner.max_iter() }
+    #[getter] fn tol_(&self) -> f64 { self.inner.tol() }
+    #[getter] fn fit_intercept_(&self) -> bool { self.inner.fit_intercept() }
     #[getter] fn n_iter_(&self) -> usize { self.inner.n_iter() }
     fn __repr__(&self) -> String { format!("Lasso(alpha={})", self.inner.alpha()) }
 }
@@ -709,7 +723,29 @@ impl PyAdaBoostRegressor {
 pub struct PyKNeighborsClassifier { inner: crate::ml::neighbors::knn::KNeighborsClassifier }
 
 impl_cls_fit_predict_score!(PyKNeighborsClassifier);
-impl_get_set_params!(PyKNeighborsClassifier, "n_neighbors" => inner.k, usize;);
+
+#[pymethods]
+impl PyKNeighborsClassifier {
+    fn get_params(&self, _py: Python<'_>) -> PyResult<std::collections::HashMap<String, PyObject>> {
+        let mut m = std::collections::HashMap::new();
+        Python::with_gil(|py| {
+            m.insert("n_neighbors".to_string(), self.inner.k.into_py(py));
+            m.insert("weights".to_string(), self.weights_().into_py(py));
+        });
+        Ok(m)
+    }
+    fn set_params(&mut self, params: std::collections::HashMap<String, PyObject>) -> PyResult<()> {
+        Python::with_gil(|py| {
+            if let Some(v) = params.get("n_neighbors") { self.inner.k = v.extract::<usize>(py).unwrap_or(self.inner.k); }
+            if let Some(v) = params.get("weights") {
+                if let Ok(s) = v.extract::<String>(py) {
+                    self.inner.weights = match s.as_str() { "distance" => crate::ml::neighbors::knn::KnnWeights::Distance, _ => crate::ml::neighbors::knn::KnnWeights::Uniform };
+                }
+            }
+        });
+        Ok(())
+    }
+}
 
 #[pymethods]
 impl PyKNeighborsClassifier {
@@ -737,7 +773,29 @@ impl PyKNeighborsClassifier {
 pub struct PyKNeighborsRegressor { inner: crate::ml::neighbors::knn::KNeighborsRegressor }
 
 impl_reg_fit_predict_score!(PyKNeighborsRegressor);
-impl_get_set_params!(PyKNeighborsRegressor, "n_neighbors" => inner.k, usize;);
+
+#[pymethods]
+impl PyKNeighborsRegressor {
+    fn get_params(&self, _py: Python<'_>) -> PyResult<std::collections::HashMap<String, PyObject>> {
+        let mut m = std::collections::HashMap::new();
+        Python::with_gil(|py| {
+            m.insert("n_neighbors".to_string(), self.inner.k.into_py(py));
+            m.insert("weights".to_string(), self.weights_().into_py(py));
+        });
+        Ok(m)
+    }
+    fn set_params(&mut self, params: std::collections::HashMap<String, PyObject>) -> PyResult<()> {
+        Python::with_gil(|py| {
+            if let Some(v) = params.get("n_neighbors") { self.inner.k = v.extract::<usize>(py).unwrap_or(self.inner.k); }
+            if let Some(v) = params.get("weights") {
+                if let Ok(s) = v.extract::<String>(py) {
+                    self.inner.weights = match s.as_str() { "distance" => crate::ml::neighbors::knn::KnnWeights::Distance, _ => crate::ml::neighbors::knn::KnnWeights::Uniform };
+                }
+            }
+        });
+        Ok(())
+    }
+}
 
 #[pymethods]
 impl PyKNeighborsRegressor {
@@ -1416,6 +1474,7 @@ pub struct PyGridSearchCV {
     param_values: Vec<Vec<String>>,
     cv: usize,
     seed: u64,
+    scoring: String,
     best_score: f64,
     best_params: std::collections::HashMap<String, String>,
     cv_results_mean: Vec<f64>,
@@ -1426,14 +1485,15 @@ pub struct PyGridSearchCV {
 #[pymethods]
 impl PyGridSearchCV {
     #[new]
-    #[pyo3(signature = (estimator, param_grid, cv=5, seed=42))]
-    fn py_new(estimator: &str, param_grid: &pyo3::types::PyDict, cv: usize, seed: u64) -> PyResult<Self> {
+    #[pyo3(signature = (estimator, param_grid, cv=5, seed=42, scoring="auto"))]
+    fn py_new(estimator: &str, param_grid: &pyo3::types::PyDict, cv: usize, seed: u64, scoring: &str) -> PyResult<Self> {
         let (param_names, param_values) = parse_param_grid(param_grid)?;
         Ok(Self {
             estimator: estimator.to_string(),
             param_names,
             param_values,
             cv, seed,
+            scoring: scoring.to_string(),
             best_score: f64::NEG_INFINITY,
             best_params: std::collections::HashMap::new(),
             cv_results_mean: Vec::new(),
@@ -1451,6 +1511,7 @@ impl PyGridSearchCV {
         let pn = self.param_names.clone();
         let pv = self.param_values.clone();
         let ps = param_sizes.clone();
+        let sc = self.scoring.clone();
 
         let folds = if is_classifier(&est) {
             let yl = extract_labels(y)?;
@@ -1462,7 +1523,7 @@ impl PyGridSearchCV {
 
         let caches = compute_caches(&est, &folds, &pn, &pv);
         let result = grid_search_parallel_cached(total, &folds, &caches, |combo_idx, fold, cache| {
-            eval_model_cached(&est, &pn, &pv, &ps, combo_idx, fold, cache)
+            eval_model_scored(&est, &pn, &pv, &ps, combo_idx, fold, cache, &sc)
         });
 
         self.best_score = result.best_score;
@@ -1521,6 +1582,7 @@ pub struct PyRandomizedSearchCV {
     n_iter: usize,
     cv: usize,
     seed: u64,
+    scoring: String,
     best_score: f64,
     best_params: std::collections::HashMap<String, String>,
     cv_results_mean: Vec<f64>,
@@ -1531,12 +1593,13 @@ pub struct PyRandomizedSearchCV {
 #[pymethods]
 impl PyRandomizedSearchCV {
     #[new]
-    #[pyo3(signature = (estimator, param_distributions, n_iter=10, cv=5, seed=42))]
-    fn py_new(estimator: &str, param_distributions: &pyo3::types::PyDict, n_iter: usize, cv: usize, seed: u64) -> PyResult<Self> {
+    #[pyo3(signature = (estimator, param_distributions, n_iter=10, cv=5, seed=42, scoring="auto"))]
+    fn py_new(estimator: &str, param_distributions: &pyo3::types::PyDict, n_iter: usize, cv: usize, seed: u64, scoring: &str) -> PyResult<Self> {
         let (param_names, param_values) = parse_param_grid(param_distributions)?;
         Ok(Self {
             estimator: estimator.to_string(),
             param_names, param_values, n_iter, cv, seed,
+            scoring: scoring.to_string(),
             best_score: f64::NEG_INFINITY,
             best_params: std::collections::HashMap::new(),
             cv_results_mean: Vec::new(),
@@ -1555,6 +1618,7 @@ impl PyRandomizedSearchCV {
         let pn = self.param_names.clone();
         let pv = self.param_values.clone();
         let ps = param_sizes.clone();
+        let sc = self.scoring.clone();
 
         let folds = if is_classifier(&est) {
             let yl = extract_labels(y)?;
@@ -1566,7 +1630,7 @@ impl PyRandomizedSearchCV {
 
         let caches = compute_caches(&est, &folds, &pn, &pv);
         let result = randomized_search_parallel_cached(&combo_indices, &folds, &caches, |combo_idx, fold, cache| {
-            eval_model_cached(&est, &pn, &pv, &ps, combo_idx, fold, cache)
+            eval_model_scored(&est, &pn, &pv, &ps, combo_idx, fold, cache, &sc)
         });
 
         self.best_score = result.best_score;
@@ -1611,6 +1675,7 @@ pub struct PyHalvingGridSearchCV {
     cv: usize,
     factor: usize,
     seed: u64,
+    scoring: String,
     best_score: f64,
     best_params: std::collections::HashMap<String, String>,
     n_iterations: usize,
@@ -1620,12 +1685,13 @@ pub struct PyHalvingGridSearchCV {
 #[pymethods]
 impl PyHalvingGridSearchCV {
     #[new]
-    #[pyo3(signature = (estimator, param_grid, cv=5, factor=3, seed=42))]
-    fn py_new(estimator: &str, param_grid: &pyo3::types::PyDict, cv: usize, factor: usize, seed: u64) -> PyResult<Self> {
+    #[pyo3(signature = (estimator, param_grid, cv=5, factor=3, seed=42, scoring="auto"))]
+    fn py_new(estimator: &str, param_grid: &pyo3::types::PyDict, cv: usize, factor: usize, seed: u64, scoring: &str) -> PyResult<Self> {
         let (param_names, param_values) = parse_param_grid(param_grid)?;
         Ok(Self {
             estimator: estimator.to_string(),
             param_names, param_values, cv, factor: factor.max(2), seed,
+            scoring: scoring.to_string(),
             best_score: f64::NEG_INFINITY,
             best_params: std::collections::HashMap::new(),
             n_iterations: 0,
@@ -1643,6 +1709,7 @@ impl PyHalvingGridSearchCV {
         let pv = self.param_values.clone();
         let ps = param_sizes.clone();
         let fac = self.factor;
+        let sc = self.scoring.clone();
 
         let n_iters = (total as f64).log(fac as f64).ceil() as usize;
         let min_resources = (n as f64 / fac.pow(n_iters as u32) as f64).max(1.0) as usize;
@@ -1667,7 +1734,7 @@ impl PyHalvingGridSearchCV {
 
             let scores: Vec<(usize, f64)> = candidates.par_iter().map(|&combo_idx| {
                 let mean: f64 = sub_folds.iter().zip(caches.iter())
-                    .map(|(fold, cache)| eval_model_cached(&est, &pn, &pv, &ps, combo_idx, fold, cache))
+                    .map(|(fold, cache)| eval_model_scored(&est, &pn, &pv, &ps, combo_idx, fold, cache, &sc))
                     .sum::<f64>() / sub_folds.len() as f64;
                 (combo_idx, mean)
             }).collect();
@@ -1684,7 +1751,7 @@ impl PyHalvingGridSearchCV {
         let best_combo = candidates[0];
         let final_caches = compute_caches(&est, &full_folds, &pn, &pv);
         let best_score: f64 = full_folds.iter().zip(final_caches.iter())
-            .map(|(fold, cache)| eval_model_cached(&est, &pn, &pv, &ps, best_combo, fold, cache))
+            .map(|(fold, cache)| eval_model_scored(&est, &pn, &pv, &ps, best_combo, fold, cache, &sc))
             .sum::<f64>() / full_folds.len() as f64;
 
         self.best_score = best_score;
@@ -1724,6 +1791,7 @@ pub struct PyHalvingRandomSearchCV {
     cv: usize,
     factor: usize,
     seed: u64,
+    scoring: String,
     best_score: f64,
     best_params: std::collections::HashMap<String, String>,
     n_iterations: usize,
@@ -1733,12 +1801,13 @@ pub struct PyHalvingRandomSearchCV {
 #[pymethods]
 impl PyHalvingRandomSearchCV {
     #[new]
-    #[pyo3(signature = (estimator, param_distributions, n_candidates=256, cv=5, factor=3, seed=42))]
-    fn py_new(estimator: &str, param_distributions: &pyo3::types::PyDict, n_candidates: usize, cv: usize, factor: usize, seed: u64) -> PyResult<Self> {
+    #[pyo3(signature = (estimator, param_distributions, n_candidates=256, cv=5, factor=3, seed=42, scoring="auto"))]
+    fn py_new(estimator: &str, param_distributions: &pyo3::types::PyDict, n_candidates: usize, cv: usize, factor: usize, seed: u64, scoring: &str) -> PyResult<Self> {
         let (param_names, param_values) = parse_param_grid(param_distributions)?;
         Ok(Self {
             estimator: estimator.to_string(),
             param_names, param_values, n_candidates, cv, factor: factor.max(2), seed,
+            scoring: scoring.to_string(),
             best_score: f64::NEG_INFINITY,
             best_params: std::collections::HashMap::new(),
             n_iterations: 0,
@@ -1756,6 +1825,7 @@ impl PyHalvingRandomSearchCV {
         let pv = self.param_values.clone();
         let ps = param_sizes.clone();
         let fac = self.factor;
+        let sc = self.scoring.clone();
 
         let full_folds = if is_classifier(&est) {
             let yl = extract_labels(y)?;
@@ -1779,7 +1849,7 @@ impl PyHalvingRandomSearchCV {
 
             let scores: Vec<(usize, f64)> = candidates.par_iter().map(|&combo_idx| {
                 let mean: f64 = sub_folds.iter().zip(caches.iter())
-                    .map(|(fold, cache)| eval_model_cached(&est, &pn, &pv, &ps, combo_idx, fold, cache))
+                    .map(|(fold, cache)| eval_model_scored(&est, &pn, &pv, &ps, combo_idx, fold, cache, &sc))
                     .sum::<f64>() / sub_folds.len() as f64;
                 (combo_idx, mean)
             }).collect();
@@ -1796,7 +1866,7 @@ impl PyHalvingRandomSearchCV {
         let best_combo = candidates[0];
         let final_caches = compute_caches(&est, &full_folds, &pn, &pv);
         let best_score: f64 = full_folds.iter().zip(final_caches.iter())
-            .map(|(fold, cache)| eval_model_cached(&est, &pn, &pv, &ps, best_combo, fold, cache))
+            .map(|(fold, cache)| eval_model_scored(&est, &pn, &pv, &ps, best_combo, fold, cache, &sc))
             .sum::<f64>() / full_folds.len() as f64;
 
         self.best_score = best_score;

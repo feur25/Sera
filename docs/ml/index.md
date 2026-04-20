@@ -4,7 +4,7 @@
 
 SeraPlot provides a complete scikit-learn-compatible ML framework written in Rust with Python bindings. All models follow the same `fit` / `predict` / `score` API.
 
-> **All models are faster than scikit-learn** on equivalent tasks, with 1.3× to 55× speedups depending on the algorithm.
+> **All models are faster than scikit-learn** on equivalent tasks, with 1.3× to 686× speedups depending on the algorithm.
 
 ---
 
@@ -112,6 +112,15 @@ proba = model.predict_proba(X_test)
 | [`classification_report`](metrics.md) | Per-class precision/recall/f1 |
 | [`train_test_split`](train-test-split.md) | Stratified train/test split |
 
+### Model Selection
+
+| Class | Description |
+|-------|-------------|
+| [`GridSearchCV`](grid-search.md) | Exhaustive grid search with cross-validation |
+| [`RandomizedSearchCV`](grid-search.md) | Random search with cross-validation |
+| [`HalvingGridSearchCV`](grid-search.md) | Grid search with successive halving |
+| [`HalvingRandomSearchCV`](grid-search.md) | Random search with successive halving |
+
 ---
 
 ## Common API
@@ -153,6 +162,13 @@ model.intercept_ -> float | ndarray
 | KNN | **1.3×** | Thread-local zero-alloc buffers |
 | LogisticRegression | **1.2×** | Full joint Hessian Newton |
 | Pipeline (10 classes) | **8.3×** | Digits dataset end-to-end |
+| GridSearch Ridge | **15×** | Direct Cholesky solver |
+| GridSearch Lasso | **418×** | Gram cache + coordinate descent |
+| GridSearch ElasticNet | **686×** | Gram cache + coordinate descent |
+| GridSearch LogReg | **42×** | IRLS fast path |
+| GridSearch KNN | **119×** | Distance matrix cache |
+| GridSearch RF | **14×** | Parallel tree building |
+| GridSearch GB | **14×** | Parallel boosting |
 
 </div>
 
@@ -160,7 +176,7 @@ model.intercept_ -> float | ndarray
 
 SeraPlot fournit un framework ML complet, compatible scikit-learn, écrit en Rust avec des liaisons Python. Tous les modèles respectent la même API `fit` / `predict` / `score`.
 
-> **Tous les modèles sont plus rapides que scikit-learn** sur des tâches équivalentes, avec des accélérations de 1,3× à 55× selon l'algorithme.
+> **Tous les modèles sont plus rapides que scikit-learn** sur des tâches équivalentes, avec des accélérations de 1,3× à 686× selon l'algorithme.
 
 ---
 
