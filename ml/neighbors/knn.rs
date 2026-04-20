@@ -376,6 +376,40 @@ impl KNeighborsClassifier {
             }
         }
     }
+
+    pub fn kneighbors(&self, x: &[f64], n: usize, p: usize) -> Vec<Vec<(f64, usize)>> {
+        let k = self.k;
+        if let Some(ref tree) = self.tree {
+            let q = |i: usize| -> Vec<(f64, usize)> {
+                let xi = &x[i * p..(i + 1) * p];
+                let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
+                tree.query_k(xi, k, &mut heap);
+                heap.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
+                heap.iter().map(|&(d, idx)| (d, tree.perm[idx as usize] as usize)).collect()
+            };
+            if n >= 64 { (0..n).into_par_iter().map(q).collect() } else { (0..n).map(q).collect() }
+        } else {
+            let p_ = self.p;
+            let n_train = self.n;
+            let q = |i: usize| -> Vec<(f64, usize)> {
+                let xi = &x[i * p..(i + 1) * p];
+                let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
+                for j in 0..n_train {
+                    let d = dist_sq(xi, unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) }, p_);
+                    if heap.len() < k {
+                        heap.push((d, j as u32));
+                        if heap.len() == k { heap_build(&mut heap); }
+                    } else if d < heap[0].0 {
+                        heap[0] = (d, j as u32);
+                        heap_sift_down(&mut heap, 0);
+                    }
+                }
+                heap.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
+                heap.iter().map(|&(d, idx)| (d, idx as usize)).collect()
+            };
+            if n >= 64 { (0..n).into_par_iter().map(q).collect() } else { (0..n).map(q).collect() }
+        }
+    }
 }
 
 pub struct KNeighborsRegressor {
@@ -473,6 +507,41 @@ impl KNeighborsRegressor {
             } else {
                 (0..n).map(predict_one).collect()
             }
+        }
+    }
+
+    pub fn kneighbors(&self, x: &[f64], n: usize, p: usize) -> Vec<Vec<(f64, usize)>> {
+        let k = self.k;
+        if let Some(ref tree) = self.tree {
+            let q = |i: usize| -> Vec<(f64, usize)> {
+                let xi = &x[i * p..(i + 1) * p];
+                let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
+                tree.query_k(xi, k, &mut heap);
+                heap.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
+                heap.iter().map(|&(d, idx)| (d, tree.perm[idx as usize] as usize)).collect()
+            };
+            if n >= 64 { (0..n).into_par_iter().map(q).collect() } else { (0..n).map(q).collect() }
+        } else {
+            let p_ = self.p;
+            let n_train = self.n;
+            let q = |i: usize| -> Vec<(f64, usize)> {
+                let xi = &x[i * p..(i + 1) * p];
+                let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
+                let k_ = k.min(n_train);
+                for j in 0..n_train {
+                    let d = dist_sq(xi, unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) }, p_);
+                    if heap.len() < k_ {
+                        heap.push((d, j as u32));
+                        if heap.len() == k_ { heap_build(&mut heap); }
+                    } else if d < heap[0].0 {
+                        heap[0] = (d, j as u32);
+                        heap_sift_down(&mut heap, 0);
+                    }
+                }
+                heap.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
+                heap.iter().map(|&(d, idx)| (d, idx as usize)).collect()
+            };
+            if n >= 64 { (0..n).into_par_iter().map(q).collect() } else { (0..n).map(q).collect() }
         }
     }
 }

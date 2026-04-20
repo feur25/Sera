@@ -1452,28 +1452,24 @@ impl PyGridSearchCV {
         let pv = self.param_values.clone();
         let ps = param_sizes.clone();
 
-        let (folds, result) = if is_classifier(&est) {
+        let folds = if is_classifier(&est) {
             let yl = extract_labels(y)?;
-            let folds = precompute_folds_cls(&xf, n, p, &yl, self.cv, self.seed);
-            let r = grid_search_parallel(total, &folds, |combo_idx, fold| {
-                eval_model(&est, &pn, &pv, &ps, combo_idx, fold)
-            });
-            (folds.len(), r)
+            precompute_folds_cls(&xf, n, p, &yl, self.cv, self.seed)
         } else {
             let yt = extract_targets(y)?;
-            let folds = precompute_folds_reg(&xf, n, p, &yt, self.cv, self.seed);
-            let r = grid_search_parallel(total, &folds, |combo_idx, fold| {
-                eval_model(&est, &pn, &pv, &ps, combo_idx, fold)
-            });
-            (folds.len(), r)
+            precompute_folds_reg(&xf, n, p, &yt, self.cv, self.seed)
         };
+
+        let caches = compute_caches(&est, &folds, &pn, &pv);
+        let result = grid_search_parallel_cached(total, &folds, &caches, |combo_idx, fold, cache| {
+            eval_model_cached(&est, &pn, &pv, &ps, combo_idx, fold, cache)
+        });
 
         self.best_score = result.best_score;
         self.best_params = build_best_params(&self.param_names, &self.param_values, &param_sizes, result.best_params_idx);
         self.cv_results_mean = result.cv_results;
         self.cv_results_std = result.cv_std;
         self.fitted = true;
-        let _ = folds;
         Ok(())
     }
 
@@ -1560,19 +1556,18 @@ impl PyRandomizedSearchCV {
         let pv = self.param_values.clone();
         let ps = param_sizes.clone();
 
-        let result = if is_classifier(&est) {
+        let folds = if is_classifier(&est) {
             let yl = extract_labels(y)?;
-            let folds = precompute_folds_cls(&xf, n, p, &yl, self.cv, self.seed);
-            randomized_search_parallel(&combo_indices, &folds, |combo_idx, fold| {
-                eval_model(&est, &pn, &pv, &ps, combo_idx, fold)
-            })
+            precompute_folds_cls(&xf, n, p, &yl, self.cv, self.seed)
         } else {
             let yt = extract_targets(y)?;
-            let folds = precompute_folds_reg(&xf, n, p, &yt, self.cv, self.seed);
-            randomized_search_parallel(&combo_indices, &folds, |combo_idx, fold| {
-                eval_model(&est, &pn, &pv, &ps, combo_idx, fold)
-            })
+            precompute_folds_reg(&xf, n, p, &yt, self.cv, self.seed)
         };
+
+        let caches = compute_caches(&est, &folds, &pn, &pv);
+        let result = randomized_search_parallel_cached(&combo_indices, &folds, &caches, |combo_idx, fold, cache| {
+            eval_model_cached(&est, &pn, &pv, &ps, combo_idx, fold, cache)
+        });
 
         self.best_score = result.best_score;
         self.best_params = build_best_params(&self.param_names, &self.param_values, &param_sizes, result.best_params_idx);
@@ -1668,10 +1663,11 @@ impl PyHalvingGridSearchCV {
             let sub_folds: Vec<FoldData> = full_folds.iter()
                 .map(|f| subsample_fold(f, resource))
                 .collect();
+            let caches = compute_caches(&est, &sub_folds, &pn, &pv);
 
             let scores: Vec<(usize, f64)> = candidates.par_iter().map(|&combo_idx| {
-                let mean: f64 = sub_folds.iter()
-                    .map(|fold| eval_model(&est, &pn, &pv, &ps, combo_idx, fold))
+                let mean: f64 = sub_folds.iter().zip(caches.iter())
+                    .map(|(fold, cache)| eval_model_cached(&est, &pn, &pv, &ps, combo_idx, fold, cache))
                     .sum::<f64>() / sub_folds.len() as f64;
                 (combo_idx, mean)
             }).collect();
@@ -1686,8 +1682,9 @@ impl PyHalvingGridSearchCV {
         }
 
         let best_combo = candidates[0];
-        let best_score: f64 = full_folds.iter()
-            .map(|fold| eval_model(&est, &pn, &pv, &ps, best_combo, fold))
+        let final_caches = compute_caches(&est, &full_folds, &pn, &pv);
+        let best_score: f64 = full_folds.iter().zip(final_caches.iter())
+            .map(|(fold, cache)| eval_model_cached(&est, &pn, &pv, &ps, best_combo, fold, cache))
             .sum::<f64>() / full_folds.len() as f64;
 
         self.best_score = best_score;
@@ -1778,10 +1775,11 @@ impl PyHalvingRandomSearchCV {
             let sub_folds: Vec<FoldData> = full_folds.iter()
                 .map(|f| subsample_fold(f, resource))
                 .collect();
+            let caches = compute_caches(&est, &sub_folds, &pn, &pv);
 
             let scores: Vec<(usize, f64)> = candidates.par_iter().map(|&combo_idx| {
-                let mean: f64 = sub_folds.iter()
-                    .map(|fold| eval_model(&est, &pn, &pv, &ps, combo_idx, fold))
+                let mean: f64 = sub_folds.iter().zip(caches.iter())
+                    .map(|(fold, cache)| eval_model_cached(&est, &pn, &pv, &ps, combo_idx, fold, cache))
                     .sum::<f64>() / sub_folds.len() as f64;
                 (combo_idx, mean)
             }).collect();
@@ -1796,8 +1794,9 @@ impl PyHalvingRandomSearchCV {
         }
 
         let best_combo = candidates[0];
-        let best_score: f64 = full_folds.iter()
-            .map(|fold| eval_model(&est, &pn, &pv, &ps, best_combo, fold))
+        let final_caches = compute_caches(&est, &full_folds, &pn, &pv);
+        let best_score: f64 = full_folds.iter().zip(final_caches.iter())
+            .map(|(fold, cache)| eval_model_cached(&est, &pn, &pv, &ps, best_combo, fold, cache))
             .sum::<f64>() / full_folds.len() as f64;
 
         self.best_score = best_score;

@@ -458,3 +458,429 @@ pub fn subsample_fold(fold: &FoldData, n_sub: usize) -> FoldData {
         p: fold.p,
     }
 }
+pub struct GramCache {
+    xtx_c: Vec<f64>,
+    xty_c: Vec<f64>,
+    gram_s: Vec<f64>,
+    xty_s: Vec<f64>,
+    xj_sq: Vec<f64>,
+    x_mean: Vec<f64>,
+    x_std: Vec<f64>,
+    y_mean: f64,
+    n: usize,
+    p: usize,
+}
+
+pub struct KnnDistCache {
+    nn: Vec<Vec<(f64, usize)>>,
+    max_k: usize,
+}
+
+pub enum ModelCache {
+    Gram(GramCache),
+    Knn(KnnDistCache),
+    None,
+}
+
+pub fn compute_gram_cache(fold: &FoldData) -> GramCache {
+    let n = fold.n_train;
+    let p = fold.p;
+    let x = &fold.x_train;
+    let y = &fold.y_train_f;
+    let nf = n as f64;
+    let inv = 1.0 / nf;
+
+    let mut x_mean = vec![0.0; p];
+    let mut y_mean = 0.0;
+    for i in 0..n {
+        for j in 0..p { x_mean[j] += x[i * p + j]; }
+        y_mean += y[i];
+    }
+    for j in 0..p { x_mean[j] *= inv; }
+    y_mean *= inv;
+
+    let mut x_var = vec![0.0; p];
+    for i in 0..n {
+        for j in 0..p { let d = x[i * p + j] - x_mean[j]; x_var[j] += d * d; }
+    }
+    let mut x_std = vec![0.0; p];
+    for j in 0..p {
+        x_std[j] = (x_var[j] * inv).sqrt();
+        if x_std[j] < 1e-15 { x_std[j] = 1.0; }
+    }
+
+    let mut xtx = vec![0.0; p * p];
+    let mut xty = vec![0.0; p];
+    for i in 0..n {
+        let row = &x[i * p..(i + 1) * p];
+        let yi = y[i];
+        for ii in 0..p {
+            let ai = row[ii];
+            for j in ii..p { xtx[ii * p + j] += ai * row[j]; }
+            xty[ii] += ai * yi;
+        }
+    }
+    for i in 0..p { for j in (i + 1)..p { xtx[j * p + i] = xtx[i * p + j]; } }
+
+    let mut xtx_c = xtx;
+    for i in 0..p {
+        for j in 0..p { xtx_c[i * p + j] -= nf * x_mean[i] * x_mean[j]; }
+    }
+    let mut xty_c = xty;
+    for j in 0..p { xty_c[j] -= nf * x_mean[j] * y_mean; }
+
+    let mut gram_s = xtx_c.clone();
+    for i in 0..p {
+        for j in 0..p { gram_s[i * p + j] /= x_std[i] * x_std[j]; }
+    }
+    let mut xty_s = xty_c.clone();
+    for j in 0..p { xty_s[j] /= x_std[j]; }
+    let xj_sq: Vec<f64> = (0..p).map(|j| gram_s[j * p + j]).collect();
+
+    GramCache { xtx_c, xty_c, gram_s, xty_s, xj_sq, x_mean, x_std, y_mean, n, p }
+}
+
+pub fn compute_knn_dist_cache(fold: &FoldData, max_k: usize) -> KnnDistCache {
+    let is_cls = !fold.y_train_i.is_empty();
+    if is_cls {
+        let mut model = crate::ml::neighbors::knn::KNeighborsClassifier::new(max_k, crate::ml::neighbors::knn::KnnWeights::Uniform);
+        model.fit(&fold.x_train, fold.n_train, fold.p, &fold.y_train_i);
+        let nn = model.kneighbors(&fold.x_test, fold.n_test, fold.p);
+        KnnDistCache { nn, max_k }
+    } else {
+        let mut model = crate::ml::neighbors::knn::KNeighborsRegressor::new(max_k, crate::ml::neighbors::knn::KnnWeights::Uniform);
+        model.fit(&fold.x_train, fold.n_train, fold.p, &fold.y_train_f);
+        let nn = model.kneighbors(&fold.x_test, fold.n_test, fold.p);
+        KnnDistCache { nn, max_k }
+    }
+}
+
+pub fn needs_gram_cache(estimator: &str) -> bool {
+    matches!(estimator, "Ridge" | "Lasso" | "ElasticNet" | "LinearRegression")
+}
+
+pub fn needs_knn_cache(estimator: &str) -> bool {
+    matches!(estimator, "KNeighborsClassifier" | "KNeighborsRegressor")
+}
+
+pub fn compute_caches(
+    estimator: &str, folds: &[FoldData],
+    param_names: &[String], param_values: &[Vec<String>],
+) -> Vec<ModelCache> {
+    if needs_gram_cache(estimator) {
+        folds.iter().map(|f| ModelCache::Gram(compute_gram_cache(f))).collect()
+    } else if needs_knn_cache(estimator) {
+        let max_k = param_names.iter().position(|n| n == "n_neighbors")
+            .and_then(|i| param_values[i].iter().filter_map(|v| v.parse::<usize>().ok()).max())
+            .unwrap_or(10);
+        folds.iter().map(|f| ModelCache::Knn(compute_knn_dist_cache(f, max_k))).collect()
+    } else {
+        folds.iter().map(|_| ModelCache::None).collect()
+    }
+}
+
+fn predict_and_r2(fold: &FoldData, coef: &[f64], intercept: f64) -> f64 {
+    let n = fold.n_test;
+    let p = fold.p;
+    let y = &fold.y_test_f;
+    let y_mean = y.iter().sum::<f64>() / n as f64;
+    let (mut ss_res, mut ss_tot) = (0.0, 0.0);
+    for i in 0..n {
+        let mut pred = intercept;
+        for j in 0..p { pred += fold.x_test[i * p + j] * coef[j]; }
+        let e = y[i] - pred; ss_res += e * e;
+        let d = y[i] - y_mean; ss_tot += d * d;
+    }
+    if ss_tot < 1e-15 { 0.0 } else { 1.0 - ss_res / ss_tot }
+}
+
+#[inline]
+fn soft_thresh(x: f64, lam: f64) -> f64 {
+    if x > lam { x - lam } else if x < -lam { x + lam } else { 0.0 }
+}
+
+fn gs_ridge_gram(fold: &FoldData, g: &GramCache, alpha: f64, fit_intercept: bool) -> f64 {
+    let p = g.p;
+    if fit_intercept {
+        let mut a = g.xtx_c.clone();
+        for j in 0..p { a[j * p + j] += alpha; }
+        let w = crate::ml::linalg::solve_spd(&a, p, &g.xty_c).unwrap_or_else(|| vec![0.0; p]);
+        let b = g.y_mean - crate::ml::linalg::dot(&w, &g.x_mean);
+        predict_and_r2(fold, &w, b)
+    } else {
+        let nf = g.n as f64;
+        let mut a = g.xtx_c.clone();
+        for i in 0..p { for j in 0..p { a[i * p + j] += nf * g.x_mean[i] * g.x_mean[j]; } a[i * p + i] += alpha; }
+        let mut b = g.xty_c.clone();
+        for j in 0..p { b[j] += nf * g.x_mean[j] * g.y_mean; }
+        let w = crate::ml::linalg::solve_spd(&a, p, &b).unwrap_or_else(|| vec![0.0; p]);
+        predict_and_r2(fold, &w, 0.0)
+    }
+}
+
+fn gs_elasticnet_gram_eval(fold: &FoldData, gc: &GramCache, alpha: f64, l1_ratio: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> f64 {
+    let p = gc.p;
+    let l1 = alpha * l1_ratio;
+    let l2 = alpha * (1.0 - l1_ratio);
+    let inv_n = 1.0 / gc.n as f64;
+
+    if fit_intercept {
+        let g = &gc.gram_s;
+        let b = &gc.xty_s;
+        let xj_sq = &gc.xj_sq;
+        let mut w = vec![0.0; p];
+        for _ in 0..max_iter {
+            let mut mc = 0.0f64;
+            for j in 0..p {
+                if xj_sq[j] < 1e-15 { continue; }
+                let old = w[j];
+                let mut rho = b[j];
+                for k in 0..p { rho -= g[j * p + k] * w[k]; }
+                rho += xj_sq[j] * old;
+                let nv = soft_thresh(rho * inv_n, l1) / (xj_sq[j] * inv_n + l2);
+                w[j] = nv;
+                mc = mc.max((nv - old).abs());
+            }
+            if mc < tol { break; }
+        }
+        let coef: Vec<f64> = (0..p).map(|j| w[j] / gc.x_std[j]).collect();
+        let intercept = gc.y_mean - crate::ml::linalg::dot(&coef, &gc.x_mean);
+        predict_and_r2(fold, &coef, intercept)
+    } else {
+        let nf = gc.n as f64;
+        let mut g = gc.xtx_c.clone();
+        for i in 0..p { for j in 0..p { g[i * p + j] += nf * gc.x_mean[i] * gc.x_mean[j]; } }
+        let mut bv = gc.xty_c.clone();
+        for j in 0..p { bv[j] += nf * gc.x_mean[j] * gc.y_mean; }
+        let xsq: Vec<f64> = (0..p).map(|j| g[j * p + j]).collect();
+        let mut w = vec![0.0; p];
+        for _ in 0..max_iter {
+            let mut mc = 0.0f64;
+            for j in 0..p {
+                if xsq[j] < 1e-15 { continue; }
+                let old = w[j];
+                let mut rho = bv[j];
+                for k in 0..p { rho -= g[j * p + k] * w[k]; }
+                rho += xsq[j] * old;
+                let nv = soft_thresh(rho * inv_n, l1) / (xsq[j] * inv_n + l2);
+                w[j] = nv;
+                mc = mc.max((nv - old).abs());
+            }
+            if mc < tol { break; }
+        }
+        predict_and_r2(fold, &w, 0.0)
+    }
+}
+
+fn gs_lasso_gram_eval(fold: &FoldData, gc: &GramCache, alpha: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> f64 {
+    gs_elasticnet_gram_eval(fold, gc, alpha, 1.0, max_iter, tol, fit_intercept)
+}
+
+fn gs_linear_gram_eval(fold: &FoldData, gc: &GramCache, fit_intercept: bool) -> f64 {
+    gs_ridge_gram(fold, gc, 0.0, fit_intercept)
+}
+
+fn gs_knn_cached_cls(fold: &FoldData, cache: &KnnDistCache, k: usize, weights: crate::ml::neighbors::knn::KnnWeights) -> f64 {
+    let n_test = fold.n_test;
+    let y_train = &fold.y_train_i;
+    let y_test = &fold.y_test_i;
+    let use_dist = matches!(weights, crate::ml::neighbors::knn::KnnWeights::Distance);
+    let mut correct = 0usize;
+    for i in 0..n_test {
+        let nn = &cache.nn[i][..k.min(cache.nn[i].len())];
+        let pred = if use_dist {
+            let mut best_cls = y_train[nn[0].1];
+            let mut best_w = 0.0f64;
+            let mut wts = [0.0f64; 256];
+            let mut cls_map: Vec<i32> = Vec::new();
+            for &(d_sq, idx) in nn {
+                let label = y_train[idx];
+                let ci = match cls_map.iter().position(|&c| c == label) {
+                    Some(p) => p, None => { cls_map.push(label); cls_map.len() - 1 }
+                };
+                let w = 1.0 / d_sq.sqrt().max(1e-10);
+                wts[ci] += w;
+                if wts[ci] > best_w { best_w = wts[ci]; best_cls = label; }
+            }
+            best_cls
+        } else {
+            let mut best_cls = y_train[nn[0].1];
+            let mut best_c = 0u32;
+            let mut counts = [0u32; 256];
+            let mut cls_map: Vec<i32> = Vec::new();
+            for &(_, idx) in nn {
+                let label = y_train[idx];
+                let ci = match cls_map.iter().position(|&c| c == label) {
+                    Some(p) => p, None => { cls_map.push(label); cls_map.len() - 1 }
+                };
+                counts[ci] += 1;
+                if counts[ci] > best_c { best_c = counts[ci]; best_cls = label; }
+            }
+            best_cls
+        };
+        if pred == y_test[i] { correct += 1; }
+    }
+    correct as f64 / n_test as f64
+}
+
+fn gs_knn_cached_reg(fold: &FoldData, cache: &KnnDistCache, k: usize, weights: crate::ml::neighbors::knn::KnnWeights) -> f64 {
+    let n_test = fold.n_test;
+    let y_train = &fold.y_train_f;
+    let y_test = &fold.y_test_f;
+    let use_dist = matches!(weights, crate::ml::neighbors::knn::KnnWeights::Distance);
+    let y_mean = y_test.iter().sum::<f64>() / n_test as f64;
+    let (mut ss_res, mut ss_tot) = (0.0, 0.0);
+    for i in 0..n_test {
+        let nn = &cache.nn[i][..k.min(cache.nn[i].len())];
+        let pred = if use_dist {
+            let (mut ws, mut vs) = (0.0, 0.0);
+            for &(d_sq, idx) in nn { let w = 1.0 / d_sq.sqrt().max(1e-10); vs += w * y_train[idx]; ws += w; }
+            vs / ws
+        } else {
+            nn.iter().map(|&(_, idx)| y_train[idx]).sum::<f64>() / nn.len() as f64
+        };
+        let e = y_test[i] - pred; ss_res += e * e;
+        let d = y_test[i] - y_mean; ss_tot += d * d;
+    }
+    if ss_tot < 1e-15 { 0.0 } else { 1.0 - ss_res / ss_tot }
+}
+
+fn gs_logistic_irls(fold: &FoldData, c: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> f64 {
+    let n = fold.n_train;
+    let p = fold.p;
+    let x = &fold.x_train;
+    let y = &fold.y_train_i;
+    let lambda = 1.0 / c;
+
+    let mut classes = y.to_vec();
+    classes.sort_unstable();
+    classes.dedup();
+    if classes.len() != 2 {
+        return gs_logistic_cls(fold, c, max_iter, tol, fit_intercept);
+    }
+
+    let y_bin: Vec<f64> = y.iter().map(|&v| if v == classes[1] { 1.0 } else { 0.0 }).collect();
+    let dim = if fit_intercept { p + 1 } else { p };
+    let inv_n = 1.0 / n as f64;
+    let mut w = vec![0.0; dim];
+
+    for _ in 0..max_iter {
+        let mut probs = vec![0.0; n];
+        for i in 0..n {
+            let mut z = if fit_intercept { w[p] } else { 0.0 };
+            for j in 0..p { z += x[i * p + j] * w[j]; }
+            z = z.clamp(-500.0, 500.0);
+            probs[i] = (1.0 / (1.0 + (-z).exp())).clamp(1e-12, 1.0 - 1e-12);
+        }
+
+        let mut hess = vec![0.0; dim * dim];
+        let mut grad = vec![0.0; dim];
+        for k in 0..n {
+            let wk = probs[k] * (1.0 - probs[k]);
+            let dk = probs[k] - y_bin[k];
+            for i in 0..p {
+                let xi = x[k * p + i];
+                grad[i] += xi * dk;
+                for j in i..p { hess[i * dim + j] += xi * x[k * p + j] * wk; }
+                if fit_intercept { hess[i * dim + p] += xi * wk; }
+            }
+            if fit_intercept { grad[p] += dk; hess[p * dim + p] += wk; }
+        }
+        for i in 0..dim {
+            grad[i] *= inv_n;
+            for j in i..dim { hess[i * dim + j] *= inv_n; hess[j * dim + i] = hess[i * dim + j]; }
+        }
+        for i in 0..p { grad[i] += lambda * w[i]; hess[i * dim + i] += lambda; }
+
+        match crate::ml::linalg::solve_spd(&hess, dim, &grad) {
+            Some(d) => {
+                let mut mc = 0.0f64;
+                for i in 0..dim { w[i] -= d[i]; mc = mc.max(d[i].abs()); }
+                if mc < tol { break; }
+            }
+            None => break,
+        }
+    }
+
+    let n_test = fold.n_test;
+    let y_test = &fold.y_test_i;
+    let mut correct = 0usize;
+    for i in 0..n_test {
+        let mut z = if fit_intercept { w[p] } else { 0.0 };
+        for j in 0..p { z += fold.x_test[i * p + j] * w[j]; }
+        let pred = if z >= 0.0 { classes[1] } else { classes[0] };
+        if pred == y_test[i] { correct += 1; }
+    }
+    correct as f64 / n_test as f64
+}
+
+pub fn eval_model_cached(
+    estimator: &str,
+    param_names: &[String],
+    param_values: &[Vec<String>],
+    param_sizes: &[usize],
+    combo_idx: usize,
+    fold: &FoldData,
+    cache: &ModelCache,
+) -> f64 {
+    let indices = decode_combo(combo_idx, param_sizes);
+    let vals: Vec<String> = indices.iter().enumerate()
+        .map(|(i, &idx)| param_values[i][idx].clone()).collect();
+    let n = param_names;
+    let v = &vals;
+    match (estimator, cache) {
+        ("Ridge", ModelCache::Gram(g)) =>
+            gs_ridge_gram(fold, g, gf(n, v, "alpha", 1.0), gb(n, v, "fit_intercept", true)),
+        ("Lasso", ModelCache::Gram(g)) =>
+            gs_lasso_gram_eval(fold, g, gf(n, v, "alpha", 1.0), gu(n, v, "max_iter", 1000), gf(n, v, "tol", 1e-4), gb(n, v, "fit_intercept", true)),
+        ("ElasticNet", ModelCache::Gram(g)) =>
+            gs_elasticnet_gram_eval(fold, g, gf(n, v, "alpha", 1.0), gf(n, v, "l1_ratio", 0.5), gu(n, v, "max_iter", 1000), gf(n, v, "tol", 1e-4), gb(n, v, "fit_intercept", true)),
+        ("LinearRegression", ModelCache::Gram(g)) =>
+            gs_linear_gram_eval(fold, g, gb(n, v, "fit_intercept", true)),
+        ("KNeighborsClassifier", ModelCache::Knn(kc)) => {
+            let wt = if gs(n, v, "weights", "uniform") == "distance" { crate::ml::neighbors::knn::KnnWeights::Distance } else { crate::ml::neighbors::knn::KnnWeights::Uniform };
+            gs_knn_cached_cls(fold, kc, gu(n, v, "n_neighbors", 5), wt)
+        }
+        ("KNeighborsRegressor", ModelCache::Knn(kc)) => {
+            let wt = if gs(n, v, "weights", "uniform") == "distance" { crate::ml::neighbors::knn::KnnWeights::Distance } else { crate::ml::neighbors::knn::KnnWeights::Uniform };
+            gs_knn_cached_reg(fold, kc, gu(n, v, "n_neighbors", 5), wt)
+        }
+        ("LogisticRegression", _) =>
+            gs_logistic_irls(fold, gf(n, v, "C", 1.0), gu(n, v, "max_iter", 100), gf(n, v, "tol", 1e-4), gb(n, v, "fit_intercept", true)),
+        _ => eval_model(estimator, param_names, param_values, param_sizes, combo_idx, fold),
+    }
+}
+
+pub fn grid_search_parallel_cached<F>(
+    n_combos: usize,
+    folds: &[FoldData],
+    caches: &[ModelCache],
+    eval_fn: F,
+) -> GridSearchResult
+where F: Fn(usize, &FoldData, &ModelCache) -> f64 + Send + Sync,
+{
+    let all_scores: Vec<Vec<f64>> = (0..n_combos)
+        .into_par_iter()
+        .map(|ci| folds.iter().zip(caches.iter())
+            .map(|(fold, cache)| eval_fn(ci, fold, cache))
+            .collect::<Vec<f64>>())
+        .collect();
+    finalise_results(all_scores, None)
+}
+
+pub fn randomized_search_parallel_cached<F>(
+    combo_indices: &[usize],
+    folds: &[FoldData],
+    caches: &[ModelCache],
+    eval_fn: F,
+) -> GridSearchResult
+where F: Fn(usize, &FoldData, &ModelCache) -> f64 + Send + Sync,
+{
+    let all_scores: Vec<Vec<f64>> = combo_indices
+        .par_iter()
+        .map(|&ci| folds.iter().zip(caches.iter())
+            .map(|(fold, cache)| eval_fn(ci, fold, cache))
+            .collect::<Vec<f64>>())
+        .collect();
+    finalise_results(all_scores, Some(combo_indices))
+}
