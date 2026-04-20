@@ -476,9 +476,17 @@ pub struct KnnDistCache {
     max_k: usize,
 }
 
+pub struct IrlsCache {
+    xt: Vec<f64>,
+    y_bin: Vec<f64>,
+    classes: [i32; 2],
+    is_binary: bool,
+}
+
 pub enum ModelCache {
     Gram(GramCache),
     Knn(KnnDistCache),
+    Irls(IrlsCache),
     None,
 }
 
@@ -556,11 +564,38 @@ pub fn compute_knn_dist_cache(fold: &FoldData, max_k: usize) -> KnnDistCache {
 }
 
 pub fn needs_gram_cache(estimator: &str) -> bool {
-    matches!(estimator, "Lasso" | "ElasticNet" | "LinearRegression")
+    matches!(estimator, "Ridge" | "Lasso" | "ElasticNet" | "LinearRegression")
 }
 
 pub fn needs_knn_cache(estimator: &str) -> bool {
     matches!(estimator, "KNeighborsClassifier" | "KNeighborsRegressor")
+}
+
+pub fn needs_irls_cache(estimator: &str) -> bool {
+    matches!(estimator, "LogisticRegression")
+}
+
+pub fn compute_irls_cache(fold: &FoldData) -> IrlsCache {
+    let n = fold.n_train;
+    let p = fold.p;
+    let y = &fold.y_train_i;
+    let mut classes_vec = y.to_vec();
+    classes_vec.sort_unstable();
+    classes_vec.dedup();
+    let is_binary = classes_vec.len() == 2;
+    let classes = if is_binary { [classes_vec[0], classes_vec[1]] } else { [0, 0] };
+    let y_bin = if is_binary {
+        y.iter().map(|&v| if v == classes[1] { 1.0 } else { 0.0 }).collect()
+    } else {
+        Vec::new()
+    };
+    let mut xt = vec![0.0; p * n];
+    for i in 0..n {
+        for j in 0..p {
+            xt[j * n + i] = fold.x_train[i * p + j];
+        }
+    }
+    IrlsCache { xt, y_bin, classes, is_binary }
 }
 
 pub fn compute_caches(
@@ -574,6 +609,8 @@ pub fn compute_caches(
             .and_then(|i| param_values[i].iter().filter_map(|v| v.parse::<usize>().ok()).max())
             .unwrap_or(10);
         folds.iter().map(|f| ModelCache::Knn(compute_knn_dist_cache(f, max_k))).collect()
+    } else if needs_irls_cache(estimator) {
+        folds.iter().map(|f| ModelCache::Irls(compute_irls_cache(f))).collect()
     } else {
         folds.iter().map(|_| ModelCache::None).collect()
     }
@@ -814,6 +851,88 @@ fn gs_logistic_irls(fold: &FoldData, c: f64, max_iter: usize, tol: f64, fit_inte
     correct as f64 / n_test as f64
 }
 
+fn gs_logistic_irls_cached(fold: &FoldData, ic: &IrlsCache, c: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> f64 {
+    if !ic.is_binary {
+        return gs_logistic_cls(fold, c, max_iter, tol, fit_intercept);
+    }
+    let n = fold.n_train;
+    let p = fold.p;
+    let xt = &ic.xt;
+    let y_bin = &ic.y_bin;
+    let lambda = 1.0 / c;
+    let dim = if fit_intercept { p + 1 } else { p };
+    let inv_n = 1.0 / n as f64;
+    let mut w = vec![0.0; dim];
+    let mut probs = vec![0.0; n];
+    let mut dk = vec![0.0; n];
+    let mut wk = vec![0.0; n];
+
+    for _ in 0..max_iter {
+        if fit_intercept { probs.fill(w[p]); } else { probs.fill(0.0); }
+        for j in 0..p {
+            let xj = &xt[j * n..(j + 1) * n];
+            let wj = w[j];
+            for i in 0..n { probs[i] += xj[i] * wj; }
+        }
+        for i in 0..n {
+            let z = probs[i].clamp(-500.0, 500.0);
+            let s = (1.0 / (1.0 + (-z).exp())).clamp(1e-12, 1.0 - 1e-12);
+            dk[i] = s - y_bin[i];
+            wk[i] = s * (1.0 - s);
+        }
+
+        let mut hess = vec![0.0; dim * dim];
+        let mut grad = vec![0.0; dim];
+        for i in 0..p {
+            let xi = &xt[i * n..(i + 1) * n];
+            let mut g = 0.0;
+            for k in 0..n { g += xi[k] * dk[k]; }
+            grad[i] = g * inv_n + lambda * w[i];
+            for j in i..p {
+                let xj = &xt[j * n..(j + 1) * n];
+                let mut s = 0.0;
+                for k in 0..n { s += xi[k] * xj[k] * wk[k]; }
+                let v = s * inv_n + if i == j { lambda } else { 0.0 };
+                hess[i * dim + j] = v;
+                hess[j * dim + i] = v;
+            }
+            if fit_intercept {
+                let mut s = 0.0;
+                for k in 0..n { s += xi[k] * wk[k]; }
+                hess[i * dim + p] = s * inv_n;
+                hess[p * dim + i] = s * inv_n;
+            }
+        }
+        if fit_intercept {
+            let mut g = 0.0;
+            let mut s = 0.0;
+            for k in 0..n { g += dk[k]; s += wk[k]; }
+            grad[p] = g * inv_n;
+            hess[p * dim + p] = s * inv_n;
+        }
+
+        match crate::ml::linalg::solve_spd(&hess, dim, &grad) {
+            Some(d) => {
+                let mut mc = 0.0f64;
+                for i in 0..dim { w[i] -= d[i]; mc = mc.max(d[i].abs()); }
+                if mc < tol { break; }
+            }
+            None => break,
+        }
+    }
+
+    let n_test = fold.n_test;
+    let y_test = &fold.y_test_i;
+    let mut correct = 0usize;
+    for i in 0..n_test {
+        let mut z = if fit_intercept { w[p] } else { 0.0 };
+        for j in 0..p { z += fold.x_test[i * p + j] * w[j]; }
+        let pred = if z >= 0.0 { ic.classes[1] } else { ic.classes[0] };
+        if pred == y_test[i] { correct += 1; }
+    }
+    correct as f64 / n_test as f64
+}
+
 pub fn eval_model_cached(
     estimator: &str,
     param_names: &[String],
@@ -845,6 +964,8 @@ pub fn eval_model_cached(
             let wt = if gs(n, v, "weights", "uniform") == "distance" { crate::ml::neighbors::knn::KnnWeights::Distance } else { crate::ml::neighbors::knn::KnnWeights::Uniform };
             gs_knn_cached_reg(fold, kc, gu(n, v, "n_neighbors", 5), wt)
         }
+        ("LogisticRegression", ModelCache::Irls(ic)) =>
+            gs_logistic_irls_cached(fold, ic, gf(n, v, "C", 1.0), gu(n, v, "max_iter", 100), gf(n, v, "tol", 1e-4), gb(n, v, "fit_intercept", true)),
         ("LogisticRegression", _) =>
             gs_logistic_irls(fold, gf(n, v, "C", 1.0), gu(n, v, "max_iter", 100), gf(n, v, "tol", 1e-4), gb(n, v, "fit_intercept", true)),
         _ => eval_model(estimator, param_names, param_values, param_sizes, combo_idx, fold),

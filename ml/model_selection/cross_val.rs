@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use crate::ml::model_selection::split::kfold_indices;
 use crate::ml::metrics::classification::accuracy_score;
 use crate::ml::metrics::regression::r2_score;
@@ -5,12 +6,12 @@ use crate::ml::metrics::regression::r2_score;
 pub fn cross_val_score_cls<F>(
     x: &[f64], n: usize, p: usize, y: &[i32],
     k: usize, seed: u64,
-    mut train_predict: F,
+    train_predict: F,
 ) -> Vec<f64>
-where F: FnMut(&[f64], usize, usize, &[i32], &[f64], usize) -> Vec<i32>
+where F: Fn(&[f64], usize, usize, &[i32], &[f64], usize) -> Vec<i32> + Send + Sync
 {
     let folds = kfold_indices(n, k, seed);
-    folds.iter().map(|(train_idx, test_idx)| {
+    folds.into_par_iter().map(|(train_idx, test_idx)| {
         let n_train = train_idx.len();
         let n_test = test_idx.len();
         let mut x_train = vec![0.0; n_train * p];
@@ -35,12 +36,12 @@ where F: FnMut(&[f64], usize, usize, &[i32], &[f64], usize) -> Vec<i32>
 pub fn cross_val_score_reg<F>(
     x: &[f64], n: usize, p: usize, y: &[f64],
     k: usize, seed: u64,
-    mut train_predict: F,
+    train_predict: F,
 ) -> Vec<f64>
-where F: FnMut(&[f64], usize, usize, &[f64], &[f64], usize) -> Vec<f64>
+where F: Fn(&[f64], usize, usize, &[f64], &[f64], usize) -> Vec<f64> + Send + Sync
 {
     let folds = kfold_indices(n, k, seed);
-    folds.iter().map(|(train_idx, test_idx)| {
+    folds.into_par_iter().map(|(train_idx, test_idx)| {
         let n_train = train_idx.len();
         let n_test = test_idx.len();
         let mut x_train = vec![0.0; n_train * p];

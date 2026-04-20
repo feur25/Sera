@@ -1,4 +1,5 @@
 use crate::ml::linalg::splitmix64;
+use rayon::prelude::*;
 
 pub fn train_test_split_cls(
     x: &[f64], n: usize, p: usize, y: &[i32], test_size: f64, seed: u64,
@@ -13,14 +14,9 @@ pub fn train_test_split_cls(
     let mut y_train = vec![0i32; n_train];
     let mut y_test = vec![0i32; n_test];
 
-    for (out_i, &orig_i) in indices[..n_train].iter().enumerate() {
-        x_train[out_i * p..(out_i + 1) * p].copy_from_slice(&x[orig_i * p..(orig_i + 1) * p]);
-        y_train[out_i] = y[orig_i];
-    }
-    for (out_i, &orig_i) in indices[n_train..].iter().enumerate() {
-        x_test[out_i * p..(out_i + 1) * p].copy_from_slice(&x[orig_i * p..(orig_i + 1) * p]);
-        y_test[out_i] = y[orig_i];
-    }
+    scatter_rows(x, p, &indices[..n_train], &mut x_train, &mut y_train, y);
+    scatter_rows(x, p, &indices[n_train..], &mut x_test, &mut y_test, y);
+
     (x_train, x_test, y_train, y_test)
 }
 
@@ -37,29 +33,54 @@ pub fn train_test_split_reg(
     let mut y_train = vec![0.0; n_train];
     let mut y_test = vec![0.0; n_test];
 
-    for (out_i, &orig_i) in indices[..n_train].iter().enumerate() {
-        x_train[out_i * p..(out_i + 1) * p].copy_from_slice(&x[orig_i * p..(orig_i + 1) * p]);
-        y_train[out_i] = y[orig_i];
-    }
-    for (out_i, &orig_i) in indices[n_train..].iter().enumerate() {
-        x_test[out_i * p..(out_i + 1) * p].copy_from_slice(&x[orig_i * p..(orig_i + 1) * p]);
-        y_test[out_i] = y[orig_i];
-    }
+    scatter_rows_f(x, p, &indices[..n_train], &mut x_train, &mut y_train, y);
+    scatter_rows_f(x, p, &indices[n_train..], &mut x_test, &mut y_test, y);
+
     (x_train, x_test, y_train, y_test)
 }
 
 pub fn kfold_indices(n: usize, k: usize, seed: u64) -> Vec<(Vec<usize>, Vec<usize>)> {
     let indices = shuffled_indices(n, seed);
     let fold_size = n / k;
-    let mut folds = Vec::with_capacity(k);
-    for i in 0..k {
+    (0..k).map(|i| {
         let start = i * fold_size;
         let end = if i == k - 1 { n } else { (i + 1) * fold_size };
         let test_idx: Vec<usize> = indices[start..end].to_vec();
         let train_idx: Vec<usize> = indices[..start].iter().chain(indices[end..].iter()).copied().collect();
-        folds.push((train_idx, test_idx));
+        (train_idx, test_idx)
+    }).collect()
+}
+
+#[inline]
+fn scatter_rows(x: &[f64], p: usize, idx: &[usize], x_out: &mut [f64], y_out: &mut [i32], y: &[i32]) {
+    if idx.len() * p > 200_000 {
+        x_out.par_chunks_mut(p).enumerate().for_each(|(i, dst)| {
+            let orig = idx[i];
+            dst.copy_from_slice(&x[orig * p..(orig + 1) * p]);
+        });
+        y_out.par_iter_mut().enumerate().for_each(|(i, dst)| { *dst = y[idx[i]]; });
+    } else {
+        for (i, &orig) in idx.iter().enumerate() {
+            x_out[i * p..(i + 1) * p].copy_from_slice(&x[orig * p..(orig + 1) * p]);
+            y_out[i] = y[orig];
+        }
     }
-    folds
+}
+
+#[inline]
+fn scatter_rows_f(x: &[f64], p: usize, idx: &[usize], x_out: &mut [f64], y_out: &mut [f64], y: &[f64]) {
+    if idx.len() * p > 200_000 {
+        x_out.par_chunks_mut(p).enumerate().for_each(|(i, dst)| {
+            let orig = idx[i];
+            dst.copy_from_slice(&x[orig * p..(orig + 1) * p]);
+        });
+        y_out.par_iter_mut().enumerate().for_each(|(i, dst)| { *dst = y[idx[i]]; });
+    } else {
+        for (i, &orig) in idx.iter().enumerate() {
+            x_out[i * p..(i + 1) * p].copy_from_slice(&x[orig * p..(orig + 1) * p]);
+            y_out[i] = y[orig];
+        }
+    }
 }
 
 fn shuffled_indices(n: usize, seed: u64) -> Vec<usize> {
