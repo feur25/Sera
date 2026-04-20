@@ -1369,6 +1369,37 @@ pub fn r2_score(y_true: Vec<f64>, y_pred: Vec<f64>) -> f64 {
 
 #[pyfunction]
 #[pyo3(signature = (y_true, y_pred))]
+pub fn root_mean_squared_error(y_true: Vec<f64>, y_pred: Vec<f64>) -> f64 {
+    crate::ml::metrics::regression::root_mean_squared_error(&y_true, &y_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (estimator, x, y, *, cv=5, scoring="auto", seed=42))]
+pub fn cross_val_score(estimator: &str, x: &PyAny, y: &PyAny, cv: usize, scoring: &str, seed: u64) -> PyResult<Vec<f64>> {
+    use crate::ml::model_selection::grid_search::*;
+    let (xf, n, p) = extract_flat(x)?;
+    let pn: Vec<String> = Vec::new();
+    let pv: Vec<Vec<String>> = Vec::new();
+    let ps: Vec<usize> = Vec::new();
+    if is_classifier(estimator) {
+        let yl = extract_labels(y)?;
+        let folds = precompute_folds_cls(&xf, n, p, &yl, cv, seed);
+        let caches = compute_caches(estimator, &folds, &pn, &pv);
+        Ok(folds.iter().zip(caches.iter()).map(|(fold, cache)| {
+            eval_model_scored(estimator, &pn, &pv, &ps, 0, fold, cache, scoring)
+        }).collect())
+    } else {
+        let yt = extract_targets(y)?;
+        let folds = precompute_folds_reg(&xf, n, p, &yt, cv, seed);
+        let caches = compute_caches(estimator, &folds, &pn, &pv);
+        Ok(folds.iter().zip(caches.iter()).map(|(fold, cache)| {
+            eval_model_scored(estimator, &pn, &pv, &ps, 0, fold, cache, scoring)
+        }).collect())
+    }
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred))]
 pub fn classification_report(y_true: Vec<i32>, y_pred: Vec<i32>) -> String {
     crate::ml::metrics::classification::classification_report(&y_true, &y_pred)
 }
@@ -2127,6 +2158,8 @@ pub fn register_ml_classes(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(mean_squared_error, m)?)?;
     m.add_function(wrap_pyfunction!(mean_absolute_error, m)?)?;
     m.add_function(wrap_pyfunction!(r2_score, m)?)?;
+    m.add_function(wrap_pyfunction!(root_mean_squared_error, m)?)?;
+    m.add_function(wrap_pyfunction!(cross_val_score, m)?)?;
     m.add_function(wrap_pyfunction!(classification_report, m)?)?;
     m.add_function(wrap_pyfunction!(f1_score, m)?)?;
     m.add_function(wrap_pyfunction!(precision_score, m)?)?;
