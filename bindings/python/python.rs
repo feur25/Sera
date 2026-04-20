@@ -11,6 +11,12 @@ use crate::Chart;
 use pyo3::types::PyAny;
 
 #[cfg(feature = "python")]
+fn chart_auto(name: &str, title: &str, n: usize) -> crate::ml::cache::TaskHandle {
+    let fp = crate::ml::cache::Fp::new(name).str(title).usize(n).finish();
+    crate::ml::cache::TaskHandle::auto(name, fp)
+}
+
+#[cfg(feature = "python")]
 pub(crate) struct ChartOpts {
     pub w: i32,
     pub h: i32,
@@ -123,6 +129,7 @@ pub fn bench_pure_rust(n: usize) -> (f64, f64, f64, f64) {
 #[pyfunction]
 /// Simple HTML chart (no kwargs). Args: title, labels, values, width, height.
 pub fn build_html_chart(title: &str, labels: Vec<String>, values: Vec<f64>, width: i32, height: i32) -> Chart {
+    let _h = chart_auto("build_html_chart", title, 0);
     Chart::new({
         let exporter = crate::html::FastHtmlExporter::new(width, height, title.to_string());
         exporter.build_optimized(labels, values)
@@ -139,6 +146,7 @@ pub fn build_html_chart(title: &str, labels: Vec<String>, values: Vec<f64>, widt
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_bar_chart(title: &str, labels: Vec<String>, values: Vec<f64>, color_hex: u32, orientation: &str, show_text: bool, color_groups: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_bar_chart", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     let orient = if orientation == "h" { b'h' } else { b'v' };
@@ -147,6 +155,7 @@ pub fn build_bar_chart(title: &str, labels: Vec<String>, values: Vec<f64>, color
     let html = crate::plot::default::render_bars_html(
         title, &labels, &values, o.w, o.h, &hover, orient, &groups, show_text, &o.xl, &o.yl, &o.pal, color_hex, o.grid, &o.srt,
     );
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
@@ -161,6 +170,7 @@ pub fn build_bar_chart(title: &str, labels: Vec<String>, values: Vec<f64>, color
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_hbar(title: &str, labels: Vec<String>, values: Vec<f64>, color_hex: u32, show_text: bool, color_groups: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_hbar", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     let groups = color_groups.unwrap_or_default();
@@ -168,6 +178,7 @@ pub fn build_hbar(title: &str, labels: Vec<String>, values: Vec<f64>, color_hex:
     let html = crate::plot::default::render_bars_html(
         title, &labels, &values, o.w, o.h, &hover, b'h', &groups, show_text, &o.xl, "", &o.pal, color_hex, o.grid, &o.srt,
     );
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
@@ -182,6 +193,7 @@ pub fn build_hbar(title: &str, labels: Vec<String>, values: Vec<f64>, color_hex:
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_line_chart(title: &str, labels: Vec<String>, values: Vec<f64>, color_hex: u32, show_points: bool, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_line_chart", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     let cap = 100usize;
@@ -191,6 +203,7 @@ pub fn build_line_chart(title: &str, labels: Vec<String>, values: Vec<f64>, colo
     let html = crate::plot::default::render_lines_html(
         title, &lbls, &vals, o.w, o.h, &hover, color_hex, &o.xl, &o.yl, o.grid, show_points, &o.srt,
     );
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
@@ -198,11 +211,13 @@ pub fn build_line_chart(title: &str, labels: Vec<String>, values: Vec<f64>, colo
 #[pyfunction]
 #[pyo3(signature = (title, x_values, y_values, *, eps=0.02_f64, min_samples=10_usize, width=1000_i32, height=580_i32, x_label="", y_label="", gridlines=false, palette=None, background=None, normalize=true))]
 pub fn build_dbscan_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, eps: f64, min_samples: usize, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, palette: Option<Vec<u32>>, background: Option<&str>, normalize: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_dbscan_chart", title, 0);
     let pal: Vec<u32> = palette.unwrap_or_default();
     let html = crate::plot::default::render_dbscan_html(
         title, &x_values, &y_values, eps, min_samples,
         x_label, y_label, width, height, gridlines, normalize, &pal,
     );
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, true, true)))
 }
 
@@ -238,10 +253,15 @@ impl DbscanModel {
 
     #[pyo3(signature = (x))]
     pub fn fit(&mut self, x: Vec<Vec<f64>>) -> PyResult<()> {
+        let n = x.len();
+        let d = x.first().map_or(0, |r| r.len());
+        let fp = crate::ml::cache::Fp::new("DBSCAN.fit").f64(self.eps).usize(self.min_samples).usize(n).usize(d).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("DBSCAN.fit", fp);
         let (labels, n_clusters) = crate::plot::default::scatter::dbscan_core_nd(&x, self.eps, self.min_samples);
         self.n_noise_ = labels.iter().filter(|&&l| l < 0).count();
         self.labels_ = labels;
         self.n_clusters_ = n_clusters;
+        _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
 
@@ -286,6 +306,7 @@ impl DbscanModel {
 ///
 /// Kwargs: eps, min_samples, width, height, x_label, y_label, z_label, bg_color, normalize, palette.
 pub fn build_dbscan_chart_3d(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, eps: f64, min_samples: usize, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, bg_color: &str, normalize: bool, palette: Option<Vec<u32>>) -> PyResult<Chart> {
+    let _h = chart_auto("build_dbscan_chart_3d", title, 0);
     let n = x_values.len().min(y_values.len()).min(z_values.len());
     let (xn, yn, zn) = if normalize && n > 0 {
         let (xmn, xmx) = x_values[..n].iter().fold((f64::INFINITY, f64::NEG_INFINITY), |(a,b),&v| (a.min(v),b.max(v)));
@@ -336,6 +357,7 @@ pub fn build_kmeans_chart(
     palette: Option<Vec<u32>>,
     background: Option<&str>,
 ) -> PyResult<Chart> {
+    let _h = chart_auto("build_kmeans_chart", title, 0);
     let pal: Vec<u32> = palette.unwrap_or_default();
     let html = crate::plot::default::render_kmeans_html(&crate::plot::default::KMeansConfig {
         title,
@@ -346,6 +368,7 @@ pub fn build_kmeans_chart(
         palette: &pal,
         ..Default::default()
     });
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, true, true)))
 }
 
@@ -410,6 +433,8 @@ impl KMeansModel {
     #[pyo3(signature = (x))]
     pub fn fit(&mut self, x: &PyAny) -> PyResult<()> {
         let (flat, n, dims) = extract_flat(x)?;
+        let fp = crate::ml::cache::Fp::new("KMeans.fit").usize(self.k).usize(self.max_iter).bval(self.mini_batch).data(&flat, n, dims).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("KMeans.fit", fp);
         if self.mini_batch {
             let (labels, flat_c, inertia) = crate::plot::default::minibatch_kmeans_core_flat(&flat, n, dims, self.k, self.max_iter, self.batch_size);
             self.labels_ = labels;
@@ -423,6 +448,7 @@ impl KMeansModel {
             self.inertia_ = inertia;
             self.n_iter_ = self.max_iter;
         }
+        _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
 
@@ -467,6 +493,7 @@ impl KMeansModel {
 #[pyfunction]
 #[pyo3(signature = (title, x_values, y_values, *, color_hex=0_u32, show_text=false, labels=None, sizes=None, color_groups=None, width=900_i32, height=540_i32, x_label="", y_label="", gridlines=false, sort_order="none", hover_json="", legend_position="right", palette=None, series_names=None, background=None, no_x_axis=false, no_y_axis=false, show_regression=false, regression_type="linear"))]
 pub fn build_scatter_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, color_hex: u32, show_text: bool, labels: Option<Vec<String>>, sizes: Option<Vec<f64>>, color_groups: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool, show_regression: bool, regression_type: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_scatter_chart", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     let cap = 200_000usize;
@@ -480,6 +507,7 @@ pub fn build_scatter_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, 
     let html = crate::plot::default::render_scatter_html(
         title, &x, &y, &lbls, o.w, o.h, &hover, &sz, &cgs, &o.pal, &o.xl, &o.yl, color_hex, o.grid, show_text, show_regression, regression_type,
     );
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
@@ -494,6 +522,7 @@ pub fn build_scatter_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, 
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_histogram(title: &str, values: Vec<f64>, color_hex: u32, bins: i32, show_counts: bool, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_histogram", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{HistogramConfig, render_histogram_html};
@@ -505,6 +534,7 @@ pub fn build_histogram(title: &str, values: Vec<f64>, color_hex: u32, bins: i32,
         show_counts, gridlines: o.grid, width: o.w, height: o.h, hover: &hover, count_scale: scale,
         sort_order: &o.srt, ..HistogramConfig::default()
     });
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
@@ -520,6 +550,7 @@ pub fn build_histogram(title: &str, values: Vec<f64>, color_hex: u32, bins: i32,
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// background (str|None, default None=transparent).
 pub fn build_histogram_overlay(title: &str, values: Vec<f64>, overlay_values: Vec<f64>, color_hex: u32, overlay_color_hex: u32, bins: i32, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_histogram_overlay", title, 0);
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{HistogramConfig, render_histogram_html};
     let hover = o.hover();
@@ -535,6 +566,7 @@ pub fn build_histogram_overlay(title: &str, values: Vec<f64>, overlay_values: Ve
         x_label: &o.xl, y_label: &o.yl, gridlines: o.grid,
         sort_order: &o.srt, ..HistogramConfig::default()
     });
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
@@ -549,6 +581,7 @@ pub fn build_histogram_overlay(title: &str, values: Vec<f64>, overlay_values: Ve
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// background (str|None, default None=transparent).
 pub fn build_grouped_bar(title: &str, category_labels: Vec<String>, series_values: Vec<f64>, show_values: bool, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_grouped_bar", title, 0);
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{GroupedBarConfig, render_grouped_bar_html};
     let hover = o.hover();
@@ -565,6 +598,7 @@ pub fn build_grouped_bar(title: &str, category_labels: Vec<String>, series_value
         palette: &o.pal, x_label: &o.xl, y_label: &o.yl, show_values, gridlines: o.grid, sort_order: &o.srt,
         hover: &hover, ..GroupedBarConfig::default()
     });
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
@@ -579,6 +613,7 @@ pub fn build_grouped_bar(title: &str, category_labels: Vec<String>, series_value
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// background (str|None, default None=transparent).
 pub fn build_stacked_bar(title: &str, category_labels: Vec<String>, series_values: Vec<f64>, show_values: bool, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_stacked_bar", title, 0);
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{GroupedBarConfig, render_grouped_bar_html};
     let hover = o.hover();
@@ -595,6 +630,7 @@ pub fn build_stacked_bar(title: &str, category_labels: Vec<String>, series_value
         palette: &o.pal, x_label: &o.xl, y_label: &o.yl, show_values, gridlines: o.grid, sort_order: &o.srt,
         hover: &hover, stacked: true, ..GroupedBarConfig::default()
     });
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
@@ -610,6 +646,7 @@ pub fn build_stacked_bar(title: &str, category_labels: Vec<String>, series_value
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_heatmap(title: &str, labels: Vec<String>, flat_matrix: Vec<f64>, show_values: bool, color_low: u32, color_mid: u32, color_high: u32, col_labels: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_heatmap", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{HeatmapConfig, render_heatmap_html};
@@ -620,6 +657,7 @@ pub fn build_heatmap(title: &str, labels: Vec<String>, flat_matrix: Vec<f64>, sh
         show_values, color_low, color_mid, color_high, width: o.w, height: o.h, hover: &hover,
         sort_order: &o.srt, ..HeatmapConfig::default()
     });
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
@@ -634,6 +672,7 @@ pub fn build_heatmap(title: &str, labels: Vec<String>, flat_matrix: Vec<f64>, sh
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_pie_chart(title: &str, labels: Vec<String>, values: Vec<f64>, show_pct: bool, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_pie_chart", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{PieConfig, render_pie_html};
@@ -656,6 +695,7 @@ pub fn build_pie_chart(title: &str, labels: Vec<String>, values: Vec<f64>, show_
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_donut_chart(title: &str, labels: Vec<String>, values: Vec<f64>, show_pct: bool, inner_radius_ratio: f64, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_donut_chart", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{PieConfig, render_pie_html};
@@ -678,6 +718,7 @@ pub fn build_donut_chart(title: &str, labels: Vec<String>, values: Vec<f64>, sho
 /// Kwargs: width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_boxplot(title: &str, category_labels: Vec<String>, values: Vec<f64>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_boxplot", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     let hover = o.hover();
@@ -698,6 +739,7 @@ pub fn build_boxplot(title: &str, category_labels: Vec<String>, values: Vec<f64>
 /// Kwargs: width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_violin(title: &str, categories: Vec<String>, values: Vec<f64>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_violin", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{ViolinConfig, render_violin_html};
@@ -707,6 +749,7 @@ pub fn build_violin(title: &str, categories: Vec<String>, values: Vec<f64>, widt
         x_label: &o.xl, y_label: &o.yl, palette: &o.pal, gridlines: o.grid, width: o.w, height: o.h,
         sort_order: &o.srt, hover: &hover, legend_position: &o.lp,
     });
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
@@ -722,6 +765,7 @@ pub fn build_violin(title: &str, categories: Vec<String>, values: Vec<f64>, widt
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_slope(title: &str, labels: Vec<String>, values_left: Vec<f64>, values_right: Vec<f64>, left_label: &str, right_label: &str, show_text: bool, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_slope", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{SlopeConfig, render_slope_html};
@@ -731,6 +775,7 @@ pub fn build_slope(title: &str, labels: Vec<String>, values_left: Vec<f64>, valu
         left_label, right_label, palette: &o.pal, show_text, width: o.w, height: o.h,
         sort_order: &o.srt, hover: &hover, ..SlopeConfig::default()
     });
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
@@ -744,6 +789,7 @@ pub fn build_slope(title: &str, labels: Vec<String>, values_left: Vec<f64>, valu
 /// Kwargs: width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_sunburst(title: &str, labels: Vec<String>, parents: Vec<String>, values: Vec<f64>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_sunburst", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{SunburstConfig, render_sunburst_html};
@@ -752,6 +798,7 @@ pub fn build_sunburst(title: &str, labels: Vec<String>, parents: Vec<String>, va
         title, labels: &labels, parents: &parents, values: &values, width: o.w, height: o.h,
         hover: &hover, ..SunburstConfig::default()
     });
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
@@ -766,6 +813,7 @@ pub fn build_sunburst(title: &str, labels: Vec<String>, parents: Vec<String>, va
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_funnel(title: &str, labels: Vec<String>, values: Vec<f64>, show_text: bool, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_funnel", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{FunnelConfig, render_funnel_html};
@@ -774,6 +822,7 @@ pub fn build_funnel(title: &str, labels: Vec<String>, values: Vec<f64>, show_tex
         title, labels: &labels, values: &values, palette: &o.pal, show_text, width: o.w, height: o.h,
         sort_order: &o.srt, hover: &hover, ..FunnelConfig::default()
     });
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
@@ -788,6 +837,7 @@ pub fn build_funnel(title: &str, labels: Vec<String>, values: Vec<f64>, show_tex
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_treemap(title: &str, labels: Vec<String>, values: Vec<f64>, parents: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_treemap", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{TreemapConfig, render_treemap_html};
@@ -811,6 +861,7 @@ pub fn build_treemap(title: &str, labels: Vec<String>, values: Vec<f64>, parents
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// background (str|None, default None=transparent).
 pub fn build_multiline_chart(title: &str, x_labels: Vec<String>, series_values: Vec<Vec<f64>>, show_points: bool, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_multiline_chart", title, 0);
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{MultiLineConfig, render_multiline_html};
     let hover = o.hover();
@@ -822,6 +873,7 @@ pub fn build_multiline_chart(title: &str, x_labels: Vec<String>, series_values: 
         x_label: &o.xl, y_label: &o.yl, show_points, gridlines: o.grid, width: o.w, height: o.h, hover: &hover,
         sort_order: &o.srt, ..MultiLineConfig::default()
     });
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(html, background, !no_x_axis, !no_y_axis)))
 }
 
@@ -836,6 +888,7 @@ pub fn build_multiline_chart(title: &str, x_labels: Vec<String>, series_values: 
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// background (str|None, default None=transparent).
 pub fn build_area_chart(title: &str, x_labels: Vec<String>, series_values: Vec<Vec<f64>>, stacked: bool, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_area_chart", title, 0);
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{AreaConfig, render_area_html};
     let hover = o.hover();
@@ -860,6 +913,7 @@ pub fn build_area_chart(title: &str, x_labels: Vec<String>, series_values: Vec<V
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_waterfall(title: &str, labels: Vec<String>, values: Vec<f64>, show_text: bool, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_waterfall", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{WaterfallConfig, render_waterfall_html};
@@ -881,6 +935,7 @@ pub fn build_waterfall(title: &str, labels: Vec<String>, values: Vec<f64>, show_
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_bullet(title: &str, labels: Vec<String>, values: Vec<f64>, targets: Option<Vec<f64>>, max_vals: Option<Vec<f64>>, ranges: Option<Vec<f64>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_bullet", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{BulletConfig, render_bullet_html};
@@ -904,8 +959,10 @@ pub fn build_bullet(title: &str, labels: Vec<String>, values: Vec<f64>, targets:
 /// Kwargs: width, height, hover_json, series_names (list[str], reserved),
 /// background (str|None, default None=transparent).
 pub fn build_bubble_map(title: &str, labels: Vec<String>, values: Vec<f64>, width: i32, height: i32, hover_json: &str, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_bubble_map", title, 0);
     let _ = series_names;
     let hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { Vec::new() };
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(crate::plot::map::render_bubble_map_html(title, &labels, &values, width, height, &hover), background, !no_x_axis, !no_y_axis)))
 }
 
@@ -919,8 +976,10 @@ pub fn build_bubble_map(title: &str, labels: Vec<String>, values: Vec<f64>, widt
 /// Kwargs: width, height, hover_json, series_names (list[str], reserved),
 /// background (str|None, default None=transparent).
 pub fn build_choropleth(title: &str, labels: Vec<String>, values: Vec<f64>, width: i32, height: i32, hover_json: &str, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_choropleth", title, 0);
     let _ = series_names;
     let hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { Vec::new() };
+    _h.complete(&crate::ml::cache::PartialState::default());
     Ok(Chart::new(crate::html::hover::apply_opts(crate::plot::map::render_choropleth_html(title, &labels, &values, width, height, &hover), background, !no_x_axis, !no_y_axis)))
 }
 
@@ -934,6 +993,7 @@ pub fn build_choropleth(title: &str, labels: Vec<String>, values: Vec<f64>, widt
 /// Kwargs: color_values (list[float]), color_labels (list[str]), series_names (list[str]), bg_color (str),
 /// width, height, x_label, y_label, z_label, hover_json.
 pub fn build_scatter3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, color_values: Option<Vec<f64>>, color_labels: Option<Vec<String>>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_scatter3d_chart", title, 0);
     let _ = series_names;
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     let cv = color_values.unwrap_or_default();
@@ -955,6 +1015,7 @@ pub fn build_scatter3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>
 /// Kwargs: color_values (list[float]), color_labels (list[str]), series_names (list[str]), bg_color (str),
 /// width, height, x_label, y_label, z_label, hover_json.
 pub fn build_bar3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, color_values: Option<Vec<f64>>, color_labels: Option<Vec<String>>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_bar3d_chart", title, 0);
     let _ = series_names;
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     let cv = color_values.unwrap_or_default();
@@ -976,6 +1037,7 @@ pub fn build_bar3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_
 /// Kwargs: color_values (list[float]), color_labels (list[str]), series_names (list[str]), bg_color (str),
 /// width, height, x_label, y_label, z_label, hover_json.
 pub fn build_line3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, color_values: Option<Vec<f64>>, color_labels: Option<Vec<String>>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_line3d_chart", title, 0);
     let _ = series_names;
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     let cv = color_values.unwrap_or_default();
@@ -998,6 +1060,7 @@ pub fn build_line3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// background (str|None, default None=transparent).
 pub fn build_radar_chart(title: &str, axes: Vec<String>, series_values: Vec<Vec<f64>>, series_names: Option<Vec<String>>, filled: bool, fill_opacity: i32, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_radar_chart", title, 0);
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{RadarConfig, render_radar_html};
     let names = series_names.unwrap_or_else(|| (0..series_values.len()).map(|_| String::new()).collect());
@@ -1018,6 +1081,7 @@ pub fn build_radar_chart(title: &str, axes: Vec<String>, series_values: Vec<Vec<
 ///
 /// Kwargs: series_names (list[str]), width, height, x_label, y_label, z_label, hover_json.
 pub fn build_radar3d_chart(title: &str, axes: Vec<String>, series_values: Vec<Vec<f64>>, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_radar3d_chart", title, 0);
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     let n_axes = axes.len();
     if n_axes == 0 { return Ok(Chart::new(String::new())); }
@@ -1058,6 +1122,7 @@ pub fn build_radar3d_chart(title: &str, axes: Vec<String>, series_values: Vec<Ve
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_lollipop_chart(title: &str, labels: Vec<String>, values: Vec<f64>, color_hex: u32, orientation: &str, show_values: bool, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_lollipop_chart", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{LollipopConfig, render_lollipop_html};
@@ -1078,6 +1143,7 @@ pub fn build_lollipop_chart(title: &str, labels: Vec<String>, values: Vec<f64>, 
 ///
 /// Kwargs: color_labels (list[str]), series_names (list[str]), width, height, x_label, y_label, z_label, hover_json.
 pub fn build_lollipop3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, color_labels: Option<Vec<String>>, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_lollipop3d_chart", title, 0);
     let _ = series_names;
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     let cl = color_labels.unwrap_or_default();
@@ -1099,6 +1165,7 @@ pub fn build_lollipop3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_kde_chart(title: &str, values: Vec<f64>, categories: Option<Vec<String>>, filled: bool, fill_opacity: i32, bandwidth: f64, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_kde_chart", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{KdeConfig, render_kde_html};
@@ -1130,6 +1197,7 @@ pub fn build_kde_chart(title: &str, values: Vec<f64>, categories: Option<Vec<Str
 ///
 /// Kwargs: categories (list[str]), series_names (list[str]), width, height, x_label, y_label, z_label, hover_json.
 pub fn build_kde3d_chart(title: &str, values: Vec<f64>, categories: Option<Vec<String>>, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_kde3d_chart", title, 0);
     let _ = series_names;
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     use crate::plot::statistical::kde::{scott_bw, kde_eval};
@@ -1182,6 +1250,7 @@ pub fn build_kde3d_chart(title: &str, values: Vec<f64>, categories: Option<Vec<S
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_ridgeline_chart(title: &str, values: Vec<f64>, categories: Vec<String>, overlap: f64, bandwidth: f64, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_ridgeline_chart", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::{RidgelineConfig, render_ridgeline_html};
@@ -1202,6 +1271,7 @@ pub fn build_ridgeline_chart(title: &str, values: Vec<f64>, categories: Vec<Stri
 ///
 /// Kwargs: series_names (list[str]), width, height, x_label, y_label, z_label, hover_json.
 pub fn build_ridgeline3d_chart(title: &str, values: Vec<f64>, categories: Vec<String>, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_ridgeline3d_chart", title, 0);
     let _ = series_names;
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     use crate::plot::statistical::kde::{scott_bw, kde_eval};
@@ -1249,6 +1319,7 @@ pub fn build_ridgeline3d_chart(title: &str, values: Vec<f64>, categories: Vec<St
 /// Kwargs: color_values (list[float]), color_labels (list[str]), series_names (list[str]),
 /// width, height, x_label, y_label, z_label, hover_json.
 pub fn build_bubble3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, z_values: Vec<f64>, size_values: Vec<f64>, color_values: Option<Vec<f64>>, color_labels: Option<Vec<String>>, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_bubble3d_chart", title, 0);
     let _ = series_names;
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     let cv = color_values.unwrap_or_default();
@@ -1274,6 +1345,7 @@ pub fn build_bubble3d_chart(title: &str, x_values: Vec<f64>, y_values: Vec<f64>,
 ///
 /// Kwargs: series_names (list[str]), bg_color (str), sort_order (str), width, height, palette, hover_json.
 pub fn build_pie3d_chart(title: &str, labels: Vec<String>, values: Vec<f64>, series_names: Option<Vec<String>>, bg_color: &str, sort_order: &str, width: i32, height: i32, palette: Option<Vec<u32>>, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_pie3d_chart", title, 0);
     let _ = series_names;
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     let pal = palette.unwrap_or_default();
@@ -1299,6 +1371,7 @@ pub fn build_pie3d_chart(title: &str, labels: Vec<String>, values: Vec<f64>, ser
 ///
 /// Kwargs: categories (list[str]), series_names (list[str]), width, height, x_label, y_label, z_label, hover_json.
 pub fn build_violin3d_chart(title: &str, values: Vec<f64>, categories: Option<Vec<String>>, series_names: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_violin3d_chart", title, 0);
     let _ = series_names;
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     use crate::plot::statistical::kde::{scott_bw, kde_eval};
@@ -1352,6 +1425,7 @@ pub fn build_violin3d_chart(title: &str, values: Vec<f64>, categories: Option<Ve
 ///
 /// Kwargs: series_names (list[str]), bg_color (str), width, height, x_label, y_label, z_label, hover_json.
 pub fn build_heatmap3d_chart(title: &str, x_labels: Vec<String>, y_labels: Vec<String>, values: Vec<Vec<f64>>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_heatmap3d_chart", title, 0);
     let _ = series_names;
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
@@ -1383,6 +1457,7 @@ pub fn build_heatmap3d_chart(title: &str, x_labels: Vec<String>, y_labels: Vec<S
 ///
 /// Kwargs: series_names (list[str]), bg_color (str), width, height, x_label, y_label, z_label, hover_json.
 pub fn build_candlestick3d_chart(title: &str, labels: Vec<String>, open: Vec<f64>, high: Vec<f64>, low: Vec<f64>, close: Vec<f64>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_candlestick3d_chart", title, 0);
     let _ = series_names;
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
@@ -1410,6 +1485,7 @@ pub fn build_candlestick3d_chart(title: &str, labels: Vec<String>, open: Vec<f64
 /// Kwargs: series_names (tuple[str,str], default ("Start","End")), bg_color (str),
 /// width, height, x_label, y_label, z_label, hover_json.
 pub fn build_dumbbell3d_chart(title: &str, labels: Vec<String>, values_start: Vec<f64>, values_end: Vec<f64>, series_names: Option<(String, String)>, bg_color: &str, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_dumbbell3d_chart", title, 0);
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
     let sl = series_names.unwrap_or(("Start".to_string(), "End".to_string()));
@@ -1438,6 +1514,7 @@ pub fn build_dumbbell3d_chart(title: &str, labels: Vec<String>, values_start: Ve
 ///
 /// Kwargs: series_names (list[str]), bg_color (str), sort_order (str), width, height, hover_json.
 pub fn build_funnel3d_chart(title: &str, labels: Vec<String>, values: Vec<f64>, series_names: Option<Vec<String>>, bg_color: &str, sort_order: &str, width: i32, height: i32, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_funnel3d_chart", title, 0);
     let _ = series_names;
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
@@ -1461,6 +1538,7 @@ pub fn build_funnel3d_chart(title: &str, labels: Vec<String>, values: Vec<f64>, 
 ///
 /// Kwargs: series_names (list[str]), bg_color (str), width, height, hover_json.
 pub fn build_sunburst3d_chart(title: &str, labels: Vec<String>, parents: Vec<String>, values: Vec<f64>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_sunburst3d_chart", title, 0);
     let _ = series_names;
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
@@ -1494,6 +1572,7 @@ pub fn build_sunburst3d_chart(title: &str, labels: Vec<String>, parents: Vec<Str
 ///
 /// Kwargs: series_names (list[str]), bg_color (str), width, height, x_label, y_label, z_label, hover_json.
 pub fn build_stacked_bar3d_chart(title: &str, category_labels: Vec<String>, series_values: Vec<Vec<f64>>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, x_label: &str, y_label: &str, z_label: &str, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_stacked_bar3d_chart", title, 0);
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
     let n_cat = category_labels.len();
@@ -1525,6 +1604,7 @@ pub fn build_stacked_bar3d_chart(title: &str, category_labels: Vec<String>, seri
 ///
 /// Kwargs: labels (list[str]), series_names (list[str]), bg_color (str), width, height, hover_json.
 pub fn build_globe3d_chart(title: &str, latitudes: Vec<f64>, longitudes: Vec<f64>, values: Vec<f64>, labels: Option<Vec<String>>, series_names: Option<Vec<String>>, bg_color: &str, width: i32, height: i32, hover_json: &str) -> PyResult<Chart> {
+    let _h = chart_auto("build_globe3d_chart", title, 0);
     let _ = series_names;
     let _hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { vec![] };
     let bg = if !bg_color.is_empty() { Some(bg_color) } else { None };
@@ -1548,6 +1628,7 @@ pub fn build_globe3d_chart(title: &str, latitudes: Vec<f64>, longitudes: Vec<f64
 /// Kwargs: min_font (float, default 12), max_font (float, default 72), background (str|None, default None=transparent),
 /// width, height, palette, sort_order, hover_json, series_names (list[str], reserved).
 pub fn build_wordcloud(title: &str, words: Vec<String>, frequencies: Vec<f64>, min_font: f64, max_font: f64, background: Option<&str>, width: i32, height: i32, sort_order: &str, hover_json: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>) -> PyResult<Chart> {
+    let _h = chart_auto("build_wordcloud", title, 0);
     let _ = series_names;
     let pal = palette.unwrap_or_default();
     let hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { Vec::new() };
@@ -1569,6 +1650,7 @@ pub fn build_wordcloud(title: &str, words: Vec<String>, frequencies: Vec<f64>, m
 /// Kwargs: width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_candlestick(title: &str, labels: Vec<String>, open: Vec<f64>, high: Vec<f64>, low: Vec<f64>, close: Vec<f64>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_candlestick", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::candlestick::{CandlestickConfig, render_candlestick_html};
@@ -1592,6 +1674,7 @@ pub fn build_candlestick(title: &str, labels: Vec<String>, open: Vec<f64>, high:
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// background (str|None, default None=transparent).
 pub fn build_dumbbell(title: &str, labels: Vec<String>, values_start: Vec<f64>, values_end: Vec<f64>, series_names: Option<(String, String)>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_dumbbell", title, 0);
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::dumbbell::{DumbbellConfig, render_dumbbell_html};
     let sl = series_names.unwrap_or(("Start".to_string(), "End".to_string()));
@@ -1615,6 +1698,7 @@ pub fn build_dumbbell(title: &str, labels: Vec<String>, values_start: Vec<f64>, 
 /// width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position,
 /// series_names (list[str], reserved), background (str|None, default None=transparent).
 pub fn build_bubble(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, sizes: Vec<f64>, categories: Option<Vec<String>>, width: i32, height: i32, x_label: &str, y_label: &str, gridlines: bool, sort_order: &str, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_bubble", title, 0);
     let _ = series_names;
     let o = ChartOpts::from_params(width, height, palette, x_label, y_label, gridlines, sort_order, hover_json, legend_position);
     use crate::plot::statistical::bubble::{BubbleConfig, render_bubble_html};
@@ -1638,6 +1722,7 @@ pub fn build_bubble(title: &str, x_values: Vec<f64>, y_values: Vec<f64>, sizes: 
 /// width, height, palette, hover_json, series_names (list[str], reserved),
 /// background (str|None, default None=transparent).
 pub fn build_gauge(title: &str, value: f64, min_val: f64, max_val: f64, label: &str, width: i32, height: i32, hover_json: &str, palette: Option<Vec<u32>>, series_names: Option<Vec<String>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_gauge", title, 0);
     let _ = series_names;
     let _pal = palette.unwrap_or_default();
     let hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { Vec::new() };
@@ -1659,6 +1744,7 @@ pub fn build_gauge(title: &str, value: f64, min_val: f64, max_val: f64, label: &
 /// width, height, palette, hover_json, legend_position,
 /// background (str|None, default None=transparent).
 pub fn build_parallel(title: &str, axes: Vec<String>, series_values: Vec<Vec<f64>>, series_names: Option<Vec<String>>, width: i32, height: i32, hover_json: &str, legend_position: &str, palette: Option<Vec<u32>>, background: Option<&str>, no_x_axis: bool, no_y_axis: bool) -> PyResult<Chart> {
+    let _h = chart_auto("build_parallel", title, 0);
     let pal = palette.unwrap_or_default();
     let hover = if !hover_json.is_empty() { crate::plot::statistical::parse_hover_json(hover_json) } else { Vec::new() };
     use crate::plot::statistical::parallel::{ParallelConfig, render_parallel_html};
@@ -1685,6 +1771,7 @@ pub fn build_grid(
     bg: Option<&str>,
     cell_height: i32,
 ) -> Chart {
+    let _h = chart_auto("build_grid", "", 0);
     let bg_color = bg
         .map(|s| s.to_string())
         .or_else(crate::get_global_background)
@@ -1722,6 +1809,7 @@ pub fn build_slideshow(
     width: i32,
     height: i32,
 ) -> Chart {
+    let _h = chart_auto("build_slideshow", "", 0);
     if charts.is_empty() { return Chart::new(String::new()); }
     let svgs: Vec<String> = charts.iter().map(|c| {
         let h = &c.html;

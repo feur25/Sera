@@ -1006,6 +1006,91 @@ where F: Fn(usize, &FoldData, &ModelCache) -> f64 + Send + Sync,
     finalise_results(all_scores, Some(combo_indices))
 }
 
+pub fn grid_search_parallel_cached_resumable<F>(
+    total: usize,
+    folds: &[FoldData],
+    caches: &[ModelCache],
+    task_id: Option<u64>,
+    eval_fn: F,
+) -> GridSearchResult
+where F: Fn(usize, &FoldData, &ModelCache) -> f64 + Send + Sync,
+{
+    use crate::ml::cache::{task_load, task_update, task_complete, PartialState};
+    let mut partial = task_id
+        .and_then(|id| task_load(id))
+        .filter(|e| matches!(e.status, crate::ml::cache::TaskStatus::Running { .. }))
+        .map(|e| e.partial)
+        .unwrap_or_default();
+    let done: std::collections::HashSet<usize> = partial.combo_fold_scores.keys()
+        .filter_map(|k| k.parse().ok())
+        .collect();
+    let remaining: Vec<usize> = (0..total).filter(|i| !done.contains(i)).collect();
+    let n_folds = folds.len();
+    let batch_size = if task_id.is_some() { (remaining.len() / 8 + 1).min(50).max(1) } else { remaining.len().max(1) };
+    for batch in remaining.chunks(batch_size) {
+        let scores: Vec<(usize, Vec<f64>)> = batch.par_iter().map(|&ci| {
+            let fs: Vec<f64> = folds.iter().zip(caches.iter())
+                .map(|(fold, cache)| eval_fn(ci, fold, cache))
+                .collect();
+            (ci, fs)
+        }).collect();
+        for (ci, fs) in scores { partial.combo_fold_scores.insert(ci.to_string(), fs); }
+        if let Some(id) = task_id {
+            task_update(id, &partial, partial.combo_fold_scores.len() as f32 / total as f32);
+        }
+    }
+    if let Some(id) = task_id { task_complete(id, &partial); }
+    let all_scores: Vec<Vec<f64>> = (0..total)
+        .map(|i| partial.combo_fold_scores.get(&i.to_string())
+            .cloned()
+            .unwrap_or_else(|| vec![f64::NEG_INFINITY; n_folds]))
+        .collect();
+    finalise_results(all_scores, None)
+}
+
+pub fn randomized_search_parallel_cached_resumable<F>(
+    combo_indices: &[usize],
+    folds: &[FoldData],
+    caches: &[ModelCache],
+    task_id: Option<u64>,
+    eval_fn: F,
+) -> GridSearchResult
+where F: Fn(usize, &FoldData, &ModelCache) -> f64 + Send + Sync,
+{
+    use crate::ml::cache::{task_load, task_update, task_complete, PartialState};
+    let mut partial = task_id
+        .and_then(|id| task_load(id))
+        .filter(|e| matches!(e.status, crate::ml::cache::TaskStatus::Running { .. }))
+        .map(|e| e.partial)
+        .unwrap_or_default();
+    let done: std::collections::HashSet<usize> = partial.combo_fold_scores.keys()
+        .filter_map(|k| k.parse().ok())
+        .collect();
+    let remaining: Vec<usize> = combo_indices.iter().copied().filter(|i| !done.contains(i)).collect();
+    let total = combo_indices.len();
+    let n_folds = folds.len();
+    let batch_size = if task_id.is_some() { (remaining.len() / 8 + 1).min(50).max(1) } else { remaining.len().max(1) };
+    for batch in remaining.chunks(batch_size) {
+        let scores: Vec<(usize, Vec<f64>)> = batch.par_iter().map(|&ci| {
+            let fs: Vec<f64> = folds.iter().zip(caches.iter())
+                .map(|(fold, cache)| eval_fn(ci, fold, cache))
+                .collect();
+            (ci, fs)
+        }).collect();
+        for (ci, fs) in scores { partial.combo_fold_scores.insert(ci.to_string(), fs); }
+        if let Some(id) = task_id {
+            task_update(id, &partial, partial.combo_fold_scores.len() as f32 / total as f32);
+        }
+    }
+    if let Some(id) = task_id { task_complete(id, &partial); }
+    let all_scores: Vec<Vec<f64>> = combo_indices.iter()
+        .map(|i| partial.combo_fold_scores.get(&i.to_string())
+            .cloned()
+            .unwrap_or_else(|| vec![f64::NEG_INFINITY; n_folds]))
+        .collect();
+    finalise_results(all_scores, Some(combo_indices))
+}
+
 fn score_reg(y_true: &[f64], y_pred: &[f64], scoring: &str) -> f64 {
     match scoring {
         "neg_mean_squared_error" => -crate::ml::metrics::regression::mean_squared_error(y_true, y_pred),

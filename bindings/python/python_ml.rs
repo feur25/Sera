@@ -81,7 +81,12 @@ macro_rules! impl_reg_fit_predict_score {
         impl $name {
             fn fit(&mut self, x: &PyAny, y: &PyAny) -> PyResult<()> {
                 let (xf, n, p) = extract_flat(x)?;
-                self.inner.fit(&xf, n, p, &extract_targets(y)?);
+                let yt = extract_targets(y)?;
+                let fp = crate::ml::cache::Fp::new(concat!(stringify!($name), ".fit"))
+                    .str(&self.__repr__()).data(&xf, n, p).targets(&yt).finish();
+                let _h = crate::ml::cache::TaskHandle::auto(concat!(stringify!($name), ".fit"), fp);
+                self.inner.fit(&xf, n, p, &yt);
+                _h.complete(&crate::ml::cache::PartialState::default());
                 Ok(())
             }
             fn predict(&self, x: &PyAny) -> PyResult<Vec<f64>> {
@@ -104,7 +109,12 @@ macro_rules! impl_cls_fit_predict_score {
         impl $name {
             fn fit(&mut self, x: &PyAny, y: &PyAny) -> PyResult<()> {
                 let (xf, n, p) = extract_flat(x)?;
-                self.inner.fit(&xf, n, p, &extract_labels(y)?);
+                let yl = extract_labels(y)?;
+                let fp = crate::ml::cache::Fp::new(concat!(stringify!($name), ".fit"))
+                    .str(&self.__repr__()).data(&xf, n, p).labels(&yl).finish();
+                let _h = crate::ml::cache::TaskHandle::auto(concat!(stringify!($name), ".fit"), fp);
+                self.inner.fit(&xf, n, p, &yl);
+                _h.complete(&crate::ml::cache::PartialState::default());
                 Ok(())
             }
             fn predict(&self, x: &PyAny) -> PyResult<Vec<i32>> {
@@ -233,7 +243,12 @@ impl PyElasticNet {
     #[pyo3(signature = (x, y, checkpoint_id=None))]
     fn fit(&mut self, x: &PyAny, y: &PyAny, checkpoint_id: Option<u64>) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
-        self.inner.fit_resumable(&xf, n, p, &extract_targets(y)?, checkpoint_id);
+        let yt = extract_targets(y)?;
+        let fp = crate::ml::cache::Fp::new("ElasticNet.fit").str(&self.__repr__()).data(&xf, n, p).targets(&yt).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("ElasticNet.fit", fp);
+        let ckpt = checkpoint_id.or(Some(_h.id));
+        self.inner.fit_resumable(&xf, n, p, &yt, ckpt);
+        _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
     fn predict(&self, x: &PyAny) -> PyResult<Vec<f64>> {
@@ -277,7 +292,12 @@ impl PyLogisticRegression {
     #[pyo3(signature = (x, y, checkpoint_id=None))]
     fn fit(&mut self, x: &PyAny, y: &PyAny, checkpoint_id: Option<u64>) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
-        self.inner.fit_resumable(&xf, n, p, &extract_labels(y)?, checkpoint_id);
+        let yl = extract_labels(y)?;
+        let fp = crate::ml::cache::Fp::new("LogisticRegression.fit").str(&self.__repr__()).data(&xf, n, p).labels(&yl).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("LogisticRegression.fit", fp);
+        let ckpt = checkpoint_id.or(Some(_h.id));
+        self.inner.fit_resumable(&xf, n, p, &yl, ckpt);
+        _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
     fn predict(&self, x: &PyAny) -> PyResult<Vec<i32>> {
@@ -330,7 +350,12 @@ impl PySGDClassifier {
     #[pyo3(signature = (x, y, checkpoint_id=None))]
     fn fit(&mut self, x: &PyAny, y: &PyAny, checkpoint_id: Option<u64>) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
-        self.inner.fit_resumable(&xf, n, p, &extract_labels(y)?, checkpoint_id);
+        let yl = extract_labels(y)?;
+        let fp = crate::ml::cache::Fp::new("SGDClassifier.fit").str(&self.__repr__()).data(&xf, n, p).labels(&yl).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("SGDClassifier.fit", fp);
+        let ckpt = checkpoint_id.or(Some(_h.id));
+        self.inner.fit_resumable(&xf, n, p, &yl, ckpt);
+        _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
     fn predict(&self, x: &PyAny) -> PyResult<Vec<i32>> {
@@ -409,7 +434,12 @@ impl PySGDRegressor {
     #[pyo3(signature = (x, y, checkpoint_id=None))]
     fn fit(&mut self, x: &PyAny, y: &PyAny, checkpoint_id: Option<u64>) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
-        self.inner.fit_resumable(&xf, n, p, &extract_targets(y)?, checkpoint_id);
+        let yt = extract_targets(y)?;
+        let fp = crate::ml::cache::Fp::new("SGDRegressor.fit").str(&self.__repr__()).data(&xf, n, p).targets(&yt).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("SGDRegressor.fit", fp);
+        let ckpt = checkpoint_id.or(Some(_h.id));
+        self.inner.fit_resumable(&xf, n, p, &yt, ckpt);
+        _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
     fn predict(&self, x: &PyAny) -> PyResult<Vec<f64>> {
@@ -995,8 +1025,11 @@ impl PyStandardScaler {
     }
     fn fit(&mut self, x: &PyAny) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
+        let fp = crate::ml::cache::Fp::new("StandardScaler.fit").data(&xf, n, p).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("StandardScaler.fit", fp);
         self.n = n; self.p = p;
         self.inner.fit(&xf, n, p);
+        _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
     fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
@@ -1032,7 +1065,10 @@ impl PyMinMaxScaler {
     }
     fn fit(&mut self, x: &PyAny) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
+        let fp = crate::ml::cache::Fp::new("MinMaxScaler.fit").data(&xf, n, p).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("MinMaxScaler.fit", fp);
         self.inner.fit(&xf, n, p);
+        _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
     fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
@@ -1070,7 +1106,10 @@ impl PyRobustScaler {
     }
     fn fit(&mut self, x: &PyAny) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
+        let fp = crate::ml::cache::Fp::new("RobustScaler.fit").data(&xf, n, p).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("RobustScaler.fit", fp);
         self.inner.fit(&xf, n, p);
+        _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
     fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
@@ -1098,7 +1137,10 @@ impl PyMaxAbsScaler {
     fn py_new() -> Self { Self { inner: crate::ml::preprocessing::scalers::MaxAbsScaler::new() } }
     fn fit(&mut self, x: &PyAny) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
+        let fp = crate::ml::cache::Fp::new("MaxAbsScaler.fit").data(&xf, n, p).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("MaxAbsScaler.fit", fp);
         self.inner.fit(&xf, n, p);
+        _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
     fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
@@ -1151,7 +1193,10 @@ impl PyPCA {
     }
     fn fit(&mut self, x: &PyAny) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
+        let fp = crate::ml::cache::Fp::new("PCA.fit").usize(self.inner.n_components).data(&xf, n, p).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("PCA.fit", fp);
         self.inner.fit(&xf, n, p);
+        _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
     fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
@@ -1197,7 +1242,10 @@ impl PyTruncatedSVD {
     fn py_new(n_components: usize) -> Self { Self { inner: crate::ml::decomposition::pca::TruncatedSVD::new(n_components) } }
     fn fit(&mut self, x: &PyAny) -> PyResult<()> {
         let (xf, n, p) = extract_flat(x)?;
+        let fp = crate::ml::cache::Fp::new("TruncatedSVD.fit").usize(self.inner.n_components).data(&xf, n, p).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("TruncatedSVD.fit", fp);
         self.inner.fit(&xf, n, p);
+        _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
     fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
@@ -1387,12 +1435,19 @@ pub fn train_test_split(py: Python<'_>, x: &PyAny, y: &PyAny, test_size: f64, ra
 }
 
 #[pyfunction]
-#[pyo3(signature = (x, y, folds, c=1.0, max_iter=1000, tol=1e-4, fit_intercept=true))]
-pub fn parallel_cv_cls(x: &PyAny, y: &PyAny, folds: Vec<(Vec<usize>, Vec<usize>)>, c: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> PyResult<Vec<f64>> {
+#[pyo3(signature = (x, y, folds, c=1.0, max_iter=1000, tol=1e-4, fit_intercept=true, task_id=None))]
+pub fn parallel_cv_cls(x: &PyAny, y: &PyAny, folds: Vec<(Vec<usize>, Vec<usize>)>, c: f64, max_iter: usize, tol: f64, fit_intercept: bool, task_id: Option<u64>) -> PyResult<Vec<f64>> {
     use rayon::prelude::*;
+    use crate::ml::cache::{task_load, task_update, task_complete, PartialState, TaskStatus};
     let (xf, _n, p) = extract_flat(x)?;
     let yl = extract_labels(y)?;
-    let scores: Vec<f64> = folds.into_par_iter().map(|(train_idx, test_idx)| {
+    let n_folds = folds.len();
+    let fp = crate::ml::cache::Fp::new("parallel_cv_cls")
+        .f64(c).usize(max_iter).f64(tol).bval(fit_intercept)
+        .data(&xf, _n, p).labels(&yl).usize(n_folds).finish();
+    let _h = crate::ml::cache::TaskHandle::auto("parallel_cv_cls", fp);
+    let effective_id = task_id.or(Some(_h.id));
+    let run_fold = |(train_idx, test_idx): (Vec<usize>, Vec<usize>)| -> f64 {
         let n_tr = train_idx.len();
         let n_te = test_idx.len();
         let mut x_tr = vec![0.0f64; n_tr * p];
@@ -1411,7 +1466,27 @@ pub fn parallel_cv_cls(x: &PyAny, y: &PyAny, folds: Vec<(Vec<usize>, Vec<usize>)
         lr.fit(&x_tr, n_tr, p, &y_tr);
         let preds = lr.predict(&x_te, n_te, p);
         crate::ml::metrics::classification::accuracy_score(&y_te, &preds)
-    }).collect();
+    };
+    if let Some(id) = effective_id {
+        let mut partial = task_load(id)
+            .filter(|e| matches!(e.status, TaskStatus::Running { .. }))
+            .map(|e| e.partial)
+            .unwrap_or_default();
+        if partial.completed_folds >= n_folds && !partial.fold_scores.is_empty() {
+            _h.complete(&partial);
+            return Ok(partial.fold_scores);
+        }
+        for fold in folds.into_iter().skip(partial.completed_folds) {
+            partial.fold_scores.push(run_fold(fold));
+            partial.completed_folds += 1;
+            task_update(id, &partial, partial.completed_folds as f32 / n_folds as f32);
+        }
+        task_complete(id, &partial);
+        _h.complete(&partial);
+        return Ok(partial.fold_scores);
+    }
+    let scores: Vec<f64> = folds.into_par_iter().map(run_fold).collect();
+    _h.complete(&PartialState::default());
     Ok(scores)
 }
 
@@ -1420,6 +1495,81 @@ pub fn ml_checkpoint_clear(id: u64) { crate::ml::cache::checkpoint_clear(id); }
 
 #[pyfunction]
 pub fn ml_checkpoint_list() -> Vec<u64> { crate::ml::cache::checkpoint_list() }
+
+#[pyfunction]
+pub fn task_new(task_type: &str) -> u64 {
+    crate::ml::cache::task_create(task_type)
+}
+
+#[pyfunction]
+pub fn task_info(py: Python<'_>, task_id: u64) -> PyResult<Option<PyObject>> {
+    let Some(entry) = crate::ml::cache::task_load(task_id) else { return Ok(None); };
+    let d = pyo3::types::PyDict::new_bound(py);
+    d.set_item("task_id", entry.task_id)?;
+    d.set_item("task_type", &entry.task_type)?;
+    d.set_item("created_ms", entry.created_ms)?;
+    d.set_item("updated_ms", entry.updated_ms)?;
+    match &entry.status {
+        crate::ml::cache::TaskStatus::Running { progress } => {
+            d.set_item("status", "running")?;
+            d.set_item("progress", *progress)?;
+        }
+        crate::ml::cache::TaskStatus::Completed => {
+            d.set_item("status", "completed")?;
+            d.set_item("progress", 1.0f32)?;
+        }
+        crate::ml::cache::TaskStatus::Failed { error } => {
+            d.set_item("status", "failed")?;
+            d.set_item("error", error.as_str())?;
+        }
+    }
+    Ok(Some(d.into()))
+}
+
+#[pyfunction]
+pub fn task_list(py: Python<'_>) -> PyResult<PyObject> {
+    let entries = crate::ml::cache::task_list_all();
+    let list = pyo3::types::PyList::empty_bound(py);
+    for entry in entries {
+        let d = pyo3::types::PyDict::new_bound(py);
+        d.set_item("task_id", entry.task_id)?;
+        d.set_item("task_type", &entry.task_type)?;
+        d.set_item("created_ms", entry.created_ms)?;
+        d.set_item("updated_ms", entry.updated_ms)?;
+        match &entry.status {
+            crate::ml::cache::TaskStatus::Running { progress } => {
+                d.set_item("status", "running")?;
+                d.set_item("progress", *progress)?;
+            }
+            crate::ml::cache::TaskStatus::Completed => {
+                d.set_item("status", "completed")?;
+                d.set_item("progress", 1.0f32)?;
+            }
+            crate::ml::cache::TaskStatus::Failed { error } => {
+                d.set_item("status", "failed")?;
+                d.set_item("error", error.as_str())?;
+            }
+        }
+        list.append(d.into_py(py))?;
+    }
+    Ok(list.into())
+}
+
+#[pyfunction]
+pub fn task_delete(task_id: u64) {
+    crate::ml::cache::task_delete(task_id);
+}
+
+#[pyfunction]
+pub fn task_dir() -> String {
+    crate::ml::cache::task_dir_path()
+}
+
+#[pyfunction]
+#[pyo3(signature = (max_age_hours=24))]
+pub fn task_cleanup(max_age_hours: u64) -> usize {
+    crate::ml::cache::task_cleanup_old(max_age_hours.saturating_mul(3_600_000))
+}
 
 fn parse_param_grid(param_grid: &pyo3::types::PyDict) -> PyResult<(Vec<String>, Vec<Vec<String>>)> {
     let mut param_names = Vec::new();
@@ -1502,9 +1652,15 @@ impl PyGridSearchCV {
         })
     }
 
-    fn fit(&mut self, x: &PyAny, y: &PyAny) -> PyResult<()> {
+    #[pyo3(signature = (x, y, task_id=None))]
+    fn fit(&mut self, x: &PyAny, y: &PyAny, task_id: Option<u64>) -> PyResult<()> {
         use crate::ml::model_selection::grid_search::*;
         let (xf, n, p) = extract_flat(x)?;
+        let fp = crate::ml::cache::Fp::new("GridSearchCV.fit")
+            .str(&self.estimator).usize(self.cv).u64(self.seed)
+            .str(&self.scoring).data(&xf, n, p).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("GridSearchCV.fit", fp);
+        let effective_id = task_id.or(Some(_h.id));
         let param_sizes: Vec<usize> = self.param_values.iter().map(|v| v.len()).collect();
         let total = n_combinations(&param_sizes);
         let est = self.estimator.clone();
@@ -1512,7 +1668,6 @@ impl PyGridSearchCV {
         let pv = self.param_values.clone();
         let ps = param_sizes.clone();
         let sc = self.scoring.clone();
-
         let folds = if is_classifier(&est) {
             let yl = extract_labels(y)?;
             precompute_folds_cls(&xf, n, p, &yl, self.cv, self.seed)
@@ -1520,17 +1675,16 @@ impl PyGridSearchCV {
             let yt = extract_targets(y)?;
             precompute_folds_reg(&xf, n, p, &yt, self.cv, self.seed)
         };
-
         let caches = compute_caches(&est, &folds, &pn, &pv);
-        let result = grid_search_parallel_cached(total, &folds, &caches, |combo_idx, fold, cache| {
+        let result = grid_search_parallel_cached_resumable(total, &folds, &caches, effective_id, |combo_idx, fold, cache| {
             eval_model_scored(&est, &pn, &pv, &ps, combo_idx, fold, cache, &sc)
         });
-
         self.best_score = result.best_score;
         self.best_params = build_best_params(&self.param_names, &self.param_values, &param_sizes, result.best_params_idx);
         self.cv_results_mean = result.cv_results;
         self.cv_results_std = result.cv_std;
         self.fitted = true;
+        _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
 
@@ -1608,9 +1762,15 @@ impl PyRandomizedSearchCV {
         })
     }
 
-    fn fit(&mut self, x: &PyAny, y: &PyAny) -> PyResult<()> {
+    #[pyo3(signature = (x, y, task_id=None))]
+    fn fit(&mut self, x: &PyAny, y: &PyAny, task_id: Option<u64>) -> PyResult<()> {
         use crate::ml::model_selection::grid_search::*;
         let (xf, n, p) = extract_flat(x)?;
+        let fp = crate::ml::cache::Fp::new("RandomizedSearchCV.fit")
+            .str(&self.estimator).usize(self.cv).u64(self.seed).usize(self.n_iter)
+            .str(&self.scoring).data(&xf, n, p).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("RandomizedSearchCV.fit", fp);
+        let effective_id = task_id.or(Some(_h.id));
         let param_sizes: Vec<usize> = self.param_values.iter().map(|v| v.len()).collect();
         let total = n_combinations(&param_sizes);
         let combo_indices = sample_indices(total, self.n_iter, self.seed);
@@ -1619,7 +1779,6 @@ impl PyRandomizedSearchCV {
         let pv = self.param_values.clone();
         let ps = param_sizes.clone();
         let sc = self.scoring.clone();
-
         let folds = if is_classifier(&est) {
             let yl = extract_labels(y)?;
             precompute_folds_cls(&xf, n, p, &yl, self.cv, self.seed)
@@ -1627,17 +1786,16 @@ impl PyRandomizedSearchCV {
             let yt = extract_targets(y)?;
             precompute_folds_reg(&xf, n, p, &yt, self.cv, self.seed)
         };
-
         let caches = compute_caches(&est, &folds, &pn, &pv);
-        let result = randomized_search_parallel_cached(&combo_indices, &folds, &caches, |combo_idx, fold, cache| {
+        let result = randomized_search_parallel_cached_resumable(&combo_indices, &folds, &caches, effective_id, |combo_idx, fold, cache| {
             eval_model_scored(&est, &pn, &pv, &ps, combo_idx, fold, cache, &sc)
         });
-
         self.best_score = result.best_score;
         self.best_params = build_best_params(&self.param_names, &self.param_values, &param_sizes, result.best_params_idx);
         self.cv_results_mean = result.cv_results;
         self.cv_results_std = result.cv_std;
         self.fitted = true;
+        _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
 
@@ -1699,9 +1857,16 @@ impl PyHalvingGridSearchCV {
         })
     }
 
-    fn fit(&mut self, x: &PyAny, y: &PyAny) -> PyResult<()> {
+    #[pyo3(signature = (x, y, task_id=None))]
+    fn fit(&mut self, x: &PyAny, y: &PyAny, task_id: Option<u64>) -> PyResult<()> {
         use crate::ml::model_selection::grid_search::*;
+        use crate::ml::cache::{task_load, task_update, task_complete, PartialState, TaskStatus};
         let (xf, n, p) = extract_flat(x)?;
+        let fp = crate::ml::cache::Fp::new("HalvingGridSearchCV.fit")
+            .str(&self.estimator).usize(self.cv).u64(self.seed).usize(self.factor)
+            .str(&self.scoring).data(&xf, n, p).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("HalvingGridSearchCV.fit", fp);
+        let effective_id = task_id.or(Some(_h.id));
         let param_sizes: Vec<usize> = self.param_values.iter().map(|v| v.len()).collect();
         let total = n_combinations(&param_sizes);
         let est = self.estimator.clone();
@@ -1710,10 +1875,8 @@ impl PyHalvingGridSearchCV {
         let ps = param_sizes.clone();
         let fac = self.factor;
         let sc = self.scoring.clone();
-
         let n_iters = (total as f64).log(fac as f64).ceil() as usize;
         let min_resources = (n as f64 / fac.pow(n_iters as u32) as f64).max(1.0) as usize;
-
         let full_folds = if is_classifier(&est) {
             let yl = extract_labels(y)?;
             precompute_folds_cls(&xf, n, p, &yl, self.cv, self.seed)
@@ -1721,39 +1884,42 @@ impl PyHalvingGridSearchCV {
             let yt = extract_targets(y)?;
             precompute_folds_reg(&xf, n, p, &yt, self.cv, self.seed)
         };
-
-        let mut candidates: Vec<usize> = (0..total).collect();
-        let mut resource = min_resources;
-        let mut iteration = 0;
-
+        let saved = effective_id
+            .and_then(|id| task_load(id))
+            .filter(|e| matches!(e.status, TaskStatus::Running { .. }))
+            .map(|e| e.partial);
+        let (mut candidates, mut resource, mut iteration) = match saved {
+            Some(ref p) if !p.halving_candidates.is_empty() =>
+                (p.halving_candidates.clone(), p.halving_resource, p.halving_iteration),
+            _ => ((0..total).collect::<Vec<_>>(), min_resources, 0),
+        };
         while candidates.len() > 1 && resource <= n {
-            let sub_folds: Vec<FoldData> = full_folds.iter()
-                .map(|f| subsample_fold(f, resource))
-                .collect();
+            let sub_folds: Vec<FoldData> = full_folds.iter().map(|f| subsample_fold(f, resource)).collect();
             let caches = compute_caches(&est, &sub_folds, &pn, &pv);
-
             let scores: Vec<(usize, f64)> = candidates.par_iter().map(|&combo_idx| {
                 let mean: f64 = sub_folds.iter().zip(caches.iter())
                     .map(|(fold, cache)| eval_model_scored(&est, &pn, &pv, &ps, combo_idx, fold, cache, &sc))
                     .sum::<f64>() / sub_folds.len() as f64;
                 (combo_idx, mean)
             }).collect();
-
             let mut sorted = scores;
             sorted.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
             let keep = (candidates.len() / fac).max(1);
             candidates = sorted[..keep].iter().map(|&(idx, _)| idx).collect();
-
             resource = (resource * fac).min(n);
             iteration += 1;
+            if let Some(id) = effective_id {
+                let partial = PartialState { halving_candidates: candidates.clone(), halving_resource: resource, halving_iteration: iteration, ..PartialState::default() };
+                task_update(id, &partial, iteration as f32 / n_iters.max(1) as f32);
+            }
         }
-
         let best_combo = candidates[0];
         let final_caches = compute_caches(&est, &full_folds, &pn, &pv);
         let best_score: f64 = full_folds.iter().zip(final_caches.iter())
             .map(|(fold, cache)| eval_model_scored(&est, &pn, &pv, &ps, best_combo, fold, cache, &sc))
             .sum::<f64>() / full_folds.len() as f64;
-
+        if let Some(id) = effective_id { task_complete(id, &PartialState::default()); }
+        _h.complete(&PartialState::default());
         self.best_score = best_score;
         self.best_params = build_best_params(&self.param_names, &self.param_values, &param_sizes, best_combo);
         self.n_iterations = iteration;
@@ -1815,9 +1981,16 @@ impl PyHalvingRandomSearchCV {
         })
     }
 
-    fn fit(&mut self, x: &PyAny, y: &PyAny) -> PyResult<()> {
+    #[pyo3(signature = (x, y, task_id=None))]
+    fn fit(&mut self, x: &PyAny, y: &PyAny, task_id: Option<u64>) -> PyResult<()> {
         use crate::ml::model_selection::grid_search::*;
+        use crate::ml::cache::{task_load, task_update, task_complete, PartialState, TaskStatus};
         let (xf, n, p) = extract_flat(x)?;
+        let fp = crate::ml::cache::Fp::new("HalvingRandomSearchCV.fit")
+            .str(&self.estimator).usize(self.cv).u64(self.seed).usize(self.factor)
+            .usize(self.n_candidates).str(&self.scoring).data(&xf, n, p).finish();
+        let _h = crate::ml::cache::TaskHandle::auto("HalvingRandomSearchCV.fit", fp);
+        let effective_id = task_id.or(Some(_h.id));
         let param_sizes: Vec<usize> = self.param_values.iter().map(|v| v.len()).collect();
         let total = n_combinations(&param_sizes);
         let est = self.estimator.clone();
@@ -1826,7 +1999,6 @@ impl PyHalvingRandomSearchCV {
         let ps = param_sizes.clone();
         let fac = self.factor;
         let sc = self.scoring.clone();
-
         let full_folds = if is_classifier(&est) {
             let yl = extract_labels(y)?;
             precompute_folds_cls(&xf, n, p, &yl, self.cv, self.seed)
@@ -1834,41 +2006,45 @@ impl PyHalvingRandomSearchCV {
             let yt = extract_targets(y)?;
             precompute_folds_reg(&xf, n, p, &yt, self.cv, self.seed)
         };
-
-        let mut candidates = sample_indices(total, self.n_candidates, self.seed);
-        let n_iters = (candidates.len() as f64).log(fac as f64).ceil() as usize;
+        let saved = effective_id
+            .and_then(|id| task_load(id))
+            .filter(|e| matches!(e.status, TaskStatus::Running { .. }))
+            .map(|e| e.partial);
+        let initial_candidates = sample_indices(total, self.n_candidates, self.seed);
+        let n_iters = (initial_candidates.len() as f64).log(fac as f64).ceil() as usize;
         let min_resources = (n as f64 / fac.pow(n_iters as u32) as f64).max(1.0) as usize;
-        let mut resource = min_resources;
-        let mut iteration = 0;
-
+        let (mut candidates, mut resource, mut iteration) = match saved {
+            Some(ref p) if !p.halving_candidates.is_empty() =>
+                (p.halving_candidates.clone(), p.halving_resource, p.halving_iteration),
+            _ => (initial_candidates, min_resources, 0),
+        };
         while candidates.len() > 1 && resource <= n {
-            let sub_folds: Vec<FoldData> = full_folds.iter()
-                .map(|f| subsample_fold(f, resource))
-                .collect();
+            let sub_folds: Vec<FoldData> = full_folds.iter().map(|f| subsample_fold(f, resource)).collect();
             let caches = compute_caches(&est, &sub_folds, &pn, &pv);
-
             let scores: Vec<(usize, f64)> = candidates.par_iter().map(|&combo_idx| {
                 let mean: f64 = sub_folds.iter().zip(caches.iter())
                     .map(|(fold, cache)| eval_model_scored(&est, &pn, &pv, &ps, combo_idx, fold, cache, &sc))
                     .sum::<f64>() / sub_folds.len() as f64;
                 (combo_idx, mean)
             }).collect();
-
             let mut sorted = scores;
             sorted.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
             let keep = (candidates.len() / fac).max(1);
             candidates = sorted[..keep].iter().map(|&(idx, _)| idx).collect();
-
             resource = (resource * fac).min(n);
             iteration += 1;
+            if let Some(id) = effective_id {
+                let partial = PartialState { halving_candidates: candidates.clone(), halving_resource: resource, halving_iteration: iteration, ..PartialState::default() };
+                task_update(id, &partial, iteration as f32 / n_iters.max(1) as f32);
+            }
         }
-
         let best_combo = candidates[0];
         let final_caches = compute_caches(&est, &full_folds, &pn, &pv);
         let best_score: f64 = full_folds.iter().zip(final_caches.iter())
             .map(|(fold, cache)| eval_model_scored(&est, &pn, &pv, &ps, best_combo, fold, cache, &sc))
             .sum::<f64>() / full_folds.len() as f64;
-
+        if let Some(id) = effective_id { task_complete(id, &PartialState::default()); }
+        _h.complete(&PartialState::default());
         self.best_score = best_score;
         self.best_params = build_best_params(&self.param_names, &self.param_values, &param_sizes, best_combo);
         self.n_iterations = iteration;
@@ -1961,5 +2137,11 @@ pub fn register_ml_classes(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(parallel_cv_cls, m)?)?;
     m.add_function(wrap_pyfunction!(ml_checkpoint_clear, m)?)?;
     m.add_function(wrap_pyfunction!(ml_checkpoint_list, m)?)?;
+    m.add_function(wrap_pyfunction!(task_new, m)?)?;
+    m.add_function(wrap_pyfunction!(task_info, m)?)?;
+    m.add_function(wrap_pyfunction!(task_list, m)?)?;
+    m.add_function(wrap_pyfunction!(task_delete, m)?)?;
+    m.add_function(wrap_pyfunction!(task_dir, m)?)?;
+    m.add_function(wrap_pyfunction!(task_cleanup, m)?)?;
     Ok(())
 }
