@@ -79,14 +79,12 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('kde3d','kde3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('kde3d','kde3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('kde3d','kde3d-ts',this)">TypeScript</button></div>
 <div id="kde3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 values = (
     [random.gauss(-2, 1) for _ in range(200)] +
     [random.gauss(0, 0.8) for _ in range(200)] +
     [random.gauss(3, 1.2) for _ in range(200)]
 )
 categories = ["Group A"] * 200 + ["Group B"] * 200 + ["Group C"] * 200
-
 chart = sp.build_kde3d_chart(
     "Density by Group",
     values,
@@ -94,14 +92,12 @@ chart = sp.build_kde3d_chart(
 )</code></pre></div>
 <div id="kde3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-
 const values = (
     [random.gauss(-2, 1) for _ in range(200)] +
     [random.gauss(0, 0.8) for _ in range(200)] +
     [random.gauss(3, 1.2) for _ in range(200)]
 )
 const categories = ["Group A"] * 200 + ["Group B"] * 200 + ["Group C"] * 200
-
 const chart = sp.build_kde3d_chart("Density by Group",
 values,
 {
@@ -109,14 +105,12 @@ values,
 })</code></pre></div>
 <div id="kde3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-
 const values = (
     [random.gauss(-2, 1) for _ in range(200)] +
     [random.gauss(0, 0.8) for _ in range(200)] +
     [random.gauss(3, 1.2) for _ in range(200)]
 )
 const categories: string[] = ["Group A"] * 200 + ["Group B"] * 200 + ["Group C"] * 200
-
 const chart = sp.build_kde3d_chart("Density by Group",
 values,
 {

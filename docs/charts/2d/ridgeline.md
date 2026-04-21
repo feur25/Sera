@@ -29,8 +29,6 @@ sp.build_ridgeline_chart(
 Ridgeline (joy) chart — stacked KDE curves per category.
 Excellent for comparing distributional shapes across many groups.
 
-Excellent pour comparer les formes de distribution entre de nombreux groupes.
-
 `values` is a flat list. The number of values must be divisible by `len(categories)` (equal samples per group).
 
 ---
@@ -85,12 +83,9 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('ridgeline','ridgeline-py',this)">Python</button><button class="sp-tb" onclick="spTab('ridgeline','ridgeline-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('ridgeline','ridgeline-ts',this)">TypeScript</button></div>
 <div id="ridgeline-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 months = ["Jan", "Apr", "Jul", "Oct"]
 means  = [5, 15, 28, 16]
-
 values = [v for m in means for v in [random.gauss(m, 4) for _ in range(100)]]
-
 chart = sp.build_ridgeline_chart(
     "Monthly Temperature Distribution",
     categories=months,
@@ -100,12 +95,9 @@ chart = sp.build_ridgeline_chart(
 )</code></pre></div>
 <div id="ridgeline-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-
 const months = ["Jan", "Apr", "Jul", "Oct"]
 const means  = [5, 15, 28, 16]
-
 const values = [v for m in means for v in [random.gauss(m, 4) for _ in range(100)]]
-
 const chart = sp.build_ridgeline_chart("Monthly Temperature Distribution",
 months,
 {
@@ -115,12 +107,9 @@ months,
 })</code></pre></div>
 <div id="ridgeline-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-
 const months: string[] = ["Jan", "Apr", "Jul", "Oct"]
 const means: number[] = [5, 15, 28, 16]
-
 const values: number[] = [v for m in means for v in [random.gauss(m, 4) for _ in range(100)]]
-
 const chart = sp.build_ridgeline_chart("Monthly Temperature Distribution",
 months,
 {

@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -253,37 +253,44 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div id="slope-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-<p>chart = sp.build_slope(
-“HDI Change 2000 to 2023”,
-labels=[“Germany”, “Japan”, “Brazil”, “India”, “Nigeria”],
-values_left=[0.926, 0.909, 0.694, 0.493, 0.452],
-values_right=[0.950, 0.920, 0.760, 0.644, 0.548],
-left_label=“2000”,
-right_label=“2023”,
-show_text=True,
-)</p>
+chart = sp.build_slope(
+    "HDI Change 2000 to 2023",
+    labels=["Germany", "Japan", "Brazil", "India", "Nigeria"],
+    values_left=[0.926, 0.909, 0.694, 0.493, 0.452],
+    values_right=[0.950, 0.920, 0.760, 0.644, 0.548],
+    left_label="2000",
+    right_label="2023",
+    show_text=True,
+)</code></pre>
+</div>
+
 <div id="slope-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-<p>const chart = sp.build_slope(“HDI Change 2000 to 2023”,
-[“Germany”, “Japan”, “Brazil”, “India”, “Nigeria”],
+const chart = sp.build_slope("HDI Change 2000 to 2023",
+["Germany", "Japan", "Brazil", "India", "Nigeria"],
 [0.926, 0.909, 0.694, 0.493, 0.452],
 {
-values_right: [0.950, 0.920, 0.760, 0.644, 0.548],
-left_label: “2000”,
-right_label: “2023”,
-show_text: true
-})</p>
+    values_right: [0.950, 0.920, 0.760, 0.644, 0.548],
+    left_label: "2000",
+    right_label: "2023",
+    show_text: true
+})</code></pre>
+</div>
+
 <div id="slope-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-<p>const chart = sp.build_slope(“HDI Change 2000 to 2023”,
-[“Germany”, “Japan”, “Brazil”, “India”, “Nigeria”],
+const chart = sp.build_slope("HDI Change 2000 to 2023",
+["Germany", "Japan", "Brazil", "India", "Nigeria"],
 [0.926, 0.909, 0.694, 0.493, 0.452],
 {
-values_right: [0.950, 0.920, 0.760, 0.644, 0.548],
-left_label: “2000”,
-right_label: “2023”,
-show_text: true
-})</p>
+    values_right: [0.950, 0.920, 0.760, 0.644, 0.548],
+    left_label: "2000",
+    right_label: "2023",
+    show_text: true
+})</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -295,6 +302,7 @@ show_text: true
 <li><a href="line.html">Line Chart</a></li>
 <li><a href="dumbbell.html">Dumbbell</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -365,14 +373,6 @@ chart = sp.build_slope(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

@@ -79,7 +79,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="candlestick3d">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('candlestick3d','candlestick3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('candlestick3d','candlestick3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('candlestick3d','candlestick3d-ts',this)">TypeScript</button></div>
 <div id="candlestick3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_candlestick3d_chart(
     "BTC/USD 3D",
     labels=["Mon", "Tue", "Wed", "Thu", "Fri"],
@@ -89,7 +88,6 @@ chart = sp.build_candlestick3d_chart(
     close=[43500, 41800, 44000, 45200, 46500],
 )</code></pre></div>
 <div id="candlestick3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_candlestick3d_chart("BTC/USD 3D",
 ["Mon", "Tue", "Wed", "Thu", "Fri"],
 [42000, 43500, 41800, 44000, 45200],
@@ -99,7 +97,6 @@ const chart = sp.build_candlestick3d_chart("BTC/USD 3D",
     close: [43500, 41800, 44000, 45200, 46500]
 })</code></pre></div>
 <div id="candlestick3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_candlestick3d_chart("BTC/USD 3D",
 ["Mon", "Tue", "Wed", "Thu", "Fri"],
 [42000, 43500, 41800, 44000, 45200],

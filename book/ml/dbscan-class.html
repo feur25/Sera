@@ -38,10 +38,10 @@
             const path_to_root = "../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-eef86151.js"></script>
+        <script src="../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -265,45 +265,52 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div id="dbscan-class-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">from seraplot import DBSCAN
 import seraplot as sp
-<p>x = [1.0, 1.1, 1.2, 10.0, 10.1, 99.0]
-y = [1.0, 0.9, 1.1, 10.2, 10.0, 99.0]</p>
-<p>xy = [[xi, yi] for xi, yi in zip(x, y)]</p>
-<p>model = DBSCAN(eps=0.5, min_samples=2)
-labels = model.fit_predict(xy)</p>
-<p>chart = sp.build_scatter_chart(
-f“DBSCAN ({model.n_clusters_} clusters)“,
-x_values=x,
-y_values=y,
-color_groups=[str(lbl) for lbl in labels],
-)</p>
+x = [1.0, 1.1, 1.2, 10.0, 10.1, 99.0]
+y = [1.0, 0.9, 1.1, 10.2, 10.0, 99.0]
+xy = [[xi, yi] for xi, yi in zip(x, y)]
+model = DBSCAN(eps=0.5, min_samples=2)
+labels = model.fit_predict(xy)
+chart = sp.build_scatter_chart(
+    f"DBSCAN ({model.n_clusters_} clusters)",
+    x_values=x,
+    y_values=y,
+    color_groups=[str(lbl) for lbl in labels],
+)</code></pre>
+</div>
+
 <div id="dbscan-class-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">from seraplot import DBSCAN
 const sp = require('seraplot');
-<p>const x = [1.0, 1.1, 1.2, 10.0, 10.1, 99.0]
-const y = [1.0, 0.9, 1.1, 10.2, 10.0, 99.0]</p>
-<p>const xy = [[xi, yi] for xi, yi in zip(x, y)]</p>
-<p>const model = DBSCAN({eps: 0.5, min_samples: 2})
-const labels = model.fit_predict(xy)</p>
-<p>const chart = sp.build_scatter_chart(f“DBSCAN ({model.n_clusters_} clusters)“,
+const x = [1.0, 1.1, 1.2, 10.0, 10.1, 99.0]
+const y = [1.0, 0.9, 1.1, 10.2, 10.0, 99.0]
+const xy = [[xi, yi] for xi, yi in zip(x, y)]
+const model = DBSCAN({eps: 0.5, min_samples: 2})
+const labels = model.fit_predict(xy)
+const chart = sp.build_scatter_chart(f"DBSCAN ({model.n_clusters_} clusters)",
 x,
 {
-y_values: y,
-color_groups: [str(lbl) for lbl in labels]
-})</p>
+    y_values: y,
+    color_groups: [str(lbl) for lbl in labels]
+})</code></pre>
+</div>
+
 <div id="dbscan-class-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">from seraplot import DBSCAN
 import * as sp from 'seraplot';
-<p>const x: number[] = [1.0, 1.1, 1.2, 10.0, 10.1, 99.0]
-const y: number[] = [1.0, 0.9, 1.1, 10.2, 10.0, 99.0]</p>
-<p>const xy: number[] = [[xi, yi] for xi, yi in zip(x, y)]</p>
-<p>const model = DBSCAN({eps: 0.5, min_samples: 2})
-const labels = model.fit_predict(xy)</p>
-<p>const chart = sp.build_scatter_chart(f“DBSCAN ({model.n_clusters_} clusters)“,
+const x: number[] = [1.0, 1.1, 1.2, 10.0, 10.1, 99.0]
+const y: number[] = [1.0, 0.9, 1.1, 10.2, 10.0, 99.0]
+const xy: number[] = [[xi, yi] for xi, yi in zip(x, y)]
+const model = DBSCAN({eps: 0.5, min_samples: 2})
+const labels = model.fit_predict(xy)
+const chart = sp.build_scatter_chart(f"DBSCAN ({model.n_clusters_} clusters)",
 x,
 {
-y_values: y,
-color_groups: [str(lbl) for lbl in labels]
-})</p>
+    y_values: y,
+    color_groups: [str(lbl) for lbl in labels]
+})</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -331,6 +338,7 @@ chart = sp.build_scatter_chart(
 <li><a href="dbscan3d.html">DBSCAN 3D</a></li>
 <li><a href="../charts/2d/scatter.html">Scatter Chart</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="description-1"><a class="header" href="#description-1">Description</a></h2>
@@ -374,14 +382,6 @@ chart = sp.build_scatter_chart(
 </div>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 
@@ -391,7 +391,7 @@ chart = sp.build_scatter_chart(
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml/linear-regression.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ml/linear-index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -405,7 +405,7 @@ chart = sp.build_scatter_chart(
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml/linear-regression.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ml/linear-index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

@@ -81,7 +81,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('bubble3d','bubble3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('bubble3d','bubble3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('bubble3d','bubble3d-ts',this)">TypeScript</button></div>
 <div id="bubble3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 n = 200
 chart = sp.build_bubble3d_chart(
     "4D Dataset",
@@ -93,7 +92,6 @@ chart = sp.build_bubble3d_chart(
 )</code></pre></div>
 <div id="bubble3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-
 const n = 200
 const chart = sp.build_bubble3d_chart("4D Dataset",
 [random.gauss(0,1) for _ in range(n)],
@@ -105,7 +103,6 @@ const chart = sp.build_bubble3d_chart("4D Dataset",
 })</code></pre></div>
 <div id="bubble3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-
 const n: number = 200
 const chart = sp.build_bubble3d_chart("4D Dataset",
 [random.gauss(0,1) for _ in range(n)],

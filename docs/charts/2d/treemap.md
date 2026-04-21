@@ -81,11 +81,9 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="treemap">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('treemap','treemap-py',this)">Python</button><button class="sp-tb" onclick="spTab('treemap','treemap-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('treemap','treemap-ts',this)">TypeScript</button></div>
 <div id="treemap-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 labels  = ["Electronics", "Phones", "Laptops", "Clothing", "Shirts", "Pants"]
 parents = ["",            "Electronics","Electronics","","Clothing","Clothing"]
 values  = [1, 400, 350, 1, 200, 150]
-
 chart = sp.build_treemap(
     "Revenue by Category",
     labels=labels,
@@ -93,11 +91,9 @@ chart = sp.build_treemap(
     parents=parents,
 )</code></pre></div>
 <div id="treemap-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const labels  = ["Electronics", "Phones", "Laptops", "Clothing", "Shirts", "Pants"]
 const parents = ["",            "Electronics","Electronics","","Clothing","Clothing"]
 const values  = [1, 400, 350, 1, 200, 150]
-
 const chart = sp.build_treemap("Revenue by Category",
 labels,
 {
@@ -105,11 +101,9 @@ labels,
     parents: parents
 })</code></pre></div>
 <div id="treemap-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const labels: string[] = ["Electronics", "Phones", "Laptops", "Clothing", "Shirts", "Pants"]
 const parents: string[] = ["",            "Electronics","Electronics","","Clothing","Clothing"]
 const values: number[] = [1, 400, 350, 1, 200, 150]
-
 const chart = sp.build_treemap("Revenue by Category",
 labels,
 {

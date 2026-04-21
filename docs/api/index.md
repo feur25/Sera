@@ -29,13 +29,13 @@ import seraplot as sp
 | [`build_funnel`](../charts/2d/funnel.md) | Funnel Chart |
 | [`build_gauge`](../charts/2d/gauge.md) | Gauge Chart |
 | [`build_grid`](../charts/2d/grid.md) | Grid Layout |
-| [`build_grouped_bar`](../charts/2d/grouped-bar.md) |  |
+| [`build_grouped_bar`](../charts/2d/grouped-bar.md) | Grouped Bar Chart |
 | [`build_hbar`](../charts/2d/hbar.md) | Horizontal Bar Chart |
 | [`build_heatmap`](../charts/2d/heatmap.md) | Heatmap |
-| [`build_histogram_overlay`](../charts/2d/histogram-overlay.md) |  |
+| [`build_histogram_overlay`](../charts/2d/histogram-overlay.md) | Histogram Overlay |
 | [`build_histogram`](../charts/2d/histogram.md) | Histogram |
 | [`build_kde_chart`](../charts/2d/kde.md) | KDE Chart |
-| [`build_line_chart`](../charts/2d/line.md) |  |
+| [`build_line_chart`](../charts/2d/line.md) | Line Chart |
 | [`build_lollipop_chart`](../charts/2d/lollipop.md) | Lollipop Chart |
 | [`build_multiline_chart`](../charts/2d/multiline.md) | Multi-Line Chart |
 | [`build_parallel`](../charts/2d/parallel.md) | Parallel Coordinates |
@@ -45,7 +45,7 @@ import seraplot as sp
 | [`build_scatter_chart`](../charts/2d/scatter.md) | Scatter Chart |
 | [`build_slideshow`](../charts/2d/slideshow.md) | Slideshow |
 | [`build_slope`](../charts/2d/slope.md) | Slope Chart |
-| [`build_stacked_bar`](../charts/2d/stacked-bar.md) |  |
+| [`build_stacked_bar`](../charts/2d/stacked-bar.md) | Stacked Bar Chart |
 | [`build_sunburst`](../charts/2d/sunburst.md) | Sunburst Chart |
 | [`build_treemap`](../charts/2d/treemap.md) | Treemap |
 | [`build_violin`](../charts/2d/violin.md) | Violin Chart |
@@ -109,8 +109,6 @@ import seraplot as sp
 </div>
 
 <div class="lang-fr">
-
-## Référence API
 
 Index alphabétique complet de tous les symboles publics exportés par `seraplot`.
 
@@ -193,7 +191,7 @@ import seraplot as sp
 | Fonction | Description |
 |----------|-------------|
 | [`build_bubble_map`](../charts/map/bubble-map.md) | Carte à bulles |
-| [`build_choropleth`](../charts/map/choropleth.md) | Choro-plèthe |
+| [`build_choropleth`](../charts/map/choropleth.md) | Choropleth |
 
 ---
 

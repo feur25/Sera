@@ -83,7 +83,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="waterfall">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('waterfall','waterfall-py',this)">Python</button><button class="sp-tb" onclick="spTab('waterfall','waterfall-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('waterfall','waterfall-ts',this)">TypeScript</button></div>
 <div id="waterfall-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_waterfall(
     "Annual P&amp;L Waterfall",
     labels=["Revenue", "COGS", "Gross Profit", "OpEx", "EBITDA", "D&amp;A", "Net Income"],
@@ -92,7 +91,6 @@ chart = sp.build_waterfall(
     y_label="$",
 )</code></pre></div>
 <div id="waterfall-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_waterfall("Annual P&amp;L Waterfall",
 ["Revenue", "COGS", "Gross Profit", "OpEx", "EBITDA", "D&amp;A", "Net Income"],
 {
@@ -101,7 +99,6 @@ const chart = sp.build_waterfall("Annual P&amp;L Waterfall",
     y_label: "$"
 })</code></pre></div>
 <div id="waterfall-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_waterfall("Annual P&amp;L Waterfall",
 ["Revenue", "COGS", "Gross Profit", "OpEx", "EBITDA", "D&amp;A", "Net Income"],
 {

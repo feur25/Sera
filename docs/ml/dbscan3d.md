@@ -85,14 +85,11 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('dbscan3d','dbscan3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('dbscan3d','dbscan3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('dbscan3d','dbscan3d-ts',this)">TypeScript</button></div>
 <div id="dbscan3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 def blob3d(cx, cy, cz, n=200, s=0.4):
     return [(cx+random.gauss(0,s), cy+random.gauss(0,s), cz+random.gauss(0,s))
             for _ in range(n)]
-
 pts = blob3d(0,0,0) + blob3d(5,5,5) + blob3d(10,0,5)
 x, y, z = zip(*pts)
-
 chart = sp.build_dbscan_chart_3d(
     "3D DBSCAN",
     x_values=list(x), y_values=list(y), z_values=list(z),
@@ -101,14 +98,11 @@ chart = sp.build_dbscan_chart_3d(
 )</code></pre></div>
 <div id="dbscan3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-
 def blob3d(cx, cy, cz, {n: 200, s: 0.4}):
     return [(cx+random.gauss(0,s), cy+random.gauss(0,s), cz+random.gauss(0,s))
             for _ in range(n)]
-
 const pts = blob3d(0,0,0) + blob3d(5,5,5) + blob3d(10,0,5)
 x, y, z = zip(*pts)
-
 const chart = sp.build_dbscan_chart_3d("3D DBSCAN",
 list(x),
 list(y),
@@ -119,14 +113,11 @@ list(y),
 })</code></pre></div>
 <div id="dbscan3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-
 def blob3d(cx, cy, cz, {n: 200, s: 0.4}):
     return [(cx+random.gauss(0,s), cy+random.gauss(0,s), cz+random.gauss(0,s))
             for _ in range(n)]
-
 const pts = blob3d(0,0,0) + blob3d(5,5,5) + blob3d(10,0,5)
 x, y, z = zip(*pts)
-
 const chart = sp.build_dbscan_chart_3d("3D DBSCAN",
 list(x),
 list(y),

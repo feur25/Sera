@@ -1,4 +1,4 @@
-# Infobulles personnalisées
+﻿# Infobulles personnalisées
 
 <div class="lang-en">
 
@@ -98,46 +98,3 @@ chart = sp.build_bar_chart(
 - [Palette & Couleurs](palette.md)
 
 </div>
-
-
----
-
-## Returns
-
-`str` — JSON string to pass to `hover_json=` parameters.
-
----
-
-## Examples
-
-### Bar chart with rich tooltip
-
-```python
-import seraplot as sp
-
-labels = ["Alpha", "Beta", "Gamma"]
-values = [420, 380, 290]
-
-hover = sp.build_hover_json(
-    fields=["Product", "Revenue ($)", "Growth (%)"],
-    values=[
-        ["Alpha", 420, "+12%"],
-        ["Beta",  380, "+5%"],
-        ["Gamma", 290, "-3%"],
-    ],
-)
-
-chart = sp.build_bar_chart(
-    "Revenue by Product",
-    labels=labels,
-    values=values,
-    hover_json=hover,
-)
-```
-
----
-
-## See also
-
-- [Background](background.md)
-- [Palette & Colors](palette.md)

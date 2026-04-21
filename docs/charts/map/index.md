@@ -13,13 +13,11 @@ SeraPlot provides geographic chart types for visualizing spatial data on world m
 
 <div class="lang-fr">
 
-# Graphiques cartographiques
-
 SeraPlot propose des types de graphiques géographiques pour visualiser des données spatiales sur des cartes mondiales.
 
 | Graphique | Fonction |
 |-----------|----------|
 | [Carte à bulles](bubble-map.md) | `bubble_map()` |
-| [Choro-plèthe](choropleth.md) | `choropleth()` |
+| [Choropleth](choropleth.md) | `choropleth()` |
 
 </div>

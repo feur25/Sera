@@ -77,7 +77,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="bar3d">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('bar3d','bar3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('bar3d','bar3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('bar3d','bar3d-ts',this)">TypeScript</button></div>
 <div id="bar3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_bar3d_chart(
     "Sales by Product",
     x_values=[0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0],
@@ -88,7 +87,6 @@ chart = sp.build_bar3d_chart(
     z_label="Units",
 )</code></pre></div>
 <div id="bar3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_bar3d_chart("Sales by Product",
 [0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0],
 [0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],
@@ -99,7 +97,6 @@ const chart = sp.build_bar3d_chart("Sales by Product",
     z_label: "Units"
 })</code></pre></div>
 <div id="bar3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_bar3d_chart("Sales by Product",
 [0.0, 1.0, 2.0, 3.0, 0.0, 1.0, 2.0, 3.0],
 [0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0],

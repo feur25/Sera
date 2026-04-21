@@ -71,16 +71,13 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="slideshow">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('slideshow','slideshow-py',this)">Python</button><button class="sp-tb" onclick="spTab('slideshow','slideshow-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('slideshow','slideshow-ts',this)">TypeScript</button></div>
 <div id="slideshow-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 slides = [
     sp.build_bar_chart("Q1 Revenue", labels=["A","B","C"], values=[120,80,95]),
     sp.build_line_chart("Growth Trend", labels=["Jan","Feb","Mar"], values=[10,14,18]),
     sp.build_pie_chart("Market Share", labels=["Us","Them"], values=[55,45]),
 ]
-
 deck = sp.build_slideshow(slides, title="Q1 Board Deck")</code></pre></div>
 <div id="slideshow-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const slides = [
     sp.build_bar_chart("Q1 Revenue",
 ["A", "B", "C"],
@@ -98,11 +95,9 @@ const slides = [
     values: [55, 45]
 }),
 ]
-
 const deck = sp.build_slideshow(slides,
 "Q1 Board Deck")</code></pre></div>
 <div id="slideshow-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const slides: number[] = [
     sp.build_bar_chart("Q1 Revenue",
 ["A", "B", "C"],
@@ -120,7 +115,6 @@ const slides: number[] = [
     values: [55, 45]
 }),
 ]
-
 const deck = sp.build_slideshow(slides,
 "Q1 Board Deck")</code></pre></div>
 </div>

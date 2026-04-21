@@ -1,8 +1,8 @@
-# ElasticNet
+﻿# ElasticNet
 
 <div class="lang-en">
 
-## Code
+## API Reference
 
 **Signature**
 
@@ -89,7 +89,7 @@ The `checkpoint_id` argument enables training resumed across multiple Python cal
 
 <div class="lang-fr">
 
-## Code
+## Référence API
 
 **Signature**
 
@@ -170,6 +170,6 @@ où $S(\cdot, \lambda)$ est l'opérateur de seuillage doux. Le terme L2 apparaî
 | `0` | Ridge — solutions denses et rétrécies |
 | `(0, 1)` | ElasticNet — creux + stable |
 
-L'argument `checkpoint_id` permet un entraînement repris : appeler `fit` à nouveau avec le même id reprend depuis le dernier checkpoint.
+L'argument `checkpoint_id` permet de reprendre l'entraînement entre plusieurs appels Python.
 
 </div>

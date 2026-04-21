@@ -38,10 +38,10 @@
             const path_to_root = "../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-eef86151.js"></script>
+        <script src="../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -283,60 +283,6 @@ with open("sortie.html", "w", encoding="utf-8") as f:
 <p>Voir <strong><a href="chart-methods.html">Méthodes du graphique</a></strong> pour la référence complète.</p>
 </div>
 
-<hr>
-<h2 id="properties-1"><a class="header" href="#properties-1">Properties</a></h2>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Property</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>html</code></td><td><code>str</code></td><td>Full self-contained HTML string</td></tr>
-</tbody>
-</table>
-</div>
-<pre><code class="language-python">chart = sp.build_bar_chart("Title", labels=["A", "B"], values=[1.0, 2.0])
-print(type(chart.html))   # &lt;class 'str'&gt;
-print(len(chart.html))    # typically 20,000–90,000 bytes
-</code></pre>
-<hr>
-<h2 id="auto-display-in-jupyter-1"><a class="header" href="#auto-display-in-jupyter-1">Auto-display in Jupyter</a></h2>
-<p>Charts display automatically when created inside a Jupyter cell. No <code>display()</code>
-call needed — SeraPlot detects the Jupyter environment and renders the chart
-inline.</p>
-<p>To disable auto-display:</p>
-<pre><code class="language-python">sp.set_auto_display(False)
-chart = sp.build_bar_chart("My Chart", labels=["A"], values=[1.0])
-# chart is returned silently — display it manually when ready
-</code></pre>
-<hr>
-<h2 id="manual-display-1"><a class="header" href="#manual-display-1">Manual display</a></h2>
-<pre><code class="language-python">from IPython.display import HTML, display
-
-chart = sp.build_bar_chart("Title", labels=["A"], values=[1.0])
-display(HTML(chart.html))
-</code></pre>
-<hr>
-<h2 id="export-to-file-1"><a class="header" href="#export-to-file-1">Export to file</a></h2>
-<pre><code class="language-python">chart = sp.build_pie_chart("Distribution", labels=["X", "Y", "Z"], values=[30.0, 40.0, 30.0])
-chart.save("output.html")
-</code></pre>
-<p>Or write the HTML string directly:</p>
-<pre><code class="language-python">with open("output.html", "w", encoding="utf-8") as f:
-    f.write(chart.html)
-</code></pre>
-<hr>
-<h2 id="method-chaining-1"><a class="header" href="#method-chaining-1">Method chaining</a></h2>
-<p>Every method on <code>Chart</code> returns a new <code>Chart</code>, so calls can be chained:</p>
-<pre><code class="language-python">chart = (
-    sp.build_bar_chart("Sales", labels, values)
-    .set_bg("#1e1e2e")
-    .show_grid()
-    .no_legend()
-    .set_font_size(14)
-)
-</code></pre>
-<p>See <strong><a href="chart-methods.html">Chart Methods</a></strong> for the full reference.</p>
 
                     </main>
 

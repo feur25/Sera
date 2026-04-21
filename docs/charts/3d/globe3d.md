@@ -82,17 +82,14 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="globe3d">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('globe3d','globe3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('globe3d','globe3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('globe3d','globe3d-ts',this)">TypeScript</button></div>
 <div id="globe3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_globe3d_chart(
     "World Population Spikes",
     labels=["China", "India", "USA", "Brazil", "Nigeria"],
     latitudes=[35.86, 20.59, 37.09, -14.23, 9.08],
     longitudes=[104.19, 78.96, -95.71, -51.92, 8.67],
     values=[1412, 1380, 331, 212, 218],
-)
-</code></pre></div>
+)</code></pre></div>
 <div id="globe3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_globe3d_chart("World Population Spikes",
 ["China", "India", "USA", "Brazil", "Nigeria"],
 [35.86, 20.59, 37.09, -14.23, 9.08],
@@ -101,7 +98,6 @@ const chart = sp.build_globe3d_chart("World Population Spikes",
     values: [1412, 1380, 331, 212, 218]
 })</code></pre></div>
 <div id="globe3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_globe3d_chart("World Population Spikes",
 ["China", "India", "USA", "Brazil", "Nigeria"],
 [35.86, 20.59, 37.09, -14.23, 9.08],

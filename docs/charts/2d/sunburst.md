@@ -78,11 +78,9 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="sunburst">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('sunburst','sunburst-py',this)">Python</button><button class="sp-tb" onclick="spTab('sunburst','sunburst-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('sunburst','sunburst-ts',this)">TypeScript</button></div>
 <div id="sunburst-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 labels  = ["Corp", "Sales", "Tech", "HR", "B2B", "B2C", "Frontend", "Backend"]
 parents = ["",       "Corp", "Corp","Corp","Sales","Sales","Tech",    "Tech"]
 values  = [1,        40,     50,    10,    25,     15,     30,        20]
-
 chart = sp.build_sunburst(
     "Headcount by Department",
     labels=labels,
@@ -90,11 +88,9 @@ chart = sp.build_sunburst(
     values=values,
 )</code></pre></div>
 <div id="sunburst-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const labels  = ["Corp", "Sales", "Tech", "HR", "B2B", "B2C", "Frontend", "Backend"]
 const parents = ["",       "Corp", "Corp","Corp","Sales","Sales","Tech",    "Tech"]
 const values  = [1,        40,     50,    10,    25,     15,     30,        20]
-
 const chart = sp.build_sunburst("Headcount by Department",
 labels,
 parents,
@@ -102,11 +98,9 @@ parents,
     values: values
 })</code></pre></div>
 <div id="sunburst-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const labels: string[] = ["Corp", "Sales", "Tech", "HR", "B2B", "B2C", "Frontend", "Backend"]
 const parents: string[] = ["",       "Corp", "Corp","Corp","Sales","Sales","Tech",    "Tech"]
 const values: number[] = [1,        40,     50,    10,    25,     15,     30,        20]
-
 const chart = sp.build_sunburst("Headcount by Department",
 labels,
 parents,

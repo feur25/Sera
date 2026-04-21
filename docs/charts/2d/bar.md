@@ -36,8 +36,6 @@ sp.build_bar_chart(
 
 Renders a vertical or horizontal bar chart.
 
-Affiche un graphique en barres vertical ou horizontal.
-
 ---
 
 ## Parameters
@@ -97,13 +95,10 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="bar">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('bar','bar-py',this)">Python</button><button class="sp-tb" onclick="spTab('bar','bar-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('bar','bar-ts',this)">TypeScript</button></div>
 <div id="bar-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 labels = ["Jan", "Feb", "Mar", "Apr", "May"]
 values = [1200.0, 1850.0, 2100.0, 1750.0, 2400.0]
-
 logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 hover = sp.build_hover_json(labels, images=[logo] * len(labels))
-
 chart = (
     sp.build_bar_chart(
         "Monthly Revenue",
@@ -118,14 +113,11 @@ chart = (
     .show_labels(position="top")
 )</code></pre></div>
 <div id="bar-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const labels = ["Jan", "Feb", "Mar", "Apr", "May"]
 const values = [1200.0, 1850.0, 2100.0, 1750.0, 2400.0]
-
 const logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 const hover = sp.build_hover_json(labels,
 [logo])
-
 const chart = (
     sp.build_bar_chart("Monthly Revenue",
 labels,
@@ -140,14 +132,11 @@ labels,
     .show_labels(position="top")
 )</code></pre></div>
 <div id="bar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const labels: string[] = ["Jan", "Feb", "Mar", "Apr", "May"]
 const values: number[] = [1200.0, 1850.0, 2100.0, 1750.0, 2400.0]
-
 const logo: string = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 const hover = sp.build_hover_json(labels,
 [logo])
-
 const chart = (
     sp.build_bar_chart("Monthly Revenue",
 labels,

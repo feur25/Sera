@@ -1,4 +1,4 @@
-# Chart Methods
+﻿# Chart Methods
 
 <div class="lang-en">
 
@@ -160,17 +160,14 @@ the call — useful for notebook sessions with a consistent theme.
 <div id="cm-gbg-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">sp.set_global_background("#0f172a")   # all subsequent charts use this bg
 chart1 = sp.build_bar_chart(...)
 chart2 = sp.build_scatter_chart(...)
-
 sp.reset_global_background()          # restore per-chart default</code></pre></div>
 <div id="cm-gbg-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">sp.set_global_background("#0f172a");  // all subsequent charts use this bg
 const chart1 = sp.build_bar_chart(...);
 const chart2 = sp.build_scatter_chart(...);
-
 sp.reset_global_background();         // restore per-chart default</code></pre></div>
 <div id="cm-gbg-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">sp.set_global_background("#0f172a");  // all subsequent charts use this bg
 const chart1 = sp.build_bar_chart(...);
 const chart2 = sp.build_scatter_chart(...);
-
 sp.reset_global_background();         // restore per-chart default</code></pre></div>
 </div>
 
@@ -504,75 +501,3 @@ Remet toute la configuration globale aux valeurs par défaut.
 - **`.export_svg(path)`** — Écrire uniquement le SVG dans un fichier
 
 </div>
-
-
-### `export_png(path, scale=2.0)`
-
-Exports the chart as a PNG via [cairosvg](https://cairosvg.org/).
-Requires `pip install cairosvg`.
-
-```python
-chart.export_png("chart.png", scale=3.0)  # 3× resolution
-```
-
----
-
-## Hover tooltips
-
-### `build_hover_json(labels, images=None, descriptions=None)`
-
-Builds a rich hover tooltip JSON string to pass as `hover_json=` to any chart function.
-
-| Parameter | Type | Description |
-|---|---|---|
-| `labels` | `list[str]` | Tooltip title for each data point |
-| `images` | `list[str \| None]` | Optional image URL per point (shown in tooltip) |
-| `descriptions` | `list[str \| None]` | Reserved for future use |
-
-```python
-import seraplot as sp
-
-countries = ["France", "Germany", "Spain", "Italy"]
-gdp = [2.9, 4.2, 1.4, 2.1]
-
-logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
-hover = sp.build_hover_json(countries, images=[logo] * len(countries))
-
-chart = sp.build_bar_chart(
-    "GDP by Country (trillion $)",
-    labels=countries,
-    values=gdp,
-    hover_json=hover,
-)
-```
-
----
-
-## Complete chaining example
-
-```python
-import seraplot as sp
-
-labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
-values = [41.2, 38.5, 55.1, 62.0, 58.7, 71.4]
-
-logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
-hover = sp.build_hover_json(labels, images=[logo] * len(labels))
-
-chart = (
-    sp.build_bar_chart("Monthly Revenue", labels, values,
-                       hover_json=hover, gridlines=True)
-    .set_bg(None)
-    .show_grid()
-    .show_labels(position="top")
-    .set_font_size(13)
-    .inject_css("""
-        .sp-bg  { fill: #0f172a !important; }
-        svg text    { fill: #e2e8f0 !important; }
-        .sp-gl      { stroke: #1e293b !important; }
-    """)
-)
-
-chart.save("revenue.html")
-```
-

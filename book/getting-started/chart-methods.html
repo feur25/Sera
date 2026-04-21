@@ -38,10 +38,10 @@
             const path_to_root = "../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-eef86151.js"></script>
+        <script src="../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -324,17 +324,24 @@ the call — useful for notebook sessions with a consistent theme.</p>
 <pre style="margin:0;border-radius:0"><code class="language-python">sp.set_global_background("#0f172a")   # all subsequent charts use this bg
 chart1 = sp.build_bar_chart(...)
 chart2 = sp.build_scatter_chart(...)
-<p>sp.reset_global_background()          # restore per-chart default</p>
+sp.reset_global_background()          # restore per-chart default</code></pre>
+</div>
+
 <div id="cm-gbg-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">sp.set_global_background("#0f172a");  // all subsequent charts use this bg
 const chart1 = sp.build_bar_chart(...);
 const chart2 = sp.build_scatter_chart(...);
-<p>sp.reset_global_background();         // restore per-chart default</p>
+sp.reset_global_background();         // restore per-chart default</code></pre>
+</div>
+
 <div id="cm-gbg-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">sp.set_global_background("#0f172a");  // all subsequent charts use this bg
 const chart1 = sp.build_bar_chart(...);
 const chart2 = sp.build_scatter_chart(...);
-<p>sp.reset_global_background();         // restore per-chart default</p>
+sp.reset_global_background();         // restore per-chart default</code></pre>
+</div>
+
+</div>
 
 <hr>
 <h2 id="grid-and-axes"><a class="header" href="#grid-and-axes">Grid and axes</a></h2>
@@ -481,7 +488,8 @@ chart.save("report/pie.html")
 <p>Writes only the SVG to a file (no HTML wrapper).</p>
 <pre><code class="language-python">chart.export_svg("chart.svg")
 </code></pre>
-<hr>
+<hr></div>
+
 <div class="lang-fr">
 <p>Ces méthodes sont disponibles sur tout objet <code>Chart</code> retourné par n’importe quelle fonction SeraPlot. Elles retournent toutes un nouveau <code>Chart</code> — elles peuvent donc être chaînées librement.</p>
 <hr>
@@ -578,76 +586,6 @@ chart.save("report/pie.html")
 </ul>
 </div>
 
-<h3 id="export_pngpath-scale20"><a class="header" href="#export_pngpath-scale20"><code>export_png(path, scale=2.0)</code></a></h3>
-<p>Exports the chart as a PNG via <a href="https://cairosvg.org/">cairosvg</a>.
-Requires <code>pip install cairosvg</code>.</p>
-<pre><code class="language-python">chart.export_png("chart.png", scale=3.0)  # 3× resolution
-</code></pre>
-<hr>
-<h2 id="hover-tooltips"><a class="header" href="#hover-tooltips">Hover tooltips</a></h2>
-<h3 id="build_hover_jsonlabels-imagesnone-descriptionsnone"><a class="header" href="#build_hover_jsonlabels-imagesnone-descriptionsnone"><code>build_hover_json(labels, images=None, descriptions=None)</code></a></h3>
-<p>Builds a rich hover tooltip JSON string to pass as <code>hover_json=</code> to any chart function.</p>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Parameter</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>labels</code></td><td><code>list[str]</code></td><td>Tooltip title for each data point</td></tr>
-<tr><td><code>images</code></td><td><code>list[str | None]</code></td><td>Optional image URL per point (shown in tooltip)</td></tr>
-<tr><td><code>descriptions</code></td><td><code>list[str | None]</code></td><td>Reserved for future use</td></tr>
-</tbody>
-</table>
-</div>
-<pre><code class="language-python">import seraplot as sp
-
-countries = ["France", "Germany", "Spain", "Italy"]
-gdp = [2.9, 4.2, 1.4, 2.1]
-
-logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
-hover = sp.build_hover_json(countries, images=[logo] * len(countries))
-
-chart = sp.build_bar_chart(
-    "GDP by Country (trillion $)",
-    labels=countries,
-    values=gdp,
-    hover_json=hover,
-)
-</code></pre>
-<hr>
-<h2 id="complete-chaining-example"><a class="header" href="#complete-chaining-example">Complete chaining example</a></h2>
-<pre><code class="language-python">import seraplot as sp
-
-labels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
-values = [41.2, 38.5, 55.1, 62.0, 58.7, 71.4]
-
-logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
-hover = sp.build_hover_json(labels, images=[logo] * len(labels))
-
-chart = (
-    sp.build_bar_chart("Monthly Revenue", labels, values,
-                       hover_json=hover, gridlines=True)
-    .set_bg(None)
-    .show_grid()
-    .show_labels(position="top")
-    .set_font_size(13)
-    .inject_css("""
-        .sp-bg  { fill: #0f172a !important; }
-        svg text    { fill: #e2e8f0 !important; }
-        .sp-gl      { stroke: #1e293b !important; }
-    """)
-)
-
-chart.save("revenue.html")
-</code></pre>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

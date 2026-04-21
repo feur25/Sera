@@ -84,15 +84,12 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="line">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('line','line-py',this)">Python</button><button class="sp-tb" onclick="spTab('line','line-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('line','line-ts',this)">TypeScript</button></div>
 <div id="line-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 revenue = [1200.0, 1350.0, 1100.0, 1600.0, 1800.0, 2100.0,
            1950.0, 2300.0, 2000.0, 2500.0, 2200.0, 2800.0]
-
 logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 hover = sp.build_hover_json(months, images=[logo] * len(months))
-
 chart = (
     sp.build_line_chart(
         "Annual Revenue",
@@ -108,16 +105,13 @@ chart = (
     .show_grid()
 )</code></pre></div>
 <div id="line-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 const revenue = [1200.0, 1350.0, 1100.0, 1600.0, 1800.0, 2100.0,
            1950.0, 2300.0, 2000.0, 2500.0, 2200.0, 2800.0]
-
 const logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 const hover = sp.build_hover_json(months,
 [logo])
-
 const chart = (
     sp.build_line_chart("Annual Revenue",
 months,
@@ -133,16 +127,13 @@ months,
     .show_grid()
 )</code></pre></div>
 <div id="line-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const months: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
           "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 const revenue: number[] = [1200.0, 1350.0, 1100.0, 1600.0, 1800.0, 2100.0,
            1950.0, 2300.0, 2000.0, 2500.0, 2200.0, 2800.0]
-
 const logo: string = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 const hover = sp.build_hover_json(months,
 [logo])
-
 const chart = (
     sp.build_line_chart("Annual Revenue",
 months,

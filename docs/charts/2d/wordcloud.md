@@ -74,10 +74,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('wordcloud','wordcloud-py',this)">Python</button><button class="sp-tb" onclick="spTab('wordcloud','wordcloud-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('wordcloud','wordcloud-ts',this)">TypeScript</button></div>
 <div id="wordcloud-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 from collections import Counter
-
 text = "python python rust rust rust go go java javascript python data ml deep learning neural"
 counts = Counter(text.split())
-
 chart = sp.build_wordcloud(
     "Tech Mentions",
     words=list(counts.keys()),
@@ -86,10 +84,8 @@ chart = sp.build_wordcloud(
 )</code></pre></div>
 <div id="wordcloud-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 from collections import Counter
-
 const text = "python python rust rust rust go go java javascript python data ml deep learning neural"
 const counts = Counter(text.split())
-
 const chart = sp.build_wordcloud("Tech Mentions",
 list(counts.keys()),
 {
@@ -98,10 +94,8 @@ list(counts.keys()),
 })</code></pre></div>
 <div id="wordcloud-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 from collections import Counter
-
 const text: string = "python python rust rust rust go go java javascript python data ml deep learning neural"
 const counts = Counter(text.split())
-
 const chart = sp.build_wordcloud("Tech Mentions",
 list(counts.keys()),
 {

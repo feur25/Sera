@@ -77,16 +77,13 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="parallel">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('parallel','parallel-py',this)">Python</button><button class="sp-tb" onclick="spTab('parallel','parallel-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('parallel','parallel-ts',this)">TypeScript</button></div>
 <div id="parallel-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 axes = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width"]
-
 data = [
     [5.1, 3.5, 1.4, 0.2],
     [6.7, 3.1, 4.7, 1.5],
     [6.3, 3.3, 6.0, 2.5],
 ]
 groups = ["Setosa", "Versicolor", "Virginica"]
-
 chart = sp.build_parallel(
     "Iris Parallel Coordinates",
     axes=axes,
@@ -94,16 +91,13 @@ chart = sp.build_parallel(
     palette=[0x6366f1, 0x22d3ee, 0xf43f5e],
 )</code></pre></div>
 <div id="parallel-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const axes = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width"]
-
 const data = [
     [5.1, 3.5, 1.4, 0.2],
     [6.7, 3.1, 4.7, 1.5],
     [6.3, 3.3, 6.0, 2.5],
 ]
 const groups = ["Setosa", "Versicolor", "Virginica"]
-
 const chart = sp.build_parallel("Iris Parallel Coordinates",
 axes,
 {
@@ -111,16 +105,13 @@ axes,
     palette: [0x6366f1, 0x22d3ee, 0xf43f5e]
 })</code></pre></div>
 <div id="parallel-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const axes: string[] = ["Sepal Length", "Sepal Width", "Petal Length", "Petal Width"]
-
 const data: number[] = [
     [5.1, 3.5, 1.4, 0.2],
     [6.7, 3.1, 4.7, 1.5],
     [6.3, 3.3, 6.0, 2.5],
 ]
 const groups: string[] = ["Setosa", "Versicolor", "Virginica"]
-
 const chart = sp.build_parallel("Iris Parallel Coordinates",
 axes,
 {

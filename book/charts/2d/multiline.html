@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -260,41 +260,48 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div id="multiline-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-<p>months = [“Jan”,“Feb”,“Mar”,“Apr”,“May”,“Jun”]</p>
-<p>chart = sp.build_multiline_chart(
-“Monthly Revenue by Product”,
-x_labels=months,
-series_values=[
-[12200, 13400, 15100, 14800, 16200, 17500],
-[8100,  9200,  9800,  10200, 11000, 12400],
-[3200,  3600,  4100,  4500,  4800,  5200],
-],
-series_names=[“Product A”, “Product B”, “Product C”],
-show_points=True,
-y_label=“Revenue ($)”,
-)</p>
+months = ["Jan","Feb","Mar","Apr","May","Jun"]
+chart = sp.build_multiline_chart(
+    "Monthly Revenue by Product",
+    x_labels=months,
+    series_values=[
+        [12200, 13400, 15100, 14800, 16200, 17500],
+        [8100,  9200,  9800,  10200, 11000, 12400],
+        [3200,  3600,  4100,  4500,  4800,  5200],
+    ],
+    series_names=["Product A", "Product B", "Product C"],
+    show_points=True,
+    y_label="Revenue ($)",
+)</code></pre>
+</div>
+
 <div id="multiline-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-<p>const months = [“Jan”,“Feb”,“Mar”,“Apr”,“May”,“Jun”]</p>
-<p>const chart = sp.build_multiline_chart(“Monthly Revenue by Product”,
+const months = ["Jan","Feb","Mar","Apr","May","Jun"]
+const chart = sp.build_multiline_chart("Monthly Revenue by Product",
 months,
 {
-series_values: [[12200, 13400, 15100, 14800, 16200, 17500], [8100, 9200, 9800, 10200, 11000, 12400], [3200, 3600, 4100, 4500, 4800, 5200]],
-series_names: [“Product A”, “Product B”, “Product C”],
-show_points: true,
-y_label: “Revenue ($)”
-})</p>
+    series_values: [[12200, 13400, 15100, 14800, 16200, 17500], [8100, 9200, 9800, 10200, 11000, 12400], [3200, 3600, 4100, 4500, 4800, 5200]],
+    series_names: ["Product A", "Product B", "Product C"],
+    show_points: true,
+    y_label: "Revenue ($)"
+})</code></pre>
+</div>
+
 <div id="multiline-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-<p>const months: string[] = [“Jan”,“Feb”,“Mar”,“Apr”,“May”,“Jun”]</p>
-<p>const chart = sp.build_multiline_chart(“Monthly Revenue by Product”,
+const months: string[] = ["Jan","Feb","Mar","Apr","May","Jun"]
+const chart = sp.build_multiline_chart("Monthly Revenue by Product",
 months,
 {
-series_values: [[12200, 13400, 15100, 14800, 16200, 17500], [8100, 9200, 9800, 10200, 11000, 12400], [3200, 3600, 4100, 4500, 4800, 5200]],
-series_names: [“Product A”, “Product B”, “Product C”],
-show_points: true,
-y_label: “Revenue ($)”
-})</p>
+    series_values: [[12200, 13400, 15100, 14800, 16200, 17500], [8100, 9200, 9800, 10200, 11000, 12400], [3200, 3600, 4100, 4500, 4800, 5200]],
+    series_names: ["Product A", "Product B", "Product C"],
+    show_points: true,
+    y_label: "Revenue ($)"
+})</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -306,6 +313,7 @@ y_label: “Revenue ($)”
 <li><a href="line.html">Line Chart</a></li>
 <li><a href="area.html">Area Chart</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -387,14 +395,6 @@ chart = sp.build_multiline_chart(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

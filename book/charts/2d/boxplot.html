@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -254,57 +254,64 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div id="boxplot-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-<p>n = 50
+n = 50
 groups = {
-“Class A”: [random.gauss(72, 10) for _ in range(n)],
-“Class B”: [random.gauss(68, 15) for _ in range(n)],
-“Class C”: [random.gauss(80, 8)  for _ in range(n)],
-}</p>
-<p>labels = list(groups.keys())
-values = [v for g in groups.values() for v in g]</p>
-<p>chart = sp.build_boxplot(
-“Test Score Distribution by Class”,
-category_labels=labels,
-values=values,
-y_label=“Score”,
-gridlines=True,
-)</p>
+    "Class A": [random.gauss(72, 10) for _ in range(n)],
+    "Class B": [random.gauss(68, 15) for _ in range(n)],
+    "Class C": [random.gauss(80, 8)  for _ in range(n)],
+}
+labels = list(groups.keys())
+values = [v for g in groups.values() for v in g]
+chart = sp.build_boxplot(
+    "Test Score Distribution by Class",
+    category_labels=labels,
+    values=values,
+    y_label="Score",
+    gridlines=True,
+)</code></pre>
+</div>
+
 <div id="boxplot-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-<p>const n = 50
+const n = 50
 const groups = {
-“Class A”: [random.gauss(72, 10) for _ in range(n)],
-“Class B”: [random.gauss(68, 15) for _ in range(n)],
-“Class C”: [random.gauss(80, 8)  for _ in range(n)],
-}</p>
-<p>const labels = list(groups.keys())
-const values = [v for g in groups.values() for v in g]</p>
-<p>const chart = sp.build_boxplot(“Test Score Distribution by Class”,
+    "Class A": [random.gauss(72, 10) for _ in range(n)],
+    "Class B": [random.gauss(68, 15) for _ in range(n)],
+    "Class C": [random.gauss(80, 8)  for _ in range(n)],
+}
+const labels = list(groups.keys())
+const values = [v for g in groups.values() for v in g]
+const chart = sp.build_boxplot("Test Score Distribution by Class",
 labels,
 {
-values: values,
-y_label: “Score”,
-gridlines: true
-})</p>
+    values: values,
+    y_label: "Score",
+    gridlines: true
+})</code></pre>
+</div>
+
 <div id="boxplot-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-<p>const n: number = 50
+const n: number = 50
 const groups = {
-“Class A”: [random.gauss(72, 10) for _ in range(n)],
-“Class B”: [random.gauss(68, 15) for _ in range(n)],
-“Class C”: [random.gauss(80, 8)  for _ in range(n)],
-}</p>
-<p>const labels = list(groups.keys())
-const values: number[] = [v for g in groups.values() for v in g]</p>
-<p>const chart = sp.build_boxplot(“Test Score Distribution by Class”,
+    "Class A": [random.gauss(72, 10) for _ in range(n)],
+    "Class B": [random.gauss(68, 15) for _ in range(n)],
+    "Class C": [random.gauss(80, 8)  for _ in range(n)],
+}
+const labels = list(groups.keys())
+const values: number[] = [v for g in groups.values() for v in g]
+const chart = sp.build_boxplot("Test Score Distribution by Class",
 labels,
 {
-values: values,
-y_label: “Score”,
-gridlines: true
-})</p>
+    values: values,
+    y_label: "Score",
+    gridlines: true
+})</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -317,6 +324,7 @@ gridlines: true
 <li><a href="histogram.html">Histogram</a></li>
 <li><a href="kde.html">KDE</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -398,14 +406,6 @@ chart = sp.build_boxplot(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

@@ -76,14 +76,12 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="stacked-bar3d">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('stacked-bar3d','stacked-bar3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('stacked-bar3d','stacked-bar3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('stacked-bar3d','stacked-bar3d-ts',this)">TypeScript</button></div>
 <div id="stacked-bar3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 categories = ["Q1", "Q2", "Q3", "Q4"]
 series_data = [
     [30, 40, 25, 50],
     [20, 35, 45, 30],
     [50, 25, 30, 20],
 ]
-
 chart = sp.build_stacked_bar3d_chart(
     "Quarterly Revenue 3D",
     category_labels=categories,
@@ -91,14 +89,12 @@ chart = sp.build_stacked_bar3d_chart(
     series_names=["Product A", "Product B", "Product C"],
 )</code></pre></div>
 <div id="stacked-bar3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const categories = ["Q1", "Q2", "Q3", "Q4"]
 const series_data = [
     [30, 40, 25, 50],
     [20, 35, 45, 30],
     [50, 25, 30, 20],
 ]
-
 const chart = sp.build_stacked_bar3d_chart("Quarterly Revenue 3D",
 categories,
 {
@@ -106,14 +102,12 @@ categories,
     series_names: ["Product A", "Product B", "Product C"]
 })</code></pre></div>
 <div id="stacked-bar3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const categories: string[] = ["Q1", "Q2", "Q3", "Q4"]
 const series_data: number[] = [
     [30, 40, 25, 50],
     [20, 35, 45, 30],
     [50, 25, 30, 20],
 ]
-
 const chart = sp.build_stacked_bar3d_chart("Quarterly Revenue 3D",
 categories,
 {

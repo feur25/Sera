@@ -76,7 +76,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="funnel">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('funnel','funnel-py',this)">Python</button><button class="sp-tb" onclick="spTab('funnel','funnel-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('funnel','funnel-ts',this)">TypeScript</button></div>
 <div id="funnel-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_funnel(
     "Sales Pipeline Q1",
     labels=["Leads", "Qualified", "Proposal", "Negotiation", "Closed"],
@@ -85,7 +84,6 @@ chart = sp.build_funnel(
     palette=[0x6366f1, 0x8b5cf6, 0xa78bfa, 0xc4b5fd, 0xddd6fe],
 )</code></pre></div>
 <div id="funnel-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_funnel("Sales Pipeline Q1",
 ["Leads", "Qualified", "Proposal", "Negotiation", "Closed"],
 {
@@ -94,7 +92,6 @@ const chart = sp.build_funnel("Sales Pipeline Q1",
     palette: [0x6366f1, 0x8b5cf6, 0xa78bfa, 0xc4b5fd, 0xddd6fe]
 })</code></pre></div>
 <div id="funnel-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_funnel("Sales Pipeline Q1",
 ["Leads", "Qualified", "Proposal", "Negotiation", "Closed"],
 {

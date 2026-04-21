@@ -38,10 +38,10 @@
             const path_to_root = "../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-eef86151.js"></script>
+        <script src="../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -304,80 +304,6 @@ chart = sp.build_heatmap(
 </ul>
 </div>
 
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Format</th><th>Example</th><th>Usage</th></tr>
-</thead>
-<tbody>
-<tr><td>Hex integer</td><td><code>0x6366f1</code></td><td><code>color_hex</code>, <code>palette</code> lists</td></tr>
-<tr><td>CSS hex string</td><td><code>"#6366f1"</code></td><td><code>background</code>, <code>bg_color</code></td></tr>
-<tr><td>CSS named color</td><td><code>"navy"</code></td><td><code>background</code>, <code>bg_color</code></td></tr>
-</tbody>
-</table>
-</div>
-<hr>
-<h2 id="built-in-palettes-1"><a class="header" href="#built-in-palettes-1">Built-in Palettes</a></h2>
-<p>SeraPlot ships with several built-in color sequences, accessible as module constants:</p>
-<pre><code class="language-python">import seraplot as sp
-
-sp.PALETTE_DEFAULT   # Indigo-based multi-color sequence
-sp.PALETTE_COOL      # Blues and purples
-sp.PALETTE_WARM      # Reds, oranges, yellows
-sp.PALETTE_EARTH     # Browns and greens
-sp.PALETTE_MONO      # Greyscale
-</code></pre>
-<p>Pass any list of hex ints as a <code>palette</code> parameter:</p>
-<pre><code class="language-python">chart = sp.build_bar_chart(
-    "Revenue",
-    labels=["A","B","C"],
-    values=[100,200,150],
-    palette=[0x6366f1, 0x22d3ee, 0xf43f5e],
-)
-</code></pre>
-<hr>
-<h2 id="color-utility-reference-1"><a class="header" href="#color-utility-reference-1">Color Utility Reference</a></h2>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Parameter name</th><th>Accepts</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>color_hex</code></td><td><code>int</code></td><td>Single element color</td></tr>
-<tr><td><code>palette</code></td><td><code>list[int]</code></td><td>Multi-element color list</td></tr>
-<tr><td><code>background</code></td><td><code>str</code></td><td>Chart canvas background</td></tr>
-<tr><td><code>bg_color</code></td><td><code>str</code></td><td>3D canvas background</td></tr>
-<tr><td><code>color_low</code></td><td><code>int</code></td><td>Min value color (heatmaps, choropleths)</td></tr>
-<tr><td><code>color_mid</code></td><td><code>int</code></td><td>Mid value color</td></tr>
-<tr><td><code>color_high</code></td><td><code>int</code></td><td>Max value color</td></tr>
-<tr><td><code>color_up</code></td><td><code>int</code></td><td>Rising candle color</td></tr>
-<tr><td><code>color_down</code></td><td><code>int</code></td><td>Falling candle color</td></tr>
-<tr><td><code>color_pos</code></td><td><code>int</code></td><td>Positive waterfall bar</td></tr>
-<tr><td><code>color_neg</code></td><td><code>int</code></td><td>Negative waterfall bar</td></tr>
-<tr><td><code>color_total</code></td><td><code>int</code></td><td>Total waterfall bar</td></tr>
-</tbody>
-</table>
-</div>
-<hr>
-<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
-<h3 id="purple-gradient-heatmap"><a class="header" href="#purple-gradient-heatmap">Purple gradient heatmap</a></h3>
-<pre><code class="language-python">import seraplot as sp
-
-chart = sp.build_heatmap(
-    "Correlation",
-    labels=["A","B","C"],
-    flat_matrix=[1, 0.8, 0.2, 0.8, 1, 0.5, 0.2, 0.5, 1],
-    color_low=0xfaf5ff,
-    color_mid=0xa78bfa,
-    color_high=0x4c1d95,
-)
-</code></pre>
-<hr>
-<h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
-<ul>
-<li><a href="background.html">Background Config</a></li>
-<li><a href="hover.html">Hover Tooltips</a></li>
-</ul>
 
                     </main>
 

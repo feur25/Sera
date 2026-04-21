@@ -77,11 +77,9 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="heatmap3d">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('heatmap3d','heatmap3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('heatmap3d','heatmap3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('heatmap3d','heatmap3d-ts',this)">TypeScript</button></div>
 <div id="heatmap3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 features = ["A", "B", "C", "D"]
 n = len(features)
 matrix = [[abs(i - j) * 0.25 for j in range(n)] for i in range(n)]
-
 chart = sp.build_heatmap3d_chart(
     "Distance Matrix 3D",
     x_labels=features,
@@ -89,11 +87,9 @@ chart = sp.build_heatmap3d_chart(
     values=matrix,
 )</code></pre></div>
 <div id="heatmap3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const features = ["A", "B", "C", "D"]
 const n = len(features)
 const matrix = [[abs(i - j) * 0.25 for j in range(n)] for i in range(n)]
-
 const chart = sp.build_heatmap3d_chart("Distance Matrix 3D",
 features,
 features,
@@ -101,11 +97,9 @@ features,
     values: matrix
 })</code></pre></div>
 <div id="heatmap3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const features: string[] = ["A", "B", "C", "D"]
 const n = len(features)
 const matrix: number[] = [[abs(i - j) * 0.25 for j in range(n)] for i in range(n)]
-
 const chart = sp.build_heatmap3d_chart("Distance Matrix 3D",
 features,
 features,

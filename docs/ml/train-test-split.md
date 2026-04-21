@@ -1,8 +1,8 @@
-# train_test_split / StratifiedKFold
+﻿# train_test_split / StratifiedKFold
 
 <div class="lang-en">
 
-## Code
+## API Reference
 
 **Signature**
 
@@ -116,7 +116,7 @@ This estimate has lower variance than a single train/test split, especially for 
 
 <div class="lang-fr">
 
-## Code
+## Référence API
 
 **Signature**
 
@@ -227,113 +227,3 @@ $$\widehat{\text{VC}} = \frac{1}{k}\sum_{f=0}^{k-1} \hat{e}_f$$
 Cette estimation a une variance plus faible qu'une seule division train/test, notamment pour les petits jeux de données.
 
 </div>
-# train_test_split
-
-<div class="lang-en">
-
-## Signature
-
-```python
-X_train, X_test, y_train, y_test = sp.train_test_split(
-    x,
-    y,
-    test_size: float = 0.2,
-    random_state: int = 42,
-)
-```
-
----
-
-## Description
-
-Splits data into training and test sets using a Fisher-Yates shuffle seeded by `random_state` (splitmix64 PRNG). Deterministic for the same seed.
-
----
-
-## Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `x` | `ndarray (n, p)` | — | Feature matrix |
-| `y` | `ndarray (n,)` | — | Target vector |
-| `test_size` | `float` | `0.2` | Fraction of data in the test set |
-| `random_state` | `int` | `42` | Random seed |
-
-</div>
-
-<div class="lang-fr">
-
-## Description
-
-Divise les données en ensembles d'entraînement et de test via un mélange Fisher-Yates seeded par `random_state` (PRNG splitmix64). Déterministe pour la même graine.
-
-## Paramètres
-
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `x` | `ndarray (n, p)` | — | Matrice des variables |
-| `y` | `ndarray (n,)` | — | Vecteur cible |
-| `test_size` | `float` | `0.2` | Fraction des données pour le test |
-| `random_state` | `int` | `42` | Graine aléatoire |
-
-</div>
-
-
----
-
-## Returns
-
-| Return | Type | Description |
-|--------|------|-------------|
-| `X_train` | `list[list[float]]` | Training features |
-| `X_test` | `list[list[float]]` | Test features |
-| `y_train` | `list[float]` | Training targets |
-| `y_test` | `list[float]` | Test targets |
-
----
-
-## Example
-
-<details>
-<summary><strong>Basic split</strong></summary>
-
-```python
-import seraplot as sp
-import numpy as np
-
-X = np.random.randn(1000, 5)
-y = (X @ np.random.randn(5)).astype(np.float64)
-
-X_train, X_test, y_train, y_test = sp.train_test_split(X, y, 0.2, 42)
-
-print(f"Train: {len(y_train)} samples")
-print(f"Test:  {len(y_test)} samples")
-```
-
-</details>
-
-<details>
-<summary><strong>Full pipeline</strong></summary>
-
-```python
-import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 4)
-y = (X @ np.random.randn(4)).astype(np.float64)
-
-X_train, X_test, y_train, y_test = sp.train_test_split(X, y, 0.25, 0)
-
-scaler = sp.StandardScaler()
-X_train = np.array(scaler.fit_transform(np.array(X_train)))
-X_test = np.array(scaler.transform(np.array(X_test)))
-
-model = sp.Ridge(alpha=0.5)
-model.fit(X_train, np.array(y_train))
-
-preds = model.predict(X_test)
-r2 = sp.r2_score(y_test, preds)
-print(f"Test R²: {r2:.4f}")
-```
-
-</details>

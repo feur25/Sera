@@ -3,6 +3,9 @@
 <div class="lang-en">
 
 ## Signature
+
+```python
+sp.build_histogram_overlay(
     title: str,
     values: list[float],
     overlay_values: list[float],
@@ -75,11 +78,9 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('histogram-overlay','histogram-overlay-py',this)">Python</button><button class="sp-tb" onclick="spTab('histogram-overlay','histogram-overlay-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('histogram-overlay','histogram-overlay-ts',this)">TypeScript</button></div>
 <div id="histogram-overlay-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import numpy as np
-
 rng = np.random.default_rng(42)
 control = rng.normal(5.0, 1.0, 1000).tolist()
 treatment = rng.normal(5.8, 1.2, 1000).tolist()
-
 chart = sp.build_histogram_overlay(
     "Control vs Treatment",
     values=control,
@@ -91,39 +92,35 @@ chart = sp.build_histogram_overlay(
     gridlines=True,
 )</code></pre></div>
 <div id="histogram-overlay-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-import numpy as np
-
-const rng = np.random.default_rng(42)
-const control = rng.normal(5.0, 1.0, 1000).tolist()
-const treatment = rng.normal(5.8, 1.2, 1000).tolist()
-
-const chart = sp.build_histogram_overlay("Control vs Treatment",
-control,
-{
+function randn() {
+  const u = 1 - Math.random(), v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+const control  = Array.from({ length: 1000 }, () => 5.0 + 1.0 * randn());
+const treatment = Array.from({ length: 1000 }, () => 5.8 + 1.2 * randn());
+const chart = sp.build_histogram_overlay("Control vs Treatment", control, {
     overlay_values: treatment,
     bins: 30,
     series_names: ["Control", "Treatment"],
     x_label: "Measurement",
     y_label: "Frequency",
-    gridlines: true
-})</code></pre></div>
+    gridlines: true,
+});</code></pre></div>
 <div id="histogram-overlay-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-import numpy as np
-
-const rng = np.random.default_rng(42)
-const control = rng.normal(5.0, 1.0, 1000).tolist()
-const treatment = rng.normal(5.8, 1.2, 1000).tolist()
-
-const chart = sp.build_histogram_overlay("Control vs Treatment",
-control,
-{
+function randn(): number {
+  const u = 1 - Math.random(), v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+const control: number[]   = Array.from({ length: 1000 }, () => 5.0 + 1.0 * randn());
+const treatment: number[] = Array.from({ length: 1000 }, () => 5.8 + 1.2 * randn());
+const chart = sp.build_histogram_overlay("Control vs Treatment", control, {
     overlay_values: treatment,
     bins: 30,
     series_names: ["Control", "Treatment"],
     x_label: "Measurement",
     y_label: "Frequency",
-    gridlines: true
-})</code></pre></div>
+    gridlines: true,
+});</code></pre></div>
 </div>
 
 

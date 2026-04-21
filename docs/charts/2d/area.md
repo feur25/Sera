@@ -86,7 +86,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="area">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('area','area-py',this)">Python</button><button class="sp-tb" onclick="spTab('area','area-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('area','area-ts',this)">TypeScript</button></div>
 <div id="area-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_area_chart(
     "Revenue Stacked by Region",
     x_labels=["Q1","Q2","Q3","Q4"],
@@ -100,7 +99,6 @@ chart = sp.build_area_chart(
     y_label="Revenue ($)",
 )</code></pre></div>
 <div id="area-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_area_chart("Revenue Stacked by Region",
 ["Q1", "Q2", "Q3", "Q4"],
 {
@@ -110,7 +108,6 @@ const chart = sp.build_area_chart("Revenue Stacked by Region",
     y_label: "Revenue ($)"
 })</code></pre></div>
 <div id="area-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_area_chart("Revenue Stacked by Region",
 ["Q1", "Q2", "Q3", "Q4"],
 {

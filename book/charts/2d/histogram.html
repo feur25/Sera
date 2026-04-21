@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -210,7 +210,6 @@
 <hr>
 <h2 id="description"><a class="header" href="#description">Description</a></h2>
 <p>Distribution histogram with configurable bin count.</p>
-<p>Histogramme de distribution avec nombre de bins configurable.</p>
 <hr>
 <h2 id="parameters"><a class="header" href="#parameters">Parameters</a></h2>
 <div class="table-wrapper">
@@ -254,42 +253,53 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div id="histogram-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import numpy as np
-<p>data = np.random.normal(0, 1, 5000).tolist()</p>
-<p>chart = sp.build_histogram(
-“Normal Distribution — N(0,1)”,
-values=data,
-bins=40,
-x_label=“Value”,
-y_label=“Count”,
-gridlines=True,
-show_counts=False,
-)</p>
+data = np.random.normal(0, 1, 5000).tolist()
+chart = sp.build_histogram(
+    "Normal Distribution — N(0,1)",
+    values=data,
+    bins=40,
+    x_label="Value",
+    y_label="Count",
+    gridlines=True,
+    show_counts=False,
+)</code></pre>
+</div>
+
 <div id="histogram-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-import numpy as np
-<p>const data = np.random.normal(0, 1, 5000).tolist()</p>
-<p>const chart = sp.build_histogram(“Normal Distribution — N(0,1)”,
-{
-values: data,
-bins: 40,
-x_label: “Value”,
-y_label: “Count”,
-gridlines: true,
-show_counts: false
-})</p>
+function randn() {
+  const u = 1 - Math.random(), v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+const data = Array.from({ length: 5000 }, () =&gt; randn());
+const chart = sp.build_histogram("Normal Distribution — N(0,1)", {
+    values: data,
+    bins: 40,
+    x_label: "Value",
+    y_label: "Count",
+    gridlines: true,
+    show_counts: false,
+});</code></pre>
+</div>
+
 <div id="histogram-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-import numpy as np
-<p>const data = np.random.normal(0, 1, 5000).tolist()</p>
-<p>const chart = sp.build_histogram(“Normal Distribution — N(0,1)”,
-{
-values: data,
-bins: 40,
-x_label: “Value”,
-y_label: “Count”,
-gridlines: true,
-show_counts: false
-})</p>
+function randn(): number {
+  const u = 1 - Math.random(), v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+const data: number[] = Array.from({ length: 5000 }, () =&gt; randn());
+const chart = sp.build_histogram("Normal Distribution — N(0,1)", {
+    values: data,
+    bins: 40,
+    x_label: "Value",
+    y_label: "Count",
+    gridlines: true,
+    show_counts: false,
+});</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -302,6 +312,7 @@ show_counts: false
 <li><a href="kde.html">KDE</a> — smooth density estimate</li>
 <li><a href="violin.html">Violin</a> — distribution by category</li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -377,14 +388,6 @@ chart = sp.build_histogram(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

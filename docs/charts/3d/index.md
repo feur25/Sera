@@ -28,8 +28,6 @@ SeraPlot provides 17 three-dimensional chart types rendered with full WebGL acce
 
 <div class="lang-fr">
 
-# Graphiques 3D
-
 SeraPlot propose 17 types de graphiques tridimensionnels rendus avec acc\u00e9l\u00e9ration WebGL compl\u00e8te.
 
 | Graphique | Fonction |

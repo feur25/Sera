@@ -73,21 +73,17 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="sunburst3d">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('sunburst3d','sunburst3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('sunburst3d','sunburst3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('sunburst3d','sunburst3d-ts',this)">TypeScript</button></div>
 <div id="sunburst3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 labels  = ["Root", "A", "B", "A1", "A2", "B1"]
 parents = ["", "Root", "Root", "A", "A", "B"]
 values  = [1, 40, 60, 25, 15, 60]
-
 chart = sp.build_sunburst3d_chart(
     "Org Chart 3D",
     labels=labels, parents=parents, values=values,
 )</code></pre></div>
 <div id="sunburst3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const labels  = ["Root", "A", "B", "A1", "A2", "B1"]
 const parents = ["", "Root", "Root", "A", "A", "B"]
 const values  = [1, 40, 60, 25, 15, 60]
-
 const chart = sp.build_sunburst3d_chart("Org Chart 3D",
 labels,
 parents,
@@ -95,11 +91,9 @@ parents,
     values: values
 })</code></pre></div>
 <div id="sunburst3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const labels: string[] = ["Root", "A", "B", "A1", "A2", "B1"]
 const parents: string[] = ["", "Root", "Root", "A", "A", "B"]
 const values: number[] = [1, 40, 60, 25, 15, 60]
-
 const chart = sp.build_sunburst3d_chart("Org Chart 3D",
 labels,
 parents,

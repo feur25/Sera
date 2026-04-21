@@ -38,10 +38,10 @@
             const path_to_root = "../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-eef86151.js"></script>
+        <script src="../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -185,7 +185,7 @@
                     <main>
                         <h1 id="train_test_split--stratifiedkfold"><a class="header" href="#train_test_split--stratifiedkfold">train_test_split / StratifiedKFold</a></h1>
 <div class="lang-en">
-<h2 id="code"><a class="header" href="#code">Code</a></h2>
+<h2 id="api-reference"><a class="header" href="#api-reference">API Reference</a></h2>
 <p><strong>Signature</strong></p>
 <pre><code class="language-python">X_train, X_test, y_train, y_test = sp.train_test_split(
     X, y, test_size=0.2, random_state=None, stratify=False
@@ -284,7 +284,7 @@ for fold, (tr, te) in enumerate(kf.split(X, y)):
 </div>
 
 <div class="lang-fr">
-<h2 id="code-1"><a class="header" href="#code-1">Code</a></h2>
+<h2 id="référence-api"><a class="header" href="#référence-api">Référence API</a></h2>
 <p><strong>Signature</strong></p>
 <pre><code class="language-python">X_train, X_test, y_train, y_test = sp.train_test_split(
     X, y, test_size=0.2, random_state=None, stratify=False
@@ -382,108 +382,6 @@ for pli, (tr, te) in enumerate(kf.split(X, y)):
 <p>Cette estimation a une variance plus faible qu’une seule division train/test, notamment pour les petits jeux de données.</p>
 </div>
 
-# train_test_split
-<div class="lang-en">
-<h2 id="signature"><a class="header" href="#signature">Signature</a></h2>
-<pre><code class="language-python">X_train, X_test, y_train, y_test = sp.train_test_split(
-    x,
-    y,
-    test_size: float = 0.2,
-    random_state: int = 42,
-)
-</code></pre>
-<hr>
-<h2 id="description"><a class="header" href="#description">Description</a></h2>
-<p>Splits data into training and test sets using a Fisher-Yates shuffle seeded by <code>random_state</code> (splitmix64 PRNG). Deterministic for the same seed.</p>
-<hr>
-<h2 id="parameters"><a class="header" href="#parameters">Parameters</a></h2>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>x</code></td><td><code>ndarray (n, p)</code></td><td>—</td><td>Feature matrix</td></tr>
-<tr><td><code>y</code></td><td><code>ndarray (n,)</code></td><td>—</td><td>Target vector</td></tr>
-<tr><td><code>test_size</code></td><td><code>float</code></td><td><code>0.2</code></td><td>Fraction of data in the test set</td></tr>
-<tr><td><code>random_state</code></td><td><code>int</code></td><td><code>42</code></td><td>Random seed</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-
-<div class="lang-fr">
-<h2 id="description-1"><a class="header" href="#description-1">Description</a></h2>
-<p>Divise les données en ensembles d’entraînement et de test via un mélange Fisher-Yates seeded par <code>random_state</code> (PRNG splitmix64). Déterministe pour la même graine.</p>
-<h2 id="paramètres"><a class="header" href="#paramètres">Paramètres</a></h2>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>x</code></td><td><code>ndarray (n, p)</code></td><td>—</td><td>Matrice des variables</td></tr>
-<tr><td><code>y</code></td><td><code>ndarray (n,)</code></td><td>—</td><td>Vecteur cible</td></tr>
-<tr><td><code>test_size</code></td><td><code>float</code></td><td><code>0.2</code></td><td>Fraction des données pour le test</td></tr>
-<tr><td><code>random_state</code></td><td><code>int</code></td><td><code>42</code></td><td>Graine aléatoire</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-
-<hr>
-<h2 id="returns"><a class="header" href="#returns">Returns</a></h2>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Return</th><th>Type</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>X_train</code></td><td><code>list[list[float]]</code></td><td>Training features</td></tr>
-<tr><td><code>X_test</code></td><td><code>list[list[float]]</code></td><td>Test features</td></tr>
-<tr><td><code>y_train</code></td><td><code>list[float]</code></td><td>Training targets</td></tr>
-<tr><td><code>y_test</code></td><td><code>list[float]</code></td><td>Test targets</td></tr>
-</tbody>
-</table>
-</div>
-<hr>
-<h2 id="example"><a class="header" href="#example">Example</a></h2>
-<details>
-<summary><strong>Basic split</strong></summary>
-<pre><code class="language-python">import seraplot as sp
-import numpy as np
-
-X = np.random.randn(1000, 5)
-y = (X @ np.random.randn(5)).astype(np.float64)
-
-X_train, X_test, y_train, y_test = sp.train_test_split(X, y, 0.2, 42)
-
-print(f"Train: {len(y_train)} samples")
-print(f"Test:  {len(y_test)} samples")
-</code></pre>
-</details>
-<details>
-<summary><strong>Full pipeline</strong></summary>
-<pre><code class="language-python">import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 4)
-y = (X @ np.random.randn(4)).astype(np.float64)
-
-X_train, X_test, y_train, y_test = sp.train_test_split(X, y, 0.25, 0)
-
-scaler = sp.StandardScaler()
-X_train = np.array(scaler.fit_transform(np.array(X_train)))
-X_test = np.array(scaler.transform(np.array(X_test)))
-
-model = sp.Ridge(alpha=0.5)
-model.fit(X_train, np.array(y_train))
-
-preds = model.predict(X_test)
-r2 = sp.r2_score(y_test, preds)
-print(f"Test R²: {r2:.4f}")
-</code></pre>
-</details>
 
                     </main>
 

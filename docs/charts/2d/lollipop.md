@@ -86,7 +86,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="lollipop">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('lollipop','lollipop-py',this)">Python</button><button class="sp-tb" onclick="spTab('lollipop','lollipop-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('lollipop','lollipop-ts',this)">TypeScript</button></div>
 <div id="lollipop-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_lollipop_chart(
     "Top Countries by GDP per Capita",
     labels=["Luxembourg", "Switzerland", "USA", "Germany", "France"],
@@ -97,7 +96,6 @@ chart = sp.build_lollipop_chart(
     x_label="GDP per capita ($)",
 )</code></pre></div>
 <div id="lollipop-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_lollipop_chart("Top Countries by GDP per Capita",
 ["Luxembourg", "Switzerland", "USA", "Germany", "France"],
 {
@@ -108,7 +106,6 @@ const chart = sp.build_lollipop_chart("Top Countries by GDP per Capita",
     x_label: "GDP per capita ($)"
 })</code></pre></div>
 <div id="lollipop-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_lollipop_chart("Top Countries by GDP per Capita",
 ["Luxembourg", "Switzerland", "USA", "Germany", "France"],
 {

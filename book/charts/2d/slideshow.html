@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -243,54 +243,61 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div id="slideshow-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-<p>slides = [
-sp.build_bar_chart(“Q1 Revenue”, labels=[“A”,“B”,“C”], values=[120,80,95]),
-sp.build_line_chart(“Growth Trend”, labels=[“Jan”,“Feb”,“Mar”], values=[10,14,18]),
-sp.build_pie_chart(“Market Share”, labels=[“Us”,“Them”], values=[55,45]),
-]</p>
-<p>deck = sp.build_slideshow(slides, title=“Q1 Board Deck”)</p>
+slides = [
+    sp.build_bar_chart("Q1 Revenue", labels=["A","B","C"], values=[120,80,95]),
+    sp.build_line_chart("Growth Trend", labels=["Jan","Feb","Mar"], values=[10,14,18]),
+    sp.build_pie_chart("Market Share", labels=["Us","Them"], values=[55,45]),
+]
+deck = sp.build_slideshow(slides, title="Q1 Board Deck")</code></pre>
+</div>
+
 <div id="slideshow-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-<p>const slides = [
-sp.build_bar_chart(“Q1 Revenue”,
-[“A”, “B”, “C”],
+const slides = [
+    sp.build_bar_chart("Q1 Revenue",
+["A", "B", "C"],
 {
-values: [120, 80, 95]
+    values: [120, 80, 95]
 }),
-sp.build_line_chart(“Growth Trend”,
-[“Jan”, “Feb”, “Mar”],
+    sp.build_line_chart("Growth Trend",
+["Jan", "Feb", "Mar"],
 {
-values: [10, 14, 18]
+    values: [10, 14, 18]
 }),
-sp.build_pie_chart(“Market Share”,
-[“Us”, “Them”],
+    sp.build_pie_chart("Market Share",
+["Us", "Them"],
 {
-values: [55, 45]
+    values: [55, 45]
 }),
-]</p>
-<p>const deck = sp.build_slideshow(slides,
-“Q1 Board Deck”)</p>
+]
+const deck = sp.build_slideshow(slides,
+"Q1 Board Deck")</code></pre>
+</div>
+
 <div id="slideshow-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-<p>const slides: number[] = [
-sp.build_bar_chart(“Q1 Revenue”,
-[“A”, “B”, “C”],
+const slides: number[] = [
+    sp.build_bar_chart("Q1 Revenue",
+["A", "B", "C"],
 {
-values: [120, 80, 95]
+    values: [120, 80, 95]
 }),
-sp.build_line_chart(“Growth Trend”,
-[“Jan”, “Feb”, “Mar”],
+    sp.build_line_chart("Growth Trend",
+["Jan", "Feb", "Mar"],
 {
-values: [10, 14, 18]
+    values: [10, 14, 18]
 }),
-sp.build_pie_chart(“Market Share”,
-[“Us”, “Them”],
+    sp.build_pie_chart("Market Share",
+["Us", "Them"],
 {
-values: [55, 45]
+    values: [55, 45]
 }),
-]</p>
-<p>const deck = sp.build_slideshow(slides,
-“Q1 Board Deck”)</p>
+]
+const deck = sp.build_slideshow(slides,
+"Q1 Board Deck")</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -301,6 +308,7 @@ values: [55, 45]
 <ul>
 <li><a href="grid.html">Grid Layout</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -358,14 +366,6 @@ presentation = sp.build_slideshow(diapositives, title="Rapport T1")
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

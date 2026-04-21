@@ -74,11 +74,9 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('ridgeline3d','ridgeline3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('ridgeline3d','ridgeline3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('ridgeline3d','ridgeline3d-ts',this)">TypeScript</button></div>
 <div id="ridgeline3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 cats   = ["Low", "Medium", "High"]
 means  = [10, 50, 90]
 values = [v for m in means for v in [random.gauss(m, 8) for _ in range(150)]]
-
 chart = sp.build_ridgeline3d_chart(
     "Score Distribution by Group",
     categories=cats,
@@ -86,11 +84,9 @@ chart = sp.build_ridgeline3d_chart(
 )</code></pre></div>
 <div id="ridgeline3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-
 const cats   = ["Low", "Medium", "High"]
 const means  = [10, 50, 90]
 const values = [v for m in means for v in [random.gauss(m, 8) for _ in range(150)]]
-
 const chart = sp.build_ridgeline3d_chart("Score Distribution by Group",
 cats,
 {
@@ -98,11 +94,9 @@ cats,
 })</code></pre></div>
 <div id="ridgeline3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-
 const cats: string[] = ["Low", "Medium", "High"]
 const means: number[] = [10, 50, 90]
 const values: number[] = [v for m in means for v in [random.gauss(m, 8) for _ in range(150)]]
-
 const chart = sp.build_ridgeline3d_chart("Score Distribution by Group",
 cats,
 {

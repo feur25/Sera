@@ -73,22 +73,18 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="pie3d">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('pie3d','pie3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('pie3d','pie3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('pie3d','pie3d-ts',this)">TypeScript</button></div>
 <div id="pie3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_pie3d_chart(
     "Market Share 3D",
     labels=["Chrome", "Safari", "Firefox", "Edge"],
     values=[65, 19, 4, 4],
-)
-</code></pre></div>
+)</code></pre></div>
 <div id="pie3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_pie3d_chart("Market Share 3D",
 ["Chrome", "Safari", "Firefox", "Edge"],
 {
     values: [65, 19, 4, 4]
 })</code></pre></div>
 <div id="pie3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_pie3d_chart("Market Share 3D",
 ["Chrome", "Safari", "Firefox", "Edge"],
 {

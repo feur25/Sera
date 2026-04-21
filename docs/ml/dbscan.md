@@ -108,13 +108,10 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('dbscan','dbscan-py',this)">Python</button><button class="sp-tb" onclick="spTab('dbscan','dbscan-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('dbscan','dbscan-ts',this)">TypeScript</button></div>
 <div id="dbscan-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 def make_blob(cx, cy, n=150, s=0.5):
     return [(cx + random.gauss(0, s), cy + random.gauss(0, s)) for _ in range(n)]
-
 pts  = make_blob(0, 0) + make_blob(5, 5) + make_blob(10, 0)
 x, y = zip(*pts)
-
 chart = sp.build_dbscan_chart(
     "DBSCAN Clustering",
     x_values=list(x),
@@ -126,13 +123,10 @@ chart = sp.build_dbscan_chart(
 )</code></pre></div>
 <div id="dbscan-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-
 def make_blob(cx, cy, {n: 150, s: 0.5}):
     return [(cx + random.gauss(0, s), cy + random.gauss(0, s)) for _ in range(n)]
-
 const pts  = make_blob(0, 0) + make_blob(5, 5) + make_blob(10, 0)
 x, y = zip(*pts)
-
 const chart = sp.build_dbscan_chart("DBSCAN Clustering",
 list(x),
 {
@@ -144,13 +138,10 @@ list(x),
 })</code></pre></div>
 <div id="dbscan-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-
 def make_blob(cx, cy, {n: 150, s: 0.5}):
     return [(cx + random.gauss(0, s), cy + random.gauss(0, s)) for _ in range(n)]
-
 const pts  = make_blob(0, 0) + make_blob(5, 5) + make_blob(10, 0)
 x, y = zip(*pts)
-
 const chart = sp.build_dbscan_chart("DBSCAN Clustering",
 list(x),
 {

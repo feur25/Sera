@@ -86,11 +86,9 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('heatmap','heatmap-py',this)">Python</button><button class="sp-tb" onclick="spTab('heatmap','heatmap-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('heatmap','heatmap-ts',this)">TypeScript</button></div>
 <div id="heatmap-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import numpy as np
-
 features = ["Age", "Income", "Score", "Visits"]
 n = len(features)
 matrix = np.corrcoef(np.random.randn(4, 100)).flatten().tolist()
-
 chart = sp.build_heatmap(
     "Feature Correlation Matrix",
     labels=features,
@@ -101,37 +99,37 @@ chart = sp.build_heatmap(
     show_values=True,
 )</code></pre></div>
 <div id="heatmap-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-import numpy as np
-
-const features = ["Age", "Income", "Score", "Visits"]
-const n = len(features)
-const matrix = np.corrcoef(np.random.randn(4, 100)).flatten().tolist()
-
-const chart = sp.build_heatmap("Feature Correlation Matrix",
-features,
-{
+const features = ["Age", "Income", "Score", "Visits"];
+// Pre-computed 4×4 correlation matrix (row-major)
+const matrix = [
+   1.00,  0.72, -0.15,  0.43,
+   0.72,  1.00,  0.08,  0.61,
+  -0.15,  0.08,  1.00, -0.27,
+   0.43,  0.61, -0.27,  1.00,
+];
+const chart = sp.build_heatmap("Feature Correlation Matrix", features, {
     flat_matrix: matrix,
     color_low: 0x3b82f6,
     color_mid: 0xffffff,
     color_high: 0xef4444,
-    show_values: true
-})</code></pre></div>
+    show_values: true,
+});</code></pre></div>
 <div id="heatmap-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-import numpy as np
-
-const features: string[] = ["Age", "Income", "Score", "Visits"]
-const n = len(features)
-const matrix = np.corrcoef(np.random.randn(4, 100)).flatten().tolist()
-
-const chart = sp.build_heatmap("Feature Correlation Matrix",
-features,
-{
+const features: string[] = ["Age", "Income", "Score", "Visits"];
+// Pre-computed 4×4 correlation matrix (row-major)
+const matrix: number[] = [
+   1.00,  0.72, -0.15,  0.43,
+   0.72,  1.00,  0.08,  0.61,
+  -0.15,  0.08,  1.00, -0.27,
+   0.43,  0.61, -0.27,  1.00,
+];
+const chart = sp.build_heatmap("Feature Correlation Matrix", features, {
     flat_matrix: matrix,
     color_low: 0x3b82f6,
     color_mid: 0xffffff,
     color_high: 0xef4444,
-    show_values: true
-})</code></pre></div>
+    show_values: true,
+});</code></pre></div>
 </div>
 
 

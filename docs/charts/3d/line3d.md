@@ -85,12 +85,10 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('line3d','line3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('line3d','line3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('line3d','line3d-ts',this)">TypeScript</button></div>
 <div id="line3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import math
-
 t = [i * 0.1 for i in range(100)]
 x = [math.cos(v) for v in t]
 y = [math.sin(v) for v in t]
 z = t
-
 chart = sp.build_line3d_chart(
     "Helix",
     x_values=x, y_values=y, z_values=z,
@@ -98,12 +96,10 @@ chart = sp.build_line3d_chart(
 )</code></pre></div>
 <div id="line3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import math
-
 const t = [i * 0.1 for i in range(100)]
 const x = [math.cos(v) for v in t]
 const y = [math.sin(v) for v in t]
 const z = t
-
 const chart = sp.build_line3d_chart("Helix",
 x,
 y,
@@ -115,12 +111,10 @@ y,
 })</code></pre></div>
 <div id="line3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import math
-
 const t: number[] = [i * 0.1 for i in range(100)]
 const x: number[] = [math.cos(v) for v in t]
 const y: number[] = [math.sin(v) for v in t]
 const z = t
-
 const chart = sp.build_line3d_chart("Helix",
 x,
 y,

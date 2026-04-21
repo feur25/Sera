@@ -82,7 +82,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="donut">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('donut','donut-py',this)">Python</button><button class="sp-tb" onclick="spTab('donut','donut-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('donut','donut-ts',this)">TypeScript</button></div>
 <div id="donut-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_donut_chart(
     "Budget Allocation",
     labels=["R&amp;D", "Marketing", "Operations", "Support"],
@@ -91,7 +90,6 @@ chart = sp.build_donut_chart(
     show_pct=True,
 )</code></pre></div>
 <div id="donut-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_donut_chart("Budget Allocation",
 ["R&amp;D", "Marketing", "Operations", "Support"],
 {
@@ -100,7 +98,6 @@ const chart = sp.build_donut_chart("Budget Allocation",
     show_pct: true
 })</code></pre></div>
 <div id="donut-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_donut_chart("Budget Allocation",
 ["R&amp;D", "Marketing", "Operations", "Support"],
 {

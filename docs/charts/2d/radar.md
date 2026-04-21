@@ -77,7 +77,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="radar">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('radar','radar-py',this)">Python</button><button class="sp-tb" onclick="spTab('radar','radar-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('radar','radar-ts',this)">TypeScript</button></div>
 <div id="radar-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_radar_chart(
     "Player Stats Comparison",
     axes=["Speed", "Strength", "Defense", "Dribbling", "Shooting", "Passing"],
@@ -86,7 +85,6 @@ chart = sp.build_radar_chart(
     palette=[0x6366f1, 0xf43f5e],
 )</code></pre></div>
 <div id="radar-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_radar_chart("Player Stats Comparison",
 ["Speed", "Strength", "Defense", "Dribbling", "Shooting", "Passing"],
 {
@@ -95,7 +93,6 @@ const chart = sp.build_radar_chart("Player Stats Comparison",
     palette: [0x6366f1, 0xf43f5e]
 })</code></pre></div>
 <div id="radar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_radar_chart("Player Stats Comparison",
 ["Speed", "Strength", "Defense", "Dribbling", "Shooting", "Passing"],
 {

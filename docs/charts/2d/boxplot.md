@@ -83,17 +83,14 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('boxplot','boxplot-py',this)">Python</button><button class="sp-tb" onclick="spTab('boxplot','boxplot-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('boxplot','boxplot-ts',this)">TypeScript</button></div>
 <div id="boxplot-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 n = 50
 groups = {
     "Class A": [random.gauss(72, 10) for _ in range(n)],
     "Class B": [random.gauss(68, 15) for _ in range(n)],
     "Class C": [random.gauss(80, 8)  for _ in range(n)],
 }
-
 labels = list(groups.keys())
 values = [v for g in groups.values() for v in g]
-
 chart = sp.build_boxplot(
     "Test Score Distribution by Class",
     category_labels=labels,
@@ -103,17 +100,14 @@ chart = sp.build_boxplot(
 )</code></pre></div>
 <div id="boxplot-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-
 const n = 50
 const groups = {
     "Class A": [random.gauss(72, 10) for _ in range(n)],
     "Class B": [random.gauss(68, 15) for _ in range(n)],
     "Class C": [random.gauss(80, 8)  for _ in range(n)],
 }
-
 const labels = list(groups.keys())
 const values = [v for g in groups.values() for v in g]
-
 const chart = sp.build_boxplot("Test Score Distribution by Class",
 labels,
 {
@@ -123,17 +117,14 @@ labels,
 })</code></pre></div>
 <div id="boxplot-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-
 const n: number = 50
 const groups = {
     "Class A": [random.gauss(72, 10) for _ in range(n)],
     "Class B": [random.gauss(68, 15) for _ in range(n)],
     "Class C": [random.gauss(80, 8)  for _ in range(n)],
 }
-
 const labels = list(groups.keys())
 const values: number[] = [v for g in groups.values() for v in g]
-
 const chart = sp.build_boxplot("Test Score Distribution by Class",
 labels,
 {

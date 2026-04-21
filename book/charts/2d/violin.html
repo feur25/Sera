@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -253,48 +253,55 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div id="violin-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-<p>roles = {
-“Engineer”: [random.gauss(95000, 15000) for _ in range(60)],
-“Manager”:  [random.gauss(110000, 20000) for _ in range(60)],
-“Analyst”:  [random.gauss(75000, 12000) for _ in range(60)],
-}</p>
-<p>chart = sp.build_violin(
-“Salary Distribution by Role”,
-categories=list(roles.keys()),
-values=[v for g in roles.values() for v in g],
-y_label=“Salary ($)”,
-palette=[0x6366f1, 0x22d3ee, 0xf43f5e],
-)</p>
+roles = {
+    "Engineer": [random.gauss(95000, 15000) for _ in range(60)],
+    "Manager":  [random.gauss(110000, 20000) for _ in range(60)],
+    "Analyst":  [random.gauss(75000, 12000) for _ in range(60)],
+}
+chart = sp.build_violin(
+    "Salary Distribution by Role",
+    categories=list(roles.keys()),
+    values=[v for g in roles.values() for v in g],
+    y_label="Salary ($)",
+    palette=[0x6366f1, 0x22d3ee, 0xf43f5e],
+)</code></pre>
+</div>
+
 <div id="violin-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-<p>const roles = {
-“Engineer”: [random.gauss(95000, 15000) for _ in range(60)],
-“Manager”:  [random.gauss(110000, 20000) for _ in range(60)],
-“Analyst”:  [random.gauss(75000, 12000) for _ in range(60)],
-}</p>
-<p>const chart = sp.build_violin(“Salary Distribution by Role”,
+const roles = {
+    "Engineer": [random.gauss(95000, 15000) for _ in range(60)],
+    "Manager":  [random.gauss(110000, 20000) for _ in range(60)],
+    "Analyst":  [random.gauss(75000, 12000) for _ in range(60)],
+}
+const chart = sp.build_violin("Salary Distribution by Role",
 list(roles.keys()),
 {
-values: [v for g in roles.values() for v in g],
-y_label: “Salary ($)”,
-palette: [0x6366f1, 0x22d3ee, 0xf43f5e]
-})</p>
+    values: [v for g in roles.values() for v in g],
+    y_label: "Salary ($)",
+    palette: [0x6366f1, 0x22d3ee, 0xf43f5e]
+})</code></pre>
+</div>
+
 <div id="violin-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-<p>const roles = {
-“Engineer”: [random.gauss(95000, 15000) for _ in range(60)],
-“Manager”:  [random.gauss(110000, 20000) for _ in range(60)],
-“Analyst”:  [random.gauss(75000, 12000) for _ in range(60)],
-}</p>
-<p>const chart = sp.build_violin(“Salary Distribution by Role”,
+const roles = {
+    "Engineer": [random.gauss(95000, 15000) for _ in range(60)],
+    "Manager":  [random.gauss(110000, 20000) for _ in range(60)],
+    "Analyst":  [random.gauss(75000, 12000) for _ in range(60)],
+}
+const chart = sp.build_violin("Salary Distribution by Role",
 list(roles.keys()),
 {
-values: [v for g in roles.values() for v in g],
-y_label: “Salary ($)”,
-palette: [0x6366f1, 0x22d3ee, 0xf43f5e]
-})</p>
+    values: [v for g in roles.values() for v in g],
+    y_label: "Salary ($)",
+    palette: [0x6366f1, 0x22d3ee, 0xf43f5e]
+})</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -308,6 +315,7 @@ palette: [0x6366f1, 0x22d3ee, 0xf43f5e]
 <li><a href="ridgeline.html">Ridgeline</a></li>
 <li><a href="../3d/violin3d.html">Violin 3D</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -385,14 +393,6 @@ chart = sp.build_violin(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

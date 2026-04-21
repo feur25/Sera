@@ -74,18 +74,15 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="grid">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('grid','grid-py',this)">Python</button><button class="sp-tb" onclick="spTab('grid','grid-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('grid','grid-ts',this)">TypeScript</button></div>
 <div id="grid-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 bar   = sp.build_bar_chart("Revenue", labels=["A","B","C"], values=[100,200,150])
 pie   = sp.build_pie_chart("Share",   labels=["A","B"],     values=[60,40])
 line  = sp.build_line_chart("Trend",  labels=["Jan","Feb","Mar"], values=[10,20,15])
 hist  = sp.build_histogram("Dist",    values=[1,2,2,3,3,3,4,4,5])
-
 dashboard = sp.build_grid(
     [bar, pie, line, hist],
     cols=2,
 )</code></pre></div>
 <div id="grid-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const bar   = sp.build_bar_chart("Revenue",
 ["A", "B", "C"],
 {
@@ -105,11 +102,9 @@ const hist  = sp.build_histogram("Dist",
 {
     values: [1, 2, 2, 3, 3, 3, 4, 4, 5]
 })
-
 const dashboard = sp.build_grid([bar, pie, line, hist],
 2)</code></pre></div>
 <div id="grid-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const bar   = sp.build_bar_chart("Revenue",
 ["A", "B", "C"],
 {
@@ -129,7 +124,6 @@ const hist  = sp.build_histogram("Dist",
 {
     values: [1, 2, 2, 3, 3, 3, 4, 4, 5]
 })
-
 const dashboard = sp.build_grid([bar, pie, line, hist],
 2)</code></pre></div>
 </div>

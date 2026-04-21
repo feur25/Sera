@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -213,7 +213,6 @@
 <hr>
 <h2 id="description"><a class="header" href="#description">Description</a></h2>
 <p>Renders a vertical or horizontal bar chart.</p>
-<p>Affiche un graphique en barres vertical ou horizontal.</p>
 <hr>
 <h2 id="parameters"><a class="header" href="#parameters">Parameters</a></h2>
 <div class="table-wrapper">
@@ -268,63 +267,70 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div id="bar-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-<p>labels = [“Jan”, “Feb”, “Mar”, “Apr”, “May”]
-values = [1200.0, 1850.0, 2100.0, 1750.0, 2400.0]</p>
-<p>logo = “https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png”
-hover = sp.build_hover_json(labels, images=[logo] * len(labels))</p>
-<p>chart = (
-sp.build_bar_chart(
-“Monthly Revenue”,
-labels=labels,
-values=values,
-x_label=“Month”,
-y_label=“Revenue (€)”,
-gridlines=True,
-hover_json=hover,
-)
-.set_bg(None)
-.show_labels(position=“top”)
-)</p>
+labels = ["Jan", "Feb", "Mar", "Apr", "May"]
+values = [1200.0, 1850.0, 2100.0, 1750.0, 2400.0]
+logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
+hover = sp.build_hover_json(labels, images=[logo] * len(labels))
+chart = (
+    sp.build_bar_chart(
+        "Monthly Revenue",
+        labels=labels,
+        values=values,
+        x_label="Month",
+        y_label="Revenue (€)",
+        gridlines=True,
+        hover_json=hover,
+    )
+    .set_bg(None)
+    .show_labels(position="top")
+)</code></pre>
+</div>
+
 <div id="bar-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-<p>const labels = [“Jan”, “Feb”, “Mar”, “Apr”, “May”]
-const values = [1200.0, 1850.0, 2100.0, 1750.0, 2400.0]</p>
-<p>const logo = “https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png”
+const labels = ["Jan", "Feb", "Mar", "Apr", "May"]
+const values = [1200.0, 1850.0, 2100.0, 1750.0, 2400.0]
+const logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 const hover = sp.build_hover_json(labels,
-[logo])</p>
-<p>const chart = (
-sp.build_bar_chart(“Monthly Revenue”,
+[logo])
+const chart = (
+    sp.build_bar_chart("Monthly Revenue",
 labels,
 {
-values: values,
-x_label: “Month”,
-y_label: “Revenue (€)”,
-gridlines: true,
-hover_json: hover
+    values: values,
+    x_label: "Month",
+    y_label: "Revenue (€)",
+    gridlines: true,
+    hover_json: hover
 })
-.set_bg(null)
-.show_labels(position=“top”)
-)</p>
+    .set_bg(null)
+    .show_labels(position="top")
+)</code></pre>
+</div>
+
 <div id="bar-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-<p>const labels: string[] = [“Jan”, “Feb”, “Mar”, “Apr”, “May”]
-const values: number[] = [1200.0, 1850.0, 2100.0, 1750.0, 2400.0]</p>
-<p>const logo: string = “https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png”
+const labels: string[] = ["Jan", "Feb", "Mar", "Apr", "May"]
+const values: number[] = [1200.0, 1850.0, 2100.0, 1750.0, 2400.0]
+const logo: string = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 const hover = sp.build_hover_json(labels,
-[logo])</p>
-<p>const chart = (
-sp.build_bar_chart(“Monthly Revenue”,
+[logo])
+const chart = (
+    sp.build_bar_chart("Monthly Revenue",
 labels,
 {
-values: values,
-x_label: “Month”,
-y_label: “Revenue (€)”,
-gridlines: true,
-hover_json: hover
+    values: values,
+    x_label: "Month",
+    y_label: "Revenue (€)",
+    gridlines: true,
+    hover_json: hover
 })
-.set_bg(null)
-.show_labels(position=“top”)
-)</p>
+    .set_bg(null)
+    .show_labels(position="top")
+)</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -356,6 +362,7 @@ hover_json: hover
 <li><a href="grouped-bar.html">Grouped Bar</a> — <code>sp.build_grouped_bar()</code></li>
 <li><a href="stacked-bar.html">Stacked Bar</a> — <code>sp.build_stacked_bar()</code></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -458,14 +465,6 @@ chart = (
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

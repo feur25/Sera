@@ -79,14 +79,14 @@
 
 - [Overview](ml/index.md)
 
-- [Clustering]()
+- [Clustering](ml/clustering-index.md)
   - [K-Means](ml/kmeans.md)
   - [K-Means Class](ml/kmeans-class.md)
   - [DBSCAN 2D](ml/dbscan.md)
   - [DBSCAN 3D](ml/dbscan3d.md)
   - [DBSCAN Class](ml/dbscan-class.md)
 
-- [Linear Models]()
+- [Linear Models](ml/linear-index.md)
   - [LinearRegression](ml/linear-regression.md)
   - [Ridge / RidgeClassifier](ml/ridge.md)
   - [Lasso](ml/lasso.md)
@@ -94,31 +94,31 @@
   - [LogisticRegression](ml/logistic-regression.md)
   - [SGDClassifier / SGDRegressor](ml/sgd.md)
 
-- [Tree-Based]()
+- [Tree-Based](ml/tree-index.md)
   - [DecisionTree](ml/decision-tree.md)
   - [RandomForest](ml/random-forest.md)
   - [GradientBoosting](ml/gradient-boosting.md)
   - [AdaBoost](ml/adaboost.md)
 
-- [Neighbors]()
+- [Neighbors](ml/neighbors-index.md)
   - [KNN / NearestCentroid](ml/knn.md)
 
-- [Naive Bayes]()
+- [Naive Bayes](ml/bayes-index.md)
   - [GaussianNB / MultinomialNB / BernoulliNB](ml/naive-bayes.md)
 
-- [SVM]()
+- [SVM](ml/svm-index.md)
   - [LinearSVC / LinearSVR](ml/svm.md)
 
-- [Preprocessing]()
+- [Preprocessing](ml/preprocessing-index.md)
   - [StandardScaler / MinMaxScaler / RobustScaler / MaxAbsScaler / Normalizer](ml/preprocessing.md)
 
-- [Decomposition]()
+- [Decomposition](ml/decomposition-index.md)
   - [PCA / TruncatedSVD](ml/decomposition.md)
 
-- [Model Selection]()
+- [Model Selection](ml/selection-index.md)
   - [GridSearchCV / RandomizedSearchCV / Halving](ml/grid-search.md)
 
-- [Evaluation]()
+- [Evaluation](ml/evaluation-index.md)
   - [Metrics](ml/metrics.md)
   - [train_test_split](ml/train-test-split.md)
 

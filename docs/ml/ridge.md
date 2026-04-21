@@ -1,8 +1,8 @@
-# Ridge / RidgeClassifier
+﻿# Ridge / RidgeClassifier
 
 <div class="lang-en">
 
-## Code
+## API Reference
 
 **Signature**
 
@@ -90,7 +90,7 @@ The variance-bias trade-off is controlled by $\alpha$: larger $\alpha$ increases
 
 <div class="lang-fr">
 
-## Code
+## Référence API
 
 **Signature**
 

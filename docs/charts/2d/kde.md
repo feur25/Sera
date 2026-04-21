@@ -85,9 +85,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('kde','kde-py',this)">Python</button><button class="sp-tb" onclick="spTab('kde','kde-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('kde','kde-ts',this)">TypeScript</button></div>
 <div id="kde-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 values = [random.gauss(50, 10) for _ in range(500)]
-
 chart = sp.build_kde_chart(
     "Score Distribution",
     values=values,
@@ -97,9 +95,7 @@ chart = sp.build_kde_chart(
 )</code></pre></div>
 <div id="kde-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-
 const values = [random.gauss(50, 10) for _ in range(500)]
-
 const chart = sp.build_kde_chart("Score Distribution",
 {
     values: values,
@@ -109,9 +105,7 @@ const chart = sp.build_kde_chart("Score Distribution",
 })</code></pre></div>
 <div id="kde-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-
 const values: number[] = [random.gauss(50, 10) for _ in range(500)]
-
 const chart = sp.build_kde_chart("Score Distribution",
 {
     values: values,

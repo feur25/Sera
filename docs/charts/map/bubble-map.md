@@ -85,21 +85,18 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="bubble-map">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('bubble-map','bubble-map-py',this)">Python</button><button class="sp-tb" onclick="spTab('bubble-map','bubble-map-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('bubble-map','bubble-map-ts',this)">TypeScript</button></div>
 <div id="bubble-map-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_bubble_map(
     "GDP by Country",
     labels=["USA", "CHN", "DEU", "JPN", "FRA"],
     values=[25500, 17700, 4400, 4200, 3100],
 )</code></pre></div>
 <div id="bubble-map-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_bubble_map("GDP by Country",
 ["USA", "CHN", "DEU", "JPN", "FRA"],
 {
     values: [25500, 17700, 4400, 4200, 3100]
 })</code></pre></div>
 <div id="bubble-map-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_bubble_map("GDP by Country",
 ["USA", "CHN", "DEU", "JPN", "FRA"],
 {

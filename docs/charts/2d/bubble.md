@@ -85,12 +85,10 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="bubble">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('bubble','bubble-py',this)">Python</button><button class="sp-tb" onclick="spTab('bubble','bubble-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('bubble','bubble-ts',this)">TypeScript</button></div>
 <div id="bubble-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 countries = ["USA", "China", "Germany", "India", "Brazil"]
 gdp       = [65000, 12500, 48000, 2100, 8800]
 life_exp  = [78.5, 77.1, 81.3, 69.7, 75.2]
 population= [331, 1412, 83, 1380, 212]
-
 chart = sp.build_bubble(
     "GDP vs Life Expectancy (2023)",
     x_values=gdp,
@@ -101,12 +99,10 @@ chart = sp.build_bubble(
     y_label="Life expectancy (years)",
 )</code></pre></div>
 <div id="bubble-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const countries = ["USA", "China", "Germany", "India", "Brazil"]
 const gdp       = [65000, 12500, 48000, 2100, 8800]
 const life_exp  = [78.5, 77.1, 81.3, 69.7, 75.2]
 const population= [331, 1412, 83, 1380, 212]
-
 const chart = sp.build_bubble("GDP vs Life Expectancy (2023)",
 gdp,
 life_exp,
@@ -117,12 +113,10 @@ life_exp,
     y_label: "Life expectancy (years)"
 })</code></pre></div>
 <div id="bubble-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const countries: string[] = ["USA", "China", "Germany", "India", "Brazil"]
 const gdp: number[] = [65000, 12500, 48000, 2100, 8800]
 const life_exp: number[] = [78.5, 77.1, 81.3, 69.7, 75.2]
 const population= [331, 1412, 83, 1380, 212]
-
 const chart = sp.build_bubble("GDP vs Life Expectancy (2023)",
 gdp,
 life_exp,

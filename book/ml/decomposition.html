@@ -38,10 +38,10 @@
             const path_to_root = "../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-eef86151.js"></script>
+        <script src="../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -185,7 +185,7 @@
                     <main>
                         <h1 id="pca--truncatedsvd"><a class="header" href="#pca--truncatedsvd">PCA / TruncatedSVD</a></h1>
 <div class="lang-en">
-<h2 id="code"><a class="header" href="#code">Code</a></h2>
+<h2 id="api-reference"><a class="header" href="#api-reference">API Reference</a></h2>
 <p><strong>Signature</strong></p>
 <pre><code class="language-python">pca  = sp.PCA(n_components=2, whiten=False)
 tsvd = sp.TruncatedSVD(n_components=2, n_iter=5)
@@ -283,7 +283,7 @@ print(f"TruncatedSVD shape: {T2.shape}")
 </div>
 
 <div class="lang-fr">
-<h2 id="code-1"><a class="header" href="#code-1">Code</a></h2>
+<h2 id="référence-api"><a class="header" href="#référence-api">Référence API</a></h2>
 <p><strong>Signature</strong></p>
 <pre><code class="language-python">pca  = sp.PCA(n_components=2, whiten=False)
 tsvd = sp.TruncatedSVD(n_components=2, n_iter=5)
@@ -380,264 +380,16 @@ print(f"Forme TruncatedSVD : {T2.shape}")
 <p><strong>Projection</strong> : $T = X V_k$, avec inverse $\hat{X} = T V_k^\top$.</p>
 </div>
 
-# PCA / TruncatedSVD
-<div class="lang-en">
-<h2 id="signature"><a class="header" href="#signature">Signature</a></h2>
-<pre><code class="language-python">pca  = sp.PCA(n_components: int = 2, svd_solver: str = "auto", whiten: bool = False)
-tsvd = sp.TruncatedSVD(n_components: int = 2)
-
-model.fit(x)
-model.transform(x)           -&gt; ndarray (n, k)
-model.fit_transform(x)       -&gt; ndarray (n, k)
-model.inverse_transform(x)   -&gt; ndarray (n, p)   # PCA only
-
-pca.components_               -&gt; list[list[float]]
-pca.explained_variance_       -&gt; list[float]
-pca.explained_variance_ratio_ -&gt; list[float]
-pca.singular_values_          -&gt; list[float]
-pca.mean_                     -&gt; list[float]
-pca.n_components_             -&gt; int
-pca.whiten_                   -&gt; bool
-pca.svd_solver_               -&gt; str
-
-tsvd.components_              -&gt; list[list[float]]
-tsvd.explained_variance_      -&gt; list[float]
-tsvd.explained_variance_ratio_ -&gt; list[float]
-tsvd.singular_values_         -&gt; list[float]
-tsvd.n_components_            -&gt; int
-</code></pre>
-<hr>
-<h2 id="description"><a class="header" href="#description">Description</a></h2>
-<p>Dimensionality reduction via matrix decomposition.</p>
-<ul>
-<li><strong>PCA</strong> — centers data then computes SVD. Components ordered by explained variance. Supports optional whitening (<code>whiten=True</code>) that rescales each component by <code>1/sqrt(variance)</code> — useful before clustering or classification.</li>
-<li><strong>TruncatedSVD</strong> — same decomposition without centering. Useful for sparse data.</li>
-</ul>
-<p><code>svd_solver</code> options: <code>"auto"</code> (heuristic), <code>"randomized"</code> (fast, approximate), <code>"full"</code> (exact).</p>
-<hr>
-<h2 id="constructor-parameters"><a class="header" href="#constructor-parameters">Constructor Parameters</a></h2>
-<h3 id="pca"><a class="header" href="#pca">PCA</a></h3>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>n_components</code></td><td><code>int</code></td><td><code>2</code></td><td>Number of components to keep</td></tr>
-<tr><td><code>svd_solver</code></td><td><code>str</code></td><td><code>"auto"</code></td><td><code>"auto"</code>, <code>"full"</code>, <code>"randomized"</code></td></tr>
-<tr><td><code>whiten</code></td><td><code>bool</code></td><td><code>False</code></td><td>Normalize components to unit variance</td></tr>
-</tbody>
-</table>
-</div>
-<h3 id="truncatedsvd-2"><a class="header" href="#truncatedsvd-2">TruncatedSVD</a></h3>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>n_components</code></td><td><code>int</code></td><td><code>2</code></td><td>Number of components to keep</td></tr>
-</tbody>
-</table>
-</div>
-<hr>
-<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
-<details>
-<summary><strong>PCA with whitening</strong></summary>
-<pre><code class="language-python">import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 10)
-
-pca = sp.PCA(n_components=3, whiten=True, svd_solver="full")
-X_reduced = pca.fit_transform(X)
-print(f"Shape: {X_reduced.shape}")
-print(f"Solver: {pca.svd_solver_}  whiten: {pca.whiten_}")
-print(f"Explained variance ratio: {[f'{v:.4f}' for v in pca.explained_variance_ratio_]}")
-</code></pre>
-</details>
-<details>
-<summary><strong>TruncatedSVD</strong></summary>
-<pre><code class="language-python">import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 20)
-tsvd = sp.TruncatedSVD(n_components=5)
-X_reduced = tsvd.fit_transform(X)
-print(f"Shape: {X_reduced.shape}  n_components: {tsvd.n_components_}")
-</code></pre>
-</details>
-</div>
-
-<div class="lang-fr">
-<h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
-<pre><code class="language-python">pca  = sp.PCA(n_components: int = 2, svd_solver: str = "auto", whiten: bool = False)
-tsvd = sp.TruncatedSVD(n_components: int = 2)
-</code></pre>
-<hr>
-<h2 id="description-1"><a class="header" href="#description-1">Description</a></h2>
-<p>Réduction de dimensionnalité par décomposition matricielle.</p>
-<ul>
-<li><strong>PCA</strong> — centre les données puis calcule la SVD tronquée. Les composantes sont ordonnées par variance expliquée. Supporte le blanchiment optionnel (<code>whiten=True</code>) qui redimensionne chaque composante par <code>1/sqrt(variance)</code>.</li>
-<li><strong>TruncatedSVD</strong> — même décomposition sans centrage. Utile pour les données creuses.</li>
-</ul>
-<p>Options pour <code>svd_solver</code> : <code>"auto"</code> (heuristique), <code>"randomized"</code> (rapide, approximatif), <code>"full"</code> (exact).</p>
-<hr>
-<h2 id="paramètres-du-constructeur"><a class="header" href="#paramètres-du-constructeur">Paramètres du constructeur</a></h2>
-<h3 id="pca-1"><a class="header" href="#pca-1">PCA</a></h3>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>n_components</code></td><td><code>int</code></td><td><code>2</code></td><td>Nombre de composantes à conserver</td></tr>
-<tr><td><code>svd_solver</code></td><td><code>str</code></td><td><code>"auto"</code></td><td><code>"auto"</code>, <code>"full"</code>, <code>"randomized"</code></td></tr>
-<tr><td><code>whiten</code></td><td><code>bool</code></td><td><code>False</code></td><td>Normaliser les composantes à variance unitaire</td></tr>
-</tbody>
-</table>
-</div>
-<h3 id="truncatedsvd-3"><a class="header" href="#truncatedsvd-3">TruncatedSVD</a></h3>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>n_components</code></td><td><code>int</code></td><td><code>2</code></td><td>Nombre de composantes à conserver</td></tr>
-</tbody>
-</table>
-</div>
-<hr>
-<h2 id="exemples"><a class="header" href="#exemples">Exemples</a></h2>
-<details>
-<summary><strong>ACP avec blanchiment</strong></summary>
-<pre><code class="language-python">import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 10)
-
-pca = sp.PCA(n_components=3, whiten=True, svd_solver="full")
-X_reduit = pca.fit_transform(X)
-print(f"Forme : {X_reduit.shape}")
-print(f"Solveur : {pca.svd_solver_}  blanchiment : {pca.whiten_}")
-print(f"Ratio variance expliquée : {[f'{v:.4f}' for v in pca.explained_variance_ratio_]}")
-</code></pre>
-</details>
-<details>
-<summary><strong>SVD Tronquée</strong></summary>
-<pre><code class="language-python">import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 20)
-tsvd = sp.TruncatedSVD(n_components=5)
-X_reduit = tsvd.fit_transform(X)
-print(f"Forme : {X_reduit.shape}  n_composantes : {tsvd.n_components_}")
-</code></pre>
-</details>
-</div>
-
-<p>tsvd = sp.TruncatedSVD(n_components: int = 2)</p>
-<p>model.fit(x)
-model.transform(x) -&gt; list[list[float]]
-model.fit_transform(x) -&gt; list[list[float]]
-model.inverse_transform(x) -&gt; list[list[float]]  # PCA only</p>
-<h1 id="attributes"><a class="header" href="#attributes">Attributes</a></h1>
-<p>model.components_               -&gt; list[list[float]]
-model.explained_variance_       -&gt; list[float]
-model.explained_variance_ratio_ -&gt; list[float]
-model.singular_values_          -&gt; list[float]
-pca.mean_                       -&gt; list[float]</p>
-<pre><code>
----
-
-## Description
-
-Dimensionality reduction via matrix decomposition.
-
-- **PCA** — centers data then computes truncated SVD. Returns principal components ordered by explained variance.
-- **TruncatedSVD** — same decomposition without centering. Useful for sparse data or when zero-mean is not desired.
-
-Both use power-iteration SVD (`svd_truncated`) — fast for low `n_components`.
-
----
-
-## Constructor Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `n_components` | `int` | `2` | Number of components to keep |
-
----
-
-## Attributes
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `components_` | `list[list[float]]` | Principal axes (k × p) |
-| `explained_variance_` | `list[float]` | Variance explained by each component |
-| `explained_variance_ratio_` | `list[float]` | Proportion of total variance |
-| `singular_values_` | `list[float]` | Singular values |
-| `mean_` | `list[float]` | Per-feature mean (PCA only) |
-
----
-
-## Examples
-
-&lt;details&gt;
-&lt;summary&gt;&lt;strong&gt;PCA dimensionality reduction&lt;/strong&gt;&lt;/summary&gt;
-
-```python
-import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 10)
-
-pca = sp.PCA(n_components=3)
-X_reduced = np.array(pca.fit_transform(X))
-print(f"Shape: {X_reduced.shape}")
-print(f"Explained variance ratio: {[f'{v:.4f}' for v in pca.explained_variance_ratio_]}")
-print(f"Total explained: {sum(pca.explained_variance_ratio_):.4f}")
-</code></pre>
-
-<details>
-<summary><strong>TruncatedSVD</strong></summary>
-<pre><code class="language-python">import seraplot as sp
-import numpy as np
-
-X = np.random.randn(300, 20)
-
-tsvd = sp.TruncatedSVD(n_components=5)
-X_reduced = np.array(tsvd.fit_transform(X))
-print(f"Shape: {X_reduced.shape}")
-print(f"Singular values: {[f'{v:.2f}' for v in tsvd.singular_values_]}")
-</code></pre>
-</details>
-<details>
-<summary><strong>PCA inverse transform</strong></summary>
-<pre><code class="language-python">import seraplot as sp
-import numpy as np
-
-X = np.random.randn(200, 6)
-
-pca = sp.PCA(n_components=2)
-X_reduced = np.array(pca.fit_transform(X))
-X_reconstructed = np.array(pca.inverse_transform(X_reduced))
-
-error = np.mean((X - X_reconstructed) ** 2)
-print(f"Reconstruction MSE: {error:.4f}")
-</code></pre>
-</details>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ml/preprocessing.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ml/decomposition-index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml/metrics.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ml/selection-index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -647,11 +399,11 @@ print(f"Reconstruction MSE: {error:.4f}")
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ml/preprocessing.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ml/decomposition-index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml/metrics.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ml/selection-index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

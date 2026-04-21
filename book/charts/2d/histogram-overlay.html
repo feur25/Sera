@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -186,152 +186,7 @@
                         <h1 id="histogram-overlay"><a class="header" href="#histogram-overlay">Histogram Overlay</a></h1>
 <div class="lang-en">
 <h2 id="signature"><a class="header" href="#signature">Signature</a></h2>
-<pre><code>title: str,
-values: list[float],
-overlay_values: list[float],
-*,
-color_hex: int = 0,
-overlay_color_hex: int = 0,
-bins: int = 20,
-series_names: list[str] | None = None,
-width: int = 900,
-height: int = 480,
-x_label: str = "",
-y_label: str = "",
-gridlines: bool = False,
-palette: list[int] | None = None,
-background: str | None = None,
-no_x_axis: bool = False,
-no_y_axis: bool = False,
-</code></pre>
-<p>) -&gt; Chart</p>
-<pre><code>
----
-
-## Description
-
-Overlaid histogram comparing two distributions side-by-side with transparency.
-
----
-
-## Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | `str` | required | Chart title |
-| `values` | `list[float]` | required | First distribution data |
-| `overlay_values` | `list[float]` | required | Second distribution data |
-| `bins` | `int` | `20` | Number of bins |
-| `series_names` | `list[str] \| None` | `None` | Names for legend `["Series A", "Series B"]` |
-| `color_hex` | `int` | `0` | Color for first series |
-| `overlay_color_hex` | `int` | `0` | Color for second series |
-
----
-
-## Returns
-
-`Chart`
-
----
-
-## Examples
-
-
-
-
-
-
-&lt;style&gt;
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
-.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-&lt;/style&gt;
-&lt;script&gt;
-function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
-document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
-&lt;/script&gt;
-&lt;div class="sp-tabs" id="histogram-overlay"&gt;
-&lt;div class="sp-tab-btns"&gt;&lt;button class="sp-tb sp-act" onclick="spTab('histogram-overlay','histogram-overlay-py',this)"&gt;Python&lt;/button&gt;&lt;button class="sp-tb" onclick="spTab('histogram-overlay','histogram-overlay-js',this)"&gt;JavaScript&lt;/button&gt;&lt;button class="sp-tb" onclick="spTab('histogram-overlay','histogram-overlay-ts',this)"&gt;TypeScript&lt;/button&gt;&lt;/div&gt;
-&lt;div id="histogram-overlay-py" class="sp-tc sp-on"&gt;&lt;pre style="margin:0;border-radius:0"&gt;&lt;code class="language-python"&gt;import seraplot as sp
-import numpy as np
-
-rng = np.random.default_rng(42)
-control = rng.normal(5.0, 1.0, 1000).tolist()
-treatment = rng.normal(5.8, 1.2, 1000).tolist()
-
-chart = sp.build_histogram_overlay(
-    "Control vs Treatment",
-    values=control,
-    overlay_values=treatment,
-    bins=30,
-    series_names=["Control", "Treatment"],
-    x_label="Measurement",
-    y_label="Frequency",
-    gridlines=True,
-)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;div id="histogram-overlay-js" class="sp-tc"&gt;&lt;pre style="margin:0;border-radius:0"&gt;&lt;code class="language-javascript"&gt;const sp = require('seraplot');
-import numpy as np
-
-const rng = np.random.default_rng(42)
-const control = rng.normal(5.0, 1.0, 1000).tolist()
-const treatment = rng.normal(5.8, 1.2, 1000).tolist()
-
-const chart = sp.build_histogram_overlay("Control vs Treatment",
-control,
-{
-    overlay_values: treatment,
-    bins: 30,
-    series_names: ["Control", "Treatment"],
-    x_label: "Measurement",
-    y_label: "Frequency",
-    gridlines: true
-})&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;div id="histogram-overlay-ts" class="sp-tc"&gt;&lt;pre style="margin:0;border-radius:0"&gt;&lt;code class="language-typescript"&gt;import * as sp from 'seraplot';
-import numpy as np
-
-const rng = np.random.default_rng(42)
-const control = rng.normal(5.0, 1.0, 1000).tolist()
-const treatment = rng.normal(5.8, 1.2, 1000).tolist()
-
-const chart = sp.build_histogram_overlay("Control vs Treatment",
-control,
-{
-    overlay_values: treatment,
-    bins: 30,
-    series_names: ["Control", "Treatment"],
-    x_label: "Measurement",
-    y_label: "Frequency",
-    gridlines: true
-})&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-
-
-&lt;details open&gt;
-&lt;summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8"&gt;&amp;#9654;&amp;nbsp;Live Preview&lt;/summary&gt;
-
-&lt;iframe src="../../previews/histogram-overlay.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"&gt;&lt;/iframe&gt;
-
-&lt;/details&gt;
-
----
-
-## See also
-
-- [Histogram](histogram.md)
-- [KDE](kde.md)
-
-&lt;/div&gt;
-
-&lt;div class="lang-fr"&gt;
-
-## Signature
-
-```python
-sp.build_histogram_overlay(
+<pre><code class="language-python">sp.build_histogram_overlay(
     title: str,
     values: list[float],
     overlay_values: list[float],
@@ -353,6 +208,138 @@ sp.build_histogram_overlay(
 </code></pre>
 <hr>
 <h2 id="description"><a class="header" href="#description">Description</a></h2>
+<p>Overlaid histogram comparing two distributions side-by-side with transparency.</p>
+<hr>
+<h2 id="parameters"><a class="header" href="#parameters">Parameters</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>title</code></td><td><code>str</code></td><td>required</td><td>Chart title</td></tr>
+<tr><td><code>values</code></td><td><code>list[float]</code></td><td>required</td><td>First distribution data</td></tr>
+<tr><td><code>overlay_values</code></td><td><code>list[float]</code></td><td>required</td><td>Second distribution data</td></tr>
+<tr><td><code>bins</code></td><td><code>int</code></td><td><code>20</code></td><td>Number of bins</td></tr>
+<tr><td><code>series_names</code></td><td><code>list[str] | None</code></td><td><code>None</code></td><td>Names for legend <code>["Series A", "Series B"]</code></td></tr>
+<tr><td><code>color_hex</code></td><td><code>int</code></td><td><code>0</code></td><td>Color for first series</td></tr>
+<tr><td><code>overlay_color_hex</code></td><td><code>int</code></td><td><code>0</code></td><td>Color for second series</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="returns"><a class="header" href="#returns">Returns</a></h2>
+<p><code>Chart</code></p>
+<hr>
+<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
+.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
+</script>
+<div class="sp-tabs" id="histogram-overlay">
+<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab(&#39;histogram-overlay&#39;,&#39;histogram-overlay-py&#39;,this)">Python</button><button class="sp-tb" onclick="spTab(&#39;histogram-overlay&#39;,&#39;histogram-overlay-js&#39;,this)">JavaScript</button><button class="sp-tb" onclick="spTab(&#39;histogram-overlay&#39;,&#39;histogram-overlay-ts&#39;,this)">TypeScript</button></div>
+
+<div id="histogram-overlay-py" class="sp-tc sp-on">
+<pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+import numpy as np
+rng = np.random.default_rng(42)
+control = rng.normal(5.0, 1.0, 1000).tolist()
+treatment = rng.normal(5.8, 1.2, 1000).tolist()
+chart = sp.build_histogram_overlay(
+    "Control vs Treatment",
+    values=control,
+    overlay_values=treatment,
+    bins=30,
+    series_names=["Control", "Treatment"],
+    x_label="Measurement",
+    y_label="Frequency",
+    gridlines=True,
+)</code></pre>
+</div>
+
+<div id="histogram-overlay-js" class="sp-tc">
+<pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
+function randn() {
+  const u = 1 - Math.random(), v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+const control  = Array.from({ length: 1000 }, () =&gt; 5.0 + 1.0 * randn());
+const treatment = Array.from({ length: 1000 }, () =&gt; 5.8 + 1.2 * randn());
+const chart = sp.build_histogram_overlay("Control vs Treatment", control, {
+    overlay_values: treatment,
+    bins: 30,
+    series_names: ["Control", "Treatment"],
+    x_label: "Measurement",
+    y_label: "Frequency",
+    gridlines: true,
+});</code></pre>
+</div>
+
+<div id="histogram-overlay-ts" class="sp-tc">
+<pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
+function randn(): number {
+  const u = 1 - Math.random(), v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+const control: number[]   = Array.from({ length: 1000 }, () =&gt; 5.0 + 1.0 * randn());
+const treatment: number[] = Array.from({ length: 1000 }, () =&gt; 5.8 + 1.2 * randn());
+const chart = sp.build_histogram_overlay("Control vs Treatment", control, {
+    overlay_values: treatment,
+    bins: 30,
+    series_names: ["Control", "Treatment"],
+    x_label: "Measurement",
+    y_label: "Frequency",
+    gridlines: true,
+});</code></pre>
+</div>
+
+</div>
+
+<details open="">
+<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
+<iframe src="../../previews/histogram-overlay.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+</details>
+<hr>
+<h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
+<ul>
+<li><a href="histogram.html">Histogram</a></li>
+<li><a href="kde.html">KDE</a></li>
+</ul>
+</div>
+
+<div class="lang-fr">
+<h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
+<pre><code class="language-python">sp.build_histogram_overlay(
+    title: str,
+    values: list[float],
+    overlay_values: list[float],
+    *,
+    color_hex: int = 0,
+    overlay_color_hex: int = 0,
+    bins: int = 20,
+    series_names: list[str] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+    palette: list[int] | None = None,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+) -&gt; Chart
+</code></pre>
+<hr>
+<h2 id="description-1"><a class="header" href="#description-1">Description</a></h2>
 <p>Histogramme superposé pour comparer deux distributions avec transparence.</p>
 <hr>
 <h2 id="paramètres"><a class="header" href="#paramètres">Paramètres</a></h2>

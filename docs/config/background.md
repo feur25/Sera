@@ -88,28 +88,19 @@ html_with_bg = sp.set_bg_fn(html_str, "#0f172a")</code></pre></div>
 <button class="sp-tb" onclick="spTab('bg-ex','bg-ex-ts',this)">TypeScript</button>
 </div>
 <div id="bg-ex-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 sp.set_global_background("#0f172a")
-
 bar = sp.build_bar_chart("Revenue", labels=["A", "B"], values=[300, 200])
 pie = sp.build_pie_chart("Share",   labels=["A", "B"], values=[60, 40])
-
 sp.reset_global_background()</code></pre></div>
 <div id="bg-ex-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 sp.set_global_background("#0f172a");
-
 const bar = sp.build_bar_chart("Revenue", ["A", "B"], { values: [300, 200] });
 const pie = sp.build_pie_chart("Share",   ["A", "B"], { values: [60, 40] });
-
 sp.reset_global_background();</code></pre></div>
 <div id="bg-ex-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 sp.set_global_background("#0f172a");
-
 const bar = sp.build_bar_chart("Revenue", ["A", "B"], { values: [300, 200] });
 const pie = sp.build_pie_chart("Share",   ["A", "B"], { values: [60, 40] });
-
 sp.reset_global_background();</code></pre></div>
 </div>
 

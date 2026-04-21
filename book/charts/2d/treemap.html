@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -250,37 +250,44 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div id="treemap-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-<p>labels  = [“Electronics”, “Phones”, “Laptops”, “Clothing”, “Shirts”, “Pants”]
-parents = [“”,            “Electronics”,“Electronics”,“”,“Clothing”,“Clothing”]
-values  = [1, 400, 350, 1, 200, 150]</p>
-<p>chart = sp.build_treemap(
-“Revenue by Category”,
-labels=labels,
-values=values,
-parents=parents,
-)</p>
+labels  = ["Electronics", "Phones", "Laptops", "Clothing", "Shirts", "Pants"]
+parents = ["",            "Electronics","Electronics","","Clothing","Clothing"]
+values  = [1, 400, 350, 1, 200, 150]
+chart = sp.build_treemap(
+    "Revenue by Category",
+    labels=labels,
+    values=values,
+    parents=parents,
+)</code></pre>
+</div>
+
 <div id="treemap-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-<p>const labels  = [“Electronics”, “Phones”, “Laptops”, “Clothing”, “Shirts”, “Pants”]
-const parents = [“”,            “Electronics”,“Electronics”,“”,“Clothing”,“Clothing”]
-const values  = [1, 400, 350, 1, 200, 150]</p>
-<p>const chart = sp.build_treemap(“Revenue by Category”,
+const labels  = ["Electronics", "Phones", "Laptops", "Clothing", "Shirts", "Pants"]
+const parents = ["",            "Electronics","Electronics","","Clothing","Clothing"]
+const values  = [1, 400, 350, 1, 200, 150]
+const chart = sp.build_treemap("Revenue by Category",
 labels,
 {
-values: values,
-parents: parents
-})</p>
+    values: values,
+    parents: parents
+})</code></pre>
+</div>
+
 <div id="treemap-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-<p>const labels: string[] = [“Electronics”, “Phones”, “Laptops”, “Clothing”, “Shirts”, “Pants”]
-const parents: string[] = [“”,            “Electronics”,“Electronics”,“”,“Clothing”,“Clothing”]
-const values: number[] = [1, 400, 350, 1, 200, 150]</p>
-<p>const chart = sp.build_treemap(“Revenue by Category”,
+const labels: string[] = ["Electronics", "Phones", "Laptops", "Clothing", "Shirts", "Pants"]
+const parents: string[] = ["",            "Electronics","Electronics","","Clothing","Clothing"]
+const values: number[] = [1, 400, 350, 1, 200, 150]
+const chart = sp.build_treemap("Revenue by Category",
 labels,
 {
-values: values,
-parents: parents
-})</p>
+    values: values,
+    parents: parents
+})</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -292,6 +299,7 @@ parents: parents
 <li><a href="sunburst.html">Sunburst</a></li>
 <li><a href="bar.html">Bar Chart</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -358,14 +366,6 @@ chart = sp.build_treemap(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

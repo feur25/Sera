@@ -78,14 +78,12 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="stacked-bar">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('stacked-bar','stacked-bar-py',this)">Python</button><button class="sp-tb" onclick="spTab('stacked-bar','stacked-bar-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('stacked-bar','stacked-bar-ts',this)">TypeScript</button></div>
 <div id="stacked-bar-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 months = ["Jan", "Feb", "Mar"]
 costs = [
     400.0, 150.0, 80.0,
     380.0, 170.0, 95.0,
     420.0, 160.0, 90.0,
 ]
-
 chart = sp.build_stacked_bar(
     "Monthly Costs",
     category_labels=months,
@@ -95,14 +93,12 @@ chart = sp.build_stacked_bar(
     gridlines=True,
 )</code></pre></div>
 <div id="stacked-bar-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const months = ["Jan", "Feb", "Mar"]
 const costs = [
     400.0, 150.0, 80.0,
     380.0, 170.0, 95.0,
     420.0, 160.0, 90.0,
 ]
-
 const chart = sp.build_stacked_bar("Monthly Costs",
 months,
 {
@@ -112,14 +108,12 @@ months,
     gridlines: true
 })</code></pre></div>
 <div id="stacked-bar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const months: string[] = ["Jan", "Feb", "Mar"]
 const costs: number[] = [
     400.0, 150.0, 80.0,
     380.0, 170.0, 95.0,
     420.0, 160.0, 90.0,
 ]
-
 const chart = sp.build_stacked_bar("Monthly Costs",
 months,
 {

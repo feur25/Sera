@@ -74,7 +74,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="lollipop3d">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('lollipop3d','lollipop3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('lollipop3d','lollipop3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('lollipop3d','lollipop3d-ts',this)">TypeScript</button></div>
 <div id="lollipop3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_lollipop3d_chart(
     "Monthly Sales 3D",
     x_values=[1.0, 2.0, 3.0, 4.0, 5.0],
@@ -82,7 +81,6 @@ chart = sp.build_lollipop3d_chart(
     z_values=[120.0, 95.0, 140.0, 110.0, 160.0],
 )</code></pre></div>
 <div id="lollipop3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_lollipop3d_chart("Monthly Sales 3D",
 [1.0, 2.0, 3.0, 4.0, 5.0],
 [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -90,7 +88,6 @@ const chart = sp.build_lollipop3d_chart("Monthly Sales 3D",
     z_values: [120.0, 95.0, 140.0, 110.0, 160.0]
 })</code></pre></div>
 <div id="lollipop3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_lollipop3d_chart("Monthly Sales 3D",
 [1.0, 2.0, 3.0, 4.0, 5.0],
 [0.0, 0.0, 0.0, 0.0, 0.0],

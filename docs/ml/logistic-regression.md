@@ -1,8 +1,8 @@
-# LogisticRegression
+﻿# LogisticRegression
 
 <div class="lang-en">
 
-## Code
+## API Reference
 
 **Signature**
 
@@ -87,7 +87,7 @@ $$\hat{y} = \underset{k}{\arg\max}\ \sigma(x^T\beta_k)$$
 
 <div class="lang-fr">
 
-## Code
+## Référence API
 
 **Signature**
 

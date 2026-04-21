@@ -80,13 +80,11 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('violin','violin-py',this)">Python</button><button class="sp-tb" onclick="spTab('violin','violin-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('violin','violin-ts',this)">TypeScript</button></div>
 <div id="violin-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 roles = {
     "Engineer": [random.gauss(95000, 15000) for _ in range(60)],
     "Manager":  [random.gauss(110000, 20000) for _ in range(60)],
     "Analyst":  [random.gauss(75000, 12000) for _ in range(60)],
 }
-
 chart = sp.build_violin(
     "Salary Distribution by Role",
     categories=list(roles.keys()),
@@ -96,13 +94,11 @@ chart = sp.build_violin(
 )</code></pre></div>
 <div id="violin-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-
 const roles = {
     "Engineer": [random.gauss(95000, 15000) for _ in range(60)],
     "Manager":  [random.gauss(110000, 20000) for _ in range(60)],
     "Analyst":  [random.gauss(75000, 12000) for _ in range(60)],
 }
-
 const chart = sp.build_violin("Salary Distribution by Role",
 list(roles.keys()),
 {
@@ -112,13 +108,11 @@ list(roles.keys()),
 })</code></pre></div>
 <div id="violin-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-
 const roles = {
     "Engineer": [random.gauss(95000, 15000) for _ in range(60)],
     "Manager":  [random.gauss(110000, 20000) for _ in range(60)],
     "Analyst":  [random.gauss(75000, 12000) for _ in range(60)],
 }
-
 const chart = sp.build_violin("Salary Distribution by Role",
 list(roles.keys()),
 {

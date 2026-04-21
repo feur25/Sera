@@ -96,13 +96,11 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('scatter3d','scatter3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('scatter3d','scatter3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('scatter3d','scatter3d-ts',this)">TypeScript</button></div>
 <div id="scatter3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 n = 1000
 x = [random.gauss(0, 1) for _ in range(n)]
 y = [random.gauss(0, 1) for _ in range(n)]
 z = [random.gauss(0, 1) for _ in range(n)]
 groups = [random.choice(["A", "B", "C"]) for _ in range(n)]
-
 chart = sp.build_scatter3d_chart(
     "3D Point Cloud",
     x_values=x, y_values=y, z_values=z,
@@ -111,13 +109,11 @@ chart = sp.build_scatter3d_chart(
 )</code></pre></div>
 <div id="scatter3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-
 const n = 1000
 const x = [random.gauss(0, 1) for _ in range(n)]
 const y = [random.gauss(0, 1) for _ in range(n)]
 const z = [random.gauss(0, 1) for _ in range(n)]
 const groups = [random.choice(["A", "B", "C"]) for _ in range(n)]
-
 const chart = sp.build_scatter3d_chart("3D Point Cloud",
 x,
 y,
@@ -130,13 +126,11 @@ y,
 })</code></pre></div>
 <div id="scatter3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-
 const n: number = 1000
 const x: number[] = [random.gauss(0, 1) for _ in range(n)]
 const y: number[] = [random.gauss(0, 1) for _ in range(n)]
 const z: number[] = [random.gauss(0, 1) for _ in range(n)]
 const groups: string[] = [random.choice(["A", "B", "C"]) for _ in range(n)]
-
 const chart = sp.build_scatter3d_chart("3D Point Cloud",
 x,
 y,

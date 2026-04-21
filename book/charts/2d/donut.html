@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -252,31 +252,38 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div id="donut-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-<p>chart = sp.build_donut_chart(
-“Budget Allocation”,
-labels=[“R&amp;D”, “Marketing”, “Operations”, “Support”],
-values=[35, 25, 30, 10],
-inner_radius_ratio=0.55,
-show_pct=True,
-)</p>
+chart = sp.build_donut_chart(
+    "Budget Allocation",
+    labels=["R&amp;D", "Marketing", "Operations", "Support"],
+    values=[35, 25, 30, 10],
+    inner_radius_ratio=0.55,
+    show_pct=True,
+)</code></pre>
+</div>
+
 <div id="donut-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-<p>const chart = sp.build_donut_chart(“Budget Allocation”,
-[“R&amp;D”, “Marketing”, “Operations”, “Support”],
+const chart = sp.build_donut_chart("Budget Allocation",
+["R&amp;D", "Marketing", "Operations", "Support"],
 {
-values: [35, 25, 30, 10],
-inner_radius_ratio: 0.55,
-show_pct: true
-})</p>
+    values: [35, 25, 30, 10],
+    inner_radius_ratio: 0.55,
+    show_pct: true
+})</code></pre>
+</div>
+
 <div id="donut-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-<p>const chart = sp.build_donut_chart(“Budget Allocation”,
-[“R&amp;D”, “Marketing”, “Operations”, “Support”],
+const chart = sp.build_donut_chart("Budget Allocation",
+["R&amp;D", "Marketing", "Operations", "Support"],
 {
-values: [35, 25, 30, 10],
-inner_radius_ratio: 0.55,
-show_pct: true
-})</p>
+    values: [35, 25, 30, 10],
+    inner_radius_ratio: 0.55,
+    show_pct: true
+})</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -288,6 +295,7 @@ show_pct: true
 <li><a href="pie.html">Pie Chart</a></li>
 <li><a href="sunburst.html">Sunburst</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -354,14 +362,6 @@ chart = sp.build_donut_chart(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

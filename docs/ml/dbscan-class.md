@@ -85,15 +85,11 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('dbscan-class','dbscan-class-py',this)">Python</button><button class="sp-tb" onclick="spTab('dbscan-class','dbscan-class-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('dbscan-class','dbscan-class-ts',this)">TypeScript</button></div>
 <div id="dbscan-class-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">from seraplot import DBSCAN
 import seraplot as sp
-
 x = [1.0, 1.1, 1.2, 10.0, 10.1, 99.0]
 y = [1.0, 0.9, 1.1, 10.2, 10.0, 99.0]
-
 xy = [[xi, yi] for xi, yi in zip(x, y)]
-
 model = DBSCAN(eps=0.5, min_samples=2)
 labels = model.fit_predict(xy)
-
 chart = sp.build_scatter_chart(
     f"DBSCAN ({model.n_clusters_} clusters)",
     x_values=x,
@@ -102,15 +98,11 @@ chart = sp.build_scatter_chart(
 )</code></pre></div>
 <div id="dbscan-class-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">from seraplot import DBSCAN
 const sp = require('seraplot');
-
 const x = [1.0, 1.1, 1.2, 10.0, 10.1, 99.0]
 const y = [1.0, 0.9, 1.1, 10.2, 10.0, 99.0]
-
 const xy = [[xi, yi] for xi, yi in zip(x, y)]
-
 const model = DBSCAN({eps: 0.5, min_samples: 2})
 const labels = model.fit_predict(xy)
-
 const chart = sp.build_scatter_chart(f"DBSCAN ({model.n_clusters_} clusters)",
 x,
 {
@@ -119,15 +111,11 @@ x,
 })</code></pre></div>
 <div id="dbscan-class-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">from seraplot import DBSCAN
 import * as sp from 'seraplot';
-
 const x: number[] = [1.0, 1.1, 1.2, 10.0, 10.1, 99.0]
 const y: number[] = [1.0, 0.9, 1.1, 10.2, 10.0, 99.0]
-
 const xy: number[] = [[xi, yi] for xi, yi in zip(x, y)]
-
 const model = DBSCAN({eps: 0.5, min_samples: 2})
 const labels = model.fit_predict(xy)
-
 const chart = sp.build_scatter_chart(f"DBSCAN ({model.n_clusters_} clusters)",
 x,
 {

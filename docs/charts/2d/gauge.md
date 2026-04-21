@@ -79,7 +79,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="gauge">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('gauge','gauge-py',this)">Python</button><button class="sp-tb" onclick="spTab('gauge','gauge-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('gauge','gauge-ts',this)">TypeScript</button></div>
 <div id="gauge-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_gauge(
     "CPU Usage",
     value=73.5,
@@ -88,7 +87,6 @@ chart = sp.build_gauge(
     label="%",
 )</code></pre></div>
 <div id="gauge-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_gauge("CPU Usage",
 {
     value: 73.5,
@@ -97,7 +95,6 @@ const chart = sp.build_gauge("CPU Usage",
     label: "%"
 })</code></pre></div>
 <div id="gauge-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_gauge("CPU Usage",
 {
     value: 73.5,

@@ -38,10 +38,10 @@
             const path_to_root = "../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-eef86151.js"></script>
+        <script src="../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -371,16 +371,21 @@ sp.reset_global_background()</code></pre>
 
 <div id="qs-bg-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-<p>sp.set_global_background(“#0f172a”);</p>
-<p>const chart1 = sp.build_bar_chart(“Chart 1”, [“A”, “B”], { values: [10.0, 20.0] });
-const chart2 = sp.build_line_chart(“Chart 2”, [“x1”, “x2”], { values: [5.0, 15.0] });
-sp.reset_global_background();</p>
+sp.set_global_background("#0f172a");
+const chart1 = sp.build_bar_chart("Chart 1", ["A", "B"], { values: [10.0, 20.0] });
+const chart2 = sp.build_line_chart("Chart 2", ["x1", "x2"], { values: [5.0, 15.0] });
+sp.reset_global_background();</code></pre>
+</div>
+
 <div id="qs-bg-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-<p>sp.set_global_background(“#0f172a”);</p>
-<p>const chart1 = sp.build_bar_chart(“Chart 1”, [“A”, “B”], { values: [10.0, 20.0] });
-const chart2 = sp.build_line_chart(“Chart 2”, [“x1”, “x2”], { values: [5.0, 15.0] });
-sp.reset_global_background();</p>
+sp.set_global_background("#0f172a");
+const chart1 = sp.build_bar_chart("Chart 1", ["A", "B"], { values: [10.0, 20.0] });
+const chart2 = sp.build_line_chart("Chart 2", ["x1", "x2"], { values: [5.0, 15.0] });
+sp.reset_global_background();</code></pre>
+</div>
+
+</div>
 
 <hr>
 <h3 id="3d-scatter"><a class="header" href="#3d-scatter">3D scatter</a></h3>
@@ -436,6 +441,7 @@ const chart = sp.build_scatter3d_chart("3D Scatter", x, {
 </div>
 
 ```
+</div>
 
 <div class="lang-fr">
 <h2 id="votre-premier-graphique"><a class="header" href="#votre-premier-graphique">Votre premier graphique</a></h2>
@@ -489,12 +495,6 @@ chart = sp.build_dbscan_chart(
 </code></pre>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

@@ -79,7 +79,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="pie">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('pie','pie-py',this)">Python</button><button class="sp-tb" onclick="spTab('pie','pie-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('pie','pie-ts',this)">TypeScript</button></div>
 <div id="pie-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_pie_chart(
     "Revenue by Region",
     labels=["North", "South", "East", "West"],
@@ -88,7 +87,6 @@ chart = sp.build_pie_chart(
     legend_position="bottom",
 )</code></pre></div>
 <div id="pie-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_pie_chart("Revenue by Region",
 ["North", "South", "East", "West"],
 {
@@ -97,7 +95,6 @@ const chart = sp.build_pie_chart("Revenue by Region",
     legend_position: "bottom"
 })</code></pre></div>
 <div id="pie-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_pie_chart("Revenue by Region",
 ["North", "South", "East", "West"],
 {

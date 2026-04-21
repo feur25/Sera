@@ -1,8 +1,8 @@
-# Model Selection — GridSearch
+﻿# Model Selection — GridSearch
 
 <div class="lang-en">
 
-## Code
+## API Reference
 
 ### GridSearchCV
 
@@ -248,7 +248,7 @@ and $C$ is the number of candidates. This eliminates weak configurations early w
 
 <div class="lang-fr">
 
-## Code
+## Référence API
 
 ### GridSearchCV
 

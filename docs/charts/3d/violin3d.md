@@ -73,11 +73,9 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('violin3d','violin3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('violin3d','violin3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('violin3d','violin3d-ts',this)">TypeScript</button></div>
 <div id="violin3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 groups = ["Control", "Treatment A", "Treatment B"]
 means  = [50, 65, 72]
 values = [v for m in means for v in [random.gauss(m, 8) for _ in range(80)]]
-
 chart = sp.build_violin3d_chart(
     "Trial Results",
     categories=groups,
@@ -85,11 +83,9 @@ chart = sp.build_violin3d_chart(
 )</code></pre></div>
 <div id="violin3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-
 const groups = ["Control", "Treatment A", "Treatment B"]
 const means  = [50, 65, 72]
 const values = [v for m in means for v in [random.gauss(m, 8) for _ in range(80)]]
-
 const chart = sp.build_violin3d_chart("Trial Results",
 {
     categories: groups,
@@ -97,11 +93,9 @@ const chart = sp.build_violin3d_chart("Trial Results",
 })</code></pre></div>
 <div id="violin3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-
 const groups: string[] = ["Control", "Treatment A", "Treatment B"]
 const means: number[] = [50, 65, 72]
 const values: number[] = [v for m in means for v in [random.gauss(m, 8) for _ in range(80)]]
-
 const chart = sp.build_violin3d_chart("Trial Results",
 {
     categories: groups,

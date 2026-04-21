@@ -81,21 +81,18 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="choropleth">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('choropleth','choropleth-py',this)">Python</button><button class="sp-tb" onclick="spTab('choropleth','choropleth-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('choropleth','choropleth-ts',this)">TypeScript</button></div>
 <div id="choropleth-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_choropleth(
     "Unemployment Rate by Country",
     labels=["FRA", "DEU", "ESP", "ITA", "PRT"],
     values=[7.1, 3.0, 11.8, 6.7, 6.2],
 )</code></pre></div>
 <div id="choropleth-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_choropleth("Unemployment Rate by Country",
 ["FRA", "DEU", "ESP", "ITA", "PRT"],
 {
     values: [7.1, 3.0, 11.8, 6.7, 6.2]
 })</code></pre></div>
 <div id="choropleth-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_choropleth("Unemployment Rate by Country",
 ["FRA", "DEU", "ESP", "ITA", "PRT"],
 {

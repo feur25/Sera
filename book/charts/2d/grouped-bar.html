@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -186,183 +186,7 @@
                         <h1 id="grouped-bar-chart"><a class="header" href="#grouped-bar-chart">Grouped Bar Chart</a></h1>
 <div class="lang-en">
 <h2 id="signature"><a class="header" href="#signature">Signature</a></h2>
-<pre><code>title: str,
-category_labels: list[str],
-series_values: list[float],
-*,
-show_values: bool = False,
-series_names: list[str] | None = None,
-width: int = 900,
-height: int = 480,
-x_label: str = "",
-y_label: str = "",
-gridlines: bool = False,
-sort_order: str = "none",
-hover_json: str = "",
-legend_position: str = "right",
-palette: list[int] | None = None,
-background: str | None = None,
-no_x_axis: bool = False,
-no_y_axis: bool = False,
-</code></pre>
-<p>) -&gt; Chart</p>
-<pre><code>
----
-
-## Description
-
-Grouped bar chart for comparing multiple series across categories.
-
-`series_values` must be a **flat list** of length `n_categories × n_series`, row-major (category-first).
-
----
-
-## Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | `str` | required | Chart title |
-| `category_labels` | `list[str]` | required | Category names on X axis |
-| `series_values` | `list[float]` | required | Flat values: `[cat0_s0, cat0_s1, cat1_s0, cat1_s1, ...]` |
-| `show_values` | `bool` | `False` | Show value labels |
-| `series_names` | `list[str] \| None` | `None` | Series names for legend |
-| `palette` | `list[int] \| None` | `None` | Custom color palette |
-
----
-
-## Returns
-
-`Chart`
-
----
-
-## Examples
-
-
-
-
-
-
-&lt;style&gt;
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
-.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-&lt;/style&gt;
-&lt;script&gt;
-function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
-document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
-&lt;/script&gt;
-&lt;div class="sp-tabs" id="grouped-bar"&gt;
-&lt;div class="sp-tab-btns"&gt;&lt;button class="sp-tb sp-act" onclick="spTab('grouped-bar','grouped-bar-py',this)"&gt;Python&lt;/button&gt;&lt;button class="sp-tb" onclick="spTab('grouped-bar','grouped-bar-js',this)"&gt;JavaScript&lt;/button&gt;&lt;button class="sp-tb" onclick="spTab('grouped-bar','grouped-bar-ts',this)"&gt;TypeScript&lt;/button&gt;&lt;/div&gt;
-&lt;div id="grouped-bar-py" class="sp-tc sp-on"&gt;&lt;pre style="margin:0;border-radius:0"&gt;&lt;code class="language-python"&gt;import seraplot as sp
-
-categories = ["Q1", "Q2", "Q3", "Q4"]
-values = [
-    120.0, 90.0, 150.0,
-    130.0, 110.0, 140.0,
-    100.0, 95.0,  160.0,
-    140.0, 120.0, 175.0,
-]
-
-logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
-hover = sp.build_hover_json(categories * 3, images=[logo] * len(categories * 3))
-
-chart = (
-    sp.build_grouped_bar(
-        "Quarterly Sales by Product",
-        category_labels=categories,
-        series_values=values,
-        series_names=["Product A", "Product B", "Product C"],
-        show_values=True,
-        gridlines=True,
-        legend_position="bottom",
-        hover_json=hover,
-    )
-    .set_bg(None)
-)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;div id="grouped-bar-js" class="sp-tc"&gt;&lt;pre style="margin:0;border-radius:0"&gt;&lt;code class="language-javascript"&gt;const sp = require('seraplot');
-
-const categories = ["Q1", "Q2", "Q3", "Q4"]
-const values = [
-    120.0, 90.0, 150.0,
-    130.0, 110.0, 140.0,
-    100.0, 95.0,  160.0,
-    140.0, 120.0, 175.0,
-]
-
-const logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
-const hover = sp.build_hover_json(categories * 3,
-[logo])
-
-const chart = (
-    sp.build_grouped_bar("Quarterly Sales by Product",
-categories,
-{
-    series_values: values,
-    series_names: ["Product A", "Product B", "Product C"],
-    show_values: true,
-    gridlines: true,
-    legend_position: "bottom",
-    hover_json: hover
-})
-    .set_bg(null)
-)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;div id="grouped-bar-ts" class="sp-tc"&gt;&lt;pre style="margin:0;border-radius:0"&gt;&lt;code class="language-typescript"&gt;import * as sp from 'seraplot';
-
-const categories: string[] = ["Q1", "Q2", "Q3", "Q4"]
-const values: number[] = [
-    120.0, 90.0, 150.0,
-    130.0, 110.0, 140.0,
-    100.0, 95.0,  160.0,
-    140.0, 120.0, 175.0,
-]
-
-const logo: string = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
-const hover = sp.build_hover_json(categories * 3,
-[logo])
-
-const chart = (
-    sp.build_grouped_bar("Quarterly Sales by Product",
-categories,
-{
-    series_values: values,
-    series_names: ["Product A", "Product B", "Product C"],
-    show_values: true,
-    gridlines: true,
-    legend_position: "bottom",
-    hover_json: hover
-})
-    .set_bg(null)
-)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-&lt;/div&gt;
-
-
-&lt;details open&gt;
-&lt;summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8"&gt;&amp;#9654;&amp;nbsp;Live Preview&lt;/summary&gt;
-
-&lt;iframe src="../../previews/grouped-bar.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"&gt;&lt;/iframe&gt;
-
-&lt;/details&gt;
-
----
-
-## See also
-
-- [Stacked Bar](stacked-bar.md) — `sp.build_stacked_bar()`
-- [Bar Chart](bar.md)
-
-&lt;/div&gt;
-
-&lt;div class="lang-fr"&gt;
-
-## Signature
-
-```python
-sp.build_grouped_bar(
+<pre><code class="language-python">sp.build_grouped_bar(
     title: str,
     category_labels: list[str],
     series_values: list[float],
@@ -385,6 +209,169 @@ sp.build_grouped_bar(
 </code></pre>
 <hr>
 <h2 id="description"><a class="header" href="#description">Description</a></h2>
+<p>Grouped bar chart for comparing multiple series across categories.</p>
+<p><code>series_values</code> must be a <strong>flat list</strong> of length <code>n_categories × n_series</code>, row-major (category-first).</p>
+<hr>
+<h2 id="parameters"><a class="header" href="#parameters">Parameters</a></h2>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
+</thead>
+<tbody>
+<tr><td><code>title</code></td><td><code>str</code></td><td>required</td><td>Chart title</td></tr>
+<tr><td><code>category_labels</code></td><td><code>list[str]</code></td><td>required</td><td>Category names on X axis</td></tr>
+<tr><td><code>series_values</code></td><td><code>list[float]</code></td><td>required</td><td>Flat values: <code>[cat0_s0, cat0_s1, cat1_s0, cat1_s1, ...]</code></td></tr>
+<tr><td><code>show_values</code></td><td><code>bool</code></td><td><code>False</code></td><td>Show value labels</td></tr>
+<tr><td><code>series_names</code></td><td><code>list[str] | None</code></td><td><code>None</code></td><td>Series names for legend</td></tr>
+<tr><td><code>palette</code></td><td><code>list[int] | None</code></td><td><code>None</code></td><td>Custom color palette</td></tr>
+<tr><td><code>width</code></td><td><code>int</code></td><td><code>900</code></td><td>Canvas width in pixels</td></tr>
+<tr><td><code>height</code></td><td><code>int</code></td><td><code>480</code></td><td>Canvas height in pixels</td></tr>
+<tr><td><code>legend_position</code></td><td><code>str</code></td><td><code>"right"</code></td><td>Legend position</td></tr>
+<tr><td><code>gridlines</code></td><td><code>bool</code></td><td><code>False</code></td><td>Show grid lines</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="returns"><a class="header" href="#returns">Returns</a></h2>
+<p><code>Chart</code></p>
+<hr>
+<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
+.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
+</script>
+<div class="sp-tabs" id="grouped-bar">
+<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab(&#39;grouped-bar&#39;,&#39;grouped-bar-py&#39;,this)">Python</button><button class="sp-tb" onclick="spTab(&#39;grouped-bar&#39;,&#39;grouped-bar-js&#39;,this)">JavaScript</button><button class="sp-tb" onclick="spTab(&#39;grouped-bar&#39;,&#39;grouped-bar-ts&#39;,this)">TypeScript</button></div>
+
+<div id="grouped-bar-py" class="sp-tc sp-on">
+<pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+categories = ["Q1", "Q2", "Q3", "Q4"]
+values = [
+    120.0, 90.0, 150.0,
+    130.0, 110.0, 140.0,
+    100.0, 95.0,  160.0,
+    140.0, 120.0, 175.0,
+]
+logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
+hover = sp.build_hover_json(categories * 3, images=[logo] * len(categories * 3))
+chart = (
+    sp.build_grouped_bar(
+        "Quarterly Sales by Product",
+        category_labels=categories,
+        series_values=values,
+        series_names=["Product A", "Product B", "Product C"],
+        show_values=True,
+        gridlines=True,
+        legend_position="bottom",
+        hover_json=hover,
+    )
+    .set_bg(None)
+)</code></pre>
+</div>
+
+<div id="grouped-bar-js" class="sp-tc">
+<pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
+const categories = ["Q1", "Q2", "Q3", "Q4"]
+const values = [
+    120.0, 90.0, 150.0,
+    130.0, 110.0, 140.0,
+    100.0, 95.0,  160.0,
+    140.0, 120.0, 175.0,
+]
+const logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
+const hover = sp.build_hover_json(categories * 3,
+[logo])
+const chart = (
+    sp.build_grouped_bar("Quarterly Sales by Product",
+categories,
+{
+    series_values: values,
+    series_names: ["Product A", "Product B", "Product C"],
+    show_values: true,
+    gridlines: true,
+    legend_position: "bottom",
+    hover_json: hover
+})
+    .set_bg(null)
+)</code></pre>
+</div>
+
+<div id="grouped-bar-ts" class="sp-tc">
+<pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
+const categories: string[] = ["Q1", "Q2", "Q3", "Q4"]
+const values: number[] = [
+    120.0, 90.0, 150.0,
+    130.0, 110.0, 140.0,
+    100.0, 95.0,  160.0,
+    140.0, 120.0, 175.0,
+]
+const logo: string = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
+const hover = sp.build_hover_json(categories * 3,
+[logo])
+const chart = (
+    sp.build_grouped_bar("Quarterly Sales by Product",
+categories,
+{
+    series_values: values,
+    series_names: ["Product A", "Product B", "Product C"],
+    show_values: true,
+    gridlines: true,
+    legend_position: "bottom",
+    hover_json: hover
+})
+    .set_bg(null)
+)</code></pre>
+</div>
+
+</div>
+
+<details open="">
+<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
+<iframe src="../../previews/grouped-bar.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+</details>
+<hr>
+<h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
+<ul>
+<li><a href="stacked-bar.html">Stacked Bar</a> — <code>sp.build_stacked_bar()</code></li>
+<li><a href="bar.html">Bar Chart</a></li>
+</ul>
+</div>
+
+<div class="lang-fr">
+<h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
+<pre><code class="language-python">sp.build_grouped_bar(
+    title: str,
+    category_labels: list[str],
+    series_values: list[float],
+    *,
+    show_values: bool = False,
+    series_names: list[str] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+    sort_order: str = "none",
+    hover_json: str = "",
+    legend_position: str = "right",
+    palette: list[int] | None = None,
+    background: str | None = None,
+    no_x_axis: bool = False,
+    no_y_axis: bool = False,
+) -&gt; Chart
+</code></pre>
+<hr>
+<h2 id="description-1"><a class="header" href="#description-1">Description</a></h2>
 <p>Graphique en barres groupées pour comparer plusieurs séries sur les mêmes catégories.</p>
 <p><code>series_values</code> doit être une <strong>liste plate</strong> de longueur <code>n_catégories × n_séries</code>, en ordre catégorie-major.</p>
 <hr>

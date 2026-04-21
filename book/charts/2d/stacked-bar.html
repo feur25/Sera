@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -250,52 +250,59 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div id="stacked-bar-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-<p>months = [“Jan”, “Feb”, “Mar”]
+months = ["Jan", "Feb", "Mar"]
 costs = [
-400.0, 150.0, 80.0,
-380.0, 170.0, 95.0,
-420.0, 160.0, 90.0,
-]</p>
-<p>chart = sp.build_stacked_bar(
-“Monthly Costs”,
-category_labels=months,
-series_values=costs,
-series_names=[“Labor”, “Materials”, “Overhead”],
-legend_position=“right”,
-gridlines=True,
-)</p>
+    400.0, 150.0, 80.0,
+    380.0, 170.0, 95.0,
+    420.0, 160.0, 90.0,
+]
+chart = sp.build_stacked_bar(
+    "Monthly Costs",
+    category_labels=months,
+    series_values=costs,
+    series_names=["Labor", "Materials", "Overhead"],
+    legend_position="right",
+    gridlines=True,
+)</code></pre>
+</div>
+
 <div id="stacked-bar-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-<p>const months = [“Jan”, “Feb”, “Mar”]
+const months = ["Jan", "Feb", "Mar"]
 const costs = [
-400.0, 150.0, 80.0,
-380.0, 170.0, 95.0,
-420.0, 160.0, 90.0,
-]</p>
-<p>const chart = sp.build_stacked_bar(“Monthly Costs”,
+    400.0, 150.0, 80.0,
+    380.0, 170.0, 95.0,
+    420.0, 160.0, 90.0,
+]
+const chart = sp.build_stacked_bar("Monthly Costs",
 months,
 {
-series_values: costs,
-series_names: [“Labor”, “Materials”, “Overhead”],
-legend_position: “right”,
-gridlines: true
-})</p>
+    series_values: costs,
+    series_names: ["Labor", "Materials", "Overhead"],
+    legend_position: "right",
+    gridlines: true
+})</code></pre>
+</div>
+
 <div id="stacked-bar-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-<p>const months: string[] = [“Jan”, “Feb”, “Mar”]
+const months: string[] = ["Jan", "Feb", "Mar"]
 const costs: number[] = [
-400.0, 150.0, 80.0,
-380.0, 170.0, 95.0,
-420.0, 160.0, 90.0,
-]</p>
-<p>const chart = sp.build_stacked_bar(“Monthly Costs”,
+    400.0, 150.0, 80.0,
+    380.0, 170.0, 95.0,
+    420.0, 160.0, 90.0,
+]
+const chart = sp.build_stacked_bar("Monthly Costs",
 months,
 {
-series_values: costs,
-series_names: [“Labor”, “Materials”, “Overhead”],
-legend_position: “right”,
-gridlines: true
-})</p>
+    series_values: costs,
+    series_names: ["Labor", "Materials", "Overhead"],
+    legend_position: "right",
+    gridlines: true
+})</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -307,6 +314,7 @@ gridlines: true
 <li><a href="grouped-bar.html">Grouped Bar</a></li>
 <li><a href="../3d/stacked-bar3d.html">Stacked Bar 3D</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -382,14 +390,6 @@ chart = sp.build_stacked_bar(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

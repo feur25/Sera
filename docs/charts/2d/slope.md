@@ -81,7 +81,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="slope">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('slope','slope-py',this)">Python</button><button class="sp-tb" onclick="spTab('slope','slope-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('slope','slope-ts',this)">TypeScript</button></div>
 <div id="slope-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_slope(
     "HDI Change 2000 to 2023",
     labels=["Germany", "Japan", "Brazil", "India", "Nigeria"],
@@ -92,7 +91,6 @@ chart = sp.build_slope(
     show_text=True,
 )</code></pre></div>
 <div id="slope-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_slope("HDI Change 2000 to 2023",
 ["Germany", "Japan", "Brazil", "India", "Nigeria"],
 [0.926, 0.909, 0.694, 0.493, 0.452],
@@ -103,7 +101,6 @@ const chart = sp.build_slope("HDI Change 2000 to 2023",
     show_text: true
 })</code></pre></div>
 <div id="slope-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_slope("HDI Change 2000 to 2023",
 ["Germany", "Japan", "Brazil", "India", "Nigeria"],
 [0.926, 0.909, 0.694, 0.493, 0.452],

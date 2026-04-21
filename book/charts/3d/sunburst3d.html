@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -247,35 +247,42 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div id="sunburst3d-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-<p>labels  = [“Root”, “A”, “B”, “A1”, “A2”, “B1”]
-parents = [“”, “Root”, “Root”, “A”, “A”, “B”]
-values  = [1, 40, 60, 25, 15, 60]</p>
-<p>chart = sp.build_sunburst3d_chart(
-“Org Chart 3D”,
-labels=labels, parents=parents, values=values,
-)</p>
+labels  = ["Root", "A", "B", "A1", "A2", "B1"]
+parents = ["", "Root", "Root", "A", "A", "B"]
+values  = [1, 40, 60, 25, 15, 60]
+chart = sp.build_sunburst3d_chart(
+    "Org Chart 3D",
+    labels=labels, parents=parents, values=values,
+)</code></pre>
+</div>
+
 <div id="sunburst3d-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-<p>const labels  = [“Root”, “A”, “B”, “A1”, “A2”, “B1”]
-const parents = [“”, “Root”, “Root”, “A”, “A”, “B”]
-const values  = [1, 40, 60, 25, 15, 60]</p>
-<p>const chart = sp.build_sunburst3d_chart(“Org Chart 3D”,
+const labels  = ["Root", "A", "B", "A1", "A2", "B1"]
+const parents = ["", "Root", "Root", "A", "A", "B"]
+const values  = [1, 40, 60, 25, 15, 60]
+const chart = sp.build_sunburst3d_chart("Org Chart 3D",
 labels,
 parents,
 {
-values: values
-})</p>
+    values: values
+})</code></pre>
+</div>
+
 <div id="sunburst3d-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-<p>const labels: string[] = [“Root”, “A”, “B”, “A1”, “A2”, “B1”]
-const parents: string[] = [“”, “Root”, “Root”, “A”, “A”, “B”]
-const values: number[] = [1, 40, 60, 25, 15, 60]</p>
-<p>const chart = sp.build_sunburst3d_chart(“Org Chart 3D”,
+const labels: string[] = ["Root", "A", "B", "A1", "A2", "B1"]
+const parents: string[] = ["", "Root", "Root", "A", "A", "B"]
+const values: number[] = [1, 40, 60, 25, 15, 60]
+const chart = sp.build_sunburst3d_chart("Org Chart 3D",
 labels,
 parents,
 {
-values: values
-})</p>
+    values: values
+})</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -287,6 +294,7 @@ values: values
 <li><a href="../2d/sunburst.html">Sunburst 2D</a></li>
 <li><a href="pie3d.html">Pie 3D</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -352,14 +360,6 @@ chart = sp.build_sunburst3d_chart(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

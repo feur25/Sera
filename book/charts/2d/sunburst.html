@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -249,37 +249,44 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div id="sunburst-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-<p>labels  = [“Corp”, “Sales”, “Tech”, “HR”, “B2B”, “B2C”, “Frontend”, “Backend”]
-parents = [“”,       “Corp”, “Corp”,“Corp”,“Sales”,“Sales”,“Tech”,    “Tech”]
-values  = [1,        40,     50,    10,    25,     15,     30,        20]</p>
-<p>chart = sp.build_sunburst(
-“Headcount by Department”,
-labels=labels,
-parents=parents,
-values=values,
-)</p>
+labels  = ["Corp", "Sales", "Tech", "HR", "B2B", "B2C", "Frontend", "Backend"]
+parents = ["",       "Corp", "Corp","Corp","Sales","Sales","Tech",    "Tech"]
+values  = [1,        40,     50,    10,    25,     15,     30,        20]
+chart = sp.build_sunburst(
+    "Headcount by Department",
+    labels=labels,
+    parents=parents,
+    values=values,
+)</code></pre>
+</div>
+
 <div id="sunburst-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-<p>const labels  = [“Corp”, “Sales”, “Tech”, “HR”, “B2B”, “B2C”, “Frontend”, “Backend”]
-const parents = [“”,       “Corp”, “Corp”,“Corp”,“Sales”,“Sales”,“Tech”,    “Tech”]
-const values  = [1,        40,     50,    10,    25,     15,     30,        20]</p>
-<p>const chart = sp.build_sunburst(“Headcount by Department”,
+const labels  = ["Corp", "Sales", "Tech", "HR", "B2B", "B2C", "Frontend", "Backend"]
+const parents = ["",       "Corp", "Corp","Corp","Sales","Sales","Tech",    "Tech"]
+const values  = [1,        40,     50,    10,    25,     15,     30,        20]
+const chart = sp.build_sunburst("Headcount by Department",
 labels,
 parents,
 {
-values: values
-})</p>
+    values: values
+})</code></pre>
+</div>
+
 <div id="sunburst-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-<p>const labels: string[] = [“Corp”, “Sales”, “Tech”, “HR”, “B2B”, “B2C”, “Frontend”, “Backend”]
-const parents: string[] = [“”,       “Corp”, “Corp”,“Corp”,“Sales”,“Sales”,“Tech”,    “Tech”]
-const values: number[] = [1,        40,     50,    10,    25,     15,     30,        20]</p>
-<p>const chart = sp.build_sunburst(“Headcount by Department”,
+const labels: string[] = ["Corp", "Sales", "Tech", "HR", "B2B", "B2C", "Frontend", "Backend"]
+const parents: string[] = ["",       "Corp", "Corp","Corp","Sales","Sales","Tech",    "Tech"]
+const values: number[] = [1,        40,     50,    10,    25,     15,     30,        20]
+const chart = sp.build_sunburst("Headcount by Department",
 labels,
 parents,
 {
-values: values
-})</p>
+    values: values
+})</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -292,6 +299,7 @@ values: values
 <li><a href="pie.html">Pie Chart</a></li>
 <li><a href="../3d/sunburst3d.html">Sunburst 3D</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -359,14 +367,6 @@ chart = sp.build_sunburst(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

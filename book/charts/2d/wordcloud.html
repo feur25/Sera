@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -246,36 +246,43 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div id="wordcloud-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 from collections import Counter
-<p>text = “python python rust rust rust go go java javascript python data ml deep learning neural”
-counts = Counter(text.split())</p>
-<p>chart = sp.build_wordcloud(
-“Tech Mentions”,
-words=list(counts.keys()),
-frequencies=list(counts.values()),
-palette=[0x6366f1, 0x22d3ee, 0xf43f5e, 0xf59e0b, 0x10b981],
-)</p>
+text = "python python rust rust rust go go java javascript python data ml deep learning neural"
+counts = Counter(text.split())
+chart = sp.build_wordcloud(
+    "Tech Mentions",
+    words=list(counts.keys()),
+    frequencies=list(counts.values()),
+    palette=[0x6366f1, 0x22d3ee, 0xf43f5e, 0xf59e0b, 0x10b981],
+)</code></pre>
+</div>
+
 <div id="wordcloud-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 from collections import Counter
-<p>const text = “python python rust rust rust go go java javascript python data ml deep learning neural”
-const counts = Counter(text.split())</p>
-<p>const chart = sp.build_wordcloud(“Tech Mentions”,
+const text = "python python rust rust rust go go java javascript python data ml deep learning neural"
+const counts = Counter(text.split())
+const chart = sp.build_wordcloud("Tech Mentions",
 list(counts.keys()),
 {
-frequencies: list(counts.values()),
-palette: [0x6366f1, 0x22d3ee, 0xf43f5e, 0xf59e0b, 0x10b981]
-})</p>
+    frequencies: list(counts.values()),
+    palette: [0x6366f1, 0x22d3ee, 0xf43f5e, 0xf59e0b, 0x10b981]
+})</code></pre>
+</div>
+
 <div id="wordcloud-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 from collections import Counter
-<p>const text: string = “python python rust rust rust go go java javascript python data ml deep learning neural”
-const counts = Counter(text.split())</p>
-<p>const chart = sp.build_wordcloud(“Tech Mentions”,
+const text: string = "python python rust rust rust go go java javascript python data ml deep learning neural"
+const counts = Counter(text.split())
+const chart = sp.build_wordcloud("Tech Mentions",
 list(counts.keys()),
 {
-frequencies: list(counts.values()),
-palette: [0x6366f1, 0x22d3ee, 0xf43f5e, 0xf59e0b, 0x10b981]
-})</p>
+    frequencies: list(counts.values()),
+    palette: [0x6366f1, 0x22d3ee, 0xf43f5e, 0xf59e0b, 0x10b981]
+})</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -286,6 +293,7 @@ palette: [0x6366f1, 0x22d3ee, 0xf43f5e, 0xf59e0b, 0x10b981]
 <ul>
 <li><a href="bar.html">Bar Chart</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -349,14 +357,6 @@ chart = sp.build_wordcloud(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

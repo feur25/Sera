@@ -89,9 +89,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="multiline">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('multiline','multiline-py',this)">Python</button><button class="sp-tb" onclick="spTab('multiline','multiline-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('multiline','multiline-ts',this)">TypeScript</button></div>
 <div id="multiline-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 months = ["Jan","Feb","Mar","Apr","May","Jun"]
-
 chart = sp.build_multiline_chart(
     "Monthly Revenue by Product",
     x_labels=months,
@@ -105,9 +103,7 @@ chart = sp.build_multiline_chart(
     y_label="Revenue ($)",
 )</code></pre></div>
 <div id="multiline-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const months = ["Jan","Feb","Mar","Apr","May","Jun"]
-
 const chart = sp.build_multiline_chart("Monthly Revenue by Product",
 months,
 {
@@ -117,9 +113,7 @@ months,
     y_label: "Revenue ($)"
 })</code></pre></div>
 <div id="multiline-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const months: string[] = ["Jan","Feb","Mar","Apr","May","Jun"]
-
 const chart = sp.build_multiline_chart("Monthly Revenue by Product",
 months,
 {

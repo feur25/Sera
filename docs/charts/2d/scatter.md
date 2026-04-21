@@ -98,13 +98,11 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('scatter','scatter-py',this)">Python</button><button class="sp-tb" onclick="spTab('scatter','scatter-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('scatter','scatter-ts',this)">TypeScript</button></div>
 <div id="scatter-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import numpy as np
-
 rng = np.random.default_rng(0)
 x_a = rng.normal(0, 1, 200).tolist()
 y_a = [xi * 1.5 + rng.normal() for xi in x_a]
 x_b = rng.normal(3, 1, 200).tolist()
 y_b = [xi * 0.5 + rng.normal() for xi in x_b]
-
 chart = sp.build_scatter_chart(
     "Two Populations",
     x_values=x_a + x_b,
@@ -116,43 +114,45 @@ chart = sp.build_scatter_chart(
     y_label="Y",
 )</code></pre></div>
 <div id="scatter-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-import numpy as np
-
-const rng = np.random.default_rng(0)
-const x_a = rng.normal(0, 1, 200).tolist()
-const y_a = [xi * 1.5 + rng.normal() for xi in x_a]
-const x_b = rng.normal(3, 1, 200).tolist()
-const y_b = [xi * 0.5 + rng.normal() for xi in x_b]
-
-const chart = sp.build_scatter_chart("Two Populations",
-x_a + x_b,
-{
-    y_values: y_a + y_b,
-    color_groups: ["Group A"],
+function randn() {
+  const u = 1 - Math.random(), v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+function normal(mu, sigma, n) {
+  return Array.from({ length: n }, () => mu + sigma * randn());
+}
+const xA = normal(0, 1, 200);
+const yA = xA.map(x => x * 1.5 + randn());
+const xB = normal(3, 1, 200);
+const yB = xB.map(x => x * 0.5 + randn());
+const chart = sp.build_scatter_chart("Two Populations", [...xA, ...xB], {
+    y_values: [...yA, ...yB],
+    color_groups: [...Array(200).fill("Group A"), ...Array(200).fill("Group B")],
     show_regression: true,
     regression_type: "linear",
     x_label: "X",
-    y_label: "Y"
-})</code></pre></div>
+    y_label: "Y",
+});</code></pre></div>
 <div id="scatter-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-import numpy as np
-
-const rng = np.random.default_rng(0)
-const x_a = rng.normal(0, 1, 200).tolist()
-const y_a: number[] = [xi * 1.5 + rng.normal() for xi in x_a]
-const x_b = rng.normal(3, 1, 200).tolist()
-const y_b: number[] = [xi * 0.5 + rng.normal() for xi in x_b]
-
-const chart = sp.build_scatter_chart("Two Populations",
-x_a + x_b,
-{
-    y_values: y_a + y_b,
-    color_groups: ["Group A"],
+function randn(): number {
+  const u = 1 - Math.random(), v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+function normal(mu: number, sigma: number, n: number): number[] {
+  return Array.from({ length: n }, () => mu + sigma * randn());
+}
+const xA: number[] = normal(0, 1, 200);
+const yA: number[] = xA.map(x => x * 1.5 + randn());
+const xB: number[] = normal(3, 1, 200);
+const yB: number[] = xB.map(x => x * 0.5 + randn());
+const chart = sp.build_scatter_chart("Two Populations", [...xA, ...xB], {
+    y_values: [...yA, ...yB],
+    color_groups: [...Array(200).fill("Group A"), ...Array(200).fill("Group B")],
     show_regression: true,
     regression_type: "linear",
     x_label: "X",
-    y_label: "Y"
-})</code></pre></div>
+    y_label: "Y",
+});</code></pre></div>
 </div>
 
 

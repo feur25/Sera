@@ -1,8 +1,8 @@
-# LinearRegression
+﻿# LinearRegression
 
 <div class="lang-en">
 
-## Code
+## API Reference
 
 **Signature**
 
@@ -77,7 +77,7 @@ $$R^2 = 1 - \frac{\displaystyle\sum_{i=1}^n (y_i - \hat{y}_i)^2}{\displaystyle\s
 
 <div class="lang-fr">
 
-## Code
+## Référence API
 
 **Signature**
 

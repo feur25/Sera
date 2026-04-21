@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -256,36 +256,43 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div id="kde-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-<p>values = [random.gauss(50, 10) for _ in range(500)]</p>
-<p>chart = sp.build_kde_chart(
-“Score Distribution”,
-values=values,
-x_label=“Score”,
-filled=True,
-bandwidth=1.0,
-)</p>
+values = [random.gauss(50, 10) for _ in range(500)]
+chart = sp.build_kde_chart(
+    "Score Distribution",
+    values=values,
+    x_label="Score",
+    filled=True,
+    bandwidth=1.0,
+)</code></pre>
+</div>
+
 <div id="kde-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-<p>const values = [random.gauss(50, 10) for _ in range(500)]</p>
-<p>const chart = sp.build_kde_chart(“Score Distribution”,
+const values = [random.gauss(50, 10) for _ in range(500)]
+const chart = sp.build_kde_chart("Score Distribution",
 {
-values: values,
-x_label: “Score”,
-filled: true,
-bandwidth: 1.0
-})</p>
+    values: values,
+    x_label: "Score",
+    filled: true,
+    bandwidth: 1.0
+})</code></pre>
+</div>
+
 <div id="kde-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-<p>const values: number[] = [random.gauss(50, 10) for _ in range(500)]</p>
-<p>const chart = sp.build_kde_chart(“Score Distribution”,
+const values: number[] = [random.gauss(50, 10) for _ in range(500)]
+const chart = sp.build_kde_chart("Score Distribution",
 {
-values: values,
-x_label: “Score”,
-filled: true,
-bandwidth: 1.0
-})</p>
+    values: values,
+    x_label: "Score",
+    filled: true,
+    bandwidth: 1.0
+})</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -299,6 +306,7 @@ bandwidth: 1.0
 <li><a href="ridgeline.html">Ridgeline</a></li>
 <li><a href="../3d/kde3d.html">KDE 3D</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -374,14 +382,6 @@ chart = sp.build_kde_chart(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

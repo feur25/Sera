@@ -84,7 +84,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="hbar">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('hbar','hbar-py',this)">Python</button><button class="sp-tb" onclick="spTab('hbar','hbar-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('hbar','hbar-ts',this)">TypeScript</button></div>
 <div id="hbar-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_hbar(
     "Top Countries by GDP",
     labels=["USA", "China", "Germany", "Japan", "India", "UK", "France", "Brazil", "Canada", "Korea"],
@@ -96,7 +95,6 @@ chart = sp.build_hbar(
     height=460,
 )</code></pre></div>
 <div id="hbar-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_hbar("Top Countries by GDP",
 ["USA", "China", "Germany", "Japan", "India", "UK", "France", "Brazil", "Canada", "Korea"],
 {
@@ -108,7 +106,6 @@ const chart = sp.build_hbar("Top Countries by GDP",
     height: 460
 })</code></pre></div>
 <div id="hbar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_hbar("Top Countries by GDP",
 ["USA", "China", "Germany", "Japan", "India", "UK", "France", "Brazil", "Canada", "Korea"],
 {

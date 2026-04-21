@@ -76,7 +76,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="dumbbell3d">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('dumbbell3d','dumbbell3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('dumbbell3d','dumbbell3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('dumbbell3d','dumbbell3d-ts',this)">TypeScript</button></div>
 <div id="dumbbell3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_dumbbell3d_chart(
     "Before vs After 3D",
     labels=["Group A", "Group B", "Group C"],
@@ -84,7 +83,6 @@ chart = sp.build_dumbbell3d_chart(
     values_end=[60, 75, 85],
 )</code></pre></div>
 <div id="dumbbell3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_dumbbell3d_chart("Before vs After 3D",
 ["Group A", "Group B", "Group C"],
 [40, 55, 70],
@@ -92,7 +90,6 @@ const chart = sp.build_dumbbell3d_chart("Before vs After 3D",
     values_end: [60, 75, 85]
 })</code></pre></div>
 <div id="dumbbell3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_dumbbell3d_chart("Before vs After 3D",
 ["Group A", "Group B", "Group C"],
 [40, 55, 70],

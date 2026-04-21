@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -255,72 +255,79 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div id="line-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-<p>months = [“Jan”, “Feb”, “Mar”, “Apr”, “May”, “Jun”,
-“Jul”, “Aug”, “Sep”, “Oct”, “Nov”, “Dec”]
+months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 revenue = [1200.0, 1350.0, 1100.0, 1600.0, 1800.0, 2100.0,
-1950.0, 2300.0, 2000.0, 2500.0, 2200.0, 2800.0]</p>
-<p>logo = “https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png”
-hover = sp.build_hover_json(months, images=[logo] * len(months))</p>
-<p>chart = (
-sp.build_line_chart(
-“Annual Revenue”,
-labels=months,
-values=revenue,
-x_label=“Month”,
-y_label=“Revenue (€)”,
-gridlines=True,
-color_hex=0x22d3ee,
-hover_json=hover,
-)
-.set_bg(None)
-.show_grid()
-)</p>
+           1950.0, 2300.0, 2000.0, 2500.0, 2200.0, 2800.0]
+logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
+hover = sp.build_hover_json(months, images=[logo] * len(months))
+chart = (
+    sp.build_line_chart(
+        "Annual Revenue",
+        labels=months,
+        values=revenue,
+        x_label="Month",
+        y_label="Revenue (€)",
+        gridlines=True,
+        color_hex=0x22d3ee,
+        hover_json=hover,
+    )
+    .set_bg(None)
+    .show_grid()
+)</code></pre>
+</div>
+
 <div id="line-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-<p>const months = [“Jan”, “Feb”, “Mar”, “Apr”, “May”, “Jun”,
-“Jul”, “Aug”, “Sep”, “Oct”, “Nov”, “Dec”]
+const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 const revenue = [1200.0, 1350.0, 1100.0, 1600.0, 1800.0, 2100.0,
-1950.0, 2300.0, 2000.0, 2500.0, 2200.0, 2800.0]</p>
-<p>const logo = “https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png”
+           1950.0, 2300.0, 2000.0, 2500.0, 2200.0, 2800.0]
+const logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 const hover = sp.build_hover_json(months,
-[logo])</p>
-<p>const chart = (
-sp.build_line_chart(“Annual Revenue”,
+[logo])
+const chart = (
+    sp.build_line_chart("Annual Revenue",
 months,
 {
-values: revenue,
-x_label: “Month”,
-y_label: “Revenue (€)”,
-gridlines: true,
-color_hex: 0x22d3ee,
-hover_json: hover
+    values: revenue,
+    x_label: "Month",
+    y_label: "Revenue (€)",
+    gridlines: true,
+    color_hex: 0x22d3ee,
+    hover_json: hover
 })
-.set_bg(null)
-.show_grid()
-)</p>
+    .set_bg(null)
+    .show_grid()
+)</code></pre>
+</div>
+
 <div id="line-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-<p>const months: string[] = [“Jan”, “Feb”, “Mar”, “Apr”, “May”, “Jun”,
-“Jul”, “Aug”, “Sep”, “Oct”, “Nov”, “Dec”]
+const months: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun",
+          "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 const revenue: number[] = [1200.0, 1350.0, 1100.0, 1600.0, 1800.0, 2100.0,
-1950.0, 2300.0, 2000.0, 2500.0, 2200.0, 2800.0]</p>
-<p>const logo: string = “https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png”
+           1950.0, 2300.0, 2000.0, 2500.0, 2200.0, 2800.0]
+const logo: string = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 const hover = sp.build_hover_json(months,
-[logo])</p>
-<p>const chart = (
-sp.build_line_chart(“Annual Revenue”,
+[logo])
+const chart = (
+    sp.build_line_chart("Annual Revenue",
 months,
 {
-values: revenue,
-x_label: “Month”,
-y_label: “Revenue (€)”,
-gridlines: true,
-color_hex: 0x22d3ee,
-hover_json: hover
+    values: revenue,
+    x_label: "Month",
+    y_label: "Revenue (€)",
+    gridlines: true,
+    color_hex: 0x22d3ee,
+    hover_json: hover
 })
-.set_bg(null)
-.show_grid()
-)</p>
+    .set_bg(null)
+    .show_grid()
+)</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -332,6 +339,7 @@ hover_json: hover
 <li><a href="multiline.html">Multi-line</a> — <code>sp.build_multiline_chart()</code> for multiple series</li>
 <li><a href="area.html">Area Chart</a> — <code>sp.build_area_chart()</code></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -413,14 +421,6 @@ chart = (
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

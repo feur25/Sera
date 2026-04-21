@@ -38,10 +38,10 @@
             const path_to_root = "../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-eef86151.js"></script>
+        <script src="../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -295,22 +295,29 @@ html_with_bg = sp.set_bg_fn(html_str, "#0f172a")</code></pre>
 
 <div id="bg-ex-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-<p>sp.set_global_background(“#0f172a”)</p>
-<p>bar = sp.build_bar_chart(“Revenue”, labels=[“A”, “B”], values=[300, 200])
-pie = sp.build_pie_chart(“Share”,   labels=[“A”, “B”], values=[60, 40])</p>
-<p>sp.reset_global_background()</p>
+sp.set_global_background("#0f172a")
+bar = sp.build_bar_chart("Revenue", labels=["A", "B"], values=[300, 200])
+pie = sp.build_pie_chart("Share",   labels=["A", "B"], values=[60, 40])
+sp.reset_global_background()</code></pre>
+</div>
+
 <div id="bg-ex-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-<p>sp.set_global_background(“#0f172a”);</p>
-<p>const bar = sp.build_bar_chart(“Revenue”, [“A”, “B”], { values: [300, 200] });
-const pie = sp.build_pie_chart(“Share”,   [“A”, “B”], { values: [60, 40] });</p>
-<p>sp.reset_global_background();</p>
+sp.set_global_background("#0f172a");
+const bar = sp.build_bar_chart("Revenue", ["A", "B"], { values: [300, 200] });
+const pie = sp.build_pie_chart("Share",   ["A", "B"], { values: [60, 40] });
+sp.reset_global_background();</code></pre>
+</div>
+
 <div id="bg-ex-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-<p>sp.set_global_background(“#0f172a”);</p>
-<p>const bar = sp.build_bar_chart(“Revenue”, [“A”, “B”], { values: [300, 200] });
-const pie = sp.build_pie_chart(“Share”,   [“A”, “B”], { values: [60, 40] });</p>
-<p>sp.reset_global_background();</p>
+sp.set_global_background("#0f172a");
+const bar = sp.build_bar_chart("Revenue", ["A", "B"], { values: [300, 200] });
+const pie = sp.build_pie_chart("Share",   ["A", "B"], { values: [60, 40] });
+sp.reset_global_background();</code></pre>
+</div>
+
+</div>
 
 <hr>
 <h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
@@ -318,6 +325,7 @@ const pie = sp.build_pie_chart(“Share”,   [“A”, “B”], { values: [60,
 <li><a href="palette.html">Palette &amp; Colors</a></li>
 <li><a href="auto-display.html">Auto Display</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="fonctions"><a class="header" href="#fonctions">Fonctions</a></h2>
@@ -368,14 +376,6 @@ sp.reset_global_background()
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

@@ -3,6 +3,9 @@
 <div class="lang-en">
 
 ## Signature
+
+```python
+sp.build_grouped_bar(
     title: str,
     category_labels: list[str],
     series_values: list[float],
@@ -44,6 +47,10 @@ Grouped bar chart for comparing multiple series across categories.
 | `show_values` | `bool` | `False` | Show value labels |
 | `series_names` | `list[str] \| None` | `None` | Series names for legend |
 | `palette` | `list[int] \| None` | `None` | Custom color palette |
+| `width` | `int` | `900` | Canvas width in pixels |
+| `height` | `int` | `480` | Canvas height in pixels |
+| `legend_position` | `str` | `"right"` | Legend position |
+| `gridlines` | `bool` | `False` | Show grid lines |
 
 ---
 
@@ -76,7 +83,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="grouped-bar">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('grouped-bar','grouped-bar-py',this)">Python</button><button class="sp-tb" onclick="spTab('grouped-bar','grouped-bar-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('grouped-bar','grouped-bar-ts',this)">TypeScript</button></div>
 <div id="grouped-bar-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 categories = ["Q1", "Q2", "Q3", "Q4"]
 values = [
     120.0, 90.0, 150.0,
@@ -84,10 +90,8 @@ values = [
     100.0, 95.0,  160.0,
     140.0, 120.0, 175.0,
 ]
-
 logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 hover = sp.build_hover_json(categories * 3, images=[logo] * len(categories * 3))
-
 chart = (
     sp.build_grouped_bar(
         "Quarterly Sales by Product",
@@ -102,7 +106,6 @@ chart = (
     .set_bg(None)
 )</code></pre></div>
 <div id="grouped-bar-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const categories = ["Q1", "Q2", "Q3", "Q4"]
 const values = [
     120.0, 90.0, 150.0,
@@ -110,11 +113,9 @@ const values = [
     100.0, 95.0,  160.0,
     140.0, 120.0, 175.0,
 ]
-
 const logo = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 const hover = sp.build_hover_json(categories * 3,
 [logo])
-
 const chart = (
     sp.build_grouped_bar("Quarterly Sales by Product",
 categories,
@@ -129,7 +130,6 @@ categories,
     .set_bg(null)
 )</code></pre></div>
 <div id="grouped-bar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const categories: string[] = ["Q1", "Q2", "Q3", "Q4"]
 const values: number[] = [
     120.0, 90.0, 150.0,
@@ -137,11 +137,9 @@ const values: number[] = [
     100.0, 95.0,  160.0,
     140.0, 120.0, 175.0,
 ]
-
 const logo: string = "https://raw.githubusercontent.com/feur25/seraplot-documentation/main/logo.png"
 const hover = sp.build_hover_json(categories * 3,
 [logo])
-
 const chart = (
     sp.build_grouped_bar("Quarterly Sales by Product",
 categories,

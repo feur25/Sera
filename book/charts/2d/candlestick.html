@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -257,37 +257,44 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div id="candlestick-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-<p>chart = sp.build_candlestick(
-“AAPL - January 2024”,
-[“Jan 2”,“Jan 3”,“Jan 4”,“Jan 5”,“Jan 8”,“Jan 9”,“Jan 10”],
-[185.0, 184.2, 182.5, 181.0, 183.5, 185.0, 186.0],
-[186.5, 185.0, 183.8, 183.5, 186.0, 187.2, 188.0],
-[183.5, 182.0, 180.5, 180.0, 183.0, 184.5, 185.5],
-[184.2, 182.5, 181.0, 183.5, 185.0, 186.0, 187.5],
-y_label=“Price ($)”,
-)</p>
+chart = sp.build_candlestick(
+    "AAPL - January 2024",
+    ["Jan 2","Jan 3","Jan 4","Jan 5","Jan 8","Jan 9","Jan 10"],
+    [185.0, 184.2, 182.5, 181.0, 183.5, 185.0, 186.0],
+    [186.5, 185.0, 183.8, 183.5, 186.0, 187.2, 188.0],
+    [183.5, 182.0, 180.5, 180.0, 183.0, 184.5, 185.5],
+    [184.2, 182.5, 181.0, 183.5, 185.0, 186.0, 187.5],
+    y_label="Price ($)",
+)</code></pre>
+</div>
+
 <div id="candlestick-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-<p>const chart = sp.build_candlestick(“AAPL - January 2024”,
-[“Jan 2”, “Jan 3”, “Jan 4”, “Jan 5”, “Jan 8”, “Jan 9”, “Jan 10”],
+const chart = sp.build_candlestick("AAPL - January 2024",
+["Jan 2", "Jan 3", "Jan 4", "Jan 5", "Jan 8", "Jan 9", "Jan 10"],
 [185.0, 184.2, 182.5, 181.0, 183.5, 185.0, 186.0],
 [186.5, 185.0, 183.8, 183.5, 186.0, 187.2, 188.0],
 [183.5, 182.0, 180.5, 180.0, 183.0, 184.5, 185.5],
 [184.2, 182.5, 181.0, 183.5, 185.0, 186.0, 187.5],
 {
-y_label: “Price ($)”
-})</p>
+    y_label: "Price ($)"
+})</code></pre>
+</div>
+
 <div id="candlestick-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-<p>const chart = sp.build_candlestick(“AAPL - January 2024”,
-[“Jan 2”, “Jan 3”, “Jan 4”, “Jan 5”, “Jan 8”, “Jan 9”, “Jan 10”],
+const chart = sp.build_candlestick("AAPL - January 2024",
+["Jan 2", "Jan 3", "Jan 4", "Jan 5", "Jan 8", "Jan 9", "Jan 10"],
 [185.0, 184.2, 182.5, 181.0, 183.5, 185.0, 186.0],
 [186.5, 185.0, 183.8, 183.5, 186.0, 187.2, 188.0],
 [183.5, 182.0, 180.5, 180.0, 183.0, 184.5, 185.5],
 [184.2, 182.5, 181.0, 183.5, 185.0, 186.0, 187.5],
 {
-y_label: “Price ($)”
-})</p>
+    y_label: "Price ($)"
+})</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -299,6 +306,7 @@ y_label: “Price ($)”
 <li><a href="dumbbell.html">Dumbbell</a></li>
 <li><a href="../3d/candlestick3d.html">Candlestick 3D</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -373,14 +381,6 @@ chart = sp.build_candlestick(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

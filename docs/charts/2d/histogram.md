@@ -33,8 +33,6 @@ sp.build_histogram(
 
 Distribution histogram with configurable bin count.
 
-Histogramme de distribution avec nombre de bins configurable.
-
 ---
 
 ## Parameters
@@ -83,9 +81,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('histogram','histogram-py',this)">Python</button><button class="sp-tb" onclick="spTab('histogram','histogram-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('histogram','histogram-ts',this)">TypeScript</button></div>
 <div id="histogram-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import numpy as np
-
 data = np.random.normal(0, 1, 5000).tolist()
-
 chart = sp.build_histogram(
     "Normal Distribution — N(0,1)",
     values=data,
@@ -96,33 +92,33 @@ chart = sp.build_histogram(
     show_counts=False,
 )</code></pre></div>
 <div id="histogram-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-import numpy as np
-
-const data = np.random.normal(0, 1, 5000).tolist()
-
-const chart = sp.build_histogram("Normal Distribution — N(0,1)",
-{
+function randn() {
+  const u = 1 - Math.random(), v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+const data = Array.from({ length: 5000 }, () => randn());
+const chart = sp.build_histogram("Normal Distribution — N(0,1)", {
     values: data,
     bins: 40,
     x_label: "Value",
     y_label: "Count",
     gridlines: true,
-    show_counts: false
-})</code></pre></div>
+    show_counts: false,
+});</code></pre></div>
 <div id="histogram-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-import numpy as np
-
-const data = np.random.normal(0, 1, 5000).tolist()
-
-const chart = sp.build_histogram("Normal Distribution — N(0,1)",
-{
+function randn(): number {
+  const u = 1 - Math.random(), v = Math.random();
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+}
+const data: number[] = Array.from({ length: 5000 }, () => randn());
+const chart = sp.build_histogram("Normal Distribution — N(0,1)", {
     values: data,
     bins: 40,
     x_label: "Value",
     y_label: "Count",
     gridlines: true,
-    show_counts: false
-})</code></pre></div>
+    show_counts: false,
+});</code></pre></div>
 </div>
 
 

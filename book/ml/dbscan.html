@@ -38,10 +38,10 @@
             const path_to_root = "../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-eef86151.js"></script>
+        <script src="../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -280,51 +280,58 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div id="dbscan-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-<p>def make_blob(cx, cy, n=150, s=0.5):
-return [(cx + random.gauss(0, s), cy + random.gauss(0, s)) for _ in range(n)]</p>
-<p>pts  = make_blob(0, 0) + make_blob(5, 5) + make_blob(10, 0)
-x, y = zip(*pts)</p>
-<p>chart = sp.build_dbscan_chart(
-“DBSCAN Clustering”,
-x_values=list(x),
-y_values=list(y),
-eps=1.0,
-min_samples=5,
-x_label=“Feature 1”,
-y_label=“Feature 2”,
-)</p>
+def make_blob(cx, cy, n=150, s=0.5):
+    return [(cx + random.gauss(0, s), cy + random.gauss(0, s)) for _ in range(n)]
+pts  = make_blob(0, 0) + make_blob(5, 5) + make_blob(10, 0)
+x, y = zip(*pts)
+chart = sp.build_dbscan_chart(
+    "DBSCAN Clustering",
+    x_values=list(x),
+    y_values=list(y),
+    eps=1.0,
+    min_samples=5,
+    x_label="Feature 1",
+    y_label="Feature 2",
+)</code></pre>
+</div>
+
 <div id="dbscan-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
 import random
-<p>def make_blob(cx, cy, {n: 150, s: 0.5}):
-return [(cx + random.gauss(0, s), cy + random.gauss(0, s)) for _ in range(n)]</p>
-<p>const pts  = make_blob(0, 0) + make_blob(5, 5) + make_blob(10, 0)
-x, y = zip(*pts)</p>
-<p>const chart = sp.build_dbscan_chart(“DBSCAN Clustering”,
+def make_blob(cx, cy, {n: 150, s: 0.5}):
+    return [(cx + random.gauss(0, s), cy + random.gauss(0, s)) for _ in range(n)]
+const pts  = make_blob(0, 0) + make_blob(5, 5) + make_blob(10, 0)
+x, y = zip(*pts)
+const chart = sp.build_dbscan_chart("DBSCAN Clustering",
 list(x),
 {
-y_values: list(y),
-eps: 1.0,
-min_samples: 5,
-x_label: “Feature 1”,
-y_label: “Feature 2”
-})</p>
+    y_values: list(y),
+    eps: 1.0,
+    min_samples: 5,
+    x_label: "Feature 1",
+    y_label: "Feature 2"
+})</code></pre>
+</div>
+
 <div id="dbscan-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
 import random
-<p>def make_blob(cx, cy, {n: 150, s: 0.5}):
-return [(cx + random.gauss(0, s), cy + random.gauss(0, s)) for _ in range(n)]</p>
-<p>const pts  = make_blob(0, 0) + make_blob(5, 5) + make_blob(10, 0)
-x, y = zip(*pts)</p>
-<p>const chart = sp.build_dbscan_chart(“DBSCAN Clustering”,
+def make_blob(cx, cy, {n: 150, s: 0.5}):
+    return [(cx + random.gauss(0, s), cy + random.gauss(0, s)) for _ in range(n)]
+const pts  = make_blob(0, 0) + make_blob(5, 5) + make_blob(10, 0)
+x, y = zip(*pts)
+const chart = sp.build_dbscan_chart("DBSCAN Clustering",
 list(x),
 {
-y_values: list(y),
-eps: 1.0,
-min_samples: 5,
-x_label: “Feature 1”,
-y_label: “Feature 2”
-})</p>
+    y_values: list(y),
+    eps: 1.0,
+    min_samples: 5,
+    x_label: "Feature 1",
+    y_label: "Feature 2"
+})</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -349,6 +356,7 @@ chart = sp.build_dbscan_chart(
 <li><a href="dbscan3d.html">DBSCAN 3D</a></li>
 <li><a href="../charts/2d/scatter.html">Scatter Chart</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="description-1"><a class="header" href="#description-1">Description</a></h2>
@@ -377,14 +385,6 @@ chart = sp.build_dbscan_chart(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

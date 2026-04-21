@@ -38,10 +38,10 @@
             const path_to_root = "../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-eef86151.js"></script>
+        <script src="../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -185,7 +185,7 @@
                     <main>
                         <h1 id="linearsvc--linearsvr"><a class="header" href="#linearsvc--linearsvr">LinearSVC / LinearSVR</a></h1>
 <div class="lang-en">
-<h2 id="code"><a class="header" href="#code">Code</a></h2>
+<h2 id="api-reference"><a class="header" href="#api-reference">API Reference</a></h2>
 <p><strong>Signature</strong></p>
 <pre><code class="language-python">clf = sp.LinearSVC(
     c=1.0, max_iter=1000, tol=1e-4, fit_intercept=True
@@ -280,7 +280,7 @@ print(f"R²: {reg.score(X, X[:, 0] * 2 - X[:, 2]):.4f}")
 </div>
 
 <div class="lang-fr">
-<h2 id="code-1"><a class="header" href="#code-1">Code</a></h2>
+<h2 id="référence-api"><a class="header" href="#référence-api">Référence API</a></h2>
 <p><strong>Signature</strong></p>
 <pre><code class="language-python">clf = sp.LinearSVC(
     c=1.0, max_iter=1000, tol=1e-4, fit_intercept=True
@@ -374,308 +374,16 @@ print(f"R² : {reg.score(X, X[:, 0] * 2 - X[:, 2]):.4f}")
 <p>Les résidus plus petits que $\varepsilon$ n’entraînent aucune pénalité — le modèle ignore les petites erreurs et se concentre sur les déviations plus grandes.</p>
 </div>
 
-# LinearSVC / LinearSVR
-<div class="lang-en">
-<h2 id="signature"><a class="header" href="#signature">Signature</a></h2>
-<pre><code class="language-python">clf = sp.LinearSVC(
-    c: float = 1.0,
-    max_iter: int = 1000,
-    tol: float = 1e-4,
-    fit_intercept: bool = True,
-)
-
-reg = sp.LinearSVR(
-    c: float = 1.0,
-    epsilon: float = 0.1,
-    max_iter: int = 1000,
-    tol: float = 1e-4,
-    fit_intercept: bool = True,
-)
-
-model.fit(x, y)
-model.predict(x) -&gt; list[int] | list[float]
-model.score(x, y) -&gt; float
-
-clf.decision_function(x) -&gt; list[float]
-clf.classes_        -&gt; list[int]
-clf.coef_           -&gt; list[list[float]]
-clf.intercept_      -&gt; list[float]
-clf.C_              -&gt; float
-clf.max_iter_       -&gt; int
-clf.tol_            -&gt; float
-clf.fit_intercept_  -&gt; bool
-
-reg.coef_           -&gt; list[float]
-reg.intercept_      -&gt; float
-reg.C_              -&gt; float
-reg.epsilon_        -&gt; float
-reg.max_iter_       -&gt; int
-reg.tol_            -&gt; float
-reg.fit_intercept_  -&gt; bool
-</code></pre>
-<hr>
-<h2 id="description"><a class="header" href="#description">Description</a></h2>
-<p>Linear Support Vector Machines with dual coordinate descent solver.</p>
-<ul>
-<li><strong>LinearSVC</strong> — hinge loss with One-vs-Rest for multiclass.</li>
-<li><strong>LinearSVR</strong> — epsilon-insensitive loss for regression.</li>
-</ul>
-<hr>
-<h2 id="constructor-parameters"><a class="header" href="#constructor-parameters">Constructor Parameters</a></h2>
-<h3 id="linearsvc"><a class="header" href="#linearsvc">LinearSVC</a></h3>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>c</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Inverse regularization strength</td></tr>
-<tr><td><code>max_iter</code></td><td><code>int</code></td><td><code>1000</code></td><td>Maximum epochs</td></tr>
-<tr><td><code>tol</code></td><td><code>float</code></td><td><code>1e-4</code></td><td>Convergence tolerance</td></tr>
-<tr><td><code>fit_intercept</code></td><td><code>bool</code></td><td><code>True</code></td><td>Fit a bias term</td></tr>
-</tbody>
-</table>
-</div>
-<h3 id="linearsvr"><a class="header" href="#linearsvr">LinearSVR</a></h3>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>c</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Inverse regularization strength</td></tr>
-<tr><td><code>epsilon</code></td><td><code>float</code></td><td><code>0.1</code></td><td>Epsilon-tube width</td></tr>
-<tr><td><code>max_iter</code></td><td><code>int</code></td><td><code>1000</code></td><td>Maximum epochs</td></tr>
-<tr><td><code>tol</code></td><td><code>float</code></td><td><code>1e-4</code></td><td>Convergence tolerance</td></tr>
-<tr><td><code>fit_intercept</code></td><td><code>bool</code></td><td><code>True</code></td><td>Fit a bias term</td></tr>
-</tbody>
-</table>
-</div>
-<hr>
-<h2 id="examples"><a class="header" href="#examples">Examples</a></h2>
-<details>
-<summary><strong>LinearSVC classification</strong></summary>
-<pre><code class="language-python">import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 4)
-y = (X[:, 0] + X[:, 1] &gt; 0).astype(np.int32)
-
-clf = sp.LinearSVC(c=1.0, fit_intercept=True)
-clf.fit(X, y)
-print(f"Accuracy: {clf.score(X, y):.4f}")
-print(f"fit_intercept: {clf.fit_intercept_}")
-</code></pre>
-</details>
-<details>
-<summary><strong>LinearSVR regression</strong></summary>
-<pre><code class="language-python">import seraplot as sp
-import numpy as np
-
-X = np.random.randn(300, 3)
-y = X @ np.array([1.5, -0.5, 2.0]) + np.random.randn(300) * 0.3
-
-reg = sp.LinearSVR(c=1.0, epsilon=0.05)
-reg.fit(X, y)
-print(f"R²: {reg.score(X, y):.4f}")
-print(f"epsilon: {reg.epsilon_}  C: {reg.C_}")
-</code></pre>
-</details>
-</div>
-
-<div class="lang-fr">
-<h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
-<pre><code class="language-python">clf = sp.LinearSVC(
-    c: float = 1.0,
-    max_iter: int = 1000,
-    tol: float = 1e-4,
-    fit_intercept: bool = True,
-)
-
-reg = sp.LinearSVR(
-    c: float = 1.0,
-    epsilon: float = 0.1,
-    max_iter: int = 1000,
-    tol: float = 1e-4,
-    fit_intercept: bool = True,
-)
-</code></pre>
-<hr>
-<h2 id="description-1"><a class="header" href="#description-1">Description</a></h2>
-<p>Machines à vecteurs de support linéaires avec solveur par descente de coordonnées duale.</p>
-<ul>
-<li><strong>LinearSVC</strong> — perte hinge avec stratégie One-vs-Rest pour la classification multiclasse.</li>
-<li><strong>LinearSVR</strong> — perte epsilon-insensible pour la régression.</li>
-</ul>
-<hr>
-<h2 id="paramètres-du-constructeur"><a class="header" href="#paramètres-du-constructeur">Paramètres du constructeur</a></h2>
-<h3 id="linearsvc-1"><a class="header" href="#linearsvc-1">LinearSVC</a></h3>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>c</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Inverse de la force de régularisation</td></tr>
-<tr><td><code>max_iter</code></td><td><code>int</code></td><td><code>1000</code></td><td>Nombre maximum d’époques</td></tr>
-<tr><td><code>tol</code></td><td><code>float</code></td><td><code>1e-4</code></td><td>Tolérance de convergence</td></tr>
-<tr><td><code>fit_intercept</code></td><td><code>bool</code></td><td><code>True</code></td><td>Ajuster un terme de biais</td></tr>
-</tbody>
-</table>
-</div>
-<h3 id="linearsvr-1"><a class="header" href="#linearsvr-1">LinearSVR</a></h3>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>c</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Inverse de la force de régularisation</td></tr>
-<tr><td><code>epsilon</code></td><td><code>float</code></td><td><code>0.1</code></td><td>Largeur du tube epsilon</td></tr>
-<tr><td><code>max_iter</code></td><td><code>int</code></td><td><code>1000</code></td><td>Nombre maximum d’époques</td></tr>
-<tr><td><code>tol</code></td><td><code>float</code></td><td><code>1e-4</code></td><td>Tolérance de convergence</td></tr>
-<tr><td><code>fit_intercept</code></td><td><code>bool</code></td><td><code>True</code></td><td>Ajuster un terme de biais</td></tr>
-</tbody>
-</table>
-</div>
-<hr>
-<h2 id="exemples"><a class="header" href="#exemples">Exemples</a></h2>
-<details>
-<summary><strong>Classification avec LinearSVC</strong></summary>
-<pre><code class="language-python">import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 4)
-y = (X[:, 0] + X[:, 1] &gt; 0).astype(np.int32)
-
-clf = sp.LinearSVC(c=1.0, fit_intercept=True)
-clf.fit(X, y)
-print(f"Précision : {clf.score(X, y):.4f}")
-print(f"fit_intercept : {clf.fit_intercept_}")
-</code></pre>
-</details>
-<details>
-<summary><strong>Régression avec LinearSVR</strong></summary>
-<pre><code class="language-python">import seraplot as sp
-import numpy as np
-
-X = np.random.randn(300, 3)
-y = X @ np.array([1.5, -0.5, 2.0]) + np.random.randn(300) * 0.3
-
-reg = sp.LinearSVR(c=1.0, epsilon=0.05)
-reg.fit(X, y)
-print(f"R² : {reg.score(X, y):.4f}")
-print(f"epsilon : {reg.epsilon_}  C : {reg.C_}")
-</code></pre>
-</details>
-</div>
-
-<pre><code>c: float = 1.0,
-max_iter: int = 1000,
-tol: float = 1e-4,
-</code></pre>
-<p>)</p>
-<p>reg = sp.LinearSVR(
-c: float = 1.0,
-epsilon: float = 0.1,
-max_iter: int = 1000,
-tol: float = 1e-4,
-)</p>
-<p>model.fit(x, y)
-model.predict(x) -&gt; list[int] | list[float]
-model.score(x, y) -&gt; float</p>
-<p>clf.decision_function(x) -&gt; list[float]
-clf.classes_    -&gt; list[int]
-clf.coef_       -&gt; list[list[float]]
-clf.intercept_  -&gt; list[float]</p>
-<p>reg.coef_       -&gt; list[float]
-reg.intercept_  -&gt; float</p>
-<pre><code>
----
-
-## Description
-
-Linear Support Vector Machines with dual coordinate descent solver.
-
-- **LinearSVC** — hinge loss with One-vs-Rest for multiclass.
-- **LinearSVR** — epsilon-insensitive loss.
-
----
-
-## Constructor Parameters
-
-### LinearSVC
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `c` | `float` | `1.0` | Inverse regularization strength |
-| `max_iter` | `int` | `1000` | Maximum epochs |
-| `tol` | `float` | `1e-4` | Convergence tolerance |
-
-### LinearSVR
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `c` | `float` | `1.0` | Inverse regularization strength |
-| `epsilon` | `float` | `0.1` | Epsilon-tube width |
-| `max_iter` | `int` | `1000` | Maximum epochs |
-| `tol` | `float` | `1e-4` | Convergence tolerance |
-
----
-
-## Attributes
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `classes_` | `list[int]` | Unique class labels (LinearSVC only) |
-| `coef_` | `list` | Weight coefficients |
-| `intercept_` | `float` or `list` | Bias term(s) |
-
----
-
-## Examples
-
-&lt;details&gt;
-&lt;summary&gt;&lt;strong&gt;LinearSVC classification&lt;/strong&gt;&lt;/summary&gt;
-
-```python
-import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 4)
-y = (X[:, 0] + X[:, 1] &gt; 0).astype(np.int32)
-
-clf = sp.LinearSVC(c=1.0)
-clf.fit(X, y)
-print(f"Accuracy: {clf.score(X, y):.4f}")
-
-margins = clf.decision_function(X[:5])
-print(f"Decision values: {[f'{v:.3f}' for v in margins]}")
-</code></pre>
-
-<details>
-<summary><strong>LinearSVR regression</strong></summary>
-<pre><code class="language-python">import seraplot as sp
-import numpy as np
-
-X = np.random.randn(300, 3)
-y = X @ np.array([2.0, -1.0, 0.5]) + np.random.randn(300) * 0.3
-
-reg = sp.LinearSVR(c=1.0, epsilon=0.1)
-reg.fit(X, y)
-print(f"R²: {reg.score(X, y):.4f}")
-</code></pre>
-</details>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ml/naive-bayes.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ml/svm-index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
-                            <a rel="next prefetch" href="../ml/preprocessing.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                            <a rel="next prefetch" href="../ml/preprocessing-index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                             </a>
 
@@ -685,11 +393,11 @@ print(f"R²: {reg.score(X, y):.4f}")
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ml/naive-bayes.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ml/svm-index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
-                    <a rel="next prefetch" href="../ml/preprocessing.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                    <a rel="next prefetch" href="../ml/preprocessing-index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
                     </a>
             </nav>

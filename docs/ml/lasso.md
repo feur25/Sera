@@ -1,8 +1,8 @@
-# Lasso
+﻿# Lasso
 
 <div class="lang-en">
 
-## Code
+## API Reference
 
 **Signature**
 
@@ -81,7 +81,7 @@ This sets small coefficients exactly to zero, producing **sparse solutions**.
 
 <div class="lang-fr">
 
-## Code
+## Référence API
 
 **Signature**
 

@@ -73,7 +73,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="radar3d">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('radar3d','radar3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('radar3d','radar3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('radar3d','radar3d-ts',this)">TypeScript</button></div>
 <div id="radar3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_radar3d_chart(
     "Skills Comparison 3D",
     axes=["Python", "Rust", "SQL", "ML", "DevOps"],
@@ -84,7 +83,6 @@ chart = sp.build_radar3d_chart(
     series_names=["Alice", "Bob"],
 )</code></pre></div>
 <div id="radar3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_radar3d_chart("Skills Comparison 3D",
 ["Python", "Rust", "SQL", "ML", "DevOps"],
 {
@@ -92,7 +90,6 @@ const chart = sp.build_radar3d_chart("Skills Comparison 3D",
     series_names: ["Alice", "Bob"]
 })</code></pre></div>
 <div id="radar3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_radar3d_chart("Skills Comparison 3D",
 ["Python", "Rust", "SQL", "ML", "DevOps"],
 {

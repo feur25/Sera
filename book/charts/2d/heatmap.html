@@ -38,10 +38,10 @@
             const path_to_root = "../../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../../toc-eef86151.js"></script>
+        <script src="../../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -256,48 +256,59 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div id="heatmap-py" class="sp-tc sp-on">
 <pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import numpy as np
-<p>features = [“Age”, “Income”, “Score”, “Visits”]
+features = ["Age", "Income", "Score", "Visits"]
 n = len(features)
-matrix = np.corrcoef(np.random.randn(4, 100)).flatten().tolist()</p>
-<p>chart = sp.build_heatmap(
-“Feature Correlation Matrix”,
-labels=features,
-flat_matrix=matrix,
-color_low=0x3b82f6,
-color_mid=0xffffff,
-color_high=0xef4444,
-show_values=True,
-)</p>
+matrix = np.corrcoef(np.random.randn(4, 100)).flatten().tolist()
+chart = sp.build_heatmap(
+    "Feature Correlation Matrix",
+    labels=features,
+    flat_matrix=matrix,
+    color_low=0x3b82f6,
+    color_mid=0xffffff,
+    color_high=0xef4444,
+    show_values=True,
+)</code></pre>
+</div>
+
 <div id="heatmap-js" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-import numpy as np
-<p>const features = [“Age”, “Income”, “Score”, “Visits”]
-const n = len(features)
-const matrix = np.corrcoef(np.random.randn(4, 100)).flatten().tolist()</p>
-<p>const chart = sp.build_heatmap(“Feature Correlation Matrix”,
-features,
-{
-flat_matrix: matrix,
-color_low: 0x3b82f6,
-color_mid: 0xffffff,
-color_high: 0xef4444,
-show_values: true
-})</p>
+const features = ["Age", "Income", "Score", "Visits"];
+// Pre-computed 4×4 correlation matrix (row-major)
+const matrix = [
+   1.00,  0.72, -0.15,  0.43,
+   0.72,  1.00,  0.08,  0.61,
+  -0.15,  0.08,  1.00, -0.27,
+   0.43,  0.61, -0.27,  1.00,
+];
+const chart = sp.build_heatmap("Feature Correlation Matrix", features, {
+    flat_matrix: matrix,
+    color_low: 0x3b82f6,
+    color_mid: 0xffffff,
+    color_high: 0xef4444,
+    show_values: true,
+});</code></pre>
+</div>
+
 <div id="heatmap-ts" class="sp-tc">
 <pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-import numpy as np
-<p>const features: string[] = [“Age”, “Income”, “Score”, “Visits”]
-const n = len(features)
-const matrix = np.corrcoef(np.random.randn(4, 100)).flatten().tolist()</p>
-<p>const chart = sp.build_heatmap(“Feature Correlation Matrix”,
-features,
-{
-flat_matrix: matrix,
-color_low: 0x3b82f6,
-color_mid: 0xffffff,
-color_high: 0xef4444,
-show_values: true
-})</p>
+const features: string[] = ["Age", "Income", "Score", "Visits"];
+// Pre-computed 4×4 correlation matrix (row-major)
+const matrix: number[] = [
+   1.00,  0.72, -0.15,  0.43,
+   0.72,  1.00,  0.08,  0.61,
+  -0.15,  0.08,  1.00, -0.27,
+   0.43,  0.61, -0.27,  1.00,
+];
+const chart = sp.build_heatmap("Feature Correlation Matrix", features, {
+    flat_matrix: matrix,
+    color_low: 0x3b82f6,
+    color_mid: 0xffffff,
+    color_high: 0xef4444,
+    show_values: true,
+});</code></pre>
+</div>
+
+</div>
 
 <details open="">
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">▶ Live Preview</summary>
@@ -308,6 +319,7 @@ show_values: true
 <ul>
 <li><a href="../3d/heatmap3d.html">Heatmap 3D</a></li>
 </ul>
+</div>
 
 <div class="lang-fr">
 <h2 id="signature-1"><a class="header" href="#signature-1">Signature</a></h2>
@@ -384,14 +396,6 @@ chart = sp.build_heatmap(
 </ul>
 </div>
 
-</code></pre>
-</div>
-</code></pre>
-</div>
-</code></pre>
-</div>
-</div>
-</div>
 
                     </main>
 

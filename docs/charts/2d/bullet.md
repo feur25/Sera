@@ -79,17 +79,14 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="bullet">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('bullet','bullet-py',this)">Python</button><button class="sp-tb" onclick="spTab('bullet','bullet-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('bullet','bullet-ts',this)">TypeScript</button></div>
 <div id="bullet-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_bullet(
     "KPI Dashboard",
     labels=["Revenue", "Satisfaction", "New Users"],
     values=[87500, 4.2, 1340],
     targets=[100000, 4.5, 1500],
     max_vals=[120000, 5.0, 2000],
-)
-</code></pre></div>
+)</code></pre></div>
 <div id="bullet-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_bullet("KPI Dashboard",
 ["Revenue", "Satisfaction", "New Users"],
 {
@@ -98,7 +95,6 @@ const chart = sp.build_bullet("KPI Dashboard",
     max_vals: [120000, 5.0, 2000]
 })</code></pre></div>
 <div id="bullet-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_bullet("KPI Dashboard",
 ["Revenue", "Satisfaction", "New Users"],
 {

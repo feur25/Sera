@@ -86,7 +86,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-tabs" id="candlestick">
 <div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('candlestick','candlestick-py',this)">Python</button><button class="sp-tb" onclick="spTab('candlestick','candlestick-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('candlestick','candlestick-ts',this)">TypeScript</button></div>
 <div id="candlestick-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.build_candlestick(
     "AAPL - January 2024",
     ["Jan 2","Jan 3","Jan 4","Jan 5","Jan 8","Jan 9","Jan 10"],
@@ -97,7 +96,6 @@ chart = sp.build_candlestick(
     y_label="Price ($)",
 )</code></pre></div>
 <div id="candlestick-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.build_candlestick("AAPL - January 2024",
 ["Jan 2", "Jan 3", "Jan 4", "Jan 5", "Jan 8", "Jan 9", "Jan 10"],
 [185.0, 184.2, 182.5, 181.0, 183.5, 185.0, 186.0],
@@ -108,7 +106,6 @@ const chart = sp.build_candlestick("AAPL - January 2024",
     y_label: "Price ($)"
 })</code></pre></div>
 <div id="candlestick-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.build_candlestick("AAPL - January 2024",
 ["Jan 2", "Jan 3", "Jan 4", "Jan 5", "Jan 8", "Jan 9", "Jan 10"],
 [185.0, 184.2, 182.5, 181.0, 183.5, 185.0, 186.0],

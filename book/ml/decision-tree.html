@@ -38,10 +38,10 @@
             const path_to_root = "../";
             const default_light_theme = "navy";
             const default_dark_theme = "navy";
-            window.path_to_searchindex_js = "../searchindex-f4e084c2.js";
+            window.path_to_searchindex_js = "../searchindex-14391b48.js";
         </script>
         <!-- Start loading toc.js asap -->
-        <script src="../toc-eef86151.js"></script>
+        <script src="../toc-e2e8240c.js"></script>
     </head>
     <body>
     <div id="mdbook-help-container">
@@ -185,7 +185,7 @@
                     <main>
                         <h1 id="decisiontreeclassifier--decisiontreeregressor"><a class="header" href="#decisiontreeclassifier--decisiontreeregressor">DecisionTreeClassifier / DecisionTreeRegressor</a></h1>
 <div class="lang-en">
-<h2 id="code"><a class="header" href="#code">Code</a></h2>
+<h2 id="api-reference"><a class="header" href="#api-reference">API Reference</a></h2>
 <p><strong>Signature</strong></p>
 <pre><code class="language-python">clf = sp.DecisionTreeClassifier(
     max_depth=10, min_samples_split=2,
@@ -266,7 +266,7 @@ print(f"Importances: {clf.feature_importances_}")
 </div>
 
 <div class="lang-fr">
-<h2 id="code-1"><a class="header" href="#code-1">Code</a></h2>
+<h2 id="référence-api"><a class="header" href="#référence-api">Référence API</a></h2>
 <p><strong>Signature</strong></p>
 <pre><code class="language-python">clf = sp.DecisionTreeClassifier(
     max_depth=10, min_samples_split=2,
@@ -346,147 +346,12 @@ print(f"Importances : {clf.feature_importances_}")
 <p>normalisée de sorte que $\sum_j \text{FI}(j) = 1$.</p>
 </div>
 
-# DecisionTreeClassifier / DecisionTreeRegressor
-<div class="lang-en">
-<h2 id="signature"><a class="header" href="#signature">Signature</a></h2>
-<pre><code class="language-python">clf = sp.DecisionTreeClassifier(
-    max_depth: int = 10,
-    min_samples_split: int = 2,
-    min_samples_leaf: int = 1,
-    max_features: int | None = None,
-    criterion: str = "gini",
-)
-
-reg = sp.DecisionTreeRegressor(
-    max_depth: int = 10,
-    min_samples_split: int = 2,
-    min_samples_leaf: int = 1,
-    max_features: int | None = None,
-)
-
-clf.classes_              -&gt; list[int]
-clf.feature_importances_  -&gt; list[float]
-clf.max_depth_            -&gt; int
-clf.min_samples_split_    -&gt; int
-clf.min_samples_leaf_     -&gt; int
-clf.max_features_         -&gt; int | None
-clf.criterion_            -&gt; str
-
-reg.feature_importances_  -&gt; list[float]
-reg.max_depth_            -&gt; int
-reg.min_samples_split_    -&gt; int
-reg.min_samples_leaf_     -&gt; int
-reg.max_features_         -&gt; int | None
-</code></pre>
-<hr>
-<h2 id="description"><a class="header" href="#description">Description</a></h2>
-<p>Decision tree with histogram-based binning for fast splits. Supports <code>gini</code> and <code>entropy</code> for classification.</p>
-<hr>
-<h2 id="constructor-parameters"><a class="header" href="#constructor-parameters">Constructor Parameters</a></h2>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>max_depth</code></td><td><code>int</code></td><td><code>10</code></td><td>Maximum tree depth</td></tr>
-<tr><td><code>min_samples_split</code></td><td><code>int</code></td><td><code>2</code></td><td>Min samples to split a node</td></tr>
-<tr><td><code>min_samples_leaf</code></td><td><code>int</code></td><td><code>1</code></td><td>Min samples in a leaf</td></tr>
-<tr><td><code>max_features</code></td><td><code>int|None</code></td><td><code>None</code></td><td>Number of features to consider per split</td></tr>
-<tr><td><code>criterion</code></td><td><code>str</code></td><td><code>"gini"</code></td><td><code>"gini"</code> or <code>"entropy"</code> (classifier only)</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-
-<div class="lang-fr">
-<h2 id="description-1"><a class="header" href="#description-1">Description</a></h2>
-<p>Arbre de décision avec binning histogramme pour des divisions rapides. Supporte <code>gini</code> et <code>entropy</code> pour la classification.</p>
-<h2 id="paramètres-du-constructeur"><a class="header" href="#paramètres-du-constructeur">Paramètres du constructeur</a></h2>
-<div class="table-wrapper">
-<table>
-<thead>
-<tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr>
-</thead>
-<tbody>
-<tr><td><code>max_depth</code></td><td><code>int</code></td><td><code>10</code></td><td>Profondeur maximale de l’arbre</td></tr>
-<tr><td><code>min_samples_split</code></td><td><code>int</code></td><td><code>2</code></td><td>Minimum d’échantillons pour diviser un nœud</td></tr>
-<tr><td><code>min_samples_leaf</code></td><td><code>int</code></td><td><code>1</code></td><td>Minimum d’échantillons dans une feuille</td></tr>
-<tr><td><code>max_features</code></td><td><code>int|None</code></td><td><code>None</code></td><td>Nombre de variables considérées par division</td></tr>
-<tr><td><code>criterion</code></td><td><code>str</code></td><td><code>"gini"</code></td><td><code>"gini"</code> ou <code>"entropy"</code> (classifieur seulement)</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-
-<pre><code>
----
-
-## Description
-
-CART decision trees with Gini / Entropy / MSE splitting. Feature importance is computed from the total impurity decrease at each split, weighted by the number of samples reaching that node.
-
----
-
-## Constructor Parameters
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `max_depth` | `int` | `10` | Maximum tree depth |
-| `min_samples_split` | `int` | `2` | Minimum samples to split a node |
-| `min_samples_leaf` | `int` | `1` | Minimum samples in a leaf |
-| `max_features` | `int \| None` | `None` | Random subset of features per split (`None` = all) |
-| `criterion` | `str` | `"gini"` | `"gini"` or `"entropy"` (classifier only) |
-
----
-
-## Attributes
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `feature_importances_` | `list[float]` | Gini / MSE importance per feature |
-| `classes_` | `list[int]` | Unique class labels (classifier only) |
-
----
-
-## Examples
-
-&lt;details&gt;
-&lt;summary&gt;&lt;strong&gt;Classification&lt;/strong&gt;&lt;/summary&gt;
-
-```python
-import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 4)
-y = (X[:, 0] ** 2 + X[:, 1] &gt; 1).astype(np.int32)
-
-clf = sp.DecisionTreeClassifier(max_depth=6, criterion="gini")
-clf.fit(X, y)
-
-print(f"Accuracy: {clf.score(X, y):.4f}")
-print(f"Feature importances: {[f'{v:.3f}' for v in clf.feature_importances_]}")
-</code></pre>
-
-<details>
-<summary><strong>Regression</strong></summary>
-<pre><code class="language-python">import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 3)
-y = np.sin(X[:, 0]) + X[:, 1] ** 2 + np.random.randn(500) * 0.1
-
-reg = sp.DecisionTreeRegressor(max_depth=8)
-reg.fit(X, y)
-print(f"R²: {reg.score(X, y):.4f}")
-</code></pre>
-</details>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                            <a rel="prev" href="../ml/sgd.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                            <a rel="prev" href="../ml/tree-index.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                             </a>
 
@@ -500,7 +365,7 @@ print(f"R²: {reg.score(X, y):.4f}")
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                    <a rel="prev" href="../ml/sgd.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                    <a rel="prev" href="../ml/tree-index.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
                     </a>
 
