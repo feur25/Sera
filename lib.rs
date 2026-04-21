@@ -108,6 +108,7 @@ pub fn get_global_gridlines() -> bool {
 #[pyclass(module = "seraplot")]
 pub struct Chart {
     html: String,
+    doc_str: &'static str,
 }
 
 #[cfg(feature = "python")]
@@ -200,6 +201,10 @@ impl Chart {
         &self.html
     }
 
+    fn doc(&self) -> &'static str {
+        self.doc_str
+    }
+
     fn _repr_html_(&self) -> String {
         self.chart_iframe()
     }
@@ -248,83 +253,61 @@ impl Chart {
 
     #[pyo3(signature = (color=None))]
     fn set_bg(&self, color: Option<&str>) -> Chart {
-        Chart {
-            html: crate::html::hover::apply_bg(self.html.clone(), color),
-        }
+        self.propagate(crate::html::hover::apply_bg(self.html.clone(), color))
     }
 
     #[pyo3(signature = (css))]
     fn inject_css(&self, css: &str) -> Chart {
-        Chart {
-            html: self.html.replacen("</head>", &format!("<style>{css}</style></head>"), 1),
-        }
+        self.propagate(self.html.replacen("</head>", &format!("<style>{css}</style></head>"), 1))
     }
 
     #[pyo3(signature = (js))]
     fn inject_js(&self, js: &str) -> Chart {
-        Chart {
-            html: self.html.replacen("</body>", &format!("<script>{js}</script></body>"), 1),
-        }
+        self.propagate(self.html.replacen("</body>", &format!("<script>{js}</script></body>"), 1))
     }
 
     fn no_x_axis(&self) -> Chart {
-        Chart {
-            html: self.html.replacen("</head>", "<style>.sp-ax-x,.sp-xt,.sp-xl{display:none}</style></head>", 1),
-        }
+        self.propagate(self.html.replacen("</head>", "<style>.sp-ax-x,.sp-xt,.sp-xl{display:none}</style></head>", 1))
     }
 
     fn no_hover(&self) -> Chart {
-        Chart {
-            html: self.html.replacen("</head>", "<style>#sp-tip{display:none!important}[data-idx]{pointer-events:none!important}[data-idx]:hover{filter:none!important}</style></head>", 1),
-        }
+        self.propagate(self.html.replacen("</head>", "<style>#sp-tip{display:none!important}[data-idx]{pointer-events:none!important}[data-idx]:hover{filter:none!important}</style></head>", 1))
     }
 
     fn no_y_axis(&self) -> Chart {
-        Chart {
-            html: self.html.replacen("</head>", "<style>.sp-ax-y,.sp-yt,.sp-yl{display:none}</style></head>", 1),
-        }
+        self.propagate(self.html.replacen("</head>", "<style>.sp-ax-y,.sp-yt,.sp-yl{display:none}</style></head>", 1))
     }
 
     fn no_axes(&self) -> Chart {
-        Chart {
-            html: self.html.replacen("</head>", "<style>.sp-ax-x,.sp-ax-y,.sp-xt,.sp-yt,.sp-xl,.sp-yl{display:none}</style></head>", 1),
-        }
+        self.propagate(self.html.replacen("</head>", "<style>.sp-ax-x,.sp-ax-y,.sp-xt,.sp-yt,.sp-xl,.sp-yl{display:none}</style></head>", 1))
     }
 
     fn show_grid(&self) -> Chart {
-        Chart {
-            html: self.html.replacen("</head>", "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>", 1),
-        }
+        self.propagate(self.html.replacen("</head>", "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>", 1))
     }
 
     fn hide_grid(&self) -> Chart {
-        Chart {
-            html: self.html.replacen("</head>", "<style>.sp-gl{display:none!important}</style></head>", 1),
-        }
+        self.propagate(self.html.replacen("</head>", "<style>.sp-gl{display:none!important}</style></head>", 1))
     }
 
     fn no_legend(&self) -> Chart {
-        Chart {
-            html: self.html.replacen("</head>", "<style>g[data-legend]{display:none!important}</style></head>", 1),
-        }
+        self.propagate(self.html.replacen("</head>", "<style>g[data-legend]{display:none!important}</style></head>", 1))
     }
 
     fn no_title(&self) -> Chart {
-        Chart {
-            html: self.html.replacen("</head>", "<style>.sp-ttl{display:none!important}</style></head>", 1),
-        }
+        self.propagate(self.html.replacen("</head>", "<style>.sp-ttl{display:none!important}</style></head>", 1))
     }
 
     #[pyo3(signature = (px))]
     fn set_font_size(&self, px: u32) -> Chart {
         let style = format!("<style>svg text{{font-size:{}px!important}}</style></head>", px);
-        Chart { html: self.html.replacen("</head>", &style, 1) }
+        self.propagate(self.html.replacen("</head>", &style, 1))
     }
 
     #[pyo3(signature = (factor))]
     fn scale(&self, factor: f64) -> Chart {
         let style = format!("<style>svg{{transform:scale({});transform-origin:top left}}</style></head>", factor);
-        Chart { html: self.html.replacen("</head>", &style, 1) }
+        self.propagate(self.html.replacen("</head>", &style, 1))
     }
 
     #[pyo3(signature = (color=None))]
@@ -334,14 +317,14 @@ impl Chart {
             Some(c) => c.to_string(),
         };
         let style = format!("<style>svg{{background:{bg}!important}}.c3w canvas{{background:{bg}!important}}.c3w{{background:{bg}!important}}</style></head>");
-        Chart { html: self.html.replacen("</head>", &style, 1) }
+        self.propagate(self.html.replacen("</head>", &style, 1))
     }
 
     #[pyo3(signature = (position="bottom", labels=None, colors=None))]
     fn show_labels(&self, position: &str, labels: Option<Vec<String>>, colors: Option<Vec<String>>) -> Chart {
         let lb = labels.unwrap_or_default();
         let co = colors.unwrap_or_default();
-        Chart { html: inject_labels(&self.html, position, &lb, &co) }
+        self.propagate(inject_labels(&self.html, position, &lb, &co))
     }
 
     fn to_svg(&self) -> PyResult<String> {
@@ -376,51 +359,51 @@ impl Chart {
 
     #[pyo3(signature = (name))]
     fn font(&self, name: &str) -> Chart {
-        Chart { html: self.html.replacen("</head>", &format!("<style>svg text,body{{font-family:'{}',system-ui,sans-serif!important}}</style></head>", name), 1) }
+        self.propagate(self.html.replacen("</head>", &format!("<style>svg text,body{{font-family:'{}',system-ui,sans-serif!important}}</style></head>", name), 1))
     }
 
     #[pyo3(signature = (px))]
     fn title_size(&self, px: i32) -> Chart {
-        Chart { html: self.html.replacen("</head>", &format!("<style>.sp-ttl{{font-size:{}px!important}}</style></head>", px), 1) }
+        self.propagate(self.html.replacen("</head>", &format!("<style>.sp-ttl{{font-size:{}px!important}}</style></head>", px), 1))
     }
 
     fn crosshair(&self) -> Chart {
-        Chart { html: self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_CROSSHAIR_JS), 1) }
+        self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_CROSSHAIR_JS), 1))
     }
 
     fn zoom(&self) -> Chart {
-        Chart { html: self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_ZOOM_JS), 1) }
+        self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_ZOOM_JS), 1))
     }
 
     fn responsive(&self) -> Chart {
-        Chart { html: self.html.replacen("</head>", "<style>svg{width:100%!important;height:auto!important}</style></head>", 1) }
+        self.propagate(self.html.replacen("</head>", "<style>svg{width:100%!important;height:auto!important}</style></head>", 1))
     }
 
     #[pyo3(signature = (duration=300))]
     fn animate(&self, duration: i32) -> Chart {
         let css = format!("<style>@keyframes sp-in{{from{{opacity:0;transform:translateY(8px)}}to{{opacity:1;transform:none}}}}svg rect[data-idx],svg circle[data-idx],svg path.sp-area{{animation:sp-in {}ms ease-out both}}</style></head>", duration);
         let js = "<script>(function(){if(window.__spa__)return;window.__spa__=1;var els=document.querySelectorAll('svg [data-idx]');for(var i=0;i<els.length;i++)els[i].style.animationDelay=i*30+'ms';})();</script></body>";
-        Chart { html: self.html.replacen("</head>", &css, 1).replacen("</body>", js, 1) }
+        self.propagate(self.html.replacen("</head>", &css, 1).replacen("</body>", js, 1))
     }
 
     #[pyo3(signature = (px))]
     fn border_radius(&self, px: i32) -> Chart {
-        Chart { html: self.html.replacen("</head>", &format!("<style>.chart-container,.c3w{{border-radius:{}px!important;overflow:hidden}}</style></head>", px), 1) }
+        self.propagate(self.html.replacen("</head>", &format!("<style>.chart-container,.c3w{{border-radius:{}px!important;overflow:hidden}}</style></head>", px), 1))
     }
 
     #[pyo3(signature = (value))]
     fn set_opacity(&self, value: f64) -> Chart {
         let v = value.clamp(0.0, 1.0);
-        Chart { html: self.html.replacen("</head>", &format!("<style>svg rect[data-idx],svg circle[data-idx],svg path.sp-area{{opacity:{}!important}}</style></head>", v), 1) }
+        self.propagate(self.html.replacen("</head>", &format!("<style>svg rect[data-idx],svg circle[data-idx],svg path.sp-area{{opacity:{}!important}}</style></head>", v), 1))
     }
 
     #[pyo3(signature = (px))]
     fn set_margin(&self, px: i32) -> Chart {
-        Chart { html: self.html.replacen("</head>", &format!("<style>.chart-container,.c3w{{padding:{}px}}</style></head>", px), 1) }
+        self.propagate(self.html.replacen("</head>", &format!("<style>.chart-container,.c3w{{padding:{}px}}</style></head>", px), 1))
     }
 
     fn export_button(&self) -> Chart {
-        Chart { html: self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_EXPORT_JS), 1) }
+        self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_EXPORT_JS), 1))
     }
 }
 
@@ -479,11 +462,21 @@ impl Chart {
             html
         };
         let html = inject_global_cfg(html);
-        let chart = Self { html };
+        let chart = Self { html, doc_str: "" };
         if AUTO_DISPLAY.load(std::sync::atomic::Ordering::Relaxed) {
             Python::with_gil(|py| auto_show_in_jupyter(py, &chart));
         }
         chart
+    }
+
+    fn new_doc(html: String, doc: &'static str) -> Self {
+        let mut c = Self::new(html);
+        c.doc_str = doc;
+        c
+    }
+
+    fn propagate(&self, html: String) -> Self {
+        Self { html, doc_str: self.doc_str }
     }
 
     fn chart_iframe(&self) -> String {
@@ -780,6 +773,6 @@ fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(config, m)?)?;
     m.add_function(wrap_pyfunction!(reset_config, m)?)?;
 
-    bindings::python::python_registry::register_submodules(py, m)?;
+    bindings::commands::registry::register_submodules(py, m)?;
     Ok(())
 }

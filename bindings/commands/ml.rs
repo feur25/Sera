@@ -1,8 +1,18 @@
-﻿#![cfg(feature = "python")]
-use pyo3::prelude::*;
+﻿use pyo3::prelude::*;
 use numpy::{PyReadonlyArray1, PyReadonlyArray2, PyUntypedArrayMethods, PyArrayMethods, IntoPyArray};
 use pyo3::types::PyAny;
 use rayon::prelude::*;
+
+macro_rules! impl_doc {
+    ($name:ident, $doc:expr) => {
+        #[pymethods]
+        impl $name {
+            fn doc(&self) -> &'static str {
+                $doc
+            }
+        }
+    };
+}
 
 fn flat_to_np2d(py: Python<'_>, flat: Vec<f64>, n: usize, cols: usize) -> PyResult<PyObject> {
     if n == 0 || cols == 0 { return Ok(numpy::PyArray2::<f64>::zeros_bound(py, [0, 0], false).into_py(py)); }
@@ -2115,6 +2125,31 @@ fn ml_registry(py: Python<'_>) -> PyResult<PyObject> {
     dict.set_item("metrics", vec!["accuracy_score", "mean_squared_error", "mean_absolute_error", "r2_score", "f1_score", "precision_score", "recall_score", "confusion_matrix", "classification_report"])?;
     Ok(dict.into())
 }
+
+impl_doc!(PyLinearRegression, crate::bindings::commands::docs::DOC_LINEAR_REGRESSION);
+impl_doc!(PyRidge, crate::bindings::commands::docs::DOC_RIDGE);
+impl_doc!(PyLasso, crate::bindings::commands::docs::DOC_LASSO);
+impl_doc!(PyElasticNet, crate::bindings::commands::docs::DOC_ELASTIC_NET);
+impl_doc!(PyLogisticRegression, crate::bindings::commands::docs::DOC_LOGISTIC_REGRESSION);
+impl_doc!(PySGDClassifier, crate::bindings::commands::docs::DOC_SGD_CLASSIFIER);
+impl_doc!(PySGDRegressor, crate::bindings::commands::docs::DOC_SGD_REGRESSOR);
+impl_doc!(PyDecisionTreeClassifier, crate::bindings::commands::docs::DOC_DECISION_TREE_CLASSIFIER);
+impl_doc!(PyDecisionTreeRegressor, crate::bindings::commands::docs::DOC_DECISION_TREE_REGRESSOR);
+impl_doc!(PyRandomForestClassifier, crate::bindings::commands::docs::DOC_RANDOM_FOREST_CLASSIFIER);
+impl_doc!(PyRandomForestRegressor, crate::bindings::commands::docs::DOC_RANDOM_FOREST_REGRESSOR);
+impl_doc!(PyGradientBoostingClassifier, crate::bindings::commands::docs::DOC_GRADIENT_BOOSTING_CLASSIFIER);
+impl_doc!(PyGradientBoostingRegressor, crate::bindings::commands::docs::DOC_GRADIENT_BOOSTING_REGRESSOR);
+impl_doc!(PyAdaBoostClassifier, crate::bindings::commands::docs::DOC_ADABOOST_CLASSIFIER);
+impl_doc!(PyAdaBoostRegressor, crate::bindings::commands::docs::DOC_ADABOOST_REGRESSOR);
+impl_doc!(PyKNeighborsClassifier, crate::bindings::commands::docs::DOC_KNEIGHBORS_CLASSIFIER);
+impl_doc!(PyKNeighborsRegressor, crate::bindings::commands::docs::DOC_KNEIGHBORS_REGRESSOR);
+impl_doc!(PyNearestCentroid, crate::bindings::commands::docs::DOC_NEAREST_CENTROID);
+impl_doc!(PyGaussianNB, crate::bindings::commands::docs::DOC_GAUSSIAN_NB);
+impl_doc!(PyMultinomialNB, crate::bindings::commands::docs::DOC_MULTINOMIAL_NB);
+impl_doc!(PyBernoulliNB, crate::bindings::commands::docs::DOC_BERNOULLI_NB);
+impl_doc!(PyLinearSVC, crate::bindings::commands::docs::DOC_LINEAR_SVC);
+impl_doc!(PyLinearSVR, crate::bindings::commands::docs::DOC_LINEAR_SVR);
+impl_doc!(PyRidgeClassifier, crate::bindings::commands::docs::DOC_RIDGE_CLASSIFIER);
 
 pub fn register_ml_classes(m: &PyModule) -> PyResult<()> {
     m.add_class::<PyLinearRegression>()?;

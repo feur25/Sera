@@ -1,3 +1,5 @@
+#[macro_use]
+pub mod registry_macro;
 pub mod fast_render;
 pub mod utils;
 pub mod chart_types;
@@ -7,13 +9,11 @@ pub mod builder_template;
 pub mod unified_config;
 pub mod unified_builder;
 pub mod export_builder;
-pub mod python;
-#[cfg(feature = "js")]
-pub mod js;
+pub mod commands;
 
 pub use fast_render::*;
 pub use utils::*;
-pub use python::*;
+pub use commands::*;
 pub use crate::html::{FastHtmlExporter, HtmlExporter, HtmlExportConfig, HtmlTheme};
 pub use chart_types::*;
 pub use fast_export_c::*;
