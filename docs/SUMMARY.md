@@ -144,6 +144,12 @@
 
 ---
 
+# Tooling
+
+- [VS Code Extension](tooling/vscode.md)
+
+---
+
 # API Reference
 
 - [Full Function Index](api/index.md)

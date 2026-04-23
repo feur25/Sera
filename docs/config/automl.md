@@ -15,7 +15,9 @@ for row in result["leaderboard"]:
     print(row)
 ```
 
-Default models: `logistic`, `knn`, `decision_tree`, `random_forest`, `gradient_boosting`. Customize with `models=["random_forest","knn"]`.
+Default models (2.3.89+): `knn`, `decision_tree`, `gradient_boosting`. The previous defaults `logistic` and `random_forest` are still available via `models=["logistic","random_forest"]` but were dropped from defaults pending stability fixes. Customize freely with e.g. `models=["knn","gradient_boosting"]`.
+
+Failed/panicking models are caught: their leaderboard entry has `score = NaN` and is sorted last.
 
 ## Pipeline
 
@@ -49,7 +51,9 @@ for row in result["leaderboard"]:
     print(row)
 ```
 
-Modèles par défaut : `logistic`, `knn`, `decision_tree`, `random_forest`, `gradient_boosting`. Personnalisable avec `models=["random_forest","knn"]`.
+Modèles par défaut (2.3.89+) : `knn`, `decision_tree`, `gradient_boosting`. Les anciens défauts `logistic` et `random_forest` restent disponibles via `models=["logistic","random_forest"]` mais ont été retirés en attendant un correctif de stabilité. Personnalisable librement, ex. `models=["knn","gradient_boosting"]`.
+
+Les modèles qui échouent/paniquent sont capturés : leur entrée du leaderboard a `score = NaN` et passe en dernier.
 
 ## Pipeline
 
