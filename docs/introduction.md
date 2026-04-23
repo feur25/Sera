@@ -510,17 +510,32 @@ Rust-native DBSCAN with KD-tree spatial indexing:
 
 </div>
 
+
 <div class="lang-fr">
-
-# SeraPlot
-
-Visualisation de données native Rust. **6 000× plus rapide que Plotly. Zéro dépendance.**
 
 ```bash
 pip install seraplot
 ```
 
-## Le déclencheur
+---
+
+## Le déclic
+
+```python
+import matplotlib.pyplot as plt
+
+import seraplot.matplotlib as plt
+```
+
+- 6 000× plus rapide que Plotly (mesuré, 1000 graphiques en barres)
+- 200× plus petit en taille de fichier
+- HTML interactif par défaut
+- zéro dépendance Python
+
+---
+
+## Le moment où ça fait tilt
+
 ```python
 import seraplot as sp
 
@@ -529,47 +544,118 @@ sp.scatter("1M points", list(range(1_000_000)), [x**0.5 for x in range(1_000_000
 
 **1 million de points. Interactif. Dans Jupyter.**
 
-Aucune configuration. Aucun backend. Aucune attente.
+Pas de config. Pas de backend. Pas d'attente.
 
 ---
 
-## Pourquoi les gens changent vraiment
+## Pourquoi les gens basculent vraiment
 
-Les gens ne changent pas à cause des benchmarks. Ils changent parce que quelque chose devient **possible**.
+Les gens ne basculent pas à cause des benchmarks.
+Ils basculent parce que quelque chose devient **possible**.
 
 ### Tableaux de bord sans backend
-Chaque graphique est un fichier HTML autonome. Déposez-le où vous voulez — S3, e-mail, Git, Notion. Pas de serveur, pas de Dash, pas de Streamlit.
+
+Chaque graphique est un fichier HTML autonome. Déposez-le n'importe où — S3, e-mail, Git, Notion.
+Pas de serveur, pas de Dash, pas de Streamlit.
 
 ### Graphiques par e-mail
-21 Ko de HTML interactif contre 4,7 Mo de blob statique Plotly.
+
+21 Ko de HTML interactif contre les 4,7 Mo de blob statique de Plotly.
 
 ### Pipelines CI à grande échelle
+
 1 000 graphiques en 6 ms. Pas 37 secondes. Pas 60 secondes.
 
-### Applications hors ligne
-Pas de CDN. Pas de framework JS. Pas d'internet au rendu. Fonctionne en environnement isolé.
+### Applications hors-ligne
+
+Pas de CDN. Pas de framework JS. Pas d'internet au moment du rendu. Fonctionne en environnement isolé.
 
 ### APIs qui retournent des graphiques
+
 Retournez du HTML directement depuis un endpoint FastAPI. 21 Ko dans le corps de la réponse, pas de fichiers temporaires.
 
 ---
 
 ## Même graphique — trois bibliothèques
 
-|               | SeraPlot  | Plotly | Matplotlib |
-| ------------- | :-------: | :----: | :--------: |
-| Lignes de code | **2**    |    4   |      7     |
-| Sortie         | HTML      |  HTML  |     PNG    |
-| Taille fichier | **21 Ko** | 4,7 Mo |   ~150 Ko  |
-| Interactif     | ✅        |   ✅   |      ❌     |
-| Dépendances    | **0**     |   6+   |     3+     |
-| Migration 1 ligne | ✅     |   —    |      —     |
+<div class="sp-tabs" id="g1fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('g1fr','g1fra',this)">SeraPlot — 2 lignes</button>
+<button class="sp-tb" onclick="spTab('g1fr','g1frb',this)">Plotly — 4 lignes</button>
+<button class="sp-tb" onclick="spTab('g1fr','g1frc',this)">Matplotlib — 7 lignes</button>
+</div>
+<div id="g1fra" class="sp-tc sp-on"><pre><code class="language-python">import seraplot as sp
+sp.bar("Chiffre d'affaires par produit", labels, values).save("chart.html")</code></pre></div>
+<div id="g1frb" class="sp-tc"><pre><code class="language-python">import plotly.express as px
+fig = px.bar(x=labels, y=values, title="Chiffre d'affaires par produit")
+fig.update_layout(template="plotly_white")
+fig.write_html("chart.html")</code></pre></div>
+<div id="g1frc" class="sp-tc"><pre><code class="language-python">import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(9, 5))
+ax.bar(labels, values, color="#6366f1")
+ax.set_title("Chiffre d'affaires par produit")
+ax.set_ylabel("Chiffre d'affaires")
+plt.tight_layout()
+plt.savefig("chart.png")</code></pre></div>
+</div>
+
+|                    |  SeraPlot | Plotly | Matplotlib |
+| ------------------ | :-------: | :----: | :--------: |
+| Lignes de code     |   **2**   |    4   |      7     |
+| Sortie             |    HTML   |  HTML  |     PNG    |
+| Taille fichier     | **21 Ko** | 4,7 Mo |  ~150 Ko   |
+| Interactif         |     ✅    |    ✅  |      ❌    |
+| Dépendances        |   **0**   |   6+   |     3+     |
+| Migration 1 ligne  |    ✅     |    —   |      —     |
 
 ---
 
 ## 1 000 graphiques. Mesurés.
 
 Même code, mêmes données aléatoires, même machine. Sortie HTML complète chronométrée.
+
+<div class="sp-tabs" id="g-bench-fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('g-bench-fr','gb-sp-fr',this)">SeraPlot — 6 ms</button>
+<button class="sp-tb" onclick="spTab('g-bench-fr','gb-pl-fr',this)">Plotly — 37 s</button>
+<button class="sp-tb" onclick="spTab('g-bench-fr','gb-mp-fr',this)">Matplotlib — 60 s</button>
+</div>
+<div id="gb-sp-fr" class="sp-tc sp-on">
+<pre><code class="language-python">import seraplot as sp
+categories = ["Électronique", "Vêtements", "Alimentation", "Livres", "Sport", "Jouets", "Santé", "Auto"]
+data = [...]
+for i in range(1000):
+    sp.bar(f"Rapport #{i+1}", categories, data[i]).html</code></pre>
+<p style="padding:10px 16px;margin:0;color:#6366f1;font-weight:700">1 000 graphiques en 6 ms — 6 µs/graphique</p>
+<iframe src="previews/bench-seraplot.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
+</div>
+<div id="gb-pl-fr" class="sp-tc">
+<pre><code class="language-python">import plotly.graph_objects as go
+categories = ["Électronique", "Vêtements", "Alimentation", "Livres", "Sport", "Jouets", "Santé", "Auto"]
+data = [...]
+for i in range(1000):
+    fig = go.Figure(data=[go.Bar(x=categories, y=data[i])])
+    fig.update_layout(title=f"Rapport #{i+1}", template="plotly_dark")
+    fig.to_html(full_html=True, include_plotlyjs="cdn")</code></pre>
+<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1 000 graphiques en 37 023 ms — 6 170× plus lent</p>
+<iframe src="previews/bench-plotly.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
+</div>
+<div id="gb-mp-fr" class="sp-tc">
+<pre><code class="language-python">import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+categories = ["Électronique", "Vêtements", "Alimentation", "Livres", "Sport", "Jouets", "Santé", "Auto"]
+data = [...]
+for i in range(1000):
+    fig, ax = plt.subplots(figsize=(9, 5))
+    ax.bar(categories, data[i])
+    ax.set_title(f"Rapport #{i+1}")
+    fig.savefig(f"chart_{i}.png")
+    plt.close()</code></pre>
+<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1 000 graphiques en 60 352 ms — 10 058× plus lent</p>
+<iframe src="previews/bench-matplotlib.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
+</div>
+</div>
 
 | Échelle | SeraPlot | Plotly | Matplotlib |
 |---------|:--------:|:------:|:----------:|
@@ -582,6 +668,44 @@ Même code, mêmes données aléatoires, même machine. Sortie HTML complète ch
 ## Vitesse du moteur de rendu
 
 **Benchmark : dataset Diabetes (n=768, 40 itérations). Temps de rendu Rust — création de l'objet graphique, pas la sérialisation HTML complète.**
+
+<div style="font-family:monospace;margin:1.2em 0">
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Camembert</span>
+  <div style="background:#6366f1;width:300px;height:16px;border-radius:3px"></div>
+  <b style="color:#6366f1;font-size:.85em">7 956×</b>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Barres</span>
+  <div style="background:#6366f1;width:245px;height:16px;border-radius:3px"></div>
+  <b style="color:#6366f1;font-size:.85em">6 488×</b>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Sucette</span>
+  <div style="background:#6366f1;width:150px;height:16px;border-radius:3px"></div>
+  <b style="color:#6366f1;font-size:.85em">3 983×</b>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Barres groupées</span>
+  <div style="background:#6366f1;width:136px;height:16px;border-radius:3px"></div>
+  <b style="color:#6366f1;font-size:.85em">3 596×</b>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Bougie</span>
+  <div style="background:#6366f1;width:77px;height:16px;border-radius:3px"></div>
+  <b style="color:#6366f1;font-size:.85em">2 038×</b>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Radar</span>
+  <div style="background:#6366f1;width:56px;height:16px;border-radius:3px"></div>
+  <b style="color:#6366f1;font-size:.85em">1 498×</b>
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">KDE</span>
+  <div style="background:#6366f1;width:28px;height:16px;border-radius:3px"></div>
+  <b style="color:#6366f1;font-size:.85em">753×</b>
+</div>
+</div>
 
 | Graphique | SeraPlot | Plotly figure | Plotly → HTML | Matplotlib |
 |-----------|----------|--------------|-------------|------------|
@@ -604,14 +728,43 @@ Toutes les valeurs en µs.
 
 ## Taille des fichiers de sortie
 
-Plotly embarque tout son bundle JavaScript dans chaque fichier HTML. SeraPlot n'inclut que le JS nécessaire au type de graphique spécifique.
+Plotly embarque tout son bundle JavaScript dans chaque fichier HTML.
+SeraPlot n'inclut que le JS nécessaire au type de graphique spécifique.
 
-| Graphique | SeraPlot | Plotly | Ratio |
-|-----------|:--------:|:------:|:-----:|
-| Camembert | 19 Ko | 4 733 Ko | **246×** |
-| Barres | 21 Ko | 4 733 Ko | **225×** |
-| Nuage de points | 39 Ko | 4 740 Ko | **121×** |
-| Radar | 23 Ko | 4 733 Ko | **205×** |
+<div style="font-family:monospace;margin:1.2em 0">
+<div style="display:flex;align-items:center;gap:8px;margin:6px 0">
+  <span style="min-width:90px;font-size:.85em">Camembert</span>
+  <div style="display:flex;gap:3px;align-items:center">
+    <div style="background:#6366f1;width:5px;height:16px;border-radius:2px"></div>
+    <div style="background:#ef4444;width:300px;height:16px;border-radius:2px"></div>
+  </div>
+  <span style="font-size:.8em;color:#94a3b8">19 Ko vs 4 733 Ko — <b style="color:#ef4444">246×</b></span>
+</div>
+<div style="display:flex;align-items:center;gap:8px;margin:6px 0">
+  <span style="min-width:90px;font-size:.85em">Barres</span>
+  <div style="display:flex;gap:3px;align-items:center">
+    <div style="background:#6366f1;width:5px;height:16px;border-radius:2px"></div>
+    <div style="background:#ef4444;width:274px;height:16px;border-radius:2px"></div>
+  </div>
+  <span style="font-size:.8em;color:#94a3b8">21 Ko vs 4 733 Ko — <b style="color:#ef4444">225×</b></span>
+</div>
+<div style="display:flex;align-items:center;gap:8px;margin:6px 0">
+  <span style="min-width:90px;font-size:.85em">Nuage de points</span>
+  <div style="display:flex;gap:3px;align-items:center">
+    <div style="background:#6366f1;width:5px;height:16px;border-radius:2px"></div>
+    <div style="background:#ef4444;width:148px;height:16px;border-radius:2px"></div>
+  </div>
+  <span style="font-size:.8em;color:#94a3b8">39 Ko vs 4 740 Ko — <b style="color:#ef4444">121×</b></span>
+</div>
+<div style="display:flex;align-items:center;gap:8px;margin:6px 0">
+  <span style="min-width:90px;font-size:.85em">Radar</span>
+  <div style="display:flex;gap:3px;align-items:center">
+    <div style="background:#6366f1;width:5px;height:16px;border-radius:2px"></div>
+    <div style="background:#ef4444;width:250px;height:16px;border-radius:2px"></div>
+  </div>
+  <span style="font-size:.8em;color:#94a3b8">23 Ko vs 4 733 Ko — <b style="color:#ef4444">205×</b></span>
+</div>
+</div>
 
 Matplotlib produit du PNG/SVG/PDF (50–500 Ko) — pas du HTML interactif.
 
@@ -619,92 +772,23 @@ Matplotlib produit du PNG/SVG/PDF (50–500 Ko) — pas du HTML interactif.
 
 ## Ce qu'est réellement SeraPlot
 
-SeraPlot n'est pas un wrapper autour de Plotly, Chart.js, ou D3.
+SeraPlot n'est pas un wrapper autour de Plotly, Chart.js ou D3.
 
-C'est un **moteur de rendu natif Rust** qui génère du HTML + JS minimal par graphique. Un camembert reçoit le JS camembert. Un graphique en barres reçoit le JS barres. Rien d'autre n'est inclus.
+C'est un **moteur de rendu natif Rust** qui génère du HTML + JS minimal par graphique.
+Un camembert reçoit le JS du camembert. Un graphique en barres reçoit le JS des barres. Rien d'autre n'est embarqué.
 
-C'est pourquoi la sortie fait 20 Ko au lieu de 4,7 Mo.
+C'est pour ça que la sortie fait 20 Ko au lieu de 4,7 Mo.
 
 ---
 
-## Configuration globale
-
-Définir une fois, tous les graphiques héritent :
+## Migration en une ligne
 
 ```python
-sp.config(
-    font="Inter",
-    font_size=14,
-    title_size=22,
-    crosshair=True,
-    zoom=True,
-    animation=True,
-    export_button=True,
-    responsive=True,
-    border_radius=12,
-    margin=16,
-    opacity=0.85,
-    background="#0f172a",
-    palette=[0x818CF8, 0xFB7185, 0x34D399],
-    gridlines=True,
-)
-
-sp.bar("Revenus", labels, values)   # hérite de tout
-sp.line("Tendance", dates, values)  # même config
-sp.scatter("Clusters", x, y)        # même config
+import seraplot.matplotlib as plt
 ```
 
-Surcharge par graphique avec chaînage de méthodes :
-
-```python
-sp.bar("Revenus", labels, values).font("Roboto").zoom(False)
-```
-
-Réinitialiser tout :
-
-```python
-sp.reset_config()
-```
-
-| Paramètre | Type | Effet |
-|-----------|------|-------|
-| `font` | str | Police pour tout le texte |
-| `font_size` | int | Taille de base (px) |
-| `title_size` | int | Taille du titre (px) |
-| `crosshair` | bool | Réticule au survol |
-| `zoom` | bool | Zoom molette + panoramique |
-| `animation` | bool | Animation d'apparition |
-| `animation_duration` | int | Durée d'animation (ms) |
-| `export_button` | bool | Bouton de téléchargement |
-| `responsive` | bool | Redimensionnement automatique |
-| `border_radius` | int | Rayon des coins du conteneur (px) |
-| `margin` | int | Marges internes (px) |
-| `opacity` | float | Opacité des éléments (0,0–1,0) |
-| `background` | str | Couleur de fond |
-| `palette` | list[int] | Palette de couleurs (entiers hex) |
-| `gridlines` | bool | Afficher les lignes de grille |
-| `locale` | str | Locale pour le formatage des nombres |
-| `thousands_sep` | str | Séparateur des milliers |
-| `tooltip` | str | Mode infobulle |
-
-### Méthodes de chaînage (par graphique)
-
-| Méthode | Effet |
-|---------|-------|
-| `.font("Inter")` | Surcharger la police |
-| `.title_size(22)` | Surcharger la taille du titre |
-| `.set_font_size(14)` | Surcharger la taille du texte |
-| `.crosshair()` | Activer le réticule |
-| `.zoom()` | Activer le zoom + panoramique |
-| `.animate(300)` | Activer l'animation (ms) |
-| `.export_button()` | Ajouter un bouton de téléchargement |
-| `.responsive()` | Redimensionnement automatique |
-| `.border_radius(12)` | Définir le rayon des coins |
-| `.set_opacity(0.85)` | Définir l'opacité des éléments |
-| `.set_margin(16)` | Définir les marges internes |
-| `.set_bg("#0f172a")` | Définir la couleur de fond |
-| `.inject_css("...")` | Injecter du CSS personnalisé |
-| `.inject_js("...")` | Injecter du JS personnalisé |
+Tout le reste reste identique.
+`plt.bar()`, `plt.scatter()`, `plt.hist()`, `plt.show()`, `plt.savefig()` — inchangés.
 
 ---
 
@@ -724,7 +808,144 @@ sp.reset_theme()
 
 ---
 
-## Machine Learning natif
+## Déployer depuis une API
+
+<div class="sp-tabs" id="g2fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('g2fr','g2fra',this)">SeraPlot — 7 lignes</button>
+<button class="sp-tb" onclick="spTab('g2fr','g2frb',this)">Plotly — 10 lignes</button>
+<button class="sp-tb" onclick="spTab('g2fr','g2frc',this)">Matplotlib — 14 lignes</button>
+</div>
+<div id="g2fra" class="sp-tc sp-on"><pre><code class="language-python">from fastapi import FastAPI
+import seraplot as sp
+app = FastAPI()
+@app.get("/chart")
+def revenue_chart():
+    return sp.bar("Chiffre d'affaires", labels, values).html</code></pre></div>
+<div id="g2frb" class="sp-tc"><pre><code class="language-python">from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+import plotly.express as px
+app = FastAPI()
+@app.get("/chart", response_class=HTMLResponse)
+def revenue_chart():
+    fig = px.bar(x=labels, y=values, title="Chiffre d'affaires")
+    return fig.to_html(full_html=True)</code></pre></div>
+<div id="g2frc" class="sp-tc"><pre><code class="language-python">from fastapi import FastAPI
+from fastapi.responses import FileResponse
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import tempfile
+app = FastAPI()
+@app.get("/chart")
+def revenue_chart():
+    fig, ax = plt.subplots(figsize=(9, 5))
+    ax.bar(labels, values)
+    ax.set_title("Chiffre d'affaires")
+    path = tempfile.mktemp(suffix=".png")
+    plt.savefig(path)
+    plt.close()
+    return FileResponse(path, media_type="image/png")</code></pre></div>
+</div>
+
+Plotly retourne 4,7 Mo par requête. Matplotlib nécessite des I/O disque et retourne un PNG statique.
+SeraPlot retourne 21 Ko de HTML interactif directement depuis la RAM.
+
+---
+
+## Quand vous n'en avez peut-être pas besoin
+
+- scripts ponctuels rapides où le temps de rendu n'a pas d'importance
+- personnalisation JS lourde (écosystème plotly.js)
+- votre équipe ne lit que des rapports PNG statiques
+
+SeraPlot est conçu pour le débit en production.
+Si vous avez juste besoin de 3 graphiques dans un notebook, matplotlib fait très bien l'affaire.
+
+---
+
+## Configuration globale
+
+Définie une seule fois, chaque graphique en hérite :
+
+```python
+sp.config(
+    font="Inter",
+    font_size=14,
+    title_size=22,
+    crosshair=True,
+    zoom=True,
+    animation=True,
+    export_button=True,
+    responsive=True,
+    border_radius=12,
+    margin=16,
+    opacity=0.85,
+    background="#0f172a",
+    palette=[0x818CF8, 0xFB7185, 0x34D399],
+    gridlines=True,
+)
+
+sp.bar("Chiffre d'affaires", labels, values)
+sp.line("Tendance", dates, values)
+sp.scatter("Clusters", x, y)
+```
+
+Surcharge par graphique avec le chaînage de méthodes :
+
+```python
+sp.bar("Chiffre d'affaires", labels, values).font("Roboto").zoom(False)
+```
+
+Tout réinitialiser :
+
+```python
+sp.reset_config()
+```
+
+| Paramètre | Type | Effet |
+|-----------|------|-------|
+| `font` | str | Police pour tout le texte |
+| `font_size` | int | Taille de police de base (px) |
+| `title_size` | int | Taille de police du titre (px) |
+| `crosshair` | bool | Réticule au survol |
+| `zoom` | bool | Zoom molette + déplacement |
+| `animation` | bool | Animation d'apparition |
+| `animation_duration` | int | Durée de l'animation (ms) |
+| `export_button` | bool | Bouton de téléchargement |
+| `responsive` | bool | Redimensionnement automatique |
+| `border_radius` | int | Rayon des coins du conteneur (px) |
+| `margin` | int | Marge intérieure (px) |
+| `opacity` | float | Opacité des éléments (0.0–1.0) |
+| `background` | str | Couleur de fond |
+| `palette` | list[int] | Palette de couleurs (entiers hex) |
+| `gridlines` | bool | Afficher la grille |
+| `locale` | str | Locale de formatage des nombres |
+| `thousands_sep` | str | Séparateur des milliers |
+| `tooltip` | str | Mode des infobulles |
+
+### Méthodes chaînables (par graphique)
+
+| Méthode | Effet |
+|---------|-------|
+| `.font("Inter")` | Surcharger la police |
+| `.title_size(22)` | Surcharger la taille du titre |
+| `.set_font_size(14)` | Surcharger la taille de base |
+| `.crosshair()` | Activer le réticule |
+| `.zoom()` | Activer zoom + déplacement |
+| `.animate(300)` | Activer l'animation (ms) |
+| `.export_button()` | Ajouter un bouton de téléchargement |
+| `.responsive()` | Redimensionnement automatique |
+| `.border_radius(12)` | Définir le rayon des coins |
+| `.set_opacity(0.85)` | Définir l'opacité |
+| `.set_margin(16)` | Définir la marge |
+| `.set_bg("#0f172a")` | Définir la couleur de fond |
+| `.inject_css("...")` | Injecter du CSS personnalisé |
+| `.inject_js("...")` | Injecter du JS personnalisé |
+
+---
+
+## Machine learning natif
 
 DBSCAN natif Rust avec indexation spatiale KD-tree :
 
@@ -737,41 +958,16 @@ DBSCAN natif Rust avec indexation spatiale KD-tree :
 
 ---
 
-## Déployer depuis une API
-
-```python
-from fastapi import FastAPI
-import seraplot as sp
-app = FastAPI()
-
-@app.get("/chart")
-def revenue_chart():
-    return sp.bar("Revenus", labels, values).html
-```
-
-Plotly retourne 4,7 Mo par requête. Matplotlib nécessite des E/S disque et retourne un PNG statique. SeraPlot retourne 21 Ko de HTML interactif directement depuis la RAM.
-
----
-
-## Migration en une ligne
-
-```python
-import seraplot.matplotlib as plt
-```
-
-Tout le reste reste identique. `plt.bar()`, `plt.scatter()`, `plt.hist()`, `plt.show()`, `plt.savefig()` — inchangés.
-
----
-
-## Tout ce que fait SeraPlot
+## Tout ce que SeraPlot fait
 
 - **57 types de graphiques** — chaque graphique 2D a une variante 3D WebGL
-- **API matplotlib compatible** — `import seraplot.matplotlib as plt`
-- **Pandas & NumPy natifs** — passez des DataFrames directement
+- **API matplotlib drop-in** — `import seraplot.matplotlib as plt`
+- **Pandas & NumPy natifs** — passez les DataFrames directement
 - **7 thèmes intégrés** — dark, light, scientific, apple, notion, minimal, neon
-- **Configuration globale** — `sp.config()` définit police, zoom, réticule, animation pour tous
+- **Configuration globale** — `sp.config()` définit la police, le zoom, le réticule, l'animation pour tous les graphiques
 - **Zéro dépendance** — moteur de rendu Rust pur
-- **200× plus petits** — pas de runtime JS inclus
+- **Fichiers 200× plus petits** — pas de runtime JS embarqué
+- **Multi-langage** — Python, JavaScript/TypeScript (npm), Rust
 - **DBSCAN jusqu'à 600× plus rapide** que scikit-learn
 - **Fonctionne partout** — Python ≥ 3.8, tout OS
 
@@ -781,9 +977,9 @@ Tout le reste reste identique. `plt.bar()`, `plt.scatter()`, `plt.hist()`, `plt.
 
 - **[Installation](getting-started/installation.md)** — `pip install seraplot`
 - **[Démarrage rapide](getting-started/quickstart.md)** — premier graphique en 3 lignes
-- **[Méthodes du graphique](getting-started/chart-methods.md)** — toutes les méthodes universelles
+- **[Méthodes des graphiques](getting-started/chart-methods.md)** — toutes les méthodes universelles Chart
 - **[Graphiques 2D](charts/2d/bar.md)** — 33 types
-- **[Graphiques 3D](charts/3d/scatter3d.md)** — 17 types, rendu WebGL GPU
+- **[Graphiques 3D](charts/3d/scatter3d.md)** — 17 types, rendu GPU WebGL
 - **[Machine Learning](ml/dbscan.md)** — DBSCAN jusqu'à 600× plus rapide que scikit-learn
 - **[Référence API](api/index.md)** — index complet des fonctions
 

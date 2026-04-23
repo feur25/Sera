@@ -224,25 +224,62 @@ Utilisez `color_values` pour une échelle de couleur continue, ou `color_labels`
 
 ---
 
+## Performance
+
+Le moteur de rendu utilise un seul appel `gl.drawArrays(POINTS, …)` par frame.
+Testé avec 10 millions de points à 60 fps sur un GPU milieu de gamme.
+
+---
+
 ## Exemples
 
-```python
-import seraplot as sp
-import random
+### Nuage 3D avec couleurs catégorielles
 
+<div class="sp-tabs" id="scatter3d-fr">
+<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('scatter3d-fr','scatter3d-fr-py',this)">Python</button><button class="sp-tb" onclick="spTab('scatter3d-fr','scatter3d-fr-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('scatter3d-fr','scatter3d-fr-ts',this)">TypeScript</button></div>
+<div id="scatter3d-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+import random
 n = 1000
 x = [random.gauss(0, 1) for _ in range(n)]
 y = [random.gauss(0, 1) for _ in range(n)]
 z = [random.gauss(0, 1) for _ in range(n)]
 groupes = [random.choice(["A", "B", "C"]) for _ in range(n)]
-
 chart = sp.build_scatter3d_chart(
-    "Nuage de points 3D",
+    "Nuage 3D",
     x_values=x, y_values=y, z_values=z,
     color_labels=groupes,
     x_label="X", y_label="Y", z_label="Z",
-)
-```
+)</code></pre></div>
+<div id="scatter3d-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
+const n = 1000;
+const x = Array.from({length: n}, () => Math.random() * 6 - 3);
+const y = Array.from({length: n}, () => Math.random() * 6 - 3);
+const z = Array.from({length: n}, () => Math.random() * 6 - 3);
+const groupes = Array.from({length: n}, () => ["A","B","C"][Math.floor(Math.random()*3)]);
+const chart = sp.build_scatter3d_chart("Nuage 3D", x, y, {
+    z_values: z,
+    color_labels: groupes,
+    x_label: "X", y_label: "Y", z_label: "Z"
+});</code></pre></div>
+<div id="scatter3d-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
+const n: number = 1000;
+const x: number[] = Array.from({length: n}, () => Math.random() * 6 - 3);
+const y: number[] = Array.from({length: n}, () => Math.random() * 6 - 3);
+const z: number[] = Array.from({length: n}, () => Math.random() * 6 - 3);
+const groupes: string[] = Array.from({length: n}, () => ["A","B","C"][Math.floor(Math.random()*3)]);
+const chart = sp.build_scatter3d_chart("Nuage 3D", x, y, {
+    z_values: z,
+    color_labels: groupes,
+    x_label: "X", y_label: "Y", z_label: "Z"
+});</code></pre></div>
+</div>
+
+<details open>
+<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Aperçu en direct</summary>
+
+<iframe src="../../previews/scatter3d.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+
+</details>
 
 ---
 

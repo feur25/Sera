@@ -403,7 +403,9 @@ chart.export_svg("chart.svg")
 
 <div class="lang-fr">
 
-Ces méthodes sont disponibles sur tout objet `Chart` retourné par n'importe quelle fonction SeraPlot. Elles retournent toutes un nouveau `Chart` — elles peuvent donc être chaînées librement.
+Ces méthodes sont disponibles sur chaque objet `Chart` retourné par n'importe quelle
+fonction SeraPlot. Elles retournent toutes un nouveau `Chart` — elles peuvent donc être
+chaînées librement.
 
 ---
 
@@ -411,93 +413,372 @@ Ces méthodes sont disponibles sur tout objet `Chart` retourné par n'importe qu
 
 ### `sp.config(**kwargs)`
 
-Définir une fois, **tous les graphiques** créés ensuite héritent automatiquement de la configuration.
+Définie une fois, **chaque graphique** créé ensuite hérite automatiquement de la configuration. Aucune surcharge par graphique nécessaire.
 
 | Paramètre | Type | Effet |
 |-----------|------|-------|
-| `font` | str | Police pour tout le texte |
-| `font_size` | int | Taille de base en px |
-| `title_size` | int | Taille du titre en px |
-| `crosshair` | bool | Réticule qui suit la souris |
-| `zoom` | bool | Zoom molette + panoramique |
-| `animation` | bool | Animation d'apparition |
-| `export_button` | bool | Bouton de téléchargement |
-| `responsive` | bool | Redimensionnement automatique |
-| `border_radius` | int | Rayon des coins (px) |
-| `background` | str | Couleur de fond |
+| `font` | str | Police pour tout le texte (ex. `"Inter"`, `"Roboto"`) |
+| `font_size` | int | Taille de police de base en px |
+| `title_size` | int | Taille de police du titre en px |
+| `crosshair` | bool | Réticule qui suit la souris au survol |
+| `zoom` | bool | Zoom molette + déplacement (double-clic réinitialise) |
+| `animation` | bool | Animation d'apparition sur les éléments |
+| `animation_duration` | int | Durée (ms), défaut 300 |
+| `export_button` | bool | Bouton de téléchargement sur chaque graphique |
+| `responsive` | bool | Redimensionnement automatique à la largeur du conteneur |
+| `border_radius` | int | Rayon des coins du conteneur (px) |
+| `margin` | int | Marge intérieure du conteneur (px) |
+| `opacity` | float | Opacité des éléments `0.0`–`1.0` |
+| `background` | str | Couleur de fond (toute couleur CSS) |
 | `gridlines` | bool | Afficher les lignes de grille |
-| `palette` | list[int] | Palette de couleurs (hex) |
+| `palette` | list[int] | Palette de couleurs en entiers hex (ex. `[0x6366F1, 0xFB7185]`) |
+| `locale` | str | Locale de formatage des nombres |
+| `thousands_sep` | str | Caractère séparateur des milliers |
+| `tooltip` | str | Mode des infobulles |
+
+```python
+import seraplot as sp
+
+sp.config(
+    font="Inter",
+    font_size=14,
+    title_size=22,
+    crosshair=True,
+    zoom=True,
+    animation=True,
+    animation_duration=500,
+    export_button=True,
+    responsive=True,
+    border_radius=12,
+    margin=16,
+    opacity=0.85,
+    background="#0f172a",
+    gridlines=True,
+    palette=[0x818CF8, 0xFB7185, 0x34D399, 0xFBBF24],
+)
+
+chart1 = sp.bar("Chiffre d'affaires", ["T1", "T2", "T3"], [120, 180, 140])
+chart2 = sp.line("Tendance", ["Jan", "Fév", "Mar"], [100, 110, 105])
+chart3 = sp.scatter("Corrélation", [1, 2, 3], [10, 20, 30])
+```
+
+---
 
 ### `sp.reset_config()`
 
-Remet toute la configuration globale aux valeurs par défaut.
+Remet toute la configuration globale aux valeurs par défaut (pas de fond, pas de réticule, pas de zoom, etc.).
+
+```python
+sp.reset_config()
+chart = sp.bar("Propre", labels, values)
+```
 
 ---
 
 ## Surcharge par graphique (chaînage de méthodes)
 
+Surcharger la configuration globale pour des graphiques individuels :
+
 | Méthode | Effet |
 |---------|-------|
-| `.font("Inter")` | Surcharge la police |
-| `.set_font_size(14)` | Surcharge la taille du texte |
-| `.crosshair()` | Activer le réticule |
-| `.zoom()` | Activer le zoom |
+| `.font("Inter")` | Surcharger la police |
+| `.title_size(22)` | Surcharger la taille du titre |
+| `.set_font_size(14)` | Surcharger la taille de base |
+| `.crosshair()` | Activer/ajouter le réticule sur ce graphique |
+| `.zoom()` | Activer/ajouter le zoom sur ce graphique |
 | `.animate(300)` | Ajouter une animation (ms) |
 | `.export_button()` | Ajouter un bouton de téléchargement |
+| `.responsive()` | Rendre responsive |
+| `.border_radius(12)` | Définir le rayon des coins |
+| `.set_opacity(0.85)` | Définir l'opacité des éléments |
+| `.set_margin(16)` | Définir la marge |
 | `.set_bg("#couleur")` | Surcharger le fond |
+
+```python
+import seraplot as sp
+
+sp.config(font="Inter", background="#0f172a", gridlines=True)
+
+chart1 = sp.bar("Défaut", labels, values)
+chart2 = sp.bar("Surcharge", labels, values).font("Roboto").border_radius(20)
+chart3 = sp.line("Propre", dates, values).zoom()
+```
 
 ---
 
 ## Fond et cadre
 
-- **`.set_bg(color)`** — Fond du wrapper HTML
-- **`.set_frame(color)`** — Fond du canevas SVG
-- **`.set_global_background(color)`** — Fond pour tous les graphiques suivants
+### `set_bg(color=None)`
+
+Définit la couleur de fond du wrapper HTML complet.
+
+```python
+chart = sp.build_bar_chart("Ventes", labels, values).set_bg("#0f172a")
+chart = sp.build_scatter_chart("Données", x, y).set_bg("white")
+chart = sp.build_pie_chart("Parts", labels, values).set_bg(None)  # transparent
+```
+
+Accepte toute chaîne de couleur CSS : `"#rrggbb"`, `"rgb(r,g,b)"`, couleurs nommées, ou
+`None`/`"transparent"`.
+
+---
+
+### `set_frame(color=None)`
+
+Définit le fond du canevas SVG indépendamment du wrapper HTML. Utile lors d'une
+intégration dans une page avec son propre fond.
+
+```python
+chart = sp.build_bar_chart("Titre", labels, values).set_frame("transparent")
+```
+
+---
+
+### `set_global_background(color)`
+
+Fonctions au niveau du module qui appliquent un fond à **tous** les graphiques créés
+après l'appel — utile pour les sessions notebook avec un thème cohérent.
+
+<div class="sp-tabs" id="cm-gbg-fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('cm-gbg-fr','cm-gbg-fr-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('cm-gbg-fr','cm-gbg-fr-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('cm-gbg-fr','cm-gbg-fr-ts',this)">TypeScript</button>
+</div>
+<div id="cm-gbg-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">sp.set_global_background("#0f172a")
+chart1 = sp.build_bar_chart(...)
+chart2 = sp.build_scatter_chart(...)
+sp.reset_global_background()</code></pre></div>
+<div id="cm-gbg-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">sp.set_global_background("#0f172a");
+const chart1 = sp.build_bar_chart(...);
+const chart2 = sp.build_scatter_chart(...);
+sp.reset_global_background();</code></pre></div>
+<div id="cm-gbg-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">sp.set_global_background("#0f172a");
+const chart1 = sp.build_bar_chart(...);
+const chart2 = sp.build_scatter_chart(...);
+sp.reset_global_background();</code></pre></div>
+</div>
 
 ---
 
 ## Grille et axes
 
-- **`.show_grid()`** — Forcer les lignes de grille
-- **`.hide_grid()`** — Masquer les lignes de grille
-- **`.no_x_axis()`** — Supprimer l'axe X
-- **`.no_y_axis()`** — Supprimer l'axe Y
-- **`.no_axes()`** — Supprimer les deux axes
+### `show_grid()`
+
+Force l'affichage des lignes de grille indépendamment du paramètre `gridlines` à la création.
+
+```python
+chart = sp.build_histogram("Âges", values).show_grid()
+```
+
+---
+
+### `hide_grid()`
+
+Force la désactivation des lignes de grille indépendamment du paramètre `gridlines` à la création.
+
+```python
+chart = sp.build_line_chart("Tendance", labels, values, gridlines=True).hide_grid()
+```
+
+---
+
+### `no_x_axis()`
+
+Supprime les lignes, ticks et étiquettes de l'axe X.
+
+```python
+chart = sp.build_bar_chart("", labels, values).no_x_axis()
+```
+
+---
+
+### `no_y_axis()`
+
+Supprime les lignes, ticks et étiquettes de l'axe Y.
+
+```python
+chart = sp.build_bar_chart("", labels, values).no_y_axis()
+```
+
+---
+
+### `no_axes()`
+
+Supprime les deux axes en une seule fois.
+
+```python
+chart = sp.build_scatter_chart("", x, y).no_axes()
+```
 
 ---
 
 ## Étiquettes et texte
 
-- **`.show_labels(position, labels, colors)`** — Afficher une étiquette sur chaque élément
-- **`.no_title()`** — Supprimer le titre
-- **`.no_legend()`** — Supprimer la légende
-- **`.set_font_size(px)`** — Taille du texte
+### `show_labels(position="bottom", labels=None, colors=None)`
+
+Affiche une étiquette texte sur chaque élément du graphique. `position` peut être
+`"top"`, `"bottom"`, `"left"` ou `"right"`.
+
+```python
+chart = sp.build_bar_chart("Chiffre d'affaires", labels, values).show_labels(position="top")
+
+chart = sp.build_bar_chart("Chiffre d'affaires", labels, values).show_labels(
+    position="top",
+    labels=["142 k€", "98 k€", "210 k€"],
+    colors=["#22c55e", "#ef4444", "#22c55e"],
+)
+```
 
 ---
 
-## Taille
+### `no_title()`
 
-- **`.scale(factor)`** — Mettre à l'échelle tout le graphique
+Supprime le titre du rendu.
+
+```python
+chart = sp.build_pie_chart("Étiquette interne", labels, values).no_title()
+```
+
+---
+
+### `no_legend()`
+
+Supprime la légende du rendu.
+
+```python
+chart = sp.build_grouped_bar("T1", cats, series).no_legend()
+```
+
+---
+
+### `set_font_size(px)`
+
+Surcharge toutes les tailles de texte du SVG avec une seule valeur en pixels.
+
+```python
+chart = sp.build_radar_chart("Compétences", labels, values).set_font_size(11)
+```
+
+---
+
+## Taille et échelle
+
+### `scale(factor)`
+
+Met à l'échelle tout le graphique (SVG et canevas). Utile pour produire des miniatures
+ou des variantes haute définition.
+
+```python
+small = sp.build_bar_chart("Ventes", labels, values).scale(0.5)
+large = sp.build_bar_chart("Ventes", labels, values).scale(2.0)
+```
 
 ---
 
 ## Survol
 
-- **`.no_hover()`** — Désactiver les infobulles
+### `no_hover()`
+
+Désactive le moteur d'infobulles. Tous les événements pointeur `data-idx` sont retirés.
+Utile pour des intégrations statiques sans interaction au survol.
+
+```python
+chart = sp.build_scatter_chart("Distribution", x, y).no_hover()
+```
 
 ---
 
-## Injection CSS / JS
+## Injection CSS et JavaScript
 
-- **`.inject_css(css)`** — Injecter un bloc `<style>` dans le `<head>`
-- **`.inject_js(js)`** — Injecter un bloc `<script>` avant `</body>`
+### `inject_css(css)`
+
+Injecte un bloc `<style>` dans le `<head>` du HTML. Donne un accès complet au DOM SVG
+— surcharger n'importe quelle classe interne, changer les couleurs, animations, polices.
+
+Classes CSS internes de SeraPlot :
+
+| Classe | Cible |
+|--------|-------|
+| `svg text` | Tout le texte du graphique |
+| `.sp-gl` | Lignes de grille |
+| `.sp-ax-x`, `.sp-ax-y` | Lignes des axes |
+| `.sp-xt`, `.sp-yt` | Étiquettes des ticks |
+| `.sp-xl`, `.sp-yl` | Titres des axes |
+| `g[data-legend]` | Groupe légende |
+| `.sp-ttl` | Titre du graphique |
+| `[data-idx]` | Éléments interactifs (cibles de survol) |
+| `rect.sp-bg` | Rectangle de fond du SVG |
+
+```python
+chart = sp.build_bar_chart("Thème sombre", labels, values).inject_css("""
+    rect.sp-bg  { fill: #0f172a !important; }
+    svg text    { fill: #e2e8f0 !important; }
+    .sp-gl      { stroke: #1e293b !important; }
+    [data-idx]  { opacity: 0.85; }
+    [data-idx]:hover { filter: brightness(1.3); }
+""")
+```
+
+---
+
+### `inject_js(js)`
+
+Injecte un bloc `<script>` avant `</body>`. Tout le DOM SVG rendu est accessible.
+Utilisez-le pour ajouter des écouteurs d'événements, animations ou intégrations tierces.
+
+```python
+chart = sp.build_bar_chart("Ventes", labels, values).inject_js("""
+    document.querySelectorAll('[data-idx]').forEach((el, i) => {
+        setTimeout(() => el.style.opacity = '1', i * 50);
+    });
+""")
+
+chart = sp.build_scatter_chart("Données", x, y).inject_js("""
+    const btn = document.createElement('button');
+    btn.textContent = 'Télécharger SVG';
+    btn.onclick = () => {
+        const svg  = document.querySelector('svg').outerHTML;
+        const a    = document.createElement('a');
+        a.href     = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        a.download = 'chart.svg';
+        a.click();
+    };
+    document.body.appendChild(btn);
+""")
+```
 
 ---
 
 ## Export
 
-- **`.save(path)`** — Écrire le HTML dans un fichier
-- **`.to_svg()`** — Extraire la chaîne SVG brute
-- **`.export_svg(path)`** — Écrire uniquement le SVG dans un fichier
+### `save(path)`
+
+Écrit le HTML dans un fichier.
+
+```python
+chart = sp.build_pie_chart("Parts", labels, values)
+chart.save("rapport/pie.html")
+```
+
+---
+
+### `to_svg()`
+
+Extrait la chaîne SVG brute du HTML.
+
+```python
+svg_string = chart.to_svg()
+```
+
+---
+
+### `export_svg(path)`
+
+Écrit uniquement le SVG dans un fichier (sans le wrapper HTML).
+
+```python
+chart.export_svg("chart.svg")
+```
 
 </div>

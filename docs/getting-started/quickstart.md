@@ -1,5 +1,5 @@
-
-# Démarrage rapide
+﻿
+# DÃ©marrage rapide
 
 <div class="lang-en">
 
@@ -209,7 +209,6 @@ const chart = sp.build_scatter3d_chart("3D Scatter", x, {
     z_label: "Z",
 });</code></pre></div>
 </div>
-```
 
 </div>
 
@@ -217,14 +216,27 @@ const chart = sp.build_scatter3d_chart("3D Scatter", x, {
 
 ## Votre premier graphique
 
-```python
-import seraplot as sp
+<div class="sp-tabs" id="qs-bar-fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('qs-bar-fr','qs-bar-fr-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('qs-bar-fr','qs-bar-fr-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('qs-bar-fr','qs-bar-fr-ts',this)">TypeScript</button>
+</div>
+<div id="qs-bar-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.build_bar_chart(
     "Ventes par région",
     labels=["Nord", "Sud", "Est", "Ouest"],
     values=[120.0, 85.0, 200.0, 140.0],
-)
-```
+)</code></pre></div>
+<div id="qs-bar-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
+const chart = sp.build_bar_chart("Ventes par région", ["Nord", "Sud", "Est", "Ouest"], {
+    values: [120.0, 85.0, 200.0, 140.0],
+});</code></pre></div>
+<div id="qs-bar-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
+const chart = sp.build_bar_chart("Ventes par région", ["Nord", "Sud", "Est", "Ouest"], {
+    values: [120.0, 85.0, 200.0, 140.0],
+});</code></pre></div>
+</div>
 
 > Dans Jupyter, le graphique s'affiche automatiquement.
 
@@ -232,10 +244,19 @@ chart = sp.build_bar_chart(
 
 ## Enregistrer en HTML
 
-```python
-with open("graphique.html", "w", encoding="utf-8") as f:
-    f.write(chart.html)
-```
+<div class="sp-tabs" id="qs-save-fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('qs-save-fr','qs-save-fr-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('qs-save-fr','qs-save-fr-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('qs-save-fr','qs-save-fr-ts',this)">TypeScript</button>
+</div>
+<div id="qs-save-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">with open("graphique.html", "w", encoding="utf-8") as f:
+    f.write(chart.html)</code></pre></div>
+<div id="qs-save-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const fs = require('fs');
+fs.writeFileSync("graphique.html", chart.html);</code></pre></div>
+<div id="qs-save-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as fs from 'fs';
+fs.writeFileSync("graphique.html", chart.html);</code></pre></div>
+</div>
 
 ---
 
@@ -243,36 +264,51 @@ with open("graphique.html", "w", encoding="utf-8") as f:
 
 ### Nuage de points avec groupes colorés
 
-```python
-import numpy as np
+<div class="sp-tabs" id="qs-scatter-fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('qs-scatter-fr','qs-scatter-fr-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('qs-scatter-fr','qs-scatter-fr-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('qs-scatter-fr','qs-scatter-fr-ts',this)">TypeScript</button>
+</div>
+<div id="qs-scatter-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import numpy as np
 x = np.random.randn(500).tolist()
 y = np.random.randn(500).tolist()
 groupes = (["A"] * 250) + (["B"] * 250)
-chart = sp.build_scatter_chart("Deux clusters", x_values=x, y_values=y, color_groups=groupes)
-```
+chart = sp.build_scatter_chart(
+    "Deux clusters",
+    x_values=x,
+    y_values=y,
+    color_groups=groupes,
+)</code></pre></div>
+<div id="qs-scatter-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
+const x = Array.from({ length: 500 }, () => (Math.random() * 6) - 3);
+const y = Array.from({ length: 500 }, () => (Math.random() * 6) - 3);
+const groups = [...Array(250).fill("A"), ...Array(250).fill("B")];
+const chart = sp.build_scatter_chart("Deux clusters", x, {
+    y_values: y,
+    color_groups: groups,
+});</code></pre></div>
+<div id="qs-scatter-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
+const x: number[] = Array.from({ length: 500 }, () => (Math.random() * 6) - 3);
+const y: number[] = Array.from({ length: 500 }, () => (Math.random() * 6) - 3);
+const groups: string[] = [...Array(250).fill("A"), ...Array(250).fill("B")];
+const chart = sp.build_scatter_chart("Deux clusters", x, {
+    y_values: y,
+    color_groups: groups,
+});</code></pre></div>
+</div>
 
-### Fond sombre global pour tous les graphiques
-
-```python
-sp.set_global_background("#0f172a")
-chart1 = sp.build_bar_chart("Graphique 1", labels=["A", "B"], values=[10.0, 20.0])
-sp.reset_global_background()
-```
-
-### Nuage de points 3D
-
-```python
-import numpy as np
-x = np.random.randn(1000).tolist()
-y = np.random.randn(1000).tolist()
-z = np.random.randn(1000).tolist()
-chart = sp.build_scatter3d_chart("Nuage 3D", x_values=x, y_values=y, z_values=z)
-```
+---
 
 ### Clustering DBSCAN en un appel
 
-```python
-import numpy as np
+<div class="sp-tabs" id="qs-dbscan-fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('qs-dbscan-fr','qs-dbscan-fr-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('qs-dbscan-fr','qs-dbscan-fr-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('qs-dbscan-fr','qs-dbscan-fr-ts',this)">TypeScript</button>
+</div>
+<div id="qs-dbscan-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import numpy as np
 x = np.random.randn(10_000).tolist()
 y = np.random.randn(10_000).tolist()
 chart = sp.build_dbscan_chart(
@@ -281,8 +317,94 @@ chart = sp.build_dbscan_chart(
     y_values=y,
     eps=0.3,
     min_samples=10,
-)
-```
-
+)</code></pre></div>
+<div id="qs-dbscan-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
+const x = Array.from({ length: 10000 }, () => (Math.random() * 8) - 4);
+const y = Array.from({ length: 10000 }, () => (Math.random() * 8) - 4);
+const chart = sp.build_dbscan_chart("DBSCAN", x, {
+    y_values: y,
+    eps: 0.3,
+    min_samples: 10,
+});</code></pre></div>
+<div id="qs-dbscan-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
+const x: number[] = Array.from({ length: 10000 }, () => (Math.random() * 8) - 4);
+const y: number[] = Array.from({ length: 10000 }, () => (Math.random() * 8) - 4);
+const chart = sp.build_dbscan_chart("DBSCAN", x, {
+    y_values: y,
+    eps: 0.3,
+    min_samples: 10,
+});</code></pre></div>
 </div>
 
+---
+
+### Fond sombre global pour tous les graphiques
+
+<div class="sp-tabs" id="qs-bg-fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('qs-bg-fr','qs-bg-fr-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('qs-bg-fr','qs-bg-fr-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('qs-bg-fr','qs-bg-fr-ts',this)">TypeScript</button>
+</div>
+<div id="qs-bg-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">sp.set_global_background("#0f172a")
+chart1 = sp.build_bar_chart("Graphique 1", labels=["A", "B"], values=[10.0, 20.0])
+chart2 = sp.build_line_chart("Graphique 2", labels=["x1", "x2"], values=[5.0, 15.0])
+sp.reset_global_background()</code></pre></div>
+<div id="qs-bg-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
+sp.set_global_background("#0f172a");
+const chart1 = sp.build_bar_chart("Graphique 1", ["A", "B"], { values: [10.0, 20.0] });
+const chart2 = sp.build_line_chart("Graphique 2", ["x1", "x2"], { values: [5.0, 15.0] });
+sp.reset_global_background();</code></pre></div>
+<div id="qs-bg-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
+sp.set_global_background("#0f172a");
+const chart1 = sp.build_bar_chart("Graphique 1", ["A", "B"], { values: [10.0, 20.0] });
+const chart2 = sp.build_line_chart("Graphique 2", ["x1", "x2"], { values: [5.0, 15.0] });
+sp.reset_global_background();</code></pre></div>
+</div>
+
+---
+
+### Nuage de points 3D
+
+<div class="sp-tabs" id="qs-scatter3d-fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('qs-scatter3d-fr','qs-scatter3d-fr-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('qs-scatter3d-fr','qs-scatter3d-fr-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('qs-scatter3d-fr','qs-scatter3d-fr-ts',this)">TypeScript</button>
+</div>
+<div id="qs-scatter3d-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import numpy as np
+x = np.random.randn(1000).tolist()
+y = np.random.randn(1000).tolist()
+z = np.random.randn(1000).tolist()
+chart = sp.build_scatter3d_chart(
+    "Nuage 3D",
+    x_values=x,
+    y_values=y,
+    z_values=z,
+    x_label="X", y_label="Y", z_label="Z",
+)</code></pre></div>
+<div id="qs-scatter3d-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
+const x = Array.from({ length: 1000 }, () => (Math.random() * 8) - 4);
+const y = Array.from({ length: 1000 }, () => (Math.random() * 8) - 4);
+const z = Array.from({ length: 1000 }, () => (Math.random() * 8) - 4);
+const chart = sp.build_scatter3d_chart("Nuage 3D", x, {
+    y_values: y,
+    z_values: z,
+    x_label: "X",
+    y_label: "Y",
+    z_label: "Z",
+});</code></pre></div>
+<div id="qs-scatter3d-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
+const x: number[] = Array.from({ length: 1000 }, () => (Math.random() * 8) - 4);
+const y: number[] = Array.from({ length: 1000 }, () => (Math.random() * 8) - 4);
+const z: number[] = Array.from({ length: 1000 }, () => (Math.random() * 8) - 4);
+const chart = sp.build_scatter3d_chart("Nuage 3D", x, {
+    y_values: y,
+    z_values: z,
+    x_label: "X",
+    y_label: "Y",
+    z_label: "Z",
+});</code></pre></div>
+</div>
+
+</div>

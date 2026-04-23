@@ -1,0 +1,841 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Chart Methods - SeraPlot Documentation</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="High-performance data visualization — Rust/Python">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="../favicon-8114d1fc.png">
+        <link rel="stylesheet" href="../css/variables-8adf115d.css">
+        <link rel="stylesheet" href="../css/general-2459343d.css">
+        <link rel="stylesheet" href="../css/chrome-ae938929.css">
+        <link rel="stylesheet" href="../css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="../highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="../tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="../ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../docs/theme/custom-2c6d06e4.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "../";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "../searchindex-2299f83c.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="../toc-66263669.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="../toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">SeraPlot Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/feur25/seraplot" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/feur25/seraplot/edit/main/docs/getting-started/chart-methods.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <span class=fa-svg id="git-edit-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M421.7 220.3l-11.3 11.3-22.6 22.6-205 205c-6.6 6.6-14.8 11.5-23.8 14.1L30.8 511c-8.4 2.5-17.5 .2-23.7-6.1S-1.5 489.7 1 481.2L38.7 353.1c2.6-9 7.5-17.2 14.1-23.8l205-205 22.6-22.6 11.3-11.3 33.9 33.9 62.1 62.1 33.9 33.9zM96 353.9l-9.3 9.3c-.9 .9-1.6 2.1-2 3.4l-25.3 86 86-25.3c1.3-.4 2.5-1.1 3.4-2l9.3-9.3H112c-8.8 0-16-7.2-16-16V353.9zM453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-14.5 14.5-22.6 22.6-11.3 11.3-33.9-33.9-62.1-62.1L314.3 67.7l11.3-11.3 22.6-22.6 14.5-14.5c25-25 65.5-25 90.5 0z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <h1 id="chart-methods"><a class="header" href="#chart-methods">Chart Methods</a></h1>
+<div class="lang-en">
+<p>These methods are available on every <code>Chart</code> object returned by any SeraPlot
+function. They all return a new <code>Chart</code>, so they can be chained freely.</p>
+<hr>
+<h2 id="global-config-automatic-inheritance"><a class="header" href="#global-config-automatic-inheritance">Global config (automatic inheritance)</a></h2>
+<h3 id="spconfigkwargs"><a class="header" href="#spconfigkwargs"><code>sp.config(**kwargs)</code></a></h3>
+<p>Set once, <strong>every chart</strong> created after inherits the configuration automatically. No per-chart override needed.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Effect</th></tr>
+</thead>
+<tbody>
+<tr><td><code>font</code></td><td>str</td><td>Font family for all text (e.g., <code>"Inter"</code>, <code>"Roboto"</code>)</td></tr>
+<tr><td><code>font_size</code></td><td>int</td><td>Base font size in px</td></tr>
+<tr><td><code>title_size</code></td><td>int</td><td>Title font size in px</td></tr>
+<tr><td><code>crosshair</code></td><td>bool</td><td>Crosshair lines follow mouse hover</td></tr>
+<tr><td><code>zoom</code></td><td>bool</td><td>Mouse wheel zoom + pan (double-click resets)</td></tr>
+<tr><td><code>animation</code></td><td>bool</td><td>Fade-in animation on chart elements</td></tr>
+<tr><td><code>animation_duration</code></td><td>int</td><td>Duration (ms), default 300</td></tr>
+<tr><td><code>export_button</code></td><td>bool</td><td>Download button on each chart</td></tr>
+<tr><td><code>responsive</code></td><td>bool</td><td>Auto-resize to container width</td></tr>
+<tr><td><code>border_radius</code></td><td>int</td><td>Container border radius (px)</td></tr>
+<tr><td><code>margin</code></td><td>int</td><td>Container padding (px)</td></tr>
+<tr><td><code>opacity</code></td><td>float</td><td>Element opacity <code>0.0</code>–<code>1.0</code></td></tr>
+<tr><td><code>background</code></td><td>str</td><td>Background color (any CSS color)</td></tr>
+<tr><td><code>gridlines</code></td><td>bool</td><td>Show grid lines in chart</td></tr>
+<tr><td><code>palette</code></td><td>list[int]</td><td>Color palette as hex ints (e.g., <code>[0x6366F1, 0xFB7185]</code>)</td></tr>
+<tr><td><code>locale</code></td><td>str</td><td>Number formatting locale</td></tr>
+<tr><td><code>thousands_sep</code></td><td>str</td><td>Thousands separator char</td></tr>
+<tr><td><code>tooltip</code></td><td>str</td><td>Tooltip mode</td></tr>
+</tbody>
+</table>
+</div>
+<pre><code class="language-python">import seraplot as sp
+
+sp.config(
+    font="Inter",
+    font_size=14,
+    title_size=22,
+    crosshair=True,
+    zoom=True,
+    animation=True,
+    animation_duration=500,
+    export_button=True,
+    responsive=True,
+    border_radius=12,
+    margin=16,
+    opacity=0.85,
+    background="#0f172a",
+    gridlines=True,
+    palette=[0x818CF8, 0xFB7185, 0x34D399, 0xFBBF24],
+)
+
+chart1 = sp.bar("Revenue", ["Q1", "Q2", "Q3"], [120, 180, 140])     # inherits ALL config
+chart2 = sp.line("Trend", ["Jan", "Feb", "Mar"], [100, 110, 105])   # same config
+chart3 = sp.scatter("Correlation", [1, 2, 3], [10, 20, 30])         # same config
+</code></pre>
+<hr>
+<h3 id="spreset_config"><a class="header" href="#spreset_config"><code>sp.reset_config()</code></a></h3>
+<p>Reset all global config to defaults (no background, no crosshair, no zoom, etc.).</p>
+<pre><code class="language-python">sp.reset_config()
+chart = sp.bar("Clean", labels, values)  # back to defaults
+</code></pre>
+<hr>
+<h2 id="per-chart-override-method-chaining"><a class="header" href="#per-chart-override-method-chaining">Per-chart override (method chaining)</a></h2>
+<p>Override global config for individual charts:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Method</th><th>Effect</th></tr>
+</thead>
+<tbody>
+<tr><td><code>.font("Inter")</code></td><td>Override font family</td></tr>
+<tr><td><code>.title_size(22)</code></td><td>Override title size</td></tr>
+<tr><td><code>.set_font_size(14)</code></td><td>Override base font size</td></tr>
+<tr><td><code>.crosshair()</code></td><td>Enable/add crosshair on this chart</td></tr>
+<tr><td><code>.zoom()</code></td><td>Enable/add zoom on this chart</td></tr>
+<tr><td><code>.animate(300)</code></td><td>Add animation (ms)</td></tr>
+<tr><td><code>.export_button()</code></td><td>Add download button</td></tr>
+<tr><td><code>.responsive()</code></td><td>Make responsive</td></tr>
+<tr><td><code>.border_radius(12)</code></td><td>Set border radius</td></tr>
+<tr><td><code>.set_opacity(0.85)</code></td><td>Set element opacity</td></tr>
+<tr><td><code>.set_margin(16)</code></td><td>Set padding</td></tr>
+<tr><td><code>.set_bg("#color")</code></td><td>Override background</td></tr>
+</tbody>
+</table>
+</div>
+<pre><code class="language-python">import seraplot as sp
+
+sp.config(font="Inter", background="#0f172a", gridlines=True)
+
+chart1 = sp.bar("Default", labels, values)           # uses config
+chart2 = sp.bar("Override", labels, values).font("Roboto").border_radius(20)  # different font + radius
+chart3 = sp.line("Clean", dates, values).zoom()       # adds zoom on top of config
+</code></pre>
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
+.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
+</script>
+<hr>
+<h2 id="background-and-frame"><a class="header" href="#background-and-frame">Background and frame</a></h2>
+<h3 id="set_bgcolornone"><a class="header" href="#set_bgcolornone"><code>set_bg(color=None)</code></a></h3>
+<p>Sets the background color of the full HTML wrapper.</p>
+<pre><code class="language-python">chart = sp.build_bar_chart("Sales", labels, values).set_bg("#0f172a")
+chart = sp.build_scatter_chart("Data", x, y).set_bg("white")
+chart = sp.build_pie_chart("Share", labels, values).set_bg(None)  # transparent
+</code></pre>
+<p>Accepts any CSS color string: <code>"#rrggbb"</code>, <code>"rgb(r,g,b)"</code>, named colors, or
+<code>None</code>/<code>"transparent"</code>.</p>
+<hr>
+<h3 id="set_framecolornone"><a class="header" href="#set_framecolornone"><code>set_frame(color=None)</code></a></h3>
+<p>Sets the SVG canvas background independently of the HTML wrapper. Useful when
+embedding the chart inside a page with its own background.</p>
+<pre><code class="language-python">chart = sp.build_bar_chart("Title", labels, values).set_frame("transparent")
+</code></pre>
+<hr>
+<h3 id="set_global_backgroundcolor"><a class="header" href="#set_global_backgroundcolor"><code>set_global_background(color)</code></a></h3>
+<p>Module-level functions that apply a background to <strong>all</strong> charts created after
+the call — useful for notebook sessions with a consistent theme.</p>
+<div class="sp-tabs" id="cm-gbg">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab(&#39;cm-gbg&#39;,&#39;cm-gbg-py&#39;,this)">Python</button>
+<button class="sp-tb" onclick="spTab(&#39;cm-gbg&#39;,&#39;cm-gbg-js&#39;,this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab(&#39;cm-gbg&#39;,&#39;cm-gbg-ts&#39;,this)">TypeScript</button>
+</div>
+
+<div id="cm-gbg-py" class="sp-tc sp-on">
+<pre style="margin:0;border-radius:0"><code class="language-python">sp.set_global_background("#0f172a")   # all subsequent charts use this bg
+chart1 = sp.build_bar_chart(...)
+chart2 = sp.build_scatter_chart(...)
+sp.reset_global_background()          # restore per-chart default</code></pre>
+</div>
+
+<div id="cm-gbg-js" class="sp-tc">
+<pre style="margin:0;border-radius:0"><code class="language-javascript">sp.set_global_background("#0f172a");  // all subsequent charts use this bg
+const chart1 = sp.build_bar_chart(...);
+const chart2 = sp.build_scatter_chart(...);
+sp.reset_global_background();         // restore per-chart default</code></pre>
+</div>
+
+<div id="cm-gbg-ts" class="sp-tc">
+<pre style="margin:0;border-radius:0"><code class="language-typescript">sp.set_global_background("#0f172a");  // all subsequent charts use this bg
+const chart1 = sp.build_bar_chart(...);
+const chart2 = sp.build_scatter_chart(...);
+sp.reset_global_background();         // restore per-chart default</code></pre>
+</div>
+
+</div>
+
+<hr>
+<h2 id="grid-and-axes"><a class="header" href="#grid-and-axes">Grid and axes</a></h2>
+<h3 id="show_grid"><a class="header" href="#show_grid"><code>show_grid()</code></a></h3>
+<p>Force gridlines on regardless of the <code>gridlines</code> parameter used at chart creation.</p>
+<pre><code class="language-python">chart = sp.build_histogram("Ages", values).show_grid()
+</code></pre>
+<hr>
+<h3 id="hide_grid"><a class="header" href="#hide_grid"><code>hide_grid()</code></a></h3>
+<p>Force gridlines off regardless of the <code>gridlines</code> parameter used at chart creation.</p>
+<pre><code class="language-python">chart = sp.build_line_chart("Trend", labels, values, gridlines=True).hide_grid()
+</code></pre>
+<hr>
+<h3 id="no_x_axis"><a class="header" href="#no_x_axis"><code>no_x_axis()</code></a></h3>
+<p>Removes the X-axis lines, ticks, and labels.</p>
+<pre><code class="language-python">chart = sp.build_bar_chart("", labels, values).no_x_axis()   # keep Y only
+</code></pre>
+<hr>
+<h3 id="no_y_axis"><a class="header" href="#no_y_axis"><code>no_y_axis()</code></a></h3>
+<p>Removes the Y-axis lines, ticks, and labels.</p>
+<pre><code class="language-python">chart = sp.build_bar_chart("", labels, values).no_y_axis()   # keep X only
+</code></pre>
+<hr>
+<h3 id="no_axes"><a class="header" href="#no_axes"><code>no_axes()</code></a></h3>
+<p>Removes both axes at once.</p>
+<pre><code class="language-python">chart = sp.build_scatter_chart("", x, y).no_axes()           # remove both axes
+</code></pre>
+<hr>
+<h2 id="labels-and-text"><a class="header" href="#labels-and-text">Labels and text</a></h2>
+<h3 id="show_labelspositionbottom-labelsnone-colorsnone"><a class="header" href="#show_labelspositionbottom-labelsnone-colorsnone"><code>show_labels(position="bottom", labels=None, colors=None)</code></a></h3>
+<p>Renders a text label on each chart element. <code>position</code> can be <code>"top"</code>,
+<code>"bottom"</code>, <code>"left"</code>, or <code>"right"</code>.</p>
+<pre><code class="language-python"># Automatic labels derived from the chart data
+chart = sp.build_bar_chart("Revenue", labels, values).show_labels(position="top")
+
+# Custom label text per element
+chart = sp.build_bar_chart("Revenue", labels, values).show_labels(
+    position="top",
+    labels=["$142k", "$98k", "$210k"],
+    colors=["#22c55e", "#ef4444", "#22c55e"],
+)
+</code></pre>
+<hr>
+<h3 id="no_title"><a class="header" href="#no_title"><code>no_title()</code></a></h3>
+<p>Removes the chart title from the rendered output.</p>
+<pre><code class="language-python">chart = sp.build_pie_chart("Internal label", labels, values).no_title()
+</code></pre>
+<hr>
+<h3 id="no_legend"><a class="header" href="#no_legend"><code>no_legend()</code></a></h3>
+<p>Removes the legend from the rendered output.</p>
+<pre><code class="language-python">chart = sp.build_grouped_bar("Q1", cats, series).no_legend()
+</code></pre>
+<hr>
+<h3 id="set_font_sizepx"><a class="header" href="#set_font_sizepx"><code>set_font_size(px)</code></a></h3>
+<p>Override all text sizes in the SVG with a single pixel value.</p>
+<pre><code class="language-python">chart = sp.build_radar_chart("Skills", labels, values).set_font_size(11)
+</code></pre>
+<hr>
+<h2 id="size-and-scale"><a class="header" href="#size-and-scale">Size and scale</a></h2>
+<h3 id="scalefactor"><a class="header" href="#scalefactor"><code>scale(factor)</code></a></h3>
+<p>Scales the entire chart (SVG and canvas). Useful to produce thumbnail or
+high-DPI variants.</p>
+<pre><code class="language-python">small = sp.build_bar_chart("Sales", labels, values).scale(0.5)
+large = sp.build_bar_chart("Sales", labels, values).scale(2.0)
+</code></pre>
+<hr>
+<h2 id="hover"><a class="header" href="#hover">Hover</a></h2>
+<h3 id="no_hover"><a class="header" href="#no_hover"><code>no_hover()</code></a></h3>
+<p>Disables the tooltip engine. All <code>data-idx</code> pointer events are removed. Useful
+for static embeds where hover interaction is unwanted.</p>
+<pre><code class="language-python">chart = sp.build_scatter_chart("Distribution", x, y).no_hover()
+</code></pre>
+<hr>
+<h2 id="css-and-javascript-injection"><a class="header" href="#css-and-javascript-injection">CSS and JavaScript injection</a></h2>
+<h3 id="inject_csscss"><a class="header" href="#inject_csscss"><code>inject_css(css)</code></a></h3>
+<p>Injects a <code>&lt;style&gt;</code> block into the HTML <code>&lt;head&gt;</code>. Gives complete access to the
+SVG DOM — override any internal class, change colors, animations, fonts.</p>
+<p>SeraPlot’s internal CSS classes:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Class</th><th>Target</th></tr>
+</thead>
+<tbody>
+<tr><td><code>svg text</code></td><td>All text in the chart</td></tr>
+<tr><td><code>.sp-gl</code></td><td>Gridlines</td></tr>
+<tr><td><code>.sp-ax-x</code>, <code>.sp-ax-y</code></td><td>Axis lines</td></tr>
+<tr><td><code>.sp-xt</code>, <code>.sp-yt</code></td><td>Axis tick labels</td></tr>
+<tr><td><code>.sp-xl</code>, <code>.sp-yl</code></td><td>Axis title labels</td></tr>
+<tr><td><code>g[data-legend]</code></td><td>Legend group</td></tr>
+<tr><td><code>.sp-ttl</code></td><td>Chart title</td></tr>
+<tr><td><code>[data-idx]</code></td><td>Interactive data elements (hover targets)</td></tr>
+<tr><td><code>rect.sp-bg</code></td><td>SVG background rect</td></tr>
+</tbody>
+</table>
+</div>
+<pre><code class="language-python">chart = sp.build_bar_chart("Dark theme", labels, values).inject_css("""
+    rect.sp-bg  { fill: #0f172a !important; }
+    svg text    { fill: #e2e8f0 !important; }
+    .sp-gl      { stroke: #1e293b !important; }
+    [data-idx]  { opacity: 0.85; }
+    [data-idx]:hover { filter: brightness(1.3); }
+""")
+</code></pre>
+<hr>
+<h3 id="inject_jsjs"><a class="header" href="#inject_jsjs"><code>inject_js(js)</code></a></h3>
+<p>Injects a <code>&lt;script&gt;</code> block before <code>&lt;/body&gt;</code>. The entire rendered SVG DOM is
+accessible. Use it to add event listeners, animations, or third-party integrations.</p>
+<pre><code class="language-python"># Highlight every bar on load
+chart = sp.build_bar_chart("Sales", labels, values).inject_js("""
+    document.querySelectorAll('[data-idx]').forEach((el, i) =&gt; {
+        setTimeout(() =&gt; el.style.opacity = '1', i * 50);
+    });
+""")
+
+# Export SVG on button click
+chart = sp.build_scatter_chart("Data", x, y).inject_js("""
+    const btn = document.createElement('button');
+    btn.textContent = 'Download SVG';
+    btn.onclick = () =&gt; {
+        const svg  = document.querySelector('svg').outerHTML;
+        const a    = document.createElement('a');
+        a.href     = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        a.download = 'chart.svg';
+        a.click();
+    };
+    document.body.appendChild(btn);
+""")
+</code></pre>
+<hr>
+<h2 id="export"><a class="header" href="#export">Export</a></h2>
+<h3 id="savepath"><a class="header" href="#savepath"><code>save(path)</code></a></h3>
+<p>Writes the HTML to a file.</p>
+<pre><code class="language-python">chart = sp.build_pie_chart("Share", labels, values)
+chart.save("report/pie.html")
+</code></pre>
+<hr>
+<h3 id="to_svg"><a class="header" href="#to_svg"><code>to_svg()</code></a></h3>
+<p>Extracts the raw SVG string from the HTML.</p>
+<pre><code class="language-python">svg_string = chart.to_svg()
+</code></pre>
+<hr>
+<h3 id="export_svgpath"><a class="header" href="#export_svgpath"><code>export_svg(path)</code></a></h3>
+<p>Writes only the SVG to a file (no HTML wrapper).</p>
+<pre><code class="language-python">chart.export_svg("chart.svg")
+</code></pre>
+<hr></div>
+
+<div class="lang-fr">
+<p>Ces méthodes sont disponibles sur chaque objet <code>Chart</code> retourné par n’importe quelle
+fonction SeraPlot. Elles retournent toutes un nouveau <code>Chart</code> — elles peuvent donc être
+chaînées librement.</p>
+<hr>
+<h2 id="configuration-globale-héritage-automatique"><a class="header" href="#configuration-globale-héritage-automatique">Configuration globale (héritage automatique)</a></h2>
+<h3 id="spconfigkwargs-1"><a class="header" href="#spconfigkwargs-1"><code>sp.config(**kwargs)</code></a></h3>
+<p>Définie une fois, <strong>chaque graphique</strong> créé ensuite hérite automatiquement de la configuration. Aucune surcharge par graphique nécessaire.</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Paramètre</th><th>Type</th><th>Effet</th></tr>
+</thead>
+<tbody>
+<tr><td><code>font</code></td><td>str</td><td>Police pour tout le texte (ex. <code>"Inter"</code>, <code>"Roboto"</code>)</td></tr>
+<tr><td><code>font_size</code></td><td>int</td><td>Taille de police de base en px</td></tr>
+<tr><td><code>title_size</code></td><td>int</td><td>Taille de police du titre en px</td></tr>
+<tr><td><code>crosshair</code></td><td>bool</td><td>Réticule qui suit la souris au survol</td></tr>
+<tr><td><code>zoom</code></td><td>bool</td><td>Zoom molette + déplacement (double-clic réinitialise)</td></tr>
+<tr><td><code>animation</code></td><td>bool</td><td>Animation d’apparition sur les éléments</td></tr>
+<tr><td><code>animation_duration</code></td><td>int</td><td>Durée (ms), défaut 300</td></tr>
+<tr><td><code>export_button</code></td><td>bool</td><td>Bouton de téléchargement sur chaque graphique</td></tr>
+<tr><td><code>responsive</code></td><td>bool</td><td>Redimensionnement automatique à la largeur du conteneur</td></tr>
+<tr><td><code>border_radius</code></td><td>int</td><td>Rayon des coins du conteneur (px)</td></tr>
+<tr><td><code>margin</code></td><td>int</td><td>Marge intérieure du conteneur (px)</td></tr>
+<tr><td><code>opacity</code></td><td>float</td><td>Opacité des éléments <code>0.0</code>–<code>1.0</code></td></tr>
+<tr><td><code>background</code></td><td>str</td><td>Couleur de fond (toute couleur CSS)</td></tr>
+<tr><td><code>gridlines</code></td><td>bool</td><td>Afficher les lignes de grille</td></tr>
+<tr><td><code>palette</code></td><td>list[int]</td><td>Palette de couleurs en entiers hex (ex. <code>[0x6366F1, 0xFB7185]</code>)</td></tr>
+<tr><td><code>locale</code></td><td>str</td><td>Locale de formatage des nombres</td></tr>
+<tr><td><code>thousands_sep</code></td><td>str</td><td>Caractère séparateur des milliers</td></tr>
+<tr><td><code>tooltip</code></td><td>str</td><td>Mode des infobulles</td></tr>
+</tbody>
+</table>
+</div>
+<pre><code class="language-python">import seraplot as sp
+
+sp.config(
+    font="Inter",
+    font_size=14,
+    title_size=22,
+    crosshair=True,
+    zoom=True,
+    animation=True,
+    animation_duration=500,
+    export_button=True,
+    responsive=True,
+    border_radius=12,
+    margin=16,
+    opacity=0.85,
+    background="#0f172a",
+    gridlines=True,
+    palette=[0x818CF8, 0xFB7185, 0x34D399, 0xFBBF24],
+)
+
+chart1 = sp.bar("Chiffre d'affaires", ["T1", "T2", "T3"], [120, 180, 140])
+chart2 = sp.line("Tendance", ["Jan", "Fév", "Mar"], [100, 110, 105])
+chart3 = sp.scatter("Corrélation", [1, 2, 3], [10, 20, 30])
+</code></pre>
+<hr>
+<h3 id="spreset_config-1"><a class="header" href="#spreset_config-1"><code>sp.reset_config()</code></a></h3>
+<p>Remet toute la configuration globale aux valeurs par défaut (pas de fond, pas de réticule, pas de zoom, etc.).</p>
+<pre><code class="language-python">sp.reset_config()
+chart = sp.bar("Propre", labels, values)
+</code></pre>
+<hr>
+<h2 id="surcharge-par-graphique-chaînage-de-méthodes"><a class="header" href="#surcharge-par-graphique-chaînage-de-méthodes">Surcharge par graphique (chaînage de méthodes)</a></h2>
+<p>Surcharger la configuration globale pour des graphiques individuels :</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Méthode</th><th>Effet</th></tr>
+</thead>
+<tbody>
+<tr><td><code>.font("Inter")</code></td><td>Surcharger la police</td></tr>
+<tr><td><code>.title_size(22)</code></td><td>Surcharger la taille du titre</td></tr>
+<tr><td><code>.set_font_size(14)</code></td><td>Surcharger la taille de base</td></tr>
+<tr><td><code>.crosshair()</code></td><td>Activer/ajouter le réticule sur ce graphique</td></tr>
+<tr><td><code>.zoom()</code></td><td>Activer/ajouter le zoom sur ce graphique</td></tr>
+<tr><td><code>.animate(300)</code></td><td>Ajouter une animation (ms)</td></tr>
+<tr><td><code>.export_button()</code></td><td>Ajouter un bouton de téléchargement</td></tr>
+<tr><td><code>.responsive()</code></td><td>Rendre responsive</td></tr>
+<tr><td><code>.border_radius(12)</code></td><td>Définir le rayon des coins</td></tr>
+<tr><td><code>.set_opacity(0.85)</code></td><td>Définir l’opacité des éléments</td></tr>
+<tr><td><code>.set_margin(16)</code></td><td>Définir la marge</td></tr>
+<tr><td><code>.set_bg("#couleur")</code></td><td>Surcharger le fond</td></tr>
+</tbody>
+</table>
+</div>
+<pre><code class="language-python">import seraplot as sp
+
+sp.config(font="Inter", background="#0f172a", gridlines=True)
+
+chart1 = sp.bar("Défaut", labels, values)
+chart2 = sp.bar("Surcharge", labels, values).font("Roboto").border_radius(20)
+chart3 = sp.line("Propre", dates, values).zoom()
+</code></pre>
+<hr>
+<h2 id="fond-et-cadre"><a class="header" href="#fond-et-cadre">Fond et cadre</a></h2>
+<h3 id="set_bgcolornone-1"><a class="header" href="#set_bgcolornone-1"><code>set_bg(color=None)</code></a></h3>
+<p>Définit la couleur de fond du wrapper HTML complet.</p>
+<pre><code class="language-python">chart = sp.build_bar_chart("Ventes", labels, values).set_bg("#0f172a")
+chart = sp.build_scatter_chart("Données", x, y).set_bg("white")
+chart = sp.build_pie_chart("Parts", labels, values).set_bg(None)  # transparent
+</code></pre>
+<p>Accepte toute chaîne de couleur CSS : <code>"#rrggbb"</code>, <code>"rgb(r,g,b)"</code>, couleurs nommées, ou
+<code>None</code>/<code>"transparent"</code>.</p>
+<hr>
+<h3 id="set_framecolornone-1"><a class="header" href="#set_framecolornone-1"><code>set_frame(color=None)</code></a></h3>
+<p>Définit le fond du canevas SVG indépendamment du wrapper HTML. Utile lors d’une
+intégration dans une page avec son propre fond.</p>
+<pre><code class="language-python">chart = sp.build_bar_chart("Titre", labels, values).set_frame("transparent")
+</code></pre>
+<hr>
+<h3 id="set_global_backgroundcolor-1"><a class="header" href="#set_global_backgroundcolor-1"><code>set_global_background(color)</code></a></h3>
+<p>Fonctions au niveau du module qui appliquent un fond à <strong>tous</strong> les graphiques créés
+après l’appel — utile pour les sessions notebook avec un thème cohérent.</p>
+<div class="sp-tabs" id="cm-gbg-fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab(&#39;cm-gbg-fr&#39;,&#39;cm-gbg-fr-py&#39;,this)">Python</button>
+<button class="sp-tb" onclick="spTab(&#39;cm-gbg-fr&#39;,&#39;cm-gbg-fr-js&#39;,this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab(&#39;cm-gbg-fr&#39;,&#39;cm-gbg-fr-ts&#39;,this)">TypeScript</button>
+</div>
+
+<div id="cm-gbg-fr-py" class="sp-tc sp-on">
+<pre style="margin:0;border-radius:0"><code class="language-python">sp.set_global_background("#0f172a")
+chart1 = sp.build_bar_chart(...)
+chart2 = sp.build_scatter_chart(...)
+sp.reset_global_background()</code></pre>
+</div>
+
+<div id="cm-gbg-fr-js" class="sp-tc">
+<pre style="margin:0;border-radius:0"><code class="language-javascript">sp.set_global_background("#0f172a");
+const chart1 = sp.build_bar_chart(...);
+const chart2 = sp.build_scatter_chart(...);
+sp.reset_global_background();</code></pre>
+</div>
+
+<div id="cm-gbg-fr-ts" class="sp-tc">
+<pre style="margin:0;border-radius:0"><code class="language-typescript">sp.set_global_background("#0f172a");
+const chart1 = sp.build_bar_chart(...);
+const chart2 = sp.build_scatter_chart(...);
+sp.reset_global_background();</code></pre>
+</div>
+
+</div>
+
+<hr>
+<h2 id="grille-et-axes"><a class="header" href="#grille-et-axes">Grille et axes</a></h2>
+<h3 id="show_grid-1"><a class="header" href="#show_grid-1"><code>show_grid()</code></a></h3>
+<p>Force l’affichage des lignes de grille indépendamment du paramètre <code>gridlines</code> à la création.</p>
+<pre><code class="language-python">chart = sp.build_histogram("Âges", values).show_grid()
+</code></pre>
+<hr>
+<h3 id="hide_grid-1"><a class="header" href="#hide_grid-1"><code>hide_grid()</code></a></h3>
+<p>Force la désactivation des lignes de grille indépendamment du paramètre <code>gridlines</code> à la création.</p>
+<pre><code class="language-python">chart = sp.build_line_chart("Tendance", labels, values, gridlines=True).hide_grid()
+</code></pre>
+<hr>
+<h3 id="no_x_axis-1"><a class="header" href="#no_x_axis-1"><code>no_x_axis()</code></a></h3>
+<p>Supprime les lignes, ticks et étiquettes de l’axe X.</p>
+<pre><code class="language-python">chart = sp.build_bar_chart("", labels, values).no_x_axis()
+</code></pre>
+<hr>
+<h3 id="no_y_axis-1"><a class="header" href="#no_y_axis-1"><code>no_y_axis()</code></a></h3>
+<p>Supprime les lignes, ticks et étiquettes de l’axe Y.</p>
+<pre><code class="language-python">chart = sp.build_bar_chart("", labels, values).no_y_axis()
+</code></pre>
+<hr>
+<h3 id="no_axes-1"><a class="header" href="#no_axes-1"><code>no_axes()</code></a></h3>
+<p>Supprime les deux axes en une seule fois.</p>
+<pre><code class="language-python">chart = sp.build_scatter_chart("", x, y).no_axes()
+</code></pre>
+<hr>
+<h2 id="étiquettes-et-texte"><a class="header" href="#étiquettes-et-texte">Étiquettes et texte</a></h2>
+<h3 id="show_labelspositionbottom-labelsnone-colorsnone-1"><a class="header" href="#show_labelspositionbottom-labelsnone-colorsnone-1"><code>show_labels(position="bottom", labels=None, colors=None)</code></a></h3>
+<p>Affiche une étiquette texte sur chaque élément du graphique. <code>position</code> peut être
+<code>"top"</code>, <code>"bottom"</code>, <code>"left"</code> ou <code>"right"</code>.</p>
+<pre><code class="language-python">chart = sp.build_bar_chart("Chiffre d'affaires", labels, values).show_labels(position="top")
+
+chart = sp.build_bar_chart("Chiffre d'affaires", labels, values).show_labels(
+    position="top",
+    labels=["142 k€", "98 k€", "210 k€"],
+    colors=["#22c55e", "#ef4444", "#22c55e"],
+)
+</code></pre>
+<hr>
+<h3 id="no_title-1"><a class="header" href="#no_title-1"><code>no_title()</code></a></h3>
+<p>Supprime le titre du rendu.</p>
+<pre><code class="language-python">chart = sp.build_pie_chart("Étiquette interne", labels, values).no_title()
+</code></pre>
+<hr>
+<h3 id="no_legend-1"><a class="header" href="#no_legend-1"><code>no_legend()</code></a></h3>
+<p>Supprime la légende du rendu.</p>
+<pre><code class="language-python">chart = sp.build_grouped_bar("T1", cats, series).no_legend()
+</code></pre>
+<hr>
+<h3 id="set_font_sizepx-1"><a class="header" href="#set_font_sizepx-1"><code>set_font_size(px)</code></a></h3>
+<p>Surcharge toutes les tailles de texte du SVG avec une seule valeur en pixels.</p>
+<pre><code class="language-python">chart = sp.build_radar_chart("Compétences", labels, values).set_font_size(11)
+</code></pre>
+<hr>
+<h2 id="taille-et-échelle"><a class="header" href="#taille-et-échelle">Taille et échelle</a></h2>
+<h3 id="scalefactor-1"><a class="header" href="#scalefactor-1"><code>scale(factor)</code></a></h3>
+<p>Met à l’échelle tout le graphique (SVG et canevas). Utile pour produire des miniatures
+ou des variantes haute définition.</p>
+<pre><code class="language-python">small = sp.build_bar_chart("Ventes", labels, values).scale(0.5)
+large = sp.build_bar_chart("Ventes", labels, values).scale(2.0)
+</code></pre>
+<hr>
+<h2 id="survol"><a class="header" href="#survol">Survol</a></h2>
+<h3 id="no_hover-1"><a class="header" href="#no_hover-1"><code>no_hover()</code></a></h3>
+<p>Désactive le moteur d’infobulles. Tous les événements pointeur <code>data-idx</code> sont retirés.
+Utile pour des intégrations statiques sans interaction au survol.</p>
+<pre><code class="language-python">chart = sp.build_scatter_chart("Distribution", x, y).no_hover()
+</code></pre>
+<hr>
+<h2 id="injection-css-et-javascript"><a class="header" href="#injection-css-et-javascript">Injection CSS et JavaScript</a></h2>
+<h3 id="inject_csscss-1"><a class="header" href="#inject_csscss-1"><code>inject_css(css)</code></a></h3>
+<p>Injecte un bloc <code>&lt;style&gt;</code> dans le <code>&lt;head&gt;</code> du HTML. Donne un accès complet au DOM SVG
+— surcharger n’importe quelle classe interne, changer les couleurs, animations, polices.</p>
+<p>Classes CSS internes de SeraPlot :</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Classe</th><th>Cible</th></tr>
+</thead>
+<tbody>
+<tr><td><code>svg text</code></td><td>Tout le texte du graphique</td></tr>
+<tr><td><code>.sp-gl</code></td><td>Lignes de grille</td></tr>
+<tr><td><code>.sp-ax-x</code>, <code>.sp-ax-y</code></td><td>Lignes des axes</td></tr>
+<tr><td><code>.sp-xt</code>, <code>.sp-yt</code></td><td>Étiquettes des ticks</td></tr>
+<tr><td><code>.sp-xl</code>, <code>.sp-yl</code></td><td>Titres des axes</td></tr>
+<tr><td><code>g[data-legend]</code></td><td>Groupe légende</td></tr>
+<tr><td><code>.sp-ttl</code></td><td>Titre du graphique</td></tr>
+<tr><td><code>[data-idx]</code></td><td>Éléments interactifs (cibles de survol)</td></tr>
+<tr><td><code>rect.sp-bg</code></td><td>Rectangle de fond du SVG</td></tr>
+</tbody>
+</table>
+</div>
+<pre><code class="language-python">chart = sp.build_bar_chart("Thème sombre", labels, values).inject_css("""
+    rect.sp-bg  { fill: #0f172a !important; }
+    svg text    { fill: #e2e8f0 !important; }
+    .sp-gl      { stroke: #1e293b !important; }
+    [data-idx]  { opacity: 0.85; }
+    [data-idx]:hover { filter: brightness(1.3); }
+""")
+</code></pre>
+<hr>
+<h3 id="inject_jsjs-1"><a class="header" href="#inject_jsjs-1"><code>inject_js(js)</code></a></h3>
+<p>Injecte un bloc <code>&lt;script&gt;</code> avant <code>&lt;/body&gt;</code>. Tout le DOM SVG rendu est accessible.
+Utilisez-le pour ajouter des écouteurs d’événements, animations ou intégrations tierces.</p>
+<pre><code class="language-python">chart = sp.build_bar_chart("Ventes", labels, values).inject_js("""
+    document.querySelectorAll('[data-idx]').forEach((el, i) =&gt; {
+        setTimeout(() =&gt; el.style.opacity = '1', i * 50);
+    });
+""")
+
+chart = sp.build_scatter_chart("Données", x, y).inject_js("""
+    const btn = document.createElement('button');
+    btn.textContent = 'Télécharger SVG';
+    btn.onclick = () =&gt; {
+        const svg  = document.querySelector('svg').outerHTML;
+        const a    = document.createElement('a');
+        a.href     = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        a.download = 'chart.svg';
+        a.click();
+    };
+    document.body.appendChild(btn);
+""")
+</code></pre>
+<hr>
+<h2 id="export-1"><a class="header" href="#export-1">Export</a></h2>
+<h3 id="savepath-1"><a class="header" href="#savepath-1"><code>save(path)</code></a></h3>
+<p>Écrit le HTML dans un fichier.</p>
+<pre><code class="language-python">chart = sp.build_pie_chart("Parts", labels, values)
+chart.save("rapport/pie.html")
+</code></pre>
+<hr>
+<h3 id="to_svg-1"><a class="header" href="#to_svg-1"><code>to_svg()</code></a></h3>
+<p>Extrait la chaîne SVG brute du HTML.</p>
+<pre><code class="language-python">svg_string = chart.to_svg()
+</code></pre>
+<hr>
+<h3 id="export_svgpath-1"><a class="header" href="#export_svgpath-1"><code>export_svg(path)</code></a></h3>
+<p>Écrit uniquement le SVG dans un fichier (sans le wrapper HTML).</p>
+<pre><code class="language-python">chart.export_svg("chart.svg")
+</code></pre>
+</div>
+
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../getting-started/chart-object.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                            </a>
+
+                            <a rel="next prefetch" href="../charts/2d/index.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../getting-started/chart-object.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M41.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.3 256 246.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"/></svg></span>
+                    </a>
+
+                    <a rel="next prefetch" href="../charts/2d/index.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr-ef4e11c1.min.js"></script>
+        <script src="../mark-09e88c2c.min.js"></script>
+        <script src="../searcher-c2a407aa.js"></script>
+
+        <script src="../clipboard-1626706a.min.js"></script>
+        <script src="../highlight-abc7f01d.js"></script>
+        <script src="../book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../docs/theme/lang-switcher-e8786b46.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

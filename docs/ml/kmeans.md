@@ -1,4 +1,4 @@
-# K-Means Chart
+﻿# K-Means Chart
 
 <div class="lang-en">
 
@@ -33,11 +33,11 @@ Alias: `sp.kmeans(...)`
 
 2D K-Means clustering chart. Runs K-Means++ initialization followed by parallel centroid assignment and converges in typically < 20 iterations. Each cluster is displayed in a distinct color with its centroid  shown as a bold `+` marker.
 
-SeraPlot's K-Means runs **thousands× faster** than scikit-learn on large datasets thanks to:
-- **K-Means++** seeding for fast convergence (O(k·n) deterministic-quality init)
-- **Parallel assignment** — scoped threads over CPU-affine chunks (zero-copy)
-- **Mini-batch** — automatic switch for n > 100 000, or set `mini_batch=True`
-- **SIMD-friendly** distance — 4-way unrolled inner loop autovectorized by LLVM
+SeraPlot's K-Means runs **thousandsÃ— faster** than scikit-learn on large datasets thanks to:
+- **K-Means++** seeding for fast convergence (O(kÂ·n) deterministic-quality init)
+- **Parallel assignment** â€” scoped threads over CPU-affine chunks (zero-copy)
+- **Mini-batch** â€” automatic switch for n > 100 000, or set `mini_batch=True`
+- **SIMD-friendly** distance â€” 4-way unrolled inner loop autovectorized by LLVM
 
 Inertia (sum of squared distances to centroids) is displayed in the chart corner.
 
@@ -154,9 +154,50 @@ chart.show()
 
 <div class="lang-fr">
 
+## Signature
+
+```python
+sp.build_kmeans_chart(
+    title: str,
+    x_values: list[float],
+    y_values: list[float],
+    *,
+    k: int = 3,
+    max_iter: int = 300,
+    tol: float = 1e-4,
+    mini_batch: bool = False,
+    batch_size: int = 1000,
+    width: int = 1000,
+    height: int = 580,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = True,
+    palette: list[int] | None = None,
+    background: str | None = None,
+) -> Chart
+```
+
+Alias : `sp.kmeans(...)`
+
+---
+
 ## Description
 
-Graphique de clustering K-Means en 2D. Exécute l'initialisation K-Means++ suivie d'une assignation parallèle des centroïdes. Chaque cluster est affiché dans une couleur distincte avec son centroïde marqué par un `+` gras.
+Graphique de clustering K-Means en 2D. Exécute l'initialisation K-Means++ suivie d'une
+assignation parallèle des centroïdes et converge généralement en moins de 20 itérations.
+Chaque cluster est affiché dans une couleur distincte avec son centroïde marqué par un
+`+` en gras.
+
+Le K-Means de SeraPlot tourne **des milliers de fois plus vite** que scikit-learn sur
+de grands jeux de données grâce à :
+- **K-Means++** pour une convergence rapide (init de qualité déterministe en O(k·n))
+- **Assignation parallèle** — threads scopés sur chunks affines au CPU (zéro copie)
+- **Mini-batch** — bascule automatique pour n > 100 000, ou via `mini_batch=True`
+- **Distance SIMD-friendly** — boucle interne déroulée 4× autovectorisée par LLVM
+
+L'inertie (somme des distances au carré aux centroïdes) est affichée dans le coin du graphique.
+
+---
 
 ## Paramètres
 
@@ -167,23 +208,71 @@ Graphique de clustering K-Means en 2D. Exécute l'initialisation K-Means++ suivi
 | `y_values` | `list[float]` | requis | Coordonnées Y |
 | `k` | `int` | `3` | Nombre de clusters |
 | `max_iter` | `int` | `300` | Nombre maximum d'itérations EM |
-| `mini_batch` | `bool` | `False` | Forcer le mode mini-batch |
+| `tol` | `float` | `1e-4` | Tolérance de convergence sur le delta d'inertie |
+| `mini_batch` | `bool` | `False` | Forcer le mode mini-batch (auto pour n > 100 000) |
+| `batch_size` | `int` | `1000` | Taille des mini-batchs |
+| `width` | `int` | `1000` | Largeur du canevas en pixels |
+| `height` | `int` | `580` | Hauteur du canevas en pixels |
+| `x_label` | `str` | `""` | Étiquette de l'axe X |
+| `y_label` | `str` | `""` | Étiquette de l'axe Y |
+| `gridlines` | `bool` | `True` | Afficher les lignes de grille |
+| `palette` | `list[int] \| None` | `None` | Couleurs personnalisées des clusters |
+| `background` | `str \| None` | `None` | Couleur de fond du graphique |
 
-## Exemple
+---
+
+## Retourne
+
+`Chart`
+
+---
+
+## Exemples
+
+### Usage basique
 
 ```python
 import seraplot as sp
-import numpy as np
+import random
 
-rng = np.random.default_rng(42)
+random.seed(42)
 centres = [(-2, -2), (2, -2), (0, 2)]
-pts = [(cx + rng.normal(0, 0.4), cy + rng.normal(0, 0.4))
+pts = [(cx + random.gauss(0, 0.4), cy + random.gauss(0, 0.4))
        for cx, cy in centres for _ in range(400)]
 x, y = zip(*pts)
 
-chart = sp.kmeans("K-Means", list(x), list(y), k=3)
+chart = sp.kmeans(
+    title="Clustering K-Means",
+    x_values=list(x),
+    y_values=list(y),
+    k=3,
+    x_label="Variable 1",
+    y_label="Variable 2",
+)
+chart.show()
+```
+
+---
+
+### Grand jeu de données (mini-batch)
+
+```python
+import seraplot as sp
+import random
+
+random.seed(0)
+x = [random.gauss(i % 5, 0.3) for i in range(500_000)]
+y = [random.gauss(i % 5, 0.3) for i in range(500_000)]
+
+chart = sp.kmeans(
+    title="K-Means sur grand jeu de données",
+    x_values=x,
+    y_values=y,
+    k=5,
+    mini_batch=True,
+    batch_size=2000,
+)
 chart.show()
 ```
 
 </div>
-

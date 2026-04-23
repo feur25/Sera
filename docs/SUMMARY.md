@@ -126,21 +126,24 @@
 
 # Configuration
 
-- [Global Background](config/background.md)
-- [Auto Display](config/auto-display.md)
-- [Hover JSON](config/hover.md)
-- [Palette](config/palette.md)
-- [Export (SVG / PNG / Data URL)](config/export.md)
-- [Live Streaming](config/streaming.md)
-- [ML Persistence](config/ml-persistence.md)
-- [Faceting / Small Multiples](config/facet.md)
-- [Downsampling (LTTB)](config/downsample.md)
-- [Chart Diff](config/diff.md)
-- [Accessibility (a11y)](config/a11y.md)
-- [CSP-safe Mode](config/csp.md)
-- [Pickle / Serialization](config/pickle.md)
-- [AutoML & Pipeline](config/automl.md)
-- [Drift Detection](config/drift.md)
+- [Display & Rendering](config/background.md)
+  - [Auto Display](config/auto-display.md)
+  - [Palette](config/palette.md)
+  - [Export (SVG / PNG / Data URL)](config/export.md)
+  - [CSP-safe Mode](config/csp.md)
+
+- [Interactivity](config/hover.md)
+  - [Faceting / Small Multiples](config/facet.md)
+  - [Live Streaming](config/streaming.md)
+
+- [Data Handling](config/downsample.md)
+  - [Chart Diff](config/diff.md)
+  - [Pickle / Serialization](config/pickle.md)
+  - [Accessibility (a11y)](config/a11y.md)
+
+- [ML & Advanced](config/automl.md)
+  - [Drift Detection](config/drift.md)
+  - [ML Persistence](config/ml-persistence.md)
 
 ---
 

@@ -1,0 +1,1300 @@
+<!DOCTYPE HTML>
+<html lang="en" class="navy sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Introduction - SeraPlot Documentation</title>
+
+
+        <!-- Custom HTML head -->
+
+        <meta name="description" content="High-performance data visualization — Rust/Python">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon-de23e50b.svg">
+        <link rel="shortcut icon" href="favicon-8114d1fc.png">
+        <link rel="stylesheet" href="css/variables-8adf115d.css">
+        <link rel="stylesheet" href="css/general-2459343d.css">
+        <link rel="stylesheet" href="css/chrome-ae938929.css">
+        <link rel="stylesheet" href="css/print-9e4910d8.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="fonts/fonts-9644e21d.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="mdbook-highlight-css" href="highlight-493f70e1.css">
+        <link rel="stylesheet" id="mdbook-tomorrow-night-css" href="tomorrow-night-4c0ae647.css">
+        <link rel="stylesheet" id="mdbook-ayu-highlight-css" href="ayu-highlight-3fdfc3ac.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="docs/theme/custom-2c6d06e4.css">
+
+        <!-- MathJax -->
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+        <!-- Provide site root and default themes to javascript -->
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "navy";
+            const default_dark_theme = "navy";
+            window.path_to_searchindex_js = "searchindex-2299f83c.js";
+        </script>
+        <!-- Start loading toc.js asap -->
+        <script src="toc-66263669.js"></script>
+    </head>
+    <body>
+    <div id="mdbook-help-container">
+        <div id="mdbook-help-popup">
+            <h2 class="mdbook-help-title">Keyboard shortcuts</h2>
+            <div>
+                <p>Press <kbd>←</kbd> or <kbd>→</kbd> to navigate between chapters</p>
+                <p>Press <kbd>S</kbd> or <kbd>/</kbd> to search in the book</p>
+                <p>Press <kbd>?</kbd> to show this help</p>
+                <p>Press <kbd>Esc</kbd> to hide this help</p>
+            </div>
+        </div>
+    </div>
+    <div id="mdbook-body-container">
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                let theme = localStorage.getItem('mdbook-theme');
+                let sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            const default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            const html = document.documentElement;
+            html.classList.remove('navy')
+            html.classList.add(theme);
+            html.classList.add("js");
+        </script>
+
+        <input type="checkbox" id="mdbook-sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            let sidebar = null;
+            const sidebar_toggle = document.getElementById("mdbook-sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+                sidebar_toggle.checked = false;
+            }
+            if (sidebar === 'visible') {
+                sidebar_toggle.checked = true;
+            } else {
+                html.classList.remove('sidebar-visible');
+            }
+        </script>
+
+        <nav id="mdbook-sidebar" class="sidebar" aria-label="Table of contents">
+            <!-- populated by js -->
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript>
+                <iframe class="sidebar-iframe-outer" src="toc.html"></iframe>
+            </noscript>
+            <div id="mdbook-sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <div id="mdbook-page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                <div id="mdbook-menu-bar-hover-placeholder"></div>
+                <div id="mdbook-menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="mdbook-sidebar-toggle" class="icon-button" for="mdbook-sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="mdbook-sidebar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M0 96C0 78.3 14.3 64 32 64H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32C14.3 128 0 113.7 0 96zM0 256c0-17.7 14.3-32 32-32H416c17.7 0 32 14.3 32 32s-14.3 32-32 32H32c-17.7 0-32-14.3-32-32zM448 416c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32s14.3-32 32-32H416c17.7 0 32 14.3 32 32z"/></svg></span>
+                        </label>
+                        <button id="mdbook-theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="mdbook-theme-list">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M371.3 367.1c27.3-3.9 51.9-19.4 67.2-42.9L600.2 74.1c12.6-19.5 9.4-45.3-7.6-61.2S549.7-4.4 531.1 9.6L294.4 187.2c-24 18-38.2 46.1-38.4 76.1L371.3 367.1zm-19.6 25.4l-116-104.4C175.9 290.3 128 339.6 128 400c0 3.9 .2 7.8 .6 11.6c1.8 17.5-10.2 36.4-27.8 36.4H96c-17.7 0-32 14.3-32 32s14.3 32 32 32H240c61.9 0 112-50.1 112-112c0-2.5-.1-5-.2-7.5z"/></svg></span>
+                        </button>
+                        <ul id="mdbook-theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="mdbook-theme-ayu">Ayu</button></li>
+                        </ul>
+                        <button id="mdbook-search-toggle" class="icon-button" type="button" title="Search (`/`)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="/ s" aria-controls="mdbook-searchbar">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352c79.5 0 144-64.5 144-144s-64.5-144-144-144S64 128.5 64 208s64.5 144 144 144z"/></svg></span>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">SeraPlot Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <span class=fa-svg id="print-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M128 0C92.7 0 64 28.7 64 64v96h64V64H354.7L384 93.3V160h64V93.3c0-17-6.7-33.3-18.7-45.3L400 18.7C388 6.7 371.7 0 354.7 0H128zM384 352v32 64H128V384 368 352H384zm64 32h32c17.7 0 32-14.3 32-32V256c0-35.3-28.7-64-64-64H64c-35.3 0-64 28.7-64 64v96c0 17.7 14.3 32 32 32H64v64c0 35.3 28.7 64 64 64H384c35.3 0 64-28.7 64-64V384zm-16-88c-13.3 0-24-10.7-24-24s10.7-24 24-24s24 10.7 24 24s-10.7 24-24 24z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/feur25/seraplot" title="Git repository" aria-label="Git repository">
+                            <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg></span>
+                        </a>
+                        <a href="https://github.com/feur25/seraplot/edit/main/docs/introduction.md" title="Suggest an edit" aria-label="Suggest an edit" rel="edit">
+                            <span class=fa-svg id="git-edit-button"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M421.7 220.3l-11.3 11.3-22.6 22.6-205 205c-6.6 6.6-14.8 11.5-23.8 14.1L30.8 511c-8.4 2.5-17.5 .2-23.7-6.1S-1.5 489.7 1 481.2L38.7 353.1c2.6-9 7.5-17.2 14.1-23.8l205-205 22.6-22.6 11.3-11.3 33.9 33.9 62.1 62.1 33.9 33.9zM96 353.9l-9.3 9.3c-.9 .9-1.6 2.1-2 3.4l-25.3 86 86-25.3c1.3-.4 2.5-1.1 3.4-2l9.3-9.3H112c-8.8 0-16-7.2-16-16V353.9zM453.3 19.3l39.4 39.4c25 25 25 65.5 0 90.5l-14.5 14.5-22.6 22.6-11.3 11.3-33.9-33.9-62.1-62.1L314.3 67.7l11.3-11.3 22.6-22.6 14.5-14.5c25-25 65.5-25 90.5 0z"/></svg></span>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="mdbook-search-wrapper" class="hidden">
+                    <form id="mdbook-searchbar-outer" class="searchbar-outer">
+                        <div class="search-wrapper">
+                            <input type="search" id="mdbook-searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="mdbook-searchresults-outer" aria-describedby="searchresults-header">
+                            <div class="spinner-wrapper">
+                                <span class=fa-svg id="fa-spin"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M304 48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zm0 416c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM48 304c26.5 0 48-21.5 48-48s-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48zm464-48c0-26.5-21.5-48-48-48s-48 21.5-48 48s21.5 48 48 48s48-21.5 48-48zM142.9 437c18.7-18.7 18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zm0-294.2c18.7-18.7 18.7-49.1 0-67.9S93.7 56.2 75 75s-18.7 49.1 0 67.9s49.1 18.7 67.9 0zM369.1 437c18.7 18.7 49.1 18.7 67.9 0s18.7-49.1 0-67.9s-49.1-18.7-67.9 0s-18.7 49.1 0 67.9z"/></svg></span>
+                            </div>
+                        </div>
+                    </form>
+                    <div id="mdbook-searchresults-outer" class="searchresults-outer hidden">
+                        <div id="mdbook-searchresults-header" class="searchresults-header"></div>
+                        <ul id="mdbook-searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('mdbook-sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('mdbook-sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#mdbook-sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="mdbook-content" class="content">
+                    <main>
+                        <div align="center">
+<h1 id="seraplot"><a class="header" href="#seraplot">SeraPlot</a></h1>
+<p><strong>Rust-native charting. 6,000× faster than Plotly. Zero dependencies.</strong></p>
+<p><a href="https://pypi.org/project/seraplot/"><img src="https://img.shields.io/pypi/v/seraplot" alt="PyPI"></a>
+<a href="https://www.npmjs.com/package/seraplot"><img src="https://img.shields.io/npm/v/seraplot" alt="npm"></a>
+<a href="https://github.com/feur25/seraplot/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License"></a></p>
+</div>
+
+<div class="lang-en">
+<pre><code class="language-bash">pip install seraplot
+</code></pre>
+<hr>
+<h2 id="the-switch"><a class="header" href="#the-switch">The switch</a></h2>
+<pre><code class="language-python">import matplotlib.pyplot as plt
+
+import seraplot.matplotlib as plt
+</code></pre>
+<ul>
+<li>6,000× faster than Plotly (measured, 1000 bar charts)</li>
+<li>200× smaller files</li>
+<li>interactive HTML by default</li>
+<li>zero Python dependencies</li>
+</ul>
+<hr>
+<h2 id="the-moment-it-clicks"><a class="header" href="#the-moment-it-clicks">The moment it clicks</a></h2>
+<pre><code class="language-python">import seraplot as sp
+
+sp.scatter("1M points", list(range(1_000_000)), [x**0.5 for x in range(1_000_000)]).show()
+</code></pre>
+<p><strong>1 million points. Interactive. In Jupyter.</strong></p>
+<p>No config. No backend. No waiting.</p>
+<hr>
+<h2 id="why-people-actually-switch"><a class="header" href="#why-people-actually-switch">Why people actually switch</a></h2>
+<p>People don’t switch because of benchmarks.
+They switch because something becomes <strong>possible</strong>.</p>
+<h3 id="dashboards-without-a-backend"><a class="header" href="#dashboards-without-a-backend">Dashboards without a backend</a></h3>
+<p>Each chart is a self-contained HTML file. Drop it anywhere — S3, email, Git, Notion.
+No server, no Dash, no Streamlit.</p>
+<h3 id="charts-by-email"><a class="header" href="#charts-by-email">Charts by email</a></h3>
+<p>21 KB interactive HTML vs Plotly’s 4.7 MB static blob.</p>
+<h3 id="ci-pipelines-at-scale"><a class="header" href="#ci-pipelines-at-scale">CI pipelines at scale</a></h3>
+<p>1,000 charts in 6 ms. Not 37 seconds. Not 60 seconds.</p>
+<h3 id="offline-first-apps"><a class="header" href="#offline-first-apps">Offline-first apps</a></h3>
+<p>No CDN. No JS framework. No internet at render time. Works air-gapped.</p>
+<h3 id="apis-that-return-charts"><a class="header" href="#apis-that-return-charts">APIs that return charts</a></h3>
+<p>Return HTML directly from a FastAPI endpoint. 21 KB in the response body, no temp files.</p>
+<hr>
+<h2 id="same-chart--three-libraries"><a class="header" href="#same-chart--three-libraries">Same chart — three libraries</a></h2>
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;overflow-x:auto}
+.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap;flex:0 0 auto}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+.sp-tc pre{margin:0;border-radius:0;overflow-x:auto;overflow-y:hidden;padding:14px 16px;box-sizing:border-box}
+.sp-tc code{display:block;line-height:1.45}
+</style>
+<div class="sp-tabs" id="g1">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab(&#39;g1&#39;,&#39;g1a&#39;,this)">SeraPlot — 2 lines</button>
+<button class="sp-tb" onclick="spTab(&#39;g1&#39;,&#39;g1b&#39;,this)">Plotly — 4 lines</button>
+<button class="sp-tb" onclick="spTab(&#39;g1&#39;,&#39;g1c&#39;,this)">Matplotlib — 7 lines</button>
+</div>
+
+<div id="g1a" class="sp-tc sp-on">
+<pre><code class="language-python">import seraplot as sp
+sp.bar("Revenue by Product", labels, values).save("chart.html")</code></pre>
+</div>
+
+<div id="g1b" class="sp-tc">
+<pre><code class="language-python">import plotly.express as px
+fig = px.bar(x=labels, y=values, title="Revenue by Product")
+fig.update_layout(template="plotly_white")
+fig.write_html("chart.html")</code></pre>
+</div>
+
+<div id="g1c" class="sp-tc">
+<pre><code class="language-python">import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(9, 5))
+ax.bar(labels, values, color="#6366f1")
+ax.set_title("Revenue by Product")
+ax.set_ylabel("Revenue")
+plt.tight_layout()
+plt.savefig("chart.png")</code></pre>
+</div>
+
+</div>
+
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th style="text-align: center">SeraPlot</th><th style="text-align: center">Plotly</th><th style="text-align: center">Matplotlib</th></tr>
+</thead>
+<tbody>
+<tr><td>Lines of code</td><td style="text-align: center"><strong>2</strong></td><td style="text-align: center">4</td><td style="text-align: center">7</td></tr>
+<tr><td>Output</td><td style="text-align: center">HTML</td><td style="text-align: center">HTML</td><td style="text-align: center">PNG</td></tr>
+<tr><td>File size</td><td style="text-align: center"><strong>21 KB</strong></td><td style="text-align: center">4.7 MB</td><td style="text-align: center">~150 KB</td></tr>
+<tr><td>Interactive</td><td style="text-align: center">✅</td><td style="text-align: center">✅</td><td style="text-align: center">❌</td></tr>
+<tr><td>Dependencies</td><td style="text-align: center"><strong>0</strong></td><td style="text-align: center">6+</td><td style="text-align: center">3+</td></tr>
+<tr><td>1-line migration</td><td style="text-align: center">✅</td><td style="text-align: center">—</td><td style="text-align: center">—</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="1000-charts-measured"><a class="header" href="#1000-charts-measured">1000 charts. Measured.</a></h2>
+<p>Same code, same random data, same machine. Full HTML output timed.</p>
+<div class="sp-tabs" id="g-bench">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab(&#39;g-bench&#39;,&#39;gb-sp&#39;,this)">SeraPlot — 6 ms</button>
+<button class="sp-tb" onclick="spTab(&#39;g-bench&#39;,&#39;gb-pl&#39;,this)">Plotly — 37 s</button>
+<button class="sp-tb" onclick="spTab(&#39;g-bench&#39;,&#39;gb-mp&#39;,this)">Matplotlib — 60 s</button>
+</div>
+
+<div id="gb-sp" class="sp-tc sp-on">
+<pre><code class="language-python">import seraplot as sp
+categories = ["Electronics", "Clothing", "Food", "Books", "Sports", "Toys", "Health", "Auto"]
+data = [...]  # 1000 pre-generated lists
+for i in range(1000):
+    sp.bar(f"Report #{i+1}", categories, data[i]).html</code></pre>
+
+<p style="padding:10px 16px;margin:0;color:#6366f1;font-weight:700">1000 charts in 6 ms — 6 µs/chart</p>
+
+<iframe src="previews/bench-seraplot.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
+</div>
+
+<div id="gb-pl" class="sp-tc">
+<pre><code class="language-python">import plotly.graph_objects as go
+categories = ["Electronics", "Clothing", "Food", "Books", "Sports", "Toys", "Health", "Auto"]
+data = [...]  # same 1000 pre-generated lists
+for i in range(1000):
+    fig = go.Figure(data=[go.Bar(x=categories, y=data[i])])
+    fig.update_layout(title=f"Report #{i+1}", template="plotly_dark")
+    fig.to_html(full_html=True, include_plotlyjs="cdn")</code></pre>
+
+<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1000 charts in 37,023 ms — 6,170× slower</p>
+
+<iframe src="previews/bench-plotly.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
+</div>
+
+<div id="gb-mp" class="sp-tc">
+<pre><code class="language-python">import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+categories = ["Electronics", "Clothing", "Food", "Books", "Sports", "Toys", "Health", "Auto"]
+data = [...]  # same 1000 pre-generated lists
+for i in range(1000):
+    fig, ax = plt.subplots(figsize=(9, 5))
+    ax.bar(categories, data[i])
+    ax.set_title(f"Report #{i+1}")
+    fig.savefig(f"chart_{i}.png")
+    plt.close()</code></pre>
+
+<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1000 charts in 60,352 ms — 10,058× slower</p>
+
+<iframe src="previews/bench-matplotlib.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
+</div>
+
+</div>
+
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Scale</th><th style="text-align: center">SeraPlot</th><th style="text-align: center">Plotly</th><th style="text-align: center">Matplotlib</th></tr>
+</thead>
+<tbody>
+<tr><td>1,000 charts</td><td style="text-align: center"><strong>6 ms</strong></td><td style="text-align: center">37 s</td><td style="text-align: center">60 s</td></tr>
+<tr><td>10,000 charts</td><td style="text-align: center"><strong>~60 ms</strong></td><td style="text-align: center">~6 min</td><td style="text-align: center">~10 min</td></tr>
+<tr><td>100,000 charts</td><td style="text-align: center"><strong>~600 ms</strong></td><td style="text-align: center">~1 h</td><td style="text-align: center">~1.7 h</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="render-core-speed"><a class="header" href="#render-core-speed">Render core speed</a></h2>
+<p><strong>Benchmark: Diabetes dataset (n=768, 40 runs). Rust render time — chart object creation, not full HTML serialization.</strong></p>
+<div style="font-family:monospace;margin:1.2em 0">
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Pie</span>
+  
+<div style="background:#6366f1;width:300px;height:16px;border-radius:3px"></div>
+
+  <b style="color:#6366f1;font-size:.85em">7,956×</b>
+</div>
+
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Bar</span>
+  
+<div style="background:#6366f1;width:245px;height:16px;border-radius:3px"></div>
+
+  <b style="color:#6366f1;font-size:.85em">6,488×</b>
+</div>
+
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Lollipop</span>
+  
+<div style="background:#6366f1;width:150px;height:16px;border-radius:3px"></div>
+
+  <b style="color:#6366f1;font-size:.85em">3,983×</b>
+</div>
+
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Grouped Bar</span>
+  
+<div style="background:#6366f1;width:136px;height:16px;border-radius:3px"></div>
+
+  <b style="color:#6366f1;font-size:.85em">3,596×</b>
+</div>
+
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Candlestick</span>
+  
+<div style="background:#6366f1;width:77px;height:16px;border-radius:3px"></div>
+
+  <b style="color:#6366f1;font-size:.85em">2,038×</b>
+</div>
+
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Radar</span>
+  
+<div style="background:#6366f1;width:56px;height:16px;border-radius:3px"></div>
+
+  <b style="color:#6366f1;font-size:.85em">1,498×</b>
+</div>
+
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">KDE</span>
+  
+<div style="background:#6366f1;width:28px;height:16px;border-radius:3px"></div>
+
+  <b style="color:#6366f1;font-size:.85em">753×</b>
+</div>
+
+</div>
+
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Chart</th><th>SeraPlot</th><th>Plotly figure</th><th>Plotly → HTML</th><th>Matplotlib</th></tr>
+</thead>
+<tbody>
+<tr><td>Pie</td><td><strong>4.2</strong></td><td>725</td><td>33,416</td><td>15,085</td></tr>
+<tr><td>Bar</td><td><strong>2.8</strong></td><td>658</td><td>18,166</td><td>13,596</td></tr>
+<tr><td>Grouped Bar</td><td><strong>5.0</strong></td><td>558</td><td>17,981</td><td>17,445</td></tr>
+<tr><td>Histogram</td><td><strong>12.4</strong></td><td>2,496</td><td>32,762</td><td>37,973</td></tr>
+<tr><td>Scatter</td><td><strong>17.0</strong></td><td>3,916</td><td>21,615</td><td>14,141</td></tr>
+<tr><td>Violin</td><td><strong>16.7</strong></td><td>2,616</td><td>21,347</td><td>21,211</td></tr>
+<tr><td>Box Plot</td><td><strong>18.4</strong></td><td>2,329</td><td>21,799</td><td>15,590</td></tr>
+<tr><td>KDE</td><td><strong>26.3</strong></td><td>2,981</td><td>19,807</td><td>40,108</td></tr>
+<tr><td>Radar</td><td><strong>11.8</strong></td><td>962</td><td>17,679</td><td>20,942</td></tr>
+<tr><td>Lollipop</td><td><strong>6.3</strong></td><td>8,382</td><td>25,096</td><td>9,072</td></tr>
+<tr><td>Candlestick</td><td><strong>8.8</strong></td><td>1,478</td><td>17,934</td><td>N/A</td></tr>
+<tr><td>Ridgeline</td><td><strong>88.8</strong></td><td>N/A</td><td>N/A</td><td>N/A</td></tr>
+</tbody>
+</table>
+</div>
+<p>All times in µs.</p>
+<hr>
+<h2 id="output-file-size"><a class="header" href="#output-file-size">Output file size</a></h2>
+<p>Plotly embeds its entire JavaScript bundle in every HTML file.
+SeraPlot only includes the JS needed for that specific chart type.</p>
+<div style="font-family:monospace;margin:1.2em 0">
+<div style="display:flex;align-items:center;gap:8px;margin:6px 0">
+  <span style="min-width:90px;font-size:.85em">Pie</span>
+  
+<div style="display:flex;gap:3px;align-items:center">
+    
+<div style="background:#6366f1;width:5px;height:16px;border-radius:2px" title="SeraPlot 19 KB"></div>
+
+    
+<div style="background:#ef4444;width:300px;height:16px;border-radius:2px" title="Plotly 4,733 KB"></div>
+
+  </div>
+
+  <span style="font-size:.8em;color:#94a3b8">19 KB vs 4,733 KB — <b style="color:#ef4444">246×</b></span>
+</div>
+
+<div style="display:flex;align-items:center;gap:8px;margin:6px 0">
+  <span style="min-width:90px;font-size:.85em">Bar</span>
+  
+<div style="display:flex;gap:3px;align-items:center">
+    
+<div style="background:#6366f1;width:5px;height:16px;border-radius:2px"></div>
+
+    
+<div style="background:#ef4444;width:274px;height:16px;border-radius:2px"></div>
+
+  </div>
+
+  <span style="font-size:.8em;color:#94a3b8">21 KB vs 4,733 KB — <b style="color:#ef4444">225×</b></span>
+</div>
+
+<div style="display:flex;align-items:center;gap:8px;margin:6px 0">
+  <span style="min-width:90px;font-size:.85em">Scatter</span>
+  
+<div style="display:flex;gap:3px;align-items:center">
+    
+<div style="background:#6366f1;width:5px;height:16px;border-radius:2px"></div>
+
+    
+<div style="background:#ef4444;width:148px;height:16px;border-radius:2px"></div>
+
+  </div>
+
+  <span style="font-size:.8em;color:#94a3b8">39 KB vs 4,740 KB — <b style="color:#ef4444">121×</b></span>
+</div>
+
+<div style="display:flex;align-items:center;gap:8px;margin:6px 0">
+  <span style="min-width:90px;font-size:.85em">Radar</span>
+  
+<div style="display:flex;gap:3px;align-items:center">
+    
+<div style="background:#6366f1;width:5px;height:16px;border-radius:2px"></div>
+
+    
+<div style="background:#ef4444;width:250px;height:16px;border-radius:2px"></div>
+
+  </div>
+
+  <span style="font-size:.8em;color:#94a3b8">23 KB vs 4,733 KB — <b style="color:#ef4444">205×</b></span>
+</div>
+
+</div>
+
+<p>Matplotlib outputs PNG/SVG/PDF (50-500 KB) — not interactive HTML.</p>
+<hr>
+<h2 id="what-seraplot-actually-is"><a class="header" href="#what-seraplot-actually-is">What SeraPlot actually is</a></h2>
+<p>SeraPlot is not a wrapper around Plotly, Chart.js, or D3.</p>
+<p>It is a <strong>Rust-native rendering engine</strong> that generates minimal HTML + JS per chart.
+A Pie chart gets Pie JS. A Bar chart gets Bar JS. Nothing else is bundled.</p>
+<p>That’s why the output is 20 KB instead of 4.7 MB.</p>
+<hr>
+<h2 id="one-line-migration"><a class="header" href="#one-line-migration">One line migration</a></h2>
+<pre><code class="language-python">import seraplot.matplotlib as plt
+</code></pre>
+<p>Everything else stays the same.
+<code>plt.bar()</code>, <code>plt.scatter()</code>, <code>plt.hist()</code>, <code>plt.show()</code>, <code>plt.savefig()</code> — unchanged.</p>
+<hr>
+<h2 id="7-themes"><a class="header" href="#7-themes">7 themes</a></h2>
+<pre><code class="language-python">sp.theme("dark")
+sp.theme("apple")
+sp.theme("notion")
+sp.theme("scientific")
+sp.theme("neon")
+sp.theme("minimal")
+sp.theme("light")
+
+sp.reset_theme()
+</code></pre>
+<hr>
+<h2 id="deploy-from-an-api"><a class="header" href="#deploy-from-an-api">Deploy from an API</a></h2>
+<div class="sp-tabs" id="g2">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab(&#39;g2&#39;,&#39;g2a&#39;,this)">SeraPlot — 7 lines</button>
+<button class="sp-tb" onclick="spTab(&#39;g2&#39;,&#39;g2b&#39;,this)">Plotly — 10 lines</button>
+<button class="sp-tb" onclick="spTab(&#39;g2&#39;,&#39;g2c&#39;,this)">Matplotlib — 14 lines</button>
+</div>
+
+<div id="g2a" class="sp-tc sp-on">
+<pre><code class="language-python">from fastapi import FastAPI
+import seraplot as sp
+app = FastAPI()
+@app.get("/chart")
+def revenue_chart():
+    return sp.bar("Revenue", labels, values).html</code></pre>
+</div>
+
+<div id="g2b" class="sp-tc">
+<pre><code class="language-python">from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+import plotly.express as px
+app = FastAPI()
+@app.get("/chart", response_class=HTMLResponse)
+def revenue_chart():
+    fig = px.bar(x=labels, y=values, title="Revenue")
+    return fig.to_html(full_html=True)</code></pre>
+</div>
+
+<div id="g2c" class="sp-tc">
+<pre><code class="language-python">from fastapi import FastAPI
+from fastapi.responses import FileResponse
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import tempfile
+app = FastAPI()
+@app.get("/chart")
+def revenue_chart():
+    fig, ax = plt.subplots(figsize=(9, 5))
+    ax.bar(labels, values)
+    ax.set_title("Revenue")
+    path = tempfile.mktemp(suffix=".png")
+    plt.savefig(path)
+    plt.close()
+    return FileResponse(path, media_type="image/png")</code></pre>
+</div>
+
+</div>
+
+<script>
+function spTab(g, id, btn) {
+  var root = document.getElementById(g);
+  root.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on');});
+  root.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act');});
+  document.getElementById(id).classList.add('sp-on');
+  btn.classList.add('sp-act');
+  if (window.hljs) document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c);});
+}
+document.addEventListener('DOMContentLoaded', function() {
+  if (window.hljs) document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c);});
+});
+</script>
+<p>Plotly returns 4.7 MB per request. Matplotlib requires disk I/O and returns a static PNG.
+SeraPlot returns 21 KB of interactive HTML directly from RAM.</p>
+<hr>
+<h2 id="when-you-might-not-need-it"><a class="header" href="#when-you-might-not-need-it">When you might not need it</a></h2>
+<ul>
+<li>quick one-off scripts where render time doesn’t matter</li>
+<li>heavy JS customization (plotly.js ecosystem)</li>
+<li>your team only reads static PNG reports</li>
+</ul>
+<p>SeraPlot is built for production throughput.
+If all you need is 3 charts in a notebook, matplotlib works fine.</p>
+<hr>
+<h2 id="global-config"><a class="header" href="#global-config">Global config</a></h2>
+<p>Set once, every chart inherits:</p>
+<pre><code class="language-python">sp.config(
+    font="Inter",
+    font_size=14,
+    title_size=22,
+    crosshair=True,
+    zoom=True,
+    animation=True,
+    export_button=True,
+    responsive=True,
+    border_radius=12,
+    margin=16,
+    opacity=0.85,
+    background="#0f172a",
+    palette=[0x818CF8, 0xFB7185, 0x34D399],
+    gridlines=True,
+)
+
+sp.bar("Revenue", labels, values)   # inherits everything
+sp.line("Trend", dates, values)     # same config
+sp.scatter("Clusters", x, y)        # same config
+</code></pre>
+<p>Per-chart override with method chaining:</p>
+<pre><code class="language-python">sp.bar("Revenue", labels, values).font("Roboto").zoom(False)
+</code></pre>
+<p>Reset everything:</p>
+<pre><code class="language-python">sp.reset_config()
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Parameter</th><th>Type</th><th>Effect</th></tr>
+</thead>
+<tbody>
+<tr><td><code>font</code></td><td>str</td><td>Font family for all text</td></tr>
+<tr><td><code>font_size</code></td><td>int</td><td>Base font size (px)</td></tr>
+<tr><td><code>title_size</code></td><td>int</td><td>Title font size (px)</td></tr>
+<tr><td><code>crosshair</code></td><td>bool</td><td>Crosshair lines on hover</td></tr>
+<tr><td><code>zoom</code></td><td>bool</td><td>Mouse wheel zoom + pan</td></tr>
+<tr><td><code>animation</code></td><td>bool</td><td>Fade-in animation on elements</td></tr>
+<tr><td><code>animation_duration</code></td><td>int</td><td>Animation duration (ms)</td></tr>
+<tr><td><code>export_button</code></td><td>bool</td><td>Download button on each chart</td></tr>
+<tr><td><code>responsive</code></td><td>bool</td><td>Auto-resize to container width</td></tr>
+<tr><td><code>border_radius</code></td><td>int</td><td>Chart container border radius (px)</td></tr>
+<tr><td><code>margin</code></td><td>int</td><td>Chart container padding (px)</td></tr>
+<tr><td><code>opacity</code></td><td>float</td><td>Element opacity (0.0–1.0)</td></tr>
+<tr><td><code>background</code></td><td>str</td><td>Background color</td></tr>
+<tr><td><code>palette</code></td><td>list[int]</td><td>Color palette (hex ints)</td></tr>
+<tr><td><code>gridlines</code></td><td>bool</td><td>Show grid lines</td></tr>
+<tr><td><code>locale</code></td><td>str</td><td>Number formatting locale</td></tr>
+<tr><td><code>thousands_sep</code></td><td>str</td><td>Thousands separator character</td></tr>
+<tr><td><code>tooltip</code></td><td>str</td><td>Tooltip mode</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="chain-methods-per-chart"><a class="header" href="#chain-methods-per-chart">Chain methods (per-chart)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Method</th><th>Effect</th></tr>
+</thead>
+<tbody>
+<tr><td><code>.font("Inter")</code></td><td>Override font family</td></tr>
+<tr><td><code>.title_size(22)</code></td><td>Override title font size</td></tr>
+<tr><td><code>.set_font_size(14)</code></td><td>Override base font size</td></tr>
+<tr><td><code>.crosshair()</code></td><td>Enable crosshair</td></tr>
+<tr><td><code>.zoom()</code></td><td>Enable zoom + pan</td></tr>
+<tr><td><code>.animate(300)</code></td><td>Enable animation (ms)</td></tr>
+<tr><td><code>.export_button()</code></td><td>Add download button</td></tr>
+<tr><td><code>.responsive()</code></td><td>Auto-resize</td></tr>
+<tr><td><code>.border_radius(12)</code></td><td>Set border radius</td></tr>
+<tr><td><code>.set_opacity(0.85)</code></td><td>Set element opacity</td></tr>
+<tr><td><code>.set_margin(16)</code></td><td>Set chart padding</td></tr>
+<tr><td><code>.set_bg("#0f172a")</code></td><td>Set background color</td></tr>
+<tr><td><code>.inject_css("...")</code></td><td>Inject custom CSS</td></tr>
+<tr><td><code>.inject_js("...")</code></td><td>Inject custom JS</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="native-machine-learning"><a class="header" href="#native-machine-learning">Native machine learning</a></h2>
+<p>Rust-native DBSCAN with KD-tree spatial indexing:</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Points</th><th>scikit-learn</th><th>SeraPlot DBSCAN</th><th>Factor</th></tr>
+</thead>
+<tbody>
+<tr><td>1,000</td><td>3.2 ms</td><td>0.18 ms</td><td><strong>18×</strong></td></tr>
+<tr><td>10,000</td><td>54 ms</td><td>1.1 ms</td><td><strong>49×</strong></td></tr>
+<tr><td>100,000</td><td>1,340 ms</td><td>8.4 ms</td><td><strong>160×</strong></td></tr>
+<tr><td>500,000</td><td>21,000 ms</td><td>38 ms</td><td><strong>553×</strong></td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="everything-seraplot-does"><a class="header" href="#everything-seraplot-does">Everything SeraPlot does</a></h2>
+<ul>
+<li><strong>57 chart types</strong> — every 2D chart has a 3D WebGL variant</li>
+<li><strong>Drop-in matplotlib API</strong> — <code>import seraplot.matplotlib as plt</code></li>
+<li><strong>Pandas &amp; NumPy native</strong> — pass DataFrames directly</li>
+<li><strong>7 built-in themes</strong> — dark, light, scientific, apple, notion, minimal, neon</li>
+<li><strong>Global config</strong> — <code>sp.config()</code> sets font, zoom, crosshair, animation across all charts</li>
+<li><strong>Zero dependencies</strong> — pure Rust renderer</li>
+<li><strong>200× smaller files</strong> — no bundled JS runtime</li>
+<li><strong>Multi-language</strong> — Python, JavaScript/TypeScript (npm), Rust</li>
+<li><strong>DBSCAN up to 600× faster</strong> than scikit-learn</li>
+<li><strong>Works everywhere</strong> — Python ≥ 3.8, any OS</li>
+</ul>
+<hr>
+<h2 id="navigation"><a class="header" href="#navigation">Navigation</a></h2>
+<ul>
+<li><strong><a href="getting-started/installation.html">Installation</a></strong> — <code>pip install seraplot</code></li>
+<li><strong><a href="getting-started/quickstart.html">Quick Start</a></strong> — first chart in 3 lines</li>
+<li><strong><a href="getting-started/chart-methods.html">Chart Methods</a></strong> — all universal Chart methods</li>
+<li><strong><a href="charts/2d/bar.html">2D Charts</a></strong> — 33 chart types</li>
+<li><strong><a href="charts/3d/scatter3d.html">3D Charts</a></strong> — 17 chart types, WebGL GPU renderer</li>
+<li><strong><a href="ml/dbscan.html">Machine Learning</a></strong> — DBSCAN up to 600x faster than scikit-learn</li>
+<li><strong><a href="api/index.html">API Reference</a></strong> — complete function index</li>
+</ul>
+</div>
+
+<div class="lang-fr">
+<pre><code class="language-bash">pip install seraplot
+</code></pre>
+<hr>
+<h2 id="le-déclic"><a class="header" href="#le-déclic">Le déclic</a></h2>
+<pre><code class="language-python">import matplotlib.pyplot as plt
+
+import seraplot.matplotlib as plt
+</code></pre>
+<ul>
+<li>6 000× plus rapide que Plotly (mesuré, 1000 graphiques en barres)</li>
+<li>200× plus petit en taille de fichier</li>
+<li>HTML interactif par défaut</li>
+<li>zéro dépendance Python</li>
+</ul>
+<hr>
+<h2 id="le-moment-où-ça-fait-tilt"><a class="header" href="#le-moment-où-ça-fait-tilt">Le moment où ça fait tilt</a></h2>
+<pre><code class="language-python">import seraplot as sp
+
+sp.scatter("1M points", list(range(1_000_000)), [x**0.5 for x in range(1_000_000)]).show()
+</code></pre>
+<p><strong>1 million de points. Interactif. Dans Jupyter.</strong></p>
+<p>Pas de config. Pas de backend. Pas d’attente.</p>
+<hr>
+<h2 id="pourquoi-les-gens-basculent-vraiment"><a class="header" href="#pourquoi-les-gens-basculent-vraiment">Pourquoi les gens basculent vraiment</a></h2>
+<p>Les gens ne basculent pas à cause des benchmarks.
+Ils basculent parce que quelque chose devient <strong>possible</strong>.</p>
+<h3 id="tableaux-de-bord-sans-backend"><a class="header" href="#tableaux-de-bord-sans-backend">Tableaux de bord sans backend</a></h3>
+<p>Chaque graphique est un fichier HTML autonome. Déposez-le n’importe où — S3, e-mail, Git, Notion.
+Pas de serveur, pas de Dash, pas de Streamlit.</p>
+<h3 id="graphiques-par-e-mail"><a class="header" href="#graphiques-par-e-mail">Graphiques par e-mail</a></h3>
+<p>21 Ko de HTML interactif contre les 4,7 Mo de blob statique de Plotly.</p>
+<h3 id="pipelines-ci-à-grande-échelle"><a class="header" href="#pipelines-ci-à-grande-échelle">Pipelines CI à grande échelle</a></h3>
+<p>1 000 graphiques en 6 ms. Pas 37 secondes. Pas 60 secondes.</p>
+<h3 id="applications-hors-ligne"><a class="header" href="#applications-hors-ligne">Applications hors-ligne</a></h3>
+<p>Pas de CDN. Pas de framework JS. Pas d’internet au moment du rendu. Fonctionne en environnement isolé.</p>
+<h3 id="apis-qui-retournent-des-graphiques"><a class="header" href="#apis-qui-retournent-des-graphiques">APIs qui retournent des graphiques</a></h3>
+<p>Retournez du HTML directement depuis un endpoint FastAPI. 21 Ko dans le corps de la réponse, pas de fichiers temporaires.</p>
+<hr>
+<h2 id="même-graphique--trois-bibliothèques"><a class="header" href="#même-graphique--trois-bibliothèques">Même graphique — trois bibliothèques</a></h2>
+<div class="sp-tabs" id="g1fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab(&#39;g1fr&#39;,&#39;g1fra&#39;,this)">SeraPlot — 2 lignes</button>
+<button class="sp-tb" onclick="spTab(&#39;g1fr&#39;,&#39;g1frb&#39;,this)">Plotly — 4 lignes</button>
+<button class="sp-tb" onclick="spTab(&#39;g1fr&#39;,&#39;g1frc&#39;,this)">Matplotlib — 7 lignes</button>
+</div>
+
+<div id="g1fra" class="sp-tc sp-on">
+<pre><code class="language-python">import seraplot as sp
+sp.bar("Chiffre d'affaires par produit", labels, values).save("chart.html")</code></pre>
+</div>
+
+<div id="g1frb" class="sp-tc">
+<pre><code class="language-python">import plotly.express as px
+fig = px.bar(x=labels, y=values, title="Chiffre d'affaires par produit")
+fig.update_layout(template="plotly_white")
+fig.write_html("chart.html")</code></pre>
+</div>
+
+<div id="g1frc" class="sp-tc">
+<pre><code class="language-python">import matplotlib.pyplot as plt
+fig, ax = plt.subplots(figsize=(9, 5))
+ax.bar(labels, values, color="#6366f1")
+ax.set_title("Chiffre d'affaires par produit")
+ax.set_ylabel("Chiffre d'affaires")
+plt.tight_layout()
+plt.savefig("chart.png")</code></pre>
+</div>
+
+</div>
+
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th></th><th style="text-align: center">SeraPlot</th><th style="text-align: center">Plotly</th><th style="text-align: center">Matplotlib</th></tr>
+</thead>
+<tbody>
+<tr><td>Lignes de code</td><td style="text-align: center"><strong>2</strong></td><td style="text-align: center">4</td><td style="text-align: center">7</td></tr>
+<tr><td>Sortie</td><td style="text-align: center">HTML</td><td style="text-align: center">HTML</td><td style="text-align: center">PNG</td></tr>
+<tr><td>Taille fichier</td><td style="text-align: center"><strong>21 Ko</strong></td><td style="text-align: center">4,7 Mo</td><td style="text-align: center">~150 Ko</td></tr>
+<tr><td>Interactif</td><td style="text-align: center">✅</td><td style="text-align: center">✅</td><td style="text-align: center">❌</td></tr>
+<tr><td>Dépendances</td><td style="text-align: center"><strong>0</strong></td><td style="text-align: center">6+</td><td style="text-align: center">3+</td></tr>
+<tr><td>Migration 1 ligne</td><td style="text-align: center">✅</td><td style="text-align: center">—</td><td style="text-align: center">—</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="1-000-graphiques-mesurés"><a class="header" href="#1-000-graphiques-mesurés">1 000 graphiques. Mesurés.</a></h2>
+<p>Même code, mêmes données aléatoires, même machine. Sortie HTML complète chronométrée.</p>
+<div class="sp-tabs" id="g-bench-fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab(&#39;g-bench-fr&#39;,&#39;gb-sp-fr&#39;,this)">SeraPlot — 6 ms</button>
+<button class="sp-tb" onclick="spTab(&#39;g-bench-fr&#39;,&#39;gb-pl-fr&#39;,this)">Plotly — 37 s</button>
+<button class="sp-tb" onclick="spTab(&#39;g-bench-fr&#39;,&#39;gb-mp-fr&#39;,this)">Matplotlib — 60 s</button>
+</div>
+
+<div id="gb-sp-fr" class="sp-tc sp-on">
+<pre><code class="language-python">import seraplot as sp
+categories = ["Électronique", "Vêtements", "Alimentation", "Livres", "Sport", "Jouets", "Santé", "Auto"]
+data = [...]
+for i in range(1000):
+    sp.bar(f"Rapport #{i+1}", categories, data[i]).html</code></pre>
+
+<p style="padding:10px 16px;margin:0;color:#6366f1;font-weight:700">1 000 graphiques en 6 ms — 6 µs/graphique</p>
+
+<iframe src="previews/bench-seraplot.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
+</div>
+
+<div id="gb-pl-fr" class="sp-tc">
+<pre><code class="language-python">import plotly.graph_objects as go
+categories = ["Électronique", "Vêtements", "Alimentation", "Livres", "Sport", "Jouets", "Santé", "Auto"]
+data = [...]
+for i in range(1000):
+    fig = go.Figure(data=[go.Bar(x=categories, y=data[i])])
+    fig.update_layout(title=f"Rapport #{i+1}", template="plotly_dark")
+    fig.to_html(full_html=True, include_plotlyjs="cdn")</code></pre>
+
+<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1 000 graphiques en 37 023 ms — 6 170× plus lent</p>
+
+<iframe src="previews/bench-plotly.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
+</div>
+
+<div id="gb-mp-fr" class="sp-tc">
+<pre><code class="language-python">import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+categories = ["Électronique", "Vêtements", "Alimentation", "Livres", "Sport", "Jouets", "Santé", "Auto"]
+data = [...]
+for i in range(1000):
+    fig, ax = plt.subplots(figsize=(9, 5))
+    ax.bar(categories, data[i])
+    ax.set_title(f"Rapport #{i+1}")
+    fig.savefig(f"chart_{i}.png")
+    plt.close()</code></pre>
+
+<p style="padding:10px 16px;margin:0;color:#ef4444;font-weight:700">1 000 graphiques en 60 352 ms — 10 058× plus lent</p>
+
+<iframe src="previews/bench-matplotlib.html" style="width:100%;height:480px;border:none;border-top:1px solid #334155" loading="lazy"></iframe>
+</div>
+
+</div>
+
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Échelle</th><th style="text-align: center">SeraPlot</th><th style="text-align: center">Plotly</th><th style="text-align: center">Matplotlib</th></tr>
+</thead>
+<tbody>
+<tr><td>1 000 graphiques</td><td style="text-align: center"><strong>6 ms</strong></td><td style="text-align: center">37 s</td><td style="text-align: center">60 s</td></tr>
+<tr><td>10 000 graphiques</td><td style="text-align: center"><strong>~60 ms</strong></td><td style="text-align: center">~6 min</td><td style="text-align: center">~10 min</td></tr>
+<tr><td>100 000 graphiques</td><td style="text-align: center"><strong>~600 ms</strong></td><td style="text-align: center">~1 h</td><td style="text-align: center">~1,7 h</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="vitesse-du-moteur-de-rendu"><a class="header" href="#vitesse-du-moteur-de-rendu">Vitesse du moteur de rendu</a></h2>
+<p><strong>Benchmark : dataset Diabetes (n=768, 40 itérations). Temps de rendu Rust — création de l’objet graphique, pas la sérialisation HTML complète.</strong></p>
+<div style="font-family:monospace;margin:1.2em 0">
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Camembert</span>
+  
+<div style="background:#6366f1;width:300px;height:16px;border-radius:3px"></div>
+
+  <b style="color:#6366f1;font-size:.85em">7 956×</b>
+</div>
+
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Barres</span>
+  
+<div style="background:#6366f1;width:245px;height:16px;border-radius:3px"></div>
+
+  <b style="color:#6366f1;font-size:.85em">6 488×</b>
+</div>
+
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Sucette</span>
+  
+<div style="background:#6366f1;width:150px;height:16px;border-radius:3px"></div>
+
+  <b style="color:#6366f1;font-size:.85em">3 983×</b>
+</div>
+
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Barres groupées</span>
+  
+<div style="background:#6366f1;width:136px;height:16px;border-radius:3px"></div>
+
+  <b style="color:#6366f1;font-size:.85em">3 596×</b>
+</div>
+
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Bougie</span>
+  
+<div style="background:#6366f1;width:77px;height:16px;border-radius:3px"></div>
+
+  <b style="color:#6366f1;font-size:.85em">2 038×</b>
+</div>
+
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">Radar</span>
+  
+<div style="background:#6366f1;width:56px;height:16px;border-radius:3px"></div>
+
+  <b style="color:#6366f1;font-size:.85em">1 498×</b>
+</div>
+
+<div style="display:flex;align-items:center;gap:12px;margin:6px 0">
+  <span style="min-width:130px;font-size:.85em">KDE</span>
+  
+<div style="background:#6366f1;width:28px;height:16px;border-radius:3px"></div>
+
+  <b style="color:#6366f1;font-size:.85em">753×</b>
+</div>
+
+</div>
+
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Graphique</th><th>SeraPlot</th><th>Plotly figure</th><th>Plotly → HTML</th><th>Matplotlib</th></tr>
+</thead>
+<tbody>
+<tr><td>Camembert</td><td><strong>4,2</strong></td><td>725</td><td>33 416</td><td>15 085</td></tr>
+<tr><td>Barres</td><td><strong>2,8</strong></td><td>658</td><td>18 166</td><td>13 596</td></tr>
+<tr><td>Barres groupées</td><td><strong>5,0</strong></td><td>558</td><td>17 981</td><td>17 445</td></tr>
+<tr><td>Histogramme</td><td><strong>12,4</strong></td><td>2 496</td><td>32 762</td><td>37 973</td></tr>
+<tr><td>Nuage de points</td><td><strong>17,0</strong></td><td>3 916</td><td>21 615</td><td>14 141</td></tr>
+<tr><td>Violon</td><td><strong>16,7</strong></td><td>2 616</td><td>21 347</td><td>21 211</td></tr>
+<tr><td>Boîte à moustaches</td><td><strong>18,4</strong></td><td>2 329</td><td>21 799</td><td>15 590</td></tr>
+<tr><td>KDE</td><td><strong>26,3</strong></td><td>2 981</td><td>19 807</td><td>40 108</td></tr>
+<tr><td>Radar</td><td><strong>11,8</strong></td><td>962</td><td>17 679</td><td>20 942</td></tr>
+<tr><td>Sucette</td><td><strong>6,3</strong></td><td>8 382</td><td>25 096</td><td>9 072</td></tr>
+<tr><td>Bougie</td><td><strong>8,8</strong></td><td>1 478</td><td>17 934</td><td>N/A</td></tr>
+<tr><td>Ridgeline</td><td><strong>88,8</strong></td><td>N/A</td><td>N/A</td><td>N/A</td></tr>
+</tbody>
+</table>
+</div>
+<p>Toutes les valeurs en µs.</p>
+<hr>
+<h2 id="taille-des-fichiers-de-sortie"><a class="header" href="#taille-des-fichiers-de-sortie">Taille des fichiers de sortie</a></h2>
+<p>Plotly embarque tout son bundle JavaScript dans chaque fichier HTML.
+SeraPlot n’inclut que le JS nécessaire au type de graphique spécifique.</p>
+<div style="font-family:monospace;margin:1.2em 0">
+<div style="display:flex;align-items:center;gap:8px;margin:6px 0">
+  <span style="min-width:90px;font-size:.85em">Camembert</span>
+  
+<div style="display:flex;gap:3px;align-items:center">
+    
+<div style="background:#6366f1;width:5px;height:16px;border-radius:2px"></div>
+
+    
+<div style="background:#ef4444;width:300px;height:16px;border-radius:2px"></div>
+
+  </div>
+
+  <span style="font-size:.8em;color:#94a3b8">19 Ko vs 4 733 Ko — <b style="color:#ef4444">246×</b></span>
+</div>
+
+<div style="display:flex;align-items:center;gap:8px;margin:6px 0">
+  <span style="min-width:90px;font-size:.85em">Barres</span>
+  
+<div style="display:flex;gap:3px;align-items:center">
+    
+<div style="background:#6366f1;width:5px;height:16px;border-radius:2px"></div>
+
+    
+<div style="background:#ef4444;width:274px;height:16px;border-radius:2px"></div>
+
+  </div>
+
+  <span style="font-size:.8em;color:#94a3b8">21 Ko vs 4 733 Ko — <b style="color:#ef4444">225×</b></span>
+</div>
+
+<div style="display:flex;align-items:center;gap:8px;margin:6px 0">
+  <span style="min-width:90px;font-size:.85em">Nuage de points</span>
+  
+<div style="display:flex;gap:3px;align-items:center">
+    
+<div style="background:#6366f1;width:5px;height:16px;border-radius:2px"></div>
+
+    
+<div style="background:#ef4444;width:148px;height:16px;border-radius:2px"></div>
+
+  </div>
+
+  <span style="font-size:.8em;color:#94a3b8">39 Ko vs 4 740 Ko — <b style="color:#ef4444">121×</b></span>
+</div>
+
+<div style="display:flex;align-items:center;gap:8px;margin:6px 0">
+  <span style="min-width:90px;font-size:.85em">Radar</span>
+  
+<div style="display:flex;gap:3px;align-items:center">
+    
+<div style="background:#6366f1;width:5px;height:16px;border-radius:2px"></div>
+
+    
+<div style="background:#ef4444;width:250px;height:16px;border-radius:2px"></div>
+
+  </div>
+
+  <span style="font-size:.8em;color:#94a3b8">23 Ko vs 4 733 Ko — <b style="color:#ef4444">205×</b></span>
+</div>
+
+</div>
+
+<p>Matplotlib produit du PNG/SVG/PDF (50–500 Ko) — pas du HTML interactif.</p>
+<hr>
+<h2 id="ce-quest-réellement-seraplot"><a class="header" href="#ce-quest-réellement-seraplot">Ce qu’est réellement SeraPlot</a></h2>
+<p>SeraPlot n’est pas un wrapper autour de Plotly, Chart.js ou D3.</p>
+<p>C’est un <strong>moteur de rendu natif Rust</strong> qui génère du HTML + JS minimal par graphique.
+Un camembert reçoit le JS du camembert. Un graphique en barres reçoit le JS des barres. Rien d’autre n’est embarqué.</p>
+<p>C’est pour ça que la sortie fait 20 Ko au lieu de 4,7 Mo.</p>
+<hr>
+<h2 id="migration-en-une-ligne"><a class="header" href="#migration-en-une-ligne">Migration en une ligne</a></h2>
+<pre><code class="language-python">import seraplot.matplotlib as plt
+</code></pre>
+<p>Tout le reste reste identique.
+<code>plt.bar()</code>, <code>plt.scatter()</code>, <code>plt.hist()</code>, <code>plt.show()</code>, <code>plt.savefig()</code> — inchangés.</p>
+<hr>
+<h2 id="7-thèmes"><a class="header" href="#7-thèmes">7 thèmes</a></h2>
+<pre><code class="language-python">sp.theme("dark")
+sp.theme("apple")
+sp.theme("notion")
+sp.theme("scientific")
+sp.theme("neon")
+sp.theme("minimal")
+sp.theme("light")
+
+sp.reset_theme()
+</code></pre>
+<hr>
+<h2 id="déployer-depuis-une-api"><a class="header" href="#déployer-depuis-une-api">Déployer depuis une API</a></h2>
+<div class="sp-tabs" id="g2fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab(&#39;g2fr&#39;,&#39;g2fra&#39;,this)">SeraPlot — 7 lignes</button>
+<button class="sp-tb" onclick="spTab(&#39;g2fr&#39;,&#39;g2frb&#39;,this)">Plotly — 10 lignes</button>
+<button class="sp-tb" onclick="spTab(&#39;g2fr&#39;,&#39;g2frc&#39;,this)">Matplotlib — 14 lignes</button>
+</div>
+
+<div id="g2fra" class="sp-tc sp-on">
+<pre><code class="language-python">from fastapi import FastAPI
+import seraplot as sp
+app = FastAPI()
+@app.get("/chart")
+def revenue_chart():
+    return sp.bar("Chiffre d'affaires", labels, values).html</code></pre>
+</div>
+
+<div id="g2frb" class="sp-tc">
+<pre><code class="language-python">from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+import plotly.express as px
+app = FastAPI()
+@app.get("/chart", response_class=HTMLResponse)
+def revenue_chart():
+    fig = px.bar(x=labels, y=values, title="Chiffre d'affaires")
+    return fig.to_html(full_html=True)</code></pre>
+</div>
+
+<div id="g2frc" class="sp-tc">
+<pre><code class="language-python">from fastapi import FastAPI
+from fastapi.responses import FileResponse
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+import tempfile
+app = FastAPI()
+@app.get("/chart")
+def revenue_chart():
+    fig, ax = plt.subplots(figsize=(9, 5))
+    ax.bar(labels, values)
+    ax.set_title("Chiffre d'affaires")
+    path = tempfile.mktemp(suffix=".png")
+    plt.savefig(path)
+    plt.close()
+    return FileResponse(path, media_type="image/png")</code></pre>
+</div>
+
+</div>
+
+<p>Plotly retourne 4,7 Mo par requête. Matplotlib nécessite des I/O disque et retourne un PNG statique.
+SeraPlot retourne 21 Ko de HTML interactif directement depuis la RAM.</p>
+<hr>
+<h2 id="quand-vous-nen-avez-peut-être-pas-besoin"><a class="header" href="#quand-vous-nen-avez-peut-être-pas-besoin">Quand vous n’en avez peut-être pas besoin</a></h2>
+<ul>
+<li>scripts ponctuels rapides où le temps de rendu n’a pas d’importance</li>
+<li>personnalisation JS lourde (écosystème plotly.js)</li>
+<li>votre équipe ne lit que des rapports PNG statiques</li>
+</ul>
+<p>SeraPlot est conçu pour le débit en production.
+Si vous avez juste besoin de 3 graphiques dans un notebook, matplotlib fait très bien l’affaire.</p>
+<hr>
+<h2 id="configuration-globale"><a class="header" href="#configuration-globale">Configuration globale</a></h2>
+<p>Définie une seule fois, chaque graphique en hérite :</p>
+<pre><code class="language-python">sp.config(
+    font="Inter",
+    font_size=14,
+    title_size=22,
+    crosshair=True,
+    zoom=True,
+    animation=True,
+    export_button=True,
+    responsive=True,
+    border_radius=12,
+    margin=16,
+    opacity=0.85,
+    background="#0f172a",
+    palette=[0x818CF8, 0xFB7185, 0x34D399],
+    gridlines=True,
+)
+
+sp.bar("Chiffre d'affaires", labels, values)
+sp.line("Tendance", dates, values)
+sp.scatter("Clusters", x, y)
+</code></pre>
+<p>Surcharge par graphique avec le chaînage de méthodes :</p>
+<pre><code class="language-python">sp.bar("Chiffre d'affaires", labels, values).font("Roboto").zoom(False)
+</code></pre>
+<p>Tout réinitialiser :</p>
+<pre><code class="language-python">sp.reset_config()
+</code></pre>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Paramètre</th><th>Type</th><th>Effet</th></tr>
+</thead>
+<tbody>
+<tr><td><code>font</code></td><td>str</td><td>Police pour tout le texte</td></tr>
+<tr><td><code>font_size</code></td><td>int</td><td>Taille de police de base (px)</td></tr>
+<tr><td><code>title_size</code></td><td>int</td><td>Taille de police du titre (px)</td></tr>
+<tr><td><code>crosshair</code></td><td>bool</td><td>Réticule au survol</td></tr>
+<tr><td><code>zoom</code></td><td>bool</td><td>Zoom molette + déplacement</td></tr>
+<tr><td><code>animation</code></td><td>bool</td><td>Animation d’apparition</td></tr>
+<tr><td><code>animation_duration</code></td><td>int</td><td>Durée de l’animation (ms)</td></tr>
+<tr><td><code>export_button</code></td><td>bool</td><td>Bouton de téléchargement</td></tr>
+<tr><td><code>responsive</code></td><td>bool</td><td>Redimensionnement automatique</td></tr>
+<tr><td><code>border_radius</code></td><td>int</td><td>Rayon des coins du conteneur (px)</td></tr>
+<tr><td><code>margin</code></td><td>int</td><td>Marge intérieure (px)</td></tr>
+<tr><td><code>opacity</code></td><td>float</td><td>Opacité des éléments (0.0–1.0)</td></tr>
+<tr><td><code>background</code></td><td>str</td><td>Couleur de fond</td></tr>
+<tr><td><code>palette</code></td><td>list[int]</td><td>Palette de couleurs (entiers hex)</td></tr>
+<tr><td><code>gridlines</code></td><td>bool</td><td>Afficher la grille</td></tr>
+<tr><td><code>locale</code></td><td>str</td><td>Locale de formatage des nombres</td></tr>
+<tr><td><code>thousands_sep</code></td><td>str</td><td>Séparateur des milliers</td></tr>
+<tr><td><code>tooltip</code></td><td>str</td><td>Mode des infobulles</td></tr>
+</tbody>
+</table>
+</div>
+<h3 id="méthodes-chaînables-par-graphique"><a class="header" href="#méthodes-chaînables-par-graphique">Méthodes chaînables (par graphique)</a></h3>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Méthode</th><th>Effet</th></tr>
+</thead>
+<tbody>
+<tr><td><code>.font("Inter")</code></td><td>Surcharger la police</td></tr>
+<tr><td><code>.title_size(22)</code></td><td>Surcharger la taille du titre</td></tr>
+<tr><td><code>.set_font_size(14)</code></td><td>Surcharger la taille de base</td></tr>
+<tr><td><code>.crosshair()</code></td><td>Activer le réticule</td></tr>
+<tr><td><code>.zoom()</code></td><td>Activer zoom + déplacement</td></tr>
+<tr><td><code>.animate(300)</code></td><td>Activer l’animation (ms)</td></tr>
+<tr><td><code>.export_button()</code></td><td>Ajouter un bouton de téléchargement</td></tr>
+<tr><td><code>.responsive()</code></td><td>Redimensionnement automatique</td></tr>
+<tr><td><code>.border_radius(12)</code></td><td>Définir le rayon des coins</td></tr>
+<tr><td><code>.set_opacity(0.85)</code></td><td>Définir l’opacité</td></tr>
+<tr><td><code>.set_margin(16)</code></td><td>Définir la marge</td></tr>
+<tr><td><code>.set_bg("#0f172a")</code></td><td>Définir la couleur de fond</td></tr>
+<tr><td><code>.inject_css("...")</code></td><td>Injecter du CSS personnalisé</td></tr>
+<tr><td><code>.inject_js("...")</code></td><td>Injecter du JS personnalisé</td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="machine-learning-natif"><a class="header" href="#machine-learning-natif">Machine learning natif</a></h2>
+<p>DBSCAN natif Rust avec indexation spatiale KD-tree :</p>
+<div class="table-wrapper">
+<table>
+<thead>
+<tr><th>Points</th><th>scikit-learn</th><th>SeraPlot DBSCAN</th><th>Facteur</th></tr>
+</thead>
+<tbody>
+<tr><td>1 000</td><td>3,2 ms</td><td>0,18 ms</td><td><strong>18×</strong></td></tr>
+<tr><td>10 000</td><td>54 ms</td><td>1,1 ms</td><td><strong>49×</strong></td></tr>
+<tr><td>100 000</td><td>1 340 ms</td><td>8,4 ms</td><td><strong>160×</strong></td></tr>
+<tr><td>500 000</td><td>21 000 ms</td><td>38 ms</td><td><strong>553×</strong></td></tr>
+</tbody>
+</table>
+</div>
+<hr>
+<h2 id="tout-ce-que-seraplot-fait"><a class="header" href="#tout-ce-que-seraplot-fait">Tout ce que SeraPlot fait</a></h2>
+<ul>
+<li><strong>57 types de graphiques</strong> — chaque graphique 2D a une variante 3D WebGL</li>
+<li><strong>API matplotlib drop-in</strong> — <code>import seraplot.matplotlib as plt</code></li>
+<li><strong>Pandas &amp; NumPy natifs</strong> — passez les DataFrames directement</li>
+<li><strong>7 thèmes intégrés</strong> — dark, light, scientific, apple, notion, minimal, neon</li>
+<li><strong>Configuration globale</strong> — <code>sp.config()</code> définit la police, le zoom, le réticule, l’animation pour tous les graphiques</li>
+<li><strong>Zéro dépendance</strong> — moteur de rendu Rust pur</li>
+<li><strong>Fichiers 200× plus petits</strong> — pas de runtime JS embarqué</li>
+<li><strong>Multi-langage</strong> — Python, JavaScript/TypeScript (npm), Rust</li>
+<li><strong>DBSCAN jusqu’à 600× plus rapide</strong> que scikit-learn</li>
+<li><strong>Fonctionne partout</strong> — Python ≥ 3.8, tout OS</li>
+</ul>
+<hr>
+<h2 id="navigation-1"><a class="header" href="#navigation-1">Navigation</a></h2>
+<ul>
+<li><strong><a href="getting-started/installation.html">Installation</a></strong> — <code>pip install seraplot</code></li>
+<li><strong><a href="getting-started/quickstart.html">Démarrage rapide</a></strong> — premier graphique en 3 lignes</li>
+<li><strong><a href="getting-started/chart-methods.html">Méthodes des graphiques</a></strong> — toutes les méthodes universelles Chart</li>
+<li><strong><a href="charts/2d/bar.html">Graphiques 2D</a></strong> — 33 types</li>
+<li><strong><a href="charts/3d/scatter3d.html">Graphiques 3D</a></strong> — 17 types, rendu GPU WebGL</li>
+<li><strong><a href="ml/dbscan.html">Machine Learning</a></strong> — DBSCAN jusqu’à 600× plus rapide que scikit-learn</li>
+<li><strong><a href="api/index.html">Référence API</a></strong> — index complet des fonctions</li>
+</ul>
+</div>
+
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+                            <a rel="next prefetch" href="getting-started/installation.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+                    <a rel="next prefetch" href="getting-started/installation.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M278.6 233.4c12.5 12.5 12.5 32.8 0 45.3l-160 160c-12.5 12.5-32.8 12.5-45.3 0s-12.5-32.8 0-45.3L210.7 256 73.4 118.6c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0l160 160z"/></svg></span>
+                    </a>
+            </nav>
+
+        </div>
+
+        <template id=fa-eye><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M288 32c-80.8 0-145.5 36.8-192.6 80.6C48.6 156 17.3 208 2.5 243.7c-3.3 7.9-3.3 16.7 0 24.6C17.3 304 48.6 356 95.4 399.4C142.5 443.2 207.2 480 288 480s145.5-36.8 192.6-80.6c46.8-43.5 78.1-95.4 93-131.1c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C433.5 68.8 368.8 32 288 32zM432 256c0 79.5-64.5 144-144 144s-144-64.5-144-144s64.5-144 144-144s144 64.5 144 144zM288 192c0 35.3-28.7 64-64 64c-11.5 0-22.3-3-31.6-8.4c-.2 2.8-.4 5.5-.4 8.4c0 53 43 96 96 96s96-43 96-96s-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6z"/></svg></span></template>
+        <template id=fa-eye-slash><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M38.8 5.1C28.4-3.1 13.3-1.2 5.1 9.2S-1.2 34.7 9.2 42.9l592 464c10.4 8.2 25.5 6.3 33.7-4.1s6.3-25.5-4.1-33.7L525.6 386.7c39.6-40.6 66.4-86.1 79.9-118.4c3.3-7.9 3.3-16.7 0-24.6c-14.9-35.7-46.2-87.7-93-131.1C465.5 68.8 400.8 32 320 32c-68.2 0-125 26.3-169.3 60.8L38.8 5.1zM223.1 149.5C248.6 126.2 282.7 112 320 112c79.5 0 144 64.5 144 144c0 24.9-6.3 48.3-17.4 68.7L408 294.5c5.2-11.8 8-24.8 8-38.5c0-53-43-96-96-96c-2.8 0-5.6 .1-8.4 .4c5.3 9.3 8.4 20.1 8.4 31.6c0 10.2-2.4 19.8-6.6 28.3l-90.3-70.8zm223.1 298L373 389.9c-16.4 6.5-34.3 10.1-53 10.1c-79.5 0-144-64.5-144-144c0-6.9 .5-13.6 1.4-20.2L83.1 161.5C60.3 191.2 44 220.8 34.5 243.7c-3.3 7.9-3.3 16.7 0 24.6c14.9 35.7 46.2 87.7 93 131.1C174.5 443.2 239.2 480 320 480c47.8 0 89.9-12.9 126.2-32.5z"/></svg></span></template>
+        <template id=fa-copy><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M502.6 70.63l-61.25-61.25C435.4 3.371 427.2 0 418.7 0H255.1c-35.35 0-64 28.66-64 64l.0195 256C192 355.4 220.7 384 256 384h192c35.2 0 64-28.8 64-64V93.25C512 84.77 508.6 76.63 502.6 70.63zM464 320c0 8.836-7.164 16-16 16H255.1c-8.838 0-16-7.164-16-16L239.1 64.13c0-8.836 7.164-16 16-16h128L384 96c0 17.67 14.33 32 32 32h47.1V320zM272 448c0 8.836-7.164 16-16 16H63.1c-8.838 0-16-7.164-16-16L47.98 192.1c0-8.836 7.164-16 16-16H160V128H63.99c-35.35 0-64 28.65-64 64l.0098 256C.002 483.3 28.66 512 64 512h192c35.2 0 64-28.8 64-64v-32h-47.1L272 448z"/></svg></span></template>
+        <template id=fa-play><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/></svg></span></template>
+        <template id=fa-clock-rotate-left><span class=fa-svg><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.2.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2022 Fonticons, Inc. --><path d="M75 75L41 41C25.9 25.9 0 36.6 0 57.9V168c0 13.3 10.7 24 24 24H134.1c21.4 0 32.1-25.9 17-41l-30.8-30.8C155 85.5 203 64 256 64c106 0 192 86 192 192s-86 192-192 192c-40.8 0-78.6-12.7-109.7-34.4c-14.5-10.1-34.4-6.6-44.6 7.9s-6.6 34.4 7.9 44.6C151.2 495 201.7 512 256 512c141.4 0 256-114.6 256-256S397.4 0 256 0C185.3 0 121.3 28.7 75 75zm181 53c-13.3 0-24 10.7-24 24V256c0 6.4 2.5 12.5 7 17l72 72c9.4 9.4 24.6 9.4 33.9 0s9.4-24.6 0-33.9l-65-65V152c0-13.3-10.7-24-24-24z"/></svg></span></template>
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr-ef4e11c1.min.js"></script>
+        <script src="mark-09e88c2c.min.js"></script>
+        <script src="searcher-c2a407aa.js"></script>
+
+        <script src="clipboard-1626706a.min.js"></script>
+        <script src="highlight-abc7f01d.js"></script>
+        <script src="book-a0b12cfe.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="docs/theme/lang-switcher-e8786b46.js"></script>
+
+
+
+    </div>
+    </body>
+</html>

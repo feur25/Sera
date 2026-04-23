@@ -1,0 +1,220 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Monthly Temperature Distribution</title><style>#sp-tip{position:absolute;z-index:999999;pointer-events:none;opacity:0;transition:opacity .15s,transform .15s;transform:translateY(6px) scale(.97);background:#0b0e18;color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px;border-radius:10px;min-width:160px;max-width:340px;box-shadow:0 4px 20px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.08);overflow:hidden}#sp-tip.sp-vis{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}.sp-nav{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;border-top:1px solid rgba(255,255,255,.08)}.sp-nav-btn{cursor:pointer;padding:0 10px;border-radius:5px;height:22px;line-height:22px;font-size:18px;background:rgba(255,255,255,.10);color:#e2e8f0;user-select:none;flex-shrink:0}.sp-nav-btn:hover{background:rgba(255,255,255,.22)}.sp-nav-dis{opacity:.25;pointer-events:none}.sp-nav-ctr{flex:1;text-align:center;font-size:11px;color:#94a3b8}.sp-head{padding:10px 14px 6px;font-weight:700;font-size:14px;color:#e2e8f0;border-bottom:1px solid rgba(255,255,255,.08)}.sp-body{padding:8px 14px 12px}.sp-row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}.sp-row:last-child{border-bottom:none}.sp-key{color:#94a3b8;font-size:12px;white-space:nowrap}.sp-val{font-weight:600;font-size:12px;color:#f8fafc;text-align:right;word-break:break-all}#sp-tip img{display:block;width:100%;max-height:210px;object-fit:contain;border-top:1px solid rgba(255,255,255,.07)}#sp-tip video{display:block;width:100%;border-top:1px solid rgba(255,255,255,.07)}.sp-html{padding:8px 14px;font-size:12px;border-top:1px solid rgba(255,255,255,.07)}[data-idx]{cursor:pointer;transition:opacity .25s,filter .2s,transform .25s}[data-idx]:hover{filter:brightness(1.12) saturate(1.08)}.sp-cpanel{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:#0b0e18;color:#f1f5f9;border-radius:10px;padding:8px 16px;font-size:12px;font-family:-apple-system,Arial,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:20;white-space:nowrap;display:none}.sp-cls-x{cursor:pointer;color:#94a3b8;margin-left:6px;font-size:13px}.sp-cls-x:hover{color:#f87171}</style><style>body{margin:0;background:#0d1117;display:flex;justify-content:center;padding:0}@keyframes sp-i{from{opacity:0;transform:translateY(8px) scale(.94)}}@keyframes sp-bar{from{opacity:0;transform:scaleY(0)}}@keyframes sp-pop{0%{opacity:0;transform:scale(0)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}@keyframes sp-arc{from{opacity:0;transform:scale(.82) rotate(-6deg)}}@keyframes sp-fn{from{opacity:0;transform:scaleX(.7) translateY(8px)}}svg rect[data-idx]{transform-box:fill-box;transform-origin:bottom center;animation:sp-bar .5s cubic-bezier(.22,.61,.36,1) both}svg circle[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-pop .42s cubic-bezier(.34,1.56,.64,1) both}svg path[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-arc .48s cubic-bezier(.22,.61,.36,1) both}svg polygon[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-fn .48s cubic-bezier(.22,.61,.36,1) both}svg line[data-idx]{animation:sp-i .45s cubic-bezier(.22,.61,.36,1) both}svg rect[data-idx]:hover{transform:scaleY(1.03);filter:brightness(1.12) saturate(1.1)}svg circle[data-idx]:hover{transform:scale(1.3);filter:brightness(1.15)}svg path[data-idx]:hover{filter:brightness(1.1) drop-shadow(0 2px 8px rgba(0,0,0,.2))}.sp-bg{fill:#fff}</style><style>.sp-bg{fill:transparent!important}.sp-ttl{fill:#e2e8f0!important}svg text{fill:#cbd5e1!important}.sp-ax-x,.sp-ax-y{stroke:#475569!important}.sp-gl{stroke:#2d3748!important}.sp-xl,.sp-yl{fill:#94a3b8!important}[id^='spp']{box-shadow:none!important;border-radius:0!important}</style></head><body><div id="spp1" style="position:relative;display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)"><svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520"><rect class="sp-bg" width="100%" height="100%"/><text x="450" y="24" text-anchor="middle" font-family="-apple-system,Arial,sans-serif" font-size="15" font-weight="700" fill="#1a202c" class="sp-ttl">Monthly Temperature Distribution</text><line x1="130" y1="476" x2="770" y2="476" stroke="#cbd5e1" stroke-width="1" class="sp-ax-x"/><text x="130" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">2.58</text><text x="236" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">3.32</text><text x="343" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">4.05</text><text x="450" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">4.78</text><text x="556" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">5.52</text><text x="663" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">6.25</text><text x="770" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">6.99</text><g data-series="3"><path d="M130.00,476.00 L130.00,315.25 L140.85,310.51 L151.69,306.58 L162.54,303.53 L173.39,301.39 L184.24,300.21 L195.08,300.00 L205.93,300.77 L216.78,302.51 L227.63,305.19 L238.47,308.76 L249.32,313.17 L260.17,318.35 L271.02,324.20 L281.86,330.66 L292.71,337.61 L303.56,344.96 L314.41,352.61 L325.25,360.46 L336.10,368.41 L346.95,376.38 L357.80,384.26 L368.64,391.99 L379.49,399.50 L390.34,406.73 L401.19,413.62 L412.03,420.13 L422.88,426.25 L433.73,431.94 L444.58,437.20 L455.42,442.02 L466.27,446.41 L477.12,450.37 L487.97,453.93 L498.81,457.09 L509.66,459.90 L520.51,462.36 L531.36,464.51 L542.20,466.38 L553.05,467.99 L563.90,469.36 L574.75,470.53 L585.59,471.52 L596.44,472.35 L607.29,473.05 L618.14,473.62 L628.98,474.09 L639.83,474.48 L650.68,474.80 L661.53,475.05 L672.37,475.26 L683.22,475.42 L694.07,475.55 L704.92,475.65 L715.76,475.74 L726.61,475.80 L737.46,475.85 L748.31,475.89 L759.15,475.91 L770.00,475.94 L770.00,476.00 Z" fill="#ffffff"/><path d="M130.00,476.00 L130.00,315.25 L140.85,310.51 L151.69,306.58 L162.54,303.53 L173.39,301.39 L184.24,300.21 L195.08,300.00 L205.93,300.77 L216.78,302.51 L227.63,305.19 L238.47,308.76 L249.32,313.17 L260.17,318.35 L271.02,324.20 L281.86,330.66 L292.71,337.61 L303.56,344.96 L314.41,352.61 L325.25,360.46 L336.10,368.41 L346.95,376.38 L357.80,384.26 L368.64,391.99 L379.49,399.50 L390.34,406.73 L401.19,413.62 L412.03,420.13 L422.88,426.25 L433.73,431.94 L444.58,437.20 L455.42,442.02 L466.27,446.41 L477.12,450.37 L487.97,453.93 L498.81,457.09 L509.66,459.90 L520.51,462.36 L531.36,464.51 L542.20,466.38 L553.05,467.99 L563.90,469.36 L574.75,470.53 L585.59,471.52 L596.44,472.35 L607.29,473.05 L618.14,473.62 L628.98,474.09 L639.83,474.48 L650.68,474.80 L661.53,475.05 L672.37,475.26 L683.22,475.42 L694.07,475.55 L704.92,475.65 L715.76,475.74 L726.61,475.80 L737.46,475.85 L748.31,475.89 L759.15,475.91 L770.00,475.94 L770.00,476.00 Z" fill="#f59e0b" fill-opacity="0.22"/><polyline points="130.00,315.25 140.85,310.51 151.69,306.58 162.54,303.53 173.39,301.39 184.24,300.21 195.08,300.00 205.93,300.77 216.78,302.51 227.63,305.19 238.47,308.76 249.32,313.17 260.17,318.35 271.02,324.20 281.86,330.66 292.71,337.61 303.56,344.96 314.41,352.61 325.25,360.46 336.10,368.41 346.95,376.38 357.80,384.26 368.64,391.99 379.49,399.50 390.34,406.73 401.19,413.62 412.03,420.13 422.88,426.25 433.73,431.94 444.58,437.20 455.42,442.02 466.27,446.41 477.12,450.37 487.97,453.93 498.81,457.09 509.66,459.90 520.51,462.36 531.36,464.51 542.20,466.38 553.05,467.99 563.90,469.36 574.75,470.53 585.59,471.52 596.44,472.35 607.29,473.05 618.14,473.62 628.98,474.09 639.83,474.48 650.68,474.80 661.53,475.05 672.37,475.26 683.22,475.42 694.07,475.55 704.92,475.65 715.76,475.74 726.61,475.80 737.46,475.85 748.31,475.89 759.15,475.91 770.00,475.94" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linejoin="round"/><line x1="126" y1="476" x2="770" y2="476" stroke="#e2e8f0" stroke-width="0.6"/><text x="122" y="425" text-anchor="end" font-family="-apple-system,Arial,sans-serif" font-size="11" font-weight="600" fill="#374151">Oct</text></g><g data-series="2"><path d="M130.00,366.00 L130.00,365.94 L140.85,365.91 L151.69,365.89 L162.54,365.85 L173.39,365.80 L184.24,365.74 L195.08,365.65 L205.93,365.55 L216.78,365.42 L227.63,365.26 L238.47,365.05 L249.32,364.80 L260.17,364.48 L271.02,364.09 L281.86,363.62 L292.71,363.05 L303.56,362.35 L314.41,361.52 L325.25,360.53 L336.10,359.36 L346.95,357.99 L357.80,356.38 L368.64,354.51 L379.49,352.36 L390.34,349.90 L401.19,347.09 L412.03,343.93 L422.88,340.37 L433.73,336.41 L444.58,332.02 L455.42,327.20 L466.27,321.94 L477.12,316.25 L487.97,310.13 L498.81,303.62 L509.66,296.73 L520.51,289.50 L531.36,281.99 L542.20,274.26 L553.05,266.38 L563.90,258.41 L574.75,250.46 L585.59,242.61 L596.44,234.96 L607.29,227.61 L618.14,220.66 L628.98,214.20 L639.83,208.35 L650.68,203.17 L661.53,198.76 L672.37,195.19 L683.22,192.51 L694.07,190.77 L704.92,190.00 L715.76,190.21 L726.61,191.39 L737.46,193.53 L748.31,196.58 L759.15,200.51 L770.00,205.25 L770.00,366.00 Z" fill="#ffffff"/><path d="M130.00,366.00 L130.00,365.94 L140.85,365.91 L151.69,365.89 L162.54,365.85 L173.39,365.80 L184.24,365.74 L195.08,365.65 L205.93,365.55 L216.78,365.42 L227.63,365.26 L238.47,365.05 L249.32,364.80 L260.17,364.48 L271.02,364.09 L281.86,363.62 L292.71,363.05 L303.56,362.35 L314.41,361.52 L325.25,360.53 L336.10,359.36 L346.95,357.99 L357.80,356.38 L368.64,354.51 L379.49,352.36 L390.34,349.90 L401.19,347.09 L412.03,343.93 L422.88,340.37 L433.73,336.41 L444.58,332.02 L455.42,327.20 L466.27,321.94 L477.12,316.25 L487.97,310.13 L498.81,303.62 L509.66,296.73 L520.51,289.50 L531.36,281.99 L542.20,274.26 L553.05,266.38 L563.90,258.41 L574.75,250.46 L585.59,242.61 L596.44,234.96 L607.29,227.61 L618.14,220.66 L628.98,214.20 L639.83,208.35 L650.68,203.17 L661.53,198.76 L672.37,195.19 L683.22,192.51 L694.07,190.77 L704.92,190.00 L715.76,190.21 L726.61,191.39 L737.46,193.53 L748.31,196.58 L759.15,200.51 L770.00,205.25 L770.00,366.00 Z" fill="#10b981" fill-opacity="0.22"/><polyline points="130.00,365.94 140.85,365.91 151.69,365.89 162.54,365.85 173.39,365.80 184.24,365.74 195.08,365.65 205.93,365.55 216.78,365.42 227.63,365.26 238.47,365.05 249.32,364.80 260.17,364.48 271.02,364.09 281.86,363.62 292.71,363.05 303.56,362.35 314.41,361.52 325.25,360.53 336.10,359.36 346.95,357.99 357.80,356.38 368.64,354.51 379.49,352.36 390.34,349.90 401.19,347.09 412.03,343.93 422.88,340.37 433.73,336.41 444.58,332.02 455.42,327.20 466.27,321.94 477.12,316.25 487.97,310.13 498.81,303.62 509.66,296.73 520.51,289.50 531.36,281.99 542.20,274.26 553.05,266.38 563.90,258.41 574.75,250.46 585.59,242.61 596.44,234.96 607.29,227.61 618.14,220.66 628.98,214.20 639.83,208.35 650.68,203.17 661.53,198.76 672.37,195.19 683.22,192.51 694.07,190.77 704.92,190.00 715.76,190.21 726.61,191.39 737.46,193.53 748.31,196.58 759.15,200.51 770.00,205.25" fill="none" stroke="#10b981" stroke-width="2" stroke-linejoin="round"/><line x1="126" y1="366" x2="770" y2="366" stroke="#e2e8f0" stroke-width="0.6"/><text x="122" y="315" text-anchor="end" font-family="-apple-system,Arial,sans-serif" font-size="11" font-weight="600" fill="#374151">Jul</text></g><g data-series="1"><path d="M130.00,256.00 L130.00,255.67 L140.85,255.58 L151.69,255.45 L162.54,255.30 L173.39,255.10 L184.24,254.86 L195.08,254.56 L205.93,254.18 L216.78,253.73 L227.63,253.18 L238.47,252.51 L249.32,251.71 L260.17,250.76 L271.02,249.63 L281.86,248.30 L292.71,246.75 L303.56,244.94 L314.41,242.85 L325.25,240.46 L336.10,237.73 L346.95,234.64 L357.80,231.17 L368.64,227.29 L379.49,223.00 L390.34,218.27 L401.19,213.11 L412.03,207.51 L422.88,201.49 L433.73,195.05 L444.58,188.24 L455.42,181.08 L466.27,173.63 L477.12,165.94 L487.97,158.08 L498.81,150.13 L509.66,142.17 L520.51,134.29 L531.36,126.59 L542.20,119.16 L553.05,112.11 L563.90,105.55 L574.75,99.55 L585.59,94.22 L596.44,89.65 L607.29,85.89 L618.14,83.01 L628.98,81.07 L639.83,80.08 L650.68,80.08 L661.53,81.05 L672.37,82.99 L683.22,85.85 L694.07,89.60 L704.92,94.17 L715.76,99.49 L726.61,105.47 L737.46,112.04 L748.31,119.08 L759.15,126.50 L770.00,134.20 L770.00,256.00 Z" fill="#ffffff"/><path d="M130.00,256.00 L130.00,255.67 L140.85,255.58 L151.69,255.45 L162.54,255.30 L173.39,255.10 L184.24,254.86 L195.08,254.56 L205.93,254.18 L216.78,253.73 L227.63,253.18 L238.47,252.51 L249.32,251.71 L260.17,250.76 L271.02,249.63 L281.86,248.30 L292.71,246.75 L303.56,244.94 L314.41,242.85 L325.25,240.46 L336.10,237.73 L346.95,234.64 L357.80,231.17 L368.64,227.29 L379.49,223.00 L390.34,218.27 L401.19,213.11 L412.03,207.51 L422.88,201.49 L433.73,195.05 L444.58,188.24 L455.42,181.08 L466.27,173.63 L477.12,165.94 L487.97,158.08 L498.81,150.13 L509.66,142.17 L520.51,134.29 L531.36,126.59 L542.20,119.16 L553.05,112.11 L563.90,105.55 L574.75,99.55 L585.59,94.22 L596.44,89.65 L607.29,85.89 L618.14,83.01 L628.98,81.07 L639.83,80.08 L650.68,80.08 L661.53,81.05 L672.37,82.99 L683.22,85.85 L694.07,89.60 L704.92,94.17 L715.76,99.49 L726.61,105.47 L737.46,112.04 L748.31,119.08 L759.15,126.50 L770.00,134.20 L770.00,256.00 Z" fill="#f43f5e" fill-opacity="0.22"/><polyline points="130.00,255.67 140.85,255.58 151.69,255.45 162.54,255.30 173.39,255.10 184.24,254.86 195.08,254.56 205.93,254.18 216.78,253.73 227.63,253.18 238.47,252.51 249.32,251.71 260.17,250.76 271.02,249.63 281.86,248.30 292.71,246.75 303.56,244.94 314.41,242.85 325.25,240.46 336.10,237.73 346.95,234.64 357.80,231.17 368.64,227.29 379.49,223.00 390.34,218.27 401.19,213.11 412.03,207.51 422.88,201.49 433.73,195.05 444.58,188.24 455.42,181.08 466.27,173.63 477.12,165.94 487.97,158.08 498.81,150.13 509.66,142.17 520.51,134.29 531.36,126.59 542.20,119.16 553.05,112.11 563.90,105.55 574.75,99.55 585.59,94.22 596.44,89.65 607.29,85.89 618.14,83.01 628.98,81.07 639.83,80.08 650.68,80.08 661.53,81.05 672.37,82.99 683.22,85.85 694.07,89.60 704.92,94.17 715.76,99.49 726.61,105.47 737.46,112.04 748.31,119.08 759.15,126.50 770.00,134.20" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linejoin="round"/><line x1="126" y1="256" x2="770" y2="256" stroke="#e2e8f0" stroke-width="0.6"/><text x="122" y="205" text-anchor="end" font-family="-apple-system,Arial,sans-serif" font-size="11" font-weight="600" fill="#374151">Apr</text></g><g data-series="0"><path d="M130.00,146.00 L130.00,47.76 L140.85,39.81 L151.69,31.85 L162.54,23.97 L173.39,16.28 L184.24,8.87 L195.08,1.84 L205.93,-4.71 L216.78,-10.68 L227.63,-15.98 L238.47,-20.52 L249.32,-24.25 L260.17,-27.08 L271.02,-28.99 L281.86,-29.94 L292.71,-29.90 L303.56,-28.89 L314.41,-26.92 L325.25,-24.01 L336.10,-20.23 L346.95,-15.63 L357.80,-10.28 L368.64,-4.27 L379.49,2.31 L390.34,9.37 L401.19,16.81 L412.03,24.52 L422.88,32.40 L433.73,40.36 L444.58,48.32 L455.42,56.17 L466.27,63.85 L477.12,71.30 L487.97,78.44 L498.81,85.25 L509.66,91.67 L520.51,97.68 L531.36,103.27 L542.20,108.42 L553.05,113.13 L563.90,117.41 L574.75,121.28 L585.59,124.74 L596.44,127.81 L607.29,130.53 L618.14,132.92 L628.98,135.00 L639.83,136.80 L650.68,138.34 L661.53,139.67 L672.37,140.79 L683.22,141.74 L694.07,142.53 L704.92,143.20 L715.76,143.74 L726.61,144.20 L737.46,144.56 L748.31,144.86 L759.15,145.11 L770.00,145.30 L770.00,146.00 Z" fill="#ffffff"/><path d="M130.00,146.00 L130.00,47.76 L140.85,39.81 L151.69,31.85 L162.54,23.97 L173.39,16.28 L184.24,8.87 L195.08,1.84 L205.93,-4.71 L216.78,-10.68 L227.63,-15.98 L238.47,-20.52 L249.32,-24.25 L260.17,-27.08 L271.02,-28.99 L281.86,-29.94 L292.71,-29.90 L303.56,-28.89 L314.41,-26.92 L325.25,-24.01 L336.10,-20.23 L346.95,-15.63 L357.80,-10.28 L368.64,-4.27 L379.49,2.31 L390.34,9.37 L401.19,16.81 L412.03,24.52 L422.88,32.40 L433.73,40.36 L444.58,48.32 L455.42,56.17 L466.27,63.85 L477.12,71.30 L487.97,78.44 L498.81,85.25 L509.66,91.67 L520.51,97.68 L531.36,103.27 L542.20,108.42 L553.05,113.13 L563.90,117.41 L574.75,121.28 L585.59,124.74 L596.44,127.81 L607.29,130.53 L618.14,132.92 L628.98,135.00 L639.83,136.80 L650.68,138.34 L661.53,139.67 L672.37,140.79 L683.22,141.74 L694.07,142.53 L704.92,143.20 L715.76,143.74 L726.61,144.20 L737.46,144.56 L748.31,144.86 L759.15,145.11 L770.00,145.30 L770.00,146.00 Z" fill="#6366f1" fill-opacity="0.22"/><polyline points="130.00,47.76 140.85,39.81 151.69,31.85 162.54,23.97 173.39,16.28 184.24,8.87 195.08,1.84 205.93,-4.71 216.78,-10.68 227.63,-15.98 238.47,-20.52 249.32,-24.25 260.17,-27.08 271.02,-28.99 281.86,-29.94 292.71,-29.90 303.56,-28.89 314.41,-26.92 325.25,-24.01 336.10,-20.23 346.95,-15.63 357.80,-10.28 368.64,-4.27 379.49,2.31 390.34,9.37 401.19,16.81 412.03,24.52 422.88,32.40 433.73,40.36 444.58,48.32 455.42,56.17 466.27,63.85 477.12,71.30 487.97,78.44 498.81,85.25 509.66,91.67 520.51,97.68 531.36,103.27 542.20,108.42 553.05,113.13 563.90,117.41 574.75,121.28 585.59,124.74 596.44,127.81 607.29,130.53 618.14,132.92 628.98,135.00 639.83,136.80 650.68,138.34 661.53,139.67 672.37,140.79 683.22,141.74 694.07,142.53 704.92,143.20 715.76,143.74 726.61,144.20 737.46,144.56 748.31,144.86 759.15,145.11 770.00,145.30" fill="none" stroke="#6366f1" stroke-width="2" stroke-linejoin="round"/><line x1="126" y1="146" x2="770" y2="146" stroke="#e2e8f0" stroke-width="0.6"/><text x="122" y="95" text-anchor="end" font-family="-apple-system,Arial,sans-serif" font-size="11" font-weight="600" fill="#374151">Jan</text></g><g data-legend="1" data-series="0"><rect x="778" y="46" width="12" height="12" rx="2" fill="#6366f1"/><text x="794" y="56" font-family="Arial,sans-serif" font-size="10" fill="#374151">Jan</text></g><g data-legend="1" data-series="1"><rect x="778" y="68" width="12" height="12" rx="2" fill="#f43f5e"/><text x="794" y="78" font-family="Arial,sans-serif" font-size="10" fill="#374151">Apr</text></g><g data-legend="1" data-series="2"><rect x="778" y="90" width="12" height="12" rx="2" fill="#10b981"/><text x="794" y="100" font-family="Arial,sans-serif" font-size="10" fill="#374151">Jul</text></g><g data-legend="1" data-series="3"><rect x="778" y="112" width="12" height="12" rx="2" fill="#f59e0b"/><text x="794" y="122" font-family="Arial,sans-serif" font-size="10" fill="#374151">Oct</text></g><text x="450" y="516" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#6b7280" class="sp-xl">°C</text></svg><div class="sp-sel-ov" style="display:none"></div><div class="sp-cpanel"></div><script>(function(){
+var wrap=document.getElementById('spp1');if(!wrap)return;wrap.removeAttribute('id');
+var svg=wrap.querySelector('svg');var data=[];
+
+var tip=document.getElementById('sp-tip');
+if(!tip){tip=document.createElement('div');tip.id='sp-tip';document.body.appendChild(tip);}
+var tipIdxs=[],tipPos=0,lastE=null;
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function cardHTML(d){
+ var h='';if(d.title)h+='<div class="sp-head">'+esc(d.title)+'</div>';
+ var rows='';(d.kv||[]).forEach(function(p){
+  rows+='<div class="sp-row"><span class="sp-key">'+esc(p[0])+'</span><span class="sp-val">'+esc(p[1])+'</span></div>';});
+ if(rows)h+='<div class="sp-body">'+rows+'</div>';
+ if(d.image)h+='<img src="'+esc(d.image)+'" alt="" loading="eager">';
+ if(d.video)h+='<video src="'+esc(d.video)+'" controls muted playsinline></video>';
+ if(d.html)h+='<div class="sp-html">'+d.html+'</div>';
+ return h;}
+function placeTip(e){
+ var sx=window.scrollX||0,sy=window.scrollY||0;
+ var x=e.pageX+16,y=e.pageY-14;
+ var tw=tip.offsetWidth||220,th=tip.offsetHeight||60;
+ if(x+tw>sx+window.innerWidth-6)x=e.pageX-tw-16;
+ if(x<sx+4)x=sx+4;
+ if(y<sy+6)y=e.pageY+20;
+ if(y+th>sy+window.innerHeight-6)y=sy+window.innerHeight-th-6;
+ tip.style.left=x+'px';tip.style.top=y+'px';}
+
+function getSlot(idx){
+ var d=data[idx];if(d)return d;
+ var el=svg.querySelector('[data-idx="'+idx+'"]');if(!el)return null;
+ var kv=[];
+ var x=el.getAttribute('data-x'),y=el.getAttribute('data-y');
+ if(x!=null){var xf=parseFloat(x);kv.push(['X',xf===xf?xf.toFixed(2):x]);}
+ if(y!=null){kv.push(['Valeur',parseFloat(y).toFixed(2)]);}
+ else{var v=el.getAttribute('data-v');
+ if(v!=null){
+  var r=el.getAttribute('data-r'),c=el.getAttribute('data-c');
+  kv.push(['Valeur',parseFloat(v).toFixed(3)]);
+  if(r)kv.push(['Ligne',r]);if(c)kv.push(['Colonne',c]);}}
+ var z=el.getAttribute('data-z');
+ if(z!=null){kv.push(['Z',parseFloat(z).toFixed(2)]);}
+ var lbl=el.getAttribute('data-lbl');
+ var an=el.attributes;if(an){for(var ai=0;ai<an.length;ai++){var a=an[ai];if(a.name.substring(0,8)==='data-kv-'){kv.push([a.name.substring(8),a.value]);}}}
+ var title=lbl||(el.getAttribute('data-v')!=null&&el.getAttribute('data-r')!=null?el.getAttribute('data-r')+' \u00d7 '+el.getAttribute('data-c'):'Point '+(idx+1));
+ return{title:title,kv:kv};}
+function renderTip(){
+ if(!tipIdxs.length){tip.classList.remove('sp-vis');return;}
+ var d=getSlot(tipIdxs[tipPos]);if(!d){tip.classList.remove('sp-vis');return;}
+ var h=cardHTML(d);
+ if(tipIdxs.length>1){
+  var p=tipPos,n=tipIdxs.length;
+  h+='<div class="sp-nav">'
+   +'<span class="sp-nav-btn'+(p>0?'':' sp-nav-dis')+'" data-d="-1">&#8249;</span>'
+   +'<span class="sp-nav-ctr">'+(p+1)+' / '+n+'</span>'
+   +'<span class="sp-nav-btn'+(p<n-1?'':' sp-nav-dis')+'" data-d="1">&#8250;</span>'
+   +'</div>';}
+ tip.innerHTML=h;tip.classList.add('sp-vis');
+ if(lastE)placeTip(lastE);
+ tip.querySelectorAll('.sp-nav-btn:not(.sp-nav-dis)').forEach(function(btn){
+  btn.onclick=function(ev){ev.stopPropagation();
+   var nd=tipPos+parseInt(btn.getAttribute('data-d'),10);
+   if(nd>=0&&nd<tipIdxs.length){tipPos=nd;renderTip();}};});}
+var dragging=false,dsx=0,dsy=0,moved=false,pinned=false;
+
+wrap.addEventListener('mouseleave',function(e){
+ if(pinned)return;
+ var rt=e.relatedTarget;
+ if(rt&&(rt===tip||tip.contains(rt)))return;
+ tip.classList.remove('sp-vis');tipIdxs=[];});
+wrap.addEventListener('mousemove',function(e){
+ if(dragging||pinned)return;
+ lastE=e;
+
+ var hits=[];
+ document.elementsFromPoint(e.clientX,e.clientY).forEach(function(el){
+  if(el===tip||tip.contains(el))return;
+  var found=null;
+  for(var n=el;n&&n!==document.body;n=n.parentElement){
+   if(found===null&&n.getAttribute&&n.getAttribute('data-idx')!==null)found=n;
+   if(n===wrap){
+    if(found!==null){var idx=parseInt(found.getAttribute('data-idx'),10);
+     if(hits.indexOf(idx)===-1)hits.push(idx);}
+    return;}
+  }
+ });
+ if(hits.length){
+  var same=hits.length===tipIdxs.length&&hits.every(function(v,i){return v===tipIdxs[i];});
+  if(!same){tipIdxs=hits;tipPos=0;renderTip();}else placeTip(e);
+ }else{tip.classList.remove('sp-vis');tipIdxs=[];}});
+
+var origVB=svg.getAttribute('viewBox')||'';
+function parseVB(s){return s.split(/[\s,]+/).map(Number);}
+function animateVB(x,y,w,h){
+ svg.style.transition='all 0.5s cubic-bezier(.4,0,.2,1)';
+ svg.setAttribute('viewBox',x+' '+y+' '+w+' '+h);}
+function resetVB(){
+ svg.style.transition='all 0.45s cubic-bezier(.4,0,.2,1)';
+ if(origVB)svg.setAttribute('viewBox',origVB);
+ setTimeout(function(){svg.style.transition='';},500);}
+function reAnim(){var els=svg.querySelectorAll('[data-idx]');els.forEach(function(el){el.style.animation='none';el.style.filter='';});void svg.offsetHeight;els.forEach(function(el,i){el.style.animation='';el.style.animationDelay=(i*14)+'ms';});}
+var ov=wrap.querySelector('.sp-sel-ov');var panel=wrap.querySelector('.sp-cpanel');
+wrap.addEventListener('mousedown',function(e){
+ if(e.button!==0)return;
+ var t=e.target;if(t===panel||panel.contains(t))return;if(t===tip||tip.contains(t))return;
+ dragging=true;moved=false;
+ var r=wrap.getBoundingClientRect();dsx=e.clientX-r.left;dsy=e.clientY-r.top;
+ ov.style.cssText='display:none;position:absolute;pointer-events:none;border:2px solid #6366F1;background:rgba(99,102,241,.12);box-sizing:border-box;border-radius:3px;z-index:10';
+ e.preventDefault();});
+document.addEventListener('mousemove',function(e){if(!dragging)return;
+ var r=wrap.getBoundingClientRect();var cx=e.clientX-r.left,cy=e.clientY-r.top;
+ if(!moved&&Math.abs(cx-dsx)<8&&Math.abs(cy-dsy)<8)return;
+ if(!moved){pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}
+ moved=true;ov.style.display='block';
+ ov.style.left=Math.min(dsx,cx)+'px';ov.style.top=Math.min(dsy,cy)+'px';
+ ov.style.width=Math.abs(cx-dsx)+'px';ov.style.height=Math.abs(cy-dsy)+'px';});
+document.addEventListener('mouseup',function(e){if(!dragging)return;dragging=false;
+ ov.style.display='none';if(!moved){
+ var ch=[];document.elementsFromPoint(e.clientX,e.clientY).forEach(function(el){if(el===tip||tip.contains(el))return;var fd=null;for(var n2=el;n2&&n2!==document.body;n2=n2.parentElement){if(fd===null&&n2.getAttribute&&n2.getAttribute('data-idx')!==null)fd=n2;if(n2===wrap){if(fd!==null){var idx=parseInt(fd.getAttribute('data-idx'),10);if(ch.indexOf(idx)===-1)ch.push(idx);}return;}}});
+ if(ch.length){pinned=true;tipIdxs=ch;tipPos=0;lastE=e;renderTip();}else{pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}return;}
+ var r=wrap.getBoundingClientRect();var cx=e.clientX-r.left,cy=e.clientY-r.top;
+ var rx1=Math.min(dsx,cx),ry1=Math.min(dsy,cy),rx2=Math.max(dsx,cx),ry2=Math.max(dsy,cy);
+ if(rx2-rx1<8&&ry2-ry1<8)return;
+ var ctm=svg.getScreenCTM();if(!ctm)return;var inv=ctm.inverse();
+ function toS(px,py){var pt=svg.createSVGPoint();pt.x=px+r.left;pt.y=py+r.top;return pt.matrixTransform(inv);}
+ var p1=toS(rx1,ry1),p2=toS(rx2,ry2);
+ var bx1=Math.min(p1.x,p2.x),by1=Math.min(p1.y,p2.y),bx2=Math.max(p1.x,p2.x),by2=Math.max(p1.y,p2.y);
+ var pts=svg.querySelectorAll('[data-idx]');var sel=[],unsel=[];
+ pts.forEach(function(el){try{var bb=el.getBBox();var ecx=bb.x+bb.width/2,ecy=bb.y+bb.height/2;
+  if(ecx>=bx1&&ecx<=bx2&&ecy>=by1&&ecy<=by2)sel.push(el);else unsel.push(el);}catch(ex){unsel.push(el);}});
+ if(!sel.length)return;
+ sel.forEach(function(el){el.style.stroke='#6366F1';el.style.strokeWidth='2.5';el.style.opacity='';el.style.transform='';});
+ unsel.forEach(function(el){
+  el.style.transformBox='fill-box';el.style.transformOrigin='center';
+  el.style.transition='transform 0.28s cubic-bezier(.4,0,.2,1),opacity 0.28s';
+  el.style.transform='scale(0,0)';el.style.opacity='0';
+  setTimeout(function(){el.style.display='none';el.style.transition='';},300);});
+
+ var mnx=Infinity,mny=Infinity,mxx=-Infinity,mxy=-Infinity;
+ sel.forEach(function(el){try{var bb=el.getBBox();
+  mnx=Math.min(mnx,bb.x);mny=Math.min(mny,bb.y);
+  mxx=Math.max(mxx,bb.x+bb.width);mxy=Math.max(mxy,bb.y+bb.height);}catch(ex){}});
+ var vb=parseVB(origVB.length?origVB:(svg.getAttribute('viewBox')||'0 0 800 500'));
+ var axL=mnx-vb[0],axT=mny-vb[1],axR=(vb[0]+vb[2])-mxx,axB=(vb[1]+vb[3])-mxy;
+ var sw=mxx-mnx||1,sh=mxy-mny||1;
+ var pL=Math.max(sw*0.12,axL>0?axL*0.7:sw*0.12);
+ var pR=Math.max(sw*0.08,axR>0?axR*0.5:sw*0.08);
+ var pT=Math.max(sh*0.12,axT>0?axT*0.7:sh*0.12);
+ var pB=Math.max(sh*0.20,axB>0?axB*0.8:sh*0.20);
+ animateVB(mnx-pL,mny-pT,(mxx+pR)-(mnx-pL),(mxy+pB)-(mny-pT));
+
+ var xs=sel.map(function(el){return parseFloat(el.getAttribute('data-x'));}).filter(Number.isFinite);
+ var ys=sel.map(function(el){return parseFloat(el.getAttribute('data-y'));}).filter(Number.isFinite);
+ var s='<span style="color:#6366F1;font-weight:700">'+sel.length+' pts</span>';
+ if(xs.length&&ys.length){
+  var mx=xs.reduce(function(a,b){return a+b;})/xs.length;
+  var my=ys.reduce(function(a,b){return a+b;})/ys.length;
+  var vX=xs.map(function(v){return(v-mx)*(v-mx);}).reduce(function(a,b){return a+b;})/xs.length;
+  var vY=ys.map(function(v){return(v-my)*(v-my);}).reduce(function(a,b){return a+b;})/ys.length;
+  s+=' &middot; X&#772; <b>'+mx.toFixed(2)+'</b> &plusmn;'+Math.sqrt(vX).toFixed(2);
+  s+=' &middot; Y&#772; <b>'+my.toFixed(2)+'</b> &plusmn;'+Math.sqrt(vY).toFixed(2);}
+ s+=' <span class="sp-cls-x">&#10005;</span>';
+ panel.innerHTML=s;panel.style.display='block';
+ panel.querySelector('.sp-cls-x').addEventListener('click',clearSel);});
+function clearSel(){panel.style.display='none';resetVB();
+ svg.querySelectorAll('[data-idx]').forEach(function(el){
+  el.style.display='';el.style.opacity='';el.style.stroke='';el.style.strokeWidth='';el.style.filter='';
+  el.style.transform='';el.style.transition='';el.style.transformBox='';el.style.transformOrigin='';});
+ reAnim();}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(dblZoomed){dblZoomed=false;resetVB();svg.querySelectorAll('[data-idx]').forEach(function(el){el.style.opacity='';el.style.display='';el.style.transform='';el.style.transition='';});reAnim();}if(pinned){pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}}});
+var dblZoomed=false;
+svg.addEventListener('dblclick',function(e){
+ if(dblZoomed){dblZoomed=false;resetVB();svg.querySelectorAll('[data-idx]').forEach(function(el){el.style.opacity='';el.style.display='';el.style.transform='';el.style.transition='';el.style.filter='';});reAnim();return;}
+ var found=null;
+ for(var nd=e.target;nd&&nd!==svg;nd=nd.parentElement){if(nd.getAttribute&&nd.getAttribute('data-idx')!==null){found=nd;break;}}
+ if(!found)return;
+ e.stopPropagation();
+ var idx=parseInt(found.getAttribute('data-idx'),10);
+ var bb;try{bb=found.getBBox();}catch(ex){return;}
+ var pad=Math.max(bb.width,bb.height)*1.5+30;
+ svg.querySelectorAll('[data-idx]').forEach(function(el){
+  var eli=parseInt(el.getAttribute('data-idx'),10);
+  if(eli===idx){el.style.opacity='1';el.style.filter='drop-shadow(0 0 6px rgba(99,102,241,.45))';}else{el.style.display='none';}});
+ var vb=parseVB(origVB.length?origVB:(svg.getAttribute('viewBox')||'0 0 800 500'));
+ var nx=Math.max(vb[0],bb.x-pad),ny=Math.max(vb[1],bb.y-pad);
+ var nw=Math.min(vb[2],bb.width+pad*2),nh=Math.min(vb[3],bb.height+pad*2);
+ animateVB(nx,ny,nw,nh);
+ dblZoomed=true;
+},false);
+var legs=svg.querySelectorAll('[data-legend]');
+legs.forEach(function(lg){lg.style.cursor='pointer';
+lg.addEventListener('click',function(){
+ var s=lg.getAttribute('data-series');if(!s)return;
+ var h=lg.getAttribute('data-hidden')==='1';
+ var els=svg.querySelectorAll('[data-series="'+s+'"]:not([data-legend])');
+ if(h){els.forEach(function(el){el.style.display='';el.style.opacity='';el.style.transform='';el.style.transformBox='';el.style.transformOrigin='';el.style.transition='';});lg.style.opacity='';lg.removeAttribute('data-hidden');}
+ else{els.forEach(function(el){
+  el.style.transformBox='fill-box';el.style.transformOrigin='center';
+  el.style.transition='transform 0.3s cubic-bezier(.4,0,.2,1),opacity 0.3s';
+  el.style.transform='scale(0,0)';el.style.opacity='0';
+  setTimeout(function(){el.style.display='none';el.style.transition='';},320);});
+  lg.style.opacity='0.3';lg.setAttribute('data-hidden','1');}spRescale();});});
+function spRescale(){
+ var m=svg.getAttribute('data-sp');if(!m)return;
+ var p=m.split(',').map(Number),pL=p[0],pT=p[1],pW=p[2],pH=p[3];
+ var vals=[];
+ svg.querySelectorAll('[data-pts]').forEach(function(el){if(el.style.display==='none')return;el.getAttribute('data-pts').split(',').forEach(function(v){var f=parseFloat(v);if(isFinite(f))vals.push(f);});});
+ svg.querySelectorAll('circle[data-y]').forEach(function(el){if(el.style.display==='none')return;var f=parseFloat(el.getAttribute('data-y'));if(isFinite(f))vals.push(f);});
+ svg.querySelectorAll('rect[data-y]').forEach(function(el){if(el.style.display==='none')return;var f=parseFloat(el.getAttribute('data-y'));if(isFinite(f))vals.push(f);});
+ svg.querySelectorAll('rect[data-v]').forEach(function(el){if(el.style.display==='none')return;if(el.hasAttribute('data-y'))return;var f=parseFloat(el.getAttribute('data-v'));if(isFinite(f))vals.push(f);});
+ if(!vals.length)return;
+ var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);if(mn>0)mn=0;var rg=mx-mn;if(rg<1e-12)rg=1;
+ svg.querySelectorAll('polyline[data-pts]').forEach(function(el){if(el.style.display==='none')return;var vs=el.getAttribute('data-pts').split(','),n=vs.length,sx=pW/Math.max(n-1,1),r='';for(var i=0;i<n;i++){var f=(parseFloat(vs[i])-mn)/rg;if(i>0)r+=' ';r+=(pL+Math.round(i*sx))+','+(pT+Math.round((1-f)*pH));}el.setAttribute('points',r);});
+ svg.querySelectorAll('circle[data-y]').forEach(function(el){if(el.style.display==='none')return;var f=(parseFloat(el.getAttribute('data-y'))-mn)/rg;el.setAttribute('cy',pT+Math.round((1-f)*pH));});
+ svg.querySelectorAll('rect[data-y]').forEach(function(el){if(el.style.display==='none')return;var v=parseFloat(el.getAttribute('data-y'));if(!isFinite(v))return;var f=(v-mn)/rg;var ny=pT+Math.round((1-f)*pH);var base=pT+pH;if(mn<0){base=pT+Math.round((0-mn)/rg*pH);}if(v>=0){el.setAttribute('y',ny);el.setAttribute('height',Math.max(1,base-ny));}else{el.setAttribute('y',base);el.setAttribute('height',Math.max(1,ny-base));}});
+ svg.querySelectorAll('rect[data-v]').forEach(function(el){if(el.style.display==='none')return;if(el.hasAttribute('data-y'))return;var v=parseFloat(el.getAttribute('data-v'));if(!isFinite(v))return;var f=(v-mn)/rg;var ny=pT+Math.round((1-f)*pH);var base=pT+pH;if(mn<0){base=pT+Math.round((0-mn)/rg*pH);}if(v>=0){el.setAttribute('y',ny);el.setAttribute('height',Math.max(1,base-ny));}else{el.setAttribute('y',base);el.setAttribute('height',Math.max(1,ny-base));}});
+ var tks=svg.querySelectorAll('.sp-yt'),nT=tks.length;if(nT>1)for(var i=0;i<nT;i++){var f=i/(nT-1);var v=mn+f*rg;tks[i].textContent=v>=1000?Math.round(v)+'':v.toFixed(2);tks[i].setAttribute('y',pT+Math.round((1-f)*pH)+3);}
+ var gls=svg.querySelectorAll('.sp-gl');if(gls.length&&nT>1)for(var j=0;j<gls.length;j++){var f=(j+1)/(nT-1);var gy=pT+Math.round((1-f)*pH);gls[j].setAttribute('y1',gy);gls[j].setAttribute('y2',gy);}
+}
+svg.querySelectorAll('[data-idx]').forEach(function(el,i){el.style.animationDelay=(i*18)+'ms';});
+})();</script></div></body></html>
