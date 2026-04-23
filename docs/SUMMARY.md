@@ -156,3 +156,9 @@
 # API Reference
 
 - [Full Function Index](api/index.md)
+
+---
+
+# About
+
+- [Support & Contact](about/support.md)
