@@ -1,0 +1,4 @@
+book/
+target/
+*.lock
+.DS_Store
