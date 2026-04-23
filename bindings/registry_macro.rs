@@ -673,30 +673,54 @@ macro_rules! impl_python_bindings {
         pub fn auto_classify(py: Python<'_>, x: &PyAny, y: Vec<i64>, models: Option<Vec<String>>) -> PyResult<pyo3::Py<pyo3::types::PyDict>> {
             let (flat, n, dims) = crate::bindings::commands::ml::extract_flat(x)?;
             let chosen = models.unwrap_or_else(|| vec![
-                "logistic".to_string(),
                 "knn".to_string(),
                 "decision_tree".to_string(),
-                "random_forest".to_string(),
                 "gradient_boosting".to_string(),
             ]);
             let mut leaderboard: Vec<(String, f64)> = Vec::new();
+            let flat2d: Vec<Vec<f64>> = flat.chunks(dims.max(1)).map(|c| c.to_vec()).collect();
             for name in chosen.iter() {
-                let payload = serde_json::json!({"x": flat, "n": n, "dims": dims, "y": y}).to_string();
-                let raw = match name.as_str() {
-                    "logistic" => crate::bindings::commands::charts::ml_logistic_regression(&payload),
-                    "knn" => crate::bindings::commands::charts::ml_knn_classifier(&payload),
-                    "decision_tree" => crate::bindings::commands::charts::ml_decision_tree_classifier(&payload),
-                    "random_forest" => crate::bindings::commands::charts::ml_random_forest_classifier(&payload),
-                    "gradient_boosting" => crate::bindings::commands::charts::ml_gradient_boosting_classifier(&payload),
-                    _ => continue,
+                let payload = serde_json::json!({"x_train": &flat2d, "x_test": &flat2d, "y_train": &y, "n": n, "dims": dims, "y": y}).to_string();
+                let payload_for_call = payload.clone();
+                let name_owned = name.clone();
+                let raw = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| match name_owned.as_str() {
+                    "logistic" => crate::bindings::commands::charts::ml_logistic_regression(&payload_for_call),
+                    "knn" => crate::bindings::commands::charts::ml_knn_classifier(&payload_for_call),
+                    "decision_tree" => crate::bindings::commands::charts::ml_decision_tree_classifier(&payload_for_call),
+                    "random_forest" => crate::bindings::commands::charts::ml_random_forest_classifier(&payload_for_call),
+                    "gradient_boosting" => crate::bindings::commands::charts::ml_gradient_boosting_classifier(&payload_for_call),
+                    _ => String::new(),
+                }));
+                let raw = match raw {
+                    Ok(s) if !s.is_empty() => s,
+                    _ => { leaderboard.push((name.clone(), f64::NAN)); continue; }
                 };
                 let score = serde_json::from_str::<serde_json::Value>(&raw).ok()
-                    .and_then(|v| v.get("score").and_then(|s| s.as_f64()))
-                    .or_else(|| serde_json::from_str::<serde_json::Value>(&raw).ok().and_then(|v| v.get("accuracy").and_then(|s| s.as_f64())))
+                    .and_then(|v| {
+                        if let Some(s) = v.get("score").and_then(|s| s.as_f64()) { return Some(s); }
+                        if let Some(s) = v.get("accuracy").and_then(|s| s.as_f64()) { return Some(s); }
+                        if let Some(preds) = v.get("predictions").and_then(|p| p.as_array()) {
+                            if preds.len() != y.len() { return Some(f64::NAN); }
+                            let mut hits = 0usize;
+                            for (i, p) in preds.iter().enumerate() {
+                                if let Some(pi) = p.as_i64() { if pi == y[i] { hits += 1; } }
+                            }
+                            return Some(hits as f64 / y.len() as f64);
+                        }
+                        None
+                    })
                     .unwrap_or(f64::NAN);
                 leaderboard.push((name.clone(), score));
             }
-            leaderboard.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+            leaderboard.sort_by(|a, b| {
+                let an = a.1.is_nan(); let bn = b.1.is_nan();
+                match (an, bn) {
+                    (true, true) => std::cmp::Ordering::Equal,
+                    (true, false) => std::cmp::Ordering::Greater,
+                    (false, true) => std::cmp::Ordering::Less,
+                    _ => b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal),
+                }
+            });
             let dict = pyo3::types::PyDict::new(py);
             let lb = pyo3::types::PyList::empty(py);
             for (name, score) in leaderboard.iter() {
@@ -732,16 +756,14 @@ macro_rules! impl_python_bindings {
                     let is_last = i == self.steps.len() - 1;
                     if is_last {
                         if let Some(yy) = y {
-                            let _ = st.call_method1("fit", (current.as_ref(py), yy));
+                            if st.call_method1("fit", (current.as_ref(py), yy)).is_err() {
+                                let _ = st.call_method1("fit", (current.as_ref(py),));
+                            }
                         } else {
                             let _ = st.call_method1("fit", (current.as_ref(py),));
                         }
                     } else {
-                        if let Some(yy) = y {
-                            let _ = st.call_method1("fit", (current.as_ref(py), yy));
-                        } else {
-                            let _ = st.call_method1("fit", (current.as_ref(py),));
-                        }
+                        let _ = st.call_method1("fit", (current.as_ref(py),));
                         if let Ok(t) = st.call_method1("transform", (current.as_ref(py),)) {
                             current = t.into();
                         }
