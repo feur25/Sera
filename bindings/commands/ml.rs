@@ -28,7 +28,7 @@ fn vv_to_np2d(py: Python<'_>, data: Vec<Vec<f64>>) -> PyResult<PyObject> {
     flat_to_np2d(py, flat, n, cols)
 }
 
-fn extract_flat(x: &PyAny) -> PyResult<(Vec<f64>, usize, usize)> {
+pub(crate) fn extract_flat(x: &PyAny) -> PyResult<(Vec<f64>, usize, usize)> {
     if let Ok(arr) = x.extract::<PyReadonlyArray2<f64>>() {
         let shape = arr.shape();
         let (n, p) = (shape[0], shape[1]);

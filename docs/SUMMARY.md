@@ -130,6 +130,17 @@
 - [Auto Display](config/auto-display.md)
 - [Hover JSON](config/hover.md)
 - [Palette](config/palette.md)
+- [Export (SVG / PNG / Data URL)](config/export.md)
+- [Live Streaming](config/streaming.md)
+- [ML Persistence](config/ml-persistence.md)
+- [Faceting / Small Multiples](config/facet.md)
+- [Downsampling (LTTB)](config/downsample.md)
+- [Chart Diff](config/diff.md)
+- [Accessibility (a11y)](config/a11y.md)
+- [CSP-safe Mode](config/csp.md)
+- [Pickle / Serialization](config/pickle.md)
+- [AutoML & Pipeline](config/automl.md)
+- [Drift Detection](config/drift.md)
 
 ---
 

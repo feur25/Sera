@@ -32,7 +32,7 @@ fn get_global_grid() -> bool {
 }
 
 #[derive(Deserialize, Default)]
-pub struct CoreOpts {
+pub struct ChartOpts {
     pub width: Option<i32>,
     pub height: Option<i32>,
     pub x_label: Option<String>,
@@ -98,7 +98,7 @@ pub struct CoreOpts {
     pub descriptions: Option<Vec<Vec<Vec<String>>>>,
 }
 
-impl CoreOpts {
+impl ChartOpts {
     pub fn w(&self, default: i32) -> i32 { self.width.unwrap_or(default) }
     pub fn h(&self, default: i32) -> i32 { self.height.unwrap_or(default) }
     pub fn xl(&self) -> String { self.x_label.clone().unwrap_or_default() }
@@ -124,7 +124,7 @@ impl CoreOpts {
 }
 
 #[derive(Deserialize, Default)]
-pub struct CoreArgs {
+pub struct ChartArgs {
     pub labels: Option<Vec<String>>,
     pub values: Option<Vec<f64>>,
     pub x: Option<Vec<f64>>,
@@ -156,35 +156,35 @@ pub struct CoreArgs {
     pub data: Option<Vec<Vec<f64>>>,
 }
 
-pub fn parse_opts(opts: &str) -> CoreOpts {
+pub fn parse_opts(opts: &str) -> ChartOpts {
     serde_json::from_str(opts).unwrap_or_default()
 }
 
-pub fn parse_args(args: &str) -> CoreArgs {
+pub fn parse_args(args: &str) -> ChartArgs {
     serde_json::from_str(args).unwrap_or_default()
 }
 
-fn parse_all(input: &str) -> (String, CoreArgs, CoreOpts) {
+fn parse_all(input: &str) -> (String, ChartArgs, ChartOpts) {
     #[derive(Deserialize, Default)]
     struct All {
         #[serde(default)]
         title: String,
         #[serde(flatten)]
-        args: CoreArgs,
+        args: ChartArgs,
         #[serde(flatten)]
-        opts: CoreOpts,
+        opts: ChartOpts,
     }
     let all: All = serde_json::from_str(input).unwrap_or_default();
     (all.title, all.args, all.opts)
 }
 
-pub fn apply(html: String, o: &CoreOpts) -> String {
+pub fn apply(html: String, o: &ChartOpts) -> String {
     let bg_str = o.bg_str().or_else(get_global_bg);
     let bg = bg_str.as_deref();
     crate::html::hover::apply_opts(html, bg, !o.no_x(), !o.no_y())
 }
 
-pub fn apply_bg3d(html: String, o: &CoreOpts) -> String {
+pub fn apply_bg3d(html: String, o: &ChartOpts) -> String {
     let bg_str = o.bg_str().or_else(get_global_bg);
     if let Some(bg) = bg_str.as_deref() {
         crate::html::hover::apply_bg(html, Some(bg))
@@ -1258,13 +1258,55 @@ pub fn build_parallel(input: &str) -> String {
     apply(html, &o)
 }
 
+pub fn plot_chart(input: &str) -> String {
+    #[derive(Deserialize, Default)]
+    struct I {
+        x: Option<Vec<f64>>,
+        y: Option<Vec<f64>>,
+        kind: Option<String>,
+        title: Option<String>,
+        color_hex: Option<u32>,
+        width: Option<i32>,
+        height: Option<i32>,
+        x_label: Option<String>,
+        y_label: Option<String>,
+        gridlines: Option<bool>,
+        palette: Option<Vec<u32>>,
+        background: Option<String>,
+        show_points: Option<bool>,
+    }
+    let p: I = serde_json::from_str(input).unwrap_or_default();
+    let xv = p.x.unwrap_or_default();
+    let title = p.title.unwrap_or_default();
+    let color_hex = p.color_hex.unwrap_or(0x6366F1);
+    let width = p.width.unwrap_or(900);
+    let height = p.height.unwrap_or(480);
+    let x_label = p.x_label.unwrap_or_default();
+    let y_label = p.y_label.unwrap_or_default();
+    let gridlines = p.gridlines.unwrap_or(false);
+    let show_points = p.show_points.unwrap_or(true);
+    let kind = p.kind.as_deref().unwrap_or("line");
+    if let Some(yv) = p.y {
+        if kind == "scatter" {
+            build_scatter_chart(&serde_json::json!({"title":title,"x":xv,"y":yv,"color_hex":color_hex,"width":width,"height":height,"x_label":x_label,"y_label":y_label,"gridlines":gridlines,"palette":p.palette,"background":p.background}).to_string())
+        } else {
+            let labels: Vec<String> = xv.iter().map(|v| v.to_string()).collect();
+            build_line_chart(&serde_json::json!({"title":title,"labels":labels,"values":yv,"color_hex":color_hex,"show_points":show_points,"width":width,"height":height,"x_label":x_label,"y_label":y_label,"gridlines":gridlines,"palette":p.palette,"background":p.background}).to_string())
+        }
+    } else {
+        let labels: Vec<String> = (0..xv.len()).map(|idx| idx.to_string()).collect();
+        build_line_chart(&serde_json::json!({"title":title,"labels":labels,"values":xv,"color_hex":color_hex,"show_points":show_points,"width":width,"height":height,"x_label":x_label,"y_label":y_label,"gridlines":gridlines,"palette":p.palette,"background":p.background}).to_string())
+    }
+}
+
 pub fn build_grid(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
     let charts = a.charts.unwrap_or_default();
     let cols = o.cols.unwrap_or(2).max(1);
     let gap = o.gap.unwrap_or(16);
-    let bg_color = o.background.as_deref().unwrap_or("#f0f2f5");
+    let bg_color = o.background.clone().or_else(get_global_bg).unwrap_or_else(|| "transparent".to_string());
+    let bg_color = bg_color.as_str();
     let cell_height = o.cell_height.unwrap_or(520);
     let mut buf = format!(
         "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><style>\
@@ -1297,13 +1339,17 @@ pub fn build_slideshow(input: &str) -> String {
         format!("<div style=\"color:#1e293b;font-family:system-ui;font-size:22px;font-weight:700;text-align:center;margin-bottom:16px\">{}</div>", show_title)
     };
     let n = charts.len();
-    let json_array = format!("[{}]", charts.iter()
-        .map(|s| serde_json::to_string(s).unwrap_or_else(|_| "\"\"".to_string()))
-        .collect::<Vec<_>>().join(","));
+    let mut frames_html = String::new();
+    for (i, html) in charts.iter().enumerate() {
+        let esc = html.replace('&', "&amp;").replace('"', "&quot;");
+        let vis = if i == 0 { "" } else { "display:none;" };
+        frames_html.push_str(&format!(
+            "<iframe id=\"sp-s-{i}\" style=\"{vis}width:{width}px;height:{height}px;border:none;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.1)\" srcdoc=\"{esc}\"></iframe>"
+        ));
+    }
     format!(
         "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><style>\
         body{{margin:0;padding:24px;background:#f0f2f5;display:flex;flex-direction:column;align-items:center;font-family:system-ui}}\
-        .sp-frm{{border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.1);background:#fff}}\
         .sp-ctrl{{display:flex;gap:10px;margin-top:14px;align-items:center}}\
         .sp-btn{{cursor:pointer;background:#6366f1;color:#fff;border:none;border-radius:8px;padding:7px 20px;font-size:14px;font-weight:600}}\
         .sp-btn:hover{{background:#4f46e5}}\
@@ -1312,20 +1358,19 @@ pub fn build_slideshow(input: &str) -> String {
         .sp-bar{{height:100%;background:#6366f1;border-radius:2px;width:0%}}\
         </style></head><body>\
         {title_html}\
-        <div class=\"sp-frm\" id=\"sp-frm\" style=\"width:{width}px;height:{height}px\"></div>\
+        {frames_html}\
         <div class=\"sp-ctrl\">\
         <button class=\"sp-btn\" id=\"sp-p\">&#9664;</button>\
         <div class=\"sp-ctr\" id=\"sp-c\">1 / {n}</div>\
         <button class=\"sp-btn\" id=\"sp-n\">&#9654;</button>\
         </div>\
         <div class=\"sp-prog\"><div class=\"sp-bar\" id=\"sp-b\"></div></div>\
-        <script type=\"application/json\" id=\"sp-d\">{json_array}</script>\
         <script>\
-        const frames=JSON.parse(document.getElementById('sp-d').textContent);\
+        const slides=document.querySelectorAll('[id^=\"sp-s-\"]');\
         let idx=0,timer;\
-        function show(i){{idx=((i%frames.length)+frames.length)%frames.length;\
-          document.getElementById('sp-frm').innerHTML=frames[idx];\
-          document.getElementById('sp-c').textContent=(idx+1)+' / '+frames.length;\
+        function show(i){{idx=((i%slides.length)+slides.length)%slides.length;\
+          slides.forEach((s,j)=>{{s.style.display=j===idx?'':'none';}});\
+          document.getElementById('sp-c').textContent=(idx+1)+' / '+slides.length;\
           const b=document.getElementById('sp-b');\
           b.style.transition='none';b.style.width='0%';\
           setTimeout(()=>{{b.style.transition='width {ivms}ms linear';b.style.width='100%';}},20);}}\
@@ -1445,4 +1490,539 @@ pub fn themes(_: &str) -> String {
     "[\"dark\",\"light\",\"scientific\",\"apple\",\"notion\",\"minimal\",\"neon\"]".to_string()
 }
 
+pub fn export_svg(input: &str) -> String {
+    #[derive(serde::Deserialize)]
+    struct In { html: String }
+    let v: In = match serde_json::from_str(input) { Ok(v) => v, Err(_) => return String::new() };
+    let h = v.html;
+    let start = match h.find("<svg") { Some(i) => i, None => return String::new() };
+    let end = match h[start..].find("</svg>") { Some(i) => start + i + 6, None => return String::new() };
+    h[start..end].to_string()
+}
 
+pub fn export_data_url(input: &str) -> String {
+    use base64::Engine;
+    let svg = export_svg(input);
+    if svg.is_empty() { return String::new(); }
+    let b64 = base64::engine::general_purpose::STANDARD.encode(svg.as_bytes());
+    format!("data:image/svg+xml;base64,{b64}")
+}
+
+pub fn export_html_file(input: &str) -> String {
+    #[derive(serde::Deserialize)]
+    struct In { html: String, path: String }
+    let v: In = match serde_json::from_str(input) { Ok(v) => v, Err(_) => return "{\"ok\":false}".to_string() };
+    match std::fs::write(&v.path, v.html) {
+        Ok(_) => format!("{{\"ok\":true,\"path\":{}}}", serde_json::to_string(&v.path).unwrap_or_else(|_| "\"\"".into())),
+        Err(e) => format!("{{\"ok\":false,\"error\":{}}}", serde_json::to_string(&e.to_string()).unwrap_or_else(|_| "\"\"".into())),
+    }
+}
+
+pub fn chart_append(input: &str) -> String {
+    #[derive(serde::Deserialize)]
+    struct In { kind: String, x: Option<Vec<f64>>, y: Option<Vec<f64>>, title: Option<String>, max_points: Option<usize>, color_hex: Option<u32>, width: Option<i32>, height: Option<i32>, prev_x: Option<Vec<f64>>, prev_y: Option<Vec<f64>> }
+    let v: In = match serde_json::from_str(input) { Ok(v) => v, Err(_) => return String::new() };
+    let mut xs = v.prev_x.unwrap_or_default();
+    let mut ys = v.prev_y.unwrap_or_default();
+    if let Some(nx) = v.x { xs.extend(nx); }
+    if let Some(ny) = v.y { ys.extend(ny); }
+    if let Some(m) = v.max_points {
+        if xs.len() > m { let cut = xs.len() - m; xs.drain(..cut); }
+        if ys.len() > m { let cut = ys.len() - m; ys.drain(..cut); }
+    }
+    let title = v.title.unwrap_or_default();
+    let color = v.color_hex.unwrap_or(0x6366F1);
+    let w = v.width.unwrap_or(900);
+    let h = v.height.unwrap_or(420);
+    let payload = serde_json::json!({"title":title,"x":xs,"y":ys,"color_hex":color,"width":w,"height":h,"show_points":true});
+    let html = match v.kind.as_str() {
+        "scatter" => build_scatter_chart(&payload.to_string()),
+        _ => build_line_chart(&serde_json::json!({"title":title,"labels":xs.iter().map(|v|v.to_string()).collect::<Vec<_>>(),"values":ys,"color_hex":color,"width":w,"height":h,"show_points":true}).to_string()),
+    };
+    serde_json::json!({"html":html,"x":xs,"y":ys}).to_string()
+}
+
+pub fn ml_save_model(input: &str) -> String {
+    #[derive(serde::Deserialize)]
+    struct In { kind: String, state: serde_json::Value, path: Option<String> }
+    let v: In = match serde_json::from_str(input) { Ok(v) => v, Err(_) => return "{\"ok\":false}".to_string() };
+    let envelope = serde_json::json!({"seraplot_model_v":1,"kind":v.kind,"state":v.state});
+    let s = envelope.to_string();
+    if let Some(p) = v.path {
+        if let Err(e) = std::fs::write(&p, &s) {
+            return format!("{{\"ok\":false,\"error\":{}}}", serde_json::to_string(&e.to_string()).unwrap_or_else(|_| "\"\"".into()));
+        }
+        return format!("{{\"ok\":true,\"path\":{},\"size\":{}}}", serde_json::to_string(&p).unwrap_or_else(|_| "\"\"".into()), s.len());
+    }
+    serde_json::json!({"ok":true,"data":s}).to_string()
+}
+
+pub fn ml_load_model(input: &str) -> String {
+    #[derive(serde::Deserialize)]
+    struct In { path: Option<String>, data: Option<String> }
+    let v: In = match serde_json::from_str(input) { Ok(v) => v, Err(_) => return "{\"ok\":false}".to_string() };
+    let raw = if let Some(p) = v.path {
+        match std::fs::read_to_string(&p) { Ok(s) => s, Err(e) => return format!("{{\"ok\":false,\"error\":{}}}", serde_json::to_string(&e.to_string()).unwrap_or_else(|_| "\"\"".into())) }
+    } else if let Some(d) = v.data { d } else { return "{\"ok\":false,\"error\":\"need path or data\"}".to_string() };
+    match serde_json::from_str::<serde_json::Value>(&raw) {
+        Ok(j) => serde_json::json!({"ok":true,"model":j}).to_string(),
+        Err(e) => format!("{{\"ok\":false,\"error\":{}}}", serde_json::to_string(&e.to_string()).unwrap_or_else(|_| "\"\"".into())),
+    }
+}
+
+pub fn chart_info(input: &str) -> String {
+    #[derive(serde::Deserialize)]
+    struct In { html: String }
+    let v: In = match serde_json::from_str(input) { Ok(v) => v, Err(_) => return "{}".to_string() };
+    let h = v.html;
+    let len = h.len();
+    let n_paths = h.matches("<path").count();
+    let n_rects = h.matches("<rect").count();
+    let n_circles = h.matches("<circle").count();
+    let has_svg = h.contains("<svg");
+    serde_json::json!({"size":len,"paths":n_paths,"rects":n_rects,"circles":n_circles,"has_svg":has_svg}).to_string()
+}
+
+pub fn validate_input(input: &str) -> String {
+    #[derive(serde::Deserialize)]
+    struct In { labels: Option<Vec<String>>, values: Option<Vec<f64>>, x: Option<Vec<f64>>, y: Option<Vec<f64>>, series: Option<Vec<Vec<f64>>> }
+    let v: In = match serde_json::from_str::<In>(input) {
+        Ok(v) => v,
+        Err(e) => return serde_json::json!({"ok":false,"error":format!("invalid JSON: {e}")}).to_string(),
+    };
+    if let (Some(l), Some(va)) = (v.labels.as_ref(), v.values.as_ref()) {
+        if l.len() != va.len() {
+            return serde_json::json!({"ok":false,"error":format!("labels ({}) and values ({}) length mismatch", l.len(), va.len())}).to_string();
+        }
+    }
+    if let (Some(x), Some(y)) = (v.x.as_ref(), v.y.as_ref()) {
+        if x.len() != y.len() {
+            return serde_json::json!({"ok":false,"error":format!("x ({}) and y ({}) length mismatch", x.len(), y.len())}).to_string();
+        }
+    }
+    if let (Some(l), Some(s)) = (v.labels.as_ref(), v.series.as_ref()) {
+        for (i, row) in s.iter().enumerate() {
+            if row.len() != l.len() {
+                return serde_json::json!({"ok":false,"error":format!("series[{i}] length {} != labels length {}", row.len(), l.len())}).to_string();
+            }
+        }
+    }
+    serde_json::json!({"ok":true}).to_string()
+}
+
+pub fn downsample_lttb(input: &str) -> String {
+    #[derive(serde::Deserialize)]
+    struct In { x: Vec<f64>, y: Vec<f64>, threshold: usize }
+    let v: In = match serde_json::from_str(input) {
+        Ok(v) => v,
+        Err(e) => return serde_json::json!({"ok":false,"error":format!("invalid JSON: {e}")}).to_string(),
+    };
+    let n = v.x.len();
+    if n != v.y.len() {
+        return serde_json::json!({"ok":false,"error":"x and y length mismatch"}).to_string();
+    }
+    let th = v.threshold;
+    if th >= n || th < 3 {
+        return serde_json::json!({"ok":true,"x":v.x,"y":v.y}).to_string();
+    }
+    let bucket_size = (n - 2) as f64 / (th - 2) as f64;
+    let mut out_x: Vec<f64> = Vec::with_capacity(th);
+    let mut out_y: Vec<f64> = Vec::with_capacity(th);
+    out_x.push(v.x[0]); out_y.push(v.y[0]);
+    let mut a: usize = 0;
+    for i in 0..(th - 2) {
+        let avg_start = ((i + 1) as f64 * bucket_size).floor() as usize + 1;
+        let avg_end = (((i + 2) as f64 * bucket_size).floor() as usize + 1).min(n);
+        let avg_len = (avg_end - avg_start).max(1) as f64;
+        let mut avg_x = 0.0; let mut avg_y = 0.0;
+        for k in avg_start..avg_end { avg_x += v.x[k]; avg_y += v.y[k]; }
+        avg_x /= avg_len; avg_y /= avg_len;
+        let range_offs = (i as f64 * bucket_size).floor() as usize + 1;
+        let range_to = ((i + 1) as f64 * bucket_size).floor() as usize + 1;
+        let pax = v.x[a]; let pay = v.y[a];
+        let mut max_area = -1.0f64;
+        let mut next_a = range_offs;
+        for k in range_offs..range_to.min(n) {
+            let area = ((pax - avg_x) * (v.y[k] - pay) - (pax - v.x[k]) * (avg_y - pay)).abs() * 0.5;
+            if area > max_area { max_area = area; next_a = k; }
+        }
+        out_x.push(v.x[next_a]); out_y.push(v.y[next_a]);
+        a = next_a;
+    }
+    out_x.push(v.x[n - 1]); out_y.push(v.y[n - 1]);
+    serde_json::json!({"ok":true,"x":out_x,"y":out_y,"reduction":format!("{}->{}", n, out_x.len())}).to_string()
+}
+
+pub fn chart_diff(input: &str) -> String {
+    #[derive(serde::Deserialize)]
+    struct In { a: String, b: String }
+    let v: In = match serde_json::from_str(input) {
+        Ok(v) => v,
+        Err(_) => return serde_json::json!({"ok":false,"error":"invalid JSON"}).to_string(),
+    };
+    let svg_a = extract_svg(&v.a);
+    let svg_b = extract_svg(&v.b);
+    let identical = svg_a == svg_b;
+    let len_a = svg_a.len();
+    let len_b = svg_b.len();
+    let common = svg_a.bytes().zip(svg_b.bytes()).take_while(|(x, y)| x == y).count();
+    let similarity = if len_a == 0 && len_b == 0 { 1.0 } else {
+        let max_len = len_a.max(len_b) as f64;
+        common as f64 / max_len
+    };
+    serde_json::json!({
+        "ok":true,
+        "identical":identical,
+        "size_a":len_a,
+        "size_b":len_b,
+        "common_prefix":common,
+        "similarity":similarity
+    }).to_string()
+}
+
+fn extract_svg(html: &str) -> String {
+    let start = match html.find("<svg") { Some(i) => i, None => return String::new() };
+    let end = match html[start..].find("</svg>") { Some(i) => start + i + 6, None => return String::new() };
+    html[start..end].to_string()
+}
+
+pub fn drift_ks(input: &str) -> String {
+    #[derive(serde::Deserialize)]
+    struct In { reference: Vec<f64>, current: Vec<f64> }
+    let v: In = match serde_json::from_str(input) {
+        Ok(v) => v,
+        Err(e) => return serde_json::json!({"ok":false,"error":format!("invalid JSON: {e}")}).to_string(),
+    };
+    let mut a = v.reference.clone();
+    let mut b = v.current.clone();
+    if a.is_empty() || b.is_empty() {
+        return serde_json::json!({"ok":false,"error":"empty array"}).to_string();
+    }
+    a.sort_by(|x, y| x.partial_cmp(y).unwrap_or(std::cmp::Ordering::Equal));
+    b.sort_by(|x, y| x.partial_cmp(y).unwrap_or(std::cmp::Ordering::Equal));
+    let n = a.len() as f64;
+    let m = b.len() as f64;
+    let mut i = 0usize; let mut j = 0usize;
+    let mut max_d = 0.0f64;
+    while i < a.len() && j < b.len() {
+        let cdf_a = (i + 1) as f64 / n;
+        let cdf_b = (j + 1) as f64 / m;
+        let d = (cdf_a - cdf_b).abs();
+        if d > max_d { max_d = d; }
+        if a[i] <= b[j] { i += 1; } else { j += 1; }
+    }
+    let coeff = ((n * m) / (n + m)).sqrt();
+    let lambda = (coeff + 0.12 + 0.11 / coeff) * max_d;
+    let mut p_value = 0.0f64;
+    let mut sign = 1.0f64;
+    for k in 1..=100 {
+        let term = sign * 2.0 * (-2.0 * lambda * lambda * (k * k) as f64).exp();
+        p_value += term;
+        sign = -sign;
+        if term.abs() < 1e-10 { break; }
+    }
+    p_value = p_value.clamp(0.0, 1.0);
+    let drift_detected = p_value < 0.05;
+    serde_json::json!({
+        "ok":true,
+        "ks_statistic":max_d,
+        "p_value":p_value,
+        "drift_detected":drift_detected,
+        "n_reference":a.len(),
+        "n_current":b.len()
+    }).to_string()
+}
+
+pub fn bench_chart_value(s: &str) -> bool {
+    serde_json::from_str::<serde_json::Value>(s).is_ok()
+}
+
+pub fn set_chart_kind(kind: u8) {
+    crate::viewer::chart::sera_set_current_chart_kind(kind);
+}
+
+pub fn set_chart_orientation(vertical: bool) {
+    crate::viewer::chart::sera_set_chart_orientation(vertical);
+}
+
+pub fn show_chart_value(s: &str) -> bool {
+    let c = std::ffi::CString::new(s).unwrap_or_default();
+    crate::viewer::chart::sera_show_chart_value(c.as_ptr())
+}
+
+pub fn bench_pure_rust(n: usize) -> (f64, f64, f64, f64) {
+    use std::time::Instant;
+    let ages: Vec<f64> = (0..891).map(|i| 10.0 + (i % 70) as f64).collect();
+    let fare: Vec<f64> = (0..891).map(|i| (i % 50) as f64 * 2.5).collect();
+    let ages100: Vec<f64> = ages[..100].to_vec();
+    let fare100: Vec<f64> = fare[..100].to_vec();
+    let labs: Vec<String> = (0..30).map(|i| format!("Cat {i}")).collect();
+    let vals: Vec<f64> = (0..30).map(|i| i as f64 * 3.7).collect();
+    let n_lbl = 11usize;
+    let corr_labels: Vec<String> = (0..n_lbl).map(|i| format!("F{i}")).collect();
+    let flat: Vec<f64> = (0..n_lbl * n_lbl).map(|i| ((i % 11) as f64 - 5.0) * 0.15).collect();
+    use crate::plot::statistical::{HistogramConfig, render_histogram_html, HeatmapConfig, render_heatmap_html};
+    let t0 = Instant::now();
+    for _ in 0..n {
+        let _ = render_histogram_html(&HistogramConfig { title: "B", values: &ages, bins: 20, width: 900, height: 400, ..HistogramConfig::default() });
+    }
+    let hist_ms = t0.elapsed().as_secs_f64() * 1000.0 / n as f64;
+    let t0 = Instant::now();
+    for _ in 0..n {
+        let _ = crate::plot::default::render_bars_html("B", &labs, &vals, 900, 480, &[], b'v', &[], false, "", "", &[], 0, true, "");
+    }
+    let bar_ms = t0.elapsed().as_secs_f64() * 1000.0 / n as f64;
+    let t0 = Instant::now();
+    for _ in 0..n {
+        let _ = crate::plot::default::render_scatter_html("B", &ages100, &fare100, &[], 900, 540, &[], &[], &[], &[], "", "", 0, true, false, false, "linear");
+    }
+    let scatter_ms = t0.elapsed().as_secs_f64() * 1000.0 / n as f64;
+    let t0 = Instant::now();
+    for _ in 0..n {
+        let _ = render_heatmap_html(&HeatmapConfig { title: "B", row_labels: &corr_labels, col_labels: &[], flat_matrix: &flat, width: 800, ..HeatmapConfig::default() });
+    }
+    let heatmap_ms = t0.elapsed().as_secs_f64() * 1000.0 / n as f64;
+    (hist_ms, bar_ms, scatter_ms, heatmap_ms)
+}
+
+pub struct DbscanState {
+    pub eps: f64,
+    pub min_samples: usize,
+    pub labels: Vec<i32>,
+    pub n_clusters: usize,
+    pub n_noise: usize,
+}
+
+impl DbscanState {
+    pub fn new(eps: f64, min_samples: usize) -> Self {
+        Self { eps, min_samples, labels: Vec::new(), n_clusters: 0, n_noise: 0 }
+    }
+    pub fn fit(&mut self, x: &[Vec<f64>]) {
+        let (labels, n_clusters) = crate::plot::default::scatter::dbscan_core_nd(x, self.eps, self.min_samples);
+        self.n_noise = labels.iter().filter(|&&l| l < 0).count();
+        self.labels = labels;
+        self.n_clusters = n_clusters;
+    }
+}
+
+pub struct KMeansState {
+    pub k: usize,
+    pub max_iter: usize,
+    pub tol: f64,
+    pub mini_batch: bool,
+    pub batch_size: usize,
+    pub n_init: usize,
+    pub labels: Vec<i32>,
+    pub centroids: Vec<Vec<f64>>,
+    pub inertia: f64,
+    pub n_iter: usize,
+}
+
+impl KMeansState {
+    pub fn new(k: usize, max_iter: usize, tol: f64, mini_batch: bool, batch_size: usize, n_init: usize) -> Self {
+        Self { k, max_iter, tol, mini_batch, batch_size, n_init, labels: Vec::new(), centroids: Vec::new(), inertia: 0.0, n_iter: 0 }
+    }
+    pub fn fit_flat(&mut self, flat: &[f64], n: usize, dims: usize) {
+        if self.mini_batch {
+            let (labels, flat_c, inertia) = crate::plot::default::minibatch_kmeans_core_flat(flat, n, dims, self.k, self.max_iter, self.batch_size);
+            self.labels = labels;
+            self.centroids = (0..self.k.min(n)).map(|ki| flat_c[ki*dims..(ki+1)*dims].to_vec()).collect();
+            self.inertia = inertia;
+        } else {
+            let (labels, flat_c, inertia) = crate::plot::default::kmeans_core_flat_ninit(flat, n, dims, self.k, self.max_iter, self.tol, self.n_init);
+            self.labels = labels;
+            self.centroids = (0..self.k.min(n)).map(|ki| flat_c[ki*dims..(ki+1)*dims].to_vec()).collect();
+            self.inertia = inertia;
+        }
+        self.n_iter = self.max_iter;
+    }
+    pub fn predict_flat(&self, flat: &[f64], n: usize, dims: usize) -> Vec<i32> {
+        (0..n).map(|i| {
+            self.centroids.iter().enumerate()
+                .map(|(ki, c)| (ki, crate::plot::default::kmeans::sq_dist_flat(&flat[i*dims..(i+1)*dims], c)))
+                .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
+                .map(|(ki, _)| ki as i32).unwrap_or(0)
+        }).collect()
+    }
+    pub fn transform_flat(&self, flat: &[f64], n: usize, dims: usize) -> Vec<Vec<f64>> {
+        (0..n).map(|i| {
+            self.centroids.iter().map(|c| crate::plot::default::kmeans::sq_dist_flat(&flat[i*dims..(i+1)*dims], c).sqrt()).collect()
+        }).collect()
+    }
+}
+
+fn parse_x2d(v: &serde_json::Value, key: &str, alias: &str) -> Vec<Vec<f64>> {
+    let raw = v.get(key).or_else(|| v.get(alias));
+    if let Some(x) = raw {
+        if let Ok(mat) = serde_json::from_value::<Vec<Vec<f64>>>(x.clone()) { return mat; }
+        if let Ok(flat) = serde_json::from_value::<Vec<f64>>(x.clone()) { return flat.into_iter().map(|v| vec![v]).collect(); }
+    }
+    vec![]
+}
+
+fn ml_parse(input: &str) -> (serde_json::Value, Vec<f64>, usize, usize, Vec<f64>, usize) {
+    let v: serde_json::Value = serde_json::from_str(input).unwrap_or(serde_json::Value::Null);
+    let xt = parse_x2d(&v, "x_train", "x");
+    let xtest = parse_x2d(&v, "x_test", "test_x");
+    let n = xt.len();
+    let p = xt.first().map_or(0, |r| r.len());
+    let xf: Vec<f64> = xt.into_iter().flatten().collect();
+    let nt = xtest.len();
+    let xtf: Vec<f64> = xtest.into_iter().flatten().collect();
+    (v, xf, n, p, xtf, nt)
+}
+
+fn jf(v: &serde_json::Value, k: &str, d: f64) -> f64 { v.get(k).and_then(|x| x.as_f64()).unwrap_or(d) }
+fn ju(v: &serde_json::Value, k: &str, d: usize) -> usize { v.get(k).and_then(|x| x.as_u64()).map(|x| x as usize).unwrap_or(d) }
+fn jb(v: &serde_json::Value, k: &str, d: bool) -> bool { v.get(k).and_then(|x| x.as_bool()).unwrap_or(d) }
+fn js<'a>(v: &'a serde_json::Value, k: &str, d: &'a str) -> &'a str { v.get(k).and_then(|x| x.as_str()).unwrap_or(d) }
+fn yf(v: &serde_json::Value) -> Vec<f64> { v.get("y_train").or_else(|| v.get("y")).and_then(|x| serde_json::from_value(x.clone()).ok()).unwrap_or_default() }
+fn yi(v: &serde_json::Value) -> Vec<i32> { v.get("y_train").or_else(|| v.get("y")).and_then(|x| serde_json::from_value(x.clone()).ok()).unwrap_or_default() }
+
+fn parse_max_features(v: &serde_json::Value) -> crate::ml::tree::random_forest::MaxFeatures {
+    use crate::ml::tree::random_forest::MaxFeatures as MF;
+    match v.get("max_features") {
+        Some(serde_json::Value::String(s)) => match s.as_str() {
+            "log2" => MF::Log2,
+            "all"  => MF::All,
+            "none" => MF::All,
+            _      => MF::Sqrt,
+        },
+        Some(serde_json::Value::Number(n)) => MF::Fixed(n.as_u64().unwrap_or(0) as usize),
+        _ => MF::Sqrt,
+    }
+}
+
+fn parse_knn_weights(s: &str) -> crate::ml::neighbors::knn::KnnWeights {
+    use crate::ml::neighbors::knn::KnnWeights as W;
+    match s { "distance" => W::Distance, _ => W::Uniform }
+}
+
+fn parse_tree_criterion(s: &str) -> crate::ml::tree::decision_tree::TreeCriterion {
+    use crate::ml::tree::decision_tree::TreeCriterion as C;
+    match s { "entropy" => C::Entropy, "mse" => C::MSE, _ => C::Gini }
+}
+
+pub fn ml_linear_regression(input: &str) -> String {
+    let (v, xf, n, p, xtf, nt) = ml_parse(input);
+    let yt = yf(&v);
+    let mut m = crate::ml::linear::ols::LinearRegression::new(jb(&v, "fit_intercept", true));
+    m.fit(&xf, n, p, &yt);
+    let preds = m.predict(&xtf, nt, p);
+    serde_json::json!({"predictions": preds, "coef": m.coef, "intercept": m.intercept}).to_string()
+}
+
+pub fn ml_ridge(input: &str) -> String {
+    let (v, xf, n, p, xtf, nt) = ml_parse(input);
+    let yt = yf(&v);
+    let mut m = crate::ml::linear::ridge::Ridge::new(jf(&v, "alpha", 1.0), jb(&v, "fit_intercept", true));
+    m.fit(&xf, n, p, &yt);
+    let preds = m.predict(&xtf, nt, p);
+    serde_json::json!({"predictions": preds, "coef": m.coef, "intercept": m.intercept}).to_string()
+}
+
+pub fn ml_lasso(input: &str) -> String {
+    let (v, xf, n, p, xtf, nt) = ml_parse(input);
+    let yt = yf(&v);
+    let mut m = crate::ml::linear::lasso::Lasso::new(jf(&v, "alpha", 1.0), ju(&v, "max_iter", 1000), jf(&v, "tol", 1e-4), jb(&v, "fit_intercept", true));
+    m.fit(&xf, n, p, &yt);
+    let preds = m.predict(&xtf, nt, p);
+    serde_json::json!({"predictions": preds}).to_string()
+}
+
+pub fn ml_elastic_net(input: &str) -> String {
+    let (v, xf, n, p, xtf, nt) = ml_parse(input);
+    let yt = yf(&v);
+    let mut m = crate::ml::linear::elastic_net::ElasticNet::new(jf(&v, "alpha", 1.0), jf(&v, "l1_ratio", 0.5), ju(&v, "max_iter", 1000), jf(&v, "tol", 1e-4), jb(&v, "fit_intercept", true));
+    m.fit(&xf, n, p, &yt);
+    let preds = m.predict(&xtf, nt, p);
+    serde_json::json!({"predictions": preds, "coef": m.coef, "intercept": m.intercept}).to_string()
+}
+
+pub fn ml_logistic_regression(input: &str) -> String {
+    let (v, xf, n, p, xtf, nt) = ml_parse(input);
+    let yt = yi(&v);
+    let mut m = crate::ml::linear::logistic::LogisticRegression::new(jf(&v, "c", 1.0), ju(&v, "max_iter", 100), jf(&v, "tol", 1e-4), jb(&v, "fit_intercept", true));
+    m.fit(&xf, n, p, &yt);
+    let preds = m.predict(&xtf, nt, p);
+    serde_json::json!({"predictions": preds, "classes": m.classes}).to_string()
+}
+
+pub fn ml_decision_tree_classifier(input: &str) -> String {
+    let (v, xf, n, p, xtf, nt) = ml_parse(input);
+    let yt = yi(&v);
+    let max_feat = v.get("max_features").and_then(|x| x.as_u64()).map(|x| x as usize);
+    let crit = parse_tree_criterion(js(&v, "criterion", "gini"));
+    let mut m = crate::ml::tree::decision_tree::DecisionTreeClassifier::new(ju(&v, "max_depth", 32), ju(&v, "min_samples_split", 2), ju(&v, "min_samples_leaf", 1), max_feat, crit);
+    m.fit(&xf, n, p, &yt);
+    let preds = m.predict(&xtf, nt, p);
+    serde_json::json!({"predictions": preds, "classes": m.classes, "feature_importances": m.feature_importances}).to_string()
+}
+
+pub fn ml_decision_tree_regressor(input: &str) -> String {
+    let (v, xf, n, p, xtf, nt) = ml_parse(input);
+    let yt = yf(&v);
+    let max_feat = v.get("max_features").and_then(|x| x.as_u64()).map(|x| x as usize);
+    let mut m = crate::ml::tree::decision_tree::DecisionTreeRegressor::new(ju(&v, "max_depth", 32), ju(&v, "min_samples_split", 2), ju(&v, "min_samples_leaf", 1), max_feat);
+    m.fit(&xf, n, p, &yt);
+    let preds = m.predict(&xtf, nt, p);
+    serde_json::json!({"predictions": preds, "feature_importances": m.feature_importances}).to_string()
+}
+
+pub fn ml_random_forest_classifier(input: &str) -> String {
+    let (v, xf, n, p, xtf, nt) = ml_parse(input);
+    let yt = yi(&v);
+    let mf = parse_max_features(&v);
+    let mut m = crate::ml::tree::random_forest::RandomForestClassifier::new(ju(&v, "n_estimators", 100), ju(&v, "max_depth", 32), ju(&v, "min_samples_split", 2), ju(&v, "min_samples_leaf", 1), mf);
+    m.fit(&xf, n, p, &yt);
+    let preds = m.predict(&xtf, nt, p);
+    serde_json::json!({"predictions": preds, "classes": m.classes, "feature_importances": m.feature_importances}).to_string()
+}
+
+pub fn ml_random_forest_regressor(input: &str) -> String {
+    let (v, xf, n, p, xtf, nt) = ml_parse(input);
+    let yt = yf(&v);
+    let mf = parse_max_features(&v);
+    let mut m = crate::ml::tree::random_forest::RandomForestRegressor::new(ju(&v, "n_estimators", 100), ju(&v, "max_depth", 32), ju(&v, "min_samples_split", 2), ju(&v, "min_samples_leaf", 1), mf);
+    m.fit(&xf, n, p, &yt);
+    let preds = m.predict(&xtf, nt, p);
+    serde_json::json!({"predictions": preds, "feature_importances": m.feature_importances}).to_string()
+}
+
+pub fn ml_gradient_boosting_classifier(input: &str) -> String {
+    let (v, xf, n, p, xtf, nt) = ml_parse(input);
+    let yt = yi(&v);
+    let mut m = crate::ml::tree::gradient_boosting::GradientBoostingClassifier::new(ju(&v, "n_estimators", 100), jf(&v, "learning_rate", 0.1), ju(&v, "max_depth", 3), ju(&v, "min_samples_split", 2), ju(&v, "min_samples_leaf", 1));
+    m.fit(&xf, n, p, &yt);
+    let preds = m.predict(&xtf, nt, p);
+    serde_json::json!({"predictions": preds, "classes": m.classes}).to_string()
+}
+
+pub fn ml_gradient_boosting_regressor(input: &str) -> String {
+    let (v, xf, n, p, xtf, nt) = ml_parse(input);
+    let yt = yf(&v);
+    let mut m = crate::ml::tree::gradient_boosting::GradientBoostingRegressor::new(ju(&v, "n_estimators", 100), jf(&v, "learning_rate", 0.1), ju(&v, "max_depth", 3), ju(&v, "min_samples_split", 2), ju(&v, "min_samples_leaf", 1));
+    m.fit(&xf, n, p, &yt);
+    let preds = m.predict(&xtf, nt, p);
+    serde_json::json!({"predictions": preds}).to_string()
+}
+
+pub fn ml_knn_classifier(input: &str) -> String {
+    let (v, xf, n, p, xtf, nt) = ml_parse(input);
+    let yt = yi(&v);
+    let w = parse_knn_weights(js(&v, "weights", "uniform"));
+    let mut m = crate::ml::neighbors::knn::KNeighborsClassifier::new(ju(&v, "k", 5), w);
+    m.fit(&xf, n, p, &yt);
+    let preds = m.predict(&xtf, nt, p);
+    serde_json::json!({"predictions": preds, "classes": m.classes}).to_string()
+}
+
+pub fn ml_knn_regressor(input: &str) -> String {
+    let (v, xf, n, p, xtf, nt) = ml_parse(input);
+    let yt = yf(&v);
+    let w = parse_knn_weights(js(&v, "weights", "uniform"));
+    let mut m = crate::ml::neighbors::knn::KNeighborsRegressor::new(ju(&v, "k", 5), w);
+    m.fit(&xf, n, p, &yt);
+    let preds = m.predict(&xtf, nt, p);
+    serde_json::json!({"predictions": preds}).to_string()
+}

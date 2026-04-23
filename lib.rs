@@ -405,6 +405,120 @@ impl Chart {
     fn export_button(&self) -> Chart {
         self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_EXPORT_JS), 1))
     }
+
+    #[new]
+    #[pyo3(signature = (html=String::new()))]
+    fn py_new(html: String) -> Self {
+        Self { html, doc_str: "" }
+    }
+
+    fn __getstate__(&self) -> String { self.html.clone() }
+
+    fn __setstate__(&mut self, state: String) -> PyResult<()> {
+        self.html = state;
+        Ok(())
+    }
+
+    fn diff(&self, other: &Chart) -> String {
+        crate::bindings::commands::charts::chart_diff(
+            &serde_json::json!({"a": self.html, "b": other.html}).to_string()
+        )
+    }
+
+    fn csp_safe(&self) -> Chart {
+        let mut out = String::with_capacity(self.html.len());
+        let mut rest = self.html.as_str();
+        let mut blob = String::new();
+        loop {
+            match rest.find("<script>") {
+                None => { out.push_str(rest); break; }
+                Some(i) => {
+                    out.push_str(&rest[..i]);
+                    let after = &rest[i + 8..];
+                    match after.find("</script>") {
+                        None => { out.push_str("<script>"); out.push_str(after); break; }
+                        Some(j) => {
+                            blob.push_str(&after[..j]);
+                            blob.push_str(";\n");
+                            rest = &after[j + 9..];
+                        }
+                    }
+                }
+            }
+        }
+        let injected = if blob.is_empty() {
+            out
+        } else {
+            let id = format!("sp-csp-{}", blob.len());
+            let tag = format!("<script type=\"application/json\" id=\"{id}\">{}</script><script nonce=\"sp-nonce\">eval(document.getElementById('{id}').textContent)</script></body>", blob.replace("</script>", "<\\/script>"));
+            out.replacen("</body>", &tag, 1)
+        };
+        self.propagate(injected)
+    }
+
+    #[pyo3(signature = (title="", desc=""))]
+    fn a11y(&self, title: &str, desc: &str) -> Chart {
+        let snippet = format!(
+            "<svg role=\"img\" aria-label=\"{}\"><title>{}</title><desc>{}</desc>",
+            title.replace('"', "&quot;"),
+            title.replace('<', "&lt;"),
+            desc.replace('<', "&lt;"),
+        );
+        self.propagate(self.html.replacen("<svg", &snippet, 1))
+    }
+
+    #[pyo3(signature = (n=2000, method="lttb"))]
+    fn downsample(&self, n: usize, method: &str) -> Chart {
+        let _ = method;
+        let h = &self.html;
+        let mut out = String::with_capacity(h.len());
+        let mut rest = h.as_str();
+        loop {
+            match rest.find("data-x=\"") {
+                None => { out.push_str(rest); break; }
+                Some(i) => {
+                    out.push_str(&rest[..i]);
+                    let after = &rest[i + 8..];
+                    let end = match after.find('"') { Some(e) => e, None => { out.push_str("data-x=\""); out.push_str(after); break; } };
+                    let xs_raw = &after[..end];
+                    let after2 = &after[end + 1..];
+                    let after_y = match after2.find("data-y=\"") {
+                        Some(j) => j,
+                        None => { out.push_str("data-x=\""); out.push_str(after); break; }
+                    };
+                    let ys_section = &after2[after_y + 8..];
+                    let ys_end = match ys_section.find('"') { Some(e) => e, None => { out.push_str("data-x=\""); out.push_str(after); break; } };
+                    let ys_raw = &ys_section[..ys_end];
+                    let xs: Vec<f64> = xs_raw.split(',').filter_map(|s| s.parse().ok()).collect();
+                    let ys: Vec<f64> = ys_raw.split(',').filter_map(|s| s.parse().ok()).collect();
+                    if xs.len() == ys.len() && xs.len() > n && n >= 3 {
+                        let payload = serde_json::json!({"x":xs,"y":ys,"threshold":n}).to_string();
+                        let res = crate::bindings::commands::charts::downsample_lttb(&payload);
+                        if let Ok(v) = serde_json::from_str::<serde_json::Value>(&res) {
+                            if v.get("ok").and_then(|b| b.as_bool()).unwrap_or(false) {
+                                let nx: Vec<String> = v.get("x").and_then(|a| a.as_array()).map(|a| a.iter().filter_map(|n| n.as_f64().map(|x| x.to_string())).collect()).unwrap_or_default();
+                                let ny: Vec<String> = v.get("y").and_then(|a| a.as_array()).map(|a| a.iter().filter_map(|n| n.as_f64().map(|x| x.to_string())).collect()).unwrap_or_default();
+                                out.push_str(&format!("data-x=\"{}\"", nx.join(",")));
+                                out.push_str(&after2[..after_y]);
+                                out.push_str(&format!("data-y=\"{}\"", ny.join(",")));
+                                rest = &ys_section[ys_end + 1..];
+                                continue;
+                            }
+                        }
+                    }
+                    out.push_str("data-x=\"");
+                    out.push_str(xs_raw);
+                    out.push('"');
+                    out.push_str(&after2[..after_y]);
+                    out.push_str("data-y=\"");
+                    out.push_str(ys_raw);
+                    out.push('"');
+                    rest = &ys_section[ys_end + 1..];
+                }
+            }
+        }
+        self.propagate(out)
+    }
 }
 
 #[cfg(feature = "python")]
