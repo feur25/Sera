@@ -187,6 +187,32 @@ for i, row in enumerate(distances):
 </div>
 </div>
 
+---
+
+## Algorithmic Functioning
+
+K-Means minimises the total inertia — the sum of squared distances from each point to
+its assigned centroid:
+
+$$J = \sum_{i=1}^{n} \|x_i - \mu_{c(x_i)}\|^2$$
+
+**K-Means++ initialisation**
+
+The first centroid $\mu_1$ is chosen uniformly at random. Each subsequent centroid
+$\mu_j$ is sampled with probability proportional to $D(x)^2$ — the squared distance to
+the nearest already-placed centroid. This reduces the expected inertia at convergence
+to $O(\log k)$ of optimal.
+
+**EM iterations**
+
+1. **Assignment:** $c(x_i) = \underset{k}{\arg\min}\ \|x_i - \mu_k\|^2$
+2. **Update:** $\mu_k = \dfrac{1}{|C_k|}\displaystyle\sum_{x_i \in C_k} x_i$
+
+Iterations run until inertia delta $< $ `tol` or `max_iter` is reached.
+
+**`transform(x)`** returns the $n \times k$ matrix of Euclidean distances from each
+sample to each centroid, useful for soft-assignment and feature engineering.
+
 </div>
 
 <div class="lang-fr">
@@ -222,6 +248,34 @@ Classe K-Means haute performance pour données N-dimensionnelles, compatible ave
 | `centroids_` | Coordonnées des centroïdes |
 | `inertia_` | Inertie finale |
 | `n_iter_` | Nombre d'itérations |
+
+---
+
+## Fonctionnement algorithmique
+
+K-Means minimise l'inertie totale — la somme des carrés des distances de chaque point
+à son centroïde assigné :
+
+$$J = \sum_{i=1}^{n} \|x_i - \mu_{c(x_i)}\|^2$$
+
+**Initialisation K-Means++**
+
+Le premier centroïde $\mu_1$ est choisi de façon uniforme aléatoire. Chaque centroïde
+suivant $\mu_j$ est échantillonné avec une probabilité proportionnelle à $D(x)^2$ — la
+distance au carré au centroïde le plus proche déjà placé. Cela réduit l'inertie attendue
+à la convergence à $O(\log k)$ de l'optimal.
+
+**Itérations EM**
+
+1. **Affectation :** $c(x_i) = \underset{k}{\arg\min}\ \|x_i - \mu_k\|^2$
+2. **Mise à jour :** $\mu_k = \dfrac{1}{|C_k|}\displaystyle\sum_{x_i \in C_k} x_i$
+
+Les itérations tournent jusqu'à ce que le delta d'inertie passe sous `tol` ou que
+`max_iter` soit atteint.
+
+**`transform(x)`** retourne la matrice $n \times k$ des distances euclidiennes de chaque
+échantillon à chaque centroïde, utile pour l'affectation douce et l'ingénierie de
+caractéristiques.
 
 </div>
 

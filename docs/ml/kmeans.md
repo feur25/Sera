@@ -150,6 +150,34 @@ chart.show()
 </div>
 </div>
 
+---
+
+## Algorithmic Functioning
+
+K-Means minimises the total inertia — the sum of squared distances from each point to
+its assigned centroid:
+
+$$J = \sum_{i=1}^{n} \|x_i - \mu_{c(x_i)}\|^2$$
+
+**K-Means++ initialisation**
+
+The first centroid $\mu_1$ is chosen uniformly at random. Each subsequent centroid
+$\mu_j$ is sampled with probability proportional to $D(x)^2$ — the squared distance to
+the nearest already-placed centroid. This seeding strategy reduces the expected inertia
+at convergence to $O(\log k)$ of optimal.
+
+**EM iterations**
+
+1. **Assignment:** $c(x_i) = \underset{k}{\arg\min}\ \|x_i - \mu_k\|^2$
+2. **Update:** $\mu_k = \dfrac{1}{|C_k|}\displaystyle\sum_{x_i \in C_k} x_i$
+
+Iterations run until the inertia delta falls below `tol` or `max_iter` is reached.
+
+**Mini-batch**
+
+At each step a random subset of `batch_size` points updates the centroids. This reduces
+memory pressure and runtime for large datasets ($n > 100\,000$) at a small quality cost.
+
 </div>
 
 <div class="lang-fr">
@@ -274,5 +302,35 @@ chart = sp.kmeans(
 )
 chart.show()
 ```
+
+---
+
+## Fonctionnement algorithmique
+
+K-Means minimise l'inertie totale — la somme des carrés des distances de chaque point
+à son centroïde assigné :
+
+$$J = \sum_{i=1}^{n} \|x_i - \mu_{c(x_i)}\|^2$$
+
+**Initialisation K-Means++**
+
+Le premier centroïde $\mu_1$ est choisi de façon uniforme aléatoire. Chaque centroïde
+suivant $\mu_j$ est échantillonné avec une probabilité proportionnelle à $D(x)^2$ — la
+distance au carré au centroïde le plus proche déjà placé. Cette stratégie d'amorçage
+réduit l'inertie attendue à la convergence à $O(\log k)$ de l'optimal.
+
+**Itérations EM**
+
+1. **Affectation :** $c(x_i) = \underset{k}{\arg\min}\ \|x_i - \mu_k\|^2$
+2. **Mise à jour :** $\mu_k = \dfrac{1}{|C_k|}\displaystyle\sum_{x_i \in C_k} x_i$
+
+Les itérations tournent jusqu'à ce que le delta d'inertie passe sous `tol` ou que
+`max_iter` soit atteint.
+
+**Mini-batch**
+
+À chaque étape, un sous-ensemble aléatoire de `batch_size` points met à jour les
+centroïdes. Cela réduit la pression mémoire et le temps d'exécution pour les grands
+jeux de données ($n > 100\,000$) au prix d'une légère perte de qualité.
 
 </div>

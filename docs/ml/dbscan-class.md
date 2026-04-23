@@ -152,6 +152,24 @@ chart = sp.build_scatter_chart(
 
 ---
 
+## Algorithmic Functioning
+
+The DBSCAN class exposes the same Rust-backed algorithm as the chart variant.
+
+For a point $p$, its $\epsilon$-neighbourhood is:
+
+$$N_\epsilon(p) = \{q \in D : \|p - q\| \leq \epsilon\}$$
+
+- **Core point:** $|N_\epsilon(p)| \geq \text{min\_samples}$
+- **Border point:** reachable from a core point but not itself a core point
+- **Noise point:** not reachable from any core point — label $-1$
+
+SeraPlot builds a **KD-tree** for $O(\log n)$ radius queries and expands clusters via
+parallel BFS with SIMD distance acceleration. `n_clusters_` counts only true clusters;
+noise points are excluded.
+
+---
+
 ## See also
 
 - [DBSCAN Chart](dbscan.md)
@@ -187,5 +205,23 @@ Classe DBSCAN bas niveau pour un accès programmatique aux labels de cluster. Le
 | `labels_` | Liste des labels par point (−1 = bruit) |
 | `n_clusters_` | Nombre de clusters trouvés |
 | `n_noise_` | Nombre de points bruit |
+
+---
+
+## Fonctionnement algorithmique
+
+La classe DBSCAN expose le même algorithme Rust que la variante graphique.
+
+Pour un point $p$, son $\epsilon$-voisinage est :
+
+$$N_\epsilon(p) = \{q \in D : \|p - q\| \leq \epsilon\}$$
+
+- **Point cœur :** $|N_\epsilon(p)| \geq \text{min\_samples}$
+- **Point frontière :** accessible depuis un point cœur, mais pas lui-même un point cœur
+- **Point bruit :** non accessible depuis aucun point cœur — label $-1$
+
+SeraPlot construit un **KD-tree** pour des requêtes de rayon en $O(\log n)$ et étend les
+clusters par BFS parallèle avec accélération SIMD. `n_clusters_` ne compte que les vrais
+clusters ; les points bruit en sont exclus.
 
 </div>

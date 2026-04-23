@@ -138,6 +138,27 @@ list(y),
 
 ---
 
+## Algorithmic Functioning
+
+DBSCAN groups points that lie in **dense regions** and marks isolated points as noise.
+It requires no prior specification of the number of clusters.
+
+For a point $p$, its $\epsilon$-neighbourhood is:
+
+$$N_\epsilon(p) = \{q \in D : \|p - q\| \leq \epsilon\}$$
+
+- **Core point:** $|N_\epsilon(p)| \geq \text{min\_samples}$
+- **Border point:** reachable from a core point but not itself a core point
+- **Noise point:** not reachable from any core point — assigned label $-1$
+
+The 3D variant operates identically in $\mathbb{R}^3$ — the KD-tree extends to three
+dimensions with SIMD-accelerated Euclidean distance $\|p - q\| = \sqrt{\Delta x^2 + \Delta y^2 + \Delta z^2}$.
+
+When `normalize=True`, each axis is scaled to $[0, 1]$ independently before clustering,
+so that the scale of $z$ does not distort $\epsilon$.
+
+---
+
 ## See also
 
 - [DBSCAN 2D](dbscan.md)
@@ -163,5 +184,27 @@ Clustering DBSCAN en 3D — rendu via WebGL GPU. Chaque cluster est coloré dist
 | `eps` | `float` | `0.5` | Distance maximale de voisinage |
 | `min_samples` | `int` | `5` | Minimum de points pour une région dense |
 | `normalize` | `bool` | `False` | Normaliser les variables avant le clustering |
+
+---
+
+## Fonctionnement algorithmique
+
+DBSCAN regroupe les points situés dans des **régions denses** et marque les points
+isolés comme du bruit. Il ne nécessite pas de spécifier le nombre de clusters à
+l'avance.
+
+Pour un point $p$, son $\epsilon$-voisinage est :
+
+$$N_\epsilon(p) = \{q \in D : \|p - q\| \leq \epsilon\}$$
+
+- **Point cœur :** $|N_\epsilon(p)| \geq \text{min\_samples}$
+- **Point frontière :** accessible depuis un point cœur, mais pas lui-même un point cœur
+- **Point bruit :** non accessible depuis aucun point cœur — label $-1$
+
+La variante 3D fonctionne identiquement dans $\mathbb{R}^3$ — le KD-tree s'étend à
+trois dimensions avec un calcul de distance euclidienne $\|p - q\| = \sqrt{\Delta x^2 + \Delta y^2 + \Delta z^2}$ accéléré par SIMD.
+
+Avec `normalize=True`, chaque axe est normalisé dans $[0, 1]$ indépendamment avant le
+clustering, de façon à ce que l'échelle de $z$ ne distorde pas $\epsilon$.
 
 </div>

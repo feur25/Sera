@@ -178,6 +178,36 @@ chart = sp.build_dbscan_chart(
 
 ---
 
+## Algorithmic Functioning
+
+DBSCAN groups points that lie in **dense regions** and marks isolated points as noise.
+It requires no prior specification of the number of clusters.
+
+**Core concepts**
+
+For a point $p$, its $\epsilon$-neighbourhood is:
+
+$$N_\epsilon(p) = \{q \in D : \|p - q\| \leq \epsilon\}$$
+
+- **Core point:** $|N_\epsilon(p)| \geq \text{min\_samples}$
+- **Border point:** reachable from a core point but not itself a core point
+- **Noise point:** not reachable from any core point — assigned label $-1$
+
+Clusters are the maximal sets of density-connected points. Two points are
+density-connected if there exists a chain of directly density-reachable steps through
+core points linking them.
+
+**Implementation**
+
+SeraPlot builds a **KD-tree** over the input for $O(\log n)$ radius queries, then
+expands each unvisited core point via parallel BFS. SIMD-accelerated distance
+computation is applied at each leaf node.
+
+When `normalize=True`, features are scaled to $[0, 1]$ before tree construction,
+preventing high-magnitude dimensions from dominating $\epsilon$.
+
+---
+
 ## See also
 
 - [DBSCAN Class](dbscan-class.md) â€” for accessing labels and cluster metadata
@@ -349,6 +379,38 @@ chart = sp.build_dbscan_chart(
     normalize=True,
 )
 ```
+
+---
+
+## Fonctionnement algorithmique
+
+DBSCAN regroupe les points situés dans des **régions denses** et marque les points
+isolés comme du bruit. Il ne nécessite pas de spécifier le nombre de clusters à
+l'avance.
+
+**Concepts clés**
+
+Pour un point $p$, son $\epsilon$-voisinage est :
+
+$$N_\epsilon(p) = \{q \in D : \|p - q\| \leq \epsilon\}$$
+
+- **Point cœur :** $|N_\epsilon(p)| \geq \text{min\_samples}$
+- **Point frontière :** accessible depuis un point cœur, mais pas lui-même un point cœur
+- **Point bruit :** non accessible depuis aucun point cœur — label $-1$
+
+Les clusters sont les ensembles maximaux de points densément connexes. Deux points sont
+densément connexes s'il existe une chaîne de sauts directement accessibles les reliant
+via des points cœurs.
+
+**Implémentation**
+
+SeraPlot construit un **KD-tree** sur les points d'entrée pour des requêtes de rayon
+en $O(\log n)$, puis étend chaque point cœur non visité par BFS parallèle. Un calcul
+de distance accéléré par SIMD est appliqué à chaque feuille de l'arbre.
+
+Avec `normalize=True`, les variables sont normalisées dans $[0, 1]$ avant la
+construction de l'arbre, pour éviter que les dimensions à grande magnitude dominent
+$\epsilon$.
 
 ---
 
