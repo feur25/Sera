@@ -20,6 +20,8 @@
   - [Horizontal Bar](charts/2d/hbar.md)
   - [Line Chart](charts/2d/line.md)
   - [Scatter Chart](charts/2d/scatter.md)
+  - [Area Chart](charts/2d/area.md)
+  - [Multi-line Chart](charts/2d/multiline.md)
   - [Histogram](charts/2d/histogram.md)
   - [Histogram Overlay](charts/2d/histogram-overlay.md)
   - [Grouped Bar](charts/2d/grouped-bar.md)
@@ -29,24 +31,23 @@
   - [Donut Chart](charts/2d/donut.md)
   - [Box Plot](charts/2d/boxplot.md)
   - [Violin Chart](charts/2d/violin.md)
-  - [Slope Chart](charts/2d/slope.md)
-  - [Sunburst](charts/2d/sunburst.md)
-  - [Funnel](charts/2d/funnel.md)
-  - [Treemap](charts/2d/treemap.md)
-  - [Multi-line Chart](charts/2d/multiline.md)
-  - [Area Chart](charts/2d/area.md)
-  - [Waterfall](charts/2d/waterfall.md)
-  - [Bullet Chart](charts/2d/bullet.md)
-  - [Word Cloud](charts/2d/wordcloud.md)
-  - [Candlestick](charts/2d/candlestick.md)
-  - [Dumbbell](charts/2d/dumbbell.md)
-  - [Bubble](charts/2d/bubble.md)
-  - [Gauge](charts/2d/gauge.md)
-  - [Parallel Coordinates](charts/2d/parallel.md)
-  - [Lollipop](charts/2d/lollipop.md)
   - [KDE](charts/2d/kde.md)
   - [Ridgeline](charts/2d/ridgeline.md)
   - [Radar](charts/2d/radar.md)
+  - [Bubble](charts/2d/bubble.md)
+  - [Scatter Plot](charts/2d/scatter.md)
+  - [Slope Chart](charts/2d/slope.md)
+  - [Funnel](charts/2d/funnel.md)
+  - [Waterfall](charts/2d/waterfall.md)
+  - [Sunburst](charts/2d/sunburst.md)
+  - [Treemap](charts/2d/treemap.md)
+  - [Candlestick](charts/2d/candlestick.md)
+  - [Dumbbell](charts/2d/dumbbell.md)
+  - [Bullet Chart](charts/2d/bullet.md)
+  - [Gauge](charts/2d/gauge.md)
+  - [Lollipop](charts/2d/lollipop.md)
+  - [Parallel Coordinates](charts/2d/parallel.md)
+  - [Word Cloud](charts/2d/wordcloud.md)
   - [Grid Layout](charts/2d/grid.md)
   - [Slideshow](charts/2d/slideshow.md)
 
@@ -78,14 +79,12 @@
 # Machine Learning
 
 - [Overview](ml/index.md)
-
 - [Clustering](ml/clustering-index.md)
   - [K-Means](ml/kmeans.md)
   - [K-Means Class](ml/kmeans-class.md)
   - [DBSCAN 2D](ml/dbscan.md)
   - [DBSCAN 3D](ml/dbscan3d.md)
   - [DBSCAN Class](ml/dbscan-class.md)
-
 - [Linear Models](ml/linear-index.md)
   - [LinearRegression](ml/linear-regression.md)
   - [Ridge / RidgeClassifier](ml/ridge.md)
@@ -93,30 +92,65 @@
   - [ElasticNet](ml/elastic-net.md)
   - [LogisticRegression](ml/logistic-regression.md)
   - [SGDClassifier / SGDRegressor](ml/sgd.md)
-
 - [Tree-Based](ml/tree-index.md)
   - [DecisionTree](ml/decision-tree.md)
   - [RandomForest](ml/random-forest.md)
   - [GradientBoosting](ml/gradient-boosting.md)
   - [AdaBoost](ml/adaboost.md)
-
 - [Neighbors](ml/neighbors-index.md)
   - [KNN / NearestCentroid](ml/knn.md)
-
 - [Naive Bayes](ml/bayes-index.md)
   - [GaussianNB / MultinomialNB / BernoulliNB](ml/naive-bayes.md)
-
 - [SVM](ml/svm-index.md)
   - [LinearSVC / LinearSVR](ml/svm.md)
-
 - [Preprocessing](ml/preprocessing-index.md)
   - [StandardScaler / MinMaxScaler / RobustScaler / MaxAbsScaler / Normalizer](ml/preprocessing.md)
-
 - [Decomposition](ml/decomposition-index.md)
   - [PCA / TruncatedSVD](ml/decomposition.md)
-
 - [Model Selection](ml/selection-index.md)
   - [GridSearchCV / RandomizedSearchCV / Halving](ml/grid-search.md)
+- [Evaluation & Metrics](ml/evaluation-index.md)
+  - [Metrics](ml/metrics.md)
+  - [Train / Test Split](ml/train-test-split.md)
+- [AutoML](ml/automl.md)
+
+---
+
+# Configuration
+
+- [Background](config/background.md)
+- [Palette](config/palette.md)
+- [Hover & Tooltip](config/hover.md)
+- [Animation](config/auto-display.md)
+- [Facet](config/facet.md)
+- [Downsampling](config/downsample.md)
+- [Streaming](config/streaming.md)
+- [Diff Mode](config/diff.md)
+- [Drift Detection](config/drift.md)
+- [AutoML Config](config/automl.md)
+- [Export](config/export.md)
+- [ML Persistence](config/ml-persistence.md)
+- [Pickle Support](config/pickle.md)
+- [Accessibility](config/a11y.md)
+- [CSP](config/csp.md)
+
+---
+
+# Tooling
+
+- [VS Code Extension](tooling/vscode.md)
+
+---
+
+# API Reference
+
+- [Full API Index](api/index.md)
+
+---
+
+# About
+
+- [Support & Contact](about/support.md)
 
 - [Evaluation](ml/evaluation-index.md)
   - [Metrics](ml/metrics.md)

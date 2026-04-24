@@ -22,7 +22,11 @@ but I'll do as much as I can. The goal is to make SeraPlot:
 - **fully customisable**
 - **complete**
 
-Email me directly to discuss feature requests, integrations, or any feedback.
+Email me directly to discuss feature requests, integrations, or any feedback:
+
+<div align="center" style="margin: 16px 0">
+  <a href="mailto:feur09@gmail.com" style="font-size:1.1em;font-weight:600">feur09@gmail.com</a>
+</div>
 
 ## Support the project
 
@@ -67,7 +71,11 @@ possible. L'objectif, c'est que SeraPlot soit :
 - **complet**
 
 Écrivez-moi directement par mail pour toute demande de fonctionnalité,
-intégration ou retour.
+intégration ou retour :
+
+<div align="center" style="margin: 16px 0">
+  <a href="mailto:feur09@gmail.com" style="font-size:1.1em;font-weight:600">feur09@gmail.com</a>
+</div>
 
 ## Soutenir le projet
 
