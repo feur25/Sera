@@ -63,34 +63,6 @@ SeraPlot has **zero required Python dependencies**. The Rust extension is entire
 
 For comparison, `pip install plotly` downloads ~15 MB. `pip install seraplot` downloads ~2 MB.
 
----
-
-## Jupyter
-
-SeraPlot displays charts **automatically** in Jupyter without any `display()` call.
-
-```python
-import seraplot as sp
-chart = sp.build_bar_chart("Sales", labels=["Q1", "Q2", "Q3"], values=[120, 145, 98])
-```
-
-To disable auto-display:
-
-```python
-sp.set_auto_display(False)
-```
-
----
-
-## Build from source
-
-```bash
-git clone https://github.com/feur25/seraplot.git
-cd seraplot
-pip install maturin
-maturin develop --features python
-```
-
 </div>
 
 <div class="lang-fr">
@@ -155,33 +127,5 @@ SeraPlot n'a **aucune dépendance Python requise**. L'extension Rust est entièr
 - wheels disponibles pour Windows, Linux et macOS — aucune compilation nécessaire
 
 Pour comparaison, `pip install plotly` télécharge ~15 Mo. `pip install seraplot` télécharge ~2 Mo.
-
----
-
-## Jupyter
-
-SeraPlot affiche les graphiques **automatiquement** dans Jupyter sans aucun appel à `display()`.
-
-```python
-import seraplot as sp
-chart = sp.build_bar_chart("Ventes", labels=["T1", "T2", "T3"], values=[120, 145, 98])
-```
-
-Pour désactiver l'affichage automatique :
-
-```python
-sp.set_auto_display(False)
-```
-
----
-
-## Compilation depuis les sources
-
-```bash
-git clone https://github.com/feur25/seraplot.git
-cd seraplot
-pip install maturin
-maturin develop --features python
-```
 
 </div>

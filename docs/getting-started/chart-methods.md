@@ -510,7 +510,7 @@ chart3 = sp.line("Propre", dates, values).zoom()
 
 ### `set_bg(color=None)`
 
-Définit la couleur de fond du wrapper HTML complet.
+Définit la couleur de fond du wrapper HTML complet, pour plus d'infos une section Background existe dans cette documentation, ou vous pourrez retrouver plus ample information concernant les arrières plan, mais aussi les thèmes existant.
 
 ```python
 chart = sp.build_bar_chart("Ventes", labels, values).set_bg("#0f172a")

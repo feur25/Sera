@@ -35,11 +35,7 @@ chart = sp.build_bar_chart("My Chart", labels=["A"], values=[1.0])
 ---
 
 ## Manual display
-
-```python
-from IPython.display import HTML, display
-display(HTML(chart.html))
-```
+you don't need anything, you just do make your chart, seraplot has a native display inside
 
 ---
 
@@ -102,11 +98,7 @@ sp.set_auto_display(False)
 ---
 
 ## Affichage manuel
-
-```python
-from IPython.display import HTML, display
-display(HTML(chart.html))
-```
+Comme dit au précédemment, vous n'avez aucunement besoin de rien, juste de crée votre chart, Seraplot à une fonction native d'affichage
 
 ---
 

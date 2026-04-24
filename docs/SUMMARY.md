@@ -117,6 +117,7 @@
 - [Configuration](config/index.md)
   - [Background](config/background.md)
   - [Palette](config/palette.md)
+  - [Themes](config/themes.md)
   - [Hover & Tooltip](config/hover.md)
   - [Auto Display](config/auto-display.md)
   - [Facet](config/facet.md)
