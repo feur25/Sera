@@ -14,30 +14,7 @@
 
 <div class="lang-en">
 
-```bash
-pip install seraplot
-```
-
-> **« Plot anything. Train anything. Ship anywhere. »**
-
----
-
-## The switch
-
-```python
-import matplotlib.pyplot as plt
-
-import seraplot.matplotlib as plt
-```
-
-- 6,000× faster than Plotly (measured, 1000 bar charts)
-- 200× smaller files
-- interactive HTML by default
-- zero Python dependencies
-
----
-
-## More than a charting library
+## Seraplot, More than a charting library
 
 SeraPlot is a complete data toolkit written in Rust. The same engine powers your visualizations, your machine learning, and the way you ship results to other people.
 
@@ -53,48 +30,6 @@ SeraPlot is a complete data toolkit written in Rust. The same engine powers your
 | **Stay accessible** | A11y-tagged SVG, semantic HTML, keyboard navigation, locale-aware number formatting. |
 
 > **One library replaces:** matplotlib + plotly + dash + streamlit + seaborn + parts of scikit-learn — with one `pip install` and zero runtime dependencies.
-
----
-
-## The moment it clicks
-
-```python
-import seraplot as sp
-
-sp.scatter("1M points", list(range(1_000_000)), [x**0.5 for x in range(1_000_000)]).show()
-```
-
-**1 million points. Interactive. In Jupyter.**
-
-No config. No backend. No waiting.
-
----
-
-## Why people actually switch
-
-People don't switch because of benchmarks.
-They switch because something becomes **possible**.
-
-### Dashboards without a backend
-
-Each chart is a self-contained HTML file. Drop it anywhere — S3, email, Git, Notion.
-No server, no Dash, no Streamlit.
-
-### Charts by email
-
-21 KB interactive HTML vs Plotly's 4.7 MB static blob.
-
-### CI pipelines at scale
-
-1,000 charts in 6 ms. Not 37 seconds. Not 60 seconds.
-
-### Offline-first apps
-
-No CDN. No JS framework. No internet at render time. Works air-gapped.
-
-### APIs that return charts
-
-Return HTML directly from a FastAPI endpoint. 21 KB in the response body, no temp files.
 
 ---
 
@@ -326,19 +261,13 @@ Everything else stays the same.
 
 ---
 
-## 7 themes
+## Why Seraplot?
 
-```python
-sp.theme("dark")
-sp.theme("apple")
-sp.theme("notion")
-sp.theme("scientific")
-sp.theme("neon")
-sp.theme("minimal")
-sp.theme("light")
+As you’ve probably understood by now, Seraplot is a tool designed to be extremely customizable, while also being much faster and more resource-efficient than existing solutions. It also provides a wide range of helpful features, such as the Seraplot extension for VSCode, which allows you to generate plots or ML methods very quickly and live, between each save of your scripts.
 
-sp.reset_theme()
-```
+In addition, Seraplot is available across multiple languages such as: JS/TS, C (C# & C++), Java, Rust, Python, R & Scala. The main goal is to be highly accessible: from one language to another, the commands remain the same for greater simplicity.
+
+In summary, Seraplot is a much more practical and independent tool that enables the generation of 2D & 3D plots, while also aiming to provide machine learning-related methods that you will find throughout the documentation. More surprises await you, such as the ability to choose different themes, a chunk system in case of crashes to resume from the error point, and even multiple aliases to use the same method (e.g., sp.build_bar_chart / sp.bar_chart / sp.bar / sp.bars).
 
 ---
 
@@ -401,111 +330,6 @@ SeraPlot returns 21 KB of interactive HTML directly from RAM.
 
 ---
 
-## When you might not need it
-
-- quick one-off scripts where render time doesn't matter
-- heavy JS customization (plotly.js ecosystem)
-- your team only reads static PNG reports
-
-SeraPlot is built for production throughput.
-If all you need is 3 charts in a notebook, matplotlib works fine.
-
----
-
-## Global config
-
-Set once, every chart inherits:
-
-```python
-sp.config(
-    font="Inter",
-    font_size=14,
-    title_size=22,
-    crosshair=True,
-    zoom=True,
-    animation=True,
-    export_button=True,
-    responsive=True,
-    border_radius=12,
-    margin=16,
-    opacity=0.85,
-    background="#0f172a",
-    palette=[0x818CF8, 0xFB7185, 0x34D399],
-    gridlines=True,
-)
-
-sp.bar("Revenue", labels, values)   # inherits everything
-sp.line("Trend", dates, values)     # same config
-sp.scatter("Clusters", x, y)        # same config
-```
-
-Per-chart override with method chaining:
-
-```python
-sp.bar("Revenue", labels, values).font("Roboto").zoom(False)
-```
-
-Reset everything:
-
-```python
-sp.reset_config()
-```
-
-| Parameter | Type | Effect |
-|-----------|------|--------|
-| `font` | str | Font family for all text |
-| `font_size` | int | Base font size (px) |
-| `title_size` | int | Title font size (px) |
-| `crosshair` | bool | Crosshair lines on hover |
-| `zoom` | bool | Mouse wheel zoom + pan |
-| `animation` | bool | Fade-in animation on elements |
-| `animation_duration` | int | Animation duration (ms) |
-| `export_button` | bool | Download button on each chart |
-| `responsive` | bool | Auto-resize to container width |
-| `border_radius` | int | Chart container border radius (px) |
-| `margin` | int | Chart container padding (px) |
-| `opacity` | float | Element opacity (0.0–1.0) |
-| `background` | str | Background color |
-| `palette` | list[int] | Color palette (hex ints) |
-| `gridlines` | bool | Show grid lines |
-| `locale` | str | Number formatting locale |
-| `thousands_sep` | str | Thousands separator character |
-| `tooltip` | str | Tooltip mode |
-
-### Chain methods (per-chart)
-
-| Method | Effect |
-|--------|--------|
-| `.font("Inter")` | Override font family |
-| `.title_size(22)` | Override title font size |
-| `.set_font_size(14)` | Override base font size |
-| `.crosshair()` | Enable crosshair |
-| `.zoom()` | Enable zoom + pan |
-| `.animate(300)` | Enable animation (ms) |
-| `.export_button()` | Add download button |
-| `.responsive()` | Auto-resize |
-| `.border_radius(12)` | Set border radius |
-| `.set_opacity(0.85)` | Set element opacity |
-| `.set_margin(16)` | Set chart padding |
-| `.set_bg("#0f172a")` | Set background color |
-| `.inject_css("...")` | Inject custom CSS |
-| `.inject_js("...")` | Inject custom JS |
-
----
-
-## Native machine learning
-
-Rust-native DBSCAN with KD-tree spatial indexing:
-
-| Points | scikit-learn | SeraPlot DBSCAN | Factor |
-|--------|-------------|-----------------|--------|
-| 1,000 | 3.2 ms | 0.18 ms | **18×** |
-| 10,000 | 54 ms | 1.1 ms | **49×** |
-| 100,000 | 1,340 ms | 8.4 ms | **160×** |
-| 500,000 | 21,000 ms | 38 ms | **553×** |
-
----
-
 ## Everything SeraPlot does
 
 - **57 chart types** — every 2D chart has a 3D WebGL variant
@@ -515,8 +339,9 @@ Rust-native DBSCAN with KD-tree spatial indexing:
 - **Global config** — `sp.config()` sets font, zoom, crosshair, animation across all charts
 - **Zero dependencies** — pure Rust renderer
 - **200× smaller files** — no bundled JS runtime
-- **Multi-language** — Python, JavaScript/TypeScript (npm), Rust
+- **Multi-language** — Python, JavaScript/TypeScript (npm), Rust, R, Scala, C#, C++, Java
 - **DBSCAN up to 600× faster** than scikit-learn
+- **Native Machine learning** — some ml methods is include by default in this tool
 - **Works everywhere** — Python ≥ 3.8, any OS
 
 ---
@@ -536,28 +361,7 @@ Rust-native DBSCAN with KD-tree spatial indexing:
 
 <div class="lang-fr">
 
-```bash
-pip install seraplot
-```
-
----
-
-## Le déclic
-
-```python
-import matplotlib.pyplot as plt
-
-import seraplot.matplotlib as plt
-```
-
-- 6 000× plus rapide que Plotly (mesuré, 1000 graphiques en barres)
-- 200× plus petit en taille de fichier
-- HTML interactif par défaut
-- zéro dépendance Python
-
----
-
-## Bien plus qu'une bibliothèque de graphiques
+## Seraplot - Bien plus qu'une bibliothèque de graphiques
 
 > **« Tout tracer. Tout entraîner. Partout déployer. »**
 
@@ -575,48 +379,6 @@ SeraPlot est une boîte à outils data complète écrite en Rust. Le même moteu
 | **Rester accessible** | SVG balisé a11y, HTML sémantique, navigation clavier, formatage numérique localisé. |
 
 > **Une seule librairie remplace :** matplotlib + plotly + dash + streamlit + seaborn + une partie de scikit-learn — avec un seul `pip install` et zéro dépendance d'exécution.
-
----
-
-## Le moment où ça fait tilt
-
-```python
-import seraplot as sp
-
-sp.scatter("1M points", list(range(1_000_000)), [x**0.5 for x in range(1_000_000)]).show()
-```
-
-**1 million de points. Interactif. Dans Jupyter.**
-
-Pas de config. Pas de backend. Pas d'attente.
-
----
-
-## Pourquoi les gens basculent vraiment
-
-Les gens ne basculent pas à cause des benchmarks.
-Ils basculent parce que quelque chose devient **possible**.
-
-### Tableaux de bord sans backend
-
-Chaque graphique est un fichier HTML autonome. Déposez-le n'importe où — S3, e-mail, Git, Notion.
-Pas de serveur, pas de Dash, pas de Streamlit.
-
-### Graphiques par e-mail
-
-21 Ko de HTML interactif contre les 4,7 Mo de blob statique de Plotly.
-
-### Pipelines CI à grande échelle
-
-1 000 graphiques en 6 ms. Pas 37 secondes. Pas 60 secondes.
-
-### Applications hors-ligne
-
-Pas de CDN. Pas de framework JS. Pas d'internet au moment du rendu. Fonctionne en environnement isolé.
-
-### APIs qui retournent des graphiques
-
-Retournez du HTML directement depuis un endpoint FastAPI. 21 Ko dans le corps de la réponse, pas de fichiers temporaires.
 
 ---
 
@@ -819,7 +581,7 @@ Matplotlib produit du PNG/SVG/PDF (50–500 Ko) — pas du HTML interactif.
 SeraPlot n'est pas un wrapper autour de Plotly, Chart.js ou D3.
 
 C'est un **moteur de rendu natif Rust** qui génère du HTML + JS minimal par graphique.
-Un camembert reçoit le JS du camembert. Un graphique en barres reçoit le JS des barres. Rien d'autre n'est embarqué.
+chaque chart reçoit soit js dédiée. Rien d'autre n'est embarqué.
 
 C'est pour ça que la sortie fait 20 Ko au lieu de 4,7 Mo.
 
@@ -836,19 +598,13 @@ Tout le reste reste identique.
 
 ---
 
-## 7 thèmes
+## Pourquoi Seraplot ?
 
-```python
-sp.theme("dark")
-sp.theme("apple")
-sp.theme("notion")
-sp.theme("scientific")
-sp.theme("neon")
-sp.theme("minimal")
-sp.theme("light")
+Comme vous l’aurez compris en arrivant jusqu’ici, Seraplot est un outil qui a pour objectif d’être extrêmement personnalisable, mais aussi beaucoup plus rapide et moins gourmand que ce qui existe déjà, en plus de proposer tout un panel d’aides, comme l’extension Seraplot dans VSCode, qui vous permettra de générer des plots ou des méthodes ML très rapidement et en live, entre chaque sauvegarde de vos scripts.
 
-sp.reset_theme()
-```
+En plus de cela, Seraplot se voit distribué dans différents langages comme : JS/TS, C (C# & C++), Java, Rust, Python, R & Scala. L’objectif étant vraiment d’être ultra accessible : d’un langage à un autre, les commandes restent les mêmes pour plus de simplicité.
+
+Pour résumer, Seraplot est un outil beaucoup plus pratique de ce qui existe déjà et complétement indépendant, en plus de compilé différente fonctionnalitée. En autre il permet la génération de plots 2D & 3D, mais aussi qui tend à proposer des méthodes liées au ML, que vous pourrez retrouver au cours de votre documentation. D’autres surprises vous attendent, que ce soit la possibilité de choisir différents thèmes, ou bien le système de chunks en cas de crash pour reprendre au point d’erreur, ou encore pour n'en citer que un dernier, le fait d’avoir différents alias pour utiliser une méthode (ex : sp.build_bar_chart / sp.bar_chart / sp.bar / sp.bars).
 
 ---
 
@@ -897,111 +653,6 @@ SeraPlot retourne 21 Ko de HTML interactif directement depuis la RAM.
 
 ---
 
-## Quand vous n'en avez peut-être pas besoin
-
-- scripts ponctuels rapides où le temps de rendu n'a pas d'importance
-- personnalisation JS lourde (écosystème plotly.js)
-- votre équipe ne lit que des rapports PNG statiques
-
-SeraPlot est conçu pour le débit en production.
-Si vous avez juste besoin de 3 graphiques dans un notebook, matplotlib fait très bien l'affaire.
-
----
-
-## Configuration globale
-
-Définie une seule fois, chaque graphique en hérite :
-
-```python
-sp.config(
-    font="Inter",
-    font_size=14,
-    title_size=22,
-    crosshair=True,
-    zoom=True,
-    animation=True,
-    export_button=True,
-    responsive=True,
-    border_radius=12,
-    margin=16,
-    opacity=0.85,
-    background="#0f172a",
-    palette=[0x818CF8, 0xFB7185, 0x34D399],
-    gridlines=True,
-)
-
-sp.bar("Chiffre d'affaires", labels, values)
-sp.line("Tendance", dates, values)
-sp.scatter("Clusters", x, y)
-```
-
-Surcharge par graphique avec le chaînage de méthodes :
-
-```python
-sp.bar("Chiffre d'affaires", labels, values).font("Roboto").zoom(False)
-```
-
-Tout réinitialiser :
-
-```python
-sp.reset_config()
-```
-
-| Paramètre | Type | Effet |
-|-----------|------|-------|
-| `font` | str | Police pour tout le texte |
-| `font_size` | int | Taille de police de base (px) |
-| `title_size` | int | Taille de police du titre (px) |
-| `crosshair` | bool | Réticule au survol |
-| `zoom` | bool | Zoom molette + déplacement |
-| `animation` | bool | Animation d'apparition |
-| `animation_duration` | int | Durée de l'animation (ms) |
-| `export_button` | bool | Bouton de téléchargement |
-| `responsive` | bool | Redimensionnement automatique |
-| `border_radius` | int | Rayon des coins du conteneur (px) |
-| `margin` | int | Marge intérieure (px) |
-| `opacity` | float | Opacité des éléments (0.0–1.0) |
-| `background` | str | Couleur de fond |
-| `palette` | list[int] | Palette de couleurs (entiers hex) |
-| `gridlines` | bool | Afficher la grille |
-| `locale` | str | Locale de formatage des nombres |
-| `thousands_sep` | str | Séparateur des milliers |
-| `tooltip` | str | Mode des infobulles |
-
-### Méthodes chaînables (par graphique)
-
-| Méthode | Effet |
-|---------|-------|
-| `.font("Inter")` | Surcharger la police |
-| `.title_size(22)` | Surcharger la taille du titre |
-| `.set_font_size(14)` | Surcharger la taille de base |
-| `.crosshair()` | Activer le réticule |
-| `.zoom()` | Activer zoom + déplacement |
-| `.animate(300)` | Activer l'animation (ms) |
-| `.export_button()` | Ajouter un bouton de téléchargement |
-| `.responsive()` | Redimensionnement automatique |
-| `.border_radius(12)` | Définir le rayon des coins |
-| `.set_opacity(0.85)` | Définir l'opacité |
-| `.set_margin(16)` | Définir la marge |
-| `.set_bg("#0f172a")` | Définir la couleur de fond |
-| `.inject_css("...")` | Injecter du CSS personnalisé |
-| `.inject_js("...")` | Injecter du JS personnalisé |
-
----
-
-## Machine learning natif
-
-DBSCAN natif Rust avec indexation spatiale KD-tree :
-
-| Points | scikit-learn | SeraPlot DBSCAN | Facteur |
-|--------|-------------|-----------------|---------|
-| 1 000 | 3,2 ms | 0,18 ms | **18×** |
-| 10 000 | 54 ms | 1,1 ms | **49×** |
-| 100 000 | 1 340 ms | 8,4 ms | **160×** |
-| 500 000 | 21 000 ms | 38 ms | **553×** |
-
----
-
 ## Tout ce que SeraPlot fait
 
 - **57 types de graphiques** — chaque graphique 2D a une variante 3D WebGL
@@ -1011,8 +662,9 @@ DBSCAN natif Rust avec indexation spatiale KD-tree :
 - **Configuration globale** — `sp.config()` définit la police, le zoom, le réticule, l'animation pour tous les graphiques
 - **Zéro dépendance** — moteur de rendu Rust pur
 - **Fichiers 200× plus petits** — pas de runtime JS embarqué
-- **Multi-langage** — Python, JavaScript/TypeScript (npm), Rust
+- **Multi-langage** — Python, JavaScript/TypeScript (npm), Rust, R, Scala, C#, C++, Java
 - **DBSCAN jusqu'à 600× plus rapide** que scikit-learn
+- **Machine learning natif** — Plusieurs methods ml, sont déjà existante dans le framework
 - **Fonctionne partout** — Python ≥ 3.8, tout OS
 
 ---
