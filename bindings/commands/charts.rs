@@ -319,9 +319,12 @@ pub fn build_kmeans_chart(input: &str) -> String {
 pub fn build_scatter_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
-    let x = a.x.unwrap_or_default();
-    let y = a.y.unwrap_or_default();
-    let lbls = a.labels.unwrap_or_default();
+    let raw_labels = a.labels.unwrap_or_default();
+    let x: Vec<f64> = a.x.unwrap_or_else(|| {
+        raw_labels.iter().enumerate().map(|(i, s)| s.parse::<f64>().unwrap_or(i as f64)).collect()
+    });
+    let y: Vec<f64> = a.y.unwrap_or_else(|| a.values.unwrap_or_default());
+    let lbls = raw_labels;
     let sz = a.sizes.unwrap_or_default();
     let cgs = o.color_groups.clone().unwrap_or_default();
     let hover = o.hj();
@@ -591,7 +594,8 @@ pub fn build_area_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
     let x_labels = a.x_labels.or(a.labels).unwrap_or_default();
-    let series_flat = a.series.unwrap_or_default();
+    let values_fallback = a.values;
+    let series_flat = a.series.unwrap_or_else(|| values_fallback.map(|v| vec![v]).unwrap_or_default());
     use crate::plot::statistical::{AreaConfig, render_area_html};
     let hover = o.hj();
     let sn = o.series_names.clone().unwrap_or_default();
