@@ -2,10 +2,18 @@
 
 [Introduction](introduction.md)
 
+---
+
+# Getting Started
+
 - [Installation](getting-started/installation.md)
 - [Quick Start](getting-started/quickstart.md)
 - [Chart Object](getting-started/chart-object.md)
 - [Chart Methods](getting-started/chart-methods.md)
+
+---
+
+# Charts/Plots
 
 - [Charts](charts/index.md)
   - [2D Charts](charts/2d/index.md)
@@ -64,6 +72,10 @@
     - [Bubble Map](charts/map/bubble-map.md)
     - [Choropleth](charts/map/choropleth.md)
 
+---
+
+# ML methods
+
 - [Machine Learning](ml/index.md)
   - [Clustering](ml/clustering-index.md)
     - [K-Means](ml/kmeans.md)
@@ -98,6 +110,10 @@
   - [Metrics](ml/metrics.md)
   - [Train / Test Split](ml/train-test-split.md)
 
+---
+
+# Seraplot controller methods
+
 - [Configuration](config/index.md)
   - [Background](config/background.md)
   - [Palette](config/palette.md)
@@ -114,6 +130,10 @@
   - [Pickle Support](config/pickle.md)
   - [Accessibility](config/a11y.md)
   - [CSP](config/csp.md)
+
+---
+
+# Support
 
 - [Tooling](tooling/index.md)
   - [VS Code Extension](tooling/vscode.md)
