@@ -31,7 +31,7 @@ Aliases: `sp.dbscan`
 
 2D DBSCAN clustering chart. Runs the DBSCAN algorithm (implemented in Rust) and plots each point colored by cluster membership. Noise points are shown in grey.
 
-SeraPlot's DBSCAN runs up to **600Ã— faster** than scikit-learn on large datasets.
+SeraPlot's DBSCAN runs up to **600× faster** than scikit-learn on large datasets.
 
 ---
 
@@ -63,14 +63,14 @@ SeraPlot's DBSCAN runs up to **600Ã— faster** than scikit-learn on large data
 
 ## Performance vs scikit-learn
 
-SeraPlot's DBSCAN is implemented entirely in Rust with spatial indexing. On the same hardware and dataset it runs **up to 600Ã— faster** than scikit-learn's implementation.
+SeraPlot's DBSCAN is implemented entirely in Rust with spatial indexing. On the same hardware and dataset it runs **up to 600× faster** than scikit-learn's implementation.
 
 | Dataset size | SeraPlot | scikit-learn | Speedup |
 |-------------|----------|-------------|---------|
-| 1,000 pts | ~0.2 ms | ~5 ms | ~25Ã— |
-| 10,000 pts | ~1.5 ms | ~200 ms | ~130Ã— |
-| 100,000 pts | ~50 ms | ~30,000 ms | ~600Ã— |
-| 500,000 pts | ~280 ms | timeout | â€” |
+| 1,000 pts | ~0.2 ms | ~5 ms | ~25× |
+| 10,000 pts | ~1.5 ms | ~200 ms | ~130× |
+| 100,000 pts | ~50 ms | ~30,000 ms | ~600× |
+| 500,000 pts | ~280 ms | timeout | — |
 
 The gap widens with dataset size because SeraPlot uses a KD-tree with SIMD acceleration internally, while scikit-learn's pure Python overhead dominates at high point counts.
 
@@ -81,7 +81,7 @@ The gap widens with dataset size because SeraPlot uses a KD-tree with SIMD accel
 ## Choosing eps and min_samples
 
 - **`eps`**: Start with a k-distance graph. A good `eps` is where the sorted k-nearest-neighbor distances show a "knee". Too small â†’ everything is noise. Too large â†’ everything is one cluster.
-- **`min_samples`**: Typically set to `dim Ã— 2` where `dim` is the number of features. Larger values produce more robust clusters but may mark more points as noise.
+- **`min_samples`**: Typically set to `dim × 2` where `dim` is the number of features. Larger values produce more robust clusters but may mark more points as noise.
 
 ---
 
@@ -169,7 +169,7 @@ list(x),
 import seraplot as sp
 
 chart = sp.build_dbscan_chart(
-    "DBSCAN â€” Normalized",
+    "DBSCAN — Normalized",
     x_values=x,
     y_values=y,
     eps=0.1,
@@ -212,7 +212,7 @@ preventing high-magnitude dimensions from dominating $\epsilon$.
 
 ## See also
 
-- [DBSCAN Class](dbscan-class.md) â€” for accessing labels and cluster metadata
+- [DBSCAN Class](dbscan-class.md) — for accessing labels and cluster metadata
 - [DBSCAN 3D](dbscan3d.md)
 - [Scatter Chart](../charts/2d/scatter.md)
 

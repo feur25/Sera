@@ -33,11 +33,11 @@ Aliases: `sp.kmeans`, `sp.kmeans_chart`
 
 2D K-Means clustering chart. Runs K-Means++ initialization followed by parallel centroid assignment and converges in typically < 20 iterations. Each cluster is displayed in a distinct color with its centroid  shown as a bold `+` marker.
 
-SeraPlot's K-Means runs **thousandsÃ— faster** than scikit-learn on large datasets thanks to:
-- **K-Means++** seeding for fast convergence (O(kÂ·n) deterministic-quality init)
-- **Parallel assignment** â€” scoped threads over CPU-affine chunks (zero-copy)
-- **Mini-batch** â€” automatic switch for n > 100 000, or set `mini_batch=True`
-- **SIMD-friendly** distance â€” 4-way unrolled inner loop autovectorized by LLVM
+SeraPlot's K-Means runs **thousands× faster** than scikit-learn on large datasets thanks to:
+- **K-Means++** seeding for fast convergence (O(k·n) deterministic-quality init)
+- **Parallel assignment** — scoped threads over CPU-affine chunks (zero-copy)
+- **Mini-batch** — automatic switch for n > 100 000, or set `mini_batch=True`
+- **SIMD-friendly** distance — 4-way unrolled inner loop autovectorized by LLVM
 
 Inertia (sum of squared distances to centroids) is displayed in the chart corner.
 

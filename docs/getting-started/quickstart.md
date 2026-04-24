@@ -1,5 +1,5 @@
 ﻿
-# DÃ©marrage rapide
+# Démarrage rapide
 
 <div class="lang-en">
 
