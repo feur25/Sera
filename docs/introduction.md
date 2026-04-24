@@ -2,7 +2,9 @@
 
 # SeraPlot
 
-**Rust-native charting. 6,000× faster than Plotly. Zero dependencies.**
+**Plot anything. Train anything. Ship anywhere.**
+
+*A Rust-native engine for visualization, machine learning, and zero-friction delivery — 6,000× faster than Plotly, 200× smaller, zero dependencies.*
 
 [![PyPI](https://img.shields.io/pypi/v/seraplot)](https://pypi.org/project/seraplot/)
 [![npm](https://img.shields.io/npm/v/seraplot)](https://www.npmjs.com/package/seraplot)
@@ -15,6 +17,8 @@
 ```bash
 pip install seraplot
 ```
+
+> **« Plot anything. Train anything. Ship anywhere. »**
 
 ---
 
@@ -30,6 +34,25 @@ import seraplot.matplotlib as plt
 - 200× smaller files
 - interactive HTML by default
 - zero Python dependencies
+
+---
+
+## More than a charting library
+
+SeraPlot is a complete data toolkit written in Rust. The same engine powers your visualizations, your machine learning, and the way you ship results to other people.
+
+| Pillar | What you get |
+|---|---|
+| **Plot** | 57 chart types — 33 in 2D, 17 in 3D (WebGL), 2 maps. Built-in themes, palettes, animation, zoom, crosshair, export. |
+| **Train** | Scikit-learn-compatible ML in Rust — DBSCAN, K-Means, RandomForest, GradientBoosting, SVM, PCA, GridSearchCV, train/test split. 1.3× to 686× faster. |
+| **Stream & scale** | Live updates, downsampling for millions of points, drift detection, AutoML, diff mode, facet grids. |
+| **Ship** | Self-contained 21 KB HTML — no CDN, no backend, works offline, by email, in S3, in PDFs, in Notion, in air-gapped CI. |
+| **Integrate** | Python, JavaScript, TypeScript, Rust. Drop-in `seraplot.matplotlib as plt` migration. Pandas / NumPy native. |
+| **Author** | Native VS Code extension — live preview, gallery, theme studio, snippets, auto-detection of `labels` / `values` from your code. |
+| **Persist & export** | Save to HTML, PNG, SVG, PDF, pickle. Re-load trained ML models. CSP-safe output. |
+| **Stay accessible** | A11y-tagged SVG, semantic HTML, keyboard navigation, locale-aware number formatting. |
+
+> **One library replaces:** matplotlib + plotly + dash + streamlit + seaborn + parts of scikit-learn — with one `pip install` and zero runtime dependencies.
 
 ---
 
@@ -531,6 +554,27 @@ import seraplot.matplotlib as plt
 - 200× plus petit en taille de fichier
 - HTML interactif par défaut
 - zéro dépendance Python
+
+---
+
+## Bien plus qu'une bibliothèque de graphiques
+
+> **« Tout tracer. Tout entraîner. Partout déployer. »**
+
+SeraPlot est une boîte à outils data complète écrite en Rust. Le même moteur propulse vos visualisations, votre machine learning, et la façon dont vous livrez les résultats à vos collègues.
+
+| Pilier | Ce que vous obtenez |
+|---|---|
+| **Tracer** | 57 types de graphiques — 33 en 2D, 17 en 3D (WebGL), 2 cartes. Thèmes intégrés, palettes, animations, zoom, crosshair, export. |
+| **Entraîner** | ML compatible scikit-learn en Rust — DBSCAN, K-Means, RandomForest, GradientBoosting, SVM, PCA, GridSearchCV, train/test split. De 1,3× à 686× plus rapide. |
+| **Streamer & passer à l'échelle** | Mises à jour en direct, downsampling pour des millions de points, détection de drift, AutoML, mode diff, grilles de facettes. |
+| **Déployer** | HTML autonome de 21 Ko — pas de CDN, pas de backend, fonctionne hors-ligne, par e-mail, sur S3, dans des PDF, dans Notion, en CI isolée. |
+| **Intégrer** | Python, JavaScript, TypeScript, Rust. Migration directe `seraplot.matplotlib as plt`. Pandas / NumPy nativement. |
+| **Coder** | Extension VS Code native — aperçu en direct, galerie, studio de thèmes, snippets, détection automatique des `labels` / `values` depuis votre code. |
+| **Persister & exporter** | Export HTML, PNG, SVG, PDF, pickle. Rechargement des modèles ML entraînés. Sortie compatible CSP. |
+| **Rester accessible** | SVG balisé a11y, HTML sémantique, navigation clavier, formatage numérique localisé. |
+
+> **Une seule librairie remplace :** matplotlib + plotly + dash + streamlit + seaborn + une partie de scikit-learn — avec un seul `pip install` et zéro dépendance d'exécution.
 
 ---
 
