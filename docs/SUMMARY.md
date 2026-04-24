@@ -151,10 +151,6 @@
 
 - [Support & Contact](about/support.md)
 
-- [Evaluation](ml/evaluation-index.md)
-  - [Metrics](ml/metrics.md)
-  - [train_test_split](ml/train-test-split.md)
-
 ---
 
 # Configuration
