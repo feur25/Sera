@@ -33,16 +33,6 @@ SeraPlot is a complete data toolkit written in Rust. The same engine powers your
 
 ---
 
-## Why Seraplot?
-
-As you’ve probably understood by now, Seraplot is a tool designed to be extremely customizable, while also being much faster and more resource-efficient than existing solutions. It also provides a wide range of helpful features, such as the Seraplot extension for VSCode, which allows you to generate plots or ML methods very quickly and live, between each save of your scripts.
-
-In addition, Seraplot is available across multiple languages such as: JS/TS, C (C# & C++), Java, Rust, Python, R & Scala. The main goal is to be highly accessible: from one language to another, the commands remain the same for greater simplicity.
-
-In summary, Seraplot is a much more practical and independent tool that enables the generation of 2D & 3D plots, while also aiming to provide machine learning-related methods that you will find throughout the documentation. More surprises await you, such as the ability to choose different themes, a chunk system in case of crashes to resume from the error point, and even multiple aliases to use the same method (e.g., sp.build_bar_chart / sp.bar_chart / sp.bar / sp.bars).
-
----
-
 ## Same chart — three libraries
 
 <style>
@@ -86,6 +76,16 @@ plt.savefig("chart.png")</code></pre></div>
 | Interactive   |     ✅     |    ✅   |      ❌     |
 | Dependencies  |   **0**   |   6+   |     3+     |
 | 1-line migration | ✅     |    —   |      —     |
+
+---
+
+## Why Seraplot?
+
+As you’ve probably understood by now, Seraplot is a tool designed to be extremely customizable, while also being much faster and more resource-efficient than existing solutions. It also provides a wide range of helpful features, such as the Seraplot extension for VSCode, which allows you to generate plots or ML methods very quickly and live, between each save of your scripts.
+
+In addition, Seraplot is available across multiple languages such as: JS/TS, C (C# & C++), Java, Rust, Python, R & Scala. The main goal is to be highly accessible: from one language to another, the commands remain the same for greater simplicity.
+
+In summary, Seraplot is a much more practical and independent tool that enables the generation of 2D & 3D plots, while also aiming to provide machine learning-related methods that you will find throughout the documentation. More surprises await you, such as the ability to choose different themes, a chunk system in case of crashes to resume from the error point, and even multiple aliases to use the same method (e.g., sp.build_bar_chart / sp.bar_chart / sp.bar / sp.bars).
 
 ---
 
@@ -382,16 +382,6 @@ SeraPlot est une boîte à outils data complète écrite en Rust. Le même moteu
 
 ---
 
-## Pourquoi Seraplot ?
-
-Comme vous l’aurez compris en arrivant jusqu’ici, Seraplot est un outil qui a pour objectif d’être extrêmement personnalisable, mais aussi beaucoup plus rapide et moins gourmand que ce qui existe déjà, en plus de proposer tout un panel d’aides, comme l’extension Seraplot dans VSCode, qui vous permettra de générer des plots ou des méthodes ML très rapidement et en live, entre chaque sauvegarde de vos scripts.
-
-En plus de cela, Seraplot se voit distribué dans différents langages comme : JS/TS, C (C# & C++), Java, Rust, Python, R & Scala. L’objectif étant vraiment d’être ultra accessible : d’un langage à un autre, les commandes restent les mêmes pour plus de simplicité.
-
-Pour résumer, Seraplot est un outil beaucoup plus pratique de ce qui existe déjà et complétement indépendant, en plus de compilé différente fonctionnalitée. En autre il permet la génération de plots 2D & 3D, mais aussi qui tend à proposer des méthodes liées au ML, que vous pourrez retrouver au cours de votre documentation. D’autres surprises vous attendent, que ce soit la possibilité de choisir différents thèmes, ou bien le système de chunks en cas de crash pour reprendre au point d’erreur, ou encore pour n'en citer que un dernier, le fait d’avoir différents alias pour utiliser une même méthode (ex : sp.build_bar_chart / sp.bar_chart / sp.bar / sp.bars).
-
----
-
 ## Même graphique — trois bibliothèques
 
 <div class="sp-tabs" id="g1fr">
@@ -423,6 +413,16 @@ plt.savefig("chart.png")</code></pre></div>
 | Interactif         |     ✅    |    ✅  |      ❌    |
 | Dépendances        |   **0**   |   6+   |     3+     |
 | Migration 1 ligne  |    ✅     |    —   |      —     |
+
+---
+
+## Pourquoi Seraplot ?
+
+Comme vous l’aurez compris en arrivant jusqu’ici, Seraplot est un outil qui a pour objectif d’être extrêmement personnalisable, mais aussi beaucoup plus rapide et moins gourmand que ce qui existe déjà, en plus de proposer tout un panel d’aides, comme l’extension Seraplot dans VSCode, qui vous permettra de générer des plots ou des méthodes ML très rapidement et en live, entre chaque sauvegarde de vos scripts.
+
+En plus de cela, Seraplot se voit distribué dans différents langages comme : JS/TS, C (C# & C++), Java, Rust, Python, R & Scala. L’objectif étant vraiment d’être ultra accessible : d’un langage à un autre, les commandes restent les mêmes pour plus de simplicité.
+
+Pour résumer, Seraplot est un outil beaucoup plus pratique de ce qui existe déjà et complétement indépendant, en plus de compilé différente fonctionnalitée. En autre il permet la génération de plots 2D & 3D, mais aussi qui tend à proposer des méthodes liées au ML, que vous pourrez retrouver au cours de votre documentation. D’autres surprises vous attendent, que ce soit la possibilité de choisir différents thèmes, ou bien le système de chunks en cas de crash pour reprendre au point d’erreur, ou encore pour n'en citer que un dernier, le fait d’avoir différents alias pour utiliser une même méthode (ex : sp.build_bar_chart / sp.bar_chart / sp.bar / sp.bars).
 
 ---
 
