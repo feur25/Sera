@@ -195,13 +195,13 @@ print(f"Iterations:   {hrs.n_iterations_}")
 
 Each candidate is evaluated using **stratified k-fold** (classification) or **shuffled k-fold** (regression). For $k$ folds, the dataset is split into $k$ subsets; the model trains on $k-1$ folds and scores on the held-out fold. The final score is the mean over all $k$ folds:
 
-$$\text{score} = \frac{1}{k}\sum_{i=1}^{k} S\bigl(\hat f_{-i},\, X_i,\, y_i\bigr)$$
+<div>$$\text{score} = \frac{1}{k}\sum_{i=1}^{k} S\bigl(\hat f_{-i},\, X_i,\, y_i\bigr)$$</div>
 
 ### Exhaustive vs Random Search
 
 **GridSearchCV** evaluates every combination in the Cartesian product of the parameter grid:
 
-$$N_{\text{combos}} = \prod_{j=1}^{d} |V_j|$$
+<div>$$N_{\text{combos}} = \prod_{j=1}^{d} |V_j|$$</div>
 
 where $|V_j|$ is the number of values for the $j$-th parameter.
 
@@ -217,7 +217,7 @@ where $|V_j|$ is the number of values for the $j$-th parameter.
 
 The initial resource is:
 
-$$r_0 = \max\!\left(\left\lfloor\frac{n}{\text{factor}^{n_{\text{iters}}}}\right\rfloor,\, 1\right) \quad\text{where}\quad n_{\text{iters}} = \lceil\log_{\text{factor}}(C)\rceil$$
+<div>$$r_0 = \max\!\left(\left\lfloor\frac{n}{\text{factor}^{n_{\text{iters}}}}\right\rfloor,\, 1\right) \quad\text{where}\quad n_{\text{iters}} = \lceil\log_{\text{factor}}(C)\rceil$$</div>
 
 and $C$ is the number of candidates. This eliminates weak configurations early while spending full resources only on promising ones.
 
@@ -441,13 +441,13 @@ print(f"Itérations :       {hrs.n_iterations_}")
 
 Chaque candidat est évalué par **k-fold stratifié** (classification) ou **k-fold mélangé** (régression). Le score final est la moyenne sur les $k$ plis :
 
-$$\text{score} = \frac{1}{k}\sum_{i=1}^{k} S\bigl(\hat f_{-i},\, X_i,\, y_i\bigr)$$
+<div>$$\text{score} = \frac{1}{k}\sum_{i=1}^{k} S\bigl(\hat f_{-i},\, X_i,\, y_i\bigr)$$</div>
 
 ### Recherche exhaustive vs aléatoire
 
 **GridSearchCV** évalue chaque combinaison du produit cartésien :
 
-$$N_{\text{combos}} = \prod_{j=1}^{d} |V_j|$$
+<div>$$N_{\text{combos}} = \prod_{j=1}^{d} |V_j|$$</div>
 
 **RandomizedSearchCV** échantillonne $n_{\text{iter}}$ combinaisons uniformément.
 
@@ -461,7 +461,7 @@ $$N_{\text{combos}} = \prod_{j=1}^{d} |V_j|$$
 
 Le budget initial est :
 
-$$r_0 = \max\!\left(\left\lfloor\frac{n}{\text{factor}^{n_{\text{iters}}}}\right\rfloor,\, 1\right) \quad\text{où}\quad n_{\text{iters}} = \lceil\log_{\text{factor}}(C)\rceil$$
+<div>$$r_0 = \max\!\left(\left\lfloor\frac{n}{\text{factor}^{n_{\text{iters}}}}\right\rfloor,\, 1\right) \quad\text{où}\quad n_{\text{iters}} = \lceil\log_{\text{factor}}(C)\rceil$$</div>
 
 Les configurations faibles sont éliminées tôt ; seules les prometteuses reçoivent le budget complet.
 

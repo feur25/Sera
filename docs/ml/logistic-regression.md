@@ -67,21 +67,21 @@ print(f"P(class=1) sample 0: {proba[0][1]:.4f}")
 
 Logistic Regression fits a linear decision boundary using the **sigmoid** function:
 
-$$\sigma(z) = \frac{1}{1 + e^{-z}}, \qquad z = x^T\beta + \beta_0$$
+<div>$$\sigma(z) = \frac{1}{1 + e^{-z}}, \qquad z = x^T\beta + \beta_0$$</div>
 
 The model minimises the **cross-entropy loss** with L2 regularisation:
 
-$$\mathcal{L}(\beta) = -\frac{1}{n}\sum_{i=1}^n \left[y_i \log \hat{p}_i + (1-y_i)\log(1-\hat{p}_i)\right] + \frac{1}{2C}\|\beta\|_2^2$$
+<div>$$\mathcal{L}(\beta) = -\frac{1}{n}\sum_{i=1}^n \left[y_i \log \hat{p}_i + (1-y_i)\log(1-\hat{p}_i)\right] + \frac{1}{2C}\|\beta\|_2^2$$</div>
 
 **Optimiser** — parameters are updated via **L-BFGS** (Limited-memory Broyden-Fletcher-Goldfarb-Shanno), a quasi-Newton method that approximates the inverse Hessian using the last $m$ gradient differences.
 
 **Multiclass** (OvR) — for $K > 2$ classes, $K$ binary classifiers are trained independently. Class $k$ vs rest:
 
-$$\hat{p}_k(x) = \sigma\!\left(x^T\beta_k + \beta_{0,k}\right)$$
+<div>$$\hat{p}_k(x) = \sigma\!\left(x^T\beta_k + \beta_{0,k}\right)$$</div>
 
 **Prediction** assigns the class with the highest probability:
 
-$$\hat{y} = \underset{k}{\arg\max}\ \sigma(x^T\beta_k)$$
+<div>$$\hat{y} = \underset{k}{\arg\max}\ \sigma(x^T\beta_k)$$</div>
 
 </div>
 
@@ -152,20 +152,20 @@ print(f"P(classe=1) échantillon 0 : {proba[0][1]:.4f}")
 
 La régression logistique ajuste une frontière de décision linéaire à l'aide de la fonction **sigmoïde** :
 
-$$\sigma(z) = \frac{1}{1 + e^{-z}}, \qquad z = x^T\beta + \beta_0$$
+<div>$$\sigma(z) = \frac{1}{1 + e^{-z}}, \qquad z = x^T\beta + \beta_0$$</div>
 
 Le modèle minimise la **perte d'entropie croisée** avec régularisation L2 :
 
-$$\mathcal{L}(\beta) = -\frac{1}{n}\sum_{i=1}^n \left[y_i \log \hat{p}_i + (1-y_i)\log(1-\hat{p}_i)\right] + \frac{1}{2C}\|\beta\|_2^2$$
+<div>$$\mathcal{L}(\beta) = -\frac{1}{n}\sum_{i=1}^n \left[y_i \log \hat{p}_i + (1-y_i)\log(1-\hat{p}_i)\right] + \frac{1}{2C}\|\beta\|_2^2$$</div>
 
 **Optimiseur** — les paramètres sont mis à jour via **L-BFGS** (Limited-memory Broyden-Fletcher-Goldfarb-Shanno), une méthode quasi-Newton qui approxime l'inverse de la Hessienne à partir des $m$ dernières différences de gradient.
 
 **Multi-classe** (OvR) — pour $K > 2$ classes, $K$ classificateurs binaires sont entraînés indépendamment. Classe $k$ contre le reste :
 
-$$\hat{p}_k(x) = \sigma\!\left(x^T\beta_k + \beta_{0,k}\right)$$
+<div>$$\hat{p}_k(x) = \sigma\!\left(x^T\beta_k + \beta_{0,k}\right)$$</div>
 
 **Prédiction** affecte la classe avec la probabilité la plus haute :
 
-$$\hat{y} = \underset{k}{\arg\max}\ \sigma(x^T\beta_k)$$
+<div>$$\hat{y} = \underset{k}{\arg\max}\ \sigma(x^T\beta_k)$$</div>
 
 </div>

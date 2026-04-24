@@ -60,23 +60,23 @@ $k$-Nearest Neighbours is a **non-parametric, lazy** algorithm: no model is fitt
 
 **Distance metric** — Euclidean distance between two points $x, x' \in \mathbb{R}^p$:
 
-$$d(x, x') = \|x - x'\|_2 = \sqrt{\sum_{j=1}^p (x_j - x'_j)^2}$$
+<div>$$d(x, x') = \|x - x'\|_2 = \sqrt{\sum_{j=1}^p (x_j - x'_j)^2}$$</div>
 
 **Neighbourhood** — for a query point $x$, the $k$ nearest training samples:
 
-$$\mathcal{N}_k(x) = \text{top-}k \text{ smallest } d(x, x_i), \quad x_i \in \mathcal{D}_{\text{train}}$$
+<div>$$\mathcal{N}_k(x) = \text{top-}k \text{ smallest } d(x, x_i), \quad x_i \in \mathcal{D}_{\text{train}}$$</div>
 
 **Classifier — majority vote** across the $k$ neighbours:
 
-$$\hat{y} = \underset{c}{\arg\max} \sum_{x_i \in \mathcal{N}_k(x)} \mathbf{1}[y_i = c]$$
+<div>$$\hat{y} = \underset{c}{\arg\max} \sum_{x_i \in \mathcal{N}_k(x)} \mathbf{1}[y_i = c]$$</div>
 
 **Class probability estimate:**
 
-$$\hat{p}(y = c \mid x) = \frac{1}{k}\sum_{x_i \in \mathcal{N}_k(x)} \mathbf{1}[y_i = c]$$
+<div>$$\hat{p}(y = c \mid x) = \frac{1}{k}\sum_{x_i \in \mathcal{N}_k(x)} \mathbf{1}[y_i = c]$$</div>
 
 **Regressor — mean of neighbours:**
 
-$$\hat{y} = \frac{1}{k}\sum_{x_i \in \mathcal{N}_k(x)} y_i$$
+<div>$$\hat{y} = \frac{1}{k}\sum_{x_i \in \mathcal{N}_k(x)} y_i$$</div>
 
 **Complexity trade-offs:**
 - Training: $O(1)$ — just store $\mathcal{D}$
@@ -147,23 +147,23 @@ $k$-Nearest Neighbours est un algorithme **non-paramétrique et paresseux** : au
 
 **Métrique de distance** — distance euclidienne entre deux points $x, x' \in \mathbb{R}^p$ :
 
-$$d(x, x') = \|x - x'\|_2 = \sqrt{\sum_{j=1}^p (x_j - x'_j)^2}$$
+<div>$$d(x, x') = \|x - x'\|_2 = \sqrt{\sum_{j=1}^p (x_j - x'_j)^2}$$</div>
 
 **Voisinage** — pour un point de requête $x$, les $k$ échantillons d'entraînement les plus proches :
 
-$$\mathcal{N}_k(x) = \text{top-}k \text{ plus petites } d(x, x_i), \quad x_i \in \mathcal{D}_{\text{train}}$$
+<div>$$\mathcal{N}_k(x) = \text{top-}k \text{ plus petites } d(x, x_i), \quad x_i \in \mathcal{D}_{\text{train}}$$</div>
 
 **Classificateur — vote majoritaire** parmi les $k$ voisins :
 
-$$\hat{y} = \underset{c}{\arg\max} \sum_{x_i \in \mathcal{N}_k(x)} \mathbf{1}[y_i = c]$$
+<div>$$\hat{y} = \underset{c}{\arg\max} \sum_{x_i \in \mathcal{N}_k(x)} \mathbf{1}[y_i = c]$$</div>
 
 **Estimation de la probabilité de classe :**
 
-$$\hat{p}(y = c \mid x) = \frac{1}{k}\sum_{x_i \in \mathcal{N}_k(x)} \mathbf{1}[y_i = c]$$
+<div>$$\hat{p}(y = c \mid x) = \frac{1}{k}\sum_{x_i \in \mathcal{N}_k(x)} \mathbf{1}[y_i = c]$$</div>
 
 **Régresseur — moyenne des voisins :**
 
-$$\hat{y} = \frac{1}{k}\sum_{x_i \in \mathcal{N}_k(x)} y_i$$
+<div>$$\hat{y} = \frac{1}{k}\sum_{x_i \in \mathcal{N}_k(x)} y_i$$</div>
 
 **Compromis de complexité :**
 - Entraînement : $O(1)$ — juste stocker $\mathcal{D}$

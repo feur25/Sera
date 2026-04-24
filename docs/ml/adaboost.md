@@ -62,7 +62,7 @@ AdaBoost (**Adaptive Boosting**) builds a **weighted sum of weak classifiers** b
 
 **Initialisation** — uniform sample weights:
 
-$$w_i^{(1)} = \frac{1}{n}, \quad i = 1, \ldots, n$$
+<div>$$w_i^{(1)} = \frac{1}{n}, \quad i = 1, \ldots, n$$</div>
 
 **Boosting iteration** $m = 1, \ldots, M$:
 
@@ -70,21 +70,21 @@ $$w_i^{(1)} = \frac{1}{n}, \quad i = 1, \ldots, n$$
 
 **2.** Compute the **weighted error**:
 
-$$\varepsilon_m = \sum_{i=1}^n w_i^{(m)} \cdot \mathbf{1}\bigl[h_m(x_i) \neq y_i\bigr]$$
+<div>$$\varepsilon_m = \sum_{i=1}^n w_i^{(m)} \cdot \mathbf{1}\bigl[h_m(x_i) \neq y_i\bigr]$$</div>
 
 **3.** Compute the **learner weight** (contribution of $h_m$):
 
-$$\alpha_m = \nu \cdot \frac{1}{2}\ln\!\left(\frac{1 - \varepsilon_m}{\varepsilon_m}\right)$$
+<div>$$\alpha_m = \nu \cdot \frac{1}{2}\ln\!\left(\frac{1 - \varepsilon_m}{\varepsilon_m}\right)$$</div>
 
 where $\nu$ is the `learning_rate`. A perfect classifier ($\varepsilon_m = 0$) receives $\alpha_m \to \infty$; a random guesser ($\varepsilon_m = 0.5$) receives $\alpha_m = 0$.
 
 **4.** Update and **renormalise** sample weights, down-weighting correctly classified samples:
 
-$$w_i^{(m+1)} \propto w_i^{(m)} \exp\!\bigl(-\alpha_m y_i h_m(x_i)\bigr)$$
+<div>$$w_i^{(m+1)} \propto w_i^{(m)} \exp\!\bigl(-\alpha_m y_i h_m(x_i)\bigr)$$</div>
 
 **Final classifier** — weighted majority vote:
 
-$$F(x) = \text{sign}\!\left(\sum_{m=1}^M \alpha_m h_m(x)\right)$$
+<div>$$F(x) = \text{sign}\!\left(\sum_{m=1}^M \alpha_m h_m(x)\right)$$</div>
 
 **Regressor (AdaBoost.R2)** — weak learners are fitted to the residuals weighted by a loss-based sample reweighting scheme, and the ensemble prediction is the weighted median.
 
@@ -154,7 +154,7 @@ AdaBoost (**Adaptive Boosting**) construit une **somme pondérée de classificat
 
 **Initialisation** — poids d'échantillons uniformes :
 
-$$w_i^{(1)} = \frac{1}{n}, \quad i = 1, \ldots, n$$
+<div>$$w_i^{(1)} = \frac{1}{n}, \quad i = 1, \ldots, n$$</div>
 
 **Itération de boosting** $m = 1, \ldots, M$ :
 
@@ -162,21 +162,21 @@ $$w_i^{(1)} = \frac{1}{n}, \quad i = 1, \ldots, n$$
 
 **2.** Calculer l'**erreur pondérée** :
 
-$$\varepsilon_m = \sum_{i=1}^n w_i^{(m)} \cdot \mathbf{1}\bigl[h_m(x_i) \neq y_i\bigr]$$
+<div>$$\varepsilon_m = \sum_{i=1}^n w_i^{(m)} \cdot \mathbf{1}\bigl[h_m(x_i) \neq y_i\bigr]$$</div>
 
 **3.** Calculer le **poids de l'apprenant** (contribution de $h_m$) :
 
-$$\alpha_m = \nu \cdot \frac{1}{2}\ln\!\left(\frac{1 - \varepsilon_m}{\varepsilon_m}\right)$$
+<div>$$\alpha_m = \nu \cdot \frac{1}{2}\ln\!\left(\frac{1 - \varepsilon_m}{\varepsilon_m}\right)$$</div>
 
 où $\nu$ est le `learning_rate`. Un classificateur parfait ($\varepsilon_m = 0$) reçoit $\alpha_m \to \infty$ ; un devineur aléatoire ($\varepsilon_m = 0,5$) reçoit $\alpha_m = 0$.
 
 **4.** Mettre à jour et **renormaliser** les poids des échantillons, en réduisant le poids des échantillons correctement classifiés :
 
-$$w_i^{(m+1)} \propto w_i^{(m)} \exp\!\bigl(-\alpha_m y_i h_m(x_i)\bigr)$$
+<div>$$w_i^{(m+1)} \propto w_i^{(m)} \exp\!\bigl(-\alpha_m y_i h_m(x_i)\bigr)$$</div>
 
 **Classificateur final** — vote majoritaire pondéré :
 
-$$F(x) = \text{sign}\!\left(\sum_{m=1}^M \alpha_m h_m(x)\right)$$
+<div>$$F(x) = \text{sign}\!\left(\sum_{m=1}^M \alpha_m h_m(x)\right)$$</div>
 
 **Régresseur (AdaBoost.R2)** — les apprenants faibles sont ajustés aux résidus pondérés par un schéma de ré-pondération basé sur la perte, et la prédiction de l'ensemble est la médiane pondérée.
 

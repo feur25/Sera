@@ -80,25 +80,25 @@ Both models are solved via the **dual coordinate descent** method on the kerneli
 
 **LinearSVC — Primal objective** (hinge loss + L2 regularisation):
 
-$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, 1 - y_i(w^\top x_i + b)\bigr)$$
+<div>$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, 1 - y_i(w^\top x_i + b)\bigr)$$</div>
 
 The constraint $y_i(w^\top x_i + b) \geq 1$ defines the **margin**; misclassified points contribute a hinge penalty.
 
 **Dual form** — introduce per-sample dual variables $\alpha_i \in [0, C]$:
 
-$$\max_{\alpha} \sum_{i=1}^n \alpha_i - \frac{1}{2}\sum_{i,j} \alpha_i \alpha_j y_i y_j x_i^\top x_j \quad \text{s.t.} \quad \sum_i \alpha_i y_i = 0$$
+<div>$$\max_{\alpha} \sum_{i=1}^n \alpha_i - \frac{1}{2}\sum_{i,j} \alpha_i \alpha_j y_i y_j x_i^\top x_j \quad \text{s.t.} \quad \sum_i \alpha_i y_i = 0$$</div>
 
 Dual coordinate descent updates one $\alpha_i$ at a time, solving the 1-d quadratic subproblem analytically with clipping to $[0, C]$.
 
 **Prediction** — signed margin:
 
-$$f(x) = w^\top x + b = \sum_{i} \alpha_i y_i x_i^\top x + b$$
+<div>$$f(x) = w^\top x + b = \sum_{i} \alpha_i y_i x_i^\top x + b$$</div>
 
 For **multiclass** (OvR): $K$ binary SVMs are trained, and the class with the highest margin wins.
 
 **LinearSVR — Primal objective** ($\varepsilon$-insensitive loss):
 
-$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, |y_i - (w^\top x_i + b)| - \varepsilon\bigr)$$
+<div>$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, |y_i - (w^\top x_i + b)| - \varepsilon\bigr)$$</div>
 
 Residuals smaller than $\varepsilon$ incur zero penalty — the model ignores small errors and focuses on larger deviations.
 
@@ -184,25 +184,25 @@ Les deux modèles sont résolus via la méthode de **descente de coordonnées du
 
 **LinearSVC — Objectif primal** (perte hinge + régularisation L2) :
 
-$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, 1 - y_i(w^\top x_i + b)\bigr)$$
+<div>$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, 1 - y_i(w^\top x_i + b)\bigr)$$</div>
 
 La contrainte $y_i(w^\top x_i + b) \geq 1$ définit la **marge** ; les points mal classifiés contribuent une pénalité hinge.
 
 **Forme duale** — introduire des variables duales $\alpha_i \in [0, C]$ par échantillon :
 
-$$\max_{\alpha} \sum_{i=1}^n \alpha_i - \frac{1}{2}\sum_{i,j} \alpha_i \alpha_j y_i y_j x_i^\top x_j \quad \text{s.t.} \quad \sum_i \alpha_i y_i = 0$$
+<div>$$\max_{\alpha} \sum_{i=1}^n \alpha_i - \frac{1}{2}\sum_{i,j} \alpha_i \alpha_j y_i y_j x_i^\top x_j \quad \text{s.t.} \quad \sum_i \alpha_i y_i = 0$$</div>
 
 La descente de coordonnées duale met à jour un $\alpha_i$ à la fois, résolvant analytiquement le sous-problème quadratique 1-d avec écrêtage à $[0, C]$.
 
 **Prédiction** — marge signée :
 
-$$f(x) = w^\top x + b = \sum_{i} \alpha_i y_i x_i^\top x + b$$
+<div>$$f(x) = w^\top x + b = \sum_{i} \alpha_i y_i x_i^\top x + b$$</div>
 
 Pour le **multiclasse** (OvR) : $K$ SVMs binaires sont entraînés, et la classe avec la marge la plus haute l'emporte.
 
 **LinearSVR — Objectif primal** (perte $\varepsilon$-insensible) :
 
-$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, |y_i - (w^\top x_i + b)| - \varepsilon\bigr)$$
+<div>$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, |y_i - (w^\top x_i + b)| - \varepsilon\bigr)$$</div>
 
 Les résidus plus petits que $\varepsilon$ n'entraînent aucune pénalité — le modèle ignore les petites erreurs et se concentre sur les déviations plus grandes.
 

@@ -70,21 +70,21 @@ A decision tree recursively partitions the feature space by finding the **best b
 
 *Gini impurity* at node $t$ containing class proportions $p_{tk}$:
 
-$$G(t) = 1 - \sum_{k=1}^K p_{tk}^2$$
+<div>$$G(t) = 1 - \sum_{k=1}^K p_{tk}^2$$</div>
 
 *Entropy* (information content):
 
-$$H(t) = -\sum_{k=1}^K p_{tk} \log_2 p_{tk}$$
+<div>$$H(t) = -\sum_{k=1}^K p_{tk} \log_2 p_{tk}$$</div>
 
 **Best split** on feature $j$ at threshold $\theta$:
 
-$$\Delta I(t, j, \theta) = I(t) - \frac{|t_L|}{|t|}I(t_L) - \frac{|t_R|}{|t|}I(t_R)$$
+<div>$$\Delta I(t, j, \theta) = I(t) - \frac{|t_L|}{|t|}I(t_L) - \frac{|t_R|}{|t|}I(t_R)$$</div>
 
 where $I \in \{G, H\}$, and $t_L, t_R$ are the left/right child nodes. The split $(j^*, \theta^*)$ that maximises $\Delta I$ is selected.
 
 **Regressor — MSE impurity:**
 
-$$I_{\text{MSE}}(t) = \frac{1}{|t|}\sum_{i \in t}(y_i - \bar{y}_t)^2, \qquad \bar{y}_t = \frac{1}{|t|}\sum_{i \in t} y_i$$
+<div>$$I_{\text{MSE}}(t) = \frac{1}{|t|}\sum_{i \in t}(y_i - \bar{y}_t)^2, \qquad \bar{y}_t = \frac{1}{|t|}\sum_{i \in t} y_i$$</div>
 
 Leaf prediction is the mean $\bar{y}_t$; split selection maximises variance reduction.
 
@@ -92,7 +92,7 @@ Leaf prediction is the mean $\bar{y}_t$; split selection maximises variance redu
 
 **Feature importance** aggregates impurity decreases weighted by node sample count:
 
-$$\text{FI}(j) = \sum_{t : j_t = j} \frac{|t|}{n} \cdot \Delta I(t, j, \theta_t)$$
+<div>$$\text{FI}(j) = \sum_{t : j_t = j} \frac{|t|}{n} \cdot \Delta I(t, j, \theta_t)$$</div>
 
 normalised so $\sum_j \text{FI}(j) = 1$.
 
@@ -168,21 +168,21 @@ Un arbre de décision partitionne récursivement l'espace des features en trouva
 
 *Impureté de Gini* au nœud $t$ avec les proportions de classes $p_{tk}$ :
 
-$$G(t) = 1 - \sum_{k=1}^K p_{tk}^2$$
+<div>$$G(t) = 1 - \sum_{k=1}^K p_{tk}^2$$</div>
 
 *Entropie* (contenu informationnel) :
 
-$$H(t) = -\sum_{k=1}^K p_{tk} \log_2 p_{tk}$$
+<div>$$H(t) = -\sum_{k=1}^K p_{tk} \log_2 p_{tk}$$</div>
 
 **Meilleure division** sur la feature $j$ au seuil $\theta$ :
 
-$$\Delta I(t, j, \theta) = I(t) - \frac{|t_L|}{|t|}I(t_L) - \frac{|t_R|}{|t|}I(t_R)$$
+<div>$$\Delta I(t, j, \theta) = I(t) - \frac{|t_L|}{|t|}I(t_L) - \frac{|t_R|}{|t|}I(t_R)$$</div>
 
 où $I \in \{G, H\}$, et $t_L, t_R$ sont les nœuds enfants gauche/droite. La division $(j^*, \theta^*)$ maximisant $\Delta I$ est sélectionnée.
 
 **Régresseur — Impureté MSE :**
 
-$$I_{\text{MSE}}(t) = \frac{1}{|t|}\sum_{i \in t}(y_i - \bar{y}_t)^2, \qquad \bar{y}_t = \frac{1}{|t|}\sum_{i \in t} y_i$$
+<div>$$I_{\text{MSE}}(t) = \frac{1}{|t|}\sum_{i \in t}(y_i - \bar{y}_t)^2, \qquad \bar{y}_t = \frac{1}{|t|}\sum_{i \in t} y_i$$</div>
 
 La prédiction d'une feuille est la moyenne $\bar{y}_t$ ; la sélection de division maximise la réduction de variance.
 
@@ -190,7 +190,7 @@ La prédiction d'une feuille est la moyenne $\bar{y}_t$ ; la sélection de divis
 
 **Importance des features** agrège les diminutions d'impureté pondérées par le nombre d'échantillons du nœud :
 
-$$\text{FI}(j) = \sum_{t : j_t = j} \frac{|t|}{n} \cdot \Delta I(t, j, \theta_t)$$
+<div>$$\text{FI}(j) = \sum_{t : j_t = j} \frac{|t|}{n} \cdot \Delta I(t, j, \theta_t)$$</div>
 
 normalisée de sorte que $\sum_j \text{FI}(j) = 1$.
 

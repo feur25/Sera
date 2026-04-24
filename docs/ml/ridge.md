@@ -68,21 +68,21 @@ print(f"Accuracy: {clf.score(X, (y > 0).astype(int)):.4f}")
 
 Ridge adds an **L2 penalty** to the OLS objective to shrink coefficients toward zero:
 
-$$\hat{\beta} = \underset{\beta}{\arg\min}\ \|y - X\beta\|_2^2 + \alpha\|\beta\|_2^2$$
+<div>$$\hat{\beta} = \underset{\beta}{\arg\min}\ \|y - X\beta\|_2^2 + \alpha\|\beta\|_2^2$$</div>
 
 The closed-form solution is:
 
-$$\hat{\beta} = (X^TX + \alpha I)^{-1}X^T y$$
+<div>$$\hat{\beta} = (X^TX + \alpha I)^{-1}X^T y$$</div>
 
 The ridge term $\alpha I$ shifts all eigenvalues of $X^TX$ upward by $\alpha$, guaranteeing the matrix is positive-definite and invertible regardless of multicollinearity. The solution is computed via **Cholesky decomposition** of $(X^TX + \alpha I)$.
 
 When `fit_intercept=True`, $X$ is centered before regularisation:
 
-$$\hat{\beta} = (X^TX + \alpha I_p)^{-1}X^T y, \qquad \hat{\beta}_0 = \bar{y} - \bar{x}^T\hat{\beta}$$
+<div>$$\hat{\beta} = (X^TX + \alpha I_p)^{-1}X^T y, \qquad \hat{\beta}_0 = \bar{y} - \bar{x}^T\hat{\beta}$$</div>
 
 **RidgeClassifier** encodes multi-class labels as a binary indicator matrix $Y \in \{0,1\}^{n \times K}$, solves Ridge regression jointly, and assigns:
 
-$$\hat{y} = \underset{k}{\arg\max}\ \hat{Y}_{:,k}$$
+<div>$$\hat{y} = \underset{k}{\arg\max}\ \hat{Y}_{:,k}$$</div>
 
 The variance-bias trade-off is controlled by $\alpha$: larger $\alpha$ increases bias but reduces variance.
 
@@ -156,21 +156,21 @@ print(f"Précision : {clf.score(X, (y > 0).astype(int)):.4f}")
 
 Ridge ajoute une **pénalité L2** à l'objectif des moindres carrés pour rétrécir les coefficients vers zéro :
 
-$$\hat{\beta} = \underset{\beta}{\arg\min}\ \|y - X\beta\|_2^2 + \alpha\|\beta\|_2^2$$
+<div>$$\hat{\beta} = \underset{\beta}{\arg\min}\ \|y - X\beta\|_2^2 + \alpha\|\beta\|_2^2$$</div>
 
 La solution exacte est :
 
-$$\hat{\beta} = (X^TX + \alpha I)^{-1}X^T y$$
+<div>$$\hat{\beta} = (X^TX + \alpha I)^{-1}X^T y$$</div>
 
 Le terme $\alpha I$ décale vers le haut toutes les valeurs propres de $X^TX$, garantissant que la matrice est définie positive et donc inversible même en cas de multicolinéarité. La solution est calculée via **décomposition de Cholesky** de $(X^TX + \alpha I)$.
 
 Avec `fit_intercept=True`, $X$ est centrée avant régularisation :
 
-$$\hat{\beta} = (X^TX + \alpha I_p)^{-1}X^T y, \qquad \hat{\beta}_0 = \bar{y} - \bar{x}^T\hat{\beta}$$
+<div>$$\hat{\beta} = (X^TX + \alpha I_p)^{-1}X^T y, \qquad \hat{\beta}_0 = \bar{y} - \bar{x}^T\hat{\beta}$$</div>
 
 **RidgeClassifier** encode les labels multi-classes dans une matrice indicatrice $Y \in \{0,1\}^{n \times K}$, résout Ridge de façon jointe, puis affecte :
 
-$$\hat{y} = \underset{k}{\arg\max}\ \hat{Y}_{:,k}$$
+<div>$$\hat{y} = \underset{k}{\arg\max}\ \hat{Y}_{:,k}$$</div>
 
 Le compromis biais-variance est contrôlé par $\alpha$ : un $\alpha$ plus grand augmente le biais mais réduit la variance.
 

@@ -75,31 +75,31 @@ Both algorithms find low-dimensional **linear projections** that maximise preser
 
 **1. Centre** the data matrix:
 
-$$\tilde{X} = X - \mathbf{1}\mu^\top, \qquad \mu_j = \frac{1}{n}\sum_i x_{ij}$$
+<div>$$\tilde{X} = X - \mathbf{1}\mu^\top, \qquad \mu_j = \frac{1}{n}\sum_i x_{ij}$$</div>
 
 **2. Compute** the covariance matrix and its eigendecomposition:
 
-$$C = \frac{1}{n}\tilde{X}^\top\tilde{X} = V \Lambda V^\top$$
+<div>$$C = \frac{1}{n}\tilde{X}^\top\tilde{X} = V \Lambda V^\top$$</div>
 
 where $V \in \mathbb{R}^{p \times p}$ has eigenvectors as columns and $\Lambda = \text{diag}(\lambda_1, \ldots, \lambda_p)$ with $\lambda_1 \geq \cdots \geq \lambda_p \geq 0$.
 
 In practice this is computed via the **economy SVD** of $\tilde{X}$:
 
-$$\tilde{X} = U \Sigma V^\top \implies \lambda_i = \frac{\sigma_i^2}{n}$$
+<div>$$\tilde{X} = U \Sigma V^\top \implies \lambda_i = \frac{\sigma_i^2}{n}$$</div>
 
 **3. Project** onto the $k$ leading components:
 
-$$T = \tilde{X} V_k, \qquad V_k = V[:, :k]$$
+<div>$$T = \tilde{X} V_k, \qquad V_k = V[:, :k]$$</div>
 
 **Whitening** (optional): $T_{\text{white}} = T \cdot \text{diag}(\lambda_1^{-1/2}, \ldots, \lambda_k^{-1/2})$, giving each component unit variance.
 
 **Explained variance ratio:**
 
-$$\text{EVR}_i = \frac{\lambda_i}{\sum_j \lambda_j}$$
+<div>$$\text{EVR}_i = \frac{\lambda_i}{\sum_j \lambda_j}$$</div>
 
 **Inverse transform** (approximate reconstruction):
 
-$$\hat{X} = T V_k^\top + \mu^\top$$
+<div>$$\hat{X} = T V_k^\top + \mu^\top$$</div>
 
 ---
 
@@ -107,11 +107,11 @@ $$\hat{X} = T V_k^\top + \mu^\top$$
 
 Directly computes a **rank-$k$ SVD** without centring, making it suitable for sparse matrices (e.g. TF-IDF):
 
-$$X \approx U_k \Sigma_k V_k^\top$$
+<div>$$X \approx U_k \Sigma_k V_k^\top$$</div>
 
 Uses a **randomised power iteration** algorithm:
 
-$$Y = (XX^\top)^q X \Omega, \quad \Omega \in \mathbb{R}^{p \times (k + \text{oversampling})}$$
+<div>$$Y = (XX^\top)^q X \Omega, \quad \Omega \in \mathbb{R}^{p \times (k + \text{oversampling})}$$</div>
 
 where $q = \lceil\texttt{n\_iter}/2\rceil$ power steps amplify the signal of the top singular vectors. The QR factorisation of $Y$ gives an orthonormal basis, and the final SVD is computed on the reduced system.
 
@@ -194,31 +194,31 @@ Les deux algorithmes trouvent des **projections linéaires** de faible dimension
 
 **1. Centrer** la matrice de données :
 
-$$\tilde{X} = X - \mathbf{1}\mu^\top, \qquad \mu_j = \frac{1}{n}\sum_i x_{ij}$$
+<div>$$\tilde{X} = X - \mathbf{1}\mu^\top, \qquad \mu_j = \frac{1}{n}\sum_i x_{ij}$$</div>
 
 **2. Calculer** la matrice de covariance et sa décomposition propre :
 
-$$C = \frac{1}{n}\tilde{X}^\top\tilde{X} = V \Lambda V^\top$$
+<div>$$C = \frac{1}{n}\tilde{X}^\top\tilde{X} = V \Lambda V^\top$$</div>
 
 où $V \in \mathbb{R}^{p \times p}$ a les vecteurs propres en colonnes et $\Lambda = \text{diag}(\lambda_1, \ldots, \lambda_p)$ avec $\lambda_1 \geq \cdots \geq \lambda_p \geq 0$.
 
 En pratique, cela est calculé via la **SVD économique** de $\tilde{X}$ :
 
-$$\tilde{X} = U \Sigma V^\top \implies \lambda_i = \frac{\sigma_i^2}{n}$$
+<div>$$\tilde{X} = U \Sigma V^\top \implies \lambda_i = \frac{\sigma_i^2}{n}$$</div>
 
 **3. Projeter** sur les $k$ composantes principales :
 
-$$T = \tilde{X} V_k, \qquad V_k = V[:, :k]$$
+<div>$$T = \tilde{X} V_k, \qquad V_k = V[:, :k]$$</div>
 
 **Blanchiment** (optionnel) : $T_{\text{blanc}} = T \cdot \text{diag}(\lambda_1^{-1/2}, \ldots, \lambda_k^{-1/2})$, donnant à chaque composante une variance unitaire.
 
 **Ratio de variance expliquée :**
 
-$$\text{EVR}_i = \frac{\lambda_i}{\sum_j \lambda_j}$$
+<div>$$\text{EVR}_i = \frac{\lambda_i}{\sum_j \lambda_j}$$</div>
 
 **Transformation inverse** (reconstruction approchée) :
 
-$$\hat{X} = T V_k^\top + \mu^\top$$
+<div>$$\hat{X} = T V_k^\top + \mu^\top$$</div>
 
 ---
 
@@ -226,11 +226,11 @@ $$\hat{X} = T V_k^\top + \mu^\top$$
 
 Calcule directement une **SVD de rang $k$** sans centrage, la rendant adaptée aux matrices creuses (ex. TF-IDF) :
 
-$$X \approx U_k \Sigma_k V_k^\top$$
+<div>$$X \approx U_k \Sigma_k V_k^\top$$</div>
 
 Utilise un algorithme d'**itération de puissance randomisée** :
 
-$$Y = (XX^\top)^q X \Omega, \quad \Omega \in \mathbb{R}^{p \times (k + \text{sursampling})}$$
+<div>$$Y = (XX^\top)^q X \Omega, \quad \Omega \in \mathbb{R}^{p \times (k + \text{sursampling})}$$</div>
 
 où $q = \lceil\texttt{n\_iter}/2\rceil$ étapes de puissance amplifient le signal des vecteurs singuliers principaux. La factorisation QR de $Y$ fournit une base orthonormale, et la SVD finale est calculée sur le système réduit.
 

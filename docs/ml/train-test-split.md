@@ -80,13 +80,13 @@ for fold, (tr, te) in enumerate(kf.split(X, y)):
 
 **Non-stratified split** — randomly shuffle indices and cut at position $\lfloor n \cdot (1 - \texttt{test\_size})\rfloor$:
 
-$$\text{train} = \sigma([0,n))[:n_{\text{tr}}], \qquad \text{test} = \sigma([0,n))[n_{\text{tr}}:]$$
+<div>$$\text{train} = \sigma([0,n))[:n_{\text{tr}}], \qquad \text{test} = \sigma([0,n))[n_{\text{tr}}:]$$</div>
 
 where $\sigma$ is a random permutation seeded by `random_state`.
 
 **Stratified split** — class proportions are preserved by splitting each class independently:
 
-$$\forall k:\quad n_{\text{test},k} = \text{round}(n_k \cdot \texttt{test\_size})$$
+<div>$$\forall k:\quad n_{\text{test},k} = \text{round}(n_k \cdot \texttt{test\_size})$$</div>
 
 then combining and shuffling all per-class test/train sets. This ensures that rare classes are not accidentally excluded from the test set.
 
@@ -108,7 +108,7 @@ Splits the dataset into $k$ non-overlapping folds whilst preserving class distri
 
 The $f$-th fold test error estimate $\hat{e}_f$ gives the cross-validated score:
 
-$$\widehat{\text{CV}} = \frac{1}{k}\sum_{f=0}^{k-1} \hat{e}_f$$
+<div>$$\widehat{\text{CV}} = \frac{1}{k}\sum_{f=0}^{k-1} \hat{e}_f$$</div>
 
 This estimate has lower variance than a single train/test split, especially for small datasets.
 
@@ -194,13 +194,13 @@ for pli, (tr, te) in enumerate(kf.split(X, y)):
 
 **Division non stratifiée** — mélange aléatoire des indices et coupe à la position $\lfloor n \cdot (1 - \texttt{test\_size})\rfloor$ :
 
-$$\text{train} = \sigma([0,n))[:n_{\text{tr}}], \qquad \text{test} = \sigma([0,n))[n_{\text{tr}}:]$$
+<div>$$\text{train} = \sigma([0,n))[:n_{\text{tr}}], \qquad \text{test} = \sigma([0,n))[n_{\text{tr}}:]$$</div>
 
 où $\sigma$ est une permutation aléatoire initialisée par `random_state`.
 
 **Division stratifiée** — les proportions de classes sont préservées en divisant chaque classe indépendamment :
 
-$$\forall k:\quad n_{\text{test},k} = \text{round}(n_k \cdot \texttt{test\_size})$$
+<div>$$\forall k:\quad n_{\text{test},k} = \text{round}(n_k \cdot \texttt{test\_size})$$</div>
 
 puis en combinant et mélangeant tous les ensembles test/train par classe. Cela garantit que les classes rares ne sont pas accidentellement exclues de l'ensemble de test.
 
@@ -222,7 +222,7 @@ Divise le jeu de données en $k$ plis non-chevauchants tout en préservant les d
 
 L'estimation d'erreur du $f$-ième pli $\hat{e}_f$ donne le score de validation croisée :
 
-$$\widehat{\text{VC}} = \frac{1}{k}\sum_{f=0}^{k-1} \hat{e}_f$$
+<div>$$\widehat{\text{VC}} = \frac{1}{k}\sum_{f=0}^{k-1} \hat{e}_f$$</div>
 
 Cette estimation a une variance plus faible qu'une seule division train/test, notamment pour les petits jeux de données.
 

@@ -68,25 +68,25 @@ Random Forest is an ensemble of $B$ decorrelated decision trees trained on **boo
 
 **Bootstrap sampling** — each tree $T_b$ is trained on $n$ samples drawn with replacement from the training set:
 
-$$\mathcal{D}_b = \{(x_i, y_i)\}_{i \sim \text{Uniform}(1,n)}^n$$
+<div>$$\mathcal{D}_b = \{(x_i, y_i)\}_{i \sim \text{Uniform}(1,n)}^n$$</div>
 
 **Random feature subsampling** — at each node split, only $m$ features are considered (not all $p$):
 
-$$m = \begin{cases} \lfloor\sqrt{p}\rfloor & \texttt{max\_features="sqrt"} \\ \lfloor\log_2 p\rfloor & \texttt{max\_features="log2"} \\ p & \texttt{max\_features="all"} \end{cases}$$
+<div>$$m = \begin{cases} \lfloor\sqrt{p}\rfloor & \texttt{max\_features="sqrt"} \\ \lfloor\log_2 p\rfloor & \texttt{max\_features="log2"} \\ p & \texttt{max\_features="all"} \end{cases}$$</div>
 
 This decorrelates trees: even when one feature is dominant, other trees will be forced to find alternative splits.
 
 **Prediction — Classifier** (majority vote):
 
-$$\hat{y} = \underset{k}{\arg\max} \sum_{b=1}^B \mathbf{1}\bigl[T_b(x) = k\bigr]$$
+<div>$$\hat{y} = \underset{k}{\arg\max} \sum_{b=1}^B \mathbf{1}\bigl[T_b(x) = k\bigr]$$</div>
 
 **Prediction — Regressor** (average):
 
-$$\hat{y} = \frac{1}{B}\sum_{b=1}^B T_b(x)$$
+<div>$$\hat{y} = \frac{1}{B}\sum_{b=1}^B T_b(x)$$</div>
 
 **Feature importance** averages per-tree importances:
 
-$$\text{FI}(j) = \frac{1}{B}\sum_{b=1}^B \text{FI}_b(j)$$
+<div>$$\text{FI}(j) = \frac{1}{B}\sum_{b=1}^B \text{FI}_b(j)$$</div>
 
 The ensemble variance is reduced relative to a single tree by a factor approaching $\frac{1}{B}$ as trees become decorrelated (via the random subsampling).
 
@@ -160,25 +160,25 @@ Random Forest est un ensemble de $B$ arbres de décision décorrélés entraîn�
 
 **Échantillonnage bootstrap** — chaque arbre $T_b$ est entraîné sur $n$ échantillons tirés avec remise depuis l'ensemble d'entraînement :
 
-$$\mathcal{D}_b = \{(x_i, y_i)\}_{i \sim \text{Uniforme}(1,n)}^n$$
+<div>$$\mathcal{D}_b = \{(x_i, y_i)\}_{i \sim \text{Uniforme}(1,n)}^n$$</div>
 
 **Sous-échantillonnage aléatoire des features** — à chaque division de nœud, seules $m$ features sont considérées (pas toutes les $p$) :
 
-$$m = \begin{cases} \lfloor\sqrt{p}\rfloor & \texttt{max\_features="sqrt"} \\ \lfloor\log_2 p\rfloor & \texttt{max\_features="log2"} \\ p & \texttt{max\_features="all"} \end{cases}$$
+<div>$$m = \begin{cases} \lfloor\sqrt{p}\rfloor & \texttt{max\_features="sqrt"} \\ \lfloor\log_2 p\rfloor & \texttt{max\_features="log2"} \\ p & \texttt{max\_features="all"} \end{cases}$$</div>
 
 Cela décorrèle les arbres : même quand une feature est dominante, les autres arbres sont forcés de trouver des divisions alternatives.
 
 **Prédiction — Classificateur** (vote majoritaire) :
 
-$$\hat{y} = \underset{k}{\arg\max} \sum_{b=1}^B \mathbf{1}\bigl[T_b(x) = k\bigr]$$
+<div>$$\hat{y} = \underset{k}{\arg\max} \sum_{b=1}^B \mathbf{1}\bigl[T_b(x) = k\bigr]$$</div>
 
 **Prédiction — Régresseur** (moyenne) :
 
-$$\hat{y} = \frac{1}{B}\sum_{b=1}^B T_b(x)$$
+<div>$$\hat{y} = \frac{1}{B}\sum_{b=1}^B T_b(x)$$</div>
 
 **Importance des features** fait la moyenne des importances par arbre :
 
-$$\text{FI}(j) = \frac{1}{B}\sum_{b=1}^B \text{FI}_b(j)$$
+<div>$$\text{FI}(j) = \frac{1}{B}\sum_{b=1}^B \text{FI}_b(j)$$</div>
 
 La variance de l'ensemble est réduite par rapport à un seul arbre d'un facteur approchant $\frac{1}{B}$ à mesure que les arbres se décorrèlent (via le sous-échantillonnage aléatoire).
 

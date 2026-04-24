@@ -1,4 +1,4 @@
-# DBSCAN Class
+﻿# DBSCAN Class
 
 <div class="lang-en">
 
@@ -158,7 +158,7 @@ The DBSCAN class exposes the same Rust-backed algorithm as the chart variant.
 
 For a point $p$, its $\epsilon$-neighbourhood is:
 
-$$N_\epsilon(p) = \{q \in D : \|p - q\| \leq \epsilon\}$$
+<div>$$N_\epsilon(p) = \{q \in D : \|p - q\| \leq \epsilon\}$$</div>
 
 - **Core point:** $|N_\epsilon(p)| \geq \text{min\_samples}$
 - **Border point:** reachable from a core point but not itself a core point
@@ -214,7 +214,7 @@ La classe DBSCAN expose le même algorithme Rust que la variante graphique.
 
 Pour un point $p$, son $\epsilon$-voisinage est :
 
-$$N_\epsilon(p) = \{q \in D : \|p - q\| \leq \epsilon\}$$
+<div>$$N_\epsilon(p) = \{q \in D : \|p - q\| \leq \epsilon\}$$</div>
 
 - **Point cœur :** $|N_\epsilon(p)| \geq \text{min\_samples}$
 - **Point frontière :** accessible depuis un point cœur, mais pas lui-même un point cœur

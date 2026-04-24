@@ -128,11 +128,26 @@
     else document.body.appendChild(btn);
   }
 
+  function fixMathDisplay() {
+    document.querySelectorAll(".content p").forEach(function (p) {
+      var html = p.innerHTML;
+      if (html.indexOf("$$") === -1) return;
+      var fixed = html.replace(/<em>/g, "_").replace(/<\/em>/g, "_");
+      fixed = fixed.replace(/<strong>/g, "__").replace(/<\/strong>/g, "__");
+      if (fixed !== html) p.innerHTML = fixed;
+    });
+    if (window.MathJax && MathJax.Hub) {
+      var content = document.querySelector(".content");
+      if (content) MathJax.Hub.Queue(["Typeset", MathJax.Hub, content]);
+    }
+  }
+
   function init() {
     purgeOldTabs();
     injectButton();
     buildPageTabs();
     applyLang(getLang());
+    fixMathDisplay();
   }
 
   if (document.readyState === "loading") {

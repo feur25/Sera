@@ -90,7 +90,7 @@ Each scaler applies a **column-wise linear transformation** fitted on the traini
 
 Standardises features to zero mean and unit variance:
 
-$$x'_j = \frac{x_j - \mu_j}{\sigma_j}$$
+<div>$$x'_j = \frac{x_j - \mu_j}{\sigma_j}$$</div>
 
 where $\mu_j = \frac{1}{n}\sum_i x_{ij}$ and $\sigma_j = \sqrt{\frac{1}{n}\sum_i (x_{ij}-\mu_j)^2}$.
 
@@ -100,7 +100,7 @@ where $\mu_j = \frac{1}{n}\sum_i x_{ij}$ and $\sigma_j = \sqrt{\frac{1}{n}\sum_i
 
 Rescales each feature into the interval $[a, b]$ (`feature_range`):
 
-$$x'_j = a + \frac{x_j - \min_j}{\max_j - \min_j}(b - a)$$
+<div>$$x'_j = a + \frac{x_j - \min_j}{\max_j - \min_j}(b - a)$$</div>
 
 Sensitive to outliers since it uses $\min$ and $\max$.
 
@@ -110,7 +110,7 @@ Sensitive to outliers since it uses $\min$ and $\max$.
 
 Uses **median** and **interquartile range** (IQR), making it robust to outliers:
 
-$$x'_j = \frac{x_j - Q_{50}(j)}{Q_{75}(j) - Q_{25}(j)}$$
+<div>$$x'_j = \frac{x_j - Q_{50}(j)}{Q_{75}(j) - Q_{25}(j)}$$</div>
 
 where $Q_p(j)$ is the $p$-th percentile of feature $j$.
 
@@ -120,7 +120,7 @@ where $Q_p(j)$ is the $p$-th percentile of feature $j$.
 
 Scales each feature by its maximum absolute value, preserving sparsity and the origin:
 
-$$x'_j = \frac{x_j}{\max_i |x_{ij}|}$$
+<div>$$x'_j = \frac{x_j}{\max_i |x_{ij}|}$$</div>
 
 Result lies in $[-1, 1]$.
 
@@ -130,13 +130,13 @@ Result lies in $[-1, 1]$.
 
 Scales each **sample** (row) to unit norm, applied independently of fit:
 
-$$x'_i = \frac{x_i}{\|x_i\|_p}, \qquad p \in \{1, 2, \infty\}$$
+<div>$$x'_i = \frac{x_i}{\|x_i\|_p}, \qquad p \in \{1, 2, \infty\}$$</div>
 
 No `fit` step is required — the transformation is stateless.
 
 **Inverse transform** is defined for StandardScaler, MinMaxScaler, RobustScaler, and MaxAbsScaler:
 
-$$x_j = x'_j \cdot \text{scale}_j + \text{center}_j$$
+<div>$$x_j = x'_j \cdot \text{scale}_j + \text{center}_j$$</div>
 
 </div>
 
@@ -230,7 +230,7 @@ Chaque scaler applique une **transformation linéaire colonne par colonne** ajus
 
 Standardise les features à moyenne nulle et variance unitaire :
 
-$$x'_j = \frac{x_j - \mu_j}{\sigma_j}$$
+<div>$$x'_j = \frac{x_j - \mu_j}{\sigma_j}$$</div>
 
 où $\mu_j = \frac{1}{n}\sum_i x_{ij}$ et $\sigma_j = \sqrt{\frac{1}{n}\sum_i (x_{ij}-\mu_j)^2}$.
 
@@ -240,7 +240,7 @@ où $\mu_j = \frac{1}{n}\sum_i x_{ij}$ et $\sigma_j = \sqrt{\frac{1}{n}\sum_i (x
 
 Redimensionne chaque feature dans l'intervalle $[a, b]$ (`feature_range`) :
 
-$$x'_j = a + \frac{x_j - \min_j}{\max_j - \min_j}(b - a)$$
+<div>$$x'_j = a + \frac{x_j - \min_j}{\max_j - \min_j}(b - a)$$</div>
 
 Sensible aux valeurs aberrantes car il utilise $\min$ et $\max$.
 
@@ -250,7 +250,7 @@ Sensible aux valeurs aberrantes car il utilise $\min$ et $\max$.
 
 Utilise la **médiane** et l'**écart interquartile** (IQR), le rendant robuste aux valeurs aberrantes :
 
-$$x'_j = \frac{x_j - Q_{50}(j)}{Q_{75}(j) - Q_{25}(j)}$$
+<div>$$x'_j = \frac{x_j - Q_{50}(j)}{Q_{75}(j) - Q_{25}(j)}$$</div>
 
 où $Q_p(j)$ est le $p$-ième percentile de la feature $j$.
 
@@ -260,7 +260,7 @@ où $Q_p(j)$ est le $p$-ième percentile de la feature $j$.
 
 Met à l'échelle chaque feature par sa valeur absolue maximale, préservant la sparsité et l'origine :
 
-$$x'_j = \frac{x_j}{\max_i |x_{ij}|}$$
+<div>$$x'_j = \frac{x_j}{\max_i |x_{ij}|}$$</div>
 
 Le résultat est dans $[-1, 1]$.
 
@@ -270,12 +270,12 @@ Le résultat est dans $[-1, 1]$.
 
 Met à l'échelle chaque **échantillon** (ligne) à une norme unitaire, appliqué indépendamment du fit :
 
-$$x'_i = \frac{x_i}{\|x_i\|_p}, \qquad p \in \{1, 2, \infty\}$$
+<div>$$x'_i = \frac{x_i}{\|x_i\|_p}, \qquad p \in \{1, 2, \infty\}$$</div>
 
 Aucune étape `fit` n'est requise — la transformation est sans état.
 
 **Transformation inverse** définie pour StandardScaler, MinMaxScaler, RobustScaler et MaxAbsScaler :
 
-$$x_j = x'_j \cdot \text{scale}_j + \text{center}_j$$
+<div>$$x_j = x'_j \cdot \text{scale}_j + \text{center}_j$$</div>
 
 </div>

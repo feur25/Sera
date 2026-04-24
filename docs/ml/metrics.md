@@ -69,17 +69,17 @@ print(f"R²:  {sp.r2_score(y_true, y_pred):.4f}")
 
 **Accuracy** — fraction of predictions that match the true label:
 
-$$\text{Accuracy} = \frac{1}{n}\sum_{i=1}^n \mathbf{1}[\hat{y}_i = y_i]$$
+<div>$$\text{Accuracy} = \frac{1}{n}\sum_{i=1}^n \mathbf{1}[\hat{y}_i = y_i]$$</div>
 
 **Confusion matrix** — $K \times K$ matrix where entry $(k, j)$ is the number of samples of true class $k$ predicted as class $j$:
 
-$$C_{kj} = |\{i : y_i = k,\; \hat{y}_i = j\}|$$
+<div>$$C_{kj} = |\{i : y_i = k,\; \hat{y}_i = j\}|$$</div>
 
 **Per-class metrics** derived from the confusion matrix (TP, FP, FN per class $k$):
 
-$$\text{Precision}_k = \frac{C_{kk}}{\sum_j C_{jk}}, \qquad \text{Recall}_k = \frac{C_{kk}}{\sum_j C_{kj}}$$
+<div>$$\text{Precision}_k = \frac{C_{kk}}{\sum_j C_{jk}}, \qquad \text{Recall}_k = \frac{C_{kk}}{\sum_j C_{kj}}$$</div>
 
-$$\text{F1}_k = 2 \cdot \frac{\text{Precision}_k \cdot \text{Recall}_k}{\text{Precision}_k + \text{Recall}_k}$$
+<div>$$\text{F1}_k = 2 \cdot \frac{\text{Precision}_k \cdot \text{Recall}_k}{\text{Precision}_k + \text{Recall}_k}$$</div>
 
 `classification_report` aggregates these per class and also reports **macro** (unweighted mean) and **weighted** (weighted by support) averages.
 
@@ -89,17 +89,17 @@ $$\text{F1}_k = 2 \cdot \frac{\text{Precision}_k \cdot \text{Recall}_k}{\text{Pr
 
 **Mean Squared Error (MSE):**
 
-$$\text{MSE} = \frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2$$
+<div>$$\text{MSE} = \frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2$$</div>
 
 **Mean Absolute Error (MAE):**
 
-$$\text{MAE} = \frac{1}{n}\sum_{i=1}^n |y_i - \hat{y}_i|$$
+<div>$$\text{MAE} = \frac{1}{n}\sum_{i=1}^n |y_i - \hat{y}_i|$$</div>
 
 MAE is less sensitive to outliers than MSE since it uses $|\cdot|$ instead of $(\cdot)^2$.
 
 **$R^2$ score** (coefficient of determination) — proportion of variance explained by the model:
 
-$$R^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2}, \qquad \bar{y} = \frac{1}{n}\sum_i y_i$$
+<div>$$R^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2}, \qquad \bar{y} = \frac{1}{n}\sum_i y_i$$</div>
 
 $R^2 = 1$ means a perfect fit; $R^2 = 0$ means the model predicts the mean; $R^2 < 0$ means worse than the mean predictor.
 
@@ -174,17 +174,17 @@ print(f"R² :  {sp.r2_score(y_true, y_pred):.4f}")
 
 **Exactitude** — fraction des prédictions qui correspondent à la vraie étiquette :
 
-$$\text{Exactitude} = \frac{1}{n}\sum_{i=1}^n \mathbf{1}[\hat{y}_i = y_i]$$
+<div>$$\text{Exactitude} = \frac{1}{n}\sum_{i=1}^n \mathbf{1}[\hat{y}_i = y_i]$$</div>
 
 **Matrice de confusion** — matrice $K \times K$ où l'entrée $(k, j)$ est le nombre d'échantillons de la vraie classe $k$ prédits comme classe $j$ :
 
-$$C_{kj} = |\{i : y_i = k,\; \hat{y}_i = j\}|$$
+<div>$$C_{kj} = |\{i : y_i = k,\; \hat{y}_i = j\}|$$</div>
 
 **Métriques par classe** dérivées de la matrice de confusion (VP, FP, FN par classe $k$) :
 
-$$\text{Précision}_k = \frac{C_{kk}}{\sum_j C_{jk}}, \qquad \text{Rappel}_k = \frac{C_{kk}}{\sum_j C_{kj}}$$
+<div>$$\text{Précision}_k = \frac{C_{kk}}{\sum_j C_{jk}}, \qquad \text{Rappel}_k = \frac{C_{kk}}{\sum_j C_{kj}}$$</div>
 
-$$\text{F1}_k = 2 \cdot \frac{\text{Précision}_k \cdot \text{Rappel}_k}{\text{Précision}_k + \text{Rappel}_k}$$
+<div>$$\text{F1}_k = 2 \cdot \frac{\text{Précision}_k \cdot \text{Rappel}_k}{\text{Précision}_k + \text{Rappel}_k}$$</div>
 
 `classification_report` agrège ces métriques par classe et rapporte également les moyennes **macro** (moyenne non pondérée) et **pondérée** (pondérée par le support).
 
@@ -194,17 +194,17 @@ $$\text{F1}_k = 2 \cdot \frac{\text{Précision}_k \cdot \text{Rappel}_k}{\text{P
 
 **Erreur Quadratique Moyenne (MSE) :**
 
-$$\text{MSE} = \frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2$$
+<div>$$\text{MSE} = \frac{1}{n}\sum_{i=1}^n (y_i - \hat{y}_i)^2$$</div>
 
 **Erreur Absolue Moyenne (MAE) :**
 
-$$\text{MAE} = \frac{1}{n}\sum_{i=1}^n |y_i - \hat{y}_i|$$
+<div>$$\text{MAE} = \frac{1}{n}\sum_{i=1}^n |y_i - \hat{y}_i|$$</div>
 
 La MAE est moins sensible aux valeurs aberrantes que la MSE car elle utilise $|\cdot|$ au lieu de $(\cdot)^2$.
 
 **Score $R^2$** (coefficient de détermination) — proportion de variance expliquée par le modèle :
 
-$$R^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2}, \qquad \bar{y} = \frac{1}{n}\sum_i y_i$$
+<div>$$R^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2}, \qquad \bar{y} = \frac{1}{n}\sum_i y_i$$</div>
 
 $R^2 = 1$ signifie un ajustement parfait ; $R^2 = 0$ signifie que le modèle prédit la moyenne ; $R^2 < 0$ signifie pire que le prédicteur moyen.
 

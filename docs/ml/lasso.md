@@ -61,17 +61,17 @@ print(f"Non-zero coefficients: {non_zero} / 20")
 
 Lasso minimises the L1-penalised objective:
 
-$$\hat{\beta} = \underset{\beta}{\arg\min}\ \frac{1}{2n}\|y - X\beta\|_2^2 + \alpha\|\beta\|_1$$
+<div>$$\hat{\beta} = \underset{\beta}{\arg\min}\ \frac{1}{2n}\|y - X\beta\|_2^2 + \alpha\|\beta\|_1$$</div>
 
 **Coordinate descent** updates one coefficient at a time while holding the rest fixed. For each $j$:
 
-$$r_j = y - X_{-j}\hat{\beta}_{-j}$$
+<div>$$r_j = y - X_{-j}\hat{\beta}_{-j}$$</div>
 
-$$\hat{\beta}_j \leftarrow \frac{S\!\left(X_j^T r_j / n,\ \alpha\right)}{\|X_j\|_2^2 / n}$$
+<div>$$\hat{\beta}_j \leftarrow \frac{S\!\left(X_j^T r_j / n,\ \alpha\right)}{\|X_j\|_2^2 / n}$$</div>
 
 where $S(\cdot, \lambda)$ is the **soft-threshold operator**:
 
-$$S(z, \lambda) = \text{sign}(z)\max(|z| - \lambda, 0)$$
+<div>$$S(z, \lambda) = \text{sign}(z)\max(|z| - \lambda, 0)$$</div>
 
 This sets small coefficients exactly to zero, producing **sparse solutions**.
 
@@ -140,17 +140,17 @@ print(f"Coefficients non nuls : {non_zero} / 20")
 
 Lasso minimise l'objectif avec pénalité L1 :
 
-$$\hat{\beta} = \underset{\beta}{\arg\min}\ \frac{1}{2n}\|y - X\beta\|_2^2 + \alpha\|\beta\|_1$$
+<div>$$\hat{\beta} = \underset{\beta}{\arg\min}\ \frac{1}{2n}\|y - X\beta\|_2^2 + \alpha\|\beta\|_1$$</div>
 
 La **descente de coordonnées** met à jour un coefficient à la fois en fixant les autres. Pour chaque $j$ :
 
-$$r_j = y - X_{-j}\hat{\beta}_{-j}$$
+<div>$$r_j = y - X_{-j}\hat{\beta}_{-j}$$</div>
 
-$$\hat{\beta}_j \leftarrow \frac{S\!\left(X_j^T r_j / n,\ \alpha\right)}{\|X_j\|_2^2 / n}$$
+<div>$$\hat{\beta}_j \leftarrow \frac{S\!\left(X_j^T r_j / n,\ \alpha\right)}{\|X_j\|_2^2 / n}$$</div>
 
 où $S(\cdot, \lambda)$ est l'**opérateur de seuillage doux** :
 
-$$S(z, \lambda) = \text{sign}(z)\max(|z| - \lambda, 0)$$
+<div>$$S(z, \lambda) = \text{sign}(z)\max(|z| - \lambda, 0)$$</div>
 
 Cela annule exactement les petits coefficients, produisant des **solutions creuses**.
 

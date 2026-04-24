@@ -67,13 +67,13 @@ print(f"Non-zero: {non_zero} / 15")
 
 ElasticNet combines both L1 and L2 penalties:
 
-$$\hat{\beta} = \underset{\beta}{\arg\min}\ \frac{1}{2n}\|y - X\beta\|_2^2 + \alpha\!\left[\rho\|\beta\|_1 + \frac{1-\rho}{2}\|\beta\|_2^2\right]$$
+<div>$$\hat{\beta} = \underset{\beta}{\arg\min}\ \frac{1}{2n}\|y - X\beta\|_2^2 + \alpha\!\left[\rho\|\beta\|_1 + \frac{1-\rho}{2}\|\beta\|_2^2\right]$$</div>
 
 where $\rho$ = `l1_ratio`. Setting $\rho = 1$ recovers Lasso; $\rho = 0$ recovers Ridge.
 
 **Coordinate descent** update for coefficient $j$:
 
-$$\hat{\beta}_j \leftarrow \frac{S\!\left(X_j^T r_j / n,\ \alpha\rho\right)}{\|X_j\|_2^2 / n + \alpha(1-\rho)}$$
+<div>$$\hat{\beta}_j \leftarrow \frac{S\!\left(X_j^T r_j / n,\ \alpha\rho\right)}{\|X_j\|_2^2 / n + \alpha(1-\rho)}$$</div>
 
 where $S(\cdot, \lambda)$ is the soft-threshold operator. The L2 term appears in the denominator, providing grouping behaviour: correlated features tend to receive similar non-zero coefficients.
 
@@ -154,13 +154,13 @@ print(f"Non nuls : {non_zero} / 15")
 
 ElasticNet combine les pénalités L1 et L2 :
 
-$$\hat{\beta} = \underset{\beta}{\arg\min}\ \frac{1}{2n}\|y - X\beta\|_2^2 + \alpha\!\left[\rho\|\beta\|_1 + \frac{1-\rho}{2}\|\beta\|_2^2\right]$$
+<div>$$\hat{\beta} = \underset{\beta}{\arg\min}\ \frac{1}{2n}\|y - X\beta\|_2^2 + \alpha\!\left[\rho\|\beta\|_1 + \frac{1-\rho}{2}\|\beta\|_2^2\right]$$</div>
 
 où $\rho$ = `l1_ratio`. Avec $\rho = 1$ on retrouve Lasso ; avec $\rho = 0$ on retrouve Ridge.
 
 **Descente de coordonnées** pour le coefficient $j$ :
 
-$$\hat{\beta}_j \leftarrow \frac{S\!\left(X_j^T r_j / n,\ \alpha\rho\right)}{\|X_j\|_2^2 / n + \alpha(1-\rho)}$$
+<div>$$\hat{\beta}_j \leftarrow \frac{S\!\left(X_j^T r_j / n,\ \alpha\rho\right)}{\|X_j\|_2^2 / n + \alpha(1-\rho)}$$</div>
 
 où $S(\cdot, \lambda)$ est l'opérateur de seuillage doux. Le terme L2 apparaît au dénominateur, favorisant le **regroupement** : les variables corrélées tendent à recevoir des coefficients non nuls similaires.
 

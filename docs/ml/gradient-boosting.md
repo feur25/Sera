@@ -68,27 +68,27 @@ Gradient Boosting constructs an **additive model** $F_M(x)$ by sequentially fitt
 
 **Initialisation** with the optimal constant prediction:
 
-$$F_0(x) = \underset{\gamma}{\arg\min} \sum_{i=1}^n \mathcal{L}(y_i, \gamma)$$
+<div>$$F_0(x) = \underset{\gamma}{\arg\min} \sum_{i=1}^n \mathcal{L}(y_i, \gamma)$$</div>
 
 **Boosting iteration** $m = 1, \ldots, M$:
 
 **1.** Compute **pseudo-residuals** (negative gradient of the loss w.r.t. the current prediction):
 
-$$r_{im} = -\frac{\partial \mathcal{L}(y_i, F(x_i))}{\partial F(x_i)}\Bigg|_{F = F_{m-1}}$$
+<div>$$r_{im} = -\frac{\partial \mathcal{L}(y_i, F(x_i))}{\partial F(x_i)}\Bigg|_{F = F_{m-1}}$$</div>
 
 **2.** Fit a decision tree $h_m$ to the pseudo-residuals $\{(x_i, r_{im})\}$.
 
 **3.** Update the model with shrinkage $\nu$ (learning rate):
 
-$$F_m(x) = F_{m-1}(x) + \nu \cdot h_m(x)$$
+<div>$$F_m(x) = F_{m-1}(x) + \nu \cdot h_m(x)$$</div>
 
 **Regressor (L2 loss)** — pseudo-residuals are simply the ordinary residuals:
 
-$$r_{im} = y_i - F_{m-1}(x_i)$$
+<div>$$r_{im} = y_i - F_{m-1}(x_i)$$</div>
 
 **Classifier (log loss / deviance)** — models the log-odds. Pseudo-residuals are:
 
-$$r_{im} = y_i - p_{m-1}(x_i), \qquad p_{m-1}(x_i) = \sigma(F_{m-1}(x_i))$$
+<div>$$r_{im} = y_i - p_{m-1}(x_i), \qquad p_{m-1}(x_i) = \sigma(F_{m-1}(x_i))$$</div>
 
 Multiclass: $K$ trees are grown per stage, one per class (OvR log-loss).
 
@@ -164,27 +164,27 @@ Le Gradient Boosting construit un **modèle additif** $F_M(x)$ en ajustant séqu
 
 **Initialisation** avec la prédiction constante optimale :
 
-$$F_0(x) = \underset{\gamma}{\arg\min} \sum_{i=1}^n \mathcal{L}(y_i, \gamma)$$
+<div>$$F_0(x) = \underset{\gamma}{\arg\min} \sum_{i=1}^n \mathcal{L}(y_i, \gamma)$$</div>
 
 **Itération de boosting** $m = 1, \ldots, M$ :
 
 **1.** Calcul des **pseudo-résidus** (gradient négatif de la perte par rapport à la prédiction courante) :
 
-$$r_{im} = -\frac{\partial \mathcal{L}(y_i, F(x_i))}{\partial F(x_i)}\Bigg|_{F = F_{m-1}}$$
+<div>$$r_{im} = -\frac{\partial \mathcal{L}(y_i, F(x_i))}{\partial F(x_i)}\Bigg|_{F = F_{m-1}}$$</div>
 
 **2.** Ajuster un arbre de décision $h_m$ aux pseudo-résidus $\{(x_i, r_{im})\}$.
 
 **3.** Mettre à jour le modèle avec le rétrécissement $\nu$ (learning rate) :
 
-$$F_m(x) = F_{m-1}(x) + \nu \cdot h_m(x)$$
+<div>$$F_m(x) = F_{m-1}(x) + \nu \cdot h_m(x)$$</div>
 
 **Régresseur (perte L2)** — les pseudo-résidus sont simplement les résidus ordinaires :
 
-$$r_{im} = y_i - F_{m-1}(x_i)$$
+<div>$$r_{im} = y_i - F_{m-1}(x_i)$$</div>
 
 **Classificateur (log loss / déviance)** — modélise les log-odds. Pseudo-résidus :
 
-$$r_{im} = y_i - p_{m-1}(x_i), \qquad p_{m-1}(x_i) = \sigma(F_{m-1}(x_i))$$
+<div>$$r_{im} = y_i - p_{m-1}(x_i), \qquad p_{m-1}(x_i) = \sigma(F_{m-1}(x_i))$$</div>
 
 Multiclasse : $K$ arbres sont construits par stage, un par classe (log-loss OvR).
 

@@ -157,7 +157,7 @@ chart.show()
 K-Means minimises the total inertia — the sum of squared distances from each point to
 its assigned centroid:
 
-$$J = \sum_{i=1}^{n} \|x_i - \mu_{c(x_i)}\|^2$$
+<div>$$J = \sum_{i=1}^{n} \|x_i - \mu_{c(x_i)}\|^2$$</div>
 
 **K-Means++ initialisation**
 
@@ -310,7 +310,7 @@ chart.show()
 K-Means minimise l'inertie totale — la somme des carrés des distances de chaque point
 à son centroïde assigné :
 
-$$J = \sum_{i=1}^{n} \|x_i - \mu_{c(x_i)}\|^2$$
+<div>$$J = \sum_{i=1}^{n} \|x_i - \mu_{c(x_i)}\|^2$$</div>
 
 **Initialisation K-Means++**
 

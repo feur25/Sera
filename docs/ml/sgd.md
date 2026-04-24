@@ -83,15 +83,15 @@ print(f"R²: {reg.score(X, X[:, 0] * 2 - 1):.4f}")
 
 **Stochastic Gradient Descent** processes one sample at a time, performing a noisy gradient step that scales to large datasets:
 
-$$\beta^{(t+1)} \leftarrow \beta^{(t)} - \eta_t \nabla_\beta \mathcal{L}_i(\beta^{(t)})$$
+<div>$$\beta^{(t+1)} \leftarrow \beta^{(t)} - \eta_t \nabla_\beta \mathcal{L}_i(\beta^{(t)})$$</div>
 
 where $i$ is drawn uniformly from $\{1, \ldots, n\}$ and $\mathcal{L}_i$ is the per-sample loss. The learning rate decays over time:
 
-$$\eta_t = \frac{\eta_0}{1 + \alpha \cdot t}$$
+<div>$$\eta_t = \frac{\eta_0}{1 + \alpha \cdot t}$$</div>
 
 **L2 regularisation** is applied as weight decay before each step:
 
-$$\beta^{(t)} \leftarrow \beta^{(t)}(1 - \eta_t \alpha)$$
+<div>$$\beta^{(t)} \leftarrow \beta^{(t)}(1 - \eta_t \alpha)$$</div>
 
 **Classifier losses and their gradients:**
 
@@ -197,15 +197,15 @@ print(f"R² : {reg.score(X, X[:, 0] * 2 - 1):.4f}")
 
 La **descente de gradient stochastique** traite un échantillon à la fois, effectuant une mise à jour de gradient bruitée qui passe à l'échelle pour les grands jeux de données :
 
-$$\beta^{(t+1)} \leftarrow \beta^{(t)} - \eta_t \nabla_\beta \mathcal{L}_i(\beta^{(t)})$$
+<div>$$\beta^{(t+1)} \leftarrow \beta^{(t)} - \eta_t \nabla_\beta \mathcal{L}_i(\beta^{(t)})$$</div>
 
 où $i$ est tiré uniformément dans $\{1, \ldots, n\}$ et $\mathcal{L}_i$ est la perte par échantillon. Le taux d'apprentissage décroît au fil du temps :
 
-$$\eta_t = \frac{\eta_0}{1 + \alpha \cdot t}$$
+<div>$$\eta_t = \frac{\eta_0}{1 + \alpha \cdot t}$$</div>
 
 La **régularisation L2** est appliquée comme décroissance des poids avant chaque étape :
 
-$$\beta^{(t)} \leftarrow \beta^{(t)}(1 - \eta_t \alpha)$$
+<div>$$\beta^{(t)} \leftarrow \beta^{(t)}(1 - \eta_t \alpha)$$</div>
 
 **Pertes du classificateur et leurs gradients :**
 

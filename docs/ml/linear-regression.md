@@ -55,23 +55,23 @@ print(f"coef: {model.coef_}")
 
 Ordinary Least Squares minimises the residual sum of squares:
 
-$$\hat{\beta} = \underset{\beta}{\arg\min}\ \|y - X\beta\|_2^2$$
+<div>$$\hat{\beta} = \underset{\beta}{\arg\min}\ \|y - X\beta\|_2^2$$</div>
 
 The closed-form solution is the **normal equation**:
 
-$$\hat{\beta} = (X^TX)^{-1}X^T y$$
+<div>$$\hat{\beta} = (X^TX)^{-1}X^T y$$</div>
 
 **Solver** — The Gram matrix $G = X^TX \in \mathbb{R}^{p \times p}$ is factored via **Cholesky** ($G = LL^T$). If $G$ is not positive-definite the solver falls back to **QR decomposition** of $X$.
 
 When `fit_intercept=True`, $X$ is first augmented with a column of ones:
 
-$$X_{\text{aug}} = \begin{bmatrix} 1 & x_{1}^T \\ \vdots & \vdots \\ 1 & x_{n}^T \end{bmatrix} \in \mathbb{R}^{n \times (p+1)}$$
+<div>$$X_{\text{aug}} = \begin{bmatrix} 1 & x_{1}^T \\ \vdots & \vdots \\ 1 & x_{n}^T \end{bmatrix} \in \mathbb{R}^{n \times (p+1)}$$</div>
 
 The intercept $\hat{\beta}_0$ and coefficients $\hat{\beta}_{1:p}$ are then extracted from the joint solution. The intercept is never regularised.
 
 **Score** returns the coefficient of determination:
 
-$$R^2 = 1 - \frac{\displaystyle\sum_{i=1}^n (y_i - \hat{y}_i)^2}{\displaystyle\sum_{i=1}^n (y_i - \bar{y})^2}$$
+<div>$$R^2 = 1 - \frac{\displaystyle\sum_{i=1}^n (y_i - \hat{y}_i)^2}{\displaystyle\sum_{i=1}^n (y_i - \bar{y})^2}$$</div>
 
 </div>
 
@@ -130,22 +130,22 @@ print(f"coef : {model.coef_}")
 
 La régression par moindres carrés ordinaires minimise la somme des carrés des résidus :
 
-$$\hat{\beta} = \underset{\beta}{\arg\min}\ \|y - X\beta\|_2^2$$
+<div>$$\hat{\beta} = \underset{\beta}{\arg\min}\ \|y - X\beta\|_2^2$$</div>
 
 La solution exacte est l'**équation normale** :
 
-$$\hat{\beta} = (X^TX)^{-1}X^T y$$
+<div>$$\hat{\beta} = (X^TX)^{-1}X^T y$$</div>
 
 **Solveur** — La matrice de Gram $G = X^TX \in \mathbb{R}^{p \times p}$ est factorisée via **Cholesky** ($G = LL^T$). Si $G$ n'est pas définie positive, le solveur bascule sur la **décomposition QR** de $X$.
 
 Avec `fit_intercept=True`, $X$ est d'abord augmentée d'une colonne de uns :
 
-$$X_{\text{aug}} = \begin{bmatrix} 1 & x_{1}^T \\ \vdots & \vdots \\ 1 & x_{n}^T \end{bmatrix} \in \mathbb{R}^{n \times (p+1)}$$
+<div>$$X_{\text{aug}} = \begin{bmatrix} 1 & x_{1}^T \\ \vdots & \vdots \\ 1 & x_{n}^T \end{bmatrix} \in \mathbb{R}^{n \times (p+1)}$$</div>
 
 Le biais $\hat{\beta}_0$ et les coefficients $\hat{\beta}_{1:p}$ sont extraits de la solution jointe. Le biais n'est jamais régularisé.
 
 **Score** retourne le coefficient de détermination :
 
-$$R^2 = 1 - \frac{\displaystyle\sum_{i=1}^n (y_i - \hat{y}_i)^2}{\displaystyle\sum_{i=1}^n (y_i - \bar{y})^2}$$
+<div>$$R^2 = 1 - \frac{\displaystyle\sum_{i=1}^n (y_i - \hat{y}_i)^2}{\displaystyle\sum_{i=1}^n (y_i - \bar{y})^2}$$</div>
 
 </div>

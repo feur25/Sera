@@ -78,7 +78,7 @@ print(f"BernoulliNB accuracy: {bnb.score(X_bin, y):.4f}")
 
 All three variants apply **Bayes' theorem** with class-conditional independence:
 
-$$\hat{y} = \underset{k}{\arg\max}\; P(y=k) \prod_{j=1}^p P(x_j \mid y=k)$$
+<div>$$\hat{y} = \underset{k}{\arg\max}\; P(y=k) \prod_{j=1}^p P(x_j \mid y=k)$$</div>
 
 The three models differ only in how $P(x_j \mid y=k)$ is modelled.
 
@@ -88,13 +88,13 @@ The three models differ only in how $P(x_j \mid y=k)$ is modelled.
 
 Assumes each feature is Gaussian within each class. Parameters are estimated from training data:
 
-$$\mu_{kj} = \frac{1}{n_k}\sum_{i: y_i=k} x_{ij}, \qquad \sigma^2_{kj} = \frac{1}{n_k}\sum_{i: y_i=k}(x_{ij} - \mu_{kj})^2 + \varepsilon_{\text{smooth}}$$
+<div>$$\mu_{kj} = \frac{1}{n_k}\sum_{i: y_i=k} x_{ij}, \qquad \sigma^2_{kj} = \frac{1}{n_k}\sum_{i: y_i=k}(x_{ij} - \mu_{kj})^2 + \varepsilon_{\text{smooth}}$$</div>
 
 where $\varepsilon_{\text{smooth}} = \texttt{var\_smoothing} \cdot \max_j \hat{\sigma}^2_j$ prevents zero variances.
 
 Likelihood:
 
-$$P(x_j \mid y=k) = \frac{1}{\sqrt{2\pi\sigma^2_{kj}}} \exp\!\left(-\frac{(x_j - \mu_{kj})^2}{2\sigma^2_{kj}}\right)$$
+<div>$$P(x_j \mid y=k) = \frac{1}{\sqrt{2\pi\sigma^2_{kj}}} \exp\!\left(-\frac{(x_j - \mu_{kj})^2}{2\sigma^2_{kj}}\right)$$</div>
 
 ---
 
@@ -102,7 +102,7 @@ $$P(x_j \mid y=k) = \frac{1}{\sqrt{2\pi\sigma^2_{kj}}} \exp\!\left(-\frac{(x_j -
 
 Designed for count data (e.g. word frequencies). Feature conditional is a **multinomial** distribution:
 
-$$P(x_j \mid y=k) = \frac{N_{kj} + \alpha}{N_k + \alpha p}$$
+<div>$$P(x_j \mid y=k) = \frac{N_{kj} + \alpha}{N_k + \alpha p}$$</div>
 
 where $N_{kj} = \sum_{i:y_i=k} x_{ij}$ is the total count of feature $j$ in class $k$, $N_k = \sum_j N_{kj}$, and $\alpha$ is the Laplace smoothing term.
 
@@ -112,15 +112,15 @@ where $N_{kj} = \sum_{i:y_i=k} x_{ij}$ is the total count of feature $j$ in clas
 
 Designed for binary/boolean feature vectors. For each feature $j$:
 
-$$P(x_j = 1 \mid y=k) = \frac{N_{kj} + \alpha}{n_k + 2\alpha}$$
+<div>$$P(x_j = 1 \mid y=k) = \frac{N_{kj} + \alpha}{n_k + 2\alpha}$$</div>
 
 and the likelihood explicitly accounts for absent features:
 
-$$P(x_j \mid y=k) = P(x_j=1 \mid y=k)^{x_j}\cdot\bigl(1 - P(x_j=1 \mid y=k)\bigr)^{1-x_j}$$
+<div>$$P(x_j \mid y=k) = P(x_j=1 \mid y=k)^{x_j}\cdot\bigl(1 - P(x_j=1 \mid y=k)\bigr)^{1-x_j}$$</div>
 
 All three variants compute the final log-probability in log-space to avoid underflow:
 
-$$\log P(y=k \mid x) \propto \log P(y=k) + \sum_{j=1}^p \log P(x_j \mid y=k)$$
+<div>$$\log P(y=k \mid x) \propto \log P(y=k) + \sum_{j=1}^p \log P(x_j \mid y=k)$$</div>
 
 </div>
 
@@ -202,7 +202,7 @@ print(f"Précision BernoulliNB : {bnb.score(X_bin, y):.4f}")
 
 Les trois variantes appliquent le **théorème de Bayes** avec indépendance conditionnelle aux classes :
 
-$$\hat{y} = \underset{k}{\arg\max}\; P(y=k) \prod_{j=1}^p P(x_j \mid y=k)$$
+<div>$$\hat{y} = \underset{k}{\arg\max}\; P(y=k) \prod_{j=1}^p P(x_j \mid y=k)$$</div>
 
 Les trois modèles diffèrent uniquement dans la façon dont $P(x_j \mid y=k)$ est modélisé.
 
@@ -212,13 +212,13 @@ Les trois modèles diffèrent uniquement dans la façon dont $P(x_j \mid y=k)$ e
 
 Suppose que chaque feature suit une loi gaussienne au sein de chaque classe. Les paramètres sont estimés à partir des données d'entraînement :
 
-$$\mu_{kj} = \frac{1}{n_k}\sum_{i: y_i=k} x_{ij}, \qquad \sigma^2_{kj} = \frac{1}{n_k}\sum_{i: y_i=k}(x_{ij} - \mu_{kj})^2 + \varepsilon_{\text{smooth}}$$
+<div>$$\mu_{kj} = \frac{1}{n_k}\sum_{i: y_i=k} x_{ij}, \qquad \sigma^2_{kj} = \frac{1}{n_k}\sum_{i: y_i=k}(x_{ij} - \mu_{kj})^2 + \varepsilon_{\text{smooth}}$$</div>
 
 où $\varepsilon_{\text{smooth}} = \texttt{var\_smoothing} \cdot \max_j \hat{\sigma}^2_j$ évite les variances nulles.
 
 Vraisemblance :
 
-$$P(x_j \mid y=k) = \frac{1}{\sqrt{2\pi\sigma^2_{kj}}} \exp\!\left(-\frac{(x_j - \mu_{kj})^2}{2\sigma^2_{kj}}\right)$$
+<div>$$P(x_j \mid y=k) = \frac{1}{\sqrt{2\pi\sigma^2_{kj}}} \exp\!\left(-\frac{(x_j - \mu_{kj})^2}{2\sigma^2_{kj}}\right)$$</div>
 
 ---
 
@@ -226,7 +226,7 @@ $$P(x_j \mid y=k) = \frac{1}{\sqrt{2\pi\sigma^2_{kj}}} \exp\!\left(-\frac{(x_j -
 
 Conçu pour les données de comptage (par ex. fréquences de mots). La conditionnelle de feature est une distribution **multinomiale** :
 
-$$P(x_j \mid y=k) = \frac{N_{kj} + \alpha}{N_k + \alpha p}$$
+<div>$$P(x_j \mid y=k) = \frac{N_{kj} + \alpha}{N_k + \alpha p}$$</div>
 
 où $N_{kj} = \sum_{i:y_i=k} x_{ij}$ est le comptage total de la feature $j$ dans la classe $k$, $N_k = \sum_j N_{kj}$, et $\alpha$ est le terme de lissage de Laplace.
 
@@ -236,14 +236,14 @@ où $N_{kj} = \sum_{i:y_i=k} x_{ij}$ est le comptage total de la feature $j$ dan
 
 Conçu pour les vecteurs de features binaires/booléens. Pour chaque feature $j$ :
 
-$$P(x_j = 1 \mid y=k) = \frac{N_{kj} + \alpha}{n_k + 2\alpha}$$
+<div>$$P(x_j = 1 \mid y=k) = \frac{N_{kj} + \alpha}{n_k + 2\alpha}$$</div>
 
 et la vraisemblance prend explicitement en compte les features absentes :
 
-$$P(x_j \mid y=k) = P(x_j=1 \mid y=k)^{x_j}\cdot\bigl(1 - P(x_j=1 \mid y=k)\bigr)^{1-x_j}$$
+<div>$$P(x_j \mid y=k) = P(x_j=1 \mid y=k)^{x_j}\cdot\bigl(1 - P(x_j=1 \mid y=k)\bigr)^{1-x_j}$$</div>
 
 Les trois variantes calculent la log-probabilité finale dans l'espace logarithmique pour éviter le sous-dépassement :
 
-$$\log P(y=k \mid x) \propto \log P(y=k) + \sum_{j=1}^p \log P(x_j \mid y=k)$$
+<div>$$\log P(y=k \mid x) \propto \log P(y=k) + \sum_{j=1}^p \log P(x_j \mid y=k)$$</div>
 
 </div>
