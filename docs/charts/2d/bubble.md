@@ -1,4 +1,4 @@
-# Bubble Chart
+﻿# Bubble Chart
 
 <div class="lang-en">
 
@@ -24,6 +24,8 @@ sp.build_bubble(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.bubble`
 
 ---
 
@@ -170,6 +172,8 @@ sp.build_bubble(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.bubble`
 
 ---
 

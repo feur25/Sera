@@ -1,4 +1,4 @@
-# Bubble Chart 3D
+﻿# Bubble Chart 3D
 
 <div class="lang-en">
 
@@ -24,6 +24,8 @@ sp.build_bubble3d_chart(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.bubble3d`
 
 ---
 
@@ -155,6 +157,8 @@ sp.build_bubble3d_chart(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.bubble3d`
 
 ---
 

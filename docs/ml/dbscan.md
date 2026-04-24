@@ -23,6 +23,8 @@ sp.build_dbscan_chart(
 ) -> Chart
 ```
 
+Aliases: `sp.dbscan`
+
 ---
 
 ## Description
@@ -238,6 +240,8 @@ sp.build_dbscan_chart(
     normalize: bool = False,
 ) -> Chart
 ```
+
+Alias : `sp.dbscan`
 
 ---
 

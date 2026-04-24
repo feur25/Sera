@@ -1,4 +1,4 @@
-# Stacked Bar Chart 3D
+﻿# Stacked Bar Chart 3D
 
 <div class="lang-en">
 
@@ -21,6 +21,8 @@ sp.build_stacked_bar3d_chart(
     z_label: str = "",
 ) -> Chart
 ```
+
+Aliases: `sp.stacked_bar3d`
 
 ---
 
@@ -154,6 +156,8 @@ sp.build_stacked_bar3d_chart(
     z_label: str = "",
 ) -> Chart
 ```
+
+Aliases: `sp.stacked_bar3d`
 
 ---
 

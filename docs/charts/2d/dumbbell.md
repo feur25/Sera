@@ -1,4 +1,4 @@
-# Dumbbell Chart
+﻿# Dumbbell Chart
 
 <div class="lang-en">
 
@@ -23,6 +23,8 @@ sp.build_dumbbell(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.dumbbell`
 
 ---
 
@@ -147,6 +149,8 @@ sp.build_dumbbell(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.dumbbell`
 
 ---
 

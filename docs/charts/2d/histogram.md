@@ -1,4 +1,4 @@
-# Histogram
+﻿# Histogram
 
 <div class="lang-en">
 
@@ -26,6 +26,8 @@ sp.build_histogram(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.hist`, `sp.histogram`
 
 ---
 
@@ -165,6 +167,8 @@ sp.build_histogram(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.hist`, `sp.histogram`
 
 ---
 

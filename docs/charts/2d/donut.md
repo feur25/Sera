@@ -1,4 +1,4 @@
-# Donut Chart
+﻿# Donut Chart
 
 <div class="lang-en">
 
@@ -20,6 +20,8 @@ sp.build_donut_chart(
     legend_position: str = "right",
 ) -> Chart
 ```
+
+Aliases: `sp.donut`, `sp.donut_chart`
 
 ---
 
@@ -144,6 +146,8 @@ sp.build_donut_chart(
     legend_position: str = "right",
 ) -> Chart
 ```
+
+Aliases: `sp.donut`, `sp.donut_chart`
 
 ---
 

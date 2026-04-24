@@ -1,4 +1,4 @@
-# Radar Chart
+﻿# Radar Chart
 
 <div class="lang-en">
 
@@ -19,6 +19,8 @@ sp.build_radar_chart(
     max_val: float | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.radar`, `sp.radar_chart`
 
 ---
 
@@ -138,6 +140,8 @@ sp.build_radar_chart(
     max_val: float | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.radar`, `sp.radar_chart`
 
 ---
 

@@ -1,4 +1,4 @@
-# Lollipop Chart 3D
+﻿# Lollipop Chart 3D
 
 <div class="lang-en">
 
@@ -21,6 +21,8 @@ sp.build_lollipop3d_chart(
     show_text: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.lollipop3d`
 
 ---
 
@@ -134,6 +136,8 @@ sp.build_lollipop3d_chart(
     show_text: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.lollipop3d`
 
 ---
 

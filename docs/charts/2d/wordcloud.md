@@ -1,4 +1,4 @@
-# Word Cloud
+﻿# Word Cloud
 
 <div class="lang-en">
 
@@ -17,6 +17,8 @@ sp.build_wordcloud(
     max_words: int = 200,
 ) -> Chart
 ```
+
+Aliases: `sp.wordcloud`
 
 ---
 
@@ -137,6 +139,8 @@ sp.build_wordcloud(
     max_words: int = 200,
 ) -> Chart
 ```
+
+Aliases: `sp.wordcloud`
 
 ---
 

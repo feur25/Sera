@@ -1,4 +1,4 @@
-# Parallel Coordinates
+﻿# Parallel Coordinates
 
 <div class="lang-en">
 
@@ -19,6 +19,8 @@ sp.build_parallel(
     line_opacity: float = 0.6,
 ) -> Chart
 ```
+
+Aliases: `sp.parallel`
 
 ---
 
@@ -156,6 +158,8 @@ sp.build_parallel(
     line_opacity: float = 0.6,
 ) -> Chart
 ```
+
+Aliases: `sp.parallel`
 
 ---
 

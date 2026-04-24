@@ -80,3 +80,31 @@ pre code {
 }
 .tab-section-code,
 .tab-section-algo { display: block; }
+
+/* ── Page-level Code / Algo tab bar ─────────────────────────────────────── */
+.sp-page-tabs {
+  display: flex;
+  gap: 0;
+  margin: 1em 0 1.5em;
+  border-bottom: 2px solid var(--table-border-color, #444);
+}
+.sp-ptb {
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  border-radius: 4px 4px 0 0;
+  color: var(--fg);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: -2px;
+  padding: 8px 20px;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.sp-ptb:hover { color: var(--links); }
+.sp-ptb.sp-ptb-act {
+  border-bottom-color: var(--links);
+  color: var(--links);
+  font-weight: 600;
+}

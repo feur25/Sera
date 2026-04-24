@@ -1,4 +1,4 @@
-# Ridgeline Chart 3D
+﻿# Ridgeline Chart 3D
 
 <div class="lang-en">
 
@@ -20,6 +20,8 @@ sp.build_ridgeline3d_chart(
     z_label: str = "Density",
 ) -> Chart
 ```
+
+Aliases: `sp.ridgeline3d`
 
 ---
 
@@ -141,6 +143,8 @@ sp.build_ridgeline3d_chart(
     z_label: str = "Density",
 ) -> Chart
 ```
+
+Aliases: `sp.ridgeline3d`
 
 ---
 

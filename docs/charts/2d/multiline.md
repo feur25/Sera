@@ -1,4 +1,4 @@
-# Multi-Line Chart
+﻿# Multi-Line Chart
 
 <div class="lang-en">
 
@@ -26,6 +26,8 @@ sp.build_multiline_chart(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.multiline`
 
 ---
 
@@ -167,6 +169,8 @@ sp.build_multiline_chart(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.multiline`
 
 ---
 

@@ -1,4 +1,4 @@
-# Heatmap
+﻿# Heatmap
 
 <div class="lang-en">
 
@@ -26,6 +26,8 @@ sp.build_heatmap(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.heatmap`
 
 ---
 
@@ -174,6 +176,8 @@ sp.build_heatmap(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.heatmap`
 
 ---
 

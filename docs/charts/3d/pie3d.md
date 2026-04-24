@@ -1,4 +1,4 @@
-# Pie Chart 3D
+﻿# Pie Chart 3D
 
 <div class="lang-en">
 
@@ -19,6 +19,8 @@ sp.build_pie3d_chart(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.pie3d`
 
 ---
 
@@ -128,6 +130,8 @@ sp.build_pie3d_chart(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.pie3d`
 
 ---
 

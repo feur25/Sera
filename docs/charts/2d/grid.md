@@ -1,4 +1,4 @@
-# Grid Layout
+﻿# Grid Layout
 
 <div class="lang-en">
 
@@ -16,6 +16,8 @@ sp.build_grid(
     title: str = "",
 ) -> Chart
 ```
+
+Aliases: `sp.grid`
 
 ---
 
@@ -160,6 +162,8 @@ sp.build_grid(
     title: str = "",
 ) -> Chart
 ```
+
+Aliases: `sp.grid`
 
 ---
 

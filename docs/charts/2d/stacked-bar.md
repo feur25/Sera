@@ -1,4 +1,4 @@
-# Stacked Bar Chart
+﻿# Stacked Bar Chart
 
 <div class="lang-en">
 
@@ -26,6 +26,8 @@ sp.build_stacked_bar(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.stacked_bar`
 
 ---
 
@@ -167,6 +169,8 @@ sp.build_stacked_bar(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.stacked_bar`
 
 ---
 

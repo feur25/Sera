@@ -1,4 +1,4 @@
-# Violin Chart
+﻿# Violin Chart
 
 <div class="lang-en">
 
@@ -21,6 +21,8 @@ sp.build_violin(
     bandwidth: float = 1.0,
 ) -> Chart
 ```
+
+Aliases: `sp.violin`
 
 ---
 
@@ -162,6 +164,8 @@ sp.build_violin(
     bandwidth: float = 1.0,
 ) -> Chart
 ```
+
+Aliases: `sp.violin`
 
 ---
 

@@ -1,4 +1,4 @@
-# Slope Chart
+﻿# Slope Chart
 
 <div class="lang-en">
 
@@ -21,6 +21,8 @@ sp.build_slope(
     background: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.slope`
 
 ---
 
@@ -150,6 +152,8 @@ sp.build_slope(
     background: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.slope`
 
 ---
 

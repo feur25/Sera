@@ -1,4 +1,4 @@
-# Box Plot
+﻿# Box Plot
 
 <div class="lang-en">
 
@@ -22,6 +22,8 @@ sp.build_boxplot(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.boxplot`, `sp.box_plot`
 
 ---
 
@@ -174,6 +176,8 @@ sp.build_boxplot(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.boxplot`, `sp.box_plot`
 
 ---
 

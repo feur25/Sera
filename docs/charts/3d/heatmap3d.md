@@ -1,4 +1,4 @@
-# Heatmap 3D
+﻿# Heatmap 3D
 
 <div class="lang-en">
 
@@ -22,6 +22,8 @@ sp.build_heatmap3d_chart(
     z_label: str = "",
 ) -> Chart
 ```
+
+Aliases: `sp.heatmap3d`
 
 ---
 
@@ -147,6 +149,8 @@ sp.build_heatmap3d_chart(
     z_label: str = "",
 ) -> Chart
 ```
+
+Aliases: `sp.heatmap3d`
 
 ---
 

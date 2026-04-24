@@ -1,4 +1,4 @@
-# Histogram Overlay
+﻿# Histogram Overlay
 
 <div class="lang-en">
 
@@ -25,6 +25,8 @@ sp.build_histogram_overlay(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.histogram_overlay`
 
 ---
 
@@ -165,6 +167,8 @@ sp.build_histogram_overlay(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.histogram_overlay`
 
 ---
 

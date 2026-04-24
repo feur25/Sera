@@ -1,4 +1,4 @@
-# Horizontal Bar Chart
+﻿# Horizontal Bar Chart
 
 <div class="lang-en">
 
@@ -27,6 +27,8 @@ sp.build_hbar(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.hbar`, `sp.barh`, `sp.horizontal_bar`
 
 ---
 
@@ -162,6 +164,8 @@ sp.build_hbar(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.hbar`, `sp.barh`, `sp.horizontal_bar`
 
 ---
 

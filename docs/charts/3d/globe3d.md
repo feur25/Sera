@@ -1,4 +1,4 @@
-# Globe 3D
+﻿# Globe 3D
 
 <div class="lang-en">
 
@@ -22,6 +22,8 @@ sp.build_globe3d_chart(
     show_graticule: bool = True,
 ) -> Chart
 ```
+
+Aliases: `sp.globe3d`
 
 ---
 
@@ -146,6 +148,8 @@ sp.build_globe3d_chart(
     show_graticule: bool = True,
 ) -> Chart
 ```
+
+Aliases: `sp.globe3d`
 
 ---
 

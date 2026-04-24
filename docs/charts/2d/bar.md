@@ -1,4 +1,4 @@
-# Bar Chart
+﻿# Bar Chart
 
 <div class="lang-en">
 
@@ -29,6 +29,8 @@ sp.build_bar_chart(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.bar`, `sp.bar_chart`, `sp.bars`
 
 ---
 
@@ -224,6 +226,8 @@ sp.build_bar_chart(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.bar`, `sp.bar_chart`, `sp.bars`
 
 ---
 

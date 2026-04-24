@@ -1,4 +1,4 @@
-# KDE Chart
+﻿# KDE Chart
 
 <div class="lang-en">
 
@@ -22,6 +22,8 @@ sp.build_kde_chart(
     series_names: list[str] | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.kde`
 
 ---
 
@@ -156,6 +158,8 @@ sp.build_kde_chart(
     series_names: list[str] | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.kde`
 
 ---
 

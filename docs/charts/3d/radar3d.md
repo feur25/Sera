@@ -1,4 +1,4 @@
-# Radar Chart 3D
+﻿# Radar Chart 3D
 
 <div class="lang-en">
 
@@ -19,6 +19,8 @@ sp.build_radar3d_chart(
     fill_opacity: float = 0.25,
 ) -> Chart
 ```
+
+Aliases: `sp.radar3d`
 
 ---
 
@@ -133,6 +135,8 @@ sp.build_radar3d_chart(
     fill_opacity: float = 0.25,
 ) -> Chart
 ```
+
+Aliases: `sp.radar3d`
 
 ---
 

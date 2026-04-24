@@ -1,4 +1,4 @@
-# Bubble Map
+﻿# Bubble Map
 
 <div class="lang-en">
 
@@ -24,6 +24,8 @@ sp.build_bubble_map(
     max_bubble_size: float = 50.0,
 ) -> Chart
 ```
+
+Aliases: `sp.bubble_map`
 
 ---
 
@@ -159,6 +161,8 @@ sp.build_bubble_map(
     max_bubble_size: float = 50.0,
 ) -> Chart
 ```
+
+Aliases: `sp.bubble_map`
 
 ---
 

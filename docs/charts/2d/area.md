@@ -1,4 +1,4 @@
-# Area Chart
+﻿# Area Chart
 
 <div class="lang-en">
 
@@ -23,6 +23,8 @@ sp.build_area_chart(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.area`, `sp.area_chart`
 
 ---
 
@@ -159,6 +161,8 @@ sp.build_area_chart(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.area`, `sp.area_chart`
 
 ---
 

@@ -1,4 +1,4 @@
-# Bar Chart 3D
+﻿# Bar Chart 3D
 
 <div class="lang-en">
 
@@ -21,6 +21,8 @@ sp.build_bar3d_chart(
     show_text: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.bar3d`
 
 ---
 
@@ -146,6 +148,8 @@ sp.build_bar3d_chart(
     show_text: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.bar3d`
 
 ---
 

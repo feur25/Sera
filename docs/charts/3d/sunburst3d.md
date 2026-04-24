@@ -1,4 +1,4 @@
-# Sunburst Chart 3D
+﻿# Sunburst Chart 3D
 
 <div class="lang-en">
 
@@ -19,6 +19,8 @@ sp.build_sunburst3d_chart(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.sunburst3d`
 
 ---
 
@@ -138,6 +140,8 @@ sp.build_sunburst3d_chart(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.sunburst3d`
 
 ---
 

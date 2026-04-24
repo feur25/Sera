@@ -1,4 +1,4 @@
-# Waterfall Chart
+﻿# Waterfall Chart
 
 <div class="lang-en">
 
@@ -23,6 +23,8 @@ sp.build_waterfall(
     gridlines: bool = True,
 ) -> Chart
 ```
+
+Aliases: `sp.waterfall`
 
 ---
 
@@ -149,6 +151,8 @@ sp.build_waterfall(
     gridlines: bool = True,
 ) -> Chart
 ```
+
+Aliases: `sp.waterfall`
 
 ---
 

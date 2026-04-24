@@ -1,4 +1,4 @@
-# Sunburst Chart
+﻿# Sunburst Chart
 
 <div class="lang-en">
 
@@ -18,6 +18,8 @@ sp.build_sunburst(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.sunburst`
 
 ---
 
@@ -145,6 +147,8 @@ sp.build_sunburst(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.sunburst`
 
 ---
 

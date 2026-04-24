@@ -1,4 +1,4 @@
-# Funnel Chart 3D
+﻿# Funnel Chart 3D
 
 <div class="lang-en">
 
@@ -18,6 +18,8 @@ sp.build_funnel3d_chart(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.funnel3d`
 
 ---
 
@@ -124,6 +126,8 @@ sp.build_funnel3d_chart(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.funnel3d`
 
 ---
 

@@ -1,4 +1,4 @@
-# Line Chart 3D
+﻿# Line Chart 3D
 
 <div class="lang-en">
 
@@ -23,6 +23,8 @@ sp.build_line3d_chart(
     show_points: bool = True,
 ) -> Chart
 ```
+
+Aliases: `sp.line3d`
 
 ---
 
@@ -166,6 +168,8 @@ sp.build_line3d_chart(
     show_points: bool = True,
 ) -> Chart
 ```
+
+Aliases: `sp.line3d`
 
 ---
 

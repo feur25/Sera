@@ -1,4 +1,4 @@
-# Bullet Chart
+﻿# Bullet Chart
 
 <div class="lang-en">
 
@@ -21,6 +21,8 @@ sp.build_bullet(
     palette: list[int] | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.bullet`
 
 ---
 
@@ -143,6 +145,8 @@ sp.build_bullet(
     palette: list[int] | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.bullet`
 
 ---
 

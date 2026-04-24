@@ -1,4 +1,4 @@
-# Scatter Chart
+﻿# Scatter Chart
 
 <div class="lang-en">
 
@@ -31,6 +31,8 @@ sp.build_scatter_chart(
     regression_type: str = "linear",
 ) -> Chart
 ```
+
+Aliases: `sp.scatter`, `sp.scatter_chart`
 
 ---
 
@@ -204,6 +206,8 @@ sp.build_scatter_chart(
     regression_type: str = "linear",
 ) -> Chart
 ```
+
+Aliases: `sp.scatter`, `sp.scatter_chart`
 
 ---
 

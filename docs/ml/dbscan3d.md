@@ -24,6 +24,8 @@ sp.build_dbscan_chart_3d(
 ) -> Chart
 ```
 
+Aliases: `sp.dbscan3d`
+
 ---
 
 ## Description

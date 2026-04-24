@@ -1,4 +1,4 @@
-# Violin Chart 3D
+﻿# Violin Chart 3D
 
 <div class="lang-en">
 
@@ -20,6 +20,8 @@ sp.build_violin3d_chart(
     z_label: str = "Density",
 ) -> Chart
 ```
+
+Aliases: `sp.violin3d`
 
 ---
 
@@ -140,6 +142,8 @@ sp.build_violin3d_chart(
     z_label: str = "Density",
 ) -> Chart
 ```
+
+Aliases: `sp.violin3d`
 
 ---
 

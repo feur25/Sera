@@ -1,4 +1,4 @@
-# Pie Chart
+﻿# Pie Chart
 
 <div class="lang-en">
 
@@ -19,6 +19,8 @@ sp.build_pie_chart(
     legend_position: str = "right",
 ) -> Chart
 ```
+
+Aliases: `sp.pie`, `sp.pie_chart`
 
 ---
 
@@ -141,6 +143,8 @@ sp.build_pie_chart(
     legend_position: str = "right",
 ) -> Chart
 ```
+
+Aliases: `sp.pie`, `sp.pie_chart`
 
 ---
 

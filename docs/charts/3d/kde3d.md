@@ -1,4 +1,4 @@
-# KDE Chart 3D
+﻿# KDE Chart 3D
 
 <div class="lang-en">
 
@@ -21,6 +21,8 @@ sp.build_kde3d_chart(
     z_label: str = "Density",
 ) -> Chart
 ```
+
+Aliases: `sp.kde3d`
 
 ---
 
@@ -156,6 +158,8 @@ sp.build_kde3d_chart(
     z_label: str = "Density",
 ) -> Chart
 ```
+
+Aliases: `sp.kde3d`
 
 ---
 

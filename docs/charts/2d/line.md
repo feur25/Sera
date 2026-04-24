@@ -1,4 +1,4 @@
-# Line Chart
+﻿# Line Chart
 
 <div class="lang-en">
 
@@ -26,6 +26,8 @@ sp.build_line_chart(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.line`, `sp.line_chart`
 
 ---
 
@@ -193,6 +195,8 @@ sp.build_line_chart(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.line`, `sp.line_chart`
 
 ---
 

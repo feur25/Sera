@@ -1,4 +1,4 @@
-# Scatter 3D
+﻿# Scatter 3D
 
 <div class="lang-en">
 
@@ -24,6 +24,8 @@ sp.build_scatter3d_chart(
     palette: list[int] | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.scatter3d`
 
 ---
 
@@ -185,6 +187,8 @@ sp.build_scatter3d_chart(
     palette: list[int] | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.scatter3d`
 
 ---
 

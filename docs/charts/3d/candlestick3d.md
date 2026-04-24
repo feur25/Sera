@@ -1,4 +1,4 @@
-# Candlestick Chart 3D
+﻿# Candlestick Chart 3D
 
 <div class="lang-en">
 
@@ -24,6 +24,8 @@ sp.build_candlestick3d_chart(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.candlestick3d`
 
 ---
 
@@ -147,6 +149,8 @@ sp.build_candlestick3d_chart(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.candlestick3d`
 
 ---
 

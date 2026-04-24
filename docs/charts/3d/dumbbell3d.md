@@ -1,4 +1,4 @@
-# Dumbbell Chart 3D
+﻿# Dumbbell Chart 3D
 
 <div class="lang-en">
 
@@ -22,6 +22,8 @@ sp.build_dumbbell3d_chart(
     show_text: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.dumbbell3d`
 
 ---
 
@@ -137,6 +139,8 @@ sp.build_dumbbell3d_chart(
     show_text: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.dumbbell3d`
 
 ---
 

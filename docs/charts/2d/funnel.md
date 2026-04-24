@@ -1,4 +1,4 @@
-# Funnel Chart
+﻿# Funnel Chart
 
 <div class="lang-en">
 
@@ -18,6 +18,8 @@ sp.build_funnel(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.funnel`
 
 ---
 
@@ -136,6 +138,8 @@ sp.build_funnel(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.funnel`
 
 ---
 

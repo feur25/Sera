@@ -1,4 +1,4 @@
-# Treemap
+﻿# Treemap
 
 <div class="lang-en">
 
@@ -18,6 +18,8 @@ sp.build_treemap(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.treemap`
 
 ---
 
@@ -147,6 +149,8 @@ sp.build_treemap(
     hover_json: str | None = None,
 ) -> Chart
 ```
+
+Aliases: `sp.treemap`
 
 ---
 

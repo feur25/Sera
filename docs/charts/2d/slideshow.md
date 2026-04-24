@@ -1,4 +1,4 @@
-# Slideshow
+﻿# Slideshow
 
 <div class="lang-en">
 
@@ -16,6 +16,8 @@ sp.build_slideshow(
     interval_ms: int = 3000,
 ) -> Chart
 ```
+
+Aliases: `sp.slideshow`
 
 ---
 
@@ -151,6 +153,8 @@ sp.build_slideshow(
     interval_ms: int = 3000,
 ) -> Chart
 ```
+
+Aliases: `sp.slideshow`
 
 ---
 

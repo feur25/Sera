@@ -1,4 +1,4 @@
-# Gauge Chart
+﻿# Gauge Chart
 
 <div class="lang-en">
 
@@ -21,6 +21,8 @@ sp.build_gauge(
     label: str = "",
 ) -> Chart
 ```
+
+Aliases: `sp.gauge`
 
 ---
 
@@ -142,6 +144,8 @@ sp.build_gauge(
     label: str = "",
 ) -> Chart
 ```
+
+Aliases: `sp.gauge`
 
 ---
 

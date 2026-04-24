@@ -1,4 +1,4 @@
-# Lollipop Chart
+﻿# Lollipop Chart
 
 <div class="lang-en">
 
@@ -25,6 +25,8 @@ sp.build_lollipop_chart(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.lollipop`
 
 ---
 
@@ -160,6 +162,8 @@ sp.build_lollipop_chart(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.lollipop`
 
 ---
 

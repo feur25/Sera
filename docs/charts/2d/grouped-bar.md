@@ -1,4 +1,4 @@
-# Grouped Bar Chart
+﻿# Grouped Bar Chart
 
 <div class="lang-en">
 
@@ -26,6 +26,8 @@ sp.build_grouped_bar(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.grouped_bar`
 
 ---
 
@@ -198,6 +200,8 @@ sp.build_grouped_bar(
     no_y_axis: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.grouped_bar`
 
 ---
 

@@ -25,7 +25,7 @@ sp.build_kmeans_chart(
 ) -> Chart
 ```
 
-Alias: `sp.kmeans(...)`
+Aliases: `sp.kmeans`, `sp.kmeans_chart`
 
 ---
 
@@ -205,7 +205,7 @@ sp.build_kmeans_chart(
 ) -> Chart
 ```
 
-Alias : `sp.kmeans(...)`
+Alias : `sp.kmeans`, `sp.kmeans_chart`
 
 ---
 

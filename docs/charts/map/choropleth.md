@@ -1,4 +1,4 @@
-# Choropleth Map
+﻿# Choropleth Map
 
 <div class="lang-en">
 
@@ -22,6 +22,8 @@ sp.build_choropleth(
     null_color: int = 0xdddddd,
 ) -> Chart
 ```
+
+Aliases: `sp.choropleth`
 
 ---
 
@@ -139,6 +141,8 @@ sp.build_choropleth(
     null_color: int = 0xdddddd,
 ) -> Chart
 ```
+
+Aliases: `sp.choropleth`
 
 ---
 

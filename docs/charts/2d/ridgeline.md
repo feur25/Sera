@@ -1,4 +1,4 @@
-# Ridgeline Chart
+﻿# Ridgeline Chart
 
 <div class="lang-en">
 
@@ -21,6 +21,8 @@ sp.build_ridgeline_chart(
     gridlines: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.ridgeline`
 
 ---
 
@@ -158,6 +160,8 @@ sp.build_ridgeline_chart(
     gridlines: bool = False,
 ) -> Chart
 ```
+
+Aliases: `sp.ridgeline`
 
 ---
 
