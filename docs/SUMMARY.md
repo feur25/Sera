@@ -35,7 +35,6 @@
   - [Ridgeline](charts/2d/ridgeline.md)
   - [Radar](charts/2d/radar.md)
   - [Bubble](charts/2d/bubble.md)
-  - [Scatter Plot](charts/2d/scatter.md)
   - [Slope Chart](charts/2d/slope.md)
   - [Funnel](charts/2d/funnel.md)
   - [Waterfall](charts/2d/waterfall.md)
