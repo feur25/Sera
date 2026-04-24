@@ -1,0 +1,102 @@
+[dbscan-class.md:163] text-with-underscore:
+  |N_\epsilon(p)| \geq \text{min\_samples}
+
+[dbscan-class.md:219] text-with-underscore:
+  |N_\epsilon(p)| \geq \text{min\_samples}
+
+[dbscan.md:194] text-with-underscore:
+  |N_\epsilon(p)| \geq \text{min\_samples}
+
+[dbscan.md:401] text-with-underscore:
+  |N_\epsilon(p)| \geq \text{min\_samples}
+
+[dbscan3d.md:152] text-with-underscore:
+  |N_\epsilon(p)| \geq \text{min\_samples}
+
+[dbscan3d.md:202] text-with-underscore:
+  |N_\epsilon(p)| \geq \text{min\_samples}
+
+[decision-tree.md:77] subscript-no-brace:
+  H(t) = -\sum_{k=1}^K p_{tk} \log_2 p_{tk}
+
+[decision-tree.md:175] subscript-no-brace:
+  H(t) = -\sum_{k=1}^K p_{tk} \log_2 p_{tk}
+
+[elastic-net.md:70] subscript-no-brace:
+  \hat{\beta} = \underset{\beta}{\arg\min}\ \frac{1}{2n}\|y - X\beta\|_2^2 + \alpha\!\left[\rho\|\beta\|_1 + \frac{1-\rho}{2}\|\beta\|_2^2\right]
+
+[elastic-net.md:76] subscript-no-brace:
+  \hat{\beta}_j \leftarrow \frac{S\!\left(X_j^T r_j / n,\ \alpha\rho\right)}{\|X_j\|_2^2 / n + \alpha(1-\rho)}
+
+[elastic-net.md:157] subscript-no-brace:
+  \hat{\beta} = \underset{\beta}{\arg\min}\ \frac{1}{2n}\|y - X\beta\|_2^2 + \alpha\!\left[\rho\|\beta\|_1 + \frac{1-\rho}{2}\|\beta\|_2^2\right]
+
+[elastic-net.md:163] subscript-no-brace:
+  \hat{\beta}_j \leftarrow \frac{S\!\left(X_j^T r_j / n,\ \alpha\rho\right)}{\|X_j\|_2^2 / n + \alpha(1-\rho)}
+
+[gradient-boosting.md:71] subscript-no-brace:
+  F_0(x) = \underset{\gamma}{\arg\min} \sum_{i=1}^n \mathcal{L}(y_i, \gamma)
+
+[gradient-boosting.md:167] subscript-no-brace:
+  F_0(x) = \underset{\gamma}{\arg\min} \sum_{i=1}^n \mathcal{L}(y_i, \gamma)
+
+[grid-search.md:220] subscript-no-brace:
+  r_0 = \max\!\left(\left\lfloor\frac{n}{\text{factor}^{n_{\text{iters}}}}\right\rfloor,\, 1\right) \quad\text{where}\quad n_{\text{iters}} = \lceil\log_{\text{factor}}(C)\rceil
+
+[grid-search.md:464] subscript-no-brace:
+  r_0 = \max\!\left(\left\lfloor\frac{n}{\text{factor}^{n_{\text{iters}}}}\right\rfloor,\, 1\right) \quad\text{où}\quad n_{\text{iters}} = \lceil\log_{\text{factor}}(C)\rceil
+
+[knn.md:63] subscript-no-brace:
+  d(x, x') = \|x - x'\|_2 = \sqrt{\sum_{j=1}^p (x_j - x'_j)^2}
+
+[knn.md:150] subscript-no-brace:
+  d(x, x') = \|x - x'\|_2 = \sqrt{\sum_{j=1}^p (x_j - x'_j)^2}
+
+[lasso.md:64] subscript-no-brace:
+  \hat{\beta} = \underset{\beta}{\arg\min}\ \frac{1}{2n}\|y - X\beta\|_2^2 + \alpha\|\beta\|_1
+
+[lasso.md:70] subscript-no-brace:
+  \hat{\beta}_j \leftarrow \frac{S\!\left(X_j^T r_j / n,\ \alpha\right)}{\|X_j\|_2^2 / n}
+
+[lasso.md:143] subscript-no-brace:
+  \hat{\beta} = \underset{\beta}{\arg\min}\ \frac{1}{2n}\|y - X\beta\|_2^2 + \alpha\|\beta\|_1
+
+[lasso.md:149] subscript-no-brace:
+  \hat{\beta}_j \leftarrow \frac{S\!\left(X_j^T r_j / n,\ \alpha\right)}{\|X_j\|_2^2 / n}
+
+[linear-regression.md:58] subscript-no-brace:
+  \hat{\beta} = \underset{\beta}{\arg\min}\ \|y - X\beta\|_2^2
+
+[linear-regression.md:133] subscript-no-brace:
+  \hat{\beta} = \underset{\beta}{\arg\min}\ \|y - X\beta\|_2^2
+
+[logistic-regression.md:70] subscript-no-brace:
+  \sigma(z) = \frac{1}{1 + e^{-z}}, \qquad z = x^T\beta + \beta_0
+
+[logistic-regression.md:74] subscript-no-brace:
+  \mathcal{L}(\beta) = -\frac{1}{n}\sum_{i=1}^n \left[y_i \log \hat{p}_i + (1-y_i)\log(1-\hat{p}_i)\right] + \frac{1}{2C}\|\beta\|_2^2
+
+[logistic-regression.md:155] subscript-no-brace:
+  \sigma(z) = \frac{1}{1 + e^{-z}}, \qquad z = x^T\beta + \beta_0
+
+[logistic-regression.md:159] subscript-no-brace:
+  \mathcal{L}(\beta) = -\frac{1}{n}\sum_{i=1}^n \left[y_i \log \hat{p}_i + (1-y_i)\log(1-\hat{p}_i)\right] + \frac{1}{2C}\|\beta\|_2^2
+
+[random-forest.md:75] subscript-no-brace:
+  m = \begin{cases} \lfloor\sqrt{p}\rfloor & \texttt{max\_features="sqrt"} \\ \lfloor\log_2 p\rfloor & \texttt{max\_features="log2"} \\ p & \texttt{max\_features="all"} \end{cases}
+
+[random-forest.md:167] subscript-no-brace:
+  m = \begin{cases} \lfloor\sqrt{p}\rfloor & \texttt{max\_features="sqrt"} \\ \lfloor\log_2 p\rfloor & \texttt{max\_features="log2"} \\ p & \texttt{max\_features="all"} \end{cases}
+
+[ridge.md:71] subscript-no-brace:
+  \hat{\beta} = \underset{\beta}{\arg\min}\ \|y - X\beta\|_2^2 + \alpha\|\beta\|_2^2
+
+[ridge.md:81] subscript-no-brace:
+  \hat{\beta} = (X^TX + \alpha I_p)^{-1}X^T y, \qquad \hat{\beta}_0 = \bar{y} - \bar{x}^T\hat{\beta}
+
+[ridge.md:159] subscript-no-brace:
+  \hat{\beta} = \underset{\beta}{\arg\min}\ \|y - X\beta\|_2^2 + \alpha\|\beta\|_2^2
+
+[ridge.md:169] subscript-no-brace:
+  \hat{\beta} = (X^TX + \alpha I_p)^{-1}X^T y, \qquad \hat{\beta}_0 = \bar{y} - \bar{x}^T\hat{\beta}
+
