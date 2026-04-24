@@ -2,11 +2,10 @@
 
 [Introduction](introduction.md)
 
-- [Getting Started](getting-started/index.md)
-  - [Installation](getting-started/installation.md)
-  - [Quick Start](getting-started/quickstart.md)
-  - [Chart Object](getting-started/chart-object.md)
-  - [Chart Methods](getting-started/chart-methods.md)
+- [Installation](getting-started/installation.md)
+- [Quick Start](getting-started/quickstart.md)
+- [Chart Object](getting-started/chart-object.md)
+- [Chart Methods](getting-started/chart-methods.md)
 
 - [Charts](charts/index.md)
   - [2D Charts](charts/2d/index.md)
@@ -121,5 +120,4 @@
 
 - [API Reference](api/index.md)
 
-- [About](about/index.md)
-  - [Support & Contact](about/support.md)
+- [Support & Contact](about/support.md)
