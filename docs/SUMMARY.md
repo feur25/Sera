@@ -19,9 +19,9 @@
   - [Bar Chart](charts/2d/bar.md)
   - [Horizontal Bar](charts/2d/hbar.md)
   - [Line Chart](charts/2d/line.md)
-  - [Scatter Chart](charts/2d/scatter.md)
   - [Area Chart](charts/2d/area.md)
   - [Multi-line Chart](charts/2d/multiline.md)
+  - [Scatter Chart](charts/2d/scatter.md)
   - [Histogram](charts/2d/histogram.md)
   - [Histogram Overlay](charts/2d/histogram-overlay.md)
   - [Grouped Bar](charts/2d/grouped-bar.md)
@@ -108,10 +108,8 @@
   - [PCA / TruncatedSVD](ml/decomposition.md)
 - [Model Selection](ml/selection-index.md)
   - [GridSearchCV / RandomizedSearchCV / Halving](ml/grid-search.md)
-- [Evaluation & Metrics](ml/evaluation-index.md)
-  - [Metrics](ml/metrics.md)
-  - [Train / Test Split](ml/train-test-split.md)
-- [AutoML](ml/automl.md)
+- [Metrics](ml/metrics.md)
+- [Train / Test Split](ml/train-test-split.md)
 
 ---
 
@@ -120,13 +118,13 @@
 - [Background](config/background.md)
 - [Palette](config/palette.md)
 - [Hover & Tooltip](config/hover.md)
-- [Animation](config/auto-display.md)
+- [Auto Display](config/auto-display.md)
 - [Facet](config/facet.md)
 - [Downsampling](config/downsample.md)
 - [Streaming](config/streaming.md)
 - [Diff Mode](config/diff.md)
 - [Drift Detection](config/drift.md)
-- [AutoML Config](config/automl.md)
+- [AutoML](config/automl.md)
 - [Export](config/export.md)
 - [ML Persistence](config/ml-persistence.md)
 - [Pickle Support](config/pickle.md)
@@ -144,47 +142,6 @@
 # API Reference
 
 - [Full API Index](api/index.md)
-
----
-
-# About
-
-- [Support & Contact](about/support.md)
-
----
-
-# Configuration
-
-- [Display & Rendering](config/background.md)
-  - [Auto Display](config/auto-display.md)
-  - [Palette](config/palette.md)
-  - [Export (SVG / PNG / Data URL)](config/export.md)
-  - [CSP-safe Mode](config/csp.md)
-
-- [Interactivity](config/hover.md)
-  - [Faceting / Small Multiples](config/facet.md)
-  - [Live Streaming](config/streaming.md)
-
-- [Data Handling](config/downsample.md)
-  - [Chart Diff](config/diff.md)
-  - [Pickle / Serialization](config/pickle.md)
-  - [Accessibility (a11y)](config/a11y.md)
-
-- [ML & Advanced](config/automl.md)
-  - [Drift Detection](config/drift.md)
-  - [ML Persistence](config/ml-persistence.md)
-
----
-
-# Tooling
-
-- [VS Code Extension](tooling/vscode.md)
-
----
-
-# API Reference
-
-- [Full Function Index](api/index.md)
 
 ---
 
