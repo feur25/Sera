@@ -2151,6 +2151,412 @@ impl_doc!(PyLinearSVC, crate::bindings::commands::docs::DOC_LINEAR_SVC);
 impl_doc!(PyLinearSVR, crate::bindings::commands::docs::DOC_LINEAR_SVR);
 impl_doc!(PyRidgeClassifier, crate::bindings::commands::docs::DOC_RIDGE_CLASSIFIER);
 
+#[pyclass(module = "seraplot", name = "OneHotEncoder")]
+pub struct PyOneHotEncoder { inner: crate::ml::preprocessing::encoders::OneHotEncoder, p: usize }
+
+#[pymethods]
+impl PyOneHotEncoder {
+    #[new]
+    fn py_new() -> Self { Self { inner: crate::ml::preprocessing::encoders::OneHotEncoder::new(), p: 0 } }
+    fn fit(&mut self, x: Vec<Vec<String>>) -> PyResult<()> {
+        let n = x.len();
+        let p = if n == 0 { 0 } else { x[0].len() };
+        self.p = p;
+        let flat: Vec<String> = x.into_iter().flatten().collect();
+        self.inner.fit(&flat, n, p);
+        Ok(())
+    }
+    fn transform(&self, py: Python<'_>, x: Vec<Vec<String>>) -> PyResult<PyObject> {
+        let n = x.len();
+        let flat: Vec<String> = x.into_iter().flatten().collect();
+        let out = self.inner.transform(&flat, n, self.p);
+        flat_to_np2d(py, out, n, self.inner.n_output_features())
+    }
+    fn fit_transform(&mut self, py: Python<'_>, x: Vec<Vec<String>>) -> PyResult<PyObject> {
+        self.fit(x.clone())?;
+        self.transform(py, x)
+    }
+    #[getter] fn categories_(&self) -> Vec<Vec<String>> { self.inner.categories.clone() }
+    #[getter] fn n_features_out_(&self) -> usize { self.inner.n_output_features() }
+    fn __repr__(&self) -> String { "OneHotEncoder()".to_string() }
+}
+
+#[pyclass(module = "seraplot", name = "OrdinalEncoder")]
+pub struct PyOrdinalEncoder { inner: crate::ml::preprocessing::encoders::OrdinalEncoder, p: usize }
+
+#[pymethods]
+impl PyOrdinalEncoder {
+    #[new]
+    fn py_new() -> Self { Self { inner: crate::ml::preprocessing::encoders::OrdinalEncoder::new(), p: 0 } }
+    fn fit(&mut self, x: Vec<Vec<String>>) -> PyResult<()> {
+        let n = x.len();
+        let p = if n == 0 { 0 } else { x[0].len() };
+        self.p = p;
+        let flat: Vec<String> = x.into_iter().flatten().collect();
+        self.inner.fit(&flat, n, p);
+        Ok(())
+    }
+    fn transform(&self, py: Python<'_>, x: Vec<Vec<String>>) -> PyResult<PyObject> {
+        let n = x.len();
+        let flat: Vec<String> = x.into_iter().flatten().collect();
+        let out = self.inner.transform(&flat, n, self.p);
+        flat_to_np2d(py, out, n, self.p)
+    }
+    fn fit_transform(&mut self, py: Python<'_>, x: Vec<Vec<String>>) -> PyResult<PyObject> {
+        self.fit(x.clone())?;
+        self.transform(py, x)
+    }
+    #[getter] fn categories_(&self) -> Vec<Vec<String>> { self.inner.categories.clone() }
+    fn __repr__(&self) -> String { "OrdinalEncoder()".to_string() }
+}
+
+#[pyclass(module = "seraplot", name = "SimpleImputer")]
+pub struct PySimpleImputer { inner: crate::ml::preprocessing::transformers::SimpleImputer }
+
+#[pymethods]
+impl PySimpleImputer {
+    #[new]
+    #[pyo3(signature = (strategy="mean", fill_value=0.0))]
+    fn py_new(strategy: &str, fill_value: f64) -> Self {
+        Self { inner: crate::ml::preprocessing::transformers::SimpleImputer::new(strategy, fill_value) }
+    }
+    fn fit(&mut self, x: &PyAny) -> PyResult<()> {
+        let (xf, n, p) = extract_flat(x)?;
+        self.inner.fit(&xf, n, p);
+        Ok(())
+    }
+    fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
+        let (xf, n, p) = extract_flat(x)?;
+        let out = self.inner.transform(&xf, n, p);
+        flat_to_np2d(py, out, n, p)
+    }
+    fn fit_transform(&mut self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
+        let (xf, n, p) = extract_flat(x)?;
+        let out = self.inner.fit_transform(&xf, n, p);
+        flat_to_np2d(py, out, n, p)
+    }
+    #[getter] fn statistics_(&self) -> Vec<f64> { self.inner.statistics.clone() }
+    #[getter] fn strategy_(&self) -> String { self.inner.strategy.clone() }
+    fn __repr__(&self) -> String { format!("SimpleImputer(strategy='{}')", self.inner.strategy) }
+}
+
+#[pyclass(module = "seraplot", name = "PolynomialFeatures")]
+pub struct PyPolynomialFeatures { inner: crate::ml::preprocessing::transformers::PolynomialFeatures }
+
+#[pymethods]
+impl PyPolynomialFeatures {
+    #[new]
+    #[pyo3(signature = (degree=2, interaction_only=false, include_bias=true))]
+    fn py_new(degree: usize, interaction_only: bool, include_bias: bool) -> Self {
+        Self { inner: crate::ml::preprocessing::transformers::PolynomialFeatures::new(degree, interaction_only, include_bias) }
+    }
+    fn fit(&mut self, x: &PyAny) -> PyResult<()> {
+        let (xf, n, p) = extract_flat(x)?;
+        self.inner.fit(&xf, n, p);
+        Ok(())
+    }
+    fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
+        let (xf, n, p) = extract_flat(x)?;
+        let cols = self.inner.n_output_features();
+        let out = self.inner.transform(&xf, n, p);
+        flat_to_np2d(py, out, n, cols)
+    }
+    fn fit_transform(&mut self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
+        let (xf, n, p) = extract_flat(x)?;
+        let out = self.inner.fit_transform(&xf, n, p);
+        let cols = self.inner.n_output_features();
+        flat_to_np2d(py, out, n, cols)
+    }
+    #[getter] fn n_output_features_(&self) -> usize { self.inner.n_output_features() }
+    #[getter] fn degree_(&self) -> usize { self.inner.degree }
+    fn __repr__(&self) -> String { format!("PolynomialFeatures(degree={})", self.inner.degree) }
+}
+
+#[pyclass(module = "seraplot", name = "KBinsDiscretizer")]
+pub struct PyKBinsDiscretizer { inner: crate::ml::preprocessing::transformers::KBinsDiscretizer }
+
+#[pymethods]
+impl PyKBinsDiscretizer {
+    #[new]
+    #[pyo3(signature = (n_bins=5, strategy="quantile"))]
+    fn py_new(n_bins: usize, strategy: &str) -> Self {
+        Self { inner: crate::ml::preprocessing::transformers::KBinsDiscretizer::new(n_bins, strategy) }
+    }
+    fn fit(&mut self, x: &PyAny) -> PyResult<()> {
+        let (xf, n, p) = extract_flat(x)?;
+        self.inner.fit(&xf, n, p);
+        Ok(())
+    }
+    fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
+        let (xf, n, p) = extract_flat(x)?;
+        let out = self.inner.transform(&xf, n, p);
+        flat_to_np2d(py, out, n, p)
+    }
+    fn fit_transform(&mut self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
+        let (xf, n, p) = extract_flat(x)?;
+        let out = self.inner.fit_transform(&xf, n, p);
+        flat_to_np2d(py, out, n, p)
+    }
+    #[getter] fn n_bins_(&self) -> usize { self.inner.n_bins }
+    fn __repr__(&self) -> String { format!("KBinsDiscretizer(n_bins={}, strategy='{}')", self.inner.n_bins, self.inner.strategy) }
+}
+
+#[pyclass(module = "seraplot", name = "PowerTransformer")]
+pub struct PyPowerTransformer { inner: crate::ml::preprocessing::transformers::PowerTransformer }
+
+#[pymethods]
+impl PyPowerTransformer {
+    #[new]
+    #[pyo3(signature = (method="yeo-johnson"))]
+    fn py_new(method: &str) -> Self {
+        Self { inner: crate::ml::preprocessing::transformers::PowerTransformer::new(method) }
+    }
+    fn fit(&mut self, x: &PyAny) -> PyResult<()> {
+        let (xf, n, p) = extract_flat(x)?;
+        self.inner.fit(&xf, n, p);
+        Ok(())
+    }
+    fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
+        let (xf, n, p) = extract_flat(x)?;
+        let out = self.inner.transform(&xf, n, p);
+        flat_to_np2d(py, out, n, p)
+    }
+    fn fit_transform(&mut self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
+        let (xf, n, p) = extract_flat(x)?;
+        let out = self.inner.fit_transform(&xf, n, p);
+        flat_to_np2d(py, out, n, p)
+    }
+    #[getter] fn lambdas_(&self) -> Vec<f64> { self.inner.lambdas.clone() }
+    fn __repr__(&self) -> String { format!("PowerTransformer(method='{}')", self.inner.method) }
+}
+
+#[pyclass(module = "seraplot", name = "QuantileTransformer")]
+pub struct PyQuantileTransformer { inner: crate::ml::preprocessing::transformers::QuantileTransformer }
+
+#[pymethods]
+impl PyQuantileTransformer {
+    #[new]
+    #[pyo3(signature = (n_quantiles=1000, output_distribution="uniform"))]
+    fn py_new(n_quantiles: usize, output_distribution: &str) -> Self {
+        Self { inner: crate::ml::preprocessing::transformers::QuantileTransformer::new(n_quantiles, output_distribution) }
+    }
+    fn fit(&mut self, x: &PyAny) -> PyResult<()> {
+        let (xf, n, p) = extract_flat(x)?;
+        self.inner.fit(&xf, n, p);
+        Ok(())
+    }
+    fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
+        let (xf, n, p) = extract_flat(x)?;
+        let out = self.inner.transform(&xf, n, p);
+        flat_to_np2d(py, out, n, p)
+    }
+    fn fit_transform(&mut self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
+        let (xf, n, p) = extract_flat(x)?;
+        let out = self.inner.fit_transform(&xf, n, p);
+        flat_to_np2d(py, out, n, p)
+    }
+    fn __repr__(&self) -> String { format!("QuantileTransformer(n_quantiles={})", self.inner.n_quantiles) }
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred))]
+pub fn balanced_accuracy_score(y_true: Vec<i32>, y_pred: Vec<i32>) -> f64 {
+    crate::ml::metrics::classification::balanced_accuracy_score(&y_true, &y_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred))]
+pub fn matthews_corrcoef(y_true: Vec<i32>, y_pred: Vec<i32>) -> f64 {
+    crate::ml::metrics::classification::matthews_corrcoef(&y_true, &y_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred))]
+pub fn cohen_kappa_score(y_true: Vec<i32>, y_pred: Vec<i32>) -> f64 {
+    crate::ml::metrics::classification::cohen_kappa_score(&y_true, &y_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred))]
+pub fn hamming_loss(y_true: Vec<i32>, y_pred: Vec<i32>) -> f64 {
+    crate::ml::metrics::classification::hamming_loss(&y_true, &y_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred))]
+pub fn zero_one_loss(y_true: Vec<i32>, y_pred: Vec<i32>) -> f64 {
+    crate::ml::metrics::classification::zero_one_loss(&y_true, &y_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred, pos_label=1))]
+pub fn jaccard_score(y_true: Vec<i32>, y_pred: Vec<i32>, pos_label: i32) -> f64 {
+    crate::ml::metrics::classification::jaccard_score(&y_true, &y_pred, pos_label)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred, beta=1.0, average="weighted"))]
+pub fn fbeta_score(y_true: Vec<i32>, y_pred: Vec<i32>, beta: f64, average: &str) -> f64 {
+    let avg = match average {
+        "macro" => crate::ml::metrics::classification::Average::Macro,
+        "weighted" => crate::ml::metrics::classification::Average::Weighted,
+        _ => {
+            let mut c: Vec<i32> = y_true.iter().chain(y_pred.iter()).copied().collect();
+            c.sort_unstable(); c.dedup();
+            crate::ml::metrics::classification::Average::Binary(*c.last().unwrap_or(&1))
+        }
+    };
+    crate::ml::metrics::classification::fbeta_score(&y_true, &y_pred, beta, avg)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_proba, eps=1e-15))]
+pub fn log_loss(y_true: Vec<i32>, y_proba: &PyAny, eps: f64) -> PyResult<f64> {
+    let (flat, n, k) = extract_flat(y_proba)?;
+    Ok(crate::ml::metrics::classification::log_loss(&y_true, &flat, n, k, eps))
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_score, eps=1e-15))]
+pub fn binary_log_loss(y_true: Vec<i32>, y_score: Vec<f64>, eps: f64) -> f64 {
+    crate::ml::metrics::classification::binary_log_loss(&y_true, &y_score, eps)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_score))]
+pub fn brier_score_loss(y_true: Vec<i32>, y_score: Vec<f64>) -> f64 {
+    crate::ml::metrics::classification::brier_score_loss(&y_true, &y_score)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, pred_decision))]
+pub fn hinge_loss(y_true: Vec<i32>, pred_decision: Vec<f64>) -> f64 {
+    crate::ml::metrics::classification::hinge_loss(&y_true, &pred_decision)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_score, pos_label=1))]
+pub fn roc_curve(y_true: Vec<i32>, y_score: Vec<f64>, pos_label: i32) -> (Vec<f64>, Vec<f64>, Vec<f64>) {
+    crate::ml::metrics::classification::roc_curve(&y_true, &y_score, pos_label)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_score, pos_label=1))]
+pub fn roc_auc_score(y_true: Vec<i32>, y_score: Vec<f64>, pos_label: i32) -> f64 {
+    crate::ml::metrics::classification::roc_auc_score(&y_true, &y_score, pos_label)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_score, pos_label=1))]
+pub fn precision_recall_curve(y_true: Vec<i32>, y_score: Vec<f64>, pos_label: i32) -> (Vec<f64>, Vec<f64>, Vec<f64>) {
+    crate::ml::metrics::classification::precision_recall_curve(&y_true, &y_score, pos_label)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_score, pos_label=1))]
+pub fn average_precision_score(y_true: Vec<i32>, y_score: Vec<f64>, pos_label: i32) -> f64 {
+    crate::ml::metrics::classification::average_precision_score(&y_true, &y_score, pos_label)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred))]
+pub fn median_absolute_error(y_true: Vec<f64>, y_pred: Vec<f64>) -> f64 {
+    crate::ml::metrics::regression::median_absolute_error(&y_true, &y_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred))]
+pub fn mean_squared_log_error(y_true: Vec<f64>, y_pred: Vec<f64>) -> f64 {
+    crate::ml::metrics::regression::mean_squared_log_error(&y_true, &y_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred))]
+pub fn root_mean_squared_log_error(y_true: Vec<f64>, y_pred: Vec<f64>) -> f64 {
+    crate::ml::metrics::regression::root_mean_squared_log_error(&y_true, &y_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred, alpha=0.5))]
+pub fn mean_pinball_loss(y_true: Vec<f64>, y_pred: Vec<f64>, alpha: f64) -> f64 {
+    crate::ml::metrics::regression::mean_pinball_loss(&y_true, &y_pred, alpha)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred))]
+pub fn mean_absolute_percentage_error(y_true: Vec<f64>, y_pred: Vec<f64>) -> f64 {
+    crate::ml::metrics::regression::mean_absolute_percentage_error(&y_true, &y_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred))]
+pub fn explained_variance_score(y_true: Vec<f64>, y_pred: Vec<f64>) -> f64 {
+    crate::ml::metrics::regression::explained_variance_score(&y_true, &y_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (y_true, y_pred))]
+pub fn max_error(y_true: Vec<f64>, y_pred: Vec<f64>) -> f64 {
+    crate::ml::metrics::regression::max_error(&y_true, &y_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (x, labels))]
+pub fn silhouette_score(x: &PyAny, labels: Vec<i32>) -> PyResult<f64> {
+    let (xf, n, p) = extract_flat(x)?;
+    Ok(crate::ml::metrics::clustering::silhouette_score(&xf, &labels, n, p))
+}
+
+#[pyfunction]
+#[pyo3(signature = (x, labels))]
+pub fn davies_bouldin_score(x: &PyAny, labels: Vec<i32>) -> PyResult<f64> {
+    let (xf, n, p) = extract_flat(x)?;
+    Ok(crate::ml::metrics::clustering::davies_bouldin_score(&xf, &labels, n, p))
+}
+
+#[pyfunction]
+#[pyo3(signature = (x, labels))]
+pub fn calinski_harabasz_score(x: &PyAny, labels: Vec<i32>) -> PyResult<f64> {
+    let (xf, n, p) = extract_flat(x)?;
+    Ok(crate::ml::metrics::clustering::calinski_harabasz_score(&xf, &labels, n, p))
+}
+
+#[pyfunction]
+#[pyo3(signature = (labels_true, labels_pred))]
+pub fn adjusted_rand_score(labels_true: Vec<i32>, labels_pred: Vec<i32>) -> f64 {
+    crate::ml::metrics::clustering::adjusted_rand_score(&labels_true, &labels_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (labels_true, labels_pred))]
+pub fn normalized_mutual_info_score(labels_true: Vec<i32>, labels_pred: Vec<i32>) -> f64 {
+    crate::ml::metrics::clustering::normalized_mutual_info_score(&labels_true, &labels_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (labels_true, labels_pred))]
+pub fn fowlkes_mallows_score(labels_true: Vec<i32>, labels_pred: Vec<i32>) -> f64 {
+    crate::ml::metrics::clustering::fowlkes_mallows_score(&labels_true, &labels_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (labels_true, labels_pred))]
+pub fn homogeneity_score(labels_true: Vec<i32>, labels_pred: Vec<i32>) -> f64 {
+    crate::ml::metrics::clustering::homogeneity_score(&labels_true, &labels_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (labels_true, labels_pred))]
+pub fn completeness_score(labels_true: Vec<i32>, labels_pred: Vec<i32>) -> f64 {
+    crate::ml::metrics::clustering::completeness_score(&labels_true, &labels_pred)
+}
+
+#[pyfunction]
+#[pyo3(signature = (labels_true, labels_pred))]
+pub fn v_measure_score(labels_true: Vec<i32>, labels_pred: Vec<i32>) -> f64 {
+    crate::ml::metrics::clustering::v_measure_score(&labels_true, &labels_pred)
+}
+
 pub fn register_ml_classes(m: &PyModule) -> PyResult<()> {
     m.add_class::<PyLinearRegression>()?;
     m.add_class::<PyRidge>()?;
@@ -2211,5 +2617,43 @@ pub fn register_ml_classes(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(task_delete, m)?)?;
     m.add_function(wrap_pyfunction!(task_dir, m)?)?;
     m.add_function(wrap_pyfunction!(task_cleanup, m)?)?;
+    m.add_class::<PyOneHotEncoder>()?;
+    m.add_class::<PyOrdinalEncoder>()?;
+    m.add_class::<PySimpleImputer>()?;
+    m.add_class::<PyPolynomialFeatures>()?;
+    m.add_class::<PyKBinsDiscretizer>()?;
+    m.add_class::<PyPowerTransformer>()?;
+    m.add_class::<PyQuantileTransformer>()?;
+    m.add_function(wrap_pyfunction!(balanced_accuracy_score, m)?)?;
+    m.add_function(wrap_pyfunction!(matthews_corrcoef, m)?)?;
+    m.add_function(wrap_pyfunction!(cohen_kappa_score, m)?)?;
+    m.add_function(wrap_pyfunction!(hamming_loss, m)?)?;
+    m.add_function(wrap_pyfunction!(zero_one_loss, m)?)?;
+    m.add_function(wrap_pyfunction!(jaccard_score, m)?)?;
+    m.add_function(wrap_pyfunction!(fbeta_score, m)?)?;
+    m.add_function(wrap_pyfunction!(log_loss, m)?)?;
+    m.add_function(wrap_pyfunction!(binary_log_loss, m)?)?;
+    m.add_function(wrap_pyfunction!(brier_score_loss, m)?)?;
+    m.add_function(wrap_pyfunction!(hinge_loss, m)?)?;
+    m.add_function(wrap_pyfunction!(roc_curve, m)?)?;
+    m.add_function(wrap_pyfunction!(roc_auc_score, m)?)?;
+    m.add_function(wrap_pyfunction!(precision_recall_curve, m)?)?;
+    m.add_function(wrap_pyfunction!(average_precision_score, m)?)?;
+    m.add_function(wrap_pyfunction!(median_absolute_error, m)?)?;
+    m.add_function(wrap_pyfunction!(mean_squared_log_error, m)?)?;
+    m.add_function(wrap_pyfunction!(root_mean_squared_log_error, m)?)?;
+    m.add_function(wrap_pyfunction!(mean_pinball_loss, m)?)?;
+    m.add_function(wrap_pyfunction!(mean_absolute_percentage_error, m)?)?;
+    m.add_function(wrap_pyfunction!(explained_variance_score, m)?)?;
+    m.add_function(wrap_pyfunction!(max_error, m)?)?;
+    m.add_function(wrap_pyfunction!(silhouette_score, m)?)?;
+    m.add_function(wrap_pyfunction!(davies_bouldin_score, m)?)?;
+    m.add_function(wrap_pyfunction!(calinski_harabasz_score, m)?)?;
+    m.add_function(wrap_pyfunction!(adjusted_rand_score, m)?)?;
+    m.add_function(wrap_pyfunction!(normalized_mutual_info_score, m)?)?;
+    m.add_function(wrap_pyfunction!(fowlkes_mallows_score, m)?)?;
+    m.add_function(wrap_pyfunction!(homogeneity_score, m)?)?;
+    m.add_function(wrap_pyfunction!(completeness_score, m)?)?;
+    m.add_function(wrap_pyfunction!(v_measure_score, m)?)?;
     Ok(())
 }
