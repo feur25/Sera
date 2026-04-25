@@ -1,6 +1,6 @@
 use rayon::prelude::*;
 use crate::ml::linalg::splitmix64;
-use crate::ml::model_selection::split::kfold_indices;
+use crate::ml::model_selection::split::{kfold_indices, stratified_kfold_indices};
 use crate::ml::{MlRegressor, MlClassifier};
 pub struct FoldData {
     pub x_train: Vec<f64>,
@@ -67,37 +67,6 @@ pub fn precompute_folds_cls(
             y_train_i, y_test_i,
             n_train, n_test, p,
         }
-    }).collect()
-}
-
-fn stratified_kfold_indices(y: &[i32], k: usize, seed: u64) -> Vec<(Vec<usize>, Vec<usize>)> {
-    let mut classes: Vec<i32> = y.to_vec();
-    classes.sort_unstable();
-    classes.dedup();
-    let mut class_indices: Vec<Vec<usize>> = classes.iter().map(|&c| {
-        y.iter().enumerate().filter(|(_, &v)| v == c).map(|(i, _)| i).collect()
-    }).collect();
-    let mut rng = seed;
-    for indices in &mut class_indices {
-        for i in (1..indices.len()).rev() {
-            rng = splitmix64(rng);
-            let j = rng as usize % (i + 1);
-            indices.swap(i, j);
-        }
-    }
-    let mut folds: Vec<Vec<usize>> = (0..k).map(|_| Vec::new()).collect();
-    for indices in &class_indices {
-        for (i, &idx) in indices.iter().enumerate() {
-            folds[i % k].push(idx);
-        }
-    }
-    (0..k).map(|fi| {
-        let test: Vec<usize> = folds[fi].clone();
-        let train: Vec<usize> = (0..k)
-            .filter(|&j| j != fi)
-            .flat_map(|j| folds[j].iter().copied())
-            .collect();
-        (train, test)
     }).collect()
 }
 

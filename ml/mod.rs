@@ -9,6 +9,7 @@ pub mod preprocessing;
 pub mod decomposition;
 pub mod model_selection;
 pub mod metrics;
+pub mod anomaly;
 
 pub use linalg::*;
 pub use linear::*;
@@ -20,6 +21,7 @@ pub use preprocessing::*;
 pub use decomposition::*;
 pub use model_selection::*;
 pub use metrics::*;
+pub use anomaly::*;
 
 pub trait MlRegressor: Send + Sync {
     fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]);

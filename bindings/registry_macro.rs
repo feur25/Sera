@@ -168,6 +168,9 @@ macro_rules! for_each_ml_oneshot_fn {
         $mac!(ml_metric_score,                   "mlMetricScore");
         $mac!(ml_metric_curve,                   "mlMetricCurve");
         $mac!(ml_fit_transform,                  "mlFitTransform");
+        $mac!(ml_kfold_split,                    "mlKfoldSplit");
+        $mac!(ml_isolation_forest,               "mlIsolationForest");
+        $mac!(ml_permutation_importance,         "mlPermutationImportance");
     };
 }
 

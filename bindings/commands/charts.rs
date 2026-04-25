@@ -1671,6 +1671,155 @@ pub fn ml_fit_transform(input: &str) -> String {
         serde_json::to_string(&data).unwrap_or_default(), n, cols, extra)
 }
 
+pub fn ml_kfold_split(input: &str) -> String {
+    use crate::ml::model_selection::split::*;
+    #[derive(Deserialize, Default)]
+    struct I {
+        kind: Option<String>,
+        n: Option<usize>,
+        k: Option<usize>,
+        seed: Option<u64>,
+        y: Option<Vec<i32>>,
+        groups: Option<Vec<i32>>,
+    }
+    let i: I = serde_json::from_str(input).unwrap_or_default();
+    let kind = i.kind.unwrap_or_else(|| "kfold".to_string());
+    let k = i.k.unwrap_or(5);
+    let seed = i.seed.unwrap_or(0);
+    let folds = match kind.as_str() {
+        "stratified" => stratified_kfold_indices(&i.y.unwrap_or_default(), k, seed),
+        "group" => group_kfold_indices(&i.groups.unwrap_or_default(), k),
+        _ => kfold_indices(i.n.unwrap_or(0), k, seed),
+    };
+    let payload: Vec<serde_json::Value> = folds.into_iter().map(|(tr, te)| {
+        serde_json::json!({"train": tr, "test": te})
+    }).collect();
+    serde_json::to_string(&payload).unwrap_or_else(|_| "[]".to_string())
+}
+
+pub fn ml_isolation_forest(input: &str) -> String {
+    use crate::ml::anomaly::isolation_forest::IsolationForest;
+    #[derive(Deserialize, Default)]
+    struct I {
+        data: Option<Vec<Vec<f64>>>,
+        x_test: Option<Vec<Vec<f64>>>,
+        n_estimators: Option<usize>,
+        max_samples: Option<usize>,
+        contamination: Option<f64>,
+        seed: Option<u64>,
+    }
+    let i: I = serde_json::from_str(input).unwrap_or_default();
+    let rows = i.data.unwrap_or_default();
+    let n = rows.len();
+    if n == 0 { return "{\"labels\":[],\"scores\":[],\"threshold\":0.0}".to_string(); }
+    let p = rows[0].len();
+    let mut flat = Vec::with_capacity(n * p);
+    for r in &rows { flat.extend_from_slice(&r[..p.min(r.len())]); if r.len() < p { flat.extend(std::iter::repeat(0.0).take(p - r.len())); } }
+    let mut model = IsolationForest::new(
+        i.n_estimators.unwrap_or(100),
+        i.max_samples.unwrap_or(256),
+        i.contamination.unwrap_or(0.1),
+        i.seed.unwrap_or(42),
+    );
+    model.fit(&flat, n, p);
+    let labels = model.predict(&flat, n, p);
+    let scores = model.score_samples(&flat, n, p);
+    let test_payload = if let Some(rows_t) = i.x_test {
+        let nt = rows_t.len();
+        if nt == 0 {
+            String::new()
+        } else {
+            let mut flat_t = Vec::with_capacity(nt * p);
+            for r in &rows_t { flat_t.extend_from_slice(&r[..p.min(r.len())]); if r.len() < p { flat_t.extend(std::iter::repeat(0.0).take(p - r.len())); } }
+            let lt = model.predict(&flat_t, nt, p);
+            let st = model.score_samples(&flat_t, nt, p);
+            format!(",\"test_labels\":{},\"test_scores\":{}",
+                serde_json::to_string(&lt).unwrap_or_default(),
+                serde_json::to_string(&st).unwrap_or_default())
+        }
+    } else { String::new() };
+    format!("{{\"labels\":{},\"scores\":{},\"threshold\":{}{}}}",
+        serde_json::to_string(&labels).unwrap_or_default(),
+        serde_json::to_string(&scores).unwrap_or_default(),
+        model.threshold_,
+        test_payload)
+}
+
+pub fn ml_permutation_importance(input: &str) -> String {
+    use crate::ml::model_selection::permutation::*;
+    #[derive(Deserialize, Default)]
+    struct I {
+        data: Option<Vec<Vec<f64>>>,
+        y: Option<Vec<f64>>,
+        baseline_pred: Option<Vec<f64>>,
+        perm_preds: Option<Vec<Vec<Vec<f64>>>>,
+        task: Option<String>,
+        n_repeats: Option<usize>,
+        seed: Option<u64>,
+    }
+    let i: I = serde_json::from_str(input).unwrap_or_default();
+    let rows = i.data.unwrap_or_default();
+    let n = rows.len();
+    if n == 0 { return "{\"importances_mean\":[],\"importances_std\":[]}".to_string(); }
+    let p = rows[0].len();
+    let mut flat = Vec::with_capacity(n * p);
+    for r in &rows { flat.extend_from_slice(&r[..p.min(r.len())]); if r.len() < p { flat.extend(std::iter::repeat(0.0).take(p - r.len())); } }
+    let yf = i.y.clone().unwrap_or_default();
+    let task = i.task.unwrap_or_else(|| "regression".to_string());
+    let n_repeats = i.n_repeats.unwrap_or(5);
+    let seed = i.seed.unwrap_or(0);
+    let perm_preds = i.perm_preds.unwrap_or_default();
+    let baseline_pred = i.baseline_pred.unwrap_or_default();
+    let _ = (n_repeats, seed, flat, n);
+    if perm_preds.is_empty() || baseline_pred.is_empty() {
+        return "{\"importances_mean\":[],\"importances_std\":[],\"error\":\"baseline_pred and perm_preds[p][n_repeats][n] are required\"}".to_string();
+    }
+    if task == "classification" {
+        let yi: Vec<i32> = yf.iter().map(|v| *v as i32).collect();
+        let baseline_i: Vec<i32> = baseline_pred.iter().map(|v| *v as i32).collect();
+        let baseline = crate::ml::metrics::classification::accuracy_score(&yi, &baseline_i);
+        let mut means = vec![0.0; p];
+        let mut stds = vec![0.0; p];
+        for j in 0..p.min(perm_preds.len()) {
+            let reps = &perm_preds[j];
+            let mut diffs = Vec::with_capacity(reps.len());
+            for rep in reps {
+                let pi: Vec<i32> = rep.iter().map(|v| *v as i32).collect();
+                let s = crate::ml::metrics::classification::accuracy_score(&yi, &pi);
+                diffs.push(baseline - s);
+            }
+            let m = diffs.iter().sum::<f64>() / diffs.len().max(1) as f64;
+            let v = diffs.iter().map(|x| (x - m).powi(2)).sum::<f64>() / diffs.len().max(1) as f64;
+            means[j] = m;
+            stds[j] = v.sqrt();
+        }
+        format!("{{\"importances_mean\":{},\"importances_std\":{},\"baseline\":{}}}",
+            serde_json::to_string(&means).unwrap_or_default(),
+            serde_json::to_string(&stds).unwrap_or_default(),
+            baseline)
+    } else {
+        let baseline = crate::ml::metrics::regression::r2_score(&yf, &baseline_pred);
+        let mut means = vec![0.0; p];
+        let mut stds = vec![0.0; p];
+        for j in 0..p.min(perm_preds.len()) {
+            let reps = &perm_preds[j];
+            let mut diffs = Vec::with_capacity(reps.len());
+            for rep in reps {
+                let s = crate::ml::metrics::regression::r2_score(&yf, rep);
+                diffs.push(baseline - s);
+            }
+            let m = diffs.iter().sum::<f64>() / diffs.len().max(1) as f64;
+            let v = diffs.iter().map(|x| (x - m).powi(2)).sum::<f64>() / diffs.len().max(1) as f64;
+            means[j] = m;
+            stds[j] = v.sqrt();
+        }
+        format!("{{\"importances_mean\":{},\"importances_std\":{},\"baseline\":{}}}",
+            serde_json::to_string(&means).unwrap_or_default(),
+            serde_json::to_string(&stds).unwrap_or_default(),
+            baseline)
+    }
+}
+
 pub fn set_global_background(input: &str) -> String {
     let color = input.trim().trim_matches('"');
     set_global_bg(if color.is_empty() { None } else { Some(color.to_string()) });
