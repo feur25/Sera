@@ -1454,6 +1454,223 @@ pub fn ml_kmeans_fit_predict(input: &str) -> String {
         serde_json::to_string(&labels).unwrap_or_default(), inertia)
 }
 
+pub fn ml_metric_score(input: &str) -> String {
+    use crate::ml::metrics::*;
+    #[derive(Deserialize, Default)]
+    struct I {
+        name: Option<String>,
+        y_true: Option<Vec<f64>>,
+        y_pred: Option<Vec<f64>>,
+        y_score: Option<Vec<f64>>,
+        labels: Option<Vec<i32>>,
+        labels_true: Option<Vec<i32>>,
+        labels_pred: Option<Vec<i32>>,
+        x: Option<Vec<Vec<f64>>>,
+        average: Option<String>,
+        pos_label: Option<i32>,
+        beta: Option<f64>,
+        alpha: Option<f64>,
+        eps: Option<f64>,
+    }
+    let i: I = serde_json::from_str(input).unwrap_or_default();
+    let name = i.name.unwrap_or_default();
+    let to_i32 = |v: &[f64]| v.iter().map(|x| *x as i32).collect::<Vec<i32>>();
+    let yt_f = i.y_true.clone().unwrap_or_default();
+    let yp_f = i.y_pred.clone().unwrap_or_default();
+    let ys_f = i.y_score.clone().unwrap_or_default();
+    let yt_i = to_i32(&yt_f);
+    let yp_i = to_i32(&yp_f);
+    let pos = i.pos_label.unwrap_or(1);
+    let avg = match i.average.as_deref().unwrap_or("binary") {
+        "macro" => Average::Macro,
+        "weighted" => Average::Weighted,
+        _ => Average::Binary(pos),
+    };
+    let value: f64 = match name.as_str() {
+        "accuracy_score" => accuracy_score(&yt_i, &yp_i),
+        "balanced_accuracy_score" => balanced_accuracy_score(&yt_i, &yp_i),
+        "precision_score" => precision_score(&yt_i, &yp_i, avg),
+        "recall_score" => recall_score(&yt_i, &yp_i, avg),
+        "f1_score" => f1_score(&yt_i, &yp_i, avg),
+        "fbeta_score" => fbeta_score(&yt_i, &yp_i, i.beta.unwrap_or(1.0), avg),
+        "jaccard_score" => jaccard_score(&yt_i, &yp_i, pos),
+        "matthews_corrcoef" => matthews_corrcoef(&yt_i, &yp_i),
+        "cohen_kappa_score" => cohen_kappa_score(&yt_i, &yp_i),
+        "hamming_loss" => hamming_loss(&yt_i, &yp_i),
+        "zero_one_loss" => zero_one_loss(&yt_i, &yp_i),
+        "binary_log_loss" => binary_log_loss(&yt_i, &yp_f, i.eps.unwrap_or(1e-15)),
+        "brier_score_loss" => brier_score_loss(&yt_i, &yp_f),
+        "hinge_loss" => hinge_loss(&yt_i, &yp_f),
+        "roc_auc_score" => roc_auc_score(&yt_i, &ys_f, pos),
+        "average_precision_score" => average_precision_score(&yt_i, &ys_f, pos),
+        "mean_squared_error" => mean_squared_error(&yt_f, &yp_f),
+        "root_mean_squared_error" => root_mean_squared_error(&yt_f, &yp_f),
+        "mean_absolute_error" => mean_absolute_error(&yt_f, &yp_f),
+        "median_absolute_error" => median_absolute_error(&yt_f, &yp_f),
+        "r2_score" => r2_score(&yt_f, &yp_f),
+        "explained_variance_score" => explained_variance_score(&yt_f, &yp_f),
+        "max_error" => max_error(&yt_f, &yp_f),
+        "mean_absolute_percentage_error" => mean_absolute_percentage_error(&yt_f, &yp_f),
+        "mean_squared_log_error" => mean_squared_log_error(&yt_f, &yp_f),
+        "root_mean_squared_log_error" => root_mean_squared_log_error(&yt_f, &yp_f),
+        "mean_pinball_loss" => mean_pinball_loss(&yt_f, &yp_f, i.alpha.unwrap_or(0.5)),
+        "d2_absolute_error_score" => d2_absolute_error_score(&yt_f, &yp_f),
+        "silhouette_score" | "davies_bouldin_score" | "calinski_harabasz_score" => {
+            let rows = i.x.clone().unwrap_or_default();
+            let n = rows.len();
+            let p = if n > 0 { rows[0].len() } else { 0 };
+            let mut flat = Vec::with_capacity(n * p);
+            for r in &rows { flat.extend_from_slice(&r[..p.min(r.len())]); if r.len() < p { flat.extend(std::iter::repeat(0.0).take(p - r.len())); } }
+            let labs = i.labels.clone().unwrap_or_default();
+            match name.as_str() {
+                "silhouette_score" => silhouette_score(&flat, &labs, n, p),
+                "davies_bouldin_score" => davies_bouldin_score(&flat, &labs, n, p),
+                _ => calinski_harabasz_score(&flat, &labs, n, p),
+            }
+        }
+        "adjusted_rand_score" | "normalized_mutual_info_score" | "fowlkes_mallows_score"
+        | "homogeneity_score" | "completeness_score" | "v_measure_score" => {
+            let lt = i.labels_true.clone().unwrap_or_default();
+            let lp = i.labels_pred.clone().unwrap_or_default();
+            match name.as_str() {
+                "adjusted_rand_score" => adjusted_rand_score(&lt, &lp),
+                "normalized_mutual_info_score" => normalized_mutual_info_score(&lt, &lp),
+                "fowlkes_mallows_score" => fowlkes_mallows_score(&lt, &lp),
+                "homogeneity_score" => homogeneity_score(&lt, &lp),
+                "completeness_score" => completeness_score(&lt, &lp),
+                _ => v_measure_score(&lt, &lp),
+            }
+        }
+        _ => f64::NAN,
+    };
+    if value.is_nan() { format!("{{\"error\":\"unknown metric: {}\"}}", name) }
+    else { format!("{{\"value\":{}}}", value) }
+}
+
+pub fn ml_metric_curve(input: &str) -> String {
+    use crate::ml::metrics::*;
+    #[derive(Deserialize, Default)]
+    struct I {
+        name: Option<String>,
+        y_true: Option<Vec<f64>>,
+        y_score: Option<Vec<f64>>,
+        pos_label: Option<i32>,
+    }
+    let i: I = serde_json::from_str(input).unwrap_or_default();
+    let yt: Vec<i32> = i.y_true.unwrap_or_default().iter().map(|v| *v as i32).collect();
+    let ys = i.y_score.unwrap_or_default();
+    let pos = i.pos_label.unwrap_or(1);
+    match i.name.as_deref().unwrap_or("") {
+        "roc_curve" => {
+            let (a, b, c) = roc_curve(&yt, &ys, pos);
+            format!("{{\"fpr\":{},\"tpr\":{},\"thresholds\":{}}}",
+                serde_json::to_string(&a).unwrap_or_default(),
+                serde_json::to_string(&b).unwrap_or_default(),
+                serde_json::to_string(&c).unwrap_or_default())
+        }
+        "precision_recall_curve" => {
+            let (a, b, c) = precision_recall_curve(&yt, &ys, pos);
+            format!("{{\"precision\":{},\"recall\":{},\"thresholds\":{}}}",
+                serde_json::to_string(&a).unwrap_or_default(),
+                serde_json::to_string(&b).unwrap_or_default(),
+                serde_json::to_string(&c).unwrap_or_default())
+        }
+        n => format!("{{\"error\":\"unknown curve: {}\"}}", n),
+    }
+}
+
+pub fn ml_fit_transform(input: &str) -> String {
+    use crate::ml::preprocessing::transformers::*;
+    use crate::ml::preprocessing::scalers::*;
+    #[derive(Deserialize, Default)]
+    struct I {
+        name: Option<String>,
+        data: Option<Vec<Vec<f64>>>,
+        strategy: Option<String>,
+        fill_value: Option<f64>,
+        degree: Option<usize>,
+        interaction_only: Option<bool>,
+        include_bias: Option<bool>,
+        n_bins: Option<usize>,
+        method: Option<String>,
+        n_quantiles: Option<usize>,
+        output_distribution: Option<String>,
+    }
+    let i: I = serde_json::from_str(input).unwrap_or_default();
+    let rows = i.data.unwrap_or_default();
+    let n = rows.len();
+    let p = if n > 0 { rows[0].len() } else { 0 };
+    let mut flat = Vec::with_capacity(n * p);
+    for r in &rows {
+        flat.extend_from_slice(&r[..p.min(r.len())]);
+        if r.len() < p { flat.extend(std::iter::repeat(0.0).take(p - r.len())); }
+    }
+    let (out, cols, extra): (Vec<f64>, usize, String) = match i.name.as_deref().unwrap_or("") {
+        "SimpleImputer" => {
+            let mut t = SimpleImputer::new(i.strategy.as_deref().unwrap_or("mean"), i.fill_value.unwrap_or(0.0));
+            t.fit(&flat, n, p);
+            let o = t.transform(&flat, n, p);
+            (o, p, format!(",\"statistics\":{}", serde_json::to_string(&t.statistics).unwrap_or_default()))
+        }
+        "PolynomialFeatures" => {
+            let mut t = PolynomialFeatures::new(i.degree.unwrap_or(2), i.interaction_only.unwrap_or(false), i.include_bias.unwrap_or(true));
+            t.fit(&flat, n, p);
+            let o = t.transform(&flat, n, p);
+            let nf = t.n_output_features();
+            (o, nf, format!(",\"n_features_out\":{}", nf))
+        }
+        "KBinsDiscretizer" => {
+            let mut t = KBinsDiscretizer::new(i.n_bins.unwrap_or(5), i.strategy.as_deref().unwrap_or("quantile"));
+            t.fit(&flat, n, p);
+            let o = t.transform(&flat, n, p);
+            (o, p, String::new())
+        }
+        "PowerTransformer" => {
+            let mut t = PowerTransformer::new(i.method.as_deref().unwrap_or("yeo-johnson"));
+            t.fit(&flat, n, p);
+            let o = t.transform(&flat, n, p);
+            (o, p, format!(",\"lambdas\":{}", serde_json::to_string(&t.lambdas).unwrap_or_default()))
+        }
+        "QuantileTransformer" => {
+            let mut t = QuantileTransformer::new(i.n_quantiles.unwrap_or(1000), i.output_distribution.as_deref().unwrap_or("uniform"));
+            t.fit(&flat, n, p);
+            let o = t.transform(&flat, n, p);
+            (o, p, String::new())
+        }
+        "StandardScaler" => {
+            let mut t = StandardScaler::new(true, true);
+            t.fit(&flat, n, p);
+            let o = t.transform(&flat, n, p);
+            (o, p, String::new())
+        }
+        "MinMaxScaler" => {
+            let mut t = MinMaxScaler::new((0.0, 1.0));
+            t.fit(&flat, n, p);
+            let o = t.transform(&flat, n, p);
+            (o, p, String::new())
+        }
+        "RobustScaler" => {
+            let mut t = RobustScaler::new(true, true);
+            t.fit(&flat, n, p);
+            let o = t.transform(&flat, n, p);
+            (o, p, String::new())
+        }
+        "MaxAbsScaler" => {
+            let mut t = MaxAbsScaler::new();
+            t.fit(&flat, n, p);
+            let o = t.transform(&flat, n, p);
+            (o, p, String::new())
+        }
+        n_ => return format!("{{\"error\":\"unknown transformer: {}\"}}", n_),
+    };
+    let mut data: Vec<Vec<f64>> = Vec::with_capacity(n);
+    for r in 0..n {
+        data.push(out[r * cols..(r + 1) * cols].to_vec());
+    }
+    format!("{{\"data\":{},\"n\":{},\"cols\":{}{}}}",
+        serde_json::to_string(&data).unwrap_or_default(), n, cols, extra)
+}
+
 pub fn set_global_background(input: &str) -> String {
     let color = input.trim().trim_matches('"');
     set_global_bg(if color.is_empty() { None } else { Some(color.to_string()) });
