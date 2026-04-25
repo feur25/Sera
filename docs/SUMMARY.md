@@ -103,11 +103,15 @@
     - [LinearSVC / LinearSVR](ml/svm.md)
   - [Preprocessing](ml/preprocessing-index.md)
     - [StandardScaler / MinMaxScaler / RobustScaler / MaxAbsScaler / Normalizer](ml/preprocessing.md)
+    - [Advanced Preprocessing](ml/preprocessing-advanced.md)
   - [Decomposition](ml/decomposition-index.md)
     - [PCA / TruncatedSVD](ml/decomposition.md)
   - [Model Selection](ml/selection-index.md)
     - [GridSearchCV / RandomizedSearchCV / Halving](ml/grid-search.md)
   - [Metrics](ml/metrics.md)
+    - [Classification Metrics](ml/metrics-classification.md)
+    - [Regression Metrics](ml/metrics-regression.md)
+    - [Clustering Metrics](ml/metrics-clustering.md)
   - [Train / Test Split](ml/train-test-split.md)
 
 ---
