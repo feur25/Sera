@@ -801,6 +801,72 @@ macro_rules! impl_python_bindings {
                 }
                 Ok(current)
             }
+            pub fn predict_proba(&self, py: Python<'_>, x: &PyAny) -> PyResult<pyo3::PyObject> {
+                let mut current: pyo3::PyObject = x.into();
+                for (i, (_, step)) in self.steps.iter().enumerate() {
+                    let st = step.as_ref(py);
+                    let is_last = i == self.steps.len() - 1;
+                    if is_last {
+                        return Ok(st.call_method1("predict_proba", (current.as_ref(py),))?.into());
+                    }
+                    if let Ok(t) = st.call_method1("transform", (current.as_ref(py),)) {
+                        current = t.into();
+                    }
+                }
+                Ok(current)
+            }
+            pub fn decision_function(&self, py: Python<'_>, x: &PyAny) -> PyResult<pyo3::PyObject> {
+                let mut current: pyo3::PyObject = x.into();
+                for (i, (_, step)) in self.steps.iter().enumerate() {
+                    let st = step.as_ref(py);
+                    let is_last = i == self.steps.len() - 1;
+                    if is_last {
+                        return Ok(st.call_method1("decision_function", (current.as_ref(py),))?.into());
+                    }
+                    if let Ok(t) = st.call_method1("transform", (current.as_ref(py),)) {
+                        current = t.into();
+                    }
+                }
+                Ok(current)
+            }
+            pub fn score(&self, py: Python<'_>, x: &PyAny, y: &PyAny) -> PyResult<f64> {
+                let mut current: pyo3::PyObject = x.into();
+                for (i, (_, step)) in self.steps.iter().enumerate() {
+                    let st = step.as_ref(py);
+                    let is_last = i == self.steps.len() - 1;
+                    if is_last {
+                        if let Ok(s) = st.call_method1("score", (current.as_ref(py), y)) {
+                            return s.extract::<f64>();
+                        }
+                        let pred: pyo3::PyObject = st.call_method1("predict", (current.as_ref(py),))?.into();
+                        let yv: Vec<f64> = y.extract().unwrap_or_default();
+                        let pv: Vec<f64> = pred.as_ref(py).extract().unwrap_or_default();
+                        if yv.is_empty() || pv.is_empty() || yv.len() != pv.len() { return Ok(0.0); }
+                        let n = yv.len();
+                        let any_non_int = yv.iter().any(|v| (v - v.round()).abs() > 1e-9);
+                        if any_non_int {
+                            let ymean: f64 = yv.iter().sum::<f64>() / n as f64;
+                            let ss_tot: f64 = yv.iter().map(|v| (v - ymean).powi(2)).sum();
+                            let ss_res: f64 = yv.iter().zip(pv.iter()).map(|(a, b)| (a - b).powi(2)).sum();
+                            return Ok(if ss_tot > 0.0 { 1.0 - ss_res / ss_tot } else { 0.0 });
+                        }
+                        let correct: usize = yv.iter().zip(pv.iter()).filter(|(a, b)| ((**a) - (**b)).abs() < 1e-9).count();
+                        return Ok(correct as f64 / n as f64);
+                    }
+                    if let Ok(t) = st.call_method1("transform", (current.as_ref(py),)) {
+                        current = t.into();
+                    }
+                }
+                Ok(0.0)
+            }
+            pub fn fit_predict(&mut self, py: Python<'_>, x: &PyAny, y: Option<&PyAny>) -> PyResult<pyo3::PyObject> {
+                self.fit(py, x, y)?;
+                self.predict(py, x)
+            }
+            pub fn fit_transform(&mut self, py: Python<'_>, x: &PyAny, y: Option<&PyAny>) -> PyResult<pyo3::PyObject> {
+                self.fit(py, x, y)?;
+                self.transform(py, x)
+            }
             #[getter] pub fn step_names(&self) -> Vec<String> { self.steps.iter().map(|(n, _)| n.clone()).collect() }
             fn __repr__(&self) -> String {
                 format!("Pipeline(steps={:?})", self.steps.iter().map(|(n, _)| n.clone()).collect::<Vec<_>>())

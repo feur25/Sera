@@ -1042,6 +1042,12 @@ impl PyStandardScaler {
         _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
+    fn partial_fit(&mut self, x: &PyAny) -> PyResult<()> {
+        let (xf, n, p) = extract_flat(x)?;
+        self.inner.partial_fit(&xf, n, p);
+        self.n = self.inner.n_samples_seen as usize; self.p = p;
+        Ok(())
+    }
     fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
         let (xf, n, p) = extract_flat(x)?;
         flat_to_np2d(py, self.inner.transform(&xf, n, p), n, p)
@@ -1060,6 +1066,7 @@ impl PyStandardScaler {
     #[getter] fn with_mean_(&self) -> bool { self.inner.with_mean }
     #[getter] fn with_std_(&self) -> bool { self.inner.with_std }
     #[getter] fn var_(&self) -> Vec<f64> { self.inner.scale.iter().map(|s| s * s).collect() }
+    #[getter] fn n_samples_seen_(&self) -> u64 { self.inner.n_samples_seen }
     fn __repr__(&self) -> String { "StandardScaler()".to_string() }
 }
 
@@ -1079,6 +1086,11 @@ impl PyMinMaxScaler {
         let _h = crate::ml::cache::TaskHandle::auto("MinMaxScaler.fit", fp);
         self.inner.fit(&xf, n, p);
         _h.complete(&crate::ml::cache::PartialState::default());
+        Ok(())
+    }
+    fn partial_fit(&mut self, x: &PyAny) -> PyResult<()> {
+        let (xf, n, p) = extract_flat(x)?;
+        self.inner.partial_fit(&xf, n, p);
         Ok(())
     }
     fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
@@ -1151,6 +1163,11 @@ impl PyMaxAbsScaler {
         let _h = crate::ml::cache::TaskHandle::auto("MaxAbsScaler.fit", fp);
         self.inner.fit(&xf, n, p);
         _h.complete(&crate::ml::cache::PartialState::default());
+        Ok(())
+    }
+    fn partial_fit(&mut self, x: &PyAny) -> PyResult<()> {
+        let (xf, n, p) = extract_flat(x)?;
+        self.inner.partial_fit(&xf, n, p);
         Ok(())
     }
     fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
@@ -2166,6 +2183,14 @@ impl PyOneHotEncoder {
         self.inner.fit(&flat, n, p);
         Ok(())
     }
+    fn partial_fit(&mut self, x: Vec<Vec<String>>) -> PyResult<()> {
+        let n = x.len();
+        let p = if n == 0 { 0 } else { x[0].len() };
+        if self.p == 0 { self.p = p; }
+        let flat: Vec<String> = x.into_iter().flatten().collect();
+        self.inner.partial_fit(&flat, n, p);
+        Ok(())
+    }
     fn transform(&self, py: Python<'_>, x: Vec<Vec<String>>) -> PyResult<PyObject> {
         let n = x.len();
         let flat: Vec<String> = x.into_iter().flatten().collect();
@@ -2194,6 +2219,14 @@ impl PyOrdinalEncoder {
         self.p = p;
         let flat: Vec<String> = x.into_iter().flatten().collect();
         self.inner.fit(&flat, n, p);
+        Ok(())
+    }
+    fn partial_fit(&mut self, x: Vec<Vec<String>>) -> PyResult<()> {
+        let n = x.len();
+        let p = if n == 0 { 0 } else { x[0].len() };
+        if self.p == 0 { self.p = p; }
+        let flat: Vec<String> = x.into_iter().flatten().collect();
+        self.inner.partial_fit(&flat, n, p);
         Ok(())
     }
     fn transform(&self, py: Python<'_>, x: Vec<Vec<String>>) -> PyResult<PyObject> {

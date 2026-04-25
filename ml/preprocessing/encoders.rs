@@ -83,6 +83,24 @@ impl OrdinalEncoder {
         self.fit(x, n, p);
         self.transform(x, n, p)
     }
+
+    pub fn partial_fit(&mut self, x: &[String], n: usize, p: usize) {
+        if self.categories.is_empty() {
+            self.categories = vec![Vec::new(); p];
+            self.maps = vec![HashMap::new(); p];
+        }
+        if self.categories.len() != p { return; }
+        for j in 0..p {
+            for i in 0..n {
+                let v = &x[i * p + j];
+                if !self.maps[j].contains_key(v) {
+                    let idx = self.categories[j].len() as f64;
+                    self.categories[j].push(v.clone());
+                    self.maps[j].insert(v.clone(), idx);
+                }
+            }
+        }
+    }
 }
 
 pub struct OneHotEncoder {
@@ -127,6 +145,38 @@ impl OneHotEncoder {
     pub fn fit_transform(&mut self, x: &[String], n: usize, p: usize) -> Vec<f64> {
         self.fit(x, n, p);
         self.transform(x, n, p)
+    }
+
+    pub fn partial_fit(&mut self, x: &[String], n: usize, p: usize) {
+        if self.categories.is_empty() {
+            self.categories = vec![Vec::new(); p];
+            self.maps = vec![HashMap::new(); p];
+            self.total_cols = 0;
+        }
+        if self.categories.len() != p { return; }
+        let mut added = false;
+        for j in 0..p {
+            for i in 0..n {
+                let v = &x[i * p + j];
+                let exists = self.maps[j].contains_key(v) || self.categories[j].iter().any(|c| c == v);
+                if !exists {
+                    self.categories[j].push(v.clone());
+                    added = true;
+                }
+            }
+        }
+        if added {
+            self.maps.clear();
+            self.total_cols = 0;
+            for j in 0..p {
+                let mut m = HashMap::new();
+                for (k, c) in self.categories[j].iter().enumerate() {
+                    m.insert(c.clone(), self.total_cols + k);
+                }
+                self.total_cols += self.categories[j].len();
+                self.maps.push(m);
+            }
+        }
     }
 
     pub fn n_output_features(&self) -> usize { self.total_cols }

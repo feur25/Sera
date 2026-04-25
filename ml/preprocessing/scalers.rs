@@ -5,19 +5,57 @@ pub struct StandardScaler {
     pub scale: Vec<f64>,
     pub with_mean: bool,
     pub with_std: bool,
+    pub n_samples_seen: u64,
+    pub m2: Vec<f64>,
     inv_scale: Vec<f64>,
     p: usize,
 }
 
 impl StandardScaler {
     pub fn new(with_mean: bool, with_std: bool) -> Self {
-        Self { mean: Vec::new(), scale: Vec::new(), with_mean, with_std, inv_scale: Vec::new(), p: 0 }
+        Self { mean: Vec::new(), scale: Vec::new(), with_mean, with_std, n_samples_seen: 0, m2: Vec::new(), inv_scale: Vec::new(), p: 0 }
+    }
+
+    pub fn partial_fit(&mut self, x: &[f64], n: usize, p: usize) {
+        if n == 0 { return; }
+        if self.p == 0 {
+            self.p = p;
+            self.mean = vec![0.0; p];
+            self.m2 = vec![0.0; p];
+            self.scale = vec![1.0; p];
+            self.n_samples_seen = 0;
+        }
+        if self.p != p { return; }
+        let mut count = self.n_samples_seen;
+        for i in 0..n {
+            count += 1;
+            let inv_count = 1.0 / count as f64;
+            for j in 0..p {
+                let v = x[i * p + j];
+                let delta = v - self.mean[j];
+                self.mean[j] += delta * inv_count;
+                let delta2 = v - self.mean[j];
+                self.m2[j] += delta * delta2;
+            }
+        }
+        self.n_samples_seen = count;
+        if self.with_std && count > 0 {
+            let inv = 1.0 / count as f64;
+            for j in 0..p {
+                self.scale[j] = (self.m2[j] * inv).max(0.0).sqrt().max(1e-15);
+            }
+        } else {
+            for j in 0..p { self.scale[j] = 1.0; }
+        }
+        self.inv_scale = self.scale.iter().map(|&s| 1.0 / s).collect();
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize) {
         self.p = p;
         self.mean = vec![0.0; p];
         self.scale = vec![1.0; p];
+        self.m2 = vec![0.0; p];
+        self.n_samples_seen = n as u64;
 
         if self.with_std {
             let chunk = 4096usize.max(p);
@@ -59,6 +97,10 @@ impl StandardScaler {
             for i in 0..n { for j in 0..p { self.mean[j] += x[i * p + j]; } }
             let inv = 1.0 / n as f64;
             for j in 0..p { self.mean[j] *= inv; }
+        }
+        for j in 0..p {
+            let s = self.scale[j];
+            self.m2[j] = s * s * (n as f64);
         }
         self.inv_scale = self.scale.iter().map(|&s| 1.0 / s).collect();
     }
@@ -129,12 +171,33 @@ pub struct MinMaxScaler {
     pub min: Vec<f64>,
     pub range: Vec<f64>,
     pub feature_range: (f64, f64),
+    pub max: Vec<f64>,
+    pub n_samples_seen: u64,
     p: usize,
 }
 
 impl MinMaxScaler {
     pub fn new(feature_range: (f64, f64)) -> Self {
-        Self { min: Vec::new(), range: Vec::new(), feature_range, p: 0 }
+        Self { min: Vec::new(), range: Vec::new(), feature_range, max: Vec::new(), n_samples_seen: 0, p: 0 }
+    }
+
+    pub fn partial_fit(&mut self, x: &[f64], n: usize, p: usize) {
+        if n == 0 { return; }
+        if self.p == 0 {
+            self.p = p;
+            self.min = vec![f64::INFINITY; p];
+            self.max = vec![f64::NEG_INFINITY; p];
+        }
+        if self.p != p { return; }
+        for i in 0..n {
+            for j in 0..p {
+                let v = x[i * p + j];
+                if v < self.min[j] { self.min[j] = v; }
+                if v > self.max[j] { self.max[j] = v; }
+            }
+        }
+        self.n_samples_seen += n as u64;
+        self.range = (0..p).map(|j| (self.max[j] - self.min[j]).max(1e-15)).collect();
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize) {
@@ -175,6 +238,8 @@ impl MinMaxScaler {
         }
         self.min = mins.clone();
         self.range = (0..p).map(|j| (maxs[j] - mins[j]).max(1e-15)).collect();
+        self.max = maxs;
+        self.n_samples_seen = n as u64;
     }
 
     pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
@@ -337,12 +402,30 @@ impl RobustScaler {
 
 pub struct MaxAbsScaler {
     pub max_abs: Vec<f64>,
+    pub n_samples_seen: u64,
     p: usize,
 }
 
 impl MaxAbsScaler {
     pub fn new() -> Self {
-        Self { max_abs: Vec::new(), p: 0 }
+        Self { max_abs: Vec::new(), n_samples_seen: 0, p: 0 }
+    }
+
+    pub fn partial_fit(&mut self, x: &[f64], n: usize, p: usize) {
+        if n == 0 { return; }
+        if self.p == 0 {
+            self.p = p;
+            self.max_abs = vec![0.0; p];
+        }
+        if self.p != p { return; }
+        for i in 0..n {
+            for j in 0..p {
+                let v = x[i * p + j].abs();
+                if v > self.max_abs[j] { self.max_abs[j] = v; }
+            }
+        }
+        self.n_samples_seen += n as u64;
+        for j in 0..p { if self.max_abs[j] < 1e-15 { self.max_abs[j] = 1.0; } }
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize) {
@@ -377,6 +460,7 @@ impl MaxAbsScaler {
             }
         }
         for j in 0..p { if self.max_abs[j] < 1e-15 { self.max_abs[j] = 1.0; } }
+        self.n_samples_seen = n as u64;
     }
 
     pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
