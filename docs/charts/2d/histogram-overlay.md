@@ -62,10 +62,6 @@ A histogram overlay renders two distributions as semi-transparent histograms on 
 
 ---
 
-## Examples
-
-### A/B test conversion rates
-
 <style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
 <script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
 
@@ -98,7 +94,6 @@ chart = sp.histogram_overlay(
 chart.show()</code></pre></div>
 <div id="hist-overlay-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
 
-// control and variant arrays pre-generated
 const chart = sp.histogramOverlay({
   title: "A/B Test — Time on Page (seconds)",
   values: control,
@@ -110,7 +105,6 @@ const chart = sp.histogramOverlay({
 chart.show();</code></pre></div>
 <div id="hist-overlay-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
 
-// control and variant arrays pre-generated
 const chart = sp.histogramOverlay({
   title: "A/B Test — Time on Page (seconds)",
   values: control,
@@ -138,7 +132,6 @@ chart$show()</code></pre></div>
 <div id="hist-overlay-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
 
-// control and variant lists pre-generated
 var chart = SeraPlot.histogramOverlay()
     .title("A/B Test — Time on Page (seconds)")
     .values(control)
@@ -150,7 +143,6 @@ var chart = SeraPlot.histogramOverlay()
 chart.show();</code></pre></div>
 <div id="hist-overlay-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
 
-// control and variant arrays pre-generated
 var chart = Sp.HistogramOverlay(
     title:         "A/B Test — Time on Page (seconds)",
     values:        control,
@@ -162,7 +154,6 @@ var chart = Sp.HistogramOverlay(
 chart.Show();</code></pre></div>
 <div id="hist-overlay-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
 
-// control and variant lists pre-generated
 val chart = sp.histogram_overlay(
   title          = "A/B Test — Time on Page (seconds)",
   values         = control,
@@ -174,7 +165,6 @@ val chart = sp.histogram_overlay(
 chart.show()</code></pre></div>
 <div id="hist-overlay-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
 
-// control and variant vectors pre-generated
 auto chart = sp::histogram_overlay({
     .title          = "A/B Test — Time on Page (seconds)",
     .values         = control,
@@ -186,25 +176,7 @@ auto chart = sp::histogram_overlay({
 chart.show();</code></pre></div>
 </div>
 
-<details open>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
 <iframe src="../../previews/histogram-overlay.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-</details>
-
-### Custom colors
-
-```python
-chart = sp.histogram_overlay(
-    title="Score Distribution: Before vs After Training",
-    values=before_scores,
-    overlay_values=after_scores,
-    bins=20,
-    series_names=["Before", "After"],
-    color_hex=0xf43f5e,
-    overlay_color_hex=0x22c55e,
-    x_label="Score",
-)
-```
 
 ---
 
@@ -277,10 +249,6 @@ Un histogramme superposé affiche deux distributions sous forme d'histogrammes s
 `Chart`
 
 ---
-
-## Exemples
-
-### Test A/B — Durée de session
 
 <div class="sp-tabs" id="hist-overlay-fr">
 <div class="sp-tab-btns">
@@ -392,6 +360,8 @@ auto chart = sp::histogram_overlay({
 });
 chart.show();</code></pre></div>
 </div>
+
+<iframe src="../../previews/histogram-overlay.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
 

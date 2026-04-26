@@ -60,10 +60,6 @@ A violin chart combines a box plot with a kernel density estimate (KDE) to show 
 
 ---
 
-## Examples
-
-### Salary distributions by department
-
 <style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
 <script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
 
@@ -185,10 +181,7 @@ auto chart = sp::violin({
 chart.show();</code></pre></div>
 </div>
 
-<details open>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
 <iframe src="../../previews/violin.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-</details>
 
 ---
 
@@ -259,10 +252,6 @@ Un graphique en violon combine une boîte à moustaches avec une estimation par 
 `Chart`
 
 ---
-
-## Exemples
-
-### Distributions salariales par département
 
 <div class="sp-tabs" id="violin-fr">
 <div class="sp-tab-btns">
@@ -381,6 +370,8 @@ auto chart = sp::violin({
 });
 chart.show();</code></pre></div>
 </div>
+
+<iframe src="../../previews/violin.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
 

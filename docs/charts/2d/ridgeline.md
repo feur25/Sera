@@ -60,10 +60,6 @@ A ridgeline chart (joyplot) stacks KDE density curves for multiple categories al
 
 ---
 
-## Examples
-
-### Daily temperature distribution by month
-
 <style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
 <script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
 
@@ -100,7 +96,6 @@ chart.show()</code></pre></div>
 <div id="ridgeline-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
 
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-// values: 100 samples per month, pre-generated
 const chart = sp.ridgeline({
   title: "Daily Temperature Distribution by Month (°C)",
   categories: months,
@@ -113,7 +108,6 @@ chart.show();</code></pre></div>
 <div id="ridgeline-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
 
 const months: string[] = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-// values: 100 samples per month, pre-generated
 const chart = sp.ridgeline({
   title: "Daily Temperature Distribution by Month (°C)",
   categories: months,
@@ -142,7 +136,6 @@ chart$show()</code></pre></div>
 <div id="ridgeline-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
 
-// values: 100 samples per month pre-generated, all concatenated
 var chart = SeraPlot.ridgeline()
     .title("Daily Temperature Distribution by Month (°C)")
     .categories(List.of("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
@@ -154,7 +147,6 @@ var chart = SeraPlot.ridgeline()
 chart.show();</code></pre></div>
 <div id="ridgeline-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
 
-// values: 100 samples per month pre-generated, all concatenated
 var chart = Sp.Ridgeline(
     title:      "Daily Temperature Distribution by Month (°C)",
     categories: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
@@ -166,7 +158,6 @@ var chart = Sp.Ridgeline(
 chart.Show();</code></pre></div>
 <div id="ridgeline-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
 
-// values: 100 samples per month pre-generated, all concatenated
 val chart = sp.ridgeline(
   title      = "Daily Temperature Distribution by Month (°C)",
   categories = List("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
@@ -178,7 +169,6 @@ val chart = sp.ridgeline(
 chart.show()</code></pre></div>
 <div id="ridgeline-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
 
-// values: 100 samples per month pre-generated, all concatenated
 auto chart = sp::ridgeline({
     .title      = "Daily Temperature Distribution by Month (°C)",
     .categories = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"},
@@ -190,23 +180,7 @@ auto chart = sp::ridgeline({
 chart.show();</code></pre></div>
 </div>
 
-<details open>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
 <iframe src="../../previews/ridgeline.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-</details>
-
-### Separate ridges with custom palette
-
-```python
-chart = sp.ridgeline(
-    title="Wage Distribution by Industry",
-    categories=["Tech", "Finance", "Healthcare", "Education", "Retail"],
-    values=wage_values,
-    overlap=0.3,
-    palette=[0x6366f1, 0x22c55e, 0xf43f5e, 0xf59e0b, 0x06b6d4],
-    x_label="Annual Wage (€K)",
-)
-```
 
 ---
 
@@ -277,10 +251,6 @@ Un graphique en arêtes (ridgeline chart ou joyplot) empile des courbes de densi
 `Chart`
 
 ---
-
-## Exemples
-
-### Distribution des températures par mois
 
 <div class="sp-tabs" id="ridgeline-fr">
 <div class="sp-tab-btns">
@@ -398,6 +368,8 @@ auto chart = sp::ridgeline({
 });
 chart.show();</code></pre></div>
 </div>
+
+<iframe src="../../previews/ridgeline.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
 

@@ -66,10 +66,6 @@ A lollipop chart is a cleaner, lower ink-density alternative to a bar chart: eac
 
 ---
 
-## Examples
-
-### Framework stars on GitHub
-
 <style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
 <script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
 
@@ -195,23 +191,7 @@ auto chart = sp::lollipop({
 chart.show();</code></pre></div>
 </div>
 
-<details open>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
 <iframe src="../../previews/lollipop.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-</details>
-
-### Horizontal with long labels
-
-```python
-chart = sp.lollipop(
-    title="Average Salary by Role (€K)",
-    labels=["Principal Engineer", "Staff Engineer", "Senior Engineer", "Engineer", "Junior"],
-    values=[155, 140, 115, 90, 65],
-    orientation="h",
-    show_text=True,
-    sort_order="desc",
-)
-```
 
 ---
 
@@ -288,10 +268,6 @@ Un graphique en sucette (lollipop chart) est une alternative plus épurée au gr
 `Chart`
 
 ---
-
-## Exemples
-
-### Stars GitHub des frameworks frontend
 
 <div class="sp-tabs" id="lollipop-fr">
 <div class="sp-tab-btns">
@@ -414,6 +390,8 @@ auto chart = sp::lollipop({
 });
 chart.show();</code></pre></div>
 </div>
+
+<iframe src="../../previews/lollipop.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
 

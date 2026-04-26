@@ -58,10 +58,6 @@ A radar chart (spider chart) maps each dimension to a radial axis emanating from
 
 ---
 
-## Examples
-
-### Player performance comparison
-
 <style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
 <script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
 
@@ -180,27 +176,7 @@ auto chart = sp::radar({
 chart.show();</code></pre></div>
 </div>
 
-<details open>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
 <iframe src="../../previews/radar.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-</details>
-
-### Fixed scale for benchmarking
-
-```python
-chart = sp.radar(
-    title="Smartphone Benchmark Comparison",
-    axes=["CPU", "GPU", "Battery", "Camera", "Display", "Storage"],
-    series=[
-        [92, 88, 75, 95, 90, 80],
-        [88, 92, 85, 88, 85, 95],
-        [78, 80, 95, 82, 78, 88],
-    ],
-    series_names=["Model X", "Model Y", "Model Z"],
-    max_val=100,
-    fill_opacity=0.2,
-)
-```
 
 ---
 
@@ -269,10 +245,6 @@ Un graphique radar (graphique en araignée) associe chaque dimension à un axe r
 `Chart`
 
 ---
-
-## Exemples
-
-### Comparaison des performances des joueurs
 
 <div class="sp-tabs" id="radar-fr">
 <div class="sp-tab-btns">
@@ -388,6 +360,8 @@ auto chart = sp::radar({
 });
 chart.show();</code></pre></div>
 </div>
+
+<iframe src="../../previews/radar.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
 
