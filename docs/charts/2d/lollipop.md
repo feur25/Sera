@@ -20,8 +20,6 @@ sp.build_lollipop_chart(
     x_label: str = "",
     y_label: str = "",
     gridlines: bool = True,
-    background: str | None = None,
-    no_x_axis: bool = False,
     no_y_axis: bool = False,
 ) -> Chart
 ```
@@ -32,8 +30,12 @@ Aliases: `sp.lollipop`
 
 ## Description
 
-Lollipop chart — a cleaner alternative to bar charts using a thin stem and a circle at the end.
-Reduces ink-to-data ratio compared to filled bars.
+A lollipop chart is a cleaner, lower ink-density alternative to a bar chart: each category is represented by a thin stem line topped with a filled circle instead of a filled rectangle. This reduces visual clutter while preserving all quantitative information, making it a popular choice in modern data journalism and presentation-quality dashboards. The `orientation` parameter switches between vertical lollipops (default) and horizontal ones — horizontal works best for ranked lists with long category labels. `sort_order` lets you instantly produce a sorted ranking.
+
+**Ideal for:**
+- Ranking comparisons where minimal visual weight is desired
+- Replacing bar charts in polished, presentation-ready designs
+- Showing sparse data where most values are small but a few stand out
 
 ---
 
@@ -43,17 +45,18 @@ Reduces ink-to-data ratio compared to filled bars.
 |-----------|------|---------|-------------|
 | `title` | `str` | required | Chart title |
 | `labels` | `list[str]` | required | Category labels |
-| `values` | `list[float]` | required | Values per category |
-| `color_hex` | `int` | `0x6366F1` | Stem and dot color |
-| `palette` | `list[int] \| None` | `None` | Per-category colors |
-| `orientation` | `str` | `"v"` | `"v"` (vertical) or `"h"` (horizontal) |
-| `show_text` | `bool` | `False` | Show value labels |
+| `values` | `list[float]` | required | Values for each lollipop |
+| `color_hex` | `int` | `0x6366F1` | Uniform color for stems and dots |
+| `palette` | `list[int] \| None` | `None` | Per-item color palette |
+| `orientation` | `str` | `"v"` | `"v"` = vertical, `"h"` = horizontal |
+| `show_text` | `bool` | `False` | Show value labels on each dot |
 | `sort_order` | `str` | `"none"` | `"asc"`, `"desc"`, or `"none"` |
-| `width` | `int` | `900` | Canvas width |
-| `height` | `int` | `480` | Canvas height |
+| `width` | `int` | `900` | Canvas width in pixels |
+| `height` | `int` | `480` | Canvas height in pixels |
 | `x_label` | `str` | `""` | X-axis label |
 | `y_label` | `str` | `""` | Y-axis label |
 | `gridlines` | `bool` | `True` | Show gridlines |
+| `no_y_axis` | `bool` | `False` | Hide Y axis |
 
 ---
 
@@ -65,75 +68,158 @@ Reduces ink-to-data ratio compared to filled bars.
 
 ## Examples
 
-### Sorted lollipop
+### Framework stars on GitHub
 
+<style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
+<script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
 
-
-
-
-
-<style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
-.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-</style>
-<script>
-function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
-document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
-</script>
 <div class="sp-tabs" id="lollipop">
-<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('lollipop','lollipop-py',this)">Python</button><button class="sp-tb" onclick="spTab('lollipop','lollipop-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('lollipop','lollipop-ts',this)">TypeScript</button></div>
-<div id="lollipop-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.build_lollipop_chart(
-    "Top Countries by GDP per Capita",
-    labels=["Luxembourg", "Switzerland", "USA", "Germany", "France"],
-    values=[135605, 92434, 76398, 50802, 42409],
-    orientation="h",
-    sort_order="desc",
-    show_values=True,
-    x_label="GDP per capita ($)",
-)</code></pre></div>
-<div id="lollipop-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-const chart = sp.build_lollipop_chart("Top Countries by GDP per Capita",
-["Luxembourg", "Switzerland", "USA", "Germany", "France"],
-{
-    values: [135605, 92434, 76398, 50802, 42409],
-    orientation: "h",
-    sort_order: "desc",
-    show_values: true,
-    x_label: "GDP per capita ($)"
-})</code></pre></div>
-<div id="lollipop-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-const chart = sp.build_lollipop_chart("Top Countries by GDP per Capita",
-["Luxembourg", "Switzerland", "USA", "Germany", "France"],
-{
-    values: [135605, 92434, 76398, 50802, 42409],
-    orientation: "h",
-    sort_order: "desc",
-    show_values: true,
-    x_label: "GDP per capita ($)"
-})</code></pre></div>
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('lollipop','lollipop-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('lollipop','lollipop-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('lollipop','lollipop-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('lollipop','lollipop-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('lollipop','lollipop-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('lollipop','lollipop-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('lollipop','lollipop-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('lollipop','lollipop-cpp',this)">C++</button>
 </div>
+<div id="lollipop-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 
+frameworks = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"]
+stars_k = [223, 47, 95, 80, 32, 18, 21]
+
+chart = sp.lollipop(
+    title="Frontend Framework Stars (GitHub, K)",
+    labels=frameworks,
+    values=stars_k,
+    sort_order="desc",
+    show_text=True,
+    y_label="Stars (K)",
+    gridlines=True,
+)
+chart.show()</code></pre></div>
+<div id="lollipop-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+
+const frameworks = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"];
+const starsK = [223, 47, 95, 80, 32, 18, 21];
+
+const chart = sp.lollipop({
+  title: "Frontend Framework Stars (GitHub, K)",
+  labels: frameworks,
+  values: starsK,
+  sortOrder: "desc",
+  showText: true,
+  yLabel: "Stars (K)",
+  gridlines: true,
+});
+chart.show();</code></pre></div>
+<div id="lollipop-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+
+const frameworks: string[] = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"];
+const starsK: number[] = [223, 47, 95, 80, 32, 18, 21];
+
+const chart = sp.lollipop({
+  title: "Frontend Framework Stars (GitHub, K)",
+  labels: frameworks,
+  values: starsK,
+  sortOrder: "desc",
+  showText: true,
+  yLabel: "Stars (K)",
+  gridlines: true,
+});
+chart.show();</code></pre></div>
+<div id="lollipop-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+
+frameworks <- c("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik")
+stars_k    <- c(223, 47, 95, 80, 32, 18, 21)
+
+chart <- sp$lollipop(
+  title      = "Frontend Framework Stars (GitHub, K)",
+  labels     = frameworks,
+  values     = stars_k,
+  sort_order = "desc",
+  show_text  = TRUE,
+  y_label    = "Stars (K)",
+  gridlines  = TRUE
+)
+chart$show()</code></pre></div>
+<div id="lollipop-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.lollipop()
+    .title("Frontend Framework Stars (GitHub, K)")
+    .labels(List.of("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"))
+    .values(List.of(223.0, 47.0, 95.0, 80.0, 32.0, 18.0, 21.0))
+    .sortOrder("desc")
+    .showText(true)
+    .yLabel("Stars (K)")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="lollipop-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Lollipop(
+    title:     "Frontend Framework Stars (GitHub, K)",
+    labels:    ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"],
+    values:    [223, 47, 95, 80, 32, 18, 21],
+    sortOrder: "desc",
+    showText:  true,
+    yLabel:    "Stars (K)",
+    gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="lollipop-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.lollipop(
+  title      = "Frontend Framework Stars (GitHub, K)",
+  labels     = List("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"),
+  values     = List(223.0, 47.0, 95.0, 80.0, 32.0, 18.0, 21.0),
+  sort_order = "desc",
+  show_text  = true,
+  y_label    = "Stars (K)",
+  gridlines  = true
+)
+chart.show()</code></pre></div>
+<div id="lollipop-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::lollipop({
+    .title      = "Frontend Framework Stars (GitHub, K)",
+    .labels     = {"React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"},
+    .values     = {223.0, 47.0, 95.0, 80.0, 32.0, 18.0, 21.0},
+    .sort_order = "desc",
+    .show_text  = true,
+    .y_label    = "Stars (K)",
+    .gridlines  = true,
+});
+chart.show();</code></pre></div>
+</div>
 
 <details open>
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
-
 <iframe src="../../previews/lollipop.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-
 </details>
+
+### Horizontal with long labels
+
+```python
+chart = sp.lollipop(
+    title="Average Salary by Role (€K)",
+    labels=["Principal Engineer", "Staff Engineer", "Senior Engineer", "Engineer", "Junior"],
+    values=[155, 140, 115, 90, 65],
+    orientation="h",
+    show_text=True,
+    sort_order="desc",
+)
+```
 
 ---
 
 ## See also
 
-- [Bar Chart](bar.md)
-- [Dumbbell](dumbbell.md)
-- [Lollipop 3D](../3d/lollipop3d.md)
+- [Bar Chart](bar.md) — `sp.build_bar_chart()`
+- [Horizontal Bar](hbar.md) — `sp.build_hbar()`
+- [Dumbbell Chart](dumbbell.md) — `sp.build_dumbbell()`
 
 </div>
 
@@ -157,8 +243,6 @@ sp.build_lollipop_chart(
     x_label: str = "",
     y_label: str = "",
     gridlines: bool = True,
-    background: str | None = None,
-    no_x_axis: bool = False,
     no_y_axis: bool = False,
 ) -> Chart
 ```
@@ -169,7 +253,12 @@ Aliases: `sp.lollipop`
 
 ## Description
 
-Graphique en sucette — alternative épurée aux barres avec une tige fine et un cercle au bout. Réduit le ratio encre/données par rapport aux barres remplies.
+Un graphique en sucette (lollipop chart) est une alternative plus épurée au graphique en barres : chaque catégorie est représentée par une fine ligne-tige surmontée d'un cercle plein au lieu d'un rectangle. Cela réduit l'encombrement visuel tout en conservant toutes les informations quantitatives, ce qui en fait un choix populaire dans le journalisme de données moderne. Le paramètre `orientation` bascule entre les sucettes verticales (par défaut) et horizontales — l'horizontal convient mieux aux listes classées avec de longues étiquettes. `sort_order` permet de produire instantanément un classement trié.
+
+**Idéal pour :**
+- Comparaisons de classements avec un poids visuel minimal
+- Remplacement des barres dans les designs de présentation soignés
+- Données éparses où la plupart des valeurs sont faibles mais quelques-unes se démarquent
 
 ---
 
@@ -179,17 +268,18 @@ Graphique en sucette — alternative épurée aux barres avec une tige fine et u
 |-----------|------|--------|-------------|
 | `title` | `str` | requis | Titre du graphique |
 | `labels` | `list[str]` | requis | Étiquettes des catégories |
-| `values` | `list[float]` | requis | Valeurs par catégorie |
-| `color_hex` | `int` | `0x6366F1` | Couleur de la tige et du point |
-| `palette` | `list[int] \| None` | `None` | Couleurs par catégorie |
-| `orientation` | `str` | `"v"` | `"v"` (vertical) ou `"h"` (horizontal) |
-| `show_text` | `bool` | `False` | Afficher les étiquettes de valeur |
+| `values` | `list[float]` | requis | Valeurs pour chaque sucette |
+| `color_hex` | `int` | `0x6366F1` | Couleur uniforme pour les tiges et les points |
+| `palette` | `list[int] \| None` | `None` | Palette de couleurs par élément |
+| `orientation` | `str` | `"v"` | `"v"` = vertical, `"h"` = horizontal |
+| `show_text` | `bool` | `False` | Afficher les étiquettes de valeur sur chaque point |
 | `sort_order` | `str` | `"none"` | `"asc"`, `"desc"` ou `"none"` |
-| `width` | `int` | `900` | Largeur du canvas |
-| `height` | `int` | `480` | Hauteur du canvas |
+| `width` | `int` | `900` | Largeur du canvas en pixels |
+| `height` | `int` | `480` | Hauteur du canvas en pixels |
 | `x_label` | `str` | `""` | Étiquette de l'axe X |
 | `y_label` | `str` | `""` | Étiquette de l'axe Y |
 | `gridlines` | `bool` | `True` | Afficher les lignes de grille |
+| `no_y_axis` | `bool` | `False` | Masquer l'axe Y |
 
 ---
 
@@ -201,26 +291,136 @@ Graphique en sucette — alternative épurée aux barres avec une tige fine et u
 
 ## Exemples
 
-```python
-import seraplot as sp
+### Stars GitHub des frameworks frontend
 
-chart = sp.build_lollipop_chart(
-    "Top pays par PIB par habitant",
-    labels=["Luxembourg", "Suisse", "USA", "Allemagne", "France"],
-    values=[135605, 92434, 76398, 50802, 42409],
-    orientation="h",
+<div class="sp-tabs" id="lollipop-fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('lollipop-fr','lollipop-fr-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-cpp',this)">C++</button>
+</div>
+<div id="lollipop-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+frameworks = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"]
+etoiles_k  = [223, 47, 95, 80, 32, 18, 21]
+
+chart = sp.lollipop(
+    title="Stars GitHub des frameworks frontend (K)",
+    labels=frameworks,
+    values=etoiles_k,
     sort_order="desc",
     show_text=True,
-    x_label="PIB par habitant ($)",
+    y_label="Stars (K)",
+    gridlines=True,
 )
-```
+chart.show()</code></pre></div>
+<div id="lollipop-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+
+const frameworks = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"];
+const etoilesK   = [223, 47, 95, 80, 32, 18, 21];
+
+const chart = sp.lollipop({
+  title: "Stars GitHub des frameworks frontend (K)",
+  labels: frameworks,
+  values: etoilesK,
+  sortOrder: "desc",
+  showText: true,
+  yLabel: "Stars (K)",
+  gridlines: true,
+});
+chart.show();</code></pre></div>
+<div id="lollipop-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+
+const frameworks: string[] = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"];
+const etoilesK: number[]   = [223, 47, 95, 80, 32, 18, 21];
+
+const chart = sp.lollipop({
+  title: "Stars GitHub des frameworks frontend (K)",
+  labels: frameworks,
+  values: etoilesK,
+  sortOrder: "desc",
+  showText: true,
+  yLabel: "Stars (K)",
+  gridlines: true,
+});
+chart.show();</code></pre></div>
+<div id="lollipop-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+
+frameworks <- c("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik")
+etoiles_k  <- c(223, 47, 95, 80, 32, 18, 21)
+
+chart <- sp$lollipop(
+  title      = "Stars GitHub des frameworks frontend (K)",
+  labels     = frameworks,
+  values     = etoiles_k,
+  sort_order = "desc",
+  show_text  = TRUE,
+  y_label    = "Stars (K)",
+  gridlines  = TRUE
+)
+chart$show()</code></pre></div>
+<div id="lollipop-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.lollipop()
+    .title("Stars GitHub des frameworks frontend (K)")
+    .labels(List.of("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"))
+    .values(List.of(223.0, 47.0, 95.0, 80.0, 32.0, 18.0, 21.0))
+    .sortOrder("desc")
+    .showText(true)
+    .yLabel("Stars (K)")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="lollipop-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Lollipop(
+    title:     "Stars GitHub des frameworks frontend (K)",
+    labels:    ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"],
+    values:    [223, 47, 95, 80, 32, 18, 21],
+    sortOrder: "desc",
+    showText:  true,
+    yLabel:    "Stars (K)",
+    gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="lollipop-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.lollipop(
+  title      = "Stars GitHub des frameworks frontend (K)",
+  labels     = List("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"),
+  values     = List(223.0, 47.0, 95.0, 80.0, 32.0, 18.0, 21.0),
+  sort_order = "desc",
+  show_text  = true,
+  y_label    = "Stars (K)",
+  gridlines  = true
+)
+chart.show()</code></pre></div>
+<div id="lollipop-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::lollipop({
+    .title      = "Stars GitHub des frameworks frontend (K)",
+    .labels     = {"React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"},
+    .values     = {223.0, 47.0, 95.0, 80.0, 32.0, 18.0, 21.0},
+    .sort_order = "desc",
+    .show_text  = true,
+    .y_label    = "Stars (K)",
+    .gridlines  = true,
+});
+chart.show();</code></pre></div>
+</div>
 
 ---
 
 ## Voir aussi
 
-- [Graphique en barres](bar.md)
-- [Haltère](dumbbell.md)
-- [Sucette 3D](../3d/lollipop3d.md)
+- [Graphique en barres](bar.md) — `sp.build_bar_chart()`
+- [Barres horizontales](hbar.md) — `sp.build_hbar()`
+- [Graphique haltère](dumbbell.md) — `sp.build_dumbbell()`
 
 </div>

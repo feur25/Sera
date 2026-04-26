@@ -17,7 +17,6 @@ sp.build_ridgeline_chart(
     width: int = 900,
     height: int = 480,
     x_label: str = "",
-    background: str | None = None,
     gridlines: bool = False,
 ) -> Chart
 ```
@@ -28,10 +27,12 @@ Aliases: `sp.ridgeline`
 
 ## Description
 
-Ridgeline (joy) chart — stacked KDE curves per category.
-Excellent for comparing distributional shapes across many groups.
+A ridgeline chart (joyplot) stacks KDE density curves for multiple categories along a shared X axis, creating a mountain-ridge appearance that is both aesthetically striking and analytically powerful. `values` is a flat list where all category samples are concatenated in order; each category must have the same number of values (`len(values) / len(categories)`). The `overlap` parameter controls vertical spacing: 0 means no overlap (full separation), 1 means categories completely stack on top of each other. SeraPlot computes all KDE curves simultaneously in parallel threads.
 
-`values` is a flat list. The number of values must be divisible by `len(categories)` (equal samples per group).
+**Ideal for:**
+- Comparing distributional shapes across many categories (hourly traffic by day, income by country)
+- Revealing bimodality or shifts across ordered groups
+- Creating publication-ready distribution comparisons with minimal visual noise
 
 ---
 
@@ -40,16 +41,16 @@ Excellent for comparing distributional shapes across many groups.
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `title` | `str` | required | Chart title |
-| `categories` | `list[str]` | required | Category labels (one ridge each) |
-| `values` | `list[float]` | required | Flat concatenated sample data |
-| `bandwidth` | `float` | `1.0` | KDE bandwidth factor |
-| `overlap` | `float` | `0.5` | Ridge overlap (0 = no overlap, 1 = full overlap) |
-| `color_hex` | `int` | `0x6366F1` | Single fill color |
-| `palette` | `list[int] \| None` | `None` | Per-ridge colors |
-| `width` | `int` | `900` | Canvas width |
-| `height` | `int` | `480` | Canvas height |
+| `categories` | `list[str]` | required | Category labels (one per density ridge) |
+| `values` | `list[float]` | required | All sample values concatenated; length = `len(categories) × n` |
+| `bandwidth` | `float` | `1.0` | Gaussian kernel bandwidth scaling factor |
+| `overlap` | `float` | `0.5` | Ridge overlap ratio (0 = full separation, 1 = full overlap) |
+| `color_hex` | `int` | `0x6366F1` | Base fill color; `palette` overrides this |
+| `palette` | `list[int] \| None` | `None` | Per-category colors |
+| `width` | `int` | `900` | Canvas width in pixels |
+| `height` | `int` | `480` | Canvas height in pixels |
 | `x_label` | `str` | `""` | X-axis label |
-| `gridlines` | `bool` | `False` | Vertical gridlines |
+| `gridlines` | `bool` | `False` | Show vertical gridlines |
 
 ---
 
@@ -61,81 +62,159 @@ Excellent for comparing distributional shapes across many groups.
 
 ## Examples
 
-### Daily temperature ridgeline
+### Daily temperature distribution by month
 
+<style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
+<script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
 
-
-
-
-
-<style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
-.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-</style>
-<script>
-function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
-document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
-</script>
 <div class="sp-tabs" id="ridgeline">
-<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('ridgeline','ridgeline-py',this)">Python</button><button class="sp-tb" onclick="spTab('ridgeline','ridgeline-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('ridgeline','ridgeline-ts',this)">TypeScript</button></div>
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('ridgeline','ridgeline-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('ridgeline','ridgeline-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('ridgeline','ridgeline-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('ridgeline','ridgeline-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('ridgeline','ridgeline-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('ridgeline','ridgeline-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('ridgeline','ridgeline-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('ridgeline','ridgeline-cpp',this)">C++</button>
+</div>
 <div id="ridgeline-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-months = ["Jan", "Apr", "Jul", "Oct"]
-means  = [5, 15, 28, 16]
-values = [v for m in means for v in [random.gauss(m, 4) for _ in range(100)]]
-chart = sp.build_ridgeline_chart(
-    "Monthly Temperature Distribution",
+
+random.seed(99)
+months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+means  = [5, 7, 11, 15, 19, 23, 26, 25, 21, 16, 10, 6]
+values = []
+for m in means:
+    values.extend([random.gauss(m, 3) for _ in range(100)])
+
+chart = sp.ridgeline(
+    title="Daily Temperature Distribution by Month (°C)",
     categories=months,
     values=values,
+    bandwidth=1.1,
     overlap=0.6,
-    x_label="°C",
-)</code></pre></div>
-<div id="ridgeline-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-import random
-const months = ["Jan", "Apr", "Jul", "Oct"]
-const means  = [5, 15, 28, 16]
-const values = [v for m in means for v in [random.gauss(m, 4) for _ in range(100)]]
-const chart = sp.build_ridgeline_chart("Monthly Temperature Distribution",
-months,
-{
-    values: values,
-    overlap: 0.6,
-    x_label: "°C"
-})</code></pre></div>
-<div id="ridgeline-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-import random
-const months: string[] = ["Jan", "Apr", "Jul", "Oct"]
-const means: number[] = [5, 15, 28, 16]
-const values: number[] = [v for m in means for v in [random.gauss(m, 4) for _ in range(100)]]
-const chart = sp.build_ridgeline_chart("Monthly Temperature Distribution",
-months,
-{
-    values: values,
-    overlap: 0.6,
-    x_label: "°C"
-})</code></pre></div>
-</div>
+    x_label="Temperature (°C)",
+)
+chart.show()</code></pre></div>
+<div id="ridgeline-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
 
+const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+// values: 100 samples per month, pre-generated
+const chart = sp.ridgeline({
+  title: "Daily Temperature Distribution by Month (°C)",
+  categories: months,
+  values: values,
+  bandwidth: 1.1,
+  overlap: 0.6,
+  xLabel: "Temperature (°C)",
+});
+chart.show();</code></pre></div>
+<div id="ridgeline-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+
+const months: string[] = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+// values: 100 samples per month, pre-generated
+const chart = sp.ridgeline({
+  title: "Daily Temperature Distribution by Month (°C)",
+  categories: months,
+  values: values,
+  bandwidth: 1.1,
+  overlap: 0.6,
+  xLabel: "Temperature (°C)",
+});
+chart.show();</code></pre></div>
+<div id="ridgeline-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+
+set.seed(99)
+months <- c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
+means  <- c(5, 7, 11, 15, 19, 23, 26, 25, 21, 16, 10, 6)
+values <- unlist(lapply(means, function(m) rnorm(100, mean = m, sd = 3)))
+
+chart <- sp$ridgeline(
+  title      = "Daily Temperature Distribution by Month (°C)",
+  categories = months,
+  values     = values,
+  bandwidth  = 1.1,
+  overlap    = 0.6,
+  x_label    = "Temperature (°C)"
+)
+chart$show()</code></pre></div>
+<div id="ridgeline-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+// values: 100 samples per month pre-generated, all concatenated
+var chart = SeraPlot.ridgeline()
+    .title("Daily Temperature Distribution by Month (°C)")
+    .categories(List.of("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
+    .values(values)
+    .bandwidth(1.1)
+    .overlap(0.6)
+    .xLabel("Temperature (°C)")
+    .build();
+chart.show();</code></pre></div>
+<div id="ridgeline-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+// values: 100 samples per month pre-generated, all concatenated
+var chart = Sp.Ridgeline(
+    title:      "Daily Temperature Distribution by Month (°C)",
+    categories: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
+    values:     values,
+    bandwidth:  1.1,
+    overlap:    0.6,
+    xLabel:     "Temperature (°C)"
+);
+chart.Show();</code></pre></div>
+<div id="ridgeline-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+// values: 100 samples per month pre-generated, all concatenated
+val chart = sp.ridgeline(
+  title      = "Daily Temperature Distribution by Month (°C)",
+  categories = List("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
+  values     = values,
+  bandwidth  = 1.1,
+  overlap    = 0.6,
+  x_label    = "Temperature (°C)"
+)
+chart.show()</code></pre></div>
+<div id="ridgeline-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+// values: 100 samples per month pre-generated, all concatenated
+auto chart = sp::ridgeline({
+    .title      = "Daily Temperature Distribution by Month (°C)",
+    .categories = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"},
+    .values     = values,
+    .bandwidth  = 1.1,
+    .overlap    = 0.6,
+    .x_label    = "Temperature (°C)",
+});
+chart.show();</code></pre></div>
+</div>
 
 <details open>
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
-
 <iframe src="../../previews/ridgeline.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-
 </details>
+
+### Separate ridges with custom palette
+
+```python
+chart = sp.ridgeline(
+    title="Wage Distribution by Industry",
+    categories=["Tech", "Finance", "Healthcare", "Education", "Retail"],
+    values=wage_values,
+    overlap=0.3,
+    palette=[0x6366f1, 0x22c55e, 0xf43f5e, 0xf59e0b, 0x06b6d4],
+    x_label="Annual Wage (€K)",
+)
+```
 
 ---
 
 ## See also
 
-- [KDE](kde.md)
-- [Violin](violin.md)
-- [Ridgeline 3D](../3d/ridgeline3d.md)
+- [KDE Chart](kde.md) — `sp.build_kde_chart()`
+- [Violin Chart](violin.md) — `sp.build_violin()`
+- [Histogram](histogram.md) — `sp.build_histogram()`
 
 </div>
 
@@ -156,7 +235,6 @@ sp.build_ridgeline_chart(
     width: int = 900,
     height: int = 480,
     x_label: str = "",
-    background: str | None = None,
     gridlines: bool = False,
 ) -> Chart
 ```
@@ -167,9 +245,12 @@ Aliases: `sp.ridgeline`
 
 ## Description
 
-Graphique ridgeline (joy plot) — courbes KDE empilées par catégorie. Excellent pour comparer les formes de distribution entre de nombreux groupes.
+Un graphique en arêtes (ridgeline chart ou joyplot) empile des courbes de densité KDE pour plusieurs catégories le long d'un axe X commun, créant un effet de chaîne de montagnes à la fois esthétique et analytiquement puissant. `values` est une liste plate où tous les échantillons de catégories sont concaténés dans l'ordre ; chaque catégorie doit avoir le même nombre de valeurs (`len(values) / len(categories)`). Le paramètre `overlap` contrôle l'espacement vertical : 0 = pas de chevauchement, 1 = chevauchement complet. SeraPlot calcule toutes les courbes KDE simultanément dans des threads parallèles.
 
-`values` est une liste plate. Le nombre de valeurs doit être divisible par `len(categories)` (échantillons égaux par groupe).
+**Idéal pour :**
+- Comparer les formes de distribution sur de nombreuses catégories (trafic horaire par jour, revenus par pays)
+- Révéler la bimodalité ou les décalages entre groupes ordonnés
+- Créer des comparaisons de distributions prêtes à publier avec un bruit visuel minimal
 
 ---
 
@@ -179,15 +260,15 @@ Graphique ridgeline (joy plot) — courbes KDE empilées par catégorie. Excelle
 |-----------|------|--------|-------------|
 | `title` | `str` | requis | Titre du graphique |
 | `categories` | `list[str]` | requis | Étiquettes des catégories (une crête par catégorie) |
-| `values` | `list[float]` | requis | Échantillons concaténés en liste plate |
-| `bandwidth` | `float` | `1.0` | Facteur de bande passante KDE |
-| `overlap` | `float` | `0.5` | Chevauchement des crêtes (0 = aucun, 1 = complet) |
-| `color_hex` | `int` | `0x6366F1` | Couleur de remplissage unique |
-| `palette` | `list[int] \| None` | `None` | Couleurs par crête |
-| `width` | `int` | `900` | Largeur du canvas |
-| `height` | `int` | `480` | Hauteur du canvas |
+| `values` | `list[float]` | requis | Toutes les valeurs concaténées ; longueur = `len(categories) × n` |
+| `bandwidth` | `float` | `1.0` | Facteur d'échelle du noyau gaussien |
+| `overlap` | `float` | `0.5` | Ratio de chevauchement des crêtes (0 = séparation, 1 = plein chevauchement) |
+| `color_hex` | `int` | `0x6366F1` | Couleur de remplissage de base ; `palette` l'écrase |
+| `palette` | `list[int] \| None` | `None` | Couleurs par catégorie |
+| `width` | `int` | `900` | Largeur du canvas en pixels |
+| `height` | `int` | `480` | Hauteur du canvas en pixels |
 | `x_label` | `str` | `""` | Étiquette de l'axe X |
-| `gridlines` | `bool` | `False` | Lignes de grille verticales |
+| `gridlines` | `bool` | `False` | Afficher les lignes de grille verticales |
 
 ---
 
@@ -199,30 +280,131 @@ Graphique ridgeline (joy plot) — courbes KDE empilées par catégorie. Excelle
 
 ## Exemples
 
-```python
-import seraplot as sp
+### Distribution des températures par mois
+
+<div class="sp-tabs" id="ridgeline-fr">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('ridgeline-fr','ridgeline-fr-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('ridgeline-fr','ridgeline-fr-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('ridgeline-fr','ridgeline-fr-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('ridgeline-fr','ridgeline-fr-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('ridgeline-fr','ridgeline-fr-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('ridgeline-fr','ridgeline-fr-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('ridgeline-fr','ridgeline-fr-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('ridgeline-fr','ridgeline-fr-cpp',this)">C++</button>
+</div>
+<div id="ridgeline-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
 
-mois = ["Jan", "Avr", "Jul", "Oct"]
-moyennes = [5, 15, 28, 16]
+random.seed(99)
+mois   = ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"]
+moyens = [5, 7, 11, 15, 19, 23, 26, 25, 21, 16, 10, 6]
+valeurs = []
+for m in moyens:
+    valeurs.extend([random.gauss(m, 3) for _ in range(100)])
 
-valeurs = [v for m in moyennes for v in [random.gauss(m, 4) for _ in range(100)]]
-
-chart = sp.build_ridgeline_chart(
-    "Distribution de température mensuelle",
+chart = sp.ridgeline(
+    title="Distribution des températures par mois (°C)",
     categories=mois,
     values=valeurs,
+    bandwidth=1.1,
     overlap=0.6,
-    x_label="°C",
+    x_label="Température (°C)",
 )
-```
+chart.show()</code></pre></div>
+<div id="ridgeline-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+
+const mois = ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"];
+const chart = sp.ridgeline({
+  title: "Distribution des températures par mois (°C)",
+  categories: mois,
+  values: valeurs,
+  bandwidth: 1.1,
+  overlap: 0.6,
+  xLabel: "Température (°C)",
+});
+chart.show();</code></pre></div>
+<div id="ridgeline-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+
+const mois: string[] = ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"];
+const chart = sp.ridgeline({
+  title: "Distribution des températures par mois (°C)",
+  categories: mois,
+  values: valeurs,
+  bandwidth: 1.1,
+  overlap: 0.6,
+  xLabel: "Température (°C)",
+});
+chart.show();</code></pre></div>
+<div id="ridgeline-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+
+set.seed(99)
+mois   <- c("Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc")
+moyens <- c(5, 7, 11, 15, 19, 23, 26, 25, 21, 16, 10, 6)
+valeurs <- unlist(lapply(moyens, function(m) rnorm(100, mean = m, sd = 3)))
+
+chart <- sp$ridgeline(
+  title      = "Distribution des températures par mois (°C)",
+  categories = mois,
+  values     = valeurs,
+  bandwidth  = 1.1,
+  overlap    = 0.6,
+  x_label    = "Température (°C)"
+)
+chart$show()</code></pre></div>
+<div id="ridgeline-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.ridgeline()
+    .title("Distribution des températures par mois (°C)")
+    .categories(List.of("Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"))
+    .values(valeurs)
+    .bandwidth(1.1)
+    .overlap(0.6)
+    .xLabel("Température (°C)")
+    .build();
+chart.show();</code></pre></div>
+<div id="ridgeline-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Ridgeline(
+    title:      "Distribution des températures par mois (°C)",
+    categories: ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"],
+    values:     valeurs,
+    bandwidth:  1.1,
+    overlap:    0.6,
+    xLabel:     "Température (°C)"
+);
+chart.Show();</code></pre></div>
+<div id="ridgeline-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.ridgeline(
+  title      = "Distribution des températures par mois (°C)",
+  categories = List("Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"),
+  values     = valeurs,
+  bandwidth  = 1.1,
+  overlap    = 0.6,
+  x_label    = "Température (°C)"
+)
+chart.show()</code></pre></div>
+<div id="ridgeline-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::ridgeline({
+    .title      = "Distribution des températures par mois (°C)",
+    .categories = {"Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"},
+    .values     = valeurs,
+    .bandwidth  = 1.1,
+    .overlap    = 0.6,
+    .x_label    = "Température (°C)",
+});
+chart.show();</code></pre></div>
+</div>
 
 ---
 
 ## Voir aussi
 
-- [KDE](kde.md)
-- [Violon](violin.md)
-- [Ridgeline 3D](../3d/ridgeline3d.md)
+- [Courbe de densité (KDE)](kde.md) — `sp.build_kde_chart()`
+- [Graphique en violon](violin.md) — `sp.build_violin()`
+- [Histogramme](histogram.md) — `sp.build_histogram()`
 
 </div>
