@@ -143,8 +143,7 @@
 
 # Support
 
-- [Tooling](tooling/index.md)
-  - [VS Code Extension](tooling/vscode.md)
+- [VS Code Extension](tooling/vscode.md)
 
 - [API Reference](api/index.md)
 
