@@ -103,7 +103,6 @@ chart3 = sp.line("Clean", dates, values).zoom()       # adds zoom on top of conf
 ```
 
 <style>
-/* ── Language tabs ─────────────────────────────────────────── */
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
 .sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
@@ -111,52 +110,6 @@ chart3 = sp.line("Clean", dates, values).zoom()       # adds zoom on top of conf
 .sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
 .sp-tc{display:none}
 .sp-tc.sp-on{display:block}
-
-/* ── Method name headings — card style ─────────────────────── */
-.lang-en h3, .lang-fr h3 {
-  font-family: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: #a5b4fc;
-  background: #080d16;
-  border: 1px solid #1e3a5f;
-  border-left: 3px solid #6366f1;
-  border-radius: 0 6px 6px 0;
-  padding: 9px 16px;
-  margin: 1.8em 0 0.5em;
-  line-height: 1.4;
-}
-.lang-en h3 code, .lang-fr h3 code {
-  background: none !important;
-  border: none !important;
-  color: inherit !important;
-  font-size: inherit !important;
-  font-family: inherit !important;
-  padding: 0 !important;
-}
-/* First paragraph after a method heading — de-emphasised description */
-.lang-en h3 + p, .lang-fr h3 + p {
-  color: #94a3b8;
-  font-size: 14px;
-  line-height: 1.65;
-  margin-top: 0.35em;
-}
-/* Section separators */
-.lang-en h2, .lang-fr h2 {
-  border-bottom: 1px solid #1e3a5f;
-  padding-bottom: 6px;
-  margin-top: 2.4em;
-}
-/* Inline code in body text */
-.lang-en p code, .lang-fr p code,
-.lang-en li code, .lang-fr li code {
-  background: #111827;
-  border: 1px solid #1e3a5f;
-  border-radius: 4px;
-  padding: 1px 5px;
-  font-size: 12.5px;
-  color: #7dd3fc;
-}
 </style>
 <script>
 function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
@@ -446,7 +399,21 @@ chart.export_svg("chart.svg")
 
 ---
 
-Every SeraPlot function returns a `Chart` object — a thin wrapper around a
+</div>
+
+<div class="lang-fr">
+
+Ces méthodes sont disponibles sur tout objet `Chart` retourné par n'importe quelle fonction SeraPlot. Elles retournent toutes un nouveau `Chart` — elles peuvent donc être chaînées librement.
+
+---
+
+## Configuration globale (héritage automatique)
+
+### `sp.config(**kwargs)`
+
+Définir une fois, **tous les graphiques** créés ensuite héritent automatiquement de la config
+u
+rEvery SeraPlot function returns a `Chart` object — a thin wrapper around a
 complete, standalone HTML string.
 
 ---
@@ -506,10 +473,9 @@ chart = (
 )
 ```
 
-See **[Chart Methods](chart-methods.md)** for the full reference.
+See **[Chart Methods](chart-methods.md)** for the full reference.ation.
 
-</div>
-
+| 
 <div class="lang-fr">
 
 Ces méthodes sont disponibles sur chaque objet `Chart` retourné par n'importe quelle
@@ -619,11 +585,11 @@ chart3 = sp.line("Propre", dates, values).zoom()
 
 ### `set_bg(color=None)`
 
-Définit la couleur de fond du wrapper HTML complet, pour plus d'infos une section Background existe dans cette documentation, ou vous pourrez retrouver plus ample information concernant les arrières plan, mais aussi les thèmes existant.
+Définit la couleur de fond du wrapper HTML complet.
 
 ```python
 chart = sp.build_bar_chart("Ventes", labels, values).set_bg("#0f172a")
-chart = sp.build_scatter_chart("Données", x, y).set_bg("white")
+chart = sp.build_scatter_c, pour plus d'infos une section Background existe dans cette documentation, ou vous pourrez retrouver plus ample information concernant les arrières plan, mais aussi les thèmes existanthart("Données", x, y).set_bg("white")
 chart = sp.build_pie_chart("Parts", labels, values).set_bg(None)  # transparent
 ```
 
@@ -889,6 +855,9 @@ svg_string = chart.to_svg()
 ```python
 chart.export_svg("chart.svg")
 ```
+
+</div>
+
 ---
 Chaque fonction SeraPlot retourne un objet `Chart` — un wrapper léger autour d'une chaîne HTML complète et autonome.
 
@@ -948,6 +917,3 @@ chart = (
 ```
 
 Voir **[Méthodes du graphique](chart-methods.md)** pour la référence complète.
-
-
-</div>
