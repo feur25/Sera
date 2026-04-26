@@ -5,6 +5,10 @@
 Official **SeraPlot** extension for Visual Studio Code: live preview, theme studio,
 snippets and a chart gallery.
 
+![SeraPlot Live Preview](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/seraplot-demo.gif)
+
+**Marketplace**: https://marketplace.visualstudio.com/items?itemName=feur25.seraplot-vscode
+
 ---
 
 ## Install
@@ -20,7 +24,7 @@ Or from the Extensions view: search for **SeraPlot**.
 ### From a `.vsix`
 
 ```bash
-code --install-extension seraplot-vscode-0.1.1.vsix
+code --install-extension seraplot-vscode-0.3.9.vsix
 ```
 
 ---
@@ -87,6 +91,10 @@ License: MIT.
 Extension officielle **SeraPlot** pour Visual Studio Code : aperçu en direct, theme
 studio, snippets et galerie de graphiques.
 
+![SeraPlot Live Preview](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/seraplot-demo.gif)
+
+**Marketplace** : https://marketplace.visualstudio.com/items?itemName=feur25.seraplot-vscode
+
 ---
 
 ## Installation
@@ -102,7 +110,7 @@ Ou depuis la vue Extensions : rechercher **SeraPlot**.
 ### Depuis un `.vsix`
 
 ```bash
-code --install-extension seraplot-vscode-0.1.1.vsix
+code --install-extension seraplot-vscode-0.3.9.vsix
 ```
 
 ---

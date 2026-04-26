@@ -127,8 +127,11 @@ impl ChartOpts {
 pub struct ChartArgs {
     pub labels: Option<Vec<String>>,
     pub values: Option<Vec<f64>>,
+    #[serde(alias = "x_values")]
     pub x: Option<Vec<f64>>,
+    #[serde(alias = "y_values")]
     pub y: Option<Vec<f64>>,
+    #[serde(alias = "z_values")]
     pub z: Option<Vec<f64>>,
     pub x_labels: Option<Vec<String>>,
     pub series: Option<Vec<Vec<f64>>>,

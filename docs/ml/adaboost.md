@@ -1,94 +1,103 @@
-﻿# AdaBoostClassifier / AdaBoostRegressor
+﻿# AdaBoost — Adaptive Boosting
 
 <div class="lang-en">
 
 ## API Reference
 
-**Signature**
-
 ```python
-clf = sp.AdaBoostClassifier(
-    n_estimators=50, learning_rate=1.0
-)
-reg = sp.AdaBoostRegressor(
-    n_estimators=50, learning_rate=1.0
-)
+clf = sp.AdaBoostClassifier(n_estimators=50, learning_rate=1.0, max_depth=1)
+reg = sp.AdaBoostRegressor(n_estimators=50, learning_rate=1.0, max_depth=1)
 
-model.fit(X, y)
-model.predict(X)               -> list[int] | list[float]
-model.predict_proba(X)         -> ndarray (n, K)   # classifier only
-model.score(X, y)              -> float
-model.get_params()             -> dict
-model.set_params(n_estimators=..., learning_rate=...)
+clf.fit(X, y)
+clf.predict(X)               -> list[int]
+clf.predict_proba(X)         -> ndarray (n, K)
+clf.score(X, y)              -> float
+clf.get_params()             -> dict
+clf.set_params(n_estimators=100, learning_rate=0.5, max_depth=3)
+
+reg.fit(X, y)
+reg.predict(X)               -> list[float]
+reg.score(X, y)              -> float
 ```
 
-**Constructor parameters**
+## Constructor Parameters
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `n_estimators` | `int` | `50` | Maximum number of weak learners |
-| `learning_rate` | `float` | `1.0` | Shrinkage applied to each weak learner's contribution |
+| `learning_rate` | `float` | `1.0` | Shrinkage parameter $\nu$ for learner contribution |
+| `max_depth` | `int` | `1` | Max tree depth; `1` = stumps, `>1` = full trees |
 
-**Attributes**
+## Attributes
 
 | Attribute | Type | Description |
 |-----------|------|-------------|
 | `classes_` | `list[int]` | Unique class labels (classifier only) |
-| `estimator_weights_` | `list[float]` | Weight $\alpha_m$ assigned to each weak learner |
-| `estimator_errors_` | `list[float]` | Weighted error of each weak learner |
+| `n_estimators_` | `int` | Number of estimators used |
+| `learning_rate_` | `float` | Shrinkage parameter |
+| `max_depth_` | `int` | Tree depth setting |
 
-<details>
-<summary><strong>Example</strong></summary>
+## Example
 
 ```python
 import seraplot as sp
 import numpy as np
 
-X = np.random.randn(300, 4)
-y = np.sign(X[:, 0] * X[:, 1]).astype(int)
+X = np.random.randn(500, 5)
+y = np.random.randint(0, 3, 500)
 
-clf = sp.AdaBoostClassifier(n_estimators=100, learning_rate=0.5)
+clf = sp.AdaBoostClassifier(n_estimators=100, learning_rate=0.8, max_depth=3)
 clf.fit(X, y)
-print(f"Accuracy: {clf.score(X, y):.4f}")
-```
 
-</details>
+proba = clf.predict_proba(X)
+score = clf.score(X, y)
+print(f"Accuracy: {score:.4f}, Class probs shape: {np.array(proba).shape}")
+```
 
 ---
 
 ## Algorithmic Functioning
 
-AdaBoost (**Adaptive Boosting**) builds a **weighted sum of weak classifiers** by iteratively re-weighting misclassified samples.
+**AdaBoost.M1** (multi-class Adaptive Boosting) combines weak learners by iteratively re-weighting misclassified samples.
 
-**Initialisation** — uniform sample weights:
+**Initialization** — uniform sample weights:
 
-<div>$$w_i^{(1)} = \frac{1}{n}, \quad i = 1, \ldots, n$$</div>
+$$w_i^{(1)} = \frac{1}{n}, \quad i = 1, \ldots, n$$
 
-**Boosting iteration** $m = 1, \ldots, M$:
+**Iteration** $m = 1, \ldots, M$:
 
-**1.** Fit a weak learner $h_m$ to the weighted dataset.
+**1.** Fit weak learner $h_m$ (stump or tree) on weighted dataset.
 
-**2.** Compute the **weighted error**:
+**2.** Compute weighted error:
 
-<div>$$\varepsilon_m = \sum_{i=1}^n w_i^{(m)} \cdot \mathbf{1}\bigl[h_m(x_i) \neq y_i\bigr]$$</div>
+$$\varepsilon_m = \sum_{i=1}^n w_i^{(m)} \cdot \mathbb{1}\bigl[h_m(x_i) \neq y_i\bigr]$$
 
-**3.** Compute the **learner weight** (contribution of $h_m$):
+**3.** If $\varepsilon_m \geq 1 - \frac{1}{K}$ (worse than random for $K$ classes), stop.
 
-<div>$$\alpha_m = \nu \cdot \frac{1}{2}\ln\!\left(\frac{1 - \varepsilon_m}{\varepsilon_m}\right)$$</div>
+**4.** Compute learner weight:
 
-where $\nu$ is the `learning_rate`. A perfect classifier ($\varepsilon_m = 0$) receives $\alpha_m \to \infty$; a random guesser ($\varepsilon_m = 0.5$) receives $\alpha_m = 0$.
+$$\alpha_m = \nu \left[\frac{1}{2}\ln\left(\frac{1 - \varepsilon_m}{\varepsilon_m}\right) + \ln(K - 1)\right]$$
 
-**4.** Update and **renormalise** sample weights, down-weighting correctly classified samples:
+where $\nu$ is `learning_rate` and $K = |\text{classes}|$.
 
-<div>$$w_i^{(m+1)} \propto w_i^{(m)} \exp\!\bigl(-\alpha_m y_i h_m(x_i)\bigr)$$</div>
+**5.** Update weights (down-weight correct predictions):
 
-**Final classifier** — weighted majority vote:
+$$w_i^{(m+1)} \propto w_i^{(m)} \exp\left(-\alpha_m \mathbb{1}\bigl[h_m(x_i) = y_i\bigr]\right)$$
 
-<div>$$F(x) = \text{sign}\!\left(\sum_{m=1}^M \alpha_m h_m(x)\right)$$</div>
+Renormalize: $\sum_i w_i^{(m+1)} = 1$.
 
-**Regressor (AdaBoost.R2)** — weak learners are fitted to the residuals weighted by a loss-based sample reweighting scheme, and the ensemble prediction is the weighted median.
+**Final classifier** — weighted majority:
 
-**Stopping condition**: if $\varepsilon_m \geq 0.5$, the iteration is stopped early (the current learner is no better than random).
+$$F(x) = \arg\max_c \sum_{m: h_m(x) = c} \alpha_m$$
+
+**Regressor (AdaBoost.R2)** — weak learners fit to residuals with exponential loss reweighting; final prediction is weighted median.
+
+### Weak Learners
+
+- `max_depth=1`: **Decision stumps** (1-level trees) — fast, O(n log p) per iteration
+- `max_depth>1`: **Full decision trees** — more expressive, captures non-linear splits
+
+---
 
 </div>
 
@@ -96,90 +105,99 @@ where $\nu$ is the `learning_rate`. A perfect classifier ($\varepsilon_m = 0$) r
 
 ## Référence API
 
-**Signature**
-
 ```python
-clf = sp.AdaBoostClassifier(
-    n_estimators=50, learning_rate=1.0
-)
-reg = sp.AdaBoostRegressor(
-    n_estimators=50, learning_rate=1.0
-)
+clf = sp.AdaBoostClassifier(n_estimators=50, learning_rate=1.0, max_depth=1)
+reg = sp.AdaBoostRegressor(n_estimators=50, learning_rate=1.0, max_depth=1)
 
-model.fit(X, y)
-model.predict(X)               -> list[int] | list[float]
-model.predict_proba(X)         -> ndarray (n, K)   # classificateur seulement
-model.score(X, y)              -> float
-model.get_params()             -> dict
-model.set_params(n_estimators=..., learning_rate=...)
+clf.fit(X, y)
+clf.predict(X)               -> list[int]
+clf.predict_proba(X)         -> ndarray (n, K)
+clf.score(X, y)              -> float
+clf.get_params()             -> dict
+clf.set_params(n_estimators=100, learning_rate=0.5, max_depth=3)
+
+reg.fit(X, y)
+reg.predict(X)               -> list[float]
+reg.score(X, y)              -> float
 ```
 
-**Paramètres du constructeur**
+## Paramètres du constructeur
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
 | `n_estimators` | `int` | `50` | Nombre maximum d'apprenants faibles |
-| `learning_rate` | `float` | `1.0` | Rétrécissement appliqué à la contribution de chaque apprenant faible |
+| `learning_rate` | `float` | `1.0` | Paramètre de rétrécissement $\nu$ |
+| `max_depth` | `int` | `1` | Profondeur max; `1` = stumps, `>1` = arbres |
 
-**Attributs**
+## Attributs
 
 | Attribut | Type | Description |
 |----------|------|-------------|
-| `classes_` | `list[int]` | Labels de classes uniques (classificateur seulement) |
-| `estimator_weights_` | `list[float]` | Poids $\alpha_m$ attribué à chaque apprenant faible |
-| `estimator_errors_` | `list[float]` | Erreur pondérée de chaque apprenant faible |
+| `classes_` | `list[int]` | Labels de classes uniques |
+| `n_estimators_` | `int` | Nombre d'estimateurs utilisés |
+| `learning_rate_` | `float` | Paramètre de rétrécissement |
+| `max_depth_` | `int` | Profondeur d'arbre |
 
-<details>
-<summary><strong>Exemple</strong></summary>
+## Exemple
 
 ```python
 import seraplot as sp
 import numpy as np
 
-X = np.random.randn(300, 4)
-y = np.sign(X[:, 0] * X[:, 1]).astype(int)
+X = np.random.randn(500, 5)
+y = np.random.randint(0, 3, 500)
 
-clf = sp.AdaBoostClassifier(n_estimators=100, learning_rate=0.5)
+clf = sp.AdaBoostClassifier(n_estimators=100, learning_rate=0.8, max_depth=3)
 clf.fit(X, y)
-print(f"Précision : {clf.score(X, y):.4f}")
-```
 
-</details>
+proba = clf.predict_proba(X)
+score = clf.score(X, y)
+print(f"Précision: {score:.4f}, Shape proba: {np.array(proba).shape}")
+```
 
 ---
 
 ## Fonctionnement algorithmique
 
-AdaBoost (**Adaptive Boosting**) construit une **somme pondérée de classificateurs faibles** en ré-pondérant itérativement les échantillons mal classifiés.
+**AdaBoost.M1** (Adaptive Boosting multi-classe) combine des apprenants faibles par re-pondération itérative des échantillons mal classés.
 
-**Initialisation** — poids d'échantillons uniformes :
+**Initialisation** — poids uniformes:
 
-<div>$$w_i^{(1)} = \frac{1}{n}, \quad i = 1, \ldots, n$$</div>
+$$w_i^{(1)} = \frac{1}{n}, \quad i = 1, \ldots, n$$
 
-**Itération de boosting** $m = 1, \ldots, M$ :
+**Itération** $m = 1, \ldots, M$:
 
-**1.** Ajuster un apprenant faible $h_m$ au jeu de données pondéré.
+**1.** Ajuster l'apprenant faible $h_m$ sur l'ensemble pondéré.
 
-**2.** Calculer l'**erreur pondérée** :
+**2.** Calculer l'erreur pondérée:
 
-<div>$$\varepsilon_m = \sum_{i=1}^n w_i^{(m)} \cdot \mathbf{1}\bigl[h_m(x_i) \neq y_i\bigr]$$</div>
+$$\varepsilon_m = \sum_{i=1}^n w_i^{(m)} \cdot \mathbb{1}\bigl[h_m(x_i) \neq y_i\bigr]$$
 
-**3.** Calculer le **poids de l'apprenant** (contribution de $h_m$) :
+**3.** Si $\varepsilon_m \geq 1 - \frac{1}{K}$ (pire qu'aléatoire), arrêter.
 
-<div>$$\alpha_m = \nu \cdot \frac{1}{2}\ln\!\left(\frac{1 - \varepsilon_m}{\varepsilon_m}\right)$$</div>
+**4.** Calculer le poids de l'apprenant:
 
-où $\nu$ est le `learning_rate`. Un classificateur parfait ($\varepsilon_m = 0$) reçoit $\alpha_m \to \infty$ ; un devineur aléatoire ($\varepsilon_m = 0,5$) reçoit $\alpha_m = 0$.
+$$\alpha_m = \nu \left[\frac{1}{2}\ln\left(\frac{1 - \varepsilon_m}{\varepsilon_m}\right) + \ln(K - 1)\right]$$
 
-**4.** Mettre à jour et **renormaliser** les poids des échantillons, en réduisant le poids des échantillons correctement classifiés :
+où $\nu$ est `learning_rate` et $K = |\text{classes}|$.
 
-<div>$$w_i^{(m+1)} \propto w_i^{(m)} \exp\!\bigl(-\alpha_m y_i h_m(x_i)\bigr)$$</div>
+**5.** Mettre à jour les poids (diminuer les bonnes prédictions):
 
-**Classificateur final** — vote majoritaire pondéré :
+$$w_i^{(m+1)} \propto w_i^{(m)} \exp\left(-\alpha_m \mathbb{1}\bigl[h_m(x_i) = y_i\bigr]\right)$$
 
-<div>$$F(x) = \text{sign}\!\left(\sum_{m=1}^M \alpha_m h_m(x)\right)$$</div>
+Renormaliser: $\sum_i w_i^{(m+1)} = 1$.
 
-**Régresseur (AdaBoost.R2)** — les apprenants faibles sont ajustés aux résidus pondérés par un schéma de ré-pondération basé sur la perte, et la prédiction de l'ensemble est la médiane pondérée.
+**Classificateur final** — vote pondéré:
 
-**Condition d'arrêt** : si $\varepsilon_m \geq 0,5$, l'itération s'arrête prématurément (l'apprenant courant n'est pas meilleur qu'aléatoire).
+$$F(x) = \arg\max_c \sum_{m: h_m(x) = c} \alpha_m$$
+
+**Régresseur (AdaBoost.R2)** — apprenants faibles ajustés aux résidus; prédiction finale = médiane pondérée.
+
+### Apprenants faibles
+
+- `max_depth=1`: **Decision stumps** (arbres 1-niveau) — rapide, O(n log p) par itération
+- `max_depth>1`: **Arbres complets** — plus expressif, capture les splits non-linéaires
+
+---
 
 </div>
