@@ -1,31 +1,143 @@
 # VS Code Extension
 
+<style>
+/* ── Floating PiP GIF ──────────────────────────────────────────── */
+#sp-pip-wrap {
+  margin: 1.2em 0 2em;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 28px rgba(0,0,0,.55);
+  cursor: default;
+}
+#sp-pip-wrap img { width: 100%; display: block; }
+
+#sp-pip-float {
+  position: fixed;
+  bottom: 24px; left: 24px;
+  width: 270px;
+  border-radius: 10px;
+  background: #0d1117;
+  box-shadow: 0 8px 36px rgba(0,0,0,.8);
+  z-index: 8800;
+  cursor: move;
+  display: none;
+  overflow: hidden;
+  user-select: none;
+}
+#sp-pip-float.sp-pip-on {
+  display: block;
+  animation: spPipIn .38s cubic-bezier(.16,1,.3,1) both;
+}
+@keyframes spPipIn {
+  from { opacity:0; transform:scale(.6) translate(-14px,18px); }
+  to   { opacity:1; transform:scale(1)  translate(0,0); }
+}
+#sp-pip-float img { width:100%; display:block; border-radius:10px 10px 0 0; pointer-events:none; }
+.sp-pip-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 5px 9px; background: #161b27; border-top: 1px solid #1e293b;
+}
+.sp-pip-lbl { font-size:10px; color:#64748b; font-weight:600; letter-spacing:.05em; text-transform:uppercase; }
+.sp-pip-x {
+  background: none; border: none; color: #64748b;
+  font-size: 18px; cursor: pointer; line-height: 1; padding: 1px 4px;
+  border-radius: 4px; transition: color .15s, background .15s;
+}
+.sp-pip-x:hover { color: #f1f5f9; background: #1e293b; }
+
+/* ── Install method switch ─────────────────────────────────────── */
+.sp-isw { border: 1px solid #30363d; border-radius: 10px; overflow: hidden; margin: 1.5em 0; }
+.sp-isw-hdr {
+  display: flex; background: #0d1117;
+  border-bottom: 1px solid #1e293b; padding: 0 6px;
+}
+.sp-isw-tab {
+  padding: 11px 18px; border: none; background: none; color: #64748b;
+  font-size: 13px; font-weight: 600; cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  transition: color .15s, border-color .15s; white-space: nowrap;
+}
+.sp-isw-tab:hover { color: #e2e8f0; }
+.sp-isw-tab.on { color: #6366f1; border-bottom-color: #6366f1; }
+.sp-isw-body { padding: 20px 22px; background: #0a0e1a; }
+.sp-isw-pane { display: none; }
+.sp-isw-pane.on { display: block; }
+.sp-isw-desc { font-size: 13px; color: #94a3b8; margin: 0 0 10px; }
+.sp-isw-pane pre {
+  margin: 0; border-radius: 7px !important;
+  background: #161b27 !important;
+}
+.sp-isw-pane code { font-size: 12.5px !important; }
+.sp-mkt-btn {
+  display: inline-flex; align-items: center; gap: 7px; margin-top: 14px;
+  background: linear-gradient(135deg,#6366f1,#8b5cf6);
+  color: #fff !important; text-decoration: none !important;
+  padding: 10px 20px; border-radius: 8px; font-size: 13px; font-weight: 700;
+  transition: filter .15s;
+}
+.sp-mkt-btn:hover { filter: brightness(1.15); }
+.sp-isw-note {
+  display: flex; align-items: flex-start; gap: 8px; margin-top: 14px;
+  background: #0f172a; border: 1px solid #1e293b; border-radius: 7px;
+  padding: 10px 13px; font-size: 12px; color: #64748b; line-height: 1.5;
+}
+.sp-isw-note-ico { flex-shrink: 0; }
+</style>
+
+<!-- Hero GIF — shared between EN and FR (placed once, outside both lang divs) -->
+<div id="sp-pip-wrap">
+  <img id="sp-pip-img" src="https://raw.githubusercontent.com/feur25/seraplot-documentation/main/seraplot-demo.gif" alt="SeraPlot Live Preview" loading="lazy">
+</div>
+
+<!-- Floating mini GIF (PiP) -->
+<div id="sp-pip-float">
+  <img src="https://raw.githubusercontent.com/feur25/seraplot-documentation/main/seraplot-demo.gif" alt="">
+  <div class="sp-pip-bar">
+    <span class="sp-pip-lbl">Live Preview</span>
+    <button class="sp-pip-x" id="sp-pip-close" title="Close">×</button>
+  </div>
+</div>
+
 <div class="lang-en">
 
-Official **SeraPlot** extension for Visual Studio Code: live preview, theme studio,
-snippets and a chart gallery.
+Official **SeraPlot** extension for Visual Studio Code — live preview, theme studio, snippets and a chart gallery.
 
-![SeraPlot Live Preview](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/seraplot-demo.gif)
-
-**Marketplace**: https://marketplace.visualstudio.com/items?itemName=feur25.seraplot-vscode
+**Marketplace**: <https://marketplace.visualstudio.com/items?itemName=feur25.seraplot-vscode>
 
 ---
 
 ## Install
 
-### Marketplace
+<div class="sp-isw">
+<div class="sp-isw-hdr">
+<button class="sp-isw-tab on" onclick="spIsw('en','mp',this)">🛒 Marketplace</button>
+<button class="sp-isw-tab" onclick="spIsw('en','vsix',this)">📦 .vsix file</button>
+</div>
+<div class="sp-isw-body">
 
-```
-ext install feur25.seraplot-vscode
-```
+<div id="sp-isw-en-mp" class="sp-isw-pane on">
+<p class="sp-isw-desc">From the command palette or terminal — no browser needed:</p>
+<pre><code>ext install feur25.seraplot-vscode</code></pre>
+<p class="sp-isw-desc" style="margin-top:12px">Or from the Extensions view <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>, search <strong>SeraPlot</strong>:</p>
+<a class="sp-mkt-btn" href="https://marketplace.visualstudio.com/items?itemName=feur25.seraplot-vscode" target="_blank" rel="noopener">Open in VS Code Marketplace →</a>
+<div class="sp-isw-note">
+<span class="sp-isw-note-ico">💡</span>
+<span>The extension auto-detects your Python environment via <code>seraplot.pythonPath</code>. Works on Windows, macOS and Linux.</span>
+</div>
+</div>
 
-Or from the Extensions view: search for **SeraPlot**.
+<div id="sp-isw-en-vsix" class="sp-isw-pane">
+<p class="sp-isw-desc">Download the <code>.vsix</code> from the GitHub releases page, then install via terminal:</p>
+<pre><code class="language-bash">code --install-extension seraplot-vscode-0.3.9.vsix</code></pre>
+<p class="sp-isw-desc" style="margin-top:12px">Or drag the <code>.vsix</code> file directly into the VS Code Extensions panel.</p>
+<div class="sp-isw-note">
+<span class="sp-isw-note-ico">📦</span>
+<span>Ideal for air-gapped environments, corporate proxies, or pinning a specific version without going through the Marketplace.</span>
+</div>
+</div>
 
-### From a `.vsix`
-
-```bash
-code --install-extension seraplot-vscode-0.3.9.vsix
-```
+</div>
+</div>
 
 ---
 
@@ -88,30 +200,44 @@ License: MIT.
 
 <div class="lang-fr">
 
-Extension officielle **SeraPlot** pour Visual Studio Code : aperçu en direct, theme
-studio, snippets et galerie de graphiques.
+Extension officielle **SeraPlot** pour Visual Studio Code — aperçu en direct, theme studio, snippets et galerie de graphiques.
 
-![SeraPlot Live Preview](https://raw.githubusercontent.com/feur25/seraplot-documentation/main/seraplot-demo.gif)
-
-**Marketplace** : https://marketplace.visualstudio.com/items?itemName=feur25.seraplot-vscode
+**Marketplace** : <https://marketplace.visualstudio.com/items?itemName=feur25.seraplot-vscode>
 
 ---
 
 ## Installation
 
-### Marketplace
+<div class="sp-isw">
+<div class="sp-isw-hdr">
+<button class="sp-isw-tab on" onclick="spIsw('fr','mp',this)">🛒 Marketplace</button>
+<button class="sp-isw-tab" onclick="spIsw('fr','vsix',this)">📦 Fichier .vsix</button>
+</div>
+<div class="sp-isw-body">
 
-```
-ext install feur25.seraplot-vscode
-```
+<div id="sp-isw-fr-mp" class="sp-isw-pane on">
+<p class="sp-isw-desc">Depuis la palette de commandes ou un terminal — sans navigateur :</p>
+<pre><code>ext install feur25.seraplot-vscode</code></pre>
+<p class="sp-isw-desc" style="margin-top:12px">Ou depuis la vue Extensions <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>X</kbd>, cherchez <strong>SeraPlot</strong> :</p>
+<a class="sp-mkt-btn" href="https://marketplace.visualstudio.com/items?itemName=feur25.seraplot-vscode" target="_blank" rel="noopener">Ouvrir dans le Marketplace VS Code →</a>
+<div class="sp-isw-note">
+<span class="sp-isw-note-ico">💡</span>
+<span>L'extension détecte automatiquement votre environnement Python via <code>seraplot.pythonPath</code>. Fonctionne sur Windows, macOS et Linux.</span>
+</div>
+</div>
 
-Ou depuis la vue Extensions : rechercher **SeraPlot**.
+<div id="sp-isw-fr-vsix" class="sp-isw-pane">
+<p class="sp-isw-desc">Téléchargez le <code>.vsix</code> depuis la page des releases GitHub, puis installez via le terminal :</p>
+<pre><code class="language-bash">code --install-extension seraplot-vscode-0.3.9.vsix</code></pre>
+<p class="sp-isw-desc" style="margin-top:12px">Ou glissez-déposez le fichier <code>.vsix</code> directement dans le panneau Extensions de VS Code.</p>
+<div class="sp-isw-note">
+<span class="sp-isw-note-ico">📦</span>
+<span>Idéal pour les environnements hors ligne, les proxys d'entreprise, ou pour figer une version spécifique sans passer par le Marketplace.</span>
+</div>
+</div>
 
-### Depuis un `.vsix`
-
-```bash
-code --install-extension seraplot-vscode-0.3.9.vsix
-```
+</div>
+</div>
 
 ---
 
@@ -171,3 +297,99 @@ Dépôt : <https://github.com/feur25/seraplot> — dossier `seraplot-vscode/`.
 Licence : MIT.
 
 </div>
+
+<script>
+/* ── Install switch ──────────────────────────────────────────── */
+function spIsw(lang, pane, btn) {
+  var wrap = btn.closest('.sp-isw');
+  wrap.querySelectorAll('.sp-isw-pane').forEach(function(p) { p.classList.remove('on'); });
+  wrap.querySelectorAll('.sp-isw-tab').forEach(function(b) { b.classList.remove('on'); });
+  document.getElementById('sp-isw-' + lang + '-' + pane).classList.add('on');
+  btn.classList.add('on');
+}
+
+/* ── Floating PiP GIF ────────────────────────────────────────── */
+(function () {
+  var dismissed = false;
+  var dragging  = false;
+  var dragOX = 0, dragOY = 0;
+
+  var wrap  = document.getElementById('sp-pip-wrap');
+  var pip   = document.getElementById('sp-pip-float');
+  var close = document.getElementById('sp-pip-close');
+  if (!wrap || !pip || !close) return;
+
+  /* close */
+  close.addEventListener('click', function () {
+    dismissed = true;
+    pip.style.transition = 'opacity .3s, transform .3s';
+    pip.style.opacity = '0';
+    pip.style.transform = 'scale(.7) translate(-10px,10px)';
+    setTimeout(function () {
+      pip.style.display = 'none';
+      pip.style.opacity = '';
+      pip.style.transform = '';
+      pip.style.transition = '';
+      pip.classList.remove('sp-pip-on');
+    }, 320);
+  });
+
+  /* mouse drag */
+  pip.addEventListener('mousedown', function (e) {
+    if (e.target === close) return;
+    dragging = true;
+    var r = pip.getBoundingClientRect();
+    dragOX = e.clientX - r.left;
+    dragOY = e.clientY - r.top;
+    pip.style.transition = 'none';
+    e.preventDefault();
+  });
+  document.addEventListener('mousemove', function (e) {
+    if (!dragging) return;
+    var x = Math.max(0, Math.min(window.innerWidth  - pip.offsetWidth,  e.clientX - dragOX));
+    var y = Math.max(0, Math.min(window.innerHeight - pip.offsetHeight, e.clientY - dragOY));
+    pip.style.left   = x + 'px';
+    pip.style.top    = y + 'px';
+    pip.style.bottom = 'auto';
+  });
+  document.addEventListener('mouseup', function () { dragging = false; });
+
+  /* touch drag */
+  pip.addEventListener('touchstart', function (e) {
+    if (e.target === close) return;
+    var t = e.touches[0];
+    var r = pip.getBoundingClientRect();
+    dragOX = t.clientX - r.left;
+    dragOY = t.clientY - r.top;
+    pip.style.transition = 'none';
+  }, { passive: true });
+  document.addEventListener('touchmove', function (e) {
+    if (!pip.classList.contains('sp-pip-on')) return;
+    var t = e.touches[0];
+    var x = Math.max(0, Math.min(window.innerWidth  - pip.offsetWidth,  t.clientX - dragOX));
+    var y = Math.max(0, Math.min(window.innerHeight - pip.offsetHeight, t.clientY - dragOY));
+    pip.style.left   = x + 'px';
+    pip.style.top    = y + 'px';
+    pip.style.bottom = 'auto';
+  }, { passive: true });
+
+  /* IntersectionObserver: show mini when hero scrolls off-top */
+  var io = new IntersectionObserver(function (entries) {
+    var e = entries[0];
+    if (!e.isIntersecting && e.boundingClientRect.top < 0 && !dismissed) {
+      pip.style.display = 'block';
+      pip.style.left    = '24px';
+      pip.style.bottom  = '24px';
+      pip.style.top     = 'auto';
+      pip.style.transition = '';
+      requestAnimationFrame(function () { pip.classList.add('sp-pip-on'); });
+    } else if (e.isIntersecting) {
+      pip.classList.remove('sp-pip-on');
+      setTimeout(function () {
+        if (!pip.classList.contains('sp-pip-on')) pip.style.display = 'none';
+      }, 380);
+    }
+  }, { threshold: 0 });
+  io.observe(wrap);
+}());
+</script>
