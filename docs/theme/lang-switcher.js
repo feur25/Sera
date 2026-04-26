@@ -17,9 +17,9 @@
       btn.textContent = lang === "en" ? "\uD83C\uDDEB\uD83C\uDDF7 Fran\u00E7ais" : "\uD83C\uDDEC\uD83C\uDDE7 English";
       btn.title       = lang === "en" ? "Passer en fran\u00E7ais" : "Switch to English";
     }
-    var algoLbl = document.querySelector(".sp-ptb[data-tab='algo'] .sp-ptb-lbl");
-    if (algoLbl) {
-      algoLbl.textContent = lang === "en" ? "Algorithmic" : "Algorithmique";
+    var algoBtn = document.querySelector(".sp-ptb[data-tab='algo']");
+    if (algoBtn) {
+      algoBtn.textContent = lang === "en" ? "Algorithmic Functioning" : "Fonctionnement algorithmique";
     }
   }
 
@@ -71,36 +71,30 @@
     if (!builtAny) return;
 
     var lang = getLang();
-    var wrap = document.createElement("div");
-    wrap.className = "sp-page-tabs";
     var bar = document.createElement("div");
-    bar.className = "sp-ptb-group";
-
-    var ICO_CODE = '<svg class="sp-ptb-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 4l-3 4 3 4M11 4l3 4-3 4"/></svg>';
-    var ICO_ALGO = '<svg class="sp-ptb-ico" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="8" cy="8" r="2.5"/><path d="M8 1v2M8 13v2M1 8h2M13 8h2M11.2 4.8l-1.4 1.4M5.2 10.8l-1.4 1.4M4.8 4.8l1.4 1.4M10.8 10.8l1.4 1.4"/></svg>';
+    bar.className = "sp-page-tabs";
 
     var codeBtn = document.createElement("button");
     codeBtn.className = "sp-ptb sp-ptb-act";
     codeBtn.dataset.tab = "code";
-    codeBtn.innerHTML = ICO_CODE + '<span class="sp-ptb-lbl">Code</span>';
+    codeBtn.textContent = "Code";
     codeBtn.addEventListener("click", function () { setPageTab("code"); });
 
     var algoBtn = document.createElement("button");
     algoBtn.className = "sp-ptb";
     algoBtn.dataset.tab = "algo";
-    algoBtn.innerHTML = ICO_ALGO + '<span class="sp-ptb-lbl">' + (lang === "en" ? "Algorithmic" : "Algorithmique") + '</span>';
+    algoBtn.textContent = lang === "en" ? "Algorithmic Functioning" : "Fonctionnement algorithmique";
     algoBtn.addEventListener("click", function () { setPageTab("algo"); });
 
     bar.appendChild(codeBtn);
     bar.appendChild(algoBtn);
-    wrap.appendChild(bar);
 
     var main = document.querySelector("main");
     var h1 = main && main.querySelector("h1");
     if (h1 && h1.nextElementSibling) {
-      h1.parentNode.insertBefore(wrap, h1.nextElementSibling);
+      h1.parentNode.insertBefore(bar, h1.nextElementSibling);
     } else if (main) {
-      main.appendChild(wrap);
+      main.appendChild(bar);
     }
 
     applyPageTab(getPageTab());
