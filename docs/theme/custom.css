@@ -51,6 +51,21 @@ pre code {
   font-size: 13px;
 }
 
+/* ── Language tab panes (.sp-tabs) — fix padding + scroll on all pages ─── */
+.sp-tc pre {
+  margin: 0;
+  border-radius: 0;
+  padding: 14px 16px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  box-sizing: border-box;
+}
+.sp-tc pre code {
+  display: block;
+  line-height: 1.5;
+  white-space: pre;
+}
+
 /* ── Section tabs (Code / Algorithmic Functioning) ───────────────────────── */
 .doc-tabs {
   display: flex;
