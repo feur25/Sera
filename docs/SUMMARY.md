@@ -8,13 +8,12 @@
 
 - [Installation](getting-started/installation.md)
 - [Quick Start](getting-started/quickstart.md)
-- [Chart Object](getting-started/chart-object.md)
-- [Chart Methods](getting-started/chart-methods.md)
 
 ---
 
 # Charts/Plots
 
+- [Chart Methods](getting-started/chart-methods.md)
 - [2D Charts](charts/2d/index.md)
   - [Bar Chart](charts/2d/bar.md)
   - [Horizontal Bar](charts/2d/hbar.md)

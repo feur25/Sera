@@ -54,7 +54,6 @@
 .sp-size-bar-wrap label { font-size: 12px; color: #64748b; display: flex; justify-content: space-between; margin-bottom: 5px; }
 .sp-size-bar { height: 8px; border-radius: 4px; }
 </style>
-
 <div class="lang-en">
 
 ## Requirements
@@ -65,7 +64,6 @@
 SeraPlot ships as a compiled Rust extension (`.pyd` / `.so`) bundled in the wheel. There is **no compiler required** on the user side — the binary is pre-built for each platform.
 
 ---
-
 ## Install
 
 <div class="sp-inst-sw">
@@ -131,7 +129,6 @@ SeraPlot has **zero required Python dependencies**. The Rust extension is entire
 </div>
 
 </div>
-
 <div class="lang-fr">
 
 ## Prérequis
@@ -142,7 +139,6 @@ SeraPlot has **zero required Python dependencies**. The Rust extension is entire
 SeraPlot se distribue sous forme d'extension Rust compilée (`.pyd` / `.so`) incluse dans le wheel. **Aucun compilateur n'est requis** côté utilisateur — le binaire est pré-compilé pour chaque plateforme.
 
 ---
-
 ## Installer
 
 <div class="sp-inst-sw">

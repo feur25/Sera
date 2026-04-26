@@ -197,4 +197,3 @@ Index alphabétique complet de tous les symboles publics exportés par `seraplot
 | [`palette`](../config/palette.md) | Palette & Couleurs |
 
 </div>
-
