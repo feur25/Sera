@@ -1,60 +1,207 @@
 (function () {
-  var POS_KEY       = "sp_params_pos";
-  var COL_KEY       = "sp_params_col";
-  var SIZE_KEY      = "sp_params_size";
-  var PANEL_ID      = "sp-params-panel";
+  var POS_KEY    = "sp_params_pos";
+  var COL_KEY    = "sp_params_col";
+  var H_KEY      = "sp_params_h";
+  var W_KEY      = "sp_params_w";
+  var LANG_KEY   = "seraplot_lang";
+  var PANEL_ID   = "sp-params-panel";
 
-  var pos       = localStorage.getItem(POS_KEY)  || "right";
-  var collapsed = localStorage.getItem(COL_KEY)  === "1";
-  var size      = localStorage.getItem(SIZE_KEY) || "md";
+  var state = {
+    pos: localStorage.getItem(POS_KEY) || "right",
+    collapsed: localStorage.getItem(COL_KEY) === "1",
+    bottomH: parseInt(localStorage.getItem(H_KEY) || "300", 10),
+    rightW:  parseInt(localStorage.getItem(W_KEY) || "360", 10)
+  };
 
-  function isChartPage() {
-    return !!document.querySelector(
-      'h2[id="parameters"], h2[id="param-tres"], h2[id="param-tres-param-tres"],' +
-      ' h2[id="param-egravtres"], h2[id="param-tres-parametres"]'
-    ) || (function () {
-      var found = false;
-      document.querySelectorAll(".content h2").forEach(function (h) {
-        var t = h.textContent.trim().toLowerCase();
-        if (t === "parameters" || t === "param\u00e8tres") found = true;
-      });
-      return found;
-    }());
-  }
+  var sectionData = { en: null, fr: null };
 
-  function findH2(texts) {
+  function getLang() { return localStorage.getItem(LANG_KEY) || "en"; }
+
+  function findH2(container, texts) {
     var found = null;
-    document.querySelectorAll(".content h2").forEach(function (h) {
+    container.querySelectorAll("h2").forEach(function (h) {
       var t = h.textContent.trim().toLowerCase();
       if (!found && texts.indexOf(t) !== -1) found = h;
     });
     return found;
   }
 
-  function extractSection(h2El) {
+  function isAliasNode(el) {
+    if (!el || !el.textContent) return false;
+    var t = el.textContent.trim();
+    return /^alias(es|)\s*[::]/i.test(t);
+  }
+
+  function isHrNode(el) { return el && el.tagName === "HR"; }
+
+  function extractAndHide(h2El, splitAlias) {
     if (!h2El) return null;
-    var frag = document.createDocumentFragment();
+    h2El.classList.add("sp-moved");
+    var sigHtml = "";
+    var aliasHtml = "";
     var sib = h2El.nextElementSibling;
     while (sib && sib.tagName !== "H2") {
-      frag.appendChild(sib.cloneNode(true));
-      sib = sib.nextElementSibling;
+      var next = sib.nextElementSibling;
+      sib.classList.add("sp-moved");
+      if (splitAlias && isAliasNode(sib)) {
+        aliasHtml += sib.outerHTML;
+      } else if (!isHrNode(sib)) {
+        sigHtml += sib.outerHTML;
+      }
+      sib = next;
     }
-    return frag;
+    return { main: sigHtml, alias: aliasHtml };
+  }
+
+  function collectFrom(container) {
+    if (!container) return null;
+    var sigH2 = findH2(container, ["signature"]);
+    var parH2 = findH2(container, ["parameters", "param\u00e8tres"]);
+    var retH2 = findH2(container, ["returns", "retour", "retours"]);
+    if (!parH2) return null;
+
+    var sig    = extractAndHide(sigH2, true);
+    var params = extractAndHide(parH2, false);
+    var rets   = extractAndHide(retH2, false);
+
+    return {
+      signature:  sig    ? sig.main   : "",
+      alias:      sig    ? sig.alias  : "",
+      parameters: params ? params.main : "",
+      returns:    rets   ? rets.main   : ""
+    };
+  }
+
+  function isChartPage() {
+    var en = document.querySelector(".lang-en");
+    var fr = document.querySelector(".lang-fr");
+    var test = en || fr;
+    return !!(test && findH2(test, ["parameters", "param\u00e8tres"]));
+  }
+
+  function renderBody(panel) {
+    var body = panel.querySelector(".sp-pb");
+    if (!body) return;
+    body.innerHTML = "";
+    var lang = getLang();
+    var data = sectionData[lang] || sectionData.en || sectionData.fr;
+    if (!data) return;
+
+    var labels = lang === "fr"
+      ? { sig: "Signature", alias: "Alias", par: "Param\u00e8tres", ret: "Retour" }
+      : { sig: "Signature", alias: "Aliases", par: "Parameters", ret: "Returns" };
+
+    function addSec(html, label, cls) {
+      if (!html || !html.trim()) return;
+      var w = document.createElement("div");
+      w.className = "sp-psec " + cls;
+      var l = document.createElement("div");
+      l.className = "sp-psec-lbl";
+      l.textContent = label;
+      w.appendChild(l);
+      var c = document.createElement("div");
+      c.className = "sp-psec-content";
+      c.innerHTML = html;
+      w.appendChild(c);
+      body.appendChild(w);
+    }
+
+    addSec(data.signature,  labels.sig,   "sp-psec-sig");
+    addSec(data.alias,      labels.alias, "sp-psec-alias");
+    addSec(data.parameters, labels.par,   "sp-psec-params");
+    addSec(data.returns,    labels.ret,   "sp-psec-returns");
+
+    if (window.hljs) {
+      body.querySelectorAll("pre code").forEach(function (c) { hljs.highlightElement(c); });
+    }
+  }
+
+  function applyPos(panel, posBtn) {
+    panel.classList.remove("sp-p-right", "sp-p-bottom");
+    document.body.classList.remove("sp-body-right", "sp-body-bottom");
+    panel.classList.add("sp-p-" + state.pos);
+    document.body.classList.add("sp-body-" + state.pos);
+
+    if (state.pos === "right") {
+      panel.style.width  = state.rightW + "px";
+      panel.style.height = "";
+      document.documentElement.style.setProperty("--sp-pp-w", state.rightW + "px");
+    } else {
+      panel.style.height = state.bottomH + "px";
+      panel.style.width  = "";
+      document.documentElement.style.setProperty("--sp-pp-h", state.bottomH + "px");
+    }
+    posBtn.innerHTML = state.pos === "right"
+      ? '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v10M4 9l4 4 4-4"/></svg>'
+      : '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>';
+    posBtn.title = state.pos === "right"
+      ? (getLang() === "fr" ? "Ancrer en bas" : "Dock to bottom")
+      : (getLang() === "fr" ? "Ancrer \u00e0 droite" : "Dock to right");
+  }
+
+  function applyCollapsed(panel, colBtn) {
+    panel.classList.toggle("sp-p-collapsed", state.collapsed);
+    colBtn.innerHTML = state.collapsed
+      ? '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>'
+      : '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10l4-4 4 4"/></svg>';
+    colBtn.title = state.collapsed
+      ? (getLang() === "fr" ? "D\u00e9plier" : "Expand")
+      : (getLang() === "fr" ? "Replier" : "Collapse");
+  }
+
+  function attachResize(panel) {
+    var handle = panel.querySelector(".sp-resize");
+    if (!handle) return;
+    handle.addEventListener("mousedown", function (e) {
+      e.preventDefault();
+      var startX = e.clientX, startY = e.clientY;
+      var rect = panel.getBoundingClientRect();
+      var startW = rect.width, startH = rect.height;
+      document.body.classList.add("sp-resizing");
+
+      function onMove(ev) {
+        if (state.pos === "right") {
+          var dx = startX - ev.clientX;
+          var w = Math.min(Math.max(260, startW + dx), Math.min(900, window.innerWidth - 200));
+          state.rightW = w;
+          panel.style.width = w + "px";
+          document.documentElement.style.setProperty("--sp-pp-w", w + "px");
+        } else {
+          var dy = startY - ev.clientY;
+          var h = Math.min(Math.max(140, startH + dy), Math.min(800, window.innerHeight - 80));
+          state.bottomH = h;
+          panel.style.height = h + "px";
+          document.documentElement.style.setProperty("--sp-pp-h", h + "px");
+        }
+      }
+      function onUp() {
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("mouseup", onUp);
+        document.body.classList.remove("sp-resizing");
+        localStorage.setItem(W_KEY, state.rightW);
+        localStorage.setItem(H_KEY, state.bottomH);
+      }
+      document.addEventListener("mousemove", onMove);
+      document.addEventListener("mouseup", onUp);
+    });
   }
 
   function buildPanel() {
     if (document.getElementById(PANEL_ID)) return;
     if (!isChartPage()) return;
 
-    var sigH2    = findH2(["signature"]);
-    var aliasH2  = findH2(["aliases", "alias"]);
-    var paramsH2 = findH2(["parameters", "param\u00e8tres"]);
-    var retH2    = findH2(["returns", "retour"]);
-
-    if (!paramsH2) return;
+    var en = document.querySelector(".lang-en");
+    var fr = document.querySelector(".lang-fr");
+    sectionData.en = collectFrom(en);
+    sectionData.fr = collectFrom(fr);
+    if (!sectionData.en && !sectionData.fr) return;
 
     var panel = document.createElement("div");
     panel.id = PANEL_ID;
+
+    var resize = document.createElement("div");
+    resize.className = "sp-resize";
+    panel.appendChild(resize);
 
     var hd = document.createElement("div");
     hd.className = "sp-ph";
@@ -67,24 +214,16 @@
         '<rect x="1" y="7" width="10" height="2" rx="1"/>' +
         '<rect x="1" y="11" width="12" height="2" rx="1"/>' +
       '</svg>' +
-      '<span>Parameters</span>';
+      '<span class="sp-ph-tt">API</span>';
 
     var ctrl = document.createElement("div");
     ctrl.className = "sp-ph-ctrl";
 
-    var sizeBtn = document.createElement("button");
-    sizeBtn.className = "sp-pc-btn";
-    sizeBtn.id = "sp-pc-size";
-
     var posBtn = document.createElement("button");
-    posBtn.className = "sp-pc-btn";
-    posBtn.id = "sp-pc-pos";
-
+    posBtn.className = "sp-pc-btn sp-pc-pos";
     var colBtn = document.createElement("button");
-    colBtn.className = "sp-pc-btn";
-    colBtn.id = "sp-pc-col";
+    colBtn.className = "sp-pc-btn sp-pc-col";
 
-    ctrl.appendChild(sizeBtn);
     ctrl.appendChild(posBtn);
     ctrl.appendChild(colBtn);
     hd.appendChild(htitle);
@@ -93,124 +232,47 @@
 
     var body = document.createElement("div");
     body.className = "sp-pb";
-    body.id = "sp-pb";
-
-    if (sigH2) {
-      var sigSec = extractSection(sigH2);
-      if (sigSec) {
-        var sw = document.createElement("div");
-        sw.className = "sp-psec sp-psec-sig";
-        var sl = document.createElement("div");
-        sl.className = "sp-psec-lbl";
-        sl.textContent = "Signature";
-        sw.appendChild(sl);
-        sw.appendChild(sigSec);
-        body.appendChild(sw);
-      }
-    }
-
-    if (aliasH2) {
-      var alSec = extractSection(aliasH2);
-      if (alSec) {
-        var aw = document.createElement("div");
-        aw.className = "sp-psec sp-psec-alias";
-        var al = document.createElement("div");
-        al.className = "sp-psec-lbl";
-        al.textContent = "Aliases";
-        aw.appendChild(al);
-        aw.appendChild(alSec);
-        body.appendChild(aw);
-      }
-    }
-
-    if (paramsH2) {
-      var pSec = extractSection(paramsH2);
-      if (pSec) {
-        var pw = document.createElement("div");
-        pw.className = "sp-psec sp-psec-params";
-        var pl = document.createElement("div");
-        pl.className = "sp-psec-lbl";
-        pl.textContent = "Parameters";
-        pw.appendChild(pl);
-        pw.appendChild(pSec);
-        body.appendChild(pw);
-      }
-    }
-
-    if (retH2) {
-      var rSec = extractSection(retH2);
-      if (rSec) {
-        var rw = document.createElement("div");
-        rw.className = "sp-psec sp-psec-returns";
-        var rl = document.createElement("div");
-        rl.className = "sp-psec-lbl";
-        rl.textContent = "Returns";
-        rw.appendChild(rl);
-        rw.appendChild(rSec);
-        body.appendChild(rw);
-      }
-    }
-
     panel.appendChild(body);
+
     document.body.appendChild(panel);
 
     applyPos(panel, posBtn);
-    applySize(panel, sizeBtn);
     applyCollapsed(panel, colBtn);
+    renderBody(panel);
+    attachResize(panel);
 
     posBtn.addEventListener("click", function () {
-      pos = pos === "right" ? "bottom" : "right";
-      localStorage.setItem(POS_KEY, pos);
+      state.pos = state.pos === "right" ? "bottom" : "right";
+      localStorage.setItem(POS_KEY, state.pos);
       applyPos(panel, posBtn);
     });
 
-    sizeBtn.addEventListener("click", function () {
-      size = size === "md" ? "lg" : "md";
-      localStorage.setItem(SIZE_KEY, size);
-      applySize(panel, sizeBtn);
-    });
-
     colBtn.addEventListener("click", function () {
-      collapsed = !collapsed;
-      localStorage.setItem(COL_KEY, collapsed ? "1" : "0");
+      state.collapsed = !state.collapsed;
+      localStorage.setItem(COL_KEY, state.collapsed ? "1" : "0");
       applyCollapsed(panel, colBtn);
     });
   }
 
-  function applyPos(panel, posBtn) {
-    panel.classList.remove("sp-p-right", "sp-p-bottom");
-    document.body.classList.remove("sp-body-right", "sp-body-bottom");
-    panel.classList.add("sp-p-" + pos);
-    document.body.classList.add("sp-body-" + pos);
-    posBtn.innerHTML = pos === "right"
-      ? '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v10M4 9l4 4 4-4"/></svg>'
-      : '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h10M9 4l4 4-4 4"/></svg>';
-    posBtn.title = pos === "right" ? "Dock to bottom" : "Dock to right";
-  }
+  var lastLang = getLang();
+  setInterval(function () {
+    var cur = getLang();
+    if (cur !== lastLang) {
+      lastLang = cur;
+      var panel = document.getElementById(PANEL_ID);
+      if (panel) {
+        renderBody(panel);
+        var posBtn = panel.querySelector(".sp-pc-pos");
+        var colBtn = panel.querySelector(".sp-pc-col");
+        if (posBtn) applyPos(panel, posBtn);
+        if (colBtn) applyCollapsed(panel, colBtn);
+      }
+    }
+  }, 250);
 
-  function applySize(panel, sizeBtn) {
-    panel.classList.remove("sp-p-md", "sp-p-lg");
-    panel.classList.add("sp-p-" + size);
-    sizeBtn.innerHTML = size === "md"
-      ? '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8h12M8 2v12"/></svg>'
-      : '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l10 10M13 3L3 13"/></svg>';
-    sizeBtn.title = size === "md" ? "Expand" : "Shrink";
-  }
-
-  function applyCollapsed(panel, colBtn) {
-    panel.classList.toggle("sp-p-collapsed", collapsed);
-    colBtn.innerHTML = collapsed
-      ? '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h8"/><path d="M8 4v8"/></svg>'
-      : '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h8"/></svg>';
-    colBtn.title = collapsed ? "Expand" : "Collapse";
-  }
-
-  var _timer = null;
   function tryBuild() {
     if (document.getElementById(PANEL_ID)) return;
-    if (document.readyState !== "loading" && isChartPage()) {
-      buildPanel();
-    }
+    if (document.readyState !== "loading" && isChartPage()) buildPanel();
   }
 
   if (document.readyState === "loading") {
@@ -219,17 +281,13 @@
     tryBuild();
   }
 
+  var _t = null;
   var _obs = new MutationObserver(function () {
-    if (_timer) clearTimeout(_timer);
-    _timer = setTimeout(function () {
-      _timer = null;
-      if (!document.getElementById(PANEL_ID)) {
-        pos       = localStorage.getItem(POS_KEY)  || "right";
-        collapsed = localStorage.getItem(COL_KEY)  === "1";
-        size      = localStorage.getItem(SIZE_KEY) || "md";
-        tryBuild();
-      }
-    }, 120);
+    if (_t) clearTimeout(_t);
+    _t = setTimeout(function () {
+      _t = null;
+      if (!document.getElementById(PANEL_ID)) tryBuild();
+    }, 150);
   });
   _obs.observe(document.body, { childList: true, subtree: true });
 })();

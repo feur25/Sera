@@ -110,6 +110,11 @@ pre code {
 }
 
 /* ── Params panel — shared ─────────────────────────────────────────────── */
+:root { --sp-pp-w: 360px; --sp-pp-h: 300px; }
+
+/* hide sections moved into the panel */
+.sp-moved { display: none !important; }
+
 #sp-params-panel {
   position: fixed;
   z-index: 800;
@@ -120,7 +125,6 @@ pre code {
   display: flex;
   flex-direction: column;
   font-family: system-ui, sans-serif;
-  transition: width .25s, height .25s, bottom .25s, right .25s, transform .25s;
 }
 
 /* right mode */
@@ -128,16 +132,12 @@ pre code {
   right: 12px;
   top: 72px;
   bottom: 20px;
-  width: 340px;
   border-radius: 12px;
-}
-#sp-params-panel.sp-p-right.sp-p-lg {
-  width: 460px;
 }
 #sp-params-panel.sp-p-right.sp-p-collapsed {
   bottom: auto;
-  height: auto;
-  width: 220px;
+  height: auto !important;
+  width: 220px !important;
 }
 
 /* bottom mode */
@@ -147,24 +147,38 @@ pre code {
   right: 0;
   width: 100% !important;
   border-radius: 12px 12px 0 0;
-  height: 280px;
-}
-#sp-params-panel.sp-p-bottom.sp-p-lg {
-  height: 400px;
 }
 #sp-params-panel.sp-p-bottom.sp-p-collapsed {
-  height: auto;
+  height: auto !important;
 }
 
-/* body offset */
-body.sp-body-right .content {
-  padding-right: 360px !important;
+/* resize handle */
+.sp-resize {
+  position: absolute;
+  z-index: 10;
+  background: transparent;
+  transition: background .15s;
 }
-body.sp-body-right.sp-params-lg .content {
-  padding-right: 480px !important;
+#sp-params-panel.sp-p-right .sp-resize {
+  left: -4px; top: 0; bottom: 0; width: 8px;
+  cursor: ew-resize;
+}
+#sp-params-panel.sp-p-bottom .sp-resize {
+  top: -4px; left: 0; right: 0; height: 8px;
+  cursor: ns-resize;
+}
+#sp-params-panel.sp-p-collapsed .sp-resize { display: none; }
+.sp-resize:hover { background: rgba(99,102,241,0.4); }
+body.sp-resizing { user-select: none; -webkit-user-select: none; }
+body.sp-resizing.sp-body-right * { cursor: ew-resize !important; }
+body.sp-resizing.sp-body-bottom * { cursor: ns-resize !important; }
+
+/* body offset — dynamic via CSS vars */
+body.sp-body-right .content {
+  padding-right: calc(var(--sp-pp-w) + 24px) !important;
 }
 body.sp-body-bottom .content {
-  padding-bottom: 300px !important;
+  padding-bottom: calc(var(--sp-pp-h) + 24px) !important;
 }
 
 /* ── Header ──────────────────────────────────────────────────────────────── */
@@ -244,19 +258,23 @@ body.sp-body-bottom .content {
 .sp-pb::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
 #sp-params-panel.sp-p-collapsed .sp-pb { display: none; }
 
-/* bottom mode: horizontal scroll */
+/* bottom mode: horizontal columns, both axes scrollable */
 #sp-params-panel.sp-p-bottom .sp-pb {
   display: flex;
   flex-direction: row;
+  align-items: stretch;
   gap: 0;
   overflow-x: auto;
-  overflow-y: hidden;
+  overflow-y: auto;
   scrollbar-width: thin;
 }
 #sp-params-panel.sp-p-bottom .sp-psec {
-  min-width: 300px;
+  min-width: 320px;
+  max-width: 480px;
+  flex: 0 0 auto;
   border-right: 1px solid #1e3a5f;
   border-bottom: none;
+  overflow-y: auto;
 }
 #sp-params-panel.sp-p-bottom .sp-psec:last-child {
   border-right: none;
