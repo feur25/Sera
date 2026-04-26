@@ -50,7 +50,12 @@ details summary {
 pre code {
   font-size: 13px;
 }
-
+/* ── Chart preview iframes ────────────────────────────────────────── */
+/* Override the 520px inline height set in each .md — reduced to fit
+   nicely alongside the API panel without being too tall. */
+.content main iframe {
+  height: 400px !important;
+}
 /* ── Language tab panes (.sp-tabs) — fix padding + scroll on all pages ─── */
 .sp-tc pre {
   margin: 0;

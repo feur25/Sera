@@ -2,6 +2,11 @@
   var LANG_KEY = "seraplot_lang";
   var PTAB_KEY = "seraplot_ptab";
 
+  // Track the last-clicked code tab index per base group.
+  // When language switches, the same index is replayed in the target section.
+  // Group naming convention: EN = "<name>", FR = "<name>-fr".
+  var _tabIdx = {};
+
   function getLang() { return localStorage.getItem(LANG_KEY) || "en"; }
   function setLang(lang) { localStorage.setItem(LANG_KEY, lang); applyLang(lang); }
 
@@ -21,6 +26,40 @@
     if (algoBtn) {
       algoBtn.textContent = lang === "en" ? "Algorithmic Functioning" : "Fonctionnement algorithmique";
     }
+    // Sync the active language tab (Python / C++ / etc.) to the new section.
+    syncCodeTabs(lang);
+  }
+
+  // Replay the last-clicked tab index in the language section that just became visible.
+  function syncCodeTabs(lang) {
+    var suffix = lang === "fr" ? "-fr" : "";
+    Object.keys(_tabIdx).forEach(function (baseG) {
+      var idx = _tabIdx[baseG];
+      var targetG = baseG + suffix;
+      var container = document.getElementById(targetG);
+      if (!container) return;
+      var btns = container.querySelectorAll(".sp-tb");
+      if (btns[idx] && !btns[idx].classList.contains("sp-act")) {
+        btns[idx].click();
+      }
+    });
+  }
+
+  // Wrap window.spTab (defined inline in each .md) to record which tab
+  // index was last clicked per group, so we can sync it on lang switch.
+  function wrapSpTab() {
+    if (!window.spTab || window._spTabWrapped) return;
+    var orig = window.spTab;
+    window.spTab = function (g, id, btn) {
+      var container = document.getElementById(g);
+      if (container) {
+        var btns = container.querySelectorAll(".sp-tb");
+        var idx = Array.from(btns).indexOf(btn);
+        if (idx >= 0) _tabIdx[g.replace(/-fr$/, "")] = idx;
+      }
+      return orig.call(this, g, id, btn);
+    };
+    window._spTabWrapped = true;
   }
 
   function applyPageTab(tab) {
@@ -206,6 +245,7 @@
     applyLang(getLang());
     fixMathDisplay();
     fixCodePanes();
+    wrapSpTab();
   }
 
   if (document.readyState === "loading") {
@@ -224,7 +264,9 @@
       injectButton();
       buildPageTabs();
       applyLang(getLang());
+      applyPageTab(getPageTab());
       fixCodePanes();
+      wrapSpTab();
       observer.observe(document.body, { childList: true, subtree: true });
     }, 80);
   });
