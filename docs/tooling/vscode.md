@@ -13,7 +13,7 @@
 
 #sp-pip-float {
   position: fixed;
-  bottom: 24px; left: 24px;
+  bottom: 24px; right: 24px;
   width: 270px;
   border-radius: 10px;
   background: #0d1117;
