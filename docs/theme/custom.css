@@ -65,6 +65,13 @@ pre code {
   line-height: 1.5;
   white-space: pre;
 }
+/* mdBook inserts <p> tags at blank lines inside <code> blocks — neutralise them */
+.sp-tc pre code p,
+.sp-tc pre p {
+  display: contents;
+  margin: 0;
+  padding: 0;
+}
 
 /* ── Section tabs (Code / Algorithmic Functioning) ───────────────────────── */
 .doc-tabs {

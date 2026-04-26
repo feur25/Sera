@@ -3,15 +3,6 @@
 <div class="lang-en">
 
 Complete alphabetical index of every public symbol exported by `seraplot`.
-
----
-
-## Module: `seraplot`
-
-```python
-import seraplot as sp
-```
-
 ---
 
 ## Chart Functions — 2D
@@ -113,15 +104,6 @@ import seraplot as sp
 Index alphabétique complet de tous les symboles publics exportés par `seraplot`.
 
 ---
-
-## Module : `seraplot`
-
-```python
-import seraplot as sp
-```
-
----
-
 ## Fonctions graphiques — 2D
 
 | Fonction | Description |

@@ -28,7 +28,6 @@ sp.build_kmeans_chart(
 Aliases: `sp.kmeans`, `sp.kmeans_chart`
 
 ---
-
 ## Description
 
 2D K-Means clustering chart. Runs K-Means++ initialization followed by parallel centroid assignment and converges in typically < 20 iterations. Each cluster is displayed in a distinct color with its centroid  shown as a bold `+` marker.
@@ -71,10 +70,7 @@ Inertia (sum of squared distances to centroids) is displayed in the chart corner
 
 ---
 
-## Examples
-
 ### Basic usage
-
 
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
@@ -115,40 +111,6 @@ chart.show()
 </div>
 </div>
 <script>function spTab(btn,id){btn.closest('.sp-tabs').querySelectorAll('.sp-tb,.sp-tp').forEach(e=>e.classList.remove('active'));btn.classList.add('active');document.getElementById(id).classList.add('active');}</script>
-
----
-
-### Large dataset (mini-batch)
-
-
-<div class="sp-tabs">
-<div class="sp-tab-btns">
-<button class="sp-tb active" onclick="spTab(this,'t2')">Python</button>
-</div>
-<div id="t2" class="sp-tp active">
-
-```python
-import seraplot as sp
-import random
-
-random.seed(0)
-x = [random.gauss(i % 5, 0.3) for i in range(500_000)]
-y = [random.gauss(i % 5, 0.3) for i in range(500_000)]
-
-# mini_batch activates automatically for n > 100 000
-chart = sp.kmeans(
-    title="Large Dataset K-Means",
-    x_values=x,
-    y_values=y,
-    k=5,
-    mini_batch=True,
-    batch_size=2000,
-)
-chart.show()
-```
-
-</div>
-</div>
 
 ---
 
@@ -208,7 +170,6 @@ sp.build_kmeans_chart(
 Alias : `sp.kmeans`, `sp.kmeans_chart`
 
 ---
-
 ## Description
 
 Graphique de clustering K-Means en 2D. Exécute l'initialisation K-Means++ suivie d'une
@@ -255,8 +216,6 @@ L'inertie (somme des distances au carré aux centroïdes) est affichée dans le 
 
 ---
 
-## Exemples
-
 ### Usage basique
 
 ```python
@@ -279,30 +238,6 @@ chart = sp.kmeans(
 )
 chart.show()
 ```
-
----
-
-### Grand jeu de données (mini-batch)
-
-```python
-import seraplot as sp
-import random
-
-random.seed(0)
-x = [random.gauss(i % 5, 0.3) for i in range(500_000)]
-y = [random.gauss(i % 5, 0.3) for i in range(500_000)]
-
-chart = sp.kmeans(
-    title="K-Means sur grand jeu de données",
-    x_values=x,
-    y_values=y,
-    k=5,
-    mini_batch=True,
-    batch_size=2000,
-)
-chart.show()
-```
-
 ---
 
 ## Fonctionnement algorithmique
