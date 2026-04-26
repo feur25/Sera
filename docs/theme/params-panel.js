@@ -42,11 +42,12 @@
     var sib = h2El.nextElementSibling;
     while (sib && sib.tagName !== "H2") {
       var next = sib.nextElementSibling;
+      var html = sib.outerHTML; // capture BEFORE adding .sp-moved
       sib.classList.add("sp-moved");
       if (splitAlias && isAliasNode(sib)) {
-        aliasHtml += sib.outerHTML;
+        aliasHtml += html;
       } else if (!isHrNode(sib)) {
-        sigHtml += sib.outerHTML;
+        sigHtml += html;
       }
       sib = next;
     }
@@ -57,7 +58,7 @@
     if (!container) return null;
     var sigH2 = findH2(container, ["signature"]);
     var parH2 = findH2(container, ["parameters", "param\u00e8tres"]);
-    var retH2 = findH2(container, ["returns", "retour", "retours"]);
+    var retH2 = findH2(container, ["returns", "retour", "retours", "retourne"]);
     if (!parH2) return null;
 
     var sig    = extractAndHide(sigH2, true);
@@ -112,7 +113,12 @@
     addSec(data.returns,    labels.ret,   "sp-psec-returns");
 
     if (window.hljs) {
-      body.querySelectorAll("pre code").forEach(function (c) { hljs.highlightElement(c); });
+      var hFn = hljs.highlightElement || hljs.highlightBlock;
+      if (hFn) {
+        body.querySelectorAll("pre code").forEach(function (c) {
+          try { hFn.call(hljs, c); } catch (e) {}
+        });
+      }
     }
   }
 
@@ -238,7 +244,6 @@
 
     applyPos(panel, posBtn);
     applyCollapsed(panel, colBtn);
-    renderBody(panel);
     attachResize(panel);
 
     posBtn.addEventListener("click", function () {
@@ -252,6 +257,8 @@
       localStorage.setItem(COL_KEY, state.collapsed ? "1" : "0");
       applyCollapsed(panel, colBtn);
     });
+
+    renderBody(panel);
   }
 
   var lastLang = getLang();
