@@ -348,7 +348,7 @@ function spIsw(lang, pane, btn) {
     if (!dragging) return;
     var x = Math.max(0, Math.min(window.innerWidth  - pip.offsetWidth,  e.clientX - dragOX));
     var y = Math.max(0, Math.min(window.innerHeight - pip.offsetHeight, e.clientY - dragOY));
-    pip.style.left   = x + 'px';
+    pip.style.right   = x + 'px';
     pip.style.top    = y + 'px';
     pip.style.bottom = 'auto';
   });
@@ -359,7 +359,7 @@ function spIsw(lang, pane, btn) {
     if (e.target === close) return;
     var t = e.touches[0];
     var r = pip.getBoundingClientRect();
-    dragOX = t.clientX - r.left;
+    dragOX = t.clientX - r.right;
     dragOY = t.clientY - r.top;
     pip.style.transition = 'none';
   }, { passive: true });
@@ -368,7 +368,7 @@ function spIsw(lang, pane, btn) {
     var t = e.touches[0];
     var x = Math.max(0, Math.min(window.innerWidth  - pip.offsetWidth,  t.clientX - dragOX));
     var y = Math.max(0, Math.min(window.innerHeight - pip.offsetHeight, t.clientY - dragOY));
-    pip.style.left   = x + 'px';
+    pip.style.right   = x + 'px';
     pip.style.top    = y + 'px';
     pip.style.bottom = 'auto';
   }, { passive: true });
@@ -378,7 +378,7 @@ function spIsw(lang, pane, btn) {
     var e = entries[0];
     if (!e.isIntersecting && e.boundingClientRect.top < 0 && !dismissed) {
       pip.style.display = 'block';
-      pip.style.left    = '24px';
+      pip.style.right    = '24px';
       pip.style.bottom  = '24px';
       pip.style.top     = 'auto';
       pip.style.transition = '';
