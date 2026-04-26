@@ -420,10 +420,10 @@ body.sp-body-bottom .content {
 } */
 .chapter li.chapter-item {
   margin-block-start: 0.15em;
-  line-height: 0rem;
+  line-height: 1.8rem;
 }
 .chapter {
-  line-height: 0rem !important;
+  line-height: 1.2rem !important;
 }
 .chapter li a {
   padding: 4px 12px 4px 16px;
