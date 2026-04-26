@@ -142,28 +142,60 @@
     }
   }
 
-  // Fix mdBook <p> injection inside code blocks + highlight all language tabs
+  // Fix mdBook <p> injection + highlight all language tab code blocks.
+  //
+  // When a blank line appears inside <pre><code> in a .md file, mdBook's
+  // Markdown parser exits "HTML block mode" and wraps the next paragraph in <p>.
+  // The browser then auto-closes <code> before <p> (block inside phrasing is
+  // invalid HTML), so the DOM ends up as:
+  //   <pre> <code>first lines</code> <p>rest of code</p> </pre>
+  // The old fix looked for p inside code — wrong level. This one looks at
+  // <pre> children directly.
   function fixCodePanes() {
-    if (!window.hljs) return;
-    document.querySelectorAll('.sp-tc pre code').forEach(function(code) {
-      // If <p> tags exist, reconstruct plain text so hljs gets clean input
-      if (code.querySelector('p')) {
-        var text = '';
-        code.childNodes.forEach(function(n) {
-          if (n.nodeType === 3) {
-            text += n.textContent;
-          } else if (n.nodeName === 'P') {
-            // The \n text-node between </p> and <p> is already a sibling;
-            // prepend \n only for the first <p> (which has no preceding \n sibling)
-            var prev = n.previousSibling;
-            var hasPrevNl = prev && prev.nodeType === 3 && /\n$/.test(prev.textContent);
-            text += (hasPrevNl ? '' : '\n') + n.textContent;
-          }
-        });
-        code.textContent = text;
+    document.querySelectorAll('.sp-tc').forEach(function(pane) {
+      // Find the first <pre> that is a direct child of this tab pane.
+      var pre = null;
+      for (var i = 0; i < pane.childNodes.length; i++) {
+        if (pane.childNodes[i].nodeName === 'PRE') { pre = pane.childNodes[i]; break; }
       }
-      // Apply (or re-apply) syntax highlighting
-      try { (hljs.highlightElement || hljs.highlightBlock).call(hljs, code); } catch(e) {}
+      if (!pre) return;
+
+      var code = pre.querySelector('code');
+      if (!code) return;
+
+      // Collect any <p> siblings of <code> inside <pre>.
+      var pNodes = [];
+      pre.childNodes.forEach(function(n) { if (n.nodeName === 'P') pNodes.push(n); });
+
+      // Fallback: some browsers may keep <p> inside <code> (non-standard).
+      var pInCode = code.querySelectorAll('p');
+
+      if (pNodes.length > 0 || pInCode.length > 0) {
+        // Reconstruct the full source code.
+        // code.textContent = everything before the first <p> sibling.
+        // Each <p> sibling represents a blank-line separated block.
+        var parts = [code.textContent];
+        pNodes.forEach(function(p) {
+          var last = parts[parts.length - 1];
+          if (!last.endsWith('\n\n')) {
+            if (!last.endsWith('\n')) parts.push('\n');
+            parts.push('\n'); // blank line
+          }
+          parts.push(p.textContent);
+        });
+
+        var text = parts.join('').replace(/^\n+/, '').replace(/\n+$/, '\n');
+
+        // Replace code content (also strips any <p> that stayed inside code).
+        code.textContent = text;
+        // Remove the now-redundant <p> siblings from <pre>.
+        pNodes.forEach(function(p) { if (p.parentNode === pre) pre.removeChild(p); });
+      }
+
+      // Apply (or re-apply) syntax highlighting to every pane (not just the active one).
+      if (window.hljs) {
+        try { (hljs.highlightElement || hljs.highlightBlock).call(hljs, code); } catch(e) {}
+      }
     });
   }
 
@@ -192,6 +224,7 @@
       injectButton();
       buildPageTabs();
       applyLang(getLang());
+      fixCodePanes();
       observer.observe(document.body, { childList: true, subtree: true });
     }, 80);
   });
