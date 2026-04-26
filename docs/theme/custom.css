@@ -65,12 +65,15 @@ pre code {
   line-height: 1.5;
   white-space: pre;
 }
-/* mdBook inserts <p> tags at blank lines inside <code> blocks — neutralise them */
+/* mdBook inserts <p> tags at blank lines inside <code> blocks — neutralise them.
+   JS in lang-switcher.js is the primary fix; this CSS is a fallback. */
 .sp-tc pre code p,
 .sp-tc pre p {
-  display: contents;
+  display: inline;
   margin: 0;
   padding: 0;
+  border: none;
+  font: inherit;
 }
 
 /* ── Section tabs (Code / Algorithmic Functioning) ───────────────────────── */

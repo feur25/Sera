@@ -142,12 +142,38 @@
     }
   }
 
+  // Fix mdBook <p> injection inside code blocks + highlight all language tabs
+  function fixCodePanes() {
+    if (!window.hljs) return;
+    document.querySelectorAll('.sp-tc pre code').forEach(function(code) {
+      // If <p> tags exist, reconstruct plain text so hljs gets clean input
+      if (code.querySelector('p')) {
+        var text = '';
+        code.childNodes.forEach(function(n) {
+          if (n.nodeType === 3) {
+            text += n.textContent;
+          } else if (n.nodeName === 'P') {
+            // The \n text-node between </p> and <p> is already a sibling;
+            // prepend \n only for the first <p> (which has no preceding \n sibling)
+            var prev = n.previousSibling;
+            var hasPrevNl = prev && prev.nodeType === 3 && /\n$/.test(prev.textContent);
+            text += (hasPrevNl ? '' : '\n') + n.textContent;
+          }
+        });
+        code.textContent = text;
+      }
+      // Apply (or re-apply) syntax highlighting
+      try { (hljs.highlightElement || hljs.highlightBlock).call(hljs, code); } catch(e) {}
+    });
+  }
+
   function init() {
     purgeOldTabs();
     injectButton();
     buildPageTabs();
     applyLang(getLang());
     fixMathDisplay();
+    fixCodePanes();
   }
 
   if (document.readyState === "loading") {
