@@ -103,6 +103,7 @@ chart3 = sp.line("Clean", dates, values).zoom()       # adds zoom on top of conf
 ```
 
 <style>
+/* ── Language tabs ─────────────────────────────────────────── */
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
 .sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
@@ -110,6 +111,52 @@ chart3 = sp.line("Clean", dates, values).zoom()       # adds zoom on top of conf
 .sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
 .sp-tc{display:none}
 .sp-tc.sp-on{display:block}
+
+/* ── Method name headings — card style ─────────────────────── */
+.lang-en h3, .lang-fr h3 {
+  font-family: ui-monospace, 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #a5b4fc;
+  background: #080d16;
+  border: 1px solid #1e3a5f;
+  border-left: 3px solid #6366f1;
+  border-radius: 0 6px 6px 0;
+  padding: 9px 16px;
+  margin: 1.8em 0 0.5em;
+  line-height: 1.4;
+}
+.lang-en h3 code, .lang-fr h3 code {
+  background: none !important;
+  border: none !important;
+  color: inherit !important;
+  font-size: inherit !important;
+  font-family: inherit !important;
+  padding: 0 !important;
+}
+/* First paragraph after a method heading — de-emphasised description */
+.lang-en h3 + p, .lang-fr h3 + p {
+  color: #94a3b8;
+  font-size: 14px;
+  line-height: 1.65;
+  margin-top: 0.35em;
+}
+/* Section separators */
+.lang-en h2, .lang-fr h2 {
+  border-bottom: 1px solid #1e3a5f;
+  padding-bottom: 6px;
+  margin-top: 2.4em;
+}
+/* Inline code in body text */
+.lang-en p code, .lang-fr p code,
+.lang-en li code, .lang-fr li code {
+  background: #111827;
+  border: 1px solid #1e3a5f;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 12.5px;
+  color: #7dd3fc;
+}
 </style>
 <script>
 function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}

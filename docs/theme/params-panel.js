@@ -147,6 +147,13 @@
 
   function applyCollapsed(panel, colBtn) {
     panel.classList.toggle("sp-p-collapsed", state.collapsed);
+    // When collapsed, the panel shrinks to just the header bar —
+    // remove the content offset so the page fills the full width again.
+    if (state.collapsed) {
+      document.body.classList.remove("sp-body-right", "sp-body-bottom");
+    } else {
+      document.body.classList.add("sp-body-" + state.pos);
+    }
     colBtn.innerHTML = state.collapsed
       ? '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6l4 4 4-4"/></svg>'
       : '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 10l4-4 4 4"/></svg>';

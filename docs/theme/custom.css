@@ -414,6 +414,51 @@ body.sp-body-bottom .content {
   color: #34d399;
 }
 
+/* ── Sidebar improvements ────────────────────────────────────────────────── */
+.sidebar .sidebar-scrollbox {
+  padding: 8px 0 40px;
+}
+.chapter li.chapter-item {
+  margin-block-start: 0.15em;
+  line-height: 1.4em;
+}
+.chapter li a {
+  padding: 4px 12px 4px 16px;
+  border-radius: 0 8px 8px 0;
+  margin-right: 8px;
+  transition: background .15s, color .15s;
+  display: block;
+}
+.chapter li a:hover {
+  background: rgba(99,102,241,.1);
+  color: #a5b4fc !important;
+}
+.chapter li a.active {
+  background: rgba(99,102,241,.15) !important;
+  border-left: 3px solid #6366f1;
+  padding-left: 13px !important;
+  font-weight: 600;
+  color: #818cf8 !important;
+}
+.chapter .part-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: #475569;
+  padding: 14px 16px 3px;
+  margin: 0;
+}
+.chapter .spacer {
+  background-color: #1e293b !important;
+  height: 1px !important;
+  margin: 8px 16px;
+  width: auto;
+}
+.section li a {
+  font-size: 13px;
+}
+
 /* ── Responsive ──────────────────────────────────────────────────────────── */
 @media (max-width: 900px) {
   #sp-params-panel.sp-p-right {
