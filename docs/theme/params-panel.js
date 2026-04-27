@@ -174,10 +174,10 @@
     var remappedSig = remapPanelHtml(data.signature);
     var scopeMatch = remappedSig.match(/\bid="(pp-[a-z0-9_-]+)"/i);
     var previewId = scopeMatch ? scopeMatch[1] + "-preview" : "";
-    addSec(remappedSig,                                         labels.sig,   "sp-psec-sig");
-    addSec(remapPanelHtml(data.alias),                          labels.alias, "sp-psec-alias");
-    addSec(remapPanelHtml(data.parameters),                     labels.par,   "sp-psec-params");
-    addSec(stripPanelReturns(remapPanelHtml(data.returns)),     labels.ret,   "sp-psec-returns");
+    addSec(remappedSig,                        labels.sig,   "sp-psec-sig");
+    addSec(remapPanelHtml(data.alias),          labels.alias, "sp-psec-alias");
+    addSec(remapPanelHtml(data.parameters),     labels.par,   "sp-psec-params");
+    addSec(remapPanelHtml(data.returns),        labels.ret,   "sp-psec-returns");
 
     // ── Code example tabs ────────────────────────────────────────────────
     var tabsHtml = (lang === "fr" ? exampleData.fr : exampleData.en) || exampleData.en || exampleData.fr;
@@ -254,35 +254,43 @@
       }
     }
 
-    hoistClassStrip(panel);
+    hoistClassRails(panel);
+    rescaleIframesInPanel(panel);
   }
 
-  // Build a horizontal variant-pill strip between the panel header and the
-  // scrollable body, so switching variants works at any scroll position.
-  function hoistClassStrip(panel) {
-    panel.querySelectorAll(":scope > .sp-cls-strip").forEach(function (el) {
-      el.parentNode.removeChild(el);
-    });
+  // Build a vertical variant rail on the LEFT edge of the panel, inside a
+  // flex-row wrapper with .sp-pb, so it stays visible while content scrolls.
+  function hoistClassRails(panel) {
+    var oldRow = Array.prototype.filter.call(panel.childNodes, function (c) {
+      return c.classList && c.classList.contains("sp-panel-row");
+    })[0];
+    if (oldRow) {
+      var oldPb = oldRow.querySelector(".sp-pb");
+      if (oldPb) panel.insertBefore(oldPb, oldRow);
+      panel.removeChild(oldRow);
+    }
 
-    var clsContainers = Array.prototype.slice.call(
-      panel.querySelectorAll(".sp-pb .sp-cls")
-    );
+    var pb = Array.prototype.filter.call(panel.childNodes, function (c) {
+      return c.classList && c.classList.contains("sp-pb");
+    })[0];
+    if (!pb) return;
+
+    var clsContainers = Array.prototype.slice.call(pb.querySelectorAll(".sp-cls"));
     if (!clsContainers.length) return;
 
-    var strip = document.createElement("div");
-    strip.className = "sp-cls-strip";
+    var rail = document.createElement("div");
+    rail.className = "sp-cls-rail-side";
 
     var tog = document.createElement("button");
-    tog.className = "sp-cls-strip-tog";
+    tog.className = "sp-rail-tog";
     tog.title = getLang() === "fr" ? "Afficher/masquer les labels" : "Toggle labels";
     tog.textContent = "\u2630";
-    tog.addEventListener("click", function () { strip.classList.toggle("sp-strip-wide"); });
-    strip.appendChild(tog);
+    tog.addEventListener("click", function () { rail.classList.toggle("sp-rail-wide"); });
+    rail.appendChild(tog);
 
     clsContainers.forEach(function (cls) {
       var scope = cls.id;
       if (!scope) return;
-
       cls.querySelectorAll(".sp-cls-tab").forEach(function (origBtn) {
         var oc = origBtn.getAttribute("onclick") || "";
         var m  = oc.match(/spCls\('([^']+)','([^']+)'/);
@@ -291,48 +299,66 @@
         var icon = origBtn.querySelector(".sp-cic");
         var lbl  = origBtn.querySelector(".sp-clb");
 
-        var pill = document.createElement("button");
-        pill.className = "sp-strip-pill" + (origBtn.classList.contains("sp-cact") ? " sp-cact" : "");
-        pill.setAttribute("data-scope", scope);
-        pill.setAttribute("data-name",  name);
-        pill.innerHTML =
-          '<span class="sp-strip-ic">' + (icon ? icon.innerHTML : "") + '</span>' +
-          '<span class="sp-strip-lbl">' + (lbl  ? lbl.textContent  : name) + '</span>';
+        var btn = document.createElement("button");
+        btn.className = "sp-rail-btn" + (origBtn.classList.contains("sp-cact") ? " sp-cact" : "");
+        btn.setAttribute("data-scope", scope);
+        btn.setAttribute("data-name",  name);
+        btn.innerHTML =
+          '<span class="sp-cic">'  + (icon ? icon.innerHTML   : "") + '</span>' +
+          '<span class="sp-clb">'  + (lbl  ? lbl.textContent  : name) + '</span>';
 
-        pill.addEventListener("click", function () {
+        btn.addEventListener("click", function () {
           var root = document.getElementById(scope);
           if (!root) return;
           root.querySelectorAll(".sp-variant").forEach(function (s) { s.classList.remove("sp-von"); });
-          strip.querySelectorAll('.sp-strip-pill[data-scope="' + scope + '"]').forEach(function (b) { b.classList.remove("sp-cact"); });
+          rail.querySelectorAll('.sp-rail-btn[data-scope="' + scope + '"]').forEach(function (b) { b.classList.remove("sp-cact"); });
           var v = document.getElementById(scope + "-" + name);
           if (v) v.classList.add("sp-von");
-          pill.classList.add("sp-cact");
+          btn.classList.add("sp-cact");
           if (window.hljs && v) {
             v.querySelectorAll("code").forEach(function (c) {
               try { (hljs.highlightElement || hljs.highlightBlock).call(hljs, c); } catch (e) {}
             });
           }
+          rescaleIframesInPanel(panel);
         });
-        strip.appendChild(pill);
+        rail.appendChild(btn);
       });
     });
 
-    var pb = panel.querySelector(".sp-pb");
-    if (pb) panel.insertBefore(strip, pb);
-    else panel.appendChild(strip);
+    var row = document.createElement("div");
+    row.className = "sp-panel-row";
+    panel.insertBefore(row, pb);
+    row.appendChild(rail);
+    row.appendChild(pb);
   }
 
-  // Remove large preview iframes from the classeur when rendering inside the panel.
-  function stripPanelReturns(html) {
-    var tmp = document.createElement("div");
-    tmp.innerHTML = html;
-    tmp.querySelectorAll(".sp-preview-frame, .sp-preview-label").forEach(function (el) {
-      el.parentNode.removeChild(el);
+  // Scale each .sp-preview-frame inside the panel to fit the available width.
+  function rescaleIframesInPanel(panel) {
+    var CHART_W = 900, CHART_H = 380;
+    panel.querySelectorAll(".sp-preview-frame").forEach(function (iframe) {
+      var wrap = iframe.parentElement;
+      if (!wrap) return;
+      if (!wrap.classList.contains("sp-iframe-wrap")) {
+        wrap.classList.add("sp-iframe-wrap");
+        wrap.style.cssText = "position:relative;overflow:hidden;border-radius:8px;width:100%;";
+        iframe.style.cssText = "position:absolute;top:0;left:0;width:" + CHART_W + "px;height:" + CHART_H + "px;border:none;transform-origin:0 0;";
+      }
+      function scale() {
+        var aw = wrap.offsetWidth;
+        if (!aw) return;
+        var sc = aw / CHART_W;
+        iframe.style.transform = "scale(" + sc + ")";
+        wrap.style.height = Math.ceil(CHART_H * sc) + "px";
+      }
+      iframe.onload = scale;
+      scale();
+      setTimeout(scale, 200);
+      if (window.ResizeObserver && !iframe._roAttached) {
+        iframe._roAttached = true;
+        new ResizeObserver(scale).observe(wrap);
+      }
     });
-    tmp.querySelectorAll('iframe[loading="lazy"]').forEach(function (el) {
-      el.parentNode.removeChild(el);
-    });
-    return tmp.innerHTML;
   }
 
   function applyPos(panel, posBtn) {
