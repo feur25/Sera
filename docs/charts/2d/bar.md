@@ -73,122 +73,6 @@ sp.bar(
 
 ---
 
-<div class="sp-tabs" id="b-basic">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('b-basic','b-basic-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-cpp',this)">C++</button>
-</div>
-<div id="b-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.bar(
-    title="Monthly Revenue",
-    variant="basic",
-    labels=["Jan","Feb","Mar","Apr","May","Jun"],
-    values=[1200, 1850, 2100, 1750, 2400, 2800],
-    y_label="Revenue (€)",
-    gridlines=True,
-    show_text=True,
-)
-chart.show()</code></pre></div>
-<div id="b-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.bar({
-  title: "Monthly Revenue", variant: "basic",
-  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-  values: [1200, 1850, 2100, 1750, 2400, 2800],
-  yLabel: "Revenue (€)", gridlines: true, showText: true,
-});
-chart.show();</code></pre></div>
-<div id="b-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.bar({
-  title: "Monthly Revenue", variant: "basic",
-  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-  values: [1200, 1850, 2100, 1750, 2400, 2800],
-  yLabel: "Revenue (€)", gridlines: true, showText: true,
-});
-chart.show();</code></pre></div>
-<div id="b-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$bar(
-  title = "Monthly Revenue",
-  variant = "basic",
-  labels = c("Jan","Feb","Mar","Apr","May","Jun"),
-  values = c(1200, 1850, 2100, 1750, 2400, 2800),
-  y_label = "Revenue (€)",
-  gridlines = TRUE,
-  show_text = TRUE
-)
-chart$show()</code></pre></div>
-<div id="b-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::bar()
-        .title("Monthly Revenue")
-        .variant("basic")
-        .labels(vec!["Jan","Feb","Mar","Apr","May","Jun"])
-        .values(vec![1200.0, 1850.0, 2100.0, 1750.0, 2400.0, 2800.0])
-        .y_label("Revenue (€)")
-        .gridlines(true)
-        .show_text(true)
-        .build();
-    chart.show();
-}</code></pre></div>
-<div id="b-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.bar()
-    .title("Monthly Revenue")
-    .variant("basic")
-    .labels(List.of("Jan","Feb","Mar","Apr","May","Jun"))
-    .values(List.of(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0))
-    .yLabel("Revenue (€)")
-    .gridlines(true)
-    .showText(true)
-    .build();
-chart.show();</code></pre></div>
-<div id="b-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Bar(
-    title: "Monthly Revenue",
-    variant: "basic",
-    labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-    values: [1200,1850,2100,1750,2400,2800],
-    yLabel: "Revenue (€)",
-    gridlines: true,
-    showText: true
-);
-chart.Show();</code></pre></div>
-<div id="b-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.bar(
-  title = "Monthly Revenue",
-  variant = "basic",
-  labels = List("Jan","Feb","Mar","Apr","May","Jun"),
-  values = List(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0),
-  y_label = "Revenue (€)",
-  gridlines = true,
-  show_text = true
-)
-chart.show()</code></pre></div>
-<div id="b-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::bar({
-    .title     = "Monthly Revenue",
-    .variant   = "basic",
-    .labels    = {"Jan","Feb","Mar","Apr","May","Jun"},
-    .values    = {1200.0,1850.0,2100.0,1750.0,2400.0,2800.0},
-    .y_label   = "Revenue (€)",
-    .gridlines = true,
-    .show_text = true,
-});
-chart.show();</code></pre></div>
-</div>
-</div>
-
 <div class="sp-variant" id="bar-en-horizontal">
 
 Horizontal bars — better for long category names. Alias: `"h"`.
@@ -1471,6 +1355,123 @@ chart.show();</code></pre></div>
 ## Returns
 
 `Chart` — object with `.html` property and `.show()` method.
+---
+
+<div class="sp-tabs" id="b-basic">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('b-basic','b-basic-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-cpp',this)">C++</button>
+</div>
+<div id="b-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.bar(
+    title="Monthly Revenue",
+    variant="basic",
+    labels=["Jan","Feb","Mar","Apr","May","Jun"],
+    values=[1200, 1850, 2100, 1750, 2400, 2800],
+    y_label="Revenue (€)",
+    gridlines=True,
+    show_text=True,
+)
+chart.show()</code></pre></div>
+<div id="b-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.bar({
+  title: "Monthly Revenue", variant: "basic",
+  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+  values: [1200, 1850, 2100, 1750, 2400, 2800],
+  yLabel: "Revenue (€)", gridlines: true, showText: true,
+});
+chart.show();</code></pre></div>
+<div id="b-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.bar({
+  title: "Monthly Revenue", variant: "basic",
+  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+  values: [1200, 1850, 2100, 1750, 2400, 2800],
+  yLabel: "Revenue (€)", gridlines: true, showText: true,
+});
+chart.show();</code></pre></div>
+<div id="b-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bar(
+  title = "Monthly Revenue",
+  variant = "basic",
+  labels = c("Jan","Feb","Mar","Apr","May","Jun"),
+  values = c(1200, 1850, 2100, 1750, 2400, 2800),
+  y_label = "Revenue (€)",
+  gridlines = TRUE,
+  show_text = TRUE
+)
+chart$show()</code></pre></div>
+<div id="b-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bar()
+        .title("Monthly Revenue")
+        .variant("basic")
+        .labels(vec!["Jan","Feb","Mar","Apr","May","Jun"])
+        .values(vec![1200.0, 1850.0, 2100.0, 1750.0, 2400.0, 2800.0])
+        .y_label("Revenue (€)")
+        .gridlines(true)
+        .show_text(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="b-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bar()
+    .title("Monthly Revenue")
+    .variant("basic")
+    .labels(List.of("Jan","Feb","Mar","Apr","May","Jun"))
+    .values(List.of(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0))
+    .yLabel("Revenue (€)")
+    .gridlines(true)
+    .showText(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="b-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bar(
+    title: "Monthly Revenue",
+    variant: "basic",
+    labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+    values: [1200,1850,2100,1750,2400,2800],
+    yLabel: "Revenue (€)",
+    gridlines: true,
+    showText: true
+);
+chart.Show();</code></pre></div>
+<div id="b-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bar(
+  title = "Monthly Revenue",
+  variant = "basic",
+  labels = List("Jan","Feb","Mar","Apr","May","Jun"),
+  values = List(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0),
+  y_label = "Revenue (€)",
+  gridlines = true,
+  show_text = true
+)
+chart.show()</code></pre></div>
+<div id="b-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bar({
+    .title     = "Monthly Revenue",
+    .variant   = "basic",
+    .labels    = {"Jan","Feb","Mar","Apr","May","Jun"},
+    .values    = {1200.0,1850.0,2100.0,1750.0,2400.0,2800.0},
+    .y_label   = "Revenue (€)",
+    .gridlines = true,
+    .show_text = true,
+});
+chart.show();</code></pre></div>
+</div>
+</div>
 
 ---
 
@@ -1599,6 +1600,122 @@ Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family
 `Chart` — objet avec la propriété `.html` et la méthode `.show()`.
 
 ---
+
+<div class="sp-tabs" id="b-basic">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('b-basic','b-basic-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-cpp',this)">C++</button>
+</div>
+<div id="b-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.bar(
+    title="Monthly Revenue",
+    variant="basic",
+    labels=["Jan","Feb","Mar","Apr","May","Jun"],
+    values=[1200, 1850, 2100, 1750, 2400, 2800],
+    y_label="Revenue (€)",
+    gridlines=True,
+    show_text=True,
+)
+chart.show()</code></pre></div>
+<div id="b-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.bar({
+  title: "Monthly Revenue", variant: "basic",
+  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+  values: [1200, 1850, 2100, 1750, 2400, 2800],
+  yLabel: "Revenue (€)", gridlines: true, showText: true,
+});
+chart.show();</code></pre></div>
+<div id="b-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.bar({
+  title: "Monthly Revenue", variant: "basic",
+  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+  values: [1200, 1850, 2100, 1750, 2400, 2800],
+  yLabel: "Revenue (€)", gridlines: true, showText: true,
+});
+chart.show();</code></pre></div>
+<div id="b-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bar(
+  title = "Monthly Revenue",
+  variant = "basic",
+  labels = c("Jan","Feb","Mar","Apr","May","Jun"),
+  values = c(1200, 1850, 2100, 1750, 2400, 2800),
+  y_label = "Revenue (€)",
+  gridlines = TRUE,
+  show_text = TRUE
+)
+chart$show()</code></pre></div>
+<div id="b-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bar()
+        .title("Monthly Revenue")
+        .variant("basic")
+        .labels(vec!["Jan","Feb","Mar","Apr","May","Jun"])
+        .values(vec![1200.0, 1850.0, 2100.0, 1750.0, 2400.0, 2800.0])
+        .y_label("Revenue (€)")
+        .gridlines(true)
+        .show_text(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="b-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bar()
+    .title("Monthly Revenue")
+    .variant("basic")
+    .labels(List.of("Jan","Feb","Mar","Apr","May","Jun"))
+    .values(List.of(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0))
+    .yLabel("Revenue (€)")
+    .gridlines(true)
+    .showText(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="b-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bar(
+    title: "Monthly Revenue",
+    variant: "basic",
+    labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+    values: [1200,1850,2100,1750,2400,2800],
+    yLabel: "Revenue (€)",
+    gridlines: true,
+    showText: true
+);
+chart.Show();</code></pre></div>
+<div id="b-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bar(
+  title = "Monthly Revenue",
+  variant = "basic",
+  labels = List("Jan","Feb","Mar","Apr","May","Jun"),
+  values = List(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0),
+  y_label = "Revenue (€)",
+  gridlines = true,
+  show_text = true
+)
+chart.show()</code></pre></div>
+<div id="b-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bar({
+    .title     = "Monthly Revenue",
+    .variant   = "basic",
+    .labels    = {"Jan","Feb","Mar","Apr","May","Jun"},
+    .values    = {1200.0,1850.0,2100.0,1750.0,2400.0,2800.0},
+    .y_label   = "Revenue (€)",
+    .gridlines = true,
+    .show_text = true,
+});
+chart.show();</code></pre></div>
+</div>
+</div>
 
 ## Voir aussi
 
