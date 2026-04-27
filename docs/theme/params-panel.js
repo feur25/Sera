@@ -45,18 +45,24 @@
     return false;
   }
 
-  // Collect the sp-tabs HTML for a given lang container (does NOT hide anything).
+  // Collect the sp-tabs HTML for a given lang container and hide the original.
   function collectTabs(container) {
     if (!container) return "";
     var tabs = container.querySelector(".sp-tabs");
-    return tabs ? tabs.outerHTML : "";
+    if (!tabs) return "";
+    var html = tabs.outerHTML;
+    tabs.classList.add("sp-moved"); // hide from main content
+    return html;
   }
 
-  // Collect the iframe src from a lang container (does NOT hide anything).
+  // Collect the iframe src for a given lang container and hide the original.
   function collectIframeSrc(container) {
     if (!container) return "";
     var iframe = container.querySelector('iframe[loading="lazy"]');
-    return iframe ? iframe.getAttribute("src") : "";
+    if (!iframe) return "";
+    var src = iframe.getAttribute("src");
+    iframe.classList.add("sp-moved"); // hide from main content
+    return src;
   }
 
   function extractAndHide(h2El, splitAlias) {
@@ -165,20 +171,39 @@
       body.appendChild(w);
     }
 
-    // ── Chart preview iframe (auto-scales to panel width) ─────────────────
+    // ── Chart preview iframe (full-size + CSS scale to fit panel width) ────
     if (exampleData.iframeSrc) {
+      var CHART_W = 900, CHART_H = 460;
       var iw = document.createElement("div");
       iw.className = "sp-psec sp-psec-preview";
       var il = document.createElement("div");
       il.className = "sp-psec-lbl";
       il.textContent = lang === "fr" ? "Aper\u00e7u" : "Preview";
       iw.appendChild(il);
-      var iframe = document.createElement("iframe");
-      iframe.src = exampleData.iframeSrc;
-      iframe.setAttribute("loading", "lazy");
-      iframe.style.cssText = "width:100%;aspect-ratio:900/460;height:auto;border:none;border-radius:6px;display:block;background:#0d1117";
-      iw.appendChild(iframe);
+      // Wrapper clips the scaled iframe to the right height
+      var wrap = document.createElement("div");
+      wrap.style.cssText = "width:100%;overflow:hidden;position:relative;border-radius:6px;";
+      var pIframe = document.createElement("iframe");
+      pIframe.src = exampleData.iframeSrc;
+      pIframe.setAttribute("loading", "lazy");
+      pIframe.style.cssText = "width:" + CHART_W + "px;height:" + CHART_H + "px;border:none;display:block;transform-origin:0 0;background:#0d1117;";
+      wrap.appendChild(pIframe);
+      iw.appendChild(wrap);
       body.appendChild(iw);
+      // Scale iframe to fit panel, update on resize
+      function rescaleIframe() {
+        var w = wrap.offsetWidth;
+        if (!w) return;
+        var scale = w / CHART_W;
+        pIframe.style.transform = "scale(" + scale + ")";
+        wrap.style.height = Math.round(CHART_H * scale) + "px";
+      }
+      setTimeout(rescaleIframe, 50);
+      if (window.ResizeObserver) {
+        new ResizeObserver(rescaleIframe).observe(wrap);
+      } else {
+        window.addEventListener("resize", rescaleIframe);
+      }
     }
 
     if (window.hljs) {

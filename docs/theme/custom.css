@@ -59,11 +59,6 @@ pre code {
 iframe[loading="lazy"] {
   height: 380px !important;
 }
-/* Inside the API panel, the iframe auto-scales via aspect-ratio (no !important override) */
-#sp-params-panel iframe[loading="lazy"] {
-  height: auto !important;
-  aspect-ratio: 900 / 460;
-}
 /* sp-tabs inside the panel: compact, no margin overflow */
 #sp-params-panel .sp-tabs {
   margin: 0 !important;
