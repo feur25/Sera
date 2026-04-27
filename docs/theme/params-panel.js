@@ -173,7 +173,7 @@
 
     // ── Chart preview iframe (full-size + CSS scale to fit panel width) ────
     if (exampleData.iframeSrc) {
-      var CHART_W = 900, CHART_H = 460;
+      var CHART_W = 900, CHART_H = 490;
       var iw = document.createElement("div");
       iw.className = "sp-psec sp-psec-preview";
       var il = document.createElement("div");
@@ -185,9 +185,10 @@
       wrap.style.cssText = "width:100%;position:relative;overflow:hidden;border-radius:6px;";
       var pIframe = document.createElement("iframe");
       pIframe.src = exampleData.iframeSrc;
+      pIframe.setAttribute("scrolling", "no");
       // No loading="lazy" — avoids the global CSS height:380px !important override.
       // position:absolute removes the iframe from flow so wrap height rules the layout.
-      pIframe.style.cssText = "position:absolute;top:0;left:0;width:" + CHART_W + "px;height:" + CHART_H + "px;border:none;transform-origin:0 0;background:#0d1117;";
+      pIframe.style.cssText = "position:absolute;top:0;left:0;width:" + CHART_W + "px;height:" + CHART_H + "px;border:none;transform-origin:0 0;background:#0d1117;overflow:hidden;";
       wrap.appendChild(pIframe);
       iw.appendChild(wrap);
       body.appendChild(iw);
@@ -197,7 +198,7 @@
         if (!aw) return;
         var scale = aw / CHART_W;
         pIframe.style.transform = "scale(" + scale + ")";
-        wrap.style.height = Math.round(CHART_H * scale) + "px";
+        wrap.style.height = Math.ceil(CHART_H * scale) + "px";
       }
       pIframe.onload = rescaleIframe;
       setTimeout(rescaleIframe, 50);
