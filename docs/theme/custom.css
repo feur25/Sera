@@ -178,6 +178,8 @@ iframe[loading="lazy"] {
 
 /* .sp-panel-row only wraps .sp-pb — no rail inside */
 .sp-panel-row {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   overflow: hidden;
   min-height: 0;
@@ -312,6 +314,12 @@ iframe[loading="lazy"] {
 /* Collapsed: hide rail + body row */
 #sp-params-panel.sp-p-collapsed .sp-cls-rail-side { display: none; }
 #sp-params-panel.sp-p-collapsed .sp-panel-row { display: none; }
+
+/* Right mode: inset rail top/bottom to clear the panel's border-radius corners */
+#sp-params-panel.sp-p-right .sp-cls-rail-side {
+  top: 12px;
+  bottom: 12px;
+}
 
 /* Bottom-dock: rail becomes horizontal bar ABOVE the panel */
 #sp-params-panel.sp-p-bottom .sp-cls-rail-side {
@@ -510,6 +518,7 @@ body.sp-body-bottom .content {
   overflow-y: auto;
   overflow-x: hidden;
   flex: 1;
+  min-height: 0;
   scrollbar-width: thin;
   scrollbar-color: #334155 transparent;
 }
