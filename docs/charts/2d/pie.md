@@ -1,4 +1,4 @@
-﻿# Pie Chart
+# Pie Chart
 
 <div class="lang-en">
 
@@ -73,7 +73,6 @@ A pie chart divides a circle into proportional slices, where each slice's arc an
 <button class="sp-tb" onclick="spTab('pie','pie-cpp',this)">C++</button>
 </div>
 <div id="pie-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.pie(
     title="Market share Q4",
     labels=["SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Other"],
@@ -81,7 +80,6 @@ chart = sp.pie(
 )
 chart.show()</code></pre></div>
 <div id="pie-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.pie({
   title: "Market share Q4",
   labels: ["SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Other"],
@@ -89,7 +87,6 @@ const chart = sp.pie({
 });
 chart.show();</code></pre></div>
 <div id="pie-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.pie({
   title: "Market share Q4",
   labels: ["SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Other"],
@@ -97,7 +94,6 @@ const chart = sp.pie({
 });
 chart.show();</code></pre></div>
 <div id="pie-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$pie(
   title = "Market share Q4",
   labels = c("SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Other"),
@@ -106,7 +102,6 @@ chart <- sp$pie(
 chart$show()</code></pre></div>
 <div id="pie-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.pie()
     .title("Market share Q4")
     .labels(List.of("SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Other"))
@@ -114,7 +109,6 @@ var chart = SeraPlot.pie()
     .build();
 chart.show();</code></pre></div>
 <div id="pie-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Pie(
     title: "Market share Q4",
     labels: new[]{"SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Other"},
@@ -122,7 +116,6 @@ var chart = Sp.Pie(
 );
 chart.Show();</code></pre></div>
 <div id="pie-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.pie(
   title = "Market share Q4",
   labels = List("SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Other"),
@@ -130,7 +123,6 @@ val chart = sp.pie(
 )
 chart.show()</code></pre></div>
 <div id="pie-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::pie({
   .title  = "Market share Q4",
   .labels = {"SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Other"},
@@ -221,7 +213,6 @@ Un graphique en secteurs divise un cercle en tranches proportionnelles, où l'an
 <button class="sp-tb" onclick="spTab('pie-fr','pie-fr-cpp',this)">C++</button>
 </div>
 <div id="pie-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.pie(
     title="Parts de marché T4",
     labels=["SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Autres"],
@@ -229,7 +220,6 @@ chart = sp.pie(
 )
 chart.show()</code></pre></div>
 <div id="pie-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.pie({
   title: "Parts de marché T4",
   labels: ["SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Autres"],
@@ -237,7 +227,6 @@ const chart = sp.pie({
 });
 chart.show();</code></pre></div>
 <div id="pie-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.pie({
   title: "Parts de marché T4",
   labels: ["SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Autres"],
@@ -245,7 +234,6 @@ const chart = sp.pie({
 });
 chart.show();</code></pre></div>
 <div id="pie-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$pie(
   title = "Parts de marché T4",
   labels = c("SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Autres"),
@@ -254,7 +242,6 @@ chart <- sp$pie(
 chart$show()</code></pre></div>
 <div id="pie-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.pie()
     .title("Parts de marché T4")
     .labels(List.of("SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Autres"))
@@ -262,7 +249,6 @@ var chart = SeraPlot.pie()
     .build();
 chart.show();</code></pre></div>
 <div id="pie-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Pie(
     title: "Parts de marché T4",
     labels: new[]{"SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Autres"},
@@ -270,7 +256,6 @@ var chart = Sp.Pie(
 );
 chart.Show();</code></pre></div>
 <div id="pie-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.pie(
   title = "Parts de marché T4",
   labels = List("SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Autres"),
@@ -278,7 +263,6 @@ val chart = sp.pie(
 )
 chart.show()</code></pre></div>
 <div id="pie-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::pie({
   .title  = "Parts de marché T4",
   .labels = {"SeraPlot", "Matplotlib", "Plotly", "Bokeh", "Autres"},

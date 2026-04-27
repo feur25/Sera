@@ -1,4 +1,4 @@
-﻿# Funnel Chart
+# Funnel Chart
 
 <div class="lang-en">
 
@@ -71,7 +71,6 @@ A funnel chart visualizes progressive reduction through ordered stages, where ea
 <button class="sp-tb" onclick="spTab('funnel','funnel-cpp',this)">C++</button>
 </div>
 <div id="funnel-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.funnel(
     title="Sales conversion funnel",
     labels=["Visitors", "Leads", "Opportunities", "Proposals", "Closed Won"],
@@ -79,7 +78,6 @@ chart = sp.funnel(
 )
 chart.show()</code></pre></div>
 <div id="funnel-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.funnel({
   title: "Sales conversion funnel",
   labels: ["Visitors", "Leads", "Opportunities", "Proposals", "Closed Won"],
@@ -87,7 +85,6 @@ const chart = sp.funnel({
 });
 chart.show();</code></pre></div>
 <div id="funnel-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.funnel({
   title: "Sales conversion funnel",
   labels: ["Visitors", "Leads", "Opportunities", "Proposals", "Closed Won"],
@@ -95,7 +92,6 @@ const chart = sp.funnel({
 });
 chart.show();</code></pre></div>
 <div id="funnel-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$funnel(
   title = "Sales conversion funnel",
   labels = c("Visitors", "Leads", "Opportunities", "Proposals", "Closed Won"),
@@ -104,7 +100,6 @@ chart <- sp$funnel(
 chart$show()</code></pre></div>
 <div id="funnel-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.funnel()
     .title("Sales conversion funnel")
     .labels(List.of("Visitors", "Leads", "Opportunities", "Proposals", "Closed Won"))
@@ -112,7 +107,6 @@ var chart = SeraPlot.funnel()
     .build();
 chart.show();</code></pre></div>
 <div id="funnel-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Funnel(
     title: "Sales conversion funnel",
     labels: new[]{"Visitors", "Leads", "Opportunities", "Proposals", "Closed Won"},
@@ -120,7 +114,6 @@ var chart = Sp.Funnel(
 );
 chart.Show();</code></pre></div>
 <div id="funnel-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.funnel(
   title = "Sales conversion funnel",
   labels = List("Visitors", "Leads", "Opportunities", "Proposals", "Closed Won"),
@@ -128,7 +121,6 @@ val chart = sp.funnel(
 )
 chart.show()</code></pre></div>
 <div id="funnel-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::funnel({
   .title  = "Sales conversion funnel",
   .labels = {"Visitors", "Leads", "Opportunities", "Proposals", "Closed Won"},
@@ -216,7 +208,6 @@ Un graphique en entonnoir visualise la réduction progressive à travers des ét
 <button class="sp-tb" onclick="spTab('funnel-fr','funnel-fr-cpp',this)">C++</button>
 </div>
 <div id="funnel-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.funnel(
     title="Entonnoir de conversion des ventes",
     labels=["Visiteurs", "Leads", "Opportunités", "Propositions", "Clients gagnés"],
@@ -224,7 +215,6 @@ chart = sp.funnel(
 )
 chart.show()</code></pre></div>
 <div id="funnel-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.funnel({
   title: "Entonnoir de conversion des ventes",
   labels: ["Visiteurs", "Leads", "Opportunités", "Propositions", "Clients gagnés"],
@@ -232,7 +222,6 @@ const chart = sp.funnel({
 });
 chart.show();</code></pre></div>
 <div id="funnel-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.funnel({
   title: "Entonnoir de conversion des ventes",
   labels: ["Visiteurs", "Leads", "Opportunités", "Propositions", "Clients gagnés"],
@@ -240,7 +229,6 @@ const chart = sp.funnel({
 });
 chart.show();</code></pre></div>
 <div id="funnel-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$funnel(
   title = "Entonnoir de conversion des ventes",
   labels = c("Visiteurs", "Leads", "Opportunités", "Propositions", "Clients gagnés"),
@@ -249,7 +237,6 @@ chart <- sp$funnel(
 chart$show()</code></pre></div>
 <div id="funnel-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.funnel()
     .title("Entonnoir de conversion des ventes")
     .labels(List.of("Visiteurs", "Leads", "Opportunités", "Propositions", "Clients gagnés"))
@@ -257,7 +244,6 @@ var chart = SeraPlot.funnel()
     .build();
 chart.show();</code></pre></div>
 <div id="funnel-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Funnel(
     title: "Entonnoir de conversion des ventes",
     labels: new[]{"Visiteurs", "Leads", "Opportunités", "Propositions", "Clients gagnés"},
@@ -265,7 +251,6 @@ var chart = Sp.Funnel(
 );
 chart.Show();</code></pre></div>
 <div id="funnel-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.funnel(
   title = "Entonnoir de conversion des ventes",
   labels = List("Visiteurs", "Leads", "Opportunités", "Propositions", "Clients gagnés"),
@@ -273,7 +258,6 @@ val chart = sp.funnel(
 )
 chart.show()</code></pre></div>
 <div id="funnel-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::funnel({
   .title  = "Entonnoir de conversion des ventes",
   .labels = {"Visiteurs", "Leads", "Opportunités", "Propositions", "Clients gagnés"},

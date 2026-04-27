@@ -1,4 +1,4 @@
-﻿# Bullet Chart
+# Bullet Chart
 
 <div class="lang-en">
 
@@ -77,7 +77,6 @@ A bullet chart follows the Stephen Few / Tufte design for information-dense KPI 
 <button class="sp-tb" onclick="spTab('bullet','bullet-cpp',this)">C++</button>
 </div>
 <div id="bullet-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.bullet(
     title="Q3 KPI performance",
     labels=["Revenue", "Users", "NPS"],
@@ -92,7 +91,6 @@ chart = sp.bullet(
 )
 chart.show()</code></pre></div>
 <div id="bullet-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.bullet({
   title: "Q3 KPI performance",
   labels: ["Revenue", "Users", "NPS"],
@@ -107,7 +105,6 @@ const chart = sp.bullet({
 });
 chart.show();</code></pre></div>
 <div id="bullet-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.bullet({
   title: "Q3 KPI performance",
   labels: ["Revenue", "Users", "NPS"],
@@ -122,7 +119,6 @@ const chart = sp.bullet({
 });
 chart.show();</code></pre></div>
 <div id="bullet-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$bullet(
   title = "Q3 KPI performance",
   labels = c("Revenue", "Users", "NPS"),
@@ -138,7 +134,6 @@ chart <- sp$bullet(
 chart$show()</code></pre></div>
 <div id="bullet-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.bullet()
     .title("Q3 KPI performance")
     .labels(List.of("Revenue", "Users", "NPS"))
@@ -153,7 +148,6 @@ var chart = SeraPlot.bullet()
     .build();
 chart.show();</code></pre></div>
 <div id="bullet-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Bullet(
     title: "Q3 KPI performance",
     labels: new[]{"Revenue", "Users", "NPS"},
@@ -168,7 +162,6 @@ var chart = Sp.Bullet(
 );
 chart.Show();</code></pre></div>
 <div id="bullet-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.bullet(
   title = "Q3 KPI performance",
   labels = List("Revenue", "Users", "NPS"),
@@ -183,7 +176,6 @@ val chart = sp.bullet(
 )
 chart.show()</code></pre></div>
 <div id="bullet-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::bullet({
   .title    = "Q3 KPI performance",
   .labels   = {"Revenue", "Users", "NPS"},
@@ -285,7 +277,6 @@ Un graphique en bullet suit le design Stephen Few / Tufte pour un reporting de K
 <button class="sp-tb" onclick="spTab('bullet-fr','bullet-fr-cpp',this)">C++</button>
 </div>
 <div id="bullet-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.bullet(
     title="Performance des KPI T3",
     labels=["Chiffre d'affaires", "Utilisateurs", "NPS"],
@@ -300,7 +291,6 @@ chart = sp.bullet(
 )
 chart.show()</code></pre></div>
 <div id="bullet-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.bullet({
   title: "Performance des KPI T3",
   labels: ["Chiffre d'affaires", "Utilisateurs", "NPS"],
@@ -315,7 +305,6 @@ const chart = sp.bullet({
 });
 chart.show();</code></pre></div>
 <div id="bullet-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.bullet({
   title: "Performance des KPI T3",
   labels: ["Chiffre d'affaires", "Utilisateurs", "NPS"],
@@ -330,7 +319,6 @@ const chart = sp.bullet({
 });
 chart.show();</code></pre></div>
 <div id="bullet-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$bullet(
   title = "Performance des KPI T3",
   labels = c("Chiffre d'affaires", "Utilisateurs", "NPS"),
@@ -346,7 +334,6 @@ chart <- sp$bullet(
 chart$show()</code></pre></div>
 <div id="bullet-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.bullet()
     .title("Performance des KPI T3")
     .labels(List.of("Chiffre d'affaires", "Utilisateurs", "NPS"))
@@ -361,7 +348,6 @@ var chart = SeraPlot.bullet()
     .build();
 chart.show();</code></pre></div>
 <div id="bullet-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Bullet(
     title: "Performance des KPI T3",
     labels: new[]{"Chiffre d'affaires", "Utilisateurs", "NPS"},
@@ -376,7 +362,6 @@ var chart = Sp.Bullet(
 );
 chart.Show();</code></pre></div>
 <div id="bullet-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.bullet(
   title = "Performance des KPI T3",
   labels = List("Chiffre d'affaires", "Utilisateurs", "NPS"),
@@ -391,7 +376,6 @@ val chart = sp.bullet(
 )
 chart.show()</code></pre></div>
 <div id="bullet-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::bullet({
   .title    = "Performance des KPI T3",
   .labels   = {"Chiffre d'affaires", "Utilisateurs", "NPS"},

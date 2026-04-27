@@ -1,4 +1,4 @@
-﻿# Lollipop Chart
+# Lollipop Chart
 
 <div class="lang-en">
 
@@ -81,10 +81,8 @@ A lollipop chart is a cleaner, lower ink-density alternative to a bar chart: eac
 <button class="sp-tb" onclick="spTab('lollipop','lollipop-cpp',this)">C++</button>
 </div>
 <div id="lollipop-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 frameworks = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"]
 stars_k = [223, 47, 95, 80, 32, 18, 21]
-
 chart = sp.lollipop(
     title="Frontend Framework Stars (GitHub, K)",
     labels=frameworks,
@@ -96,10 +94,8 @@ chart = sp.lollipop(
 )
 chart.show()</code></pre></div>
 <div id="lollipop-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const frameworks = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"];
 const starsK = [223, 47, 95, 80, 32, 18, 21];
-
 const chart = sp.lollipop({
   title: "Frontend Framework Stars (GitHub, K)",
   labels: frameworks,
@@ -111,10 +107,8 @@ const chart = sp.lollipop({
 });
 chart.show();</code></pre></div>
 <div id="lollipop-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const frameworks: string[] = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"];
 const starsK: number[] = [223, 47, 95, 80, 32, 18, 21];
-
 const chart = sp.lollipop({
   title: "Frontend Framework Stars (GitHub, K)",
   labels: frameworks,
@@ -126,10 +120,8 @@ const chart = sp.lollipop({
 });
 chart.show();</code></pre></div>
 <div id="lollipop-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 frameworks <- c("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik")
 stars_k    <- c(223, 47, 95, 80, 32, 18, 21)
-
 chart <- sp$lollipop(
   title      = "Frontend Framework Stars (GitHub, K)",
   labels     = frameworks,
@@ -142,7 +134,6 @@ chart <- sp$lollipop(
 chart$show()</code></pre></div>
 <div id="lollipop-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.lollipop()
     .title("Frontend Framework Stars (GitHub, K)")
     .labels(List.of("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"))
@@ -154,7 +145,6 @@ var chart = SeraPlot.lollipop()
     .build();
 chart.show();</code></pre></div>
 <div id="lollipop-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Lollipop(
     title:     "Frontend Framework Stars (GitHub, K)",
     labels:    ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"],
@@ -166,7 +156,6 @@ var chart = Sp.Lollipop(
 );
 chart.Show();</code></pre></div>
 <div id="lollipop-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.lollipop(
   title      = "Frontend Framework Stars (GitHub, K)",
   labels     = List("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"),
@@ -178,7 +167,6 @@ val chart = sp.lollipop(
 )
 chart.show()</code></pre></div>
 <div id="lollipop-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::lollipop({
     .title      = "Frontend Framework Stars (GitHub, K)",
     .labels     = {"React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"},
@@ -281,10 +269,8 @@ Un graphique en sucette (lollipop chart) est une alternative plus épurée au gr
 <button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-cpp',this)">C++</button>
 </div>
 <div id="lollipop-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 frameworks = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"]
 etoiles_k  = [223, 47, 95, 80, 32, 18, 21]
-
 chart = sp.lollipop(
     title="Stars GitHub des frameworks frontend (K)",
     labels=frameworks,
@@ -296,10 +282,8 @@ chart = sp.lollipop(
 )
 chart.show()</code></pre></div>
 <div id="lollipop-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const frameworks = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"];
 const etoilesK   = [223, 47, 95, 80, 32, 18, 21];
-
 const chart = sp.lollipop({
   title: "Stars GitHub des frameworks frontend (K)",
   labels: frameworks,
@@ -311,10 +295,8 @@ const chart = sp.lollipop({
 });
 chart.show();</code></pre></div>
 <div id="lollipop-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const frameworks: string[] = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"];
 const etoilesK: number[]   = [223, 47, 95, 80, 32, 18, 21];
-
 const chart = sp.lollipop({
   title: "Stars GitHub des frameworks frontend (K)",
   labels: frameworks,
@@ -326,10 +308,8 @@ const chart = sp.lollipop({
 });
 chart.show();</code></pre></div>
 <div id="lollipop-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 frameworks <- c("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik")
 etoiles_k  <- c(223, 47, 95, 80, 32, 18, 21)
-
 chart <- sp$lollipop(
   title      = "Stars GitHub des frameworks frontend (K)",
   labels     = frameworks,
@@ -342,7 +322,6 @@ chart <- sp$lollipop(
 chart$show()</code></pre></div>
 <div id="lollipop-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.lollipop()
     .title("Stars GitHub des frameworks frontend (K)")
     .labels(List.of("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"))
@@ -354,7 +333,6 @@ var chart = SeraPlot.lollipop()
     .build();
 chart.show();</code></pre></div>
 <div id="lollipop-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Lollipop(
     title:     "Stars GitHub des frameworks frontend (K)",
     labels:    ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"],
@@ -366,7 +344,6 @@ var chart = Sp.Lollipop(
 );
 chart.Show();</code></pre></div>
 <div id="lollipop-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.lollipop(
   title      = "Stars GitHub des frameworks frontend (K)",
   labels     = List("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"),
@@ -378,7 +355,6 @@ val chart = sp.lollipop(
 )
 chart.show()</code></pre></div>
 <div id="lollipop-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::lollipop({
     .title      = "Stars GitHub des frameworks frontend (K)",
     .labels     = {"React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"},

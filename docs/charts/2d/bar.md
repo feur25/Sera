@@ -1,4 +1,4 @@
-﻿# Bar Chart
+# Bar Chart
 
 <div class="lang-en">
 
@@ -92,10 +92,8 @@ A bar chart encodes a single numeric variable as the length of rectangular bars 
 <button class="sp-tb" onclick="spTab('bar-basic','bar-basic-cpp',this)">C++</button>
 </div>
 <div id="bar-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"]
 revenue = [1200, 1850, 2100, 1750, 2400, 2800]
-
 chart = sp.bar(
     title="Monthly Revenue",
     labels=months,
@@ -106,10 +104,8 @@ chart = sp.bar(
 )
 chart.show()</code></pre></div>
 <div id="bar-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
 const revenue = [1200, 1850, 2100, 1750, 2400, 2800];
-
 const chart = sp.bar({
   title: "Monthly Revenue",
   labels: months,
@@ -120,10 +116,8 @@ const chart = sp.bar({
 });
 chart.show();</code></pre></div>
 <div id="bar-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const months: string[] = ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
 const revenue: number[] = [1200, 1850, 2100, 1750, 2400, 2800];
-
 const chart = sp.bar({
   title: "Monthly Revenue",
   labels: months,
@@ -134,10 +128,8 @@ const chart = sp.bar({
 });
 chart.show();</code></pre></div>
 <div id="bar-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 months <- c("Jan", "Feb", "Mar", "Apr", "May", "Jun")
 revenue <- c(1200, 1850, 2100, 1750, 2400, 2800)
-
 chart <- sp$bar(
   title = "Monthly Revenue",
   labels = months,
@@ -149,7 +141,6 @@ chart <- sp$bar(
 chart$show()</code></pre></div>
 <div id="bar-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.bar()
     .title("Monthly Revenue")
     .labels(List.of("Jan", "Feb", "Mar", "Apr", "May", "Jun"))
@@ -160,7 +151,6 @@ var chart = SeraPlot.bar()
     .build();
 chart.show();</code></pre></div>
 <div id="bar-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Bar(
     title: "Monthly Revenue",
     labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -171,7 +161,6 @@ var chart = Sp.Bar(
 );
 chart.Show();</code></pre></div>
 <div id="bar-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.bar(
   title = "Monthly Revenue",
   labels = List("Jan", "Feb", "Mar", "Apr", "May", "Jun"),
@@ -182,7 +171,6 @@ val chart = sp.bar(
 )
 chart.show()</code></pre></div>
 <div id="bar-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::bar({
     .title    = "Monthly Revenue",
     .labels   = {"Jan", "Feb", "Mar", "Apr", "May", "Jun"},
@@ -296,10 +284,8 @@ Un graphique en barres encode une variable numérique sous forme de barres recta
 <button class="sp-tb" onclick="spTab('bar-basic-fr','bar-bfr-cpp',this)">C++</button>
 </div>
 <div id="bar-bfr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 mois = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun"]
 ca   = [1200, 1850, 2100, 1750, 2400, 2800]
-
 chart = sp.bar(
     title="Chiffre d'affaires mensuel",
     labels=mois,
@@ -310,10 +296,8 @@ chart = sp.bar(
 )
 chart.show()</code></pre></div>
 <div id="bar-bfr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const mois = ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun"];
 const ca   = [1200, 1850, 2100, 1750, 2400, 2800];
-
 const chart = sp.bar({
   title: "Chiffre d'affaires mensuel",
   labels: mois,
@@ -324,7 +308,6 @@ const chart = sp.bar({
 });
 chart.show();</code></pre></div>
 <div id="bar-bfr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.bar({
   title: "Chiffre d'affaires mensuel",
   labels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun"],
@@ -335,7 +318,6 @@ const chart = sp.bar({
 });
 chart.show();</code></pre></div>
 <div id="bar-bfr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$bar(
   title  = "Chiffre d'affaires mensuel",
   labels = c("Jan", "Fév", "Mar", "Avr", "Mai", "Jun"),
@@ -347,7 +329,6 @@ chart <- sp$bar(
 chart$show()</code></pre></div>
 <div id="bar-bfr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.bar()
     .title("Chiffre d'affaires mensuel")
     .labels(List.of("Jan", "Fév", "Mar", "Avr", "Mai", "Jun"))
@@ -358,7 +339,6 @@ var chart = SeraPlot.bar()
     .build();
 chart.show();</code></pre></div>
 <div id="bar-bfr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Bar(
     title: "Chiffre d'affaires mensuel",
     labels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Jun"],
@@ -369,7 +349,6 @@ var chart = Sp.Bar(
 );
 chart.Show();</code></pre></div>
 <div id="bar-bfr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.bar(
   title  = "Chiffre d'affaires mensuel",
   labels = List("Jan", "Fév", "Mar", "Avr", "Mai", "Jun"),
@@ -380,7 +359,6 @@ val chart = sp.bar(
 )
 chart.show()</code></pre></div>
 <div id="bar-bfr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::bar({
     .title     = "Chiffre d'affaires mensuel",
     .labels    = {"Jan", "Fév", "Mar", "Avr", "Mai", "Jun"},

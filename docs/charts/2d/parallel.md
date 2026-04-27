@@ -1,4 +1,4 @@
-﻿# Parallel Coordinates
+# Parallel Coordinates
 
 <div class="lang-en">
 
@@ -73,14 +73,12 @@ Parallel coordinates place each dimension on its own vertical axis, with observa
 <button class="sp-tb" onclick="spTab('parallel','parallel-cpp',this)">C++</button>
 </div>
 <div id="parallel-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 # 12 Iris observations (4 per species), 4 features each
 sepal_l = [5.1,4.9,4.7,7.0,6.4,6.9,6.3,5.8,7.1,5.8,5.7,6.2]
 sepal_w = [3.5,3.0,3.2,3.2,3.2,3.1,3.3,2.7,3.0,2.8,2.8,2.9]
 petal_l = [1.4,1.4,1.3,4.7,4.5,4.9,6.0,5.1,5.9,5.1,4.5,4.3]
 petal_w = [0.2,0.2,0.2,1.4,1.5,1.5,2.5,1.9,2.1,1.8,1.3,1.3]
 species = ["Setosa"]*3 + ["Versicolor"]*3 + ["Virginica"]*3 + ["Versicolor"]*3
-
 chart = sp.parallel(
     title="Iris Dataset — Parallel Coordinates",
     axes=["Sepal L", "Sepal W", "Petal L", "Petal W"],
@@ -90,14 +88,12 @@ chart = sp.parallel(
 )
 chart.show()</code></pre></div>
 <div id="parallel-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const sepalL = [5.1,4.9,4.7,7.0,6.4,6.9,6.3,5.8,7.1,5.8,5.7,6.2];
 const sepalW = [3.5,3.0,3.2,3.2,3.2,3.1,3.3,2.7,3.0,2.8,2.8,2.9];
 const petalL = [1.4,1.4,1.3,4.7,4.5,4.9,6.0,5.1,5.9,5.1,4.5,4.3];
 const petalW = [0.2,0.2,0.2,1.4,1.5,1.5,2.5,1.9,2.1,1.8,1.3,1.3];
 const species = [...Array(3).fill("Setosa"), ...Array(3).fill("Versicolor"),
                  ...Array(3).fill("Virginica"), ...Array(3).fill("Versicolor")];
-
 const chart = sp.parallel({
   title: "Iris Dataset — Parallel Coordinates",
   axes: ["Sepal L", "Sepal W", "Petal L", "Petal W"],
@@ -107,14 +103,12 @@ const chart = sp.parallel({
 });
 chart.show();</code></pre></div>
 <div id="parallel-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const sepalL: number[] = [5.1,4.9,4.7,7.0,6.4,6.9,6.3,5.8,7.1,5.8,5.7,6.2];
 const sepalW: number[] = [3.5,3.0,3.2,3.2,3.2,3.1,3.3,2.7,3.0,2.8,2.8,2.9];
 const petalL: number[] = [1.4,1.4,1.3,4.7,4.5,4.9,6.0,5.1,5.9,5.1,4.5,4.3];
 const petalW: number[] = [0.2,0.2,0.2,1.4,1.5,1.5,2.5,1.9,2.1,1.8,1.3,1.3];
 const species: string[] = [...Array(3).fill("Setosa"), ...Array(3).fill("Versicolor"),
                            ...Array(3).fill("Virginica"), ...Array(3).fill("Versicolor")];
-
 const chart = sp.parallel({
   title: "Iris Dataset — Parallel Coordinates",
   axes: ["Sepal L", "Sepal W", "Petal L", "Petal W"],
@@ -124,13 +118,11 @@ const chart = sp.parallel({
 });
 chart.show();</code></pre></div>
 <div id="parallel-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 sepal_l <- c(5.1,4.9,4.7,7.0,6.4,6.9,6.3,5.8,7.1,5.8,5.7,6.2)
 sepal_w <- c(3.5,3.0,3.2,3.2,3.2,3.1,3.3,2.7,3.0,2.8,2.8,2.9)
 petal_l <- c(1.4,1.4,1.3,4.7,4.5,4.9,6.0,5.1,5.9,5.1,4.5,4.3)
 petal_w <- c(0.2,0.2,0.2,1.4,1.5,1.5,2.5,1.9,2.1,1.8,1.3,1.3)
 especes <- c(rep("Setosa",3), rep("Versicolor",3), rep("Virginica",3), rep("Versicolor",3))
-
 chart <- sp$parallel(
   title        = "Iris Dataset — Coordonnées parallèles",
   axes         = c("Sepal L", "Sepal W", "Petal L", "Petal W"),
@@ -141,7 +133,6 @@ chart <- sp$parallel(
 chart$show()</code></pre></div>
 <div id="parallel-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var series = List.of(
     List.of(5.1,3.5,1.4,0.2), List.of(4.9,3.0,1.4,0.2), List.of(4.7,3.2,1.3,0.2),
     List.of(7.0,3.2,4.7,1.4), List.of(6.4,3.2,4.5,1.5), List.of(6.9,3.1,4.9,1.5),
@@ -150,7 +141,6 @@ var series = List.of(
 );
 var colorGroups = List.of("Setosa","Setosa","Setosa","Versicolor","Versicolor","Versicolor",
     "Virginica","Virginica","Virginica","Versicolor","Versicolor","Versicolor");
-
 var chart = SeraPlot.parallel()
     .title("Iris Dataset — Parallel Coordinates")
     .axes(List.of("Sepal L", "Sepal W", "Petal L", "Petal W"))
@@ -160,7 +150,6 @@ var chart = SeraPlot.parallel()
     .build();
 chart.show();</code></pre></div>
 <div id="parallel-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 double[][] series = [
     [5.1,3.5,1.4,0.2], [4.9,3.0,1.4,0.2], [4.7,3.2,1.3,0.2],
     [7.0,3.2,4.7,1.4], [6.4,3.2,4.5,1.5], [6.9,3.1,4.9,1.5],
@@ -177,14 +166,12 @@ var chart = Sp.Parallel(
 );
 chart.Show();</code></pre></div>
 <div id="parallel-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val sepalL = List(5.1,4.9,4.7,7.0,6.4,6.9,6.3,5.8,7.1,5.8,5.7,6.2)
 val sepalW = List(3.5,3.0,3.2,3.2,3.2,3.1,3.3,2.7,3.0,2.8,2.8,2.9)
 val petalL = List(1.4,1.4,1.3,4.7,4.5,4.9,6.0,5.1,5.9,5.1,4.5,4.3)
 val petalW = List(0.2,0.2,0.2,1.4,1.5,1.5,2.5,1.9,2.1,1.8,1.3,1.3)
 val especes = List.fill(3)("Setosa") ++ List.fill(3)("Versicolor") ++
               List.fill(3)("Virginica") ++ List.fill(3)("Versicolor")
-
 val chart = sp.parallel(
   title        = "Iris Dataset — Parallel Coordinates",
   axes         = List("Sepal L", "Sepal W", "Petal L", "Petal W"),
@@ -194,7 +181,6 @@ val chart = sp.parallel(
 )
 chart.show()</code></pre></div>
 <div id="parallel-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::parallel({
     .title        = "Iris Dataset — Parallel Coordinates",
     .axes         = {"Sepal L", "Sepal W", "Petal L", "Petal W"},
@@ -293,13 +279,11 @@ Les coordonnées parallèles placent chaque dimension sur son propre axe vertica
 <button class="sp-tb" onclick="spTab('parallel-fr','parallel-fr-cpp',this)">C++</button>
 </div>
 <div id="parallel-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 long_sep = [5.1,4.9,4.7,7.0,6.4,6.9,6.3,5.8,7.1,5.8,5.7,6.2]
 larg_sep = [3.5,3.0,3.2,3.2,3.2,3.1,3.3,2.7,3.0,2.8,2.8,2.9]
 long_pet = [1.4,1.4,1.3,4.7,4.5,4.9,6.0,5.1,5.9,5.1,4.5,4.3]
 larg_pet = [0.2,0.2,0.2,1.4,1.5,1.5,2.5,1.9,2.1,1.8,1.3,1.3]
 especes  = ["Setosa"]*3 + ["Versicolor"]*3 + ["Virginica"]*3 + ["Versicolor"]*3
-
 chart = sp.parallel(
     title="Iris — Coordonnées parallèles",
     axes=["Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."],
@@ -309,7 +293,6 @@ chart = sp.parallel(
 )
 chart.show()</code></pre></div>
 <div id="parallel-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.parallel({
   title: "Iris — Coordonnées parallèles",
   axes: ["Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."],
@@ -319,7 +302,6 @@ const chart = sp.parallel({
 });
 chart.show();</code></pre></div>
 <div id="parallel-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.parallel({
   title: "Iris — Coordonnées parallèles",
   axes: ["Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."],
@@ -329,13 +311,11 @@ const chart = sp.parallel({
 });
 chart.show();</code></pre></div>
 <div id="parallel-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 long_sep <- c(5.1,4.9,4.7,7.0,6.4,6.9,6.3,5.8,7.1,5.8,5.7,6.2)
 larg_sep <- c(3.5,3.0,3.2,3.2,3.2,3.1,3.3,2.7,3.0,2.8,2.8,2.9)
 long_pet <- c(1.4,1.4,1.3,4.7,4.5,4.9,6.0,5.1,5.9,5.1,4.5,4.3)
 larg_pet <- c(0.2,0.2,0.2,1.4,1.5,1.5,2.5,1.9,2.1,1.8,1.3,1.3)
 especes  <- c(rep("Setosa",3),rep("Versicolor",3),rep("Virginica",3),rep("Versicolor",3))
-
 chart <- sp$parallel(
   title        = "Iris — Coordonnées parallèles",
   axes         = c("Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."),
@@ -346,7 +326,6 @@ chart <- sp$parallel(
 chart$show()</code></pre></div>
 <div id="parallel-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.parallel()
     .title("Iris — Coordonnées parallèles")
     .axes(List.of("Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."))
@@ -356,7 +335,6 @@ var chart = SeraPlot.parallel()
     .build();
 chart.show();</code></pre></div>
 <div id="parallel-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Parallel(
     title:       "Iris — Coordonnées parallèles",
     axes:        ["Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."],
@@ -366,7 +344,6 @@ var chart = Sp.Parallel(
 );
 chart.Show();</code></pre></div>
 <div id="parallel-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.parallel(
   title        = "Iris — Coordonnées parallèles",
   axes         = List("Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."),
@@ -376,7 +353,6 @@ val chart = sp.parallel(
 )
 chart.show()</code></pre></div>
 <div id="parallel-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::parallel({
     .title        = "Iris — Coordonnées parallèles",
     .axes         = {"Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."},

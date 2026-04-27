@@ -1,4 +1,4 @@
-﻿# Waterfall Chart
+# Waterfall Chart
 
 <div class="lang-en">
 
@@ -75,7 +75,6 @@ A waterfall chart shows cumulative contributions of sequential positive and nega
 <button class="sp-tb" onclick="spTab('waterfall','waterfall-cpp',this)">C++</button>
 </div>
 <div id="waterfall-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.waterfall(
     title="P&L breakdown",
     labels=["Revenue", "COGS", "R&D", "Sales", "G&A", "EBIT"],
@@ -84,7 +83,6 @@ chart = sp.waterfall(
 )
 chart.show()</code></pre></div>
 <div id="waterfall-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.waterfall({
   title: "P&L breakdown",
   labels: ["Revenue", "COGS", "R&D", "Sales", "G&A", "EBIT"],
@@ -93,7 +91,6 @@ const chart = sp.waterfall({
 });
 chart.show();</code></pre></div>
 <div id="waterfall-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.waterfall({
   title: "P&L breakdown",
   labels: ["Revenue", "COGS", "R&D", "Sales", "G&A", "EBIT"],
@@ -102,7 +99,6 @@ const chart = sp.waterfall({
 });
 chart.show();</code></pre></div>
 <div id="waterfall-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$waterfall(
   title = "P&L breakdown",
   labels = c("Revenue", "COGS", "R&D", "Sales", "G&A", "EBIT"),
@@ -112,7 +108,6 @@ chart <- sp$waterfall(
 chart$show()</code></pre></div>
 <div id="waterfall-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.waterfall()
     .title("P&L breakdown")
     .labels(List.of("Revenue", "COGS", "R&D", "Sales", "G&A", "EBIT"))
@@ -121,7 +116,6 @@ var chart = SeraPlot.waterfall()
     .build();
 chart.show();</code></pre></div>
 <div id="waterfall-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Waterfall(
     title: "P&L breakdown",
     labels: new[]{"Revenue", "COGS", "R&D", "Sales", "G&A", "EBIT"},
@@ -130,7 +124,6 @@ var chart = Sp.Waterfall(
 );
 chart.Show();</code></pre></div>
 <div id="waterfall-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.waterfall(
   title = "P&L breakdown",
   labels = List("Revenue", "COGS", "R&D", "Sales", "G&A", "EBIT"),
@@ -139,7 +132,6 @@ val chart = sp.waterfall(
 )
 chart.show()</code></pre></div>
 <div id="waterfall-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::waterfall({
   .title   = "P&L breakdown",
   .labels  = {"Revenue", "COGS", "R&D", "Sales", "G&A", "EBIT"},
@@ -232,7 +224,6 @@ Un graphique en cascade affiche les contributions cumulées de valeurs positives
 <button class="sp-tb" onclick="spTab('waterfall-fr','waterfall-fr-cpp',this)">C++</button>
 </div>
 <div id="waterfall-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.waterfall(
     title="Décomposition du compte de résultat",
     labels=["Chiffre d'affaires", "Coût des ventes", "R&D", "Ventes", "G&A", "EBIT"],
@@ -241,7 +232,6 @@ chart = sp.waterfall(
 )
 chart.show()</code></pre></div>
 <div id="waterfall-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.waterfall({
   title: "Décomposition du compte de résultat",
   labels: ["Chiffre d'affaires", "Coût des ventes", "R&D", "Ventes", "G&A", "EBIT"],
@@ -250,7 +240,6 @@ const chart = sp.waterfall({
 });
 chart.show();</code></pre></div>
 <div id="waterfall-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.waterfall({
   title: "Décomposition du compte de résultat",
   labels: ["Chiffre d'affaires", "Coût des ventes", "R&D", "Ventes", "G&A", "EBIT"],
@@ -259,7 +248,6 @@ const chart = sp.waterfall({
 });
 chart.show();</code></pre></div>
 <div id="waterfall-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$waterfall(
   title = "Décomposition du compte de résultat",
   labels = c("Chiffre d'affaires", "Coût des ventes", "R&D", "Ventes", "G&A", "EBIT"),
@@ -269,7 +257,6 @@ chart <- sp$waterfall(
 chart$show()</code></pre></div>
 <div id="waterfall-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.waterfall()
     .title("Décomposition du compte de résultat")
     .labels(List.of("Chiffre d'affaires", "Coût des ventes", "R&D", "Ventes", "G&A", "EBIT"))
@@ -278,7 +265,6 @@ var chart = SeraPlot.waterfall()
     .build();
 chart.show();</code></pre></div>
 <div id="waterfall-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Waterfall(
     title: "Décomposition du compte de résultat",
     labels: new[]{"Chiffre d'affaires", "Coût des ventes", "R&D", "Ventes", "G&A", "EBIT"},
@@ -287,7 +273,6 @@ var chart = Sp.Waterfall(
 );
 chart.Show();</code></pre></div>
 <div id="waterfall-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.waterfall(
   title = "Décomposition du compte de résultat",
   labels = List("Chiffre d'affaires", "Coût des ventes", "R&D", "Ventes", "G&A", "EBIT"),
@@ -296,7 +281,6 @@ val chart = sp.waterfall(
 )
 chart.show()</code></pre></div>
 <div id="waterfall-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::waterfall({
   .title   = "Décomposition du compte de résultat",
   .labels  = {"Chiffre d'affaires", "Coût des ventes", "R&D", "Ventes", "G&A", "EBIT"},

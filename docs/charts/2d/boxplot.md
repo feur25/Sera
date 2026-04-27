@@ -1,4 +1,4 @@
-﻿# Box Plot
+# Box Plot
 
 <div class="lang-en">
 
@@ -79,7 +79,6 @@ A box plot (box-and-whisker chart) summarizes the statistical distribution of a 
 <button class="sp-tb" onclick="spTab('boxplot','boxplot-cpp',this)">C++</button>
 </div>
 <div id="boxplot-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.boxplot(
     title="Test scores by class",
     category_labels=["Class A", "Class B", "Class C", "Class D"],
@@ -93,7 +92,6 @@ chart = sp.boxplot(
 )
 chart.show()</code></pre></div>
 <div id="boxplot-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.boxplot({
   title: "Test scores by class",
   categoryLabels: ["Class A", "Class B", "Class C", "Class D"],
@@ -107,7 +105,6 @@ const chart = sp.boxplot({
 });
 chart.show();</code></pre></div>
 <div id="boxplot-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.boxplot({
   title: "Test scores by class",
   categoryLabels: ["Class A", "Class B", "Class C", "Class D"],
@@ -121,7 +118,6 @@ const chart = sp.boxplot({
 });
 chart.show();</code></pre></div>
 <div id="boxplot-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$boxplot(
   title = "Test scores by class",
   category_labels = c("Class A", "Class B", "Class C", "Class D"),
@@ -136,7 +132,6 @@ chart <- sp$boxplot(
 chart$show()</code></pre></div>
 <div id="boxplot-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.boxplot()
     .title("Test scores by class")
     .categoryLabels(List.of("Class A", "Class B", "Class C", "Class D"))
@@ -150,7 +145,6 @@ var chart = SeraPlot.boxplot()
     .build();
 chart.show();</code></pre></div>
 <div id="boxplot-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Boxplot(
     title: "Test scores by class",
     categoryLabels: new[]{"Class A", "Class B", "Class C", "Class D"},
@@ -164,7 +158,6 @@ var chart = Sp.Boxplot(
 );
 chart.Show();</code></pre></div>
 <div id="boxplot-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.boxplot(
   title = "Test scores by class",
   category_labels = List("Class A", "Class B", "Class C", "Class D"),
@@ -178,7 +171,6 @@ val chart = sp.boxplot(
 )
 chart.show()</code></pre></div>
 <div id="boxplot-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::boxplot({
   .title            = "Test scores by class",
   .category_labels  = {"Class A", "Class B", "Class C", "Class D"},
@@ -281,7 +273,6 @@ Un diagramme en boîte (boîte à moustaches) résume la distribution statistiqu
 <button class="sp-tb" onclick="spTab('boxplot-fr','boxplot-fr-cpp',this)">C++</button>
 </div>
 <div id="boxplot-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.boxplot(
     title="Notes d'examen par classe",
     category_labels=["Classe A", "Classe B", "Classe C", "Classe D"],
@@ -295,7 +286,6 @@ chart = sp.boxplot(
 )
 chart.show()</code></pre></div>
 <div id="boxplot-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.boxplot({
   title: "Notes d'examen par classe",
   categoryLabels: ["Classe A", "Classe B", "Classe C", "Classe D"],
@@ -309,7 +299,6 @@ const chart = sp.boxplot({
 });
 chart.show();</code></pre></div>
 <div id="boxplot-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.boxplot({
   title: "Notes d'examen par classe",
   categoryLabels: ["Classe A", "Classe B", "Classe C", "Classe D"],
@@ -323,7 +312,6 @@ const chart = sp.boxplot({
 });
 chart.show();</code></pre></div>
 <div id="boxplot-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$boxplot(
   title = "Notes d'examen par classe",
   category_labels = c("Classe A", "Classe B", "Classe C", "Classe D"),
@@ -338,7 +326,6 @@ chart <- sp$boxplot(
 chart$show()</code></pre></div>
 <div id="boxplot-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.boxplot()
     .title("Notes d'examen par classe")
     .categoryLabels(List.of("Classe A", "Classe B", "Classe C", "Classe D"))
@@ -352,7 +339,6 @@ var chart = SeraPlot.boxplot()
     .build();
 chart.show();</code></pre></div>
 <div id="boxplot-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Boxplot(
     title: "Notes d'examen par classe",
     categoryLabels: new[]{"Classe A", "Classe B", "Classe C", "Classe D"},
@@ -366,7 +352,6 @@ var chart = Sp.Boxplot(
 );
 chart.Show();</code></pre></div>
 <div id="boxplot-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.boxplot(
   title = "Notes d'examen par classe",
   category_labels = List("Classe A", "Classe B", "Classe C", "Classe D"),
@@ -380,7 +365,6 @@ val chart = sp.boxplot(
 )
 chart.show()</code></pre></div>
 <div id="boxplot-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::boxplot({
   .title           = "Notes d'examen par classe",
   .category_labels = {"Classe A", "Classe B", "Classe C", "Classe D"},

@@ -1,4 +1,4 @@
-﻿# Multi-Line Chart
+# Multi-Line Chart
 
 <div class="lang-en">
 
@@ -79,7 +79,6 @@ A multi-line chart overlays multiple line series on the same axes, enabling dire
 <button class="sp-tb" onclick="spTab('multiline','multiline-cpp',this)">C++</button>
 </div>
 <div id="multiline-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.multiline(
     title="Monthly revenue by product line",
     x_labels=["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -92,7 +91,6 @@ chart = sp.multiline(
 )
 chart.show()</code></pre></div>
 <div id="multiline-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.multiline({
   title: "Monthly revenue by product line",
   xLabels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -105,7 +103,6 @@ const chart = sp.multiline({
 });
 chart.show();</code></pre></div>
 <div id="multiline-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.multiline({
   title: "Monthly revenue by product line",
   xLabels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -118,7 +115,6 @@ const chart = sp.multiline({
 });
 chart.show();</code></pre></div>
 <div id="multiline-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$multiline(
   title = "Monthly revenue by product line",
   x_labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun"),
@@ -132,7 +128,6 @@ chart <- sp$multiline(
 chart$show()</code></pre></div>
 <div id="multiline-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.multiline()
     .title("Monthly revenue by product line")
     .xLabels(List.of("Jan", "Feb", "Mar", "Apr", "May", "Jun"))
@@ -145,7 +140,6 @@ var chart = SeraPlot.multiline()
     .build();
 chart.show();</code></pre></div>
 <div id="multiline-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Multiline(
     title: "Monthly revenue by product line",
     xLabels: new[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun"},
@@ -158,7 +152,6 @@ var chart = Sp.Multiline(
 );
 chart.Show();</code></pre></div>
 <div id="multiline-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.multiline(
   title = "Monthly revenue by product line",
   x_labels = List("Jan", "Feb", "Mar", "Apr", "May", "Jun"),
@@ -171,7 +164,6 @@ val chart = sp.multiline(
 )
 chart.show()</code></pre></div>
 <div id="multiline-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::multiline({
   .title         = "Monthly revenue by product line",
   .x_labels      = {"Jan", "Feb", "Mar", "Apr", "May", "Jun"},
@@ -272,7 +264,6 @@ Un graphique multi-courbes superpose plusieurs séries de lignes sur les mêmes 
 <button class="sp-tb" onclick="spTab('multiline-fr','multiline-fr-cpp',this)">C++</button>
 </div>
 <div id="multiline-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.multiline(
     title="Chiffre d'affaires mensuel par ligne de produit",
     x_labels=["Jan", "Fév", "Mar", "Avr", "Mai", "Juin"],
@@ -285,7 +276,6 @@ chart = sp.multiline(
 )
 chart.show()</code></pre></div>
 <div id="multiline-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.multiline({
   title: "Chiffre d'affaires mensuel par ligne de produit",
   xLabels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin"],
@@ -298,7 +288,6 @@ const chart = sp.multiline({
 });
 chart.show();</code></pre></div>
 <div id="multiline-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.multiline({
   title: "Chiffre d'affaires mensuel par ligne de produit",
   xLabels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin"],
@@ -311,7 +300,6 @@ const chart = sp.multiline({
 });
 chart.show();</code></pre></div>
 <div id="multiline-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$multiline(
   title = "Chiffre d'affaires mensuel par ligne de produit",
   x_labels = c("Jan", "Fév", "Mar", "Avr", "Mai", "Juin"),
@@ -325,7 +313,6 @@ chart <- sp$multiline(
 chart$show()</code></pre></div>
 <div id="multiline-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.multiline()
     .title("Chiffre d'affaires mensuel par ligne de produit")
     .xLabels(List.of("Jan", "Fév", "Mar", "Avr", "Mai", "Juin"))
@@ -338,7 +325,6 @@ var chart = SeraPlot.multiline()
     .build();
 chart.show();</code></pre></div>
 <div id="multiline-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Multiline(
     title: "Chiffre d'affaires mensuel par ligne de produit",
     xLabels: new[]{"Jan", "Fév", "Mar", "Avr", "Mai", "Juin"},
@@ -351,7 +337,6 @@ var chart = Sp.Multiline(
 );
 chart.Show();</code></pre></div>
 <div id="multiline-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.multiline(
   title = "Chiffre d'affaires mensuel par ligne de produit",
   x_labels = List("Jan", "Fév", "Mar", "Avr", "Mai", "Juin"),
@@ -364,7 +349,6 @@ val chart = sp.multiline(
 )
 chart.show()</code></pre></div>
 <div id="multiline-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::multiline({
   .title         = "Chiffre d'affaires mensuel par ligne de produit",
   .x_labels      = {"Jan", "Fév", "Mar", "Avr", "Mai", "Juin"},

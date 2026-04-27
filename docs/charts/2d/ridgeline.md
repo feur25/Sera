@@ -1,4 +1,4 @@
-﻿# Ridgeline Chart
+# Ridgeline Chart
 
 <div class="lang-en">
 
@@ -76,14 +76,12 @@ A ridgeline chart (joyplot) stacks KDE density curves for multiple categories al
 </div>
 <div id="ridgeline-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 random.seed(99)
 months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 means  = [5, 7, 11, 15, 19, 23, 26, 25, 21, 16, 10, 6]
 values = []
 for m in means:
     values.extend([random.gauss(m, 3) for _ in range(100)])
-
 chart = sp.ridgeline(
     title="Daily Temperature Distribution by Month (°C)",
     categories=months,
@@ -94,7 +92,6 @@ chart = sp.ridgeline(
 )
 chart.show()</code></pre></div>
 <div id="ridgeline-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const chart = sp.ridgeline({
   title: "Daily Temperature Distribution by Month (°C)",
@@ -106,7 +103,6 @@ const chart = sp.ridgeline({
 });
 chart.show();</code></pre></div>
 <div id="ridgeline-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const months: string[] = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const chart = sp.ridgeline({
   title: "Daily Temperature Distribution by Month (°C)",
@@ -118,12 +114,10 @@ const chart = sp.ridgeline({
 });
 chart.show();</code></pre></div>
 <div id="ridgeline-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 set.seed(99)
 months <- c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec")
 means  <- c(5, 7, 11, 15, 19, 23, 26, 25, 21, 16, 10, 6)
 values <- unlist(lapply(means, function(m) rnorm(100, mean = m, sd = 3)))
-
 chart <- sp$ridgeline(
   title      = "Daily Temperature Distribution by Month (°C)",
   categories = months,
@@ -135,7 +129,6 @@ chart <- sp$ridgeline(
 chart$show()</code></pre></div>
 <div id="ridgeline-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.ridgeline()
     .title("Daily Temperature Distribution by Month (°C)")
     .categories(List.of("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
@@ -146,7 +139,6 @@ var chart = SeraPlot.ridgeline()
     .build();
 chart.show();</code></pre></div>
 <div id="ridgeline-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Ridgeline(
     title:      "Daily Temperature Distribution by Month (°C)",
     categories: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
@@ -157,7 +149,6 @@ var chart = Sp.Ridgeline(
 );
 chart.Show();</code></pre></div>
 <div id="ridgeline-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.ridgeline(
   title      = "Daily Temperature Distribution by Month (°C)",
   categories = List("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
@@ -168,7 +159,6 @@ val chart = sp.ridgeline(
 )
 chart.show()</code></pre></div>
 <div id="ridgeline-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::ridgeline({
     .title      = "Daily Temperature Distribution by Month (°C)",
     .categories = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"},
@@ -265,14 +255,12 @@ Un graphique en arêtes (ridgeline chart ou joyplot) empile des courbes de densi
 </div>
 <div id="ridgeline-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 random.seed(99)
 mois   = ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"]
 moyens = [5, 7, 11, 15, 19, 23, 26, 25, 21, 16, 10, 6]
 valeurs = []
 for m in moyens:
     valeurs.extend([random.gauss(m, 3) for _ in range(100)])
-
 chart = sp.ridgeline(
     title="Distribution des températures par mois (°C)",
     categories=mois,
@@ -283,7 +271,6 @@ chart = sp.ridgeline(
 )
 chart.show()</code></pre></div>
 <div id="ridgeline-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const mois = ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"];
 const chart = sp.ridgeline({
   title: "Distribution des températures par mois (°C)",
@@ -295,7 +282,6 @@ const chart = sp.ridgeline({
 });
 chart.show();</code></pre></div>
 <div id="ridgeline-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const mois: string[] = ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"];
 const chart = sp.ridgeline({
   title: "Distribution des températures par mois (°C)",
@@ -307,12 +293,10 @@ const chart = sp.ridgeline({
 });
 chart.show();</code></pre></div>
 <div id="ridgeline-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 set.seed(99)
 mois   <- c("Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc")
 moyens <- c(5, 7, 11, 15, 19, 23, 26, 25, 21, 16, 10, 6)
 valeurs <- unlist(lapply(moyens, function(m) rnorm(100, mean = m, sd = 3)))
-
 chart <- sp$ridgeline(
   title      = "Distribution des températures par mois (°C)",
   categories = mois,
@@ -324,7 +308,6 @@ chart <- sp$ridgeline(
 chart$show()</code></pre></div>
 <div id="ridgeline-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.ridgeline()
     .title("Distribution des températures par mois (°C)")
     .categories(List.of("Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"))
@@ -335,7 +318,6 @@ var chart = SeraPlot.ridgeline()
     .build();
 chart.show();</code></pre></div>
 <div id="ridgeline-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Ridgeline(
     title:      "Distribution des températures par mois (°C)",
     categories: ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"],
@@ -346,7 +328,6 @@ var chart = Sp.Ridgeline(
 );
 chart.Show();</code></pre></div>
 <div id="ridgeline-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.ridgeline(
   title      = "Distribution des températures par mois (°C)",
   categories = List("Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"),
@@ -357,7 +338,6 @@ val chart = sp.ridgeline(
 )
 chart.show()</code></pre></div>
 <div id="ridgeline-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::ridgeline({
     .title      = "Distribution des températures par mois (°C)",
     .categories = {"Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"},

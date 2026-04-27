@@ -1,4 +1,4 @@
-﻿# Treemap
+# Treemap
 
 <div class="lang-en">
 
@@ -71,7 +71,6 @@ A treemap tiles rectangular cells whose area is proportional to `values`, using 
 <button class="sp-tb" onclick="spTab('treemap','treemap-cpp',this)">C++</button>
 </div>
 <div id="treemap-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.treemap(
     title="S&P 500 Sector Weights (%)",
     labels=["Information Technology", "Health Care", "Financials",
@@ -82,7 +81,6 @@ chart = sp.treemap(
 )
 chart.show()</code></pre></div>
 <div id="treemap-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.treemap({
   title: "S&P 500 Sector Weights (%)",
   labels: ["Information Technology","Health Care","Financials",
@@ -92,7 +90,6 @@ const chart = sp.treemap({
 });
 chart.show();</code></pre></div>
 <div id="treemap-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.treemap({
   title: "S&P 500 Sector Weights (%)",
   labels: ["Information Technology","Health Care","Financials",
@@ -102,7 +99,6 @@ const chart = sp.treemap({
 });
 chart.show();</code></pre></div>
 <div id="treemap-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$treemap(
   title  = "S&P 500 Sector Weights (%)",
   labels = c("Information Technology","Health Care","Financials",
@@ -113,7 +109,6 @@ chart <- sp$treemap(
 chart$show()</code></pre></div>
 <div id="treemap-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.treemap()
     .title("S&P 500 Sector Weights (%)")
     .labels(List.of("Information Technology","Health Care","Financials",
@@ -123,7 +118,6 @@ var chart = SeraPlot.treemap()
     .build();
 chart.show();</code></pre></div>
 <div id="treemap-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Treemap(
     title:  "S&P 500 Sector Weights (%)",
     labels: ["Information Technology","Health Care","Financials",
@@ -133,7 +127,6 @@ var chart = Sp.Treemap(
 );
 chart.Show();</code></pre></div>
 <div id="treemap-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.treemap(
   title  = "S&P 500 Sector Weights (%)",
   labels = List("Information Technology","Health Care","Financials",
@@ -143,7 +136,6 @@ val chart = sp.treemap(
 )
 chart.show()</code></pre></div>
 <div id="treemap-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::treemap({
     .title  = "S&P 500 Sector Weights (%)",
     .labels = {"Information Technology","Health Care","Financials",
@@ -234,7 +226,6 @@ Un treemap dispose des cellules rectangulaires dont l'aire est proportionnelle a
 <button class="sp-tb" onclick="spTab('treemap-fr','treemap-fr-cpp',this)">C++</button>
 </div>
 <div id="treemap-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.treemap(
     title="Pondérations sectorielles S&P 500 (%)",
     labels=["Technologies", "Santé", "Finance",
@@ -245,7 +236,6 @@ chart = sp.treemap(
 )
 chart.show()</code></pre></div>
 <div id="treemap-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.treemap({
   title: "Pondérations sectorielles S&P 500 (%)",
   labels: ["Technologies","Santé","Finance",
@@ -255,7 +245,6 @@ const chart = sp.treemap({
 });
 chart.show();</code></pre></div>
 <div id="treemap-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.treemap({
   title: "Pondérations sectorielles S&P 500 (%)",
   labels: ["Technologies","Santé","Finance",
@@ -265,7 +254,6 @@ const chart = sp.treemap({
 });
 chart.show();</code></pre></div>
 <div id="treemap-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$treemap(
   title  = "Pondérations sectorielles S&P 500 (%)",
   labels = c("Technologies","Santé","Finance",
@@ -276,7 +264,6 @@ chart <- sp$treemap(
 chart$show()</code></pre></div>
 <div id="treemap-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.treemap()
     .title("Pondérations sectorielles S&P 500 (%)")
     .labels(List.of("Technologies","Santé","Finance",
@@ -286,7 +273,6 @@ var chart = SeraPlot.treemap()
     .build();
 chart.show();</code></pre></div>
 <div id="treemap-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Treemap(
     title:  "Pondérations sectorielles S&P 500 (%)",
     labels: ["Technologies","Santé","Finance",
@@ -296,7 +282,6 @@ var chart = Sp.Treemap(
 );
 chart.Show();</code></pre></div>
 <div id="treemap-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.treemap(
   title  = "Pondérations sectorielles S&P 500 (%)",
   labels = List("Technologies","Santé","Finance",
@@ -306,7 +291,6 @@ val chart = sp.treemap(
 )
 chart.show()</code></pre></div>
 <div id="treemap-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::treemap({
     .title  = "Pondérations sectorielles S&P 500 (%)",
     .labels = {"Technologies","Santé","Finance",

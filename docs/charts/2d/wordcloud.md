@@ -1,4 +1,4 @@
-﻿# Word Cloud
+# Word Cloud
 
 <div class="lang-en">
 
@@ -69,7 +69,6 @@ A word cloud places words at font sizes proportional to their `weights` using an
 <button class="sp-tb" onclick="spTab('wordcloud','wordcloud-cpp',this)">C++</button>
 </div>
 <div id="wordcloud-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.wordcloud(
     title="Tech Conference Topics 2024",
     words=["AI", "Rust", "WebAssembly", "Kubernetes", "LLM",
@@ -82,7 +81,6 @@ chart = sp.wordcloud(
 )
 chart.show()</code></pre></div>
 <div id="wordcloud-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.wordcloud({
   title: "Tech Conference Topics 2024",
   words: ["AI","Rust","WebAssembly","Kubernetes","LLM",
@@ -94,7 +92,6 @@ const chart = sp.wordcloud({
 });
 chart.show();</code></pre></div>
 <div id="wordcloud-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.wordcloud({
   title: "Tech Conference Topics 2024",
   words: ["AI","Rust","WebAssembly","Kubernetes","LLM",
@@ -106,7 +103,6 @@ const chart = sp.wordcloud({
 });
 chart.show();</code></pre></div>
 <div id="wordcloud-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$wordcloud(
   title   = "Tech Conference Topics 2024",
   words   = c("AI","Rust","WebAssembly","Kubernetes","LLM",
@@ -119,7 +115,6 @@ chart <- sp$wordcloud(
 chart$show()</code></pre></div>
 <div id="wordcloud-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.wordcloud()
     .title("Tech Conference Topics 2024")
     .words(List.of("AI","Rust","WebAssembly","Kubernetes","LLM",
@@ -132,7 +127,6 @@ var chart = SeraPlot.wordcloud()
     .build();
 chart.show();</code></pre></div>
 <div id="wordcloud-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Wordcloud(
     title:    "Tech Conference Topics 2024",
     words:    ["AI","Rust","WebAssembly","Kubernetes","LLM",
@@ -144,7 +138,6 @@ var chart = Sp.Wordcloud(
 );
 chart.Show();</code></pre></div>
 <div id="wordcloud-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.wordcloud(
   title     = "Tech Conference Topics 2024",
   words     = List("AI","Rust","WebAssembly","Kubernetes","LLM",
@@ -157,7 +150,6 @@ val chart = sp.wordcloud(
 )
 chart.show()</code></pre></div>
 <div id="wordcloud-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::wordcloud({
     .title     = "Tech Conference Topics 2024",
     .words     = {"AI","Rust","WebAssembly","Kubernetes","LLM",
@@ -249,7 +241,6 @@ Un nuage de mots place les mots à des tailles de police proportionnelles à leu
 <button class="sp-tb" onclick="spTab('wordcloud-fr','wordcloud-fr-cpp',this)">C++</button>
 </div>
 <div id="wordcloud-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.wordcloud(
     title="Sujets de conférence tech 2024",
     words=["IA", "Rust", "WebAssembly", "Kubernetes", "LLM",
@@ -262,7 +253,6 @@ chart = sp.wordcloud(
 )
 chart.show()</code></pre></div>
 <div id="wordcloud-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.wordcloud({
   title: "Sujets de conférence tech 2024",
   words: ["IA","Rust","WebAssembly","Kubernetes","LLM",
@@ -274,7 +264,6 @@ const chart = sp.wordcloud({
 });
 chart.show();</code></pre></div>
 <div id="wordcloud-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.wordcloud({
   title: "Sujets de conférence tech 2024",
   words: ["IA","Rust","WebAssembly","Kubernetes","LLM",
@@ -286,7 +275,6 @@ const chart = sp.wordcloud({
 });
 chart.show();</code></pre></div>
 <div id="wordcloud-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$wordcloud(
   title     = "Sujets de conférence tech 2024",
   words     = c("IA","Rust","WebAssembly","Kubernetes","LLM",
@@ -299,7 +287,6 @@ chart <- sp$wordcloud(
 chart$show()</code></pre></div>
 <div id="wordcloud-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.wordcloud()
     .title("Sujets de conférence tech 2024")
     .words(List.of("IA","Rust","WebAssembly","Kubernetes","LLM",
@@ -312,7 +299,6 @@ var chart = SeraPlot.wordcloud()
     .build();
 chart.show();</code></pre></div>
 <div id="wordcloud-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Wordcloud(
     title:    "Sujets de conférence tech 2024",
     words:    ["IA","Rust","WebAssembly","Kubernetes","LLM",
@@ -324,7 +310,6 @@ var chart = Sp.Wordcloud(
 );
 chart.Show();</code></pre></div>
 <div id="wordcloud-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.wordcloud(
   title     = "Sujets de conférence tech 2024",
   words     = List("IA","Rust","WebAssembly","Kubernetes","LLM",
@@ -337,7 +322,6 @@ val chart = sp.wordcloud(
 )
 chart.show()</code></pre></div>
 <div id="wordcloud-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::wordcloud({
     .title     = "Sujets de conférence tech 2024",
     .words     = {"IA","Rust","WebAssembly","Kubernetes","LLM",

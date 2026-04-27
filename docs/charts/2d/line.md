@@ -1,4 +1,4 @@
-﻿# Line Chart
+# Line Chart
 
 <div class="lang-en">
 
@@ -77,7 +77,6 @@ A line chart connects ordered data points with continuous line segments, making 
 <button class="sp-tb" onclick="spTab('line','line-cpp',this)">C++</button>
 </div>
 <div id="line-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.line(
     title="Temperature over 12 months",
     labels=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
@@ -87,7 +86,6 @@ chart = sp.line(
 )
 chart.show()</code></pre></div>
 <div id="line-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.line({
   title: "Temperature over 12 months",
   labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
@@ -97,7 +95,6 @@ const chart = sp.line({
 });
 chart.show();</code></pre></div>
 <div id="line-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.line({
   title: "Temperature over 12 months",
   labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
@@ -107,7 +104,6 @@ const chart = sp.line({
 });
 chart.show();</code></pre></div>
 <div id="line-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$line(
   title = "Temperature over 12 months",
   labels = c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
@@ -118,7 +114,6 @@ chart <- sp$line(
 chart$show()</code></pre></div>
 <div id="line-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.line()
     .title("Temperature over 12 months")
     .labels(List.of("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
@@ -128,7 +123,6 @@ var chart = SeraPlot.line()
     .build();
 chart.show();</code></pre></div>
 <div id="line-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Line(
     title: "Temperature over 12 months",
     labels: new[]{"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"},
@@ -138,7 +132,6 @@ var chart = Sp.Line(
 );
 chart.Show();</code></pre></div>
 <div id="line-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.line(
   title = "Temperature over 12 months",
   labels = List("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
@@ -148,7 +141,6 @@ val chart = sp.line(
 )
 chart.show()</code></pre></div>
 <div id="line-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::line({
   .title     = "Temperature over 12 months",
   .labels    = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"},
@@ -245,7 +237,6 @@ Un graphique en ligne relie des points de données ordonnés par des segments co
 <button class="sp-tb" onclick="spTab('line-fr','line-fr-cpp',this)">C++</button>
 </div>
 <div id="line-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.line(
     title="Température sur 12 mois",
     labels=["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"],
@@ -255,7 +246,6 @@ chart = sp.line(
 )
 chart.show()</code></pre></div>
 <div id="line-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.line({
   title: "Température sur 12 mois",
   labels: ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"],
@@ -265,7 +255,6 @@ const chart = sp.line({
 });
 chart.show();</code></pre></div>
 <div id="line-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.line({
   title: "Température sur 12 mois",
   labels: ["Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"],
@@ -275,7 +264,6 @@ const chart = sp.line({
 });
 chart.show();</code></pre></div>
 <div id="line-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$line(
   title = "Température sur 12 mois",
   labels = c("Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"),
@@ -286,7 +274,6 @@ chart <- sp$line(
 chart$show()</code></pre></div>
 <div id="line-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.line()
     .title("Température sur 12 mois")
     .labels(List.of("Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"))
@@ -296,7 +283,6 @@ var chart = SeraPlot.line()
     .build();
 chart.show();</code></pre></div>
 <div id="line-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Line(
     title: "Température sur 12 mois",
     labels: new[]{"Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"},
@@ -306,7 +292,6 @@ var chart = Sp.Line(
 );
 chart.Show();</code></pre></div>
 <div id="line-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.line(
   title = "Température sur 12 mois",
   labels = List("Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"),
@@ -316,7 +301,6 @@ val chart = sp.line(
 )
 chart.show()</code></pre></div>
 <div id="line-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::line({
   .title     = "Température sur 12 mois",
   .labels    = {"Jan","Fév","Mar","Avr","Mai","Juin","Juil","Août","Sep","Oct","Nov","Déc"},

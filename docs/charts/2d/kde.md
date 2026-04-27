@@ -1,4 +1,4 @@
-﻿# KDE Chart
+# KDE Chart
 
 <div class="lang-en">
 
@@ -78,12 +78,10 @@ A Kernel Density Estimation (KDE) chart produces a smooth, continuous probabilit
 </div>
 <div id="kde-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 random.seed(7)
 group_a = [random.gauss(45000, 8000) for _ in range(300)]
 group_b = [random.gauss(65000, 12000) for _ in range(300)]
 group_c = [random.gauss(90000, 15000) for _ in range(300)]
-
 chart = sp.kde(
     title="Income Distribution by Education",
     values=group_a + group_b + group_c,
@@ -93,7 +91,6 @@ chart = sp.kde(
 )
 chart.show()</code></pre></div>
 <div id="kde-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.kde({
   title: "Income Distribution by Education",
   values: [...groupA, ...groupB, ...groupC],
@@ -103,7 +100,6 @@ const chart = sp.kde({
 });
 chart.show();</code></pre></div>
 <div id="kde-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.kde({
   title: "Income Distribution by Education",
   values: [...groupA, ...groupB, ...groupC],
@@ -113,12 +109,10 @@ const chart = sp.kde({
 });
 chart.show();</code></pre></div>
 <div id="kde-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 set.seed(7)
 groupe_a <- rnorm(300, mean = 45000, sd = 8000)
 groupe_b <- rnorm(300, mean = 65000, sd = 12000)
 groupe_c <- rnorm(300, mean = 90000, sd = 15000)
-
 chart <- sp$kde(
   title        = "Income Distribution by Education",
   values       = c(groupe_a, groupe_b, groupe_c),
@@ -130,10 +124,8 @@ chart$show()</code></pre></div>
 <div id="kde-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.ArrayList;
 import java.util.List;
-
 var all = new ArrayList<Double>();
 all.addAll(groupA); all.addAll(groupB); all.addAll(groupC);
-
 var chart = SeraPlot.kde()
     .title("Income Distribution by Education")
     .values(all)
@@ -143,7 +135,6 @@ var chart = SeraPlot.kde()
     .build();
 chart.show();</code></pre></div>
 <div id="kde-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Kde(
     title:       "Income Distribution by Education",
     values:      [..groupA, ..groupB, ..groupC],
@@ -153,7 +144,6 @@ var chart = Sp.Kde(
 );
 chart.Show();</code></pre></div>
 <div id="kde-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.kde(
   title        = "Income Distribution by Education",
   values       = groupA ++ groupB ++ groupC,
@@ -163,7 +153,6 @@ val chart = sp.kde(
 )
 chart.show()</code></pre></div>
 <div id="kde-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::kde({
     .title        = "Income Distribution by Education",
     .values       = all_values,
@@ -261,12 +250,10 @@ Un graphique d'estimation par noyau (KDE) produit une courbe de densité de prob
 </div>
 <div id="kde-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 random.seed(7)
 groupe_a = [random.gauss(45000, 8000) for _ in range(300)]
 groupe_b = [random.gauss(65000, 12000) for _ in range(300)]
 groupe_c = [random.gauss(90000, 15000) for _ in range(300)]
-
 chart = sp.kde(
     title="Distribution des revenus par niveau d'éducation",
     values=groupe_a + groupe_b + groupe_c,
@@ -276,7 +263,6 @@ chart = sp.kde(
 )
 chart.show()</code></pre></div>
 <div id="kde-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.kde({
   title: "Distribution des revenus par niveau d'éducation",
   values: [...groupeA, ...groupeB, ...groupeC],
@@ -286,7 +272,6 @@ const chart = sp.kde({
 });
 chart.show();</code></pre></div>
 <div id="kde-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.kde({
   title: "Distribution des revenus par niveau d'éducation",
   values: [...groupeA, ...groupeB, ...groupeC],
@@ -296,12 +281,10 @@ const chart = sp.kde({
 });
 chart.show();</code></pre></div>
 <div id="kde-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 set.seed(7)
 groupe_a <- rnorm(300, mean = 45000, sd = 8000)
 groupe_b <- rnorm(300, mean = 65000, sd = 12000)
 groupe_c <- rnorm(300, mean = 90000, sd = 15000)
-
 chart <- sp$kde(
   title        = "Distribution des revenus par niveau d'éducation",
   values       = c(groupe_a, groupe_b, groupe_c),
@@ -313,10 +296,8 @@ chart$show()</code></pre></div>
 <div id="kde-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.ArrayList;
 import java.util.List;
-
 var all = new ArrayList<Double>();
 all.addAll(groupeA); all.addAll(groupeB); all.addAll(groupeC);
-
 var chart = SeraPlot.kde()
     .title("Distribution des revenus par niveau d'éducation")
     .values(all)
@@ -326,7 +307,6 @@ var chart = SeraPlot.kde()
     .build();
 chart.show();</code></pre></div>
 <div id="kde-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Kde(
     title:       "Distribution des revenus par niveau d'éducation",
     values:      [..groupeA, ..groupeB, ..groupeC],
@@ -336,7 +316,6 @@ var chart = Sp.Kde(
 );
 chart.Show();</code></pre></div>
 <div id="kde-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.kde(
   title        = "Distribution des revenus par niveau d'éducation",
   values       = groupeA ++ groupeB ++ groupeC,
@@ -346,7 +325,6 @@ val chart = sp.kde(
 )
 chart.show()</code></pre></div>
 <div id="kde-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::kde({
     .title        = "Distribution des revenus par niveau d'éducation",
     .values       = all_values,

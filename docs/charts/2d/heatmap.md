@@ -1,4 +1,4 @@
-﻿# Heatmap
+# Heatmap
 
 <div class="lang-en">
 
@@ -77,7 +77,6 @@ A heatmap encodes the magnitude of a two-dimensional matrix as color intensity, 
 <button class="sp-tb" onclick="spTab('heatmap','heatmap-cpp',this)">C++</button>
 </div>
 <div id="heatmap-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.heatmap(
     title="Correlation matrix",
     labels=["Price", "Volume", "Volatility", "Return"],
@@ -90,7 +89,6 @@ chart = sp.heatmap(
 )
 chart.show()</code></pre></div>
 <div id="heatmap-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.heatmap({
   title: "Correlation matrix",
   labels: ["Price", "Volume", "Volatility", "Return"],
@@ -103,7 +101,6 @@ const chart = sp.heatmap({
 });
 chart.show();</code></pre></div>
 <div id="heatmap-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.heatmap({
   title: "Correlation matrix",
   labels: ["Price", "Volume", "Volatility", "Return"],
@@ -116,7 +113,6 @@ const chart = sp.heatmap({
 });
 chart.show();</code></pre></div>
 <div id="heatmap-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$heatmap(
   title = "Correlation matrix",
   labels = c("Price", "Volume", "Volatility", "Return"),
@@ -130,7 +126,6 @@ chart <- sp$heatmap(
 chart$show()</code></pre></div>
 <div id="heatmap-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.heatmap()
     .title("Correlation matrix")
     .labels(List.of("Price", "Volume", "Volatility", "Return"))
@@ -143,7 +138,6 @@ var chart = SeraPlot.heatmap()
     .build();
 chart.show();</code></pre></div>
 <div id="heatmap-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Heatmap(
     title: "Correlation matrix",
     labels: new[]{"Price", "Volume", "Volatility", "Return"},
@@ -156,7 +150,6 @@ var chart = Sp.Heatmap(
 );
 chart.Show();</code></pre></div>
 <div id="heatmap-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.heatmap(
   title = "Correlation matrix",
   labels = List("Price", "Volume", "Volatility", "Return"),
@@ -169,7 +162,6 @@ val chart = sp.heatmap(
 )
 chart.show()</code></pre></div>
 <div id="heatmap-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::heatmap({
   .title       = "Correlation matrix",
   .labels      = {"Price", "Volume", "Volatility", "Return"},
@@ -268,7 +260,6 @@ Une carte thermique encode la magnitude d'une matrice bidimensionnelle sous form
 <button class="sp-tb" onclick="spTab('heatmap-fr','heatmap-fr-cpp',this)">C++</button>
 </div>
 <div id="heatmap-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.heatmap(
     title="Matrice de corrélation",
     labels=["Prix", "Volume", "Volatilité", "Rendement"],
@@ -281,7 +272,6 @@ chart = sp.heatmap(
 )
 chart.show()</code></pre></div>
 <div id="heatmap-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.heatmap({
   title: "Matrice de corrélation",
   labels: ["Prix", "Volume", "Volatilité", "Rendement"],
@@ -294,7 +284,6 @@ const chart = sp.heatmap({
 });
 chart.show();</code></pre></div>
 <div id="heatmap-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.heatmap({
   title: "Matrice de corrélation",
   labels: ["Prix", "Volume", "Volatilité", "Rendement"],
@@ -307,7 +296,6 @@ const chart = sp.heatmap({
 });
 chart.show();</code></pre></div>
 <div id="heatmap-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$heatmap(
   title = "Matrice de corrélation",
   labels = c("Prix", "Volume", "Volatilité", "Rendement"),
@@ -321,7 +309,6 @@ chart <- sp$heatmap(
 chart$show()</code></pre></div>
 <div id="heatmap-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.heatmap()
     .title("Matrice de corrélation")
     .labels(List.of("Prix", "Volume", "Volatilité", "Rendement"))
@@ -334,7 +321,6 @@ var chart = SeraPlot.heatmap()
     .build();
 chart.show();</code></pre></div>
 <div id="heatmap-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Heatmap(
     title: "Matrice de corrélation",
     labels: new[]{"Prix", "Volume", "Volatilité", "Rendement"},
@@ -347,7 +333,6 @@ var chart = Sp.Heatmap(
 );
 chart.Show();</code></pre></div>
 <div id="heatmap-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.heatmap(
   title = "Matrice de corrélation",
   labels = List("Prix", "Volume", "Volatilité", "Rendement"),
@@ -360,7 +345,6 @@ val chart = sp.heatmap(
 )
 chart.show()</code></pre></div>
 <div id="heatmap-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::heatmap({
   .title       = "Matrice de corrélation",
   .labels      = {"Prix", "Volume", "Volatilité", "Rendement"},

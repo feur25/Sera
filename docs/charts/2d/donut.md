@@ -1,4 +1,4 @@
-﻿# Donut Chart
+# Donut Chart
 
 <div class="lang-en">
 
@@ -75,7 +75,6 @@ A donut chart is a pie chart with a circular cutout at the center, reducing the 
 <button class="sp-tb" onclick="spTab('donut','donut-cpp',this)">C++</button>
 </div>
 <div id="donut-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.donut(
     title="Revenue by product line",
     labels=["SaaS", "Professional Services", "Licensing", "Training"],
@@ -84,7 +83,6 @@ chart = sp.donut(
 )
 chart.show()</code></pre></div>
 <div id="donut-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.donut({
   title: "Revenue by product line",
   labels: ["SaaS", "Professional Services", "Licensing", "Training"],
@@ -93,7 +91,6 @@ const chart = sp.donut({
 });
 chart.show();</code></pre></div>
 <div id="donut-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.donut({
   title: "Revenue by product line",
   labels: ["SaaS", "Professional Services", "Licensing", "Training"],
@@ -102,7 +99,6 @@ const chart = sp.donut({
 });
 chart.show();</code></pre></div>
 <div id="donut-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$donut(
   title = "Revenue by product line",
   labels = c("SaaS", "Professional Services", "Licensing", "Training"),
@@ -112,7 +108,6 @@ chart <- sp$donut(
 chart$show()</code></pre></div>
 <div id="donut-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.donut()
     .title("Revenue by product line")
     .labels(List.of("SaaS", "Professional Services", "Licensing", "Training"))
@@ -121,7 +116,6 @@ var chart = SeraPlot.donut()
     .build();
 chart.show();</code></pre></div>
 <div id="donut-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Donut(
     title: "Revenue by product line",
     labels: new[]{"SaaS", "Professional Services", "Licensing", "Training"},
@@ -130,7 +124,6 @@ var chart = Sp.Donut(
 );
 chart.Show();</code></pre></div>
 <div id="donut-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.donut(
   title = "Revenue by product line",
   labels = List("SaaS", "Professional Services", "Licensing", "Training"),
@@ -139,7 +132,6 @@ val chart = sp.donut(
 )
 chart.show()</code></pre></div>
 <div id="donut-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::donut({
   .title               = "Revenue by product line",
   .labels              = {"SaaS", "Professional Services", "Licensing", "Training"},
@@ -232,7 +224,6 @@ Un graphique en anneau est un graphique en secteurs avec un trou circulaire au c
 <button class="sp-tb" onclick="spTab('donut-fr','donut-fr-cpp',this)">C++</button>
 </div>
 <div id="donut-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.donut(
     title="Chiffre d'affaires par ligne de produit",
     labels=["SaaS", "Services professionnels", "Licences", "Formation"],
@@ -241,7 +232,6 @@ chart = sp.donut(
 )
 chart.show()</code></pre></div>
 <div id="donut-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.donut({
   title: "Chiffre d'affaires par ligne de produit",
   labels: ["SaaS", "Services professionnels", "Licences", "Formation"],
@@ -250,7 +240,6 @@ const chart = sp.donut({
 });
 chart.show();</code></pre></div>
 <div id="donut-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.donut({
   title: "Chiffre d'affaires par ligne de produit",
   labels: ["SaaS", "Services professionnels", "Licences", "Formation"],
@@ -259,7 +248,6 @@ const chart = sp.donut({
 });
 chart.show();</code></pre></div>
 <div id="donut-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$donut(
   title = "Chiffre d'affaires par ligne de produit",
   labels = c("SaaS", "Services professionnels", "Licences", "Formation"),
@@ -269,7 +257,6 @@ chart <- sp$donut(
 chart$show()</code></pre></div>
 <div id="donut-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.donut()
     .title("Chiffre d'affaires par ligne de produit")
     .labels(List.of("SaaS", "Services professionnels", "Licences", "Formation"))
@@ -278,7 +265,6 @@ var chart = SeraPlot.donut()
     .build();
 chart.show();</code></pre></div>
 <div id="donut-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Donut(
     title: "Chiffre d'affaires par ligne de produit",
     labels: new[]{"SaaS", "Services professionnels", "Licences", "Formation"},
@@ -287,7 +273,6 @@ var chart = Sp.Donut(
 );
 chart.Show();</code></pre></div>
 <div id="donut-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.donut(
   title = "Chiffre d'affaires par ligne de produit",
   labels = List("SaaS", "Services professionnels", "Licences", "Formation"),
@@ -296,7 +281,6 @@ val chart = sp.donut(
 )
 chart.show()</code></pre></div>
 <div id="donut-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::donut({
   .title              = "Chiffre d'affaires par ligne de produit",
   .labels             = {"SaaS", "Services professionnels", "Licences", "Formation"},

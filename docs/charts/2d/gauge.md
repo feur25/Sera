@@ -1,4 +1,4 @@
-﻿# Gauge Chart
+# Gauge Chart
 
 <div class="lang-en">
 
@@ -77,7 +77,6 @@ A gauge chart renders a semicircular speedometer-style arc with a needle pointin
 <button class="sp-tb" onclick="spTab('gauge','gauge-cpp',this)">C++</button>
 </div>
 <div id="gauge-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.gauge(
     title="Server CPU load",
     value=72.5,
@@ -90,7 +89,6 @@ chart = sp.gauge(
 )
 chart.show()</code></pre></div>
 <div id="gauge-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.gauge({
   title: "Server CPU load",
   value: 72.5,
@@ -103,7 +101,6 @@ const chart = sp.gauge({
 });
 chart.show();</code></pre></div>
 <div id="gauge-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.gauge({
   title: "Server CPU load",
   value: 72.5,
@@ -116,7 +113,6 @@ const chart = sp.gauge({
 });
 chart.show();</code></pre></div>
 <div id="gauge-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$gauge(
   title = "Server CPU load",
   value = 72.5,
@@ -130,7 +126,6 @@ chart <- sp$gauge(
 chart$show()</code></pre></div>
 <div id="gauge-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.gauge()
     .title("Server CPU load")
     .value(72.5)
@@ -143,7 +138,6 @@ var chart = SeraPlot.gauge()
     .build();
 chart.show();</code></pre></div>
 <div id="gauge-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Gauge(
     title: "Server CPU load",
     value: 72.5,
@@ -156,7 +150,6 @@ var chart = Sp.Gauge(
 );
 chart.Show();</code></pre></div>
 <div id="gauge-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.gauge(
   title = "Server CPU load",
   value = 72.5,
@@ -169,7 +162,6 @@ val chart = sp.gauge(
 )
 chart.show()</code></pre></div>
 <div id="gauge-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::gauge({
   .title             = "Server CPU load",
   .value             = 72.5,
@@ -268,7 +260,6 @@ Un graphique de jauge affiche un arc en demi-cercle de style compteur de vitesse
 <button class="sp-tb" onclick="spTab('gauge-fr','gauge-fr-cpp',this)">C++</button>
 </div>
 <div id="gauge-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.gauge(
     title="Charge CPU du serveur",
     value=72.5,
@@ -281,7 +272,6 @@ chart = sp.gauge(
 )
 chart.show()</code></pre></div>
 <div id="gauge-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.gauge({
   title: "Charge CPU du serveur",
   value: 72.5,
@@ -294,7 +284,6 @@ const chart = sp.gauge({
 });
 chart.show();</code></pre></div>
 <div id="gauge-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.gauge({
   title: "Charge CPU du serveur",
   value: 72.5,
@@ -307,7 +296,6 @@ const chart = sp.gauge({
 });
 chart.show();</code></pre></div>
 <div id="gauge-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$gauge(
   title = "Charge CPU du serveur",
   value = 72.5,
@@ -321,7 +309,6 @@ chart <- sp$gauge(
 chart$show()</code></pre></div>
 <div id="gauge-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.gauge()
     .title("Charge CPU du serveur")
     .value(72.5)
@@ -334,7 +321,6 @@ var chart = SeraPlot.gauge()
     .build();
 chart.show();</code></pre></div>
 <div id="gauge-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Gauge(
     title: "Charge CPU du serveur",
     value: 72.5,
@@ -347,7 +333,6 @@ var chart = Sp.Gauge(
 );
 chart.Show();</code></pre></div>
 <div id="gauge-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.gauge(
   title = "Charge CPU du serveur",
   value = 72.5,
@@ -360,7 +345,6 @@ val chart = sp.gauge(
 )
 chart.show()</code></pre></div>
 <div id="gauge-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::gauge({
   .title            = "Charge CPU du serveur",
   .value            = 72.5,

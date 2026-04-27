@@ -1,4 +1,4 @@
-﻿# Area Chart
+# Area Chart
 
 <div class="lang-en">
 
@@ -81,7 +81,6 @@ An area chart is a line chart where the region between the line and the horizont
 <button class="sp-tb" onclick="spTab('area','area-cpp',this)">C++</button>
 </div>
 <div id="area-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.area(
     title="Website traffic by source",
     x_labels=["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -93,7 +92,6 @@ chart = sp.area(
 )
 chart.show()</code></pre></div>
 <div id="area-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.area({
   title: "Website traffic by source",
   xLabels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -105,7 +103,6 @@ const chart = sp.area({
 });
 chart.show();</code></pre></div>
 <div id="area-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.area({
   title: "Website traffic by source",
   xLabels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
@@ -117,7 +114,6 @@ const chart = sp.area({
 });
 chart.show();</code></pre></div>
 <div id="area-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$area(
   title = "Website traffic by source",
   x_labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun"),
@@ -130,7 +126,6 @@ chart <- sp$area(
 chart$show()</code></pre></div>
 <div id="area-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.area()
     .title("Website traffic by source")
     .xLabels(List.of("Jan", "Feb", "Mar", "Apr", "May", "Jun"))
@@ -142,7 +137,6 @@ var chart = SeraPlot.area()
     .build();
 chart.show();</code></pre></div>
 <div id="area-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Area(
     title: "Website traffic by source",
     xLabels: new[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun"},
@@ -154,7 +148,6 @@ var chart = Sp.Area(
 );
 chart.Show();</code></pre></div>
 <div id="area-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.area(
   title = "Website traffic by source",
   x_labels = List("Jan", "Feb", "Mar", "Apr", "May", "Jun"),
@@ -166,7 +159,6 @@ val chart = sp.area(
 )
 chart.show()</code></pre></div>
 <div id="area-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::area({
   .title         = "Website traffic by source",
   .x_labels      = {"Jan", "Feb", "Mar", "Apr", "May", "Jun"},
@@ -269,7 +261,6 @@ Un graphique de zone est un graphique en ligne dont la région entre la courbe e
 <button class="sp-tb" onclick="spTab('area-fr','area-fr-cpp',this)">C++</button>
 </div>
 <div id="area-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.area(
     title="Trafic web par source",
     x_labels=["Jan", "Fév", "Mar", "Avr", "Mai", "Juin"],
@@ -281,7 +272,6 @@ chart = sp.area(
 )
 chart.show()</code></pre></div>
 <div id="area-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.area({
   title: "Trafic web par source",
   xLabels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin"],
@@ -293,7 +283,6 @@ const chart = sp.area({
 });
 chart.show();</code></pre></div>
 <div id="area-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.area({
   title: "Trafic web par source",
   xLabels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin"],
@@ -305,7 +294,6 @@ const chart = sp.area({
 });
 chart.show();</code></pre></div>
 <div id="area-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$area(
   title = "Trafic web par source",
   x_labels = c("Jan", "Fév", "Mar", "Avr", "Mai", "Juin"),
@@ -318,7 +306,6 @@ chart <- sp$area(
 chart$show()</code></pre></div>
 <div id="area-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.area()
     .title("Trafic web par source")
     .xLabels(List.of("Jan", "Fév", "Mar", "Avr", "Mai", "Juin"))
@@ -330,7 +317,6 @@ var chart = SeraPlot.area()
     .build();
 chart.show();</code></pre></div>
 <div id="area-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Area(
     title: "Trafic web par source",
     xLabels: new[]{"Jan", "Fév", "Mar", "Avr", "Mai", "Juin"},
@@ -342,7 +328,6 @@ var chart = Sp.Area(
 );
 chart.Show();</code></pre></div>
 <div id="area-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.area(
   title = "Trafic web par source",
   x_labels = List("Jan", "Fév", "Mar", "Avr", "Mai", "Juin"),
@@ -354,7 +339,6 @@ val chart = sp.area(
 )
 chart.show()</code></pre></div>
 <div id="area-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::area({
   .title         = "Trafic web par source",
   .x_labels      = {"Jan", "Fév", "Mar", "Avr", "Mai", "Juin"},

@@ -1,4 +1,4 @@
-﻿# Grid Layout
+# Grid Layout
 
 <div class="lang-en">
 
@@ -67,7 +67,6 @@ A grid layout places multiple `Chart` objects side by side in a responsive colum
 <button class="sp-tb" onclick="spTab('grid','grid-cpp',this)">C++</button>
 </div>
 <div id="grid-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 bar  = sp.bar(
     title="Revenue by Region",
     labels=["EMEA", "APAC", "Americas", "LATAM"],
@@ -88,7 +87,6 @@ hist = sp.histogram(
     values=[12,45,23,67,34,89,55,42,78,30,61,48,95,27,53],
     bins=8,
 )
-
 dashboard = sp.grid(
     charts=[bar, line, pie, hist],
     cols=2,
@@ -97,7 +95,6 @@ dashboard = sp.grid(
 )
 dashboard.show()</code></pre></div>
 <div id="grid-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const bar  = sp.bar({ title: "Revenue by Region",
     labels: ["EMEA","APAC","Americas","LATAM"], values: [420,380,610,195] });
 const line = sp.line({ title: "MAU Trend",
@@ -107,7 +104,6 @@ const pie  = sp.pie({ title: "Revenue by Product",
     labels: ["Cloud","SaaS","Hardware","Services"], values: [42,31,15,12] });
 const hist = sp.histogram({ title: "Deal Size Distribution",
     values: [12,45,23,67,34,89,55,42,78,30,61,48,95,27,53], bins: 8 });
-
 const dashboard = sp.grid({
   charts: [bar, line, pie, hist],
   cols: 2,
@@ -116,7 +112,6 @@ const dashboard = sp.grid({
 });
 dashboard.show();</code></pre></div>
 <div id="grid-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const bar  = sp.bar({ title: "Revenue by Region",
     labels: ["EMEA","APAC","Americas","LATAM"], values: [420,380,610,195] });
 const line = sp.line({ title: "MAU Trend",
@@ -126,7 +121,6 @@ const pie  = sp.pie({ title: "Revenue by Product",
     labels: ["Cloud","SaaS","Hardware","Services"], values: [42,31,15,12] });
 const hist = sp.histogram({ title: "Deal Size Distribution",
     values: [12,45,23,67,34,89,55,42,78,30,61,48,95,27,53], bins: 8 });
-
 const dashboard = sp.grid({
   charts: [bar, line, pie, hist],
   cols: 2,
@@ -135,7 +129,6 @@ const dashboard = sp.grid({
 });
 dashboard.show();</code></pre></div>
 <div id="grid-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 bar  <- sp$bar(title="Revenue by Region",
                labels=c("EMEA","APAC","Americas","LATAM"), values=c(420,380,610,195))
 line <- sp$line(title="MAU Trend",
@@ -144,7 +137,6 @@ pie  <- sp$pie(title="Revenue by Product",
                labels=c("Cloud","SaaS","Hardware","Services"), values=c(42,31,15,12))
 hist <- sp$histogram(title="Deal Size Distribution",
                      values=c(12,45,23,67,34,89,55,42,78,30,61,48,95,27,53), bins=8L)
-
 dashboard <- sp$grid(
   charts = list(bar, line, pie, hist),
   cols   = 2L,
@@ -154,7 +146,6 @@ dashboard <- sp$grid(
 dashboard$show()</code></pre></div>
 <div id="grid-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var bar  = SeraPlot.bar().title("Revenue by Region")
     .labels(List.of("EMEA","APAC","Americas","LATAM")).values(List.of(420.0,380.0,610.0,195.0)).build();
 var line = SeraPlot.line().title("MAU Trend")
@@ -165,7 +156,6 @@ var pie  = SeraPlot.pie().title("Revenue by Product")
 var hist = SeraPlot.histogram().title("Deal Size Distribution")
     .values(List.of(12.0,45.0,23.0,67.0,34.0,89.0,55.0,42.0,78.0,30.0,61.0,48.0,95.0,27.0,53.0))
     .bins(8).build();
-
 var dashboard = SeraPlot.grid()
     .charts(List.of(bar, line, pie, hist))
     .cols(2)
@@ -174,7 +164,6 @@ var dashboard = SeraPlot.grid()
     .build();
 dashboard.show();</code></pre></div>
 <div id="grid-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var bar  = Sp.Bar(title: "Revenue by Region",
     labels: ["EMEA","APAC","Americas","LATAM"], values: [420,380,610,195]);
 var line = Sp.Line(title: "MAU Trend",
@@ -184,7 +173,6 @@ var pie  = Sp.Pie(title: "Revenue by Product",
     labels: ["Cloud","SaaS","Hardware","Services"], values: [42,31,15,12]);
 var hist = Sp.Histogram(title: "Deal Size Distribution",
     values: [12,45,23,67,34,89,55,42,78,30,61,48,95,27,53], bins: 8);
-
 var dashboard = Sp.Grid(
     charts: [bar, line, pie, hist],
     cols:   2,
@@ -193,7 +181,6 @@ var dashboard = Sp.Grid(
 );
 dashboard.Show();</code></pre></div>
 <div id="grid-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val bar  = sp.bar(title = "Revenue by Region",
   labels = List("EMEA","APAC","Americas","LATAM"), values = List(420.0,380.0,610.0,195.0))
 val line = sp.line(title = "MAU Trend",
@@ -203,7 +190,6 @@ val pie  = sp.pie(title = "Revenue by Product",
   labels = List("Cloud","SaaS","Hardware","Services"), values = List(42.0,31.0,15.0,12.0))
 val hist = sp.histogram(title = "Deal Size Distribution",
   values = List(12,45,23,67,34,89,55,42,78,30,61,48,95,27,53).map(_.toDouble), bins = 8)
-
 val dashboard = sp.grid(
   charts = List(bar, line, pie, hist),
   cols   = 2,
@@ -212,7 +198,6 @@ val dashboard = sp.grid(
 )
 dashboard.show()</code></pre></div>
 <div id="grid-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto bar  = sp::bar({.title="Revenue by Region",
     .labels={"EMEA","APAC","Americas","LATAM"}, .values={420,380,610,195}});
 auto line = sp::line({.title="MAU Trend",
@@ -222,7 +207,6 @@ auto pie  = sp::pie({.title="Revenue by Product",
     .labels={"Cloud","SaaS","Hardware","Services"}, .values={42,31,15,12}});
 auto hist = sp::histogram({.title="Deal Size Distribution",
     .values={12,45,23,67,34,89,55,42,78,30,61,48,95,27,53}, .bins=8});
-
 auto dashboard = sp::grid({
     .charts = {bar, line, pie, hist},
     .cols   = 2,
@@ -308,7 +292,6 @@ Une grille place plusieurs objets `Chart` côte à côte dans une grille en colo
 <button class="sp-tb" onclick="spTab('grid-fr','grid-fr-cpp',this)">C++</button>
 </div>
 <div id="grid-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 barre = sp.bar(
     title="Revenus par région",
     labels=["EMEA", "APAC", "Amériques", "LATAM"],
@@ -329,7 +312,6 @@ histo = sp.histogram(
     values=[12,45,23,67,34,89,55,42,78,30,61,48,95,27,53],
     bins=8,
 )
-
 tableau = sp.grid(
     charts=[barre, courbe, camembert, histo],
     cols=2,
@@ -338,7 +320,6 @@ tableau = sp.grid(
 )
 tableau.show()</code></pre></div>
 <div id="grid-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const barre     = sp.bar({ title: "Revenus par région",
     labels: ["EMEA","APAC","Amériques","LATAM"], values: [420,380,610,195] });
 const courbe    = sp.line({ title: "Tendance UAM",
@@ -348,7 +329,6 @@ const camembert = sp.pie({ title: "Revenus par produit",
     labels: ["Cloud","SaaS","Matériel","Services"], values: [42,31,15,12] });
 const histo     = sp.histogram({ title: "Distribution des tailles de deal",
     values: [12,45,23,67,34,89,55,42,78,30,61,48,95,27,53], bins: 8 });
-
 const tableau = sp.grid({
   charts: [barre, courbe, camembert, histo],
   cols: 2,
@@ -357,7 +337,6 @@ const tableau = sp.grid({
 });
 tableau.show();</code></pre></div>
 <div id="grid-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const barre     = sp.bar({ title: "Revenus par région",
     labels: ["EMEA","APAC","Amériques","LATAM"], values: [420,380,610,195] });
 const courbe    = sp.line({ title: "Tendance UAM",
@@ -367,7 +346,6 @@ const camembert = sp.pie({ title: "Revenus par produit",
     labels: ["Cloud","SaaS","Matériel","Services"], values: [42,31,15,12] });
 const histo     = sp.histogram({ title: "Distribution des tailles de deal",
     values: [12,45,23,67,34,89,55,42,78,30,61,48,95,27,53], bins: 8 });
-
 const tableau = sp.grid({
   charts: [barre, courbe, camembert, histo],
   cols: 2,
@@ -376,7 +354,6 @@ const tableau = sp.grid({
 });
 tableau.show();</code></pre></div>
 <div id="grid-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 barre     <- sp$bar(title="Revenus par région",
                     labels=c("EMEA","APAC","Amériques","LATAM"), values=c(420,380,610,195))
 courbe    <- sp$line(title="Tendance UAM",
@@ -385,7 +362,6 @@ camembert <- sp$pie(title="Revenus par produit",
                     labels=c("Cloud","SaaS","Matériel","Services"), values=c(42,31,15,12))
 histo     <- sp$histogram(title="Distribution des tailles de deal",
                           values=c(12,45,23,67,34,89,55,42,78,30,61,48,95,27,53), bins=8L)
-
 tableau <- sp$grid(
   charts = list(barre, courbe, camembert, histo),
   cols   = 2L,
@@ -395,7 +371,6 @@ tableau <- sp$grid(
 tableau$show()</code></pre></div>
 <div id="grid-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var barre     = SeraPlot.bar().title("Revenus par région")
     .labels(List.of("EMEA","APAC","Amériques","LATAM")).values(List.of(420.0,380.0,610.0,195.0)).build();
 var courbe    = SeraPlot.line().title("Tendance UAM")
@@ -406,7 +381,6 @@ var camembert = SeraPlot.pie().title("Revenus par produit")
 var histo     = SeraPlot.histogram().title("Distribution des tailles de deal")
     .values(List.of(12.0,45.0,23.0,67.0,34.0,89.0,55.0,42.0,78.0,30.0,61.0,48.0,95.0,27.0,53.0))
     .bins(8).build();
-
 var tableau = SeraPlot.grid()
     .charts(List.of(barre, courbe, camembert, histo))
     .cols(2)
@@ -415,7 +389,6 @@ var tableau = SeraPlot.grid()
     .build();
 tableau.show();</code></pre></div>
 <div id="grid-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var barre     = Sp.Bar(title: "Revenus par région",
     labels: ["EMEA","APAC","Amériques","LATAM"], values: [420,380,610,195]);
 var courbe    = Sp.Line(title: "Tendance UAM",
@@ -425,7 +398,6 @@ var camembert = Sp.Pie(title: "Revenus par produit",
     labels: ["Cloud","SaaS","Matériel","Services"], values: [42,31,15,12]);
 var histo     = Sp.Histogram(title: "Distribution des tailles de deal",
     values: [12,45,23,67,34,89,55,42,78,30,61,48,95,27,53], bins: 8);
-
 var tableau = Sp.Grid(
     charts: [barre, courbe, camembert, histo],
     cols:   2,
@@ -434,7 +406,6 @@ var tableau = Sp.Grid(
 );
 tableau.Show();</code></pre></div>
 <div id="grid-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val barre     = sp.bar(title = "Revenus par région",
   labels = List("EMEA","APAC","Amériques","LATAM"), values = List(420.0,380.0,610.0,195.0))
 val courbe    = sp.line(title = "Tendance UAM",
@@ -444,7 +415,6 @@ val camembert = sp.pie(title = "Revenus par produit",
   labels = List("Cloud","SaaS","Matériel","Services"), values = List(42.0,31.0,15.0,12.0))
 val histo     = sp.histogram(title = "Distribution des tailles de deal",
   values = List(12,45,23,67,34,89,55,42,78,30,61,48,95,27,53).map(_.toDouble), bins = 8)
-
 val tableau = sp.grid(
   charts = List(barre, courbe, camembert, histo),
   cols   = 2,
@@ -453,7 +423,6 @@ val tableau = sp.grid(
 )
 tableau.show()</code></pre></div>
 <div id="grid-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto barre     = sp::bar({.title="Revenus par région",
     .labels={"EMEA","APAC","Amériques","LATAM"}, .values={420,380,610,195}});
 auto courbe    = sp::line({.title="Tendance UAM",
@@ -463,7 +432,6 @@ auto camembert = sp::pie({.title="Revenus par produit",
     .labels={"Cloud","SaaS","Matériel","Services"}, .values={42,31,15,12}});
 auto histo     = sp::histogram({.title="Distribution des tailles de deal",
     .values={12,45,23,67,34,89,55,42,78,30,61,48,95,27,53}, .bins=8});
-
 auto tableau = sp::grid({
     .charts = {barre, courbe, camembert, histo},
     .cols   = 2,

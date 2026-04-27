@@ -1,4 +1,4 @@
-﻿# Slideshow
+# Slideshow
 
 <div class="lang-en">
 
@@ -67,7 +67,6 @@ A slideshow wraps multiple `Chart` objects into a single interactive carousel wi
 <button class="sp-tb" onclick="spTab('slideshow','slideshow-cpp',this)">C++</button>
 </div>
 <div id="slideshow-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 bar = sp.bar(
     title="Q4 Revenue by Region",
     labels=["EMEA", "APAC", "Americas", "LATAM"],
@@ -85,7 +84,6 @@ donut = sp.donut(
     labels=["Cloud", "SaaS", "Hardware", "Services"],
     values=[42, 31, 15, 12],
 )
-
 show = sp.slideshow(
     charts=[bar, line, donut],
     title="Q4 2024 Business Review",
@@ -93,7 +91,6 @@ show = sp.slideshow(
 )
 show.show()</code></pre></div>
 <div id="slideshow-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const bar   = sp.bar({ title: "Q4 Revenue by Region",
     labels: ["EMEA","APAC","Americas","LATAM"], values: [420,380,610,195] });
 const line  = sp.line({ title: "Monthly Active Users",
@@ -101,7 +98,6 @@ const line  = sp.line({ title: "Monthly Active Users",
     y: [12,15,14,18,22,25,24,28,31,29,34,38] });
 const donut = sp.donut({ title: "Revenue by Product",
     labels: ["Cloud","SaaS","Hardware","Services"], values: [42,31,15,12] });
-
 const show = sp.slideshow({
   charts: [bar, line, donut],
   title: "Q4 2024 Business Review",
@@ -109,7 +105,6 @@ const show = sp.slideshow({
 });
 show.show();</code></pre></div>
 <div id="slideshow-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const bar   = sp.bar({ title: "Q4 Revenue by Region",
     labels: ["EMEA","APAC","Americas","LATAM"], values: [420,380,610,195] });
 const line  = sp.line({ title: "Monthly Active Users",
@@ -117,7 +112,6 @@ const line  = sp.line({ title: "Monthly Active Users",
     y: [12,15,14,18,22,25,24,28,31,29,34,38] });
 const donut = sp.donut({ title: "Revenue by Product",
     labels: ["Cloud","SaaS","Hardware","Services"], values: [42,31,15,12] });
-
 const show = sp.slideshow({
   charts: [bar, line, donut],
   title: "Q4 2024 Business Review",
@@ -125,14 +119,12 @@ const show = sp.slideshow({
 });
 show.show();</code></pre></div>
 <div id="slideshow-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 bar   <- sp$bar(title="Q4 Revenue by Region",
                 labels=c("EMEA","APAC","Americas","LATAM"), values=c(420,380,610,195))
 line  <- sp$line(title="Monthly Active Users",
                  x=1:12, y=c(12,15,14,18,22,25,24,28,31,29,34,38))
 donut <- sp$donut(title="Revenue by Product",
                   labels=c("Cloud","SaaS","Hardware","Services"), values=c(42,31,15,12))
-
 show <- sp$slideshow(
   charts  = list(bar, line, donut),
   title   = "Q4 2024 Business Review",
@@ -141,7 +133,6 @@ show <- sp$slideshow(
 show$show()</code></pre></div>
 <div id="slideshow-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var bar   = SeraPlot.bar().title("Q4 Revenue by Region")
     .labels(List.of("EMEA","APAC","Americas","LATAM")).values(List.of(420.0,380.0,610.0,195.0)).build();
 var line  = SeraPlot.line().title("Monthly Active Users")
@@ -149,7 +140,6 @@ var line  = SeraPlot.line().title("Monthly Active Users")
     .y(List.of(12.0,15.0,14.0,18.0,22.0,25.0,24.0,28.0,31.0,29.0,34.0,38.0)).build();
 var donut = SeraPlot.donut().title("Revenue by Product")
     .labels(List.of("Cloud","SaaS","Hardware","Services")).values(List.of(42.0,31.0,15.0,12.0)).build();
-
 var show = SeraPlot.slideshow()
     .charts(List.of(bar, line, donut))
     .title("Q4 2024 Business Review")
@@ -157,7 +147,6 @@ var show = SeraPlot.slideshow()
     .build();
 show.show();</code></pre></div>
 <div id="slideshow-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var bar   = Sp.Bar(title: "Q4 Revenue by Region",
     labels: ["EMEA","APAC","Americas","LATAM"], values: [420,380,610,195]);
 var line  = Sp.Line(title: "Monthly Active Users",
@@ -165,7 +154,6 @@ var line  = Sp.Line(title: "Monthly Active Users",
     y: [12,15,14,18,22,25,24,28,31,29,34,38]);
 var donut = Sp.Donut(title: "Revenue by Product",
     labels: ["Cloud","SaaS","Hardware","Services"], values: [42,31,15,12]);
-
 var show = Sp.Slideshow(
     charts:   [bar, line, donut],
     title:    "Q4 2024 Business Review",
@@ -173,7 +161,6 @@ var show = Sp.Slideshow(
 );
 show.Show();</code></pre></div>
 <div id="slideshow-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val bar   = sp.bar(title = "Q4 Revenue by Region",
   labels = List("EMEA","APAC","Americas","LATAM"), values = List(420.0,380.0,610.0,195.0))
 val line  = sp.line(title = "Monthly Active Users",
@@ -181,7 +168,6 @@ val line  = sp.line(title = "Monthly Active Users",
   y = List(12,15,14,18,22,25,24,28,31,29,34,38).map(_.toDouble))
 val donut = sp.donut(title = "Revenue by Product",
   labels = List("Cloud","SaaS","Hardware","Services"), values = List(42.0,31.0,15.0,12.0))
-
 val show = sp.slideshow(
   charts   = List(bar, line, donut),
   title    = "Q4 2024 Business Review",
@@ -189,7 +175,6 @@ val show = sp.slideshow(
 )
 show.show()</code></pre></div>
 <div id="slideshow-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto bar   = sp::bar({.title="Q4 Revenue by Region",
     .labels={"EMEA","APAC","Americas","LATAM"}, .values={420,380,610,195}});
 auto line  = sp::line({.title="Monthly Active Users",
@@ -197,7 +182,6 @@ auto line  = sp::line({.title="Monthly Active Users",
     .y={12,15,14,18,22,25,24,28,31,29,34,38}});
 auto donut = sp::donut({.title="Revenue by Product",
     .labels={"Cloud","SaaS","Hardware","Services"}, .values={42,31,15,12}});
-
 auto show = sp::slideshow({
     .charts   = {bar, line, donut},
     .title    = "Q4 2024 Business Review",
@@ -280,7 +264,6 @@ Un slideshow enveloppe plusieurs objets `Chart` dans un seul carousel interactif
 <button class="sp-tb" onclick="spTab('slideshow-fr','slideshow-fr-cpp',this)">C++</button>
 </div>
 <div id="slideshow-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 barre = sp.bar(
     title="Revenus T4 par région",
     labels=["EMEA", "APAC", "Amériques", "LATAM"],
@@ -298,7 +281,6 @@ donut = sp.donut(
     labels=["Cloud", "SaaS", "Matériel", "Services"],
     values=[42, 31, 15, 12],
 )
-
 show = sp.slideshow(
     charts=[barre, courbe, donut],
     title="Bilan T4 2024",
@@ -306,7 +288,6 @@ show = sp.slideshow(
 )
 show.show()</code></pre></div>
 <div id="slideshow-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const barre  = sp.bar({ title: "Revenus T4 par région",
     labels: ["EMEA","APAC","Amériques","LATAM"], values: [420,380,610,195] });
 const courbe = sp.line({ title: "Utilisateurs actifs mensuels",
@@ -314,7 +295,6 @@ const courbe = sp.line({ title: "Utilisateurs actifs mensuels",
     y: [12,15,14,18,22,25,24,28,31,29,34,38] });
 const donut  = sp.donut({ title: "Revenus par produit",
     labels: ["Cloud","SaaS","Matériel","Services"], values: [42,31,15,12] });
-
 const show = sp.slideshow({
   charts: [barre, courbe, donut],
   title: "Bilan T4 2024",
@@ -322,7 +302,6 @@ const show = sp.slideshow({
 });
 show.show();</code></pre></div>
 <div id="slideshow-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const barre  = sp.bar({ title: "Revenus T4 par région",
     labels: ["EMEA","APAC","Amériques","LATAM"], values: [420,380,610,195] });
 const courbe = sp.line({ title: "Utilisateurs actifs mensuels",
@@ -330,7 +309,6 @@ const courbe = sp.line({ title: "Utilisateurs actifs mensuels",
     y: [12,15,14,18,22,25,24,28,31,29,34,38] });
 const donut  = sp.donut({ title: "Revenus par produit",
     labels: ["Cloud","SaaS","Matériel","Services"], values: [42,31,15,12] });
-
 const show = sp.slideshow({
   charts: [barre, courbe, donut],
   title: "Bilan T4 2024",
@@ -338,14 +316,12 @@ const show = sp.slideshow({
 });
 show.show();</code></pre></div>
 <div id="slideshow-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 barre  <- sp$bar(title="Revenus T4 par région",
                  labels=c("EMEA","APAC","Amériques","LATAM"), values=c(420,380,610,195))
 courbe <- sp$line(title="Utilisateurs actifs mensuels",
                   x=1:12, y=c(12,15,14,18,22,25,24,28,31,29,34,38))
 donut  <- sp$donut(title="Revenus par produit",
                    labels=c("Cloud","SaaS","Matériel","Services"), values=c(42,31,15,12))
-
 show <- sp$slideshow(
   charts   = list(barre, courbe, donut),
   title    = "Bilan T4 2024",
@@ -354,7 +330,6 @@ show <- sp$slideshow(
 show$show()</code></pre></div>
 <div id="slideshow-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var barre  = SeraPlot.bar().title("Revenus T4 par région")
     .labels(List.of("EMEA","APAC","Amériques","LATAM")).values(List.of(420.0,380.0,610.0,195.0)).build();
 var courbe = SeraPlot.line().title("Utilisateurs actifs mensuels")
@@ -362,7 +337,6 @@ var courbe = SeraPlot.line().title("Utilisateurs actifs mensuels")
     .y(List.of(12.0,15.0,14.0,18.0,22.0,25.0,24.0,28.0,31.0,29.0,34.0,38.0)).build();
 var donut  = SeraPlot.donut().title("Revenus par produit")
     .labels(List.of("Cloud","SaaS","Matériel","Services")).values(List.of(42.0,31.0,15.0,12.0)).build();
-
 var show = SeraPlot.slideshow()
     .charts(List.of(barre, courbe, donut))
     .title("Bilan T4 2024")
@@ -370,7 +344,6 @@ var show = SeraPlot.slideshow()
     .build();
 show.show();</code></pre></div>
 <div id="slideshow-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var barre  = Sp.Bar(title: "Revenus T4 par région",
     labels: ["EMEA","APAC","Amériques","LATAM"], values: [420,380,610,195]);
 var courbe = Sp.Line(title: "Utilisateurs actifs mensuels",
@@ -378,7 +351,6 @@ var courbe = Sp.Line(title: "Utilisateurs actifs mensuels",
     y: [12,15,14,18,22,25,24,28,31,29,34,38]);
 var donut  = Sp.Donut(title: "Revenus par produit",
     labels: ["Cloud","SaaS","Matériel","Services"], values: [42,31,15,12]);
-
 var show = Sp.Slideshow(
     charts:   [barre, courbe, donut],
     title:    "Bilan T4 2024",
@@ -386,7 +358,6 @@ var show = Sp.Slideshow(
 );
 show.Show();</code></pre></div>
 <div id="slideshow-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val barre  = sp.bar(title = "Revenus T4 par région",
   labels = List("EMEA","APAC","Amériques","LATAM"), values = List(420.0,380.0,610.0,195.0))
 val courbe = sp.line(title = "Utilisateurs actifs mensuels",
@@ -394,7 +365,6 @@ val courbe = sp.line(title = "Utilisateurs actifs mensuels",
   y = List(12,15,14,18,22,25,24,28,31,29,34,38).map(_.toDouble))
 val donut  = sp.donut(title = "Revenus par produit",
   labels = List("Cloud","SaaS","Matériel","Services"), values = List(42.0,31.0,15.0,12.0))
-
 val show = sp.slideshow(
   charts   = List(barre, courbe, donut),
   title    = "Bilan T4 2024",
@@ -402,7 +372,6 @@ val show = sp.slideshow(
 )
 show.show()</code></pre></div>
 <div id="slideshow-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto barre  = sp::bar({.title="Revenus T4 par région",
     .labels={"EMEA","APAC","Amériques","LATAM"}, .values={420,380,610,195}});
 auto courbe = sp::line({.title="Utilisateurs actifs mensuels",
@@ -410,7 +379,6 @@ auto courbe = sp::line({.title="Utilisateurs actifs mensuels",
     .y={12,15,14,18,22,25,24,28,31,29,34,38}});
 auto donut  = sp::donut({.title="Revenus par produit",
     .labels={"Cloud","SaaS","Matériel","Services"}, .values={42,31,15,12}});
-
 auto show = sp::slideshow({
     .charts   = {barre, courbe, donut},
     .title    = "Bilan T4 2024",

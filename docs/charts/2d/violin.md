@@ -1,4 +1,4 @@
-﻿# Violin Chart
+# Violin Chart
 
 <div class="lang-en">
 
@@ -75,7 +75,6 @@ A violin chart combines a box plot with a kernel density estimate (KDE) to show 
 <button class="sp-tb" onclick="spTab('violin','violin-cpp',this)">C++</button>
 </div>
 <div id="violin-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.violin(
     title="Salary distributions by department",
     categories=["Engineering", "Marketing", "Sales"],
@@ -88,7 +87,6 @@ chart = sp.violin(
 )
 chart.show()</code></pre></div>
 <div id="violin-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.violin({
   title: "Salary distributions by department",
   categories: ["Engineering", "Marketing", "Sales"],
@@ -101,7 +99,6 @@ const chart = sp.violin({
 });
 chart.show();</code></pre></div>
 <div id="violin-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.violin({
   title: "Salary distributions by department",
   categories: ["Engineering", "Marketing", "Sales"],
@@ -114,7 +111,6 @@ const chart = sp.violin({
 });
 chart.show();</code></pre></div>
 <div id="violin-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$violin(
   title = "Salary distributions by department",
   categories = c("Engineering", "Marketing", "Sales"),
@@ -128,7 +124,6 @@ chart <- sp$violin(
 chart$show()</code></pre></div>
 <div id="violin-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.violin()
     .title("Salary distributions by department")
     .categories(List.of("Engineering", "Marketing", "Sales"))
@@ -141,7 +136,6 @@ var chart = SeraPlot.violin()
     .build();
 chart.show();</code></pre></div>
 <div id="violin-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Violin(
     title: "Salary distributions by department",
     categories: new[]{"Engineering", "Marketing", "Sales"},
@@ -154,7 +148,6 @@ var chart = Sp.Violin(
 );
 chart.Show();</code></pre></div>
 <div id="violin-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.violin(
   title = "Salary distributions by department",
   categories = List("Engineering", "Marketing", "Sales"),
@@ -167,7 +160,6 @@ val chart = sp.violin(
 )
 chart.show()</code></pre></div>
 <div id="violin-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::violin({
   .title      = "Salary distributions by department",
   .categories = {"Engineering", "Marketing", "Sales"},
@@ -265,7 +257,6 @@ Un graphique en violon combine une boîte à moustaches avec une estimation par 
 <button class="sp-tb" onclick="spTab('violin-fr','violin-fr-cpp',this)">C++</button>
 </div>
 <div id="violin-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.violin(
     title="Distributions salariales par département",
     categories=["Ingénierie", "Marketing", "Ventes"],
@@ -278,7 +269,6 @@ chart = sp.violin(
 )
 chart.show()</code></pre></div>
 <div id="violin-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.violin({
   title: "Distributions salariales par département",
   categories: ["Ingénierie", "Marketing", "Ventes"],
@@ -291,7 +281,6 @@ const chart = sp.violin({
 });
 chart.show();</code></pre></div>
 <div id="violin-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.violin({
   title: "Distributions salariales par département",
   categories: ["Ingénierie", "Marketing", "Ventes"],
@@ -304,7 +293,6 @@ const chart = sp.violin({
 });
 chart.show();</code></pre></div>
 <div id="violin-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$violin(
   title = "Distributions salariales par département",
   categories = c("Ingénierie", "Marketing", "Ventes"),
@@ -318,7 +306,6 @@ chart <- sp$violin(
 chart$show()</code></pre></div>
 <div id="violin-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.violin()
     .title("Distributions salariales par département")
     .categories(List.of("Ingénierie", "Marketing", "Ventes"))
@@ -331,7 +318,6 @@ var chart = SeraPlot.violin()
     .build();
 chart.show();</code></pre></div>
 <div id="violin-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Violin(
     title: "Distributions salariales par département",
     categories: new[]{"Ingénierie", "Marketing", "Ventes"},
@@ -344,7 +330,6 @@ var chart = Sp.Violin(
 );
 chart.Show();</code></pre></div>
 <div id="violin-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.violin(
   title = "Distributions salariales par département",
   categories = List("Ingénierie", "Marketing", "Ventes"),
@@ -357,7 +342,6 @@ val chart = sp.violin(
 )
 chart.show()</code></pre></div>
 <div id="violin-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::violin({
   .title      = "Distributions salariales par département",
   .categories = {"Ingénierie", "Marketing", "Ventes"},

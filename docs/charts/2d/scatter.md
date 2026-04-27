@@ -1,4 +1,4 @@
-﻿# Scatter Chart
+# Scatter Chart
 
 <div class="lang-en">
 
@@ -85,7 +85,6 @@ A scatter chart plots each observation as a point on a two-dimensional Cartesian
 <button class="sp-tb" onclick="spTab('scatter','scatter-cpp',this)">C++</button>
 </div>
 <div id="scatter-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.scatter(
     title="Height vs Weight",
     x_values=[160, 165, 170, 172, 175, 178, 180, 182, 185, 190],
@@ -97,7 +96,6 @@ chart = sp.scatter(
 )
 chart.show()</code></pre></div>
 <div id="scatter-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.scatter({
   title: "Height vs Weight",
   xValues: [160, 165, 170, 172, 175, 178, 180, 182, 185, 190],
@@ -109,7 +107,6 @@ const chart = sp.scatter({
 });
 chart.show();</code></pre></div>
 <div id="scatter-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.scatter({
   title: "Height vs Weight",
   xValues: [160, 165, 170, 172, 175, 178, 180, 182, 185, 190],
@@ -121,7 +118,6 @@ const chart = sp.scatter({
 });
 chart.show();</code></pre></div>
 <div id="scatter-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$scatter(
   title = "Height vs Weight",
   x_values = c(160, 165, 170, 172, 175, 178, 180, 182, 185, 190),
@@ -134,7 +130,6 @@ chart <- sp$scatter(
 chart$show()</code></pre></div>
 <div id="scatter-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.scatter()
     .title("Height vs Weight")
     .xValues(List.of(160.0, 165.0, 170.0, 172.0, 175.0, 178.0, 180.0, 182.0, 185.0, 190.0))
@@ -146,7 +141,6 @@ var chart = SeraPlot.scatter()
     .build();
 chart.show();</code></pre></div>
 <div id="scatter-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Scatter(
     title: "Height vs Weight",
     xValues: new[]{160.0, 165.0, 170.0, 172.0, 175.0, 178.0, 180.0, 182.0, 185.0, 190.0},
@@ -158,7 +152,6 @@ var chart = Sp.Scatter(
 );
 chart.Show();</code></pre></div>
 <div id="scatter-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.scatter(
   title = "Height vs Weight",
   x_values = List(160.0, 165.0, 170.0, 172.0, 175.0, 178.0, 180.0, 182.0, 185.0, 190.0),
@@ -170,7 +163,6 @@ val chart = sp.scatter(
 )
 chart.show()</code></pre></div>
 <div id="scatter-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::scatter({
   .title           = "Height vs Weight",
   .x_values        = {160, 165, 170, 172, 175, 178, 180, 182, 185, 190},
@@ -277,7 +269,6 @@ Un graphique de dispersion représente chaque observation comme un point sur un 
 <button class="sp-tb" onclick="spTab('scatter-fr','scatter-fr-cpp',this)">C++</button>
 </div>
 <div id="scatter-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.scatter(
     title="Taille vs Poids",
     x_values=[160, 165, 170, 172, 175, 178, 180, 182, 185, 190],
@@ -289,7 +280,6 @@ chart = sp.scatter(
 )
 chart.show()</code></pre></div>
 <div id="scatter-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.scatter({
   title: "Taille vs Poids",
   xValues: [160, 165, 170, 172, 175, 178, 180, 182, 185, 190],
@@ -301,7 +291,6 @@ const chart = sp.scatter({
 });
 chart.show();</code></pre></div>
 <div id="scatter-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.scatter({
   title: "Taille vs Poids",
   xValues: [160, 165, 170, 172, 175, 178, 180, 182, 185, 190],
@@ -313,7 +302,6 @@ const chart = sp.scatter({
 });
 chart.show();</code></pre></div>
 <div id="scatter-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$scatter(
   title = "Taille vs Poids",
   x_values = c(160, 165, 170, 172, 175, 178, 180, 182, 185, 190),
@@ -326,7 +314,6 @@ chart <- sp$scatter(
 chart$show()</code></pre></div>
 <div id="scatter-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.scatter()
     .title("Taille vs Poids")
     .xValues(List.of(160.0, 165.0, 170.0, 172.0, 175.0, 178.0, 180.0, 182.0, 185.0, 190.0))
@@ -338,7 +325,6 @@ var chart = SeraPlot.scatter()
     .build();
 chart.show();</code></pre></div>
 <div id="scatter-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Scatter(
     title: "Taille vs Poids",
     xValues: new[]{160.0, 165.0, 170.0, 172.0, 175.0, 178.0, 180.0, 182.0, 185.0, 190.0},
@@ -350,7 +336,6 @@ var chart = Sp.Scatter(
 );
 chart.Show();</code></pre></div>
 <div id="scatter-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.scatter(
   title = "Taille vs Poids",
   x_values = List(160.0, 165.0, 170.0, 172.0, 175.0, 178.0, 180.0, 182.0, 185.0, 190.0),
@@ -362,7 +347,6 @@ val chart = sp.scatter(
 )
 chart.show()</code></pre></div>
 <div id="scatter-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::scatter({
   .title           = "Taille vs Poids",
   .x_values        = {160, 165, 170, 172, 175, 178, 180, 182, 185, 190},

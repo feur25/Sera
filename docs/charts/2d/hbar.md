@@ -1,4 +1,4 @@
-﻿# Horizontal Bar Chart
+# Horizontal Bar Chart
 
 <div class="lang-en">
 
@@ -79,7 +79,6 @@ A horizontal bar chart draws bars along the horizontal axis instead of the verti
 <button class="sp-tb" onclick="spTab('hbar','hbar-cpp',this)">C++</button>
 </div>
 <div id="hbar-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.hbar(
     title="Top 10 programming languages by popularity",
     labels=["Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"],
@@ -88,7 +87,6 @@ chart = sp.hbar(
 )
 chart.show()</code></pre></div>
 <div id="hbar-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.hbar({
   title: "Top 10 programming languages by popularity",
   labels: ["Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"],
@@ -97,7 +95,6 @@ const chart = sp.hbar({
 });
 chart.show();</code></pre></div>
 <div id="hbar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.hbar({
   title: "Top 10 programming languages by popularity",
   labels: ["Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"],
@@ -106,7 +103,6 @@ const chart = sp.hbar({
 });
 chart.show();</code></pre></div>
 <div id="hbar-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$hbar(
   title = "Top 10 programming languages by popularity",
   labels = c("Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"),
@@ -116,7 +112,6 @@ chart <- sp$hbar(
 chart$show()</code></pre></div>
 <div id="hbar-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.hbar()
     .title("Top 10 programming languages by popularity")
     .labels(List.of("Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"))
@@ -125,7 +120,6 @@ var chart = SeraPlot.hbar()
     .build();
 chart.show();</code></pre></div>
 <div id="hbar-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Hbar(
     title: "Top 10 programming languages by popularity",
     labels: new[]{"Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"},
@@ -134,7 +128,6 @@ var chart = Sp.Hbar(
 );
 chart.Show();</code></pre></div>
 <div id="hbar-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.hbar(
   title = "Top 10 programming languages by popularity",
   labels = List("Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"),
@@ -143,7 +136,6 @@ val chart = sp.hbar(
 )
 chart.show()</code></pre></div>
 <div id="hbar-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::hbar({
   .title      = "Top 10 programming languages by popularity",
   .labels     = {"Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"},
@@ -241,7 +233,6 @@ Un graphique à barres horizontales trace les barres le long de l'axe horizontal
 <button class="sp-tb" onclick="spTab('hbar-fr','hbar-fr-cpp',this)">C++</button>
 </div>
 <div id="hbar-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.hbar(
     title="Top 10 des langages de programmation par popularité",
     labels=["Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"],
@@ -250,7 +241,6 @@ chart = sp.hbar(
 )
 chart.show()</code></pre></div>
 <div id="hbar-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.hbar({
   title: "Top 10 des langages de programmation par popularité",
   labels: ["Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"],
@@ -259,7 +249,6 @@ const chart = sp.hbar({
 });
 chart.show();</code></pre></div>
 <div id="hbar-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.hbar({
   title: "Top 10 des langages de programmation par popularité",
   labels: ["Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"],
@@ -268,7 +257,6 @@ const chart = sp.hbar({
 });
 chart.show();</code></pre></div>
 <div id="hbar-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$hbar(
   title = "Top 10 des langages de programmation par popularité",
   labels = c("Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"),
@@ -278,7 +266,6 @@ chart <- sp$hbar(
 chart$show()</code></pre></div>
 <div id="hbar-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.hbar()
     .title("Top 10 des langages de programmation par popularité")
     .labels(List.of("Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"))
@@ -287,7 +274,6 @@ var chart = SeraPlot.hbar()
     .build();
 chart.show();</code></pre></div>
 <div id="hbar-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Hbar(
     title: "Top 10 des langages de programmation par popularité",
     labels: new[]{"Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"},
@@ -296,7 +282,6 @@ var chart = Sp.Hbar(
 );
 chart.Show();</code></pre></div>
 <div id="hbar-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.hbar(
   title = "Top 10 des langages de programmation par popularité",
   labels = List("Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"),
@@ -305,7 +290,6 @@ val chart = sp.hbar(
 )
 chart.show()</code></pre></div>
 <div id="hbar-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::hbar({
   .title      = "Top 10 des langages de programmation par popularité",
   .labels     = {"Python","JavaScript","Java","C#","C++","TypeScript","Go","Rust","Kotlin","Swift"},

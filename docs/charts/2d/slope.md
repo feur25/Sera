@@ -1,4 +1,4 @@
-﻿# Slope Chart
+# Slope Chart
 
 <div class="lang-en">
 
@@ -77,7 +77,6 @@ A slope chart draws one line per entity between two vertical axes, highlighting 
 <button class="sp-tb" onclick="spTab('slope','slope-cpp',this)">C++</button>
 </div>
 <div id="slope-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.slope(
     title="Human Development Index: 2010 vs 2022",
     labels=["Norway", "Switzerland", "Iceland", "Hong Kong", "Australia",
@@ -89,7 +88,6 @@ chart = sp.slope(
 )
 chart.show()</code></pre></div>
 <div id="slope-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.slope({
   title: "Human Development Index: 2010 vs 2022",
   labels: ["Norway","Switzerland","Iceland","Hong Kong","Australia",
@@ -101,7 +99,6 @@ const chart = sp.slope({
 });
 chart.show();</code></pre></div>
 <div id="slope-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.slope({
   title: "Human Development Index: 2010 vs 2022",
   labels: ["Norway","Switzerland","Iceland","Hong Kong","Australia",
@@ -113,7 +110,6 @@ const chart = sp.slope({
 });
 chart.show();</code></pre></div>
 <div id="slope-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$slope(
   title        = "Human Development Index: 2010 vs 2022",
   labels       = c("Norway","Switzerland","Iceland","Hong Kong","Australia",
@@ -126,7 +122,6 @@ chart <- sp$slope(
 chart$show()</code></pre></div>
 <div id="slope-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.slope()
     .title("Human Development Index: 2010 vs 2022")
     .labels(List.of("Norway","Switzerland","Iceland","Hong Kong","Australia",
@@ -138,7 +133,6 @@ var chart = SeraPlot.slope()
     .build();
 chart.show();</code></pre></div>
 <div id="slope-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Slope(
     title:       "Human Development Index: 2010 vs 2022",
     labels:      ["Norway","Switzerland","Iceland","Hong Kong","Australia",
@@ -150,7 +144,6 @@ var chart = Sp.Slope(
 );
 chart.Show();</code></pre></div>
 <div id="slope-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.slope(
   title        = "Human Development Index: 2010 vs 2022",
   labels       = List("Norway","Switzerland","Iceland","Hong Kong","Australia",
@@ -162,7 +155,6 @@ val chart = sp.slope(
 )
 chart.show()</code></pre></div>
 <div id="slope-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::slope({
     .title        = "Human Development Index: 2010 vs 2022",
     .labels       = {"Norway","Switzerland","Iceland","Hong Kong","Australia",
@@ -261,7 +253,6 @@ Un graphique en pentes trace une ligne par entité entre deux axes verticaux, me
 <button class="sp-tb" onclick="spTab('slope-fr','slope-fr-cpp',this)">C++</button>
 </div>
 <div id="slope-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.slope(
     title="Indice de développement humain : 2010 vs 2022",
     labels=["Norvège", "Suisse", "Islande", "Hong Kong", "Australie",
@@ -273,7 +264,6 @@ chart = sp.slope(
 )
 chart.show()</code></pre></div>
 <div id="slope-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.slope({
   title: "Indice de développement humain : 2010 vs 2022",
   labels: ["Norvège","Suisse","Islande","Hong Kong","Australie",
@@ -285,7 +275,6 @@ const chart = sp.slope({
 });
 chart.show();</code></pre></div>
 <div id="slope-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.slope({
   title: "Indice de développement humain : 2010 vs 2022",
   labels: ["Norvège","Suisse","Islande","Hong Kong","Australie",
@@ -297,7 +286,6 @@ const chart = sp.slope({
 });
 chart.show();</code></pre></div>
 <div id="slope-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$slope(
   title        = "Indice de développement humain : 2010 vs 2022",
   labels       = c("Norvège","Suisse","Islande","Hong Kong","Australie",
@@ -310,7 +298,6 @@ chart <- sp$slope(
 chart$show()</code></pre></div>
 <div id="slope-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.slope()
     .title("Indice de développement humain : 2010 vs 2022")
     .labels(List.of("Norvège","Suisse","Islande","Hong Kong","Australie",
@@ -322,7 +309,6 @@ var chart = SeraPlot.slope()
     .build();
 chart.show();</code></pre></div>
 <div id="slope-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Slope(
     title:       "Indice de développement humain : 2010 vs 2022",
     labels:      ["Norvège","Suisse","Islande","Hong Kong","Australie",
@@ -334,7 +320,6 @@ var chart = Sp.Slope(
 );
 chart.Show();</code></pre></div>
 <div id="slope-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.slope(
   title        = "Indice de développement humain : 2010 vs 2022",
   labels       = List("Norvège","Suisse","Islande","Hong Kong","Australie",
@@ -346,7 +331,6 @@ val chart = sp.slope(
 )
 chart.show()</code></pre></div>
 <div id="slope-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::slope({
     .title        = "Indice de développement humain : 2010 vs 2022",
     .labels       = {"Norvège","Suisse","Islande","Hong Kong","Australie",

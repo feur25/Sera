@@ -1,4 +1,4 @@
-﻿# Candlestick Chart
+# Candlestick Chart
 
 <div class="lang-en">
 
@@ -83,13 +83,11 @@ A candlestick chart is the standard visualization for OHLC (Open, High, Low, Clo
 <button class="sp-tb" onclick="spTab('candlestick','candlestick-cpp',this)">C++</button>
 </div>
 <div id="candlestick-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 dates  = ["Nov 1","Nov 4","Nov 5","Nov 6","Nov 7","Nov 8","Nov 11","Nov 12"]
 opens  = [68200, 69800, 72500, 74000, 76800, 79200, 81000, 85000]
 highs  = [70100, 73200, 75800, 77500, 80200, 82500, 87000, 89500]
 lows   = [67800, 69200, 71500, 73200, 75900, 78000, 80500, 84000]
 closes = [69800, 72500, 74000, 76800, 79200, 81000, 85000, 87200]
-
 chart = sp.candlestick(
     title="BTC/USD — November 2024",
     dates=dates,
@@ -102,13 +100,11 @@ chart = sp.candlestick(
 )
 chart.show()</code></pre></div>
 <div id="candlestick-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const dates  = ["Nov 1","Nov 4","Nov 5","Nov 6","Nov 7","Nov 8","Nov 11","Nov 12"];
 const opens  = [68200, 69800, 72500, 74000, 76800, 79200, 81000, 85000];
 const highs  = [70100, 73200, 75800, 77500, 80200, 82500, 87000, 89500];
 const lows   = [67800, 69200, 71500, 73200, 75900, 78000, 80500, 84000];
 const closes = [69800, 72500, 74000, 76800, 79200, 81000, 85000, 87200];
-
 const chart = sp.candlestick({
   title: "BTC/USD — November 2024",
   dates, opens, highs, lows, closes,
@@ -117,13 +113,11 @@ const chart = sp.candlestick({
 });
 chart.show();</code></pre></div>
 <div id="candlestick-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const dates: string[]  = ["Nov 1","Nov 4","Nov 5","Nov 6","Nov 7","Nov 8","Nov 11","Nov 12"];
 const opens: number[]  = [68200, 69800, 72500, 74000, 76800, 79200, 81000, 85000];
 const highs: number[]  = [70100, 73200, 75800, 77500, 80200, 82500, 87000, 89500];
 const lows: number[]   = [67800, 69200, 71500, 73200, 75900, 78000, 80500, 84000];
 const closes: number[] = [69800, 72500, 74000, 76800, 79200, 81000, 85000, 87200];
-
 const chart = sp.candlestick({
   title: "BTC/USD — November 2024",
   dates, opens, highs, lows, closes,
@@ -132,13 +126,11 @@ const chart = sp.candlestick({
 });
 chart.show();</code></pre></div>
 <div id="candlestick-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 dates  <- c("Nov 1","Nov 4","Nov 5","Nov 6","Nov 7","Nov 8","Nov 11","Nov 12")
 opens  <- c(68200, 69800, 72500, 74000, 76800, 79200, 81000, 85000)
 highs  <- c(70100, 73200, 75800, 77500, 80200, 82500, 87000, 89500)
 lows   <- c(67800, 69200, 71500, 73200, 75900, 78000, 80500, 84000)
 closes <- c(69800, 72500, 74000, 76800, 79200, 81000, 85000, 87200)
-
 chart <- sp$candlestick(
   title   = "BTC/USD — November 2024",
   dates   = dates,
@@ -152,7 +144,6 @@ chart <- sp$candlestick(
 chart$show()</code></pre></div>
 <div id="candlestick-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.candlestick()
     .title("BTC/USD — November 2024")
     .dates(List.of("Nov 1","Nov 4","Nov 5","Nov 6","Nov 7","Nov 8","Nov 11","Nov 12"))
@@ -165,7 +156,6 @@ var chart = SeraPlot.candlestick()
     .build();
 chart.show();</code></pre></div>
 <div id="candlestick-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Candlestick(
     title:  "BTC/USD — November 2024",
     dates:  ["Nov 1","Nov 4","Nov 5","Nov 6","Nov 7","Nov 8","Nov 11","Nov 12"],
@@ -178,7 +168,6 @@ var chart = Sp.Candlestick(
 );
 chart.Show();</code></pre></div>
 <div id="candlestick-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.candlestick(
   title   = "BTC/USD — November 2024",
   dates   = List("Nov 1","Nov 4","Nov 5","Nov 6","Nov 7","Nov 8","Nov 11","Nov 12"),
@@ -191,7 +180,6 @@ val chart = sp.candlestick(
 )
 chart.show()</code></pre></div>
 <div id="candlestick-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::candlestick({
     .title    = "BTC/USD — November 2024",
     .dates    = {"Nov 1","Nov 4","Nov 5","Nov 6","Nov 7","Nov 8","Nov 11","Nov 12"},
@@ -297,13 +285,11 @@ Un graphique en chandeliers (candlestick) est la visualisation standard des donn
 <button class="sp-tb" onclick="spTab('candlestick-fr','candlestick-fr-cpp',this)">C++</button>
 </div>
 <div id="candlestick-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 dates  = ["1 nov","4 nov","5 nov","6 nov","7 nov","8 nov","11 nov","12 nov"]
 opens  = [68200, 69800, 72500, 74000, 76800, 79200, 81000, 85000]
 highs  = [70100, 73200, 75800, 77500, 80200, 82500, 87000, 89500]
 lows   = [67800, 69200, 71500, 73200, 75900, 78000, 80500, 84000]
 closes = [69800, 72500, 74000, 76800, 79200, 81000, 85000, 87200]
-
 chart = sp.candlestick(
     title="BTC/USD — Novembre 2024",
     dates=dates,
@@ -316,13 +302,11 @@ chart = sp.candlestick(
 )
 chart.show()</code></pre></div>
 <div id="candlestick-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const dates  = ["1 nov","4 nov","5 nov","6 nov","7 nov","8 nov","11 nov","12 nov"];
 const opens  = [68200, 69800, 72500, 74000, 76800, 79200, 81000, 85000];
 const highs  = [70100, 73200, 75800, 77500, 80200, 82500, 87000, 89500];
 const lows   = [67800, 69200, 71500, 73200, 75900, 78000, 80500, 84000];
 const closes = [69800, 72500, 74000, 76800, 79200, 81000, 85000, 87200];
-
 const chart = sp.candlestick({
   title: "BTC/USD — Novembre 2024",
   dates, opens, highs, lows, closes,
@@ -331,13 +315,11 @@ const chart = sp.candlestick({
 });
 chart.show();</code></pre></div>
 <div id="candlestick-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const dates: string[]  = ["1 nov","4 nov","5 nov","6 nov","7 nov","8 nov","11 nov","12 nov"];
 const opens: number[]  = [68200, 69800, 72500, 74000, 76800, 79200, 81000, 85000];
 const highs: number[]  = [70100, 73200, 75800, 77500, 80200, 82500, 87000, 89500];
 const lows: number[]   = [67800, 69200, 71500, 73200, 75900, 78000, 80500, 84000];
 const closes: number[] = [69800, 72500, 74000, 76800, 79200, 81000, 85000, 87200];
-
 const chart = sp.candlestick({
   title: "BTC/USD — Novembre 2024",
   dates, opens, highs, lows, closes,
@@ -346,13 +328,11 @@ const chart = sp.candlestick({
 });
 chart.show();</code></pre></div>
 <div id="candlestick-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 dates  <- c("1 nov","4 nov","5 nov","6 nov","7 nov","8 nov","11 nov","12 nov")
 opens  <- c(68200, 69800, 72500, 74000, 76800, 79200, 81000, 85000)
 highs  <- c(70100, 73200, 75800, 77500, 80200, 82500, 87000, 89500)
 lows   <- c(67800, 69200, 71500, 73200, 75900, 78000, 80500, 84000)
 closes <- c(69800, 72500, 74000, 76800, 79200, 81000, 85000, 87200)
-
 chart <- sp$candlestick(
   title     = "BTC/USD — Novembre 2024",
   dates     = dates,
@@ -366,7 +346,6 @@ chart <- sp$candlestick(
 chart$show()</code></pre></div>
 <div id="candlestick-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.candlestick()
     .title("BTC/USD — Novembre 2024")
     .dates(List.of("1 nov","4 nov","5 nov","6 nov","7 nov","8 nov","11 nov","12 nov"))
@@ -379,7 +358,6 @@ var chart = SeraPlot.candlestick()
     .build();
 chart.show();</code></pre></div>
 <div id="candlestick-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Candlestick(
     title:  "BTC/USD — Novembre 2024",
     dates:  ["1 nov","4 nov","5 nov","6 nov","7 nov","8 nov","11 nov","12 nov"],
@@ -392,7 +370,6 @@ var chart = Sp.Candlestick(
 );
 chart.Show();</code></pre></div>
 <div id="candlestick-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.candlestick(
   title   = "BTC/USD — Novembre 2024",
   dates   = List("1 nov","4 nov","5 nov","6 nov","7 nov","8 nov","11 nov","12 nov"),
@@ -405,7 +382,6 @@ val chart = sp.candlestick(
 )
 chart.show()</code></pre></div>
 <div id="candlestick-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::candlestick({
     .title    = "BTC/USD — Novembre 2024",
     .dates    = {"1 nov","4 nov","5 nov","6 nov","7 nov","8 nov","11 nov","12 nov"},

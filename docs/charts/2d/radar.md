@@ -1,4 +1,4 @@
-﻿# Radar Chart
+# Radar Chart
 
 <div class="lang-en">
 
@@ -73,7 +73,6 @@ A radar chart (spider chart) maps each dimension to a radial axis emanating from
 <button class="sp-tb" onclick="spTab('radar','radar-cpp',this)">C++</button>
 </div>
 <div id="radar-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.radar(
     title="Player Performance Comparison",
     axes=["Speed", "Strength", "Stamina", "Agility", "Accuracy", "IQ"],
@@ -86,7 +85,6 @@ chart = sp.radar(
 )
 chart.show()</code></pre></div>
 <div id="radar-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.radar({
   title: "Player Performance Comparison",
   axes: ["Speed", "Strength", "Stamina", "Agility", "Accuracy", "IQ"],
@@ -99,7 +97,6 @@ const chart = sp.radar({
 });
 chart.show();</code></pre></div>
 <div id="radar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.radar({
   title: "Player Performance Comparison",
   axes: ["Speed", "Strength", "Stamina", "Agility", "Accuracy", "IQ"],
@@ -112,7 +109,6 @@ const chart = sp.radar({
 });
 chart.show();</code></pre></div>
 <div id="radar-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$radar(
   title        = "Player Performance Comparison",
   axes         = c("Speed", "Strength", "Stamina", "Agility", "Accuracy", "IQ"),
@@ -126,7 +122,6 @@ chart <- sp$radar(
 chart$show()</code></pre></div>
 <div id="radar-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.radar()
     .title("Player Performance Comparison")
     .axes(List.of("Speed", "Strength", "Stamina", "Agility", "Accuracy", "IQ"))
@@ -139,7 +134,6 @@ var chart = SeraPlot.radar()
     .build();
 chart.show();</code></pre></div>
 <div id="radar-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Radar(
     title:       "Player Performance Comparison",
     axes:        ["Speed", "Strength", "Stamina", "Agility", "Accuracy", "IQ"],
@@ -149,7 +143,6 @@ var chart = Sp.Radar(
 );
 chart.Show();</code></pre></div>
 <div id="radar-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.radar(
   title        = "Player Performance Comparison",
   axes         = List("Speed", "Strength", "Stamina", "Agility", "Accuracy", "IQ"),
@@ -162,7 +155,6 @@ val chart = sp.radar(
 )
 chart.show()</code></pre></div>
 <div id="radar-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::radar({
     .title        = "Player Performance Comparison",
     .axes         = {"Speed", "Strength", "Stamina", "Agility", "Accuracy", "IQ"},
@@ -258,7 +250,6 @@ Un graphique radar (graphique en araignée) associe chaque dimension à un axe r
 <button class="sp-tb" onclick="spTab('radar-fr','radar-fr-cpp',this)">C++</button>
 </div>
 <div id="radar-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.radar(
     title="Comparaison des performances des joueurs",
     axes=["Vitesse", "Force", "Endurance", "Agilité", "Précision", "QI"],
@@ -271,7 +262,6 @@ chart = sp.radar(
 )
 chart.show()</code></pre></div>
 <div id="radar-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.radar({
   title: "Comparaison des performances des joueurs",
   axes: ["Vitesse", "Force", "Endurance", "Agilité", "Précision", "QI"],
@@ -284,7 +274,6 @@ const chart = sp.radar({
 });
 chart.show();</code></pre></div>
 <div id="radar-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.radar({
   title: "Comparaison des performances des joueurs",
   axes: ["Vitesse", "Force", "Endurance", "Agilité", "Précision", "QI"],
@@ -297,7 +286,6 @@ const chart = sp.radar({
 });
 chart.show();</code></pre></div>
 <div id="radar-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$radar(
   title        = "Comparaison des performances des joueurs",
   axes         = c("Vitesse", "Force", "Endurance", "Agilité", "Précision", "QI"),
@@ -311,7 +299,6 @@ chart <- sp$radar(
 chart$show()</code></pre></div>
 <div id="radar-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.radar()
     .title("Comparaison des performances des joueurs")
     .axes(List.of("Vitesse", "Force", "Endurance", "Agilité", "Précision", "QI"))
@@ -324,7 +311,6 @@ var chart = SeraPlot.radar()
     .build();
 chart.show();</code></pre></div>
 <div id="radar-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Radar(
     title:       "Comparaison des performances des joueurs",
     axes:        ["Vitesse", "Force", "Endurance", "Agilité", "Précision", "QI"],
@@ -334,7 +320,6 @@ var chart = Sp.Radar(
 );
 chart.Show();</code></pre></div>
 <div id="radar-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.radar(
   title        = "Comparaison des performances des joueurs",
   axes         = List("Vitesse", "Force", "Endurance", "Agilité", "Précision", "QI"),
@@ -347,7 +332,6 @@ val chart = sp.radar(
 )
 chart.show()</code></pre></div>
 <div id="radar-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::radar({
     .title        = "Comparaison des performances des joueurs",
     .axes         = {"Vitesse", "Force", "Endurance", "Agilité", "Précision", "QI"},

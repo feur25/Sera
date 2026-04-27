@@ -1,4 +1,4 @@
-﻿# Histogram Overlay
+# Histogram Overlay
 
 <div class="lang-en">
 
@@ -78,11 +78,9 @@ A histogram overlay renders two distributions as semi-transparent histograms on 
 </div>
 <div id="hist-overlay-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 random.seed(42)
 control = [random.gauss(62, 8) for _ in range(500)]
 variant = [random.gauss(67, 9) for _ in range(500)]
-
 chart = sp.histogram_overlay(
     title="A/B Test — Time on Page (seconds)",
     values=control,
@@ -93,7 +91,6 @@ chart = sp.histogram_overlay(
 )
 chart.show()</code></pre></div>
 <div id="hist-overlay-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.histogramOverlay({
   title: "A/B Test — Time on Page (seconds)",
   values: control,
@@ -104,7 +101,6 @@ const chart = sp.histogramOverlay({
 });
 chart.show();</code></pre></div>
 <div id="hist-overlay-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.histogramOverlay({
   title: "A/B Test — Time on Page (seconds)",
   values: control,
@@ -115,11 +111,9 @@ const chart = sp.histogramOverlay({
 });
 chart.show();</code></pre></div>
 <div id="hist-overlay-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 set.seed(42)
 controle <- rnorm(500, mean = 62, sd = 8)
 variante <- rnorm(500, mean = 67, sd = 9)
-
 chart <- sp$histogram_overlay(
   title          = "Test A/B — Temps sur la page (secondes)",
   values         = controle,
@@ -131,7 +125,6 @@ chart <- sp$histogram_overlay(
 chart$show()</code></pre></div>
 <div id="hist-overlay-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.histogramOverlay()
     .title("A/B Test — Time on Page (seconds)")
     .values(control)
@@ -142,7 +135,6 @@ var chart = SeraPlot.histogramOverlay()
     .build();
 chart.show();</code></pre></div>
 <div id="hist-overlay-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.HistogramOverlay(
     title:         "A/B Test — Time on Page (seconds)",
     values:        control,
@@ -153,7 +145,6 @@ var chart = Sp.HistogramOverlay(
 );
 chart.Show();</code></pre></div>
 <div id="hist-overlay-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.histogram_overlay(
   title          = "A/B Test — Time on Page (seconds)",
   values         = control,
@@ -164,7 +155,6 @@ val chart = sp.histogram_overlay(
 )
 chart.show()</code></pre></div>
 <div id="hist-overlay-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::histogram_overlay({
     .title          = "A/B Test — Time on Page (seconds)",
     .values         = control,
@@ -263,11 +253,9 @@ Un histogramme superposé affiche deux distributions sous forme d'histogrammes s
 </div>
 <div id="hist-overlay-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 random.seed(42)
 controle = [random.gauss(62, 8) for _ in range(500)]
 variante = [random.gauss(67, 9) for _ in range(500)]
-
 chart = sp.histogram_overlay(
     title="Test A/B — Durée sur la page (secondes)",
     values=controle,
@@ -278,7 +266,6 @@ chart = sp.histogram_overlay(
 )
 chart.show()</code></pre></div>
 <div id="hist-overlay-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.histogramOverlay({
   title: "Test A/B — Durée sur la page (secondes)",
   values: controle,
@@ -289,7 +276,6 @@ const chart = sp.histogramOverlay({
 });
 chart.show();</code></pre></div>
 <div id="hist-overlay-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.histogramOverlay({
   title: "Test A/B — Durée sur la page (secondes)",
   values: controle,
@@ -300,11 +286,9 @@ const chart = sp.histogramOverlay({
 });
 chart.show();</code></pre></div>
 <div id="hist-overlay-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 set.seed(42)
 controle <- rnorm(500, mean = 62, sd = 8)
 variante <- rnorm(500, mean = 67, sd = 9)
-
 chart <- sp$histogram_overlay(
   title          = "Test A/B — Durée sur la page (secondes)",
   values         = controle,
@@ -316,7 +300,6 @@ chart <- sp$histogram_overlay(
 chart$show()</code></pre></div>
 <div id="hist-overlay-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.histogramOverlay()
     .title("Test A/B — Durée sur la page (secondes)")
     .values(controle)
@@ -327,7 +310,6 @@ var chart = SeraPlot.histogramOverlay()
     .build();
 chart.show();</code></pre></div>
 <div id="hist-overlay-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.HistogramOverlay(
     title:         "Test A/B — Durée sur la page (secondes)",
     values:        controle,
@@ -338,7 +320,6 @@ var chart = Sp.HistogramOverlay(
 );
 chart.Show();</code></pre></div>
 <div id="hist-overlay-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.histogram_overlay(
   title          = "Test A/B — Durée sur la page (secondes)",
   values         = controle,
@@ -349,7 +330,6 @@ val chart = sp.histogram_overlay(
 )
 chart.show()</code></pre></div>
 <div id="hist-overlay-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::histogram_overlay({
     .title          = "Test A/B — Durée sur la page (secondes)",
     .values         = controle,

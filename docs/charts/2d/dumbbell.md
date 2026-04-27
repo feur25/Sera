@@ -1,4 +1,4 @@
-﻿# Dumbbell Chart
+# Dumbbell Chart
 
 <div class="lang-en">
 
@@ -77,11 +77,9 @@ A dumbbell chart (also called dot plot or gap chart) draws a horizontal line con
 <button class="sp-tb" onclick="spTab('dumbbell','dumbbell-cpp',this)">C++</button>
 </div>
 <div id="dumbbell-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 countries = ["Japan", "Australia", "Germany", "USA", "Brazil", "China", "India"]
 le_1990 = [78.9, 77.1, 75.3, 75.3, 66.6, 69.3, 58.3]
 le_2023 = [84.3, 83.5, 81.2, 78.8, 75.9, 77.4, 70.8]
-
 chart = sp.dumbbell(
     title="Life Expectancy 1990 vs 2023",
     labels=countries,
@@ -91,11 +89,9 @@ chart = sp.dumbbell(
 )
 chart.show()</code></pre></div>
 <div id="dumbbell-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const countries = ["Japan", "Australia", "Germany", "USA", "Brazil", "China", "India"];
 const le1990 = [78.9, 77.1, 75.3, 75.3, 66.6, 69.3, 58.3];
 const le2023 = [84.3, 83.5, 81.2, 78.8, 75.9, 77.4, 70.8];
-
 const chart = sp.dumbbell({
   title: "Life Expectancy 1990 vs 2023",
   labels: countries,
@@ -105,11 +101,9 @@ const chart = sp.dumbbell({
 });
 chart.show();</code></pre></div>
 <div id="dumbbell-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const countries: string[] = ["Japan", "Australia", "Germany", "USA", "Brazil", "China", "India"];
 const le1990: number[] = [78.9, 77.1, 75.3, 75.3, 66.6, 69.3, 58.3];
 const le2023: number[] = [84.3, 83.5, 81.2, 78.8, 75.9, 77.4, 70.8];
-
 const chart = sp.dumbbell({
   title: "Life Expectancy 1990 vs 2023",
   labels: countries,
@@ -119,11 +113,9 @@ const chart = sp.dumbbell({
 });
 chart.show();</code></pre></div>
 <div id="dumbbell-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 pays    <- c("Japan", "Australia", "Germany", "USA", "Brazil", "China", "India")
 le_1990 <- c(78.9, 77.1, 75.3, 75.3, 66.6, 69.3, 58.3)
 le_2023 <- c(84.3, 83.5, 81.2, 78.8, 75.9, 77.4, 70.8)
-
 chart <- sp$dumbbell(
   title        = "Life Expectancy 1990 vs 2023",
   labels       = pays,
@@ -134,7 +126,6 @@ chart <- sp$dumbbell(
 chart$show()</code></pre></div>
 <div id="dumbbell-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.dumbbell()
     .title("Life Expectancy 1990 vs 2023")
     .labels(List.of("Japan", "Australia", "Germany", "USA", "Brazil", "China", "India"))
@@ -144,7 +135,6 @@ var chart = SeraPlot.dumbbell()
     .build();
 chart.show();</code></pre></div>
 <div id="dumbbell-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Dumbbell(
     title:       "Life Expectancy 1990 vs 2023",
     labels:      ["Japan", "Australia", "Germany", "USA", "Brazil", "China", "India"],
@@ -154,7 +144,6 @@ var chart = Sp.Dumbbell(
 );
 chart.Show();</code></pre></div>
 <div id="dumbbell-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.dumbbell(
   title        = "Life Expectancy 1990 vs 2023",
   labels       = List("Japan", "Australia", "Germany", "USA", "Brazil", "China", "India"),
@@ -164,7 +153,6 @@ val chart = sp.dumbbell(
 )
 chart.show()</code></pre></div>
 <div id="dumbbell-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::dumbbell({
     .title        = "Life Expectancy 1990 vs 2023",
     .labels       = {"Japan", "Australia", "Germany", "USA", "Brazil", "China", "India"},
@@ -261,11 +249,9 @@ Un graphique haltère (dumbbell chart, aussi appelé dot plot ou gap chart) trac
 <button class="sp-tb" onclick="spTab('dumbbell-fr','dumbbell-fr-cpp',this)">C++</button>
 </div>
 <div id="dumbbell-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 pays    = ["Japon", "Australie", "Allemagne", "États-Unis", "Brésil", "Chine", "Inde"]
 esp_1990 = [78.9, 77.1, 75.3, 75.3, 66.6, 69.3, 58.3]
 esp_2023 = [84.3, 83.5, 81.2, 78.8, 75.9, 77.4, 70.8]
-
 chart = sp.dumbbell(
     title="Espérance de vie 1990 vs 2023",
     labels=pays,
@@ -275,11 +261,9 @@ chart = sp.dumbbell(
 )
 chart.show()</code></pre></div>
 <div id="dumbbell-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const pays    = ["Japon", "Australie", "Allemagne", "États-Unis", "Brésil", "Chine", "Inde"];
 const esp1990 = [78.9, 77.1, 75.3, 75.3, 66.6, 69.3, 58.3];
 const esp2023 = [84.3, 83.5, 81.2, 78.8, 75.9, 77.4, 70.8];
-
 const chart = sp.dumbbell({
   title: "Espérance de vie 1990 vs 2023",
   labels: pays,
@@ -289,11 +273,9 @@ const chart = sp.dumbbell({
 });
 chart.show();</code></pre></div>
 <div id="dumbbell-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const pays: string[]    = ["Japon", "Australie", "Allemagne", "États-Unis", "Brésil", "Chine", "Inde"];
 const esp1990: number[] = [78.9, 77.1, 75.3, 75.3, 66.6, 69.3, 58.3];
 const esp2023: number[] = [84.3, 83.5, 81.2, 78.8, 75.9, 77.4, 70.8];
-
 const chart = sp.dumbbell({
   title: "Espérance de vie 1990 vs 2023",
   labels: pays,
@@ -303,11 +285,9 @@ const chart = sp.dumbbell({
 });
 chart.show();</code></pre></div>
 <div id="dumbbell-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 pays     <- c("Japon", "Australie", "Allemagne", "États-Unis", "Brésil", "Chine", "Inde")
 esp_1990 <- c(78.9, 77.1, 75.3, 75.3, 66.6, 69.3, 58.3)
 esp_2023 <- c(84.3, 83.5, 81.2, 78.8, 75.9, 77.4, 70.8)
-
 chart <- sp$dumbbell(
   title        = "Espérance de vie 1990 vs 2023",
   labels       = pays,
@@ -318,7 +298,6 @@ chart <- sp$dumbbell(
 chart$show()</code></pre></div>
 <div id="dumbbell-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.dumbbell()
     .title("Espérance de vie 1990 vs 2023")
     .labels(List.of("Japon", "Australie", "Allemagne", "États-Unis", "Brésil", "Chine", "Inde"))
@@ -328,7 +307,6 @@ var chart = SeraPlot.dumbbell()
     .build();
 chart.show();</code></pre></div>
 <div id="dumbbell-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Dumbbell(
     title:       "Espérance de vie 1990 vs 2023",
     labels:      ["Japon", "Australie", "Allemagne", "États-Unis", "Brésil", "Chine", "Inde"],
@@ -338,7 +316,6 @@ var chart = Sp.Dumbbell(
 );
 chart.Show();</code></pre></div>
 <div id="dumbbell-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.dumbbell(
   title        = "Espérance de vie 1990 vs 2023",
   labels       = List("Japon", "Australie", "Allemagne", "États-Unis", "Brésil", "Chine", "Inde"),
@@ -348,7 +325,6 @@ val chart = sp.dumbbell(
 )
 chart.show()</code></pre></div>
 <div id="dumbbell-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::dumbbell({
     .title        = "Espérance de vie 1990 vs 2023",
     .labels       = {"Japon", "Australie", "Allemagne", "États-Unis", "Brésil", "Chine", "Inde"},

@@ -1,4 +1,4 @@
-﻿# Bubble Chart
+# Bubble Chart
 
 <div class="lang-en">
 
@@ -83,7 +83,6 @@ A bubble chart extends a scatter plot with a third numeric dimension represented
 <button class="sp-tb" onclick="spTab('bubble','bubble-cpp',this)">C++</button>
 </div>
 <div id="bubble-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.bubble(
     title="Countries: GDP vs Life expectancy",
     x_values=[2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0],
@@ -96,7 +95,6 @@ chart = sp.bubble(
 )
 chart.show()</code></pre></div>
 <div id="bubble-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.bubble({
   title: "Countries: GDP vs Life expectancy",
   xValues: [2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0],
@@ -109,7 +107,6 @@ const chart = sp.bubble({
 });
 chart.show();</code></pre></div>
 <div id="bubble-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.bubble({
   title: "Countries: GDP vs Life expectancy",
   xValues: [2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0],
@@ -122,7 +119,6 @@ const chart = sp.bubble({
 });
 chart.show();</code></pre></div>
 <div id="bubble-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$bubble(
   title = "Countries: GDP vs Life expectancy",
   x_values = c(2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0),
@@ -136,7 +132,6 @@ chart <- sp$bubble(
 chart$show()</code></pre></div>
 <div id="bubble-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.bubble()
     .title("Countries: GDP vs Life expectancy")
     .xValues(List.of(2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0))
@@ -149,7 +144,6 @@ var chart = SeraPlot.bubble()
     .build();
 chart.show();</code></pre></div>
 <div id="bubble-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Bubble(
     title: "Countries: GDP vs Life expectancy",
     xValues: new[]{2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0},
@@ -162,7 +156,6 @@ var chart = Sp.Bubble(
 );
 chart.Show();</code></pre></div>
 <div id="bubble-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.bubble(
   title = "Countries: GDP vs Life expectancy",
   x_values = List(2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0),
@@ -175,7 +168,6 @@ val chart = sp.bubble(
 )
 chart.show()</code></pre></div>
 <div id="bubble-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::bubble({
   .title        = "Countries: GDP vs Life expectancy",
   .x_values     = {2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0},
@@ -280,7 +272,6 @@ Un graphique à bulles étend un nuage de points avec une troisième dimension n
 <button class="sp-tb" onclick="spTab('bubble-fr','bubble-fr-cpp',this)">C++</button>
 </div>
 <div id="bubble-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.bubble(
     title="Pays : PIB vs Espérance de vie",
     x_values=[2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0],
@@ -293,7 +284,6 @@ chart = sp.bubble(
 )
 chart.show()</code></pre></div>
 <div id="bubble-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 const chart = sp.bubble({
   title: "Pays : PIB vs Espérance de vie",
   xValues: [2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0],
@@ -306,7 +296,6 @@ const chart = sp.bubble({
 });
 chart.show();</code></pre></div>
 <div id="bubble-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 const chart = sp.bubble({
   title: "Pays : PIB vs Espérance de vie",
   xValues: [2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0],
@@ -319,7 +308,6 @@ const chart = sp.bubble({
 });
 chart.show();</code></pre></div>
 <div id="bubble-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$bubble(
   title = "Pays : PIB vs Espérance de vie",
   x_values = c(2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0),
@@ -333,7 +321,6 @@ chart <- sp$bubble(
 chart$show()</code></pre></div>
 <div id="bubble-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.bubble()
     .title("Pays : PIB vs Espérance de vie")
     .xValues(List.of(2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0))
@@ -346,7 +333,6 @@ var chart = SeraPlot.bubble()
     .build();
 chart.show();</code></pre></div>
 <div id="bubble-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Bubble(
     title: "Pays : PIB vs Espérance de vie",
     xValues: new[]{2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0},
@@ -359,7 +345,6 @@ var chart = Sp.Bubble(
 );
 chart.Show();</code></pre></div>
 <div id="bubble-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val chart = sp.bubble(
   title = "Pays : PIB vs Espérance de vie",
   x_values = List(2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0),
@@ -372,7 +357,6 @@ val chart = sp.bubble(
 )
 chart.show()</code></pre></div>
 <div id="bubble-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::bubble({
   .title        = "Pays : PIB vs Espérance de vie",
   .x_values     = {2.5, 5.0, 12.0, 18.5, 25.0, 3.2, 8.0},

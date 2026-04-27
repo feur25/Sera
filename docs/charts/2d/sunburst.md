@@ -1,4 +1,4 @@
-﻿# Sunburst Chart
+# Sunburst Chart
 
 <div class="lang-en">
 
@@ -71,7 +71,6 @@ A sunburst chart displays hierarchical data as concentric rings. Each ring repre
 <button class="sp-tb" onclick="spTab('sunburst','sunburst-cpp',this)">C++</button>
 </div>
 <div id="sunburst-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.sunburst(
     title="Budget Breakdown by Department",
     labels=["Engineering", "Marketing", "Sales",
@@ -89,7 +88,6 @@ chart = sp.sunburst(
 )
 chart.show()</code></pre></div>
 <div id="sunburst-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.sunburst({
   title: "Budget Breakdown by Department",
   labels:  ["Engineering","Marketing","Sales",
@@ -102,7 +100,6 @@ const chart = sp.sunburst({
 });
 chart.show();</code></pre></div>
 <div id="sunburst-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.sunburst({
   title: "Budget Breakdown by Department",
   labels:  ["Engineering","Marketing","Sales",
@@ -115,7 +112,6 @@ const chart = sp.sunburst({
 });
 chart.show();</code></pre></div>
 <div id="sunburst-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$sunburst(
   title   = "Budget Breakdown by Department",
   labels  = c("Engineering","Marketing","Sales",
@@ -129,7 +125,6 @@ chart <- sp$sunburst(
 chart$show()</code></pre></div>
 <div id="sunburst-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.sunburst()
     .title("Budget Breakdown by Department")
     .labels(List.of("Engineering","Marketing","Sales",
@@ -142,7 +137,6 @@ var chart = SeraPlot.sunburst()
     .build();
 chart.show();</code></pre></div>
 <div id="sunburst-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Sunburst(
     title:   "Budget Breakdown by Department",
     labels:  ["Engineering","Marketing","Sales",
@@ -155,7 +149,6 @@ var chart = Sp.Sunburst(
 );
 chart.Show();</code></pre></div>
 <div id="sunburst-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.sunburst(
   title   = "Budget Breakdown by Department",
   labels  = List("Engineering","Marketing","Sales",
@@ -168,7 +161,6 @@ val chart = sp.sunburst(
 )
 chart.show()</code></pre></div>
 <div id="sunburst-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::sunburst({
     .title   = "Budget Breakdown by Department",
     .labels  = {"Engineering","Marketing","Sales",
@@ -262,7 +254,6 @@ Un graphique sunburst affiche des données hiérarchiques sous forme d'anneaux c
 <button class="sp-tb" onclick="spTab('sunburst-fr','sunburst-fr-cpp',this)">C++</button>
 </div>
 <div id="sunburst-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.sunburst(
     title="Répartition du budget par département",
     labels=["Ingénierie", "Marketing", "Ventes",
@@ -280,7 +271,6 @@ chart = sp.sunburst(
 )
 chart.show()</code></pre></div>
 <div id="sunburst-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.sunburst({
   title: "Répartition du budget par département",
   labels:  ["Ingénierie","Marketing","Ventes",
@@ -293,7 +283,6 @@ const chart = sp.sunburst({
 });
 chart.show();</code></pre></div>
 <div id="sunburst-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.sunburst({
   title: "Répartition du budget par département",
   labels:  ["Ingénierie","Marketing","Ventes",
@@ -306,7 +295,6 @@ const chart = sp.sunburst({
 });
 chart.show();</code></pre></div>
 <div id="sunburst-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$sunburst(
   title   = "Répartition du budget par département",
   labels  = c("Ingénierie","Marketing","Ventes",
@@ -320,7 +308,6 @@ chart <- sp$sunburst(
 chart$show()</code></pre></div>
 <div id="sunburst-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.sunburst()
     .title("Répartition du budget par département")
     .labels(List.of("Ingénierie","Marketing","Ventes",
@@ -333,7 +320,6 @@ var chart = SeraPlot.sunburst()
     .build();
 chart.show();</code></pre></div>
 <div id="sunburst-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.Sunburst(
     title:   "Répartition du budget par département",
     labels:  ["Ingénierie","Marketing","Ventes",
@@ -346,7 +332,6 @@ var chart = Sp.Sunburst(
 );
 chart.Show();</code></pre></div>
 <div id="sunburst-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.sunburst(
   title   = "Répartition du budget par département",
   labels  = List("Ingénierie","Marketing","Ventes",
@@ -359,7 +344,6 @@ val chart = sp.sunburst(
 )
 chart.show()</code></pre></div>
 <div id="sunburst-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::sunburst({
     .title   = "Répartition du budget par département",
     .labels  = {"Ingénierie","Marketing","Ventes",

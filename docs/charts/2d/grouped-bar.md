@@ -1,4 +1,4 @@
-﻿# Grouped Bar Chart
+# Grouped Bar Chart
 
 <div class="lang-en">
 
@@ -75,7 +75,6 @@ A grouped bar chart places bars for multiple series side by side within each cat
 <button class="sp-tb" onclick="spTab('grouped-bar','grouped-bar-cpp',this)">C++</button>
 </div>
 <div id="grouped-bar-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 quarters = ["Q1", "Q2", "Q3", "Q4"]
 # Flat: [q1_north, q1_south, q1_east, q2_north, q2_south, q2_east, ...]
 values = [
@@ -84,7 +83,6 @@ values = [
     420, 360, 450,
     480, 390, 510,
 ]
-
 chart = sp.grouped_bar(
     title="Quarterly Sales by Region",
     category_labels=quarters,
@@ -95,7 +93,6 @@ chart = sp.grouped_bar(
 )
 chart.show()</code></pre></div>
 <div id="grouped-bar-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const quarters = ["Q1", "Q2", "Q3", "Q4"];
 const values = [
   320, 280, 350,
@@ -103,7 +100,6 @@ const values = [
   420, 360, 450,
   480, 390, 510,
 ];
-
 const chart = sp.groupedBar({
   title: "Quarterly Sales by Region",
   categoryLabels: quarters,
@@ -114,7 +110,6 @@ const chart = sp.groupedBar({
 });
 chart.show();</code></pre></div>
 <div id="grouped-bar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const quarters: string[] = ["Q1", "Q2", "Q3", "Q4"];
 const values: number[] = [
   320, 280, 350,
@@ -122,7 +117,6 @@ const values: number[] = [
   420, 360, 450,
   480, 390, 510,
 ];
-
 const chart = sp.groupedBar({
   title: "Quarterly Sales by Region",
   categoryLabels: quarters,
@@ -133,7 +127,6 @@ const chart = sp.groupedBar({
 });
 chart.show();</code></pre></div>
 <div id="grouped-bar-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 quarters <- c("Q1", "Q2", "Q3", "Q4")
 values <- c(
   320, 280, 350,
@@ -141,7 +134,6 @@ values <- c(
   420, 360, 450,
   480, 390, 510
 )
-
 chart <- sp$grouped_bar(
   title            = "Quarterly Sales by Region",
   category_labels  = quarters,
@@ -153,7 +145,6 @@ chart <- sp$grouped_bar(
 chart$show()</code></pre></div>
 <div id="grouped-bar-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.groupedBar()
     .title("Quarterly Sales by Region")
     .categoryLabels(List.of("Q1", "Q2", "Q3", "Q4"))
@@ -169,7 +160,6 @@ var chart = SeraPlot.groupedBar()
     .build();
 chart.show();</code></pre></div>
 <div id="grouped-bar-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.GroupedBar(
     title:          "Quarterly Sales by Region",
     categoryLabels: ["Q1", "Q2", "Q3", "Q4"],
@@ -180,7 +170,6 @@ var chart = Sp.GroupedBar(
 );
 chart.Show();</code></pre></div>
 <div id="grouped-bar-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.grouped_bar(
   title           = "Quarterly Sales by Region",
   category_labels = List("Q1", "Q2", "Q3", "Q4"),
@@ -196,7 +185,6 @@ val chart = sp.grouped_bar(
 )
 chart.show()</code></pre></div>
 <div id="grouped-bar-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::grouped_bar({
     .title           = "Quarterly Sales by Region",
     .category_labels = {"Q1", "Q2", "Q3", "Q4"},
@@ -297,7 +285,6 @@ Un graphique en barres groupées place les barres de plusieurs séries côte à 
 <button class="sp-tb" onclick="spTab('grouped-bar-fr','grouped-bar-fr-cpp',this)">C++</button>
 </div>
 <div id="grouped-bar-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 trimestres = ["T1", "T2", "T3", "T4"]
 valeurs = [
     320, 280, 350,
@@ -305,7 +292,6 @@ valeurs = [
     420, 360, 450,
     480, 390, 510,
 ]
-
 chart = sp.grouped_bar(
     title="Ventes trimestrielles par région",
     category_labels=trimestres,
@@ -316,7 +302,6 @@ chart = sp.grouped_bar(
 )
 chart.show()</code></pre></div>
 <div id="grouped-bar-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const trimestres = ["T1", "T2", "T3", "T4"];
 const valeurs = [
   320, 280, 350,
@@ -324,7 +309,6 @@ const valeurs = [
   420, 360, 450,
   480, 390, 510,
 ];
-
 const chart = sp.groupedBar({
   title: "Ventes trimestrielles par région",
   categoryLabels: trimestres,
@@ -335,7 +319,6 @@ const chart = sp.groupedBar({
 });
 chart.show();</code></pre></div>
 <div id="grouped-bar-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const trimestres: string[] = ["T1", "T2", "T3", "T4"];
 const valeurs: number[] = [
   320, 280, 350,
@@ -343,7 +326,6 @@ const valeurs: number[] = [
   420, 360, 450,
   480, 390, 510,
 ];
-
 const chart = sp.groupedBar({
   title: "Ventes trimestrielles par région",
   categoryLabels: trimestres,
@@ -354,7 +336,6 @@ const chart = sp.groupedBar({
 });
 chart.show();</code></pre></div>
 <div id="grouped-bar-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 trimestres <- c("T1", "T2", "T3", "T4")
 valeurs <- c(
   320, 280, 350,
@@ -362,7 +343,6 @@ valeurs <- c(
   420, 360, 450,
   480, 390, 510
 )
-
 chart <- sp$grouped_bar(
   title           = "Ventes trimestrielles par région",
   category_labels = trimestres,
@@ -374,7 +354,6 @@ chart <- sp$grouped_bar(
 chart$show()</code></pre></div>
 <div id="grouped-bar-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.groupedBar()
     .title("Ventes trimestrielles par région")
     .categoryLabels(List.of("T1", "T2", "T3", "T4"))
@@ -390,7 +369,6 @@ var chart = SeraPlot.groupedBar()
     .build();
 chart.show();</code></pre></div>
 <div id="grouped-bar-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.GroupedBar(
     title:          "Ventes trimestrielles par région",
     categoryLabels: ["T1", "T2", "T3", "T4"],
@@ -401,7 +379,6 @@ var chart = Sp.GroupedBar(
 );
 chart.Show();</code></pre></div>
 <div id="grouped-bar-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.grouped_bar(
   title           = "Ventes trimestrielles par région",
   category_labels = List("T1", "T2", "T3", "T4"),
@@ -417,7 +394,6 @@ val chart = sp.grouped_bar(
 )
 chart.show()</code></pre></div>
 <div id="grouped-bar-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::grouped_bar({
     .title           = "Ventes trimestrielles par région",
     .category_labels = {"T1", "T2", "T3", "T4"},

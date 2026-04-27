@@ -1,4 +1,4 @@
-﻿# Stacked Bar Chart
+# Stacked Bar Chart
 
 <div class="lang-en">
 
@@ -75,7 +75,6 @@ A stacked bar chart divides each bar into colored segments representing sub-seri
 <button class="sp-tb" onclick="spTab('stacked-bar','stacked-bar-cpp',this)">C++</button>
 </div>
 <div id="stacked-bar-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 # 4 years × 3 product lines (row-major: Cloud first, then SaaS, then Hardware)
 chart = sp.stacked_bar(
     title="Annual Revenue by Product Line (K€)",
@@ -93,7 +92,6 @@ chart = sp.stacked_bar(
 )
 chart.show()</code></pre></div>
 <div id="stacked-bar-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.stackedBar({
   title: "Annual Revenue by Product Line (K€)",
   categoryLabels: ["2021", "2022", "2023", "2024"],
@@ -107,7 +105,6 @@ const chart = sp.stackedBar({
 });
 chart.show();</code></pre></div>
 <div id="stacked-bar-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.stackedBar({
   title: "Annual Revenue by Product Line (K€)",
   categoryLabels: ["2021", "2022", "2023", "2024"],
@@ -121,7 +118,6 @@ const chart = sp.stackedBar({
 });
 chart.show();</code></pre></div>
 <div id="stacked-bar-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$stacked_bar(
   title            = "Annual Revenue by Product Line (K€)",
   category_labels  = c("2021", "2022", "2023", "2024"),
@@ -136,7 +132,6 @@ chart <- sp$stacked_bar(
 chart$show()</code></pre></div>
 <div id="stacked-bar-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.stackedBar()
     .title("Annual Revenue by Product Line (K€)")
     .categoryLabels(List.of("2021", "2022", "2023", "2024"))
@@ -150,7 +145,6 @@ var chart = SeraPlot.stackedBar()
     .build();
 chart.show();</code></pre></div>
 <div id="stacked-bar-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.StackedBar(
     title:          "Annual Revenue by Product Line (K€)",
     categoryLabels: ["2021", "2022", "2023", "2024"],
@@ -160,7 +154,6 @@ var chart = Sp.StackedBar(
 );
 chart.Show();</code></pre></div>
 <div id="stacked-bar-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.stacked_bar(
   title           = "Annual Revenue by Product Line (K€)",
   category_labels = List("2021", "2022", "2023", "2024"),
@@ -174,7 +167,6 @@ val chart = sp.stacked_bar(
 )
 chart.show()</code></pre></div>
 <div id="stacked-bar-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::stacked_bar({
     .title           = "Annual Revenue by Product Line (K€)",
     .category_labels = {"2021", "2022", "2023", "2024"},
@@ -273,7 +265,6 @@ Un graphique en barres empilées divise chaque barre en segments colorés repré
 <button class="sp-tb" onclick="spTab('stacked-bar-fr','stacked-bar-fr-cpp',this)">C++</button>
 </div>
 <div id="stacked-bar-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-
 chart = sp.stacked_bar(
     title="Revenus annuels par ligne de produits (K€)",
     category_labels=["2021", "2022", "2023", "2024"],
@@ -290,7 +281,6 @@ chart = sp.stacked_bar(
 )
 chart.show()</code></pre></div>
 <div id="stacked-bar-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-
 const chart = sp.stackedBar({
   title: "Revenus annuels par ligne de produits (K€)",
   categoryLabels: ["2021", "2022", "2023", "2024"],
@@ -300,7 +290,6 @@ const chart = sp.stackedBar({
 });
 chart.show();</code></pre></div>
 <div id="stacked-bar-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-
 const chart = sp.stackedBar({
   title: "Revenus annuels par ligne de produits (K€)",
   categoryLabels: ["2021", "2022", "2023", "2024"],
@@ -310,7 +299,6 @@ const chart = sp.stackedBar({
 });
 chart.show();</code></pre></div>
 <div id="stacked-bar-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 chart <- sp$stacked_bar(
   title           = "Revenus annuels par ligne de produits (K€)",
   category_labels = c("2021", "2022", "2023", "2024"),
@@ -321,7 +309,6 @@ chart <- sp$stacked_bar(
 chart$show()</code></pre></div>
 <div id="stacked-bar-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
-
 var chart = SeraPlot.stackedBar()
     .title("Revenus annuels par ligne de produits (K€)")
     .categoryLabels(List.of("2021", "2022", "2023", "2024"))
@@ -335,7 +322,6 @@ var chart = SeraPlot.stackedBar()
     .build();
 chart.show();</code></pre></div>
 <div id="stacked-bar-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var chart = Sp.StackedBar(
     title:          "Revenus annuels par ligne de produits (K€)",
     categoryLabels: ["2021", "2022", "2023", "2024"],
@@ -345,7 +331,6 @@ var chart = Sp.StackedBar(
 );
 chart.Show();</code></pre></div>
 <div id="stacked-bar-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
 val chart = sp.stacked_bar(
   title           = "Revenus annuels par ligne de produits (K€)",
   category_labels = List("2021", "2022", "2023", "2024"),
@@ -355,7 +340,6 @@ val chart = sp.stacked_bar(
 )
 chart.show()</code></pre></div>
 <div id="stacked-bar-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
 auto chart = sp::stacked_bar({
     .title           = "Revenus annuels par ligne de produits (K€)",
     .category_labels = {"2021", "2022", "2023", "2024"},

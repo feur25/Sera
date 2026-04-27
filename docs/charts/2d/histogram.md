@@ -1,4 +1,4 @@
-﻿# Histogram
+# Histogram
 
 <div class="lang-en">
 
@@ -74,10 +74,8 @@ A histogram groups a continuous numeric variable into equal-width bins and draws
 </div>
 <div id="histogram-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 random.seed(42)
 values = [random.gauss(70, 10) for _ in range(500)]
-
 chart = sp.hist(
     title="Distribution of exam scores",
     values=values,
@@ -87,14 +85,12 @@ chart = sp.hist(
 )
 chart.show()</code></pre></div>
 <div id="histogram-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 // Box-Muller transform to generate normally distributed values
 function randn(mean, std) {
   const u1 = Math.random(), u2 = Math.random();
   return mean + std * Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
 }
 const values = Array.from({ length: 500 }, () => randn(70, 10));
-
 const chart = sp.hist({
   title: "Distribution of exam scores",
   values: values,
@@ -104,13 +100,11 @@ const chart = sp.hist({
 });
 chart.show();</code></pre></div>
 <div id="histogram-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 function randn(mean: number, std: number): number {
   const u1 = Math.random(), u2 = Math.random();
   return mean + std * Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
 }
 const values: number[] = Array.from({ length: 500 }, () => randn(70, 10));
-
 const chart = sp.hist({
   title: "Distribution of exam scores",
   values: values,
@@ -120,10 +114,8 @@ const chart = sp.hist({
 });
 chart.show();</code></pre></div>
 <div id="histogram-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 set.seed(42)
 values <- rnorm(500, mean = 70, sd = 10)
-
 chart <- sp$hist(
   title = "Distribution of exam scores",
   values = values,
@@ -137,12 +129,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 var rng = new Random(42);
 var values = Stream.generate(() -> 70.0 + 10.0 * rng.nextGaussian())
     .limit(500)
     .collect(Collectors.toList());
-
 var chart = SeraPlot.hist()
     .title("Distribution of exam scores")
     .values(values)
@@ -152,13 +142,11 @@ var chart = SeraPlot.hist()
     .build();
 chart.show();</code></pre></div>
 <div id="histogram-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var rng = new Random(42);
 var values = Enumerable.Range(0, 500).Select(_ => {
     double u1 = rng.NextDouble(), u2 = rng.NextDouble();
     return 70.0 + 10.0 * Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Cos(2 * Math.PI * u2);
 }).ToList();
-
 var chart = Sp.Hist(
     title: "Distribution of exam scores",
     values: values,
@@ -168,10 +156,8 @@ var chart = Sp.Hist(
 );
 chart.Show();</code></pre></div>
 <div id="histogram-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val rng = new scala.util.Random(42)
 val values = List.fill(500)(70.0 + 10.0 * rng.nextGaussian())
-
 val chart = sp.hist(
   title = "Distribution of exam scores",
   values = values,
@@ -183,12 +169,10 @@ chart.show()</code></pre></div>
 <div id="histogram-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
 #include &lt;random&gt;
 #include &lt;vector&gt;
-
 std::mt19937 rng(42);
 std::normal_distribution&lt;double&gt; dist(70.0, 10.0);
 std::vector&lt;double&gt; values(500);
 std::generate(values.begin(), values.end(), [&]{ return dist(rng); });
-
 auto chart = sp::hist({
   .title       = "Distribution of exam scores",
   .values      = values,
@@ -282,10 +266,8 @@ Un histogramme regroupe une variable numérique continue en intervalles de large
 </div>
 <div id="histogram-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
-
 random.seed(42)
 valeurs = [random.gauss(70, 10) for _ in range(500)]
-
 chart = sp.hist(
     title="Distribution des notes d'examen",
     values=valeurs,
@@ -295,13 +277,11 @@ chart = sp.hist(
 )
 chart.show()</code></pre></div>
 <div id="histogram-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-
 function randn(mean, std) {
   const u1 = Math.random(), u2 = Math.random();
   return mean + std * Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
 }
 const valeurs = Array.from({ length: 500 }, () => randn(70, 10));
-
 const chart = sp.hist({
   title: "Distribution des notes d'examen",
   values: valeurs,
@@ -311,13 +291,11 @@ const chart = sp.hist({
 });
 chart.show();</code></pre></div>
 <div id="histogram-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-
 function randn(mean: number, std: number): number {
   const u1 = Math.random(), u2 = Math.random();
   return mean + std * Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2);
 }
 const valeurs: number[] = Array.from({ length: 500 }, () => randn(70, 10));
-
 const chart = sp.hist({
   title: "Distribution des notes d'examen",
   values: valeurs,
@@ -327,10 +305,8 @@ const chart = sp.hist({
 });
 chart.show();</code></pre></div>
 <div id="histogram-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-
 set.seed(42)
 valeurs <- rnorm(500, mean = 70, sd = 10)
-
 chart <- sp$hist(
   title = "Distribution des notes d'examen",
   values = valeurs,
@@ -343,12 +319,10 @@ chart$show()</code></pre></div>
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
 var rng = new Random(42);
 var valeurs = Stream.generate(() -> 70.0 + 10.0 * rng.nextGaussian())
     .limit(500)
     .collect(Collectors.toList());
-
 var chart = SeraPlot.hist()
     .title("Distribution des notes d'examen")
     .values(valeurs)
@@ -358,13 +332,11 @@ var chart = SeraPlot.hist()
     .build();
 chart.show();</code></pre></div>
 <div id="histogram-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
 var rng = new Random(42);
 var valeurs = Enumerable.Range(0, 500).Select(_ => {
     double u1 = rng.NextDouble(), u2 = rng.NextDouble();
     return 70.0 + 10.0 * Math.Sqrt(-2.0 * Math.Log(u1)) * Math.Cos(2 * Math.PI * u2);
 }).ToList();
-
 var chart = Sp.Hist(
     title: "Distribution des notes d'examen",
     values: valeurs,
@@ -374,10 +346,8 @@ var chart = Sp.Hist(
 );
 chart.Show();</code></pre></div>
 <div id="histogram-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-
 val rng = new scala.util.Random(42)
 val valeurs = List.fill(500)(70.0 + 10.0 * rng.nextGaussian())
-
 val chart = sp.hist(
   title = "Distribution des notes d'examen",
   values = valeurs,
@@ -389,12 +359,10 @@ chart.show()</code></pre></div>
 <div id="histogram-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
 #include &lt;random&gt;
 #include &lt;vector&gt;
-
 std::mt19937 rng(42);
 std::normal_distribution&lt;double&gt; dist(70.0, 10.0);
 std::vector&lt;double&gt; valeurs(500);
 std::generate(valeurs.begin(), valeurs.end(), [&]{ return dist(rng); });
-
 auto chart = sp::hist({
   .title       = "Distribution des notes d'examen",
   .values      = valeurs,
