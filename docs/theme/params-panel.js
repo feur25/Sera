@@ -258,9 +258,17 @@
     rescaleIframesInPanel(panel);
   }
 
-  // Build a vertical variant rail on the LEFT edge of the panel, inside a
-  // flex-row wrapper with .sp-pb, so it stays visible while content scrolls.
+  // Build a filing-cabinet ticket rail OUTSIDE the panel (position:absolute,
+  // right:100% so its right edge is flush with the panel's left border).
+  // Tickets point LEFT with drop-shadow casting leftward for 3-D relief.
   function hoistClassRails(panel) {
+    // Remove old direct-child rail from a previous render
+    var oldRails = Array.prototype.filter.call(panel.childNodes, function (c) {
+      return c.classList && c.classList.contains("sp-cls-rail-side");
+    });
+    oldRails.forEach(function (c) { panel.removeChild(c); });
+
+    // Unwrap old .sp-panel-row, restore .sp-pb as direct child
     var oldRow = Array.prototype.filter.call(panel.childNodes, function (c) {
       return c.classList && c.classList.contains("sp-panel-row");
     })[0];
@@ -310,10 +318,17 @@
         btn.addEventListener("click", function () {
           var root = document.getElementById(scope);
           if (!root) return;
-          root.querySelectorAll(".sp-variant").forEach(function (s) { s.classList.remove("sp-von"); });
+          // Toggle variant — also set inline style as bulletproof display fix
+          root.querySelectorAll(".sp-variant").forEach(function (s) {
+            s.classList.remove("sp-von");
+            s.style.display = "none";
+          });
           rail.querySelectorAll('.sp-rail-btn[data-scope="' + scope + '"]').forEach(function (b) { b.classList.remove("sp-cact"); });
           var v = document.getElementById(scope + "-" + name);
-          if (v) v.classList.add("sp-von");
+          if (v) {
+            v.classList.add("sp-von");
+            v.style.display = "block";
+          }
           btn.classList.add("sp-cact");
           if (window.hljs && v) {
             v.querySelectorAll("code").forEach(function (c) {
@@ -326,11 +341,23 @@
       });
     });
 
+    // .sp-panel-row wraps .sp-pb only; rail is a sibling on the panel itself
     var row = document.createElement("div");
     row.className = "sp-panel-row";
     panel.insertBefore(row, pb);
-    row.appendChild(rail);
     row.appendChild(pb);
+    panel.appendChild(rail);  // position:absolute — protrudes outside panel box
+
+    // Inline-style display fix: makes variants/tabs visible regardless of CSS
+    // cascade conflicts between custom.css and bar.md's inline <style> block.
+    clsContainers.forEach(function (cls) {
+      cls.querySelectorAll(".sp-variant").forEach(function (v) {
+        v.style.display = v.classList.contains("sp-von") ? "block" : "none";
+      });
+      cls.querySelectorAll(".sp-tc").forEach(function (pane) {
+        pane.style.display = pane.classList.contains("sp-on") ? "block" : "";
+      });
+    });
   }
 
   // Scale each .sp-preview-frame inside the panel to fit the available width.
