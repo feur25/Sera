@@ -33,6 +33,14 @@ Set once, **every chart** created after inherits the configuration automatically
 | `locale` | str | Number formatting locale |
 | `thousands_sep` | str | Thousands separator char |
 | `tooltip` | str | Tooltip mode |
+| `text_auto` | bool \| str | Display values on bars/markers. `True` = raw value; format string like `".2s"`, `".0f"`, `".1%"` |
+| `text_position` | str | Where labels appear: `"auto"`, `"inside"`, `"outside"` |
+| `text_angle` | int | Rotation of value labels in degrees |
+| `text_font_size` | int | Max font size for value labels in px |
+| `text_font_color` | str | Color for value labels (any CSS color) |
+| `uniform_text_min_size` | int | Minimum px size for value labels |
+| `uniform_text_mode` | str | `"hide"` to hide labels that don't fit, `"show"` to overflow |
+| `bar_corner_radius` | int \| str | Rounded bar corners. Number of px or `"20%"` of bar width |
 
 ```python
 import seraplot as sp
@@ -91,6 +99,12 @@ Override global config for individual charts:
 | `.set_opacity(0.85)` | Set element opacity |
 | `.set_margin(16)` | Set padding |
 | `.set_bg("#color")` | Override background |
+| `.text_auto(format=True, position=None, angle=None, font_size=None, color=None)` | Show values on bars/markers (Plotly-style) |
+| `.text_position("outside")` | `"auto"` \| `"inside"` \| `"outside"` |
+| `.text_angle(-45)` | Rotate value labels |
+| `.text_font(family="Inter", size=12, color="#fff")` | Style value labels |
+| `.uniform_text(min_size=8, mode="hide")` | Force uniform label sizing |
+| `.corner_radius_bars(8)` | Round bar corners (px or `"20%"`) |
 
 ```python
 import seraplot as sp
@@ -272,6 +286,124 @@ Override all text sizes in the SVG with a single pixel value.
 
 ```python
 chart = sp.build_radar_chart("Skills", labels, values).set_font_size(11)
+```
+
+---
+
+## Value labels on bars and markers (new in 2.4.3)
+
+Plotly-style value labels — `text_auto`, `text_position`, `text_angle`, `text_font`,
+`uniform_text`, and `corner_radius_bars`. Works on **every** chart type that emits
+`data-v` attributes (bar variants, lollipop, scatter, line markers, pie, treemap…).
+
+### `text_auto(format=True, position=None, angle=None, font_size=None, color=None)`
+
+Adds value labels on every data element. Format string follows a tiny d3-format
+subset:
+
+| Format | Example | Output |
+|--------|---------|--------|
+| `True` or `""` | `42.0` | `42` |
+| `".0f"` | `42.567` | `43` |
+| `".2f"` | `42.567` | `42.57` |
+| `".2s"` | `42_500_000` | `42.50M` |
+| `".1%"` | `0.853` | `85.3%` |
+| `".2e"` | `42500` | `4.25e+4` |
+
+```python
+chart = sp.bar("Sales", ["Q1", "Q2", "Q3", "Q4"], [42500, 51800, 49200, 63100]).text_auto(".2s")
+chart = sp.bar("Score", labels, values).text_auto(True, position="outside", angle=-45)
+```
+
+---
+
+### `text_position(position)`
+
+Where labels render relative to each element:
+
+| Value | Behavior |
+|-------|----------|
+| `"auto"` | Inside if the bar is tall enough, outside otherwise |
+| `"inside"` | Centered inside the bar/marker |
+| `"outside"` | Above (vertical) / right (horizontal) of the bar |
+
+```python
+chart = sp.bar("Population", labels, values).text_auto(".2s").text_position("outside")
+```
+
+---
+
+### `text_angle(degrees)`
+
+Rotate every value label.
+
+```python
+chart = sp.bar("Cities", cities, populations).text_auto(".2s").text_angle(-45)
+```
+
+---
+
+### `text_font(family=None, size=None, color=None)`
+
+Style value labels independently from the chart's main text.
+
+```python
+chart = (
+    sp.bar("Revenue", labels, values)
+    .text_auto(".2s")
+    .text_font(family="JetBrains Mono", size=12, color="#ffffff")
+)
+```
+
+---
+
+### `uniform_text(min_size=8, mode="hide")`
+
+Force every label to share the same minimum size; labels that wouldn't fit are
+either hidden (`"hide"`) or rendered with overflow (`"show"`).
+
+```python
+chart = sp.bar("Long labels", labels, values).text_auto(".2s").uniform_text(min_size=10, mode="hide")
+```
+
+---
+
+### `corner_radius_bars(radius)`
+
+Round bar corners. Accepts a pixel value (`int` / `float`) or a percent string
+(`"20%"`, computed from the smaller bar dimension).
+
+```python
+chart = sp.bar("Sales", labels, values).corner_radius_bars(12)        # 12 px
+chart = sp.bar("Sales", labels, values).corner_radius_bars("25%")     # 25% of bar width
+```
+
+---
+
+### Combine: chained vs global
+
+```python
+import seraplot as sp
+
+chart = (
+    sp.bar("Quarterly", ["Q1", "Q2", "Q3", "Q4"], [120, 180, 140, 210])
+    .corner_radius_bars(8)
+    .text_auto(".0f", position="outside", color="#1f2937")
+    .uniform_text(min_size=10, mode="hide")
+)
+
+sp.config(
+    text_auto=".2s",
+    text_position="outside",
+    text_angle=0,
+    text_font_size=12,
+    text_font_color="#374151",
+    bar_corner_radius=10,
+    uniform_text_min_size=10,
+    uniform_text_mode="hide",
+)
+
+every_chart_inherits = sp.bar("Auto", labels, values)
 ```
 
 ---
@@ -510,6 +642,14 @@ Définie une fois, **chaque graphique** créé ensuite hérite automatiquement d
 | `locale` | str | Locale de formatage des nombres |
 | `thousands_sep` | str | Caractère séparateur des milliers |
 | `tooltip` | str | Mode des infobulles |
+| `text_auto` | bool \| str | Affiche les valeurs sur les barres/marqueurs. `True` = valeur brute ; chaîne de format type `".2s"`, `".0f"`, `".1%"` |
+| `text_position` | str | Position des étiquettes : `"auto"`, `"inside"`, `"outside"` |
+| `text_angle` | int | Rotation des étiquettes en degrés |
+| `text_font_size` | int | Taille max des étiquettes en px |
+| `text_font_color` | str | Couleur des étiquettes (toute couleur CSS) |
+| `uniform_text_min_size` | int | Taille minimale en px |
+| `uniform_text_mode` | str | `"hide"` masque les étiquettes qui dépassent, `"show"` les affiche |
+| `bar_corner_radius` | int \| str | Coins arrondis des barres. Px ou `"20%"` de la largeur |
 
 ```python
 import seraplot as sp
@@ -568,6 +708,12 @@ Surcharger la configuration globale pour des graphiques individuels :
 | `.set_opacity(0.85)` | Définir l'opacité des éléments |
 | `.set_margin(16)` | Définir la marge |
 | `.set_bg("#couleur")` | Surcharger le fond |
+| `.text_auto(format=True, position=None, angle=None, font_size=None, color=None)` | Afficher les valeurs (style Plotly) |
+| `.text_position("outside")` | `"auto"` \| `"inside"` \| `"outside"` |
+| `.text_angle(-45)` | Rotation des étiquettes |
+| `.text_font(family="Inter", size=12, color="#fff")` | Style des étiquettes |
+| `.uniform_text(min_size=8, mode="hide")` | Forcer une taille uniforme |
+| `.corner_radius_bars(8)` | Coins arrondis (px ou `"20%"`) |
 
 ```python
 import seraplot as sp
@@ -733,6 +879,123 @@ Surcharge toutes les tailles de texte du SVG avec une seule valeur en pixels.
 
 ```python
 chart = sp.build_radar_chart("Compétences", labels, values).set_font_size(11)
+```
+
+---
+
+## Étiquettes de valeur sur barres et marqueurs (nouveau en 2.4.3)
+
+Étiquettes de valeur style Plotly — `text_auto`, `text_position`, `text_angle`,
+`text_font`, `uniform_text` et `corner_radius_bars`. Fonctionne sur **chaque** type de
+graphique émettant l'attribut `data-v` (variantes bar, lollipop, scatter, marqueurs de
+ligne, pie, treemap…).
+
+### `text_auto(format=True, position=None, angle=None, font_size=None, color=None)`
+
+Ajoute des étiquettes de valeur sur chaque élément. La chaîne de format suit un
+sous-ensemble minimal du format d3 :
+
+| Format | Exemple | Sortie |
+|--------|---------|--------|
+| `True` ou `""` | `42.0` | `42` |
+| `".0f"` | `42.567` | `43` |
+| `".2f"` | `42.567` | `42.57` |
+| `".2s"` | `42_500_000` | `42.50M` |
+| `".1%"` | `0.853` | `85.3%` |
+| `".2e"` | `42500` | `4.25e+4` |
+
+```python
+chart = sp.bar("Ventes", ["T1", "T2", "T3", "T4"], [42500, 51800, 49200, 63100]).text_auto(".2s")
+chart = sp.bar("Score", labels, values).text_auto(True, position="outside", angle=-45)
+```
+
+---
+
+### `text_position(position)`
+
+| Valeur | Comportement |
+|--------|--------------|
+| `"auto"` | À l'intérieur si la barre est assez grande, sinon à l'extérieur |
+| `"inside"` | Centré dans la barre/marqueur |
+| `"outside"` | Au-dessus (vertical) / à droite (horizontal) |
+
+```python
+chart = sp.bar("Population", labels, values).text_auto(".2s").text_position("outside")
+```
+
+---
+
+### `text_angle(degrees)`
+
+Rotation de toutes les étiquettes.
+
+```python
+chart = sp.bar("Villes", villes, populations).text_auto(".2s").text_angle(-45)
+```
+
+---
+
+### `text_font(family=None, size=None, color=None)`
+
+Style des étiquettes indépendamment du texte principal.
+
+```python
+chart = (
+    sp.bar("CA", labels, values)
+    .text_auto(".2s")
+    .text_font(family="JetBrains Mono", size=12, color="#ffffff")
+)
+```
+
+---
+
+### `uniform_text(min_size=8, mode="hide")`
+
+Force chaque étiquette à partager une taille minimale ; les étiquettes qui ne tiennent
+pas sont soit masquées (`"hide"`) soit débordent (`"show"`).
+
+```python
+chart = sp.bar("Étiquettes longues", labels, values).text_auto(".2s").uniform_text(min_size=10, mode="hide")
+```
+
+---
+
+### `corner_radius_bars(radius)`
+
+Arrondit les coins des barres. Valeur en pixels (`int` / `float`) ou pourcentage
+(`"20%"`, calculé à partir de la plus petite dimension).
+
+```python
+chart = sp.bar("Ventes", labels, values).corner_radius_bars(12)
+chart = sp.bar("Ventes", labels, values).corner_radius_bars("25%")
+```
+
+---
+
+### Combiner : chaînage vs global
+
+```python
+import seraplot as sp
+
+chart = (
+    sp.bar("Trimestres", ["T1", "T2", "T3", "T4"], [120, 180, 140, 210])
+    .corner_radius_bars(8)
+    .text_auto(".0f", position="outside", color="#1f2937")
+    .uniform_text(min_size=10, mode="hide")
+)
+
+sp.config(
+    text_auto=".2s",
+    text_position="outside",
+    text_angle=0,
+    text_font_size=12,
+    text_font_color="#374151",
+    bar_corner_radius=10,
+    uniform_text_min_size=10,
+    uniform_text_mode="hide",
+)
+
+tout_graphique_herite = sp.bar("Auto", labels, values)
 ```
 
 ---
