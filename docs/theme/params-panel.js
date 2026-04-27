@@ -87,6 +87,12 @@
       .replace(/spVar\('([^']+)'/g, function (m, scope) { return "spVar('pp-" + scope + "'"; })
       .replace(/spTab\('([^']+)','([^']+)',this\)/g, function (m, g, id) {
         return "spTab('pp-" + g + "','pp-" + id + "',this)";
+      })
+      .replace(/spCls\('([^']+)','([^']+)',this\)/g, function (m, scope, name) {
+        return "spCls('pp-" + scope + "','" + name + "',this)";
+      })
+      .replace(/spClsTog\('([^']+)'\)/g, function (m, id) {
+        return "spClsTog('pp-" + id + "')";
       });
   }
 
@@ -168,10 +174,10 @@
     var remappedSig = remapPanelHtml(data.signature);
     var scopeMatch = remappedSig.match(/\bid="(pp-[a-z0-9_-]+)"/i);
     var previewId = scopeMatch ? scopeMatch[1] + "-preview" : "";
-    addSec(remappedSig,     labels.sig,   "sp-psec-sig");
-    addSec(data.alias,      labels.alias, "sp-psec-alias");
-    addSec(data.parameters, labels.par,   "sp-psec-params");
-    addSec(data.returns,    labels.ret,   "sp-psec-returns");
+    addSec(remappedSig,                      labels.sig,   "sp-psec-sig");
+    addSec(remapPanelHtml(data.alias),       labels.alias, "sp-psec-alias");
+    addSec(remapPanelHtml(data.parameters),  labels.par,   "sp-psec-params");
+    addSec(remapPanelHtml(data.returns),     labels.ret,   "sp-psec-returns");
 
     // ── Code example tabs ────────────────────────────────────────────────
     var tabsHtml = (lang === "fr" ? exampleData.fr : exampleData.en) || exampleData.en || exampleData.fr;
