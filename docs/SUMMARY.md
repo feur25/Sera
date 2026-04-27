@@ -15,10 +15,9 @@
 
 - [Chart Methods](getting-started/chart-methods.md)
 - [2D Charts](charts/2d/index.md)
-  - [Bar Charts (unified)](charts/2d/bar-charts.md)
-  - [Bar Chart](charts/2d/bar.md)
+  - [Bar Charts](charts/2d/bar.md)
   - [Horizontal Bar](charts/2d/hbar.md)
-  - [Line Chart](charts/2d/line.md)
+  - [Line Charts](charts/2d/line.md)
   - [Area Chart](charts/2d/area.md)
   - [Multi-line Chart](charts/2d/multiline.md)
   - [Scatter Chart](charts/2d/scatter.md)
