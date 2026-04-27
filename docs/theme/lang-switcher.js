@@ -47,8 +47,11 @@
 
   // Wrap window.spTab (defined inline in each .md) to record which tab
   // index was last clicked per group, so we can sync it on lang switch.
+  // NOTE: we mark the FUNCTION itself with ._wrapped (not a global flag),
+  // so that SPA navigation — which redefines window.spTab on every page
+  // transition — causes the new function to be correctly re-wrapped.
   function wrapSpTab() {
-    if (!window.spTab || window._spTabWrapped) return;
+    if (!window.spTab || window.spTab._wrapped) return;
     var orig = window.spTab;
     window.spTab = function (g, id, btn) {
       var container = document.getElementById(g);
@@ -59,7 +62,7 @@
       }
       return orig.call(this, g, id, btn);
     };
-    window._spTabWrapped = true;
+    window.spTab._wrapped = true;
   }
 
   function applyPageTab(tab) {
