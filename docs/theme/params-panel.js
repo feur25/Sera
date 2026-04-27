@@ -34,6 +34,15 @@
 
   function isHrNode(el) { return el && el.tagName === "HR"; }
 
+  // Tags that mark the start of the "examples" zone — stop extraction here.
+  function isExampleBoundary(el) {
+    if (!el) return false;
+    var tag = el.tagName;
+    if (tag === "STYLE" || tag === "SCRIPT" || tag === "IFRAME") return true;
+    if (tag === "DIV" && el.classList.contains("sp-tabs")) return true;
+    return false;
+  }
+
   function extractAndHide(h2El, splitAlias) {
     if (!h2El) return null;
     h2El.classList.add("sp-moved");
@@ -41,6 +50,8 @@
     var aliasHtml = "";
     var sib = h2El.nextElementSibling;
     while (sib && sib.tagName !== "H2") {
+      // Stop before code-example elements so they stay in the main content.
+      if (isExampleBoundary(sib)) break;
       var next = sib.nextElementSibling;
       var html = sib.outerHTML; // capture BEFORE adding .sp-moved
       sib.classList.add("sp-moved");
