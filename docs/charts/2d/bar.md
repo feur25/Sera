@@ -18,7 +18,7 @@
 .sp-variant.sp-von{display:block}
 </style>
 <script>
-var barPreviewMap={'basic':'bar','horizontal':'hbar','grouped':'grouped-bar','stacked':'stacked-bar','relative':'stacked-bar','gstack':'grouped-bar','marimekko':'bar','pictogram':'bar','multicategory':'bar'};
+var barPreviewMap={'basic':'bar','horizontal':'hbar','grouped':'grouped-bar','stacked':'stacked-bar','relative':'relative-bar','gstack':'grouped-stacked-bar','marimekko':'marimekko-bar','pictogram':'pictogram-bar','multicategory':'multicategory-bar'};
 function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
 function spVar(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-vbtn').forEach(function(b){b.classList.remove('sp-vact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-vact');var frame=document.getElementById(scope+'-preview');if(frame&&barPreviewMap[name]){frame.src='../../previews/'+barPreviewMap[name]+'.html';}}
 document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
