@@ -31,6 +31,7 @@
   }
 
   // Replay the last-clicked tab index in the language section that just became visible.
+  // Directly updates DOM classes — no .click() to avoid re-triggering listeners.
   function syncCodeTabs(lang) {
     var suffix = lang === "fr" ? "-fr" : "";
     Object.keys(_tabIdx).forEach(function (baseG) {
@@ -39,30 +40,20 @@
       var container = document.getElementById(targetG);
       if (!container) return;
       var btns = container.querySelectorAll(".sp-tb");
-      if (btns[idx] && !btns[idx].classList.contains("sp-act")) {
-        btns[idx].click();
+      var panes = container.querySelectorAll(".sp-tc");
+      if (!btns[idx]) return;
+      btns.forEach(function (b) { b.classList.remove("sp-act"); });
+      btns[idx].classList.add("sp-act");
+      panes.forEach(function (p) { p.classList.remove("sp-on"); });
+      if (panes[idx]) {
+        panes[idx].classList.add("sp-on");
+        if (window.hljs) {
+          panes[idx].querySelectorAll("code").forEach(function (c) {
+            try { (hljs.highlightElement || hljs.highlightBlock).call(hljs, c); } catch (e) {}
+          });
+        }
       }
     });
-  }
-
-  // Wrap window.spTab (defined inline in each .md) to record which tab
-  // index was last clicked per group, so we can sync it on lang switch.
-  // NOTE: we mark the FUNCTION itself with ._wrapped (not a global flag),
-  // so that SPA navigation — which redefines window.spTab on every page
-  // transition — causes the new function to be correctly re-wrapped.
-  function wrapSpTab() {
-    if (!window.spTab || window.spTab._wrapped) return;
-    var orig = window.spTab;
-    window.spTab = function (g, id, btn) {
-      var container = document.getElementById(g);
-      if (container) {
-        var btns = container.querySelectorAll(".sp-tb");
-        var idx = Array.from(btns).indexOf(btn);
-        if (idx >= 0) _tabIdx[g.replace(/-fr$/, "")] = idx;
-      }
-      return orig.call(this, g, id, btn);
-    };
-    window.spTab._wrapped = true;
   }
 
   function applyPageTab(tab) {
@@ -248,7 +239,6 @@
     applyLang(getLang());
     fixMathDisplay();
     fixCodePanes();
-    wrapSpTab();
   }
 
   if (document.readyState === "loading") {
@@ -256,6 +246,18 @@
   } else {
     init();
   }
+
+  // Delegated click tracker: record which tab index was last activated per .sp-tabs group.
+  // Works for all current and future DOM nodes — no need to wrap window.spTab.
+  document.addEventListener("click", function (e) {
+    var btn = e.target.closest ? e.target.closest(".sp-tb") : null;
+    if (!btn) return;
+    var container = btn.closest(".sp-tabs");
+    if (!container || !container.id) return;
+    var btns = container.querySelectorAll(".sp-tb");
+    var idx = Array.from(btns).indexOf(btn);
+    if (idx >= 0) _tabIdx[container.id.replace(/-fr$/, "")] = idx;
+  });
 
   var debounceTimer = null;
   var observer = new MutationObserver(function () {
@@ -269,7 +271,6 @@
       applyLang(getLang());
       applyPageTab(getPageTab());
       fixCodePanes();
-      wrapSpTab();
       observer.observe(document.body, { childList: true, subtree: true });
     }, 80);
   });

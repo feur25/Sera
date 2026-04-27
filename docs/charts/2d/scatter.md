@@ -183,7 +183,7 @@ auto chart = sp::scatter({
 chart.show();</code></pre></div>
 </div>
 
-<iframe src="../../previews/scatter.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<iframe src="../../previews/scatter.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
 
@@ -375,7 +375,7 @@ auto chart = sp::scatter({
 chart.show();</code></pre></div>
 </div>
 
-<iframe src="../../previews/scatter.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<iframe src="../../previews/scatter.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
 
