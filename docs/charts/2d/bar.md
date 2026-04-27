@@ -18,7 +18,7 @@
 .sp-variant.sp-von{display:block}
 </style>
 <script>
-var barPreviewMap={'basic':'bar','horizontal':'hbar','grouped':'grouped-bar','stacked':'stacked-bar','relative':'relative-bar','gstack':'grouped-stacked-bar','marimekko':'marimekko-bar','pictogram':'pictogram-bar','multicategory':'multicategory-bar'};
+var barPreviewMap={'basic':'bar','horizontal':'hbar','grouped':'grouped-bar','stacked':'stacked-bar','relative':'stacked-bar','gstack':'grouped-bar','marimekko':'bar','pictogram':'bar','multicategory':'bar'};
 function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
 function spVar(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-vbtn').forEach(function(b){b.classList.remove('sp-vact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-vact');var frame=document.getElementById(scope+'-preview');if(frame&&barPreviewMap[name]){frame.src='../../previews/'+barPreviewMap[name]+'.html';}}
 document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
@@ -29,6 +29,67 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 `sp.bar(title, labels=None, values=None, *, variant="basic", series=None, **kwargs) -> Chart`
 
 Aliases: `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family`, `sp.bar_chart`
+
+## Description
+
+
+`sp.bar()` is the unified entry point for the entire bar-chart family. The `variant` keyword selects the rendering strategy — all other arguments remain consistent across variants.
+
+| Variant | Use case | Key extra args |
+|---------|----------|----------------|
+| `"basic"` | Single series, vertical | `labels`, `values` |
+| `"horizontal"` / `"h"` | Single series, horizontal | `labels`, `values` |
+| `"grouped"` / `"group"` | Multi-series side-by-side | `series`, `series_names` |
+| `"stacked"` / `"stack"` | Multi-series stacked | `series`, `series_names` |
+| `"relative"` / `"rel"` | Stacked + negatives below 0 | `series`, `series_names` |
+| `"grouped_stacked"` | Groups of stacked bars | `series`, `series_names`, `offset_groups` |
+| `"marimekko"` / `"mekko"` / `"mosaic"` | Variable-width mosaic | `series`, `series_names`, `widths` |
+| `"pictogram"` / `"icon"` | Repeated-icon bar | `labels`, `values`, `units_per_icon` |
+| `"multicategory"` / `"multi"` | Two-level x axis | `labels`, `values`, `super_categories` |
+
+---
+
+## Parameters
+
+| Parameter | Type | Default | Variants | Description |
+|-----------|------|---------|----------|-------------|
+| `title` | `str` | required | all | Chart title |
+| `labels` | `list[str]` | `None` | all | Category labels |
+| `values` | `list[float]` | `None` | basic, horizontal, pictogram, multicategory | Single-series values |
+| `variant` | `str` | `"basic"` | — | Rendering variant (see table above) |
+| `series` | `list[list[float]]` | `None` | grouped, stacked, relative, grouped_stacked, marimekko, multicategory | Multi-series data |
+| `series_names` | `list[str]` | `None` | multi-series | Legend label per series |
+| `offset_groups` | `list[str]` | `None` | grouped_stacked | Stack-group name per series |
+| `widths` | `list[float]` | `None` | marimekko | Relative column width per category |
+| `super_categories` | `list[str]` | `None` | multicategory | Bracket label per bar |
+| `icon_size` | `int` | `24` | pictogram | Icon square size in px |
+| `max_icons_per_column` | `int` | `10` | pictogram | Max icons per column before wrap |
+| `units_per_icon` | `float` | `1.0` | pictogram | Data units each icon represents |
+| `unit_description` | `str` | `""` | pictogram | Unit label shown in header |
+| `color_hex` | `int` | `0` | basic, horizontal, pictogram | Single override color as hex int |
+| `palette` | `list[int]` | `None` | all | Custom color list |
+| `show_text` | `bool` | `False` | basic, horizontal, marimekko | Render value labels on bars |
+| `corner_radius` | `int` | `0` | basic, horizontal | Rounded-corner radius in px |
+| `bar_gap` | `float` | `0.2` | basic, horizontal, relative, grouped_stacked | Fraction of category width as spacing |
+| `bargroup_gap` | `float` | `0.1` | grouped, grouped_stacked | Fraction of group width as gap between bars |
+| `width` | `int` | `900` | all | Canvas width in pixels |
+| `height` | `int` | `480` | all | Canvas height in pixels |
+| `x_label` | `str` | `""` | all | X-axis label |
+| `y_label` | `str` | `""` | all | Y-axis label |
+| `gridlines` | `bool` | `False` | all | Show horizontal gridlines |
+| `sort_order` | `str` | `"none"` | basic, horizontal | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, or `"none"` |
+| `legend_position` | `str` | `"right"` | multi-series | `"right"`, `"left"`, `"top"`, `"bottom"` |
+| `background` | `str` | `None` | all | Background CSS color; `None` = transparent |
+| `no_x_axis` | `bool` | `False` | all | Hide X axis |
+| `no_y_axis` | `bool` | `False` | all | Hide Y axis |
+
+---
+
+## Returns
+
+`Chart` — object with `.html` property and `.show()` method.
+
+---
 
 <div id="bar-en">
 <div class="sp-variant-nav">
@@ -72,6 +133,122 @@ sp.bar(
 ```
 
 ---
+
+<div class="sp-tabs" id="b-basic">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('b-basic','b-basic-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-cpp',this)">C++</button>
+</div>
+<div id="b-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.bar(
+    title="Monthly Revenue",
+    variant="basic",
+    labels=["Jan","Feb","Mar","Apr","May","Jun"],
+    values=[1200, 1850, 2100, 1750, 2400, 2800],
+    y_label="Revenue (€)",
+    gridlines=True,
+    show_text=True,
+)
+chart.show()</code></pre></div>
+<div id="b-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.bar({
+  title: "Monthly Revenue", variant: "basic",
+  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+  values: [1200, 1850, 2100, 1750, 2400, 2800],
+  yLabel: "Revenue (€)", gridlines: true, showText: true,
+});
+chart.show();</code></pre></div>
+<div id="b-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.bar({
+  title: "Monthly Revenue", variant: "basic",
+  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+  values: [1200, 1850, 2100, 1750, 2400, 2800],
+  yLabel: "Revenue (€)", gridlines: true, showText: true,
+});
+chart.show();</code></pre></div>
+<div id="b-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bar(
+  title = "Monthly Revenue",
+  variant = "basic",
+  labels = c("Jan","Feb","Mar","Apr","May","Jun"),
+  values = c(1200, 1850, 2100, 1750, 2400, 2800),
+  y_label = "Revenue (€)",
+  gridlines = TRUE,
+  show_text = TRUE
+)
+chart$show()</code></pre></div>
+<div id="b-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bar()
+        .title("Monthly Revenue")
+        .variant("basic")
+        .labels(vec!["Jan","Feb","Mar","Apr","May","Jun"])
+        .values(vec![1200.0, 1850.0, 2100.0, 1750.0, 2400.0, 2800.0])
+        .y_label("Revenue (€)")
+        .gridlines(true)
+        .show_text(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="b-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bar()
+    .title("Monthly Revenue")
+    .variant("basic")
+    .labels(List.of("Jan","Feb","Mar","Apr","May","Jun"))
+    .values(List.of(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0))
+    .yLabel("Revenue (€)")
+    .gridlines(true)
+    .showText(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="b-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bar(
+    title: "Monthly Revenue",
+    variant: "basic",
+    labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+    values: [1200,1850,2100,1750,2400,2800],
+    yLabel: "Revenue (€)",
+    gridlines: true,
+    showText: true
+);
+chart.Show();</code></pre></div>
+<div id="b-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bar(
+  title = "Monthly Revenue",
+  variant = "basic",
+  labels = List("Jan","Feb","Mar","Apr","May","Jun"),
+  values = List(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0),
+  y_label = "Revenue (€)",
+  gridlines = true,
+  show_text = true
+)
+chart.show()</code></pre></div>
+<div id="b-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bar({
+    .title     = "Monthly Revenue",
+    .variant   = "basic",
+    .labels    = {"Jan","Feb","Mar","Apr","May","Jun"},
+    .values    = {1200.0,1850.0,2100.0,1750.0,2400.0,2800.0},
+    .y_label   = "Revenue (€)",
+    .gridlines = true,
+    .show_text = true,
+});
+chart.show();</code></pre></div>
+</div>
+</div>
 
 <div class="sp-variant" id="bar-en-horizontal">
 
@@ -1295,183 +1472,7 @@ chart.show();</code></pre></div>
 
 </div><!-- /bar-en -->
 
-<iframe id="bar-en-preview" loading="lazy" src="../../previews/bar.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117"></iframe>
-
-## Description
-
-
-`sp.bar()` is the unified entry point for the entire bar-chart family. The `variant` keyword selects the rendering strategy — all other arguments remain consistent across variants.
-
-| Variant | Use case | Key extra args |
-|---------|----------|----------------|
-| `"basic"` | Single series, vertical | `labels`, `values` |
-| `"horizontal"` / `"h"` | Single series, horizontal | `labels`, `values` |
-| `"grouped"` / `"group"` | Multi-series side-by-side | `series`, `series_names` |
-| `"stacked"` / `"stack"` | Multi-series stacked | `series`, `series_names` |
-| `"relative"` / `"rel"` | Stacked + negatives below 0 | `series`, `series_names` |
-| `"grouped_stacked"` | Groups of stacked bars | `series`, `series_names`, `offset_groups` |
-| `"marimekko"` / `"mekko"` / `"mosaic"` | Variable-width mosaic | `series`, `series_names`, `widths` |
-| `"pictogram"` / `"icon"` | Repeated-icon bar | `labels`, `values`, `units_per_icon` |
-| `"multicategory"` / `"multi"` | Two-level x axis | `labels`, `values`, `super_categories` |
-
----
-
-## Parameters
-
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | required | all | Chart title |
-| `labels` | `list[str]` | `None` | all | Category labels |
-| `values` | `list[float]` | `None` | basic, horizontal, pictogram, multicategory | Single-series values |
-| `variant` | `str` | `"basic"` | — | Rendering variant (see table above) |
-| `series` | `list[list[float]]` | `None` | grouped, stacked, relative, grouped_stacked, marimekko, multicategory | Multi-series data |
-| `series_names` | `list[str]` | `None` | multi-series | Legend label per series |
-| `offset_groups` | `list[str]` | `None` | grouped_stacked | Stack-group name per series |
-| `widths` | `list[float]` | `None` | marimekko | Relative column width per category |
-| `super_categories` | `list[str]` | `None` | multicategory | Bracket label per bar |
-| `icon_size` | `int` | `24` | pictogram | Icon square size in px |
-| `max_icons_per_column` | `int` | `10` | pictogram | Max icons per column before wrap |
-| `units_per_icon` | `float` | `1.0` | pictogram | Data units each icon represents |
-| `unit_description` | `str` | `""` | pictogram | Unit label shown in header |
-| `color_hex` | `int` | `0` | basic, horizontal, pictogram | Single override color as hex int |
-| `palette` | `list[int]` | `None` | all | Custom color list |
-| `show_text` | `bool` | `False` | basic, horizontal, marimekko | Render value labels on bars |
-| `corner_radius` | `int` | `0` | basic, horizontal | Rounded-corner radius in px |
-| `bar_gap` | `float` | `0.2` | basic, horizontal, relative, grouped_stacked | Fraction of category width as spacing |
-| `bargroup_gap` | `float` | `0.1` | grouped, grouped_stacked | Fraction of group width as gap between bars |
-| `width` | `int` | `900` | all | Canvas width in pixels |
-| `height` | `int` | `480` | all | Canvas height in pixels |
-| `x_label` | `str` | `""` | all | X-axis label |
-| `y_label` | `str` | `""` | all | Y-axis label |
-| `gridlines` | `bool` | `False` | all | Show horizontal gridlines |
-| `sort_order` | `str` | `"none"` | basic, horizontal | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, or `"none"` |
-| `legend_position` | `str` | `"right"` | multi-series | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | all | Background CSS color; `None` = transparent |
-| `no_x_axis` | `bool` | `False` | all | Hide X axis |
-| `no_y_axis` | `bool` | `False` | all | Hide Y axis |
-
----
-
-## Returns
-
-`Chart` — object with `.html` property and `.show()` method.
----
-
-<div class="sp-tabs" id="b-basic">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('b-basic','b-basic-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-cpp',this)">C++</button>
-</div>
-<div id="b-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.bar(
-    title="Monthly Revenue",
-    variant="basic",
-    labels=["Jan","Feb","Mar","Apr","May","Jun"],
-    values=[1200, 1850, 2100, 1750, 2400, 2800],
-    y_label="Revenue (€)",
-    gridlines=True,
-    show_text=True,
-)
-chart.show()</code></pre></div>
-<div id="b-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.bar({
-  title: "Monthly Revenue", variant: "basic",
-  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-  values: [1200, 1850, 2100, 1750, 2400, 2800],
-  yLabel: "Revenue (€)", gridlines: true, showText: true,
-});
-chart.show();</code></pre></div>
-<div id="b-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.bar({
-  title: "Monthly Revenue", variant: "basic",
-  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-  values: [1200, 1850, 2100, 1750, 2400, 2800],
-  yLabel: "Revenue (€)", gridlines: true, showText: true,
-});
-chart.show();</code></pre></div>
-<div id="b-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$bar(
-  title = "Monthly Revenue",
-  variant = "basic",
-  labels = c("Jan","Feb","Mar","Apr","May","Jun"),
-  values = c(1200, 1850, 2100, 1750, 2400, 2800),
-  y_label = "Revenue (€)",
-  gridlines = TRUE,
-  show_text = TRUE
-)
-chart$show()</code></pre></div>
-<div id="b-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::bar()
-        .title("Monthly Revenue")
-        .variant("basic")
-        .labels(vec!["Jan","Feb","Mar","Apr","May","Jun"])
-        .values(vec![1200.0, 1850.0, 2100.0, 1750.0, 2400.0, 2800.0])
-        .y_label("Revenue (€)")
-        .gridlines(true)
-        .show_text(true)
-        .build();
-    chart.show();
-}</code></pre></div>
-<div id="b-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.bar()
-    .title("Monthly Revenue")
-    .variant("basic")
-    .labels(List.of("Jan","Feb","Mar","Apr","May","Jun"))
-    .values(List.of(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0))
-    .yLabel("Revenue (€)")
-    .gridlines(true)
-    .showText(true)
-    .build();
-chart.show();</code></pre></div>
-<div id="b-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Bar(
-    title: "Monthly Revenue",
-    variant: "basic",
-    labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-    values: [1200,1850,2100,1750,2400,2800],
-    yLabel: "Revenue (€)",
-    gridlines: true,
-    showText: true
-);
-chart.Show();</code></pre></div>
-<div id="b-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.bar(
-  title = "Monthly Revenue",
-  variant = "basic",
-  labels = List("Jan","Feb","Mar","Apr","May","Jun"),
-  values = List(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0),
-  y_label = "Revenue (€)",
-  gridlines = true,
-  show_text = true
-)
-chart.show()</code></pre></div>
-<div id="b-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::bar({
-    .title     = "Monthly Revenue",
-    .variant   = "basic",
-    .labels    = {"Jan","Feb","Mar","Apr","May","Jun"},
-    .values    = {1200.0,1850.0,2100.0,1750.0,2400.0,2800.0},
-    .y_label   = "Revenue (€)",
-    .gridlines = true,
-    .show_text = true,
-});
-chart.show();</code></pre></div>
-</div>
-</div>
+<iframe id="bar-en-preview" src="../../previews/bar.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117"></iframe>
 
 ---
 
@@ -1491,53 +1492,6 @@ chart.show();</code></pre></div>
 `sp.bar(title, labels=None, values=None, *, variant="basic", series=None, **kwargs) -> Chart`
 
 Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family`, `sp.bar_chart`
-
-<div id="bar-fr">
-<div class="sp-variant-nav">
-<button class="sp-vbtn sp-vact" onclick="spVar('bar-fr','basic',this)">Basique</button>
-<button class="sp-vbtn" onclick="spVar('bar-fr','horizontal',this)">Horizontal</button>
-<button class="sp-vbtn" onclick="spVar('bar-fr','grouped',this)">Groupé</button>
-<button class="sp-vbtn" onclick="spVar('bar-fr','stacked',this)">Empilé</button>
-<button class="sp-vbtn" onclick="spVar('bar-fr','relative',this)">Relatif</button>
-<button class="sp-vbtn" onclick="spVar('bar-fr','gstack',this)">Groupé-Empilé</button>
-<button class="sp-vbtn" onclick="spVar('bar-fr','marimekko',this)">Marimekko</button>
-<button class="sp-vbtn" onclick="spVar('bar-fr','pictogram',this)">Pictogramme</button>
-<button class="sp-vbtn" onclick="spVar('bar-fr','multicategory',this)">Multi-catégories</button>
-</div>
-<div class="sp-variant sp-von" id="bar-fr-basic"><p>Barres verticales — une valeur par catégorie.</p>
-<pre><code class="language-python">sp.bar(title, labels, values, *, variant="basic", color_hex=0,
-       show_text=False, corner_radius=0, bar_gap=0.2,
-       width=900, height=480, x_label="", y_label="",
-       gridlines=False, sort_order="none") -> Chart</code></pre>
-</div>
-<div class="sp-variant" id="bar-fr-horizontal"><p>Barres horizontales — idéal pour les longs noms de catégories.</p>
-<pre><code class="language-python">sp.bar(title, labels, values, *, variant="horizontal",
-       color_hex=0, show_text=False, corner_radius=0, ...) -> Chart</code></pre></div>
-<div class="sp-variant" id="bar-fr-grouped"><p>Plusieurs séries côte à côte par catégorie.</p>
-<pre><code class="language-python">sp.bar(title, labels, *, variant="grouped",
-       series, series_names=None, ...) -> Chart</code></pre></div>
-<div class="sp-variant" id="bar-fr-stacked"><p>Séries empilées — montre la part de chaque série dans le total.</p>
-<pre><code class="language-python">sp.bar(title, labels, *, variant="stacked",
-       series, series_names=None, ...) -> Chart</code></pre></div>
-<div class="sp-variant" id="bar-fr-relative"><p>Empilé avec valeurs négatives sous l'axe zéro — flux de trésorerie, P&amp;L.</p>
-<pre><code class="language-python">sp.bar(title, labels, *, variant="relative",
-       series, series_names=None, ...) -> Chart</code></pre></div>
-<div class="sp-variant" id="bar-fr-gstack"><p>Groupes de barres empilées. <code>offset_groups</code> assigne une pile à chaque série.</p>
-<pre><code class="language-python">sp.bar(title, labels, *, variant="grouped_stacked",
-       series, series_names=None, offset_groups, ...) -> Chart</code></pre></div>
-<div class="sp-variant" id="bar-fr-marimekko"><p>Barres empilées à largeur variable. <code>widths</code> encode la taille de chaque catégorie.</p>
-<pre><code class="language-python">sp.bar(title, labels, *, variant="marimekko",
-       series, series_names=None, widths, ...) -> Chart</code></pre></div>
-<div class="sp-variant" id="bar-fr-pictogram"><p>Barre composée d'icônes répétées. Chaque icône représente <code>units_per_icon</code> unités.</p>
-<pre><code class="language-python">sp.bar(title, labels, values, *, variant="pictogram",
-       icon_size=24, max_icons_per_column=10,
-       units_per_icon=1.0, unit_description="", ...) -> Chart</code></pre></div>
-<div class="sp-variant" id="bar-fr-multicategory"><p>Axe x à deux niveaux. <code>super_categories</code> regroupe les barres sous un label chapeau.</p>
-<pre><code class="language-python">sp.bar(title, labels, values, *, variant="multicategory",
-       super_categories, ...) -> Chart</code></pre></div>
-</div><!-- /bar-fr -->
-
-<iframe id="bar-fr-preview" loading="lazy" src="../../previews/bar.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117"></iframe>
 
 ## Description
 
@@ -1601,126 +1555,61 @@ Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family
 
 ---
 
-<div class="sp-tabs" id="b-basic">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('b-basic','b-basic-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-cpp',this)">C++</button>
-</div>
-<div id="b-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.bar(
-    title="Monthly Revenue",
-    variant="basic",
-    labels=["Jan","Feb","Mar","Apr","May","Jun"],
-    values=[1200, 1850, 2100, 1750, 2400, 2800],
-    y_label="Revenue (€)",
-    gridlines=True,
-    show_text=True,
-)
-chart.show()</code></pre></div>
-<div id="b-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.bar({
-  title: "Monthly Revenue", variant: "basic",
-  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-  values: [1200, 1850, 2100, 1750, 2400, 2800],
-  yLabel: "Revenue (€)", gridlines: true, showText: true,
-});
-chart.show();</code></pre></div>
-<div id="b-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.bar({
-  title: "Monthly Revenue", variant: "basic",
-  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-  values: [1200, 1850, 2100, 1750, 2400, 2800],
-  yLabel: "Revenue (€)", gridlines: true, showText: true,
-});
-chart.show();</code></pre></div>
-<div id="b-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$bar(
-  title = "Monthly Revenue",
-  variant = "basic",
-  labels = c("Jan","Feb","Mar","Apr","May","Jun"),
-  values = c(1200, 1850, 2100, 1750, 2400, 2800),
-  y_label = "Revenue (€)",
-  gridlines = TRUE,
-  show_text = TRUE
-)
-chart$show()</code></pre></div>
-<div id="b-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::bar()
-        .title("Monthly Revenue")
-        .variant("basic")
-        .labels(vec!["Jan","Feb","Mar","Apr","May","Jun"])
-        .values(vec![1200.0, 1850.0, 2100.0, 1750.0, 2400.0, 2800.0])
-        .y_label("Revenue (€)")
-        .gridlines(true)
-        .show_text(true)
-        .build();
-    chart.show();
-}</code></pre></div>
-<div id="b-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.bar()
-    .title("Monthly Revenue")
-    .variant("basic")
-    .labels(List.of("Jan","Feb","Mar","Apr","May","Jun"))
-    .values(List.of(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0))
-    .yLabel("Revenue (€)")
-    .gridlines(true)
-    .showText(true)
-    .build();
-chart.show();</code></pre></div>
-<div id="b-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Bar(
-    title: "Monthly Revenue",
-    variant: "basic",
-    labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-    values: [1200,1850,2100,1750,2400,2800],
-    yLabel: "Revenue (€)",
-    gridlines: true,
-    showText: true
-);
-chart.Show();</code></pre></div>
-<div id="b-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.bar(
-  title = "Monthly Revenue",
-  variant = "basic",
-  labels = List("Jan","Feb","Mar","Apr","May","Jun"),
-  values = List(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0),
-  y_label = "Revenue (€)",
-  gridlines = true,
-  show_text = true
-)
-chart.show()</code></pre></div>
-<div id="b-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::bar({
-    .title     = "Monthly Revenue",
-    .variant   = "basic",
-    .labels    = {"Jan","Feb","Mar","Apr","May","Jun"},
-    .values    = {1200.0,1850.0,2100.0,1750.0,2400.0,2800.0},
-    .y_label   = "Revenue (€)",
-    .gridlines = true,
-    .show_text = true,
-});
-chart.show();</code></pre></div>
-</div>
-</div>
-
 ## Voir aussi
 
 - [Lollipop](lollipop.md) — `sp.lollipop()`
 - [Cascade / Waterfall](waterfall.md) — `sp.waterfall()`
 - [Bullet](bullet.md) — `sp.bullet()`
+
+
+
+---
+
+<div id="bar-fr">
+<div class="sp-variant-nav">
+<button class="sp-vbtn sp-vact" onclick="spVar('bar-fr','basic',this)">Basique</button>
+<button class="sp-vbtn" onclick="spVar('bar-fr','horizontal',this)">Horizontal</button>
+<button class="sp-vbtn" onclick="spVar('bar-fr','grouped',this)">Groupé</button>
+<button class="sp-vbtn" onclick="spVar('bar-fr','stacked',this)">Empilé</button>
+<button class="sp-vbtn" onclick="spVar('bar-fr','relative',this)">Relatif</button>
+<button class="sp-vbtn" onclick="spVar('bar-fr','gstack',this)">Groupé-Empilé</button>
+<button class="sp-vbtn" onclick="spVar('bar-fr','marimekko',this)">Marimekko</button>
+<button class="sp-vbtn" onclick="spVar('bar-fr','pictogram',this)">Pictogramme</button>
+<button class="sp-vbtn" onclick="spVar('bar-fr','multicategory',this)">Multi-catégories</button>
+</div>
+<div class="sp-variant sp-von" id="bar-fr-basic"><p>Barres verticales — une valeur par catégorie.</p>
+<pre><code class="language-python">sp.bar(title, labels, values, *, variant="basic", color_hex=0,
+       show_text=False, corner_radius=0, bar_gap=0.2,
+       width=900, height=480, x_label="", y_label="",
+       gridlines=False, sort_order="none") -> Chart</code></pre>
+<p>Pour les exemples de code, voir la version EN.</p></div>
+<div class="sp-variant" id="bar-fr-horizontal"><p>Barres horizontales — idéal pour les longs noms de catégories.</p>
+<pre><code class="language-python">sp.bar(title, labels, values, *, variant="horizontal",
+       color_hex=0, show_text=False, corner_radius=0, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="bar-fr-grouped"><p>Plusieurs séries côte à côte par catégorie.</p>
+<pre><code class="language-python">sp.bar(title, labels, *, variant="grouped",
+       series, series_names=None, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="bar-fr-stacked"><p>Séries empilées — montre la part de chaque série dans le total.</p>
+<pre><code class="language-python">sp.bar(title, labels, *, variant="stacked",
+       series, series_names=None, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="bar-fr-relative"><p>Empilé avec valeurs négatives sous l'axe zéro — flux de trésorerie, P&amp;L.</p>
+<pre><code class="language-python">sp.bar(title, labels, *, variant="relative",
+       series, series_names=None, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="bar-fr-gstack"><p>Groupes de barres empilées. <code>offset_groups</code> assigne une pile à chaque série.</p>
+<pre><code class="language-python">sp.bar(title, labels, *, variant="grouped_stacked",
+       series, series_names=None, offset_groups, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="bar-fr-marimekko"><p>Barres empilées à largeur variable. <code>widths</code> encode la taille de chaque catégorie.</p>
+<pre><code class="language-python">sp.bar(title, labels, *, variant="marimekko",
+       series, series_names=None, widths, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="bar-fr-pictogram"><p>Barre composée d'icônes répétées. Chaque icône représente <code>units_per_icon</code> unités.</p>
+<pre><code class="language-python">sp.bar(title, labels, values, *, variant="pictogram",
+       icon_size=24, max_icons_per_column=10,
+       units_per_icon=1.0, unit_description="", ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="bar-fr-multicategory"><p>Axe x à deux niveaux. <code>super_categories</code> regroupe les barres sous un label chapeau.</p>
+<pre><code class="language-python">sp.bar(title, labels, values, *, variant="multicategory",
+       super_categories, ...) -> Chart</code></pre></div>
+</div><!-- /bar-fr -->
+
+<iframe id="bar-fr-preview" src="../../previews/bar.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117"></iframe>
 
 </div><!-- /lang-fr -->
