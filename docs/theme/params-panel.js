@@ -36,13 +36,11 @@
 
   function isHrNode(el) { return el && el.tagName === "HR"; }
 
-  // Tags that mark the start of the "examples" zone — stop extraction here.
   function isExampleBoundary(el) {
     if (!el) return false;
     var tag = el.tagName;
     if (tag === "STYLE" || tag === "SCRIPT" || tag === "IFRAME") return true;
     if (tag === "DIV" && el.classList.contains("sp-tabs")) return true;
-    if (tag === "DIV" && el.querySelector && el.querySelector(".sp-variant-nav")) return true;
     return false;
   }
 
