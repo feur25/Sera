@@ -1,5 +1,4 @@
 ﻿# Installation
-
 <style>
 /* ── Install method switch ─────────────────────────────── */
 .sp-inst-sw { border: 1px solid #30363d; border-radius: 10px; overflow: hidden; margin: 1.5em 0; }

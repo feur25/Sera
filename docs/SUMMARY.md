@@ -143,6 +143,6 @@
 
 - [VS Code Extension](tooling/vscode.md)
 
-- [API Reference](api/index.md)
+- [API Reference](api/api.md)
 
 - [Support & Contact](about/support.md)
