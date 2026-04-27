@@ -165,7 +165,10 @@
       body.appendChild(w);
     }
 
-    addSec(remapPanelHtml(data.signature),  labels.sig,   "sp-psec-sig");
+    var remappedSig = remapPanelHtml(data.signature);
+    var scopeMatch = remappedSig.match(/\bid="(pp-[a-z0-9_-]+)"/i);
+    var previewId = scopeMatch ? scopeMatch[1] + "-preview" : "";
+    addSec(remappedSig,     labels.sig,   "sp-psec-sig");
     addSec(data.alias,      labels.alias, "sp-psec-alias");
     addSec(data.parameters, labels.par,   "sp-psec-params");
     addSec(data.returns,    labels.ret,   "sp-psec-returns");
@@ -209,6 +212,7 @@
       var wrap = document.createElement("div");
       wrap.style.cssText = "width:100%;position:relative;overflow:hidden;border-radius:6px;";
       var pIframe = document.createElement("iframe");
+      if (previewId) pIframe.id = previewId;
       pIframe.src = exampleData.iframeSrc;
       pIframe.setAttribute("scrolling", "no");
       // No loading="lazy" — avoids the global CSS height:380px !important override.
