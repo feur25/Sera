@@ -355,7 +355,32 @@
         v.style.display = v.classList.contains("sp-von") ? "block" : "none";
       });
       cls.querySelectorAll(".sp-tc").forEach(function (pane) {
-        pane.style.display = pane.classList.contains("sp-on") ? "block" : "";
+        pane.style.display = pane.classList.contains("sp-on") ? "block" : "none";
+      });
+    });
+
+    // Fix .sp-tb click handlers: mdBook HTML-encodes ' as &#39; in onclick attrs,
+    // so spTab('id',…) doesn't get remapped and getElementById returns null.
+    // Replace every .sp-tb onclick with an index-based closure — no IDs needed.
+    pb.querySelectorAll(".sp-tabs").forEach(function (tabs) {
+      var btns  = Array.prototype.slice.call(tabs.querySelectorAll(".sp-tb"));
+      var panes = Array.prototype.slice.call(tabs.querySelectorAll(".sp-tc"));
+      btns.forEach(function (btn, idx) {
+        btn.onclick = null;
+        btn.addEventListener("click", function () {
+          panes.forEach(function (p) { p.classList.remove("sp-on"); p.style.display = "none"; });
+          btns.forEach(function  (b) { b.classList.remove("sp-act"); });
+          if (panes[idx]) {
+            panes[idx].classList.add("sp-on");
+            panes[idx].style.display = "block";
+            if (window.hljs) {
+              panes[idx].querySelectorAll("code").forEach(function (c) {
+                try { (hljs.highlightElement || hljs.highlightBlock).call(hljs, c); } catch (e) {}
+              });
+            }
+          }
+          btn.classList.add("sp-act");
+        });
       });
     });
   }
