@@ -14,6 +14,8 @@
   };
 
   var sectionData = { en: null, fr: null };
+  // Code-example tabs HTML keyed by lang, and the iframe src.
+  var exampleData = { en: "", fr: "", iframeSrc: "" };
 
   function getLang() { return localStorage.getItem(LANG_KEY) || "en"; }
 
@@ -41,6 +43,20 @@
     if (tag === "STYLE" || tag === "SCRIPT" || tag === "IFRAME") return true;
     if (tag === "DIV" && el.classList.contains("sp-tabs")) return true;
     return false;
+  }
+
+  // Collect the sp-tabs HTML for a given lang container (does NOT hide anything).
+  function collectTabs(container) {
+    if (!container) return "";
+    var tabs = container.querySelector(".sp-tabs");
+    return tabs ? tabs.outerHTML : "";
+  }
+
+  // Collect the iframe src from a lang container (does NOT hide anything).
+  function collectIframeSrc(container) {
+    if (!container) return "";
+    var iframe = container.querySelector('iframe[loading="lazy"]');
+    return iframe ? iframe.getAttribute("src") : "";
   }
 
   function extractAndHide(h2El, splitAlias) {
@@ -122,6 +138,48 @@
     addSec(data.alias,      labels.alias, "sp-psec-alias");
     addSec(data.parameters, labels.par,   "sp-psec-params");
     addSec(data.returns,    labels.ret,   "sp-psec-returns");
+
+    // ── Code example tabs ────────────────────────────────────────────────
+    var tabsHtml = (lang === "fr" ? exampleData.fr : exampleData.en) || exampleData.en || exampleData.fr;
+    if (tabsHtml) {
+      var exLabel = lang === "fr" ? "Exemple" : "Example";
+      // Give each sp-tabs container inside the panel a unique id suffix to
+      // avoid duplicate-id conflicts with the same tabs in the main content.
+      var panelTabsHtml = tabsHtml.replace(
+        /\bid="([^"]+)"/g,
+        function (m, id) { return 'id="pp-' + id + '"'; }
+      ).replace(
+        /spTab\('([^']+)','([^']+)',this\)/g,
+        function (m, g, id) { return "spTab('pp-" + g + "','pp-" + id + "',this)"; }
+      );
+      var w = document.createElement("div");
+      w.className = "sp-psec sp-psec-example";
+      var l = document.createElement("div");
+      l.className = "sp-psec-lbl";
+      l.textContent = exLabel;
+      w.appendChild(l);
+      var c = document.createElement("div");
+      c.className = "sp-psec-content";
+      c.innerHTML = panelTabsHtml;
+      w.appendChild(c);
+      body.appendChild(w);
+    }
+
+    // ── Chart preview iframe (auto-scales to panel width) ─────────────────
+    if (exampleData.iframeSrc) {
+      var iw = document.createElement("div");
+      iw.className = "sp-psec sp-psec-preview";
+      var il = document.createElement("div");
+      il.className = "sp-psec-lbl";
+      il.textContent = lang === "fr" ? "Aper\u00e7u" : "Preview";
+      iw.appendChild(il);
+      var iframe = document.createElement("iframe");
+      iframe.src = exampleData.iframeSrc;
+      iframe.setAttribute("loading", "lazy");
+      iframe.style.cssText = "width:100%;aspect-ratio:900/460;height:auto;border:none;border-radius:6px;display:block;background:#0d1117";
+      iw.appendChild(iframe);
+      body.appendChild(iw);
+    }
 
     if (window.hljs) {
       var hFn = hljs.highlightElement || hljs.highlightBlock;
@@ -219,6 +277,11 @@
     sectionData.en = collectFrom(en);
     sectionData.fr = collectFrom(fr);
     if (!sectionData.en && !sectionData.fr) return;
+
+    // Collect code tabs and iframe for each language (read-only, no hiding).
+    exampleData.en = collectTabs(en);
+    exampleData.fr = collectTabs(fr);
+    exampleData.iframeSrc = collectIframeSrc(en) || collectIframeSrc(fr);
 
     var panel = document.createElement("div");
     panel.id = PANEL_ID;
