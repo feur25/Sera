@@ -185,13 +185,13 @@
       wrap.style.cssText = "width:100%;position:relative;overflow:hidden;border-radius:6px;";
       var pIframe = document.createElement("iframe");
       pIframe.src = exampleData.iframeSrc;
-      pIframe.setAttribute("loading", "lazy");
+      // No loading="lazy" — avoids the global CSS height:380px !important override.
       // position:absolute removes the iframe from flow so wrap height rules the layout.
       pIframe.style.cssText = "position:absolute;top:0;left:0;width:" + CHART_W + "px;height:" + CHART_H + "px;border:none;transform-origin:0 0;background:#0d1117;";
       wrap.appendChild(pIframe);
       iw.appendChild(wrap);
       body.appendChild(iw);
-      // Scale iframe to fit panel, update on resize
+      // Scale iframe to fit panel width, re-run on load and resize.
       function rescaleIframe() {
         var aw = wrap.offsetWidth;
         if (!aw) return;
@@ -199,7 +199,9 @@
         pIframe.style.transform = "scale(" + scale + ")";
         wrap.style.height = Math.round(CHART_H * scale) + "px";
       }
+      pIframe.onload = rescaleIframe;
       setTimeout(rescaleIframe, 50);
+      setTimeout(rescaleIframe, 300);
       if (window.ResizeObserver) {
         new ResizeObserver(rescaleIframe).observe(wrap);
       } else {
