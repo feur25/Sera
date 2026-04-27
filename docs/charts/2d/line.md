@@ -5,15 +5,15 @@
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
-.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb{padding:8px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
 .sp-tb:hover{color:#e2e8f0}
 .sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
 .sp-tc{display:none}
 .sp-tc.sp-on{display:block}
-.sp-variant-nav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 1.2em;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a}
-.sp-vbtn{padding:7px 13px;border:1px solid #334155;background:#1e293b;color:#94a3b8;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;transition:all .15s}
-.sp-vbtn:hover{color:#e2e8f0;border-color:#6366f1}
-.sp-vbtn.sp-vact{background:#6366f1;color:#fff;border-color:#6366f1}
+.sp-variant-nav{display:flex;flex-wrap:wrap;border-bottom:2px solid #1e293b;margin:0 0 1.4em}
+.sp-vbtn{padding:9px 15px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-vbtn:hover{color:#cbd5e1}
+.sp-vbtn.sp-vact{color:#818cf8;border-bottom-color:#818cf8}
 .sp-variant{display:none}
 .sp-variant.sp-von{display:block}
 </style>
@@ -679,37 +679,14 @@ Aliases: `sp.line_chart`, `sp.line_unified`, `sp.lines_unified`, `sp.line_family
 
 ## See also
 
-- [multiline.md](multiline.md) â€” `sp.build_multiline_chart()` (legacy)
-- [area.md](area.md) â€” `sp.area()`
-- [scatter.md](scatter.md) â€” `sp.scatter()`
+- [multiline.md](multiline.md) — `sp.build_multiline_chart()` (legacy)
+- [area.md](area.md) — `sp.area()`
+- [scatter.md](scatter.md) — `sp.scatter()`
 
 </div><!-- /lang-en -->
 
 
 <div class="lang-fr" style="display:none">
-
-<style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
-.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-.sp-variant-nav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 1.2em;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a}
-.sp-vbtn{padding:7px 13px;border:1px solid #334155;background:#1e293b;color:#94a3b8;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;transition:all .15s}
-.sp-vbtn:hover{color:#e2e8f0;border-color:#6366f1}
-.sp-vbtn.sp-vact{background:#6366f1;color:#fff;border-color:#6366f1}
-.sp-variant{display:none}
-.sp-variant.sp-von{display:block}
-</style>
-<script>
-function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
-function spVar(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-vbtn').forEach(function(b){b.classList.remove('sp-vact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-vact');}
-document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
-</script>
-
-## Signature
 
 <div id="line-fr">
 <div class="sp-variant-nav">
@@ -723,76 +700,40 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-vbtn" onclick="spVar('line-fr','connected',this)">ConnectedScatter</button>
 <button class="sp-vbtn" onclick="spVar('line-fr','gapped',this)">Lacunes</button>
 </div>
-<div class="sp-variant sp-von" id="line-fr-basic">
-SÃ©rie unique reliant des points ordonnÃ©s.
-```python
-sp.line(title, labels, values, *, variant="basic",
+<div class="sp-variant sp-von" id="line-fr-basic"><p>Série unique reliant des points ordonnés.</p>
+<pre><code class="language-python">sp.line(title, labels, values, *, variant="basic",
         color_hex=0x6366F1, show_points=True, gridlines=False,
         sort_order="none", width=900, height=480,
-        x_label="", y_label="") -> Chart
-```
-Pour les exemples de code, voir la version EN.
-</div>
-<div class="sp-variant" id="line-fr-multi">
-Plusieurs sÃ©ries sur les mÃªmes axes.
-```python
-sp.line(title, labels, *, variant="multi",
-        series, series_names=None, show_points=True, ...) -> Chart
-```
-</div>
-<div class="sp-variant" id="line-fr-stepped">
-Ligne en escalier â€” la valeur reste constante jusqu'au point suivant.
-```python
-sp.line(title, labels, values, *, variant="stepped",
-        step_shape="hv", ...) -> Chart
-```
-`step_shape` : `"hv"` (dÃ©faut), `"vh"`, `"hvh"`, `"vhv"`.
-</div>
-<div class="sp-variant" id="line-fr-spline">
-Courbe Catmull-Rom lissÃ©e. `spline_tension` contrÃ´le la courbure (0.0â€“1.0).
-```python
-sp.line(title, labels, values, *, variant="spline",
-        spline_tension=0.5, ...) -> Chart
-```
-</div>
-<div class="sp-variant" id="line-fr-filled">
-Zone remplie sous la courbe. `stack_fill=True` empile plusieurs sÃ©ries.
-```python
-sp.line(title, labels, *, variant="filled",
+        x_label="", y_label="") -> Chart</code></pre>
+<p>Pour les exemples de code, voir la version EN.</p></div>
+<div class="sp-variant" id="line-fr-multi"><p>Plusieurs séries sur les mêmes axes.</p>
+<pre><code class="language-python">sp.line(title, labels, *, variant="multi",
+        series, series_names=None, show_points=True, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="line-fr-stepped"><p>Ligne en escalier — la valeur reste constante jusqu'au point suivant.</p>
+<pre><code class="language-python">sp.line(title, labels, values, *, variant="stepped",
+        step_shape="hv", ...) -> Chart</code></pre>
+<p><code>step_shape</code> : <code>"hv"</code> (défaut), <code>"vh"</code>, <code>"hvh"</code>, <code>"vhv"</code>.</p></div>
+<div class="sp-variant" id="line-fr-spline"><p>Courbe Catmull-Rom lissée. <code>spline_tension</code> contrôle la courbure (0.0–1.0).</p>
+<pre><code class="language-python">sp.line(title, labels, values, *, variant="spline",
+        spline_tension=0.5, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="line-fr-filled"><p>Zone remplie sous la courbe. <code>stack_fill=True</code> empile plusieurs séries.</p>
+<pre><code class="language-python">sp.line(title, labels, *, variant="filled",
         values=None, series=None, fill_opacity=0.25,
-        stack_fill=False, ...) -> Chart
-```
-</div>
-<div class="sp-variant" id="line-fr-sparkline">
-Grille de petits graphiques â€” un par sÃ©rie.
-```python
-sp.line(title, *, variant="sparkline",
+        stack_fill=False, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="line-fr-sparkline"><p>Grille de petits graphiques — un par série.</p>
+<pre><code class="language-python">sp.line(title, *, variant="sparkline",
         series, series_names=None,
-        spark_cols=3, spark_cell_w=220, spark_cell_h=80, ...) -> Chart
-```
-</div>
-<div class="sp-variant" id="line-fr-dashed">
-Ligne avec tirets SVG. `dash_pattern="auto"` cycle Ã  travers les motifs.
-```python
-sp.line(title, labels, *, variant="dashed",
+        spark_cols=3, spark_cell_w=220, spark_cell_h=80, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="line-fr-dashed"><p>Ligne avec tirets SVG. <code>dash_pattern="auto"</code> cycle à travers les motifs.</p>
+<pre><code class="language-python">sp.line(title, labels, *, variant="dashed",
         values=None, series=None, dash_pattern="auto",
-        stroke_width=2.0, ...) -> Chart
-```
-</div>
-<div class="sp-variant" id="line-fr-connected">
-Ligne + grands marqueurs â€” accentue les points individuels.
-```python
-sp.line(title, labels, values, *, variant="connected_scatter",
-        marker_size=5, stroke_width=2.0, ...) -> Chart
-```
-</div>
-<div class="sp-variant" id="line-fr-gapped">
-Rupture de ligne aux valeurs manquantes ou aux sauts importants.
-```python
-sp.line(title, labels, values, *, variant="gapped",
-        gap_threshold=float("nan"), ...) -> Chart
-```
-</div>
+        stroke_width=2.0, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="line-fr-connected"><p>Ligne + grands marqueurs — accentue les points individuels.</p>
+<pre><code class="language-python">sp.line(title, labels, values, *, variant="connected_scatter",
+        marker_size=5, stroke_width=2.0, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="line-fr-gapped"><p>Rupture de ligne aux valeurs manquantes ou aux sauts importants.</p>
+<pre><code class="language-python">sp.line(title, labels, values, *, variant="gapped",
+        gap_threshold=float("nan"), ...) -> Chart</code></pre></div>
 </div><!-- /line-fr -->
 
 Alias : `sp.line_chart`, `sp.line_unified`, `sp.lines_unified`, `sp.line_family`
@@ -801,14 +742,14 @@ Alias : `sp.line_chart`, `sp.line_unified`, `sp.lines_unified`, `sp.line_family`
 
 ## Description
 
-`sp.line()` est le point d'entrÃ©e unique pour toute la famille de graphiques en ligne.
+`sp.line()` est le point d'entrée unique pour toute la famille de graphiques en ligne.
 
-| Variante | Cas d'usage | Arguments clÃ©s |
+| Variante | Cas d'usage | Arguments clés |
 |----------|-------------|----------------|
-| `"basic"` | SÃ©rie unique, ligne simple | `labels`, `values` |
-| `"multi"` / `"multiline"` | Plusieurs sÃ©ries, axes partagÃ©s | `series`, `series_names` |
+| `"basic"` | Série unique, ligne simple | `labels`, `values` |
+| `"multi"` / `"multiline"` | Plusieurs séries, axes partagés | `series`, `series_names` |
 | `"stepped"` / `"hv"` | Fonction en escalier | `step_shape` |
-| `"spline"` / `"smooth"` | Courbe lissÃ©e | `spline_tension` |
+| `"spline"` / `"smooth"` | Courbe lissée | `spline_tension` |
 | `"filled"` / `"area"` | Zone remplie sous la ligne | `fill_opacity`, `stack_fill` |
 | `"sparkline"` / `"spark"` | Grille de mini-graphiques | `spark_cols`, `spark_cell_w`, `spark_cell_h` |
 | `"dashed"` / `"dash"` | Motifs de tirets | `dash_pattern`, `stroke_width` |
@@ -817,27 +758,27 @@ Alias : `sp.line_chart`, `sp.line_unified`, `sp.lines_unified`, `sp.line_family`
 
 ---
 
-## ParamÃ¨tres
+## Paramètres
 
-| ParamÃ¨tre | Type | DÃ©faut | Variantes | Description |
+| Paramètre | Type | Défaut | Variantes | Description |
 |-----------|------|--------|-----------|-------------|
 | `title` | `str` | requis | toutes | Titre du graphique |
-| `labels` | `list[str]` | `None` | toutes sauf sparkline | Labels de catÃ©gorie ou de temps |
-| `values` | `list[float\|None]` | `None` | basic, stepped, spline, filled, connected_scatter, gapped | Valeurs sÃ©rie unique |
-| `variant` | `str` | `"basic"` | â€” | Variante de rendu |
-| `series` | `list[list[float]]` | `None` | multi, filled, dashed, sparkline | DonnÃ©es multi-sÃ©ries |
-| `series_names` | `list[str]` | `None` | multi, dashed, sparkline | Nom de chaque sÃ©rie |
-| `color_hex` | `int` | `0x6366F1` | sÃ©rie unique | Couleur ligne et points (hex int) |
-| `palette` | `list[int]` | `None` | toutes | Palette personnalisÃ©e |
+| `labels` | `list[str]` | `None` | toutes sauf sparkline | Labels de catégorie ou de temps |
+| `values` | `list[float\|None]` | `None` | basic, stepped, spline, filled, connected_scatter, gapped | Valeurs série unique |
+| `variant` | `str` | `"basic"` | — | Variante de rendu |
+| `series` | `list[list[float]]` | `None` | multi, filled, dashed, sparkline | Données multi-séries |
+| `series_names` | `list[str]` | `None` | multi, dashed, sparkline | Nom de chaque série |
+| `color_hex` | `int` | `0x6366F1` | série unique | Couleur ligne et points (hex int) |
+| `palette` | `list[int]` | `None` | toutes | Palette personnalisée |
 | `show_points` | `bool` | `True` | basic, multi, spline, filled, gapped | Afficher les marqueurs |
 | `gridlines` | `bool` | `False` | toutes | Lignes de grille horizontales |
 | `sort_order` | `str` | `"none"` | basic | `"asc"`, `"desc"`, `"none"` |
 | `step_shape` | `str` | `"hv"` | stepped | `"hv"`, `"vh"`, `"hvh"`, `"vhv"` |
-| `spline_tension` | `float` | `0.5` | spline | Courbure (0.0â€“1.0) |
-| `fill_opacity` | `float` | `0.25` | filled | OpacitÃ© du remplissage (0.0â€“1.0) |
-| `stack_fill` | `bool` | `False` | filled | Empiler plusieurs sÃ©ries remplies |
+| `spline_tension` | `float` | `0.5` | spline | Courbure (0.0–1.0) |
+| `fill_opacity` | `float` | `0.25` | filled | Opacité du remplissage (0.0–1.0) |
+| `stack_fill` | `bool` | `False` | filled | Empiler plusieurs séries remplies |
 | `dash_pattern` | `str` | `"auto"` | dashed | Motif SVG dasharray |
-| `stroke_width` | `float` | `2.0` | dashed, connected_scatter | Ã‰paisseur du trait |
+| `stroke_width` | `float` | `2.0` | dashed, connected_scatter | Épaisseur du trait |
 | `marker_size` | `int` | `5` | connected_scatter | Rayon des marqueurs (min 5) |
 | `gap_threshold` | `float` | `NaN` | gapped | Seuil delta pour rupture ; `NaN` = rupture uniquement sur null |
 | `spark_cols` | `int` | `3` | sparkline | Colonnes dans la grille |
@@ -848,14 +789,14 @@ Alias : `sp.line_chart`, `sp.line_unified`, `sp.lines_unified`, `sp.line_family`
 | `x_label` | `str` | `""` | toutes | Label axe X |
 | `y_label` | `str` | `""` | toutes | Label axe Y |
 | `no_y_axis` | `bool` | `False` | toutes | Masquer l'axe Y |
-| `legend_position` | `str` | `"right"` | multi, dashed | Position de la lÃ©gende |
+| `legend_position` | `str` | `"right"` | multi, dashed | Position de la légende |
 | `background` | `str` | `None` | toutes | Couleur de fond CSS |
 
 ---
 
 ## Retourne
 
-`Chart` â€” objet avec la propriÃ©tÃ© `.html` et la mÃ©thode `.show()`.
+`Chart` — objet avec la propriété `.html` et la méthode `.show()`.
 
 ---
 
@@ -866,4 +807,3 @@ Alias : `sp.line_chart`, `sp.line_unified`, `sp.lines_unified`, `sp.line_family`
 - [scatter.md](scatter.md) — `sp.scatter()`
 
 </div><!-- /lang-fr -->
-

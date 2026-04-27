@@ -5,15 +5,15 @@
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
-.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb{padding:8px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
 .sp-tb:hover{color:#e2e8f0}
 .sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
 .sp-tc{display:none}
 .sp-tc.sp-on{display:block}
-.sp-variant-nav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 1.2em;padding:10px;border:1px solid #334155;border-radius:8px;background:#0f172a}
-.sp-vbtn{padding:7px 13px;border:1px solid #334155;background:#1e293b;color:#94a3b8;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;transition:all .15s}
-.sp-vbtn:hover{color:#e2e8f0;border-color:#6366f1}
-.sp-vbtn.sp-vact{background:#6366f1;color:#fff;border-color:#6366f1}
+.sp-variant-nav{display:flex;flex-wrap:wrap;border-bottom:2px solid #1e293b;margin:0 0 1.4em}
+.sp-vbtn{padding:9px 15px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-vbtn:hover{color:#cbd5e1}
+.sp-vbtn.sp-vact{color:#818cf8;border-bottom-color:#818cf8}
 .sp-variant{display:none}
 .sp-variant.sp-von{display:block}
 </style>
@@ -702,69 +702,37 @@ Aliases: `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family`
 <button class="sp-vbtn" onclick="spVar('bar-fr','pictogram',this)">Pictogramme</button>
 <button class="sp-vbtn" onclick="spVar('bar-fr','multicategory',this)">Multi-catégories</button>
 </div>
-<div class="sp-variant sp-von" id="bar-fr-basic">
-Barres verticales — une valeur par catégorie.
-```python
-sp.bar(title, labels, values, *, variant="basic", color_hex=0,
+<div class="sp-variant sp-von" id="bar-fr-basic"><p>Barres verticales — une valeur par catégorie.</p>
+<pre><code class="language-python">sp.bar(title, labels, values, *, variant="basic", color_hex=0,
        show_text=False, corner_radius=0, bar_gap=0.2,
        width=900, height=480, x_label="", y_label="",
-       gridlines=False, sort_order="none") -> Chart
-```
-Pour les exemples de code, voir la version EN.
-</div>
-<div class="sp-variant" id="bar-fr-horizontal">
-Barres horizontales — idéal pour les longs noms de catégories.
-```python
-sp.bar(title, labels, values, *, variant="horizontal", ...) -> Chart
-```
-</div>
-<div class="sp-variant" id="bar-fr-grouped">
-Plusieurs séries côte à côte par catégorie.
-```python
-sp.bar(title, labels, *, variant="grouped", series, series_names=None, ...) -> Chart
-```
-</div>
-<div class="sp-variant" id="bar-fr-stacked">
-Séries empilées — montre la part de chaque série dans le total.
-```python
-sp.bar(title, labels, *, variant="stacked", series, series_names=None, ...) -> Chart
-```
-</div>
-<div class="sp-variant" id="bar-fr-relative">
-Empilé avec valeurs négatives sous l'axe zéro — flux de trésorerie, P&L.
-```python
-sp.bar(title, labels, *, variant="relative", series, series_names=None, ...) -> Chart
-```
-</div>
-<div class="sp-variant" id="bar-fr-gstack">
-Groupes de barres empilées. `offset_groups` assigne une pile à chaque série.
-```python
-sp.bar(title, labels, *, variant="grouped_stacked",
-       series, series_names=None, offset_groups, ...) -> Chart
-```
-</div>
-<div class="sp-variant" id="bar-fr-marimekko">
-Barres empilées à largeur variable. `widths` encode la taille de chaque catégorie.
-```python
-sp.bar(title, labels, *, variant="marimekko",
-       series, series_names=None, widths, ...) -> Chart
-```
-</div>
-<div class="sp-variant" id="bar-fr-pictogram">
-Barre composée d'icônes répétées. Chaque icône représente `units_per_icon` unités.
-```python
-sp.bar(title, labels, values, *, variant="pictogram",
+       gridlines=False, sort_order="none") -> Chart</code></pre>
+<p>Pour les exemples de code, voir la version EN.</p></div>
+<div class="sp-variant" id="bar-fr-horizontal"><p>Barres horizontales — idéal pour les longs noms de catégories.</p>
+<pre><code class="language-python">sp.bar(title, labels, values, *, variant="horizontal",
+       color_hex=0, show_text=False, corner_radius=0, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="bar-fr-grouped"><p>Plusieurs séries côte à côte par catégorie.</p>
+<pre><code class="language-python">sp.bar(title, labels, *, variant="grouped",
+       series, series_names=None, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="bar-fr-stacked"><p>Séries empilées — montre la part de chaque série dans le total.</p>
+<pre><code class="language-python">sp.bar(title, labels, *, variant="stacked",
+       series, series_names=None, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="bar-fr-relative"><p>Empilé avec valeurs négatives sous l'axe zéro — flux de trésorerie, P&amp;L.</p>
+<pre><code class="language-python">sp.bar(title, labels, *, variant="relative",
+       series, series_names=None, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="bar-fr-gstack"><p>Groupes de barres empilées. <code>offset_groups</code> assigne une pile à chaque série.</p>
+<pre><code class="language-python">sp.bar(title, labels, *, variant="grouped_stacked",
+       series, series_names=None, offset_groups, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="bar-fr-marimekko"><p>Barres empilées à largeur variable. <code>widths</code> encode la taille de chaque catégorie.</p>
+<pre><code class="language-python">sp.bar(title, labels, *, variant="marimekko",
+       series, series_names=None, widths, ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="bar-fr-pictogram"><p>Barre composée d'icônes répétées. Chaque icône représente <code>units_per_icon</code> unités.</p>
+<pre><code class="language-python">sp.bar(title, labels, values, *, variant="pictogram",
        icon_size=24, max_icons_per_column=10,
-       units_per_icon=1.0, unit_description="", ...) -> Chart
-```
-</div>
-<div class="sp-variant" id="bar-fr-multicategory">
-Axe x à deux niveaux. `super_categories` regroupe les barres sous un label chapeau.
-```python
-sp.bar(title, labels, values, *, variant="multicategory",
-       super_categories, ...) -> Chart
-```
-</div>
+       units_per_icon=1.0, unit_description="", ...) -> Chart</code></pre></div>
+<div class="sp-variant" id="bar-fr-multicategory"><p>Axe x à deux niveaux. <code>super_categories</code> regroupe les barres sous un label chapeau.</p>
+<pre><code class="language-python">sp.bar(title, labels, values, *, variant="multicategory",
+       super_categories, ...) -> Chart</code></pre></div>
 </div><!-- /bar-fr -->
 
 Alias : `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family`
