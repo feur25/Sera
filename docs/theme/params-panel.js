@@ -45,24 +45,50 @@
     return false;
   }
 
+  function hasMoved(el, container) {
+    var p = el.parentElement;
+    while (p && p !== container) {
+      if (p.classList.contains("sp-moved")) return true;
+      p = p.parentElement;
+    }
+    return false;
+  }
+
   // Collect the sp-tabs HTML for a given lang container and hide the original.
   function collectTabs(container) {
     if (!container) return "";
-    var tabs = container.querySelector(".sp-tabs");
+    var tabs = null;
+    container.querySelectorAll(".sp-tabs").forEach(function (el) {
+      if (tabs) return;
+      if (!hasMoved(el, container)) tabs = el;
+    });
     if (!tabs) return "";
     var html = tabs.outerHTML;
-    tabs.classList.add("sp-moved"); // hide from main content
+    tabs.classList.add("sp-moved");
     return html;
   }
 
   // Collect the iframe src for a given lang container and hide the original.
   function collectIframeSrc(container) {
     if (!container) return "";
-    var iframe = container.querySelector('iframe[loading="lazy"]');
+    var iframe = null;
+    container.querySelectorAll('iframe[loading="lazy"]').forEach(function (el) {
+      if (iframe) return;
+      if (!hasMoved(el, container)) iframe = el;
+    });
     if (!iframe) return "";
     var src = iframe.getAttribute("src");
-    iframe.classList.add("sp-moved"); // hide from main content
+    iframe.classList.add("sp-moved");
     return src;
+  }
+
+  function remapPanelHtml(html) {
+    return html
+      .replace(/\bid="([^"]+)"/g, function (m, id) { return 'id="pp-' + id + '"'; })
+      .replace(/spVar\('([^']+)'/g, function (m, scope) { return "spVar('pp-" + scope + "'"; })
+      .replace(/spTab\('([^']+)','([^']+)',this\)/g, function (m, g, id) {
+        return "spTab('pp-" + g + "','pp-" + id + "',this)";
+      });
   }
 
   function extractAndHide(h2El, splitAlias) {
@@ -140,7 +166,7 @@
       body.appendChild(w);
     }
 
-    addSec(data.signature,  labels.sig,   "sp-psec-sig");
+    addSec(remapPanelHtml(data.signature),  labels.sig,   "sp-psec-sig");
     addSec(data.alias,      labels.alias, "sp-psec-alias");
     addSec(data.parameters, labels.par,   "sp-psec-params");
     addSec(data.returns,    labels.ret,   "sp-psec-returns");

@@ -73,6 +73,12 @@ sp.bar(
 <button class="sp-tb sp-act" onclick="spTab('b-basic','b-basic-py',this)">Python</button>
 <button class="sp-tb" onclick="spTab('b-basic','b-basic-js',this)">JavaScript</button>
 <button class="sp-tb" onclick="spTab('b-basic','b-basic-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('b-basic','b-basic-cpp',this)">C++</button>
 </div>
 <div id="b-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.bar(
@@ -99,6 +105,80 @@ const chart = sp.bar({
   labels: ["Jan","Feb","Mar","Apr","May","Jun"],
   values: [1200, 1850, 2100, 1750, 2400, 2800],
   yLabel: "Revenue (€)", gridlines: true, showText: true,
+});
+chart.show();</code></pre></div>
+<div id="b-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bar(
+  title = "Monthly Revenue",
+  variant = "basic",
+  labels = c("Jan","Feb","Mar","Apr","May","Jun"),
+  values = c(1200, 1850, 2100, 1750, 2400, 2800),
+  y_label = "Revenue (€)",
+  gridlines = TRUE,
+  show_text = TRUE
+)
+chart$show()</code></pre></div>
+<div id="b-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bar()
+        .title("Monthly Revenue")
+        .variant("basic")
+        .labels(vec!["Jan","Feb","Mar","Apr","May","Jun"])
+        .values(vec![1200.0, 1850.0, 2100.0, 1750.0, 2400.0, 2800.0])
+        .y_label("Revenue (€)")
+        .gridlines(true)
+        .show_text(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="b-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bar()
+    .title("Monthly Revenue")
+    .variant("basic")
+    .labels(List.of("Jan","Feb","Mar","Apr","May","Jun"))
+    .values(List.of(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0))
+    .yLabel("Revenue (€)")
+    .gridlines(true)
+    .showText(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="b-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bar(
+    title: "Monthly Revenue",
+    variant: "basic",
+    labels: ["Jan","Feb","Mar","Apr","May","Jun"],
+    values: [1200,1850,2100,1750,2400,2800],
+    yLabel: "Revenue (€)",
+    gridlines: true,
+    showText: true
+);
+chart.Show();</code></pre></div>
+<div id="b-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bar(
+  title = "Monthly Revenue",
+  variant = "basic",
+  labels = List("Jan","Feb","Mar","Apr","May","Jun"),
+  values = List(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0),
+  y_label = "Revenue (€)",
+  gridlines = true,
+  show_text = true
+)
+chart.show()</code></pre></div>
+<div id="b-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bar({
+    .title     = "Monthly Revenue",
+    .variant   = "basic",
+    .labels    = {"Jan","Feb","Mar","Apr","May","Jun"},
+    .values    = {1200.0,1850.0,2100.0,1750.0,2400.0,2800.0},
+    .y_label   = "Revenue (€)",
+    .gridlines = true,
+    .show_text = true,
 });
 chart.show();</code></pre></div>
 </div>
@@ -133,6 +213,12 @@ sp.bar(
 <button class="sp-tb sp-act" onclick="spTab('b-h','b-h-py',this)">Python</button>
 <button class="sp-tb" onclick="spTab('b-h','b-h-js',this)">JavaScript</button>
 <button class="sp-tb" onclick="spTab('b-h','b-h-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('b-h','b-h-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('b-h','b-h-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('b-h','b-h-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('b-h','b-h-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('b-h','b-h-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('b-h','b-h-cpp',this)">C++</button>
 </div>
 <div id="b-h-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.bar(
@@ -159,6 +245,80 @@ const chart = sp.bar({
   labels: ["China","India","USA","Indonesia","Pakistan"],
   values: [1411, 1393, 332, 273, 220],
   xLabel: "Population (M)", gridlines: true, sortOrder: "desc",
+});
+chart.show();</code></pre></div>
+<div id="b-h-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bar(
+  title = "Population by Country",
+  variant = "horizontal",
+  labels = c("China","India","USA","Indonesia","Pakistan"),
+  values = c(1411, 1393, 332, 273, 220),
+  x_label = "Population (M)",
+  gridlines = TRUE,
+  sort_order = "desc"
+)
+chart$show()</code></pre></div>
+<div id="b-h-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bar()
+        .title("Population by Country")
+        .variant("horizontal")
+        .labels(vec!["China","India","USA","Indonesia","Pakistan"])
+        .values(vec![1411.0, 1393.0, 332.0, 273.0, 220.0])
+        .x_label("Population (M)")
+        .gridlines(true)
+        .sort_order("desc")
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="b-h-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bar()
+    .title("Population by Country")
+    .variant("horizontal")
+    .labels(List.of("China","India","USA","Indonesia","Pakistan"))
+    .values(List.of(1411.0,1393.0,332.0,273.0,220.0))
+    .xLabel("Population (M)")
+    .gridlines(true)
+    .sortOrder("desc")
+    .build();
+chart.show();</code></pre></div>
+<div id="b-h-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bar(
+    title: "Population by Country",
+    variant: "horizontal",
+    labels: ["China","India","USA","Indonesia","Pakistan"],
+    values: [1411,1393,332,273,220],
+    xLabel: "Population (M)",
+    gridlines: true,
+    sortOrder: "desc"
+);
+chart.Show();</code></pre></div>
+<div id="b-h-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bar(
+  title = "Population by Country",
+  variant = "horizontal",
+  labels = List("China","India","USA","Indonesia","Pakistan"),
+  values = List(1411.0,1393.0,332.0,273.0,220.0),
+  x_label = "Population (M)",
+  gridlines = true,
+  sort_order = "desc"
+)
+chart.show()</code></pre></div>
+<div id="b-h-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bar({
+    .title      = "Population by Country",
+    .variant    = "horizontal",
+    .labels     = {"China","India","USA","Indonesia","Pakistan"},
+    .values     = {1411.0,1393.0,332.0,273.0,220.0},
+    .x_label    = "Population (M)",
+    .gridlines  = true,
+    .sort_order = "desc",
 });
 chart.show();</code></pre></div>
 </div>
@@ -194,6 +354,12 @@ sp.bar(
 <button class="sp-tb sp-act" onclick="spTab('b-g','b-g-py',this)">Python</button>
 <button class="sp-tb" onclick="spTab('b-g','b-g-js',this)">JavaScript</button>
 <button class="sp-tb" onclick="spTab('b-g','b-g-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('b-g','b-g-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('b-g','b-g-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('b-g','b-g-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('b-g','b-g-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('b-g','b-g-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('b-g','b-g-cpp',this)">C++</button>
 </div>
 <div id="b-g-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.bar(
@@ -222,6 +388,92 @@ const chart = sp.bar({
   series: [[120,145,160,180],[90,110,135,150],[60,75,80,95]],
   seriesNames: ["EU","NA","APAC"],
   yLabel: "Revenue (M€)", gridlines: true,
+});
+chart.show();</code></pre></div>
+<div id="b-g-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bar(
+  title = "Revenue by Region",
+  variant = "grouped",
+  labels = c("Q1","Q2","Q3","Q4"),
+  series = list(c(120,145,160,180), c(90,110,135,150), c(60,75,80,95)),
+  series_names = c("EU","NA","APAC"),
+  y_label = "Revenue (M€)",
+  gridlines = TRUE
+)
+chart$show()</code></pre></div>
+<div id="b-g-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bar()
+        .title("Revenue by Region")
+        .variant("grouped")
+        .labels(vec!["Q1","Q2","Q3","Q4"])
+        .series(vec![
+            vec![120.0,145.0,160.0,180.0],
+            vec![90.0,110.0,135.0,150.0],
+            vec![60.0,75.0,80.0,95.0],
+        ])
+        .series_names(vec!["EU","NA","APAC"])
+        .y_label("Revenue (M€)")
+        .gridlines(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="b-g-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bar()
+    .title("Revenue by Region")
+    .variant("grouped")
+    .labels(List.of("Q1","Q2","Q3","Q4"))
+    .series(List.of(
+        List.of(120.0,145.0,160.0,180.0),
+        List.of(90.0,110.0,135.0,150.0),
+        List.of(60.0,75.0,80.0,95.0)
+    ))
+    .seriesNames(List.of("EU","NA","APAC"))
+    .yLabel("Revenue (M€)")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="b-g-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bar(
+    title: "Revenue by Region",
+    variant: "grouped",
+    labels: ["Q1","Q2","Q3","Q4"],
+    series: [[120,145,160,180],[90,110,135,150],[60,75,80,95]],
+    seriesNames: ["EU","NA","APAC"],
+    yLabel: "Revenue (M€)",
+    gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="b-g-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bar(
+  title = "Revenue by Region",
+  variant = "grouped",
+  labels = List("Q1","Q2","Q3","Q4"),
+  series = List(
+    List(120.0,145.0,160.0,180.0),
+    List(90.0,110.0,135.0,150.0),
+    List(60.0,75.0,80.0,95.0)
+  ),
+  series_names = List("EU","NA","APAC"),
+  y_label = "Revenue (M€)",
+  gridlines = true
+)
+chart.show()</code></pre></div>
+<div id="b-g-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bar({
+    .title        = "Revenue by Region",
+    .variant      = "grouped",
+    .labels       = {"Q1","Q2","Q3","Q4"},
+    .series       = {{120,145,160,180},{90,110,135,150},{60,75,80,95}},
+    .series_names = {"EU","NA","APAC"},
+    .y_label      = "Revenue (M€)",
+    .gridlines    = true,
 });
 chart.show();</code></pre></div>
 </div>
@@ -254,6 +506,12 @@ sp.bar(
 <button class="sp-tb sp-act" onclick="spTab('b-s','b-s-py',this)">Python</button>
 <button class="sp-tb" onclick="spTab('b-s','b-s-js',this)">JavaScript</button>
 <button class="sp-tb" onclick="spTab('b-s','b-s-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('b-s','b-s-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('b-s','b-s-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('b-s','b-s-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('b-s','b-s-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('b-s','b-s-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('b-s','b-s-cpp',this)">C++</button>
 </div>
 <div id="b-s-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.bar(
@@ -279,6 +537,86 @@ const chart = sp.bar({
   labels: ["Q1","Q2","Q3","Q4"],
   series: [[120,145,160,180],[90,110,135,150],[60,75,80,95]],
   seriesNames: ["EU","NA","APAC"], yLabel: "Revenue (M€)",
+});
+chart.show();</code></pre></div>
+<div id="b-s-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bar(
+  title = "Quarterly Revenue Mix",
+  variant = "stacked",
+  labels = c("Q1","Q2","Q3","Q4"),
+  series = list(c(120,145,160,180), c(90,110,135,150), c(60,75,80,95)),
+  series_names = c("EU","NA","APAC"),
+  y_label = "Revenue (M€)"
+)
+chart$show()</code></pre></div>
+<div id="b-s-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bar()
+        .title("Quarterly Revenue Mix")
+        .variant("stacked")
+        .labels(vec!["Q1","Q2","Q3","Q4"])
+        .series(vec![
+            vec![120.0,145.0,160.0,180.0],
+            vec![90.0,110.0,135.0,150.0],
+            vec![60.0,75.0,80.0,95.0],
+        ])
+        .series_names(vec!["EU","NA","APAC"])
+        .y_label("Revenue (M€)")
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="b-s-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bar()
+    .title("Quarterly Revenue Mix")
+    .variant("stacked")
+    .labels(List.of("Q1","Q2","Q3","Q4"))
+    .series(List.of(
+        List.of(120.0,145.0,160.0,180.0),
+        List.of(90.0,110.0,135.0,150.0),
+        List.of(60.0,75.0,80.0,95.0)
+    ))
+    .seriesNames(List.of("EU","NA","APAC"))
+    .yLabel("Revenue (M€)")
+    .build();
+chart.show();</code></pre></div>
+<div id="b-s-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bar(
+    title: "Quarterly Revenue Mix",
+    variant: "stacked",
+    labels: ["Q1","Q2","Q3","Q4"],
+    series: [[120,145,160,180],[90,110,135,150],[60,75,80,95]],
+    seriesNames: ["EU","NA","APAC"],
+    yLabel: "Revenue (M€)"
+);
+chart.Show();</code></pre></div>
+<div id="b-s-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bar(
+  title = "Quarterly Revenue Mix",
+  variant = "stacked",
+  labels = List("Q1","Q2","Q3","Q4"),
+  series = List(
+    List(120.0,145.0,160.0,180.0),
+    List(90.0,110.0,135.0,150.0),
+    List(60.0,75.0,80.0,95.0)
+  ),
+  series_names = List("EU","NA","APAC"),
+  y_label = "Revenue (M€)"
+)
+chart.show()</code></pre></div>
+<div id="b-s-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bar({
+    .title        = "Quarterly Revenue Mix",
+    .variant      = "stacked",
+    .labels       = {"Q1","Q2","Q3","Q4"},
+    .series       = {{120,145,160,180},{90,110,135,150},{60,75,80,95}},
+    .series_names = {"EU","NA","APAC"},
+    .y_label      = "Revenue (M€)",
 });
 chart.show();</code></pre></div>
 </div>
@@ -312,6 +650,12 @@ sp.bar(
 <button class="sp-tb sp-act" onclick="spTab('b-r','b-r-py',this)">Python</button>
 <button class="sp-tb" onclick="spTab('b-r','b-r-js',this)">JavaScript</button>
 <button class="sp-tb" onclick="spTab('b-r','b-r-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('b-r','b-r-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('b-r','b-r-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('b-r','b-r-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('b-r','b-r-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('b-r','b-r-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('b-r','b-r-cpp',this)">C++</button>
 </div>
 <div id="b-r-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.bar(
@@ -340,6 +684,92 @@ const chart = sp.bar({
   series: [[50,80,-40,120],[-30,20,-50,60],[40,-10,30,-20]],
   seriesNames: ["Operations","Financing","Investing"],
   yLabel: "Cash Flow (k€)", gridlines: true,
+});
+chart.show();</code></pre></div>
+<div id="b-r-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bar(
+  title = "Net Cash Flow by Quarter",
+  variant = "relative",
+  labels = c("Q1","Q2","Q3","Q4"),
+  series = list(c(50,80,-40,120), c(-30,20,-50,60), c(40,-10,30,-20)),
+  series_names = c("Operations","Financing","Investing"),
+  y_label = "Cash Flow (k€)",
+  gridlines = TRUE
+)
+chart$show()</code></pre></div>
+<div id="b-r-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bar()
+        .title("Net Cash Flow by Quarter")
+        .variant("relative")
+        .labels(vec!["Q1","Q2","Q3","Q4"])
+        .series(vec![
+            vec![50.0, 80.0,-40.0,120.0],
+            vec![-30.0,20.0,-50.0, 60.0],
+            vec![40.0,-10.0, 30.0,-20.0],
+        ])
+        .series_names(vec!["Operations","Financing","Investing"])
+        .y_label("Cash Flow (k€)")
+        .gridlines(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="b-r-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bar()
+    .title("Net Cash Flow by Quarter")
+    .variant("relative")
+    .labels(List.of("Q1","Q2","Q3","Q4"))
+    .series(List.of(
+        List.of(50.0,80.0,-40.0,120.0),
+        List.of(-30.0,20.0,-50.0,60.0),
+        List.of(40.0,-10.0,30.0,-20.0)
+    ))
+    .seriesNames(List.of("Operations","Financing","Investing"))
+    .yLabel("Cash Flow (k€)")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="b-r-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bar(
+    title: "Net Cash Flow by Quarter",
+    variant: "relative",
+    labels: ["Q1","Q2","Q3","Q4"],
+    series: [[50,80,-40,120],[-30,20,-50,60],[40,-10,30,-20]],
+    seriesNames: ["Operations","Financing","Investing"],
+    yLabel: "Cash Flow (k€)",
+    gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="b-r-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bar(
+  title = "Net Cash Flow by Quarter",
+  variant = "relative",
+  labels = List("Q1","Q2","Q3","Q4"),
+  series = List(
+    List(50.0,80.0,-40.0,120.0),
+    List(-30.0,20.0,-50.0,60.0),
+    List(40.0,-10.0,30.0,-20.0)
+  ),
+  series_names = List("Operations","Financing","Investing"),
+  y_label = "Cash Flow (k€)",
+  gridlines = true
+)
+chart.show()</code></pre></div>
+<div id="b-r-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bar({
+    .title        = "Net Cash Flow by Quarter",
+    .variant      = "relative",
+    .labels       = {"Q1","Q2","Q3","Q4"},
+    .series       = {{50,-40,120,80},{-30,20,-50,60},{40,-10,30,-20}},
+    .series_names = {"Operations","Financing","Investing"},
+    .y_label      = "Cash Flow (k€)",
+    .gridlines    = true,
 });
 chart.show();</code></pre></div>
 </div>
@@ -375,6 +805,12 @@ sp.bar(
 <button class="sp-tb sp-act" onclick="spTab('b-gs','b-gs-py',this)">Python</button>
 <button class="sp-tb" onclick="spTab('b-gs','b-gs-js',this)">JavaScript</button>
 <button class="sp-tb" onclick="spTab('b-gs','b-gs-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('b-gs','b-gs-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('b-gs','b-gs-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('b-gs','b-gs-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('b-gs','b-gs-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('b-gs','b-gs-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('b-gs','b-gs-cpp',this)">C++</button>
 </div>
 <div id="b-gs-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.bar(
@@ -413,6 +849,101 @@ const chart = sp.bar({
   yLabel: "Revenue (M€)", gridlines: true,
 });
 chart.show();</code></pre></div>
+<div id="b-gs-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bar(
+  title = "Revenue by Channel x Region",
+  variant = "grouped_stacked",
+  labels = c("Q1","Q2","Q3","Q4"),
+  series = list(c(50,60,70,80), c(30,40,45,55), c(40,50,55,65), c(20,30,35,40)),
+  series_names = c("Online.EU","Retail.EU","Online.NA","Retail.NA"),
+  offset_groups = c("EU","EU","NA","NA"),
+  y_label = "Revenue (M€)",
+  gridlines = TRUE
+)
+chart$show()</code></pre></div>
+<div id="b-gs-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bar()
+        .title("Revenue by Channel x Region")
+        .variant("grouped_stacked")
+        .labels(vec!["Q1","Q2","Q3","Q4"])
+        .series(vec![
+            vec![50.0,60.0,70.0,80.0],
+            vec![30.0,40.0,45.0,55.0],
+            vec![40.0,50.0,55.0,65.0],
+            vec![20.0,30.0,35.0,40.0],
+        ])
+        .series_names(vec!["Online-EU","Retail-EU","Online-NA","Retail-NA"])
+        .offset_groups(vec!["EU","EU","NA","NA"])
+        .y_label("Revenue (M€)")
+        .gridlines(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="b-gs-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bar()
+    .title("Revenue by Channel x Region")
+    .variant("grouped_stacked")
+    .labels(List.of("Q1","Q2","Q3","Q4"))
+    .series(List.of(
+        List.of(50.0,60.0,70.0,80.0),
+        List.of(30.0,40.0,45.0,55.0),
+        List.of(40.0,50.0,55.0,65.0),
+        List.of(20.0,30.0,35.0,40.0)
+    ))
+    .seriesNames(List.of("Online-EU","Retail-EU","Online-NA","Retail-NA"))
+    .offsetGroups(List.of("EU","EU","NA","NA"))
+    .yLabel("Revenue (M€)")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="b-gs-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bar(
+    title: "Revenue by Channel x Region",
+    variant: "grouped_stacked",
+    labels: ["Q1","Q2","Q3","Q4"],
+    series: [[50,60,70,80],[30,40,45,55],[40,50,55,65],[20,30,35,40]],
+    seriesNames: ["Online-EU","Retail-EU","Online-NA","Retail-NA"],
+    offsetGroups: ["EU","EU","NA","NA"],
+    yLabel: "Revenue (M€)",
+    gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="b-gs-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bar(
+  title = "Revenue by Channel x Region",
+  variant = "grouped_stacked",
+  labels = List("Q1","Q2","Q3","Q4"),
+  series = List(
+    List(50.0,60.0,70.0,80.0),
+    List(30.0,40.0,45.0,55.0),
+    List(40.0,50.0,55.0,65.0),
+    List(20.0,30.0,35.0,40.0)
+  ),
+  series_names = List("Online-EU","Retail-EU","Online-NA","Retail-NA"),
+  offset_groups = List("EU","EU","NA","NA"),
+  y_label = "Revenue (M€)",
+  gridlines = true
+)
+chart.show()</code></pre></div>
+<div id="b-gs-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bar({
+    .title         = "Revenue by Channel x Region",
+    .variant       = "grouped_stacked",
+    .labels        = {"Q1","Q2","Q3","Q4"},
+    .series        = {{50,60,70,80},{30,40,45,55},{40,50,55,65},{20,30,35,40}},
+    .series_names  = {"Online-EU","Retail-EU","Online-NA","Retail-NA"},
+    .offset_groups = {"EU","EU","NA","NA"},
+    .y_label       = "Revenue (M€)",
+    .gridlines     = true,
+});
+chart.show();</code></pre></div>
 </div>
 </div>
 
@@ -445,6 +976,12 @@ sp.bar(
 <button class="sp-tb sp-act" onclick="spTab('b-m','b-m-py',this)">Python</button>
 <button class="sp-tb" onclick="spTab('b-m','b-m-js',this)">JavaScript</button>
 <button class="sp-tb" onclick="spTab('b-m','b-m-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('b-m','b-m-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('b-m','b-m-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('b-m','b-m-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('b-m','b-m-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('b-m','b-m-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('b-m','b-m-cpp',this)">C++</button>
 </div>
 <div id="b-m-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.bar(
@@ -481,6 +1018,92 @@ const chart = sp.bar({
   showText: true,
 });
 chart.show();</code></pre></div>
+<div id="b-m-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bar(
+  title = "Market Share by Segment Size",
+  variant = "marimekko",
+  labels = c("Auto","Tech","Retail","Energy","Health"),
+  widths = c(40,25,15,12,8),
+  series = list(c(45,30,20,50,60), c(30,35,40,25,25), c(25,35,40,25,15)),
+  series_names = c("Leader","Challenger","Others"),
+  show_text = TRUE
+)
+chart$show()</code></pre></div>
+<div id="b-m-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bar()
+        .title("Market Share by Segment Size")
+        .variant("marimekko")
+        .labels(vec!["Auto","Tech","Retail","Energy","Health"])
+        .widths(vec![40.0,25.0,15.0,12.0,8.0])
+        .series(vec![
+            vec![45.0,30.0,20.0,50.0,60.0],
+            vec![30.0,35.0,40.0,25.0,25.0],
+            vec![25.0,35.0,40.0,25.0,15.0],
+        ])
+        .series_names(vec!["Leader","Challenger","Others"])
+        .show_text(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="b-m-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bar()
+    .title("Market Share by Segment Size")
+    .variant("marimekko")
+    .labels(List.of("Auto","Tech","Retail","Energy","Health"))
+    .widths(List.of(40.0,25.0,15.0,12.0,8.0))
+    .series(List.of(
+        List.of(45.0,30.0,20.0,50.0,60.0),
+        List.of(30.0,35.0,40.0,25.0,25.0),
+        List.of(25.0,35.0,40.0,25.0,15.0)
+    ))
+    .seriesNames(List.of("Leader","Challenger","Others"))
+    .showText(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="b-m-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bar(
+    title: "Market Share by Segment Size",
+    variant: "marimekko",
+    labels: ["Auto","Tech","Retail","Energy","Health"],
+    widths: [40,25,15,12,8],
+    series: [[45,30,20,50,60],[30,35,40,25,25],[25,35,40,25,15]],
+    seriesNames: ["Leader","Challenger","Others"],
+    showText: true
+);
+chart.Show();</code></pre></div>
+<div id="b-m-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bar(
+  title = "Market Share by Segment Size",
+  variant = "marimekko",
+  labels = List("Auto","Tech","Retail","Energy","Health"),
+  widths = List(40.0,25.0,15.0,12.0,8.0),
+  series = List(
+    List(45.0,30.0,20.0,50.0,60.0),
+    List(30.0,35.0,40.0,25.0,25.0),
+    List(25.0,35.0,40.0,25.0,15.0)
+  ),
+  series_names = List("Leader","Challenger","Others"),
+  show_text = true
+)
+chart.show()</code></pre></div>
+<div id="b-m-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bar({
+    .title        = "Market Share by Segment Size",
+    .variant      = "marimekko",
+    .labels       = {"Auto","Tech","Retail","Energy","Health"},
+    .widths       = {40,25,15,12,8},
+    .series       = {{45,30,20,50,60},{30,35,40,25,25},{25,35,40,25,15}},
+    .series_names = {"Leader","Challenger","Others"},
+    .show_text    = true,
+});
+chart.show();</code></pre></div>
 </div>
 </div>
 
@@ -511,6 +1134,12 @@ sp.bar(
 <button class="sp-tb sp-act" onclick="spTab('b-p','b-p-py',this)">Python</button>
 <button class="sp-tb" onclick="spTab('b-p','b-p-js',this)">JavaScript</button>
 <button class="sp-tb" onclick="spTab('b-p','b-p-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('b-p','b-p-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('b-p','b-p-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('b-p','b-p-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('b-p','b-p-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('b-p','b-p-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('b-p','b-p-cpp',this)">C++</button>
 </div>
 <div id="b-p-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.bar(
@@ -545,6 +1174,92 @@ const chart = sp.bar({
   colorHex: 0x6F4E37,
 });
 chart.show();</code></pre></div>
+<div id="b-p-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bar(
+  title = "Coffees Per Day",
+  variant = "pictogram",
+  labels = c("Mon","Tue","Wed","Thu","Fri"),
+  values = c(3, 5, 4, 7, 6),
+  icon_size = 22,
+  units_per_icon = 1,
+  max_icons_per_column = 4,
+  unit_description = "cup",
+  color_hex = 0x6F4E37
+)
+chart$show()</code></pre></div>
+<div id="b-p-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bar()
+        .title("Coffees Per Day")
+        .variant("pictogram")
+        .labels(vec!["Mon","Tue","Wed","Thu","Fri"])
+        .values(vec![3.0, 5.0, 4.0, 7.0, 6.0])
+        .icon_size(22)
+        .units_per_icon(1.0)
+        .max_icons_per_column(4)
+        .unit_description("cup")
+        .color_hex(0x6F4E37)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="b-p-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bar()
+    .title("Coffees Per Day")
+    .variant("pictogram")
+    .labels(List.of("Mon","Tue","Wed","Thu","Fri"))
+    .values(List.of(3.0,5.0,4.0,7.0,6.0))
+    .iconSize(22)
+    .unitsPerIcon(1.0)
+    .maxIconsPerColumn(4)
+    .unitDescription("cup")
+    .colorHex(0x6F4E37)
+    .build();
+chart.show();</code></pre></div>
+<div id="b-p-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bar(
+    title: "Coffees Per Day",
+    variant: "pictogram",
+    labels: ["Mon","Tue","Wed","Thu","Fri"],
+    values: [3,5,4,7,6],
+    iconSize: 22,
+    unitsPerIcon: 1,
+    maxIconsPerColumn: 4,
+    unitDescription: "cup",
+    colorHex: 0x6F4E37
+);
+chart.Show();</code></pre></div>
+<div id="b-p-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bar(
+  title = "Coffees Per Day",
+  variant = "pictogram",
+  labels = List("Mon","Tue","Wed","Thu","Fri"),
+  values = List(3.0, 5.0, 4.0, 7.0, 6.0),
+  icon_size = 22,
+  units_per_icon = 1.0,
+  max_icons_per_column = 4,
+  unit_description = "cup",
+  color_hex = 0x6F4E37
+)
+chart.show()</code></pre></div>
+<div id="b-p-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bar({
+    .title                = "Coffees Per Day",
+    .variant              = "pictogram",
+    .labels               = {"Mon","Tue","Wed","Thu","Fri"},
+    .values               = {3,5,4,7,6},
+    .icon_size            = 22,
+    .units_per_icon       = 1.0,
+    .max_icons_per_column = 4,
+    .unit_description     = "cup",
+    .color_hex            = 0x6F4E37,
+});
+chart.show();</code></pre></div>
 </div>
 </div>
 
@@ -576,6 +1291,12 @@ sp.bar(
 <button class="sp-tb sp-act" onclick="spTab('b-mc','b-mc-py',this)">Python</button>
 <button class="sp-tb" onclick="spTab('b-mc','b-mc-js',this)">JavaScript</button>
 <button class="sp-tb" onclick="spTab('b-mc','b-mc-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('b-mc','b-mc-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('b-mc','b-mc-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('b-mc','b-mc-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('b-mc','b-mc-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('b-mc','b-mc-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('b-mc','b-mc-cpp',this)">C++</button>
 </div>
 <div id="b-mc-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.bar(
@@ -604,6 +1325,80 @@ const chart = sp.bar({
   superCategories: ["EU","EU","EU","EU","NA","NA","NA","NA"],
   values: [120,145,160,180,90,110,135,150],
   yLabel: "Revenue (M€)", gridlines: true,
+});
+chart.show();</code></pre></div>
+<div id="b-mc-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bar(
+  title = "Sales by Region & Quarter",
+  variant = "multicategory",
+  labels = c("Q1","Q2","Q3","Q4","Q1","Q2","Q3","Q4"),
+  super_categories = c("EU","EU","EU","EU","NA","NA","NA","NA"),
+  values = c(120,145,160,180,90,110,135,150),
+  y_label = "Revenue (M€)",
+  gridlines = TRUE
+)
+chart$show()</code></pre></div>
+<div id="b-mc-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bar()
+        .title("Sales by Region & Quarter")
+        .variant("multicategory")
+        .labels(vec!["Q1","Q2","Q3","Q4","Q1","Q2","Q3","Q4"])
+        .super_categories(vec!["EU","EU","EU","EU","NA","NA","NA","NA"])
+        .values(vec![120.0,145.0,160.0,180.0,90.0,110.0,135.0,150.0])
+        .y_label("Revenue (M€)")
+        .gridlines(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="b-mc-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bar()
+    .title("Sales by Region & Quarter")
+    .variant("multicategory")
+    .labels(List.of("Q1","Q2","Q3","Q4","Q1","Q2","Q3","Q4"))
+    .superCategories(List.of("EU","EU","EU","EU","NA","NA","NA","NA"))
+    .values(List.of(120.0,145.0,160.0,180.0,90.0,110.0,135.0,150.0))
+    .yLabel("Revenue (M€)")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="b-mc-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bar(
+    title: "Sales by Region & Quarter",
+    variant: "multicategory",
+    labels: ["Q1","Q2","Q3","Q4","Q1","Q2","Q3","Q4"],
+    superCategories: ["EU","EU","EU","EU","NA","NA","NA","NA"],
+    values: [120,145,160,180,90,110,135,150],
+    yLabel: "Revenue (M€)",
+    gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="b-mc-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bar(
+  title = "Sales by Region & Quarter",
+  variant = "multicategory",
+  labels = List("Q1","Q2","Q3","Q4","Q1","Q2","Q3","Q4"),
+  super_categories = List("EU","EU","EU","EU","NA","NA","NA","NA"),
+  values = List(120.0,145.0,160.0,180.0,90.0,110.0,135.0,150.0),
+  y_label = "Revenue (M€)",
+  gridlines = true
+)
+chart.show()</code></pre></div>
+<div id="b-mc-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bar({
+    .title             = "Sales by Region & Quarter",
+    .variant           = "multicategory",
+    .labels            = {"Q1","Q2","Q3","Q4","Q1","Q2","Q3","Q4"},
+    .super_categories  = {"EU","EU","EU","EU","NA","NA","NA","NA"},
+    .values            = {120,145,160,180,90,110,135,150},
+    .y_label           = "Revenue (M€)",
+    .gridlines         = true,
 });
 chart.show();</code></pre></div>
 </div>
@@ -689,6 +1484,8 @@ Aliases: `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family`
 
 
 <div class="lang-fr" style="display:none">
+
+## Signature
 
 <div id="bar-fr">
 <div class="sp-variant-nav">
