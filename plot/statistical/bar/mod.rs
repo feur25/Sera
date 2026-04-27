@@ -1,0 +1,27 @@
+pub mod variant;
+pub mod config;
+pub mod basic;
+pub mod grouped;
+pub mod relative;
+pub mod grouped_stacked;
+pub mod marimekko;
+pub mod pictogram;
+pub mod multicategory;
+
+pub use variant::BarVariant;
+pub use config::BarConfig;
+
+pub fn render_bar_html(cfg: &BarConfig) -> String {
+    use BarVariant::*;
+    match cfg.variant {
+        Basic           => basic::render(cfg, b'v'),
+        Horizontal      => basic::render(cfg, b'h'),
+        Grouped         => grouped::render(cfg, false),
+        Stacked         => grouped::render(cfg, true),
+        Relative        => relative::render(cfg),
+        GroupedStacked  => grouped_stacked::render(cfg),
+        Marimekko       => marimekko::render(cfg),
+        Pictogram       => pictogram::render(cfg),
+        Multicategory   => multicategory::render(cfg),
+    }
+}

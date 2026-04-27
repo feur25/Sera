@@ -3,8 +3,10 @@ macro_rules! for_each_json_chart_fn {
     ($mac:ident) => {
         $mac!(build_html_chart,          "buildHtmlChart");
         $mac!(build_bar_chart,           "buildBarChart");
+        $mac!(build_bar,                 "buildBar");
         $mac!(build_hbar,                "buildHbar");
         $mac!(build_line_chart,          "buildLineChart");
+        $mac!(build_line,                "buildLine");
         $mac!(build_dbscan_chart,        "buildDbscanChart");
         $mac!(build_dbscan_chart_3d,     "buildDbscanChart3d");
         $mac!(build_kmeans_chart,        "buildKmeansChart");
@@ -79,11 +81,18 @@ pub const CHART_ALIASES: &[(&str, &str)] = &[
     ("bar",            "build_bar_chart"),
     ("bar_chart",      "build_bar_chart"),
     ("bars",           "build_bar_chart"),
+    ("bar_unified",    "build_bar"),
+    ("bars_unified",   "build_bar"),
+    ("bar_family",     "build_bar"),
     ("hbar",           "build_hbar"),
     ("barh",           "build_hbar"),
     ("horizontal_bar", "build_hbar"),
     ("line",           "build_line_chart"),
     ("line_chart",     "build_line_chart"),
+    ("line_unified",   "build_line"),
+    ("lines_unified",  "build_line"),
+    ("line_family",    "build_line"),
+    ("lines_family",   "build_line"),
     ("scatter",        "build_scatter_chart"),
     ("scatter_chart",  "build_scatter_chart"),
     ("hist",           "build_histogram"),

@@ -96,6 +96,29 @@ pub struct ChartOpts {
     pub normalize: Option<bool>,
     pub images: Option<Vec<Option<String>>>,
     pub descriptions: Option<Vec<Vec<Vec<String>>>>,
+    pub variant: Option<String>,
+    pub offset_groups: Option<Vec<String>>,
+    pub widths: Option<Vec<f64>>,
+    pub super_categories: Option<Vec<String>>,
+    pub icon_size: Option<i32>,
+    pub max_icons_per_column: Option<i32>,
+    pub units_per_icon: Option<f64>,
+    pub unit_description: Option<String>,
+    pub corner_radius: Option<i32>,
+    pub bar_gap: Option<f64>,
+    pub bargroup_gap: Option<f64>,
+    pub line_shape: Option<String>,
+    pub step_shape: Option<String>,
+    pub spline_tension: Option<f64>,
+    pub dash_pattern: Option<String>,
+    pub stroke_width: Option<f64>,
+    pub marker_size: Option<i32>,
+    pub gap_threshold: Option<f64>,
+    pub spark_cols: Option<usize>,
+    pub spark_cell_w: Option<i32>,
+    pub spark_cell_h: Option<i32>,
+    pub stack_fill: Option<bool>,
+    pub fill_opacity_f: Option<f64>,
 }
 
 impl ChartOpts {
@@ -218,6 +241,127 @@ pub fn build_bar_chart(input: &str) -> String {
         &groups, o.show_text.unwrap_or(false), &o.xl(), &o.yl(),
         &o.pal(), o.color_hex.unwrap_or(0), o.grid(), &o.srt(),
     );
+    apply(html, &o)
+}
+
+/// Unified bar-family entry point. Dispatches by `variant` keyword:
+/// "basic" | "horizontal" | "grouped" | "stacked" | "relative" |
+/// "grouped_stacked" | "marimekko" | "pictogram" | "multicategory".
+pub fn build_bar(input: &str) -> String {
+    use crate::plot::statistical::{BarVariant, BarConfig, render_bar_html};
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let variant = BarVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+
+    let labels = a.labels.clone().unwrap_or_default();
+    let values = a.values.clone().unwrap_or_default();
+    let category_labels = a.labels.clone().unwrap_or_default();
+    let groups = o.color_groups.clone().unwrap_or_default();
+    let hover = o.hj();
+    let palette = o.pal();
+    let offset_groups = o.offset_groups.clone().unwrap_or_default();
+    let widths = o.widths.clone().unwrap_or_default();
+    let super_categories = o.super_categories.clone().unwrap_or_default();
+    let unit_desc = o.unit_description.clone().unwrap_or_default();
+    let xl = o.xl(); let yl = o.yl(); let srt = o.srt(); let lp = o.lp();
+
+    let series: Vec<(String, Vec<f64>)> = {
+        let sn = o.series_names.clone().unwrap_or_default();
+        let n_cats = category_labels.len();
+        if let Some(s) = a.series.as_ref() {
+            s.iter().enumerate().map(|(si, vals)| (
+                sn.get(si).cloned().unwrap_or_else(|| format!("S{}", si + 1)),
+                vals.clone(),
+            )).collect()
+        } else if !sn.is_empty() && n_cats > 0 {
+            let flat = a.values.clone().unwrap_or_default();
+            sn.iter().enumerate().map(|(si, name)| {
+                let vals: Vec<f64> = (0..n_cats)
+                    .map(|ci| flat.get(si * n_cats + ci).copied().unwrap_or(0.0))
+                    .collect();
+                (name.clone(), vals)
+            }).collect()
+        } else {
+            Vec::new()
+        }
+    };
+
+    let cfg = BarConfig {
+        variant, title,
+        x_label: &xl, y_label: &yl,
+        width: o.w(900), height: o.h(480),
+        gridlines: o.grid(), sort_order: &srt, legend_position: &lp,
+        hover: &hover, palette: &palette,
+        labels: &labels, values: &values,
+        color_hex: o.color_hex.unwrap_or(0),
+        color_groups: &groups,
+        category_labels: &category_labels, series: &series,
+        offset_groups: &offset_groups, widths: &widths,
+        super_categories: &super_categories,
+        icon_size: o.icon_size.unwrap_or(24),
+        max_icons_per_column: o.max_icons_per_column.unwrap_or(10),
+        units_per_icon: o.units_per_icon.unwrap_or(1.0),
+        unit_description: &unit_desc,
+        show_text: o.show_text.unwrap_or(false),
+        corner_radius: o.corner_radius.unwrap_or(0),
+        bar_gap: o.bar_gap.unwrap_or(0.2),
+        bargroup_gap: o.bargroup_gap.unwrap_or(0.1),
+    };
+    let html = render_bar_html(&cfg);
+    apply(html, &o)
+}
+
+pub fn build_line(input: &str) -> String {
+    use crate::plot::statistical::{LineVariant, LineConfig, render_line_html};
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let variant = LineVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+
+    let labels = a.labels.clone().unwrap_or_default();
+    let values = a.values.clone().unwrap_or_default();
+    let x_labels = a.x_labels.clone().unwrap_or_default();
+    let hover = o.hj();
+    let palette = o.pal();
+    let xl = o.xl(); let yl = o.yl(); let srt = o.srt(); let lp = o.lp();
+
+    let series: Vec<(String, Vec<f64>)> = {
+        let sn = o.series_names.clone().unwrap_or_default();
+        if let Some(s) = a.series.as_ref() {
+            s.iter().enumerate().map(|(si, vals)| (
+                sn.get(si).cloned().unwrap_or_else(|| format!("S{}", si + 1)),
+                vals.clone(),
+            )).collect()
+        } else {
+            Vec::new()
+        }
+    };
+
+    let step_shape = o.step_shape.clone().or_else(|| o.line_shape.clone()).unwrap_or_else(|| "hv".to_string());
+    let dash_pattern = o.dash_pattern.clone().unwrap_or_else(|| "auto".to_string());
+
+    let cfg = LineConfig {
+        variant, title,
+        x_label: &xl, y_label: &yl,
+        width: o.w(900), height: o.h(480),
+        gridlines: o.grid(), sort_order: &srt, legend_position: &lp,
+        hover: &hover, palette: &palette,
+        labels: &labels, values: &values,
+        color_hex: o.color_hex.unwrap_or(0),
+        show_points: o.show_points.unwrap_or(false),
+        series: &series, x_labels: &x_labels,
+        step_shape: &step_shape,
+        spline_tension: o.spline_tension.unwrap_or(0.5),
+        fill_opacity: o.fill_opacity_f.unwrap_or_else(|| o.fill_opacity.map(|i| i as f64 / 100.0).unwrap_or(0.3)),
+        stack_fill: o.stack_fill.unwrap_or(false),
+        dash_pattern: &dash_pattern,
+        stroke_width: o.stroke_width.unwrap_or(2.0),
+        marker_size: o.marker_size.unwrap_or(4),
+        gap_threshold: o.gap_threshold.unwrap_or(f64::NAN),
+        spark_cols: o.spark_cols.unwrap_or(3),
+        spark_cell_h: o.spark_cell_h.unwrap_or(60),
+        spark_cell_w: o.spark_cell_w.unwrap_or(220),
+    };
+    let html = render_line_html(&cfg);
     apply(html, &o)
 }
 

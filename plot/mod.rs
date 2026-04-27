@@ -1,4 +1,5 @@
 pub mod canvas;
+pub mod family_macro;
 pub mod renderers;
 pub mod generic;
 pub mod camera;
