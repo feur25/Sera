@@ -18,8 +18,9 @@
 .sp-variant.sp-von{display:block}
 </style>
 <script>
+var barPreviewMap={'basic':'bar','horizontal':'hbar','grouped':'grouped-bar','stacked':'stacked-bar','relative':'stacked-bar','gstack':'grouped-bar','marimekko':'bar','pictogram':'bar','multicategory':'bar'};
 function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
-function spVar(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-vbtn').forEach(function(b){b.classList.remove('sp-vact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-vact');}
+function spVar(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-vbtn').forEach(function(b){b.classList.remove('sp-vact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-vact');var frame=document.getElementById(scope+'-preview');if(frame&&barPreviewMap[name]){frame.src='../../previews/'+barPreviewMap[name]+'.html';}}
 document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
 </script>
 
@@ -1406,13 +1407,7 @@ chart.show();</code></pre></div>
 
 </div><!-- /bar-en -->
 
-Aliases: `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family`
-
----
-
-## Description
-
-`sp.bar()` is the unified entry point for the entire bar-chart family. The `variant` keyword selects the rendering strategy — all other arguments remain consistent across variants.
+Aliases: `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family` for the entire bar-chart family. The `variant` keyword selects the rendering strategy — all other arguments remain consistent across variants.
 
 | Variant | Use case | Key extra args |
 |---------|----------|----------------|
@@ -1470,7 +1465,7 @@ Aliases: `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family`
 
 ---
 
-<iframe src="../../previews/bar.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<iframe id="bar-en-preview" src="../../previews/bar.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
 
@@ -1532,7 +1527,7 @@ Aliases: `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family`
        super_categories, ...) -> Chart</code></pre></div>
 </div><!-- /bar-fr -->
 
-Alias : `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family`
+Alias : `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family`
 
 ---
 
@@ -1585,6 +1580,8 @@ Alias : `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family`
 | `sort_order` | `str` | `"none"` | basic, horizontal | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, `"none"` |
 | `legend_position` | `str` | `"right"` | multi-séries | `"right"`, `"left"`, `"top"`, `"bottom"` |
 | `background` | `str` | `None` | toutes | Couleur de fond CSS |
+| `no_x_axis` | `bool` | `False` | toutes | Masquer l'axe X |
+| `no_y_axis` | `bool` | `False` | toutes | Masquer l'axe Y |
 
 ---
 
@@ -1600,3 +1597,8 @@ Alias : `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family`
 - [Cascade / Waterfall](waterfall.md) — `sp.waterfall()`
 - [Bullet](bullet.md) — `sp.bullet()`
 
+---
+
+<iframe id="bar-fr-preview" src="../../previews/bar.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+
+</div><!-- /lang-fr -->
