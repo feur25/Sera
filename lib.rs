@@ -88,6 +88,26 @@ static GLOBAL_THOUSANDS_SEP: std::sync::Mutex<Option<String>> = std::sync::Mutex
 static GLOBAL_MARGIN: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
 #[cfg(feature = "python")]
 static GLOBAL_EXPORT_BTN: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+#[cfg(feature = "python")]
+static GLOBAL_TEXT_AUTO: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+#[cfg(feature = "python")]
+static GLOBAL_TEXT_POSITION: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+#[cfg(feature = "python")]
+static GLOBAL_TEXT_ANGLE: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(i32::MIN);
+#[cfg(feature = "python")]
+static GLOBAL_TEXT_FONT_SIZE: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
+#[cfg(feature = "python")]
+static GLOBAL_TEXT_FONT_COLOR: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+#[cfg(feature = "python")]
+static GLOBAL_UNIFORM_TEXT_MIN: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
+#[cfg(feature = "python")]
+static GLOBAL_UNIFORM_TEXT_MODE: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+#[cfg(feature = "python")]
+static GLOBAL_BAR_CORNER_RADIUS: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+#[cfg(feature = "python")]
+static GLOBAL_HOVER_INFO: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+#[cfg(feature = "python")]
+static GLOBAL_PATTERN_SHAPE: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 
 #[cfg(feature = "python")]
 pub fn get_global_background() -> Option<String> {
@@ -406,6 +426,69 @@ impl Chart {
         self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_EXPORT_JS), 1))
     }
 
+    #[pyo3(signature = (format=None, position=None, angle=None, font_size=None, color=None))]
+    fn text_auto(&self, py: Python<'_>, format: Option<&PyAny>, position: Option<&str>, angle: Option<i32>, font_size: Option<i32>, color: Option<&str>) -> Chart {
+        let _ = py;
+        let mut opts = String::from("window.__sp_text__={");
+        let fmt = match format {
+            None => Some(String::new()),
+            Some(v) => {
+                if let Ok(b) = v.extract::<bool>() { if b { Some(String::new()) } else { None } }
+                else if let Ok(s) = v.extract::<String>() { Some(s) }
+                else { Some(String::new()) }
+            }
+        };
+        if let Some(f) = fmt { opts.push_str(&format!("format:{},", json_str(&f))); }
+        if let Some(p) = position { opts.push_str(&format!("position:{},", json_str(p))); }
+        if let Some(a) = angle { opts.push_str(&format!("angle:{},", a)); }
+        if let Some(s) = font_size { opts.push_str(&format!("font_size:{},", s)); }
+        if let Some(c) = color { opts.push_str(&format!("color:{},", json_str(c))); }
+        opts.push_str("};");
+        let snippet = format!("<script>{}{}</script></body>", opts, SP_TEXT_JS);
+        self.propagate(self.html.replacen("</body>", &snippet, 1))
+    }
+
+    #[pyo3(signature = (position))]
+    fn text_position(&self, position: &str) -> Chart {
+        let snippet = format!("<script>window.__sp_text__=Object.assign(window.__sp_text__||{{}},{{position:{}}});{}</script></body>", json_str(position), SP_TEXT_JS);
+        self.propagate(self.html.replacen("</body>", &snippet, 1))
+    }
+
+    #[pyo3(signature = (degrees))]
+    fn text_angle(&self, degrees: i32) -> Chart {
+        let snippet = format!("<script>window.__sp_text__=Object.assign(window.__sp_text__||{{}},{{angle:{}}});{}</script></body>", degrees, SP_TEXT_JS);
+        self.propagate(self.html.replacen("</body>", &snippet, 1))
+    }
+
+    #[pyo3(signature = (family=None, size=None, color=None))]
+    fn text_font(&self, family: Option<&str>, size: Option<i32>, color: Option<&str>) -> Chart {
+        let mut opts = String::from("window.__sp_text__=Object.assign(window.__sp_text__||{},{");
+        if let Some(f) = family { opts.push_str(&format!("font_family:{},", json_str(f))); }
+        if let Some(s) = size { opts.push_str(&format!("font_size:{},", s)); }
+        if let Some(c) = color { opts.push_str(&format!("color:{},", json_str(c))); }
+        opts.push_str("});");
+        let snippet = format!("<script>{}{}</script></body>", opts, SP_TEXT_JS);
+        self.propagate(self.html.replacen("</body>", &snippet, 1))
+    }
+
+    #[pyo3(signature = (min_size=8, mode="hide"))]
+    fn uniform_text(&self, min_size: i32, mode: &str) -> Chart {
+        let snippet = format!("<script>window.__sp_text__=Object.assign(window.__sp_text__||{{}},{{uniform_min:{},uniform_mode:{}}});{}</script></body>", min_size, json_str(mode), SP_TEXT_JS);
+        self.propagate(self.html.replacen("</body>", &snippet, 1))
+    }
+
+    #[pyo3(signature = (radius))]
+    fn corner_radius_bars(&self, py: Python<'_>, radius: &PyAny) -> Chart {
+        let _ = py;
+        let s = if let Ok(i) = radius.extract::<i32>() { i.to_string() }
+            else if let Ok(f) = radius.extract::<f64>() { f.to_string() }
+            else if let Ok(s) = radius.extract::<String>() { s }
+            else { String::from("0") };
+        let val = if s.ends_with('%') { json_str(&s) } else { s.parse::<f64>().map(|v| v.to_string()).unwrap_or_else(|_| json_str(&s)) };
+        let snippet = format!("<script>window.__sp_bar_r__={};{}</script></body>", val, SP_BAR_RADIUS_JS);
+        self.propagate(self.html.replacen("</body>", &snippet, 1))
+    }
+
     #[new]
     #[pyo3(signature = (html=String::new()))]
     fn py_new(html: String) -> Self {
@@ -528,7 +611,32 @@ const SP_CROSSHAIR_JS: &str = "(function(){if(window.__spc__)return;window.__spc
 const SP_ZOOM_JS: &str = "(function(){if(window.__spz__)return;window.__spz__=1;var svg=document.querySelector('svg');if(!svg)return;var s=1,tx=0,ty=0,dr=false,sx,sy;svg.style.cursor='grab';svg.addEventListener('wheel',function(e){e.preventDefault();var z=e.deltaY<0?1.1:0.9;s=Math.min(Math.max(s*z,0.5),10);svg.style.transform='scale('+s+') translate('+tx+'px,'+ty+'px)';svg.style.transformOrigin='center center';},{passive:false});svg.addEventListener('mousedown',function(e){dr=true;sx=e.clientX-tx;sy=e.clientY-ty;svg.style.cursor='grabbing';});window.addEventListener('mouseup',function(){dr=false;if(svg)svg.style.cursor='grab';});svg.addEventListener('mousemove',function(e){if(!dr)return;tx=e.clientX-sx;ty=e.clientY-sy;svg.style.transform='scale('+s+') translate('+tx+'px,'+ty+'px)';});svg.addEventListener('dblclick',function(){s=1;tx=0;ty=0;svg.style.transform='';});})()";
 
 #[cfg(feature = "python")]
+const SP_TEXT_JS: &str = "(function(){var o=window.__sp_text__||{};if(window.__spt__)return;window.__spt__=1;var fmt=function(v,f){if(f==null||f===true||f==='true'||f==='')return (Math.round(v*1000)/1000).toString();var m=/^\\.(\\d+)([fs%eg])$/.exec(f);if(!m)return String(v);var d=+m[1],t=m[2];if(t==='f')return (+v).toFixed(d);if(t==='%')return ((+v)*100).toFixed(d)+'%';if(t==='e')return (+v).toExponential(d);if(t==='g')return (+v).toPrecision(d);if(t==='s'){var u=['','K','M','B','T'],a=Math.abs(+v),i=0;while(a>=1000&&i<u.length-1){a/=1000;i++;}var sn=(+v)<0?-a:a;return sn.toFixed(d)+u[i];}return String(v);};var ns='http://www.w3.org/2000/svg';var pos=o.position||'auto',ang=o.angle==null?0:+o.angle,fs=o.font_size||11,col=o.color||'#1f2937',ff=o.font_family||'system-ui,Arial,sans-serif',fmtS=o.format,umin=o.uniform_min||0,umode=o.uniform_mode||'';document.querySelectorAll('svg [data-v]').forEach(function(el){if(el.tagName==='text')return;if(el.getAttribute('data-sp-text')==='1')return;el.setAttribute('data-sp-text','1');var v=parseFloat(el.getAttribute('data-v'));if(!isFinite(v))return;var svg=el.ownerSVGElement;if(!svg)return;var bb;try{bb=el.getBBox();}catch(e){return;}var cx=bb.x+bb.width/2,tx,ty,ta='middle',pp=pos;if(pp==='auto')pp=(el.tagName==='rect'&&bb.height>fs*1.6)?'inside':'outside';if(el.tagName==='rect'){var isHoriz=bb.width>bb.height*1.5&&bb.x>50;if(pp==='inside'){tx=cx;ty=bb.y+bb.height/2+fs/3;}else if(pp==='outside'){tx=cx;ty=bb.y-4;}else{tx=cx;ty=bb.y-4;}if(isHoriz&&pp==='outside'){tx=bb.x+bb.width+6;ty=bb.y+bb.height/2+fs/3;ta='start';}}else{tx=cx;ty=bb.y-6;}var t=document.createElementNS(ns,'text');t.setAttribute('x',tx);t.setAttribute('y',ty);t.setAttribute('text-anchor',ta);t.setAttribute('font-family',ff);t.setAttribute('font-size',fs);t.setAttribute('fill',col);t.setAttribute('pointer-events','none');t.setAttribute('class','sp-vt');if(ang)t.setAttribute('transform','rotate('+ang+' '+tx+' '+ty+')');t.textContent=fmt(v,fmtS);el.parentNode.appendChild(t);if(umin>0){var rect=t.getBBox();if(rect.width>bb.width&&umode==='hide')t.style.display='none';}});})()";
+
+#[cfg(feature = "python")]
+const SP_BAR_RADIUS_JS: &str = "(function(){var r=window.__sp_bar_r__;if(r==null||window.__spbr__)return;window.__spbr__=1;document.querySelectorAll('svg rect[data-idx]').forEach(function(el){var v=r;if(typeof r==='string'&&r.charAt(r.length-1)==='%'){var bb;try{bb=el.getBBox();}catch(e){return;}var p=parseFloat(r)/100;v=Math.min(bb.width,bb.height)*p;}el.setAttribute('rx',v);el.setAttribute('ry',v);});})()";
+
+#[cfg(feature = "python")]
 const SP_EXPORT_JS: &str = "(function(){if(window.__spe__)return;window.__spe__=1;var c=document.querySelector('.chart-container')||document.querySelector('.c3w')||document.body;if(getComputedStyle(c).position==='static')c.style.position='relative';var b=document.createElement('button');b.textContent='\u{2B07}';b.title='Download chart';b.style.cssText='position:absolute;top:8px;right:8px;z-index:300;background:#6366f1;color:#fff;border:none;border-radius:6px;width:32px;height:32px;font-size:16px;cursor:pointer;opacity:0.6;transition:opacity .2s';b.onmouseenter=function(){b.style.opacity='1';};b.onmouseleave=function(){b.style.opacity='0.6';};b.onclick=function(){var bl=new Blob([document.documentElement.outerHTML],{type:'text/html'});var a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download='chart.html';a.click();};c.appendChild(b);})()";
+
+#[cfg(feature = "python")]
+fn json_str(s: &str) -> String {
+    let mut out = String::with_capacity(s.len() + 2);
+    out.push('"');
+    for c in s.chars() {
+        match c {
+            '"' => out.push_str("\\\""),
+            '\\' => out.push_str("\\\\"),
+            '\n' => out.push_str("\\n"),
+            '\r' => out.push_str("\\r"),
+            '\t' => out.push_str("\\t"),
+            c if (c as u32) < 0x20 => out.push_str(&format!("\\u{:04x}", c as u32)),
+            c => out.push(c),
+        }
+    }
+    out.push('"');
+    out
+}
 
 #[cfg(feature = "python")]
 fn inject_global_cfg(html: String) -> String {
@@ -560,6 +668,33 @@ fn inject_global_cfg(html: String) -> String {
     if GLOBAL_CROSSHAIR.load(Relaxed) { js.push_str(SP_CROSSHAIR_JS); js.push(';'); }
     if GLOBAL_ZOOM.load(Relaxed) { js.push_str(SP_ZOOM_JS); js.push(';'); }
     if GLOBAL_EXPORT_BTN.load(Relaxed) { js.push_str(SP_EXPORT_JS); js.push(';'); }
+    let text_auto_v = GLOBAL_TEXT_AUTO.lock().ok().and_then(|g| g.clone());
+    let text_pos_v = GLOBAL_TEXT_POSITION.lock().ok().and_then(|g| g.clone());
+    let text_angle_v = GLOBAL_TEXT_ANGLE.load(Relaxed);
+    let text_fs_v = GLOBAL_TEXT_FONT_SIZE.load(Relaxed);
+    let text_col_v = GLOBAL_TEXT_FONT_COLOR.lock().ok().and_then(|g| g.clone());
+    let utext_min = GLOBAL_UNIFORM_TEXT_MIN.load(Relaxed);
+    let utext_mode = GLOBAL_UNIFORM_TEXT_MODE.lock().ok().and_then(|g| g.clone());
+    if text_auto_v.is_some() || text_pos_v.is_some() || text_angle_v != i32::MIN || text_fs_v > 0 || text_col_v.is_some() {
+        let mut opts = String::from("window.__sp_text__={");
+        if let Some(ref t) = text_auto_v { opts.push_str(&format!("format:{},", json_str(t))); }
+        if let Some(ref p) = text_pos_v { opts.push_str(&format!("position:{},", json_str(p))); }
+        if text_angle_v != i32::MIN { opts.push_str(&format!("angle:{},", text_angle_v)); }
+        if text_fs_v > 0 { opts.push_str(&format!("font_size:{},", text_fs_v)); }
+        if let Some(ref c) = text_col_v { opts.push_str(&format!("color:{},", json_str(c))); }
+        if utext_min > 0 { opts.push_str(&format!("uniform_min:{},", utext_min)); }
+        if let Some(ref m) = utext_mode { opts.push_str(&format!("uniform_mode:{},", json_str(m))); }
+        opts.push_str("};");
+        js.push_str(&opts);
+        js.push_str(SP_TEXT_JS);
+        js.push(';');
+    }
+    let bar_r = GLOBAL_BAR_CORNER_RADIUS.lock().ok().and_then(|g| g.clone());
+    if let Some(r) = bar_r {
+        js.push_str(&format!("window.__sp_bar_r__={};", if r.ends_with('%') { json_str(&r) } else { r.parse::<f64>().map(|v| v.to_string()).unwrap_or_else(|_| json_str(&r)) }));
+        js.push_str(SP_BAR_RADIUS_JS);
+        js.push(';');
+    }
     if css.is_empty() && js.is_empty() { return html; }
     let mut out = html;
     if !css.is_empty() { out = out.replacen("</head>", &format!("<style>{}</style></head>", css), 1); }
@@ -769,8 +904,8 @@ pub fn themes() -> Vec<String> {
 
 #[cfg(feature = "python")]
 #[pyfunction]
-#[pyo3(signature = (*, font=None, font_size=None, title_size=None, border_radius=None, opacity=None, responsive=None, animation=None, animation_duration=None, crosshair=None, zoom=None, tooltip=None, locale=None, thousands_sep=None, margin=None, export_button=None, palette=None, background=None, gridlines=None))]
-pub fn config(font: Option<&str>, font_size: Option<i32>, title_size: Option<i32>, border_radius: Option<i32>, opacity: Option<f64>, responsive: Option<bool>, animation: Option<bool>, animation_duration: Option<i32>, crosshair: Option<bool>, zoom: Option<bool>, tooltip: Option<&str>, locale: Option<&str>, thousands_sep: Option<&str>, margin: Option<i32>, export_button: Option<bool>, palette: Option<Vec<u32>>, background: Option<&str>, gridlines: Option<bool>) {
+#[pyo3(signature = (*, font=None, font_size=None, title_size=None, border_radius=None, opacity=None, responsive=None, animation=None, animation_duration=None, crosshair=None, zoom=None, tooltip=None, locale=None, thousands_sep=None, margin=None, export_button=None, palette=None, background=None, gridlines=None, text_auto=None, text_position=None, text_angle=None, text_font_size=None, text_font_color=None, uniform_text_min_size=None, uniform_text_mode=None, bar_corner_radius=None))]
+pub fn config(font: Option<&str>, font_size: Option<i32>, title_size: Option<i32>, border_radius: Option<i32>, opacity: Option<f64>, responsive: Option<bool>, animation: Option<bool>, animation_duration: Option<i32>, crosshair: Option<bool>, zoom: Option<bool>, tooltip: Option<&str>, locale: Option<&str>, thousands_sep: Option<&str>, margin: Option<i32>, export_button: Option<bool>, palette: Option<Vec<u32>>, background: Option<&str>, gridlines: Option<bool>, text_auto: Option<&PyAny>, text_position: Option<&str>, text_angle: Option<i32>, text_font_size: Option<i32>, text_font_color: Option<&str>, uniform_text_min_size: Option<i32>, uniform_text_mode: Option<&str>, bar_corner_radius: Option<&PyAny>) {
     use std::sync::atomic::Ordering::Relaxed;
     if let Some(v) = font { if let Ok(mut f) = GLOBAL_FONT.lock() { *f = Some(v.to_string()); } }
     if let Some(v) = font_size { GLOBAL_FONT_SIZE.store(v, Relaxed); }
@@ -790,6 +925,30 @@ pub fn config(font: Option<&str>, font_size: Option<i32>, title_size: Option<i32
     if let Some(v) = background { if let Ok(mut b) = GLOBAL_BACKGROUND.lock() { *b = Some(v.to_string()); } }
     if let Some(p) = palette { if let Ok(mut pl) = GLOBAL_PALETTE.lock() { *pl = Some(p); } }
     if let Some(v) = gridlines { GLOBAL_GRIDLINES.store(v, Relaxed); }
+    if let Some(v) = text_auto {
+        let s = if let Ok(b) = v.extract::<bool>() { if b { String::from("") } else { return reset_text_auto(); } }
+            else if let Ok(s) = v.extract::<String>() { s }
+            else { return; };
+        if let Ok(mut g) = GLOBAL_TEXT_AUTO.lock() { *g = Some(s); }
+    }
+    if let Some(v) = text_position { if let Ok(mut g) = GLOBAL_TEXT_POSITION.lock() { *g = Some(v.to_string()); } }
+    if let Some(v) = text_angle { GLOBAL_TEXT_ANGLE.store(v, Relaxed); }
+    if let Some(v) = text_font_size { GLOBAL_TEXT_FONT_SIZE.store(v, Relaxed); }
+    if let Some(v) = text_font_color { if let Ok(mut g) = GLOBAL_TEXT_FONT_COLOR.lock() { *g = Some(v.to_string()); } }
+    if let Some(v) = uniform_text_min_size { GLOBAL_UNIFORM_TEXT_MIN.store(v, Relaxed); }
+    if let Some(v) = uniform_text_mode { if let Ok(mut g) = GLOBAL_UNIFORM_TEXT_MODE.lock() { *g = Some(v.to_string()); } }
+    if let Some(v) = bar_corner_radius {
+        let s = if let Ok(i) = v.extract::<i32>() { i.to_string() }
+            else if let Ok(f) = v.extract::<f64>() { f.to_string() }
+            else if let Ok(s) = v.extract::<String>() { s }
+            else { return; };
+        if let Ok(mut g) = GLOBAL_BAR_CORNER_RADIUS.lock() { *g = Some(s); }
+    }
+}
+
+#[cfg(feature = "python")]
+fn reset_text_auto() {
+    if let Ok(mut g) = GLOBAL_TEXT_AUTO.lock() { *g = None; }
 }
 
 #[cfg(feature = "python")]
@@ -815,6 +974,16 @@ pub fn reset_config() {
     if let Ok(mut pal) = GLOBAL_PALETTE.lock() { *pal = None; }
     GLOBAL_GRIDLINES.store(false, Relaxed);
     if let Ok(mut tn) = GLOBAL_THEME_NAME.lock() { *tn = None; }
+    if let Ok(mut g) = GLOBAL_TEXT_AUTO.lock() { *g = None; }
+    if let Ok(mut g) = GLOBAL_TEXT_POSITION.lock() { *g = None; }
+    GLOBAL_TEXT_ANGLE.store(i32::MIN, Relaxed);
+    GLOBAL_TEXT_FONT_SIZE.store(0, Relaxed);
+    if let Ok(mut g) = GLOBAL_TEXT_FONT_COLOR.lock() { *g = None; }
+    GLOBAL_UNIFORM_TEXT_MIN.store(0, Relaxed);
+    if let Ok(mut g) = GLOBAL_UNIFORM_TEXT_MODE.lock() { *g = None; }
+    if let Ok(mut g) = GLOBAL_BAR_CORNER_RADIUS.lock() { *g = None; }
+    if let Ok(mut g) = GLOBAL_HOVER_INFO.lock() { *g = None; }
+    if let Ok(mut g) = GLOBAL_PATTERN_SHAPE.lock() { *g = None; }
 }
 
 #[cfg(feature = "python")]

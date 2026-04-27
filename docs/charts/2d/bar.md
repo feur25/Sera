@@ -1508,7 +1508,7 @@ Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family
        show_text=False, corner_radius=0, bar_gap=0.2,
        width=900, height=480, x_label="", y_label="",
        gridlines=False, sort_order="none") -> Chart</code></pre>
-<p>Pour les exemples de code, voir la version EN.</p></div>
+</div>
 <div class="sp-variant" id="bar-fr-horizontal"><p>Barres horizontales — idéal pour les longs noms de catégories.</p>
 <pre><code class="language-python">sp.bar(title, labels, values, *, variant="horizontal",
        color_hex=0, show_text=False, corner_radius=0, ...) -> Chart</code></pre></div>
