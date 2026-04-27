@@ -180,21 +180,22 @@
       il.className = "sp-psec-lbl";
       il.textContent = lang === "fr" ? "Aper\u00e7u" : "Preview";
       iw.appendChild(il);
-      // Wrapper clips the scaled iframe to the right height
+      // Wrapper: height controlled programmatically so layout = visual (no scroll).
       var wrap = document.createElement("div");
-      wrap.style.cssText = "width:100%;overflow:hidden;position:relative;border-radius:6px;";
+      wrap.style.cssText = "width:100%;position:relative;overflow:hidden;border-radius:6px;";
       var pIframe = document.createElement("iframe");
       pIframe.src = exampleData.iframeSrc;
       pIframe.setAttribute("loading", "lazy");
-      pIframe.style.cssText = "width:" + CHART_W + "px;height:" + CHART_H + "px;border:none;display:block;transform-origin:0 0;background:#0d1117;";
+      // position:absolute removes the iframe from flow so wrap height rules the layout.
+      pIframe.style.cssText = "position:absolute;top:0;left:0;width:" + CHART_W + "px;height:" + CHART_H + "px;border:none;transform-origin:0 0;background:#0d1117;";
       wrap.appendChild(pIframe);
       iw.appendChild(wrap);
       body.appendChild(iw);
       // Scale iframe to fit panel, update on resize
       function rescaleIframe() {
-        var w = wrap.offsetWidth;
-        if (!w) return;
-        var scale = w / CHART_W;
+        var aw = wrap.offsetWidth;
+        if (!aw) return;
+        var scale = aw / CHART_W;
         pIframe.style.transform = "scale(" + scale + ")";
         wrap.style.height = Math.round(CHART_H * scale) + "px";
       }
@@ -306,7 +307,10 @@
     // Collect code tabs and iframe for each language (read-only, no hiding).
     exampleData.en = collectTabs(en);
     exampleData.fr = collectTabs(fr);
-    exampleData.iframeSrc = collectIframeSrc(en) || collectIframeSrc(fr);
+    // Collect both iframes unconditionally so both get hidden (.sp-moved).
+    var srcEn = collectIframeSrc(en);
+    var srcFr = collectIframeSrc(fr);
+    exampleData.iframeSrc = srcEn || srcFr;
 
     var panel = document.createElement("div");
     panel.id = PANEL_ID;
