@@ -169,111 +169,89 @@ iframe[loading="lazy"] {
   display: flex;
   flex-direction: column;
   font-family: system-ui, sans-serif;
-  /* allow the hoisted bookmark sidebar to escape the left border */
-  overflow: visible;
+  overflow: hidden;
 }
 
-/* ── Hoisted classeur sidebar — bookmarks glued to the panel left edge ─── */
-.sp-cls-rail-side {
-  position: absolute;
-  left: -44px;
-  top: 90px;
-  bottom: 16px;
-  width: 44px;
+/* ── Variant strip — horizontal pill bar at top of API panel ────────────── */
+.sp-cls-strip {
   display: flex;
-  flex-direction: column;
-  gap: 0;
-  padding: 6px 0;
-  background: linear-gradient(180deg, #0d1426, #070b18);
-  border: 1px solid #1e293b;
-  border-right: none;
-  border-radius: 10px 0 0 10px;
-  box-shadow: -8px 6px 22px -8px rgba(0,0,0,.55);
-  z-index: 1;
-  overflow-y: auto;
-  overflow-x: visible;
-  scrollbar-width: thin;
-  scrollbar-color: #334155 transparent;
+  flex-direction: row;
+  align-items: center;
+  flex-shrink: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  background: #07091a;
+  border-bottom: 1px solid #1e293b;
+  padding: 5px 8px;
+  gap: 2px;
+  min-height: 36px;
+  scrollbar-width: none;
 }
-.sp-cls-rail-side::-webkit-scrollbar { width: 3px; }
-.sp-cls-rail-side::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-.sp-cls-rail-side .sp-cls-tab {
-  position: relative;
+.sp-cls-strip::-webkit-scrollbar { display: none; }
+#sp-params-panel.sp-p-collapsed .sp-cls-strip { display: none; }
+
+/* Label-toggle button at left of strip */
+.sp-cls-strip-tog {
+  flex-shrink: 0;
+  background: none;
+  border: 1px solid #1e3a5f;
+  border-radius: 5px;
+  color: #475569;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  padding: 4px 7px;
+  margin-right: 6px;
+  transition: all .15s;
+}
+.sp-cls-strip-tog:hover { background: #1e293b; color: #a5b4fc; border-color: #3730a3; }
+
+/* Variant pills — icon-only by default, label shown in "wide" mode */
+.sp-strip-pill {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 0;
-  margin: 3px 0 3px -10px;
-  padding: 9px 8px;
-  background: linear-gradient(90deg, #1a2540 0%, #141d33 70%, #0f172a 100%);
-  color: #94a3b8;
-  font-size: 12px;
-  font-weight: 600;
+  gap: 5px;
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  color: #64748b;
   cursor: pointer;
-  border: none;
-  border-radius: 8px 0 0 8px;
-  box-shadow: -4px 3px 10px -3px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
-  transition: all .2s cubic-bezier(.5,0,.2,1);
-  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 8px;
+  transition: all .15s;
   white-space: nowrap;
-  min-height: 16px;
 }
-.sp-cls-rail-side .sp-cls-tab:hover {
-  background: linear-gradient(90deg, #23304d, #1a2540 70%, #141d33);
-  color: #e0e7ff;
-  margin-left: -16px;
-}
-.sp-cls-rail-side .sp-cls-tab.sp-cact {
-  background: linear-gradient(90deg, #3730a3 0%, #1e1b4b 50%, #0f172a 100%);
+.sp-strip-pill:hover { background: #1e293b; color: #e0e7ff; }
+.sp-strip-pill.sp-cact {
+  background: linear-gradient(135deg, #312e81, #1e1b4b);
+  border-color: #4f46e5;
   color: #f5f3ff;
-  margin-left: -22px;
-  box-shadow: -8px 6px 16px -3px rgba(99,102,241,.4), -3px 0 0 0 #818cf8 inset;
-  font-weight: 700;
-  z-index: 3;
+  box-shadow: 0 2px 8px -2px rgba(99,102,241,.5);
 }
-.sp-cls-rail-side .sp-cls-tab .sp-cic {
-  font-size: 13px;
-  color: #a5b4fc;
-  font-weight: 900;
-  letter-spacing: -1px;
-  text-shadow: 0 0 6px rgba(165,180,252,.4);
-}
-.sp-cls-rail-side .sp-cls-tab.sp-cact .sp-cic {
-  color: #e0e7ff;
-  text-shadow: 0 0 10px rgba(165,180,252,.7);
-}
-.sp-cls-rail-side .sp-cls-tab .sp-clb { display: none; }
+.sp-strip-pill .sp-strip-ic { font-weight: 900; font-size: 13px; color: #818cf8; }
+.sp-strip-pill.sp-cact .sp-strip-ic { color: #e0e7ff; text-shadow: 0 0 8px rgba(165,180,252,.6); }
+.sp-strip-pill .sp-strip-lbl { display: none; }
+.sp-cls-strip.sp-strip-wide .sp-strip-pill .sp-strip-lbl { display: inline; }
 
-/* When the panel is collapsed (just the header), hide the sidebar too */
-#sp-params-panel.sp-p-collapsed .sp-cls-rail-side { display: none; }
+/* The .sp-cls inside the panel body: layout-only shell (rail is in the strip) */
+#sp-params-panel .sp-pb .sp-cls { margin: 0 !important; box-shadow: none !important; background: transparent !important; border-radius: 8px; overflow: hidden; }
+#sp-params-panel .sp-pb .sp-cls-rail { display: none !important; }
+#sp-params-panel .sp-pb .sp-cls-body { padding: 0 !important; background: transparent !important; }
 
-/* In bottom-dock mode, the sidebar slides above the panel instead of off-left */
-#sp-params-panel.sp-p-bottom .sp-cls-rail-side {
-  left: 16px;
-  top: -42px;
-  right: auto;
+/* right mode */
+#sp-params-panel.sp-p-right {
+  right: 12px;
+  top: 72px;
+  bottom: 20px;
+  border-radius: 12px;
+}
+#sp-params-panel.sp-p-right.sp-p-collapsed {
   bottom: auto;
-  width: auto;
-  height: 42px;
-  flex-direction: row;
-  border-radius: 10px 10px 0 0;
-  border-bottom: none;
-  border-right: 1px solid #1e293b;
-  padding: 0 6px;
-  box-shadow: -2px -8px 22px -8px rgba(0,0,0,.55);
+  height: auto !important;
+  width: 220px !important;
 }
-#sp-params-panel.sp-p-bottom .sp-cls-rail-side .sp-cls-tab {
-  margin: -10px 3px 0;
-  border-radius: 8px 8px 0 0;
-  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 8px 100%);
-  padding: 8px 10px 12px;
-}
-#sp-params-panel.sp-p-bottom .sp-cls-rail-side .sp-cls-tab:hover { margin-top: -16px; }
-#sp-params-panel.sp-p-bottom .sp-cls-rail-side .sp-cls-tab.sp-cact { margin-top: -22px; }
-
-/* The original .sp-cls inside the panel body becomes body-only (rail moved) */
-#sp-params-panel .sp-pb .sp-cls { margin-left: 0 !important; box-shadow: none; background: transparent; border-radius: 10px; }
-#sp-params-panel .sp-pb .sp-cls-body { padding: 0; background: transparent; }
 
 /* right mode */
 #sp-params-panel.sp-p-right {

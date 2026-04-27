@@ -174,10 +174,10 @@
     var remappedSig = remapPanelHtml(data.signature);
     var scopeMatch = remappedSig.match(/\bid="(pp-[a-z0-9_-]+)"/i);
     var previewId = scopeMatch ? scopeMatch[1] + "-preview" : "";
-    addSec(remappedSig,                      labels.sig,   "sp-psec-sig");
-    addSec(remapPanelHtml(data.alias),       labels.alias, "sp-psec-alias");
-    addSec(remapPanelHtml(data.parameters),  labels.par,   "sp-psec-params");
-    addSec(remapPanelHtml(data.returns),     labels.ret,   "sp-psec-returns");
+    addSec(remappedSig,                                         labels.sig,   "sp-psec-sig");
+    addSec(remapPanelHtml(data.alias),                          labels.alias, "sp-psec-alias");
+    addSec(remapPanelHtml(data.parameters),                     labels.par,   "sp-psec-params");
+    addSec(stripPanelReturns(remapPanelHtml(data.returns)),     labels.ret,   "sp-psec-returns");
 
     // ── Code example tabs ────────────────────────────────────────────────
     var tabsHtml = (lang === "fr" ? exampleData.fr : exampleData.en) || exampleData.en || exampleData.fr;
@@ -254,55 +254,85 @@
       }
     }
 
-    hoistClassRails(panel);
+    hoistClassStrip(panel);
   }
 
-  // Move every .sp-cls-rail out of the scrolling body and attach it as a
-  // sticky sidebar to the LEFT edge of the API panel itself, so variants
-  // can be switched at any scroll position. Rebinds tab clicks because
-  // the original spCls() relies on the rail being a child of .sp-cls.
-  function hoistClassRails(panel) {
-    var rails = panel.querySelectorAll(".sp-pb .sp-cls .sp-cls-rail");
-    // Wipe any rails hoisted by a previous render.
-    panel.querySelectorAll(":scope > .sp-cls-rail-side").forEach(function (r) {
-      r.parentNode.removeChild(r);
+  // Build a horizontal variant-pill strip between the panel header and the
+  // scrollable body, so switching variants works at any scroll position.
+  function hoistClassStrip(panel) {
+    panel.querySelectorAll(":scope > .sp-cls-strip").forEach(function (el) {
+      el.parentNode.removeChild(el);
     });
-    rails.forEach(function (rail, idx) {
-      var cls = rail.closest(".sp-cls");
-      if (!cls || !cls.id) return;
+
+    var clsContainers = Array.prototype.slice.call(
+      panel.querySelectorAll(".sp-pb .sp-cls")
+    );
+    if (!clsContainers.length) return;
+
+    var strip = document.createElement("div");
+    strip.className = "sp-cls-strip";
+
+    var tog = document.createElement("button");
+    tog.className = "sp-cls-strip-tog";
+    tog.title = getLang() === "fr" ? "Afficher/masquer les labels" : "Toggle labels";
+    tog.textContent = "\u2630";
+    tog.addEventListener("click", function () { strip.classList.toggle("sp-strip-wide"); });
+    strip.appendChild(tog);
+
+    clsContainers.forEach(function (cls) {
       var scope = cls.id;
-      // Drop the in-rail toggle button — sidebar is always visible/expanded.
-      var tog = rail.querySelector(".sp-cls-toggle");
-      if (tog) tog.parentNode.removeChild(tog);
-      rail.classList.add("sp-cls-rail-side");
-      rail.setAttribute("data-scope", scope);
-      // Rebind each tab click against its scope (rail is no longer inside .sp-cls).
-      rail.querySelectorAll(".sp-cls-tab").forEach(function (btn) {
-        var oc = btn.getAttribute("onclick") || "";
+      if (!scope) return;
+
+      cls.querySelectorAll(".sp-cls-tab").forEach(function (origBtn) {
+        var oc = origBtn.getAttribute("onclick") || "";
         var m  = oc.match(/spCls\('([^']+)','([^']+)'/);
-        btn.removeAttribute("onclick");
         if (!m) return;
         var name = m[2];
-        btn.addEventListener("click", function () {
+        var icon = origBtn.querySelector(".sp-cic");
+        var lbl  = origBtn.querySelector(".sp-clb");
+
+        var pill = document.createElement("button");
+        pill.className = "sp-strip-pill" + (origBtn.classList.contains("sp-cact") ? " sp-cact" : "");
+        pill.setAttribute("data-scope", scope);
+        pill.setAttribute("data-name",  name);
+        pill.innerHTML =
+          '<span class="sp-strip-ic">' + (icon ? icon.innerHTML : "") + '</span>' +
+          '<span class="sp-strip-lbl">' + (lbl  ? lbl.textContent  : name) + '</span>';
+
+        pill.addEventListener("click", function () {
           var root = document.getElementById(scope);
           if (!root) return;
           root.querySelectorAll(".sp-variant").forEach(function (s) { s.classList.remove("sp-von"); });
-          rail.querySelectorAll(".sp-cls-tab").forEach(function (b) { b.classList.remove("sp-cact"); });
+          strip.querySelectorAll('.sp-strip-pill[data-scope="' + scope + '"]').forEach(function (b) { b.classList.remove("sp-cact"); });
           var v = document.getElementById(scope + "-" + name);
           if (v) v.classList.add("sp-von");
-          btn.classList.add("sp-cact");
+          pill.classList.add("sp-cact");
           if (window.hljs && v) {
             v.querySelectorAll("code").forEach(function (c) {
               try { (hljs.highlightElement || hljs.highlightBlock).call(hljs, c); } catch (e) {}
             });
           }
         });
+        strip.appendChild(pill);
       });
-      // Hoist out: position absolute relative to the panel.
-      // Stagger top offset if multiple .sp-cls exist on the same page.
-      rail.style.top = (90 + idx * 40) + "px";
-      panel.appendChild(rail);
     });
+
+    var pb = panel.querySelector(".sp-pb");
+    if (pb) panel.insertBefore(strip, pb);
+    else panel.appendChild(strip);
+  }
+
+  // Remove large preview iframes from the classeur when rendering inside the panel.
+  function stripPanelReturns(html) {
+    var tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    tmp.querySelectorAll(".sp-preview-frame, .sp-preview-label").forEach(function (el) {
+      el.parentNode.removeChild(el);
+    });
+    tmp.querySelectorAll('iframe[loading="lazy"]').forEach(function (el) {
+      el.parentNode.removeChild(el);
+    });
+    return tmp.innerHTML;
   }
 
   function applyPos(panel, posBtn) {
