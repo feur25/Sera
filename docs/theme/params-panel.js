@@ -253,6 +253,56 @@
         });
       }
     }
+
+    hoistClassRails(panel);
+  }
+
+  // Move every .sp-cls-rail out of the scrolling body and attach it as a
+  // sticky sidebar to the LEFT edge of the API panel itself, so variants
+  // can be switched at any scroll position. Rebinds tab clicks because
+  // the original spCls() relies on the rail being a child of .sp-cls.
+  function hoistClassRails(panel) {
+    var rails = panel.querySelectorAll(".sp-pb .sp-cls .sp-cls-rail");
+    // Wipe any rails hoisted by a previous render.
+    panel.querySelectorAll(":scope > .sp-cls-rail-side").forEach(function (r) {
+      r.parentNode.removeChild(r);
+    });
+    rails.forEach(function (rail, idx) {
+      var cls = rail.closest(".sp-cls");
+      if (!cls || !cls.id) return;
+      var scope = cls.id;
+      // Drop the in-rail toggle button — sidebar is always visible/expanded.
+      var tog = rail.querySelector(".sp-cls-toggle");
+      if (tog) tog.parentNode.removeChild(tog);
+      rail.classList.add("sp-cls-rail-side");
+      rail.setAttribute("data-scope", scope);
+      // Rebind each tab click against its scope (rail is no longer inside .sp-cls).
+      rail.querySelectorAll(".sp-cls-tab").forEach(function (btn) {
+        var oc = btn.getAttribute("onclick") || "";
+        var m  = oc.match(/spCls\('([^']+)','([^']+)'/);
+        btn.removeAttribute("onclick");
+        if (!m) return;
+        var name = m[2];
+        btn.addEventListener("click", function () {
+          var root = document.getElementById(scope);
+          if (!root) return;
+          root.querySelectorAll(".sp-variant").forEach(function (s) { s.classList.remove("sp-von"); });
+          rail.querySelectorAll(".sp-cls-tab").forEach(function (b) { b.classList.remove("sp-cact"); });
+          var v = document.getElementById(scope + "-" + name);
+          if (v) v.classList.add("sp-von");
+          btn.classList.add("sp-cact");
+          if (window.hljs && v) {
+            v.querySelectorAll("code").forEach(function (c) {
+              try { (hljs.highlightElement || hljs.highlightBlock).call(hljs, c); } catch (e) {}
+            });
+          }
+        });
+      });
+      // Hoist out: position absolute relative to the panel.
+      // Stagger top offset if multiple .sp-cls exist on the same page.
+      rail.style.top = (90 + idx * 40) + "px";
+      panel.appendChild(rail);
+    });
   }
 
   function applyPos(panel, posBtn) {

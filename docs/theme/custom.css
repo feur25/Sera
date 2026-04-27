@@ -169,7 +169,111 @@ iframe[loading="lazy"] {
   display: flex;
   flex-direction: column;
   font-family: system-ui, sans-serif;
+  /* allow the hoisted bookmark sidebar to escape the left border */
+  overflow: visible;
 }
+
+/* ── Hoisted classeur sidebar — bookmarks glued to the panel left edge ─── */
+.sp-cls-rail-side {
+  position: absolute;
+  left: -44px;
+  top: 90px;
+  bottom: 16px;
+  width: 44px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 6px 0;
+  background: linear-gradient(180deg, #0d1426, #070b18);
+  border: 1px solid #1e293b;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  box-shadow: -8px 6px 22px -8px rgba(0,0,0,.55);
+  z-index: 1;
+  overflow-y: auto;
+  overflow-x: visible;
+  scrollbar-width: thin;
+  scrollbar-color: #334155 transparent;
+}
+.sp-cls-rail-side::-webkit-scrollbar { width: 3px; }
+.sp-cls-rail-side::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+.sp-cls-rail-side .sp-cls-tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  margin: 3px 0 3px -10px;
+  padding: 9px 8px;
+  background: linear-gradient(90deg, #1a2540 0%, #141d33 70%, #0f172a 100%);
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px 0 0 8px;
+  box-shadow: -4px 3px 10px -3px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04);
+  transition: all .2s cubic-bezier(.5,0,.2,1);
+  clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
+  white-space: nowrap;
+  min-height: 16px;
+}
+.sp-cls-rail-side .sp-cls-tab:hover {
+  background: linear-gradient(90deg, #23304d, #1a2540 70%, #141d33);
+  color: #e0e7ff;
+  margin-left: -16px;
+}
+.sp-cls-rail-side .sp-cls-tab.sp-cact {
+  background: linear-gradient(90deg, #3730a3 0%, #1e1b4b 50%, #0f172a 100%);
+  color: #f5f3ff;
+  margin-left: -22px;
+  box-shadow: -8px 6px 16px -3px rgba(99,102,241,.4), -3px 0 0 0 #818cf8 inset;
+  font-weight: 700;
+  z-index: 3;
+}
+.sp-cls-rail-side .sp-cls-tab .sp-cic {
+  font-size: 13px;
+  color: #a5b4fc;
+  font-weight: 900;
+  letter-spacing: -1px;
+  text-shadow: 0 0 6px rgba(165,180,252,.4);
+}
+.sp-cls-rail-side .sp-cls-tab.sp-cact .sp-cic {
+  color: #e0e7ff;
+  text-shadow: 0 0 10px rgba(165,180,252,.7);
+}
+.sp-cls-rail-side .sp-cls-tab .sp-clb { display: none; }
+
+/* When the panel is collapsed (just the header), hide the sidebar too */
+#sp-params-panel.sp-p-collapsed .sp-cls-rail-side { display: none; }
+
+/* In bottom-dock mode, the sidebar slides above the panel instead of off-left */
+#sp-params-panel.sp-p-bottom .sp-cls-rail-side {
+  left: 16px;
+  top: -42px;
+  right: auto;
+  bottom: auto;
+  width: auto;
+  height: 42px;
+  flex-direction: row;
+  border-radius: 10px 10px 0 0;
+  border-bottom: none;
+  border-right: 1px solid #1e293b;
+  padding: 0 6px;
+  box-shadow: -2px -8px 22px -8px rgba(0,0,0,.55);
+}
+#sp-params-panel.sp-p-bottom .sp-cls-rail-side .sp-cls-tab {
+  margin: -10px 3px 0;
+  border-radius: 8px 8px 0 0;
+  clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 8px 100%);
+  padding: 8px 10px 12px;
+}
+#sp-params-panel.sp-p-bottom .sp-cls-rail-side .sp-cls-tab:hover { margin-top: -16px; }
+#sp-params-panel.sp-p-bottom .sp-cls-rail-side .sp-cls-tab.sp-cact { margin-top: -22px; }
+
+/* The original .sp-cls inside the panel body becomes body-only (rail moved) */
+#sp-params-panel .sp-pb .sp-cls { margin-left: 0 !important; box-shadow: none; background: transparent; border-radius: 10px; }
+#sp-params-panel .sp-pb .sp-cls-body { padding: 0; background: transparent; }
 
 /* right mode */
 #sp-params-panel.sp-p-right {

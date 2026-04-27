@@ -43,10 +43,7 @@
 .sp-preview-frame{width:100%;height:380px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
 .sp-preview-label{font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase}
 
-/* Inside the API panel: ensure the bookmarks can escape the section padding */
-#sp-params-panel .sp-psec-returns,
-#sp-params-panel .sp-psec-returns .sp-psec-content{overflow:visible}
-#sp-params-panel .sp-cls{margin-left:46px;margin-right:0}
+/* Inside the API panel: the rail is hoisted out as a sidebar (see custom.css) */
 </style>
 <script>
 function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
