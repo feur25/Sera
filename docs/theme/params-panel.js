@@ -16,6 +16,9 @@
   var sectionData = { en: null, fr: null };
   // Code-example tabs HTML keyed by lang, and the iframe src.
   var exampleData = { en: "", fr: "", iframeSrc: "" };
+  // Body-appended rail position tracking
+  var lastRailResizeHandler = null;
+  var positionRailFn = null;
 
   function getLang() { return localStorage.getItem(LANG_KEY) || "en"; }
 
@@ -258,15 +261,19 @@
     rescaleIframesInPanel(panel);
   }
 
-  // Build a filing-cabinet ticket rail OUTSIDE the panel (position:absolute,
-  // right:100% so its right edge is flush with the panel's left border).
-  // Tickets point LEFT with drop-shadow casting leftward for 3-D relief.
+  // Build a filing-cabinet ticket rail appended to document.body (position:fixed,
+  // z-index:799) so it sits behind the panel (800) in the global stacking context.
+  // JS positions it flush to the panel's left border via getBoundingClientRect.
   function hoistClassRails(panel) {
-    // Remove old direct-child rail from a previous render
-    var oldRails = Array.prototype.filter.call(panel.childNodes, function (c) {
-      return c.classList && c.classList.contains("sp-cls-rail-side");
+    // Remove any previously-appended body rail and its resize listener
+    document.querySelectorAll(".sp-cls-rail-side").forEach(function (r) {
+      if (r.parentNode) r.parentNode.removeChild(r);
     });
-    oldRails.forEach(function (c) { panel.removeChild(c); });
+    if (lastRailResizeHandler) {
+      window.removeEventListener("resize", lastRailResizeHandler);
+      lastRailResizeHandler = null;
+    }
+    positionRailFn = null;
 
     // Unwrap old .sp-panel-row, restore .sp-pb as direct child
     var oldRow = Array.prototype.filter.call(panel.childNodes, function (c) {
@@ -341,12 +348,44 @@
       });
     });
 
-    // .sp-panel-row wraps .sp-pb only; rail is a sibling on the panel itself
+    // .sp-panel-row wraps .sp-pb only; rail goes to body for correct stacking
     var row = document.createElement("div");
     row.className = "sp-panel-row";
     panel.insertBefore(row, pb);
     row.appendChild(pb);
-    panel.appendChild(rail);  // position:absolute — protrudes outside panel box
+
+    // Append rail to body so it's behind the panel (z-index:799 < panel:800)
+    document.body.appendChild(rail);
+
+    function positionRail() {
+      if (!document.body.contains(panel)) return;
+      var isBottom    = panel.classList.contains("sp-p-bottom");
+      var isCollapsed = panel.classList.contains("sp-p-collapsed");
+      if (isCollapsed) { rail.style.display = "none"; return; }
+      rail.style.display = "";
+      rail.classList.toggle("sp-rail-bottom", isBottom);
+      var r = panel.getBoundingClientRect();
+      if (isBottom) {
+        rail.style.left   = r.left + "px";
+        rail.style.right  = (window.innerWidth - r.right) + "px";
+        rail.style.bottom = (window.innerHeight - r.top) + "px";
+        rail.style.top    = "";
+        rail.style.height = "";
+        rail.style.width  = "";
+      } else {
+        var inset = 12;   /* clear panel border-radius corners */
+        rail.style.right  = (window.innerWidth - r.left) + "px";
+        rail.style.left   = "";
+        rail.style.top    = (r.top + inset) + "px";
+        rail.style.bottom = (window.innerHeight - r.bottom + inset) + "px";
+        rail.style.height = "";
+        rail.style.width  = "";
+      }
+    }
+    positionRail();
+    positionRailFn = positionRail;
+    lastRailResizeHandler = positionRail;
+    window.addEventListener("resize", positionRail);
 
     // Inline-style display fix: makes variants/tabs visible regardless of CSS
     // cascade conflicts between custom.css and bar.md's inline <style> block.
@@ -434,6 +473,7 @@
     posBtn.title = state.pos === "right"
       ? (getLang() === "fr" ? "Ancrer en bas" : "Dock to bottom")
       : (getLang() === "fr" ? "Ancrer \u00e0 droite" : "Dock to right");
+    if (positionRailFn) positionRailFn();
   }
 
   function applyCollapsed(panel, colBtn) {
@@ -451,6 +491,7 @@
     colBtn.title = state.collapsed
       ? (getLang() === "fr" ? "D\u00e9plier" : "Expand")
       : (getLang() === "fr" ? "Replier" : "Collapse");
+    if (positionRailFn) positionRailFn();
   }
 
   function attachResize(panel) {
@@ -477,6 +518,7 @@
           panel.style.height = h + "px";
           document.documentElement.style.setProperty("--sp-pp-h", h + "px");
         }
+        if (positionRailFn) positionRailFn();
       }
       function onUp() {
         document.removeEventListener("mousemove", onMove);
