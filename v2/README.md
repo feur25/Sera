@@ -1,2 +1,0 @@
-﻿# SeraPlot v2
-
