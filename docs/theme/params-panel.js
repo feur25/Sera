@@ -434,7 +434,7 @@
 
   // Scale each .sp-preview-frame inside the panel to fit the available width.
   function rescaleIframesInPanel(panel) {
-    var CHART_W = 900, CHART_H = 380;
+    var CHART_W = 900, CHART_H = 480;
     panel.querySelectorAll(".sp-preview-frame").forEach(function (iframe) {
       // If the iframe is already inside a dedicated wrapper, re-use it.
       // Otherwise INSERT a new wrapper div around JUST the iframe so we never

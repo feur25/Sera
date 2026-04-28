@@ -1,68 +1,139 @@
-﻿# Line Charts
+# Line Charts
 
 <div class="lang-en">
 
 <style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.2em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
 .sp-tb{padding:8px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
 .sp-tb:hover{color:#e2e8f0}
 .sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
 .sp-tc{display:none}
 .sp-tc.sp-on{display:block}
-.sp-variant-nav{display:flex;flex-wrap:wrap;border-bottom:2px solid #1e293b;margin:0 0 1.4em}
-.sp-vbtn{padding:9px 15px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-vbtn:hover{color:#cbd5e1}
-.sp-vbtn.sp-vact{color:#818cf8;border-bottom-color:#818cf8}
+
+/* ── Filing-cabinet (classeur) — bookmark tabs that protrude LEFT ─────── */
+.sp-cls{display:flex;gap:0;margin:1.6em 0 1.6em 36px;border-radius:14px;background:linear-gradient(180deg,#0a0f1c 0%,#060912 100%);box-shadow:0 18px 50px -12px rgba(0,0,0,.6),0 0 0 1px #1e293b inset;position:relative;overflow:visible}
+.sp-cls-rail{display:flex;flex-direction:column;background:linear-gradient(180deg,#0d1426,#070b18);border-right:1px solid #1e293b;padding:18px 0;min-width:18px;transition:min-width .28s cubic-bezier(.5,0,.2,1);position:relative;z-index:2;border-radius:14px 0 0 14px;overflow:visible}
+.sp-cls.sp-open .sp-cls-rail{min-width:170px;padding:18px 8px}
+.sp-cls-toggle{position:absolute;top:-14px;left:8px;padding:5px 9px;background:#1e293b;color:#a5b4fc;border:1px solid #312e81;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;line-height:1;z-index:5;box-shadow:0 4px 12px -2px rgba(0,0,0,.5)}
+.sp-cls-toggle:hover{background:#312e81;color:#e0e7ff;transform:translateY(-1px)}
+
+.sp-cls-tab{position:relative;display:flex;align-items:center;gap:8px;margin:5px 0 5px -34px;padding:11px 16px 11px 14px;background:linear-gradient(90deg,#1a2540 0%,#141d33 70%,#0f172a 100%);color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;border:none;text-align:left;white-space:nowrap;border-radius:8px 0 0 8px;box-shadow:-6px 4px 14px -4px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04),inset 1px 0 0 rgba(255,255,255,.05);transition:all .25s cubic-bezier(.5,0,.2,1);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);min-height:18px}
+.sp-cls-tab:hover{background:linear-gradient(90deg,#23304d,#1a2540 70%,#141d33);color:#e0e7ff;margin-left:-40px;box-shadow:-8px 6px 18px -4px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
+.sp-cls-tab.sp-cact{background:linear-gradient(90deg,#3730a3 0%,#1e1b4b 50%,#0f172a 100%);color:#f5f3ff;margin-left:-46px;box-shadow:-10px 8px 22px -4px rgba(99,102,241,.35),-3px 0 0 0 #818cf8 inset,inset 0 1px 0 rgba(165,180,252,.2);font-weight:700;z-index:3}
+.sp-cls-tab .sp-cic{font-size:13px;flex-shrink:0;color:#a5b4fc;font-weight:900;letter-spacing:-1px;width:16px;text-align:center;text-shadow:0 0 6px rgba(165,180,252,.4)}
+.sp-cls-tab.sp-cact .sp-cic{color:#e0e7ff;text-shadow:0 0 10px rgba(165,180,252,.7)}
+.sp-cls-tab .sp-clb{display:none;font-weight:inherit;letter-spacing:.01em}
+.sp-cls.sp-open .sp-cls-tab .sp-clb{display:inline}
+.sp-cls-body{flex:1;padding:24px 26px 22px;background:#0a0f1c;min-width:0;position:relative;z-index:1;border-radius:0 14px 14px 0;overflow:hidden}
 .sp-variant{display:none}
-.sp-variant.sp-von{display:block}
+.sp-variant.sp-von{display:block;animation:spFade .25s ease}
+@keyframes spFade{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+
+.sp-variant > p:first-of-type{margin:0;padding:14px 18px 8px;background:linear-gradient(180deg,rgba(99,102,241,.08),rgba(99,102,241,.03));border:1px solid rgba(99,102,241,.18);border-bottom:none;border-radius:10px 10px 0 0;color:#e2e8f0;font-size:14px;line-height:1.55;font-weight:500}
+.sp-variant > p:first-of-type + pre{margin:0 0 18px;padding:14px 18px 16px;background:linear-gradient(180deg,#0d1326,#080d1a);border:1px solid rgba(99,102,241,.18);border-top:none;border-radius:0 0 10px 10px;box-shadow:0 6px 18px -8px rgba(0,0,0,.6);overflow-x:auto}
+.sp-variant > p:first-of-type + pre code{background:none;padding:0;font-size:12.5px;line-height:1.55;color:#cbd5e1}
+
+.sp-vmeta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px;color:#94a3b8;margin:6px 0 16px;padding:10px 14px;background:rgba(99,102,241,.06);border-left:3px solid #6366f1;border-radius:0 6px 6px 0}
+.sp-vmeta strong{color:#a5b4fc;font-weight:700;margin-right:4px;letter-spacing:.04em;text-transform:uppercase;font-size:11px}
+.sp-vmeta code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#e2e8f0;font-size:12px}
+.sp-preview-frame{width:100%;height:380px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+.sp-preview-label{font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase}
 </style>
 <script>
 function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
-function spVar(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-vbtn').forEach(function(b){b.classList.remove('sp-vact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-vact');}
+function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact');if(window.hljs)document.getElementById(scope+'-'+name).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
 document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
 </script>
 
 ## Signature
 
-<div id="line-en">
-<div class="sp-variant-nav">
-<button class="sp-vbtn sp-vact" onclick="spVar('line-en','basic',this)">Basic</button>
-<button class="sp-vbtn" onclick="spVar('line-en','multi',this)">Multi</button>
-<button class="sp-vbtn" onclick="spVar('line-en','stepped',this)">Stepped</button>
-<button class="sp-vbtn" onclick="spVar('line-en','spline',this)">Spline</button>
-<button class="sp-vbtn" onclick="spVar('line-en','filled',this)">Filled</button>
-<button class="sp-vbtn" onclick="spVar('line-en','sparkline',this)">Sparkline</button>
-<button class="sp-vbtn" onclick="spVar('line-en','dashed',this)">Dashed</button>
-<button class="sp-vbtn" onclick="spVar('line-en','connected',this)">ConnectedScatter</button>
-<button class="sp-vbtn" onclick="spVar('line-en','gapped',this)">Gapped</button>
-</div>
+`sp.line(title, labels=None, values=None, *, variant="basic", series=None, **kwargs) -> Chart`
 
-<!-- â”€â”€ Basic â”€â”€ -->
+Aliases: `sp.line`, `sp.lines`, `sp.line_unified`, `sp.lines_unified`, `sp.line_family`, `sp.line_chart`
+
+## Description
+
+`sp.line()` is the unified entry point for the entire line-chart family. The `variant` keyword selects the rendering strategy — every other argument is shared across variants.
+
+| Variant | Use case | Key extra args |
+|---------|----------|----------------|
+| `"basic"` | Single ordered series | `labels`, `values` |
+| `"multi"` / `"multiline"` | Several series, shared x-axis | `series`, `x_labels` |
+| `"stepped"` / `"step"` / `"hv"` | Piecewise-constant signal | `step_shape` |
+| `"spline"` / `"smooth"` | Smoothed Catmull-Rom curve | `spline_tension` |
+| `"filled"` / `"area"` | Area chart | `fill_opacity`, `stack_fill` |
+| `"sparkline"` / `"spark"` | Tiny inline charts grid | `spark_cols`, `spark_cell_w/h` |
+| `"dashed"` / `"dotted"` | Custom stroke pattern | `dash_pattern`, `stroke_width` |
+| `"connected_scatter"` / `"markers"` | Line + visible markers | `marker_size` |
+| `"gapped"` / `"missing"` | Breaks across NaN gaps | `gap_threshold` |
+
+---
+
+## Parameters
+
+| Parameter | Type | Default | Variants | Description |
+|-----------|------|---------|----------|-------------|
+| `title` | `str` | required | all | Chart title |
+| `labels` | `list[str]` | `None` | basic, stepped, spline, filled, dashed, connected_scatter, gapped | Category labels for x-axis |
+| `values` | `list[float]` | `None` | single-series variants | Y-values |
+| `series` | `list[(str, list[float])]` | `None` | multi, sparkline | Named series tuples |
+| `x_labels` | `list[str]` | `None` | multi | Shared x-axis labels |
+| `variant` | `str` | `"basic"` | — | Which variant to render |
+| `step_shape` | `str` | `"hv"` | stepped | `"hv"`, `"vh"`, `"hvh"` or `"vhv"` |
+| `spline_tension` | `float` | `0.5` | spline | Catmull-Rom tension (0–1) |
+| `fill_opacity` | `float` | `0.3` | filled | Fill alpha (0–1) |
+| `stack_fill` | `bool` | `False` | filled | Stack multiple filled series |
+| `dash_pattern` | `str` | `"8,4"` | dashed | SVG `stroke-dasharray` |
+| `stroke_width` | `float` | `2.0` | all | Line thickness in px |
+| `marker_size` | `int` | `4` | connected_scatter | Marker radius in px |
+| `gap_threshold` | `float` | `NaN` | gapped | Break line when |Δy| > threshold |
+| `spark_cols` | `int` | `3` | sparkline | Columns in the grid |
+| `spark_cell_w` | `int` | `220` | sparkline | Each cell width in px |
+| `spark_cell_h` | `int` | `60` | sparkline | Each cell height in px |
+| `show_points` | `bool` | `True` | all | Render data-point markers |
+| `color_hex` | `int` | `0` | single-series | Override line color (hex int) |
+| `palette` | `list[int]` | `None` | all | Custom color list |
+| `width` | `int` | `900` | all | Canvas width in px |
+| `height` | `int` | `480` | all | Canvas height in px |
+| `x_label` | `str` | `""` | all | X-axis label |
+| `y_label` | `str` | `""` | all | Y-axis label |
+| `gridlines` | `bool` | `False` | all | Show horizontal gridlines |
+| `sort_order` | `str` | `"none"` | basic | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, `"none"` |
+| `legend_position` | `str` | `"right"` | multi, sparkline | `"right"`, `"left"`, `"top"`, `"bottom"` |
+| `background` | `str` | `None` | all | Background CSS color; `None` = transparent |
+
+---
+
+## Returns
+
+`Chart` — object with `.html` property and `.show()` method.
+
+---
+
+
+<div class="sp-cls sp-open" id="line-en">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('line-en')" title="Collapse / expand">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('line-en','basic',this)"><span class="sp-cic">─</span><span class="sp-clb">Basic</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-en','multi',this)"><span class="sp-cic">≡</span><span class="sp-clb">Multi</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-en','stepped',this)"><span class="sp-cic">⌐</span><span class="sp-clb">Stepped</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-en','spline',this)"><span class="sp-cic">∽</span><span class="sp-clb">Spline</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-en','filled',this)"><span class="sp-cic">▰</span><span class="sp-clb">Filled</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-en','sparkline',this)"><span class="sp-cic">⌁</span><span class="sp-clb">Sparkline</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-en','dashed',this)"><span class="sp-cic">┈</span><span class="sp-clb">Dashed</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-en','connected_scatter',this)"><span class="sp-cic">●</span><span class="sp-clb">Connected Scatter</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-en','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Gapped</span></button>
+</div>
+<div class="sp-cls-body">
+
 <div class="sp-variant sp-von" id="line-en-basic">
 
 Single series connecting ordered data points.
 
-```python
-sp.line(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "basic",
-    color_hex: int = 0x6366F1,
-    show_points: bool = True,
-    gridlines: bool = False,
-    sort_order: str = "none",
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    no_y_axis: bool = False,
-    palette: list[int] | None = None,
-    background: str | None = None,
-) -> Chart
-```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>"basic"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="l-basic">
 <div class="sp-tab-btns">
@@ -78,38 +149,42 @@ sp.line(
 </div>
 <div id="l-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.line(
-    title="Temperature over 12 months",
-    variant="basic",
-    labels=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-    values=[3.2, 4.1, 8.5, 13.2, 17.8, 22.1, 24.6, 24.0, 19.3, 13.7, 7.8, 4.2],
+    title='Temperature over 12 months',
+    variant='basic',
+    labels=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    values=[2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0],
+    y_label='°C',
     gridlines=True,
-    y_label="Â°C",
 )
 chart.show()</code></pre></div>
 <div id="l-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
 const chart = sp.line({
-  title: "Temperature over 12 months", variant: "basic",
-  labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-  values: [3.2,4.1,8.5,13.2,17.8,22.1,24.6,24.0,19.3,13.7,7.8,4.2],
-  gridlines: true, yLabel: "Â°C",
+  title: "Temperature over 12 months",
+  variant: "basic",
+  labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  values: [2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0],
+  yLabel: "°C",
+  gridlines: true
 });
 chart.show();</code></pre></div>
 <div id="l-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
 const chart = sp.line({
-  title: "Temperature over 12 months", variant: "basic",
-  labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-  values: [3.2,4.1,8.5,13.2,17.8,22.1,24.6,24.0,19.3,13.7,7.8,4.2],
-  gridlines: true, yLabel: "Â°C",
+  title: "Temperature over 12 months",
+  variant: "basic",
+  labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+  values: [2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0],
+  yLabel: "°C",
+  gridlines: true
 });
 chart.show();</code></pre></div>
 <div id="l-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
 chart <- sp$line(
   title = "Temperature over 12 months",
   variant = "basic",
-  labels = c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
-  values = c(3.2, 4.1, 8.5, 13.2, 17.8, 22.1, 24.6, 24.0, 19.3, 13.7, 7.8, 4.2),
-  gridlines = TRUE,
-  y_label = "Â°C"
+  labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
+  values = c(2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0),
+  y_label = "°C",
+  gridlines = TRUE
 )
 chart$show()</code></pre></div>
 <div id="l-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
@@ -118,23 +193,24 @@ fn main() {
     let chart = sp::line()
         .title("Temperature over 12 months")
         .variant("basic")
-        .labels(vec!["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"])
-        .values(vec![3.2, 4.1, 8.5, 13.2, 17.8, 22.1, 24.6, 24.0, 19.3, 13.7, 7.8, 4.2])
+        .labels(vec!["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"])
+        .values(vec![2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0])
+        .y_label("°C")
         .gridlines(true)
-        .y_label("Â°C")
         .build();
     chart.show();
 }</code></pre></div>
 <div id="l-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
+import java.util.Map;
 
 var chart = SeraPlot.line()
     .title("Temperature over 12 months")
     .variant("basic")
-    .labels(List.of("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"))
-    .values(List.of(3.2,4.1,8.5,13.2,17.8,22.1,24.6,24.0,19.3,13.7,7.8,4.2))
+    .labels(List.of("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
+    .values(List.of(2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0))
+    .yLabel("°C")
     .gridlines(true)
-    .yLabel("Â°C")
     .build();
 chart.show();</code></pre></div>
 <div id="l-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
@@ -142,10 +218,10 @@ chart.show();</code></pre></div>
 var chart = Sp.Line(
     title: "Temperature over 12 months",
     variant: "basic",
-    labels: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-    values: [3.2,4.1,8.5,13.2,17.8,22.1,24.6,24.0,19.3,13.7,7.8,4.2],
-    gridlines: true,
-    yLabel: "Â°C"
+    labels: new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" },
+    values: new[] { 2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0 },
+    yLabel: "°C",
+    gridlines: true
 );
 chart.Show();</code></pre></div>
 <div id="l-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
@@ -153,51 +229,34 @@ chart.Show();</code></pre></div>
 val chart = sp.line(
   title = "Temperature over 12 months",
   variant = "basic",
-  labels = List("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
-  values = List(3.2, 4.1, 8.5, 13.2, 17.8, 22.1, 24.6, 24.0, 19.3, 13.7, 7.8, 4.2),
-  gridlines = true,
-  y_label = "Â°C"
+  labels = List("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"),
+  values = List(2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0),
+  y_label = "°C",
+  gridlines = true
 )
 chart.show()</code></pre></div>
-<div id="l-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+<div id="l-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
 
-auto chart = sp::line({
-    .title     = "Temperature over 12 months",
-    .variant   = "basic",
-    .labels    = {"Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"},
-    .values    = {3.2,4.1,8.5,13.2,17.8,22.1,24.6,24.0,19.3,13.7,7.8,4.2},
-    .gridlines = true,
-    .y_label   = "Â°C",
-});
+auto chart = sp::line()
+    .title("Temperature over 12 months")
+    .variant("basic")
+    .labels({"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"})
+    .values({2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0})
+    .yLabel("°C")
+    .gridlines(true)
+    .build();
 chart.show();</code></pre></div>
 </div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
 </div>
 
-<!-- â”€â”€ Multi â”€â”€ -->
 <div class="sp-variant" id="line-en-multi">
 
-Multiple series on shared axes. Alias: `"multiline"`, `"multi_line"`.
+Several series sharing the same x-axis. Pass `series=[(name, values), ...]`.
 
-```python
-sp.line(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "multi",
-    series: list[list[float]],
-    series_names: list[str] | None = None,
-    x_labels: list[str] | None = None,
-    show_points: bool = True,
-    gridlines: bool = False,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    legend_position: str = "right",
-    palette: list[int] | None = None,
-    background: str | None = None,
-) -> Chart
-```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"multi"</code></span><span><strong>Aliases</strong> <code>"multi"</code> / <code>"multiline"</code> / <code>"multiple"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="l-multi">
 <div class="sp-tab-btns">
@@ -213,142 +272,114 @@ sp.line(
 </div>
 <div id="l-multi-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.line(
-    title="CPU vs Memory usage",
-    variant="multi",
-    labels=["00:00","04:00","08:00","12:00","16:00","20:00"],
-    series=[[20,22,55,80,72,35],[40,38,45,60,55,42]],
-    series_names=["CPU %","RAM %"],
+    title='Quarterly revenue by region',
+    variant='multi',
+    x_labels=['Q1', 'Q2', 'Q3', 'Q4'],
+    series=[("EU", [120, 145, 160, 180]), ("NA", [90, 110, 135, 150]), ("APAC", [60, 75, 80, 95])],
+    y_label='Revenue (M€)',
     gridlines=True,
-    y_label="%",
 )
 chart.show()</code></pre></div>
 <div id="l-multi-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
 const chart = sp.line({
-  title: "CPU vs Memory usage", variant: "multi",
-  labels: ["00:00","04:00","08:00","12:00","16:00","20:00"],
-  series: [[20,22,55,80,72,35],[40,38,45,60,55,42]],
-  seriesNames: ["CPU %","RAM %"],
-  gridlines: true, yLabel: "%",
+  title: "Quarterly revenue by region",
+  variant: "multi",
+  xLabels: ["Q1", "Q2", "Q3", "Q4"],
+  series: [["EU", [120, 145, 160, 180]], ["NA", [90, 110, 135, 150]], ["APAC", [60, 75, 80, 95]]],
+  yLabel: "Revenue (M€)",
+  gridlines: true
 });
 chart.show();</code></pre></div>
 <div id="l-multi-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
 const chart = sp.line({
-  title: "CPU vs Memory usage", variant: "multi",
-  labels: ["00:00","04:00","08:00","12:00","16:00","20:00"],
-  series: [[20,22,55,80,72,35],[40,38,45,60,55,42]],
-  seriesNames: ["CPU %","RAM %"],
-  gridlines: true, yLabel: "%",
+  title: "Quarterly revenue by region",
+  variant: "multi",
+  xLabels: ["Q1", "Q2", "Q3", "Q4"],
+  series: [["EU", [120, 145, 160, 180]], ["NA", [90, 110, 135, 150]], ["APAC", [60, 75, 80, 95]]],
+  yLabel: "Revenue (M€)",
+  gridlines: true
 });
 chart.show();</code></pre></div>
 <div id="l-multi-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
 chart <- sp$line(
-  title = "CPU vs Memory usage",
+  title = "Quarterly revenue by region",
   variant = "multi",
-  labels = c("00:00","04:00","08:00","12:00","16:00","20:00"),
-  series = list(c(20,22,55,80,72,35), c(40,38,45,60,55,42)),
-  series_names = c("CPU %","RAM %"),
-  gridlines = TRUE,
-  y_label = "%"
+  x_labels = c("Q1", "Q2", "Q3", "Q4"),
+  series = list(list("EU", c(120, 145, 160, 180)), list("NA", c(90, 110, 135, 150)), list("APAC", c(60, 75, 80, 95))),
+  y_label = "Revenue (M€)",
+  gridlines = TRUE
 )
 chart$show()</code></pre></div>
 <div id="l-multi-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
 
 fn main() {
     let chart = sp::line()
-        .title("CPU vs Memory usage")
+        .title("Quarterly revenue by region")
         .variant("multi")
-        .labels(vec!["00:00","04:00","08:00","12:00","16:00","20:00"])
-        .series(vec![
-            vec![20.0,22.0,55.0,80.0,72.0,35.0],
-            vec![40.0,38.0,45.0,60.0,55.0,42.0],
-        ])
-        .series_names(vec!["CPU %","RAM %"])
+        .x_labels(vec!["Q1", "Q2", "Q3", "Q4"])
+        .series(vec![("EU".into(), vec![120.0, 145.0, 160.0, 180.0]), ("NA".into(), vec![90.0, 110.0, 135.0, 150.0]), ("APAC".into(), vec![60.0, 75.0, 80.0, 95.0])])
+        .y_label("Revenue (M€)")
         .gridlines(true)
-        .y_label("%")
         .build();
     chart.show();
 }</code></pre></div>
 <div id="l-multi-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
+import java.util.Map;
 
 var chart = SeraPlot.line()
-    .title("CPU vs Memory usage")
+    .title("Quarterly revenue by region")
     .variant("multi")
-    .labels(List.of("00:00","04:00","08:00","12:00","16:00","20:00"))
-    .series(List.of(
-        List.of(20.0,22.0,55.0,80.0,72.0,35.0),
-        List.of(40.0,38.0,45.0,60.0,55.0,42.0)))
-    .seriesNames(List.of("CPU %","RAM %"))
+    .xLabels(List.of("Q1", "Q2", "Q3", "Q4"))
+    .series(List.of(Map.entry("EU", List.of(120.0, 145.0, 160.0, 180.0)), Map.entry("NA", List.of(90.0, 110.0, 135.0, 150.0)), Map.entry("APAC", List.of(60.0, 75.0, 80.0, 95.0))))
+    .yLabel("Revenue (M€)")
     .gridlines(true)
-    .yLabel("%")
     .build();
 chart.show();</code></pre></div>
 <div id="l-multi-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
 
 var chart = Sp.Line(
-    title: "CPU vs Memory usage",
+    title: "Quarterly revenue by region",
     variant: "multi",
-    labels: ["00:00","04:00","08:00","12:00","16:00","20:00"],
-    series: [[20,22,55,80,72,35],[40,38,45,60,55,42]],
-    seriesNames: ["CPU %","RAM %"],
-    gridlines: true,
-    yLabel: "%"
+    xLabels: new[] { "Q1", "Q2", "Q3", "Q4" },
+    series: new[] { ("EU", new[] { 120, 145, 160, 180 }), ("NA", new[] { 90, 110, 135, 150 }), ("APAC", new[] { 60, 75, 80, 95 }) },
+    yLabel: "Revenue (M€)",
+    gridlines: true
 );
 chart.Show();</code></pre></div>
 <div id="l-multi-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
 
 val chart = sp.line(
-  title = "CPU vs Memory usage",
+  title = "Quarterly revenue by region",
   variant = "multi",
-  labels = List("00:00","04:00","08:00","12:00","16:00","20:00"),
-  series = List(
-    List(20.0,22.0,55.0,80.0,72.0,35.0),
-    List(40.0,38.0,45.0,60.0,55.0,42.0)),
-  series_names = List("CPU %","RAM %"),
-  gridlines = true,
-  y_label = "%"
+  x_labels = List("Q1", "Q2", "Q3", "Q4"),
+  series = List(("EU", List(120.0, 145.0, 160.0, 180.0)), ("NA", List(90.0, 110.0, 135.0, 150.0)), ("APAC", List(60.0, 75.0, 80.0, 95.0))),
+  y_label = "Revenue (M€)",
+  gridlines = true
 )
 chart.show()</code></pre></div>
-<div id="l-multi-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+<div id="l-multi-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
 
-auto chart = sp::line({
-    .title        = "CPU vs Memory usage",
-    .variant      = "multi",
-    .labels       = {"00:00","04:00","08:00","12:00","16:00","20:00"},
-    .series       = {{20,22,55,80,72,35},{40,38,45,60,55,42}},
-    .series_names = {"CPU %","RAM %"},
-    .gridlines    = true,
-    .y_label      = "%",
-});
+auto chart = sp::line()
+    .title("Quarterly revenue by region")
+    .variant("multi")
+    .xLabels({"Q1", "Q2", "Q3", "Q4"})
+    .series({{"EU", {120, 145, 160, 180}}, {"NA", {90, 110, 135, 150}}, {"APAC", {60, 75, 80, 95}}})
+    .yLabel("Revenue (M€)")
+    .gridlines(true)
+    .build();
 chart.show();</code></pre></div>
 </div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/multiline.html"></iframe>
 </div>
 
-<!-- â”€â”€ Stepped â”€â”€ -->
 <div class="sp-variant" id="line-en-stepped">
 
-Step line â€” value holds constant until the next point. `step_shape` controls where the step occurs. Aliases: `"hv"`, `"vh"`, `"hvh"`, `"vhv"`, `"step"`.
+Step (staircase) line — ideal for piecewise-constant data. Use `step_shape` to control corner direction.
 
-```python
-sp.line(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "stepped",
-    step_shape: str = "hv",
-    color_hex: int = 0x6366F1,
-    show_points: bool = False,
-    gridlines: bool = False,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    palette: list[int] | None = None,
-) -> Chart
-```
 
-`step_shape` values: `"hv"` (horizontal then vertical, default), `"vh"` (vertical then horizontal), `"hvh"`, `"vhv"`.
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"stepped"</code></span><span><strong>Aliases</strong> <code>"stepped"</code> / <code>"step"</code> / <code>"hv"</code> / <code>"vh"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="l-stepped">
 <div class="sp-tab-btns">
@@ -364,41 +395,45 @@ sp.line(
 </div>
 <div id="l-stepped-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.line(
-    title="Price Tier Changes",
-    variant="stepped",
-    step_shape="hv",
-    labels=["Jan","Feb","Mar","Apr","May","Jun"],
-    values=[10, 10, 15, 15, 20, 20],
-    y_label="Price (â‚¬)",
+    title='Server load (stepped)',
+    variant='stepped',
+    labels=['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+    values=[12.0, 8.0, 35.0, 52.0, 40.0, 18.0],
+    step_shape='hv',
+    y_label='% CPU',
     gridlines=True,
 )
 chart.show()</code></pre></div>
 <div id="l-stepped-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
 const chart = sp.line({
-  title: "Price Tier Changes", variant: "stepped",
+  title: "Server load (stepped)",
+  variant: "stepped",
+  labels: ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00"],
+  values: [12.0, 8.0, 35.0, 52.0, 40.0, 18.0],
   stepShape: "hv",
-  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-  values: [10,10,15,15,20,20],
-  yLabel: "Price (â‚¬)", gridlines: true,
+  yLabel: "% CPU",
+  gridlines: true
 });
 chart.show();</code></pre></div>
 <div id="l-stepped-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
 const chart = sp.line({
-  title: "Price Tier Changes", variant: "stepped",
+  title: "Server load (stepped)",
+  variant: "stepped",
+  labels: ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00"],
+  values: [12.0, 8.0, 35.0, 52.0, 40.0, 18.0],
   stepShape: "hv",
-  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-  values: [10,10,15,15,20,20],
-  yLabel: "Price (â‚¬)", gridlines: true,
+  yLabel: "% CPU",
+  gridlines: true
 });
 chart.show();</code></pre></div>
 <div id="l-stepped-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
 chart <- sp$line(
-  title = "Price Tier Changes",
+  title = "Server load (stepped)",
   variant = "stepped",
+  labels = c("00:00", "04:00", "08:00", "12:00", "16:00", "20:00"),
+  values = c(12.0, 8.0, 35.0, 52.0, 40.0, 18.0),
   step_shape = "hv",
-  labels = c("Jan","Feb","Mar","Apr","May","Jun"),
-  values = c(10, 10, 15, 15, 20, 20),
-  y_label = "Price (â‚¬)",
+  y_label = "% CPU",
   gridlines = TRUE
 )
 chart$show()</code></pre></div>
@@ -406,91 +441,77 @@ chart$show()</code></pre></div>
 
 fn main() {
     let chart = sp::line()
-        .title("Price Tier Changes")
+        .title("Server load (stepped)")
         .variant("stepped")
+        .labels(vec!["00:00", "04:00", "08:00", "12:00", "16:00", "20:00"])
+        .values(vec![12.0, 8.0, 35.0, 52.0, 40.0, 18.0])
         .step_shape("hv")
-        .labels(vec!["Jan","Feb","Mar","Apr","May","Jun"])
-        .values(vec![10.0, 10.0, 15.0, 15.0, 20.0, 20.0])
-        .y_label("Price (â‚¬)")
+        .y_label("% CPU")
         .gridlines(true)
         .build();
     chart.show();
 }</code></pre></div>
 <div id="l-stepped-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
+import java.util.Map;
 
 var chart = SeraPlot.line()
-    .title("Price Tier Changes")
+    .title("Server load (stepped)")
     .variant("stepped")
+    .labels(List.of("00:00", "04:00", "08:00", "12:00", "16:00", "20:00"))
+    .values(List.of(12.0, 8.0, 35.0, 52.0, 40.0, 18.0))
     .stepShape("hv")
-    .labels(List.of("Jan","Feb","Mar","Apr","May","Jun"))
-    .values(List.of(10.0,10.0,15.0,15.0,20.0,20.0))
-    .yLabel("Price (â‚¬)")
+    .yLabel("% CPU")
     .gridlines(true)
     .build();
 chart.show();</code></pre></div>
 <div id="l-stepped-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
 
 var chart = Sp.Line(
-    title: "Price Tier Changes",
+    title: "Server load (stepped)",
     variant: "stepped",
+    labels: new[] { "00:00", "04:00", "08:00", "12:00", "16:00", "20:00" },
+    values: new[] { 12.0, 8.0, 35.0, 52.0, 40.0, 18.0 },
     stepShape: "hv",
-    labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-    values: [10,10,15,15,20,20],
-    yLabel: "Price (â‚¬)",
+    yLabel: "% CPU",
     gridlines: true
 );
 chart.Show();</code></pre></div>
 <div id="l-stepped-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
 
 val chart = sp.line(
-  title = "Price Tier Changes",
+  title = "Server load (stepped)",
   variant = "stepped",
+  labels = List("00:00", "04:00", "08:00", "12:00", "16:00", "20:00"),
+  values = List(12.0, 8.0, 35.0, 52.0, 40.0, 18.0),
   step_shape = "hv",
-  labels = List("Jan","Feb","Mar","Apr","May","Jun"),
-  values = List(10.0, 10.0, 15.0, 15.0, 20.0, 20.0),
-  y_label = "Price (â‚¬)",
+  y_label = "% CPU",
   gridlines = true
 )
 chart.show()</code></pre></div>
-<div id="l-stepped-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+<div id="l-stepped-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
 
-auto chart = sp::line({
-    .title      = "Price Tier Changes",
-    .variant    = "stepped",
-    .step_shape = "hv",
-    .labels     = {"Jan","Feb","Mar","Apr","May","Jun"},
-    .values     = {10,10,15,15,20,20},
-    .y_label    = "Price (â‚¬)",
-    .gridlines  = true,
-});
+auto chart = sp::line()
+    .title("Server load (stepped)")
+    .variant("stepped")
+    .labels({"00:00", "04:00", "08:00", "12:00", "16:00", "20:00"})
+    .values({12.0, 8.0, 35.0, 52.0, 40.0, 18.0})
+    .stepShape("hv")
+    .yLabel("% CPU")
+    .gridlines(true)
+    .build();
 chart.show();</code></pre></div>
 </div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
 </div>
 
-<!-- â”€â”€ Spline â”€â”€ -->
 <div class="sp-variant" id="line-en-spline">
 
-Smooth Catmull-Rom curve through data points. `spline_tension` controls curvature (0.0 = straight, 1.0 = maximum curve). Alias: `"smooth"`.
+Catmull-Rom smoothed curve. `spline_tension` (0–1) controls how tight the curve hugs the points.
 
-```python
-sp.line(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "spline",
-    spline_tension: float = 0.5,
-    color_hex: int = 0x6366F1,
-    show_points: bool = True,
-    gridlines: bool = False,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    palette: list[int] | None = None,
-) -> Chart
-```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"spline"</code></span><span><strong>Aliases</strong> <code>"spline"</code> / <code>"smooth"</code> / <code>"curved"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="l-spline">
 <div class="sp-tab-btns">
@@ -506,136 +527,114 @@ sp.line(
 </div>
 <div id="l-spline-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.line(
-    title="Heart Rate During Workout",
-    variant="spline",
+    title='Sales trend (smoothed)',
+    variant='spline',
+    labels=['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8'],
+    values=[120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0],
     spline_tension=0.5,
-    labels=["0:00","5:00","10:00","15:00","20:00","25:00","30:00"],
-    values=[68, 95, 142, 158, 161, 145, 110],
-    y_label="BPM",
-    gridlines=True,
+    y_label='Units',
 )
 chart.show()</code></pre></div>
 <div id="l-spline-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
 const chart = sp.line({
-  title: "Heart Rate During Workout", variant: "spline",
+  title: "Sales trend (smoothed)",
+  variant: "spline",
+  labels: ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"],
+  values: [120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0],
   splineTension: 0.5,
-  labels: ["0:00","5:00","10:00","15:00","20:00","25:00","30:00"],
-  values: [68,95,142,158,161,145,110],
-  yLabel: "BPM", gridlines: true,
+  yLabel: "Units"
 });
 chart.show();</code></pre></div>
 <div id="l-spline-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
 const chart = sp.line({
-  title: "Heart Rate During Workout", variant: "spline",
+  title: "Sales trend (smoothed)",
+  variant: "spline",
+  labels: ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"],
+  values: [120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0],
   splineTension: 0.5,
-  labels: ["0:00","5:00","10:00","15:00","20:00","25:00","30:00"],
-  values: [68,95,142,158,161,145,110],
-  yLabel: "BPM", gridlines: true,
+  yLabel: "Units"
 });
 chart.show();</code></pre></div>
 <div id="l-spline-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
 chart <- sp$line(
-  title = "Heart Rate During Workout",
+  title = "Sales trend (smoothed)",
   variant = "spline",
+  labels = c("W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"),
+  values = c(120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0),
   spline_tension = 0.5,
-  labels = c("0:00","5:00","10:00","15:00","20:00","25:00","30:00"),
-  values = c(68, 95, 142, 158, 161, 145, 110),
-  y_label = "BPM",
-  gridlines = TRUE
+  y_label = "Units"
 )
 chart$show()</code></pre></div>
 <div id="l-spline-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
 
 fn main() {
     let chart = sp::line()
-        .title("Heart Rate During Workout")
+        .title("Sales trend (smoothed)")
         .variant("spline")
+        .labels(vec!["W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"])
+        .values(vec![120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0])
         .spline_tension(0.5)
-        .labels(vec!["0:00","5:00","10:00","15:00","20:00","25:00","30:00"])
-        .values(vec![68.0, 95.0, 142.0, 158.0, 161.0, 145.0, 110.0])
-        .y_label("BPM")
-        .gridlines(true)
+        .y_label("Units")
         .build();
     chart.show();
 }</code></pre></div>
 <div id="l-spline-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
+import java.util.Map;
 
 var chart = SeraPlot.line()
-    .title("Heart Rate During Workout")
+    .title("Sales trend (smoothed)")
     .variant("spline")
+    .labels(List.of("W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"))
+    .values(List.of(120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0))
     .splineTension(0.5)
-    .labels(List.of("0:00","5:00","10:00","15:00","20:00","25:00","30:00"))
-    .values(List.of(68.0,95.0,142.0,158.0,161.0,145.0,110.0))
-    .yLabel("BPM")
-    .gridlines(true)
+    .yLabel("Units")
     .build();
 chart.show();</code></pre></div>
 <div id="l-spline-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
 
 var chart = Sp.Line(
-    title: "Heart Rate During Workout",
+    title: "Sales trend (smoothed)",
     variant: "spline",
+    labels: new[] { "W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8" },
+    values: new[] { 120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0 },
     splineTension: 0.5,
-    labels: ["0:00","5:00","10:00","15:00","20:00","25:00","30:00"],
-    values: [68,95,142,158,161,145,110],
-    yLabel: "BPM",
-    gridlines: true
+    yLabel: "Units"
 );
 chart.Show();</code></pre></div>
 <div id="l-spline-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
 
 val chart = sp.line(
-  title = "Heart Rate During Workout",
+  title = "Sales trend (smoothed)",
   variant = "spline",
+  labels = List("W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"),
+  values = List(120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0),
   spline_tension = 0.5,
-  labels = List("0:00","5:00","10:00","15:00","20:00","25:00","30:00"),
-  values = List(68.0, 95.0, 142.0, 158.0, 161.0, 145.0, 110.0),
-  y_label = "BPM",
-  gridlines = true
+  y_label = "Units"
 )
 chart.show()</code></pre></div>
-<div id="l-spline-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+<div id="l-spline-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
 
-auto chart = sp::line({
-    .title          = "Heart Rate During Workout",
-    .variant        = "spline",
-    .spline_tension = 0.5,
-    .labels         = {"0:00","5:00","10:00","15:00","20:00","25:00","30:00"},
-    .values         = {68,95,142,158,161,145,110},
-    .y_label        = "BPM",
-    .gridlines      = true,
-});
+auto chart = sp::line()
+    .title("Sales trend (smoothed)")
+    .variant("spline")
+    .labels({"W1", "W2", "W3", "W4", "W5", "W6", "W7", "W8"})
+    .values({120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0})
+    .splineTension(0.5)
+    .yLabel("Units")
+    .build();
 chart.show();</code></pre></div>
 </div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
 </div>
 
-<!-- â”€â”€ Filled â”€â”€ -->
 <div class="sp-variant" id="line-en-filled">
 
-Area fill under the line. `fill_opacity` controls transparency; `stack_fill=True` stacks multiple series. Alias: `"area"`.
+Area chart — fills the region under the line. `fill_opacity` controls transparency; `stack_fill=True` stacks multiple series.
 
-```python
-sp.line(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "filled",
-    values: list[float] | None = None,
-    series: list[list[float]] | None = None,
-    series_names: list[str] | None = None,
-    fill_opacity: float = 0.25,
-    stack_fill: bool = False,
-    color_hex: int = 0x6366F1,
-    show_points: bool = False,
-    gridlines: bool = False,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    palette: list[int] | None = None,
-) -> Chart
-```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"filled"</code></span><span><strong>Aliases</strong> <code>"filled"</code> / <code>"area"</code> / <code>"fill"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="l-filled">
 <div class="sp-tab-btns">
@@ -651,39 +650,45 @@ sp.line(
 </div>
 <div id="l-filled-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.line(
-    title="Monthly Active Users",
-    variant="filled",
-    labels=["Jan","Feb","Mar","Apr","May","Jun"],
-    values=[1200, 1850, 2100, 1750, 2400, 2800],
-    fill_opacity=0.3,
-    y_label="Users",
+    title='Daily active users',
+    variant='filled',
+    labels=['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    values=[320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0],
+    fill_opacity=0.35,
+    y_label='DAU',
     gridlines=True,
 )
 chart.show()</code></pre></div>
 <div id="l-filled-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
 const chart = sp.line({
-  title: "Monthly Active Users", variant: "filled",
-  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-  values: [1200,1850,2100,1750,2400,2800],
-  fillOpacity: 0.3, yLabel: "Users", gridlines: true,
+  title: "Daily active users",
+  variant: "filled",
+  labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+  values: [320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0],
+  fillOpacity: 0.35,
+  yLabel: "DAU",
+  gridlines: true
 });
 chart.show();</code></pre></div>
 <div id="l-filled-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
 const chart = sp.line({
-  title: "Monthly Active Users", variant: "filled",
-  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-  values: [1200,1850,2100,1750,2400,2800],
-  fillOpacity: 0.3, yLabel: "Users", gridlines: true,
+  title: "Daily active users",
+  variant: "filled",
+  labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+  values: [320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0],
+  fillOpacity: 0.35,
+  yLabel: "DAU",
+  gridlines: true
 });
 chart.show();</code></pre></div>
 <div id="l-filled-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
 chart <- sp$line(
-  title = "Monthly Active Users",
+  title = "Daily active users",
   variant = "filled",
-  labels = c("Jan","Feb","Mar","Apr","May","Jun"),
-  values = c(1200, 1850, 2100, 1750, 2400, 2800),
-  fill_opacity = 0.3,
-  y_label = "Users",
+  labels = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
+  values = c(320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0),
+  fill_opacity = 0.35,
+  y_label = "DAU",
   gridlines = TRUE
 )
 chart$show()</code></pre></div>
@@ -691,89 +696,77 @@ chart$show()</code></pre></div>
 
 fn main() {
     let chart = sp::line()
-        .title("Monthly Active Users")
+        .title("Daily active users")
         .variant("filled")
-        .labels(vec!["Jan","Feb","Mar","Apr","May","Jun"])
-        .values(vec![1200.0, 1850.0, 2100.0, 1750.0, 2400.0, 2800.0])
-        .fill_opacity(0.3)
-        .y_label("Users")
+        .labels(vec!["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"])
+        .values(vec![320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0])
+        .fill_opacity(0.35)
+        .y_label("DAU")
         .gridlines(true)
         .build();
     chart.show();
 }</code></pre></div>
 <div id="l-filled-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
+import java.util.Map;
 
 var chart = SeraPlot.line()
-    .title("Monthly Active Users")
+    .title("Daily active users")
     .variant("filled")
-    .labels(List.of("Jan","Feb","Mar","Apr","May","Jun"))
-    .values(List.of(1200.0,1850.0,2100.0,1750.0,2400.0,2800.0))
-    .fillOpacity(0.3)
-    .yLabel("Users")
+    .labels(List.of("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+    .values(List.of(320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0))
+    .fillOpacity(0.35)
+    .yLabel("DAU")
     .gridlines(true)
     .build();
 chart.show();</code></pre></div>
 <div id="l-filled-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
 
 var chart = Sp.Line(
-    title: "Monthly Active Users",
+    title: "Daily active users",
     variant: "filled",
-    labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-    values: [1200,1850,2100,1750,2400,2800],
-    fillOpacity: 0.3,
-    yLabel: "Users",
+    labels: new[] { "Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun" },
+    values: new[] { 320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0 },
+    fillOpacity: 0.35,
+    yLabel: "DAU",
     gridlines: true
 );
 chart.Show();</code></pre></div>
 <div id="l-filled-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
 
 val chart = sp.line(
-  title = "Monthly Active Users",
+  title = "Daily active users",
   variant = "filled",
-  labels = List("Jan","Feb","Mar","Apr","May","Jun"),
-  values = List(1200.0, 1850.0, 2100.0, 1750.0, 2400.0, 2800.0),
-  fill_opacity = 0.3,
-  y_label = "Users",
+  labels = List("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"),
+  values = List(320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0),
+  fill_opacity = 0.35,
+  y_label = "DAU",
   gridlines = true
 )
 chart.show()</code></pre></div>
-<div id="l-filled-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+<div id="l-filled-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
 
-auto chart = sp::line({
-    .title        = "Monthly Active Users",
-    .variant      = "filled",
-    .labels       = {"Jan","Feb","Mar","Apr","May","Jun"},
-    .values       = {1200,1850,2100,1750,2400,2800},
-    .fill_opacity = 0.3,
-    .y_label      = "Users",
-    .gridlines    = true,
-});
+auto chart = sp::line()
+    .title("Daily active users")
+    .variant("filled")
+    .labels({"Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"})
+    .values({320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0})
+    .fillOpacity(0.35)
+    .yLabel("DAU")
+    .gridlines(true)
+    .build();
 chart.show();</code></pre></div>
 </div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
 </div>
 
-<!-- â”€â”€ Sparkline â”€â”€ -->
 <div class="sp-variant" id="line-en-sparkline">
 
-Small-multiple grid â€” one mini chart per series. `spark_cols` controls columns, `spark_cell_w`/`spark_cell_h` control cell dimensions. Alias: `"spark"`.
+Small inline chart — no axes, perfect for dashboards. `spark_cols` arranges multiple series in a grid.
 
-```python
-sp.line(
-    title: str,
-    *,
-    variant: str = "sparkline",
-    series: list[list[float]],
-    series_names: list[str] | None = None,
-    labels: list[str] | None = None,
-    spark_cols: int = 3,
-    spark_cell_w: int = 220,
-    spark_cell_h: int = 80,
-    color_hex: int = 0x6366F1,
-    palette: list[int] | None = None,
-    background: str | None = None,
-) -> Chart
-```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"sparkline"</code></span><span><strong>Aliases</strong> <code>"sparkline"</code> / <code>"spark"</code> / <code>"tiny"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="l-spark">
 <div class="sp-tab-btns">
@@ -789,150 +782,114 @@ sp.line(
 </div>
 <div id="l-spark-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.line(
-    title="KPI Sparklines",
-    variant="sparkline",
-    series=[
-        [10,12,15,11,18,22],
-        [80,75,70,85,90,88],
-        [5,8,6,10,9,12],
-    ],
-    series_names=["Revenue","Satisfaction","Churn"],
+    title='KPI summary',
+    variant='sparkline',
+    series=[("Revenue", [120, 135, 128, 160, 180, 175, 210]), ("Users", [80, 90, 85, 110, 130, 125, 145]), ("Errors", [5, 3, 4, 2, 1, 2, 1])],
     spark_cols=3,
-    spark_cell_w=200,
-    spark_cell_h=90,
+    spark_cell_w=220,
+    spark_cell_h=60,
 )
 chart.show()</code></pre></div>
 <div id="l-spark-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
 const chart = sp.line({
-  title: "KPI Sparklines", variant: "sparkline",
-  series: [[10,12,15,11,18,22],[80,75,70,85,90,88],[5,8,6,10,9,12]],
-  seriesNames: ["Revenue","Satisfaction","Churn"],
-  sparkCols: 3, sparkCellW: 200, sparkCellH: 90,
+  title: "KPI summary",
+  variant: "sparkline",
+  series: [["Revenue", [120, 135, 128, 160, 180, 175, 210]], ["Users", [80, 90, 85, 110, 130, 125, 145]], ["Errors", [5, 3, 4, 2, 1, 2, 1]]],
+  sparkCols: 3,
+  sparkCellW: 220,
+  sparkCellH: 60
 });
 chart.show();</code></pre></div>
 <div id="l-spark-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
 const chart = sp.line({
-  title: "KPI Sparklines", variant: "sparkline",
-  series: [[10,12,15,11,18,22],[80,75,70,85,90,88],[5,8,6,10,9,12]],
-  seriesNames: ["Revenue","Satisfaction","Churn"],
-  sparkCols: 3, sparkCellW: 200, sparkCellH: 90,
+  title: "KPI summary",
+  variant: "sparkline",
+  series: [["Revenue", [120, 135, 128, 160, 180, 175, 210]], ["Users", [80, 90, 85, 110, 130, 125, 145]], ["Errors", [5, 3, 4, 2, 1, 2, 1]]],
+  sparkCols: 3,
+  sparkCellW: 220,
+  sparkCellH: 60
 });
 chart.show();</code></pre></div>
 <div id="l-spark-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
 chart <- sp$line(
-  title = "KPI Sparklines",
+  title = "KPI summary",
   variant = "sparkline",
-  series = list(
-    c(10,12,15,11,18,22),
-    c(80,75,70,85,90,88),
-    c(5,8,6,10,9,12)
-  ),
-  series_names = c("Revenue","Satisfaction","Churn"),
+  series = list(list("Revenue", c(120, 135, 128, 160, 180, 175, 210)), list("Users", c(80, 90, 85, 110, 130, 125, 145)), list("Errors", c(5, 3, 4, 2, 1, 2, 1))),
   spark_cols = 3,
-  spark_cell_w = 200,
-  spark_cell_h = 90
+  spark_cell_w = 220,
+  spark_cell_h = 60
 )
 chart$show()</code></pre></div>
 <div id="l-spark-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
 
 fn main() {
     let chart = sp::line()
-        .title("KPI Sparklines")
+        .title("KPI summary")
         .variant("sparkline")
-        .series(vec![
-            vec![10.0,12.0,15.0,11.0,18.0,22.0],
-            vec![80.0,75.0,70.0,85.0,90.0,88.0],
-            vec![5.0,8.0,6.0,10.0,9.0,12.0],
-        ])
-        .series_names(vec!["Revenue","Satisfaction","Churn"])
+        .series(vec![("Revenue".into(), vec![120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0]), ("Users".into(), vec![80.0, 90.0, 85.0, 110.0, 130.0, 125.0, 145.0]), ("Errors".into(), vec![5.0, 3.0, 4.0, 2.0, 1.0, 2.0, 1.0])])
         .spark_cols(3)
-        .spark_cell_w(200)
-        .spark_cell_h(90)
+        .spark_cell_w(220)
+        .spark_cell_h(60)
         .build();
     chart.show();
 }</code></pre></div>
 <div id="l-spark-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
+import java.util.Map;
 
 var chart = SeraPlot.line()
-    .title("KPI Sparklines")
+    .title("KPI summary")
     .variant("sparkline")
-    .series(List.of(
-        List.of(10.0,12.0,15.0,11.0,18.0,22.0),
-        List.of(80.0,75.0,70.0,85.0,90.0,88.0),
-        List.of(5.0,8.0,6.0,10.0,9.0,12.0)))
-    .seriesNames(List.of("Revenue","Satisfaction","Churn"))
-    .sparkCols(3).sparkCellW(200).sparkCellH(90)
+    .series(List.of(Map.entry("Revenue", List.of(120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0)), Map.entry("Users", List.of(80.0, 90.0, 85.0, 110.0, 130.0, 125.0, 145.0)), Map.entry("Errors", List.of(5.0, 3.0, 4.0, 2.0, 1.0, 2.0, 1.0))))
+    .sparkCols(3)
+    .sparkCellW(220)
+    .sparkCellH(60)
     .build();
 chart.show();</code></pre></div>
 <div id="l-spark-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
 
 var chart = Sp.Line(
-    title: "KPI Sparklines",
+    title: "KPI summary",
     variant: "sparkline",
-    series: [[10,12,15,11,18,22],[80,75,70,85,90,88],[5,8,6,10,9,12]],
-    seriesNames: ["Revenue","Satisfaction","Churn"],
-    sparkCols: 3, sparkCellW: 200, sparkCellH: 90
+    series: new[] { ("Revenue", new[] { 120, 135, 128, 160, 180, 175, 210 }), ("Users", new[] { 80, 90, 85, 110, 130, 125, 145 }), ("Errors", new[] { 5, 3, 4, 2, 1, 2, 1 }) },
+    sparkCols: 3,
+    sparkCellW: 220,
+    sparkCellH: 60
 );
 chart.Show();</code></pre></div>
 <div id="l-spark-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
 
 val chart = sp.line(
-  title = "KPI Sparklines",
+  title = "KPI summary",
   variant = "sparkline",
-  series = List(
-    List(10.0,12.0,15.0,11.0,18.0,22.0),
-    List(80.0,75.0,70.0,85.0,90.0,88.0),
-    List(5.0,8.0,6.0,10.0,9.0,12.0)),
-  series_names = List("Revenue","Satisfaction","Churn"),
+  series = List(("Revenue", List(120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0)), ("Users", List(80.0, 90.0, 85.0, 110.0, 130.0, 125.0, 145.0)), ("Errors", List(5.0, 3.0, 4.0, 2.0, 1.0, 2.0, 1.0))),
   spark_cols = 3,
-  spark_cell_w = 200,
-  spark_cell_h = 90
+  spark_cell_w = 220,
+  spark_cell_h = 60
 )
 chart.show()</code></pre></div>
-<div id="l-spark-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+<div id="l-spark-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
 
-auto chart = sp::line({
-    .title        = "KPI Sparklines",
-    .variant      = "sparkline",
-    .series       = {{10,12,15,11,18,22},{80,75,70,85,90,88},{5,8,6,10,9,12}},
-    .series_names = {"Revenue","Satisfaction","Churn"},
-    .spark_cols   = 3,
-    .spark_cell_w = 200,
-    .spark_cell_h = 90,
-});
+auto chart = sp::line()
+    .title("KPI summary")
+    .variant("sparkline")
+    .series({{"Revenue", {120, 135, 128, 160, 180, 175, 210}}, {"Users", {80, 90, 85, 110, 130, 125, 145}}, {"Errors", {5, 3, 4, 2, 1, 2, 1}}})
+    .sparkCols(3)
+    .sparkCellW(220)
+    .sparkCellH(60)
+    .build();
 chart.show();</code></pre></div>
 </div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
 </div>
 
-<!-- â”€â”€ Dashed â”€â”€ -->
 <div class="sp-variant" id="line-en-dashed">
 
-Dashed line with a `stroke-dasharray` pattern. `dash_pattern="auto"` cycles through preset patterns per series. Alias: `"dash"`.
+Custom stroke pattern. `dash_pattern="8,4"` means 8px on, 4px off. Use `"2,3"` for dotted.
 
-```python
-sp.line(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "dashed",
-    values: list[float] | None = None,
-    series: list[list[float]] | None = None,
-    series_names: list[str] | None = None,
-    dash_pattern: str = "auto",
-    stroke_width: float = 2.0,
-    color_hex: int = 0x6366F1,
-    show_points: bool = False,
-    gridlines: bool = False,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    palette: list[int] | None = None,
-) -> Chart
-```
 
-`dash_pattern` examples: `"auto"`, `"4 4"`, `"8 4"`, `"8 4 2 4"` (SVG dasharray syntax).
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"dashed"</code></span><span><strong>Aliases</strong> <code>"dashed"</code> / <code>"dotted"</code> / <code>"styled"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="l-dashed">
 <div class="sp-tab-btns">
@@ -948,293 +905,264 @@ sp.line(
 </div>
 <div id="l-dashed-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.line(
-    title="Forecast vs Actual",
-    variant="dashed",
-    labels=["Jan","Feb","Mar","Apr","May","Jun"],
-    series=[
-        [100, 110, 120, 115, 130, 140],
-        [100, 105, 118, 112, 125, 138],
-    ],
-    series_names=["Forecast","Actual"],
-    dash_pattern="auto",
+    title='Forecast vs actual',
+    variant='dashed',
+    labels=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    values=[10.0, 18.0, 22.0, 30.0, 38.0, 45.0],
+    dash_pattern='8,4',
+    stroke_width=2.5,
+    y_label='Units',
     gridlines=True,
-    y_label="Revenue (kâ‚¬)",
 )
 chart.show()</code></pre></div>
 <div id="l-dashed-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
 const chart = sp.line({
-  title: "Forecast vs Actual", variant: "dashed",
-  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-  series: [[100,110,120,115,130,140],[100,105,118,112,125,138]],
-  seriesNames: ["Forecast","Actual"],
-  dashPattern: "auto", gridlines: true, yLabel: "Revenue (kâ‚¬)",
+  title: "Forecast vs actual",
+  variant: "dashed",
+  labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+  values: [10.0, 18.0, 22.0, 30.0, 38.0, 45.0],
+  dashPattern: "8,4",
+  strokeWidth: 2.5,
+  yLabel: "Units",
+  gridlines: true
 });
 chart.show();</code></pre></div>
 <div id="l-dashed-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
 const chart = sp.line({
-  title: "Forecast vs Actual", variant: "dashed",
-  labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-  series: [[100,110,120,115,130,140],[100,105,118,112,125,138]],
-  seriesNames: ["Forecast","Actual"],
-  dashPattern: "auto", gridlines: true, yLabel: "Revenue (kâ‚¬)",
+  title: "Forecast vs actual",
+  variant: "dashed",
+  labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+  values: [10.0, 18.0, 22.0, 30.0, 38.0, 45.0],
+  dashPattern: "8,4",
+  strokeWidth: 2.5,
+  yLabel: "Units",
+  gridlines: true
 });
 chart.show();</code></pre></div>
 <div id="l-dashed-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
 chart <- sp$line(
-  title = "Forecast vs Actual",
+  title = "Forecast vs actual",
   variant = "dashed",
-  labels = c("Jan","Feb","Mar","Apr","May","Jun"),
-  series = list(
-    c(100, 110, 120, 115, 130, 140),
-    c(100, 105, 118, 112, 125, 138)
-  ),
-  series_names = c("Forecast","Actual"),
-  dash_pattern = "auto",
-  gridlines = TRUE,
-  y_label = "Revenue (kâ‚¬)"
+  labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun"),
+  values = c(10.0, 18.0, 22.0, 30.0, 38.0, 45.0),
+  dash_pattern = "8,4",
+  stroke_width = 2.5,
+  y_label = "Units",
+  gridlines = TRUE
 )
 chart$show()</code></pre></div>
 <div id="l-dashed-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
 
 fn main() {
     let chart = sp::line()
-        .title("Forecast vs Actual")
+        .title("Forecast vs actual")
         .variant("dashed")
-        .labels(vec!["Jan","Feb","Mar","Apr","May","Jun"])
-        .series(vec![
-            vec![100.0,110.0,120.0,115.0,130.0,140.0],
-            vec![100.0,105.0,118.0,112.0,125.0,138.0],
-        ])
-        .series_names(vec!["Forecast","Actual"])
-        .dash_pattern("auto")
+        .labels(vec!["Jan", "Feb", "Mar", "Apr", "May", "Jun"])
+        .values(vec![10.0, 18.0, 22.0, 30.0, 38.0, 45.0])
+        .dash_pattern("8,4")
+        .stroke_width(2.5)
+        .y_label("Units")
         .gridlines(true)
-        .y_label("Revenue (kâ‚¬)")
         .build();
     chart.show();
 }</code></pre></div>
 <div id="l-dashed-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
+import java.util.Map;
 
 var chart = SeraPlot.line()
-    .title("Forecast vs Actual")
+    .title("Forecast vs actual")
     .variant("dashed")
-    .labels(List.of("Jan","Feb","Mar","Apr","May","Jun"))
-    .series(List.of(
-        List.of(100.0,110.0,120.0,115.0,130.0,140.0),
-        List.of(100.0,105.0,118.0,112.0,125.0,138.0)))
-    .seriesNames(List.of("Forecast","Actual"))
-    .dashPattern("auto")
+    .labels(List.of("Jan", "Feb", "Mar", "Apr", "May", "Jun"))
+    .values(List.of(10.0, 18.0, 22.0, 30.0, 38.0, 45.0))
+    .dashPattern("8,4")
+    .strokeWidth(2.5)
+    .yLabel("Units")
     .gridlines(true)
-    .yLabel("Revenue (kâ‚¬)")
     .build();
 chart.show();</code></pre></div>
 <div id="l-dashed-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
 
 var chart = Sp.Line(
-    title: "Forecast vs Actual",
+    title: "Forecast vs actual",
     variant: "dashed",
-    labels: ["Jan","Feb","Mar","Apr","May","Jun"],
-    series: [[100,110,120,115,130,140],[100,105,118,112,125,138]],
-    seriesNames: ["Forecast","Actual"],
-    dashPattern: "auto",
-    gridlines: true,
-    yLabel: "Revenue (kâ‚¬)"
+    labels: new[] { "Jan", "Feb", "Mar", "Apr", "May", "Jun" },
+    values: new[] { 10.0, 18.0, 22.0, 30.0, 38.0, 45.0 },
+    dashPattern: "8,4",
+    strokeWidth: 2.5,
+    yLabel: "Units",
+    gridlines: true
 );
 chart.Show();</code></pre></div>
 <div id="l-dashed-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
 
 val chart = sp.line(
-  title = "Forecast vs Actual",
+  title = "Forecast vs actual",
   variant = "dashed",
-  labels = List("Jan","Feb","Mar","Apr","May","Jun"),
-  series = List(
-    List(100.0,110.0,120.0,115.0,130.0,140.0),
-    List(100.0,105.0,118.0,112.0,125.0,138.0)),
-  series_names = List("Forecast","Actual"),
-  dash_pattern = "auto",
-  gridlines = true,
-  y_label = "Revenue (kâ‚¬)"
+  labels = List("Jan", "Feb", "Mar", "Apr", "May", "Jun"),
+  values = List(10.0, 18.0, 22.0, 30.0, 38.0, 45.0),
+  dash_pattern = "8,4",
+  stroke_width = 2.5,
+  y_label = "Units",
+  gridlines = true
 )
 chart.show()</code></pre></div>
-<div id="l-dashed-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+<div id="l-dashed-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
 
-auto chart = sp::line({
-    .title        = "Forecast vs Actual",
-    .variant      = "dashed",
-    .labels       = {"Jan","Feb","Mar","Apr","May","Jun"},
-    .series       = {{100,110,120,115,130,140},{100,105,118,112,125,138}},
-    .series_names = {"Forecast","Actual"},
-    .dash_pattern = "auto",
-    .gridlines    = true,
-    .y_label      = "Revenue (kâ‚¬)",
-});
+auto chart = sp::line()
+    .title("Forecast vs actual")
+    .variant("dashed")
+    .labels({"Jan", "Feb", "Mar", "Apr", "May", "Jun"})
+    .values({10.0, 18.0, 22.0, 30.0, 38.0, 45.0})
+    .dashPattern("8,4")
+    .strokeWidth(2.5)
+    .yLabel("Units")
+    .gridlines(true)
+    .build();
 chart.show();</code></pre></div>
 </div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
 </div>
 
-<!-- â”€â”€ ConnectedScatter â”€â”€ -->
-<div class="sp-variant" id="line-en-connected">
+<div class="sp-variant" id="line-en-connected_scatter">
 
-Line + large filled markers â€” emphasises individual data points while preserving trend. `marker_size` defaults to 5 (minimum). Aliases: `"connected_scatter"`, `"markers"`, `"lines+markers"`.
+Line plot with prominent markers. `marker_size` (px) controls dot size; `show_points=True` is implicit.
 
-```python
-sp.line(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "connected_scatter",
-    marker_size: int = 5,
-    stroke_width: float = 2.0,
-    color_hex: int = 0x6366F1,
-    gridlines: bool = False,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    palette: list[int] | None = None,
-) -> Chart
-```
 
-<div class="sp-tabs" id="l-cs">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"connected_scatter"</code></span><span><strong>Aliases</strong> <code>"connected_scatter"</code> / <code>"markers"</code> / <code>"lines+markers"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="l-connected">
 <div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('l-cs','l-cs-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('l-cs','l-cs-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('l-cs','l-cs-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('l-cs','l-cs-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('l-cs','l-cs-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('l-cs','l-cs-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('l-cs','l-cs-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('l-cs','l-cs-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('l-cs','l-cs-cpp',this)">C++</button>
+<button class="sp-tb sp-act" onclick="spTab('l-connected','l-connected-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('l-connected','l-connected-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('l-connected','l-connected-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('l-connected','l-connected-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('l-connected','l-connected-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('l-connected','l-connected-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('l-connected','l-connected-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('l-connected','l-connected-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('l-connected','l-connected-cpp',this)">C++</button>
 </div>
-<div id="l-cs-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+<div id="l-connected-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 chart = sp.line(
-    title="Weekly Sales",
-    variant="connected_scatter",
-    labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-    values=[42, 55, 60, 48, 70, 95, 80],
-    marker_size=8,
-    y_label="Orders",
+    title='Experiment readings',
+    variant='connected_scatter',
+    labels=['t0', 't1', 't2', 't3', 't4', 't5', 't6'],
+    values=[4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3],
+    marker_size=7,
+    y_label='mV',
     gridlines=True,
 )
 chart.show()</code></pre></div>
-<div id="l-cs-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+<div id="l-connected-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
 const chart = sp.line({
-  title: "Weekly Sales", variant: "connected_scatter",
-  labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-  values: [42,55,60,48,70,95,80],
-  markerSize: 8, yLabel: "Orders", gridlines: true,
+  title: "Experiment readings",
+  variant: "connected_scatter",
+  labels: ["t0", "t1", "t2", "t3", "t4", "t5", "t6"],
+  values: [4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3],
+  markerSize: 7,
+  yLabel: "mV",
+  gridlines: true
 });
 chart.show();</code></pre></div>
-<div id="l-cs-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+<div id="l-connected-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
 const chart = sp.line({
-  title: "Weekly Sales", variant: "connected_scatter",
-  labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-  values: [42,55,60,48,70,95,80],
-  markerSize: 8, yLabel: "Orders", gridlines: true,
+  title: "Experiment readings",
+  variant: "connected_scatter",
+  labels: ["t0", "t1", "t2", "t3", "t4", "t5", "t6"],
+  values: [4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3],
+  markerSize: 7,
+  yLabel: "mV",
+  gridlines: true
 });
 chart.show();</code></pre></div>
-<div id="l-cs-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+<div id="l-connected-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
 chart <- sp$line(
-  title = "Weekly Sales",
+  title = "Experiment readings",
   variant = "connected_scatter",
-  labels = c("Mon","Tue","Wed","Thu","Fri","Sat","Sun"),
-  values = c(42, 55, 60, 48, 70, 95, 80),
-  marker_size = 8,
-  y_label = "Orders",
+  labels = c("t0", "t1", "t2", "t3", "t4", "t5", "t6"),
+  values = c(4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3),
+  marker_size = 7,
+  y_label = "mV",
   gridlines = TRUE
 )
 chart$show()</code></pre></div>
-<div id="l-cs-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+<div id="l-connected-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
 
 fn main() {
     let chart = sp::line()
-        .title("Weekly Sales")
+        .title("Experiment readings")
         .variant("connected_scatter")
-        .labels(vec!["Mon","Tue","Wed","Thu","Fri","Sat","Sun"])
-        .values(vec![42.0, 55.0, 60.0, 48.0, 70.0, 95.0, 80.0])
-        .marker_size(8)
-        .y_label("Orders")
+        .labels(vec!["t0", "t1", "t2", "t3", "t4", "t5", "t6"])
+        .values(vec![4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3])
+        .marker_size(7)
+        .y_label("mV")
         .gridlines(true)
         .build();
     chart.show();
 }</code></pre></div>
-<div id="l-cs-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+<div id="l-connected-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
+import java.util.Map;
 
 var chart = SeraPlot.line()
-    .title("Weekly Sales")
+    .title("Experiment readings")
     .variant("connected_scatter")
-    .labels(List.of("Mon","Tue","Wed","Thu","Fri","Sat","Sun"))
-    .values(List.of(42.0,55.0,60.0,48.0,70.0,95.0,80.0))
-    .markerSize(8)
-    .yLabel("Orders")
+    .labels(List.of("t0", "t1", "t2", "t3", "t4", "t5", "t6"))
+    .values(List.of(4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3))
+    .markerSize(7)
+    .yLabel("mV")
     .gridlines(true)
     .build();
 chart.show();</code></pre></div>
-<div id="l-cs-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+<div id="l-connected-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
 
 var chart = Sp.Line(
-    title: "Weekly Sales",
+    title: "Experiment readings",
     variant: "connected_scatter",
-    labels: ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-    values: [42,55,60,48,70,95,80],
-    markerSize: 8,
-    yLabel: "Orders",
+    labels: new[] { "t0", "t1", "t2", "t3", "t4", "t5", "t6" },
+    values: new[] { 4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3 },
+    markerSize: 7,
+    yLabel: "mV",
     gridlines: true
 );
 chart.Show();</code></pre></div>
-<div id="l-cs-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+<div id="l-connected-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
 
 val chart = sp.line(
-  title = "Weekly Sales",
+  title = "Experiment readings",
   variant = "connected_scatter",
-  labels = List("Mon","Tue","Wed","Thu","Fri","Sat","Sun"),
-  values = List(42.0, 55.0, 60.0, 48.0, 70.0, 95.0, 80.0),
-  marker_size = 8,
-  y_label = "Orders",
+  labels = List("t0", "t1", "t2", "t3", "t4", "t5", "t6"),
+  values = List(4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3),
+  marker_size = 7,
+  y_label = "mV",
   gridlines = true
 )
 chart.show()</code></pre></div>
-<div id="l-cs-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+<div id="l-connected-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
 
-auto chart = sp::line({
-    .title       = "Weekly Sales",
-    .variant     = "connected_scatter",
-    .labels      = {"Mon","Tue","Wed","Thu","Fri","Sat","Sun"},
-    .values      = {42,55,60,48,70,95,80},
-    .marker_size = 8,
-    .y_label     = "Orders",
-    .gridlines   = true,
-});
+auto chart = sp::line()
+    .title("Experiment readings")
+    .variant("connected_scatter")
+    .labels({"t0", "t1", "t2", "t3", "t4", "t5", "t6"})
+    .values({4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3})
+    .markerSize(7)
+    .yLabel("mV")
+    .gridlines(true)
+    .build();
 chart.show();</code></pre></div>
 </div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
 </div>
 
-<!-- â”€â”€ Gapped â”€â”€ -->
 <div class="sp-variant" id="line-en-gapped">
 
-Breaks the line at `null`/`NaN` values or at large jumps. `gap_threshold=NaN` breaks only at missing values; a numeric threshold breaks when consecutive delta exceeds it. Aliases: `"gaps"`, `"missing"`.
+Line breaks where values exceed `gap_threshold`. Useful for time series with missing samples.
 
-```python
-sp.line(
-    title: str,
-    labels: list[str],
-    values: list[float | None],
-    *,
-    variant: str = "gapped",
-    gap_threshold: float = float("nan"),
-    color_hex: int = 0x6366F1,
-    show_points: bool = True,
-    gridlines: bool = False,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    palette: list[int] | None = None,
-) -> Chart
-```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gapped"</code></span><span><strong>Aliases</strong> <code>"gapped"</code> / <code>"gaps"</code> / <code>"missing"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="l-gapped">
 <div class="sp-tab-btns">
@@ -1249,39 +1177,46 @@ sp.line(
 <button class="sp-tb" onclick="spTab('l-gapped','l-gapped-cpp',this)">C++</button>
 </div>
 <div id="l-gapped-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import math
 chart = sp.line(
-    title="Sensor Readings (with outages)",
-    variant="gapped",
-    labels=["00:00","01:00","02:00","03:00","04:00","05:00","06:00"],
-    values=[22.1, 22.4, math.nan, math.nan, 23.0, 22.8, 23.2],
-    y_label="Â°C",
+    title='Sensor signal (with dropouts)',
+    variant='gapped',
+    labels=['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7', 't8'],
+    values=[3.2, 3.5, 3.4, float("nan"), float("nan"), 4.1, 4.5, 4.3, 4.8],
+    gap_threshold=1.0,
+    y_label='V',
     gridlines=True,
 )
 chart.show()</code></pre></div>
 <div id="l-gapped-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
 const chart = sp.line({
-  title: "Sensor Readings (with outages)", variant: "gapped",
-  labels: ["00:00","01:00","02:00","03:00","04:00","05:00","06:00"],
-  values: [22.1, 22.4, null, null, 23.0, 22.8, 23.2],
-  yLabel: "Â°C", gridlines: true,
+  title: "Sensor signal (with dropouts)",
+  variant: "gapped",
+  labels: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"],
+  values: [3.2, 3.5, 3.4, NaN, NaN, 4.1, 4.5, 4.3, 4.8],
+  gapThreshold: 1.0,
+  yLabel: "V",
+  gridlines: true
 });
 chart.show();</code></pre></div>
 <div id="l-gapped-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
 const chart = sp.line({
-  title: "Sensor Readings (with outages)", variant: "gapped",
-  labels: ["00:00","01:00","02:00","03:00","04:00","05:00","06:00"],
-  values: [22.1, 22.4, null, null, 23.0, 22.8, 23.2],
-  yLabel: "Â°C", gridlines: true,
+  title: "Sensor signal (with dropouts)",
+  variant: "gapped",
+  labels: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"],
+  values: [3.2, 3.5, 3.4, NaN, NaN, 4.1, 4.5, 4.3, 4.8],
+  gapThreshold: 1.0,
+  yLabel: "V",
+  gridlines: true
 });
 chart.show();</code></pre></div>
 <div id="l-gapped-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
 chart <- sp$line(
-  title = "Sensor Readings (with outages)",
+  title = "Sensor signal (with dropouts)",
   variant = "gapped",
-  labels = c("00:00","01:00","02:00","03:00","04:00","05:00","06:00"),
-  values = c(22.1, 22.4, NA, NA, 23.0, 22.8, 23.2),
-  y_label = "Â°C",
+  labels = c("t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"),
+  values = c(3.2, 3.5, 3.4, NA, NA, 4.1, 4.5, 4.3, 4.8),
+  gap_threshold = 1.0,
+  y_label = "V",
   gridlines = TRUE
 )
 chart$show()</code></pre></div>
@@ -1289,216 +1224,100 @@ chart$show()</code></pre></div>
 
 fn main() {
     let chart = sp::line()
-        .title("Sensor Readings (with outages)")
+        .title("Sensor signal (with dropouts)")
         .variant("gapped")
-        .labels(vec!["00:00","01:00","02:00","03:00","04:00","05:00","06:00"])
-        .values(vec![Some(22.1), Some(22.4), None, None, Some(23.0), Some(22.8), Some(23.2)])
-        .y_label("Â°C")
+        .labels(vec!["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"])
+        .values(vec![3.2, 3.5, 3.4, f64::NAN, f64::NAN, 4.1, 4.5, 4.3, 4.8])
+        .gap_threshold(1.0)
+        .y_label("V")
         .gridlines(true)
         .build();
     chart.show();
 }</code></pre></div>
 <div id="l-gapped-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 var chart = SeraPlot.line()
-    .title("Sensor Readings (with outages)")
+    .title("Sensor signal (with dropouts)")
     .variant("gapped")
-    .labels(List.of("00:00","01:00","02:00","03:00","04:00","05:00","06:00"))
-    .values(Arrays.asList(22.1, 22.4, null, null, 23.0, 22.8, 23.2))
-    .yLabel("Â°C")
+    .labels(List.of("t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"))
+    .values(List.of(3.2, 3.5, 3.4, Double.NaN, Double.NaN, 4.1, 4.5, 4.3, 4.8))
+    .gapThreshold(1.0)
+    .yLabel("V")
     .gridlines(true)
     .build();
 chart.show();</code></pre></div>
 <div id="l-gapped-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
 
 var chart = Sp.Line(
-    title: "Sensor Readings (with outages)",
+    title: "Sensor signal (with dropouts)",
     variant: "gapped",
-    labels: ["00:00","01:00","02:00","03:00","04:00","05:00","06:00"],
-    values: [22.1, 22.4, null, null, 23.0, 22.8, 23.2],
-    yLabel: "Â°C",
+    labels: new[] { "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8" },
+    values: new[] { 3.2, 3.5, 3.4, double.NaN, double.NaN, 4.1, 4.5, 4.3, 4.8 },
+    gapThreshold: 1.0,
+    yLabel: "V",
     gridlines: true
 );
 chart.Show();</code></pre></div>
 <div id="l-gapped-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
 
 val chart = sp.line(
-  title = "Sensor Readings (with outages)",
+  title = "Sensor signal (with dropouts)",
   variant = "gapped",
-  labels = List("00:00","01:00","02:00","03:00","04:00","05:00","06:00"),
-  values = List(Some(22.1), Some(22.4), None, None, Some(23.0), Some(22.8), Some(23.2)),
-  y_label = "Â°C",
+  labels = List("t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"),
+  values = List(3.2, 3.5, 3.4, Double.NaN, Double.NaN, 4.1, 4.5, 4.3, 4.8),
+  gap_threshold = 1.0,
+  y_label = "V",
   gridlines = true
 )
 chart.show()</code></pre></div>
-<div id="l-gapped-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+<div id="l-gapped-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
 
-auto chart = sp::line({
-    .title     = "Sensor Readings (with outages)",
-    .variant   = "gapped",
-    .labels    = {"00:00","01:00","02:00","03:00","04:00","05:00","06:00"},
-    .values    = {22.1, 22.4, NAN, NAN, 23.0, 22.8, 23.2},
-    .y_label   = "Â°C",
-    .gridlines = true,
-});
+auto chart = sp::line()
+    .title("Sensor signal (with dropouts)")
+    .variant("gapped")
+    .labels({"t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"})
+    .values({3.2, 3.5, 3.4, std::nan(""), std::nan(""), 4.1, 4.5, 4.3, 4.8})
+    .gapThreshold(1.0)
+    .yLabel("V")
+    .gridlines(true)
+    .build();
 chart.show();</code></pre></div>
 </div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
 </div>
 
-</div><!-- /line-en -->
+</div>
+</div>
 
-Aliases: `sp.line_chart`, `sp.line_unified`, `sp.lines_unified`, `sp.line_family`
-
----
-
-## Description
-
-`sp.line()` is the unified entry point for the entire line-chart family. The `variant` keyword selects the rendering strategy.
-
-| Variant | Use case | Key extra args |
-|---------|----------|----------------|
-| `"basic"` | Single series, simple line | `labels`, `values` |
-| `"multi"` / `"multiline"` | Multiple series, shared axes | `series`, `series_names` |
-| `"stepped"` / `"hv"` / `"vh"` | Step function | `step_shape` |
-| `"spline"` / `"smooth"` | Catmull-Rom smooth curve | `spline_tension` |
-| `"filled"` / `"area"` | Filled area under line | `fill_opacity`, `stack_fill` |
-| `"sparkline"` / `"spark"` | Small-multiple grid | `spark_cols`, `spark_cell_w`, `spark_cell_h` |
-| `"dashed"` / `"dash"` | Dashed stroke patterns | `dash_pattern`, `stroke_width` |
-| `"connected_scatter"` / `"markers"` | Line + large markers | `marker_size`, `stroke_width` |
-| `"gapped"` / `"gaps"` | Break at missing values | `gap_threshold` |
-
----
-
-## Parameters
-
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | required | all | Chart title |
-| `labels` | `list[str]` | `None` | all except sparkline | Category or time labels |
-| `values` | `list[float\|None]` | `None` | basic, stepped, spline, filled, connected_scatter, gapped | Single-series values |
-| `variant` | `str` | `"basic"` | â€” | Rendering variant |
-| `series` | `list[list[float]]` | `None` | multi, filled, dashed, sparkline | Multi-series data |
-| `series_names` | `list[str]` | `None` | multi, dashed, sparkline | Legend label per series |
-| `x_labels` | `list[str]` | `None` | multi | Override x axis labels per series |
-| `color_hex` | `int` | `0x6366F1` | single-series | Line and point color as hex int |
-| `palette` | `list[int]` | `None` | all | Custom color list |
-| `show_points` | `bool` | `True` | basic, multi, spline, filled, gapped | Draw circle markers at data points |
-| `gridlines` | `bool` | `False` | all | Show horizontal gridlines |
-| `sort_order` | `str` | `"none"` | basic | `"asc"`, `"desc"`, or `"none"` |
-| `step_shape` | `str` | `"hv"` | stepped | `"hv"`, `"vh"`, `"hvh"`, `"vhv"` |
-| `spline_tension` | `float` | `0.5` | spline | Curvature strength (0.0â€“1.0) |
-| `fill_opacity` | `float` | `0.25` | filled | Fill area alpha (0.0â€“1.0) |
-| `fill_opacity_f` | `float` | `0.25` | filled | Alternative alias for `fill_opacity` |
-| `stack_fill` | `bool` | `False` | filled | Stack multiple filled series |
-| `dash_pattern` | `str` | `"auto"` | dashed | SVG dasharray string or `"auto"` |
-| `stroke_width` | `float` | `2.0` | dashed, connected_scatter | Line stroke width in px |
-| `marker_size` | `int` | `5` | connected_scatter | Marker circle radius (min 5) |
-| `gap_threshold` | `float` | `NaN` | gapped | Delta threshold to break line; `NaN` = break only at null |
-| `spark_cols` | `int` | `3` | sparkline | Number of columns in the grid |
-| `spark_cell_w` | `int` | `220` | sparkline | Width of each sparkline cell in px |
-| `spark_cell_h` | `int` | `80` | sparkline | Height of each sparkline cell in px |
-| `width` | `int` | `900` | all | Canvas width in pixels |
-| `height` | `int` | `480` | all | Canvas height in pixels |
-| `x_label` | `str` | `""` | all | X-axis label |
-| `y_label` | `str` | `""` | all | Y-axis label |
-| `no_y_axis` | `bool` | `False` | all | Hide Y axis |
-| `legend_position` | `str` | `"right"` | multi, dashed | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | all | Background CSS color; `None` = transparent |
-
----
-
-## Returns
-
-`Chart` â€” object with `.html` property and `.show()` method.
-
----
-
-<iframe src="../../previews/line.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-
----
-
-## See also
-
-- [multiline.md](multiline.md) — `sp.build_multiline_chart()` (legacy)
-- [area.md](area.md) — `sp.area()`
-- [scatter.md](scatter.md) — `sp.scatter()`
-
-</div><!-- /lang-en -->
+</div>
 
 
 <div class="lang-fr" style="display:none">
 
 ## Signature
 
-<div id="line-fr">
-<div class="sp-variant-nav">
-<button class="sp-vbtn sp-vact" onclick="spVar('line-fr','basic',this)">Basique</button>
-<button class="sp-vbtn" onclick="spVar('line-fr','multi',this)">Multi</button>
-<button class="sp-vbtn" onclick="spVar('line-fr','stepped',this)">Escalier</button>
-<button class="sp-vbtn" onclick="spVar('line-fr','spline',this)">Spline</button>
-<button class="sp-vbtn" onclick="spVar('line-fr','filled',this)">Rempli</button>
-<button class="sp-vbtn" onclick="spVar('line-fr','sparkline',this)">Sparkline</button>
-<button class="sp-vbtn" onclick="spVar('line-fr','dashed',this)">Tirets</button>
-<button class="sp-vbtn" onclick="spVar('line-fr','connected',this)">ConnectedScatter</button>
-<button class="sp-vbtn" onclick="spVar('line-fr','gapped',this)">Lacunes</button>
-</div>
-<div class="sp-variant sp-von" id="line-fr-basic"><p>Série unique reliant des points ordonnés.</p>
-<pre><code class="language-python">sp.line(title, labels, values, *, variant="basic",
-        color_hex=0x6366F1, show_points=True, gridlines=False,
-        sort_order="none", width=900, height=480,
-        x_label="", y_label="") -> Chart</code></pre>
-<p>Pour les exemples de code, voir la version EN.</p></div>
-<div class="sp-variant" id="line-fr-multi"><p>Plusieurs séries sur les mêmes axes.</p>
-<pre><code class="language-python">sp.line(title, labels, *, variant="multi",
-        series, series_names=None, show_points=True, ...) -> Chart</code></pre></div>
-<div class="sp-variant" id="line-fr-stepped"><p>Ligne en escalier — la valeur reste constante jusqu'au point suivant.</p>
-<pre><code class="language-python">sp.line(title, labels, values, *, variant="stepped",
-        step_shape="hv", ...) -> Chart</code></pre>
-<p><code>step_shape</code> : <code>"hv"</code> (défaut), <code>"vh"</code>, <code>"hvh"</code>, <code>"vhv"</code>.</p></div>
-<div class="sp-variant" id="line-fr-spline"><p>Courbe Catmull-Rom lissée. <code>spline_tension</code> contrôle la courbure (0.0–1.0).</p>
-<pre><code class="language-python">sp.line(title, labels, values, *, variant="spline",
-        spline_tension=0.5, ...) -> Chart</code></pre></div>
-<div class="sp-variant" id="line-fr-filled"><p>Zone remplie sous la courbe. <code>stack_fill=True</code> empile plusieurs séries.</p>
-<pre><code class="language-python">sp.line(title, labels, *, variant="filled",
-        values=None, series=None, fill_opacity=0.25,
-        stack_fill=False, ...) -> Chart</code></pre></div>
-<div class="sp-variant" id="line-fr-sparkline"><p>Grille de petits graphiques — un par série.</p>
-<pre><code class="language-python">sp.line(title, *, variant="sparkline",
-        series, series_names=None,
-        spark_cols=3, spark_cell_w=220, spark_cell_h=80, ...) -> Chart</code></pre></div>
-<div class="sp-variant" id="line-fr-dashed"><p>Ligne avec tirets SVG. <code>dash_pattern="auto"</code> cycle à travers les motifs.</p>
-<pre><code class="language-python">sp.line(title, labels, *, variant="dashed",
-        values=None, series=None, dash_pattern="auto",
-        stroke_width=2.0, ...) -> Chart</code></pre></div>
-<div class="sp-variant" id="line-fr-connected"><p>Ligne + grands marqueurs — accentue les points individuels.</p>
-<pre><code class="language-python">sp.line(title, labels, values, *, variant="connected_scatter",
-        marker_size=5, stroke_width=2.0, ...) -> Chart</code></pre></div>
-<div class="sp-variant" id="line-fr-gapped"><p>Rupture de ligne aux valeurs manquantes ou aux sauts importants.</p>
-<pre><code class="language-python">sp.line(title, labels, values, *, variant="gapped",
-        gap_threshold=float("nan"), ...) -> Chart</code></pre></div>
-</div><!-- /line-fr -->
+`sp.line(title, labels=None, values=None, *, variant="basic", series=None, **kwargs) -> Chart`
 
-Alias : `sp.line_chart`, `sp.line_unified`, `sp.lines_unified`, `sp.line_family`
-
----
+Alias : `sp.line`, `sp.lines`, `sp.line_unified`, `sp.lines_unified`, `sp.line_family`, `sp.line_chart`
 
 ## Description
 
-`sp.line()` est le point d'entrée unique pour toute la famille de graphiques en ligne.
+`sp.line()` est le point d'entrée unifié pour toute la famille de graphiques en ligne. Le mot-clé `variant` sélectionne la stratégie de rendu — tous les autres arguments sont partagés entre les variantes.
 
 | Variante | Cas d'usage | Arguments clés |
 |----------|-------------|----------------|
-| `"basic"` | Série unique, ligne simple | `labels`, `values` |
-| `"multi"` / `"multiline"` | Plusieurs séries, axes partagés | `series`, `series_names` |
-| `"stepped"` / `"hv"` | Fonction en escalier | `step_shape` |
-| `"spline"` / `"smooth"` | Courbe lissée | `spline_tension` |
-| `"filled"` / `"area"` | Zone remplie sous la ligne | `fill_opacity`, `stack_fill` |
-| `"sparkline"` / `"spark"` | Grille de mini-graphiques | `spark_cols`, `spark_cell_w`, `spark_cell_h` |
-| `"dashed"` / `"dash"` | Motifs de tirets | `dash_pattern`, `stroke_width` |
-| `"connected_scatter"` / `"markers"` | Ligne + grands marqueurs | `marker_size`, `stroke_width` |
-| `"gapped"` / `"gaps"` | Rupture aux valeurs manquantes | `gap_threshold` |
+| `"basic"` | Série unique ordonnée | `labels`, `values` |
+| `"multi"` / `"multiline"` | Plusieurs séries, axe x partagé | `series`, `x_labels` |
+| `"stepped"` / `"step"` / `"hv"` | Signal constant par morceaux | `step_shape` |
+| `"spline"` / `"smooth"` | Courbe Catmull-Rom lissée | `spline_tension` |
+| `"filled"` / `"area"` | Graphique en aire | `fill_opacity`, `stack_fill` |
+| `"sparkline"` / `"spark"` | Grille de petits graphiques inline | `spark_cols`, `spark_cell_w/h` |
+| `"dashed"` / `"dotted"` | Motif de trait personnalisé | `dash_pattern`, `stroke_width` |
+| `"connected_scatter"` / `"markers"` | Ligne + marqueurs visibles | `marker_size` |
+| `"gapped"` / `"missing"` | Coupures sur les NaN | `gap_threshold` |
 
 ---
 
@@ -1507,47 +1326,1220 @@ Alias : `sp.line_chart`, `sp.line_unified`, `sp.lines_unified`, `sp.line_family`
 | Paramètre | Type | Défaut | Variantes | Description |
 |-----------|------|--------|-----------|-------------|
 | `title` | `str` | requis | toutes | Titre du graphique |
-| `labels` | `list[str]` | `None` | toutes sauf sparkline | Labels de catégorie ou de temps |
-| `values` | `list[float\|None]` | `None` | basic, stepped, spline, filled, connected_scatter, gapped | Valeurs série unique |
-| `variant` | `str` | `"basic"` | — | Variante de rendu |
-| `series` | `list[list[float]]` | `None` | multi, filled, dashed, sparkline | Données multi-séries |
-| `series_names` | `list[str]` | `None` | multi, dashed, sparkline | Nom de chaque série |
-| `color_hex` | `int` | `0x6366F1` | série unique | Couleur ligne et points (hex int) |
-| `palette` | `list[int]` | `None` | toutes | Palette personnalisée |
-| `show_points` | `bool` | `True` | basic, multi, spline, filled, gapped | Afficher les marqueurs |
-| `gridlines` | `bool` | `False` | toutes | Lignes de grille horizontales |
-| `sort_order` | `str` | `"none"` | basic | `"asc"`, `"desc"`, `"none"` |
-| `step_shape` | `str` | `"hv"` | stepped | `"hv"`, `"vh"`, `"hvh"`, `"vhv"` |
-| `spline_tension` | `float` | `0.5` | spline | Courbure (0.0–1.0) |
-| `fill_opacity` | `float` | `0.25` | filled | Opacité du remplissage (0.0–1.0) |
-| `stack_fill` | `bool` | `False` | filled | Empiler plusieurs séries remplies |
-| `dash_pattern` | `str` | `"auto"` | dashed | Motif SVG dasharray |
-| `stroke_width` | `float` | `2.0` | dashed, connected_scatter | Épaisseur du trait |
-| `marker_size` | `int` | `5` | connected_scatter | Rayon des marqueurs (min 5) |
-| `gap_threshold` | `float` | `NaN` | gapped | Seuil delta pour rupture ; `NaN` = rupture uniquement sur null |
+| `labels` | `list[str]` | `None` | basic, stepped, spline, filled, dashed, connected_scatter, gapped | Étiquettes de l'axe x |
+| `values` | `list[float]` | `None` | variantes mono-série | Valeurs y |
+| `series` | `list[(str, list[float])]` | `None` | multi, sparkline | Tuples (nom, valeurs) par série |
+| `x_labels` | `list[str]` | `None` | multi | Étiquettes partagées de l'axe x |
+| `variant` | `str` | `"basic"` | — | Variante à rendre |
+| `step_shape` | `str` | `"hv"` | stepped | `"hv"`, `"vh"`, `"hvh"` ou `"vhv"` |
+| `spline_tension` | `float` | `0.5` | spline | Tension Catmull-Rom (0–1) |
+| `fill_opacity` | `float` | `0.3` | filled | Alpha de remplissage (0–1) |
+| `stack_fill` | `bool` | `False` | filled | Empile plusieurs séries remplies |
+| `dash_pattern` | `str` | `"8,4"` | dashed | `stroke-dasharray` SVG |
+| `stroke_width` | `float` | `2.0` | toutes | Épaisseur du trait en px |
+| `marker_size` | `int` | `4` | connected_scatter | Rayon des marqueurs en px |
+| `gap_threshold` | `float` | `NaN` | gapped | Coupe la ligne quand |Δy| > seuil |
 | `spark_cols` | `int` | `3` | sparkline | Colonnes dans la grille |
 | `spark_cell_w` | `int` | `220` | sparkline | Largeur d'une cellule en px |
-| `spark_cell_h` | `int` | `80` | sparkline | Hauteur d'une cellule en px |
-| `width` | `int` | `900` | toutes | Largeur du canevas en px |
-| `height` | `int` | `480` | toutes | Hauteur du canevas en px |
-| `x_label` | `str` | `""` | toutes | Label axe X |
-| `y_label` | `str` | `""` | toutes | Label axe Y |
-| `no_y_axis` | `bool` | `False` | toutes | Masquer l'axe Y |
-| `legend_position` | `str` | `"right"` | multi, dashed | Position de la légende |
-| `background` | `str` | `None` | toutes | Couleur de fond CSS |
+| `spark_cell_h` | `int` | `60` | sparkline | Hauteur d'une cellule en px |
+| `show_points` | `bool` | `True` | toutes | Affiche les marqueurs |
+| `color_hex` | `int` | `0` | mono-série | Couleur de ligne (entier hex) |
+| `palette` | `list[int]` | `None` | toutes | Palette de couleurs personnalisée |
+| `width` | `int` | `900` | toutes | Largeur du canvas en px |
+| `height` | `int` | `480` | toutes | Hauteur du canvas en px |
+| `x_label` | `str` | `""` | toutes | Étiquette de l'axe x |
+| `y_label` | `str` | `""` | toutes | Étiquette de l'axe y |
+| `gridlines` | `bool` | `False` | toutes | Affiche les lignes de grille horizontales |
+| `sort_order` | `str` | `"none"` | basic | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, `"none"` |
+| `legend_position` | `str` | `"right"` | multi, sparkline | `"right"`, `"left"`, `"top"`, `"bottom"` |
+| `background` | `str` | `None` | toutes | Couleur de fond CSS ; `None` = transparent |
 
 ---
 
 ## Retourne
 
-`Chart` — objet avec la propriété `.html` et la méthode `.show()`.
+`Chart` — objet avec une propriété `.html` et une méthode `.show()`.
 
 ---
 
-## Voir aussi
 
-- [multiline.md](multiline.md) — `sp.build_multiline_chart()` (legacy)
-- [area.md](area.md) — `sp.area()`
-- [scatter.md](scatter.md) — `sp.scatter()`
+<div class="sp-cls sp-open" id="line-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('line-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('line-fr','basic',this)"><span class="sp-cic">─</span><span class="sp-clb">Basique</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-fr','multi',this)"><span class="sp-cic">≡</span><span class="sp-clb">Multi</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-fr','stepped',this)"><span class="sp-cic">⌐</span><span class="sp-clb">Escalier</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-fr','spline',this)"><span class="sp-cic">∽</span><span class="sp-clb">Spline</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-fr','filled',this)"><span class="sp-cic">▰</span><span class="sp-clb">Remplie</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-fr','sparkline',this)"><span class="sp-cic">⌁</span><span class="sp-clb">Sparkline</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-fr','dashed',this)"><span class="sp-cic">┈</span><span class="sp-clb">Tirets</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-fr','connected_scatter',this)"><span class="sp-cic">●</span><span class="sp-clb">Scatter Connecté</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-fr','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Avec lacunes</span></button>
+</div>
+<div class="sp-cls-body">
 
-</div><!-- /lang-fr -->
+<div class="sp-variant sp-von" id="line-fr-basic">
+
+Série unique reliant des points ordonnés.
+
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>"basic"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="lf-basic">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('lf-basic','lf-basic-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('lf-basic','lf-basic-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('lf-basic','lf-basic-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('lf-basic','lf-basic-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('lf-basic','lf-basic-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('lf-basic','lf-basic-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('lf-basic','lf-basic-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('lf-basic','lf-basic-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('lf-basic','lf-basic-cpp',this)">C++</button>
+</div>
+<div id="lf-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.line(
+    title='Température sur 12 mois',
+    variant='basic',
+    labels=['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'],
+    values=[2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0],
+    y_label='°C',
+    gridlines=True,
+)
+chart.show()</code></pre></div>
+<div id="lf-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.line({
+  title: "Température sur 12 mois",
+  variant: "basic",
+  labels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"],
+  values: [2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0],
+  yLabel: "°C",
+  gridlines: true
+});
+chart.show();</code></pre></div>
+<div id="lf-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.line({
+  title: "Température sur 12 mois",
+  variant: "basic",
+  labels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"],
+  values: [2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0],
+  yLabel: "°C",
+  gridlines: true
+});
+chart.show();</code></pre></div>
+<div id="lf-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$line(
+  title = "Température sur 12 mois",
+  variant = "basic",
+  labels = c("Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"),
+  values = c(2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0),
+  y_label = "°C",
+  gridlines = TRUE
+)
+chart$show()</code></pre></div>
+<div id="lf-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::line()
+        .title("Température sur 12 mois")
+        .variant("basic")
+        .labels(vec!["Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"])
+        .values(vec![2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0])
+        .y_label("°C")
+        .gridlines(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="lf-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+import java.util.Map;
+
+var chart = SeraPlot.line()
+    .title("Température sur 12 mois")
+    .variant("basic")
+    .labels(List.of("Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"))
+    .values(List.of(2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0))
+    .yLabel("°C")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="lf-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Line(
+    title: "Température sur 12 mois",
+    variant: "basic",
+    labels: new[] { "Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc" },
+    values: new[] { 2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0 },
+    yLabel: "°C",
+    gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="lf-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.line(
+  title = "Température sur 12 mois",
+  variant = "basic",
+  labels = List("Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"),
+  values = List(2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0),
+  y_label = "°C",
+  gridlines = true
+)
+chart.show()</code></pre></div>
+<div id="lf-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
+
+auto chart = sp::line()
+    .title("Température sur 12 mois")
+    .variant("basic")
+    .labels({"Jan", "Fév", "Mar", "Avr", "Mai", "Juin", "Juil", "Août", "Sep", "Oct", "Nov", "Déc"})
+    .values({2.0, 3.5, 7.0, 12.0, 17.0, 22.0, 25.5, 24.5, 19.0, 13.0, 7.5, 3.0})
+    .yLabel("°C")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+</div>
+
+<div class="sp-variant" id="line-fr-multi">
+
+Plusieurs séries partageant le même axe x. Passez `series=[(nom, valeurs), ...]`.
+
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"multi"</code></span><span><strong>Alias</strong> <code>"multi"</code> / <code>"multiline"</code> / <code>"multiple"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="lf-multi">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('lf-multi','lf-multi-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('lf-multi','lf-multi-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('lf-multi','lf-multi-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('lf-multi','lf-multi-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('lf-multi','lf-multi-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('lf-multi','lf-multi-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('lf-multi','lf-multi-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('lf-multi','lf-multi-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('lf-multi','lf-multi-cpp',this)">C++</button>
+</div>
+<div id="lf-multi-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.line(
+    title='CA trimestriel par région',
+    variant='multi',
+    x_labels=['T1', 'T2', 'T3', 'T4'],
+    series=[("UE", [120, 145, 160, 180]), ("NA", [90, 110, 135, 150]), ("APAC", [60, 75, 80, 95])],
+    y_label='CA (M€)',
+    gridlines=True,
+)
+chart.show()</code></pre></div>
+<div id="lf-multi-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.line({
+  title: "CA trimestriel par région",
+  variant: "multi",
+  xLabels: ["T1", "T2", "T3", "T4"],
+  series: [["UE", [120, 145, 160, 180]], ["NA", [90, 110, 135, 150]], ["APAC", [60, 75, 80, 95]]],
+  yLabel: "CA (M€)",
+  gridlines: true
+});
+chart.show();</code></pre></div>
+<div id="lf-multi-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.line({
+  title: "CA trimestriel par région",
+  variant: "multi",
+  xLabels: ["T1", "T2", "T3", "T4"],
+  series: [["UE", [120, 145, 160, 180]], ["NA", [90, 110, 135, 150]], ["APAC", [60, 75, 80, 95]]],
+  yLabel: "CA (M€)",
+  gridlines: true
+});
+chart.show();</code></pre></div>
+<div id="lf-multi-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$line(
+  title = "CA trimestriel par région",
+  variant = "multi",
+  x_labels = c("T1", "T2", "T3", "T4"),
+  series = list(list("UE", c(120, 145, 160, 180)), list("NA", c(90, 110, 135, 150)), list("APAC", c(60, 75, 80, 95))),
+  y_label = "CA (M€)",
+  gridlines = TRUE
+)
+chart$show()</code></pre></div>
+<div id="lf-multi-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::line()
+        .title("CA trimestriel par région")
+        .variant("multi")
+        .x_labels(vec!["T1", "T2", "T3", "T4"])
+        .series(vec![("UE".into(), vec![120.0, 145.0, 160.0, 180.0]), ("NA".into(), vec![90.0, 110.0, 135.0, 150.0]), ("APAC".into(), vec![60.0, 75.0, 80.0, 95.0])])
+        .y_label("CA (M€)")
+        .gridlines(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="lf-multi-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+import java.util.Map;
+
+var chart = SeraPlot.line()
+    .title("CA trimestriel par région")
+    .variant("multi")
+    .xLabels(List.of("T1", "T2", "T3", "T4"))
+    .series(List.of(Map.entry("UE", List.of(120.0, 145.0, 160.0, 180.0)), Map.entry("NA", List.of(90.0, 110.0, 135.0, 150.0)), Map.entry("APAC", List.of(60.0, 75.0, 80.0, 95.0))))
+    .yLabel("CA (M€)")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="lf-multi-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Line(
+    title: "CA trimestriel par région",
+    variant: "multi",
+    xLabels: new[] { "T1", "T2", "T3", "T4" },
+    series: new[] { ("UE", new[] { 120, 145, 160, 180 }), ("NA", new[] { 90, 110, 135, 150 }), ("APAC", new[] { 60, 75, 80, 95 }) },
+    yLabel: "CA (M€)",
+    gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="lf-multi-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.line(
+  title = "CA trimestriel par région",
+  variant = "multi",
+  x_labels = List("T1", "T2", "T3", "T4"),
+  series = List(("UE", List(120.0, 145.0, 160.0, 180.0)), ("NA", List(90.0, 110.0, 135.0, 150.0)), ("APAC", List(60.0, 75.0, 80.0, 95.0))),
+  y_label = "CA (M€)",
+  gridlines = true
+)
+chart.show()</code></pre></div>
+<div id="lf-multi-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
+
+auto chart = sp::line()
+    .title("CA trimestriel par région")
+    .variant("multi")
+    .xLabels({"T1", "T2", "T3", "T4"})
+    .series({{"UE", {120, 145, 160, 180}}, {"NA", {90, 110, 135, 150}}, {"APAC", {60, 75, 80, 95}}})
+    .yLabel("CA (M€)")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/multiline.html"></iframe>
+</div>
+
+<div class="sp-variant" id="line-fr-stepped">
+
+Ligne en escalier — idéale pour des données constantes par morceaux. `step_shape` contrôle l'orientation des marches.
+
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"stepped"</code></span><span><strong>Alias</strong> <code>"stepped"</code> / <code>"step"</code> / <code>"hv"</code> / <code>"vh"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="lf-stepped">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('lf-stepped','lf-stepped-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('lf-stepped','lf-stepped-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('lf-stepped','lf-stepped-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('lf-stepped','lf-stepped-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('lf-stepped','lf-stepped-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('lf-stepped','lf-stepped-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('lf-stepped','lf-stepped-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('lf-stepped','lf-stepped-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('lf-stepped','lf-stepped-cpp',this)">C++</button>
+</div>
+<div id="lf-stepped-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.line(
+    title='Charge serveur (escalier)',
+    variant='stepped',
+    labels=['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
+    values=[12.0, 8.0, 35.0, 52.0, 40.0, 18.0],
+    step_shape='hv',
+    y_label='% CPU',
+    gridlines=True,
+)
+chart.show()</code></pre></div>
+<div id="lf-stepped-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.line({
+  title: "Charge serveur (escalier)",
+  variant: "stepped",
+  labels: ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00"],
+  values: [12.0, 8.0, 35.0, 52.0, 40.0, 18.0],
+  stepShape: "hv",
+  yLabel: "% CPU",
+  gridlines: true
+});
+chart.show();</code></pre></div>
+<div id="lf-stepped-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.line({
+  title: "Charge serveur (escalier)",
+  variant: "stepped",
+  labels: ["00:00", "04:00", "08:00", "12:00", "16:00", "20:00"],
+  values: [12.0, 8.0, 35.0, 52.0, 40.0, 18.0],
+  stepShape: "hv",
+  yLabel: "% CPU",
+  gridlines: true
+});
+chart.show();</code></pre></div>
+<div id="lf-stepped-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$line(
+  title = "Charge serveur (escalier)",
+  variant = "stepped",
+  labels = c("00:00", "04:00", "08:00", "12:00", "16:00", "20:00"),
+  values = c(12.0, 8.0, 35.0, 52.0, 40.0, 18.0),
+  step_shape = "hv",
+  y_label = "% CPU",
+  gridlines = TRUE
+)
+chart$show()</code></pre></div>
+<div id="lf-stepped-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::line()
+        .title("Charge serveur (escalier)")
+        .variant("stepped")
+        .labels(vec!["00:00", "04:00", "08:00", "12:00", "16:00", "20:00"])
+        .values(vec![12.0, 8.0, 35.0, 52.0, 40.0, 18.0])
+        .step_shape("hv")
+        .y_label("% CPU")
+        .gridlines(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="lf-stepped-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+import java.util.Map;
+
+var chart = SeraPlot.line()
+    .title("Charge serveur (escalier)")
+    .variant("stepped")
+    .labels(List.of("00:00", "04:00", "08:00", "12:00", "16:00", "20:00"))
+    .values(List.of(12.0, 8.0, 35.0, 52.0, 40.0, 18.0))
+    .stepShape("hv")
+    .yLabel("% CPU")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="lf-stepped-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Line(
+    title: "Charge serveur (escalier)",
+    variant: "stepped",
+    labels: new[] { "00:00", "04:00", "08:00", "12:00", "16:00", "20:00" },
+    values: new[] { 12.0, 8.0, 35.0, 52.0, 40.0, 18.0 },
+    stepShape: "hv",
+    yLabel: "% CPU",
+    gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="lf-stepped-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.line(
+  title = "Charge serveur (escalier)",
+  variant = "stepped",
+  labels = List("00:00", "04:00", "08:00", "12:00", "16:00", "20:00"),
+  values = List(12.0, 8.0, 35.0, 52.0, 40.0, 18.0),
+  step_shape = "hv",
+  y_label = "% CPU",
+  gridlines = true
+)
+chart.show()</code></pre></div>
+<div id="lf-stepped-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
+
+auto chart = sp::line()
+    .title("Charge serveur (escalier)")
+    .variant("stepped")
+    .labels({"00:00", "04:00", "08:00", "12:00", "16:00", "20:00"})
+    .values({12.0, 8.0, 35.0, 52.0, 40.0, 18.0})
+    .stepShape("hv")
+    .yLabel("% CPU")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+</div>
+
+<div class="sp-variant" id="line-fr-spline">
+
+Courbe Catmull-Rom lissée. `spline_tension` (0–1) contrôle l'adhérence de la courbe aux points.
+
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"spline"</code></span><span><strong>Alias</strong> <code>"spline"</code> / <code>"smooth"</code> / <code>"curved"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="lf-spline">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('lf-spline','lf-spline-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('lf-spline','lf-spline-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('lf-spline','lf-spline-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('lf-spline','lf-spline-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('lf-spline','lf-spline-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('lf-spline','lf-spline-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('lf-spline','lf-spline-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('lf-spline','lf-spline-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('lf-spline','lf-spline-cpp',this)">C++</button>
+</div>
+<div id="lf-spline-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.line(
+    title='Tendance des ventes (lissée)',
+    variant='spline',
+    labels=['S1', 'S2', 'S3', 'S4', 'S5', 'S6', 'S7', 'S8'],
+    values=[120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0],
+    spline_tension=0.5,
+    y_label='Unités',
+)
+chart.show()</code></pre></div>
+<div id="lf-spline-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.line({
+  title: "Tendance des ventes (lissée)",
+  variant: "spline",
+  labels: ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"],
+  values: [120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0],
+  splineTension: 0.5,
+  yLabel: "Unités"
+});
+chart.show();</code></pre></div>
+<div id="lf-spline-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.line({
+  title: "Tendance des ventes (lissée)",
+  variant: "spline",
+  labels: ["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"],
+  values: [120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0],
+  splineTension: 0.5,
+  yLabel: "Unités"
+});
+chart.show();</code></pre></div>
+<div id="lf-spline-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$line(
+  title = "Tendance des ventes (lissée)",
+  variant = "spline",
+  labels = c("S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"),
+  values = c(120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0),
+  spline_tension = 0.5,
+  y_label = "Unités"
+)
+chart$show()</code></pre></div>
+<div id="lf-spline-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::line()
+        .title("Tendance des ventes (lissée)")
+        .variant("spline")
+        .labels(vec!["S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"])
+        .values(vec![120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0])
+        .spline_tension(0.5)
+        .y_label("Unités")
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="lf-spline-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+import java.util.Map;
+
+var chart = SeraPlot.line()
+    .title("Tendance des ventes (lissée)")
+    .variant("spline")
+    .labels(List.of("S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"))
+    .values(List.of(120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0))
+    .splineTension(0.5)
+    .yLabel("Unités")
+    .build();
+chart.show();</code></pre></div>
+<div id="lf-spline-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Line(
+    title: "Tendance des ventes (lissée)",
+    variant: "spline",
+    labels: new[] { "S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8" },
+    values: new[] { 120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0 },
+    splineTension: 0.5,
+    yLabel: "Unités"
+);
+chart.Show();</code></pre></div>
+<div id="lf-spline-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.line(
+  title = "Tendance des ventes (lissée)",
+  variant = "spline",
+  labels = List("S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"),
+  values = List(120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0),
+  spline_tension = 0.5,
+  y_label = "Unités"
+)
+chart.show()</code></pre></div>
+<div id="lf-spline-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
+
+auto chart = sp::line()
+    .title("Tendance des ventes (lissée)")
+    .variant("spline")
+    .labels({"S1", "S2", "S3", "S4", "S5", "S6", "S7", "S8"})
+    .values({120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0, 225.0})
+    .splineTension(0.5)
+    .yLabel("Unités")
+    .build();
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+</div>
+
+<div class="sp-variant" id="line-fr-filled">
+
+Graphique en aire — remplit la zone sous la ligne. `fill_opacity` règle la transparence ; `stack_fill=True` empile plusieurs séries.
+
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"filled"</code></span><span><strong>Alias</strong> <code>"filled"</code> / <code>"area"</code> / <code>"fill"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="lf-filled">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('lf-filled','lf-filled-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('lf-filled','lf-filled-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('lf-filled','lf-filled-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('lf-filled','lf-filled-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('lf-filled','lf-filled-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('lf-filled','lf-filled-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('lf-filled','lf-filled-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('lf-filled','lf-filled-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('lf-filled','lf-filled-cpp',this)">C++</button>
+</div>
+<div id="lf-filled-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.line(
+    title='Utilisateurs actifs par jour',
+    variant='filled',
+    labels=['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'],
+    values=[320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0],
+    fill_opacity=0.35,
+    y_label='DAU',
+    gridlines=True,
+)
+chart.show()</code></pre></div>
+<div id="lf-filled-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.line({
+  title: "Utilisateurs actifs par jour",
+  variant: "filled",
+  labels: ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"],
+  values: [320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0],
+  fillOpacity: 0.35,
+  yLabel: "DAU",
+  gridlines: true
+});
+chart.show();</code></pre></div>
+<div id="lf-filled-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.line({
+  title: "Utilisateurs actifs par jour",
+  variant: "filled",
+  labels: ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"],
+  values: [320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0],
+  fillOpacity: 0.35,
+  yLabel: "DAU",
+  gridlines: true
+});
+chart.show();</code></pre></div>
+<div id="lf-filled-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$line(
+  title = "Utilisateurs actifs par jour",
+  variant = "filled",
+  labels = c("Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"),
+  values = c(320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0),
+  fill_opacity = 0.35,
+  y_label = "DAU",
+  gridlines = TRUE
+)
+chart$show()</code></pre></div>
+<div id="lf-filled-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::line()
+        .title("Utilisateurs actifs par jour")
+        .variant("filled")
+        .labels(vec!["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"])
+        .values(vec![320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0])
+        .fill_opacity(0.35)
+        .y_label("DAU")
+        .gridlines(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="lf-filled-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+import java.util.Map;
+
+var chart = SeraPlot.line()
+    .title("Utilisateurs actifs par jour")
+    .variant("filled")
+    .labels(List.of("Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"))
+    .values(List.of(320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0))
+    .fillOpacity(0.35)
+    .yLabel("DAU")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="lf-filled-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Line(
+    title: "Utilisateurs actifs par jour",
+    variant: "filled",
+    labels: new[] { "Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim" },
+    values: new[] { 320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0 },
+    fillOpacity: 0.35,
+    yLabel: "DAU",
+    gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="lf-filled-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.line(
+  title = "Utilisateurs actifs par jour",
+  variant = "filled",
+  labels = List("Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"),
+  values = List(320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0),
+  fill_opacity = 0.35,
+  y_label = "DAU",
+  gridlines = true
+)
+chart.show()</code></pre></div>
+<div id="lf-filled-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
+
+auto chart = sp::line()
+    .title("Utilisateurs actifs par jour")
+    .variant("filled")
+    .labels({"Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"})
+    .values({320.0, 410.0, 395.0, 460.0, 520.0, 310.0, 280.0})
+    .fillOpacity(0.35)
+    .yLabel("DAU")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+</div>
+
+<div class="sp-variant" id="line-fr-sparkline">
+
+Petit graphique inline — sans axes, idéal pour les tableaux de bord. `spark_cols` arrange plusieurs séries dans une grille.
+
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"sparkline"</code></span><span><strong>Alias</strong> <code>"sparkline"</code> / <code>"spark"</code> / <code>"tiny"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="lf-spark">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('lf-spark','lf-spark-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('lf-spark','lf-spark-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('lf-spark','lf-spark-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('lf-spark','lf-spark-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('lf-spark','lf-spark-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('lf-spark','lf-spark-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('lf-spark','lf-spark-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('lf-spark','lf-spark-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('lf-spark','lf-spark-cpp',this)">C++</button>
+</div>
+<div id="lf-spark-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.line(
+    title='Résumé des KPI',
+    variant='sparkline',
+    series=[("CA", [120, 135, 128, 160, 180, 175, 210]), ("Utilisateurs", [80, 90, 85, 110, 130, 125, 145]), ("Erreurs", [5, 3, 4, 2, 1, 2, 1])],
+    spark_cols=3,
+    spark_cell_w=220,
+    spark_cell_h=60,
+)
+chart.show()</code></pre></div>
+<div id="lf-spark-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.line({
+  title: "Résumé des KPI",
+  variant: "sparkline",
+  series: [["CA", [120, 135, 128, 160, 180, 175, 210]], ["Utilisateurs", [80, 90, 85, 110, 130, 125, 145]], ["Erreurs", [5, 3, 4, 2, 1, 2, 1]]],
+  sparkCols: 3,
+  sparkCellW: 220,
+  sparkCellH: 60
+});
+chart.show();</code></pre></div>
+<div id="lf-spark-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.line({
+  title: "Résumé des KPI",
+  variant: "sparkline",
+  series: [["CA", [120, 135, 128, 160, 180, 175, 210]], ["Utilisateurs", [80, 90, 85, 110, 130, 125, 145]], ["Erreurs", [5, 3, 4, 2, 1, 2, 1]]],
+  sparkCols: 3,
+  sparkCellW: 220,
+  sparkCellH: 60
+});
+chart.show();</code></pre></div>
+<div id="lf-spark-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$line(
+  title = "Résumé des KPI",
+  variant = "sparkline",
+  series = list(list("CA", c(120, 135, 128, 160, 180, 175, 210)), list("Utilisateurs", c(80, 90, 85, 110, 130, 125, 145)), list("Erreurs", c(5, 3, 4, 2, 1, 2, 1))),
+  spark_cols = 3,
+  spark_cell_w = 220,
+  spark_cell_h = 60
+)
+chart$show()</code></pre></div>
+<div id="lf-spark-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::line()
+        .title("Résumé des KPI")
+        .variant("sparkline")
+        .series(vec![("CA".into(), vec![120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0]), ("Utilisateurs".into(), vec![80.0, 90.0, 85.0, 110.0, 130.0, 125.0, 145.0]), ("Erreurs".into(), vec![5.0, 3.0, 4.0, 2.0, 1.0, 2.0, 1.0])])
+        .spark_cols(3)
+        .spark_cell_w(220)
+        .spark_cell_h(60)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="lf-spark-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+import java.util.Map;
+
+var chart = SeraPlot.line()
+    .title("Résumé des KPI")
+    .variant("sparkline")
+    .series(List.of(Map.entry("CA", List.of(120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0)), Map.entry("Utilisateurs", List.of(80.0, 90.0, 85.0, 110.0, 130.0, 125.0, 145.0)), Map.entry("Erreurs", List.of(5.0, 3.0, 4.0, 2.0, 1.0, 2.0, 1.0))))
+    .sparkCols(3)
+    .sparkCellW(220)
+    .sparkCellH(60)
+    .build();
+chart.show();</code></pre></div>
+<div id="lf-spark-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Line(
+    title: "Résumé des KPI",
+    variant: "sparkline",
+    series: new[] { ("CA", new[] { 120, 135, 128, 160, 180, 175, 210 }), ("Utilisateurs", new[] { 80, 90, 85, 110, 130, 125, 145 }), ("Erreurs", new[] { 5, 3, 4, 2, 1, 2, 1 }) },
+    sparkCols: 3,
+    sparkCellW: 220,
+    sparkCellH: 60
+);
+chart.Show();</code></pre></div>
+<div id="lf-spark-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.line(
+  title = "Résumé des KPI",
+  variant = "sparkline",
+  series = List(("CA", List(120.0, 135.0, 128.0, 160.0, 180.0, 175.0, 210.0)), ("Utilisateurs", List(80.0, 90.0, 85.0, 110.0, 130.0, 125.0, 145.0)), ("Erreurs", List(5.0, 3.0, 4.0, 2.0, 1.0, 2.0, 1.0))),
+  spark_cols = 3,
+  spark_cell_w = 220,
+  spark_cell_h = 60
+)
+chart.show()</code></pre></div>
+<div id="lf-spark-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
+
+auto chart = sp::line()
+    .title("Résumé des KPI")
+    .variant("sparkline")
+    .series({{"CA", {120, 135, 128, 160, 180, 175, 210}}, {"Utilisateurs", {80, 90, 85, 110, 130, 125, 145}}, {"Erreurs", {5, 3, 4, 2, 1, 2, 1}}})
+    .sparkCols(3)
+    .sparkCellW(220)
+    .sparkCellH(60)
+    .build();
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+</div>
+
+<div class="sp-variant" id="line-fr-dashed">
+
+Motif de ligne personnalisé. `dash_pattern="8,4"` signifie 8px de trait, 4px de vide. Utilisez `"2,3"` pour pointillé.
+
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"dashed"</code></span><span><strong>Alias</strong> <code>"dashed"</code> / <code>"dotted"</code> / <code>"styled"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="lf-dashed">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('lf-dashed','lf-dashed-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('lf-dashed','lf-dashed-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('lf-dashed','lf-dashed-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('lf-dashed','lf-dashed-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('lf-dashed','lf-dashed-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('lf-dashed','lf-dashed-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('lf-dashed','lf-dashed-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('lf-dashed','lf-dashed-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('lf-dashed','lf-dashed-cpp',this)">C++</button>
+</div>
+<div id="lf-dashed-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.line(
+    title='Prévision vs réel',
+    variant='dashed',
+    labels=['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin'],
+    values=[10.0, 18.0, 22.0, 30.0, 38.0, 45.0],
+    dash_pattern='8,4',
+    stroke_width=2.5,
+    y_label='Unités',
+    gridlines=True,
+)
+chart.show()</code></pre></div>
+<div id="lf-dashed-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.line({
+  title: "Prévision vs réel",
+  variant: "dashed",
+  labels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin"],
+  values: [10.0, 18.0, 22.0, 30.0, 38.0, 45.0],
+  dashPattern: "8,4",
+  strokeWidth: 2.5,
+  yLabel: "Unités",
+  gridlines: true
+});
+chart.show();</code></pre></div>
+<div id="lf-dashed-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.line({
+  title: "Prévision vs réel",
+  variant: "dashed",
+  labels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin"],
+  values: [10.0, 18.0, 22.0, 30.0, 38.0, 45.0],
+  dashPattern: "8,4",
+  strokeWidth: 2.5,
+  yLabel: "Unités",
+  gridlines: true
+});
+chart.show();</code></pre></div>
+<div id="lf-dashed-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$line(
+  title = "Prévision vs réel",
+  variant = "dashed",
+  labels = c("Jan", "Fév", "Mar", "Avr", "Mai", "Juin"),
+  values = c(10.0, 18.0, 22.0, 30.0, 38.0, 45.0),
+  dash_pattern = "8,4",
+  stroke_width = 2.5,
+  y_label = "Unités",
+  gridlines = TRUE
+)
+chart$show()</code></pre></div>
+<div id="lf-dashed-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::line()
+        .title("Prévision vs réel")
+        .variant("dashed")
+        .labels(vec!["Jan", "Fév", "Mar", "Avr", "Mai", "Juin"])
+        .values(vec![10.0, 18.0, 22.0, 30.0, 38.0, 45.0])
+        .dash_pattern("8,4")
+        .stroke_width(2.5)
+        .y_label("Unités")
+        .gridlines(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="lf-dashed-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+import java.util.Map;
+
+var chart = SeraPlot.line()
+    .title("Prévision vs réel")
+    .variant("dashed")
+    .labels(List.of("Jan", "Fév", "Mar", "Avr", "Mai", "Juin"))
+    .values(List.of(10.0, 18.0, 22.0, 30.0, 38.0, 45.0))
+    .dashPattern("8,4")
+    .strokeWidth(2.5)
+    .yLabel("Unités")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="lf-dashed-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Line(
+    title: "Prévision vs réel",
+    variant: "dashed",
+    labels: new[] { "Jan", "Fév", "Mar", "Avr", "Mai", "Juin" },
+    values: new[] { 10.0, 18.0, 22.0, 30.0, 38.0, 45.0 },
+    dashPattern: "8,4",
+    strokeWidth: 2.5,
+    yLabel: "Unités",
+    gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="lf-dashed-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.line(
+  title = "Prévision vs réel",
+  variant = "dashed",
+  labels = List("Jan", "Fév", "Mar", "Avr", "Mai", "Juin"),
+  values = List(10.0, 18.0, 22.0, 30.0, 38.0, 45.0),
+  dash_pattern = "8,4",
+  stroke_width = 2.5,
+  y_label = "Unités",
+  gridlines = true
+)
+chart.show()</code></pre></div>
+<div id="lf-dashed-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
+
+auto chart = sp::line()
+    .title("Prévision vs réel")
+    .variant("dashed")
+    .labels({"Jan", "Fév", "Mar", "Avr", "Mai", "Juin"})
+    .values({10.0, 18.0, 22.0, 30.0, 38.0, 45.0})
+    .dashPattern("8,4")
+    .strokeWidth(2.5)
+    .yLabel("Unités")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+</div>
+
+<div class="sp-variant" id="line-fr-connected_scatter">
+
+Ligne avec marqueurs visibles. `marker_size` (px) règle la taille des points ; `show_points=True` est implicite.
+
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"connected_scatter"</code></span><span><strong>Alias</strong> <code>"connected_scatter"</code> / <code>"markers"</code> / <code>"lines+markers"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="lf-connected">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('lf-connected','lf-connected-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('lf-connected','lf-connected-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('lf-connected','lf-connected-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('lf-connected','lf-connected-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('lf-connected','lf-connected-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('lf-connected','lf-connected-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('lf-connected','lf-connected-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('lf-connected','lf-connected-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('lf-connected','lf-connected-cpp',this)">C++</button>
+</div>
+<div id="lf-connected-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.line(
+    title="Mesures d'expérience",
+    variant='connected_scatter',
+    labels=['t0', 't1', 't2', 't3', 't4', 't5', 't6'],
+    values=[4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3],
+    marker_size=7,
+    y_label='mV',
+    gridlines=True,
+)
+chart.show()</code></pre></div>
+<div id="lf-connected-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.line({
+  title: "Mesures d'expérience",
+  variant: "connected_scatter",
+  labels: ["t0", "t1", "t2", "t3", "t4", "t5", "t6"],
+  values: [4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3],
+  markerSize: 7,
+  yLabel: "mV",
+  gridlines: true
+});
+chart.show();</code></pre></div>
+<div id="lf-connected-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.line({
+  title: "Mesures d'expérience",
+  variant: "connected_scatter",
+  labels: ["t0", "t1", "t2", "t3", "t4", "t5", "t6"],
+  values: [4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3],
+  markerSize: 7,
+  yLabel: "mV",
+  gridlines: true
+});
+chart.show();</code></pre></div>
+<div id="lf-connected-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$line(
+  title = "Mesures d'expérience",
+  variant = "connected_scatter",
+  labels = c("t0", "t1", "t2", "t3", "t4", "t5", "t6"),
+  values = c(4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3),
+  marker_size = 7,
+  y_label = "mV",
+  gridlines = TRUE
+)
+chart$show()</code></pre></div>
+<div id="lf-connected-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::line()
+        .title("Mesures d'expérience")
+        .variant("connected_scatter")
+        .labels(vec!["t0", "t1", "t2", "t3", "t4", "t5", "t6"])
+        .values(vec![4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3])
+        .marker_size(7)
+        .y_label("mV")
+        .gridlines(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="lf-connected-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+import java.util.Map;
+
+var chart = SeraPlot.line()
+    .title("Mesures d'expérience")
+    .variant("connected_scatter")
+    .labels(List.of("t0", "t1", "t2", "t3", "t4", "t5", "t6"))
+    .values(List.of(4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3))
+    .markerSize(7)
+    .yLabel("mV")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="lf-connected-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Line(
+    title: "Mesures d'expérience",
+    variant: "connected_scatter",
+    labels: new[] { "t0", "t1", "t2", "t3", "t4", "t5", "t6" },
+    values: new[] { 4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3 },
+    markerSize: 7,
+    yLabel: "mV",
+    gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="lf-connected-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.line(
+  title = "Mesures d'expérience",
+  variant = "connected_scatter",
+  labels = List("t0", "t1", "t2", "t3", "t4", "t5", "t6"),
+  values = List(4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3),
+  marker_size = 7,
+  y_label = "mV",
+  gridlines = true
+)
+chart.show()</code></pre></div>
+<div id="lf-connected-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
+
+auto chart = sp::line()
+    .title("Mesures d'expérience")
+    .variant("connected_scatter")
+    .labels({"t0", "t1", "t2", "t3", "t4", "t5", "t6"})
+    .values({4.2, 5.8, 7.1, 6.5, 8.4, 9.0, 10.3})
+    .markerSize(7)
+    .yLabel("mV")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+</div>
+
+<div class="sp-variant" id="line-fr-gapped">
+
+Rupture de ligne lorsque les valeurs dépassent `gap_threshold`. Utile pour des séries temporelles avec échantillons manquants.
+
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gapped"</code></span><span><strong>Alias</strong> <code>"gapped"</code> / <code>"gaps"</code> / <code>"missing"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="lf-gapped">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('lf-gapped','lf-gapped-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('lf-gapped','lf-gapped-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('lf-gapped','lf-gapped-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('lf-gapped','lf-gapped-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('lf-gapped','lf-gapped-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('lf-gapped','lf-gapped-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('lf-gapped','lf-gapped-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('lf-gapped','lf-gapped-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('lf-gapped','lf-gapped-cpp',this)">C++</button>
+</div>
+<div id="lf-gapped-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.line(
+    title='Signal capteur (avec coupures)',
+    variant='gapped',
+    labels=['t0', 't1', 't2', 't3', 't4', 't5', 't6', 't7', 't8'],
+    values=[3.2, 3.5, 3.4, float("nan"), float("nan"), 4.1, 4.5, 4.3, 4.8],
+    gap_threshold=1.0,
+    y_label='V',
+    gridlines=True,
+)
+chart.show()</code></pre></div>
+<div id="lf-gapped-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.line({
+  title: "Signal capteur (avec coupures)",
+  variant: "gapped",
+  labels: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"],
+  values: [3.2, 3.5, 3.4, NaN, NaN, 4.1, 4.5, 4.3, 4.8],
+  gapThreshold: 1.0,
+  yLabel: "V",
+  gridlines: true
+});
+chart.show();</code></pre></div>
+<div id="lf-gapped-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.line({
+  title: "Signal capteur (avec coupures)",
+  variant: "gapped",
+  labels: ["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"],
+  values: [3.2, 3.5, 3.4, NaN, NaN, 4.1, 4.5, 4.3, 4.8],
+  gapThreshold: 1.0,
+  yLabel: "V",
+  gridlines: true
+});
+chart.show();</code></pre></div>
+<div id="lf-gapped-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$line(
+  title = "Signal capteur (avec coupures)",
+  variant = "gapped",
+  labels = c("t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"),
+  values = c(3.2, 3.5, 3.4, NA, NA, 4.1, 4.5, 4.3, 4.8),
+  gap_threshold = 1.0,
+  y_label = "V",
+  gridlines = TRUE
+)
+chart$show()</code></pre></div>
+<div id="lf-gapped-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::line()
+        .title("Signal capteur (avec coupures)")
+        .variant("gapped")
+        .labels(vec!["t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"])
+        .values(vec![3.2, 3.5, 3.4, f64::NAN, f64::NAN, 4.1, 4.5, 4.3, 4.8])
+        .gap_threshold(1.0)
+        .y_label("V")
+        .gridlines(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="lf-gapped-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+import java.util.Map;
+
+var chart = SeraPlot.line()
+    .title("Signal capteur (avec coupures)")
+    .variant("gapped")
+    .labels(List.of("t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"))
+    .values(List.of(3.2, 3.5, 3.4, Double.NaN, Double.NaN, 4.1, 4.5, 4.3, 4.8))
+    .gapThreshold(1.0)
+    .yLabel("V")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="lf-gapped-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Line(
+    title: "Signal capteur (avec coupures)",
+    variant: "gapped",
+    labels: new[] { "t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8" },
+    values: new[] { 3.2, 3.5, 3.4, double.NaN, double.NaN, 4.1, 4.5, 4.3, 4.8 },
+    gapThreshold: 1.0,
+    yLabel: "V",
+    gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="lf-gapped-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.line(
+  title = "Signal capteur (avec coupures)",
+  variant = "gapped",
+  labels = List("t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"),
+  values = List(3.2, 3.5, 3.4, Double.NaN, Double.NaN, 4.1, 4.5, 4.3, 4.8),
+  gap_threshold = 1.0,
+  y_label = "V",
+  gridlines = true
+)
+chart.show()</code></pre></div>
+<div id="lf-gapped-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot.hpp>
+
+auto chart = sp::line()
+    .title("Signal capteur (avec coupures)")
+    .variant("gapped")
+    .labels({"t0", "t1", "t2", "t3", "t4", "t5", "t6", "t7", "t8"})
+    .values({3.2, 3.5, 3.4, std::nan(""), std::nan(""), 4.1, 4.5, 4.3, 4.8})
+    .gapThreshold(1.0)
+    .yLabel("V")
+    .gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+</div>
+
+</div>
+</div>
+
+</div>
