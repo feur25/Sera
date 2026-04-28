@@ -645,7 +645,8 @@
     if (!rail) return;
     rail.classList.toggle("sp-rail-wide");
     localStorage.setItem("sp_rail_wide", rail.classList.contains("sp-rail-wide") ? "1" : "0");
-    refreshRailToggleLabel();
+    // Defer label update to the next frame so it doesn't interrupt transition start
+    requestAnimationFrame(refreshRailToggleLabel);
   });
 
   var lastLang = getLang();
