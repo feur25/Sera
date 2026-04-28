@@ -364,20 +364,26 @@
       if (isCollapsed) { rail.style.display = "none"; return; }
       rail.style.display = "";
       rail.classList.toggle("sp-rail-bottom", isBottom);
-      var r = panel.getBoundingClientRect();
+      var r  = panel.getBoundingClientRect();
+      // clientWidth/clientHeight = layout viewport WITHOUT scrollbar,
+      // which is exactly what position:fixed uses for its coordinates.
+      // window.innerWidth includes the scrollbar (~17px on Windows) and would
+      // shift the rail left by the scrollbar width, creating a visible gap.
+      var vw = document.documentElement.clientWidth;
+      var vh = document.documentElement.clientHeight;
       if (isBottom) {
         rail.style.left   = r.left + "px";
-        rail.style.right  = (window.innerWidth - r.right) + "px";
-        rail.style.bottom = (window.innerHeight - r.top) + "px";
+        rail.style.right  = (vw - r.right) + "px";
+        rail.style.bottom = (vh - r.top) + "px";
         rail.style.top    = "";
         rail.style.height = "";
         rail.style.width  = "";
       } else {
         var inset = 12;   /* clear panel border-radius corners */
-        rail.style.right  = (window.innerWidth - r.left) + "px";
+        rail.style.right  = (vw - r.left) + "px";
         rail.style.left   = "";
         rail.style.top    = (r.top + inset) + "px";
-        rail.style.bottom = (window.innerHeight - r.bottom + inset) + "px";
+        rail.style.bottom = (vh - r.bottom + inset) + "px";
         rail.style.height = "";
         rail.style.width  = "";
       }
