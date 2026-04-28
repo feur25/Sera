@@ -111,13 +111,14 @@ const chart = sp.bar({
   show_text: true,
 });
 chart.show();</code></pre></div>
-<div id="qs-build-rust" class="sp-tc"><pre><code class="language-rust">use seraplot::prelude::*;
+<div id="qs-build-rust" class="sp-tc"><pre><code class="language-rust">// Cargo.toml: [dependencies] seraplot = "2"
+use seraplot::Chart;
 
 fn main() {
-    let chart = sp::bar()
+    let chart = Chart::bar()
         .title("Sales by Region")
-        .labels(&["North", "South", "East", "West"])
-        .values(&[120.0, 85.0, 200.0, 140.0])
+        .labels(["North", "South", "East", "West"])
+        .values([120.0, 85.0, 200.0, 140.0])
         .gridlines(true)
         .show_text(true)
         .build();
@@ -246,13 +247,14 @@ const chart = sp.bar({
   show_text: true,
 });
 chart.show();</code></pre></div>
-<div id="qs-build-fr-rust" class="sp-tc"><pre><code class="language-rust">use seraplot::prelude::*;
+<div id="qs-build-fr-rust" class="sp-tc"><pre><code class="language-rust">// Cargo.toml: [dependencies] seraplot = "2"
+use seraplot::Chart;
 
 fn main() {
-    let chart = sp::bar()
+    let chart = Chart::bar()
         .title("Ventes par région")
-        .labels(&["Nord", "Sud", "Est", "Ouest"])
-        .values(&[120.0, 85.0, 200.0, 140.0])
+        .labels(["Nord", "Sud", "Est", "Ouest"])
+        .values([120.0, 85.0, 200.0, 140.0])
         .gridlines(true)
         .show_text(true)
         .build();

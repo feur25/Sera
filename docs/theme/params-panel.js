@@ -215,7 +215,8 @@
       iw.className = "sp-psec sp-psec-preview";
       var il = document.createElement("div");
       il.className = "sp-psec-lbl";
-      il.textContent = lang === "fr" ? "Aper\u00e7u" : "Preview";
+      var eyeSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+      il.innerHTML = eyeSvg + (lang === "fr" ? "Aper\u00e7u" : "Preview");
       iw.appendChild(il);
       // Wrapper: height controlled programmatically so layout = visual (no scroll).
       var wrap = document.createElement("div");

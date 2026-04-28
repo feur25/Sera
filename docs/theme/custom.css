@@ -299,15 +299,23 @@ iframe[loading="lazy"] {
   filter: drop-shadow(0 0 5px rgba(153,170,255,.55));
 }
 
-/* Label text — shown only in wide mode */
+/* Label text — shown only in wide mode, smooth reveal */
 .sp-rail-btn .sp-clb {
-  display: none;
   flex: 1;
   min-width: 0;
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
+  max-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: max-width .26s cubic-bezier(.5,0,.2,1), opacity .2s ease;
 }
-.sp-cls-rail-side.sp-rail-wide .sp-rail-btn .sp-clb { display: block; }
+.sp-cls-rail-side.sp-rail-wide .sp-rail-btn .sp-clb {
+  max-width: 140px;
+  opacity: 1;
+  pointer-events: auto;
+}
 
 /* Collapsed: JS sets display:none on the body-appended rail */
 #sp-params-panel.sp-p-collapsed .sp-panel-row { display: none; }
@@ -745,3 +753,33 @@ body.sp-body-bottom .content {
     padding-bottom: 280px !important;
   }
 }
+
+/* ── Code tab action buttons (copy / play / eye) ──────────────────────── */
+.sp-copy-btn,
+.sp-play-btn,
+.sp-eye-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 8px;
+  background: none;
+  border: none;
+  border-left: 1px solid #1e293b;
+  color: #475569;
+  cursor: pointer;
+  transition: color .15s, background .15s;
+  line-height: 1;
+}
+.sp-copy-btn:hover { color: #94a3b8; background: rgba(148,163,184,.07); }
+.sp-play-btn       { color: #4f7096; }
+.sp-play-btn:hover { color: #38bdf8; background: rgba(56,189,248,.07); }
+.sp-eye-btn        { color: #4f6880; }
+.sp-eye-btn:hover,
+.sp-eye-btn.sp-eye-on { color: #818cf8; background: rgba(129,140,248,.07); }
+/* copied flash */
+.sp-copy-btn.sp-copied { color: #22c55e !important; }
+.sp-copy-btn.sp-copied svg { display: none; }
+.sp-copy-btn.sp-copied::after { content: '\2713'; font-size: 12px; font-weight: 700; }
+/* eye icon in panel section labels */
+.sp-psec-lbl svg { vertical-align: -2px; margin-right: 5px; opacity: .75; }
