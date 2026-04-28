@@ -436,12 +436,20 @@
   function rescaleIframesInPanel(panel) {
     var CHART_W = 900, CHART_H = 380;
     panel.querySelectorAll(".sp-preview-frame").forEach(function (iframe) {
-      var wrap = iframe.parentElement;
-      if (!wrap) return;
-      if (!wrap.classList.contains("sp-iframe-wrap")) {
-        wrap.classList.add("sp-iframe-wrap");
+      // If the iframe is already inside a dedicated wrapper, re-use it.
+      // Otherwise INSERT a new wrapper div around JUST the iframe so we never
+      // use a .sp-variant (or any parent with other content) as the wrap —
+      // setting height+overflow:hidden on the variant would clip the code tabs.
+      var wrap;
+      if (iframe.parentElement && iframe.parentElement.classList.contains("sp-iframe-wrap")) {
+        wrap = iframe.parentElement;
+      } else {
+        wrap = document.createElement("div");
+        wrap.className = "sp-iframe-wrap";
         wrap.style.cssText = "position:relative;overflow:hidden;border-radius:8px;width:100%;";
-        iframe.style.cssText = "position:absolute;top:0;left:0;width:" + CHART_W + "px;height:" + CHART_H + "px;border:none;transform-origin:0 0;";
+        iframe.parentElement.insertBefore(wrap, iframe);
+        wrap.appendChild(iframe);
+        iframe.style.cssText = "position:absolute;top:0;left:0;width:" + CHART_W + "px;height:" + CHART_H + "px;border:none;transform-origin:0 0;background:#0d1117;overflow:hidden;";
       }
       function scale() {
         var aw = wrap.offsetWidth;
