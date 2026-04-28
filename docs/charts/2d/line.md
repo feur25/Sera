@@ -248,7 +248,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-en-multi">
@@ -371,7 +371,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/multiline.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-multi.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-en-stepped">
@@ -503,7 +503,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-stepped.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-en-spline">
@@ -626,7 +626,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-spline.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-en-filled">
@@ -758,7 +758,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-filled.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-en-sparkline">
@@ -881,7 +881,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-sparkline.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-en-dashed">
@@ -1022,7 +1022,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-dashed.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-en-connected_scatter">
@@ -1154,7 +1154,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-connected_scatter.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-en-gapped">
@@ -1286,7 +1286,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-gapped.html"></iframe>
 </div>
 
 </div>
@@ -1498,7 +1498,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-basic.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-fr-multi">
@@ -1621,7 +1621,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/multiline.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-multi.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-fr-stepped">
@@ -1753,7 +1753,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-stepped.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-fr-spline">
@@ -1876,7 +1876,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-spline.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-fr-filled">
@@ -2008,7 +2008,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-filled.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-fr-sparkline">
@@ -2131,7 +2131,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-sparkline.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-fr-dashed">
@@ -2272,7 +2272,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-dashed.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-fr-connected_scatter">
@@ -2404,7 +2404,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-connected_scatter.html"></iframe>
 </div>
 
 <div class="sp-variant" id="line-fr-gapped">
@@ -2536,7 +2536,7 @@ auto chart = sp::line()
 chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/line.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/line-gapped.html"></iframe>
 </div>
 
 </div>

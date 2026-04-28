@@ -295,13 +295,8 @@
 
     var rail = document.createElement("div");
     rail.className = "sp-cls-rail-side";
-
-    var tog = document.createElement("button");
-    tog.className = "sp-rail-tog";
-    tog.title = getLang() === "fr" ? "Afficher/masquer les labels" : "Toggle labels";
-    tog.textContent = "\u2630";
-    tog.addEventListener("click", function () { rail.classList.toggle("sp-rail-wide"); });
-    rail.appendChild(tog);
+    // Restore wide-state from previous session
+    if (localStorage.getItem("sp_rail_wide") === "1") rail.classList.add("sp-rail-wide");
 
     clsContainers.forEach(function (cls) {
       var scope = cls.id;
@@ -449,7 +444,9 @@
         wrap.style.cssText = "position:relative;overflow:hidden;border-radius:8px;width:100%;";
         iframe.parentElement.insertBefore(wrap, iframe);
         wrap.appendChild(iframe);
-        iframe.style.cssText = "position:absolute;top:0;left:0;width:" + CHART_W + "px;height:" + CHART_H + "px;border:none;transform-origin:0 0;background:#0d1117;overflow:hidden;";
+        iframe.setAttribute("scrolling", "no");
+        iframe.setAttribute("frameborder", "0");
+        iframe.style.cssText = "position:absolute;top:0;left:0;width:" + CHART_W + "px;height:" + CHART_H + "px;border:none;transform-origin:0 0;background:#0d1117;overflow:hidden;display:block;";
       }
       function scale() {
         var aw = wrap.offsetWidth;
@@ -584,7 +581,8 @@
         '<rect x="1" y="7" width="10" height="2" rx="1"/>' +
         '<rect x="1" y="11" width="12" height="2" rx="1"/>' +
       '</svg>' +
-      '<span class="sp-ph-tt">API</span>';
+      '<span class="sp-ph-tt">API</span>' +
+      '<button class="sp-ph-rail-tog" type="button" aria-pressed="false"></button>';
 
     var ctrl = document.createElement("div");
     ctrl.className = "sp-ph-ctrl";
@@ -623,7 +621,31 @@
     });
 
     renderBody(panel);
+    refreshRailToggleLabel();
   }
+
+  function refreshRailToggleLabel() {
+    var btn = document.querySelector("#" + PANEL_ID + " .sp-ph-rail-tog");
+    if (!btn) return;
+    var rail = document.querySelector(".sp-cls-rail-side");
+    var wide = !!(rail && rail.classList.contains("sp-rail-wide"));
+    var fr = getLang() === "fr";
+    btn.textContent = wide
+      ? (fr ? "Masquer les variantes" : "Hide variants")
+      : (fr ? "Afficher les variantes" : "Show variants");
+    btn.setAttribute("aria-pressed", wide ? "true" : "false");
+    btn.classList.toggle("sp-rail-on", wide);
+  }
+
+  document.addEventListener("click", function (ev) {
+    var t = ev.target;
+    if (!t || !t.classList || !t.classList.contains("sp-ph-rail-tog")) return;
+    var rail = document.querySelector(".sp-cls-rail-side");
+    if (!rail) return;
+    rail.classList.toggle("sp-rail-wide");
+    localStorage.setItem("sp_rail_wide", rail.classList.contains("sp-rail-wide") ? "1" : "0");
+    refreshRailToggleLabel();
+  });
 
   var lastLang = getLang();
   setInterval(function () {
@@ -637,6 +659,7 @@
         var colBtn = panel.querySelector(".sp-pc-col");
         if (posBtn) applyPos(panel, posBtn);
         if (colBtn) applyCollapsed(panel, colBtn);
+        refreshRailToggleLabel();
       }
     }
   }, 250);

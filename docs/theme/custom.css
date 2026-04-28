@@ -360,6 +360,10 @@ iframe[loading="lazy"] {
   overflow: visible !important;
 }
 
+/* The legacy "⇆" toggle sticking out of the in-page rail is replaced by the
+   header pill button — hide everywhere. */
+.sp-cls-toggle { display: none !important; }
+
 /* ── Variant + code-tab visibility (JS also sets inline styles as backup) ─── */
 #sp-params-panel .sp-variant { display: none; }
 #sp-params-panel .sp-variant.sp-von {
@@ -477,6 +481,34 @@ body.sp-body-bottom .content {
   height: 15px;
   color: #6366f1;
   flex-shrink: 0;
+}
+
+/* Header rail-toggle pill — replaces the old in-rail .sp-rail-tog */
+.sp-ph-rail-tog {
+  margin-left: 10px;
+  padding: 4px 11px;
+  background: linear-gradient(135deg, #182337, #0f1b2d);
+  border: 1px solid #1e3a5f;
+  border-radius: 999px;
+  color: #94a3b8;
+  cursor: pointer;
+  font: inherit;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: none;
+  transition: background .15s, color .15s, border-color .15s, box-shadow .15s;
+}
+.sp-ph-rail-tog:hover {
+  color: #c4d5ef;
+  border-color: #3b4a6b;
+  background: linear-gradient(135deg, #1e2d48, #152239);
+}
+.sp-ph-rail-tog.sp-rail-on {
+  color: #dce1ff;
+  border-color: #4f46e5;
+  background: linear-gradient(135deg, #3c368c, #1a1558);
+  box-shadow: 0 0 0 1px rgba(99,102,241,.35), 0 2px 8px rgba(80,70,200,.35);
 }
 
 .sp-ph-ctrl {
