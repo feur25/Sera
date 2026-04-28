@@ -56,7 +56,10 @@
       "#sp-wip-notice .sp-wip-body{padding:10px 14px 12px;color:#bcc6d4}",
       "#sp-wip-notice .sp-wip-body p{margin:0 0 8px}",
       "#sp-wip-notice .sp-wip-body p:last-child{margin-bottom:0}",
-      "#sp-wip-notice .lang-en, #sp-wip-notice .lang-fr{display:none}",
+      "#sp-wip-notice .sp-wip-lang{display:none}",
+      "#sp-wip-notice .sp-wip-lang.sp-wip-on{display:block}",
+      "#sp-wip-notice .sp-wip-title{display:none}",
+      "#sp-wip-notice .sp-wip-title.sp-wip-on{display:inline;font-weight:600;font-size:12px;color:#e2e8f0;flex:1;min-width:0}",
       "@media (prefers-reduced-motion:reduce){",
       "  #sp-wip-notice{transition:none}",
       "}"
@@ -70,16 +73,16 @@
     el.innerHTML = [
       '<div class="sp-wip-head">',
       '  <span class="sp-wip-badge">⚠ Warning</span>',
-      '  <span class="sp-wip-title lang-en">Work in progress</span>',
-      '  <span class="sp-wip-title lang-fr">En cours de rédaction</span>',
+      '  <span class="sp-wip-title" data-lang="en">Work in progress</span>',
+      '  <span class="sp-wip-title" data-lang="fr">En cours de rédaction</span>',
       '  <button class="sp-wip-close" type="button" aria-label="Close" title="Close">×</button>',
       '</div>',
       '<div class="sp-wip-body">',
-      '  <div class="lang-fr">',
+      '  <div class="sp-wip-lang" data-lang="fr">',
       '    <p>La doc est fortement vouée à être modifiée — je prends beaucoup de temps à la rédiger et à retravailler le framework. Ne pouvant pas être à temps plein dessus, je suis navré.</p>',
       '    <p>J\'essaie de vous pondre le meilleur outil que je peux, à mon échelle. Merci de votre compréhension.</p>',
       '  </div>',
-      '  <div class="lang-en">',
+      '  <div class="sp-wip-lang" data-lang="en">',
       '    <p>This documentation is very much a work in progress — writing it and reworking the framework takes a lot of time. I cannot be on it full-time, so my apologies.</p>',
       '    <p>I\'m doing my best to ship the finest tool I can at my own scale. Thanks for your patience and understanding.</p>',
       '  </div>',
@@ -90,8 +93,25 @@
     requestAnimationFrame(function () { el.classList.add("sp-show"); });
 
     el.querySelector(".sp-wip-close").addEventListener("click", dismiss);
-    // lang-switcher.js handles .lang-en / .lang-fr visibility automatically
-    // via its MutationObserver + applyLang — nothing extra needed here.
+
+    // Apply the correct language immediately, then keep in sync with the
+    // lang-switcher toggle (which stores the choice in localStorage).
+    function applyWipLang() {
+      var lang = "en";
+      try { lang = localStorage.getItem("seraplot_lang") || "en"; } catch (_e) {}
+      el.querySelectorAll(".sp-wip-lang, .sp-wip-title").forEach(function (node) {
+        node.classList.toggle("sp-wip-on", node.getAttribute("data-lang") === lang);
+      });
+    }
+    applyWipLang();
+
+    // Re-apply whenever localStorage changes (lang-switcher click in another tab)
+    // and also poll for in-page toggle since storage events don't fire same-tab.
+    window.addEventListener("storage", applyWipLang);
+    var _langPoll = setInterval(applyWipLang, 400);
+    // Stop polling once dismissed
+    var _origDismiss = dismiss;
+    dismiss = function () { clearInterval(_langPoll); _origDismiss(); };
   }
 
   if (document.readyState === "loading") {
