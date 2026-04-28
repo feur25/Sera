@@ -195,6 +195,7 @@ iframe[loading="lazy"] {
   flex-direction: column;
   align-items: stretch;
   border-radius: 10px 0 0 10px;
+  background: linear-gradient(90deg, #020408 0%, #030710 100%);
   overflow-y: auto;
   overflow-x: visible;
   padding: 8px 0 14px;
@@ -380,13 +381,14 @@ iframe[loading="lazy"] {
   margin-top: 8px;
 }
 
-/* right mode — clip-path prevents box-shadow from bleeding LEFT onto the rail */
+/* right mode — clip-path prevents box-shadow from bleeding LEFT onto the rail.
+   Left inset is -1px so the panel's own 1px left border still renders flush. */
 #sp-params-panel.sp-p-right {
   right: 12px;
   top: 72px;
   bottom: 20px;
   border-radius: 12px;
-  clip-path: inset(-60px -60px -60px 0 round 12px);
+  clip-path: inset(-60px -60px -60px -1px round 12px);
 }
 #sp-params-panel.sp-p-right.sp-p-collapsed {
   bottom: auto;
@@ -394,14 +396,15 @@ iframe[loading="lazy"] {
   width: 220px !important;
 }
 
-/* bottom mode — clip-path prevents box-shadow from bleeding UP onto the rail */
+/* bottom mode — clip-path prevents box-shadow from bleeding UP onto the rail.
+   Top inset is -1px so the panel's own 1px top border still renders flush. */
 #sp-params-panel.sp-p-bottom {
   bottom: 0;
   left: 0;
   right: 0;
   width: 100% !important;
   border-radius: 12px 12px 0 0;
-  clip-path: inset(0 -60px -60px -60px round 12px 12px 0 0);
+  clip-path: inset(-1px -60px -60px -60px round 12px 12px 0 0);
 }
 #sp-params-panel.sp-p-bottom.sp-p-collapsed {
   height: auto !important;
