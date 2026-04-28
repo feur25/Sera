@@ -365,27 +365,29 @@
       rail.style.display = "";
       rail.classList.toggle("sp-rail-bottom", isBottom);
       var r  = panel.getBoundingClientRect();
-      // clientWidth/clientHeight = layout viewport WITHOUT scrollbar,
-      // which is exactly what position:fixed uses for its coordinates.
-      // window.innerWidth includes the scrollbar (~17px on Windows) and would
-      // shift the rail left by the scrollbar width, creating a visible gap.
-      var vw = document.documentElement.clientWidth;
       var vh = document.documentElement.clientHeight;
       if (isBottom) {
-        rail.style.left   = r.left + "px";
-        rail.style.right  = (vw - r.right) + "px";
-        rail.style.bottom = (vh - r.top) + "px";
-        rail.style.top    = "";
-        rail.style.height = "";
-        rail.style.width  = "";
+        // Bottom mode: horizontal strip above the panel.
+        // left/right match panel edges exactly.
+        rail.style.left      = r.left + "px";
+        rail.style.right     = (document.documentElement.clientWidth - r.right) + "px";
+        rail.style.bottom    = (vh - r.top) + "px";
+        rail.style.top       = "";
+        rail.style.height    = "";
+        rail.style.width     = "";
+        rail.style.transform = "";
       } else {
-        var inset = 12;   /* clear panel border-radius corners */
-        rail.style.right  = (vw - r.left) + "px";
-        rail.style.left   = "";
-        rail.style.top    = (r.top + inset) + "px";
-        rail.style.bottom = (vh - r.bottom + inset) + "px";
-        rail.style.height = "";
-        rail.style.width  = "";
+        // Right mode: vertical strip to the LEFT of the panel.
+        // Anchor left edge to r.left and shift left by 100% own-width.
+        // This avoids any viewport-width computation — no scrollbar gap possible.
+        var inset = 12;
+        rail.style.left      = r.left + "px";
+        rail.style.transform = "translateX(-100%)";
+        rail.style.right     = "";
+        rail.style.top       = (r.top  + inset) + "px";
+        rail.style.bottom    = (vh - r.bottom + inset) + "px";
+        rail.style.height    = "";
+        rail.style.width     = "";
       }
     }
     positionRail();
