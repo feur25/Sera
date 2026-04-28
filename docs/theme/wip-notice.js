@@ -56,19 +56,7 @@
       "#sp-wip-notice .sp-wip-body{padding:10px 14px 12px;color:#bcc6d4}",
       "#sp-wip-notice .sp-wip-body p{margin:0 0 8px}",
       "#sp-wip-notice .sp-wip-body p:last-child{margin-bottom:0}",
-      "#sp-wip-notice .sp-wip-tabs{",
-      "  display:flex;gap:4px;padding:6px 10px 0;",
-      "}",
-      "#sp-wip-notice .sp-wip-tab{",
-      "  background:transparent;border:none;color:#7e8a9c;cursor:pointer;",
-      "  padding:4px 8px;border-radius:5px;font-size:10.5px;font-weight:600;",
-      "  letter-spacing:.4px;text-transform:uppercase;font-family:inherit;",
-      "  transition:all .15s;",
-      "}",
-      "#sp-wip-notice .sp-wip-tab:hover{color:#e2e8f0;background:rgba(255,255,255,.04)}",
-      "#sp-wip-notice .sp-wip-tab.sp-active{color:#a5b4fc;background:rgba(129,140,248,.10)}",
-      "#sp-wip-notice .sp-wip-pane{display:none}",
-      "#sp-wip-notice .sp-wip-pane.sp-active{display:block}",
+      "#sp-wip-notice .lang-en, #sp-wip-notice .lang-fr{display:none}",
       "@media (prefers-reduced-motion:reduce){",
       "  #sp-wip-notice{transition:none}",
       "}"
@@ -82,19 +70,16 @@
     el.innerHTML = [
       '<div class="sp-wip-head">',
       '  <span class="sp-wip-badge">⚠ Warning</span>',
-      '  <span class="sp-wip-title">Work in progress</span>',
+      '  <span class="sp-wip-title lang-en">Work in progress</span>',
+      '  <span class="sp-wip-title lang-fr">En cours de rédaction</span>',
       '  <button class="sp-wip-close" type="button" aria-label="Close" title="Close">×</button>',
       '</div>',
-      '<div class="sp-wip-tabs" role="tablist">',
-      '  <button class="sp-wip-tab sp-active" data-pane="fr" role="tab" aria-selected="true">FR</button>',
-      '  <button class="sp-wip-tab" data-pane="en" role="tab" aria-selected="false">EN</button>',
-      '</div>',
       '<div class="sp-wip-body">',
-      '  <div class="sp-wip-pane sp-active" data-pane="fr">',
+      '  <div class="lang-fr">',
       '    <p>La doc est fortement vouée à être modifiée — je prends beaucoup de temps à la rédiger et à retravailler le framework. Ne pouvant pas être à temps plein dessus, je suis navré.</p>',
       '    <p>J\'essaie de vous pondre le meilleur outil que je peux, à mon échelle. Merci de votre compréhension.</p>',
       '  </div>',
-      '  <div class="sp-wip-pane" data-pane="en">',
+      '  <div class="lang-en">',
       '    <p>This documentation is very much a work in progress — writing it and reworking the framework takes a lot of time. I cannot be on it full-time, so my apologies.</p>',
       '    <p>I\'m doing my best to ship the finest tool I can at my own scale. Thanks for your patience and understanding.</p>',
       '  </div>',
@@ -105,31 +90,8 @@
     requestAnimationFrame(function () { el.classList.add("sp-show"); });
 
     el.querySelector(".sp-wip-close").addEventListener("click", dismiss);
-
-    var tabs = el.querySelectorAll(".sp-wip-tab");
-    var panes = el.querySelectorAll(".sp-wip-pane");
-    tabs.forEach(function (tab) {
-      tab.addEventListener("click", function () {
-        var key = tab.getAttribute("data-pane");
-        tabs.forEach(function (t) {
-          var on = t === tab;
-          t.classList.toggle("sp-active", on);
-          t.setAttribute("aria-selected", on ? "true" : "false");
-        });
-        panes.forEach(function (p) {
-          p.classList.toggle("sp-active", p.getAttribute("data-pane") === key);
-        });
-      });
-    });
-
-    // Auto-pick FR/EN based on browser preference
-    try {
-      var lang = (navigator.language || "").toLowerCase();
-      if (lang && lang.indexOf("fr") !== 0) {
-        var enTab = el.querySelector('.sp-wip-tab[data-pane="en"]');
-        if (enTab) enTab.click();
-      }
-    } catch (_e) {}
+    // lang-switcher.js handles .lang-en / .lang-fr visibility automatically
+    // via its MutationObserver + applyLang — nothing extra needed here.
   }
 
   if (document.readyState === "loading") {
