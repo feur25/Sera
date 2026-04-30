@@ -249,7 +249,7 @@ palette : list[int], optional
 background : str or None, optional
     Background color. Default None.";
 
-pub const DOC_BUILD_SCATTER_CHART: &str = "build_scatter_chart(title, x_values, y_values, *, color_hex=0, show_text=False, labels=None, sizes=None, color_groups=None, width=900, height=540, x_label='', y_label='', gridlines=False, legend_position='right', palette=None, hover_json='', background=None, no_x_axis=False, no_y_axis=False, show_regression=False, regression_type='linear') -> Chart
+pub const DOC_BUILD_SCATTER_CHART: &str = "build_scatter_chart(title, x_values, y_values, *, variant=None, categories=None, labels=None, color_values=None, color_low=0x6366F1, color_high=0xF43F5E, color_hex=0, point_size=5.0, stroke_width=1.0, symbol='circle', symbols=None, regression_type='linear', show_regression=False, show_text=False, sizes=None, color_groups=None, width=900, height=540, x_label='', y_label='', gridlines=False, legend_position='right', palette=None, hover_json='', background=None, no_x_axis=False, no_y_axis=False) -> Chart
 
 Scatter plot of numeric X/Y data.
 

@@ -24,6 +24,7 @@ pub mod ridgeline;
 pub mod candlestick;
 pub mod dumbbell;
 pub mod bubble;
+pub mod scatter;
 pub mod gauge;
 pub mod parallel;
 
