@@ -1623,9 +1623,12 @@ no_x_axis : bool, optional
 no_y_axis : bool, optional
     Hide the Y axis. Default False.";
 
-pub const DOC_BUILD_BUBBLE: &str = "build_bubble(title, x_values, y_values, sizes, *, categories=None, width=900, height=500, x_label='', y_label='', gridlines=False, palette=None, hover_json='', background=None, no_x_axis=False, no_y_axis=False) -> Chart
+pub const DOC_BUILD_BUBBLE: &str = "build_bubble(title, x_values, y_values, sizes, *, variant='basic', categories=None, labels=None, color_values=None, color_hex=0, color_low=0x6366F1, color_high=0xF43F5E, min_size=4.0, max_size=40.0, show_text=False, stroke_width=1.5, width=900, height=500, x_label='', y_label='', gridlines=False, sort_order='none', legend_position='right', palette=None, hover_json='', background=None, no_x_axis=False, no_y_axis=False) -> Chart
 
-2D bubble chart.
+2D bubble chart family. The `variant` keyword selects the rendering strategy.
+
+Variants: 'basic' | 'categorical'/'grouped' | 'gradient'/'colorscale' |
+'labeled'/'text' | 'outlined'/'hollow' | 'negative'/'signed'.
 
 Parameters
 ----------
@@ -1636,9 +1639,29 @@ x_values : list[float]
 y_values : list[float]
     Y coordinates.
 sizes : list[float]
-    Bubble sizes.
+    Bubble sizes (mapped to bubble area; signed in 'negative' variant).
+variant : str, optional
+    Rendering variant. Default 'basic'.
 categories : list[str], optional
-    Category labels for color grouping.
+    Per-point group name for color partitioning ('categorical' / 'outlined').
+labels : list[str], optional
+    Per-point text label, shown in tooltip and rendered in 'labeled' variant.
+color_values : list[float], optional
+    Per-point continuous value driving 'gradient' colorscale.
+color_hex : int, optional
+    Single fill color when no group/gradient applies. Default 0 (auto).
+color_low : int, optional
+    Gradient/diverging low color. Default 0x6366F1.
+color_high : int, optional
+    Gradient/diverging high color. Default 0xF43F5E.
+min_size : float, optional
+    Minimum bubble radius in pixels. Default 4.0.
+max_size : float, optional
+    Maximum bubble radius in pixels. Default 40.0.
+show_text : bool, optional
+    Force always-on text labels. Default False.
+stroke_width : float, optional
+    Bubble stroke width in pixels. Default 1.5.
 width : int, optional
     Chart width in pixels. Default 900.
 height : int, optional
@@ -1649,6 +1672,10 @@ y_label : str, optional
     Y-axis label. Default ''.
 gridlines : bool, optional
     Show gridlines. Default False.
+sort_order : str, optional
+    'asc' | 'desc' | 'none' — controls draw order by absolute size. Default 'none'.
+legend_position : str, optional
+    'right' | 'left' | 'top' | 'bottom'. Default 'right'.
 palette : list[int], optional
     Custom color palette.
 background : str or None, optional
