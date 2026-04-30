@@ -1063,7 +1063,849 @@ Alias : `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 
 ---
 
-Voir la version anglaise pour les exemples détaillés des 6 variantes ; l'API et le code sont rigoureusement identiques (les noms de paramètres sont les mêmes en français comme en anglais : `variant`, `categories`, `labels`, `color_values`, `color_low`, `color_high`, `min_size`, `max_size`, `stroke_width`, `show_text`).
+<div class="sp-cls sp-open" id="bubble-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('bubble-fr')" title="Réduire / développer">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('bubble-fr','basic',this)"><span class="sp-cic">●</span><span class="sp-clb">Basique</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubble-fr','categorical',this)"><span class="sp-cic">◓</span><span class="sp-clb">Catégoriel</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubble-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubble-fr','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Étiqueté</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubble-fr','outlined',this)"><span class="sp-cic">○</span><span class="sp-clb">Contour</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubble-fr','negative',this)"><span class="sp-cic">±</span><span class="sp-clb">Négatif</span></button>
+</div>
+<div class="sp-cls-body">
+
+<div class="sp-variant sp-von" id="bubble-fr-basic">
+
+Bulles unicolores où la taille encode une troisième dimension numérique. La forme la plus simple — idéale pour afficher l'amplitude sur une position 2D.
+
+```python
+sp.bubble(
+    title: str,
+    x_values: list[float],
+    y_values: list[float],
+    sizes: list[float],
+    *,
+    variant: str = "basic",
+    color_hex: int = 0x6366F1,
+    min_size: float = 4.0,
+    max_size: float = 40.0,
+    stroke_width: float = 1.5,
+    width: int = 900,
+    height: int = 500,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+    labels: list[str] | None = None,
+) -> Chart
+```
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic</code> / <code>simple</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="bbfr-basic">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('bbfr-basic','bbfr-basic-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('bbfr-basic','bbfr-basic-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('bbfr-basic','bbfr-basic-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('bbfr-basic','bbfr-basic-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('bbfr-basic','bbfr-basic-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('bbfr-basic','bbfr-basic-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('bbfr-basic','bbfr-basic-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('bbfr-basic','bbfr-basic-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('bbfr-basic','bbfr-basic-cpp',this)">C++</button>
+</div>
+<div id="bbfr-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.bubble(
+    title="PIB vs Espérance de vie",
+    variant="basic",
+    x_values=[2.5, 5.0, 12.0, 18.5, 25.0],
+    y_values=[72, 75, 80, 82, 79],
+    sizes=[500, 1200, 3000, 4500, 8000],
+    labels=["Brésil","Mexique","Allemagne","Japon","USA"],
+    x_label="PIB/hab (k$)",
+    y_label="Espérance de vie",
+    gridlines=True,
+)
+chart.show()</code></pre></div>
+<div id="bbfr-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.bubble({
+  title: "PIB vs Espérance de vie", variant: "basic",
+  xValues: [2.5,5.0,12.0,18.5,25.0],
+  yValues: [72,75,80,82,79],
+  sizes:   [500,1200,3000,4500,8000],
+  labels:  ["Brésil","Mexique","Allemagne","Japon","USA"],
+  xLabel: "PIB/hab (k$)", yLabel: "Espérance de vie", gridlines: true,
+});
+chart.show();</code></pre></div>
+<div id="bbfr-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.bubble({
+  title: "PIB vs Espérance de vie", variant: "basic",
+  xValues: [2.5,5.0,12.0,18.5,25.0],
+  yValues: [72,75,80,82,79],
+  sizes:   [500,1200,3000,4500,8000],
+  xLabel: "PIB/hab (k$)", yLabel: "Espérance de vie", gridlines: true,
+});
+chart.show();</code></pre></div>
+<div id="bbfr-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bubble(
+  title = "PIB vs Espérance de vie",
+  variant = "basic",
+  x_values = c(2.5,5.0,12.0,18.5,25.0),
+  y_values = c(72,75,80,82,79),
+  sizes    = c(500,1200,3000,4500,8000),
+  labels   = c("Brésil","Mexique","Allemagne","Japon","USA"),
+  x_label = "PIB/hab (k$)", y_label = "Espérance de vie", gridlines = TRUE
+)
+chart$show()</code></pre></div>
+<div id="bbfr-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bubble()
+        .title("PIB vs Espérance de vie")
+        .variant("basic")
+        .x_values(vec![2.5,5.0,12.0,18.5,25.0])
+        .y_values(vec![72.0,75.0,80.0,82.0,79.0])
+        .sizes(vec![500.0,1200.0,3000.0,4500.0,8000.0])
+        .x_label("PIB/hab (k$)").y_label("Espérance de vie").gridlines(true)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="bbfr-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bubble()
+    .title("PIB vs Espérance de vie").variant("basic")
+    .xValues(List.of(2.5,5.0,12.0,18.5,25.0))
+    .yValues(List.of(72.0,75.0,80.0,82.0,79.0))
+    .sizes(List.of(500.0,1200.0,3000.0,4500.0,8000.0))
+    .xLabel("PIB/hab (k$)").yLabel("Espérance de vie").gridlines(true)
+    .build();
+chart.show();</code></pre></div>
+<div id="bbfr-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bubble(
+    title: "PIB vs Espérance de vie", variant: "basic",
+    xValues: [2.5,5.0,12.0,18.5,25.0],
+    yValues: [72,75,80,82,79],
+    sizes:   [500,1200,3000,4500,8000],
+    xLabel: "PIB/hab (k$)", yLabel: "Espérance de vie", gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="bbfr-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bubble(
+  title = "PIB vs Espérance de vie", variant = "basic",
+  x_values = List(2.5,5.0,12.0,18.5,25.0),
+  y_values = List(72.0,75.0,80.0,82.0,79.0),
+  sizes    = List(500.0,1200.0,3000.0,4500.0,8000.0),
+  x_label = "PIB/hab (k$)", y_label = "Espérance de vie", gridlines = true
+)
+chart.show()</code></pre></div>
+<div id="bbfr-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bubble({
+    .title    = "PIB vs Espérance de vie",
+    .variant  = "basic",
+    .x_values = {2.5,5.0,12.0,18.5,25.0},
+    .y_values = {72,75,80,82,79},
+    .sizes    = {500,1200,3000,4500,8000},
+    .x_label  = "PIB/hab (k$)", .y_label = "Espérance de vie", .gridlines = true,
+});
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/bubble-basic.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubble-fr-categorical">
+
+Bulles colorées selon le groupe `categories`, avec une légende latérale automatique. Le classique diagramme de Gapminder. Alias : `"grouped"`, `"groups"`, `"category"`.
+
+```python
+sp.bubble(
+    title: str,
+    x_values: list[float],
+    y_values: list[float],
+    sizes: list[float],
+    categories: list[str],
+    *,
+    variant: str = "categorical",
+    palette: list[int] | None = None,
+    legend_position: str = "right",
+    labels: list[str] | None = None,
+    width: int = 900,
+    height: int = 500,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+) -> Chart
+```
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"categorical"</code> / <code>"grouped"</code></span><span><strong>Alias</strong> <code>category</code> / <code>groups</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="bbfr-cat">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('bbfr-cat','bbfr-cat-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('bbfr-cat','bbfr-cat-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('bbfr-cat','bbfr-cat-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('bbfr-cat','bbfr-cat-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('bbfr-cat','bbfr-cat-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('bbfr-cat','bbfr-cat-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('bbfr-cat','bbfr-cat-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('bbfr-cat','bbfr-cat-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('bbfr-cat','bbfr-cat-cpp',this)">C++</button>
+</div>
+<div id="bbfr-cat-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.bubble(
+    title="PIB vs Espérance de vie par région",
+    variant="categorical",
+    x_values=[2.5,5.0,12.0,18.5,25.0,3.2,8.0,14.0],
+    y_values=[72,75,80,82,79,68,77,81],
+    sizes=[500,1200,3000,4500,8000,800,2100,3600],
+    labels=["Brésil","Mexique","Allemagne","Japon","USA","Nigéria","Turquie","France"],
+    categories=["Amériques","Amériques","Europe","Asie","Amériques","Afrique","Europe","Europe"],
+    x_label="PIB/hab (k$)", y_label="Espérance de vie", gridlines=True,
+)
+chart.show()</code></pre></div>
+<div id="bbfr-cat-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.bubble({
+  title: "PIB vs Espérance de vie par région", variant: "categorical",
+  xValues: [2.5,5.0,12.0,18.5,25.0],
+  yValues: [72,75,80,82,79],
+  sizes:   [500,1200,3000,4500,8000],
+  categories: ["Amériques","Amériques","Europe","Asie","Amériques"],
+  xLabel: "PIB/hab (k$)", yLabel: "Espérance de vie", gridlines: true,
+});
+chart.show();</code></pre></div>
+<div id="bbfr-cat-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.bubble({
+  title: "PIB vs Espérance de vie par région", variant: "categorical",
+  xValues: [2.5,5.0,12.0,18.5,25.0],
+  yValues: [72,75,80,82,79],
+  sizes:   [500,1200,3000,4500,8000],
+  categories: ["Amériques","Amériques","Europe","Asie","Amériques"],
+});
+chart.show();</code></pre></div>
+<div id="bbfr-cat-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bubble(
+  title = "PIB vs Espérance de vie par région",
+  variant = "categorical",
+  x_values = c(2.5,5.0,12.0,18.5,25.0),
+  y_values = c(72,75,80,82,79),
+  sizes    = c(500,1200,3000,4500,8000),
+  categories = c("Amériques","Amériques","Europe","Asie","Amériques"),
+  x_label = "PIB/hab (k$)", y_label = "Espérance de vie", gridlines = TRUE
+)
+chart$show()</code></pre></div>
+<div id="bbfr-cat-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bubble()
+        .title("PIB vs Espérance de vie par région").variant("categorical")
+        .x_values(vec![2.5,5.0,12.0,18.5,25.0])
+        .y_values(vec![72.0,75.0,80.0,82.0,79.0])
+        .sizes(vec![500.0,1200.0,3000.0,4500.0,8000.0])
+        .categories(vec!["Amériques","Amériques","Europe","Asie","Amériques"])
+        .gridlines(true).build();
+    chart.show();
+}</code></pre></div>
+<div id="bbfr-cat-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bubble()
+    .title("PIB vs Espérance de vie par région").variant("categorical")
+    .xValues(List.of(2.5,5.0,12.0,18.5,25.0))
+    .yValues(List.of(72.0,75.0,80.0,82.0,79.0))
+    .sizes(List.of(500.0,1200.0,3000.0,4500.0,8000.0))
+    .categories(List.of("Amériques","Amériques","Europe","Asie","Amériques"))
+    .gridlines(true).build();
+chart.show();</code></pre></div>
+<div id="bbfr-cat-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bubble(
+    title: "PIB vs Espérance de vie par région", variant: "categorical",
+    xValues: [2.5,5.0,12.0,18.5,25.0],
+    yValues: [72,75,80,82,79],
+    sizes:   [500,1200,3000,4500,8000],
+    categories: ["Amériques","Amériques","Europe","Asie","Amériques"],
+    gridlines: true
+);
+chart.Show();</code></pre></div>
+<div id="bbfr-cat-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bubble(
+  title = "PIB vs Espérance de vie par région", variant = "categorical",
+  x_values = List(2.5,5.0,12.0,18.5,25.0),
+  y_values = List(72.0,75.0,80.0,82.0,79.0),
+  sizes    = List(500.0,1200.0,3000.0,4500.0,8000.0),
+  categories = List("Amériques","Amériques","Europe","Asie","Amériques"),
+  gridlines = true
+)
+chart.show()</code></pre></div>
+<div id="bbfr-cat-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bubble({
+    .title = "PIB vs Espérance de vie par région", .variant = "categorical",
+    .x_values = {2.5,5.0,12.0,18.5,25.0},
+    .y_values = {72,75,80,82,79},
+    .sizes    = {500,1200,3000,4500,8000},
+    .categories = {"Amériques","Amériques","Europe","Asie","Amériques"},
+    .gridlines = true,
+});
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/bubble-categorical.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubble-fr-gradient">
+
+Mapping de couleur continue piloté par `color_values`, avec une colorbar verticale automatique. Utilisez cette variante pour encoder une 4ᵉ variable continue (température, score, intensité…). Alias : `"colorscale"`, `"continuous"`, `"scaled"`.
+
+```python
+sp.bubble(
+    title: str,
+    x_values: list[float],
+    y_values: list[float],
+    sizes: list[float],
+    color_values: list[float],
+    *,
+    variant: str = "gradient",
+    color_low: int = 0x6366F1,
+    color_high: int = 0xF43F5E,
+    width: int = 900,
+    height: int = 500,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+) -> Chart
+```
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code> / <code>"colorscale"</code></span><span><strong>Alias</strong> <code>continuous</code> / <code>scaled</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="bbfr-grad">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('bbfr-grad','bbfr-grad-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('bbfr-grad','bbfr-grad-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('bbfr-grad','bbfr-grad-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('bbfr-grad','bbfr-grad-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('bbfr-grad','bbfr-grad-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('bbfr-grad','bbfr-grad-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('bbfr-grad','bbfr-grad-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('bbfr-grad','bbfr-grad-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('bbfr-grad','bbfr-grad-cpp',this)">C++</button>
+</div>
+<div id="bbfr-grad-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.bubble(
+    title="Stations : dégradé de température",
+    variant="gradient",
+    x_values=[2.5,5.0,12.0,18.5,25.0,3.2,8.0,14.0],
+    y_values=[72,75,80,82,79,68,77,81],
+    sizes=[500,1200,3000,4500,8000,800,2100,3600],
+    color_values=[12,18,41,55,63,8,24,47],
+    color_low=0x0EA5E9, color_high=0xF43F5E,
+    x_label="Longitude", y_label="Latitude", gridlines=True,
+)
+chart.show()</code></pre></div>
+<div id="bbfr-grad-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.bubble({
+  title: "Stations : dégradé", variant: "gradient",
+  xValues: [2.5,5.0,12.0,18.5,25.0],
+  yValues: [72,75,80,82,79],
+  sizes:   [500,1200,3000,4500,8000],
+  colorValues: [12,18,41,55,63],
+  colorLow: 0x0EA5E9, colorHigh: 0xF43F5E,
+});
+chart.show();</code></pre></div>
+<div id="bbfr-grad-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.bubble({
+  title: "Stations : dégradé", variant: "gradient",
+  xValues: [2.5,5.0,12.0,18.5,25.0],
+  yValues: [72,75,80,82,79],
+  sizes:   [500,1200,3000,4500,8000],
+  colorValues: [12,18,41,55,63],
+  colorLow: 0x0EA5E9, colorHigh: 0xF43F5E,
+});
+chart.show();</code></pre></div>
+<div id="bbfr-grad-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bubble(
+  title = "Stations : dégradé", variant = "gradient",
+  x_values = c(2.5,5.0,12.0,18.5,25.0),
+  y_values = c(72,75,80,82,79),
+  sizes    = c(500,1200,3000,4500,8000),
+  color_values = c(12,18,41,55,63),
+  color_low = 0x0EA5E9, color_high = 0xF43F5E
+)
+chart$show()</code></pre></div>
+<div id="bbfr-grad-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bubble()
+        .title("Stations : dégradé").variant("gradient")
+        .x_values(vec![2.5,5.0,12.0,18.5,25.0])
+        .y_values(vec![72.0,75.0,80.0,82.0,79.0])
+        .sizes(vec![500.0,1200.0,3000.0,4500.0,8000.0])
+        .color_values(vec![12.0,18.0,41.0,55.0,63.0])
+        .color_low(0x0EA5E9).color_high(0xF43F5E)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="bbfr-grad-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bubble()
+    .title("Stations : dégradé").variant("gradient")
+    .xValues(List.of(2.5,5.0,12.0,18.5,25.0))
+    .yValues(List.of(72.0,75.0,80.0,82.0,79.0))
+    .sizes(List.of(500.0,1200.0,3000.0,4500.0,8000.0))
+    .colorValues(List.of(12.0,18.0,41.0,55.0,63.0))
+    .colorLow(0x0EA5E9).colorHigh(0xF43F5E)
+    .build();
+chart.show();</code></pre></div>
+<div id="bbfr-grad-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bubble(
+    title: "Stations : dégradé", variant: "gradient",
+    xValues: [2.5,5.0,12.0,18.5,25.0],
+    yValues: [72,75,80,82,79],
+    sizes:   [500,1200,3000,4500,8000],
+    colorValues: [12,18,41,55,63],
+    colorLow: 0x0EA5E9, colorHigh: 0xF43F5E
+);
+chart.Show();</code></pre></div>
+<div id="bbfr-grad-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bubble(
+  title = "Stations : dégradé", variant = "gradient",
+  x_values = List(2.5,5.0,12.0,18.5,25.0),
+  y_values = List(72.0,75.0,80.0,82.0,79.0),
+  sizes    = List(500.0,1200.0,3000.0,4500.0,8000.0),
+  color_values = List(12.0,18.0,41.0,55.0,63.0),
+  color_low = 0x0EA5E9, color_high = 0xF43F5E
+)
+chart.show()</code></pre></div>
+<div id="bbfr-grad-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bubble({
+    .title = "Stations : dégradé", .variant = "gradient",
+    .x_values = {2.5,5.0,12.0,18.5,25.0},
+    .y_values = {72,75,80,82,79},
+    .sizes    = {500,1200,3000,4500,8000},
+    .color_values = {12,18,41,55,63},
+    .color_low = 0x0EA5E9, .color_high = 0xF43F5E,
+});
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/bubble-gradient.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubble-fr-labeled">
+
+Labels texte permanents par point, rendus au-dessus de chaque bulle avec un halo pour la lisibilité. Idéal sur les petits jeux de données. Alias : `"labels"`, `"text"`, `"annotated"`.
+
+```python
+sp.bubble(
+    title: str,
+    x_values: list[float],
+    y_values: list[float],
+    sizes: list[float],
+    labels: list[str],
+    *,
+    variant: str = "labeled",
+    categories: list[str] | None = None,
+    palette: list[int] | None = None,
+    width: int = 900,
+    height: int = 500,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+) -> Chart
+```
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"labeled"</code> / <code>"text"</code></span><span><strong>Alias</strong> <code>labels</code> / <code>annotated</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="bbfr-lbl">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('bbfr-lbl','bbfr-lbl-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('bbfr-lbl','bbfr-lbl-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('bbfr-lbl','bbfr-lbl-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('bbfr-lbl','bbfr-lbl-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('bbfr-lbl','bbfr-lbl-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('bbfr-lbl','bbfr-lbl-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('bbfr-lbl','bbfr-lbl-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('bbfr-lbl','bbfr-lbl-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('bbfr-lbl','bbfr-lbl-cpp',this)">C++</button>
+</div>
+<div id="bbfr-lbl-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.bubble(
+    title="Top 6 économies",
+    variant="labeled",
+    x_values=[2.5,5.0,12.0,18.5,25.0,3.2],
+    y_values=[72,75,80,82,79,68],
+    sizes=[500,1200,3000,4500,8000,800],
+    labels=["Brésil","Mexique","Allemagne","Japon","USA","Nigéria"],
+    categories=["Amériques","Amériques","Europe","Asie","Amériques","Afrique"],
+    x_label="PIB/hab (k$)", y_label="Espérance de vie", gridlines=True,
+)
+chart.show()</code></pre></div>
+<div id="bbfr-lbl-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.bubble({
+  title: "Top 6 économies", variant: "labeled",
+  xValues: [2.5,5.0,12.0,18.5,25.0,3.2],
+  yValues: [72,75,80,82,79,68],
+  sizes:   [500,1200,3000,4500,8000,800],
+  labels:  ["Brésil","Mexique","Allemagne","Japon","USA","Nigéria"],
+});
+chart.show();</code></pre></div>
+<div id="bbfr-lbl-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.bubble({
+  title: "Top 6 économies", variant: "labeled",
+  xValues: [2.5,5.0,12.0,18.5,25.0,3.2],
+  yValues: [72,75,80,82,79,68],
+  sizes:   [500,1200,3000,4500,8000,800],
+  labels:  ["Brésil","Mexique","Allemagne","Japon","USA","Nigéria"],
+});
+chart.show();</code></pre></div>
+<div id="bbfr-lbl-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bubble(
+  title = "Top 6 économies", variant = "labeled",
+  x_values = c(2.5,5.0,12.0,18.5,25.0,3.2),
+  y_values = c(72,75,80,82,79,68),
+  sizes    = c(500,1200,3000,4500,8000,800),
+  labels   = c("Brésil","Mexique","Allemagne","Japon","USA","Nigéria")
+)
+chart$show()</code></pre></div>
+<div id="bbfr-lbl-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bubble()
+        .title("Top 6 économies").variant("labeled")
+        .x_values(vec![2.5,5.0,12.0,18.5,25.0,3.2])
+        .y_values(vec![72.0,75.0,80.0,82.0,79.0,68.0])
+        .sizes(vec![500.0,1200.0,3000.0,4500.0,8000.0,800.0])
+        .labels(vec!["Brésil","Mexique","Allemagne","Japon","USA","Nigéria"])
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="bbfr-lbl-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bubble()
+    .title("Top 6 économies").variant("labeled")
+    .xValues(List.of(2.5,5.0,12.0,18.5,25.0,3.2))
+    .yValues(List.of(72.0,75.0,80.0,82.0,79.0,68.0))
+    .sizes(List.of(500.0,1200.0,3000.0,4500.0,8000.0,800.0))
+    .labels(List.of("Brésil","Mexique","Allemagne","Japon","USA","Nigéria"))
+    .build();
+chart.show();</code></pre></div>
+<div id="bbfr-lbl-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bubble(
+    title: "Top 6 économies", variant: "labeled",
+    xValues: [2.5,5.0,12.0,18.5,25.0,3.2],
+    yValues: [72,75,80,82,79,68],
+    sizes:   [500,1200,3000,4500,8000,800],
+    labels:  ["Brésil","Mexique","Allemagne","Japon","USA","Nigéria"]
+);
+chart.Show();</code></pre></div>
+<div id="bbfr-lbl-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bubble(
+  title = "Top 6 économies", variant = "labeled",
+  x_values = List(2.5,5.0,12.0,18.5,25.0,3.2),
+  y_values = List(72.0,75.0,80.0,82.0,79.0,68.0),
+  sizes    = List(500.0,1200.0,3000.0,4500.0,8000.0,800.0),
+  labels   = List("Brésil","Mexique","Allemagne","Japon","USA","Nigéria")
+)
+chart.show()</code></pre></div>
+<div id="bbfr-lbl-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bubble({
+    .title = "Top 6 économies", .variant = "labeled",
+    .x_values = {2.5,5.0,12.0,18.5,25.0,3.2},
+    .y_values = {72,75,80,82,79,68},
+    .sizes    = {500,1200,3000,4500,8000,800},
+    .labels   = {"Brésil","Mexique","Allemagne","Japon","USA","Nigéria"},
+});
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/bubble-labeled.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubble-fr-outlined">
+
+Cercles creux (sans remplissage) avec un contour épais — parfait lorsque les bulles se chevauchent et que les aplats masqueraient les points derrière. Alias : `"hollow"`, `"ring"`, `"open"`.
+
+```python
+sp.bubble(
+    title: str,
+    x_values: list[float],
+    y_values: list[float],
+    sizes: list[float],
+    *,
+    variant: str = "outlined",
+    categories: list[str] | None = None,
+    stroke_width: float = 2.5,
+    width: int = 900,
+    height: int = 500,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+) -> Chart
+```
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"outlined"</code> / <code>"hollow"</code></span><span><strong>Alias</strong> <code>ring</code> / <code>open</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="bbfr-out">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('bbfr-out','bbfr-out-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('bbfr-out','bbfr-out-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('bbfr-out','bbfr-out-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('bbfr-out','bbfr-out-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('bbfr-out','bbfr-out-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('bbfr-out','bbfr-out-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('bbfr-out','bbfr-out-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('bbfr-out','bbfr-out-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('bbfr-out','bbfr-out-cpp',this)">C++</button>
+</div>
+<div id="bbfr-out-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.bubble(
+    title="Chevauchement dense → contours",
+    variant="outlined",
+    x_values=[2.5,5.0,12.0,18.5,25.0,3.2,8.0,14.0],
+    y_values=[72,75,80,82,79,68,77,81],
+    sizes=[500,1200,3000,4500,8000,800,2100,3600],
+    categories=["A","A","B","B","A","C","B","C"],
+    stroke_width=3.0,
+    x_label="X", y_label="Y", gridlines=True,
+)
+chart.show()</code></pre></div>
+<div id="bbfr-out-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.bubble({
+  title: "Chevauchement dense", variant: "outlined",
+  xValues: [2.5,5.0,12.0,18.5,25.0],
+  yValues: [72,75,80,82,79],
+  sizes:   [500,1200,3000,4500,8000],
+  categories: ["A","A","B","B","A"], strokeWidth: 3.0,
+});
+chart.show();</code></pre></div>
+<div id="bbfr-out-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.bubble({
+  title: "Chevauchement dense", variant: "outlined",
+  xValues: [2.5,5.0,12.0,18.5,25.0],
+  yValues: [72,75,80,82,79],
+  sizes:   [500,1200,3000,4500,8000],
+  categories: ["A","A","B","B","A"], strokeWidth: 3.0,
+});
+chart.show();</code></pre></div>
+<div id="bbfr-out-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bubble(
+  title = "Chevauchement dense", variant = "outlined",
+  x_values = c(2.5,5.0,12.0,18.5,25.0),
+  y_values = c(72,75,80,82,79),
+  sizes    = c(500,1200,3000,4500,8000),
+  categories = c("A","A","B","B","A"), stroke_width = 3.0
+)
+chart$show()</code></pre></div>
+<div id="bbfr-out-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bubble()
+        .title("Chevauchement dense").variant("outlined")
+        .x_values(vec![2.5,5.0,12.0,18.5,25.0])
+        .y_values(vec![72.0,75.0,80.0,82.0,79.0])
+        .sizes(vec![500.0,1200.0,3000.0,4500.0,8000.0])
+        .categories(vec!["A","A","B","B","A"])
+        .stroke_width(3.0).build();
+    chart.show();
+}</code></pre></div>
+<div id="bbfr-out-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bubble()
+    .title("Chevauchement dense").variant("outlined")
+    .xValues(List.of(2.5,5.0,12.0,18.5,25.0))
+    .yValues(List.of(72.0,75.0,80.0,82.0,79.0))
+    .sizes(List.of(500.0,1200.0,3000.0,4500.0,8000.0))
+    .categories(List.of("A","A","B","B","A"))
+    .strokeWidth(3.0).build();
+chart.show();</code></pre></div>
+<div id="bbfr-out-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bubble(
+    title: "Chevauchement dense", variant: "outlined",
+    xValues: [2.5,5.0,12.0,18.5,25.0],
+    yValues: [72,75,80,82,79],
+    sizes:   [500,1200,3000,4500,8000],
+    categories: ["A","A","B","B","A"], strokeWidth: 3.0
+);
+chart.Show();</code></pre></div>
+<div id="bbfr-out-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bubble(
+  title = "Chevauchement dense", variant = "outlined",
+  x_values = List(2.5,5.0,12.0,18.5,25.0),
+  y_values = List(72.0,75.0,80.0,82.0,79.0),
+  sizes    = List(500.0,1200.0,3000.0,4500.0,8000.0),
+  categories = List("A","A","B","B","A"),
+  stroke_width = 3.0
+)
+chart.show()</code></pre></div>
+<div id="bbfr-out-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bubble({
+    .title = "Chevauchement dense", .variant = "outlined",
+    .x_values = {2.5,5.0,12.0,18.5,25.0},
+    .y_values = {72,75,80,82,79},
+    .sizes    = {500,1200,3000,4500,8000},
+    .categories = {"A","A","B","B","A"}, .stroke_width = 3.0,
+});
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/bubble-outlined.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubble-fr-negative">
+
+Visualisation divergente pour tailles **signées** — positif en `color_high`, négatif en `color_low` avec tirets. L'aire est toujours proportionnelle à `|taille|`. Parfait pour P&L, résidus, deltas. Alias : `"signed"`, `"diverging"`.
+
+```python
+sp.bubble(
+    title: str,
+    x_values: list[float],
+    y_values: list[float],
+    sizes: list[float],
+    *,
+    variant: str = "negative",
+    color_low: int = 0xEF4444,
+    color_high: int = 0x10B981,
+    labels: list[str] | None = None,
+    width: int = 900,
+    height: int = 500,
+    x_label: str = "",
+    y_label: str = "",
+    gridlines: bool = False,
+) -> Chart
+```
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"negative"</code> / <code>"signed"</code></span><span><strong>Alias</strong> <code>diverging</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="bbfr-neg">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('bbfr-neg','bbfr-neg-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('bbfr-neg','bbfr-neg-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('bbfr-neg','bbfr-neg-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('bbfr-neg','bbfr-neg-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('bbfr-neg','bbfr-neg-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('bbfr-neg','bbfr-neg-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('bbfr-neg','bbfr-neg-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('bbfr-neg','bbfr-neg-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('bbfr-neg','bbfr-neg-cpp',this)">C++</button>
+</div>
+<div id="bbfr-neg-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.bubble(
+    title="Exposition P&amp;L signée",
+    variant="negative",
+    x_values=[1,2,3,4,5,6,7,8,9,10],
+    y_values=[12,-8,15,22,-14,9,-5,18,-11,25],
+    sizes=[120,-85,150,220,-140,90,-55,180,-115,250],
+    labels=["T1","T2","T3","T4","T5","T6","T7","T8","T9","T10"],
+    color_low=0xEF4444, color_high=0x10B981,
+    x_label="Période", y_label="Rendement (%)", gridlines=True,
+)
+chart.show()</code></pre></div>
+<div id="bbfr-neg-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.bubble({
+  title: "P&L signé", variant: "negative",
+  xValues: [1,2,3,4,5,6,7,8,9,10],
+  yValues: [12,-8,15,22,-14,9,-5,18,-11,25],
+  sizes:   [120,-85,150,220,-140,90,-55,180,-115,250],
+  colorLow: 0xEF4444, colorHigh: 0x10B981,
+});
+chart.show();</code></pre></div>
+<div id="bbfr-neg-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.bubble({
+  title: "P&L signé", variant: "negative",
+  xValues: [1,2,3,4,5,6,7,8,9,10],
+  yValues: [12,-8,15,22,-14,9,-5,18,-11,25],
+  sizes:   [120,-85,150,220,-140,90,-55,180,-115,250],
+  colorLow: 0xEF4444, colorHigh: 0x10B981,
+});
+chart.show();</code></pre></div>
+<div id="bbfr-neg-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart <- sp$bubble(
+  title = "P&L signé", variant = "negative",
+  x_values = 1:10,
+  y_values = c(12,-8,15,22,-14,9,-5,18,-11,25),
+  sizes    = c(120,-85,150,220,-140,90,-55,180,-115,250),
+  color_low = 0xEF4444, color_high = 0x10B981
+)
+chart$show()</code></pre></div>
+<div id="bbfr-neg-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::bubble()
+        .title("P&L signé").variant("negative")
+        .x_values(vec![1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0])
+        .y_values(vec![12.0,-8.0,15.0,22.0,-14.0,9.0,-5.0,18.0,-11.0,25.0])
+        .sizes(vec![120.0,-85.0,150.0,220.0,-140.0,90.0,-55.0,180.0,-115.0,250.0])
+        .color_low(0xEF4444).color_high(0x10B981)
+        .build();
+    chart.show();
+}</code></pre></div>
+<div id="bbfr-neg-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.bubble()
+    .title("P&L signé").variant("negative")
+    .xValues(List.of(1,2,3,4,5,6,7,8,9,10))
+    .yValues(List.of(12.0,-8.0,15.0,22.0,-14.0,9.0,-5.0,18.0,-11.0,25.0))
+    .sizes(List.of(120.0,-85.0,150.0,220.0,-140.0,90.0,-55.0,180.0,-115.0,250.0))
+    .colorLow(0xEF4444).colorHigh(0x10B981)
+    .build();
+chart.show();</code></pre></div>
+<div id="bbfr-neg-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Bubble(
+    title: "P&L signé", variant: "negative",
+    xValues: [1,2,3,4,5,6,7,8,9,10],
+    yValues: [12,-8,15,22,-14,9,-5,18,-11,25],
+    sizes:   [120,-85,150,220,-140,90,-55,180,-115,250],
+    colorLow: 0xEF4444, colorHigh: 0x10B981
+);
+chart.Show();</code></pre></div>
+<div id="bbfr-neg-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.bubble(
+  title = "P&L signé", variant = "negative",
+  x_values = List(1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0),
+  y_values = List(12.0,-8.0,15.0,22.0,-14.0,9.0,-5.0,18.0,-11.0,25.0),
+  sizes    = List(120.0,-85.0,150.0,220.0,-140.0,90.0,-55.0,180.0,-115.0,250.0),
+  color_low = 0xEF4444, color_high = 0x10B981
+)
+chart.show()</code></pre></div>
+<div id="bbfr-neg-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::bubble({
+    .title = "P&L signé", .variant = "negative",
+    .x_values = {1,2,3,4,5,6,7,8,9,10},
+    .y_values = {12,-8,15,22,-14,9,-5,18,-11,25},
+    .sizes    = {120,-85,150,220,-140,90,-55,180,-115,250},
+    .color_low = 0xEF4444, .color_high = 0x10B981,
+});
+chart.show();</code></pre></div>
+</div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/bubble-negative.html"></iframe>
+</div>
+
+</div>
+</div>
+
+---
 
 ## Voir aussi
 
