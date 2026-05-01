@@ -29,7 +29,7 @@ pub mod gauge;
 pub mod parallel;
 
 pub use pie::{Pie, PieConfig, render_pie_html};
-pub use heatmap::{Heatmap, HeatmapConfig, render_heatmap_html};
+pub use heatmap::{Heatmap, HeatmapConfig, HeatmapVariant, render_heatmap_html};
 pub use histogram::{Histogram, HistogramConfig, HistogramVariant, render_histogram_html, compute_bins};
 pub use grouped_bar::{GroupedBar, GroupedBarConfig, render_grouped_bar_html};
 pub use bar::{BarVariant, BarConfig, render_bar_html};

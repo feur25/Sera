@@ -1,0 +1,285 @@
+use super::config::HeatmapConfig;
+use crate::html::hover::{build_chart_html, slots_to_json};
+use crate::plot::statistical::common::{escape_xml, hex6, lerp_color, palette_color, push_b, push_f2, push_i, truncate};
+
+pub fn clone_cfg<'a>(cfg: &HeatmapConfig<'a>) -> HeatmapConfig<'a> {
+    HeatmapConfig {
+        title: cfg.title, x_label: cfg.x_label, y_label: cfg.y_label,
+        gridlines: cfg.gridlines, sort_order: cfg.sort_order, hover: cfg.hover,
+        legend_position: cfg.legend_position, width: cfg.width, height: cfg.height,
+        variant: cfg.variant, row_labels: cfg.row_labels, col_labels: cfg.col_labels,
+        flat_matrix: cfg.flat_matrix, show_values: cfg.show_values,
+        value_min_cell: cfg.value_min_cell, value_decimals: cfg.value_decimals,
+        col_label_angle: cfg.col_label_angle, color_low: cfg.color_low,
+        color_mid: cfg.color_mid, color_high: cfg.color_high, palette: cfg.palette,
+        discrete_steps: cfg.discrete_steps, log_scale: cfg.log_scale,
+        diverging: cfg.diverging, x_widths: cfg.x_widths, y_heights: cfg.y_heights,
+        annotate: cfg.annotate, categorical: cfg.categorical,
+    }
+}
+
+
+pub fn finite_minmax(data: &[f64]) -> (f64, f64) {
+    let mut mn = f64::INFINITY;
+    let mut mx = f64::NEG_INFINITY;
+    for &v in data { if v.is_finite() { if v < mn { mn = v; } if v > mx { mx = v; } } }
+    if !mn.is_finite() { return (0.0, 1.0); }
+    (mn, mx)
+}
+
+pub fn map_value_to_t(val: f64, vmin: f64, vmax: f64, log: bool, diverging: bool) -> f64 {
+    if !val.is_finite() { return 0.5; }
+    if diverging {
+        let m = vmin.abs().max(vmax.abs()).max(1e-12);
+        return ((val / m) * 0.5 + 0.5).clamp(0.0, 1.0);
+    }
+    if log {
+        let lmin = (vmin.max(0.0) + 1.0).ln();
+        let lmax = (vmax.max(0.0) + 1.0).ln();
+        let lv = (val.max(0.0) + 1.0).ln();
+        return ((lv - lmin) / (lmax - lmin).max(1e-12)).clamp(0.0, 1.0);
+    }
+    let r = (vmax - vmin).max(1e-12);
+    ((val - vmin) / r).clamp(0.0, 1.0)
+}
+
+pub fn quantize_t(t: f64, steps: usize) -> f64 {
+    if steps == 0 { return t; }
+    let s = steps.max(2) as f64;
+    ((t * s).floor().min(s - 1.0)) / (s - 1.0)
+}
+
+pub fn cell_color(t: f64, cfg: &HeatmapConfig) -> u32 {
+    if cfg.discrete_steps > 0 && !cfg.palette.is_empty() {
+        let s = cfg.discrete_steps.max(2);
+        let bin = ((t * s as f64).floor() as usize).min(s - 1);
+        return palette_color(cfg.palette, bin);
+    }
+    let qt = quantize_t(t, cfg.discrete_steps);
+    if cfg.diverging {
+        return lerp_color(qt, 0x2563EB, 0xfafbfc, 0xDC2626);
+    }
+    lerp_color(qt, cfg.color_low, cfg.color_mid, cfg.color_high)
+}
+
+pub fn categorical_color(val: f64, cfg: &HeatmapConfig) -> u32 {
+    let key = if val.is_finite() { val.to_bits() as usize } else { 0 };
+    palette_color(cfg.palette, key.wrapping_mul(2654435761) as usize % 256)
+}
+
+pub fn cumulative(arr: &[f64], total_px: i32) -> Vec<i32> {
+    let n = arr.len();
+    if n == 0 { return vec![0]; }
+    let sum: f64 = arr.iter().filter(|v| v.is_finite() && **v > 0.0).sum::<f64>().max(1e-12);
+    let mut out = Vec::with_capacity(n + 1);
+    out.push(0);
+    let mut acc = 0.0;
+    for &v in arr {
+        let w = if v.is_finite() && v > 0.0 { v } else { 0.0 };
+        acc += w;
+        out.push(((acc / sum) * total_px as f64).round() as i32);
+    }
+    out
+}
+
+pub fn render_core(cfg: &HeatmapConfig) -> String {
+    let n_rows = cfg.row_labels.len();
+    let col_lbls: &[String] = if cfg.col_labels.is_empty() { cfg.row_labels } else { cfg.col_labels };
+    let n_cols = col_lbls.len();
+    if n_rows == 0 || n_cols == 0 || cfg.flat_matrix.len() < n_rows * n_cols {
+        return String::new();
+    }
+    let data = &cfg.flat_matrix[..n_rows * n_cols];
+    let (vmin, vmax) = finite_minmax(data);
+
+    let pad_left: i32 = 100;
+    let pad_top: i32 = 88;
+    let pad_right: i32 = 24;
+    let pad_bottom: i32 = 52;
+
+    let plot_w = (cfg.width - pad_left - pad_right).max(40);
+    let cell_w_uni = (plot_w / n_cols as i32).max(4);
+    let svg_h = if cfg.height > 0 {
+        cfg.height
+    } else {
+        pad_top + cell_w_uni * n_rows as i32 + pad_bottom
+    };
+    let plot_h = (svg_h - pad_top - pad_bottom).max(40);
+    let cell_h_uni = (plot_h / n_rows as i32).max(4);
+
+    let use_unequal_x = !cfg.x_widths.is_empty() && cfg.x_widths.len() == n_cols;
+    let use_unequal_y = !cfg.y_heights.is_empty() && cfg.y_heights.len() == n_rows;
+    let xs: Vec<i32> = if use_unequal_x {
+        cumulative(cfg.x_widths, plot_w)
+    } else {
+        (0..=n_cols as i32).map(|i| i * cell_w_uni).collect()
+    };
+    let ys: Vec<i32> = if use_unequal_y {
+        cumulative(cfg.y_heights, plot_h)
+    } else {
+        (0..=n_rows as i32).map(|i| i * cell_h_uni).collect()
+    };
+
+    let svg_w = cfg.width;
+    let auto_hover = cfg.hover.is_empty();
+    let total_cells = n_rows * n_cols;
+    let mut buf = Vec::<u8>::with_capacity(total_cells * 220 + 2048);
+
+    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_i(&mut buf, svg_w);
+    push_b(&mut buf, b"\" height=\"");
+    push_i(&mut buf, svg_h);
+    push_b(&mut buf, b"\" viewBox=\"0 0 ");
+    push_i(&mut buf, svg_w);
+    push_b(&mut buf, b" ");
+    push_i(&mut buf, svg_h);
+    push_b(&mut buf, b"\">");
+    push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#f8f9fa\"/>");
+
+    if !cfg.title.is_empty() {
+        push_b(&mut buf, b"<text x=\"");
+        push_i(&mut buf, svg_w / 2);
+        push_b(&mut buf, b"\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\">");
+        escape_xml(&mut buf, cfg.title);
+        push_b(&mut buf, b"</text>");
+    }
+
+    for (col, lbl) in col_lbls.iter().enumerate() {
+        let cx = pad_left + (xs[col] + xs[col + 1]) / 2;
+        let cy = pad_top - 8;
+        push_b(&mut buf, b"<text x=\"");
+        push_i(&mut buf, cx);
+        push_b(&mut buf, b"\" y=\"");
+        push_i(&mut buf, cy);
+        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#4b5563\" transform=\"rotate(-");
+        push_i(&mut buf, cfg.col_label_angle);
+        push_b(&mut buf, b",");
+        push_i(&mut buf, cx);
+        push_b(&mut buf, b",");
+        push_i(&mut buf, cy);
+        push_b(&mut buf, b")\">");
+        escape_xml(&mut buf, truncate(lbl, 14));
+        push_b(&mut buf, b"</text>");
+    }
+
+    let mut idx = 0usize;
+    for row in 0..n_rows {
+        let ry0 = pad_top + ys[row];
+        let ry1 = pad_top + ys[row + 1];
+        let rh = (ry1 - ry0).max(1);
+        push_b(&mut buf, b"<text x=\"");
+        push_i(&mut buf, pad_left - 5);
+        push_b(&mut buf, b"\" y=\"");
+        push_i(&mut buf, ry0 + rh / 2 + 3);
+        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#4b5563\">");
+        escape_xml(&mut buf, truncate(&cfg.row_labels[row], 14));
+        push_b(&mut buf, b"</text>");
+
+        for col in 0..n_cols {
+            let val = data[row * n_cols + col];
+            let color = if cfg.categorical {
+                categorical_color(val, cfg)
+            } else {
+                let t = map_value_to_t(val, vmin, vmax, cfg.log_scale, cfg.diverging);
+                cell_color(t, cfg)
+            };
+            let hx = hex6(color);
+            let cx0 = pad_left + xs[col];
+            let cx1 = pad_left + xs[col + 1];
+            let cw = (cx1 - cx0).max(1);
+
+            push_b(&mut buf, b"<rect data-idx=\"");
+            push_i(&mut buf, idx as i32);
+            push_b(&mut buf, b"\" data-v=\"");
+            push_f2(&mut buf, val);
+            push_b(&mut buf, b"\" data-r=\"");
+            escape_xml(&mut buf, truncate(&cfg.row_labels[row], 16));
+            push_b(&mut buf, b"\" data-c=\"");
+            escape_xml(&mut buf, truncate(&col_lbls[col], 16));
+            push_b(&mut buf, b"\" x=\"");
+            push_i(&mut buf, cx0);
+            push_b(&mut buf, b"\" y=\"");
+            push_i(&mut buf, ry0);
+            push_b(&mut buf, b"\" width=\"");
+            push_i(&mut buf, cw);
+            push_b(&mut buf, b"\" height=\"");
+            push_i(&mut buf, rh);
+            push_b(&mut buf, b"\" fill=\"#");
+            buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\" rx=\"2\" stroke=\"#e2e8f0\" stroke-width=\"0.4\"/>");
+
+            let show = cfg.show_values || cfg.annotate;
+            let min_cell = if cfg.annotate { 10 } else { cfg.value_min_cell };
+            if show && cw >= min_cell && rh >= min_cell {
+                let lum = 0.299 * ((color >> 16 & 0xFF) as f64)
+                    + 0.587 * ((color >> 8 & 0xFF) as f64)
+                    + 0.114 * ((color & 0xFF) as f64);
+                let text_col = if lum > 140.0 { b"#1f2937".as_ref() } else { b"#f9fafb".as_ref() };
+                push_b(&mut buf, b"<text x=\"");
+                push_i(&mut buf, cx0 + cw / 2);
+                push_b(&mut buf, b"\" y=\"");
+                push_i(&mut buf, ry0 + rh / 2);
+                push_b(&mut buf, b"\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"");
+                buf.extend_from_slice(text_col);
+                push_b(&mut buf, b"\">");
+                push_f2(&mut buf, val);
+                push_b(&mut buf, b"</text>");
+            }
+            idx += 1;
+        }
+    }
+
+    if !cfg.categorical {
+        let scale_y: i32 = svg_h - pad_bottom + 8;
+        let scale_x0: f64 = pad_left as f64;
+        let scale_w: f64 = (svg_w - pad_left - pad_right) as f64;
+        let n_steps = if cfg.discrete_steps > 0 { cfg.discrete_steps.max(2) } else { 32 };
+        let step_w = scale_w / n_steps as f64;
+        for si in 0..n_steps {
+            let t = si as f64 / (n_steps - 1).max(1) as f64;
+            let color = cell_color(t, cfg);
+            let hx = hex6(color);
+            let sx = scale_x0 + si as f64 * step_w;
+            push_b(&mut buf, b"<rect x=\"");
+            push_i(&mut buf, sx as i32);
+            push_b(&mut buf, b"\" y=\"");
+            push_i(&mut buf, scale_y);
+            push_b(&mut buf, b"\" width=\"");
+            push_i(&mut buf, (step_w as i32 + 1).max(1));
+            push_b(&mut buf, b"\" height=\"12\" fill=\"#");
+            buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\" stroke=\"none\"/>");
+        }
+        let label_y = scale_y + 22;
+        let scale_pw = svg_w - pad_left - pad_right;
+        let (lo_v, hi_v) = if cfg.diverging {
+            let m = vmin.abs().max(vmax.abs());
+            (-m, m)
+        } else {
+            (vmin, vmax)
+        };
+        let mid_v = (lo_v + hi_v) / 2.0;
+        let label_static = b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">";
+        for (lx, lv) in [(pad_left, lo_v), (pad_left + scale_pw / 2, mid_v), (pad_left + scale_pw, hi_v)] {
+            push_b(&mut buf, b"<text x=\"");
+            push_i(&mut buf, lx);
+            push_b(&mut buf, b"\" y=\"");
+            push_i(&mut buf, label_y);
+            buf.extend_from_slice(label_static);
+            push_f2(&mut buf, lv);
+            push_b(&mut buf, b"</text>");
+        }
+        if cfg.log_scale {
+            push_b(&mut buf, b"<text x=\"");
+            push_i(&mut buf, svg_w - pad_right);
+            push_b(&mut buf, b"\" y=\"");
+            push_i(&mut buf, scale_y - 4);
+            push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6366f1\" font-weight=\"700\">log scale</text>");
+        }
+    }
+
+    push_b(&mut buf, b"</svg>");
+    let svg = unsafe { String::from_utf8_unchecked(buf) };
+    let hover_json = if auto_hover { "[]".to_string() } else { slots_to_json(cfg.hover) };
+    build_chart_html(cfg.title, &svg, &hover_json)
+}

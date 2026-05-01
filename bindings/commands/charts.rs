@@ -639,15 +639,24 @@ pub fn build_heatmap(input: &str) -> String {
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let flat_matrix = a.values.unwrap_or_default();
-    use crate::plot::statistical::{HeatmapConfig, render_heatmap_html};
+    use crate::plot::statistical::{HeatmapConfig, HeatmapVariant, render_heatmap_html};
     let col_lbl = o.col_labels.clone().unwrap_or_default();
     let hover = o.hj();
+    let palette = o.pal();
+    let variant = HeatmapVariant::from_str(&o.variant.clone().unwrap_or_default());
+    let x_widths: Vec<f64> = o.widths.clone().unwrap_or_default();
+    let y_heights: Vec<f64> = o.ranges.clone().unwrap_or_default();
     let html = render_heatmap_html(&HeatmapConfig {
-        title, row_labels: &labels, col_labels: &col_lbl, flat_matrix: &flat_matrix,
+        title, variant,
+        row_labels: &labels, col_labels: &col_lbl, flat_matrix: &flat_matrix,
         show_values: o.show_values.unwrap_or(true),
         color_low: o.color_low.unwrap_or(0x6366F1),
         color_mid: o.color_mid.unwrap_or(0xfafbfc),
         color_high: o.color_high.unwrap_or(0xF43F5E),
+        palette: &palette,
+        discrete_steps: o.bins.unwrap_or(0).max(0) as usize,
+        x_widths: &x_widths,
+        y_heights: &y_heights,
         width: o.w(720), height: o.h(440), hover: &hover,
         sort_order: &o.srt(), ..HeatmapConfig::default()
     });

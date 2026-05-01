@@ -466,9 +466,19 @@ no_x_axis : bool, optional
 no_y_axis : bool, optional
     Hide the Y axis. Default False.";
 
-pub const DOC_BUILD_HEATMAP: &str = "build_heatmap(title, labels, flat_matrix, *, show_values=True, color_low=0x6366F1, color_mid=0xfafbfc, color_high=0xF43F5E, col_labels=None, width=720, height=440, x_label='', y_label='', gridlines=False, background=None) -> Chart
+pub const DOC_BUILD_HEATMAP: &str = "build_heatmap(title, labels, flat_matrix, *, variant='basic', show_values=True, color_low=0x6366F1, color_mid=0xfafbfc, color_high=0xF43F5E, palette=None, bins=0, widths=None, ranges=None, col_labels=None, width=720, height=440, x_label='', y_label='', gridlines=False, background=None) -> Chart
 
-Heatmap from a flat matrix.
+Color-coded matrix heatmap (7 variants).
+
+Variants
+--------
+basic        Smooth 3-stop gradient on a uniform grid (default).
+annotated    Forces value labels in every cell with adaptive contrast.
+categorical  Distinct palette color per discrete value (no gradient).
+unequal      Cell widths/heights driven by `widths` and `ranges` arrays.
+log          Logarithmic color mapping (log10) for skewed data.
+discrete     Quantizes values into N color bands (set with `bins`).
+correlation  Diverging palette centered at 0 (red\u{2194}blue), ideal for [-1,1] matrices.
 
 Parameters
 ----------
@@ -477,25 +487,27 @@ title : str
 labels : list[str]
     Row labels.
 flat_matrix : list[float]
-    Flattened matrix values (row-major order).
+    Flattened matrix values (row-major order, length = n_rows * n_cols).
+variant : str, optional
+    Heatmap variant. Default 'basic'.
 show_values : bool, optional
-    Show cell values. Default True.
-color_low : int, optional
-    Color for minimum values as hex. Default 0x6366F1.
-color_mid : int, optional
-    Color for midpoint values as hex. Default 0xfafbfc.
-color_high : int, optional
-    Color for maximum values as hex. Default 0xF43F5E.
+    Show cell values when cell is large enough. Default True.
+color_low / color_mid / color_high : int, optional
+    Gradient stops (hex RGB).
+palette : list[int] or None, optional
+    Used by `categorical` and `discrete` variants for per-band colors.
+bins : int, optional
+    Number of discrete color bands (used by `discrete` variant).
+widths : list[float] or None, optional
+    Relative column widths (used by `unequal`).
+ranges : list[float] or None, optional
+    Relative row heights (used by `unequal`).
 col_labels : list[str], optional
     Column labels. Defaults to row labels.
-width : int, optional
-    Chart width in pixels. Default 720.
-height : int, optional
-    Chart height in pixels. Default 440.
-x_label : str, optional
-    X-axis label. Default ''.
-y_label : str, optional
-    Y-axis label. Default ''.
+width / height : int, optional
+    Canvas size in pixels.
+x_label / y_label : str, optional
+    Axis labels.
 gridlines : bool, optional
     Show gridlines. Default False.
 background : str or None, optional
