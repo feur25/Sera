@@ -15,6 +15,8 @@ pub fn clone_cfg<'a>(cfg: &HeatmapConfig<'a>) -> HeatmapConfig<'a> {
         discrete_steps: cfg.discrete_steps, log_scale: cfg.log_scale,
         diverging: cfg.diverging, x_widths: cfg.x_widths, y_heights: cfg.y_heights,
         annotate: cfg.annotate, categorical: cfg.categorical,
+        smooth: cfg.smooth, viridis: cfg.viridis,
+        contour: cfg.contour, contour_levels: cfg.contour_levels,
     }
 }
 
@@ -56,10 +58,29 @@ pub fn cell_color(t: f64, cfg: &HeatmapConfig) -> u32 {
         return palette_color(cfg.palette, bin);
     }
     let qt = quantize_t(t, cfg.discrete_steps);
+    if cfg.viridis {
+        return viridis_color(qt);
+    }
     if cfg.diverging {
         return lerp_color(qt, 0x2563EB, 0xfafbfc, 0xDC2626);
     }
     lerp_color(qt, cfg.color_low, cfg.color_mid, cfg.color_high)
+}
+
+pub fn viridis_color(t: f64) -> u32 {
+    let stops: [u32; 5] = [0x440154, 0x3B528B, 0x21908C, 0x5DC863, 0xFDE725];
+    let n = stops.len() - 1;
+    let p = (t.clamp(0.0, 1.0)) * n as f64;
+    let i0 = p.floor() as usize;
+    let i1 = (i0 + 1).min(n);
+    let f = p - i0 as f64;
+    let a = stops[i0]; let b = stops[i1];
+    let ar = ((a >> 16) & 0xFF) as f64; let ag = ((a >> 8) & 0xFF) as f64; let ab = (a & 0xFF) as f64;
+    let br = ((b >> 16) & 0xFF) as f64; let bg = ((b >> 8) & 0xFF) as f64; let bb = (b & 0xFF) as f64;
+    let r = (ar + (br - ar) * f).round() as u32;
+    let g = (ag + (bg - ag) * f).round() as u32;
+    let bl = (ab + (bb - ab) * f).round() as u32;
+    (r << 16) | (g << 8) | bl
 }
 
 pub fn categorical_color(val: f64, cfg: &HeatmapConfig) -> u32 {
@@ -206,7 +227,11 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
             push_i(&mut buf, rh);
             push_b(&mut buf, b"\" fill=\"#");
             buf.extend_from_slice(&hx);
-            push_b(&mut buf, b"\" rx=\"2\" stroke=\"#e2e8f0\" stroke-width=\"0.4\"/>");
+            if cfg.smooth {
+                push_b(&mut buf, b"\" stroke=\"none\"/>");
+            } else {
+                push_b(&mut buf, b"\" rx=\"2\" stroke=\"#e2e8f0\" stroke-width=\"0.4\"/>");
+            }
 
             let show = cfg.show_values || cfg.annotate;
             let min_cell = if cfg.annotate { 10 } else { cfg.value_min_cell };
@@ -226,6 +251,63 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
                 push_b(&mut buf, b"</text>");
             }
             idx += 1;
+        }
+    }
+
+    if cfg.contour && cfg.contour_levels > 0 && !cfg.categorical {
+        let levels = cfg.contour_levels.max(1);
+        for li in 1..=levels {
+            let t_thr = li as f64 / (levels + 1) as f64;
+            let v_thr = vmin + (vmax - vmin) * t_thr;
+            for row in 0..n_rows {
+                let ry0 = pad_top + ys[row];
+                let ry1 = pad_top + ys[row + 1];
+                let cy = (ry0 + ry1) / 2;
+                for col in 0..n_cols.saturating_sub(1) {
+                    let a = data[row * n_cols + col];
+                    let b = data[row * n_cols + col + 1];
+                    if (a - v_thr) * (b - v_thr) < 0.0 {
+                        let span = (b - a).abs().max(1e-12);
+                        let frac = ((v_thr - a).abs() / span).clamp(0.0, 1.0);
+                        let cx0 = pad_left + xs[col];
+                        let cx1 = pad_left + xs[col + 1];
+                        let cx = (cx0 as f64 + (cx1 - cx0) as f64 * (0.5 + frac * 0.0)) as i32;
+                        let _ = frac;
+                        push_b(&mut buf, b"<line x1=\"");
+                        push_i(&mut buf, cx);
+                        push_b(&mut buf, b"\" y1=\"");
+                        push_i(&mut buf, ry0);
+                        push_b(&mut buf, b"\" x2=\"");
+                        push_i(&mut buf, cx);
+                        push_b(&mut buf, b"\" y2=\"");
+                        push_i(&mut buf, ry1);
+                        push_b(&mut buf, b"\" stroke=\"#ffffff\" stroke-width=\"1.2\" stroke-opacity=\"0.85\"/>");
+                    }
+                }
+            }
+            for col in 0..n_cols {
+                let cx0 = pad_left + xs[col];
+                let cx1 = pad_left + xs[col + 1];
+                let cx = (cx0 + cx1) / 2;
+                for row in 0..n_rows.saturating_sub(1) {
+                    let a = data[row * n_cols + col];
+                    let b = data[(row + 1) * n_cols + col];
+                    if (a - v_thr) * (b - v_thr) < 0.0 {
+                        let ry0 = pad_top + ys[row];
+                        let ry2 = pad_top + ys[row + 2];
+                        push_b(&mut buf, b"<line x1=\"");
+                        push_i(&mut buf, cx0);
+                        push_b(&mut buf, b"\" y1=\"");
+                        push_i(&mut buf, (ry0 + ry2) / 2);
+                        push_b(&mut buf, b"\" x2=\"");
+                        push_i(&mut buf, cx1);
+                        push_b(&mut buf, b"\" y2=\"");
+                        push_i(&mut buf, (ry0 + ry2) / 2);
+                        push_b(&mut buf, b"\" stroke=\"#ffffff\" stroke-width=\"1.2\" stroke-opacity=\"0.85\"/>");
+                        let _ = cx;
+                    }
+                }
+            }
         }
     }
 

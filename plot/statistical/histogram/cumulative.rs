@@ -25,31 +25,48 @@ pub fn render(cfg: &HistogramConfig) -> String {
     let op_i = (cfg.opacity as f64 / 255.0 * 100.0 + 0.5) as i32;
     let hx = hex6(cfg.color);
 
+    let baseline_y = f.pt + f.ph;
+    push_b(&mut f.buf, b"<path d=\"M ");
+    push_i(&mut f.buf, f.pl);
+    f.buf.push(b' ');
+    push_i(&mut f.buf, baseline_y);
     for (i, &p) in acc.iter().enumerate() {
-        let bh = (p / max_y * f.ph as f64) as i32;
-        let x = f.pl + (i as f64 * bw_px) as i32;
-        let y = f.pt + f.ph - bh;
-        let w_px = (bw_px as i32 - cfg.gap.max(0)).max(1);
+        let x0 = f.pl + (i as f64 * bw_px) as i32;
+        let x1 = f.pl + ((i + 1) as f64 * bw_px) as i32;
+        let y = f.pt + f.ph - (p / max_y * f.ph as f64) as i32;
+        push_b(&mut f.buf, b" L ");
+        push_i(&mut f.buf, x0); f.buf.push(b' '); push_i(&mut f.buf, y);
+        push_b(&mut f.buf, b" L ");
+        push_i(&mut f.buf, x1); f.buf.push(b' '); push_i(&mut f.buf, y);
+    }
+    push_b(&mut f.buf, b" L ");
+    push_i(&mut f.buf, f.pl + (n_bins as f64 * bw_px) as i32);
+    f.buf.push(b' ');
+    push_i(&mut f.buf, baseline_y);
+    push_b(&mut f.buf, b" Z\" fill=\"#");
+    f.buf.extend_from_slice(&hx);
+    push_b(&mut f.buf, b"\" fill-opacity=\"0.");
+    push_i(&mut f.buf, op_i);
+    push_b(&mut f.buf, b"\" stroke=\"#");
+    f.buf.extend_from_slice(&hx);
+    push_b(&mut f.buf, b"\" stroke-width=\"1.6\" stroke-linejoin=\"miter\"/>");
+
+    for (i, &p) in acc.iter().enumerate() {
+        let x0 = f.pl + (i as f64 * bw_px) as i32;
+        let x1 = f.pl + ((i + 1) as f64 * bw_px) as i32;
+        let y = f.pt + f.ph - (p / max_y * f.ph as f64) as i32;
         push_b(&mut f.buf, b"<rect data-idx=\""); push_i(&mut f.buf, i as i32);
-        push_b(&mut f.buf, b"\" data-series=\"0\" data-lbl=\""); f.buf.extend_from_slice("\u{2264} ".as_bytes()); push_f2(&mut f.buf, edges.get(i+1).copied().unwrap_or(edges[i]));
+        push_b(&mut f.buf, b"\" data-series=\"0\" data-lbl=\"");
+        f.buf.extend_from_slice("\u{2264} ".as_bytes());
+        push_f2(&mut f.buf, edges.get(i+1).copied().unwrap_or(edges[i]));
         push_b(&mut f.buf, b"\" data-kv-Cumulative=\""); push_f2(&mut f.buf, p);
         push_b(&mut f.buf, b"\" data-kv-Count=\""); push_i(&mut f.buf, bin_counts[i] as i32);
-        push_b(&mut f.buf, b"\" x=\""); push_i(&mut f.buf, x);
+        push_b(&mut f.buf, b"\" x=\""); push_i(&mut f.buf, x0);
         push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, y);
-        push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, w_px);
-        push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, bh);
-        push_b(&mut f.buf, b"\" fill=\"#"); f.buf.extend_from_slice(&hx);
-        push_b(&mut f.buf, b"\" fill-opacity=\"0."); push_i(&mut f.buf, op_i);
-        push_b(&mut f.buf, b"\" rx=\"2\" stroke=\"#fff\" stroke-width=\"0.4\"/>");
+        push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, (x1 - x0).max(1));
+        push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, baseline_y - y);
+        push_b(&mut f.buf, b"\" fill=\"transparent\" stroke=\"none\"/>");
     }
-
-    push_b(&mut f.buf, b"<polyline fill=\"none\" stroke=\"#fbbf24\" stroke-width=\"2\" points=\"");
-    for (i, &p) in acc.iter().enumerate() {
-        let cx = f.pl + (i as f64 * bw_px + bw_px / 2.0) as i32;
-        let cy = f.pt + f.ph - (p / max_y * f.ph as f64) as i32;
-        push_i(&mut f.buf, cx); f.buf.push(b','); push_i(&mut f.buf, cy); f.buf.push(b' ');
-    }
-    push_b(&mut f.buf, b"\"/>");
 
     let tick_step = ((n_bins as f64 / 8.0).ceil() as usize).max(1);
     for i in (0..=n_bins).step_by(tick_step) {

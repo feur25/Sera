@@ -59,6 +59,9 @@ Aliases: `sp.heatmap`, `sp.heatmaps`, `sp.heatmap_unified`, `sp.heatmap_family`
 | `"log"` | Logarithmic color mapping | (no extra) |
 | `"discrete"` | Quantize values into N color bands | `bins`, `palette` |
 | `"correlation"` | Diverging palette centered at 0 | (no extra) |
+| `"density"` | Viridis palette + smooth (no cell strokes) | (no extra) |
+| `"contour"` | Iso-value contour lines overlay | `contour_levels` |
+| `"temporal"` | Date/time preset (viridis, smooth, rotated labels) | (no extra) |
 
 ---
 
@@ -102,6 +105,9 @@ Aliases: `sp.heatmap`, `sp.heatmaps`, `sp.heatmap_unified`, `sp.heatmap_family`
 <button class="sp-cls-tab" onclick="spCls('heatmap-en','log',this)"><span class="sp-cic">L</span><span class="sp-clb">Log scale</span></button>
 <button class="sp-cls-tab" onclick="spCls('heatmap-en','discrete',this)"><span class="sp-cic">D</span><span class="sp-clb">Discrete</span></button>
 <button class="sp-cls-tab" onclick="spCls('heatmap-en','correlation',this)"><span class="sp-cic">R</span><span class="sp-clb">Correlation</span></button>
+<button class="sp-cls-tab" onclick="spCls('heatmap-en','density',this)"><span class="sp-cic">V</span><span class="sp-clb">Density</span></button>
+<button class="sp-cls-tab" onclick="spCls('heatmap-en','contour',this)"><span class="sp-cic">O</span><span class="sp-clb">Contour</span></button>
+<button class="sp-cls-tab" onclick="spCls('heatmap-en','temporal',this)"><span class="sp-cic">T</span><span class="sp-clb">Temporal</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -823,6 +829,318 @@ chart.show();</code></pre></div></div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-correlation.html"></iframe>
 </div>
 
+<div class="sp-variant" id="heatmap-en-density">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / imshow / viridis / smooth</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="hmen-density">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('hmen-density','hmen-density-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('hmen-density','hmen-density-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('hmen-density','hmen-density-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('hmen-density','hmen-density-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('hmen-density','hmen-density-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('hmen-density','hmen-density-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('hmen-density','hmen-density-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('hmen-density','hmen-density-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('hmen-density','hmen-density-cpp',this)">C++</button>
+</div><div id="hmen-density-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+import math, random
+random.seed(0)
+rows = [f"r{i}" for i in range(20)]
+cols = [f"{c}" for c in range(40)]
+def g(r,c,r0,c0,s):
+    return math.exp(-(((r-r0)**2+(c-c0)**2)/(2*s*s)))
+m = [100*(g(r,c,5,10,3.5)+0.7*g(r,c,14,28,4.2)) for r in range(20) for c in range(40)]
+chart = sp.heatmap(
+    title="Density (Viridis)",
+    labels=rows, col_labels=cols, values=m,
+    variant="density",
+)
+chart.show()</code></pre></div><div id="hmen-density-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.heatmap({
+  title: "Heatmap",
+  labels: ["A","B","C"],
+  col_labels: ["X","Y","Z"],
+  values: [/* row-major matrix */],
+  variant: "basic",
+});
+chart.show();</code></pre></div><div id="hmen-density-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.heatmap({
+  title: "Heatmap",
+  labels: ["A","B","C"],
+  col_labels: ["X","Y","Z"],
+  values: [/* row-major matrix */],
+  variant: "basic",
+});
+chart.show();</code></pre></div><div id="hmen-density-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$heatmap(
+  title = "Heatmap",
+  labels = c("A","B","C"),
+  col_labels = c("X","Y","Z"),
+  values = c(),
+  variant = "basic"
+)
+chart$show()</code></pre></div><div id="hmen-density-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::heatmap()
+        .title("Heatmap")
+        .labels(vec!["A","B","C"])
+        .col_labels(vec!["X","Y","Z"])
+        .values(vec![])
+        .variant("basic")
+        .build();
+    chart.show();
+}</code></pre></div><div id="hmen-density-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.heatmap()
+    .title("Heatmap")
+    .labels(List.of("A","B","C"))
+    .colLabels(List.of("X","Y","Z"))
+    .values(List.of())
+    .variant("basic")
+    .build();
+chart.show();</code></pre></div><div id="hmen-density-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Heatmap(
+    title: "Heatmap",
+    labels: new[]{"A","B","C"},
+    colLabels: new[]{"X","Y","Z"},
+    values: new double[]{},
+    variant: "basic"
+);
+chart.Show();</code></pre></div><div id="hmen-density-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.heatmap(
+  title      = "Heatmap",
+  labels     = List("A","B","C"),
+  colLabels  = List("X","Y","Z"),
+  values     = List(),
+  variant    = "basic"
+)
+chart.show()</code></pre></div><div id="hmen-density-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::heatmap({
+    .title      = "Heatmap",
+    .labels     = {"A","B","C"},
+    .col_labels = {"X","Y","Z"},
+    .values     = {},
+    .variant    = "basic",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/heatmap-density.html"></iframe>
+</div>
+
+<div class="sp-variant" id="heatmap-en-contour">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"contour"</code></span><span><strong>Aliases</strong> <code>contour / iso / isolines / level</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="hmen-contour">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('hmen-contour','hmen-contour-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('hmen-contour','hmen-contour-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('hmen-contour','hmen-contour-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('hmen-contour','hmen-contour-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('hmen-contour','hmen-contour-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('hmen-contour','hmen-contour-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('hmen-contour','hmen-contour-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('hmen-contour','hmen-contour-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('hmen-contour','hmen-contour-cpp',this)">C++</button>
+</div><div id="hmen-contour-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+import math
+rows = [f"r{i}" for i in range(20)]
+cols = [f"{c}" for c in range(40)]
+m = [50 + 40*math.sin(r*0.4)*math.cos(c*0.25) + 25*math.sin((r+c)*0.18) for r in range(20) for c in range(40)]
+chart = sp.heatmap(
+    title="Iso-contour overlay",
+    labels=rows, col_labels=cols, values=m,
+    variant="contour",
+)
+chart.show()</code></pre></div><div id="hmen-contour-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.heatmap({
+  title: "Heatmap",
+  labels: ["A","B","C"],
+  col_labels: ["X","Y","Z"],
+  values: [/* row-major matrix */],
+  variant: "basic",
+});
+chart.show();</code></pre></div><div id="hmen-contour-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.heatmap({
+  title: "Heatmap",
+  labels: ["A","B","C"],
+  col_labels: ["X","Y","Z"],
+  values: [/* row-major matrix */],
+  variant: "basic",
+});
+chart.show();</code></pre></div><div id="hmen-contour-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$heatmap(
+  title = "Heatmap",
+  labels = c("A","B","C"),
+  col_labels = c("X","Y","Z"),
+  values = c(),
+  variant = "basic"
+)
+chart$show()</code></pre></div><div id="hmen-contour-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::heatmap()
+        .title("Heatmap")
+        .labels(vec!["A","B","C"])
+        .col_labels(vec!["X","Y","Z"])
+        .values(vec![])
+        .variant("basic")
+        .build();
+    chart.show();
+}</code></pre></div><div id="hmen-contour-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.heatmap()
+    .title("Heatmap")
+    .labels(List.of("A","B","C"))
+    .colLabels(List.of("X","Y","Z"))
+    .values(List.of())
+    .variant("basic")
+    .build();
+chart.show();</code></pre></div><div id="hmen-contour-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Heatmap(
+    title: "Heatmap",
+    labels: new[]{"A","B","C"},
+    colLabels: new[]{"X","Y","Z"},
+    values: new double[]{},
+    variant: "basic"
+);
+chart.Show();</code></pre></div><div id="hmen-contour-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.heatmap(
+  title      = "Heatmap",
+  labels     = List("A","B","C"),
+  colLabels  = List("X","Y","Z"),
+  values     = List(),
+  variant    = "basic"
+)
+chart.show()</code></pre></div><div id="hmen-contour-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::heatmap({
+    .title      = "Heatmap",
+    .labels     = {"A","B","C"},
+    .col_labels = {"X","Y","Z"},
+    .values     = {},
+    .variant    = "basic",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/heatmap-contour.html"></iframe>
+</div>
+
+<div class="sp-variant" id="heatmap-en-temporal">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"temporal"</code></span><span><strong>Aliases</strong> <code>temporal / calendar / time / date</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="hmen-temporal">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('hmen-temporal','hmen-temporal-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('hmen-temporal','hmen-temporal-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('hmen-temporal','hmen-temporal-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('hmen-temporal','hmen-temporal-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('hmen-temporal','hmen-temporal-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('hmen-temporal','hmen-temporal-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('hmen-temporal','hmen-temporal-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('hmen-temporal','hmen-temporal-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('hmen-temporal','hmen-temporal-cpp',this)">C++</button>
+</div><div id="hmen-temporal-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+import math, random
+random.seed(0)
+lats = ["Lat 70","Lat 60","Lat 50","Lat 40","Lat 30","Lat 20","Lat 10"]
+dates = ["Jan 13","Mar 13","May 13","Jul 13","Sep 13","Nov 13",
+         "Jan 14","Mar 14","May 14","Jul 14","Sep 14","Nov 14"]
+m = [240 + 70*math.sin((c%12)*0.52-1.4) + (6-r)*7 + random.uniform(-3,3)
+     for r in range(len(lats)) for c in range(len(dates))]
+chart = sp.heatmap(
+    title="Air temperature x Latitude",
+    labels=lats, col_labels=dates, values=m,
+    variant="temporal",
+)
+chart.show()</code></pre></div><div id="hmen-temporal-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.heatmap({
+  title: "Heatmap",
+  labels: ["A","B","C"],
+  col_labels: ["X","Y","Z"],
+  values: [/* row-major matrix */],
+  variant: "basic",
+});
+chart.show();</code></pre></div><div id="hmen-temporal-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.heatmap({
+  title: "Heatmap",
+  labels: ["A","B","C"],
+  col_labels: ["X","Y","Z"],
+  values: [/* row-major matrix */],
+  variant: "basic",
+});
+chart.show();</code></pre></div><div id="hmen-temporal-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$heatmap(
+  title = "Heatmap",
+  labels = c("A","B","C"),
+  col_labels = c("X","Y","Z"),
+  values = c(),
+  variant = "basic"
+)
+chart$show()</code></pre></div><div id="hmen-temporal-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::heatmap()
+        .title("Heatmap")
+        .labels(vec!["A","B","C"])
+        .col_labels(vec!["X","Y","Z"])
+        .values(vec![])
+        .variant("basic")
+        .build();
+    chart.show();
+}</code></pre></div><div id="hmen-temporal-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.heatmap()
+    .title("Heatmap")
+    .labels(List.of("A","B","C"))
+    .colLabels(List.of("X","Y","Z"))
+    .values(List.of())
+    .variant("basic")
+    .build();
+chart.show();</code></pre></div><div id="hmen-temporal-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Heatmap(
+    title: "Heatmap",
+    labels: new[]{"A","B","C"},
+    colLabels: new[]{"X","Y","Z"},
+    values: new double[]{},
+    variant: "basic"
+);
+chart.Show();</code></pre></div><div id="hmen-temporal-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.heatmap(
+  title      = "Heatmap",
+  labels     = List("A","B","C"),
+  colLabels  = List("X","Y","Z"),
+  values     = List(),
+  variant    = "basic"
+)
+chart.show()</code></pre></div><div id="hmen-temporal-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::heatmap({
+    .title      = "Heatmap",
+    .labels     = {"A","B","C"},
+    .col_labels = {"X","Y","Z"},
+    .values     = {},
+    .variant    = "basic",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/heatmap-temporal.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -887,6 +1205,9 @@ Alias : `sp.heatmap`, `sp.heatmaps`, `sp.heatmap_unified`, `sp.heatmap_family`
 | `"log"` | Mappage de couleur logarithmique | (rien de plus) |
 | `"discrete"` | Quantifie les valeurs en N bandes | `bins`, `palette` |
 | `"correlation"` | Palette divergente centrée en 0 | (rien de plus) |
+| `"density"` | Palette viridis + lisse (sans bordures) | (rien de plus) |
+| `"contour"` | Lignes iso-valeur en surimpression | `contour_levels` |
+| `"temporal"` | Préréglage date/heure (viridis, lisse) | (rien de plus) |
 
 ---
 
@@ -927,6 +1248,9 @@ Alias : `sp.heatmap`, `sp.heatmaps`, `sp.heatmap_unified`, `sp.heatmap_family`
 <button class="sp-cls-tab" onclick="spCls('heatmap-fr','log',this)"><span class="sp-cic">L</span><span class="sp-clb">Échelle log</span></button>
 <button class="sp-cls-tab" onclick="spCls('heatmap-fr','discrete',this)"><span class="sp-cic">D</span><span class="sp-clb">Discret</span></button>
 <button class="sp-cls-tab" onclick="spCls('heatmap-fr','correlation',this)"><span class="sp-cic">R</span><span class="sp-clb">Corrélation</span></button>
+<button class="sp-cls-tab" onclick="spCls('heatmap-fr','density',this)"><span class="sp-cic">V</span><span class="sp-clb">Densité</span></button>
+<button class="sp-cls-tab" onclick="spCls('heatmap-fr','contour',this)"><span class="sp-cic">O</span><span class="sp-clb">Iso-contours</span></button>
+<button class="sp-cls-tab" onclick="spCls('heatmap-fr','temporal',this)"><span class="sp-cic">T</span><span class="sp-clb">Temporel</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -1646,6 +1970,318 @@ auto chart = sp::heatmap({
 chart.show();</code></pre></div></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-correlation.html"></iframe>
+</div>
+
+<div class="sp-variant" id="heatmap-fr-density">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / imshow / viridis / smooth</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="hmfr-density">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('hmfr-density','hmfr-density-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('hmfr-density','hmfr-density-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('hmfr-density','hmfr-density-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('hmfr-density','hmfr-density-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('hmfr-density','hmfr-density-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('hmfr-density','hmfr-density-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('hmfr-density','hmfr-density-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('hmfr-density','hmfr-density-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('hmfr-density','hmfr-density-cpp',this)">C++</button>
+</div><div id="hmfr-density-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+import math, random
+random.seed(0)
+rows = [f"r{i}" for i in range(20)]
+cols = [f"{c}" for c in range(40)]
+def g(r,c,r0,c0,s):
+    return math.exp(-(((r-r0)**2+(c-c0)**2)/(2*s*s)))
+m = [100*(g(r,c,5,10,3.5)+0.7*g(r,c,14,28,4.2)) for r in range(20) for c in range(40)]
+chart = sp.heatmap(
+    title="Density (Viridis)",
+    labels=rows, col_labels=cols, values=m,
+    variant="density",
+)
+chart.show()</code></pre></div><div id="hmfr-density-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.heatmap({
+  title: "Heatmap",
+  labels: ["A","B","C"],
+  col_labels: ["X","Y","Z"],
+  values: [/* row-major matrix */],
+  variant: "basic",
+});
+chart.show();</code></pre></div><div id="hmfr-density-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.heatmap({
+  title: "Heatmap",
+  labels: ["A","B","C"],
+  col_labels: ["X","Y","Z"],
+  values: [/* row-major matrix */],
+  variant: "basic",
+});
+chart.show();</code></pre></div><div id="hmfr-density-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$heatmap(
+  title = "Heatmap",
+  labels = c("A","B","C"),
+  col_labels = c("X","Y","Z"),
+  values = c(),
+  variant = "basic"
+)
+chart$show()</code></pre></div><div id="hmfr-density-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::heatmap()
+        .title("Heatmap")
+        .labels(vec!["A","B","C"])
+        .col_labels(vec!["X","Y","Z"])
+        .values(vec![])
+        .variant("basic")
+        .build();
+    chart.show();
+}</code></pre></div><div id="hmfr-density-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.heatmap()
+    .title("Heatmap")
+    .labels(List.of("A","B","C"))
+    .colLabels(List.of("X","Y","Z"))
+    .values(List.of())
+    .variant("basic")
+    .build();
+chart.show();</code></pre></div><div id="hmfr-density-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Heatmap(
+    title: "Heatmap",
+    labels: new[]{"A","B","C"},
+    colLabels: new[]{"X","Y","Z"},
+    values: new double[]{},
+    variant: "basic"
+);
+chart.Show();</code></pre></div><div id="hmfr-density-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.heatmap(
+  title      = "Heatmap",
+  labels     = List("A","B","C"),
+  colLabels  = List("X","Y","Z"),
+  values     = List(),
+  variant    = "basic"
+)
+chart.show()</code></pre></div><div id="hmfr-density-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::heatmap({
+    .title      = "Heatmap",
+    .labels     = {"A","B","C"},
+    .col_labels = {"X","Y","Z"},
+    .values     = {},
+    .variant    = "basic",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/heatmap-density.html"></iframe>
+</div>
+
+<div class="sp-variant" id="heatmap-fr-contour">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"contour"</code></span><span><strong>Aliases</strong> <code>contour / iso / isolines / level</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="hmfr-contour">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('hmfr-contour','hmfr-contour-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('hmfr-contour','hmfr-contour-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('hmfr-contour','hmfr-contour-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('hmfr-contour','hmfr-contour-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('hmfr-contour','hmfr-contour-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('hmfr-contour','hmfr-contour-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('hmfr-contour','hmfr-contour-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('hmfr-contour','hmfr-contour-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('hmfr-contour','hmfr-contour-cpp',this)">C++</button>
+</div><div id="hmfr-contour-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+import math
+rows = [f"r{i}" for i in range(20)]
+cols = [f"{c}" for c in range(40)]
+m = [50 + 40*math.sin(r*0.4)*math.cos(c*0.25) + 25*math.sin((r+c)*0.18) for r in range(20) for c in range(40)]
+chart = sp.heatmap(
+    title="Iso-contour overlay",
+    labels=rows, col_labels=cols, values=m,
+    variant="contour",
+)
+chart.show()</code></pre></div><div id="hmfr-contour-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.heatmap({
+  title: "Heatmap",
+  labels: ["A","B","C"],
+  col_labels: ["X","Y","Z"],
+  values: [/* row-major matrix */],
+  variant: "basic",
+});
+chart.show();</code></pre></div><div id="hmfr-contour-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.heatmap({
+  title: "Heatmap",
+  labels: ["A","B","C"],
+  col_labels: ["X","Y","Z"],
+  values: [/* row-major matrix */],
+  variant: "basic",
+});
+chart.show();</code></pre></div><div id="hmfr-contour-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$heatmap(
+  title = "Heatmap",
+  labels = c("A","B","C"),
+  col_labels = c("X","Y","Z"),
+  values = c(),
+  variant = "basic"
+)
+chart$show()</code></pre></div><div id="hmfr-contour-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::heatmap()
+        .title("Heatmap")
+        .labels(vec!["A","B","C"])
+        .col_labels(vec!["X","Y","Z"])
+        .values(vec![])
+        .variant("basic")
+        .build();
+    chart.show();
+}</code></pre></div><div id="hmfr-contour-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.heatmap()
+    .title("Heatmap")
+    .labels(List.of("A","B","C"))
+    .colLabels(List.of("X","Y","Z"))
+    .values(List.of())
+    .variant("basic")
+    .build();
+chart.show();</code></pre></div><div id="hmfr-contour-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Heatmap(
+    title: "Heatmap",
+    labels: new[]{"A","B","C"},
+    colLabels: new[]{"X","Y","Z"},
+    values: new double[]{},
+    variant: "basic"
+);
+chart.Show();</code></pre></div><div id="hmfr-contour-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.heatmap(
+  title      = "Heatmap",
+  labels     = List("A","B","C"),
+  colLabels  = List("X","Y","Z"),
+  values     = List(),
+  variant    = "basic"
+)
+chart.show()</code></pre></div><div id="hmfr-contour-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::heatmap({
+    .title      = "Heatmap",
+    .labels     = {"A","B","C"},
+    .col_labels = {"X","Y","Z"},
+    .values     = {},
+    .variant    = "basic",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/heatmap-contour.html"></iframe>
+</div>
+
+<div class="sp-variant" id="heatmap-fr-temporal">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"temporal"</code></span><span><strong>Aliases</strong> <code>temporal / calendar / time / date</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="hmfr-temporal">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('hmfr-temporal','hmfr-temporal-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('hmfr-temporal','hmfr-temporal-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('hmfr-temporal','hmfr-temporal-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('hmfr-temporal','hmfr-temporal-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('hmfr-temporal','hmfr-temporal-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('hmfr-temporal','hmfr-temporal-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('hmfr-temporal','hmfr-temporal-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('hmfr-temporal','hmfr-temporal-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('hmfr-temporal','hmfr-temporal-cpp',this)">C++</button>
+</div><div id="hmfr-temporal-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+import math, random
+random.seed(0)
+lats = ["Lat 70","Lat 60","Lat 50","Lat 40","Lat 30","Lat 20","Lat 10"]
+dates = ["Jan 13","Mar 13","May 13","Jul 13","Sep 13","Nov 13",
+         "Jan 14","Mar 14","May 14","Jul 14","Sep 14","Nov 14"]
+m = [240 + 70*math.sin((c%12)*0.52-1.4) + (6-r)*7 + random.uniform(-3,3)
+     for r in range(len(lats)) for c in range(len(dates))]
+chart = sp.heatmap(
+    title="Air temperature x Latitude",
+    labels=lats, col_labels=dates, values=m,
+    variant="temporal",
+)
+chart.show()</code></pre></div><div id="hmfr-temporal-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.heatmap({
+  title: "Heatmap",
+  labels: ["A","B","C"],
+  col_labels: ["X","Y","Z"],
+  values: [/* row-major matrix */],
+  variant: "basic",
+});
+chart.show();</code></pre></div><div id="hmfr-temporal-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.heatmap({
+  title: "Heatmap",
+  labels: ["A","B","C"],
+  col_labels: ["X","Y","Z"],
+  values: [/* row-major matrix */],
+  variant: "basic",
+});
+chart.show();</code></pre></div><div id="hmfr-temporal-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$heatmap(
+  title = "Heatmap",
+  labels = c("A","B","C"),
+  col_labels = c("X","Y","Z"),
+  values = c(),
+  variant = "basic"
+)
+chart$show()</code></pre></div><div id="hmfr-temporal-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::heatmap()
+        .title("Heatmap")
+        .labels(vec!["A","B","C"])
+        .col_labels(vec!["X","Y","Z"])
+        .values(vec![])
+        .variant("basic")
+        .build();
+    chart.show();
+}</code></pre></div><div id="hmfr-temporal-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.heatmap()
+    .title("Heatmap")
+    .labels(List.of("A","B","C"))
+    .colLabels(List.of("X","Y","Z"))
+    .values(List.of())
+    .variant("basic")
+    .build();
+chart.show();</code></pre></div><div id="hmfr-temporal-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Heatmap(
+    title: "Heatmap",
+    labels: new[]{"A","B","C"},
+    colLabels: new[]{"X","Y","Z"},
+    values: new double[]{},
+    variant: "basic"
+);
+chart.Show();</code></pre></div><div id="hmfr-temporal-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.heatmap(
+  title      = "Heatmap",
+  labels     = List("A","B","C"),
+  colLabels  = List("X","Y","Z"),
+  values     = List(),
+  variant    = "basic"
+)
+chart.show()</code></pre></div><div id="hmfr-temporal-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::heatmap({
+    .title      = "Heatmap",
+    .labels     = {"A","B","C"},
+    .col_labels = {"X","Y","Z"},
+    .values     = {},
+    .variant    = "basic",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/heatmap-temporal.html"></iframe>
 </div>
 
 </div>

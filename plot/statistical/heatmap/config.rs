@@ -19,6 +19,10 @@ crate::chart_config!(HeatmapConfig, 720, 0;
         pub y_heights: &'a [f64],
         pub annotate: bool,
         pub categorical: bool,
+        pub smooth: bool,
+        pub viridis: bool,
+        pub contour: bool,
+        pub contour_levels: usize,
     }
     defaults {
         variant: super::variant::HeatmapVariant::Basic,
@@ -40,5 +44,9 @@ crate::chart_config!(HeatmapConfig, 720, 0;
         y_heights: &[],
         annotate: false,
         categorical: false,
+        smooth: false,
+        viridis: false,
+        contour: false,
+        contour_levels: 5,
     }
 );

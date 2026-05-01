@@ -7,5 +7,8 @@ crate::plot_family! {
         Log         => "log" | "logarithmic" | "log_scale" | "log10",
         Discrete    => "discrete" | "binned" | "stepped" | "bands",
         Correlation => "correlation" | "corr" | "diverging" | "pearson",
+        Density     => "density" | "imshow" | "viridis" | "smooth",
+        Contour     => "contour" | "iso" | "isolines" | "level",
+        Temporal    => "temporal" | "calendar" | "time" | "date" | "timeseries",
     }
 }
