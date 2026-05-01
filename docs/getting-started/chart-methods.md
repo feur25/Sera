@@ -1,1182 +1,823 @@
-﻿# Chart Methods
-
-<div class="lang-en">
-
-These methods are available on every `Chart` object returned by any SeraPlot
-function. They all return a new `Chart`, so they can be chained freely.
-
----
-
-## Global config (automatic inheritance)
-
-### `sp.config(**kwargs)`
-
-Set once, **every chart** created after inherits the configuration automatically. No per-chart override needed.
-
-| Parameter | Type | Effect |
-|-----------|------|--------|
-| `font` | str | Font family for all text (e.g., `"Inter"`, `"Roboto"`) |
-| `font_size` | int | Base font size in px |
-| `title_size` | int | Title font size in px |
-| `crosshair` | bool | Crosshair lines follow mouse hover |
-| `zoom` | bool | Mouse wheel zoom + pan (double-click resets) |
-| `animation` | bool | Fade-in animation on chart elements |
-| `animation_duration` | int | Duration (ms), default 300 |
-| `export_button` | bool | Download button on each chart |
-| `responsive` | bool | Auto-resize to container width |
-| `border_radius` | int | Container border radius (px) |
-| `margin` | int | Container padding (px) |
-| `opacity` | float | Element opacity `0.0`–`1.0` |
-| `background` | str | Background color (any CSS color) |
-| `gridlines` | bool | Show grid lines in chart |
-| `palette` | list[int] | Color palette as hex ints (e.g., `[0x6366F1, 0xFB7185]`) |
-| `locale` | str | Number formatting locale |
-| `thousands_sep` | str | Thousands separator char |
-| `tooltip` | str | Tooltip mode |
-| `text_auto` | bool \| str | Display values on bars/markers. `True` = raw value; format string like `".2s"`, `".0f"`, `".1%"` |
-| `text_position` | str | Where labels appear: `"auto"`, `"inside"`, `"outside"` |
-| `text_angle` | int | Rotation of value labels in degrees |
-| `text_font_size` | int | Max font size for value labels in px |
-| `text_font_color` | str | Color for value labels (any CSS color) |
-| `uniform_text_min_size` | int | Minimum px size for value labels |
-| `uniform_text_mode` | str | `"hide"` to hide labels that don't fit, `"show"` to overflow |
-| `bar_corner_radius` | int \| str | Rounded bar corners. Number of px or `"20%"` of bar width |
-
-```python
-import seraplot as sp
-
-sp.config(
-    font="Inter",
-    font_size=14,
-    title_size=22,
-    crosshair=True,
-    zoom=True,
-    animation=True,
-    animation_duration=500,
-    export_button=True,
-    responsive=True,
-    border_radius=12,
-    margin=16,
-    opacity=0.85,
-    background="#0f172a",
-    gridlines=True,
-    palette=[0x818CF8, 0xFB7185, 0x34D399, 0xFBBF24],
-)
-
-chart1 = sp.bar("Revenue", ["Q1", "Q2", "Q3"], [120, 180, 140])     # inherits ALL config
-chart2 = sp.line("Trend", ["Jan", "Feb", "Mar"], [100, 110, 105])   # same config
-chart3 = sp.scatter("Correlation", [1, 2, 3], [10, 20, 30])         # same config
-```
-
----
-
-### `sp.reset_config()`
-
-Reset all global config to defaults (no background, no crosshair, no zoom, etc.).
-
-```python
-sp.reset_config()
-chart = sp.bar("Clean", labels, values)  # back to defaults
-```
-
----
-
-## Per-chart override (method chaining)
-
-Override global config for individual charts:
-
-| Method | Effect |
-|--------|--------|
-| `.font("Inter")` | Override font family |
-| `.title_size(22)` | Override title size |
-| `.set_font_size(14)` | Override base font size |
-| `.crosshair()` | Enable/add crosshair on this chart |
-| `.zoom()` | Enable/add zoom on this chart |
-| `.animate(300)` | Add animation (ms) |
-| `.export_button()` | Add download button |
-| `.responsive()` | Make responsive |
-| `.border_radius(12)` | Set border radius |
-| `.set_opacity(0.85)` | Set element opacity |
-| `.set_margin(16)` | Set padding |
-| `.set_bg("#color")` | Override background |
-| `.text_auto(format=True, position=None, angle=None, font_size=None, color=None)` | Show values on bars/markers (Plotly-style) |
-| `.text_position("outside")` | `"auto"` \| `"inside"` \| `"outside"` |
-| `.text_angle(-45)` | Rotate value labels |
-| `.text_font(family="Inter", size=12, color="#fff")` | Style value labels |
-| `.uniform_text(min_size=8, mode="hide")` | Force uniform label sizing |
-| `.corner_radius_bars(8)` | Round bar corners (px or `"20%"`) |
-
-```python
-import seraplot as sp
-
-sp.config(font="Inter", background="#0f172a", gridlines=True)
-
-chart1 = sp.bar("Default", labels, values)           # uses config
-chart2 = sp.bar("Override", labels, values).font("Roboto").border_radius(20)  # different font + radius
-chart3 = sp.line("Clean", dates, values).zoom()       # adds zoom on top of config
-```
+# Chart methods
 
 <style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
-.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
+.cm-hero{margin:1.6em 0 2em;padding:28px 30px;border-radius:14px;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 60%,#312e81 100%);border:1px solid rgba(99,102,241,.35);box-shadow:0 18px 50px -12px rgba(99,102,241,.25),inset 0 1px 0 rgba(255,255,255,.05);position:relative;overflow:hidden}
+.cm-hero::before{content:"";position:absolute;top:-40%;right:-10%;width:60%;height:180%;background:radial-gradient(ellipse at center,rgba(129,140,248,.18) 0%,transparent 65%);pointer-events:none}
+.cm-hero h2{margin:0 0 8px;font-size:22px;color:#f5f3ff;font-weight:700;letter-spacing:-.01em;border:none}
+.cm-hero p{margin:0;color:#cbd5e1;font-size:14.5px;line-height:1.6;max-width:62ch}
+.cm-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;position:relative;z-index:1}
+.cm-pill{padding:4px 11px;background:rgba(99,102,241,.14);border:1px solid rgba(165,180,252,.3);border-radius:999px;font-size:11px;font-weight:600;color:#c7d2fe;letter-spacing:.04em}
+
+.cm-toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:1.4em 0 2em}
+.cm-toc a{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#0a0f1c;border:1px solid #1e293b;border-radius:10px;color:#cbd5e1;text-decoration:none;font-size:13px;font-weight:600;transition:border-color .15s,transform .15s,color .15s}
+.cm-toc a:hover{border-color:#3730a3;transform:translateY(-2px);color:#e0e7ff}
+.cm-toc .cm-ic{flex-shrink:0;width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#3730a3,#1e1b4b);display:flex;align-items:center;justify-content:center;color:#a5b4fc;font-weight:800;font-size:13px;letter-spacing:-.5px}
+
+.cm-section{margin:2.4em 0 .6em;padding:14px 18px;border-radius:10px 10px 0 0;background:linear-gradient(90deg,rgba(99,102,241,.12),rgba(99,102,241,0));border-left:3px solid #6366f1;display:flex;align-items:center;gap:12px}
+.cm-section .cm-sn{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:#6366f1;color:#fff;font-weight:800;font-size:14px;letter-spacing:-.5px;box-shadow:0 4px 14px -4px rgba(99,102,241,.55)}
+.cm-section h3{margin:0;font-size:18px;color:#e0e7ff;font-weight:700;border:none;padding:0}
+.cm-section p{margin:0 0 0 auto;color:#94a3b8;font-size:12.5px;font-style:italic}
+
+.cm-card{margin:1em 0 1.4em;padding:18px 20px;background:#0a0f1c;border:1px solid #1e293b;border-left:3px solid #475569;border-radius:0 10px 10px 0;box-shadow:0 6px 18px -8px rgba(0,0,0,.5)}
+.cm-card.cm-new{border-left-color:#22c55e}
+.cm-card .cm-name{display:flex;align-items:center;gap:10px;margin:0 0 6px;flex-wrap:wrap}
+.cm-card code.cm-fn{font-family:"JetBrains Mono",Consolas,monospace;font-size:14px;color:#a5b4fc;background:rgba(99,102,241,.10);padding:3px 9px;border-radius:6px;font-weight:600}
+.cm-tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.cm-tag.cm-tag-new{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.35)}
+.cm-tag.cm-tag-chain{background:rgba(99,102,241,.15);color:#c7d2fe;border:1px solid rgba(99,102,241,.35)}
+.cm-tag.cm-tag-global{background:rgba(251,191,36,.15);color:#fde68a;border:1px solid rgba(251,191,36,.35)}
+.cm-tag.cm-tag-export{background:rgba(244,63,94,.15);color:#fda4af;border:1px solid rgba(244,63,94,.35)}
+.cm-tag.cm-tag-prop{background:rgba(168,85,247,.15);color:#d8b4fe;border:1px solid rgba(168,85,247,.35)}
+.cm-card .cm-desc{margin:6px 0 10px;color:#cbd5e1;font-size:13.5px;line-height:1.6}
+.cm-card pre{margin:0;border-radius:8px;background:#06080f;border:1px solid #131a2a;padding:12px 14px;overflow-x:auto}
+.cm-card pre code{font-size:12.5px;line-height:1.55;color:#e2e8f0;background:none;padding:0}
+
+.cm-table{width:100%;border-collapse:collapse;margin:1em 0;font-size:13px;background:#0a0f1c;border-radius:8px;overflow:hidden;border:1px solid #1e293b}
+.cm-table th{background:#0f172a;color:#a5b4fc;padding:10px 14px;text-align:left;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #1e293b}
+.cm-table td{padding:9px 14px;color:#cbd5e1;border-bottom:1px solid #131a2a;vertical-align:top}
+.cm-table tr:last-child td{border-bottom:none}
+.cm-table code{background:#1e293b;padding:1px 6px;border-radius:4px;font-size:12px;color:#e2e8f0}
+
+.cm-tip{margin:1em 0;padding:12px 16px;background:rgba(34,197,94,.06);border-left:3px solid #22c55e;border-radius:0 6px 6px 0;color:#cbd5e1;font-size:13.5px;line-height:1.55}
+.cm-tip strong{color:#86efac;font-weight:700}
+.cm-warn{margin:1em 0;padding:12px 16px;background:rgba(251,146,60,.06);border-left:3px solid #fb923c;border-radius:0 6px 6px 0;color:#cbd5e1;font-size:13.5px;line-height:1.55}
+.cm-warn strong{color:#fdba74;font-weight:700}
 </style>
-<script>
-function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
-document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
-</script>
+<div class="lang-en">
 
----
-
-## Background and frame
-
-### `set_bg(color=None)`
-
-Sets the background color of the full HTML wrapper.
-
-```python
-chart = sp.build_bar_chart("Sales", labels, values).set_bg("#0f172a")
-chart = sp.build_scatter_chart("Data", x, y).set_bg("white")
-chart = sp.build_pie_chart("Share", labels, values).set_bg(None)  # transparent
-```
-
-Accepts any CSS color string: `"#rrggbb"`, `"rgb(r,g,b)"`, named colors, or
-`None`/`"transparent"`.
-
----
-
-### `set_frame(color=None)`
-
-Sets the SVG canvas background independently of the HTML wrapper. Useful when
-embedding the chart inside a page with its own background.
-
-```python
-chart = sp.build_bar_chart("Title", labels, values).set_frame("transparent")
-```
-
----
-
-### `set_global_background(color)`
-
-Module-level functions that apply a background to **all** charts created after
-the call — useful for notebook sessions with a consistent theme.
-
-<div class="sp-tabs" id="cm-gbg">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('cm-gbg','cm-gbg-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('cm-gbg','cm-gbg-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('cm-gbg','cm-gbg-ts',this)">TypeScript</button>
-</div>
-<div id="cm-gbg-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">sp.set_global_background("#0f172a")   # all subsequent charts use this bg
-chart1 = sp.build_bar_chart(...)
-chart2 = sp.build_scatter_chart(...)
-sp.reset_global_background()          # restore per-chart default</code></pre></div>
-<div id="cm-gbg-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">sp.set_global_background("#0f172a");  // all subsequent charts use this bg
-const chart1 = sp.build_bar_chart(...);
-const chart2 = sp.build_scatter_chart(...);
-sp.reset_global_background();         // restore per-chart default</code></pre></div>
-<div id="cm-gbg-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">sp.set_global_background("#0f172a");  // all subsequent charts use this bg
-const chart1 = sp.build_bar_chart(...);
-const chart2 = sp.build_scatter_chart(...);
-sp.reset_global_background();         // restore per-chart default</code></pre></div>
+<div class="cm-hero">
+<h2>Chart methods & global config</h2>
+<p>Every <code>Chart</code> object returned by SeraPlot supports the same fluent API. Set defaults once with <code>sp.config()</code> and tweak per chart with chainable methods. All methods return a new <code>Chart</code>, so chaining is always safe.</p>
+<div class="cm-pills"><span class="cm-pill">Fluent API</span><span class="cm-pill">Global + per-chart override</span><span class="cm-pill">60+ chart types</span><span class="cm-pill">Plotly-compatible value labels</span></div>
 </div>
 
----
-
-## Grid and axes
-
-### `show_grid()`
-
-Force gridlines on regardless of the `gridlines` parameter used at chart creation.
-
-```python
-chart = sp.build_histogram("Ages", values).show_grid()
-```
-
----
-
-### `hide_grid()`
-
-Force gridlines off regardless of the `gridlines` parameter used at chart creation.
-
-```python
-chart = sp.build_line_chart("Trend", labels, values, gridlines=True).hide_grid()
-```
-
----
-
-### `no_x_axis()`
-
-Removes the X-axis lines, ticks, and labels.
-
-```python
-chart = sp.build_bar_chart("", labels, values).no_x_axis()   # keep Y only
-```
-
----
-
-### `no_y_axis()`
-
-Removes the Y-axis lines, ticks, and labels.
-
-```python
-chart = sp.build_bar_chart("", labels, values).no_y_axis()   # keep X only
-```
-
----
-
-### `no_axes()`
-
-Removes both axes at once.
-
-```python
-chart = sp.build_scatter_chart("", x, y).no_axes()           # remove both axes
-```
-
----
-
-## Labels and text
-
-### `show_labels(position="bottom", labels=None, colors=None)`
-
-Renders a text label on each chart element. `position` can be `"top"`,
-`"bottom"`, `"left"`, or `"right"`.
-
-```python
-# Automatic labels derived from the chart data
-chart = sp.build_bar_chart("Revenue", labels, values).show_labels(position="top")
-
-# Custom label text per element
-chart = sp.build_bar_chart("Revenue", labels, values).show_labels(
-    position="top",
-    labels=["$142k", "$98k", "$210k"],
-    colors=["#22c55e", "#ef4444", "#22c55e"],
-)
-```
-
----
-
-### `no_title()`
-
-Removes the chart title from the rendered output.
-
-```python
-chart = sp.build_pie_chart("Internal label", labels, values).no_title()
-```
-
----
-
-### `no_legend()`
-
-Removes the legend from the rendered output.
-
-```python
-chart = sp.build_grouped_bar("Q1", cats, series).no_legend()
-```
-
----
-
-### `set_font_size(px)`
-
-Override all text sizes in the SVG with a single pixel value.
-
-```python
-chart = sp.build_radar_chart("Skills", labels, values).set_font_size(11)
-```
-
----
-
-## Value labels on bars and markers (new in 2.4.3)
-
-Plotly-style value labels — `text_auto`, `text_position`, `text_angle`, `text_font`,
-`uniform_text`, and `corner_radius_bars`. Works on **every** chart type that emits
-`data-v` attributes (bar variants, lollipop, scatter, line markers, pie, treemap…).
-
-### `text_auto(format=True, position=None, angle=None, font_size=None, color=None)`
-
-Adds value labels on every data element. Format string follows a tiny d3-format
-subset:
-
-| Format | Example | Output |
-|--------|---------|--------|
-| `True` or `""` | `42.0` | `42` |
-| `".0f"` | `42.567` | `43` |
-| `".2f"` | `42.567` | `42.57` |
-| `".2s"` | `42_500_000` | `42.50M` |
-| `".1%"` | `0.853` | `85.3%` |
-| `".2e"` | `42500` | `4.25e+4` |
-
-```python
-chart = sp.bar("Sales", ["Q1", "Q2", "Q3", "Q4"], [42500, 51800, 49200, 63100]).text_auto(".2s")
-chart = sp.bar("Score", labels, values).text_auto(True, position="outside", angle=-45)
-```
-
----
-
-### `text_position(position)`
-
-Where labels render relative to each element:
-
-| Value | Behavior |
-|-------|----------|
-| `"auto"` | Inside if the bar is tall enough, outside otherwise |
-| `"inside"` | Centered inside the bar/marker |
-| `"outside"` | Above (vertical) / right (horizontal) of the bar |
-
-```python
-chart = sp.bar("Population", labels, values).text_auto(".2s").text_position("outside")
-```
-
----
-
-### `text_angle(degrees)`
-
-Rotate every value label.
-
-```python
-chart = sp.bar("Cities", cities, populations).text_auto(".2s").text_angle(-45)
-```
-
----
-
-### `text_font(family=None, size=None, color=None)`
-
-Style value labels independently from the chart's main text.
-
-```python
-chart = (
-    sp.bar("Revenue", labels, values)
-    .text_auto(".2s")
-    .text_font(family="JetBrains Mono", size=12, color="#ffffff")
-)
-```
-
----
-
-### `uniform_text(min_size=8, mode="hide")`
-
-Force every label to share the same minimum size; labels that wouldn't fit are
-either hidden (`"hide"`) or rendered with overflow (`"show"`).
-
-```python
-chart = sp.bar("Long labels", labels, values).text_auto(".2s").uniform_text(min_size=10, mode="hide")
-```
-
----
-
-### `corner_radius_bars(radius)`
-
-Round bar corners. Accepts a pixel value (`int` / `float`) or a percent string
-(`"20%"`, computed from the smaller bar dimension).
-
-```python
-chart = sp.bar("Sales", labels, values).corner_radius_bars(12)        # 12 px
-chart = sp.bar("Sales", labels, values).corner_radius_bars("25%")     # 25% of bar width
-```
-
----
-
-### Combine: chained vs global
-
-```python
-import seraplot as sp
-
-chart = (
-    sp.bar("Quarterly", ["Q1", "Q2", "Q3", "Q4"], [120, 180, 140, 210])
-    .corner_radius_bars(8)
-    .text_auto(".0f", position="outside", color="#1f2937")
-    .uniform_text(min_size=10, mode="hide")
-)
+<div class="cm-toc">
+<a href="#global-config"><span class="cm-ic">1</span><span>Global config</span></a>
+<a href="#themes"><span class="cm-ic">2</span><span>Themes</span></a>
+<a href="#background-frame"><span class="cm-ic">3</span><span>Background & frame</span></a>
+<a href="#grid-axes"><span class="cm-ic">4</span><span>Grid & axes</span></a>
+<a href="#title-legend"><span class="cm-ic">5</span><span>Title & legend</span></a>
+<a href="#typography"><span class="cm-ic">6</span><span>Typography</span></a>
+<a href="#value-labels"><span class="cm-ic">7</span><span>Value labels</span></a>
+<a href="#bar-styling"><span class="cm-ic">8</span><span>Bar styling</span></a>
+<a href="#animation-interactivity"><span class="cm-ic">9</span><span>Animation & interactivity</span></a>
+<a href="#responsive-layout"><span class="cm-ic">10</span><span>Responsive & layout</span></a>
+<a href="#export-download"><span class="cm-ic">11</span><span>Export & download</span></a>
+<a href="#custom-css-/-js"><span class="cm-ic">12</span><span>Custom CSS / JS</span></a>
+<a href="#accessibility-csp"><span class="cm-ic">13</span><span>Accessibility & CSP</span></a>
+<a href="#diff-introspection"><span class="cm-ic">14</span><span>Diff & introspection</span></a>
+<a href="#magic-properties"><span class="cm-ic">15</span><span>Magic properties</span></a>
+</div>
+<div class="cm-section"><span class="cm-sn">1</span><h3>Global config</h3></div>
+
+Set defaults once. <strong>Every chart</strong> created afterwards inherits this configuration automatically.
+
+<table class="cm-table">
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Effect</th></tr></thead>
+<tbody>
+<tr><td><code>font</code></td><td>str</td><td>system</td><td>Font family for every text element</td></tr>
+<tr><td><code>font_size</code></td><td>int</td><td>12</td><td>Base font size in px</td></tr>
+<tr><td><code>title_size</code></td><td>int</td><td>16</td><td>Title font size in px</td></tr>
+<tr><td><code>border_radius</code></td><td>int</td><td>0</td><td>Container border radius (px)</td></tr>
+<tr><td><code>opacity</code></td><td>float</td><td>1.0</td><td>Element opacity 0.0–1.0</td></tr>
+<tr><td><code>responsive</code></td><td>bool</td><td>False</td><td>Auto-resize to container width</td></tr>
+<tr><td><code>animation</code></td><td>bool</td><td>False</td><td>Fade-in animation on chart load</td></tr>
+<tr><td><code>animation_duration</code></td><td>int</td><td>300</td><td>Animation duration in ms</td></tr>
+<tr><td><code>crosshair</code></td><td>bool</td><td>False</td><td>Crosshair lines follow mouse hover</td></tr>
+<tr><td><code>zoom</code></td><td>bool</td><td>False</td><td>Mouse wheel zoom + pan (double-click resets)</td></tr>
+<tr><td><code>tooltip</code></td><td>str</td><td>—</td><td>Tooltip mode</td></tr>
+<tr><td><code>locale</code></td><td>str</td><td>—</td><td>Number formatting locale</td></tr>
+<tr><td><code>thousands_sep</code></td><td>str</td><td>—</td><td>Thousands separator character</td></tr>
+<tr><td><code>margin</code></td><td>int</td><td>0</td><td>Container padding (px)</td></tr>
+<tr><td><code>export_button</code></td><td>bool</td><td>False</td><td>Show download button on each chart</td></tr>
+<tr><td><code>palette</code></td><td>list[int]</td><td>—</td><td>Color palette as hex ints (e.g. <code>[0x6366F1,0xFB7185]</code>)</td></tr>
+<tr><td><code>background</code></td><td>str</td><td>—</td><td>Background color (any CSS color)</td></tr>
+<tr><td><code>gridlines</code></td><td>bool</td><td>False</td><td>Show grid lines in chart</td></tr>
+<tr><td><code>text_auto</code></td><td>bool / str</td><td>False</td><td>Display values on bars/markers (<code>True</code> raw, or d3 format like <code>".2s"</code>)</td></tr>
+<tr><td><code>text_position</code></td><td>str</td><td>"auto"</td><td><code>"auto"</code> / <code>"inside"</code> / <code>"outside"</code></td></tr>
+<tr><td><code>text_angle</code></td><td>int</td><td>0</td><td>Value label rotation (deg)</td></tr>
+<tr><td><code>text_font_size</code></td><td>int</td><td>12</td><td>Max font size for value labels (px)</td></tr>
+<tr><td><code>text_font_color</code></td><td>str</td><td>—</td><td>Value label color</td></tr>
+<tr><td><code>uniform_text_min_size</code></td><td>int</td><td>0</td><td>Minimum px before label is hidden</td></tr>
+<tr><td><code>uniform_text_mode</code></td><td>str</td><td>"hide"</td><td><code>"hide"</code> small labels or <code>"show"</code> overflow</td></tr>
+<tr><td><code>bar_corner_radius</code></td><td>int / str</td><td>0</td><td>Bar corner radius in px or <code>"20%"</code> of bar width</td></tr>
+</tbody>
+</table>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">sp.config(**kwargs)</code><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Apply persistent defaults to all subsequent charts.</div>
+<pre><code class="language-python">import seraplot as sp
 
 sp.config(
-    text_auto=".2s",
-    text_position="outside",
-    text_angle=0,
-    text_font_size=12,
-    text_font_color="#374151",
-    bar_corner_radius=10,
-    uniform_text_min_size=10,
-    uniform_text_mode="hide",
+    font=&quot;Inter&quot;, font_size=12, title_size=16,
+    crosshair=True, zoom=True, animation=True,
+    palette=[0x6366F1, 0xFB7185, 0x10B981],
+    background=&quot;#fafafa&quot;, border_radius=8, margin=16,
 )
-
-every_chart_inherits = sp.bar("Auto", labels, values)
-```
-
----
-
-## Size and scale
-
-### `scale(factor)`
-
-Scales the entire chart (SVG and canvas). Useful to produce thumbnail or
-high-DPI variants.
-
-```python
-small = sp.build_bar_chart("Sales", labels, values).scale(0.5)
-large = sp.build_bar_chart("Sales", labels, values).scale(2.0)
-```
-
----
-
-## Hover
-
-### `no_hover()`
-
-Disables the tooltip engine. All `data-idx` pointer events are removed. Useful
-for static embeds where hover interaction is unwanted.
-
-```python
-chart = sp.build_scatter_chart("Distribution", x, y).no_hover()
-```
-
----
-
-## CSS and JavaScript injection
-
-### `inject_css(css)`
-
-Injects a `<style>` block into the HTML `<head>`. Gives complete access to the
-SVG DOM — override any internal class, change colors, animations, fonts.
-
-SeraPlot's internal CSS classes:
-
-| Class| Target |
-|-----------------|--------|
-| `svg text` | All text in the chart |
-| `.sp-gl` | Gridlines |
-| `.sp-ax-x`, `.sp-ax-y` | Axis lines |
-| `.sp-xt`, `.sp-yt` | Axis tick labels |
-| `.sp-xl`, `.sp-yl` | Axis title labels |
-| `g[data-legend]` | Legend group |
-| `.sp-ttl` | Chart title |
-| `[data-idx]` | Interactive data elements (hover targets) |
-| `rect.sp-bg` | SVG background rect |
-
-```python
-chart = sp.build_bar_chart("Dark theme", labels, values).inject_css("""
-    rect.sp-bg  { fill: #0f172a !important; }
-    svg text    { fill: #e2e8f0 !important; }
-    .sp-gl      { stroke: #1e293b !important; }
-    [data-idx]  { opacity: 0.85; }
-    [data-idx]:hover { filter: brightness(1.3); }
-""")
-```
-
----
-
-### `inject_js(js)`
-
-Injects a `<script>` block before `</body>`. The entire rendered SVG DOM is
-accessible. Use it to add event listeners, animations, or third-party integrations.
-
-```python
-# Highlight every bar on load
-chart = sp.build_bar_chart("Sales", labels, values).inject_js("""
-    document.querySelectorAll('[data-idx]').forEach((el, i) => {
-        setTimeout(() => el.style.opacity = '1', i * 50);
-    });
-""")
-
-# Export SVG on button click
-chart = sp.build_scatter_chart("Data", x, y).inject_js("""
-    const btn = document.createElement('button');
-    btn.textContent = 'Download SVG';
-    btn.onclick = () => {
-        const svg  = document.querySelector('svg').outerHTML;
-        const a    = document.createElement('a');
-        a.href     = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-        a.download = 'chart.svg';
-        a.click();
-    };
-    document.body.appendChild(btn);
-""")
-```
-
----
-
-## Export
-
-### `save(path)`
-
-Writes the HTML to a file.
-
-```python
-chart = sp.build_pie_chart("Share", labels, values)
-chart.save("report/pie.html")
-```
-
----
-
-### `to_svg()`
-
-Extracts the raw SVG string from the HTML.
-
-```python
-svg_string = chart.to_svg()
-```
-
----
-
-### `export_svg(path)`
-
-Writes only the SVG to a file (no HTML wrapper).
-
-```python
-chart.export_svg("chart.svg")
-```
-
----
-
+chart = sp.bar(&quot;Sales&quot;, [&quot;Q1&quot;,&quot;Q2&quot;,&quot;Q3&quot;], [100,150,120])</code></pre>
 </div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">sp.reset_config()</code><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Clear every global setting back to factory defaults.</div>
+<pre><code class="language-python">sp.reset_config()
+chart = sp.bar(&quot;Clean&quot;, labels, values)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">2</span><h3>Themes</h3></div>
 
+Curated presets that combine palette, background and gridlines.
+
+<table class="cm-table"><thead><tr><th>Theme</th><th>Mood</th></tr></thead><tbody><tr><td><code>"dark"</code></td><td>High-contrast dark dashboard</td></tr><tr><td><code>"light"</code></td><td>Soft pastel light backdrop</td></tr><tr><td><code>"scientific"</code></td><td>Publication-style monochrome</td></tr><tr><td><code>"apple"</code></td><td>Glassy iOS-inspired palette</td></tr><tr><td><code>"notion"</code></td><td>Calm Notion-style neutrals</td></tr><tr><td><code>"minimal"</code></td><td>Bare lines, no chrome</td></tr><tr><td><code>"neon"</code></td><td>Vibrant cyberpunk neons</td></tr></tbody></table>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">sp.theme(name)</code><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Apply a preset theme. Combine with <code>sp.config()</code> overrides.</div>
+<pre><code class="language-python">sp.theme(&quot;dark&quot;)
+chart = sp.bar(&quot;Modern&quot;, labels, values)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">sp.themes() -&gt; list[str]</code><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">List every available theme name.</div>
+<pre><code class="language-python">available = sp.themes()
+print(available)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">sp.reset_theme()</code><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Reset back to no theme (default palette, no background, no gridlines).</div>
+<pre><code class="language-python">sp.reset_theme()</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">3</span><h3>Background & frame</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.set_bg(color=None) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Set the HTML wrapper background. Accepts any CSS color or <code>None</code> for transparent.</div>
+<pre><code class="language-python">chart = sp.line(&quot;Trend&quot;, x, y).set_bg(&quot;#0f172a&quot;)
+chart = sp.pie(&quot;Share&quot;, labels, values).set_bg(None)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.set_frame(color=None) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Set the SVG canvas background, independent from the HTML wrapper.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Title&quot;, labels, values).set_frame(&quot;transparent&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">sp.set_global_background(color)</code><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Apply a background to <strong>every</strong> chart created afterwards. Useful for notebooks.</div>
+<pre><code class="language-python">sp.set_global_background(&quot;#0f172a&quot;)
+chart1 = sp.bar(...)
+chart2 = sp.scatter(...)
+sp.reset_global_background()</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">4</span><h3>Grid & axes</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.show_grid() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Force gridlines on (overrides config).</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Data&quot;, labels, values).show_grid()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.hide_grid() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Force gridlines off.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Data&quot;, labels, values, gridlines=True).hide_grid()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.no_x_axis() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Drop X-axis line, ticks and labels.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Y only&quot;, labels, values).no_x_axis()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.no_y_axis() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Drop Y-axis line, ticks and labels.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;X only&quot;, labels, values).no_y_axis()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.no_axes() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Drop both axes at once.</div>
+<pre><code class="language-python">chart = sp.scatter(&quot;Clean&quot;, x, y).no_axes()</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">5</span><h3>Title & legend</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.no_title() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Hide the chart title.</div>
+<pre><code class="language-python">chart = sp.pie(&quot;Internal&quot;, labels, values).no_title()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.no_legend() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Hide the legend (multi-series charts).</div>
+<pre><code class="language-python">chart = sp.grouped_bar(&quot;Q1&quot;, cats, series).no_legend()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.title_size(px: int) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Override title font size for this chart.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Big&quot;, labels, values).title_size(24)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">6</span><h3>Typography</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.font(name: str) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Override the font family for this chart.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Roboto&quot;, labels, values).font(&quot;Roboto&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.set_font_size(px: int) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Override base text size for all axis/legend labels.</div>
+<pre><code class="language-python">chart = sp.radar(&quot;Skills&quot;, labels, values).set_font_size(11)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.text_font(family=None, size=None, color=None) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Style the value labels (text_auto family).</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Styled&quot;, labels, values).text_font(family=&quot;Courier&quot;, size=11, color=&quot;#333&quot;)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">7</span><h3>Value labels</h3></div>
+
+<div class="cm-tip"><strong>Tip:</strong> works on <strong>every</strong> chart that emits <code>data-v</code> attributes — bars, lollipops, scatter, pie, treemap, line markers… Format strings follow d3 / Plotly conventions: <code>".2s"</code>, <code>".0f"</code>, <code>".1%"</code>.</div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.text_auto(format=True, position=None, angle=None, font_size=None, color=None) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Show value labels on every data point. <code>format=True</code> uses raw values; pass a d3 format string for fancy formatting.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Raw&quot;, labels, values).text_auto(True)
+chart = sp.pie(&quot;Pct&quot;, labels, values).text_auto(&quot;.1%&quot;, position=&quot;outside&quot;)
+chart = sp.bar(&quot;SI&quot;, labels, values).text_auto(&quot;.2s&quot;, angle=45, font_size=13)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.text_position(position: str) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Override label placement: <code>"auto"</code>, <code>"inside"</code>, <code>"outside"</code>.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Out&quot;, labels, values).text_position(&quot;outside&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.text_angle(degrees: int) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Rotate value labels by N degrees.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Rot&quot;, labels, values).text_angle(90)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.uniform_text(min_size=8, mode=&quot;hide&quot;) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Force consistent label sizing. <code>mode="hide"</code> drops labels smaller than <code>min_size</code>; <code>"show"</code> allows overflow.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Uniform&quot;, labels, values).uniform_text(min_size=10, mode=&quot;hide&quot;)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">8</span><h3>Bar styling</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.corner_radius_bars(radius) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Round bar corners. Accepts an integer (pixels) or a string like <code>"20%"</code> of the bar width.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Modern&quot;, labels, values).corner_radius_bars(8)
+chart = sp.bar(&quot;Pct&quot;, labels, values).corner_radius_bars(&quot;15%&quot;)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">9</span><h3>Animation & interactivity</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.animate(duration=300) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Fade-in animation. Pass duration in ms.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Fade&quot;, labels, values).animate(500)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.crosshair() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Crosshair lines follow the mouse.</div>
+<pre><code class="language-python">chart = sp.scatter(&quot;XY&quot;, x, y).crosshair()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.zoom() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Mouse-wheel zoom and pan; double-click resets.</div>
+<pre><code class="language-python">chart = sp.line(&quot;Big&quot;, x, y).zoom()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.no_hover() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Disable all hover effects and tooltips.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Static&quot;, labels, values).no_hover()</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">10</span><h3>Responsive & layout</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.responsive() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Auto-resize to the parent container width.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Fluid&quot;, labels, values).responsive()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.border_radius(px: int) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Set the container border radius.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Round&quot;, labels, values).border_radius(12)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.set_margin(px: int) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Set the container padding.</div>
+<pre><code class="language-python">chart = sp.scatter(&quot;Pad&quot;, x, y).set_margin(20)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.set_opacity(value: float) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Set element opacity (0.0–1.0).</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Faded&quot;, labels, values).set_opacity(0.7)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.scale(factor: float) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Scale chart by multiplier (1.0 = normal).</div>
+<pre><code class="language-python">chart = sp.pie(&quot;Big&quot;, labels, values).scale(1.5)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">11</span><h3>Export & download</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.save(path: str)</code><span class="cm-tag cm-tag-export">export</span></div>
+<div class="cm-desc">Write chart HTML to disk.</div>
+<pre><code class="language-python">chart.save(&quot;chart.html&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.show()</code><span class="cm-tag cm-tag-export">export</span></div>
+<div class="cm-desc">Display chart in Jupyter via IPython.display.</div>
+<pre><code class="language-python">sp.scatter(&quot;Data&quot;, x, y).show()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.to_svg() -&gt; str</code><span class="cm-tag cm-tag-export">export</span></div>
+<div class="cm-desc">Return the inner <code>&lt;svg&gt;</code> element as a string.</div>
+<pre><code class="language-python">svg = chart.to_svg()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.export_svg(path: str)</code><span class="cm-tag cm-tag-export">export</span></div>
+<div class="cm-desc">Save the SVG portion to disk.</div>
+<pre><code class="language-python">chart.export_svg(&quot;chart.svg&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.export_png(path: str, scale=2.0)</code><span class="cm-tag cm-tag-export">export</span></div>
+<div class="cm-desc">Export PNG (requires <code>cairosvg</code>).</div>
+<pre><code class="language-python">chart.export_png(&quot;chart.png&quot;, scale=1.5)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.export_button() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Add a download button on the chart.</div>
+<pre><code class="language-python">chart = sp.pie(&quot;Share&quot;, labels, values).export_button()</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">12</span><h3>Custom CSS / JS</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.inject_css(css: str) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Inject extra CSS into the chart's <code>&lt;head&gt;</code>.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;X&quot;, labels, values).inject_css(&quot;.sp-ttl{color:#22c55e}&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.inject_js(js: str) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Inject extra JavaScript at the end of the body.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;X&quot;, labels, values).inject_js(&quot;console.log(&#x27;loaded&#x27;)&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.show_labels(position=&quot;bottom&quot;, labels=None, colors=None) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Render a clickable text label overlay (alternative legend).</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Q&quot;, labels, values).show_labels(
+    &quot;top&quot;, labels=[&quot;Series A&quot;, &quot;Series B&quot;], colors=[&quot;#6366F1&quot;, &quot;#FB7185&quot;]
+)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">13</span><h3>Accessibility & CSP</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.a11y(title=&quot;&quot;, desc=&quot;&quot;) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Inject ARIA <code>title</code> and <code>desc</code> for screen readers.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Sales&quot;, labels, values).a11y(title=&quot;Q1–Q4 revenue&quot;, desc=&quot;Bar chart showing quarterly revenue trends&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.csp_safe() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Move inline scripts to <code>data-*</code> attributes for strict Content-Security-Policy environments.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;CSP&quot;, labels, values).csp_safe()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.downsample(n=2000, method=&quot;lttb&quot;) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Reduce data points using LTTB (Largest-Triangle-Three-Buckets) for very large series.</div>
+<pre><code class="language-python">chart = sp.line(&quot;Big&quot;, xs, ys).downsample(n=1000)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">14</span><h3>Diff & introspection</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.diff(other: Chart) -&gt; str</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Compare two charts and return a JSON diff describing structural and stylistic differences.</div>
+<pre><code class="language-python">a = sp.bar(&quot;v1&quot;, labels, vals1)
+b = sp.bar(&quot;v2&quot;, labels, vals2)
+print(a.diff(b))</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.doc() -&gt; str</code><span class="cm-tag cm-tag-prop">property</span></div>
+<div class="cm-desc">Return the full inline documentation for the chart type.</div>
+<pre><code class="language-python">print(chart.doc())</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">15</span><h3>Magic properties</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.html  # property</code><span class="cm-tag cm-tag-prop">property</span></div>
+<div class="cm-desc">Read the full HTML payload as a string.</div>
+<pre><code class="language-python">src = chart.html</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">len(chart) -&gt; int</code><span class="cm-tag cm-tag-prop">property</span></div>
+<div class="cm-desc">Returns the size of the HTML payload in bytes.</div>
+<pre><code class="language-python">print(len(chart))</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">bool(chart) -&gt; bool</code><span class="cm-tag cm-tag-prop">property</span></div>
+<div class="cm-desc"><code>True</code> when the chart has rendered output.</div>
+<pre><code class="language-python">if chart:
+    chart.show()</code></pre>
+</div>
+</div>
 <div class="lang-fr">
 
-Ces méthodes sont disponibles sur tout objet `Chart` retourné par n'importe quelle fonction SeraPlot. Elles retournent toutes un nouveau `Chart` — elles peuvent donc être chaînées librement.
+<style>
+.cm-hero{margin:1.6em 0 2em;padding:28px 30px;border-radius:14px;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 60%,#312e81 100%);border:1px solid rgba(99,102,241,.35);box-shadow:0 18px 50px -12px rgba(99,102,241,.25),inset 0 1px 0 rgba(255,255,255,.05);position:relative;overflow:hidden}
+.cm-hero::before{content:"";position:absolute;top:-40%;right:-10%;width:60%;height:180%;background:radial-gradient(ellipse at center,rgba(129,140,248,.18) 0%,transparent 65%);pointer-events:none}
+.cm-hero h2{margin:0 0 8px;font-size:22px;color:#f5f3ff;font-weight:700;letter-spacing:-.01em;border:none}
+.cm-hero p{margin:0;color:#cbd5e1;font-size:14.5px;line-height:1.6;max-width:62ch}
+.cm-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;position:relative;z-index:1}
+.cm-pill{padding:4px 11px;background:rgba(99,102,241,.14);border:1px solid rgba(165,180,252,.3);border-radius:999px;font-size:11px;font-weight:600;color:#c7d2fe;letter-spacing:.04em}
 
----
+.cm-toc{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:1.4em 0 2em}
+.cm-toc a{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#0a0f1c;border:1px solid #1e293b;border-radius:10px;color:#cbd5e1;text-decoration:none;font-size:13px;font-weight:600;transition:border-color .15s,transform .15s,color .15s}
+.cm-toc a:hover{border-color:#3730a3;transform:translateY(-2px);color:#e0e7ff}
+.cm-toc .cm-ic{flex-shrink:0;width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#3730a3,#1e1b4b);display:flex;align-items:center;justify-content:center;color:#a5b4fc;font-weight:800;font-size:13px;letter-spacing:-.5px}
 
-## Configuration globale (héritage automatique)
+.cm-section{margin:2.4em 0 .6em;padding:14px 18px;border-radius:10px 10px 0 0;background:linear-gradient(90deg,rgba(99,102,241,.12),rgba(99,102,241,0));border-left:3px solid #6366f1;display:flex;align-items:center;gap:12px}
+.cm-section .cm-sn{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:8px;background:#6366f1;color:#fff;font-weight:800;font-size:14px;letter-spacing:-.5px;box-shadow:0 4px 14px -4px rgba(99,102,241,.55)}
+.cm-section h3{margin:0;font-size:18px;color:#e0e7ff;font-weight:700;border:none;padding:0}
+.cm-section p{margin:0 0 0 auto;color:#94a3b8;font-size:12.5px;font-style:italic}
 
-### `sp.config(**kwargs)`
+.cm-card{margin:1em 0 1.4em;padding:18px 20px;background:#0a0f1c;border:1px solid #1e293b;border-left:3px solid #475569;border-radius:0 10px 10px 0;box-shadow:0 6px 18px -8px rgba(0,0,0,.5)}
+.cm-card.cm-new{border-left-color:#22c55e}
+.cm-card .cm-name{display:flex;align-items:center;gap:10px;margin:0 0 6px;flex-wrap:wrap}
+.cm-card code.cm-fn{font-family:"JetBrains Mono",Consolas,monospace;font-size:14px;color:#a5b4fc;background:rgba(99,102,241,.10);padding:3px 9px;border-radius:6px;font-weight:600}
+.cm-tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
+.cm-tag.cm-tag-new{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.35)}
+.cm-tag.cm-tag-chain{background:rgba(99,102,241,.15);color:#c7d2fe;border:1px solid rgba(99,102,241,.35)}
+.cm-tag.cm-tag-global{background:rgba(251,191,36,.15);color:#fde68a;border:1px solid rgba(251,191,36,.35)}
+.cm-tag.cm-tag-export{background:rgba(244,63,94,.15);color:#fda4af;border:1px solid rgba(244,63,94,.35)}
+.cm-tag.cm-tag-prop{background:rgba(168,85,247,.15);color:#d8b4fe;border:1px solid rgba(168,85,247,.35)}
+.cm-card .cm-desc{margin:6px 0 10px;color:#cbd5e1;font-size:13.5px;line-height:1.6}
+.cm-card pre{margin:0;border-radius:8px;background:#06080f;border:1px solid #131a2a;padding:12px 14px;overflow-x:auto}
+.cm-card pre code{font-size:12.5px;line-height:1.55;color:#e2e8f0;background:none;padding:0}
 
-Définir une fois, **tous les graphiques** créés ensuite héritent automatiquement de la config
-u
-rEvery SeraPlot function returns a `Chart` object — a thin wrapper around a
-complete, standalone HTML string.
+.cm-table{width:100%;border-collapse:collapse;margin:1em 0;font-size:13px;background:#0a0f1c;border-radius:8px;overflow:hidden;border:1px solid #1e293b}
+.cm-table th{background:#0f172a;color:#a5b4fc;padding:10px 14px;text-align:left;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #1e293b}
+.cm-table td{padding:9px 14px;color:#cbd5e1;border-bottom:1px solid #131a2a;vertical-align:top}
+.cm-table tr:last-child td{border-bottom:none}
+.cm-table code{background:#1e293b;padding:1px 6px;border-radius:4px;font-size:12px;color:#e2e8f0}
 
----
+.cm-tip{margin:1em 0;padding:12px 16px;background:rgba(34,197,94,.06);border-left:3px solid #22c55e;border-radius:0 6px 6px 0;color:#cbd5e1;font-size:13.5px;line-height:1.55}
+.cm-tip strong{color:#86efac;font-weight:700}
+.cm-warn{margin:1em 0;padding:12px 16px;background:rgba(251,146,60,.06);border-left:3px solid #fb923c;border-radius:0 6px 6px 0;color:#cbd5e1;font-size:13.5px;line-height:1.55}
+.cm-warn strong{color:#fdba74;font-weight:700}
+</style>
+<div class="cm-hero">
+<h2>Méthodes & configuration globale</h2>
+<p>Tout objet <code>Chart</code> renvoyé par SeraPlot expose la même API fluide. Définis les valeurs par défaut une fois avec <code>sp.config()</code>, ajuste chart par chart avec des méthodes chaînées. Toutes les méthodes retournent un nouveau <code>Chart</code> : le chaînage est toujours sûr.</p>
+<div class="cm-pills"><span class="cm-pill">API fluide</span><span class="cm-pill">Global + override par chart</span><span class="cm-pill">60+ types de graphiques</span><span class="cm-pill">Étiquettes Plotly</span></div>
+</div>
 
-## Properties
+<div class="cm-toc">
+<a href="#configuration-globale"><span class="cm-ic">1</span><span>Configuration globale</span></a>
+<a href="#themes"><span class="cm-ic">2</span><span>Thèmes</span></a>
+<a href="#arriere-plan-cadre"><span class="cm-ic">3</span><span>Arrière-plan & cadre</span></a>
+<a href="#grille-axes"><span class="cm-ic">4</span><span>Grille & axes</span></a>
+<a href="#titre-legende"><span class="cm-ic">5</span><span>Titre & légende</span></a>
+<a href="#typographie"><span class="cm-ic">6</span><span>Typographie</span></a>
+<a href="#etiquettes-de-valeur"><span class="cm-ic">7</span><span>Étiquettes de valeur</span></a>
+<a href="#style-des-barres"><span class="cm-ic">8</span><span>Style des barres</span></a>
+<a href="#animation-interactivite"><span class="cm-ic">9</span><span>Animation & interactivité</span></a>
+<a href="#reactif-mise-en-page"><span class="cm-ic">10</span><span>Réactif & mise en page</span></a>
+<a href="#export-telechargement"><span class="cm-ic">11</span><span>Export & téléchargement</span></a>
+<a href="#css-/-js-personnalises"><span class="cm-ic">12</span><span>CSS / JS personnalisés</span></a>
+<a href="#accessibilite-csp"><span class="cm-ic">13</span><span>Accessibilité & CSP</span></a>
+<a href="#diff-introspection"><span class="cm-ic">14</span><span>Diff & introspection</span></a>
+<a href="#proprietes-magiques"><span class="cm-ic">15</span><span>Propriétés magiques</span></a>
+</div>
+<div class="cm-section"><span class="cm-sn">1</span><h3>Configuration globale</h3></div>
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `html` | `str` | Full self-contained HTML string |
+Définis les défauts une fois. <strong>Tous les graphiques</strong> créés ensuite héritent automatiquement de cette configuration.
 
-```python
-chart = sp.build_bar_chart("Title", labels=["A", "B"], values=[1.0, 2.0])
-print(type(chart.html))   # <class 'str'>
-print(len(chart.html))    # typically 20,000–90,000 bytes
-```
-
----
-
-## Auto-display in Jupyter
-
-Charts display automatically when created inside a Jupyter cell. No `display()` call needed.
-
-To disable:
-
-```python
-sp.set_auto_display(False)
-chart = sp.build_bar_chart("My Chart", labels=["A"], values=[1.0])
-```
-
----
-
-## Manual display
-you don't need anything, you just do make your chart, seraplot has a native display inside
-
----
-
-## Export to file
-
-```python
-chart.save("output.html")
-# or
-with open("output.html", "w", encoding="utf-8") as f:
-    f.write(chart.html)
-```
-
----
-
-## Method chaining
-
-```python
-chart = (
-    sp.build_bar_chart("Sales", labels, values)
-    .set_bg("#1e1e2e")
-    .show_grid()
-    .no_legend()
-    .set_font_size(14)
-)
-```
-
-See **[Chart Methods](chart-methods.md)** for the full reference.ation.
-
-| 
-<div class="lang-fr">
-
-Ces méthodes sont disponibles sur chaque objet `Chart` retourné par n'importe quelle
-fonction SeraPlot. Elles retournent toutes un nouveau `Chart` — elles peuvent donc être
-chaînées librement.
-
----
-
-## Configuration globale (héritage automatique)
-
-### `sp.config(**kwargs)`
-
-Définie une fois, **chaque graphique** créé ensuite hérite automatiquement de la configuration. Aucune surcharge par graphique nécessaire.
-
-| Paramètre | Type | Effet |
-|-----------|------|-------|
-| `font` | str | Police pour tout le texte (ex. `"Inter"`, `"Roboto"`) |
-| `font_size` | int | Taille de police de base en px |
-| `title_size` | int | Taille de police du titre en px |
-| `crosshair` | bool | Réticule qui suit la souris au survol |
-| `zoom` | bool | Zoom molette + déplacement (double-clic réinitialise) |
-| `animation` | bool | Animation d'apparition sur les éléments |
-| `animation_duration` | int | Durée (ms), défaut 300 |
-| `export_button` | bool | Bouton de téléchargement sur chaque graphique |
-| `responsive` | bool | Redimensionnement automatique à la largeur du conteneur |
-| `border_radius` | int | Rayon des coins du conteneur (px) |
-| `margin` | int | Marge intérieure du conteneur (px) |
-| `opacity` | float | Opacité des éléments `0.0`–`1.0` |
-| `background` | str | Couleur de fond (toute couleur CSS) |
-| `gridlines` | bool | Afficher les lignes de grille |
-| `palette` | list[int] | Palette de couleurs en entiers hex (ex. `[0x6366F1, 0xFB7185]`) |
-| `locale` | str | Locale de formatage des nombres |
-| `thousands_sep` | str | Caractère séparateur des milliers |
-| `tooltip` | str | Mode des infobulles |
-| `text_auto` | bool \| str | Affiche les valeurs sur les barres/marqueurs. `True` = valeur brute ; chaîne de format type `".2s"`, `".0f"`, `".1%"` |
-| `text_position` | str | Position des étiquettes : `"auto"`, `"inside"`, `"outside"` |
-| `text_angle` | int | Rotation des étiquettes en degrés |
-| `text_font_size` | int | Taille max des étiquettes en px |
-| `text_font_color` | str | Couleur des étiquettes (toute couleur CSS) |
-| `uniform_text_min_size` | int | Taille minimale en px |
-| `uniform_text_mode` | str | `"hide"` masque les étiquettes qui dépassent, `"show"` les affiche |
-| `bar_corner_radius` | int \| str | Coins arrondis des barres. Px ou `"20%"` de la largeur |
-
-```python
-import seraplot as sp
+<table class="cm-table">
+<thead><tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Effet</th></tr></thead>
+<tbody>
+<tr><td><code>font</code></td><td>str</td><td>system</td><td>Font family for every text element</td></tr>
+<tr><td><code>font_size</code></td><td>int</td><td>12</td><td>Base font size in px</td></tr>
+<tr><td><code>title_size</code></td><td>int</td><td>16</td><td>Title font size in px</td></tr>
+<tr><td><code>border_radius</code></td><td>int</td><td>0</td><td>Container border radius (px)</td></tr>
+<tr><td><code>opacity</code></td><td>float</td><td>1.0</td><td>Element opacity 0.0–1.0</td></tr>
+<tr><td><code>responsive</code></td><td>bool</td><td>False</td><td>Auto-resize to container width</td></tr>
+<tr><td><code>animation</code></td><td>bool</td><td>False</td><td>Fade-in animation on chart load</td></tr>
+<tr><td><code>animation_duration</code></td><td>int</td><td>300</td><td>Animation duration in ms</td></tr>
+<tr><td><code>crosshair</code></td><td>bool</td><td>False</td><td>Crosshair lines follow mouse hover</td></tr>
+<tr><td><code>zoom</code></td><td>bool</td><td>False</td><td>Mouse wheel zoom + pan (double-click resets)</td></tr>
+<tr><td><code>tooltip</code></td><td>str</td><td>—</td><td>Tooltip mode</td></tr>
+<tr><td><code>locale</code></td><td>str</td><td>—</td><td>Number formatting locale</td></tr>
+<tr><td><code>thousands_sep</code></td><td>str</td><td>—</td><td>Thousands separator character</td></tr>
+<tr><td><code>margin</code></td><td>int</td><td>0</td><td>Container padding (px)</td></tr>
+<tr><td><code>export_button</code></td><td>bool</td><td>False</td><td>Show download button on each chart</td></tr>
+<tr><td><code>palette</code></td><td>list[int]</td><td>—</td><td>Color palette as hex ints (e.g. <code>[0x6366F1,0xFB7185]</code>)</td></tr>
+<tr><td><code>background</code></td><td>str</td><td>—</td><td>Background color (any CSS color)</td></tr>
+<tr><td><code>gridlines</code></td><td>bool</td><td>False</td><td>Show grid lines in chart</td></tr>
+<tr><td><code>text_auto</code></td><td>bool / str</td><td>False</td><td>Display values on bars/markers (<code>True</code> raw, or d3 format like <code>".2s"</code>)</td></tr>
+<tr><td><code>text_position</code></td><td>str</td><td>"auto"</td><td><code>"auto"</code> / <code>"inside"</code> / <code>"outside"</code></td></tr>
+<tr><td><code>text_angle</code></td><td>int</td><td>0</td><td>Value label rotation (deg)</td></tr>
+<tr><td><code>text_font_size</code></td><td>int</td><td>12</td><td>Max font size for value labels (px)</td></tr>
+<tr><td><code>text_font_color</code></td><td>str</td><td>—</td><td>Value label color</td></tr>
+<tr><td><code>uniform_text_min_size</code></td><td>int</td><td>0</td><td>Minimum px before label is hidden</td></tr>
+<tr><td><code>uniform_text_mode</code></td><td>str</td><td>"hide"</td><td><code>"hide"</code> small labels or <code>"show"</code> overflow</td></tr>
+<tr><td><code>bar_corner_radius</code></td><td>int / str</td><td>0</td><td>Bar corner radius in px or <code>"20%"</code> of bar width</td></tr>
+</tbody>
+</table>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">sp.config(**kwargs)</code><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Applique des défauts persistants à tous les charts suivants.</div>
+<pre><code class="language-python">import seraplot as sp
 
 sp.config(
-    font="Inter",
-    font_size=14,
-    title_size=22,
-    crosshair=True,
-    zoom=True,
-    animation=True,
-    animation_duration=500,
-    export_button=True,
-    responsive=True,
-    border_radius=12,
-    margin=16,
-    opacity=0.85,
-    background="#0f172a",
-    gridlines=True,
-    palette=[0x818CF8, 0xFB7185, 0x34D399, 0xFBBF24],
+    font=&quot;Inter&quot;, font_size=12, title_size=16,
+    crosshair=True, zoom=True, animation=True,
+    palette=[0x6366F1, 0xFB7185, 0x10B981],
+    background=&quot;#fafafa&quot;, border_radius=8, margin=16,
 )
-
-chart1 = sp.bar("Chiffre d'affaires", ["T1", "T2", "T3"], [120, 180, 140])
-chart2 = sp.line("Tendance", ["Jan", "Fév", "Mar"], [100, 110, 105])
-chart3 = sp.scatter("Corrélation", [1, 2, 3], [10, 20, 30])
-```
-
----
-
-### `sp.reset_config()`
-
-Remet toute la configuration globale aux valeurs par défaut (pas de fond, pas de réticule, pas de zoom, etc.).
-
-```python
-sp.reset_config()
-chart = sp.bar("Propre", labels, values)
-```
-
----
-
-## Surcharge par graphique (chaînage de méthodes)
-
-Surcharger la configuration globale pour des graphiques individuels :
-
-| Méthode | Effet |
-|---------|-------|
-| `.font("Inter")` | Surcharger la police |
-| `.title_size(22)` | Surcharger la taille du titre |
-| `.set_font_size(14)` | Surcharger la taille de base |
-| `.crosshair()` | Activer/ajouter le réticule sur ce graphique |
-| `.zoom()` | Activer/ajouter le zoom sur ce graphique |
-| `.animate(300)` | Ajouter une animation (ms) |
-| `.export_button()` | Ajouter un bouton de téléchargement |
-| `.responsive()` | Rendre responsive |
-| `.border_radius(12)` | Définir le rayon des coins |
-| `.set_opacity(0.85)` | Définir l'opacité des éléments |
-| `.set_margin(16)` | Définir la marge |
-| `.set_bg("#couleur")` | Surcharger le fond |
-| `.text_auto(format=True, position=None, angle=None, font_size=None, color=None)` | Afficher les valeurs (style Plotly) |
-| `.text_position("outside")` | `"auto"` \| `"inside"` \| `"outside"` |
-| `.text_angle(-45)` | Rotation des étiquettes |
-| `.text_font(family="Inter", size=12, color="#fff")` | Style des étiquettes |
-| `.uniform_text(min_size=8, mode="hide")` | Forcer une taille uniforme |
-| `.corner_radius_bars(8)` | Coins arrondis (px ou `"20%"`) |
-
-```python
-import seraplot as sp
-
-sp.config(font="Inter", background="#0f172a", gridlines=True)
-
-chart1 = sp.bar("Défaut", labels, values)
-chart2 = sp.bar("Surcharge", labels, values).font("Roboto").border_radius(20)
-chart3 = sp.line("Propre", dates, values).zoom()
-```
-
----
-
-## Fond et cadre
-
-### `set_bg(color=None)`
-
-Définit la couleur de fond du wrapper HTML complet.
-
-```python
-chart = sp.build_bar_chart("Ventes", labels, values).set_bg("#0f172a")
-chart = sp.build_scatter_c, pour plus d'infos une section Background existe dans cette documentation, ou vous pourrez retrouver plus ample information concernant les arrières plan, mais aussi les thèmes existanthart("Données", x, y).set_bg("white")
-chart = sp.build_pie_chart("Parts", labels, values).set_bg(None)  # transparent
-```
-
-Accepte toute chaîne de couleur CSS : `"#rrggbb"`, `"rgb(r,g,b)"`, couleurs nommées, ou
-`None`/`"transparent"`.
-
----
-
-### `set_frame(color=None)`
-
-Définit le fond du canevas SVG indépendamment du wrapper HTML. Utile lors d'une
-intégration dans une page avec son propre fond.
-
-```python
-chart = sp.build_bar_chart("Titre", labels, values).set_frame("transparent")
-```
-
----
-
-### `set_global_background(color)`
-
-Fonctions au niveau du module qui appliquent un fond à **tous** les graphiques créés
-après l'appel — utile pour les sessions notebook avec un thème cohérent.
-
-<div class="sp-tabs" id="cm-gbg-fr">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('cm-gbg-fr','cm-gbg-fr-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('cm-gbg-fr','cm-gbg-fr-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('cm-gbg-fr','cm-gbg-fr-ts',this)">TypeScript</button>
+chart = sp.bar(&quot;Sales&quot;, [&quot;Q1&quot;,&quot;Q2&quot;,&quot;Q3&quot;], [100,150,120])</code></pre>
 </div>
-<div id="cm-gbg-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">sp.set_global_background("#0f172a")
-chart1 = sp.build_bar_chart(...)
-chart2 = sp.build_scatter_chart(...)
-sp.reset_global_background()</code></pre></div>
-<div id="cm-gbg-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">sp.set_global_background("#0f172a");
-const chart1 = sp.build_bar_chart(...);
-const chart2 = sp.build_scatter_chart(...);
-sp.reset_global_background();</code></pre></div>
-<div id="cm-gbg-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">sp.set_global_background("#0f172a");
-const chart1 = sp.build_bar_chart(...);
-const chart2 = sp.build_scatter_chart(...);
-sp.reset_global_background();</code></pre></div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">sp.reset_config()</code><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Remet chaque paramètre global aux valeurs d'usine.</div>
+<pre><code class="language-python">sp.reset_config()
+chart = sp.bar(&quot;Clean&quot;, labels, values)</code></pre>
 </div>
-
----
-
-## Grille et axes
-
-### `show_grid()`
-
-Force l'affichage des lignes de grille indépendamment du paramètre `gridlines` à la création.
-
-```python
-chart = sp.build_histogram("Âges", values).show_grid()
-```
-
----
-
-### `hide_grid()`
-
-Force la désactivation des lignes de grille indépendamment du paramètre `gridlines` à la création.
-
-```python
-chart = sp.build_line_chart("Tendance", labels, values, gridlines=True).hide_grid()
-```
-
----
-
-### `no_x_axis()`
-
-Supprime les lignes, ticks et étiquettes de l'axe X.
-
-```python
-chart = sp.build_bar_chart("", labels, values).no_x_axis()
-```
-
----
-
-### `no_y_axis()`
-
-Supprime les lignes, ticks et étiquettes de l'axe Y.
-
-```python
-chart = sp.build_bar_chart("", labels, values).no_y_axis()
-```
-
----
-
-### `no_axes()`
-
-Supprime les deux axes en une seule fois.
-
-```python
-chart = sp.build_scatter_chart("", x, y).no_axes()
-```
-
----
-
-## Étiquettes et texte
-
-### `show_labels(position="bottom", labels=None, colors=None)`
-
-Affiche une étiquette texte sur chaque élément du graphique. `position` peut être
-`"top"`, `"bottom"`, `"left"` ou `"right"`.
-
-```python
-chart = sp.build_bar_chart("Chiffre d'affaires", labels, values).show_labels(position="top")
-
-chart = sp.build_bar_chart("Chiffre d'affaires", labels, values).show_labels(
-    position="top",
-    labels=["142 k€", "98 k€", "210 k€"],
-    colors=["#22c55e", "#ef4444", "#22c55e"],
-)
-```
-
----
-
-### `no_title()`
-
-Supprime le titre du rendu.
-
-```python
-chart = sp.build_pie_chart("Étiquette interne", labels, values).no_title()
-```
-
----
-
-### `no_legend()`
-
-Supprime la légende du rendu.
-
-```python
-chart = sp.build_grouped_bar("T1", cats, series).no_legend()
-```
-
----
-
-### `set_font_size(px)`
-
-Surcharge toutes les tailles de texte du SVG avec une seule valeur en pixels.
-
-```python
-chart = sp.build_radar_chart("Compétences", labels, values).set_font_size(11)
-```
-
----
-
-## Étiquettes de valeur sur barres et marqueurs (nouveau en 2.4.3)
-
-Étiquettes de valeur style Plotly — `text_auto`, `text_position`, `text_angle`,
-`text_font`, `uniform_text` et `corner_radius_bars`. Fonctionne sur **chaque** type de
-graphique émettant l'attribut `data-v` (variantes bar, lollipop, scatter, marqueurs de
-ligne, pie, treemap…).
-
-### `text_auto(format=True, position=None, angle=None, font_size=None, color=None)`
-
-Ajoute des étiquettes de valeur sur chaque élément. La chaîne de format suit un
-sous-ensemble minimal du format d3 :
-
-| Format | Exemple | Sortie |
-|--------|---------|--------|
-| `True` ou `""` | `42.0` | `42` |
-| `".0f"` | `42.567` | `43` |
-| `".2f"` | `42.567` | `42.57` |
-| `".2s"` | `42_500_000` | `42.50M` |
-| `".1%"` | `0.853` | `85.3%` |
-| `".2e"` | `42500` | `4.25e+4` |
-
-```python
-chart = sp.bar("Ventes", ["T1", "T2", "T3", "T4"], [42500, 51800, 49200, 63100]).text_auto(".2s")
-chart = sp.bar("Score", labels, values).text_auto(True, position="outside", angle=-45)
-```
-
----
-
-### `text_position(position)`
-
-| Valeur | Comportement |
-|--------|--------------|
-| `"auto"` | À l'intérieur si la barre est assez grande, sinon à l'extérieur |
-| `"inside"` | Centré dans la barre/marqueur |
-| `"outside"` | Au-dessus (vertical) / à droite (horizontal) |
-
-```python
-chart = sp.bar("Population", labels, values).text_auto(".2s").text_position("outside")
-```
-
----
-
-### `text_angle(degrees)`
-
-Rotation de toutes les étiquettes.
-
-```python
-chart = sp.bar("Villes", villes, populations).text_auto(".2s").text_angle(-45)
-```
-
----
-
-### `text_font(family=None, size=None, color=None)`
-
-Style des étiquettes indépendamment du texte principal.
-
-```python
-chart = (
-    sp.bar("CA", labels, values)
-    .text_auto(".2s")
-    .text_font(family="JetBrains Mono", size=12, color="#ffffff")
-)
-```
-
----
-
-### `uniform_text(min_size=8, mode="hide")`
-
-Force chaque étiquette à partager une taille minimale ; les étiquettes qui ne tiennent
-pas sont soit masquées (`"hide"`) soit débordent (`"show"`).
-
-```python
-chart = sp.bar("Étiquettes longues", labels, values).text_auto(".2s").uniform_text(min_size=10, mode="hide")
-```
-
----
-
-### `corner_radius_bars(radius)`
-
-Arrondit les coins des barres. Valeur en pixels (`int` / `float`) ou pourcentage
-(`"20%"`, calculé à partir de la plus petite dimension).
-
-```python
-chart = sp.bar("Ventes", labels, values).corner_radius_bars(12)
-chart = sp.bar("Ventes", labels, values).corner_radius_bars("25%")
-```
-
----
-
-### Combiner : chaînage vs global
-
-```python
-import seraplot as sp
-
-chart = (
-    sp.bar("Trimestres", ["T1", "T2", "T3", "T4"], [120, 180, 140, 210])
-    .corner_radius_bars(8)
-    .text_auto(".0f", position="outside", color="#1f2937")
-    .uniform_text(min_size=10, mode="hide")
-)
-
-sp.config(
-    text_auto=".2s",
-    text_position="outside",
-    text_angle=0,
-    text_font_size=12,
-    text_font_color="#374151",
-    bar_corner_radius=10,
-    uniform_text_min_size=10,
-    uniform_text_mode="hide",
-)
-
-tout_graphique_herite = sp.bar("Auto", labels, values)
-```
-
----
-
-## Taille et échelle
-
-### `scale(factor)`
-
-Met à l'échelle tout le graphique (SVG et canevas). Utile pour produire des miniatures
-ou des variantes haute définition.
-
-```python
-small = sp.build_bar_chart("Ventes", labels, values).scale(0.5)
-large = sp.build_bar_chart("Ventes", labels, values).scale(2.0)
-```
-
----
-
-## Survol
-
-### `no_hover()`
-
-Désactive le moteur d'infobulles. Tous les événements pointeur `data-idx` sont retirés.
-Utile pour des intégrations statiques sans interaction au survol.
-
-```python
-chart = sp.build_scatter_chart("Distribution", x, y).no_hover()
-```
-
----
-
-## Injection CSS et JavaScript
-
-### `inject_css(css)`
-
-Injecte un bloc `<style>` dans le `<head>` du HTML. Donne un accès complet au DOM SVG
-— surcharger n'importe quelle classe interne, changer les couleurs, animations, polices.
-
-Classes CSS internes de SeraPlot :
-
-| Classe | Cible |
-|--------|-------|
-| `svg text` | Tout le texte du graphique |
-| `.sp-gl` | Lignes de grille |
-| `.sp-ax-x`, `.sp-ax-y` | Lignes des axes |
-| `.sp-xt`, `.sp-yt` | Étiquettes des ticks |
-| `.sp-xl`, `.sp-yl` | Titres des axes |
-| `g[data-legend]` | Groupe légende |
-| `.sp-ttl` | Titre du graphique |
-| `[data-idx]` | Éléments interactifs (cibles de survol) |
-| `rect.sp-bg` | Rectangle de fond du SVG |
-
-```python
-chart = sp.build_bar_chart("Thème sombre", labels, values).inject_css("""
-    rect.sp-bg  { fill: #0f172a !important; }
-    svg text    { fill: #e2e8f0 !important; }
-    .sp-gl      { stroke: #1e293b !important; }
-    [data-idx]  { opacity: 0.85; }
-    [data-idx]:hover { filter: brightness(1.3); }
-""")
-```
-
----
-
-### `inject_js(js)`
-
-Injecte un bloc `<script>` avant `</body>`. Tout le DOM SVG rendu est accessible.
-Utilisez-le pour ajouter des écouteurs d'événements, animations ou intégrations tierces.
-
-```python
-chart = sp.build_bar_chart("Ventes", labels, values).inject_js("""
-    document.querySelectorAll('[data-idx]').forEach((el, i) => {
-        setTimeout(() => el.style.opacity = '1', i * 50);
-    });
-""")
-
-chart = sp.build_scatter_chart("Données", x, y).inject_js("""
-    const btn = document.createElement('button');
-    btn.textContent = 'Télécharger SVG';
-    btn.onclick = () => {
-        const svg  = document.querySelector('svg').outerHTML;
-        const a    = document.createElement('a');
-        a.href     = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-        a.download = 'chart.svg';
-        a.click();
-    };
-    document.body.appendChild(btn);
-""")
-```
-
----
-
-## Export
-
-### `save(path)`
-
-Écrit le HTML dans un fichier.
-
-```python
-chart = sp.build_pie_chart("Parts", labels, values)
-chart.save("rapport/pie.html")
-```
-
----
-
-### `to_svg()`
-
-Extrait la chaîne SVG brute du HTML.
-
-```python
-svg_string = chart.to_svg()
-```
-
----
-
-### `export_svg(path)`
-
-Écrit uniquement le SVG dans un fichier (sans le wrapper HTML).
-
-```python
-chart.export_svg("chart.svg")
-```
-
+<div class="cm-section"><span class="cm-sn">2</span><h3>Thèmes</h3></div>
+
+Préréglages combinant palette, fond et grille.
+
+<table class="cm-table"><thead><tr><th>Theme</th><th>Mood</th></tr></thead><tbody><tr><td><code>"dark"</code></td><td>Tableau de bord sombre haut contraste</td></tr><tr><td><code>"light"</code></td><td>Fond clair pastel doux</td></tr><tr><td><code>"scientific"</code></td><td>Style publication monochrome</td></tr><tr><td><code>"apple"</code></td><td>Palette inspirée iOS, glassy</td></tr><tr><td><code>"notion"</code></td><td>Neutres calmes type Notion</td></tr><tr><td><code>"minimal"</code></td><td>Lignes pures, sans décoration</td></tr><tr><td><code>"neon"</code></td><td>Néons cyberpunk vibrants</td></tr></tbody></table>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">sp.theme(name)</code><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Applique un thème prédéfini. Cumulable avec <code>sp.config()</code>.</div>
+<pre><code class="language-python">sp.theme(&quot;dark&quot;)
+chart = sp.bar(&quot;Modern&quot;, labels, values)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">sp.themes() -&gt; list[str]</code><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Liste tous les thèmes disponibles.</div>
+<pre><code class="language-python">available = sp.themes()
+print(available)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">sp.reset_theme()</code><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Revient à aucun thème (palette par défaut, sans fond, sans grille).</div>
+<pre><code class="language-python">sp.reset_theme()</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">3</span><h3>Arrière-plan & cadre</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.set_bg(color=None) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Définit le fond du conteneur HTML. Toute couleur CSS ou <code>None</code> pour transparent.</div>
+<pre><code class="language-python">chart = sp.line(&quot;Trend&quot;, x, y).set_bg(&quot;#0f172a&quot;)
+chart = sp.pie(&quot;Share&quot;, labels, values).set_bg(None)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.set_frame(color=None) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Définit le fond du canvas SVG, indépendant du conteneur HTML.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Title&quot;, labels, values).set_frame(&quot;transparent&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">sp.set_global_background(color)</code><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Applique un fond à <strong>tous</strong> les charts créés ensuite. Utile pour les notebooks.</div>
+<pre><code class="language-python">sp.set_global_background(&quot;#0f172a&quot;)
+chart1 = sp.bar(...)
+chart2 = sp.scatter(...)
+sp.reset_global_background()</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">4</span><h3>Grille & axes</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.show_grid() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Force la grille active (override config).</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Data&quot;, labels, values).show_grid()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.hide_grid() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Force la grille à OFF.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Data&quot;, labels, values, gridlines=True).hide_grid()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.no_x_axis() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Supprime l'axe X (ligne, ticks, labels).</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Y only&quot;, labels, values).no_x_axis()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.no_y_axis() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Supprime l'axe Y (ligne, ticks, labels).</div>
+<pre><code class="language-python">chart = sp.bar(&quot;X only&quot;, labels, values).no_y_axis()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.no_axes() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Supprime les deux axes en même temps.</div>
+<pre><code class="language-python">chart = sp.scatter(&quot;Clean&quot;, x, y).no_axes()</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">5</span><h3>Titre & légende</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.no_title() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Masque le titre.</div>
+<pre><code class="language-python">chart = sp.pie(&quot;Internal&quot;, labels, values).no_title()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.no_legend() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Masque la légende (charts multi-séries).</div>
+<pre><code class="language-python">chart = sp.grouped_bar(&quot;Q1&quot;, cats, series).no_legend()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.title_size(px: int) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Override la taille du titre pour ce chart.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Big&quot;, labels, values).title_size(24)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">6</span><h3>Typographie</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.font(name: str) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Override la police pour ce chart.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Roboto&quot;, labels, values).font(&quot;Roboto&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.set_font_size(px: int) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Override la taille de base de tous les labels.</div>
+<pre><code class="language-python">chart = sp.radar(&quot;Skills&quot;, labels, values).set_font_size(11)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.text_font(family=None, size=None, color=None) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Style les étiquettes de valeur (famille text_auto).</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Styled&quot;, labels, values).text_font(family=&quot;Courier&quot;, size=11, color=&quot;#333&quot;)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">7</span><h3>Étiquettes de valeur</h3></div>
+
+<div class="cm-tip"><strong>Astuce :</strong> fonctionne sur <strong>tous</strong> les charts qui exposent <code>data-v</code> — barres, lollipops, scatter, pie, treemap, marqueurs de ligne… Les formats suivent d3 / Plotly : <code>".2s"</code>, <code>".0f"</code>, <code>".1%"</code>.</div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.text_auto(format=True, position=None, angle=None, font_size=None, color=None) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Affiche les valeurs sur chaque point. <code>format=True</code> = brut ; passe un format d3 pour personnaliser.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Raw&quot;, labels, values).text_auto(True)
+chart = sp.pie(&quot;Pct&quot;, labels, values).text_auto(&quot;.1%&quot;, position=&quot;outside&quot;)
+chart = sp.bar(&quot;SI&quot;, labels, values).text_auto(&quot;.2s&quot;, angle=45, font_size=13)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.text_position(position: str) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Override la position : <code>"auto"</code>, <code>"inside"</code>, <code>"outside"</code>.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Out&quot;, labels, values).text_position(&quot;outside&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.text_angle(degrees: int) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Tourne les étiquettes de N degrés.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Rot&quot;, labels, values).text_angle(90)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.uniform_text(min_size=8, mode=&quot;hide&quot;) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Force une taille uniforme. <code>mode="hide"</code> masque les labels &lt; <code>min_size</code> ; <code>"show"</code> autorise l'overflow.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Uniform&quot;, labels, values).uniform_text(min_size=10, mode=&quot;hide&quot;)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">8</span><h3>Style des barres</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.corner_radius_bars(radius) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Arrondit les coins. Entier (pixels) ou chaîne type <code>"20%"</code> de la largeur de barre.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Modern&quot;, labels, values).corner_radius_bars(8)
+chart = sp.bar(&quot;Pct&quot;, labels, values).corner_radius_bars(&quot;15%&quot;)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">9</span><h3>Animation & interactivité</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.animate(duration=300) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Animation fade-in. Durée en ms.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Fade&quot;, labels, values).animate(500)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.crosshair() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Lignes crosshair qui suivent la souris.</div>
+<pre><code class="language-python">chart = sp.scatter(&quot;XY&quot;, x, y).crosshair()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.zoom() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Zoom molette + pan ; double-clic = reset.</div>
+<pre><code class="language-python">chart = sp.line(&quot;Big&quot;, x, y).zoom()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.no_hover() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Désactive les effets hover et les tooltips.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Static&quot;, labels, values).no_hover()</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">10</span><h3>Réactif & mise en page</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.responsive() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Redimensionnement auto sur la largeur parent.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Fluid&quot;, labels, values).responsive()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.border_radius(px: int) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Définit le rayon des coins du conteneur.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Round&quot;, labels, values).border_radius(12)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.set_margin(px: int) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Définit le padding du conteneur.</div>
+<pre><code class="language-python">chart = sp.scatter(&quot;Pad&quot;, x, y).set_margin(20)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.set_opacity(value: float) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Opacité des éléments (0.0–1.0).</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Faded&quot;, labels, values).set_opacity(0.7)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.scale(factor: float) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Mise à l'échelle (1.0 = normal).</div>
+<pre><code class="language-python">chart = sp.pie(&quot;Big&quot;, labels, values).scale(1.5)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">11</span><h3>Export & téléchargement</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.save(path: str)</code><span class="cm-tag cm-tag-export">export</span></div>
+<div class="cm-desc">Écrit le HTML du chart sur disque.</div>
+<pre><code class="language-python">chart.save(&quot;chart.html&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.show()</code><span class="cm-tag cm-tag-export">export</span></div>
+<div class="cm-desc">Affiche dans Jupyter via IPython.display.</div>
+<pre><code class="language-python">sp.scatter(&quot;Data&quot;, x, y).show()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.to_svg() -&gt; str</code><span class="cm-tag cm-tag-export">export</span></div>
+<div class="cm-desc">Renvoie l'élément <code>&lt;svg&gt;</code> sous forme de chaîne.</div>
+<pre><code class="language-python">svg = chart.to_svg()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.export_svg(path: str)</code><span class="cm-tag cm-tag-export">export</span></div>
+<div class="cm-desc">Sauve la partie SVG sur disque.</div>
+<pre><code class="language-python">chart.export_svg(&quot;chart.svg&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.export_png(path: str, scale=2.0)</code><span class="cm-tag cm-tag-export">export</span></div>
+<div class="cm-desc">Export PNG (nécessite <code>cairosvg</code>).</div>
+<pre><code class="language-python">chart.export_png(&quot;chart.png&quot;, scale=1.5)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.export_button() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Ajoute un bouton de téléchargement.</div>
+<pre><code class="language-python">chart = sp.pie(&quot;Share&quot;, labels, values).export_button()</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">12</span><h3>CSS / JS personnalisés</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.inject_css(css: str) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Injecte du CSS dans le <code>&lt;head&gt;</code> du chart.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;X&quot;, labels, values).inject_css(&quot;.sp-ttl{color:#22c55e}&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.inject_js(js: str) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Injecte du JavaScript en fin de body.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;X&quot;, labels, values).inject_js(&quot;console.log(&#x27;loaded&#x27;)&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.show_labels(position=&quot;bottom&quot;, labels=None, colors=None) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Ajoute des étiquettes textuelles cliquables (légende alternative).</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Q&quot;, labels, values).show_labels(
+    &quot;top&quot;, labels=[&quot;Series A&quot;, &quot;Series B&quot;], colors=[&quot;#6366F1&quot;, &quot;#FB7185&quot;]
+)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">13</span><h3>Accessibilité & CSP</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.a11y(title=&quot;&quot;, desc=&quot;&quot;) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Ajoute <code>title</code> et <code>desc</code> ARIA pour les lecteurs d'écran.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;Sales&quot;, labels, values).a11y(title=&quot;Q1–Q4 revenue&quot;, desc=&quot;Bar chart showing quarterly revenue trends&quot;)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.csp_safe() -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Déplace les scripts inline en attributs <code>data-*</code> pour les environnements CSP strict.</div>
+<pre><code class="language-python">chart = sp.bar(&quot;CSP&quot;, labels, values).csp_safe()</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.downsample(n=2000, method=&quot;lttb&quot;) -&gt; Chart</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Réduit le nombre de points avec LTTB (Largest-Triangle-Three-Buckets) pour les grosses séries.</div>
+<pre><code class="language-python">chart = sp.line(&quot;Big&quot;, xs, ys).downsample(n=1000)</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">14</span><h3>Diff & introspection</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.diff(other: Chart) -&gt; str</code><span class="cm-tag cm-tag-chain">chainable</span></div>
+<div class="cm-desc">Compare deux charts et renvoie un diff JSON décrivant les différences.</div>
+<pre><code class="language-python">a = sp.bar(&quot;v1&quot;, labels, vals1)
+b = sp.bar(&quot;v2&quot;, labels, vals2)
+print(a.diff(b))</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.doc() -&gt; str</code><span class="cm-tag cm-tag-prop">property</span></div>
+<div class="cm-desc">Renvoie la documentation inline complète du type de chart.</div>
+<pre><code class="language-python">print(chart.doc())</code></pre>
+</div>
+<div class="cm-section"><span class="cm-sn">15</span><h3>Propriétés magiques</h3></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">.html  # property</code><span class="cm-tag cm-tag-prop">property</span></div>
+<div class="cm-desc">Lit le HTML complet sous forme de chaîne.</div>
+<pre><code class="language-python">src = chart.html</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">len(chart) -&gt; int</code><span class="cm-tag cm-tag-prop">property</span></div>
+<div class="cm-desc">Renvoie la taille du HTML en octets.</div>
+<pre><code class="language-python">print(len(chart))</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">bool(chart) -&gt; bool</code><span class="cm-tag cm-tag-prop">property</span></div>
+<div class="cm-desc"><code>True</code> si le chart a un rendu.</div>
+<pre><code class="language-python">if chart:
+    chart.show()</code></pre>
 </div>
 
----
-Chaque fonction SeraPlot retourne un objet `Chart` — un wrapper léger autour d'une chaîne HTML complète et autonome.
-
----
-
-## Propriétés
-
-| Propriété | Type | Description |
-|-----------|------|-------------|
-| `html` | `str` | Chaîne HTML complète et autonome |
-
-```python
-chart = sp.build_bar_chart("Titre", labels=["A", "B"], values=[1.0, 2.0])
-print(len(chart.html))    # typiquement 20 000 à 90 000 octets
-```
-
----
-
-## Affichage automatique dans Jupyter
-
-Les graphiques s'affichent automatiquement à la fin d'une cellule Jupyter. Aucun appel à `display()` n'est nécessaire.
-
-Pour désactiver :
-
-```python
-sp.set_auto_display(False)
-```
-
----
-
-## Affichage manuel
-Comme dit au précédemment, vous n'avez aucunement besoin de rien, juste de crée votre chart, Seraplot à une fonction native d'affichage
-
----
-
-## Export vers fichier
-
-```python
-chart.save("sortie.html")
-# ou
-with open("sortie.html", "w", encoding="utf-8") as f:
-    f.write(chart.html)
-```
-
----
-
-## Chaînage de méthodes
-
-```python
-chart = (
-    sp.build_bar_chart("Ventes", labels, values)
-    .set_bg("#1e1e2e")
-    .show_grid()
-    .no_legend()
-    .set_font_size(14)
-)
-```
-
-Voir **[Méthodes du graphique](chart-methods.md)** pour la référence complète.
+</div>
