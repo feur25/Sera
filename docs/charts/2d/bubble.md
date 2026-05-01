@@ -116,29 +116,6 @@ Aliases: `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 
 <div class="sp-variant sp-von" id="bubble-en-basic">
 
-Single-color bubbles where size encodes a third numeric dimension. The simplest form — ideal when you only need to show magnitude on top of a 2D position.
-
-```python
-sp.bubble(
-    title: str,
-    x_values: list[float],
-    y_values: list[float],
-    sizes: list[float],
-    *,
-    variant: str = "basic",
-    color_hex: int = 0x6366F1,
-    min_size: float = 4.0,
-    max_size: float = 40.0,
-    stroke_width: float = 1.5,
-    width: int = 900,
-    height: int = 500,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-    labels: list[str] | None = None,
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic</code> / <code>simple</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="bb-basic">
@@ -279,30 +256,6 @@ chart.show();</code></pre></div>
 
 <div class="sp-variant" id="bubble-en-categorical">
 
-Bubbles colored by `categories` group, with an automatic side legend. The classic Gapminder-style bubble chart. Aliases: `"grouped"`, `"groups"`, `"category"`.
-
-```python
-sp.bubble(
-    title: str,
-    x_values: list[float],
-    y_values: list[float],
-    sizes: list[float],
-    categories: list[str],
-    *,
-    variant: str = "categorical",
-    palette: list[int] | None = None,
-    legend_position: str = "right",
-    labels: list[str] | None = None,
-    min_size: float = 4.0,
-    max_size: float = 40.0,
-    width: int = 900,
-    height: int = 500,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code> / <code>"grouped"</code></span><span><strong>Aliases</strong> <code>category</code> / <code>groups</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="bb-cat">
@@ -433,30 +386,6 @@ chart.show();</code></pre></div>
 
 <div class="sp-variant" id="bubble-en-gradient">
 
-Continuous color mapping driven by a per-point `color_values` array, with an automatic vertical colorbar legend. Use it when color must encode an extra continuous variable (temperature, score, intensity…). Aliases: `"colorscale"`, `"continuous"`, `"scaled"`.
-
-```python
-sp.bubble(
-    title: str,
-    x_values: list[float],
-    y_values: list[float],
-    sizes: list[float],
-    color_values: list[float],
-    *,
-    variant: str = "gradient",
-    color_low: int = 0x6366F1,
-    color_high: int = 0xF43F5E,
-    min_size: float = 4.0,
-    max_size: float = 40.0,
-    labels: list[str] | None = None,
-    width: int = 900,
-    height: int = 500,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code> / <code>"colorscale"</code></span><span><strong>Aliases</strong> <code>continuous</code> / <code>scaled</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="bb-grad">
@@ -585,27 +514,6 @@ chart.show();</code></pre></div>
 
 <div class="sp-variant" id="bubble-en-labeled">
 
-Always-on per-point text labels rendered above each bubble with a halo for legibility. Best on small datasets where every point matters. Aliases: `"labels"`, `"text"`, `"annotated"`.
-
-```python
-sp.bubble(
-    title: str,
-    x_values: list[float],
-    y_values: list[float],
-    sizes: list[float],
-    labels: list[str],
-    *,
-    variant: str = "labeled",
-    categories: list[str] | None = None,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 500,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code> / <code>"text"</code></span><span><strong>Aliases</strong> <code>labels</code> / <code>annotated</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="bb-lbl">
@@ -719,27 +627,6 @@ chart.show();</code></pre></div>
 </div>
 
 <div class="sp-variant" id="bubble-en-outlined">
-
-Hollow rings (no fill) with a thicker stroke — perfect when bubbles overlap heavily and solid fills would hide each other. Aliases: `"hollow"`, `"ring"`, `"open"`.
-
-```python
-sp.bubble(
-    title: str,
-    x_values: list[float],
-    y_values: list[float],
-    sizes: list[float],
-    *,
-    variant: str = "outlined",
-    categories: list[str] | None = None,
-    palette: list[int] | None = None,
-    stroke_width: float = 2.5,
-    width: int = 900,
-    height: int = 500,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outlined"</code> / <code>"hollow"</code></span><span><strong>Aliases</strong> <code>ring</code> / <code>open</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -856,29 +743,6 @@ chart.show();</code></pre></div>
 </div>
 
 <div class="sp-variant" id="bubble-en-negative">
-
-Diverging visualization for **signed** sizes — positive values are filled with `color_high` and negative values are dashed-stroked with `color_low`. The bubble area is mapped from `|size|`, so magnitude is always preserved. Perfect for P&L, residuals, deltas. Aliases: `"signed"`, `"diverging"`.
-
-```python
-sp.bubble(
-    title: str,
-    x_values: list[float],
-    y_values: list[float],
-    sizes: list[float],
-    *,
-    variant: str = "negative",
-    color_low: int = 0xEF4444,
-    color_high: int = 0x10B981,
-    min_size: float = 4.0,
-    max_size: float = 40.0,
-    labels: list[str] | None = None,
-    width: int = 900,
-    height: int = 500,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"negative"</code> / <code>"signed"</code></span><span><strong>Aliases</strong> <code>diverging</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -1077,29 +941,6 @@ Alias : `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 
 <div class="sp-variant sp-von" id="bubble-fr-basic">
 
-Bulles unicolores où la taille encode une troisième dimension numérique. La forme la plus simple — idéale pour afficher l'amplitude sur une position 2D.
-
-```python
-sp.bubble(
-    title: str,
-    x_values: list[float],
-    y_values: list[float],
-    sizes: list[float],
-    *,
-    variant: str = "basic",
-    color_hex: int = 0x6366F1,
-    min_size: float = 4.0,
-    max_size: float = 40.0,
-    stroke_width: float = 1.5,
-    width: int = 900,
-    height: int = 500,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-    labels: list[str] | None = None,
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic</code> / <code>simple</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="bbfr-basic">
@@ -1219,28 +1060,6 @@ chart.show();</code></pre></div>
 
 <div class="sp-variant" id="bubble-fr-categorical">
 
-Bulles colorées selon le groupe `categories`, avec une légende latérale automatique. Le classique diagramme de Gapminder. Alias : `"grouped"`, `"groups"`, `"category"`.
-
-```python
-sp.bubble(
-    title: str,
-    x_values: list[float],
-    y_values: list[float],
-    sizes: list[float],
-    categories: list[str],
-    *,
-    variant: str = "categorical",
-    palette: list[int] | None = None,
-    legend_position: str = "right",
-    labels: list[str] | None = None,
-    width: int = 900,
-    height: int = 500,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"categorical"</code> / <code>"grouped"</code></span><span><strong>Alias</strong> <code>category</code> / <code>groups</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="bbfr-cat">
@@ -1359,27 +1178,6 @@ chart.show();</code></pre></div>
 </div>
 
 <div class="sp-variant" id="bubble-fr-gradient">
-
-Mapping de couleur continue piloté par `color_values`, avec une colorbar verticale automatique. Utilisez cette variante pour encoder une 4ᵉ variable continue (température, score, intensité…). Alias : `"colorscale"`, `"continuous"`, `"scaled"`.
-
-```python
-sp.bubble(
-    title: str,
-    x_values: list[float],
-    y_values: list[float],
-    sizes: list[float],
-    color_values: list[float],
-    *,
-    variant: str = "gradient",
-    color_low: int = 0x6366F1,
-    color_high: int = 0xF43F5E,
-    width: int = 900,
-    height: int = 500,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code> / <code>"colorscale"</code></span><span><strong>Alias</strong> <code>continuous</code> / <code>scaled</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
@@ -1502,27 +1300,6 @@ chart.show();</code></pre></div>
 
 <div class="sp-variant" id="bubble-fr-labeled">
 
-Labels texte permanents par point, rendus au-dessus de chaque bulle avec un halo pour la lisibilité. Idéal sur les petits jeux de données. Alias : `"labels"`, `"text"`, `"annotated"`.
-
-```python
-sp.bubble(
-    title: str,
-    x_values: list[float],
-    y_values: list[float],
-    sizes: list[float],
-    labels: list[str],
-    *,
-    variant: str = "labeled",
-    categories: list[str] | None = None,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 500,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"labeled"</code> / <code>"text"</code></span><span><strong>Alias</strong> <code>labels</code> / <code>annotated</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="bbfr-lbl">
@@ -1635,26 +1412,6 @@ chart.show();</code></pre></div>
 </div>
 
 <div class="sp-variant" id="bubble-fr-outlined">
-
-Cercles creux (sans remplissage) avec un contour épais — parfait lorsque les bulles se chevauchent et que les aplats masqueraient les points derrière. Alias : `"hollow"`, `"ring"`, `"open"`.
-
-```python
-sp.bubble(
-    title: str,
-    x_values: list[float],
-    y_values: list[float],
-    sizes: list[float],
-    *,
-    variant: str = "outlined",
-    categories: list[str] | None = None,
-    stroke_width: float = 2.5,
-    width: int = 900,
-    height: int = 500,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"outlined"</code> / <code>"hollow"</code></span><span><strong>Alias</strong> <code>ring</code> / <code>open</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
@@ -1769,27 +1526,6 @@ chart.show();</code></pre></div>
 </div>
 
 <div class="sp-variant" id="bubble-fr-negative">
-
-Visualisation divergente pour tailles **signées** — positif en `color_high`, négatif en `color_low` avec tirets. L'aire est toujours proportionnelle à `|taille|`. Parfait pour P&L, résidus, deltas. Alias : `"signed"`, `"diverging"`.
-
-```python
-sp.bubble(
-    title: str,
-    x_values: list[float],
-    y_values: list[float],
-    sizes: list[float],
-    *,
-    variant: str = "negative",
-    color_low: int = 0xEF4444,
-    color_high: int = 0x10B981,
-    labels: list[str] | None = None,
-    width: int = 900,
-    height: int = 500,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"negative"</code> / <code>"signed"</code></span><span><strong>Alias</strong> <code>diverging</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 

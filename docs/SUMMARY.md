@@ -20,7 +20,6 @@
   - [Scatter Chart](charts/2d/scatter.md)
   - [Bubble](charts/2d/bubble.md)
   - [Histogram](charts/2d/histogram.md)
-  - [Histogram Overlay](charts/2d/histogram-overlay.md)
   - [Heatmap](charts/2d/heatmap.md)
   - [Pie Chart](charts/2d/pie.md)
   - [Donut Chart](charts/2d/donut.md)

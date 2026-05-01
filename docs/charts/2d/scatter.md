@@ -114,26 +114,6 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-variant sp-von" id="scatter-en-basic">
 
-Single-color markers — the simplest scatter, perfect to inspect raw correlation between two numeric variables.
-
-```python
-import seraplot as sp
-import random
-random.seed(0)
-xs = [random.gauss(0,1) for _ in range(120)]
-ys = [x*0.6 + random.gauss(0,0.45) for x in xs]
-chart = sp.scatter(
-    title="Returns vs Volatility",
-    variant="basic",
-    x_values=xs, y_values=ys,
-    color_hex=0x6366F1,
-    point_size=5.5,
-    x_label="Volatility", y_label="Return",
-    gridlines=True,
-)
-chart.show()
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="scen-basic">
@@ -232,23 +212,6 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-variant" id="scatter-en-categorical">
 
-Color-by-group with a side legend. Use it to compare distributions between categories on the same axes.
-
-```python
-import seraplot as sp
-chart = sp.scatter(
-    title="Iris — Sepal vs Petal",
-    variant="categorical",
-    x_values=[5.1,4.9,7.0,6.4,6.3,5.8],
-    y_values=[1.4,1.4,4.7,4.5,6.0,5.1],
-    categories=["setosa","setosa","versicolor","versicolor","virginica","virginica"],
-    point_size=7.0,
-    x_label="Sepal length", y_label="Petal length",
-    gridlines=True,
-)
-chart.show()
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / grouped / category</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="scen-categorical">
@@ -343,23 +306,6 @@ chart.show();</code></pre></div></div>
 </div>
 
 <div class="sp-variant" id="scatter-en-gradient">
-
-Continuous color mapping driven by a third numeric value, with a vertical colorbar legend.
-
-```python
-import seraplot as sp
-chart = sp.scatter(
-    title="Stars — Mass vs Luminosity",
-    variant="gradient",
-    x_values=[0.3,0.8,1.0,1.5,3.0,8.0,15.0],
-    y_values=[0.01,0.4,1.0,5.0,80.0,3000.0,30000.0],
-    color_values=[3000,4500,5800,6500,8500,15000,28000],
-    color_low=0xef4444, color_high=0x3b82f6,
-    point_size=8.0,
-    x_label="Mass (M☉)", y_label="Luminosity (L☉)",
-)
-chart.show()
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / colorscale / continuous</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -456,23 +402,6 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-variant" id="scatter-en-symbols">
 
-Use distinct marker shapes per category in addition to color — improves readability for color-blind viewers.
-
-```python
-import seraplot as sp
-chart = sp.scatter(
-    title="Penguins — Bill vs Flipper",
-    variant="symbols",
-    x_values=[39.1,46.5,50.0,49.5,38.9,47.5],
-    y_values=[181,217,222,209,184,219],
-    categories=["Adelie","Gentoo","Chinstrap","Chinstrap","Adelie","Gentoo"],
-    point_size=8.0,
-    x_label="Bill length (mm)", y_label="Flipper length (mm)",
-    gridlines=True,
-)
-chart.show()
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"symbols"</code></span><span><strong>Aliases</strong> <code>symbols / shapes / markers</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="scen-symbols">
@@ -567,24 +496,6 @@ chart.show();</code></pre></div></div>
 </div>
 
 <div class="sp-variant" id="scatter-en-labeled">
-
-Always-on text labels above each marker, with a halo for legibility on busy charts.
-
-```python
-import seraplot as sp
-chart = sp.scatter(
-    title="French Cities — Cost vs Quality",
-    variant="labeled",
-    x_values=[2.1,1.8,1.5,1.3,1.1,1.6,1.9,1.4,1.2,2.4],
-    y_values=[8.2,7.8,7.4,7.0,6.5,7.6,7.9,7.2,6.8,8.5],
-    labels=["Paris","Lyon","Marseille","Toulouse","Nice","Nantes","Bordeaux","Lille","Rennes","Strasbourg"],
-    point_size=7.5,
-    color_hex=0x10b981,
-    x_label="Cost index", y_label="Quality of life",
-    gridlines=True,
-)
-chart.show()
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labels / text</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -681,27 +592,6 @@ chart.show();</code></pre></div></div>
 </div>
 
 <div class="sp-variant" id="scatter-en-regression">
-
-Overlay an ordinary least-squares fit (linear or polynomial) and display the equation with R².
-
-```python
-import seraplot as sp
-import random
-random.seed(1)
-xs = [i + random.gauss(0,0.6) for i in range(40)]
-ys = [2.1*x + 4 + random.gauss(0,4.5) for x in xs]
-chart = sp.scatter(
-    title="Linear Trend",
-    variant="regression",
-    x_values=xs, y_values=ys,
-    regression_type="linear",
-    color_hex=0x6366F1, color_high=0xef4444,
-    point_size=5.5,
-    x_label="X", y_label="Y",
-    gridlines=True,
-)
-chart.show()
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"regression"</code></span><span><strong>Aliases</strong> <code>regression / trendline / fit</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -919,26 +809,6 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-variant sp-von" id="scatter-fr-basic">
 
-Marqueurs d'une seule couleur — le scatter le plus simple, idéal pour observer la corrélation brute entre deux variables numériques.
-
-```python
-import seraplot as sp
-import random
-random.seed(0)
-xs = [random.gauss(0,1) for _ in range(120)]
-ys = [x*0.6 + random.gauss(0,0.45) for x in xs]
-chart = sp.scatter(
-    title="Returns vs Volatility",
-    variant="basic",
-    x_values=xs, y_values=ys,
-    color_hex=0x6366F1,
-    point_size=5.5,
-    x_label="Volatility", y_label="Return",
-    gridlines=True,
-)
-chart.show()
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="scfr-basic">
@@ -1037,23 +907,6 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-variant" id="scatter-fr-categorical">
 
-Couleur par groupe avec légende latérale. À utiliser pour comparer les distributions entre catégories sur les mêmes axes.
-
-```python
-import seraplot as sp
-chart = sp.scatter(
-    title="Iris — Sepal vs Petal",
-    variant="categorical",
-    x_values=[5.1,4.9,7.0,6.4,6.3,5.8],
-    y_values=[1.4,1.4,4.7,4.5,6.0,5.1],
-    categories=["setosa","setosa","versicolor","versicolor","virginica","virginica"],
-    point_size=7.0,
-    x_label="Sepal length", y_label="Petal length",
-    gridlines=True,
-)
-chart.show()
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / grouped / category</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="scfr-categorical">
@@ -1148,23 +1001,6 @@ chart.show();</code></pre></div></div>
 </div>
 
 <div class="sp-variant" id="scatter-fr-gradient">
-
-Couleur continue pilotée par une troisième valeur numérique, avec barre de couleur verticale.
-
-```python
-import seraplot as sp
-chart = sp.scatter(
-    title="Stars — Mass vs Luminosity",
-    variant="gradient",
-    x_values=[0.3,0.8,1.0,1.5,3.0,8.0,15.0],
-    y_values=[0.01,0.4,1.0,5.0,80.0,3000.0,30000.0],
-    color_values=[3000,4500,5800,6500,8500,15000,28000],
-    color_low=0xef4444, color_high=0x3b82f6,
-    point_size=8.0,
-    x_label="Mass (M☉)", y_label="Luminosity (L☉)",
-)
-chart.show()
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / colorscale / continuous</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -1261,23 +1097,6 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-variant" id="scatter-fr-symbols">
 
-Formes de marqueurs distinctes par catégorie en plus de la couleur — améliore la lisibilité pour les daltoniens.
-
-```python
-import seraplot as sp
-chart = sp.scatter(
-    title="Penguins — Bill vs Flipper",
-    variant="symbols",
-    x_values=[39.1,46.5,50.0,49.5,38.9,47.5],
-    y_values=[181,217,222,209,184,219],
-    categories=["Adelie","Gentoo","Chinstrap","Chinstrap","Adelie","Gentoo"],
-    point_size=8.0,
-    x_label="Bill length (mm)", y_label="Flipper length (mm)",
-    gridlines=True,
-)
-chart.show()
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"symbols"</code></span><span><strong>Aliases</strong> <code>symbols / shapes / markers</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="scfr-symbols">
@@ -1372,24 +1191,6 @@ chart.show();</code></pre></div></div>
 </div>
 
 <div class="sp-variant" id="scatter-fr-labeled">
-
-Étiquettes textuelles permanentes au-dessus de chaque marqueur, avec halo pour rester lisible.
-
-```python
-import seraplot as sp
-chart = sp.scatter(
-    title="French Cities — Cost vs Quality",
-    variant="labeled",
-    x_values=[2.1,1.8,1.5,1.3,1.1,1.6,1.9,1.4,1.2,2.4],
-    y_values=[8.2,7.8,7.4,7.0,6.5,7.6,7.9,7.2,6.8,8.5],
-    labels=["Paris","Lyon","Marseille","Toulouse","Nice","Nantes","Bordeaux","Lille","Rennes","Strasbourg"],
-    point_size=7.5,
-    color_hex=0x10b981,
-    x_label="Cost index", y_label="Quality of life",
-    gridlines=True,
-)
-chart.show()
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labels / text</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -1486,27 +1287,6 @@ chart.show();</code></pre></div></div>
 </div>
 
 <div class="sp-variant" id="scatter-fr-regression">
-
-Superpose un ajustement par moindres carrés (linéaire ou polynomial) et affiche l'équation avec R².
-
-```python
-import seraplot as sp
-import random
-random.seed(1)
-xs = [i + random.gauss(0,0.6) for i in range(40)]
-ys = [2.1*x + 4 + random.gauss(0,4.5) for x in xs]
-chart = sp.scatter(
-    title="Linear Trend",
-    variant="regression",
-    x_values=xs, y_values=ys,
-    regression_type="linear",
-    color_hex=0x6366F1, color_high=0xef4444,
-    point_size=5.5,
-    x_label="X", y_label="Y",
-    gridlines=True,
-)
-chart.show()
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"regression"</code></span><span><strong>Aliases</strong> <code>regression / trendline / fit</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 

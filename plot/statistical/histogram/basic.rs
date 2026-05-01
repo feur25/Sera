@@ -1,34 +1,9 @@
-use super::common::{sorted, push_b, push_i, push_f2, escape_xml, hex6, Frame, svg_legend_item};
+use super::common::{bin_to_edges, compute_bins};
+use super::config::HistogramConfig;
 use crate::html::hover::slots_to_json;
+use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i, sorted, svg_legend_item, Frame};
 
-pub struct Histogram;
-
-crate::chart_config!(HistogramConfig, 860, 380;
-    struct {
-        pub values: &'a [f64],
-        pub bins: usize,
-        pub color: u32,
-        pub opacity: u8,
-        pub overlay_values: Option<&'a [f64]>,
-        pub overlay_color: u32,
-        pub show_counts: bool,
-        pub count_scale: usize,
-        pub series_names: Option<(&'a str, &'a str)>,
-    }
-    defaults {
-        values: &[],
-        bins: 0,
-        color: 0x6366F1,
-        opacity: 204,
-        overlay_values: None,
-        overlay_color: 0xF43F5E,
-        show_counts: false,
-        count_scale: 1,
-        series_names: None,
-    }
-);
-
-pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
+pub fn render(cfg: &HistogramConfig) -> String {
     if cfg.values.is_empty() { return String::new(); }
     let (mut bin_counts, mut edges) = compute_bins(cfg.values, cfg.bins);
     if cfg.count_scale > 1 { for c in bin_counts.iter_mut() { *c *= cfg.count_scale as u64; } }
@@ -91,24 +66,6 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
             push_b(&mut f.buf, b"</text>");
         }
     }
-    if let Some(ref oc) = overlay_counts {
-        let hx2 = hex6(cfg.overlay_color);
-        let base_idx = n_bins;
-        for (i, &cnt) in oc.iter().enumerate() {
-            if cnt == 0 { continue; }
-            let bh = (cnt as f64 / max_count * f.ph as f64) as i32;
-            let x = f.pl + (i as f64 * bw) as i32;
-            let y = f.pt + f.ph - bh;
-            let w_px = (bw as i32).max(1) - 1;
-            push_b(&mut f.buf, b"<rect data-idx=\""); push_i(&mut f.buf, (base_idx + i) as i32);
-            push_b(&mut f.buf, b"\" data-series=\"1\" x=\""); push_i(&mut f.buf, x);
-            push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, y);
-            push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, w_px);
-            push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, bh);
-            push_b(&mut f.buf, b"\" fill=\"#"); f.buf.extend_from_slice(&hx2);
-            push_b(&mut f.buf, b"\" fill-opacity=\"0.60\" rx=\"2\" stroke=\"#fff\" stroke-width=\"0.4\"/>");
-        }
-    }
     let tick_step = ((n_bins as f64 / 8.0).ceil() as usize).max(1);
     for i in (0..=n_bins).step_by(tick_step) {
         let x = f.pl + (i as f64 * bw) as i32;
@@ -119,53 +76,26 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
         push_f2(&mut f.buf, val);
         push_b(&mut f.buf, b"</text>");
     }
-    if let Some((n0, n1)) = cfg.series_names {
-        let lx = f.w - 130;
-        svg_legend_item(&mut f.buf, 0, n0, cfg.color, lx, f.pt + 5, 16);
-        if cfg.overlay_values.is_some() {
-            svg_legend_item(&mut f.buf, 1, n1, cfg.overlay_color, lx, f.pt + 22, 16);
-        }
-    }
+    let _ = escape_xml;
     let slots_json;
     let json: &str = if auto_hover { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
     f.html(json)
 }
 
-pub fn compute_bins(values: &[f64], n_bins: usize) -> (Vec<u64>, Vec<f64>) {
-    if values.is_empty() { return (vec![], vec![]); }
-    let (min, max) = crate::bindings::utils::simd_ops::find_minmax(values);
-    if !min.is_finite() || !max.is_finite() { return (vec![], vec![]); }
-    let n = if n_bins == 0 {
-        ((values.len() as f64).log2().ceil() as usize + 1).clamp(5, 128)
-    } else {
-        n_bins.clamp(2, 512)
-    };
-    let range = (max - min).max(1e-12);
-    let step = range / n as f64;
-    let inv_step = 1.0 / step;
-    let mut edges = Vec::with_capacity(n + 1);
-    for i in 0..=n { edges.push(min + i as f64 * step); }
-    let mut counts = vec![0u64; n];
-    for &v in values {
-        if !v.is_finite() { continue; }
-        let idx = ((v - min) * inv_step) as usize;
-        counts[idx.min(n - 1)] += 1;
+pub fn render_with_overlay_legend(cfg: &HistogramConfig) -> String {
+    if let Some((n0, n1)) = cfg.series_names {
+        let mut s = render(cfg);
+        if cfg.overlay_values.is_some() {
+            let lx = cfg.width - 130;
+            let mut tmp: Vec<u8> = Vec::new();
+            svg_legend_item(&mut tmp, 0, n0, cfg.color, lx, 36 + 5, 16);
+            svg_legend_item(&mut tmp, 1, n1, cfg.overlay_color, lx, 36 + 22, 16);
+            if let Some(idx) = s.rfind("</svg>") {
+                let extra = String::from_utf8_lossy(&tmp).into_owned();
+                s.insert_str(idx, &extra);
+            }
+        }
+        return s;
     }
-    (counts, edges)
-}
-
-pub fn bin_to_edges(values: &[f64], edges: &[f64]) -> (Vec<u64>, Vec<f64>) {
-    let n = edges.len().saturating_sub(1);
-    let mut counts = vec![0u64; n];
-    if n == 0 { return (counts, edges.to_vec()); }
-    let min = edges[0];
-    let max = *edges.last().unwrap();
-    let range = (max - min).max(1e-12);
-    let step = range / n as f64;
-    for &v in values.iter() {
-        if !v.is_finite() { continue; }
-        let idx = ((v - min) / step) as usize;
-        counts[idx.min(n - 1)] += 1;
-    }
-    (counts, edges.to_vec())
+    render(cfg)
 }

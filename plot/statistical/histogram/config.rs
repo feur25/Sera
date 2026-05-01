@@ -1,0 +1,32 @@
+crate::chart_config!(HistogramConfig, 860, 380;
+    struct {
+        pub variant: super::variant::HistogramVariant,
+        pub values: &'a [f64],
+        pub bins: usize,
+        pub color: u32,
+        pub opacity: u8,
+        pub overlay_values: Option<&'a [f64]>,
+        pub overlay_color: u32,
+        pub show_counts: bool,
+        pub count_scale: usize,
+        pub series_names: Option<(&'a str, &'a str)>,
+        pub categories: &'a [String],
+        pub palette: &'a [u32],
+        pub stroke_width: f64,
+    }
+    defaults {
+        variant: super::variant::HistogramVariant::Basic,
+        values: &[],
+        bins: 0,
+        color: 0x6366F1,
+        opacity: 204,
+        overlay_values: None,
+        overlay_color: 0xF43F5E,
+        show_counts: false,
+        count_scale: 1,
+        series_names: None,
+        categories: &[],
+        palette: &[],
+        stroke_width: 1.0,
+    }
+);

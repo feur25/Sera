@@ -296,9 +296,10 @@ show_regression : bool, optional
 regression_type : str, optional
     Regression type: 'linear', 'polynomial', etc. Default 'linear'.";
 
-pub const DOC_BUILD_HISTOGRAM: &str = "build_histogram(title, values, *, color_hex=0x6366F1, bins=0, show_counts=False, width=860, height=380, x_label='', y_label='Count', gridlines=False, palette=None, background=None, no_x_axis=False, no_y_axis=False) -> Chart
+pub const DOC_BUILD_HISTOGRAM: &str = "build_histogram(title, values, *, variant='basic', bins=0, color_hex=0x6366F1, overlay_values=None, overlay_color_hex=0xF43F5E, color_groups=None, palette=None, series_names=None, show_counts=False, stroke_width=1.0, width=860, height=380, x_label='', y_label='Count', gridlines=False, hover_json='', background=None, no_x_axis=False, no_y_axis=False) -> Chart
 
-Histogram of a numeric distribution.
+Unified histogram entry point. Dispatches by `variant`:
+'basic' | 'horizontal' | 'normalized' | 'cumulative' | 'stacked' | 'overlay' | 'step'.
 
 Parameters
 ----------
@@ -306,30 +307,44 @@ title : str
     Chart title.
 values : list[float]
     Numeric values to bin.
-color_hex : int, optional
-    Bar color as hex integer. Default 0x6366F1.
+variant : str, optional
+    Histogram variant. Default 'basic'.
 bins : int, optional
-    Number of bins. 0 = auto. Default 0.
+    Number of bins. 0 = auto (Sturges). Default 0.
+color_hex : int, optional
+    Primary bar color. Default 0x6366F1.
+overlay_values : list[float] or None, optional
+    Second distribution (used by 'overlay'). Default None.
+overlay_color_hex : int, optional
+    Overlay color. Default 0xF43F5E.
+color_groups : list[str] or None, optional
+    Per-value category labels (used by 'stacked'). Default None.
+palette : list[int] or None, optional
+    Custom color palette (used by 'stacked').
+series_names : list[str] or None, optional
+    Two names for legend (used by 'overlay').
 show_counts : bool, optional
     Show count labels on bars. Default False.
+stroke_width : float, optional
+    Stroke width (used by 'step'). Default 1.0.
 width : int, optional
     Chart width in pixels. Default 860.
 height : int, optional
     Chart height in pixels. Default 380.
 x_label : str, optional
-    X-axis label. Default ''.
+    X-axis label.
 y_label : str, optional
     Y-axis label. Default 'Count'.
 gridlines : bool, optional
     Show gridlines. Default False.
-palette : list[int], optional
-    Custom color palette.
+hover_json : str, optional
+    Hover slot JSON.
 background : str or None, optional
-    Background color. Default None.
+    Background color.
 no_x_axis : bool, optional
-    Hide the X axis. Default False.
+    Hide the X axis.
 no_y_axis : bool, optional
-    Hide the Y axis. Default False.";
+    Hide the Y axis.";
 
 pub const DOC_BUILD_HISTOGRAM_OVERLAY: &str = "build_histogram_overlay(title, values, overlay_values, *, color_hex=0x6366F1, overlay_color_hex=0xF43F5E, bins=0, width=860, height=380, x_label='', y_label='Count', gridlines=False, background=None, no_x_axis=False, no_y_axis=False) -> Chart
 

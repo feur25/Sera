@@ -526,15 +526,29 @@ pub fn build_scatter_chart(input: &str) -> String {
 }
 
 pub fn build_histogram(input: &str) -> String {
+    use crate::plot::statistical::{HistogramConfig, HistogramVariant, render_histogram_html};
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
     let values = a.values.unwrap_or_default();
-    use crate::plot::statistical::{HistogramConfig, render_histogram_html};
+    let overlay = a.overlay.clone().unwrap_or_default();
+    let cats = o.color_groups.clone().unwrap_or_default();
+    let palette = o.pal();
     let hover = o.hj();
+    let sn = o.series_names.clone().unwrap_or_default();
+    let names = if sn.len() >= 2 { Some((sn[0].as_str(), sn[1].as_str())) } else { None };
+    let ref_names: Option<(&str, &str)> = names.as_ref().map(|(a, b)| (*a, *b));
+    let variant = HistogramVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+    let overlay_opt: Option<&[f64]> = if overlay.is_empty() { None } else { Some(&overlay) };
     let html = render_histogram_html(&HistogramConfig {
-        title, values: &values, bins: o.bins.unwrap_or(0) as usize,
+        title, variant, values: &values, bins: o.bins.unwrap_or(0) as usize,
         color: o.color_hex.unwrap_or(0x6366F1),
-        x_label: &o.xl(), y_label: &o.yl(), show_counts: o.show_counts.unwrap_or(false),
+        overlay_color: o.overlay_color_hex.unwrap_or(0xF43F5E),
+        overlay_values: overlay_opt,
+        categories: &cats, palette: &palette,
+        stroke_width: o.stroke_width.unwrap_or(1.0),
+        series_names: ref_names,
+        x_label: &o.xl(), y_label: &o.yl(),
+        show_counts: o.show_counts.unwrap_or(false),
         gridlines: o.grid(), width: o.w(860), height: o.h(380), hover: &hover,
         sort_order: &o.srt(), ..HistogramConfig::default()
     });
@@ -546,13 +560,14 @@ pub fn build_histogram_overlay(input: &str) -> String {
     let title = title_s.as_str();
     let values = a.values.unwrap_or_default();
     let overlay = a.overlay.unwrap_or_default();
-    use crate::plot::statistical::{HistogramConfig, render_histogram_html};
+    use crate::plot::statistical::{HistogramConfig, HistogramVariant, render_histogram_html};
     let hover = o.hj();
     let sn = o.series_names.clone().unwrap_or_default();
     let names = if sn.len() >= 2 { Some((sn[0].as_str(), sn[1].as_str())) } else { None };
     let ref_names: Option<(&str, &str)> = names.as_ref().map(|(a, b)| (*a, *b));
     let html = render_histogram_html(&HistogramConfig {
-        title, values: &values, bins: o.bins.unwrap_or(0) as usize,
+        title, variant: HistogramVariant::Overlay,
+        values: &values, bins: o.bins.unwrap_or(0) as usize,
         color: o.color_hex.unwrap_or(0x6366F1),
         overlay_color: o.overlay_color_hex.unwrap_or(0xF43F5E),
         overlay_values: Some(&overlay),
