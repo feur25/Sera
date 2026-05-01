@@ -27,6 +27,12 @@ pub struct PieConfig<'a> {
     pub subplot_titles: &'a [String],
     pub subplot_cols: usize,
     pub proportional: bool,
+
+    pub center_text: &'a str,
+    pub center_subtext: &'a str,
+    pub secondary_values: &'a [f64],
+    pub secondary_labels: &'a [String],
+    pub pattern: &'a str,
 }
 
 impl<'a> Default for PieConfig<'a> {
@@ -53,6 +59,11 @@ impl<'a> Default for PieConfig<'a> {
             subplot_titles: &[],
             subplot_cols: 0,
             proportional: false,
+            center_text: "",
+            center_subtext: "",
+            secondary_values: &[],
+            secondary_labels: &[],
+            pattern: "",
         }
     }
 }

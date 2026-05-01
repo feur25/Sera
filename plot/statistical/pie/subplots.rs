@@ -1,11 +1,11 @@
+use super::common::{render_pie_svg, PiePiece};
 use super::config::PieConfig;
-use super::basic::{render_pie_svg, PiePiece};
-use crate::plot::statistical::common::{palette_color, push_b, push_i, push_f2, hex6, escape_xml, truncate};
+use crate::plot::statistical::common::{palette_color, push_b, push_i, hex6, escape_xml, truncate};
 
-pub fn render_subplots(cfg: &PieConfig) -> String {
+pub fn render(cfg: &PieConfig) -> String {
     let n_pies = cfg.series.len();
     if n_pies == 0 {
-        return super::basic::render_single(cfg, cfg.donut);
+        return super::basic::render(cfg);
     }
     let labels = cfg.labels.to_vec();
     let label_names: Vec<String> = if labels.is_empty() {
@@ -25,20 +25,10 @@ pub fn render_subplots(cfg: &PieConfig) -> String {
     let h = cfg.height.max(320);
 
     let mut buf = Vec::<u8>::with_capacity(n_pies * n_cats * 380 + 2048);
-    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
-    push_i(&mut buf, w); push_b(&mut buf, b"\" height=\"");
-    push_i(&mut buf, h); push_b(&mut buf, b"\" viewBox=\"0 0 ");
-    push_i(&mut buf, w); push_b(&mut buf, b" ");
-    push_i(&mut buf, h); push_b(&mut buf, b"\">");
-    push_b(&mut buf, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
+    super::common::open_svg(&mut buf, w, h);
 
     let title_h: f64 = if cfg.title.is_empty() { 8.0 } else { 30.0 };
-    if !cfg.title.is_empty() {
-        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, w / 2);
-        push_b(&mut buf, b"\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#e2e8f0\">");
-        escape_xml(&mut buf, cfg.title);
-        push_b(&mut buf, b"</text>");
-    }
+    super::common::write_title(&mut buf, w, cfg.title);
 
     let legend_h: f64 = 30.0;
     let avail_h = h as f64 - title_h - legend_h - 10.0;
@@ -61,7 +51,6 @@ pub fn render_subplots(cfg: &PieConfig) -> String {
         let val_slice: Vec<f64> = s[..n].to_vec();
 
         let pull_empty: Vec<f64> = Vec::new();
-        let pull_ref: &[f64] = &pull_empty;
 
         let radius_scale = if cfg.proportional {
             (totals[pi] / max_total).sqrt().max(0.15)
@@ -79,9 +68,9 @@ pub fn render_subplots(cfg: &PieConfig) -> String {
             draw_legend: false,
             title_top: !sub_title.is_empty(),
             title: sub_title,
-            palette_offset: 0,
+            ..PiePiece::default()
         };
-        render_pie_svg(&mut buf, cfg, &lab_slice, &val_slice, pull_ref, &piece);
+        render_pie_svg(&mut buf, cfg, &lab_slice, &val_slice, &pull_empty, &piece);
     }
 
     let legend_y = (h as f64 - legend_h * 0.5) as i32;

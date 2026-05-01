@@ -102,6 +102,10 @@ Aliases: `sp.pie`, `sp.pie_chart`, `sp.pie_unified`, `sp.pie_family`, `sp.pies`
 <button class="sp-cls-tab" onclick="spCls('pie-en','exploded',this)"><span class="sp-cic">◐</span><span class="sp-clb">Exploded</span></button>
 <button class="sp-cls-tab" onclick="spCls('pie-en','subplots',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Subplots</span></button>
 <button class="sp-cls-tab" onclick="spCls('pie-en','proportional',this)"><span class="sp-cic">◔</span><span class="sp-clb">Proportional</span></button>
+<button class="sp-cls-tab" onclick="spCls('pie-en','semi',this)"><span class="sp-cic">◗</span><span class="sp-clb">Semi</span></button>
+<button class="sp-cls-tab" onclick="spCls('pie-en','kpi',this)"><span class="sp-cic">◉</span><span class="sp-clb">KPI</span></button>
+<button class="sp-cls-tab" onclick="spCls('pie-en','nested',this)"><span class="sp-cic">◎</span><span class="sp-clb">Nested</span></button>
+<button class="sp-cls-tab" onclick="spCls('pie-en','pattern',this)"><span class="sp-cic">▦</span><span class="sp-clb">Pattern</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -748,6 +752,163 @@ chart.show();</code></pre></div>
 </div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/pie-proportional.html"></iframe>
+</div>
+
+<div class="sp-variant" id="pie-en-semi">
+
+A half-circle pie (semicircle / half-pie) — ideal for satisfaction gauges, NPS dashboards, or any composition reading naturally as a horizon arc. Aliases: `"semicircle"`, `"half"`, `"halfpie"`, `"half_pie"`.
+
+```python
+sp.pie(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    variant: str = "semi",
+    inner_radius_ratio: float = 0.45,
+    palette: list[int] | None = None,
+    width: int = 720,
+    height: int = 440,
+) -> Chart
+```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"semi"</code> / <code>"half_pie"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="p-semi">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('p-semi','p-semi-py',this)">Python</button>
+</div>
+<div id="p-semi-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.pie(
+    title="Customer Satisfaction",
+    variant="semi",
+    labels=["Promoters","Passives","Detractors"],
+    values=[68, 22, 10],
+    inner_radius_ratio=0.5,
+)
+chart.show()</code></pre></div>
+</div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/pie-semi.html"></iframe>
+</div>
+
+<div class="sp-variant" id="pie-en-kpi">
+
+A donut with a centered KPI metric — perfect for executive dashboards. The total is auto-formatted (K/M/B) when `center_text` is omitted. Aliases: `"kpi"`, `"center"`, `"indicator"`, `"metric"`.
+
+```python
+sp.pie(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    variant: str = "kpi",
+    center_text: str = "",
+    center_subtext: str = "",
+    inner_radius_ratio: float = 0.62,
+    palette: list[int] | None = None,
+    width: int = 720,
+    height: int = 440,
+) -> Chart
+```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"kpi"</code> / <code>"indicator"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="p-kpi">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('p-kpi','p-kpi-py',this)">Python</button>
+</div>
+<div id="p-kpi-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.pie(
+    title="Q1 Revenue Mix",
+    variant="kpi",
+    labels=["Direct","Partners","Online","Wholesale"],
+    values=[420, 310, 210, 160],
+    center_text="$1.10M",
+    center_subtext="TOTAL REVENUE",
+)
+chart.show()</code></pre></div>
+</div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/pie-kpi.html"></iframe>
+</div>
+
+<div class="sp-variant" id="pie-en-nested">
+
+Two concentric rings sharing the same center — a hierarchical composition (outer = top level, inner = sub-grouping). Pass the secondary ring through `secondary_labels` / `secondary_values`. Aliases: `"concentric"`, `"rings"`, `"double_ring"`, `"multi_ring"`.
+
+```python
+sp.pie(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    variant: str = "nested",
+    secondary_labels: list[str] | None = None,
+    secondary_values: list[float] | None = None,
+    palette: list[int] | None = None,
+    width: int = 720,
+    height: int = 440,
+) -> Chart
+```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"nested"</code> / <code>"concentric"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code>, <code>secondary_values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="p-nest">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('p-nest','p-nest-py',this)">Python</button>
+</div>
+<div id="p-nest-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.pie(
+    title="Sales by Region & Channel",
+    variant="nested",
+    labels=["North","South","East","West"],
+    values=[35, 25, 22, 18],
+    secondary_labels=["Online","Retail"],
+    secondary_values=[58, 42],
+)
+chart.show()</code></pre></div>
+</div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/pie-nested.html"></iframe>
+</div>
+
+<div class="sp-variant" id="pie-en-pattern">
+
+Each slice filled with an SVG pattern (stripes / dots / diagonal / cross) instead of a solid color — useful for high-contrast, print-friendly, or accessibility-oriented compositions. Aliases: `"patterned"`, `"textured"`, `"hatched"`.
+
+```python
+sp.pie(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    variant: str = "pattern",
+    pattern: str = "stripes",
+    palette: list[int] | None = None,
+    width: int = 720,
+    height: int = 440,
+) -> Chart
+```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"pattern"</code> / <code>"hatched"</code></span><span><strong>Patterns</strong> <code>"stripes"</code>, <code>"dots"</code>, <code>"diagonal"</code>, <code>"cross"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-tabs" id="p-pat">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('p-pat','p-pat-py',this)">Python</button>
+</div>
+<div id="p-pat-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+chart = sp.pie(
+    title="Energy Mix 2025",
+    variant="pattern",
+    labels=["Solar","Wind","Hydro","Gas","Coal"],
+    values=[28, 22, 18, 20, 12],
+    pattern="diagonal",
+)
+chart.show()</code></pre></div>
+</div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/pie-pattern.html"></iframe>
 </div>
 
 </div>

@@ -129,6 +129,11 @@ pub struct ChartOpts {
     pub subplot_cols: Option<usize>,
     pub proportional: Option<bool>,
     pub min_label_frac: Option<f64>,
+    pub center_text: Option<String>,
+    pub center_subtext: Option<String>,
+    pub secondary_values: Option<Vec<f64>>,
+    pub secondary_labels: Option<Vec<String>>,
+    pub pattern: Option<String>,
 }
 
 impl ChartOpts {
@@ -719,6 +724,11 @@ pub fn build_pie(input: &str) -> String {
     let series = a.series.clone().unwrap_or_default();
     let pull = o.pull.clone().unwrap_or_default();
     let subplot_titles = o.subplot_titles.clone().unwrap_or_default();
+    let secondary_values = o.secondary_values.clone().unwrap_or_default();
+    let secondary_labels = o.secondary_labels.clone().unwrap_or_default();
+    let center_text = o.center_text.clone().unwrap_or_default();
+    let center_subtext = o.center_subtext.clone().unwrap_or_default();
+    let pattern = o.pattern.clone().unwrap_or_default();
     let hover = o.hj();
     let palette = o.pal();
     let srt = o.srt();
@@ -740,6 +750,11 @@ pub fn build_pie(input: &str) -> String {
         subplot_titles: &subplot_titles,
         subplot_cols: o.subplot_cols.unwrap_or(0),
         proportional: o.proportional.unwrap_or(false),
+        center_text: &center_text,
+        center_subtext: &center_subtext,
+        secondary_values: &secondary_values,
+        secondary_labels: &secondary_labels,
+        pattern: &pattern,
     };
     let html = render_pie_html(&cfg);
     apply(html, &o)
