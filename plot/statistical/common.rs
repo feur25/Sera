@@ -160,7 +160,7 @@ pub fn svg_hgrid(buf: &mut Vec<u8>, x1: i32, x2: i32, y: i32) {
     push_b(buf, b"\" y1=\""); push_i(buf, y);
     push_b(buf, b"\" x2=\""); push_i(buf, x2);
     push_b(buf, b"\" y2=\""); push_i(buf, y);
-    push_b(buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"/>");
+    push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"0.8\" stroke-opacity=\"0.65\" class=\"sp-gl\"/>");
 }
 
 pub fn svg_vgrid(buf: &mut Vec<u8>, x: i32, y1: i32, y2: i32) {
@@ -168,7 +168,7 @@ pub fn svg_vgrid(buf: &mut Vec<u8>, x: i32, y1: i32, y2: i32) {
     push_b(buf, b"\" y1=\""); push_i(buf, y1);
     push_b(buf, b"\" x2=\""); push_i(buf, x);
     push_b(buf, b"\" y2=\""); push_i(buf, y2);
-    push_b(buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"/>");
+    push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"0.8\" stroke-opacity=\"0.65\" class=\"sp-gl\"/>");
 }
 
 pub fn svg_tick_y(buf: &mut Vec<u8>, x: i32, y: i32, val: f64) {

@@ -296,10 +296,11 @@ show_regression : bool, optional
 regression_type : str, optional
     Regression type: 'linear', 'polynomial', etc. Default 'linear'.";
 
-pub const DOC_BUILD_HISTOGRAM: &str = "build_histogram(title, values, *, variant='basic', bins=0, color_hex=0x6366F1, overlay_values=None, overlay_color_hex=0xF43F5E, color_groups=None, palette=None, series_names=None, show_counts=False, stroke_width=1.0, width=860, height=380, x_label='', y_label='Count', gridlines=False, hover_json='', background=None, no_x_axis=False, no_y_axis=False) -> Chart
+pub const DOC_BUILD_HISTOGRAM: &str = "build_histogram(title, values, *, variant='basic', orientation='v', bins=0, gap=2, color_hex=0x6366F1, overlay_values=None, overlay_color_hex=0xF43F5E, color_groups=None, palette=None, series_names=None, show_counts=False, stroke_width=1.0, width=860, height=380, x_label='', y_label='Count', gridlines=False, hover_json='', background=None, no_x_axis=False, no_y_axis=False) -> Chart
 
 Unified histogram entry point. Dispatches by `variant`:
 'basic' | 'horizontal' | 'normalized' | 'cumulative' | 'stacked' | 'overlay' | 'step'.
+Set `orientation='h'` to render any variant horizontally (framework-native).
 
 Parameters
 ----------
@@ -309,20 +310,26 @@ values : list[float]
     Numeric values to bin.
 variant : str, optional
     Histogram variant. Default 'basic'.
+orientation : str, optional
+    'v' (vertical) or 'h' (horizontal). 'h' routes any variant through the
+    horizontal renderer. Default 'v'.
 bins : int, optional
     Number of bins. 0 = auto (Sturges). Default 0.
+gap : int, optional
+    Pixel gap between adjacent bars. Default 2.
 color_hex : int, optional
-    Primary bar color. Default 0x6366F1.
+    Primary bar color. 0 falls back to `palette[0]` then 0x6366F1. Default 0x6366F1.
 overlay_values : list[float] or None, optional
     Second distribution (used by 'overlay'). Default None.
 overlay_color_hex : int, optional
     Overlay color. Default 0xF43F5E.
 color_groups : list[str] or None, optional
-    Per-value category labels (used by 'stacked'). Default None.
+    Per-value category labels. Used by 'stacked' and by 'overlay' to render
+    N series via the `palette`. Default None.
 palette : list[int] or None, optional
-    Custom color palette (used by 'stacked').
+    Custom color palette (used by 'stacked' and N-series 'overlay').
 series_names : list[str] or None, optional
-    Two names for legend (used by 'overlay').
+    Two names for legend (used by classic 2-series 'overlay').
 show_counts : bool, optional
     Show count labels on bars. Default False.
 stroke_width : float, optional

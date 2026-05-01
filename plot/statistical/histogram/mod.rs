@@ -16,7 +16,9 @@ pub use common::{compute_bins, bin_to_edges};
 pub struct Histogram;
 
 pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
-    let v = if cfg.variant == HistogramVariant::Basic && cfg.overlay_values.is_some() {
+    let v = if cfg.orientation == b'h' && cfg.variant != HistogramVariant::Horizontal {
+        HistogramVariant::Horizontal
+    } else if cfg.variant == HistogramVariant::Basic && cfg.overlay_values.is_some() {
         HistogramVariant::Overlay
     } else {
         cfg.variant

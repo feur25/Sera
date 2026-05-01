@@ -42,7 +42,7 @@ pub fn render(cfg: &HistogramConfig) -> String {
 
     for b in 0..n_bins {
         let x = f.pl + (b as f64 * bw_px) as i32;
-        let w_px = (bw_px as i32).max(1) - 1;
+        let w_px = (bw_px as i32 - cfg.gap.max(0)).max(1);
         let mut acc_h: i32 = 0;
         for g in 0..n_groups {
             let cnt = series[g][b];

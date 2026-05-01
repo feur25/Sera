@@ -25,7 +25,7 @@ pub fn render(cfg: &HistogramConfig) -> String {
     for (i, &cnt) in bin_counts.iter().enumerate() {
         let bw = (cnt as f64 / max_count * f.pw as f64) as i32;
         let y = f.pt + (i as f64 * bh) as i32;
-        let h_px = (bh as i32).max(1) - 1;
+        let h_px = (bh as i32 - cfg.gap.max(0)).max(1);
         let x = f.pl;
         push_b(&mut f.buf, b"<rect data-idx=\""); push_i(&mut f.buf, i as i32);
         push_b(&mut f.buf, b"\" data-series=\"0\" data-lbl=\""); push_f2(&mut f.buf, edges[i]); f.buf.extend_from_slice("\u{2013}".as_bytes()); push_f2(&mut f.buf, edges.get(i+1).copied().unwrap_or(edges[i]));

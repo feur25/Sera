@@ -13,6 +13,8 @@ crate::chart_config!(HistogramConfig, 860, 380;
         pub categories: &'a [String],
         pub palette: &'a [u32],
         pub stroke_width: f64,
+        pub gap: i32,
+        pub orientation: u8,
     }
     defaults {
         variant: super::variant::HistogramVariant::Basic,
@@ -28,5 +30,7 @@ crate::chart_config!(HistogramConfig, 860, 380;
         categories: &[],
         palette: &[],
         stroke_width: 1.0,
+        gap: 2,
+        orientation: b'v',
     }
 );

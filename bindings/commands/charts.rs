@@ -539,13 +539,20 @@ pub fn build_histogram(input: &str) -> String {
     let ref_names: Option<(&str, &str)> = names.as_ref().map(|(a, b)| (*a, *b));
     let variant = HistogramVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let overlay_opt: Option<&[f64]> = if overlay.is_empty() { None } else { Some(&overlay) };
+    let orient = if o.orientation.as_deref() == Some("h") { b'h' } else { b'v' };
+    let color = match o.color_hex {
+        Some(0) | None => palette.get(0).copied().unwrap_or(0x6366F1),
+        Some(c) => c,
+    };
     let html = render_histogram_html(&HistogramConfig {
         title, variant, values: &values, bins: o.bins.unwrap_or(0) as usize,
-        color: o.color_hex.unwrap_or(0x6366F1),
+        color,
         overlay_color: o.overlay_color_hex.unwrap_or(0xF43F5E),
         overlay_values: overlay_opt,
         categories: &cats, palette: &palette,
         stroke_width: o.stroke_width.unwrap_or(1.0),
+        gap: o.gap.unwrap_or(2),
+        orientation: orient,
         series_names: ref_names,
         x_label: &o.xl(), y_label: &o.yl(),
         show_counts: o.show_counts.unwrap_or(false),

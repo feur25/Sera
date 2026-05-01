@@ -61,7 +61,7 @@ pub fn render(cfg: &HistogramConfig) -> String {
             let bh = (cnt as f64 / max_count * f.ph as f64) as i32;
             let x = f.pl + (i as f64 * bw_px) as i32;
             let y = f.pt + f.ph - bh;
-            let w_px = (bw_px as i32).max(1) - 1;
+            let w_px = (bw_px as i32 - cfg.gap.max(0)).max(1);
             push_b(&mut f.buf, b"<rect data-idx=\""); push_i(&mut f.buf, (si * n_bins + i) as i32);
             push_b(&mut f.buf, b"\" data-series=\""); push_i(&mut f.buf, si as i32);
             push_b(&mut f.buf, b"\" data-lbl=\""); escape_xml(&mut f.buf, name);
