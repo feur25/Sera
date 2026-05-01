@@ -124,6 +124,11 @@ pub struct ChartOpts {
     pub point_size: Option<f64>,
     pub symbol: Option<String>,
     pub symbols: Option<Vec<String>>,
+    pub pull: Option<Vec<f64>>,
+    pub subplot_titles: Option<Vec<String>>,
+    pub subplot_cols: Option<usize>,
+    pub proportional: Option<bool>,
+    pub min_label_frac: Option<f64>,
 }
 
 impl ChartOpts {
@@ -668,12 +673,17 @@ pub fn build_pie_chart(input: &str) -> String {
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
-    use crate::plot::statistical::{PieConfig, render_pie_html};
+    use crate::plot::statistical::{PieConfig, PieVariant, render_pie_html};
     let hover = o.hj();
+    let pull = o.pull.clone().unwrap_or_default();
     let html = render_pie_html(&PieConfig {
+        variant: PieVariant::Basic,
         title, labels: &labels, values: &values, palette: &o.pal(),
         show_pct: o.show_pct.unwrap_or(true), sort_order: &o.srt(),
-        width: o.w(720), height: o.h(440), hover: &hover, ..PieConfig::default()
+        width: o.w(720), height: o.h(440), hover: &hover,
+        pull: &pull,
+        min_label_frac: o.min_label_frac.unwrap_or(0.04),
+        ..PieConfig::default()
     });
     apply(html, &o)
 }
@@ -683,15 +693,55 @@ pub fn build_donut_chart(input: &str) -> String {
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
-    use crate::plot::statistical::{PieConfig, render_pie_html};
+    use crate::plot::statistical::{PieConfig, PieVariant, render_pie_html};
     let hover = o.hj();
+    let pull = o.pull.clone().unwrap_or_default();
     let html = render_pie_html(&PieConfig {
+        variant: PieVariant::Donut,
         title, labels: &labels, values: &values, palette: &o.pal(),
         show_pct: o.show_pct.unwrap_or(true), sort_order: &o.srt(),
         width: o.w(720), height: o.h(440), hover: &hover,
         donut: o.inner_radius_ratio.unwrap_or(0.55).clamp(0.0, 0.9),
+        pull: &pull,
+        min_label_frac: o.min_label_frac.unwrap_or(0.04),
         ..PieConfig::default()
     });
+    apply(html, &o)
+}
+
+pub fn build_pie(input: &str) -> String {
+    use crate::plot::statistical::{PieConfig, PieVariant, render_pie_html};
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let variant = PieVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+    let labels = a.labels.clone().unwrap_or_default();
+    let values = a.values.clone().unwrap_or_default();
+    let series = a.series.clone().unwrap_or_default();
+    let pull = o.pull.clone().unwrap_or_default();
+    let subplot_titles = o.subplot_titles.clone().unwrap_or_default();
+    let hover = o.hj();
+    let palette = o.pal();
+    let srt = o.srt();
+    let lp = o.lp();
+
+    let cfg = PieConfig {
+        variant, title,
+        x_label: "", y_label: "",
+        gridlines: false, sort_order: &srt,
+        hover: &hover, legend_position: &lp,
+        width: o.w(720), height: o.h(440),
+        labels: &labels, values: &values,
+        donut: o.inner_radius_ratio.unwrap_or(0.0).clamp(0.0, 0.9),
+        show_pct: o.show_pct.unwrap_or(true),
+        min_label_frac: o.min_label_frac.unwrap_or(0.04),
+        palette: &palette,
+        pull: &pull,
+        series: &series,
+        subplot_titles: &subplot_titles,
+        subplot_cols: o.subplot_cols.unwrap_or(0),
+        proportional: o.proportional.unwrap_or(false),
+    };
+    let html = render_pie_html(&cfg);
     apply(html, &o)
 }
 

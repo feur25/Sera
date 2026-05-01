@@ -17,6 +17,7 @@ macro_rules! for_each_json_chart_fn {
         $mac!(build_stacked_bar,         "buildStackedBar");
         $mac!(build_heatmap,             "buildHeatmap");
         $mac!(build_pie_chart,           "buildPieChart");
+        $mac!(build_pie,                 "buildPie");
         $mac!(build_donut_chart,         "buildDonutChart");
         $mac!(build_boxplot,             "buildBoxplot");
         $mac!(build_violin,              "buildViolin");
@@ -103,8 +104,11 @@ pub const CHART_ALIASES: &[(&str, &str)] = &[
     ("histograms",     "build_histogram"),
     ("histogram_family","build_histogram"),
     ("histogram_unified","build_histogram"),
-    ("pie",            "build_pie_chart"),
+    ("pie",            "build_pie"),
     ("pie_chart",      "build_pie_chart"),
+    ("pie_unified",    "build_pie"),
+    ("pie_family",     "build_pie"),
+    ("pies",           "build_pie"),
     ("donut",          "build_donut_chart"),
     ("donut_chart",    "build_donut_chart"),
     ("heatmap",        "build_heatmap"),
