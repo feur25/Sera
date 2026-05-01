@@ -1,64 +1,81 @@
-use super::common::{bin_to_edges, compute_bins};
+use super::common::{bin_to_edges, compute_bins, group_indices};
 use super::config::HistogramConfig;
 use crate::html::hover::slots_to_json;
-use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i, svg_legend_item, Frame};
+use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i, svg_legend_item, Frame};
 
 pub fn render(cfg: &HistogramConfig) -> String {
     if cfg.values.is_empty() { return String::new(); }
-    let (a_counts, edges) = compute_bins(cfg.values, cfg.bins);
-    let n_bins = a_counts.len();
+    let (_, edges) = compute_bins(cfg.values, cfg.bins);
+    let n_bins = edges.len().saturating_sub(1);
     if n_bins == 0 { return String::new(); }
-    let b_counts = match cfg.overlay_values {
-        Some(v) => bin_to_edges(v, &edges).0,
-        None => vec![0u64; n_bins],
-    };
-    let max_count = a_counts.iter().chain(b_counts.iter()).cloned().max().unwrap_or(1).max(1) as f64;
 
-    let has_legend = cfg.series_names.is_some();
-    let legend_w = if has_legend { 130 } else { 20 };
-    let pad_l: i32 = 52;
+    let mut series: Vec<(String, Vec<u64>, u32)> = Vec::new();
+
+    if !cfg.categories.is_empty() {
+        let n = cfg.values.len();
+        let (groups, idx) = group_indices(cfg.categories, n);
+        let n_groups = groups.len().max(1);
+        let mut buckets: Vec<Vec<f64>> = vec![Vec::new(); n_groups];
+        for i in 0..n {
+            let gi = if i < idx.len() { idx[i] } else { 0 };
+            buckets[gi.min(n_groups - 1)].push(cfg.values[i]);
+        }
+        for (gi, name) in groups.iter().enumerate() {
+            let counts = bin_to_edges(&buckets[gi], &edges).0;
+            series.push((name.clone(), counts, palette_color(cfg.palette, gi)));
+        }
+    } else if let Some(ov) = cfg.overlay_values {
+        let a = bin_to_edges(cfg.values, &edges).0;
+        let b = bin_to_edges(ov, &edges).0;
+        let (n0, n1) = match cfg.series_names {
+            Some((a, b)) => (a.to_string(), b.to_string()),
+            None => ("A".to_string(), "B".to_string()),
+        };
+        series.push((n0, a, cfg.color));
+        series.push((n1, b, cfg.overlay_color));
+    } else {
+        let a = bin_to_edges(cfg.values, &edges).0;
+        let name = cfg.series_names.map(|(a, _)| a.to_string()).unwrap_or_default();
+        series.push((name, a, cfg.color));
+    }
+
+    let max_count = series.iter().flat_map(|s| s.1.iter().copied()).max().unwrap_or(1).max(1) as f64;
+    let n_series = series.len();
+    let has_legend = n_series > 1 || cfg.series_names.is_some();
+    let legend_w = if has_legend { 140 } else { 20 };
+    let pad_l: i32 = 56;
     let pad_r: i32 = legend_w;
     let plot_w = cfg.width - pad_l - pad_r;
     let bw_px = plot_w as f64 / n_bins as f64;
-    let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, pad_l, 36, 46, pad_r, n_bins * 320 + 2048);
+    let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, pad_l, 40, 50, pad_r, n_bins * n_series * 360 + 2048);
     f.open(cfg.title, false);
     f.y_grid_int(5, max_count, cfg.gridlines);
     f.axes(cfg.x_label, cfg.y_label);
 
-    let hx_a = hex6(cfg.color);
-    let hx_b = hex6(cfg.overlay_color);
+    let opacity = if n_series >= 3 { "0.45" } else { "0.55" };
 
-    for (i, &cnt) in a_counts.iter().enumerate() {
-        let bh = (cnt as f64 / max_count * f.ph as f64) as i32;
-        let x = f.pl + (i as f64 * bw_px) as i32;
-        let y = f.pt + f.ph - bh;
-        let w_px = (bw_px as i32).max(1) - 1;
-        push_b(&mut f.buf, b"<rect data-idx=\""); push_i(&mut f.buf, i as i32);
-        push_b(&mut f.buf, b"\" data-series=\"0\" data-lbl=\""); push_f2(&mut f.buf, edges[i]); f.buf.extend_from_slice("\u{2013}".as_bytes()); push_f2(&mut f.buf, edges.get(i+1).copied().unwrap_or(edges[i]));
-        push_b(&mut f.buf, b"\" data-kv-Count=\""); push_i(&mut f.buf, cnt as i32);
-        push_b(&mut f.buf, b"\" x=\""); push_i(&mut f.buf, x);
-        push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, y);
-        push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, w_px);
-        push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, bh);
-        push_b(&mut f.buf, b"\" fill=\"#"); f.buf.extend_from_slice(&hx_a);
-        push_b(&mut f.buf, b"\" fill-opacity=\"0.55\" stroke=\"#fff\" stroke-width=\"0.4\"/>");
-    }
-    for (i, &cnt) in b_counts.iter().enumerate() {
-        if cnt == 0 { continue; }
-        let bh = (cnt as f64 / max_count * f.ph as f64) as i32;
-        let x = f.pl + (i as f64 * bw_px) as i32;
-        let y = f.pt + f.ph - bh;
-        let w_px = (bw_px as i32).max(1) - 1;
-        let base_idx = n_bins;
-        push_b(&mut f.buf, b"<rect data-idx=\""); push_i(&mut f.buf, (base_idx + i) as i32);
-        push_b(&mut f.buf, b"\" data-series=\"1\" data-lbl=\""); push_f2(&mut f.buf, edges[i]); f.buf.extend_from_slice("\u{2013}".as_bytes()); push_f2(&mut f.buf, edges.get(i+1).copied().unwrap_or(edges[i]));
-        push_b(&mut f.buf, b"\" data-kv-Count=\""); push_i(&mut f.buf, cnt as i32);
-        push_b(&mut f.buf, b"\" x=\""); push_i(&mut f.buf, x);
-        push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, y);
-        push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, w_px);
-        push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, bh);
-        push_b(&mut f.buf, b"\" fill=\"#"); f.buf.extend_from_slice(&hx_b);
-        push_b(&mut f.buf, b"\" fill-opacity=\"0.55\" stroke=\"#fff\" stroke-width=\"0.4\"/>");
+    for (si, (name, counts, color)) in series.iter().enumerate() {
+        let hx = hex6(*color);
+        for (i, &cnt) in counts.iter().enumerate() {
+            if cnt == 0 { continue; }
+            let bh = (cnt as f64 / max_count * f.ph as f64) as i32;
+            let x = f.pl + (i as f64 * bw_px) as i32;
+            let y = f.pt + f.ph - bh;
+            let w_px = (bw_px as i32).max(1) - 1;
+            push_b(&mut f.buf, b"<rect data-idx=\""); push_i(&mut f.buf, (si * n_bins + i) as i32);
+            push_b(&mut f.buf, b"\" data-series=\""); push_i(&mut f.buf, si as i32);
+            push_b(&mut f.buf, b"\" data-lbl=\""); escape_xml(&mut f.buf, name);
+            push_b(&mut f.buf, b"\" data-kv-Range=\""); push_f2(&mut f.buf, edges[i]); f.buf.extend_from_slice("\u{2013}".as_bytes()); push_f2(&mut f.buf, edges.get(i+1).copied().unwrap_or(edges[i]));
+            push_b(&mut f.buf, b"\" data-kv-Count=\""); push_i(&mut f.buf, cnt as i32);
+            push_b(&mut f.buf, b"\" x=\""); push_i(&mut f.buf, x);
+            push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, y);
+            push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, w_px);
+            push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, bh);
+            push_b(&mut f.buf, b"\" fill=\"#"); f.buf.extend_from_slice(&hx);
+            push_b(&mut f.buf, b"\" fill-opacity=\""); f.buf.extend_from_slice(opacity.as_bytes());
+            push_b(&mut f.buf, b"\" stroke=\"#"); f.buf.extend_from_slice(&hx);
+            push_b(&mut f.buf, b"\" stroke-opacity=\"0.9\" stroke-width=\"1\"/>");
+        }
     }
 
     let tick_step = ((n_bins as f64 / 8.0).ceil() as usize).max(1);
@@ -72,12 +89,12 @@ pub fn render(cfg: &HistogramConfig) -> String {
         push_b(&mut f.buf, b"</text>");
     }
 
-    if let Some((n0, n1)) = cfg.series_names {
+    if has_legend {
         let lx = cfg.width - legend_w + 10;
-        svg_legend_item(&mut f.buf, 0, n0, cfg.color, lx, f.pt + 6, 18);
-        svg_legend_item(&mut f.buf, 1, n1, cfg.overlay_color, lx, f.pt + 28, 18);
+        for (si, (name, _, color)) in series.iter().enumerate() {
+            svg_legend_item(&mut f.buf, si as i32, name, *color, lx, f.pt + 6 + (si as i32) * 22, 18);
+        }
     }
-    let _ = escape_xml;
 
     let slots_json;
     let json: &str = if cfg.hover.is_empty() { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };

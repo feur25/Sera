@@ -335,9 +335,9 @@ macro_rules! impl_python_bindings {
             if let Ok(f) = val.extract::<f64>() { return serde_json::json!(f); }
             if let Ok(s) = val.extract::<String>() { return serde_json::Value::String(s); }
             if let Ok(list) = val.extract::<Vec<Vec<f64>>>() { return serde_json::json!(list); }
+            if let Ok(list) = val.extract::<Vec<i64>>() { return serde_json::json!(list); }
             if let Ok(list) = val.extract::<Vec<f64>>() { return serde_json::json!(list); }
             if let Ok(list) = val.extract::<Vec<String>>() { return serde_json::json!(list); }
-            if let Ok(list) = val.extract::<Vec<i64>>() { return serde_json::json!(list); }
             serde_json::Value::Null
         }
 
