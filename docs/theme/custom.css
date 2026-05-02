@@ -734,28 +734,25 @@ body.sp-body-bottom .content {
 .section li a {
   font-size: 13px;
 
-.sp-rpg {
-  display: flex;
+.sp-rpg-hdr {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 4px;
-  padding: 8px 4px 4px;
-  border-top: 1px solid #1e293b;
-  margin-top: 4px;
-  flex-shrink: 0;
+  gap: 3px;
+  margin-left: 8px;
 }
 .sp-rpg-prev,
 .sp-rpg-next {
-  background: #1e293b;
-  border: 1px solid #2d3a52;
-  color: #64748b;
-  width: 18px;
-  height: 18px;
-  border-radius: 4px;
+  background: rgba(99,102,241,.12);
+  border: 1px solid rgba(99,102,241,.28);
+  color: #818cf8;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
   cursor: pointer;
-  font-size: 8px;
+  font-size: 15px;
+  font-weight: 700;
   line-height: 1;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   transition: background .13s, color .13s, border-color .13s;
@@ -764,26 +761,22 @@ body.sp-body-bottom .content {
 }
 .sp-rpg-prev:hover:not(:disabled),
 .sp-rpg-next:hover:not(:disabled) {
-  background: #312e81;
+  background: rgba(99,102,241,.30);
   color: #e0e7ff;
-  border-color: #4338ca;
+  border-color: #6366f1;
 }
 .sp-rpg-prev:disabled,
 .sp-rpg-next:disabled {
-  opacity: .3;
+  opacity: .28;
   cursor: default;
 }
 .sp-rpg-ind {
-  display: none;
-  font-size: 10px;
+  font-size: 11px;
   color: #64748b;
-  min-width: 28px;
+  min-width: 32px;
   text-align: center;
   font-family: system-ui, sans-serif;
-}
-.sp-cls.sp-open .sp-rpg-ind,
-.sp-cls-rail-side.sp-rail-wide .sp-rpg-ind {
-  display: inline;
+  letter-spacing: .02em;
 }
 }
 

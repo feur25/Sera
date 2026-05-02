@@ -111,24 +111,6 @@ Aliases: `sp.pie`, `sp.pie_chart`, `sp.pie_unified`, `sp.pie_family`, `sp.pies`
 
 <div class="sp-variant sp-von" id="pie-en-basic">
 
-Standard pie chart. Each slice's arc is proportional to its share of the total. Best for 3–6 categories that form a meaningful whole.
-
-```python
-sp.pie(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "basic",
-    show_pct: bool = True,
-    palette: list[int] | None = None,
-    width: int = 720,
-    height: int = 440,
-    sort_order: str = "none",
-    legend_position: str = "right",
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code> / <code>"pie"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="p-basic">
@@ -227,23 +209,6 @@ chart.show();</code></pre></div>
 </div>
 
 <div class="sp-variant" id="pie-en-donut">
-
-Pie with a hole in the center. The `inner_radius_ratio` keyword controls the hole as a fraction of the outer radius. Aliases: `"ring"`, `"hole"`.
-
-```python
-sp.pie(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "donut",
-    inner_radius_ratio: float = 0.55,
-    show_pct: bool = True,
-    palette: list[int] | None = None,
-    width: int = 720,
-    height: int = 440,
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"donut"</code> / <code>"ring"</code> / <code>"hole"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -353,23 +318,6 @@ chart.show();</code></pre></div>
 
 <div class="sp-variant" id="pie-en-exploded">
 
-One or more slices pulled out from the center for emphasis. `pull[i]` is the radial offset of slice `i` as a fraction of the radius (0–0.6). When `pull` is omitted, the largest slice is auto-pulled. Aliases: `"pulled"`, `"explode"`.
-
-```python
-sp.pie(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "exploded",
-    pull: list[float] | None = None,
-    show_pct: bool = True,
-    palette: list[int] | None = None,
-    width: int = 720,
-    height: int = 440,
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"exploded"</code> / <code>"pulled"</code> / <code>"explode"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="p-exploded">
@@ -477,24 +425,6 @@ chart.show();</code></pre></div>
 </div>
 
 <div class="sp-variant" id="pie-en-subplots">
-
-Multiple pies in a grid sharing the same labels — one pie per series. Captions go in `subplot_titles`. The grid is auto-sized; override with `subplot_cols`. Aliases: `"grid"`, `"facet"`, `"multi"`.
-
-```python
-sp.pie(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "subplots",
-    series: list[list[float]],
-    subplot_titles: list[str] | None = None,
-    subplot_cols: int = 0,
-    inner_radius_ratio: float = 0.0,
-    palette: list[int] | None = None,
-    width: int = 720,
-    height: int = 440,
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"subplots"</code> / <code>"grid"</code> / <code>"facet"</code> / <code>"multi"</code></span><span><strong>Required</strong> <code>labels</code>, <code>series</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -621,23 +551,6 @@ chart.show();</code></pre></div>
 
 <div class="sp-variant" id="pie-en-proportional">
 
-Subplots whose pies are sized proportionally to their respective totals — useful when comparing populations of different magnitudes (e.g. world GDP at different years). Aliases: `"scaled"`, `"scalegroup"`, `"area_proportional"`.
-
-```python
-sp.pie(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "proportional",
-    series: list[list[float]],
-    subplot_titles: list[str] | None = None,
-    subplot_cols: int = 0,
-    palette: list[int] | None = None,
-    width: int = 720,
-    height: int = 440,
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"proportional"</code> / <code>"scaled"</code> / <code>"scalegroup"</code></span><span><strong>Required</strong> <code>labels</code>, <code>series</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="p-prop">
@@ -756,22 +669,6 @@ chart.show();</code></pre></div>
 
 <div class="sp-variant" id="pie-en-semi">
 
-A half-circle pie (semicircle / half-pie) — ideal for satisfaction gauges, NPS dashboards, or any composition reading naturally as a horizon arc. Aliases: `"semicircle"`, `"half"`, `"halfpie"`, `"half_pie"`.
-
-```python
-sp.pie(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "semi",
-    inner_radius_ratio: float = 0.45,
-    palette: list[int] | None = None,
-    width: int = 720,
-    height: int = 440,
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"semi"</code> / <code>"half_pie"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="p-semi">
@@ -793,24 +690,6 @@ chart.show()</code></pre></div>
 </div>
 
 <div class="sp-variant" id="pie-en-kpi">
-
-A donut with a centered KPI metric — perfect for executive dashboards. The total is auto-formatted (K/M/B) when `center_text` is omitted. Aliases: `"kpi"`, `"center"`, `"indicator"`, `"metric"`.
-
-```python
-sp.pie(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "kpi",
-    center_text: str = "",
-    center_subtext: str = "",
-    inner_radius_ratio: float = 0.62,
-    palette: list[int] | None = None,
-    width: int = 720,
-    height: int = 440,
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"kpi"</code> / <code>"indicator"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -835,23 +714,6 @@ chart.show()</code></pre></div>
 
 <div class="sp-variant" id="pie-en-nested">
 
-Two concentric rings sharing the same center — a hierarchical composition (outer = top level, inner = sub-grouping). Pass the secondary ring through `secondary_labels` / `secondary_values`. Aliases: `"concentric"`, `"rings"`, `"double_ring"`, `"multi_ring"`.
-
-```python
-sp.pie(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "nested",
-    secondary_labels: list[str] | None = None,
-    secondary_values: list[float] | None = None,
-    palette: list[int] | None = None,
-    width: int = 720,
-    height: int = 440,
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"nested"</code> / <code>"concentric"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code>, <code>secondary_values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="p-nest">
@@ -874,22 +736,6 @@ chart.show()</code></pre></div>
 </div>
 
 <div class="sp-variant" id="pie-en-pattern">
-
-Each slice filled with an SVG pattern (stripes / dots / diagonal / cross) instead of a solid color — useful for high-contrast, print-friendly, or accessibility-oriented compositions. Aliases: `"patterned"`, `"textured"`, `"hatched"`.
-
-```python
-sp.pie(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "pattern",
-    pattern: str = "stripes",
-    palette: list[int] | None = None,
-    width: int = 720,
-    height: int = 440,
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"pattern"</code> / <code>"hatched"</code></span><span><strong>Patterns</strong> <code>"stripes"</code>, <code>"dots"</code>, <code>"diagonal"</code>, <code>"cross"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
