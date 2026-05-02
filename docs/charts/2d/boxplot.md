@@ -347,4 +347,105 @@ chart.show()</code></pre></div>
 </div>
 </div>
 
+</div><!-- /lang-en -->
+
+
+<div class="lang-fr" style="display:none">
+
+## Signature
+
+`sp.boxplot(title, labels=None, values=None, *, variant="basic", series=None, **kwargs) -> Chart`
+
+Alias : `sp.boxplot`, `sp.box_plot`
+
+## Description
+
+`sp.boxplot()` est le point d'entrée unique pour toute la famille des boîtes à moustaches. Le paramètre `variant` sélectionne la stratégie de rendu — tous les autres arguments restent identiques entre les variantes. Quartiles, moustaches 1,5×IQR et valeurs aberrantes sont calculés en pur Rust, sans NumPy ni pandas.
+
+| Variante | Cas d'usage | Arguments clés |
+|----------|-------------|----------------|
+| `"basic"` | Boîte verticale standard | `labels`, `values` |
+| `"horizontal"` / `"hbox"` | Disposition pivotée pour longs noms | `labels`, `values` |
+| `"notched"` / `"ci"` | Encoche autour de la médiane (IC 95 %) | `notch=True` |
+| `"grouped"` / `"side_by_side"` | Plusieurs séries côte à côte | `series`, `series_names` |
+| `"points"` / `"all_points"` | Boîte + tous les échantillons | `show_points=True`, `jitter` |
+| `"outliers"` / `"fliers"` | Marqueurs aberrants agrandis + libellés | `labels`, `values` |
+| `"strip"` / `"swarm"` | Nuage de points avec ligne médiane | `jitter` |
+| `"violin"` / `"density"` | Boîte enveloppée d'une silhouette KDE | `labels`, `values` |
+| `"letter_value"` / `"boxen"` | Diagramme de Tukey à valeurs lettres | `boxen_depth` |
+| `"rainbow"` / `"gradient"` | Palette spectrale interpolée | `labels`, `values` |
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Variantes | Description |
+|-----------|------|--------|-----------|-------------|
+| `title` | `str` | — | toutes | Titre du graphique |
+| `labels` | `list[str]` | `None` | toutes | Une étiquette de catégorie par échantillon |
+| `values` | `list[float]` | `None` | toutes sauf grouped | Liste plate des valeurs alignées sur `labels` |
+| `series` | `list[list[float]]` | `None` | grouped | Une liste plate par série |
+| `series_names` | `list[str]` | `None` | grouped | Noms de séries (légende) |
+| `variant` | `str` | `"basic"` | toutes | Sélectionne la variante |
+| `notch` | `bool` | `False` | basic, notched, points, outliers, grouped | Affiche une encoche autour de la médiane (IC 95 %) |
+| `show_points` | `bool` | `False` | basic, points | Superpose les échantillons individuels |
+| `jitter` | `float` | `0.35` | points, strip, grouped | Étalement horizontal du nuage (0–1) |
+| `boxen_depth` | `int` | `4` | letter_value | Nombre de bandes de quantiles imbriquées (2–7) |
+| `palette` | `list[int]` | `None` | toutes | Couleurs par catégorie (entiers hex) |
+| `width` | `int` | `900` | toutes | Largeur du canevas en px |
+| `height` | `int` | `500` | toutes | Hauteur du canevas en px |
+| `x_label` | `str` | `""` | toutes | Label axe X |
+| `y_label` | `str` | `""` | toutes | Label axe Y |
+| `gridlines` | `bool` | `False` | toutes | Lignes de grille horizontales |
+| `sort_order` | `str` | `"none"` | toutes | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, `"none"` |
+| `legend_position` | `str` | `"right"` | toutes | `"right"`, `"left"`, `"top"`, `"bottom"` |
+| `background` | `str` | `None` | toutes | Couleur de fond CSS ; `None` = transparent |
+
+---
+
+## Retourne
+
+`Chart` — objet avec la propriété `.html` et la méthode `.show()`.
+
+---
+
+<div class="sp-cls sp-open" id="bx-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('bx-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('bx-fr','basic',this)"><span class="sp-cic">▭</span><span class="sp-clb">Basique</span></button>
+<button class="sp-cls-tab" onclick="spCls('bx-fr','horizontal',this)"><span class="sp-cic">⇆</span><span class="sp-clb">Horizontal</span></button>
+<button class="sp-cls-tab" onclick="spCls('bx-fr','notched',this)"><span class="sp-cic">◊</span><span class="sp-clb">Encoché</span></button>
+<button class="sp-cls-tab" onclick="spCls('bx-fr','grouped',this)"><span class="sp-cic">▦</span><span class="sp-clb">Groupé</span></button>
+<button class="sp-cls-tab" onclick="spCls('bx-fr','points',this)"><span class="sp-cic">⁝</span><span class="sp-clb">Points</span></button>
+<button class="sp-cls-tab" onclick="spCls('bx-fr','outliers',this)"><span class="sp-cic">⊙</span><span class="sp-clb">Aberrants</span></button>
+<button class="sp-cls-tab" onclick="spCls('bx-fr','strip',this)"><span class="sp-cic">⋮</span><span class="sp-clb">Bande</span></button>
+<button class="sp-cls-tab" onclick="spCls('bx-fr','violin',this)"><span class="sp-cic">◇</span><span class="sp-clb">Violon</span></button>
+<button class="sp-cls-tab" onclick="spCls('bx-fr','letter',this)"><span class="sp-cic">≡</span><span class="sp-clb">Valeurs-Lettres</span></button>
+<button class="sp-cls-tab" onclick="spCls('bx-fr','rainbow',this)"><span class="sp-cic">◑</span><span class="sp-clb">Arc-en-ciel</span></button>
 </div>
+<div class="sp-cls-body">
+
+<div class="sp-variant sp-von" id="bx-fr-basic"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-basic.html"></iframe></div>
+
+<div class="sp-variant" id="bx-fr-horizontal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"horizontal"</code> / <code>"hbox"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-horizontal.html"></iframe></div>
+
+<div class="sp-variant" id="bx-fr-notched"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"notched"</code> / <code>"ci"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-notched.html"></iframe></div>
+
+<div class="sp-variant" id="bx-fr-grouped"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"grouped"</code> / <code>"side_by_side"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>series</code>, <code>series_names</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-grouped.html"></iframe></div>
+
+<div class="sp-variant" id="bx-fr-points"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"points"</code> / <code>"all_points"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-points.html"></iframe></div>
+
+<div class="sp-variant" id="bx-fr-outliers"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"outliers"</code> / <code>"fliers"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-outliers.html"></iframe></div>
+
+<div class="sp-variant" id="bx-fr-strip"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"strip"</code> / <code>"swarm"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-strip.html"></iframe></div>
+
+<div class="sp-variant" id="bx-fr-violin"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"violin"</code> / <code>"density"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-violin.html"></iframe></div>
+
+<div class="sp-variant" id="bx-fr-letter"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"letter_value"</code> / <code>"boxen"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-letter_value.html"></iframe></div>
+
+<div class="sp-variant" id="bx-fr-rainbow"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"rainbow"</code> / <code>"gradient"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-rainbow.html"></iframe></div>
+
+</div>
+</div>
+
+</div><!-- /lang-fr -->

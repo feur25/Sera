@@ -760,4 +760,99 @@ chart.show()</code></pre></div>
 </div>
 </div>
 
+</div><!-- /lang-en -->
+
+
+<div class="lang-fr" style="display:none">
+
+## Signature
+
+`sp.pie(title, labels=None, values=None, *, variant="basic", **kwargs) -> Chart`
+
+Alias : `sp.pie`, `sp.pie_chart`, `sp.donut`
+
+## Description
+
+`sp.pie()` est le point d'entrée unique pour toute la famille des camemberts. Le paramètre `variant` sélectionne la stratégie de rendu — donut, éclaté, KPI, semi-cercle ou imbriqué — tout en conservant la même API simple.
+
+| Variante | Cas d'usage | Arguments clés |
+|----------|-------------|----------------|
+| `"basic"` | Camembert classique | `labels`, `values` |
+| `"donut"` / `"ring"` | Anneau avec trou central | `labels`, `values`, `inner_radius` |
+| `"exploded"` / `"explode"` | Tranches détachées de l'anneau | `labels`, `values`, `pull` |
+| `"subplots"` / `"grid"` | Plusieurs camemberts côte à côte | `panels` |
+| `"proportional"` / `"prop"` | Tailles proportionnelles entre panneaux | `panels`, `total_basis` |
+| `"semi"` / `"half"` | Demi-camembert (jauge) | `labels`, `values` |
+| `"kpi"` / `"indicator"` | Donut avec valeur au centre | `labels`, `values`, `center_text` |
+| `"nested"` / `"sunburst"` | Anneaux concentriques hiérarchiques | `rings` |
+| `"pattern"` / `"hatch"` | Tranches avec motifs (accessibilité) | `labels`, `values`, `patterns` |
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Variantes | Description |
+|-----------|------|--------|-----------|-------------|
+| `title` | `str` | requis | toutes | Titre du graphique |
+| `labels` | `list[str]` | `None` | toutes sauf subplots, nested | Labels de tranche |
+| `values` | `list[float]` | `None` | toutes sauf subplots, nested | Valeurs (normalisées en %) |
+| `variant` | `str` | `"basic"` | — | Variante de rendu |
+| `inner_radius` | `float` | `0.0` | basic, donut, exploded, kpi | Rayon du trou (0–0.95) |
+| `pull` | `list[float]` | `None` | exploded | Distance d'extraction par tranche |
+| `panels` | `list[dict]` | `None` | subplots, proportional | Liste de panneaux `{title, labels, values}` |
+| `total_basis` | `str` | `"max"` | proportional | `"max"`, `"sum"` ou valeur de référence |
+| `center_text` | `str` | `""` | kpi | Texte central du KPI |
+| `rings` | `list[dict]` | `None` | nested | Anneaux concentriques |
+| `patterns` | `list[str]` | `None` | pattern | Motifs (`"dots"`, `"lines"`, `"cross"`, …) |
+| `palette` | `list[int]` | `None` | toutes | Couleurs personnalisées |
+| `width` | `int` | `700` | toutes | Largeur du canevas en px |
+| `height` | `int` | `500` | toutes | Hauteur du canevas en px |
+| `legend_position` | `str` | `"right"` | toutes | `"right"`, `"left"`, `"top"`, `"bottom"` |
+| `show_text` | `bool` | `True` | toutes | Afficher pourcentages sur les tranches |
+| `background` | `str` | `None` | toutes | Couleur de fond CSS |
+
+---
+
+## Retourne
+
+`Chart` — objet avec la propriété `.html` et la méthode `.show()`.
+
+---
+
+<div class="sp-cls sp-open" id="pie-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('pie-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('pie-fr','basic',this)"><span class="sp-cic">●</span><span class="sp-clb">Basique</span></button>
+<button class="sp-cls-tab" onclick="spCls('pie-fr','donut',this)"><span class="sp-cic">◯</span><span class="sp-clb">Donut</span></button>
+<button class="sp-cls-tab" onclick="spCls('pie-fr','exploded',this)"><span class="sp-cic">✦</span><span class="sp-clb">Éclaté</span></button>
+<button class="sp-cls-tab" onclick="spCls('pie-fr','subplots',this)"><span class="sp-cic">▦</span><span class="sp-clb">Sous-graphiques</span></button>
+<button class="sp-cls-tab" onclick="spCls('pie-fr','proportional',this)"><span class="sp-cic">◐</span><span class="sp-clb">Proportionnel</span></button>
+<button class="sp-cls-tab" onclick="spCls('pie-fr','semi',this)"><span class="sp-cic">◗</span><span class="sp-clb">Semi</span></button>
+<button class="sp-cls-tab" onclick="spCls('pie-fr','kpi',this)"><span class="sp-cic">⊙</span><span class="sp-clb">KPI</span></button>
+<button class="sp-cls-tab" onclick="spCls('pie-fr','nested',this)"><span class="sp-cic">◎</span><span class="sp-clb">Imbriqué</span></button>
+<button class="sp-cls-tab" onclick="spCls('pie-fr','pattern',this)"><span class="sp-cic">▩</span><span class="sp-clb">Motifs</span></button>
 </div>
+<div class="sp-cls-body">
+
+<div class="sp-variant sp-von" id="pie-fr-basic"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-basic.html"></iframe></div>
+
+<div class="sp-variant" id="pie-fr-donut"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"donut"</code> / <code>"ring"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>inner_radius</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-donut.html"></iframe></div>
+
+<div class="sp-variant" id="pie-fr-exploded"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"exploded"</code> / <code>"explode"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>pull</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-exploded.html"></iframe></div>
+
+<div class="sp-variant" id="pie-fr-subplots"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"subplots"</code> / <code>"grid"</code></span><span><strong>Requis</strong> <code>panels</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-subplots.html"></iframe></div>
+
+<div class="sp-variant" id="pie-fr-proportional"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"proportional"</code> / <code>"prop"</code></span><span><strong>Requis</strong> <code>panels</code>, <code>total_basis</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-proportional.html"></iframe></div>
+
+<div class="sp-variant" id="pie-fr-semi"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"semi"</code> / <code>"half"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-semi.html"></iframe></div>
+
+<div class="sp-variant" id="pie-fr-kpi"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"kpi"</code> / <code>"indicator"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>center_text</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-kpi.html"></iframe></div>
+
+<div class="sp-variant" id="pie-fr-nested"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"nested"</code> / <code>"sunburst"</code></span><span><strong>Requis</strong> <code>rings</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-nested.html"></iframe></div>
+
+<div class="sp-variant" id="pie-fr-pattern"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"pattern"</code> / <code>"hatch"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>patterns</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-pattern.html"></iframe></div>
+
+</div>
+</div>
+
+</div><!-- /lang-fr -->

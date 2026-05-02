@@ -540,4 +540,136 @@ chart.show()</code></pre></div>
 </div>
 </div>
 
+</div><!-- /lang-en -->
+
+
+<div class="lang-fr" style="display:none">
+
+## Signature
+
+`sp.heatmap(title, matrix, *, variant="basic", x_labels=None, y_labels=None, **kwargs) -> Chart`
+
+Alias : `sp.heatmap`, `sp.heat_map`, `sp.heatmap_chart`
+
+## Description
+
+`sp.heatmap()` est le point d'entrée unique pour toute la famille des cartes de chaleur. Le paramètre `variant` sélectionne la stratégie de rendu — annotée, catégorielle, log, contour, clustering hiérarchique, etc. — tout en partageant la même API de base.
+
+| Variante | Cas d'usage | Arguments clés |
+|----------|-------------|----------------|
+| `"basic"` | Heatmap classique | `matrix`, `x_labels`, `y_labels` |
+| `"annotated"` / `"text"` | Valeurs imprimées dans chaque cellule | `matrix`, `annotation_format` |
+| `"categorical"` / `"cat"` | Données catégorielles (palette discrète) | `matrix`, `categories` |
+| `"unequal"` / `"variable"` | Cellules à largeur/hauteur variable | `matrix`, `x_widths`, `y_heights` |
+| `"log"` / `"logscale"` | Échelle de couleur logarithmique | `matrix`, `colorscale` |
+| `"discrete"` / `"binned"` | Découpage en bandes discrètes | `matrix`, `levels` |
+| `"correlation"` / `"corr"` | Matrice de corrélation symétrique | `matrix`, `mask_upper` |
+| `"density"` / `"hist2d"` | Densité 2D (binning xy) | `x`, `y`, `bins` |
+| `"contour"` / `"isoline"` | Lignes de contour superposées | `matrix`, `n_contours` |
+| `"temporal"` / `"calendar"` | Calendrier (jour × heure / semaine × jour) | `matrix`, `time_axis` |
+| `"cluster"` / `"dendro"` | Clustering hiérarchique avec dendrogramme | `matrix`, `cluster_method` |
+| `"bubble"` / `"dot"` | Cellules sous forme de bulles dimensionnées | `matrix`, `size_matrix` |
+| `"marginal"` / `"histograms"` | Heatmap + histogrammes marginaux | `matrix` |
+| `"confusion"` / `"cm"` | Matrice de confusion (vrai vs prédit) | `matrix`, `class_labels` |
+| `"pivot"` / `"crosstab"` | Tableau croisé dynamique | `data`, `index`, `columns`, `values` |
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Variantes | Description |
+|-----------|------|--------|-----------|-------------|
+| `title` | `str` | requis | toutes | Titre du graphique |
+| `matrix` | `list[list[float]]` | requis | toutes sauf density, pivot | Matrice 2D des valeurs |
+| `x_labels` | `list[str]` | `None` | toutes | Labels des colonnes |
+| `y_labels` | `list[str]` | `None` | toutes | Labels des lignes |
+| `variant` | `str` | `"basic"` | — | Variante de rendu |
+| `colorscale` | `str` | `"viridis"` | toutes | Palette continue (`"viridis"`, `"plasma"`, `"inferno"`, …) |
+| `annotation_format` | `str` | `".2f"` | annotated | Format des valeurs affichées |
+| `categories` | `list[str]` | `None` | categorical | Catégories pour palette discrète |
+| `x_widths` | `list[float]` | `None` | unequal | Largeur relative de chaque colonne |
+| `y_heights` | `list[float]` | `None` | unequal | Hauteur relative de chaque ligne |
+| `levels` | `int` ou `list[float]` | `5` | discrete, contour | Nombre de bandes / contours |
+| `mask_upper` | `bool` | `False` | correlation | Masque le triangle supérieur |
+| `x` / `y` | `list[float]` | `None` | density | Coordonnées brutes pour binning |
+| `bins` | `int` ou `tuple` | `30` | density | Nombre de bins pour la densité |
+| `n_contours` | `int` | `8` | contour | Nombre de courbes de niveau |
+| `time_axis` | `str` | `"hour-day"` | temporal | `"hour-day"`, `"day-week"`, `"day-month"` |
+| `cluster_method` | `str` | `"ward"` | cluster | Méthode de liaison (`"ward"`, `"single"`, `"complete"`) |
+| `size_matrix` | `list[list[float]]` | `None` | bubble | Matrice de tailles des bulles |
+| `class_labels` | `list[str]` | `None` | confusion | Noms des classes |
+| `data` | `list[dict]` | `None` | pivot | Données longues à pivoter |
+| `index` | `str` | `None` | pivot | Colonne pour l'axe Y |
+| `columns` | `str` | `None` | pivot | Colonne pour l'axe X |
+| `values` | `str` | `None` | pivot | Colonne agrégée |
+| `palette` | `list[int]` | `None` | toutes | Palette personnalisée |
+| `width` | `int` | `800` | toutes | Largeur du canevas en px |
+| `height` | `int` | `600` | toutes | Hauteur du canevas en px |
+| `x_label` | `str` | `""` | toutes | Label axe X |
+| `y_label` | `str` | `""` | toutes | Label axe Y |
+| `show_colorbar` | `bool` | `True` | toutes | Afficher la barre de couleur |
+| `background` | `str` | `None` | toutes | Couleur de fond CSS |
+
+---
+
+## Retourne
+
+`Chart` — objet avec la propriété `.html` et la méthode `.show()`.
+
+---
+
+<div class="sp-cls sp-open" id="hm-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('hm-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('hm-fr','basic',this)"><span class="sp-cic">▦</span><span class="sp-clb">Basique</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','annotated',this)"><span class="sp-cic">▤</span><span class="sp-clb">Annotée</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','categorical',this)"><span class="sp-cic">▩</span><span class="sp-clb">Catégorielle</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','unequal',this)"><span class="sp-cic">▥</span><span class="sp-clb">Inégale</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','log',this)"><span class="sp-cic">∿</span><span class="sp-clb">Log</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','discrete',this)"><span class="sp-cic">≣</span><span class="sp-clb">Discrète</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','correlation',this)"><span class="sp-cic">◤</span><span class="sp-clb">Corrélation</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','density',this)"><span class="sp-cic">⁂</span><span class="sp-clb">Densité</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','contour',this)"><span class="sp-cic">◉</span><span class="sp-clb">Contour</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','temporal',this)"><span class="sp-cic">◷</span><span class="sp-clb">Temporelle</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','cluster',this)"><span class="sp-cic">⌬</span><span class="sp-clb">Cluster</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','bubble',this)"><span class="sp-cic">⊙</span><span class="sp-clb">Bulles</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','marginal',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Marginale</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','confusion',this)"><span class="sp-cic">⊠</span><span class="sp-clb">Confusion</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','pivot',this)"><span class="sp-cic">⊟</span><span class="sp-clb">Pivot</span></button>
 </div>
+<div class="sp-cls-body">
+
+<div class="sp-variant sp-von" id="hm-fr-basic"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Requis</strong> <code>matrix</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-basic.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-annotated"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"annotated"</code> / <code>"text"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>annotation_format</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-annotated.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-categorical"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"categorical"</code> / <code>"cat"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>categories</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-categorical.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-unequal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"unequal"</code> / <code>"variable"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>x_widths</code>, <code>y_heights</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-unequal.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-log"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"log"</code> / <code>"logscale"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>colorscale</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-log.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-discrete"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"discrete"</code> / <code>"binned"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>levels</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-discrete.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-correlation"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"correlation"</code> / <code>"corr"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>mask_upper</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-correlation.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-density"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"density"</code> / <code>"hist2d"</code></span><span><strong>Requis</strong> <code>x</code>, <code>y</code>, <code>bins</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-density.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-contour"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"contour"</code> / <code>"isoline"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>n_contours</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-contour.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-temporal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"temporal"</code> / <code>"calendar"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>time_axis</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-temporal.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-cluster"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"cluster"</code> / <code>"dendro"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>cluster_method</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-cluster.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-bubble"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"bubble"</code> / <code>"dot"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>size_matrix</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-bubble.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-marginal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"marginal"</code> / <code>"histograms"</code></span><span><strong>Requis</strong> <code>matrix</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-marginal.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-confusion"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"confusion"</code> / <code>"cm"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>class_labels</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-confusion.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-pivot"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"pivot"</code> / <code>"crosstab"</code></span><span><strong>Requis</strong> <code>data</code>, <code>index</code>, <code>columns</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-pivot.html"></iframe></div>
+
+</div>
+</div>
+
+</div><!-- /lang-fr -->
