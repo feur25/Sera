@@ -22,7 +22,6 @@
   - [Histogram](charts/2d/histogram.md)
   - [Heatmap](charts/2d/heatmap.md)
   - [Pie Chart](charts/2d/pie.md)
-  - [Donut Chart](charts/2d/donut.md)
   - [Box Plot](charts/2d/boxplot.md)
   - [Violin Chart](charts/2d/violin.md)
   - [KDE](charts/2d/kde.md)

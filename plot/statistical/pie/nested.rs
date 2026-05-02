@@ -45,10 +45,10 @@ pub fn render(cfg: &PieConfig) -> String {
         let inner_piece = PiePiece {
             area_x: 0.0,
             area_y: title_pad,
-            area_w: w as f64,
+            area_w: w as f64 * 0.62,
             area_h: h as f64 - title_pad,
-            donut: 0.45,
-            radius_scale: inner_radius_factor,
+            donut: 0.4,
+            radius_scale: outer_donut,
             draw_legend: false,
             palette_offset: outer_values.len(),
             pattern_id_offset: outer_values.len(),

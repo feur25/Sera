@@ -134,6 +134,15 @@ pub struct ChartOpts {
     pub secondary_values: Option<Vec<f64>>,
     pub secondary_labels: Option<Vec<String>>,
     pub pattern: Option<String>,
+    pub notch: Option<bool>,
+    pub jitter: Option<f64>,
+    pub boxen_depth: Option<usize>,
+    pub violin_overlay: Option<bool>,
+    pub fill_opacity_real: Option<f64>,
+    pub box_stroke_width: Option<f64>,
+    pub colorscale: Option<String>,
+    pub colorbar_position: Option<String>,
+    pub origin_lower: Option<bool>,
 }
 
 impl ChartOpts {
@@ -656,6 +665,8 @@ pub fn build_heatmap(input: &str) -> String {
     let variant = HeatmapVariant::from_str(&o.variant.clone().unwrap_or_default());
     let x_widths: Vec<f64> = o.widths.clone().unwrap_or_default();
     let y_heights: Vec<f64> = o.ranges.clone().unwrap_or_default();
+    let colorscale = o.colorscale.clone().unwrap_or_default();
+    let colorbar_position = o.colorbar_position.clone().unwrap_or_else(|| "right".to_string());
     let html = render_heatmap_html(&HeatmapConfig {
         title, variant,
         row_labels: &labels, col_labels: &col_lbl, flat_matrix: &flat_matrix,
@@ -667,6 +678,9 @@ pub fn build_heatmap(input: &str) -> String {
         discrete_steps: o.bins.unwrap_or(0).max(0) as usize,
         x_widths: &x_widths,
         y_heights: &y_heights,
+        colorscale: &colorscale,
+        colorbar_position: &colorbar_position,
+        origin_lower: o.origin_lower.unwrap_or(false),
         width: o.w(720), height: o.h(440), hover: &hover,
         sort_order: &o.srt(), ..HeatmapConfig::default()
     });
@@ -765,11 +779,33 @@ pub fn build_boxplot(input: &str) -> String {
     let title = title_s.as_str();
     let category_labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
+    let series = a.series.unwrap_or_default();
+    let series_names = o.series_names.clone().unwrap_or_default();
     let hover = o.hj();
+    let variant = crate::plot::statistical::BoxplotVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let html = crate::plot::statistical::render_boxplot_html(&crate::plot::statistical::BoxplotConfig {
-        title, category_labels: &category_labels, values: &values, palette: &o.pal(),
-        hover: &hover, x_label: &o.xl(), y_label: &o.yl(), gridlines: o.grid(),
-        width: o.w(900), height: o.h(500), sort_order: &o.srt(), legend_position: &o.lp(),
+        title,
+        variant,
+        category_labels: &category_labels,
+        values: &values,
+        series: &series,
+        series_names: &series_names,
+        palette: &o.pal(),
+        hover: &hover,
+        x_label: &o.xl(),
+        y_label: &o.yl(),
+        gridlines: o.grid(),
+        width: o.w(900),
+        height: o.h(500),
+        sort_order: &o.srt(),
+        legend_position: &o.lp(),
+        notch: o.notch.unwrap_or(false),
+        show_points: o.show_points.unwrap_or(false),
+        jitter: o.jitter.unwrap_or(0.35),
+        violin_overlay: o.violin_overlay.unwrap_or(false),
+        boxen_depth: o.boxen_depth.unwrap_or(4),
+        fill_opacity: o.fill_opacity_real.unwrap_or(0.28),
+        stroke_width: o.box_stroke_width.unwrap_or(1.6),
     });
     apply(html, &o)
 }

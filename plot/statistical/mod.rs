@@ -37,7 +37,7 @@ pub use line::{LineVariant, LineConfig, render_line_html};
 pub use multiline::{MultiLine, MultiLineConfig, render_multiline_html};
 pub use area::{Area, AreaConfig, render_area_html};
 pub use treemap::{Treemap, TreemapConfig, render_treemap_html};
-pub use boxplot::{BoxplotConfig, render_boxplot_html};
+pub use boxplot::{BoxplotConfig, BoxplotVariant, render_boxplot_html};
 pub use funnel::{FunnelConfig, render_funnel_html};
 pub use sunburst::{SunburstConfig, render_sunburst_html};
 pub use waterfall::{WaterfallConfig, render_waterfall_html};

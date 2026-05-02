@@ -10,5 +10,10 @@ crate::plot_family! {
         Density     => "density" | "imshow" | "viridis" | "smooth",
         Contour     => "contour" | "iso" | "isolines" | "level",
         Temporal    => "temporal" | "calendar" | "time" | "date" | "timeseries",
+        Cluster     => "cluster" | "clustermap" | "dendrogram" | "reorder",
+        Bubble      => "bubble" | "size_scaled" | "circle_heatmap" | "punchcard",
+        Marginal    => "marginal" | "with_marginals" | "histograms" | "side_bars",
+        Confusion   => "confusion" | "confusion_matrix" | "classifier" | "cm",
+        Pivot       => "pivot" | "pivot_table" | "totals" | "summary",
     }
 }

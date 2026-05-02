@@ -11,6 +11,11 @@ pub mod correlation;
 pub mod density;
 pub mod contour;
 pub mod temporal;
+pub mod cluster;
+pub mod bubble;
+pub mod marginal;
+pub mod confusion;
+pub mod pivot;
 
 pub use variant::HeatmapVariant;
 pub use config::HeatmapConfig;
@@ -29,5 +34,10 @@ pub fn render_heatmap_html(cfg: &HeatmapConfig) -> String {
         HeatmapVariant::Density => density::render(cfg),
         HeatmapVariant::Contour => contour::render(cfg),
         HeatmapVariant::Temporal => temporal::render(cfg),
+        HeatmapVariant::Cluster => cluster::render(cfg),
+        HeatmapVariant::Bubble => bubble::render(cfg),
+        HeatmapVariant::Marginal => marginal::render(cfg),
+        HeatmapVariant::Confusion => confusion::render(cfg),
+        HeatmapVariant::Pivot => pivot::render(cfg),
     }
 }
