@@ -146,22 +146,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-variant sp-von" id="hm-en-basic">
 
-Standard heatmap with smooth 3-stop color interpolation (or any named `colorscale`). The default for visualizing 2D matrices like sales-by-month or temperature-by-time. With `colorscale="rdbu_r"` you get the classic Plotly `px.imshow` look.
-
-```python
-import seraplot as sp
-chart = sp.heatmap(
-    "Hourly temperature",
-    labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-    col_labels=[f"{h:02d}" for h in range(24)],
-    values=flat_matrix,
-    variant="basic",
-    colorscale="rdbu_r",
-    colorbar_position="right",
-)
-chart.show()
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
@@ -170,17 +154,6 @@ chart.show()
 </div>
 
 <div class="sp-variant" id="hm-en-annotated">
-
-Annotated heatmap: same colored cells, plus the numeric value drawn in each cell. Use for executive dashboards where readers must see the exact figure as well as the gradient.
-
-```python
-chart = sp.heatmap(
-    "Monthly sales by product",
-    labels=products, col_labels=months, values=sales,
-    variant="annotated", colorscale="viridis",
-    show_values=True,
-)
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"annotated"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -191,17 +164,6 @@ chart = sp.heatmap(
 
 <div class="sp-variant" id="hm-en-categorical">
 
-Categorical heatmap: integer values index a discrete `palette`. Perfect for status grids, risk matrices, or any cell whose value is a class id rather than a continuous number.
-
-```python
-chart = sp.heatmap(
-    "Region × Cluster",
-    labels=regions, col_labels=clusters, values=class_ids,
-    variant="categorical",
-    palette=[0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B, 0x8B5CF6],
-)
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code>, <code>palette</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
@@ -210,19 +172,6 @@ chart = sp.heatmap(
 </div>
 
 <div class="sp-variant" id="hm-en-unequal">
-
-Variable cell widths and heights. Pass `widths` (one per column) and `ranges` (one per row) — values are normalized to fit the canvas. Ideal for time-vs-bandwidth plots where columns represent unequal time intervals.
-
-```python
-chart = sp.heatmap(
-    "Tier × Quarter",
-    labels=tiers, col_labels=quarters, values=mat,
-    variant="unequal",
-    widths=[1.0, 2.4, 1.6, 0.9, 2.1, 1.3],
-    ranges=[2.2, 1.0, 1.5, 0.8],
-    colorscale="plasma",
-)
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"unequal"</code> / <code>"variable"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code>, <code>widths</code>, <code>ranges</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -233,17 +182,6 @@ chart = sp.heatmap(
 
 <div class="sp-variant" id="hm-en-log">
 
-Log10-normalized heatmap. Cell colors are interpolated on `log10(value)` instead of the raw value, so a few extreme outliers no longer wash out the rest. The colorbar shows a `log` badge.
-
-```python
-chart = sp.heatmap(
-    "Resource load (log scale)",
-    labels=services, col_labels=months, values=latencies,
-    variant="log",
-    colorscale="inferno",
-)
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"log"</code> / <code>"log_scale"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
@@ -252,17 +190,6 @@ chart = sp.heatmap(
 </div>
 
 <div class="sp-variant" id="hm-en-discrete">
-
-Discrete heatmap: continuous values are quantized into `bins` bands, each painted with one palette color. Reduces visual noise and makes thresholds explicit (e.g. low / medium / high risk).
-
-```python
-chart = sp.heatmap(
-    "Sales tiers",
-    labels=products, col_labels=months, values=sales,
-    variant="discrete", bins=6,
-    palette=[0x1E3A8A, 0x3B82F6, 0x60A5FA, 0xFBBF24, 0xF97316, 0xDC2626],
-)
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"discrete"</code> / <code>"binned"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code>, <code>bins</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -273,17 +200,6 @@ chart = sp.heatmap(
 
 <div class="sp-variant" id="hm-en-correlation">
 
-Correlation matrix: diverging Red ↔ Blue scale centered on 0, with values printed on each cell. Use for Pearson / Spearman matrices to spot strong positive (red) and negative (blue) couplings.
-
-```python
-chart = sp.heatmap(
-    "Feature correlation",
-    labels=features, col_labels=features, values=corr_matrix,
-    variant="correlation",
-    colorscale="rdbu_r",
-)
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"correlation"</code> / <code>"corr"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
@@ -292,19 +208,6 @@ chart = sp.heatmap(
 </div>
 
 <div class="sp-variant" id="hm-en-density">
-
-Density / `imshow`-style heatmap. Smooth continuous color, no cell text, no gridlines. Matches Plotly `px.imshow(arr, color_continuous_scale='RdBu_r', origin='lower')`. Ideal for fields, images, and 2D probability densities.
-
-```python
-chart = sp.heatmap(
-    "Atmospheric pressure",
-    labels=lat, col_labels=lon, values=field,
-    variant="density",
-    colorscale="rdbu_r",
-    origin_lower=True,
-    show_values=False,
-)
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code> / <code>"imshow"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -315,17 +218,6 @@ chart = sp.heatmap(
 
 <div class="sp-variant" id="hm-en-contour">
 
-Contour heatmap: smooth color field plus iso-contour lines drawn at quantized levels. Great for topography, potential fields, or any continuous 2D surface.
-
-```python
-chart = sp.heatmap(
-    "Topographic contour",
-    labels=lat, col_labels=lon, values=field,
-    variant="contour",
-    colorscale="viridis",
-)
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"contour"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
@@ -334,18 +226,6 @@ chart = sp.heatmap(
 </div>
 
 <div class="sp-variant" id="hm-en-temporal">
-
-Temporal / calendar heatmap. Days down the y-axis, weeks across the x-axis, color = activity level. The classic GitHub-contributions look.
-
-```python
-chart = sp.heatmap(
-    "Calendar contributions",
-    labels=weekdays, col_labels=weeks, values=activity,
-    variant="temporal",
-    colorscale="greens",
-    show_values=False,
-)
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"temporal"</code> / <code>"calendar"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -356,17 +236,6 @@ chart = sp.heatmap(
 
 <div class="sp-variant" id="hm-en-cluster">
 
-Clustermap: rows and columns are reordered by descending sum so similar profiles end up next to each other (a lightweight dendrogram-style ordering, no SciPy required). Ideal for gene expression, customer segmentation, and any "find the block structure" task.
-
-```python
-chart = sp.heatmap(
-    "Gene expression",
-    labels=genes, col_labels=samples, values=expr,
-    variant="cluster",
-    colorscale="rdbu_r",
-)
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"cluster"</code> / <code>"clustermap"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
@@ -375,17 +244,6 @@ chart = sp.heatmap(
 </div>
 
 <div class="sp-variant" id="hm-en-bubble">
-
-Punchcard / bubble heatmap: each cell is a sized circle whose radius encodes magnitude and whose fill encodes the colorscale. Reads like a heatmap but emphasizes magnitude through area.
-
-```python
-chart = sp.heatmap(
-    "Engagement punchcard",
-    labels=channels, col_labels=days, values=engagement,
-    variant="bubble",
-    colorscale="viridis",
-)
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code> / <code>"punchcard"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -396,17 +254,6 @@ chart = sp.heatmap(
 
 <div class="sp-variant" id="hm-en-marginal">
 
-Marginal heatmap: the main grid is flanked by a top bar chart of column sums and a right bar chart of row sums — exactly what you want for survey crosstabs and contingency tables.
-
-```python
-chart = sp.heatmap(
-    "Survey crosstab",
-    labels=questions, col_labels=options, values=counts,
-    variant="marginal",
-    colorscale="plasma",
-)
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"marginal"</code> / <code>"with_marginals"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
@@ -416,17 +263,6 @@ chart = sp.heatmap(
 
 <div class="sp-variant" id="hm-en-confusion">
 
-Confusion matrix variant: blues colorscale, large diagonal cells, integer values printed in each cell. Standard ML classifier diagnostic.
-
-```python
-chart = sp.heatmap(
-    "Classifier confusion matrix",
-    labels=classes, col_labels=classes, values=cm,
-    variant="confusion",
-    colorscale="blues",
-)
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"confusion"</code> / <code>"confusion_matrix"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
@@ -435,17 +271,6 @@ chart = sp.heatmap(
 </div>
 
 <div class="sp-variant" id="hm-en-pivot">
-
-Pivot table heatmap: row totals, column totals and a grand total are appended to the matrix as highlighted cells. Reproduces the look of a spreadsheet pivot table with the colors of a heatmap.
-
-```python
-chart = sp.heatmap(
-    "Sales pivot",
-    labels=regions, col_labels=quarters, values=sales,
-    variant="pivot",
-    colorscale="cividis",
-)
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"pivot"</code> / <code>"pivot_table"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 

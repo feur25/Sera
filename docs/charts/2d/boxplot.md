@@ -114,27 +114,11 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 <button class="sp-cls-tab" onclick="spCls('bx-en','strip',this)"><span class="sp-cic">⋮</span><span class="sp-clb">Strip</span></button>
 <button class="sp-cls-tab" onclick="spCls('bx-en','violin',this)"><span class="sp-cic">◇</span><span class="sp-clb">Violin</span></button>
 <button class="sp-cls-tab" onclick="spCls('bx-en','letter',this)"><span class="sp-cic">≡</span><span class="sp-clb">Letter-Value</span></button>
-<button class="sp-cls-tab" onclick="spCls('bx-en','rainbow',this)"><span class="sp-cic">🌈</span><span class="sp-clb">Rainbow</span></button>
+<button class="sp-cls-tab" onclick="spCls('bx-en','rainbow',this)"><span class="sp-cic">◑</span><span class="sp-clb">Rainbow</span></button>
 </div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="bx-en-basic">
-
-Standard vertical box plot. Each box spans Q1–Q3, the inner line marks the median, whiskers reach the most extreme samples within 1.5×IQR, and dots beyond are flagged as outliers. The default for distribution comparison.
-
-```python
-sp.boxplot(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "basic",
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 500,
-    sort_order: str = "none",
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -170,16 +154,6 @@ chart.show();</code></pre></div>
 
 <div class="sp-variant" id="bx-en-horizontal">
 
-Horizontal box plot with categories laid down the y-axis. Ideal when category names are long or when the user wants a left-to-right read of the value distribution.
-
-```python
-sp.boxplot(
-    "Salaries by Department (USD)",
-    labels=cats, values=vals,
-    variant="horizontal",
-)
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code> / <code>"hbox"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="b-horizontal">
@@ -202,16 +176,6 @@ chart.show()</code></pre></div>
 
 <div class="sp-variant" id="bx-en-notched">
 
-Notched box plot. The narrowing around each median is the 95% confidence interval ±1.57·IQR/√n. Two boxes whose notches do **not** overlap have significantly different medians at α≈0.05 — perfect for treatment-vs-placebo comparisons.
-
-```python
-sp.boxplot(
-    "Blood Pressure (mmHg)",
-    labels=cats, values=vals,
-    variant="notched", notch=True,
-)
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"notched"</code> / <code>"ci"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="b-notched">
@@ -232,18 +196,6 @@ chart.show()</code></pre></div>
 </div>
 
 <div class="sp-variant" id="bx-en-grouped">
-
-Grouped box plot. Pass `series=[s1, s2, ...]` where each `s` is split evenly across `labels`. Each series gets its own color and legend entry, and boxes are drawn side-by-side per category — perfect for region-by-quarter or model-by-dataset matrices.
-
-```python
-sp.boxplot(
-    "Quarterly Performance by Region",
-    labels=["Q1","Q2","Q3","Q4"],
-    series=[s_north, s_south, s_east],
-    series_names=["North","South","East"],
-    variant="grouped",
-)
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"grouped"</code> / <code>"side_by_side"</code></span><span><strong>Required</strong> <code>labels</code>, <code>series</code>, <code>series_names</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -268,16 +220,6 @@ chart.show()</code></pre></div>
 
 <div class="sp-variant" id="bx-en-points">
 
-Box plot with every raw sample drawn over the box as jittered points. Use `jitter=0..1` to control horizontal spread. Best for small-to-medium samples (n ≤ ~200 per group) where the user benefits from seeing every observation, not just the summary.
-
-```python
-sp.boxplot(
-    "Sleep Quality Score",
-    labels=cats, values=vals,
-    variant="points", show_points=True, jitter=0.4,
-)
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"points"</code> / <code>"all_points"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="b-points">
@@ -298,16 +240,6 @@ chart.show()</code></pre></div>
 </div>
 
 <div class="sp-variant" id="bx-en-outliers">
-
-Outlier-focused box plot. Outliers (samples beyond Q1−1.5·IQR or Q3+1.5·IQR) are drawn as larger circles labelled `#1`, `#2`, … so they can be discussed individually. Use this when anomaly detection or quality control is the focus.
-
-```python
-sp.boxplot(
-    "Sensor Readings (Outlier Highlight)",
-    labels=cats, values=vals,
-    variant="outliers",
-)
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outliers"</code> / <code>"fliers"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -330,16 +262,6 @@ chart.show()</code></pre></div>
 
 <div class="sp-variant" id="bx-en-strip">
 
-Strip / swarm plot. Drops the box entirely and shows a jittered cloud of points per category, with a dashed median line for reference. Best for n ≤ ~80 per group when the absolute density of observations is the message — common in psychology and small-sample science.
-
-```python
-sp.boxplot(
-    "Conversion Rate Distribution",
-    labels=cats, values=vals,
-    variant="strip", jitter=0.55,
-)
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"strip"</code> / <code>"swarm"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="b-strip">
@@ -360,16 +282,6 @@ chart.show()</code></pre></div>
 </div>
 
 <div class="sp-variant" id="bx-en-violin">
-
-Violin overlay. The Gaussian kernel-density profile (Silverman bandwidth) is mirrored around each box, so multimodality and skew become visible at a glance. Combines the best of box plot (quartile summary) and density plot (full shape).
-
-```python
-sp.boxplot(
-    "Model Accuracy Distribution",
-    labels=cats, values=vals,
-    variant="violin",
-)
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"violin"</code> / <code>"density"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -392,16 +304,6 @@ chart.show()</code></pre></div>
 
 <div class="sp-variant" id="bx-en-letter">
 
-Letter-value (boxen) plot. Instead of a single box per category, draws nested boxes at successive quantiles 1/2, 1/4, 1/8, … 1/2^k. Far more informative than the standard box plot for **large samples (n ≥ 1000)** with heavy tails — pioneered by Hofmann, Wickham & Kafadar (2017).
-
-```python
-sp.boxplot(
-    "Order Value (USD) by Region",
-    labels=cats, values=vals,
-    variant="letter_value", boxen_depth=5,
-)
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"letter_value"</code> / <code>"boxen"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Optional</strong> <code>boxen_depth</code> (2–7)</span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-tabs" id="b-letter">
@@ -422,17 +324,6 @@ chart.show()</code></pre></div>
 </div>
 
 <div class="sp-variant" id="bx-en-rainbow">
-
-Rainbow box plot. The palette is interpolated through a 7-stop spectrum (red → orange → yellow → green → cyan → indigo → violet) so categories naturally read along an ordinal dimension — months, percentiles, calibration runs, etc.
-
-```python
-sp.boxplot(
-    "Daily Temperature (Celsius)",
-    labels=["Jan","Feb","Mar","Apr","May","Jun","Jul"],
-    values=vals,
-    variant="rainbow",
-)
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"rainbow"</code> / <code>"gradient"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
