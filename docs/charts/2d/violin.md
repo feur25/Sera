@@ -28,10 +28,6 @@
 .sp-variant.sp-von{display:block;animation:spFade .25s ease}
 @keyframes spFade{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
 
-.sp-variant > p:first-of-type{margin:0;padding:14px 18px 8px;background:linear-gradient(180deg,rgba(99,102,241,.08),rgba(99,102,241,.03));border:1px solid rgba(99,102,241,.18);border-bottom:none;border-radius:10px 10px 0 0;color:#e2e8f0;font-size:14px;line-height:1.55;font-weight:500}
-.sp-variant > p:first-of-type + pre{margin:0 0 18px;padding:14px 18px 16px;background:linear-gradient(180deg,#0d1326,#080d1a);border:1px solid rgba(99,102,241,.18);border-top:none;border-radius:0 0 10px 10px;box-shadow:0 6px 18px -8px rgba(0,0,0,.6);overflow-x:auto}
-.sp-variant > p:first-of-type + pre code{background:none;padding:0;font-size:12.5px;line-height:1.55;color:#cbd5e1}
-
 .sp-vmeta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px;color:#94a3b8;margin:6px 0 16px;padding:10px 14px;background:rgba(99,102,241,.06);border-left:3px solid #6366f1;border-radius:0 6px 6px 0}
 .sp-vmeta strong{color:#a5b4fc;font-weight:700;margin-right:4px;letter-spacing:.04em;text-transform:uppercase;font-size:11px}
 .sp-vmeta code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#e2e8f0;font-size:12px}
@@ -121,10 +117,14 @@ Aliases: `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.v
 
 <div class="sp-variant" id="vl-en-basic">
 
-The cleanest violin: a symmetric KDE silhouette with no inner annotations. Use it when you want to compare distribution shapes side-by-side without the visual noise of inner statistics.
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-```python
-import seraplot as sp
+<div class="sp-tabs" id="v-basic">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('v-basic','v-basic-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('v-basic','v-basic-rust',this)">Rust</button>
+</div>
+<div id="v-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 import random
 random.seed(1)
 cats, vals = [], []
@@ -133,170 +133,325 @@ for i, c in enumerate(["Class A", "Class B", "Class C", "Class D"]):
         cats.append(c)
         vals.append(random.gauss(70 + i*5, 10 - i*0.6))
 chart = sp.violin("Exam Scores", labels=cats, values=vals, variant="basic")
-chart.show()
-```
+chart.show()</code></pre></div>
+<div id="v-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+let chart = sp::violin()
+    .title("Exam Scores")
+    .variant("basic")
+    .labels(cats)
+    .values(vals)
+    .build();
+chart.show();</code></pre></div>
+</div>
 
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/violin-basic.html"></iframe>
 
 </div>
 
 <div class="sp-variant sp-von" id="vl-en-box">
 
-The default violin: KDE silhouette wrapping a dark IQR box, a white median marker and min–max whiskers. The most informative single-glance summary of a distribution.
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"box"</code> (default)</span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-```python
-chart = sp.violin(
+<div class="sp-tabs" id="v-box">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('v-box','v-box-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('v-box','v-box-rust',this)">Rust</button>
+</div>
+<div id="v-box-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
     "Reaction Time (ms)",
     labels=cats, values=vals,
     variant="box",
     bandwidth=1.0,
 )
-chart.show()
-```
+chart.show()</code></pre></div>
+<div id="v-box-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">let chart = sp::violin()
+    .title("Reaction Time (ms)")
+    .variant("box")
+    .labels(cats).values(vals)
+    .bandwidth(1.0)
+    .build();
+chart.show();</code></pre></div>
+</div>
 
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"box"</code> (default)</span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/violin-box.html"></iframe>
 
 </div>
 
 <div class="sp-variant" id="vl-en-quartile">
 
-KDE silhouette with three dashed horizontal lines marking Q1, the median and Q3. Useful when you want to highlight the spread of the central 50% without obscuring the density shape.
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"quartile"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-```python
-chart = sp.violin(
+<div class="sp-tabs" id="v-quartile">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('v-quartile','v-quartile-py',this)">Python</button>
+</div>
+<div id="v-quartile-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
     "Salary Distribution (k$)",
     labels=cats, values=vals,
     variant="quartile",
 )
-chart.show()
-```
+chart.show()</code></pre></div>
+</div>
 
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"quartile"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/violin-quartile.html"></iframe>
 
 </div>
 
 <div class="sp-variant" id="vl-en-mean">
 
-KDE silhouette with a yellow dashed line at the mean and a small white circle at the median. Best when comparing central tendency between groups with similar shapes.
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"mean"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-```python
-chart = sp.violin(
+<div class="sp-tabs" id="v-mean">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('v-mean','v-mean-py',this)">Python</button>
+</div>
+<div id="v-mean-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
     "Daily Steps (k)",
     labels=cats, values=vals,
     variant="mean",
 )
-chart.show()
-```
+chart.show()</code></pre></div>
+</div>
 
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"mean"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/violin-mean.html"></iframe>
 
 </div>
 
 <div class="sp-variant" id="vl-en-points">
 
-KDE silhouette overlaid with every individual sample jittered horizontally. Provides full transparency about the underlying data — perfect for small to medium datasets.
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"points"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-```python
-chart = sp.violin(
+<div class="sp-tabs" id="v-points">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('v-points','v-points-py',this)">Python</button>
+</div>
+<div id="v-points-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
     "Sensor Readings",
     labels=cats, values=vals,
     variant="points",
     jitter=0.4,
 )
-chart.show()
-```
+chart.show()</code></pre></div>
+</div>
 
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"points"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/violin-points.html"></iframe>
 
 </div>
 
 <div class="sp-variant" id="vl-en-strip">
 
-Pure jittered scatter with no KDE silhouette and no box. Useful when the dataset is small enough that the raw observations are the most honest visualization.
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"strip"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-```python
-chart = sp.violin(
+<div class="sp-tabs" id="v-strip">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('v-strip','v-strip-py',this)">Python</button>
+</div>
+<div id="v-strip-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
     "Lab Replicate Counts",
     labels=cats, values=vals,
     variant="strip",
     jitter=0.5,
 )
-chart.show()
-```
+chart.show()</code></pre></div>
+</div>
 
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"strip"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/violin-strip.html"></iframe>
 
 </div>
 
 <div class="sp-variant" id="vl-en-horizontal">
 
-Rotated layout: categories along the Y-axis, values along the X-axis. Ideal when category names are long or when you have many groups to compare.
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-```python
-chart = sp.violin(
+<div class="sp-tabs" id="v-horizontal">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('v-horizontal','v-horizontal-py',this)">Python</button>
+</div>
+<div id="v-horizontal-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
     "Response Time by Region (ms)",
     labels=cats, values=vals,
     variant="horizontal",
 )
-chart.show()
-```
+chart.show()</code></pre></div>
+</div>
 
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/violin-horizontal.html"></iframe>
 
 </div>
 
 <div class="sp-variant" id="vl-en-split">
 
-Adjacent pairs of categories rendered back-to-back at a shared X position — the left half belongs to category 2k, the right half to category 2k+1. Perfect for paired comparisons (before/after, control/treatment, male/female).
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"split"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-```python
-chart = sp.violin(
+<div class="sp-tabs" id="v-split">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('v-split','v-split-py',this)">Python</button>
+</div>
+<div id="v-split-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
     "Before vs After Treatment",
     labels=cats, values=vals,
     variant="split",
 )
-chart.show()
-```
+chart.show()</code></pre></div>
+</div>
 
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"split"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/violin-split.html"></iframe>
 
 </div>
 
 <div class="sp-variant" id="vl-en-half">
 
-Single-sided violin: only the right half of the KDE is drawn, with horizontal lines at the median and the mean leaking out from the spine. A compact alternative when vertical real estate is limited.
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"half"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-```python
-chart = sp.violin(
+<div class="sp-tabs" id="v-half">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('v-half','v-half-py',this)">Python</button>
+</div>
+<div id="v-half-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
     "Latency Distribution",
     labels=cats, values=vals,
     variant="half",
 )
-chart.show()
-```
+chart.show()</code></pre></div>
+</div>
 
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"half"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/violin-half.html"></iframe>
 
 </div>
 
 <div class="sp-variant" id="vl-en-rainbow">
 
-Spectral hue rotation across categories (HSV 0°→320°), regardless of the configured palette. The inner IQR box is preserved for readability. Best for slide-deck visuals or many-category comparisons.
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"rainbow"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-```python
-chart = sp.violin(
+<div class="sp-tabs" id="v-rainbow">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('v-rainbow','v-rainbow-py',this)">Python</button>
+</div>
+<div id="v-rainbow-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
     "Genres by Rating",
     labels=cats, values=vals,
     variant="rainbow",
 )
-chart.show()
-```
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"rainbow"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
+chart.show()</code></pre></div>
 </div>
 
-</div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/violin-rainbow.html"></iframe>
+
 </div>
 
 </div>
+</div>
+
+</div><!-- /lang-en -->
+
+
+<div class="lang-fr" style="display:none">
+
+## Signature
+
+`sp.violin(title, labels=None, values=None, *, variant="box", **kwargs) -> Chart`
+
+Alias : `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.violin_unified`
+
+## Description
+
+`sp.violin()` est le point d'entrée unique pour toute la famille des violons. Le paramètre `variant` sélectionne la stratégie de rendu — tous les autres arguments restent identiques entre les variantes. L'estimation de densité par noyau (KDE), les quartiles et les statistiques sont calculés en pur Rust, sans NumPy ni pandas.
+
+| Variante | Cas d'usage | Arguments clés |
+|----------|-------------|----------------|
+| `"basic"` | Silhouette KDE symétrique épurée, sans statistiques internes | `labels`, `values` |
+| `"box"` | KDE enveloppant une boîte IQR sombre et un point médian blanc | `bandwidth` |
+| `"quartile"` | KDE avec trois lignes pointillées (Q1 / médiane / Q3) | `bandwidth` |
+| `"mean"` | KDE avec ligne moyenne pointillée et point médian | `bandwidth` |
+| `"points"` | Silhouette KDE + tous les échantillons individuels jittered | `jitter` |
+| `"strip"` | Nuage jittered pur, sans silhouette KDE | `jitter` |
+| `"horizontal"` | Disposition pivotée, idéale pour longs noms ou nombreux groupes | `bandwidth` |
+| `"split"` | Paires de catégories rendues dos à dos sur axe partagé | `bandwidth` |
+| `"half"` | Violon mono-côté (moitié droite uniquement) avec médiane + moyenne | `bandwidth` |
+| `"rainbow"` | Rotation spectrale des teintes entre catégories avec boîte interne | `bandwidth` |
+
+---
+
+## Paramètres
+
+| Paramètre | Type | Défaut | Variantes | Description |
+|-----------|------|--------|-----------|-------------|
+| `title` | `str` | — | toutes | Titre du graphique |
+| `labels` | `list[str]` | `None` | toutes | Une étiquette de catégorie par échantillon (liste plate) |
+| `values` | `list[float]` | `None` | toutes | Liste plate des valeurs alignées sur `labels` |
+| `variant` | `str` | `"box"` | toutes | Sélectionne la variante |
+| `bandwidth` | `float` | `1.0` | toutes | Multiplicateur de largeur de bande KDE (règle de Silverman) |
+| `fill_opacity` | `float` | `0.55` | toutes | Opacité de remplissage du violon (0–1) |
+| `stroke_width` | `float` | `1.4` | toutes | Épaisseur du contour en pixels |
+| `jitter` | `float` | `0.35` | points, strip | Étalement horizontal du nuage (0–1) |
+| `show_points` | `bool` | `False` | basic, box | Superpose les échantillons individuels |
+| `show_box` | `bool` | `False` | basic, quartile | Force la boîte IQR interne sur les variantes sans boîte |
+| `show_mean` | `bool` | `False` | basic, box, quartile | Force l'affichage de la ligne moyenne |
+| `palette` | `list[int]` | `None` | toutes sauf rainbow | Couleurs par catégorie (entiers hex) |
+| `width` | `int` | `900` | toutes | Largeur du canevas en px |
+| `height` | `int` | `500` | toutes | Hauteur du canevas en px |
+| `x_label` | `str` | `""` | toutes | Label axe X |
+| `y_label` | `str` | `""` | toutes | Label axe Y |
+| `gridlines` | `bool` | `False` | toutes | Lignes de grille sur l'axe des valeurs |
+| `sort_order` | `str` | `"none"` | toutes | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, `"none"` |
+| `legend_position` | `str` | `"right"` | toutes | `"right"`, `"left"`, `"top"`, `"bottom"` |
+| `background` | `str` | `None` | toutes | Couleur de fond CSS ; `None` = transparent |
+
+---
+
+## Retourne
+
+`Chart` — objet avec la propriété `.html` et la méthode `.show()`.
+
+---
+
+<div class="sp-cls sp-open" id="vl-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('vl-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab" onclick="spCls('vl-fr','basic',this)"><span class="sp-cic">◇</span><span class="sp-clb">Basique</span></button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('vl-fr','box',this)"><span class="sp-cic">▭</span><span class="sp-clb">Boîte</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-fr','quartile',this)"><span class="sp-cic">≣</span><span class="sp-clb">Quartile</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-fr','mean',this)"><span class="sp-cic">μ</span><span class="sp-clb">Moyenne</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-fr','points',this)"><span class="sp-cic">⁝</span><span class="sp-clb">Points</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-fr','strip',this)"><span class="sp-cic">⋮</span><span class="sp-clb">Bande</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-fr','horizontal',this)"><span class="sp-cic">⇆</span><span class="sp-clb">Horizontal</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-fr','split',this)"><span class="sp-cic">◐</span><span class="sp-clb">Scindé</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-fr','half',this)"><span class="sp-cic">◗</span><span class="sp-clb">Demi</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-fr','rainbow',this)"><span class="sp-cic">◑</span><span class="sp-clb">Arc-en-ciel</span></button>
+</div>
+<div class="sp-cls-body">
+
+<div class="sp-variant" id="vl-fr-basic"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-basic.html"></iframe></div>
+
+<div class="sp-variant sp-von" id="vl-fr-box"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"box"</code> (par défaut)</span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-box.html"></iframe></div>
+
+<div class="sp-variant" id="vl-fr-quartile"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"quartile"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-quartile.html"></iframe></div>
+
+<div class="sp-variant" id="vl-fr-mean"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"mean"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-mean.html"></iframe></div>
+
+<div class="sp-variant" id="vl-fr-points"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"points"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-points.html"></iframe></div>
+
+<div class="sp-variant" id="vl-fr-strip"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"strip"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-strip.html"></iframe></div>
+
+<div class="sp-variant" id="vl-fr-horizontal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"horizontal"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-horizontal.html"></iframe></div>
+
+<div class="sp-variant" id="vl-fr-split"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"split"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-split.html"></iframe></div>
+
+<div class="sp-variant" id="vl-fr-half"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"half"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-half.html"></iframe></div>
+
+<div class="sp-variant" id="vl-fr-rainbow"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"rainbow"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-rainbow.html"></iframe></div>
+
+</div>
+</div>
+
+</div><!-- /lang-fr -->
