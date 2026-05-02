@@ -41,7 +41,7 @@ pub use boxplot::{BoxplotConfig, BoxplotVariant, render_boxplot_html};
 pub use funnel::{FunnelConfig, render_funnel_html};
 pub use sunburst::{SunburstConfig, render_sunburst_html};
 pub use waterfall::{WaterfallConfig, render_waterfall_html};
-pub use violin::{ViolinConfig, render_violin_html};
+pub use violin::{ViolinConfig, ViolinVariant, render_violin_html};
 pub use slope::{SlopeConfig, render_slope_html};
 pub use bullet::{BulletConfig, render_bullet_html};
 pub use wordcloud::{WordCloudConfig, render_wordcloud_html};

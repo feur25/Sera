@@ -143,6 +143,8 @@ pub struct ChartOpts {
     pub colorscale: Option<String>,
     pub colorbar_position: Option<String>,
     pub origin_lower: Option<bool>,
+    pub show_box: Option<bool>,
+    pub show_mean: Option<bool>,
 }
 
 impl ChartOpts {
@@ -815,13 +817,22 @@ pub fn build_violin(input: &str) -> String {
     let title = title_s.as_str();
     let categories = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
-    use crate::plot::statistical::{ViolinConfig, render_violin_html};
+    use crate::plot::statistical::{ViolinConfig, ViolinVariant, render_violin_html};
     let hover = o.hj();
+    let variant = ViolinVariant::from_str(o.variant.as_deref().unwrap_or("box"));
     let html = render_violin_html(&ViolinConfig {
-        title, categories: &categories, values: &values,
+        title, variant, categories: &categories, values: &values,
         x_label: &o.xl(), y_label: &o.yl(), palette: &o.pal(), gridlines: o.grid(),
         width: o.w(900), height: o.h(500), sort_order: &o.srt(), hover: &hover,
         legend_position: &o.lp(),
+        bandwidth: o.bandwidth.unwrap_or(1.0),
+        fill_opacity: o.fill_opacity_real.unwrap_or(0.55),
+        stroke_width: o.box_stroke_width.unwrap_or(1.4),
+        show_box: o.show_box.unwrap_or(false),
+        show_points: o.show_points.unwrap_or(false),
+        show_mean: o.show_mean.unwrap_or(false),
+        jitter: o.jitter.unwrap_or(0.35),
+        kde_steps: 32,
     });
     apply(html, &o)
 }

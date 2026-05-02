@@ -1,368 +1,302 @@
-# Violin Chart
+# Violin Plot
 
 <div class="lang-en">
 
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.2em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
+.sp-tb{padding:8px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+
+.sp-cls{display:flex;gap:0;margin:1.6em 0 1.6em 36px;border-radius:14px;background:linear-gradient(180deg,#0a0f1c 0%,#060912 100%);box-shadow:0 18px 50px -12px rgba(0,0,0,.6),0 0 0 1px #1e293b inset;position:relative;overflow:visible}
+.sp-cls-rail{display:flex;flex-direction:column;background:linear-gradient(180deg,#0d1426,#070b18);border-right:1px solid #1e293b;padding:18px 0;min-width:18px;transition:min-width .28s cubic-bezier(.5,0,.2,1);position:relative;z-index:2;border-radius:14px 0 0 14px;overflow:visible}
+.sp-cls.sp-open .sp-cls-rail{min-width:180px;padding:18px 8px}
+.sp-cls-toggle{position:absolute;top:-14px;left:8px;padding:5px 9px;background:#1e293b;color:#a5b4fc;border:1px solid #312e81;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;line-height:1;z-index:5;box-shadow:0 4px 12px -2px rgba(0,0,0,.5)}
+.sp-cls-toggle:hover{background:#312e81;color:#e0e7ff;transform:translateY(-1px)}
+.sp-cls-tab{position:relative;display:flex;align-items:center;gap:8px;margin:5px 0 5px -34px;padding:11px 16px 11px 14px;background:linear-gradient(90deg,#1a2540 0%,#141d33 70%,#0f172a 100%);color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;border:none;text-align:left;white-space:nowrap;border-radius:8px 0 0 8px;box-shadow:-6px 4px 14px -4px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04),inset 1px 0 0 rgba(255,255,255,.05);transition:all .25s cubic-bezier(.5,0,.2,1);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);min-height:18px}
+.sp-cls-tab:hover{background:linear-gradient(90deg,#23304d,#1a2540 70%,#141d33);color:#e0e7ff;margin-left:-40px;box-shadow:-8px 6px 18px -4px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
+.sp-cls-tab.sp-cact{background:linear-gradient(90deg,#3730a3 0%,#1e1b4b 50%,#0f172a 100%);color:#f5f3ff;margin-left:-46px;box-shadow:-10px 8px 22px -4px rgba(99,102,241,.35),-3px 0 0 0 #818cf8 inset,inset 0 1px 0 rgba(165,180,252,.2);font-weight:700;z-index:3}
+.sp-cls-tab .sp-cic{font-size:13px;flex-shrink:0;color:#a5b4fc;font-weight:900;letter-spacing:-1px;width:16px;text-align:center;text-shadow:0 0 6px rgba(165,180,252,.4)}
+.sp-cls-tab.sp-cact .sp-cic{color:#e0e7ff;text-shadow:0 0 10px rgba(165,180,252,.7)}
+.sp-cls-tab .sp-clb{display:none;font-weight:inherit;letter-spacing:.01em}
+.sp-cls.sp-open .sp-cls-tab .sp-clb{display:inline}
+.sp-cls-body{flex:1;padding:24px 26px 22px;background:#0a0f1c;min-width:0;position:relative;z-index:1;border-radius:0 14px 14px 0;overflow:hidden}
+.sp-variant{display:none}
+.sp-variant.sp-von{display:block;animation:spFade .25s ease}
+@keyframes spFade{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+
+.sp-variant > p:first-of-type{margin:0;padding:14px 18px 8px;background:linear-gradient(180deg,rgba(99,102,241,.08),rgba(99,102,241,.03));border:1px solid rgba(99,102,241,.18);border-bottom:none;border-radius:10px 10px 0 0;color:#e2e8f0;font-size:14px;line-height:1.55;font-weight:500}
+.sp-variant > p:first-of-type + pre{margin:0 0 18px;padding:14px 18px 16px;background:linear-gradient(180deg,#0d1326,#080d1a);border:1px solid rgba(99,102,241,.18);border-top:none;border-radius:0 0 10px 10px;box-shadow:0 6px 18px -8px rgba(0,0,0,.6);overflow-x:auto}
+.sp-variant > p:first-of-type + pre code{background:none;padding:0;font-size:12.5px;line-height:1.55;color:#cbd5e1}
+
+.sp-vmeta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px;color:#94a3b8;margin:6px 0 16px;padding:10px 14px;background:rgba(99,102,241,.06);border-left:3px solid #6366f1;border-radius:0 6px 6px 0}
+.sp-vmeta strong{color:#a5b4fc;font-weight:700;margin-right:4px;letter-spacing:.04em;text-transform:uppercase;font-size:11px}
+.sp-vmeta code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#e2e8f0;font-size:12px}
+.sp-preview-frame{width:100%;height:420px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+.sp-preview-label{font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact');if(window.hljs)document.getElementById(scope+'-'+name).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
+</script>
+
 ## Signature
 
-```python
-sp.build_violin(
-    title: str,
-    categories: list[str],
-    values: list[float],
-    *,
-    color_hex: int = 0x6366F1,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = True,
-    bandwidth: float = 1.0,
-) -> Chart
-```
+`sp.violin(title, labels=None, values=None, *, variant="box", **kwargs) -> Chart`
 
-Aliases: `sp.violin`
-
----
+Aliases: `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.violin_unified`
 
 ## Description
 
-A violin chart combines a box plot with a kernel density estimate (KDE) to show both summary statistics and the full probability distribution shape of each group. The mirrored symmetrical shape makes it easy to spot bimodal distributions, long tails, and concentration regions that a box plot would hide. `values` is a flat list concatenating all groups' samples; groups must have equal sample counts. `bandwidth` scales the KDE smoothing kernel — lower values reveal more detail, higher values produce smoother shapes.
+`sp.violin()` is the unified entry point for the entire violin-plot family. The `variant` keyword selects the rendering strategy — every other argument stays consistent across variants. The kernel-density estimation, quartiles and statistics are computed in pure Rust, no NumPy or pandas required.
 
-**Ideal for:**
-- Comparing full distribution shapes across groups
-- Detecting bimodality or heavy tails invisible in box plots
-- Scientific and academic data analysis requiring more than just quartiles
+| Variant | Use case | Key extra args |
+|---------|----------|----------------|
+| `"basic"` | Clean symmetric KDE silhouette, no inner stats | `labels`, `values` |
+| `"box"` | KDE wrapping a dark IQR box and white median dot | `bandwidth` |
+| `"quartile"` | KDE with three dashed quartile lines (Q1/median/Q3) | `bandwidth` |
+| `"mean"` | KDE with mean dashed line and median dot | `bandwidth` |
+| `"points"` | KDE silhouette with every individual sample jittered | `jitter` |
+| `"strip"` | Pure jittered scatter with no KDE silhouette | `jitter` |
+| `"horizontal"` | Rotated layout, ideal for many categories or long names | `bandwidth` |
+| `"split"` | Pairs of categories rendered back-to-back on shared axis | `bandwidth` |
+| `"half"` | Single-sided violin (right half only) with median + mean | `bandwidth` |
+| `"rainbow"` | Spectral hue rotation across categories with inner box | `bandwidth` |
 
 ---
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | `str` | — | Chart title displayed at the top |
-| `categories` | `list[str]` | — | Name of each group |
-| `values` | `list[float]` | — | Flat list of all observations; must have equal samples per group |
-| `color_hex` | `int` | `0x6366F1` | Single violin color when no palette is provided |
-| `palette` | `list[int] \| None` | `None` | Per-group colors as hex integers |
-| `width` | `int` | `900` | Canvas width in pixels |
-| `height` | `int` | `480` | Canvas height in pixels |
-| `x_label` | `str` | `""` | Label for the X axis |
-| `y_label` | `str` | `""` | Label for the Y axis |
-| `gridlines` | `bool` | `True` | Draw horizontal gridlines |
-| `bandwidth` | `float` | `1.0` | KDE bandwidth multiplier; lower = more detail, higher = smoother |
+| Parameter | Type | Default | Variants | Description |
+|-----------|------|---------|----------|-------------|
+| `title` | `str` | — | all | Chart title shown at the top |
+| `labels` | `list[str]` | `None` | all | One category label per sample (flat list) |
+| `values` | `list[float]` | `None` | all | Flat list of numeric samples aligned with `labels` |
+| `variant` | `str` | `"box"` | all | Selects the violin variant |
+| `bandwidth` | `float` | `1.0` | all | KDE bandwidth multiplier (Silverman rule scaled) |
+| `fill_opacity` | `float` | `0.55` | all | Violin body fill opacity (0–1) |
+| `stroke_width` | `float` | `1.4` | all | Violin outline stroke width in pixels |
+| `jitter` | `float` | `0.35` | points, strip | Horizontal scatter spread (0–1) |
+| `show_points` | `bool` | `False` | basic, box | Overlay individual samples on top |
+| `show_box` | `bool` | `False` | basic, quartile | Force inner IQR box on non-box variants |
+| `show_mean` | `bool` | `False` | basic, box, quartile | Force mean dashed line |
+| `palette` | `list[int]` | `None` | all except rainbow | Per-category fill colors as hex integers |
+| `width` | `int` | `900` | all | Canvas width in pixels |
+| `height` | `int` | `500` | all | Canvas height in pixels |
+| `x_label` | `str` | `""` | all | X-axis label |
+| `y_label` | `str` | `""` | all | Y-axis label |
+| `gridlines` | `bool` | `False` | all | Show gridlines on the value axis |
+| `sort_order` | `str` | `"none"` | all | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, or `"none"` |
+| `legend_position` | `str` | `"right"` | all | `"right"`, `"left"`, `"top"`, `"bottom"` |
+| `background` | `str` | `None` | all | Background CSS color; `None` = transparent |
 
 ---
 
 ## Returns
 
-`Chart`
+`Chart` — object with `.html` property and `.show()` method.
 
 ---
 
-<style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
-<script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
-
-<div class="sp-tabs" id="violin">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('violin','violin-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('violin','violin-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('violin','violin-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('violin','violin-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('violin','violin-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('violin','violin-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('violin','violin-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('violin','violin-cpp',this)">C++</button>
+<div class="sp-cls sp-open" id="vl-en">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('vl-en')" title="Collapse / expand">⇆</button>
+<button class="sp-cls-tab" onclick="spCls('vl-en','basic',this)"><span class="sp-cic">◇</span><span class="sp-clb">Basic</span></button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('vl-en','box',this)"><span class="sp-cic">▭</span><span class="sp-clb">Box</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-en','quartile',this)"><span class="sp-cic">≣</span><span class="sp-clb">Quartile</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-en','mean',this)"><span class="sp-cic">μ</span><span class="sp-clb">Mean</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-en','points',this)"><span class="sp-cic">⁝</span><span class="sp-clb">Points</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-en','strip',this)"><span class="sp-cic">⋮</span><span class="sp-clb">Strip</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-en','horizontal',this)"><span class="sp-cic">⇆</span><span class="sp-clb">Horizontal</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-en','split',this)"><span class="sp-cic">◐</span><span class="sp-clb">Split</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-en','half',this)"><span class="sp-cic">◗</span><span class="sp-clb">Half</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-en','rainbow',this)"><span class="sp-cic">◑</span><span class="sp-clb">Rainbow</span></button>
 </div>
-<div id="violin-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.violin(
-    title="Salary distributions by department",
-    categories=["Engineering", "Marketing", "Sales"],
-    values=[
-        85000, 92000, 78000, 105000, 95000, 88000, 110000, 82000,  # Engineering
-        55000, 62000, 58000,  65000, 60000, 57000,  63000, 59000,  # Marketing
-        70000, 75000, 68000,  80000, 72000, 77000,  65000, 73000,  # Sales
-    ],
-    y_label="Annual Salary ($)",
-)
-chart.show()</code></pre></div>
-<div id="violin-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-const chart = sp.violin({
-  title: "Salary distributions by department",
-  categories: ["Engineering", "Marketing", "Sales"],
-  values: [
-    85000, 92000, 78000, 105000, 95000, 88000, 110000, 82000,
-    55000, 62000, 58000,  65000, 60000, 57000,  63000, 59000,
-    70000, 75000, 68000,  80000, 72000, 77000,  65000, 73000,
-  ],
-  yLabel: "Annual Salary ($)",
-});
-chart.show();</code></pre></div>
-<div id="violin-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-const chart = sp.violin({
-  title: "Salary distributions by department",
-  categories: ["Engineering", "Marketing", "Sales"],
-  values: [
-    85000, 92000, 78000, 105000, 95000, 88000, 110000, 82000,
-    55000, 62000, 58000,  65000, 60000, 57000,  63000, 59000,
-    70000, 75000, 68000,  80000, 72000, 77000,  65000, 73000,
-  ],
-  yLabel: "Annual Salary ($)",
-});
-chart.show();</code></pre></div>
-<div id="violin-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$violin(
-  title = "Salary distributions by department",
-  categories = c("Engineering", "Marketing", "Sales"),
-  values = c(
-    85000, 92000, 78000, 105000, 95000, 88000, 110000, 82000,
-    55000, 62000, 58000,  65000, 60000, 57000,  63000, 59000,
-    70000, 75000, 68000,  80000, 72000, 77000,  65000, 73000
-  ),
-  y_label = "Annual Salary ($)"
-)
-chart$show()</code></pre></div>
-<div id="violin-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-var chart = SeraPlot.violin()
-    .title("Salary distributions by department")
-    .categories(List.of("Engineering", "Marketing", "Sales"))
-    .values(List.of(
-        85000.0, 92000.0, 78000.0, 105000.0, 95000.0, 88000.0, 110000.0, 82000.0,
-        55000.0, 62000.0, 58000.0,  65000.0, 60000.0, 57000.0,  63000.0, 59000.0,
-        70000.0, 75000.0, 68000.0,  80000.0, 72000.0, 77000.0,  65000.0, 73000.0
-    ))
-    .yLabel("Annual Salary ($)")
-    .build();
-chart.show();</code></pre></div>
-<div id="violin-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-var chart = Sp.Violin(
-    title: "Salary distributions by department",
-    categories: new[]{"Engineering", "Marketing", "Sales"},
-    values: new[]{
-        85000, 92000, 78000, 105000, 95000, 88000, 110000, 82000,
-        55000, 62000, 58000,  65000, 60000, 57000,  63000, 59000,
-        70000, 75000, 68000,  80000, 72000, 77000,  65000, 73000,
-    },
-    yLabel: "Annual Salary ($)"
-);
-chart.Show();</code></pre></div>
-<div id="violin-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-val chart = sp.violin(
-  title = "Salary distributions by department",
-  categories = List("Engineering", "Marketing", "Sales"),
-  values = List(
-    85000, 92000, 78000, 105000, 95000, 88000, 110000, 82000,
-    55000, 62000, 58000,  65000, 60000, 57000,  63000, 59000,
-    70000, 75000, 68000,  80000, 72000, 77000,  65000, 73000
-  ),
-  y_label = "Annual Salary ($)"
-)
-chart.show()</code></pre></div>
-<div id="violin-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-auto chart = sp::violin({
-  .title      = "Salary distributions by department",
-  .categories = {"Engineering", "Marketing", "Sales"},
-  .values     = {
-    85000, 92000, 78000, 105000, 95000, 88000, 110000, 82000,
-    55000, 62000, 58000,  65000, 60000, 57000,  63000, 59000,
-    70000, 75000, 68000,  80000, 72000, 77000,  65000, 73000
-  },
-  .y_label    = "Annual Salary ($)"
-});
-chart.show();</code></pre></div>
-</div>
+<div class="sp-cls-body">
 
-<iframe src="../../previews/violin.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<div class="sp-variant" id="vl-en-basic">
 
----
-
-## See also
-
-- [boxplot.md](boxplot.md) — Five-number summary without density estimate
-- [kde.md](kde.md) — Standalone kernel density estimate
-- [ridgeline.md](ridgeline.md) — Stacked KDE curves per group
-
-</div>
-
-<div class="lang-fr">
-
-## Signature
+The cleanest violin: a symmetric KDE silhouette with no inner annotations. Use it when you want to compare distribution shapes side-by-side without the visual noise of inner statistics.
 
 ```python
-sp.build_violin(
-    title: str,
-    categories: list[str],
-    values: list[float],
-    *,
-    color_hex: int = 0x6366F1,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = True,
-    bandwidth: float = 1.0,
-) -> Chart
+import seraplot as sp
+import random
+random.seed(1)
+cats, vals = [], []
+for i, c in enumerate(["Class A", "Class B", "Class C", "Class D"]):
+    for _ in range(60):
+        cats.append(c)
+        vals.append(random.gauss(70 + i*5, 10 - i*0.6))
+chart = sp.violin("Exam Scores", labels=cats, values=vals, variant="basic")
+chart.show()
 ```
 
-Aliases: `sp.violin`
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
----
-
-## Description
-
-Un graphique en violon combine une boîte à moustaches avec une estimation par noyau de densité (KDE) pour montrer à la fois les statistiques récapitulatives et la forme complète de la distribution de probabilité de chaque groupe. La forme symétrique en miroir facilite la détection des distributions bimodales, des queues longues et des zones de concentration qu'une boîte à moustaches dissimulerait. `values` est une liste plate concaténant les échantillons de tous les groupes ; les groupes doivent avoir un nombre égal d'observations. `bandwidth` ajuste le noyau de lissage KDE — des valeurs faibles révèlent plus de détails, des valeurs élevées produisent des formes plus lisses.
-
-**Idéal pour :**
-- Comparer la forme complète des distributions entre groupes
-- Détecter la bimodalité ou les queues lourdes invisibles dans les boîtes à moustaches
-- L'analyse de données scientifiques et académiques nécessitant plus que de simples quartiles
-
----
-
-## Paramètres
-
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `title` | `str` | — | Titre du graphique affiché en haut |
-| `categories` | `list[str]` | — | Nom de chaque groupe |
-| `values` | `list[float]` | — | Liste plate de toutes les observations ; doit avoir un nombre égal d'échantillons par groupe |
-| `color_hex` | `int` | `0x6366F1` | Couleur de violon unique quand aucune palette n'est fournie |
-| `palette` | `list[int] \| None` | `None` | Couleurs par groupe en entiers hexadécimaux |
-| `width` | `int` | `900` | Largeur du canevas en pixels |
-| `height` | `int` | `480` | Hauteur du canevas en pixels |
-| `x_label` | `str` | `""` | Label de l'axe X |
-| `y_label` | `str` | `""` | Label de l'axe Y |
-| `gridlines` | `bool` | `True` | Afficher des lignes de grille horizontales |
-| `bandwidth` | `float` | `1.0` | Multiplicateur de bande passante KDE ; faible = plus de détails, élevé = plus lisse |
-
----
-
-## Retourne
-
-`Chart`
-
----
-
-<div class="sp-tabs" id="violin-fr">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('violin-fr','violin-fr-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('violin-fr','violin-fr-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('violin-fr','violin-fr-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('violin-fr','violin-fr-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('violin-fr','violin-fr-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('violin-fr','violin-fr-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('violin-fr','violin-fr-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('violin-fr','violin-fr-cpp',this)">C++</button>
 </div>
-<div id="violin-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+<div class="sp-variant sp-von" id="vl-en-box">
+
+The default violin: KDE silhouette wrapping a dark IQR box, a white median marker and min–max whiskers. The most informative single-glance summary of a distribution.
+
+```python
 chart = sp.violin(
-    title="Distributions salariales par département",
-    categories=["Ingénierie", "Marketing", "Ventes"],
-    values=[
-        85000, 92000, 78000, 105000, 95000, 88000, 110000, 82000,  # Ingénierie
-        55000, 62000, 58000,  65000, 60000, 57000,  63000, 59000,  # Marketing
-        70000, 75000, 68000,  80000, 72000, 77000,  65000, 73000,  # Ventes
-    ],
-    y_label="Salaire annuel (€)",
+    "Reaction Time (ms)",
+    labels=cats, values=vals,
+    variant="box",
+    bandwidth=1.0,
 )
-chart.show()</code></pre></div>
-<div id="violin-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-const chart = sp.violin({
-  title: "Distributions salariales par département",
-  categories: ["Ingénierie", "Marketing", "Ventes"],
-  values: [
-    85000, 92000, 78000, 105000, 95000, 88000, 110000, 82000,
-    55000, 62000, 58000,  65000, 60000, 57000,  63000, 59000,
-    70000, 75000, 68000,  80000, 72000, 77000,  65000, 73000,
-  ],
-  yLabel: "Salaire annuel (€)",
-});
-chart.show();</code></pre></div>
-<div id="violin-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-const chart = sp.violin({
-  title: "Distributions salariales par département",
-  categories: ["Ingénierie", "Marketing", "Ventes"],
-  values: [
-    85000, 92000, 78000, 105000, 95000, 88000, 110000, 82000,
-    55000, 62000, 58000,  65000, 60000, 57000,  63000, 59000,
-    70000, 75000, 68000,  80000, 72000, 77000,  65000, 73000,
-  ],
-  yLabel: "Salaire annuel (€)",
-});
-chart.show();</code></pre></div>
-<div id="violin-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$violin(
-  title = "Distributions salariales par département",
-  categories = c("Ingénierie", "Marketing", "Ventes"),
-  values = c(
-    85000, 92000, 78000, 105000, 95000, 88000, 110000, 82000,
-    55000, 62000, 58000,  65000, 60000, 57000,  63000, 59000,
-    70000, 75000, 68000,  80000, 72000, 77000,  65000, 73000
-  ),
-  y_label = "Salaire annuel (€)"
-)
-chart$show()</code></pre></div>
-<div id="violin-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-var chart = SeraPlot.violin()
-    .title("Distributions salariales par département")
-    .categories(List.of("Ingénierie", "Marketing", "Ventes"))
-    .values(List.of(
-        85000.0, 92000.0, 78000.0, 105000.0, 95000.0, 88000.0, 110000.0, 82000.0,
-        55000.0, 62000.0, 58000.0,  65000.0, 60000.0, 57000.0,  63000.0, 59000.0,
-        70000.0, 75000.0, 68000.0,  80000.0, 72000.0, 77000.0,  65000.0, 73000.0
-    ))
-    .yLabel("Salaire annuel (€)")
-    .build();
-chart.show();</code></pre></div>
-<div id="violin-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-var chart = Sp.Violin(
-    title: "Distributions salariales par département",
-    categories: new[]{"Ingénierie", "Marketing", "Ventes"},
-    values: new[]{
-        85000, 92000, 78000, 105000, 95000, 88000, 110000, 82000,
-        55000, 62000, 58000,  65000, 60000, 57000,  63000, 59000,
-        70000, 75000, 68000,  80000, 72000, 77000,  65000, 73000,
-    },
-    yLabel: "Salaire annuel (€)"
-);
-chart.Show();</code></pre></div>
-<div id="violin-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-val chart = sp.violin(
-  title = "Distributions salariales par département",
-  categories = List("Ingénierie", "Marketing", "Ventes"),
-  values = List(
-    85000, 92000, 78000, 105000, 95000, 88000, 110000, 82000,
-    55000, 62000, 58000,  65000, 60000, 57000,  63000, 59000,
-    70000, 75000, 68000,  80000, 72000, 77000,  65000, 73000
-  ),
-  y_label = "Salaire annuel (€)"
-)
-chart.show()</code></pre></div>
-<div id="violin-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-auto chart = sp::violin({
-  .title      = "Distributions salariales par département",
-  .categories = {"Ingénierie", "Marketing", "Ventes"},
-  .values     = {
-    85000, 92000, 78000, 105000, 95000, 88000, 110000, 82000,
-    55000, 62000, 58000,  65000, 60000, 57000,  63000, 59000,
-    70000, 75000, 68000,  80000, 72000, 77000,  65000, 73000
-  },
-  .y_label    = "Salaire annuel (€)"
-});
-chart.show();</code></pre></div>
+chart.show()
+```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"box"</code> (default)</span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
 </div>
 
-<iframe src="../../previews/violin.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<div class="sp-variant" id="vl-en-quartile">
 
----
+KDE silhouette with three dashed horizontal lines marking Q1, the median and Q3. Useful when you want to highlight the spread of the central 50% without obscuring the density shape.
 
-## Voir aussi
+```python
+chart = sp.violin(
+    "Salary Distribution (k$)",
+    labels=cats, values=vals,
+    variant="quartile",
+)
+chart.show()
+```
 
-- [boxplot.md](boxplot.md) — Résumé en cinq chiffres sans estimation de densité
-- [kde.md](kde.md) — Estimation par noyau de densité autonome
-- [ridgeline.md](ridgeline.md) — Courbes KDE empilées par groupe
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"quartile"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+</div>
+
+<div class="sp-variant" id="vl-en-mean">
+
+KDE silhouette with a yellow dashed line at the mean and a small white circle at the median. Best when comparing central tendency between groups with similar shapes.
+
+```python
+chart = sp.violin(
+    "Daily Steps (k)",
+    labels=cats, values=vals,
+    variant="mean",
+)
+chart.show()
+```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"mean"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+</div>
+
+<div class="sp-variant" id="vl-en-points">
+
+KDE silhouette overlaid with every individual sample jittered horizontally. Provides full transparency about the underlying data — perfect for small to medium datasets.
+
+```python
+chart = sp.violin(
+    "Sensor Readings",
+    labels=cats, values=vals,
+    variant="points",
+    jitter=0.4,
+)
+chart.show()
+```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"points"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+</div>
+
+<div class="sp-variant" id="vl-en-strip">
+
+Pure jittered scatter with no KDE silhouette and no box. Useful when the dataset is small enough that the raw observations are the most honest visualization.
+
+```python
+chart = sp.violin(
+    "Lab Replicate Counts",
+    labels=cats, values=vals,
+    variant="strip",
+    jitter=0.5,
+)
+chart.show()
+```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"strip"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+</div>
+
+<div class="sp-variant" id="vl-en-horizontal">
+
+Rotated layout: categories along the Y-axis, values along the X-axis. Ideal when category names are long or when you have many groups to compare.
+
+```python
+chart = sp.violin(
+    "Response Time by Region (ms)",
+    labels=cats, values=vals,
+    variant="horizontal",
+)
+chart.show()
+```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+</div>
+
+<div class="sp-variant" id="vl-en-split">
+
+Adjacent pairs of categories rendered back-to-back at a shared X position — the left half belongs to category 2k, the right half to category 2k+1. Perfect for paired comparisons (before/after, control/treatment, male/female).
+
+```python
+chart = sp.violin(
+    "Before vs After Treatment",
+    labels=cats, values=vals,
+    variant="split",
+)
+chart.show()
+```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"split"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+</div>
+
+<div class="sp-variant" id="vl-en-half">
+
+Single-sided violin: only the right half of the KDE is drawn, with horizontal lines at the median and the mean leaking out from the spine. A compact alternative when vertical real estate is limited.
+
+```python
+chart = sp.violin(
+    "Latency Distribution",
+    labels=cats, values=vals,
+    variant="half",
+)
+chart.show()
+```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"half"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+</div>
+
+<div class="sp-variant" id="vl-en-rainbow">
+
+Spectral hue rotation across categories (HSV 0°→320°), regardless of the configured palette. The inner IQR box is preserved for readability. Best for slide-deck visuals or many-category comparisons.
+
+```python
+chart = sp.violin(
+    "Genres by Rating",
+    labels=cats, values=vals,
+    variant="rainbow",
+)
+chart.show()
+```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"rainbow"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+</div>
+
+</div>
+</div>
 
 </div>

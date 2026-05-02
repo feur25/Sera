@@ -27,6 +27,14 @@ macro_rules! plot_family {
             pub fn all() -> &'static [$name] {
                 &[ $( $name::$variant ),* ]
             }
+
+            pub fn keys_and_aliases() -> &'static [(&'static str, &'static [&'static str])] {
+                &[ $( ($key, &[ $( $alias ),* ]) ),* ]
+            }
+
+            pub fn default_key() -> &'static str {
+                $name::$default.name()
+            }
         }
 
         impl Default for $name {

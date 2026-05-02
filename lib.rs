@@ -142,6 +142,7 @@ fn build_labels_js(pos: &str, forced: &str) -> String {
     s.push_str("if(window.__SL__)return;window.__SL__=1;");
     s.push_str("function esc(t){return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');}");
     s.push_str("function gl2d(svg){var a=[];svg.querySelectorAll('[data-legend]').forEach(function(lg){var rc=lg.querySelector('rect');var tx=lg.querySelector('text');var l=tx?tx.textContent:'';if(!l)return;a.push({lb:l,co:rc?rc.getAttribute('fill'):'',se:lg.getAttribute('data-series')});});return a;}");
+    s.push_str("function glCat(svg){var a=[],seen={};svg.querySelectorAll('[data-idx][data-lbl]').forEach(function(el){var lb=el.getAttribute('data-lbl');if(!lb||seen[lb])return;seen[lb]=1;var co=el.getAttribute('fill')||'';a.push({lb:lb,co:co,se:null,idx:el.getAttribute('data-idx')});});return a;}");
     s.push_str("function gl3d(){var sc=document.querySelectorAll('script'),cl=null,pl=[];for(var i=0;i<sc.length;i++){var m=sc[i].textContent.match(/var CL=\\[([\\s\\S]*?)\\];/);if(m){try{cl=JSON.parse('['+m[1]+']');}catch(e){var a=m[1].match(/'([^']*)'/g)||[];cl=a.map(function(x){return x.slice(1,-1);});}break;}}if(!cl||!cl.length)return[];for(var j=0;j<sc.length;j++){var pm=sc[j].textContent.match(/var PAL=\\[([\\s\\S]*?)\\];/);if(pm){try{pl=JSON.parse('['+pm[1]+']');}catch(e){}break;}}var seen={},arr=[];cl.forEach(function(l){if(!seen[l]){seen[l]=1;arr.push({lb:l,co:pl[arr.length%pl.length]||'',se:null});}});return arr;}");
     s.push_str("function glColors(svg){var pal=[];if(!svg)return pal;var seen={};svg.querySelectorAll('rect[fill],path[fill],circle[fill]').forEach(function(e){var f=e.getAttribute('fill');if(f&&f!=='none'&&f!=='#fff'&&f!=='#ffffff'&&!seen[f]){seen[f]=1;pal.push(f);}});return pal;}");
     s.push_str(&format!("var POS='{}';", p));
@@ -156,7 +157,7 @@ fn build_labels_js(pos: &str, forced: &str) -> String {
     s.push_str("var cont=document.querySelector('.chart-container')||document.querySelector('.c3w');if(!cont)return;");
     s.push_str("if(getComputedStyle(cont).position==='static')cont.style.position='relative';");
     s.push_str("var svg=cont.querySelector('svg');");
-    s.push_str("var items;if(FRC){var ac=glColors(svg);items=FRC.map(function(f,i){return{lb:f.l,co:f.c||(ac[i%ac.length]||''),se:f.s};});}else{items=svg?gl2d(svg):gl3d();}");
+    s.push_str("var items;if(FRC){var ac=glColors(svg);items=FRC.map(function(f,i){return{lb:f.l,co:f.c||(ac[i%ac.length]||''),se:f.s};});}else{items=svg?gl2d(svg):gl3d();if((!items||items.length<2)&&svg){var cats=glCat(svg);if(cats.length>=2)items=cats;}}");
     s.push_str("if(!items.length)return;");
     s.push_str("var ov=document.createElement('div');");
     s.push_str("var isH=POS==='top'||POS==='bottom';");
@@ -168,13 +169,13 @@ fn build_labels_js(pos: &str, forced: &str) -> String {
     s.push_str("var dis=[];");
     s.push_str("var rb=document.createElement('span');rb.textContent='\\u21BA';rb.title='Show all';");
     s.push_str("rb.style.cssText='display:none;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.6);color:#f1f5f9;font-size:13px;cursor:pointer;border:1px solid rgba(255,255,255,.2);align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(4px);';");
-    s.push_str("rb.addEventListener('click',function(){dis.forEach(function(d){d.b.style.display='';setTimeout(function(){d.b.style.opacity='1';},10);if(d.se!=null&&svg){svg.querySelectorAll('[data-series=\"'+d.se+'\"]:not([data-legend])').forEach(function(e){e.style.display='';});}});dis=[];rb.style.display='none';});");
+    s.push_str("rb.addEventListener('click',function(){dis.forEach(function(d){d.b.style.display='';setTimeout(function(){d.b.style.opacity='1';},10);if(svg){if(d.se!=null)svg.querySelectorAll('[data-series=\"'+d.se+'\"]:not([data-legend])').forEach(function(e){e.style.display='';});else if(d.ix!=null)svg.querySelectorAll('[data-idx=\"'+d.ix+'\"]').forEach(function(e){e.style.display='';});}});dis=[];rb.style.display='none';});");
     s.push_str("items.forEach(function(it){");
     s.push_str("var b=document.createElement('span');");
     s.push_str("b.style.cssText='display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;user-select:none;transition:opacity .2s;background:rgba(0,0,0,.55);color:#f1f5f9;border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(4px);white-space:nowrap;';");
     s.push_str("if(it.co){var d=document.createElement('span');d.style.cssText='width:8px;height:8px;border-radius:50%;flex-shrink:0;background:'+it.co+';';b.appendChild(d);}");
     s.push_str("b.appendChild(document.createTextNode(esc(it.lb)));");
-    s.push_str("b.addEventListener('click',function(){b.style.opacity='0';setTimeout(function(){b.style.display='none';},200);dis.push({b:b,se:it.se});rb.style.display='inline-flex';if(it.se!=null&&svg){svg.querySelectorAll('[data-series=\"'+it.se+'\"]:not([data-legend])').forEach(function(e){e.style.display='none';});}});");
+    s.push_str("b.addEventListener('click',function(){b.style.opacity='0';setTimeout(function(){b.style.display='none';},200);dis.push({b:b,se:it.se,ix:it.idx});rb.style.display='inline-flex';if(svg){if(it.se!=null)svg.querySelectorAll('[data-series=\"'+it.se+'\"]:not([data-legend])').forEach(function(e){e.style.display='none';});else if(it.idx!=null)svg.querySelectorAll('[data-idx=\"'+it.idx+'\"]').forEach(function(e){e.style.display='none';});}});");
     s.push_str("ov.appendChild(b);});");
     s.push_str("ov.appendChild(rb);cont.appendChild(ov);");
     s.push_str("});})();</script></body>");
@@ -395,6 +396,37 @@ impl Chart {
         self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_ZOOM_JS), 1))
     }
 
+    fn flip(&self) -> Chart {
+        self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_FLIP_JS), 1))
+    }
+
+    fn horizontal(&self) -> Chart {
+        self.flip()
+    }
+
+    #[pyo3(signature = (order="desc"))]
+    fn sort_by(&self, order: &str) -> Chart {
+        let ord = match order { "asc" | "desc" | "alpha" | "alpha_desc" | "none" => order, _ => "desc" };
+        let snippet = format!("<script>window.__sp_sort__={};{}</script></body>", json_str(ord), SP_SORT_JS);
+        self.propagate(self.html.replacen("</body>", &snippet, 1))
+    }
+
+    #[pyo3(signature = (position="right"))]
+    fn legend(&self, position: &str) -> Chart {
+        let pos = match position { "right" | "left" | "top" | "bottom" | "none" => position, _ => "right" };
+        if pos == "none" {
+            return self.no_legend();
+        }
+        let snippet = format!("<script>window.__sp_legend_pos__={};{}</script></body>", json_str(pos), SP_LEGEND_JS);
+        self.propagate(self.html.replacen("</body>", &snippet, 1))
+    }
+
+    #[pyo3(signature = (angle))]
+    fn rotate_labels(&self, angle: i32) -> Chart {
+        let css = format!("<style>.sp-xt{{transform-box:fill-box;transform-origin:center;transform:rotate({}deg)}}</style></head>", angle);
+        self.propagate(self.html.replacen("</head>", &css, 1))
+    }
+
     fn responsive(&self) -> Chart {
         self.propagate(self.html.replacen("</head>", "<style>svg{width:100%!important;height:auto!important}</style></head>", 1))
     }
@@ -609,6 +641,15 @@ const SP_CROSSHAIR_JS: &str = "(function(){if(window.__spc__)return;window.__spc
 
 #[cfg(feature = "python")]
 const SP_ZOOM_JS: &str = "(function(){if(window.__spz__)return;window.__spz__=1;var svg=document.querySelector('svg');if(!svg)return;var s=1,tx=0,ty=0,dr=false,sx,sy;svg.style.cursor='grab';svg.addEventListener('wheel',function(e){e.preventDefault();var z=e.deltaY<0?1.1:0.9;s=Math.min(Math.max(s*z,0.5),10);svg.style.transform='scale('+s+') translate('+tx+'px,'+ty+'px)';svg.style.transformOrigin='center center';},{passive:false});svg.addEventListener('mousedown',function(e){dr=true;sx=e.clientX-tx;sy=e.clientY-ty;svg.style.cursor='grabbing';});window.addEventListener('mouseup',function(){dr=false;if(svg)svg.style.cursor='grab';});svg.addEventListener('mousemove',function(e){if(!dr)return;tx=e.clientX-sx;ty=e.clientY-sy;svg.style.transform='scale('+s+') translate('+tx+'px,'+ty+'px)';});svg.addEventListener('dblclick',function(){s=1;tx=0;ty=0;svg.style.transform='';});})()";
+
+#[cfg(feature = "python")]
+const SP_FLIP_JS: &str = "(function(){if(window.__spfl__)return;window.__spfl__=1;var svg=document.querySelector('svg');if(!svg)return;var m=svg.getAttribute('data-sp');if(!m)return;var p=m.split(',').map(Number),pL=p[0],pT=p[1],pW=p[2],pH=p[3];var rects=svg.querySelectorAll('rect[data-idx][data-v]');if(!rects.length)return;var n=rects.length,vals=[],ymax=0,ymin=0;for(var i=0;i<n;i++){var v=parseFloat(rects[i].getAttribute('data-v'));vals.push(v);if(v>ymax)ymax=v;if(v<ymin)ymin=v;}var rg=ymax-ymin;if(rg<1e-12)rg=1;var slotH=pH/n,barH=Math.max(2,slotH*0.7);for(var i=0;i<n;i++){var v=vals[i];var newW=Math.max(1,(v-ymin)/rg*pW);var ny=pT+i*slotH+(slotH-barH)/2;rects[i].setAttribute('x',pL);rects[i].setAttribute('y',ny);rects[i].setAttribute('width',newW);rects[i].setAttribute('height',barH);}var xts=svg.querySelectorAll('.sp-xt');for(var k=0;k<xts.length&&k<n;k++){xts[k].setAttribute('y',pT+k*slotH+slotH/2+4);xts[k].setAttribute('x',pL-8);xts[k].setAttribute('text-anchor','end');}var yts=svg.querySelectorAll('.sp-yt'),nT=yts.length;for(var j=0;j<nT;j++){var f=nT>1?j/(nT-1):0;var nx=pL+f*pW;var v2=ymin+f*rg;yts[j].setAttribute('x',nx);yts[j].setAttribute('y',pT+pH+16);yts[j].setAttribute('text-anchor','middle');yts[j].textContent=Math.abs(v2)>=1000?Math.round(v2).toString():(+v2).toFixed(2);}var gls=svg.querySelectorAll('.sp-gl');for(var g=0;g<gls.length;g++){var f=gls.length>1?(g+1)/(gls.length+1):0.5;var nx=pL+f*pW;gls[g].setAttribute('x1',nx);gls[g].setAttribute('x2',nx);gls[g].setAttribute('y1',pT);gls[g].setAttribute('y2',pT+pH);}})()";
+
+#[cfg(feature = "python")]
+const SP_SORT_JS: &str = "(function(){if(window.__spso__)return;window.__spso__=1;var ord=window.__sp_sort__||'desc';if(ord==='none')return;var svg=document.querySelector('svg');if(!svg)return;var rects=Array.prototype.slice.call(svg.querySelectorAll('rect[data-idx][data-v]'));if(rects.length<2)return;var items=rects.map(function(r){return{r:r,v:parseFloat(r.getAttribute('data-v'))||0,lb:r.getAttribute('data-lbl')||'',x:parseFloat(r.getAttribute('x'))||0,y:parseFloat(r.getAttribute('y'))||0,h:parseFloat(r.getAttribute('height'))||0,w:parseFloat(r.getAttribute('width'))||0};});var horizontal=items[0].h<items[0].w*0.5&&items[0].x<100;var cmp;if(ord==='asc')cmp=function(a,b){return a.v-b.v;};else if(ord==='desc')cmp=function(a,b){return b.v-a.v;};else if(ord==='alpha')cmp=function(a,b){return a.lb.localeCompare(b.lb);};else if(ord==='alpha_desc')cmp=function(a,b){return b.lb.localeCompare(a.lb);};else return;var sorted=items.slice().sort(cmp);var slots=horizontal?items.map(function(it){return it.y;}).sort(function(a,b){return a-b;}):items.map(function(it){return it.x;}).sort(function(a,b){return a-b;});var labels=items.map(function(it){return it.lb;});var newOrder=sorted.map(function(it){return it.lb;});for(var k=0;k<sorted.length;k++){if(horizontal)sorted[k].r.setAttribute('y',slots[k]);else sorted[k].r.setAttribute('x',slots[k]);}var ts=svg.querySelectorAll(horizontal?'.sp-yt':'.sp-xt');var labTs=[];ts.forEach(function(t){var tt=t.textContent.trim();if(labels.indexOf(tt)>=0)labTs.push(t);});if(labTs.length===newOrder.length){for(var i=0;i<newOrder.length;i++){labTs[i].textContent=newOrder[i];}}})()";
+
+#[cfg(feature = "python")]
+const SP_LEGEND_JS: &str = "(function(){if(window.__spleg__)return;window.__spleg__=1;var pos=window.__sp_legend_pos__||'right';var svg=document.querySelector('svg');if(!svg)return;var legs=svg.querySelectorAll('g[data-legend]');if(!legs.length)return;var cont=document.querySelector('.chart-container')||document.querySelector('.c3w')||svg.parentElement;if(!cont)return;if(getComputedStyle(cont).position==='static')cont.style.position='relative';var ov=document.createElement('div');var isH=pos==='top'||pos==='bottom';ov.style.cssText='position:absolute;z-index:200;display:flex;gap:8px;padding:6px 10px;align-items:center;'+(isH?'flex-direction:row;flex-wrap:wrap;justify-content:center;':'flex-direction:column;');if(pos==='top'){ov.style.top='4px';ov.style.left='50%';ov.style.transform='translateX(-50%)';}else if(pos==='bottom'){ov.style.bottom='4px';ov.style.left='50%';ov.style.transform='translateX(-50%)';}else if(pos==='left'){ov.style.left='4px';ov.style.top='50%';ov.style.transform='translateY(-50%)';}else{ov.style.right='4px';ov.style.top='50%';ov.style.transform='translateY(-50%)';}legs.forEach(function(lg){var rc=lg.querySelector('rect'),tx=lg.querySelector('text');var lb=tx?tx.textContent:'';var co=rc?rc.getAttribute('fill'):'';var se=lg.getAttribute('data-series');lg.style.display='none';var b=document.createElement('span');b.style.cssText='display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;user-select:none;background:rgba(0,0,0,.55);color:#f1f5f9;border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(4px);white-space:nowrap;transition:opacity .2s;';if(co){var d=document.createElement('span');d.style.cssText='width:8px;height:8px;border-radius:50%;background:'+co+';flex-shrink:0;';b.appendChild(d);}b.appendChild(document.createTextNode(lb));b.addEventListener('click',function(){var hidden=b.getAttribute('data-h')==='1';var els=svg.querySelectorAll('[data-series=\"'+se+'\"]:not([data-legend])');if(hidden){els.forEach(function(e){e.style.display='';});b.style.opacity='';b.removeAttribute('data-h');}else{els.forEach(function(e){e.style.display='none';});b.style.opacity='0.4';b.setAttribute('data-h','1');}});ov.appendChild(b);});cont.appendChild(ov);})()";
 
 #[cfg(feature = "python")]
 const SP_TEXT_JS: &str = "(function(){var o=window.__sp_text__||{};if(window.__spt__)return;window.__spt__=1;var fmt=function(v,f){if(f==null||f===true||f==='true'||f==='')return (Math.round(v*1000)/1000).toString();var m=/^\\.(\\d+)([fs%eg])$/.exec(f);if(!m)return String(v);var d=+m[1],t=m[2];if(t==='f')return (+v).toFixed(d);if(t==='%')return ((+v)*100).toFixed(d)+'%';if(t==='e')return (+v).toExponential(d);if(t==='g')return (+v).toPrecision(d);if(t==='s'){var u=['','K','M','B','T'],a=Math.abs(+v),i=0;while(a>=1000&&i<u.length-1){a/=1000;i++;}var sn=(+v)<0?-a:a;return sn.toFixed(d)+u[i];}return String(v);};var ns='http://www.w3.org/2000/svg';var pos=o.position||'auto',ang=o.angle==null?0:+o.angle,fs=o.font_size||11,col=o.color||'#1f2937',ff=o.font_family||'system-ui,Arial,sans-serif',fmtS=o.format,umin=o.uniform_min||0,umode=o.uniform_mode||'';document.querySelectorAll('svg [data-v]').forEach(function(el){if(el.tagName==='text')return;if(el.getAttribute('data-sp-text')==='1')return;el.setAttribute('data-sp-text','1');var v=parseFloat(el.getAttribute('data-v'));if(!isFinite(v))return;var svg=el.ownerSVGElement;if(!svg)return;var bb;try{bb=el.getBBox();}catch(e){return;}var cx=bb.x+bb.width/2,tx,ty,ta='middle',pp=pos;if(pp==='auto')pp=(el.tagName==='rect'&&bb.height>fs*1.6)?'inside':'outside';if(el.tagName==='rect'){var isHoriz=bb.width>bb.height*1.5&&bb.x>50;if(pp==='inside'){tx=cx;ty=bb.y+bb.height/2+fs/3;}else if(pp==='outside'){tx=cx;ty=bb.y-4;}else{tx=cx;ty=bb.y-4;}if(isHoriz&&pp==='outside'){tx=bb.x+bb.width+6;ty=bb.y+bb.height/2+fs/3;ta='start';}}else{tx=cx;ty=bb.y-6;}var t=document.createElementNS(ns,'text');t.setAttribute('x',tx);t.setAttribute('y',ty);t.setAttribute('text-anchor',ta);t.setAttribute('font-family',ff);t.setAttribute('font-size',fs);t.setAttribute('fill',col);t.setAttribute('pointer-events','none');t.setAttribute('class','sp-vt');if(ang)t.setAttribute('transform','rotate('+ang+' '+tx+' '+ty+')');t.textContent=fmt(v,fmtS);el.parentNode.appendChild(t);if(umin>0){var rect=t.getBBox();if(rect.width>bb.width&&umode==='hide')t.style.display='none';}});})()";
@@ -904,6 +945,52 @@ pub fn themes() -> Vec<String> {
 
 #[cfg(feature = "python")]
 #[pyfunction]
+pub fn chart_variants(py: Python<'_>) -> PyResult<PyObject> {
+    use pyo3::types::{PyDict, PyList};
+    use crate::plot::statistical::{
+        BarVariant, LineVariant, HeatmapVariant, HistogramVariant,
+        PieVariant, BoxplotVariant, ViolinVariant,
+    };
+    use crate::plot::statistical::scatter::ScatterVariant;
+    use crate::plot::statistical::bubble::BubbleVariant;
+
+    fn build<V>(
+        py: Python<'_>,
+        keys: &'static [(&'static str, &'static [&'static str])],
+        default_key: &'static str,
+    ) -> PyResult<PyObject>
+    where V: 'static {
+        let _ = std::marker::PhantomData::<V>;
+        let outer = PyDict::new(py);
+        outer.set_item("default", default_key)?;
+        let arr = PyList::empty(py);
+        for (k, aliases) in keys {
+            let item = PyDict::new(py);
+            item.set_item("key", *k)?;
+            let al = PyList::empty(py);
+            for a in *aliases { al.append(*a)?; }
+            item.set_item("aliases", al)?;
+            arr.append(item)?;
+        }
+        outer.set_item("variants", arr)?;
+        Ok(outer.into())
+    }
+
+    let out = PyDict::new(py);
+    out.set_item("bar", build::<BarVariant>(py, BarVariant::keys_and_aliases(), BarVariant::default_key())?)?;
+    out.set_item("line", build::<LineVariant>(py, LineVariant::keys_and_aliases(), LineVariant::default_key())?)?;
+    out.set_item("scatter", build::<ScatterVariant>(py, ScatterVariant::keys_and_aliases(), ScatterVariant::default_key())?)?;
+    out.set_item("bubble", build::<BubbleVariant>(py, BubbleVariant::keys_and_aliases(), BubbleVariant::default_key())?)?;
+    out.set_item("histogram", build::<HistogramVariant>(py, HistogramVariant::keys_and_aliases(), HistogramVariant::default_key())?)?;
+    out.set_item("heatmap", build::<HeatmapVariant>(py, HeatmapVariant::keys_and_aliases(), HeatmapVariant::default_key())?)?;
+    out.set_item("pie", build::<PieVariant>(py, PieVariant::keys_and_aliases(), PieVariant::default_key())?)?;
+    out.set_item("boxplot", build::<BoxplotVariant>(py, BoxplotVariant::keys_and_aliases(), BoxplotVariant::default_key())?)?;
+    out.set_item("violin", build::<ViolinVariant>(py, ViolinVariant::keys_and_aliases(), ViolinVariant::default_key())?)?;
+    Ok(out.into())
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
 #[pyo3(signature = (*, font=None, font_size=None, title_size=None, border_radius=None, opacity=None, responsive=None, animation=None, animation_duration=None, crosshair=None, zoom=None, tooltip=None, locale=None, thousands_sep=None, margin=None, export_button=None, palette=None, background=None, gridlines=None, text_auto=None, text_position=None, text_angle=None, text_font_size=None, text_font_color=None, uniform_text_min_size=None, uniform_text_mode=None, bar_corner_radius=None))]
 pub fn config(font: Option<&str>, font_size: Option<i32>, title_size: Option<i32>, border_radius: Option<i32>, opacity: Option<f64>, responsive: Option<bool>, animation: Option<bool>, animation_duration: Option<i32>, crosshair: Option<bool>, zoom: Option<bool>, tooltip: Option<&str>, locale: Option<&str>, thousands_sep: Option<&str>, margin: Option<i32>, export_button: Option<bool>, palette: Option<Vec<u32>>, background: Option<&str>, gridlines: Option<bool>, text_auto: Option<&PyAny>, text_position: Option<&str>, text_angle: Option<i32>, text_font_size: Option<i32>, text_font_color: Option<&str>, uniform_text_min_size: Option<i32>, uniform_text_mode: Option<&str>, bar_corner_radius: Option<&PyAny>) {
     use std::sync::atomic::Ordering::Relaxed;
@@ -1053,6 +1140,7 @@ fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(theme, m)?)?;
     m.add_function(wrap_pyfunction!(reset_theme, m)?)?;
     m.add_function(wrap_pyfunction!(themes, m)?)?;
+    m.add_function(wrap_pyfunction!(chart_variants, m)?)?;
     m.add_function(wrap_pyfunction!(config, m)?)?;
     m.add_function(wrap_pyfunction!(reset_config, m)?)?;
 
