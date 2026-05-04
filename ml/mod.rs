@@ -10,6 +10,10 @@ pub mod decomposition;
 pub mod model_selection;
 pub mod metrics;
 pub mod anomaly;
+pub mod registry;
+pub mod export;
+pub mod gpu;
+pub mod distributed;
 
 pub use linalg::*;
 pub use linear::*;

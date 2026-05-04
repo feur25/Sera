@@ -2,6 +2,7 @@
 pub mod data;
 pub mod plot;
 pub mod ml;
+pub mod cloud;
 
 #[cfg(any(feature = "python", feature = "gui"))]
 

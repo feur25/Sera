@@ -76,8 +76,78 @@ impl ElasticNet {
                 entry.iteration.min(self.max_iter)
             } else { 0 }
         } else { 0 };
-        let mut r = yw;
 
+        let use_gram = p <= 256 && (n as u128) * (p as u128) >= 200_000;
+        if use_gram {
+            let mut gram = vec![0.0f64; p * p];
+            let mut q = vec![0.0f64; p];
+            let chunk_n = 4096usize.min(n).max(1);
+            let nc = (n + chunk_n - 1) / chunk_n;
+            let partials: Vec<(Vec<f64>, Vec<f64>)> = (0..nc).into_par_iter().map(|ci| {
+                let s = ci * chunk_n;
+                let e = (s + chunk_n).min(n);
+                let mut pg = vec![0.0f64; p * p];
+                let mut pq = vec![0.0f64; p];
+                for k in 0..p {
+                    let ck = &x_col[k * n + s..k * n + e];
+                    for k2 in k..p {
+                        let ck2 = &x_col[k2 * n + s..k2 * n + e];
+                        let len = e - s;
+                        let (mut a0, mut a1, mut a2, mut a3) = (0.0, 0.0, 0.0, 0.0);
+                        let mut i = 0;
+                        while i + 4 <= len { a0 += ck[i]*ck2[i]; a1 += ck[i+1]*ck2[i+1]; a2 += ck[i+2]*ck2[i+2]; a3 += ck[i+3]*ck2[i+3]; i += 4; }
+                        while i < len { a0 += ck[i]*ck2[i]; i += 1; }
+                        pg[k*p+k2] += a0+a1+a2+a3;
+                    }
+                    let yc = &yw[s..e];
+                    let len = e - s;
+                    let (mut a0, mut a1, mut a2, mut a3) = (0.0, 0.0, 0.0, 0.0);
+                    let mut i = 0;
+                    while i + 4 <= len { a0 += ck[i]*yc[i]; a1 += ck[i+1]*yc[i+1]; a2 += ck[i+2]*yc[i+2]; a3 += ck[i+3]*yc[i+3]; i += 4; }
+                    while i < len { a0 += ck[i]*yc[i]; i += 1; }
+                    pq[k] += a0+a1+a2+a3;
+                }
+                (pg, pq)
+            }).collect();
+            for (pg, pq) in &partials {
+                for k in 0..p { for k2 in k..p { gram[k*p+k2] += pg[k*p+k2]; } q[k] += pq[k]; }
+            }
+            for k in 0..p { for k2 in k+1..p { gram[k2*p+k] = gram[k*p+k2]; } }
+            for iter in start_iter..self.max_iter {
+                let mut max_change = 0.0f64;
+                for j in 0..p {
+                    let gjj = gram[j*p+j];
+                    if gjj < 1e-15 { continue; }
+                    let old = w[j];
+                    let row = &gram[j*p..(j+1)*p];
+                    let mut s = 0.0f64;
+                    for k in 0..p { s += row[k] * w[k]; }
+                    let xj_r = q[j] - s + gjj * old;
+                    let new_val = soft_threshold(xj_r * inv_n, l1) / (gjj * inv_n + l2);
+                    let delta = new_val - old;
+                    if delta.abs() > 1e-15 {
+                        w[j] = new_val;
+                        max_change = max_change.max(delta.abs());
+                    }
+                }
+                self.n_iter = iter + 1;
+                if max_change < self.tol { break; }
+                if let Some(id) = checkpoint_id {
+                    if (iter + 1) % 20 == 0 { crate::ml::cache::checkpoint_save(id, &w, iter + 1); }
+                }
+            }
+            if let Some(id) = checkpoint_id { crate::ml::cache::checkpoint_clear(id); }
+            if self.fit_intercept {
+                self.coef = (0..p).map(|j| w[j] / stds[j]).collect();
+                self.intercept = y_mean - dot(&self.coef, &means);
+            } else {
+                self.coef = w;
+                self.intercept = 0.0;
+            }
+            return;
+        }
+
+        let mut r = yw;
         let par_threshold = 50_000usize;
         let chunk = ((n + 7) / 8).max(8192);
         for iter in start_iter..self.max_iter {

@@ -2617,6 +2617,193 @@ pub fn v_measure_score(labels_true: Vec<i32>, labels_pred: Vec<i32>) -> f64 {
     crate::ml::metrics::clustering::v_measure_score(&labels_true, &labels_pred)
 }
 
+#[pyfunction]
+#[pyo3(signature = (name, kind, payload, params=None, metrics=None, tags=None))]
+fn registry_register(py: Python<'_>, name: &str, kind: &str, payload: &str, params: Option<std::collections::HashMap<String, String>>, metrics: Option<std::collections::HashMap<String, f64>>, tags: Option<Vec<String>>) -> PyResult<PyObject> {
+    let rec = crate::ml::registry::register(name, kind, payload, params.unwrap_or_default(), metrics.unwrap_or_default(), tags.unwrap_or_default());
+    record_to_py(py, &rec)
+}
+
+#[pyfunction]
+#[pyo3(signature = (name, version=None))]
+fn registry_get(py: Python<'_>, name: &str, version: Option<u32>) -> PyResult<PyObject> {
+    match crate::ml::registry::get(name, version) {
+        Some(r) => record_to_py(py, &r),
+        None => Ok(py.None()),
+    }
+}
+
+#[pyfunction]
+fn registry_list(py: Python<'_>) -> PyResult<PyObject> {
+    let recs = crate::ml::registry::list();
+    let list = pyo3::types::PyList::empty_bound(py);
+    for r in &recs { list.append(record_to_py(py, r)?)?; }
+    Ok(list.into())
+}
+
+#[pyfunction]
+#[pyo3(signature = (name, version=None))]
+fn registry_delete(name: &str, version: Option<u32>) -> usize {
+    crate::ml::registry::delete(name, version)
+}
+
+#[pyfunction]
+fn registry_clear() -> usize { crate::ml::registry::clear_all() }
+
+#[pyfunction]
+fn registry_promote(name: &str, version: u32, tag: &str) -> bool { crate::ml::registry::promote(name, version, tag) }
+
+#[pyfunction]
+fn registry_by_tag(py: Python<'_>, name: &str, tag: &str) -> PyResult<PyObject> {
+    match crate::ml::registry::by_tag(name, tag) {
+        Some(r) => record_to_py(py, &r),
+        None => Ok(py.None()),
+    }
+}
+
+#[pyfunction]
+fn registry_dir() -> String { crate::ml::registry::registry_dir().to_string_lossy().to_string() }
+
+fn record_to_py(py: Python<'_>, r: &crate::ml::registry::ModelRecord) -> PyResult<PyObject> {
+    let d = pyo3::types::PyDict::new_bound(py);
+    d.set_item("name", &r.name)?;
+    d.set_item("version", r.version)?;
+    d.set_item("kind", &r.kind)?;
+    d.set_item("created_ms", r.created_ms)?;
+    d.set_item("payload", &r.payload)?;
+    d.set_item("tags", r.tags.clone())?;
+    let p = pyo3::types::PyDict::new_bound(py);
+    for (k, v) in &r.params { p.set_item(k, v)?; }
+    d.set_item("params", p)?;
+    let mt = pyo3::types::PyDict::new_bound(py);
+    for (k, v) in &r.metrics { mt.set_item(k, *v)?; }
+    d.set_item("metrics", mt)?;
+    Ok(d.into())
+}
+
+#[pyfunction]
+#[pyo3(signature = (name, table, x, y=None, y_pred=None))]
+fn export_powerbi(name: &str, table: &str, x: &PyAny, y: Option<&PyAny>, y_pred: Option<&PyAny>) -> PyResult<String> {
+    let (xv, n, p) = extract_flat(x)?;
+    let yv = if let Some(yy) = y { Some(extract_targets(yy)?) } else { None };
+    let yp = if let Some(yy) = y_pred { Some(extract_targets(yy)?) } else { None };
+    let cols = crate::ml::export::powerbi::columns_from_features(p, yv.is_some(), yp.is_some());
+    let rows = crate::ml::export::powerbi::rows_from_matrix(&xv, n, p, yv.as_deref(), yp.as_deref());
+    let ds = crate::ml::export::powerbi::build_dataset(name, table, &cols, rows);
+    Ok(crate::ml::export::powerbi::to_json(&ds))
+}
+
+#[pyfunction]
+#[pyo3(signature = (name, x, y=None, y_pred=None))]
+fn export_tableau_tds(name: &str, x: &PyAny, y: Option<&PyAny>, y_pred: Option<&PyAny>) -> PyResult<String> {
+    let (xv, n, p) = extract_flat(x)?;
+    let yv = if let Some(yy) = y { Some(extract_targets(yy)?) } else { None };
+    let yp = if let Some(yy) = y_pred { Some(extract_targets(yy)?) } else { None };
+    let cols = crate::ml::export::tableau::columns_from_features(p, yv.is_some(), yp.is_some());
+    let rows = crate::ml::export::tableau::rows_from_matrix(&xv, n, p, yv.as_deref(), yp.as_deref());
+    let d = crate::ml::export::tableau::TdsDescriptor { name: name.into(), columns: cols, rows, row_strings: vec![], use_strings: false };
+    Ok(crate::ml::export::tableau::to_tds_xml(&d))
+}
+
+#[pyfunction]
+#[pyo3(signature = (name, x, y=None, y_pred=None))]
+fn export_tableau_csv(name: &str, x: &PyAny, y: Option<&PyAny>, y_pred: Option<&PyAny>) -> PyResult<String> {
+    let (xv, n, p) = extract_flat(x)?;
+    let yv = if let Some(yy) = y { Some(extract_targets(yy)?) } else { None };
+    let yp = if let Some(yy) = y_pred { Some(extract_targets(yy)?) } else { None };
+    let cols = crate::ml::export::tableau::columns_from_features(p, yv.is_some(), yp.is_some());
+    let rows = crate::ml::export::tableau::rows_from_matrix(&xv, n, p, yv.as_deref(), yp.as_deref());
+    let d = crate::ml::export::tableau::TdsDescriptor { name: name.into(), columns: cols, rows, row_strings: vec![], use_strings: false };
+    Ok(crate::ml::export::tableau::to_csv(&d))
+}
+
+#[pyfunction]
+fn gpu_devices(py: Python<'_>) -> PyResult<PyObject> {
+    let list = pyo3::types::PyList::empty_bound(py);
+    for d in crate::ml::gpu::detect_devices() {
+        let dd = pyo3::types::PyDict::new_bound(py);
+        dd.set_item("backend", d.backend.name())?;
+        dd.set_item("name", d.name)?;
+        dd.set_item("mem_mb", d.mem_mb)?;
+        dd.set_item("available", d.available)?;
+        list.append(dd)?;
+    }
+    Ok(list.into())
+}
+
+#[pyfunction]
+#[pyo3(signature = (backend=None))]
+fn gpu_set_backend(backend: Option<&str>) -> String {
+    let b = crate::ml::gpu::Backend::from_str(backend.unwrap_or("auto"));
+    let dev = crate::ml::gpu::select(b);
+    crate::ml::gpu::set_active(dev.backend);
+    dev.backend.name().to_string()
+}
+
+#[pyfunction]
+fn gpu_active_backend() -> String { crate::ml::gpu::active().name().to_string() }
+
+#[pyfunction]
+#[pyo3(signature = (n_rows, n_cols, mem_budget_mb=2048))]
+fn cloud_plan(py: Python<'_>, n_rows: usize, n_cols: usize, mem_budget_mb: u64) -> PyResult<PyObject> {
+    let p = crate::cloud::planner::plan(n_rows, n_cols, mem_budget_mb);
+    let d = pyo3::types::PyDict::new_bound(py);
+    d.set_item("n_rows", p.n_rows)?;
+    d.set_item("n_cols", p.n_cols)?;
+    d.set_item("bytes_total", p.bytes_total)?;
+    d.set_item("mem_budget_mb", p.mem_budget_mb)?;
+    d.set_item("recommended_workers", p.recommended_workers)?;
+    d.set_item("recommended_chunk_rows", p.recommended_chunk_rows)?;
+    d.set_item("n_chunks", p.n_chunks)?;
+    d.set_item("estimated_seconds", p.estimated_seconds)?;
+    d.set_item("strategy", p.strategy)?;
+    Ok(d.into())
+}
+
+#[pyfunction]
+fn cloud_resources(py: Python<'_>) -> PyResult<PyObject> {
+    let r = crate::cloud::profile::current();
+    let d = pyo3::types::PyDict::new_bound(py);
+    d.set_item("cpu_threads", r.cpu_threads)?;
+    d.set_item("backend", r.backend)?;
+    d.set_item("os", r.os)?;
+    d.set_item("arch", r.arch)?;
+    d.set_item("registry_dir", r.registry_dir)?;
+    d.set_item("tasks_dir", r.tasks_dir)?;
+    Ok(d.into())
+}
+
+#[pyfunction]
+#[pyo3(signature = (path, chunk_rows=100000, has_header=true, delimiter=","))]
+fn cloud_count_rows(path: &str, chunk_rows: usize, has_header: bool, delimiter: &str) -> PyResult<usize> {
+    let _ = (chunk_rows, delimiter);
+    crate::cloud::chunker::count_rows(path, has_header).map_err(|e| pyo3::exceptions::PyIOError::new_err(e.to_string()))
+}
+
+#[pyclass(module = "seraplot", name = "WorkerPool")]
+pub struct PyWorkerPool { inner: std::sync::Arc<crate::ml::distributed::WorkerPool> }
+
+#[pymethods]
+impl PyWorkerPool {
+    #[new]
+    #[pyo3(signature = (n_workers=0))]
+    fn py_new(n_workers: usize) -> Self { Self { inner: crate::ml::distributed::WorkerPool::new(n_workers) } }
+    #[getter] fn n_workers(&self) -> usize { self.inner.n_workers }
+    fn scatter(&self, n_rows: usize) -> u64 { self.inner.scatter(n_rows) }
+    fn shards(&self, py: Python<'_>, handle: u64) -> PyResult<PyObject> {
+        let list = pyo3::types::PyList::empty_bound(py);
+        for s in self.inner.shards_for(handle) {
+            let d = pyo3::types::PyDict::new_bound(py);
+            d.set_item("id", s.id)?; d.set_item("start", s.start)?; d.set_item("end", s.end)?;
+            list.append(d)?;
+        }
+        Ok(list.into())
+    }
+    fn release(&self, handle: u64) { self.inner.release(handle) }
+    fn allreduce_mean(&self, vecs: Vec<Vec<f64>>) -> Vec<f64> { self.inner.allreduce_mean(vecs) }
+    fn allreduce_sum(&self, vecs: Vec<Vec<f64>>) -> Vec<f64> { self.inner.allreduce_sum(vecs) }
+}
+
 pub fn register_ml_classes(m: &PyModule) -> PyResult<()> {
     m.add_class::<PyLinearRegression>()?;
     m.add_class::<PyRidge>()?;
@@ -2715,5 +2902,23 @@ pub fn register_ml_classes(m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(homogeneity_score, m)?)?;
     m.add_function(wrap_pyfunction!(completeness_score, m)?)?;
     m.add_function(wrap_pyfunction!(v_measure_score, m)?)?;
+    m.add_function(wrap_pyfunction!(registry_register, m)?)?;
+    m.add_function(wrap_pyfunction!(registry_get, m)?)?;
+    m.add_function(wrap_pyfunction!(registry_list, m)?)?;
+    m.add_function(wrap_pyfunction!(registry_delete, m)?)?;
+    m.add_function(wrap_pyfunction!(registry_clear, m)?)?;
+    m.add_function(wrap_pyfunction!(registry_promote, m)?)?;
+    m.add_function(wrap_pyfunction!(registry_by_tag, m)?)?;
+    m.add_function(wrap_pyfunction!(registry_dir, m)?)?;
+    m.add_function(wrap_pyfunction!(export_powerbi, m)?)?;
+    m.add_function(wrap_pyfunction!(export_tableau_tds, m)?)?;
+    m.add_function(wrap_pyfunction!(export_tableau_csv, m)?)?;
+    m.add_function(wrap_pyfunction!(gpu_devices, m)?)?;
+    m.add_function(wrap_pyfunction!(gpu_set_backend, m)?)?;
+    m.add_function(wrap_pyfunction!(gpu_active_backend, m)?)?;
+    m.add_function(wrap_pyfunction!(cloud_plan, m)?)?;
+    m.add_function(wrap_pyfunction!(cloud_resources, m)?)?;
+    m.add_function(wrap_pyfunction!(cloud_count_rows, m)?)?;
+    m.add_class::<PyWorkerPool>()?;
     Ok(())
 }

@@ -6,6 +6,10 @@
 
 *A Rust-native engine for visualization, machine learning, and zero-friction delivery — 6,000× faster than Plotly, 200× smaller, zero dependencies.*
 
+<div class="sp-pitch">
+  <strong>Drop-in replacement for scikit-learn</strong> — 2–30× faster, single-line install, full GPU / distributed / model-registry / PowerBI &amp; Tableau export bundled in the free tier.
+</div>
+
 [![PyPI](https://img.shields.io/pypi/v/seraplot)](https://pypi.org/project/seraplot/)
 [![npm](https://img.shields.io/npm/v/seraplot)](https://www.npmjs.com/package/seraplot)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/feur25/seraplot/blob/main/LICENSE)
@@ -364,6 +368,10 @@ SeraPlot returns 21 KB of interactive HTML directly from RAM.
 ## Seraplot - Bien plus qu'une bibliothèque de graphiques
 
 > **« Tout tracer. Tout entraîner. Partout déployer. »**
+
+<div class="sp-pitch">
+  <strong>Remplace scikit-learn directement</strong> — 2 à 30× plus rapide, installé en une ligne, avec GPU / entraînement distribué / registre de modèles / export PowerBI &amp; Tableau inclus gratuitement.
+</div>
 
 SeraPlot est une boîte à outils data complète écrite en Rust. Le même moteur propulse vos visualisations, votre machine learning, et la façon dont vous livrez les résultats à vos collègues.
 
