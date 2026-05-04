@@ -34,8 +34,8 @@
 
 <div class="ml-pg-note ml-pg-note-warn">
   <span class="ml-pg-note-icon">⚠️</span>
-  <div><strong>EN — Current state:</strong> The GPU backend layer is an abstraction and detection API. SeraPlot <em>currently trains on CPU</em> using rayon multi-threading. Full CUDA/candle kernel dispatch is planned for 2.5.x. This API lets you prepare your code and detect hardware now.<br>
-  <strong>FR — État actuel :</strong> Le backend GPU est une couche d'abstraction et de détection. SeraPlot <em>entraîne actuellement sur CPU</em> avec rayon. Le dispatch complet CUDA/candle est prévu pour 2.5.x. Cette API vous permet de préparer votre code et détecter le matériel dès maintenant.</div>
+  <div><strong>EN — Current state:</strong> The default <code>pip install seraplot</code> wheel ships CPU-only and uses rayon multi-threading. Real GPU kernels are available through opt-in feature flags compiled from source: <code>cargo build --features cuda</code>, <code>--features metal</code>, <code>--features rocm</code>. The detection and selection API works in both builds.<br>
+  <strong>FR — État actuel :</strong> La wheel par défaut <code>pip install seraplot</code> est CPU only avec multi-threading rayon. Les vrais kernels GPU sont disponibles via des feature flags opt-in compilés depuis les sources : <code>cargo build --features cuda</code>, <code>--features metal</code>, <code>--features rocm</code>. L'API de détection et sélection fonctionne dans les deux builds.</div>
 </div>
 
 <div class="ml-pg-feature-grid">

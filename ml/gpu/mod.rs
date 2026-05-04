@@ -80,6 +80,18 @@ fn total_mem_mb() -> u64 {
 pub fn num_cpus() -> usize { rayon::current_num_threads().max(1) }
 
 fn detect_cuda() -> Option<DeviceInfo> {
+    #[cfg(feature = "cuda")]
+    {
+        if let Ok(d) = candle_core::Device::new_cuda(0) {
+            let _ = d;
+            return Some(DeviceInfo {
+                backend: Backend::Cuda,
+                name: "cuda:0 (candle)".into(),
+                mem_mb: 0,
+                available: true,
+            });
+        }
+    }
     let p = std::env::var("CUDA_PATH").ok().or_else(|| std::env::var("CUDA_HOME").ok());
     if p.is_some() || std::path::Path::new("/usr/local/cuda").exists() {
         Some(DeviceInfo { backend: Backend::Cuda, name: "cuda-detected".into(), mem_mb: 0, available: false })
@@ -87,6 +99,18 @@ fn detect_cuda() -> Option<DeviceInfo> {
 }
 
 fn detect_metal() -> Option<DeviceInfo> {
+    #[cfg(feature = "metal")]
+    {
+        if let Ok(d) = candle_core::Device::new_metal(0) {
+            let _ = d;
+            return Some(DeviceInfo {
+                backend: Backend::Metal,
+                name: "metal:0 (candle)".into(),
+                mem_mb: 0,
+                available: true,
+            });
+        }
+    }
     if cfg!(target_os = "macos") {
         Some(DeviceInfo { backend: Backend::Metal, name: "apple-gpu".into(), mem_mb: 0, available: false })
     } else { None }
