@@ -266,7 +266,7 @@ pub fn render_lines_html(
         let x = pad_l + (i as f64 * step_x) as i32;
         push_b(&mut b, b"<text x=\""); push_i(&mut b, x);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, pad_t + plot_h + 14);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">");
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-xt\">");
         escape_xml(&mut b, truncate(&labels[i], 10));
         push_b(&mut b, b"</text>");
     }

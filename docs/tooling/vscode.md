@@ -128,7 +128,7 @@ Official **SeraPlot** extension for Visual Studio Code — live preview, theme s
 
 <div id="sp-isw-en-vsix" class="sp-isw-pane">
 <p class="sp-isw-desc">Download the <code>.vsix</code> from the GitHub releases page, then install via terminal:</p>
-<pre><code class="language-bash">code --install-extension seraplot-vscode-0.4.3.vsix</code></pre>
+<pre><code class="language-bash">code --install-extension seraplot-vscode-0.6.1.vsix</code></pre>
 <p class="sp-isw-desc" style="margin-top:12px">Or drag the <code>.vsix</code> file directly into the VS Code Extensions panel.</p>
 <div class="sp-isw-note">
 <span class="sp-isw-note-ico">📦</span>
@@ -228,7 +228,7 @@ Extension officielle **SeraPlot** pour Visual Studio Code — aperçu en direct,
 
 <div id="sp-isw-fr-vsix" class="sp-isw-pane">
 <p class="sp-isw-desc">Téléchargez le <code>.vsix</code> depuis la page des releases GitHub, puis installez via le terminal :</p>
-<pre><code class="language-bash">code --install-extension seraplot-vscode-0.4.3.vsix</code></pre>
+<pre><code class="language-bash">code --install-extension seraplot-vscode-0.6.1.vsix</code></pre>
 <p class="sp-isw-desc" style="margin-top:12px">Ou glissez-déposez le fichier <code>.vsix</code> directement dans le panneau Extensions de VS Code.</p>
 <div class="sp-isw-note">
 <span class="sp-isw-note-ico">📦</span>

@@ -451,7 +451,7 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
             }
             let label_y = scale_y + 22;
             let scale_pw = svg_w - pad_left - pad_right;
-            let label_static = b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">";
+            let label_static = b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-xt\">";
             for (lx, lv) in [(pad_left, lo_v), (pad_left + scale_pw / 2, mid_v), (pad_left + scale_pw, hi_v)] {
                 push_b(&mut buf, b"<text x=\"");
                 push_i(&mut buf, lx);

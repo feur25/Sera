@@ -126,7 +126,7 @@ pub fn render_candlestick_html(cfg: &CandlestickConfig) -> String {
         if n <= 60 && i % ((n / 12).max(1)) == 0 {
             push_b(&mut buf, b"<text x=\""); push_i(&mut buf, cx);
             push_b(&mut buf, b"\" y=\""); push_i(&mut buf, pad_t + plot_h + 14);
-            push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#6b7280\">");
+            push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#6b7280\" class=\"sp-xt\">");
             escape_xml(&mut buf, truncate(&labels[i], 10));
             push_b(&mut buf, b"</text>");
         }

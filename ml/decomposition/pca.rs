@@ -248,13 +248,28 @@ impl TruncatedSVD {
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize) {
         let k = self.n_components.min(n).min(p);
-        let (_u, s, vt) = svd_truncated(x, n, p, k, 100);
+        let mut ata = vec![0.0f64; p * p];
+        for i in 0..n {
+            for a in 0..p {
+                let xa = x[i * p + a];
+                if xa == 0.0 { continue; }
+                for b in 0..p { ata[a * p + b] += xa * x[i * p + b]; }
+            }
+        }
+        let (evals, v) = crate::ml::linalg::symeig(&ata, p);
+        let mut order: Vec<usize> = (0..p).collect();
+        order.sort_by(|&i, &j| evals[j].partial_cmp(&evals[i]).unwrap_or(std::cmp::Ordering::Equal));
+        let mut s = vec![0.0; k];
+        let mut vt = vec![0.0; k * p];
+        for c in 0..k {
+            let idx = order[c];
+            s[c] = evals[idx].max(0.0).sqrt();
+            for j in 0..p { vt[c * p + j] = v[j * p + idx]; }
+        }
         self.components = vt;
         self.singular_values = s.clone();
-
         let n_f = n as f64;
         self.explained_variance = s.iter().map(|&sv| sv * sv / (n_f - 1.0)).collect();
-
         let mut total_var = 0.0;
         for i in 0..n {
             for j in 0..p { total_var += x[i * p + j] * x[i * p + j]; }

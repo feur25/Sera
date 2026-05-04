@@ -111,11 +111,13 @@ impl Ridge {
 pub struct RidgeClassifier {
     pub ridge: Ridge,
     pub classes: Vec<i32>,
+    pub coefs: Vec<Vec<f64>>,
+    pub intercepts: Vec<f64>,
 }
 
 impl RidgeClassifier {
     pub fn new(alpha: f64) -> Self {
-        Self { ridge: Ridge::new(alpha, true), classes: Vec::new() }
+        Self { ridge: Ridge::new(alpha, true), classes: Vec::new(), coefs: Vec::new(), intercepts: Vec::new() }
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) {
@@ -123,21 +125,96 @@ impl RidgeClassifier {
         classes.sort_unstable();
         classes.dedup();
         self.classes = classes;
-        let yf: Vec<f64> = y.iter().map(|&v| v as f64).collect();
-        self.ridge.fit(x, n, p, &yf);
+        let k = self.classes.len();
+        if k <= 2 {
+            let pos = if k == 2 { self.classes[1] } else { self.classes[0] };
+            let yf: Vec<f64> = y.iter().map(|&v| if v == pos { 1.0 } else { -1.0 }).collect();
+            self.ridge.fit(x, n, p, &yf);
+            self.coefs = vec![self.ridge.coef.clone()];
+            self.intercepts = vec![self.ridge.intercept];
+            return;
+        }
+        let alpha = self.ridge.alpha;
+        let fit_intercept = self.ridge.fit_intercept;
+        let inv = 1.0 / n as f64;
+        let nf = n as f64;
+        let (means, _) = if fit_intercept {
+            let mut xm = vec![0.0f64; p];
+            for i in 0..n {
+                let row = &x[i * p..(i + 1) * p];
+                for j in 0..p { xm[j] += row[j]; }
+            }
+            for j in 0..p { xm[j] *= inv; }
+            (xm, 0.0)
+        } else { (vec![0.0; p], 0.0) };
+        let mut ata = vec![0.0f64; p * p];
+        for i in 0..n {
+            let row = &x[i * p..(i + 1) * p];
+            for ii in 0..p {
+                let ai = row[ii];
+                for j in ii..p { ata[ii * p + j] += ai * row[j]; }
+            }
+        }
+        if fit_intercept {
+            for i in 0..p {
+                for j in i..p { ata[i * p + j] -= nf * means[i] * means[j]; }
+            }
+        }
+        for i in 0..p { for j in (i + 1)..p { ata[j * p + i] = ata[i * p + j]; } }
+        for j in 0..p { ata[j * p + j] += alpha; }
+        let l = match crate::ml::linalg::cholesky(&ata, p) {
+            Some(v) => v,
+            None => { self.coefs = vec![vec![0.0; p]; k]; self.intercepts = vec![0.0; k]; return; }
+        };
+        let mut coefs: Vec<Vec<f64>> = Vec::with_capacity(k);
+        let mut intercepts: Vec<f64> = Vec::with_capacity(k);
+        for &cls in &self.classes {
+            let mut atb = vec![0.0f64; p];
+            let mut ym = 0.0f64;
+            for i in 0..n {
+                let yi = if y[i] == cls { 1.0 } else { -1.0 };
+                let row = &x[i * p..(i + 1) * p];
+                for j in 0..p { atb[j] += row[j] * yi; }
+                ym += yi;
+            }
+            ym *= inv;
+            if fit_intercept {
+                for i in 0..p { atb[i] -= nf * ym * means[i]; }
+            }
+            let mut beta = vec![0.0f64; p];
+            crate::ml::linalg::cholesky_solve(&l, p, &atb, &mut beta);
+            let b0 = if fit_intercept { ym - dot(&beta, &means) } else { 0.0 };
+            coefs.push(beta);
+            intercepts.push(b0);
+        }
+        self.coefs = coefs;
+        self.intercepts = intercepts;
     }
 
     pub fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> {
-        let scores = self.ridge.predict(x, n, p);
-        scores.iter().map(|&s| {
-            let mut best = self.classes[0];
-            let mut bd = f64::INFINITY;
-            for &c in &self.classes {
-                let d = (s - c as f64).abs();
-                if d < bd { bd = d; best = c; }
-            }
-            best
-        }).collect()
+        let k = self.classes.len();
+        if k <= 2 {
+            let coef = &self.coefs[0];
+            let b = self.intercepts[0];
+            (0..n).map(|i| {
+                let row = &x[i * p..(i + 1) * p];
+                let mut s = b;
+                for j in 0..p { s += row[j] * coef[j]; }
+                if s >= 0.0 { *self.classes.last().unwrap() } else { self.classes[0] }
+            }).collect()
+        } else {
+            (0..n).map(|i| {
+                let row = &x[i * p..(i + 1) * p];
+                let mut best = self.classes[0];
+                let mut bs = f64::NEG_INFINITY;
+                for (ci, coef) in self.coefs.iter().enumerate() {
+                    let mut s = self.intercepts[ci];
+                    for j in 0..p { s += row[j] * coef[j]; }
+                    if s > bs { bs = s; best = self.classes[ci]; }
+                }
+                best
+            }).collect()
+        }
     }
 }
 

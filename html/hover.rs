@@ -151,6 +151,51 @@ pub fn apply_opts(html: String, bg: Option<&str>, show_x: bool, show_y: bool) ->
     h
 }
 
+#[inline]
+pub fn apply_rotation(html: String, deg: i32) -> String {
+    if deg == 0 { return html; }
+    let (sw, sh) = extract_svg_dims(&html);
+    let (cw, ch) = if deg == 90 || deg == 270 { (sh, sw) } else { (sw, sh) };
+    let counter = -deg;
+    let css = format!(
+        "<style>.sp-rot-wrap{{display:inline-block;position:relative;width:{cw}px;height:{ch}px;overflow:visible}}.sp-rot-inner{{position:absolute;top:50%;left:50%;width:{sw}px;height:{sh}px;transform:translate(-50%,-50%) rotate({deg}deg);transform-origin:center center}}.sp-rot-inner > svg{{display:block}}.sp-rot-inner svg text{{transform-box:fill-box;transform-origin:center;transform:rotate({counter}deg)}}</style>"
+    );
+    let h = html.replacen("</head>", &format!("{}</head>", css), 1);
+    let h = h.replacen(
+        "border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)\">",
+        "border-radius:12px;overflow:visible;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)\"><div class=\"sp-rot-wrap\"><div class=\"sp-rot-inner\">",
+        1,
+    );
+    h.replacen("<div class=\"sp-sel-ov\"", "</div></div><div class=\"sp-sel-ov\"", 1)
+}
+
+fn extract_svg_dims(html: &str) -> (i32, i32) {
+    let s = html.as_bytes();
+    let needle = b"<svg";
+    let mut i = 0usize;
+    while i + needle.len() <= s.len() {
+        if &s[i..i+needle.len()] == needle {
+            let end = (i..s.len()).find(|&k| s[k] == b'>').unwrap_or(s.len());
+            let chunk = &html[i..end];
+            let w = parse_attr_int(chunk, "width=\"");
+            let h = parse_attr_int(chunk, "height=\"");
+            if w > 0 && h > 0 { return (w, h); }
+        }
+        i += 1;
+    }
+    (900, 480)
+}
+
+fn parse_attr_int(s: &str, key: &str) -> i32 {
+    if let Some(p) = s.find(key) {
+        let rest = &s[p + key.len()..];
+        if let Some(q) = rest.find('"') {
+            return rest[..q].parse::<i32>().unwrap_or(0);
+        }
+    }
+    0
+}
+
 
 
 const JS_P1: &str = "<script>(function(){\nvar wrap=document.getElementById('";

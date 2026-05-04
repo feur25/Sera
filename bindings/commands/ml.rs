@@ -294,10 +294,11 @@ impl_get_set_params!(PyLogisticRegression,
 
 #[pymethods]
 impl PyLogisticRegression {
+    #[allow(non_snake_case)]
     #[new]
-    #[pyo3(signature = (c=1.0, max_iter=1000, tol=1e-4, fit_intercept=true))]
-    fn py_new(c: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> Self {
-        Self { inner: crate::ml::linear::logistic::LogisticRegression::new(c, max_iter, tol, fit_intercept) }
+    #[pyo3(signature = (C=1.0, max_iter=1000, tol=1e-4, fit_intercept=true))]
+    fn py_new(C: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> Self {
+        Self { inner: crate::ml::linear::logistic::LogisticRegression::new(C, max_iter, tol, fit_intercept) }
     }
     #[pyo3(signature = (x, y, checkpoint_id=None))]
     fn fit(&mut self, x: &PyAny, y: &PyAny, checkpoint_id: Option<u64>) -> PyResult<()> {
@@ -958,10 +959,11 @@ impl_get_set_params!(PyLinearSVC,
 
 #[pymethods]
 impl PyLinearSVC {
+    #[allow(non_snake_case)]
     #[new]
-    #[pyo3(signature = (c=1.0, max_iter=1000, tol=1e-4, fit_intercept=true))]
-    fn py_new(c: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> Self {
-        Self { inner: crate::ml::svm::svm::LinearSVC::with_fit_intercept(c, max_iter, tol, fit_intercept) }
+    #[pyo3(signature = (C=1.0, max_iter=1000, tol=1e-4, fit_intercept=true))]
+    fn py_new(C: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> Self {
+        Self { inner: crate::ml::svm::svm::LinearSVC::with_fit_intercept(C, max_iter, tol, fit_intercept) }
     }
     fn decision_function(&self, x: &PyAny) -> PyResult<Vec<f64>> {
         let (xf, n, p) = extract_flat(x)?;
@@ -991,10 +993,11 @@ impl_get_set_params!(PyLinearSVR,
 
 #[pymethods]
 impl PyLinearSVR {
+    #[allow(non_snake_case)]
     #[new]
-    #[pyo3(signature = (c=1.0, epsilon=0.1, max_iter=1000, tol=1e-4, fit_intercept=true))]
-    fn py_new(c: f64, epsilon: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> Self {
-        Self { inner: crate::ml::svm::svm::LinearSVR::with_fit_intercept(c, epsilon, max_iter, tol, fit_intercept) }
+    #[pyo3(signature = (C=1.0, epsilon=0.1, max_iter=1000, tol=1e-4, fit_intercept=true))]
+    fn py_new(C: f64, epsilon: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> Self {
+        Self { inner: crate::ml::svm::svm::LinearSVR::with_fit_intercept(C, epsilon, max_iter, tol, fit_intercept) }
     }
     #[getter] fn coef_(&self) -> Vec<f64> { self.inner.coef().to_vec() }
     #[getter] fn intercept_(&self) -> f64 { self.inner.intercept() }
@@ -1017,8 +1020,21 @@ impl PyRidgeClassifier {
     #[new]
     #[pyo3(signature = (alpha=1.0))]
     fn py_new(alpha: f64) -> Self { Self { inner: crate::ml::linear::ridge::RidgeClassifier::new(alpha) } }
-    #[getter] fn coef_(&self) -> Vec<f64> { self.inner.ridge.coef.clone() }
-    #[getter] fn intercept_(&self) -> f64 { self.inner.ridge.intercept }
+    #[getter] fn coef_(&self, py: Python<'_>) -> PyResult<PyObject> {
+        if self.inner.coefs.len() <= 1 {
+            let v = self.inner.coefs.first().cloned().unwrap_or_default();
+            Ok(v.into_pyarray_bound(py).into_py(py))
+        } else {
+            vv_to_np2d(py, self.inner.coefs.clone())
+        }
+    }
+    #[getter] fn intercept_(&self, py: Python<'_>) -> PyResult<PyObject> {
+        if self.inner.intercepts.len() <= 1 {
+            Ok(self.inner.intercepts.first().copied().unwrap_or(0.0).into_py(py))
+        } else {
+            Ok(self.inner.intercepts.clone().into_pyarray_bound(py).into_py(py))
+        }
+    }
     #[getter] fn classes_(&self) -> Vec<i32> { self.inner.classes.clone() }
     fn __repr__(&self) -> String { format!("RidgeClassifier(alpha={})", self.inner.ridge.alpha) }
 }

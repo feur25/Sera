@@ -87,7 +87,7 @@ pub fn render_lollipop_html(cfg: &LollipopConfig) -> String {
             if i % tick_step == 0 {
                 push_b(&mut b, b"<text x=\""); push_i(&mut b, cx);
                 push_b(&mut b, b"\" y=\""); push_i(&mut b, pad_t + plot_h + 14);
-                push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
+                push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" class=\"sp-xt\">");
                 escape_xml(&mut b, truncate(&sorted_labels[i], 12));
                 push_b(&mut b, b"</text>");
             }

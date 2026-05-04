@@ -10,6 +10,7 @@ pub fn render(cfg: &BarConfig, stacked: bool) -> String {
         category_labels: cfg.category_labels, series: cfg.series,
         palette: cfg.palette, stacked,
         show_values: cfg.show_text, value_min_height: 16,
+        orientation: cfg.orientation,
     };
     render_grouped_bar_html(&g)
 }

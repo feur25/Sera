@@ -49,6 +49,7 @@ pub struct ChartOpts {
     pub no_y_axis: Option<bool>,
     pub color_hex: Option<u32>,
     pub orientation: Option<String>,
+    pub orientation_option: Option<u8>,
     pub show_text: Option<bool>,
     pub color_groups: Option<Vec<String>>,
     pub show_points: Option<bool>,
@@ -170,6 +171,30 @@ impl ChartOpts {
     }
     pub fn no_x(&self) -> bool { self.no_x_axis.unwrap_or(false) }
     pub fn no_y(&self) -> bool { self.no_y_axis.unwrap_or(false) }
+    pub fn is_horiz(&self) -> bool {
+        match self.orientation.as_deref() {
+            Some(s) => {
+                let l = s.to_ascii_lowercase();
+                l == "h" || l == "horiz" || l == "horizontal" || l == "rotated" || l == "hbar" || l == "hbox" || l == "barh"
+            }
+            None => false,
+        }
+    }
+    pub fn orient_byte(&self) -> u8 { if self.is_horiz() { b'h' } else { b'v' } }
+    pub fn rotation_deg(&self) -> i32 {
+        if let Some(opt) = self.orientation_option {
+            return match opt { 2 => 90, 3 => 180, 4 => 270, _ => 0 };
+        }
+        if self.is_horiz() { 90 } else { 0 }
+    }
+    pub fn rotation_deg_native(&self) -> i32 {
+        match self.orientation_option.unwrap_or(0) {
+            2 => 90,
+            3 => 180,
+            4 => 270,
+            _ => 0,
+        }
+    }
 }
 
 #[derive(Deserialize, Default)]
@@ -233,8 +258,38 @@ fn parse_all(input: &str) -> (String, ChartArgs, ChartOpts) {
 pub fn apply(html: String, o: &ChartOpts) -> String {
     let bg_str = o.bg_str().or_else(get_global_bg);
     let bg = bg_str.as_deref();
-    crate::html::hover::apply_opts(html, bg, !o.no_x(), !o.no_y())
+    let h = crate::html::hover::apply_opts(html, bg, !o.no_x(), !o.no_y());
+    let h = crate::html::hover::apply_rotation(h, o.rotation_deg());
+    apply_kwarg_chains(h, o)
 }
+
+pub fn apply_h(html: String, o: &ChartOpts) -> String {
+    let bg_str = o.bg_str().or_else(get_global_bg);
+    let bg = bg_str.as_deref();
+    let h = crate::html::hover::apply_opts(html, bg, !o.no_x(), !o.no_y());
+    let h = crate::html::hover::apply_rotation(h, o.rotation_deg_native());
+    apply_kwarg_chains(h, o)
+}
+
+#[cfg(feature = "python")]
+fn apply_kwarg_chains(html: String, o: &ChartOpts) -> String {
+    use crate::{SP_LEGEND_JS, json_str};
+    let mut snip = String::new();
+    if let Some(ref lp) = o.legend_position {
+        let pos = match lp.as_str() { "right" | "left" | "top" | "bottom" => lp.as_str(), _ => "right" };
+        snip.push_str(&format!("window.__sp_legend_pos__={};", json_str(pos)));
+        snip.push_str(SP_LEGEND_JS);
+        snip.push(';');
+    }
+    if snip.is_empty() {
+        return html;
+    }
+    let block = format!("<script>{}</script></body>", snip);
+    html.replacen("</body>", &block, 1)
+}
+
+#[cfg(not(feature = "python"))]
+fn apply_kwarg_chains(html: String, _o: &ChartOpts) -> String { html }
 
 pub fn apply_bg3d(html: String, o: &ChartOpts) -> String {
     let bg_str = o.bg_str().or_else(get_global_bg);
@@ -259,7 +314,7 @@ pub fn build_bar_chart(input: &str) -> String {
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
-    let orient = if o.orientation.as_deref() == Some("h") { b'h' } else { b'v' };
+    let orient = o.orient_byte();
     let groups = o.color_groups.clone().unwrap_or_default();
     let hover = o.hj();
     let html = crate::plot::default::render_bars_html(
@@ -267,7 +322,7 @@ pub fn build_bar_chart(input: &str) -> String {
         &groups, o.show_text.unwrap_or(false), &o.xl(), &o.yl(),
         &o.pal(), o.color_hex.unwrap_or(0), o.grid(), &o.srt(),
     );
-    apply(html, &o)
+    apply_h(html, &o)
 }
 
 /// Unified bar-family entry point. Dispatches by `variant` keyword:
@@ -328,13 +383,16 @@ pub fn build_bar(input: &str) -> String {
         max_icons_per_column: o.max_icons_per_column.unwrap_or(10),
         units_per_icon: o.units_per_icon.unwrap_or(1.0),
         unit_description: &unit_desc,
-        show_text: o.show_text.unwrap_or(false),
+        show_text: o.show_values.or(o.show_text).unwrap_or(false),
         corner_radius: o.corner_radius.unwrap_or(0),
         bar_gap: o.bar_gap.unwrap_or(0.2),
         bargroup_gap: o.bargroup_gap.unwrap_or(0.1),
+        orientation: o.orient_byte(),
     };
     let html = render_bar_html(&cfg);
-    apply(html, &o)
+    use crate::plot::statistical::BarVariant::*;
+    let native = matches!(variant, Basic | Horizontal | Grouped | Stacked);
+    if native { apply_h(html, &o) } else { apply(html, &o) }
 }
 
 pub fn build_line(input: &str) -> String {
@@ -529,7 +587,7 @@ pub fn build_scatter_chart(input: &str) -> String {
             color_high: o.color_high.unwrap_or(0xF43F5E),
             point_size: o.point_size.unwrap_or(5.0),
             stroke_width: o.stroke_width.unwrap_or(1.0),
-            show_text: o.show_text.unwrap_or(false),
+            show_text: o.show_values.or(o.show_text).unwrap_or(false),
             symbol: &symbol,
             regression_type: &reg_t,
         };
@@ -558,9 +616,12 @@ pub fn build_histogram(input: &str) -> String {
     let sn = o.series_names.clone().unwrap_or_default();
     let names = if sn.len() >= 2 { Some((sn[0].as_str(), sn[1].as_str())) } else { None };
     let ref_names: Option<(&str, &str)> = names.as_ref().map(|(a, b)| (*a, *b));
-    let variant = HistogramVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+    let mut variant = HistogramVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let overlay_opt: Option<&[f64]> = if overlay.is_empty() { None } else { Some(&overlay) };
-    let orient = if o.orientation.as_deref() == Some("h") { b'h' } else { b'v' };
+    let orient = o.orient_byte();
+    if orient == b'h' && matches!(variant, HistogramVariant::Basic) {
+        variant = HistogramVariant::Horizontal;
+    }
     let color = match o.color_hex {
         Some(0) | None => palette.get(0).copied().unwrap_or(0x6366F1),
         Some(c) => c,
@@ -580,7 +641,9 @@ pub fn build_histogram(input: &str) -> String {
         gridlines: o.grid(), width: o.w(860), height: o.h(380), hover: &hover,
         sort_order: &o.srt(), ..HistogramConfig::default()
     });
-    apply(html, &o)
+    use crate::plot::statistical::HistogramVariant::*;
+    let native = matches!(variant, Basic | Horizontal);
+    if native { apply_h(html, &o) } else { apply(html, &o) }
 }
 
 pub fn build_histogram_overlay(input: &str) -> String {
@@ -626,9 +689,9 @@ pub fn build_grouped_bar(input: &str) -> String {
         title, category_labels: &category_labels, series: &series,
         palette: &o.pal(), x_label: &o.xl(), y_label: &o.yl(),
         show_values: o.show_values.unwrap_or(false), gridlines: o.grid(),
-        sort_order: &o.srt(), hover: &hover, ..GroupedBarConfig::default()
+        sort_order: &o.srt(), hover: &hover, orientation: o.orient_byte(), ..GroupedBarConfig::default()
     });
-    apply(html, &o)
+    apply_h(html, &o)
 }
 
 pub fn build_stacked_bar(input: &str) -> String {
@@ -650,9 +713,9 @@ pub fn build_stacked_bar(input: &str) -> String {
         title, category_labels: &category_labels, series: &series,
         palette: &o.pal(), x_label: &o.xl(), y_label: &o.yl(),
         show_values: o.show_values.unwrap_or(false), gridlines: o.grid(),
-        sort_order: &o.srt(), hover: &hover, stacked: true, ..GroupedBarConfig::default()
+        sort_order: &o.srt(), hover: &hover, stacked: true, orientation: o.orient_byte(), ..GroupedBarConfig::default()
     });
-    apply(html, &o)
+    apply_h(html, &o)
 }
 
 pub fn build_heatmap(input: &str) -> String {
@@ -784,7 +847,10 @@ pub fn build_boxplot(input: &str) -> String {
     let series = a.series.unwrap_or_default();
     let series_names = o.series_names.clone().unwrap_or_default();
     let hover = o.hj();
-    let variant = crate::plot::statistical::BoxplotVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+    let mut variant = crate::plot::statistical::BoxplotVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+    if o.is_horiz() && matches!(variant, crate::plot::statistical::BoxplotVariant::Basic) {
+        variant = crate::plot::statistical::BoxplotVariant::Horizontal;
+    }
     let html = crate::plot::statistical::render_boxplot_html(&crate::plot::statistical::BoxplotConfig {
         title,
         variant,
@@ -809,7 +875,9 @@ pub fn build_boxplot(input: &str) -> String {
         fill_opacity: o.fill_opacity_real.unwrap_or(0.28),
         stroke_width: o.box_stroke_width.unwrap_or(1.6),
     });
-    apply(html, &o)
+    use crate::plot::statistical::BoxplotVariant::*;
+    let native = matches!(variant, Horizontal);
+    if native { apply_h(html, &o) } else { apply(html, &o) }
 }
 
 pub fn build_violin(input: &str) -> String {
@@ -819,7 +887,10 @@ pub fn build_violin(input: &str) -> String {
     let values = a.values.unwrap_or_default();
     use crate::plot::statistical::{ViolinConfig, ViolinVariant, render_violin_html};
     let hover = o.hj();
-    let variant = ViolinVariant::from_str(o.variant.as_deref().unwrap_or("box"));
+    let mut variant = ViolinVariant::from_str(o.variant.as_deref().unwrap_or("box"));
+    if o.is_horiz() && matches!(variant, ViolinVariant::Basic | ViolinVariant::Box | ViolinVariant::Quartile | ViolinVariant::Mean) {
+        variant = ViolinVariant::Horizontal;
+    }
     let html = render_violin_html(&ViolinConfig {
         title, variant, categories: &categories, values: &values,
         x_label: &o.xl(), y_label: &o.yl(), palette: &o.pal(), gridlines: o.grid(),
@@ -834,7 +905,8 @@ pub fn build_violin(input: &str) -> String {
         jitter: o.jitter.unwrap_or(0.35),
         kde_steps: 32,
     });
-    apply(html, &o)
+    let native = matches!(variant, ViolinVariant::Horizontal);
+    if native { apply_h(html, &o) } else { apply(html, &o) }
 }
 
 pub fn build_slope(input: &str) -> String {
@@ -952,9 +1024,9 @@ pub fn build_waterfall(input: &str) -> String {
         title, labels: &labels, values: &values, x_label: &o.xl(), y_label: &o.yl(),
         show_text: o.show_text.unwrap_or(true), gridlines: o.grid(),
         width: o.w(900), height: o.h(480), sort_order: &o.srt(), hover: &hover,
-        legend_position: &o.lp(),
+        legend_position: &o.lp(), orientation: o.orient_byte(),
     });
-    apply(html, &o)
+    apply_h(html, &o)
 }
 
 pub fn build_bullet(input: &str) -> String {
@@ -1092,7 +1164,7 @@ pub fn build_lollipop_chart(input: &str) -> String {
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
     use crate::plot::statistical::{LollipopConfig, render_lollipop_html};
-    let orient = if o.orientation.as_deref() == Some("h") { b'h' } else { b'v' };
+    let orient = o.orient_byte();
     let hover = o.hj();
     let html = render_lollipop_html(&LollipopConfig {
         title, labels: &labels, values: &values, x_label: &o.xl(), y_label: &o.yl(),
@@ -1101,7 +1173,7 @@ pub fn build_lollipop_chart(input: &str) -> String {
         sort_order: &o.srt(), width: o.w(900), height: o.h(480), hover: &hover,
         legend_position: &o.lp(),
     });
-    apply(html, &o)
+    apply_h(html, &o)
 }
 
 pub fn build_lollipop3d_chart(input: &str) -> String {
@@ -1570,7 +1642,7 @@ pub fn build_bubble(input: &str) -> String {
         color_high: o.color_high.unwrap_or(0xF43F5E),
         min_size: o.min_size.unwrap_or(4.0),
         max_size: o.max_size.unwrap_or(40.0),
-        show_text: o.show_text.unwrap_or(false),
+        show_text: o.show_values.or(o.show_text).unwrap_or(false),
         stroke_width: o.stroke_width.unwrap_or(1.5),
     };
     let html = render_bubble_html(&cfg);

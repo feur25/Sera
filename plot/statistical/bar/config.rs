@@ -35,6 +35,7 @@ pub struct BarConfig<'a> {
     pub corner_radius: i32,
     pub bar_gap: f64,
     pub bargroup_gap: f64,
+    pub orientation: u8,
 }
 
 impl<'a> Default for BarConfig<'a> {
@@ -52,6 +53,7 @@ impl<'a> Default for BarConfig<'a> {
             icon_size: 24, max_icons_per_column: 10, units_per_icon: 1.0,
             unit_description: "",
             show_text: false, corner_radius: 0, bar_gap: 0.2, bargroup_gap: 0.1,
+            orientation: b'v',
         }
     }
 }

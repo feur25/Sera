@@ -324,7 +324,7 @@ pub fn render_bars_html(
             let trunc_lbl = truncate(&labels[i], 12);
             push_b(&mut buf, b"<text x=\""); push_i(&mut buf, x + w / 2);
             push_b(&mut buf, b"\" y=\""); push_i(&mut buf, pad_t + plot_h + 14);
-            push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">");
+            push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-xt\">");
             escape_xml(&mut buf, trunc_lbl);
             push_b(&mut buf, b"</text>");
 

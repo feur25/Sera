@@ -91,7 +91,7 @@ pub fn render(cfg: &LineConfig) -> String {
         let xi = f.pl + (i as f64 * step_x) as i32;
         push_b(&mut f.buf, b"<text x=\""); push_i(&mut f.buf, xi);
         push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, f.pt + f.ph + 14);
-        push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">");
+        push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-xt\">");
         if let Some(l) = labels_src.get(i) { escape_xml(&mut f.buf, truncate(l, 10)); }
         push_b(&mut f.buf, b"</text>");
     }

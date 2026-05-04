@@ -113,7 +113,7 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
         let x = f.pl + (i as f64 * step_x) as i32;
         push_b(&mut f.buf, b"<text x=\""); push_i(&mut f.buf, x);
         push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, f.pt + f.ph + 14);
-        push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#6b7280\">");
+        push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#6b7280\" class=\"sp-xt\">");
         escape_xml(&mut f.buf, truncate(&cfg.x_labels[i], 12));
         push_b(&mut f.buf, b"</text>");
     }

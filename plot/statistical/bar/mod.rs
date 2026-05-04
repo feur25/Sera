@@ -14,7 +14,7 @@ pub use config::BarConfig;
 pub fn render_bar_html(cfg: &BarConfig) -> String {
     use BarVariant::*;
     match cfg.variant {
-        Basic           => basic::render(cfg, b'v'),
+        Basic           => basic::render(cfg, cfg.orientation),
         Horizontal      => basic::render(cfg, b'h'),
         Grouped         => grouped::render(cfg, false),
         Stacked         => grouped::render(cfg, true),
