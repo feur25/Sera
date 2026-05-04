@@ -1388,32 +1388,37 @@ impl PyStratifiedKFold {
 
 #[pyfunction]
 #[pyo3(signature = (y_true, y_pred))]
-pub fn accuracy_score(y_true: Vec<i32>, y_pred: Vec<i32>) -> f64 {
-    crate::ml::metrics::classification::accuracy_score(&y_true, &y_pred)
+pub fn accuracy_score(y_true: &PyAny, y_pred: &PyAny) -> PyResult<f64> {
+    let yt = extract_labels(y_true)?; let yp = extract_labels(y_pred)?;
+    Ok(crate::ml::metrics::classification::accuracy_score(&yt, &yp))
 }
 
 #[pyfunction]
 #[pyo3(signature = (y_true, y_pred))]
-pub fn mean_squared_error(y_true: Vec<f64>, y_pred: Vec<f64>) -> f64 {
-    crate::ml::metrics::regression::mean_squared_error(&y_true, &y_pred)
+pub fn mean_squared_error(y_true: &PyAny, y_pred: &PyAny) -> PyResult<f64> {
+    let yt = extract_targets(y_true)?; let yp = extract_targets(y_pred)?;
+    Ok(crate::ml::metrics::regression::mean_squared_error(&yt, &yp))
 }
 
 #[pyfunction]
 #[pyo3(signature = (y_true, y_pred))]
-pub fn mean_absolute_error(y_true: Vec<f64>, y_pred: Vec<f64>) -> f64 {
-    crate::ml::metrics::regression::mean_absolute_error(&y_true, &y_pred)
+pub fn mean_absolute_error(y_true: &PyAny, y_pred: &PyAny) -> PyResult<f64> {
+    let yt = extract_targets(y_true)?; let yp = extract_targets(y_pred)?;
+    Ok(crate::ml::metrics::regression::mean_absolute_error(&yt, &yp))
 }
 
 #[pyfunction]
 #[pyo3(signature = (y_true, y_pred))]
-pub fn r2_score(y_true: Vec<f64>, y_pred: Vec<f64>) -> f64 {
-    crate::ml::metrics::regression::r2_score(&y_true, &y_pred)
+pub fn r2_score(y_true: &PyAny, y_pred: &PyAny) -> PyResult<f64> {
+    let yt = extract_targets(y_true)?; let yp = extract_targets(y_pred)?;
+    Ok(crate::ml::metrics::regression::r2_score(&yt, &yp))
 }
 
 #[pyfunction]
 #[pyo3(signature = (y_true, y_pred))]
-pub fn root_mean_squared_error(y_true: Vec<f64>, y_pred: Vec<f64>) -> f64 {
-    crate::ml::metrics::regression::root_mean_squared_error(&y_true, &y_pred)
+pub fn root_mean_squared_error(y_true: &PyAny, y_pred: &PyAny) -> PyResult<f64> {
+    let yt = extract_targets(y_true)?; let yp = extract_targets(y_pred)?;
+    Ok(crate::ml::metrics::regression::root_mean_squared_error(&yt, &yp))
 }
 
 #[pyfunction]
@@ -1443,13 +1448,15 @@ pub fn cross_val_score(estimator: &str, x: &PyAny, y: &PyAny, cv: usize, scoring
 
 #[pyfunction]
 #[pyo3(signature = (y_true, y_pred))]
-pub fn classification_report(y_true: Vec<i32>, y_pred: Vec<i32>) -> String {
-    crate::ml::metrics::classification::classification_report(&y_true, &y_pred)
+pub fn classification_report(y_true: &PyAny, y_pred: &PyAny) -> PyResult<String> {
+    let yt = extract_labels(y_true)?; let yp = extract_labels(y_pred)?;
+    Ok(crate::ml::metrics::classification::classification_report(&yt, &yp))
 }
 
 #[pyfunction]
 #[pyo3(signature = (y_true, y_pred, average="weighted"))]
-pub fn f1_score(y_true: Vec<i32>, y_pred: Vec<i32>, average: &str) -> f64 {
+pub fn f1_score(y_true: &PyAny, y_pred: &PyAny, average: &str) -> PyResult<f64> {
+    let y_true = extract_labels(y_true)?; let y_pred = extract_labels(y_pred)?;
     let avg = match average {
         "macro" => crate::ml::metrics::classification::Average::Macro,
         "weighted" => crate::ml::metrics::classification::Average::Weighted,
@@ -1458,12 +1465,13 @@ pub fn f1_score(y_true: Vec<i32>, y_pred: Vec<i32>, average: &str) -> f64 {
             crate::ml::metrics::classification::Average::Binary(*classes.last().unwrap_or(&1))
         }
     };
-    crate::ml::metrics::classification::f1_score(&y_true, &y_pred, avg)
+    Ok(crate::ml::metrics::classification::f1_score(&y_true, &y_pred, avg))
 }
 
 #[pyfunction]
 #[pyo3(signature = (y_true, y_pred, average="weighted"))]
-pub fn precision_score(y_true: Vec<i32>, y_pred: Vec<i32>, average: &str) -> f64 {
+pub fn precision_score(y_true: &PyAny, y_pred: &PyAny, average: &str) -> PyResult<f64> {
+    let y_true = extract_labels(y_true)?; let y_pred = extract_labels(y_pred)?;
     let avg = match average {
         "macro" => crate::ml::metrics::classification::Average::Macro,
         "weighted" => crate::ml::metrics::classification::Average::Weighted,
@@ -1472,12 +1480,13 @@ pub fn precision_score(y_true: Vec<i32>, y_pred: Vec<i32>, average: &str) -> f64
             crate::ml::metrics::classification::Average::Binary(*classes.last().unwrap_or(&1))
         }
     };
-    crate::ml::metrics::classification::precision_score(&y_true, &y_pred, avg)
+    Ok(crate::ml::metrics::classification::precision_score(&y_true, &y_pred, avg))
 }
 
 #[pyfunction]
 #[pyo3(signature = (y_true, y_pred, average="weighted"))]
-pub fn recall_score(y_true: Vec<i32>, y_pred: Vec<i32>, average: &str) -> f64 {
+pub fn recall_score(y_true: &PyAny, y_pred: &PyAny, average: &str) -> PyResult<f64> {
+    let y_true = extract_labels(y_true)?; let y_pred = extract_labels(y_pred)?;
     let avg = match average {
         "macro" => crate::ml::metrics::classification::Average::Macro,
         "weighted" => crate::ml::metrics::classification::Average::Weighted,
@@ -1486,13 +1495,14 @@ pub fn recall_score(y_true: Vec<i32>, y_pred: Vec<i32>, average: &str) -> f64 {
             crate::ml::metrics::classification::Average::Binary(*classes.last().unwrap_or(&1))
         }
     };
-    crate::ml::metrics::classification::recall_score(&y_true, &y_pred, avg)
+    Ok(crate::ml::metrics::classification::recall_score(&y_true, &y_pred, avg))
 }
 
 #[pyfunction]
 #[pyo3(signature = (y_true, y_pred))]
-pub fn confusion_matrix(y_true: Vec<i32>, y_pred: Vec<i32>) -> (Vec<i32>, Vec<usize>) {
-    crate::ml::metrics::classification::confusion_matrix(&y_true, &y_pred)
+pub fn confusion_matrix(y_true: &PyAny, y_pred: &PyAny) -> PyResult<(Vec<i32>, Vec<usize>)> {
+    let yt = extract_labels(y_true)?; let yp = extract_labels(y_pred)?;
+    Ok(crate::ml::metrics::classification::confusion_matrix(&yt, &yp))
 }
 
 #[pyfunction]
@@ -2515,8 +2525,9 @@ pub fn median_absolute_error(y_true: Vec<f64>, y_pred: Vec<f64>) -> f64 {
 
 #[pyfunction]
 #[pyo3(signature = (y_true, y_pred))]
-pub fn mean_squared_log_error(y_true: Vec<f64>, y_pred: Vec<f64>) -> f64 {
-    crate::ml::metrics::regression::mean_squared_log_error(&y_true, &y_pred)
+pub fn mean_squared_log_error(y_true: &PyAny, y_pred: &PyAny) -> PyResult<f64> {
+    let yt = extract_targets(y_true)?; let yp = extract_targets(y_pred)?;
+    Ok(crate::ml::metrics::regression::mean_squared_log_error(&yt, &yp))
 }
 
 #[pyfunction]

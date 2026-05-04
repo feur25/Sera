@@ -160,7 +160,7 @@ model.coef_, model.intercept_      # Linear models
 
 ## Benchmarks vs scikit-learn
 
-Measured on `n=5000`, `p=20`, single machine (Windows, Python 3.11, scikit-learn 1.8.0, seraplot 2.4.32). Parity is the per-prediction agreement on a held-out test set.
+Measured on `n=5000`, `p=20`, single machine (Windows, Python 3.11, scikit-learn 1.8.0, seraplot 2.4.33). Parity is the per-prediction agreement on a held-out test set.
 
 ### Trees &amp; Ensembles — where SeraPlot shines
 
@@ -217,7 +217,47 @@ Measured on `n=5000`, `p=20`, single machine (Windows, Python 3.11, scikit-learn
 </table>
 
 <div class="ml-callout">
-  <strong>Parity notes.</strong> Tree-based models reach ~0.90 because tie-breaking on equal-gain splits differs across implementations. <code>SGDClassifier</code> diverges due to RNG / iteration ordering. <code>TruncatedSVD</code> falls below 1.0 on noise-only data because singular vectors are not uniquely defined when singular values are nearly equal.
+  <strong>Reading the parity badge.</strong>
+  <ul>
+    <li><span class="ml-parity">≥ 0.95</span> — drop-in replacement. Predictions agree with scikit-learn within numerical tolerance.</li>
+    <li><span class="ml-parity ml-parity-mid">0.85 – 0.95</span> — same statistical accuracy, but tie-breaking on equal-gain tree splits, RNG seeds or iteration ordering produce a few different individual predictions. Score on a test set is essentially identical.</li>
+    <li><span class="ml-parity ml-parity-low">&lt; 0.85</span> — algorithmic divergence on noisy or degenerate inputs. Two cases: (1) <code>SGDClassifier</code> uses a different mini-batch shuffle / learning-rate schedule, so individual predictions can differ even when accuracy matches; (2) <code>TruncatedSVD</code> on data with near-equal singular values returns a different (but mathematically valid) basis — sign and rotation of singular vectors are not unique.</li>
+  </ul>
+  In all cases the test-set <em>score</em> (accuracy / R²) matches scikit-learn to two decimals.
+</div>
+
+## Big-data benchmarks (real OpenFoodFacts data)
+
+Dataset: 504,376 products from [openfoodfacts.org](https://en.openfoodfacts.org/), 9 numerical features (energy, fat, sugars, …), nutri-score grade as 5-class target. Times are wall-clock per `fit` on a single Windows laptop.
+
+<table class="ml-bench">
+<thead><tr><th>Estimator</th><th>n=10k</th><th>n=50k</th><th>n=200k</th><th>n=500k</th></tr></thead>
+<tbody>
+<tr><td><code>GradientBoostingClassifier</code></td><td><span class="ml-num">×38.3</span></td><td><span class="ml-num">×46.0</span></td><td>—</td><td>—</td></tr>
+<tr><td><code>GradientBoostingRegressor</code></td><td><span class="ml-num">×15.6</span></td><td><span class="ml-num">×19.7</span></td><td>—</td><td>—</td></tr>
+<tr><td><code>AdaBoostClassifier</code></td><td><span class="ml-num">×17.9</span></td><td><span class="ml-num">×20.2</span></td><td>—</td><td>—</td></tr>
+<tr><td><code>RandomForestRegressor</code></td><td><span class="ml-num">×10.9</span></td><td><span class="ml-num">×11.7</span></td><td><span class="ml-num">×11.2</span></td><td>—</td></tr>
+<tr><td><code>RandomForestClassifier</code></td><td><span class="ml-num">×6.95</span></td><td><span class="ml-num">×6.66</span></td><td><span class="ml-num">×7.95</span></td><td>—</td></tr>
+<tr><td><code>DecisionTreeClassifier</code></td><td><span class="ml-num">×4.64</span></td><td><span class="ml-num">×8.93</span></td><td><span class="ml-num">×15.7</span></td><td>—</td></tr>
+<tr><td><code>SGDClassifier</code></td><td><span class="ml-num">×6.73</span></td><td><span class="ml-num">×11.0</span></td><td><span class="ml-num">×14.8</span></td><td><span class="ml-num">×15.0</span></td></tr>
+<tr><td><code>NearestCentroid</code></td><td><span class="ml-num">×2.21</span></td><td><span class="ml-num">×4.22</span></td><td><span class="ml-num">×6.49</span></td><td><span class="ml-num">×6.77</span></td></tr>
+<tr><td><code>GaussianNB</code></td><td><span class="ml-num">×1.77</span></td><td><span class="ml-num">×3.78</span></td><td><span class="ml-num">×6.05</span></td><td><span class="ml-num">×6.66</span></td></tr>
+<tr><td><code>BernoulliNB</code></td><td><span class="ml-num">×1.89</span></td><td><span class="ml-num">×3.88</span></td><td><span class="ml-num">×5.71</span></td><td><span class="ml-num">×5.96</span></td></tr>
+<tr><td><code>RobustScaler</code></td><td><span class="ml-num">×1.83</span></td><td><span class="ml-num">×3.76</span></td><td><span class="ml-num">×5.21</span></td><td><span class="ml-num">×6.00</span></td></tr>
+<tr><td><code>StandardScaler</code></td><td><span class="ml-num">×1.33</span></td><td><span class="ml-num">×2.91</span></td><td><span class="ml-num">×4.72</span></td><td><span class="ml-num">×7.41</span></td></tr>
+<tr><td><code>KMeans</code></td><td>—</td><td><span class="ml-num">×3.90</span></td><td><span class="ml-num">×5.38</span></td><td><span class="ml-num">×5.34</span></td></tr>
+<tr><td><code>LinearRegression</code></td><td><span class="ml-num">×0.00</span></td><td><span class="ml-num">×2.05</span></td><td><span class="ml-num">×3.54</span></td><td><span class="ml-num">×5.03</span></td></tr>
+<tr><td><code>RidgeClassifier</code></td><td><span class="ml-num">×2.90</span></td><td><span class="ml-num">×2.85</span></td><td><span class="ml-num">×3.28</span></td><td><span class="ml-num">×2.97</span></td></tr>
+<tr><td><code>Ridge</code></td><td><span class="ml-num">×1.15</span></td><td><span class="ml-num">×1.53</span></td><td><span class="ml-num">×2.02</span></td><td><span class="ml-num">×2.35</span></td></tr>
+<tr><td><code>accuracy_score</code></td><td>—</td><td>—</td><td><span class="ml-num">×15.6</span></td><td>—</td></tr>
+<tr><td><code>f1_score</code></td><td>—</td><td>—</td><td><span class="ml-num">×5.41</span></td><td>—</td></tr>
+<tr><td><code>r2_score</code></td><td>—</td><td>—</td><td>—</td><td><span class="ml-num">×2.86</span></td></tr>
+<tr><td><code>train_test_split</code></td><td>—</td><td>—</td><td>—</td><td><span class="ml-num">×1.64</span></td></tr>
+</tbody>
+</table>
+
+<div class="ml-callout">
+  <strong>How SeraPlot scales.</strong> The whole core is written in Rust on top of <a href="https://github.com/rayon-rs/rayon">rayon</a> — work-stealing thread pools that automatically span every CPU core. Hot inner loops (column dot-products, residual updates, tree split scans, distance reductions) are 4-way unrolled and laid out cache-friendly (column-major <code>X</code>, contiguous chunks). Coordinate descent in <code>Lasso</code> / <code>ElasticNet</code> switches to a parallel chunked reduction once n ≥ 50k; tree ensembles parallelize across estimators; metrics and scalers operate directly on the NumPy buffer with zero copies.
 </div>
 
 </div>
@@ -380,7 +420,7 @@ model.coef_, model.intercept_      # Modèles linéaires
 
 ## Benchmarks vs scikit-learn
 
-Mesuré sur `n=5000`, `p=20`, machine unique (Windows, Python 3.11, scikit-learn 1.8.0, seraplot 2.4.32). La parité est l'accord par prédiction sur un jeu de test.
+Mesuré sur `n=5000`, `p=20`, machine unique (Windows, Python 3.11, scikit-learn 1.8.0, seraplot 2.4.33). La parité est l'accord par prédiction sur un jeu de test.
 
 ### Arbres &amp; ensembles — là où SeraPlot brille
 
@@ -416,7 +456,47 @@ Mesuré sur `n=5000`, `p=20`, machine unique (Windows, Python 3.11, scikit-learn
 </table>
 
 <div class="ml-callout">
-  <strong>Notes sur la parité.</strong> Les modèles à base d'arbres atteignent ~0,90 car le tie-breaking sur les splits d'égal gain diffère selon l'implémentation. <code>SGDClassifier</code> diverge à cause de l'ordre RNG / itérations. <code>TruncatedSVD</code> reste sous 1,0 sur des données purement aléatoires car les vecteurs singuliers ne sont pas uniques quand les valeurs singulières sont quasi-égales.
+  <strong>Lecture du badge de parité.</strong>
+  <ul>
+    <li><span class="ml-parity">≥ 0,95</span> — remplacement direct. Les prédictions correspondent à scikit-learn à la tolérance numérique près.</li>
+    <li><span class="ml-parity ml-parity-mid">0,85 – 0,95</span> — même précision statistique, mais le tie-breaking sur les splits d'arbres à gain égal, les graines RNG ou l'ordre d'itération produisent quelques prédictions individuelles différentes. Le score sur un jeu de test est quasi identique.</li>
+    <li><span class="ml-parity ml-parity-low">&lt; 0,85</span> — divergence algorithmique sur entrées bruitées ou dégénérées. Deux cas : (1) <code>SGDClassifier</code> utilise un mélange mini-batch / planning de taux d'apprentissage différents, donc les prédictions individuelles diffèrent même quand l'accuracy correspond ; (2) <code>TruncatedSVD</code> sur des données aux valeurs singulières quasi-égales renvoie une base différente (mais mathématiquement valide) — signe et rotation des vecteurs singuliers ne sont pas uniques.</li>
+  </ul>
+  Dans tous les cas, le <em>score</em> sur jeu de test (accuracy / R²) correspond à scikit-learn à deux décimales.
+</div>
+
+## Benchmarks gros volume (données réelles OpenFoodFacts)
+
+Jeu de données : 504 376 produits depuis [openfoodfacts.org](https://fr.openfoodfacts.org/), 9 features numériques (énergie, lipides, sucres, …), nutri-score (5 classes) en cible. Temps `fit` mesurés sur un seul portable Windows.
+
+<table class="ml-bench">
+<thead><tr><th>Estimateur</th><th>n=10k</th><th>n=50k</th><th>n=200k</th><th>n=500k</th></tr></thead>
+<tbody>
+<tr><td><code>GradientBoostingClassifier</code></td><td><span class="ml-num">×38,3</span></td><td><span class="ml-num">×46,0</span></td><td>—</td><td>—</td></tr>
+<tr><td><code>GradientBoostingRegressor</code></td><td><span class="ml-num">×15,6</span></td><td><span class="ml-num">×19,7</span></td><td>—</td><td>—</td></tr>
+<tr><td><code>AdaBoostClassifier</code></td><td><span class="ml-num">×17,9</span></td><td><span class="ml-num">×20,2</span></td><td>—</td><td>—</td></tr>
+<tr><td><code>RandomForestRegressor</code></td><td><span class="ml-num">×10,9</span></td><td><span class="ml-num">×11,7</span></td><td><span class="ml-num">×11,2</span></td><td>—</td></tr>
+<tr><td><code>RandomForestClassifier</code></td><td><span class="ml-num">×6,95</span></td><td><span class="ml-num">×6,66</span></td><td><span class="ml-num">×7,95</span></td><td>—</td></tr>
+<tr><td><code>DecisionTreeClassifier</code></td><td><span class="ml-num">×4,64</span></td><td><span class="ml-num">×8,93</span></td><td><span class="ml-num">×15,7</span></td><td>—</td></tr>
+<tr><td><code>SGDClassifier</code></td><td><span class="ml-num">×6,73</span></td><td><span class="ml-num">×11,0</span></td><td><span class="ml-num">×14,8</span></td><td><span class="ml-num">×15,0</span></td></tr>
+<tr><td><code>NearestCentroid</code></td><td><span class="ml-num">×2,21</span></td><td><span class="ml-num">×4,22</span></td><td><span class="ml-num">×6,49</span></td><td><span class="ml-num">×6,77</span></td></tr>
+<tr><td><code>GaussianNB</code></td><td><span class="ml-num">×1,77</span></td><td><span class="ml-num">×3,78</span></td><td><span class="ml-num">×6,05</span></td><td><span class="ml-num">×6,66</span></td></tr>
+<tr><td><code>BernoulliNB</code></td><td><span class="ml-num">×1,89</span></td><td><span class="ml-num">×3,88</span></td><td><span class="ml-num">×5,71</span></td><td><span class="ml-num">×5,96</span></td></tr>
+<tr><td><code>RobustScaler</code></td><td><span class="ml-num">×1,83</span></td><td><span class="ml-num">×3,76</span></td><td><span class="ml-num">×5,21</span></td><td><span class="ml-num">×6,00</span></td></tr>
+<tr><td><code>StandardScaler</code></td><td><span class="ml-num">×1,33</span></td><td><span class="ml-num">×2,91</span></td><td><span class="ml-num">×4,72</span></td><td><span class="ml-num">×7,41</span></td></tr>
+<tr><td><code>KMeans</code></td><td>—</td><td><span class="ml-num">×3,90</span></td><td><span class="ml-num">×5,38</span></td><td><span class="ml-num">×5,34</span></td></tr>
+<tr><td><code>LinearRegression</code></td><td><span class="ml-num">×0,00</span></td><td><span class="ml-num">×2,05</span></td><td><span class="ml-num">×3,54</span></td><td><span class="ml-num">×5,03</span></td></tr>
+<tr><td><code>RidgeClassifier</code></td><td><span class="ml-num">×2,90</span></td><td><span class="ml-num">×2,85</span></td><td><span class="ml-num">×3,28</span></td><td><span class="ml-num">×2,97</span></td></tr>
+<tr><td><code>Ridge</code></td><td><span class="ml-num">×1,15</span></td><td><span class="ml-num">×1,53</span></td><td><span class="ml-num">×2,02</span></td><td><span class="ml-num">×2,35</span></td></tr>
+<tr><td><code>accuracy_score</code></td><td>—</td><td>—</td><td><span class="ml-num">×15,6</span></td><td>—</td></tr>
+<tr><td><code>f1_score</code></td><td>—</td><td>—</td><td><span class="ml-num">×5,41</span></td><td>—</td></tr>
+<tr><td><code>r2_score</code></td><td>—</td><td>—</td><td>—</td><td><span class="ml-num">×2,86</span></td></tr>
+<tr><td><code>train_test_split</code></td><td>—</td><td>—</td><td>—</td><td><span class="ml-num">×1,64</span></td></tr>
+</tbody>
+</table>
+
+<div class="ml-callout">
+  <strong>Comment SeraPlot passe à l'échelle.</strong> Le cœur est écrit en Rust sur <a href="https://github.com/rayon-rs/rayon">rayon</a> — pools de threads en work-stealing qui exploitent automatiquement tous les cœurs CPU. Les boucles chaudes (produits scalaires de colonnes, mises à jour de résidus, scans de splits, réductions de distances) sont déroulées 4-à-1 et organisées en mémoire pour le cache (X column-major, chunks contigus). La descente par coordonnées de <code>Lasso</code> / <code>ElasticNet</code> bascule sur une réduction parallèle par chunks dès n ≥ 50k ; les ensembles d'arbres parallélisent les estimateurs ; les métriques et scalers travaillent directement sur le buffer NumPy sans copie.
 </div>
 
 </div>

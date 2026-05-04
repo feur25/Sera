@@ -937,3 +937,11 @@ body.sp-body-bottom .content {
   color: #cbd5e1; font-size: 13.5px;
 }
 .ml-callout strong { color: #e0f2fe; }
+.ml-callout ul { margin: 8px 0 4px 0; padding-left: 18px; }
+.ml-callout li { margin: 4px 0; line-height: 1.55; }
+.ml-callout li .ml-parity {
+  display: inline-block; padding: 1px 7px; border-radius: 4px;
+  font-size: 11.5px; font-weight: 600; background: #052e1a; color: #4ade80;
+}
+.ml-callout li .ml-parity.ml-parity-mid { background: #422006; color: #fcd34d; }
+.ml-callout li .ml-parity.ml-parity-low { background: #450a0a; color: #fca5a5; }

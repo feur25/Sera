@@ -78,25 +78,48 @@ impl ElasticNet {
         } else { 0 };
         let mut r = yw;
 
+        let par_threshold = 50_000usize;
+        let chunk = ((n + 7) / 8).max(8192);
         for iter in start_iter..self.max_iter {
             let mut max_change = 0.0f64;
             for j in 0..p {
                 if xj_sq[j] < 1e-15 { continue; }
                 let old = w[j];
                 let col = &x_col[j * n..(j + 1) * n];
-                let (mut d0, mut d1, mut d2, mut d3) = (0.0, 0.0, 0.0, 0.0);
-                let mut i = 0;
-                while i + 4 <= n { d0 += col[i]*r[i]; d1 += col[i+1]*r[i+1]; d2 += col[i+2]*r[i+2]; d3 += col[i+3]*r[i+3]; i += 4; }
-                while i < n { d0 += col[i]*r[i]; i += 1; }
-                let xj_r = d0 + d1 + d2 + d3 + xj_sq[j] * old;
+                let xj_r = if n >= par_threshold {
+                    let s: f64 = col.par_chunks(chunk).zip(r.par_chunks(chunk)).map(|(c, rr)| {
+                        let (mut s0, mut s1, mut s2, mut s3) = (0.0, 0.0, 0.0, 0.0);
+                        let len = c.len();
+                        let mut i = 0;
+                        while i + 4 <= len { s0 += c[i]*rr[i]; s1 += c[i+1]*rr[i+1]; s2 += c[i+2]*rr[i+2]; s3 += c[i+3]*rr[i+3]; i += 4; }
+                        while i < len { s0 += c[i]*rr[i]; i += 1; }
+                        s0 + s1 + s2 + s3
+                    }).sum();
+                    s + xj_sq[j] * old
+                } else {
+                    let (mut d0, mut d1, mut d2, mut d3) = (0.0, 0.0, 0.0, 0.0);
+                    let mut i = 0;
+                    while i + 4 <= n { d0 += col[i]*r[i]; d1 += col[i+1]*r[i+1]; d2 += col[i+2]*r[i+2]; d3 += col[i+3]*r[i+3]; i += 4; }
+                    while i < n { d0 += col[i]*r[i]; i += 1; }
+                    d0 + d1 + d2 + d3 + xj_sq[j] * old
+                };
                 let new_val = soft_threshold(xj_r * inv_n, l1) / (xj_sq[j] * inv_n + l2);
                 let delta = new_val - old;
                 if delta.abs() > 1e-15 {
                     w[j] = new_val;
                     let nd = -delta;
-                    let mut i = 0;
-                    while i + 4 <= n { r[i] += col[i]*nd; r[i+1] += col[i+1]*nd; r[i+2] += col[i+2]*nd; r[i+3] += col[i+3]*nd; i += 4; }
-                    while i < n { r[i] += col[i]*nd; i += 1; }
+                    if n >= par_threshold {
+                        r.par_chunks_mut(chunk).zip(col.par_chunks(chunk)).for_each(|(rr, c)| {
+                            let len = rr.len();
+                            let mut i = 0;
+                            while i + 4 <= len { rr[i] += c[i]*nd; rr[i+1] += c[i+1]*nd; rr[i+2] += c[i+2]*nd; rr[i+3] += c[i+3]*nd; i += 4; }
+                            while i < len { rr[i] += c[i]*nd; i += 1; }
+                        });
+                    } else {
+                        let mut i = 0;
+                        while i + 4 <= n { r[i] += col[i]*nd; r[i+1] += col[i+1]*nd; r[i+2] += col[i+2]*nd; r[i+3] += col[i+3]*nd; i += 4; }
+                        while i < n { r[i] += col[i]*nd; i += 1; }
+                    }
                     max_change = max_change.max(delta.abs());
                 }
             }
