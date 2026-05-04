@@ -306,8 +306,8 @@ impl LogisticRegression {
     }
 
     fn fit_binary_impl(x: &[f64], n: usize, p: usize, y: &[f64], c: f64, max_iter: usize, tol: f64, fit_intercept: bool, checkpoint_id: Option<u64>) -> (Vec<f64>, f64, usize) {
-        let reg = 1.0 / c;
         let inv_n = 1.0 / n as f64;
+        let reg = inv_n / c;
         let dim = p + if fit_intercept { 1 } else { 0 };
         let mut wb = vec![0.0; dim];
 

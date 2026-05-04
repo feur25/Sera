@@ -487,9 +487,11 @@ macro_rules! impl_python_bindings {
         #[pymethods]
         impl KMeansModel {
             #[new]
-            #[pyo3(signature = (k=3, max_iter=300, tol=1e-4, mini_batch=false, batch_size=1000, n_init=10))]
-            pub fn py_new(k: usize, max_iter: usize, tol: f64, mini_batch: bool, batch_size: usize, n_init: usize) -> Self {
-                KMeansModel(crate::bindings::commands::charts::KMeansState::new(k, max_iter, tol, mini_batch, batch_size, n_init))
+            #[pyo3(signature = (k=3, max_iter=300, tol=1e-4, mini_batch=false, batch_size=1000, n_init=10, n_clusters=None, random_state=None))]
+            pub fn py_new(k: usize, max_iter: usize, tol: f64, mini_batch: bool, batch_size: usize, n_init: usize, n_clusters: Option<usize>, random_state: Option<i64>) -> Self {
+                let _ = random_state;
+                let kk = n_clusters.unwrap_or(k);
+                KMeansModel(crate::bindings::commands::charts::KMeansState::new(kk, max_iter, tol, mini_batch, batch_size, n_init))
             }
             #[pyo3(signature = (x))]
             pub fn fit(&mut self, x: &PyAny) -> PyResult<()> {
@@ -516,9 +518,11 @@ macro_rules! impl_python_bindings {
             }
             #[getter] pub fn labels_(&self) -> Vec<i32> { self.0.labels.clone() }
             #[getter] pub fn centroids_(&self) -> Vec<Vec<f64>> { self.0.centroids.clone() }
+            #[getter] pub fn cluster_centers_(&self) -> Vec<Vec<f64>> { self.0.centroids.clone() }
             #[getter] pub fn inertia_(&self) -> f64 { self.0.inertia }
             #[getter] pub fn n_iter_(&self) -> usize { self.0.n_iter }
             #[getter] pub fn n_clusters(&self) -> usize { self.0.centroids.len() }
+            #[getter] pub fn n_clusters_(&self) -> usize { self.0.centroids.len() }
             #[getter] pub fn k(&self) -> usize { self.0.k }
             fn doc(&self) -> &'static str { crate::bindings::commands::docs::DOC_KMEANS_MODEL }
             fn __repr__(&self) -> String {
