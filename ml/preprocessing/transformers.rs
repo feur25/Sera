@@ -94,18 +94,36 @@ impl PolynomialFeatures {
     }
 
     pub fn transform(&self, x: &[f64], n: usize, _p: usize) -> Vec<f64> {
+        use rayon::prelude::*;
         let cols = self.powers.len();
         let mut out = vec![0.0f64; n * cols];
-        for i in 0..n {
-            for (c, pw) in self.powers.iter().enumerate() {
+        let p_in = self.n_input_features;
+        let powers = &self.powers;
+        let active: Vec<Vec<(usize, usize)>> = powers.iter().map(|pw| {
+            pw.iter().enumerate().filter_map(|(j, &e)| if e > 0 { Some((j, e)) } else { None }).collect()
+        }).collect();
+        let work = |i: usize, row: &mut [f64]| {
+            let xi = &x[i * p_in..(i + 1) * p_in];
+            for c in 0..cols {
                 let mut v = 1.0f64;
-                for (j, &e) in pw.iter().enumerate() {
-                    if e == 0 { continue; }
-                    let mut t = 1.0;
-                    for _ in 0..e { t *= x[i * self.n_input_features + j]; }
-                    v *= t;
+                for &(j, e) in &active[c] {
+                    let xj = xi[j];
+                    match e {
+                        1 => v *= xj,
+                        2 => v *= xj * xj,
+                        3 => { let s = xj * xj; v *= s * xj; }
+                        _ => { let mut t = 1.0; for _ in 0..e { t *= xj; } v *= t; }
+                    }
                 }
-                out[i * cols + c] = v;
+                row[c] = v;
+            }
+        };
+        if n >= 1024 {
+            out.par_chunks_mut(cols).enumerate().for_each(|(i, row)| work(i, row));
+        } else {
+            for i in 0..n {
+                let row = &mut out[i * cols..(i + 1) * cols];
+                work(i, row);
             }
         }
         out
@@ -258,28 +276,42 @@ impl QuantileTransformer {
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize) {
-        self.quantiles.clear();
-        for j in 0..p {
+        use rayon::prelude::*;
+        self.quantiles = (0..p).into_par_iter().map(|j| {
             let mut col: Vec<f64> = (0..n).map(|i| x[i * p + j]).collect();
             col.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
-            let q: Vec<f64> = (0..self.n_quantiles).map(|k| {
+            (0..self.n_quantiles).map(|k| {
                 let f = k as f64 / (self.n_quantiles - 1).max(1) as f64;
                 let idx = ((col.len() - 1) as f64 * f).round() as usize;
                 col[idx.min(col.len() - 1)]
-            }).collect();
-            self.quantiles.push(q);
-        }
+            }).collect()
+        }).collect();
     }
 
     pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        use rayon::prelude::*;
         let mut out = vec![0.0f64; n * p];
-        for i in 0..n {
-            for j in 0..p {
-                let v = x[i * p + j];
-                let q = &self.quantiles[j];
-                let idx = q.partition_point(|&qv| qv <= v);
-                let r = idx as f64 / q.len().max(1) as f64;
-                out[i * p + j] = if self.output_distribution == "normal" { norm_ppf(r.max(1e-7).min(1.0 - 1e-7)) } else { r };
+        let qs = &self.quantiles;
+        let dist = self.output_distribution.as_str();
+        if n * p >= 50_000 {
+            out.par_chunks_mut(p).enumerate().for_each(|(i, row)| {
+                for j in 0..p {
+                    let v = x[i * p + j];
+                    let q = &qs[j];
+                    let idx = q.partition_point(|&qv| qv <= v);
+                    let r = idx as f64 / q.len().max(1) as f64;
+                    row[j] = if dist == "normal" { norm_ppf(r.max(1e-7).min(1.0 - 1e-7)) } else { r };
+                }
+            });
+        } else {
+            for i in 0..n {
+                for j in 0..p {
+                    let v = x[i * p + j];
+                    let q = &qs[j];
+                    let idx = q.partition_point(|&qv| qv <= v);
+                    let r = idx as f64 / q.len().max(1) as f64;
+                    out[i * p + j] = if dist == "normal" { norm_ppf(r.max(1e-7).min(1.0 - 1e-7)) } else { r };
+                }
             }
         }
         out

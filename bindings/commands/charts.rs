@@ -2592,6 +2592,12 @@ impl DbscanState {
         self.labels = labels;
         self.n_clusters = n_clusters;
     }
+    pub fn fit_flat(&mut self, x: &[f64], n: usize, p: usize) {
+        let (labels, n_clusters) = crate::plot::default::scatter::dbscan_core_nd_flat(x, n, p, self.eps, self.min_samples);
+        self.n_noise = labels.iter().filter(|&&l| l < 0).count();
+        self.labels = labels;
+        self.n_clusters = n_clusters;
+    }
 }
 
 pub struct KMeansState {
@@ -2626,16 +2632,108 @@ impl KMeansState {
         self.n_iter = self.max_iter;
     }
     pub fn predict_flat(&self, flat: &[f64], n: usize, dims: usize) -> Vec<i32> {
-        (0..n).map(|i| {
-            self.centroids.iter().enumerate()
-                .map(|(ki, c)| (ki, crate::plot::default::kmeans::sq_dist_flat(&flat[i*dims..(i+1)*dims], c)))
-                .min_by(|a, b| a.1.partial_cmp(&b.1).unwrap())
-                .map(|(ki, _)| ki as i32).unwrap_or(0)
-        }).collect()
+        use rayon::prelude::*;
+        let kk = self.centroids.len();
+        if n == 0 || dims == 0 || kk == 0 { return vec![0i32; n]; }
+        let mut c_flat: Vec<f64> = Vec::with_capacity(kk * dims);
+        for c in &self.centroids {
+            if c.len() == dims { c_flat.extend_from_slice(c); } else { c_flat.extend(std::iter::repeat(0.0).take(dims)); }
+        }
+        let mut c_norm = vec![0.0f64; kk];
+        for ki in 0..kk {
+            let row = &c_flat[ki*dims..(ki+1)*dims];
+            let mut s = 0.0;
+            for &v in row { s += v*v; }
+            c_norm[ki] = s;
+        }
+        let mut d = vec![0.0f64; n * kk];
+        if n * dims * kk < 4096 {
+            d.par_chunks_mut(kk).enumerate().for_each(|(i, drow)| {
+                let xrow = &flat[i*dims..(i+1)*dims];
+                for ki in 0..kk {
+                    let crow = &c_flat[ki*dims..(ki+1)*dims];
+                    let mut s = 0.0;
+                    for j in 0..dims { s += xrow[j] * crow[j]; }
+                    drow[ki] = s;
+                }
+            });
+        } else {
+            unsafe {
+                matrixmultiply::dgemm(
+                    n, dims, kk,
+                    1.0,
+                    flat.as_ptr(), dims as isize, 1,
+                    c_flat.as_ptr(), 1, dims as isize,
+                    0.0,
+                    d.as_mut_ptr(), kk as isize, 1,
+                );
+            }
+        }
+        let mut labels = vec![0i32; n];
+        labels.par_iter_mut().enumerate().for_each(|(i, lab)| {
+            let row = &d[i*kk..(i+1)*kk];
+            let mut best = 0usize;
+            let mut bestv = c_norm[0] - 2.0 * row[0];
+            for ki in 1..kk {
+                let v = c_norm[ki] - 2.0 * row[ki];
+                if v < bestv { bestv = v; best = ki; }
+            }
+            *lab = best as i32;
+        });
+        labels
     }
     pub fn transform_flat(&self, flat: &[f64], n: usize, dims: usize) -> Vec<Vec<f64>> {
-        (0..n).map(|i| {
-            self.centroids.iter().map(|c| crate::plot::default::kmeans::sq_dist_flat(&flat[i*dims..(i+1)*dims], c).sqrt()).collect()
+        use rayon::prelude::*;
+        let kk = self.centroids.len();
+        if n == 0 || dims == 0 || kk == 0 { return vec![vec![0.0; kk]; n]; }
+        let mut c_flat: Vec<f64> = Vec::with_capacity(kk * dims);
+        for c in &self.centroids {
+            if c.len() == dims { c_flat.extend_from_slice(c); } else { c_flat.extend(std::iter::repeat(0.0).take(dims)); }
+        }
+        let mut c_norm = vec![0.0f64; kk];
+        for ki in 0..kk {
+            let row = &c_flat[ki*dims..(ki+1)*dims];
+            let mut s = 0.0;
+            for &v in row { s += v*v; }
+            c_norm[ki] = s;
+        }
+        let mut x_norm = vec![0.0f64; n];
+        x_norm.par_iter_mut().enumerate().for_each(|(i, s)| {
+            let row = &flat[i*dims..(i+1)*dims];
+            let mut acc = 0.0;
+            for &v in row { acc += v*v; }
+            *s = acc;
+        });
+        let mut d = vec![0.0f64; n * kk];
+        if n * dims * kk < 4096 {
+            d.par_chunks_mut(kk).enumerate().for_each(|(i, drow)| {
+                let xrow = &flat[i*dims..(i+1)*dims];
+                for ki in 0..kk {
+                    let crow = &c_flat[ki*dims..(ki+1)*dims];
+                    let mut s = 0.0;
+                    for j in 0..dims { s += xrow[j] * crow[j]; }
+                    drow[ki] = s;
+                }
+            });
+        } else {
+            unsafe {
+                matrixmultiply::dgemm(
+                    n, dims, kk,
+                    1.0,
+                    flat.as_ptr(), dims as isize, 1,
+                    c_flat.as_ptr(), 1, dims as isize,
+                    0.0,
+                    d.as_mut_ptr(), kk as isize, 1,
+                );
+            }
+        }
+        (0..n).into_par_iter().map(|i| {
+            let row = &d[i*kk..(i+1)*kk];
+            let xn = x_norm[i];
+            (0..kk).map(|ki| {
+                let v = xn - 2.0 * row[ki] + c_norm[ki];
+                if v <= 0.0 { 0.0 } else { v.sqrt() }
+            }).collect()
         }).collect()
     }
 }

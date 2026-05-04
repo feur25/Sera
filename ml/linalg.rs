@@ -32,124 +32,113 @@ pub fn dot(a: &[f64], b: &[f64]) -> f64 {
 }
 
 pub fn mat_vec(a: &[f64], rows: usize, cols: usize, x: &[f64], out: &mut [f64]) {
-    if rows >= 2048 {
-        let grain = 1024usize;
-        out.par_chunks_mut(grain).enumerate().for_each(|(ci, block)| {
-            let base = ci * grain;
-            for r in 0..block.len() {
-                block[r] = dot(&a[(base + r) * cols..(base + r + 1) * cols], x);
+    if rows == 0 || cols == 0 { for v in out.iter_mut() { *v = 0.0; } return; }
+    if rows >= 32_768 {
+        out.par_chunks_mut(2048).enumerate().for_each(|(ci, chunk)| {
+            let r0 = ci * 2048;
+            for (k, v) in chunk.iter_mut().enumerate() {
+                let i = r0 + k;
+                let row = unsafe { a.get_unchecked(i * cols..(i + 1) * cols) };
+                *v = dot(row, x);
             }
         });
-    } else if rows * cols >= PAR_THRESHOLD {
-        out.par_iter_mut().enumerate().for_each(|(i, o)| {
-            *o = dot(&a[i * cols..(i + 1) * cols], x);
-        });
-    } else {
-        for i in 0..rows {
-            out[i] = dot(&a[i * cols..(i + 1) * cols], x);
-        }
+        return;
+    }
+    for i in 0..rows {
+        out[i] = dot(unsafe { a.get_unchecked(i * cols..(i + 1) * cols) }, x);
     }
 }
 
 pub fn mat_t_vec(a: &[f64], rows: usize, cols: usize, x: &[f64], out: &mut [f64]) {
-    if rows >= 8192 {
-        let chunk = 1024usize.min(rows);
-        let nc = (rows + chunk - 1) / chunk;
-        let partials: Vec<Vec<f64>> = (0..nc).into_par_iter().map(|c| {
-            let s = c * chunk;
-            let e = (s + chunk).min(rows);
-            let mut part = vec![0.0; cols];
-            for i in s..e {
-                let xi = x[i];
-                let row = &a[i * cols..(i + 1) * cols];
-                for j in 0..cols { part[j] += row[j] * xi; }
-            }
-            part
-        }).collect();
-        for j in 0..cols { out[j] = 0.0; }
-        for part in &partials { for j in 0..cols { out[j] += part[j]; } }
-    } else {
+    if rows == 0 || cols == 0 { for v in out.iter_mut() { *v = 0.0; } return; }
+    if rows * cols < 4096 {
         for j in 0..cols { out[j] = 0.0; }
         for i in 0..rows {
             let xi = x[i];
             let row = &a[i * cols..(i + 1) * cols];
             for j in 0..cols { out[j] += row[j] * xi; }
         }
+        return;
+    }
+    unsafe {
+        matrixmultiply::dgemm(
+            cols, rows, 1,
+            1.0,
+            a.as_ptr(), 1, cols as isize,
+            x.as_ptr(), 1, 1,
+            0.0,
+            out.as_mut_ptr(), 1, 1,
+        );
     }
 }
 
 pub fn mat_t_mat(a: &[f64], n: usize, p: usize, out: &mut [f64]) {
     for v in out[..p * p].iter_mut() { *v = 0.0; }
-    if n >= 1024 {
-        let chunk = 2048usize.min(n);
-        let nc = (n + chunk - 1) / chunk;
-        let partials: Vec<Vec<f64>> = (0..nc).into_par_iter().map(|c| {
-            let s = c * chunk;
-            let e = (s + chunk).min(n);
-            let mut part = vec![0.0; p * p];
-            let mut r = s;
-            while r + 4 <= e {
-                let r0 = &a[r * p..(r + 1) * p];
-                let r1 = &a[(r + 1) * p..(r + 2) * p];
-                let r2 = &a[(r + 2) * p..(r + 3) * p];
-                let r3 = &a[(r + 3) * p..(r + 4) * p];
-                for i in 0..p {
-                    let (a0, a1, a2, a3) = (r0[i], r1[i], r2[i], r3[i]);
-                    let base = i * p;
-                    for j in i..p {
-                        part[base + j] += a0 * r0[j] + a1 * r1[j] + a2 * r2[j] + a3 * r3[j];
+    if n == 0 || p == 0 { return; }
+    if p <= 64 || n * p * p < 32_768 {
+        if n >= 1024 {
+            let chunk = 2048usize.min(n);
+            let nc = (n + chunk - 1) / chunk;
+            let partials: Vec<Vec<f64>> = (0..nc).into_par_iter().map(|c| {
+                let s = c * chunk;
+                let e = (s + chunk).min(n);
+                let mut part = vec![0.0; p * p];
+                for r in s..e {
+                    let row = &a[r * p..r * p + p];
+                    for i in 0..p {
+                        let ai = row[i];
+                        for j in i..p { part[i * p + j] += ai * row[j]; }
                     }
                 }
-                r += 4;
+                part
+            }).collect();
+            for part in &partials {
+                for i in 0..p { for j in i..p { out[i * p + j] += part[i * p + j]; } }
             }
-            while r < e {
+        } else {
+            for r in 0..n {
                 let row = &a[r * p..r * p + p];
                 for i in 0..p {
                     let ai = row[i];
-                    for j in i..p { part[i * p + j] += ai * row[j]; }
+                    for j in i..p { out[i * p + j] += ai * row[j]; }
                 }
-                r += 1;
-            }
-            part
-        }).collect();
-        for part in &partials {
-            for i in 0..p { for j in i..p { out[i * p + j] += part[i * p + j]; } }
-        }
-    } else {
-        for r in 0..n {
-            let row = &a[r * p..r * p + p];
-            for i in 0..p {
-                let ai = row[i];
-                for j in i..p { out[i * p + j] += ai * row[j]; }
             }
         }
+        for i in 0..p { for j in (i + 1)..p { out[j * p + i] = out[i * p + j]; } }
+        return;
     }
-    for i in 0..p { for j in (i + 1)..p { out[j * p + i] = out[i * p + j]; } }
+    unsafe {
+        matrixmultiply::dgemm(
+            p, n, p,
+            1.0,
+            a.as_ptr(), 1, p as isize,
+            a.as_ptr(), p as isize, 1,
+            0.0,
+            out.as_mut_ptr(), p as isize, 1,
+        );
+    }
 }
 
 pub fn mat_t_y(a: &[f64], n: usize, p: usize, y: &[f64], out: &mut [f64]) {
     for j in 0..p { out[j] = 0.0; }
-    if n >= 8192 {
-        let chunk = 2048usize.min(n);
-        let nc = (n + chunk - 1) / chunk;
-        let partials: Vec<Vec<f64>> = (0..nc).into_par_iter().map(|c| {
-            let s = c * chunk;
-            let e = (s + chunk).min(n);
-            let mut part = vec![0.0; p];
-            for i in s..e {
-                let yi = y[i];
-                let row = &a[i * p..(i + 1) * p];
-                for j in 0..p { part[j] += row[j] * yi; }
-            }
-            part
-        }).collect();
-        for part in &partials { for j in 0..p { out[j] += part[j]; } }
-    } else {
+    if n == 0 || p == 0 { return; }
+    if n * p < 4096 {
         for i in 0..n {
             let yi = y[i];
             let row = &a[i * p..(i + 1) * p];
             for j in 0..p { out[j] += row[j] * yi; }
         }
+        return;
+    }
+    unsafe {
+        matrixmultiply::dgemm(
+            p, n, 1,
+            1.0,
+            a.as_ptr(), 1, p as isize,
+            y.as_ptr(), 1, 1,
+            0.0,
+            out.as_mut_ptr(), 1, 1,
+        );
     }
 }
 
@@ -413,17 +402,11 @@ pub fn argsort(a: &[f64]) -> Vec<usize> {
 }
 
 pub fn mat_mul(a: &[f64], m: usize, k: usize, b: &[f64], bn: usize, c: &mut [f64]) {
-    if m * k >= PAR_THRESHOLD {
-        c.par_chunks_mut(bn).enumerate().for_each(|(i, crow)| {
-            for j in 0..bn { crow[j] = 0.0; }
-            let arow = &a[i * k..i * k + k];
-            for t in 0..k {
-                let ait = arow[t];
-                let brow = &b[t * bn..t * bn + bn];
-                for j in 0..bn { crow[j] += ait * brow[j]; }
-            }
-        });
-    } else {
+    if m == 0 || k == 0 || bn == 0 {
+        for v in c[..m * bn].iter_mut() { *v = 0.0; }
+        return;
+    }
+    if m * k * bn < 4096 {
         for v in c[..m * bn].iter_mut() { *v = 0.0; }
         for i in 0..m {
             let arow = &a[i * k..i * k + k];
@@ -434,31 +417,26 @@ pub fn mat_mul(a: &[f64], m: usize, k: usize, b: &[f64], bn: usize, c: &mut [f64
                 for j in 0..bn { crow[j] += ait * brow[j]; }
             }
         }
+        return;
+    }
+    unsafe {
+        matrixmultiply::dgemm(
+            m, k, bn,
+            1.0,
+            a.as_ptr(), k as isize, 1,
+            b.as_ptr(), bn as isize, 1,
+            0.0,
+            c.as_mut_ptr(), bn as isize, 1,
+        );
     }
 }
 
 pub fn mat_t_mul(a: &[f64], m: usize, k: usize, b: &[f64], bn: usize, c: &mut [f64]) {
-    if m >= 4096 {
-        let chunk = 1024usize.min(m);
-        let nc = (m + chunk - 1) / chunk;
-        let partials: Vec<Vec<f64>> = (0..nc).into_par_iter().map(|ch| {
-            let s = ch * chunk;
-            let e = (s + chunk).min(m);
-            let mut part = vec![0.0; k * bn];
-            for r in s..e {
-                let arow = &a[r * k..r * k + k];
-                let brow = &b[r * bn..r * bn + bn];
-                for i in 0..k {
-                    let ai = arow[i];
-                    let prow = &mut part[i * bn..i * bn + bn];
-                    for j in 0..bn { prow[j] += ai * brow[j]; }
-                }
-            }
-            part
-        }).collect();
+    if m == 0 || k == 0 || bn == 0 {
         for v in c[..k * bn].iter_mut() { *v = 0.0; }
-        for part in &partials { for i in 0..(k * bn) { c[i] += part[i]; } }
-    } else {
+        return;
+    }
+    if m * k * bn < 4096 {
         for v in c[..k * bn].iter_mut() { *v = 0.0; }
         for r in 0..m {
             let arow = &a[r * k..r * k + k];
@@ -469,6 +447,17 @@ pub fn mat_t_mul(a: &[f64], m: usize, k: usize, b: &[f64], bn: usize, c: &mut [f
                 for j in 0..bn { crow[j] += ai * brow[j]; }
             }
         }
+        return;
+    }
+    unsafe {
+        matrixmultiply::dgemm(
+            k, m, bn,
+            1.0,
+            a.as_ptr(), 1, k as isize,
+            b.as_ptr(), bn as isize, 1,
+            0.0,
+            c.as_mut_ptr(), bn as isize, 1,
+        );
     }
 }
 
@@ -519,14 +508,30 @@ pub fn discover_classes(y: &[i32]) -> Vec<i32> {
 }
 
 pub fn weighted_bootstrap(n: usize, weights: &[f64], rng: &mut u64) -> Vec<usize> {
-    let mut cumulative = Vec::with_capacity(n);
-    let mut acc = 0.0;
-    for &w in weights { acc += w; cumulative.push(acc); }
+    let total: f64 = weights.iter().sum();
+    let scale = n as f64 / total;
+    let mut prob: Vec<f64> = weights.iter().map(|&w| w * scale).collect();
+    let mut alias: Vec<usize> = (0..n).collect();
+    let mut small: Vec<usize> = Vec::with_capacity(n);
+    let mut large: Vec<usize> = Vec::with_capacity(n);
+    for i in 0..n {
+        if prob[i] < 1.0 { small.push(i); } else { large.push(i); }
+    }
+    while !small.is_empty() && !large.is_empty() {
+        let s = small.pop().unwrap();
+        let l = *large.last().unwrap();
+        alias[s] = l;
+        prob[l] -= 1.0 - prob[s];
+        if prob[l] < 1.0 { large.pop(); small.push(l); }
+    }
     let mut indices = Vec::with_capacity(n);
     for _ in 0..n {
         *rng = splitmix64(*rng);
-        let r = (*rng as f64) / (u64::MAX as f64) * acc;
-        indices.push(cumulative.partition_point(|&c| c < r).min(n - 1));
+        let u = *rng;
+        let i = ((u >> 33) as usize).wrapping_mul(n) >> 31;
+        let i = i.min(n - 1);
+        let frac = (u & 0x1FFFFF) as f64 * (1.0 / 0x200000 as f64);
+        indices.push(if frac < unsafe { *prob.get_unchecked(i) } { i } else { unsafe { *alias.get_unchecked(i) } });
     }
     indices
 }

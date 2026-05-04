@@ -56,6 +56,7 @@ impl RandomForestClassifier {
             }
             let bins = BinInfo { edges: master_bins.edges.clone(), n_bins: master_bins.n_bins.clone(), binned: binned_boot, p, n };
             let mut tree = DecisionTreeClassifier::new(self.max_depth, self.min_samples_split, self.min_samples_leaf, Some(mf), TreeCriterion::Gini);
+            tree.need_dist = false;
             tree.fit_with_bins(&yb, &bins);
             tree
         }).collect();

@@ -329,13 +329,17 @@ impl AdaBoostRegressor {
 
         for _ in 0..self.n_estimators {
             let sample = weighted_bootstrap(n, &sample_weights, &mut rng);
-            let sampled_x: Vec<f64> = sample.iter().flat_map(|&i| x[i * p..(i + 1) * p].iter().copied()).collect();
             let sampled_y: Vec<f64> = sample.iter().map(|&i| y[i]).collect();
             let sn = sample.len();
-
+            let mut binned_boot = vec![0u8; sn * p];
+            for j in 0..p {
+                let src = &master_bins_r.binned[j * n..(j + 1) * n];
+                for (k, &bi) in sample.iter().enumerate() {
+                    binned_boot[j * sn + k] = unsafe { *src.get_unchecked(bi) };
+                }
+            }
+            let bins = BinInfo { edges: master_bins_r.edges.clone(), n_bins: master_bins_r.n_bins.clone(), binned: binned_boot, p, n: sn };
             let mut tree = DecisionTreeRegressor::new(self.max_depth, 2, 1, None);
-            let binned = bin_data_with_edges(&sampled_x, sn, p, &master_bins_r.edges);
-            let bins = BinInfo { edges: master_bins_r.edges.clone(), n_bins: master_bins_r.n_bins.clone(), binned, p, n: sn };
             tree.fit_with_bins(&sampled_y, &bins);
 
             let preds = tree.predict(x, n, p);

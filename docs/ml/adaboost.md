@@ -1,4 +1,4 @@
-ï»¿# AdaBoost â€” Adaptive Boosting
+# AdaBoost — Adaptive Boosting
 
 <div class="lang-en">
 
@@ -6,7 +6,7 @@
 
 ```python
 clf = sp.AdaBoostClassifier(n_estimators=50, learning_rate=1.0, max_depth=1)
-reg = sp.AdaBoostRegressor(n_estimators=50, learning_rate=1.0, max_depth=1)
+reg = sp.AdaBoostRegressor(n_estimators=50, learning_rate=1.0, max_depth=3)
 
 clf.fit(X, y)
 clf.predict(X)               -> list[int]
@@ -26,7 +26,7 @@ reg.score(X, y)              -> float
 |-----------|------|---------|-------------|
 | `n_estimators` | `int` | `50` | Maximum number of weak learners |
 | `learning_rate` | `float` | `1.0` | Shrinkage parameter $\nu$ for learner contribution |
-| `max_depth` | `int` | `1` | Max tree depth; `1` = stumps, `>1` = full trees |
+| `max_depth` | `int` | `1` (clf) / `3` (reg) | Max tree depth; `1` = stumps, `>1` = full trees |
 
 ## Attributes
 
@@ -60,7 +60,7 @@ print(f"Accuracy: {score:.4f}, Class probs shape: {np.array(proba).shape}")
 
 **AdaBoost.M1** (multi-class Adaptive Boosting) combines weak learners by iteratively re-weighting misclassified samples.
 
-**Initialization** â€” uniform sample weights:
+**Initialization** — uniform sample weights:
 
 $$w_i^{(1)} = \frac{1}{n}, \quad i = 1, \ldots, n$$
 
@@ -86,16 +86,16 @@ $$w_i^{(m+1)} \propto w_i^{(m)} \exp\left(-\alpha_m \mathbb{1}\bigl[h_m(x_i) = y
 
 Renormalize: $\sum_i w_i^{(m+1)} = 1$.
 
-**Final classifier** â€” weighted majority:
+**Final classifier** — weighted majority:
 
 $$F(x) = \arg\max_c \sum_{m: h_m(x) = c} \alpha_m$$
 
-**Regressor (AdaBoost.R2)** â€” weak learners fit to residuals with exponential loss reweighting; final prediction is weighted median.
+**Regressor (AdaBoost.R2)** — weak learners fit to residuals with exponential loss reweighting; final prediction is weighted median.
 
 ### Weak Learners
 
-- `max_depth=1`: **Decision stumps** (1-level trees) â€” fast, O(n log p) per iteration
-- `max_depth>1`: **Full decision trees** â€” more expressive, captures non-linear splits
+- `max_depth=1`: **Decision stumps** (1-level trees) — fast, O(n log p) per iteration
+- `max_depth>1`: **Full decision trees** — more expressive, captures non-linear splits
 
 ---
 
@@ -103,11 +103,11 @@ $$F(x) = \arg\max_c \sum_{m: h_m(x) = c} \alpha_m$$
 
 <div class="lang-fr">
 
-## RÃ©fÃ©rence API
+## Référence API
 
 ```python
 clf = sp.AdaBoostClassifier(n_estimators=50, learning_rate=1.0, max_depth=1)
-reg = sp.AdaBoostRegressor(n_estimators=50, learning_rate=1.0, max_depth=1)
+reg = sp.AdaBoostRegressor(n_estimators=50, learning_rate=1.0, max_depth=3)
 
 clf.fit(X, y)
 clf.predict(X)               -> list[int]
@@ -121,12 +121,12 @@ reg.predict(X)               -> list[float]
 reg.score(X, y)              -> float
 ```
 
-## ParamÃ¨tres du constructeur
+## Paramètres du constructeur
 
-| ParamÃ¨tre | Type | DÃ©faut | Description |
+| Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
 | `n_estimators` | `int` | `50` | Nombre maximum d'apprenants faibles |
-| `learning_rate` | `float` | `1.0` | ParamÃ¨tre de rÃ©trÃ©cissement $\nu$ |
+| `learning_rate` | `float` | `1.0` | Paramètre de rétrécissement $\nu$ |
 | `max_depth` | `int` | `1` | Profondeur max; `1` = stumps, `>1` = arbres |
 
 ## Attributs
@@ -134,8 +134,8 @@ reg.score(X, y)              -> float
 | Attribut | Type | Description |
 |----------|------|-------------|
 | `classes_` | `list[int]` | Labels de classes uniques |
-| `n_estimators_` | `int` | Nombre d'estimateurs utilisÃ©s |
-| `learning_rate_` | `float` | ParamÃ¨tre de rÃ©trÃ©cissement |
+| `n_estimators_` | `int` | Nombre d'estimateurs utilisés |
+| `learning_rate_` | `float` | Paramètre de rétrécissement |
 | `max_depth_` | `int` | Profondeur d'arbre |
 
 ## Exemple
@@ -152,51 +152,51 @@ clf.fit(X, y)
 
 proba = clf.predict_proba(X)
 score = clf.score(X, y)
-print(f"PrÃ©cision: {score:.4f}, Shape proba: {np.array(proba).shape}")
+print(f"Précision: {score:.4f}, Shape proba: {np.array(proba).shape}")
 ```
 
 ---
 
 ## Fonctionnement algorithmique
 
-**AdaBoost.M1** (Adaptive Boosting multi-classe) combine des apprenants faibles par re-pondÃ©ration itÃ©rative des Ã©chantillons mal classÃ©s.
+**AdaBoost.M1** (Adaptive Boosting multi-classe) combine des apprenants faibles par re-pondération itérative des échantillons mal classés.
 
-**Initialisation** â€” poids uniformes:
+**Initialisation** — poids uniformes:
 
 $$w_i^{(1)} = \frac{1}{n}, \quad i = 1, \ldots, n$$
 
-**ItÃ©ration** $m = 1, \ldots, M$:
+**Itération** $m = 1, \ldots, M$:
 
-**1.** Ajuster l'apprenant faible $h_m$ sur l'ensemble pondÃ©rÃ©.
+**1.** Ajuster l'apprenant faible $h_m$ sur l'ensemble pondéré.
 
-**2.** Calculer l'erreur pondÃ©rÃ©e:
+**2.** Calculer l'erreur pondérée:
 
 $$\varepsilon_m = \sum_{i=1}^n w_i^{(m)} \cdot \mathbb{1}\bigl[h_m(x_i) \neq y_i\bigr]$$
 
-**3.** Si $\varepsilon_m \geq 1 - \frac{1}{K}$ (pire qu'alÃ©atoire), arrÃªter.
+**3.** Si $\varepsilon_m \geq 1 - \frac{1}{K}$ (pire qu'aléatoire), arrêter.
 
 **4.** Calculer le poids de l'apprenant:
 
 $$\alpha_m = \nu \left[\frac{1}{2}\ln\left(\frac{1 - \varepsilon_m}{\varepsilon_m}\right) + \ln(K - 1)\right]$$
 
-oÃ¹ $\nu$ est `learning_rate` et $K = |\text{classes}|$.
+où $\nu$ est `learning_rate` et $K = |\text{classes}|$.
 
-**5.** Mettre Ã  jour les poids (diminuer les bonnes prÃ©dictions):
+**5.** Mettre à jour les poids (diminuer les bonnes prédictions):
 
 $$w_i^{(m+1)} \propto w_i^{(m)} \exp\left(-\alpha_m \mathbb{1}\bigl[h_m(x_i) = y_i\bigr]\right)$$
 
 Renormaliser: $\sum_i w_i^{(m+1)} = 1$.
 
-**Classificateur final** â€” vote pondÃ©rÃ©:
+**Classificateur final** — vote pondéré:
 
 $$F(x) = \arg\max_c \sum_{m: h_m(x) = c} \alpha_m$$
 
-**RÃ©gresseur (AdaBoost.R2)** â€” apprenants faibles ajustÃ©s aux rÃ©sidus; prÃ©diction finale = mÃ©diane pondÃ©rÃ©e.
+**Régresseur (AdaBoost.R2)** — apprenants faibles ajustés aux résidus; prédiction finale = médiane pondérée.
 
 ### Apprenants faibles
 
-- `max_depth=1`: **Decision stumps** (arbres 1-niveau) â€” rapide, O(n log p) par itÃ©ration
-- `max_depth>1`: **Arbres complets** â€” plus expressif, capture les splits non-linÃ©aires
+- `max_depth=1`: **Decision stumps** (arbres 1-niveau) — rapide, O(n log p) par itération
+- `max_depth>1`: **Arbres complets** — plus expressif, capture les splits non-linéaires
 
 ---
 

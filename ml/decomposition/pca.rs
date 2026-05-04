@@ -81,69 +81,13 @@ impl PCA {
             }
             self.explained_variance_ratio = self.explained_variance.iter().map(|&v| v / total_var.max(1e-15)).collect();
         } else if use_covariance {
-            let chunk = 4096usize.min(n);
-            let xtx = if n >= 1024 {
-                let nc = (n + chunk - 1) / chunk;
-                let partials: Vec<Vec<f64>> = (0..nc).into_par_iter().map(|c| {
-                    let s = c * chunk;
-                    let e = (s + chunk).min(n);
-                    let mut part = vec![0.0; p * p];
-                    let mut r = s;
-                    while r + 4 <= e {
-                        let r0 = unsafe { x.get_unchecked(r * p..(r + 1) * p) };
-                        let r1 = unsafe { x.get_unchecked((r + 1) * p..(r + 2) * p) };
-                        let r2 = unsafe { x.get_unchecked((r + 2) * p..(r + 3) * p) };
-                        let r3 = unsafe { x.get_unchecked((r + 3) * p..(r + 4) * p) };
-                        for i in 0..p {
-                            let (a0, a1, a2, a3) = unsafe {
-                                (*r0.get_unchecked(i), *r1.get_unchecked(i),
-                                 *r2.get_unchecked(i), *r3.get_unchecked(i))
-                            };
-                            let base = i * p;
-                            for j in i..p {
-                                unsafe {
-                                    *part.get_unchecked_mut(base + j) +=
-                                        a0 * *r0.get_unchecked(j) + a1 * *r1.get_unchecked(j) +
-                                        a2 * *r2.get_unchecked(j) + a3 * *r3.get_unchecked(j);
-                                }
-                            }
-                        }
-                        r += 4;
-                    }
-                    while r < e {
-                        let row = unsafe { x.get_unchecked(r * p..r * p + p) };
-                        for i in 0..p {
-                            let ai = unsafe { *row.get_unchecked(i) };
-                            let base = i * p;
-                            for j in i..p { unsafe { *part.get_unchecked_mut(base + j) += ai * *row.get_unchecked(j); } }
-                        }
-                        r += 1;
-                    }
-                    part
-                }).collect();
-                let mut xtx = vec![0.0; p * p];
-                for part in &partials { for idx in 0..p * p { xtx[idx] += part[idx]; } }
-                xtx
-            } else {
-                let mut xtx = vec![0.0; p * p];
-                for r in 0..n {
-                    let row = &x[r * p..r * p + p];
-                    for i in 0..p {
-                        let ai = row[i];
-                        for j in i..p { xtx[i * p + j] += ai * row[j]; }
-                    }
-                }
-                xtx
-            };
-
+            let mut cov = vec![0.0; p * p];
+            crate::ml::linalg::mat_t_mat(x, n, p, &mut cov);
             let inv_nm1 = 1.0 / nm1;
             let nf = n as f64;
-            let mut cov = xtx;
             for i in 0..p {
-                for j in i..p {
-                    let c = (cov[i * p + j] - nf * self.mean[i] * self.mean[j]) * inv_nm1;
-                    cov[i * p + j] = c;
-                    cov[j * p + i] = c;
+                for j in 0..p {
+                    cov[i * p + j] = (cov[i * p + j] - nf * self.mean[i] * self.mean[j]) * inv_nm1;
                 }
             }
 
@@ -183,29 +127,36 @@ impl PCA {
     pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
         let k = self.n_components.min(self.singular_values.len());
         let mut out = vec![0.0; n * k];
-        let comps = &self.components;
+        if n == 0 || k == 0 { return out; }
         let bias = &self.bias;
         let whiten_scale: Vec<f64> = if self.whiten {
             self.explained_variance.iter().map(|&v| 1.0 / v.max(1e-15).sqrt()).collect()
         } else {
             vec![1.0; k]
         };
-        if n * p >= 200_000 {
-            let grain = 512usize;
-            out.par_chunks_mut(k * grain).enumerate().for_each(|(ci, block)| {
-                let s = ci * grain;
-                let rows = block.len() / k;
-                for r in 0..rows {
-                    let i = s + r;
-                    let xi = &x[i * p..i * p + p];
-                    for c in 0..k { block[r * k + c] = (dot(xi, &comps[c * p..(c + 1) * p]) - bias[c]) * whiten_scale[c]; }
-                }
-            });
-        } else {
+        let comps = &self.components;
+        if n * p * k < 200_000 {
             for i in 0..n {
                 let xi = &x[i * p..i * p + p];
                 for c in 0..k { out[i * k + c] = (dot(xi, &comps[c * p..(c + 1) * p]) - bias[c]) * whiten_scale[c]; }
             }
+            return out;
+        }
+        unsafe {
+            matrixmultiply::dgemm(
+                n, p, k,
+                1.0,
+                x.as_ptr(), p as isize, 1,
+                self.components.as_ptr(), 1, p as isize,
+                0.0,
+                out.as_mut_ptr(), k as isize, 1,
+            );
+        }
+        let need_post = self.whiten || bias.iter().any(|&b| b != 0.0);
+        if need_post {
+            out.par_chunks_mut(k).for_each(|row| {
+                for c in 0..k { row[c] = (row[c] - bias[c]) * whiten_scale[c]; }
+            });
         }
         out
     }
@@ -219,13 +170,14 @@ impl PCA {
         let k = self.n_components.min(self.singular_values.len());
         let p = self.p;
         let mut out = vec![0.0; n * p];
-        for i in 0..n {
-            for j in 0..p {
-                let mut s = self.mean[j];
-                for c in 0..k { s += x_reduced[i * k + c] * self.components[c * p + j]; }
-                out[i * p + j] = s;
-            }
+        if n == 0 || p == 0 || k == 0 {
+            for i in 0..n { for j in 0..p { out[i * p + j] = self.mean[j]; } }
+            return out;
         }
+        crate::ml::linalg::mat_mul(x_reduced, n, k, &self.components, p, &mut out);
+        out.par_chunks_mut(p).for_each(|row| {
+            for j in 0..p { row[j] += self.mean[j]; }
+        });
         out
     }
 }
@@ -249,13 +201,7 @@ impl TruncatedSVD {
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize) {
         let k = self.n_components.min(n).min(p);
         let mut ata = vec![0.0f64; p * p];
-        for i in 0..n {
-            for a in 0..p {
-                let xa = x[i * p + a];
-                if xa == 0.0 { continue; }
-                for b in 0..p { ata[a * p + b] += xa * x[i * p + b]; }
-            }
-        }
+        crate::ml::linalg::mat_t_mat(x, n, p, &mut ata);
         let (evals, v) = crate::ml::linalg::symeig(&ata, p);
         let mut order: Vec<usize> = (0..p).collect();
         order.sort_by(|&i, &j| evals[j].partial_cmp(&evals[i]).unwrap_or(std::cmp::Ordering::Equal));
@@ -270,23 +216,37 @@ impl TruncatedSVD {
         self.singular_values = s.clone();
         let n_f = n as f64;
         self.explained_variance = s.iter().map(|&sv| sv * sv / (n_f - 1.0)).collect();
-        let mut total_var = 0.0;
-        for i in 0..n {
-            for j in 0..p { total_var += x[i * p + j] * x[i * p + j]; }
-        }
-        total_var /= n_f - 1.0;
+        let total_var = if n * p >= 100_000 {
+            x.par_chunks(p).map(|row| row.iter().map(|&v| v * v).sum::<f64>()).sum::<f64>() / (n_f - 1.0)
+        } else {
+            x.iter().map(|&v| v * v).sum::<f64>() / (n_f - 1.0)
+        };
         self.explained_variance_ratio = self.explained_variance.iter().map(|&v| v / total_var.max(1e-15)).collect();
     }
 
     pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
         let k = self.n_components.min(self.singular_values.len());
         let mut out = vec![0.0; n * k];
-        for i in 0..n {
-            for c in 0..k {
-                let mut s = 0.0;
-                for j in 0..p { s += x[i * p + j] * self.components[c * p + j]; }
-                out[i * k + c] = s;
+        if n == 0 || k == 0 { return out; }
+        if n * p * k < 200_000 {
+            for i in 0..n {
+                for c in 0..k {
+                    let mut s = 0.0;
+                    for j in 0..p { s += x[i * p + j] * self.components[c * p + j]; }
+                    out[i * k + c] = s;
+                }
             }
+            return out;
+        }
+        unsafe {
+            matrixmultiply::dgemm(
+                n, p, k,
+                1.0,
+                x.as_ptr(), p as isize, 1,
+                self.components.as_ptr(), 1, p as isize,
+                0.0,
+                out.as_mut_ptr(), k as isize, 1,
+            );
         }
         out
     }

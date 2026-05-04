@@ -31,11 +31,11 @@ pub fn root_mean_squared_error(y_true: &[f64], y_pred: &[f64]) -> f64 {
 pub fn mean_absolute_percentage_error(y_true: &[f64], y_pred: &[f64]) -> f64 {
     let n = y_true.len().min(y_pred.len());
     if n == 0 { return 0.0; }
+    let eps = f64::EPSILON;
     let mut s = 0.0;
     for i in 0..n {
-        if y_true[i].abs() > 1e-15 {
-            s += ((y_true[i] - y_pred[i]) / y_true[i]).abs();
-        }
+        let denom = y_true[i].abs().max(eps);
+        s += ((y_true[i] - y_pred[i]) / denom).abs();
     }
     s / n as f64
 }

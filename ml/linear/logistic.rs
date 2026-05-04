@@ -241,10 +241,11 @@ impl LogisticRegression {
         let mut rhos: Vec<f64> = Vec::with_capacity(M);
 
         let (mut loss, mut grad) = compute_grad(&w, &mut probs);
+        const FTOL: f64 = 2.22e-9;
 
         for iter in start_iter..max_iter {
-            let gnorm: f64 = grad.iter().map(|&g| g * g).sum::<f64>().sqrt();
-            if gnorm < tol {
+            let gnorm_inf: f64 = grad.iter().map(|g| g.abs()).fold(0.0f64, f64::max);
+            if gnorm_inf < tol {
                 if let Some(id) = checkpoint_id { crate::ml::cache::checkpoint_clear(id); }
                 let (mc, mi, _) = Self::unpack_multinomial(&w, k, p);
                 return (mc, mi, iter + 1);
@@ -289,9 +290,16 @@ impl LogisticRegression {
                 rhos.push(1.0 / rho_denom);
             }
 
+            let denom = loss.abs().max(new_loss.abs()).max(1.0);
+            let rel_df = (loss - new_loss).abs() / denom;
             w.copy_from_slice(&w_new);
             grad = new_grad;
             loss = new_loss;
+            if rel_df < FTOL {
+                if let Some(id) = checkpoint_id { crate::ml::cache::checkpoint_clear(id); }
+                let (mc, mi, _) = Self::unpack_multinomial(&w, k, p);
+                return (mc, mi, iter + 1);
+            }
         }
         if let Some(id) = checkpoint_id { crate::ml::cache::checkpoint_clear(id); }
         let (mc, mi, _) = Self::unpack_multinomial(&w, k, p);
@@ -321,65 +329,57 @@ impl LogisticRegression {
         let mut z_buf = vec![0.0; n];
         let mut s_buf = vec![0.0; n];
 
-        let compute_loss_bin = |wb: &[f64], z_buf: &mut Vec<f64>, s_buf: &mut Vec<f64>| -> f64 {
-            for i in 0..n {
-                let mut z = 0.0;
-                let row = &x[i * p..(i + 1) * p];
-                for j in 0..p { z += wb[j] * row[j]; }
-                if fit_intercept { z += wb[p]; }
-                s_buf[i] = sigmoid(z);
+        let compute_loss_bin = |wb: &[f64], _z_buf: &mut Vec<f64>, s_buf: &mut Vec<f64>| -> f64 {
+            mat_vec(x, n, p, &wb[..p], s_buf);
+            if fit_intercept {
+                let b = wb[p];
+                s_buf.par_iter_mut().for_each(|s| *s = sigmoid(*s + b));
+            } else {
+                s_buf.par_iter_mut().for_each(|s| *s = sigmoid(*s));
             }
-            let mut loss = 0.0;
-            for i in 0..n {
-                let si = s_buf[i].max(1e-300).min(1.0 - 1e-300);
-                loss -= y[i] * si.ln() + (1.0 - y[i]) * (1.0 - si).ln();
-            }
-            loss *= inv_n;
+            let loss_data: f64 = s_buf.par_iter().zip(y.par_iter()).map(|(si, yi)| {
+                let s = si.max(1e-300).min(1.0 - 1e-300);
+                -(yi * s.ln() + (1.0 - yi) * (1.0 - s).ln())
+            }).sum();
+            let mut loss = loss_data * inv_n;
             for j in 0..p { loss += 0.5 * reg * wb[j] * wb[j]; }
             loss
         };
 
         let compute_grad = |wb: &[f64], z_buf: &mut Vec<f64>, s_buf: &mut Vec<f64>| -> (f64, Vec<f64>) {
-            for i in 0..n {
-                let mut z = 0.0;
-                let row = &x[i * p..(i + 1) * p];
-                for j in 0..p { z += wb[j] * row[j]; }
-                if fit_intercept { z += wb[p]; }
-                z_buf[i] = z;
-                s_buf[i] = sigmoid(z);
+            mat_vec(x, n, p, &wb[..p], s_buf);
+            if fit_intercept {
+                let b = wb[p];
+                s_buf.par_iter_mut().for_each(|s| *s = sigmoid(*s + b));
+            } else {
+                s_buf.par_iter_mut().for_each(|s| *s = sigmoid(*s));
             }
-            let mut loss = 0.0;
-            for i in 0..n {
-                let si = s_buf[i].max(1e-300).min(1.0 - 1e-300);
-                loss -= y[i] * si.ln() + (1.0 - y[i]) * (1.0 - si).ln();
-                z_buf[i] = s_buf[i] - y[i];
-            }
-            loss *= inv_n;
+            let loss_data: f64 = s_buf.par_iter().zip(y.par_iter()).zip(z_buf.par_iter_mut()).map(|((si, yi), zi)| {
+                let s = si.max(1e-300).min(1.0 - 1e-300);
+                *zi = si - yi;
+                -(yi * s.ln() + (1.0 - yi) * (1.0 - s).ln())
+            }).sum();
+            let mut loss = loss_data * inv_n;
             for j in 0..p { loss += 0.5 * reg * wb[j] * wb[j]; }
             let mut grad = vec![0.0; dim];
-            let mut gb = 0.0;
-            for i in 0..n {
-                let diff = z_buf[i];
-                let row = &x[i * p..(i + 1) * p];
-                for j in 0..p { grad[j] += diff * row[j]; }
-                if fit_intercept { gb += diff; }
-            }
+            mat_t_vec(x, n, p, z_buf, &mut grad[..p]);
             for j in 0..p { grad[j] = grad[j] * inv_n + reg * wb[j]; }
-            if fit_intercept { grad[p] = gb * inv_n; }
+            if fit_intercept {
+                let gb: f64 = z_buf.par_iter().sum();
+                grad[p] = gb * inv_n;
+            }
             (loss, grad)
         };
 
         let compute_grad_only_bin = |wb: &[f64], s_buf: &Vec<f64>| -> Vec<f64> {
+            let diff: Vec<f64> = s_buf.par_iter().zip(y.par_iter()).map(|(s, yi)| s - yi).collect();
             let mut grad = vec![0.0; dim];
-            let mut gb = 0.0;
-            for i in 0..n {
-                let diff = s_buf[i] - y[i];
-                let row = &x[i * p..(i + 1) * p];
-                for j in 0..p { grad[j] += diff * row[j]; }
-                if fit_intercept { gb += diff; }
-            }
+            mat_t_vec(x, n, p, &diff, &mut grad[..p]);
             for j in 0..p { grad[j] = grad[j] * inv_n + reg * wb[j]; }
-            if fit_intercept { grad[p] = gb * inv_n; }
+            if fit_intercept {
+                let gb: f64 = diff.par_iter().sum();
+                grad[p] = gb * inv_n;
+            }
             grad
         };
 
@@ -389,10 +389,11 @@ impl LogisticRegression {
         let mut rhos: Vec<f64> = Vec::with_capacity(M);
 
         let (mut loss, mut grad) = compute_grad(&wb, &mut z_buf, &mut s_buf);
+        const FTOL: f64 = 2.22e-9;
 
         for iter in start_iter..max_iter {
-            let gnorm: f64 = grad.iter().map(|&g| g * g).sum::<f64>().sqrt();
-            if gnorm < tol {
+            let gnorm_inf: f64 = grad.iter().map(|g| g.abs()).fold(0.0f64, f64::max);
+            if gnorm_inf < tol {
                 if let Some(id) = checkpoint_id { crate::ml::cache::checkpoint_clear(id); }
                 let w = wb[..p].to_vec();
                 let b = if fit_intercept { wb[p] } else { 0.0 };
@@ -437,9 +438,17 @@ impl LogisticRegression {
                 rhos.push(1.0 / rho_denom);
             }
 
+            let denom = loss.abs().max(new_loss.abs()).max(1.0);
+            let rel_df = (loss - new_loss).abs() / denom;
             wb.copy_from_slice(&wb_new);
             grad = new_grad;
             loss = new_loss;
+            if rel_df < FTOL {
+                if let Some(id) = checkpoint_id { crate::ml::cache::checkpoint_clear(id); }
+                let w = wb[..p].to_vec();
+                let b = if fit_intercept { wb[p] } else { 0.0 };
+                return (w, b, iter + 1);
+            }
         }
         if let Some(id) = checkpoint_id { crate::ml::cache::checkpoint_clear(id); }
         let w = wb[..p].to_vec();

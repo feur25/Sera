@@ -456,17 +456,17 @@ macro_rules! impl_python_bindings {
                 DbscanModel(crate::bindings::commands::charts::DbscanState::new(eps, min_samples))
             }
             #[pyo3(signature = (x))]
-            pub fn fit(&mut self, x: Vec<Vec<f64>>) -> PyResult<()> {
-                let n = x.len();
-                let d = x.first().map_or(0, |r| r.len());
-                let fp = crate::ml::cache::Fp::new("DBSCAN.fit").f64(self.0.eps).usize(self.0.min_samples).usize(n).usize(d).finish();
-                let _h = crate::ml::cache::TaskHandle::auto("DBSCAN.fit", fp);
-                self.0.fit(&x);
-                _h.complete(&crate::ml::cache::PartialState::default());
+            pub fn fit(&mut self, x: &PyAny) -> PyResult<()> {
+                super::ml::with_flat(x, |xf, n, d| {
+                    let fp = crate::ml::cache::Fp::new("DBSCAN.fit").f64(self.0.eps).usize(self.0.min_samples).usize(n).usize(d).finish();
+                    let _h = crate::ml::cache::TaskHandle::auto("DBSCAN.fit", fp);
+                    self.0.fit_flat(xf, n, d);
+                    _h.complete(&crate::ml::cache::PartialState::default());
+                })?;
                 Ok(())
             }
             #[pyo3(signature = (x))]
-            pub fn fit_predict(&mut self, py: Python<'_>, x: Vec<Vec<f64>>) -> PyResult<pyo3::PyObject> {
+            pub fn fit_predict(&mut self, py: Python<'_>, x: &PyAny) -> PyResult<pyo3::PyObject> {
                 self.fit(x)?;
                 Ok(crate::bindings::commands::ml::vec_i32_to_np(py, self.0.labels.clone()))
             }
@@ -496,11 +496,12 @@ macro_rules! impl_python_bindings {
             }
             #[pyo3(signature = (x))]
             pub fn fit(&mut self, x: &PyAny) -> PyResult<()> {
-                let (flat, n, dims) = super::ml::extract_flat(x)?;
-                let fp = crate::ml::cache::Fp::new("KMeans.fit").usize(self.0.k).usize(self.0.max_iter).bval(self.0.mini_batch).data(&flat, n, dims).finish();
-                let _h = crate::ml::cache::TaskHandle::auto("KMeans.fit", fp);
-                self.0.fit_flat(&flat, n, dims);
-                _h.complete(&crate::ml::cache::PartialState::default());
+                super::ml::with_flat(x, |flat, n, dims| {
+                    let fp = crate::ml::cache::Fp::new("KMeans.fit").usize(self.0.k).usize(self.0.max_iter).bval(self.0.mini_batch).data(flat, n, dims).finish();
+                    let _h = crate::ml::cache::TaskHandle::auto("KMeans.fit", fp);
+                    self.0.fit_flat(flat, n, dims);
+                    _h.complete(&crate::ml::cache::PartialState::default());
+                })?;
                 Ok(())
             }
             #[pyo3(signature = (x))]
@@ -515,6 +516,16 @@ macro_rules! impl_python_bindings {
             }
             #[pyo3(signature = (x))]
             pub fn predict(&self, py: Python<'_>, x: &PyAny) -> PyResult<pyo3::PyObject> {
+                use numpy::PyReadonlyArray2;
+                if let Ok(arr) = x.extract::<PyReadonlyArray2<f64>>() {
+                    let view = arr.as_array();
+                    let shape = view.shape();
+                    let (n, dims) = (shape[0], shape[1]);
+                    if view.is_standard_layout() {
+                        let s = view.as_slice().unwrap();
+                        return Ok(crate::bindings::commands::ml::vec_i32_to_np(py, self.0.predict_flat(s, n, dims)));
+                    }
+                }
                 let (flat, n, dims) = super::ml::extract_flat(x)?;
                 Ok(crate::bindings::commands::ml::vec_i32_to_np(py, self.0.predict_flat(&flat, n, dims)))
             }

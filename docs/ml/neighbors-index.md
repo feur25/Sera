@@ -7,6 +7,7 @@ Instance-based models make predictions by looking at the closest training exampl
 | Model | Task | Description |
 |-------|------|-------------|
 | [KNeighborsClassifier / KNeighborsRegressor](knn.md) | Both | k-nearest neighbours using Euclidean distance |
+| NearestCentroid | Classification | Assigns each sample to the class whose centroid is nearest |
 
 ### Key properties
 
@@ -24,6 +25,7 @@ Les modèles à base d'instances font des prédictions en cherchant les exemples
 | Modèle | Tâche | Description |
 |-------|------|-------------|
 | [KNeighborsClassifier / KNeighborsRegressor](knn.md) | Les deux | k plus proches voisins avec distance euclidienne |
+| NearestCentroid | Classification | Affecte chaque échantillon à la classe dont le centroïde est le plus proche |
 
 ### Propriétés clés
 

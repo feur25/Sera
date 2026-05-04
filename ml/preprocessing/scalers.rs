@@ -106,12 +106,14 @@ impl StandardScaler {
     }
 
     pub fn transform(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
-        let mut out = vec![0.0; n * p];
+        let total = n * p;
+        let mut out: Vec<f64> = Vec::with_capacity(total);
+        unsafe { out.set_len(total); }
         if self.with_mean && self.with_std {
             let mean = &self.mean;
             let inv = &self.inv_scale;
             if n >= 50_000 {
-                let grain = 1024usize;
+                let grain = 4096usize;
                 out.par_chunks_mut(p * grain).enumerate().for_each(|(ci, block)| {
                     let base = ci * grain;
                     let rows = block.len() / p;

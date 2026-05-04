@@ -1023,6 +1023,138 @@ pub fn dbscan_core_nd(data: &[Vec<f64>], eps: f64, min_samples: usize) -> (Vec<i
     (labels, cid as usize)
 }
 
+#[inline(always)]
+fn dist2_flat(a: &[f64], b: &[f64], p: usize) -> f64 {
+    let mut s = 0.0;
+    for j in 0..p {
+        let d = unsafe { *a.get_unchecked(j) - *b.get_unchecked(j) };
+        s += d * d;
+    }
+    s
+}
+
+pub fn dbscan_core_nd_flat(data: &[f64], n: usize, p: usize, eps: f64, min_samples: usize) -> (Vec<i32>, usize) {
+    use std::sync::atomic::{AtomicU32, AtomicU8, Ordering};
+    if n == 0 { return (Vec::new(), 0); }
+    if p == 0 { return (vec![-1; n], 0); }
+
+    let eps2 = eps * eps;
+    let ms = min_samples as u32;
+    let ncpu = std::thread::available_parallelism().map(|v| v.get()).unwrap_or(4).min(16);
+
+    fn uf_find(uf: &[AtomicU32], mut x: usize) -> usize {
+        loop {
+            let pp = uf[x].load(Ordering::Relaxed) as usize;
+            if pp == x { return x; }
+            let gp = uf[pp].load(Ordering::Relaxed) as usize;
+            let _ = uf[x].compare_exchange_weak(pp as u32, gp as u32, Ordering::Relaxed, Ordering::Relaxed);
+            x = pp;
+        }
+    }
+    fn uf_union(uf: &[AtomicU32], a: usize, b: usize) {
+        loop {
+            let (ra, rb) = (uf_find(uf, a), uf_find(uf, b));
+            if ra == rb { return; }
+            let (lo, hi) = if ra < rb { (ra, rb) } else { (rb, ra) };
+            if uf[hi].compare_exchange_weak(hi as u32, lo as u32, Ordering::AcqRel, Ordering::Relaxed).is_ok() { return; }
+        }
+    }
+
+    let mut order: Vec<usize> = (0..n).collect();
+    order.sort_unstable_by(|&a, &b| data[a * p].partial_cmp(&data[b * p]).unwrap_or(std::cmp::Ordering::Equal));
+    let sorted_c0: Vec<f64> = order.iter().map(|&oi| data[oi * p]).collect();
+    let mut inv_order = vec![0usize; n];
+    for (si, &oi) in order.iter().enumerate() { inv_order[oi] = si; }
+
+    let is_core: Vec<AtomicU8> = (0..n).map(|_| AtomicU8::new(0)).collect();
+    let task1 = AtomicU32::new(0);
+    std::thread::scope(|s| {
+        for _ in 0..ncpu {
+            let (data, order, sorted_c0, is_core, task1) = (&data, &order, &sorted_c0, &is_core, &task1);
+            s.spawn(move || loop {
+                let si = task1.fetch_add(1, Ordering::Relaxed) as usize;
+                if si >= n { break; }
+                let oi = order[si];
+                let pt = &data[oi * p..(oi + 1) * p];
+                let c0 = pt[0];
+                let lo = sorted_c0.partition_point(|&v| v < c0 - eps);
+                let hi = sorted_c0.partition_point(|&v| v <= c0 + eps);
+                let mut cnt = 0u32;
+                for sj in lo..hi {
+                    let oj = order[sj];
+                    let q = &data[oj * p..(oj + 1) * p];
+                    if dist2_flat(pt, q, p) <= eps2 {
+                        cnt += 1;
+                        if cnt >= ms { is_core[oi].store(1, Ordering::Relaxed); break; }
+                    }
+                }
+            });
+        }
+    });
+
+    let uf: Vec<AtomicU32> = (0..n).map(|i| AtomicU32::new(i as u32)).collect();
+    let task2 = AtomicU32::new(0);
+    std::thread::scope(|s| {
+        for _ in 0..ncpu {
+            let (data, order, sorted_c0, is_core, uf, task2) = (&data, &order, &sorted_c0, &is_core, &uf, &task2);
+            s.spawn(move || loop {
+                let si = task2.fetch_add(1, Ordering::Relaxed) as usize;
+                if si >= n { break; }
+                let oi = order[si];
+                if is_core[oi].load(Ordering::Relaxed) == 0 { continue; }
+                let pt = &data[oi * p..(oi + 1) * p];
+                let c0 = pt[0];
+                let lo = sorted_c0.partition_point(|&v| v < c0 - eps);
+                let hi = sorted_c0.partition_point(|&v| v <= c0 + eps);
+                for sj in lo..hi {
+                    if sj <= si { continue; }
+                    let oj = order[sj];
+                    if is_core[oj].load(Ordering::Relaxed) == 0 { continue; }
+                    let q = &data[oj * p..(oj + 1) * p];
+                    if dist2_flat(pt, q, p) <= eps2 { uf_union(&uf, oi, oj); }
+                }
+            });
+        }
+    });
+
+    let mut labels = vec![-1i32; n];
+    for i in 0..n {
+        if is_core[i].load(Ordering::Relaxed) == 1 {
+            labels[i] = uf_find(&uf, i) as i32;
+        }
+    }
+
+    for i in 0..n {
+        if labels[i] >= 0 { continue; }
+        let pt = &data[i * p..(i + 1) * p];
+        let si = inv_order[i];
+        let c0 = pt[0];
+        let lo = sorted_c0.partition_point(|&v| v < c0 - eps);
+        let hi = sorted_c0.partition_point(|&v| v <= c0 + eps);
+        let mut best_root = u32::MAX;
+        let mut best_d = f64::INFINITY;
+        for sj in lo..hi {
+            if sj == si { continue; }
+            let oj = order[sj];
+            if is_core[oj].load(Ordering::Relaxed) == 0 { continue; }
+            let q = &data[oj * p..(oj + 1) * p];
+            let d2 = dist2_flat(pt, q, p);
+            if d2 <= eps2 && d2 < best_d { best_d = d2; best_root = uf_find(&uf, oj) as u32; }
+        }
+        if best_root != u32::MAX { labels[i] = best_root as i32; }
+    }
+
+    let mut rm = std::collections::HashMap::<i32, i32>::new();
+    let mut cid = 0i32;
+    for l in labels.iter_mut() {
+        if *l >= 0 {
+            let e = rm.entry(*l).or_insert_with(|| { let v = cid; cid += 1; v });
+            *l = *e;
+        }
+    }
+    (labels, cid as usize)
+}
+
 fn render_dbscan_canvas(
     title: &str,
     x_values: &[f64],

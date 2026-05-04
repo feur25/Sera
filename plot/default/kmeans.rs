@@ -100,7 +100,7 @@ fn kmeans_pp_2d(x: &[f64], y: &[f64], k: usize, seed: u64) -> (Vec<f64>, Vec<f64
 pub fn kmeans_pp_flat(data: &[f64], n: usize, dims: usize, k: usize, seed: u64) -> Vec<f64> {
     let k = k.min(n);
     if k == 0 { return Vec::new(); }
-    let n_trials = 2 + (k as f64).ln() as usize; // sklearn's improved k-means++
+    let n_trials = if k >= 100 { 2 } else { 2 + (k as f64).ln() as usize };
     let mut rng = seed.wrapping_add(n as u64).wrapping_mul(0xCAFEBABE_u64);
     let first = (splitmix64(&mut rng) as usize) % n;
     let mut centroids = Vec::with_capacity(k * dims);
@@ -136,7 +136,7 @@ pub fn kmeans_pp_flat(data: &[f64], n: usize, dims: usize, k: usize, seed: u64) 
 fn kmeans_pp_flat_par(data: &[f64], n: usize, dims: usize, k: usize, seed: u64) -> Vec<f64> {
     let k = k.min(n);
     if k == 0 { return Vec::new(); }
-    let n_trials = 2 + (k as f64).ln() as usize;
+    let n_trials = if k >= 100 { 2 } else { 2 + (k as f64).ln() as usize };
     let mut rng = seed.wrapping_add(n as u64).wrapping_mul(0xCAFEBABE_u64);
     let first = (splitmix64(&mut rng) as usize) % n;
     let mut centroids = Vec::with_capacity(k * dims);
@@ -238,22 +238,23 @@ fn eucl_dist_flat(a: &[f64], b: &[f64]) -> f64 {
 fn nearest_two(pt: &[f64], centroids: &[f64], k: usize, dims: usize) -> (usize, f64, f64) {
     let (mut bc, mut bd1, mut bd2) = (0usize, f64::INFINITY, f64::INFINITY);
     for ki in 0..k {
-        let d = eucl_dist_flat(pt, &centroids[ki*dims..(ki+1)*dims]);
+        let d = sq_dist_flat(pt, &centroids[ki*dims..(ki+1)*dims]);
         if d < bd1 { bd2 = bd1; bd1 = d; bc = ki; }
         else if d < bd2 { bd2 = d; }
     }
-    (bc, bd1, bd2)
+    (bc, bd1.sqrt(), bd2.sqrt())
 }
 
 fn nearest_two_from_curr(pt: &[f64], centroids: &[f64], k: usize, dims: usize, curr: usize, curr_d: f64) -> (usize, f64, f64) {
-    let (mut bc, mut bd1, mut bd2) = (curr, curr_d, f64::INFINITY);
+    let curr_sq = curr_d * curr_d;
+    let (mut bc, mut bd1, mut bd2) = (curr, curr_sq, f64::INFINITY);
     for ki in 0..k {
         if ki == curr { continue; }
-        let d = eucl_dist_flat(pt, &centroids[ki*dims..(ki+1)*dims]);
+        let d = sq_dist_flat(pt, &centroids[ki*dims..(ki+1)*dims]);
         if d < bd1 { bd2 = bd1; bd1 = d; bc = ki; }
         else if d < bd2 { bd2 = d; }
     }
-    (bc, bd1, bd2)
+    (bc, bd1.sqrt(), bd2.sqrt())
 }
 
 fn half_nearest_centroid_dists(centroids: &[f64], k: usize, dims: usize) -> Vec<f64> {
@@ -324,6 +325,92 @@ fn update_centroids_seq(data: &[f64], n: usize, dims: usize, k: usize, labels: &
 const PAR_THRESHOLD: usize = 40_000;
 const HAMERLY_CHUNK: usize = 16_384;
 const CORESET_THRESHOLD: usize = 50_000;
+const K_BLAS: usize = 9999;
+const BLAS_CHUNK: usize = 4096;
+
+std::thread_local! {
+    static BLAS_BUF: std::cell::RefCell<Vec<f64>> = std::cell::RefCell::new(Vec::new());
+}
+
+fn blas_assign_par(x: &[f64], n: usize, p: usize, k: usize,
+                   centroids: &[f64], x_norms_sq: &[f64], c_norms: &[f64],
+                   labels: &mut [i32]) -> f64 {
+    labels.par_chunks_mut(BLAS_CHUNK)
+        .zip(x_norms_sq.par_chunks(BLAS_CHUNK))
+        .enumerate()
+        .map(|(ci, (lab_chunk, xn_chunk))| {
+            let s = ci * BLAS_CHUNK;
+            let cn = lab_chunk.len();
+            let x_chunk = &x[s * p..(s + cn) * p];
+            BLAS_BUF.with(|cell| {
+                let mut buf = cell.borrow_mut();
+                let needed = cn * k;
+                if buf.len() < needed { buf.resize(needed, 0.0); }
+                unsafe {
+                    matrixmultiply::dgemm(
+                        cn, p, k, 1.0,
+                        x_chunk.as_ptr(), p as isize, 1,
+                        centroids.as_ptr(), 1, p as isize,
+                        0.0, buf.as_mut_ptr(), k as isize, 1,
+                    );
+                }
+                let mut chunk_inertia = 0.0f64;
+                for i in 0..cn {
+                    let xn = unsafe { *xn_chunk.get_unchecked(i) };
+                    let row = unsafe { buf.get_unchecked(i * k..(i + 1) * k) };
+                    let mut best = 0usize;
+                    let mut best_d = xn - 2.0 * unsafe { *row.get_unchecked(0) } + unsafe { *c_norms.get_unchecked(0) };
+                    for j in 1..k {
+                        let d = xn - 2.0 * unsafe { *row.get_unchecked(j) } + unsafe { *c_norms.get_unchecked(j) };
+                        if d < best_d { best_d = d; best = j; }
+                    }
+                    unsafe { *lab_chunk.get_unchecked_mut(i) = best as i32; }
+                    chunk_inertia += best_d.max(0.0);
+                }
+                chunk_inertia
+            })
+        })
+        .sum()
+}
+
+fn blas_assign_seq(x: &[f64], n: usize, p: usize, k: usize,
+                   centroids: &[f64], x_norms_sq: &[f64], c_norms: &[f64],
+                   labels: &mut [i32]) -> f64 {
+    let n_chunks = (n + BLAS_CHUNK - 1) / BLAS_CHUNK;
+    let mut inertia = 0.0f64;
+    BLAS_BUF.with(|cell| {
+        let mut buf = cell.borrow_mut();
+        for ci in 0..n_chunks {
+            let s = ci * BLAS_CHUNK;
+            let e = (s + BLAS_CHUNK).min(n);
+            let cn = e - s;
+            let needed = cn * k;
+            if buf.len() < needed { buf.resize(needed, 0.0); }
+            let x_chunk = &x[s * p..e * p];
+            unsafe {
+                matrixmultiply::dgemm(
+                    cn, p, k, 1.0,
+                    x_chunk.as_ptr(), p as isize, 1,
+                    centroids.as_ptr(), 1, p as isize,
+                    0.0, buf.as_mut_ptr(), k as isize, 1,
+                );
+            }
+            for i in 0..cn {
+                let xn = unsafe { *x_norms_sq.get_unchecked(s + i) };
+                let row = unsafe { buf.get_unchecked(i * k..(i + 1) * k) };
+                let mut best = 0usize;
+                let mut best_d = xn - 2.0 * unsafe { *row.get_unchecked(0) } + unsafe { *c_norms.get_unchecked(0) };
+                for j in 1..k {
+                    let d = xn - 2.0 * unsafe { *row.get_unchecked(j) } + unsafe { *c_norms.get_unchecked(j) };
+                    if d < best_d { best_d = d; best = j; }
+                }
+                unsafe { *labels.get_unchecked_mut(s + i) = best as i32; }
+                inertia += best_d.max(0.0);
+            }
+        }
+    });
+    inertia
+}
 
 /// Single-seed Hamerly k-means on the full data. This is the workhorse.
 /// When `force_seq` is true, all internal work is sequential (no Rayon).
@@ -338,6 +425,35 @@ fn kmeans_core_flat_seeded(data: &[f64], n: usize, dims: usize, k: usize, max_it
     } else {
         kmeans_pp_flat(data, n, dims, k, seed)
     };
+
+    if k >= K_BLAS {
+        let x_norms_sq: Vec<f64> = if par {
+            data.par_chunks(dims).map(|row| row.iter().map(|&v| v*v).sum::<f64>()).collect()
+        } else {
+            data.chunks(dims).map(|row| row.iter().map(|&v| v*v).sum::<f64>()).collect()
+        };
+        let mut labels = vec![0i32; n];
+        let mut c_norms: Vec<f64> = (0..k).map(|j| centroids[j*dims..(j+1)*dims].iter().map(|&v| v*v).sum::<f64>()).collect();
+        let mut inertia = if par {
+            blas_assign_par(data, n, dims, k, &centroids, &x_norms_sq, &c_norms, &mut labels)
+        } else {
+            blas_assign_seq(data, n, dims, k, &centroids, &x_norms_sq, &c_norms, &mut labels)
+        };
+        for _ in 0..max_iter {
+            let old = centroids.clone();
+            centroids = if par { update_centroids_par(data, n, dims, k, &labels, &old) }
+                        else   { update_centroids_seq(data, n, dims, k, &labels, &old) };
+            let drift_sq: f64 = (0..k).map(|j| sq_dist_flat(&centroids[j*dims..(j+1)*dims], &old[j*dims..(j+1)*dims])).sum();
+            if drift_sq <= tol { break; }
+            for j in 0..k { c_norms[j] = centroids[j*dims..(j+1)*dims].iter().map(|&v| v*v).sum(); }
+            inertia = if par {
+                blas_assign_par(data, n, dims, k, &centroids, &x_norms_sq, &c_norms, &mut labels)
+            } else {
+                blas_assign_seq(data, n, dims, k, &centroids, &x_norms_sq, &c_norms, &mut labels)
+            };
+        }
+        return (labels, centroids, inertia);
+    }
 
     let mut labels = vec![0i32; n];
     let mut upper = vec![0.0f64; n];
@@ -442,9 +558,25 @@ fn kmeans_core_flat_seeded(data: &[f64], n: usize, dims: usize, k: usize, max_it
 
 /// Refine given centroids on `data` using Hamerly for at most `max_iter` iterations,
 /// then compute final labels + inertia.  Used after coreset selection to polish on full data.
-fn kmeans_refine_flat(data: &[f64], n: usize, dims: usize, k: usize, max_iter: usize, centroids_in: &[f64]) -> (Vec<i32>, Vec<f64>, f64) {
+fn kmeans_refine_flat(data: &[f64], n: usize, dims: usize, k: usize, max_iter: usize, centroids_in: &[f64], tol: f64) -> (Vec<i32>, Vec<f64>, f64) {
     let par = n >= PAR_THRESHOLD;
     let mut centroids = centroids_in.to_vec();
+
+    if k >= K_BLAS {
+        let x_norms_sq: Vec<f64> = data.par_chunks(dims).map(|row| row.iter().map(|&v| v*v).sum::<f64>()).collect();
+        let mut labels = vec![0i32; n];
+        let mut c_norms: Vec<f64> = (0..k).map(|j| centroids[j*dims..(j+1)*dims].iter().map(|&v| v*v).sum::<f64>()).collect();
+        let mut inertia = blas_assign_par(data, n, dims, k, &centroids, &x_norms_sq, &c_norms, &mut labels);
+        for _ in 0..max_iter {
+            let old = centroids.clone();
+            centroids = update_centroids_par(data, n, dims, k, &labels, &old);
+            let drift_sq: f64 = (0..k).map(|j| sq_dist_flat(&centroids[j*dims..(j+1)*dims], &old[j*dims..(j+1)*dims])).sum();
+            if drift_sq <= tol { break; }
+            for j in 0..k { c_norms[j] = centroids[j*dims..(j+1)*dims].iter().map(|&v| v*v).sum(); }
+            inertia = blas_assign_par(data, n, dims, k, &centroids, &x_norms_sq, &c_norms, &mut labels);
+        }
+        return (labels, centroids, inertia);
+    }
 
     let mut labels = vec![0i32; n];
     let mut upper = vec![0.0f64; n];
@@ -475,7 +607,7 @@ fn kmeans_refine_flat(data: &[f64], n: usize, dims: usize, k: usize, max_iter: u
 
         // Convergence: sum of squared centroid drifts (same criterion as sklearn)
         let drift_sq: f64 = drifts.iter().map(|d| d * d).sum();
-        if drift_sq <= 1e-4 { break; }
+        if drift_sq <= tol { break; }
 
         labels.par_iter()
             .zip(upper.par_iter_mut())
@@ -542,6 +674,22 @@ pub fn kmeans_core_flat_ninit(data: &[f64], n: usize, dims: usize, k: usize, max
         .wrapping_add(n as u64)
         .wrapping_mul(0xCAFEBABE_u64);
 
+    // Scale tol by mean feature variance — matches sklearn's tolerance criterion:
+    // sklearn uses tol_effective = mean(var(X)) * tol_user so that the convergence
+    // threshold is data-scale-independent. Without this, our tol=1e-4 is orders of
+    // magnitude tighter than sklearn's on high-variance data, causing us to run all
+    // max_iter iterations while sklearn converges in 10-20 iterations.
+    let mean_var: f64 = {
+        let mut s_d = vec![0.0f64; dims];
+        let mut sq_d = vec![0.0f64; dims];
+        for i in 0..n {
+            let row = &data[i*dims..(i+1)*dims];
+            for d in 0..dims { s_d[d] += row[d]; sq_d[d] += row[d]*row[d]; }
+        }
+        (0..dims).map(|d| { let m = s_d[d] / n as f64; sq_d[d] / n as f64 - m * m }).sum::<f64>() / dims as f64
+    };
+    let tol = tol * mean_var.max(1.0);
+
     // ── Single init: direct full-data Hamerly (internal parallelism ok) ──
     if n_init == 1 {
         return kmeans_core_flat_seeded(data, n, dims, k, max_iter, base_seed, false, tol);
@@ -550,7 +698,7 @@ pub fn kmeans_core_flat_ninit(data: &[f64], n: usize, dims: usize, k: usize, max
     // ── Multi-init with coreset acceleration for large n ──
     if n >= CORESET_THRESHOLD {
         // 1. Build jittered coreset — dynamic size scaled to n
-        let cs_n = (n / 5).max(10_000).min(n);
+        let cs_n = if k >= 100 { (n / 20).max(5_000) } else { (n / 5).max(10_000) }.min(n);
         let stride = n / cs_n;
         let mut rng_cs = base_seed.wrapping_mul(0xDEAD1234_u64);
         let mut coreset = Vec::with_capacity(cs_n * dims);
@@ -561,18 +709,22 @@ pub fn kmeans_core_flat_ninit(data: &[f64], n: usize, dims: usize, k: usize, max
         }
 
         // 2. Run n_init k-means on coreset in parallel — force_seq=true avoids
-        //    nested Rayon contention (outer par_iter provides all parallelism)
+        //    nested Rayon contention (outer par_iter provides all parallelism).
+        //    For k<100 the coreset is large (n/5) but converges in <30 iters with k++ init;
+        //    cap at 50 to avoid wasting time. For k>=100 the coreset is small (n/20) and
+        //    may need more iterations to give good init for the full refine.
+        let cs_max_iter = if k < 100 { max_iter.min(50) } else { max_iter };
         let best_centroids: Vec<f64> = (0..n_init).into_par_iter()
             .map(|idx| {
                 let seed = base_seed.wrapping_add(idx as u64 * 0x9E3779B97F4A7C15);
-                kmeans_core_flat_seeded(&coreset, cs_n, dims, k, max_iter, seed, true, tol)
+                kmeans_core_flat_seeded(&coreset, cs_n, dims, k, cs_max_iter, seed, true, tol)
             })
             .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap_or(std::cmp::Ordering::Equal))
             .unwrap()
             .1;
 
         // 3. Refine on full data with Hamerly until convergence
-        return kmeans_refine_flat(data, n, dims, k, max_iter, &best_centroids);
+        return kmeans_refine_flat(data, n, dims, k, max_iter, &best_centroids, tol);
     }
 
     // ── Multi-init on full data for smaller n ──

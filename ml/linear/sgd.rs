@@ -260,44 +260,94 @@ impl SGDRegressor {
             } else { 0 }
         } else { 0 };
 
-        let mut rng = 0xDEADBEEFCAFEu64;
-        let mut global_t = 1usize + start_epoch * n;
-        let mut best_loss = f64::MAX;
-        let mut no_change = 0usize;
         let alpha = self.alpha;
         let loss_fn = self.loss;
         let epsilon = self.epsilon;
         let lr = self.learning_rate;
-        let mut indices: Vec<usize> = (0..n).collect();
+        let fit_intercept = self.fit_intercept;
+        let mut best_loss = f64::MAX;
+        let mut no_change = 0usize;
+        let mut global_t = 1usize + start_epoch * n;
+
+        let use_par = n >= 100_000;
+        let batch = 1024usize.min(n);
+        let n_batches = (n + batch - 1) / batch;
 
         for epoch in start_epoch..self.max_iter {
-            for i in (1..n).rev() {
-                rng ^= rng << 13; rng ^= rng >> 7; rng ^= rng << 17;
-                let j = rng as usize % (i + 1);
-                indices.swap(i, j);
-            }
-            let mut total_loss = 0.0;
             let eta = lr / (global_t as f64).sqrt().sqrt();
-            for &idx in &indices {
-                let row = &x[idx * p..(idx + 1) * p];
-                let pred = dot(row, &w) + b;
-                let err = pred - y[idx];
-                let (grad, lv) = match loss_fn {
-                    SGDRegLoss::SquaredError => (err, err * err),
-                    SGDRegLoss::Huber => {
-                        if err.abs() <= epsilon { (err, 0.5 * err * err) }
-                        else { (epsilon * err.signum(), epsilon * (err.abs() - 0.5 * epsilon)) }
+            let inv_n = 1.0 / n as f64;
+            let total_loss = if use_par {
+                let (gw, gb, lv) = (0..n_batches).into_par_iter().map(|bi| {
+                    let s = bi * batch;
+                    let e = (s + batch).min(n);
+                    let mut lgw = vec![0.0f64; p];
+                    let mut lgb = 0.0f64;
+                    let mut lloss = 0.0f64;
+                    for idx in s..e {
+                        let row = &x[idx * p..(idx + 1) * p];
+                        let pred = dot(row, &w) + b;
+                        let err = pred - y[idx];
+                        let (grad, lvi) = match loss_fn {
+                            SGDRegLoss::SquaredError => (err, err * err),
+                            SGDRegLoss::Huber => {
+                                if err.abs() <= epsilon { (err, 0.5 * err * err) }
+                                else { (epsilon * err.signum(), epsilon * (err.abs() - 0.5 * epsilon)) }
+                            }
+                            SGDRegLoss::EpsilonInsensitive => {
+                                let a = err.abs();
+                                if a <= epsilon { (0.0, 0.0) }
+                                else { (err.signum(), a - epsilon) }
+                            }
+                        };
+                        lloss += lvi;
+                        for j in 0..p { lgw[j] += grad * row[j]; }
+                        lgb += grad;
                     }
-                    SGDRegLoss::EpsilonInsensitive => {
-                        let a = err.abs();
-                        if a <= epsilon { (0.0, 0.0) }
-                        else { (err.signum(), a - epsilon) }
+                    (lgw, lgb, lloss)
+                }).reduce(|| (vec![0.0; p], 0.0, 0.0), |mut a, b2| {
+                    for j in 0..p { a.0[j] += b2.0[j]; }
+                    a.1 += b2.1; a.2 += b2.2;
+                    a
+                });
+                for j in 0..p { w[j] -= eta * (gw[j] * inv_n + alpha * w[j]); }
+                if fit_intercept { b -= eta * gb * inv_n; }
+                lv
+            } else {
+                let mut lloss = 0.0f64;
+                let mut t = global_t;
+                for idx in 0..n {
+                    let row = unsafe { x.get_unchecked(idx * p..(idx + 1) * p) };
+                    let mut pred = b;
+                    for j in 0..p { pred += unsafe { *row.get_unchecked(j) * *w.get_unchecked(j) }; }
+                    let err = pred - unsafe { *y.get_unchecked(idx) };
+                    let (grad, lvi) = match loss_fn {
+                        SGDRegLoss::SquaredError => (err, err * err),
+                        SGDRegLoss::Huber => {
+                            if err.abs() <= epsilon { (err, 0.5 * err * err) }
+                            else { (epsilon * err.signum(), epsilon * (err.abs() - 0.5 * epsilon)) }
+                        }
+                        SGDRegLoss::EpsilonInsensitive => {
+                            let a = err.abs();
+                            if a <= epsilon { (0.0, 0.0) }
+                            else { (err.signum(), a - epsilon) }
+                        }
+                    };
+                    lloss += lvi;
+                    let eta_t = lr / (t as f64).sqrt().sqrt();
+                    let shrink = 1.0 - eta_t * alpha;
+                    for j in 0..p {
+                        unsafe {
+                            let wj = w.get_unchecked_mut(j);
+                            *wj = *wj * shrink - eta_t * grad * *row.get_unchecked(j);
+                        }
                     }
-                };
-                total_loss += lv;
-                for j in 0..p { w[j] -= eta * (grad * row[j] + alpha * w[j]); }
-                if self.fit_intercept { b -= eta * grad; }
-            }
+                    if fit_intercept { b -= eta_t * grad; }
+                    t += 1;
+                }
+                let _ = eta;
+                let _ = inv_n;
+                lloss
+            };
             global_t += n;
 
             self.n_iter = epoch + 1;
@@ -326,8 +376,21 @@ impl SGDRegressor {
     pub fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
         let coef = &self.coef;
         let b = self.intercept;
-        if n >= 512 {
-            (0..n).into_par_iter().map(|i| dot(&x[i * p..(i + 1) * p], coef) + b).collect()
+        if n == 0 || p == 0 || coef.is_empty() { return vec![b; n]; }
+        if n * p >= 8192 {
+            let mut out = vec![0.0f64; n];
+            unsafe {
+                matrixmultiply::dgemm(
+                    n, p, 1,
+                    1.0,
+                    x.as_ptr(), p as isize, 1,
+                    coef.as_ptr(), 1, 1,
+                    0.0,
+                    out.as_mut_ptr(), 1, 1,
+                );
+            }
+            if b != 0.0 { for v in out.iter_mut() { *v += b; } }
+            out
         } else {
             (0..n).map(|i| dot(&x[i * p..(i + 1) * p], coef) + b).collect()
         }

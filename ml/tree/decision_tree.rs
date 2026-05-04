@@ -10,6 +10,7 @@ thread_local! {
     static REG_WORK: RefCell<(Vec<f64>, Vec<f64>, Vec<u32>)> = RefCell::new((
         vec![0.0f64; MAX_BINS], vec![0.0f64; MAX_BINS], vec![0u32; MAX_BINS]
     ));
+    static PART_BUF: RefCell<Vec<usize>> = RefCell::new(Vec::new());
 }
 
 #[derive(Clone)]
@@ -105,6 +106,7 @@ pub struct DecisionTreeClassifier {
     pub classes: Vec<i32>,
     nodes: Vec<TreeNode>,
     pub feature_importances: Vec<f64>,
+    pub need_dist: bool,
 }
 
 impl DecisionTreeClassifier {
@@ -112,7 +114,7 @@ impl DecisionTreeClassifier {
         Self {
             max_depth, min_samples_split, min_samples_leaf, max_features,
             criterion, n_classes: 0, classes: Vec::new(), nodes: Vec::new(),
-            feature_importances: Vec::new(),
+            feature_importances: Vec::new(), need_dist: true,
         }
     }
 
@@ -164,22 +166,24 @@ impl DecisionTreeClassifier {
         let majority = cnts[..nc].iter().enumerate().max_by_key(|(_, &v)| v).map(|(i, _)| i).unwrap_or(0);
 
         if depth >= self.max_depth || n < self.min_samples_split || cnts[..nc].iter().filter(|&&v| v > 0).count() <= 1 {
-            let dist: Vec<f64> = cnts[..nc].iter().map(|&v| v as f64).collect();
+            let dist: Vec<f64> = if self.need_dist { cnts[..nc].iter().map(|&v| v as f64).collect() } else { Vec::new() };
             self.nodes[idx].kind = NodeKind::Leaf { value: cnts[majority] as f64, class: self.classes[majority], dist };
             return idx;
         }
 
         let max_f = self.max_features.unwrap_or(p);
-        let features: Vec<usize> = if max_f >= p {
-            (0..p).collect()
+        let mut feats_arr = [0usize; 64];
+        let features: &[usize] = if max_f >= p {
+            for i in 0..p { feats_arr[i] = i; }
+            &feats_arr[..p]
         } else {
-            let mut fs = Vec::with_capacity(max_f);
-            while fs.len() < max_f {
+            let mut len = 0;
+            while len < max_f {
                 *rng ^= *rng << 13; *rng ^= *rng >> 7; *rng ^= *rng << 17;
                 let f = *rng as usize % p;
-                if !fs.contains(&f) { fs.push(f); }
+                if !feats_arr[..len].contains(&f) { feats_arr[len] = f; len += 1; }
             }
-            fs
+            &feats_arr[..max_f]
         };
 
         let parent_impurity = gini_from_counts(&cnts[..nc], n);
@@ -231,14 +235,14 @@ impl DecisionTreeClassifier {
                 if g > best_gain { best_gain = g; best_feat = f; best_bin = b; }
             }
         } else {
-            for &feat in &features {
+            for &feat in features.iter() {
                 let (g, b) = scan_feat(feat);
                 if g > best_gain { best_gain = g; best_feat = feat; best_bin = b; }
             }
         }
 
         if best_gain <= 0.0 {
-            let dist: Vec<f64> = cnts[..nc].iter().map(|&v| v as f64).collect();
+            let dist: Vec<f64> = if self.need_dist { cnts[..nc].iter().map(|&v| v as f64).collect() } else { Vec::new() };
             self.nodes[idx].kind = NodeKind::Leaf { value: cnts[majority] as f64, class: self.classes[majority], dist };
             return idx;
         }
@@ -313,16 +317,18 @@ impl DecisionTreeClassifier {
         }
 
         let max_f = self.max_features.unwrap_or(p);
-        let features: Vec<usize> = if max_f >= p {
-            (0..p).collect()
+        let mut feats_arr = [0usize; 64];
+        let features: &[usize] = if max_f >= p {
+            for i in 0..p { feats_arr[i] = i; }
+            &feats_arr[..p]
         } else {
-            let mut fs = Vec::with_capacity(max_f);
-            while fs.len() < max_f {
+            let mut len = 0;
+            while len < max_f {
                 *rng ^= *rng << 13; *rng ^= *rng >> 7; *rng ^= *rng << 17;
                 let f = *rng as usize % p;
-                if !fs.contains(&f) { fs.push(f); }
+                if !feats_arr[..len].contains(&f) { feats_arr[len] = f; len += 1; }
             }
-            fs
+            &feats_arr[..max_f]
         };
 
         let parent_impurity = gini_weighted(&cwts[..nc], total_w);
@@ -375,7 +381,7 @@ impl DecisionTreeClassifier {
                 if g > best_gain { best_gain = g; best_feat = f; best_bin = b; }
             }
         } else {
-            for &feat in &features {
+            for &feat in features.iter() {
                 let (g, b) = scan_feat(feat);
                 if g > best_gain { best_gain = g; best_feat = feat; best_bin = b; }
             }
@@ -526,33 +532,36 @@ impl DecisionTreeRegressor {
         let p = bins.p;
         let bn = bins.n;
         let idx = self.nodes.len();
-        let sum_y: f64 = indices.iter().map(|&i| y[i]).sum();
+        let (sum_y, sum_y2) = indices.iter().fold((0.0f64, 0.0f64), |(s, s2), &i| {
+            let yi = unsafe { *y.get_unchecked(i) }; (s + yi, s2 + yi * yi)
+        });
         let mean_y = sum_y / n as f64;
         self.nodes.push(TreeNodeReg { kind: TreeNodeRegKind::Leaf { value: mean_y }, n_samples: n });
 
         if depth >= self.max_depth || n < self.min_samples_split { return idx; }
-
-        let sum_y2: f64 = indices.iter().map(|&i| unsafe { y.get_unchecked(i) * y.get_unchecked(i) }).sum();
         let parent_mse = sum_y2 / n as f64 - mean_y * mean_y;
         if parent_mse < 1e-15 { return idx; }
 
         let max_f = self.max_features.unwrap_or(p);
-        let features: Vec<usize> = if max_f >= p {
-            (0..p).collect()
+        let mut feats_arr = [0usize; 64];
+        let features: &[usize] = if max_f >= p {
+            for i in 0..p { feats_arr[i] = i; }
+            &feats_arr[..p]
         } else {
-            let mut fs = Vec::with_capacity(max_f);
-            while fs.len() < max_f {
+            let mut len = 0;
+            while len < max_f {
                 *rng ^= *rng << 13; *rng ^= *rng >> 7; *rng ^= *rng << 17;
                 let f = *rng as usize % p;
-                if !fs.contains(&f) { fs.push(f); }
+                if !feats_arr[..len].contains(&f) { feats_arr[len] = f; len += 1; }
             }
-            fs
+            &feats_arr[..max_f]
         };
 
         let mut best_gain = 0.0;
         let mut best_feat = 0;
         let mut best_bin = 0usize;
         let min_sl = self.min_samples_leaf;
+        let indices_ro: &[usize] = &*indices;
 
         let scan_feat = |feat: usize| -> (f64, usize) {
             let nb = unsafe { *bins.n_bins.get_unchecked(feat) };
@@ -563,7 +572,7 @@ impl DecisionTreeRegressor {
                 bin_sq[..nb].fill(0.0);
                 bin_cnt[..nb].fill(0);
                 let col_off = feat * bn;
-                for &i in indices.iter() {
+                for &i in indices_ro.iter() {
                     let b = unsafe { *bins.binned.get_unchecked(col_off + i) } as usize;
                     let yi = unsafe { *y.get_unchecked(i) };
                     unsafe {
@@ -593,9 +602,19 @@ impl DecisionTreeRegressor {
             })
         };
 
-        for &feat in &features {
-            let (g, b) = scan_feat(feat);
-            if g > best_gain { best_gain = g; best_feat = feat; best_bin = b; }
+        if features.len() >= 8 && n >= 1000 {
+            let results: Vec<(f64, usize, usize)> = features.par_iter().map(|&feat| {
+                let (g, b) = scan_feat(feat);
+                (g, feat, b)
+            }).collect();
+            for (g, f, b) in results {
+                if g > best_gain { best_gain = g; best_feat = f; best_bin = b; }
+            }
+        } else {
+            for &feat in features.iter() {
+                let (g, b) = scan_feat(feat);
+                if g > best_gain { best_gain = g; best_feat = feat; best_bin = b; }
+            }
         }
 
         if best_gain <= 0.0 { return idx; }

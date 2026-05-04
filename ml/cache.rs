@@ -91,9 +91,17 @@ fn task_read(id: u64) -> Option<TaskEntry> {
 }
 
 fn task_write(entry: &TaskEntry) {
+    if !persistence_enabled() { return; }
     if let Ok(json) = serde_json::to_vec(entry) {
         let _ = std::fs::write(task_path(entry.task_id), json);
     }
+}
+
+fn persistence_enabled() -> bool {
+    static FLAG: OnceLock<bool> = OnceLock::new();
+    *FLAG.get_or_init(|| {
+        std::env::var("SERAPLOT_CHECKPOINT").map(|v| v == "1" || v.eq_ignore_ascii_case("true")).unwrap_or(false)
+    })
 }
 
 pub struct Fp(std::collections::hash_map::DefaultHasher);
@@ -167,7 +175,7 @@ fn fp_index() -> &'static Mutex<HashMap<u64, u64>> {
 }
 
 fn task_find_by_fp(fp: u64) -> Option<TaskEntry> {
-    if fp == 0 { return None; }
+    if fp == 0 || !persistence_enabled() { return None; }
     let idx = fp_index().lock().ok()?;
     let id = idx.get(&fp).copied()?;
     drop(idx);
@@ -175,6 +183,7 @@ fn task_find_by_fp(fp: u64) -> Option<TaskEntry> {
 }
 
 fn task_create_with_fp(task_type: &str, fingerprint: u64) -> u64 {
+    if !persistence_enabled() { return gen_id(); }
     if fingerprint != 0 {
         if let Ok(mut idx) = fp_index().lock() {
             if let Some(old_id) = idx.remove(&fingerprint) {
@@ -211,6 +220,9 @@ pub struct TaskHandle {
 
 impl TaskHandle {
     pub fn auto(name: &str, fingerprint: u64) -> Self {
+        if !persistence_enabled() {
+            return Self { id: 0, completed: std::cell::Cell::new(true), partial_state: PartialState::default(), has_result_file: false };
+        }
         if let Some(entry) = task_find_by_fp(fingerprint) {
             if entry.session != session_id() {
                 match &entry.status {
@@ -255,12 +267,14 @@ impl TaskHandle {
     }
 
     pub fn complete_with_result(&self, partial: &PartialState, result: &str) {
+        if !persistence_enabled() { self.completed.set(true); return; }
         task_complete(self.id, partial);
         let _ = std::fs::write(result_path(self.id), result.as_bytes());
         self.completed.set(true);
     }
 
     pub fn complete_result(&self, result: &str) {
+        if !persistence_enabled() { self.completed.set(true); return; }
         task_complete(self.id, &PartialState::default());
         let _ = std::fs::write(result_path(self.id), result.as_bytes());
         self.completed.set(true);

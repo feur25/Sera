@@ -62,6 +62,42 @@ pub(crate) fn extract_flat(x: &PyAny) -> PyResult<(Vec<f64>, usize, usize)> {
     Ok((flat, n, p))
 }
 
+pub(crate) fn with_flat<R>(x: &PyAny, f: impl FnOnce(&[f64], usize, usize) -> R) -> PyResult<R> {
+    if let Ok(arr) = x.extract::<PyReadonlyArray2<f64>>() {
+        let shape = arr.shape();
+        let (n, p) = (shape[0], shape[1]);
+        let view = arr.as_array();
+        if view.is_standard_layout() {
+            return Ok(f(view.as_slice().unwrap(), n, p));
+        }
+        let c = view.as_standard_layout();
+        return Ok(f(c.as_slice().unwrap(), n, p));
+    }
+    if let Ok(arr) = x.extract::<PyReadonlyArray2<f32>>() {
+        let shape = arr.shape();
+        let (n, p) = (shape[0], shape[1]);
+        let view = arr.as_array();
+        let src: &[f32] = if view.is_standard_layout() { view.as_slice().unwrap() } else {
+            let c = view.as_standard_layout();
+            let s = c.as_slice().unwrap();
+            let mut v = vec![0.0f64; n * p];
+            v.par_chunks_mut(8192).enumerate().for_each(|(ci, chunk)| {
+                let s0 = ci * 8192;
+                for (k, d) in chunk.iter_mut().enumerate() { *d = unsafe { *s.get_unchecked(s0 + k) } as f64; }
+            });
+            return Ok(f(&v, n, p));
+        };
+        let mut v = vec![0.0f64; n * p];
+        v.par_chunks_mut(8192).enumerate().for_each(|(ci, chunk)| {
+            let s0 = ci * 8192;
+            for (k, d) in chunk.iter_mut().enumerate() { *d = unsafe { *src.get_unchecked(s0 + k) } as f64; }
+        });
+        return Ok(f(&v, n, p));
+    }
+    let (v, n, p) = extract_flat(x)?;
+    Ok(f(&v, n, p))
+}
+
 fn extract_labels(y: &PyAny) -> PyResult<Vec<i32>> {
     if let Ok(arr) = y.extract::<PyReadonlyArray1<i64>>() { return Ok(arr.as_slice().unwrap().iter().map(|&v| v as i32).collect()); }
     if let Ok(arr) = y.extract::<PyReadonlyArray1<i32>>() { return Ok(arr.as_slice().unwrap().to_vec()); }
@@ -74,6 +110,16 @@ fn extract_targets(y: &PyAny) -> PyResult<Vec<f64>> {
     if let Ok(arr) = y.extract::<PyReadonlyArray1<f32>>() { return Ok(arr.as_slice().unwrap().iter().map(|&v| v as f64).collect()); }
     if let Ok(arr) = y.extract::<PyReadonlyArray1<i64>>() { return Ok(arr.as_slice().unwrap().iter().map(|&v| v as f64).collect()); }
     y.extract::<Vec<f64>>()
+}
+
+pub(crate) fn extract_estimator_name(est: &PyAny) -> PyResult<String> {
+    if let Ok(s) = est.extract::<String>() { return Ok(s); }
+    if let Ok(t) = est.getattr("__class__") {
+        if let Ok(n) = t.getattr("__name__") {
+            if let Ok(s) = n.extract::<String>() { return Ok(s); }
+        }
+    }
+    Err(pyo3::exceptions::PyTypeError::new_err("estimator must be a string name or seraplot estimator instance"))
 }
 
 macro_rules! impl_get_set_params {
@@ -98,23 +144,23 @@ macro_rules! impl_reg_fit_predict_score {
         #[pymethods]
         impl $name {
             fn fit(&mut self, x: &PyAny, y: &PyAny) -> PyResult<()> {
-                let (xf, n, p) = extract_flat(x)?;
                 let yt = extract_targets(y)?;
-                let fp = crate::ml::cache::Fp::new(concat!(stringify!($name), ".fit"))
-                    .str(&self.__repr__()).data(&xf, n, p).targets(&yt).finish();
-                let _h = crate::ml::cache::TaskHandle::auto(concat!(stringify!($name), ".fit"), fp);
-                self.inner.fit(&xf, n, p, &yt);
-                _h.complete(&crate::ml::cache::PartialState::default());
+                with_flat(x, |xf, n, p| {
+                    let fp = crate::ml::cache::Fp::new(concat!(stringify!($name), ".fit"))
+                        .str(&self.__repr__()).data(xf, n, p).targets(&yt).finish();
+                    let _h = crate::ml::cache::TaskHandle::auto(concat!(stringify!($name), ".fit"), fp);
+                    self.inner.fit(xf, n, p, &yt);
+                    _h.complete(&crate::ml::cache::PartialState::default());
+                })?;
                 Ok(())
             }
             fn predict(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
-                let (xf, n, p) = extract_flat(x)?;
-                Ok(vec_f64_to_np(py, self.inner.predict(&xf, n, p)))
+                let v = with_flat(x, |xf, n, p| self.inner.predict(xf, n, p))?;
+                Ok(vec_f64_to_np(py, v))
             }
             fn score(&self, x: &PyAny, y: &PyAny) -> PyResult<f64> {
-                let (xf, n, p) = extract_flat(x)?;
                 let yt = extract_targets(y)?;
-                let preds = self.inner.predict(&xf, n, p);
+                let preds = with_flat(x, |xf, n, p| self.inner.predict(xf, n, p))?;
                 Ok(crate::ml::metrics::regression::r2_score(&yt, &preds))
             }
         }
@@ -126,23 +172,23 @@ macro_rules! impl_cls_fit_predict_score {
         #[pymethods]
         impl $name {
             fn fit(&mut self, x: &PyAny, y: &PyAny) -> PyResult<()> {
-                let (xf, n, p) = extract_flat(x)?;
                 let yl = extract_labels(y)?;
-                let fp = crate::ml::cache::Fp::new(concat!(stringify!($name), ".fit"))
-                    .str(&self.__repr__()).data(&xf, n, p).labels(&yl).finish();
-                let _h = crate::ml::cache::TaskHandle::auto(concat!(stringify!($name), ".fit"), fp);
-                self.inner.fit(&xf, n, p, &yl);
-                _h.complete(&crate::ml::cache::PartialState::default());
+                with_flat(x, |xf, n, p| {
+                    let fp = crate::ml::cache::Fp::new(concat!(stringify!($name), ".fit"))
+                        .str(&self.__repr__()).data(xf, n, p).labels(&yl).finish();
+                    let _h = crate::ml::cache::TaskHandle::auto(concat!(stringify!($name), ".fit"), fp);
+                    self.inner.fit(xf, n, p, &yl);
+                    _h.complete(&crate::ml::cache::PartialState::default());
+                })?;
                 Ok(())
             }
             fn predict(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
-                let (xf, n, p) = extract_flat(x)?;
-                Ok(vec_i32_to_np(py, self.inner.predict(&xf, n, p)))
+                let v = with_flat(x, |xf, n, p| self.inner.predict(xf, n, p))?;
+                Ok(vec_i32_to_np(py, v))
             }
             fn score(&self, x: &PyAny, y: &PyAny) -> PyResult<f64> {
-                let (xf, n, p) = extract_flat(x)?;
                 let yl = extract_labels(y)?;
-                let preds = self.inner.predict(&xf, n, p);
+                let preds = with_flat(x, |xf, n, p| self.inner.predict(xf, n, p))?;
                 Ok(crate::ml::metrics::classification::accuracy_score(&yl, &preds))
             }
         }
@@ -197,18 +243,17 @@ impl PyLasso {
     }
     #[pyo3(signature = (x, y, checkpoint_id=None))]
     fn fit(&mut self, x: &PyAny, y: &PyAny, checkpoint_id: Option<u64>) -> PyResult<()> {
-        let (xf, n, p) = extract_flat(x)?;
-        self.inner.fit_resumable(&xf, n, p, &extract_targets(y)?, checkpoint_id);
+        let yt = extract_targets(y)?;
+        with_flat(x, |xf, n, p| self.inner.fit_resumable(xf, n, p, &yt, checkpoint_id))?;
         Ok(())
     }
     fn predict(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
-        let (xf, n, p) = extract_flat(x)?;
-        Ok(vec_f64_to_np(py, self.inner.predict(&xf, n, p)))
+        let v = with_flat(x, |xf, n, p| self.inner.predict(xf, n, p))?;
+        Ok(vec_f64_to_np(py, v))
     }
     fn score(&self, x: &PyAny, y: &PyAny) -> PyResult<f64> {
-        let (xf, n, p) = extract_flat(x)?;
         let yt = extract_targets(y)?;
-        let preds = self.inner.predict(&xf, n, p);
+        let preds = with_flat(x, |xf, n, p| self.inner.predict(xf, n, p))?;
         Ok(crate::ml::linear::ols::r2_score_pub(&yt, &preds))
     }
     fn get_params(&self, _py: Python<'_>) -> PyResult<std::collections::HashMap<String, PyObject>> {
@@ -260,23 +305,23 @@ impl PyElasticNet {
     }
     #[pyo3(signature = (x, y, checkpoint_id=None))]
     fn fit(&mut self, x: &PyAny, y: &PyAny, checkpoint_id: Option<u64>) -> PyResult<()> {
-        let (xf, n, p) = extract_flat(x)?;
         let yt = extract_targets(y)?;
-        let fp = crate::ml::cache::Fp::new("ElasticNet.fit").str(&self.__repr__()).data(&xf, n, p).targets(&yt).finish();
-        let _h = crate::ml::cache::TaskHandle::auto("ElasticNet.fit", fp);
-        let ckpt = checkpoint_id.or(Some(_h.id));
-        self.inner.fit_resumable(&xf, n, p, &yt, ckpt);
-        _h.complete(&crate::ml::cache::PartialState::default());
+        with_flat(x, |xf, n, p| {
+            let fp = crate::ml::cache::Fp::new("ElasticNet.fit").str(&self.__repr__()).data(xf, n, p).targets(&yt).finish();
+            let _h = crate::ml::cache::TaskHandle::auto("ElasticNet.fit", fp);
+            let ckpt = checkpoint_id.or(Some(_h.id));
+            self.inner.fit_resumable(xf, n, p, &yt, ckpt);
+            _h.complete(&crate::ml::cache::PartialState::default());
+        })?;
         Ok(())
     }
-    fn predict(&self, x: &PyAny) -> PyResult<Vec<f64>> {
-        let (xf, n, p) = extract_flat(x)?;
-        Ok(self.inner.predict(&xf, n, p))
+    fn predict(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
+        let v = with_flat(x, |xf, n, p| self.inner.predict(xf, n, p))?;
+        Ok(vec_f64_to_np(py, v))
     }
     fn score(&self, x: &PyAny, y: &PyAny) -> PyResult<f64> {
-        let (xf, n, p) = extract_flat(x)?;
         let yt = extract_targets(y)?;
-        let preds = self.inner.predict(&xf, n, p);
+        let preds = with_flat(x, |xf, n, p| self.inner.predict(xf, n, p))?;
         Ok(crate::ml::linear::ols::r2_score_pub(&yt, &preds))
     }
     #[getter] fn coef_(&self) -> Vec<f64> { self.inner.coef.clone() }
@@ -452,23 +497,23 @@ impl PySGDRegressor {
     }
     #[pyo3(signature = (x, y, checkpoint_id=None))]
     fn fit(&mut self, x: &PyAny, y: &PyAny, checkpoint_id: Option<u64>) -> PyResult<()> {
-        let (xf, n, p) = extract_flat(x)?;
         let yt = extract_targets(y)?;
-        let fp = crate::ml::cache::Fp::new("SGDRegressor.fit").str(&self.__repr__()).data(&xf, n, p).targets(&yt).finish();
-        let _h = crate::ml::cache::TaskHandle::auto("SGDRegressor.fit", fp);
-        let ckpt = checkpoint_id.or(Some(_h.id));
-        self.inner.fit_resumable(&xf, n, p, &yt, ckpt);
-        _h.complete(&crate::ml::cache::PartialState::default());
+        with_flat(x, |xf, n, p| {
+            let fp = crate::ml::cache::Fp::new("SGDRegressor.fit").str(&self.__repr__()).data(xf, n, p).targets(&yt).finish();
+            let _h = crate::ml::cache::TaskHandle::auto("SGDRegressor.fit", fp);
+            let ckpt = checkpoint_id.or(Some(_h.id));
+            self.inner.fit_resumable(xf, n, p, &yt, ckpt);
+            _h.complete(&crate::ml::cache::PartialState::default());
+        })?;
         Ok(())
     }
     fn predict(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
-        let (xf, n, p) = extract_flat(x)?;
-        Ok(vec_f64_to_np(py, self.inner.predict(&xf, n, p)))
+        let v = with_flat(x, |xf, n, p| self.inner.predict(xf, n, p))?;
+        Ok(vec_f64_to_np(py, v))
     }
     fn score(&self, x: &PyAny, y: &PyAny) -> PyResult<f64> {
-        let (xf, n, p) = extract_flat(x)?;
         let yt = extract_targets(y)?;
-        let preds = self.inner.predict(&xf, n, p);
+        let preds = with_flat(x, |xf, n, p| self.inner.predict(xf, n, p))?;
         Ok(crate::ml::metrics::regression::r2_score(&yt, &preds))
     }
     fn get_params(&self, _py: Python<'_>) -> PyResult<std::collections::HashMap<String, PyObject>> {
@@ -1058,32 +1103,36 @@ impl PyStandardScaler {
         Self { inner: crate::ml::preprocessing::scalers::StandardScaler::new(with_mean, with_std), n: 0, p: 0 }
     }
     fn fit(&mut self, x: &PyAny) -> PyResult<()> {
-        let (xf, n, p) = extract_flat(x)?;
-        let fp = crate::ml::cache::Fp::new("StandardScaler.fit").data(&xf, n, p).finish();
-        let _h = crate::ml::cache::TaskHandle::auto("StandardScaler.fit", fp);
-        self.n = n; self.p = p;
-        self.inner.fit(&xf, n, p);
-        _h.complete(&crate::ml::cache::PartialState::default());
+        with_flat(x, |xf, n, p| {
+            let fp = crate::ml::cache::Fp::new("StandardScaler.fit").data(xf, n, p).finish();
+            let _h = crate::ml::cache::TaskHandle::auto("StandardScaler.fit", fp);
+            self.n = n; self.p = p;
+            self.inner.fit(xf, n, p);
+            _h.complete(&crate::ml::cache::PartialState::default());
+        })?;
         Ok(())
     }
     fn partial_fit(&mut self, x: &PyAny) -> PyResult<()> {
-        let (xf, n, p) = extract_flat(x)?;
-        self.inner.partial_fit(&xf, n, p);
-        self.n = self.inner.n_samples_seen as usize; self.p = p;
+        with_flat(x, |xf, n, p| {
+            self.inner.partial_fit(xf, n, p);
+            self.n = self.inner.n_samples_seen as usize; self.p = p;
+        })?;
         Ok(())
     }
     fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
-        let (xf, n, p) = extract_flat(x)?;
-        flat_to_np2d(py, self.inner.transform(&xf, n, p), n, p)
+        let (out, n, p) = with_flat(x, |xf, n, p| (self.inner.transform(xf, n, p), n, p))?;
+        flat_to_np2d(py, out, n, p)
     }
     fn fit_transform(&mut self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
-        let (xf, n, p) = extract_flat(x)?;
-        self.n = n; self.p = p;
-        flat_to_np2d(py, self.inner.fit_transform(&xf, n, p), n, p)
+        let (out, n, p) = with_flat(x, |xf, n, p| {
+            self.n = n; self.p = p;
+            (self.inner.fit_transform(xf, n, p), n, p)
+        })?;
+        flat_to_np2d(py, out, n, p)
     }
     fn inverse_transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
-        let (xf, n, p) = extract_flat(x)?;
-        flat_to_np2d(py, self.inner.inverse_transform(&xf, n, p), n, p)
+        let (out, n, p) = with_flat(x, |xf, n, p| (self.inner.inverse_transform(xf, n, p), n, p))?;
+        flat_to_np2d(py, out, n, p)
     }
     #[getter] fn mean_(&self) -> Vec<f64> { self.inner.mean.clone() }
     #[getter] fn scale_(&self) -> Vec<f64> { self.inner.scale.clone() }
@@ -1243,28 +1292,26 @@ impl PyPCA {
         Self { inner: crate::ml::decomposition::pca::PCA::with_options(n_components, svd_solver.to_string(), whiten) }
     }
     fn fit(&mut self, x: &PyAny) -> PyResult<()> {
-        let (xf, n, p) = extract_flat(x)?;
-        let fp = crate::ml::cache::Fp::new("PCA.fit").usize(self.inner.n_components).data(&xf, n, p).finish();
-        let _h = crate::ml::cache::TaskHandle::auto("PCA.fit", fp);
-        self.inner.fit(&xf, n, p);
-        _h.complete(&crate::ml::cache::PartialState::default());
+        with_flat(x, |xf, n, p| {
+            let fp = crate::ml::cache::Fp::new("PCA.fit").usize(self.inner.n_components).data(xf, n, p).finish();
+            let _h = crate::ml::cache::TaskHandle::auto("PCA.fit", fp);
+            self.inner.fit(xf, n, p);
+            _h.complete(&crate::ml::cache::PartialState::default());
+        })?;
         Ok(())
     }
     fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
-        let (xf, n, p) = extract_flat(x)?;
-        let flat = self.inner.transform(&xf, n, p);
+        let (flat, n) = with_flat(x, |xf, nn, pp| (self.inner.transform(xf, nn, pp), nn))?;
         let k = self.inner.n_components.min(self.inner.singular_values.len());
         flat_to_np2d(py, flat, n, k)
     }
     fn fit_transform(&mut self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
-        let (xf, n, p) = extract_flat(x)?;
-        let flat = self.inner.fit_transform(&xf, n, p);
+        let (flat, n) = with_flat(x, |xf, nn, pp| (self.inner.fit_transform(xf, nn, pp), nn))?;
         let k = self.inner.n_components.min(self.inner.singular_values.len());
         flat_to_np2d(py, flat, n, k)
     }
     fn inverse_transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
-        let (xf, n, _p) = extract_flat(x)?;
-        let flat = self.inner.inverse_transform(&xf, n);
+        let (flat, n) = with_flat(x, |xf, nn, _pp| (self.inner.inverse_transform(xf, nn), nn))?;
         let p = self.inner.mean.len();
         flat_to_np2d(py, flat, n, p)
     }
@@ -1431,8 +1478,10 @@ pub fn root_mean_squared_error(y_true: &PyAny, y_pred: &PyAny) -> PyResult<f64> 
 
 #[pyfunction]
 #[pyo3(signature = (estimator, x, y, *, cv=5, scoring="auto", seed=42))]
-pub fn cross_val_score(estimator: &str, x: &PyAny, y: &PyAny, cv: usize, scoring: &str, seed: u64) -> PyResult<Vec<f64>> {
+pub fn cross_val_score(estimator: &PyAny, x: &PyAny, y: &PyAny, cv: usize, scoring: &str, seed: u64) -> PyResult<Vec<f64>> {
     use crate::ml::model_selection::grid_search::*;
+    let est_name = extract_estimator_name(estimator)?;
+    let estimator = est_name.as_str();
     let (xf, n, p) = extract_flat(x)?;
     let pn: Vec<String> = Vec::new();
     let pv: Vec<Vec<String>> = Vec::new();
@@ -1728,10 +1777,11 @@ pub struct PyGridSearchCV {
 impl PyGridSearchCV {
     #[new]
     #[pyo3(signature = (estimator, param_grid, cv=5, seed=42, scoring="auto"))]
-    fn py_new(estimator: &str, param_grid: &pyo3::types::PyDict, cv: usize, seed: u64, scoring: &str) -> PyResult<Self> {
+    fn py_new(estimator: &PyAny, param_grid: &pyo3::types::PyDict, cv: usize, seed: u64, scoring: &str) -> PyResult<Self> {
+        let est_name = extract_estimator_name(estimator)?;
         let (param_names, param_values) = parse_param_grid(param_grid)?;
         Ok(Self {
-            estimator: estimator.to_string(),
+            estimator: est_name,
             param_names,
             param_values,
             cv, seed,
@@ -1840,10 +1890,11 @@ pub struct PyRandomizedSearchCV {
 impl PyRandomizedSearchCV {
     #[new]
     #[pyo3(signature = (estimator, param_distributions, n_iter=10, cv=5, seed=42, scoring="auto"))]
-    fn py_new(estimator: &str, param_distributions: &pyo3::types::PyDict, n_iter: usize, cv: usize, seed: u64, scoring: &str) -> PyResult<Self> {
+    fn py_new(estimator: &PyAny, param_distributions: &pyo3::types::PyDict, n_iter: usize, cv: usize, seed: u64, scoring: &str) -> PyResult<Self> {
+        let est_name = extract_estimator_name(estimator)?;
         let (param_names, param_values) = parse_param_grid(param_distributions)?;
         Ok(Self {
-            estimator: estimator.to_string(),
+            estimator: est_name,
             param_names, param_values, n_iter, cv, seed,
             scoring: scoring.to_string(),
             best_score: f64::NEG_INFINITY,
@@ -1936,10 +1987,11 @@ pub struct PyHalvingGridSearchCV {
 impl PyHalvingGridSearchCV {
     #[new]
     #[pyo3(signature = (estimator, param_grid, cv=5, factor=3, seed=42, scoring="auto"))]
-    fn py_new(estimator: &str, param_grid: &pyo3::types::PyDict, cv: usize, factor: usize, seed: u64, scoring: &str) -> PyResult<Self> {
+    fn py_new(estimator: &PyAny, param_grid: &pyo3::types::PyDict, cv: usize, factor: usize, seed: u64, scoring: &str) -> PyResult<Self> {
+        let est_name = extract_estimator_name(estimator)?;
         let (param_names, param_values) = parse_param_grid(param_grid)?;
         Ok(Self {
-            estimator: estimator.to_string(),
+            estimator: est_name,
             param_names, param_values, cv, factor: factor.max(2), seed,
             scoring: scoring.to_string(),
             best_score: f64::NEG_INFINITY,
@@ -2060,10 +2112,11 @@ pub struct PyHalvingRandomSearchCV {
 impl PyHalvingRandomSearchCV {
     #[new]
     #[pyo3(signature = (estimator, param_distributions, n_candidates=256, cv=5, factor=3, seed=42, scoring="auto"))]
-    fn py_new(estimator: &str, param_distributions: &pyo3::types::PyDict, n_candidates: usize, cv: usize, factor: usize, seed: u64, scoring: &str) -> PyResult<Self> {
+    fn py_new(estimator: &PyAny, param_distributions: &pyo3::types::PyDict, n_candidates: usize, cv: usize, factor: usize, seed: u64, scoring: &str) -> PyResult<Self> {
+        let est_name = extract_estimator_name(estimator)?;
         let (param_names, param_values) = parse_param_grid(param_distributions)?;
         Ok(Self {
-            estimator: estimator.to_string(),
+            estimator: est_name,
             param_names, param_values, n_candidates, cv, factor: factor.max(2), seed,
             scoring: scoring.to_string(),
             best_score: f64::NEG_INFINITY,
@@ -2318,19 +2371,16 @@ impl PyPolynomialFeatures {
         Self { inner: crate::ml::preprocessing::transformers::PolynomialFeatures::new(degree, interaction_only, include_bias) }
     }
     fn fit(&mut self, x: &PyAny) -> PyResult<()> {
-        let (xf, n, p) = extract_flat(x)?;
-        self.inner.fit(&xf, n, p);
+        with_flat(x, |xf, n, p| self.inner.fit(xf, n, p))?;
         Ok(())
     }
     fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
-        let (xf, n, p) = extract_flat(x)?;
+        let (out, n) = with_flat(x, |xf, nn, pp| (self.inner.transform(xf, nn, pp), nn))?;
         let cols = self.inner.n_output_features();
-        let out = self.inner.transform(&xf, n, p);
         flat_to_np2d(py, out, n, cols)
     }
     fn fit_transform(&mut self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
-        let (xf, n, p) = extract_flat(x)?;
-        let out = self.inner.fit_transform(&xf, n, p);
+        let (out, n) = with_flat(x, |xf, nn, pp| (self.inner.fit_transform(xf, nn, pp), nn))?;
         let cols = self.inner.n_output_features();
         flat_to_np2d(py, out, n, cols)
     }
