@@ -22,7 +22,7 @@ model.get_params()             -> dict
 model.set_params(C=..., max_iter=..., tol=...)
 ```
 
-**Constructor parameters — LinearSVC**
+**Constructor parameters â€” LinearSVC**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -31,7 +31,7 @@ model.set_params(C=..., max_iter=..., tol=...)
 | `tol` | `float` | `1e-4` | Convergence tolerance |
 | `fit_intercept` | `bool` | `True` | Fit a bias term |
 
-**Constructor parameters — LinearSVR**
+**Constructor parameters â€” LinearSVR**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -46,7 +46,7 @@ model.set_params(C=..., max_iter=..., tol=...)
 | Attribute | Type | Description |
 |-----------|------|-------------|
 | `classes_` | `list[int]` | Unique class labels (LinearSVC only) |
-| `coef_` | `list[list[float]]` | Weight vectors — shape `(K, p)` for classifier, `(p,)` list for SVR |
+| `coef_` | `list[list[float]]` | Weight vectors â€” shape `(K, p)` for classifier, `(p,)` list for SVR |
 | `intercept_` | `list[float]` | Bias term(s)|`intercept_` | `list[float]` | Bias term(s) |
 | `C_` | `float` | Regularisation parameter |
 
@@ -69,7 +69,7 @@ print(f"Margins: {clf.decision_function(X[:3])}")
 reg = sp.LinearSVR(
     C=1.0, epsilon=0.05)
 reg.fit(X, X[:, 0] * 2 - X[:, 2])
-print(f"R²: {reg.score(X, X[:, 0] * 2 - X[:, 2]):.4f}")
+print(f"RÂ²: {reg.score(X, X[:, 0] * 2 - X[:, 2]):.4f}")
 ```
 
 </details>
@@ -80,35 +80,35 @@ print(f"R²: {reg.score(X, X[:, 0] * 2 - X[:, 2]):.4f}")
 
 Both models are solved via the **dual coordinate descent** method on the kernelised SVM dual problem restricted to a linear kernel.
 
-**LinearSVC — Primal objective** (hinge loss + L2 regularisation):
+**LinearSVC â€” Primal objective** (hinge loss + L2 regularisation):
 
 <div>$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, 1 - y_i(w^\top x_i + b)\bigr)$$</div>
 
 The constraint $y_i(w^\top x_i + b) \geq 1$ defines the **margin**; misclassified points contribute a hinge penalty.
 
-**Dual form** — introduce per-sample dual variables $\alpha_i \in [0, C]$:
+**Dual form** â€” introduce per-sample dual variables $\alpha_i \in [0, C]$:
 
 <div>$$\max_{\alpha} \sum_{i=1}^n \alpha_i - \frac{1}{2}\sum_{i,j} \alpha_i \alpha_j y_i y_j x_i^\top x_j \quad \text{s.t.} \quad \sum_i \alpha_i y_i = 0$$</div>
 
 Dual coordinate descent updates one $\alpha_i$ at a time, solving the 1-d quadratic subproblem analytically with clipping to $[0, C]$.
 
-**Prediction** — signed margin:
+**Prediction** â€” signed margin:
 
 <div>$$f(x) = w^\top x + b = \sum_{i} \alpha_i y_i x_i^\top x + b$$</div>
 
 For **multiclass** (OvR): $K$ binary SVMs are trained, and the class with the highest margin wins.
 
-**LinearSVR — Primal objective** ($\varepsilon$-insensitive loss):
+**LinearSVR â€” Primal objective** ($\varepsilon$-insensitive loss):
 
 <div>$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, |y_i - (w^\top x_i + b)| - \varepsilon\bigr)$$</div>
 
-Residuals smaller than $\varepsilon$ incur zero penalty — the model ignores small errors and focuses on larger deviations.
+Residuals smaller than $\varepsilon$ incur zero penalty â€” the model ignores small errors and focuses on larger deviations.
 
 </div>
 
 <div class="lang-fr">
 
-## Référence API
+## RÃ©fÃ©rence API
 
 **Signature**
 
@@ -128,23 +128,23 @@ model.get_params()             -> dict
 model.set_params(C=..., max_iter=..., tol=...)
 ```
 
-**Paramètres du constructeur — LinearSVC**
+**ParamÃ¨tres du constructeur â€” LinearSVC**
 
-| Paramètre | Type | Défaut | Description |
+| ParamÃ¨tre | Type | DÃ©faut | Description |
 |-----------|------|--------|-------------|
-| `C` | `float` | `1.0` | Inverse de la force de régularisation (plus petit = plus fort) |
-| `max_iter` | `int` | `1000` | Nombre maximum d'époques d'entraînement |
-| `tol` | `float` | `1e-4` | Tolérance de convergence |
+| `C` | `float` | `1.0` | Inverse de la force de rÃ©gularisation (plus petit = plus fort) |
+| `max_iter` | `int` | `1000` | Nombre maximum d'Ã©poques d'entraÃ®nement |
+| `tol` | `float` | `1e-4` | TolÃ©rance de convergence |
 | `fit_intercept` | `bool` | `True` | Ajuster un terme de biais |
 
-**Paramètres du constructeur — LinearSVR**
+**ParamÃ¨tres du constructeur â€” LinearSVR**
 
-| Paramètre | Type | Défaut | Description |
+| ParamÃ¨tre | Type | DÃ©faut | Description |
 |-----------|------|--------|-------------|
-| `C` | `float` | `1.0` | Inverse de la force de régularisation |
+| `C` | `float` | `1.0` | Inverse de la force de rÃ©gularisation |
 | `epsilon` | `float` | `0.1` | Demi-largeur du tube $\varepsilon$-insensible |
-| `max_iter` | `int` | `1000` | Nombre maximum d'époques d'entraînement |
-| `tol` | `float` | `1e-4` | Tolérance de convergence |
+| `max_iter` | `int` | `1000` | Nombre maximum d'Ã©poques d'entraÃ®nement |
+| `tol` | `float` | `1e-4` | TolÃ©rance de convergence |
 | `fit_intercept` | `bool` | `True` | Ajuster un terme de biais |
 
 **Attributs**
@@ -152,9 +152,9 @@ model.set_params(C=..., max_iter=..., tol=...)
 | Attribut | Type | Description |
 |----------|------|-------------|
 | `classes_` | `list[int]` | Labels de classes uniques (LinearSVC seulement) |
-| `coef_` | `list` | Coefficients de poids — forme `(K, p)` pour SVC multiclasse, `(p,)` pour SVR |
+| `coef_` | `list` | Coefficients de poids â€” forme `(K, p)` pour SVC multiclasse, `(p,)` pour SVR |
 | `intercept_` | `list[float]` | Bias term(s)| list[float]` | Terme(s) de biais |
-| `C_` | `float` | Paramètre de régularisation |
+| `C_` | `float` | ParamÃ¨tre de rÃ©gularisation |
 
 <details>
 <summary><strong>Exemple</strong></summary>
@@ -169,13 +169,13 @@ y = (X[:, 0] + X[:, 1] > 0).astype(int)
 clf = sp.LinearSVC(
     C=1.0, fit_intercept=True)
 clf.fit(X, y)
-print(f"Précision : {clf.score(X, y):.4f}")
+print(f"PrÃ©cision : {clf.score(X, y):.4f}")
 print(f"Marges : {clf.decision_function(X[:3])}")
 
 reg = sp.LinearSVR(
     C=1.0, epsilon=0.05)
 reg.fit(X, X[:, 0] * 2 - X[:, 2])
-print(f"R² : {reg.score(X, X[:, 0] * 2 - X[:, 2]):.4f}")
+print(f"RÂ² : {reg.score(X, X[:, 0] * 2 - X[:, 2]):.4f}")
 ```
 
 </details>
@@ -184,30 +184,30 @@ print(f"R² : {reg.score(X, X[:, 0] * 2 - X[:, 2]):.4f}")
 
 ## Fonctionnement algorithmique
 
-Les deux modèles sont résolus via la méthode de **descente de coordonnées duale** sur le problème dual SVM noyauté restreint au noyau linéaire.
+Les deux modÃ¨les sont rÃ©solus via la mÃ©thode de **descente de coordonnÃ©es duale** sur le problÃ¨me dual SVM noyautÃ© restreint au noyau linÃ©aire.
 
-**LinearSVC — Objectif primal** (perte hinge + régularisation L2) :
+**LinearSVC â€” Objectif primal** (perte hinge + rÃ©gularisation L2) :
 
 <div>$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, 1 - y_i(w^\top x_i + b)\bigr)$$</div>
 
-La contrainte $y_i(w^\top x_i + b) \geq 1$ définit la **marge** ; les points mal classifiés contribuent une pénalité hinge.
+La contrainte $y_i(w^\top x_i + b) \geq 1$ dÃ©finit la **marge** ; les points mal classifiÃ©s contribuent une pÃ©nalitÃ© hinge.
 
-**Forme duale** — introduire des variables duales $\alpha_i \in [0, C]$ par échantillon :
+**Forme duale** â€” introduire des variables duales $\alpha_i \in [0, C]$ par Ã©chantillon :
 
 <div>$$\max_{\alpha} \sum_{i=1}^n \alpha_i - \frac{1}{2}\sum_{i,j} \alpha_i \alpha_j y_i y_j x_i^\top x_j \quad \text{s.t.} \quad \sum_i \alpha_i y_i = 0$$</div>
 
-La descente de coordonnées duale met à jour un $\alpha_i$ à la fois, résolvant analytiquement le sous-problème quadratique 1-d avec écrêtage à $[0, C]$.
+La descente de coordonnÃ©es duale met Ã  jour un $\alpha_i$ Ã  la fois, rÃ©solvant analytiquement le sous-problÃ¨me quadratique 1-d avec Ã©crÃªtage Ã  $[0, C]$.
 
-**Prédiction** — marge signée :
+**PrÃ©diction** â€” marge signÃ©e :
 
 <div>$$f(x) = w^\top x + b = \sum_{i} \alpha_i y_i x_i^\top x + b$$</div>
 
-Pour le **multiclasse** (OvR) : $K$ SVMs binaires sont entraînés, et la classe avec la marge la plus haute l'emporte.
+Pour le **multiclasse** (OvR) : $K$ SVMs binaires sont entraÃ®nÃ©s, et la classe avec la marge la plus haute l'emporte.
 
-**LinearSVR — Objectif primal** (perte $\varepsilon$-insensible) :
+**LinearSVR â€” Objectif primal** (perte $\varepsilon$-insensible) :
 
 <div>$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, |y_i - (w^\top x_i + b)| - \varepsilon\bigr)$$</div>
 
-Les résidus plus petits que $\varepsilon$ n'entraînent aucune pénalité — le modèle ignore les petites erreurs et se concentre sur les déviations plus grandes.
+Les rÃ©sidus plus petits que $\varepsilon$ n'entraÃ®nent aucune pÃ©nalitÃ© â€” le modÃ¨le ignore les petites erreurs et se concentre sur les dÃ©viations plus grandes.
 
 </div>

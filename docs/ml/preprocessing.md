@@ -18,21 +18,21 @@ X_scaled  = scaler.transform(X)       -> ndarray
 X_scaled  = scaler.fit_transform(X)   -> ndarray
 ```
 
-**Constructor parameters — StandardScaler**
+**Constructor parameters â€” StandardScaler**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `with_mean` | `bool` | `True` | Subtract the mean |
 | `with_std` | `bool` | `True` | Divide by standard deviation |
 
-**Constructor parameters — MinMaxScaler**
+**Constructor parameters â€” MinMaxScaler**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `feature_range_min` | `float` | `0.0` | Lower bound of output range |
 | `feature_range_max` | `float` | `1.0` | Upper bound of output range |
 
-**Constructor parameters — RobustScaler**
+**Constructor parameters â€” RobustScaler**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -40,7 +40,7 @@ X_scaled  = scaler.fit_transform(X)   -> ndarray
 | `with_scaling` | `bool` | `True` | Divide by IQR |
 | `quantile_range` | `tuple(float,float)` | `(25.0, 75.0)` | Quantile range for IQR |
 
-**Constructor parameters — Normalizer**
+**Constructor parameters â€” Normalizer**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -70,7 +70,7 @@ X_test  = np.random.randn(50, 4)  * [5, 2, 0.1, 100]
 scaler = sp.StandardScaler()
 X_tr = scaler.fit_transform(X_train)
 X_te = scaler.transform(X_test)
-print(f"Train mean˜0: {X_tr.mean(0).round(3)}")
+print(f"Train meanËœ0: {X_tr.mean(0).round(3)}")
 
 mm = sp.MinMaxScaler(feature_range_min=0.0, feature_range_max=1.0)
 print(f"MinMax range: {mm.fit_transform(X_train).min(0).round(3)}, {mm.fit_transform(X_train).max(0).round(3)}")
@@ -132,7 +132,7 @@ Scales each **sample** (row) to unit norm, applied independently of fit:
 
 <div>$$x'_i = \frac{x_i}{\|x_i\|_p}, \qquad p \in \{1, 2, \infty\}$$</div>
 
-No `fit` step is required — the transformation is stateless.
+No `fit` step is required â€” the transformation is stateless.
 
 **Inverse transform** is defined for StandardScaler, MinMaxScaler, RobustScaler, and MaxAbsScaler:
 
@@ -142,7 +142,7 @@ No `fit` step is required — the transformation is stateless.
 
 <div class="lang-fr">
 
-## Référence API
+## RÃ©fÃ©rence API
 
 **Signature**
 
@@ -158,43 +158,43 @@ X_scaled  = scaler.transform(X)       -> ndarray
 X_scaled  = scaler.fit_transform(X)   -> ndarray
 ```
 
-**Paramètres du constructeur — StandardScaler**
+**ParamÃ¨tres du constructeur â€” StandardScaler**
 
-| Paramètre | Type | Défaut | Description |
+| ParamÃ¨tre | Type | DÃ©faut | Description |
 |-----------|------|--------|-------------|
 | `with_mean` | `bool` | `True` | Soustraire la moyenne |
-| `with_std` | `bool` | `True` | Diviser par l'écart-type |
+| `with_std` | `bool` | `True` | Diviser par l'Ã©cart-type |
 
-**Paramètres du constructeur — MinMaxScaler**
+**ParamÃ¨tres du constructeur â€” MinMaxScaler**
 
-| Paramètre | Type | Défaut | Description |
+| ParamÃ¨tre | Type | DÃ©faut | Description |
 |-----------|------|--------|-------------|
-| `feature_range_min` | `float` | `0.0` | Borne inférieure de la plage de sortie |
-| `feature_range_max` | `float` | `1.0` | Borne supérieure de la plage de sortie |
+| `feature_range_min` | `float` | `0.0` | Borne infÃ©rieure de la plage de sortie |
+| `feature_range_max` | `float` | `1.0` | Borne supÃ©rieure de la plage de sortie |
 
-**Paramètres du constructeur — RobustScaler**
+**ParamÃ¨tres du constructeur â€” RobustScaler**
 
-| Paramètre | Type | Défaut | Description |
+| ParamÃ¨tre | Type | DÃ©faut | Description |
 |-----------|------|--------|-------------|
-| `with_centering` | `bool` | `True` | Soustraire la médiane |
+| `with_centering` | `bool` | `True` | Soustraire la mÃ©diane |
 | `with_scaling` | `bool` | `True` | Diviser par l'IQR |
 | `quantile_range` | `tuple(float,float)` | `(25.0, 75.0)` | Plage de quantiles pour l'IQR |
 
-**Paramètres du constructeur — Normalizer**
+**ParamÃ¨tres du constructeur â€” Normalizer**
 
-| Paramètre | Type | Défaut | Description |
+| ParamÃ¨tre | Type | DÃ©faut | Description |
 |-----------|------|--------|-------------|
-| `norm` | `str` | `"l2"` | Norme par échantillon : `"l1"`, `"l2"`, `"max"` |
+| `norm` | `str` | `"l2"` | Norme par Ã©chantillon : `"l1"`, `"l2"`, `"max"` |
 
 **Attributs**
 
 | Attribut | Type | Description |
 |----------|------|-------------|
 | `mean_` | `list[float]` | Moyenne par feature (StandardScaler) |
-| `scale_` | `list[float]` | Facteur d'échelle par feature |
+| `scale_` | `list[float]` | Facteur d'Ã©chelle par feature |
 | `min_` | `list[float]` | Minimum par feature (MinMaxScaler) |
 | `data_range_` | `list[float]` | Plage par feature (MinMaxScaler) |
-| `center_` | `list[float]` | Médiane par feature (RobustScaler) |
+| `center_` | `list[float]` | MÃ©diane par feature (RobustScaler) |
 | `max_abs_` | `list[float]` | Valeur absolue maximale par feature (MaxAbsScaler) |
 
 <details>
@@ -210,7 +210,7 @@ X_test  = np.random.randn(50, 4)  * [5, 2, 0.1, 100]
 scaler = sp.StandardScaler()
 X_tr = scaler.fit_transform(X_train)
 X_te = scaler.transform(X_test)
-print(f"Moyenne train˜0 : {X_tr.mean(0).round(3)}")
+print(f"Moyenne trainËœ0 : {X_tr.mean(0).round(3)}")
 
 mm = sp.MinMaxScaler(feature_range_min=0.0, feature_range_max=1.0)
 print(f"Plage MinMax : {mm.fit_transform(X_train).min(0).round(3)}, {mm.fit_transform(X_train).max(0).round(3)}")
@@ -222,17 +222,17 @@ print(f"Plage MinMax : {mm.fit_transform(X_train).min(0).round(3)}, {mm.fit_tran
 
 ## Fonctionnement algorithmique
 
-Chaque scaler applique une **transformation linéaire colonne par colonne** ajustée sur l'ensemble d'entraînement et appliquée de manière identique à toute nouvelle donnée.
+Chaque scaler applique une **transformation linÃ©aire colonne par colonne** ajustÃ©e sur l'ensemble d'entraÃ®nement et appliquÃ©e de maniÃ¨re identique Ã  toute nouvelle donnÃ©e.
 
 ---
 
 ### StandardScaler
 
-Standardise les features à moyenne nulle et variance unitaire :
+Standardise les features Ã  moyenne nulle et variance unitaire :
 
 <div>$$x'_j = \frac{x_j - \mu_j}{\sigma_j}$$</div>
 
-où $\mu_j = \frac{1}{n}\sum_i x_{ij}$ et $\sigma_j = \sqrt{\frac{1}{n}\sum_i (x_{ij}-\mu_j)^2}$.
+oÃ¹ $\mu_j = \frac{1}{n}\sum_i x_{ij}$ et $\sigma_j = \sqrt{\frac{1}{n}\sum_i (x_{ij}-\mu_j)^2}$.
 
 ---
 
@@ -248,33 +248,33 @@ Sensible aux valeurs aberrantes car il utilise $\min$ et $\max$.
 
 ### RobustScaler
 
-Utilise la **médiane** et l'**écart interquartile** (IQR), le rendant robuste aux valeurs aberrantes :
+Utilise la **mÃ©diane** et l'**Ã©cart interquartile** (IQR), le rendant robuste aux valeurs aberrantes :
 
 <div>$$x'_j = \frac{x_j - Q_{50}(j)}{Q_{75}(j) - Q_{25}(j)}$$</div>
 
-où $Q_p(j)$ est le $p$-ième percentile de la feature $j$.
+oÃ¹ $Q_p(j)$ est le $p$-iÃ¨me percentile de la feature $j$.
 
 ---
 
 ### MaxAbsScaler
 
-Met à l'échelle chaque feature par sa valeur absolue maximale, préservant la sparsité et l'origine :
+Met Ã  l'Ã©chelle chaque feature par sa valeur absolue maximale, prÃ©servant la sparsitÃ© et l'origine :
 
 <div>$$x'_j = \frac{x_j}{\max_i |x_{ij}|}$$</div>
 
-Le résultat est dans $[-1, 1]$.
+Le rÃ©sultat est dans $[-1, 1]$.
 
 ---
 
 ### Normalizer
 
-Met à l'échelle chaque **échantillon** (ligne) à une norme unitaire, appliqué indépendamment du fit :
+Met Ã  l'Ã©chelle chaque **Ã©chantillon** (ligne) Ã  une norme unitaire, appliquÃ© indÃ©pendamment du fit :
 
 <div>$$x'_i = \frac{x_i}{\|x_i\|_p}, \qquad p \in \{1, 2, \infty\}$$</div>
 
-Aucune étape `fit` n'est requise — la transformation est sans état.
+Aucune Ã©tape `fit` n'est requise â€” la transformation est sans Ã©tat.
 
-**Transformation inverse** définie pour StandardScaler, MinMaxScaler, RobustScaler et MaxAbsScaler :
+**Transformation inverse** dÃ©finie pour StandardScaler, MinMaxScaler, RobustScaler et MaxAbsScaler :
 
 <div>$$x_j = x'_j \cdot \text{scale}_j + \text{center}_j$$</div>
 

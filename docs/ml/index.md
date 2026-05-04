@@ -94,13 +94,16 @@ proba = model.predict_proba(X_test)
 </div>
 
 <div class="ml-cat">
-  <div class="ml-cat-h"><strong>Preprocessing</strong><span class="ml-badge">5</span></div>
+  <div class="ml-cat-h"><strong>Preprocessing</strong><span class="ml-badge">12</span></div>
   <ul>
     <li><a href="preprocessing.html">StandardScaler</a></li>
     <li><a href="preprocessing.html">MinMaxScaler</a></li>
     <li><a href="preprocessing.html">RobustScaler</a></li>
     <li><a href="preprocessing.html">MaxAbsScaler</a></li>
     <li><a href="preprocessing.html">Normalizer</a></li>
+    <li><a href="preprocessing-advanced.html">SimpleImputer / PolynomialFeatures</a></li>
+    <li><a href="preprocessing-advanced.html">KBinsDiscretizer / PowerTransformer</a></li>
+    <li><a href="preprocessing-advanced.html">OneHotEncoder / OrdinalEncoder</a></li>
   </ul>
 </div>
 
@@ -113,13 +116,15 @@ proba = model.predict_proba(X_test)
 </div>
 
 <div class="ml-cat">
-  <div class="ml-cat-h"><strong>Model selection</strong><span class="ml-badge">5</span></div>
+  <div class="ml-cat-h"><strong>Model selection</strong><span class="ml-badge">8</span></div>
   <ul>
-    <li><a href="train-test-split.html">train_test_split</a></li>
+    <li><a href="train-test-split.html">train_test_split / StratifiedKFold</a></li>
+    <li><a href="cv-splitters.html">CV Splitters (kfold / stratified / group)</a></li>
     <li><a href="grid-search.html">GridSearchCV</a></li>
     <li><a href="grid-search.html">RandomizedSearchCV</a></li>
     <li><a href="grid-search.html">HalvingGridSearchCV</a></li>
     <li><a href="grid-search.html">HalvingRandomSearchCV</a></li>
+    <li><a href="permutation-importance.html">Permutation Importance</a></li>
   </ul>
 </div>
 
@@ -354,13 +359,16 @@ print(f"Précision : {model.score(X_test, y_test):.4f}")
 </div>
 
 <div class="ml-cat">
-  <div class="ml-cat-h"><strong>Prétraitement</strong><span class="ml-badge">5</span></div>
+  <div class="ml-cat-h"><strong>Prétraitement</strong><span class="ml-badge">12</span></div>
   <ul>
     <li><a href="preprocessing.html">StandardScaler</a></li>
     <li><a href="preprocessing.html">MinMaxScaler</a></li>
     <li><a href="preprocessing.html">RobustScaler</a></li>
     <li><a href="preprocessing.html">MaxAbsScaler</a></li>
     <li><a href="preprocessing.html">Normalizer</a></li>
+    <li><a href="preprocessing-advanced.html">SimpleImputer / PolynomialFeatures</a></li>
+    <li><a href="preprocessing-advanced.html">KBinsDiscretizer / PowerTransformer</a></li>
+    <li><a href="preprocessing-advanced.html">OneHotEncoder / OrdinalEncoder</a></li>
   </ul>
 </div>
 
@@ -373,13 +381,15 @@ print(f"Précision : {model.score(X_test, y_test):.4f}")
 </div>
 
 <div class="ml-cat">
-  <div class="ml-cat-h"><strong>Sélection de modèle</strong><span class="ml-badge">5</span></div>
+  <div class="ml-cat-h"><strong>Sélection de modèle</strong><span class="ml-badge">8</span></div>
   <ul>
-    <li><a href="train-test-split.html">train_test_split</a></li>
+    <li><a href="train-test-split.html">train_test_split / StratifiedKFold</a></li>
+    <li><a href="cv-splitters.html">Découpeurs CV (kfold / stratified / group)</a></li>
     <li><a href="grid-search.html">GridSearchCV</a></li>
     <li><a href="grid-search.html">RandomizedSearchCV</a></li>
     <li><a href="grid-search.html">HalvingGridSearchCV</a></li>
     <li><a href="grid-search.html">HalvingRandomSearchCV</a></li>
+    <li><a href="permutation-importance.html">Importance par permutation</a></li>
   </ul>
 </div>
 

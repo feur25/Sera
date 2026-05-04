@@ -19,19 +19,19 @@ model.get_params()             -> dict
 model.set_params(var_smoothing=...) | set_params(alpha=...)
 ```
 
-**Constructor parameters — GaussianNB**
+**Constructor parameters â€” GaussianNB**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `var_smoothing` | `float` | `1e-9` | Fraction of the largest variance added to all variances for stability |
 
-**Constructor parameters — MultinomialNB**
+**Constructor parameters â€” MultinomialNB**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `alpha` | `float` | `1.0` | Laplace/Lidstone smoothing parameter |
 
-**Constructor parameters — BernoulliNB**
+**Constructor parameters â€” BernoulliNB**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -86,7 +86,7 @@ The three models differ only in how $P(x_j \mid y=k)$ is modelled.
 
 ---
 
-### GaussianNB — continuous features
+### GaussianNB â€” continuous features
 
 Assumes each feature is Gaussian within each class. Parameters are estimated from training data:
 
@@ -100,7 +100,7 @@ Likelihood:
 
 ---
 
-### MultinomialNB — count features
+### MultinomialNB â€” count features
 
 Designed for count data (e.g. word frequencies). Feature conditional is a **multinomial** distribution:
 
@@ -110,7 +110,7 @@ where $N_{kj} = \sum_{i:y_i=k} x_{ij}$ is the total count of feature $j$ in clas
 
 ---
 
-### BernoulliNB — binary features
+### BernoulliNB â€” binary features
 
 Designed for binary/boolean feature vectors. For each feature $j$:
 
@@ -128,7 +128,7 @@ All three variants compute the final log-probability in log-space to avoid under
 
 <div class="lang-fr">
 
-## Référence API
+## RÃ©fÃ©rence API
 
 **Signature**
 
@@ -145,30 +145,30 @@ model.get_params()             -> dict
 model.set_params(var_smoothing=...) | set_params(alpha=...)
 ```
 
-**Paramètres du constructeur — GaussianNB**
+**ParamÃ¨tres du constructeur â€” GaussianNB**
 
-| Paramètre | Type | Défaut | Description |
+| ParamÃ¨tre | Type | DÃ©faut | Description |
 |-----------|------|--------|-------------|
-| `var_smoothing` | `float` | `1e-9` | Fraction de la plus grande variance ajoutée à toutes les variances pour la stabilité |
+| `var_smoothing` | `float` | `1e-9` | Fraction de la plus grande variance ajoutÃ©e Ã  toutes les variances pour la stabilitÃ© |
 
-**Paramètres du constructeur — MultinomialNB**
+**ParamÃ¨tres du constructeur â€” MultinomialNB**
 
-| Paramètre | Type | Défaut | Description |
+| ParamÃ¨tre | Type | DÃ©faut | Description |
 |-----------|------|--------|-------------|
-| `alpha` | `float` | `1.0` | Paramètre de lissage Laplace/Lidstone |
+| `alpha` | `float` | `1.0` | ParamÃ¨tre de lissage Laplace/Lidstone |
 
-**Paramètres du constructeur — BernoulliNB**
+**ParamÃ¨tres du constructeur â€” BernoulliNB**
 
-| Paramètre | Type | Défaut | Description |
+| ParamÃ¨tre | Type | DÃ©faut | Description |
 |-----------|------|--------|-------------|
-| `alpha` | `float` | `1.0` | Paramètre de lissage Laplace/Lidstone |
+| `alpha` | `float` | `1.0` | ParamÃ¨tre de lissage Laplace/Lidstone |
 
 **Attributs (toutes variantes)**
 
 | Attribut | Type | Description |
 |----------|------|-------------|
 | `classes_` | `list[int]` | Labels de classes uniques |
-| `class_prior_` | `list[float]` | Probabilité a priori $P(y=k)$ par classe |
+| `class_prior_` | `list[float]` | ProbabilitÃ© a priori $P(y=k)$ par classe |
 | `theta_` | `list[list[float]]` | Moyenne par classe et feature (GaussianNB) |
 | `var_` | `list[list[float]]` | Variance par classe et feature (GaussianNB) |
 
@@ -184,17 +184,17 @@ y = (X[:, 0] + X[:, 1] > 0).astype(int)
 
 gnb = sp.GaussianNB()
 gnb.fit(X, y)
-print(f"Précision GaussianNB : {gnb.score(X, y):.4f}")
+print(f"PrÃ©cision GaussianNB : {gnb.score(X, y):.4f}")
 
 X_counts = np.random.randint(0, 10, (500, 6)).astype(float)
 mnb = sp.MultinomialNB(alpha=1.0)
 mnb.fit(X_counts, y)
-print(f"Précision MultinomialNB : {mnb.score(X_counts, y):.4f}")
+print(f"PrÃ©cision MultinomialNB : {mnb.score(X_counts, y):.4f}")
 
 X_bin = (X > 0).astype(float)
 bnb = sp.BernoulliNB(alpha=1.0)
 bnb.fit(X_bin, y)
-print(f"Précision BernoulliNB : {bnb.score(X_bin, y):.4f}")
+print(f"PrÃ©cision BernoulliNB : {bnb.score(X_bin, y):.4f}")
 ```
 
 </details>
@@ -203,21 +203,21 @@ print(f"Précision BernoulliNB : {bnb.score(X_bin, y):.4f}")
 
 ## Fonctionnement algorithmique
 
-Les trois variantes appliquent le **théorème de Bayes** avec indépendance conditionnelle aux classes :
+Les trois variantes appliquent le **thÃ©orÃ¨me de Bayes** avec indÃ©pendance conditionnelle aux classes :
 
 <div>$$\hat{y} = \underset{k}{\arg\max}\; P(y=k) \prod_{j=1}^p P(x_j \mid y=k)$$</div>
 
-Les trois modèles diffèrent uniquement dans la façon dont $P(x_j \mid y=k)$ est modélisé.
+Les trois modÃ¨les diffÃ¨rent uniquement dans la faÃ§on dont $P(x_j \mid y=k)$ est modÃ©lisÃ©.
 
 ---
 
-### GaussianNB — features continues
+### GaussianNB â€” features continues
 
-Suppose que chaque feature suit une loi gaussienne au sein de chaque classe. Les paramètres sont estimés à partir des données d'entraînement :
+Suppose que chaque feature suit une loi gaussienne au sein de chaque classe. Les paramÃ¨tres sont estimÃ©s Ã  partir des donnÃ©es d'entraÃ®nement :
 
 <div>$$\mu_{kj} = \frac{1}{n_k}\sum_{i: y_i=k} x_{ij}, \qquad \sigma^2_{kj} = \frac{1}{n_k}\sum_{i: y_i=k}(x_{ij} - \mu_{kj})^2 + \varepsilon_{\text{smooth}}$$</div>
 
-où $\varepsilon_{\text{smooth}} = \texttt{var\_smoothing} \cdot \max_j \hat{\sigma}^2_j$ évite les variances nulles.
+oÃ¹ $\varepsilon_{\text{smooth}} = \texttt{var\_smoothing} \cdot \max_j \hat{\sigma}^2_j$ Ã©vite les variances nulles.
 
 Vraisemblance :
 
@@ -225,19 +225,19 @@ Vraisemblance :
 
 ---
 
-### MultinomialNB — features de comptage
+### MultinomialNB â€” features de comptage
 
-Conçu pour les données de comptage (par ex. fréquences de mots). La conditionnelle de feature est une distribution **multinomiale** :
+ConÃ§u pour les donnÃ©es de comptage (par ex. frÃ©quences de mots). La conditionnelle de feature est une distribution **multinomiale** :
 
 <div>$$P(x_j \mid y=k) = \frac{N_{kj} + \alpha}{N_k + \alpha p}$$</div>
 
-où $N_{kj} = \sum_{i:y_i=k} x_{ij}$ est le comptage total de la feature $j$ dans la classe $k$, $N_k = \sum_j N_{kj}$, et $\alpha$ est le terme de lissage de Laplace.
+oÃ¹ $N_{kj} = \sum_{i:y_i=k} x_{ij}$ est le comptage total de la feature $j$ dans la classe $k$, $N_k = \sum_j N_{kj}$, et $\alpha$ est le terme de lissage de Laplace.
 
 ---
 
-### BernoulliNB — features binaires
+### BernoulliNB â€” features binaires
 
-Conçu pour les vecteurs de features binaires/booléens. Pour chaque feature $j$ :
+ConÃ§u pour les vecteurs de features binaires/boolÃ©ens. Pour chaque feature $j$ :
 
 <div>$$P(x_j = 1 \mid y=k) = \frac{N_{kj} + \alpha}{n_k + 2\alpha}$$</div>
 
@@ -245,7 +245,7 @@ et la vraisemblance prend explicitement en compte les features absentes :
 
 <div>$$P(x_j \mid y=k) = P(x_j=1 \mid y=k)^{x_j}\cdot\bigl(1 - P(x_j=1 \mid y=k)\bigr)^{1-x_j}$$</div>
 
-Les trois variantes calculent la log-probabilité finale dans l'espace logarithmique pour éviter le sous-dépassement :
+Les trois variantes calculent la log-probabilitÃ© finale dans l'espace logarithmique pour Ã©viter le sous-dÃ©passement :
 
 <div>$$\log P(y=k \mid x) \propto \log P(y=k) + \sum_{j=1}^p \log P(x_j \mid y=k)$$</div>
 

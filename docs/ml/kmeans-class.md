@@ -67,7 +67,7 @@ Assign new samples to the nearest centroid (does not refit).
 
 ### `transform(x) -> list[list[float]]`
 
-Return Euclidean distance from each sample to each centroid (shape: n_samples × k).
+Return Euclidean distance from each sample to each centroid (shape: n_samples Ã— k).
 
 ---
 
@@ -76,7 +76,7 @@ Return Euclidean distance from each sample to each centroid (shape: n_samples × 
 | Attribute | Type | Description |
 |-----------|------|-------------|
 | `labels_` | `list[int]` | Cluster index per point (0-based) |
-| `centroids_` | `list[list[float]]` | Final centroid coordinates (k × dims) |
+| `centroids_` | `list[list[float]]` | Final centroid coordinates (k Ã— dims) |
 | `inertia_` | `float` | Sum of squared distances to assigned centroids |
 | `n_iter_` | `int` | Number of iterations run |
 | `n_clusters` | `int` | Effective number of clusters found |
@@ -193,7 +193,7 @@ for i, row in enumerate(distances):
 
 ## Algorithmic Functioning
 
-K-Means minimises the total inertia — the sum of squared distances from each point to
+K-Means minimises the total inertia â€” the sum of squared distances from each point to
 its assigned centroid:
 
 <div>$$J = \sum_{i=1}^{n} \|x_i - \mu_{c(x_i)}\|^2$$</div>
@@ -201,7 +201,7 @@ its assigned centroid:
 **K-Means++ initialisation**
 
 The first centroid $\mu_1$ is chosen uniformly at random. Each subsequent centroid
-$\mu_j$ is sampled with probability proportional to $D(x)^2$ — the squared distance to
+$\mu_j$ is sampled with probability proportional to $D(x)^2$ â€” the squared distance to
 the nearest already-placed centroid. This reduces the expected inertia at convergence
 to $O(\log k)$ of optimal.
 
@@ -221,63 +221,63 @@ sample to each centroid, useful for soft-assignment and feature engineering.
 
 ## Description
 
-Classe K-Means haute performance pour données N-dimensionnelles, compatible avec l'API scikit-learn. Passe automatiquement en mode mini-batch pour `n > 100 000`.
+Classe K-Means haute performance pour donnÃ©es N-dimensionnelles, compatible avec l'API scikit-learn. Passe automatiquement en mode mini-batch pour `n > 100 000`.
 
 ## Constructeur
 
-| Paramètre | Type | Défaut | Description |
+| ParamÃ¨tre | Type | DÃ©faut | Description |
 |-----------|------|--------|-------------|
 | `k` | `int` | `3` | Nombre de clusters |
-| `max_iter` | `int` | `300` | Nombre maximum d'itérations |
-| `tol` | `float` | `1e-4` | Tolérance de convergence |
+| `max_iter` | `int` | `300` | Nombre maximum d'itÃ©rations |
+| `tol` | `float` | `1e-4` | TolÃ©rance de convergence |
 | `mini_batch` | `bool` | `False` | Forcer le mode mini-batch |
 | `batch_size` | `int` | `1000` | Taille du mini-batch |
 
-## Méthodes
+## MÃ©thodes
 
-| Méthode | Description |
+| MÃ©thode | Description |
 |---------|-------------|
-| `fit(x)` | Ajuste le modèle |
+| `fit(x)` | Ajuste le modÃ¨le |
 | `fit_predict(x)` | Ajuste et retourne les labels |
-| `predict(x)` | Prédit les clusters |
-| `transform(x)` | Distances aux centroïdes |
+| `predict(x)` | PrÃ©dit les clusters |
+| `transform(x)` | Distances aux centroÃ¯des |
 
 ## Attributs
 
 | Attribut | Description |
 |---------|-------------|
 | `labels_` | Labels par point |
-| `centroids_` | Coordonnées des centroïdes |
+| `centroids_` | CoordonnÃ©es des centroÃ¯des |
 | `inertia_` | Inertie finale |
-| `n_iter_` | Nombre d'itérations |
+| `n_iter_` | Nombre d'itÃ©rations |
 
 ---
 
 ## Fonctionnement algorithmique
 
-K-Means minimise l'inertie totale — la somme des carrés des distances de chaque point
-à son centroïde assigné :
+K-Means minimise l'inertie totale â€” la somme des carrÃ©s des distances de chaque point
+Ã  son centroÃ¯de assignÃ© :
 
 <div>$$J = \sum_{i=1}^{n} \|x_i - \mu_{c(x_i)}\|^2$$</div>
 
 **Initialisation K-Means++**
 
-Le premier centroïde $\mu_1$ est choisi de façon uniforme aléatoire. Chaque centroïde
-suivant $\mu_j$ est échantillonné avec une probabilité proportionnelle à $D(x)^2$ — la
-distance au carré au centroïde le plus proche déjà placé. Cela réduit l'inertie attendue
-à la convergence à $O(\log k)$ de l'optimal.
+Le premier centroÃ¯de $\mu_1$ est choisi de faÃ§on uniforme alÃ©atoire. Chaque centroÃ¯de
+suivant $\mu_j$ est Ã©chantillonnÃ© avec une probabilitÃ© proportionnelle Ã  $D(x)^2$ â€” la
+distance au carrÃ© au centroÃ¯de le plus proche dÃ©jÃ  placÃ©. Cela rÃ©duit l'inertie attendue
+Ã  la convergence Ã  $O(\log k)$ de l'optimal.
 
-**Itérations EM**
+**ItÃ©rations EM**
 
 1. **Affectation :** $c(x_i) = \underset{k}{\arg\min}\ \|x_i - \mu_k\|^2$
-2. **Mise à jour :** $\mu_k = \dfrac{1}{|C_k|}\displaystyle\sum_{x_i \in C_k} x_i$
+2. **Mise Ã  jour :** $\mu_k = \dfrac{1}{|C_k|}\displaystyle\sum_{x_i \in C_k} x_i$
 
-Les itérations tournent jusqu'à ce que le delta d'inertie passe sous `tol` ou que
+Les itÃ©rations tournent jusqu'Ã  ce que le delta d'inertie passe sous `tol` ou que
 `max_iter` soit atteint.
 
 **`transform(x)`** retourne la matrice $n \times k$ des distances euclidiennes de chaque
-échantillon à chaque centroïde, utile pour l'affectation douce et l'ingénierie de
-caractéristiques.
+Ã©chantillon Ã  chaque centroÃ¯de, utile pour l'affectation douce et l'ingÃ©nierie de
+caractÃ©ristiques.
 
 </div>
 

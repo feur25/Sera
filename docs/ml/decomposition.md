@@ -18,14 +18,14 @@ model.get_params()                     -> dict
 model.set_params(n_components=...)
 ```
 
-**Constructor parameters — PCA**
+**Constructor parameters â€” PCA**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `n_components` | `int` | `2` | Number of principal components to keep |
 | `whiten` | `bool` | `False` | Scale components to unit variance |
 
-**Constructor parameters — TruncatedSVD**
+**Constructor parameters â€” TruncatedSVD**
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
@@ -70,7 +70,7 @@ Both algorithms find low-dimensional **linear projections** that maximise preser
 
 ---
 
-### PCA — Principal Component Analysis
+### PCA â€” Principal Component Analysis
 
 **1. Centre** the data matrix:
 
@@ -120,7 +120,7 @@ where $q = \lceil\texttt{n\_iter}/2\rceil$ power steps amplify the signal of the
 
 <div class="lang-fr">
 
-## Référence API
+## RÃ©fÃ©rence API
 
 **Signature**
 
@@ -136,27 +136,27 @@ model.get_params()                     -> dict
 model.set_params(n_components=...)
 ```
 
-**Paramètres du constructeur — PCA**
+**ParamÃ¨tres du constructeur â€” PCA**
 
-| Paramètre | Type | Défaut | Description |
+| ParamÃ¨tre | Type | DÃ©faut | Description |
 |-----------|------|--------|-------------|
-| `n_components` | `int` | `2` | Nombre de composantes principales à conserver |
-| `whiten` | `bool` | `False` | Mettre les composantes à variance unitaire |
+| `n_components` | `int` | `2` | Nombre de composantes principales Ã  conserver |
+| `whiten` | `bool` | `False` | Mettre les composantes Ã  variance unitaire |
 
-**Paramètres du constructeur — TruncatedSVD**
+**ParamÃ¨tres du constructeur â€” TruncatedSVD**
 
-| Paramètre | Type | Défaut | Description |
+| ParamÃ¨tre | Type | DÃ©faut | Description |
 |-----------|------|--------|-------------|
-| `n_components` | `int` | `2` | Nombre de vecteurs singuliers à calculer |
+| `n_components` | `int` | `2` | Nombre de vecteurs singuliers Ã  calculer |
 
 **Attributs**
 
 | Attribut | Type | Description |
 |----------|------|-------------|
 | `components_` | `ndarray (k, p)` | Axes principaux dans l'espace des features |
-| `explained_variance_` | `list[float]` | Variance expliquée par composante |
+| `explained_variance_` | `list[float]` | Variance expliquÃ©e par composante |
 | `explained_variance_ratio_` | `list[float]` | Fraction de la variance totale par composante |
-| `singular_values_` | `list[float]` | Valeurs singulières de la matrice de données centrée |
+| `singular_values_` | `list[float]` | Valeurs singuliÃ¨res de la matrice de donnÃ©es centrÃ©e |
 | `mean_` | `list[float]` | Moyenne par feature pour le centrage (PCA seulement) |
 
 <details>
@@ -170,8 +170,8 @@ X = np.random.randn(400, 20)
 
 pca = sp.PCA(n_components=5)
 T = pca.fit_transform(X)
-print(f"Ratio de variance expliquée : {[f'{v:.3f}' for v in pca.explained_variance_ratio_]}")
-print(f"Forme réduite : {T.shape}")   # (400, 5)
+print(f"Ratio de variance expliquÃ©e : {[f'{v:.3f}' for v in pca.explained_variance_ratio_]}")
+print(f"Forme rÃ©duite : {T.shape}")   # (400, 5)
 
 tsvd = sp.TruncatedSVD(n_components=5)
 T2 = tsvd.fit_transform(X)
@@ -184,23 +184,23 @@ print(f"Forme TruncatedSVD : {T2.shape}")
 
 ## Fonctionnement algorithmique
 
-Les deux algorithmes trouvent des **projections linéaires** de faible dimension qui maximisent la variance préservée.
+Les deux algorithmes trouvent des **projections linÃ©aires** de faible dimension qui maximisent la variance prÃ©servÃ©e.
 
 ---
 
-### PCA — Analyse en Composantes Principales
+### PCA â€” Analyse en Composantes Principales
 
-**1. Centrer** la matrice de données :
+**1. Centrer** la matrice de donnÃ©es :
 
 <div>$$\tilde{X} = X - \mathbf{1}\mu^\top, \qquad \mu_j = \frac{1}{n}\sum_i x_{ij}$$</div>
 
-**2. Calculer** la matrice de covariance et sa décomposition propre :
+**2. Calculer** la matrice de covariance et sa dÃ©composition propre :
 
 <div>$$C = \frac{1}{n}\tilde{X}^\top\tilde{X} = V \Lambda V^\top$$</div>
 
-où $V \in \mathbb{R}^{p \times p}$ a les vecteurs propres en colonnes et $\Lambda = \text{diag}(\lambda_1, \ldots, \lambda_p)$ avec $\lambda_1 \geq \cdots \geq \lambda_p \geq 0$.
+oÃ¹ $V \in \mathbb{R}^{p \times p}$ a les vecteurs propres en colonnes et $\Lambda = \text{diag}(\lambda_1, \ldots, \lambda_p)$ avec $\lambda_1 \geq \cdots \geq \lambda_p \geq 0$.
 
-En pratique, cela est calculé via la **SVD économique** de $\tilde{X}$ :
+En pratique, cela est calculÃ© via la **SVD Ã©conomique** de $\tilde{X}$ :
 
 <div>$$\tilde{X} = U \Sigma V^\top \implies \lambda_i = \frac{\sigma_i^2}{n}$$</div>
 
@@ -208,13 +208,13 @@ En pratique, cela est calculé via la **SVD économique** de $\tilde{X}$ :
 
 <div>$$T = \tilde{X} V_k, \qquad V_k = V[:, :k]$$</div>
 
-**Blanchiment** (optionnel) : $T_{\text{blanc}} = T \cdot \text{diag}(\lambda_1^{-1/2}, \ldots, \lambda_k^{-1/2})$, donnant à chaque composante une variance unitaire.
+**Blanchiment** (optionnel) : $T_{\text{blanc}} = T \cdot \text{diag}(\lambda_1^{-1/2}, \ldots, \lambda_k^{-1/2})$, donnant Ã  chaque composante une variance unitaire.
 
-**Ratio de variance expliquée :**
+**Ratio de variance expliquÃ©e :**
 
 <div>$$\text{EVR}_i = \frac{\lambda_i}{\sum_j \lambda_j}$$</div>
 
-**Transformation inverse** (reconstruction approchée) :
+**Transformation inverse** (reconstruction approchÃ©e) :
 
 <div>$$\hat{X} = T V_k^\top + \mu^\top$$</div>
 
@@ -222,15 +222,15 @@ En pratique, cela est calculé via la **SVD économique** de $\tilde{X}$ :
 
 ### TruncatedSVD
 
-Calcule directement une **SVD de rang $k$** sans centrage, la rendant adaptée aux matrices creuses (ex. TF-IDF) :
+Calcule directement une **SVD de rang $k$** sans centrage, la rendant adaptÃ©e aux matrices creuses (ex. TF-IDF) :
 
 <div>$$X \approx U_k \Sigma_k V_k^\top$$</div>
 
-Utilise un algorithme d'**itération de puissance randomisée** :
+Utilise un algorithme d'**itÃ©ration de puissance randomisÃ©e** :
 
 <div>$$Y = (XX^\top)^q X \Omega, \quad \Omega \in \mathbb{R}^{p \times (k + \text{sursampling})}$$</div>
 
-où $q = \lceil\texttt{n\_iter}/2\rceil$ étapes de puissance amplifient le signal des vecteurs singuliers principaux. La factorisation QR de $Y$ fournit une base orthonormale, et la SVD finale est calculée sur le système réduit.
+oÃ¹ $q = \lceil\texttt{n\_iter}/2\rceil$ Ã©tapes de puissance amplifient le signal des vecteurs singuliers principaux. La factorisation QR de $Y$ fournit une base orthonormale, et la SVD finale est calculÃ©e sur le systÃ¨me rÃ©duit.
 
 **Projection** : $T = X V_k$, avec inverse $\hat{X} = T V_k^\top$.
 
