@@ -14,18 +14,26 @@ macro_rules! impl_doc {
     };
 }
 
-fn flat_to_np2d(py: Python<'_>, flat: Vec<f64>, n: usize, cols: usize) -> PyResult<PyObject> {
+pub(crate) fn flat_to_np2d(py: Python<'_>, flat: Vec<f64>, n: usize, cols: usize) -> PyResult<PyObject> {
     if n == 0 || cols == 0 { return Ok(numpy::PyArray2::<f64>::zeros_bound(py, [0, 0], false).into_py(py)); }
     let arr = flat.into_pyarray_bound(py);
     Ok(arr.reshape([n, cols])?.into_py(py))
 }
 
-fn vv_to_np2d(py: Python<'_>, data: Vec<Vec<f64>>) -> PyResult<PyObject> {
+pub(crate) fn vv_to_np2d(py: Python<'_>, data: Vec<Vec<f64>>) -> PyResult<PyObject> {
     let n = data.len();
     if n == 0 { return Ok(numpy::PyArray2::<f64>::zeros_bound(py, [0, 0], false).into_py(py)); }
     let cols = data[0].len();
     let flat: Vec<f64> = data.into_iter().flat_map(|r| r).collect();
     flat_to_np2d(py, flat, n, cols)
+}
+
+pub(crate) fn vec_f64_to_np(py: Python<'_>, v: Vec<f64>) -> PyObject {
+    v.into_pyarray_bound(py).into_py(py)
+}
+
+pub(crate) fn vec_i32_to_np(py: Python<'_>, v: Vec<i32>) -> PyObject {
+    v.into_pyarray_bound(py).into_py(py)
 }
 
 pub(crate) fn extract_flat(x: &PyAny) -> PyResult<(Vec<f64>, usize, usize)> {
@@ -99,9 +107,9 @@ macro_rules! impl_reg_fit_predict_score {
                 _h.complete(&crate::ml::cache::PartialState::default());
                 Ok(())
             }
-            fn predict(&self, x: &PyAny) -> PyResult<Vec<f64>> {
+            fn predict(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
                 let (xf, n, p) = extract_flat(x)?;
-                Ok(self.inner.predict(&xf, n, p))
+                Ok(vec_f64_to_np(py, self.inner.predict(&xf, n, p)))
             }
             fn score(&self, x: &PyAny, y: &PyAny) -> PyResult<f64> {
                 let (xf, n, p) = extract_flat(x)?;
@@ -127,9 +135,9 @@ macro_rules! impl_cls_fit_predict_score {
                 _h.complete(&crate::ml::cache::PartialState::default());
                 Ok(())
             }
-            fn predict(&self, x: &PyAny) -> PyResult<Vec<i32>> {
+            fn predict(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
                 let (xf, n, p) = extract_flat(x)?;
-                Ok(self.inner.predict(&xf, n, p))
+                Ok(vec_i32_to_np(py, self.inner.predict(&xf, n, p)))
             }
             fn score(&self, x: &PyAny, y: &PyAny) -> PyResult<f64> {
                 let (xf, n, p) = extract_flat(x)?;
@@ -193,9 +201,9 @@ impl PyLasso {
         self.inner.fit_resumable(&xf, n, p, &extract_targets(y)?, checkpoint_id);
         Ok(())
     }
-    fn predict(&self, x: &PyAny) -> PyResult<Vec<f64>> {
+    fn predict(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
         let (xf, n, p) = extract_flat(x)?;
-        Ok(self.inner.predict(&xf, n, p))
+        Ok(vec_f64_to_np(py, self.inner.predict(&xf, n, p)))
     }
     fn score(&self, x: &PyAny, y: &PyAny) -> PyResult<f64> {
         let (xf, n, p) = extract_flat(x)?;
@@ -311,9 +319,9 @@ impl PyLogisticRegression {
         _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
-    fn predict(&self, x: &PyAny) -> PyResult<Vec<i32>> {
+    fn predict(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
         let (xf, n, p) = extract_flat(x)?;
-        Ok(self.inner.predict(&xf, n, p))
+        Ok(vec_i32_to_np(py, self.inner.predict(&xf, n, p)))
     }
     fn predict_proba(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
         let (xf, n, p) = extract_flat(x)?;
@@ -369,9 +377,9 @@ impl PySGDClassifier {
         _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
-    fn predict(&self, x: &PyAny) -> PyResult<Vec<i32>> {
+    fn predict(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
         let (xf, n, p) = extract_flat(x)?;
-        Ok(self.inner.predict(&xf, n, p))
+        Ok(vec_i32_to_np(py, self.inner.predict(&xf, n, p)))
     }
     fn score(&self, x: &PyAny, y: &PyAny) -> PyResult<f64> {
         let (xf, n, p) = extract_flat(x)?;
@@ -379,9 +387,9 @@ impl PySGDClassifier {
         let preds = self.inner.predict(&xf, n, p);
         Ok(crate::ml::metrics::classification::accuracy_score(&yl, &preds))
     }
-    fn decision_function(&self, x: &PyAny) -> PyResult<Vec<f64>> {
+    fn decision_function(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
         let (xf, n, p) = extract_flat(x)?;
-        Ok(self.inner.decision_function(&xf, n, p))
+        Ok(vec_f64_to_np(py, self.inner.decision_function(&xf, n, p)))
     }
     fn get_params(&self, _py: Python<'_>) -> PyResult<std::collections::HashMap<String, PyObject>> {
         let mut m = std::collections::HashMap::new();
@@ -453,9 +461,9 @@ impl PySGDRegressor {
         _h.complete(&crate::ml::cache::PartialState::default());
         Ok(())
     }
-    fn predict(&self, x: &PyAny) -> PyResult<Vec<f64>> {
+    fn predict(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
         let (xf, n, p) = extract_flat(x)?;
-        Ok(self.inner.predict(&xf, n, p))
+        Ok(vec_f64_to_np(py, self.inner.predict(&xf, n, p)))
     }
     fn score(&self, x: &PyAny, y: &PyAny) -> PyResult<f64> {
         let (xf, n, p) = extract_flat(x)?;
@@ -965,9 +973,9 @@ impl PyLinearSVC {
     fn py_new(C: f64, max_iter: usize, tol: f64, fit_intercept: bool) -> Self {
         Self { inner: crate::ml::svm::svm::LinearSVC::with_fit_intercept(C, max_iter, tol, fit_intercept) }
     }
-    fn decision_function(&self, x: &PyAny) -> PyResult<Vec<f64>> {
+    fn decision_function(&self, py: Python<'_>, x: &PyAny) -> PyResult<PyObject> {
         let (xf, n, p) = extract_flat(x)?;
-        Ok(self.inner.decision_function(&xf, n, p))
+        Ok(vec_f64_to_np(py, self.inner.decision_function(&xf, n, p)))
     }
     #[getter] fn coef_(&self) -> Vec<Vec<f64>> { self.inner.coef().to_vec() }
     #[getter] fn intercept_(&self) -> Vec<f64> { self.inner.intercept().to_vec() }

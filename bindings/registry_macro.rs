@@ -466,8 +466,9 @@ macro_rules! impl_python_bindings {
                 Ok(())
             }
             #[pyo3(signature = (x))]
-            pub fn fit_predict(&mut self, x: Vec<Vec<f64>>) -> PyResult<Vec<i32>> {
-                self.fit(x)?; Ok(self.0.labels.clone())
+            pub fn fit_predict(&mut self, py: Python<'_>, x: Vec<Vec<f64>>) -> PyResult<pyo3::PyObject> {
+                self.fit(x)?;
+                Ok(crate::bindings::commands::ml::vec_i32_to_np(py, self.0.labels.clone()))
             }
             #[getter] pub fn labels_(&self) -> Vec<i32> { self.0.labels.clone() }
             #[getter] pub fn n_clusters_(&self) -> usize { self.0.n_clusters }
@@ -503,18 +504,19 @@ macro_rules! impl_python_bindings {
                 Ok(())
             }
             #[pyo3(signature = (x))]
-            pub fn fit_predict(&mut self, x: &PyAny) -> PyResult<Vec<i32>> {
-                self.fit(x)?; Ok(self.0.labels.clone())
+            pub fn fit_predict(&mut self, py: Python<'_>, x: &PyAny) -> PyResult<pyo3::PyObject> {
+                self.fit(x)?;
+                Ok(crate::bindings::commands::ml::vec_i32_to_np(py, self.0.labels.clone()))
             }
             #[pyo3(signature = (x))]
-            pub fn transform(&self, x: &PyAny) -> PyResult<Vec<Vec<f64>>> {
+            pub fn transform(&self, py: Python<'_>, x: &PyAny) -> PyResult<pyo3::PyObject> {
                 let (flat, n, dims) = super::ml::extract_flat(x)?;
-                Ok(self.0.transform_flat(&flat, n, dims))
+                crate::bindings::commands::ml::vv_to_np2d(py, self.0.transform_flat(&flat, n, dims))
             }
             #[pyo3(signature = (x))]
-            pub fn predict(&self, x: &PyAny) -> PyResult<Vec<i32>> {
+            pub fn predict(&self, py: Python<'_>, x: &PyAny) -> PyResult<pyo3::PyObject> {
                 let (flat, n, dims) = super::ml::extract_flat(x)?;
-                Ok(self.0.predict_flat(&flat, n, dims))
+                Ok(crate::bindings::commands::ml::vec_i32_to_np(py, self.0.predict_flat(&flat, n, dims)))
             }
             #[getter] pub fn labels_(&self) -> Vec<i32> { self.0.labels.clone() }
             #[getter] pub fn centroids_(&self) -> Vec<Vec<f64>> { self.0.centroids.clone() }
