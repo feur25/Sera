@@ -915,12 +915,13 @@ pub fn build_slope(input: &str) -> String {
     let labels = a.labels.unwrap_or_default();
     let values_left = a.left.unwrap_or_default();
     let values_right = a.right.unwrap_or_default();
-    use crate::plot::statistical::{SlopeConfig, render_slope_html};
+    use crate::plot::statistical::{SlopeConfig, SlopeVariant, render_slope_html};
     let hover = o.hj();
     let ll = o.left_label.as_deref().unwrap_or("Before").to_string();
     let rl = o.right_label.as_deref().unwrap_or("After").to_string();
+    let variant = SlopeVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let html = render_slope_html(&SlopeConfig {
-        title, labels: &labels, values_left: &values_left, values_right: &values_right,
+        title, variant, labels: &labels, values_left: &values_left, values_right: &values_right,
         left_label: &ll, right_label: &rl, palette: &o.pal(),
         show_text: o.show_text.unwrap_or(true), width: o.w(700), height: o.h(500),
         sort_order: &o.srt(), hover: &hover, ..SlopeConfig::default()
@@ -948,10 +949,11 @@ pub fn build_funnel(input: &str) -> String {
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
-    use crate::plot::statistical::{FunnelConfig, render_funnel_html};
+    use crate::plot::statistical::{FunnelConfig, FunnelVariant, render_funnel_html};
     let hover = o.hj();
+    let variant = FunnelVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let html = render_funnel_html(&FunnelConfig {
-        title, labels: &labels, values: &values, palette: &o.pal(),
+        title, variant, labels: &labels, values: &values, palette: &o.pal(),
         show_text: o.show_text.unwrap_or(true), width: o.w(800), height: o.h(480),
         sort_order: &o.srt(), hover: &hover, ..FunnelConfig::default()
     });

@@ -1032,6 +1032,7 @@ pub fn chart_variants(py: Python<'_>) -> PyResult<PyObject> {
     use crate::plot::statistical::{
         BarVariant, LineVariant, HeatmapVariant, HistogramVariant,
         PieVariant, BoxplotVariant, ViolinVariant, KdeVariant, RidgelineVariant, RadarVariant,
+        SlopeVariant, FunnelVariant,
     };
     use crate::plot::statistical::scatter::ScatterVariant;
     use crate::plot::statistical::bubble::BubbleVariant;
@@ -1071,6 +1072,8 @@ pub fn chart_variants(py: Python<'_>) -> PyResult<PyObject> {
     out.set_item("kde", build::<KdeVariant>(py, KdeVariant::keys_and_aliases(), KdeVariant::default_key())?)?;
     out.set_item("ridgeline", build::<RidgelineVariant>(py, RidgelineVariant::keys_and_aliases(), RidgelineVariant::default_key())?)?;
     out.set_item("radar", build::<RadarVariant>(py, RadarVariant::keys_and_aliases(), RadarVariant::default_key())?)?;
+    out.set_item("slope", build::<SlopeVariant>(py, SlopeVariant::keys_and_aliases(), SlopeVariant::default_key())?)?;
+    out.set_item("funnel", build::<FunnelVariant>(py, FunnelVariant::keys_and_aliases(), FunnelVariant::default_key())?)?;
     Ok(out.into())
 }
 
