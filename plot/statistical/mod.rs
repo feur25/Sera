@@ -45,10 +45,10 @@ pub use violin::{ViolinConfig, ViolinVariant, render_violin_html};
 pub use slope::{SlopeConfig, render_slope_html};
 pub use bullet::{BulletConfig, render_bullet_html};
 pub use wordcloud::{WordCloudConfig, render_wordcloud_html};
-pub use radar::{RadarConfig, render_radar_html};
+pub use radar::{RadarConfig, RadarVariant, render_radar_html};
 pub use lollipop::{LollipopConfig, render_lollipop_html};
-pub use kde::{KdeConfig, render_kde_html, scott_bw, kde_eval};
-pub use ridgeline::{RidgelineConfig, render_ridgeline_html};
+pub use kde::{KdeConfig, KdeVariant, render_kde_html, scott_bw, kde_eval};
+pub use ridgeline::{RidgelineConfig, RidgelineVariant, render_ridgeline_html};
 pub use crate::html::hover::{HoverSlot, slots_to_json, parse_hover_json};
 pub use _3d::register_statistical_3d_types;
 

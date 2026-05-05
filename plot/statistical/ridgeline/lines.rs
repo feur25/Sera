@@ -1,0 +1,25 @@
+use super::common::{prepare, open_svg, ridge_label, project_pts, polyline, close_svg, finalize};
+use super::config::RidgelineConfig;
+use crate::plot::statistical::common::{palette_color, push_b, push_i, hex6};
+
+pub fn render(cfg: &RidgelineConfig) -> String {
+    let p = match prepare(cfg, None) { Some(v) => v, None => return String::new() };
+    let n_groups = p.group_order.len();
+    let mut b = Vec::<u8>::with_capacity(n_groups * p.xs.len() * 18 + 2048);
+    open_svg(&mut b, cfg, &p.layout, p.x0, p.xr);
+
+    for gi in (0..n_groups).rev() {
+        let color = palette_color(cfg.palette, gi);
+        let hx = hex6(color);
+        let base_y = p.layout.title_h + (gi + 1) as i32 * p.layout.row_h;
+        let pts = project_pts(&p, &p.curves[gi], base_y);
+
+        push_b(&mut b, b"<g data-series=\""); push_i(&mut b, gi as i32); push_b(&mut b, b"\">");
+        polyline(&mut b, &pts, &hx, 2.4);
+        ridge_label(&mut b, &p.layout, base_y, &p.group_order[gi]);
+        push_b(&mut b, b"</g>");
+    }
+
+    close_svg(&mut b, cfg, &p, true);
+    finalize(b, cfg)
+}

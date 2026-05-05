@@ -1120,12 +1120,13 @@ pub fn build_radar_chart(input: &str) -> String {
     let title = title_s.as_str();
     let axes = a.axes.unwrap_or_default();
     let series_flat = a.series.unwrap_or_default();
-    use crate::plot::statistical::{RadarConfig, render_radar_html};
+    use crate::plot::statistical::{RadarConfig, RadarVariant, render_radar_html};
     let names: Vec<String> = o.series_names.clone().unwrap_or_else(|| (0..series_flat.len()).map(|_| String::new()).collect());
     let hover = o.hj();
     let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(series_flat.into_iter()).collect();
+    let variant = RadarVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let html = render_radar_html(&RadarConfig {
-        title, axes: &axes, series: &series, palette: &o.pal(),
+        title, variant, axes: &axes, series: &series, palette: &o.pal(),
         filled: o.filled.unwrap_or(true), fill_opacity: o.fill_opacity.unwrap_or(50) as u8,
         width: o.w(700), height: o.h(560), hover: &hover, ..RadarConfig::default()
     });
@@ -1194,7 +1195,7 @@ pub fn build_kde_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
     let values = a.values.unwrap_or_default();
-    use crate::plot::statistical::{KdeConfig, render_kde_html};
+    use crate::plot::statistical::{KdeConfig, KdeVariant, render_kde_html};
     let series: Vec<(String, Vec<f64>)> = if let Some(cats) = a.categories {
         let mut group_order: Vec<String> = Vec::new();
         let mut group_vals: std::collections::HashMap<String, Vec<f64>> = std::collections::HashMap::new();
@@ -1209,10 +1210,12 @@ pub fn build_kde_chart(input: &str) -> String {
     let hover = o.hj();
     let xl = o.xl();
     let yl = if o.y_label.is_none() { "Density".to_string() } else { o.yl() };
+    let variant = KdeVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let html = render_kde_html(&KdeConfig {
-        title, series: &series, palette: &o.pal(), x_label: &xl, y_label: &yl,
+        title, variant, series: &series, palette: &o.pal(), x_label: &xl, y_label: &yl,
         bandwidth: o.bandwidth.unwrap_or(0.0), filled: o.filled.unwrap_or(true),
         fill_opacity: o.fill_opacity.unwrap_or(50) as u8, gridlines: o.grid(),
+        bins: o.bins.unwrap_or(0) as usize,
         width: o.w(900), height: o.h(420), sort_order: &o.srt(), hover: &hover,
         ..KdeConfig::default()
     });
@@ -1265,10 +1268,11 @@ pub fn build_ridgeline_chart(input: &str) -> String {
     let title = title_s.as_str();
     let values = a.values.unwrap_or_default();
     let categories = a.categories.or(a.labels).unwrap_or_default();
-    use crate::plot::statistical::{RidgelineConfig, render_ridgeline_html};
+    use crate::plot::statistical::{RidgelineConfig, RidgelineVariant, render_ridgeline_html};
     let hover = o.hj();
+    let variant = RidgelineVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let html = render_ridgeline_html(&RidgelineConfig {
-        title, values: &values, categories: &categories, palette: &o.pal(),
+        title, variant, values: &values, categories: &categories, palette: &o.pal(),
         x_label: &o.xl(), y_label: &o.yl(), overlap: o.overlap.unwrap_or(0.5),
         bandwidth: o.bandwidth.unwrap_or(0.0), width: o.w(900), height: o.h(520),
         gridlines: o.grid(), sort_order: &o.srt(), hover: &hover, ..RidgelineConfig::default()

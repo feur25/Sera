@@ -1031,7 +1031,7 @@ pub fn chart_variants(py: Python<'_>) -> PyResult<PyObject> {
     use pyo3::types::{PyDict, PyList};
     use crate::plot::statistical::{
         BarVariant, LineVariant, HeatmapVariant, HistogramVariant,
-        PieVariant, BoxplotVariant, ViolinVariant,
+        PieVariant, BoxplotVariant, ViolinVariant, KdeVariant, RidgelineVariant, RadarVariant,
     };
     use crate::plot::statistical::scatter::ScatterVariant;
     use crate::plot::statistical::bubble::BubbleVariant;
@@ -1068,6 +1068,9 @@ pub fn chart_variants(py: Python<'_>) -> PyResult<PyObject> {
     out.set_item("pie", build::<PieVariant>(py, PieVariant::keys_and_aliases(), PieVariant::default_key())?)?;
     out.set_item("boxplot", build::<BoxplotVariant>(py, BoxplotVariant::keys_and_aliases(), BoxplotVariant::default_key())?)?;
     out.set_item("violin", build::<ViolinVariant>(py, ViolinVariant::keys_and_aliases(), ViolinVariant::default_key())?)?;
+    out.set_item("kde", build::<KdeVariant>(py, KdeVariant::keys_and_aliases(), KdeVariant::default_key())?)?;
+    out.set_item("ridgeline", build::<RidgelineVariant>(py, RidgelineVariant::keys_and_aliases(), RidgelineVariant::default_key())?)?;
+    out.set_item("radar", build::<RadarVariant>(py, RadarVariant::keys_and_aliases(), RadarVariant::default_key())?)?;
     Ok(out.into())
 }
 

@@ -1,0 +1,220 @@
+<!DOCTYPE html><html><head><meta charset="utf-8"><title>Ridgeline (Quartiles)</title><style>#sp-tip{position:absolute;z-index:999999;pointer-events:none;opacity:0;transition:opacity .15s,transform .15s;transform:translateY(6px) scale(.97);background:#0b0e18;color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-size:13px;border-radius:10px;min-width:160px;max-width:340px;box-shadow:0 4px 20px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.08);overflow:hidden}#sp-tip.sp-vis{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}.sp-nav{display:flex;align-items:center;justify-content:space-between;padding:5px 10px;border-top:1px solid rgba(255,255,255,.08)}.sp-nav-btn{cursor:pointer;padding:0 10px;border-radius:5px;height:22px;line-height:22px;font-size:18px;background:rgba(255,255,255,.10);color:#e2e8f0;user-select:none;flex-shrink:0}.sp-nav-btn:hover{background:rgba(255,255,255,.22)}.sp-nav-dis{opacity:.25;pointer-events:none}.sp-nav-ctr{flex:1;text-align:center;font-size:11px;color:#94a3b8}.sp-head{padding:10px 14px 6px;font-weight:700;font-size:14px;color:#e2e8f0;border-bottom:1px solid rgba(255,255,255,.08)}.sp-body{padding:8px 14px 12px}.sp-row{display:flex;justify-content:space-between;align-items:baseline;gap:14px;padding:3px 0;border-bottom:1px solid rgba(255,255,255,.04)}.sp-row:last-child{border-bottom:none}.sp-key{color:#94a3b8;font-size:12px;white-space:nowrap}.sp-val{font-weight:600;font-size:12px;color:#f8fafc;text-align:right;word-break:break-all}#sp-tip img{display:block;width:100%;max-height:210px;object-fit:contain;border-top:1px solid rgba(255,255,255,.07)}#sp-tip video{display:block;width:100%;border-top:1px solid rgba(255,255,255,.07)}.sp-html{padding:8px 14px;font-size:12px;border-top:1px solid rgba(255,255,255,.07)}[data-idx]{cursor:pointer;transition:opacity .25s,filter .2s,transform .25s}[data-idx]:hover{filter:brightness(1.12) saturate(1.08)}.sp-cpanel{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:#0b0e18;color:#f1f5f9;border-radius:10px;padding:8px 16px;font-size:12px;font-family:-apple-system,Arial,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:20;white-space:nowrap;display:none}.sp-cls-x{cursor:pointer;color:#94a3b8;margin-left:6px;font-size:13px}.sp-cls-x:hover{color:#f87171}</style><style>body{margin:0;background:transparent;display:flex;justify-content:center;padding:0}@keyframes sp-i{from{opacity:0;transform:translateY(8px) scale(.94)}}@keyframes sp-bar{from{opacity:0;transform:scaleY(0)}}@keyframes sp-pop{0%{opacity:0;transform:scale(0)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}@keyframes sp-arc{from{opacity:0;transform:scale(.82) rotate(-6deg)}}@keyframes sp-fn{from{opacity:0;transform:scaleX(.7) translateY(8px)}}svg rect[data-idx]{transform-box:fill-box;transform-origin:bottom center;animation:sp-bar .5s cubic-bezier(.22,.61,.36,1) both}svg circle[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-pop .42s cubic-bezier(.34,1.56,.64,1) both}svg path[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-arc .48s cubic-bezier(.22,.61,.36,1) both}svg polygon[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-fn .48s cubic-bezier(.22,.61,.36,1) both}svg line[data-idx]{animation:sp-i .45s cubic-bezier(.22,.61,.36,1) both}svg rect[data-idx]:hover{transform:scaleY(1.03);filter:brightness(1.12) saturate(1.1)}svg circle[data-idx]:hover{transform:scale(1.3);filter:brightness(1.15)}svg path[data-idx]:hover{filter:brightness(1.1) drop-shadow(0 2px 8px rgba(0,0,0,.2))}.sp-bg{fill:transparent}</style></head><body><div id="spp4" style="position:relative;display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)"><svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520"><rect class="sp-bg" width="100%" height="100%"/><text x="450" y="24" text-anchor="middle" font-family="-apple-system,Arial,sans-serif" font-size="15" font-weight="700" fill="#1a202c" class="sp-ttl">Ridgeline (Quartiles)</text><line x1="130" y1="476" x2="770" y2="476" stroke="#cbd5e1" stroke-width="1" class="sp-ax-x"/><line x1="130" y1="36" x2="130" y2="476" stroke="#e2e8f0" stroke-width="0.5" class="sp-gl"/><text x="130" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">-7.65</text><line x1="236" y1="36" x2="236" y2="476" stroke="#e2e8f0" stroke-width="0.5" class="sp-gl"/><text x="236" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">-2.87</text><line x1="343" y1="36" x2="343" y2="476" stroke="#e2e8f0" stroke-width="0.5" class="sp-gl"/><text x="343" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">1.91</text><line x1="450" y1="36" x2="450" y2="476" stroke="#e2e8f0" stroke-width="0.5" class="sp-gl"/><text x="450" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">6.69</text><line x1="556" y1="36" x2="556" y2="476" stroke="#e2e8f0" stroke-width="0.5" class="sp-gl"/><text x="556" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">11.47</text><line x1="663" y1="36" x2="663" y2="476" stroke="#e2e8f0" stroke-width="0.5" class="sp-gl"/><text x="663" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">16.25</text><line x1="770" y1="36" x2="770" y2="476" stroke="#e2e8f0" stroke-width="0.5" class="sp-gl"/><text x="770" y="490" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#9ca3af" class="sp-xt">21.03</text><g data-series="4"><path d="M130.00,476.00 L130.00,476.00 L140.85,476.00 L151.69,476.00 L162.54,476.00 L173.39,476.00 L184.24,476.00 L195.08,476.00 L205.93,476.00 L216.78,476.00 L227.63,476.00 L238.47,476.00 L249.32,476.00 L260.17,476.00 L271.02,476.00 L281.86,476.00 L292.71,476.00 L303.56,476.00 L314.41,476.00 L325.25,476.00 L336.10,476.00 L346.95,476.00 L357.80,476.00 L368.64,476.00 L379.49,476.00 L390.34,476.00 L401.19,476.00 L412.03,476.00 L422.88,475.99 L433.73,475.97 L444.58,475.83 L455.42,475.37 L466.27,474.28 L477.12,472.50 L487.97,470.65 L498.81,469.65 L509.66,469.36 L520.51,468.00 L531.36,463.56 L542.20,455.17 L553.05,442.32 L563.90,423.94 L574.75,401.23 L585.59,380.95 L596.44,370.47 L607.29,369.58 L618.14,372.56 L628.98,377.36 L639.83,386.48 L650.68,400.18 L661.53,415.06 L672.37,429.00 L683.22,442.50 L694.07,455.41 L704.92,465.72 L715.76,471.97 L726.61,474.79 L737.46,475.72 L748.31,475.95 L759.15,476.00 L770.00,476.00 L770.00,476.00 Z" fill="#ffffff"/><path d="M130.00,476.00 L130.00,476.00 L140.85,476.00 L151.69,476.00 L162.54,476.00 L173.39,476.00 L184.24,476.00 L195.08,476.00 L205.93,476.00 L216.78,476.00 L227.63,476.00 L238.47,476.00 L249.32,476.00 L260.17,476.00 L271.02,476.00 L281.86,476.00 L292.71,476.00 L303.56,476.00 L314.41,476.00 L325.25,476.00 L336.10,476.00 L346.95,476.00 L357.80,476.00 L368.64,476.00 L379.49,476.00 L390.34,476.00 L401.19,476.00 L412.03,476.00 L422.88,475.99 L433.73,475.97 L444.58,475.83 L455.42,475.37 L466.27,474.28 L477.12,472.50 L487.97,470.65 L498.81,469.65 L509.66,469.36 L520.51,468.00 L531.36,463.56 L542.20,455.17 L553.05,442.32 L563.90,423.94 L574.75,401.23 L585.59,380.95 L596.44,370.47 L607.29,369.58 L618.14,372.56 L628.98,377.36 L639.83,386.48 L650.68,400.18 L661.53,415.06 L672.37,429.00 L683.22,442.50 L694.07,455.41 L704.92,465.72 L715.76,471.97 L726.61,474.79 L737.46,475.72 L748.31,475.95 L759.15,476.00 L770.00,476.00 L770.00,476.00 Z" fill="#8b5cf6" fill-opacity="0.22"/><line x1="586.50" y1="380.08" x2="586.50" y2="476" stroke="#8b5cf6" stroke-width="1.20" stroke-dasharray="3,3"/><line x1="613.58" y1="371.31" x2="613.58" y2="476" stroke="#8b5cf6" stroke-width="2.00"/><line x1="640.16" y1="386.90" x2="640.16" y2="476" stroke="#8b5cf6" stroke-width="1.20" stroke-dasharray="3,3"/><polyline points="130.00,476.00 140.85,476.00 151.69,476.00 162.54,476.00 173.39,476.00 184.24,476.00 195.08,476.00 205.93,476.00 216.78,476.00 227.63,476.00 238.47,476.00 249.32,476.00 260.17,476.00 271.02,476.00 281.86,476.00 292.71,476.00 303.56,476.00 314.41,476.00 325.25,476.00 336.10,476.00 346.95,476.00 357.80,476.00 368.64,476.00 379.49,476.00 390.34,476.00 401.19,476.00 412.03,476.00 422.88,475.99 433.73,475.97 444.58,475.83 455.42,475.37 466.27,474.28 477.12,472.50 487.97,470.65 498.81,469.65 509.66,469.36 520.51,468.00 531.36,463.56 542.20,455.17 553.05,442.32 563.90,423.94 574.75,401.23 585.59,380.95 596.44,370.47 607.29,369.58 618.14,372.56 628.98,377.36 639.83,386.48 650.68,400.18 661.53,415.06 672.37,429.00 683.22,442.50 694.07,455.41 704.92,465.72 715.76,471.97 726.61,474.79 737.46,475.72 748.31,475.95 759.15,476.00 770.00,476.00" fill="none" stroke="#8b5cf6" stroke-width="2.00" stroke-linejoin="round"/><line x1="126" y1="476" x2="770" y2="476" stroke="#e2e8f0" stroke-width="0.6"/><text x="122" y="436" text-anchor="end" font-family="-apple-system,Arial,sans-serif" font-size="11" font-weight="600" fill="#374151">Epsilon</text></g><g data-series="3"><path d="M130.00,388.00 L130.00,388.00 L140.85,388.00 L151.69,388.00 L162.54,388.00 L173.39,388.00 L184.24,388.00 L195.08,388.00 L205.93,388.00 L216.78,388.00 L227.63,388.00 L238.47,388.00 L249.32,388.00 L260.17,388.00 L271.02,388.00 L281.86,388.00 L292.71,388.00 L303.56,388.00 L314.41,388.00 L325.25,388.00 L336.10,388.00 L346.95,388.00 L357.80,388.00 L368.64,388.00 L379.49,388.00 L390.34,388.00 L401.19,387.99 L412.03,387.92 L422.88,387.44 L433.73,385.26 L444.58,378.83 L455.42,366.60 L466.27,351.82 L477.12,339.75 L487.97,329.49 L498.81,315.53 L509.66,295.95 L520.51,273.38 L531.36,256.00 L542.20,256.00 L553.05,276.02 L563.90,304.58 L574.75,329.37 L585.59,346.49 L596.44,358.63 L607.29,369.18 L618.14,378.28 L628.98,384.26 L639.83,386.98 L650.68,387.81 L661.53,387.97 L672.37,388.00 L683.22,388.00 L694.07,388.00 L704.92,388.00 L715.76,388.00 L726.61,388.00 L737.46,388.00 L748.31,388.00 L759.15,388.00 L770.00,388.00 L770.00,388.00 Z" fill="#ffffff"/><path d="M130.00,388.00 L130.00,388.00 L140.85,388.00 L151.69,388.00 L162.54,388.00 L173.39,388.00 L184.24,388.00 L195.08,388.00 L205.93,388.00 L216.78,388.00 L227.63,388.00 L238.47,388.00 L249.32,388.00 L260.17,388.00 L271.02,388.00 L281.86,388.00 L292.71,388.00 L303.56,388.00 L314.41,388.00 L325.25,388.00 L336.10,388.00 L346.95,388.00 L357.80,388.00 L368.64,388.00 L379.49,388.00 L390.34,388.00 L401.19,387.99 L412.03,387.92 L422.88,387.44 L433.73,385.26 L444.58,378.83 L455.42,366.60 L466.27,351.82 L477.12,339.75 L487.97,329.49 L498.81,315.53 L509.66,295.95 L520.51,273.38 L531.36,256.00 L542.20,256.00 L553.05,276.02 L563.90,304.58 L574.75,329.37 L585.59,346.49 L596.44,358.63 L607.29,369.18 L618.14,378.28 L628.98,384.26 L639.83,386.98 L650.68,387.81 L661.53,387.97 L672.37,388.00 L683.22,388.00 L694.07,388.00 L704.92,388.00 L715.76,388.00 L726.61,388.00 L737.46,388.00 L748.31,388.00 L759.15,388.00 L770.00,388.00 L770.00,388.00 Z" fill="#ef4444" fill-opacity="0.22"/><line x1="513.72" y1="287.51" x2="513.72" y2="388" stroke="#ef4444" stroke-width="1.20" stroke-dasharray="3,3"/><line x1="538.25" y1="256.00" x2="538.25" y2="388" stroke="#ef4444" stroke-width="2.00"/><line x1="560.79" y1="296.40" x2="560.79" y2="388" stroke="#ef4444" stroke-width="1.20" stroke-dasharray="3,3"/><polyline points="130.00,388.00 140.85,388.00 151.69,388.00 162.54,388.00 173.39,388.00 184.24,388.00 195.08,388.00 205.93,388.00 216.78,388.00 227.63,388.00 238.47,388.00 249.32,388.00 260.17,388.00 271.02,388.00 281.86,388.00 292.71,388.00 303.56,388.00 314.41,388.00 325.25,388.00 336.10,388.00 346.95,388.00 357.80,388.00 368.64,388.00 379.49,388.00 390.34,388.00 401.19,387.99 412.03,387.92 422.88,387.44 433.73,385.26 444.58,378.83 455.42,366.60 466.27,351.82 477.12,339.75 487.97,329.49 498.81,315.53 509.66,295.95 520.51,273.38 531.36,256.00 542.20,256.00 553.05,276.02 563.90,304.58 574.75,329.37 585.59,346.49 596.44,358.63 607.29,369.18 618.14,378.28 628.98,384.26 639.83,386.98 650.68,387.81 661.53,387.97 672.37,388.00 683.22,388.00 694.07,388.00 704.92,388.00 715.76,388.00 726.61,388.00 737.46,388.00 748.31,388.00 759.15,388.00 770.00,388.00" fill="none" stroke="#ef4444" stroke-width="2.00" stroke-linejoin="round"/><line x1="126" y1="388" x2="770" y2="388" stroke="#e2e8f0" stroke-width="0.6"/><text x="122" y="348" text-anchor="end" font-family="-apple-system,Arial,sans-serif" font-size="11" font-weight="600" fill="#374151">Delta</text></g><g data-series="2"><path d="M130.00,300.00 L130.00,300.00 L140.85,300.00 L151.69,300.00 L162.54,300.00 L173.39,300.00 L184.24,300.00 L195.08,300.00 L205.93,300.00 L216.78,300.00 L227.63,300.00 L238.47,300.00 L249.32,300.00 L260.17,300.00 L271.02,300.00 L281.86,300.00 L292.71,300.00 L303.56,300.00 L314.41,299.97 L325.25,299.77 L336.10,298.93 L346.95,296.11 L357.80,289.05 L368.64,275.84 L379.49,257.47 L390.34,238.76 L401.19,225.26 L412.03,218.93 L422.88,217.38 L433.73,216.24 L444.58,211.84 L455.42,204.40 L466.27,200.06 L477.12,206.29 L487.97,223.49 L498.81,244.13 L509.66,260.84 L520.51,272.52 L531.36,281.72 L542.20,289.55 L553.05,295.23 L563.90,298.32 L574.75,299.55 L585.59,299.91 L596.44,299.99 L607.29,300.00 L618.14,300.00 L628.98,300.00 L639.83,300.00 L650.68,300.00 L661.53,300.00 L672.37,300.00 L683.22,300.00 L694.07,300.00 L704.92,300.00 L715.76,300.00 L726.61,300.00 L737.46,300.00 L748.31,300.00 L759.15,300.00 L770.00,300.00 L770.00,300.00 Z" fill="#ffffff"/><path d="M130.00,300.00 L130.00,300.00 L140.85,300.00 L151.69,300.00 L162.54,300.00 L173.39,300.00 L184.24,300.00 L195.08,300.00 L205.93,300.00 L216.78,300.00 L227.63,300.00 L238.47,300.00 L249.32,300.00 L260.17,300.00 L271.02,300.00 L281.86,300.00 L292.71,300.00 L303.56,300.00 L314.41,299.97 L325.25,299.77 L336.10,298.93 L346.95,296.11 L357.80,289.05 L368.64,275.84 L379.49,257.47 L390.34,238.76 L401.19,225.26 L412.03,218.93 L422.88,217.38 L433.73,216.24 L444.58,211.84 L455.42,204.40 L466.27,200.06 L477.12,206.29 L487.97,223.49 L498.81,244.13 L509.66,260.84 L520.51,272.52 L531.36,281.72 L542.20,289.55 L553.05,295.23 L563.90,298.32 L574.75,299.55 L585.59,299.91 L596.44,299.99 L607.29,300.00 L618.14,300.00 L628.98,300.00 L639.83,300.00 L650.68,300.00 L661.53,300.00 L672.37,300.00 L683.22,300.00 L694.07,300.00 L704.92,300.00 L715.76,300.00 L726.61,300.00 L737.46,300.00 L748.31,300.00 L759.15,300.00 L770.00,300.00 L770.00,300.00 Z" fill="#f59e0b" fill-opacity="0.22"/><line x1="428.66" y1="216.77" x2="428.66" y2="300" stroke="#f59e0b" stroke-width="1.20" stroke-dasharray="3,3"/><line x1="459.18" y1="202.90" x2="459.18" y2="300" stroke="#f59e0b" stroke-width="2.00"/><line x1="482.72" y1="215.17" x2="482.72" y2="300" stroke="#f59e0b" stroke-width="1.20" stroke-dasharray="3,3"/><polyline points="130.00,300.00 140.85,300.00 151.69,300.00 162.54,300.00 173.39,300.00 184.24,300.00 195.08,300.00 205.93,300.00 216.78,300.00 227.63,300.00 238.47,300.00 249.32,300.00 260.17,300.00 271.02,300.00 281.86,300.00 292.71,300.00 303.56,300.00 314.41,299.97 325.25,299.77 336.10,298.93 346.95,296.11 357.80,289.05 368.64,275.84 379.49,257.47 390.34,238.76 401.19,225.26 412.03,218.93 422.88,217.38 433.73,216.24 444.58,211.84 455.42,204.40 466.27,200.06 477.12,206.29 487.97,223.49 498.81,244.13 509.66,260.84 520.51,272.52 531.36,281.72 542.20,289.55 553.05,295.23 563.90,298.32 574.75,299.55 585.59,299.91 596.44,299.99 607.29,300.00 618.14,300.00 628.98,300.00 639.83,300.00 650.68,300.00 661.53,300.00 672.37,300.00 683.22,300.00 694.07,300.00 704.92,300.00 715.76,300.00 726.61,300.00 737.46,300.00 748.31,300.00 759.15,300.00 770.00,300.00" fill="none" stroke="#f59e0b" stroke-width="2.00" stroke-linejoin="round"/><line x1="126" y1="300" x2="770" y2="300" stroke="#e2e8f0" stroke-width="0.6"/><text x="122" y="260" text-anchor="end" font-family="-apple-system,Arial,sans-serif" font-size="11" font-weight="600" fill="#374151">Gamma</text></g><g data-series="1"><path d="M130.00,212.00 L130.00,212.00 L140.85,212.00 L151.69,212.00 L162.54,212.00 L173.39,212.00 L184.24,212.00 L195.08,212.00 L205.93,212.00 L216.78,212.00 L227.63,212.00 L238.47,212.00 L249.32,212.00 L260.17,211.95 L271.02,211.66 L281.86,210.45 L292.71,206.99 L303.56,200.22 L314.41,190.84 L325.25,180.42 L336.10,167.87 L346.95,149.86 L357.80,127.07 L368.64,106.94 L379.49,96.29 L390.34,94.00 L401.19,96.42 L412.03,105.98 L422.88,125.29 L433.73,148.51 L444.58,167.82 L455.42,182.27 L466.27,194.05 L477.12,203.14 L487.97,208.66 L498.81,211.07 L509.66,211.81 L520.51,211.98 L531.36,212.00 L542.20,212.00 L553.05,212.00 L563.90,212.00 L574.75,212.00 L585.59,212.00 L596.44,212.00 L607.29,212.00 L618.14,212.00 L628.98,212.00 L639.83,212.00 L650.68,212.00 L661.53,212.00 L672.37,212.00 L683.22,212.00 L694.07,212.00 L704.92,212.00 L715.76,212.00 L726.61,212.00 L737.46,212.00 L748.31,212.00 L759.15,212.00 L770.00,212.00 L770.00,212.00 Z" fill="#ffffff"/><path d="M130.00,212.00 L130.00,212.00 L140.85,212.00 L151.69,212.00 L162.54,212.00 L173.39,212.00 L184.24,212.00 L195.08,212.00 L205.93,212.00 L216.78,212.00 L227.63,212.00 L238.47,212.00 L249.32,212.00 L260.17,211.95 L271.02,211.66 L281.86,210.45 L292.71,206.99 L303.56,200.22 L314.41,190.84 L325.25,180.42 L336.10,167.87 L346.95,149.86 L357.80,127.07 L368.64,106.94 L379.49,96.29 L390.34,94.00 L401.19,96.42 L412.03,105.98 L422.88,125.29 L433.73,148.51 L444.58,167.82 L455.42,182.27 L466.27,194.05 L477.12,203.14 L487.97,208.66 L498.81,211.07 L509.66,211.81 L520.51,211.98 L531.36,212.00 L542.20,212.00 L553.05,212.00 L563.90,212.00 L574.75,212.00 L585.59,212.00 L596.44,212.00 L607.29,212.00 L618.14,212.00 L628.98,212.00 L639.83,212.00 L650.68,212.00 L661.53,212.00 L672.37,212.00 L683.22,212.00 L694.07,212.00 L704.92,212.00 L715.76,212.00 L726.61,212.00 L737.46,212.00 L748.31,212.00 L759.15,212.00 L770.00,212.00 L770.00,212.00 Z" fill="#10b981" fill-opacity="0.22"/><line x1="351.37" y1="140.56" x2="351.37" y2="212" stroke="#10b981" stroke-width="1.20" stroke-dasharray="3,3"/><line x1="379.13" y1="96.65" x2="379.13" y2="212" stroke="#10b981" stroke-width="2.00"/><line x1="408.80" y1="103.13" x2="408.80" y2="212" stroke="#10b981" stroke-width="1.20" stroke-dasharray="3,3"/><polyline points="130.00,212.00 140.85,212.00 151.69,212.00 162.54,212.00 173.39,212.00 184.24,212.00 195.08,212.00 205.93,212.00 216.78,212.00 227.63,212.00 238.47,212.00 249.32,212.00 260.17,211.95 271.02,211.66 281.86,210.45 292.71,206.99 303.56,200.22 314.41,190.84 325.25,180.42 336.10,167.87 346.95,149.86 357.80,127.07 368.64,106.94 379.49,96.29 390.34,94.00 401.19,96.42 412.03,105.98 422.88,125.29 433.73,148.51 444.58,167.82 455.42,182.27 466.27,194.05 477.12,203.14 487.97,208.66 498.81,211.07 509.66,211.81 520.51,211.98 531.36,212.00 542.20,212.00 553.05,212.00 563.90,212.00 574.75,212.00 585.59,212.00 596.44,212.00 607.29,212.00 618.14,212.00 628.98,212.00 639.83,212.00 650.68,212.00 661.53,212.00 672.37,212.00 683.22,212.00 694.07,212.00 704.92,212.00 715.76,212.00 726.61,212.00 737.46,212.00 748.31,212.00 759.15,212.00 770.00,212.00" fill="none" stroke="#10b981" stroke-width="2.00" stroke-linejoin="round"/><line x1="126" y1="212" x2="770" y2="212" stroke="#e2e8f0" stroke-width="0.6"/><text x="122" y="172" text-anchor="end" font-family="-apple-system,Arial,sans-serif" font-size="11" font-weight="600" fill="#374151">Beta</text></g><g data-series="0"><path d="M130.00,124.00 L130.00,124.00 L140.85,124.00 L151.69,124.00 L162.54,123.96 L173.39,123.71 L184.24,122.64 L195.08,119.59 L205.93,113.80 L216.78,106.35 L227.63,98.52 L238.47,88.04 L249.32,70.33 L260.17,44.52 L271.02,16.75 L281.86,-2.02 L292.71,-3.92 L303.56,8.31 L314.41,25.47 L325.25,42.11 L336.10,58.51 L346.95,75.31 L357.80,90.65 L368.64,102.55 L379.49,111.12 L390.34,117.23 L401.19,121.15 L412.03,123.11 L422.88,123.80 L433.73,123.97 L444.58,124.00 L455.42,124.00 L466.27,124.00 L477.12,124.00 L487.97,124.00 L498.81,124.00 L509.66,124.00 L520.51,124.00 L531.36,124.00 L542.20,124.00 L553.05,124.00 L563.90,124.00 L574.75,124.00 L585.59,124.00 L596.44,124.00 L607.29,124.00 L618.14,124.00 L628.98,124.00 L639.83,124.00 L650.68,124.00 L661.53,124.00 L672.37,124.00 L683.22,124.00 L694.07,124.00 L704.92,124.00 L715.76,124.00 L726.61,124.00 L737.46,124.00 L748.31,124.00 L759.15,124.00 L770.00,124.00 L770.00,124.00 Z" fill="#ffffff"/><path d="M130.00,124.00 L130.00,124.00 L140.85,124.00 L151.69,124.00 L162.54,123.96 L173.39,123.71 L184.24,122.64 L195.08,119.59 L205.93,113.80 L216.78,106.35 L227.63,98.52 L238.47,88.04 L249.32,70.33 L260.17,44.52 L271.02,16.75 L281.86,-2.02 L292.71,-3.92 L303.56,8.31 L314.41,25.47 L325.25,42.11 L336.10,58.51 L346.95,75.31 L357.80,90.65 L368.64,102.55 L379.49,111.12 L390.34,117.23 L401.19,121.15 L412.03,123.11 L422.88,123.80 L433.73,123.97 L444.58,124.00 L455.42,124.00 L466.27,124.00 L477.12,124.00 L487.97,124.00 L498.81,124.00 L509.66,124.00 L520.51,124.00 L531.36,124.00 L542.20,124.00 L553.05,124.00 L563.90,124.00 L574.75,124.00 L585.59,124.00 L596.44,124.00 L607.29,124.00 L618.14,124.00 L628.98,124.00 L639.83,124.00 L650.68,124.00 L661.53,124.00 L672.37,124.00 L683.22,124.00 L694.07,124.00 L704.92,124.00 L715.76,124.00 L726.61,124.00 L737.46,124.00 L748.31,124.00 L759.15,124.00 L770.00,124.00 L770.00,124.00 Z" fill="#6366f1" fill-opacity="0.22"/><line x1="271.84" y1="15.32" x2="271.84" y2="124" stroke="#6366f1" stroke-width="1.20" stroke-dasharray="3,3"/><line x1="297.08" y1="1.00" x2="297.08" y2="124" stroke="#6366f1" stroke-width="2.00"/><line x1="322.73" y1="38.24" x2="322.73" y2="124" stroke="#6366f1" stroke-width="1.20" stroke-dasharray="3,3"/><polyline points="130.00,124.00 140.85,124.00 151.69,124.00 162.54,123.96 173.39,123.71 184.24,122.64 195.08,119.59 205.93,113.80 216.78,106.35 227.63,98.52 238.47,88.04 249.32,70.33 260.17,44.52 271.02,16.75 281.86,-2.02 292.71,-3.92 303.56,8.31 314.41,25.47 325.25,42.11 336.10,58.51 346.95,75.31 357.80,90.65 368.64,102.55 379.49,111.12 390.34,117.23 401.19,121.15 412.03,123.11 422.88,123.80 433.73,123.97 444.58,124.00 455.42,124.00 466.27,124.00 477.12,124.00 487.97,124.00 498.81,124.00 509.66,124.00 520.51,124.00 531.36,124.00 542.20,124.00 553.05,124.00 563.90,124.00 574.75,124.00 585.59,124.00 596.44,124.00 607.29,124.00 618.14,124.00 628.98,124.00 639.83,124.00 650.68,124.00 661.53,124.00 672.37,124.00 683.22,124.00 694.07,124.00 704.92,124.00 715.76,124.00 726.61,124.00 737.46,124.00 748.31,124.00 759.15,124.00 770.00,124.00" fill="none" stroke="#6366f1" stroke-width="2.00" stroke-linejoin="round"/><line x1="126" y1="124" x2="770" y2="124" stroke="#e2e8f0" stroke-width="0.6"/><text x="122" y="84" text-anchor="end" font-family="-apple-system,Arial,sans-serif" font-size="11" font-weight="600" fill="#374151">Alpha</text></g><g data-legend="1" data-series="0"><rect x="778" y="46" width="12" height="12" rx="2" fill="#6366f1"/><text x="794" y="56" font-family="Arial,sans-serif" font-size="10" fill="#374151">Alpha</text></g><g data-legend="1" data-series="1"><rect x="778" y="68" width="12" height="12" rx="2" fill="#10b981"/><text x="794" y="78" font-family="Arial,sans-serif" font-size="10" fill="#374151">Beta</text></g><g data-legend="1" data-series="2"><rect x="778" y="90" width="12" height="12" rx="2" fill="#f59e0b"/><text x="794" y="100" font-family="Arial,sans-serif" font-size="10" fill="#374151">Gamma</text></g><g data-legend="1" data-series="3"><rect x="778" y="112" width="12" height="12" rx="2" fill="#ef4444"/><text x="794" y="122" font-family="Arial,sans-serif" font-size="10" fill="#374151">Delta</text></g><g data-legend="1" data-series="4"><rect x="778" y="134" width="12" height="12" rx="2" fill="#8b5cf6"/><text x="794" y="144" font-family="Arial,sans-serif" font-size="10" fill="#374151">Epsilon</text></g><text x="450" y="516" text-anchor="middle" font-family="Arial,sans-serif" font-size="10" fill="#6b7280" class="sp-xl">value</text></svg><div class="sp-sel-ov" style="display:none"></div><div class="sp-cpanel"></div><script>(function(){
+var wrap=document.getElementById('spp4');if(!wrap)return;wrap.removeAttribute('id');
+var svg=wrap.querySelector('svg');var data=[];
+
+var tip=document.getElementById('sp-tip');
+if(!tip){tip=document.createElement('div');tip.id='sp-tip';document.body.appendChild(tip);}
+var tipIdxs=[],tipPos=0,lastE=null;
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');}
+function cardHTML(d){
+ var h='';if(d.title)h+='<div class="sp-head">'+esc(d.title)+'</div>';
+ var rows='';(d.kv||[]).forEach(function(p){
+  rows+='<div class="sp-row"><span class="sp-key">'+esc(p[0])+'</span><span class="sp-val">'+esc(p[1])+'</span></div>';});
+ if(rows)h+='<div class="sp-body">'+rows+'</div>';
+ if(d.image)h+='<img src="'+esc(d.image)+'" alt="" loading="eager">';
+ if(d.video)h+='<video src="'+esc(d.video)+'" controls muted playsinline></video>';
+ if(d.html)h+='<div class="sp-html">'+d.html+'</div>';
+ return h;}
+function placeTip(e){
+ var sx=window.scrollX||0,sy=window.scrollY||0;
+ var x=e.pageX+16,y=e.pageY-14;
+ var tw=tip.offsetWidth||220,th=tip.offsetHeight||60;
+ if(x+tw>sx+window.innerWidth-6)x=e.pageX-tw-16;
+ if(x<sx+4)x=sx+4;
+ if(y<sy+6)y=e.pageY+20;
+ if(y+th>sy+window.innerHeight-6)y=sy+window.innerHeight-th-6;
+ tip.style.left=x+'px';tip.style.top=y+'px';}
+
+function getSlot(idx){
+ var d=data[idx];if(d)return d;
+ var el=svg.querySelector('[data-idx="'+idx+'"]');if(!el)return null;
+ var kv=[];
+ var x=el.getAttribute('data-x'),y=el.getAttribute('data-y');
+ if(x!=null){var xf=parseFloat(x);kv.push(['X',xf===xf?xf.toFixed(2):x]);}
+ if(y!=null){kv.push(['Valeur',parseFloat(y).toFixed(2)]);}
+ else{var v=el.getAttribute('data-v');
+ if(v!=null){
+  var r=el.getAttribute('data-r'),c=el.getAttribute('data-c');
+  kv.push(['Valeur',parseFloat(v).toFixed(3)]);
+  if(r)kv.push(['Ligne',r]);if(c)kv.push(['Colonne',c]);}}
+ var z=el.getAttribute('data-z');
+ if(z!=null){kv.push(['Z',parseFloat(z).toFixed(2)]);}
+ var lbl=el.getAttribute('data-lbl');
+ var an=el.attributes;if(an){for(var ai=0;ai<an.length;ai++){var a=an[ai];if(a.name.substring(0,8)==='data-kv-'){kv.push([a.name.substring(8),a.value]);}}}
+ var title=lbl||(el.getAttribute('data-v')!=null&&el.getAttribute('data-r')!=null?el.getAttribute('data-r')+' \u00d7 '+el.getAttribute('data-c'):'Point '+(idx+1));
+ return{title:title,kv:kv};}
+function renderTip(){
+ if(!tipIdxs.length){tip.classList.remove('sp-vis');return;}
+ var d=getSlot(tipIdxs[tipPos]);if(!d){tip.classList.remove('sp-vis');return;}
+ var h=cardHTML(d);
+ if(tipIdxs.length>1){
+  var p=tipPos,n=tipIdxs.length;
+  h+='<div class="sp-nav">'
+   +'<span class="sp-nav-btn'+(p>0?'':' sp-nav-dis')+'" data-d="-1">&#8249;</span>'
+   +'<span class="sp-nav-ctr">'+(p+1)+' / '+n+'</span>'
+   +'<span class="sp-nav-btn'+(p<n-1?'':' sp-nav-dis')+'" data-d="1">&#8250;</span>'
+   +'</div>';}
+ tip.innerHTML=h;tip.classList.add('sp-vis');
+ if(lastE)placeTip(lastE);
+ tip.querySelectorAll('.sp-nav-btn:not(.sp-nav-dis)').forEach(function(btn){
+  btn.onclick=function(ev){ev.stopPropagation();
+   var nd=tipPos+parseInt(btn.getAttribute('data-d'),10);
+   if(nd>=0&&nd<tipIdxs.length){tipPos=nd;renderTip();}};});}
+var dragging=false,dsx=0,dsy=0,moved=false,pinned=false;
+
+wrap.addEventListener('mouseleave',function(e){
+ if(pinned)return;
+ var rt=e.relatedTarget;
+ if(rt&&(rt===tip||tip.contains(rt)))return;
+ tip.classList.remove('sp-vis');tipIdxs=[];});
+wrap.addEventListener('mousemove',function(e){
+ if(dragging||pinned)return;
+ lastE=e;
+
+ var hits=[];
+ document.elementsFromPoint(e.clientX,e.clientY).forEach(function(el){
+  if(el===tip||tip.contains(el))return;
+  var found=null;
+  for(var n=el;n&&n!==document.body;n=n.parentElement){
+   if(found===null&&n.getAttribute&&n.getAttribute('data-idx')!==null)found=n;
+   if(n===wrap){
+    if(found!==null){var idx=parseInt(found.getAttribute('data-idx'),10);
+     if(hits.indexOf(idx)===-1)hits.push(idx);}
+    return;}
+  }
+ });
+ if(hits.length){
+  var same=hits.length===tipIdxs.length&&hits.every(function(v,i){return v===tipIdxs[i];});
+  if(!same){tipIdxs=hits;tipPos=0;renderTip();}else placeTip(e);
+ }else{tip.classList.remove('sp-vis');tipIdxs=[];}});
+
+var origVB=svg.getAttribute('viewBox')||'';
+function parseVB(s){return s.split(/[\s,]+/).map(Number);}
+function animateVB(x,y,w,h){
+ svg.style.transition='all 0.5s cubic-bezier(.4,0,.2,1)';
+ svg.setAttribute('viewBox',x+' '+y+' '+w+' '+h);}
+function resetVB(){
+ svg.style.transition='all 0.45s cubic-bezier(.4,0,.2,1)';
+ if(origVB)svg.setAttribute('viewBox',origVB);
+ setTimeout(function(){svg.style.transition='';},500);}
+function reAnim(){var els=svg.querySelectorAll('[data-idx]');els.forEach(function(el){el.style.animation='none';el.style.filter='';});void svg.offsetHeight;els.forEach(function(el,i){el.style.animation='';el.style.animationDelay=(i*14)+'ms';});}
+var ov=wrap.querySelector('.sp-sel-ov');var panel=wrap.querySelector('.sp-cpanel');
+wrap.addEventListener('mousedown',function(e){
+ if(e.button!==0)return;
+ var t=e.target;if(t===panel||panel.contains(t))return;if(t===tip||tip.contains(t))return;
+ dragging=true;moved=false;
+ var r=wrap.getBoundingClientRect();dsx=e.clientX-r.left;dsy=e.clientY-r.top;
+ ov.style.cssText='display:none;position:absolute;pointer-events:none;border:2px solid #6366F1;background:rgba(99,102,241,.12);box-sizing:border-box;border-radius:3px;z-index:10';
+ e.preventDefault();});
+document.addEventListener('mousemove',function(e){if(!dragging)return;
+ var r=wrap.getBoundingClientRect();var cx=e.clientX-r.left,cy=e.clientY-r.top;
+ if(!moved&&Math.abs(cx-dsx)<8&&Math.abs(cy-dsy)<8)return;
+ if(!moved){pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}
+ moved=true;ov.style.display='block';
+ ov.style.left=Math.min(dsx,cx)+'px';ov.style.top=Math.min(dsy,cy)+'px';
+ ov.style.width=Math.abs(cx-dsx)+'px';ov.style.height=Math.abs(cy-dsy)+'px';});
+document.addEventListener('mouseup',function(e){if(!dragging)return;dragging=false;
+ ov.style.display='none';if(!moved){
+ var ch=[];document.elementsFromPoint(e.clientX,e.clientY).forEach(function(el){if(el===tip||tip.contains(el))return;var fd=null;for(var n2=el;n2&&n2!==document.body;n2=n2.parentElement){if(fd===null&&n2.getAttribute&&n2.getAttribute('data-idx')!==null)fd=n2;if(n2===wrap){if(fd!==null){var idx=parseInt(fd.getAttribute('data-idx'),10);if(ch.indexOf(idx)===-1)ch.push(idx);}return;}}});
+ if(ch.length){pinned=true;tipIdxs=ch;tipPos=0;lastE=e;renderTip();}else{pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}return;}
+ var r=wrap.getBoundingClientRect();var cx=e.clientX-r.left,cy=e.clientY-r.top;
+ var rx1=Math.min(dsx,cx),ry1=Math.min(dsy,cy),rx2=Math.max(dsx,cx),ry2=Math.max(dsy,cy);
+ if(rx2-rx1<8&&ry2-ry1<8)return;
+ var ctm=svg.getScreenCTM();if(!ctm)return;var inv=ctm.inverse();
+ function toS(px,py){var pt=svg.createSVGPoint();pt.x=px+r.left;pt.y=py+r.top;return pt.matrixTransform(inv);}
+ var p1=toS(rx1,ry1),p2=toS(rx2,ry2);
+ var bx1=Math.min(p1.x,p2.x),by1=Math.min(p1.y,p2.y),bx2=Math.max(p1.x,p2.x),by2=Math.max(p1.y,p2.y);
+ var pts=svg.querySelectorAll('[data-idx]');var sel=[],unsel=[];
+ pts.forEach(function(el){try{var bb=el.getBBox();var ecx=bb.x+bb.width/2,ecy=bb.y+bb.height/2;
+  if(ecx>=bx1&&ecx<=bx2&&ecy>=by1&&ecy<=by2)sel.push(el);else unsel.push(el);}catch(ex){unsel.push(el);}});
+ if(!sel.length)return;
+ sel.forEach(function(el){el.style.stroke='#6366F1';el.style.strokeWidth='2.5';el.style.opacity='';el.style.transform='';});
+ unsel.forEach(function(el){
+  el.style.transformBox='fill-box';el.style.transformOrigin='center';
+  el.style.transition='transform 0.28s cubic-bezier(.4,0,.2,1),opacity 0.28s';
+  el.style.transform='scale(0,0)';el.style.opacity='0';
+  setTimeout(function(){el.style.display='none';el.style.transition='';},300);});
+
+ var mnx=Infinity,mny=Infinity,mxx=-Infinity,mxy=-Infinity;
+ sel.forEach(function(el){try{var bb=el.getBBox();
+  mnx=Math.min(mnx,bb.x);mny=Math.min(mny,bb.y);
+  mxx=Math.max(mxx,bb.x+bb.width);mxy=Math.max(mxy,bb.y+bb.height);}catch(ex){}});
+ var vb=parseVB(origVB.length?origVB:(svg.getAttribute('viewBox')||'0 0 800 500'));
+ var axL=mnx-vb[0],axT=mny-vb[1],axR=(vb[0]+vb[2])-mxx,axB=(vb[1]+vb[3])-mxy;
+ var sw=mxx-mnx||1,sh=mxy-mny||1;
+ var pL=Math.max(sw*0.12,axL>0?axL*0.7:sw*0.12);
+ var pR=Math.max(sw*0.08,axR>0?axR*0.5:sw*0.08);
+ var pT=Math.max(sh*0.12,axT>0?axT*0.7:sh*0.12);
+ var pB=Math.max(sh*0.20,axB>0?axB*0.8:sh*0.20);
+ animateVB(mnx-pL,mny-pT,(mxx+pR)-(mnx-pL),(mxy+pB)-(mny-pT));
+
+ var xs=sel.map(function(el){return parseFloat(el.getAttribute('data-x'));}).filter(Number.isFinite);
+ var ys=sel.map(function(el){return parseFloat(el.getAttribute('data-y'));}).filter(Number.isFinite);
+ var s='<span style="color:#6366F1;font-weight:700">'+sel.length+' pts</span>';
+ if(xs.length&&ys.length){
+  var mx=xs.reduce(function(a,b){return a+b;})/xs.length;
+  var my=ys.reduce(function(a,b){return a+b;})/ys.length;
+  var vX=xs.map(function(v){return(v-mx)*(v-mx);}).reduce(function(a,b){return a+b;})/xs.length;
+  var vY=ys.map(function(v){return(v-my)*(v-my);}).reduce(function(a,b){return a+b;})/ys.length;
+  s+=' &middot; X&#772; <b>'+mx.toFixed(2)+'</b> &plusmn;'+Math.sqrt(vX).toFixed(2);
+  s+=' &middot; Y&#772; <b>'+my.toFixed(2)+'</b> &plusmn;'+Math.sqrt(vY).toFixed(2);}
+ s+=' <span class="sp-cls-x">&#10005;</span>';
+ panel.innerHTML=s;panel.style.display='block';
+ panel.querySelector('.sp-cls-x').addEventListener('click',clearSel);});
+function clearSel(){panel.style.display='none';resetVB();
+ svg.querySelectorAll('[data-idx]').forEach(function(el){
+  el.style.display='';el.style.opacity='';el.style.stroke='';el.style.strokeWidth='';el.style.filter='';
+  el.style.transform='';el.style.transition='';el.style.transformBox='';el.style.transformOrigin='';});
+ reAnim();}
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){if(dblZoomed){dblZoomed=false;resetVB();svg.querySelectorAll('[data-idx]').forEach(function(el){el.style.opacity='';el.style.display='';el.style.transform='';el.style.transition='';});reAnim();}if(pinned){pinned=false;tip.classList.remove('sp-vis');tipIdxs=[];}}});
+var dblZoomed=false;
+svg.addEventListener('dblclick',function(e){
+ if(dblZoomed){dblZoomed=false;resetVB();svg.querySelectorAll('[data-idx]').forEach(function(el){el.style.opacity='';el.style.display='';el.style.transform='';el.style.transition='';el.style.filter='';});reAnim();return;}
+ var found=null;
+ for(var nd=e.target;nd&&nd!==svg;nd=nd.parentElement){if(nd.getAttribute&&nd.getAttribute('data-idx')!==null){found=nd;break;}}
+ if(!found)return;
+ e.stopPropagation();
+ var idx=parseInt(found.getAttribute('data-idx'),10);
+ var bb;try{bb=found.getBBox();}catch(ex){return;}
+ var pad=Math.max(bb.width,bb.height)*1.5+30;
+ svg.querySelectorAll('[data-idx]').forEach(function(el){
+  var eli=parseInt(el.getAttribute('data-idx'),10);
+  if(eli===idx){el.style.opacity='1';el.style.filter='drop-shadow(0 0 6px rgba(99,102,241,.45))';}else{el.style.display='none';}});
+ var vb=parseVB(origVB.length?origVB:(svg.getAttribute('viewBox')||'0 0 800 500'));
+ var nx=Math.max(vb[0],bb.x-pad),ny=Math.max(vb[1],bb.y-pad);
+ var nw=Math.min(vb[2],bb.width+pad*2),nh=Math.min(vb[3],bb.height+pad*2);
+ animateVB(nx,ny,nw,nh);
+ dblZoomed=true;
+},false);
+var legs=svg.querySelectorAll('[data-legend]');
+legs.forEach(function(lg){lg.style.cursor='pointer';
+lg.addEventListener('click',function(){
+ var s=lg.getAttribute('data-series');if(!s)return;
+ var h=lg.getAttribute('data-hidden')==='1';
+ var els=svg.querySelectorAll('[data-series="'+s+'"]:not([data-legend])');
+ if(h){els.forEach(function(el){el.style.display='';el.style.opacity='';el.style.transform='';el.style.transformBox='';el.style.transformOrigin='';el.style.transition='';});lg.style.opacity='';lg.removeAttribute('data-hidden');}
+ else{els.forEach(function(el){
+  el.style.transformBox='fill-box';el.style.transformOrigin='center';
+  el.style.transition='transform 0.3s cubic-bezier(.4,0,.2,1),opacity 0.3s';
+  el.style.transform='scale(0,0)';el.style.opacity='0';
+  setTimeout(function(){el.style.display='none';el.style.transition='';},320);});
+  lg.style.opacity='0.3';lg.setAttribute('data-hidden','1');}spRescale();});});
+function spRescale(){
+ var m=svg.getAttribute('data-sp');if(!m)return;
+ var p=m.split(',').map(Number),pL=p[0],pT=p[1],pW=p[2],pH=p[3];
+ var vals=[];
+ svg.querySelectorAll('[data-pts]').forEach(function(el){if(el.style.display==='none')return;el.getAttribute('data-pts').split(',').forEach(function(v){var f=parseFloat(v);if(isFinite(f))vals.push(f);});});
+ svg.querySelectorAll('circle[data-y]').forEach(function(el){if(el.style.display==='none')return;var f=parseFloat(el.getAttribute('data-y'));if(isFinite(f))vals.push(f);});
+ svg.querySelectorAll('rect[data-y]').forEach(function(el){if(el.style.display==='none')return;var f=parseFloat(el.getAttribute('data-y'));if(isFinite(f))vals.push(f);});
+ svg.querySelectorAll('rect[data-v]').forEach(function(el){if(el.style.display==='none')return;if(el.hasAttribute('data-y'))return;var f=parseFloat(el.getAttribute('data-v'));if(isFinite(f))vals.push(f);});
+ if(!vals.length)return;
+ var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);if(mn>0)mn=0;var rg=mx-mn;if(rg<1e-12)rg=1;
+ svg.querySelectorAll('polyline[data-pts]').forEach(function(el){if(el.style.display==='none')return;var vs=el.getAttribute('data-pts').split(','),n=vs.length,sx=pW/Math.max(n-1,1),r='';for(var i=0;i<n;i++){var f=(parseFloat(vs[i])-mn)/rg;if(i>0)r+=' ';r+=(pL+Math.round(i*sx))+','+(pT+Math.round((1-f)*pH));}el.setAttribute('points',r);});
+ svg.querySelectorAll('circle[data-y]').forEach(function(el){if(el.style.display==='none')return;var f=(parseFloat(el.getAttribute('data-y'))-mn)/rg;el.setAttribute('cy',pT+Math.round((1-f)*pH));});
+ svg.querySelectorAll('rect[data-y]').forEach(function(el){if(el.style.display==='none')return;var v=parseFloat(el.getAttribute('data-y'));if(!isFinite(v))return;var f=(v-mn)/rg;var ny=pT+Math.round((1-f)*pH);var base=pT+pH;if(mn<0){base=pT+Math.round((0-mn)/rg*pH);}if(v>=0){el.setAttribute('y',ny);el.setAttribute('height',Math.max(1,base-ny));}else{el.setAttribute('y',base);el.setAttribute('height',Math.max(1,ny-base));}});
+ svg.querySelectorAll('rect[data-v]').forEach(function(el){if(el.style.display==='none')return;if(el.hasAttribute('data-y'))return;var v=parseFloat(el.getAttribute('data-v'));if(!isFinite(v))return;var f=(v-mn)/rg;var ny=pT+Math.round((1-f)*pH);var base=pT+pH;if(mn<0){base=pT+Math.round((0-mn)/rg*pH);}if(v>=0){el.setAttribute('y',ny);el.setAttribute('height',Math.max(1,base-ny));}else{el.setAttribute('y',base);el.setAttribute('height',Math.max(1,ny-base));}});
+ var tks=svg.querySelectorAll('.sp-yt'),nT=tks.length;if(nT>1)for(var i=0;i<nT;i++){var f=i/(nT-1);var v=mn+f*rg;tks[i].textContent=v>=1000?Math.round(v)+'':v.toFixed(2);tks[i].setAttribute('y',pT+Math.round((1-f)*pH)+3);}
+ var gls=svg.querySelectorAll('.sp-gl');if(gls.length&&nT>1)for(var j=0;j<gls.length;j++){var f=(j+1)/(nT-1);var gy=pT+Math.round((1-f)*pH);gls[j].setAttribute('y1',gy);gls[j].setAttribute('y2',gy);}
+}
+svg.querySelectorAll('[data-idx]').forEach(function(el,i){el.style.animationDelay=(i*18)+'ms';});
+})();</script></div><script>(function(){if(window.__spac__)return;window.__spac__=1;var svgs=document.querySelectorAll('svg');svgs.forEach(function(svg){var d=svg.getAttribute('data-sp');if(!d)return;var p=d.split(',').map(Number),pL=p[0]||0,pT=p[1]||0,pW=p[2]||0,pH=p[3]||0;if(pW<=0||pH<=0)return;var bX=pT+pH;var lX=pL;svg.querySelectorAll('text').forEach(function(t){if(t.getAttribute('class'))return;if(t.hasAttribute('data-idx'))return;if(t.hasAttribute('data-series'))return;var tx=parseFloat(t.getAttribute('x'));var ty=parseFloat(t.getAttribute('y'));if(!isFinite(tx)||!isFinite(ty))return;var ta=t.getAttribute('text-anchor')||'';var inXBand=ty>=bX-2&&ty<=bX+30;var inYBand=ty>=pT-4&&ty<=pT+pH+4&&tx<=lX+2&&tx>=lX-80;if(inXBand&&tx>=pL-5&&tx<=pL+pW+5){t.setAttribute('class','sp-xt');}else if(inYBand||(ta==='end'&&tx<lX&&ty>=pT-2&&ty<=pT+pH+12)){t.setAttribute('class','sp-yt');}});});})();</script></body></html>
