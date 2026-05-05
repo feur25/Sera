@@ -273,6 +273,7 @@ pub fn rect_attrs(buf: &mut Vec<u8>, r: Rect) {
     push_b(buf, b"\" y=\""); push_f2(buf, r.y);
     push_b(buf, b"\" width=\""); push_f2(buf, r.w);
     push_b(buf, b"\" height=\""); push_f2(buf, r.h);
+    push_b(buf, b"\"");
 }
 
 pub fn fill_hex(buf: &mut Vec<u8>, color: u32) {

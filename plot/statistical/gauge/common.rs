@@ -56,7 +56,7 @@ pub fn arc_path(buf: &mut Vec<u8>, cx: f64, cy: f64, r: f64, a0: f64, a1: f64, c
     let y2 = cy - r * a1.sin();
     let sweep_diff = (a0 - a1).abs();
     let large = if sweep_diff > std::f64::consts::PI { 1 } else { 0 };
-    let sweep_dir = if a1 < a0 { 0 } else { 1 };
+    let sweep_dir = if a1 < a0 { 1 } else { 0 };
     let hx = hex6(color);
     push_b(buf, b"<path d=\"M ");
     push_f2(buf, x1); push_b(buf, b" "); push_f2(buf, y1);

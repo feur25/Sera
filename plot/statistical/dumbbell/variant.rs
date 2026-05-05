@@ -7,6 +7,5 @@ crate::plot_family! {
         Glow     => "glow" | "halo" | "neon" | "soft",
         Dotted   => "dotted" | "dashed" | "minimal" | "thin",
         Ranked   => "ranked" | "ranking" | "ordered" | "numbered",
-        Vertical => "vertical" | "column" | "rotated" | "v",
     }
 }

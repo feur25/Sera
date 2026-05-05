@@ -8,7 +8,6 @@ pub mod barbell;
 pub mod glow;
 pub mod dotted;
 pub mod ranked;
-pub mod vertical;
 
 pub use variant::DumbbellVariant;
 pub use config::DumbbellConfig;
@@ -23,6 +22,5 @@ pub fn render_dumbbell_html(cfg: &DumbbellConfig) -> String {
         Glow     => glow::render(cfg),
         Dotted   => dotted::render(cfg),
         Ranked   => ranked::render(cfg),
-        Vertical => vertical::render(cfg),
     }
 }
