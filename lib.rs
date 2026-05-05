@@ -1033,6 +1033,7 @@ pub fn chart_variants(py: Python<'_>) -> PyResult<PyObject> {
         BarVariant, LineVariant, HeatmapVariant, HistogramVariant,
         PieVariant, BoxplotVariant, ViolinVariant, KdeVariant, RidgelineVariant, RadarVariant,
         SlopeVariant, FunnelVariant, SunburstVariant, WaterfallVariant, TreemapVariant, CandlestickVariant,
+        DumbbellVariant, BulletVariant, GaugeVariant,
     };
     use crate::plot::statistical::scatter::ScatterVariant;
     use crate::plot::statistical::bubble::BubbleVariant;
@@ -1078,6 +1079,9 @@ pub fn chart_variants(py: Python<'_>) -> PyResult<PyObject> {
     out.set_item("waterfall", build::<WaterfallVariant>(py, WaterfallVariant::keys_and_aliases(), WaterfallVariant::default_key())?)?;
     out.set_item("treemap", build::<TreemapVariant>(py, TreemapVariant::keys_and_aliases(), TreemapVariant::default_key())?)?;
     out.set_item("candlestick", build::<CandlestickVariant>(py, CandlestickVariant::keys_and_aliases(), CandlestickVariant::default_key())?)?;
+    out.set_item("dumbbell", build::<DumbbellVariant>(py, DumbbellVariant::keys_and_aliases(), DumbbellVariant::default_key())?)?;
+    out.set_item("bullet", build::<BulletVariant>(py, BulletVariant::keys_and_aliases(), BulletVariant::default_key())?)?;
+    out.set_item("gauge", build::<GaugeVariant>(py, GaugeVariant::keys_and_aliases(), GaugeVariant::default_key())?)?;
     Ok(out.into())
 }
 

@@ -72,6 +72,8 @@ pub struct ChartOpts {
     pub targets: Option<Vec<f64>>,
     pub max_vals: Option<Vec<f64>>,
     pub ranges: Option<Vec<f64>>,
+    pub comparisons: Option<Vec<f64>>,
+    pub comparison: Option<f64>,
     pub color_values: Option<Vec<f64>>,
     pub color_labels: Option<Vec<String>>,
     pub filled: Option<bool>,
@@ -1039,14 +1041,17 @@ pub fn build_bullet(input: &str) -> String {
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
-    use crate::plot::statistical::{BulletConfig, render_bullet_html};
+    use crate::plot::statistical::{BulletConfig, BulletVariant, render_bullet_html};
+    let variant = BulletVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let targets = o.targets.clone().unwrap_or_default();
     let max_vals = o.max_vals.clone().unwrap_or_default();
     let ranges = o.ranges.clone().unwrap_or_default();
+    let comparisons = o.comparisons.clone().unwrap_or_default();
     let hover = o.hj();
     let html = render_bullet_html(&BulletConfig {
-        title, labels: &labels, values: &values, targets: &targets,
-        max_vals: &max_vals, ranges: &ranges, width: o.w(800), height: o.h(300),
+        variant, title, labels: &labels, values: &values, targets: &targets,
+        max_vals: &max_vals, ranges: &ranges, comparisons: &comparisons,
+        width: o.w(800), height: o.h(300),
         hover: &hover, ..BulletConfig::default()
     });
     apply(html, &o)
@@ -1612,12 +1617,13 @@ pub fn build_dumbbell(input: &str) -> String {
     let labels = a.labels.unwrap_or_default();
     let values_start = a.start.unwrap_or_default();
     let values_end = a.end.unwrap_or_default();
-    use crate::plot::statistical::dumbbell::{DumbbellConfig, render_dumbbell_html};
+    use crate::plot::statistical::dumbbell::{DumbbellConfig, DumbbellVariant, render_dumbbell_html};
+    let variant = DumbbellVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let s = o.series_name_start.as_deref().unwrap_or("Start").to_string();
     let e = o.series_name_end.as_deref().unwrap_or("End").to_string();
     let hover = o.hj();
     let html = render_dumbbell_html(&DumbbellConfig {
-        title, labels: &labels, values_start: &values_start, values_end: &values_end,
+        variant, title, labels: &labels, values_start: &values_start, values_end: &values_end,
         series_names: (&s, &e), palette: &o.pal(), width: o.w(1000), height: o.h(500),
         x_label: &o.xl(), y_label: &o.yl(), gridlines: o.grid(),
         sort_order: &o.srt(), hover: &hover, ..DumbbellConfig::default()
@@ -1664,11 +1670,13 @@ pub fn build_gauge(input: &str) -> String {
     let title = title_s.as_str();
     let value = a.value.unwrap_or(0.0);
     let hover = o.hj();
-    use crate::plot::statistical::gauge::{GaugeConfig, render_gauge_html};
+    use crate::plot::statistical::gauge::{GaugeConfig, GaugeVariant, render_gauge_html};
+    let variant = GaugeVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+    let comparison = o.comparison.unwrap_or(0.0);
     let lbl = o.label.as_deref().unwrap_or("").to_string();
     let html = render_gauge_html(&GaugeConfig {
-        title, value, min_val: o.min_val.unwrap_or(0.0), max_val: o.max_val.unwrap_or(100.0),
-        label: &lbl, width: o.w(400), height: o.h(300),
+        variant, title, value, min_val: o.min_val.unwrap_or(0.0), max_val: o.max_val.unwrap_or(100.0),
+        label: &lbl, comparison, width: o.w(400), height: o.h(300),
         hover: &hover, ..GaugeConfig::default()
     });
     apply(html, &o)
