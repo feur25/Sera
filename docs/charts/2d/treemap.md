@@ -1,314 +1,1905 @@
-# Treemap
+# Treemap — Hierarchical Proportional Tiles
 
 <div class="lang-en">
 
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.2em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
+.sp-tb{padding:8px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+.sp-cls{display:flex;gap:0;margin:1.6em 0 1.6em 36px;border-radius:14px;background:linear-gradient(180deg,#0a0f1c 0%,#060912 100%);box-shadow:0 18px 50px -12px rgba(0,0,0,.6),0 0 0 1px #1e293b inset;position:relative;overflow:visible}
+.sp-cls-rail{display:flex;flex-direction:column;background:linear-gradient(180deg,#0d1426,#070b18);border-right:1px solid #1e293b;padding:18px 0;min-width:18px;transition:min-width .28s cubic-bezier(.5,0,.2,1);position:relative;z-index:2;border-radius:14px 0 0 14px;overflow:visible}
+.sp-cls.sp-open .sp-cls-rail{min-width:170px;padding:18px 8px}
+.sp-cls-toggle{position:absolute;top:-14px;left:8px;padding:5px 9px;background:#1e293b;color:#a5b4fc;border:1px solid #312e81;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;line-height:1;z-index:5;box-shadow:0 4px 12px -2px rgba(0,0,0,.5)}
+.sp-cls-toggle:hover{background:#312e81;color:#e0e7ff;transform:translateY(-1px)}
+.sp-cls-tab{position:relative;display:flex;align-items:center;gap:8px;margin:5px 0 5px -34px;padding:11px 16px 11px 14px;background:linear-gradient(90deg,#1a2540 0%,#141d33 70%,#0f172a 100%);color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;border:none;text-align:left;white-space:nowrap;border-radius:8px 0 0 8px;box-shadow:-6px 4px 14px -4px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04),inset 1px 0 0 rgba(255,255,255,.05);transition:all .25s cubic-bezier(.5,0,.2,1);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);min-height:18px}
+.sp-cls-tab:hover{background:linear-gradient(90deg,#23304d,#1a2540 70%,#141d33);color:#e0e7ff;margin-left:-40px;box-shadow:-8px 6px 18px -4px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
+.sp-cls-tab.sp-cact{background:linear-gradient(90deg,#3730a3 0%,#1e1b4b 50%,#0f172a 100%);color:#f5f3ff;margin-left:-46px;box-shadow:-10px 8px 22px -4px rgba(99,102,241,.35),-3px 0 0 0 #818cf8 inset,inset 0 1px 0 rgba(165,180,252,.2);font-weight:700;z-index:3}
+.sp-cls-tab .sp-cic{font-size:13px;flex-shrink:0;color:#a5b4fc;font-weight:900;letter-spacing:-1px;width:16px;text-align:center;text-shadow:0 0 6px rgba(165,180,252,.4)}
+.sp-cls-tab.sp-cact .sp-cic{color:#e0e7ff;text-shadow:0 0 10px rgba(165,180,252,.7)}
+.sp-cls-tab .sp-clb{display:none;font-weight:inherit;letter-spacing:.01em}
+.sp-cls.sp-open .sp-cls-tab .sp-clb{display:inline}
+.sp-cls-body{flex:1;padding:24px 26px 22px;background:#0a0f1c;min-width:0;position:relative;z-index:1;border-radius:0 14px 14px 0;overflow:hidden}
+.sp-variant{display:none}
+.sp-variant.sp-von{display:block;animation:spFade .25s ease}
+@keyframes spFade{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+.sp-vmeta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px;color:#94a3b8;margin:6px 0 16px;padding:10px 14px;background:rgba(99,102,241,.06);border-left:3px solid #6366f1;border-radius:0 6px 6px 0}
+.sp-vmeta strong{color:#a5b4fc;font-weight:700;margin-right:4px;letter-spacing:.04em;text-transform:uppercase;font-size:11px}
+.sp-vmeta code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#e2e8f0;font-size:12px}
+.sp-preview-frame{width:100%;height:480px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+.sp-preview-label{font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact');if(window.hljs)document.getElementById(scope+'-'+name).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
+</script>
+
+
 ## Signature
 
-```python
-sp.build_treemap(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    parents: list[str] | None = None,
-    width: int = 900,
-    height: int = 480,
-    palette: list[int] | None = None,
-    background: str | None = None,
-    hover_json: str | None = None,
-) -> Chart
-```
+`sp.treemap(title, labels, values, *, parents=None, variant="basic", palette=None, **kwargs) -> Chart`
 
-Aliases: `sp.treemap`
-
----
+Aliases: `sp.treemap`, `sp.build_treemap`
 
 ## Description
 
-A treemap tiles rectangular cells whose area is proportional to `values`, using the squarified layout algorithm to maximize the aspect ratio of each tile. When `parents` is provided, tiles are nested inside their parent rectangles, forming a two-level hierarchy with colored group backgrounds. Font size inside each tile scales with tile area so labels are always legible at their given size. SeraPlot's Rust renderer handles layouts of thousands of nodes in under a millisecond.
+`sp.treemap()` is the unified entry point for the entire treemap-chart family. A treemap divides a rectangle into proportional sub-rectangles whose area encodes value; when a `parents` list is given the layout becomes hierarchical (each parent gets its own block, leaves are squarified within). The `variant` keyword switches the visual style without touching the data. Treemaps are the standard for visualizing budgets, market cap, disk usage, portfolio weights, file systems and any 'whole = sum of parts' breakdown.
 
-**Ideal for:**
-- Part-to-whole comparisons where area encoding conveys magnitude directly
-- Navigating large hierarchies (file systems, org structures, market cap breakdowns)
-- Comparing relative weights across many categories simultaneously
+> **Hierarchical mode** — pass `parents` (one parent label per leaf, can be empty string `""` for a flat treemap). Internal totals are auto-computed from leaves. Sort leaves with the `sort_order` parameter (`"desc"` recommended).
 
----
+## Variants
+
+| Variant | Aliases | Description |
+|---|---|---|
+| `"basic"` | `basic / default / classic / filled` | Classic squarified treemap with rounded corners and white separators between tiles. |
+| `"flat"` | `flat / mosaic / edge / tight` | Edge-to-edge mosaic with no stroke and no rounding for a dense, magazine-style block. |
+| `"gradient"` | `gradient / fade / shaded / smooth` | Per-tile vertical gradient (opaque top, faded bottom) for a polished, modern feel. |
+| `"outlined"` | `outlined / outline / stroke / wireframe` | Wireframe tiles: translucent fill with bold colored stroke and dark labels for print-ready look. |
+| `"gapped"` | `gapped / spaced / inset / separated` | Each tile inset with extra padding so the structure breathes; rounded corners and color fill. |
+| `"nested"` | `nested / grouped / parents / hierarchy` | Draws parent group rectangles with header labels around their children, emphasising hierarchy. |
+| `"heat"` | `heat / heatmap / temperature / cold_warm` | Color encodes value (cool blue -> hot red) instead of identity, turning the treemap into a heatmap. |
+| `"mono"` | `mono / monochrome / single / uniform` | Single hue with opacity decreasing by rank; editorial, minimalist, perfect for slides. |
 
 ## Parameters
 
 | Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | `str` | required | Chart title |
-| `labels` | `list[str]` | required | Tile labels |
-| `values` | `list[float]` | required | Tile values (determines area) |
-| `parents` | `list[str] \| None` | `None` | Parent label per tile for nested layout |
-| `width` | `int` | `900` | Canvas width in pixels |
-| `height` | `int` | `480` | Canvas height in pixels |
-| `palette` | `list[int] \| None` | `None` | Colors per root group |
-| `background` | `str \| None` | `None` | Background color or `None` = transparent |
-| `hover_json` | `str \| None` | `None` | JSON string with extra per-tile tooltip data |
-
----
+|---|---|---|---|
+| `title`    | `str`         | required  | Chart title |
+| `labels`   | `list[str]`   | required  | Tile labels (one per leaf) |
+| `values`   | `list[float]` | required  | Leaf values (area) |
+| `parents`  | `list[str]`   | `None`    | Parent label of each leaf (`""` -> flat) |
+| `variant`  | `str`         | `"basic"` | Visual style (see table) |
+| `palette`  | `list[int]`   | `None`    | Custom color palette (per parent or per tile) |
+| `sort_order` | `str`       | `"none"` | `"none"`, `"asc"` or `"desc"` for leaves |
+| `width`    | `int`         | `1100`    | Canvas width (px) |
+| `height`   | `int`         | `520`     | Canvas height (px) |
 
 ## Returns
 
-`Chart`
+`Chart` — object with `.html` property and `.show()` method.
 
 ---
 
-<style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
-<script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
+<div class="sp-cls sp-open" id="treemap-en">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('treemap-en')" title="Collapse / expand">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('treemap-en','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-en','flat',this)"><span class="sp-cic">F</span><span class="sp-clb">Flat</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-en','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-en','outlined',this)"><span class="sp-cic">O</span><span class="sp-clb">Outlined</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-en','gapped',this)"><span class="sp-cic">P</span><span class="sp-clb">Gapped</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-en','nested',this)"><span class="sp-cic">N</span><span class="sp-clb">Nested</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-en','heat',this)"><span class="sp-cic">H</span><span class="sp-clb">Heat</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-en','mono',this)"><span class="sp-cic">M</span><span class="sp-clb">Mono</span></button>
+</div>
+<div class="sp-cls-body">
 
-<div class="sp-tabs" id="treemap">
+<div class="sp-variant sp-von" id="treemap-en-basic">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / filled</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Classic squarified treemap with rounded corners and white separators between tiles.</p>
+<div class="sp-tabs" id="treemap-en-basic">
 <div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('treemap','treemap-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('treemap','treemap-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('treemap','treemap-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('treemap','treemap-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('treemap','treemap-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('treemap','treemap-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('treemap','treemap-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('treemap','treemap-cpp',this)">C++</button>
-</div>
-<div id="treemap-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+<button class="sp-tb sp-act" onclick="spTab('treemap-en-basic','treemap-en-basic-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-en-basic','treemap-en-basic-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-basic','treemap-en-basic-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-basic','treemap-en-basic-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-en-basic','treemap-en-basic-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-en-basic','treemap-en-basic-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-en-basic','treemap-en-basic-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-en-basic','treemap-en-basic-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-en-basic','treemap-en-basic-cpp',this)">C++</button>
+</div><div id="treemap-en-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
+
 chart = sp.treemap(
-    title="S&P 500 Sector Weights (%)",
-    labels=["Information Technology", "Health Care", "Financials",
-            "Consumer Discretionary", "Industrials", "Communication Services",
-            "Consumer Staples", "Energy", "Utilities",
-            "Real Estate", "Materials"],
-    values=[29.0, 12.5, 13.2, 10.7, 8.5, 8.8, 6.0, 4.0, 2.5, 2.4, 2.4],
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="basic",
 )
-chart.show()</code></pre></div>
-<div id="treemap-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+chart.show()</code></pre></div><div id="treemap-en-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
 const chart = sp.treemap({
-  title: "S&P 500 Sector Weights (%)",
-  labels: ["Information Technology","Health Care","Financials",
-           "Consumer Discretionary","Industrials","Communication Services",
-           "Consumer Staples","Energy","Utilities","Real Estate","Materials"],
-  values: [29.0,12.5,13.2,10.7,8.5,8.8,6.0,4.0,2.5,2.4,2.4],
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "basic",
 });
-chart.show();</code></pre></div>
-<div id="treemap-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+chart.show();</code></pre></div><div id="treemap-en-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
 const chart = sp.treemap({
-  title: "S&P 500 Sector Weights (%)",
-  labels: ["Information Technology","Health Care","Financials",
-           "Consumer Discretionary","Industrials","Communication Services",
-           "Consumer Staples","Energy","Utilities","Real Estate","Materials"],
-  values: [29.0,12.5,13.2,10.7,8.5,8.8,6.0,4.0,2.5,2.4,2.4],
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "basic",
 });
-chart.show();</code></pre></div>
-<div id="treemap-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$treemap(
-  title  = "S&P 500 Sector Weights (%)",
-  labels = c("Information Technology","Health Care","Financials",
-             "Consumer Discretionary","Industrials","Communication Services",
-             "Consumer Staples","Energy","Utilities","Real Estate","Materials"),
-  values = c(29.0,12.5,13.2,10.7,8.5,8.8,6.0,4.0,2.5,2.4,2.4)
+chart.show();</code></pre></div><div id="treemap-en-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "basic"
 )
-chart$show()</code></pre></div>
-<div id="treemap-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+chart$show()</code></pre></div><div id="treemap-en-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("basic")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-en-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
+
 var chart = SeraPlot.treemap()
-    .title("S&P 500 Sector Weights (%)")
-    .labels(List.of("Information Technology","Health Care","Financials",
-                    "Consumer Discretionary","Industrials","Communication Services",
-                    "Consumer Staples","Energy","Utilities","Real Estate","Materials"))
-    .values(List.of(29.0,12.5,13.2,10.7,8.5,8.8,6.0,4.0,2.5,2.4,2.4))
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("basic")
     .build();
-chart.show();</code></pre></div>
-<div id="treemap-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+chart.show();</code></pre></div><div id="treemap-en-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
 var chart = Sp.Treemap(
-    title:  "S&P 500 Sector Weights (%)",
-    labels: ["Information Technology","Health Care","Financials",
-             "Consumer Discretionary","Industrials","Communication Services",
-             "Consumer Staples","Energy","Utilities","Real Estate","Materials"],
-    values: [29.0,12.5,13.2,10.7,8.5,8.8,6.0,4.0,2.5,2.4,2.4]
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "basic"
 );
-chart.Show();</code></pre></div>
-<div id="treemap-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+chart.Show();</code></pre></div><div id="treemap-en-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
 val chart = sp.treemap(
-  title  = "S&P 500 Sector Weights (%)",
-  labels = List("Information Technology","Health Care","Financials",
-                "Consumer Discretionary","Industrials","Communication Services",
-                "Consumer Staples","Energy","Utilities","Real Estate","Materials"),
-  values = List(29.0,12.5,13.2,10.7,8.5,8.8,6.0,4.0,2.5,2.4,2.4)
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "basic"
 )
-chart.show()</code></pre></div>
-<div id="treemap-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+chart.show()</code></pre></div><div id="treemap-en-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
 auto chart = sp::treemap({
-    .title  = "S&P 500 Sector Weights (%)",
-    .labels = {"Information Technology","Health Care","Financials",
-               "Consumer Discretionary","Industrials","Communication Services",
-               "Consumer Staples","Energy","Utilities","Real Estate","Materials"},
-    .values = {29.0,12.5,13.2,10.7,8.5,8.8,6.0,4.0,2.5,2.4,2.4},
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "basic",
 });
-chart.show();</code></pre></div>
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-basic.html"></iframe>
 </div>
 
-<iframe src="../../previews/treemap.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<div class="sp-variant" id="treemap-en-flat">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"flat"</code></span><span><strong>Aliases</strong> <code>flat / mosaic / edge / tight</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
----
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Edge-to-edge mosaic with no stroke and no rounding for a dense, magazine-style block.</p>
+<div class="sp-tabs" id="treemap-en-flat">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('treemap-en-flat','treemap-en-flat-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-en-flat','treemap-en-flat-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-flat','treemap-en-flat-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-flat','treemap-en-flat-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-en-flat','treemap-en-flat-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-en-flat','treemap-en-flat-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-en-flat','treemap-en-flat-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-en-flat','treemap-en-flat-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-en-flat','treemap-en-flat-cpp',this)">C++</button>
+</div><div id="treemap-en-flat-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 
-## See also
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
 
-- [Sunburst Chart](sunburst.md) — `sp.build_sunburst()`
-- [Pie Chart](pie.md) — `sp.build_pie_chart()`
-- [Bar Chart](bar.md) — `sp.build_bar_chart()`
+chart = sp.treemap(
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="flat",
+)
+chart.show()</code></pre></div><div id="treemap-en-flat-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "flat",
+});
+chart.show();</code></pre></div><div id="treemap-en-flat-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "flat",
+});
+chart.show();</code></pre></div><div id="treemap-en-flat-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "flat"
+)
+chart$show()</code></pre></div><div id="treemap-en-flat-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("flat")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-en-flat-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.treemap()
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("flat")
+    .build();
+chart.show();</code></pre></div><div id="treemap-en-flat-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Treemap(
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "flat"
+);
+chart.Show();</code></pre></div><div id="treemap-en-flat-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.treemap(
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "flat"
+)
+chart.show()</code></pre></div><div id="treemap-en-flat-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::treemap({
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "flat",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-flat.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-en-gradient">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / fade / shaded / smooth</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Per-tile vertical gradient (opaque top, faded bottom) for a polished, modern feel.</p>
+<div class="sp-tabs" id="treemap-en-gradient">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('treemap-en-gradient','treemap-en-gradient-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gradient','treemap-en-gradient-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gradient','treemap-en-gradient-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gradient','treemap-en-gradient-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gradient','treemap-en-gradient-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gradient','treemap-en-gradient-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gradient','treemap-en-gradient-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gradient','treemap-en-gradient-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gradient','treemap-en-gradient-cpp',this)">C++</button>
+</div><div id="treemap-en-gradient-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
+
+chart = sp.treemap(
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="gradient",
+)
+chart.show()</code></pre></div><div id="treemap-en-gradient-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "gradient",
+});
+chart.show();</code></pre></div><div id="treemap-en-gradient-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "gradient",
+});
+chart.show();</code></pre></div><div id="treemap-en-gradient-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "gradient"
+)
+chart$show()</code></pre></div><div id="treemap-en-gradient-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("gradient")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-en-gradient-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.treemap()
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("gradient")
+    .build();
+chart.show();</code></pre></div><div id="treemap-en-gradient-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Treemap(
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "gradient"
+);
+chart.Show();</code></pre></div><div id="treemap-en-gradient-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.treemap(
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "gradient"
+)
+chart.show()</code></pre></div><div id="treemap-en-gradient-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::treemap({
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "gradient",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-gradient.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-en-outlined">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"outlined"</code></span><span><strong>Aliases</strong> <code>outlined / outline / stroke / wireframe</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Wireframe tiles: translucent fill with bold colored stroke and dark labels for print-ready look.</p>
+<div class="sp-tabs" id="treemap-en-outlined">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('treemap-en-outlined','treemap-en-outlined-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-en-outlined','treemap-en-outlined-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-outlined','treemap-en-outlined-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-outlined','treemap-en-outlined-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-en-outlined','treemap-en-outlined-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-en-outlined','treemap-en-outlined-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-en-outlined','treemap-en-outlined-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-en-outlined','treemap-en-outlined-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-en-outlined','treemap-en-outlined-cpp',this)">C++</button>
+</div><div id="treemap-en-outlined-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
+
+chart = sp.treemap(
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="outlined",
+)
+chart.show()</code></pre></div><div id="treemap-en-outlined-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "outlined",
+});
+chart.show();</code></pre></div><div id="treemap-en-outlined-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "outlined",
+});
+chart.show();</code></pre></div><div id="treemap-en-outlined-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "outlined"
+)
+chart$show()</code></pre></div><div id="treemap-en-outlined-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("outlined")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-en-outlined-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.treemap()
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("outlined")
+    .build();
+chart.show();</code></pre></div><div id="treemap-en-outlined-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Treemap(
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "outlined"
+);
+chart.Show();</code></pre></div><div id="treemap-en-outlined-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.treemap(
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "outlined"
+)
+chart.show()</code></pre></div><div id="treemap-en-outlined-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::treemap({
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "outlined",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-outlined.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-en-gapped">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gapped"</code></span><span><strong>Aliases</strong> <code>gapped / spaced / inset / separated</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Each tile inset with extra padding so the structure breathes; rounded corners and color fill.</p>
+<div class="sp-tabs" id="treemap-en-gapped">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('treemap-en-gapped','treemap-en-gapped-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gapped','treemap-en-gapped-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gapped','treemap-en-gapped-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gapped','treemap-en-gapped-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gapped','treemap-en-gapped-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gapped','treemap-en-gapped-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gapped','treemap-en-gapped-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gapped','treemap-en-gapped-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-en-gapped','treemap-en-gapped-cpp',this)">C++</button>
+</div><div id="treemap-en-gapped-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
+
+chart = sp.treemap(
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="gapped",
+)
+chart.show()</code></pre></div><div id="treemap-en-gapped-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "gapped",
+});
+chart.show();</code></pre></div><div id="treemap-en-gapped-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "gapped",
+});
+chart.show();</code></pre></div><div id="treemap-en-gapped-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "gapped"
+)
+chart$show()</code></pre></div><div id="treemap-en-gapped-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("gapped")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-en-gapped-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.treemap()
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("gapped")
+    .build();
+chart.show();</code></pre></div><div id="treemap-en-gapped-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Treemap(
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "gapped"
+);
+chart.Show();</code></pre></div><div id="treemap-en-gapped-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.treemap(
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "gapped"
+)
+chart.show()</code></pre></div><div id="treemap-en-gapped-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::treemap({
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "gapped",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-gapped.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-en-nested">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"nested"</code></span><span><strong>Aliases</strong> <code>nested / grouped / parents / hierarchy</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Draws parent group rectangles with header labels around their children, emphasising hierarchy.</p>
+<div class="sp-tabs" id="treemap-en-nested">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('treemap-en-nested','treemap-en-nested-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-en-nested','treemap-en-nested-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-nested','treemap-en-nested-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-nested','treemap-en-nested-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-en-nested','treemap-en-nested-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-en-nested','treemap-en-nested-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-en-nested','treemap-en-nested-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-en-nested','treemap-en-nested-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-en-nested','treemap-en-nested-cpp',this)">C++</button>
+</div><div id="treemap-en-nested-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
+
+chart = sp.treemap(
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="nested",
+)
+chart.show()</code></pre></div><div id="treemap-en-nested-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "nested",
+});
+chart.show();</code></pre></div><div id="treemap-en-nested-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "nested",
+});
+chart.show();</code></pre></div><div id="treemap-en-nested-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "nested"
+)
+chart$show()</code></pre></div><div id="treemap-en-nested-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("nested")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-en-nested-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.treemap()
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("nested")
+    .build();
+chart.show();</code></pre></div><div id="treemap-en-nested-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Treemap(
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "nested"
+);
+chart.Show();</code></pre></div><div id="treemap-en-nested-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.treemap(
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "nested"
+)
+chart.show()</code></pre></div><div id="treemap-en-nested-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::treemap({
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "nested",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-nested.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-en-heat">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"heat"</code></span><span><strong>Aliases</strong> <code>heat / heatmap / temperature / cold_warm</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Color encodes value (cool blue -> hot red) instead of identity, turning the treemap into a heatmap.</p>
+<div class="sp-tabs" id="treemap-en-heat">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('treemap-en-heat','treemap-en-heat-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-en-heat','treemap-en-heat-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-heat','treemap-en-heat-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-heat','treemap-en-heat-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-en-heat','treemap-en-heat-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-en-heat','treemap-en-heat-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-en-heat','treemap-en-heat-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-en-heat','treemap-en-heat-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-en-heat','treemap-en-heat-cpp',this)">C++</button>
+</div><div id="treemap-en-heat-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
+
+chart = sp.treemap(
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="heat",
+)
+chart.show()</code></pre></div><div id="treemap-en-heat-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "heat",
+});
+chart.show();</code></pre></div><div id="treemap-en-heat-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "heat",
+});
+chart.show();</code></pre></div><div id="treemap-en-heat-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "heat"
+)
+chart$show()</code></pre></div><div id="treemap-en-heat-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("heat")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-en-heat-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.treemap()
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("heat")
+    .build();
+chart.show();</code></pre></div><div id="treemap-en-heat-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Treemap(
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "heat"
+);
+chart.Show();</code></pre></div><div id="treemap-en-heat-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.treemap(
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "heat"
+)
+chart.show()</code></pre></div><div id="treemap-en-heat-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::treemap({
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "heat",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-heat.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-en-mono">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"mono"</code></span><span><strong>Aliases</strong> <code>mono / monochrome / single / uniform</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Single hue with opacity decreasing by rank; editorial, minimalist, perfect for slides.</p>
+<div class="sp-tabs" id="treemap-en-mono">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('treemap-en-mono','treemap-en-mono-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-en-mono','treemap-en-mono-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-mono','treemap-en-mono-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-en-mono','treemap-en-mono-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-en-mono','treemap-en-mono-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-en-mono','treemap-en-mono-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-en-mono','treemap-en-mono-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-en-mono','treemap-en-mono-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-en-mono','treemap-en-mono-cpp',this)">C++</button>
+</div><div id="treemap-en-mono-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
+
+chart = sp.treemap(
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="mono",
+)
+chart.show()</code></pre></div><div id="treemap-en-mono-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "mono",
+});
+chart.show();</code></pre></div><div id="treemap-en-mono-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "mono",
+});
+chart.show();</code></pre></div><div id="treemap-en-mono-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "mono"
+)
+chart$show()</code></pre></div><div id="treemap-en-mono-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("mono")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-en-mono-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.treemap()
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("mono")
+    .build();
+chart.show();</code></pre></div><div id="treemap-en-mono-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Treemap(
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "mono"
+);
+chart.Show();</code></pre></div><div id="treemap-en-mono-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.treemap(
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "mono"
+)
+chart.show()</code></pre></div><div id="treemap-en-mono-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::treemap({
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "mono",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-mono.html"></iframe>
+</div>
+
+</div>
+</div>
 
 </div>
 
 <div class="lang-fr">
 
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.2em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
+.sp-tb{padding:8px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+.sp-cls{display:flex;gap:0;margin:1.6em 0 1.6em 36px;border-radius:14px;background:linear-gradient(180deg,#0a0f1c 0%,#060912 100%);box-shadow:0 18px 50px -12px rgba(0,0,0,.6),0 0 0 1px #1e293b inset;position:relative;overflow:visible}
+.sp-cls-rail{display:flex;flex-direction:column;background:linear-gradient(180deg,#0d1426,#070b18);border-right:1px solid #1e293b;padding:18px 0;min-width:18px;transition:min-width .28s cubic-bezier(.5,0,.2,1);position:relative;z-index:2;border-radius:14px 0 0 14px;overflow:visible}
+.sp-cls.sp-open .sp-cls-rail{min-width:170px;padding:18px 8px}
+.sp-cls-toggle{position:absolute;top:-14px;left:8px;padding:5px 9px;background:#1e293b;color:#a5b4fc;border:1px solid #312e81;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;line-height:1;z-index:5;box-shadow:0 4px 12px -2px rgba(0,0,0,.5)}
+.sp-cls-toggle:hover{background:#312e81;color:#e0e7ff;transform:translateY(-1px)}
+.sp-cls-tab{position:relative;display:flex;align-items:center;gap:8px;margin:5px 0 5px -34px;padding:11px 16px 11px 14px;background:linear-gradient(90deg,#1a2540 0%,#141d33 70%,#0f172a 100%);color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;border:none;text-align:left;white-space:nowrap;border-radius:8px 0 0 8px;box-shadow:-6px 4px 14px -4px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04),inset 1px 0 0 rgba(255,255,255,.05);transition:all .25s cubic-bezier(.5,0,.2,1);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);min-height:18px}
+.sp-cls-tab:hover{background:linear-gradient(90deg,#23304d,#1a2540 70%,#141d33);color:#e0e7ff;margin-left:-40px;box-shadow:-8px 6px 18px -4px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
+.sp-cls-tab.sp-cact{background:linear-gradient(90deg,#3730a3 0%,#1e1b4b 50%,#0f172a 100%);color:#f5f3ff;margin-left:-46px;box-shadow:-10px 8px 22px -4px rgba(99,102,241,.35),-3px 0 0 0 #818cf8 inset,inset 0 1px 0 rgba(165,180,252,.2);font-weight:700;z-index:3}
+.sp-cls-tab .sp-cic{font-size:13px;flex-shrink:0;color:#a5b4fc;font-weight:900;letter-spacing:-1px;width:16px;text-align:center;text-shadow:0 0 6px rgba(165,180,252,.4)}
+.sp-cls-tab.sp-cact .sp-cic{color:#e0e7ff;text-shadow:0 0 10px rgba(165,180,252,.7)}
+.sp-cls-tab .sp-clb{display:none;font-weight:inherit;letter-spacing:.01em}
+.sp-cls.sp-open .sp-cls-tab .sp-clb{display:inline}
+.sp-cls-body{flex:1;padding:24px 26px 22px;background:#0a0f1c;min-width:0;position:relative;z-index:1;border-radius:0 14px 14px 0;overflow:hidden}
+.sp-variant{display:none}
+.sp-variant.sp-von{display:block;animation:spFade .25s ease}
+@keyframes spFade{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+.sp-vmeta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px;color:#94a3b8;margin:6px 0 16px;padding:10px 14px;background:rgba(99,102,241,.06);border-left:3px solid #6366f1;border-radius:0 6px 6px 0}
+.sp-vmeta strong{color:#a5b4fc;font-weight:700;margin-right:4px;letter-spacing:.04em;text-transform:uppercase;font-size:11px}
+.sp-vmeta code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#e2e8f0;font-size:12px}
+.sp-preview-frame{width:100%;height:480px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+.sp-preview-label{font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact');if(window.hljs)document.getElementById(scope+'-'+name).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
+</script>
+
+
 ## Signature
 
-```python
-sp.build_treemap(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    parents: list[str] | None = None,
-    width: int = 900,
-    height: int = 480,
-    palette: list[int] | None = None,
-    background: str | None = None,
-    hover_json: str | None = None,
-) -> Chart
-```
+`sp.treemap(title, labels, values, *, parents=None, variant="basic", palette=None, **kwargs) -> Chart`
 
-Aliases: `sp.treemap`
-
----
+Alias : `sp.treemap`, `sp.build_treemap`
 
 ## Description
 
-Un treemap dispose des cellules rectangulaires dont l'aire est proportionnelle aux `values`, en utilisant l'algorithme de mise en page squarifiée pour maximiser le rapport d'aspect de chaque tuile. Quand `parents` est fourni, les tuiles sont imbriquées dans leurs rectangles parents, formant une hiérarchie à deux niveaux. La taille de police dans chaque tuile s'adapte à l'aire de la tuile. Le moteur Rust de SeraPlot gère des mises en page de milliers de nœuds en moins d'une milliseconde.
+`sp.treemap()` est le point d entree unifie pour toute la famille treemap. Un treemap decoupe un rectangle en sous-rectangles proportionnels dont l aire code la valeur ; lorsqu une liste `parents` est fournie le rendu devient hierarchique (chaque parent recoit son propre bloc, les feuilles y sont squarifiees). Le mot-cle `variant` change le style sans toucher aux donnees. Les treemaps sont la reference pour visualiser budgets, capitalisations boursieres, occupation disque, poids de portefeuille, systemes de fichiers et toute decomposition 'tout = somme des parties'.
 
-**Idéal pour :**
-- Comparaisons partie-à-tout où l'encodage par aire transmet directement la magnitude
-- Navigation dans de grandes hiérarchies (systèmes de fichiers, structures org, répartitions de capitalisation boursière)
-- Comparer les poids relatifs de nombreuses catégories simultanément
+> **Mode hierarchique** — passez `parents` (un libelle parent par feuille, chaine vide `""` pour un treemap plat). Les totaux internes sont auto-calcules. Triez les feuilles avec `sort_order` (`"desc"` recommande).
+
+## Variantes
+
+| Variante | Alias | Description |
+|---|---|---|
+| `"basic"` | `basic / default / classic / filled` | Treemap squarifie classique avec coins arrondis et separateurs blancs entre les tuiles. |
+| `"flat"` | `flat / mosaic / edge / tight` | Mosaique bord-a-bord sans contour ni arrondi pour un bloc dense type magazine. |
+| `"gradient"` | `gradient / fade / shaded / smooth` | Degrade vertical par tuile (haut opaque, bas estompe) pour un rendu moderne et soigne. |
+| `"outlined"` | `outlined / outline / stroke / wireframe` | Tuiles en fil de fer : fond translucide, contour colore epais et libelles sombres, style imprimable. |
+| `"gapped"` | `gapped / spaced / inset / separated` | Chaque tuile en retrait avec marges supplementaires pour aerer la structure ; coins arrondis. |
+| `"nested"` | `nested / grouped / parents / hierarchy` | Dessine les rectangles parents avec libelle d en-tete autour de leurs enfants, met en avant la hierarchie. |
+| `"heat"` | `heat / heatmap / temperature / cold_warm` | La couleur code la valeur (bleu froid -> rouge chaud) au lieu de l identite, treemap en heatmap. |
+| `"mono"` | `mono / monochrome / single / uniform` | Teinte unique avec opacite decroissante par rang ; minimaliste et editorial, ideal pour slides. |
+
+## Parametres
+
+| Parametre | Type | Defaut | Description |
+|---|---|---|---|
+| `title`    | `str`         | requis    | Titre du graphique |
+| `labels`   | `list[str]`   | requis    | Libelles des tuiles (un par feuille) |
+| `values`   | `list[float]` | requis    | Valeurs feuilles (aire) |
+| `parents`  | `list[str]`   | `None`    | Parent de chaque feuille (`""` -> plat) |
+| `variant`  | `str`         | `"basic"` | Style visuel (voir tableau) |
+| `palette`  | `list[int]`   | `None`    | Palette de couleurs (par parent ou tuile) |
+| `sort_order` | `str`       | `"none"` | `"none"`, `"asc"` ou `"desc"` pour les feuilles |
+| `width`    | `int`         | `1100`    | Largeur du canvas (px) |
+| `height`   | `int`         | `520`     | Hauteur du canvas (px) |
+
+## Retour
+
+`Chart` — objet avec une propriete `.html` et une methode `.show()`.
 
 ---
 
-## Paramètres
+<div class="sp-cls sp-open" id="treemap-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('treemap-fr')" title="Collapse / expand">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('treemap-fr','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-fr','flat',this)"><span class="sp-cic">F</span><span class="sp-clb">Flat</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-fr','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-fr','outlined',this)"><span class="sp-cic">O</span><span class="sp-clb">Outlined</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-fr','gapped',this)"><span class="sp-cic">P</span><span class="sp-clb">Gapped</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-fr','nested',this)"><span class="sp-cic">N</span><span class="sp-clb">Nested</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-fr','heat',this)"><span class="sp-cic">H</span><span class="sp-clb">Heat</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-fr','mono',this)"><span class="sp-cic">M</span><span class="sp-clb">Mono</span></button>
+</div>
+<div class="sp-cls-body">
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `title` | `str` | requis | Titre du graphique |
-| `labels` | `list[str]` | requis | Étiquettes des tuiles |
-| `values` | `list[float]` | requis | Valeurs des tuiles (détermine l'aire) |
-| `parents` | `list[str] \| None` | `None` | Étiquette du parent par tuile pour la mise en page imbriquée |
-| `width` | `int` | `900` | Largeur du canvas en pixels |
-| `height` | `int` | `480` | Hauteur du canvas en pixels |
-| `palette` | `list[int] \| None` | `None` | Couleurs par groupe racine |
-| `background` | `str \| None` | `None` | Couleur de fond ou `None` = transparent |
-| `hover_json` | `str \| None` | `None` | Chaîne JSON avec des données d'infobulle supplémentaires par tuile |
+<div class="sp-variant sp-von" id="treemap-fr-basic">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / filled</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
----
-
-## Retourne
-
-`Chart`
-
----
-
-<div class="sp-tabs" id="treemap-fr">
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Treemap squarifie classique avec coins arrondis et separateurs blancs entre les tuiles.</p>
+<div class="sp-tabs" id="treemap-fr-basic">
 <div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('treemap-fr','treemap-fr-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('treemap-fr','treemap-fr-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('treemap-fr','treemap-fr-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('treemap-fr','treemap-fr-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('treemap-fr','treemap-fr-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('treemap-fr','treemap-fr-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('treemap-fr','treemap-fr-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('treemap-fr','treemap-fr-cpp',this)">C++</button>
-</div>
-<div id="treemap-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+<button class="sp-tb sp-act" onclick="spTab('treemap-fr-basic','treemap-fr-basic-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-basic','treemap-fr-basic-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-basic','treemap-fr-basic-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-basic','treemap-fr-basic-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-basic','treemap-fr-basic-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-basic','treemap-fr-basic-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-basic','treemap-fr-basic-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-basic','treemap-fr-basic-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-basic','treemap-fr-basic-cpp',this)">C++</button>
+</div><div id="treemap-fr-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
+
 chart = sp.treemap(
-    title="Pondérations sectorielles S&P 500 (%)",
-    labels=["Technologies", "Santé", "Finance",
-            "Conso. discrétion.", "Industrie", "Communication",
-            "Conso. courante", "Énergie", "Services publics",
-            "Immobilier", "Matériaux"],
-    values=[29.0, 12.5, 13.2, 10.7, 8.5, 8.8, 6.0, 4.0, 2.5, 2.4, 2.4],
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="basic",
 )
-chart.show()</code></pre></div>
-<div id="treemap-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+chart.show()</code></pre></div><div id="treemap-fr-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
 const chart = sp.treemap({
-  title: "Pondérations sectorielles S&P 500 (%)",
-  labels: ["Technologies","Santé","Finance",
-           "Conso. discrétion.","Industrie","Communication",
-           "Conso. courante","Énergie","Services publics","Immobilier","Matériaux"],
-  values: [29.0,12.5,13.2,10.7,8.5,8.8,6.0,4.0,2.5,2.4,2.4],
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "basic",
 });
-chart.show();</code></pre></div>
-<div id="treemap-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+chart.show();</code></pre></div><div id="treemap-fr-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
 const chart = sp.treemap({
-  title: "Pondérations sectorielles S&P 500 (%)",
-  labels: ["Technologies","Santé","Finance",
-           "Conso. discrétion.","Industrie","Communication",
-           "Conso. courante","Énergie","Services publics","Immobilier","Matériaux"],
-  values: [29.0,12.5,13.2,10.7,8.5,8.8,6.0,4.0,2.5,2.4,2.4],
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "basic",
 });
-chart.show();</code></pre></div>
-<div id="treemap-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$treemap(
-  title  = "Pondérations sectorielles S&P 500 (%)",
-  labels = c("Technologies","Santé","Finance",
-             "Conso. discrétion.","Industrie","Communication",
-             "Conso. courante","Énergie","Services publics","Immobilier","Matériaux"),
-  values = c(29.0,12.5,13.2,10.7,8.5,8.8,6.0,4.0,2.5,2.4,2.4)
+chart.show();</code></pre></div><div id="treemap-fr-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "basic"
 )
-chart$show()</code></pre></div>
-<div id="treemap-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+chart$show()</code></pre></div><div id="treemap-fr-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("basic")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-fr-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
 import java.util.List;
+
 var chart = SeraPlot.treemap()
-    .title("Pondérations sectorielles S&P 500 (%)")
-    .labels(List.of("Technologies","Santé","Finance",
-                    "Conso. discrétion.","Industrie","Communication",
-                    "Conso. courante","Énergie","Services publics","Immobilier","Matériaux"))
-    .values(List.of(29.0,12.5,13.2,10.7,8.5,8.8,6.0,4.0,2.5,2.4,2.4))
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("basic")
     .build();
-chart.show();</code></pre></div>
-<div id="treemap-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+chart.show();</code></pre></div><div id="treemap-fr-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
 var chart = Sp.Treemap(
-    title:  "Pondérations sectorielles S&P 500 (%)",
-    labels: ["Technologies","Santé","Finance",
-             "Conso. discrétion.","Industrie","Communication",
-             "Conso. courante","Énergie","Services publics","Immobilier","Matériaux"],
-    values: [29.0,12.5,13.2,10.7,8.5,8.8,6.0,4.0,2.5,2.4,2.4]
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "basic"
 );
-chart.Show();</code></pre></div>
-<div id="treemap-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+chart.Show();</code></pre></div><div id="treemap-fr-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
 val chart = sp.treemap(
-  title  = "Pondérations sectorielles S&P 500 (%)",
-  labels = List("Technologies","Santé","Finance",
-                "Conso. discrétion.","Industrie","Communication",
-                "Conso. courante","Énergie","Services publics","Immobilier","Matériaux"),
-  values = List(29.0,12.5,13.2,10.7,8.5,8.8,6.0,4.0,2.5,2.4,2.4)
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "basic"
 )
-chart.show()</code></pre></div>
-<div id="treemap-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+chart.show()</code></pre></div><div id="treemap-fr-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
 auto chart = sp::treemap({
-    .title  = "Pondérations sectorielles S&P 500 (%)",
-    .labels = {"Technologies","Santé","Finance",
-               "Conso. discrétion.","Industrie","Communication",
-               "Conso. courante","Énergie","Services publics","Immobilier","Matériaux"},
-    .values = {29.0,12.5,13.2,10.7,8.5,8.8,6.0,4.0,2.5,2.4,2.4},
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "basic",
 });
-chart.show();</code></pre></div>
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-basic.html"></iframe>
 </div>
 
-<iframe src="../../previews/treemap.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<div class="sp-variant" id="treemap-fr-flat">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"flat"</code></span><span><strong>Aliases</strong> <code>flat / mosaic / edge / tight</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
----
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Mosaique bord-a-bord sans contour ni arrondi pour un bloc dense type magazine.</p>
+<div class="sp-tabs" id="treemap-fr-flat">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('treemap-fr-flat','treemap-fr-flat-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-flat','treemap-fr-flat-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-flat','treemap-fr-flat-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-flat','treemap-fr-flat-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-flat','treemap-fr-flat-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-flat','treemap-fr-flat-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-flat','treemap-fr-flat-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-flat','treemap-fr-flat-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-flat','treemap-fr-flat-cpp',this)">C++</button>
+</div><div id="treemap-fr-flat-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
 
-## Voir aussi
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
 
-- [Sunburst](sunburst.md) — `sp.build_sunburst()`
-- [Camembert](pie.md) — `sp.build_pie_chart()`
-- [Graphique en barres](bar.md) — `sp.build_bar_chart()`
+chart = sp.treemap(
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="flat",
+)
+chart.show()</code></pre></div><div id="treemap-fr-flat-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "flat",
+});
+chart.show();</code></pre></div><div id="treemap-fr-flat-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "flat",
+});
+chart.show();</code></pre></div><div id="treemap-fr-flat-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "flat"
+)
+chart$show()</code></pre></div><div id="treemap-fr-flat-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("flat")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-fr-flat-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.treemap()
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("flat")
+    .build();
+chart.show();</code></pre></div><div id="treemap-fr-flat-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Treemap(
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "flat"
+);
+chart.Show();</code></pre></div><div id="treemap-fr-flat-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.treemap(
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "flat"
+)
+chart.show()</code></pre></div><div id="treemap-fr-flat-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::treemap({
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "flat",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-flat.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-fr-gradient">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / fade / shaded / smooth</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Degrade vertical par tuile (haut opaque, bas estompe) pour un rendu moderne et soigne.</p>
+<div class="sp-tabs" id="treemap-fr-gradient">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('treemap-fr-gradient','treemap-fr-gradient-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gradient','treemap-fr-gradient-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gradient','treemap-fr-gradient-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gradient','treemap-fr-gradient-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gradient','treemap-fr-gradient-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gradient','treemap-fr-gradient-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gradient','treemap-fr-gradient-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gradient','treemap-fr-gradient-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gradient','treemap-fr-gradient-cpp',this)">C++</button>
+</div><div id="treemap-fr-gradient-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
+
+chart = sp.treemap(
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="gradient",
+)
+chart.show()</code></pre></div><div id="treemap-fr-gradient-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "gradient",
+});
+chart.show();</code></pre></div><div id="treemap-fr-gradient-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "gradient",
+});
+chart.show();</code></pre></div><div id="treemap-fr-gradient-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "gradient"
+)
+chart$show()</code></pre></div><div id="treemap-fr-gradient-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("gradient")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-fr-gradient-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.treemap()
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("gradient")
+    .build();
+chart.show();</code></pre></div><div id="treemap-fr-gradient-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Treemap(
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "gradient"
+);
+chart.Show();</code></pre></div><div id="treemap-fr-gradient-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.treemap(
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "gradient"
+)
+chart.show()</code></pre></div><div id="treemap-fr-gradient-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::treemap({
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "gradient",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-gradient.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-fr-outlined">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"outlined"</code></span><span><strong>Aliases</strong> <code>outlined / outline / stroke / wireframe</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Tuiles en fil de fer : fond translucide, contour colore epais et libelles sombres, style imprimable.</p>
+<div class="sp-tabs" id="treemap-fr-outlined">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('treemap-fr-outlined','treemap-fr-outlined-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-outlined','treemap-fr-outlined-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-outlined','treemap-fr-outlined-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-outlined','treemap-fr-outlined-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-outlined','treemap-fr-outlined-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-outlined','treemap-fr-outlined-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-outlined','treemap-fr-outlined-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-outlined','treemap-fr-outlined-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-outlined','treemap-fr-outlined-cpp',this)">C++</button>
+</div><div id="treemap-fr-outlined-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
+
+chart = sp.treemap(
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="outlined",
+)
+chart.show()</code></pre></div><div id="treemap-fr-outlined-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "outlined",
+});
+chart.show();</code></pre></div><div id="treemap-fr-outlined-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "outlined",
+});
+chart.show();</code></pre></div><div id="treemap-fr-outlined-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "outlined"
+)
+chart$show()</code></pre></div><div id="treemap-fr-outlined-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("outlined")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-fr-outlined-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.treemap()
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("outlined")
+    .build();
+chart.show();</code></pre></div><div id="treemap-fr-outlined-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Treemap(
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "outlined"
+);
+chart.Show();</code></pre></div><div id="treemap-fr-outlined-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.treemap(
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "outlined"
+)
+chart.show()</code></pre></div><div id="treemap-fr-outlined-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::treemap({
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "outlined",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-outlined.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-fr-gapped">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gapped"</code></span><span><strong>Aliases</strong> <code>gapped / spaced / inset / separated</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chaque tuile en retrait avec marges supplementaires pour aerer la structure ; coins arrondis.</p>
+<div class="sp-tabs" id="treemap-fr-gapped">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('treemap-fr-gapped','treemap-fr-gapped-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gapped','treemap-fr-gapped-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gapped','treemap-fr-gapped-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gapped','treemap-fr-gapped-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gapped','treemap-fr-gapped-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gapped','treemap-fr-gapped-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gapped','treemap-fr-gapped-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gapped','treemap-fr-gapped-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-gapped','treemap-fr-gapped-cpp',this)">C++</button>
+</div><div id="treemap-fr-gapped-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
+
+chart = sp.treemap(
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="gapped",
+)
+chart.show()</code></pre></div><div id="treemap-fr-gapped-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "gapped",
+});
+chart.show();</code></pre></div><div id="treemap-fr-gapped-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "gapped",
+});
+chart.show();</code></pre></div><div id="treemap-fr-gapped-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "gapped"
+)
+chart$show()</code></pre></div><div id="treemap-fr-gapped-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("gapped")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-fr-gapped-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.treemap()
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("gapped")
+    .build();
+chart.show();</code></pre></div><div id="treemap-fr-gapped-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Treemap(
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "gapped"
+);
+chart.Show();</code></pre></div><div id="treemap-fr-gapped-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.treemap(
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "gapped"
+)
+chart.show()</code></pre></div><div id="treemap-fr-gapped-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::treemap({
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "gapped",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-gapped.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-fr-nested">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"nested"</code></span><span><strong>Aliases</strong> <code>nested / grouped / parents / hierarchy</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Dessine les rectangles parents avec libelle d en-tete autour de leurs enfants, met en avant la hierarchie.</p>
+<div class="sp-tabs" id="treemap-fr-nested">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('treemap-fr-nested','treemap-fr-nested-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-nested','treemap-fr-nested-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-nested','treemap-fr-nested-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-nested','treemap-fr-nested-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-nested','treemap-fr-nested-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-nested','treemap-fr-nested-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-nested','treemap-fr-nested-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-nested','treemap-fr-nested-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-nested','treemap-fr-nested-cpp',this)">C++</button>
+</div><div id="treemap-fr-nested-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
+
+chart = sp.treemap(
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="nested",
+)
+chart.show()</code></pre></div><div id="treemap-fr-nested-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "nested",
+});
+chart.show();</code></pre></div><div id="treemap-fr-nested-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "nested",
+});
+chart.show();</code></pre></div><div id="treemap-fr-nested-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "nested"
+)
+chart$show()</code></pre></div><div id="treemap-fr-nested-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("nested")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-fr-nested-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.treemap()
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("nested")
+    .build();
+chart.show();</code></pre></div><div id="treemap-fr-nested-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Treemap(
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "nested"
+);
+chart.Show();</code></pre></div><div id="treemap-fr-nested-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.treemap(
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "nested"
+)
+chart.show()</code></pre></div><div id="treemap-fr-nested-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::treemap({
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "nested",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-nested.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-fr-heat">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"heat"</code></span><span><strong>Aliases</strong> <code>heat / heatmap / temperature / cold_warm</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">La couleur code la valeur (bleu froid -> rouge chaud) au lieu de l identite, treemap en heatmap.</p>
+<div class="sp-tabs" id="treemap-fr-heat">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('treemap-fr-heat','treemap-fr-heat-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-heat','treemap-fr-heat-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-heat','treemap-fr-heat-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-heat','treemap-fr-heat-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-heat','treemap-fr-heat-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-heat','treemap-fr-heat-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-heat','treemap-fr-heat-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-heat','treemap-fr-heat-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-heat','treemap-fr-heat-cpp',this)">C++</button>
+</div><div id="treemap-fr-heat-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
+
+chart = sp.treemap(
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="heat",
+)
+chart.show()</code></pre></div><div id="treemap-fr-heat-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "heat",
+});
+chart.show();</code></pre></div><div id="treemap-fr-heat-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "heat",
+});
+chart.show();</code></pre></div><div id="treemap-fr-heat-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "heat"
+)
+chart$show()</code></pre></div><div id="treemap-fr-heat-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("heat")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-fr-heat-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.treemap()
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("heat")
+    .build();
+chart.show();</code></pre></div><div id="treemap-fr-heat-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Treemap(
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "heat"
+);
+chart.Show();</code></pre></div><div id="treemap-fr-heat-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.treemap(
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "heat"
+)
+chart.show()</code></pre></div><div id="treemap-fr-heat-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::treemap({
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "heat",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-heat.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-fr-mono">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"mono"</code></span><span><strong>Aliases</strong> <code>mono / monochrome / single / uniform</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Teinte unique avec opacite decroissante par rang ; minimaliste et editorial, ideal pour slides.</p>
+<div class="sp-tabs" id="treemap-fr-mono">
+<div class="sp-tab-btns">
+<button class="sp-tb sp-act" onclick="spTab('treemap-fr-mono','treemap-fr-mono-py',this)">Python</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-mono','treemap-fr-mono-js',this)">JavaScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-mono','treemap-fr-mono-ts',this)">TypeScript</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-mono','treemap-fr-mono-r',this)">R</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-mono','treemap-fr-mono-rust',this)">Rust</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-mono','treemap-fr-mono-java',this)">Java</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-mono','treemap-fr-mono-cs',this)">C#</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-mono','treemap-fr-mono-scala',this)">Scala</button>
+<button class="sp-tb" onclick="spTab('treemap-fr-mono','treemap-fr-mono-cpp',this)">C++</button>
+</div><div id="treemap-fr-mono-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
+
+labels  = ["AAPL","MSFT","NVDA","GOOG","AMZN","META","TSLA","BRK","JPM","V","WMT","PG"]
+values  = [2900,2800,1700,1600,1500,900,800,700,500,500,420,360]
+parents = ["Tech","Tech","Tech","Tech","Tech","Tech","Auto","Fin","Fin","Fin","Cons","Cons"]
+
+chart = sp.treemap(
+    title="Market Cap",
+    labels=labels,
+    values=values,
+    parents=parents,
+    palette=[0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0xA855F7, 0x06B6D4],
+    variant="mono",
+)
+chart.show()</code></pre></div><div id="treemap-fr-mono-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "mono",
+});
+chart.show();</code></pre></div><div id="treemap-fr-mono-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
+const chart = sp.treemap({
+  title: "Market Cap",
+  labels: [/* ... */],
+  values: [/* ... */],
+  parents: [/* ... */],
+  variant: "mono",
+});
+chart.show();</code></pre></div><div id="treemap-fr-mono-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
+chart &lt;- sp$treemap(
+  title = "Market Cap",
+  labels = c(),
+  values = c(),
+  parents = c(),
+  variant = "mono"
+)
+chart$show()</code></pre></div><div id="treemap-fr-mono-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
+
+fn main() {
+    let chart = sp::treemap()
+        .title("Market Cap")
+        .labels(vec![])
+        .values(vec![])
+        .parents(vec![])
+        .variant("mono")
+        .build();
+    chart.show();
+}</code></pre></div><div id="treemap-fr-mono-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
+import java.util.List;
+
+var chart = SeraPlot.treemap()
+    .title("Market Cap")
+    .labels(List.of())
+    .values(List.of())
+    .parents(List.of())
+    .variant("mono")
+    .build();
+chart.show();</code></pre></div><div id="treemap-fr-mono-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
+
+var chart = Sp.Treemap(
+    title: "Market Cap",
+    labels: new string[]{},
+    values: new double[]{},
+    parents: new string[]{},
+    variant: "mono"
+);
+chart.Show();</code></pre></div><div id="treemap-fr-mono-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
+
+val chart = sp.treemap(
+  title   = "Market Cap",
+  labels  = List(),
+  values  = List(),
+  parents = List(),
+  variant = "mono"
+)
+chart.show()</code></pre></div><div id="treemap-fr-mono-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
+
+auto chart = sp::treemap({
+    .title   = "Market Cap",
+    .labels  = {},
+    .values  = {},
+    .parents = {},
+    .variant = "mono",
+});
+chart.show();</code></pre></div></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-mono.html"></iframe>
+</div>
+
+</div>
+</div>
 
 </div>

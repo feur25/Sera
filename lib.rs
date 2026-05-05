@@ -1032,7 +1032,7 @@ pub fn chart_variants(py: Python<'_>) -> PyResult<PyObject> {
     use crate::plot::statistical::{
         BarVariant, LineVariant, HeatmapVariant, HistogramVariant,
         PieVariant, BoxplotVariant, ViolinVariant, KdeVariant, RidgelineVariant, RadarVariant,
-        SlopeVariant, FunnelVariant,
+        SlopeVariant, FunnelVariant, SunburstVariant, WaterfallVariant, TreemapVariant, CandlestickVariant,
     };
     use crate::plot::statistical::scatter::ScatterVariant;
     use crate::plot::statistical::bubble::BubbleVariant;
@@ -1074,6 +1074,10 @@ pub fn chart_variants(py: Python<'_>) -> PyResult<PyObject> {
     out.set_item("radar", build::<RadarVariant>(py, RadarVariant::keys_and_aliases(), RadarVariant::default_key())?)?;
     out.set_item("slope", build::<SlopeVariant>(py, SlopeVariant::keys_and_aliases(), SlopeVariant::default_key())?)?;
     out.set_item("funnel", build::<FunnelVariant>(py, FunnelVariant::keys_and_aliases(), FunnelVariant::default_key())?)?;
+    out.set_item("sunburst", build::<SunburstVariant>(py, SunburstVariant::keys_and_aliases(), SunburstVariant::default_key())?)?;
+    out.set_item("waterfall", build::<WaterfallVariant>(py, WaterfallVariant::keys_and_aliases(), WaterfallVariant::default_key())?)?;
+    out.set_item("treemap", build::<TreemapVariant>(py, TreemapVariant::keys_and_aliases(), TreemapVariant::default_key())?)?;
+    out.set_item("candlestick", build::<CandlestickVariant>(py, CandlestickVariant::keys_and_aliases(), CandlestickVariant::default_key())?)?;
     Ok(out.into())
 }
 

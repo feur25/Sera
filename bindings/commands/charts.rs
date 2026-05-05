@@ -935,10 +935,11 @@ pub fn build_sunburst(input: &str) -> String {
     let labels = a.labels.unwrap_or_default();
     let parents = a.parents.unwrap_or_default();
     let values = a.values.unwrap_or_default();
-    use crate::plot::statistical::{SunburstConfig, render_sunburst_html};
+    use crate::plot::statistical::{SunburstConfig, SunburstVariant, render_sunburst_html};
     let hover = o.hj();
+    let variant = SunburstVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let html = render_sunburst_html(&SunburstConfig {
-        title, labels: &labels, parents: &parents, values: &values,
+        title, variant, labels: &labels, parents: &parents, values: &values, palette: &o.pal(),
         width: o.w(700), height: o.h(700), hover: &hover, ..SunburstConfig::default()
     });
     apply(html, &o)
@@ -966,12 +967,13 @@ pub fn build_treemap(input: &str) -> String {
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
     let pars = a.parents.unwrap_or_default();
-    use crate::plot::statistical::{TreemapConfig, render_treemap_html};
+    use crate::plot::statistical::{TreemapConfig, TreemapVariant, render_treemap_html};
     let hover = o.hj();
+    let variant = TreemapVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let html = render_treemap_html(&TreemapConfig {
         title, labels: &labels, values: &values, parents: &pars,
         palette: &o.pal(), sort_order: &o.srt(), width: o.w(1100), height: o.h(520),
-        hover: &hover, ..TreemapConfig::default()
+        hover: &hover, variant, ..TreemapConfig::default()
     });
     apply(html, &o)
 }
@@ -1020,10 +1022,11 @@ pub fn build_waterfall(input: &str) -> String {
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
-    use crate::plot::statistical::{WaterfallConfig, render_waterfall_html};
+    use crate::plot::statistical::{WaterfallConfig, WaterfallVariant, render_waterfall_html};
     let hover = o.hj();
+    let variant = WaterfallVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let html = render_waterfall_html(&WaterfallConfig {
-        title, labels: &labels, values: &values, x_label: &o.xl(), y_label: &o.yl(),
+        title, variant, labels: &labels, values: &values, x_label: &o.xl(), y_label: &o.yl(),
         show_text: o.show_text.unwrap_or(true), gridlines: o.grid(),
         width: o.w(900), height: o.h(480), sort_order: &o.srt(), hover: &hover,
         legend_position: &o.lp(), orientation: o.orient_byte(),
@@ -1591,13 +1594,14 @@ pub fn build_candlestick(input: &str) -> String {
     let high = a.high.unwrap_or_default();
     let low = a.low.unwrap_or_default();
     let close = a.close.unwrap_or_default();
-    use crate::plot::statistical::candlestick::{CandlestickConfig, render_candlestick_html};
+    use crate::plot::statistical::{CandlestickConfig, CandlestickVariant, render_candlestick_html};
     let hover = o.hj();
+    let variant = CandlestickVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let html = render_candlestick_html(&CandlestickConfig {
         title, labels: &labels, open: &open, high: &high, low: &low, close: &close,
         palette: &o.pal(), width: o.w(1100), height: o.h(500),
         x_label: &o.xl(), y_label: &o.yl(), gridlines: o.grid(),
-        sort_order: &o.srt(), hover: &hover, ..CandlestickConfig::default()
+        sort_order: &o.srt(), hover: &hover, variant, ..CandlestickConfig::default()
     });
     apply(html, &o)
 }
