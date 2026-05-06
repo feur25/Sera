@@ -110,87 +110,7 @@ Aliases: `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default / vertical</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="hgen-basic">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('hgen-basic','hgen-basic-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('hgen-basic','hgen-basic-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('hgen-basic','hgen-basic-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('hgen-basic','hgen-basic-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('hgen-basic','hgen-basic-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('hgen-basic','hgen-basic-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('hgen-basic','hgen-basic-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('hgen-basic','hgen-basic-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('hgen-basic','hgen-basic-cpp',this)">C++</button>
-</div><div id="hgen-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-v = [random.gauss(70, 10) for _ in range(500)]
-chart = sp.histogram(
-    title="Distribution",
-    values=v,
-    variant="basic",
-    bins=0,
-    color_hex=0x6366F1,
-    x_label="value", y_label="count",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="hgen-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgen-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgen-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$histogram(
-  title = "Distribution",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="hgen-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::histogram()
-        .title("Distribution")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="hgen-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.histogram()
-    .title("Distribution")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="hgen-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Histogram(
-    title: "Distribution",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="hgen-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.histogram(
-  title   = "Distribution",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="hgen-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::histogram({
-    .title   = "Distribution",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-basic.html"></iframe>
 </div>
@@ -199,86 +119,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Aliases</strong> <code>horizontal / h / barh / hbar</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="hgen-horizontal">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('hgen-horizontal','hgen-horizontal-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('hgen-horizontal','hgen-horizontal-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('hgen-horizontal','hgen-horizontal-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('hgen-horizontal','hgen-horizontal-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('hgen-horizontal','hgen-horizontal-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('hgen-horizontal','hgen-horizontal-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('hgen-horizontal','hgen-horizontal-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('hgen-horizontal','hgen-horizontal-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('hgen-horizontal','hgen-horizontal-cpp',this)">C++</button>
-</div><div id="hgen-horizontal-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-v = [random.gauss(70, 10) for _ in range(500)]
-chart = sp.histogram(
-    title="Distribution (Horizontal)",
-    values=v,
-    variant="horizontal",
-    color_hex=0x6366F1,
-    x_label="count", y_label="value",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="hgen-horizontal-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgen-horizontal-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgen-horizontal-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$histogram(
-  title = "Distribution",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="hgen-horizontal-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::histogram()
-        .title("Distribution")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="hgen-horizontal-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.histogram()
-    .title("Distribution")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="hgen-horizontal-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Histogram(
-    title: "Distribution",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="hgen-horizontal-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.histogram(
-  title   = "Distribution",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="hgen-horizontal-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::histogram({
-    .title   = "Distribution",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-horizontal.html"></iframe>
 </div>
@@ -287,86 +128,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"normalized"</code></span><span><strong>Aliases</strong> <code>normalized / probability / density / pdf</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="hgen-normalized">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('hgen-normalized','hgen-normalized-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('hgen-normalized','hgen-normalized-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('hgen-normalized','hgen-normalized-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('hgen-normalized','hgen-normalized-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('hgen-normalized','hgen-normalized-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('hgen-normalized','hgen-normalized-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('hgen-normalized','hgen-normalized-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('hgen-normalized','hgen-normalized-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('hgen-normalized','hgen-normalized-cpp',this)">C++</button>
-</div><div id="hgen-normalized-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-v = [random.gauss(70, 10) for _ in range(500)]
-chart = sp.histogram(
-    title="Probability Density",
-    values=v,
-    variant="normalized",
-    color_hex=0x10b981,
-    x_label="value", y_label="density",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="hgen-normalized-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgen-normalized-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgen-normalized-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$histogram(
-  title = "Distribution",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="hgen-normalized-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::histogram()
-        .title("Distribution")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="hgen-normalized-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.histogram()
-    .title("Distribution")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="hgen-normalized-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Histogram(
-    title: "Distribution",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="hgen-normalized-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.histogram(
-  title   = "Distribution",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="hgen-normalized-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::histogram({
-    .title   = "Distribution",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-normalized.html"></iframe>
 </div>
@@ -375,86 +137,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"cumulative"</code></span><span><strong>Aliases</strong> <code>cumulative / cdf / cum</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="hgen-cumulative">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('hgen-cumulative','hgen-cumulative-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('hgen-cumulative','hgen-cumulative-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('hgen-cumulative','hgen-cumulative-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('hgen-cumulative','hgen-cumulative-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('hgen-cumulative','hgen-cumulative-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('hgen-cumulative','hgen-cumulative-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('hgen-cumulative','hgen-cumulative-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('hgen-cumulative','hgen-cumulative-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('hgen-cumulative','hgen-cumulative-cpp',this)">C++</button>
-</div><div id="hgen-cumulative-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-v = [random.gauss(70, 10) for _ in range(500)]
-chart = sp.histogram(
-    title="Cumulative Distribution",
-    values=v,
-    variant="cumulative",
-    color_hex=0x6366F1,
-    x_label="value", y_label="cumulative probability",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="hgen-cumulative-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgen-cumulative-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgen-cumulative-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$histogram(
-  title = "Distribution",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="hgen-cumulative-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::histogram()
-        .title("Distribution")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="hgen-cumulative-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.histogram()
-    .title("Distribution")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="hgen-cumulative-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Histogram(
-    title: "Distribution",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="hgen-cumulative-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.histogram(
-  title   = "Distribution",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="hgen-cumulative-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::histogram({
-    .title   = "Distribution",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-cumulative.html"></iframe>
 </div>
@@ -463,88 +146,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stacked"</code></span><span><strong>Aliases</strong> <code>stacked / stack / stack_by</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="hgen-stacked">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('hgen-stacked','hgen-stacked-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('hgen-stacked','hgen-stacked-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('hgen-stacked','hgen-stacked-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('hgen-stacked','hgen-stacked-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('hgen-stacked','hgen-stacked-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('hgen-stacked','hgen-stacked-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('hgen-stacked','hgen-stacked-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('hgen-stacked','hgen-stacked-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('hgen-stacked','hgen-stacked-cpp',this)">C++</button>
-</div><div id="hgen-stacked-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-v = [random.gauss(70, 10) for _ in range(500)]
-days = ["Mon", "Tue", "Wed", "Thu", "Fri"]
-groups = [days[int((x - 40) / 12) % len(days)] for x in v]
-chart = sp.histogram(
-    title="Stacked by Day",
-    values=v,
-    variant="stacked",
-    color_groups=groups,
-    x_label="value", y_label="count",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="hgen-stacked-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgen-stacked-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgen-stacked-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$histogram(
-  title = "Distribution",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="hgen-stacked-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::histogram()
-        .title("Distribution")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="hgen-stacked-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.histogram()
-    .title("Distribution")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="hgen-stacked-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Histogram(
-    title: "Distribution",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="hgen-stacked-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.histogram(
-  title   = "Distribution",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="hgen-stacked-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::histogram({
-    .title   = "Distribution",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-stacked.html"></iframe>
 </div>
@@ -553,89 +155,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"overlay"</code></span><span><strong>Aliases</strong> <code>overlay / overlapping / compare / ab</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="hgen-overlay">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('hgen-overlay','hgen-overlay-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('hgen-overlay','hgen-overlay-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('hgen-overlay','hgen-overlay-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('hgen-overlay','hgen-overlay-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('hgen-overlay','hgen-overlay-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('hgen-overlay','hgen-overlay-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('hgen-overlay','hgen-overlay-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('hgen-overlay','hgen-overlay-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('hgen-overlay','hgen-overlay-cpp',this)">C++</button>
-</div><div id="hgen-overlay-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-control = [random.gauss(70, 10) for _ in range(500)]
-variant_ = [random.gauss(78, 9) for _ in range(500)]
-chart = sp.histogram(
-    title="A/B Test",
-    values=control,
-    overlay_values=variant_,
-    variant="overlay",
-    series_names=["Control", "Variant"],
-    color_hex=0x6366F1, overlay_color_hex=0xF43F5E,
-    x_label="metric", y_label="count",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="hgen-overlay-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgen-overlay-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgen-overlay-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$histogram(
-  title = "Distribution",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="hgen-overlay-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::histogram()
-        .title("Distribution")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="hgen-overlay-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.histogram()
-    .title("Distribution")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="hgen-overlay-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Histogram(
-    title: "Distribution",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="hgen-overlay-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.histogram(
-  title   = "Distribution",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="hgen-overlay-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::histogram({
-    .title   = "Distribution",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-overlay.html"></iframe>
 </div>
@@ -644,87 +164,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"step"</code></span><span><strong>Aliases</strong> <code>step / outline / stair</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="hgen-step">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('hgen-step','hgen-step-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('hgen-step','hgen-step-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('hgen-step','hgen-step-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('hgen-step','hgen-step-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('hgen-step','hgen-step-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('hgen-step','hgen-step-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('hgen-step','hgen-step-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('hgen-step','hgen-step-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('hgen-step','hgen-step-cpp',this)">C++</button>
-</div><div id="hgen-step-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-v = [random.gauss(70, 10) for _ in range(500)]
-chart = sp.histogram(
-    title="Step Outline",
-    values=v,
-    variant="step",
-    color_hex=0x6366F1,
-    stroke_width=2.0,
-    x_label="value", y_label="count",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="hgen-step-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgen-step-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgen-step-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$histogram(
-  title = "Distribution",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="hgen-step-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::histogram()
-        .title("Distribution")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="hgen-step-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.histogram()
-    .title("Distribution")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="hgen-step-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Histogram(
-    title: "Distribution",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="hgen-step-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.histogram(
-  title   = "Distribution",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="hgen-step-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::histogram({
-    .title   = "Distribution",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-step.html"></iframe>
 </div>
@@ -774,13 +214,13 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 </script>
 
 
-## Signature
+<h2>Signature</h2>
 
 `sp.histogram(title, values, *, variant="basic", bins=0, overlay_values=None, color_groups=None, series_names=None, **kwargs) -> Chart`
 
 Alias : `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_family`
 
-## Description
+<h2>Description</h2>
 
 `sp.histogram()` est le point d'entrée unifié de toute la famille histogramme. Le mot-clé `variant` sélectionne la stratégie de rendu — tous les autres arguments gardent le même nom d'une variante à l'autre. Les histogrammes sont la façon canonique de visualiser la distribution d'une variable numérique ; SeraPlot ajoute layout horizontal, normalisation densité, distribution cumulative, groupes empilés, superposition A/B et contour en escalier — le tout en SVG Rust pur, des milliers de fois plus rapide que Plotly.
 
@@ -796,7 +236,7 @@ Alias : `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_f
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Variantes | Description |
 |-----------|------|--------|-----------|-------------|
@@ -821,7 +261,7 @@ Alias : `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_f
 
 ---
 
-## Retour
+<h2>Retour</h2>
 
 `Chart` — objet exposant `.html` et `.show()`.
 
@@ -844,87 +284,7 @@ Alias : `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_f
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default / vertical</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="hgfr-basic">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('hgfr-basic','hgfr-basic-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('hgfr-basic','hgfr-basic-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('hgfr-basic','hgfr-basic-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('hgfr-basic','hgfr-basic-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('hgfr-basic','hgfr-basic-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('hgfr-basic','hgfr-basic-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('hgfr-basic','hgfr-basic-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('hgfr-basic','hgfr-basic-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('hgfr-basic','hgfr-basic-cpp',this)">C++</button>
-</div><div id="hgfr-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-v = [random.gauss(70, 10) for _ in range(500)]
-chart = sp.histogram(
-    title="Distribution",
-    values=v,
-    variant="basic",
-    bins=0,
-    color_hex=0x6366F1,
-    x_label="value", y_label="count",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="hgfr-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgfr-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgfr-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$histogram(
-  title = "Distribution",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="hgfr-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::histogram()
-        .title("Distribution")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="hgfr-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.histogram()
-    .title("Distribution")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="hgfr-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Histogram(
-    title: "Distribution",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="hgfr-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.histogram(
-  title   = "Distribution",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="hgfr-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::histogram({
-    .title   = "Distribution",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-basic.html"></iframe>
 </div>
@@ -933,86 +293,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Aliases</strong> <code>horizontal / h / barh / hbar</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="hgfr-horizontal">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('hgfr-horizontal','hgfr-horizontal-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('hgfr-horizontal','hgfr-horizontal-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('hgfr-horizontal','hgfr-horizontal-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('hgfr-horizontal','hgfr-horizontal-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('hgfr-horizontal','hgfr-horizontal-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('hgfr-horizontal','hgfr-horizontal-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('hgfr-horizontal','hgfr-horizontal-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('hgfr-horizontal','hgfr-horizontal-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('hgfr-horizontal','hgfr-horizontal-cpp',this)">C++</button>
-</div><div id="hgfr-horizontal-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-v = [random.gauss(70, 10) for _ in range(500)]
-chart = sp.histogram(
-    title="Distribution (Horizontal)",
-    values=v,
-    variant="horizontal",
-    color_hex=0x6366F1,
-    x_label="count", y_label="value",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="hgfr-horizontal-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgfr-horizontal-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgfr-horizontal-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$histogram(
-  title = "Distribution",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="hgfr-horizontal-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::histogram()
-        .title("Distribution")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="hgfr-horizontal-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.histogram()
-    .title("Distribution")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="hgfr-horizontal-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Histogram(
-    title: "Distribution",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="hgfr-horizontal-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.histogram(
-  title   = "Distribution",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="hgfr-horizontal-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::histogram({
-    .title   = "Distribution",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-horizontal.html"></iframe>
 </div>
@@ -1021,86 +302,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"normalized"</code></span><span><strong>Aliases</strong> <code>normalized / probability / density / pdf</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="hgfr-normalized">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('hgfr-normalized','hgfr-normalized-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('hgfr-normalized','hgfr-normalized-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('hgfr-normalized','hgfr-normalized-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('hgfr-normalized','hgfr-normalized-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('hgfr-normalized','hgfr-normalized-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('hgfr-normalized','hgfr-normalized-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('hgfr-normalized','hgfr-normalized-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('hgfr-normalized','hgfr-normalized-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('hgfr-normalized','hgfr-normalized-cpp',this)">C++</button>
-</div><div id="hgfr-normalized-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-v = [random.gauss(70, 10) for _ in range(500)]
-chart = sp.histogram(
-    title="Probability Density",
-    values=v,
-    variant="normalized",
-    color_hex=0x10b981,
-    x_label="value", y_label="density",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="hgfr-normalized-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgfr-normalized-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgfr-normalized-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$histogram(
-  title = "Distribution",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="hgfr-normalized-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::histogram()
-        .title("Distribution")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="hgfr-normalized-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.histogram()
-    .title("Distribution")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="hgfr-normalized-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Histogram(
-    title: "Distribution",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="hgfr-normalized-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.histogram(
-  title   = "Distribution",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="hgfr-normalized-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::histogram({
-    .title   = "Distribution",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-normalized.html"></iframe>
 </div>
@@ -1109,86 +311,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"cumulative"</code></span><span><strong>Aliases</strong> <code>cumulative / cdf / cum</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="hgfr-cumulative">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('hgfr-cumulative','hgfr-cumulative-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('hgfr-cumulative','hgfr-cumulative-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('hgfr-cumulative','hgfr-cumulative-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('hgfr-cumulative','hgfr-cumulative-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('hgfr-cumulative','hgfr-cumulative-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('hgfr-cumulative','hgfr-cumulative-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('hgfr-cumulative','hgfr-cumulative-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('hgfr-cumulative','hgfr-cumulative-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('hgfr-cumulative','hgfr-cumulative-cpp',this)">C++</button>
-</div><div id="hgfr-cumulative-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-v = [random.gauss(70, 10) for _ in range(500)]
-chart = sp.histogram(
-    title="Cumulative Distribution",
-    values=v,
-    variant="cumulative",
-    color_hex=0x6366F1,
-    x_label="value", y_label="cumulative probability",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="hgfr-cumulative-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgfr-cumulative-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgfr-cumulative-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$histogram(
-  title = "Distribution",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="hgfr-cumulative-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::histogram()
-        .title("Distribution")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="hgfr-cumulative-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.histogram()
-    .title("Distribution")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="hgfr-cumulative-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Histogram(
-    title: "Distribution",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="hgfr-cumulative-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.histogram(
-  title   = "Distribution",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="hgfr-cumulative-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::histogram({
-    .title   = "Distribution",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-cumulative.html"></iframe>
 </div>
@@ -1197,88 +320,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stacked"</code></span><span><strong>Aliases</strong> <code>stacked / stack / stack_by</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="hgfr-stacked">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('hgfr-stacked','hgfr-stacked-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('hgfr-stacked','hgfr-stacked-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('hgfr-stacked','hgfr-stacked-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('hgfr-stacked','hgfr-stacked-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('hgfr-stacked','hgfr-stacked-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('hgfr-stacked','hgfr-stacked-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('hgfr-stacked','hgfr-stacked-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('hgfr-stacked','hgfr-stacked-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('hgfr-stacked','hgfr-stacked-cpp',this)">C++</button>
-</div><div id="hgfr-stacked-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-v = [random.gauss(70, 10) for _ in range(500)]
-days = ["Mon", "Tue", "Wed", "Thu", "Fri"]
-groups = [days[int((x - 40) / 12) % len(days)] for x in v]
-chart = sp.histogram(
-    title="Stacked by Day",
-    values=v,
-    variant="stacked",
-    color_groups=groups,
-    x_label="value", y_label="count",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="hgfr-stacked-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgfr-stacked-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgfr-stacked-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$histogram(
-  title = "Distribution",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="hgfr-stacked-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::histogram()
-        .title("Distribution")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="hgfr-stacked-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.histogram()
-    .title("Distribution")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="hgfr-stacked-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Histogram(
-    title: "Distribution",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="hgfr-stacked-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.histogram(
-  title   = "Distribution",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="hgfr-stacked-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::histogram({
-    .title   = "Distribution",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-stacked.html"></iframe>
 </div>
@@ -1287,89 +329,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"overlay"</code></span><span><strong>Aliases</strong> <code>overlay / overlapping / compare / ab</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="hgfr-overlay">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('hgfr-overlay','hgfr-overlay-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('hgfr-overlay','hgfr-overlay-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('hgfr-overlay','hgfr-overlay-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('hgfr-overlay','hgfr-overlay-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('hgfr-overlay','hgfr-overlay-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('hgfr-overlay','hgfr-overlay-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('hgfr-overlay','hgfr-overlay-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('hgfr-overlay','hgfr-overlay-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('hgfr-overlay','hgfr-overlay-cpp',this)">C++</button>
-</div><div id="hgfr-overlay-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-control = [random.gauss(70, 10) for _ in range(500)]
-variant_ = [random.gauss(78, 9) for _ in range(500)]
-chart = sp.histogram(
-    title="A/B Test",
-    values=control,
-    overlay_values=variant_,
-    variant="overlay",
-    series_names=["Control", "Variant"],
-    color_hex=0x6366F1, overlay_color_hex=0xF43F5E,
-    x_label="metric", y_label="count",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="hgfr-overlay-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgfr-overlay-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgfr-overlay-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$histogram(
-  title = "Distribution",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="hgfr-overlay-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::histogram()
-        .title("Distribution")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="hgfr-overlay-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.histogram()
-    .title("Distribution")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="hgfr-overlay-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Histogram(
-    title: "Distribution",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="hgfr-overlay-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.histogram(
-  title   = "Distribution",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="hgfr-overlay-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::histogram({
-    .title   = "Distribution",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-overlay.html"></iframe>
 </div>
@@ -1378,87 +338,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"step"</code></span><span><strong>Aliases</strong> <code>step / outline / stair</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="hgfr-step">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('hgfr-step','hgfr-step-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('hgfr-step','hgfr-step-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('hgfr-step','hgfr-step-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('hgfr-step','hgfr-step-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('hgfr-step','hgfr-step-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('hgfr-step','hgfr-step-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('hgfr-step','hgfr-step-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('hgfr-step','hgfr-step-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('hgfr-step','hgfr-step-cpp',this)">C++</button>
-</div><div id="hgfr-step-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-v = [random.gauss(70, 10) for _ in range(500)]
-chart = sp.histogram(
-    title="Step Outline",
-    values=v,
-    variant="step",
-    color_hex=0x6366F1,
-    stroke_width=2.0,
-    x_label="value", y_label="count",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="hgfr-step-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgfr-step-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.histogram({
-  title: "Distribution",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="hgfr-step-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$histogram(
-  title = "Distribution",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="hgfr-step-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::histogram()
-        .title("Distribution")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="hgfr-step-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.histogram()
-    .title("Distribution")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="hgfr-step-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Histogram(
-    title: "Distribution",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="hgfr-step-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.histogram(
-  title   = "Distribution",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="hgfr-step-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::histogram({
-    .title   = "Distribution",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-step.html"></iframe>
 </div>

@@ -183,19 +183,19 @@ Aliases: `sp.candlestick`, `sp.build_candlestick`
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.candlestick(title, labels, open, high, low, close, *, variant="basic", palette=None, **kwargs) -> Chart`
 
 Alias : `sp.candlestick`, `sp.build_candlestick`
 
-## Description
+<h2>Description</h2>
 
 `sp.candlestick()` est le point d entree unifie pour toute la famille des chandeliers. Un graphique en chandeliers affiche des barres OHLC (Ouverture, Haut, Bas, Cloture) dans le temps et constitue le standard de fait pour les marches financiers, la crypto, les matieres premieres, le spot energie et toute serie temporelle avec spread intra-periode. Le mot-cle `variant` change le style sans toucher aux donnees — y compris des vues derivees comme le lissage Heikin-Ashi, la ligne de cloture, l aire mountain et les barres haut-bas.
 
 > **Convention de couleur** — par defaut vert = hausse (`close >= open`) et rouge = baisse. Surchargez avec `palette=[couleur_hausse, couleur_baisse]`. Les barres sont rendues de gauche a droite dans l ordre d entree ; `sort_order="asc"` pour trier par prix de cloture.
 
-## Variantes
+<h2>Variantes</h2>
 
 | Variante | Alias | Description |
 |---|---|---|
@@ -208,7 +208,7 @@ Alias : `sp.candlestick`, `sp.build_candlestick`
 | `"mountain"` | `mountain / area / filled_area / shade` | Aire des prix de cloture avec degrade vertical sous la courbe ; ideal pour visuel de couverture. |
 | `"range"` | `range / hl / highlow / spread` | Barres haut-bas uniquement (sans ouverture/cloture), une seule couleur — visualisation de la volatilite. |
 
-## Parametres
+<h2>Parametres</h2>
 
 | Parametre | Type | Defaut | Description |
 |---|---|---|---|
@@ -227,7 +227,7 @@ Alias : `sp.candlestick`, `sp.build_candlestick`
 | `width`    | `int`         | `1100`    | Largeur du canvas (px) |
 | `height`   | `int`         | `500`     | Hauteur du canvas (px) |
 
-## Retour
+<h2>Retour</h2>
 
 `Chart` — objet avec une propriete `.html` et une methode `.show()`.
 

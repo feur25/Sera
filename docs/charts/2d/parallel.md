@@ -1,376 +1,255 @@
-# Parallel Coordinates
+# Parallel Coordinates - Multivariate Profile Lines
 
 <div class="lang-en">
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.2em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
+.sp-tb{padding:8px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+.sp-cls{display:flex;gap:0;margin:1.6em 0 1.6em 36px;border-radius:14px;background:linear-gradient(180deg,#0a0f1c 0%,#060912 100%);box-shadow:0 18px 50px -12px rgba(0,0,0,.6),0 0 0 1px #1e293b inset;position:relative;overflow:visible}
+.sp-cls-rail{display:flex;flex-direction:column;background:linear-gradient(180deg,#0d1426,#070b18);border-right:1px solid #1e293b;padding:18px 0;min-width:18px;transition:min-width .28s cubic-bezier(.5,0,.2,1);position:relative;z-index:2;border-radius:14px 0 0 14px;overflow:visible}
+.sp-cls.sp-open .sp-cls-rail{min-width:170px;padding:18px 8px}
+.sp-cls-toggle{position:absolute;top:-14px;left:8px;padding:5px 9px;background:#1e293b;color:#a5b4fc;border:1px solid #312e81;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;line-height:1;z-index:5;box-shadow:0 4px 12px -2px rgba(0,0,0,.5)}
+.sp-cls-toggle:hover{background:#312e81;color:#e0e7ff;transform:translateY(-1px)}
+.sp-cls-tab{position:relative;display:flex;align-items:center;gap:8px;margin:5px 0 5px -34px;padding:11px 16px 11px 14px;background:linear-gradient(90deg,#1a2540 0%,#141d33 70%,#0f172a 100%);color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;border:none;text-align:left;white-space:nowrap;border-radius:8px 0 0 8px;box-shadow:-6px 4px 14px -4px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04),inset 1px 0 0 rgba(255,255,255,.05);transition:all .25s cubic-bezier(.5,0,.2,1);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);min-height:18px}
+.sp-cls-tab:hover{background:linear-gradient(90deg,#23304d,#1a2540 70%,#141d33);color:#e0e7ff;margin-left:-40px;box-shadow:-8px 6px 18px -4px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
+.sp-cls-tab.sp-cact{background:linear-gradient(90deg,#3730a3 0%,#1e1b4b 50%,#0f172a 100%);color:#f5f3ff;margin-left:-46px;box-shadow:-10px 8px 22px -4px rgba(99,102,241,.35),-3px 0 0 0 #818cf8 inset,inset 0 1px 0 rgba(165,180,252,.2);font-weight:700;z-index:3}
+.sp-cls-tab .sp-cic{font-size:13px;flex-shrink:0;color:#a5b4fc;font-weight:900;letter-spacing:-1px;width:16px;text-align:center;text-shadow:0 0 6px rgba(165,180,252,.4)}
+.sp-cls-tab.sp-cact .sp-cic{color:#e0e7ff;text-shadow:0 0 10px rgba(165,180,252,.7)}
+.sp-cls-tab .sp-clb{display:none;font-weight:inherit;letter-spacing:.01em}
+.sp-cls.sp-open .sp-cls-tab .sp-clb{display:inline}
+.sp-cls-body{flex:1;padding:24px 26px 22px;background:#0a0f1c;min-width:0;position:relative;z-index:1;border-radius:0 14px 14px 0;overflow:hidden}
+.sp-variant{display:none}
+.sp-variant.sp-von{display:block;animation:spFade .25s ease}
+@keyframes spFade{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+.sp-vmeta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px;color:#94a3b8;margin:6px 0 16px;padding:10px 14px;background:rgba(99,102,241,.06);border-left:3px solid #6366f1;border-radius:0 6px 6px 0}
+.sp-vmeta strong{color:#a5b4fc;font-weight:700;margin-right:4px;letter-spacing:.04em;text-transform:uppercase;font-size:11px}
+.sp-vmeta code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#e2e8f0;font-size:12px}
+.sp-preview-frame{width:100%;height:520px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+.sp-preview-label{font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact');if(window.hljs)document.getElementById(scope+'-'+name).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
+</scrip
 
 ## Signature
 
-```python
-sp.build_parallel(
-    title: str,
-    axes: list[str],
-    series: list[list[float]],
-    *,
-    series_names: list[str] | None = None,
-    color_groups: list[str] | None = None,
-    palette: list[int] | None = None,
-    width: int = 1000,
-    height: int = 480,
-    background: str | None = None,
-    line_opacity: float = 0.6,
-) -> Chart
-```
+`sp.parallel(title, *, axes, series, series_names=None, variant="basic", category_indices=None, highlight_index=-1, color_axis=-1, **kwargs) -> Chart`
 
-Aliases: `sp.parallel`
-
----
+Aliases: `sp.parallel`, `sp.build_parallel`
 
 ## Description
 
-Parallel coordinates place each dimension on its own vertical axis, with observations drawn as polylines connecting their values across all axes. The resulting visual immediately reveals correlations (parallel lines), inverse correlations (crossing lines), clusters (bundles of similar lines), and outliers (isolated crossing lines). Each inner list in `series` must have length equal to `len(axes)`. Color groups paint different observations in different colors, turning the chart into a multi-class pattern explorer. `line_opacity` controls visual density for large datasets.
+`sp.parallel()` is the unified entry point for the parallel-coordinates family. Each row becomes a polyline traversing every axis - the workhorse layout for inspecting multivariate samples (iris by species, KPI cohorts, hyperparameter sweeps). The `variant` keyword switches between straight, smoothed, categorical, focused, density and value-gradient renderings without touching the data.
 
-**Ideal for:**
-- Exploring high-dimensional datasets (5–15 variables) for patterns and clusters
-- Comparing multiple entities (products, countries, patients) across many attributes simultaneously
-- Preliminary EDA before dimensionality reduction or clustering
+## Variants
 
----
+| Variant | Aliases | Description |
+|---|---|---|
+| `"basic"` | `basic / default / classic / lines` | Straight polylines through every axis - the textbook parallel coordinates rendering. |
+| `"smooth"` | `smooth / curved / bezier / spline` | Catmull-Rom-style curves between axes - reduces visual noise on dense bundles. |
+| `"categorical"` | `categorical / category / groups / colored` | Color each line by an integer `category_indices` column - the canonical iris-by-species pattern. |
+| `"highlight"` | `highlight / spotlight / focus / dim` | All lines dim, one (`highlight_index`) lit and dotted - editorial focus on a single sample. |
+| `"density"` | `density / fade / translucent / alpha` | Very low opacity over a thicker stroke - reveals overlap and structure on big bundles. |
+| `"gradient"` | `gradient / value / ramp / shaded` | Color each line by its value on `color_axis` (Viridis ramp) - encodes a continuous variable directly. |
 
 ## Parameters
 
 | Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
+|---|---|---|---|
 | `title` | `str` | required | Chart title |
-| `axes` | `list[str]` | required | Axis names (one per dimension) |
-| `series` | `list[list[float]]` | required | Each inner list is one observation with `len(axes)` values |
-| `series_names` | `list[str] \| None` | `None` | Name for each observation (used in tooltips) |
-| `color_groups` | `list[str] \| None` | `None` | Group label per observation for color coding |
-| `palette` | `list[int] \| None` | `None` | Colors for each distinct color group |
-| `width` | `int` | `1000` | Canvas width in pixels |
-| `height` | `int` | `480` | Canvas height in pixels |
-| `background` | `str \| None` | `None` | Background color or `None` = transparent |
-| `line_opacity` | `float` | `0.6` | Line opacity (0.0–1.0) |
-
----
+| `axes` | `list[str]` | required | Axis names (one per dimension, >= 2) |
+| `series` | `list[list[float]]` | required | Sample values, one inner list per series |
+| `series_names` | `list[str]` | None | Legend label per series |
+| `variant` | `str` | "basic" | Visual style (see table) |
+| `category_indices` | `list[int]` | None | Integer category per series (Categorical variant) |
+| `highlight_index` | `int` | -1 | Series to spotlight (Highlight variant) |
+| `color_axis` | `int` | -1 | Axis index used to color lines (Gradient variant) |
+| `palette` | `list[int]` | None | Custom palette |
+| `width` | `int` | 1000 | Canvas width (px) |
+| `height` | `int` | 500 | Canvas height (px) |
 
 ## Returns
 
-`Chart`
+`Chart` - object with `.html` property and `.show()` method.
 
 ---
 
-<style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
-<script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
-
-<div class="sp-tabs" id="parallel">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('parallel','parallel-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('parallel','parallel-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('parallel','parallel-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('parallel','parallel-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('parallel','parallel-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('parallel','parallel-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('parallel','parallel-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('parallel','parallel-cpp',this)">C++</button>
+<div class="sp-cls sp-open" id="parallel-en">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('parallel-en')" title="Toggle">&#x21C6;</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('parallel-en','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-en','smooth',this)"><span class="sp-cic">S</span><span class="sp-clb">Smooth</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-en','categorical',this)"><span class="sp-cic">C</span><span class="sp-clb">Categorical</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-en','highlight',this)"><span class="sp-cic">H</span><span class="sp-clb">Highlight</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-en','density',this)"><span class="sp-cic">D</span><span class="sp-clb">Density</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-en','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
 </div>
-<div id="parallel-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-# 12 Iris observations (4 per species), 4 features each
-sepal_l = [5.1,4.9,4.7,7.0,6.4,6.9,6.3,5.8,7.1,5.8,5.7,6.2]
-sepal_w = [3.5,3.0,3.2,3.2,3.2,3.1,3.3,2.7,3.0,2.8,2.8,2.9]
-petal_l = [1.4,1.4,1.3,4.7,4.5,4.9,6.0,5.1,5.9,5.1,4.5,4.3]
-petal_w = [0.2,0.2,0.2,1.4,1.5,1.5,2.5,1.9,2.1,1.8,1.3,1.3]
-species = ["Setosa"]*3 + ["Versicolor"]*3 + ["Virginica"]*3 + ["Versicolor"]*3
-chart = sp.parallel(
-    title="Iris Dataset — Parallel Coordinates",
-    axes=["Sepal L", "Sepal W", "Petal L", "Petal W"],
-    series=[[sepal_l[i], sepal_w[i], petal_l[i], petal_w[i]] for i in range(12)],
-    color_groups=species,
-    line_opacity=0.7,
-)
-chart.show()</code></pre></div>
-<div id="parallel-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const sepalL = [5.1,4.9,4.7,7.0,6.4,6.9,6.3,5.8,7.1,5.8,5.7,6.2];
-const sepalW = [3.5,3.0,3.2,3.2,3.2,3.1,3.3,2.7,3.0,2.8,2.8,2.9];
-const petalL = [1.4,1.4,1.3,4.7,4.5,4.9,6.0,5.1,5.9,5.1,4.5,4.3];
-const petalW = [0.2,0.2,0.2,1.4,1.5,1.5,2.5,1.9,2.1,1.8,1.3,1.3];
-const species = [...Array(3).fill("Setosa"), ...Array(3).fill("Versicolor"),
-                 ...Array(3).fill("Virginica"), ...Array(3).fill("Versicolor")];
-const chart = sp.parallel({
-  title: "Iris Dataset — Parallel Coordinates",
-  axes: ["Sepal L", "Sepal W", "Petal L", "Petal W"],
-  series: sepalL.map((_, i) => [sepalL[i], sepalW[i], petalL[i], petalW[i]]),
-  colorGroups: species,
-  lineOpacity: 0.7,
-});
-chart.show();</code></pre></div>
-<div id="parallel-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const sepalL: number[] = [5.1,4.9,4.7,7.0,6.4,6.9,6.3,5.8,7.1,5.8,5.7,6.2];
-const sepalW: number[] = [3.5,3.0,3.2,3.2,3.2,3.1,3.3,2.7,3.0,2.8,2.8,2.9];
-const petalL: number[] = [1.4,1.4,1.3,4.7,4.5,4.9,6.0,5.1,5.9,5.1,4.5,4.3];
-const petalW: number[] = [0.2,0.2,0.2,1.4,1.5,1.5,2.5,1.9,2.1,1.8,1.3,1.3];
-const species: string[] = [...Array(3).fill("Setosa"), ...Array(3).fill("Versicolor"),
-                           ...Array(3).fill("Virginica"), ...Array(3).fill("Versicolor")];
-const chart = sp.parallel({
-  title: "Iris Dataset — Parallel Coordinates",
-  axes: ["Sepal L", "Sepal W", "Petal L", "Petal W"],
-  series: sepalL.map((_, i) => [sepalL[i], sepalW[i], petalL[i], petalW[i]]),
-  colorGroups: species,
-  lineOpacity: 0.7,
-});
-chart.show();</code></pre></div>
-<div id="parallel-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-sepal_l <- c(5.1,4.9,4.7,7.0,6.4,6.9,6.3,5.8,7.1,5.8,5.7,6.2)
-sepal_w <- c(3.5,3.0,3.2,3.2,3.2,3.1,3.3,2.7,3.0,2.8,2.8,2.9)
-petal_l <- c(1.4,1.4,1.3,4.7,4.5,4.9,6.0,5.1,5.9,5.1,4.5,4.3)
-petal_w <- c(0.2,0.2,0.2,1.4,1.5,1.5,2.5,1.9,2.1,1.8,1.3,1.3)
-especes <- c(rep("Setosa",3), rep("Versicolor",3), rep("Virginica",3), rep("Versicolor",3))
-chart <- sp$parallel(
-  title        = "Iris Dataset — Coordonnées parallèles",
-  axes         = c("Sepal L", "Sepal W", "Petal L", "Petal W"),
-  series       = lapply(1:12, function(i) c(sepal_l[i], sepal_w[i], petal_l[i], petal_w[i])),
-  color_groups = especes,
-  line_opacity = 0.7
-)
-chart$show()</code></pre></div>
-<div id="parallel-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-var series = List.of(
-    List.of(5.1,3.5,1.4,0.2), List.of(4.9,3.0,1.4,0.2), List.of(4.7,3.2,1.3,0.2),
-    List.of(7.0,3.2,4.7,1.4), List.of(6.4,3.2,4.5,1.5), List.of(6.9,3.1,4.9,1.5),
-    List.of(6.3,3.3,6.0,2.5), List.of(5.8,2.7,5.1,1.9), List.of(7.1,3.0,5.9,2.1),
-    List.of(5.8,2.8,5.1,1.8), List.of(5.7,2.8,4.5,1.3), List.of(6.2,2.9,4.3,1.3)
-);
-var colorGroups = List.of("Setosa","Setosa","Setosa","Versicolor","Versicolor","Versicolor",
-    "Virginica","Virginica","Virginica","Versicolor","Versicolor","Versicolor");
-var chart = SeraPlot.parallel()
-    .title("Iris Dataset — Parallel Coordinates")
-    .axes(List.of("Sepal L", "Sepal W", "Petal L", "Petal W"))
-    .series(series)
-    .colorGroups(colorGroups)
-    .lineOpacity(0.7)
-    .build();
-chart.show();</code></pre></div>
-<div id="parallel-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-double[][] series = [
-    [5.1,3.5,1.4,0.2], [4.9,3.0,1.4,0.2], [4.7,3.2,1.3,0.2],
-    [7.0,3.2,4.7,1.4], [6.4,3.2,4.5,1.5], [6.9,3.1,4.9,1.5],
-    [6.3,3.3,6.0,2.5], [5.8,2.7,5.1,1.9], [7.1,3.0,5.9,2.1],
-    [5.8,2.8,5.1,1.8], [5.7,2.8,4.5,1.3], [6.2,2.9,4.3,1.3],
-];
-var chart = Sp.Parallel(
-    title:       "Iris Dataset — Parallel Coordinates",
-    axes:        ["Sepal L", "Sepal W", "Petal L", "Petal W"],
-    series:      series,
-    colorGroups: ["Setosa","Setosa","Setosa","Versicolor","Versicolor","Versicolor",
-                  "Virginica","Virginica","Virginica","Versicolor","Versicolor","Versicolor"],
-    lineOpacity: 0.7
-);
-chart.Show();</code></pre></div>
-<div id="parallel-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-val sepalL = List(5.1,4.9,4.7,7.0,6.4,6.9,6.3,5.8,7.1,5.8,5.7,6.2)
-val sepalW = List(3.5,3.0,3.2,3.2,3.2,3.1,3.3,2.7,3.0,2.8,2.8,2.9)
-val petalL = List(1.4,1.4,1.3,4.7,4.5,4.9,6.0,5.1,5.9,5.1,4.5,4.3)
-val petalW = List(0.2,0.2,0.2,1.4,1.5,1.5,2.5,1.9,2.1,1.8,1.3,1.3)
-val especes = List.fill(3)("Setosa") ++ List.fill(3)("Versicolor") ++
-              List.fill(3)("Virginica") ++ List.fill(3)("Versicolor")
-val chart = sp.parallel(
-  title        = "Iris Dataset — Parallel Coordinates",
-  axes         = List("Sepal L", "Sepal W", "Petal L", "Petal W"),
-  series       = (0 until 12).map(i => List(sepalL(i), sepalW(i), petalL(i), petalW(i))).toList,
-  color_groups = especes,
-  line_opacity = 0.7
-)
-chart.show()</code></pre></div>
-<div id="parallel-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-auto chart = sp::parallel({
-    .title        = "Iris Dataset — Parallel Coordinates",
-    .axes         = {"Sepal L", "Sepal W", "Petal L", "Petal W"},
-    .series       = {
-        {5.1,3.5,1.4,0.2}, {4.9,3.0,1.4,0.2}, {4.7,3.2,1.3,0.2},
-        {7.0,3.2,4.7,1.4}, {6.4,3.2,4.5,1.5}, {6.9,3.1,4.9,1.5},
-        {6.3,3.3,6.0,2.5}, {5.8,2.7,5.1,1.9}, {7.1,3.0,5.9,2.1},
-        {5.8,2.8,5.1,1.8}, {5.7,2.8,4.5,1.3}, {6.2,2.9,4.3,1.3},
-    },
-    .color_groups = {"Setosa","Setosa","Setosa","Versicolor","Versicolor","Versicolor",
-                     "Virginica","Virginica","Virginica","Versicolor","Versicolor","Versicolor"},
-    .line_opacity = 0.7f,
-});
-chart.show();</code></pre></div>
+<div class="sp-cls-body">
+<div class="sp-variant sp-von" id="parallel-en-basic">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / lines</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Straight polylines through every axis - the textbook parallel coordinates rendering.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-basic.html"></iframe>
 </div>
+<div class="sp-variant" id="parallel-en-smooth">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"smooth"</code></span><span><strong>Aliases</strong> <code>smooth / curved / bezier / spline</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<iframe src="../../previews/parallel.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Catmull-Rom-style curves between axes - reduces visual noise on dense bundles.</p>
 
----
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-smooth.html"></iframe>
+</div>
+<div class="sp-variant" id="parallel-en-categorical">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / category / groups / colored</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-## See also
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Color each line by an integer `category_indices` column - the canonical iris-by-species pattern.</p>
 
-- [Scatter Chart](scatter.md) — `sp.build_scatter_chart()`
-- [Heatmap](heatmap.md) — `sp.build_heatmap()`
-- [Radar Chart](radar.md) — `sp.build_radar_chart()`
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-categorical.html"></iframe>
+</div>
+<div class="sp-variant" id="parallel-en-highlight">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / spotlight / focus / dim</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">All lines dim, one (`highlight_index`) lit and dotted - editorial focus on a single sample.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-highlight.html"></iframe>
+</div>
+<div class="sp-variant" id="parallel-en-density">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / fade / translucent / alpha</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Very low opacity over a thicker stroke - reveals overlap and structure on big bundles.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-density.html"></iframe>
+</div>
+<div class="sp-variant" id="parallel-en-gradient">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / value / ramp / shaded</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Color each line by its value on `color_axis` (Viridis ramp) - encodes a continuous variable directly.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-gradient.html"></iframe>
+</div>
+</div>
+</div>
 
 </div>
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
-```python
-sp.build_parallel(
-    title: str,
-    axes: list[str],
-    series: list[list[float]],
-    *,
-    series_names: list[str] | None = None,
-    color_groups: list[str] | None = None,
-    palette: list[int] | None = None,
-    width: int = 1000,
-    height: int = 480,
-    background: str | None = None,
-    line_opacity: float = 0.6,
-) -> Chart
-```
+`sp.parallel(title, *, axes, series, series_names=None, variant="basic", category_indices=None, highlight_index=-1, color_axis=-1, **kwargs) -> Chart`
 
-Aliases: `sp.parallel`
+Aliases: `sp.parallel`, `sp.build_parallel`
 
----
+<h2>Description</h2>
 
-## Description
+`sp.parallel()` est le point d entree unique pour la famille des coordonnees paralleles. Chaque ligne devient une polyligne traversant tous les axes - le layout de reference pour inspecter des echantillons multivaries (iris par espece, cohortes KPI, balayages d hyperparametres). Le mot-cle `variant` bascule entre rendus droit, lisse, categoriel, focalise, densite et gradient de valeur sans toucher aux donnees.
 
-Les coordonnées parallèles placent chaque dimension sur son propre axe vertical, avec les observations tracées comme des polylignes reliant leurs valeurs sur tous les axes. Le visuel révèle immédiatement les corrélations (lignes parallèles), les corrélations inverses (lignes croisées), les clusters (paquets de lignes similaires) et les valeurs aberrantes. Chaque liste interne de `series` doit avoir une longueur égale à `len(axes)`. Les groupes de couleurs colorient différentes observations, transformant le graphique en explorateur de motifs multi-classes.
+<h2>Variantes</h2>
 
-**Idéal pour :**
-- Explorer des jeux de données à haute dimension (5–15 variables) à la recherche de motifs et clusters
-- Comparer plusieurs entités (produits, pays, patients) sur de nombreux attributs simultanément
-- EDA préliminaire avant réduction de dimensionnalité ou clustering
+| Variante | Alias | Description |
+|---|---|---|
+| `"basic"` | `basic / default / classic / lines` | Polylignes droites traversant chaque axe - le rendu canonique des coordonnees paralleles. |
+| `"smooth"` | `smooth / curved / bezier / spline` | Courbes type Catmull-Rom entre les axes - reduit le bruit visuel des bundles denses. |
+| `"categorical"` | `categorical / category / groups / colored` | Coloration par colonne entiere `category_indices` - le motif iris-par-espece. |
+| `"highlight"` | `highlight / spotlight / focus / dim` | Toutes les lignes grises sauf une (`highlight_index`) coloree avec points - focus editorial. |
+| `"density"` | `density / fade / translucent / alpha` | Opacite tres basse sur trait epais - revele les chevauchements de gros bundles. |
+| `"gradient"` | `gradient / value / ramp / shaded` | Coloration par la valeur sur `color_axis` (rampe Viridis) - encode une variable continue. |
 
----
+<h2>Parametres</h2>
 
-## Paramètres
-
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
+| Parametre | Type | Defaut | Description |
+|---|---|---|---|
 | `title` | `str` | requis | Titre du graphique |
-| `axes` | `list[str]` | requis | Noms des axes (un par dimension) |
-| `series` | `list[list[float]]` | requis | Chaque liste interne est une observation avec `len(axes)` valeurs |
-| `series_names` | `list[str] \| None` | `None` | Nom de chaque observation (pour les infobulles) |
-| `color_groups` | `list[str] \| None` | `None` | Étiquette de groupe par observation pour le codage couleur |
-| `palette` | `list[int] \| None` | `None` | Couleurs pour chaque groupe distinct |
-| `width` | `int` | `1000` | Largeur du canvas en pixels |
-| `height` | `int` | `480` | Hauteur du canvas en pixels |
-| `background` | `str \| None` | `None` | Couleur de fond ou `None` = transparent |
-| `line_opacity` | `float` | `0.6` | Opacité des lignes (0.0–1.0) |
+| `axes` | `list[str]` | requis | Noms des axes (>= 2) |
+| `series` | `list[list[float]]` | requis | Valeurs par echantillon, une liste interne par serie |
+| `series_names` | `list[str]` | None | Label legende par serie |
+| `variant` | `str` | "basic" | Style visuel (voir tableau) |
+| `category_indices` | `list[int]` | None | Categorie entiere par serie (Categorical) |
+| `highlight_index` | `int` | -1 | Serie a mettre en avant (Highlight) |
+| `color_axis` | `int` | -1 | Axe utilise pour colorer les lignes (Gradient) |
+| `palette` | `list[int]` | None | Palette personnalisee |
+| `width` | `int` | 1000 | Largeur (px) |
+| `height` | `int` | 500 | Hauteur (px) |
+
+<h2>Retour</h2>
+
+`Chart` - objet avec propriete `.html` et methode `.show()`.
 
 ---
 
-## Retourne
-
-`Chart`
-
----
-
-<div class="sp-tabs" id="parallel-fr">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('parallel-fr','parallel-fr-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('parallel-fr','parallel-fr-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('parallel-fr','parallel-fr-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('parallel-fr','parallel-fr-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('parallel-fr','parallel-fr-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('parallel-fr','parallel-fr-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('parallel-fr','parallel-fr-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('parallel-fr','parallel-fr-cpp',this)">C++</button>
+<div class="sp-cls sp-open" id="parallel-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('parallel-fr')" title="Toggle">&#x21C6;</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('parallel-fr','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-fr','smooth',this)"><span class="sp-cic">S</span><span class="sp-clb">Smooth</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-fr','categorical',this)"><span class="sp-cic">C</span><span class="sp-clb">Categorical</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-fr','highlight',this)"><span class="sp-cic">H</span><span class="sp-clb">Highlight</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-fr','density',this)"><span class="sp-cic">D</span><span class="sp-clb">Density</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-fr','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
 </div>
-<div id="parallel-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-long_sep = [5.1,4.9,4.7,7.0,6.4,6.9,6.3,5.8,7.1,5.8,5.7,6.2]
-larg_sep = [3.5,3.0,3.2,3.2,3.2,3.1,3.3,2.7,3.0,2.8,2.8,2.9]
-long_pet = [1.4,1.4,1.3,4.7,4.5,4.9,6.0,5.1,5.9,5.1,4.5,4.3]
-larg_pet = [0.2,0.2,0.2,1.4,1.5,1.5,2.5,1.9,2.1,1.8,1.3,1.3]
-especes  = ["Setosa"]*3 + ["Versicolor"]*3 + ["Virginica"]*3 + ["Versicolor"]*3
-chart = sp.parallel(
-    title="Iris — Coordonnées parallèles",
-    axes=["Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."],
-    series=[[long_sep[i], larg_sep[i], long_pet[i], larg_pet[i]] for i in range(12)],
-    color_groups=especes,
-    line_opacity=0.7,
-)
-chart.show()</code></pre></div>
-<div id="parallel-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.parallel({
-  title: "Iris — Coordonnées parallèles",
-  axes: ["Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."],
-  series: longSep.map((_, i) => [longSep[i], largSep[i], longPet[i], largPet[i]]),
-  colorGroups: especes,
-  lineOpacity: 0.7,
-});
-chart.show();</code></pre></div>
-<div id="parallel-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.parallel({
-  title: "Iris — Coordonnées parallèles",
-  axes: ["Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."],
-  series: longSep.map((_, i) => [longSep[i], largSep[i], longPet[i], largPet[i]]),
-  colorGroups: especes,
-  lineOpacity: 0.7,
-});
-chart.show();</code></pre></div>
-<div id="parallel-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-long_sep <- c(5.1,4.9,4.7,7.0,6.4,6.9,6.3,5.8,7.1,5.8,5.7,6.2)
-larg_sep <- c(3.5,3.0,3.2,3.2,3.2,3.1,3.3,2.7,3.0,2.8,2.8,2.9)
-long_pet <- c(1.4,1.4,1.3,4.7,4.5,4.9,6.0,5.1,5.9,5.1,4.5,4.3)
-larg_pet <- c(0.2,0.2,0.2,1.4,1.5,1.5,2.5,1.9,2.1,1.8,1.3,1.3)
-especes  <- c(rep("Setosa",3),rep("Versicolor",3),rep("Virginica",3),rep("Versicolor",3))
-chart <- sp$parallel(
-  title        = "Iris — Coordonnées parallèles",
-  axes         = c("Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."),
-  series       = lapply(1:12, function(i) c(long_sep[i], larg_sep[i], long_pet[i], larg_pet[i])),
-  color_groups = especes,
-  line_opacity = 0.7
-)
-chart$show()</code></pre></div>
-<div id="parallel-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-var chart = SeraPlot.parallel()
-    .title("Iris — Coordonnées parallèles")
-    .axes(List.of("Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."))
-    .series(series)
-    .colorGroups(especes)
-    .lineOpacity(0.7)
-    .build();
-chart.show();</code></pre></div>
-<div id="parallel-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-var chart = Sp.Parallel(
-    title:       "Iris — Coordonnées parallèles",
-    axes:        ["Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."],
-    series:      series,
-    colorGroups: especes,
-    lineOpacity: 0.7
-);
-chart.Show();</code></pre></div>
-<div id="parallel-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-val chart = sp.parallel(
-  title        = "Iris — Coordonnées parallèles",
-  axes         = List("Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."),
-  series       = series,
-  color_groups = especes,
-  line_opacity = 0.7
-)
-chart.show()</code></pre></div>
-<div id="parallel-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-auto chart = sp::parallel({
-    .title        = "Iris — Coordonnées parallèles",
-    .axes         = {"Long. Sép.", "Larg. Sép.", "Long. Pét.", "Larg. Pét."},
-    .series       = series,
-    .color_groups = especes,
-    .line_opacity = 0.7f,
-});
-chart.show();</code></pre></div>
+<div class="sp-cls-body">
+<div class="sp-variant sp-von" id="parallel-fr-basic">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / lines</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Polylignes droites traversant chaque axe - le rendu canonique des coordonnees paralleles.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-basic.html"></iframe>
 </div>
+<div class="sp-variant" id="parallel-fr-smooth">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"smooth"</code></span><span><strong>Aliases</strong> <code>smooth / curved / bezier / spline</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<iframe src="../../previews/parallel.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Courbes type Catmull-Rom entre les axes - reduit le bruit visuel des bundles denses.</p>
 
----
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-smooth.html"></iframe>
+</div>
+<div class="sp-variant" id="parallel-fr-categorical">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / category / groups / colored</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-## Voir aussi
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Coloration par colonne entiere `category_indices` - le motif iris-par-espece.</p>
 
-- [Nuage de points](scatter.md) — `sp.build_scatter_chart()`
-- [Carte de chaleur](heatmap.md) — `sp.build_heatmap()`
-- [Graphique radar](radar.md) — `sp.build_radar_chart()`
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-categorical.html"></iframe>
+</div>
+<div class="sp-variant" id="parallel-fr-highlight">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / spotlight / focus / dim</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Toutes les lignes grises sauf une (`highlight_index`) coloree avec points - focus editorial.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-highlight.html"></iframe>
+</div>
+<div class="sp-variant" id="parallel-fr-density">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / fade / translucent / alpha</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Opacite tres basse sur trait epais - revele les chevauchements de gros bundles.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-density.html"></iframe>
+</div>
+<div class="sp-variant" id="parallel-fr-gradient">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / value / ramp / shaded</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Coloration par la valeur sur `color_axis` (rampe Viridis) - encode une variable continue.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-gradient.html"></iframe>
+</div>
+</div>
+</div>
 
 </div>

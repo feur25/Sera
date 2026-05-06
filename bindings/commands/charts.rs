@@ -148,6 +148,9 @@ pub struct ChartOpts {
     pub origin_lower: Option<bool>,
     pub show_box: Option<bool>,
     pub show_mean: Option<bool>,
+    pub highlight_index: Option<i32>,
+    pub color_axis: Option<i32>,
+    pub category_indices: Option<Vec<i32>>,
 }
 
 impl ChartOpts {
@@ -1174,13 +1177,18 @@ pub fn build_lollipop_chart(input: &str) -> String {
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
-    use crate::plot::statistical::{LollipopConfig, render_lollipop_html};
+    use crate::plot::statistical::{LollipopConfig, LollipopVariant, render_lollipop_html};
+    let mut variant = LollipopVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let orient = o.orient_byte();
+    if o.variant.is_none() && orient == b'h' { variant = LollipopVariant::Cleveland; }
+    let groups = o.color_groups.clone().unwrap_or_default();
     let hover = o.hj();
     let html = render_lollipop_html(&LollipopConfig {
-        title, labels: &labels, values: &values, x_label: &o.xl(), y_label: &o.yl(),
+        variant, title, labels: &labels, values: &values, groups: &groups,
+        x_label: &o.xl(), y_label: &o.yl(),
         palette: &o.pal(), color_hex: o.color_hex.unwrap_or(0), gridlines: o.grid(),
-        show_values: o.show_values.unwrap_or(false), orientation: orient,
+        show_values: o.show_values.unwrap_or(false),
+        highlight_index: o.highlight_index.unwrap_or(-1),
         sort_order: &o.srt(), width: o.w(900), height: o.h(480), hover: &hover,
         legend_position: &o.lp(),
     });
@@ -1689,11 +1697,15 @@ pub fn build_parallel(input: &str) -> String {
     let series_values = a.series.unwrap_or_default();
     let pal = o.pal();
     let hover = o.hj();
-    use crate::plot::statistical::parallel::{ParallelConfig, render_parallel_html};
+    use crate::plot::statistical::parallel::{ParallelConfig, ParallelVariant, render_parallel_html};
+    let variant = ParallelVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let names: Vec<String> = o.series_names.clone().unwrap_or_else(|| (0..series_values.len()).map(|_| String::new()).collect());
+    let categories = o.category_indices.clone().unwrap_or_default();
     let html = render_parallel_html(&ParallelConfig {
-        title, axes: &axes, series_names: &names, series_values: &series_values,
-        palette: &pal, width: o.w(1000), height: o.h(500),
+        variant, title, axes: &axes, series_names: &names, series_values: &series_values,
+        categories: &categories, palette: &pal, width: o.w(1000), height: o.h(500),
+        highlight_index: o.highlight_index.unwrap_or(-1),
+        color_axis: o.color_axis.unwrap_or(-1),
         hover: &hover, ..ParallelConfig::default()
     });
     apply(html, &o)

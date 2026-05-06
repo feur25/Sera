@@ -169,13 +169,13 @@ Aliases: `sp.funnel`, `sp.build_funnel_chart`
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.funnel(title, labels, values, *, variant="basic", palette=None, show_text=True, **kwargs) -> Chart`
 
 Alias : `sp.funnel`, `sp.build_funnel_chart`
 
-## Description
+<h2>Description</h2>
 
 `sp.funnel()` produit toute la famille des entonnoirs : une séquence d’étapes empilées dont la largeur encode une valeur. Le mot-clé `variant` permute la géométrie sans changer aucun autre paramètre. Standard pour l’analyse de conversion (visiteurs → inscrits → payants), pipelines de recrutement, pipelines commerciaux, fuites de processus et toute analyse de cohorte décroissante.
 
@@ -190,7 +190,7 @@ Alias : `sp.funnel`, `sp.build_funnel_chart`
 | `"inverted"`   | Inversé verticalement                | Pyramide de croissance |
 | `"conversion"` | Trapèze de base + % de chute        | Entonnoir exécutif avec KPI |
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |---|---|---|---|
@@ -203,7 +203,7 @@ Alias : `sp.funnel`, `sp.build_funnel_chart`
 | `width`     | `int`         | `800`      | Largeur (px) |
 | `height`    | `int`         | `480`      | Hauteur (px) |
 
-## Retour
+<h2>Retour</h2>
 
 `Chart` — objet avec propriété `.html` et méthode `.show()`.
 

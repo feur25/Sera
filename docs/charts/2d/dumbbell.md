@@ -159,17 +159,17 @@ Aliases: `sp.dumbbell`, `sp.build_dumbbell`
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.dumbbell(title, labels, start, end, *, variant="basic", series_name_start="Start", series_name_end="End", **kwargs) -> Chart`
 
 Aliases: `sp.dumbbell`, `sp.build_dumbbell`
 
-## Description
+<h2>Description</h2>
 
 `sp.dumbbell()` est le point d entree unique pour la famille dumbbell. Chaque ligne montre deux valeurs - typiquement avant/apres - reliees par un connecteur, ce qui en fait le choix naturel pour visualiser un changement, un ecart ou une evolution (equite salariale, KPIs de redressement, uplifts A/B, etc.). Le mot-cle `variant` change le style visuel sans toucher aux donnees.
 
-## Variantes
+<h2>Variantes</h2>
 
 | Variante | Alias | Description |
 |---|---|---|
@@ -181,7 +181,7 @@ Aliases: `sp.dumbbell`, `sp.build_dumbbell`
 | `"dotted"` | `dotted / dashed / minimal / thin` | Connecteur en pointilles et marqueurs en anneaux - leger et aere. |
 | `"ranked"` | `ranked / ranking / ordered / numbered` | Ajoute un rang numerique devant chaque label - ideal pour comparer un top-N. |
 
-## Parametres
+<h2>Parametres</h2>
 
 | Parametre | Type | Defaut | Description |
 |---|---|---|---|
@@ -197,7 +197,7 @@ Aliases: `sp.dumbbell`, `sp.build_dumbbell`
 | `width` | `int` | `1000` | Largeur (px) |
 | `height` | `int` | `500` | Hauteur (px) |
 
-## Retour
+<h2>Retour</h2>
 
 `Chart` - objet avec propriete `.html` et methode `.show()`.
 

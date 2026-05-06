@@ -109,668 +109,56 @@ Aliases: `sp.kde`, `sp.build_kde_chart`
 <div class="sp-variant sp-von" id="kde-en-basic">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / filled / default / single / multi</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Filled curve, single or multi-series.</p>
-<div class="sp-tabs" id="kgen-kde-en-basic">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-en-basic','kgen-kde-en-basic-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-basic','kgen-kde-en-basic-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-basic','kgen-kde-en-basic-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-basic','kgen-kde-en-basic-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-basic','kgen-kde-en-basic-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-basic','kgen-kde-en-basic-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-basic','kgen-kde-en-basic-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-basic','kgen-kde-en-basic-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-basic','kgen-kde-en-basic-cpp',this)">C++</button>
-</div><div id="kgen-kde-en-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-a = [random.gauss(-1.5, 0.7) for _ in range(500)]
-b = [random.gauss(0.5, 1.0) for _ in range(500)]
-c = [random.gauss(2.5, 0.6) for _ in range(500)]
-chart = sp.kde(
-    title="Density",
-    values=a + b + c,
-    categories=["A"]*500 + ["B"]*500 + ["C"]*500,
-    variant="basic",
-    palette=[0x6366F1, 0xF59E0B, 0xEF4444],
-    x_label="value", y_label="density",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="kgen-kde-en-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-en-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-en-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-en-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-outline">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outline"</code></span><span><strong>Aliases</strong> <code>outline / line / stroke / compare / no_fill</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Stroke-only curves for clean overlays.</p>
-<div class="sp-tabs" id="kgen-kde-en-outline">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-en-outline','kgen-kde-en-outline-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-outline','kgen-kde-en-outline-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-outline','kgen-kde-en-outline-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-outline','kgen-kde-en-outline-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-outline','kgen-kde-en-outline-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-outline','kgen-kde-en-outline-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-outline','kgen-kde-en-outline-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-outline','kgen-kde-en-outline-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-outline','kgen-kde-en-outline-cpp',this)">C++</button>
-</div><div id="kgen-kde-en-outline-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.kde(
-    title="Density (Outline)",
-    values=values,
-    categories=groups,
-    variant="outline",
-    palette=[0x6366F1, 0x10B981, 0xF59E0B],
-    x_label="value", y_label="density",
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-outline-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "outline",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-outline-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "outline",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-outline-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "outline"
-)
-chart$show()</code></pre></div><div id="kgen-kde-en-outline-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("outline")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-en-outline-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("outline")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-en-outline-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "outline"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-en-outline-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "outline"
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-outline-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "outline",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-outline.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-stepped">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stepped"</code></span><span><strong>Aliases</strong> <code>stepped / step / stair / stairs</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Stair-stepped density (rectangular look).</p>
-<div class="sp-tabs" id="kgen-kde-en-stepped">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-en-stepped','kgen-kde-en-stepped-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-stepped','kgen-kde-en-stepped-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-stepped','kgen-kde-en-stepped-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-stepped','kgen-kde-en-stepped-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-stepped','kgen-kde-en-stepped-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-stepped','kgen-kde-en-stepped-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-stepped','kgen-kde-en-stepped-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-stepped','kgen-kde-en-stepped-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-stepped','kgen-kde-en-stepped-cpp',this)">C++</button>
-</div><div id="kgen-kde-en-stepped-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.kde(
-    title="Density (Stepped)",
-    values=values,
-    categories=groups,
-    variant="stepped",
-    fill_opacity=80,
-    x_label="value", y_label="density",
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-stepped-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "stepped",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-stepped-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "stepped",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-stepped-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "stepped"
-)
-chart$show()</code></pre></div><div id="kgen-kde-en-stepped-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("stepped")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-en-stepped-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("stepped")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-en-stepped-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "stepped"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-en-stepped-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "stepped"
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-stepped-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "stepped",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-stepped.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-rug">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"rug"</code></span><span><strong>Aliases</strong> <code>rug / carpet / ticks / rugplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">KDE curve with rug ticks at sample positions.</p>
-<div class="sp-tabs" id="kgen-kde-en-rug">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-en-rug','kgen-kde-en-rug-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-rug','kgen-kde-en-rug-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-rug','kgen-kde-en-rug-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-rug','kgen-kde-en-rug-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-rug','kgen-kde-en-rug-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-rug','kgen-kde-en-rug-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-rug','kgen-kde-en-rug-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-rug','kgen-kde-en-rug-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-rug','kgen-kde-en-rug-cpp',this)">C++</button>
-</div><div id="kgen-kde-en-rug-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.kde(
-    title="Density (Rug)",
-    values=values,
-    categories=groups,
-    variant="rug",
-    x_label="value", y_label="density",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-rug-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "rug",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-rug-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "rug",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-rug-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "rug"
-)
-chart$show()</code></pre></div><div id="kgen-kde-en-rug-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("rug")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-en-rug-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("rug")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-en-rug-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "rug"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-en-rug-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "rug"
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-rug-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "rug",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-rug.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-histogram">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"histogram"</code></span><span><strong>Aliases</strong> <code>histogram / hist / with_hist / kdehist / distplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">KDE curve overlaid on a normalized histogram.</p>
-<div class="sp-tabs" id="kgen-kde-en-histogram">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-en-histogram','kgen-kde-en-histogram-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-histogram','kgen-kde-en-histogram-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-histogram','kgen-kde-en-histogram-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-histogram','kgen-kde-en-histogram-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-histogram','kgen-kde-en-histogram-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-histogram','kgen-kde-en-histogram-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-histogram','kgen-kde-en-histogram-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-histogram','kgen-kde-en-histogram-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-histogram','kgen-kde-en-histogram-cpp',this)">C++</button>
-</div><div id="kgen-kde-en-histogram-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.kde(
-    title="Distribution + KDE",
-    values=values,
-    variant="histogram",
-    bins=30,
-    palette=[0x6366F1],
-    x_label="value", y_label="density",
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-histogram-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "histogram",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-histogram-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "histogram",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-histogram-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "histogram"
-)
-chart$show()</code></pre></div><div id="kgen-kde-en-histogram-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("histogram")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-en-histogram-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("histogram")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-en-histogram-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "histogram"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-en-histogram-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "histogram"
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-histogram-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "histogram",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-histogram.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-normalized">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"normalized"</code></span><span><strong>Aliases</strong> <code>normalized / pdf / norm / density</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Each series normalized so its area integrates to 1.</p>
-<div class="sp-tabs" id="kgen-kde-en-normalized">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-en-normalized','kgen-kde-en-normalized-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-normalized','kgen-kde-en-normalized-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-normalized','kgen-kde-en-normalized-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-normalized','kgen-kde-en-normalized-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-normalized','kgen-kde-en-normalized-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-normalized','kgen-kde-en-normalized-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-normalized','kgen-kde-en-normalized-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-normalized','kgen-kde-en-normalized-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-normalized','kgen-kde-en-normalized-cpp',this)">C++</button>
-</div><div id="kgen-kde-en-normalized-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.kde(
-    title="PDF",
-    values=values,
-    categories=groups,
-    variant="normalized",
-    fill_opacity=70,
-    x_label="value", y_label="pdf",
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-normalized-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "normalized",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-normalized-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "normalized",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-normalized-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "normalized"
-)
-chart$show()</code></pre></div><div id="kgen-kde-en-normalized-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("normalized")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-en-normalized-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("normalized")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-en-normalized-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "normalized"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-en-normalized-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "normalized"
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-normalized-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "normalized",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-normalized.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-cumulative">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"cumulative"</code></span><span><strong>Aliases</strong> <code>cumulative / cdf / cum</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Cumulative density (CDF) curve in [0, 1].</p>
-<div class="sp-tabs" id="kgen-kde-en-cumulative">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-en-cumulative','kgen-kde-en-cumulative-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-cumulative','kgen-kde-en-cumulative-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-cumulative','kgen-kde-en-cumulative-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-cumulative','kgen-kde-en-cumulative-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-cumulative','kgen-kde-en-cumulative-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-cumulative','kgen-kde-en-cumulative-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-cumulative','kgen-kde-en-cumulative-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-cumulative','kgen-kde-en-cumulative-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-cumulative','kgen-kde-en-cumulative-cpp',this)">C++</button>
-</div><div id="kgen-kde-en-cumulative-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.kde(
-    title="CDF",
-    values=values,
-    categories=groups,
-    variant="cumulative",
-    x_label="value", y_label="cdf",
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-cumulative-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "cumulative",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-cumulative-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "cumulative",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-cumulative-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "cumulative"
-)
-chart$show()</code></pre></div><div id="kgen-kde-en-cumulative-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("cumulative")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-en-cumulative-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("cumulative")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-en-cumulative-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "cumulative"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-en-cumulative-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "cumulative"
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-cumulative-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "cumulative",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-cumulative.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-en-gradient">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / shade / fade / ridge</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Vertical gradient fill (opaque top → transparent bottom).</p>
-<div class="sp-tabs" id="kgen-kde-en-gradient">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-en-gradient','kgen-kde-en-gradient-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-gradient','kgen-kde-en-gradient-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-gradient','kgen-kde-en-gradient-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-gradient','kgen-kde-en-gradient-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-gradient','kgen-kde-en-gradient-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-gradient','kgen-kde-en-gradient-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-gradient','kgen-kde-en-gradient-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-gradient','kgen-kde-en-gradient-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-en-gradient','kgen-kde-en-gradient-cpp',this)">C++</button>
-</div><div id="kgen-kde-en-gradient-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.kde(
-    title="Density (Gradient)",
-    values=values,
-    variant="gradient",
-    palette=[0x8B5CF6],
-    x_label="value", y_label="density",
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-gradient-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "gradient",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-gradient-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "gradient",
-});
-chart.show();</code></pre></div><div id="kgen-kde-en-gradient-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "gradient"
-)
-chart$show()</code></pre></div><div id="kgen-kde-en-gradient-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("gradient")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-en-gradient-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("gradient")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-en-gradient-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "gradient"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-en-gradient-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "gradient"
-)
-chart.show()</code></pre></div><div id="kgen-kde-en-gradient-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "gradient",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-gradient.html"></iframe>
 </div>
@@ -780,13 +168,13 @@ chart.show();</code></pre></div></div>
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.kde(title, values, *, variant="basic", categories=None, bandwidth=0.0, filled=True, fill_opacity=50, bins=30, n_points=80, palette=None, **kwargs) -> Chart`
 
 Alias : `sp.kde`, `sp.build_kde_chart`
 
-## Description
+<h2>Description</h2>
 
 `sp.kde()` est le point d'entrée unifié pour toute la famille KDE (Kernel Density Estimate). Le mot-clé `variant` sélectionne la stratégie de rendu — tous les autres arguments conservent le même nom d'une variante à l'autre. La KDE produit une estimation de densité continue lissée à partir d'un échantillon de points avec un noyau gaussien et la règle de Scott pour le choix automatique de la bande passante. SeraPlot rend les courbes en SVG Rust natif, avec multi-séries, normalisation, CDF, rug, histogramme superposé et remplissage en dégradé.
 
@@ -803,7 +191,7 @@ Alias : `sp.kde`, `sp.build_kde_chart`
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Variantes | Description |
 |-----------|------|--------|-----------|-------------|
@@ -827,7 +215,7 @@ Alias : `sp.kde`, `sp.build_kde_chart`
 
 ---
 
-## Retour
+<h2>Retour</h2>
 
 `Chart` — objet avec propriété `.html` et méthode `.show()`.
 
@@ -849,668 +237,56 @@ Alias : `sp.kde`, `sp.build_kde_chart`
 <div class="sp-variant sp-von" id="kde-fr-basic">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / filled / default / single / multi</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Courbe pleine, mono ou multi-séries.</p>
-<div class="sp-tabs" id="kgen-kde-fr-basic">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-fr-basic','kgen-kde-fr-basic-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-basic','kgen-kde-fr-basic-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-basic','kgen-kde-fr-basic-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-basic','kgen-kde-fr-basic-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-basic','kgen-kde-fr-basic-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-basic','kgen-kde-fr-basic-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-basic','kgen-kde-fr-basic-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-basic','kgen-kde-fr-basic-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-basic','kgen-kde-fr-basic-cpp',this)">C++</button>
-</div><div id="kgen-kde-fr-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-a = [random.gauss(-1.5, 0.7) for _ in range(500)]
-b = [random.gauss(0.5, 1.0) for _ in range(500)]
-c = [random.gauss(2.5, 0.6) for _ in range(500)]
-chart = sp.kde(
-    title="Density",
-    values=a + b + c,
-    categories=["A"]*500 + ["B"]*500 + ["C"]*500,
-    variant="basic",
-    palette=[0x6366F1, 0xF59E0B, 0xEF4444],
-    x_label="value", y_label="density",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "basic",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "basic"
-)
-chart$show()</code></pre></div><div id="kgen-kde-fr-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("basic")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-fr-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("basic")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-fr-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "basic"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-fr-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "basic"
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "basic",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-outline">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"outline"</code></span><span><strong>Alias</strong> <code>outline / line / stroke / compare / no_fill</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Courbes en trait seul pour des superpositions épurées.</p>
-<div class="sp-tabs" id="kgen-kde-fr-outline">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-fr-outline','kgen-kde-fr-outline-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-outline','kgen-kde-fr-outline-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-outline','kgen-kde-fr-outline-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-outline','kgen-kde-fr-outline-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-outline','kgen-kde-fr-outline-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-outline','kgen-kde-fr-outline-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-outline','kgen-kde-fr-outline-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-outline','kgen-kde-fr-outline-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-outline','kgen-kde-fr-outline-cpp',this)">C++</button>
-</div><div id="kgen-kde-fr-outline-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.kde(
-    title="Density (Outline)",
-    values=values,
-    categories=groups,
-    variant="outline",
-    palette=[0x6366F1, 0x10B981, 0xF59E0B],
-    x_label="value", y_label="density",
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-outline-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "outline",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-outline-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "outline",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-outline-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "outline"
-)
-chart$show()</code></pre></div><div id="kgen-kde-fr-outline-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("outline")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-fr-outline-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("outline")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-fr-outline-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "outline"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-fr-outline-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "outline"
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-outline-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "outline",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-outline.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-stepped">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"stepped"</code></span><span><strong>Alias</strong> <code>stepped / step / stair / stairs</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Densité en escalier (rendu rectangulaire).</p>
-<div class="sp-tabs" id="kgen-kde-fr-stepped">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-fr-stepped','kgen-kde-fr-stepped-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-stepped','kgen-kde-fr-stepped-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-stepped','kgen-kde-fr-stepped-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-stepped','kgen-kde-fr-stepped-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-stepped','kgen-kde-fr-stepped-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-stepped','kgen-kde-fr-stepped-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-stepped','kgen-kde-fr-stepped-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-stepped','kgen-kde-fr-stepped-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-stepped','kgen-kde-fr-stepped-cpp',this)">C++</button>
-</div><div id="kgen-kde-fr-stepped-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.kde(
-    title="Density (Stepped)",
-    values=values,
-    categories=groups,
-    variant="stepped",
-    fill_opacity=80,
-    x_label="value", y_label="density",
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-stepped-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "stepped",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-stepped-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "stepped",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-stepped-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "stepped"
-)
-chart$show()</code></pre></div><div id="kgen-kde-fr-stepped-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("stepped")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-fr-stepped-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("stepped")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-fr-stepped-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "stepped"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-fr-stepped-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "stepped"
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-stepped-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "stepped",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-stepped.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-rug">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"rug"</code></span><span><strong>Alias</strong> <code>rug / carpet / ticks / rugplot</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Courbe KDE avec ticks rug aux positions des points.</p>
-<div class="sp-tabs" id="kgen-kde-fr-rug">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-fr-rug','kgen-kde-fr-rug-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-rug','kgen-kde-fr-rug-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-rug','kgen-kde-fr-rug-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-rug','kgen-kde-fr-rug-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-rug','kgen-kde-fr-rug-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-rug','kgen-kde-fr-rug-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-rug','kgen-kde-fr-rug-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-rug','kgen-kde-fr-rug-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-rug','kgen-kde-fr-rug-cpp',this)">C++</button>
-</div><div id="kgen-kde-fr-rug-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.kde(
-    title="Density (Rug)",
-    values=values,
-    categories=groups,
-    variant="rug",
-    x_label="value", y_label="density",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-rug-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "rug",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-rug-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "rug",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-rug-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "rug"
-)
-chart$show()</code></pre></div><div id="kgen-kde-fr-rug-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("rug")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-fr-rug-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("rug")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-fr-rug-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "rug"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-fr-rug-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "rug"
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-rug-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "rug",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-rug.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-histogram">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"histogram"</code></span><span><strong>Alias</strong> <code>histogram / hist / with_hist / kdehist / distplot</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Courbe KDE par-dessus un histogramme normalisé.</p>
-<div class="sp-tabs" id="kgen-kde-fr-histogram">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-fr-histogram','kgen-kde-fr-histogram-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-histogram','kgen-kde-fr-histogram-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-histogram','kgen-kde-fr-histogram-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-histogram','kgen-kde-fr-histogram-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-histogram','kgen-kde-fr-histogram-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-histogram','kgen-kde-fr-histogram-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-histogram','kgen-kde-fr-histogram-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-histogram','kgen-kde-fr-histogram-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-histogram','kgen-kde-fr-histogram-cpp',this)">C++</button>
-</div><div id="kgen-kde-fr-histogram-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.kde(
-    title="Distribution + KDE",
-    values=values,
-    variant="histogram",
-    bins=30,
-    palette=[0x6366F1],
-    x_label="value", y_label="density",
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-histogram-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "histogram",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-histogram-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "histogram",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-histogram-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "histogram"
-)
-chart$show()</code></pre></div><div id="kgen-kde-fr-histogram-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("histogram")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-fr-histogram-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("histogram")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-fr-histogram-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "histogram"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-fr-histogram-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "histogram"
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-histogram-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "histogram",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-histogram.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-normalized">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"normalized"</code></span><span><strong>Alias</strong> <code>normalized / pdf / norm / density</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chaque série normalisée pour que son aire vaille 1.</p>
-<div class="sp-tabs" id="kgen-kde-fr-normalized">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-fr-normalized','kgen-kde-fr-normalized-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-normalized','kgen-kde-fr-normalized-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-normalized','kgen-kde-fr-normalized-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-normalized','kgen-kde-fr-normalized-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-normalized','kgen-kde-fr-normalized-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-normalized','kgen-kde-fr-normalized-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-normalized','kgen-kde-fr-normalized-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-normalized','kgen-kde-fr-normalized-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-normalized','kgen-kde-fr-normalized-cpp',this)">C++</button>
-</div><div id="kgen-kde-fr-normalized-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.kde(
-    title="PDF",
-    values=values,
-    categories=groups,
-    variant="normalized",
-    fill_opacity=70,
-    x_label="value", y_label="pdf",
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-normalized-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "normalized",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-normalized-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "normalized",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-normalized-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "normalized"
-)
-chart$show()</code></pre></div><div id="kgen-kde-fr-normalized-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("normalized")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-fr-normalized-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("normalized")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-fr-normalized-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "normalized"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-fr-normalized-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "normalized"
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-normalized-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "normalized",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-normalized.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-cumulative">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"cumulative"</code></span><span><strong>Alias</strong> <code>cumulative / cdf / cum</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Densité cumulée (CDF) dans [0, 1].</p>
-<div class="sp-tabs" id="kgen-kde-fr-cumulative">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-fr-cumulative','kgen-kde-fr-cumulative-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-cumulative','kgen-kde-fr-cumulative-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-cumulative','kgen-kde-fr-cumulative-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-cumulative','kgen-kde-fr-cumulative-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-cumulative','kgen-kde-fr-cumulative-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-cumulative','kgen-kde-fr-cumulative-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-cumulative','kgen-kde-fr-cumulative-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-cumulative','kgen-kde-fr-cumulative-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-cumulative','kgen-kde-fr-cumulative-cpp',this)">C++</button>
-</div><div id="kgen-kde-fr-cumulative-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.kde(
-    title="CDF",
-    values=values,
-    categories=groups,
-    variant="cumulative",
-    x_label="value", y_label="cdf",
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-cumulative-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "cumulative",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-cumulative-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "cumulative",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-cumulative-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "cumulative"
-)
-chart$show()</code></pre></div><div id="kgen-kde-fr-cumulative-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("cumulative")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-fr-cumulative-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("cumulative")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-fr-cumulative-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "cumulative"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-fr-cumulative-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "cumulative"
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-cumulative-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "cumulative",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-cumulative.html"></iframe>
 </div>
 <div class="sp-variant" id="kde-fr-gradient">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / shade / fade / ridge</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Remplissage en dégradé vertical (opaque haut → transparent bas).</p>
-<div class="sp-tabs" id="kgen-kde-fr-gradient">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('kgen-kde-fr-gradient','kgen-kde-fr-gradient-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-gradient','kgen-kde-fr-gradient-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-gradient','kgen-kde-fr-gradient-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-gradient','kgen-kde-fr-gradient-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-gradient','kgen-kde-fr-gradient-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-gradient','kgen-kde-fr-gradient-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-gradient','kgen-kde-fr-gradient-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-gradient','kgen-kde-fr-gradient-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('kgen-kde-fr-gradient','kgen-kde-fr-gradient-cpp',this)">C++</button>
-</div><div id="kgen-kde-fr-gradient-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.kde(
-    title="Density (Gradient)",
-    values=values,
-    variant="gradient",
-    palette=[0x8B5CF6],
-    x_label="value", y_label="density",
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-gradient-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "gradient",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-gradient-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.kde({
-  title: "Density",
-  values: [/* numbers */],
-  variant: "gradient",
-});
-chart.show();</code></pre></div><div id="kgen-kde-fr-gradient-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$kde(
-  title = "Density",
-  values = c(),
-  variant = "gradient"
-)
-chart$show()</code></pre></div><div id="kgen-kde-fr-gradient-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::kde()
-        .title("Density")
-        .values(vec![])
-        .variant("gradient")
-        .build();
-    chart.show();
-}</code></pre></div><div id="kgen-kde-fr-gradient-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.kde()
-    .title("Density")
-    .values(List.of())
-    .variant("gradient")
-    .build();
-chart.show();</code></pre></div><div id="kgen-kde-fr-gradient-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Kde(
-    title: "Density",
-    values: new double[]{},
-    variant: "gradient"
-);
-chart.Show();</code></pre></div><div id="kgen-kde-fr-gradient-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.kde(
-  title   = "Density",
-  values  = List(),
-  variant = "gradient"
-)
-chart.show()</code></pre></div><div id="kgen-kde-fr-gradient-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include <seraplot/seraplot.hpp>
-
-auto chart = sp::kde({
-    .title   = "Density",
-    .values  = {},
-    .variant = "gradient",
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-gradient.html"></iframe>
 </div>

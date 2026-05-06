@@ -168,17 +168,17 @@ Aliases: `sp.bullet`, `sp.build_bullet`
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.bullet(title, labels, values, *, targets=None, max_vals=None, ranges=None, comparisons=None, variant="basic", **kwargs) -> Chart`
 
 Aliases: `sp.bullet`, `sp.build_bullet`
 
-## Description
+<h2>Description</h2>
 
 `sp.bullet()` est le point d entree unique pour la famille bullet. Inspire par Edward Tufte, le bullet condense valeur, cible, zones qualitatives et echelle dans une seule ligne horizontale - parfait pour des dashboards KPIs serres. Le mot-cle `variant` change l aspect (zones, feu tricolore, thermometre, pillule de progression, point, comparaison par barre fantome) sans toucher aux donnees.
 
-## Variantes
+<h2>Variantes</h2>
 
 | Variante | Alias | Description |
 |---|---|---|
@@ -191,7 +191,7 @@ Aliases: `sp.bullet`, `sp.build_bullet`
 | `"progress"` | `progress / pill / bar / percent` | Barre de progression pillule en degrade avec pourcentage centre. |
 | `"compare"` | `compare / vs / ghost / prior` | Ajoute une barre fantome (par ex. periode precedente via comparisons) derriere la valeur courante. |
 
-## Parametres
+<h2>Parametres</h2>
 
 | Parametre | Type | Defaut | Description |
 |---|---|---|---|
@@ -206,7 +206,7 @@ Aliases: `sp.bullet`, `sp.build_bullet`
 | `width` | `int` | `800` | Largeur (px) |
 | `height` | `int` | `300` | Hauteur (px, auto si trop petite) |
 
-## Retour
+<h2>Retour</h2>
 
 `Chart` - objet avec propriete `.html` et methode `.show()`.
 

@@ -1,380 +1,260 @@
-# Lollipop Chart
+# Lollipop - Categorical Value Sticks
 
 <div class="lang-en">
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.2em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
+.sp-tb{padding:8px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+.sp-cls{display:flex;gap:0;margin:1.6em 0 1.6em 36px;border-radius:14px;background:linear-gradient(180deg,#0a0f1c 0%,#060912 100%);box-shadow:0 18px 50px -12px rgba(0,0,0,.6),0 0 0 1px #1e293b inset;position:relative;overflow:visible}
+.sp-cls-rail{display:flex;flex-direction:column;background:linear-gradient(180deg,#0d1426,#070b18);border-right:1px solid #1e293b;padding:18px 0;min-width:18px;transition:min-width .28s cubic-bezier(.5,0,.2,1);position:relative;z-index:2;border-radius:14px 0 0 14px;overflow:visible}
+.sp-cls.sp-open .sp-cls-rail{min-width:170px;padding:18px 8px}
+.sp-cls-toggle{position:absolute;top:-14px;left:8px;padding:5px 9px;background:#1e293b;color:#a5b4fc;border:1px solid #312e81;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;line-height:1;z-index:5;box-shadow:0 4px 12px -2px rgba(0,0,0,.5)}
+.sp-cls-toggle:hover{background:#312e81;color:#e0e7ff;transform:translateY(-1px)}
+.sp-cls-tab{position:relative;display:flex;align-items:center;gap:8px;margin:5px 0 5px -34px;padding:11px 16px 11px 14px;background:linear-gradient(90deg,#1a2540 0%,#141d33 70%,#0f172a 100%);color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;border:none;text-align:left;white-space:nowrap;border-radius:8px 0 0 8px;box-shadow:-6px 4px 14px -4px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04),inset 1px 0 0 rgba(255,255,255,.05);transition:all .25s cubic-bezier(.5,0,.2,1);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);min-height:18px}
+.sp-cls-tab:hover{background:linear-gradient(90deg,#23304d,#1a2540 70%,#141d33);color:#e0e7ff;margin-left:-40px;box-shadow:-8px 6px 18px -4px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
+.sp-cls-tab.sp-cact{background:linear-gradient(90deg,#3730a3 0%,#1e1b4b 50%,#0f172a 100%);color:#f5f3ff;margin-left:-46px;box-shadow:-10px 8px 22px -4px rgba(99,102,241,.35),-3px 0 0 0 #818cf8 inset,inset 0 1px 0 rgba(165,180,252,.2);font-weight:700;z-index:3}
+.sp-cls-tab .sp-cic{font-size:13px;flex-shrink:0;color:#a5b4fc;font-weight:900;letter-spacing:-1px;width:16px;text-align:center;text-shadow:0 0 6px rgba(165,180,252,.4)}
+.sp-cls-tab.sp-cact .sp-cic{color:#e0e7ff;text-shadow:0 0 10px rgba(165,180,252,.7)}
+.sp-cls-tab .sp-clb{display:none;font-weight:inherit;letter-spacing:.01em}
+.sp-cls.sp-open .sp-cls-tab .sp-clb{display:inline}
+.sp-cls-body{flex:1;padding:24px 26px 22px;background:#0a0f1c;min-width:0;position:relative;z-index:1;border-radius:0 14px 14px 0;overflow:hidden}
+.sp-variant{display:none}
+.sp-variant.sp-von{display:block;animation:spFade .25s ease}
+@keyframes spFade{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+.sp-vmeta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px;color:#94a3b8;margin:6px 0 16px;padding:10px 14px;background:rgba(99,102,241,.06);border-left:3px solid #6366f1;border-radius:0 6px 6px 0}
+.sp-vmeta strong{color:#a5b4fc;font-weight:700;margin-right:4px;letter-spacing:.04em;text-transform:uppercase;font-size:11px}
+.sp-vmeta code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#e2e8f0;font-size:12px}
+.sp-preview-frame{width:100%;height:520px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+.sp-preview-label{font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact');if(window.hljs)document.getElementById(scope+'-'+name).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
+</script>
+
 
 ## Signature
 
-```python
-sp.build_lollipop_chart(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    color_hex: int = 0x6366F1,
-    palette: list[int] | None = None,
-    orientation: str = "v",
-    show_text: bool = False,
-    sort_order: str = "none",
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = True,
-    no_y_axis: bool = False,
-) -> Chart
-```
+`sp.lollipop(title, labels, values, *, variant="basic", color_groups=None, highlight_index=-1, **kwargs) -> Chart`
 
-Aliases: `sp.lollipop`
-
----
+Aliases: `sp.lollipop`, `sp.build_lollipop_chart`
 
 ## Description
 
-A lollipop chart is a cleaner, lower ink-density alternative to a bar chart: each category is represented by a thin stem line topped with a filled circle instead of a filled rectangle. This reduces visual clutter while preserving all quantitative information, making it a popular choice in modern data journalism and presentation-quality dashboards. The `orientation` parameter switches between vertical lollipops (default) and horizontal ones — horizontal works best for ranked lists with long category labels. `sort_order` lets you instantly produce a sorted ranking.
+`sp.lollipop()` is the unified entry point for the lollipop family. Each item becomes a thin stick capped by a dot - lighter ink than a bar chart for the same ranking, and the family includes circular, diverging, focused and grouped editorial layouts (the Office variant reproduces the season-rating panel pattern).
 
-**Ideal for:**
-- Ranking comparisons where minimal visual weight is desired
-- Replacing bar charts in polished, presentation-ready designs
-- Showing sparse data where most values are small but a few stand out
+## Variants
 
----
+| Variant | Aliases | Description |
+|---|---|---|
+| `"basic"` | `basic / default / classic / vertical` | Vertical sticks topped with dots - the canonical lollipop for ranked categorical values. |
+| `"cleveland"` | `cleveland / horizontal / h / row` | Horizontal Cleveland dot plot - long labels read naturally and dots align cleanly along value axis. |
+| `"diverging"` | `diverging / div / signed / delta` | Sticks pivot around the mean: green points sit above, red points below - perfect for deviation analysis. |
+| `"circular"` | `circular / polar / radial / round` | Polar layout where each category is an angular spoke - eye-catching for small alphabets and dashboard tiles. |
+| `"highlight"` | `highlight / spotlight / focus / dim` | All sticks dimmed except one accent (auto-max or `highlight_index`) - ideal for editorial focus. |
+| `"office"` | `office / grouped / season / panel` | Group-aware lollipops with per-group mean line and color band - inspired by The Office IMDb season chart. |
 
 ## Parameters
 
 | Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
+|---|---|---|---|
 | `title` | `str` | required | Chart title |
-| `labels` | `list[str]` | required | Category labels |
-| `values` | `list[float]` | required | Values for each lollipop |
-| `color_hex` | `int` | `0x6366F1` | Uniform color for stems and dots |
-| `palette` | `list[int] \| None` | `None` | Per-item color palette |
-| `orientation` | `str` | `"v"` | `"v"` = vertical, `"h"` = horizontal |
-| `show_text` | `bool` | `False` | Show value labels on each dot |
-| `sort_order` | `str` | `"none"` | `"asc"`, `"desc"`, or `"none"` |
-| `width` | `int` | `900` | Canvas width in pixels |
-| `height` | `int` | `480` | Canvas height in pixels |
-| `x_label` | `str` | `""` | X-axis label |
-| `y_label` | `str` | `""` | Y-axis label |
-| `gridlines` | `bool` | `True` | Show gridlines |
-| `no_y_axis` | `bool` | `False` | Hide Y axis |
-
----
+| `labels` | `list[str]` | required | Category labels (one per stick) |
+| `values` | `list[float]` | required | Value per label |
+| `variant` | `str` | "basic" | Visual style (see table) |
+| `color_groups` | `list[str]` | None | Group label per item - enables Office variant grouping |
+| `highlight_index` | `int` | -1 | Item to spotlight (Highlight variant); -1 = auto-max |
+| `color_hex` | `int` | 0x6366F1 | Default stick color |
+| `palette` | `list[int]` | None | Custom palette |
+| `show_values` | `bool` | False | Print value next to each dot |
+| `gridlines` | `bool` | False | Toggle background grid |
+| `sort_order` | `str` | "none" | "none" / "asc" / "desc" / "alpha" |
+| `width` | `int` | 900 | Canvas width (px) |
+| `height` | `int` | 480 | Canvas height (px) |
 
 ## Returns
 
-`Chart`
+`Chart` - object with `.html` property and `.show()` method.
 
 ---
 
-<style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
-<script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
-
-<div class="sp-tabs" id="lollipop">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('lollipop','lollipop-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('lollipop','lollipop-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('lollipop','lollipop-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('lollipop','lollipop-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('lollipop','lollipop-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('lollipop','lollipop-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('lollipop','lollipop-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('lollipop','lollipop-cpp',this)">C++</button>
+<div class="sp-cls sp-open" id="lollipop-en">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('lollipop-en')" title="Toggle">&#x21C6;</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('lollipop-en','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
+<button class="sp-cls-tab" onclick="spCls('lollipop-en','cleveland',this)"><span class="sp-cic">C</span><span class="sp-clb">Cleveland</span></button>
+<button class="sp-cls-tab" onclick="spCls('lollipop-en','diverging',this)"><span class="sp-cic">D</span><span class="sp-clb">Diverging</span></button>
+<button class="sp-cls-tab" onclick="spCls('lollipop-en','circular',this)"><span class="sp-cic">O</span><span class="sp-clb">Circular</span></button>
+<button class="sp-cls-tab" onclick="spCls('lollipop-en','highlight',this)"><span class="sp-cic">H</span><span class="sp-clb">Highlight</span></button>
+<button class="sp-cls-tab" onclick="spCls('lollipop-en','office',this)"><span class="sp-cic">G</span><span class="sp-clb">Office</span></button>
 </div>
-<div id="lollipop-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-frameworks = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"]
-stars_k = [223, 47, 95, 80, 32, 18, 21]
-chart = sp.lollipop(
-    title="Frontend Framework Stars (GitHub, K)",
-    labels=frameworks,
-    values=stars_k,
-    sort_order="desc",
-    show_text=True,
-    y_label="Stars (K)",
-    gridlines=True,
-)
-chart.show()</code></pre></div>
-<div id="lollipop-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const frameworks = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"];
-const starsK = [223, 47, 95, 80, 32, 18, 21];
-const chart = sp.lollipop({
-  title: "Frontend Framework Stars (GitHub, K)",
-  labels: frameworks,
-  values: starsK,
-  sortOrder: "desc",
-  showText: true,
-  yLabel: "Stars (K)",
-  gridlines: true,
-});
-chart.show();</code></pre></div>
-<div id="lollipop-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const frameworks: string[] = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"];
-const starsK: number[] = [223, 47, 95, 80, 32, 18, 21];
-const chart = sp.lollipop({
-  title: "Frontend Framework Stars (GitHub, K)",
-  labels: frameworks,
-  values: starsK,
-  sortOrder: "desc",
-  showText: true,
-  yLabel: "Stars (K)",
-  gridlines: true,
-});
-chart.show();</code></pre></div>
-<div id="lollipop-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-frameworks <- c("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik")
-stars_k    <- c(223, 47, 95, 80, 32, 18, 21)
-chart <- sp$lollipop(
-  title      = "Frontend Framework Stars (GitHub, K)",
-  labels     = frameworks,
-  values     = stars_k,
-  sort_order = "desc",
-  show_text  = TRUE,
-  y_label    = "Stars (K)",
-  gridlines  = TRUE
-)
-chart$show()</code></pre></div>
-<div id="lollipop-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-var chart = SeraPlot.lollipop()
-    .title("Frontend Framework Stars (GitHub, K)")
-    .labels(List.of("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"))
-    .values(List.of(223.0, 47.0, 95.0, 80.0, 32.0, 18.0, 21.0))
-    .sortOrder("desc")
-    .showText(true)
-    .yLabel("Stars (K)")
-    .gridlines(true)
-    .build();
-chart.show();</code></pre></div>
-<div id="lollipop-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-var chart = Sp.Lollipop(
-    title:     "Frontend Framework Stars (GitHub, K)",
-    labels:    ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"],
-    values:    [223, 47, 95, 80, 32, 18, 21],
-    sortOrder: "desc",
-    showText:  true,
-    yLabel:    "Stars (K)",
-    gridlines: true
-);
-chart.Show();</code></pre></div>
-<div id="lollipop-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-val chart = sp.lollipop(
-  title      = "Frontend Framework Stars (GitHub, K)",
-  labels     = List("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"),
-  values     = List(223.0, 47.0, 95.0, 80.0, 32.0, 18.0, 21.0),
-  sort_order = "desc",
-  show_text  = true,
-  y_label    = "Stars (K)",
-  gridlines  = true
-)
-chart.show()</code></pre></div>
-<div id="lollipop-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-auto chart = sp::lollipop({
-    .title      = "Frontend Framework Stars (GitHub, K)",
-    .labels     = {"React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"},
-    .values     = {223.0, 47.0, 95.0, 80.0, 32.0, 18.0, 21.0},
-    .sort_order = "desc",
-    .show_text  = true,
-    .y_label    = "Stars (K)",
-    .gridlines  = true,
-});
-chart.show();</code></pre></div>
+<div class="sp-cls-body">
+<div class="sp-variant sp-von" id="lollipop-en-basic">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / vertical</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Vertical sticks topped with dots - the canonical lollipop for ranked categorical values.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/lollipop-basic.html"></iframe>
 </div>
+<div class="sp-variant" id="lollipop-en-cleveland">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"cleveland"</code></span><span><strong>Aliases</strong> <code>cleveland / horizontal / h / row</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<iframe src="../../previews/lollipop.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Horizontal Cleveland dot plot - long labels read naturally and dots align cleanly along value axis.</p>
 
----
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/lollipop-cleveland.html"></iframe>
+</div>
+<div class="sp-variant" id="lollipop-en-diverging">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"diverging"</code></span><span><strong>Aliases</strong> <code>diverging / div / signed / delta</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-## See also
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Sticks pivot around the mean: green points sit above, red points below - perfect for deviation analysis.</p>
 
-- [Bar Chart](bar.md) — `sp.build_bar_chart()`
-- [Horizontal Bar](hbar.md) — `sp.build_hbar()`
-- [Dumbbell Chart](dumbbell.md) — `sp.build_dumbbell()`
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/lollipop-diverging.html"></iframe>
+</div>
+<div class="sp-variant" id="lollipop-en-circular">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"circular"</code></span><span><strong>Aliases</strong> <code>circular / polar / radial / round</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Polar layout where each category is an angular spoke - eye-catching for small alphabets and dashboard tiles.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/lollipop-circular.html"></iframe>
+</div>
+<div class="sp-variant" id="lollipop-en-highlight">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / spotlight / focus / dim</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">All sticks dimmed except one accent (auto-max or `highlight_index`) - ideal for editorial focus.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/lollipop-highlight.html"></iframe>
+</div>
+<div class="sp-variant" id="lollipop-en-office">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"office"</code></span><span><strong>Aliases</strong> <code>office / grouped / season / panel</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Group-aware lollipops with per-group mean line and color band - inspired by The Office IMDb season chart.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/lollipop-office.html"></iframe>
+</div>
+</div>
+</div>
 
 </div>
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
-```python
-sp.build_lollipop_chart(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    color_hex: int = 0x6366F1,
-    palette: list[int] | None = None,
-    orientation: str = "v",
-    show_text: bool = False,
-    sort_order: str = "none",
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = True,
-    no_y_axis: bool = False,
-) -> Chart
-```
+`sp.lollipop(title, labels, values, *, variant="basic", color_groups=None, highlight_index=-1, **kwargs) -> Chart`
 
-Aliases: `sp.lollipop`
+Aliases: `sp.lollipop`, `sp.build_lollipop_chart`
 
----
+<h2>Description</h2>
 
-## Description
+`sp.lollipop()` est le point d entree unique pour la famille lollipop. Chaque item devient un baton fin termine par un point - moins d encre qu un bar chart pour le meme classement, et la famille couvre des layouts circulaires, divergents, focalises et editoriaux groupes (la variante Office reproduit le motif des saisons IMDb de The Office).
 
-Un graphique en sucette (lollipop chart) est une alternative plus épurée au graphique en barres : chaque catégorie est représentée par une fine ligne-tige surmontée d'un cercle plein au lieu d'un rectangle. Cela réduit l'encombrement visuel tout en conservant toutes les informations quantitatives, ce qui en fait un choix populaire dans le journalisme de données moderne. Le paramètre `orientation` bascule entre les sucettes verticales (par défaut) et horizontales — l'horizontal convient mieux aux listes classées avec de longues étiquettes. `sort_order` permet de produire instantanément un classement trié.
+<h2>Variantes</h2>
 
-**Idéal pour :**
-- Comparaisons de classements avec un poids visuel minimal
-- Remplacement des barres dans les designs de présentation soignés
-- Données éparses où la plupart des valeurs sont faibles mais quelques-unes se démarquent
+| Variante | Alias | Description |
+|---|---|---|
+| `"basic"` | `basic / default / classic / vertical` | Batons verticaux surmontes de points - le lollipop canonique pour valeurs categorielles classees. |
+| `"cleveland"` | `cleveland / horizontal / h / row` | Cleveland dot plot horizontal - les longs libelles se lisent naturellement, les points s alignent sur l axe des valeurs. |
+| `"diverging"` | `diverging / div / signed / delta` | Batons pivotent autour de la moyenne: vert au-dessus, rouge en-dessous - parfait pour les ecarts. |
+| `"circular"` | `circular / polar / radial / round` | Disposition polaire ou chaque categorie est un rayon - tres lisible pour petits jeux et dashboards. |
+| `"highlight"` | `highlight / spotlight / focus / dim` | Tous les batons grises sauf un accent (auto-max ou `highlight_index`) - ideal pour focus editorial. |
+| `"office"` | `office / grouped / season / panel` | Lollipops groupes avec moyenne par groupe et bande de couleur - inspire du chart IMDb de The Office. |
 
----
+<h2>Parametres</h2>
 
-## Paramètres
-
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
+| Parametre | Type | Defaut | Description |
+|---|---|---|---|
 | `title` | `str` | requis | Titre du graphique |
-| `labels` | `list[str]` | requis | Étiquettes des catégories |
-| `values` | `list[float]` | requis | Valeurs pour chaque sucette |
-| `color_hex` | `int` | `0x6366F1` | Couleur uniforme pour les tiges et les points |
-| `palette` | `list[int] \| None` | `None` | Palette de couleurs par élément |
-| `orientation` | `str` | `"v"` | `"v"` = vertical, `"h"` = horizontal |
-| `show_text` | `bool` | `False` | Afficher les étiquettes de valeur sur chaque point |
-| `sort_order` | `str` | `"none"` | `"asc"`, `"desc"` ou `"none"` |
-| `width` | `int` | `900` | Largeur du canvas en pixels |
-| `height` | `int` | `480` | Hauteur du canvas en pixels |
-| `x_label` | `str` | `""` | Étiquette de l'axe X |
-| `y_label` | `str` | `""` | Étiquette de l'axe Y |
-| `gridlines` | `bool` | `True` | Afficher les lignes de grille |
-| `no_y_axis` | `bool` | `False` | Masquer l'axe Y |
+| `labels` | `list[str]` | requis | Libelles categoriels (un par baton) |
+| `values` | `list[float]` | requis | Valeur par libelle |
+| `variant` | `str` | "basic" | Style visuel (voir tableau) |
+| `color_groups` | `list[str]` | None | Groupe par item - active le groupage Office |
+| `highlight_index` | `int` | -1 | Index a mettre en avant (Highlight); -1 = auto-max |
+| `color_hex` | `int` | 0x6366F1 | Couleur par defaut |
+| `palette` | `list[int]` | None | Palette personnalisee |
+| `show_values` | `bool` | False | Afficher la valeur a cote de chaque point |
+| `gridlines` | `bool` | False | Activer la grille de fond |
+| `sort_order` | `str` | "none" | "none" / "asc" / "desc" / "alpha" |
+| `width` | `int` | 900 | Largeur (px) |
+| `height` | `int` | 480 | Hauteur (px) |
+
+<h2>Retour</h2>
+
+`Chart` - objet avec propriete `.html` et methode `.show()`.
 
 ---
 
-## Retourne
-
-`Chart`
-
----
-
-<div class="sp-tabs" id="lollipop-fr">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('lollipop-fr','lollipop-fr-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('lollipop-fr','lollipop-fr-cpp',this)">C++</button>
+<div class="sp-cls sp-open" id="lollipop-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('lollipop-fr')" title="Toggle">&#x21C6;</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('lollipop-fr','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
+<button class="sp-cls-tab" onclick="spCls('lollipop-fr','cleveland',this)"><span class="sp-cic">C</span><span class="sp-clb">Cleveland</span></button>
+<button class="sp-cls-tab" onclick="spCls('lollipop-fr','diverging',this)"><span class="sp-cic">D</span><span class="sp-clb">Diverging</span></button>
+<button class="sp-cls-tab" onclick="spCls('lollipop-fr','circular',this)"><span class="sp-cic">O</span><span class="sp-clb">Circular</span></button>
+<button class="sp-cls-tab" onclick="spCls('lollipop-fr','highlight',this)"><span class="sp-cic">H</span><span class="sp-clb">Highlight</span></button>
+<button class="sp-cls-tab" onclick="spCls('lollipop-fr','office',this)"><span class="sp-cic">G</span><span class="sp-clb">Office</span></button>
 </div>
-<div id="lollipop-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-frameworks = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"]
-etoiles_k  = [223, 47, 95, 80, 32, 18, 21]
-chart = sp.lollipop(
-    title="Stars GitHub des frameworks frontend (K)",
-    labels=frameworks,
-    values=etoiles_k,
-    sort_order="desc",
-    show_text=True,
-    y_label="Stars (K)",
-    gridlines=True,
-)
-chart.show()</code></pre></div>
-<div id="lollipop-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const frameworks = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"];
-const etoilesK   = [223, 47, 95, 80, 32, 18, 21];
-const chart = sp.lollipop({
-  title: "Stars GitHub des frameworks frontend (K)",
-  labels: frameworks,
-  values: etoilesK,
-  sortOrder: "desc",
-  showText: true,
-  yLabel: "Stars (K)",
-  gridlines: true,
-});
-chart.show();</code></pre></div>
-<div id="lollipop-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const frameworks: string[] = ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"];
-const etoilesK: number[]   = [223, 47, 95, 80, 32, 18, 21];
-const chart = sp.lollipop({
-  title: "Stars GitHub des frameworks frontend (K)",
-  labels: frameworks,
-  values: etoilesK,
-  sortOrder: "desc",
-  showText: true,
-  yLabel: "Stars (K)",
-  gridlines: true,
-});
-chart.show();</code></pre></div>
-<div id="lollipop-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-frameworks <- c("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik")
-etoiles_k  <- c(223, 47, 95, 80, 32, 18, 21)
-chart <- sp$lollipop(
-  title      = "Stars GitHub des frameworks frontend (K)",
-  labels     = frameworks,
-  values     = etoiles_k,
-  sort_order = "desc",
-  show_text  = TRUE,
-  y_label    = "Stars (K)",
-  gridlines  = TRUE
-)
-chart$show()</code></pre></div>
-<div id="lollipop-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-var chart = SeraPlot.lollipop()
-    .title("Stars GitHub des frameworks frontend (K)")
-    .labels(List.of("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"))
-    .values(List.of(223.0, 47.0, 95.0, 80.0, 32.0, 18.0, 21.0))
-    .sortOrder("desc")
-    .showText(true)
-    .yLabel("Stars (K)")
-    .gridlines(true)
-    .build();
-chart.show();</code></pre></div>
-<div id="lollipop-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-var chart = Sp.Lollipop(
-    title:     "Stars GitHub des frameworks frontend (K)",
-    labels:    ["React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"],
-    values:    [223, 47, 95, 80, 32, 18, 21],
-    sortOrder: "desc",
-    showText:  true,
-    yLabel:    "Stars (K)",
-    gridlines: true
-);
-chart.Show();</code></pre></div>
-<div id="lollipop-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-val chart = sp.lollipop(
-  title      = "Stars GitHub des frameworks frontend (K)",
-  labels     = List("React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"),
-  values     = List(223.0, 47.0, 95.0, 80.0, 32.0, 18.0, 21.0),
-  sort_order = "desc",
-  show_text  = true,
-  y_label    = "Stars (K)",
-  gridlines  = true
-)
-chart.show()</code></pre></div>
-<div id="lollipop-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-auto chart = sp::lollipop({
-    .title      = "Stars GitHub des frameworks frontend (K)",
-    .labels     = {"React", "Vue", "Angular", "Svelte", "Solid", "Lit", "Qwik"},
-    .values     = {223.0, 47.0, 95.0, 80.0, 32.0, 18.0, 21.0},
-    .sort_order = "desc",
-    .show_text  = true,
-    .y_label    = "Stars (K)",
-    .gridlines  = true,
-});
-chart.show();</code></pre></div>
+<div class="sp-cls-body">
+<div class="sp-variant sp-von" id="lollipop-fr-basic">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / vertical</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Batons verticaux surmontes de points - le lollipop canonique pour valeurs categorielles classees.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/lollipop-basic.html"></iframe>
 </div>
+<div class="sp-variant" id="lollipop-fr-cleveland">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"cleveland"</code></span><span><strong>Aliases</strong> <code>cleveland / horizontal / h / row</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<iframe src="../../previews/lollipop.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Cleveland dot plot horizontal - les longs libelles se lisent naturellement, les points s alignent sur l axe des valeurs.</p>
 
----
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/lollipop-cleveland.html"></iframe>
+</div>
+<div class="sp-variant" id="lollipop-fr-diverging">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"diverging"</code></span><span><strong>Aliases</strong> <code>diverging / div / signed / delta</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-## Voir aussi
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Batons pivotent autour de la moyenne: vert au-dessus, rouge en-dessous - parfait pour les ecarts.</p>
 
-- [Graphique en barres](bar.md) — `sp.build_bar_chart()`
-- [Barres horizontales](hbar.md) — `sp.build_hbar()`
-- [Graphique haltère](dumbbell.md) — `sp.build_dumbbell()`
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/lollipop-diverging.html"></iframe>
+</div>
+<div class="sp-variant" id="lollipop-fr-circular">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"circular"</code></span><span><strong>Aliases</strong> <code>circular / polar / radial / round</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Disposition polaire ou chaque categorie est un rayon - tres lisible pour petits jeux et dashboards.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/lollipop-circular.html"></iframe>
+</div>
+<div class="sp-variant" id="lollipop-fr-highlight">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / spotlight / focus / dim</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Tous les batons grises sauf un accent (auto-max ou `highlight_index`) - ideal pour focus editorial.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/lollipop-highlight.html"></iframe>
+</div>
+<div class="sp-variant" id="lollipop-fr-office">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"office"</code></span><span><strong>Aliases</strong> <code>office / grouped / season / panel</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Lollipops groupes avec moyenne par groupe et bande de couleur - inspire du chart IMDb de The Office.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/lollipop-office.html"></iframe>
+</div>
+</div>
+</div>
 
 </div>

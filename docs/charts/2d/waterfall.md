@@ -159,19 +159,19 @@ Aliases: `sp.waterfall`, `sp.build_waterfall`
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.waterfall(title, labels, values, *, variant="basic", show_text=True, **kwargs) -> Chart`
 
 Alias : `sp.waterfall`, `sp.build_waterfall`
 
-## Description
+<h2>Description</h2>
 
 `sp.waterfall()` rassemble toute la famille des graphiques waterfall : une suite de barres ou chaque etape ajoute (positif) ou retranche (negatif) au cumul courant. Le mot-cle `variant` change la geometrie sans toucher aux autres parametres. Les waterfalls sont la reference pour les ponts de P&L, l analyse d ecarts, la decomposition de cohortes, le detail des frais/taxes et tout recit du type "de A vers B, qu est-ce qui a change ?".
 
 > **Totaux** — mettez la valeur a `0` et utilisez un libelle contenant `total`, `net`, `final`, `gross` ou `ebitda` pour marquer une barre de sous-total ; elle est rendue avec la couleur des totaux et ancree sur le cumul courant.
 
-## Variantes
+<h2>Variantes</h2>
 
 | Variante | Alias | Description |
 |---|---|---|
@@ -182,7 +182,7 @@ Alias : `sp.waterfall`, `sp.build_waterfall`
 | `"delta"` | `delta / percent / annotated / pct` | Barres + badge de pourcentage signe (Delta vs cumul precedent) au-dessus de chaque etape. |
 | `"horizontal"` | `horizontal / rows / sideways / h` | Pivote a 90 degres : etapes en lignes empilees vers le bas, layout editorial. |
 
-## Parametres
+<h2>Parametres</h2>
 
 | Parametre | Type | Defaut | Description |
 |---|---|---|---|
@@ -194,7 +194,7 @@ Alias : `sp.waterfall`, `sp.build_waterfall`
 | `width`     | `int`         | `900`     | Largeur du canvas (px) |
 | `height`    | `int`         | `480`     | Hauteur du canvas (px) |
 
-## Retour
+<h2>Retour</h2>
 
 `Chart` — objet avec une propriete `.html` et une methode `.show()`.
 

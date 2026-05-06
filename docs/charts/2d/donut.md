@@ -63,82 +63,7 @@ A donut chart is a pie chart with a circular cutout at the center, reducing the 
 <style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
 <script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
 
-<div class="sp-tabs" id="donut">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('donut','donut-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('donut','donut-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('donut','donut-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('donut','donut-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('donut','donut-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('donut','donut-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('donut','donut-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('donut','donut-cpp',this)">C++</button>
-</div>
-<div id="donut-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.donut(
-    title="Revenue by product line",
-    labels=["SaaS", "Professional Services", "Licensing", "Training"],
-    values=[52, 24, 15, 9],
-    inner_radius_ratio=0.6,
-)
-chart.show()</code></pre></div>
-<div id="donut-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-const chart = sp.donut({
-  title: "Revenue by product line",
-  labels: ["SaaS", "Professional Services", "Licensing", "Training"],
-  values: [52, 24, 15, 9],
-  innerRadiusRatio: 0.6,
-});
-chart.show();</code></pre></div>
-<div id="donut-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-const chart = sp.donut({
-  title: "Revenue by product line",
-  labels: ["SaaS", "Professional Services", "Licensing", "Training"],
-  values: [52, 24, 15, 9],
-  innerRadiusRatio: 0.6,
-});
-chart.show();</code></pre></div>
-<div id="donut-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$donut(
-  title = "Revenue by product line",
-  labels = c("SaaS", "Professional Services", "Licensing", "Training"),
-  values = c(52, 24, 15, 9),
-  inner_radius_ratio = 0.6
-)
-chart$show()</code></pre></div>
-<div id="donut-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-var chart = SeraPlot.donut()
-    .title("Revenue by product line")
-    .labels(List.of("SaaS", "Professional Services", "Licensing", "Training"))
-    .values(List.of(52.0, 24.0, 15.0, 9.0))
-    .innerRadiusRatio(0.6)
-    .build();
-chart.show();</code></pre></div>
-<div id="donut-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-var chart = Sp.Donut(
-    title: "Revenue by product line",
-    labels: new[]{"SaaS", "Professional Services", "Licensing", "Training"},
-    values: new[]{52.0, 24.0, 15.0, 9.0},
-    innerRadiusRatio: 0.6
-);
-chart.Show();</code></pre></div>
-<div id="donut-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-val chart = sp.donut(
-  title = "Revenue by product line",
-  labels = List("SaaS", "Professional Services", "Licensing", "Training"),
-  values = List(52.0, 24.0, 15.0, 9.0),
-  inner_radius_ratio = 0.6
-)
-chart.show()</code></pre></div>
-<div id="donut-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-auto chart = sp::donut({
-  .title               = "Revenue by product line",
-  .labels              = {"SaaS", "Professional Services", "Licensing", "Training"},
-  .values              = {52.0, 24.0, 15.0, 9.0},
-  .inner_radius_ratio  = 0.6
-});
-chart.show();</code></pre></div>
+
 </div>
 
 <iframe src="../../previews/donut.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
@@ -154,7 +79,7 @@ chart.show();</code></pre></div>
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_donut_chart(
@@ -177,7 +102,7 @@ Aliases: `sp.donut`, `sp.donut_chart`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Un graphique en anneau est un graphique en secteurs avec un trou circulaire au centre, réduisant le poids visuel et laissant de la place pour afficher une métrique récapitulative (total, nom d'indicateur ou label) dans le vide. Le paramètre `inner_radius_ratio` contrôle la taille du trou : `0.0` produit un secteur plein, `0.9` produit un anneau fin. Les graphiques en anneau ont la même sémantique parties-tout que les graphiques en secteurs, tout en étant plus modernes et moins sujets aux problèmes de perception liés à la distorsion des surfaces. Ils fonctionnent mieux avec 3 à 7 tranches.
 
@@ -188,7 +113,7 @@ Un graphique en anneau est un graphique en secteurs avec un trou circulaire au c
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -206,95 +131,20 @@ Un graphique en anneau est un graphique en secteurs avec un trou circulaire au c
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-<div class="sp-tabs" id="donut-fr">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('donut-fr','donut-fr-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('donut-fr','donut-fr-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('donut-fr','donut-fr-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('donut-fr','donut-fr-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('donut-fr','donut-fr-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('donut-fr','donut-fr-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('donut-fr','donut-fr-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('donut-fr','donut-fr-cpp',this)">C++</button>
-</div>
-<div id="donut-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.donut(
-    title="Chiffre d'affaires par ligne de produit",
-    labels=["SaaS", "Services professionnels", "Licences", "Formation"],
-    values=[52, 24, 15, 9],
-    inner_radius_ratio=0.6,
-)
-chart.show()</code></pre></div>
-<div id="donut-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-const chart = sp.donut({
-  title: "Chiffre d'affaires par ligne de produit",
-  labels: ["SaaS", "Services professionnels", "Licences", "Formation"],
-  values: [52, 24, 15, 9],
-  innerRadiusRatio: 0.6,
-});
-chart.show();</code></pre></div>
-<div id="donut-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-const chart = sp.donut({
-  title: "Chiffre d'affaires par ligne de produit",
-  labels: ["SaaS", "Services professionnels", "Licences", "Formation"],
-  values: [52, 24, 15, 9],
-  innerRadiusRatio: 0.6,
-});
-chart.show();</code></pre></div>
-<div id="donut-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$donut(
-  title = "Chiffre d'affaires par ligne de produit",
-  labels = c("SaaS", "Services professionnels", "Licences", "Formation"),
-  values = c(52, 24, 15, 9),
-  inner_radius_ratio = 0.6
-)
-chart$show()</code></pre></div>
-<div id="donut-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-var chart = SeraPlot.donut()
-    .title("Chiffre d'affaires par ligne de produit")
-    .labels(List.of("SaaS", "Services professionnels", "Licences", "Formation"))
-    .values(List.of(52.0, 24.0, 15.0, 9.0))
-    .innerRadiusRatio(0.6)
-    .build();
-chart.show();</code></pre></div>
-<div id="donut-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-var chart = Sp.Donut(
-    title: "Chiffre d'affaires par ligne de produit",
-    labels: new[]{"SaaS", "Services professionnels", "Licences", "Formation"},
-    values: new[]{52.0, 24.0, 15.0, 9.0},
-    innerRadiusRatio: 0.6
-);
-chart.Show();</code></pre></div>
-<div id="donut-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-val chart = sp.donut(
-  title = "Chiffre d'affaires par ligne de produit",
-  labels = List("SaaS", "Services professionnels", "Licences", "Formation"),
-  values = List(52.0, 24.0, 15.0, 9.0),
-  inner_radius_ratio = 0.6
-)
-chart.show()</code></pre></div>
-<div id="donut-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-auto chart = sp::donut({
-  .title              = "Chiffre d'affaires par ligne de produit",
-  .labels             = {"SaaS", "Services professionnels", "Licences", "Formation"},
-  .values             = {52.0, 24.0, 15.0, 9.0},
-  .inner_radius_ratio = 0.6
-});
-chart.show();</code></pre></div>
+
 </div>
 
 <iframe src="../../previews/donut.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [pie.md](pie.md) — Graphique en secteurs plein sans trou central
 - [sunburst.md](sunburst.md) — Anneau hiérarchique avec plusieurs anneaux imbriqués

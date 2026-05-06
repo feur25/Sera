@@ -172,13 +172,13 @@ Aliases: `sp.slope`, `sp.build_slope_chart`
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.slope(title, labels, left, right, *, variant="basic", left_label="Before", right_label="After", palette=None, show_text=True, **kwargs) -> Chart`
 
 Alias : `sp.slope`, `sp.build_slope_chart`
 
-## Description
+<h2>Description</h2>
 
 `sp.slope()` produit toute la famille des slope charts : deux axes de valeurs parallèles (gauche / droite) avec un connecteur par ligne. Le mot-clé `variant` permute le style du connecteur sans changer aucun autre paramètre. Idéal pour comparer avant/après, résultats A/B, changements de classement, KPI entre périodes, et toute évolution par paire sur de nombreuses entités.
 
@@ -193,7 +193,7 @@ Alias : `sp.slope`, `sp.build_slope_chart`
 | `"diverging"`   | Visualisation pure du delta                | Barres delta centrées |
 | `"stepped"`     | Look rectiligne / dashboard                | Horizontal-vertical-horizontal |
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |---|---|---|---|
@@ -209,7 +209,7 @@ Alias : `sp.slope`, `sp.build_slope_chart`
 | `width`        | `int`             | `700`      | Largeur (px) |
 | `height`       | `int`             | `500`      | Hauteur (px) |
 
-## Retour
+<h2>Retour</h2>
 
 `Chart` — objet avec propriété `.html` et méthode `.show()`.
 

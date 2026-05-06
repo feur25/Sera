@@ -185,19 +185,19 @@ Aliases: `sp.sunburst`, `sp.build_sunburst`
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.sunburst(title, labels, parents, values, *, variant="basic", palette=None, **kwargs) -> Chart`
 
 Alias : `sp.sunburst`, `sp.build_sunburst`
 
-## Description
+<h2>Description</h2>
 
 `sp.sunburst()` est le point d entree unifie pour toute la famille des graphiques sunburst. Un sunburst represente une hierarchie sous forme d anneaux concentriques : l anneau interieur est la racine, chaque anneau exterieur est un niveau plus profond, et l angle code la valeur. Le mot-cle `variant` change le style sans toucher aux autres parametres. Les sunbursts sont la reference pour visualiser des taxonomies imbriquees (organigrammes, systemes de fichiers, segmentation marche, categories de depenses, arbres phylogenetiques) et surpassent le camembert des qu une vraie hierarchie existe.
 
 > **Encodage de la hierarchie** — `labels` liste tous les noeuds, `parents` donne le libelle du parent de chaque noeud ("" pour une racine). Les valeurs des feuilles viennent de `values` ; les noeuds internes a 0 sont calcules automatiquement comme la somme de leurs descendants.
 
-## Variantes
+<h2>Variantes</h2>
 
 | Variante | Alias | Description |
 |---|---|---|
@@ -210,7 +210,7 @@ Alias : `sp.sunburst`, `sp.build_sunburst`
 | `"depth_fade"` | `depth_fade / fade / fading / depth` | Palette standard mais opacite decroissante en profondeur pour concentrer le regard. |
 | `"mono"` | `mono / monochrome / single / uniform` | Anneaux monochromes differencies uniquement par opacite. Rendu editorial. |
 
-## Parametres
+<h2>Parametres</h2>
 
 | Parametre | Type | Defaut | Description |
 |---|---|---|---|
@@ -223,7 +223,7 @@ Alias : `sp.sunburst`, `sp.build_sunburst`
 | `width`    | `int`         | `700`     | Largeur du canvas (px) |
 | `height`   | `int`         | `700`     | Hauteur du canvas (px) |
 
-## Retour
+<h2>Retour</h2>
 
 `Chart` — objet avec une propriete `.html` et une methode `.show()`.
 

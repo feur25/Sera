@@ -178,19 +178,19 @@ Aliases: `sp.treemap`, `sp.build_treemap`
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.treemap(title, labels, values, *, parents=None, variant="basic", palette=None, **kwargs) -> Chart`
 
 Alias : `sp.treemap`, `sp.build_treemap`
 
-## Description
+<h2>Description</h2>
 
 `sp.treemap()` est le point d entree unifie pour toute la famille treemap. Un treemap decoupe un rectangle en sous-rectangles proportionnels dont l aire code la valeur ; lorsqu une liste `parents` est fournie le rendu devient hierarchique (chaque parent recoit son propre bloc, les feuilles y sont squarifiees). Le mot-cle `variant` change le style sans toucher aux donnees. Les treemaps sont la reference pour visualiser budgets, capitalisations boursieres, occupation disque, poids de portefeuille, systemes de fichiers et toute decomposition 'tout = somme des parties'.
 
 > **Mode hierarchique** — passez `parents` (un libelle parent par feuille, chaine vide `""` pour un treemap plat). Les totaux internes sont auto-calcules. Triez les feuilles avec `sort_order` (`"desc"` recommande).
 
-## Variantes
+<h2>Variantes</h2>
 
 | Variante | Alias | Description |
 |---|---|---|
@@ -203,7 +203,7 @@ Alias : `sp.treemap`, `sp.build_treemap`
 | `"heat"` | `heat / heatmap / temperature / cold_warm` | La couleur code la valeur (bleu froid -> rouge chaud) au lieu de l identite, treemap en heatmap. |
 | `"mono"` | `mono / monochrome / single / uniform` | Teinte unique avec opacite decroissante par rang ; minimaliste et editorial, ideal pour slides. |
 
-## Parametres
+<h2>Parametres</h2>
 
 | Parametre | Type | Defaut | Description |
 |---|---|---|---|
@@ -217,7 +217,7 @@ Alias : `sp.treemap`, `sp.build_treemap`
 | `width`    | `int`         | `1100`    | Largeur du canvas (px) |
 | `height`   | `int`         | `520`     | Hauteur du canvas (px) |
 
-## Retour
+<h2>Retour</h2>
 
 `Chart` — objet avec une propriete `.html` et une methode `.show()`.
 

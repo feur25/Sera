@@ -168,17 +168,17 @@ Aliases: `sp.gauge`, `sp.build_gauge`
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.gauge(title, *, value, min_val=0.0, max_val=100.0, label="", variant="basic", comparison=0.0, **kwargs) -> Chart`
 
 Aliases: `sp.gauge`, `sp.build_gauge`
 
-## Description
+<h2>Description</h2>
 
 `sp.gauge()` est le point d entree unique pour la famille jauge. Une jauge associe un scalaire unique a un arc colore avec des seuils optionnels - parfait pour des KPIs de statut / sante / utilisation. Le mot-cle `variant` change la geometrie (demi, trois-quart, anneau complet), les ornements (aiguille, ticks, glow) et la composition (arc simple ou arcs concentriques pour valeur-vs-cible).
 
-## Variantes
+<h2>Variantes</h2>
 
 | Variante | Alias | Description |
 |---|---|---|
@@ -191,7 +191,7 @@ Aliases: `sp.gauge`, `sp.build_gauge`
 | `"glow"` | `glow / neon / halo / luminous` | Effet neon sur l arc actif - look dashboard sombre tres marquant. |
 | `"concentric"` | `concentric / rings / target / dual` | Deux arcs concentriques : externe = courant, interne = comparaison ou cible. |
 
-## Parametres
+<h2>Parametres</h2>
 
 | Parametre | Type | Defaut | Description |
 |---|---|---|---|
@@ -206,7 +206,7 @@ Aliases: `sp.gauge`, `sp.build_gauge`
 | `width` | `int` | `400` | Largeur (px) |
 | `height` | `int` | `300` | Hauteur (px) |
 
-## Retour
+<h2>Retour</h2>
 
 `Chart` - objet avec propriete `.html` et methode `.show()`.
 

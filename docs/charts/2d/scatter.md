@@ -116,96 +116,7 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="scen-basic">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('scen-basic','scen-basic-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('scen-basic','scen-basic-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('scen-basic','scen-basic-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('scen-basic','scen-basic-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('scen-basic','scen-basic-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('scen-basic','scen-basic-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('scen-basic','scen-basic-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('scen-basic','scen-basic-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('scen-basic','scen-basic-cpp',this)">C++</button>
-</div><div id="scen-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-xs = [random.gauss(0,1) for _ in range(120)]
-ys = [x*0.6 + random.gauss(0,0.45) for x in xs]
-chart = sp.scatter(
-    title="Returns vs Volatility",
-    variant="basic",
-    x_values=xs, y_values=ys,
-    color_hex=0x6366F1,
-    point_size=5.5,
-    x_label="Volatility", y_label="Return",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="scen-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scen-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scen-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$scatter(
-  title = "Scatter",
-  variant = "basic",
-  x_values = c(),
-  y_values = c()
-)
-chart$show()</code></pre></div><div id="scen-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::scatter()
-        .title("Scatter")
-        .variant("basic")
-        .x_values(vec![])
-        .y_values(vec![])
-        .build();
-    chart.show();
-}</code></pre></div><div id="scen-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.scatter()
-    .title("Scatter")
-    .variant("basic")
-    .xValues(List.of())
-    .yValues(List.of())
-    .build();
-chart.show();</code></pre></div><div id="scen-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Scatter(
-    title: "Scatter",
-    variant: "basic",
-    xValues: new double[]{},
-    yValues: new double[]{}
-);
-chart.Show();</code></pre></div><div id="scen-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.scatter(
-  title    = "Scatter",
-  variant  = "basic",
-  x_values = List(),
-  y_values = List()
-)
-chart.show()</code></pre></div><div id="scen-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::scatter({
-    .title    = "Scatter",
-    .variant  = "basic",
-    .x_values = {},
-    .y_values = {},
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-basic.html"></iframe>
 </div>
@@ -214,93 +125,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / grouped / category</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="scen-categorical">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('scen-categorical','scen-categorical-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('scen-categorical','scen-categorical-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('scen-categorical','scen-categorical-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('scen-categorical','scen-categorical-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('scen-categorical','scen-categorical-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('scen-categorical','scen-categorical-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('scen-categorical','scen-categorical-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('scen-categorical','scen-categorical-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('scen-categorical','scen-categorical-cpp',this)">C++</button>
-</div><div id="scen-categorical-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.scatter(
-    title="Iris — Sepal vs Petal",
-    variant="categorical",
-    x_values=[5.1,4.9,7.0,6.4,6.3,5.8],
-    y_values=[1.4,1.4,4.7,4.5,6.0,5.1],
-    categories=["setosa","setosa","versicolor","versicolor","virginica","virginica"],
-    point_size=7.0,
-    x_label="Sepal length", y_label="Petal length",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="scen-categorical-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scen-categorical-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scen-categorical-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$scatter(
-  title = "Scatter",
-  variant = "basic",
-  x_values = c(),
-  y_values = c()
-)
-chart$show()</code></pre></div><div id="scen-categorical-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::scatter()
-        .title("Scatter")
-        .variant("basic")
-        .x_values(vec![])
-        .y_values(vec![])
-        .build();
-    chart.show();
-}</code></pre></div><div id="scen-categorical-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.scatter()
-    .title("Scatter")
-    .variant("basic")
-    .xValues(List.of())
-    .yValues(List.of())
-    .build();
-chart.show();</code></pre></div><div id="scen-categorical-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Scatter(
-    title: "Scatter",
-    variant: "basic",
-    xValues: new double[]{},
-    yValues: new double[]{}
-);
-chart.Show();</code></pre></div><div id="scen-categorical-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.scatter(
-  title    = "Scatter",
-  variant  = "basic",
-  x_values = List(),
-  y_values = List()
-)
-chart.show()</code></pre></div><div id="scen-categorical-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::scatter({
-    .title    = "Scatter",
-    .variant  = "basic",
-    .x_values = {},
-    .y_values = {},
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-categorical.html"></iframe>
 </div>
@@ -309,93 +134,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / colorscale / continuous</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="scen-gradient">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('scen-gradient','scen-gradient-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('scen-gradient','scen-gradient-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('scen-gradient','scen-gradient-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('scen-gradient','scen-gradient-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('scen-gradient','scen-gradient-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('scen-gradient','scen-gradient-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('scen-gradient','scen-gradient-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('scen-gradient','scen-gradient-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('scen-gradient','scen-gradient-cpp',this)">C++</button>
-</div><div id="scen-gradient-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.scatter(
-    title="Stars — Mass vs Luminosity",
-    variant="gradient",
-    x_values=[0.3,0.8,1.0,1.5,3.0,8.0,15.0],
-    y_values=[0.01,0.4,1.0,5.0,80.0,3000.0,30000.0],
-    color_values=[3000,4500,5800,6500,8500,15000,28000],
-    color_low=0xef4444, color_high=0x3b82f6,
-    point_size=8.0,
-    x_label="Mass (M☉)", y_label="Luminosity (L☉)",
-)
-chart.show()</code></pre></div><div id="scen-gradient-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scen-gradient-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scen-gradient-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$scatter(
-  title = "Scatter",
-  variant = "basic",
-  x_values = c(),
-  y_values = c()
-)
-chart$show()</code></pre></div><div id="scen-gradient-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::scatter()
-        .title("Scatter")
-        .variant("basic")
-        .x_values(vec![])
-        .y_values(vec![])
-        .build();
-    chart.show();
-}</code></pre></div><div id="scen-gradient-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.scatter()
-    .title("Scatter")
-    .variant("basic")
-    .xValues(List.of())
-    .yValues(List.of())
-    .build();
-chart.show();</code></pre></div><div id="scen-gradient-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Scatter(
-    title: "Scatter",
-    variant: "basic",
-    xValues: new double[]{},
-    yValues: new double[]{}
-);
-chart.Show();</code></pre></div><div id="scen-gradient-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.scatter(
-  title    = "Scatter",
-  variant  = "basic",
-  x_values = List(),
-  y_values = List()
-)
-chart.show()</code></pre></div><div id="scen-gradient-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::scatter({
-    .title    = "Scatter",
-    .variant  = "basic",
-    .x_values = {},
-    .y_values = {},
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-gradient.html"></iframe>
 </div>
@@ -404,93 +143,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"symbols"</code></span><span><strong>Aliases</strong> <code>symbols / shapes / markers</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="scen-symbols">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('scen-symbols','scen-symbols-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('scen-symbols','scen-symbols-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('scen-symbols','scen-symbols-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('scen-symbols','scen-symbols-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('scen-symbols','scen-symbols-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('scen-symbols','scen-symbols-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('scen-symbols','scen-symbols-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('scen-symbols','scen-symbols-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('scen-symbols','scen-symbols-cpp',this)">C++</button>
-</div><div id="scen-symbols-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.scatter(
-    title="Penguins — Bill vs Flipper",
-    variant="symbols",
-    x_values=[39.1,46.5,50.0,49.5,38.9,47.5],
-    y_values=[181,217,222,209,184,219],
-    categories=["Adelie","Gentoo","Chinstrap","Chinstrap","Adelie","Gentoo"],
-    point_size=8.0,
-    x_label="Bill length (mm)", y_label="Flipper length (mm)",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="scen-symbols-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scen-symbols-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scen-symbols-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$scatter(
-  title = "Scatter",
-  variant = "basic",
-  x_values = c(),
-  y_values = c()
-)
-chart$show()</code></pre></div><div id="scen-symbols-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::scatter()
-        .title("Scatter")
-        .variant("basic")
-        .x_values(vec![])
-        .y_values(vec![])
-        .build();
-    chart.show();
-}</code></pre></div><div id="scen-symbols-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.scatter()
-    .title("Scatter")
-    .variant("basic")
-    .xValues(List.of())
-    .yValues(List.of())
-    .build();
-chart.show();</code></pre></div><div id="scen-symbols-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Scatter(
-    title: "Scatter",
-    variant: "basic",
-    xValues: new double[]{},
-    yValues: new double[]{}
-);
-chart.Show();</code></pre></div><div id="scen-symbols-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.scatter(
-  title    = "Scatter",
-  variant  = "basic",
-  x_values = List(),
-  y_values = List()
-)
-chart.show()</code></pre></div><div id="scen-symbols-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::scatter({
-    .title    = "Scatter",
-    .variant  = "basic",
-    .x_values = {},
-    .y_values = {},
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-symbols.html"></iframe>
 </div>
@@ -499,94 +152,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labels / text</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="scen-labeled">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('scen-labeled','scen-labeled-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('scen-labeled','scen-labeled-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('scen-labeled','scen-labeled-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('scen-labeled','scen-labeled-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('scen-labeled','scen-labeled-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('scen-labeled','scen-labeled-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('scen-labeled','scen-labeled-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('scen-labeled','scen-labeled-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('scen-labeled','scen-labeled-cpp',this)">C++</button>
-</div><div id="scen-labeled-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.scatter(
-    title="French Cities — Cost vs Quality",
-    variant="labeled",
-    x_values=[2.1,1.8,1.5,1.3,1.1,1.6,1.9,1.4,1.2,2.4],
-    y_values=[8.2,7.8,7.4,7.0,6.5,7.6,7.9,7.2,6.8,8.5],
-    labels=["Paris","Lyon","Marseille","Toulouse","Nice","Nantes","Bordeaux","Lille","Rennes","Strasbourg"],
-    point_size=7.5,
-    color_hex=0x10b981,
-    x_label="Cost index", y_label="Quality of life",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="scen-labeled-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scen-labeled-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scen-labeled-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$scatter(
-  title = "Scatter",
-  variant = "basic",
-  x_values = c(),
-  y_values = c()
-)
-chart$show()</code></pre></div><div id="scen-labeled-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::scatter()
-        .title("Scatter")
-        .variant("basic")
-        .x_values(vec![])
-        .y_values(vec![])
-        .build();
-    chart.show();
-}</code></pre></div><div id="scen-labeled-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.scatter()
-    .title("Scatter")
-    .variant("basic")
-    .xValues(List.of())
-    .yValues(List.of())
-    .build();
-chart.show();</code></pre></div><div id="scen-labeled-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Scatter(
-    title: "Scatter",
-    variant: "basic",
-    xValues: new double[]{},
-    yValues: new double[]{}
-);
-chart.Show();</code></pre></div><div id="scen-labeled-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.scatter(
-  title    = "Scatter",
-  variant  = "basic",
-  x_values = List(),
-  y_values = List()
-)
-chart.show()</code></pre></div><div id="scen-labeled-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::scatter({
-    .title    = "Scatter",
-    .variant  = "basic",
-    .x_values = {},
-    .y_values = {},
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-labeled.html"></iframe>
 </div>
@@ -595,97 +161,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"regression"</code></span><span><strong>Aliases</strong> <code>regression / trendline / fit</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="scen-regression">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('scen-regression','scen-regression-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('scen-regression','scen-regression-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('scen-regression','scen-regression-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('scen-regression','scen-regression-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('scen-regression','scen-regression-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('scen-regression','scen-regression-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('scen-regression','scen-regression-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('scen-regression','scen-regression-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('scen-regression','scen-regression-cpp',this)">C++</button>
-</div><div id="scen-regression-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(1)
-xs = [i + random.gauss(0,0.6) for i in range(40)]
-ys = [2.1*x + 4 + random.gauss(0,4.5) for x in xs]
-chart = sp.scatter(
-    title="Linear Trend",
-    variant="regression",
-    x_values=xs, y_values=ys,
-    regression_type="linear",
-    color_hex=0x6366F1, color_high=0xef4444,
-    point_size=5.5,
-    x_label="X", y_label="Y",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="scen-regression-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scen-regression-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scen-regression-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$scatter(
-  title = "Scatter",
-  variant = "basic",
-  x_values = c(),
-  y_values = c()
-)
-chart$show()</code></pre></div><div id="scen-regression-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::scatter()
-        .title("Scatter")
-        .variant("basic")
-        .x_values(vec![])
-        .y_values(vec![])
-        .build();
-    chart.show();
-}</code></pre></div><div id="scen-regression-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.scatter()
-    .title("Scatter")
-    .variant("basic")
-    .xValues(List.of())
-    .yValues(List.of())
-    .build();
-chart.show();</code></pre></div><div id="scen-regression-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Scatter(
-    title: "Scatter",
-    variant: "basic",
-    xValues: new double[]{},
-    yValues: new double[]{}
-);
-chart.Show();</code></pre></div><div id="scen-regression-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.scatter(
-  title    = "Scatter",
-  variant  = "basic",
-  x_values = List(),
-  y_values = List()
-)
-chart.show()</code></pre></div><div id="scen-regression-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::scatter({
-    .title    = "Scatter",
-    .variant  = "basic",
-    .x_values = {},
-    .y_values = {},
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-regression.html"></iframe>
 </div>
@@ -738,13 +214,13 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 </script>
 
 
-## Signature
+<h2>Signature</h2>
 
 `sp.scatter(title, x_values, y_values, *, variant="basic", categories=None, labels=None, color_values=None, **kwargs) -> Chart`
 
 Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
-## Description
+<h2>Description</h2>
 
 `sp.scatter()` est le point d'entrée unifié de toute la famille scatter. Le mot-clé `variant` sélectionne la stratégie de rendu — tous les autres arguments gardent le même nom d'une variante à l'autre. Les nuages de points sont la façon canonique d'afficher la distribution conjointe de deux variables numériques ; SeraPlot ajoute groupement optionnel, couleur continue, formes de marqueurs distinctes, étiquettes sur les points et régression OLS — le tout en SVG Rust pur, des milliers de fois plus rapide que Plotly.
 
@@ -759,7 +235,7 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Variantes | Description |
 |-----------|------|--------|-----------|-------------|
@@ -789,7 +265,7 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 ---
 
-## Retour
+<h2>Retour</h2>
 
 `Chart` — objet exposant `.html` et `.show()`.
 
@@ -811,96 +287,7 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="scfr-basic">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('scfr-basic','scfr-basic-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('scfr-basic','scfr-basic-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('scfr-basic','scfr-basic-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('scfr-basic','scfr-basic-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('scfr-basic','scfr-basic-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('scfr-basic','scfr-basic-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('scfr-basic','scfr-basic-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('scfr-basic','scfr-basic-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('scfr-basic','scfr-basic-cpp',this)">C++</button>
-</div><div id="scfr-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(0)
-xs = [random.gauss(0,1) for _ in range(120)]
-ys = [x*0.6 + random.gauss(0,0.45) for x in xs]
-chart = sp.scatter(
-    title="Returns vs Volatility",
-    variant="basic",
-    x_values=xs, y_values=ys,
-    color_hex=0x6366F1,
-    point_size=5.5,
-    x_label="Volatility", y_label="Return",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="scfr-basic-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scfr-basic-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scfr-basic-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$scatter(
-  title = "Scatter",
-  variant = "basic",
-  x_values = c(),
-  y_values = c()
-)
-chart$show()</code></pre></div><div id="scfr-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::scatter()
-        .title("Scatter")
-        .variant("basic")
-        .x_values(vec![])
-        .y_values(vec![])
-        .build();
-    chart.show();
-}</code></pre></div><div id="scfr-basic-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.scatter()
-    .title("Scatter")
-    .variant("basic")
-    .xValues(List.of())
-    .yValues(List.of())
-    .build();
-chart.show();</code></pre></div><div id="scfr-basic-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Scatter(
-    title: "Scatter",
-    variant: "basic",
-    xValues: new double[]{},
-    yValues: new double[]{}
-);
-chart.Show();</code></pre></div><div id="scfr-basic-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.scatter(
-  title    = "Scatter",
-  variant  = "basic",
-  x_values = List(),
-  y_values = List()
-)
-chart.show()</code></pre></div><div id="scfr-basic-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::scatter({
-    .title    = "Scatter",
-    .variant  = "basic",
-    .x_values = {},
-    .y_values = {},
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-basic.html"></iframe>
 </div>
@@ -909,93 +296,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / grouped / category</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="scfr-categorical">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('scfr-categorical','scfr-categorical-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('scfr-categorical','scfr-categorical-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('scfr-categorical','scfr-categorical-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('scfr-categorical','scfr-categorical-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('scfr-categorical','scfr-categorical-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('scfr-categorical','scfr-categorical-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('scfr-categorical','scfr-categorical-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('scfr-categorical','scfr-categorical-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('scfr-categorical','scfr-categorical-cpp',this)">C++</button>
-</div><div id="scfr-categorical-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.scatter(
-    title="Iris — Sepal vs Petal",
-    variant="categorical",
-    x_values=[5.1,4.9,7.0,6.4,6.3,5.8],
-    y_values=[1.4,1.4,4.7,4.5,6.0,5.1],
-    categories=["setosa","setosa","versicolor","versicolor","virginica","virginica"],
-    point_size=7.0,
-    x_label="Sepal length", y_label="Petal length",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="scfr-categorical-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scfr-categorical-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scfr-categorical-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$scatter(
-  title = "Scatter",
-  variant = "basic",
-  x_values = c(),
-  y_values = c()
-)
-chart$show()</code></pre></div><div id="scfr-categorical-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::scatter()
-        .title("Scatter")
-        .variant("basic")
-        .x_values(vec![])
-        .y_values(vec![])
-        .build();
-    chart.show();
-}</code></pre></div><div id="scfr-categorical-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.scatter()
-    .title("Scatter")
-    .variant("basic")
-    .xValues(List.of())
-    .yValues(List.of())
-    .build();
-chart.show();</code></pre></div><div id="scfr-categorical-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Scatter(
-    title: "Scatter",
-    variant: "basic",
-    xValues: new double[]{},
-    yValues: new double[]{}
-);
-chart.Show();</code></pre></div><div id="scfr-categorical-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.scatter(
-  title    = "Scatter",
-  variant  = "basic",
-  x_values = List(),
-  y_values = List()
-)
-chart.show()</code></pre></div><div id="scfr-categorical-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::scatter({
-    .title    = "Scatter",
-    .variant  = "basic",
-    .x_values = {},
-    .y_values = {},
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-categorical.html"></iframe>
 </div>
@@ -1004,93 +305,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / colorscale / continuous</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="scfr-gradient">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('scfr-gradient','scfr-gradient-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('scfr-gradient','scfr-gradient-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('scfr-gradient','scfr-gradient-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('scfr-gradient','scfr-gradient-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('scfr-gradient','scfr-gradient-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('scfr-gradient','scfr-gradient-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('scfr-gradient','scfr-gradient-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('scfr-gradient','scfr-gradient-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('scfr-gradient','scfr-gradient-cpp',this)">C++</button>
-</div><div id="scfr-gradient-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.scatter(
-    title="Stars — Mass vs Luminosity",
-    variant="gradient",
-    x_values=[0.3,0.8,1.0,1.5,3.0,8.0,15.0],
-    y_values=[0.01,0.4,1.0,5.0,80.0,3000.0,30000.0],
-    color_values=[3000,4500,5800,6500,8500,15000,28000],
-    color_low=0xef4444, color_high=0x3b82f6,
-    point_size=8.0,
-    x_label="Mass (M☉)", y_label="Luminosity (L☉)",
-)
-chart.show()</code></pre></div><div id="scfr-gradient-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scfr-gradient-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scfr-gradient-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$scatter(
-  title = "Scatter",
-  variant = "basic",
-  x_values = c(),
-  y_values = c()
-)
-chart$show()</code></pre></div><div id="scfr-gradient-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::scatter()
-        .title("Scatter")
-        .variant("basic")
-        .x_values(vec![])
-        .y_values(vec![])
-        .build();
-    chart.show();
-}</code></pre></div><div id="scfr-gradient-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.scatter()
-    .title("Scatter")
-    .variant("basic")
-    .xValues(List.of())
-    .yValues(List.of())
-    .build();
-chart.show();</code></pre></div><div id="scfr-gradient-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Scatter(
-    title: "Scatter",
-    variant: "basic",
-    xValues: new double[]{},
-    yValues: new double[]{}
-);
-chart.Show();</code></pre></div><div id="scfr-gradient-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.scatter(
-  title    = "Scatter",
-  variant  = "basic",
-  x_values = List(),
-  y_values = List()
-)
-chart.show()</code></pre></div><div id="scfr-gradient-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::scatter({
-    .title    = "Scatter",
-    .variant  = "basic",
-    .x_values = {},
-    .y_values = {},
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-gradient.html"></iframe>
 </div>
@@ -1099,93 +314,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"symbols"</code></span><span><strong>Aliases</strong> <code>symbols / shapes / markers</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="scfr-symbols">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('scfr-symbols','scfr-symbols-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('scfr-symbols','scfr-symbols-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('scfr-symbols','scfr-symbols-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('scfr-symbols','scfr-symbols-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('scfr-symbols','scfr-symbols-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('scfr-symbols','scfr-symbols-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('scfr-symbols','scfr-symbols-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('scfr-symbols','scfr-symbols-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('scfr-symbols','scfr-symbols-cpp',this)">C++</button>
-</div><div id="scfr-symbols-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.scatter(
-    title="Penguins — Bill vs Flipper",
-    variant="symbols",
-    x_values=[39.1,46.5,50.0,49.5,38.9,47.5],
-    y_values=[181,217,222,209,184,219],
-    categories=["Adelie","Gentoo","Chinstrap","Chinstrap","Adelie","Gentoo"],
-    point_size=8.0,
-    x_label="Bill length (mm)", y_label="Flipper length (mm)",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="scfr-symbols-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scfr-symbols-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scfr-symbols-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$scatter(
-  title = "Scatter",
-  variant = "basic",
-  x_values = c(),
-  y_values = c()
-)
-chart$show()</code></pre></div><div id="scfr-symbols-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::scatter()
-        .title("Scatter")
-        .variant("basic")
-        .x_values(vec![])
-        .y_values(vec![])
-        .build();
-    chart.show();
-}</code></pre></div><div id="scfr-symbols-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.scatter()
-    .title("Scatter")
-    .variant("basic")
-    .xValues(List.of())
-    .yValues(List.of())
-    .build();
-chart.show();</code></pre></div><div id="scfr-symbols-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Scatter(
-    title: "Scatter",
-    variant: "basic",
-    xValues: new double[]{},
-    yValues: new double[]{}
-);
-chart.Show();</code></pre></div><div id="scfr-symbols-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.scatter(
-  title    = "Scatter",
-  variant  = "basic",
-  x_values = List(),
-  y_values = List()
-)
-chart.show()</code></pre></div><div id="scfr-symbols-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::scatter({
-    .title    = "Scatter",
-    .variant  = "basic",
-    .x_values = {},
-    .y_values = {},
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-symbols.html"></iframe>
 </div>
@@ -1194,94 +323,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labels / text</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="scfr-labeled">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('scfr-labeled','scfr-labeled-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('scfr-labeled','scfr-labeled-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('scfr-labeled','scfr-labeled-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('scfr-labeled','scfr-labeled-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('scfr-labeled','scfr-labeled-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('scfr-labeled','scfr-labeled-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('scfr-labeled','scfr-labeled-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('scfr-labeled','scfr-labeled-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('scfr-labeled','scfr-labeled-cpp',this)">C++</button>
-</div><div id="scfr-labeled-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.scatter(
-    title="French Cities — Cost vs Quality",
-    variant="labeled",
-    x_values=[2.1,1.8,1.5,1.3,1.1,1.6,1.9,1.4,1.2,2.4],
-    y_values=[8.2,7.8,7.4,7.0,6.5,7.6,7.9,7.2,6.8,8.5],
-    labels=["Paris","Lyon","Marseille","Toulouse","Nice","Nantes","Bordeaux","Lille","Rennes","Strasbourg"],
-    point_size=7.5,
-    color_hex=0x10b981,
-    x_label="Cost index", y_label="Quality of life",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="scfr-labeled-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scfr-labeled-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scfr-labeled-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$scatter(
-  title = "Scatter",
-  variant = "basic",
-  x_values = c(),
-  y_values = c()
-)
-chart$show()</code></pre></div><div id="scfr-labeled-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::scatter()
-        .title("Scatter")
-        .variant("basic")
-        .x_values(vec![])
-        .y_values(vec![])
-        .build();
-    chart.show();
-}</code></pre></div><div id="scfr-labeled-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.scatter()
-    .title("Scatter")
-    .variant("basic")
-    .xValues(List.of())
-    .yValues(List.of())
-    .build();
-chart.show();</code></pre></div><div id="scfr-labeled-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Scatter(
-    title: "Scatter",
-    variant: "basic",
-    xValues: new double[]{},
-    yValues: new double[]{}
-);
-chart.Show();</code></pre></div><div id="scfr-labeled-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.scatter(
-  title    = "Scatter",
-  variant  = "basic",
-  x_values = List(),
-  y_values = List()
-)
-chart.show()</code></pre></div><div id="scfr-labeled-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::scatter({
-    .title    = "Scatter",
-    .variant  = "basic",
-    .x_values = {},
-    .y_values = {},
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-labeled.html"></iframe>
 </div>
@@ -1290,97 +332,7 @@ chart.show();</code></pre></div></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"regression"</code></span><span><strong>Aliases</strong> <code>regression / trendline / fit</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="scfr-regression">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('scfr-regression','scfr-regression-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('scfr-regression','scfr-regression-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('scfr-regression','scfr-regression-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('scfr-regression','scfr-regression-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('scfr-regression','scfr-regression-rust',this)">Rust</button>
-<button class="sp-tb" onclick="spTab('scfr-regression','scfr-regression-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('scfr-regression','scfr-regression-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('scfr-regression','scfr-regression-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('scfr-regression','scfr-regression-cpp',this)">C++</button>
-</div><div id="scfr-regression-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(1)
-xs = [i + random.gauss(0,0.6) for i in range(40)]
-ys = [2.1*x + 4 + random.gauss(0,4.5) for x in xs]
-chart = sp.scatter(
-    title="Linear Trend",
-    variant="regression",
-    x_values=xs, y_values=ys,
-    regression_type="linear",
-    color_hex=0x6366F1, color_high=0xef4444,
-    point_size=5.5,
-    x_label="X", y_label="Y",
-    gridlines=True,
-)
-chart.show()</code></pre></div><div id="scfr-regression-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require("seraplot");
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scfr-regression-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from "seraplot";
-const chart = sp.scatter({
-  title: "Scatter",
-  variant: "basic",
-  xValues: [/* numbers */],
-  yValues: [/* numbers */],
-});
-chart.show();</code></pre></div><div id="scfr-regression-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart &lt;- sp$scatter(
-  title = "Scatter",
-  variant = "basic",
-  x_values = c(),
-  y_values = c()
-)
-chart$show()</code></pre></div><div id="scfr-regression-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-
-fn main() {
-    let chart = sp::scatter()
-        .title("Scatter")
-        .variant("basic")
-        .x_values(vec![])
-        .y_values(vec![])
-        .build();
-    chart.show();
-}</code></pre></div><div id="scfr-regression-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-
-var chart = SeraPlot.scatter()
-    .title("Scatter")
-    .variant("basic")
-    .xValues(List.of())
-    .yValues(List.of())
-    .build();
-chart.show();</code></pre></div><div id="scfr-regression-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-
-var chart = Sp.Scatter(
-    title: "Scatter",
-    variant: "basic",
-    xValues: new double[]{},
-    yValues: new double[]{}
-);
-chart.Show();</code></pre></div><div id="scfr-regression-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import seraplot.sp
-
-val chart = sp.scatter(
-  title    = "Scatter",
-  variant  = "basic",
-  x_values = List(),
-  y_values = List()
-)
-chart.show()</code></pre></div><div id="scfr-regression-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-
-auto chart = sp::scatter({
-    .title    = "Scatter",
-    .variant  = "basic",
-    .x_values = {},
-    .y_values = {},
-});
-chart.show();</code></pre></div></div>
+</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-regression.html"></iframe>
 </div>

@@ -67,114 +67,7 @@ A multi-line chart overlays multiple line series on the same axes, enabling dire
 <style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
 <script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
 
-<div class="sp-tabs" id="multiline">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('multiline','multiline-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('multiline','multiline-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('multiline','multiline-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('multiline','multiline-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('multiline','multiline-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('multiline','multiline-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('multiline','multiline-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('multiline','multiline-cpp',this)">C++</button>
-</div>
-<div id="multiline-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.multiline(
-    title="Monthly revenue by product line",
-    x_labels=["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-    series_values=[
-        [1200, 1400, 1600, 1500, 1800, 2100],
-        [800,  850,  900,  1050, 1100, 1300],
-        [500,  520,  580,  610,  650,  700],
-    ],
-    series_names=["Product A", "Product B", "Product C"],
-)
-chart.show()</code></pre></div>
-<div id="multiline-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-const chart = sp.multiline({
-  title: "Monthly revenue by product line",
-  xLabels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-  seriesValues: [
-    [1200, 1400, 1600, 1500, 1800, 2100],
-    [800,  850,  900,  1050, 1100, 1300],
-    [500,  520,  580,  610,  650,  700],
-  ],
-  seriesNames: ["Product A", "Product B", "Product C"],
-});
-chart.show();</code></pre></div>
-<div id="multiline-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-const chart = sp.multiline({
-  title: "Monthly revenue by product line",
-  xLabels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-  seriesValues: [
-    [1200, 1400, 1600, 1500, 1800, 2100],
-    [800,  850,  900,  1050, 1100, 1300],
-    [500,  520,  580,  610,  650,  700],
-  ],
-  seriesNames: ["Product A", "Product B", "Product C"],
-});
-chart.show();</code></pre></div>
-<div id="multiline-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$multiline(
-  title = "Monthly revenue by product line",
-  x_labels = c("Jan", "Feb", "Mar", "Apr", "May", "Jun"),
-  series_values = list(
-    c(1200, 1400, 1600, 1500, 1800, 2100),
-    c(800,  850,  900,  1050, 1100, 1300),
-    c(500,  520,  580,  610,  650,  700)
-  ),
-  series_names = c("Product A", "Product B", "Product C")
-)
-chart$show()</code></pre></div>
-<div id="multiline-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-var chart = SeraPlot.multiline()
-    .title("Monthly revenue by product line")
-    .xLabels(List.of("Jan", "Feb", "Mar", "Apr", "May", "Jun"))
-    .seriesValues(List.of(
-        List.of(1200.0, 1400.0, 1600.0, 1500.0, 1800.0, 2100.0),
-        List.of(800.0,  850.0,  900.0,  1050.0, 1100.0, 1300.0),
-        List.of(500.0,  520.0,  580.0,  610.0,  650.0,  700.0)
-    ))
-    .seriesNames(List.of("Product A", "Product B", "Product C"))
-    .build();
-chart.show();</code></pre></div>
-<div id="multiline-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-var chart = Sp.Multiline(
-    title: "Monthly revenue by product line",
-    xLabels: new[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun"},
-    seriesValues: new[]{
-        new[]{1200.0, 1400.0, 1600.0, 1500.0, 1800.0, 2100.0},
-        new[]{800.0,  850.0,  900.0,  1050.0, 1100.0, 1300.0},
-        new[]{500.0,  520.0,  580.0,  610.0,  650.0,  700.0},
-    },
-    seriesNames: new[]{"Product A", "Product B", "Product C"}
-);
-chart.Show();</code></pre></div>
-<div id="multiline-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-val chart = sp.multiline(
-  title = "Monthly revenue by product line",
-  x_labels = List("Jan", "Feb", "Mar", "Apr", "May", "Jun"),
-  series_values = List(
-    List(1200.0, 1400.0, 1600.0, 1500.0, 1800.0, 2100.0),
-    List(800.0,  850.0,  900.0,  1050.0, 1100.0, 1300.0),
-    List(500.0,  520.0,  580.0,  610.0,  650.0,  700.0)
-  ),
-  series_names = List("Product A", "Product B", "Product C")
-)
-chart.show()</code></pre></div>
-<div id="multiline-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-auto chart = sp::multiline({
-  .title         = "Monthly revenue by product line",
-  .x_labels      = {"Jan", "Feb", "Mar", "Apr", "May", "Jun"},
-  .series_values = {
-    {1200, 1400, 1600, 1500, 1800, 2100},
-    {800,  850,  900,  1050, 1100, 1300},
-    {500,  520,  580,  610,  650,  700}
-  },
-  .series_names  = {"Product A", "Product B", "Product C"}
-});
-chart.show();</code></pre></div>
+
 </div>
 
 <iframe src="../../previews/multiline.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
@@ -190,7 +83,7 @@ chart.show();</code></pre></div>
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_multiline_chart(
@@ -215,7 +108,7 @@ Aliases: `sp.multiline`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Un graphique multi-courbes superpose plusieurs séries de lignes sur les mêmes axes, permettant la comparaison directe de l'évolution de plusieurs métriques en parallèle sur la même dimension temporelle. Chaque liste interne de `series_values` doit avoir la même longueur que `x_labels`. Les séries sont distinguées par les couleurs de la palette par défaut (ou d'une palette personnalisée) et étiquetées dans la légende. Contrairement à `build_line_chart`, cette fonction est optimisée pour 2 à 10 séries simultanées ; au-delà, envisagez un ridgeline ou une carte thermique.
 
@@ -226,7 +119,7 @@ Un graphique multi-courbes superpose plusieurs séries de lignes sur les mêmes 
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -246,127 +139,20 @@ Un graphique multi-courbes superpose plusieurs séries de lignes sur les mêmes 
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-<div class="sp-tabs" id="multiline-fr">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('multiline-fr','multiline-fr-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('multiline-fr','multiline-fr-js',this)">JavaScript</button>
-<button class="sp-tb" onclick="spTab('multiline-fr','multiline-fr-ts',this)">TypeScript</button>
-<button class="sp-tb" onclick="spTab('multiline-fr','multiline-fr-r',this)">R</button>
-<button class="sp-tb" onclick="spTab('multiline-fr','multiline-fr-java',this)">Java</button>
-<button class="sp-tb" onclick="spTab('multiline-fr','multiline-fr-cs',this)">C#</button>
-<button class="sp-tb" onclick="spTab('multiline-fr','multiline-fr-scala',this)">Scala</button>
-<button class="sp-tb" onclick="spTab('multiline-fr','multiline-fr-cpp',this)">C++</button>
-</div>
-<div id="multiline-fr-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.multiline(
-    title="Chiffre d'affaires mensuel par ligne de produit",
-    x_labels=["Jan", "Fév", "Mar", "Avr", "Mai", "Juin"],
-    series_values=[
-        [1200, 1400, 1600, 1500, 1800, 2100],
-        [800,  850,  900,  1050, 1100, 1300],
-        [500,  520,  580,  610,  650,  700],
-    ],
-    series_names=["Produit A", "Produit B", "Produit C"],
-)
-chart.show()</code></pre></div>
-<div id="multiline-fr-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-const chart = sp.multiline({
-  title: "Chiffre d'affaires mensuel par ligne de produit",
-  xLabels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin"],
-  seriesValues: [
-    [1200, 1400, 1600, 1500, 1800, 2100],
-    [800,  850,  900,  1050, 1100, 1300],
-    [500,  520,  580,  610,  650,  700],
-  ],
-  seriesNames: ["Produit A", "Produit B", "Produit C"],
-});
-chart.show();</code></pre></div>
-<div id="multiline-fr-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-const chart = sp.multiline({
-  title: "Chiffre d'affaires mensuel par ligne de produit",
-  xLabels: ["Jan", "Fév", "Mar", "Avr", "Mai", "Juin"],
-  seriesValues: [
-    [1200, 1400, 1600, 1500, 1800, 2100],
-    [800,  850,  900,  1050, 1100, 1300],
-    [500,  520,  580,  610,  650,  700],
-  ],
-  seriesNames: ["Produit A", "Produit B", "Produit C"],
-});
-chart.show();</code></pre></div>
-<div id="multiline-fr-r" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-r">library(seraplot)
-chart <- sp$multiline(
-  title = "Chiffre d'affaires mensuel par ligne de produit",
-  x_labels = c("Jan", "Fév", "Mar", "Avr", "Mai", "Juin"),
-  series_values = list(
-    c(1200, 1400, 1600, 1500, 1800, 2100),
-    c(800,  850,  900,  1050, 1100, 1300),
-    c(500,  520,  580,  610,  650,  700)
-  ),
-  series_names = c("Produit A", "Produit B", "Produit C")
-)
-chart$show()</code></pre></div>
-<div id="multiline-fr-java" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-java">import io.seraplot.SeraPlot;
-import java.util.List;
-var chart = SeraPlot.multiline()
-    .title("Chiffre d'affaires mensuel par ligne de produit")
-    .xLabels(List.of("Jan", "Fév", "Mar", "Avr", "Mai", "Juin"))
-    .seriesValues(List.of(
-        List.of(1200.0, 1400.0, 1600.0, 1500.0, 1800.0, 2100.0),
-        List.of(800.0,  850.0,  900.0,  1050.0, 1100.0, 1300.0),
-        List.of(500.0,  520.0,  580.0,  610.0,  650.0,  700.0)
-    ))
-    .seriesNames(List.of("Produit A", "Produit B", "Produit C"))
-    .build();
-chart.show();</code></pre></div>
-<div id="multiline-fr-cs" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-csharp">using SeraPlot;
-var chart = Sp.Multiline(
-    title: "Chiffre d'affaires mensuel par ligne de produit",
-    xLabels: new[]{"Jan", "Fév", "Mar", "Avr", "Mai", "Juin"},
-    seriesValues: new[]{
-        new[]{1200.0, 1400.0, 1600.0, 1500.0, 1800.0, 2100.0},
-        new[]{800.0,  850.0,  900.0,  1050.0, 1100.0, 1300.0},
-        new[]{500.0,  520.0,  580.0,  610.0,  650.0,  700.0},
-    },
-    seriesNames: new[]{"Produit A", "Produit B", "Produit C"}
-);
-chart.Show();</code></pre></div>
-<div id="multiline-fr-scala" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-scala">import io.seraplot._
-val chart = sp.multiline(
-  title = "Chiffre d'affaires mensuel par ligne de produit",
-  x_labels = List("Jan", "Fév", "Mar", "Avr", "Mai", "Juin"),
-  series_values = List(
-    List(1200.0, 1400.0, 1600.0, 1500.0, 1800.0, 2100.0),
-    List(800.0,  850.0,  900.0,  1050.0, 1100.0, 1300.0),
-    List(500.0,  520.0,  580.0,  610.0,  650.0,  700.0)
-  ),
-  series_names = List("Produit A", "Produit B", "Produit C")
-)
-chart.show()</code></pre></div>
-<div id="multiline-fr-cpp" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-cpp">#include &lt;seraplot/seraplot.hpp&gt;
-auto chart = sp::multiline({
-  .title         = "Chiffre d'affaires mensuel par ligne de produit",
-  .x_labels      = {"Jan", "Fév", "Mar", "Avr", "Mai", "Juin"},
-  .series_values = {
-    {1200, 1400, 1600, 1500, 1800, 2100},
-    {800,  850,  900,  1050, 1100, 1300},
-    {500,  520,  580,  610,  650,  700}
-  },
-  .series_names  = {"Produit A", "Produit B", "Produit C"}
-});
-chart.show();</code></pre></div>
+
 </div>
 
 <iframe src="../../previews/multiline.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [line.md](line.md) — Graphique en ligne à série unique
 - [area.md](area.md) — Multi-séries avec zones remplies

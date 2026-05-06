@@ -122,29 +122,7 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="b-basic">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('b-basic','b-basic-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('b-basic','b-basic-rust',this)">Rust</button>
-</div>
-<div id="b-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(1)
-cats, vals = [], []
-for i, c in enumerate(["Class A", "Class B", "Class C", "Class D"]):
-    for _ in range(55):
-        cats.append(c)
-        vals.append(random.gauss(70 + i*6, 12 - i*0.8))
-chart = sp.boxplot("Exam Scores", labels=cats, values=vals, variant="basic")
-chart.show()</code></pre></div>
-<div id="b-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-let chart = sp::boxplot()
-    .title("Exam Scores")
-    .variant("basic")
-    .labels(cats)
-    .values(vals)
-    .build();
-chart.show();</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -156,17 +134,7 @@ chart.show();</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code> / <code>"hbox"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="b-horizontal">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('b-horizontal','b-horizontal-py',this)">Python</button>
-</div>
-<div id="b-horizontal-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.boxplot(
-    "Salaries by Department (USD)",
-    labels=cats, values=vals,
-    variant="horizontal",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -178,16 +146,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"notched"</code> / <code>"ci"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="b-notched">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('b-notched','b-notched-py',this)">Python</button>
-</div>
-<div id="b-notched-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.boxplot(
-    "Blood Pressure (mmHg)",
-    labels=cats, values=vals,
-    variant="notched", notch=True,
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -199,18 +158,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"grouped"</code> / <code>"side_by_side"</code></span><span><strong>Required</strong> <code>labels</code>, <code>series</code>, <code>series_names</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="b-grouped">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('b-grouped','b-grouped-py',this)">Python</button>
-</div>
-<div id="b-grouped-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.boxplot(
-    "Quarterly Performance by Region",
-    labels=["Q1","Q2","Q3","Q4"],
-    series=[s_north, s_south, s_east],
-    series_names=["North","South","East"],
-    variant="grouped",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -222,16 +170,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"points"</code> / <code>"all_points"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="b-points">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('b-points','b-points-py',this)">Python</button>
-</div>
-<div id="b-points-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.boxplot(
-    "Sleep Quality Score",
-    labels=cats, values=vals,
-    variant="points", show_points=True, jitter=0.4,
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -243,16 +182,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outliers"</code> / <code>"fliers"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="b-outliers">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('b-outliers','b-outliers-py',this)">Python</button>
-</div>
-<div id="b-outliers-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.boxplot(
-    "Sensor Readings (Outlier Highlight)",
-    labels=cats, values=vals,
-    variant="outliers",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -264,16 +194,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"strip"</code> / <code>"swarm"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="b-strip">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('b-strip','b-strip-py',this)">Python</button>
-</div>
-<div id="b-strip-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.boxplot(
-    "Conversion Rate Distribution",
-    labels=cats, values=vals,
-    variant="strip", jitter=0.55,
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -285,16 +206,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"violin"</code> / <code>"density"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="b-violin">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('b-violin','b-violin-py',this)">Python</button>
-</div>
-<div id="b-violin-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.boxplot(
-    "Model Accuracy Distribution",
-    labels=cats, values=vals,
-    variant="violin",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -306,16 +218,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"letter_value"</code> / <code>"boxen"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Optional</strong> <code>boxen_depth</code> (2–7)</span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="b-letter">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('b-letter','b-letter-py',this)">Python</button>
-</div>
-<div id="b-letter-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.boxplot(
-    "Order Value (USD) by Region",
-    labels=cats, values=vals,
-    variant="letter_value", boxen_depth=5,
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -327,16 +230,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"rainbow"</code> / <code>"gradient"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="b-rainbow">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('b-rainbow','b-rainbow-py',this)">Python</button>
-</div>
-<div id="b-rainbow-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.boxplot(
-    "Daily Temperature (Celsius)",
-    labels=months, values=vals,
-    variant="rainbow",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>

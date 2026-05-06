@@ -133,20 +133,7 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-basic">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-basic','ht-basic-py',this)">Python</button>
-</div>
-<div id="ht-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.heatmap(
-    "Monthly Sales by Region",
-    labels=["North", "South", "East", "West"],
-    col_labels=["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-    values=[120,135,148,162,178,190, 98,112,125,138,152,165,
-            145,158,172,185,198,210, 88,102,115,128,142,155],
-    colorscale="viridis",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -158,22 +145,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"annotated"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-annotated">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-annotated','ht-annotated-py',this)">Python</button>
-</div>
-<div id="ht-annotated-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-cols = ["A", "B", "C", "D"]
-vals = [1.0,0.8,0.3,-0.1, 0.8,1.0,0.5,0.2,
-        0.3,0.5,1.0,0.7, -0.1,0.2,0.7,1.0]
-chart = sp.heatmap(
-    "Annotated Correlation",
-    labels=cols, col_labels=cols,
-    values=vals,
-    variant="annotated",
-    show_values=True,
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -185,20 +157,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code>, <code>palette</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-categorical">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-categorical','ht-categorical-py',this)">Python</button>
-</div>
-<div id="ht-categorical-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.heatmap(
-    "Risk Level by Region &amp; Quarter",
-    labels=["Q1", "Q2", "Q3", "Q4"],
-    col_labels=["North", "South", "East", "West"],
-    values=[0,1,2,1, 1,2,3,2, 2,3,3,3, 1,2,2,1],
-    variant="categorical",
-    palette=[0x22c55e, 0xeab308, 0xf97316, 0xef4444],
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -210,21 +169,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"unequal"</code> / <code>"variable"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code>, <code>widths</code>, <code>ranges</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-unequal">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-unequal','ht-unequal-py',this)">Python</button>
-</div>
-<div id="ht-unequal-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.heatmap(
-    "Unequal Cell Sizes",
-    labels=["Row A", "Row B", "Row C"],
-    col_labels=["Col 1", "Col 2", "Col 3", "Col 4"],
-    values=[10,20,30,40, 50,60,70,80, 90,100,110,120],
-    variant="unequal",
-    widths=[2.0, 1.0, 1.5, 0.5],
-    ranges=[1.0, 2.0, 1.0],
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -236,20 +181,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"log"</code> / <code>"log_scale"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-log">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-log','ht-log-py',this)">Python</button>
-</div>
-<div id="ht-log-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.heatmap(
-    "Gene Expression (log scale)",
-    labels=["Gene A", "Gene B", "Gene C", "Gene D"],
-    col_labels=["Sample 1", "Sample 2", "Sample 3"],
-    values=[1,10,100, 5,50,500, 2,20,200, 8,80,800],
-    variant="log",
-    colorscale="plasma",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -261,21 +193,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"discrete"</code> / <code>"binned"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code>, <code>bins</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-discrete">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-discrete','ht-discrete-py',this)">Python</button>
-</div>
-<div id="ht-discrete-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.heatmap(
-    "Performance Bands",
-    labels=["Team A", "Team B", "Team C", "Team D"],
-    col_labels=["Q1", "Q2", "Q3", "Q4"],
-    values=[72,85,91,68, 55,63,78,82, 88,92,95,97, 45,58,67,74],
-    variant="discrete",
-    bins=5,
-    colorscale="blues",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -287,27 +205,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"correlation"</code> / <code>"corr"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-correlation">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-correlation','ht-correlation-py',this)">Python</button>
-</div>
-<div id="ht-correlation-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-cols = ["Rev", "Cost", "Margin", "Units", "CAC"]
-vals = [
-    1.0, 0.82, 0.41,-0.15, 0.23,
-    0.82, 1.0, 0.12,-0.08, 0.37,
-    0.41, 0.12, 1.0, 0.68,-0.42,
-   -0.15,-0.08, 0.68, 1.0,-0.55,
-    0.23, 0.37,-0.42,-0.55, 1.0,
-]
-chart = sp.heatmap(
-    "KPI Correlation Matrix",
-    labels=cols, col_labels=cols,
-    values=vals,
-    variant="correlation",
-    colorscale="rdbu_r",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -319,25 +217,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code> / <code>"imshow"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-density">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-density','ht-density-py',this)">Python</button>
-</div>
-<div id="ht-density-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import math
-n = 20
-vals = [math.exp(-((i-10)**2+(j-10)**2)/18.0)
-        for i in range(n) for j in range(n)]
-chart = sp.heatmap(
-    "2D Gaussian Field",
-    labels=[str(i) for i in range(n)],
-    col_labels=[str(j) for j in range(n)],
-    values=vals,
-    variant="density",
-    colorscale="viridis",
-    origin_lower=True,
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -349,24 +229,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"contour"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-contour">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-contour','ht-contour-py',this)">Python</button>
-</div>
-<div id="ht-contour-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import math
-n = 15
-vals = [math.sin(i * 0.4) * math.cos(j * 0.4)
-        for i in range(n) for j in range(n)]
-chart = sp.heatmap(
-    "Sine-Cosine Surface",
-    labels=[str(i) for i in range(n)],
-    col_labels=[str(j) for j in range(n)],
-    values=vals,
-    variant="contour",
-    colorscale="plasma",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -378,25 +241,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"temporal"</code> / <code>"calendar"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-temporal">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-temporal','ht-temporal-py',this)">Python</button>
-</div>
-<div id="ht-temporal-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(42)
-days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-weeks = [f"W{i+1}" for i in range(52)]
-vals = [random.randint(0, 20) for _ in range(52 * 7)]
-chart = sp.heatmap(
-    "GitHub Contributions",
-    labels=days,
-    col_labels=weeks,
-    values=vals,
-    variant="temporal",
-    colorscale="greens",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -408,25 +253,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"cluster"</code> / <code>"clustermap"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-cluster">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-cluster','ht-cluster-py',this)">Python</button>
-</div>
-<div id="ht-cluster-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(7)
-genes = [f"Gene {i+1}" for i in range(8)]
-samples = [f"S{i+1}" for i in range(6)]
-vals = [random.uniform(-2, 2) for _ in range(8 * 6)]
-chart = sp.heatmap(
-    "Gene Expression Cluster",
-    labels=genes,
-    col_labels=samples,
-    values=vals,
-    variant="cluster",
-    colorscale="rdbu_r",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -438,20 +265,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code> / <code>"punchcard"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-bubble">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-bubble','ht-bubble-py',this)">Python</button>
-</div>
-<div id="ht-bubble-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.heatmap(
-    "Task Completion by Team",
-    labels=["Team A", "Team B", "Team C", "Team D"],
-    col_labels=["Sprint 1", "Sprint 2", "Sprint 3", "Sprint 4"],
-    values=[8,12,15,10, 5,9,13,16, 11,14,18,20, 3,7,9,12],
-    variant="bubble",
-    colorscale="blues",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -463,21 +277,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"marginal"</code> / <code>"with_marginals"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-marginal">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-marginal','ht-marginal-py',this)">Python</button>
-</div>
-<div id="ht-marginal-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.heatmap(
-    "Sales with Marginal Totals",
-    labels=["North", "South", "East", "West"],
-    col_labels=["Jan", "Feb", "Mar", "Apr"],
-    values=[120,135,148,162, 98,112,125,138,
-            145,158,172,185, 88,102,115,128],
-    variant="marginal",
-    colorscale="viridis",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -489,21 +289,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"confusion"</code> / <code>"confusion_matrix"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-confusion">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-confusion','ht-confusion-py',this)">Python</button>
-</div>
-<div id="ht-confusion-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-classes = ["Cat", "Dog", "Bird", "Fish"]
-chart = sp.heatmap(
-    "Classifier Confusion Matrix",
-    labels=classes,
-    col_labels=classes,
-    values=[92,4,3,1, 5,88,5,2, 2,3,90,5, 1,2,4,93],
-    variant="confusion",
-    colorscale="blues",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -515,21 +301,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"pivot"</code> / <code>"pivot_table"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="ht-pivot">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('ht-pivot','ht-pivot-py',this)">Python</button>
-</div>
-<div id="ht-pivot-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.heatmap(
-    "Revenue Pivot Table",
-    labels=["Electronics", "Clothing", "Food", "Furniture"],
-    col_labels=["Q1", "Q2", "Q3", "Q4"],
-    values=[1200,1450,1380,1620, 890,1020,1150,980,
-            650,720,810,760, 420,510,480,560],
-    variant="pivot",
-    colorscale="viridis",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>

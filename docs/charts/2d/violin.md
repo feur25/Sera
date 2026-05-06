@@ -119,29 +119,7 @@ Aliases: `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.v
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="v-basic">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('v-basic','v-basic-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('v-basic','v-basic-rust',this)">Rust</button>
-</div>
-<div id="v-basic-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-import random
-random.seed(1)
-cats, vals = [], []
-for i, c in enumerate(["Class A", "Class B", "Class C", "Class D"]):
-    for _ in range(60):
-        cats.append(c)
-        vals.append(random.gauss(70 + i*5, 10 - i*0.6))
-chart = sp.violin("Exam Scores", labels=cats, values=vals, variant="basic")
-chart.show()</code></pre></div>
-<div id="v-basic-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">use seraplot::sp;
-let chart = sp::violin()
-    .title("Exam Scores")
-    .variant("basic")
-    .labels(cats)
-    .values(vals)
-    .build();
-chart.show();</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -153,25 +131,7 @@ chart.show();</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"box"</code> (default)</span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="v-box">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('v-box','v-box-py',this)">Python</button>
-<button class="sp-tb" onclick="spTab('v-box','v-box-rust',this)">Rust</button>
-</div>
-<div id="v-box-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
-    "Reaction Time (ms)",
-    labels=cats, values=vals,
-    variant="box",
-    bandwidth=1.0,
-)
-chart.show()</code></pre></div>
-<div id="v-box-rust" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-rust">let chart = sp::violin()
-    .title("Reaction Time (ms)")
-    .variant("box")
-    .labels(cats).values(vals)
-    .bandwidth(1.0)
-    .build();
-chart.show();</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -183,16 +143,7 @@ chart.show();</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"quartile"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="v-quartile">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('v-quartile','v-quartile-py',this)">Python</button>
-</div>
-<div id="v-quartile-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
-    "Salary Distribution (k$)",
-    labels=cats, values=vals,
-    variant="quartile",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -204,16 +155,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"mean"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="v-mean">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('v-mean','v-mean-py',this)">Python</button>
-</div>
-<div id="v-mean-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
-    "Daily Steps (k)",
-    labels=cats, values=vals,
-    variant="mean",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -225,17 +167,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"points"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="v-points">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('v-points','v-points-py',this)">Python</button>
-</div>
-<div id="v-points-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
-    "Sensor Readings",
-    labels=cats, values=vals,
-    variant="points",
-    jitter=0.4,
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -247,17 +179,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"strip"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="v-strip">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('v-strip','v-strip-py',this)">Python</button>
-</div>
-<div id="v-strip-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
-    "Lab Replicate Counts",
-    labels=cats, values=vals,
-    variant="strip",
-    jitter=0.5,
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -269,16 +191,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="v-horizontal">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('v-horizontal','v-horizontal-py',this)">Python</button>
-</div>
-<div id="v-horizontal-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
-    "Response Time by Region (ms)",
-    labels=cats, values=vals,
-    variant="horizontal",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -290,16 +203,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"split"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="v-split">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('v-split','v-split-py',this)">Python</button>
-</div>
-<div id="v-split-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
-    "Before vs After Treatment",
-    labels=cats, values=vals,
-    variant="split",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -311,16 +215,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"half"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="v-half">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('v-half','v-half-py',this)">Python</button>
-</div>
-<div id="v-half-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
-    "Latency Distribution",
-    labels=cats, values=vals,
-    variant="half",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
@@ -332,16 +227,7 @@ chart.show()</code></pre></div>
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"rainbow"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<div class="sp-tabs" id="v-rainbow">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('v-rainbow','v-rainbow-py',this)">Python</button>
-</div>
-<div id="v-rainbow-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">chart = sp.violin(
-    "Genres by Rating",
-    labels=cats, values=vals,
-    variant="rainbow",
-)
-chart.show()</code></pre></div>
+
 </div>
 
 <div class="sp-preview-label">Preview</div>
