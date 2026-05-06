@@ -123,8 +123,6 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/boxplot-basic.html"></iframe>
 
@@ -134,8 +132,6 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code> / <code>"hbox"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
-</div>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/boxplot-horizontal.html"></iframe>
@@ -147,8 +143,6 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"notched"</code> / <code>"ci"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/boxplot-notched.html"></iframe>
 
@@ -158,8 +152,6 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"grouped"</code> / <code>"side_by_side"</code></span><span><strong>Required</strong> <code>labels</code>, <code>series</code>, <code>series_names</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
-</div>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/boxplot-grouped.html"></iframe>
@@ -171,8 +163,6 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"points"</code> / <code>"all_points"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/boxplot-points.html"></iframe>
 
@@ -182,8 +172,6 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outliers"</code> / <code>"fliers"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
-</div>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/boxplot-outliers.html"></iframe>
@@ -195,8 +183,6 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"strip"</code> / <code>"swarm"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/boxplot-strip.html"></iframe>
 
@@ -206,8 +192,6 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"violin"</code> / <code>"density"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
-</div>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/boxplot-violin.html"></iframe>
@@ -219,8 +203,6 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"letter_value"</code> / <code>"boxen"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Optional</strong> <code>boxen_depth</code> (2–7)</span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/boxplot-letter_value.html"></iframe>
 
@@ -230,8 +212,6 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"rainbow"</code> / <code>"gradient"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
-</div>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/boxplot-rainbow.html"></iframe>

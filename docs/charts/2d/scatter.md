@@ -116,7 +116,6 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-basic.html"></iframe>
 </div>
@@ -125,7 +124,6 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / grouped / category</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-categorical.html"></iframe>
 </div>
@@ -134,7 +132,6 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / colorscale / continuous</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-gradient.html"></iframe>
 </div>
@@ -143,7 +140,6 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"symbols"</code></span><span><strong>Aliases</strong> <code>symbols / shapes / markers</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-symbols.html"></iframe>
 </div>
@@ -152,7 +148,6 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labels / text</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-labeled.html"></iframe>
 </div>
@@ -161,7 +156,6 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"regression"</code></span><span><strong>Aliases</strong> <code>regression / trendline / fit</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-regression.html"></iframe>
 </div>
@@ -287,7 +281,6 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-basic.html"></iframe>
 </div>
@@ -296,7 +289,6 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / grouped / category</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-categorical.html"></iframe>
 </div>
@@ -305,7 +297,6 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / colorscale / continuous</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-gradient.html"></iframe>
 </div>
@@ -314,7 +305,6 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"symbols"</code></span><span><strong>Aliases</strong> <code>symbols / shapes / markers</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-symbols.html"></iframe>
 </div>
@@ -323,7 +313,6 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labels / text</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-labeled.html"></iframe>
 </div>
@@ -332,7 +321,6 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"regression"</code></span><span><strong>Aliases</strong> <code>regression / trendline / fit</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-regression.html"></iframe>
 </div>

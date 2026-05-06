@@ -134,8 +134,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-basic.html"></iframe>
 
@@ -145,8 +143,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"annotated"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
-</div>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-annotated.html"></iframe>
@@ -158,8 +154,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code>, <code>palette</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-categorical.html"></iframe>
 
@@ -169,8 +163,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"unequal"</code> / <code>"variable"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code>, <code>widths</code>, <code>ranges</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
-</div>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-unequal.html"></iframe>
@@ -182,8 +174,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"log"</code> / <code>"log_scale"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-log.html"></iframe>
 
@@ -193,8 +183,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"discrete"</code> / <code>"binned"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code>, <code>bins</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
-</div>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-discrete.html"></iframe>
@@ -206,8 +194,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"correlation"</code> / <code>"corr"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-correlation.html"></iframe>
 
@@ -217,8 +203,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code> / <code>"imshow"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
-</div>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-density.html"></iframe>
@@ -230,8 +214,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"contour"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-contour.html"></iframe>
 
@@ -241,8 +223,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"temporal"</code> / <code>"calendar"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
-</div>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-temporal.html"></iframe>
@@ -254,8 +234,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"cluster"</code> / <code>"clustermap"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-cluster.html"></iframe>
 
@@ -265,8 +243,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code> / <code>"punchcard"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
-</div>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-bubble.html"></iframe>
@@ -278,8 +254,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"marginal"</code> / <code>"with_marginals"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-marginal.html"></iframe>
 
@@ -290,8 +264,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"confusion"</code> / <code>"confusion_matrix"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-confusion.html"></iframe>
 
@@ -301,8 +273,6 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"pivot"</code> / <code>"pivot_table"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-
-</div>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-pivot.html"></iframe>

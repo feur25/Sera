@@ -110,7 +110,6 @@ Aliases: `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default / vertical</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-basic.html"></iframe>
 </div>
@@ -119,7 +118,6 @@ Aliases: `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Aliases</strong> <code>horizontal / h / barh / hbar</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-horizontal.html"></iframe>
 </div>
@@ -128,7 +126,6 @@ Aliases: `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"normalized"</code></span><span><strong>Aliases</strong> <code>normalized / probability / density / pdf</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-normalized.html"></iframe>
 </div>
@@ -137,7 +134,6 @@ Aliases: `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"cumulative"</code></span><span><strong>Aliases</strong> <code>cumulative / cdf / cum</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-cumulative.html"></iframe>
 </div>
@@ -146,7 +142,6 @@ Aliases: `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stacked"</code></span><span><strong>Aliases</strong> <code>stacked / stack / stack_by</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-stacked.html"></iframe>
 </div>
@@ -155,7 +150,6 @@ Aliases: `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"overlay"</code></span><span><strong>Aliases</strong> <code>overlay / overlapping / compare / ab</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-overlay.html"></iframe>
 </div>
@@ -164,7 +158,6 @@ Aliases: `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"step"</code></span><span><strong>Aliases</strong> <code>step / outline / stair</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-step.html"></iframe>
 </div>
@@ -284,7 +277,6 @@ Alias : `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_f
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / simple / default / vertical</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-basic.html"></iframe>
 </div>
@@ -293,7 +285,6 @@ Alias : `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_f
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Aliases</strong> <code>horizontal / h / barh / hbar</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-horizontal.html"></iframe>
 </div>
@@ -302,7 +293,6 @@ Alias : `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_f
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"normalized"</code></span><span><strong>Aliases</strong> <code>normalized / probability / density / pdf</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-normalized.html"></iframe>
 </div>
@@ -311,7 +301,6 @@ Alias : `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_f
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"cumulative"</code></span><span><strong>Aliases</strong> <code>cumulative / cdf / cum</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-cumulative.html"></iframe>
 </div>
@@ -320,7 +309,6 @@ Alias : `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_f
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stacked"</code></span><span><strong>Aliases</strong> <code>stacked / stack / stack_by</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-stacked.html"></iframe>
 </div>
@@ -329,7 +317,6 @@ Alias : `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_f
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"overlay"</code></span><span><strong>Aliases</strong> <code>overlay / overlapping / compare / ab</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-overlay.html"></iframe>
 </div>
@@ -338,7 +325,6 @@ Alias : `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_f
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"step"</code></span><span><strong>Aliases</strong> <code>step / outline / stair</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-step.html"></iframe>
 </div>

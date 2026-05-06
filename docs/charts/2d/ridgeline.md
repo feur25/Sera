@@ -108,56 +108,48 @@ Aliases: `sp.ridgeline`, `sp.build_ridgeline_chart`
 <div class="sp-variant sp-von" id="ridgeline-en-basic">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / filled / default / single / multi</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Stacked filled ridges (one per category) with white underlay.</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-en-gradient">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / shade / fade / vgrad</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Vertical gradient fill per ridge (opaque top → transparent bottom).</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-en-lines">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"lines"</code></span><span><strong>Aliases</strong> <code>lines / outline / stroke / no_fill</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Stroke-only ridges, no fill — clean outline view.</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-lines.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-en-quartiles">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"quartiles"</code></span><span><strong>Aliases</strong> <code>quartiles / q / qrt / iqr</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Marks Q1, median (solid), and Q3 vertical lines on each ridge.</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-quartiles.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-en-mean">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"mean"</code></span><span><strong>Aliases</strong> <code>mean / average / avg / mean_dot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Dashed line + dot at the mean of each distribution.</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-mean.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-en-rug">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"rug"</code></span><span><strong>Aliases</strong> <code>rug / ticks / carpet / rugplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Filled ridge with rug ticks below the baseline at sample positions.</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-rug.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-en-heatmap">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"heatmap"</code></span><span><strong>Aliases</strong> <code>heatmap / heat / rainbow / colored</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Auto viridis palette across ridges (or custom palette).</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-heatmap.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-en-spaced">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"spaced"</code></span><span><strong>Aliases</strong> <code>spaced / separated / no_overlap / split</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Forced low overlap — ridges are separated for clarity.</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-spaced.html"></iframe>
 </div>
@@ -235,56 +227,48 @@ Alias : `sp.ridgeline`, `sp.build_ridgeline_chart`
 <div class="sp-variant sp-von" id="ridgeline-fr-basic">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / filled / default / single / multi</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Crêtes empilées remplies (une par catégorie) avec fond blanc.</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-fr-gradient">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / shade / fade / vgrad</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Remplissage en dégradé vertical par crête (opaque haut → transparent bas).</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-fr-lines">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"lines"</code></span><span><strong>Alias</strong> <code>lines / outline / stroke / no_fill</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Crêtes en trait seul, sans remplissage — vue épurée.</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-lines.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-fr-quartiles">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"quartiles"</code></span><span><strong>Alias</strong> <code>quartiles / q / qrt / iqr</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Trace les verticales Q1, médiane (pleine) et Q3 sur chaque crête.</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-quartiles.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-fr-mean">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"mean"</code></span><span><strong>Alias</strong> <code>mean / average / avg / mean_dot</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Trait pointillé + point à la moyenne de chaque distribution.</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-mean.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-fr-rug">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"rug"</code></span><span><strong>Alias</strong> <code>rug / ticks / carpet / rugplot</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Crête remplie avec ticks rug sous la ligne de base aux positions des points.</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-rug.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-fr-heatmap">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"heatmap"</code></span><span><strong>Alias</strong> <code>heatmap / heat / rainbow / colored</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Palette viridis automatique sur les crêtes (ou palette personnalisée).</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-heatmap.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-fr-spaced">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"spaced"</code></span><span><strong>Alias</strong> <code>spaced / separated / no_overlap / split</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Recouvrement forcé bas — crêtes séparées pour la lisibilité.</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-spaced.html"></iframe>
 </div>

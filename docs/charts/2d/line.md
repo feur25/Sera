@@ -136,7 +136,6 @@ Single series connecting ordered data points.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>"basic"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/line-basic.html"></iframe>
 </div>
@@ -149,7 +148,6 @@ Several series sharing the same x-axis. Pass `series=[(name, values), ...]`.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"multi"</code></span><span><strong>Aliases</strong> <code>"multi"</code> / <code>"multiline"</code> / <code>"multiple"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/line-multi.html"></iframe>
 </div>
@@ -162,7 +160,6 @@ Step (staircase) line — ideal for piecewise-constant data. Use `step_shape` to
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stepped"</code></span><span><strong>Aliases</strong> <code>"stepped"</code> / <code>"step"</code> / <code>"hv"</code> / <code>"vh"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/line-stepped.html"></iframe>
 </div>
@@ -175,7 +172,6 @@ Catmull-Rom smoothed curve. `spline_tension` (0–1) controls how tight the curv
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"spline"</code></span><span><strong>Aliases</strong> <code>"spline"</code> / <code>"smooth"</code> / <code>"curved"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/line-spline.html"></iframe>
 </div>
@@ -188,7 +184,6 @@ Area chart — fills the region under the line. `fill_opacity` controls transpar
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"filled"</code></span><span><strong>Aliases</strong> <code>"filled"</code> / <code>"area"</code> / <code>"fill"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/line-filled.html"></iframe>
 </div>
@@ -201,7 +196,6 @@ Small inline chart — no axes, perfect for dashboards. `spark_cols` arranges mu
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"sparkline"</code></span><span><strong>Aliases</strong> <code>"sparkline"</code> / <code>"spark"</code> / <code>"tiny"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/line-sparkline.html"></iframe>
 </div>
@@ -214,7 +208,6 @@ Custom stroke pattern. `dash_pattern="8,4"` means 8px on, 4px off. Use `"2,3"` f
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"dashed"</code></span><span><strong>Aliases</strong> <code>"dashed"</code> / <code>"dotted"</code> / <code>"styled"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/line-dashed.html"></iframe>
 </div>
@@ -227,7 +220,6 @@ Line plot with prominent markers. `marker_size` (px) controls dot size; `show_po
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"connected_scatter"</code></span><span><strong>Aliases</strong> <code>"connected_scatter"</code> / <code>"markers"</code> / <code>"lines+markers"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/line-connected_scatter.html"></iframe>
 </div>
@@ -240,7 +232,6 @@ Line breaks where values exceed `gap_threshold`. Useful for time series with mis
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gapped"</code></span><span><strong>Aliases</strong> <code>"gapped"</code> / <code>"gaps"</code> / <code>"missing"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/line-gapped.html"></iframe>
 </div>
@@ -342,7 +333,6 @@ Série unique reliant des points ordonnés.
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>"basic"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/line-basic.html"></iframe>
 </div>
@@ -355,7 +345,6 @@ Plusieurs séries partageant le même axe x. Passez `series=[(nom, valeurs), ...
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"multi"</code></span><span><strong>Alias</strong> <code>"multi"</code> / <code>"multiline"</code> / <code>"multiple"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/line-multi.html"></iframe>
 </div>
@@ -368,7 +357,6 @@ Ligne en escalier — idéale pour des données constantes par morceaux. `step_s
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"stepped"</code></span><span><strong>Alias</strong> <code>"stepped"</code> / <code>"step"</code> / <code>"hv"</code> / <code>"vh"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/line-stepped.html"></iframe>
 </div>
@@ -381,7 +369,6 @@ Courbe Catmull-Rom lissée. `spline_tension` (0–1) contrôle l'adhérence de l
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"spline"</code></span><span><strong>Alias</strong> <code>"spline"</code> / <code>"smooth"</code> / <code>"curved"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/line-spline.html"></iframe>
 </div>
@@ -394,7 +381,6 @@ Graphique en aire — remplit la zone sous la ligne. `fill_opacity` règle la tr
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"filled"</code></span><span><strong>Alias</strong> <code>"filled"</code> / <code>"area"</code> / <code>"fill"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/line-filled.html"></iframe>
 </div>
@@ -407,7 +393,6 @@ Petit graphique inline — sans axes, idéal pour les tableaux de bord. `spark_c
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"sparkline"</code></span><span><strong>Alias</strong> <code>"sparkline"</code> / <code>"spark"</code> / <code>"tiny"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/line-sparkline.html"></iframe>
 </div>
@@ -420,7 +405,6 @@ Motif de ligne personnalisé. `dash_pattern="8,4"` signifie 8px de trait, 4px de
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"dashed"</code></span><span><strong>Alias</strong> <code>"dashed"</code> / <code>"dotted"</code> / <code>"styled"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/line-dashed.html"></iframe>
 </div>
@@ -433,7 +417,6 @@ Ligne avec marqueurs visibles. `marker_size` (px) règle la taille des points ; 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"connected_scatter"</code></span><span><strong>Alias</strong> <code>"connected_scatter"</code> / <code>"markers"</code> / <code>"lines+markers"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/line-connected_scatter.html"></iframe>
 </div>
@@ -446,7 +429,6 @@ Rupture de ligne lorsque les valeurs dépassent `gap_threshold`. Utile pour des 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"gapped"</code></span><span><strong>Alias</strong> <code>"gapped"</code> / <code>"gaps"</code> / <code>"missing"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/line-gapped.html"></iframe>
 </div>

@@ -103,56 +103,48 @@ Aliases: `sp.radar`, `sp.build_radar_chart`
 <div class="sp-variant sp-von" id="radar-en-basic">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Filled polygon per series with stroke and dot markers — the standard radar.</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-en-lines">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"lines"</code></span><span><strong>Aliases</strong> <code>lines / outline / stroke / no_fill</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Stroke-only polygons, no fill — clean overlay for many series.</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-lines.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-en-filled">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"filled"</code></span><span><strong>Aliases</strong> <code>filled / fill / solid / area</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Strong fill, no stroke, sorted back-to-front by total area for clarity.</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-filled.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-en-markers">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"markers"</code></span><span><strong>Aliases</strong> <code>markers / dots / points / marker</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Light stroke + bold outlined markers — emphasis on data points.</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-markers.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-en-dashed">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"dashed"</code></span><span><strong>Aliases</strong> <code>dashed / dash / dotted</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Dashed outline polygons — useful for projections, targets, baselines.</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-dashed.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-en-stacked">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stacked"</code></span><span><strong>Aliases</strong> <code>stacked / stack / cumulative</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Cumulative stacking on each axis — visualizes part-of-whole composition.</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-stacked.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-en-polar_bar">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"polar_bar"</code></span><span><strong>Aliases</strong> <code>polar_bar / polar / bar / radial_bar</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Radial bars per axis grouped by series — categorical polar histogram.</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-polar_bar.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-en-gradient">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / radial_gradient / shade / fade</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Radial gradient fill from center (opaque) to edge (transparent).</p>
-</div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-gradient.html"></iframe>
 </div>
@@ -225,56 +217,48 @@ Alias : `sp.radar`, `sp.build_radar_chart`
 <div class="sp-variant sp-von" id="radar-fr-basic">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Polygone rempli par série avec contour et points — le radar standard.</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-fr-lines">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"lines"</code></span><span><strong>Alias</strong> <code>lines / outline / stroke / no_fill</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Polygones en trait seul, sans remplissage — overlay net pour plusieurs séries.</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-lines.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-fr-filled">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"filled"</code></span><span><strong>Alias</strong> <code>filled / fill / solid / area</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Remplissage fort sans contour, trié de l'arrière vers l'avant par aire totale.</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-filled.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-fr-markers">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"markers"</code></span><span><strong>Alias</strong> <code>markers / dots / points / marker</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Trait léger + marqueurs détourés — accent sur les points de données.</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-markers.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-fr-dashed">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"dashed"</code></span><span><strong>Alias</strong> <code>dashed / dash / dotted</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Polygones à contour pointillé — utile pour projections, cibles, références.</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-dashed.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-fr-stacked">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"stacked"</code></span><span><strong>Alias</strong> <code>stacked / stack / cumulative</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Empilement cumulatif sur chaque axe — visualise une composition part/tout.</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-stacked.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-fr-polar_bar">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"polar_bar"</code></span><span><strong>Alias</strong> <code>polar_bar / polar / bar / radial_bar</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Barres radiales par axe groupées par série — histogramme polaire catégoriel.</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-polar_bar.html"></iframe>
 </div>
 <div class="sp-variant" id="radar-fr-gradient">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / radial_gradient / shade / fade</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Remplissage en dégradé radial du centre (opaque) vers le bord (transparent).</p>
-</div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-gradient.html"></iframe>
 </div>
