@@ -47,7 +47,7 @@ pub use slope::{SlopeConfig, SlopeVariant, render_slope_html};
 pub use bullet::{BulletConfig, BulletVariant, render_bullet_html};
 pub use dumbbell::{DumbbellConfig, DumbbellVariant, render_dumbbell_html};
 pub use gauge::{GaugeConfig, GaugeVariant, render_gauge_html};
-pub use wordcloud::{WordCloudConfig, render_wordcloud_html};
+pub use wordcloud::{WordCloudConfig, WordCloudVariant, render_wordcloud_html};
 pub use radar::{RadarConfig, RadarVariant, render_radar_html};
 pub use lollipop::{LollipopConfig, LollipopVariant, render_lollipop_html};
 pub use kde::{KdeConfig, KdeVariant, render_kde_html, scott_bw, kde_eval};

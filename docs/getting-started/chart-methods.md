@@ -409,6 +409,63 @@ print(a.diff(b))</code></pre>
 <pre><code class="language-python">if chart:
     chart.show()</code></pre>
 </div>
+<div class="cm-section"><span class="cm-sn">16</span><h3>Annotations (cross-chart)</h3><p>SVG overlays inherited by every plot</p></div>
+
+<div class="cm-card cm-new">
+<div class="cm-name"><code class="cm-fn">annotations=[...] (kwarg)</code><span class="cm-tag cm-tag-new">new</span><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Pass a list of annotation dicts to <strong>any</strong> chart builder. Coordinates default to fractional canvas space (<code>0.0 - 1.0</code>); set <code>"frac": false</code> to use raw pixels. Supported <code>kind</code> values: <code>"hline"</code>, <code>"vline"</code>, <code>"line"</code>, <code>"arrow"</code>, <code>"rect"</code>, <code>"text"</code>.</div>
+<pre><code class="language-python">chart = sp.build_line_chart(
+    "Sales", labels=months, values=sales,
+    annotations=[
+        {"kind":"hline", "y":0.5, "color":"#22c55e", "dash":"6 4", "text":"Target"},
+        {"kind":"vline", "x":0.62, "color":"#f59e0b", "text":"Launch"},
+        {"kind":"rect",  "x":0.05, "y":0.65, "x2":0.40, "y2":0.92,
+                         "color":"#6366f1", "fill":"#6366f1", "opacity":0.10},
+        {"kind":"arrow", "x":0.45, "y":0.30, "x2":0.85, "y2":0.18, "color":"#ef4444"},
+        {"kind":"text",  "x":0.46, "y":0.28, "text":"Outlier", "color":"#ef4444"},
+    ],
+)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">Annotation fields</code></div>
+<div class="cm-desc">Every annotation accepts the same shape:</div>
+<table class="cm-table">
+<thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>kind</code></td><td>str</td><td>required</td><td><code>hline</code> / <code>vline</code> / <code>line</code> / <code>arrow</code> / <code>rect</code> / <code>text</code></td></tr>
+<tr><td><code>x</code>, <code>y</code></td><td>float</td><td>0.5</td><td>Anchor point (frac of canvas if <code>frac=True</code>, pixels otherwise)</td></tr>
+<tr><td><code>x2</code>, <code>y2</code></td><td>float</td><td>1.0</td><td>End point for line / arrow / rect</td></tr>
+<tr><td><code>color</code></td><td>str</td><td><code>"#ef4444"</code></td><td>Stroke / text color (CSS)</td></tr>
+<tr><td><code>fill</code></td><td>str</td><td><code>"none"</code></td><td>Fill color (rect only)</td></tr>
+<tr><td><code>stroke_width</code></td><td>float</td><td>1.5</td><td>Stroke width</td></tr>
+<tr><td><code>dash</code></td><td>str</td><td><code>""</code></td><td>SVG dash array, e.g. <code>"6 4"</code></td></tr>
+<tr><td><code>opacity</code></td><td>float</td><td>1.0</td><td>0.0 - 1.0</td></tr>
+<tr><td><code>text</code></td><td>str</td><td>None</td><td>Optional label rendered next to the primitive</td></tr>
+<tr><td><code>font_size</code></td><td>float</td><td>11.0</td><td>Label font size</td></tr>
+<tr><td><code>frac</code></td><td>bool</td><td>true</td><td>Coordinate space: fractional (0-1) or pixel</td></tr>
+</tbody>
+</table>
+</div>
+<div class="cm-tip"><strong>Tip:</strong> Annotations apply uniformly to every 2D and 3D chart through the <code>apply_annotations()</code> hook - no per-chart wiring required.</div>
+
+<div class="cm-section"><span class="cm-sn">17</span><h3>Composers (Grid + Slideshow)</h3><p>Group charts into stories</p></div>
+
+<div class="cm-card cm-new">
+<div class="cm-name"><code class="cm-fn">sp.build_grid(charts, *, cols=2, gap=16, bg=None, cell_height=520) -&gt; Chart</code><span class="cm-tag cm-tag-new">new</span></div>
+<div class="cm-desc">Compose any number of pre-built charts into a responsive CSS-grid layout, each chart hosted in its own iframe.</div>
+<pre><code class="language-python">bar = sp.build_bar_chart("Q-Sales", labels=["Q1","Q2","Q3","Q4"], values=[120,180,150,210])
+line = sp.build_line_chart("Trend", labels=months, values=sales)
+pie = sp.build_pie_chart("Mix", labels=["A","B","C"], values=[40,35,25])
+grid = sp.build_grid([bar, line, pie], cols=2, gap=14, cell_height=320)
+grid.show()</code></pre>
+</div>
+<div class="cm-card cm-new">
+<div class="cm-name"><code class="cm-fn">sp.build_slideshow(charts, interval_ms=2500, title='', width=900, height=520) -&gt; Chart</code><span class="cm-tag cm-tag-new">new</span></div>
+<div class="cm-desc">Build a navigable HTML carousel with previous / next buttons and an auto-advance progress bar - perfect for telling a story without a slide deck.</div>
+<pre><code class="language-python">slides = [sp.build_bar_chart(f"Slide {i+1}", labels=["A","B"], values=[i, i+1]) for i in range(4)]
+show = sp.build_slideshow(slides, interval_ms=2200, title="Quarterly Story")
+show.show()</code></pre>
+</div>
 </div>
 <div class="lang-fr">
 
@@ -818,6 +875,64 @@ print(a.diff(b))</code></pre>
 <div class="cm-desc"><code>True</code> si le chart a un rendu.</div>
 <pre><code class="language-python">if chart:
     chart.show()</code></pre>
+</div>
+
+<div class="cm-section"><span class="cm-sn">16</span><h3>Annotations (transversales)</h3><p>Surcouches SVG heritees par tous les plots</p></div>
+
+<div class="cm-card cm-new">
+<div class="cm-name"><code class="cm-fn">annotations=[...] (kwarg)</code><span class="cm-tag cm-tag-new">nouveau</span><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Passe une liste de dictionnaires d annotations a <strong>n importe quel</strong> builder. Coordonnees fractionnaires par defaut (<code>0.0 - 1.0</code>) ; mets <code>"frac": false</code> pour utiliser des pixels. Valeurs supportees pour <code>kind</code> : <code>"hline"</code>, <code>"vline"</code>, <code>"line"</code>, <code>"arrow"</code>, <code>"rect"</code>, <code>"text"</code>.</div>
+<pre><code class="language-python">chart = sp.build_line_chart(
+    "Ventes", labels=mois, values=ventes,
+    annotations=[
+        {"kind":"hline", "y":0.5, "color":"#22c55e", "dash":"6 4", "text":"Cible"},
+        {"kind":"vline", "x":0.62, "color":"#f59e0b", "text":"Lancement"},
+        {"kind":"rect",  "x":0.05, "y":0.65, "x2":0.40, "y2":0.92,
+                         "color":"#6366f1", "fill":"#6366f1", "opacity":0.10},
+        {"kind":"arrow", "x":0.45, "y":0.30, "x2":0.85, "y2":0.18, "color":"#ef4444"},
+        {"kind":"text",  "x":0.46, "y":0.28, "text":"Outlier", "color":"#ef4444"},
+    ],
+)</code></pre>
+</div>
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">Champs d annotation</code></div>
+<div class="cm-desc">Toutes les annotations partagent la meme structure :</div>
+<table class="cm-table">
+<thead><tr><th>Champ</th><th>Type</th><th>Defaut</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>kind</code></td><td>str</td><td>requis</td><td><code>hline</code> / <code>vline</code> / <code>line</code> / <code>arrow</code> / <code>rect</code> / <code>text</code></td></tr>
+<tr><td><code>x</code>, <code>y</code></td><td>float</td><td>0.5</td><td>Point d ancrage (frac canvas si <code>frac=True</code>, pixels sinon)</td></tr>
+<tr><td><code>x2</code>, <code>y2</code></td><td>float</td><td>1.0</td><td>Point final pour line / arrow / rect</td></tr>
+<tr><td><code>color</code></td><td>str</td><td><code>"#ef4444"</code></td><td>Couleur de trait / texte (CSS)</td></tr>
+<tr><td><code>fill</code></td><td>str</td><td><code>"none"</code></td><td>Couleur de remplissage (rect uniquement)</td></tr>
+<tr><td><code>stroke_width</code></td><td>float</td><td>1.5</td><td>Epaisseur du trait</td></tr>
+<tr><td><code>dash</code></td><td>str</td><td><code>""</code></td><td>SVG dash array, ex. <code>"6 4"</code></td></tr>
+<tr><td><code>opacity</code></td><td>float</td><td>1.0</td><td>0.0 - 1.0</td></tr>
+<tr><td><code>text</code></td><td>str</td><td>None</td><td>Etiquette optionnelle a cote du primitif</td></tr>
+<tr><td><code>font_size</code></td><td>float</td><td>11.0</td><td>Taille de la police de l etiquette</td></tr>
+<tr><td><code>frac</code></td><td>bool</td><td>true</td><td>Espace de coordonnees : fractionnaire (0-1) ou pixel</td></tr>
+</tbody>
+</table>
+</div>
+<div class="cm-tip"><strong>Astuce :</strong> les annotations s appliquent uniformement a tous les charts 2D et 3D via le hook <code>apply_annotations()</code> - aucun branchement par chart requis.</div>
+
+<div class="cm-section"><span class="cm-sn">17</span><h3>Composers (Grid + Slideshow)</h3><p>Regroupe des charts en histoires</p></div>
+
+<div class="cm-card cm-new">
+<div class="cm-name"><code class="cm-fn">sp.build_grid(charts, *, cols=2, gap=16, bg=None, cell_height=520) -&gt; Chart</code><span class="cm-tag cm-tag-new">nouveau</span></div>
+<div class="cm-desc">Empile N charts deja construits dans une grille CSS responsive, chaque chart isole dans son iframe.</div>
+<pre><code class="language-python">bar = sp.build_bar_chart("Ventes-Q", labels=["Q1","Q2","Q3","Q4"], values=[120,180,150,210])
+line = sp.build_line_chart("Tendance", labels=mois, values=ventes)
+pie = sp.build_pie_chart("Mix", labels=["A","B","C"], values=[40,35,25])
+grid = sp.build_grid([bar, line, pie], cols=2, gap=14, cell_height=320)
+grid.show()</code></pre>
+</div>
+<div class="cm-card cm-new">
+<div class="cm-name"><code class="cm-fn">sp.build_slideshow(charts, interval_ms=2500, title='', width=900, height=520) -&gt; Chart</code><span class="cm-tag cm-tag-new">nouveau</span></div>
+<div class="cm-desc">Construit un carrousel HTML navigable avec boutons precedent/suivant et barre de progression - parfait pour raconter une histoire sans presentation externe.</div>
+<pre><code class="language-python">slides = [sp.build_bar_chart(f"Slide {i+1}", labels=["A","B"], values=[i, i+1]) for i in range(4)]
+show = sp.build_slideshow(slides, interval_ms=2200, title="Histoire trimestrielle")
+show.show()</code></pre>
 </div>
 
 </div>

@@ -1,70 +1,73 @@
-# Slideshow
+# Slideshow - Navigable Chart Carousel
 
 <div class="lang-en">
 
+<style>
+.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.2em 0}
+.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
+.sp-tb{padding:8px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:#e2e8f0}
+.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tc{display:none}
+.sp-tc.sp-on{display:block}
+.sp-cls{display:flex;gap:0;margin:1.6em 0 1.6em 36px;border-radius:14px;background:linear-gradient(180deg,#0a0f1c 0%,#060912 100%);box-shadow:0 18px 50px -12px rgba(0,0,0,.6),0 0 0 1px #1e293b inset;position:relative;overflow:visible}
+.sp-cls-rail{display:flex;flex-direction:column;background:linear-gradient(180deg,#0d1426,#070b18);border-right:1px solid #1e293b;padding:18px 0;min-width:18px;transition:min-width .28s cubic-bezier(.5,0,.2,1);position:relative;z-index:2;border-radius:14px 0 0 14px;overflow:visible}
+.sp-cls.sp-open .sp-cls-rail{min-width:170px;padding:18px 8px}
+.sp-cls-toggle{position:absolute;top:-14px;left:8px;padding:5px 9px;background:#1e293b;color:#a5b4fc;border:1px solid #312e81;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;transition:all .15s;line-height:1;z-index:5;box-shadow:0 4px 12px -2px rgba(0,0,0,.5)}
+.sp-cls-toggle:hover{background:#312e81;color:#e0e7ff;transform:translateY(-1px)}
+.sp-cls-tab{position:relative;display:flex;align-items:center;gap:8px;margin:5px 0 5px -34px;padding:11px 16px 11px 14px;background:linear-gradient(90deg,#1a2540 0%,#141d33 70%,#0f172a 100%);color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;border:none;text-align:left;white-space:nowrap;border-radius:8px 0 0 8px;box-shadow:-6px 4px 14px -4px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.04),inset 1px 0 0 rgba(255,255,255,.05);transition:all .25s cubic-bezier(.5,0,.2,1);clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);min-height:18px}
+.sp-cls-tab:hover{background:linear-gradient(90deg,#23304d,#1a2540 70%,#141d33);color:#e0e7ff;margin-left:-40px;box-shadow:-8px 6px 18px -4px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
+.sp-cls-tab.sp-cact{background:linear-gradient(90deg,#3730a3 0%,#1e1b4b 50%,#0f172a 100%);color:#f5f3ff;margin-left:-46px;box-shadow:-10px 8px 22px -4px rgba(99,102,241,.35),-3px 0 0 0 #818cf8 inset,inset 0 1px 0 rgba(165,180,252,.2);font-weight:700;z-index:3}
+.sp-cls-tab .sp-cic{font-size:13px;flex-shrink:0;color:#a5b4fc;font-weight:900;letter-spacing:-1px;width:16px;text-align:center;text-shadow:0 0 6px rgba(165,180,252,.4)}
+.sp-cls-tab.sp-cact .sp-cic{color:#e0e7ff;text-shadow:0 0 10px rgba(165,180,252,.7)}
+.sp-cls-tab .sp-clb{display:none;font-weight:inherit;letter-spacing:.01em}
+.sp-cls.sp-open .sp-cls-tab .sp-clb{display:inline}
+.sp-cls-body{flex:1;padding:24px 26px 22px;background:#0a0f1c;min-width:0;position:relative;z-index:1;border-radius:0 14px 14px 0;overflow:hidden}
+.sp-variant{display:none}
+.sp-variant.sp-von{display:block;animation:spFade .25s ease}
+@keyframes spFade{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+.sp-vmeta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px;color:#94a3b8;margin:6px 0 16px;padding:10px 14px;background:rgba(99,102,241,.06);border-left:3px solid #6366f1;border-radius:0 6px 6px 0}
+.sp-vmeta strong{color:#a5b4fc;font-weight:700;margin-right:4px;letter-spacing:.04em;text-transform:uppercase;font-size:11px}
+.sp-vmeta code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#e2e8f0;font-size:12px}
+.sp-preview-frame{width:100%;height:520px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+.sp-preview-label{font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase}
+</style>
+<script>
+function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact');if(window.hljs)document.getElementById(scope+'-'+name).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
+function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
+document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
+</script>
+
+
 ## Signature
 
-```python
-sp.build_slideshow(
-    charts: list[Chart],
-    *,
-    title: str = "",
-    width: int = 1000,
-    height: int = 600,
-    background: str | None = None,
-    autoplay: bool = False,
-    interval_ms: int = 3000,
-) -> Chart
-```
+`sp.build_slideshow(charts, interval_ms=2500, title='', width=900, height=520) -> Chart`
 
-Aliases: `sp.slideshow`
-
----
+Aliases: `sp.build_slideshow`
 
 ## Description
 
-A slideshow wraps multiple `Chart` objects into a single interactive carousel with Prev/Next navigation buttons. All charts are pre-rendered inline in the output HTML, so the slideshow works fully offline without any external dependencies. When `autoplay` is `True`, slides advance automatically every `interval_ms` milliseconds and loop back to the first after the last. The slideshow is ideal for presentations, dashboards, and reports where multiple charts share equal importance and should be viewed sequentially.
-
-**Ideal for:**
-- Business reviews and presentations requiring multiple charts in a single embed
-- Report sections where charts follow a narrative sequence
-- Dashboard demos cycling through key metrics automatically
-
----
+`sp.build_slideshow()` turns a list of charts into a navigable HTML carousel with previous / next buttons and an auto-advance progress bar. Drop in any pre-built chart objects - the slideshow takes care of layout, timing and progressive reveal so you can pitch a story without a slide deck.
 
 ## Parameters
 
 | Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `charts` | `list[Chart]` | required | Ordered list of charts to display |
-| `title` | `str` | `""` | Slideshow header title |
-| `width` | `int` | `1000` | Canvas width in pixels |
-| `height` | `int` | `600` | Canvas height in pixels |
-| `background` | `str \| None` | `None` | Background color or `None` = transparent |
-| `autoplay` | `bool` | `False` | Auto-advance slides |
-| `interval_ms` | `int` | `3000` | Milliseconds between auto-advances |
-
----
+|---|---|---|---|
+| `charts` | `list[Chart]` | required | Charts to use as slides |
+| `interval_ms` | `int` | 2500 | Auto-play interval in milliseconds |
+| `title` | `str` | "" | Slideshow title shown above the deck |
+| `width` | `int` | 900 | Width per slide (px) |
+| `height` | `int` | 520 | Height per slide (px) |
 
 ## Returns
 
-`Chart`
+`Chart` - object with `.html` property and `.show()` method.
 
 ---
 
-<style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
-<script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
-
-
-</div>
-
-<iframe src="../../previews/slideshow.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-
----
-
-## See also
-
-- [Grid Layout](grid.md) — `sp.build_grid()`
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/slideshow-basic.html"></iframe>
 
 </div>
 
@@ -72,63 +75,26 @@ A slideshow wraps multiple `Chart` objects into a single interactive carousel wi
 
 <h2>Signature</h2>
 
-```python
-sp.build_slideshow(
-    charts: list[Chart],
-    *,
-    title: str = "",
-    width: int = 1000,
-    height: int = 600,
-    background: str | None = None,
-    autoplay: bool = False,
-    interval_ms: int = 3000,
-) -> Chart
-```
+`sp.build_slideshow(charts, interval_ms=2500, title='', width=900, height=520) -> Chart`
 
-Aliases: `sp.slideshow`
-
----
+Aliases: `sp.build_slideshow`
 
 <h2>Description</h2>
 
-Un slideshow enveloppe plusieurs objets `Chart` dans un seul carousel interactif avec des boutons de navigation Précédent/Suivant. Tous les graphiques sont pré-rendus en ligne dans le HTML de sortie, le slideshow fonctionne donc entièrement hors ligne. Quand `autoplay` est `True`, les diapositives avancent automatiquement toutes les `interval_ms` millisecondes et rebouclent au début après la dernière.
+`sp.build_slideshow()` transforme une liste de charts en carrousel HTML navigable avec boutons precedent/suivant et barre de progression auto. Pose n importe quels charts deja construits - le slideshow gere layout, timing et reveal progressif pour raconter une histoire sans presentation externe.
 
-**Idéal pour :**
-- Bilans d'activité et présentations nécessitant plusieurs graphiques dans un seul embed
-- Sections de rapport où les graphiques suivent une séquence narrative
-- Démonstrations de tableau de bord faisant défiler automatiquement les indicateurs clés
+<h2>Parametres</h2>
 
----
+| Parametre | Type | Defaut | Description |
+|---|---|---|---|
+| `charts` | `list[Chart]` | requis | Charts utilises comme slides |
+| `interval_ms` | `int` | 2500 | Intervalle d auto-play (ms) |
+| `title` | `str` | "" | Titre affiche au-dessus du carrousel |
+| `width` | `int` | 900 | Largeur par slide (px) |
+| `height` | `int` | 520 | Hauteur par slide (px) |
 
-<h2>Paramètres</h2>
+<h2>Retour</h2>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `charts` | `list[Chart]` | requis | Liste ordonnée des graphiques à afficher |
-| `title` | `str` | `""` | Titre d'en-tête du slideshow |
-| `width` | `int` | `1000` | Largeur du canvas en pixels |
-| `height` | `int` | `600` | Hauteur du canvas en pixels |
-| `background` | `str \| None` | `None` | Couleur de fond ou `None` = transparent |
-| `autoplay` | `bool` | `False` | Avance automatique des diapositives |
-| `interval_ms` | `int` | `3000` | Millisecondes entre les avancements automatiques |
-
----
-
-<h2>Retourne</h2>
-
-`Chart`
-
----
-
-
-</div>
-
-<iframe src="../../previews/slideshow.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-
----
-
-<h2>Voir aussi</h2>
-
-- [Grille de graphiques](grid.md) — `sp.build_grid()`
+`Chart` - objet avec propriete `.html` et methode `.show()`.
 
 </div>

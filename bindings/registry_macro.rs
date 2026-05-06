@@ -356,6 +356,16 @@ macro_rules! impl_python_bindings {
             if let Ok(list) = val.extract::<Vec<i64>>() { return serde_json::json!(list); }
             if let Ok(list) = val.extract::<Vec<f64>>() { return serde_json::json!(list); }
             if let Ok(list) = val.extract::<Vec<String>>() { return serde_json::json!(list); }
+            let py = val.py();
+            if let Ok(json_mod) = py.import("json") {
+                if let Ok(s) = json_mod.call_method1("dumps", (val,)) {
+                    if let Ok(ss) = s.extract::<String>() {
+                        if let Ok(jv) = serde_json::from_str::<serde_json::Value>(&ss) {
+                            return jv;
+                        }
+                    }
+                }
+            }
             serde_json::Value::Null
         }
 
