@@ -135,7 +135,7 @@ const chart = sp.build_bubble3d_chart("4D Dataset",
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_bubble3d_chart(
@@ -162,13 +162,13 @@ Aliases: `sp.bubble3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Graphique à bulles 3D — nuage de points XYZ où le rayon des bulles encode une quatrième dimension.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -187,13 +187,13 @@ Graphique à bulles 3D — nuage de points XYZ où le rayon des bulles encode un
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -212,7 +212,7 @@ chart = sp.build_bubble3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Nuage de points 3D](scatter3d.md)
 - [Bulles 2D](../2d/bubble.md)

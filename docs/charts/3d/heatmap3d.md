@@ -129,7 +129,7 @@ features,
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_heatmap3d_chart(
@@ -154,13 +154,13 @@ Aliases: `sp.heatmap3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Heatmap 3D où les valeurs sont extrudées comme des barres s'élevant d'une grille plate. Les valeurs plus hautes produisent des colonnes plus élevées.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -177,13 +177,13 @@ Heatmap 3D où les valeurs sont extrudées comme des barres s'élevant d'une gri
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -203,7 +203,7 @@ chart = sp.build_heatmap3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Heatmap 2D](../2d/heatmap.md)
 - [Barres 3D](bar3d.md)

@@ -139,7 +139,7 @@ values,
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_kde3d_chart(
@@ -163,13 +163,13 @@ Aliases: `sp.kde3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Estimation par noyau 2D rendue comme une surface maillage 3D. Visualise la densité jointe de deux variables.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -188,13 +188,13 @@ Estimation par noyau 2D rendue comme une surface maillage 3D. Visualise la densi
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -212,7 +212,7 @@ chart = sp.build_kde3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [KDE 2D](../2d/kde.md)
 - [Nuage de points 3D](scatter3d.md)

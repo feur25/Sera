@@ -129,7 +129,7 @@ const chart = sp.build_bar3d_chart("Sales by Product",
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_bar3d_chart(
@@ -153,13 +153,13 @@ Aliases: `sp.bar3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Graphique en barres 3D rendant les barres comme des prismes rectangulaires extrudés sur un canvas WebGL.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -178,13 +178,13 @@ Graphique en barres 3D rendant les barres comme des prismes rectangulaires extru
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -202,7 +202,7 @@ chart = sp.build_bar3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Graphique en barres 2D](../2d/bar.md)
 - [Barres empilées 3D](stacked-bar3d.md)

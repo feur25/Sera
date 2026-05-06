@@ -123,7 +123,7 @@ parents,
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_sunburst3d_chart(
@@ -145,13 +145,13 @@ Aliases: `sp.sunburst3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Sunburst 3D — anneaux d'arc extrudés concentriques dans une scène WebGL.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -168,13 +168,13 @@ Sunburst 3D — anneaux d'arc extrudés concentriques dans une scène WebGL.
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -191,7 +191,7 @@ chart = sp.build_sunburst3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Sunburst 2D](../2d/sunburst.md)
 - [Camembert 3D](pie3d.md)

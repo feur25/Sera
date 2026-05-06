@@ -117,7 +117,7 @@ const chart = sp.build_lollipop3d_chart("Monthly Sales 3D",
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_lollipop3d_chart(
@@ -141,13 +141,13 @@ Aliases: `sp.lollipop3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Graphique en sucette 3D — tiges et sphères rendus dans une scène WebGL.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -163,13 +163,13 @@ Graphique en sucette 3D — tiges et sphères rendus dans une scène WebGL.
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -184,7 +184,7 @@ chart = sp.build_lollipop3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Sucette 2D](../2d/lollipop.md)
 - [Barres 3D](bar3d.md)

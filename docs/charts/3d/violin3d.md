@@ -124,7 +124,7 @@ const chart = sp.build_violin3d_chart("Trial Results",
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_violin3d_chart(
@@ -147,13 +147,13 @@ Aliases: `sp.violin3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Graphique en violon 3D — surfaces de distribution basées sur KDE par catégorie rendues en WebGL.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -168,13 +168,13 @@ Graphique en violon 3D — surfaces de distribution basées sur KDE par catégor
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -193,7 +193,7 @@ chart = sp.build_violin3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Violon 2D](../2d/violin.md)
 - [KDE 3D](kde3d.md)

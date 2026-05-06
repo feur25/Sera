@@ -226,13 +226,13 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 
 <div class="lang-fr" style="display:none">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.boxplot(title, labels=None, values=None, *, variant="basic", series=None, **kwargs) -> Chart`
 
 Alias : `sp.boxplot`, `sp.box_plot`
 
-## Description
+<h2>Description</h2>
 
 `sp.boxplot()` est le point d'entrée unique pour toute la famille des boîtes à moustaches. Le paramètre `variant` sélectionne la stratégie de rendu — tous les autres arguments restent identiques entre les variantes. Quartiles, moustaches 1,5×IQR et valeurs aberrantes sont calculés en pur Rust, sans NumPy ni pandas.
 
@@ -251,7 +251,7 @@ Alias : `sp.boxplot`, `sp.box_plot`
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Variantes | Description |
 |-----------|------|--------|-----------|-------------|
@@ -277,7 +277,7 @@ Alias : `sp.boxplot`, `sp.box_plot`
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart` — objet avec la propriété `.html` et la méthode `.show()`.
 

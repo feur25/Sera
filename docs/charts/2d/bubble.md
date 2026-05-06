@@ -184,13 +184,13 @@ Aliases: `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 
 <div class="lang-fr" style="display:none">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.bubble(title, x_values, y_values, sizes, *, variant="basic", categories=None, labels=None, color_values=None, **kwargs) -> Chart`
 
 Alias : `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 
-## Description
+<h2>Description</h2>
 
 `sp.bubble()` est le point d'entrée unique de toute la famille des graphiques à bulles. Le paramètre `variant` choisit la stratégie de rendu — tous les autres arguments restent cohérents entre variantes. Une bulle représente une troisième dimension via son **aire** (et non son rayon), pour une lecture perceptive correcte.
 
@@ -205,7 +205,7 @@ Alias : `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Variantes | Description |
 |-----------|------|--------|-----------|-------------|
@@ -234,7 +234,7 @@ Alias : `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart` — objet exposant `.html` et `.show()`.
 
@@ -311,7 +311,7 @@ Alias : `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Nuage de points (scatter)](scatter.md) — `sp.scatter()`
 - [Bulles 3D](../3d/bubble3d.md) — `sp.bubble3d()`

@@ -118,7 +118,7 @@ const chart = sp.build_radar3d_chart("Skills Comparison 3D",
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_radar3d_chart(
@@ -140,13 +140,13 @@ Aliases: `sp.radar3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Graphique radar 3D (toile d'araignée). Même concept que le radar 2D mais rendu dans une scène WebGL.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -163,13 +163,13 @@ Graphique radar 3D (toile d'araignée). Même concept que le radar 2D mais rendu
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -187,7 +187,7 @@ chart = sp.build_radar3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Radar 2D](../2d/radar.md)
 

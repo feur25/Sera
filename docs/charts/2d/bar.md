@@ -147,6 +147,8 @@ Aliases: `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_famil
 
 Horizontal bars — better for long category names. Alias: `"h"`.
 
+<div class="sp-preview-label">Code</div>
+
 ```python
 sp.bar(
     title: str,
@@ -177,6 +179,8 @@ sp.bar(
 <div class="sp-variant" id="bar-en-grouped">
 
 Multiple series side-by-side per category. Alias: `"group"`.
+
+<div class="sp-preview-label">Code</div>
 
 ```python
 sp.bar(
@@ -210,6 +214,8 @@ sp.bar(
 
 Series stacked vertically — shows part-to-whole within each category. Alias: `"stack"`.
 
+<div class="sp-preview-label">Code</div>
+
 ```python
 sp.bar(
     title: str,
@@ -238,6 +244,8 @@ sp.bar(
 <div class="sp-variant" id="bar-en-relative">
 
 Stacked with **negative values below the zero baseline** — P&L, gains/losses. Alias: `"rel"`.
+
+<div class="sp-preview-label">Code</div>
 
 ```python
 sp.bar(
@@ -268,6 +276,8 @@ sp.bar(
 <div class="sp-variant" id="bar-en-gstack">
 
 Groups of stacked sub-bars per category. `offset_groups` assigns a stack-group name to each series.
+
+<div class="sp-preview-label">Code</div>
 
 ```python
 sp.bar(
@@ -301,6 +311,8 @@ sp.bar(
 
 Variable-width stacked bars (mosaic plot). `widths` encodes one dimension, stacked segments encode share. Aliases: `"mekko"`, `"mosaic"`.
 
+<div class="sp-preview-label">Code</div>
+
 ```python
 sp.bar(
     title: str,
@@ -332,6 +344,8 @@ sp.bar(
 
 A bar made of repeated icons. Each icon represents `units_per_icon` units. Alias: `"icon"`.
 
+<div class="sp-preview-label">Code</div>
+
 ```python
 sp.bar(
     title: str,
@@ -360,6 +374,8 @@ sp.bar(
 <div class="sp-variant" id="bar-en-multicategory">
 
 Two-level hierarchical x axis. `super_categories` groups adjacent bars under a bracket label. Alias: `"multi"`.
+
+<div class="sp-preview-label">Code</div>
 
 ```python
 sp.bar(
@@ -403,13 +419,13 @@ sp.bar(
 
 <div class="lang-fr" style="display:none">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.bar(title, labels=None, values=None, *, variant="basic", series=None, **kwargs) -> Chart`
 
 Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family`, `sp.bar_chart`
 
-## Description
+<h2>Description</h2>
 
 `sp.bar()` est le point d'entrée unique pour toute la famille de graphiques en barres. Le paramètre `variant` sélectionne la stratégie de rendu.
 
@@ -427,7 +443,7 @@ Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Variantes | Description |
 |-----------|------|--------|-----------|-------------|
@@ -463,7 +479,7 @@ Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart` — objet avec la propriété `.html` et la méthode `.show()`.
 
@@ -497,6 +513,8 @@ Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family
 
 Barres horizontales — idéal pour les longs noms de catégories. Alias : `"h"`.
 
+<div class="sp-preview-label">Code</div>
+
 ```python
 sp.bar(
     title: str,
@@ -527,6 +545,8 @@ sp.bar(
 <div class="sp-variant" id="bar-fr-grouped">
 
 Plusieurs séries côte à côte par catégorie. Alias : `"group"`.
+
+<div class="sp-preview-label">Code</div>
 
 ```python
 sp.bar(
@@ -560,6 +580,8 @@ sp.bar(
 
 Séries empilées verticalement — montre la part de chaque série dans le total. Alias : `"stack"`.
 
+<div class="sp-preview-label">Code</div>
+
 ```python
 sp.bar(
     title: str,
@@ -588,6 +610,8 @@ sp.bar(
 <div class="sp-variant" id="bar-fr-relative">
 
 Empilé avec **valeurs négatives sous l'axe zéro** — flux de trésorerie, P&L. Alias : `"rel"`.
+
+<div class="sp-preview-label">Code</div>
 
 ```python
 sp.bar(
@@ -618,6 +642,8 @@ sp.bar(
 <div class="sp-variant" id="bar-fr-gstack">
 
 Groupes de sous-barres empilées par catégorie. `offset_groups` assigne un nom de pile à chaque série.
+
+<div class="sp-preview-label">Code</div>
 
 ```python
 sp.bar(
@@ -651,6 +677,8 @@ sp.bar(
 
 Barres empilées à largeur variable (mosaïque). `widths` encode une dimension, les segments empilés encodent la part. Alias : `"mekko"`, `"mosaic"`.
 
+<div class="sp-preview-label">Code</div>
+
 ```python
 sp.bar(
     title: str,
@@ -682,6 +710,8 @@ sp.bar(
 
 Barre composée d'icônes répétées. Chaque icône représente `units_per_icon` unités. Alias : `"icon"`.
 
+<div class="sp-preview-label">Code</div>
+
 ```python
 sp.bar(
     title: str,
@@ -710,6 +740,8 @@ sp.bar(
 <div class="sp-variant" id="bar-fr-multicategory">
 
 Axe x à deux niveaux. `super_categories` regroupe les barres adjacentes sous un label chapeau. Alias : `"multi"`.
+
+<div class="sp-preview-label">Code</div>
 
 ```python
 sp.bar(
@@ -742,7 +774,7 @@ sp.bar(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Lollipop](lollipop.md) — `sp.lollipop()`
 - [Cascade / Waterfall](waterfall.md) — `sp.waterfall()`

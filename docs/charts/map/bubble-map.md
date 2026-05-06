@@ -139,7 +139,7 @@ chart = sp.build_bubble_map(
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_bubble_map(
@@ -166,13 +166,13 @@ Aliases: `sp.bubble_map`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Carte mondiale avec des bulles proportionnelles aux coordonnées géographiques. Utilisez `iso_codes` pour les données par pays (la bibliothèque résout les centroïdes automatiquement), ou passez des `latitudes` / `longitudes` explicites.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -193,13 +193,13 @@ Carte mondiale avec des bulles proportionnelles aux coordonnées géographiques.
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -225,7 +225,7 @@ chart = sp.build_bubble_map(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Choro-plèthe](choropleth.md)
 - [Globe 3D](../3d/globe3d.md)

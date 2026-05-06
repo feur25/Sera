@@ -128,7 +128,7 @@ const chart = sp.build_globe3d_chart("World Population Spikes",
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_globe3d_chart(
@@ -153,13 +153,13 @@ Aliases: `sp.globe3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Globe interactif 3D — données géographiques tracées comme des barres verticales sur une sphère. Faites glisser pour tourner, défilez pour zoomer.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -179,13 +179,13 @@ Globe interactif 3D — données géographiques tracées comme des barres vertic
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -201,7 +201,7 @@ chart = sp.build_globe3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Carte à bulles](../map/bubble-map.md)
 - [Choro-plèthe](../map/choropleth.md)

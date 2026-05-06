@@ -287,14 +287,14 @@ Alias : `sp.slope`, `sp.build_slope_chart`
 </div>
 </div>
 
-## Astuces
+<h2>Astuces</h2>
 
 - Utilisez `sort_order="asc"` / `"desc"` pour réordonner les lignes selon `left` avant le rendu.
 - Les variantes `"diverging"` et `"thick"` encodent visuellement la magnitude — parfaites pour un résumé exécutif.
 - Pour les changements de rang (positions dans un classement), préférez `"bumps"` à `"basic"`.
 - Combinez `palette=` avec `"monochrome"` pour aligner les couleurs sur les catégories de marque.
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Bar](bar.md) — comparaisons à axe unique
 - [Line](line.md) — séries temporelles continues

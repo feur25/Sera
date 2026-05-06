@@ -281,14 +281,14 @@ Alias : `sp.funnel`, `sp.build_funnel_chart`
 </div>
 </div>
 
-## Astuces
+<h2>Astuces</h2>
 
 - Triez les étapes décroissantes avant de les passer (ou utilisez `sort_order="desc"`).
 - Utilisez `"conversion"` quand l’audience s’intéresse au taux de rétention entre étapes.
 - La variante `"pyramid"` fonctionne mieux avec des valeurs en forte décroissance.
 - Pour un public large, `"chevron"` se lit plus naturellement comme un pipeline commercial qu’un trapèze.
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Bar](bar.md) — comparaisons simples
 - [Waterfall](waterfall.md) — contributions additives

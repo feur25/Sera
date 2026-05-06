@@ -119,7 +119,7 @@ const chart = sp.build_dumbbell3d_chart("Before vs After 3D",
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_dumbbell3d_chart(
@@ -144,13 +144,13 @@ Aliases: `sp.dumbbell3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Graphique haltère 3D — connecte les sphères de début et de fin avec un tube 3D.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -167,13 +167,13 @@ Graphique haltère 3D — connecte les sphères de début et de fin avec un tube
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -188,7 +188,7 @@ chart = sp.build_dumbbell3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Haltère 2D](../2d/dumbbell.md)
 - [Pente](../2d/slope.md)

@@ -223,13 +223,13 @@ Aliases: `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.v
 
 <div class="lang-fr" style="display:none">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.violin(title, labels=None, values=None, *, variant="box", **kwargs) -> Chart`
 
 Alias : `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.violin_unified`
 
-## Description
+<h2>Description</h2>
 
 `sp.violin()` est le point d'entrée unique pour toute la famille des violons. Le paramètre `variant` sélectionne la stratégie de rendu — tous les autres arguments restent identiques entre les variantes. L'estimation de densité par noyau (KDE), les quartiles et les statistiques sont calculés en pur Rust, sans NumPy ni pandas.
 
@@ -248,7 +248,7 @@ Alias : `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.vi
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Variantes | Description |
 |-----------|------|--------|-----------|-------------|
@@ -275,7 +275,7 @@ Alias : `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.vi
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart` — objet avec la propriété `.html` et la méthode `.show()`.
 

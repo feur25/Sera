@@ -165,7 +165,7 @@ y,
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_scatter3d_chart(
@@ -192,7 +192,7 @@ Aliases: `sp.scatter3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Nuage de points 3D accéléré GPU via WebGL. Gère des millions de points à des fréquences d'images interactives.
 
@@ -200,7 +200,7 @@ Utilisez `color_values` pour une échelle de couleur continue, ou `color_labels`
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -222,20 +222,20 @@ Utilisez `color_values` pour une échelle de couleur continue, ou `color_labels`
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Performance
+<h2>Performance</h2>
 
 Le moteur de rendu utilise un seul appel `gl.drawArrays(POINTS, …)` par frame.
 Testé avec 10 millions de points à 60 fps sur un GPU milieu de gamme.
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ### Nuage 3D avec couleurs catégorielles
 
@@ -287,7 +287,7 @@ const chart = sp.build_scatter3d_chart("Nuage 3D", x, y, {
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Nuage de points 2D](../2d/scatter.md)
 - [DBSCAN 3D](../../ml/dbscan.md)

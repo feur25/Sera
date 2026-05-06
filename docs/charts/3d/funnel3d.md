@@ -110,7 +110,7 @@ const chart = sp.build_funnel3d_chart("Conversion Funnel 3D",
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_funnel3d_chart(
@@ -131,13 +131,13 @@ Aliases: `sp.funnel3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Entonnoir 3D où chaque étape est un cône tronqué (frustum) dans une scène WebGL.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -153,13 +153,13 @@ Entonnoir 3D où chaque étape est un cône tronqué (frustum) dans une scène W
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -173,7 +173,7 @@ chart = sp.build_funnel3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Entonnoir 2D](../2d/funnel.md)
 

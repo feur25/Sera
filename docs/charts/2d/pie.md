@@ -198,13 +198,13 @@ Aliases: `sp.pie`, `sp.pie_chart`, `sp.pie_unified`, `sp.pie_family`, `sp.pies`
 
 <div class="lang-fr" style="display:none">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.pie(title, labels=None, values=None, *, variant="basic", **kwargs) -> Chart`
 
 Alias : `sp.pie`, `sp.pie_chart`, `sp.donut`
 
-## Description
+<h2>Description</h2>
 
 `sp.pie()` est le point d'entrée unique pour toute la famille des camemberts. Le paramètre `variant` sélectionne la stratégie de rendu — donut, éclaté, KPI, semi-cercle ou imbriqué — tout en conservant la même API simple.
 
@@ -222,7 +222,7 @@ Alias : `sp.pie`, `sp.pie_chart`, `sp.donut`
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Variantes | Description |
 |-----------|------|--------|-----------|-------------|
@@ -246,7 +246,7 @@ Alias : `sp.pie`, `sp.pie_chart`, `sp.donut`
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart` — objet avec la propriété `.html` et la méthode `.show()`.
 

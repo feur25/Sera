@@ -113,7 +113,7 @@ const chart = sp.build_pie3d_chart("Market Share 3D",
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_pie3d_chart(
@@ -135,13 +135,13 @@ Aliases: `sp.pie3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Camembert 3D rendu comme des segments d'arc extrudés dans une scène WebGL.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -158,13 +158,13 @@ Camembert 3D rendu comme des segments d'arc extrudés dans une scène WebGL.
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -178,7 +178,7 @@ chart = sp.build_pie3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Camembert 2D](../2d/pie.md)
 - [Sunburst 3D](sunburst3d.md)

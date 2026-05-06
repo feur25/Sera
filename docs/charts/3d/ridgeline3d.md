@@ -125,7 +125,7 @@ cats,
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_ridgeline3d_chart(
@@ -148,13 +148,13 @@ Aliases: `sp.ridgeline3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Ridgeline 3D — surfaces KDE par catégorie arrangées le long de l'axe Y dans une scène WebGL.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -170,13 +170,13 @@ Ridgeline 3D — surfaces KDE par catégorie arrangées le long de l'axe Y dans 
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -195,7 +195,7 @@ chart = sp.build_ridgeline3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Ridgeline 2D](../2d/ridgeline.md)
 - [KDE 3D](kde3d.md)

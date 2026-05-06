@@ -147,7 +147,7 @@ y,
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_line3d_chart(
@@ -173,13 +173,13 @@ Aliases: `sp.line3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Graphique en courbe 3D connectant des points séquentiels dans l'espace 3D. Utile pour les trajectoires, les séries temporelles 3D et les courbes paramétriques.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -200,13 +200,13 @@ Graphique en courbe 3D connectant des points séquentiels dans l'espace 3D. Util
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -226,7 +226,7 @@ chart = sp.build_line3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Courbe 2D](../2d/line.md)
 - [Nuage de points 3D](scatter3d.md)

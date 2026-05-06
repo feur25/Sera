@@ -137,7 +137,7 @@ categories,
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_stacked_bar3d_chart(
@@ -161,7 +161,7 @@ Aliases: `sp.stacked_bar3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Graphique en barres empilées 3D — chaque barre est segmentée en séries, rendues comme des prismes empilés.
 
@@ -169,7 +169,7 @@ Graphique en barres empilées 3D — chaque barre est segmentée en séries, ren
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -185,13 +185,13 @@ Graphique en barres empilées 3D — chaque barre est segmentée en séries, ren
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -213,7 +213,7 @@ chart = sp.build_stacked_bar3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Barres empilées 2D](../2d/stacked-bar.md)
 - [Barres 3D](bar3d.md)

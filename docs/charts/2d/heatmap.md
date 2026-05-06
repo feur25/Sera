@@ -287,13 +287,13 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 <div class="lang-fr" style="display:none">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.heatmap(title, matrix, *, variant="basic", x_labels=None, y_labels=None, **kwargs) -> Chart`
 
 Alias : `sp.heatmap`, `sp.heat_map`, `sp.heatmap_chart`
 
-## Description
+<h2>Description</h2>
 
 `sp.heatmap()` est le point d'entrée unique pour toute la famille des cartes de chaleur. Le paramètre `variant` sélectionne la stratégie de rendu — annotée, catégorielle, log, contour, clustering hiérarchique, etc. — tout en partageant la même API de base.
 
@@ -317,7 +317,7 @@ Alias : `sp.heatmap`, `sp.heat_map`, `sp.heatmap_chart`
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Variantes | Description |
 |-----------|------|--------|-----------|-------------|
@@ -354,7 +354,7 @@ Alias : `sp.heatmap`, `sp.heat_map`, `sp.heatmap_chart`
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart` — objet avec la propriété `.html` et la méthode `.show()`.
 

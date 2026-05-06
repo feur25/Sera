@@ -244,13 +244,13 @@ Line breaks where values exceed `gap_threshold`. Useful for time series with mis
 
 <div class="lang-fr" style="display:none">
 
-## Signature
+<h2>Signature</h2>
 
 `sp.line(title, labels=None, values=None, *, variant="basic", series=None, **kwargs) -> Chart`
 
 Alias : `sp.line`, `sp.lines`, `sp.line_unified`, `sp.lines_unified`, `sp.line_family`, `sp.line_chart`
 
-## Description
+<h2>Description</h2>
 
 `sp.line()` est le point d'entrée unifié pour toute la famille de graphiques en ligne. Le mot-clé `variant` sélectionne la stratégie de rendu — tous les autres arguments sont partagés entre les variantes.
 
@@ -268,7 +268,7 @@ Alias : `sp.line`, `sp.lines`, `sp.line_unified`, `sp.lines_unified`, `sp.line_f
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Variantes | Description |
 |-----------|------|--------|-----------|-------------|
@@ -303,7 +303,7 @@ Alias : `sp.line`, `sp.lines`, `sp.line_unified`, `sp.lines_unified`, `sp.line_f
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart` — objet avec une propriété `.html` et une méthode `.show()`.
 

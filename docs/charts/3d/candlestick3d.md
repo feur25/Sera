@@ -127,7 +127,7 @@ const chart = sp.build_candlestick3d_chart("BTC/USD 3D",
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_candlestick3d_chart(
@@ -154,13 +154,13 @@ Aliases: `sp.candlestick3d`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Graphique bougie OHLC rendu en WebGL 3D. Les bougies sont extrudées comme des prismes 3D.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -178,13 +178,13 @@ Graphique bougie OHLC rendu en WebGL 3D. Les bougies sont extrudées comme des p
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -201,7 +201,7 @@ chart = sp.build_candlestick3d_chart(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Bougie 2D](../2d/candlestick.md)
 

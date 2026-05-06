@@ -121,7 +121,7 @@ const chart = sp.build_choropleth("Unemployment Rate by Country",
 
 <div class="lang-fr">
 
-## Signature
+<h2>Signature</h2>
 
 ```python
 sp.build_choropleth(
@@ -146,13 +146,13 @@ Aliases: `sp.choropleth`
 
 ---
 
-## Description
+<h2>Description</h2>
 
 Carte choro-plèthe — polygones de pays/régions colorés par une valeur scalaire. Les pays sans données reçoivent la `null_color`. Fournissez des `iso_codes` (ISO-3166 alpha-3) pour associer les pays automatiquement.
 
 ---
 
-## Paramètres
+<h2>Paramètres</h2>
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
@@ -170,13 +170,13 @@ Carte choro-plèthe — polygones de pays/régions colorés par une valeur scala
 
 ---
 
-## Retourne
+<h2>Retourne</h2>
 
 `Chart`
 
 ---
 
-## Exemples
+<h2>Exemples</h2>
 
 ```python
 import seraplot as sp
@@ -190,7 +190,7 @@ chart = sp.build_choropleth(
 
 ---
 
-## Voir aussi
+<h2>Voir aussi</h2>
 
 - [Carte à bulles](bubble-map.md)
 - [Globe 3D](../3d/globe3d.md)
