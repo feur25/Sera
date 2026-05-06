@@ -1,4 +1,4 @@
-# Word Cloud - Weighted Tokens, Four Architectures
+# Word Cloud - Six Rendering Architectures
 
 <div class="lang-en">
 
@@ -48,15 +48,17 @@ Aliases: `sp.build_wordcloud` &middot; `sp.wordcloud` &middot; `sp.word_cloud` &
 
 ## Description
 
-`sp.build_wordcloud()` packs weighted tokens into four distinct rendering architectures. The `basic` variant is the canonical spiral packer driven by a parametric `shape=` mask (rectangle, circle, heart, bird, glasses, diamond, star). The `image` variant accepts any binary mask and shapes the cloud after a real silhouette - logo, icon, photo. The `labelmap` variant draws a clustered scatter with cluster labels placed by leader lines (datamapplot style). The `network` variant lays out keywords as a co-occurrence graph with bezier-curved edges (academic keyword-map style).
+`sp.build_wordcloud()` packs weighted tokens into six rendering architectures. **Basic** is the canonical spiral packer driven by a parametric `shape=` mask (rect, circle, heart, bird, glasses, diamond, star). **Bubble** gives each word its own color-filled disc sized by frequency - a packed-bubble layout. **Context** is an InfraNodus-style text-network cloud: words positioned by a force-directed layout driven by co-occurrence edges so semantically close words cluster spatially, colored by community. **Image** accepts any binary pixel mask (logo, icon, photo). **LabelMap** draws a datamapplot-style clustered scatter with leader-line labels. **Network** renders a keyword co-occurrence graph with bezier-curved edges.
 
 ## Variants
 
 | Variant | Aliases | Description |
 |---|---|---|
 | `"basic"` | `basic / default / spiral / rect / shape / shaped` | Spiral packing inside a parametric shape mask. Pick the silhouette via the `shape=` argument (rect, circle, heart, bird, glasses, diamond, star). |
+| `"bubble"` | `bubble / bubbles / packed / circles / packing / pack` | Each word gets a colored disc sized by frequency - a packed-bubble word cloud. Words float in labeled circles, no overlap. |
+| `"context"` | `context / semantic / infranodus / text_network / textnetwork / force / force_directed` | Text-network word cloud (InfraNodus style): words positioned by force-directed layout based on co-occurrence edges, colored by semantic cluster - semantically close words appear spatially close. |
 | `"image"` | `image / img / mask / picture / photo / silhouette` | Words flow inside a custom binary image mask - upload any silhouette (logo, icon, photo) and the cloud takes its shape. |
-| `"labelmap"` | `labelmap / label_map / datamap / datamapplot / topic_map / scatter_labels` | Datamapplot-style topic map - clustered scatter of points colored per category, with cluster labels positioned via leader lines (a la datamapplot). |
+| `"labelmap"` | `labelmap / label_map / datamap / datamapplot / topic_map / scatter_labels` | Datamapplot-style topic map - clustered scatter of points colored per category, with cluster labels positioned via leader lines. |
 | `"network"` | `network / graph / keywords / co_occurrence / cooccurrence / knowledge_graph` | Keyword co-occurrence graph - golden-angle node layout, bezier-curved edges, frequency-sized circles. Editorial style of academic keyword maps. |
 
 ### Shapes (for variant `basic`)
@@ -78,20 +80,20 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `title` | `str` | required | Chart title |
-| `words` | `list[str]` | required | Tokens (variants `basic`, `image`, `network`) |
+| `words` | `list[str]` | required | Tokens (all variants except labelmap) |
 | `frequencies` | `list[float]` | required | Weight per word (controls size) |
 | `variant` | `str` | "basic" | Rendering mode (see Variants) |
-| `shape` | `str` | "rect" | Sub-shape for `basic` (see Shapes) |
-| `mask` | `list[int]` | None | Binary mask (`image` variant) - row-major, 1 = inside |
+| `shape` | `str` | "rect" | Sub-shape for `basic` variant (see Shapes) |
+| `mask` | `list[int]` | None | Binary mask (`image` variant) - row-major, 1=inside |
 | `mask_width` | `int` | 0 | Mask width in pixels (`image` variant) |
 | `mask_height` | `int` | 0 | Mask height in pixels (`image` variant) |
-| `points_x` | `list[float]` | None | Scatter x (`labelmap` variant) |
-| `points_y` | `list[float]` | None | Scatter y (`labelmap` variant) |
-| `category_indices` | `list[int]` | None | Cluster id per point (`labelmap` variant) |
+| `points_x` | `list[float]` | None | Scatter x coords (`labelmap` variant) |
+| `points_y` | `list[float]` | None | Scatter y coords (`labelmap` variant) |
+| `category_indices` | `list[int]` | None | Cluster id per point/word (`labelmap`, `context`) |
 | `cluster_labels` | `list[str]` | None | Label per cluster (`labelmap` variant) |
-| `edges_i` | `list[int]` | None | Edge source indices (`network` variant) |
-| `edges_j` | `list[int]` | None | Edge target indices (`network` variant) |
-| `edges_w` | `list[float]` | None | Edge weights (`network` variant) |
+| `edges_i` | `list[int]` | None | Edge source indices (`network`, `context` variants) |
+| `edges_j` | `list[int]` | None | Edge target indices (`network`, `context` variants) |
+| `edges_w` | `list[float]` | None | Edge weights (`network`, `context` variants) |
 | `min_font` | `float` | 12.0 | Smallest rendered font size |
 | `max_font` | `float` | 72.0 | Largest rendered font size |
 | `palette` | `list[int]` | None | Custom palette |
@@ -109,6 +111,8 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('wordcloud-en')" title="Toggle">&#x21C6;</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('wordcloud-en','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
+<button class="sp-cls-tab" onclick="spCls('wordcloud-en','bubble',this)"><span class="sp-cic">U</span><span class="sp-clb">Bubble</span></button>
+<button class="sp-cls-tab" onclick="spCls('wordcloud-en','context',this)"><span class="sp-cic">X</span><span class="sp-clb">Context</span></button>
 <button class="sp-cls-tab" onclick="spCls('wordcloud-en','image',this)"><span class="sp-cic">I</span><span class="sp-clb">Image</span></button>
 <button class="sp-cls-tab" onclick="spCls('wordcloud-en','labelmap',this)"><span class="sp-cic">L</span><span class="sp-clb">LabelMap</span></button>
 <button class="sp-cls-tab" onclick="spCls('wordcloud-en','network',this)"><span class="sp-cic">N</span><span class="sp-clb">Network</span></button>
@@ -141,6 +145,74 @@ chart.show()
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-basic.html"></iframe>
+</div>
+<div class="sp-variant" id="wordcloud-en-bubble">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code></span><span><strong>Aliases</strong> <code>bubble / bubbles / packed / circles / packing / pack</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Each word gets a colored disc sized by frequency - a packed-bubble word cloud. Words float in labeled circles, no overlap.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp, random
+random.seed(0)
+
+words = ["Python","Rust","Data","ML","AI","Cloud","GPU","Vector",
+         "Tensor","Graph","Pandas","NumPy","Polars","Arrow","Spark",
+         "Kafka","Docker","K8s","FastAPI","Tokio","Async","Serde"]
+freqs = [random.randint(5,90) for _ in words]
+
+chart = sp.build_wordcloud(
+    title="Bubble word cloud", words=words, frequencies=freqs,
+    variant="bubble",
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    bg_color="#1a1a2e", min_font=10, max_font=48,
+    width=720, height=440,
+)
+chart.show()
+```
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/wordcloud-bubble.html"></iframe>
+</div>
+<div class="sp-variant" id="wordcloud-en-context">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"context"</code></span><span><strong>Aliases</strong> <code>context / semantic / infranodus / text_network / textnetwork / force / force_directed</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Text-network word cloud (InfraNodus style): words positioned by force-directed layout based on co-occurrence edges, colored by semantic cluster - semantically close words appear spatially close.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp, random
+random.seed(0)
+
+words = ["data","python","rust","machine","learning","model","training",
+         "feature","vector","neural","deep","tensor","gradient","loss",
+         "accuracy","metric","pipeline","encoder","decoder","attention"]
+freqs = [random.randint(8,90) for _ in words]
+
+ei, ej, ew = [], [], []
+for i in range(len(words)):
+    for j in range(i+1, len(words)):
+        if random.random() < 0.09:
+            ei.append(i); ej.append(j); ew.append(random.random())
+
+clusters = [random.randint(0,4) for _ in words]
+
+chart = sp.build_wordcloud(
+    title="Context word cloud (text network)",
+    words=words, frequencies=freqs,
+    variant="context",
+    edges_i=ei, edges_j=ej, edges_w=ew,
+    category_indices=clusters,
+    bg_color="#fafafa", min_font=11, max_font=46,
+    width=720, height=440,
+)
+chart.show()
+```
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/wordcloud-context.html"></iframe>
 </div>
 <div class="sp-variant" id="wordcloud-en-image">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"image"</code></span><span><strong>Aliases</strong> <code>image / img / mask / picture / photo / silhouette</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -175,7 +247,7 @@ chart.show()
 <div class="sp-variant" id="wordcloud-en-labelmap">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"labelmap"</code></span><span><strong>Aliases</strong> <code>labelmap / label_map / datamap / datamapplot / topic_map / scatter_labels</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Datamapplot-style topic map - clustered scatter of points colored per category, with cluster labels positioned via leader lines (a la datamapplot).</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Datamapplot-style topic map - clustered scatter of points colored per category, with cluster labels positioned via leader lines.</p>
 
 <div class="sp-preview-label">Code</div>
 
@@ -255,20 +327,22 @@ Aliases: `sp.build_wordcloud` &middot; `sp.wordcloud` &middot; `sp.word_cloud` &
 
 <h2>Description</h2>
 
-`sp.build_wordcloud()` packe des tokens ponderes selon quatre architectures de rendu distinctes. La variante `basic` est le packer spirale canonique pilote par un masque parametrique `shape=` (rectangle, cercle, coeur, oiseau, lunettes, losange, etoile). La variante `image` accepte n importe quel masque binaire et donne au nuage la forme d une vraie silhouette - logo, icone, photo. La variante `labelmap` dessine un scatter clusterise avec des etiquettes de cluster positionnees par lignes de rappel (style datamapplot). La variante `network` dispose les mots-cles en graphe de co-occurrence avec des aretes courbes bezier (style carte de mots-cles academique).
+`sp.build_wordcloud()` propose six architectures de rendu. **Basic** est le packer spirale canonique pilote par un masque `shape=` (rect, circle, heart, bird, glasses, diamond, star). **Bubble** donne a chaque mot un disque colore dimensionne par frequence - un layout bubble-packed. **Context** est un nuage texte-reseau style InfraNodus : mots positionnes par layout force-dirige base sur les aretes de co-occurrence, colores par communaute. **Image** accepte n importe quel masque binaire de pixels. **LabelMap** dessine un scatter clusterise style datamapplot avec etiquettes en lignes de rappel. **Network** rend un graphe de co-occurrence de mots-cles avec aretes bezier.
 
 <h2>Variantes</h2>
 
 | Variante | Alias | Description |
 |---|---|---|
 | `"basic"` | `basic / default / spiral / rect / shape / shaped` | Packing en spirale dans un masque parametrique. Choisissez la silhouette via l argument `shape=` (rect, circle, heart, bird, glasses, diamond, star). |
-| `"image"` | `image / img / mask / picture / photo / silhouette` | Mots a l interieur d un masque binaire personnalise - uploadez n importe quelle silhouette (logo, icone, photo) et le nuage en prend la forme. |
+| `"bubble"` | `bubble / bubbles / packed / circles / packing / pack` | Chaque mot obtient un disque colore dimensionne par frequence - un nuage de bulles pack. Les mots flottent dans des cercles etiquetes, sans chevauchement. |
+| `"context"` | `context / semantic / infranodus / text_network / textnetwork / force / force_directed` | Nuage de mots texte-reseau (style InfraNodus) : mots positionnes par layout force-dirige base sur les aretes de co-occurrence, colores par cluster semantique - les mots proches semantiquement sont proches spatialement. |
+| `"image"` | `image / img / mask / picture / photo / silhouette` | Mots a l interieur d un masque binaire personnalise - uploadez n importe quelle silhouette et le nuage en prend la forme. |
 | `"labelmap"` | `labelmap / label_map / datamap / datamapplot / topic_map / scatter_labels` | Carte thematique style datamapplot - scatter de points clusterises colores par categorie, avec etiquettes de cluster positionnees via lignes de rappel. |
 | `"network"` | `network / graph / keywords / co_occurrence / cooccurrence / knowledge_graph` | Graphe de co-occurrence de mots-cles - layout en angle d or, aretes courbes bezier, cercles dimensionnes par frequence. Style editorial des cartes de mots-cles academiques. |
 
 <h3>Formes (pour la variante `basic`)</h3>
 
-La variante `basic` accepte un argument `shape=` qui choisit le masque de silhouette :
+La variante `basic` accepte un argument `shape=` :
 
 | Forme | Alias | Description |
 |---|---|---|
@@ -285,20 +359,20 @@ La variante `basic` accepte un argument `shape=` qui choisit le masque de silhou
 | Parametre | Type | Defaut | Description |
 |---|---|---|---|
 | `title` | `str` | requis | Titre du graphique |
-| `words` | `list[str]` | requis | Tokens (variantes `basic`, `image`, `network`) |
+| `words` | `list[str]` | requis | Tokens (toutes variantes sauf labelmap) |
 | `frequencies` | `list[float]` | requis | Poids par mot (controle la taille) |
 | `variant` | `str` | "basic" | Mode de rendu (voir Variantes) |
 | `shape` | `str` | "rect" | Sous-forme pour `basic` (voir Formes) |
-| `mask` | `list[int]` | None | Masque binaire (variante `image`) - row-major, 1 = interieur |
+| `mask` | `list[int]` | None | Masque binaire (variante `image`) - row-major, 1=interieur |
 | `mask_width` | `int` | 0 | Largeur du masque (variante `image`) |
 | `mask_height` | `int` | 0 | Hauteur du masque (variante `image`) |
-| `points_x` | `list[float]` | None | Scatter x (variante `labelmap`) |
-| `points_y` | `list[float]` | None | Scatter y (variante `labelmap`) |
-| `category_indices` | `list[int]` | None | Id de cluster par point (variante `labelmap`) |
+| `points_x` | `list[float]` | None | Coords x du scatter (variante `labelmap`) |
+| `points_y` | `list[float]` | None | Coords y du scatter (variante `labelmap`) |
+| `category_indices` | `list[int]` | None | Id de cluster par point/mot (`labelmap`, `context`) |
 | `cluster_labels` | `list[str]` | None | Etiquette par cluster (variante `labelmap`) |
-| `edges_i` | `list[int]` | None | Indices source des aretes (variante `network`) |
-| `edges_j` | `list[int]` | None | Indices cible des aretes (variante `network`) |
-| `edges_w` | `list[float]` | None | Poids des aretes (variante `network`) |
+| `edges_i` | `list[int]` | None | Indices source des aretes (variantes `network`, `context`) |
+| `edges_j` | `list[int]` | None | Indices cible des aretes (variantes `network`, `context`) |
+| `edges_w` | `list[float]` | None | Poids des aretes (variantes `network`, `context`) |
 | `min_font` | `float` | 12.0 | Plus petite taille de police rendue |
 | `max_font` | `float` | 72.0 | Plus grande taille de police rendue |
 | `palette` | `list[int]` | None | Palette personnalisee |
@@ -314,6 +388,8 @@ La variante `basic` accepte un argument `shape=` qui choisit le masque de silhou
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('wordcloud-fr')" title="Toggle">&#x21C6;</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('wordcloud-fr','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
+<button class="sp-cls-tab" onclick="spCls('wordcloud-fr','bubble',this)"><span class="sp-cic">U</span><span class="sp-clb">Bubble</span></button>
+<button class="sp-cls-tab" onclick="spCls('wordcloud-fr','context',this)"><span class="sp-cic">X</span><span class="sp-clb">Context</span></button>
 <button class="sp-cls-tab" onclick="spCls('wordcloud-fr','image',this)"><span class="sp-cic">I</span><span class="sp-clb">Image</span></button>
 <button class="sp-cls-tab" onclick="spCls('wordcloud-fr','labelmap',this)"><span class="sp-cic">L</span><span class="sp-clb">LabelMap</span></button>
 <button class="sp-cls-tab" onclick="spCls('wordcloud-fr','network',this)"><span class="sp-cic">N</span><span class="sp-clb">Network</span></button>
@@ -347,10 +423,78 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-basic.html"></iframe>
 </div>
+<div class="sp-variant" id="wordcloud-fr-bubble">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code></span><span><strong>Aliases</strong> <code>bubble / bubbles / packed / circles / packing / pack</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chaque mot obtient un disque colore dimensionne par frequence - un nuage de bulles pack. Les mots flottent dans des cercles etiquetes, sans chevauchement.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp, random
+random.seed(0)
+
+words = ["Python","Rust","Data","ML","AI","Cloud","GPU","Vector",
+         "Tensor","Graph","Pandas","NumPy","Polars","Arrow","Spark",
+         "Kafka","Docker","K8s","FastAPI","Tokio","Async","Serde"]
+freqs = [random.randint(5,90) for _ in words]
+
+chart = sp.build_wordcloud(
+    title="Bubble word cloud", words=words, frequencies=freqs,
+    variant="bubble",
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    bg_color="#1a1a2e", min_font=10, max_font=48,
+    width=720, height=440,
+)
+chart.show()
+```
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/wordcloud-bubble.html"></iframe>
+</div>
+<div class="sp-variant" id="wordcloud-fr-context">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"context"</code></span><span><strong>Aliases</strong> <code>context / semantic / infranodus / text_network / textnetwork / force / force_directed</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Nuage de mots texte-reseau (style InfraNodus) : mots positionnes par layout force-dirige base sur les aretes de co-occurrence, colores par cluster semantique - les mots proches semantiquement sont proches spatialement.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp, random
+random.seed(0)
+
+words = ["data","python","rust","machine","learning","model","training",
+         "feature","vector","neural","deep","tensor","gradient","loss",
+         "accuracy","metric","pipeline","encoder","decoder","attention"]
+freqs = [random.randint(8,90) for _ in words]
+
+ei, ej, ew = [], [], []
+for i in range(len(words)):
+    for j in range(i+1, len(words)):
+        if random.random() < 0.09:
+            ei.append(i); ej.append(j); ew.append(random.random())
+
+clusters = [random.randint(0,4) for _ in words]
+
+chart = sp.build_wordcloud(
+    title="Context word cloud (text network)",
+    words=words, frequencies=freqs,
+    variant="context",
+    edges_i=ei, edges_j=ej, edges_w=ew,
+    category_indices=clusters,
+    bg_color="#fafafa", min_font=11, max_font=46,
+    width=720, height=440,
+)
+chart.show()
+```
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/wordcloud-context.html"></iframe>
+</div>
 <div class="sp-variant" id="wordcloud-fr-image">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"image"</code></span><span><strong>Aliases</strong> <code>image / img / mask / picture / photo / silhouette</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Mots a l interieur d un masque binaire personnalise - uploadez n importe quelle silhouette (logo, icone, photo) et le nuage en prend la forme.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Mots a l interieur d un masque binaire personnalise - uploadez n importe quelle silhouette et le nuage en prend la forme.</p>
 
 <div class="sp-preview-label">Code</div>
 

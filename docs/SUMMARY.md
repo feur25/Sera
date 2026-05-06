@@ -39,8 +39,6 @@
   - [Lollipop Charts](charts/2d/lollipop.md)
   - [Parallel-Coordinates Charts](charts/2d/parallel.md)
   - [Word Cloud Charts](charts/2d/wordcloud.md)
-  - [Grid Layout](charts/2d/grid.md)
-  - [Slideshow](charts/2d/slideshow.md)
 - [3D Charts](charts/3d/index.md)
   - [Scatter 3D](charts/3d/scatter3d.md)
   - [Bar 3D](charts/3d/bar3d.md)

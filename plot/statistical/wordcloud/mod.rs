@@ -6,6 +6,8 @@ pub mod basic;
 pub mod image;
 pub mod labelmap;
 pub mod network;
+pub mod bubble;
+pub mod context;
 
 pub use variant::WordCloudVariant;
 pub use shape::WordCloudShape;
@@ -18,5 +20,7 @@ pub fn render_wordcloud_html(cfg: &WordCloudConfig) -> String {
         Image    => image::render(cfg),
         LabelMap => labelmap::render(cfg),
         Network  => network::render(cfg),
+        Bubble   => bubble::render(cfg),
+        Context  => context::render(cfg),
     }
 }

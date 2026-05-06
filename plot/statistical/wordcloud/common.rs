@@ -506,3 +506,205 @@ pub fn render_network(cfg: &WordCloudConfig) -> String {
     push_b(&mut buf, b"</svg>");
     finalize(cfg, buf)
 }
+
+pub fn render_bubble(cfg: &WordCloudConfig) -> String {
+    let p = match prepare(cfg) { Some(p) => p, None => return String::new() };
+    let bg = cfg.bg_color.unwrap_or("#1a1a2e");
+    let w = cfg.width as f64;
+    let h = cfg.height as f64;
+    let pad_t = p.pad_t;
+    let cx = w / 2.0;
+    let cy = pad_t + (h - pad_t) / 2.0;
+    let max_f = p.freqs.iter().copied().fold(0.0_f64, f64::max).max(1.0);
+    let min_r = 12.0_f64;
+    let max_r = (w.min(h - pad_t)) * 0.16;
+    let radii: Vec<f64> = p.freqs.iter().map(|&f| {
+        min_r + (f / max_f).powf(0.5) * (max_r - min_r)
+    }).collect();
+
+    let mut circles: Vec<(f64, f64, f64, usize)> = Vec::with_capacity(p.words.len());
+    let max_search = w.max(h) * 1.5;
+
+    for i in 0..p.words.len() {
+        let r = radii[i];
+        let step_a = 0.32_f64;
+        let step_r = 2.2_f64;
+        let mut angle = 0.0_f64;
+        let mut radius = 0.0_f64;
+        let mut best = (cx, cy);
+
+        loop {
+            let px = cx + radius * angle.cos();
+            let py = cy + radius * angle.sin() * 0.82;
+            if px - r >= 2.0 && px + r <= w - 2.0 && py - r >= pad_t + 2.0 && py + r <= h - 2.0 {
+                let mut ok = true;
+                for &(ox, oy, or2, _) in &circles {
+                    if ((px - ox).powi(2) + (py - oy).powi(2)).sqrt() < r + or2 + 2.5 {
+                        ok = false; break;
+                    }
+                }
+                if ok { best = (px, py); break; }
+            }
+            angle += step_a;
+            radius += step_r * step_a / (2.0 * std::f64::consts::PI);
+            if radius > max_search { break; }
+        }
+        circles.push((best.0, best.1, r, i));
+    }
+
+    let mut buf = Vec::<u8>::with_capacity(p.words.len() * 420 + 2048);
+    svg_open(&mut buf, cfg.width, cfg.height, bg);
+    svg_title(&mut buf, cfg.width, cfg.title, "#e2e8f0");
+
+    for &(bx, by, br, idx) in &circles {
+        let word = &p.words[idx];
+        let freq = p.freqs[idx];
+        let pct = if p.total > 0.0 { freq / p.total * 100.0 } else { 0.0 };
+        let color = palette_color(cfg.palette, p.orig_idx[idx]);
+        push_b(&mut buf, b"<circle cx=\"");
+        push_f2(&mut buf, bx); push_b(&mut buf, b"\" cy=\"");
+        push_f2(&mut buf, by); push_b(&mut buf, b"\" r=\"");
+        push_f2(&mut buf, br);
+        push_b(&mut buf, b"\" fill=\"#");
+        let hx = hex6(color);
+        buf.extend_from_slice(&hx);
+        push_b(&mut buf, b"\" fill-opacity=\"0.82\" stroke=\"rgba(255,255,255,0.18)\" stroke-width=\"1\"/>");
+
+        let fs = (br * 0.40).clamp(cfg.min_font, cfg.max_font * 0.65);
+        push_b(&mut buf, b"<text data-idx=\"");
+        push_i(&mut buf, idx as i32);
+        push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, word);
+        push_b(&mut buf, b"\" data-v=\""); push_f2(&mut buf, freq);
+        push_b(&mut buf, b"\" data-kv-Pct=\""); push_f2(&mut buf, pct); buf.push(b'%');
+        push_b(&mut buf, b"\" x=\""); push_f2(&mut buf, bx);
+        push_b(&mut buf, b"\" y=\""); push_f2(&mut buf, by + fs * 0.38);
+        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"'Segoe UI',Arial,sans-serif\" font-weight=\"700\" font-size=\"");
+        push_f2(&mut buf, fs);
+        push_b(&mut buf, b"\" fill=\"rgba(255,255,255,0.92)\" style=\"cursor:pointer\">");
+        escape_xml(&mut buf, word);
+        push_b(&mut buf, b"</text>");
+    }
+
+    push_b(&mut buf, b"</svg>");
+    finalize(cfg, buf)
+}
+
+pub fn render_context(cfg: &WordCloudConfig) -> String {
+    let p = match prepare(cfg) { Some(p) => p, None => return String::new() };
+    let bg = cfg.bg_color.unwrap_or("#fafafa");
+    let w = cfg.width as f64;
+    let h = cfg.height as f64;
+    let pad_t = p.pad_t;
+    let n = p.words.len();
+    let cx_init = w / 2.0;
+    let cy_init = pad_t + (h - pad_t) / 2.0;
+    let max_f = p.freqs.iter().copied().fold(0.0_f64, f64::max).max(1.0);
+    let golden = std::f64::consts::PI * (3.0 - (5.0_f64).sqrt());
+    let init_r = (w.min(h - pad_t)) * 0.36;
+
+    let mut pos_x: Vec<f64> = Vec::with_capacity(n);
+    let mut pos_y: Vec<f64> = Vec::with_capacity(n);
+    for i in 0..n {
+        let ring = 1.0 - (p.freqs[i] / max_f).powf(0.6);
+        let r = ring * init_r;
+        let theta = (i as f64) * golden;
+        pos_x.push(cx_init + r * theta.cos());
+        pos_y.push(cy_init + r * theta.sin());
+    }
+
+    let m = cfg.edges_i.len().min(cfg.edges_j.len());
+    if m > 0 {
+        let k_spring = 0.07_f64;
+        let k_repel = 900.0_f64;
+        let damping = 0.86_f64;
+        let dt = 0.85_f64;
+        let mut vx = vec![0.0_f64; n];
+        let mut vy = vec![0.0_f64; n];
+
+        for _iter in 0..220 {
+            let mut fx = vec![0.0_f64; n];
+            let mut fy = vec![0.0_f64; n];
+            for i in 0..n {
+                for j in (i + 1)..n {
+                    let dx = pos_x[i] - pos_x[j];
+                    let dy = pos_y[i] - pos_y[j];
+                    let d2 = dx * dx + dy * dy + 1.0;
+                    let d = d2.sqrt();
+                    let f = k_repel / d2;
+                    fx[i] += f * dx / d; fy[i] += f * dy / d;
+                    fx[j] -= f * dx / d; fy[j] -= f * dy / d;
+                }
+            }
+            for k in 0..m {
+                let i = cfg.edges_i[k] as usize;
+                let j = cfg.edges_j[k] as usize;
+                if i >= n || j >= n { continue; }
+                let we = if k < cfg.edges_w.len() { cfg.edges_w[k].abs().max(0.1) } else { 1.0 };
+                let dx = pos_x[j] - pos_x[i];
+                let dy = pos_y[j] - pos_y[i];
+                let d = (dx * dx + dy * dy).sqrt().max(1.0);
+                let f = k_spring * we * d;
+                fx[i] += f * dx / d; fy[i] += f * dy / d;
+                fx[j] -= f * dx / d; fy[j] -= f * dy / d;
+            }
+            for i in 0..n {
+                fx[i] += (cx_init - pos_x[i]) * 0.007;
+                fy[i] += (cy_init - pos_y[i]) * 0.007;
+                vx[i] = (vx[i] + fx[i] * dt) * damping;
+                vy[i] = (vy[i] + fy[i] * dt) * damping;
+                pos_x[i] += vx[i] * dt;
+                pos_y[i] += vy[i] * dt;
+            }
+        }
+    }
+
+    let pp = 54.0_f64;
+    let x_min = pos_x.iter().copied().fold(f64::INFINITY, f64::min);
+    let x_max = pos_x.iter().copied().fold(f64::NEG_INFINITY, f64::max);
+    let y_min = pos_y.iter().copied().fold(f64::INFINITY, f64::min);
+    let y_max = pos_y.iter().copied().fold(f64::NEG_INFINITY, f64::max);
+    let xr = (x_max - x_min).max(1.0);
+    let yr = (y_max - y_min).max(1.0);
+    let scale = ((w - pp * 2.0) / xr).min((h - pad_t - pp * 1.5) / yr);
+    for i in 0..n {
+        pos_x[i] = cx_init + (pos_x[i] - (x_min + x_max) / 2.0) * scale;
+        pos_y[i] = cy_init + (pos_y[i] - (y_min + y_max) / 2.0) * scale;
+    }
+
+    let has_clusters = cfg.point_clusters.len() >= n;
+
+    let mut buf = Vec::<u8>::with_capacity(n * 340 + 2048);
+    svg_open(&mut buf, cfg.width, cfg.height, bg);
+    svg_title(&mut buf, cfg.width, cfg.title, "#0f172a");
+
+    for i in 0..n {
+        let word = &p.words[i];
+        let freq = p.freqs[i];
+        let pct = if p.total > 0.0 { freq / p.total * 100.0 } else { 0.0 };
+        let color_idx = if has_clusters {
+            cfg.point_clusters[p.orig_idx[i]].max(0) as usize
+        } else {
+            p.orig_idx[i]
+        };
+        let color = palette_color(cfg.palette, color_idx);
+        let fs = p.sizes[i];
+        push_b(&mut buf, b"<text data-idx=\"");
+        push_i(&mut buf, i as i32);
+        push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, word);
+        push_b(&mut buf, b"\" data-v=\""); push_f2(&mut buf, freq);
+        push_b(&mut buf, b"\" data-kv-Pct=\""); push_f2(&mut buf, pct); buf.push(b'%');
+        push_b(&mut buf, b"\" x=\""); push_f2(&mut buf, pos_x[i]);
+        push_b(&mut buf, b"\" y=\""); push_f2(&mut buf, pos_y[i]);
+        push_b(&mut buf, b"\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"'Segoe UI',Arial,sans-serif\" font-weight=\"700\" font-size=\"");
+        push_f2(&mut buf, fs);
+        push_b(&mut buf, b"\" fill=\"#");
+        let hx = hex6(color);
+        buf.extend_from_slice(&hx);
+        push_b(&mut buf, b"\" style=\"cursor:pointer\">");
+        escape_xml(&mut buf, word);
+        push_b(&mut buf, b"</text>");
+    }
+
+    push_b(&mut buf, b"</svg>");
+    finalize(cfg, buf)
+}

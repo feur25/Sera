@@ -4,5 +4,7 @@ crate::plot_family! {
         Image    => "image" | "img" | "mask" | "picture" | "photo" | "silhouette",
         LabelMap => "labelmap" | "label_map" | "datamap" | "datamapplot" | "topic_map" | "scatter_labels",
         Network  => "network" | "graph" | "keywords" | "co_occurrence" | "cooccurrence" | "knowledge_graph",
+        Bubble   => "bubble" | "bubbles" | "packed" | "circles" | "packing" | "pack",
+        Context  => "context" | "semantic" | "infranodus" | "text_network" | "textnetwork" | "force" | "force_directed",
     }
 }
