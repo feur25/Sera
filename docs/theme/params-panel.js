@@ -124,7 +124,7 @@
   function collectFrom(container) {
     if (!container) return null;
     var sigH2 = findH2(container, ["signature"]);
-    var parH2 = findH2(container, ["parameters", "param\u00e8tres"]);
+    var parH2 = findH2(container, ["parameters", "param\u00e8tres", "parametres"]);
     var retH2 = findH2(container, ["returns", "retour", "retours", "retourne"]);
     if (!parH2) return null;
 
