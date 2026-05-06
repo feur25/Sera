@@ -3,8 +3,8 @@ crate::plot_family! {
         Basic   => "basic" | "default" | "spiral" | "rect",
         Circle  => "circle" | "round" | "disk" | "ball",
         Heart   => "heart" | "love" | "valentine",
-        Star    => "star" | "polygon" | "celestial",
-        Diamond => "diamond" | "rhombus" | "kite",
         Bird    => "bird" | "twitter" | "tweet" | "icon",
+        Bubble  => "bubble" | "bubbles" | "packed" | "packing" | "circles",
+        Glasses => "glasses" | "sunglasses" | "shades" | "specs",
     }
 }

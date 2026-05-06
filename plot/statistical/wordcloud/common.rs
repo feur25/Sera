@@ -29,23 +29,11 @@ pub fn shape_inside(shape: WordCloudVariant, nx: f64, ny: f64) -> bool {
     use WordCloudVariant::*;
     match shape {
         Basic => nx.abs() <= 1.0 && ny.abs() <= 1.0,
-        Circle => nx * nx + ny * ny <= 1.0,
+        Circle | Bubble => nx * nx + ny * ny <= 1.0,
         Heart => {
             let yp = -ny;
             let v = (nx * nx + yp * yp - 1.0).powi(3) - nx * nx * yp.powi(3);
             v <= 0.0
-        }
-        Diamond => nx.abs() + ny.abs() <= 1.0,
-        Star => {
-            let r2 = nx * nx + ny * ny;
-            if r2 <= 0.0001 { return true; }
-            let theta = ny.atan2(nx);
-            let n_pts = 5.0_f64;
-            let inner = 0.45_f64;
-            let phase = std::f64::consts::PI / 2.0;
-            let a = ((theta + phase) * n_pts / 2.0).cos().abs();
-            let lim = inner + (1.0 - inner) * a;
-            r2.sqrt() <= lim
         }
         Bird => {
             let disks: [(f64, f64, f64); 7] = [
@@ -62,6 +50,16 @@ pub fn shape_inside(shape: WordCloudVariant, nx: f64, ny: f64) -> bool {
                 if d <= r * r { return true; }
             }
             false
+        }
+        Glasses => {
+            let cx_l = -0.50_f64;
+            let cx_r =  0.50_f64;
+            let rx = 0.42_f64;
+            let ry = 0.34_f64;
+            let in_l = ((nx - cx_l) / rx).powi(2) + (ny / ry).powi(2) <= 1.0;
+            let in_r = ((nx - cx_r) / rx).powi(2) + (ny / ry).powi(2) <= 1.0;
+            let in_bridge = nx.abs() <= 0.55 && ny.abs() <= 0.05;
+            in_l || in_r || in_bridge
         }
     }
 }
@@ -169,6 +167,9 @@ pub fn prepare(cfg: &WordCloudConfig) -> Option<Prepared> {
 }
 
 pub fn render_with(cfg: &WordCloudConfig, shape: WordCloudVariant) -> String {
+    if matches!(shape, WordCloudVariant::Bubble) {
+        return render_bubble(cfg);
+    }
     let p = match prepare(cfg) { Some(p) => p, None => return String::new() };
     let placed = place_words(&p.words, &p.sizes, cfg.width as f64, cfg.height as f64, p.pad_t, shape);
     let bg = cfg.bg_color.unwrap_or("#1a1a2e");
@@ -224,6 +225,160 @@ pub fn render_with(cfg: &WordCloudConfig, shape: WordCloudVariant) -> String {
         push_b(&mut buf, b"\" style=\"cursor:pointer\">");
         escape_xml(&mut buf, word);
         push_b(&mut buf, b"</text>");
+    }
+
+    push_b(&mut buf, b"</svg>");
+
+    let svg = unsafe { String::from_utf8_unchecked(buf) };
+    let slots_json;
+    let json: &str = if auto_hover { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
+    build_chart_html(cfg.title, &svg, json)
+}
+
+pub struct PlacedBubble {
+    pub x: f64,
+    pub y: f64,
+    pub r: f64,
+    pub idx: usize,
+}
+
+pub fn place_bubbles(radii: &[f64], width: f64, height: f64, pad_t: f64) -> Vec<PlacedBubble> {
+    let n = radii.len();
+    let mut out: Vec<PlacedBubble> = Vec::with_capacity(n);
+    let cx = width / 2.0;
+    let cy = pad_t + (height - pad_t) / 2.0;
+    let max_r = (width.min(height - pad_t)) / 2.0 - 6.0;
+
+    for i in 0..n {
+        let r = radii[i].min(max_r);
+        let mut placed_ok = false;
+        let mut best = (cx, cy);
+        let mut radius_search: f64 = 0.0;
+        let step_a = 0.18_f64;
+        let step_r = (r * 0.20_f64).max(1.5);
+        let mut angle: f64 = (i as f64) * 0.7;
+
+        'search: for _ in 0..6000 {
+            let px = cx + radius_search * angle.cos();
+            let py = cy + radius_search * angle.sin();
+            if px - r >= 4.0 && px + r <= width - 4.0 && py - r >= pad_t + 2.0 && py + r <= height - 4.0 {
+                let mut ok = true;
+                for p in &out {
+                    let dx = px - p.x;
+                    let dy = py - p.y;
+                    let d2 = dx * dx + dy * dy;
+                    let need = (r + p.r + 2.0).powi(2);
+                    if d2 < need { ok = false; break; }
+                }
+                if ok {
+                    best = (px, py);
+                    placed_ok = true;
+                    break 'search;
+                }
+            }
+            angle += step_a;
+            radius_search += step_r * step_a / (2.0 * std::f64::consts::PI);
+        }
+        if placed_ok || out.is_empty() {
+            out.push(PlacedBubble { x: best.0, y: best.1, r, idx: i });
+        }
+    }
+    out
+}
+
+pub fn render_bubble(cfg: &WordCloudConfig) -> String {
+    let p = match prepare(cfg) { Some(p) => p, None => return String::new() };
+    let max_freq = p.freqs.iter().copied().fold(0.0_f64, f64::max).max(1.0);
+    let area_total = (cfg.width as f64) * ((cfg.height as f64) - p.pad_t) * 0.55;
+    let sum_freq: f64 = p.freqs.iter().sum::<f64>().max(1.0);
+    let scale = (area_total / (sum_freq * std::f64::consts::PI)).sqrt();
+    let radii: Vec<f64> = p.freqs.iter().map(|&f| (f.max(0.0)).sqrt() * scale).collect();
+    let mut order: Vec<usize> = (0..p.words.len()).collect();
+    order.sort_by(|&a, &b| radii[b].partial_cmp(&radii[a]).unwrap_or(std::cmp::Ordering::Equal));
+    let radii_sorted: Vec<f64> = order.iter().map(|&i| radii[i]).collect();
+    let bubbles = place_bubbles(&radii_sorted, cfg.width as f64, cfg.height as f64, p.pad_t);
+
+    let bg = cfg.bg_color.unwrap_or("#ffffff");
+    let auto_hover = cfg.hover.is_empty();
+    let mut buf = Vec::<u8>::with_capacity(p.words.len() * 320 + 2048);
+
+    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_i(&mut buf, cfg.width);
+    push_b(&mut buf, b"\" height=\"");
+    push_i(&mut buf, cfg.height);
+    push_b(&mut buf, b"\" viewBox=\"0 0 ");
+    push_i(&mut buf, cfg.width);
+    push_b(&mut buf, b" ");
+    push_i(&mut buf, cfg.height);
+    push_b(&mut buf, b"\">");
+
+    push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"");
+    push_b(&mut buf, bg.as_bytes());
+    push_b(&mut buf, b"\"/>");
+
+    if !cfg.title.is_empty() {
+        push_b(&mut buf, b"<text x=\"");
+        push_i(&mut buf, cfg.width / 2);
+        push_b(&mut buf, b"\" y=\"24\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#0f172a\">");
+        escape_xml(&mut buf, cfg.title);
+        push_b(&mut buf, b"</text>");
+    }
+
+    for b in &bubbles {
+        let real_i = order[b.idx];
+        let word = &p.words[real_i];
+        let freq = p.freqs[real_i];
+        let color_idx = p.orig_idx[real_i];
+        let color = palette_color(cfg.palette, color_idx);
+        let pct = if p.total > 0.0 { freq / p.total * 100.0 } else { 0.0 };
+        let intensity = freq / max_freq;
+        let stroke_alpha = 0.18 + 0.55 * intensity;
+        let label_fs = (b.r * 0.45).clamp(cfg.min_font, cfg.max_font);
+        let val_fs = (b.r * 0.30).clamp(cfg.min_font * 0.85, cfg.max_font * 0.7);
+
+        push_b(&mut buf, b"<g data-idx=\"");
+        push_i(&mut buf, real_i as i32);
+        push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, word);
+        push_b(&mut buf, b"\" data-v=\""); push_f2(&mut buf, freq);
+        push_b(&mut buf, b"\" data-kv-Pct=\""); push_f2(&mut buf, pct); buf.push(b'%');
+        push_b(&mut buf, b"\" style=\"cursor:pointer\">");
+
+        push_b(&mut buf, b"<circle cx=\"");
+        push_f2(&mut buf, b.x);
+        push_b(&mut buf, b"\" cy=\"");
+        push_f2(&mut buf, b.y);
+        push_b(&mut buf, b"\" r=\"");
+        push_f2(&mut buf, b.r);
+        push_b(&mut buf, b"\" fill=\"#");
+        let hx = hex6(color);
+        buf.extend_from_slice(&hx);
+        push_b(&mut buf, b"\" fill-opacity=\"");
+        push_f2(&mut buf, 0.78);
+        push_b(&mut buf, b"\" stroke=\"#0f172a\" stroke-opacity=\"");
+        push_f2(&mut buf, stroke_alpha);
+        push_b(&mut buf, b"\" stroke-width=\"1\"/>");
+
+        push_b(&mut buf, b"<text x=\"");
+        push_f2(&mut buf, b.x);
+        push_b(&mut buf, b"\" y=\"");
+        push_f2(&mut buf, b.y - 1.0);
+        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"'Segoe UI',Arial,sans-serif\" font-weight=\"700\" font-size=\"");
+        push_f2(&mut buf, label_fs);
+        push_b(&mut buf, b"\" fill=\"#0f172a\">");
+        escape_xml(&mut buf, word);
+        push_b(&mut buf, b"</text>");
+
+        push_b(&mut buf, b"<text x=\"");
+        push_f2(&mut buf, b.x);
+        push_b(&mut buf, b"\" y=\"");
+        push_f2(&mut buf, b.y + label_fs * 0.85);
+        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"'Segoe UI',Arial,sans-serif\" font-weight=\"600\" font-size=\"");
+        push_f2(&mut buf, val_fs);
+        push_b(&mut buf, b"\" fill=\"#0f172a\" fill-opacity=\"0.75\">");
+        push_f2(&mut buf, freq);
+        push_b(&mut buf, b"</text>");
+
+        push_b(&mut buf, b"</g>");
     }
 
     push_b(&mut buf, b"</svg>");
