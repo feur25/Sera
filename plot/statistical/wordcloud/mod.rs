@@ -1,24 +1,22 @@
 pub mod variant;
+pub mod shape;
 pub mod config;
 pub mod common;
 pub mod basic;
-pub mod circle;
-pub mod heart;
-pub mod bird;
-pub mod bubble;
-pub mod glasses;
+pub mod image;
+pub mod labelmap;
+pub mod network;
 
 pub use variant::WordCloudVariant;
+pub use shape::WordCloudShape;
 pub use config::WordCloudConfig;
 
 pub fn render_wordcloud_html(cfg: &WordCloudConfig) -> String {
     use variant::WordCloudVariant::*;
     match cfg.variant {
-        Basic   => basic::render(cfg),
-        Circle  => circle::render(cfg),
-        Heart   => heart::render(cfg),
-        Bird    => bird::render(cfg),
-        Bubble  => bubble::render(cfg),
-        Glasses => glasses::render(cfg),
+        Basic    => basic::render(cfg),
+        Image    => image::render(cfg),
+        LabelMap => labelmap::render(cfg),
+        Network  => network::render(cfg),
     }
 }

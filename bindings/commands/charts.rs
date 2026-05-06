@@ -152,6 +152,16 @@ pub struct ChartOpts {
     pub color_axis: Option<i32>,
     pub category_indices: Option<Vec<i32>>,
     pub annotations: Option<Vec<Annotation>>,
+    pub shape: Option<String>,
+    pub mask: Option<Vec<i32>>,
+    pub mask_width: Option<i32>,
+    pub mask_height: Option<i32>,
+    pub points_x: Option<Vec<f64>>,
+    pub points_y: Option<Vec<f64>>,
+    pub cluster_labels: Option<Vec<String>>,
+    pub edges_i: Option<Vec<i32>>,
+    pub edges_j: Option<Vec<i32>>,
+    pub edges_w: Option<Vec<f64>>,
 }
 
 #[derive(Deserialize, Default, Clone)]
@@ -1694,13 +1704,26 @@ pub fn build_wordcloud(input: &str) -> String {
     let pal = o.pal();
     let hover = o.hj();
     let bg_str = o.bg_str();
-    use crate::plot::statistical::wordcloud::{WordCloudConfig, WordCloudVariant, render_wordcloud_html};
+    use crate::plot::statistical::wordcloud::{WordCloudConfig, WordCloudVariant, WordCloudShape, render_wordcloud_html};
     let variant = WordCloudVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+    let shape = WordCloudShape::from_str(o.shape.as_deref().unwrap_or("rect"));
+    let mask = o.mask.clone().unwrap_or_default();
+    let points_x = o.points_x.clone().unwrap_or_default();
+    let points_y = o.points_y.clone().unwrap_or_default();
+    let point_clusters = o.category_indices.clone().unwrap_or_default();
+    let cluster_labels = o.cluster_labels.clone().unwrap_or_default();
+    let edges_i = o.edges_i.clone().unwrap_or_default();
+    let edges_j = o.edges_j.clone().unwrap_or_default();
+    let edges_w = o.edges_w.clone().unwrap_or_default();
     let html = render_wordcloud_html(&WordCloudConfig {
-        variant, title, words: &words, frequencies: &frequencies,
+        variant, shape, title, words: &words, frequencies: &frequencies,
         palette: &pal, width: o.w(900), height: o.h(500),
         min_font: o.min_font.unwrap_or(12.0), max_font: o.max_font.unwrap_or(72.0),
         bg_color: bg_str.as_deref(), sort_order: &o.srt(), hover: &hover,
+        mask: &mask, mask_width: o.mask_width.unwrap_or(0), mask_height: o.mask_height.unwrap_or(0),
+        points_x: &points_x, points_y: &points_y, point_clusters: &point_clusters,
+        cluster_labels: &cluster_labels,
+        edges_i: &edges_i, edges_j: &edges_j, edges_w: &edges_w,
         ..WordCloudConfig::default()
     });
     apply_bg3d(html, &o)

@@ -1,6 +1,7 @@
 # Parallel Coordinates - Multivariate Profile Lines
 
 <div class="lang-en">
+
 <style>
 .sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.2em 0}
 .sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
@@ -36,41 +37,42 @@ function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.s
 function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact');if(window.hljs)document.getElementById(scope+'-'+name).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}
 function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
 document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});
-</scrip
+</script>
+
 
 ## Signature
 
-`sp.parallel(title, *, axes, series, series_names=None, variant="basic", category_indices=None, highlight_index=-1, color_axis=-1, **kwargs) -> Chart`
+`sp.build_parallel(title, axes, series, *, variant="basic", **kwargs) -> Chart`
 
-Aliases: `sp.parallel`, `sp.build_parallel`
+Aliases: `sp.build_parallel` &middot; `sp.parallel` &middot; `sp.parallel_coords` &middot; `sp.parallel_coordinates` &middot; `sp.pcoords`
 
 ## Description
 
-`sp.parallel()` is the unified entry point for the parallel-coordinates family. Each row becomes a polyline traversing every axis - the workhorse layout for inspecting multivariate samples (iris by species, KPI cohorts, hyperparameter sweeps). The `variant` keyword switches between straight, smoothed, categorical, focused, density and value-gradient renderings without touching the data.
+`sp.build_parallel()` renders a **parallel-coordinates** chart - one vertical axis per dimension, one polyline per row. Six variants cover the classical use cases: straight lines, smooth Bezier curves, categorical coloring, single-row highlight, density-blended overlay, and gradient coloring driven by any axis. Perfect for high-dimensional EDA, profile comparison, and class separability inspection.
 
 ## Variants
 
 | Variant | Aliases | Description |
 |---|---|---|
-| `"basic"` | `basic / default / classic / lines` | Straight polylines through every axis - the textbook parallel coordinates rendering. |
-| `"smooth"` | `smooth / curved / bezier / spline` | Catmull-Rom-style curves between axes - reduces visual noise on dense bundles. |
-| `"categorical"` | `categorical / category / groups / colored` | Color each line by an integer `category_indices` column - the canonical iris-by-species pattern. |
-| `"highlight"` | `highlight / spotlight / focus / dim` | All lines dim, one (`highlight_index`) lit and dotted - editorial focus on a single sample. |
-| `"density"` | `density / fade / translucent / alpha` | Very low opacity over a thicker stroke - reveals overlap and structure on big bundles. |
-| `"gradient"` | `gradient / value / ramp / shaded` | Color each line by its value on `color_axis` (Viridis ramp) - encodes a continuous variable directly. |
+| `"basic"` | `basic / default / classic / lines` | Straight polylines through every axis - the textbook parallel-coordinates chart. |
+| `"smooth"` | `smooth / curved / bezier / spline` | Bezier-smoothed lines reduce visual clutter for dense datasets. |
+| `"categorical"` | `categorical / category / groups / colored` | One color per category - perfect for comparing classes side by side. |
+| `"highlight"` | `highlight / spotlight / focus / dim` | Spotlights one series and dims the others - great for storytelling. |
+| `"density"` | `density / fade / translucent / alpha` | Translucent lines reveal density bands inside thousands of profiles. |
+| `"gradient"` | `gradient / value / ramp / shaded` | Color encodes a chosen axis value via a continuous ramp. |
 
 ## Parameters
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `title` | `str` | required | Chart title |
-| `axes` | `list[str]` | required | Axis names (one per dimension, >= 2) |
-| `series` | `list[list[float]]` | required | Sample values, one inner list per series |
-| `series_names` | `list[str]` | None | Legend label per series |
-| `variant` | `str` | "basic" | Visual style (see table) |
-| `category_indices` | `list[int]` | None | Integer category per series (Categorical variant) |
-| `highlight_index` | `int` | -1 | Series to spotlight (Highlight variant) |
-| `color_axis` | `int` | -1 | Axis index used to color lines (Gradient variant) |
+| `axes` | `list[str]` | required | Axis labels (left to right) |
+| `series` | `list[list[float]]` | required | Profiles - one inner list per axis |
+| `variant` | `str` | "basic" | Rendering style (see table) |
+| `series_names` | `list[str]` | None | Optional row names for hover/legend |
+| `category_indices` | `list[int]` | None | Category id per row (categorical variant) |
+| `highlight_index` | `int` | -1 | Row to spotlight (highlight variant) |
+| `color_axis` | `int` | -1 | Axis index to drive gradient color (gradient variant) |
 | `palette` | `list[int]` | None | Custom palette |
 | `width` | `int` | 1000 | Canvas width (px) |
 | `height` | `int` | 500 | Canvas height (px) |
@@ -95,7 +97,32 @@ Aliases: `sp.parallel`, `sp.build_parallel`
 <div class="sp-variant sp-von" id="parallel-en-basic">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / lines</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Straight polylines through every axis - the textbook parallel coordinates rendering.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Straight polylines through every axis - the textbook parallel-coordinates chart.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["mpg", "hp", "weight", "accel", "price"]
+rows = [
+    [32, 90,  2300, 14.5, 18000],
+    [28, 110, 2800, 12.0, 22000],
+    [22, 160, 3400, 9.5,  31000],
+    [18, 200, 3800, 8.0,  42000],
+    [35, 75,  2100, 16.0, 16000],
+    [25, 130, 3000, 11.5, 26000],
+]
+series = list(map(list, zip(*rows)))
+
+chart = sp.build_parallel(
+    title="Cars profile", axes=axes, series=series,
+    variant="basic",
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    width=900, height=460,
+)
+chart.show()
+```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-basic.html"></iframe>
@@ -103,7 +130,32 @@ Aliases: `sp.parallel`, `sp.build_parallel`
 <div class="sp-variant" id="parallel-en-smooth">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"smooth"</code></span><span><strong>Aliases</strong> <code>smooth / curved / bezier / spline</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Catmull-Rom-style curves between axes - reduces visual noise on dense bundles.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bezier-smoothed lines reduce visual clutter for dense datasets.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["mpg", "hp", "weight", "accel", "price"]
+rows = [
+    [32, 90,  2300, 14.5, 18000],
+    [28, 110, 2800, 12.0, 22000],
+    [22, 160, 3400, 9.5,  31000],
+    [18, 200, 3800, 8.0,  42000],
+    [35, 75,  2100, 16.0, 16000],
+    [25, 130, 3000, 11.5, 26000],
+]
+series = list(map(list, zip(*rows)))
+
+chart = sp.build_parallel(
+    title="Cars profile", axes=axes, series=series,
+    variant="smooth",
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    width=900, height=460,
+)
+chart.show()
+```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-smooth.html"></iframe>
@@ -111,7 +163,33 @@ Aliases: `sp.parallel`, `sp.build_parallel`
 <div class="sp-variant" id="parallel-en-categorical">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / category / groups / colored</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Color each line by an integer `category_indices` column - the canonical iris-by-species pattern.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">One color per category - perfect for comparing classes side by side.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["mpg", "hp", "weight", "accel", "price"]
+rows = [
+    [32, 90,  2300, 14.5, 18000],
+    [28, 110, 2800, 12.0, 22000],
+    [22, 160, 3400, 9.5,  31000],
+    [18, 200, 3800, 8.0,  42000],
+    [35, 75,  2100, 16.0, 16000],
+    [25, 130, 3000, 11.5, 26000],
+]
+series = list(map(list, zip(*rows)))
+
+chart = sp.build_parallel(
+    title="Cars profile", axes=axes, series=series,
+    variant="categorical",
+    category_indices=[0,0,1,1,2,2],
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    width=900, height=460,
+)
+chart.show()
+```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-categorical.html"></iframe>
@@ -119,7 +197,33 @@ Aliases: `sp.parallel`, `sp.build_parallel`
 <div class="sp-variant" id="parallel-en-highlight">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / spotlight / focus / dim</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">All lines dim, one (`highlight_index`) lit and dotted - editorial focus on a single sample.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Spotlights one series and dims the others - great for storytelling.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["mpg", "hp", "weight", "accel", "price"]
+rows = [
+    [32, 90,  2300, 14.5, 18000],
+    [28, 110, 2800, 12.0, 22000],
+    [22, 160, 3400, 9.5,  31000],
+    [18, 200, 3800, 8.0,  42000],
+    [35, 75,  2100, 16.0, 16000],
+    [25, 130, 3000, 11.5, 26000],
+]
+series = list(map(list, zip(*rows)))
+
+chart = sp.build_parallel(
+    title="Cars profile", axes=axes, series=series,
+    variant="highlight",
+    highlight_index=2,
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    width=900, height=460,
+)
+chart.show()
+```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-highlight.html"></iframe>
@@ -127,7 +231,32 @@ Aliases: `sp.parallel`, `sp.build_parallel`
 <div class="sp-variant" id="parallel-en-density">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / fade / translucent / alpha</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Very low opacity over a thicker stroke - reveals overlap and structure on big bundles.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Translucent lines reveal density bands inside thousands of profiles.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["mpg", "hp", "weight", "accel", "price"]
+rows = [
+    [32, 90,  2300, 14.5, 18000],
+    [28, 110, 2800, 12.0, 22000],
+    [22, 160, 3400, 9.5,  31000],
+    [18, 200, 3800, 8.0,  42000],
+    [35, 75,  2100, 16.0, 16000],
+    [25, 130, 3000, 11.5, 26000],
+]
+series = list(map(list, zip(*rows)))
+
+chart = sp.build_parallel(
+    title="Cars profile", axes=axes, series=series,
+    variant="density",
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    width=900, height=460,
+)
+chart.show()
+```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-density.html"></iframe>
@@ -135,7 +264,33 @@ Aliases: `sp.parallel`, `sp.build_parallel`
 <div class="sp-variant" id="parallel-en-gradient">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / value / ramp / shaded</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Color each line by its value on `color_axis` (Viridis ramp) - encodes a continuous variable directly.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Color encodes a chosen axis value via a continuous ramp.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["mpg", "hp", "weight", "accel", "price"]
+rows = [
+    [32, 90,  2300, 14.5, 18000],
+    [28, 110, 2800, 12.0, 22000],
+    [22, 160, 3400, 9.5,  31000],
+    [18, 200, 3800, 8.0,  42000],
+    [35, 75,  2100, 16.0, 16000],
+    [25, 130, 3000, 11.5, 26000],
+]
+series = list(map(list, zip(*rows)))
+
+chart = sp.build_parallel(
+    title="Cars profile", axes=axes, series=series,
+    variant="gradient",
+    color_axis=2,
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    width=900, height=460,
+)
+chart.show()
+```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-gradient.html"></iframe>
@@ -149,37 +304,37 @@ Aliases: `sp.parallel`, `sp.build_parallel`
 
 <h2>Signature</h2>
 
-`sp.parallel(title, *, axes, series, series_names=None, variant="basic", category_indices=None, highlight_index=-1, color_axis=-1, **kwargs) -> Chart`
+`sp.build_parallel(title, axes, series, *, variant="basic", **kwargs) -> Chart`
 
-Aliases: `sp.parallel`, `sp.build_parallel`
+Aliases: `sp.build_parallel` &middot; `sp.parallel` &middot; `sp.parallel_coords` &middot; `sp.parallel_coordinates` &middot; `sp.pcoords`
 
 <h2>Description</h2>
 
-`sp.parallel()` est le point d entree unique pour la famille des coordonnees paralleles. Chaque ligne devient une polyligne traversant tous les axes - le layout de reference pour inspecter des echantillons multivaries (iris par espece, cohortes KPI, balayages d hyperparametres). Le mot-cle `variant` bascule entre rendus droit, lisse, categoriel, focalise, densite et gradient de valeur sans toucher aux donnees.
+`sp.build_parallel()` rend un graphique **parallel-coordinates** - un axe vertical par dimension, une polyligne par ligne. Six variantes couvrent les cas classiques : lignes droites, courbes Bezier, couleur par categorie, mise en avant d une ligne, overlay de densite, et degrade pilote par un axe. Ideal pour l EDA haute-dimension, la comparaison de profils, et l inspection de separabilite de classes.
 
 <h2>Variantes</h2>
 
 | Variante | Alias | Description |
 |---|---|---|
-| `"basic"` | `basic / default / classic / lines` | Polylignes droites traversant chaque axe - le rendu canonique des coordonnees paralleles. |
-| `"smooth"` | `smooth / curved / bezier / spline` | Courbes type Catmull-Rom entre les axes - reduit le bruit visuel des bundles denses. |
-| `"categorical"` | `categorical / category / groups / colored` | Coloration par colonne entiere `category_indices` - le motif iris-par-espece. |
-| `"highlight"` | `highlight / spotlight / focus / dim` | Toutes les lignes grises sauf une (`highlight_index`) coloree avec points - focus editorial. |
-| `"density"` | `density / fade / translucent / alpha` | Opacite tres basse sur trait epais - revele les chevauchements de gros bundles. |
-| `"gradient"` | `gradient / value / ramp / shaded` | Coloration par la valeur sur `color_axis` (rampe Viridis) - encode une variable continue. |
+| `"basic"` | `basic / default / classic / lines` | Polylignes droites sur tous les axes - le parallel-coordinates canonique. |
+| `"smooth"` | `smooth / curved / bezier / spline` | Lignes Bezier qui reduisent l encombrement visuel sur grands jeux. |
+| `"categorical"` | `categorical / category / groups / colored` | Une couleur par categorie - parfait pour comparer des classes. |
+| `"highlight"` | `highlight / spotlight / focus / dim` | Met en avant une serie et estompe les autres - ideal pour storytelling. |
+| `"density"` | `density / fade / translucent / alpha` | Lignes translucides revelent les bandes de densite sur des milliers de profils. |
+| `"gradient"` | `gradient / value / ramp / shaded` | La couleur encode la valeur d un axe via un degrade continu. |
 
 <h2>Parametres</h2>
 
 | Parametre | Type | Defaut | Description |
 |---|---|---|---|
 | `title` | `str` | requis | Titre du graphique |
-| `axes` | `list[str]` | requis | Noms des axes (>= 2) |
-| `series` | `list[list[float]]` | requis | Valeurs par echantillon, une liste interne par serie |
-| `series_names` | `list[str]` | None | Label legende par serie |
-| `variant` | `str` | "basic" | Style visuel (voir tableau) |
-| `category_indices` | `list[int]` | None | Categorie entiere par serie (Categorical) |
-| `highlight_index` | `int` | -1 | Serie a mettre en avant (Highlight) |
-| `color_axis` | `int` | -1 | Axe utilise pour colorer les lignes (Gradient) |
+| `axes` | `list[str]` | requis | Etiquettes des axes (gauche vers droite) |
+| `series` | `list[list[float]]` | requis | Profils - une liste interne par axe |
+| `variant` | `str` | "basic" | Style de rendu (voir tableau) |
+| `series_names` | `list[str]` | None | Noms optionnels par ligne (hover/legende) |
+| `category_indices` | `list[int]` | None | Id de categorie par ligne (variant categorical) |
+| `highlight_index` | `int` | -1 | Ligne a mettre en avant (variant highlight) |
+| `color_axis` | `int` | -1 | Index de l axe pilotant la couleur (variant gradient) |
 | `palette` | `list[int]` | None | Palette personnalisee |
 | `width` | `int` | 1000 | Largeur (px) |
 | `height` | `int` | 500 | Hauteur (px) |
@@ -187,8 +342,6 @@ Aliases: `sp.parallel`, `sp.build_parallel`
 <h2>Retour</h2>
 
 `Chart` - objet avec propriete `.html` et methode `.show()`.
-
----
 
 <div class="sp-cls sp-open" id="parallel-fr">
 <div class="sp-cls-rail">
@@ -204,7 +357,32 @@ Aliases: `sp.parallel`, `sp.build_parallel`
 <div class="sp-variant sp-von" id="parallel-fr-basic">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / lines</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Polylignes droites traversant chaque axe - le rendu canonique des coordonnees paralleles.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Polylignes droites sur tous les axes - le parallel-coordinates canonique.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["mpg", "hp", "weight", "accel", "price"]
+rows = [
+    [32, 90,  2300, 14.5, 18000],
+    [28, 110, 2800, 12.0, 22000],
+    [22, 160, 3400, 9.5,  31000],
+    [18, 200, 3800, 8.0,  42000],
+    [35, 75,  2100, 16.0, 16000],
+    [25, 130, 3000, 11.5, 26000],
+]
+series = list(map(list, zip(*rows)))
+
+chart = sp.build_parallel(
+    title="Cars profile", axes=axes, series=series,
+    variant="basic",
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    width=900, height=460,
+)
+chart.show()
+```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-basic.html"></iframe>
@@ -212,7 +390,32 @@ Aliases: `sp.parallel`, `sp.build_parallel`
 <div class="sp-variant" id="parallel-fr-smooth">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"smooth"</code></span><span><strong>Aliases</strong> <code>smooth / curved / bezier / spline</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Courbes type Catmull-Rom entre les axes - reduit le bruit visuel des bundles denses.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Lignes Bezier qui reduisent l encombrement visuel sur grands jeux.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["mpg", "hp", "weight", "accel", "price"]
+rows = [
+    [32, 90,  2300, 14.5, 18000],
+    [28, 110, 2800, 12.0, 22000],
+    [22, 160, 3400, 9.5,  31000],
+    [18, 200, 3800, 8.0,  42000],
+    [35, 75,  2100, 16.0, 16000],
+    [25, 130, 3000, 11.5, 26000],
+]
+series = list(map(list, zip(*rows)))
+
+chart = sp.build_parallel(
+    title="Cars profile", axes=axes, series=series,
+    variant="smooth",
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    width=900, height=460,
+)
+chart.show()
+```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-smooth.html"></iframe>
@@ -220,7 +423,33 @@ Aliases: `sp.parallel`, `sp.build_parallel`
 <div class="sp-variant" id="parallel-fr-categorical">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"categorical"</code></span><span><strong>Aliases</strong> <code>categorical / category / groups / colored</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Coloration par colonne entiere `category_indices` - le motif iris-par-espece.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Une couleur par categorie - parfait pour comparer des classes.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["mpg", "hp", "weight", "accel", "price"]
+rows = [
+    [32, 90,  2300, 14.5, 18000],
+    [28, 110, 2800, 12.0, 22000],
+    [22, 160, 3400, 9.5,  31000],
+    [18, 200, 3800, 8.0,  42000],
+    [35, 75,  2100, 16.0, 16000],
+    [25, 130, 3000, 11.5, 26000],
+]
+series = list(map(list, zip(*rows)))
+
+chart = sp.build_parallel(
+    title="Cars profile", axes=axes, series=series,
+    variant="categorical",
+    category_indices=[0,0,1,1,2,2],
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    width=900, height=460,
+)
+chart.show()
+```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-categorical.html"></iframe>
@@ -228,7 +457,33 @@ Aliases: `sp.parallel`, `sp.build_parallel`
 <div class="sp-variant" id="parallel-fr-highlight">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / spotlight / focus / dim</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Toutes les lignes grises sauf une (`highlight_index`) coloree avec points - focus editorial.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Met en avant une serie et estompe les autres - ideal pour storytelling.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["mpg", "hp", "weight", "accel", "price"]
+rows = [
+    [32, 90,  2300, 14.5, 18000],
+    [28, 110, 2800, 12.0, 22000],
+    [22, 160, 3400, 9.5,  31000],
+    [18, 200, 3800, 8.0,  42000],
+    [35, 75,  2100, 16.0, 16000],
+    [25, 130, 3000, 11.5, 26000],
+]
+series = list(map(list, zip(*rows)))
+
+chart = sp.build_parallel(
+    title="Cars profile", axes=axes, series=series,
+    variant="highlight",
+    highlight_index=2,
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    width=900, height=460,
+)
+chart.show()
+```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-highlight.html"></iframe>
@@ -236,7 +491,32 @@ Aliases: `sp.parallel`, `sp.build_parallel`
 <div class="sp-variant" id="parallel-fr-density">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / fade / translucent / alpha</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Opacite tres basse sur trait epais - revele les chevauchements de gros bundles.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Lignes translucides revelent les bandes de densite sur des milliers de profils.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["mpg", "hp", "weight", "accel", "price"]
+rows = [
+    [32, 90,  2300, 14.5, 18000],
+    [28, 110, 2800, 12.0, 22000],
+    [22, 160, 3400, 9.5,  31000],
+    [18, 200, 3800, 8.0,  42000],
+    [35, 75,  2100, 16.0, 16000],
+    [25, 130, 3000, 11.5, 26000],
+]
+series = list(map(list, zip(*rows)))
+
+chart = sp.build_parallel(
+    title="Cars profile", axes=axes, series=series,
+    variant="density",
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    width=900, height=460,
+)
+chart.show()
+```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-density.html"></iframe>
@@ -244,7 +524,33 @@ Aliases: `sp.parallel`, `sp.build_parallel`
 <div class="sp-variant" id="parallel-fr-gradient">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / value / ramp / shaded</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Coloration par la valeur sur `color_axis` (rampe Viridis) - encode une variable continue.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">La couleur encode la valeur d un axe via un degrade continu.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["mpg", "hp", "weight", "accel", "price"]
+rows = [
+    [32, 90,  2300, 14.5, 18000],
+    [28, 110, 2800, 12.0, 22000],
+    [22, 160, 3400, 9.5,  31000],
+    [18, 200, 3800, 8.0,  42000],
+    [35, 75,  2100, 16.0, 16000],
+    [25, 130, 3000, 11.5, 26000],
+]
+series = list(map(list, zip(*rows)))
+
+chart = sp.build_parallel(
+    title="Cars profile", axes=axes, series=series,
+    variant="gradient",
+    color_axis=2,
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    width=900, height=460,
+)
+chart.show()
+```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-gradient.html"></iframe>

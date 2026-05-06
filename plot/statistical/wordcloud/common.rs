@@ -1,5 +1,5 @@
 use super::config::WordCloudConfig;
-use super::variant::WordCloudVariant;
+use super::shape::WordCloudShape;
 use crate::plot::statistical::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6, apply_sort};
 use crate::html::hover::{slots_to_json, build_chart_html};
 
@@ -25,15 +25,27 @@ pub fn intersects(a: &PlacedWord, b: &PlacedWord) -> bool {
     a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y
 }
 
-pub fn shape_inside(shape: WordCloudVariant, nx: f64, ny: f64) -> bool {
-    use WordCloudVariant::*;
+pub fn shape_inside(shape: WordCloudShape, nx: f64, ny: f64) -> bool {
+    use WordCloudShape::*;
     match shape {
-        Basic => nx.abs() <= 1.0 && ny.abs() <= 1.0,
-        Circle | Bubble => nx * nx + ny * ny <= 1.0,
+        Rect => nx.abs() <= 1.0 && ny.abs() <= 1.0,
+        Circle => nx * nx + ny * ny <= 1.0,
         Heart => {
             let yp = -ny;
             let v = (nx * nx + yp * yp - 1.0).powi(3) - nx * nx * yp.powi(3);
             v <= 0.0
+        }
+        Diamond => nx.abs() + ny.abs() <= 1.0,
+        Star => {
+            let r2 = nx * nx + ny * ny;
+            if r2 <= 0.0001 { return true; }
+            let theta = ny.atan2(nx);
+            let n_pts = 5.0_f64;
+            let inner = 0.45_f64;
+            let phase = std::f64::consts::PI / 2.0;
+            let a = ((theta + phase) * n_pts / 2.0).cos().abs();
+            let lim = inner + (1.0 - inner) * a;
+            r2.sqrt() <= lim
         }
         Bird => {
             let disks: [(f64, f64, f64); 7] = [
@@ -64,7 +76,19 @@ pub fn shape_inside(shape: WordCloudVariant, nx: f64, ny: f64) -> bool {
     }
 }
 
-pub fn shape_box_inside(shape: WordCloudVariant, x: f64, y: f64, w: f64, h: f64, cx: f64, cy: f64, rx: f64, ry: f64) -> bool {
+pub fn mask_inside(mask: &[i32], mw: i32, mh: i32, nx: f64, ny: f64) -> bool {
+    if mw <= 0 || mh <= 0 || mask.is_empty() { return true; }
+    let u = (nx + 1.0) * 0.5;
+    let v = (ny + 1.0) * 0.5;
+    if u < 0.0 || u > 1.0 || v < 0.0 || v > 1.0 { return false; }
+    let mx = ((u * (mw as f64 - 1.0)).round() as i32).clamp(0, mw - 1);
+    let my = ((v * (mh as f64 - 1.0)).round() as i32).clamp(0, mh - 1);
+    let i = (my * mw + mx) as usize;
+    if i >= mask.len() { return false; }
+    mask[i] != 0
+}
+
+pub fn shape_box_inside(shape: WordCloudShape, x: f64, y: f64, w: f64, h: f64, cx: f64, cy: f64, rx: f64, ry: f64) -> bool {
     let pts = [
         (x + w * 0.5, y + h * 0.5),
         (x, y),
@@ -80,7 +104,23 @@ pub fn shape_box_inside(shape: WordCloudVariant, x: f64, y: f64, w: f64, h: f64,
     true
 }
 
-pub fn place_words(words: &[String], font_sizes: &[f64], width: f64, height: f64, pad_t: f64, shape: WordCloudVariant) -> Vec<PlacedWord> {
+pub fn mask_box_inside(mask: &[i32], mw: i32, mh: i32, x: f64, y: f64, w: f64, h: f64, cx: f64, cy: f64, rx: f64, ry: f64) -> bool {
+    let pts = [
+        (x + w * 0.5, y + h * 0.5),
+        (x, y),
+        (x + w, y),
+        (x, y + h),
+        (x + w, y + h),
+    ];
+    for (px, py) in pts.iter() {
+        let nx = (px - cx) / rx;
+        let ny = (py - cy) / ry;
+        if !mask_inside(mask, mw, mh, nx, ny) { return false; }
+    }
+    true
+}
+
+pub fn place_words(words: &[String], font_sizes: &[f64], width: f64, height: f64, pad_t: f64, test: &dyn Fn(f64, f64, f64, f64, f64, f64, f64, f64) -> bool) -> Vec<PlacedWord> {
     let n = words.len();
     let mut placed: Vec<PlacedWord> = Vec::with_capacity(n);
     let cx = width / 2.0;
@@ -109,7 +149,7 @@ pub fn place_words(words: &[String], font_sizes: &[f64], width: f64, height: f64
             let py = cy + r * angle.sin() * 0.65 - th / 2.0;
 
             if px >= 2.0 && px + tw <= width - 2.0 && py >= pad_t && py + th <= height - 2.0
-                && shape_box_inside(shape, px, py, tw, th, cx, cy, rx, ry) {
+                && test(px, py, tw, th, cx, cy, rx, ry) {
                 let candidate = PlacedWord { x: px, y: py, w: tw, h: th, font_size: fs, idx: i };
                 let mut ok = true;
                 for p in &placed {
@@ -166,225 +206,303 @@ pub fn prepare(cfg: &WordCloudConfig) -> Option<Prepared> {
     Some(Prepared { words, freqs, sizes, orig_idx: order, total, pad_t })
 }
 
-pub fn render_with(cfg: &WordCloudConfig, shape: WordCloudVariant) -> String {
-    if matches!(shape, WordCloudVariant::Bubble) {
-        return render_bubble(cfg);
-    }
-    let p = match prepare(cfg) { Some(p) => p, None => return String::new() };
-    let placed = place_words(&p.words, &p.sizes, cfg.width as f64, cfg.height as f64, p.pad_t, shape);
-    let bg = cfg.bg_color.unwrap_or("#1a1a2e");
+fn svg_open(buf: &mut Vec<u8>, w: i32, h: i32, bg: &str) {
+    push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_i(buf, w);
+    push_b(buf, b"\" height=\"");
+    push_i(buf, h);
+    push_b(buf, b"\" viewBox=\"0 0 ");
+    push_i(buf, w);
+    push_b(buf, b" ");
+    push_i(buf, h);
+    push_b(buf, b"\">");
+    push_b(buf, b"<rect width=\"100%\" height=\"100%\" fill=\"");
+    push_b(buf, bg.as_bytes());
+    push_b(buf, b"\"/>");
+}
+
+fn svg_title(buf: &mut Vec<u8>, w: i32, title: &str, fill: &str) {
+    if title.is_empty() { return; }
+    push_b(buf, b"<text x=\"");
+    push_i(buf, w / 2);
+    push_b(buf, b"\" y=\"24\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"");
+    push_b(buf, fill.as_bytes());
+    push_b(buf, b"\">");
+    escape_xml(buf, title);
+    push_b(buf, b"</text>");
+}
+
+fn finalize(cfg: &WordCloudConfig, buf: Vec<u8>) -> String {
     let auto_hover = cfg.hover.is_empty();
-    let mut buf = Vec::<u8>::with_capacity(p.words.len() * 320 + 2048);
-
-    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
-    push_i(&mut buf, cfg.width);
-    push_b(&mut buf, b"\" height=\"");
-    push_i(&mut buf, cfg.height);
-    push_b(&mut buf, b"\" viewBox=\"0 0 ");
-    push_i(&mut buf, cfg.width);
-    push_b(&mut buf, b" ");
-    push_i(&mut buf, cfg.height);
-    push_b(&mut buf, b"\">");
-
-    push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"");
-    push_b(&mut buf, bg.as_bytes());
-    push_b(&mut buf, b"\"/>");
-
-    if !cfg.title.is_empty() {
-        push_b(&mut buf, b"<text x=\"");
-        push_i(&mut buf, cfg.width / 2);
-        push_b(&mut buf, b"\" y=\"24\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#fff\">");
-        escape_xml(&mut buf, cfg.title);
-        push_b(&mut buf, b"</text>");
-    }
-
-    for pw in &placed {
-        let word = &p.words[pw.idx];
-        let freq = p.freqs[pw.idx];
-        let color_idx = p.orig_idx[pw.idx];
-        let color = palette_color(cfg.palette, color_idx);
-        let pct = if p.total > 0.0 { freq / p.total * 100.0 } else { 0.0 };
-
-        let text_x = pw.x + pw.w / 2.0;
-        let text_y = pw.y + pw.h * 0.72;
-
-        push_b(&mut buf, b"<text data-idx=\"");
-        push_i(&mut buf, pw.idx as i32);
-        push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, word);
-        push_b(&mut buf, b"\" data-v=\""); push_f2(&mut buf, freq);
-        push_b(&mut buf, b"\" data-kv-Pct=\""); push_f2(&mut buf, pct); buf.push(b'%');
-        push_b(&mut buf, b"\" x=\"");
-        push_f2(&mut buf, text_x);
-        push_b(&mut buf, b"\" y=\"");
-        push_f2(&mut buf, text_y);
-        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"'Segoe UI',Arial,sans-serif\" font-size=\"");
-        push_f2(&mut buf, pw.font_size);
-        push_b(&mut buf, b"\" font-weight=\"700\" fill=\"#");
-        let hx = hex6(color);
-        buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" style=\"cursor:pointer\">");
-        escape_xml(&mut buf, word);
-        push_b(&mut buf, b"</text>");
-    }
-
-    push_b(&mut buf, b"</svg>");
-
     let svg = unsafe { String::from_utf8_unchecked(buf) };
     let slots_json;
     let json: &str = if auto_hover { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
     build_chart_html(cfg.title, &svg, json)
 }
 
-pub struct PlacedBubble {
-    pub x: f64,
-    pub y: f64,
-    pub r: f64,
-    pub idx: usize,
-}
-
-pub fn place_bubbles(radii: &[f64], width: f64, height: f64, pad_t: f64) -> Vec<PlacedBubble> {
-    let n = radii.len();
-    let mut out: Vec<PlacedBubble> = Vec::with_capacity(n);
-    let cx = width / 2.0;
-    let cy = pad_t + (height - pad_t) / 2.0;
-    let max_r = (width.min(height - pad_t)) / 2.0 - 6.0;
-
-    for i in 0..n {
-        let r = radii[i].min(max_r);
-        let mut placed_ok = false;
-        let mut best = (cx, cy);
-        let mut radius_search: f64 = 0.0;
-        let step_a = 0.18_f64;
-        let step_r = (r * 0.20_f64).max(1.5);
-        let mut angle: f64 = (i as f64) * 0.7;
-
-        'search: for _ in 0..6000 {
-            let px = cx + radius_search * angle.cos();
-            let py = cy + radius_search * angle.sin();
-            if px - r >= 4.0 && px + r <= width - 4.0 && py - r >= pad_t + 2.0 && py + r <= height - 4.0 {
-                let mut ok = true;
-                for p in &out {
-                    let dx = px - p.x;
-                    let dy = py - p.y;
-                    let d2 = dx * dx + dy * dy;
-                    let need = (r + p.r + 2.0).powi(2);
-                    if d2 < need { ok = false; break; }
-                }
-                if ok {
-                    best = (px, py);
-                    placed_ok = true;
-                    break 'search;
-                }
-            }
-            angle += step_a;
-            radius_search += step_r * step_a / (2.0 * std::f64::consts::PI);
-        }
-        if placed_ok || out.is_empty() {
-            out.push(PlacedBubble { x: best.0, y: best.1, r, idx: i });
-        }
-    }
-    out
-}
-
-pub fn render_bubble(cfg: &WordCloudConfig) -> String {
+pub fn render_basic(cfg: &WordCloudConfig) -> String {
     let p = match prepare(cfg) { Some(p) => p, None => return String::new() };
-    let max_freq = p.freqs.iter().copied().fold(0.0_f64, f64::max).max(1.0);
-    let area_total = (cfg.width as f64) * ((cfg.height as f64) - p.pad_t) * 0.55;
-    let sum_freq: f64 = p.freqs.iter().sum::<f64>().max(1.0);
-    let scale = (area_total / (sum_freq * std::f64::consts::PI)).sqrt();
-    let radii: Vec<f64> = p.freqs.iter().map(|&f| (f.max(0.0)).sqrt() * scale).collect();
-    let mut order: Vec<usize> = (0..p.words.len()).collect();
-    order.sort_by(|&a, &b| radii[b].partial_cmp(&radii[a]).unwrap_or(std::cmp::Ordering::Equal));
-    let radii_sorted: Vec<f64> = order.iter().map(|&i| radii[i]).collect();
-    let bubbles = place_bubbles(&radii_sorted, cfg.width as f64, cfg.height as f64, p.pad_t);
-
-    let bg = cfg.bg_color.unwrap_or("#ffffff");
-    let auto_hover = cfg.hover.is_empty();
+    let shape = cfg.shape;
+    let test = move |x: f64, y: f64, w: f64, h: f64, cx: f64, cy: f64, rx: f64, ry: f64| -> bool {
+        shape_box_inside(shape, x, y, w, h, cx, cy, rx, ry)
+    };
+    let placed = place_words(&p.words, &p.sizes, cfg.width as f64, cfg.height as f64, p.pad_t, &test);
+    let bg = cfg.bg_color.unwrap_or("#1a1a2e");
     let mut buf = Vec::<u8>::with_capacity(p.words.len() * 320 + 2048);
+    svg_open(&mut buf, cfg.width, cfg.height, bg);
+    svg_title(&mut buf, cfg.width, cfg.title, "#fff");
+    write_words(&mut buf, &placed, &p, cfg);
+    push_b(&mut buf, b"</svg>");
+    finalize(cfg, buf)
+}
 
-    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
-    push_i(&mut buf, cfg.width);
-    push_b(&mut buf, b"\" height=\"");
-    push_i(&mut buf, cfg.height);
-    push_b(&mut buf, b"\" viewBox=\"0 0 ");
-    push_i(&mut buf, cfg.width);
-    push_b(&mut buf, b" ");
-    push_i(&mut buf, cfg.height);
-    push_b(&mut buf, b"\">");
+pub fn render_image(cfg: &WordCloudConfig) -> String {
+    let p = match prepare(cfg) { Some(p) => p, None => return String::new() };
+    let mask = cfg.mask;
+    let mw = cfg.mask_width;
+    let mh = cfg.mask_height;
+    let test = move |x: f64, y: f64, w: f64, h: f64, cx: f64, cy: f64, rx: f64, ry: f64| -> bool {
+        mask_box_inside(mask, mw, mh, x, y, w, h, cx, cy, rx, ry)
+    };
+    let placed = place_words(&p.words, &p.sizes, cfg.width as f64, cfg.height as f64, p.pad_t, &test);
+    let bg = cfg.bg_color.unwrap_or("#ffffff");
+    let mut buf = Vec::<u8>::with_capacity(p.words.len() * 320 + 2048);
+    svg_open(&mut buf, cfg.width, cfg.height, bg);
+    svg_title(&mut buf, cfg.width, cfg.title, "#0f172a");
+    write_words(&mut buf, &placed, &p, cfg);
+    push_b(&mut buf, b"</svg>");
+    finalize(cfg, buf)
+}
 
-    push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"");
-    push_b(&mut buf, bg.as_bytes());
-    push_b(&mut buf, b"\"/>");
-
-    if !cfg.title.is_empty() {
-        push_b(&mut buf, b"<text x=\"");
-        push_i(&mut buf, cfg.width / 2);
-        push_b(&mut buf, b"\" y=\"24\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#0f172a\">");
-        escape_xml(&mut buf, cfg.title);
-        push_b(&mut buf, b"</text>");
-    }
-
-    for b in &bubbles {
-        let real_i = order[b.idx];
-        let word = &p.words[real_i];
-        let freq = p.freqs[real_i];
-        let color_idx = p.orig_idx[real_i];
+fn write_words(buf: &mut Vec<u8>, placed: &[PlacedWord], p: &Prepared, cfg: &WordCloudConfig) {
+    for pw in placed {
+        let word = &p.words[pw.idx];
+        let freq = p.freqs[pw.idx];
+        let color_idx = p.orig_idx[pw.idx];
         let color = palette_color(cfg.palette, color_idx);
         let pct = if p.total > 0.0 { freq / p.total * 100.0 } else { 0.0 };
-        let intensity = freq / max_freq;
-        let stroke_alpha = 0.18 + 0.55 * intensity;
-        let label_fs = (b.r * 0.45).clamp(cfg.min_font, cfg.max_font);
-        let val_fs = (b.r * 0.30).clamp(cfg.min_font * 0.85, cfg.max_font * 0.7);
+        let text_x = pw.x + pw.w / 2.0;
+        let text_y = pw.y + pw.h * 0.72;
+        push_b(buf, b"<text data-idx=\"");
+        push_i(buf, pw.idx as i32);
+        push_b(buf, b"\" data-lbl=\""); escape_xml(buf, word);
+        push_b(buf, b"\" data-v=\""); push_f2(buf, freq);
+        push_b(buf, b"\" data-kv-Pct=\""); push_f2(buf, pct); buf.push(b'%');
+        push_b(buf, b"\" x=\"");
+        push_f2(buf, text_x);
+        push_b(buf, b"\" y=\"");
+        push_f2(buf, text_y);
+        push_b(buf, b"\" text-anchor=\"middle\" font-family=\"'Segoe UI',Arial,sans-serif\" font-size=\"");
+        push_f2(buf, pw.font_size);
+        push_b(buf, b"\" font-weight=\"700\" fill=\"#");
+        let hx = hex6(color);
+        buf.extend_from_slice(&hx);
+        push_b(buf, b"\" style=\"cursor:pointer\">");
+        escape_xml(buf, word);
+        push_b(buf, b"</text>");
+    }
+}
+
+pub fn render_labelmap(cfg: &WordCloudConfig) -> String {
+    let bg = cfg.bg_color.unwrap_or("#fafafa");
+    let mut buf = Vec::<u8>::with_capacity(8192);
+    svg_open(&mut buf, cfg.width, cfg.height, bg);
+    svg_title(&mut buf, cfg.width, cfg.title, "#0f172a");
+
+    let n = cfg.points_x.len().min(cfg.points_y.len());
+    if n == 0 { push_b(&mut buf, b"</svg>"); return finalize(cfg, buf); }
+
+    let pad_t = if cfg.title.is_empty() { 12.0 } else { 42.0 };
+    let pad = 16.0_f64;
+    let w = cfg.width as f64;
+    let h = cfg.height as f64;
+    let plot_w = w - pad * 2.0;
+    let plot_h = h - pad_t - pad;
+
+    let mut x_min = f64::INFINITY; let mut x_max = f64::NEG_INFINITY;
+    let mut y_min = f64::INFINITY; let mut y_max = f64::NEG_INFINITY;
+    for i in 0..n {
+        let xv = cfg.points_x[i]; let yv = cfg.points_y[i];
+        if xv < x_min { x_min = xv; } if xv > x_max { x_max = xv; }
+        if yv < y_min { y_min = yv; } if yv > y_max { y_max = yv; }
+    }
+    let xr = (x_max - x_min).max(1e-6);
+    let yr = (y_max - y_min).max(1e-6);
+
+    let project = |xv: f64, yv: f64| -> (f64, f64) {
+        let px = pad + (xv - x_min) / xr * plot_w;
+        let py = pad_t + (1.0 - (yv - y_min) / yr) * plot_h;
+        (px, py)
+    };
+
+    let cluster_max = cfg.point_clusters.iter().copied().max().unwrap_or(0).max(0);
+    let n_clusters = (cluster_max + 1) as usize;
+
+    push_b(&mut buf, b"<g class=\"sp-points\" pointer-events=\"none\">");
+    for i in 0..n {
+        let cid = if i < cfg.point_clusters.len() { cfg.point_clusters[i].max(0) as usize } else { 0 };
+        let color = palette_color(cfg.palette, cid);
+        let (px, py) = project(cfg.points_x[i], cfg.points_y[i]);
+        push_b(&mut buf, b"<circle cx=\"");
+        push_f2(&mut buf, px);
+        push_b(&mut buf, b"\" cy=\"");
+        push_f2(&mut buf, py);
+        push_b(&mut buf, b"\" r=\"1.6\" fill=\"#");
+        let hx = hex6(color);
+        buf.extend_from_slice(&hx);
+        push_b(&mut buf, b"\" fill-opacity=\"0.55\"/>");
+    }
+    push_b(&mut buf, b"</g>");
+
+    let mut sums_x: Vec<f64> = vec![0.0; n_clusters];
+    let mut sums_y: Vec<f64> = vec![0.0; n_clusters];
+    let mut counts: Vec<usize> = vec![0; n_clusters];
+    for i in 0..n {
+        let cid = if i < cfg.point_clusters.len() { cfg.point_clusters[i].max(0) as usize } else { 0 };
+        if cid < n_clusters {
+            sums_x[cid] += cfg.points_x[i];
+            sums_y[cid] += cfg.points_y[i];
+            counts[cid] += 1;
+        }
+    }
+
+    let n_lab = cfg.cluster_labels.len().min(n_clusters);
+    push_b(&mut buf, b"<g class=\"sp-labels\">");
+    for cid in 0..n_lab {
+        if counts[cid] == 0 { continue; }
+        let cx_data = sums_x[cid] / counts[cid] as f64;
+        let cy_data = sums_y[cid] / counts[cid] as f64;
+        let (cx, cy) = project(cx_data, cy_data);
+        let label = &cfg.cluster_labels[cid];
+        let fs = cfg.min_font.max(11.0).min(cfg.max_font);
+        let color = palette_color(cfg.palette, cid);
+        let lw = estimate_text_width(label, fs) + 14.0;
+
+        let mut lx = cx + 30.0;
+        let mut ly = cy - 6.0;
+        if lx + lw > w - 4.0 { lx = cx - 30.0 - lw; }
+        if ly < pad_t + 8.0 { ly = pad_t + 8.0; }
+        if ly > h - 18.0 { ly = h - 18.0; }
+        let anchor_x = if lx > cx { lx } else { lx + lw };
+
+        push_b(&mut buf, b"<line x1=\"");
+        push_f2(&mut buf, cx); push_b(&mut buf, b"\" y1=\"");
+        push_f2(&mut buf, cy); push_b(&mut buf, b"\" x2=\"");
+        push_f2(&mut buf, anchor_x); push_b(&mut buf, b"\" y2=\"");
+        push_f2(&mut buf, ly + 7.0); push_b(&mut buf, b"\" stroke=\"#475569\" stroke-width=\"0.6\" stroke-opacity=\"0.65\"/>");
+
+        push_b(&mut buf, b"<text x=\"");
+        push_f2(&mut buf, lx + lw / 2.0);
+        push_b(&mut buf, b"\" y=\"");
+        push_f2(&mut buf, ly + 11.0);
+        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"'Segoe UI',Arial,sans-serif\" font-weight=\"700\" font-size=\"");
+        push_f2(&mut buf, fs);
+        push_b(&mut buf, b"\" fill=\"#");
+        let hx = hex6(color);
+        buf.extend_from_slice(&hx);
+        push_b(&mut buf, b"\">");
+        escape_xml(&mut buf, label);
+        push_b(&mut buf, b"</text>");
+    }
+    push_b(&mut buf, b"</g>");
+
+    push_b(&mut buf, b"</svg>");
+    finalize(cfg, buf)
+}
+
+pub fn render_network(cfg: &WordCloudConfig) -> String {
+    let p = match prepare(cfg) { Some(p) => p, None => return String::new() };
+    let bg = cfg.bg_color.unwrap_or("#ffffff");
+    let mut buf = Vec::<u8>::with_capacity(p.words.len() * 360 + 4096);
+    svg_open(&mut buf, cfg.width, cfg.height, bg);
+    svg_title(&mut buf, cfg.width, cfg.title, "#0f172a");
+
+    let n = p.words.len();
+    let w = cfg.width as f64;
+    let h = cfg.height as f64;
+    let pad_t = p.pad_t;
+    let cx = w / 2.0;
+    let cy = pad_t + (h - pad_t) / 2.0;
+    let r_max = (w.min(h - pad_t)) * 0.40;
+
+    let mut pos: Vec<(f64, f64)> = Vec::with_capacity(n);
+    let max_f = p.freqs.iter().copied().fold(0.0_f64, f64::max).max(1.0);
+    for i in 0..n {
+        let intensity = p.freqs[i] / max_f;
+        let ring = 1.0 - intensity;
+        let r = 0.12 * r_max + ring * (r_max * 0.95);
+        let golden = std::f64::consts::PI * (3.0 - (5.0_f64).sqrt());
+        let theta = (i as f64) * golden;
+        let px = cx + r * theta.cos();
+        let py = cy + r * theta.sin();
+        pos.push((px, py));
+    }
+
+    let m = cfg.edges_i.len().min(cfg.edges_j.len());
+    push_b(&mut buf, b"<g class=\"sp-edges\" pointer-events=\"none\">");
+    for k in 0..m {
+        let i = cfg.edges_i[k] as usize;
+        let j = cfg.edges_j[k] as usize;
+        if i >= n || j >= n { continue; }
+        let weight = if k < cfg.edges_w.len() { cfg.edges_w[k] } else { 1.0 };
+        let (x1, y1) = pos[i];
+        let (x2, y2) = pos[j];
+        let cmx = (x1 + x2) / 2.0 + (y2 - y1) * 0.12;
+        let cmy = (y1 + y2) / 2.0 - (x2 - x1) * 0.12;
+        let color_a = palette_color(cfg.palette, i);
+        let stroke_w = (0.3 + weight.abs().sqrt() * 0.9).clamp(0.4, 3.0);
+        push_b(&mut buf, b"<path d=\"M");
+        push_f2(&mut buf, x1); buf.push(b','); push_f2(&mut buf, y1);
+        push_b(&mut buf, b" Q"); push_f2(&mut buf, cmx); buf.push(b','); push_f2(&mut buf, cmy);
+        buf.push(b' '); push_f2(&mut buf, x2); buf.push(b','); push_f2(&mut buf, y2);
+        push_b(&mut buf, b"\" stroke=\"#");
+        let hx = hex6(color_a);
+        buf.extend_from_slice(&hx);
+        push_b(&mut buf, b"\" stroke-opacity=\"0.30\" stroke-width=\"");
+        push_f2(&mut buf, stroke_w);
+        push_b(&mut buf, b"\" fill=\"none\"/>");
+    }
+    push_b(&mut buf, b"</g>");
+
+    push_b(&mut buf, b"<g class=\"sp-nodes\">");
+    for i in 0..n {
+        let word = &p.words[i];
+        let freq = p.freqs[i];
+        let pct = if p.total > 0.0 { freq / p.total * 100.0 } else { 0.0 };
+        let color = palette_color(cfg.palette, p.orig_idx[i]);
+        let (x, y) = pos[i];
+        let r = (4.0 + (freq / max_f) * 14.0).clamp(3.0, 22.0);
+        let fs = (p.sizes[i] * 0.55).clamp(cfg.min_font, cfg.max_font * 0.6);
 
         push_b(&mut buf, b"<g data-idx=\"");
-        push_i(&mut buf, real_i as i32);
+        push_i(&mut buf, i as i32);
         push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, word);
         push_b(&mut buf, b"\" data-v=\""); push_f2(&mut buf, freq);
         push_b(&mut buf, b"\" data-kv-Pct=\""); push_f2(&mut buf, pct); buf.push(b'%');
         push_b(&mut buf, b"\" style=\"cursor:pointer\">");
 
         push_b(&mut buf, b"<circle cx=\"");
-        push_f2(&mut buf, b.x);
-        push_b(&mut buf, b"\" cy=\"");
-        push_f2(&mut buf, b.y);
-        push_b(&mut buf, b"\" r=\"");
-        push_f2(&mut buf, b.r);
+        push_f2(&mut buf, x); push_b(&mut buf, b"\" cy=\"");
+        push_f2(&mut buf, y); push_b(&mut buf, b"\" r=\"");
+        push_f2(&mut buf, r);
         push_b(&mut buf, b"\" fill=\"#");
         let hx = hex6(color);
         buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" fill-opacity=\"");
-        push_f2(&mut buf, 0.78);
-        push_b(&mut buf, b"\" stroke=\"#0f172a\" stroke-opacity=\"");
-        push_f2(&mut buf, stroke_alpha);
-        push_b(&mut buf, b"\" stroke-width=\"1\"/>");
+        push_b(&mut buf, b"\" fill-opacity=\"0.85\" stroke=\"#0f172a\" stroke-opacity=\"0.25\" stroke-width=\"0.8\"/>");
 
         push_b(&mut buf, b"<text x=\"");
-        push_f2(&mut buf, b.x);
-        push_b(&mut buf, b"\" y=\"");
-        push_f2(&mut buf, b.y - 1.0);
+        push_f2(&mut buf, x); push_b(&mut buf, b"\" y=\"");
+        push_f2(&mut buf, y - r - 3.0);
         push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"'Segoe UI',Arial,sans-serif\" font-weight=\"700\" font-size=\"");
-        push_f2(&mut buf, label_fs);
+        push_f2(&mut buf, fs);
         push_b(&mut buf, b"\" fill=\"#0f172a\">");
         escape_xml(&mut buf, word);
         push_b(&mut buf, b"</text>");
 
-        push_b(&mut buf, b"<text x=\"");
-        push_f2(&mut buf, b.x);
-        push_b(&mut buf, b"\" y=\"");
-        push_f2(&mut buf, b.y + label_fs * 0.85);
-        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"'Segoe UI',Arial,sans-serif\" font-weight=\"600\" font-size=\"");
-        push_f2(&mut buf, val_fs);
-        push_b(&mut buf, b"\" fill=\"#0f172a\" fill-opacity=\"0.75\">");
-        push_f2(&mut buf, freq);
-        push_b(&mut buf, b"</text>");
-
         push_b(&mut buf, b"</g>");
     }
+    push_b(&mut buf, b"</g>");
 
     push_b(&mut buf, b"</svg>");
-
-    let svg = unsafe { String::from_utf8_unchecked(buf) };
-    let slots_json;
-    let json: &str = if auto_hover { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
-    build_chart_html(cfg.title, &svg, json)
+    finalize(cfg, buf)
 }

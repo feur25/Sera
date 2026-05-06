@@ -1,4 +1,4 @@
-# Word Cloud - Weighted Tokens in a Shape
+# Word Cloud - Weighted Tokens, Four Architectures
 
 <div class="lang-en">
 
@@ -42,37 +42,60 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 ## Signature
 
-`sp.build_wordcloud(title, words, frequencies, *, variant="basic", min_font=12, max_font=72, **kwargs) -> Chart`
+`sp.build_wordcloud(title, words, frequencies, *, variant="basic", shape="rect", **kwargs) -> Chart`
 
 Aliases: `sp.build_wordcloud` &middot; `sp.wordcloud` &middot; `sp.word_cloud` &middot; `sp.tag_cloud` &middot; `sp.cloud` &middot; `sp.text_cloud` &middot; `sp.token_cloud`
 
 ## Description
 
-`sp.build_wordcloud()` packs weighted tokens inside a parametric shape mask. Font size encodes the frequency, color rotates through the palette, and the `variant` keyword swaps the boundary - rectangular spiral, circle, heart, stylised bird, packed bubbles or sunglasses silhouette - so the same data can be packaged for editorial, dashboard or social contexts.
+`sp.build_wordcloud()` packs weighted tokens into four distinct rendering architectures. The `basic` variant is the canonical spiral packer driven by a parametric `shape=` mask (rectangle, circle, heart, bird, glasses, diamond, star). The `image` variant accepts any binary mask and shapes the cloud after a real silhouette - logo, icon, photo. The `labelmap` variant draws a clustered scatter with cluster labels placed by leader lines (datamapplot style). The `network` variant lays out keywords as a co-occurrence graph with bezier-curved edges (academic keyword-map style).
 
 ## Variants
 
 | Variant | Aliases | Description |
 |---|---|---|
-| `"basic"` | `basic / default / spiral / rect` | Classic Archimedean-spiral packing inside a rectangle - the textbook word cloud. |
-| `"circle"` | `circle / round / disk / ball` | Words packed inside a perfect disc - clean editorial silhouette ideal for thumbnails. |
-| `"heart"` | `heart / love / valentine` | Cardioid heart silhouette - perfect for sentiment, brand-love or community storytelling. |
-| `"bird"` | `bird / twitter / tweet / icon` | Composite-disk silhouette evoking a stylised bird - perfect for social-feed buzz boards. |
-| `"bubble"` | `bubble / bubbles / packed / packing / circles` | Each token is rendered as its own colored disc, sized by frequency - editorial bubble pack. |
-| `"glasses"` | `glasses / sunglasses / shades / specs` | Sunglasses silhouette (two ellipses + bridge) - playful headline visual for lifestyle decks. |
+| `"basic"` | `basic / default / spiral / rect / shape / shaped` | Spiral packing inside a parametric shape mask. Pick the silhouette via the `shape=` argument (rect, circle, heart, bird, glasses, diamond, star). |
+| `"image"` | `image / img / mask / picture / photo / silhouette` | Words flow inside a custom binary image mask - upload any silhouette (logo, icon, photo) and the cloud takes its shape. |
+| `"labelmap"` | `labelmap / label_map / datamap / datamapplot / topic_map / scatter_labels` | Datamapplot-style topic map - clustered scatter of points colored per category, with cluster labels positioned via leader lines (a la datamapplot). |
+| `"network"` | `network / graph / keywords / co_occurrence / cooccurrence / knowledge_graph` | Keyword co-occurrence graph - golden-angle node layout, bezier-curved edges, frequency-sized circles. Editorial style of academic keyword maps. |
+
+### Shapes (for variant `basic`)
+
+The `basic` variant accepts a `shape=` argument that selects the silhouette mask:
+
+| Shape | Aliases | Description |
+|---|---|---|
+| `"rect"` | `rect / rectangle / box / default` | Rectangular Archimedean spiral - the textbook word cloud. |
+| `"circle"` | `circle / round / disk / ball` | Words packed inside a perfect disc. |
+| `"heart"` | `heart / love / valentine` | Cardioid heart silhouette. |
+| `"bird"` | `bird / twitter / tweet / icon` | Composite-disk stylised bird silhouette. |
+| `"glasses"` | `glasses / sunglasses / shades / specs` | Sunglasses silhouette (two ellipses + bridge). |
+| `"diamond"` | `diamond / rhombus / lozenge` | Rotated square / rhombus silhouette. |
+| `"star"` | `star / starburst / 5-point` | 5-pointed star silhouette. |
 
 ## Parameters
 
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `title` | `str` | required | Chart title |
-| `words` | `list[str]` | required | Tokens to render |
+| `words` | `list[str]` | required | Tokens (variants `basic`, `image`, `network`) |
 | `frequencies` | `list[float]` | required | Weight per word (controls size) |
-| `variant` | `str` | "basic" | Shape mask (see table) |
+| `variant` | `str` | "basic" | Rendering mode (see Variants) |
+| `shape` | `str` | "rect" | Sub-shape for `basic` (see Shapes) |
+| `mask` | `list[int]` | None | Binary mask (`image` variant) - row-major, 1 = inside |
+| `mask_width` | `int` | 0 | Mask width in pixels (`image` variant) |
+| `mask_height` | `int` | 0 | Mask height in pixels (`image` variant) |
+| `points_x` | `list[float]` | None | Scatter x (`labelmap` variant) |
+| `points_y` | `list[float]` | None | Scatter y (`labelmap` variant) |
+| `category_indices` | `list[int]` | None | Cluster id per point (`labelmap` variant) |
+| `cluster_labels` | `list[str]` | None | Label per cluster (`labelmap` variant) |
+| `edges_i` | `list[int]` | None | Edge source indices (`network` variant) |
+| `edges_j` | `list[int]` | None | Edge target indices (`network` variant) |
+| `edges_w` | `list[float]` | None | Edge weights (`network` variant) |
 | `min_font` | `float` | 12.0 | Smallest rendered font size |
 | `max_font` | `float` | 72.0 | Largest rendered font size |
 | `palette` | `list[int]` | None | Custom palette |
-| `bg_color` | `str` | "#1a1a2e" | Background color |
+| `bg_color` | `str` | auto | Background color |
 | `width` | `int` | 900 | Canvas width (px) |
 | `height` | `int` | 500 | Canvas height (px) |
 
@@ -86,33 +109,31 @@ Aliases: `sp.build_wordcloud` &middot; `sp.wordcloud` &middot; `sp.word_cloud` &
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('wordcloud-en')" title="Toggle">&#x21C6;</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('wordcloud-en','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
-<button class="sp-cls-tab" onclick="spCls('wordcloud-en','circle',this)"><span class="sp-cic">C</span><span class="sp-clb">Circle</span></button>
-<button class="sp-cls-tab" onclick="spCls('wordcloud-en','heart',this)"><span class="sp-cic">H</span><span class="sp-clb">Heart</span></button>
-<button class="sp-cls-tab" onclick="spCls('wordcloud-en','bird',this)"><span class="sp-cic">T</span><span class="sp-clb">Bird</span></button>
-<button class="sp-cls-tab" onclick="spCls('wordcloud-en','bubble',this)"><span class="sp-cic">U</span><span class="sp-clb">Bubble</span></button>
-<button class="sp-cls-tab" onclick="spCls('wordcloud-en','glasses',this)"><span class="sp-cic">G</span><span class="sp-clb">Glasses</span></button>
+<button class="sp-cls-tab" onclick="spCls('wordcloud-en','image',this)"><span class="sp-cic">I</span><span class="sp-clb">Image</span></button>
+<button class="sp-cls-tab" onclick="spCls('wordcloud-en','labelmap',this)"><span class="sp-cic">L</span><span class="sp-clb">LabelMap</span></button>
+<button class="sp-cls-tab" onclick="spCls('wordcloud-en','network',this)"><span class="sp-cic">N</span><span class="sp-clb">Network</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="wordcloud-en-basic">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / spiral / rect</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / spiral / rect / shape / shaped</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Classic Archimedean-spiral packing inside a rectangle - the textbook word cloud.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Spiral packing inside a parametric shape mask. Pick the silhouette via the `shape=` argument (rect, circle, heart, bird, glasses, diamond, star).</p>
 
 <div class="sp-preview-label">Code</div>
 
 ```python
 import seraplot as sp
 
-words = ["Python", "Rust", "Data", "ML", "AI", "Cloud", "GPU", "Vector",
-         "Tensor", "Graph", "Pandas", "NumPy", "Polars", "Arrow"]
-freqs = [98, 92, 88, 80, 74, 66, 60, 54, 48, 42, 36, 30, 24, 18]
+words = ["Python","Rust","Data","ML","AI","Cloud","GPU","Vector",
+         "Tensor","Graph","Pandas","NumPy","Polars","Arrow","Spark",
+         "Kafka","Docker","K8s","FastAPI","Tokio","Async","Serde"]
+freqs  = [98,92,88,80,74,66,60,54,48,42,36,30,24,18,16,14,12,11,10,9,8,7]
 
 chart = sp.build_wordcloud(
     title="Tech stack", words=words, frequencies=freqs,
-    variant="basic",
-    palette=[0x6366F1, 0x22D3EE, 0xF59E0B, 0xEF4444,
-             0x10B981, 0xA855F7, 0xEC4899, 0x14B8A6],
-    bg_color="#0f172a", min_font=12, max_font=58,
+    variant="basic", shape="heart",
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    bg_color="#fdf2f8", min_font=12, max_font=58,
     width=720, height=440,
 )
 chart.show()
@@ -121,145 +142,103 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-basic.html"></iframe>
 </div>
-<div class="sp-variant" id="wordcloud-en-circle">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"circle"</code></span><span><strong>Aliases</strong> <code>circle / round / disk / ball</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-variant" id="wordcloud-en-image">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"image"</code></span><span><strong>Aliases</strong> <code>image / img / mask / picture / photo / silhouette</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Words packed inside a perfect disc - clean editorial silhouette ideal for thumbnails.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Words flow inside a custom binary image mask - upload any silhouette (logo, icon, photo) and the cloud takes its shape.</p>
 
 <div class="sp-preview-label">Code</div>
 
 ```python
 import seraplot as sp
 
-words = ["Python", "Rust", "Data", "ML", "AI", "Cloud", "GPU", "Vector",
-         "Tensor", "Graph", "Pandas", "NumPy", "Polars", "Arrow"]
-freqs = [98, 92, 88, 80, 74, 66, 60, 54, 48, 42, 36, 30, 24, 18]
+mw, mh = 80, 40
+mask = [
+    1 if ((x-40)**2/40**2 + (y-20)**2/20**2) <= 1.0 else 0
+    for y in range(mh) for x in range(mw)
+]
+
+words = ["Python","Rust","Data","ML","AI","Cloud","GPU","Vector"]
+freqs = [98,92,88,80,74,66,60,54]
 
 chart = sp.build_wordcloud(
-    title="Tech stack", words=words, frequencies=freqs,
-    variant="circle",
-    palette=[0x6366F1, 0x22D3EE, 0xF59E0B, 0xEF4444,
-             0x10B981, 0xA855F7, 0xEC4899, 0x14B8A6],
-    bg_color="#0f172a", min_font=12, max_font=58,
-    width=720, height=440,
+    title="Image-mask cloud", words=words, frequencies=freqs,
+    variant="image", mask=mask, mask_width=mw, mask_height=mh,
+    bg_color="#ffffff", width=720, height=440,
 )
 chart.show()
 ```
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-circle.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/wordcloud-image.html"></iframe>
 </div>
-<div class="sp-variant" id="wordcloud-en-heart">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"heart"</code></span><span><strong>Aliases</strong> <code>heart / love / valentine</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-variant" id="wordcloud-en-labelmap">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"labelmap"</code></span><span><strong>Aliases</strong> <code>labelmap / label_map / datamap / datamapplot / topic_map / scatter_labels</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Cardioid heart silhouette - perfect for sentiment, brand-love or community storytelling.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Datamapplot-style topic map - clustered scatter of points colored per category, with cluster labels positioned via leader lines (a la datamapplot).</p>
 
 <div class="sp-preview-label">Code</div>
 
 ```python
-import seraplot as sp
+import seraplot as sp, random
+random.seed(0)
 
-words = ["Python", "Rust", "Data", "ML", "AI", "Cloud", "GPU", "Vector",
-         "Tensor", "Graph", "Pandas", "NumPy", "Polars", "Arrow"]
-freqs = [98, 92, 88, 80, 74, 66, 60, 54, 48, 42, 36, 30, 24, 18]
+centers = [(0,0),(2,2),(-2,2),(2,-2),(-2,-2)]
+labels  = ["NLP","Vision","Audio","Tabular","RL"]
+px, py, ci = [], [], []
+for k,(cx,cy) in enumerate(centers):
+    for _ in range(120):
+        px.append(cx + random.gauss(0,0.55))
+        py.append(cy + random.gauss(0,0.55))
+        ci.append(k)
 
 chart = sp.build_wordcloud(
-    title="Tech stack", words=words, frequencies=freqs,
-    variant="heart",
-    palette=[0x6366F1, 0x22D3EE, 0xF59E0B, 0xEF4444,
-             0x10B981, 0xA855F7, 0xEC4899, 0x14B8A6],
-    bg_color="#fdf2f8", min_font=12, max_font=58,
-    width=720, height=440,
+    title="Topic map", words=labels, frequencies=[1]*len(labels),
+    variant="labelmap",
+    points_x=px, points_y=py,
+    category_indices=ci, cluster_labels=labels,
+    bg_color="#fafafa", width=720, height=440,
 )
 chart.show()
 ```
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-heart.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/wordcloud-labelmap.html"></iframe>
 </div>
-<div class="sp-variant" id="wordcloud-en-bird">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"bird"</code></span><span><strong>Aliases</strong> <code>bird / twitter / tweet / icon</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-variant" id="wordcloud-en-network">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"network"</code></span><span><strong>Aliases</strong> <code>network / graph / keywords / co_occurrence / cooccurrence / knowledge_graph</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Composite-disk silhouette evoking a stylised bird - perfect for social-feed buzz boards.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Keyword co-occurrence graph - golden-angle node layout, bezier-curved edges, frequency-sized circles. Editorial style of academic keyword maps.</p>
 
 <div class="sp-preview-label">Code</div>
 
 ```python
-import seraplot as sp
+import seraplot as sp, random
+random.seed(0)
 
-words = ["Python", "Rust", "Data", "ML", "AI", "Cloud", "GPU", "Vector",
-         "Tensor", "Graph", "Pandas", "NumPy", "Polars", "Arrow"]
-freqs = [98, 92, 88, 80, 74, 66, 60, 54, 48, 42, 36, 30, 24, 18]
+words = ["data","python","rust","machine","learning","model","training",
+         "feature","vector","neural","deep","tensor","gradient","loss",
+         "accuracy","metric","pipeline","encoder","decoder","token",
+         "batch","epoch","optimizer","attention","layer","kernel"]
+freqs = [random.randint(8,90) for _ in words]
+
+ei, ej, ew = [], [], []
+for i in range(len(words)):
+    for j in range(i+1, len(words)):
+        if random.random() < 0.07:
+            ei.append(i); ej.append(j); ew.append(random.random())
 
 chart = sp.build_wordcloud(
-    title="Tech stack", words=words, frequencies=freqs,
-    variant="bird",
-    palette=[0x6366F1, 0x22D3EE, 0xF59E0B, 0xEF4444,
-             0x10B981, 0xA855F7, 0xEC4899, 0x14B8A6],
-    bg_color="#0f172a", min_font=12, max_font=58,
-    width=720, height=440,
+    title="Keyword graph", words=words, frequencies=freqs,
+    variant="network",
+    edges_i=ei, edges_j=ej, edges_w=ew,
+    bg_color="#ffffff", width=720, height=440,
 )
 chart.show()
 ```
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-bird.html"></iframe>
-</div>
-<div class="sp-variant" id="wordcloud-en-bubble">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code></span><span><strong>Aliases</strong> <code>bubble / bubbles / packed / packing / circles</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Each token is rendered as its own colored disc, sized by frequency - editorial bubble pack.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-words = ["Python", "Rust", "Data", "ML", "AI", "Cloud", "GPU", "Vector",
-         "Tensor", "Graph", "Pandas", "NumPy", "Polars", "Arrow"]
-freqs = [98, 92, 88, 80, 74, 66, 60, 54, 48, 42, 36, 30, 24, 18]
-
-chart = sp.build_wordcloud(
-    title="Tech stack", words=words, frequencies=freqs,
-    variant="bubble",
-    palette=[0x6366F1, 0x22D3EE, 0xF59E0B, 0xEF4444,
-             0x10B981, 0xA855F7, 0xEC4899, 0x14B8A6],
-    bg_color="#ffffff", min_font=12, max_font=58,
-    width=720, height=440,
-)
-chart.show()
-```
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-bubble.html"></iframe>
-</div>
-<div class="sp-variant" id="wordcloud-en-glasses">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"glasses"</code></span><span><strong>Aliases</strong> <code>glasses / sunglasses / shades / specs</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Sunglasses silhouette (two ellipses + bridge) - playful headline visual for lifestyle decks.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-words = ["Python", "Rust", "Data", "ML", "AI", "Cloud", "GPU", "Vector",
-         "Tensor", "Graph", "Pandas", "NumPy", "Polars", "Arrow"]
-freqs = [98, 92, 88, 80, 74, 66, 60, 54, 48, 42, 36, 30, 24, 18]
-
-chart = sp.build_wordcloud(
-    title="Tech stack", words=words, frequencies=freqs,
-    variant="glasses",
-    palette=[0x6366F1, 0x22D3EE, 0xF59E0B, 0xEF4444,
-             0x10B981, 0xA855F7, 0xEC4899, 0x14B8A6],
-    bg_color="#ffffff", min_font=12, max_font=58,
-    width=720, height=440,
-)
-chart.show()
-```
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-glasses.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/wordcloud-network.html"></iframe>
 </div>
 </div>
 </div>
@@ -270,39 +249,62 @@ chart.show()
 
 <h2>Signature</h2>
 
-`sp.build_wordcloud(title, words, frequencies, *, variant="basic", min_font=12, max_font=72, **kwargs) -> Chart`
+`sp.build_wordcloud(title, words, frequencies, *, variant="basic", shape="rect", **kwargs) -> Chart`
 
 Aliases: `sp.build_wordcloud` &middot; `sp.wordcloud` &middot; `sp.word_cloud` &middot; `sp.tag_cloud` &middot; `sp.cloud` &middot; `sp.text_cloud` &middot; `sp.token_cloud`
 
 <h2>Description</h2>
 
-`sp.build_wordcloud()` empile des tokens ponderes dans un masque parametrique. La taille de police encode la frequence, la couleur tourne sur la palette, et le mot-cle `variant` change la frontiere - rectangle en spirale, cercle, coeur, oiseau stylise, bulles compactes ou silhouette de lunettes - pour adapter la meme donnee a un usage editorial, dashboard ou reseaux sociaux.
+`sp.build_wordcloud()` packe des tokens ponderes selon quatre architectures de rendu distinctes. La variante `basic` est le packer spirale canonique pilote par un masque parametrique `shape=` (rectangle, cercle, coeur, oiseau, lunettes, losange, etoile). La variante `image` accepte n importe quel masque binaire et donne au nuage la forme d une vraie silhouette - logo, icone, photo. La variante `labelmap` dessine un scatter clusterise avec des etiquettes de cluster positionnees par lignes de rappel (style datamapplot). La variante `network` dispose les mots-cles en graphe de co-occurrence avec des aretes courbes bezier (style carte de mots-cles academique).
 
 <h2>Variantes</h2>
 
 | Variante | Alias | Description |
 |---|---|---|
-| `"basic"` | `basic / default / spiral / rect` | Spirale d Archimede classique dans un rectangle - le word cloud canonique. |
-| `"circle"` | `circle / round / disk / ball` | Mots empiles dans un disque parfait - silhouette editoriale pour vignettes. |
-| `"heart"` | `heart / love / valentine` | Silhouette de coeur (cardioide) - parfait pour sentiment, brand-love, communautes. |
-| `"bird"` | `bird / twitter / tweet / icon` | Silhouette composee de disques evoquant un oiseau - boards de buzz reseaux sociaux. |
-| `"bubble"` | `bubble / bubbles / packed / packing / circles` | Chaque token devient un disque colore, taille par la frequence - bubble pack editorial. |
-| `"glasses"` | `glasses / sunglasses / shades / specs` | Silhouette de lunettes de soleil (deux ellipses + pont) - visuel ludique pour decks lifestyle. |
+| `"basic"` | `basic / default / spiral / rect / shape / shaped` | Packing en spirale dans un masque parametrique. Choisissez la silhouette via l argument `shape=` (rect, circle, heart, bird, glasses, diamond, star). |
+| `"image"` | `image / img / mask / picture / photo / silhouette` | Mots a l interieur d un masque binaire personnalise - uploadez n importe quelle silhouette (logo, icone, photo) et le nuage en prend la forme. |
+| `"labelmap"` | `labelmap / label_map / datamap / datamapplot / topic_map / scatter_labels` | Carte thematique style datamapplot - scatter de points clusterises colores par categorie, avec etiquettes de cluster positionnees via lignes de rappel. |
+| `"network"` | `network / graph / keywords / co_occurrence / cooccurrence / knowledge_graph` | Graphe de co-occurrence de mots-cles - layout en angle d or, aretes courbes bezier, cercles dimensionnes par frequence. Style editorial des cartes de mots-cles academiques. |
+
+<h3>Formes (pour la variante `basic`)</h3>
+
+La variante `basic` accepte un argument `shape=` qui choisit le masque de silhouette :
+
+| Forme | Alias | Description |
+|---|---|---|
+| `"rect"` | `rect / rectangle / box / default` | Rectangular Archimedean spiral - the textbook word cloud. |
+| `"circle"` | `circle / round / disk / ball` | Words packed inside a perfect disc. |
+| `"heart"` | `heart / love / valentine` | Cardioid heart silhouette. |
+| `"bird"` | `bird / twitter / tweet / icon` | Composite-disk stylised bird silhouette. |
+| `"glasses"` | `glasses / sunglasses / shades / specs` | Sunglasses silhouette (two ellipses + bridge). |
+| `"diamond"` | `diamond / rhombus / lozenge` | Rotated square / rhombus silhouette. |
+| `"star"` | `star / starburst / 5-point` | 5-pointed star silhouette. |
 
 <h2>Parametres</h2>
 
 | Parametre | Type | Defaut | Description |
 |---|---|---|---|
 | `title` | `str` | requis | Titre du graphique |
-| `words` | `list[str]` | requis | Tokens a afficher |
-| `frequencies` | `list[float]` | requis | Poids par mot (taille de police) |
-| `variant` | `str` | "basic" | Masque de forme (voir tableau) |
-| `min_font` | `float` | 12.0 | Police mini |
-| `max_font` | `float` | 72.0 | Police maxi |
+| `words` | `list[str]` | requis | Tokens (variantes `basic`, `image`, `network`) |
+| `frequencies` | `list[float]` | requis | Poids par mot (controle la taille) |
+| `variant` | `str` | "basic" | Mode de rendu (voir Variantes) |
+| `shape` | `str` | "rect" | Sous-forme pour `basic` (voir Formes) |
+| `mask` | `list[int]` | None | Masque binaire (variante `image`) - row-major, 1 = interieur |
+| `mask_width` | `int` | 0 | Largeur du masque (variante `image`) |
+| `mask_height` | `int` | 0 | Hauteur du masque (variante `image`) |
+| `points_x` | `list[float]` | None | Scatter x (variante `labelmap`) |
+| `points_y` | `list[float]` | None | Scatter y (variante `labelmap`) |
+| `category_indices` | `list[int]` | None | Id de cluster par point (variante `labelmap`) |
+| `cluster_labels` | `list[str]` | None | Etiquette par cluster (variante `labelmap`) |
+| `edges_i` | `list[int]` | None | Indices source des aretes (variante `network`) |
+| `edges_j` | `list[int]` | None | Indices cible des aretes (variante `network`) |
+| `edges_w` | `list[float]` | None | Poids des aretes (variante `network`) |
+| `min_font` | `float` | 12.0 | Plus petite taille de police rendue |
+| `max_font` | `float` | 72.0 | Plus grande taille de police rendue |
 | `palette` | `list[int]` | None | Palette personnalisee |
-| `bg_color` | `str` | "#1a1a2e" | Couleur de fond |
-| `width` | `int` | 900 | Largeur (px) |
-| `height` | `int` | 500 | Hauteur (px) |
+| `bg_color` | `str` | auto | Couleur de fond |
+| `width` | `int` | 900 | Largeur du canvas (px) |
+| `height` | `int` | 500 | Hauteur du canvas (px) |
 
 <h2>Retour</h2>
 
@@ -312,33 +314,31 @@ Aliases: `sp.build_wordcloud` &middot; `sp.wordcloud` &middot; `sp.word_cloud` &
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('wordcloud-fr')" title="Toggle">&#x21C6;</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('wordcloud-fr','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
-<button class="sp-cls-tab" onclick="spCls('wordcloud-fr','circle',this)"><span class="sp-cic">C</span><span class="sp-clb">Circle</span></button>
-<button class="sp-cls-tab" onclick="spCls('wordcloud-fr','heart',this)"><span class="sp-cic">H</span><span class="sp-clb">Heart</span></button>
-<button class="sp-cls-tab" onclick="spCls('wordcloud-fr','bird',this)"><span class="sp-cic">T</span><span class="sp-clb">Bird</span></button>
-<button class="sp-cls-tab" onclick="spCls('wordcloud-fr','bubble',this)"><span class="sp-cic">U</span><span class="sp-clb">Bubble</span></button>
-<button class="sp-cls-tab" onclick="spCls('wordcloud-fr','glasses',this)"><span class="sp-cic">G</span><span class="sp-clb">Glasses</span></button>
+<button class="sp-cls-tab" onclick="spCls('wordcloud-fr','image',this)"><span class="sp-cic">I</span><span class="sp-clb">Image</span></button>
+<button class="sp-cls-tab" onclick="spCls('wordcloud-fr','labelmap',this)"><span class="sp-cic">L</span><span class="sp-clb">LabelMap</span></button>
+<button class="sp-cls-tab" onclick="spCls('wordcloud-fr','network',this)"><span class="sp-cic">N</span><span class="sp-clb">Network</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="wordcloud-fr-basic">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / spiral / rect</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / spiral / rect / shape / shaped</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Spirale d Archimede classique dans un rectangle - le word cloud canonique.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Packing en spirale dans un masque parametrique. Choisissez la silhouette via l argument `shape=` (rect, circle, heart, bird, glasses, diamond, star).</p>
 
 <div class="sp-preview-label">Code</div>
 
 ```python
 import seraplot as sp
 
-words = ["Python", "Rust", "Data", "ML", "AI", "Cloud", "GPU", "Vector",
-         "Tensor", "Graph", "Pandas", "NumPy", "Polars", "Arrow"]
-freqs = [98, 92, 88, 80, 74, 66, 60, 54, 48, 42, 36, 30, 24, 18]
+words = ["Python","Rust","Data","ML","AI","Cloud","GPU","Vector",
+         "Tensor","Graph","Pandas","NumPy","Polars","Arrow","Spark",
+         "Kafka","Docker","K8s","FastAPI","Tokio","Async","Serde"]
+freqs  = [98,92,88,80,74,66,60,54,48,42,36,30,24,18,16,14,12,11,10,9,8,7]
 
 chart = sp.build_wordcloud(
     title="Tech stack", words=words, frequencies=freqs,
-    variant="basic",
-    palette=[0x6366F1, 0x22D3EE, 0xF59E0B, 0xEF4444,
-             0x10B981, 0xA855F7, 0xEC4899, 0x14B8A6],
-    bg_color="#0f172a", min_font=12, max_font=58,
+    variant="basic", shape="heart",
+    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
+    bg_color="#fdf2f8", min_font=12, max_font=58,
     width=720, height=440,
 )
 chart.show()
@@ -347,145 +347,103 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-basic.html"></iframe>
 </div>
-<div class="sp-variant" id="wordcloud-fr-circle">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"circle"</code></span><span><strong>Aliases</strong> <code>circle / round / disk / ball</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-variant" id="wordcloud-fr-image">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"image"</code></span><span><strong>Aliases</strong> <code>image / img / mask / picture / photo / silhouette</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Mots empiles dans un disque parfait - silhouette editoriale pour vignettes.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Mots a l interieur d un masque binaire personnalise - uploadez n importe quelle silhouette (logo, icone, photo) et le nuage en prend la forme.</p>
 
 <div class="sp-preview-label">Code</div>
 
 ```python
 import seraplot as sp
 
-words = ["Python", "Rust", "Data", "ML", "AI", "Cloud", "GPU", "Vector",
-         "Tensor", "Graph", "Pandas", "NumPy", "Polars", "Arrow"]
-freqs = [98, 92, 88, 80, 74, 66, 60, 54, 48, 42, 36, 30, 24, 18]
+mw, mh = 80, 40
+mask = [
+    1 if ((x-40)**2/40**2 + (y-20)**2/20**2) <= 1.0 else 0
+    for y in range(mh) for x in range(mw)
+]
+
+words = ["Python","Rust","Data","ML","AI","Cloud","GPU","Vector"]
+freqs = [98,92,88,80,74,66,60,54]
 
 chart = sp.build_wordcloud(
-    title="Tech stack", words=words, frequencies=freqs,
-    variant="circle",
-    palette=[0x6366F1, 0x22D3EE, 0xF59E0B, 0xEF4444,
-             0x10B981, 0xA855F7, 0xEC4899, 0x14B8A6],
-    bg_color="#0f172a", min_font=12, max_font=58,
-    width=720, height=440,
+    title="Image-mask cloud", words=words, frequencies=freqs,
+    variant="image", mask=mask, mask_width=mw, mask_height=mh,
+    bg_color="#ffffff", width=720, height=440,
 )
 chart.show()
 ```
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-circle.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/wordcloud-image.html"></iframe>
 </div>
-<div class="sp-variant" id="wordcloud-fr-heart">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"heart"</code></span><span><strong>Aliases</strong> <code>heart / love / valentine</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-variant" id="wordcloud-fr-labelmap">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"labelmap"</code></span><span><strong>Aliases</strong> <code>labelmap / label_map / datamap / datamapplot / topic_map / scatter_labels</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Silhouette de coeur (cardioide) - parfait pour sentiment, brand-love, communautes.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Carte thematique style datamapplot - scatter de points clusterises colores par categorie, avec etiquettes de cluster positionnees via lignes de rappel.</p>
 
 <div class="sp-preview-label">Code</div>
 
 ```python
-import seraplot as sp
+import seraplot as sp, random
+random.seed(0)
 
-words = ["Python", "Rust", "Data", "ML", "AI", "Cloud", "GPU", "Vector",
-         "Tensor", "Graph", "Pandas", "NumPy", "Polars", "Arrow"]
-freqs = [98, 92, 88, 80, 74, 66, 60, 54, 48, 42, 36, 30, 24, 18]
+centers = [(0,0),(2,2),(-2,2),(2,-2),(-2,-2)]
+labels  = ["NLP","Vision","Audio","Tabular","RL"]
+px, py, ci = [], [], []
+for k,(cx,cy) in enumerate(centers):
+    for _ in range(120):
+        px.append(cx + random.gauss(0,0.55))
+        py.append(cy + random.gauss(0,0.55))
+        ci.append(k)
 
 chart = sp.build_wordcloud(
-    title="Tech stack", words=words, frequencies=freqs,
-    variant="heart",
-    palette=[0x6366F1, 0x22D3EE, 0xF59E0B, 0xEF4444,
-             0x10B981, 0xA855F7, 0xEC4899, 0x14B8A6],
-    bg_color="#fdf2f8", min_font=12, max_font=58,
-    width=720, height=440,
+    title="Topic map", words=labels, frequencies=[1]*len(labels),
+    variant="labelmap",
+    points_x=px, points_y=py,
+    category_indices=ci, cluster_labels=labels,
+    bg_color="#fafafa", width=720, height=440,
 )
 chart.show()
 ```
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-heart.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/wordcloud-labelmap.html"></iframe>
 </div>
-<div class="sp-variant" id="wordcloud-fr-bird">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"bird"</code></span><span><strong>Aliases</strong> <code>bird / twitter / tweet / icon</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-variant" id="wordcloud-fr-network">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"network"</code></span><span><strong>Aliases</strong> <code>network / graph / keywords / co_occurrence / cooccurrence / knowledge_graph</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Silhouette composee de disques evoquant un oiseau - boards de buzz reseaux sociaux.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Graphe de co-occurrence de mots-cles - layout en angle d or, aretes courbes bezier, cercles dimensionnes par frequence. Style editorial des cartes de mots-cles academiques.</p>
 
 <div class="sp-preview-label">Code</div>
 
 ```python
-import seraplot as sp
+import seraplot as sp, random
+random.seed(0)
 
-words = ["Python", "Rust", "Data", "ML", "AI", "Cloud", "GPU", "Vector",
-         "Tensor", "Graph", "Pandas", "NumPy", "Polars", "Arrow"]
-freqs = [98, 92, 88, 80, 74, 66, 60, 54, 48, 42, 36, 30, 24, 18]
+words = ["data","python","rust","machine","learning","model","training",
+         "feature","vector","neural","deep","tensor","gradient","loss",
+         "accuracy","metric","pipeline","encoder","decoder","token",
+         "batch","epoch","optimizer","attention","layer","kernel"]
+freqs = [random.randint(8,90) for _ in words]
+
+ei, ej, ew = [], [], []
+for i in range(len(words)):
+    for j in range(i+1, len(words)):
+        if random.random() < 0.07:
+            ei.append(i); ej.append(j); ew.append(random.random())
 
 chart = sp.build_wordcloud(
-    title="Tech stack", words=words, frequencies=freqs,
-    variant="bird",
-    palette=[0x6366F1, 0x22D3EE, 0xF59E0B, 0xEF4444,
-             0x10B981, 0xA855F7, 0xEC4899, 0x14B8A6],
-    bg_color="#0f172a", min_font=12, max_font=58,
-    width=720, height=440,
+    title="Keyword graph", words=words, frequencies=freqs,
+    variant="network",
+    edges_i=ei, edges_j=ej, edges_w=ew,
+    bg_color="#ffffff", width=720, height=440,
 )
 chart.show()
 ```
 
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-bird.html"></iframe>
-</div>
-<div class="sp-variant" id="wordcloud-fr-bubble">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code></span><span><strong>Aliases</strong> <code>bubble / bubbles / packed / packing / circles</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chaque token devient un disque colore, taille par la frequence - bubble pack editorial.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-words = ["Python", "Rust", "Data", "ML", "AI", "Cloud", "GPU", "Vector",
-         "Tensor", "Graph", "Pandas", "NumPy", "Polars", "Arrow"]
-freqs = [98, 92, 88, 80, 74, 66, 60, 54, 48, 42, 36, 30, 24, 18]
-
-chart = sp.build_wordcloud(
-    title="Tech stack", words=words, frequencies=freqs,
-    variant="bubble",
-    palette=[0x6366F1, 0x22D3EE, 0xF59E0B, 0xEF4444,
-             0x10B981, 0xA855F7, 0xEC4899, 0x14B8A6],
-    bg_color="#ffffff", min_font=12, max_font=58,
-    width=720, height=440,
-)
-chart.show()
-```
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-bubble.html"></iframe>
-</div>
-<div class="sp-variant" id="wordcloud-fr-glasses">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"glasses"</code></span><span><strong>Aliases</strong> <code>glasses / sunglasses / shades / specs</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Silhouette de lunettes de soleil (deux ellipses + pont) - visuel ludique pour decks lifestyle.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-words = ["Python", "Rust", "Data", "ML", "AI", "Cloud", "GPU", "Vector",
-         "Tensor", "Graph", "Pandas", "NumPy", "Polars", "Arrow"]
-freqs = [98, 92, 88, 80, 74, 66, 60, 54, 48, 42, 36, 30, 24, 18]
-
-chart = sp.build_wordcloud(
-    title="Tech stack", words=words, frequencies=freqs,
-    variant="glasses",
-    palette=[0x6366F1, 0x22D3EE, 0xF59E0B, 0xEF4444,
-             0x10B981, 0xA855F7, 0xEC4899, 0x14B8A6],
-    bg_color="#ffffff", min_font=12, max_font=58,
-    width=720, height=440,
-)
-chart.show()
-```
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/wordcloud-glasses.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/wordcloud-network.html"></iframe>
 </div>
 </div>
 </div>
