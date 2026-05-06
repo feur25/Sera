@@ -451,12 +451,13 @@ print(a.diff(b))</code></pre>
 <div class="cm-section"><span class="cm-sn">17</span><h3>Composers (Grid + Slideshow)</h3><p>Group charts into stories</p></div>
 
 <div class="cm-card cm-new">
-<div class="cm-name"><code class="cm-fn">sp.build_grid(charts, *, cols=2, gap=16, bg=None, cell_height=520) -&gt; Chart</code><span class="cm-tag cm-tag-new">new</span></div>
-<div class="cm-desc">Compose any number of pre-built charts into a responsive CSS-grid layout, each chart hosted in its own iframe.</div>
-<pre><code class="language-python">bar = sp.build_bar_chart("Q-Sales", labels=["Q1","Q2","Q3","Q4"], values=[120,180,150,210])
+<div class="cm-name"><code class="cm-fn">sp.grid(charts, cols=3, gap=16, bg_color="#0a0f1c", title="", cell_height=None) -&gt; Chart</code><span class="cm-tag cm-tag-new">new</span></div>
+<div class="cm-desc">Compose any number of pre-built charts into a responsive CSS-grid layout, each chart hosted in its own iframe. <code>sp.build_grid</code> is an identical alias. <code>cell_height</code> defaults to the chart's own <code>height</code> attribute.</div>
+<pre><code class="language-python">bar  = sp.build_bar_chart("Q-Sales", labels=["Q1","Q2","Q3","Q4"], values=[120,180,150,210])
 line = sp.build_line_chart("Trend", labels=months, values=sales)
-pie = sp.build_pie_chart("Mix", labels=["A","B","C"], values=[40,35,25])
-grid = sp.build_grid([bar, line, pie], cols=2, gap=14, cell_height=320)
+pie  = sp.build_pie_chart("Mix", labels=["A","B","C"], values=[40,35,25])
+
+grid = sp.grid([bar, line, pie], cols=3, gap=14, title="Dashboard")
 grid.show()</code></pre>
 </div>
 <div class="cm-card cm-new">
@@ -919,12 +920,13 @@ print(a.diff(b))</code></pre>
 <div class="cm-section"><span class="cm-sn">17</span><h3>Composers (Grid + Slideshow)</h3><p>Regroupe des charts en histoires</p></div>
 
 <div class="cm-card cm-new">
-<div class="cm-name"><code class="cm-fn">sp.build_grid(charts, *, cols=2, gap=16, bg=None, cell_height=520) -&gt; Chart</code><span class="cm-tag cm-tag-new">nouveau</span></div>
-<div class="cm-desc">Empile N charts deja construits dans une grille CSS responsive, chaque chart isole dans son iframe.</div>
-<pre><code class="language-python">bar = sp.build_bar_chart("Ventes-Q", labels=["Q1","Q2","Q3","Q4"], values=[120,180,150,210])
+<div class="cm-name"><code class="cm-fn">sp.grid(charts, cols=3, gap=16, bg_color="#0a0f1c", title="", cell_height=None) -&gt; Chart</code><span class="cm-tag cm-tag-new">nouveau</span></div>
+<div class="cm-desc">Empile N charts deja construits dans une grille CSS responsive, chaque chart isole dans son iframe. <code>sp.build_grid</code> est un alias identique. <code>cell_height</code> utilise par defaut la hauteur detectee dans le chart.</div>
+<pre><code class="language-python">bar  = sp.build_bar_chart("Ventes-Q", labels=["Q1","Q2","Q3","Q4"], values=[120,180,150,210])
 line = sp.build_line_chart("Tendance", labels=mois, values=ventes)
-pie = sp.build_pie_chart("Mix", labels=["A","B","C"], values=[40,35,25])
-grid = sp.build_grid([bar, line, pie], cols=2, gap=14, cell_height=320)
+pie  = sp.build_pie_chart("Mix", labels=["A","B","C"], values=[40,35,25])
+
+grid = sp.grid([bar, line, pie], cols=3, gap=14, title="Tableau de bord")
 grid.show()</code></pre>
 </div>
 <div class="cm-card cm-new">

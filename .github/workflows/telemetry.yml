@@ -1,0 +1,52 @@
+name: Telemetry Ingest
+
+on:
+  repository_dispatch:
+    types: [seraplot-telemetry]
+
+permissions:
+  contents: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Append telemetry events
+        run: |
+          mkdir -p telemetry
+          PAYLOAD='${{ toJson(github.event.client_payload) }}'
+          VERSION=$(echo "$PAYLOAD" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('version','unknown'))")
+          TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "$PAYLOAD" | python3 - << 'PYEOF'
+          import sys, json, csv, os, datetime
+          raw = sys.stdin.read()
+          payload = json.loads(raw)
+          events = payload.get("events", [])
+          csv_path = "telemetry/data.csv"
+          file_exists = os.path.exists(csv_path)
+          with open(csv_path, "a", newline="", encoding="utf-8") as f:
+              writer = csv.DictWriter(f, fieldnames=["ts","method","duration_ms","version","cpu_count"])
+              if not file_exists:
+                  writer.writeheader()
+              for ev in events:
+                  writer.writerow({
+                      "ts": ev.get("ts", ""),
+                      "method": ev.get("method", ""),
+                      "duration_ms": ev.get("duration_ms", ""),
+                      "version": ev.get("version", ""),
+                      "cpu_count": ev.get("cpu_count", ""),
+                  })
+          PYEOF
+
+      - name: Commit telemetry data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add telemetry/data.csv
+          git diff --cached --quiet || git commit -m "telemetry: append events [skip ci]"
+          git push
