@@ -418,10 +418,13 @@ macro_rules! impl_python_bindings {
                     values: Option<&pyo3::types::PyAny>,
                     kwargs: Option<&pyo3::types::PyDict>,
                 ) -> PyResult<crate::Chart> {
-                    Ok(crate::Chart::new_doc(
+                    let t = std::time::Instant::now();
+                    let result = crate::Chart::new_doc(
                         crate::bindings::commands::charts::$fn(&py_args_to_json(title, labels, values, kwargs)),
                         "",
-                    ))
+                    );
+                    crate::telemetry::record(stringify!($fn), t.elapsed().as_millis() as u64);
+                    Ok(result)
                 }
             };
         }
@@ -474,12 +477,14 @@ macro_rules! impl_python_bindings {
             }
             #[pyo3(signature = (x))]
             pub fn fit(&mut self, x: &PyAny) -> PyResult<()> {
+                let t = std::time::Instant::now();
                 super::ml::with_flat(x, |xf, n, d| {
                     let fp = crate::ml::cache::Fp::new("DBSCAN.fit").f64(self.0.eps).usize(self.0.min_samples).usize(n).usize(d).finish();
                     let _h = crate::ml::cache::TaskHandle::auto("DBSCAN.fit", fp);
                     self.0.fit_flat(xf, n, d);
                     _h.complete(&crate::ml::cache::PartialState::default());
                 })?;
+                crate::telemetry::record("DBSCAN.fit", t.elapsed().as_millis() as u64);
                 Ok(())
             }
             #[pyo3(signature = (x))]
@@ -513,12 +518,14 @@ macro_rules! impl_python_bindings {
             }
             #[pyo3(signature = (x))]
             pub fn fit(&mut self, x: &PyAny) -> PyResult<()> {
-                super::ml::with_flat(x, |flat, n, dims| {
-                    let fp = crate::ml::cache::Fp::new("KMeans.fit").usize(self.0.k).usize(self.0.max_iter).bval(self.0.mini_batch).data(flat, n, dims).finish();
+                let t = std::time::Instant::now();
+                super::ml::with_flat(x, |xf, n, d| {
+                    let fp = crate::ml::cache::Fp::new("KMeans.fit").usize(self.0.k).usize(self.0.max_iter).bval(self.0.mini_batch).data(xf, n, d).finish();
                     let _h = crate::ml::cache::TaskHandle::auto("KMeans.fit", fp);
-                    self.0.fit_flat(flat, n, dims);
+                    self.0.fit_flat(xf, n, d);
                     _h.complete(&crate::ml::cache::PartialState::default());
                 })?;
+                crate::telemetry::record("KMeans.fit", t.elapsed().as_millis() as u64);
                 Ok(())
             }
             #[pyo3(signature = (x))]
@@ -583,6 +590,7 @@ macro_rules! impl_python_bindings {
             background: Option<&str>,
             show_points: bool,
         ) -> PyResult<crate::Chart> {
+            let t = std::time::Instant::now();
             let (bg, pal, grid) = crate::merge_global_opts(background, palette, gridlines);
             let pal_opt: Option<Vec<u32>> = if pal.is_empty() { None } else { Some(pal) };
             if let Ok(cols_obj) = x.getattr("columns") {
@@ -591,20 +599,24 @@ macro_rules! impl_python_bindings {
                     let xv = crate::py_to_f64_vec(py, x.get_item(&cols[0])?)?;
                     let yv = crate::py_to_f64_vec(py, x.get_item(&cols[1])?)?;
                     let auto_title = if title.is_empty() { format!("{} vs {}", cols[0], cols[1]) } else { title.to_string() };
-                    return Ok(crate::Chart::new_doc(
+                    let result = Ok(crate::Chart::new_doc(
                         crate::bindings::commands::charts::plot_chart(
                             &serde_json::json!({"x":xv,"y":yv,"kind":"scatter","title":auto_title,"color_hex":color_hex,"width":width,"height":height,"x_label":x_label,"y_label":y_label,"gridlines":grid,"palette":pal_opt,"background":bg}).to_string()
                         ), "",
                     ));
+                    crate::telemetry::record("plot", t.elapsed().as_millis() as u64);
+                    return result;
                 }
             }
             let xv = crate::py_to_f64_vec(py, x)?;
             let yv: Option<Vec<f64>> = if let Some(yobj) = y { Some(crate::py_to_f64_vec(py, yobj)?) } else { None };
-            Ok(crate::Chart::new_doc(
+            let res = Ok(crate::Chart::new_doc(
                 crate::bindings::commands::charts::plot_chart(
                     &serde_json::json!({"x":xv,"y":yv,"kind":kind,"title":title,"color_hex":color_hex,"show_points":show_points,"width":width,"height":height,"x_label":x_label,"y_label":y_label,"gridlines":grid,"palette":pal_opt,"background":bg}).to_string()
                 ), "",
-            ))
+            ));
+            crate::telemetry::record("plot", t.elapsed().as_millis() as u64);
+            res
         }
 
         #[pyfunction]

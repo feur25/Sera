@@ -1083,6 +1083,11 @@ pub fn chart_variants(py: Python<'_>) -> PyResult<PyObject> {
     out.set_item("dumbbell", build::<DumbbellVariant>(py, DumbbellVariant::keys_and_aliases(), DumbbellVariant::default_key())?)?;
     out.set_item("bullet", build::<BulletVariant>(py, BulletVariant::keys_and_aliases(), BulletVariant::default_key())?)?;
     out.set_item("gauge", build::<GaugeVariant>(py, GaugeVariant::keys_and_aliases(), GaugeVariant::default_key())?)?;
+    
+    use crate::plot::statistical::{LollipopVariant, ParallelVariant, WordCloudVariant};
+    out.set_item("lollipop", build::<LollipopVariant>(py, LollipopVariant::keys_and_aliases(), LollipopVariant::default_key())?)?;
+    out.set_item("parallel", build::<ParallelVariant>(py, ParallelVariant::keys_and_aliases(), ParallelVariant::default_key())?)?;
+    out.set_item("wordcloud", build::<WordCloudVariant>(py, WordCloudVariant::keys_and_aliases(), WordCloudVariant::default_key())?)?;
     Ok(out.into())
 }
 
@@ -1423,6 +1428,14 @@ fn telemetry_path_fn() -> String {
 
 #[cfg(feature = "python")]
 #[pyfunction]
+fn get_metrics() -> PyResult<String> {
+    let summary = crate::telemetry::get_metrics_summary();
+    serde_json::to_string(&summary)
+        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
 #[pyo3(signature = (endpoint, token))]
 fn push_telemetry(py: Python<'_>, endpoint: &str, token: &str) -> PyResult<usize> {
     let events = crate::telemetry::read_pending();
@@ -1430,12 +1443,14 @@ fn push_telemetry(py: Python<'_>, endpoint: &str, token: &str) -> PyResult<usize
     if count == 0 {
         return Ok(0);
     }
+    
+    let summary = crate::telemetry::get_metrics_summary();
+    let system = summary.get("system").cloned().unwrap_or_else(|| serde_json::json!({}));
+    
     let payload = serde_json::json!({
-        "event_type": "seraplot-telemetry",
-        "client_payload": {
-            "events": events,
-            "version": VERSION,
-        }
+        "secret": token,
+        "events": events,
+        "system": system
     });
     let body = serde_json::to_string(&payload)
         .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
@@ -1446,8 +1461,6 @@ fn push_telemetry(py: Python<'_>, endpoint: &str, token: &str) -> PyResult<usize
             let client = reqwest::Client::new();
             let resp = client
                 .post(endpoint)
-                .header("Authorization", format!("Bearer {token}"))
-                .header("Accept", "application/vnd.github+json")
                 .header("Content-Type", "application/json")
                 .header("User-Agent", format!("seraplot/{VERSION}"))
                 .body(body)
@@ -1493,6 +1506,7 @@ fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(sysmon, m)?)?;
     m.add_function(wrap_pyfunction!(telemetry_consent, m)?)?;
     m.add_function(wrap_pyfunction!(telemetry_path_fn, m)?)?;
+    m.add_function(wrap_pyfunction!(get_metrics, m)?)?;
     m.add_function(wrap_pyfunction!(push_telemetry, m)?)?;
 
     Ok(())
