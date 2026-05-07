@@ -1,81 +1,86 @@
 # Telemetry
 
 <style>
-/* ── Telemetry page ─────────────────────────────────────────────────────── */
-.tm-hero{margin:1.6em 0 2em;padding:28px 30px;border-radius:14px;background:linear-gradient(135deg,#0a0f1c 0%,#0f1f2e 60%,#0a2340 100%);border:1px solid rgba(56,189,248,.2);box-shadow:0 18px 50px -12px rgba(14,165,233,.15),inset 0 1px 0 rgba(255,255,255,.04);position:relative;overflow:hidden}
-.tm-hero::before{content:"";position:absolute;top:-40%;right:-10%;width:60%;height:180%;background:radial-gradient(ellipse at center,rgba(56,189,248,.12) 0%,transparent 65%);pointer-events:none}
-.tm-hero h2{margin:0 0 8px;font-size:22px;color:#f0f9ff;font-weight:700;letter-spacing:-.01em;border:none}
-.tm-hero p{margin:0;color:#94a3b8;font-size:14px;line-height:1.6;max-width:64ch}
-.tm-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;position:relative;z-index:1}
-.tm-pill{padding:4px 11px;background:rgba(14,165,233,.12);border:1px solid rgba(56,189,248,.25);border-radius:999px;font-size:11px;font-weight:600;color:#7dd3fc;letter-spacing:.04em}
+.tm-hero{margin:1.6em 0 2.4em;padding:40px 42px;border-radius:16px;background:linear-gradient(135deg,#0a0f1c 0%,#0f1f2e 50%,#0a2340 100%);border:1px solid rgba(56,189,248,.25);box-shadow:0 20px 60px -15px rgba(14,165,233,.25),inset 0 1px 0 rgba(255,255,255,.06);position:relative;overflow:hidden;transition:all .3s ease}
+.tm-hero:hover{border-color:rgba(56,189,248,.4);box-shadow:0 25px 70px -12px rgba(14,165,233,.3),inset 0 1px 0 rgba(255,255,255,.08)}
+.tm-hero::before{content:"";position:absolute;top:-50%;right:-5%;width:70%;height:200%;background:radial-gradient(ellipse at center,rgba(56,189,248,.15) 0%,transparent 60%);pointer-events:none;animation:heroGlow 8s ease-in-out infinite}
+.tm-hero::after{content:"";position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(180deg,rgba(255,255,255,.02) 0%,transparent 50%,rgba(56,189,248,.02) 100%);pointer-events:none;border-radius:16px}
+@keyframes heroGlow{0%,100%{opacity:.8}50%{opacity:1.2}}
+.tm-hero h2{margin:0 0 12px;font-size:28px;color:#f0f9ff;font-weight:800;letter-spacing:-.02em;border:none;position:relative;z-index:1}
+.tm-hero p{margin:0;color:#cbd5e1;font-size:15px;line-height:1.7;max-width:68ch;position:relative;z-index:1}
+.tm-pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;position:relative;z-index:1}
+.tm-pill{padding:6px 14px;background:linear-gradient(135deg,rgba(14,165,233,.15),rgba(56,189,248,.08));border:1px solid rgba(56,189,248,.3);border-radius:999px;font-size:11.5px;font-weight:600;color:#7dd3fc;letter-spacing:.05em;transition:all .25s ease;backdrop-filter:blur(8px)}
+.tm-pill:hover{background:linear-gradient(135deg,rgba(14,165,233,.25),rgba(56,189,248,.15));border-color:rgba(56,189,248,.5);transform:translateY(-1px)}
 
-/* ── Status badge ── */
-.tm-status{display:inline-flex;align-items:center;gap:7px;padding:6px 14px;background:#0f172a;border:1px solid #1e293b;border-radius:7px;font-size:12px;color:#64748b;font-weight:600;margin:1.2em 0 .4em;user-select:none}
-.tm-dot{width:8px;height:8px;border-radius:50%;background:#ef4444;box-shadow:0 0 6px #ef4444aa}
-.tm-status.active .tm-dot{background:#22c55e;box-shadow:0 0 6px #22c55eaa}
+.tm-status{display:inline-flex;align-items:center;gap:8px;padding:8px 16px;background:linear-gradient(135deg,#0d1520,#080d18);border:1px solid rgba(34,197,94,.2);border-radius:8px;font-size:12.5px;color:#86efac;font-weight:600;margin:1.4em 0 .6em;user-select:none;box-shadow:0 4px 12px rgba(34,197,94,.1)}
+.tm-dot{width:9px;height:9px;border-radius:50%;background:#22c55e;box-shadow:0 0 8px #22c55eaa;animation:statusPulse 2s ease-in-out infinite}
+@keyframes statusPulse{0%,100%{box-shadow:0 0 8px #22c55eaa}50%{box-shadow:0 0 12px #22c55e}}
 
-/* ── Metrics table ── */
-.tm-table-wrap{overflow-x:auto;margin:1em 0 1.6em;border-radius:10px;border:1px solid #1e293b;background:#080d18}
+.tm-table-wrap{overflow-x:auto;margin:1.2em 0 1.8em;border-radius:12px;border:1px solid rgba(30,45,75,.6);background:linear-gradient(135deg,#080d18,#0a1120);box-shadow:0 8px 32px -8px rgba(0,0,0,.4),inset 0 1px 0 rgba(56,189,248,.1)}
 .tm-table{width:100%;border-collapse:collapse;font-size:12.5px}
-.tm-table thead tr{background:#0d1520}
-.tm-table th{padding:10px 14px;text-align:left;color:#475569;font-weight:700;font-size:11px;letter-spacing:.07em;text-transform:uppercase;border-bottom:1px solid #1e293b;white-space:nowrap}
-.tm-table td{padding:9px 14px;color:#94a3b8;border-bottom:1px solid #0f1a27;vertical-align:top;line-height:1.5}
+.tm-table thead tr{background:linear-gradient(90deg,#0d1520,#0a1220)}
+.tm-table th{padding:12px 16px;text-align:left;color:#93c5fd;font-weight:750;font-size:11px;letter-spacing:.08em;text-transform:uppercase;border-bottom:1px solid rgba(56,189,248,.15);white-space:nowrap;background:linear-gradient(90deg,rgba(56,189,248,.08),rgba(14,165,233,.04))}
+.tm-table td{padding:11px 16px;color:#cbd5e1;border-bottom:1px solid rgba(56,189,248,.08);vertical-align:top;line-height:1.6;transition:all .2s ease}
 .tm-table tr:last-child td{border-bottom:none}
-.tm-table tr:hover td{background:#0a1220}
-.tm-table td:first-child code{background:#0f172a;border:1px solid #334155;color:#38bdf8;padding:2px 7px;border-radius:5px;font-size:11.5px;white-space:nowrap}
-.tm-table td:nth-child(2){color:#64748b;font-size:11.5px;white-space:nowrap}
-.tm-opt{background:rgba(251,146,60,.08);border:1px solid rgba(251,146,60,.2);color:#fb923c;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;letter-spacing:.04em;margin-left:4px;vertical-align:middle}
-.tm-core{background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);color:#818cf8;font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;letter-spacing:.04em;margin-left:4px;vertical-align:middle}
+.tm-table tbody tr:hover{background:rgba(56,189,248,.06);transform:translateX(2px)}
+.tm-table td:first-child code{background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(56,189,248,.06));border:1px solid rgba(56,189,248,.2);color:#38bdf8;padding:3px 9px;border-radius:6px;font-size:11.5px;white-space:nowrap;font-weight:600}
+.tm-opt{background:rgba(251,146,60,.12);border:1px solid rgba(251,146,60,.3);color:#fdba74;font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;letter-spacing:.05em;margin-left:6px;vertical-align:middle;transition:all .2s}
+.tm-opt:hover{background:rgba(251,146,60,.18);border-color:rgba(251,146,60,.5)}
+.tm-core{background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.3);color:#a5b4fc;font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;letter-spacing:.05em;margin-left:6px;vertical-align:middle;transition:all .2s}
+.tm-core:hover{background:rgba(99,102,241,.18);border-color:rgba(99,102,241,.5)}
 
-/* ── Privacy list ── */
-.tm-privacy{list-style:none;padding:0;margin:.8em 0 1.2em;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px}
-.tm-privacy li{display:flex;align-items:center;gap:9px;background:#080d18;border:1px solid #1e293b;border-radius:8px;padding:9px 13px;color:#64748b;font-size:13px}
-.tm-privacy li::before{content:"✕";flex-shrink:0;width:20px;height:20px;border-radius:50%;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:#f87171;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;text-align:center;line-height:20px}
+.tm-privacy{list-style:none;padding:0;margin:1em 0 1.4em;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.tm-privacy li{display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#080d18,#0a1120);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:12px 14px;color:#cbd5e1;font-size:13.5px;transition:all .25s ease;backdrop-filter:blur(4px)}
+.tm-privacy li:hover{border-color:rgba(239,68,68,.4);background:linear-gradient(135deg,#0a1120,#0d1520);transform:translateY(-2px)}
+.tm-privacy li::before{content:"✕";flex-shrink:0;width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,rgba(239,68,68,.2),rgba(239,68,68,.08));border:1.5px solid rgba(239,68,68,.3);color:#f87171;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;text-align:center;line-height:22px}
 
-/* ── Steps ── */
-.tm-steps{counter-reset:step;padding:0;margin:1em 0 1.6em;display:flex;flex-direction:column;gap:0}
-.tm-step{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid #0f1a27;align-items:flex-start}
-.tm-step:last-child{border-bottom:none}
-.tm-step-n{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0ea5e9,#0369a1);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px -3px rgba(14,165,233,.5);margin-top:1px}
-.tm-step-body{flex:1}
-.tm-step-body strong{color:#e2e8f0;font-size:13.5px;display:block;margin-bottom:3px}
-.tm-step-body span{color:#64748b;font-size:12.5px;line-height:1.55}
+.tm-steps{counter-reset:step;padding:0;margin:1.2em 0 1.8em;display:flex;flex-direction:column;gap:0;position:relative}
+.tm-steps::before{content:"";position:absolute;left:13px;top:28px;bottom:0;width:2px;background:linear-gradient(180deg,rgba(56,189,248,.4) 0%,rgba(56,189,248,.1) 100%)}
+.tm-step{display:flex;gap:18px;padding:18px 0;align-items:flex-start;position:relative}
+.tm-step:last-child{padding-bottom:0}
+.tm-step-n{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#38bdf8,#0369a1);color:#fff;font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px -2px rgba(14,165,233,.4),inset 0 1px 2px rgba(255,255,255,.2);position:relative;z-index:2;transition:all .3s ease}
+.tm-step:hover .tm-step-n{transform:scale(1.1);box-shadow:0 6px 20px -2px rgba(14,165,233,.6)}
+.tm-step-body{flex:1;padding-top:2px}
+.tm-step-body strong{color:#f0f9ff;font-size:14px;display:block;margin-bottom:4px;font-weight:700}
+.tm-step-body span{color:#cbd5e1;font-size:13px;line-height:1.6}
 
-/* ── Code cell (scrollable source) ── */
-.tm-source{border:1px solid #1e2d45;border-radius:12px;overflow:hidden;margin:1.4em 0 2em;background:#080c16}
-.tm-source-hdr{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:#0a1120;border-bottom:1px solid #1e2d45}
-.tm-source-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#38bdf8;letter-spacing:.06em;text-transform:uppercase}
-.tm-source-title svg{opacity:.7}
-.tm-source-dots{display:flex;gap:5px}
-.tm-source-dot{width:11px;height:11px;border-radius:50%}
-.tm-scroll{max-height:460px;overflow-y:auto;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#1e3a5f #080c16}
-.tm-scroll::-webkit-scrollbar{width:6px;height:6px}
+.tm-source{border:1px solid rgba(30,45,75,.8);border-radius:14px;overflow:hidden;margin:1.6em 0 2.2em;background:linear-gradient(135deg,#080c16,#0a0f18);box-shadow:0 12px 40px -12px rgba(0,0,0,.5),inset 0 1px 0 rgba(56,189,248,.08);transition:all .3s ease}
+.tm-source:hover{box-shadow:0 16px 50px -10px rgba(14,165,233,.2),inset 0 1px 0 rgba(56,189,248,.12);border-color:rgba(56,189,248,.2)}
+.tm-source-hdr{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:linear-gradient(90deg,#0a1120,#080d18);border-bottom:1px solid rgba(56,189,248,.1)}
+.tm-source-title{display:flex;align-items:center;gap:9px;font-size:12px;font-weight:700;color:#7dd3fc;letter-spacing:.07em;text-transform:uppercase}
+.tm-source-title svg{opacity:.8;transition:all .3s}
+.tm-source:hover .tm-source-title svg{opacity:1;color:#38bdf8}
+.tm-source-dots{display:flex;gap:6px}
+.tm-source-dot{width:12px;height:12px;border-radius:50%;transition:all .25s;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+.tm-scroll{max-height:480px;overflow-y:auto;overflow-x:auto;scrollbar-width:thin;scrollbar-color:#1e3a5f 0080c16}
+.tm-scroll::-webkit-scrollbar{width:7px;height:7px}
 .tm-scroll::-webkit-scrollbar-track{background:#080c16}
-.tm-scroll::-webkit-scrollbar-thumb{background:#1e3a5f;border-radius:3px}
-.tm-scroll pre{margin:0;border-radius:0;padding:18px 20px;background:#080c16}
-.tm-scroll pre code{font-size:12px;line-height:1.65;color:#cdd9e5;background:none;padding:0}
+.tm-scroll::-webkit-scrollbar-thumb{background:linear-gradient(180deg,#1e3a5f,#1a2f4a);border-radius:4px;transition:all .2s}
+.tm-scroll::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,#2a4a7a,#1e3a5f)}
+.tm-scroll pre{margin:0;border-radius:0;padding:20px 22px;background:#080c16}
+.tm-scroll pre code{font-size:12px;line-height:1.7;color:#e2e8f0;background:none;padding:0;font-weight:500}
 
-/* ── API call blocks ── */
-.tm-api{margin:1em 0 1.6em}
-.tm-api-call{background:#080d18;border:1px solid #1e293b;border-radius:8px;overflow:hidden;margin-bottom:10px}
-.tm-api-call pre{margin:0;padding:14px 16px;background:transparent}
-.tm-api-call pre code{font-size:12.5px;line-height:1.55}
+.tm-api{margin:1.2em 0 1.8em}
+.tm-api-call{background:linear-gradient(135deg,#080d18,#0a0f18);border:1px solid rgba(56,189,248,.15);border-radius:10px;overflow:hidden;margin-bottom:12px;transition:all .25s ease;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.tm-api-call:hover{border-color:rgba(56,189,248,.3);box-shadow:0 6px 16px rgba(14,165,233,.15)}
+.tm-api-call pre{margin:0;padding:16px 18px;background:transparent}
+.tm-api-call pre code{font-size:12.5px;line-height:1.65;color:#cbd5e1;font-weight:500}
 
-/* ── Note box ── */
-.tm-note{display:flex;align-items:flex-start;gap:10px;margin:1em 0;padding:12px 16px;background:rgba(14,165,233,.05);border:1px solid rgba(14,165,233,.2);border-radius:8px;font-size:13px;color:#94a3b8;line-height:1.55}
-.tm-note-ico{flex-shrink:0;font-size:16px;margin-top:1px}
-.tm-note strong{color:#7dd3fc}
+.tm-note{display:flex;align-items:flex-start;gap:12px;margin:1.2em 0;padding:14px 18px;background:linear-gradient(135deg,rgba(14,165,233,.08),rgba(56,189,248,.04));border:1px solid rgba(56,189,248,.25);border-radius:10px;font-size:13.5px;color:#cbd5e1;line-height:1.6;backdrop-filter:blur(8px);transition:all .25s ease}
+.tm-note:hover{border-color:rgba(56,189,248,.35);background:linear-gradient(135deg,rgba(14,165,233,.12),rgba(56,189,248,.06))}
+.tm-note-ico{flex-shrink:0;font-size:18px;margin-top:2px;color:#7dd3fc}
+.tm-note strong{color:#93c5fd;font-weight:700}
 
-/* tabs reuse from global */
-.sp-tabs{border:1px solid #1e2d45;border-radius:8px;overflow:hidden;margin:1em 0 1.6em}
-.sp-tab-btns{display:flex;background:#0a1120;border-bottom:1px solid #1e2d45}
-.sp-tb{padding:9px 18px;border:none;background:none;color:#475569;cursor:pointer;font-size:12.5px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#38bdf8;border-bottom-color:#38bdf8}
+.sp-tabs{border:1px solid rgba(30,45,75,.6);border-radius:10px;overflow:hidden;margin:1.2em 0 1.8em;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.sp-tab-btns{display:flex;background:linear-gradient(90deg,#0a1120,#080d18);border-bottom:1px solid rgba(56,189,248,.1)}
+.sp-tb{padding:11px 20px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12.5px;font-weight:600;border-bottom:3px solid transparent;transition:all .2s ease;white-space:nowrap;position:relative}
+.sp-tb:hover{color:#cbd5e1;background:rgba(56,189,248,.04)}
+.sp-tb.sp-act{color:#38bdf8;border-bottom-color:#38bdf8;background:rgba(56,189,248,.08)}
 .sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-.sp-tc pre{margin:0;border-radius:0;padding:14px 16px;overflow-x:auto;background:#080c16}
-.sp-tc pre code{font-size:12.5px;line-height:1.55;color:#cbd5e1;background:none;padding:0}
+.sp-tc.sp-on{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.sp-tc pre{margin:0;border-radius:0;padding:16px 18px;overflow-x:auto;background:#080c16;border-top:1px solid rgba(56,189,248,.08)}
+.sp-tc pre code{font-size:12.5px;line-height:1.65;color:#e2e8f0;background:none;padding:0;font-weight:500}
 </style>
 
 <script>
@@ -200,11 +205,9 @@ telemetry.rs
 use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-// ── GitHub dispatch endpoint (public repository) ─────────────────────────
 const GITHUB_DISPATCH_URL: &str =
     "https://api.github.com/repos/feur25/seraplot/dispatches";
 
-// ── Event structure ───────────────────────────────────────────────────────
 pub struct TelemetryEvent {
     pub method:       String,
     pub duration_ms:  f64,
@@ -246,7 +249,6 @@ impl TelemetryEvent {
     }
 }
 
-// ── Consent gate ─────────────────────────────────────────────────────────
 pub fn is_consent_given() -> bool {
     let path = seraplot_dir().join("consent.json");
     if let Ok(text) = std::fs::read_to_string(&path) {
@@ -269,7 +271,6 @@ pub fn set_consent(enabled: bool) {
     let _ = std::fs::write(dir.join("consent.json"), json);
 }
 
-// ── Record an event ───────────────────────────────────────────────────────
 pub fn record(event: TelemetryEvent) {
     if !is_consent_given() { return; }
 
@@ -290,7 +291,6 @@ pub fn record(event: TelemetryEvent) {
         "ts":          ts,
     });
 
-    // Merge system info fields
     if let (Some(obj), Some(sys)) = (ev.as_object_mut(), sys_info.as_object()) {
         for (k, v) in sys { obj.insert(k.clone(), v.clone()); }
         if let Some(n) = event.data_count   { obj.insert("data_count".into(),   n.into()); }
@@ -300,10 +300,8 @@ pub fn record(event: TelemetryEvent) {
         if let Some(a) = &event.algorithm    { obj.insert("algorithm".into(),    a.clone().into()); }
     }
 
-    // Non-blocking background send
     std::thread::spawn(move || {
         if try_send_event(ev.clone()) { return; }
-        // Fallback: local JSONL
         let path = seraplot_dir().join("telemetry.jsonl");
         use std::io::Write;
         if let Ok(mut f) = std::fs::OpenOptions::new()
@@ -443,7 +441,7 @@ use std::collections::HashMap;
 
 const GITHUB_DISPATCH_URL: &str =
     "https://api.github.com/repos/feur25/seraplot/dispatches";
-// Jeton chargé depuis l'environnement de build — absent du code source
+
 const GITHUB_TOKEN: &str = env!("SERAPLOT_TOKEN", "<non-défini>");
 
 static PYTHON_VER: std::sync::OnceLock<String> = std::sync::OnceLock::new();
@@ -452,7 +450,6 @@ pub fn set_python_version(v: &str) {
     let _ = PYTHON_VER.set(v.to_string());
 }
 
-// ── Événement ────────────────────────────────────────────────────────────
 pub struct TelemetryEvent {
     pub method:       String,
     pub duration_ms:  f64,
@@ -484,7 +481,6 @@ impl TelemetryEvent {
     }
 }
 
-// ── Répertoire de données ─────────────────────────────────────────────────
 fn seraplot_dir() -> PathBuf {
     let home = std::env::var("USERPROFILE")
         .or_else(|_| std::env::var("HOME"))
@@ -493,7 +489,6 @@ fn seraplot_dir() -> PathBuf {
     home.join(".seraplot")
 }
 
-// ── Infos système (exécuté dans le thread d'arrière-plan) ─────────────────
 fn get_system_info() -> serde_json::Value {
     let os        = std::env::consts::OS;
     let arch      = std::env::consts::ARCH;
@@ -505,7 +500,6 @@ fn get_system_info() -> serde_json::Value {
     let (ram_gb, available_ram_gb, cpu_brand) = {
         #[cfg(target_os = "windows")]
         {
-            // Appel PowerShell unique — indépendant de la locale
             let ps = r#"try{\
 $c=Get-CimInstance Win32_ComputerSystem;\
 $o=Get-CimInstance Win32_OperatingSystem;\
@@ -519,7 +513,6 @@ $o.FreePhysicalMemory,$p.Name)\
                 .and_then(|o| String::from_utf8(o.stdout).ok())
                 .unwrap_or_default();
             let parts: Vec<&str> = out.trim().split('|').collect();
-            // TotalPhysicalMemory → octets; FreePhysicalMemory → Ko
             let ram_gb = parts.get(0)
                 .and_then(|s| s.trim().parse::<f64>().ok()).unwrap_or(0.0)
                 / (1024.0_f64 * 1024.0 * 1024.0);
@@ -584,7 +577,6 @@ $o.FreePhysicalMemory,$p.Name)\
     })
 }
 
-// ── Envoi HTTP ────────────────────────────────────────────────────────────
 fn try_send_event(event: serde_json::Value) -> bool {
     if GITHUB_TOKEN.is_empty() { return false; }
     let body = serde_json::json!({
@@ -605,7 +597,6 @@ fn try_send_event(event: serde_json::Value) -> bool {
         .unwrap_or(false)
 }
 
-// ── Consentement ──────────────────────────────────────────────────────────
 pub fn is_consent_given() -> bool {
     let path = seraplot_dir().join("consent.json");
     if !path.exists() { return false; }
@@ -624,7 +615,6 @@ pub fn set_consent(enabled: bool) {
     );
 }
 
-// ── Enregistrement — infos système dans le thread d'arrière-plan ──────────
 pub fn record(event: TelemetryEvent) {
     if !is_consent_given() { return; }
     let ts = SystemTime::now()
@@ -632,7 +622,7 @@ pub fn record(event: TelemetryEvent) {
     let duration_f64: f64 = format!("{:.3}", event.duration_ms)
         .parse().unwrap_or(event.duration_ms);
     std::thread::spawn(move || {
-        let sys_info = get_system_info();   // ← requêtes OS ici
+        let sys_info = get_system_info();
         let mut ev = serde_json::json!({
             "method": event.method, "duration_ms": duration_f64,
             "version": crate::VERSION, "ts": ts
@@ -648,7 +638,6 @@ pub fn record(event: TelemetryEvent) {
             if let Some(ref a) = event.algorithm    { obj.insert("algorithm".into(),    a.clone().into()); }
         }
         if try_send_event(ev.clone()) { return; }
-        // Repli : JSONL local
         let path = seraplot_dir().join("telemetry.jsonl");
         use std::io::Write;
         if let Ok(mut f) = std::fs::OpenOptions::new()
@@ -658,7 +647,6 @@ pub fn record(event: TelemetryEvent) {
     });
 }
 
-// ── Utilitaires ───────────────────────────────────────────────────────────
 pub fn read_pending() -> Vec<serde_json::Value> {
     let path = seraplot_dir().join("telemetry.jsonl");
     if !path.exists() { return vec![]; }
