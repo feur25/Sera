@@ -423,7 +423,7 @@ macro_rules! impl_python_bindings {
                         crate::bindings::commands::charts::$fn(&py_args_to_json(title, labels, values, kwargs)),
                         "",
                     );
-                    crate::telemetry::record(stringify!($fn), t.elapsed().as_millis() as u64);
+                    crate::telemetry::record(crate::telemetry::TelemetryEvent::new(stringify!($fn), t.elapsed().as_secs_f64() * 1000.0));
                     Ok(result)
                 }
             };
@@ -484,7 +484,7 @@ macro_rules! impl_python_bindings {
                     self.0.fit_flat(xf, n, d);
                     _h.complete(&crate::ml::cache::PartialState::default());
                 })?;
-                crate::telemetry::record("DBSCAN.fit", t.elapsed().as_millis() as u64);
+                crate::telemetry::record(crate::telemetry::TelemetryEvent::new("DBSCAN.fit", t.elapsed().as_secs_f64() * 1000.0).with_algorithm("DBSCAN"));
                 Ok(())
             }
             #[pyo3(signature = (x))]
@@ -525,7 +525,7 @@ macro_rules! impl_python_bindings {
                     self.0.fit_flat(xf, n, d);
                     _h.complete(&crate::ml::cache::PartialState::default());
                 })?;
-                crate::telemetry::record("KMeans.fit", t.elapsed().as_millis() as u64);
+                crate::telemetry::record(crate::telemetry::TelemetryEvent::new("KMeans.fit", t.elapsed().as_secs_f64() * 1000.0).with_algorithm("KMeans"));
                 Ok(())
             }
             #[pyo3(signature = (x))]
@@ -604,7 +604,7 @@ macro_rules! impl_python_bindings {
                             &serde_json::json!({"x":xv,"y":yv,"kind":"scatter","title":auto_title,"color_hex":color_hex,"width":width,"height":height,"x_label":x_label,"y_label":y_label,"gridlines":grid,"palette":pal_opt,"background":bg}).to_string()
                         ), "",
                     ));
-                    crate::telemetry::record("plot", t.elapsed().as_millis() as u64);
+                    crate::telemetry::record(crate::telemetry::TelemetryEvent::new("plot", t.elapsed().as_secs_f64() * 1000.0));
                     return result;
                 }
             }
@@ -615,7 +615,7 @@ macro_rules! impl_python_bindings {
                     &serde_json::json!({"x":xv,"y":yv,"kind":kind,"title":title,"color_hex":color_hex,"show_points":show_points,"width":width,"height":height,"x_label":x_label,"y_label":y_label,"gridlines":grid,"palette":pal_opt,"background":bg}).to_string()
                 ), "",
             ));
-            crate::telemetry::record("plot", t.elapsed().as_millis() as u64);
+            crate::telemetry::record(crate::telemetry::TelemetryEvent::new("plot", t.elapsed().as_secs_f64() * 1000.0).with_data(xv.len() as u64, 0.0));
             res
         }
 

@@ -17,23 +17,33 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Append telemetry events
+        env:
+          PAYLOAD: ${{ toJson(github.event.client_payload) }}
         run: |
           mkdir -p telemetry
-          PAYLOAD='${{ toJson(github.event.client_payload) }}'
-          echo "$PAYLOAD" | python3 - << 'PYEOF'
-          import sys, json, csv, os
-          raw = sys.stdin.read()
-          payload = json.loads(raw)
-          events = payload.get("events", [])
-          csv_path = "telemetry/data.csv"
-          file_exists = os.path.exists(csv_path)
-          fieldnames = ["ts", "method", "duration_ms", "version", "os", "cpu_count", "ram_gb", "cpu_brand"]
-          with open(csv_path, "a", newline="", encoding="utf-8") as f:
-              writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
-              if not file_exists:
-                  writer.writeheader()
-              for ev in events:
-                  writer.writerow({k: ev.get(k, "") for k in fieldnames})
+          python3 << 'PYEOF'
+          import os, json, csv, sys
+          payload_str = os.environ.get("PAYLOAD", "{}")
+          try:
+              payload = json.loads(payload_str)
+              events = payload.get("events", [])
+              if not events:
+                  print("No events found in payload")
+                  sys.exit(0)
+              csv_path = "telemetry/data.csv"
+              file_exists = os.path.exists(csv_path)
+              fieldnames = ["ts", "method", "duration_ms", "version", "os", "arch", "cpu_count", "ram_gb", "available_ram_gb", "cpu_brand", "python_version", "data_count", "data_size_mb", "input_shape", "output_shape", "algorithm"]
+              with open(csv_path, "a", newline="", encoding="utf-8") as f:
+                  writer = csv.DictWriter(f, fieldnames=fieldnames, extrasaction="ignore")
+                  if not file_exists:
+                      writer.writeheader()
+                  for ev in events:
+                      writer.writerow({k: ev.get(k, "") for k in fieldnames})
+              print(f"Appended {len(events)} events to CSV")
+          except json.JSONDecodeError as e:
+              print(f"Error parsing payload: {e}")
+              print(f"Payload was: {payload_str[:200]}")
+              sys.exit(1)
           PYEOF
 
       - name: Commit telemetry data

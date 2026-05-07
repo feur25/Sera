@@ -113,7 +113,7 @@
 ---
 
 # Seraplot controller methods
-
+- [Data-Collected](controller_methods/telemetry.md)
 - [Configuration](config/index.md)
   - [Background](config/background.md)
   - [Palette](config/palette.md)
