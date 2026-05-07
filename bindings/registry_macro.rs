@@ -423,7 +423,10 @@ macro_rules! impl_python_bindings {
                         crate::bindings::commands::charts::$fn(&py_args_to_json(title, labels, values, kwargs)),
                         "",
                     );
-                    crate::telemetry::record(crate::telemetry::TelemetryEvent::new(stringify!($fn), t.elapsed().as_secs_f64() * 1000.0));
+                    let _dc = labels.and_then(|l| l.len().ok()).unwrap_or(0) as u64;
+                    let mut _ev = crate::telemetry::TelemetryEvent::new(stringify!($fn), t.elapsed().as_secs_f64() * 1000.0);
+                    if _dc > 0 { _ev = _ev.with_data(_dc, 0.0); }
+                    crate::telemetry::record(_ev);
                     Ok(result)
                 }
             };

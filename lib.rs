@@ -1485,6 +1485,17 @@ fn push_telemetry(py: Python<'_>, endpoint: &str, token: &str) -> PyResult<usize
 #[cfg(feature = "python")]
 #[pymodule]
 fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
+    if let Ok(sys) = py.import("sys") {
+        if let Ok(vi) = sys.getattr("version_info") {
+            if let (Ok(maj), Ok(min), Ok(mic)) = (
+                vi.getattr("major").and_then(|v| v.extract::<u32>()),
+                vi.getattr("minor").and_then(|v| v.extract::<u32>()),
+                vi.getattr("micro").and_then(|v| v.extract::<u32>()),
+            ) {
+                crate::telemetry::set_python_version(&format!("{}.{}.{}", maj, min, mic));
+            }
+        }
+    }
     m.add_class::<Chart>()?;
     m.add("__version__", VERSION)?;
 

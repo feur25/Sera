@@ -5,6 +5,12 @@ use std::collections::HashMap;
 const GITHUB_DISPATCH_URL: &str = "https://api.github.com/repos/feur25/seraplot/dispatches";
 const GITHUB_TOKEN: &str = "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";
 
+static PYTHON_VER: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+
+pub fn set_python_version(v: &str) {
+    let _ = PYTHON_VER.set(v.to_string());
+}
+
 pub struct TelemetryEvent {
     pub method: String,
     pub duration_ms: f64,
@@ -60,50 +66,29 @@ fn get_system_info() -> serde_json::Value {
         .map(|n| n.get())
         .unwrap_or(1);
     let arch = std::env::consts::ARCH;
-    let python_version = std::env::var("PYTHON_VERSION").unwrap_or_else(|_| "3.11".to_string());
+    let python_version = PYTHON_VER.get().cloned().unwrap_or_else(|| "unknown".to_string());
 
     let (ram_gb, available_ram_gb, cpu_brand) = {
         #[cfg(target_os = "windows")]
         {
-            let output = std::process::Command::new("systeminfo").output();
-            let mut ram_gb = 0.0f64;
-            let mut available_ram_gb = 0.0f64;
-            let mut cpu_brand = String::new();
-            if let Ok(o) = output {
-                let stdout = String::from_utf8_lossy(&o.stdout);
-                for line in stdout.lines() {
-                    if line.contains("Total Physical Memory:") {
-                        if let Some(val) = line.split(':').nth(1) {
-                            let parts: Vec<&str> = val.split_whitespace().collect();
-                            if let Some(num_str) = parts.first() {
-                                let cleaned = num_str.replace(",", "");
-                                if let Ok(mb) = cleaned.parse::<f64>() {
-                                    ram_gb = mb / 1024.0;
-                                }
-                            }
-                        }
-                    }
-                    if line.contains("Available Physical Memory:") {
-                        if let Some(val) = line.split(':').nth(1) {
-                            let parts: Vec<&str> = val.split_whitespace().collect();
-                            if let Some(num_str) = parts.first() {
-                                let cleaned = num_str.replace(",", "");
-                                if let Ok(mb) = cleaned.parse::<f64>() {
-                                    available_ram_gb = mb / 1024.0;
-                                }
-                            }
-                        }
-                    }
-                    if line.contains("Processor(s):") && cpu_brand.is_empty() {
-                        if let Some(val) = line.split(':').nth(1) {
-                            cpu_brand = val.trim().to_string();
-                        }
-                    }
-                }
-            }
-            if cpu_brand.is_empty() {
-                cpu_brand = "Unknown".to_string();
-            }
+            // Single PowerShell call — locale-independent, works on all Windows versions
+            let ps = r#"try{$c=Get-CimInstance Win32_ComputerSystem;$o=Get-CimInstance Win32_OperatingSystem;$p=(Get-CimInstance Win32_Processor|Select-Object -First 1);Write-Output("{0}|{1}|{2}"-f $c.TotalPhysicalMemory,$o.FreePhysicalMemory,$p.Name)}catch{Write-Output '0|0|Unknown'}"#;
+            let out = std::process::Command::new("powershell")
+                .args(&["-NoProfile", "-NonInteractive", "-Command", ps])
+                .output()
+                .ok()
+                .and_then(|o| String::from_utf8(o.stdout).ok())
+                .unwrap_or_default();
+            let parts: Vec<&str> = out.trim().split('|').collect();
+            // TotalPhysicalMemory → bytes; FreePhysicalMemory → KB
+            let ram_gb = parts.get(0).and_then(|s| s.trim().parse::<f64>().ok()).unwrap_or(0.0)
+                / (1024.0_f64 * 1024.0 * 1024.0);
+            let available_ram_gb = parts.get(1).and_then(|s| s.trim().parse::<f64>().ok()).unwrap_or(0.0)
+                / (1024.0 * 1024.0);
+            let cpu_brand = parts.get(2)
+                .map(|s| s.trim().to_string())
+                .filter(|s| !s.is_empty())
+                .unwrap_or_else(|| "Unknown".to_string());
             (ram_gb, available_ram_gb, cpu_brand)
         }
         #[cfg(target_os = "linux")]
@@ -250,38 +235,39 @@ pub fn record(event: TelemetryEvent) {
         .duration_since(UNIX_EPOCH)
         .map(|d| d.as_secs())
         .unwrap_or(0);
-    let sys_info = get_system_info();
-    let formatted_duration = format!("{:.3}", event.duration_ms);
-    let duration_f64: f64 = formatted_duration.parse().unwrap_or(event.duration_ms);
-    let mut event_json = serde_json::json!({
-        "method": event.method,
-        "duration_ms": duration_f64,
-        "version": crate::VERSION,
-        "ts": ts
-    });
-    if let Some(obj) = event_json.as_object_mut() {
-        if let Some(info_obj) = sys_info.as_object() {
-            for (k, v) in info_obj {
-                obj.insert(k.clone(), v.clone());
+    let duration_f64: f64 = format!("{:.3}", event.duration_ms)
+        .parse()
+        .unwrap_or(event.duration_ms);
+    std::thread::spawn(move || {
+        let sys_info = get_system_info();
+        let mut event_json = serde_json::json!({
+            "method": event.method,
+            "duration_ms": duration_f64,
+            "version": crate::VERSION,
+            "ts": ts
+        });
+        if let Some(obj) = event_json.as_object_mut() {
+            if let Some(info_obj) = sys_info.as_object() {
+                for (k, v) in info_obj {
+                    obj.insert(k.clone(), v.clone());
+                }
+            }
+            if let Some(dc) = event.data_count {
+                obj.insert("data_count".to_string(), serde_json::json!(dc));
+            }
+            if let Some(ds) = event.data_size_mb {
+                obj.insert("data_size_mb".to_string(), serde_json::json!((ds * 100.0).round() / 100.0));
+            }
+            if let Some(ref is_) = event.input_shape {
+                obj.insert("input_shape".to_string(), serde_json::json!(is_));
+            }
+            if let Some(ref os_) = event.output_shape {
+                obj.insert("output_shape".to_string(), serde_json::json!(os_));
+            }
+            if let Some(ref alg) = event.algorithm {
+                obj.insert("algorithm".to_string(), serde_json::json!(alg));
             }
         }
-        if let Some(dc) = event.data_count {
-            obj.insert("data_count".to_string(), serde_json::json!(dc));
-        }
-        if let Some(ds) = event.data_size_mb {
-            obj.insert("data_size_mb".to_string(), serde_json::json!((ds * 100.0).round() / 100.0));
-        }
-        if let Some(is_) = &event.input_shape {
-            obj.insert("input_shape".to_string(), serde_json::json!(is_));
-        }
-        if let Some(os_) = &event.output_shape {
-            obj.insert("output_shape".to_string(), serde_json::json!(os_));
-        }
-        if let Some(alg) = &event.algorithm {
-            obj.insert("algorithm".to_string(), serde_json::json!(alg));
-        }
-    }
-    std::thread::spawn(move || {
         if try_send_event(event_json.clone()) {
             return;
         }
