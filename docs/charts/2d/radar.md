@@ -60,6 +60,7 @@ Aliases: `sp.radar`, `sp.build_radar_chart`
 | `"stacked"` | Cumulative stacked polygons | `palette`, `fill_opacity` |
 | `"polar_bar"` | Radial bars per axis (grouped) | `palette`, `fill_opacity` |
 | `"gradient"` | Radial center→edge gradient | `palette` |
+| `"deluxe"` / `"premium"` / `"neon"` | Dark background, neon radial gradient fills, glow effect | `axes`, `series` |
 
 ---
 

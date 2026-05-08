@@ -11,5 +11,6 @@ crate::plot_family! {
         Half       => "half" | "asymmetric" | "one_sided" | "single",
         Rainbow    => "rainbow" | "gradient" | "spectrum" | "colorful",
         Aurora     => "aurora" | "warm" | "ember" | "fire",
+        Deluxe     => "deluxe" | "premium" | "neon" | "dark",
     }
 }

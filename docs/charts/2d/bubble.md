@@ -60,6 +60,8 @@ Aliases: `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 | `"labeled"` / `"text"` | Always-on per-point text labels | `labels` |
 | `"outlined"` / `"hollow"` | Hollow rings — great for overlap | `categories`, `stroke_width` |
 | `"negative"` / `"signed"` | Diverging signed sizes (e.g. P&L) | signed `sizes`, `color_low`, `color_high` |
+| `"deluxe"` / `"premium"` / `"iridescent"` | Dark 3D iridescent orbs with shine highlight | `x_values`, `y_values`, `sizes` |
+| `"plasma"` | Translucent soap bubble effect with glow | `x_values`, `y_values`, `sizes` |
 
 ---
 
@@ -111,6 +113,8 @@ Aliases: `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 <button class="sp-cls-tab" onclick="spCls('bubble-en','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Labeled</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-en','outlined',this)"><span class="sp-cic">○</span><span class="sp-clb">Outlined</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-en','negative',this)"><span class="sp-cic">±</span><span class="sp-clb">Negative</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubble-en','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubble-en','plasma',this)"><span class="sp-cic">◎</span><span class="sp-clb">Plasma</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -166,6 +170,22 @@ Aliases: `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/bubble-negative.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubble-en-deluxe">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"deluxe"</code></span><span><strong>Aliases</strong> <code>deluxe / premium / iridescent</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/bubble-deluxe.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubble-en-plasma">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"plasma"</code></span><span><strong>Aliases</strong> <code>plasma / soap / translucent</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/bubble-plasma.html"></iframe>
 </div>
 
 </div>
@@ -249,6 +269,8 @@ Alias : `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 <button class="sp-cls-tab" onclick="spCls('bubble-fr','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Étiqueté</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-fr','outlined',this)"><span class="sp-cic">○</span><span class="sp-clb">Contour</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-fr','negative',this)"><span class="sp-cic">±</span><span class="sp-clb">Négatif</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubble-fr','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubble-fr','plasma',this)"><span class="sp-cic">◎</span><span class="sp-clb">Plasma</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -304,6 +326,22 @@ Alias : `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/bubble-negative.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubble-fr-deluxe">
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"deluxe"</code></span><span><strong>Alias</strong> <code>deluxe / premium / iridescent</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/bubble-deluxe.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubble-fr-plasma">
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"plasma"</code></span><span><strong>Alias</strong> <code>plasma / soap / translucent</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/bubble-plasma.html"></iframe>
 </div>
 
 </div>

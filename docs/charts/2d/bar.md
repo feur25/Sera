@@ -74,6 +74,7 @@ Aliases: `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_famil
 | `"marimekko"` / `"mekko"` / `"mosaic"` | Variable-width mosaic | `series`, `series_names`, `widths` |
 | `"pictogram"` / `"icon"` | Repeated-icon bar | `labels`, `values`, `units_per_icon` |
 | `"multicategory"` / `"multi"` | Two-level x axis | `labels`, `values`, `super_categories` |
+| `"deluxe"` / `"premium"` / `"neon"` | Dark glowing neon bars | `labels`, `values` |
 
 ---
 
@@ -131,6 +132,7 @@ Aliases: `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_famil
 <button class="sp-cls-tab" onclick="spCls('bar-en','marimekko',this)"><span class="sp-cic">▤</span><span class="sp-clb">Marimekko</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','pictogram',this)"><span class="sp-cic">☰</span><span class="sp-clb">Pictogram</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','multicategory',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Multicategory</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-en','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -403,6 +405,31 @@ sp.bar(
 <iframe class="sp-preview-frame" src="../../previews/multicategory-bar.html"></iframe>
 </div>
 
+<div class="sp-variant" id="bar-en-deluxe">
+
+Dark `#0f172a` background, per-bar neon gradient fill, gaussian glow filter, bright top highlight strip. Aliases: `"premium"`, `"neon"`, `"dark"`.
+
+<div class="sp-preview-label">Code</div>
+
+```python
+sp.bar(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    variant: str = "deluxe",
+    palette: list[int] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+) -> Chart
+```
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"deluxe"</code> / <code>"premium"</code> / <code>"neon"</code></span><span><strong>Style</strong> dark background · neon gradients · glow</span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+</div>
+
 </div><!-- /sp-cls-body -->
 </div><!-- /bar-en -->
 
@@ -497,6 +524,7 @@ Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family
 <button class="sp-cls-tab" onclick="spCls('bar-fr','marimekko',this)"><span class="sp-cic">▤</span><span class="sp-clb">Marimekko</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','pictogram',this)"><span class="sp-cic">☰</span><span class="sp-clb">Pictogramme</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','multicategory',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Multi-catégories</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-fr','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -767,6 +795,31 @@ sp.bar(
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/multicategory-bar.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bar-fr-deluxe">
+
+Fond `#0f172a`, gradient néon par barre, filtre de glow gaussien, liseré blanc en haut. Alias : `"premium"`, `"neon"`, `"dark"`.
+
+<div class="sp-preview-label">Code</div>
+
+```python
+sp.bar(
+    title: str,
+    labels: list[str],
+    values: list[float],
+    *,
+    variant: str = "deluxe",
+    palette: list[int] | None = None,
+    width: int = 900,
+    height: int = 480,
+    x_label: str = "",
+    y_label: str = "",
+) -> Chart
+```
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"deluxe"</code> / <code>"premium"</code> / <code>"neon"</code></span><span><strong>Style</strong> fond sombre · dégradés néon · lueur</span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
 </div>
 
 </div><!-- /sp-cls-body -->

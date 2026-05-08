@@ -9,6 +9,7 @@ pub mod mean;
 pub mod rug;
 pub mod heatmap;
 pub mod spaced;
+pub mod deluxe;
 
 pub use variant::RidgelineVariant;
 pub use config::RidgelineConfig;
@@ -24,5 +25,6 @@ pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
         Rug => rug::render(cfg),
         Heatmap => heatmap::render(cfg),
         Spaced => spaced::render(cfg),
+        Deluxe => deluxe::render(cfg),
     }
 }

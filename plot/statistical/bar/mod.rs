@@ -7,6 +7,7 @@ pub mod grouped_stacked;
 pub mod marimekko;
 pub mod pictogram;
 pub mod multicategory;
+pub mod deluxe;
 
 pub use variant::BarVariant;
 pub use config::BarConfig;
@@ -23,5 +24,6 @@ pub fn render_bar_html(cfg: &BarConfig) -> String {
         Marimekko       => marimekko::render(cfg),
         Pictogram       => pictogram::render(cfg),
         Multicategory   => multicategory::render(cfg),
+        Deluxe          => deluxe::render(cfg, b'v'),
     }
 }

@@ -60,6 +60,7 @@ Aliases: `sp.ridgeline`, `sp.build_ridgeline_chart`
 | `"rug"` | Rug ticks at sample positions | `palette` |
 | `"heatmap"` | Auto viridis palette across ridges | — |
 | `"spaced"` | Forced low overlap, separated ridges | `palette` |
+| `"deluxe"` / `"premium"` / `"aurora"` | Dark background, neon aurora gradient pairs, increased overlap | `categories`, `values` |
 
 ---
 

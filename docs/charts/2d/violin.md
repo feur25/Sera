@@ -63,6 +63,8 @@ Aliases: `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.v
 | `"split"` | Pairs of categories rendered back-to-back on shared axis | `bandwidth` |
 | `"half"` | Single-sided violin (right half only) with median + mean | `bandwidth` |
 | `"rainbow"` | Spectral hue rotation across categories with inner box | `bandwidth` |
+| `"deluxe"` / `"premium"` / `"neon"` | Dark neon gradient fills with glow | `labels`, `values` |
+| `"aurora"` | Warm/cool gradient pair fills, increased overlap | `labels`, `values` |
 
 ---
 
@@ -112,6 +114,8 @@ Aliases: `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.v
 <button class="sp-cls-tab" onclick="spCls('vl-en','split',this)"><span class="sp-cic">◐</span><span class="sp-clb">Split</span></button>
 <button class="sp-cls-tab" onclick="spCls('vl-en','half',this)"><span class="sp-cic">◗</span><span class="sp-clb">Half</span></button>
 <button class="sp-cls-tab" onclick="spCls('vl-en','rainbow',this)"><span class="sp-cic">◑</span><span class="sp-clb">Rainbow</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-en','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-en','aurora',this)"><span class="sp-cic">☄</span><span class="sp-clb">Aurora</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -215,6 +219,22 @@ Aliases: `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.v
 
 </div>
 
+<div class="sp-variant" id="vl-en-deluxe">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"deluxe"</code></span><span><strong>Aliases</strong> <code>deluxe / premium / neon</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/violin-deluxe.html"></iframe>
+</div>
+
+<div class="sp-variant" id="vl-en-aurora">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"aurora"</code></span><span><strong>Aliases</strong> <code>aurora / warm-cool / bicolor</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/violin-aurora.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -294,6 +314,8 @@ Alias : `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.vi
 <button class="sp-cls-tab" onclick="spCls('vl-fr','split',this)"><span class="sp-cic">◐</span><span class="sp-clb">Scindé</span></button>
 <button class="sp-cls-tab" onclick="spCls('vl-fr','half',this)"><span class="sp-cic">◗</span><span class="sp-clb">Demi</span></button>
 <button class="sp-cls-tab" onclick="spCls('vl-fr','rainbow',this)"><span class="sp-cic">◑</span><span class="sp-clb">Arc-en-ciel</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-fr','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
+<button class="sp-cls-tab" onclick="spCls('vl-fr','aurora',this)"><span class="sp-cic">☄</span><span class="sp-clb">Aurore</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -316,6 +338,10 @@ Alias : `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.vi
 <div class="sp-variant" id="vl-fr-half"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"half"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-half.html"></iframe></div>
 
 <div class="sp-variant" id="vl-fr-rainbow"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"rainbow"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-rainbow.html"></iframe></div>
+
+<div class="sp-variant" id="vl-fr-deluxe"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"deluxe"</code></span><span><strong>Alias</strong> <code>deluxe / premium / neon</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-deluxe.html"></iframe></div>
+
+<div class="sp-variant" id="vl-fr-aurora"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"aurora"</code></span><span><strong>Alias</strong> <code>aurora / warm-cool / bicolor</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-aurora.html"></iframe></div>
 
 </div>
 </div>

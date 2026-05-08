@@ -59,6 +59,7 @@ Aliases: `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_
 | `"stacked"` / `"stack"` | One bar per bin, stacked by group | `color_groups`, `palette` |
 | `"overlay"` / `"compare"` | Two overlapping distributions for A/B | `overlay_values`, `series_names` |
 | `"step"` / `"outline"` | Outline-only step curve, no fill | `stroke_width` |
+| `"deluxe"` / `"premium"` / `"neon"` | Dark background, spectrum gradient by bin, glow filter | `values` |
 
 ---
 

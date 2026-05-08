@@ -8,6 +8,7 @@ pub mod cumulative;
 pub mod stacked;
 pub mod overlay;
 pub mod step;
+pub mod deluxe;
 
 pub use variant::HistogramVariant;
 pub use config::HistogramConfig;
@@ -31,5 +32,6 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
         HistogramVariant::Stacked => stacked::render(cfg),
         HistogramVariant::Overlay => overlay::render(cfg),
         HistogramVariant::Step => step::render(cfg),
+        HistogramVariant::Deluxe => deluxe::render(cfg),
     }
 }

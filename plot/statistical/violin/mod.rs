@@ -12,6 +12,7 @@ pub mod split;
 pub mod half;
 pub mod rainbow;
 pub mod aurora;
+pub mod deluxe;
 
 pub use variant::ViolinVariant;
 pub use config::ViolinConfig;
@@ -30,5 +31,6 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
         Half       => half::render(cfg),
         Rainbow    => rainbow::render(cfg),
         Aurora     => aurora::render(cfg),
+        Deluxe     => deluxe::render(cfg),
     }
 }
