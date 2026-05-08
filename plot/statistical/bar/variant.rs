@@ -10,5 +10,6 @@ crate::plot_family! {
         Pictogram       => "pictogram" | "icon",
         Multicategory   => "multicategory" | "multi" | "hierarchical",
         Deluxe          => "deluxe" | "premium" | "neon" | "dark",
+        Prism           => "prism" | "crystal" | "glass" | "rainbow",
     }
 }

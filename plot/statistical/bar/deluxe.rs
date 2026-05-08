@@ -21,12 +21,6 @@ pub fn render(cfg: &BarConfig, orient: u8) -> String {
     let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, 52, 38, 52, legend_w, n * 300 + 4096);
     f.open(cfg.title, false);
 
-    push_b(&mut f.buf, b"<rect x=\""); push_i(&mut f.buf, f.pl);
-    push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, f.pt);
-    push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, f.pw);
-    push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, f.ph);
-    push_b(&mut f.buf, b"\" fill=\"#0f172a\" rx=\"4\"/>");
-
     push_b(&mut f.buf, b"<defs>");
     push_b(&mut f.buf, b"<filter id=\"dlxgf\" x=\"-30%\" y=\"-30%\" width=\"160%\" height=\"160%\">");
     push_b(&mut f.buf, b"<feGaussianBlur stdDeviation=\"3\" result=\"b\"/>");
@@ -128,12 +122,12 @@ pub fn render(cfg: &BarConfig, orient: u8) -> String {
         push_b(&mut f.buf, b"\" y1=\""); push_i(&mut f.buf, f.pt);
         push_b(&mut f.buf, b"\" x2=\""); push_i(&mut f.buf, f.pl);
         push_b(&mut f.buf, b"\" y2=\""); push_i(&mut f.buf, f.pt + f.ph);
-        push_b(&mut f.buf, b"\" stroke=\"#1e293b\" stroke-width=\"1.5\"/>");
+        push_b(&mut f.buf, b"\" stroke=\"#64748b\" stroke-width=\"1.5\"/>");
         push_b(&mut f.buf, b"<line x1=\""); push_i(&mut f.buf, f.pl);
         push_b(&mut f.buf, b"\" y1=\""); push_i(&mut f.buf, f.pt + f.ph);
         push_b(&mut f.buf, b"\" x2=\""); push_i(&mut f.buf, f.pl + f.pw);
         push_b(&mut f.buf, b"\" y2=\""); push_i(&mut f.buf, f.pt + f.ph);
-        push_b(&mut f.buf, b"\" stroke=\"#1e293b\" stroke-width=\"1.5\"/>");
+        push_b(&mut f.buf, b"\" stroke=\"#64748b\" stroke-width=\"1.5\"/>");
     }
     f.html(&slots_to_json(cfg.hover))
 }

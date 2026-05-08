@@ -37,11 +37,6 @@ pub fn render(cfg: &ScatterConfig) -> String {
     push_b(&mut f.buf, b"<feMerge><feMergeNode in=\"b\"/><feMergeNode in=\"SourceGraphic\"/></feMerge>");
     push_b(&mut f.buf, b"</filter></defs>");
 
-    push_b(&mut f.buf, b"<rect x=\""); push_i(&mut f.buf, f.pl);
-    push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, f.pt);
-    push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, f.pw);
-    push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, f.ph);
-    push_b(&mut f.buf, b"\" fill=\"#0f172a\" rx=\"3\"/>");
 
     f.x_grid(6, layout.xmin2, layout.xmax2, cfg.gridlines);
     f.y_grid(5, layout.ymin2, layout.ymax2, cfg.gridlines);

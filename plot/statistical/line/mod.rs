@@ -9,6 +9,7 @@ pub mod sparkline;
 pub mod dashed;
 pub mod connected_scatter;
 pub mod gapped;
+pub mod neon;
 
 pub use variant::LineVariant;
 pub use config::LineConfig;
@@ -25,5 +26,6 @@ pub fn render_line_html(cfg: &LineConfig) -> String {
         Dashed           => dashed::render(cfg),
         ConnectedScatter => connected_scatter::render(cfg),
         Gapped           => gapped::render(cfg),
+        Neon             => neon::render(cfg),
     }
 }

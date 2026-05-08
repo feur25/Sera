@@ -133,6 +133,7 @@ Aliases: `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_famil
 <button class="sp-cls-tab" onclick="spCls('bar-en','pictogram',this)"><span class="sp-cic">☰</span><span class="sp-clb">Pictogram</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','multicategory',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Multicategory</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-en','prism',this)"><span class="sp-cic">◈</span><span class="sp-clb">Prism</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -430,6 +431,16 @@ sp.bar(
 
 </div>
 
+<div class="sp-variant" id="bar-en-prism">
+
+Prismatic crystal bars with diagonal facet lines and shine overlay. Each bar gets a vivid rainbow gradient with glowing highlights.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"prism"</code></span><span><strong>Aliases</strong> <code>prism / crystal / glass / rainbow</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/bar-prism.html"></iframe>
+</div>
+
 </div><!-- /sp-cls-body -->
 </div><!-- /bar-en -->
 
@@ -525,6 +536,7 @@ Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family
 <button class="sp-cls-tab" onclick="spCls('bar-fr','pictogram',this)"><span class="sp-cic">☰</span><span class="sp-clb">Pictogramme</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','multicategory',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Multi-catégories</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-fr','prism',this)"><span class="sp-cic">◈</span><span class="sp-clb">Prisme</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -820,6 +832,16 @@ sp.bar(
 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"deluxe"</code> / <code>"premium"</code> / <code>"neon"</code></span><span><strong>Style</strong> fond sombre · dégradés néon · lueur</span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
+</div>
+
+<div class="sp-variant" id="bar-fr-prism">
+
+Barres cristal prismatiques avec lignes de facettes diagonales et surbrillance. Chaque barre reçoit un dégradé arc-en-ciel vif avec effets lumineux.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"prism"</code></span><span><strong>Alias</strong> <code>prism / crystal / glass / rainbow</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/bar-prism.html"></iframe>
 </div>
 
 </div><!-- /sp-cls-body -->

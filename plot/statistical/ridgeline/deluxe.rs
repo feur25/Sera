@@ -25,10 +25,6 @@ pub fn render(cfg: &RidgelineConfig) -> String {
     svg_open(&mut b, cfg.width, cfg.height);
     svg_title(&mut b, cfg.title, cfg.width / 2, if p.layout.title_h > 0 { 24 } else { 0 });
 
-    push_b(&mut b, b"<rect width=\""); push_i(&mut b, cfg.width);
-    push_b(&mut b, b"\" height=\""); push_i(&mut b, cfg.height);
-    push_b(&mut b, b"\" fill=\"#0f172a\"/>");
-
     let n_xticks: i32 = 6;
     push_b(&mut b, b"<defs>");
     push_b(&mut b, b"<filter id=\"dlxrf\" x=\"-30%\" y=\"-60%\" width=\"160%\" height=\"220%\">");
@@ -54,7 +50,7 @@ pub fn render(cfg: &RidgelineConfig) -> String {
         push_b(&mut b, b"\" y1=\""); push_i(&mut b, p.layout.title_h);
         push_b(&mut b, b"\" x2=\""); push_i(&mut b, x);
         push_b(&mut b, b"\" y2=\""); push_i(&mut b, p.layout.axis_y);
-        push_b(&mut b, b"\" stroke=\"#1e293b\" stroke-width=\"0.8\"/>");
+        push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.8\"/>");
         push_b(&mut b, b"<text x=\""); push_i(&mut b, x);
         push_b(&mut b, b"\" y=\""); push_i(&mut b, p.layout.axis_y + 14);
         push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#475569\">");

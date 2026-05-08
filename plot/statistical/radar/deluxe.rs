@@ -20,10 +20,6 @@ pub fn render(cfg: &RadarConfig) -> String {
     svg_open(&mut b, cfg.width, cfg.height);
     svg_title(&mut b, cfg.title, cx as i32, if p.layout.title_h > 0 { 24 } else { 0 });
 
-    push_b(&mut b, b"<rect width=\""); push_i(&mut b, cfg.width);
-    push_b(&mut b, b"\" height=\""); push_i(&mut b, cfg.height);
-    push_b(&mut b, b"\" fill=\"#0f172a\"/>");
-
     push_b(&mut b, b"<defs>");
     push_b(&mut b, b"<filter id=\"dlxradf\" x=\"-50%\" y=\"-50%\" width=\"200%\" height=\"200%\">");
     push_b(&mut b, b"<feGaussianBlur stdDeviation=\"4\" result=\"b\"/>");
@@ -54,7 +50,7 @@ pub fn render(cfg: &RadarConfig) -> String {
             if ai > 0 { b.push(b' '); }
             push_f2(&mut b, cx + rr * a.cos()); b.push(b','); push_f2(&mut b, cy - rr * a.sin());
         }
-        push_b(&mut b, b"\" fill=\"none\" stroke=\"#1e3a5f\" stroke-width=\"1\"/>");
+        push_b(&mut b, b"\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.6\"/>");
         let lx = cx + 5.0;
         let ly = cy - rr - 2.0;
         push_b(&mut b, b"<text x=\""); push_f2(&mut b, lx);

@@ -22,12 +22,6 @@ pub fn render(cfg: &BubbleConfig) -> String {
     let mut f = make_frame(cfg, n, 20);
     f.open(cfg.title, true);
 
-    push_b(&mut f.buf, b"<rect x=\""); push_i(&mut f.buf, f.pl);
-    push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, f.pt);
-    push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, f.pw);
-    push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, f.ph);
-    push_b(&mut f.buf, b"\" fill=\"#080d1a\" rx=\"3\"/>");
-
     push_b(&mut f.buf, b"<defs>");
     push_b(&mut f.buf, b"<filter id=\"irdsf\" x=\"-50%\" y=\"-50%\" width=\"200%\" height=\"200%\">");
     push_b(&mut f.buf, b"<feGaussianBlur stdDeviation=\"6\" result=\"b\"/>");

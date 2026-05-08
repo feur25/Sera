@@ -32,12 +32,6 @@ pub fn render(cfg: &HistogramConfig) -> String {
     let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, pad_l, 36, 46, pad_r, n_bins * 300 + 4096);
     f.open(cfg.title, false);
 
-    push_b(&mut f.buf, b"<rect x=\""); push_i(&mut f.buf, f.pl);
-    push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, f.pt);
-    push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, f.pw);
-    push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, f.ph);
-    push_b(&mut f.buf, b"\" fill=\"#0f172a\" rx=\"3\"/>");
-
     push_b(&mut f.buf, b"<defs>");
     push_b(&mut f.buf, b"<filter id=\"dlxhf\" x=\"-30%\" y=\"-30%\" width=\"160%\" height=\"160%\">");
     push_b(&mut f.buf, b"<feGaussianBlur stdDeviation=\"3\" result=\"b\"/>");

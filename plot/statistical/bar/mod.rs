@@ -8,6 +8,7 @@ pub mod marimekko;
 pub mod pictogram;
 pub mod multicategory;
 pub mod deluxe;
+pub mod prism;
 
 pub use variant::BarVariant;
 pub use config::BarConfig;
@@ -25,5 +26,6 @@ pub fn render_bar_html(cfg: &BarConfig) -> String {
         Pictogram       => pictogram::render(cfg),
         Multicategory   => multicategory::render(cfg),
         Deluxe          => deluxe::render(cfg, b'v'),
+        Prism           => prism::render(cfg),
     }
 }

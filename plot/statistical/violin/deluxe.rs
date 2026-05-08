@@ -31,12 +31,6 @@ pub fn render(cfg: &ViolinConfig) -> String {
     let half_w = (slot_w * 0.42) as i32;
     open_axes_y(&mut f, cfg.title, cfg.gridlines, vr.min, vr.max);
 
-    push_b(&mut f.buf, b"<rect x=\""); push_i(&mut f.buf, f.pl);
-    push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, f.pt);
-    push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, f.pw);
-    push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, f.ph);
-    push_b(&mut f.buf, b"\" fill=\"#0f172a\" rx=\"3\"/>");
-
     push_b(&mut f.buf, b"<defs>");
     push_b(&mut f.buf, b"<filter id=\"dlxvf\" x=\"-80%\" y=\"-10%\" width=\"260%\" height=\"120%\">");
     push_b(&mut f.buf, b"<feGaussianBlur stdDeviation=\"5\" result=\"b\"/>");

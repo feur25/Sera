@@ -12,5 +12,6 @@ crate::plot_family! {
         Rainbow    => "rainbow" | "gradient" | "spectrum" | "colorful",
         Aurora     => "aurora" | "warm" | "ember" | "fire",
         Deluxe     => "deluxe" | "premium" | "neon" | "dark",
+        Crystal    => "crystal" | "glass" | "prism" | "transparent",
     }
 }

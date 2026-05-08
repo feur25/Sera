@@ -7,6 +7,7 @@ crate::plot_family! {
         Labeled     => "labeled" | "labels" | "text" | "annotated",
         Regression  => "regression" | "trendline" | "fit" | "ols",
         Galaxy      => "galaxy" | "nebula" | "cosmic" | "glow",
+        Nova        => "nova" | "burst" | "starburst" | "spike",
         Deluxe      => "deluxe" | "premium" | "stellar" | "dark",
     }
 }
