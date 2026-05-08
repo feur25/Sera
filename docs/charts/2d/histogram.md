@@ -104,6 +104,7 @@ Aliases: `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_
 <button class="sp-cls-tab" onclick="spCls('histogram-en','stacked',this)"><span class="sp-cic">S</span><span class="sp-clb">Stacked</span></button>
 <button class="sp-cls-tab" onclick="spCls('histogram-en','overlay',this)"><span class="sp-cic">O</span><span class="sp-clb">Overlay</span></button>
 <button class="sp-cls-tab" onclick="spCls('histogram-en','step',this)"><span class="sp-cic">L</span><span class="sp-clb">Step</span></button>
+<button class="sp-cls-tab" onclick="spCls('histogram-en','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -161,6 +162,14 @@ Aliases: `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-step.html"></iframe>
+</div>
+
+<div class="sp-variant" id="histogram-en-deluxe">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"deluxe"</code></span><span><strong>Aliases</strong> <code>deluxe / premium / neon</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/histogram-deluxe.html"></iframe>
 </div>
 
 </div>
@@ -271,6 +280,7 @@ Alias : `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_f
 <button class="sp-cls-tab" onclick="spCls('histogram-fr','stacked',this)"><span class="sp-cic">S</span><span class="sp-clb">Empilé</span></button>
 <button class="sp-cls-tab" onclick="spCls('histogram-fr','overlay',this)"><span class="sp-cic">O</span><span class="sp-clb">Superposé</span></button>
 <button class="sp-cls-tab" onclick="spCls('histogram-fr','step',this)"><span class="sp-cic">L</span><span class="sp-clb">Contour</span></button>
+<button class="sp-cls-tab" onclick="spCls('histogram-fr','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -328,6 +338,14 @@ Alias : `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_f
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-step.html"></iframe>
+</div>
+
+<div class="sp-variant" id="histogram-fr-deluxe">
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"deluxe"</code></span><span><strong>Alias</strong> <code>deluxe / premium / neon</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/histogram-deluxe.html"></iframe>
 </div>
 
 </div>

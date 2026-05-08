@@ -104,6 +104,7 @@ Aliases: `sp.ridgeline`, `sp.build_ridgeline_chart`
 <button class="sp-cls-tab" onclick="spCls('ridgeline-en','rug',this)"><span class="sp-cic">R</span><span class="sp-clb">Rug</span></button>
 <button class="sp-cls-tab" onclick="spCls('ridgeline-en','heatmap',this)"><span class="sp-cic">H</span><span class="sp-clb">Heatmap</span></button>
 <button class="sp-cls-tab" onclick="spCls('ridgeline-en','spaced',this)"><span class="sp-cic">S</span><span class="sp-clb">Spaced</span></button>
+<button class="sp-cls-tab" onclick="spCls('ridgeline-en','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="ridgeline-en-basic">
@@ -153,6 +154,12 @@ Aliases: `sp.ridgeline`, `sp.build_ridgeline_chart`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Forced low overlap — ridges are separated for clarity.</p>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-spaced.html"></iframe>
+</div>
+<div class="sp-variant" id="ridgeline-en-deluxe">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"deluxe"</code></span><span><strong>Aliases</strong> <code>deluxe / premium / aurora</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Dark background with neon aurora gradient pairs and increased overlap.</p>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/ridgeline-deluxe.html"></iframe>
 </div>
 </div></div>
 
@@ -223,6 +230,7 @@ Alias : `sp.ridgeline`, `sp.build_ridgeline_chart`
 <button class="sp-cls-tab" onclick="spCls('ridgeline-fr','rug',this)"><span class="sp-cic">R</span><span class="sp-clb">Rug</span></button>
 <button class="sp-cls-tab" onclick="spCls('ridgeline-fr','heatmap',this)"><span class="sp-cic">H</span><span class="sp-clb">Heatmap</span></button>
 <button class="sp-cls-tab" onclick="spCls('ridgeline-fr','spaced',this)"><span class="sp-cic">S</span><span class="sp-clb">Spaced</span></button>
+<button class="sp-cls-tab" onclick="spCls('ridgeline-fr','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="ridgeline-fr-basic">
@@ -272,6 +280,12 @@ Alias : `sp.ridgeline`, `sp.build_ridgeline_chart`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Recouvrement forcé bas — crêtes séparées pour la lisibilité.</p>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-spaced.html"></iframe>
+</div>
+<div class="sp-variant" id="ridgeline-fr-deluxe">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"deluxe"</code></span><span><strong>Alias</strong> <code>deluxe / premium / aurora</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fond sombre avec paires de dégradés aurore néon et recouvrement augmenté.</p>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/ridgeline-deluxe.html"></iframe>
 </div>
 </div></div>
 

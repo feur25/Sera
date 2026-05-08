@@ -99,6 +99,7 @@ Aliases: `sp.radar`, `sp.build_radar_chart`
 <button class="sp-cls-tab" onclick="spCls('radar-en','stacked',this)"><span class="sp-cic">S</span><span class="sp-clb">Stacked</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-en','polar_bar',this)"><span class="sp-cic">P</span><span class="sp-clb">PolarBar</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-en','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('radar-en','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="radar-en-basic">
@@ -149,11 +150,13 @@ Aliases: `sp.radar`, `sp.build_radar_chart`
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-gradient.html"></iframe>
 </div>
-</div></div>
-
+<div class="sp-variant" id="radar-en-deluxe">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"deluxe"</code></span><span><strong>Aliases</strong> <code>deluxe / premium / neon</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Dark background with neon radial gradient fills and glow effect per series.</p>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/radar-deluxe.html"></iframe>
 </div>
-
-<div class="lang-fr">
+</div></div>
 
 <h2>Signature</h2>
 
@@ -213,6 +216,7 @@ Alias : `sp.radar`, `sp.build_radar_chart`
 <button class="sp-cls-tab" onclick="spCls('radar-fr','stacked',this)"><span class="sp-cic">S</span><span class="sp-clb">Stacked</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-fr','polar_bar',this)"><span class="sp-cic">P</span><span class="sp-clb">PolarBar</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-fr','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('radar-fr','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="radar-fr-basic">
@@ -262,6 +266,12 @@ Alias : `sp.radar`, `sp.build_radar_chart`
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Remplissage en dégradé radial du centre (opaque) vers le bord (transparent).</p>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-gradient.html"></iframe>
+</div>
+<div class="sp-variant" id="radar-fr-deluxe">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"deluxe"</code></span><span><strong>Alias</strong> <code>deluxe / premium / neon</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fond sombre avec remplissages dégradé radial néon et effet de lueur par série.</p>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/radar-deluxe.html"></iframe>
 </div>
 </div></div>
 
