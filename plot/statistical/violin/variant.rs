@@ -10,5 +10,6 @@ crate::plot_family! {
         Split      => "split" | "paired" | "back_to_back" | "mirror",
         Half       => "half" | "asymmetric" | "one_sided" | "single",
         Rainbow    => "rainbow" | "gradient" | "spectrum" | "colorful",
+        Aurora     => "aurora" | "warm" | "ember" | "fire",
     }
 }

@@ -7,6 +7,7 @@ pub mod gradient;
 pub mod labeled;
 pub mod outlined;
 pub mod negative;
+pub mod plasma;
 
 pub use variant::BubbleVariant;
 pub use config::BubbleConfig;
@@ -25,5 +26,6 @@ pub fn render_bubble_html(cfg: &BubbleConfig) -> String {
         Labeled     => labeled::render(cfg),
         Outlined    => outlined::render(cfg),
         Negative    => negative::render(cfg),
+        Plasma      => plasma::render(cfg),
     }
 }

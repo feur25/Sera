@@ -7,6 +7,7 @@ pub mod gradient;
 pub mod symbols;
 pub mod labeled;
 pub mod regression;
+pub mod galaxy;
 
 pub use variant::ScatterVariant;
 pub use config::ScatterConfig;
@@ -25,5 +26,6 @@ pub fn render_scatter_variant_html(cfg: &ScatterConfig) -> String {
         Symbols     => symbols::render(cfg),
         Labeled     => labeled::render(cfg),
         Regression  => regression::render(cfg),
+        Galaxy      => galaxy::render(cfg),
     }
 }

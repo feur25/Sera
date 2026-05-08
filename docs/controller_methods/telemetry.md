@@ -81,6 +81,36 @@
 @keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
 .sp-tc pre{margin:0;border-radius:0;padding:16px 18px;overflow-x:auto;background:#080c16;border-top:1px solid rgba(56,189,248,.08)}
 .sp-tc pre code{font-size:12.5px;line-height:1.65;color:#e2e8f0;background:none;padding:0;font-weight:500}
+
+@media(max-width:768px){
+.tm-hero{padding:24px 20px;margin:1em 0 1.6em;border-radius:12px}
+.tm-hero h2{font-size:20px}
+.tm-hero p{font-size:13.5px}
+.tm-pills{gap:7px;margin-top:12px}
+.tm-pill{font-size:10.5px;padding:5px 10px}
+.tm-table th,.tm-table td{padding:9px 11px;font-size:11.5px}
+.tm-table th{font-size:10px}
+.tm-steps::before{left:11px}
+.tm-step{gap:12px;padding:14px 0}
+.tm-step-n{width:26px;height:26px;font-size:12px}
+.tm-step-body strong{font-size:13px}
+.tm-step-body span{font-size:12px}
+.tm-source-hdr{padding:11px 14px}
+.tm-scroll pre{padding:14px 16px}
+.tm-scroll pre code{font-size:11px}
+.tm-api-call pre{padding:12px 14px}
+.tm-api-call pre code{font-size:11.5px}
+.tm-note{padding:11px 14px;font-size:12.5px}
+.sp-tb{padding:9px 14px;font-size:11.5px}
+}
+@media(max-width:480px){
+.tm-hero{padding:18px 14px}
+.tm-hero h2{font-size:17px}
+.tm-table-wrap{border-radius:8px}
+.tm-table th,.tm-table td{padding:7px 9px;font-size:11px}
+.tm-privacy li{font-size:12px;padding:10px 11px}
+.tm-source{border-radius:10px}
+}
 </style>
 
 <script>
@@ -208,6 +238,9 @@ use std::time::{SystemTime, UNIX_EPOCH};
 const GITHUB_DISPATCH_URL: &str =
     "https://api.github.com/repos/feur25/seraplot/dispatches";
 
+static PYTHON_VER: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+static SYS_INFO_CACHE: std::sync::OnceLock<serde_json::Value> = std::sync::OnceLock::new();
+
 pub struct TelemetryEvent {
     pub method:       String,
     pub duration_ms:  f64,
@@ -220,96 +253,68 @@ pub struct TelemetryEvent {
 
 impl TelemetryEvent {
     pub fn new(method: &str, duration_ms: f64) -> Self {
-        Self {
-            method: method.to_string(),
-            duration_ms,
-            data_count:   None,
-            data_size_mb: None,
-            input_shape:  None,
-            output_shape: None,
-            algorithm:    None,
-        }
+        Self { method: method.to_string(), duration_ms,
+               data_count: None, data_size_mb: None,
+               input_shape: None, output_shape: None, algorithm: None }
     }
-
     pub fn with_data(mut self, count: u64, size_mb: f64) -> Self {
-        self.data_count   = Some(count);
-        self.data_size_mb = Some(size_mb);
-        self
+        self.data_count = Some(count); self.data_size_mb = Some(size_mb); self
     }
-
+    pub fn with_count(mut self, count: u64) -> Self {
+        self.data_count = Some(count); self
+    }
     pub fn with_shapes(mut self, input: &str, output: &str) -> Self {
-        self.input_shape  = Some(input.to_string());
-        self.output_shape = Some(output.to_string());
-        self
+        self.input_shape = Some(input.to_string());
+        self.output_shape = Some(output.to_string()); self
     }
-
     pub fn with_algorithm(mut self, algo: &str) -> Self {
-        self.algorithm = Some(algo.to_string());
-        self
+        self.algorithm = Some(algo.to_string()); self
     }
+}
+
+fn parse_bytes(s: &str) -> f64 {
+    s.chars().filter(|c| c.is_ascii_digit())
+        .collect::<String>().parse::<f64>().unwrap_or(0.0)
+}
+
+fn sys_info() -> &'static serde_json::Value {
+    SYS_INFO_CACHE.get_or_init(|| {
+        // collected once at first event — Windows, Linux, macOS
+        collect_system_info()
+    })
 }
 
 pub fn is_consent_given() -> bool {
     let path = seraplot_dir().join("consent.json");
-    if let Ok(text) = std::fs::read_to_string(&path) {
-        if let Ok(v) = serde_json::from_str::<serde_json::Value>(&text) {
-            return v.get("enabled")
-                .and_then(|e| e.as_bool())
-                .unwrap_or(false);
-        }
-    }
-    false
+    if !path.exists() { return false; }
+    std::fs::read_to_string(&path).ok()
+        .and_then(|t| serde_json::from_str::<serde_json::Value>(&t).ok())
+        .and_then(|v| v.get("enabled").and_then(|e| e.as_bool()))
+        .unwrap_or(false)
 }
 
 pub fn set_consent(enabled: bool) {
     let dir = seraplot_dir();
     let _ = std::fs::create_dir_all(&dir);
-    let json = format!(
-        r#"{{"enabled":{enabled},"version":"{}"}}"#,
-        crate::VERSION
+    let _ = std::fs::write(
+        dir.join("consent.json"),
+        format!("{{\"enabled\":{},\"version\":\"{}\"}}", enabled, crate::VERSION),
     );
-    let _ = std::fs::write(dir.join("consent.json"), json);
 }
 
 pub fn record(event: TelemetryEvent) {
     if !is_consent_given() { return; }
-
     let ts = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map(|d| d.as_secs())
-        .unwrap_or(0);
-
-    let sys_info   = get_system_info();
-    let duration_f = format!("{:.3}", event.duration_ms)
-        .parse::<f64>()
-        .unwrap_or(event.duration_ms);
-
-    let mut ev = serde_json::json!({
-        "method":      event.method,
-        "duration_ms": duration_f,
-        "version":     crate::VERSION,
-        "ts":          ts,
-    });
-
-    if let (Some(obj), Some(sys)) = (ev.as_object_mut(), sys_info.as_object()) {
-        for (k, v) in sys { obj.insert(k.clone(), v.clone()); }
-        if let Some(n) = event.data_count   { obj.insert("data_count".into(),   n.into()); }
-        if let Some(s) = event.data_size_mb { obj.insert("data_size_mb".into(), ((s*100.0).round()/100.0).into()); }
-        if let Some(i) = &event.input_shape  { obj.insert("input_shape".into(),  i.clone().into()); }
-        if let Some(o) = &event.output_shape { obj.insert("output_shape".into(), o.clone().into()); }
-        if let Some(a) = &event.algorithm    { obj.insert("algorithm".into(),    a.clone().into()); }
+        .duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
+    let ev = build_event_json(&event, ts);
+    let path = seraplot_dir().join("telemetry.jsonl");
+    use std::io::Write;
+    if let Ok(mut f) = std::fs::OpenOptions::new()
+        .create(true).append(true).open(&path)
+    {
+        let _ = writeln!(f, "{}", ev);
     }
-
-    std::thread::spawn(move || {
-        if try_send_event(ev.clone()) { return; }
-        let path = seraplot_dir().join("telemetry.jsonl");
-        use std::io::Write;
-        if let Ok(mut f) = std::fs::OpenOptions::new()
-            .create(true).append(true).open(&path)
-        {
-            let _ = writeln!(f, "{}", ev);
-        }
-    });
+    std::thread::spawn(move || { try_send_event(ev); });
 }
 ```
 
@@ -442,27 +447,10 @@ use std::collections::HashMap;
 const GITHUB_DISPATCH_URL: &str =
     "https://api.github.com/repos/feur25/seraplot/dispatches";
 
-const GITHUB_TOKEN: &str = env!("SERAPLOT_TOKEN", "<non-défini>");
-
 static PYTHON_VER: std::sync::OnceLock<String> = std::sync::OnceLock::new();
+static SYS_INFO_CACHE: std::sync::OnceLock<serde_json::Value> = std::sync::OnceLock::new();
 
 pub fn set_python_version(v: &str) {
-    let _ = PYTHON_VER.set(v.to_string());
-}
-
-pub struct TelemetryEvent {
-    pub method:       String,
-    pub duration_ms:  f64,
-    pub data_count:   Option<u64>,
-    pub data_size_mb: Option<f64>,
-    pub input_shape:  Option<String>,
-    pub output_shape: Option<String>,
-    pub algorithm:    Option<String>,
-}
-
-impl TelemetryEvent {
-    pub fn new(method: &str, duration_ms: f64) -> Self {
-        Self {
             method: method.to_string(),
             duration_ms,
             data_count: None, data_size_mb: None,
@@ -612,6 +600,64 @@ pub fn set_consent(enabled: bool) {
     let _ = std::fs::write(
         dir.join("consent.json"),
         format!("{{\"enabled\":{},\"version\":\"{}\"}}", enabled, crate::VERSION),
+    let _ = PYTHON_VER.set(v.to_string());
+}
+
+pub struct TelemetryEvent {
+    pub method:       String,
+    pub duration_ms:  f64,
+    pub data_count:   Option<u64>,
+    pub data_size_mb: Option<f64>,
+    pub input_shape:  Option<String>,
+    pub output_shape: Option<String>,
+    pub algorithm:    Option<String>,
+}
+
+impl TelemetryEvent {
+    pub fn new(method: &str, duration_ms: f64) -> Self {
+        Self { method: method.to_string(), duration_ms,
+               data_count: None, data_size_mb: None,
+               input_shape: None, output_shape: None, algorithm: None }
+    }
+    pub fn with_data(mut self, count: u64, size_mb: f64) -> Self {
+        self.data_count = Some(count); self.data_size_mb = Some(size_mb); self
+    }
+    pub fn with_count(mut self, count: u64) -> Self {
+        self.data_count = Some(count); self
+    }
+    pub fn with_shapes(mut self, input: &str, output: &str) -> Self {
+        self.input_shape = Some(input.to_string());
+        self.output_shape = Some(output.to_string()); self
+    }
+    pub fn with_algorithm(mut self, algo: &str) -> Self {
+        self.algorithm = Some(algo.to_string()); self
+    }
+}
+
+fn parse_bytes(s: &str) -> f64 {
+    s.chars().filter(|c| c.is_ascii_digit())
+        .collect::<String>().parse::<f64>().unwrap_or(0.0)
+}
+
+fn sys_info() -> &'static serde_json::Value {
+    SYS_INFO_CACHE.get_or_init(|| collect_system_info())
+}
+
+pub fn is_consent_given() -> bool {
+    let path = seraplot_dir().join("consent.json");
+    if !path.exists() { return false; }
+    std::fs::read_to_string(&path).ok()
+        .and_then(|t| serde_json::from_str::<serde_json::Value>(&t).ok())
+        .and_then(|v| v.get("enabled").and_then(|e| e.as_bool()))
+        .unwrap_or(false)
+}
+
+pub fn set_consent(enabled: bool) {
+    let dir = seraplot_dir();
+    let _ = std::fs::create_dir_all(&dir);
+    let _ = std::fs::write(
+        dir.join("consent.json"),
+        format!("{{\"enabled\":{},\"version\":\"{}\"}}", enabled, crate::VERSION),
     );
 }
 
@@ -619,51 +665,15 @@ pub fn record(event: TelemetryEvent) {
     if !is_consent_given() { return; }
     let ts = SystemTime::now()
         .duration_since(UNIX_EPOCH).map(|d| d.as_secs()).unwrap_or(0);
-    let duration_f64: f64 = format!("{:.3}", event.duration_ms)
-        .parse().unwrap_or(event.duration_ms);
-    std::thread::spawn(move || {
-        let sys_info = get_system_info();
-        let mut ev = serde_json::json!({
-            "method": event.method, "duration_ms": duration_f64,
-            "version": crate::VERSION, "ts": ts
-        });
-        if let Some(obj) = ev.as_object_mut() {
-            if let Some(info) = sys_info.as_object() {
-                for (k, v) in info { obj.insert(k.clone(), v.clone()); }
-            }
-            if let Some(n) = event.data_count   { obj.insert("data_count".into(),   n.into()); }
-            if let Some(s) = event.data_size_mb { obj.insert("data_size_mb".into(), ((s*100.0).round()/100.0).into()); }
-            if let Some(ref i) = event.input_shape  { obj.insert("input_shape".into(),  i.clone().into()); }
-            if let Some(ref o) = event.output_shape { obj.insert("output_shape".into(), o.clone().into()); }
-            if let Some(ref a) = event.algorithm    { obj.insert("algorithm".into(),    a.clone().into()); }
-        }
-        if try_send_event(ev.clone()) { return; }
-        let path = seraplot_dir().join("telemetry.jsonl");
-        use std::io::Write;
-        if let Ok(mut f) = std::fs::OpenOptions::new()
-            .create(true).append(true).open(&path) {
-            let _ = writeln!(f, "{}", ev);
-        }
-    });
-}
-
-pub fn read_pending() -> Vec<serde_json::Value> {
+    let ev = build_event_json(&event, ts);
     let path = seraplot_dir().join("telemetry.jsonl");
-    if !path.exists() { return vec![]; }
-    std::fs::read_to_string(&path).ok()
-        .map(|t| t.lines().filter_map(|l| serde_json::from_str(l).ok()).collect())
-        .unwrap_or_default()
-}
-
-pub fn clear_pending() {
-    let _ = std::fs::write(seraplot_dir().join("telemetry.jsonl"), b"");
-}
-
-pub fn flush_pending() {
-    let events = read_pending();
-    if events.is_empty() { return; }
-    let sent = events.iter().filter(|e| try_send_event((*e).clone())).count();
-    if sent == events.len() { clear_pending(); }
+    use std::io::Write;
+    if let Ok(mut f) = std::fs::OpenOptions::new()
+        .create(true).append(true).open(&path)
+    {
+        let _ = writeln!(f, "{}", ev);
+    }
+    std::thread::spawn(move || { try_send_event(ev); });
 }
 
 pub fn get_metrics_summary() -> serde_json::Value {
