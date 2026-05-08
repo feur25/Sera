@@ -7,6 +7,9 @@ pub mod categorical;
 pub mod highlight;
 pub mod density;
 pub mod gradient;
+pub mod deluxe;
+pub mod arc;
+pub mod ribbon;
 
 pub use variant::ParallelVariant;
 pub use config::ParallelConfig;
@@ -20,5 +23,8 @@ pub fn render_parallel_html(cfg: &ParallelConfig) -> String {
         Highlight   => highlight::render(cfg),
         Density     => density::render(cfg),
         Gradient    => gradient::render(cfg),
+        Deluxe      => deluxe::render(cfg),
+        Arc         => arc::render(cfg),
+        Ribbon      => ribbon::render(cfg),
     }
 }

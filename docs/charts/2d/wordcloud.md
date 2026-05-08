@@ -116,6 +116,7 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 <button class="sp-cls-tab" onclick="spCls('wordcloud-en','image',this)"><span class="sp-cic">I</span><span class="sp-clb">Image</span></button>
 <button class="sp-cls-tab" onclick="spCls('wordcloud-en','labelmap',this)"><span class="sp-cic">L</span><span class="sp-clb">LabelMap</span></button>
 <button class="sp-cls-tab" onclick="spCls('wordcloud-en','network',this)"><span class="sp-cic">N</span><span class="sp-clb">Network</span></button>
+<button class="sp-cls-tab" onclick="spCls('wordcloud-en','neuron',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Neuron</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="wordcloud-en-basic">
@@ -312,6 +313,33 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-network.html"></iframe>
 </div>
+
+<div class="sp-variant" id="wordcloud-en-neuron">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"neuron"</code></span><span><strong>Aliases</strong> <code>neuron / neural / brain / synapse / network_glow / nodes</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Neural-network word cloud on a dark background. Words become glowing nodes; faint connecting edges link nearest neighbors, evoking a synaptic graph.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+words = ["Python","Rust","Machine Learning","Data","Neural","Network",
+         "Deep","AI","Vision","NLP","Graph","Node","Edge","Cluster",
+         "Vector","Matrix"]
+freqs = [100,90,85,80,75,70,65,60,55,50,45,40,38,35,30,25]
+
+chart = sp.build_wordcloud(
+    title="Neuron Cloud", words=words, frequencies=freqs,
+    variant="neuron",
+    width=900, height=500,
+)
+chart.show()
+```
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/wordcloud-neuron.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -393,6 +421,7 @@ La variante `basic` accepte un argument `shape=` :
 <button class="sp-cls-tab" onclick="spCls('wordcloud-fr','image',this)"><span class="sp-cic">I</span><span class="sp-clb">Image</span></button>
 <button class="sp-cls-tab" onclick="spCls('wordcloud-fr','labelmap',this)"><span class="sp-cic">L</span><span class="sp-clb">LabelMap</span></button>
 <button class="sp-cls-tab" onclick="spCls('wordcloud-fr','network',this)"><span class="sp-cic">N</span><span class="sp-clb">Network</span></button>
+<button class="sp-cls-tab" onclick="spCls('wordcloud-fr','neuron',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Neuron</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="wordcloud-fr-basic">
@@ -589,7 +618,35 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-network.html"></iframe>
 </div>
+
+<div class="sp-variant" id="wordcloud-fr-neuron">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"neuron"</code></span><span><strong>Alias</strong> <code>neuron / neural / brain / synapse / network_glow / nodes</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Nuage de mots style reseau de neurones sur fond sombre. Les mots deviennent des noeuds lumineux relies par des aretes fines evoquant un graphe synaptique.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+words = ["Python","Rust","Machine Learning","Data","Neural","Network",
+         "Deep","AI","Vision","NLP","Graph","Node","Edge","Cluster",
+         "Vector","Matrix"]
+freqs = [100,90,85,80,75,70,65,60,55,50,45,40,38,35,30,25]
+
+chart = sp.build_wordcloud(
+    title="Neuron Cloud", words=words, frequencies=freqs,
+    variant="neuron",
+    width=900, height=500,
+)
+chart.show()
+```
+
+<div class="sp-preview-label">Apercu</div>
+<iframe class="sp-preview-frame" src="../../previews/wordcloud-neuron.html"></iframe>
+</div>
 </div>
 </div>
 
+</div>
 </div>

@@ -408,26 +408,12 @@ sp.bar(
 
 <div class="sp-variant" id="bar-en-deluxe">
 
-Dark `#0f172a` background, per-bar neon gradient fill, gaussian glow filter, bright top highlight strip. Aliases: `"premium"`, `"neon"`, `"dark"`.
-
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "deluxe",
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-) -> Chart
-```
+Dark background, per-bar neon gradient fill, gaussian glow filter, bright top highlight strip. Aliases: `"premium"`, `"neon"`, `"dark"`.
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"deluxe"</code> / <code>"premium"</code> / <code>"neon"</code></span><span><strong>Style</strong> dark background · neon gradients · glow</span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/bar-deluxe.html"></iframe>
 
 </div>
 
@@ -811,26 +797,12 @@ sp.bar(
 
 <div class="sp-variant" id="bar-fr-deluxe">
 
-Fond `#0f172a`, gradient néon par barre, filtre de glow gaussien, liseré blanc en haut. Alias : `"premium"`, `"neon"`, `"dark"`.
-
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "deluxe",
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-) -> Chart
-```
+Fond sombre, gradient néon par barre, filtre de glow gaussien, liseré blanc en haut. Alias : `"premium"`, `"neon"`, `"dark"`.
 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"deluxe"</code> / <code>"premium"</code> / <code>"neon"</code></span><span><strong>Style</strong> fond sombre · dégradés néon · lueur</span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/bar-deluxe.html"></iframe>
 
 </div>
 

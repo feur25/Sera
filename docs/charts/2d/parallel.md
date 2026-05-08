@@ -92,6 +92,9 @@ Aliases: `sp.build_parallel` &middot; `sp.parallel` &middot; `sp.parallel_coords
 <button class="sp-cls-tab" onclick="spCls('parallel-en','highlight',this)"><span class="sp-cic">H</span><span class="sp-clb">Highlight</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-en','density',this)"><span class="sp-cic">D</span><span class="sp-clb">Density</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-en','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-en','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-en','arc',this)"><span class="sp-cic">∿</span><span class="sp-clb">Arc</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-en','ribbon',this)"><span class="sp-cic">≈</span><span class="sp-clb">Ribbon</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="parallel-en-basic">
@@ -295,6 +298,87 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-gradient.html"></iframe>
 </div>
+
+<div class="sp-variant" id="parallel-en-deluxe">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"deluxe"</code></span><span><strong>Aliases</strong> <code>deluxe / neon / dark / premium</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Dark neon style — deep navy background, glowing series lines rendered in two passes (soft glow + crisp stroke) with electric rainbow colors.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["Speed","Agility","Strength","Defense","Magic","Stamina"]
+series_names = ["Hero","Warrior","Mage","Rogue"]
+series_values = [[85,72,60,91,78,88],[60,55,95,88,45,75],[45,68,40,55,99,65],[95,90,55,70,60,70]]
+
+chart = sp.build_parallel(
+    title="Character Stats", axes=axes,
+    series=series_values, series_names=series_names,
+    variant="deluxe",
+    width=900, height=460,
+)
+chart.show()
+```
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-deluxe.html"></iframe>
+</div>
+
+<div class="sp-variant" id="parallel-en-arc">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"arc"</code></span><span><strong>Aliases</strong> <code>arc / bezier_color / smooth_color / colored_bezier</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Smooth cubic bezier curves with per-series gradient coloring. Reduces visual clutter compared to straight lines while preserving individual series identity.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["Speed","Agility","Strength","Defense","Magic","Stamina"]
+series_names = ["Hero","Warrior","Mage","Rogue"]
+series_values = [[85,72,60,91,78,88],[60,55,95,88,45,75],[45,68,40,55,99,65],[95,90,55,70,60,70]]
+
+chart = sp.build_parallel(
+    title="Character Stats", axes=axes,
+    series=series_values, series_names=series_names,
+    variant="arc",
+    width=900, height=460,
+)
+chart.show()
+```
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-arc.html"></iframe>
+</div>
+
+<div class="sp-variant" id="parallel-en-ribbon">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"ribbon"</code></span><span><strong>Aliases</strong> <code>ribbon / flow / band / filled_bezier</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Filled bezier bands between adjacent axes. Each series is rendered as a translucent ribbon + thin solid stroke, creating a flowing Sankey-lite effect.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["Speed","Agility","Strength","Defense","Magic","Stamina"]
+series_names = ["Hero","Warrior","Mage","Rogue"]
+series_values = [[85,72,60,91,78,88],[60,55,95,88,45,75],[45,68,40,55,99,65],[95,90,55,70,60,70]]
+
+chart = sp.build_parallel(
+    title="Character Stats", axes=axes,
+    series=series_values, series_names=series_names,
+    variant="ribbon",
+    width=900, height=460,
+)
+chart.show()
+```
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-ribbon.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -352,6 +436,9 @@ Aliases: `sp.build_parallel` &middot; `sp.parallel` &middot; `sp.parallel_coords
 <button class="sp-cls-tab" onclick="spCls('parallel-fr','highlight',this)"><span class="sp-cic">H</span><span class="sp-clb">Highlight</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-fr','density',this)"><span class="sp-cic">D</span><span class="sp-clb">Density</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-fr','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-fr','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-fr','arc',this)"><span class="sp-cic">∿</span><span class="sp-clb">Arc</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-fr','ribbon',this)"><span class="sp-cic">≈</span><span class="sp-clb">Ribbon</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="parallel-fr-basic">
@@ -554,6 +641,87 @@ chart.show()
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-gradient.html"></iframe>
+</div>
+
+<div class="sp-variant" id="parallel-fr-deluxe">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"deluxe"</code></span><span><strong>Alias</strong> <code>deluxe / neon / dark / premium</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Style neon sombre - fond bleu nuit, lignes en double passe (lueur douce + trait net) avec des couleurs arc-en-ciel electriques.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["Speed","Agility","Strength","Defense","Magic","Stamina"]
+series_names = ["Hero","Warrior","Mage","Rogue"]
+series_values = [[85,72,60,91,78,88],[60,55,95,88,45,75],[45,68,40,55,99,65],[95,90,55,70,60,70]]
+
+chart = sp.build_parallel(
+    title="Character Stats", axes=axes,
+    series=series_values, series_names=series_names,
+    variant="deluxe",
+    width=900, height=460,
+)
+chart.show()
+```
+
+<div class="sp-preview-label">Apercu</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-deluxe.html"></iframe>
+</div>
+
+<div class="sp-variant" id="parallel-fr-arc">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"arc"</code></span><span><strong>Alias</strong> <code>arc / bezier_color / smooth_color / colored_bezier</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Courbes de Bezier cubiques avec degrade de couleur par serie. Reduit l encombrement visuel par rapport aux lignes droites tout en preservant l identite de chaque serie.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["Speed","Agility","Strength","Defense","Magic","Stamina"]
+series_names = ["Hero","Warrior","Mage","Rogue"]
+series_values = [[85,72,60,91,78,88],[60,55,95,88,45,75],[45,68,40,55,99,65],[95,90,55,70,60,70]]
+
+chart = sp.build_parallel(
+    title="Character Stats", axes=axes,
+    series=series_values, series_names=series_names,
+    variant="arc",
+    width=900, height=460,
+)
+chart.show()
+```
+
+<div class="sp-preview-label">Apercu</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-arc.html"></iframe>
+</div>
+
+<div class="sp-variant" id="parallel-fr-ribbon">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"ribbon"</code></span><span><strong>Alias</strong> <code>ribbon / flow / band / filled_bezier</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bandes de Bezier remplies entre les axes adjacents. Chaque serie est rendue comme un ruban translucide + trait fin, creant un effet de flux style Sankey simplifie.</p>
+
+<div class="sp-preview-label">Code</div>
+
+```python
+import seraplot as sp
+
+axes = ["Speed","Agility","Strength","Defense","Magic","Stamina"]
+series_names = ["Hero","Warrior","Mage","Rogue"]
+series_values = [[85,72,60,91,78,88],[60,55,95,88,45,75],[45,68,40,55,99,65],[95,90,55,70,60,70]]
+
+chart = sp.build_parallel(
+    title="Character Stats", axes=axes,
+    series=series_values, series_names=series_names,
+    variant="ribbon",
+    width=900, height=460,
+)
+chart.show()
+```
+
+<div class="sp-preview-label">Apercu</div>
+<iframe class="sp-preview-frame" src="../../previews/parallel-ribbon.html"></iframe>
 </div>
 </div>
 </div>

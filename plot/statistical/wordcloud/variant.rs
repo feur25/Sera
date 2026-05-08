@@ -6,5 +6,6 @@ crate::plot_family! {
         Network  => "network" | "graph" | "keywords" | "co_occurrence" | "cooccurrence" | "knowledge_graph",
         Bubble   => "bubble" | "bubbles" | "packed" | "circles" | "packing" | "pack",
         Context  => "context" | "semantic" | "infranodus" | "text_network" | "textnetwork" | "force" | "force_directed",
+        Neuron   => "neuron" | "neural" | "brain" | "synapse" | "network_glow" | "nodes",
     }
 }
