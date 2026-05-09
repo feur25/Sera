@@ -20,3 +20,5 @@ fn format_total(v: f64) -> String {
     else if abs >= 100.0 { format!("{:.0}", v) }
     else { format!("{:.1}", v) }
 }
+
+

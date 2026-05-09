@@ -249,3 +249,5 @@ fn render_grouped_bar_horiz(cfg: &GroupedBarConfig) -> String {
     let slots = cfg.hover;
     f.html(&slots_to_json(slots))
 }
+
+

@@ -380,6 +380,7 @@ macro_rules! impl_python_bindings {
             title: &str,
             labels: Option<&pyo3::types::PyAny>,
             values: Option<&pyo3::types::PyAny>,
+            theme: Option<&str>,
             kwargs: Option<&pyo3::types::PyDict>,
         ) -> String {
             let mut m = serde_json::Map::new();
@@ -396,6 +397,9 @@ macro_rules! impl_python_bindings {
                     if jv != serde_json::Value::Null { m.insert("values".into(), jv); }
                 }
             }
+            if let Some(t) = theme {
+                m.insert("theme".into(), serde_json::json!(t));
+            }
             if let Some(d) = kwargs {
                 for (key, val) in d.iter() {
                     if let Ok(ks) = key.str() {
@@ -411,16 +415,17 @@ macro_rules! impl_python_bindings {
         macro_rules! impl_python {
             ($fn:ident, $_js:literal) => {
                 #[pyfunction]
-                #[pyo3(signature = (title="", labels=None, values=None, **kwargs))]
+                #[pyo3(signature = (title="", labels=None, values=None, theme=None, **kwargs))]
                 pub fn $fn(
                     title: &str,
                     labels: Option<&pyo3::types::PyAny>,
                     values: Option<&pyo3::types::PyAny>,
+                    theme: Option<&str>,
                     kwargs: Option<&pyo3::types::PyDict>,
                 ) -> PyResult<crate::Chart> {
                     let t = std::time::Instant::now();
                     let result = crate::Chart::new_doc(
-                        crate::bindings::commands::charts::$fn(&py_args_to_json(title, labels, values, kwargs)),
+                        crate::bindings::commands::charts::$fn(&py_args_to_json(title, labels, values, theme, kwargs)),
                         "",
                     );
                     let _dc = labels.and_then(|l| l.len().ok()).unwrap_or(0) as u64;
@@ -959,3 +964,5 @@ macro_rules! impl_python_bindings {
         }
     };
 }
+
+

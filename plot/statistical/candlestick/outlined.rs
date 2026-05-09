@@ -36,3 +36,5 @@ pub fn render(cfg: &CandlestickConfig) -> String {
     }
     finalize(b, cfg)
 }
+
+

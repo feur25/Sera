@@ -151,3 +151,5 @@ pub fn render(cfg: &WordCloudConfig) -> String {
     let json: &str = if cfg.hover.is_empty() { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
     build_chart_html(cfg.title, &svg, json)
 }
+
+

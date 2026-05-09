@@ -64,3 +64,5 @@ pub fn render(cfg: &BoxplotConfig) -> String {
     finish_frame(&mut f, &cats, cfg.palette, cfg.x_label, cfg.y_label, legend_w);
     f.html(&slots_to_json(cfg.hover))
 }
+
+

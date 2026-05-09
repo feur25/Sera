@@ -47,3 +47,5 @@ pub fn register_statistical_3d_types() {
         grp_reg.register_group("statistical".to_string(), ids);
     }
 }
+
+

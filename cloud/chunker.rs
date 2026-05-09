@@ -48,3 +48,5 @@ pub fn count_rows<P: AsRef<Path>>(path: P, has_header: bool) -> std::io::Result<
     for _ in r.lines() { n += 1; }
     if has_header && n > 0 { Ok(n - 1) } else { Ok(n) }
 }
+
+

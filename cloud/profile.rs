@@ -27,3 +27,5 @@ pub fn current() -> Resources {
 pub fn to_json(r: &Resources) -> String {
     serde_json::to_string_pretty(r).unwrap_or_else(|_| "{}".to_string())
 }
+
+

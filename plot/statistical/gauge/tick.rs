@@ -60,3 +60,5 @@ pub fn render(cfg: &GaugeConfig) -> String {
     label_text(&mut b, cfg, p.cx, p.cy + 68.0);
     finalize(b, cfg)
 }
+
+

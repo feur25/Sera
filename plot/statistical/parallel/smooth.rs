@@ -44,3 +44,5 @@ fn write_curve(buf: &mut Vec<u8>, p: &super::common::Prepared, vals: &[f64], hx:
     }
     push_b(buf, b"\"/>");
 }
+
+

@@ -209,3 +209,5 @@ pub fn y_at_x(p: &Prepared, ys: &[f64], x: f64, base_y: i32) -> f64 {
     let y = ys[lo] * (1.0 - frac) + ys[hi] * frac;
     base_y as f64 - y / p.global_max * p.layout.curve_h as f64
 }
+
+

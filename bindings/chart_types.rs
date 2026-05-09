@@ -71,3 +71,5 @@ pub fn init_chart_types() {
         }
     });
 }
+
+

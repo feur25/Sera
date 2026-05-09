@@ -125,3 +125,5 @@ pub fn hsv_to_rgb(h: f32, s: f32, v: f32) -> egui::Color32 {
     let m = v - c;
     egui::Color32::from_rgb(((r + m) * 255.0) as u8, ((g + m) * 255.0) as u8, ((b + m) * 255.0) as u8)
 }
+
+

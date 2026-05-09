@@ -76,3 +76,5 @@ pub fn render(cfg: &BarConfig) -> String {
     f.legend_pos(&names, cfg.palette, cfg.legend_position);
     f.html("[]")
 }
+
+

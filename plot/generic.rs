@@ -426,3 +426,5 @@ impl<M: PointMapper, S: RenderStrategy> ChartBuilder<M, S> {
         GenericRenderer::new(self.mapper, self.strategy)
     }
 }
+
+

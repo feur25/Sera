@@ -39,3 +39,5 @@ impl ImageProcessor {
         Some(format!("data:{};base64,{}", mime, base64))
     }
 }
+
+

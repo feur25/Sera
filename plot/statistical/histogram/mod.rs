@@ -17,6 +17,9 @@ pub use common::{compute_bins, bin_to_edges};
 pub struct Histogram;
 
 pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
+    use crate::plot::statistical::theme::ChartTheme;
+    if cfg.theme == ChartTheme::Deluxe { return deluxe::render(cfg); }
+    if matches!(cfg.theme, ChartTheme::Aurora | ChartTheme::Inferno | ChartTheme::Frost | ChartTheme::Prism) {}
     let v = if cfg.orientation == b'h' && cfg.variant != HistogramVariant::Horizontal {
         HistogramVariant::Horizontal
     } else if cfg.variant == HistogramVariant::Basic && cfg.overlay_values.is_some() {
@@ -35,3 +38,5 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
         HistogramVariant::Deluxe => deluxe::render(cfg),
     }
 }
+
+

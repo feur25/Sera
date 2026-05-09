@@ -308,3 +308,5 @@ pub extern "C" fn sera_state_storage_load(s:*const StateStorage,k:*const c_char)
 pub extern "C" fn sera_state_storage_free(s:*mut StateStorage){
     if !s.is_null(){unsafe{let _=Box::from_raw(s);}}
 }
+
+

@@ -121,3 +121,5 @@ fn detect_rocm() -> Option<DeviceInfo> {
         Some(DeviceInfo { backend: Backend::Rocm, name: "rocm".into(), mem_mb: 0, available: false })
     } else { None }
 }
+
+

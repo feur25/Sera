@@ -14,3 +14,5 @@ crate::chart_config!(TreemapConfig, 1100, 520;
         palette: &[],
     }
 );
+
+

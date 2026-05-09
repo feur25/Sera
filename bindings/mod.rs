@@ -26,3 +26,4 @@ pub use export_builder::ExportBuilder;
 pub use crate::plot::default::bar::render_bars_fast;
 pub use crate::plot::default::scatter::render_scatter_fast;
 pub use crate::plot::default::line::render_lines_fast;
+

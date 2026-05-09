@@ -214,3 +214,5 @@ impl ChartDataProcessor {
         self.labels.is_empty()
     }
 }
+
+

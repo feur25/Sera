@@ -102,3 +102,5 @@ impl ViewerApp {
     pub fn canvas_mut(&mut self) -> &mut Canvas { &mut self.canvas }
     pub fn legend_visible(&self) -> bool { self.legend_visible }
 }
+
+

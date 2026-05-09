@@ -27,3 +27,5 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
         Gradient => gradient::render(cfg),
     }
 }
+
+

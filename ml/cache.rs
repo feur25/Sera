@@ -434,3 +434,5 @@ pub trait Resumable {
     type YType;
     fn fit_resumable(&mut self, x: &[f64], n: usize, p: usize, y: &[Self::YType], checkpoint_id: Option<u64>);
 }
+
+

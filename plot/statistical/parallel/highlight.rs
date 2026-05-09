@@ -22,3 +22,5 @@ pub fn render(cfg: &ParallelConfig) -> String {
     legend(&mut b, cfg, &p);
     finalize(b, cfg)
 }
+
+

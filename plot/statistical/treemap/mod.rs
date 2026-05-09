@@ -26,3 +26,5 @@ pub fn render_treemap_html(cfg: &TreemapConfig) -> String {
         Mono     => mono::render(cfg),
     }
 }
+
+

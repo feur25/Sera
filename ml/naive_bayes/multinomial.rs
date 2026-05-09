@@ -117,3 +117,5 @@ impl crate::ml::MlClassifier for MultinomialNB {
     fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) { self.fit(x, n, p, y); }
     fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> { self.predict(x, n, p) }
 }
+
+

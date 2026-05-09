@@ -204,3 +204,5 @@ pub fn render_choropleth_html(
     let slots = if auto { &auto_slots } else { hover };
     build_chart_html(title, &svg, &slots_to_json(slots))
 }
+
+

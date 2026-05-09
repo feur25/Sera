@@ -137,3 +137,5 @@ pub fn write_dots(buf: &mut Vec<u8>, p: &Prepared, vals: &[f64], color: u32, r: 
         push_b(buf, b"\"/>");
     }
 }
+
+

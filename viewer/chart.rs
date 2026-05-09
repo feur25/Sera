@@ -1791,3 +1791,4 @@ pub extern "C" fn sera_show_with_variants(enable_transform: bool, default_kind: 
     sera_set_current_chart_kind(default_kind);
     true
 }
+

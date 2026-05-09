@@ -81,3 +81,5 @@ fn split_series<'a>(s: &'a [f64], n_cats: usize) -> Vec<&'a [f64]> {
         })
         .collect()
 }
+
+

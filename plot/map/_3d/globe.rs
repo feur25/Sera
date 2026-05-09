@@ -198,3 +198,5 @@ fn index_to_globe_latlon(idx: usize) -> (f64, f64) {
     let lon = -180.0 + (idx as f64 * 7.3) % 360.0;
     (lat, lon)
 }
+
+

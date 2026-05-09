@@ -103,3 +103,5 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
     let json: &str = if auto_hover { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
     f.html(json)
 }
+
+

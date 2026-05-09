@@ -33,3 +33,5 @@ pub fn render_scatter_variant_html(cfg: &ScatterConfig) -> String {
         Deluxe      => deluxe::render(cfg),
     }
 }
+
+

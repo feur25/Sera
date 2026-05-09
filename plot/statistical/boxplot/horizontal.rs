@@ -113,3 +113,5 @@ pub fn render(cfg: &BoxplotConfig) -> String {
     svg_y_label(&mut f.buf, cfg.y_label, 14, f.pt, f.ph);
     f.html(&slots_to_json(cfg.hover))
 }
+
+

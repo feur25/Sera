@@ -309,3 +309,5 @@ fn train_linear_svm(x: &[f64], n: usize, p: usize, y: &[f64], c: f64, max_iter: 
     let b = if fit_intercept { let bv = w[p]; w.truncate(p); bv } else { w.truncate(p); 0.0 };
     (w, b)
 }
+
+

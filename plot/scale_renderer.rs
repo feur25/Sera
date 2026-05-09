@@ -28,3 +28,4 @@ pub fn render_scale_labels(
         );
     }
 }
+

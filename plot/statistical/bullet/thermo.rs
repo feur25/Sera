@@ -78,3 +78,5 @@ pub fn render(cfg: &BulletConfig) -> String {
     let svg = unsafe { String::from_utf8_unchecked(b) };
     build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }
+
+

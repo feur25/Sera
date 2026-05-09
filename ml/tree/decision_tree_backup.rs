@@ -455,3 +455,5 @@ fn impurity_from_dist(dist: &[f64], n: usize, criterion: &TreeCriterion) -> f64 
         TreeCriterion::MSE => 0.0,
     }
 }
+
+

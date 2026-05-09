@@ -1,4 +1,4 @@
-﻿pub mod core;
+pub mod core;
 pub mod data;
 pub mod plot;
 pub mod ml;
@@ -1522,3 +1522,6 @@ fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
 
     Ok(())
 }
+
+
+

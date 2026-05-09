@@ -20,3 +20,5 @@ pub fn render(cfg: &PieConfig) -> String {
     }
     render_with(cfg, &auto, |_, _| {})
 }
+
+

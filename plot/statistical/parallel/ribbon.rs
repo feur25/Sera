@@ -131,3 +131,5 @@ pub fn render(cfg: &ParallelConfig) -> String {
 
     finalize(b, cfg)
 }
+
+

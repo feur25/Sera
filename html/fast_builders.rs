@@ -148,3 +148,5 @@ impl HtmlBuilder {
         String::from_utf8(self.buf).unwrap_or_default()
     }
 }
+
+

@@ -1,6 +1,7 @@
 crate::chart_config!(HistogramConfig, 860, 380;
     struct {
         pub variant: super::variant::HistogramVariant,
+        pub theme: crate::plot::statistical::theme::ChartTheme,
         pub values: &'a [f64],
         pub bins: usize,
         pub color: u32,
@@ -18,6 +19,7 @@ crate::chart_config!(HistogramConfig, 860, 380;
     }
     defaults {
         variant: super::variant::HistogramVariant::Basic,
+        theme: crate::plot::statistical::theme::ChartTheme::None,
         values: &[],
         bins: 0,
         color: 0x6366F1,
@@ -34,3 +36,5 @@ crate::chart_config!(HistogramConfig, 860, 380;
         orientation: b'v',
     }
 );
+
+

@@ -17,3 +17,5 @@ crate::plot_family! {
         Pivot       => "pivot" | "pivot_table" | "totals" | "summary",
     }
 }
+
+

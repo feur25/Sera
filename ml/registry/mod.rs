@@ -144,3 +144,5 @@ pub fn by_tag(name: &str, tag: &str) -> Option<ModelRecord> {
     let g = store().lock().unwrap();
     g.entries.get(name)?.iter().filter(|r| r.tags.iter().any(|t| t == tag)).max_by_key(|r| r.version).cloned()
 }
+
+

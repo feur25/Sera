@@ -93,3 +93,5 @@ pub fn render(cfg: &LineConfig) -> String {
     html_suffix(&mut b, hid, "[]");
     unsafe { String::from_utf8_unchecked(b) }
 }
+
+

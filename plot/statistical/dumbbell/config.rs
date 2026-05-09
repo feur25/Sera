@@ -16,3 +16,5 @@ crate::chart_config!(DumbbellConfig, 1000, 500;
         palette: &[],
     }
 );
+
+

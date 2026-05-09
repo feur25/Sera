@@ -101,3 +101,5 @@ pub fn render(cfg: &ViolinConfig) -> String {
     finish(&mut f, &names, &palette, cfg.x_label, cfg.y_label, legend_w);
     f.html(&slots_to_json(cfg.hover))
 }
+
+

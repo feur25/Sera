@@ -102,3 +102,5 @@ pub fn finalize(mut buf: Vec<u8>, cfg: &FunnelConfig) -> String {
 pub fn step_color(palette: &[u32], i: usize) -> [u8; 6] {
     hex6(palette_color(palette, i))
 }
+
+

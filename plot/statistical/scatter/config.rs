@@ -36,3 +36,5 @@ crate::chart_config!(ScatterConfig, 900, 500;
         regression_type: "linear",
     }
 );
+
+

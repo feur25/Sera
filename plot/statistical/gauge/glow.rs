@@ -36,3 +36,5 @@ pub fn render(cfg: &GaugeConfig) -> String {
     min_max_labels(&mut b, cfg, &p);
     finalize(b, cfg)
 }
+
+

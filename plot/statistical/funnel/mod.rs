@@ -26,3 +26,5 @@ pub fn render_funnel_html(cfg: &FunnelConfig) -> String {
         Conversion => conversion::render(cfg),
     }
 }
+
+

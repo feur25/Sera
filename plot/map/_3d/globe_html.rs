@@ -46,3 +46,5 @@ fn build_globe_map_js() -> Vec<u8> {
     push_b(&mut buf, b"];\n");
     buf
 }
+
+

@@ -8,3 +8,5 @@ pub fn render(cfg: &BarConfig, orient: u8) -> String {
         cfg.gridlines, cfg.sort_order,
     )
 }
+
+

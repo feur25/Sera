@@ -109,3 +109,5 @@ pub fn histogram_normalized(vals: &[f64], x0: f64, x1: f64, n_bins: usize) -> (V
     let max = densities.iter().copied().fold(0.0f64, f64::max);
     (densities, max)
 }
+
+

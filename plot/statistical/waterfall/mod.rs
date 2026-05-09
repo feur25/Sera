@@ -22,3 +22,5 @@ pub fn render_waterfall_html(cfg: &WaterfallConfig) -> String {
         Horizontal => horizontal::render(cfg),
     }
 }
+
+

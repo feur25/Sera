@@ -236,3 +236,4 @@ impl FullRenderPipeline {
         datasets[0].render_to_string(&config, 1024)
     }
 }
+

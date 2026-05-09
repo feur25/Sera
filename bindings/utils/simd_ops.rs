@@ -22,3 +22,5 @@ pub fn compute_hex_colors_batch_into(len: usize, out: &mut Vec<u32>) {
         out.push(r | g | b);
     }
 }
+
+

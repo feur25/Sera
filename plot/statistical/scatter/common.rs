@@ -175,3 +175,5 @@ pub fn cycle_symbol(i: usize) -> &'static str {
     const SYMS: &[&str] = &["circle", "square", "diamond", "triangle", "cross", "plus", "star", "triangle-down"];
     SYMS[i % SYMS.len()]
 }
+
+

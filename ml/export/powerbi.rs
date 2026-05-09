@@ -50,3 +50,5 @@ pub fn rows_from_matrix(x: &[f64], n: usize, p: usize, y: Option<&[f64]>, yhat: 
         row
     }).collect()
 }
+
+

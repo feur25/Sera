@@ -40,3 +40,5 @@ pub fn render(cfg: &GaugeConfig) -> String {
     let _ = push_i;
     finalize(b, cfg)
 }
+
+

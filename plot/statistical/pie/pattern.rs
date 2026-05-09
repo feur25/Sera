@@ -6,3 +6,5 @@ pub fn render(cfg: &PieConfig) -> String {
         if p.pattern.is_empty() { p.pattern = "stripes".to_string(); }
     })
 }
+
+

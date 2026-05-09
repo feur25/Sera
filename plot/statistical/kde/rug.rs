@@ -84,3 +84,5 @@ pub fn render(cfg: &KdeConfig) -> String {
     }
     f.html(&slots_to_json(cfg.hover))
 }
+
+

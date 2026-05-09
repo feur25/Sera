@@ -26,3 +26,5 @@ pub fn render_sunburst_html(cfg: &SunburstConfig) -> String {
         Mono      => mono::render(cfg),
     }
 }
+
+

@@ -26,3 +26,5 @@ pub fn render_wordcloud_html(cfg: &WordCloudConfig) -> String {
         Neuron   => neuron::render(cfg),
     }
 }
+
+

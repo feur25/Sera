@@ -2540,3 +2540,5 @@ coef_ : list[float]
     Estimated coefficients.
 intercept_ : float
     Intercept term.";
+
+

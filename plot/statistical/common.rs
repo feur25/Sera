@@ -436,3 +436,5 @@ impl Frame {
         Self { buf, w, h, pl, pt, pw: w - pl - pr, ph: h - pt - pb, hid }
     }
 }
+
+

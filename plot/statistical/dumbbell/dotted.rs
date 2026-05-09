@@ -31,3 +31,5 @@ pub fn render(cfg: &DumbbellConfig) -> String {
     }
     finalize(f, cfg, &p)
 }
+
+

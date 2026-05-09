@@ -28,3 +28,5 @@ pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
         Deluxe => deluxe::render(cfg),
     }
 }
+
+

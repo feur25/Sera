@@ -162,6 +162,7 @@ pub struct ChartOpts {
     pub edges_i: Option<Vec<i32>>,
     pub edges_j: Option<Vec<i32>>,
     pub edges_w: Option<Vec<f64>>,
+    pub theme: Option<String>,
 }
 
 #[derive(Deserialize, Default, Clone)]
@@ -379,7 +380,10 @@ pub fn apply(html: String, o: &ChartOpts) -> String {
     let h = crate::html::hover::apply_opts(html, bg, !o.no_x(), !o.no_y());
     let h = crate::html::hover::apply_rotation(h, o.rotation_deg());
     let h = apply_annotations(h, o);
-    apply_kwarg_chains(h, o)
+    let h = apply_kwarg_chains(h, o);
+    if let Some(ref t) = o.theme {
+        crate::plot::statistical::apply_chart_theme(h, t)
+    } else { h }
 }
 
 pub fn apply_h(html: String, o: &ChartOpts) -> String {
@@ -388,7 +392,10 @@ pub fn apply_h(html: String, o: &ChartOpts) -> String {
     let h = crate::html::hover::apply_opts(html, bg, !o.no_x(), !o.no_y());
     let h = crate::html::hover::apply_rotation(h, o.rotation_deg_native());
     let h = apply_annotations(h, o);
-    apply_kwarg_chains(h, o)
+    let h = apply_kwarg_chains(h, o);
+    if let Some(ref t) = o.theme {
+        crate::plot::statistical::apply_chart_theme(h, t)
+    } else { h }
 }
 
 #[cfg(feature = "python")]
@@ -450,7 +457,7 @@ pub fn build_bar_chart(input: &str) -> String {
 /// "basic" | "horizontal" | "grouped" | "stacked" | "relative" |
 /// "grouped_stacked" | "marimekko" | "pictogram" | "multicategory".
 pub fn build_bar(input: &str) -> String {
-    use crate::plot::statistical::{BarVariant, BarConfig, render_bar_html};
+    use crate::plot::statistical::{BarVariant, BarConfig, render_bar_html, ChartTheme};
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
     let variant = BarVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
@@ -509,6 +516,7 @@ pub fn build_bar(input: &str) -> String {
         bar_gap: o.bar_gap.unwrap_or(0.2),
         bargroup_gap: o.bargroup_gap.unwrap_or(0.1),
         orientation: o.orient_byte(),
+        theme: ChartTheme::from_str(o.theme.as_deref().unwrap_or("none")),
     };
     let html = render_bar_html(&cfg);
     use crate::plot::statistical::BarVariant::*;
@@ -760,7 +768,9 @@ pub fn build_histogram(input: &str) -> String {
         x_label: &o.xl(), y_label: &o.yl(),
         show_counts: o.show_counts.unwrap_or(false),
         gridlines: o.grid(), width: o.w(860), height: o.h(380), hover: &hover,
-        sort_order: &o.srt(), ..HistogramConfig::default()
+        sort_order: &o.srt(),
+        theme: { use crate::plot::statistical::ChartTheme; ChartTheme::from_str(o.theme.as_deref().unwrap_or("none")) },
+        ..HistogramConfig::default()
     });
     use crate::plot::statistical::HistogramVariant::*;
     let native = matches!(variant, Basic | Horizontal);
@@ -1771,6 +1781,7 @@ pub fn build_dumbbell(input: &str) -> String {
 
 pub fn build_bubble(input: &str) -> String {
     use crate::plot::statistical::bubble::{BubbleConfig, BubbleVariant, render_bubble_html};
+    use crate::plot::statistical::ChartTheme;
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
     let variant = BubbleVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
@@ -1798,6 +1809,7 @@ pub fn build_bubble(input: &str) -> String {
         max_size: o.max_size.unwrap_or(40.0),
         show_text: o.show_values.or(o.show_text).unwrap_or(false),
         stroke_width: o.stroke_width.unwrap_or(1.5),
+        theme: ChartTheme::from_str(o.theme.as_deref().unwrap_or("none")),
     };
     let html = render_bubble_html(&cfg);
     apply(html, &o)
@@ -1836,7 +1848,9 @@ pub fn build_parallel(input: &str) -> String {
         categories: &categories, palette: &pal, width: o.w(1000), height: o.h(500),
         highlight_index: o.highlight_index.unwrap_or(-1),
         color_axis: o.color_axis.unwrap_or(-1),
-        hover: &hover, ..ParallelConfig::default()
+        hover: &hover,
+        theme: { use crate::plot::statistical::ChartTheme; ChartTheme::from_str(o.theme.as_deref().unwrap_or("none")) },
+        ..ParallelConfig::default()
     });
     apply(html, &o)
 }
@@ -3073,3 +3087,4 @@ pub fn ml_knn_regressor(input: &str) -> String {
     let preds = m.predict(&xtf, nt, p);
     serde_json::json!({"predictions": preds}).to_string()
 }
+

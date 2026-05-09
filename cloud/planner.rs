@@ -42,3 +42,5 @@ pub fn plan(n_rows: usize, n_cols: usize, mem_budget_mb: u64) -> ScalePlan {
 pub fn to_json(p: &ScalePlan) -> String {
     serde_json::to_string_pretty(p).unwrap_or_else(|_| "{}".to_string())
 }
+
+

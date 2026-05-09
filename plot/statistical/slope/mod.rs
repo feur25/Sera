@@ -26,3 +26,5 @@ pub fn render_slope_html(cfg: &SlopeConfig) -> String {
         Stepped     => stepped::render(cfg),
     }
 }
+
+

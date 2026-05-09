@@ -52,3 +52,5 @@ pub fn render_chart_by_type(
         }
     }
 }
+
+

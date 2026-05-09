@@ -68,3 +68,4 @@ pub extern "C" fn sera_register_chart_type(id: u8, name: *const c_char, renderer
         .build()
         .is_ok()
 }
+

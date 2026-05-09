@@ -189,3 +189,5 @@ fn softmax_rows(scores: &[f64], n: usize, k: usize) -> Vec<f64> {
     }
     out
 }
+
+

@@ -62,3 +62,5 @@ where F: Fn(&[f64], usize, usize, &[f64], &[f64], usize) -> Vec<f64> + Send + Sy
         r2_score(&y_test, &preds)
     }).collect()
 }
+
+

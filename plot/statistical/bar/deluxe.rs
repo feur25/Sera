@@ -131,3 +131,5 @@ pub fn render(cfg: &BarConfig, orient: u8) -> String {
     }
     f.html(&slots_to_json(cfg.hover))
 }
+
+

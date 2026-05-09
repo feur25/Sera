@@ -22,3 +22,5 @@ pub fn render_lollipop_html(cfg: &LollipopConfig) -> String {
         Office    => office::render(cfg),
     }
 }
+
+

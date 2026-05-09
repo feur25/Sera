@@ -357,3 +357,5 @@ pub fn render_bars_html(
     html_suffix(&mut buf, hid, &slots_to_json(hover));
     unsafe { String::from_utf8_unchecked(buf) }
 }
+
+

@@ -93,3 +93,5 @@ pub fn render(cfg: &LineConfig) -> String {
     let _ = palette_color;
     f.html("[]")
 }
+
+

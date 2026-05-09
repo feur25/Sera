@@ -1,4 +1,4 @@
-﻿use pyo3::prelude::*;
+use pyo3::prelude::*;
 use numpy::{PyReadonlyArray1, PyReadonlyArray2, PyUntypedArrayMethods, PyArrayMethods, IntoPyArray};
 use pyo3::types::PyAny;
 use rayon::prelude::*;
@@ -2980,3 +2980,5 @@ pub fn register_ml_classes(m: &PyModule) -> PyResult<()> {
     m.add_class::<PyWorkerPool>()?;
     Ok(())
 }
+
+

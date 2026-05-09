@@ -9,3 +9,5 @@ pub fn render(cfg: &HeatmapConfig) -> String {
     };
     render_core(&c)
 }
+
+

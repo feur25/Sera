@@ -24,3 +24,5 @@ pub fn render_dumbbell_html(cfg: &DumbbellConfig) -> String {
         Ranked   => ranked::render(cfg),
     }
 }
+
+

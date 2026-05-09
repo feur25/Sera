@@ -30,3 +30,5 @@ pub fn render_pie_html(cfg: &PieConfig) -> String {
     };
     build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }
+
+

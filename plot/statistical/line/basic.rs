@@ -8,3 +8,5 @@ pub fn render(cfg: &LineConfig) -> String {
         cfg.gridlines, cfg.show_points, cfg.sort_order,
     )
 }
+
+

@@ -57,3 +57,5 @@ impl BatchRenderer {
         self.text_items.clear();
     }
 }
+
+

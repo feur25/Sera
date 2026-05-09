@@ -99,3 +99,5 @@ pub fn render_with_overlay_legend(cfg: &HistogramConfig) -> String {
     }
     render(cfg)
 }
+
+

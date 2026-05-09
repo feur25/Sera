@@ -48,3 +48,5 @@ pub fn group_indices(categories: &[String], n: usize) -> (Vec<String>, Vec<usize
     }
     (order, idx)
 }
+
+

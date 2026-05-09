@@ -1,4 +1,4 @@
-﻿#[cfg(feature = "python")]
+#[cfg(feature = "python")]
 use pyo3::prelude::*;
 
 #[cfg(feature = "python")]
@@ -56,3 +56,4 @@ pub fn register_submodules(py: Python<'_>, m: &PyModule) -> PyResult<()> {
 
     Ok(())
 }
+

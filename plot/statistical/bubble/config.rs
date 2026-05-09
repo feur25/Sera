@@ -1,6 +1,7 @@
 crate::chart_config!(BubbleConfig, 900, 500;
     struct {
         pub variant: super::variant::BubbleVariant,
+        pub theme: crate::plot::statistical::theme::ChartTheme,
         pub x_values: &'a [f64],
         pub y_values: &'a [f64],
         pub sizes: &'a [f64],
@@ -18,6 +19,7 @@ crate::chart_config!(BubbleConfig, 900, 500;
     }
     defaults {
         variant: super::variant::BubbleVariant::Basic,
+        theme: crate::plot::statistical::theme::ChartTheme::None,
         x_values: &[],
         y_values: &[],
         sizes: &[],
@@ -34,3 +36,5 @@ crate::chart_config!(BubbleConfig, 900, 500;
         stroke_width: 1.5,
     }
 );
+
+

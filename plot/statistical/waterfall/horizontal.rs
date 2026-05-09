@@ -117,3 +117,5 @@ pub fn render(cfg: &WaterfallConfig) -> String {
     let _ = COLOR_POS; let _ = COLOR_NEG; let _ = COLOR_TOTAL;
     finalize(b, cfg)
 }
+
+

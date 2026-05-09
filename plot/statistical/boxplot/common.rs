@@ -294,3 +294,5 @@ pub fn open_axes_horizontal(f: &mut Frame, title: &str, gridlines: bool, x_min: 
     f.x_grid(5, x_min, x_max, gridlines);
     svg_axis_lines(&mut f.buf, f.pl, f.pt, f.pw, f.ph);
 }
+
+

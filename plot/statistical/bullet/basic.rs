@@ -43,3 +43,5 @@ pub fn render(cfg: &BulletConfig) -> String {
     }
     finalize(b, cfg)
 }
+
+

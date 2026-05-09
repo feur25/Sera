@@ -947,3 +947,5 @@ pub fn render_kmeans_html(cfg: &KMeansConfig) -> String {
     html_suffix(&mut buf, hid, "[]");
     unsafe { String::from_utf8_unchecked(buf) }
 }
+
+

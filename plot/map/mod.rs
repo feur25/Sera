@@ -9,3 +9,5 @@ pub use choropleth::{render_choropleth, render_choropleth_fast, render_choroplet
 pub use bubble_map::{render_bubble_map, render_bubble_map_fast, render_bubble_map_html};
 pub use chart::register_map_types;
 pub use _3d::register_map_3d_types;
+
+

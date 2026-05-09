@@ -79,3 +79,5 @@ impl CompactChartState {
             + self.values.len() * std::mem::size_of::<f64>()
     }
 }
+
+

@@ -15,6 +15,9 @@ pub use variant::ParallelVariant;
 pub use config::ParallelConfig;
 
 pub fn render_parallel_html(cfg: &ParallelConfig) -> String {
+    use crate::plot::statistical::theme::ChartTheme;
+    if cfg.theme == ChartTheme::Deluxe { return deluxe::render(cfg); }
+    if matches!(cfg.theme, ChartTheme::Aurora | ChartTheme::Inferno | ChartTheme::Frost | ChartTheme::Prism) {}
     use variant::ParallelVariant::*;
     match cfg.variant {
         Basic       => basic::render(cfg),
@@ -28,3 +31,5 @@ pub fn render_parallel_html(cfg: &ParallelConfig) -> String {
         Ribbon      => ribbon::render(cfg),
     }
 }
+
+

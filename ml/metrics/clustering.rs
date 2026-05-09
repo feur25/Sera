@@ -271,3 +271,5 @@ fn nmi_homogeneity(labels_true: &[i32], labels_pred: &[i32]) -> (f64, f64) {
     let comp = if hp < 1e-15 { 1.0 } else { mi / hp };
     (homo, comp)
 }
+
+

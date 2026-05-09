@@ -40,3 +40,5 @@ pub fn render(cfg: &RadarConfig) -> String {
     draw_legend(&mut b, cfg, &p);
     finalize(b, cfg)
 }
+
+

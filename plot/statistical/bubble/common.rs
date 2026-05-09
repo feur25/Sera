@@ -82,3 +82,5 @@ pub fn lerp_color(a: u32, b: u32, t: f64) -> u32 {
 pub fn make_frame(cfg: &BubbleConfig, n: usize, legend_w: i32) -> Frame {
     Frame::new_html(cfg.title, cfg.width, cfg.height, 56, 38, 52, legend_w, n * 320 + 4096)
 }
+
+

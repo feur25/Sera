@@ -47,3 +47,5 @@ pub fn render(cfg: &RidgelineConfig) -> String {
     close_svg(&mut b, cfg, &p, true);
     finalize(b, cfg)
 }
+
+

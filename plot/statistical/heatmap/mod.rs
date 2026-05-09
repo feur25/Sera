@@ -41,3 +41,5 @@ pub fn render_heatmap_html(cfg: &HeatmapConfig) -> String {
         HeatmapVariant::Pivot => pivot::render(cfg),
     }
 }
+
+

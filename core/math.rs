@@ -378,3 +378,4 @@ pub fn heat_color(value: f64, max_val: f64) -> (u8, u8, u8) {
     let b = (255.0 * (1.0 - 2.0 * t).clamp(0.0, 1.0)) as u8;
     (r, g, b)
 }
+

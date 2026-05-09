@@ -55,3 +55,5 @@ impl SvgChart for super::scatter::Scatter {
         super::scatter::render_svg_scatter(svg, values, colors, pad, plot_width, plot_height, max_val, vertical);
     }
 }
+
+

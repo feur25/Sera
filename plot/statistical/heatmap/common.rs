@@ -476,3 +476,5 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
     let hover_json = if auto_hover { "[]".to_string() } else { slots_to_json(cfg.hover) };
     build_chart_html(cfg.title, &svg, &hover_json)
 }
+
+

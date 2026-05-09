@@ -30,3 +30,5 @@ pub fn render_boxplot_html(cfg: &BoxplotConfig) -> String {
         Rainbow     => rainbow::render(cfg),
     }
 }
+
+

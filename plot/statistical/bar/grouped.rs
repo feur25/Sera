@@ -14,3 +14,5 @@ pub fn render(cfg: &BarConfig, stacked: bool) -> String {
     };
     render_grouped_bar_html(&g)
 }
+
+

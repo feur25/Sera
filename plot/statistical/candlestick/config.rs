@@ -18,3 +18,5 @@ crate::chart_config!(CandlestickConfig, 1100, 500;
         palette: &[],
     }
 );
+
+

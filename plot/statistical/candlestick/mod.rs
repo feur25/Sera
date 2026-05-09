@@ -26,3 +26,5 @@ pub fn render_candlestick_html(cfg: &CandlestickConfig) -> String {
         Range    => range::render(cfg),
     }
 }
+
+

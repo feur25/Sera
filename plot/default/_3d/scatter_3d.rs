@@ -134,3 +134,4 @@ pub fn render_scatter3d_html(
         axis_labels, color_values, color_labels, width, height, bg_color,
     )
 }
+

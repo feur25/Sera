@@ -14,6 +14,12 @@ pub use variant::BarVariant;
 pub use config::BarConfig;
 
 pub fn render_bar_html(cfg: &BarConfig) -> String {
+    use crate::plot::statistical::theme::ChartTheme;
+    match cfg.theme {
+        ChartTheme::Deluxe => return deluxe::render(cfg, cfg.orientation),
+        ChartTheme::Prism  => return prism::render(cfg),
+        _                  => {}
+    }
     use BarVariant::*;
     match cfg.variant {
         Basic           => basic::render(cfg, cfg.orientation),
@@ -29,3 +35,5 @@ pub fn render_bar_html(cfg: &BarConfig) -> String {
         Prism           => prism::render(cfg),
     }
 }
+
+

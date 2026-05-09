@@ -14,6 +14,12 @@ pub use variant::BubbleVariant;
 pub use config::BubbleConfig;
 
 pub fn render_bubble_html(cfg: &BubbleConfig) -> String {
+    use crate::plot::statistical::theme::ChartTheme;
+    match cfg.theme {
+        ChartTheme::Deluxe => return deluxe::render(cfg),
+        ChartTheme::Prism  => return plasma::render(cfg),
+        _                  => {}
+    }
     use BubbleVariant::*;
     let v = if cfg.variant == Basic && !cfg.categories.is_empty() {
         Categorical
@@ -31,3 +37,5 @@ pub fn render_bubble_html(cfg: &BubbleConfig) -> String {
         Deluxe      => deluxe::render(cfg),
     }
 }
+
+

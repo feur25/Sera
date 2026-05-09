@@ -12,3 +12,5 @@ crate::plot_family! {
         Rainbow     => "rainbow" | "gradient" | "spectrum" | "colorful",
     }
 }
+
+

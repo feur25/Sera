@@ -2,6 +2,7 @@ use crate::html::hover::HoverSlot;
 
 pub struct BarConfig<'a> {
     pub variant: super::variant::BarVariant,
+    pub theme: crate::plot::statistical::theme::ChartTheme,
 
     pub title: &'a str,
     pub x_label: &'a str,
@@ -42,6 +43,7 @@ impl<'a> Default for BarConfig<'a> {
     fn default() -> Self {
         Self {
             variant: super::variant::BarVariant::Basic,
+            theme: crate::plot::statistical::theme::ChartTheme::None,
             title: "", x_label: "", y_label: "",
             width: 900, height: 480,
             gridlines: false, sort_order: "none",
@@ -57,3 +59,5 @@ impl<'a> Default for BarConfig<'a> {
         }
     }
 }
+
+

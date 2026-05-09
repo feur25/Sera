@@ -535,3 +535,5 @@ pub fn weighted_bootstrap(n: usize, weights: &[f64], rng: &mut u64) -> Vec<usize
     }
     indices
 }
+
+

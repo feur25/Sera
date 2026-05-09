@@ -34,3 +34,5 @@ pub fn render(cfg: &GaugeConfig) -> String {
     push_b(&mut b, b"</text>");
     finalize(b, cfg)
 }
+
+

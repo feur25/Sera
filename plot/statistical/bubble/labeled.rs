@@ -57,3 +57,5 @@ pub fn render(cfg: &BubbleConfig) -> String {
     let json: &str = if cfg.hover.is_empty() { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
     f.html(json)
 }
+
+

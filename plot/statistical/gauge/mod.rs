@@ -26,3 +26,5 @@ pub fn render_gauge_html(cfg: &GaugeConfig) -> String {
         Concentric => concentric::render(cfg),
     }
 }
+
+

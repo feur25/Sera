@@ -101,3 +101,5 @@ pub fn d2_absolute_error_score(y_true: &[f64], y_pred: &[f64]) -> f64 {
     let denom: f64 = y_true.iter().map(|y| (y - median).abs()).sum::<f64>() / n as f64;
     if denom < 1e-15 { 0.0 } else { 1.0 - num / denom }
 }
+
+

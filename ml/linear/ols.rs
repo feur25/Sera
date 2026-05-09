@@ -146,3 +146,5 @@ fn r2_score(y: &[f64], pred: &[f64]) -> f64 {
     if ss_tot < 1e-15 { return 0.0; }
     1.0 - ss_res / ss_tot
 }
+
+

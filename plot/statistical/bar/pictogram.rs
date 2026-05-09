@@ -78,3 +78,5 @@ pub fn render(cfg: &BarConfig) -> String {
 
     f.html("[]")
 }
+
+

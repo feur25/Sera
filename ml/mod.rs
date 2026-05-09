@@ -44,3 +44,5 @@ pub trait MlClassifier: Send + Sync {
         crate::ml::metrics::classification::accuracy_score(y, &preds)
     }
 }
+
+

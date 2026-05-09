@@ -26,3 +26,5 @@ pub fn render_bullet_html(cfg: &BulletConfig) -> String {
         Compare   => compare::render(cfg),
     }
 }
+
+

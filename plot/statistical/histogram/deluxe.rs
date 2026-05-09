@@ -92,3 +92,5 @@ pub fn render(cfg: &HistogramConfig) -> String {
     let _ = (escape_xml, bin_to_edges);
     f.html(&slots_to_json(cfg.hover))
 }
+
+

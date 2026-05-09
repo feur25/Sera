@@ -137,3 +137,5 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
     let json: &str = if auto_hover { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
     f.html(json)
 }
+
+

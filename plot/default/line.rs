@@ -279,3 +279,5 @@ pub fn render_lines_html(
 
 #[inline] fn line_xml_esc(s: &str) -> String { s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;") }
 #[inline] fn line_trunc(s: &str, max: usize) -> &str { if s.len() <= max { s } else { &s[..max] } }
+
+

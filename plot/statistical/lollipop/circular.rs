@@ -57,3 +57,5 @@ pub fn render(cfg: &LollipopConfig) -> String {
     let _ = palette_color;
     finalize(b, cfg)
 }
+
+

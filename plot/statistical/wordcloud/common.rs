@@ -708,3 +708,5 @@ pub fn render_context(cfg: &WordCloudConfig) -> String {
     push_b(&mut buf, b"</svg>");
     finalize(cfg, buf)
 }
+
+

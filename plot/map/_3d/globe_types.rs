@@ -47,3 +47,5 @@ pub fn register_map_3d_types() {
         grp_reg.register_group("map".to_string(), ids);
     }
 }
+
+

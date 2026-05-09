@@ -28,3 +28,5 @@ pub fn render_radar_html(cfg: &RadarConfig) -> String {
         Deluxe   => deluxe::render(cfg),
     }
 }
+
+
