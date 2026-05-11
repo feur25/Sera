@@ -1,7 +1,6 @@
 ﻿(function () {
     var WS_URL_OVERRIDE = localStorage.getItem("sp_ws_url");
     var WS_URL_LOCAL = "ws://127.0.0.1:7842";
-    var PLAYGROUND_STATUS_URL = "https://raw.githubusercontent.com/feur25/seraplot/main/playground-url.json";
     var MAX_AGE_S = 21600;
     var DEBOUNCE_MS = 650;
     var LANG_KEY = "seraplot_lang";
@@ -227,13 +226,21 @@
     function resolveWsUrl(cb) {
         if (WS_URL_OVERRIDE) { cb(WS_URL_OVERRIDE); return; }
         if (location.protocol !== "https:") { cb(WS_URL_LOCAL); return; }
-        fetch(PLAYGROUND_STATUS_URL + "?_=" + Date.now())
-            .then(function (r) { return r.json(); })
-            .then(function (d) {
-                var age = Math.floor(Date.now() / 1000) - (d.ts || 0);
-                cb((d.url && age < MAX_AGE_S) ? d.url : null);
-            })
-            .catch(function () { cb(null); });
+        var base = "https://raw.githubusercontent.com/feur25/seraplot/";
+        var branches = ["master", "main"];
+        var tried = 0;
+        function tryBranch(i) {
+            if (i >= branches.length) { cb(null); return; }
+            fetch(base + branches[i] + "/playground-url.json?_=" + Date.now())
+                .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+                .then(function (d) {
+                    var age = Math.floor(Date.now() / 1000) - (d.ts || 0);
+                    if (d.url && age < MAX_AGE_S) { cb(d.url); }
+                    else { tryBranch(i + 1); }
+                })
+                .catch(function () { tryBranch(i + 1); });
+        }
+        tryBranch(0);
     }
 
     function wsConnect(onState) {
