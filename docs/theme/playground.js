@@ -447,41 +447,47 @@
 
     function injectStyles() {
         if (document.getElementById('sp-pg-style')) return;
-        var css = '.sp-pg-wrap{display:flex;flex-direction:column;border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;margin:2rem 0;background:#080d1e;font-family:sans-serif}'
-            + '.sp-pg-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#0c1228;border-bottom:1px solid rgba(255,255,255,.07)}'
-            + '.sp-pg-title{font-size:11px;font-weight:700;letter-spacing:.12em;color:#7c83a8;text-transform:uppercase;flex-shrink:0}'
-            + '.sp-pg-fn-sel{background:#151c35;color:#c9d1ff;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:4px 10px;font-size:13px;cursor:pointer;max-width:160px}'
-            + '.sp-pg-fn-sel:focus{outline:none}'
-            + '.sp-pg-conn{display:flex;align-items:center;gap:6px;margin-left:auto;font-size:12px;color:#7c83a8}'
-            + '.sp-pg-dot{width:8px;height:8px;border-radius:50%;background:#444;flex-shrink:0;transition:background .3s}'
-            + '.sp-wasm-loading{background:#f59e0b!important;box-shadow:0 0 6px #f59e0b66;animation:sp-pulse 1s infinite}'
-            + '.sp-wasm-ready{background:#22c55e!important;box-shadow:0 0 6px #22c55e55}'
-            + '.sp-wasm-err{background:#ef4444!important}'
-            + '@keyframes sp-pulse{0%,100%{opacity:1}50%{opacity:.4}}'
+        var css = '.sp-pg-wrap{display:flex;flex-direction:column;border:1px solid rgba(120,130,200,.13);border-radius:14px;overflow:hidden;margin:2.2rem 0;background:#07091a;font-family:sans-serif;box-shadow:0 8px 40px rgba(0,0,0,.45)}'
+            + '.sp-pg-hdr{display:flex;align-items:center;gap:10px;padding:9px 16px;background:linear-gradient(90deg,#0c1228 0%,#0e1530 100%);border-bottom:1px solid rgba(120,130,200,.1)}'
+            + '.sp-pg-title{font-size:10px;font-weight:800;letter-spacing:.18em;color:#4a5280;text-transform:uppercase;flex-shrink:0}'
+            + '.sp-pg-fn-sel{background:#111828;color:#c9d1ff;border:1px solid rgba(120,130,200,.18);border-radius:7px;padding:4px 12px;font-size:13px;cursor:pointer;max-width:170px;outline:none;transition:border-color .2s}'
+            + '.sp-pg-fn-sel:hover,.sp-pg-fn-sel:focus{border-color:rgba(120,130,200,.4)}'
+            + '.sp-pg-conn{display:flex;align-items:center;gap:7px;margin-left:auto;font-size:11.5px;color:#4a5280;letter-spacing:.04em}'
+            + '.sp-pg-dot{width:7px;height:7px;border-radius:50%;background:#333;flex-shrink:0;transition:background .3s}'
+            + '.sp-wasm-loading{background:#f59e0b!important;box-shadow:0 0 8px #f59e0b88;animation:sp-pulse .9s infinite}'
+            + '.sp-wasm-ready{background:#22c55e!important;box-shadow:0 0 7px #22c55e66}'
+            + '.sp-wasm-err{background:#ef4444!important;box-shadow:0 0 7px #ef444466}'
+            + '@keyframes sp-pulse{0%,100%{opacity:1}50%{opacity:.3}}'
             + '@keyframes sp-spin{to{transform:rotate(360deg)}}'
-            + '.sp-pg-main{display:flex;min-height:340px}'
-            + '.sp-pg-ecol{width:50%;min-width:200px;display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,.07)}'
-            + '.sp-pg-head,.sp-pg-tail{font-family:"Fira Code","Consolas",monospace;font-size:13px;line-height:1.65;padding:0 14px;color:#6272a4;background:#080d1e;white-space:pre;user-select:none}'
-            + '.sp-pg-head{padding-top:14px}.sp-pg-tail{padding-bottom:14px}'
-            + '.sp-pg-cm-wrap{flex:1}'
-            + '.sp-pg-cm-wrap .CodeMirror{background:#080d1e;font:13px/1.65 "Fira Code","Consolas",monospace;height:auto;min-height:80px}'
-            + '.sp-pg-cm-wrap .CodeMirror-scroll{padding:0 14px}'
+            + '@keyframes sp-fadein{from{opacity:0}to{opacity:1}}'
+            + '.sp-pg-main{display:flex;min-height:360px;position:relative}'
+            + '.sp-pg-ecol{width:48%;min-width:160px;max-width:80%;display:flex;flex-direction:column;flex-shrink:0}'
+            + '.sp-pg-divider{width:5px;background:rgba(120,130,200,.07);cursor:col-resize;flex-shrink:0;transition:background .15s;position:relative;z-index:2}'
+            + '.sp-pg-divider:hover,.sp-pg-divider.sp-dragging{background:rgba(120,130,200,.28)}'
+            + '.sp-pg-head,.sp-pg-tail{font-family:"Fira Code","Consolas",monospace;font-size:12.5px;line-height:1.7;padding:0 16px;color:#3d4a70;background:#07091a;white-space:pre;user-select:none}'
+            + '.sp-pg-head{padding-top:14px;border-bottom:1px solid rgba(120,130,200,.05)}.sp-pg-tail{padding-bottom:14px;border-top:1px solid rgba(120,130,200,.05)}'
+            + '.sp-pg-cm-wrap{flex:1;background:#07091a}'
+            + '.sp-pg-cm-wrap .CodeMirror{background:#07091a;font:13px/1.7 "Fira Code","Consolas",monospace;height:auto;min-height:80px}'
+            + '.sp-pg-cm-wrap .CodeMirror-scroll{padding:2px 16px}'
             + '.sp-pg-cm-wrap .CodeMirror-gutters{display:none!important}'
+            + '.sp-pg-cm-wrap .CodeMirror-cursor{border-left-color:#bd93f9}'
+            + '.sp-pg-cm-wrap .CodeMirror-selected{background:rgba(189,147,249,.15)!important}'
             + '.sp-pg-cm-wrap .cm-s-dracula .cm-keyword{color:#ff79c6}'
             + '.sp-pg-cm-wrap .cm-s-dracula .cm-string{color:#f1fa8c}'
             + '.sp-pg-cm-wrap .cm-s-dracula .cm-number{color:#bd93f9}'
             + '.sp-pg-cm-wrap .cm-s-dracula .cm-def{color:#50fa7b}'
-            + '.sp-pg-cm-wrap .cm-s-dracula .cm-comment{color:#3d5070;font-style:italic}'
+            + '.sp-pg-cm-wrap .cm-s-dracula .cm-comment{color:#3a4d6a;font-style:italic}'
             + '.sp-pg-cm-wrap .cm-s-dracula .cm-operator{color:#ff79c6}'
             + '.sp-pg-cm-wrap .cm-s-dracula .cm-variable{color:#f8f8f2}'
-            + '.sp-pg-pcol{flex:1;display:flex;flex-direction:column;position:relative}'
-            + '.sp-pg-iframe{flex:1;border:none;background:#000;width:100%;display:block}'
-            + '.sp-pg-loader{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#080d1e;flex-direction:column;gap:16px;color:#7c83a8;font-size:14px}'
-            + '.sp-pg-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,.1);border-top-color:#bd93f9;border-radius:50%;animation:sp-spin 1s linear infinite}'
-            + '.sp-pg-sbar{display:flex;align-items:center;gap:8px;padding:6px 12px;background:#0c1228;border-top:1px solid rgba(255,255,255,.07)}'
-            + '.sp-pg-sbar button{background:#1a2240;border:1px solid rgba(255,255,255,.12);color:#c9d1ff;border-radius:5px;padding:3px 10px;cursor:pointer;font-size:13px}'
-            + '.sp-pg-sbar button:hover{background:#243056}'
-            + '.sp-pg-fc{font-size:12px;color:#7c83a8}';
+            + '.sp-pg-pcol{flex:1;min-width:120px;display:flex;flex-direction:column;position:relative;background:#07091a}'
+            + '.sp-pg-iframe{flex:1;border:none;background:#07091a;width:100%;display:block;animation:sp-fadein .18s ease}'
+            + '.sp-pg-loader{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#07091a;flex-direction:column;gap:14px;color:#4a5280;font-size:13px;transition:opacity .15s;z-index:1}'
+            + '.sp-pg-loader.sp-hide{opacity:0;pointer-events:none}'
+            + '.sp-pg-spinner{width:30px;height:30px;border:2.5px solid rgba(189,147,249,.15);border-top-color:#bd93f9;border-radius:50%;animation:sp-spin .8s linear infinite}'
+            + '.sp-pg-sbar{display:flex;align-items:center;gap:8px;padding:6px 14px;background:#0a0d1e;border-top:1px solid rgba(120,130,200,.08)}'
+            + '.sp-pg-sbar button{background:#111828;border:1px solid rgba(120,130,200,.15);color:#8899cc;border-radius:6px;padding:3px 11px;cursor:pointer;font-size:13px;transition:background .15s,color .15s}'
+            + '.sp-pg-sbar button:hover{background:#1a2240;color:#c9d1ff}'
+            + '.sp-pg-fc{font-size:11px;color:#3d4a70}';
         var st = document.createElement('style'); st.id = 'sp-pg-style'; st.textContent = css; document.head.appendChild(st);
     }
 
@@ -505,6 +511,7 @@
             '</div>',
             '<div class="sp-pg-main">',
             '<div class="sp-pg-ecol"><pre class="sp-pg-head"></pre><div class="sp-pg-cm-wrap"></div><pre class="sp-pg-tail"></pre></div>',
+            '<div class="sp-pg-divider"></div>',
             '<div class="sp-pg-pcol">',
             '<div class="sp-pg-loader"><div class="sp-pg-spinner"></div><span>Initialisation\u2026</span></div>',
             '<iframe class="sp-pg-iframe" sandbox="allow-scripts" style="display:none"></iframe>',
@@ -535,9 +542,9 @@
         }
 
         function showFrame(html) {
-            loader.style.display = 'none';
+            loader.classList.add('sp-hide');
             iframe.style.display = 'block';
-            iframe.srcdoc = html;
+            iframe.srcdoc = html.replace('<head>', '<head><style>html,body{background:#07091a!important;margin:0}</style>');
         }
 
         function startPlay() {
@@ -583,6 +590,26 @@
 
         var fprev = root.querySelector('.sp-pg-fprev');
         var fnext = root.querySelector('.sp-pg-fnext');
+
+        var divider = root.querySelector('.sp-pg-divider');
+        var ecol = root.querySelector('.sp-pg-ecol');
+        divider && divider.addEventListener('mousedown', function (e) {
+            e.preventDefault();
+            divider.classList.add('sp-dragging');
+            var startX = e.clientX, startW = ecol.offsetWidth;
+            var totalW = root.querySelector('.sp-pg-main').offsetWidth;
+            function onMove(ev) {
+                var w = Math.max(160, Math.min(totalW - 160, startW + ev.clientX - startX));
+                ecol.style.width = w + 'px'; ecol.style.flex = 'none';
+            }
+            function onUp() {
+                divider.classList.remove('sp-dragging');
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onUp);
+            }
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onUp);
+        });
         fprev && fprev.addEventListener('click', function () {
             clearInterval(_streamTimer); if (fplay) fplay.textContent = '\u25b6';
             frameIdx = (frameIdx - 1 + frames.length) % frames.length;
