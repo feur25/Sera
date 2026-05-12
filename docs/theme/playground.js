@@ -507,7 +507,7 @@
             '<div class="sp-pg-ecol"><pre class="sp-pg-head"></pre><div class="sp-pg-cm-wrap"></div><pre class="sp-pg-tail"></pre></div>',
             '<div class="sp-pg-pcol">',
             '<div class="sp-pg-loader"><div class="sp-pg-spinner"></div><span>Initialisation\u2026</span></div>',
-            '<iframe class="sp-pg-iframe" sandbox="allow-scripts allow-same-origin" style="display:none"></iframe>',
+            '<iframe class="sp-pg-iframe" sandbox="allow-scripts" style="display:none"></iframe>',
             '<div class="sp-pg-sbar" style="display:none"><button class="sp-pg-fprev">\u2039</button><span class="sp-pg-fc">1/1</span><button class="sp-pg-fnext">\u203a</button><button class="sp-pg-fplay">\u25b6</button></div>',
             '</div></div>',
         ].join('');
