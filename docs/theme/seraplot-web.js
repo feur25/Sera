@@ -1516,9 +1516,8 @@ var wasm;
 async function __seraplot_init(wasmUrl) {
     const resp = await fetch(wasmUrl);
     const buf = await resp.arrayBuffer();
-    const mod = await WebAssembly.compile(buf);
-    const inst = new WebAssembly.Instance(mod, __wbg_get_imports());
-    wasm = inst.exports;
+    const result = await WebAssembly.instantiate(buf, __wbg_get_imports());
+    wasm = result.instance.exports;
     wasm.__wbindgen_start();
 }
 window.SeraplotWASM = { __init: __seraplot_init, __ready: false, buildAreaChart, buildBar3dChart, buildBarChart, buildBoxplot, buildBubble, buildBubble3dChart, buildBubbleMap, buildBullet, buildCandlestick, buildCandlestick3dChart, buildChoropleth, buildDonutChart, buildDumbbell, buildDumbbell3dChart, buildFunnel, buildFunnel3dChart, buildGauge, buildGlobe3dChart, buildGrid, buildGroupedBar, buildHbar, buildHeatmap, buildHeatmap3dChart, buildHistogram, buildHistogramOverlay, buildHoverJson, buildKdeChart, buildLine3dChart, buildLineChart, buildLollipopChart, buildMultilineChart, buildParallel, buildPie3dChart, buildPieChart, buildRadarChart, buildRidgelineChart, buildScatter3dChart, buildScatterChart, buildSlideshow, buildSlope, buildStackedBar, buildStackedBar3dChart, buildSunburst, buildSunburst3dChart, buildTreemap, buildViolin, buildWaterfall, buildWordcloud, resetGlobalBackground, resetTheme, setGlobalBackground, setTheme, themes };
