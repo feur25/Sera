@@ -1,14 +1,44 @@
 ﻿(function () {
-    var WS_URL_OVERRIDE = localStorage.getItem("sp_ws_url");
-    var WS_URL_LOCAL = "ws://127.0.0.1:7842";
-    var MAX_AGE_S = 21600;
     var DEBOUNCE_MS = 650;
-    var LANG_KEY = "seraplot_lang";
-    var _runId = 0;
-    var _ws = null;
-    var _wsState = "disc";
-    var _wsCallbacks = {};
-    var _allFns = [];
+    var _debTimer = null;
+    var _wasmReady = false;
+    var _streamTimer = null;
+
+    function rng(seed) {
+        var s = seed >>> 0;
+        return function () { s = (Math.imul(s, 1664525) + 1013904223) >>> 0; return s / 4294967296; };
+    }
+    function gauss(n, mu, sig, seed) {
+        var r = rng(seed), a = [];
+        for (var i = 0; i < n; i++) {
+            var u1 = r() + 1e-10, u2 = r();
+            a.push(+(mu + sig * Math.sqrt(-2 * Math.log(u1)) * Math.cos(2 * Math.PI * u2)).toFixed(2));
+        }
+        return a;
+    }
+    function rints(n, lo, hi, seed) {
+        var r = rng(seed), a = [];
+        for (var i = 0; i < n; i++) a.push(Math.round(lo + r() * (hi - lo)));
+        return a;
+    }
+    function J(v) { return JSON.stringify(v); }
+
+    var _sc = gauss(20, 0, 1, 42), _sc2 = gauss(20, 0, 1, 99);
+    var _hist = gauss(50, 100, 15, 7);
+    var _kde = gauss(40, 50, 15, 5);
+    var _vio = [gauss(25, 65, 12, 3), gauss(25, 75, 8, 4), gauss(25, 55, 20, 5)];
+    var _box = [gauss(20, 50, 10, 3), gauss(20, 65, 8, 4), gauss(20, 55, 12, 5), gauss(20, 70, 7, 6)];
+    var _rid = [0, 1, 2, 3, 4].map(function (i) { return gauss(18, 50 + i * 3, 10 + i, 10 + i); });
+    var _s3x = gauss(15, 0, 1, 42), _s3y = gauss(15, 0, 1, 43), _s3z = gauss(15, 0, 1, 44);
+    var _b3x = gauss(12, 0, 1, 9), _b3y = gauss(12, 0, 1, 10), _b3z = gauss(12, 0, 1, 11);
+    var _b3s = rints(12, 10, 50, 9);
+    var _hx = [], _hy = [], _hz = [];
+    for (var _ti = 0; _ti < 40; _ti++) {
+        var _t = _ti / 20 * Math.PI * 4;
+        _hx.push(+Math.cos(_t).toFixed(3));
+        _hy.push(+Math.sin(_t).toFixed(3));
+        _hz.push(+_t.toFixed(3));
+    }
 
     var TPLS = {
         "bar": [
@@ -37,28 +67,28 @@
             ')\nc'
         ],
         "scatter": [
-            'import seraplot as sp\nimport random; random.seed(42)\nc = sp.scatter(',
-            '    "Correlation Study",\n    x=[random.gauss(0,1) for _ in range(80)],\n    y=[random.gauss(0,1) for _ in range(80)],\n    theme="prism",\n    width=860,\n    height=480,',
+            'import seraplot as sp\nc = sp.scatter(',
+            '    "Correlation Study",\n    x=SCATTERX,\n    y=SCATTERY,\n    theme="prism",\n    width=860,\n    height=480,',
             ')\nc'
         ],
         "line": [
             'import seraplot as sp\nc = sp.line(',
-            '    "Trend Analysis",\n    x=list(range(12)),\n    y=[12,19,3,17,28,24,38,35,45,41,52,60],\n    theme="frost",\n    width=860,\n    height=420,',
+            '    "Trend Analysis",\n    x=[0,1,2,3,4,5,6,7,8,9,10,11],\n    y=[12,19,3,17,28,24,38,35,45,41,52,60],\n    theme="frost",\n    width=860,\n    height=420,',
             ')\nc'
         ],
         "multiline": [
             'import seraplot as sp\nc = sp.multiline(',
-            '    "Series Comparison",\n    x=list(range(12)),\n    series=[[12,19,3,17,28,24,38,35,45,41,52,60],[8,15,25,13,21,30,27,32,38,29,44,51]],\n    series_names=["Alpha","Beta"],\n    theme="deluxe",\n    width=860,\n    height=420,',
+            '    "Series Comparison",\n    x=[0,1,2,3,4,5,6,7,8,9,10,11],\n    series=[[12,19,3,17,28,24,38,35,45,41,52,60],[8,15,25,13,21,30,27,32,38,29,44,51]],\n    series_names=["Alpha","Beta"],\n    theme="deluxe",\n    width=860,\n    height=420,',
             ')\nc'
         ],
         "area": [
             'import seraplot as sp\nc = sp.area(',
-            '    "Sales Volume",\n    x=list(range(12)),\n    y=[420,580,730,610,890,970,850,780,910,650,540,700],\n    theme="aurora",\n    width=860,\n    height=420,',
+            '    "Sales Volume",\n    x=[0,1,2,3,4,5,6,7,8,9,10,11],\n    y=[420,580,730,610,890,970,850,780,910,650,540,700],\n    theme="aurora",\n    width=860,\n    height=420,',
             ')\nc'
         ],
         "histogram": [
-            'import seraplot as sp\nimport random; random.seed(7)\nc = sp.histogram(',
-            '    "Distribution",\n    values=[random.gauss(100,15) for _ in range(500)],\n    bins=30,\n    theme="prism",\n    width=860,\n    height=420,',
+            'import seraplot as sp\nc = sp.histogram(',
+            '    "Distribution",\n    values=HIST,\n    bins=20,\n    theme="prism",\n    width=860,\n    height=420,',
             ')\nc'
         ],
         "radar": [
@@ -67,13 +97,13 @@
             ')\nc'
         ],
         "violin": [
-            'import seraplot as sp\nimport random; random.seed(3)\nc = sp.violin(',
-            '    "Score Distribution",\n    groups=["Alpha","Beta","Gamma"],\n    values=[[random.gauss(65,12) for _ in range(100)],[random.gauss(75,8) for _ in range(100)],[random.gauss(55,20) for _ in range(100)]],\n    theme="prism",\n    width=860,\n    height=480,',
+            'import seraplot as sp\nc = sp.violin(',
+            '    "Score Distribution",\n    groups=["Alpha","Beta","Gamma"],\n    values=VIO,\n    theme="prism",\n    width=860,\n    height=480,',
             ')\nc'
         ],
         "boxplot": [
-            'import seraplot as sp\nimport random; random.seed(3)\nc = sp.boxplot(',
-            '    "Statistical Summary",\n    groups=["Q1","Q2","Q3","Q4"],\n    values=[[random.gauss(50,10) for _ in range(60)],[random.gauss(65,8) for _ in range(60)],[random.gauss(55,12) for _ in range(60)],[random.gauss(70,7) for _ in range(60)]],\n    theme="aurora",\n    width=860,\n    height=480,',
+            'import seraplot as sp\nc = sp.boxplot(',
+            '    "Statistical Summary",\n    groups=["Q1","Q2","Q3","Q4"],\n    values=BOX,\n    theme="aurora",\n    width=860,\n    height=480,',
             ')\nc'
         ],
         "heatmap": [
@@ -112,13 +142,13 @@
             ')\nc'
         ],
         "kde": [
-            'import seraplot as sp\nimport random; random.seed(5)\nc = sp.kde(',
-            '    "Density Estimate",\n    values=[random.gauss(50,15) for _ in range(200)],\n    theme="deluxe",\n    width=860,\n    height=440,',
+            'import seraplot as sp\nc = sp.kde(',
+            '    "Density Estimate",\n    values=KDE,\n    theme="deluxe",\n    width=860,\n    height=440,',
             ')\nc'
         ],
         "ridgeline": [
-            'import seraplot as sp\nimport random; random.seed(1)\nc = sp.ridgeline(',
-            '    "Distribution Ridgeline",\n    groups=["2020","2021","2022","2023","2024"],\n    values=[[random.gauss(50+i*3,10+i) for _ in range(80)] for i in range(5)],\n    theme="prism",\n    width=860,\n    height=560,',
+            'import seraplot as sp\nc = sp.ridgeline(',
+            '    "Distribution Ridgeline",\n    groups=["2020","2021","2022","2023","2024"],\n    values=RID,\n    theme="prism",\n    width=860,\n    height=560,',
             ')\nc'
         ],
         "lollipop": [
@@ -142,8 +172,8 @@
             ')\nc'
         ],
         "scatter3d": [
-            'import seraplot as sp\nimport random; random.seed(42)\nn = 60\nc = sp.scatter3d(',
-            '    "3D Distribution",\n    x=[random.gauss(0,1) for _ in range(n)],\n    y=[random.gauss(0,1) for _ in range(n)],\n    z=[random.gauss(0,1) for _ in range(n)],\n    theme="deluxe",\n    width=860,\n    height=560,',
+            'import seraplot as sp\nc = sp.scatter3d(',
+            '    "3D Distribution",\n    x=S3X,\n    y=S3Y,\n    z=S3Z,\n    theme="deluxe",\n    width=860,\n    height=560,',
             ')\nc'
         ],
         "bar3d": [
@@ -152,13 +182,13 @@
             ')\nc'
         ],
         "bubble3d": [
-            'import seraplot as sp\nimport random; random.seed(9)\nn = 40\nc = sp.bubble3d(',
-            '    "3D Bubbles",\n    x=[random.gauss(0,1) for _ in range(n)],\n    y=[random.gauss(0,1) for _ in range(n)],\n    z=[random.gauss(0,1) for _ in range(n)],\n    sizes=[random.randint(10,50) for _ in range(n)],\n    theme="aurora",\n    width=860,\n    height=560,',
+            'import seraplot as sp\nc = sp.bubble3d(',
+            '    "3D Bubbles",\n    x=B3X,\n    y=B3Y,\n    z=B3Z,\n    sizes=B3S,\n    theme="aurora",\n    width=860,\n    height=560,',
             ')\nc'
         ],
         "line3d": [
-            'import seraplot as sp\nimport math\nt = [i/20*math.pi*4 for i in range(80)]\nc = sp.line3d(',
-            '    "3D Helix",\n    x=[math.cos(v) for v in t],\n    y=[math.sin(v) for v in t],\n    z=t,\n    theme="frost",\n    width=860,\n    height=560,',
+            'import seraplot as sp\nc = sp.line3d(',
+            '    "3D Helix",\n    x=HX,\n    y=HY,\n    z=HZ,\n    theme="frost",\n    width=860,\n    height=560,',
             ')\nc'
         ],
         "gauge": [
@@ -172,11 +202,25 @@
             ')\nc'
         ],
         "streaming": [
-            'import seraplot as sp\nimport time',
-            'months = ["Jan","Feb","Mar","Apr","May","Jun"]\nbase = [42,58,73,61,89,97]\n\nfor i in range(8):\n    import random; random.seed(i)\n    vals = [v + random.randint(-10,10) for v in base]\n    c = sp.bar("Live Stream", labels=months, values=vals, theme="inferno", width=860, height=420)\n    _stream(c)\n    time.sleep(0.3)',
+            'import seraplot as sp',
+            '    title="Live Stream",\n    labels=["Jan","Feb","Mar","Apr","May","Jun"],\n    base=[42,58,73,61,89,97],\n    theme="inferno",\n    width=860,\n    height=420,',
             ''
         ],
     };
+
+    function fixTpl(tpl) {
+        var b = tpl[1];
+        b = b.replace('SCATTERX', J(_sc)).replace('SCATTERY', J(_sc2));
+        b = b.replace('HIST', J(_hist));
+        b = b.replace('VIO', J(_vio));
+        b = b.replace('BOX', J(_box));
+        b = b.replace('KDE', J(_kde));
+        b = b.replace('RID', J(_rid));
+        b = b.replace('S3X', J(_s3x)).replace('S3Y', J(_s3y)).replace('S3Z', J(_s3z));
+        b = b.replace('B3X', J(_b3x)).replace('B3Y', J(_b3y)).replace('B3Z', J(_b3z)).replace('B3S', J(_b3s));
+        b = b.replace('HX', J(_hx)).replace('HY', J(_hy)).replace('HZ', J(_hz));
+        return [tpl[0], b, tpl[2]];
+    }
 
     var DEFAULT_TPL = [
         'import seraplot as sp\nc = sp.bar(',
@@ -184,7 +228,174 @@
         ')\nc'
     ];
 
-    function getLang() { return localStorage.getItem(LANG_KEY) || "en"; }
+    var CHART_MAP = {
+        "bar":          { fn: "buildBarChart",       p: ["labels", "values"] },
+        "hbar":         { fn: "buildHbar",            p: ["labels", "values"] },
+        "pie":          { fn: "buildPieChart",        p: ["labels", "values"] },
+        "donut":        { fn: "buildDonutChart",      p: ["labels", "values"] },
+        "lollipop":     { fn: "buildLollipopChart",   p: ["labels", "values"] },
+        "waterfall":    { fn: "buildWaterfall",       p: ["labels", "values"] },
+        "treemap":      { fn: "buildTreemap",         p: ["labels", "values"] },
+        "funnel":       { fn: "buildFunnel",          p: ["labels", "values"],  al: { stages: "labels" } },
+        "choropleth":   { fn: "buildChoropleth",      p: ["labels", "values"],  al: { countries: "labels" } },
+        "bullet":       { fn: "buildBullet",          p: ["labels", "values"],  al: { actuals: "values" } },
+        "scatter":      { fn: "buildScatterChart",    p: ["x", "y"] },
+        "line":         { fn: "buildLineChart",       p: ["labels", "values"],  al: { x: "labels", y: "values" } },
+        "kde":          { fn: "buildKdeChart",        p: ["values"] },
+        "histogram":    { fn: "buildHistogram",       p: ["values"] },
+        "gauge":        { fn: "buildGauge",           p: ["value"],             sp: "gauge" },
+        "grouped-bar":  { fn: "buildGroupedBar",      p: ["cat", "series"],     al: { labels: "cat" } },
+        "grouped_bar":  { fn: "buildGroupedBar",      p: ["cat", "series"],     al: { labels: "cat" } },
+        "stacked-bar":  { fn: "buildStackedBar",      p: ["cat", "series"],     al: { labels: "cat" } },
+        "stacked_bar":  { fn: "buildStackedBar",      p: ["cat", "series"],     al: { labels: "cat" } },
+        "multiline":    { fn: "buildMultilineChart",  p: ["xlabels", "series"], al: { x: "xlabels" } },
+        "area":         { fn: "buildAreaChart",       p: ["xlabels", "series"], al: { x: "xlabels" }, sp: "area" },
+        "radar":        { fn: "buildRadarChart",      p: ["axes", "series"] },
+        "parallel":     { fn: "buildParallel",        p: ["axes", "series"] },
+        "violin":       { fn: "buildViolin",          p: ["cat", "values"],     al: { groups: "cat" } },
+        "boxplot":      { fn: "buildBoxplot",         p: ["cat", "values"],     al: { groups: "cat" } },
+        "heatmap":      { fn: "buildHeatmap",         p: ["labels", "matrix"],  al: { rows: "labels", values: "matrix" }, sp: "heatmap" },
+        "sunburst":     { fn: "buildSunburst",        p: ["labels", "parents", "values"] },
+        "ridgeline":    { fn: "buildRidgelineChart",  p: ["values", "categories"], al: { groups: "categories" } },
+        "slope":        { fn: "buildSlope",           p: ["labels", "left", "right"], al: { before: "left", after: "right" } },
+        "bubble":       { fn: "buildBubble",          p: ["x", "y", "sizes"] },
+        "scatter3d":    { fn: "buildScatter3dChart",  p: ["x", "y", "z"] },
+        "line3d":       { fn: "buildLine3dChart",     p: ["x", "y", "z"] },
+        "bubble3d":     { fn: "buildBubble3dChart",   p: ["x", "y", "z", "sizes"] },
+        "bar3d":        { fn: "buildBar3dChart",      p: ["x", "y", "z"],       sp: "bar3d" },
+    };
+
+    function parsePyVal(s) {
+        s = s.trim();
+        if (!s) return undefined;
+        if (s === "True") return true;
+        if (s === "False") return false;
+        if (s === "None") return null;
+        var rm = s.match(/^list\(range\((\d+)\)\)$/);
+        if (rm) { var n = +rm[1], a = []; for (var i = 0; i < n; i++) a.push(i); return a; }
+        if ((s[0] === '"' && s[s.length - 1] === '"') || (s[0] === "'" && s[s.length - 1] === "'")) {
+            return s.slice(1, -1);
+        }
+        if (s[0] === '[') return parsePyList(s);
+        var num = parseFloat(s);
+        if (!isNaN(num) && /^-?\d+\.?\d*$/.test(s)) return num;
+        return undefined;
+    }
+
+    function parsePyList(s) {
+        s = s.trim();
+        if (s[0] !== '[' || s[s.length - 1] !== ']') return undefined;
+        s = s.slice(1, -1).trim();
+        if (!s) return [];
+        var items = [], depth = 0, cur = '', inStr = false, sc = '';
+        for (var i = 0; i < s.length; i++) {
+            var c = s[i];
+            if (inStr) { cur += c; if (c === sc && s[i - 1] !== '\\') inStr = false; }
+            else if (c === '"' || c === "'") { inStr = true; sc = c; cur += c; }
+            else if (c === '[' || c === '(') { depth++; cur += c; }
+            else if (c === ']' || c === ')') { depth--; cur += c; }
+            else if (c === ',' && depth === 0) { items.push(parsePyVal(cur.trim())); cur = ''; }
+            else cur += c;
+        }
+        if (cur.trim()) items.push(parsePyVal(cur.trim()));
+        return items;
+    }
+
+    function parsePyArgs(body) {
+        var title = null, kwargs = {};
+        var flat = body.replace(/\r/g, '');
+        var buf = '', depth = 0, inStr = false, sc = '', tokens = [];
+        for (var i = 0; i < flat.length; i++) {
+            var c = flat[i];
+            if (inStr) { buf += c; if (c === sc && flat[i - 1] !== '\\') inStr = false; }
+            else if (c === '"' || c === "'") { inStr = true; sc = c; buf += c; }
+            else if (c === '[' || c === '(') { depth++; buf += c; }
+            else if (c === ']' || c === ')') { depth--; buf += c; }
+            else if ((c === ',' || c === '\n') && depth === 0) {
+                var t = buf.trim(); if (t) tokens.push(t); buf = '';
+            } else buf += c;
+        }
+        if (buf.trim()) tokens.push(buf.trim());
+        tokens.forEach(function (tok, idx) {
+            tok = tok.replace(/,$/, '').trim();
+            var eq = tok.indexOf('=');
+            if (eq === -1) { if (idx === 0 && title === null) title = parsePyVal(tok); }
+            else {
+                var key = tok.slice(0, eq).trim();
+                var val = parsePyVal(tok.slice(eq + 1).trim());
+                if (val !== undefined) kwargs[key] = val;
+            }
+        });
+        return { title: title, kwargs: kwargs };
+    }
+
+    function callWasm(typeKey, body) {
+        var sp = window.SeraplotWASM;
+        if (!sp || !sp.__ready) return null;
+        var map = CHART_MAP[typeKey];
+        if (!map) return null;
+        var fn = sp[map.fn];
+        if (!fn) return null;
+        var parsed = parsePyArgs(body);
+        var title = parsed.title || "";
+        var kw = parsed.kwargs;
+        if (map.al) Object.keys(map.al).forEach(function (from) {
+            var to = map.al[from];
+            if (kw[from] !== undefined && kw[to] === undefined) kw[to] = kw[from];
+        });
+        var used = {};
+        map.p.forEach(function (k) { used[k] = true; });
+        var opts = {};
+        Object.keys(kw).forEach(function (k) { if (!used[k]) opts[k] = kw[k]; });
+        if (map.al) Object.keys(map.al).forEach(function (k) { delete opts[k]; });
+        try {
+            if (map.sp === 'gauge') return fn(title, kw.value || 0, J(opts));
+            if (map.sp === 'area') {
+                return fn(title, J(kw.xlabels || kw.x || []), J(kw.series || (kw.y ? [kw.y] : [])), J(opts));
+            }
+            if (map.sp === 'bar3d') {
+                var labels = kw.labels || kw.x || [];
+                var series = kw.series || [];
+                var names = kw.series_names || series.map(function (_, i) { return String(i); });
+                delete opts.series_names;
+                var xs = [], ys = [], zs = [];
+                series.forEach(function (row, i) {
+                    (row || []).forEach(function (v, j) { xs.push(names[i] || String(i)); ys.push(labels[j] || String(j)); zs.push(v); });
+                });
+                return fn(title, J(xs), J(ys), J(zs), J(opts));
+            }
+            if (map.sp === 'heatmap') {
+                var rows = kw.labels || kw.rows || [];
+                var matrix = kw.matrix || kw.values || [];
+                delete opts.rows; delete opts.cols;
+                return fn(title, J(rows), J(matrix), J(opts));
+            }
+            var args = [title];
+            map.p.forEach(function (key) { args.push(J(kw[key] !== undefined ? kw[key] : [])); });
+            args.push(J(opts));
+            return fn.apply(null, args);
+        } catch (e) { return null; }
+    }
+
+    function streamingFrames(body) {
+        var sp = window.SeraplotWASM;
+        if (!sp || !sp.__ready) return [];
+        var parsed = parsePyArgs(body);
+        var kw = parsed.kwargs;
+        var title = kw.title || "Live Stream";
+        var labels = kw.labels || ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
+        var base = kw.base || [42, 58, 73, 61, 89, 97];
+        var theme = kw.theme || "inferno";
+        var width = kw.width || 860;
+        var height = kw.height || 420;
+        var frames = [];
+        for (var i = 0; i < 8; i++) {
+            var r = rng(i * 7 + 1);
+            var vals = base.map(function (v) { return Math.round(v + (r() - 0.5) * 20); });
+            try { var html = sp.buildBarChart(title, J(labels), J(vals), J({ theme: theme, width: width, height: height })); if (html) frames.push(html); } catch (e) {}
+        }
+        return frames;
+    }
 
     function pageSlug() {
         var m = window.location.pathname.match(/\/([^\/]+?)(?:\.html?)?$/);
@@ -192,447 +403,233 @@
     }
 
     function isChartPage() {
-        return /\/charts\//.test(window.location.pathname) &&
-               pageSlug() !== "index" &&
-               pageSlug() !== null;
+        return /\/charts\//.test(window.location.pathname) && pageSlug() !== "index" && pageSlug() !== null;
+    }
+
+    function getThemeBase() {
+        var els = document.querySelectorAll('link[href*="/theme/"],script[src*="/theme/"]');
+        for (var i = 0; i < els.length; i++) {
+            var u = els[i].href || els[i].src || '';
+            var m = u.match(/(.*\/theme\/)/);
+            if (m) return m[1];
+        }
+        var depth = window.location.pathname.replace(/\/$/, '').split('/').length - 2;
+        return '../'.repeat(Math.max(1, depth)) + 'theme/';
     }
 
     function loadCM(cb) {
         if (window.CodeMirror) { cb(); return; }
-        [
-            "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.css",
-            "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/theme/dracula.min.css"
-        ].forEach(function (href) {
-            var l = document.createElement("link");
-            l.rel = "stylesheet"; l.href = href;
-            document.head.appendChild(l);
+        ["https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.css",
+         "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/theme/dracula.min.css"].forEach(function (href) {
+            var l = document.createElement("link"); l.rel = "stylesheet"; l.href = href; document.head.appendChild(l);
         });
-        function loadScript(src, next) {
-            var s = document.createElement("script");
-            s.src = src; s.onload = next; s.onerror = next;
-            document.head.appendChild(s);
-        }
-        loadScript(
-            "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.js",
-            function () {
-                loadScript(
-                    "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/mode/python/python.min.js",
-                    cb
-                );
-            }
-        );
-    }
-
-    function resolveWsUrl(cb) {
-        if (WS_URL_OVERRIDE) { cb(WS_URL_OVERRIDE); return; }
-        if (location.protocol !== "https:") { cb(WS_URL_LOCAL); return; }
-        var base = "https://raw.githubusercontent.com/feur25/seraplot/";
-        var branches = ["master", "main"];
-        var tried = 0;
-        function tryBranch(i) {
-            if (i >= branches.length) { cb(null); return; }
-            fetch(base + branches[i] + "/playground-url.json?_=" + Date.now())
-                .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
-                .then(function (d) {
-                    var age = Math.floor(Date.now() / 1000) - (d.ts || 0);
-                    if (d.url && age < MAX_AGE_S) { cb(d.url); }
-                    else { tryBranch(i + 1); }
-                })
-                .catch(function () { tryBranch(i + 1); });
-        }
-        tryBranch(0);
-    }
-
-    function wsConnect(onState) {
-        if (_ws && (_ws.readyState === 0 || _ws.readyState === 1)) return;
-        _wsState = "connecting";
-        onState("connecting");
-        resolveWsUrl(function (url) {
-            if (!url) { _wsState = "disc"; onState("disc"); return; }
-            try {
-                _ws = new WebSocket(url);
-            } catch (e) {
-                _wsState = "disc";
-                onState("disc");
-                return;
-            }
-            _ws.onopen = function () {
-                _wsState = "ok";
-                _ws.send(JSON.stringify({ a: "ping" }));
-            };
-            _ws.onmessage = function (e) {
-                try {
-                    var msg = JSON.parse(e.data);
-                    if (msg.t === "pong") {
-                        onState("ok", msg.version);
-                        _ws.send(JSON.stringify({ a: "list" }));
-                    }
-                    if (msg.t === "list" && msg.fns) {
-                        _allFns = msg.fns;
-                        document.dispatchEvent(new CustomEvent("sp-pg-fns", { detail: msg.fns }));
-                    }
-                    var cb = _wsCallbacks[msg.id];
-                    if (cb) cb(msg);
-                    if (msg.t === "done" || msg.t === "err") delete _wsCallbacks[msg.id];
-                } catch (ex) {}
-            };
-            _ws.onclose = _ws.onerror = function () {
-                _wsState = "disc";
-                onState("disc");
-                _ws = null;
-                setTimeout(function () { wsConnect(onState); }, 3000);
-            };
+        function loadScript(src, next) { var s = document.createElement("script"); s.src = src; s.onload = next; s.onerror = next; document.head.appendChild(s); }
+        loadScript("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.js", function () {
+            loadScript("https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/mode/python/python.min.js", cb);
         });
     }
 
-    function wsSend(payload, cb) {
-        if (!_ws || _ws.readyState !== 1) return false;
-        if (cb) _wsCallbacks[payload.id] = cb;
-        _ws.send(JSON.stringify(payload));
-        return true;
+    function initWasm(cb) {
+        if (_wasmReady) { cb(); return; }
+        var base = getThemeBase();
+        function doInit() {
+            window.SeraplotWASM.__init(base + 'seraplot_bg.wasm').then(function () {
+                window.SeraplotWASM.__ready = true; _wasmReady = true; cb();
+            }).catch(function () { cb(); });
+        }
+        if (window.SeraplotWASM) { doInit(); return; }
+        var s = document.createElement('script');
+        s.src = base + 'seraplot-web.js';
+        s.onload = doInit;
+        s.onerror = function () { cb(); };
+        document.head.appendChild(s);
     }
 
-    function esc(s) {
-        return (s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    function injectStyles() {
+        if (document.getElementById('sp-pg-style')) return;
+        var css = '.sp-pg-wrap{display:flex;flex-direction:column;border:1px solid rgba(255,255,255,.08);border-radius:10px;overflow:hidden;margin:2rem 0;background:#080d1e;font-family:sans-serif}'
+            + '.sp-pg-hdr{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#0c1228;border-bottom:1px solid rgba(255,255,255,.07)}'
+            + '.sp-pg-title{font-size:11px;font-weight:700;letter-spacing:.12em;color:#7c83a8;text-transform:uppercase;flex-shrink:0}'
+            + '.sp-pg-fn-sel{background:#151c35;color:#c9d1ff;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:4px 10px;font-size:13px;cursor:pointer;max-width:160px}'
+            + '.sp-pg-fn-sel:focus{outline:none}'
+            + '.sp-pg-conn{display:flex;align-items:center;gap:6px;margin-left:auto;font-size:12px;color:#7c83a8}'
+            + '.sp-pg-dot{width:8px;height:8px;border-radius:50%;background:#444;flex-shrink:0;transition:background .3s}'
+            + '.sp-wasm-loading{background:#f59e0b!important;box-shadow:0 0 6px #f59e0b66;animation:sp-pulse 1s infinite}'
+            + '.sp-wasm-ready{background:#22c55e!important;box-shadow:0 0 6px #22c55e55}'
+            + '.sp-wasm-err{background:#ef4444!important}'
+            + '@keyframes sp-pulse{0%,100%{opacity:1}50%{opacity:.4}}'
+            + '@keyframes sp-spin{to{transform:rotate(360deg)}}'
+            + '.sp-pg-main{display:flex;min-height:340px}'
+            + '.sp-pg-ecol{width:50%;min-width:200px;display:flex;flex-direction:column;border-right:1px solid rgba(255,255,255,.07)}'
+            + '.sp-pg-head,.sp-pg-tail{font-family:"Fira Code","Consolas",monospace;font-size:13px;line-height:1.65;padding:0 14px;color:#6272a4;background:#080d1e;white-space:pre;user-select:none}'
+            + '.sp-pg-head{padding-top:14px}.sp-pg-tail{padding-bottom:14px}'
+            + '.sp-pg-cm-wrap{flex:1}'
+            + '.sp-pg-cm-wrap .CodeMirror{background:#080d1e;font:13px/1.65 "Fira Code","Consolas",monospace;height:auto;min-height:80px}'
+            + '.sp-pg-cm-wrap .CodeMirror-scroll{padding:0 14px}'
+            + '.sp-pg-cm-wrap .CodeMirror-gutters{display:none!important}'
+            + '.sp-pg-cm-wrap .cm-s-dracula .cm-keyword{color:#ff79c6}'
+            + '.sp-pg-cm-wrap .cm-s-dracula .cm-string{color:#f1fa8c}'
+            + '.sp-pg-cm-wrap .cm-s-dracula .cm-number{color:#bd93f9}'
+            + '.sp-pg-cm-wrap .cm-s-dracula .cm-def{color:#50fa7b}'
+            + '.sp-pg-cm-wrap .cm-s-dracula .cm-comment{color:#3d5070;font-style:italic}'
+            + '.sp-pg-cm-wrap .cm-s-dracula .cm-operator{color:#ff79c6}'
+            + '.sp-pg-cm-wrap .cm-s-dracula .cm-variable{color:#f8f8f2}'
+            + '.sp-pg-pcol{flex:1;display:flex;flex-direction:column;position:relative}'
+            + '.sp-pg-iframe{flex:1;border:none;background:#000;width:100%;display:block}'
+            + '.sp-pg-loader{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#080d1e;flex-direction:column;gap:16px;color:#7c83a8;font-size:14px}'
+            + '.sp-pg-spinner{width:36px;height:36px;border:3px solid rgba(255,255,255,.1);border-top-color:#bd93f9;border-radius:50%;animation:sp-spin 1s linear infinite}'
+            + '.sp-pg-sbar{display:flex;align-items:center;gap:8px;padding:6px 12px;background:#0c1228;border-top:1px solid rgba(255,255,255,.07)}'
+            + '.sp-pg-sbar button{background:#1a2240;border:1px solid rgba(255,255,255,.12);color:#c9d1ff;border-radius:5px;padding:3px 10px;cursor:pointer;font-size:13px}'
+            + '.sp-pg-sbar button:hover{background:#243056}'
+            + '.sp-pg-fc{font-size:12px;color:#7c83a8}';
+        var st = document.createElement('style'); st.id = 'sp-pg-style'; st.textContent = css; document.head.appendChild(st);
     }
 
     function buildPG(root) {
         var slug = pageSlug();
-        var tpl = (slug && TPLS[slug]) ? TPLS[slug].slice() : DEFAULT_TPL.slice();
-        var frames = [];
-        var frameIdx = 0;
-        var currentRunId = 0;
-        var debTimer = null;
-        var autoPlay = null;
+        var rawTpl = (slug && TPLS[slug]) ? TPLS[slug] : DEFAULT_TPL;
+        var tpl = fixTpl(rawTpl.slice());
         var cmEditor = null;
-        var previewEl, statusDot, versionEl, statusMsg, streamBar, fcEl;
+        var frames = [], frameIdx = 0;
+        var streaming = (slug === 'streaming');
 
         injectStyles();
-        root.innerHTML = buildHTML(tpl, slug);
-        queryRefs();
-        bindEvents();
-        wsConnect(onWsState);
+        var opts = Object.keys(TPLS).map(function (k) {
+            return '<option value="' + k + '"' + (k === slug ? ' selected' : '') + '>' + k + '</option>';
+        }).join('');
+        root.innerHTML = [
+            '<div class="sp-pg-hdr">',
+            '<span class="sp-pg-title">Playground</span>',
+            '<select class="sp-pg-fn-sel">' + opts + '</select>',
+            '<span class="sp-pg-conn"><span class="sp-pg-dot sp-wasm-loading"></span><span class="sp-pg-smsg">WASM\u2026</span></span>',
+            '</div>',
+            '<div class="sp-pg-main">',
+            '<div class="sp-pg-ecol"><pre class="sp-pg-head"></pre><div class="sp-pg-cm-wrap"></div><pre class="sp-pg-tail"></pre></div>',
+            '<div class="sp-pg-pcol">',
+            '<div class="sp-pg-loader"><div class="sp-pg-spinner"></div><span>Initialisation\u2026</span></div>',
+            '<iframe class="sp-pg-iframe" sandbox="allow-scripts allow-same-origin" style="display:none"></iframe>',
+            '<div class="sp-pg-sbar" style="display:none"><button class="sp-pg-fprev">\u2039</button><span class="sp-pg-fc">1/1</span><button class="sp-pg-fnext">\u203a</button><button class="sp-pg-fplay">\u25b6</button></div>',
+            '</div></div>',
+        ].join('');
+
+        var dot = root.querySelector('.sp-pg-dot');
+        var smsg = root.querySelector('.sp-pg-smsg');
+        var loader = root.querySelector('.sp-pg-loader');
+        var iframe = root.querySelector('.sp-pg-iframe');
+        var sbar = root.querySelector('.sp-pg-sbar');
+        var fcEl = root.querySelector('.sp-pg-fc');
+        var headEl = root.querySelector('.sp-pg-head');
+        var tailEl = root.querySelector('.sp-pg-tail');
+        var cmWrap = root.querySelector('.sp-pg-cm-wrap');
+        var sel = root.querySelector('.sp-pg-fn-sel');
+        var fplay = root.querySelector('.sp-pg-fplay');
+
+        headEl.textContent = tpl[0];
+        tailEl.textContent = tpl[2] || '';
+
+        function setStatus(state) {
+            dot.className = 'sp-pg-dot';
+            if (state === 'loading') { dot.classList.add('sp-wasm-loading'); smsg.textContent = 'WASM\u2026'; }
+            else if (state === 'ready') { dot.classList.add('sp-wasm-ready'); smsg.textContent = 'pr\u00eat'; }
+            else { dot.classList.add('sp-wasm-err'); smsg.textContent = 'erreur'; }
+        }
+
+        function showFrame(html) {
+            loader.style.display = 'none';
+            iframe.style.display = 'block';
+            iframe.srcdoc = html;
+        }
+
+        function startPlay() {
+            clearInterval(_streamTimer);
+            if (fplay) fplay.textContent = '\u23f8';
+            _streamTimer = setInterval(function () {
+                frameIdx = (frameIdx + 1) % frames.length;
+                showFrame(frames[frameIdx]);
+                if (fcEl) fcEl.textContent = (frameIdx + 1) + '/' + frames.length;
+            }, 600);
+        }
+
+        function run() {
+            if (!_wasmReady) return;
+            clearInterval(_streamTimer);
+            if (fplay) fplay.textContent = '\u25b6';
+            var body = cmEditor ? cmEditor.getValue() : tpl[1];
+            if (streaming) {
+                frames = streamingFrames(body);
+                if (!frames.length) return;
+                frameIdx = 0; showFrame(frames[0]);
+                if (fcEl) fcEl.textContent = '1/' + frames.length;
+                sbar.style.display = 'flex';
+                startPlay();
+            } else {
+                var typeKey = sel ? sel.value : (slug || 'bar');
+                var html = callWasm(typeKey, body);
+                if (html) { frames = [html]; frameIdx = 0; showFrame(html); sbar.style.display = 'none'; }
+            }
+        }
+
+        sel && sel.addEventListener('change', function () {
+            var newSlug = sel.value;
+            var newRawTpl = TPLS[newSlug] || DEFAULT_TPL;
+            var newTpl = fixTpl(newRawTpl.slice());
+            headEl.textContent = newTpl[0];
+            tailEl.textContent = newTpl[2] || '';
+            if (cmEditor) cmEditor.setValue(newTpl[1]);
+            streaming = (newSlug === 'streaming');
+            clearInterval(_streamTimer);
+            setTimeout(run, 50);
+        });
+
+        var fprev = root.querySelector('.sp-pg-fprev');
+        var fnext = root.querySelector('.sp-pg-fnext');
+        fprev && fprev.addEventListener('click', function () {
+            clearInterval(_streamTimer); if (fplay) fplay.textContent = '\u25b6';
+            frameIdx = (frameIdx - 1 + frames.length) % frames.length;
+            showFrame(frames[frameIdx]);
+            if (fcEl) fcEl.textContent = (frameIdx + 1) + '/' + frames.length;
+        });
+        fnext && fnext.addEventListener('click', function () {
+            clearInterval(_streamTimer); if (fplay) fplay.textContent = '\u25b6';
+            frameIdx = (frameIdx + 1) % frames.length;
+            showFrame(frames[frameIdx]);
+            if (fcEl) fcEl.textContent = (frameIdx + 1) + '/' + frames.length;
+        });
+        fplay && fplay.addEventListener('click', function () {
+            if (_streamTimer) { clearInterval(_streamTimer); _streamTimer = null; fplay.textContent = '\u25b6'; }
+            else startPlay();
+        });
 
         loadCM(function () {
             if (!window.CodeMirror) return;
-            var cmWrap = root.querySelector(".sp-pg-cm-wrap");
             cmEditor = CodeMirror(cmWrap, {
-                value: tpl[1],
-                mode: "python",
-                theme: "dracula",
-                lineNumbers: false,
-                indentUnit: 4,
-                tabSize: 4,
-                indentWithTabs: false,
+                value: tpl[1], mode: "python", theme: "dracula",
+                lineNumbers: false, indentUnit: 4, tabSize: 4, indentWithTabs: false,
                 viewportMargin: Infinity,
                 extraKeys: { Tab: function (cm) { cm.replaceSelection("    "); } }
             });
             cmEditor.on("change", function () {
-                clearTimeout(debTimer);
-                debTimer = setTimeout(function () {
-                    if (_wsState === "ok") run();
-                }, DEBOUNCE_MS);
+                clearTimeout(_debTimer);
+                _debTimer = setTimeout(run, DEBOUNCE_MS);
             });
         });
 
-        function queryRefs() {
-            previewEl  = root.querySelector(".sp-pg-iframe");
-            statusDot  = root.querySelector(".sp-pg-dot");
-            versionEl  = root.querySelector(".sp-pg-ver");
-            statusMsg  = root.querySelector(".sp-pg-smsg");
-            streamBar  = root.querySelector(".sp-pg-sbar");
-            fcEl       = root.querySelector(".sp-pg-fc");
-        }
-
-        function buildHTML(t, currentSlug) {
-            var tplOptions = Object.keys(TPLS).map(function (k) {
-                return '<option value="' + k + '"' + (k === currentSlug ? ' selected' : '') + '>' + k + '</option>';
-            }).join('');
-            return '<div class="sp-pg-wrap">' +
-                '<div class="sp-pg-hdr">' +
-                    '<span class="sp-pg-title">Playground</span>' +
-                    '<select class="sp-pg-fn-sel"><optgroup label="Charts">' + tplOptions + '</optgroup></select>' +
-                    '<span class="sp-pg-conn">' +
-                        '<span class="sp-pg-dot sp-pg-disc"></span>' +
-                        '<span class="sp-pg-ver"></span>' +
-                        '<span class="sp-pg-smsg"></span>' +
-                    '</span>' +
-                '</div>' +
-                '<div class="sp-pg-main">' +
-                    '<div class="sp-pg-ecol">' +
-                        '<pre class="sp-pg-head">' + esc(t[0]) + '</pre>' +
-                        '<div class="sp-pg-cm-wrap"></div>' +
-                        (t[2] ? '<pre class="sp-pg-tail">' + esc(t[2]) + '</pre>' : '') +
-                    '</div>' +
-                    '<div class="sp-pg-pcol">' +
-                        '<iframe class="sp-pg-iframe" sandbox="allow-scripts allow-same-origin"></iframe>' +
-                        '<div class="sp-pg-sbar" style="display:none">' +
-                            '<button class="sp-pg-fprev">&#x2039;</button>' +
-                            '<span class="sp-pg-fc">1/1</span>' +
-                            '<button class="sp-pg-fnext">&#x203a;</button>' +
-                            '<button class="sp-pg-fplay">&#x25b6;</button>' +
-                        '</div>' +
-                    '</div>' +
-                '</div>' +
-            '</div>';
-        }
-
-        function bindEvents() {
-            root.querySelector(".sp-pg-fn-sel").addEventListener("change", function () {
-                var v = this.value;
-                if (!v) return;
-                if (v.startsWith("__dyn__")) {
-                    loadDynTpl(v.slice(7));
-                } else {
-                    tpl = TPLS[v] ? TPLS[v].slice() : DEFAULT_TPL.slice();
-                    root.querySelector(".sp-pg-head").textContent = tpl[0];
-                    if (cmEditor) cmEditor.setValue(tpl[1]);
-                    var tailEl = root.querySelector(".sp-pg-tail");
-                    if (tailEl) tailEl.textContent = tpl[2];
-                    if (_wsState === "ok") run();
-                }
-            });
-
-            root.querySelector(".sp-pg-fprev").addEventListener("click", function () { showFrame(frameIdx - 1); });
-            root.querySelector(".sp-pg-fnext").addEventListener("click", function () { showFrame(frameIdx + 1); });
-            root.querySelector(".sp-pg-fplay").addEventListener("click", function () {
-                var btn = this;
-                if (autoPlay) {
-                    clearInterval(autoPlay); autoPlay = null; btn.textContent = "\u25b6";
-                } else {
-                    btn.textContent = "\u23f8";
-                    autoPlay = setInterval(function () {
-                        if (frameIdx >= frames.length - 1) {
-                            clearInterval(autoPlay); autoPlay = null; btn.textContent = "\u25b6";
-                        } else showFrame(frameIdx + 1);
-                    }, 400);
-                }
-            });
-
-            document.addEventListener("sp-pg-fns", function (e) {
-                var sel = root.querySelector(".sp-pg-fn-sel");
-                if (!sel) return;
-                var dyn = e.detail.filter(function (f) { return !TPLS[f]; });
-                var grp = sel.querySelector('optgroup[label="All functions"]');
-                if (grp) grp.parentNode.removeChild(grp);
-                if (dyn.length) {
-                    var og = document.createElement("optgroup");
-                    og.label = "All functions";
-                    dyn.forEach(function (f) {
-                        var o = document.createElement("option");
-                        o.value = "__dyn__" + f;
-                        o.textContent = "sp." + f;
-                        og.appendChild(o);
-                    });
-                    sel.appendChild(og);
-                }
-            });
-        }
-
-        function loadDynTpl(fn) {
-            wsSend({ a: "sig", fn: fn }, function (msg) {
-                if (msg.t !== "sig" || !msg.params) return;
-                var required = msg.params.filter(function (p) { return p.required; });
-                var optional = msg.params.filter(function (p) { return !p.required; });
-                var head = 'import seraplot as sp\nc = sp.' + fn + '(';
-                var body = required.map(function (p) {
-                    return '    ' + p.name + '=' + (p.name === 'title' ? '"My ' + fn + '"' : '""') + ',';
-                }).concat(
-                    optional.slice(0, 6).map(function (p) {
-                        return '    ' + p.name + '=' + (p.default || '""') + ',';
-                    })
-                ).join('\n');
-                var tail = ')\nc';
-                tpl = [head, body, tail];
-                root.querySelector(".sp-pg-head").textContent = head;
-                if (cmEditor) cmEditor.setValue(body);
-                var tailEl = root.querySelector(".sp-pg-tail");
-                if (tailEl) tailEl.textContent = tail;
-                if (_wsState === "ok") run();
-            });
-        }
-
-        function onWsState(state, version) {
-            if (!statusDot) return;
-            statusDot.className = "sp-pg-dot sp-pg-" + state;
-            if (version) versionEl.textContent = "v" + version;
-            if (state === "ok") {
-                setMsg("ready");
-                run();
-            } else if (state === "connecting") {
-                setMsg("connecting");
-                if (previewEl && !previewEl.srcdoc) previewEl.srcdoc = loadingFrame();
-            } else {
-                setMsg("disc");
-                if (previewEl) previewEl.srcdoc = discFrame();
-            }
-        }
-
-        function fullCode() {
-            var body = cmEditor ? cmEditor.getValue() : "";
-            return tpl[0] + "\n" + body + "\n" + tpl[2];
-        }
-
-        function loadingFrame() {
-            return '<!DOCTYPE html><html><head><style>' +
-                'body{margin:0;background:#060a14;display:flex;align-items:center;justify-content:center;height:100vh}' +
-                '@keyframes spin{to{transform:rotate(360deg)}}' +
-                '.r{width:28px;height:28px;border:3px solid #1c2a40;border-top-color:#6366f1;border-radius:50%;animation:spin 0.8s linear infinite}' +
-                '</style></head><body><div class="r"></div></body></html>';
-        }
-
-        function discFrame() {
-            var isFr = getLang() === "fr";
-            var msg = isFr ? "Connexion au serveur impossible" : "Could not reach playground server";
-            var hint = "pip install seraplot websockets &amp;&amp; python playground_server.py";
-            return '<!DOCTYPE html><html><head><style>' +
-                'body{margin:0;background:#060a14;display:flex;align-items:center;justify-content:center;height:100vh;font-family:system-ui,sans-serif;flex-direction:column;gap:10px}' +
-                'p{color:#334155;font-size:12px;margin:0;text-align:center}' +
-                'code{background:#0d1425;color:#475569;padding:3px 9px;border-radius:4px;font-size:11px;border:1px solid #1c2a40}' +
-                '</style></head><body>' +
-                '<p>' + msg + '</p><code>' + hint + '</code>' +
-                '</body></html>';
-        }
-
-        function run() {
-            if (_wsState !== "ok") return;
-            currentRunId = ++_runId;
-            frames = []; frameIdx = 0;
-            if (autoPlay) { clearInterval(autoPlay); autoPlay = null; }
-            setMsg("running");
-            var id = currentRunId;
-            wsSend({ a: "run", id: id, code: fullCode() }, function (msg) {
-                if (msg.id !== id) return;
-                if (msg.t === "frame") {
-                    frames.push(msg.html);
-                    showFrame(frames.length - 1);
-                    if (frames.length > 1) setMsg("streaming");
-                } else if (msg.t === "done") {
-                    setMsg("ready");
-                    updateSBar();
-                } else if (msg.t === "err") {
-                    var lines = (msg.msg || "").split("\n").slice(-6).join("\n");
-                    previewEl.srcdoc = "<body style='background:#140505;color:#f87171;font:12.5px/1.5 monospace;padding:20px'><pre>" + esc(lines) + "</pre></body>";
-                    setMsg("err");
-                }
-            });
-        }
-
-        function showFrame(idx) {
-            idx = Math.max(0, Math.min(idx, frames.length - 1));
-            frameIdx = idx;
-            if (frames[idx]) previewEl.srcdoc = frames[idx];
-            updateSBar();
-        }
-
-        function updateSBar() {
-            if (streamBar) streamBar.style.display = frames.length > 1 ? "" : "none";
-            if (fcEl) fcEl.textContent = (frameIdx + 1) + "/" + frames.length;
-        }
-
-        function setMsg(s) {
-            if (!statusMsg) return;
-            var isFr = getLang() === "fr";
-            var m = {
-                running:    isFr ? "Execution..." : "Running...",
-                streaming:  "Streaming...",
-                ready:      isFr ? "Pret" : "Ready",
-                err:        isFr ? "Erreur" : "Error",
-                connecting: isFr ? "Connexion..." : "Connecting...",
-                disc:       ""
-            };
-            statusMsg.textContent = m[s] !== undefined ? m[s] : s;
-            statusMsg.className = "sp-pg-smsg sp-pg-s-" + s;
-        }
-    }
-
-    function injectStyles() {
-        if (document.getElementById("sp-pg-css")) return;
-        var s = document.createElement("style");
-        s.id = "sp-pg-css";
-        s.textContent = [
-            ".sp-pg-wrap{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;",
-            "background:linear-gradient(180deg,#0c1120,#070c18);border:1px solid #1c2a40;",
-            "border-radius:12px;overflow:hidden;margin:0 0 32px;",
-            "box-shadow:0 16px 48px -12px rgba(0,0,0,.65),0 0 0 1px rgba(99,102,241,.08) inset}",
-            ".sp-pg-hdr{display:flex;align-items:center;gap:10px;padding:9px 14px;",
-            "background:#080e1c;border-bottom:1px solid #1c2a40;flex-wrap:wrap}",
-            ".sp-pg-title{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#6366f1;flex-shrink:0}",
-            ".sp-pg-conn{display:flex;align-items:center;gap:5px;margin-left:auto;min-width:0}",
-            ".sp-pg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;transition:background .3s,box-shadow .3s}",
-            ".sp-pg-ok{background:#22c55e;box-shadow:0 0 7px rgba(34,197,94,.55)}",
-            ".sp-pg-connecting{background:#f59e0b;animation:sp-pg-blink 1s infinite}",
-            ".sp-pg-disc{background:#1e2d42}",
-            "@keyframes sp-pg-blink{0%,100%{opacity:1}50%{opacity:.25}}",
-            ".sp-pg-ver{font-size:10.5px;color:#2d3f56}",
-            ".sp-pg-smsg{font-size:11px;color:#334155;transition:color .2s;white-space:nowrap}",
-            ".sp-pg-s-running{color:#f59e0b}",
-            ".sp-pg-s-streaming{color:#22c55e;animation:sp-pg-blink 0.7s infinite}",
-            ".sp-pg-s-ready{color:#2d3f56}",
-            ".sp-pg-s-err{color:#ef4444}",
-            ".sp-pg-s-connecting{color:#f59e0b}",
-            ".sp-pg-fn-sel{background:#0d1425;border:1px solid #1e2d42;color:#64748b;",
-            "padding:4px 8px;border-radius:6px;font-size:11.5px;cursor:pointer;max-width:180px;outline:none}",
-            ".sp-pg-fn-sel:focus{border-color:#4f46e5}",
-            ".sp-pg-main{display:grid;grid-template-columns:1fr 1fr;min-height:340px}",
-            "@media(max-width:780px){.sp-pg-main{grid-template-columns:1fr}}",
-            ".sp-pg-ecol{border-right:1px solid #0f1b2d;display:flex;flex-direction:column;min-width:0;overflow:hidden}",
-            ".sp-pg-head,.sp-pg-tail{margin:0;padding:7px 14px;",
-            "background:#060a16;color:#243452;font:12px/1.6 'Fira Code','Cascadia Code','Consolas',monospace;",
-            "white-space:pre;overflow-x:auto;user-select:none;flex-shrink:0}",
-            ".sp-pg-head{border-bottom:1px solid #0f1b2d}",
-            ".sp-pg-tail{border-top:1px solid #0f1b2d}",
-            ".sp-pg-cm-wrap{flex:1;overflow:hidden;min-height:80px}",
-            ".sp-pg-cm-wrap .CodeMirror{height:auto !important;min-height:80px;",
-            "background:#080d1e !important;font:13px/1.65 'Fira Code','Cascadia Code','Consolas',monospace !important;",
-            "padding:0;border:none !important;color:#cdd6f4}",
-            ".sp-pg-cm-wrap .CodeMirror-scroll{min-height:80px}",
-            ".sp-pg-cm-wrap .CodeMirror-gutters{display:none !important;width:0 !important}",
-            ".sp-pg-cm-wrap .CodeMirror-lines{padding:9px 14px !important}",
-            ".sp-pg-cm-wrap .CodeMirror-cursor{border-left:2px solid #818cf8 !important}",
-            ".sp-pg-cm-wrap .CodeMirror-selected{background:rgba(99,102,241,.18) !important}",
-            ".sp-pg-cm-wrap .cm-s-dracula .cm-keyword{color:#ff79c6}",
-            ".sp-pg-cm-wrap .cm-s-dracula .cm-def{color:#50fa7b}",
-            ".sp-pg-cm-wrap .cm-s-dracula .cm-string{color:#f1fa8c}",
-            ".sp-pg-cm-wrap .cm-s-dracula .cm-number{color:#bd93f9}",
-            ".sp-pg-cm-wrap .cm-s-dracula .cm-comment{color:#3d5070;font-style:italic}",
-            ".sp-pg-cm-wrap .cm-s-dracula .cm-variable-2{color:#8be9fd}",
-            ".sp-pg-cm-wrap .cm-s-dracula .cm-operator{color:#ff79c6}",
-            ".sp-pg-pcol{position:relative;display:flex;flex-direction:column;background:#060a14;min-width:0}",
-            ".sp-pg-iframe{flex:1;border:none;min-height:340px;background:#060a14;display:block;width:100%}",
-            ".sp-pg-sbar{display:flex;align-items:center;gap:8px;padding:5px 12px;",
-            "background:#060c1a;border-top:1px solid #0f1b2d;font-size:11.5px;color:#334155}",
-            ".sp-pg-sbar button{background:#101926;border:none;color:#4a5e78;",
-            "padding:2px 10px;border-radius:4px;cursor:pointer;font-size:13px;line-height:1.5;transition:background .15s}",
-            ".sp-pg-sbar button:hover{background:#1a2a3d;color:#94a3b8}",
-            ".sp-pg-fc{min-width:38px;text-align:center;color:#2d3f56;font-size:11px}",
-        ].join("");
-        document.head.appendChild(s);
+        initWasm(function () {
+            if (_wasmReady) { setStatus('ready'); run(); }
+            else setStatus('error');
+        });
     }
 
     function init() {
         if (!isChartPage()) return;
-        if (document.querySelector(".sp-pg-wrap")) return;
-        var main = document.querySelector(".content main") ||
-                   document.querySelector("main") ||
-                   document.querySelector(".content");
-        if (!main) return;
-        var h1 = main.querySelector("h1");
-        var anchor = h1 ? h1.nextElementSibling : main.firstElementChild;
-        var wrapper = document.createElement("div");
-        if (anchor) main.insertBefore(wrapper, anchor);
-        else main.appendChild(wrapper);
-        buildPG(wrapper);
+        if (document.querySelector('.sp-pg-wrap')) return;
+        var root = document.createElement('div');
+        root.className = 'sp-pg-wrap';
+        var main = document.querySelector('.content main') || document.querySelector('main') || document.body;
+        main.appendChild(root);
+        buildPG(root);
     }
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", init);
-    } else {
-        init();
-    }
-
-    var _obs = new MutationObserver(function () {
-        if (!document.querySelector(".sp-pg-wrap") && isChartPage()) setTimeout(init, 80);
-    });
-    _obs.observe(document.body, { childList: true });
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
 })();

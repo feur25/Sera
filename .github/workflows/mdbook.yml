@@ -80,7 +80,10 @@ jobs:
           git push
 
       - name: Build docs
-        run: mdbook build -d book/html
+        run: |
+          mdbook build -d book/html
+          mkdir -p book/html/theme
+          cp docs/theme/seraplot_bg.wasm book/html/theme/seraplot_bg.wasm
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
