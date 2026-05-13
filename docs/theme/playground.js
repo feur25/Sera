@@ -242,7 +242,7 @@
     };
 
     var CHART_MAP = {
-        "bar":        { fn: "buildBarChart",       p: ["labels", "values"] },
+        "bar":        { fn: "buildBarChart",       p: ["labels", "values"], sp: "bar" },
         "scatter":    { fn: "buildScatterChart",   p: ["x", "y"],              al: { x_values: "x", y_values: "y" } },
         "line":       { fn: "buildLineChart",      p: ["labels", "values"],     al: { x: "labels", y: "values", x_labels: "labels" } },
         "histogram":  { fn: "buildHistogram",      p: ["values"] },
@@ -367,6 +367,16 @@
         Object.keys(kw).forEach(function (k) { if (!used[k]) opts[k] = kw[k]; });
         if (map.al) Object.keys(map.al).forEach(function (k) { delete opts[k]; });
         try {
+            if (map.sp === 'bar') {
+                var variant = kw.variant || 'basic';
+                var barOpts = {};
+                Object.keys(kw).forEach(function(k) { if (k !== 'labels' && k !== 'values' && k !== 'series') barOpts[k] = kw[k]; });
+                if (variant === 'horizontal') return sp.buildHbar(title, J(kw.labels || []), J(kw.values || []), J(barOpts));
+                if (variant === 'grouped') return sp.buildGroupedBar(title, J(kw.labels || []), J(kw.series || []), J(barOpts));
+                if (variant === 'stacked') return sp.buildStackedBar(title, J(kw.labels || []), J(kw.series || []), J(barOpts));
+                if (variant === 'relative') { barOpts.relative = true; return sp.buildStackedBar(title, J(kw.labels || []), J(kw.series || []), J(barOpts)); }
+                return sp.buildBarChart(title, J(kw.labels || []), J(kw.values || []), J(barOpts));
+            }
             if (map.sp === 'gauge') return fn(title, kw.value || 0, J(opts));
             if (map.sp === 'heatmap') {
                 var rows = kw.labels || kw.rows || [];
