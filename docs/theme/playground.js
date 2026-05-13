@@ -2,7 +2,6 @@
     var DEBOUNCE_MS = 650;
     var _debTimer = null;
     var _wasmReady = false;
-    var _streamTimer = null;
 
     function rng(seed) {
         var s = seed >>> 0;
@@ -40,230 +39,248 @@
         _hz.push(+_t.toFixed(3));
     }
 
-    var TPLS = {
+    var PAGE_VARIANTS = {
         "bar": [
-            'import seraplot as sp\nc = sp.bar(',
-            '    "Revenue by Month",\n    labels=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],\n    values=[42,58,73,61,89,97,85,78,91,65,54,70],\n    variant="basic",\n    theme="deluxe",\n    width=860,\n    height=420,',
-            ')\nc'
-        ],
-        "grouped-bar": [
-            'import seraplot as sp\nc = sp.grouped_bar(',
-            '    "Performance Comparison",\n    labels=["Q1","Q2","Q3","Q4"],\n    series=[[42,58,73,61],[60,45,80,55],[35,70,50,65]],\n    series_names=["Alpha","Beta","Gamma"],\n    theme="deluxe",\n    width=860,\n    height=440,',
-            ')\nc'
-        ],
-        "stacked-bar": [
-            'import seraplot as sp\nc = sp.stacked_bar(',
-            '    "Revenue Breakdown",\n    labels=["Jan","Feb","Mar","Apr","May","Jun"],\n    series=[[30,40,35,45,50,42],[20,25,30,20,25,28],[10,15,12,18,20,15]],\n    series_names=["Product A","Product B","Product C"],\n    theme="prism",\n    width=860,\n    height=440,',
-            ')\nc'
-        ],
-        "hbar": [
-            'import seraplot as sp\nc = sp.hbar(',
-            '    "Horizontal Rankings",\n    labels=["Alpha","Beta","Gamma","Delta","Epsilon"],\n    values=[88,74,91,65,83],\n    theme="prism",\n    width=860,\n    height=420,',
-            ')\nc'
-        ],
-        "bubble": [
-            'import seraplot as sp\nc = sp.bubble(',
-            '    "Market Positioning",\n    x=[1.2,2.4,3.8,5.1,7.0,8.5],\n    y=[4.5,6.2,3.1,8.7,5.5,9.2],\n    sizes=[20,40,15,60,35,25],\n    labels=["A","B","C","D","E","F"],\n    theme="aurora",\n    width=860,\n    height=480,',
-            ')\nc'
+            { id: "basic",         label: "Basic",          body: '    "Revenue by Month",\n    labels=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],\n    values=[42,58,73,61,89,97,85,78,91,65,54,70],\n    variant="basic",\n    theme="deluxe",\n    width=860,\n    height=420,' },
+            { id: "horizontal",    label: "Horizontal",     body: '    "Horizontal Rankings",\n    labels=["Alpha","Beta","Gamma","Delta","Epsilon","Zeta"],\n    values=[88,74,91,65,83,57],\n    variant="horizontal",\n    theme="prism",\n    width=860,\n    height=420,' },
+            { id: "grouped",       label: "Grouped",        body: '    "Performance Comparison",\n    labels=["Q1","Q2","Q3","Q4"],\n    series=[[42,58,73,61],[60,45,80,55],[35,70,50,65]],\n    series_names=["Alpha","Beta","Gamma"],\n    variant="grouped",\n    theme="deluxe",\n    width=860,\n    height=440,' },
+            { id: "stacked",       label: "Stacked",        body: '    "Revenue Breakdown",\n    labels=["Jan","Feb","Mar","Apr","May","Jun"],\n    series=[[30,40,35,45,50,42],[20,25,30,20,25,28],[10,15,12,18,20,15]],\n    series_names=["Product A","Product B","Product C"],\n    variant="stacked",\n    theme="prism",\n    width=860,\n    height=440,' },
+            { id: "relative",      label: "Relative",       body: '    "Profit & Loss",\n    labels=["Jan","Feb","Mar","Apr","May","Jun"],\n    series=[[30,40,-10,45,50,42],[20,-25,30,20,25,-18],[10,15,12,-8,20,15]],\n    series_names=["Product A","Product B","Product C"],\n    variant="relative",\n    theme="frost",\n    width=860,\n    height=440,' },
+            { id: "marimekko",     label: "Marimekko",      body: '    "Market Share",\n    series=[[40,30,20,10],[35,25,30,10]],\n    series_names=["Category A","Category B"],\n    widths=[1,2,1.5,0.8],\n    variant="marimekko",\n    theme="aurora",\n    width=860,\n    height=440,' },
+            { id: "pictogram",     label: "Pictogram",      body: '    "Sales Units",\n    labels=["Alpha","Beta","Gamma","Delta"],\n    values=[50,30,70,45],\n    units_per_icon=10,\n    variant="pictogram",\n    theme="deluxe",\n    width=860,\n    height=420,' },
+            { id: "multicategory", label: "Multicategory",  body: '    "Regional Sales",\n    labels=["Jan","Feb","Mar","Jan","Feb","Mar"],\n    values=[42,58,73,61,89,97],\n    super_categories=["North","North","North","South","South","South"],\n    variant="multicategory",\n    theme="prism",\n    width=860,\n    height=440,' },
+            { id: "deluxe",        label: "Deluxe",         body: '    "Neon Revenue",\n    labels=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],\n    values=[42,58,73,61,89,97,85,78,91,65,54,70],\n    variant="deluxe",\n    theme="deluxe",\n    width=860,\n    height=420,' },
         ],
         "scatter": [
-            'import seraplot as sp\nc = sp.scatter(',
-            '    "Correlation Study",\n    x=SCATTERX,\n    y=SCATTERY,\n    theme="prism",\n    width=860,\n    height=480,',
-            ')\nc'
+            { id: "basic",       label: "Basic",       body: '    "Correlation Study",\n    x_values=SCATTERX,\n    y_values=SCATTERY,\n    variant="basic",\n    theme="prism",\n    width=860,\n    height=480,' },
+            { id: "categorical", label: "Categorical", body: '    "Grouped Points",\n    x_values=SCATTERX,\n    y_values=SCATTERY,\n    categories=["A","B","A","B","A","B","A","B","A","B","A","B","A","B","A","B","A","B","A","B"],\n    variant="categorical",\n    theme="frost",\n    width=860,\n    height=480,' },
+            { id: "gradient",    label: "Gradient",   body: '    "Color Scale",\n    x_values=SCATTERX,\n    y_values=SCATTERY,\n    color_values=SCATTERY,\n    variant="gradient",\n    theme="aurora",\n    width=860,\n    height=480,' },
+            { id: "symbols",     label: "Symbols",    body: '    "Shape Groups",\n    x_values=SCATTERX,\n    y_values=SCATTERY,\n    categories=["A","B","C","A","B","C","A","B","C","A","B","C","A","B","C","A","B","C","A","B"],\n    variant="symbols",\n    theme="prism",\n    width=860,\n    height=480,' },
+            { id: "labeled",     label: "Labeled",    body: '    "Labeled Points",\n    x_values=SCATTERX,\n    y_values=SCATTERY,\n    labels=["P1","P2","P3","P4","P5","P6","P7","P8","P9","P10","P11","P12","P13","P14","P15","P16","P17","P18","P19","P20"],\n    variant="labeled",\n    theme="frost",\n    width=860,\n    height=480,' },
+            { id: "regression",  label: "Regression", body: '    "Trend Line",\n    x_values=SCATTERX,\n    y_values=SCATTERY,\n    regression_type="linear",\n    variant="regression",\n    theme="deluxe",\n    width=860,\n    height=480,' },
+            { id: "deluxe",      label: "Deluxe",     body: '    "Stellar Points",\n    x_values=SCATTERX,\n    y_values=SCATTERY,\n    variant="deluxe",\n    theme="deluxe",\n    width=860,\n    height=480,' },
+            { id: "galaxy",      label: "Galaxy",     body: '    "Galaxy Scatter",\n    x_values=SCATTERX,\n    y_values=SCATTERY,\n    variant="galaxy",\n    theme="deluxe",\n    width=860,\n    height=480,' },
+            { id: "nova",        label: "Nova",       body: '    "Nova Scatter",\n    x_values=SCATTERX,\n    y_values=SCATTERY,\n    variant="nova",\n    theme="deluxe",\n    width=860,\n    height=480,' },
         ],
         "line": [
-            'import seraplot as sp\nc = sp.line(',
-            '    "Trend Analysis",\n    x=[0,1,2,3,4,5,6,7,8,9,10,11],\n    y=[12,19,3,17,28,24,38,35,45,41,52,60],\n    theme="frost",\n    width=860,\n    height=420,',
-            ')\nc'
-        ],
-        "multiline": [
-            'import seraplot as sp\nc = sp.multiline(',
-            '    "Series Comparison",\n    x=[0,1,2,3,4,5,6,7,8,9,10,11],\n    series=[[12,19,3,17,28,24,38,35,45,41,52,60],[8,15,25,13,21,30,27,32,38,29,44,51]],\n    series_names=["Alpha","Beta"],\n    theme="deluxe",\n    width=860,\n    height=420,',
-            ')\nc'
-        ],
-        "area": [
-            'import seraplot as sp\nc = sp.area(',
-            '    "Sales Volume",\n    x=[0,1,2,3,4,5,6,7,8,9,10,11],\n    y=[420,580,730,610,890,970,850,780,910,650,540,700],\n    theme="aurora",\n    width=860,\n    height=420,',
-            ')\nc'
+            { id: "basic",             label: "Basic",             body: '    "Trend Analysis",\n    labels=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],\n    values=[12,19,3,17,28,24,38,35,45,41,52,60],\n    variant="basic",\n    theme="frost",\n    width=860,\n    height=420,' },
+            { id: "multi",             label: "Multi",             body: '    "Series Comparison",\n    x_labels=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],\n    series=[[12,19,3,17,28,24,38,35,45,41,52,60],[8,15,25,13,21,30,27,32,38,29,44,51]],\n    series_names=["Alpha","Beta"],\n    variant="multi",\n    theme="deluxe",\n    width=860,\n    height=420,' },
+            { id: "stepped",           label: "Stepped",           body: '    "Step Signal",\n    labels=["00:00","04:00","08:00","12:00","16:00","20:00","24:00"],\n    values=[2,2,5,8,8,3,1],\n    variant="stepped",\n    theme="aurora",\n    width=860,\n    height=420,' },
+            { id: "spline",            label: "Spline",            body: '    "Smooth Curve",\n    labels=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],\n    values=[12,19,3,17,28,24,38,35,45,41,52,60],\n    variant="spline",\n    theme="prism",\n    width=860,\n    height=420,' },
+            { id: "filled",            label: "Filled",            body: '    "Area Fill",\n    labels=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],\n    values=[12,19,3,17,28,24,38,35,45,41,52,60],\n    variant="filled",\n    theme="frost",\n    width=860,\n    height=420,' },
+            { id: "dashed",            label: "Dashed",            body: '    "Dashed Line",\n    labels=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],\n    values=[12,19,3,17,28,24,38,35,45,41,52,60],\n    variant="dashed",\n    theme="deluxe",\n    width=860,\n    height=420,' },
+            { id: "connected_scatter", label: "Connected Scatter", body: '    "Points + Line",\n    labels=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],\n    values=[12,19,3,17,28,24,38,35,45,41,52,60],\n    marker_size=6,\n    variant="connected_scatter",\n    theme="aurora",\n    width=860,\n    height=420,' },
         ],
         "histogram": [
-            'import seraplot as sp\nc = sp.histogram(',
-            '    "Distribution",\n    values=HIST,\n    bins=20,\n    theme="prism",\n    width=860,\n    height=420,',
-            ')\nc'
-        ],
-        "radar": [
-            'import seraplot as sp\nc = sp.radar(',
-            '    "Skills Matrix",\n    axes=["Speed","Agility","Strength","Defense","Magic","Stamina"],\n    series=[[85,72,60,91,78,88],[60,55,95,88,45,75]],\n    series_names=["Hero","Warrior"],\n    theme="deluxe",\n    width=620,\n    height=520,',
-            ')\nc'
+            { id: "basic",      label: "Basic",      body: '    "Distribution",\n    values=HIST,\n    bins=20,\n    variant="basic",\n    theme="prism",\n    width=860,\n    height=420,' },
+            { id: "horizontal", label: "Horizontal", body: '    "Horizontal Distribution",\n    values=HIST,\n    bins=20,\n    variant="horizontal",\n    theme="frost",\n    width=860,\n    height=420,' },
+            { id: "normalized", label: "Normalized", body: '    "Density",\n    values=HIST,\n    bins=20,\n    variant="normalized",\n    theme="aurora",\n    width=860,\n    height=420,' },
+            { id: "cumulative", label: "Cumulative", body: '    "CDF",\n    values=HIST,\n    bins=20,\n    variant="cumulative",\n    theme="prism",\n    width=860,\n    height=420,' },
+            { id: "step",       label: "Step",       body: '    "Step Outline",\n    values=HIST,\n    bins=20,\n    variant="step",\n    theme="deluxe",\n    width=860,\n    height=420,' },
+            { id: "deluxe",     label: "Deluxe",     body: '    "Neon Distribution",\n    values=HIST,\n    bins=20,\n    variant="deluxe",\n    theme="deluxe",\n    width=860,\n    height=420,' },
         ],
         "violin": [
-            'import seraplot as sp\nc = sp.violin(',
-            '    "Score Distribution",\n    groups=["Alpha","Beta","Gamma"],\n    values=VIO,\n    theme="prism",\n    width=860,\n    height=480,',
-            ')\nc'
+            { id: "basic",    label: "Basic",    body: '    "Score Distribution",\n    labels=["Alpha","Beta","Gamma"],\n    values=VIO,\n    variant="basic",\n    theme="prism",\n    width=860,\n    height=480,' },
+            { id: "box",      label: "Box",      body: '    "Violin + Box",\n    labels=["Alpha","Beta","Gamma"],\n    values=VIO,\n    variant="box",\n    theme="deluxe",\n    width=860,\n    height=480,' },
+            { id: "quartile", label: "Quartile", body: '    "Quartile Lines",\n    labels=["Alpha","Beta","Gamma"],\n    values=VIO,\n    variant="quartile",\n    theme="frost",\n    width=860,\n    height=480,' },
+            { id: "mean",     label: "Mean",     body: '    "Mean Line",\n    labels=["Alpha","Beta","Gamma"],\n    values=VIO,\n    variant="mean",\n    theme="aurora",\n    width=860,\n    height=480,' },
+            { id: "points",   label: "Points",   body: '    "Points Jitter",\n    labels=["Alpha","Beta","Gamma"],\n    values=VIO,\n    variant="points",\n    theme="prism",\n    width=860,\n    height=480,' },
         ],
         "boxplot": [
-            'import seraplot as sp\nc = sp.boxplot(',
-            '    "Statistical Summary",\n    groups=["Q1","Q2","Q3","Q4"],\n    values=BOX,\n    theme="aurora",\n    width=860,\n    height=480,',
-            ')\nc'
+            { id: "basic",      label: "Basic",      body: '    "Statistical Summary",\n    labels=["Q1","Q2","Q3","Q4"],\n    values=BOX,\n    variant="basic",\n    theme="aurora",\n    width=860,\n    height=480,' },
+            { id: "horizontal", label: "Horizontal", body: '    "Horizontal Boxes",\n    labels=["Q1","Q2","Q3","Q4"],\n    values=BOX,\n    variant="horizontal",\n    theme="frost",\n    width=860,\n    height=480,' },
+            { id: "notched",    label: "Notched",    body: '    "Confidence Intervals",\n    labels=["Q1","Q2","Q3","Q4"],\n    values=BOX,\n    variant="notched",\n    theme="prism",\n    width=860,\n    height=480,' },
+            { id: "strip",      label: "Strip",      body: '    "Strip Plot",\n    labels=["Q1","Q2","Q3","Q4"],\n    values=BOX,\n    variant="strip",\n    theme="aurora",\n    width=860,\n    height=480,' },
+        ],
+        "radar": [
+            { id: "basic",     label: "Basic",     body: '    "Skills Matrix",\n    axes=["Speed","Agility","Strength","Defense","Magic","Stamina"],\n    series=[[85,72,60,91,78,88],[60,55,95,88,45,75]],\n    series_names=["Hero","Warrior"],\n    variant="basic",\n    theme="deluxe",\n    width=620,\n    height=520,' },
+            { id: "lines",     label: "Lines",     body: '    "Outline Radar",\n    axes=["Speed","Agility","Strength","Defense","Magic","Stamina"],\n    series=[[85,72,60,91,78,88],[60,55,95,88,45,75]],\n    series_names=["Hero","Warrior"],\n    variant="lines",\n    theme="prism",\n    width=620,\n    height=520,' },
+            { id: "filled",    label: "Filled",    body: '    "Filled Radar",\n    axes=["Speed","Agility","Strength","Defense","Magic","Stamina"],\n    series=[[85,72,60,91,78,88],[60,55,95,88,45,75]],\n    series_names=["Hero","Warrior"],\n    variant="filled",\n    theme="aurora",\n    width=620,\n    height=520,' },
+            { id: "dashed",    label: "Dashed",    body: '    "Dashed Radar",\n    axes=["Speed","Agility","Strength","Defense","Magic","Stamina"],\n    series=[[85,72,60,91,78,88],[60,55,95,88,45,75]],\n    series_names=["Hero","Warrior"],\n    variant="dashed",\n    theme="frost",\n    width=620,\n    height=520,' },
+            { id: "polar_bar", label: "Polar Bar", body: '    "Radial Bars",\n    axes=["Speed","Agility","Strength","Defense","Magic","Stamina"],\n    series=[[85,72,60,91,78,88]],\n    series_names=["Hero"],\n    variant="polar_bar",\n    theme="deluxe",\n    width=620,\n    height=520,' },
+            { id: "gradient",  label: "Gradient",  body: '    "Gradient Radar",\n    axes=["Speed","Agility","Strength","Defense","Magic","Stamina"],\n    series=[[85,72,60,91,78,88]],\n    series_names=["Hero"],\n    variant="gradient",\n    theme="aurora",\n    width=620,\n    height=520,' },
         ],
         "heatmap": [
-            'import seraplot as sp\nc = sp.heatmap(',
-            '    "Correlation Matrix",\n    rows=["A","B","C","D","E"],\n    cols=["V1","V2","V3","V4","V5"],\n    values=[[0.9,0.4,0.2,0.7,0.3],[0.4,1.0,0.6,0.1,0.8],[0.2,0.6,0.9,0.5,0.4],[0.7,0.1,0.5,1.0,0.2],[0.3,0.8,0.4,0.2,1.0]],\n    theme="frost",\n    width=700,\n    height=560,',
-            ')\nc'
+            { id: "basic",       label: "Basic",       body: '    "Correlation Matrix",\n    rows=["A","B","C","D","E"],\n    cols=["V1","V2","V3","V4","V5"],\n    values=[[0.9,0.4,0.2,0.7,0.3],[0.4,1.0,0.6,0.1,0.8],[0.2,0.6,0.9,0.5,0.4],[0.7,0.1,0.5,1.0,0.2],[0.3,0.8,0.4,0.2,1.0]],\n    variant="basic",\n    theme="frost",\n    width=700,\n    height=560,' },
+            { id: "annotated",   label: "Annotated",   body: '    "Annotated Heatmap",\n    rows=["A","B","C","D","E"],\n    cols=["V1","V2","V3","V4","V5"],\n    values=[[0.9,0.4,0.2,0.7,0.3],[0.4,1.0,0.6,0.1,0.8],[0.2,0.6,0.9,0.5,0.4],[0.7,0.1,0.5,1.0,0.2],[0.3,0.8,0.4,0.2,1.0]],\n    show_values=True,\n    variant="annotated",\n    theme="frost",\n    width=700,\n    height=560,' },
+            { id: "correlation", label: "Correlation", body: '    "Correlation",\n    rows=["A","B","C","D","E"],\n    cols=["A","B","C","D","E"],\n    values=[[1.0,0.4,0.2,0.7,0.3],[0.4,1.0,0.6,-0.1,0.8],[0.2,0.6,1.0,0.5,-0.4],[0.7,-0.1,0.5,1.0,0.2],[0.3,0.8,-0.4,0.2,1.0]],\n    variant="correlation",\n    theme="prism",\n    width=700,\n    height=560,' },
+            { id: "log",         label: "Log Scale",   body: '    "Log Heatmap",\n    rows=["A","B","C","D","E"],\n    cols=["V1","V2","V3","V4","V5"],\n    values=[[900,4,2,700,3],[40,1000,600,1,800],[2,60,900,50,4],[700,1,50,1000,2],[3,800,4,2,1000]],\n    variant="log",\n    theme="aurora",\n    width=700,\n    height=560,' },
         ],
-        "parallel": [
-            'import seraplot as sp\nc = sp.parallel(',
-            '    "Multi-Attribute Analysis",\n    axes=["Speed","Power","Agility","Defense"],\n    series=[[82,74,91,65],[55,88,60,78],[70,65,75,82],[90,50,85,58]],\n    series_names=["A","B","C","D"],\n    theme="frost",\n    width=860,\n    height=460,',
-            ')\nc'
-        ],
-        "treemap": [
-            'import seraplot as sp\nc = sp.treemap(',
-            '    "Portfolio Allocation",\n    labels=["Tech","Finance","Health","Energy","Consumer","Materials"],\n    values=[340,220,180,150,130,90],\n    theme="prism",\n    width=860,\n    height=520,',
-            ')\nc'
-        ],
-        "sunburst": [
-            'import seraplot as sp\nc = sp.sunburst(',
-            '    "Hierarchy",\n    labels=["Root","A","B","A1","A2","B1","B2"],\n    parents=["","Root","Root","A","A","B","B"],\n    values=[0,60,40,35,25,22,18],\n    theme="aurora",\n    width=700,\n    height=700,',
-            ')\nc'
+        "bubble": [
+            { id: "basic",       label: "Basic",       body: '    "Market Positioning",\n    x_values=[1.2,2.4,3.8,5.1,7.0,8.5],\n    y_values=[4.5,6.2,3.1,8.7,5.5,9.2],\n    sizes=[20,40,15,60,35,25],\n    variant="basic",\n    theme="aurora",\n    width=860,\n    height=480,' },
+            { id: "categorical", label: "Categorical", body: '    "Grouped Bubbles",\n    x_values=[1.2,2.4,3.8,5.1,7.0,8.5],\n    y_values=[4.5,6.2,3.1,8.7,5.5,9.2],\n    sizes=[20,40,15,60,35,25],\n    categories=["A","B","A","B","A","B"],\n    variant="categorical",\n    theme="frost",\n    width=860,\n    height=480,' },
+            { id: "labeled",     label: "Labeled",     body: '    "Labeled Bubbles",\n    x_values=[1.2,2.4,3.8,5.1,7.0,8.5],\n    y_values=[4.5,6.2,3.1,8.7,5.5,9.2],\n    sizes=[20,40,15,60,35,25],\n    labels=["Alpha","Beta","Gamma","Delta","Epsilon","Zeta"],\n    variant="labeled",\n    theme="prism",\n    width=860,\n    height=480,' },
+            { id: "deluxe",      label: "Deluxe",      body: '    "Iridescent Bubbles",\n    x_values=[1.2,2.4,3.8,5.1,7.0,8.5],\n    y_values=[4.5,6.2,3.1,8.7,5.5,9.2],\n    sizes=[20,40,15,60,35,25],\n    variant="deluxe",\n    theme="deluxe",\n    width=860,\n    height=480,' },
+            { id: "plasma",      label: "Plasma",      body: '    "Plasma Bubbles",\n    x_values=[1.2,2.4,3.8,5.1,7.0,8.5],\n    y_values=[4.5,6.2,3.1,8.7,5.5,9.2],\n    sizes=[20,40,15,60,35,25],\n    variant="plasma",\n    theme="deluxe",\n    width=860,\n    height=480,' },
         ],
         "pie": [
-            'import seraplot as sp\nc = sp.pie(',
-            '    "Market Share",\n    labels=["Product A","Product B","Product C","Other"],\n    values=[38,27,21,14],\n    theme="aurora",\n    width=700,\n    height=520,',
-            ')\nc'
-        ],
-        "donut": [
-            'import seraplot as sp\nc = sp.donut(',
-            '    "Category Split",\n    labels=["Alpha","Beta","Gamma","Delta"],\n    values=[35,28,22,15],\n    theme="prism",\n    width=700,\n    height=520,',
-            ')\nc'
+            { id: "basic",    label: "Basic",    body: '    "Market Share",\n    labels=["Product A","Product B","Product C","Other"],\n    values=[38,27,21,14],\n    variant="basic",\n    theme="aurora",\n    width=700,\n    height=520,' },
+            { id: "donut",    label: "Donut",    body: '    "Category Split",\n    labels=["Alpha","Beta","Gamma","Delta"],\n    values=[35,28,22,15],\n    variant="donut",\n    theme="prism",\n    width=700,\n    height=520,' },
+            { id: "exploded", label: "Exploded", body: '    "Pulled Slice",\n    labels=["Product A","Product B","Product C","Other"],\n    values=[38,27,21,14],\n    pull=[0.1,0,0,0],\n    variant="exploded",\n    theme="frost",\n    width=700,\n    height=520,' },
         ],
         "funnel": [
-            'import seraplot as sp\nc = sp.funnel(',
-            '    "Conversion Funnel",\n    stages=["Impressions","Clicks","Signups","Trials","Paid"],\n    values=[10000,3200,850,240,96],\n    theme="aurora",\n    width=700,\n    height=520,',
-            ')\nc'
+            { id: "basic",      label: "Basic",      body: '    "Conversion Funnel",\n    stages=["Impressions","Clicks","Signups","Trials","Paid"],\n    values=[10000,3200,850,240,96],\n    variant="basic",\n    theme="aurora",\n    width=700,\n    height=520,' },
+            { id: "stepped",    label: "Stepped",    body: '    "Step Funnel",\n    stages=["Impressions","Clicks","Signups","Trials","Paid"],\n    values=[10000,3200,850,240,96],\n    variant="stepped",\n    theme="prism",\n    width=700,\n    height=520,' },
+            { id: "chevron",    label: "Chevron",    body: '    "Sales Pipeline",\n    stages=["Impressions","Clicks","Signups","Trials","Paid"],\n    values=[10000,3200,850,240,96],\n    variant="chevron",\n    theme="frost",\n    width=700,\n    height=520,' },
+            { id: "pyramid",    label: "Pyramid",    body: '    "Pyramid",\n    stages=["Level 1","Level 2","Level 3","Level 4","Level 5"],\n    values=[10000,3200,850,240,96],\n    variant="pyramid",\n    theme="deluxe",\n    width=700,\n    height=520,' },
+            { id: "conversion", label: "Conversion", body: '    "KPI Funnel",\n    stages=["Impressions","Clicks","Signups","Trials","Paid"],\n    values=[10000,3200,850,240,96],\n    variant="conversion",\n    theme="aurora",\n    width=700,\n    height=520,' },
         ],
-        "kde": [
-            'import seraplot as sp\nc = sp.kde(',
-            '    "Density Estimate",\n    values=KDE,\n    theme="deluxe",\n    width=860,\n    height=440,',
-            ')\nc'
+        "treemap": [
+            { id: "basic",    label: "Basic",    body: '    "Portfolio Allocation",\n    labels=["Tech","Finance","Health","Energy","Consumer","Materials"],\n    values=[340,220,180,150,130,90],\n    variant="basic",\n    theme="prism",\n    width=860,\n    height=520,' },
+            { id: "flat",     label: "Flat",     body: '    "Mosaic",\n    labels=["Tech","Finance","Health","Energy","Consumer","Materials"],\n    values=[340,220,180,150,130,90],\n    variant="flat",\n    theme="frost",\n    width=860,\n    height=520,' },
+            { id: "gradient", label: "Gradient", body: '    "Gradient Tiles",\n    labels=["Tech","Finance","Health","Energy","Consumer","Materials"],\n    values=[340,220,180,150,130,90],\n    variant="gradient",\n    theme="aurora",\n    width=860,\n    height=520,' },
+            { id: "heat",     label: "Heatmap",  body: '    "Value Heatmap",\n    labels=["Tech","Finance","Health","Energy","Consumer","Materials"],\n    values=[340,220,180,150,130,90],\n    variant="heat",\n    theme="prism",\n    width=860,\n    height=520,' },
+            { id: "mono",     label: "Mono",     body: '    "Monochrome",\n    labels=["Tech","Finance","Health","Energy","Consumer","Materials"],\n    values=[340,220,180,150,130,90],\n    variant="mono",\n    theme="deluxe",\n    width=860,\n    height=520,' },
         ],
-        "ridgeline": [
-            'import seraplot as sp\nc = sp.ridgeline(',
-            '    "Distribution Ridgeline",\n    groups=["2020","2021","2022","2023","2024"],\n    values=RID,\n    theme="prism",\n    width=860,\n    height=560,',
-            ')\nc'
-        ],
-        "lollipop": [
-            'import seraplot as sp\nc = sp.lollipop(',
-            '    "Top Values",\n    labels=["Alpha","Beta","Gamma","Delta","Epsilon","Zeta"],\n    values=[88,74,91,65,83,57],\n    theme="frost",\n    width=860,\n    height=440,',
-            ')\nc'
+        "sunburst": [
+            { id: "basic",   label: "Basic",   body: '    "Hierarchy",\n    labels=["Root","A","B","A1","A2","B1","B2"],\n    parents=["","Root","Root","A","A","B","B"],\n    values=[0,60,40,35,25,22,18],\n    variant="basic",\n    theme="aurora",\n    width=700,\n    height=700,' },
+            { id: "donut",   label: "Donut",   body: '    "Donut Sunburst",\n    labels=["Root","A","B","A1","A2","B1","B2"],\n    parents=["","Root","Root","A","A","B","B"],\n    values=[0,60,40,35,25,22,18],\n    variant="donut",\n    theme="prism",\n    width=700,\n    height=700,' },
+            { id: "flame",   label: "Flame",   body: '    "Flame Sunburst",\n    labels=["Root","A","B","A1","A2","B1","B2"],\n    parents=["","Root","Root","A","A","B","B"],\n    values=[0,60,40,35,25,22,18],\n    variant="flame",\n    theme="deluxe",\n    width=700,\n    height=700,' },
+            { id: "rainbow", label: "Rainbow", body: '    "Rainbow Sunburst",\n    labels=["Root","A","B","A1","A2","B1","B2"],\n    parents=["","Root","Root","A","A","B","B"],\n    values=[0,60,40,35,25,22,18],\n    variant="rainbow",\n    theme="aurora",\n    width=700,\n    height=700,' },
         ],
         "waterfall": [
-            'import seraplot as sp\nc = sp.waterfall(',
-            '    "Cash Flow",\n    labels=["Start","Revenue","Costs","Taxes","R&D","End"],\n    values=[100,250,-180,-40,-30,100],\n    theme="prism",\n    width=860,\n    height=460,',
-            ')\nc'
+            { id: "basic",      label: "Basic",      body: '    "Cash Flow",\n    labels=["Start","Revenue","Costs","Taxes","R&D","End"],\n    values=[100,250,-180,-40,-30,100],\n    variant="basic",\n    theme="prism",\n    width=860,\n    height=460,' },
+            { id: "stepped",    label: "Stepped",    body: '    "Staircase",\n    labels=["Start","Revenue","Costs","Taxes","R&D","End"],\n    values=[100,250,-180,-40,-30,100],\n    variant="stepped",\n    theme="frost",\n    width=860,\n    height=460,' },
+            { id: "lollipop",   label: "Lollipop",   body: '    "Lollipop Waterfall",\n    labels=["Start","Revenue","Costs","Taxes","R&D","End"],\n    values=[100,250,-180,-40,-30,100],\n    variant="lollipop",\n    theme="aurora",\n    width=860,\n    height=460,' },
+            { id: "arrowed",    label: "Arrowed",    body: '    "Directional",\n    labels=["Start","Revenue","Costs","Taxes","R&D","End"],\n    values=[100,250,-180,-40,-30,100],\n    variant="arrowed",\n    theme="deluxe",\n    width=860,\n    height=460,' },
+            { id: "horizontal", label: "Horizontal", body: '    "Horizontal Flow",\n    labels=["Start","Revenue","Costs","Taxes","R&D","End"],\n    values=[100,250,-180,-40,-30,100],\n    variant="horizontal",\n    theme="prism",\n    width=860,\n    height=460,' },
+        ],
+        "ridgeline": [
+            { id: "basic",     label: "Basic",     body: '    "Distribution Ridgeline",\n    groups=["2020","2021","2022","2023","2024"],\n    values=RID,\n    variant="basic",\n    theme="prism",\n    width=860,\n    height=560,' },
+            { id: "gradient",  label: "Gradient",  body: '    "Gradient Ridges",\n    groups=["2020","2021","2022","2023","2024"],\n    values=RID,\n    variant="gradient",\n    theme="aurora",\n    width=860,\n    height=560,' },
+            { id: "lines",     label: "Lines",     body: '    "Outline Ridges",\n    groups=["2020","2021","2022","2023","2024"],\n    values=RID,\n    variant="lines",\n    theme="frost",\n    width=860,\n    height=560,' },
+            { id: "quartiles", label: "Quartiles", body: '    "Quartile Markers",\n    groups=["2020","2021","2022","2023","2024"],\n    values=RID,\n    variant="quartiles",\n    theme="deluxe",\n    width=860,\n    height=560,' },
+            { id: "heatmap",   label: "Heatmap",   body: '    "Heatmap Ridges",\n    groups=["2020","2021","2022","2023","2024"],\n    values=RID,\n    variant="heatmap",\n    theme="prism",\n    width=860,\n    height=560,' },
+        ],
+        "lollipop": [
+            { id: "basic",     label: "Basic",     body: '    "Top Values",\n    labels=["Alpha","Beta","Gamma","Delta","Epsilon","Zeta"],\n    values=[88,74,91,65,83,57],\n    variant="basic",\n    theme="frost",\n    width=860,\n    height=440,' },
+            { id: "cleveland", label: "Cleveland", body: '    "Cleveland Dot Plot",\n    labels=["Alpha","Beta","Gamma","Delta","Epsilon","Zeta"],\n    values=[88,74,91,65,83,57],\n    variant="cleveland",\n    theme="aurora",\n    width=860,\n    height=440,' },
+            { id: "diverging", label: "Diverging", body: '    "Deviation Plot",\n    labels=["Alpha","Beta","Gamma","Delta","Epsilon","Zeta"],\n    values=[88,74,91,65,83,57],\n    variant="diverging",\n    theme="prism",\n    width=860,\n    height=440,' },
+            { id: "circular",  label: "Circular",  body: '    "Radial Lollipop",\n    labels=["Alpha","Beta","Gamma","Delta","Epsilon","Zeta"],\n    values=[88,74,91,65,83,57],\n    variant="circular",\n    theme="deluxe",\n    width=640,\n    height=640,' },
+            { id: "highlight", label: "Highlight", body: '    "Spotlight",\n    labels=["Alpha","Beta","Gamma","Delta","Epsilon","Zeta"],\n    values=[88,74,91,65,83,57],\n    variant="highlight",\n    theme="frost",\n    width=860,\n    height=440,' },
+        ],
+        "kde": [
+            { id: "basic",      label: "Basic",      body: '    "Density Estimate",\n    values=KDE,\n    variant="basic",\n    theme="deluxe",\n    width=860,\n    height=440,' },
+            { id: "outline",    label: "Outline",    body: '    "Outline Density",\n    values=KDE,\n    variant="outline",\n    theme="prism",\n    width=860,\n    height=440,' },
+            { id: "rug",        label: "Rug",        body: '    "Rug + KDE",\n    values=KDE,\n    variant="rug",\n    theme="aurora",\n    width=860,\n    height=440,' },
+            { id: "histogram",  label: "Histogram",  body: '    "KDE on Histogram",\n    values=KDE,\n    variant="histogram",\n    theme="frost",\n    width=860,\n    height=440,' },
+            { id: "cumulative", label: "Cumulative", body: '    "CDF",\n    values=KDE,\n    variant="cumulative",\n    theme="deluxe",\n    width=860,\n    height=440,' },
+            { id: "gradient",   label: "Gradient",   body: '    "Gradient Fill",\n    values=KDE,\n    variant="gradient",\n    theme="prism",\n    width=860,\n    height=440,' },
         ],
         "slope": [
-            'import seraplot as sp\nc = sp.slope(',
-            '    "Before vs After",\n    labels=["Alpha","Beta","Gamma","Delta"],\n    before=[42,78,55,90],\n    after=[65,61,82,74],\n    theme="deluxe",\n    width=600,\n    height=500,',
-            ')\nc'
+            { id: "basic",       label: "Basic",       body: '    "Before vs After",\n    labels=["Alpha","Beta","Gamma","Delta"],\n    before=[42,78,55,90],\n    after=[65,61,82,74],\n    variant="basic",\n    theme="deluxe",\n    width=600,\n    height=500,' },
+            { id: "monochrome",  label: "Monochrome",  body: '    "Monochrome Slope",\n    labels=["Alpha","Beta","Gamma","Delta"],\n    before=[42,78,55,90],\n    after=[65,61,82,74],\n    variant="monochrome",\n    theme="frost",\n    width=600,\n    height=500,' },
+            { id: "highlighted", label: "Highlighted", body: '    "Spotlight Slope",\n    labels=["Alpha","Beta","Gamma","Delta"],\n    before=[42,78,55,90],\n    after=[65,61,82,74],\n    variant="highlighted",\n    theme="prism",\n    width=600,\n    height=500,' },
+            { id: "bumps",       label: "Bumps",       body: '    "Rank Changes",\n    labels=["Alpha","Beta","Gamma","Delta"],\n    before=[1,4,3,2],\n    after=[2,3,1,4],\n    variant="bumps",\n    theme="aurora",\n    width=600,\n    height=500,' },
+            { id: "curved",      label: "Curved",      body: '    "Smooth Slope",\n    labels=["Alpha","Beta","Gamma","Delta"],\n    before=[42,78,55,90],\n    after=[65,61,82,74],\n    variant="curved",\n    theme="deluxe",\n    width=600,\n    height=500,' },
         ],
         "bullet": [
-            'import seraplot as sp\nc = sp.bullet(',
-            '    "KPI Dashboard",\n    labels=["Revenue","Satisfaction","Leads","Retention"],\n    actuals=[82,74,91,65],\n    targets=[90,80,85,70],\n    theme="aurora",\n    width=860,\n    height=380,',
-            ')\nc'
+            { id: "basic",    label: "Basic",    body: '    "KPI Dashboard",\n    labels=["Revenue","Satisfaction","Leads","Retention"],\n    actuals=[82,74,91,65],\n    targets=[90,80,85,70],\n    variant="basic",\n    theme="aurora",\n    width=860,\n    height=380,' },
+            { id: "stacked",  label: "Stacked",  body: '    "Zones KPI",\n    labels=["Revenue","Satisfaction","Leads","Retention"],\n    actuals=[82,74,91,65],\n    targets=[90,80,85,70],\n    variant="stacked",\n    theme="prism",\n    width=860,\n    height=380,' },
+            { id: "thermo",   label: "Thermo",   body: '    "Thermometer",\n    labels=["Revenue","Satisfaction","Leads","Retention"],\n    actuals=[82,74,91,65],\n    targets=[90,80,85,70],\n    variant="thermo",\n    theme="deluxe",\n    width=860,\n    height=380,' },
+            { id: "progress", label: "Progress", body: '    "Progress Pills",\n    labels=["Revenue","Satisfaction","Leads","Retention"],\n    actuals=[82,74,91,65],\n    targets=[90,80,85,70],\n    variant="progress",\n    theme="aurora",\n    width=860,\n    height=380,' },
         ],
-        "scatter3d": [
-            'import seraplot as sp\nc = sp.scatter3d(',
-            '    "3D Distribution",\n    x=S3X,\n    y=S3Y,\n    z=S3Z,\n    theme="deluxe",\n    width=860,\n    height=560,',
-            ')\nc'
-        ],
-        "bar3d": [
-            'import seraplot as sp\nc = sp.bar3d(',
-            '    "3D Overview",\n    labels=["Q1","Q2","Q3","Q4"],\n    series=[[42,58,73,61],[60,45,80,55]],\n    series_names=["Alpha","Beta"],\n    theme="inferno",\n    width=860,\n    height=560,',
-            ')\nc'
-        ],
-        "bubble3d": [
-            'import seraplot as sp\nc = sp.bubble3d(',
-            '    "3D Bubbles",\n    x=B3X,\n    y=B3Y,\n    z=B3Z,\n    sizes=B3S,\n    theme="aurora",\n    width=860,\n    height=560,',
-            ')\nc'
-        ],
-        "line3d": [
-            'import seraplot as sp\nc = sp.line3d(',
-            '    "3D Helix",\n    x=HX,\n    y=HY,\n    z=HZ,\n    theme="frost",\n    width=860,\n    height=560,',
-            ')\nc'
+        "parallel": [
+            { id: "basic",       label: "Basic",       body: '    "Multi-Attribute Analysis",\n    axes=["Speed","Power","Agility","Defense"],\n    series=[[82,74,91,65],[55,88,60,78],[70,65,75,82],[90,50,85,58]],\n    series_names=["A","B","C","D"],\n    variant="basic",\n    theme="frost",\n    width=860,\n    height=460,' },
+            { id: "smooth",      label: "Smooth",      body: '    "Smooth Parallel",\n    axes=["Speed","Power","Agility","Defense"],\n    series=[[82,74,91,65],[55,88,60,78],[70,65,75,82],[90,50,85,58]],\n    series_names=["A","B","C","D"],\n    variant="smooth",\n    theme="aurora",\n    width=860,\n    height=460,' },
+            { id: "categorical", label: "Categorical", body: '    "Color by Group",\n    axes=["Speed","Power","Agility","Defense"],\n    series=[[82,74,91,65],[55,88,60,78],[70,65,75,82],[90,50,85,58]],\n    series_names=["A","B","C","D"],\n    variant="categorical",\n    theme="prism",\n    width=860,\n    height=460,' },
+            { id: "highlight",   label: "Highlight",   body: '    "Spotlight Series",\n    axes=["Speed","Power","Agility","Defense"],\n    series=[[82,74,91,65],[55,88,60,78],[70,65,75,82],[90,50,85,58]],\n    series_names=["A","B","C","D"],\n    variant="highlight",\n    theme="deluxe",\n    width=860,\n    height=460,' },
         ],
         "gauge": [
-            'import seraplot as sp\nc = sp.gauge(',
-            '    "KPI Score",\n    value=72,\n    min_val=0,\n    max_val=100,\n    theme="deluxe",\n    width=500,\n    height=400,',
-            ')\nc'
+            { id: "basic",     label: "Basic",     body: '    "KPI Score",\n    value=72,\n    min_val=0,\n    max_val=100,\n    variant="basic",\n    theme="deluxe",\n    width=500,\n    height=400,' },
+            { id: "radial",    label: "Radial",    body: '    "Donut Gauge",\n    value=72,\n    min_val=0,\n    max_val=100,\n    variant="radial",\n    theme="aurora",\n    width=500,\n    height=400,' },
+            { id: "arc270",    label: "Arc 270\u00b0", body: '    "Wide Arc",\n    value=72,\n    min_val=0,\n    max_val=100,\n    variant="arc270",\n    theme="prism",\n    width=500,\n    height=400,' },
+            { id: "sleek",     label: "Sleek",     body: '    "Clean KPI",\n    value=72,\n    min_val=0,\n    max_val=100,\n    variant="sleek",\n    theme="frost",\n    width=500,\n    height=400,' },
+            { id: "segmented", label: "Segmented", body: '    "Battery Gauge",\n    value=72,\n    min_val=0,\n    max_val=100,\n    variant="segmented",\n    theme="deluxe",\n    width=500,\n    height=400,' },
+            { id: "glow",      label: "Glow",      body: '    "Neon Gauge",\n    value=72,\n    min_val=0,\n    max_val=100,\n    variant="glow",\n    theme="deluxe",\n    width=500,\n    height=400,' },
         ],
         "choropleth": [
-            'import seraplot as sp\nc = sp.choropleth(',
-            '    "Country Metric",\n    countries=["USA","GBR","FRA","DEU","CHN","IND","BRA"],\n    values=[88,74,82,79,91,65,70],\n    theme="aurora",\n    width=860,\n    height=520,',
-            ')\nc'
+            { id: "basic", label: "Basic", body: '    "Country Metric",\n    countries=["USA","GBR","FRA","DEU","CHN","IND","BRA"],\n    values=[88,74,82,79,91,65,70],\n    theme="aurora",\n    width=860,\n    height=520,' },
         ],
-        "streaming": [
-            'import seraplot as sp',
-            '    title="Live Stream",\n    labels=["Jan","Feb","Mar","Apr","May","Jun"],\n    base=[42,58,73,61,89,97],\n    theme="inferno",\n    width=860,\n    height=420,',
-            ''
+        "scatter3d": [
+            { id: "basic", label: "Basic", body: '    "3D Distribution",\n    x=S3X,\n    y=S3Y,\n    z=S3Z,\n    theme="deluxe",\n    width=860,\n    height=560,' },
+        ],
+        "bar3d": [
+            { id: "basic", label: "Basic", body: '    "3D Overview",\n    labels=["Q1","Q2","Q3","Q4"],\n    series=[[42,58,73,61],[60,45,80,55]],\n    series_names=["Alpha","Beta"],\n    theme="inferno",\n    width=860,\n    height=560,' },
+        ],
+        "bubble3d": [
+            { id: "basic", label: "Basic", body: '    "3D Bubbles",\n    x=B3X,\n    y=B3Y,\n    z=B3Z,\n    sizes=B3S,\n    theme="aurora",\n    width=860,\n    height=560,' },
+        ],
+        "line3d": [
+            { id: "basic", label: "Basic", body: '    "3D Helix",\n    x=HX,\n    y=HY,\n    z=HZ,\n    theme="frost",\n    width=860,\n    height=560,' },
         ],
     };
 
-    function fixTpl(tpl) {
-        var b = tpl[1];
-        b = b.replace('SCATTERX', J(_sc)).replace('SCATTERY', J(_sc2));
-        b = b.replace('HIST', J(_hist));
-        b = b.replace('VIO', J(_vio));
-        b = b.replace('BOX', J(_box));
-        b = b.replace('KDE', J(_kde));
-        b = b.replace('RID', J(_rid));
-        b = b.replace('S3X', J(_s3x)).replace('S3Y', J(_s3y)).replace('S3Z', J(_s3z));
-        b = b.replace('B3X', J(_b3x)).replace('B3Y', J(_b3y)).replace('B3Z', J(_b3z)).replace('B3S', J(_b3s));
-        b = b.replace('HX', J(_hx)).replace('HY', J(_hy)).replace('HZ', J(_hz));
-        return [tpl[0], b, tpl[2]];
-    }
-
-    var DEFAULT_TPL = [
-        'import seraplot as sp\nc = sp.bar(',
-        '    "My Chart",\n    labels=["A","B","C","D"],\n    values=[10,25,18,32],',
-        ')\nc'
-    ];
+    var PAGE_FN = {
+        "bar":        'import seraplot as sp\nc = sp.bar(',
+        "scatter":    'import seraplot as sp\nc = sp.scatter(',
+        "line":       'import seraplot as sp\nc = sp.line(',
+        "histogram":  'import seraplot as sp\nc = sp.histogram(',
+        "violin":     'import seraplot as sp\nc = sp.violin(',
+        "boxplot":    'import seraplot as sp\nc = sp.boxplot(',
+        "radar":      'import seraplot as sp\nc = sp.radar(',
+        "heatmap":    'import seraplot as sp\nc = sp.heatmap(',
+        "bubble":     'import seraplot as sp\nc = sp.bubble(',
+        "pie":        'import seraplot as sp\nc = sp.pie(',
+        "funnel":     'import seraplot as sp\nc = sp.funnel(',
+        "treemap":    'import seraplot as sp\nc = sp.treemap(',
+        "sunburst":   'import seraplot as sp\nc = sp.sunburst(',
+        "waterfall":  'import seraplot as sp\nc = sp.waterfall(',
+        "ridgeline":  'import seraplot as sp\nc = sp.ridgeline(',
+        "lollipop":   'import seraplot as sp\nc = sp.lollipop(',
+        "kde":        'import seraplot as sp\nc = sp.kde(',
+        "slope":      'import seraplot as sp\nc = sp.slope(',
+        "bullet":     'import seraplot as sp\nc = sp.bullet(',
+        "parallel":   'import seraplot as sp\nc = sp.parallel(',
+        "gauge":      'import seraplot as sp\nc = sp.gauge(',
+        "choropleth": 'import seraplot as sp\nc = sp.choropleth(',
+        "scatter3d":  'import seraplot as sp\nc = sp.scatter3d(',
+        "bar3d":      'import seraplot as sp\nc = sp.bar3d(',
+        "bubble3d":   'import seraplot as sp\nc = sp.bubble3d(',
+        "line3d":     'import seraplot as sp\nc = sp.line3d(',
+    };
 
     var CHART_MAP = {
-        "bar":          { fn: "buildBarChart",       p: ["labels", "values"] },
-        "hbar":         { fn: "buildHbar",            p: ["labels", "values"] },
-        "pie":          { fn: "buildPieChart",        p: ["labels", "values"] },
-        "donut":        { fn: "buildDonutChart",      p: ["labels", "values"] },
-        "lollipop":     { fn: "buildLollipopChart",   p: ["labels", "values"] },
-        "waterfall":    { fn: "buildWaterfall",       p: ["labels", "values"] },
-        "treemap":      { fn: "buildTreemap",         p: ["labels", "values"] },
-        "funnel":       { fn: "buildFunnel",          p: ["labels", "values"],  al: { stages: "labels" } },
-        "choropleth":   { fn: "buildChoropleth",      p: ["labels", "values"],  al: { countries: "labels" } },
-        "bullet":       { fn: "buildBullet",          p: ["labels", "values"],  al: { actuals: "values" } },
-        "scatter":      { fn: "buildScatterChart",    p: ["x", "y"] },
-        "line":         { fn: "buildLineChart",       p: ["labels", "values"],  al: { x: "labels", y: "values" } },
-        "kde":          { fn: "buildKdeChart",        p: ["values"] },
-        "histogram":    { fn: "buildHistogram",       p: ["values"] },
-        "gauge":        { fn: "buildGauge",           p: ["value"],             sp: "gauge" },
-        "grouped-bar":  { fn: "buildGroupedBar",      p: ["cat", "series"],     al: { labels: "cat" } },
-        "grouped_bar":  { fn: "buildGroupedBar",      p: ["cat", "series"],     al: { labels: "cat" } },
-        "stacked-bar":  { fn: "buildStackedBar",      p: ["cat", "series"],     al: { labels: "cat" } },
-        "stacked_bar":  { fn: "buildStackedBar",      p: ["cat", "series"],     al: { labels: "cat" } },
-        "multiline":    { fn: "buildMultilineChart",  p: ["xlabels", "series"], al: { x: "xlabels" } },
-        "area":         { fn: "buildAreaChart",       p: ["xlabels", "series"], al: { x: "xlabels" }, sp: "area" },
-        "radar":        { fn: "buildRadarChart",      p: ["axes", "series"] },
-        "parallel":     { fn: "buildParallel",        p: ["axes", "series"] },
-        "violin":       { fn: "buildViolin",          p: ["cat", "values"],     al: { groups: "cat" } },
-        "boxplot":      { fn: "buildBoxplot",         p: ["cat", "values"],     al: { groups: "cat" } },
-        "heatmap":      { fn: "buildHeatmap",         p: ["labels", "matrix"],  al: { rows: "labels", values: "matrix" }, sp: "heatmap" },
-        "sunburst":     { fn: "buildSunburst",        p: ["labels", "parents", "values"] },
-        "ridgeline":    { fn: "buildRidgelineChart",  p: ["values", "categories"], al: { groups: "categories" } },
-        "slope":        { fn: "buildSlope",           p: ["labels", "left", "right"], al: { before: "left", after: "right" } },
-        "bubble":       { fn: "buildBubble",          p: ["x", "y", "sizes"] },
-        "scatter3d":    { fn: "buildScatter3dChart",  p: ["x", "y", "z"] },
-        "line3d":       { fn: "buildLine3dChart",     p: ["x", "y", "z"] },
-        "bubble3d":     { fn: "buildBubble3dChart",   p: ["x", "y", "z", "sizes"] },
-        "bar3d":        { fn: "buildBar3dChart",      p: ["x", "y", "z"],       sp: "bar3d" },
+        "bar":        { fn: "buildBarChart",       p: ["labels", "values"] },
+        "scatter":    { fn: "buildScatterChart",   p: ["x", "y"],              al: { x_values: "x", y_values: "y" } },
+        "line":       { fn: "buildLineChart",      p: ["labels", "values"],     al: { x: "labels", y: "values", x_labels: "labels" } },
+        "histogram":  { fn: "buildHistogram",      p: ["values"] },
+        "violin":     { fn: "buildViolin",         p: ["cat", "values"],        al: { labels: "cat", groups: "cat" } },
+        "boxplot":    { fn: "buildBoxplot",        p: ["cat", "values"],        al: { labels: "cat", groups: "cat" } },
+        "radar":      { fn: "buildRadarChart",     p: ["axes", "series"] },
+        "heatmap":    { fn: "buildHeatmap",        p: ["labels", "matrix"],     al: { rows: "labels", values: "matrix" }, sp: "heatmap" },
+        "bubble":     { fn: "buildBubble",         p: ["x", "y", "sizes"],      al: { x_values: "x", y_values: "y" } },
+        "pie":        { fn: "buildPieChart",       p: ["labels", "values"] },
+        "funnel":     { fn: "buildFunnel",         p: ["labels", "values"],     al: { stages: "labels" } },
+        "treemap":    { fn: "buildTreemap",        p: ["labels", "values"] },
+        "sunburst":   { fn: "buildSunburst",       p: ["labels", "parents", "values"] },
+        "waterfall":  { fn: "buildWaterfall",      p: ["labels", "values"] },
+        "ridgeline":  { fn: "buildRidgelineChart", p: ["values", "categories"], al: { groups: "categories" } },
+        "lollipop":   { fn: "buildLollipopChart",  p: ["labels", "values"] },
+        "kde":        { fn: "buildKdeChart",       p: ["values"] },
+        "slope":      { fn: "buildSlope",          p: ["labels", "left", "right"], al: { before: "left", after: "right" } },
+        "bullet":     { fn: "buildBullet",         p: ["labels", "values"],     al: { actuals: "values" } },
+        "parallel":   { fn: "buildParallel",       p: ["axes", "series"] },
+        "gauge":      { fn: "buildGauge",          p: ["value"],                sp: "gauge" },
+        "choropleth": { fn: "buildChoropleth",     p: ["labels", "values"],     al: { countries: "labels" } },
+        "scatter3d":  { fn: "buildScatter3dChart", p: ["x", "y", "z"] },
+        "line3d":     { fn: "buildLine3dChart",    p: ["x", "y", "z"] },
+        "bubble3d":   { fn: "buildBubble3dChart",  p: ["x", "y", "z", "sizes"] },
+        "bar3d":      { fn: "buildBar3dChart",     p: ["x", "y", "z"],          sp: "bar3d" },
     };
+
+    function fixBody(body) {
+        return body
+            .replace(/\bSCATTERX\b/g, J(_sc)).replace(/\bSCATTERY\b/g, J(_sc2))
+            .replace(/\bHIST\b/g, J(_hist))
+            .replace(/\bVIO\b/g, J(_vio))
+            .replace(/\bBOX\b/g, J(_box))
+            .replace(/\bKDE\b/g, J(_kde))
+            .replace(/\bRID\b/g, J(_rid))
+            .replace(/\bS3X\b/g, J(_s3x)).replace(/\bS3Y\b/g, J(_s3y)).replace(/\bS3Z\b/g, J(_s3z))
+            .replace(/\bB3X\b/g, J(_b3x)).replace(/\bB3Y\b/g, J(_b3y)).replace(/\bB3Z\b/g, J(_b3z)).replace(/\bB3S\b/g, J(_b3s))
+            .replace(/\bHX\b/g, J(_hx)).replace(/\bHY\b/g, J(_hy)).replace(/\bHZ\b/g, J(_hz));
+    }
 
     function parsePyVal(s) {
         s = s.trim();
@@ -350,8 +367,11 @@
         if (map.al) Object.keys(map.al).forEach(function (k) { delete opts[k]; });
         try {
             if (map.sp === 'gauge') return fn(title, kw.value || 0, J(opts));
-            if (map.sp === 'area') {
-                return fn(title, J(kw.xlabels || kw.x || []), J(kw.series || (kw.y ? [kw.y] : [])), J(opts));
+            if (map.sp === 'heatmap') {
+                var rows = kw.labels || kw.rows || [];
+                var matrix = kw.matrix || kw.values || [];
+                delete opts.rows; delete opts.cols;
+                return fn(title, J(rows), J(matrix), J(opts));
             }
             if (map.sp === 'bar3d') {
                 var labels = kw.labels || kw.x || [];
@@ -364,37 +384,11 @@
                 });
                 return fn(title, J(xs), J(ys), J(zs), J(opts));
             }
-            if (map.sp === 'heatmap') {
-                var rows = kw.labels || kw.rows || [];
-                var matrix = kw.matrix || kw.values || [];
-                delete opts.rows; delete opts.cols;
-                return fn(title, J(rows), J(matrix), J(opts));
-            }
             var args = [title];
             map.p.forEach(function (key) { args.push(J(kw[key] !== undefined ? kw[key] : [])); });
             args.push(J(opts));
             return fn.apply(null, args);
         } catch (e) { return null; }
-    }
-
-    function streamingFrames(body) {
-        var sp = window.SeraplotWASM;
-        if (!sp || !sp.__ready) return [];
-        var parsed = parsePyArgs(body);
-        var kw = parsed.kwargs;
-        var title = kw.title || "Live Stream";
-        var labels = kw.labels || ["Jan", "Feb", "Mar", "Apr", "May", "Jun"];
-        var base = kw.base || [42, 58, 73, 61, 89, 97];
-        var theme = kw.theme || "inferno";
-        var width = kw.width || 860;
-        var height = kw.height || 420;
-        var frames = [];
-        for (var i = 0; i < 8; i++) {
-            var r = rng(i * 7 + 1);
-            var vals = base.map(function (v) { return Math.round(v + (r() - 0.5) * 20); });
-            try { var html = sp.buildBarChart(title, J(labels), J(vals), J({ theme: theme, width: width, height: height })); if (html) frames.push(html); } catch (e) {}
-        }
-        return frames;
     }
 
     function pageSlug() {
@@ -447,12 +441,14 @@
 
     function injectStyles() {
         if (document.getElementById('sp-pg-style')) return;
-        var css = '.sp-pg-wrap{display:flex;flex-direction:column;border:1px solid rgba(120,130,200,.13);border-radius:14px;overflow:hidden;margin:2.2rem 0;background:#07091a;font-family:sans-serif;box-shadow:0 8px 40px rgba(0,0,0,.45)}'
-            + '.sp-pg-hdr{display:flex;align-items:center;gap:10px;padding:9px 16px;background:linear-gradient(90deg,#0c1228 0%,#0e1530 100%);border-bottom:1px solid rgba(120,130,200,.1)}'
+        var css = '.sp-pg-wrap{display:flex;flex-direction:column;border:1px solid rgba(120,130,200,.13);border-radius:14px;overflow:hidden;margin:0 0 2.4rem;background:#07091a;font-family:sans-serif;box-shadow:0 8px 40px rgba(0,0,0,.45)}'
+            + '.sp-pg-hdr{display:flex;align-items:center;gap:10px;padding:9px 14px;background:linear-gradient(90deg,#0c1228 0%,#0e1530 100%);border-bottom:1px solid rgba(120,130,200,.1);flex-wrap:wrap;row-gap:8px}'
             + '.sp-pg-title{font-size:10px;font-weight:800;letter-spacing:.18em;color:#4a5280;text-transform:uppercase;flex-shrink:0}'
-            + '.sp-pg-fn-sel{background:#111828;color:#c9d1ff;border:1px solid rgba(120,130,200,.18);border-radius:7px;padding:4px 12px;font-size:13px;cursor:pointer;max-width:170px;outline:none;transition:border-color .2s}'
-            + '.sp-pg-fn-sel:hover,.sp-pg-fn-sel:focus{border-color:rgba(120,130,200,.4)}'
-            + '.sp-pg-conn{display:flex;align-items:center;gap:7px;margin-left:auto;font-size:11.5px;color:#4a5280;letter-spacing:.04em}'
+            + '.sp-pg-vtabs{display:flex;gap:4px;flex-wrap:wrap;flex:1;min-width:0}'
+            + '.sp-pg-vtab{background:transparent;border:1px solid rgba(120,130,200,.15);color:#6475a0;border-radius:6px;padding:3px 10px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;letter-spacing:.02em}'
+            + '.sp-pg-vtab:hover{background:rgba(120,130,200,.1);color:#c9d1ff;border-color:rgba(120,130,200,.35)}'
+            + '.sp-pg-vtab.sp-vact{background:linear-gradient(135deg,#3730a3,#1e1b4b);color:#e0e7ff;border-color:#6366f1;box-shadow:0 0 10px rgba(99,102,241,.3)}'
+            + '.sp-pg-conn{display:flex;align-items:center;gap:7px;margin-left:auto;font-size:11.5px;color:#4a5280;letter-spacing:.04em;flex-shrink:0}'
             + '.sp-pg-dot{width:7px;height:7px;border-radius:50%;background:#333;flex-shrink:0;transition:background .3s}'
             + '.sp-wasm-loading{background:#f59e0b!important;box-shadow:0 0 8px #f59e0b88;animation:sp-pulse .9s infinite}'
             + '.sp-wasm-ready{background:#22c55e!important;box-shadow:0 0 7px #22c55e66}'
@@ -461,11 +457,12 @@
             + '@keyframes sp-spin{to{transform:rotate(360deg)}}'
             + '@keyframes sp-fadein{from{opacity:0}to{opacity:1}}'
             + '.sp-pg-main{display:flex;min-height:360px;position:relative}'
-            + '.sp-pg-ecol{width:48%;min-width:160px;max-width:80%;display:flex;flex-direction:column;flex-shrink:0}'
+            + '.sp-pg-ecol{width:46%;min-width:160px;max-width:80%;display:flex;flex-direction:column;flex-shrink:0}'
             + '.sp-pg-divider{width:5px;background:rgba(120,130,200,.07);cursor:col-resize;flex-shrink:0;transition:background .15s;position:relative;z-index:2}'
             + '.sp-pg-divider:hover,.sp-pg-divider.sp-dragging{background:rgba(120,130,200,.28)}'
             + '.sp-pg-head,.sp-pg-tail{font-family:"Fira Code","Consolas",monospace;font-size:12.5px;line-height:1.7;padding:0 16px;color:#3d4a70;background:#07091a;white-space:pre;user-select:none}'
-            + '.sp-pg-head{padding-top:14px;border-bottom:1px solid rgba(120,130,200,.05)}.sp-pg-tail{padding-bottom:14px;border-top:1px solid rgba(120,130,200,.05)}'
+            + '.sp-pg-head{padding-top:14px;border-bottom:1px solid rgba(120,130,200,.05)}'
+            + '.sp-pg-tail{padding-bottom:14px;border-top:1px solid rgba(120,130,200,.05)}'
             + '.sp-pg-cm-wrap{flex:1;background:#07091a}'
             + '.sp-pg-cm-wrap .CodeMirror{background:#07091a;font:13px/1.7 "Fira Code","Consolas",monospace;height:auto;min-height:80px}'
             + '.sp-pg-cm-wrap .CodeMirror-scroll{padding:2px 16px}'
@@ -483,30 +480,27 @@
             + '.sp-pg-iframe{flex:1;border:none;background:#07091a;width:100%;display:block;animation:sp-fadein .18s ease}'
             + '.sp-pg-loader{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#07091a;flex-direction:column;gap:14px;color:#4a5280;font-size:13px;transition:opacity .15s;z-index:1}'
             + '.sp-pg-loader.sp-hide{opacity:0;pointer-events:none}'
-            + '.sp-pg-spinner{width:30px;height:30px;border:2.5px solid rgba(189,147,249,.15);border-top-color:#bd93f9;border-radius:50%;animation:sp-spin .8s linear infinite}'
-            + '.sp-pg-sbar{display:flex;align-items:center;gap:8px;padding:6px 14px;background:#0a0d1e;border-top:1px solid rgba(120,130,200,.08)}'
-            + '.sp-pg-sbar button{background:#111828;border:1px solid rgba(120,130,200,.15);color:#8899cc;border-radius:6px;padding:3px 11px;cursor:pointer;font-size:13px;transition:background .15s,color .15s}'
-            + '.sp-pg-sbar button:hover{background:#1a2240;color:#c9d1ff}'
-            + '.sp-pg-fc{font-size:11px;color:#3d4a70}';
+            + '.sp-pg-spinner{width:30px;height:30px;border:2.5px solid rgba(189,147,249,.15);border-top-color:#bd93f9;border-radius:50%;animation:sp-spin .8s linear infinite}';
         var st = document.createElement('style'); st.id = 'sp-pg-style'; st.textContent = css; document.head.appendChild(st);
     }
 
     function buildPG(root) {
         var slug = pageSlug();
-        var rawTpl = (slug && TPLS[slug]) ? TPLS[slug] : DEFAULT_TPL;
-        var tpl = fixTpl(rawTpl.slice());
+        var variants = (slug && PAGE_VARIANTS[slug]) ? PAGE_VARIANTS[slug] : null;
+        var headFn = (slug && PAGE_FN[slug]) ? PAGE_FN[slug] : 'import seraplot as sp\nc = sp.bar(';
+        var varIdx = 0;
         var cmEditor = null;
-        var frames = [], frameIdx = 0;
-        var streaming = (slug === 'streaming');
 
         injectStyles();
-        var opts = Object.keys(TPLS).map(function (k) {
-            return '<option value="' + k + '"' + (k === slug ? ' selected' : '') + '>' + k + '</option>';
-        }).join('');
+
+        var vtabsHtml = variants ? variants.map(function (v, i) {
+            return '<button class="sp-pg-vtab' + (i === 0 ? ' sp-vact' : '') + '" data-vi="' + i + '">' + v.label + '</button>';
+        }).join('') : '';
+
         root.innerHTML = [
             '<div class="sp-pg-hdr">',
             '<span class="sp-pg-title">Playground</span>',
-            '<select class="sp-pg-fn-sel">' + opts + '</select>',
+            '<div class="sp-pg-vtabs">' + vtabsHtml + '</div>',
             '<span class="sp-pg-conn"><span class="sp-pg-dot sp-wasm-loading"></span><span class="sp-pg-smsg">WASM\u2026</span></span>',
             '</div>',
             '<div class="sp-pg-main">',
@@ -515,7 +509,6 @@
             '<div class="sp-pg-pcol">',
             '<div class="sp-pg-loader"><div class="sp-pg-spinner"></div><span>Initialisation\u2026</span></div>',
             '<iframe class="sp-pg-iframe" sandbox="allow-scripts" style="display:none"></iframe>',
-            '<div class="sp-pg-sbar" style="display:none"><button class="sp-pg-fprev">\u2039</button><span class="sp-pg-fc">1/1</span><button class="sp-pg-fnext">\u203a</button><button class="sp-pg-fplay">\u25b6</button></div>',
             '</div></div>',
         ].join('');
 
@@ -523,16 +516,17 @@
         var smsg = root.querySelector('.sp-pg-smsg');
         var loader = root.querySelector('.sp-pg-loader');
         var iframe = root.querySelector('.sp-pg-iframe');
-        var sbar = root.querySelector('.sp-pg-sbar');
-        var fcEl = root.querySelector('.sp-pg-fc');
         var headEl = root.querySelector('.sp-pg-head');
         var tailEl = root.querySelector('.sp-pg-tail');
         var cmWrap = root.querySelector('.sp-pg-cm-wrap');
-        var sel = root.querySelector('.sp-pg-fn-sel');
-        var fplay = root.querySelector('.sp-pg-fplay');
 
-        headEl.textContent = tpl[0];
-        tailEl.textContent = tpl[2] || '';
+        headEl.textContent = headFn;
+        tailEl.textContent = ')\nc';
+
+        function currentBody() {
+            if (!variants) return '';
+            return fixBody(variants[varIdx].body);
+        }
 
         function setStatus(state) {
             dot.className = 'sp-pg-dot';
@@ -547,49 +541,23 @@
             iframe.srcdoc = html.replace('<head>', '<head><style>html,body{background:#07091a!important;margin:0}</style>');
         }
 
-        function startPlay() {
-            clearInterval(_streamTimer);
-            if (fplay) fplay.textContent = '\u23f8';
-            _streamTimer = setInterval(function () {
-                frameIdx = (frameIdx + 1) % frames.length;
-                showFrame(frames[frameIdx]);
-                if (fcEl) fcEl.textContent = (frameIdx + 1) + '/' + frames.length;
-            }, 600);
-        }
-
         function run() {
             if (!_wasmReady) return;
-            clearInterval(_streamTimer);
-            if (fplay) fplay.textContent = '\u25b6';
-            var body = cmEditor ? cmEditor.getValue() : tpl[1];
-            if (streaming) {
-                frames = streamingFrames(body);
-                if (!frames.length) return;
-                frameIdx = 0; showFrame(frames[0]);
-                if (fcEl) fcEl.textContent = '1/' + frames.length;
-                sbar.style.display = 'flex';
-                startPlay();
-            } else {
-                var typeKey = sel ? sel.value : (slug || 'bar');
-                var html = callWasm(typeKey, body);
-                if (html) { frames = [html]; frameIdx = 0; showFrame(html); sbar.style.display = 'none'; }
-            }
+            var body = cmEditor ? cmEditor.getValue() : currentBody();
+            var html = callWasm(slug || 'bar', body);
+            if (html) showFrame(html);
         }
 
-        sel && sel.addEventListener('change', function () {
-            var newSlug = sel.value;
-            var newRawTpl = TPLS[newSlug] || DEFAULT_TPL;
-            var newTpl = fixTpl(newRawTpl.slice());
-            headEl.textContent = newTpl[0];
-            tailEl.textContent = newTpl[2] || '';
-            if (cmEditor) cmEditor.setValue(newTpl[1]);
-            streaming = (newSlug === 'streaming');
-            clearInterval(_streamTimer);
-            setTimeout(run, 50);
+        root.querySelectorAll('.sp-pg-vtab').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                varIdx = parseInt(btn.getAttribute('data-vi'), 10);
+                root.querySelectorAll('.sp-pg-vtab').forEach(function (b) { b.classList.remove('sp-vact'); });
+                btn.classList.add('sp-vact');
+                var body = fixBody(variants[varIdx].body);
+                if (cmEditor) cmEditor.setValue(body);
+                setTimeout(run, 50);
+            });
         });
-
-        var fprev = root.querySelector('.sp-pg-fprev');
-        var fnext = root.querySelector('.sp-pg-fnext');
 
         var divider = root.querySelector('.sp-pg-divider');
         var ecol = root.querySelector('.sp-pg-ecol');
@@ -610,27 +578,11 @@
             document.addEventListener('mousemove', onMove);
             document.addEventListener('mouseup', onUp);
         });
-        fprev && fprev.addEventListener('click', function () {
-            clearInterval(_streamTimer); if (fplay) fplay.textContent = '\u25b6';
-            frameIdx = (frameIdx - 1 + frames.length) % frames.length;
-            showFrame(frames[frameIdx]);
-            if (fcEl) fcEl.textContent = (frameIdx + 1) + '/' + frames.length;
-        });
-        fnext && fnext.addEventListener('click', function () {
-            clearInterval(_streamTimer); if (fplay) fplay.textContent = '\u25b6';
-            frameIdx = (frameIdx + 1) % frames.length;
-            showFrame(frames[frameIdx]);
-            if (fcEl) fcEl.textContent = (frameIdx + 1) + '/' + frames.length;
-        });
-        fplay && fplay.addEventListener('click', function () {
-            if (_streamTimer) { clearInterval(_streamTimer); _streamTimer = null; fplay.textContent = '\u25b6'; }
-            else startPlay();
-        });
 
         loadCM(function () {
             if (!window.CodeMirror) return;
             cmEditor = CodeMirror(cmWrap, {
-                value: tpl[1], mode: "python", theme: "dracula",
+                value: currentBody(), mode: "python", theme: "dracula",
                 lineNumbers: false, indentUnit: 4, tabSize: 4, indentWithTabs: false,
                 viewportMargin: Infinity,
                 extraKeys: { Tab: function (cm) { cm.replaceSelection("    "); } }
@@ -653,7 +605,9 @@
         var root = document.createElement('div');
         root.className = 'sp-pg-wrap';
         var main = document.querySelector('.content main') || document.querySelector('main') || document.body;
-        main.appendChild(root);
+        var first = main.firstChild;
+        if (first) main.insertBefore(root, first);
+        else main.appendChild(root);
         buildPG(root);
     }
 
