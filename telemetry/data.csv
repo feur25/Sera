@@ -1,0 +1,2 @@
+ts,method,duration_ms,version,os,arch,cpu_count,ram_gb,available_ram_gb,cpu_brand,python_version,data_count,data_size_mb,input_shape,output_shape,algorithm
+1778712443,build_bar,2.509,2.7.5,windows,x86_64,16,15.7,0.53,13th Gen Intel(R) Core(TM) i7-13620H,3.11.9,2,0,,,
