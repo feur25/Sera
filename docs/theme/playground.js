@@ -2,6 +2,7 @@
     var DEBOUNCE_MS = 650;
     var _debTimer = null;
     var _wasmReady = false;
+    var _skipDebounce = false;
 
     function rng(seed) {
         var s = seed >>> 0;
@@ -456,16 +457,16 @@
             + '@keyframes sp-pulse{0%,100%{opacity:1}50%{opacity:.3}}'
             + '@keyframes sp-spin{to{transform:rotate(360deg)}}'
             + '@keyframes sp-fadein{from{opacity:0}to{opacity:1}}'
-            + '.sp-pg-main{display:flex;min-height:360px;position:relative}'
-            + '.sp-pg-ecol{width:46%;min-width:160px;max-width:80%;display:flex;flex-direction:column;flex-shrink:0}'
-            + '.sp-pg-divider{width:5px;background:rgba(120,130,200,.07);cursor:col-resize;flex-shrink:0;transition:background .15s;position:relative;z-index:2}'
-            + '.sp-pg-divider:hover,.sp-pg-divider.sp-dragging{background:rgba(120,130,200,.28)}'
-            + '.sp-pg-head,.sp-pg-tail{font-family:"Fira Code","Consolas",monospace;font-size:12.5px;line-height:1.7;padding:0 16px;color:#3d4a70;background:#07091a;white-space:pre;user-select:none}'
-            + '.sp-pg-head{padding-top:14px;border-bottom:1px solid rgba(120,130,200,.05)}'
-            + '.sp-pg-tail{padding-bottom:14px;border-top:1px solid rgba(120,130,200,.05)}'
-            + '.sp-pg-cm-wrap{flex:1;background:#07091a}'
-            + '.sp-pg-cm-wrap .CodeMirror{background:#07091a;font:13px/1.7 "Fira Code","Consolas",monospace;height:auto;min-height:80px}'
-            + '.sp-pg-cm-wrap .CodeMirror-scroll{padding:2px 16px}'
+            + '.sp-pg-main{display:flex;height:440px;position:relative}'
+            + '.sp-pg-ecol{width:44%;min-width:140px;max-width:78%;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;border-right:1px solid rgba(120,130,200,.08)}'
+            + '.sp-pg-divider{width:4px;background:transparent;cursor:col-resize;flex-shrink:0;position:relative;z-index:2;transition:background .15s}'
+            + '.sp-pg-divider:hover,.sp-pg-divider.sp-dragging{background:rgba(120,130,200,.22)}'
+            + '.sp-pg-head,.sp-pg-tail{font-family:"Fira Code","Consolas",monospace;font-size:12px;line-height:1.65;padding:10px 14px 6px;color:#2d3a5a;background:#07091a;white-space:pre;user-select:none;flex-shrink:0;letter-spacing:.01em}'
+            + '.sp-pg-tail{padding:6px 14px 10px;border-top:1px solid rgba(120,130,200,.05)}'
+            + '.sp-pg-head{border-bottom:1px solid rgba(120,130,200,.05)}'
+            + '.sp-pg-cm-wrap{flex:1;background:#07091a;overflow:hidden;position:relative}'
+            + '.sp-pg-cm-wrap .CodeMirror{background:#07091a;font:12.5px/1.65 "Fira Code","Consolas",monospace;height:100%}'
+            + '.sp-pg-cm-wrap .CodeMirror-scroll{padding:4px 14px;box-sizing:border-box}'
             + '.sp-pg-cm-wrap .CodeMirror-gutters{display:none!important}'
             + '.sp-pg-cm-wrap .CodeMirror-cursor{border-left-color:#bd93f9}'
             + '.sp-pg-cm-wrap .CodeMirror-selected{background:rgba(189,147,249,.15)!important}'
@@ -553,9 +554,14 @@
                 varIdx = parseInt(btn.getAttribute('data-vi'), 10);
                 root.querySelectorAll('.sp-pg-vtab').forEach(function (b) { b.classList.remove('sp-vact'); });
                 btn.classList.add('sp-vact');
+                clearTimeout(_debTimer);
                 var body = fixBody(variants[varIdx].body);
-                if (cmEditor) cmEditor.setValue(body);
-                setTimeout(run, 50);
+                if (cmEditor) {
+                    _skipDebounce = true;
+                    cmEditor.setValue(body);
+                    _skipDebounce = false;
+                }
+                run();
             });
         });
 
@@ -584,13 +590,16 @@
             cmEditor = CodeMirror(cmWrap, {
                 value: currentBody(), mode: "python", theme: "dracula",
                 lineNumbers: false, indentUnit: 4, tabSize: 4, indentWithTabs: false,
-                viewportMargin: Infinity,
+                lineWrapping: true,
                 extraKeys: { Tab: function (cm) { cm.replaceSelection("    "); } }
             });
+            cmEditor.setSize('100%', '100%');
             cmEditor.on("change", function () {
+                if (_skipDebounce) return;
                 clearTimeout(_debTimer);
                 _debTimer = setTimeout(run, DEBOUNCE_MS);
             });
+            if (_wasmReady) run();
         });
 
         initWasm(function () {
