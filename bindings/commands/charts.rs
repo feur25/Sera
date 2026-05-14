@@ -2700,18 +2700,27 @@ pub fn bench_chart_value(s: &str) -> bool {
     serde_json::from_str::<serde_json::Value>(s).is_ok()
 }
 
+#[cfg(any(feature = "python", feature = "gui"))]
 pub fn set_chart_kind(kind: u8) {
     crate::viewer::chart::sera_set_current_chart_kind(kind);
 }
+#[cfg(not(any(feature = "python", feature = "gui")))]
+pub fn set_chart_kind(_kind: u8) {}
 
+#[cfg(any(feature = "python", feature = "gui"))]
 pub fn set_chart_orientation(vertical: bool) {
     crate::viewer::chart::sera_set_chart_orientation(vertical);
 }
+#[cfg(not(any(feature = "python", feature = "gui")))]
+pub fn set_chart_orientation(_vertical: bool) {}
 
+#[cfg(any(feature = "python", feature = "gui"))]
 pub fn show_chart_value(s: &str) -> bool {
     let c = std::ffi::CString::new(s).unwrap_or_default();
     crate::viewer::chart::sera_show_chart_value(c.as_ptr())
 }
+#[cfg(not(any(feature = "python", feature = "gui")))]
+pub fn show_chart_value(_s: &str) -> bool { false }
 
 pub fn bench_pure_rust(n: usize) -> (f64, f64, f64, f64) {
     use std::time::Instant;

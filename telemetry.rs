@@ -146,7 +146,7 @@ fn collect_system_info() -> serde_json::Value {
             (ram_gb, available_ram_gb, cpu_brand)
         }
         #[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
-        { (0.0, 0.0, "Unknown".to_string()) }
+        { (0.0_f64, 0.0_f64, "Unknown".to_string()) }
     };
 
     serde_json::json!({
@@ -175,6 +175,9 @@ fn try_send_event(event: serde_json::Value) -> bool {
         Ok(b) => b,
         Err(_) => return false,
     };
+    #[cfg(target_arch = "wasm32")]
+    { let _ = body; return false; }
+    #[cfg(not(target_arch = "wasm32"))]
     reqwest::blocking::Client::builder()
         .timeout(std::time::Duration::from_secs(5))
         .build().ok()
