@@ -1,24 +1,63 @@
 ﻿(function () {
-    var URL_JSON_REMOTE = "https://raw.githubusercontent.com/feur25/seraplot/main/playground-url.json";
-    var URL_JSON_LOCAL = "playground-url.json";
-    var DEBOUNCE_MS = 700;
-    var RECONNECT_MS = 2500;
+    var DEBOUNCE_MS = 550;
+
+    var SAMPLES = {
+        bar: [
+            { name: 'Basic', code: 'sp.bar(\n    "Quarterly Sales",\n    labels=["Q1","Q2","Q3","Q4"],\n    values=[120,190,150,220],\n)' },
+            { name: 'Horizontal', code: 'sp.bar(\n    "Top Categories",\n    labels=["Books","Music","Games","Tech","Art"],\n    values=[42,36,55,78,29],\n    variant="horizontal",\n)' },
+            { name: 'Grouped', code: 'sp.bar(\n    "Revenue by Region",\n    labels=["Q1","Q2","Q3","Q4"],\n    series=[[40,55,38,62],[30,42,48,55],[22,28,35,40]],\n    series_names=["EU","US","ASIA"],\n    variant="grouped",\n    theme="aurora",\n)' },
+            { name: 'Stacked', code: 'sp.bar(\n    "Sales Stack",\n    labels=["Mon","Tue","Wed","Thu","Fri"],\n    series=[[10,20,15,25,18],[8,14,12,20,15],[5,9,11,14,12]],\n    series_names=["A","B","C"],\n    variant="stacked",\n    theme="aurora",\n)' },
+            { name: 'Relative', code: 'sp.bar(\n    "Market Share",\n    labels=["Jan","Feb","Mar","Apr"],\n    series=[[30,40,35,50],[20,30,25,35],[15,20,18,25]],\n    series_names=["X","Y","Z"],\n    variant="relative",\n    theme="aurora",\n)' },
+            { name: 'Marimekko', code: 'sp.bar(\n    "Marimekko",\n    labels=["A","B","C","D"],\n    series=[[10,20,15,25],[8,14,12,20],[6,10,9,14]],\n    series_names=["L1","L2","L3"],\n    widths=[1,2,1.5,1],\n    variant="marimekko",\n    theme="aurora",\n)' },
+            { name: 'Pictogram', code: 'sp.bar(\n    "Users",\n    labels=["A","B","C","D"],\n    values=[40,75,55,90],\n    units_per_icon=10,\n    variant="pictogram",\n)' },
+            { name: 'Deluxe', code: 'sp.bar(\n    "Deluxe Style",\n    labels=["Alpha","Beta","Gamma","Delta","Epsilon"],\n    values=[28,52,41,67,35],\n    theme="deluxe",\n)' },
+        ],
+        line: [
+            { name: 'Basic', code: 'sp.line(\n    "Trend",\n    x=[1,2,3,4,5,6,7,8],\n    y=[10,15,12,22,28,25,35,42],\n)' },
+            { name: 'Multi-series', code: 'sp.line(\n    "Multi Trend",\n    x=[1,2,3,4,5,6,7,8],\n    series=[[10,15,12,22,28,25,35,42],[8,12,18,24,22,30,28,38],[5,9,14,18,25,28,32,40]],\n    series_names=["Alpha","Beta","Gamma"],\n)' },
+            { name: 'Smooth', code: 'sp.line(\n    "Smoothed",\n    x=[0,1,2,3,4,5,6,7,8,9],\n    y=[5,12,8,18,22,15,25,30,28,35],\n    variant="smooth",\n)' },
+            { name: 'Area', code: 'sp.line(\n    "Area Fill",\n    x=[1,2,3,4,5,6,7,8],\n    y=[12,18,15,25,30,28,38,45],\n    variant="area",\n    theme="aurora",\n)' },
+            { name: 'Stepped', code: 'sp.line(\n    "Stepped",\n    x=[1,2,3,4,5,6,7,8],\n    y=[10,10,18,18,25,25,32,40],\n    variant="step",\n)' },
+        ],
+        pie: [
+            { name: 'Basic', code: 'sp.pie(\n    "Market Share",\n    labels=["Apple","Google","Microsoft","Amazon","Meta"],\n    values=[28,24,22,16,10],\n)' },
+            { name: 'Donut', code: 'sp.pie(\n    "Donut",\n    labels=["A","B","C","D"],\n    values=[35,25,22,18],\n    variant="donut",\n)' },
+            { name: 'Exploded', code: 'sp.pie(\n    "Exploded",\n    labels=["Core","Plus","Pro","Max","Ultra"],\n    values=[40,25,18,12,5],\n    variant="exploded",\n)' },
+        ],
+        violin: [
+            { name: 'Basic', code: 'sp.violin(\n    "Distribution",\n    labels=["Group A","Group B","Group C"],\n    series=[\n        [12,14,15,16,17,18,19,20,21,22,23,24,25,26,27],\n        [10,12,13,14,15,16,17,18,19,20,21,22,23,24,28],\n        [15,16,17,18,19,20,21,22,23,24,25,26,27,28,30],\n    ],\n)' },
+            { name: 'Split', code: 'sp.violin(\n    "Split",\n    labels=["A","B","C","D"],\n    series=[\n        [10,12,13,15,16,18,19,20,22,24],\n        [8,11,13,14,17,18,20,22,23,25],\n        [12,13,15,17,18,20,21,22,24,26],\n        [9,11,12,14,16,18,19,21,23,24],\n    ],\n    variant="split",\n)' },
+        ],
+        scatter: [
+            { name: 'Basic', code: 'sp.scatter(\n    "Cluster",\n    x=[1,2,3,4,5,6,7,8,9,10,11,12],\n    y=[2,3,5,4,7,6,9,8,11,10,13,12],\n)' },
+        ],
+        histogram: [
+            { name: 'Basic', code: 'sp.histogram(\n    "Distribution",\n    values=[1,2,2,3,3,3,4,4,4,4,5,5,5,5,5,6,6,6,6,7,7,7,8,8,9],\n    bins=10,\n)' },
+        ],
+        heatmap: [
+            { name: 'Basic', code: 'sp.heatmap(\n    "Correlation",\n    matrix=[[1.0,0.8,0.3],[0.8,1.0,0.5],[0.3,0.5,1.0]],\n    labels=["A","B","C"],\n)' },
+        ],
+        boxplot: [
+            { name: 'Basic', code: 'sp.boxplot(\n    "Distribution",\n    labels=["A","B","C"],\n    series=[[10,12,15,18,22,25,30],[8,11,14,17,21,28,35],[12,15,18,22,26,30,38]],\n)' },
+        ],
+        radar: [
+            { name: 'Basic', code: 'sp.radar(\n    "Profile",\n    labels=["Speed","Power","Endurance","Skill","Range"],\n    values=[80,65,90,75,55],\n)' },
+        ],
+    };
 
     var state = {
-        ws: null,
-        wsUrl: null,
-        connecting: false,
         ready: false,
-        runId: 0,
-        lastSent: "",
-        debTimer: null,
         editor: null,
         iframe: null,
         statusDot: null,
         statusText: null,
-        version: "",
         loaderEl: null,
         errEl: null,
+        slug: null,
+        unifiedFn: null,
+        debTimer: null,
+        lastSent: '',
+        currentVariant: 0,
     };
 
     function pageSlug() {
@@ -27,7 +66,8 @@
     }
 
     function isChartPage() {
-        return /\/charts\//.test(window.location.pathname) && pageSlug() && pageSlug() !== "index";
+        var slug = pageSlug();
+        return /\/charts\//.test(window.location.pathname) && slug && slug !== 'index';
     }
 
     function getThemeBase() {
@@ -42,23 +82,34 @@
 
     function loadCM(cb) {
         if (window.CodeMirror) { cb(); return; }
-        ["https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.css",
-         "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/theme/dracula.min.css"].forEach(function (href) {
-            var l = document.createElement("link"); l.rel = "stylesheet"; l.href = href; document.head.appendChild(l);
+        ['https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.css',
+         'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/theme/dracula.min.css'].forEach(function (href) {
+            var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href; document.head.appendChild(l);
         });
-        var s1 = document.createElement("script");
-        s1.src = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.js";
+        var s1 = document.createElement('script');
+        s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.js';
         s1.onload = function () {
-            var s2 = document.createElement("script");
-            s2.src = "https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/mode/python/python.min.js";
+            var s2 = document.createElement('script');
+            s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/mode/python/python.min.js';
             s2.onload = cb;
             document.head.appendChild(s2);
         };
         document.head.appendChild(s1);
     }
 
-    function defaultCode(slug) {
-        return 'import seraplot as sp\n\nc = sp.' + slug + '(\n    "Demo ' + slug + '",\n    labels=["A","B","C","D","E"],\n    values=[12,24,18,30,21],\n)\n';
+    function ensureWasm(cb) {
+        var sp = window.SeraplotWASM;
+        if (!sp) { setTimeout(function () { ensureWasm(cb); }, 80); return; }
+        if (sp.__ready) { cb(); return; }
+        if (sp.__loading) { sp.__loading.then(cb); return; }
+        sp.__loading = sp.__init(getThemeBase() + 'seraplot_bg.wasm').then(cb).catch(function (e) {
+            setStatus('err', 'WASM load failed');
+            showLoader('Failed to load WASM module.<br>' + (e && e.message ? e.message : ''));
+        });
+    }
+
+    function unifiedName(slug) {
+        return 'build' + slug.charAt(0).toUpperCase() + slug.slice(1);
     }
 
     function injectStyles() {
@@ -73,7 +124,7 @@
             '.sp-pg-wrap{position:relative;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;margin:0 0 2.6rem;font-family:"Inter","Segoe UI",sans-serif;background:linear-gradient(135deg,#05060f 0%,#0a0d24 50%,#05060f 100%);box-shadow:0 24px 70px -20px rgba(0,0,0,.7),0 0 0 1px rgba(120,130,200,.08),inset 0 1px 0 rgba(255,255,255,.04)}',
             '.sp-pg-wrap::before{content:"";position:absolute;inset:-1px;border-radius:19px;padding:1px;background:linear-gradient(120deg,rgba(99,102,241,.45),rgba(168,85,247,.35),rgba(34,211,238,.4),rgba(99,102,241,.45));background-size:200% 200%;animation:sp-rotate-bg 14s linear infinite;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.55;z-index:0}',
             '.sp-pg-wrap::after{content:"";position:absolute;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.18),transparent 60%);top:-160px;right:-100px;filter:blur(40px);pointer-events:none;animation:sp-orb 18s ease-in-out infinite;z-index:0}',
-            '.sp-pg-hdr,.sp-pg-main,.sp-pg-foot{position:relative;z-index:1}',
+            '.sp-pg-hdr,.sp-pg-tabs,.sp-pg-main,.sp-pg-foot{position:relative;z-index:1}',
             '.sp-pg-hdr{display:flex;align-items:center;gap:14px;padding:13px 18px;background:linear-gradient(90deg,rgba(12,18,40,.7) 0%,rgba(14,21,48,.5) 100%);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(120,130,200,.12);flex-wrap:wrap;row-gap:10px}',
             '.sp-pg-title{font-size:10.5px;font-weight:800;letter-spacing:.24em;background:linear-gradient(135deg,#a5b4fc 0%,#67e8f9 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-transform:uppercase;flex-shrink:0;text-shadow:0 0 18px rgba(99,102,241,.3)}',
             '.sp-pg-spacer{flex:1}',
@@ -86,6 +137,11 @@
             '.sp-d-loading{background:#f59e0b!important;animation:sp-pulse 1s infinite}',
             '.sp-d-ready{background:#22c55e!important;animation:sp-ripple 2.4s infinite}',
             '.sp-d-err{background:#ef4444!important;box-shadow:0 0 8px #ef444488}',
+            '.sp-pg-tabs{display:flex;gap:4px;padding:8px 14px;background:rgba(8,10,28,.5);border-bottom:1px solid rgba(120,130,200,.08);overflow-x:auto;scrollbar-width:none}',
+            '.sp-pg-tabs::-webkit-scrollbar{display:none}',
+            '.sp-pg-tab{font:600 11px/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:8px 14px;border-radius:8px;color:#7d8bb8;background:transparent;border:1px solid transparent;cursor:pointer;transition:all .18s;white-space:nowrap;font-family:inherit}',
+            '.sp-pg-tab:hover{color:#c4b5fd;background:rgba(124,58,237,.08)}',
+            '.sp-pg-tab.sp-active{color:#fff;background:linear-gradient(135deg,rgba(99,102,241,.35),rgba(124,58,237,.3));border-color:rgba(167,139,250,.45);box-shadow:0 4px 14px -4px rgba(124,58,237,.55),inset 0 1px 0 rgba(255,255,255,.12)}',
             '.sp-pg-main{display:flex;height:480px;background:rgba(5,6,15,.6)}',
             '.sp-pg-ecol{width:46%;min-width:160px;max-width:78%;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;border-right:1px solid rgba(120,130,200,.08);background:linear-gradient(180deg,rgba(8,10,28,.85) 0%,rgba(5,6,15,.95) 100%)}',
             '.sp-pg-divider{width:6px;background:transparent;cursor:col-resize;flex-shrink:0;position:relative;z-index:3;transition:background .2s}',
@@ -154,81 +210,147 @@
         if (prev) setTimeout(function () { URL.revokeObjectURL(prev); }, 500);
     }
 
-    function fetchPlaygroundUrl() {
-        return fetch(URL_JSON_REMOTE, { cache: 'no-store' })
-            .catch(function () { return fetch(URL_JSON_LOCAL, { cache: 'no-store' }); })
-            .then(function (r) { return r.ok ? r.json() : null; })
-            .catch(function () { return null; });
+    function parsePyVal(s) {
+        s = s.trim();
+        if (!s.length) return null;
+        if (s[0] === '"' || s[0] === "'") {
+            var q = s[0], out = '', i = 1;
+            while (i < s.length && s[i] !== q) {
+                if (s[i] === '\\' && i + 1 < s.length) { out += s[i + 1]; i += 2; }
+                else { out += s[i]; i++; }
+            }
+            return out;
+        }
+        if (s[0] === '[') return parsePyList(s);
+        if (s === 'True') return true;
+        if (s === 'False') return false;
+        if (s === 'None') return null;
+        var rangeM = s.match(/^list\s*\(\s*range\s*\(\s*(\d+)\s*(?:,\s*(\d+)\s*)?\)\s*\)$/);
+        if (rangeM) {
+            var a = +rangeM[1], b = rangeM[2] !== undefined ? +rangeM[2] : null;
+            var arr = [], lo = b === null ? 0 : a, hi = b === null ? a : b;
+            for (var k = lo; k < hi; k++) arr.push(k);
+            return arr;
+        }
+        var n = Number(s);
+        if (!isNaN(n)) return n;
+        return s;
     }
 
-    function connect() {
-        if (state.connecting || state.ready) return;
-        state.connecting = true;
-        setStatus('loading', 'Connecting');
-        fetchPlaygroundUrl().then(function (info) {
-            if (!info || !info.url) {
-                state.connecting = false;
-                setStatus('err', 'Server offline');
-                showLoader('Playground server is <b>offline</b>.<br>It cycles every ~6h via GitHub Actions.<br>Check back soon.');
-                setTimeout(connect, 30000);
-                return;
+    function parsePyList(s) {
+        s = s.trim();
+        if (s[0] !== '[') return null;
+        var out = [], i = 1, depth = 1, buf = '', inStr = false, q = '';
+        while (i < s.length && depth > 0) {
+            var c = s[i];
+            if (inStr) {
+                buf += c;
+                if (c === '\\' && i + 1 < s.length) { buf += s[i + 1]; i += 2; continue; }
+                if (c === q) inStr = false;
+            } else {
+                if (c === '"' || c === "'") { inStr = true; q = c; buf += c; }
+                else if (c === '[' || c === '(' || c === '{') { depth++; buf += c; }
+                else if (c === ']' || c === ')' || c === '}') { depth--; if (depth === 0) { if (buf.trim().length) out.push(parsePyVal(buf)); break; } buf += c; }
+                else if (c === ',' && depth === 1) { if (buf.trim().length) out.push(parsePyVal(buf)); buf = ''; }
+                else buf += c;
             }
-            state.wsUrl = info.url;
-            try { state.ws = new WebSocket(info.url); }
-            catch (e) {
-                state.connecting = false;
-                setStatus('err', 'Connect failed');
-                setTimeout(connect, RECONNECT_MS);
-                return;
-            }
-            state.ws.onopen = function () {
-                state.connecting = false;
-                state.ready = true;
-                setStatus('ready', 'Live');
-                state.ws.send(JSON.stringify({ a: 'ping' }));
-                runOnce(true);
-            };
-            state.ws.onmessage = function (ev) {
-                try { handleMsg(JSON.parse(ev.data)); } catch (e) { }
-            };
-            state.ws.onerror = function () {
-                setStatus('err', 'Error');
-            };
-            state.ws.onclose = function () {
-                state.ready = false;
-                state.connecting = false;
-                state.ws = null;
-                setStatus('err', 'Disconnected');
-                setTimeout(connect, RECONNECT_MS);
-            };
-        });
+            i++;
+        }
+        return out;
     }
 
-    function handleMsg(m) {
-        if (m.t === 'pong') {
-            state.version = m.version || '';
-            setStatus('ready', 'Live · sp ' + state.version);
-        } else if (m.t === 'frame') {
-            hideErr();
-            hideLoader();
-            renderHtmlInIframe(m.html);
-        } else if (m.t === 'err') {
-            showErr(m.msg || 'Execution error');
-            hideLoader();
-        } else if (m.t === 'done') {
-            hideLoader();
+    function parsePyArgs(body) {
+        var args = [], kwargs = {};
+        var i = 0, depth = 0, buf = '', inStr = false, q = '';
+        while (i < body.length) {
+            var c = body[i];
+            if (inStr) {
+                buf += c;
+                if (c === '\\' && i + 1 < body.length) { buf += body[i + 1]; i += 2; continue; }
+                if (c === q) inStr = false;
+            } else {
+                if (c === '"' || c === "'") { inStr = true; q = c; buf += c; }
+                else if (c === '(' || c === '[' || c === '{') { depth++; buf += c; }
+                else if (c === ')' || c === ']' || c === '}') { depth--; buf += c; }
+                else if (c === ',' && depth === 0) { pushArg(buf, args, kwargs); buf = ''; }
+                else buf += c;
+            }
+            i++;
+        }
+        if (buf.trim().length) pushArg(buf, args, kwargs);
+        var title = '';
+        if (args.length > 0 && typeof args[0] === 'string') title = args[0];
+        return { title: title, kwargs: kwargs };
+    }
+
+    function pushArg(raw, args, kwargs) {
+        var s = raw.trim();
+        if (!s.length) return;
+        var eq = -1, depth = 0, inStr = false, q = '';
+        for (var i = 0; i < s.length; i++) {
+            var c = s[i];
+            if (inStr) { if (c === '\\') { i++; continue; } if (c === q) inStr = false; }
+            else {
+                if (c === '"' || c === "'") { inStr = true; q = c; }
+                else if (c === '(' || c === '[' || c === '{') depth++;
+                else if (c === ')' || c === ']' || c === '}') depth--;
+                else if (c === '=' && depth === 0 && s[i + 1] !== '=' && s[i - 1] !== '=' && s[i - 1] !== '!' && s[i - 1] !== '<' && s[i - 1] !== '>') { eq = i; break; }
+            }
+        }
+        if (eq === -1) args.push(parsePyVal(s));
+        else {
+            var k = s.slice(0, eq).trim();
+            var v = parsePyVal(s.slice(eq + 1));
+            kwargs[k] = v;
         }
     }
 
+    function extractCall(code) {
+        var m = code.match(/sp\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/);
+        if (!m) return null;
+        var fn = m[1], start = m.index + m[0].length, depth = 1, i = start, inStr = false, q = '';
+        while (i < code.length && depth > 0) {
+            var c = code[i];
+            if (inStr) { if (c === '\\') { i += 2; continue; } if (c === q) inStr = false; }
+            else {
+                if (c === '"' || c === "'") { inStr = true; q = c; }
+                else if (c === '(') depth++;
+                else if (c === ')') depth--;
+            }
+            i++;
+        }
+        return { fn: fn, body: code.slice(start, i - 1) };
+    }
+
     function runOnce(force) {
-        if (!state.ready || !state.editor) return;
+        if (!state.editor) return;
         var code = state.editor.getValue();
         if (!force && code === state.lastSent) return;
         state.lastSent = code;
-        state.runId++;
-        showLoader('Running');
-        try { state.ws.send(JSON.stringify({ a: 'run', id: state.runId, code: code })); }
-        catch (e) { setStatus('err', 'Send failed'); }
+        var call = extractCall(code);
+        if (!call) { showErr('No sp.<chart>(...) call detected'); return; }
+        var sp = window.SeraplotWASM;
+        if (!sp || !sp.__ready) { showErr('WASM not ready'); return; }
+        var fnName = unifiedName(call.fn);
+        var fn = sp[fnName];
+        if (typeof fn !== 'function') {
+            showErr('No live preview for sp.' + call.fn + '() yet (missing unified WASM entry: ' + fnName + ')');
+            hideLoader();
+            return;
+        }
+        var parsed;
+        try { parsed = parsePyArgs(call.body); }
+        catch (e) { showErr('Parse error: ' + e.message); return; }
+        var input = Object.assign({ title: parsed.title }, parsed.kwargs);
+        try {
+            var html = fn(JSON.stringify(input));
+            hideErr();
+            hideLoader();
+            renderHtmlInIframe(html);
+        } catch (e) {
+            showErr('Render error: ' + (e && e.message ? e.message : String(e)));
+            hideLoader();
+        }
     }
 
     function debouncedRun() {
@@ -270,9 +392,30 @@
         document.addEventListener('touchend', up);
     }
 
+    function buildSampleCode(sample) {
+        return 'import seraplot as sp\n\nc = ' + sample.code + '\n';
+    }
+
+    function selectVariant(idx) {
+        var samples = SAMPLES[state.slug] || [];
+        if (!samples[idx]) return;
+        state.currentVariant = idx;
+        var tabs = document.querySelectorAll('.sp-pg-tab');
+        for (var i = 0; i < tabs.length; i++) tabs[i].classList.toggle('sp-active', i === idx);
+        if (state.editor) {
+            state.editor.setValue(buildSampleCode(samples[idx]));
+            runOnce(true);
+        }
+    }
+
     function buildUI() {
         injectStyles();
-        var slug = pageSlug();
+        var slug = state.slug;
+        var samples = SAMPLES[slug] || [{ name: 'Default', code: 'sp.' + slug + '("Demo ' + slug + '")' }];
+        var tabsHtml = '';
+        for (var i = 0; i < samples.length; i++) {
+            tabsHtml += '<button class="sp-pg-tab' + (i === 0 ? ' sp-active' : '') + '" type="button" data-idx="' + i + '">' + samples[i].name + '</button>';
+        }
         var wrap = document.createElement('div');
         wrap.className = 'sp-pg-wrap';
         wrap.innerHTML =
@@ -282,12 +425,13 @@
                 '<button class="sp-pg-btn" type="button">Run</button>' +
                 '<div class="sp-pg-conn"><span class="sp-pg-dot"></span><span class="sp-pg-text">Init</span></div>' +
             '</div>' +
+            '<div class="sp-pg-tabs">' + tabsHtml + '</div>' +
             '<div class="sp-pg-main">' +
                 '<div class="sp-pg-ecol"><div class="sp-pg-cm-wrap"><textarea></textarea></div></div>' +
                 '<div class="sp-pg-divider"></div>' +
                 '<div class="sp-pg-pcol">' +
                     '<iframe class="sp-pg-iframe" sandbox="allow-scripts allow-same-origin"></iframe>' +
-                    '<div class="sp-pg-loader"><div class="sp-pg-spinner"></div><div>Booting</div></div>' +
+                    '<div class="sp-pg-loader"><div class="sp-pg-spinner"></div><div>Loading WASM</div></div>' +
                     '<div class="sp-pg-err"></div>' +
                 '</div>' +
             '</div>';
@@ -298,7 +442,7 @@
         else contentRoot.insertBefore(wrap, contentRoot.firstChild);
 
         var ta = wrap.querySelector('textarea');
-        ta.value = defaultCode(slug);
+        ta.value = buildSampleCode(samples[0]);
         state.iframe = wrap.querySelector('.sp-pg-iframe');
         state.statusDot = wrap.querySelector('.sp-pg-dot');
         state.statusText = wrap.querySelector('.sp-pg-text');
@@ -307,7 +451,13 @@
         var btn = wrap.querySelector('.sp-pg-btn');
         var divider = wrap.querySelector('.sp-pg-divider');
         var ecol = wrap.querySelector('.sp-pg-ecol');
+        var tabs = wrap.querySelectorAll('.sp-pg-tab');
+        for (var t = 0; t < tabs.length; t++) {
+            (function (idx) { tabs[idx].addEventListener('click', function () { selectVariant(idx); }); })(t);
+        }
+        btn.addEventListener('click', function () { runOnce(true); });
 
+        setStatus('loading', 'Loading WASM');
         loadCM(function () {
             state.editor = window.CodeMirror.fromTextArea(ta, {
                 mode: 'python',
@@ -320,14 +470,17 @@
             });
             state.editor.on('change', debouncedRun);
             attachResize(divider, ecol);
-            connect();
+            ensureWasm(function () {
+                state.ready = true;
+                setStatus('ready', 'Live · in-browser');
+                runOnce(true);
+            });
         });
-
-        btn.addEventListener('click', function () { runOnce(true); });
     }
 
     function init() {
         if (!isChartPage()) return;
+        state.slug = pageSlug();
         buildUI();
     }
 
