@@ -1,30 +1,31 @@
 ﻿(function () {
-    var DEBOUNCE_MS = 550;
+    var DEBOUNCE_MS = 500;
+    var MONACO_BASE = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs';
 
-    var DEFAULTS = {
-        title: '"Demo"',
-        labels: '["Alpha","Beta","Gamma","Delta","Epsilon"]',
+    var DEFAULT_VALUES = {
+        labels: '["Alpha","Beta","Gamma","Delta","Epsilon","Zeta","Eta","Theta"]',
         category_labels: '["Alpha","Beta","Gamma","Delta","Epsilon"]',
-        categories: '["Alpha","Beta","Gamma","Delta","Epsilon"]',
-        super_categories: '["G1","G1","G2","G2","G3"]',
+        categories: '["Alpha","Alpha","Beta","Beta","Gamma","Gamma","Delta","Delta"]',
+        super_categories: '["G1","G1","G2","G2","G3","G3","G4","G4"]',
         names: '["Alpha","Beta","Gamma","Delta","Epsilon"]',
-        values: '[12,28,18,34,22]',
+        values: '[12,28,18,34,22,15,30,20]',
         series_values: '[12,28,18,34,22,8,16,12,22,15,5,11,9,17,13]',
         series: '[[12,28,18,34,22],[8,16,12,22,15],[5,11,9,17,13]]',
         series_names: '["Alpha","Beta","Gamma"]',
         widths: '[1,2,1.5,1,1.2]',
-        weights: '[1,2,3,4,5]',
-        x: '[1,2,3,4,5,6,7,8,9,10]',
-        x_values: '[1,2,3,4,5,6,7,8,9,10]',
-        y: '[10,18,15,25,30,28,35,42,38,48]',
-        y_values: '[10,18,15,25,30,28,35,42,38,48]',
-        z: '[2,4,3,6,8,5,7,9,4,6]',
-        z_values: '[2,4,3,6,8,5,7,9,4,6]',
-        sizes: '[10,18,12,24,30,16,22,28,14,20]',
-        opens: '[100,105,110,108,115]',
-        highs: '[108,112,118,114,122]',
-        lows: '[98,102,106,104,112]',
-        closes: '[105,110,108,115,118]',
+        weights: '[1,2,3,4,5,6,7,8]',
+        x: '[10,25,40,55,70,85,100,115]',
+        x_values: '[10,25,40,55,70,85,100,115]',
+        y: '[18,42,28,55,38,72,48,85]',
+        y_values: '[18,42,28,55,38,72,48,85]',
+        z: '[2,4,3,6,8,5,7,9]',
+        z_values: '[2,4,3,6,8,5,7,9]',
+        sizes: '[18,42,28,55,38,72,48,85]',
+        size: '[18,42,28,55,38,72,48,85]',
+        opens: '[100,105,110,108,115,112,118,122]',
+        highs: '[108,112,118,114,122,120,125,128]',
+        lows: '[98,102,106,104,112,110,115,118]',
+        closes: '[105,110,108,115,118,116,122,126]',
         matrix: '[[1.0,0.85,0.42,0.18],[0.85,1.0,0.65,0.31],[0.42,0.65,1.0,0.74],[0.18,0.31,0.74,1.0]]',
         data: '[[1,2,3,4,5],[5,4,3,2,1],[2,3,4,3,2]]',
         bins: '15',
@@ -42,10 +43,10 @@
         words: '["data","chart","plot","graph","viz","render","scale","axis"]',
         frequencies: '[40,32,28,24,20,16,12,10]',
         groups: '["A","B","A","B","A","B"]',
-        order: '["asc"]',
-        theme: '"aurora"',
-        variant: null,
-        title_text: '"Demo"',
+        color_groups: '["A","B","A","B","C","C","A","B"]',
+        color_values: '[10,25,40,55,70,85,100,115]',
+        sort_order: '"none"',
+        legend_position: '"right"',
     };
 
     var state = {
@@ -56,6 +57,8 @@
         loaderEl: null,
         errEl: null,
         slug: null,
+        baseFn: null,
+        baseParams: [],
         variants: [],
         currentVariant: 0,
         debTimer: null,
@@ -72,6 +75,16 @@
         return /\/charts\//.test(window.location.pathname) && slug && slug !== 'index';
     }
 
+    function detectLang() {
+        var visEn = document.querySelector('.lang-en');
+        var visFr = document.querySelector('.lang-fr');
+        if (visFr && visEn) {
+            var stEn = window.getComputedStyle(visEn).display;
+            if (stEn === 'none') return 'fr';
+        }
+        return 'en';
+    }
+
     function getThemeBase() {
         var els = document.querySelectorAll('link[href*="/theme/"],script[src*="/theme/"]');
         for (var i = 0; i < els.length; i++) {
@@ -82,21 +95,26 @@
         return 'theme/';
     }
 
-    function loadCM(cb) {
-        if (window.CodeMirror) { cb(); return; }
-        ['https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.css',
-         'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/theme/dracula.min.css'].forEach(function (href) {
-            var l = document.createElement('link'); l.rel = 'stylesheet'; l.href = href; document.head.appendChild(l);
+    function loadMonaco(cb) {
+        if (window.monaco) { cb(); return; }
+        if (window.__spMonacoLoading) { window.__spMonacoLoading.then(cb); return; }
+        window.__spMonacoLoading = new Promise(function (resolve) {
+            var loader = document.createElement('script');
+            loader.src = MONACO_BASE + '/loader.js';
+            loader.onload = function () {
+                window.require.config({ paths: { vs: MONACO_BASE } });
+                window.MonacoEnvironment = {
+                    getWorkerUrl: function () {
+                        return 'data:text/javascript;charset=utf-8,' + encodeURIComponent(
+                            'self.MonacoEnvironment={baseUrl:"' + MONACO_BASE + '/"};' +
+                            'importScripts("' + MONACO_BASE + '/base/worker/workerMain.js");'
+                        );
+                    }
+                };
+                window.require(['vs/editor/editor.main'], function () { resolve(); cb(); });
+            };
+            document.head.appendChild(loader);
         });
-        var s1 = document.createElement('script');
-        s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/codemirror.min.js';
-        s1.onload = function () {
-            var s2 = document.createElement('script');
-            s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.17/mode/python/python.min.js';
-            s2.onload = cb;
-            document.head.appendChild(s2);
-        };
-        document.head.appendChild(s1);
     }
 
     function ensureWasm(cb) {
@@ -110,136 +128,195 @@
         });
     }
 
-    function unifiedName(fn) {
+    function fnCandidates(fn) {
         var camel = fn.split('_').map(function (s, i) {
             return i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1);
         }).join('');
-        if (camel.indexOf('build') !== 0) {
-            camel = 'build' + camel.charAt(0).toUpperCase() + camel.slice(1);
+        var base = camel.charAt(0).toUpperCase() + camel.slice(1);
+        var out = [];
+        if (camel.indexOf('build') === 0) out.push(camel);
+        else { out.push('build' + base); out.push('build' + base + 'Chart'); out.push(camel); }
+        out.push('build' + base + 'Chart');
+        var seen = {}, dedup = [];
+        for (var i = 0; i < out.length; i++) {
+            if (!seen[out[i]]) { seen[out[i]] = 1; dedup.push(out[i]); }
         }
-        return camel;
+        return dedup;
+    }
+
+    function resolveWasmFn(fn) {
+        var sp = window.SeraplotWASM;
+        if (!sp) return null;
+        var cands = fnCandidates(fn);
+        for (var i = 0; i < cands.length; i++) {
+            if (typeof sp[cands[i]] === 'function') return { name: cands[i], fn: sp[cands[i]] };
+        }
+        return null;
     }
 
     function parseSignature(sig) {
-        var m = sig.match(/sp\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([\s\S]*?)\)\s*(?:->|:)/);
+        var m = sig.match(/sp\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([\s\S]*?)\)\s*(?:->|$)/);
         if (!m) {
             m = sig.match(/sp\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([\s\S]*)\)/);
             if (!m) return null;
         }
-        var fn = m[1];
-        var raw = m[2];
-        var params = [];
-        var variantValue = null;
-        var depth = 0, buf = '', inStr = false, q = '';
+        var fn = m[1], raw = m[2], params = [], depth = 0, buf = '', inStr = false, q = '';
         for (var i = 0; i < raw.length; i++) {
             var c = raw[i];
-            if (inStr) { if (c === '\\') { buf += c + (raw[i + 1] || ''); i++; continue; } if (c === q) inStr = false; buf += c; }
-            else {
+            if (inStr) {
+                if (c === '\\' && i + 1 < raw.length) { buf += c + raw[i + 1]; i++; continue; }
+                if (c === q) inStr = false;
+                buf += c;
+            } else {
                 if (c === '"' || c === "'") { inStr = true; q = c; buf += c; }
                 else if (c === '(' || c === '[' || c === '{') { depth++; buf += c; }
                 else if (c === ')' || c === ']' || c === '}') { depth--; buf += c; }
-                else if (c === ',' && depth === 0) { handleParam(buf, params); buf = ''; }
+                else if (c === ',' && depth === 0) { addParam(buf, params); buf = ''; }
                 else buf += c;
             }
         }
-        if (buf.trim().length) handleParam(buf, params);
-        for (var j = 0; j < params.length; j++) {
-            if (params[j].name === 'variant' && params[j].defaultValue) {
-                variantValue = params[j].defaultValue;
-            }
-        }
-        return { fn: fn, params: params, variantValue: variantValue };
+        if (buf.trim().length) addParam(buf, params);
+        return { fn: fn, params: params };
     }
 
-    function handleParam(raw, out) {
+    function addParam(raw, out) {
         var s = raw.trim();
-        if (!s.length || s === '*' || s === '/' || s === '**') return;
+        if (!s.length || s === '*' || s === '/' || s.indexOf('**') === 0) return;
         if (s.charAt(0) === '*') s = s.replace(/^\*+/, '');
         var nm = s.match(/^([a-zA-Z_][a-zA-Z0-9_]*)/);
         if (!nm) return;
         var name = nm[1];
-        if (name === 'self' || name === 'cls') return;
+        if (name === 'self' || name === 'cls' || name === 'kwargs' || name === 'args') return;
         var def = null;
         var eq = s.indexOf('=');
         if (eq !== -1) {
             var rhs = s.slice(eq + 1).trim();
             var qm = rhs.match(/^"([^"]*)"|^'([^']*)'/);
-            if (qm) def = qm[1] || qm[2];
-            else if (/^\d/.test(rhs)) def = rhs.match(/^[-\d.]+/)[0];
+            if (qm) def = '"' + (qm[1] || qm[2]) + '"';
+            else if (/^(True|False|None)$/.test(rhs)) def = rhs;
+            else if (/^-?\d/.test(rhs)) { var nm2 = rhs.match(/^-?[\d.]+/); if (nm2) def = nm2[0]; }
         }
         out.push({ name: name, defaultValue: def });
     }
 
-    function discoverVariants() {
-        var slug = state.slug;
-        var nodes = document.querySelectorAll('.sp-variant');
-        var seen = {}, out = [];
+    function findPageSignature() {
+        var nodes = document.querySelectorAll('p code, pre code, pre, code');
         for (var i = 0; i < nodes.length; i++) {
             var node = nodes[i];
-            var id = node.id || '';
-            var parts = id.split('-');
-            var name = parts[parts.length - 1] || ('variant' + i);
-            if (seen[name]) continue;
-            var pre = node.querySelector('pre code') || node.querySelector('pre');
-            if (!pre) continue;
-            var sig = pre.textContent || '';
-            var parsed = parseSignature(sig);
-            if (!parsed) continue;
-            seen[name] = true;
-            out.push({
-                name: name,
-                fn: parsed.fn,
-                params: parsed.params,
-                variantValue: parsed.variantValue || name,
-            });
-        }
-        if (out.length > 0) return out;
-        var pres = document.querySelectorAll('pre code, pre');
-        for (var k = 0; k < pres.length; k++) {
-            var t = pres[k].textContent || '';
+            if (node.closest && node.closest('.sp-variant')) continue;
+            var t = node.textContent || '';
             if (t.indexOf('sp.') === -1) continue;
             var p = parseSignature(t);
-            if (!p) continue;
-            return [{
-                name: 'default',
-                fn: p.fn,
-                params: p.params,
-                variantValue: p.variantValue || null,
-            }];
+            if (p && p.params.length >= 1) return p;
         }
-        if (slug) {
-            var fnGuess = slug.replace(/-/g, '_');
-            return [{ name: 'default', fn: fnGuess, params: [{ name: 'title' }, { name: 'labels' }, { name: 'values' }], variantValue: null }];
-        }
-        return [];
+        return null;
     }
 
-    function buildCode(v) {
-        var lines = ['import seraplot as sp', '', 'c = sp.' + v.fn + '('];
-        var hasTitle = false;
-        for (var i = 0; i < v.params.length; i++) {
-            if (v.params[i].name === 'title') { hasTitle = true; break; }
+    function discoverVariants() {
+        var slug = state.slug;
+        var lang = detectLang();
+        var nodes = document.querySelectorAll('.sp-variant[id^="' + slug + '-' + lang + '-"]');
+        if (nodes.length === 0) {
+            nodes = document.querySelectorAll('.sp-variant[id^="' + slug + '-"]');
         }
-        if (hasTitle) lines.push('    "Demo ' + v.name + '",');
-        var seenVariant = false;
-        for (var j = 0; j < v.params.length; j++) {
-            var p = v.params[j];
-            var n = p.name;
-            if (n === 'title') continue;
-            if (n === 'variant') {
-                seenVariant = true;
-                lines.push('    variant="' + (v.variantValue || v.name) + '",');
-                continue;
+        var seen = {}, out = [];
+        for (var i = 0; i < nodes.length; i++) {
+            var id = nodes[i].id;
+            var parts = id.split('-');
+            var name = parts[parts.length - 1];
+            if (!name || seen[name]) continue;
+            seen[name] = true;
+            out.push(name);
+        }
+        return out;
+    }
+
+    function findVariantParamHints() {
+        var hints = {};
+        var tables = document.querySelectorAll('table');
+        for (var t = 0; t < tables.length; t++) {
+            var table = tables[t];
+            if (table.closest && table.closest('.sp-variant')) continue;
+            var headRow = table.querySelector('thead tr') || table.querySelector('tr');
+            if (!headRow) continue;
+            var headCells = headRow.querySelectorAll('th, td');
+            var head = [];
+            for (var h = 0; h < headCells.length; h++) head.push((headCells[h].textContent || '').trim().toLowerCase());
+            var variantCol = -1, extrasCol = -1;
+            for (var hh = 0; hh < head.length; hh++) {
+                if (head[hh] === 'variant' && variantCol === -1) variantCol = hh;
+                if (/extra|key.*arg|required/.test(head[hh])) extrasCol = hh;
             }
-            if (DEFAULTS.hasOwnProperty(n) && DEFAULTS[n] !== null) {
-                lines.push('    ' + n + '=' + DEFAULTS[n] + ',');
+            if (variantCol === -1 || extrasCol === -1) continue;
+            var rows = table.querySelectorAll('tbody tr');
+            if (!rows.length) rows = table.querySelectorAll('tr');
+            for (var r = 0; r < rows.length; r++) {
+                var cells = rows[r].querySelectorAll('td');
+                if (cells.length <= Math.max(variantCol, extrasCol)) continue;
+                var nameCell = cells[variantCol];
+                var nameCodes = nameCell.querySelectorAll('code');
+                var names = [];
+                if (nameCodes.length) {
+                    for (var nc = 0; nc < nameCodes.length; nc++) names.push((nameCodes[nc].textContent || '').replace(/["']/g, '').trim());
+                } else {
+                    names.push((nameCell.textContent || '').replace(/["']/g, '').trim());
+                }
+                var extraCell = cells[extrasCol];
+                var paramCodes = extraCell.querySelectorAll('code');
+                var params = [];
+                for (var pc = 0; pc < paramCodes.length; pc++) {
+                    var pn = (paramCodes[pc].textContent || '').trim();
+                    if (/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(pn)) params.push(pn);
+                }
+                for (var nn = 0; nn < names.length; nn++) {
+                    if (names[nn]) hints[names[nn]] = params;
+                }
             }
         }
-        if (!seenVariant && v.variantValue && v.name !== 'default') {
-            lines.push('    variant="' + v.variantValue + '",');
+        return hints;
+    }
+
+    function buildCode(variantName) {
+        var fn = state.baseFn || (state.slug ? state.slug.replace(/-/g, '_') : 'bar');
+        var lines = ['import seraplot as sp', '', 'c = sp.' + fn + '('];
+        lines.push('    "' + capitalize(variantName === 'default' ? state.slug : variantName) + ' demo",');
+        var paramSet = {};
+        var ordered = [];
+        var hints = state.variantHints[variantName] || [];
+        for (var h = 0; h < hints.length; h++) {
+            if (!paramSet[hints[h]]) { paramSet[hints[h]] = 1; ordered.push(hints[h]); }
+        }
+        for (var i = 0; i < state.baseParams.length; i++) {
+            var n = state.baseParams[i].name;
+            if (n === 'title' || n === 'variant') continue;
+            if (state.baseParams[i].defaultValue !== null) continue;
+            if (!paramSet[n]) { paramSet[n] = 1; ordered.push(n); }
+        }
+        var hasXY = paramSet['x_values'] || paramSet['x'];
+        if (!hasXY) {
+            for (var j = 0; j < state.baseParams.length; j++) {
+                var nm = state.baseParams[j].name;
+                if (nm === 'x_values' || nm === 'x' || nm === 'y_values' || nm === 'y' || nm === 'sizes' || nm === 'labels' || nm === 'values' || nm === 'category_labels' || nm === 'series_values' || nm === 'series' || nm === 'matrix') {
+                    if (!paramSet[nm]) { paramSet[nm] = 1; ordered.push(nm); }
+                }
+            }
+        }
+        for (var k = 0; k < ordered.length; k++) {
+            var pn = ordered[k];
+            if (DEFAULT_VALUES.hasOwnProperty(pn)) {
+                lines.push('    ' + pn + '=' + DEFAULT_VALUES[pn] + ',');
+            }
+        }
+        if (variantName && variantName !== 'default') {
+            lines.push('    variant="' + variantName + '",');
         }
         lines.push(')\n');
         return lines.join('\n');
+    }
+
+    function capitalize(s) {
+        if (!s) return 'Demo';
+        return s.charAt(0).toUpperCase() + s.slice(1);
     }
 
     function injectStyles() {
@@ -251,55 +328,47 @@
             '@keyframes sp-ripple{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}100%{box-shadow:0 0 0 14px rgba(34,197,94,0)}}',
             '@keyframes sp-orb{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(40px,-30px,0)}100%{transform:translate3d(0,0,0)}}',
             '@keyframes sp-rotate-bg{0%{background-position:0% 50%}100%{background-position:200% 50%}}',
-            '.sp-pg-wrap{position:relative;display:flex;flex-direction:column;border-radius:18px;overflow:hidden;margin:0 0 2.6rem;font-family:"Inter","Segoe UI",sans-serif;background:linear-gradient(135deg,#05060f 0%,#0a0d24 50%,#05060f 100%);box-shadow:0 24px 70px -20px rgba(0,0,0,.7),0 0 0 1px rgba(120,130,200,.08),inset 0 1px 0 rgba(255,255,255,.04)}',
-            '.sp-pg-wrap::before{content:"";position:absolute;inset:-1px;border-radius:19px;padding:1px;background:linear-gradient(120deg,rgba(99,102,241,.45),rgba(168,85,247,.35),rgba(34,211,238,.4),rgba(99,102,241,.45));background-size:200% 200%;animation:sp-rotate-bg 14s linear infinite;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.55;z-index:0}',
-            '.sp-pg-wrap::after{content:"";position:absolute;width:380px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(99,102,241,.18),transparent 60%);top:-160px;right:-100px;filter:blur(40px);pointer-events:none;animation:sp-orb 18s ease-in-out infinite;z-index:0}',
-            '.sp-pg-hdr,.sp-pg-tabs,.sp-pg-main,.sp-pg-foot{position:relative;z-index:1}',
-            '.sp-pg-hdr{display:flex;align-items:center;gap:14px;padding:13px 18px;background:linear-gradient(90deg,rgba(12,18,40,.7) 0%,rgba(14,21,48,.5) 100%);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(120,130,200,.12);flex-wrap:wrap;row-gap:10px}',
-            '.sp-pg-title{font-size:10.5px;font-weight:800;letter-spacing:.24em;background:linear-gradient(135deg,#a5b4fc 0%,#67e8f9 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-transform:uppercase;flex-shrink:0;text-shadow:0 0 18px rgba(99,102,241,.3)}',
+            '.sp-pg-wrap{position:relative;display:flex;flex-direction:column;border-radius:14px;overflow:hidden;margin:0 0 2.6rem;font-family:"Inter","Segoe UI",sans-serif;background:#1e1e1e;box-shadow:0 24px 70px -20px rgba(0,0,0,.7),0 0 0 1px #2d2d30,inset 0 1px 0 rgba(255,255,255,.04)}',
+            '.sp-pg-wrap::before{content:"";position:absolute;inset:-1px;border-radius:15px;padding:1px;background:linear-gradient(120deg,rgba(99,102,241,.4),rgba(168,85,247,.3),rgba(34,211,238,.35),rgba(99,102,241,.4));background-size:200% 200%;animation:sp-rotate-bg 14s linear infinite;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.5;z-index:0}',
+            '.sp-pg-hdr,.sp-pg-tabs,.sp-pg-main{position:relative;z-index:1}',
+            '.sp-pg-hdr{display:flex;align-items:center;gap:14px;padding:9px 14px;background:#252526;border-bottom:1px solid #2d2d30;flex-wrap:wrap;row-gap:8px}',
+            '.sp-pg-title{font-size:10.5px;font-weight:700;letter-spacing:.22em;color:#cccccc;text-transform:uppercase;flex-shrink:0}',
+            '.sp-pg-title b{background:linear-gradient(135deg,#a5b4fc 0%,#67e8f9 100%);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800}',
             '.sp-pg-spacer{flex:1}',
-            '.sp-pg-btn{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;border:none;border-radius:8px;padding:6px 16px;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;transition:transform .15s,box-shadow .15s;font-family:inherit;box-shadow:0 6px 22px -6px rgba(124,58,237,.65),inset 0 1px 0 rgba(255,255,255,.18)}',
-            '.sp-pg-btn:hover{transform:translateY(-1px);box-shadow:0 9px 26px -6px rgba(124,58,237,.85),inset 0 1px 0 rgba(255,255,255,.25)}',
-            '.sp-pg-btn:active{transform:translateY(0)}',
-            '.sp-pg-btn[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}',
-            '.sp-pg-conn{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:600;color:#7d8bb8;letter-spacing:.06em;text-transform:uppercase;flex-shrink:0;padding:5px 12px;background:rgba(20,25,55,.5);border:1px solid rgba(120,130,200,.12);border-radius:20px}',
+            '.sp-pg-btn{background:#0e639c;color:#fff;border:none;border-radius:4px;padding:5px 14px;font-size:12px;font-weight:600;cursor:pointer;transition:background .15s;font-family:inherit}',
+            '.sp-pg-btn:hover{background:#1177bb}',
+            '.sp-pg-btn:active{background:#0a4d7a}',
+            '.sp-pg-btn[disabled]{opacity:.45;cursor:not-allowed}',
+            '.sp-pg-conn{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;color:#969696;letter-spacing:.05em;text-transform:uppercase;flex-shrink:0;padding:4px 10px;background:#1e1e1e;border:1px solid #2d2d30;border-radius:14px}',
             '.sp-pg-dot{width:8px;height:8px;border-radius:50%;background:#444;flex-shrink:0;transition:background .3s}',
-            '.sp-d-loading{background:#f59e0b!important;animation:sp-pulse 1s infinite}',
-            '.sp-d-ready{background:#22c55e!important;animation:sp-ripple 2.4s infinite}',
-            '.sp-d-err{background:#ef4444!important;box-shadow:0 0 8px #ef444488}',
-            '.sp-pg-tabs{display:flex;gap:4px;padding:8px 14px;background:rgba(8,10,28,.5);border-bottom:1px solid rgba(120,130,200,.08);overflow-x:auto;scrollbar-width:none}',
+            '.sp-d-loading{background:#dcdcaa!important;animation:sp-pulse 1s infinite}',
+            '.sp-d-ready{background:#4ec9b0!important;animation:sp-ripple 2.4s infinite}',
+            '.sp-d-err{background:#f48771!important;box-shadow:0 0 8px #f4877188}',
+            '.sp-pg-tabs{display:flex;gap:0;padding:0;background:#252526;border-bottom:1px solid #2d2d30;overflow-x:auto;scrollbar-width:none}',
             '.sp-pg-tabs::-webkit-scrollbar{display:none}',
-            '.sp-pg-tab{font:600 11px/1 "Inter",sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:8px 14px;border-radius:8px;color:#7d8bb8;background:transparent;border:1px solid transparent;cursor:pointer;transition:all .18s;white-space:nowrap;font-family:inherit}',
-            '.sp-pg-tab:hover{color:#c4b5fd;background:rgba(124,58,237,.08)}',
-            '.sp-pg-tab.sp-active{color:#fff;background:linear-gradient(135deg,rgba(99,102,241,.35),rgba(124,58,237,.3));border-color:rgba(167,139,250,.45);box-shadow:0 4px 14px -4px rgba(124,58,237,.55),inset 0 1px 0 rgba(255,255,255,.12)}',
-            '.sp-pg-main{display:flex;height:480px;background:rgba(5,6,15,.6)}',
-            '.sp-pg-ecol{width:46%;min-width:160px;max-width:78%;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;border-right:1px solid rgba(120,130,200,.08);background:linear-gradient(180deg,rgba(8,10,28,.85) 0%,rgba(5,6,15,.95) 100%)}',
-            '.sp-pg-divider{width:6px;background:transparent;cursor:col-resize;flex-shrink:0;position:relative;z-index:3;transition:background .2s}',
-            '.sp-pg-divider::before{content:"";position:absolute;left:50%;top:50%;width:2px;height:42px;background:linear-gradient(180deg,transparent,rgba(165,180,252,.45),transparent);transform:translate(-50%,-50%);border-radius:2px;transition:opacity .2s,height .2s;opacity:.5}',
-            '.sp-pg-divider:hover::before,.sp-pg-divider.sp-dragging::before{opacity:1;height:90px}',
-            '.sp-pg-divider:hover,.sp-pg-divider.sp-dragging{background:rgba(99,102,241,.08)}',
-            '.sp-pg-cm-wrap{flex:1;background:transparent;overflow:hidden;position:relative}',
-            '.sp-pg-cm-wrap .CodeMirror{background:transparent;font:13px/1.7 "JetBrains Mono","Fira Code","Consolas",monospace;height:100%;color:#d6deff}',
-            '.sp-pg-cm-wrap .CodeMirror-scroll{padding:14px 18px;box-sizing:border-box}',
-            '.sp-pg-cm-wrap .CodeMirror-gutters{display:none!important;background:transparent}',
-            '.sp-pg-cm-wrap .CodeMirror-cursor{border-left:2px solid #c4b5fd;box-shadow:0 0 8px rgba(196,181,253,.6)}',
-            '.sp-pg-cm-wrap .CodeMirror-selected{background:rgba(124,58,237,.22)!important}',
-            '.sp-pg-cm-wrap .CodeMirror-focused .CodeMirror-selected{background:rgba(124,58,237,.32)!important}',
-            '.sp-pg-cm-wrap .cm-s-dracula .cm-keyword{color:#ff79c6;font-weight:600}',
-            '.sp-pg-cm-wrap .cm-s-dracula .cm-string{color:#f1fa8c}',
-            '.sp-pg-cm-wrap .cm-s-dracula .cm-number{color:#bd93f9}',
-            '.sp-pg-cm-wrap .cm-s-dracula .cm-def{color:#50fa7b}',
-            '.sp-pg-cm-wrap .cm-s-dracula .cm-comment{color:#3a4d6a;font-style:italic}',
-            '.sp-pg-cm-wrap .cm-s-dracula .cm-operator{color:#ff79c6}',
-            '.sp-pg-cm-wrap .cm-s-dracula .cm-variable{color:#e6e7ff}',
-            '.sp-pg-cm-wrap .cm-s-dracula .cm-property{color:#8be9fd}',
-            '.sp-pg-pcol{flex:1;min-width:140px;display:flex;flex-direction:column;position:relative;background:radial-gradient(ellipse at 70% 30%,rgba(99,102,241,.06),transparent 60%),#05060f}',
-            '.sp-pg-iframe{flex:1;border:none;background:transparent;width:100%;display:block;animation:sp-fadein .28s cubic-bezier(.2,.8,.2,1)}',
-            '.sp-pg-loader{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,rgba(20,25,55,.4),#05060f);flex-direction:column;gap:18px;color:#7d8bb8;font-size:12.5px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;transition:opacity .25s;z-index:1;text-align:center;padding:0 24px}',
+            '.sp-pg-tab{font:600 11.5px/1 "Inter",sans-serif;letter-spacing:.04em;padding:9px 16px;color:#969696;background:#2d2d30;border:none;border-right:1px solid #252526;border-bottom:1px solid #2d2d30;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:inherit;text-transform:capitalize}',
+            '.sp-pg-tab:hover{color:#fff;background:#37373d}',
+            '.sp-pg-tab.sp-active{color:#fff;background:#1e1e1e;border-bottom-color:#1e1e1e}',
+            '.sp-pg-main{display:flex;height:520px;background:#1e1e1e}',
+            '.sp-pg-ecol{width:50%;min-width:180px;max-width:80%;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;border-right:1px solid #2d2d30;background:#1e1e1e}',
+            '.sp-pg-ehdr{display:flex;align-items:center;padding:0;background:#252526;border-bottom:1px solid #2d2d30;font:11px/1 "Segoe UI",sans-serif;color:#969696}',
+            '.sp-pg-etab{padding:7px 14px;background:#1e1e1e;border:none;border-right:1px solid #2d2d30;color:#fff;font-size:12px;font-weight:500;letter-spacing:.02em;display:flex;align-items:center;gap:8px;font-family:inherit}',
+            '.sp-pg-etab::before{content:"🐍";font-size:11px}',
+            '.sp-pg-cm-wrap{flex:1;background:#1e1e1e;overflow:hidden;position:relative}',
+            '.sp-pg-cm-wrap .monaco-editor{background:#1e1e1e!important}',
+            '.sp-pg-cm-wrap .monaco-editor .margin{background:#1e1e1e!important}',
+            '.sp-pg-cm-wrap .monaco-editor .monaco-editor-background{background:#1e1e1e!important}',
+            '.sp-pg-divider{width:5px;background:#2d2d30;cursor:col-resize;flex-shrink:0;position:relative;z-index:3;transition:background .15s}',
+            '.sp-pg-divider:hover,.sp-pg-divider.sp-dragging{background:#0e639c}',
+            '.sp-pg-pcol{flex:1;min-width:160px;display:flex;flex-direction:column;position:relative;background:#1e1e1e}',
+            '.sp-pg-phdr{display:flex;align-items:center;padding:7px 14px;background:#252526;border-bottom:1px solid #2d2d30;font:11px/1 "Segoe UI",sans-serif;color:#969696;letter-spacing:.04em;text-transform:uppercase;font-weight:700;gap:8px}',
+            '.sp-pg-phdr::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:#4ec9b0;box-shadow:0 0 8px rgba(78,201,176,.6)}',
+            '.sp-pg-iframe{flex:1;border:none;background:#fff;width:100%;display:block;animation:sp-fadein .28s cubic-bezier(.2,.8,.2,1)}',
+            '.sp-pg-loader{position:absolute;left:0;right:0;top:33px;bottom:0;display:flex;align-items:center;justify-content:center;background:#1e1e1e;flex-direction:column;gap:18px;color:#969696;font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;transition:opacity .25s;z-index:1;text-align:center;padding:0 24px}',
             '.sp-pg-loader.sp-hide{opacity:0;pointer-events:none}',
-            '.sp-pg-loader b{color:#c4b5fd;font-weight:700;letter-spacing:.05em}',
+            '.sp-pg-loader b{color:#c4b5fd;font-weight:700}',
             '.sp-pg-spinner{width:38px;height:38px;border:3px solid rgba(124,58,237,.15);border-top-color:#a78bfa;border-right-color:#67e8f9;border-radius:50%;animation:sp-spin .9s cubic-bezier(.5,.1,.5,.9) infinite;filter:drop-shadow(0 0 10px rgba(167,139,250,.5))}',
-            '.sp-pg-err{position:absolute;left:18px;right:18px;bottom:18px;background:rgba(40,10,20,.75);border:1px solid rgba(239,68,68,.45);color:#fda4af;font:11.5px/1.55 "JetBrains Mono","Consolas",monospace;padding:10px 14px;border-radius:10px;backdrop-filter:blur(10px);max-height:160px;overflow:auto;white-space:pre-wrap;z-index:5;display:none}',
+            '.sp-pg-err{position:absolute;left:14px;right:14px;bottom:14px;background:rgba(40,10,20,.85);border:1px solid #f48771;color:#f48771;font:11px/1.5 "Cascadia Code","Consolas",monospace;padding:9px 12px;border-radius:6px;backdrop-filter:blur(10px);max-height:160px;overflow:auto;white-space:pre-wrap;z-index:5;display:none}',
             '.sp-pg-err.sp-show{display:block;animation:sp-fadein .2s}',
         ].join('');
         var st = document.createElement('style'); st.id = 'sp-pg-style'; st.textContent = css; document.head.appendChild(st);
@@ -317,18 +386,9 @@
         state.loaderEl.innerHTML = '<div class="sp-pg-spinner"></div><div>' + msg + '</div>';
         state.loaderEl.classList.remove('sp-hide');
     }
-    function hideLoader() {
-        if (state.loaderEl) state.loaderEl.classList.add('sp-hide');
-    }
-
-    function showErr(msg) {
-        if (!state.errEl) return;
-        state.errEl.textContent = msg;
-        state.errEl.classList.add('sp-show');
-    }
-    function hideErr() {
-        if (state.errEl) state.errEl.classList.remove('sp-show');
-    }
+    function hideLoader() { if (state.loaderEl) state.loaderEl.classList.add('sp-hide'); }
+    function showErr(msg) { if (state.errEl) { state.errEl.textContent = msg; state.errEl.classList.add('sp-show'); } }
+    function hideErr() { if (state.errEl) state.errEl.classList.remove('sp-show'); }
 
     function renderHtmlInIframe(html) {
         if (!state.iframe) return;
@@ -357,11 +417,12 @@
         if (s === 'None' || s === 'null') return null;
         var rangeM = s.match(/^list\s*\(\s*range\s*\(\s*(\d+)\s*(?:,\s*(\d+)\s*)?\)\s*\)$/);
         if (rangeM) {
-            var a = +rangeM[1], b = rangeM[2] !== undefined ? +rangeM[2] : null;
-            var arr = [], lo = b === null ? 0 : a, hi = b === null ? a : b;
+            var aa = +rangeM[1], bb = rangeM[2] !== undefined ? +rangeM[2] : null;
+            var arr = [], lo = bb === null ? 0 : aa, hi = bb === null ? aa : bb;
             for (var k = lo; k < hi; k++) arr.push(k);
             return arr;
         }
+        if (/^0x[0-9a-fA-F]+$/.test(s)) return parseInt(s, 16);
         var n = Number(s);
         if (!isNaN(n)) return n;
         return s;
@@ -390,8 +451,7 @@
     }
 
     function parsePyArgs(body) {
-        var args = [], kwargs = {};
-        var i = 0, depth = 0, buf = '', inStr = false, q = '';
+        var args = [], kwargs = {}, i = 0, depth = 0, buf = '', inStr = false, q = '';
         while (i < body.length) {
             var c = body[i];
             if (inStr) {
@@ -408,9 +468,7 @@
             i++;
         }
         if (buf.trim().length) pushArg(buf, args, kwargs);
-        var title = '';
-        if (args.length > 0 && typeof args[0] === 'string') title = args[0];
-        return { title: title, kwargs: kwargs };
+        return { args: args, kwargs: kwargs };
     }
 
     function pushArg(raw, args, kwargs) {
@@ -428,28 +486,32 @@
             }
         }
         if (eq === -1) args.push(parsePyVal(s));
-        else {
-            var k = s.slice(0, eq).trim();
-            var v = parsePyVal(s.slice(eq + 1));
-            kwargs[k] = v;
-        }
+        else { var k = s.slice(0, eq).trim(); var v = parsePyVal(s.slice(eq + 1)); kwargs[k] = v; }
     }
 
-    function extractCall(code) {
-        var m = code.match(/sp\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/);
-        if (!m) return null;
-        var fn = m[1], start = m.index + m[0].length, depth = 1, i = start, inStr = false, q = '';
-        while (i < code.length && depth > 0) {
-            var c = code[i];
-            if (inStr) { if (c === '\\') { i += 2; continue; } if (c === q) inStr = false; }
-            else {
-                if (c === '"' || c === "'") { inStr = true; q = c; }
-                else if (c === '(') depth++;
-                else if (c === ')') depth--;
+    function extractAllCalls(code) {
+        var calls = [], i = 0;
+        while (i < code.length) {
+            var idx = code.indexOf('sp.', i);
+            if (idx === -1) break;
+            var rest = code.slice(idx);
+            var m = rest.match(/^sp\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/);
+            if (!m) { i = idx + 3; continue; }
+            var bodyStart = idx + m[0].length, depth = 1, j = bodyStart, inStr = false, q = '';
+            while (j < code.length && depth > 0) {
+                var c = code[j];
+                if (inStr) { if (c === '\\') { j += 2; continue; } if (c === q) inStr = false; }
+                else {
+                    if (c === '"' || c === "'") { inStr = true; q = c; }
+                    else if (c === '(') depth++;
+                    else if (c === ')') depth--;
+                }
+                j++;
             }
-            i++;
+            calls.push({ fn: m[1], body: code.slice(bodyStart, j - 1) });
+            i = j;
         }
-        return { fn: fn, body: code.slice(start, i - 1) };
+        return calls;
     }
 
     function runOnce(force) {
@@ -457,30 +519,41 @@
         var code = state.editor.getValue();
         if (!force && code === state.lastSent) return;
         state.lastSent = code;
-        var call = extractCall(code);
-        if (!call) { showErr('No sp.<chart>(...) call detected'); return; }
+        var calls = extractAllCalls(code);
+        if (!calls.length) { showErr('No sp.<chart>(...) call detected'); return; }
         var sp = window.SeraplotWASM;
         if (!sp || !sp.__ready) { showErr('WASM not ready'); return; }
-        var fnName = unifiedName(call.fn);
-        var fn = sp[fnName];
-        if (typeof fn !== 'function') {
-            showErr('No live preview for sp.' + call.fn + '() yet (missing WASM entry: ' + fnName + ')');
-            hideLoader();
-            return;
+        var lastHtml = '';
+        for (var c = 0; c < calls.length; c++) {
+            var call = calls[c];
+            try {
+                if (call.fn === 'theme') {
+                    var parsedTheme = parsePyArgs(call.body);
+                    var name = (parsedTheme.args[0] || parsedTheme.kwargs.name || '').toString();
+                    if (typeof sp.setTheme === 'function') sp.setTheme(name);
+                    continue;
+                }
+                if (call.fn === 'reset_theme' || call.fn === 'resetTheme') {
+                    if (typeof sp.resetTheme === 'function') sp.resetTheme('');
+                    continue;
+                }
+                var entry = resolveWasmFn(call.fn);
+                if (!entry) { showErr('No WASM entry for sp.' + call.fn + '() (tried: ' + fnCandidates(call.fn).join(', ') + ')'); hideLoader(); return; }
+                var parsed = parsePyArgs(call.body);
+                var input = {};
+                if (parsed.args.length > 0 && typeof parsed.args[0] === 'string') input.title = parsed.args[0];
+                for (var key in parsed.kwargs) if (parsed.kwargs.hasOwnProperty(key)) input[key] = parsed.kwargs[key];
+                lastHtml = entry.fn(JSON.stringify(input));
+            } catch (e) {
+                showErr('Render error in sp.' + call.fn + ': ' + (e && e.message ? e.message : String(e)));
+                hideLoader();
+                return;
+            }
         }
-        var parsed;
-        try { parsed = parsePyArgs(call.body); }
-        catch (e) { showErr('Parse error: ' + e.message); return; }
-        var input = Object.assign({ title: parsed.title }, parsed.kwargs);
-        try {
-            var html = fn(JSON.stringify(input));
-            hideErr();
-            hideLoader();
-            renderHtmlInIframe(html);
-        } catch (e) {
-            showErr('Render error: ' + (e && e.message ? e.message : String(e)));
-            hideLoader();
-        }
+        if (!lastHtml) { showErr('Empty render output'); hideLoader(); return; }
+        hideErr();
+        hideLoader();
+        renderHtmlInIframe(lastHtml);
     }
 
     function debouncedRun() {
@@ -503,10 +576,10 @@
             if (!dragging) return;
             var x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
             var w = startW + (x - startX);
-            var min = 160, max = parentW - 140;
+            var min = 180, max = parentW - 160;
             if (w < min) w = min; if (w > max) w = max;
             ecol.style.width = w + 'px';
-            if (state.editor) state.editor.refresh();
+            if (state.editor && state.editor.layout) state.editor.layout();
         }
         function up() {
             if (!dragging) return;
@@ -523,13 +596,13 @@
     }
 
     function selectVariant(idx) {
-        var v = state.variants[idx];
-        if (!v) return;
+        var name = state.variants[idx];
+        if (!name) return;
         state.currentVariant = idx;
-        var tabs = document.querySelectorAll('.sp-pg-tab');
+        var tabs = document.querySelectorAll('.sp-pg-wrap .sp-pg-tab');
         for (var i = 0; i < tabs.length; i++) tabs[i].classList.toggle('sp-active', i === idx);
         if (state.editor) {
-            state.editor.setValue(buildCode(v));
+            state.editor.setValue(buildCode(name));
             runOnce(true);
         }
     }
@@ -537,27 +610,37 @@
     function buildUI() {
         injectStyles();
         var slug = state.slug;
-        state.variants = discoverVariants();
-        if (state.variants.length === 0) return;
+        var sig = findPageSignature();
+        if (sig) { state.baseFn = sig.fn; state.baseParams = sig.params; }
+        else { state.baseFn = slug.replace(/-/g, '_'); state.baseParams = []; }
+        state.variantHints = findVariantParamHints();
+        var variants = discoverVariants();
+        if (variants.length === 0) variants = ['default'];
+        state.variants = variants;
+
         var tabsHtml = '';
-        for (var i = 0; i < state.variants.length; i++) {
-            var label = state.variants[i].name.charAt(0).toUpperCase() + state.variants[i].name.slice(1);
-            tabsHtml += '<button class="sp-pg-tab' + (i === 0 ? ' sp-active' : '') + '" type="button" data-idx="' + i + '">' + label + '</button>';
+        for (var i = 0; i < variants.length; i++) {
+            tabsHtml += '<button class="sp-pg-tab' + (i === 0 ? ' sp-active' : '') + '" type="button">' + variants[i] + '</button>';
         }
+
         var wrap = document.createElement('div');
         wrap.className = 'sp-pg-wrap';
         wrap.innerHTML =
             '<div class="sp-pg-hdr">' +
-                '<div class="sp-pg-title">Playground · ' + slug + '</div>' +
+                '<div class="sp-pg-title">Playground · <b>' + slug + '</b></div>' +
                 '<div class="sp-pg-spacer"></div>' +
-                '<button class="sp-pg-btn" type="button">Run</button>' +
+                '<button class="sp-pg-btn" type="button">▶ Run</button>' +
                 '<div class="sp-pg-conn"><span class="sp-pg-dot"></span><span class="sp-pg-text">Init</span></div>' +
             '</div>' +
-            (state.variants.length > 1 ? '<div class="sp-pg-tabs">' + tabsHtml + '</div>' : '') +
+            (variants.length > 1 ? '<div class="sp-pg-tabs">' + tabsHtml + '</div>' : '') +
             '<div class="sp-pg-main">' +
-                '<div class="sp-pg-ecol"><div class="sp-pg-cm-wrap"><textarea></textarea></div></div>' +
+                '<div class="sp-pg-ecol">' +
+                    '<div class="sp-pg-ehdr"><div class="sp-pg-etab">' + slug + '.py</div></div>' +
+                    '<div class="sp-pg-cm-wrap"><div class="sp-pg-monaco" style="position:absolute;inset:0"></div></div>' +
+                '</div>' +
                 '<div class="sp-pg-divider"></div>' +
                 '<div class="sp-pg-pcol">' +
+                    '<div class="sp-pg-phdr">Live Preview</div>' +
                     '<iframe class="sp-pg-iframe" sandbox="allow-scripts allow-same-origin"></iframe>' +
                     '<div class="sp-pg-loader"><div class="sp-pg-spinner"></div><div>Loading WASM</div></div>' +
                     '<div class="sp-pg-err"></div>' +
@@ -569,8 +652,6 @@
         if (firstHeading && firstHeading.parentNode) firstHeading.parentNode.insertBefore(wrap, firstHeading.nextSibling);
         else contentRoot.insertBefore(wrap, contentRoot.firstChild);
 
-        var ta = wrap.querySelector('textarea');
-        ta.value = buildCode(state.variants[0]);
         state.iframe = wrap.querySelector('.sp-pg-iframe');
         state.statusDot = wrap.querySelector('.sp-pg-dot');
         state.statusText = wrap.querySelector('.sp-pg-text');
@@ -579,24 +660,38 @@
         var btn = wrap.querySelector('.sp-pg-btn');
         var divider = wrap.querySelector('.sp-pg-divider');
         var ecol = wrap.querySelector('.sp-pg-ecol');
+        var monacoHost = wrap.querySelector('.sp-pg-monaco');
         var tabs = wrap.querySelectorAll('.sp-pg-tab');
         for (var t = 0; t < tabs.length; t++) {
             (function (idx) { tabs[idx].addEventListener('click', function () { selectVariant(idx); }); })(t);
         }
         btn.addEventListener('click', function () { runOnce(true); });
 
-        setStatus('loading', 'Loading WASM');
-        loadCM(function () {
-            state.editor = window.CodeMirror.fromTextArea(ta, {
-                mode: 'python',
-                theme: 'dracula',
-                lineNumbers: false,
-                lineWrapping: true,
-                indentUnit: 4,
+        setStatus('loading', 'Loading editor');
+        loadMonaco(function () {
+            setStatus('loading', 'Loading WASM');
+            state.editor = window.monaco.editor.create(monacoHost, {
+                value: buildCode(variants[0]),
+                language: 'python',
+                theme: 'vs-dark',
+                automaticLayout: true,
+                fontFamily: '"Cascadia Code","JetBrains Mono","Fira Code","Consolas",monospace',
+                fontSize: 13,
+                lineHeight: 21,
+                minimap: { enabled: false },
+                scrollBeyondLastLine: false,
+                renderLineHighlight: 'all',
                 tabSize: 4,
-                indentWithTabs: false,
+                insertSpaces: true,
+                wordWrap: 'on',
+                bracketPairColorization: { enabled: true },
+                guides: { indentation: true, bracketPairs: true },
+                padding: { top: 10, bottom: 10 },
+                smoothScrolling: true,
+                cursorBlinking: 'smooth',
+                fixedOverflowWidgets: true,
             });
-            state.editor.on('change', debouncedRun);
+            state.editor.onDidChangeModelContent(debouncedRun);
             attachResize(divider, ecol);
             ensureWasm(function () {
                 setStatus('ready', 'Live · in-browser');
@@ -611,9 +706,6 @@
         buildUI();
     }
 
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
+    if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+    else init();
 })();
