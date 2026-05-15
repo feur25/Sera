@@ -1,52 +1,54 @@
 ﻿(function () {
     var DEBOUNCE_MS = 550;
 
-    var SAMPLES = {
-        bar: [
-            { name: 'Basic', code: 'sp.bar(\n    "Quarterly Sales",\n    labels=["Q1","Q2","Q3","Q4"],\n    values=[120,190,150,220],\n)' },
-            { name: 'Horizontal', code: 'sp.bar(\n    "Top Categories",\n    labels=["Books","Music","Games","Tech","Art"],\n    values=[42,36,55,78,29],\n    variant="horizontal",\n)' },
-            { name: 'Grouped', code: 'sp.bar(\n    "Revenue by Region",\n    labels=["Q1","Q2","Q3","Q4"],\n    series=[[40,55,38,62],[30,42,48,55],[22,28,35,40]],\n    series_names=["EU","US","ASIA"],\n    variant="grouped",\n    theme="aurora",\n)' },
-            { name: 'Stacked', code: 'sp.bar(\n    "Sales Stack",\n    labels=["Mon","Tue","Wed","Thu","Fri"],\n    series=[[10,20,15,25,18],[8,14,12,20,15],[5,9,11,14,12]],\n    series_names=["A","B","C"],\n    variant="stacked",\n    theme="aurora",\n)' },
-            { name: 'Relative', code: 'sp.bar(\n    "Market Share",\n    labels=["Jan","Feb","Mar","Apr"],\n    series=[[30,40,35,50],[20,30,25,35],[15,20,18,25]],\n    series_names=["X","Y","Z"],\n    variant="relative",\n    theme="aurora",\n)' },
-            { name: 'Marimekko', code: 'sp.bar(\n    "Marimekko",\n    labels=["A","B","C","D"],\n    series=[[10,20,15,25],[8,14,12,20],[6,10,9,14]],\n    series_names=["L1","L2","L3"],\n    widths=[1,2,1.5,1],\n    variant="marimekko",\n    theme="aurora",\n)' },
-            { name: 'Pictogram', code: 'sp.bar(\n    "Users",\n    labels=["A","B","C","D"],\n    values=[40,75,55,90],\n    units_per_icon=10,\n    variant="pictogram",\n)' },
-            { name: 'Deluxe', code: 'sp.bar(\n    "Deluxe Style",\n    labels=["Alpha","Beta","Gamma","Delta","Epsilon"],\n    values=[28,52,41,67,35],\n    theme="deluxe",\n)' },
-        ],
-        line: [
-            { name: 'Basic', code: 'sp.line(\n    "Trend",\n    x=[1,2,3,4,5,6,7,8],\n    y=[10,15,12,22,28,25,35,42],\n)' },
-            { name: 'Multi-series', code: 'sp.line(\n    "Multi Trend",\n    x=[1,2,3,4,5,6,7,8],\n    series=[[10,15,12,22,28,25,35,42],[8,12,18,24,22,30,28,38],[5,9,14,18,25,28,32,40]],\n    series_names=["Alpha","Beta","Gamma"],\n)' },
-            { name: 'Smooth', code: 'sp.line(\n    "Smoothed",\n    x=[0,1,2,3,4,5,6,7,8,9],\n    y=[5,12,8,18,22,15,25,30,28,35],\n    variant="smooth",\n)' },
-            { name: 'Area', code: 'sp.line(\n    "Area Fill",\n    x=[1,2,3,4,5,6,7,8],\n    y=[12,18,15,25,30,28,38,45],\n    variant="area",\n    theme="aurora",\n)' },
-            { name: 'Stepped', code: 'sp.line(\n    "Stepped",\n    x=[1,2,3,4,5,6,7,8],\n    y=[10,10,18,18,25,25,32,40],\n    variant="step",\n)' },
-        ],
-        pie: [
-            { name: 'Basic', code: 'sp.pie(\n    "Market Share",\n    labels=["Apple","Google","Microsoft","Amazon","Meta"],\n    values=[28,24,22,16,10],\n)' },
-            { name: 'Donut', code: 'sp.pie(\n    "Donut",\n    labels=["A","B","C","D"],\n    values=[35,25,22,18],\n    variant="donut",\n)' },
-            { name: 'Exploded', code: 'sp.pie(\n    "Exploded",\n    labels=["Core","Plus","Pro","Max","Ultra"],\n    values=[40,25,18,12,5],\n    variant="exploded",\n)' },
-        ],
-        violin: [
-            { name: 'Basic', code: 'sp.violin(\n    "Distribution",\n    labels=["Group A","Group B","Group C"],\n    series=[\n        [12,14,15,16,17,18,19,20,21,22,23,24,25,26,27],\n        [10,12,13,14,15,16,17,18,19,20,21,22,23,24,28],\n        [15,16,17,18,19,20,21,22,23,24,25,26,27,28,30],\n    ],\n)' },
-            { name: 'Split', code: 'sp.violin(\n    "Split",\n    labels=["A","B","C","D"],\n    series=[\n        [10,12,13,15,16,18,19,20,22,24],\n        [8,11,13,14,17,18,20,22,23,25],\n        [12,13,15,17,18,20,21,22,24,26],\n        [9,11,12,14,16,18,19,21,23,24],\n    ],\n    variant="split",\n)' },
-        ],
-        scatter: [
-            { name: 'Basic', code: 'sp.scatter(\n    "Cluster",\n    x=[1,2,3,4,5,6,7,8,9,10,11,12],\n    y=[2,3,5,4,7,6,9,8,11,10,13,12],\n)' },
-        ],
-        histogram: [
-            { name: 'Basic', code: 'sp.histogram(\n    "Distribution",\n    values=[1,2,2,3,3,3,4,4,4,4,5,5,5,5,5,6,6,6,6,7,7,7,8,8,9],\n    bins=10,\n)' },
-        ],
-        heatmap: [
-            { name: 'Basic', code: 'sp.heatmap(\n    "Correlation",\n    matrix=[[1.0,0.8,0.3],[0.8,1.0,0.5],[0.3,0.5,1.0]],\n    labels=["A","B","C"],\n)' },
-        ],
-        boxplot: [
-            { name: 'Basic', code: 'sp.boxplot(\n    "Distribution",\n    labels=["A","B","C"],\n    series=[[10,12,15,18,22,25,30],[8,11,14,17,21,28,35],[12,15,18,22,26,30,38]],\n)' },
-        ],
-        radar: [
-            { name: 'Basic', code: 'sp.radar(\n    "Profile",\n    labels=["Speed","Power","Endurance","Skill","Range"],\n    values=[80,65,90,75,55],\n)' },
-        ],
+    var DEFAULTS = {
+        title: '"Demo"',
+        labels: '["Alpha","Beta","Gamma","Delta","Epsilon"]',
+        category_labels: '["Alpha","Beta","Gamma","Delta","Epsilon"]',
+        categories: '["Alpha","Beta","Gamma","Delta","Epsilon"]',
+        super_categories: '["G1","G1","G2","G2","G3"]',
+        names: '["Alpha","Beta","Gamma","Delta","Epsilon"]',
+        values: '[12,28,18,34,22]',
+        series_values: '[12,28,18,34,22,8,16,12,22,15,5,11,9,17,13]',
+        series: '[[12,28,18,34,22],[8,16,12,22,15],[5,11,9,17,13]]',
+        series_names: '["Alpha","Beta","Gamma"]',
+        widths: '[1,2,1.5,1,1.2]',
+        weights: '[1,2,3,4,5]',
+        x: '[1,2,3,4,5,6,7,8,9,10]',
+        x_values: '[1,2,3,4,5,6,7,8,9,10]',
+        y: '[10,18,15,25,30,28,35,42,38,48]',
+        y_values: '[10,18,15,25,30,28,35,42,38,48]',
+        z: '[2,4,3,6,8,5,7,9,4,6]',
+        z_values: '[2,4,3,6,8,5,7,9,4,6]',
+        sizes: '[10,18,12,24,30,16,22,28,14,20]',
+        opens: '[100,105,110,108,115]',
+        highs: '[108,112,118,114,122]',
+        lows: '[98,102,106,104,112]',
+        closes: '[105,110,108,115,118]',
+        matrix: '[[1.0,0.85,0.42,0.18],[0.85,1.0,0.65,0.31],[0.42,0.65,1.0,0.74],[0.18,0.31,0.74,1.0]]',
+        data: '[[1,2,3,4,5],[5,4,3,2,1],[2,3,4,3,2]]',
+        bins: '15',
+        units_per_icon: '10',
+        icon_size: '24',
+        max_icons_per_column: '10',
+        parents: '[null,"Root","Root","A","A","B"]',
+        ids: '["Root","A","B","A1","A2","B1"]',
+        offset_groups: '["G1","G1","G2","G2"]',
+        regions: '["FR","DE","IT","ES","UK"]',
+        positions: '[1,2,3,4,5]',
+        actuals: '[60,75,82,55,68]',
+        targets: '[70,80,80,60,75]',
+        ranges: '[[40,70,90],[50,75,95],[55,80,100],[35,60,85],[45,70,90]]',
+        words: '["data","chart","plot","graph","viz","render","scale","axis"]',
+        frequencies: '[40,32,28,24,20,16,12,10]',
+        groups: '["A","B","A","B","A","B"]',
+        order: '["asc"]',
+        theme: '"aurora"',
+        variant: null,
+        title_text: '"Demo"',
     };
 
     var state = {
-        ready: false,
         editor: null,
         iframe: null,
         statusDot: null,
@@ -54,10 +56,10 @@
         loaderEl: null,
         errEl: null,
         slug: null,
-        unifiedFn: null,
+        variants: [],
+        currentVariant: 0,
         debTimer: null,
         lastSent: '',
-        currentVariant: 0,
     };
 
     function pageSlug() {
@@ -108,8 +110,136 @@
         });
     }
 
-    function unifiedName(slug) {
-        return 'build' + slug.charAt(0).toUpperCase() + slug.slice(1);
+    function unifiedName(fn) {
+        var camel = fn.split('_').map(function (s, i) {
+            return i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1);
+        }).join('');
+        if (camel.indexOf('build') !== 0) {
+            camel = 'build' + camel.charAt(0).toUpperCase() + camel.slice(1);
+        }
+        return camel;
+    }
+
+    function parseSignature(sig) {
+        var m = sig.match(/sp\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([\s\S]*?)\)\s*(?:->|:)/);
+        if (!m) {
+            m = sig.match(/sp\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(([\s\S]*)\)/);
+            if (!m) return null;
+        }
+        var fn = m[1];
+        var raw = m[2];
+        var params = [];
+        var variantValue = null;
+        var depth = 0, buf = '', inStr = false, q = '';
+        for (var i = 0; i < raw.length; i++) {
+            var c = raw[i];
+            if (inStr) { if (c === '\\') { buf += c + (raw[i + 1] || ''); i++; continue; } if (c === q) inStr = false; buf += c; }
+            else {
+                if (c === '"' || c === "'") { inStr = true; q = c; buf += c; }
+                else if (c === '(' || c === '[' || c === '{') { depth++; buf += c; }
+                else if (c === ')' || c === ']' || c === '}') { depth--; buf += c; }
+                else if (c === ',' && depth === 0) { handleParam(buf, params); buf = ''; }
+                else buf += c;
+            }
+        }
+        if (buf.trim().length) handleParam(buf, params);
+        for (var j = 0; j < params.length; j++) {
+            if (params[j].name === 'variant' && params[j].defaultValue) {
+                variantValue = params[j].defaultValue;
+            }
+        }
+        return { fn: fn, params: params, variantValue: variantValue };
+    }
+
+    function handleParam(raw, out) {
+        var s = raw.trim();
+        if (!s.length || s === '*' || s === '/' || s === '**') return;
+        if (s.charAt(0) === '*') s = s.replace(/^\*+/, '');
+        var nm = s.match(/^([a-zA-Z_][a-zA-Z0-9_]*)/);
+        if (!nm) return;
+        var name = nm[1];
+        if (name === 'self' || name === 'cls') return;
+        var def = null;
+        var eq = s.indexOf('=');
+        if (eq !== -1) {
+            var rhs = s.slice(eq + 1).trim();
+            var qm = rhs.match(/^"([^"]*)"|^'([^']*)'/);
+            if (qm) def = qm[1] || qm[2];
+            else if (/^\d/.test(rhs)) def = rhs.match(/^[-\d.]+/)[0];
+        }
+        out.push({ name: name, defaultValue: def });
+    }
+
+    function discoverVariants() {
+        var slug = state.slug;
+        var nodes = document.querySelectorAll('.sp-variant');
+        var seen = {}, out = [];
+        for (var i = 0; i < nodes.length; i++) {
+            var node = nodes[i];
+            var id = node.id || '';
+            var parts = id.split('-');
+            var name = parts[parts.length - 1] || ('variant' + i);
+            if (seen[name]) continue;
+            var pre = node.querySelector('pre code') || node.querySelector('pre');
+            if (!pre) continue;
+            var sig = pre.textContent || '';
+            var parsed = parseSignature(sig);
+            if (!parsed) continue;
+            seen[name] = true;
+            out.push({
+                name: name,
+                fn: parsed.fn,
+                params: parsed.params,
+                variantValue: parsed.variantValue || name,
+            });
+        }
+        if (out.length > 0) return out;
+        var pres = document.querySelectorAll('pre code, pre');
+        for (var k = 0; k < pres.length; k++) {
+            var t = pres[k].textContent || '';
+            if (t.indexOf('sp.') === -1) continue;
+            var p = parseSignature(t);
+            if (!p) continue;
+            return [{
+                name: 'default',
+                fn: p.fn,
+                params: p.params,
+                variantValue: p.variantValue || null,
+            }];
+        }
+        if (slug) {
+            var fnGuess = slug.replace(/-/g, '_');
+            return [{ name: 'default', fn: fnGuess, params: [{ name: 'title' }, { name: 'labels' }, { name: 'values' }], variantValue: null }];
+        }
+        return [];
+    }
+
+    function buildCode(v) {
+        var lines = ['import seraplot as sp', '', 'c = sp.' + v.fn + '('];
+        var hasTitle = false;
+        for (var i = 0; i < v.params.length; i++) {
+            if (v.params[i].name === 'title') { hasTitle = true; break; }
+        }
+        if (hasTitle) lines.push('    "Demo ' + v.name + '",');
+        var seenVariant = false;
+        for (var j = 0; j < v.params.length; j++) {
+            var p = v.params[j];
+            var n = p.name;
+            if (n === 'title') continue;
+            if (n === 'variant') {
+                seenVariant = true;
+                lines.push('    variant="' + (v.variantValue || v.name) + '",');
+                continue;
+            }
+            if (DEFAULTS.hasOwnProperty(n) && DEFAULTS[n] !== null) {
+                lines.push('    ' + n + '=' + DEFAULTS[n] + ',');
+            }
+        }
+        if (!seenVariant && v.variantValue && v.name !== 'default') {
+            lines.push('    variant="' + v.variantValue + '",');
+        }
+        lines.push(')\n');
+        return lines.join('\n');
     }
 
     function injectStyles() {
@@ -224,7 +354,7 @@
         if (s[0] === '[') return parsePyList(s);
         if (s === 'True') return true;
         if (s === 'False') return false;
-        if (s === 'None') return null;
+        if (s === 'None' || s === 'null') return null;
         var rangeM = s.match(/^list\s*\(\s*range\s*\(\s*(\d+)\s*(?:,\s*(\d+)\s*)?\)\s*\)$/);
         if (rangeM) {
             var a = +rangeM[1], b = rangeM[2] !== undefined ? +rangeM[2] : null;
@@ -334,7 +464,7 @@
         var fnName = unifiedName(call.fn);
         var fn = sp[fnName];
         if (typeof fn !== 'function') {
-            showErr('No live preview for sp.' + call.fn + '() yet (missing unified WASM entry: ' + fnName + ')');
+            showErr('No live preview for sp.' + call.fn + '() yet (missing WASM entry: ' + fnName + ')');
             hideLoader();
             return;
         }
@@ -392,18 +522,14 @@
         document.addEventListener('touchend', up);
     }
 
-    function buildSampleCode(sample) {
-        return 'import seraplot as sp\n\nc = ' + sample.code + '\n';
-    }
-
     function selectVariant(idx) {
-        var samples = SAMPLES[state.slug] || [];
-        if (!samples[idx]) return;
+        var v = state.variants[idx];
+        if (!v) return;
         state.currentVariant = idx;
         var tabs = document.querySelectorAll('.sp-pg-tab');
         for (var i = 0; i < tabs.length; i++) tabs[i].classList.toggle('sp-active', i === idx);
         if (state.editor) {
-            state.editor.setValue(buildSampleCode(samples[idx]));
+            state.editor.setValue(buildCode(v));
             runOnce(true);
         }
     }
@@ -411,10 +537,12 @@
     function buildUI() {
         injectStyles();
         var slug = state.slug;
-        var samples = SAMPLES[slug] || [{ name: 'Default', code: 'sp.' + slug + '("Demo ' + slug + '")' }];
+        state.variants = discoverVariants();
+        if (state.variants.length === 0) return;
         var tabsHtml = '';
-        for (var i = 0; i < samples.length; i++) {
-            tabsHtml += '<button class="sp-pg-tab' + (i === 0 ? ' sp-active' : '') + '" type="button" data-idx="' + i + '">' + samples[i].name + '</button>';
+        for (var i = 0; i < state.variants.length; i++) {
+            var label = state.variants[i].name.charAt(0).toUpperCase() + state.variants[i].name.slice(1);
+            tabsHtml += '<button class="sp-pg-tab' + (i === 0 ? ' sp-active' : '') + '" type="button" data-idx="' + i + '">' + label + '</button>';
         }
         var wrap = document.createElement('div');
         wrap.className = 'sp-pg-wrap';
@@ -425,7 +553,7 @@
                 '<button class="sp-pg-btn" type="button">Run</button>' +
                 '<div class="sp-pg-conn"><span class="sp-pg-dot"></span><span class="sp-pg-text">Init</span></div>' +
             '</div>' +
-            '<div class="sp-pg-tabs">' + tabsHtml + '</div>' +
+            (state.variants.length > 1 ? '<div class="sp-pg-tabs">' + tabsHtml + '</div>' : '') +
             '<div class="sp-pg-main">' +
                 '<div class="sp-pg-ecol"><div class="sp-pg-cm-wrap"><textarea></textarea></div></div>' +
                 '<div class="sp-pg-divider"></div>' +
@@ -442,7 +570,7 @@
         else contentRoot.insertBefore(wrap, contentRoot.firstChild);
 
         var ta = wrap.querySelector('textarea');
-        ta.value = buildSampleCode(samples[0]);
+        ta.value = buildCode(state.variants[0]);
         state.iframe = wrap.querySelector('.sp-pg-iframe');
         state.statusDot = wrap.querySelector('.sp-pg-dot');
         state.statusText = wrap.querySelector('.sp-pg-text');
@@ -471,7 +599,6 @@
             state.editor.on('change', debouncedRun);
             attachResize(divider, ecol);
             ensureWasm(function () {
-                state.ready = true;
                 setStatus('ready', 'Live · in-browser');
                 runOnce(true);
             });
