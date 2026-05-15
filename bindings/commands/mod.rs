@@ -1,4 +1,5 @@
 pub mod charts;
+pub mod demos;
 pub mod native;
 #[cfg(feature = "python")]
 pub mod docs;

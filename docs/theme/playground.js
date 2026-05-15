@@ -278,6 +278,17 @@
 
     function buildCode(variantName) {
         var fn = state.baseFn || (state.slug ? state.slug.replace(/-/g, '_') : 'bar');
+        try {
+            var sp = window.SeraplotWASM;
+            if (sp) {
+                var jsName = 'demo' + fn.split('_').map(capitalize).join('');
+                if (typeof sp[jsName] === 'function') {
+                    var v = (variantName === 'default' || !variantName) ? '' : variantName;
+                    var code = sp[jsName](JSON.stringify({ variant: v }));
+                    if (code && code.trim()) return code;
+                }
+            }
+        } catch (e) {}
         var lines = ['import seraplot as sp', '', 'c = sp.' + fn + '('];
         lines.push('    "' + capitalize(variantName === 'default' ? state.slug : variantName) + ' demo",');
         var paramSet = {};

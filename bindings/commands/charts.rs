@@ -1,6 +1,8 @@
 use serde::Deserialize;
 use std::cell::RefCell;
 
+pub use crate::bindings::commands::demos::*;
+
 thread_local! {
     static GLOBAL_BG: RefCell<Option<String>> = RefCell::new(None);
     static GLOBAL_PAL: RefCell<Vec<u32>> = RefCell::new(Vec::new());
