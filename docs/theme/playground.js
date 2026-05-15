@@ -282,23 +282,23 @@
         lines.push('    "' + capitalize(variantName === 'default' ? state.slug : variantName) + ' demo",');
         var paramSet = {};
         var ordered = [];
+        function add(n) { if (!paramSet[n]) { paramSet[n] = 1; ordered.push(n); } }
         var hints = state.variantHints[variantName] || [];
-        for (var h = 0; h < hints.length; h++) {
-            if (!paramSet[hints[h]]) { paramSet[hints[h]] = 1; ordered.push(hints[h]); }
-        }
+        for (var h = 0; h < hints.length; h++) add(hints[h]);
         for (var i = 0; i < state.baseParams.length; i++) {
             var n = state.baseParams[i].name;
             if (n === 'title' || n === 'variant') continue;
-            if (state.baseParams[i].defaultValue !== null) continue;
-            if (!paramSet[n]) { paramSet[n] = 1; ordered.push(n); }
+            if (state.baseParams[i].defaultValue === null) add(n);
         }
-        var hasXY = paramSet['x_values'] || paramSet['x'];
-        if (!hasXY) {
-            for (var j = 0; j < state.baseParams.length; j++) {
-                var nm = state.baseParams[j].name;
-                if (nm === 'x_values' || nm === 'x' || nm === 'y_values' || nm === 'y' || nm === 'sizes' || nm === 'labels' || nm === 'values' || nm === 'category_labels' || nm === 'series_values' || nm === 'series' || nm === 'matrix') {
-                    if (!paramSet[nm]) { paramSet[nm] = 1; ordered.push(nm); }
-                }
+        for (var j = 0; j < state.baseParams.length; j++) {
+            var nm = state.baseParams[j].name;
+            if (nm === 'title' || nm === 'variant') continue;
+            if (DEFAULT_VALUES.hasOwnProperty(nm)) add(nm);
+        }
+        if (ordered.length === 0) {
+            var dataKeys = ['labels', 'values', 'x_values', 'y_values', 'sizes', 'category_labels', 'series_values', 'series', 'matrix'];
+            for (var d = 0; d < dataKeys.length; d++) {
+                if (DEFAULT_VALUES.hasOwnProperty(dataKeys[d])) add(dataKeys[d]);
             }
         }
         for (var k = 0; k < ordered.length; k++) {
@@ -543,6 +543,8 @@
                 var input = {};
                 if (parsed.args.length > 0 && typeof parsed.args[0] === 'string') input.title = parsed.args[0];
                 for (var key in parsed.kwargs) if (parsed.kwargs.hasOwnProperty(key)) input[key] = parsed.kwargs[key];
+                state.lastInput = input;
+                state.lastFnName = entry.name;
                 lastHtml = entry.fn(JSON.stringify(input));
             } catch (e) {
                 showErr('Render error in sp.' + call.fn + ': ' + (e && e.message ? e.message : String(e)));
@@ -550,7 +552,12 @@
                 return;
             }
         }
-        if (!lastHtml) { showErr('Empty render output'); hideLoader(); return; }
+        if (!lastHtml) {
+            var keys = Object.keys(state.lastInput || {}).join(', ');
+            showErr('Empty render output from ' + (state.lastFnName || '?') + '(). The chart returned an empty string — usually means a required field is missing or has invalid shape.\nFields sent: ' + keys);
+            hideLoader();
+            return;
+        }
         hideErr();
         hideLoader();
         renderHtmlInIframe(lastHtml);
@@ -648,9 +655,25 @@
             '</div>';
 
         var contentRoot = document.querySelector('main') || document.querySelector('.content') || document.body;
-        var firstHeading = contentRoot.querySelector('h1, h2');
-        if (firstHeading && firstHeading.parentNode) firstHeading.parentNode.insertBefore(wrap, firstHeading.nextSibling);
-        else contentRoot.insertBefore(wrap, contentRoot.firstChild);
+        var anchor = contentRoot.querySelector('.sp-cls');
+        if (!anchor) {
+            var hs = contentRoot.querySelectorAll('h2');
+            for (var hi = 0; hi < hs.length; hi++) {
+                var txt = (hs[hi].textContent || '').trim().toLowerCase();
+                if (/variants?|variantes?|examples?|exemples?|gallery|gallerie/.test(txt)) { anchor = hs[hi]; break; }
+            }
+        }
+        if (!anchor) {
+            var hrs = contentRoot.querySelectorAll('hr');
+            if (hrs.length >= 2) anchor = hrs[1];
+            else if (hrs.length === 1) anchor = hrs[0];
+        }
+        if (anchor && anchor.parentNode) anchor.parentNode.insertBefore(wrap, anchor);
+        else {
+            var firstHeading = contentRoot.querySelector('h1, h2');
+            if (firstHeading && firstHeading.parentNode) firstHeading.parentNode.insertBefore(wrap, firstHeading.nextSibling);
+            else contentRoot.insertBefore(wrap, contentRoot.firstChild);
+        }
 
         state.iframe = wrap.querySelector('.sp-pg-iframe');
         state.statusDot = wrap.querySelector('.sp-pg-dot');
