@@ -10,3 +10,6 @@ path = "src/bin/gen_index.rs"
 [[bin]]
 name = "gen_previews"
 path = "src/bin/gen_previews.rs"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
