@@ -3,6 +3,7 @@ use super::config::KdeConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{hex6, palette_color, push_b, push_f2, push_i, Frame};
 
+pub const DEMO_KWARGS: &str = "values=[2.1,2.3,2.7,3.1,3.4,3.6,3.9,4.0,4.2,4.5,4.6,4.8,5.0,5.3,5.7,6.1,6.3,6.5,6.8,7.0,3.2,4.1,5.2,4.7,3.8,4.4,5.1,4.9,5.5,6.2]";
 pub fn render(cfg: &KdeConfig) -> String {
     let series = ordered_series(cfg);
     let n_ser = series.len();

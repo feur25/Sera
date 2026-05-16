@@ -31,19 +31,12 @@ fn build(fn_name: &str, variant: &str, args: &str) -> String {
     )
 }
 
-const BAR_SINGLE: &str = "labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]";
-const BAR_MULTI: &str = "labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], series=[[24,38,17,42],[18,29,33,21],[12,15,28,30]], series_names=[\"Product A\",\"Product B\",\"Product C\"]";
-const BAR_PICTO: &str = "labels=[\"Bikes\",\"Cars\",\"Buses\",\"Trains\"], values=[24,38,17,42], unit_description=\"units\", units_per_icon=2.0, icon_size=24, max_icons_per_column=10";
-const BAR_MULTICAT: &str = "labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], series=[[24,38,17,42],[18,29,33,21]], series_names=[\"2023\",\"2024\"], super_categories=[\"H1\",\"H1\",\"H2\",\"H2\"]";
-
 pub fn demo_bar(input: &str) -> String {
     let v = parse_variant(input);
-    let args = match v.as_str() {
-        "grouped" | "group" | "stacked" | "stack" | "relative" | "rel" | "grouped_stacked" | "groupstack" | "marimekko" | "mekko" | "mosaic" => BAR_MULTI,
-        "multicategory" | "multi" | "hierarchical" => BAR_MULTICAT,
-        "pictogram" | "icon" => BAR_PICTO,
-        _ => BAR_SINGLE,
-    };
+    use crate::plot::statistical::BarVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = BarVariant::from_str(key);
+    let args = crate::plot::statistical::bar::demo_kwargs(bv);
     build("bar", &v, args)
 }
 
@@ -54,11 +47,10 @@ pub fn demo_hbar(input: &str) -> String {
 
 pub fn demo_line(input: &str) -> String {
     let v = parse_variant(input);
-    let args = match v.as_str() {
-        "multi" | "multiline" | "multiple" | "connected_scatter" | "markers" | "lines+markers" =>
-            "x_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\"], series=[[12,18,25,22,30],[8,14,17,21,24]], series_names=[\"Revenue\",\"Profit\"]",
-        _ => "x_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\"], values=[12,18,25,22,30,28]",
-    };
+    use crate::plot::statistical::LineVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = LineVariant::from_str(key);
+    let args = crate::plot::statistical::line::demo_kwargs(bv);
     build("line", &v, args)
 }
 
@@ -74,26 +66,29 @@ pub fn demo_area(input: &str) -> String {
 
 pub fn demo_scatter(input: &str) -> String {
     let v = parse_variant(input);
-    let args = match v.as_str() {
-        "categorical" | "grouped" | "groups" | "category" =>
-            "x=[1.2,2.4,3.1,4.8,5.6,6.9,7.3,8.1,9.5], y=[2.1,3.4,5.2,4.6,6.8,7.1,8.4,9.0,9.8], categories=[\"A\",\"A\",\"A\",\"B\",\"B\",\"B\",\"C\",\"C\",\"C\"]",
-        "gradient" | "colorscale" | "continuous" | "scaled" =>
-            "x=[1.2,2.4,3.1,4.8,5.6,6.9,7.3,8.1,9.5], y=[2.1,3.4,5.2,4.6,6.8,7.1,8.4,9.0,9.8], color_values=[10,22,34,46,58,70,82,94,100]",
-        "labeled" | "labels" | "text" | "annotated" =>
-            "x=[1.2,2.4,3.1,4.8,5.6], y=[2.1,3.4,5.2,4.6,6.8], labels=[\"P1\",\"P2\",\"P3\",\"P4\",\"P5\"]",
-        _ => "x=[1.2,2.4,3.1,4.8,5.6,6.9,7.3,8.1,9.5], y=[2.1,3.4,5.2,4.6,6.8,7.1,8.4,9.0,9.8]",
-    };
+    use crate::plot::statistical::ScatterVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = ScatterVariant::from_str(key);
+    let args = crate::plot::statistical::scatter::demo_kwargs(bv);
     build("scatter", &v, args)
 }
 
 pub fn demo_bubble(input: &str) -> String {
     let v = parse_variant(input);
-    build("bubble", &v, "x=[65000,12500,48000,33000,42000,28000], y=[78.5,77.1,81.3,80.2,79.4,76.8], sizes=[33,141,8,12,67,45], labels=[\"USA\",\"China\",\"Germany\",\"France\",\"Japan\",\"Brazil\"]")
+    use crate::plot::statistical::BubbleVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = BubbleVariant::from_str(key);
+    let args = crate::plot::statistical::bubble::demo_kwargs(bv);
+    build("bubble", &v, args)
 }
 
 pub fn demo_histogram(input: &str) -> String {
     let v = parse_variant(input);
-    build("histogram", &v, "values=[1.2,2.4,2.7,3.1,3.5,3.6,4.0,4.2,4.5,4.8,5.0,5.2,5.5,5.7,6.1,6.4,6.8,7.2,7.5,8.0,3.2,4.1,5.3,4.6,3.9,4.7,5.1,4.3,3.8,5.6]")
+    use crate::plot::statistical::HistogramVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = HistogramVariant::from_str(key);
+    let args = crate::plot::statistical::histogram::demo_kwargs(bv);
+    build("histogram", &v, args)
 }
 
 pub fn demo_grouped_bar(input: &str) -> String {
@@ -108,18 +103,19 @@ pub fn demo_stacked_bar(input: &str) -> String {
 
 pub fn demo_heatmap(input: &str) -> String {
     let v = parse_variant(input);
-    build("heatmap", &v, "labels=[\"R1\",\"R2\",\"R3\",\"R4\"], col_labels=[\"C1\",\"C2\",\"C3\",\"C4\"], values=[1,5,3,7,2,8,4,6,9,3,5,2,4,6,7,1]")
+    use crate::plot::statistical::HeatmapVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = HeatmapVariant::from_str(key);
+    let args = crate::plot::statistical::heatmap::demo_kwargs(bv);
+    build("heatmap", &v, args)
 }
 
 pub fn demo_pie(input: &str) -> String {
     let v = parse_variant(input);
-    let args = match v.as_str() {
-        "subplots" | "grid" | "facet" | "multi" =>
-            "labels=[\"A\",\"B\",\"C\",\"D\"], series=[[42,28,17,13],[35,30,20,15],[40,25,20,15]]",
-        "nested" | "concentric" | "rings" | "double_ring" | "multi_ring" =>
-            "labels=[\"Tech\",\"Finance\",\"Health\"], values=[45,30,25], secondary_labels=[\"Web\",\"Mobile\",\"Banks\",\"Pharma\",\"Devices\"], secondary_values=[20,25,18,12,15]",
-        _ => "labels=[\"Apple\",\"Samsung\",\"Xiaomi\",\"Other\"], values=[42,28,17,13]",
-    };
+    use crate::plot::statistical::PieVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = PieVariant::from_str(key);
+    let args = crate::plot::statistical::pie::demo_kwargs(bv);
     build("pie", &v, args)
 }
 
@@ -130,99 +126,155 @@ pub fn demo_donut(input: &str) -> String {
 
 pub fn demo_boxplot(input: &str) -> String {
     let v = parse_variant(input);
-    build("boxplot", &v, "labels=[\"Group A\",\"Group B\",\"Group C\"], series=[[1.2,2.4,2.7,3.1,3.5,3.8,4.2,5.1,6.0],[2.0,2.8,3.2,3.6,4.1,4.5,5.0,5.7,6.5],[1.8,2.2,2.6,3.0,3.4,3.9,4.3,4.9,5.5]]")
+    use crate::plot::statistical::BoxplotVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = BoxplotVariant::from_str(key);
+    let args = crate::plot::statistical::boxplot::demo_kwargs(bv);
+    build("boxplot", &v, args)
 }
 
 pub fn demo_violin(input: &str) -> String {
     let v = parse_variant(input);
-    build("violin", &v, "labels=[\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"B\",\"B\",\"B\",\"B\",\"B\",\"B\",\"B\",\"B\",\"B\",\"C\",\"C\",\"C\",\"C\",\"C\",\"C\",\"C\",\"C\",\"C\"], values=[1.2,2.4,2.7,3.1,3.5,3.8,4.2,5.1,6.0,2.0,2.8,3.2,3.6,4.1,4.5,5.0,5.7,6.5,1.8,2.2,2.6,3.0,3.4,3.9,4.3,4.9,5.5]")
+    use crate::plot::statistical::ViolinVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = ViolinVariant::from_str(key);
+    let args = crate::plot::statistical::violin::demo_kwargs(bv);
+    build("violin", &v, args)
 }
 
 pub fn demo_slope(input: &str) -> String {
     let v = parse_variant(input);
-    build("slope", &v, "labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\"], left=[10,22,15,8], right=[18,16,25,14]")
+    use crate::plot::statistical::SlopeVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = SlopeVariant::from_str(key);
+    let args = crate::plot::statistical::slope::demo_kwargs(bv);
+    build("slope", &v, args)
 }
 
 pub fn demo_sunburst(input: &str) -> String {
     let v = parse_variant(input);
-    build("sunburst", &v, "labels=[\"Tech\",\"Finance\",\"Health\",\"Web\",\"Mobile\",\"Banks\",\"Pharma\"], parents=[\"\",\"\",\"\",\"Tech\",\"Tech\",\"Finance\",\"Health\"], values=[0,0,0,30,40,50,35]")
+    use crate::plot::statistical::SunburstVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = SunburstVariant::from_str(key);
+    let args = crate::plot::statistical::sunburst::demo_kwargs(bv);
+    build("sunburst", &v, args)
 }
 
 pub fn demo_funnel(input: &str) -> String {
     let v = parse_variant(input);
-    build("funnel", &v, "labels=[\"Visits\",\"Leads\",\"Trials\",\"Customers\"], values=[1000,520,210,85]")
+    use crate::plot::statistical::FunnelVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = FunnelVariant::from_str(key);
+    let args = crate::plot::statistical::funnel::demo_kwargs(bv);
+    build("funnel", &v, args)
 }
 
 pub fn demo_treemap(input: &str) -> String {
     let v = parse_variant(input);
-    build("treemap", &v, "labels=[\"Apple\",\"Samsung\",\"Xiaomi\",\"Huawei\",\"Sony\",\"Other\"], values=[450,320,210,180,90,150]")
+    use crate::plot::statistical::TreemapVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = TreemapVariant::from_str(key);
+    let args = crate::plot::statistical::treemap::demo_kwargs(bv);
+    build("treemap", &v, args)
 }
 
 pub fn demo_waterfall(input: &str) -> String {
     let v = parse_variant(input);
-    build("waterfall", &v, "labels=[\"Start\",\"Sales\",\"Returns\",\"Costs\",\"Tax\",\"Net\"], values=[1000,500,-150,-300,-100,950]")
+    use crate::plot::statistical::WaterfallVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = WaterfallVariant::from_str(key);
+    let args = crate::plot::statistical::waterfall::demo_kwargs(bv);
+    build("waterfall", &v, args)
 }
 
 pub fn demo_bullet(input: &str) -> String {
     let v = parse_variant(input);
-    let args = match v.as_str() {
-        "compare" | "vs" | "ghost" | "prior" =>
-            "labels=[\"Sales\",\"Profit\",\"Growth\",\"NPS\"], values=[78,62,45,82], targets=[80,65,50,75], comparisons=[70,55,40,70], max_vals=[100,100,100,100]",
-        "stacked" | "stacked_ranges" | "zones" | "qualitative" | "segmented" | "traffic" | "rag" | "zones_color" =>
-            "labels=[\"Sales\",\"Profit\",\"Growth\",\"NPS\"], values=[78,62,45,82], targets=[80,65,50,75], ranges=[40,70,100,40,70,100,40,70,100,40,70,100], max_vals=[100,100,100,100]",
-        _ => "labels=[\"Sales\",\"Profit\",\"Growth\",\"NPS\"], values=[78,62,45,82], targets=[80,65,50,75], max_vals=[100,100,100,100]",
-    };
+    use crate::plot::statistical::BulletVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = BulletVariant::from_str(key);
+    let args = crate::plot::statistical::bullet::demo_kwargs(bv);
     build("bullet", &v, args)
 }
 
 pub fn demo_radar(input: &str) -> String {
     let v = parse_variant(input);
-    build("radar", &v, "axes=[\"Speed\",\"Power\",\"Range\",\"Comfort\",\"Price\",\"Style\"], series=[[80,72,65,90,55,85],[65,85,80,70,75,60]], series_names=[\"Model A\",\"Model B\"]")
+    use crate::plot::statistical::RadarVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = RadarVariant::from_str(key);
+    let args = crate::plot::statistical::radar::demo_kwargs(bv);
+    build("radar", &v, args)
 }
 
 pub fn demo_lollipop(input: &str) -> String {
     let v = parse_variant(input);
-    build("lollipop", &v, "labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]")
+    use crate::plot::statistical::LollipopVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = LollipopVariant::from_str(key);
+    let args = crate::plot::statistical::lollipop::demo_kwargs(bv);
+    build("lollipop", &v, args)
 }
 
 pub fn demo_kde(input: &str) -> String {
     let v = parse_variant(input);
-    let args = match v.as_str() {
-        "outline" | "line" | "stroke" | "compare" | "no_fill" =>
-            "values=[1.2,2.1,2.4,2.7,3.0,3.1,3.3,3.5,3.7,3.8,4.0,4.2,4.4,4.5,4.7,4.8,5.0,5.2,5.4,5.7,6.0,6.3,6.7,7.1,2.5,3.2,3.8,4.1,4.6,5.1,5.5,6.0], categories=[\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"B\",\"B\",\"B\",\"B\",\"B\",\"B\",\"B\",\"B\"]",
-        _ => "values=[1.2,2.1,2.4,2.7,3.0,3.1,3.3,3.5,3.7,3.8,4.0,4.2,4.4,4.5,4.7,4.8,5.0,5.2,5.4,5.7,6.0,6.3,6.7,7.1]",
-    };
+    use crate::plot::statistical::KdeVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = KdeVariant::from_str(key);
+    let args = crate::plot::statistical::kde::demo_kwargs(bv);
     build("kde", &v, args)
 }
 
 pub fn demo_ridgeline(input: &str) -> String {
     let v = parse_variant(input);
-    build("ridgeline", &v, "categories=[\"Mon\",\"Mon\",\"Mon\",\"Mon\",\"Mon\",\"Mon\",\"Mon\",\"Tue\",\"Tue\",\"Tue\",\"Tue\",\"Tue\",\"Tue\",\"Tue\",\"Wed\",\"Wed\",\"Wed\",\"Wed\",\"Wed\",\"Wed\",\"Wed\",\"Thu\",\"Thu\",\"Thu\",\"Thu\",\"Thu\",\"Thu\",\"Thu\",\"Fri\",\"Fri\",\"Fri\",\"Fri\",\"Fri\",\"Fri\",\"Fri\"], values=[1.2,2.4,2.7,3.1,3.5,3.8,4.2,2.0,2.8,3.2,3.6,4.1,4.5,5.0,1.8,2.2,2.6,3.0,3.4,3.9,4.3,2.5,3.1,3.5,4.0,4.5,5.0,5.5,1.5,2.0,2.5,3.0,3.5,4.0,4.5]")
+    use crate::plot::statistical::RidgelineVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = RidgelineVariant::from_str(key);
+    let args = crate::plot::statistical::ridgeline::demo_kwargs(bv);
+    build("ridgeline", &v, args)
 }
 
 pub fn demo_candlestick(input: &str) -> String {
     let v = parse_variant(input);
-    build("candlestick", &v, "labels=[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\"], open=[100,108,112,109,118], high=[112,118,120,121,125], low=[98,105,108,107,115], close=[108,112,109,118,122]")
+    use crate::plot::statistical::CandlestickVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = CandlestickVariant::from_str(key);
+    let args = crate::plot::statistical::candlestick::demo_kwargs(bv);
+    build("candlestick", &v, args)
 }
 
 pub fn demo_dumbbell(input: &str) -> String {
     let v = parse_variant(input);
-    build("dumbbell", &v, "labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], start=[10,22,15,8,18], end=[18,16,25,14,30]")
+    use crate::plot::statistical::DumbbellVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = DumbbellVariant::from_str(key);
+    let args = crate::plot::statistical::dumbbell::demo_kwargs(bv);
+    build("dumbbell", &v, args)
 }
 
 pub fn demo_gauge(input: &str) -> String {
     let v = parse_variant(input);
-    build("gauge", &v, "value=72, min_val=0, max_val=100, label=\"KPI\"")
+    use crate::plot::statistical::GaugeVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = GaugeVariant::from_str(key);
+    let args = crate::plot::statistical::gauge::demo_kwargs(bv);
+    build("gauge", &v, args)
 }
 
 pub fn demo_parallel(input: &str) -> String {
     let v = parse_variant(input);
-    build("parallel", &v, "axes=[\"Speed\",\"Power\",\"Range\",\"Comfort\",\"Price\"], series=[[80,72,65,90,55],[65,85,80,70,75],[70,60,75,80,65]], series_names=[\"A\",\"B\",\"C\"]")
+    use crate::plot::statistical::ParallelVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = ParallelVariant::from_str(key);
+    let args = crate::plot::statistical::parallel::demo_kwargs(bv);
+    build("parallel", &v, args)
 }
 
 pub fn demo_wordcloud(input: &str) -> String {
     let v = parse_variant(input);
-    build("wordcloud", &v, "words=[\"data\",\"science\",\"machine\",\"learning\",\"python\",\"rust\",\"chart\",\"plot\",\"visual\",\"analytics\",\"insight\",\"model\",\"neural\",\"network\",\"deep\"], frequencies=[60,55,50,48,45,42,40,38,35,33,30,28,25,22,20]")
+    use crate::plot::statistical::WordCloudVariant;
+    let key = if v == "default" || v.is_empty() { "basic" } else { v.as_str() };
+    let bv = WordCloudVariant::from_str(key);
+    let args = crate::plot::statistical::wordcloud::demo_kwargs(bv);
+    build("wordcloud", &v, args)
 }
 
 pub fn demo_bubble_map(input: &str) -> String {

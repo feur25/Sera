@@ -3,6 +3,7 @@ use super::config::ScatterConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i};
 
+pub const DEMO_KWARGS: &str = "x=[1,2,3,4,5,6,7,8,9,10], y=[2,5,3,8,7,9,6,11,9,13]";
 fn nova_color(t: f64) -> u32 {
     let t = t.clamp(0.0, 1.0);
     let stops: [(f64, u32); 7] = [

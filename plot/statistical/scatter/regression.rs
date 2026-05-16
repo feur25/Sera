@@ -3,6 +3,7 @@ use super::config::ScatterConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i};
 
+pub const DEMO_KWARGS: &str = "x=[1,2,3,4,5,6,7,8,9,10], y=[2,3.8,5.1,7.2,8.5,10.3,11.8,13.4,15.1,16.7]";
 fn fit_linear(xs: &[f64], ys: &[f64]) -> Option<(f64, f64, f64)> {
     let n = xs.len() as f64;
     if xs.len() < 2 { return None; }

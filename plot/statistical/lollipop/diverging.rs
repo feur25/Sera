@@ -2,6 +2,7 @@ use super::common::{prepare, open, finalize, dot, data_attrs, x_tick_label};
 use super::config::LollipopConfig;
 use crate::plot::statistical::common::{push_b, push_i, push_f2, hex6, svg_axis_lines, svg_y_label};
 
+pub const DEMO_KWARGS: &str = "labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,-38,17,-42,29]";
 pub fn render(cfg: &LollipopConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let (mut b, pl, pt, pw, ph) = open(cfg, 64, 42, 20, 52);

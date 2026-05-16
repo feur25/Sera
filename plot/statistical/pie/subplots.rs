@@ -2,6 +2,7 @@ use super::common::{render_pie_svg, PiePiece};
 use super::config::PieConfig;
 use crate::plot::statistical::common::{palette_color, push_b, push_i, hex6, escape_xml, truncate};
 
+pub const DEMO_KWARGS: &str = "labels=[\"A\",\"B\",\"C\",\"D\"], series=[[40,25,20,15],[30,30,20,20],[50,20,15,15]], series_names=[\"P1\",\"P2\",\"P3\"]";
 pub fn render(cfg: &PieConfig) -> String {
     let n_pies = cfg.series.len();
     if n_pies == 0 {

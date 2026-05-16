@@ -27,4 +27,16 @@ pub fn render_bullet_html(cfg: &BulletConfig) -> String {
     }
 }
 
-
+pub fn demo_kwargs(v: BulletVariant) -> &'static str {
+    use BulletVariant::*;
+    match v {
+        Basic              => basic::DEMO_KWARGS,
+        Stacked            => stacked::DEMO_KWARGS,
+        Thermo             => thermo::DEMO_KWARGS,
+        Segmented          => segmented::DEMO_KWARGS,
+        Minimal            => minimal::DEMO_KWARGS,
+        Dot                => dot::DEMO_KWARGS,
+        Progress           => progress::DEMO_KWARGS,
+        Compare            => compare::DEMO_KWARGS,
+    }
+}

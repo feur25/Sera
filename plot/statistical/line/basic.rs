@@ -1,5 +1,6 @@
 use super::config::LineConfig;
 
+pub const DEMO_KWARGS: &str = "x_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\"], values=[12,19,15,22,28,24]";
 pub fn render(cfg: &LineConfig) -> String {
     let color = if cfg.color_hex != 0 { cfg.color_hex } else { 0x6366F1 };
     crate::plot::default::render_lines_html(

@@ -2,6 +2,7 @@ use super::common::{prepare_with_pad, open_svg, finalize, leaf_color, label_insi
 use super::config::TreemapConfig;
 use crate::plot::statistical::common::{push_b, push_f2, escape_xml, hex6};
 
+pub const DEMO_KWARGS: &str = "labels=[\"Root\",\"A\",\"B\",\"A1\",\"A2\",\"B1\"], parents=[\"\",\"Root\",\"Root\",\"A\",\"A\",\"B\"], values=[0,40,30,20,20,30]";
 pub fn render(cfg: &TreemapConfig) -> String {
     let p = match prepare_with_pad(cfg, 14.0) { Some(v) => v, None => return String::new() };
     let mut b = Vec::<u8>::with_capacity(p.leaf_indices.len() * 240 + 2048);

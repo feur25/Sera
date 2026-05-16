@@ -1,6 +1,7 @@
 use super::config::LineConfig;
 use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, truncate, Frame};
 
+pub const DEMO_KWARGS: &str = "x_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\"], values=[12,19,15,22,28,24]";
 fn catmull_rom_path(buf: &mut Vec<u8>, pts: &[(i32, i32)], tension: f64) {
     if pts.len() < 2 { return; }
     push_b(buf, b"M "); push_i(buf, pts[0].0); buf.push(b' '); push_i(buf, pts[0].1);

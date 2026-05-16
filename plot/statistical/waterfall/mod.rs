@@ -23,4 +23,14 @@ pub fn render_waterfall_html(cfg: &WaterfallConfig) -> String {
     }
 }
 
-
+pub fn demo_kwargs(v: WaterfallVariant) -> &'static str {
+    use WaterfallVariant::*;
+    match v {
+        Basic              => basic::DEMO_KWARGS,
+        Stepped            => stepped::DEMO_KWARGS,
+        Lollipop           => lollipop::DEMO_KWARGS,
+        Arrowed            => arrowed::DEMO_KWARGS,
+        Delta              => delta::DEMO_KWARGS,
+        Horizontal         => horizontal::DEMO_KWARGS,
+    }
+}

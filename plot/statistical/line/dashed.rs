@@ -1,6 +1,7 @@
 use super::config::LineConfig;
 use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, palette_color, truncate, Frame};
 
+pub const DEMO_KWARGS: &str = "x_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\"], values=[12,19,15,22,28,24]";
 pub fn render(cfg: &LineConfig) -> String {
     let multi = !cfg.series.is_empty();
     let (n, mx, mn) = if multi {

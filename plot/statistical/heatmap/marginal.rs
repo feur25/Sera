@@ -3,6 +3,7 @@ use super::config::HeatmapConfig;
 use crate::html::hover::{build_chart_html, slots_to_json};
 use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i, truncate};
 
+pub const DEMO_KWARGS: &str = "labels=[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\"], col_labels=[\"8h\",\"12h\",\"16h\",\"20h\"], values=[5,9,7,3,6,12,10,4,8,15,13,7,4,8,11,5,3,7,9,2]";
 pub fn render(cfg: &HeatmapConfig) -> String {
     let cfg = HeatmapConfig {
         marginal_mode: true,

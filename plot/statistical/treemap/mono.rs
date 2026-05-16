@@ -2,6 +2,7 @@ use super::common::{prepare, open_svg, finalize, label_inside, tile_data_attrs, 
 use super::config::TreemapConfig;
 use crate::plot::statistical::common::{push_b, push_f2, hex6};
 
+pub const DEMO_KWARGS: &str = "labels=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\"], values=[40,25,20,10,5,8,12]";
 pub fn render(cfg: &TreemapConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let n = p.leaf_indices.len();

@@ -13,6 +13,21 @@ pub mod prism;
 pub use variant::BarVariant;
 pub use config::BarConfig;
 
+pub fn demo_kwargs(v: BarVariant) -> &'static str {
+    use BarVariant::*;
+    match v {
+        Basic | Horizontal => basic::DEMO_KWARGS,
+        Grouped | Stacked  => grouped::DEMO_KWARGS,
+        Relative           => relative::DEMO_KWARGS,
+        GroupedStacked     => grouped_stacked::DEMO_KWARGS,
+        Marimekko          => marimekko::DEMO_KWARGS,
+        Multicategory      => multicategory::DEMO_KWARGS,
+        Pictogram          => pictogram::DEMO_KWARGS,
+        Deluxe             => deluxe::DEMO_KWARGS,
+        Prism              => prism::DEMO_KWARGS,
+    }
+}
+
 pub fn render_bar_html(cfg: &BarConfig) -> String {
     use crate::plot::statistical::theme::ChartTheme;
     match cfg.theme {

@@ -1,4 +1,6 @@
 use super::common::{
+
+
     draw_cat_label_v, draw_mean_v, estimate_bw, finish, group_data, kde_curve,
     make_frame, open_axes_y, sort_groups, value_range, write_violin_v, Side,
 };
@@ -6,6 +8,7 @@ use super::config::ViolinConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{palette_color, push_b, push_i};
 
+pub const DEMO_KWARGS: &str = "labels=[\"A\",\"B\",\"C\"], values=[1.2,2.4,2.7,3.1,3.5,3.8,2.0,2.8,3.2,3.6,4.1,4.5,1.8,2.2,2.6,3.0,3.4,3.9], categories=[\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"B\",\"B\",\"B\",\"B\",\"B\",\"B\",\"C\",\"C\",\"C\",\"C\",\"C\",\"C\"]";
 pub fn render(cfg: &ViolinConfig) -> String {
     let groups = group_data(cfg.categories, cfg.values);
     if groups.is_empty() { return String::new(); }

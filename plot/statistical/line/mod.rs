@@ -30,4 +30,18 @@ pub fn render_line_html(cfg: &LineConfig) -> String {
     }
 }
 
-
+pub fn demo_kwargs(v: LineVariant) -> &'static str {
+    use LineVariant::*;
+    match v {
+        Basic              => basic::DEMO_KWARGS,
+        Multi              => multi::DEMO_KWARGS,
+        Stepped            => stepped::DEMO_KWARGS,
+        Spline             => spline::DEMO_KWARGS,
+        Filled             => filled::DEMO_KWARGS,
+        Sparkline          => sparkline::DEMO_KWARGS,
+        Dashed             => dashed::DEMO_KWARGS,
+        ConnectedScatter   => connected_scatter::DEMO_KWARGS,
+        Gapped             => gapped::DEMO_KWARGS,
+        Neon               => neon::DEMO_KWARGS,
+    }
+}

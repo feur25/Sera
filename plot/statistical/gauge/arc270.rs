@@ -2,6 +2,7 @@ use super::common::{prepare_with, open_svg, arc_path, color_for, value_text, lab
 use super::config::GaugeConfig;
 use crate::plot::statistical::common::{push_b, push_f2};
 
+pub const DEMO_KWARGS: &str = "value=72, min_val=0, max_val=100, label=\"Score\"";
 pub fn render(cfg: &GaugeConfig) -> String {
     let p = prepare_with(cfg, 0.55, 0.36);
     let mut b = Vec::<u8>::with_capacity(4096);

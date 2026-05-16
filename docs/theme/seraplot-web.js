@@ -3125,17 +3125,4 @@ let wasm_bindgen = (function(exports) {
 
     return Object.assign(__wbg_init, { initSync }, exports);
 })({ __proto__: null });
-
-window.SeraplotWASM = {
-  __init: function(url) {
-    return wasm_bindgen(url).then(function() {
-      Object.keys(wasm_bindgen).forEach(function(k) {
-        if (typeof wasm_bindgen[k] === 'function' && k !== 'initSync') {
-          window.SeraplotWASM[k] = wasm_bindgen[k];
-        }
-      });
-      window.SeraplotWASM.__ready = true;
-    });
-  },
-  __ready: false
-};
+window.SeraplotWASM = { __init: function(url) { return wasm_bindgen(url).then(function() { Object.keys(wasm_bindgen).forEach(function(k) { if (typeof wasm_bindgen[k] === 'function' && k !== 'initSync') { window.SeraplotWASM[k] = wasm_bindgen[k]; } }); window.SeraplotWASM.__ready = true; }); }, __ready: false };

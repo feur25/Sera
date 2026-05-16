@@ -34,4 +34,17 @@ pub fn render_scatter_variant_html(cfg: &ScatterConfig) -> String {
     }
 }
 
-
+pub fn demo_kwargs(v: ScatterVariant) -> &'static str {
+    use ScatterVariant::*;
+    match v {
+        Basic              => basic::DEMO_KWARGS,
+        Categorical        => categorical::DEMO_KWARGS,
+        Gradient           => gradient::DEMO_KWARGS,
+        Symbols            => symbols::DEMO_KWARGS,
+        Labeled            => labeled::DEMO_KWARGS,
+        Regression         => regression::DEMO_KWARGS,
+        Nova               => nova::DEMO_KWARGS,
+        Galaxy             => galaxy::DEMO_KWARGS,
+        Deluxe             => deluxe::DEMO_KWARGS,
+    }
+}

@@ -39,4 +39,16 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
     }
 }
 
-
+pub fn demo_kwargs(v: HistogramVariant) -> &'static str {
+    use HistogramVariant::*;
+    match v {
+        Basic              => basic::DEMO_KWARGS,
+        Horizontal         => horizontal::DEMO_KWARGS,
+        Normalized         => normalized::DEMO_KWARGS,
+        Cumulative         => cumulative::DEMO_KWARGS,
+        Stacked            => stacked::DEMO_KWARGS,
+        Overlay            => overlay::DEMO_KWARGS,
+        Step               => step::DEMO_KWARGS,
+        Deluxe             => deluxe::DEMO_KWARGS,
+    }
+}

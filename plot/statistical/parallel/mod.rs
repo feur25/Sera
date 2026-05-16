@@ -32,4 +32,17 @@ pub fn render_parallel_html(cfg: &ParallelConfig) -> String {
     }
 }
 
-
+pub fn demo_kwargs(v: ParallelVariant) -> &'static str {
+    use ParallelVariant::*;
+    match v {
+        Basic              => basic::DEMO_KWARGS,
+        Smooth             => smooth::DEMO_KWARGS,
+        Categorical        => categorical::DEMO_KWARGS,
+        Highlight          => highlight::DEMO_KWARGS,
+        Density            => density::DEMO_KWARGS,
+        Gradient           => gradient::DEMO_KWARGS,
+        Deluxe             => deluxe::DEMO_KWARGS,
+        Arc                => arc::DEMO_KWARGS,
+        Ribbon             => ribbon::DEMO_KWARGS,
+    }
+}

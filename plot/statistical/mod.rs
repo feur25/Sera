@@ -54,6 +54,8 @@ pub use lollipop::{LollipopConfig, LollipopVariant, render_lollipop_html};
 pub use kde::{KdeConfig, KdeVariant, render_kde_html, scott_bw, kde_eval};
 pub use ridgeline::{RidgelineConfig, RidgelineVariant, render_ridgeline_html};
 pub use parallel::{ParallelConfig, ParallelVariant, render_parallel_html};
+pub use scatter::ScatterVariant;
+pub use bubble::BubbleVariant;
 pub use theme::{ChartTheme, apply_chart_theme};
 pub use crate::html::hover::{HoverSlot, slots_to_json, parse_hover_json};
 pub use _3d::register_statistical_3d_types;

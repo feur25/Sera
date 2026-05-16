@@ -3,6 +3,7 @@ use super::config::ScatterConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i, truncate};
 
+pub const DEMO_KWARGS: &str = "x=[1,2,3,4,5,6], y=[2,5,3,8,7,9], labels=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\"]";
 pub fn render(cfg: &ScatterConfig) -> String {
     let layout = match compute_layout(cfg) { Some(l) => l, None => return String::new() };
     let mut f = make_frame(cfg, layout.n, 20);

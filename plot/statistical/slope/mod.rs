@@ -27,4 +27,16 @@ pub fn render_slope_html(cfg: &SlopeConfig) -> String {
     }
 }
 
-
+pub fn demo_kwargs(v: SlopeVariant) -> &'static str {
+    use SlopeVariant::*;
+    match v {
+        Basic              => basic::DEMO_KWARGS,
+        Monochrome         => monochrome::DEMO_KWARGS,
+        Highlighted        => highlighted::DEMO_KWARGS,
+        Bumps              => bumps::DEMO_KWARGS,
+        Curved             => curved::DEMO_KWARGS,
+        Thick              => thick::DEMO_KWARGS,
+        Diverging          => diverging::DEMO_KWARGS,
+        Stepped            => stepped::DEMO_KWARGS,
+    }
+}

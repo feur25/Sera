@@ -25,4 +25,15 @@ pub fn render_dumbbell_html(cfg: &DumbbellConfig) -> String {
     }
 }
 
-
+pub fn demo_kwargs(v: DumbbellVariant) -> &'static str {
+    use DumbbellVariant::*;
+    match v {
+        Basic              => basic::DEMO_KWARGS,
+        Arrow              => arrow::DEMO_KWARGS,
+        Delta              => delta::DEMO_KWARGS,
+        Barbell            => barbell::DEMO_KWARGS,
+        Glow               => glow::DEMO_KWARGS,
+        Dotted             => dotted::DEMO_KWARGS,
+        Ranked             => ranked::DEMO_KWARGS,
+    }
+}

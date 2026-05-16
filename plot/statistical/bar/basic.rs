@@ -1,5 +1,7 @@
 use super::config::BarConfig;
 
+pub const DEMO_KWARGS: &str = "labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]";
+
 pub fn render(cfg: &BarConfig, orient: u8) -> String {
     crate::plot::default::render_bars_html(
         cfg.title, cfg.labels, cfg.values, cfg.width, cfg.height,

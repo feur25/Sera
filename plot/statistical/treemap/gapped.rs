@@ -2,6 +2,7 @@ use super::common::{prepare_with_pad, open_svg, finalize, leaf_color, label_insi
 use super::config::TreemapConfig;
 use crate::plot::statistical::common::push_b;
 
+pub const DEMO_KWARGS: &str = "labels=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\"], values=[40,25,20,10,5,8,12]";
 pub fn render(cfg: &TreemapConfig) -> String {
     let mut p = match prepare_with_pad(cfg, 6.0) { Some(v) => v, None => return String::new() };
     let inset = 4.0_f64;

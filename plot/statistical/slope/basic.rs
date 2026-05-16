@@ -2,6 +2,7 @@ use super::common::{prepare, val_to_y, open_svg, draw_axes, dot, label_left, lab
 use super::config::SlopeConfig;
 use crate::plot::statistical::common::{push_b, push_i, escape_xml};
 
+pub const DEMO_KWARGS: &str = "labels=[\"A\",\"B\",\"C\",\"D\",\"E\"], left=[20,35,15,42,28], right=[35,28,40,55,22]";
 pub fn render(cfg: &SlopeConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let mut b = Vec::<u8>::with_capacity(p.n * 200 + 1024);

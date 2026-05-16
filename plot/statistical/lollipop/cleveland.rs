@@ -2,6 +2,7 @@ use super::common::{prepare, open, finalize, color_for, dot, data_attrs};
 use super::config::LollipopConfig;
 use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_axis_lines, svg_vgrid};
 
+pub const DEMO_KWARGS: &str = "labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], series=[[24,38,17,42,29],[18,28,22,35,33]], series_names=[\"2023\",\"2024\"]";
 pub fn render(cfg: &LollipopConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let (mut b, pl, pt, pw, ph) = open(cfg, 140, 42, 28, 44);

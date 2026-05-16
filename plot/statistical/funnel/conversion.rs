@@ -2,6 +2,7 @@ use super::common::{prepare, open_svg, finalize, label_inside, label_left_pct, l
 use super::config::FunnelConfig;
 use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml};
 
+pub const DEMO_KWARGS: &str = "labels=[\"Visits\",\"Signups\",\"Trial\",\"Paid\",\"Renewed\"], values=[1000,520,210,85,40]";
 pub fn render(cfg: &FunnelConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let l = &p.layout;

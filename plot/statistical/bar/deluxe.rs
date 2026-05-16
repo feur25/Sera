@@ -12,6 +12,8 @@ fn lerp(a: u32, b: u32, t: f64) -> u32 {
 
 fn lighten(c: u32) -> u32 { lerp(c, 0xFFFFFF, 0.55) }
 
+pub const DEMO_KWARGS: &str = "labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]";
+
 pub fn render(cfg: &BarConfig, orient: u8) -> String {
     let n = cfg.labels.len().min(cfg.values.len());
     if n == 0 { return String::new(); }

@@ -3,6 +3,7 @@ use super::config::BulletConfig;
 use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, truncate};
 use crate::html::hover::{build_chart_html, slots_to_json};
 
+pub const DEMO_KWARGS: &str = "labels=[\"Revenue\",\"Profit\",\"CSAT\"], values=[80,65,4.2], targets=[90,70,4.5], max_vals=[120,100,5]";
 pub fn render(cfg: &BulletConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let pad_t = if cfg.title.is_empty() { 26 } else { 50 };

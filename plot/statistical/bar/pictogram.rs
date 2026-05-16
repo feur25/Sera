@@ -1,6 +1,8 @@
 use super::config::BarConfig;
 use crate::plot::statistical::common::{palette_color, push_b, push_i, push_f2, escape_xml, push_hex, Frame};
 
+pub const DEMO_KWARGS: &str = "labels=[\"Bikes\",\"Cars\",\"Buses\",\"Trains\"], values=[24,38,17,42], unit_description=\"units\", units_per_icon=2.0, icon_size=24, max_icons_per_column=10";
+
 pub fn render(cfg: &BarConfig) -> String {
     let n = cfg.labels.len().min(cfg.values.len());
     if n == 0 { return String::new(); }

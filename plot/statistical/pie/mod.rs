@@ -31,4 +31,17 @@ pub fn render_pie_html(cfg: &PieConfig) -> String {
     build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }
 
-
+pub fn demo_kwargs(v: PieVariant) -> &'static str {
+    use PieVariant::*;
+    match v {
+        Basic              => basic::DEMO_KWARGS,
+        Donut              => donut::DEMO_KWARGS,
+        Exploded           => exploded::DEMO_KWARGS,
+        Subplots           => subplots::DEMO_KWARGS,
+        Proportional       => proportional::DEMO_KWARGS,
+        Semi               => semi::DEMO_KWARGS,
+        Kpi                => kpi::DEMO_KWARGS,
+        Nested             => nested::DEMO_KWARGS,
+        Pattern            => pattern::DEMO_KWARGS,
+    }
+}

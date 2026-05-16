@@ -27,4 +27,16 @@ pub fn render_sunburst_html(cfg: &SunburstConfig) -> String {
     }
 }
 
-
+pub fn demo_kwargs(v: SunburstVariant) -> &'static str {
+    use SunburstVariant::*;
+    match v {
+        Basic              => basic::DEMO_KWARGS,
+        Donut              => donut::DEMO_KWARGS,
+        Flame              => flame::DEMO_KWARGS,
+        Rainbow            => rainbow::DEMO_KWARGS,
+        Outlined           => outlined::DEMO_KWARGS,
+        Gapped             => gapped::DEMO_KWARGS,
+        DepthFade          => depth_fade::DEMO_KWARGS,
+        Mono               => mono::DEMO_KWARGS,
+    }
+}

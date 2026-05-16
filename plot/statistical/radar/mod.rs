@@ -29,4 +29,17 @@ pub fn render_radar_html(cfg: &RadarConfig) -> String {
     }
 }
 
-
+pub fn demo_kwargs(v: RadarVariant) -> &'static str {
+    use RadarVariant::*;
+    match v {
+        Basic              => basic::DEMO_KWARGS,
+        Lines              => lines::DEMO_KWARGS,
+        Filled             => filled::DEMO_KWARGS,
+        Markers            => markers::DEMO_KWARGS,
+        Dashed             => dashed::DEMO_KWARGS,
+        Stacked            => stacked::DEMO_KWARGS,
+        PolarBar           => polar_bar::DEMO_KWARGS,
+        Gradient           => gradient::DEMO_KWARGS,
+        Deluxe             => deluxe::DEMO_KWARGS,
+    }
+}

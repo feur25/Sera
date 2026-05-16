@@ -2,6 +2,7 @@ use super::common::{prepare, finalize, point};
 use super::config::ParallelConfig;
 use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, palette_color, svg_open, svg_title};
 
+pub const DEMO_KWARGS: &str = "axes=[\"Speed\",\"Power\",\"Range\",\"Cost\"], series=[[80,65,70,40],[60,80,55,60],[40,70,90,75]], series_names=[\"A\",\"B\",\"C\"]";
 pub fn render(cfg: &ParallelConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let mut b: Vec<u8> = Vec::with_capacity(p.n_series * p.n_axes * 300 + 4096);

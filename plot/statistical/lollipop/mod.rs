@@ -23,4 +23,14 @@ pub fn render_lollipop_html(cfg: &LollipopConfig) -> String {
     }
 }
 
-
+pub fn demo_kwargs(v: LollipopVariant) -> &'static str {
+    use LollipopVariant::*;
+    match v {
+        Basic              => basic::DEMO_KWARGS,
+        Cleveland          => cleveland::DEMO_KWARGS,
+        Diverging          => diverging::DEMO_KWARGS,
+        Circular           => circular::DEMO_KWARGS,
+        Highlight          => highlight::DEMO_KWARGS,
+        Office             => office::DEMO_KWARGS,
+    }
+}

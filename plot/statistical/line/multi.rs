@@ -1,6 +1,7 @@
 use super::config::LineConfig;
 use crate::plot::statistical::{MultiLineConfig, render_multiline_html};
 
+pub const DEMO_KWARGS: &str = "x_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\"], series=[[12,19,15,22,28,24],[8,14,18,16,22,20],[5,9,12,15,18,21]], series_names=[\"A\",\"B\",\"C\"]";
 pub fn render(cfg: &LineConfig) -> String {
     let mc = MultiLineConfig {
         title: cfg.title,
