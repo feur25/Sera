@@ -150,27 +150,6 @@ Aliases: `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_famil
 
 Horizontal bars — better for long category names. Alias: `"h"`.
 
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "horizontal",
-    color_hex: int = 0,
-    show_text: bool = False,
-    bar_gap: float = 0.2,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-    sort_order: str = "none",
-    palette: list[int] | None = None,
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code> / <code>"h"</code></span><span><strong>Aliases</strong> <code>sp.bar</code> + <code>variant="h"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -183,29 +162,6 @@ sp.bar(
 
 Multiple series side-by-side per category. Alias: `"group"`.
 
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "grouped",
-    series: list[list[float]],
-    series_names: list[str] | None = None,
-    bar_gap: float = 0.2,
-    bargroup_gap: float = 0.1,
-    show_text: bool = False,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-    legend_position: str = "right",
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"grouped"</code> / <code>"group"</code></span><span><strong>Required</strong> <code>series</code>, <code>series_names</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
@@ -216,26 +172,6 @@ sp.bar(
 <div class="sp-variant" id="bar-en-stacked">
 
 Series stacked vertically — shows part-to-whole within each category. Alias: `"stack"`.
-
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "stacked",
-    series: list[list[float]],
-    series_names: list[str] | None = None,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-    legend_position: str = "right",
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"stacked"</code> / <code>"stack"</code></span><span><strong>Required</strong> <code>series</code>, <code>series_names</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -248,27 +184,6 @@ sp.bar(
 
 Stacked with **negative values below the zero baseline** — P&L, gains/losses. Alias: `"rel"`.
 
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "relative",
-    series: list[list[float]],
-    series_names: list[str] | None = None,
-    palette: list[int] | None = None,
-    bar_gap: float = 0.2,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-    legend_position: str = "right",
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"relative"</code> / <code>"rel"</code></span><span><strong>Required</strong> <code>series</code>, <code>series_names</code></span><span><strong>Note</strong> negatives render below 0</span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
@@ -279,29 +194,6 @@ sp.bar(
 <div class="sp-variant" id="bar-en-gstack">
 
 Groups of stacked sub-bars per category. `offset_groups` assigns a stack-group name to each series.
-
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "grouped_stacked",
-    series: list[list[float]],
-    series_names: list[str] | None = None,
-    offset_groups: list[str],
-    palette: list[int] | None = None,
-    bar_gap: float = 0.2,
-    bargroup_gap: float = 0.1,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-    legend_position: str = "right",
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"grouped_stacked"</code></span><span><strong>Required</strong> <code>series</code>, <code>offset_groups</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -314,28 +206,6 @@ sp.bar(
 
 Variable-width stacked bars (mosaic plot). `widths` encodes one dimension, stacked segments encode share. Aliases: `"mekko"`, `"mosaic"`.
 
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "marimekko",
-    series: list[list[float]],
-    series_names: list[str] | None = None,
-    widths: list[float],
-    show_text: bool = False,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-    legend_position: str = "right",
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"marimekko"</code> / <code>"mekko"</code> / <code>"mosaic"</code></span><span><strong>Required</strong> <code>series</code>, <code>widths</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
@@ -347,26 +217,6 @@ sp.bar(
 
 A bar made of repeated icons. Each icon represents `units_per_icon` units. Alias: `"icon"`.
 
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "pictogram",
-    icon_size: int = 24,
-    max_icons_per_column: int = 10,
-    units_per_icon: float = 1.0,
-    unit_description: str = "",
-    color_hex: int = 0,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"pictogram"</code> / <code>"icon"</code></span><span><strong>Required</strong> <code>values</code>, <code>units_per_icon</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
@@ -377,27 +227,6 @@ sp.bar(
 <div class="sp-variant" id="bar-en-multicategory">
 
 Two-level hierarchical x axis. `super_categories` groups adjacent bars under a bracket label. Alias: `"multi"`.
-
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "multicategory",
-    super_categories: list[str],
-    series: list[list[float]] | None = None,
-    series_names: list[str] | None = None,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"multicategory"</code> / <code>"multi"</code></span><span><strong>Required</strong> <code>values</code>, <code>super_categories</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -539,27 +368,6 @@ Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family
 
 Barres horizontales — idéal pour les longs noms de catégories. Alias : `"h"`.
 
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "horizontal",
-    color_hex: int = 0,
-    show_text: bool = False,
-    bar_gap: float = 0.2,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-    sort_order: str = "none",
-    palette: list[int] | None = None,
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"horizontal"</code> / <code>"h"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
@@ -572,29 +380,6 @@ sp.bar(
 
 Plusieurs séries côte à côte par catégorie. Alias : `"group"`.
 
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "grouped",
-    series: list[list[float]],
-    series_names: list[str] | None = None,
-    bar_gap: float = 0.2,
-    bargroup_gap: float = 0.1,
-    show_text: bool = False,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-    legend_position: str = "right",
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"grouped"</code> / <code>"group"</code></span><span><strong>Requis</strong> <code>series</code>, <code>series_names</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 
@@ -606,25 +391,6 @@ sp.bar(
 
 Séries empilées verticalement — montre la part de chaque série dans le total. Alias : `"stack"`.
 
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "stacked",
-    series: list[list[float]],
-    series_names: list[str] | None = None,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-    legend_position: str = "right",
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"stacked"</code> / <code>"stack"</code></span><span><strong>Requis</strong> <code>series</code>, <code>series_names</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
@@ -637,27 +403,6 @@ sp.bar(
 
 Empilé avec **valeurs négatives sous l'axe zéro** — flux de trésorerie, P&L. Alias : `"rel"`.
 
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "relative",
-    series: list[list[float]],
-    series_names: list[str] | None = None,
-    palette: list[int] | None = None,
-    bar_gap: float = 0.2,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-    legend_position: str = "right",
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"relative"</code> / <code>"rel"</code></span><span><strong>Requis</strong> <code>series</code>, <code>series_names</code></span><span><strong>Note</strong> les négatifs s'affichent sous 0</span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 
@@ -669,28 +414,6 @@ sp.bar(
 
 Groupes de sous-barres empilées par catégorie. `offset_groups` assigne un nom de pile à chaque série.
 
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "grouped_stacked",
-    series: list[list[float]],
-    series_names: list[str] | None = None,
-    offset_groups: list[str],
-    palette: list[int] | None = None,
-    bar_gap: float = 0.2,
-    bargroup_gap: float = 0.1,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-    legend_position: str = "right",
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"grouped_stacked"</code></span><span><strong>Requis</strong> <code>series</code>, <code>offset_groups</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
@@ -703,28 +426,6 @@ sp.bar(
 
 Barres empilées à largeur variable (mosaïque). `widths` encode une dimension, les segments empilés encodent la part. Alias : `"mekko"`, `"mosaic"`.
 
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    *,
-    variant: str = "marimekko",
-    series: list[list[float]],
-    series_names: list[str] | None = None,
-    widths: list[float],
-    show_text: bool = False,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-    legend_position: str = "right",
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"marimekko"</code> / <code>"mekko"</code> / <code>"mosaic"</code></span><span><strong>Requis</strong> <code>series</code>, <code>widths</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 
@@ -736,26 +437,6 @@ sp.bar(
 
 Barre composée d'icônes répétées. Chaque icône représente `units_per_icon` unités. Alias : `"icon"`.
 
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "pictogram",
-    icon_size: int = 24,
-    max_icons_per_column: int = 10,
-    units_per_icon: float = 1.0,
-    unit_description: str = "",
-    color_hex: int = 0,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-) -> Chart
-```
-
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"pictogram"</code> / <code>"icon"</code></span><span><strong>Requis</strong> <code>values</code>, <code>units_per_icon</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 
@@ -766,27 +447,6 @@ sp.bar(
 <div class="sp-variant" id="bar-fr-multicategory">
 
 Axe x à deux niveaux. `super_categories` regroupe les barres adjacentes sous un label chapeau. Alias : `"multi"`.
-
-<div class="sp-preview-label">Code</div>
-
-```python
-sp.bar(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    variant: str = "multicategory",
-    super_categories: list[str],
-    series: list[list[float]] | None = None,
-    series_names: list[str] | None = None,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = False,
-) -> Chart
-```
 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"multicategory"</code> / <code>"multi"</code></span><span><strong>Requis</strong> <code>values</code>, <code>super_categories</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 

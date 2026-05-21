@@ -2,27 +2,6 @@
 
 <div class="lang-en">
 
-## Signature
-
-```python
-sp.build_multiline_chart(
-    title: str,
-    x_labels: list[str],
-    series_values: list[list[float]],
-    *,
-    show_points: bool = True,
-    series_names: list[str] | None = None,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = True,
-    legend_position: str = "top",
-    hover_json: str | None = None,
-) -> Chart
-```
-
 Aliases: `sp.multiline`
 
 ---
@@ -82,27 +61,6 @@ A multi-line chart overlays multiple line series on the same axes, enabling dire
 </div>
 
 <div class="lang-fr">
-
-<h2>Signature</h2>
-
-```python
-sp.build_multiline_chart(
-    title: str,
-    x_labels: list[str],
-    series_values: list[list[float]],
-    *,
-    show_points: bool = True,
-    series_names: list[str] | None = None,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = True,
-    legend_position: str = "top",
-    hover_json: str | None = None,
-) -> Chart
-```
 
 Aliases: `sp.multiline`
 

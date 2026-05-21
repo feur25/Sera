@@ -102,31 +102,6 @@ Aliases: `sp.build_parallel` &middot; `sp.parallel` &middot; `sp.parallel_coords
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Straight polylines through every axis - the textbook parallel-coordinates chart.</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["mpg", "hp", "weight", "accel", "price"]
-rows = [
-    [32, 90,  2300, 14.5, 18000],
-    [28, 110, 2800, 12.0, 22000],
-    [22, 160, 3400, 9.5,  31000],
-    [18, 200, 3800, 8.0,  42000],
-    [35, 75,  2100, 16.0, 16000],
-    [25, 130, 3000, 11.5, 26000],
-]
-series = list(map(list, zip(*rows)))
-
-chart = sp.build_parallel(
-    title="Cars profile", axes=axes, series=series,
-    variant="basic",
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    width=900, height=460,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-basic.html"></iframe>
 </div>
@@ -134,31 +109,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"smooth"</code></span><span><strong>Aliases</strong> <code>smooth / curved / bezier / spline</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bezier-smoothed lines reduce visual clutter for dense datasets.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["mpg", "hp", "weight", "accel", "price"]
-rows = [
-    [32, 90,  2300, 14.5, 18000],
-    [28, 110, 2800, 12.0, 22000],
-    [22, 160, 3400, 9.5,  31000],
-    [18, 200, 3800, 8.0,  42000],
-    [35, 75,  2100, 16.0, 16000],
-    [25, 130, 3000, 11.5, 26000],
-]
-series = list(map(list, zip(*rows)))
-
-chart = sp.build_parallel(
-    title="Cars profile", axes=axes, series=series,
-    variant="smooth",
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    width=900, height=460,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-smooth.html"></iframe>
@@ -168,32 +118,6 @@ chart.show()
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">One color per category - perfect for comparing classes side by side.</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["mpg", "hp", "weight", "accel", "price"]
-rows = [
-    [32, 90,  2300, 14.5, 18000],
-    [28, 110, 2800, 12.0, 22000],
-    [22, 160, 3400, 9.5,  31000],
-    [18, 200, 3800, 8.0,  42000],
-    [35, 75,  2100, 16.0, 16000],
-    [25, 130, 3000, 11.5, 26000],
-]
-series = list(map(list, zip(*rows)))
-
-chart = sp.build_parallel(
-    title="Cars profile", axes=axes, series=series,
-    variant="categorical",
-    category_indices=[0,0,1,1,2,2],
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    width=900, height=460,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-categorical.html"></iframe>
 </div>
@@ -201,32 +125,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / spotlight / focus / dim</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Spotlights one series and dims the others - great for storytelling.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["mpg", "hp", "weight", "accel", "price"]
-rows = [
-    [32, 90,  2300, 14.5, 18000],
-    [28, 110, 2800, 12.0, 22000],
-    [22, 160, 3400, 9.5,  31000],
-    [18, 200, 3800, 8.0,  42000],
-    [35, 75,  2100, 16.0, 16000],
-    [25, 130, 3000, 11.5, 26000],
-]
-series = list(map(list, zip(*rows)))
-
-chart = sp.build_parallel(
-    title="Cars profile", axes=axes, series=series,
-    variant="highlight",
-    highlight_index=2,
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    width=900, height=460,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-highlight.html"></iframe>
@@ -236,31 +134,6 @@ chart.show()
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Translucent lines reveal density bands inside thousands of profiles.</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["mpg", "hp", "weight", "accel", "price"]
-rows = [
-    [32, 90,  2300, 14.5, 18000],
-    [28, 110, 2800, 12.0, 22000],
-    [22, 160, 3400, 9.5,  31000],
-    [18, 200, 3800, 8.0,  42000],
-    [35, 75,  2100, 16.0, 16000],
-    [25, 130, 3000, 11.5, 26000],
-]
-series = list(map(list, zip(*rows)))
-
-chart = sp.build_parallel(
-    title="Cars profile", axes=axes, series=series,
-    variant="density",
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    width=900, height=460,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-density.html"></iframe>
 </div>
@@ -268,32 +141,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / value / ramp / shaded</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Color encodes a chosen axis value via a continuous ramp.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["mpg", "hp", "weight", "accel", "price"]
-rows = [
-    [32, 90,  2300, 14.5, 18000],
-    [28, 110, 2800, 12.0, 22000],
-    [22, 160, 3400, 9.5,  31000],
-    [18, 200, 3800, 8.0,  42000],
-    [35, 75,  2100, 16.0, 16000],
-    [25, 130, 3000, 11.5, 26000],
-]
-series = list(map(list, zip(*rows)))
-
-chart = sp.build_parallel(
-    title="Cars profile", axes=axes, series=series,
-    variant="gradient",
-    color_axis=2,
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    width=900, height=460,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-gradient.html"></iframe>
@@ -304,24 +151,6 @@ chart.show()
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Dark neon style — deep navy background, glowing series lines rendered in two passes (soft glow + crisp stroke) with electric rainbow colors.</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["Speed","Agility","Strength","Defense","Magic","Stamina"]
-series_names = ["Hero","Warrior","Mage","Rogue"]
-series_values = [[85,72,60,91,78,88],[60,55,95,88,45,75],[45,68,40,55,99,65],[95,90,55,70,60,70]]
-
-chart = sp.build_parallel(
-    title="Character Stats", axes=axes,
-    series=series_values, series_names=series_names,
-    variant="deluxe",
-    width=900, height=460,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-deluxe.html"></iframe>
 </div>
@@ -331,24 +160,6 @@ chart.show()
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Smooth cubic bezier curves with per-series gradient coloring. Reduces visual clutter compared to straight lines while preserving individual series identity.</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["Speed","Agility","Strength","Defense","Magic","Stamina"]
-series_names = ["Hero","Warrior","Mage","Rogue"]
-series_values = [[85,72,60,91,78,88],[60,55,95,88,45,75],[45,68,40,55,99,65],[95,90,55,70,60,70]]
-
-chart = sp.build_parallel(
-    title="Character Stats", axes=axes,
-    series=series_values, series_names=series_names,
-    variant="arc",
-    width=900, height=460,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-arc.html"></iframe>
 </div>
@@ -357,24 +168,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"ribbon"</code></span><span><strong>Aliases</strong> <code>ribbon / flow / band / filled_bezier</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Filled bezier bands between adjacent axes. Each series is rendered as a translucent ribbon + thin solid stroke, creating a flowing Sankey-lite effect.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["Speed","Agility","Strength","Defense","Magic","Stamina"]
-series_names = ["Hero","Warrior","Mage","Rogue"]
-series_values = [[85,72,60,91,78,88],[60,55,95,88,45,75],[45,68,40,55,99,65],[95,90,55,70,60,70]]
-
-chart = sp.build_parallel(
-    title="Character Stats", axes=axes,
-    series=series_values, series_names=series_names,
-    variant="ribbon",
-    width=900, height=460,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-ribbon.html"></iframe>
@@ -446,31 +239,6 @@ Aliases: `sp.build_parallel` &middot; `sp.parallel` &middot; `sp.parallel_coords
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Polylignes droites sur tous les axes - le parallel-coordinates canonique.</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["mpg", "hp", "weight", "accel", "price"]
-rows = [
-    [32, 90,  2300, 14.5, 18000],
-    [28, 110, 2800, 12.0, 22000],
-    [22, 160, 3400, 9.5,  31000],
-    [18, 200, 3800, 8.0,  42000],
-    [35, 75,  2100, 16.0, 16000],
-    [25, 130, 3000, 11.5, 26000],
-]
-series = list(map(list, zip(*rows)))
-
-chart = sp.build_parallel(
-    title="Cars profile", axes=axes, series=series,
-    variant="basic",
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    width=900, height=460,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-basic.html"></iframe>
 </div>
@@ -478,31 +246,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"smooth"</code></span><span><strong>Aliases</strong> <code>smooth / curved / bezier / spline</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Lignes Bezier qui reduisent l encombrement visuel sur grands jeux.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["mpg", "hp", "weight", "accel", "price"]
-rows = [
-    [32, 90,  2300, 14.5, 18000],
-    [28, 110, 2800, 12.0, 22000],
-    [22, 160, 3400, 9.5,  31000],
-    [18, 200, 3800, 8.0,  42000],
-    [35, 75,  2100, 16.0, 16000],
-    [25, 130, 3000, 11.5, 26000],
-]
-series = list(map(list, zip(*rows)))
-
-chart = sp.build_parallel(
-    title="Cars profile", axes=axes, series=series,
-    variant="smooth",
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    width=900, height=460,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-smooth.html"></iframe>
@@ -512,32 +255,6 @@ chart.show()
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Une couleur par categorie - parfait pour comparer des classes.</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["mpg", "hp", "weight", "accel", "price"]
-rows = [
-    [32, 90,  2300, 14.5, 18000],
-    [28, 110, 2800, 12.0, 22000],
-    [22, 160, 3400, 9.5,  31000],
-    [18, 200, 3800, 8.0,  42000],
-    [35, 75,  2100, 16.0, 16000],
-    [25, 130, 3000, 11.5, 26000],
-]
-series = list(map(list, zip(*rows)))
-
-chart = sp.build_parallel(
-    title="Cars profile", axes=axes, series=series,
-    variant="categorical",
-    category_indices=[0,0,1,1,2,2],
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    width=900, height=460,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-categorical.html"></iframe>
 </div>
@@ -545,32 +262,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / spotlight / focus / dim</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Met en avant une serie et estompe les autres - ideal pour storytelling.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["mpg", "hp", "weight", "accel", "price"]
-rows = [
-    [32, 90,  2300, 14.5, 18000],
-    [28, 110, 2800, 12.0, 22000],
-    [22, 160, 3400, 9.5,  31000],
-    [18, 200, 3800, 8.0,  42000],
-    [35, 75,  2100, 16.0, 16000],
-    [25, 130, 3000, 11.5, 26000],
-]
-series = list(map(list, zip(*rows)))
-
-chart = sp.build_parallel(
-    title="Cars profile", axes=axes, series=series,
-    variant="highlight",
-    highlight_index=2,
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    width=900, height=460,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-highlight.html"></iframe>
@@ -580,31 +271,6 @@ chart.show()
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Lignes translucides revelent les bandes de densite sur des milliers de profils.</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["mpg", "hp", "weight", "accel", "price"]
-rows = [
-    [32, 90,  2300, 14.5, 18000],
-    [28, 110, 2800, 12.0, 22000],
-    [22, 160, 3400, 9.5,  31000],
-    [18, 200, 3800, 8.0,  42000],
-    [35, 75,  2100, 16.0, 16000],
-    [25, 130, 3000, 11.5, 26000],
-]
-series = list(map(list, zip(*rows)))
-
-chart = sp.build_parallel(
-    title="Cars profile", axes=axes, series=series,
-    variant="density",
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    width=900, height=460,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-density.html"></iframe>
 </div>
@@ -612,32 +278,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / value / ramp / shaded</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">La couleur encode la valeur d un axe via un degrade continu.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["mpg", "hp", "weight", "accel", "price"]
-rows = [
-    [32, 90,  2300, 14.5, 18000],
-    [28, 110, 2800, 12.0, 22000],
-    [22, 160, 3400, 9.5,  31000],
-    [18, 200, 3800, 8.0,  42000],
-    [35, 75,  2100, 16.0, 16000],
-    [25, 130, 3000, 11.5, 26000],
-]
-series = list(map(list, zip(*rows)))
-
-chart = sp.build_parallel(
-    title="Cars profile", axes=axes, series=series,
-    variant="gradient",
-    color_axis=2,
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    width=900, height=460,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-gradient.html"></iframe>
@@ -648,24 +288,6 @@ chart.show()
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Style neon sombre - fond bleu nuit, lignes en double passe (lueur douce + trait net) avec des couleurs arc-en-ciel electriques.</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["Speed","Agility","Strength","Defense","Magic","Stamina"]
-series_names = ["Hero","Warrior","Mage","Rogue"]
-series_values = [[85,72,60,91,78,88],[60,55,95,88,45,75],[45,68,40,55,99,65],[95,90,55,70,60,70]]
-
-chart = sp.build_parallel(
-    title="Character Stats", axes=axes,
-    series=series_values, series_names=series_names,
-    variant="deluxe",
-    width=900, height=460,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Apercu</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-deluxe.html"></iframe>
 </div>
@@ -675,24 +297,6 @@ chart.show()
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Courbes de Bezier cubiques avec degrade de couleur par serie. Reduit l encombrement visuel par rapport aux lignes droites tout en preservant l identite de chaque serie.</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["Speed","Agility","Strength","Defense","Magic","Stamina"]
-series_names = ["Hero","Warrior","Mage","Rogue"]
-series_values = [[85,72,60,91,78,88],[60,55,95,88,45,75],[45,68,40,55,99,65],[95,90,55,70,60,70]]
-
-chart = sp.build_parallel(
-    title="Character Stats", axes=axes,
-    series=series_values, series_names=series_names,
-    variant="arc",
-    width=900, height=460,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Apercu</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-arc.html"></iframe>
 </div>
@@ -701,24 +305,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"ribbon"</code></span><span><strong>Alias</strong> <code>ribbon / flow / band / filled_bezier</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bandes de Bezier remplies entre les axes adjacents. Chaque serie est rendue comme un ruban translucide + trait fin, creant un effet de flux style Sankey simplifie.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-axes = ["Speed","Agility","Strength","Defense","Magic","Stamina"]
-series_names = ["Hero","Warrior","Mage","Rogue"]
-series_values = [[85,72,60,91,78,88],[60,55,95,88,45,75],[45,68,40,55,99,65],[95,90,55,70,60,70]]
-
-chart = sp.build_parallel(
-    title="Character Stats", axes=axes,
-    series=series_values, series_names=series_names,
-    variant="ribbon",
-    width=900, height=460,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Apercu</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-ribbon.html"></iframe>

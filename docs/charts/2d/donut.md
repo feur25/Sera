@@ -2,25 +2,6 @@
 
 <div class="lang-en">
 
-## Signature
-
-```python
-sp.build_donut_chart(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    show_pct: bool = True,
-    inner_radius_ratio: float = 0.55,
-    width: int = 700,
-    height: int = 480,
-    palette: list[int] | None = None,
-    background: str | None = None,
-    hover_json: str | None = None,
-    legend_position: str = "right",
-) -> Chart
-```
-
 Aliases: `sp.donut`, `sp.donut_chart`
 
 ---
@@ -78,25 +59,6 @@ A donut chart is a pie chart with a circular cutout at the center, reducing the 
 </div>
 
 <div class="lang-fr">
-
-<h2>Signature</h2>
-
-```python
-sp.build_donut_chart(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    show_pct: bool = True,
-    inner_radius_ratio: float = 0.55,
-    width: int = 700,
-    height: int = 480,
-    palette: list[int] | None = None,
-    background: str | None = None,
-    hover_json: str | None = None,
-    legend_position: str = "right",
-) -> Chart
-```
 
 Aliases: `sp.donut`, `sp.donut_chart`
 

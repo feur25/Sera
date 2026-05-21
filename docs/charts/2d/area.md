@@ -2,28 +2,6 @@
 
 <div class="lang-en">
 
-## Signature
-
-```python
-sp.build_area_chart(
-    title: str,
-    x_labels: list[str],
-    series_values: list[list[float]],
-    *,
-    stacked: bool = False,
-    series_names: list[str] | None = None,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = True,
-    background: str | None = None,
-    legend_position: str = "top",
-    hover_json: str | None = None,
-) -> Chart
-```
-
 Aliases: `sp.area`, `sp.area_chart`
 
 ---
@@ -85,28 +63,6 @@ An area chart is a line chart where the region between the line and the horizont
 </div>
 
 <div class="lang-fr">
-
-<h2>Signature</h2>
-
-```python
-sp.build_area_chart(
-    title: str,
-    x_labels: list[str],
-    series_values: list[list[float]],
-    *,
-    stacked: bool = False,
-    series_names: list[str] | None = None,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    x_label: str = "",
-    y_label: str = "",
-    gridlines: bool = True,
-    background: str | None = None,
-    legend_position: str = "top",
-    hover_json: str | None = None,
-) -> Chart
-```
 
 Aliases: `sp.area`, `sp.area_chart`
 

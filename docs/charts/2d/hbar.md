@@ -2,27 +2,6 @@
 
 <div class="lang-en">
 
-## Signature
-
-```python
-sp.build_hbar(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    show_text: bool = True,
-    sort_order: str = "none",
-    color_groups: list[str] | None = None,
-    palette: list[int] | None = None,
-    background: str | None = None,
-    width: int = 900,
-    height: int = 500,
-    x_label: str = "",
-    y_label: str = "",
-    no_y_axis: bool = False,
-) -> Chart
-```
-
 Aliases: `sp.hbar`, `sp.barh`, `sp.horizontal_bar`
 
 ---
@@ -83,27 +62,6 @@ A horizontal bar chart draws bars along the horizontal axis instead of the verti
 </div>
 
 <div class="lang-fr">
-
-<h2>Signature</h2>
-
-```python
-sp.build_hbar(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    show_text: bool = True,
-    sort_order: str = "none",
-    color_groups: list[str] | None = None,
-    palette: list[int] | None = None,
-    background: str | None = None,
-    width: int = 900,
-    height: int = 500,
-    x_label: str = "",
-    y_label: str = "",
-    no_y_axis: bool = False,
-) -> Chart
-```
 
 Aliases: `sp.hbar`, `sp.barh`, `sp.horizontal_bar`
 

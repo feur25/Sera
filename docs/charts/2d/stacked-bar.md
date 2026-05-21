@@ -2,25 +2,6 @@
 
 <div class="lang-en">
 
-## Signature
-
-```python
-sp.build_stacked_bar(
-    title: str,
-    category_labels: list[str],
-    series_values: list[float],
-    *,
-    show_values: bool = False,
-    series_names: list[str] | None = None,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    legend_position: str = "right",
-    gridlines: bool = False,
-    no_y_axis: bool = False,
-) -> Chart
-```
-
 Aliases: `sp.stacked_bar`
 
 ---
@@ -79,25 +60,6 @@ A stacked bar chart divides each bar into colored segments representing sub-seri
 </div>
 
 <div class="lang-fr">
-
-<h2>Signature</h2>
-
-```python
-sp.build_stacked_bar(
-    title: str,
-    category_labels: list[str],
-    series_values: list[float],
-    *,
-    show_values: bool = False,
-    series_names: list[str] | None = None,
-    palette: list[int] | None = None,
-    width: int = 900,
-    height: int = 480,
-    legend_position: str = "right",
-    gridlines: bool = False,
-    no_y_axis: bool = False,
-) -> Chart
-```
 
 Aliases: `sp.stacked_bar`
 

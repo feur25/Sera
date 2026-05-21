@@ -124,26 +124,6 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Spiral packing inside a parametric shape mask. Pick the silhouette via the `shape=` argument (rect, circle, heart, bird, glasses, diamond, star).</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-words = ["Python","Rust","Data","ML","AI","Cloud","GPU","Vector",
-         "Tensor","Graph","Pandas","NumPy","Polars","Arrow","Spark",
-         "Kafka","Docker","K8s","FastAPI","Tokio","Async","Serde"]
-freqs  = [98,92,88,80,74,66,60,54,48,42,36,30,24,18,16,14,12,11,10,9,8,7]
-
-chart = sp.build_wordcloud(
-    title="Tech stack", words=words, frequencies=freqs,
-    variant="basic", shape="heart",
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    bg_color="#fdf2f8", min_font=12, max_font=58,
-    width=720, height=440,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-basic.html"></iframe>
 </div>
@@ -151,27 +131,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code></span><span><strong>Aliases</strong> <code>bubble / bubbles / packed / circles / packing / pack</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Each word gets a colored disc sized by frequency - a packed-bubble word cloud. Words float in labeled circles, no overlap.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp, random
-random.seed(0)
-
-words = ["Python","Rust","Data","ML","AI","Cloud","GPU","Vector",
-         "Tensor","Graph","Pandas","NumPy","Polars","Arrow","Spark",
-         "Kafka","Docker","K8s","FastAPI","Tokio","Async","Serde"]
-freqs = [random.randint(5,90) for _ in words]
-
-chart = sp.build_wordcloud(
-    title="Bubble word cloud", words=words, frequencies=freqs,
-    variant="bubble",
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    bg_color="#1a1a2e", min_font=10, max_font=48,
-    width=720, height=440,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-bubble.html"></iframe>
@@ -181,37 +140,6 @@ chart.show()
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Text-network word cloud (InfraNodus style): words positioned by force-directed layout based on co-occurrence edges, colored by semantic cluster - semantically close words appear spatially close.</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp, random
-random.seed(0)
-
-words = ["data","python","rust","machine","learning","model","training",
-         "feature","vector","neural","deep","tensor","gradient","loss",
-         "accuracy","metric","pipeline","encoder","decoder","attention"]
-freqs = [random.randint(8,90) for _ in words]
-
-ei, ej, ew = [], [], []
-for i in range(len(words)):
-    for j in range(i+1, len(words)):
-        if random.random() < 0.09:
-            ei.append(i); ej.append(j); ew.append(random.random())
-
-clusters = [random.randint(0,4) for _ in words]
-
-chart = sp.build_wordcloud(
-    title="Context word cloud (text network)",
-    words=words, frequencies=freqs,
-    variant="context",
-    edges_i=ei, edges_j=ej, edges_w=ew,
-    category_indices=clusters,
-    bg_color="#fafafa", min_font=11, max_font=46,
-    width=720, height=440,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-context.html"></iframe>
 </div>
@@ -219,28 +147,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"image"</code></span><span><strong>Aliases</strong> <code>image / img / mask / picture / photo / silhouette</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Words flow inside a custom binary image mask - upload any silhouette (logo, icon, photo) and the cloud takes its shape.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-mw, mh = 80, 40
-mask = [
-    1 if ((x-40)**2/40**2 + (y-20)**2/20**2) <= 1.0 else 0
-    for y in range(mh) for x in range(mw)
-]
-
-words = ["Python","Rust","Data","ML","AI","Cloud","GPU","Vector"]
-freqs = [98,92,88,80,74,66,60,54]
-
-chart = sp.build_wordcloud(
-    title="Image-mask cloud", words=words, frequencies=freqs,
-    variant="image", mask=mask, mask_width=mw, mask_height=mh,
-    bg_color="#ffffff", width=720, height=440,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-image.html"></iframe>
@@ -250,31 +156,6 @@ chart.show()
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Datamapplot-style topic map - clustered scatter of points colored per category, with cluster labels positioned via leader lines.</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp, random
-random.seed(0)
-
-centers = [(0,0),(2,2),(-2,2),(2,-2),(-2,-2)]
-labels  = ["NLP","Vision","Audio","Tabular","RL"]
-px, py, ci = [], [], []
-for k,(cx,cy) in enumerate(centers):
-    for _ in range(120):
-        px.append(cx + random.gauss(0,0.55))
-        py.append(cy + random.gauss(0,0.55))
-        ci.append(k)
-
-chart = sp.build_wordcloud(
-    title="Topic map", words=labels, frequencies=[1]*len(labels),
-    variant="labelmap",
-    points_x=px, points_y=py,
-    category_indices=ci, cluster_labels=labels,
-    bg_color="#fafafa", width=720, height=440,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-labelmap.html"></iframe>
 </div>
@@ -282,33 +163,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"network"</code></span><span><strong>Aliases</strong> <code>network / graph / keywords / co_occurrence / cooccurrence / knowledge_graph</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Keyword co-occurrence graph - golden-angle node layout, bezier-curved edges, frequency-sized circles. Editorial style of academic keyword maps.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp, random
-random.seed(0)
-
-words = ["data","python","rust","machine","learning","model","training",
-         "feature","vector","neural","deep","tensor","gradient","loss",
-         "accuracy","metric","pipeline","encoder","decoder","token",
-         "batch","epoch","optimizer","attention","layer","kernel"]
-freqs = [random.randint(8,90) for _ in words]
-
-ei, ej, ew = [], [], []
-for i in range(len(words)):
-    for j in range(i+1, len(words)):
-        if random.random() < 0.07:
-            ei.append(i); ej.append(j); ew.append(random.random())
-
-chart = sp.build_wordcloud(
-    title="Keyword graph", words=words, frequencies=freqs,
-    variant="network",
-    edges_i=ei, edges_j=ej, edges_w=ew,
-    bg_color="#ffffff", width=720, height=440,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-network.html"></iframe>
@@ -318,24 +172,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"neuron"</code></span><span><strong>Aliases</strong> <code>neuron / neural / brain / synapse / network_glow / nodes</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Neural-network word cloud on a dark background. Words become glowing nodes; faint connecting edges link nearest neighbors, evoking a synaptic graph.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-words = ["Python","Rust","Machine Learning","Data","Neural","Network",
-         "Deep","AI","Vision","NLP","Graph","Node","Edge","Cluster",
-         "Vector","Matrix"]
-freqs = [100,90,85,80,75,70,65,60,55,50,45,40,38,35,30,25]
-
-chart = sp.build_wordcloud(
-    title="Neuron Cloud", words=words, frequencies=freqs,
-    variant="neuron",
-    width=900, height=500,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-neuron.html"></iframe>
@@ -429,26 +265,6 @@ La variante `basic` accepte un argument `shape=` :
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Packing en spirale dans un masque parametrique. Choisissez la silhouette via l argument `shape=` (rect, circle, heart, bird, glasses, diamond, star).</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-words = ["Python","Rust","Data","ML","AI","Cloud","GPU","Vector",
-         "Tensor","Graph","Pandas","NumPy","Polars","Arrow","Spark",
-         "Kafka","Docker","K8s","FastAPI","Tokio","Async","Serde"]
-freqs  = [98,92,88,80,74,66,60,54,48,42,36,30,24,18,16,14,12,11,10,9,8,7]
-
-chart = sp.build_wordcloud(
-    title="Tech stack", words=words, frequencies=freqs,
-    variant="basic", shape="heart",
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    bg_color="#fdf2f8", min_font=12, max_font=58,
-    width=720, height=440,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-basic.html"></iframe>
 </div>
@@ -456,27 +272,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code></span><span><strong>Aliases</strong> <code>bubble / bubbles / packed / circles / packing / pack</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chaque mot obtient un disque colore dimensionne par frequence - un nuage de bulles pack. Les mots flottent dans des cercles etiquetes, sans chevauchement.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp, random
-random.seed(0)
-
-words = ["Python","Rust","Data","ML","AI","Cloud","GPU","Vector",
-         "Tensor","Graph","Pandas","NumPy","Polars","Arrow","Spark",
-         "Kafka","Docker","K8s","FastAPI","Tokio","Async","Serde"]
-freqs = [random.randint(5,90) for _ in words]
-
-chart = sp.build_wordcloud(
-    title="Bubble word cloud", words=words, frequencies=freqs,
-    variant="bubble",
-    palette=[0x6366F1,0x22D3EE,0xF59E0B,0xEF4444,0x10B981,0xA855F7],
-    bg_color="#1a1a2e", min_font=10, max_font=48,
-    width=720, height=440,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-bubble.html"></iframe>
@@ -486,37 +281,6 @@ chart.show()
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Nuage de mots texte-reseau (style InfraNodus) : mots positionnes par layout force-dirige base sur les aretes de co-occurrence, colores par cluster semantique - les mots proches semantiquement sont proches spatialement.</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp, random
-random.seed(0)
-
-words = ["data","python","rust","machine","learning","model","training",
-         "feature","vector","neural","deep","tensor","gradient","loss",
-         "accuracy","metric","pipeline","encoder","decoder","attention"]
-freqs = [random.randint(8,90) for _ in words]
-
-ei, ej, ew = [], [], []
-for i in range(len(words)):
-    for j in range(i+1, len(words)):
-        if random.random() < 0.09:
-            ei.append(i); ej.append(j); ew.append(random.random())
-
-clusters = [random.randint(0,4) for _ in words]
-
-chart = sp.build_wordcloud(
-    title="Context word cloud (text network)",
-    words=words, frequencies=freqs,
-    variant="context",
-    edges_i=ei, edges_j=ej, edges_w=ew,
-    category_indices=clusters,
-    bg_color="#fafafa", min_font=11, max_font=46,
-    width=720, height=440,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-context.html"></iframe>
 </div>
@@ -524,28 +288,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"image"</code></span><span><strong>Aliases</strong> <code>image / img / mask / picture / photo / silhouette</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Mots a l interieur d un masque binaire personnalise - uploadez n importe quelle silhouette et le nuage en prend la forme.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-mw, mh = 80, 40
-mask = [
-    1 if ((x-40)**2/40**2 + (y-20)**2/20**2) <= 1.0 else 0
-    for y in range(mh) for x in range(mw)
-]
-
-words = ["Python","Rust","Data","ML","AI","Cloud","GPU","Vector"]
-freqs = [98,92,88,80,74,66,60,54]
-
-chart = sp.build_wordcloud(
-    title="Image-mask cloud", words=words, frequencies=freqs,
-    variant="image", mask=mask, mask_width=mw, mask_height=mh,
-    bg_color="#ffffff", width=720, height=440,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-image.html"></iframe>
@@ -555,31 +297,6 @@ chart.show()
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Carte thematique style datamapplot - scatter de points clusterises colores par categorie, avec etiquettes de cluster positionnees via lignes de rappel.</p>
 
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp, random
-random.seed(0)
-
-centers = [(0,0),(2,2),(-2,2),(2,-2),(-2,-2)]
-labels  = ["NLP","Vision","Audio","Tabular","RL"]
-px, py, ci = [], [], []
-for k,(cx,cy) in enumerate(centers):
-    for _ in range(120):
-        px.append(cx + random.gauss(0,0.55))
-        py.append(cy + random.gauss(0,0.55))
-        ci.append(k)
-
-chart = sp.build_wordcloud(
-    title="Topic map", words=labels, frequencies=[1]*len(labels),
-    variant="labelmap",
-    points_x=px, points_y=py,
-    category_indices=ci, cluster_labels=labels,
-    bg_color="#fafafa", width=720, height=440,
-)
-chart.show()
-```
-
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-labelmap.html"></iframe>
 </div>
@@ -587,33 +304,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"network"</code></span><span><strong>Aliases</strong> <code>network / graph / keywords / co_occurrence / cooccurrence / knowledge_graph</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Graphe de co-occurrence de mots-cles - layout en angle d or, aretes courbes bezier, cercles dimensionnes par frequence. Style editorial des cartes de mots-cles academiques.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp, random
-random.seed(0)
-
-words = ["data","python","rust","machine","learning","model","training",
-         "feature","vector","neural","deep","tensor","gradient","loss",
-         "accuracy","metric","pipeline","encoder","decoder","token",
-         "batch","epoch","optimizer","attention","layer","kernel"]
-freqs = [random.randint(8,90) for _ in words]
-
-ei, ej, ew = [], [], []
-for i in range(len(words)):
-    for j in range(i+1, len(words)):
-        if random.random() < 0.07:
-            ei.append(i); ej.append(j); ew.append(random.random())
-
-chart = sp.build_wordcloud(
-    title="Keyword graph", words=words, frequencies=freqs,
-    variant="network",
-    edges_i=ei, edges_j=ej, edges_w=ew,
-    bg_color="#ffffff", width=720, height=440,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-network.html"></iframe>
@@ -623,24 +313,6 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"neuron"</code></span><span><strong>Alias</strong> <code>neuron / neural / brain / synapse / network_glow / nodes</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Nuage de mots style reseau de neurones sur fond sombre. Les mots deviennent des noeuds lumineux relies par des aretes fines evoquant un graphe synaptique.</p>
-
-<div class="sp-preview-label">Code</div>
-
-```python
-import seraplot as sp
-
-words = ["Python","Rust","Machine Learning","Data","Neural","Network",
-         "Deep","AI","Vision","NLP","Graph","Node","Edge","Cluster",
-         "Vector","Matrix"]
-freqs = [100,90,85,80,75,70,65,60,55,50,45,40,38,35,30,25]
-
-chart = sp.build_wordcloud(
-    title="Neuron Cloud", words=words, frequencies=freqs,
-    variant="neuron",
-    width=900, height=500,
-)
-chart.show()
-```
 
 <div class="sp-preview-label">Apercu</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-neuron.html"></iframe>
