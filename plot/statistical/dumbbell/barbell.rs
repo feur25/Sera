@@ -2,7 +2,8 @@ use super::common::{prepare, open_frame, finalize, label_left, data_dot, x_at};
 use super::config::DumbbellConfig;
 use crate::plot::statistical::common::{push_b, push_i, hex6};
 
-pub const DEMO_KWARGS: &str = "labels=[\"A\",\"B\",\"C\",\"D\",\"E\"], start=[20,35,15,42,28], end=[60,52,38,68,55]";
+#[crate::chart_demo("labels=[\"A\",\"B\",\"C\",\"D\",\"E\"], start=[20,35,15,42,28], end=[60,52,38,68,55]")]
+
 pub fn render(cfg: &DumbbellConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let mut f = open_frame(cfg, &p);
@@ -33,5 +34,4 @@ pub fn render(cfg: &DumbbellConfig) -> String {
     }
     finalize(f, cfg, &p)
 }
-
 

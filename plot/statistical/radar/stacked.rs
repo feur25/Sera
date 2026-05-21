@@ -2,7 +2,8 @@ use super::common::{prepare, open_svg, draw_grid, polygon_pts, draw_legend, fina
 use super::config::RadarConfig;
 use crate::plot::statistical::common::{palette_color, push_b, push_i, push_f2, hex6};
 
-pub const DEMO_KWARGS: &str = "axes=[\"Speed\",\"Power\",\"Range\",\"Cost\",\"Style\"], series=[[80,65,70,40,75],[60,80,55,60,70]], series_names=[\"A\",\"B\"]";
+#[crate::chart_demo("axes=[\"Speed\",\"Power\",\"Range\",\"Cost\",\"Style\"], series=[[80,65,70,40,75],[60,80,55,60,70]], series_names=[\"A\",\"B\"]")]
+
 pub fn render(cfg: &RadarConfig) -> String {
     let mut p = match prepare(cfg) { Some(v) => v, None => return String::new() };
 
@@ -49,5 +50,4 @@ pub fn render(cfg: &RadarConfig) -> String {
     draw_legend(&mut b, cfg, &p);
     finalize(b, cfg)
 }
-
 

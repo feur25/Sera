@@ -2,7 +2,8 @@ use super::common::{prepare, finalize, color_for};
 use super::config::LollipopConfig;
 use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_open_rescalable, svg_title, palette_color};
 
-pub const DEMO_KWARGS: &str = "labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]";
+#[crate::chart_demo("labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]")]
+
 pub fn render(cfg: &LollipopConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let mut b = Vec::<u8>::with_capacity(4096);
@@ -58,5 +59,4 @@ pub fn render(cfg: &LollipopConfig) -> String {
     let _ = palette_color;
     finalize(b, cfg)
 }
-
 

@@ -3,7 +3,8 @@ use super::config::ScatterConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i};
 
-pub const DEMO_KWARGS: &str = "x=[1,2,3,4,5,6,7,8,9,10], y=[2,5,3,8,7,9,6,11,9,13]";
+#[crate::chart_demo("x=[1,2,3,4,5,6,7,8,9,10], y=[2,5,3,8,7,9,6,11,9,13]")]
+
 pub fn render(cfg: &ScatterConfig) -> String {
     let layout = match compute_layout(cfg) { Some(l) => l, None => return String::new() };
     let mut f = make_frame(cfg, layout.n, 20);
@@ -32,5 +33,4 @@ pub fn render(cfg: &ScatterConfig) -> String {
     let json: &str = if cfg.hover.is_empty() { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
     f.html(json)
 }
-
 

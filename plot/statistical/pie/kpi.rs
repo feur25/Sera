@@ -1,7 +1,8 @@
 use super::common::render_with;
 use super::config::PieConfig;
 
-pub const DEMO_KWARGS: &str = "labels=[\"Apple\",\"Banana\",\"Cherry\",\"Date\",\"Fig\"], values=[40,25,20,10,5]";
+#[crate::chart_demo("labels=[\"Apple\",\"Banana\",\"Cherry\",\"Date\",\"Fig\"], values=[40,25,20,10,5]")]
+
 pub fn render(cfg: &PieConfig) -> String {
     let total: f64 = cfg.values.iter().filter(|v| v.is_finite() && **v >= 0.0).sum();
     let auto_text = if cfg.center_text.is_empty() { format_total(total) } else { cfg.center_text.to_string() };
@@ -21,5 +22,4 @@ fn format_total(v: f64) -> String {
     else if abs >= 100.0 { format!("{:.0}", v) }
     else { format!("{:.1}", v) }
 }
-
 

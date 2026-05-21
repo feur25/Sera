@@ -27,16 +27,3 @@ pub fn render_treemap_html(cfg: &TreemapConfig) -> String {
     }
 }
 
-pub fn demo_kwargs(v: TreemapVariant) -> &'static str {
-    use TreemapVariant::*;
-    match v {
-        Basic              => basic::DEMO_KWARGS,
-        Flat               => flat::DEMO_KWARGS,
-        Gradient           => gradient::DEMO_KWARGS,
-        Outlined           => outlined::DEMO_KWARGS,
-        Gapped             => gapped::DEMO_KWARGS,
-        Nested             => nested::DEMO_KWARGS,
-        Heat               => heat::DEMO_KWARGS,
-        Mono               => mono::DEMO_KWARGS,
-    }
-}

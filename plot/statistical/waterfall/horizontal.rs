@@ -2,7 +2,8 @@ use super::common::{prepare, finalize, bar_color, COLOR_POS, COLOR_NEG, COLOR_TO
 use super::config::WaterfallConfig;
 use crate::plot::statistical::common::{push_b, push_i, push_f2, hex6, escape_xml};
 
-pub const DEMO_KWARGS: &str = "labels=[\"Start\",\"Q1\",\"Q2\",\"Q3\",\"End\"], values=[100,30,-15,40,155]";
+#[crate::chart_demo("labels=[\"Start\",\"Q1\",\"Q2\",\"Q3\",\"End\"], values=[100,30,-15,40,155]")]
+
 pub fn render(cfg: &WaterfallConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let mut b = Vec::<u8>::with_capacity(p.n * 220 + 2048);
@@ -118,5 +119,4 @@ pub fn render(cfg: &WaterfallConfig) -> String {
     let _ = COLOR_POS; let _ = COLOR_NEG; let _ = COLOR_TOTAL;
     finalize(b, cfg)
 }
-
 

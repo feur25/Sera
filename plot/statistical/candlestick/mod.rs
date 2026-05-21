@@ -27,16 +27,3 @@ pub fn render_candlestick_html(cfg: &CandlestickConfig) -> String {
     }
 }
 
-pub fn demo_kwargs(v: CandlestickVariant) -> &'static str {
-    use CandlestickVariant::*;
-    match v {
-        Basic              => basic::DEMO_KWARGS,
-        Hollow             => hollow::DEMO_KWARGS,
-        Ohlc               => ohlc::DEMO_KWARGS,
-        Heikin             => heikin::DEMO_KWARGS,
-        Outlined           => outlined::DEMO_KWARGS,
-        Line               => line::DEMO_KWARGS,
-        Mountain           => mountain::DEMO_KWARGS,
-        Range              => range::DEMO_KWARGS,
-    }
-}

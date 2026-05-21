@@ -3,7 +3,8 @@ use super::config::BubbleConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i, svg_legend_item};
 
-pub const DEMO_KWARGS: &str = "x=[1,2,3,4,5,6,7], y=[3,5,2,7,6,8,4], sizes=[20,40,15,55,30,45,25], labels=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\"], categories=[\"X\",\"Y\",\"X\",\"Y\",\"Z\",\"X\",\"Z\"]";
+#[crate::chart_demo("x=[1,2,3,4,5,6,7], y=[3,5,2,7,6,8,4], sizes=[20,40,15,55,30,45,25], labels=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\"], categories=[\"X\",\"Y\",\"X\",\"Y\",\"Z\",\"X\",\"Z\"]")]
+
 pub fn render(cfg: &BubbleConfig) -> String {
     let layout = match compute_layout(cfg) { Some(l) => l, None => return String::new() };
 
@@ -56,5 +57,4 @@ pub fn render(cfg: &BubbleConfig) -> String {
     let json: &str = if cfg.hover.is_empty() { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
     f.html(json)
 }
-
 

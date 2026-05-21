@@ -38,16 +38,3 @@ pub fn render_bubble_html(cfg: &BubbleConfig) -> String {
     }
 }
 
-pub fn demo_kwargs(v: BubbleVariant) -> &'static str {
-    use BubbleVariant::*;
-    match v {
-        Basic              => basic::DEMO_KWARGS,
-        Categorical        => categorical::DEMO_KWARGS,
-        Gradient           => gradient::DEMO_KWARGS,
-        Labeled            => labeled::DEMO_KWARGS,
-        Outlined           => outlined::DEMO_KWARGS,
-        Negative           => negative::DEMO_KWARGS,
-        Plasma             => plasma::DEMO_KWARGS,
-        Deluxe             => deluxe::DEMO_KWARGS,
-    }
-}

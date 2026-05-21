@@ -2,7 +2,6 @@ use super::common::{prepare, open_svg, ridge_label, project_pts, area_path, poly
 use super::config::RidgelineConfig;
 use crate::plot::statistical::common::{push_b, push_i, hex6};
 
-pub const DEMO_KWARGS: &str = "categories=[\"A\",\"A\",\"A\",\"A\",\"A\",\"B\",\"B\",\"B\",\"B\",\"B\",\"C\",\"C\",\"C\",\"C\",\"C\",\"D\",\"D\",\"D\",\"D\",\"D\"], values=[1.2,2.4,2.7,3.1,3.5,2.0,2.8,3.2,3.6,4.1,1.8,2.2,2.6,3.0,3.4,2.3,2.9,3.5,3.9,4.4]";
 fn lerp(a: u32, b: u32, t: f64) -> u32 {
     let ar = ((a >> 16) & 0xFF) as f64;
     let ag = ((a >> 8) & 0xFF) as f64;
@@ -25,6 +24,8 @@ fn viridis(t: f64) -> u32 {
     let hi = (lo + 1).min(n);
     lerp(stops[lo], stops[hi], pos - lo as f64)
 }
+
+#[crate::chart_demo("categories=[\"A\",\"A\",\"A\",\"A\",\"A\",\"B\",\"B\",\"B\",\"B\",\"B\",\"C\",\"C\",\"C\",\"C\",\"C\",\"D\",\"D\",\"D\",\"D\",\"D\"], values=[1.2,2.4,2.7,3.1,3.5,2.0,2.8,3.2,3.6,4.1,1.8,2.2,2.6,3.0,3.4,2.3,2.9,3.5,3.9,4.4]")]
 
 pub fn render(cfg: &RidgelineConfig) -> String {
     let p = match prepare(cfg, None) { Some(v) => v, None => return String::new() };
@@ -52,5 +53,4 @@ pub fn render(cfg: &RidgelineConfig) -> String {
     close_svg(&mut b, cfg, &p, false);
     finalize(b, cfg)
 }
-
 

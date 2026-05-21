@@ -3,7 +3,8 @@ use super::config::RadarConfig;
 use crate::plot::statistical::common::{palette_color, push_b, push_i, push_f2, hex6};
 use std::f64::consts::PI;
 
-pub const DEMO_KWARGS: &str = "axes=[\"Speed\",\"Power\",\"Range\",\"Cost\",\"Style\"], series=[[80,65,70,40,75],[60,80,55,60,70]], series_names=[\"A\",\"B\"]";
+#[crate::chart_demo("axes=[\"Speed\",\"Power\",\"Range\",\"Cost\",\"Style\"], series=[[80,65,70,40,75],[60,80,55,60,70]], series_names=[\"A\",\"B\"]")]
+
 pub fn render(cfg: &RadarConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let mut b = Vec::<u8>::with_capacity(4096 + p.n_ser * p.n_axes * 120);
@@ -53,5 +54,4 @@ pub fn render(cfg: &RadarConfig) -> String {
     draw_legend(&mut b, cfg, &p);
     finalize(b, cfg)
 }
-
 

@@ -3,12 +3,12 @@ use super::config::BoxplotConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{
 
-
     escape_xml, hex6, palette_color, push_b, push_f2, push_i,
     svg_axis_lines, svg_legend_item, svg_x_label, svg_y_label, Frame,
 };
 
-pub const DEMO_KWARGS: &str = "labels=[\"A\",\"B\",\"C\"], series=[[1.2,2.4,2.7,3.1,3.5,3.8,4.2,5.1,6.0],[2.0,2.8,3.2,3.6,4.1,4.5,5.0,5.7,6.5],[1.8,2.2,2.6,3.0,3.4,3.9,4.3,4.9,5.5]]";
+#[crate::chart_demo("labels=[\"A\",\"B\",\"C\"], series=[[1.2,2.4,2.7,3.1,3.5,3.8,4.2,5.1,6.0],[2.0,2.8,3.2,3.6,4.1,4.5,5.0,5.7,6.5],[1.8,2.2,2.6,3.0,3.4,3.9,4.3,4.9,5.5]]")]
+
 pub fn render(cfg: &BoxplotConfig) -> String {
     let n = cfg.category_labels.len().min(cfg.values.len());
     if n == 0 {
@@ -116,5 +116,4 @@ pub fn render(cfg: &BoxplotConfig) -> String {
     svg_y_label(&mut f.buf, cfg.y_label, 14, f.pt, f.ph);
     f.html(&slots_to_json(cfg.hover))
 }
-
 

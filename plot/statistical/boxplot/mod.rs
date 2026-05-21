@@ -31,18 +31,3 @@ pub fn render_boxplot_html(cfg: &BoxplotConfig) -> String {
     }
 }
 
-pub fn demo_kwargs(v: BoxplotVariant) -> &'static str {
-    use BoxplotVariant::*;
-    match v {
-        Basic              => basic::DEMO_KWARGS,
-        Horizontal         => horizontal::DEMO_KWARGS,
-        Notched            => notched::DEMO_KWARGS,
-        Grouped            => grouped::DEMO_KWARGS,
-        Points             => points::DEMO_KWARGS,
-        Outliers           => outliers::DEMO_KWARGS,
-        Strip              => strip::DEMO_KWARGS,
-        Violin             => violin::DEMO_KWARGS,
-        LetterValue        => letter_value::DEMO_KWARGS,
-        Rainbow            => rainbow::DEMO_KWARGS,
-    }
-}

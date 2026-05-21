@@ -2,7 +2,8 @@ use super::common::{prepare, open, finalize, color_for, dot, data_attrs, unique_
 use super::config::LollipopConfig;
 use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, svg_hgrid, svg_y_label, svg_tick_y};
 
-pub const DEMO_KWARGS: &str = "labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]";
+#[crate::chart_demo("labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]")]
+
 pub fn render(cfg: &LollipopConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let (mut b, pl, pt, pw, ph) = open(cfg, 64, 56, 26, 52);
@@ -118,5 +119,4 @@ pub fn render(cfg: &LollipopConfig) -> String {
     }
     finalize(b, cfg)
 }
-
 

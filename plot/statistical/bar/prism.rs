@@ -18,7 +18,7 @@ fn prism_color(i: usize) -> u32 {
     COLS[i % COLS.len()]
 }
 
-pub const DEMO_KWARGS: &str = "labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]";
+#[crate::chart_demo("labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]")]
 
 pub fn render(cfg: &BarConfig) -> String {
     let n = cfg.labels.len().min(cfg.values.len());
@@ -128,5 +128,4 @@ pub fn render(cfg: &BarConfig) -> String {
 
     f.html(&slots_to_json(cfg.hover))
 }
-
 

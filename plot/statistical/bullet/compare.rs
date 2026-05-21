@@ -2,7 +2,8 @@ use super::common::{prepare, max_for, open_svg, label_left, value_text, data_val
 use super::config::BulletConfig;
 use crate::plot::statistical::common::{push_b, push_i, hex6};
 
-pub const DEMO_KWARGS: &str = "labels=[\"Revenue\",\"Profit\",\"CSAT\"], values=[80,65,4.2], targets=[90,70,4.5], max_vals=[120,100,5], comparisons=[70,55,3.8]";
+#[crate::chart_demo("labels=[\"Revenue\",\"Profit\",\"CSAT\"], values=[80,65,4.2], targets=[90,70,4.5], max_vals=[120,100,5], comparisons=[70,55,3.8]")]
+
 pub fn render(cfg: &BulletConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let mut b = Vec::<u8>::with_capacity(p.n * 340 + 1024);
@@ -46,5 +47,4 @@ pub fn render(cfg: &BulletConfig) -> String {
     }
     finalize(b, cfg)
 }
-
 

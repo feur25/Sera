@@ -3,7 +3,6 @@ use super::config::HistogramConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{hex6, push_b, push_f2, push_i, Frame};
 
-pub const DEMO_KWARGS: &str = "values=[2.1,2.3,2.7,3.1,3.4,3.6,3.9,4.0,4.2,4.5,4.6,4.8,5.0,5.3,5.7,6.1,6.3,6.5,6.8,7.0,3.2,4.1,5.2,4.7,3.8,4.4,5.1,4.9,5.5,6.2]";
 fn gaussian_kde(values: &[f64], xs: &[f64]) -> Vec<f64> {
     let n = values.len();
     if n == 0 { return vec![0.0; xs.len()]; }
@@ -20,6 +19,8 @@ fn gaussian_kde(values: &[f64], xs: &[f64]) -> Vec<f64> {
         }).sum::<f64>() * norm
     }).collect()
 }
+
+#[crate::chart_demo("values=[2.1,2.3,2.7,3.1,3.4,3.6,3.9,4.0,4.2,4.5,4.6,4.8,5.0,5.3,5.7,6.1,6.3,6.5,6.8,7.0,3.2,4.1,5.2,4.7,3.8,4.4,5.1,4.9,5.5,6.2]")]
 
 pub fn render(cfg: &HistogramConfig) -> String {
     if cfg.values.is_empty() { return String::new(); }
@@ -96,5 +97,4 @@ pub fn render(cfg: &HistogramConfig) -> String {
     let json: &str = if cfg.hover.is_empty() { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
     f.html(json)
 }
-
 

@@ -3,7 +3,6 @@ use super::config::ScatterConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i};
 
-pub const DEMO_KWARGS: &str = "x=[1,2,3,4,5,6,7,8,9,10], y=[2,5,3,8,7,9,6,11,9,13]";
 fn galaxy_color(t: f64) -> u32 {
     let t = t.clamp(0.0, 1.0);
     let stops: [(f64, u32); 6] = [
@@ -28,6 +27,8 @@ fn galaxy_color(t: f64) -> u32 {
     0x34D399
 }
 
+#[crate::chart_demo("x=[1,2,3,4,5,6,7,8,9,10], y=[2,5,3,8,7,9,6,11,9,13]")]
+
 pub fn render(cfg: &ScatterConfig) -> String {
     let layout = match compute_layout(cfg) { Some(l) => l, None => return String::new() };
     let mut f = make_frame(cfg, layout.n, 20);
@@ -37,7 +38,6 @@ pub fn render(cfg: &ScatterConfig) -> String {
     push_b(&mut f.buf, b"<feGaussianBlur stdDeviation=\"3.5\" result=\"b\"/>");
     push_b(&mut f.buf, b"<feMerge><feMergeNode in=\"b\"/><feMergeNode in=\"SourceGraphic\"/></feMerge>");
     push_b(&mut f.buf, b"</filter></defs>");
-
 
     f.x_grid(6, layout.xmin2, layout.xmax2, cfg.gridlines);
     f.y_grid(5, layout.ymin2, layout.ymax2, cfg.gridlines);
@@ -78,5 +78,4 @@ pub fn render(cfg: &ScatterConfig) -> String {
     let json: &str = if cfg.hover.is_empty() { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
     f.html(json)
 }
-
 

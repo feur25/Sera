@@ -1,7 +1,6 @@
 use super::config::LineConfig;
 use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i, truncate, Frame};
 
-pub const DEMO_KWARGS: &str = "x_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\"], values=[12,19,15,22,28,24]";
 fn neon_col(i: usize, palette: &[u32]) -> u32 {
     if !palette.is_empty() { return palette_color(palette, i); }
     const COLS: [u32; 8] = [
@@ -10,6 +9,8 @@ fn neon_col(i: usize, palette: &[u32]) -> u32 {
     ];
     COLS[i % COLS.len()]
 }
+
+#[crate::chart_demo("x_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\"], values=[12,19,15,22,28,24]")]
 
 pub fn render(cfg: &LineConfig) -> String {
     let multi = !cfg.series.is_empty();
@@ -119,5 +120,4 @@ pub fn render(cfg: &LineConfig) -> String {
     }
     f.html("[]")
 }
-
 

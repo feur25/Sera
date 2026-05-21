@@ -27,16 +27,3 @@ pub fn render_funnel_html(cfg: &FunnelConfig) -> String {
     }
 }
 
-pub fn demo_kwargs(v: FunnelVariant) -> &'static str {
-    use FunnelVariant::*;
-    match v {
-        Basic              => basic::DEMO_KWARGS,
-        Stepped            => stepped::DEMO_KWARGS,
-        Rounded            => rounded::DEMO_KWARGS,
-        Chevron            => chevron::DEMO_KWARGS,
-        Gradient           => gradient::DEMO_KWARGS,
-        Pyramid            => pyramid::DEMO_KWARGS,
-        Inverted           => inverted::DEMO_KWARGS,
-        Conversion         => conversion::DEMO_KWARGS,
-    }
-}

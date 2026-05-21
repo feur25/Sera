@@ -2,7 +2,8 @@ use super::common::{prepare, open_svg, finalize, arc_path, slice_data_attrs, lab
 use super::config::SunburstConfig;
 use crate::plot::statistical::common::{push_b, push_i, push_f2, hex6};
 
-pub const DEMO_KWARGS: &str = "labels=[\"Root\",\"A\",\"B\",\"A1\",\"A2\",\"B1\",\"B2\"], parents=[\"\",\"Root\",\"Root\",\"A\",\"A\",\"B\",\"B\"], values=[0,40,30,20,20,15,15]";
+#[crate::chart_demo("labels=[\"Root\",\"A\",\"B\",\"A1\",\"A2\",\"B1\",\"B2\"], parents=[\"\",\"Root\",\"Root\",\"A\",\"A\",\"B\",\"B\"], values=[0,40,30,20,20,15,15]")]
+
 pub fn render(cfg: &SunburstConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let mut b = Vec::<u8>::with_capacity(p.n * 320 + 1536);
@@ -30,5 +31,4 @@ pub fn render(cfg: &SunburstConfig) -> String {
     push_b(&mut b, b"\" fill=\"#fff\"/>");
     finalize(b, cfg)
 }
-
 

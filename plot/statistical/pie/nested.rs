@@ -2,7 +2,8 @@ use super::common::{render_pie_svg, PiePiece, open_svg, write_title};
 use super::config::PieConfig;
 use crate::plot::statistical::common::{push_b, push_i, escape_xml};
 
-pub const DEMO_KWARGS: &str = "labels=[\"Apple\",\"Banana\",\"Cherry\",\"Date\",\"Fig\"], values=[40,25,20,10,5], secondary_labels=[\"X\",\"Y\",\"Z\"], secondary_values=[55,30,15]";
+#[crate::chart_demo("labels=[\"Apple\",\"Banana\",\"Cherry\",\"Date\",\"Fig\"], values=[40,25,20,10,5], secondary_labels=[\"X\",\"Y\",\"Z\"], secondary_values=[55,30,15]")]
+
 pub fn render(cfg: &PieConfig) -> String {
     let outer_labels: Vec<String> = cfg.labels.to_vec();
     let outer_values: Vec<f64> = cfg.values.to_vec();
@@ -71,5 +72,4 @@ pub fn render(cfg: &PieConfig) -> String {
     push_b(&mut buf, b"</svg>");
     unsafe { String::from_utf8_unchecked(buf) }
 }
-
 

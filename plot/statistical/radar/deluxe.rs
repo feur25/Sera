@@ -3,13 +3,14 @@ use super::config::RadarConfig;
 use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i, svg_open, svg_title};
 use std::f64::consts::PI;
 
-pub const DEMO_KWARGS: &str = "axes=[\"Speed\",\"Power\",\"Range\",\"Cost\",\"Style\"], series=[[80,65,70,40,75],[60,80,55,60,70]], series_names=[\"A\",\"B\"]";
 fn neon_color(si: usize) -> u32 {
     const COLS: [u32; 8] = [
         0x22D3EE, 0xA78BFA, 0x34D399, 0xF472B6, 0xFBBF24, 0x60A5FA, 0xFB7185, 0x4ADE80,
     ];
     COLS[si % COLS.len()]
 }
+
+#[crate::chart_demo("axes=[\"Speed\",\"Power\",\"Range\",\"Cost\",\"Style\"], series=[[80,65,70,40,75],[60,80,55,60,70]], series_names=[\"A\",\"B\"]")]
 
 pub fn render(cfg: &RadarConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
@@ -105,5 +106,4 @@ pub fn render(cfg: &RadarConfig) -> String {
     draw_legend(&mut b, cfg, &p);
     finalize(b, cfg)
 }
-
 

@@ -1,7 +1,7 @@
 use super::config::BarConfig;
 use crate::plot::statistical::common::{palette_color, push_b, push_i, escape_xml, push_hex, Frame};
 
-pub const DEMO_KWARGS: &str = "labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], series=[[24,38,17,42],[18,29,33,21]], series_names=[\"2023\",\"2024\"], super_categories=[\"H1\",\"H1\",\"H2\",\"H2\"]";
+#[crate::chart_demo("labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], series=[[24,38,17,42],[18,29,33,21]], series_names=[\"2023\",\"2024\"], super_categories=[\"H1\",\"H1\",\"H2\",\"H2\"]")]
 
 pub fn render(cfg: &BarConfig) -> String {
     let n_cats = cfg.category_labels.len();
@@ -99,5 +99,4 @@ pub fn render(cfg: &BarConfig) -> String {
     }
     f.html("[]")
 }
-
 

@@ -27,16 +27,3 @@ pub fn render_gauge_html(cfg: &GaugeConfig) -> String {
     }
 }
 
-pub fn demo_kwargs(v: GaugeVariant) -> &'static str {
-    use GaugeVariant::*;
-    match v {
-        Basic              => basic::DEMO_KWARGS,
-        Radial             => radial::DEMO_KWARGS,
-        Arc270             => arc270::DEMO_KWARGS,
-        Sleek              => sleek::DEMO_KWARGS,
-        Tick               => tick::DEMO_KWARGS,
-        Segmented          => segmented::DEMO_KWARGS,
-        Glow               => glow::DEMO_KWARGS,
-        Concentric         => concentric::DEMO_KWARGS,
-    }
-}

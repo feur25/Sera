@@ -42,23 +42,3 @@ pub fn render_heatmap_html(cfg: &HeatmapConfig) -> String {
     }
 }
 
-pub fn demo_kwargs(v: HeatmapVariant) -> &'static str {
-    use HeatmapVariant::*;
-    match v {
-        Basic              => basic::DEMO_KWARGS,
-        Annotated          => annotated::DEMO_KWARGS,
-        Categorical        => categorical::DEMO_KWARGS,
-        Unequal            => unequal::DEMO_KWARGS,
-        Log                => log::DEMO_KWARGS,
-        Discrete           => discrete::DEMO_KWARGS,
-        Correlation        => correlation::DEMO_KWARGS,
-        Density            => density::DEMO_KWARGS,
-        Contour            => contour::DEMO_KWARGS,
-        Temporal           => temporal::DEMO_KWARGS,
-        Cluster            => cluster::DEMO_KWARGS,
-        Bubble             => bubble::DEMO_KWARGS,
-        Marginal           => marginal::DEMO_KWARGS,
-        Confusion          => confusion::DEMO_KWARGS,
-        Pivot              => pivot::DEMO_KWARGS,
-    }
-}

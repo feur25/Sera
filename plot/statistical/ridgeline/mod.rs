@@ -29,17 +29,3 @@ pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
     }
 }
 
-pub fn demo_kwargs(v: RidgelineVariant) -> &'static str {
-    use RidgelineVariant::*;
-    match v {
-        Basic              => basic::DEMO_KWARGS,
-        Gradient           => gradient::DEMO_KWARGS,
-        Lines              => lines::DEMO_KWARGS,
-        Quartiles          => quartiles::DEMO_KWARGS,
-        Mean               => mean::DEMO_KWARGS,
-        Rug                => rug::DEMO_KWARGS,
-        Heatmap            => heatmap::DEMO_KWARGS,
-        Spaced             => spaced::DEMO_KWARGS,
-        Deluxe             => deluxe::DEMO_KWARGS,
-    }
-}

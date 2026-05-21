@@ -3,7 +3,8 @@ use super::common::{prepare, place_words};
 use crate::plot::statistical::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6};
 use crate::html::hover::{slots_to_json, build_chart_html};
 
-pub const DEMO_KWARGS: &str = "words=[\"rust\",\"python\",\"wasm\",\"plot\",\"data\",\"viz\",\"chart\",\"graph\",\"fast\",\"native\",\"async\",\"macro\",\"trait\",\"enum\",\"crate\"], frequencies=[42,38,30,28,25,22,18,15,12,10,9,8,7,6,5]";
+#[crate::chart_demo("words=[\"rust\",\"python\",\"wasm\",\"plot\",\"data\",\"viz\",\"chart\",\"graph\",\"fast\",\"native\",\"async\",\"macro\",\"trait\",\"enum\",\"crate\"], frequencies=[42,38,30,28,25,22,18,15,12,10,9,8,7,6,5]")]
+
 pub fn render(cfg: &WordCloudConfig) -> String {
     let p = match prepare(cfg) { Some(p) => p, None => return String::new() };
 
@@ -152,5 +153,4 @@ pub fn render(cfg: &WordCloudConfig) -> String {
     let json: &str = if cfg.hover.is_empty() { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
     build_chart_html(cfg.title, &svg, json)
 }
-
 

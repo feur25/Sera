@@ -2,7 +2,8 @@ use super::common::{prepare, open_with_axes, finalize, val_to_y, cx_at, data_att
 use super::config::CandlestickConfig;
 use crate::plot::statistical::common::{push_b, push_i};
 
-pub const DEMO_KWARGS: &str = "labels=[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\"], open=[100,102,105,103,108], high=[105,107,109,110,114], low=[99,101,103,102,107], close=[102,105,103,108,112]";
+#[crate::chart_demo("labels=[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\"], open=[100,102,105,103,108], high=[105,107,109,110,114], low=[99,101,103,102,107], close=[102,105,103,108,112]")]
+
 pub fn render(cfg: &CandlestickConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let mut b = Vec::<u8>::with_capacity(p.n * 80 + 4096);
@@ -31,5 +32,4 @@ pub fn render(cfg: &CandlestickConfig) -> String {
     }
     finalize(b, cfg)
 }
-
 

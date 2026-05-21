@@ -1,7 +1,6 @@
 use super::config::LineConfig;
 use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, truncate, Frame};
 
-pub const DEMO_KWARGS: &str = "x_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\"], values=[12,19,15,22,28,24]";
 fn catmull_rom_path(buf: &mut Vec<u8>, pts: &[(i32, i32)], tension: f64) {
     if pts.len() < 2 { return; }
     push_b(buf, b"M "); push_i(buf, pts[0].0); buf.push(b' '); push_i(buf, pts[0].1);
@@ -24,6 +23,8 @@ fn catmull_rom_path(buf: &mut Vec<u8>, pts: &[(i32, i32)], tension: f64) {
         push_i(buf, p2.0); buf.push(b' '); push_i(buf, p2.1);
     }
 }
+
+#[crate::chart_demo("x_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\"], values=[12,19,15,22,28,24]")]
 
 pub fn render(cfg: &LineConfig) -> String {
     let n = cfg.values.len().min(cfg.labels.len());
@@ -75,5 +76,4 @@ pub fn render(cfg: &LineConfig) -> String {
 
     f.html("[]")
 }
-
 

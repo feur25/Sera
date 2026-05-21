@@ -37,21 +37,3 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
     }
 }
 
-pub fn demo_kwargs(v: ViolinVariant) -> &'static str {
-    use ViolinVariant::*;
-    match v {
-        Basic              => basic::DEMO_KWARGS,
-        Box                => with_box::DEMO_KWARGS,
-        Quartile           => quartile::DEMO_KWARGS,
-        Mean               => mean::DEMO_KWARGS,
-        Points             => points::DEMO_KWARGS,
-        Strip              => strip::DEMO_KWARGS,
-        Horizontal         => horizontal::DEMO_KWARGS,
-        Split              => split::DEMO_KWARGS,
-        Half               => half::DEMO_KWARGS,
-        Rainbow            => rainbow::DEMO_KWARGS,
-        Aurora             => aurora::DEMO_KWARGS,
-        Deluxe             => deluxe::DEMO_KWARGS,
-        Crystal            => crystal::DEMO_KWARGS,
-    }
-}

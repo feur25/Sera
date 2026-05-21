@@ -5,6 +5,23 @@ pub mod ml;
 pub mod cloud;
 pub mod telemetry;
 
+pub use seraplot_macros::chart_demo;
+
+include!(concat!(env!("OUT_DIR"), "/demo_registry.rs"));
+
+pub fn demo_kwargs(family: &str, variant: &str) -> Option<&'static str> {
+    DEMO_REGISTRY.iter().find(|(f, v, _)| *f == family && *v == variant).map(|(_, _, k)| *k)
+}
+
+pub fn demo_snippet(family: &str, variant: &str) -> Option<String> {
+    let k = demo_kwargs(family, variant)?;
+    let mut c = variant.chars();
+    let title = c.next().map(|f| f.to_uppercase().chain(c).collect::<String>()).unwrap_or_default();
+    let suffix = if variant == "basic" || variant == "default" { String::new() }
+                 else { format!(",\n    variant=\"{}\"", variant) };
+    Some(format!("import seraplot as sp\n\nc = sp.{}(\n    \"{} demo\",\n    {}{}\n)\n", family, title, k, suffix))
+}
+
 #[cfg(any(feature = "python", feature = "gui"))]
 
 pub mod viewer;
@@ -1027,6 +1044,50 @@ pub fn themes() -> Vec<String> {
 }
 
 #[cfg(feature = "python")]
+#[pyfunction(name = "demo")]
+#[pyo3(signature = (chart, variant=None))]
+pub fn py_demo(chart: &str, variant: Option<&str>) -> PyResult<String> {
+    let v = variant.unwrap_or("basic");
+    crate::demo_snippet(chart, v).ok_or_else(|| {
+        pyo3::exceptions::PyValueError::new_err(format!("unknown chart '{}' / variant '{}'", chart, v))
+    })
+}
+
+#[cfg(feature = "python")]
+#[pyfunction(name = "demos")]
+pub fn py_demos() -> Vec<&'static str> {
+    let mut out: Vec<&'static str> = crate::DEMO_REGISTRY.iter().map(|(f, _, _)| *f).collect();
+    out.sort(); out.dedup(); out
+}
+
+#[cfg(feature = "python")]
+#[pyfunction]
+#[pyo3(signature = (chart=None, variant=None))]
+pub fn params(py: Python<'_>, chart: Option<&str>, variant: Option<&str>) -> PyResult<PyObject> {
+    use pyo3::types::PyDict;
+    let root = PyDict::new(py);
+    for (f, v, k) in crate::DEMO_REGISTRY.iter() {
+        let inner: &PyDict = match root.get_item(*f)? {
+            Some(d) => d.downcast()?,
+            None => { let d = PyDict::new(py); root.set_item(*f, d)?; d }
+        };
+        inner.set_item(*v, *k)?;
+    }
+    if let Some(c) = chart {
+        let sub = root.get_item(c)?
+            .ok_or_else(|| pyo3::exceptions::PyKeyError::new_err(format!("unknown chart '{}'", c)))?;
+        if let Some(v) = variant {
+            let d: &PyDict = sub.downcast()?;
+            let val = d.get_item(v)?
+                .ok_or_else(|| pyo3::exceptions::PyKeyError::new_err(format!("unknown variant '{}' for '{}'", v, c)))?;
+            return Ok(val.into());
+        }
+        return Ok(sub.into());
+    }
+    Ok(root.into())
+}
+
+#[cfg(feature = "python")]
 #[pyfunction]
 pub fn chart_variants(py: Python<'_>) -> PyResult<PyObject> {
     use pyo3::types::{PyDict, PyList};
@@ -1506,6 +1567,9 @@ fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(reset_theme, m)?)?;
     m.add_function(wrap_pyfunction!(themes, m)?)?;
     m.add_function(wrap_pyfunction!(chart_variants, m)?)?;
+    m.add_function(wrap_pyfunction!(py_demo, m)?)?;
+    m.add_function(wrap_pyfunction!(py_demos, m)?)?;
+    m.add_function(wrap_pyfunction!(params, m)?)?;
     m.add_function(wrap_pyfunction!(config, m)?)?;
     m.add_function(wrap_pyfunction!(reset_config, m)?)?;
 

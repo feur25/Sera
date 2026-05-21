@@ -2,7 +2,8 @@ use super::common::{prepare, open_svg, finalize};
 use super::config::SlopeConfig;
 use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml};
 
-pub const DEMO_KWARGS: &str = "labels=[\"A\",\"B\",\"C\",\"D\",\"E\"], left=[20,35,15,42,28], right=[35,28,40,55,22]";
+#[crate::chart_demo("labels=[\"A\",\"B\",\"C\",\"D\",\"E\"], left=[20,35,15,42,28], right=[35,28,40,55,22]")]
+
 pub fn render(cfg: &SlopeConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let l = &p.layout;
@@ -69,5 +70,4 @@ pub fn render(cfg: &SlopeConfig) -> String {
     }
     finalize(b, cfg)
 }
-
 

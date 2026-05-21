@@ -27,15 +27,3 @@ pub fn render_wordcloud_html(cfg: &WordCloudConfig) -> String {
     }
 }
 
-pub fn demo_kwargs(v: WordCloudVariant) -> &'static str {
-    use WordCloudVariant::*;
-    match v {
-        Basic              => basic::DEMO_KWARGS,
-        Image              => image::DEMO_KWARGS,
-        LabelMap           => labelmap::DEMO_KWARGS,
-        Network            => network::DEMO_KWARGS,
-        Bubble             => bubble::DEMO_KWARGS,
-        Context            => context::DEMO_KWARGS,
-        Neuron             => neuron::DEMO_KWARGS,
-    }
-}

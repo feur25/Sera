@@ -1,7 +1,7 @@
 use super::config::BarConfig;
 use crate::plot::statistical::{GroupedBarConfig, render_grouped_bar_html};
 
-pub const DEMO_KWARGS: &str = "labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], series=[[24,38,17,42],[18,29,33,21],[12,15,28,30]], series_names=[\"Product A\",\"Product B\",\"Product C\"]";
+#[crate::chart_demo("labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], series=[[24,38,17,42],[18,29,33,21],[12,15,28,30]], series_names=[\"Product A\",\"Product B\",\"Product C\"]")]
 
 pub fn render(cfg: &BarConfig, stacked: bool) -> String {
     let g = GroupedBarConfig {
@@ -16,5 +16,4 @@ pub fn render(cfg: &BarConfig, stacked: bool) -> String {
     };
     render_grouped_bar_html(&g)
 }
-
 

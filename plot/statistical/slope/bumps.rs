@@ -2,7 +2,6 @@ use super::common::{prepare, open_svg, draw_axes, dot, label_left, label_right, 
 use super::config::SlopeConfig;
 use crate::plot::statistical::common::{palette_color, push_b, push_i, escape_xml, hex6};
 
-pub const DEMO_KWARGS: &str = "labels=[\"A\",\"B\",\"C\",\"D\",\"E\"], left=[20,35,15,42,28], right=[35,28,40,55,22]";
 fn ranks_desc(vals: &[f64]) -> Vec<usize> {
     let n = vals.len();
     let mut idx: Vec<usize> = (0..n).collect();
@@ -11,6 +10,8 @@ fn ranks_desc(vals: &[f64]) -> Vec<usize> {
     for (r, i) in idx.iter().enumerate() { rank[*i] = r + 1; }
     rank
 }
+
+#[crate::chart_demo("labels=[\"A\",\"B\",\"C\",\"D\",\"E\"], left=[20,35,15,42,28], right=[35,28,40,55,22]")]
 
 pub fn render(cfg: &SlopeConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
@@ -59,5 +60,4 @@ pub fn render(cfg: &SlopeConfig) -> String {
     }
     finalize(b, cfg)
 }
-
 

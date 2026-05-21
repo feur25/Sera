@@ -3,7 +3,6 @@ use super::config::ScatterConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i};
 
-pub const DEMO_KWARGS: &str = "x=[1,2,3,4,5,6,7,8,9,10], y=[2,3.8,5.1,7.2,8.5,10.3,11.8,13.4,15.1,16.7]";
 fn fit_linear(xs: &[f64], ys: &[f64]) -> Option<(f64, f64, f64)> {
     let n = xs.len() as f64;
     if xs.len() < 2 { return None; }
@@ -46,6 +45,8 @@ fn fit_poly2(xs: &[f64], ys: &[f64]) -> Option<(f64, f64, f64)> {
     let c2 = det3([[m[0][0], m[0][1], b[0]], [m[1][0], m[1][1], b[1]], [m[2][0], m[2][1], b[2]]]) / d;
     Some((c0, c1, c2))
 }
+
+#[crate::chart_demo("x=[1,2,3,4,5,6,7,8,9,10], y=[2,3.8,5.1,7.2,8.5,10.3,11.8,13.4,15.1,16.7]")]
 
 pub fn render(cfg: &ScatterConfig) -> String {
     let layout = match compute_layout(cfg) { Some(l) => l, None => return String::new() };
@@ -138,5 +139,4 @@ pub fn render(cfg: &ScatterConfig) -> String {
     let json: &str = if cfg.hover.is_empty() { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
     f.html(json)
 }
-
 

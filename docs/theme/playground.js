@@ -280,13 +280,10 @@
         var fn = state.baseFn || (state.slug ? state.slug.replace(/-/g, '_') : 'bar');
         try {
             var sp = window.SeraplotWASM;
-            if (sp) {
-                var jsName = 'demo' + fn.split('_').map(capitalize).join('');
-                if (typeof sp[jsName] === 'function') {
-                    var v = (variantName === 'default' || !variantName) ? '' : variantName;
-                    var code = sp[jsName](JSON.stringify({ variant: v }));
-                    if (code && code.trim()) return code;
-                }
+            if (sp && typeof sp.demo === 'function') {
+                var v = (variantName === 'default' || !variantName) ? 'basic' : variantName;
+                var code = sp.demo(JSON.stringify({ family: fn, variant: v }));
+                if (code && code.trim()) return code;
             }
         } catch (e) {}
         var lines = ['import seraplot as sp', '', 'c = sp.' + fn + '('];
@@ -360,7 +357,7 @@
             '.sp-pg-tab{font:600 11.5px/1 "Inter",sans-serif;letter-spacing:.04em;padding:9px 16px;color:#969696;background:#2d2d30;border:none;border-right:1px solid #252526;border-bottom:1px solid #2d2d30;cursor:pointer;transition:all .15s;white-space:nowrap;font-family:inherit;text-transform:capitalize}',
             '.sp-pg-tab:hover{color:#fff;background:#37373d}',
             '.sp-pg-tab.sp-active{color:#fff;background:#1e1e1e;border-bottom-color:#1e1e1e}',
-            '.sp-pg-main{display:flex;height:520px;background:#1e1e1e}',
+            '.sp-pg-main{display:flex;height:620px;background:#1e1e1e}',
             '.sp-pg-ecol{width:50%;min-width:180px;max-width:80%;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;border-right:1px solid #2d2d30;background:#1e1e1e}',
             '.sp-pg-ehdr{display:flex;align-items:center;padding:0;background:#252526;border-bottom:1px solid #2d2d30;font:11px/1 "Segoe UI",sans-serif;color:#969696}',
             '.sp-pg-etab{padding:7px 14px;background:#1e1e1e;border:none;border-right:1px solid #2d2d30;color:#fff;font-size:12px;font-weight:500;letter-spacing:.02em;display:flex;align-items:center;gap:8px;font-family:inherit}',
@@ -403,6 +400,14 @@
 
     function renderHtmlInIframe(html) {
         if (!state.iframe) return;
+        var fitStyle = '<style>html,body{margin:0;padding:0;width:100%;height:100%;overflow:auto;background:#fff}body>*{max-width:100%!important}svg,canvas{max-width:100%!important;height:auto!important;display:block;margin:0 auto}.chart-container,.plot-container,#chart,#plot{max-width:100%!important;width:100%!important;height:auto!important;box-sizing:border-box}</style>';
+        if (/<\/head>/i.test(html)) {
+            html = html.replace(/<\/head>/i, fitStyle + '</head>');
+        } else if (/<body[^>]*>/i.test(html)) {
+            html = html.replace(/<body[^>]*>/i, function (m) { return m + fitStyle; });
+        } else {
+            html = fitStyle + html;
+        }
         var blob = new Blob([html], { type: 'text/html' });
         var url = URL.createObjectURL(blob);
         var prev = state.iframe.dataset.blobUrl;

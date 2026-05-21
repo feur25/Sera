@@ -2,7 +2,8 @@ use super::common::{prepare, open_svg, finalize, axes, val_to_y, xlabel, value_t
 use super::config::WaterfallConfig;
 use crate::plot::statistical::common::{push_b, push_i, hex6};
 
-pub const DEMO_KWARGS: &str = "labels=[\"Start\",\"Q1\",\"Q2\",\"Q3\",\"End\"], values=[100,30,-15,40,155]";
+#[crate::chart_demo("labels=[\"Start\",\"Q1\",\"Q2\",\"Q3\",\"End\"], values=[100,30,-15,40,155]")]
+
 pub fn render(cfg: &WaterfallConfig) -> String {
     let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
     let l = &p.layout;
@@ -41,5 +42,4 @@ pub fn render(cfg: &WaterfallConfig) -> String {
     }
     finalize(b, cfg)
 }
-
 
