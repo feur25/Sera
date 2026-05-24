@@ -7,10 +7,7 @@ pub mod telemetry;
 
 pub use seraplot_macros::chart_demo;
 
-macro_rules! _cpe {
-    ($f:literal, $v:literal, $k:literal) => { ($f, $v, $k) };
-}
-pub static DEMO_REGISTRY: &[(&str, &str, &str)] = &crate::for_each_chart_params!(_cpe);
+include!(concat!(env!("OUT_DIR"), "/demo_registry.rs"));
 
 pub fn demo_kwargs(family: &str, variant: &str) -> Option<&'static str> {
     DEMO_REGISTRY.iter().find(|(f, v, _)| *f == family && *v == variant).map(|(_, _, k)| *k)
