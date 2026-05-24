@@ -1,6 +1,7 @@
 # Summary
 
 [Introduction](introduction.md)
+[Sera Framework](about/sera-framework.md)
 
 ---
 
@@ -11,7 +12,7 @@
 
 ---
 
-# Charts/Plots
+# SeraPlot
 
 - [Chart Methods](getting-started/chart-methods.md)
 - [2D Charts](charts/2d/index.md)
@@ -63,7 +64,7 @@
 
 ---
 
-# ML methods
+# SeraML
 
 - [Machine Learning](ml/index.md)
   - [Clustering](ml/clustering-index.md)
@@ -112,7 +113,8 @@
 
 ---
 
-# Seraplot controller methods
+# Controller & Config
+
 - [Data-Collected](controller_methods/telemetry.md)
 - [Configuration](config/index.md)
   - [Background](config/background.md)
@@ -134,10 +136,15 @@
 
 ---
 
-# Support
+# Tooling
 
 - [VS Code Extension](tooling/vscode.md)
+- [Live Playground](tooling/playground.md)
 
+---
+
+# About
+
+- [Sera Framework](about/sera-framework.md)
 - [API Reference](api/api.md)
-
 - [Support & Contact](about/support.md)

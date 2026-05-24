@@ -2,3 +2,5 @@ book/
 target/
 *.lock
 .DS_Store
+src/telemetry/
+*.csv

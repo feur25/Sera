@@ -2981,4 +2981,32 @@ pub fn register_ml_classes(m: &PyModule) -> PyResult<()> {
     Ok(())
 }
 
+pub fn register_full_ml(m: &PyModule) -> PyResult<()> {
+    register_ml_classes(m)?;
+    m.add_class::<super::native::KMeansModel>()?;
+    m.add_class::<super::native::DbscanModel>()?;
+    m.add_function(wrap_pyfunction!(super::native::ml_dbscan_fit_predict, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_kmeans_fit_predict, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_linear_regression, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_ridge, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_lasso, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_elastic_net, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_logistic_regression, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_decision_tree_classifier, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_decision_tree_regressor, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_random_forest_classifier, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_random_forest_regressor, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_gradient_boosting_classifier, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_gradient_boosting_regressor, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_knn_classifier, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_knn_regressor, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_metric_score, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_metric_curve, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_fit_transform, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_kfold_split, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_isolation_forest, m)?)?;
+    m.add_function(wrap_pyfunction!(super::native::ml_permutation_importance, m)?)?;
+    Ok(())
+}
+
 
