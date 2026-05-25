@@ -1,4 +1,4 @@
-﻿let wasm_bindgen = (function(exports) {
+let wasm_bindgen = (function(exports) {
     let script_src;
     if (typeof document !== 'undefined' && document.currentScript !== null) {
         script_src = new URL(document.currentScript.src, location.href).toString();
@@ -1205,6 +1205,23 @@
     exports.buildWordcloud = buildWordcloud;
 
     /**
+     * @returns {string}
+     */
+    function chartAliases() {
+        let deferred1_0;
+        let deferred1_1;
+        try {
+            const ret = wasm.chartAliases();
+            deferred1_0 = ret[0];
+            deferred1_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+        }
+    }
+    exports.chartAliases = chartAliases;
+
+    /**
      * @param {string} input
      * @returns {string}
      */
@@ -2165,17 +2182,3 @@
 
     return Object.assign(__wbg_init, { initSync }, exports);
 })({ __proto__: null });
-
-window.SeraplotWASM = {
-    __init: function(url) {
-        return wasm_bindgen(url).then(function() {
-            Object.keys(wasm_bindgen).forEach(function(k) {
-                if (typeof wasm_bindgen[k] === 'function' && k !== 'initSync') {
-                    window.SeraplotWASM[k] = wasm_bindgen[k];
-                }
-            });
-            window.SeraplotWASM.__ready = true;
-        });
-    },
-    __ready: false
-};
