@@ -530,9 +530,9 @@ pub fn build_line(input: &str) -> String {
     let title = title_s.as_str();
     let variant = LineVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
 
-    let labels = a.labels.clone().unwrap_or_default();
-    let values = a.values.clone().unwrap_or_default();
     let x_labels = a.x_labels.clone().unwrap_or_default();
+    let labels = a.labels.clone().unwrap_or_else(|| x_labels.clone());
+    let values = a.values.clone().unwrap_or_default();
     let hover = o.hj();
     let palette = o.pal();
     let xl = o.xl(); let yl = o.yl(); let srt = o.srt(); let lp = o.lp();
