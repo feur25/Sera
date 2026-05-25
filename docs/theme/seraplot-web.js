@@ -2182,3 +2182,7 @@ let wasm_bindgen = (function(exports) {
 
     return Object.assign(__wbg_init, { initSync }, exports);
 })({ __proto__: null });
+window.SeraplotWASM = wasm_bindgen;
+window.SeraplotWASM.__init = function(path) {
+    return wasm_bindgen(path).then(function() { wasm_bindgen.__ready = true; });
+};
