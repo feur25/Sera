@@ -135,6 +135,9 @@
     }
 
     function buildDynamicAliases(sp) {
+        if (typeof sp.chartAliases === 'function') {
+            try { return JSON.parse(sp.chartAliases()); } catch (e) {}
+        }
         var aliases = {};
         var keys = Object.keys(sp);
         for (var i = 0; i < keys.length; i++) {
