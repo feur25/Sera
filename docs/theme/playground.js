@@ -810,6 +810,17 @@
         return out;
     }
 
+    var VARIANT_ALIASES = {
+        'gstack': 'grouped_stacked',
+        'h': 'horizontal',
+        'grp': 'grouped',
+        'stk': 'stacked',
+        'rel': 'relative',
+        'mek': 'marimekko',
+        'pict': 'pictogram',
+        'multi': 'multicategory',
+    };
+
     function injectVariantCodeBlocks() {
         var sp = window.SeraplotWASM;
         if (!sp || typeof sp.demo !== 'function') return;
@@ -817,11 +828,14 @@
         if (!slug || slug === 'playground') return;
         var fn = slug.replace(/-/g, '_');
         var codeStyle = [
-            'background:#1e1e1e',
-            'border:1px solid rgba(99,102,241,.22)',
-            'border-radius:8px',
-            'padding:14px 18px',
-            'margin:0 0 18px',
+            'background:transparent',
+            'border-top:1px solid rgba(99,102,241,.18)',
+            'border-bottom:none',
+            'border-left:none',
+            'border-right:none',
+            'border-radius:0',
+            'padding:12px 2px 4px',
+            'margin:0 0 14px',
             'overflow-x:auto',
             'font-family:"Cascadia Code","JetBrains Mono","Fira Code","Consolas",monospace',
             'font-size:12.5px',
@@ -830,11 +844,11 @@
             'white-space:pre',
             'position:relative',
         ].join(';');
-        var labelStyle = 'font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase';
+        var labelStyle = 'font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 4px;text-transform:uppercase';
         var copyBtnStyle = [
             'position:absolute',
-            'top:8px',
-            'right:8px',
+            'top:4px',
+            'right:0',
             'background:#1e293b',
             'border:1px solid #334155',
             'color:#94a3b8',
@@ -854,10 +868,14 @@
             var variantName = parts[parts.length - 1];
             if (!variantName) continue;
             var v = (variantName === 'default') ? 'basic' : variantName;
+            var wasmV = VARIANT_ALIASES[v] || v;
             var code;
             try {
-                code = sp.demo(JSON.stringify({ family: fn, variant: v }));
-            } catch (e) { continue; }
+                code = sp.demo(JSON.stringify({ family: fn, variant: wasmV }));
+            } catch (e) {}
+            if (!code || !code.trim()) {
+                code = buildCode(v);
+            }
             if (!code || !code.trim()) continue;
             var wrap = document.createElement('div');
             wrap.className = 'sp-demo-code-wrap';
