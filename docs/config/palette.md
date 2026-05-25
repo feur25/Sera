@@ -115,9 +115,4 @@ chart = sp.build_heatmap(
 
 ---
 
-## Voir aussi
-
-- [Configuration de fond](background.md)
-- [Infobulles de survol](hover.md)
-
 </div>

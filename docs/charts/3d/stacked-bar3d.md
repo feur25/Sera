@@ -128,11 +128,6 @@ categories,
 
 ---
 
-## See also
-
-- [Stacked Bar 2D](../2d/stacked-bar.md)
-- [Bar 3D](bar3d.md)
-
 </div>
 
 <div class="lang-fr">
@@ -212,10 +207,5 @@ chart = sp.build_stacked_bar3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Barres empilées 2D](../2d/stacked-bar.md)
-- [Barres 3D](bar3d.md)
 
 </div>

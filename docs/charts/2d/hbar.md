@@ -53,12 +53,6 @@ A horizontal bar chart draws bars along the horizontal axis instead of the verti
 
 ---
 
-## See also
-
-- [bar.md](bar.md) — Vertical bar chart
-- [lollipop.md](lollipop.md) — Minimalist bar chart using dot-on-stick encoding
-- [dumbbell.md](dumbbell.md) — Two-value comparison per category
-
 </div>
 
 <div class="lang-fr">
@@ -110,11 +104,5 @@ Un graphique à barres horizontales trace les barres le long de l'axe horizontal
 <iframe src="../../previews/hbar.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [bar.md](bar.md) — Graphique à barres verticales
-- [lollipop.md](lollipop.md) — Graphique à barres minimaliste avec encodage point-sur-tige
-- [dumbbell.md](dumbbell.md) — Comparaison de deux valeurs par catégorie
 
 </div>

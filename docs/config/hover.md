@@ -92,9 +92,4 @@ chart = sp.build_bar_chart(
 
 ---
 
-## Voir aussi
-
-- [Fond du graphique](background.md)
-- [Palette & Couleurs](palette.md)
-
 </div>

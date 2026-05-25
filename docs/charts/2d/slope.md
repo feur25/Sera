@@ -162,12 +162,6 @@ Aliases: `sp.slope`, `sp.build_slope_chart`
 - For rank shifts (positions in a league), prefer `"bumps"` rather than `"basic"`.
 - Combine `palette=` with `"monochrome"` to match brand colours per category.
 
-## See also
-
-- [Bar](bar.md) — single-axis comparisons
-- [Line](line.md) — continuous time series
-- [Dumbbell](dumbbell.md) — paired endpoints without diagonal lines
-
 </div>
 
 <div class="lang-fr">
@@ -293,11 +287,5 @@ Alias : `sp.slope`, `sp.build_slope_chart`
 - Les variantes `"diverging"` et `"thick"` encodent visuellement la magnitude — parfaites pour un résumé exécutif.
 - Pour les changements de rang (positions dans un classement), préférez `"bumps"` à `"basic"`.
 - Combinez `palette=` avec `"monochrome"` pour aligner les couleurs sur les catégories de marque.
-
-<h2>Voir aussi</h2>
-
-- [Bar](bar.md) — comparaisons à axe unique
-- [Line](line.md) — séries temporelles continues
-- [Dumbbell](dumbbell.md) — points appariés sans ligne diagonale
 
 </div>

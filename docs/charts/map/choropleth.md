@@ -112,11 +112,6 @@ const chart = sp.build_choropleth("Unemployment Rate by Country",
 
 ---
 
-## See also
-
-- [Bubble Map](bubble-map.md)
-- [Globe 3D](../3d/globe3d.md)
-
 </div>
 
 <div class="lang-fr">
@@ -189,10 +184,5 @@ chart = sp.build_choropleth(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Carte à bulles](bubble-map.md)
-- [Globe 3D](../3d/globe3d.md)
 
 </div>

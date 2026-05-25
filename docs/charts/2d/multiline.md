@@ -53,11 +53,6 @@ A multi-line chart overlays multiple line series on the same axes, enabling dire
 
 ---
 
-## See also
-
-- [line.md](line.md) — Single series line chart
-- [area.md](area.md) — Multi-series with filled areas
-
 </div>
 
 <div class="lang-fr">
@@ -109,10 +104,5 @@ Un graphique multi-courbes superpose plusieurs séries de lignes sur les mêmes 
 <iframe src="../../previews/multiline.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [line.md](line.md) — Graphique en ligne à série unique
-- [area.md](area.md) — Multi-séries avec zones remplies
 
 </div>

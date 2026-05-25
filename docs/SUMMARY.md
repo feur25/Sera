@@ -138,7 +138,6 @@
 # Tooling
 
 - [VS Code Extension](tooling/vscode.md)
-- [Live Playground](tooling/playground.md)
 
 ---
 

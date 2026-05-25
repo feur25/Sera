@@ -138,11 +138,6 @@ y,
 
 ---
 
-## See also
-
-- [Line Chart 2D](../2d/line.md)
-- [Scatter 3D](scatter3d.md)
-
 </div>
 
 <div class="lang-fr">
@@ -225,10 +220,5 @@ chart = sp.build_line3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Courbe 2D](../2d/line.md)
-- [Nuage de points 3D](scatter3d.md)
 
 </div>

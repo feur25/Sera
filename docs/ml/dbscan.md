@@ -210,12 +210,6 @@ preventing high-magnitude dimensions from dominating $\epsilon$.
 
 ---
 
-## See also
-
-- [DBSCAN Class](dbscan-class.md) — for accessing labels and cluster metadata
-- [DBSCAN 3D](dbscan3d.md)
-- [Scatter Chart](../charts/2d/scatter.md)
-
 </div>
 
 <div class="lang-fr">
@@ -417,11 +411,5 @@ construction de l'arbre, pour éviter que les dimensions à grande magnitude dom
 $\epsilon$.
 
 ---
-
-## Voir aussi
-
-- [Classe DBSCAN](dbscan-class.md) — pour accéder aux étiquettes et métadonnées des clusters
-- [DBSCAN 3D](dbscan3d.md)
-- [Nuage de points](../charts/2d/scatter.md)
 
 </div>

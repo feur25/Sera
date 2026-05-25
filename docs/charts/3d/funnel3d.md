@@ -102,10 +102,6 @@ const chart = sp.build_funnel3d_chart("Conversion Funnel 3D",
 
 ---
 
-## See also
-
-- [Funnel 2D](../2d/funnel.md)
-
 </div>
 
 <div class="lang-fr">
@@ -172,9 +168,5 @@ chart = sp.build_funnel3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Entonnoir 2D](../2d/funnel.md)
 
 </div>

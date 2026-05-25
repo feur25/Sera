@@ -54,12 +54,6 @@ An area chart is a line chart where the region between the line and the horizont
 
 ---
 
-## See also
-
-- [line.md](line.md) — Unfilled line chart for a single series
-- [multiline.md](multiline.md) — Multiple lines without area fills
-- [waterfall.md](waterfall.md) — Incremental contribution chart
-
 </div>
 
 <div class="lang-fr">
@@ -112,11 +106,5 @@ Un graphique de zone est un graphique en ligne dont la région entre la courbe e
 <iframe src="../../previews/area.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [line.md](line.md) — Graphique en ligne sans remplissage pour une seule série
-- [multiline.md](multiline.md) — Plusieurs lignes sans zone remplie
-- [waterfall.md](waterfall.md) — Graphique à contribution incrémentale
 
 </div>

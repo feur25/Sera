@@ -120,11 +120,6 @@ features,
 
 ---
 
-## See also
-
-- [Heatmap 2D](../2d/heatmap.md)
-- [Bar 3D](bar3d.md)
-
 </div>
 
 <div class="lang-fr">
@@ -202,10 +197,5 @@ chart = sp.build_heatmap3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Heatmap 2D](../2d/heatmap.md)
-- [Barres 3D](bar3d.md)
 
 </div>

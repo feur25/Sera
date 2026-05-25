@@ -131,12 +131,6 @@ sp.config(font_size=16, border_radius=12)
 
 ---
 
-## See also
-
-- [Background](background.md)
-- [Palette](palette.md)
-- [Global Config](../getting-started/chart-methods.md)
-
 </div>
 
 <div class="lang-fr">
@@ -263,11 +257,5 @@ sp.config(font_size=16, border_radius=12)
 ```
 
 ---
-
-## Voir aussi
-
-- [Fond (Background)](background.md)
-- [Palette](palette.md)
-- [Configuration globale](../getting-started/chart-methods.md)
 
 </div>

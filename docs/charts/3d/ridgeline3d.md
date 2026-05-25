@@ -116,11 +116,6 @@ cats,
 
 ---
 
-## See also
-
-- [Ridgeline 2D](../2d/ridgeline.md)
-- [KDE 3D](kde3d.md)
-
 </div>
 
 <div class="lang-fr">
@@ -194,10 +189,5 @@ chart = sp.build_ridgeline3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Ridgeline 2D](../2d/ridgeline.md)
-- [KDE 3D](kde3d.md)
 
 </div>

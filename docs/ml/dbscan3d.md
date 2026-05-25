@@ -161,12 +161,6 @@ so that the scale of $z$ does not distort $\epsilon$.
 
 ---
 
-## See also
-
-- [DBSCAN 2D](dbscan.md)
-- [DBSCAN Class](dbscan-class.md)
-- [Scatter 3D](../charts/3d/scatter3d.md)
-
 </div>
 
 <div class="lang-fr">

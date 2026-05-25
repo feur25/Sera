@@ -261,12 +261,6 @@ Prismatic crystal bars with diagonal facet lines and shine overlay. Each bar get
 
 ---
 
-## See also
-
-- [Lollipop](lollipop.md) — `sp.lollipop()`
-- [Waterfall](waterfall.md) — `sp.waterfall()`
-- [Bullet Chart](bullet.md) — `sp.bullet()`
-
 </div><!-- /lang-en -->
 
 
@@ -480,11 +474,5 @@ Barres cristal prismatiques avec lignes de facettes diagonales et surbrillance. 
 </div><!-- /bar-fr -->
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Lollipop](lollipop.md) — `sp.lollipop()`
-- [Cascade / Waterfall](waterfall.md) — `sp.waterfall()`
-- [Bullet](bullet.md) — `sp.bullet()`
 
 </div><!-- /lang-fr -->

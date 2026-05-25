@@ -159,12 +159,6 @@ Aliases: `sp.funnel`, `sp.build_funnel_chart`
 - The `"pyramid"` variant works best when values follow a steep decay.
 - For broad audiences, `"chevron"` reads as a sales pipeline more naturally than the trapezoid.
 
-## See also
-
-- [Bar](bar.md) — simple value comparisons
-- [Waterfall](waterfall.md) — additive contributions
-- [Sankey](sankey.md) — multi-step flow with branching
-
 </div>
 
 <div class="lang-fr">
@@ -287,11 +281,5 @@ Alias : `sp.funnel`, `sp.build_funnel_chart`
 - Utilisez `"conversion"` quand l’audience s’intéresse au taux de rétention entre étapes.
 - La variante `"pyramid"` fonctionne mieux avec des valeurs en forte décroissance.
 - Pour un public large, `"chevron"` se lit plus naturellement comme un pipeline commercial qu’un trapèze.
-
-<h2>Voir aussi</h2>
-
-- [Bar](bar.md) — comparaisons simples
-- [Waterfall](waterfall.md) — contributions additives
-- [Sankey](sankey.md) — flux multi-étapes avec branchements
 
 </div>

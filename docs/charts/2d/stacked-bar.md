@@ -51,12 +51,6 @@ A stacked bar chart divides each bar into colored segments representing sub-seri
 
 ---
 
-## See also
-
-- [Grouped Bar Chart](grouped-bar.md) — `sp.build_grouped_bar()`
-- [Bar Chart](bar.md) — `sp.build_bar_chart()`
-- [Area Chart](area.md) — `sp.build_area_chart()`
-
 </div>
 
 <div class="lang-fr">
@@ -106,11 +100,5 @@ Un graphique en barres empilées divise chaque barre en segments colorés repré
 <iframe src="../../previews/stacked-bar.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Barres groupées](grouped-bar.md) — `sp.build_grouped_bar()`
-- [Graphique en barres](bar.md) — `sp.build_bar_chart()`
-- [Graphique en aires](area.md) — `sp.build_area_chart()`
 
 </div>

@@ -130,11 +130,6 @@ chart = sp.build_bubble_map(
 
 ---
 
-## See also
-
-- [Choropleth](choropleth.md)
-- [Globe 3D](../3d/globe3d.md)
-
 </div>
 
 <div class="lang-fr">
@@ -224,10 +219,5 @@ chart = sp.build_bubble_map(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Choro-plèthe](choropleth.md)
-- [Globe 3D](../3d/globe3d.md)
 
 </div>

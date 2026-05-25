@@ -119,10 +119,6 @@ const chart = sp.build_candlestick3d_chart("BTC/USD 3D",
 
 ---
 
-## See also
-
-- [Candlestick 2D](../2d/candlestick.md)
-
 </div>
 
 <div class="lang-fr">
@@ -200,9 +196,5 @@ chart = sp.build_candlestick3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Bougie 2D](../2d/candlestick.md)
 
 </div>

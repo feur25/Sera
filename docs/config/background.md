@@ -106,11 +106,6 @@ sp.reset_global_background();</code></pre></div>
 
 ---
 
-## See also
-
-- [Palette & Colors](palette.md)
-- [Auto Display](auto-display.md)
-
 </div>
 
 <div class="lang-fr">
@@ -156,11 +151,6 @@ sp.reset_global_background()
 ```
 
 ---
-
-## Voir aussi
-
-- [Palette & Couleurs](palette.md)
-- [Affichage automatique](auto-display.md)
 
 </div>
 

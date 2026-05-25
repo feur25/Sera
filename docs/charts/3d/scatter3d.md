@@ -155,12 +155,6 @@ y,
 
 ---
 
-## See also
-
-- [Scatter 2D](../2d/scatter.md)
-- [DBSCAN 3D](../../ml/dbscan.md)
-- [Bubble 3D](bubble3d.md)
-
 </div>
 
 <div class="lang-fr">
@@ -286,11 +280,5 @@ const chart = sp.build_scatter3d_chart("Nuage 3D", x, y, {
 </details>
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Nuage de points 2D](../2d/scatter.md)
-- [DBSCAN 3D](../../ml/dbscan.md)
-- [Bulles 3D](bubble3d.md)
 
 </div>

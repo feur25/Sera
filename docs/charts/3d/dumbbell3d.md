@@ -110,11 +110,6 @@ const chart = sp.build_dumbbell3d_chart("Before vs After 3D",
 
 ---
 
-## See also
-
-- [Dumbbell 2D](../2d/dumbbell.md)
-- [Slope](../2d/slope.md)
-
 </div>
 
 <div class="lang-fr">
@@ -187,10 +182,5 @@ chart = sp.build_dumbbell3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Haltère 2D](../2d/dumbbell.md)
-- [Pente](../2d/slope.md)
 
 </div>

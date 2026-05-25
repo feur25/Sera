@@ -115,11 +115,6 @@ const chart = sp.build_violin3d_chart("Trial Results",
 
 ---
 
-## See also
-
-- [Violin 2D](../2d/violin.md)
-- [KDE 3D](kde3d.md)
-
 </div>
 
 <div class="lang-fr">
@@ -192,10 +187,5 @@ chart = sp.build_violin3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Violon 2D](../2d/violin.md)
-- [KDE 3D](kde3d.md)
 
 </div>

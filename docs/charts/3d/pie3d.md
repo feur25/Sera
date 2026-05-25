@@ -104,11 +104,6 @@ const chart = sp.build_pie3d_chart("Market Share 3D",
 
 ---
 
-## See also
-
-- [Pie 2D](../2d/pie.md)
-- [Sunburst 3D](sunburst3d.md)
-
 </div>
 
 <div class="lang-fr">
@@ -177,10 +172,5 @@ chart = sp.build_pie3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Camembert 2D](../2d/pie.md)
-- [Sunburst 3D](sunburst3d.md)
 
 </div>

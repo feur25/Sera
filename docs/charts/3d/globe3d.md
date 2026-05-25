@@ -119,11 +119,6 @@ const chart = sp.build_globe3d_chart("World Population Spikes",
 
 ---
 
-## See also
-
-- [Bubble Map](../map/bubble-map.md)
-- [Choropleth](../map/choropleth.md)
-
 </div>
 
 <div class="lang-fr">
@@ -200,10 +195,5 @@ chart = sp.build_globe3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Carte à bulles](../map/bubble-map.md)
-- [Choro-plèthe](../map/choropleth.md)
 
 </div>

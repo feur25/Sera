@@ -193,12 +193,6 @@ Aliases: `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 
 ---
 
-## See also
-
-- [Scatter](scatter.md) — `sp.scatter()`
-- [Bubble 3D](../3d/bubble3d.md) — `sp.bubble3d()`
-- [Bar](bar.md) — `sp.bar()`
-
 </div><!-- /lang-en -->
 
 
@@ -348,11 +342,5 @@ Alias : `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 </div>
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Nuage de points (scatter)](scatter.md) — `sp.scatter()`
-- [Bulles 3D](../3d/bubble3d.md) — `sp.bubble3d()`
-- [Barres](bar.md) — `sp.bar()`
 
 </div><!-- /lang-fr -->

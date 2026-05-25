@@ -130,11 +130,6 @@ values,
 
 ---
 
-## See also
-
-- [KDE 2D](../2d/kde.md)
-- [Scatter 3D](scatter3d.md)
-
 </div>
 
 <div class="lang-fr">
@@ -211,10 +206,5 @@ chart = sp.build_kde3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [KDE 2D](../2d/kde.md)
-- [Nuage de points 3D](scatter3d.md)
 
 </div>

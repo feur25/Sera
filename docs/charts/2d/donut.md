@@ -51,11 +51,6 @@ A donut chart is a pie chart with a circular cutout at the center, reducing the 
 
 ---
 
-## See also
-
-- [pie.md](pie.md) — Solid pie chart without a center cutout
-- [sunburst.md](sunburst.md) — Hierarchical donut with multiple nested rings
-
 </div>
 
 <div class="lang-fr">
@@ -105,10 +100,5 @@ Un graphique en anneau est un graphique en secteurs avec un trou circulaire au c
 <iframe src="../../previews/donut.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [pie.md](pie.md) — Graphique en secteurs plein sans trou central
-- [sunburst.md](sunburst.md) — Anneau hiérarchique avec plusieurs anneaux imbriqués
 
 </div>

@@ -114,11 +114,6 @@ parents,
 
 ---
 
-## See also
-
-- [Sunburst 2D](../2d/sunburst.md)
-- [Pie 3D](pie3d.md)
-
 </div>
 
 <div class="lang-fr">
@@ -190,10 +185,5 @@ chart = sp.build_sunburst3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Sunburst 2D](../2d/sunburst.md)
-- [Camembert 3D](pie3d.md)
 
 </div>

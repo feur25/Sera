@@ -108,11 +108,6 @@ const chart = sp.build_lollipop3d_chart("Monthly Sales 3D",
 
 ---
 
-## See also
-
-- [Lollipop 2D](../2d/lollipop.md)
-- [Bar 3D](bar3d.md)
-
 </div>
 
 <div class="lang-fr">
@@ -183,10 +178,5 @@ chart = sp.build_lollipop3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Sucette 2D](../2d/lollipop.md)
-- [Barres 3D](bar3d.md)
 
 </div>

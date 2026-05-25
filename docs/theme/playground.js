@@ -749,6 +749,67 @@
         });
     }
 
+    function escHtml(s) {
+        return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    }
+
+    var PY_KW = /^(import|from|as|def|return|class|if|elif|else|for|while|in|not|and|or|is|None|True|False|lambda|with|try|except|finally|raise|pass|break|continue|yield|global|nonlocal|del|assert|print|self|super)$/;
+
+    function highlightPython(src) {
+        var out = '';
+        var i = 0;
+        var n = src.length;
+        while (i < n) {
+            var ch = src[i];
+            if (ch === '#') {
+                var e = src.indexOf('\n', i);
+                if (e === -1) e = n;
+                out += '<span style="color:#6a9955">' + escHtml(src.slice(i, e)) + '</span>';
+                i = e;
+            } else if (src.slice(i, i + 3) === '"""' || src.slice(i, i + 3) === "'''") {
+                var q = src.slice(i, i + 3);
+                var e = src.indexOf(q, i + 3);
+                if (e === -1) e = n - 3; else e += 3;
+                out += '<span style="color:#ce9178">' + escHtml(src.slice(i, e)) + '</span>';
+                i = e;
+            } else if (ch === '"' || ch === "'") {
+                var q = ch;
+                var j = i + 1;
+                while (j < n && src[j] !== q && src[j] !== '\n') { if (src[j] === '\\') j++; j++; }
+                if (j < n && src[j] === q) j++;
+                out += '<span style="color:#ce9178">' + escHtml(src.slice(i, j)) + '</span>';
+                i = j;
+            } else if (ch >= '0' && ch <= '9') {
+                var j = i;
+                while (j < n && ((src[j] >= '0' && src[j] <= '9') || src[j] === '.' || src[j] === '_' || src[j] === 'x' || src[j] === 'X')) j++;
+                out += '<span style="color:#b5cea8">' + escHtml(src.slice(i, j)) + '</span>';
+                i = j;
+            } else if ((ch >= 'a' && ch <= 'z') || (ch >= 'A' && ch <= 'Z') || ch === '_') {
+                var j = i;
+                while (j < n && ((src[j] >= 'a' && src[j] <= 'z') || (src[j] >= 'A' && src[j] <= 'Z') || (src[j] >= '0' && src[j] <= '9') || src[j] === '_')) j++;
+                var word = src.slice(i, j);
+                var after = (src.slice(j).match(/^[\t ]*\(/) !== null);
+                if (PY_KW.test(word)) {
+                    out += '<span style="color:#569cd6">' + escHtml(word) + '</span>';
+                } else if (after) {
+                    out += '<span style="color:#dcdcaa">' + escHtml(word) + '</span>';
+                } else if (word[0] >= 'A' && word[0] <= 'Z') {
+                    out += '<span style="color:#4ec9b0">' + escHtml(word) + '</span>';
+                } else {
+                    out += '<span style="color:#9cdcfe">' + escHtml(word) + '</span>';
+                }
+                i = j;
+            } else if (ch === '=' || ch === '+' || ch === '-' || ch === '*' || ch === '/' || ch === '%' || ch === '<' || ch === '>' || ch === '!' || ch === '&' || ch === '|' || ch === '^' || ch === '~') {
+                out += '<span style="color:#d4d4d4">' + escHtml(ch) + '</span>';
+                i++;
+            } else {
+                out += escHtml(ch);
+                i++;
+            }
+        }
+        return out;
+    }
+
     function injectVariantCodeBlocks() {
         var sp = window.SeraplotWASM;
         if (!sp || typeof sp.demo !== 'function') return;
@@ -756,7 +817,7 @@
         if (!slug || slug === 'playground') return;
         var fn = slug.replace(/-/g, '_');
         var codeStyle = [
-            'background:#0d1117',
+            'background:#1e1e1e',
             'border:1px solid rgba(99,102,241,.22)',
             'border-radius:8px',
             'padding:14px 18px',
@@ -765,7 +826,7 @@
             'font-family:"Cascadia Code","JetBrains Mono","Fira Code","Consolas",monospace',
             'font-size:12.5px',
             'line-height:1.6',
-            'color:#e2e8f0',
+            'color:#d4d4d4',
             'white-space:pre',
             'position:relative',
         ].join(';');
@@ -806,7 +867,7 @@
             var pre = document.createElement('pre');
             pre.style.cssText = codeStyle;
             var codeEl = document.createElement('code');
-            codeEl.textContent = code;
+            codeEl.innerHTML = highlightPython(code);
             var copyBtn = document.createElement('button');
             copyBtn.style.cssText = copyBtnStyle;
             copyBtn.textContent = 'Copy';
@@ -822,9 +883,6 @@
             pre.appendChild(copyBtn);
             wrap.appendChild(lbl);
             wrap.appendChild(pre);
-            if (window.hljs) {
-                try { (hljs.highlightElement || hljs.highlightBlock).call(hljs, codeEl); } catch (e) {}
-            }
             var preview = el.querySelector('.sp-preview-label');
             if (preview) {
                 el.insertBefore(wrap, preview);

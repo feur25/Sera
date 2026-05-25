@@ -91,11 +91,6 @@ SeraPlot uses **KD-tree** for $O(\log n)$ radius queries and **parallel BFS** wi
 
 ---
 
-## See also
-
-- [DBSCAN Chart (2D)](dbscan.md)
-- [DBSCAN 3D Chart](dbscan3d.md)
-
 ---
 
 </div>
@@ -189,11 +184,6 @@ SeraPlot utilise **KD-tree** pour $O(\log n)$ requêtes de rayon et **BFS parall
 **Complexité:** $O(n \log n)$ en moyenne; $O(n^2)$ pire cas.
 
 ---
-
-## Voir aussi
-
-- [Graphique DBSCAN (2D)](dbscan.md)
-- [Graphique DBSCAN 3D](dbscan3d.md)
 
 ---
 

@@ -126,11 +126,6 @@ const chart = sp.build_bubble3d_chart("4D Dataset",
 
 ---
 
-## See also
-
-- [Scatter 3D](scatter3d.md)
-- [Bubble 2D](../2d/bubble.md)
-
 </div>
 
 <div class="lang-fr">
@@ -211,10 +206,5 @@ chart = sp.build_bubble3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Nuage de points 3D](scatter3d.md)
-- [Bulles 2D](../2d/bubble.md)
 
 </div>

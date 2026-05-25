@@ -120,11 +120,6 @@ const chart = sp.build_bar3d_chart("Sales by Product",
 
 ---
 
-## See also
-
-- [Bar Chart 2D](../2d/bar.md)
-- [Stacked Bar 3D](stacked-bar3d.md)
-
 </div>
 
 <div class="lang-fr">
@@ -201,10 +196,5 @@ chart = sp.build_bar3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Graphique en barres 2D](../2d/bar.md)
-- [Barres empilées 3D](stacked-bar3d.md)
 
 </div>

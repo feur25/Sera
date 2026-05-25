@@ -110,10 +110,6 @@ const chart = sp.build_radar3d_chart("Skills Comparison 3D",
 
 ---
 
-## See also
-
-- [Radar 2D](../2d/radar.md)
-
 </div>
 
 <div class="lang-fr">
@@ -186,9 +182,5 @@ chart = sp.build_radar3d_chart(
 ```
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Radar 2D](../2d/radar.md)
 
 </div>

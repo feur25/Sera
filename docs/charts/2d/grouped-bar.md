@@ -70,12 +70,6 @@ A grouped bar chart places bars for multiple series side by side within each cat
 
 ---
 
-## See also
-
-- [Bar Chart](bar.md) — `sp.build_bar_chart()`
-- [Stacked Bar](stacked-bar.md) — `sp.build_stacked_bar()`
-- [Multiline Chart](multiline.md) — `sp.build_multiline()`
-
 </div>
 
 <div class="lang-fr">
@@ -144,11 +138,5 @@ Un graphique en barres groupées place les barres de plusieurs séries côte à 
 <iframe src="../../previews/grouped-bar.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 ---
-
-<h2>Voir aussi</h2>
-
-- [Graphique en barres](bar.md) — `sp.build_bar_chart()`
-- [Barres empilées](stacked-bar.md) — `sp.build_stacked_bar()`
-- [Graphique multiligne](multiline.md) — `sp.build_multiline()`
 
 </div>
