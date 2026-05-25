@@ -109,14 +109,7 @@
             loader.src = MONACO_BASE + '/loader.js';
             loader.onload = function () {
                 window.require.config({ paths: { vs: MONACO_BASE } });
-                window.MonacoEnvironment = {
-                    getWorkerUrl: function () {
-                        return 'data:text/javascript;charset=utf-8,' + encodeURIComponent(
-                            'self.MonacoEnvironment={baseUrl:"' + MONACO_BASE + '/"};' +
-                            'importScripts("' + MONACO_BASE + '/base/worker/workerMain.js");'
-                        );
-                    }
-                };
+                window.MonacoEnvironment = { getWorkerUrl: function () { return 'data:text/javascript;charset=utf-8,'; } };
                 window.require(['vs/editor/editor.main'], function () { resolve(); cb(); });
             };
             document.head.appendChild(loader);
