@@ -1,7 +1,6 @@
 # Summary
 
 [Introduction](introduction.md)
-[Sera Framework](about/sera-framework.md)
 
 ---
 
