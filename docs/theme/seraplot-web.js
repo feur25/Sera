@@ -1,4 +1,4 @@
-let wasm_bindgen = (function(exports) {
+﻿let wasm_bindgen = (function(exports) {
     let script_src;
     if (typeof document !== 'undefined' && document.currentScript !== null) {
         script_src = new URL(document.currentScript.src, location.href).toString();
@@ -1998,7 +1998,7 @@ let wasm_bindgen = (function(exports) {
         };
         return {
             __proto__: null,
-            "./seraplot-web_bg.js": import0,
+            "./seraplot_bg.js": import0,
         };
     }
 

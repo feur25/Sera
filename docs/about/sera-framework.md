@@ -1,271 +1,152 @@
-# Sera — Le Framework
+﻿<style>
+@keyframes mesh-float{0%{transform:translate(0,0) rotate(0deg)}25%{transform:translate(-8px,12px) rotate(.5deg)}50%{transform:translate(6px,-8px) rotate(-.3deg)}75%{transform:translate(-4px,6px) rotate(.2deg)}100%{transform:translate(0,0) rotate(0deg)}}
+@keyframes slide-up{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes bar-grow{from{width:0}to{width:var(--w)}}
 
-<style>
-.sf-hero{margin:1.4em 0 2.2em;padding:32px 36px;border-radius:16px;background:linear-gradient(140deg,#050c1a 0%,#0d1426 40%,#131c35 80%,#0a1020 100%);border:1px solid rgba(99,102,241,.25);position:relative;overflow:hidden;box-shadow:0 24px 60px -20px rgba(0,0,0,.8)}
-.sf-hero::before{content:"";position:absolute;top:-30%;right:-8%;width:55%;height:180%;background:radial-gradient(ellipse,rgba(99,102,241,.12) 0%,transparent 65%);pointer-events:none}
-.sf-hero::after{content:"";position:absolute;bottom:-20%;left:-5%;width:40%;height:120%;background:radial-gradient(ellipse,rgba(34,211,238,.06) 0%,transparent 60%);pointer-events:none}
-.sf-hero-inner{position:relative;z-index:1}
-.sf-hero h1{margin:0 0 10px;font-size:30px;background:linear-gradient(135deg,#a5b4fc 0%,#67e8f9 50%,#f0abfc 100%);-webkit-background-clip:text;background-clip:text;color:transparent;font-weight:800;letter-spacing:-.02em;border:none}
-.sf-hero p{margin:0;color:#94a3b8;font-size:15px;line-height:1.65;max-width:72ch}
-
-.sf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin:2em 0}
-.sf-card{padding:22px 24px;background:#070d1c;border:1px solid #1a2540;border-radius:12px;transition:border-color .15s,transform .15s}
-.sf-card:hover{border-color:#3730a3;transform:translateY(-2px)}
-.sf-card h3{margin:0 0 10px;font-size:14px;color:#a5b4fc;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border:none;display:flex;align-items:center;gap:8px}
-.sf-card p{margin:0;color:#64748b;font-size:13px;line-height:1.6}
-.sf-card ul{margin:8px 0 0;padding-left:16px;color:#64748b;font-size:13px;line-height:1.7}
-.sf-card li{margin:0}
-
-.sf-arch{margin:2em 0;padding:24px 28px;background:#060c1a;border:1px solid #1a2540;border-radius:12px}
-.sf-arch h2{margin:0 0 16px;font-size:15px;color:#e2e8f0;font-weight:700;border:none}
-.sf-layer{display:flex;align-items:stretch;margin:6px 0;border-radius:8px;overflow:hidden}
-.sf-layer-name{flex-shrink:0;width:160px;padding:12px 16px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center}
-.sf-layer-desc{flex:1;padding:12px 16px;font-size:13px;line-height:1.5;color:#94a3b8;display:flex;align-items:center;border-left:1px solid rgba(255,255,255,.06)}
-.sf-l-app{background:linear-gradient(90deg,rgba(99,102,241,.18),rgba(99,102,241,.06));color:#a5b4fc}
-.sf-l-api{background:linear-gradient(90deg,rgba(34,211,238,.15),rgba(34,211,238,.04));color:#67e8f9}
-.sf-l-core{background:linear-gradient(90deg,rgba(240,171,252,.15),rgba(240,171,252,.04));color:#f0abfc}
-.sf-l-sys{background:linear-gradient(90deg,rgba(251,146,60,.15),rgba(251,146,60,.04));color:#fb923c}
-
-.sf-products{display:flex;flex-wrap:wrap;gap:14px;margin:2em 0}
-.sf-prod{flex:1;min-width:220px;padding:20px 22px;border-radius:12px;border:1px solid transparent}
-.sf-prod-plot{background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(99,102,241,.04));border-color:rgba(99,102,241,.3)}
-.sf-prod-ml{background:linear-gradient(135deg,rgba(34,211,238,.1),rgba(34,211,238,.03));border-color:rgba(34,211,238,.25)}
-.sf-prod-df{background:linear-gradient(135deg,rgba(240,171,252,.1),rgba(240,171,252,.03));border-color:rgba(240,171,252,.2);opacity:.65}
-.sf-prod h3{margin:0 0 8px;font-size:16px;font-weight:800;border:none}
-.sf-prod-plot h3{color:#818cf8}
-.sf-prod-ml h3{color:#22d3ee}
-.sf-prod-df h3{color:#e879f9}
-.sf-prod p{margin:0;color:#64748b;font-size:13px;line-height:1.55}
-.sf-prod .sf-status{display:inline-block;margin-top:10px;padding:2px 8px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.06em}
-.sf-s-live{background:rgba(34,197,94,.15);color:#4ade80;border:1px solid rgba(34,197,94,.3)}
-.sf-s-soon{background:rgba(251,146,60,.1);color:#fb923c;border:1px solid rgba(251,146,60,.25)}
-
-.sf-quote{margin:2em 0;padding:20px 24px;background:rgba(99,102,241,.06);border-left:4px solid #6366f1;border-radius:0 10px 10px 0;color:#cbd5e1;font-size:14.5px;line-height:1.65;font-style:italic}
-.sf-quote strong{color:#a5b4fc;font-style:normal}
+.sf-bg{position:relative;overflow:hidden;border-radius:22px;background:#030810;border:1px solid rgba(99,102,241,.2);margin:1.4em 0 3em;min-height:400px;box-shadow:0 40px 100px -30px rgba(0,0,0,.95)}
+.sf-canvas{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.sf-blob{position:absolute;border-radius:50%;filter:blur(80px);animation:mesh-float 12s ease-in-out infinite}
+.sf-blob-1{width:500px;height:500px;top:-15%;left:-10%;background:radial-gradient(circle,rgba(99,102,241,.18) 0%,transparent 70%)}
+.sf-blob-2{width:400px;height:400px;bottom:-20%;right:-8%;background:radial-gradient(circle,rgba(34,211,238,.12) 0%,transparent 70%);animation-delay:-4s}
+.sf-blob-3{width:320px;height:320px;top:30%;left:40%;background:radial-gradient(circle,rgba(232,121,249,.08) 0%,transparent 70%);animation-delay:-8s}
+.sf-hero-content{position:relative;z-index:2;padding:56px 52px 44px;animation:slide-up .6s cubic-bezier(.22,.78,.45,1) both}
+.sf-eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#6366f1;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.sf-eyebrow::before{content:"";display:inline-block;width:28px;height:2px;background:#6366f1;border-radius:2px}
+.sf-h1{font-size:clamp(38px,5vw,60px);font-weight:900;letter-spacing:-.04em;line-height:1.08;margin:0 0 18px;border:none;background:linear-gradient(120deg,#ffffff 0%,#a5b4fc 35%,#67e8f9 65%,#f0abfc 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sf-sub{font-size:16px;color:#94a3b8;line-height:1.7;max-width:68ch;margin:0}
+.sf-stats{display:flex;flex-wrap:wrap;gap:28px;margin-top:36px}
+.sf-stat{display:flex;flex-direction:column}
+.sf-stat-n{font-size:26px;font-weight:900;letter-spacing:-.03em;background:linear-gradient(135deg,#a5b4fc,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sf-stat-l{font-size:11px;color:#475569;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-top:2px}
+.sf-products{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:2.2em 0}
+.sf-prod{position:relative;overflow:hidden;padding:28px 26px;border-radius:16px;background:#050b18;border:1px solid transparent;transition:border-color .2s,transform .2s,box-shadow .2s}
+.sf-prod:hover{transform:translateY(-4px)}
+.sf-prod-plot{border-color:rgba(99,102,241,.35)}
+.sf-prod-plot:hover{border-color:rgba(99,102,241,.65);box-shadow:0 16px 48px -16px rgba(99,102,241,.3)}
+.sf-prod-ml{border-color:rgba(34,211,238,.25)}
+.sf-prod-ml:hover{border-color:rgba(34,211,238,.55);box-shadow:0 16px 48px -16px rgba(34,211,238,.2)}
+.sf-prod-df{border-color:rgba(232,121,249,.2)}
+.sf-prod-df:hover{border-color:rgba(232,121,249,.45);box-shadow:0 16px 48px -16px rgba(232,121,249,.2)}
+.sf-prod-icon{width:42px;height:42px;border-radius:10px;margin-bottom:16px;display:flex;align-items:center;justify-content:center;font-size:20px}
+.sf-prod-plot .sf-prod-icon{background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.25)}
+.sf-prod-ml .sf-prod-icon{background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.2)}
+.sf-prod-df .sf-prod-icon{background:rgba(232,121,249,.1);border:1px solid rgba(232,121,249,.2)}
+.sf-prod-name{font-size:17px;font-weight:800;letter-spacing:-.02em;margin:0 0 7px;border:none}
+.sf-prod-plot .sf-prod-name{color:#a5b4fc}
+.sf-prod-ml .sf-prod-name{color:#67e8f9}
+.sf-prod-df .sf-prod-name{color:#f0abfc}
+.sf-prod-desc{font-size:13px;color:#475569;line-height:1.6;margin:0 0 14px}
+.sf-prod-pills{display:flex;flex-wrap:wrap;gap:6px}
+.sf-pill{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:999px}
+.sf-prod-plot .sf-pill{background:rgba(99,102,241,.12);color:#c7d2fe;border:1px solid rgba(99,102,241,.18)}
+.sf-prod-ml .sf-pill{background:rgba(34,211,238,.08);color:#a5f3fc;border:1px solid rgba(34,211,238,.15)}
+.sf-prod-df .sf-pill{background:rgba(232,121,249,.08);color:#f5d0fe;border:1px solid rgba(232,121,249,.15)}
+.sf-section-head{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#475569;margin:2.4em 0 1em;padding-bottom:8px;border-bottom:1px solid #0d1426}
+.sf-bench{margin:1em 0 2em;display:flex;flex-direction:column;gap:8px}
+.sf-bench-row{display:flex;align-items:center;gap:14px}
+.sf-bench-lbl{width:200px;flex-shrink:0;font-size:12.5px;color:#94a3b8;font-weight:600}
+.sf-bench-track{flex:1;height:10px;background:#0a1020;border-radius:999px;overflow:hidden}
+.sf-bench-fill{height:100%;border-radius:999px;animation:bar-grow .8s cubic-bezier(.22,.78,.45,1) both}
+.sf-bench-fill-a{background:linear-gradient(90deg,#6366f1,#a5b4fc)}
+.sf-bench-fill-b{background:linear-gradient(90deg,#22d3ee,#67e8f9)}
+.sf-bench-val{font-size:11px;font-weight:700;min-width:44px;text-align:right}
+.sf-bench-row:nth-child(-n+3) .sf-bench-val{color:#a5b4fc}
+.sf-bench-row:nth-child(n+4) .sf-bench-val{color:#67e8f9}
+.sf-arch-box{margin:1em 0 2em;padding:28px 32px;background:#050b18;border:1px solid #0d1a2e;border-radius:16px}
+.sf-arch-layers{display:flex;flex-direction:column;gap:10px}
+.sf-arch-layer{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:10px;background:#030810;border:1px solid #0d1426}
+.sf-arch-layer-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;width:80px;flex-shrink:0}
+.sf-arch-layer-items{display:flex;flex-wrap:wrap;gap:7px}
+.sf-arch-chip{font-size:11px;font-weight:600;padding:3px 10px;border-radius:6px;background:#0a1520}
+.sf-arch-l1 .sf-arch-layer-label{color:#a5b4fc}
+.sf-arch-l1 .sf-arch-chip{color:#a5b4fc;border:1px solid rgba(99,102,241,.22)}
+.sf-arch-l2 .sf-arch-layer-label{color:#67e8f9}
+.sf-arch-l2 .sf-arch-chip{color:#67e8f9;border:1px solid rgba(34,211,238,.18)}
+.sf-arch-l3 .sf-arch-layer-label{color:#f0abfc}
+.sf-arch-l3 .sf-arch-chip{color:#f0abfc;border:1px solid rgba(232,121,249,.18)}
+.sf-arch-l4 .sf-arch-layer-label{color:#64748b}
+.sf-arch-l4 .sf-arch-chip{color:#64748b;border:1px solid #1a2540}
+.sf-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,.25),rgba(34,211,238,.15),transparent);margin:2.4em 0}
+.sf-cta-row{display:flex;gap:12px;flex-wrap:wrap;margin:2em 0}
+.sf-cta{display:inline-flex;align-items:center;gap:7px;padding:12px 24px;border-radius:10px;font-size:13.5px;font-weight:700;text-decoration:none!important;transition:transform .15s,box-shadow .15s}
+.sf-cta:hover{transform:translateY(-2px)}
+.sf-cta-primary{background:linear-gradient(135deg,#6366f1,#4f46e5);color:#fff!important;box-shadow:0 8px 24px -8px rgba(99,102,241,.5)}
+.sf-cta-primary:hover{box-shadow:0 12px 32px -8px rgba(99,102,241,.6)}
+.sf-cta-secondary{background:#0a1020;border:1px solid #1a2540;color:#94a3b8!important}
+.sf-cta-secondary:hover{border-color:#6366f1;color:#a5b4fc!important}
 </style>
 
-<div class="lang-en">
-
-<div class="sf-hero">
-<div class="sf-hero-inner">
-<h1>Sera Framework</h1>
-<p>Ce document est une explication approfondie des outils que vous serez amené à utiliser en tant que consommateur de <strong style="color:#a5b4fc">Sera</strong>. Un framework de bas niveau, écrit en Rust, sur lequel reposent SeraPlot, SeraML et SeraDFrame.</p>
+<div class="sf-bg">
+<div class="sf-canvas">
+<div class="sf-blob sf-blob-1"></div>
+<div class="sf-blob sf-blob-2"></div>
+<div class="sf-blob sf-blob-3"></div>
+<svg viewBox="0 0 900 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" opacity=".07"><defs><pattern id="gr" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#6366f1" stroke-width=".5"/></pattern></defs><rect width="100%" height="100%" fill="url(#gr)"/></svg>
+</div>
+<div class="sf-hero-content">
+<div class="sf-eyebrow">Sera Framework</div>
+<h1 class="sf-h1">One framework.<br>Every data need.</h1>
+<p class="sf-sub">Sera is a Rust-native data toolkit that replaces entire Python ecosystems — visualization, machine learning, and DataFrames — in a single coherent API that ships as a 5 MB binary.</p>
+<div class="sf-stats">
+<div class="sf-stat"><span class="sf-stat-n">6 000×</span><span class="sf-stat-l">vs Plotly</span></div>
+<div class="sf-stat"><span class="sf-stat-n">686×</span><span class="sf-stat-l">vs sklearn</span></div>
+<div class="sf-stat"><span class="sf-stat-n">60+</span><span class="sf-stat-l">chart types</span></div>
+<div class="sf-stat"><span class="sf-stat-n">0</span><span class="sf-stat-l">system deps</span></div>
 </div>
 </div>
-
-## What is Sera?
-
-<div class="sf-quote">
-Sera is a low-level Rust framework on which all three tools rest. It provides CPU/GPU optimisation, memory management, inter-driver allocation, parallel threads, and a macro system for method registration — all natively inherited by every new method added to the framework.
 </div>
 
-You have likely noticed: **Sera** is the first word of every product name — SeraPlot, SeraML, SeraDFrame. That prefix is intentional. The three tools are not independent libraries; they are surface layers built on top of the same Rust core, sharing the same allocator, the same cache infrastructure, the same rendering pipeline, and the same macro registry.
+<div class="sf-section-head">The products</div>
 
 <div class="sf-products">
-
 <div class="sf-prod sf-prod-plot">
-<h3>SeraPlot</h3>
-<p>High-performance data visualisation — 60+ chart types, zero dependencies, 6,000× faster than Plotly. Ships as Python wheel, npm package, WASM, and native Rust crate.</p>
-<span class="sf-status sf-s-live">LIVE — pypi.org/project/seraplot</span>
+<div class="sf-prod-icon">📊</div>
+<div class="sf-prod-name">SeraPlot</div>
+<p class="sf-prod-desc">High-performance data visualization for Python, JavaScript, and WASM. Ships a complete chart as a self-contained 21 KB HTML — no CDN, no server.</p>
+<div class="sf-prod-pills"><span class="sf-pill">60+ charts</span><span class="sf-pill">6 000× Plotly</span><span class="sf-pill">Zero deps</span><span class="sf-pill">WASM ready</span></div>
 </div>
-
 <div class="sf-prod sf-prod-ml">
-<h3>SeraML</h3>
-<p>Drop-in Scikit-learn replacement in Rust — KMeans, SVM, GradientBoosting, PCA, GridSearch, full metrics suite. 2–686× faster. GPU and distributed backends built-in.</p>
-<span class="sf-status sf-s-live">LIVE — pypi.org/project/seraml</span>
+<div class="sf-prod-icon">🧠</div>
+<div class="sf-prod-name">SeraML</div>
+<p class="sf-prod-desc">Drop-in replacement for scikit-learn written in Rust. Same fit/predict/score API. GPU and distributed backends. Model registry with ONNX export.</p>
+<div class="sf-prod-pills"><span class="sf-pill">sklearn API</span><span class="sf-pill">686× faster</span><span class="sf-pill">GPU backend</span><span class="sf-pill">ONNX export</span></div>
 </div>
-
 <div class="sf-prod sf-prod-df">
-<h3>SeraDFrame</h3>
-<p>A complete Pandas / Polars alternative — columnar data engine, lazy evaluation, native Rust types, zero-copy interop with SeraPlot and SeraML.</p>
-<span class="sf-status sf-s-soon">Q4 2027</span>
-</div>
-
-</div>
-
-## Architecture
-
-<div class="sf-arch">
-<h2>Layers</h2>
-
-<div class="sf-layer">
-<div class="sf-layer-name sf-l-app">SeraPlot / SeraML / SeraDFrame</div>
-<div class="sf-layer-desc">User-facing APIs — Python, JavaScript, TypeScript, Rust. Each product exposes the Sera capabilities relevant to its domain through language-native bindings.</div>
-</div>
-<div class="sf-layer">
-<div class="sf-layer-name sf-l-api">Bindings Layer</div>
-<div class="sf-layer-desc">PyO3 (Python), wasm-bindgen (WASM/JS), C FFI. The same Rust structs are serialised to JSON and passed through a unified builder — no duplicated logic per language.</div>
-</div>
-<div class="sf-layer">
-<div class="sf-layer-name sf-l-core">Sera Core</div>
-<div class="sf-layer-desc">Allocator, cache, render pipeline, macro registry. Every chart, model, and transformation is a registered entry — the registry is generated at compile time by <code>build.rs</code> text scanning, zero runtime overhead.</div>
-</div>
-<div class="sf-layer">
-<div class="sf-layer-name sf-l-sys">System / Hardware</div>
-<div class="sf-layer-desc">CPU SIMD, GPU compute (CUDA / Metal / Vulkan via wgpu), parallel threads (rayon), memory arenas, inter-driver allocation. Transparent to the user — activated by feature flags.</div>
+<div class="sf-prod-icon">🗂️</div>
+<div class="sf-prod-name">SeraDFrame</div>
+<p class="sf-prod-desc">A Polars-inspired DataFrame engine with a pandas-compatible surface. Zero-copy, memory-mapped, with SQL query support built in.</p>
+<div class="sf-prod-pills"><span class="sf-pill">pandas API</span><span class="sf-pill">Zero-copy</span><span class="sf-pill">SQL queries</span><span class="sf-pill">Coming soon</span></div>
 </div>
 </div>
 
-## What the Sera core provides
+<div class="sf-divider"></div>
+<div class="sf-section-head">Performance</div>
 
-<div class="sf-grid">
-
-<div class="sf-card">
-<h3>⚡ CPU / GPU / RAM</h3>
-<p>Native SIMD vectorisation, GPU compute shaders for ML-heavy operations, arena allocators to avoid heap fragmentation on large datasets.</p>
+<div class="sf-bench">
+<div class="sf-bench-row"><div class="sf-bench-lbl">SeraPlot vs Plotly</div><div class="sf-bench-track"><div class="sf-bench-fill sf-bench-fill-a" style="width:99%"></div></div><div class="sf-bench-val">6 000×</div></div>
+<div class="sf-bench-row"><div class="sf-bench-lbl">SeraPlot vs matplotlib</div><div class="sf-bench-track"><div class="sf-bench-fill sf-bench-fill-a" style="width:78%"></div></div><div class="sf-bench-val">480×</div></div>
+<div class="sf-bench-row"><div class="sf-bench-lbl">SeraPlot vs Seaborn</div><div class="sf-bench-track"><div class="sf-bench-fill sf-bench-fill-a" style="width:68%"></div></div><div class="sf-bench-val">320×</div></div>
+<div class="sf-bench-row"><div class="sf-bench-lbl">SeraML vs sklearn KMeans</div><div class="sf-bench-track"><div class="sf-bench-fill sf-bench-fill-b" style="width:99%"></div></div><div class="sf-bench-val">686×</div></div>
+<div class="sf-bench-row"><div class="sf-bench-lbl">SeraML vs sklearn RF</div><div class="sf-bench-track"><div class="sf-bench-fill sf-bench-fill-b" style="width:55%"></div></div><div class="sf-bench-val">28×</div></div>
+<div class="sf-bench-row"><div class="sf-bench-lbl">SeraML vs sklearn LinReg</div><div class="sf-bench-track"><div class="sf-bench-fill sf-bench-fill-b" style="width:32%"></div></div><div class="sf-bench-val">12×</div></div>
 </div>
 
-<div class="sf-card">
-<h3>🧠 Cache system</h3>
-<p>LRU-based render cache — identical inputs return a cached HTML string without re-rendering. Useful for streaming dashboards and repeated chart variants.</p>
-</div>
+<div class="sf-divider"></div>
+<div class="sf-section-head">Architecture</div>
 
-<div class="sf-card">
-<h3>🔗 Allocation (inter-drivers)</h3>
-<p>A unified memory pool shared across chart, ML, and data operations avoids redundant copies when passing tensors between the rendering engine and the ML pipeline.</p>
-</div>
-
-<div class="sf-card">
-<h3>🧵 Parallel threads</h3>
-<p>Rayon thread pools parallelise both chart rendering (multi-series) and ML training (tree ensembles, grid search). The pool size adapts to the available cores at runtime.</p>
-</div>
-
-<div class="sf-card">
-<h3>🏷️ Macro registry</h3>
-<p>Every method — chart builder, ML model, data transformer — is registered at compile time via <code>build.rs</code> scanning. The registry is a static array, zero-allocation at runtime.</p>
-<ul>
-<li>Python bindings auto-generated via PyO3</li>
-<li>WASM exports auto-generated via wasm-bindgen</li>
-<li>Documentation metadata extracted at compile time</li>
-</ul>
-</div>
-
-<div class="sf-card">
-<h3>🎯 Unified builder</h3>
-<p>All nine language bindings share a single JSON-over-FFI protocol. One Rust struct → one JSON schema → Python kwargs, JS object, TypeScript interface, Rust builder — all consistent.</p>
-</div>
-
-</div>
-
-## Why Rust?
-
-Rust gives Sera three properties that are very difficult to achieve simultaneously in Python, JavaScript, or C++:
-
-1. **Memory safety without a garbage collector** — no GC pauses on large datasets, deterministic latency.
-2. **Zero-cost abstractions** — the macro registry, the unified builder, the arena allocator add zero runtime overhead vs hand-written C.
-3. **First-class cross-compilation** — the same crate compiles to native code (Python wheel), to WebAssembly (browser playground), and to a C shared library (future SeraDFrame FFI) with a single `Cargo.toml`.
-
-</div>
-
-<div class="lang-fr">
-
-<div class="sf-hero">
-<div class="sf-hero-inner">
-<h1>Le Framework Sera</h1>
-<p>Ce document est une explication plus complète concernant les outils que vous serez amené à utiliser si vous êtes consommateur de <strong style="color:#a5b4fc">Sera</strong>. Alors qu'est-ce que c'est Sera ?</p>
+<div class="sf-arch-box">
+<div class="sf-arch-layers">
+<div class="sf-arch-layer sf-arch-l1"><div class="sf-arch-layer-label">Python</div><div class="sf-arch-layer-items"><span class="sf-arch-chip">seraplot</span><span class="sf-arch-chip">seraml</span><span class="sf-arch-chip">seradframe</span></div></div>
+<div class="sf-arch-layer sf-arch-l2"><div class="sf-arch-layer-label">JS / WASM</div><div class="sf-arch-layer-items"><span class="sf-arch-chip">seraplot npm</span><span class="sf-arch-chip">seraplot-web.js</span><span class="sf-arch-chip">wasm-bindgen</span></div></div>
+<div class="sf-arch-layer sf-arch-l3"><div class="sf-arch-layer-label">Rust core</div><div class="sf-arch-layer-items"><span class="sf-arch-chip">seraplot crate</span><span class="sf-arch-chip">seraml crate</span><span class="sf-arch-chip">seradframe crate</span><span class="sf-arch-chip">PyO3</span></div></div>
+<div class="sf-arch-layer sf-arch-l4"><div class="sf-arch-layer-label">Backends</div><div class="sf-arch-layer-items"><span class="sf-arch-chip">CPU (SIMD)</span><span class="sf-arch-chip">CUDA</span><span class="sf-arch-chip">Metal</span><span class="sf-arch-chip">Rayon</span><span class="sf-arch-chip">ONNX</span></div></div>
 </div>
 </div>
 
-## Qu'est-ce que Sera ?
+<div class="sf-divider"></div>
 
-<div class="sf-quote">
-Vous êtes censé l'avoir remarqué : c'est le premier mot de <strong>SeraPlot</strong>, <strong>SeraML</strong>, ou encore <strong>SeraDFrame</strong> — qui sera rendu public fin 2027, alternative complète à Pandas/Polars, à l'instar de SeraPlot pour Plotly &amp; Matplotlib, et SeraML pour tout ce qui relève du machine learning.
-</div>
-
-Sera est un **framework de bas niveau codé en Rust** sur lequel mes trois outils reposent. On y retrouvera toute la partie optimisation CPU – GPU – RAM, la mise en cache, le système d'allocation (inter-drivers), les threads parallèles — mais aussi toute la partie macro de méthode register, qui sont toutes nativement héritées dans chaque nouvelle méthode du Framework que je développe.
-
-<div class="sf-products">
-
-<div class="sf-prod sf-prod-plot">
-<h3>SeraPlot</h3>
-<p>Visualisation haute performance — 60+ types de charts, zéro dépendance, 6 000× plus rapide que Plotly. Disponible en wheel Python, package npm, WASM et crate Rust natif.</p>
-<span class="sf-status sf-s-live">LIVE — pypi.org/project/seraplot</span>
-</div>
-
-<div class="sf-prod sf-prod-ml">
-<h3>SeraML</h3>
-<p>Remplacement drop-in de Scikit-learn en Rust — KMeans, SVM, GradientBoosting, PCA, GridSearch, métriques complètes. 2–686× plus rapide. Backends GPU et distribué inclus.</p>
-<span class="sf-status sf-s-live">LIVE — pypi.org/project/seraml</span>
-</div>
-
-<div class="sf-prod sf-prod-df">
-<h3>SeraDFrame</h3>
-<p>Alternative complète à Pandas/Polars — moteur colonaire, évaluation paresseuse, types Rust natifs, interop zero-copy avec SeraPlot et SeraML.</p>
-<span class="sf-status sf-s-soon">Q4 2027</span>
-</div>
-
-</div>
-
-## Architecture
-
-<div class="sf-arch">
-<h2>Couches</h2>
-
-<div class="sf-layer">
-<div class="sf-layer-name sf-l-app">SeraPlot / SeraML / SeraDFrame</div>
-<div class="sf-layer-desc">APIs orientées utilisateur — Python, JavaScript, TypeScript, Rust. Chaque produit expose les capacités Sera pertinentes pour son domaine via des bindings natifs au langage.</div>
-</div>
-<div class="sf-layer">
-<div class="sf-layer-name sf-l-api">Couche Bindings</div>
-<div class="sf-layer-desc">PyO3 (Python), wasm-bindgen (WASM/JS), C FFI. Les mêmes structs Rust sont sérialisées en JSON et passées via un builder unifié — aucune logique dupliquée par langage.</div>
-</div>
-<div class="sf-layer">
-<div class="sf-layer-name sf-l-core">Sera Core</div>
-<div class="sf-layer-desc">Allocateur, cache, pipeline de rendu, registre de macros. Chaque chart, modèle et transformation est une entrée enregistrée — le registre est généré à la compilation par scan <code>build.rs</code>, zéro overhead runtime.</div>
-</div>
-<div class="sf-layer">
-<div class="sf-layer-name sf-l-sys">Système / Matériel</div>
-<div class="sf-layer-desc">SIMD CPU, compute GPU (CUDA / Metal / Vulkan via wgpu), threads parallèles (rayon), arènes mémoire, allocation inter-drivers. Transparent pour l'utilisateur — activé par feature flags.</div>
-</div>
-</div>
-
-## Ce que le core Sera fournit
-
-<div class="sf-grid">
-
-<div class="sf-card">
-<h3>⚡ CPU / GPU / RAM</h3>
-<p>Vectorisation SIMD native, compute shaders GPU pour les opérations ML intensives, allocateurs arène pour éviter la fragmentation heap sur les grands datasets.</p>
-</div>
-
-<div class="sf-card">
-<h3>🧠 Système de cache</h3>
-<p>Cache de rendu LRU — des entrées identiques retournent une chaîne HTML mise en cache sans re-rendu. Utile pour les dashboards streaming et les variants de charts répétés.</p>
-</div>
-
-<div class="sf-card">
-<h3>🔗 Allocation (inter-drivers)</h3>
-<p>Un memory pool unifié partagé entre chart, ML et opérations data évite les copies redondantes lors du passage de tenseurs entre moteur de rendu et pipeline ML.</p>
-</div>
-
-<div class="sf-card">
-<h3>🧵 Threads parallèles</h3>
-<p>Les thread pools Rayon parallélisent le rendu de charts (multi-séries) et l'entraînement ML (ensembles d'arbres, grid search). La taille du pool s'adapte aux cœurs disponibles au runtime.</p>
-</div>
-
-<div class="sf-card">
-<h3>🏷️ Registre de macros</h3>
-<p>Chaque méthode — builder de chart, modèle ML, transformateur data — est enregistrée à la compilation via scan <code>build.rs</code>. Le registre est un tableau statique, zéro allocation au runtime.</p>
-<ul>
-<li>Bindings Python auto-générés via PyO3</li>
-<li>Exports WASM auto-générés via wasm-bindgen</li>
-<li>Métadonnées de documentation extraites à la compilation</li>
-</ul>
-</div>
-
-<div class="sf-card">
-<h3>🎯 Builder unifié</h3>
-<p>Les neuf bindings de langage partagent un unique protocole JSON-over-FFI. Un seul struct Rust → un seul schéma JSON → kwargs Python, objet JS, interface TypeScript, builder Rust — tous cohérents.</p>
-</div>
-
-</div>
-
-## Pourquoi Rust ?
-
-Rust donne à Sera trois propriétés très difficiles à obtenir simultanément en Python, JavaScript ou C++ :
-
-1. **Sécurité mémoire sans GC** — aucune pause GC sur les grands datasets, latence déterministe.
-2. **Abstractions zero-cost** — le registre de macros, le builder unifié, l'allocateur arène n'ajoutent aucun overhead runtime vs du C écrit à la main.
-3. **Cross-compilation first-class** — le même crate compile vers du code natif (wheel Python), WebAssembly (playground navigateur) et bibliothèque partagée C (futur FFI SeraDFrame) avec un seul `Cargo.toml`.
-
+<div class="sf-cta-row">
+<a href="../seraplot/introduction.html" class="sf-cta sf-cta-primary">Get started with SeraPlot →</a>
+<a href="../seraml/introduction.html" class="sf-cta sf-cta-secondary">Explore SeraML →</a>
+<a href="../about/support.html" class="sf-cta sf-cta-secondary">Support & Contact →</a>
 </div>

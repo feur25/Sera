@@ -1,18 +1,14 @@
-# Summary
+﻿# Summary
 
 [Introduction](introduction.md)
 
 ---
 
-# Getting Started
-
-- [Installation](getting-started/installation.md)
-- [Quick Start](getting-started/quickstart.md)
-
----
-
 # SeraPlot
 
+- [Introduction](seraplot/introduction.md)
+- [Installation](seraplot/installation.md)
+- [Quick Start](seraplot/quickstart.md)
 - [Chart Methods](getting-started/chart-methods.md)
 - [2D Charts](charts/2d/index.md)
   - [Bar Charts](charts/2d/bar.md)
@@ -65,6 +61,9 @@
 
 # SeraML
 
+- [Introduction](seraml/introduction.md)
+- [Installation](seraml/installation.md)
+- [Quick Start](seraml/quickstart.md)
 - [Machine Learning](ml/index.md)
   - [Clustering](ml/clustering-index.md)
     - [K-Means](ml/kmeans.md)
@@ -138,7 +137,6 @@
 # Tooling
 
 - [VS Code Extension](tooling/vscode.md)
-- [Live Playground](tooling/playground.md)
 
 ---
 
