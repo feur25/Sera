@@ -810,23 +810,13 @@
         return out;
     }
 
-    var VARIANT_ALIASES = {
-        'gstack': 'grouped_stacked',
-        'h': 'horizontal',
-        'grp': 'grouped',
-        'stk': 'stacked',
-        'rel': 'relative',
-        'mek': 'marimekko',
-        'pict': 'pictogram',
-        'multi': 'multicategory',
-    };
-
     function injectVariantCodeBlocks() {
         var sp = window.SeraplotWASM;
         if (!sp || typeof sp.demo !== 'function') return;
         var slug = state.slug;
         if (!slug || slug === 'playground') return;
         var fn = slug.replace(/-/g, '_');
+        var slugSegments = slug.split('-').length;
         var codeStyle = [
             'background:transparent',
             'border-top:1px solid rgba(99,102,241,.18)',
@@ -865,13 +855,11 @@
             if (el.querySelector('.sp-demo-code-wrap')) continue;
             var id = el.id;
             var parts = id.split('-');
-            var variantName = parts[parts.length - 1];
-            if (!variantName) continue;
-            var v = (variantName === 'default') ? 'basic' : variantName;
-            var wasmV = VARIANT_ALIASES[v] || v;
+            var v = parts.slice(slugSegments + 1).join('_');
+            if (!v || v === 'default') v = 'basic';
             var code;
             try {
-                code = sp.demo(JSON.stringify({ family: fn, variant: wasmV }));
+                code = sp.demo(JSON.stringify({ family: fn, variant: v }));
             } catch (e) {}
             if (!code || !code.trim()) {
                 code = buildCode(v);

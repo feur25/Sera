@@ -128,7 +128,7 @@ Aliases: `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_famil
 <button class="sp-cls-tab" onclick="spCls('bar-en','grouped',this)"><span class="sp-cic">▐▐</span><span class="sp-clb">Grouped</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','stacked',this)"><span class="sp-cic">▦</span><span class="sp-clb">Stacked</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','relative',this)"><span class="sp-cic">±</span><span class="sp-clb">Relative</span></button>
-<button class="sp-cls-tab" onclick="spCls('bar-en','gstack',this)"><span class="sp-cic">▤</span><span class="sp-clb">Grouped-Stacked</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-en','grouped_stacked',this)"><span class="sp-cic">▤</span><span class="sp-clb">Grouped-Stacked</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','marimekko',this)"><span class="sp-cic">▤</span><span class="sp-clb">Marimekko</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','pictogram',this)"><span class="sp-cic">☰</span><span class="sp-clb">Pictogram</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','multicategory',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Multicategory</span></button>
@@ -191,7 +191,7 @@ Stacked with **negative values below the zero baseline** — P&L, gains/losses. 
 <iframe class="sp-preview-frame" src="../../previews/relative-bar.html"></iframe>
 </div>
 
-<div class="sp-variant" id="bar-en-gstack">
+<div class="sp-variant" id="bar-en-grouped_stacked">
 
 Groups of stacked sub-bars per category. `offset_groups` assigns a stack-group name to each series.
 
@@ -340,7 +340,7 @@ Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family
 <button class="sp-cls-tab" onclick="spCls('bar-fr','grouped',this)"><span class="sp-cic">▐▐</span><span class="sp-clb">Groupé</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','stacked',this)"><span class="sp-cic">▦</span><span class="sp-clb">Empilé</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','relative',this)"><span class="sp-cic">±</span><span class="sp-clb">Relatif</span></button>
-<button class="sp-cls-tab" onclick="spCls('bar-fr','gstack',this)"><span class="sp-cic">▤</span><span class="sp-clb">Groupé-Empilé</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-fr','grouped_stacked',this)"><span class="sp-cic">▤</span><span class="sp-clb">Groupé-Empilé</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','marimekko',this)"><span class="sp-cic">▤</span><span class="sp-clb">Marimekko</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','pictogram',this)"><span class="sp-cic">☰</span><span class="sp-clb">Pictogramme</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','multicategory',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Multi-catégories</span></button>
@@ -404,7 +404,7 @@ Empilé avec **valeurs négatives sous l'axe zéro** — flux de trésorerie, P&
 <iframe class="sp-preview-frame" src="../../previews/relative-bar.html"></iframe>
 </div>
 
-<div class="sp-variant" id="bar-fr-gstack">
+<div class="sp-variant" id="bar-fr-grouped_stacked">
 
 Groupes de sous-barres empilées par catégorie. `offset_groups` assigne un nom de pile à chaque série.
 
