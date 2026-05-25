@@ -766,8 +766,96 @@
             ensureWasm(function () {
                 setStatus('ready', 'Live · in-browser');
                 runOnce(true);
+                injectVariantCodeBlocks();
             });
         });
+    }
+
+    function injectVariantCodeBlocks() {
+        var sp = window.SeraplotWASM;
+        if (!sp || typeof sp.demo !== 'function') return;
+        var slug = state.slug;
+        if (!slug || slug === 'playground') return;
+        var fn = slug.replace(/-/g, '_');
+        var codeStyle = [
+            'background:#0d1117',
+            'border:1px solid rgba(99,102,241,.22)',
+            'border-radius:8px',
+            'padding:14px 18px',
+            'margin:0 0 18px',
+            'overflow-x:auto',
+            'font-family:"Cascadia Code","JetBrains Mono","Fira Code","Consolas",monospace',
+            'font-size:12.5px',
+            'line-height:1.6',
+            'color:#e2e8f0',
+            'white-space:pre',
+            'position:relative',
+        ].join(';');
+        var labelStyle = 'font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase';
+        var copyBtnStyle = [
+            'position:absolute',
+            'top:8px',
+            'right:8px',
+            'background:#1e293b',
+            'border:1px solid #334155',
+            'color:#94a3b8',
+            'border-radius:5px',
+            'padding:3px 9px',
+            'font-size:11px',
+            'cursor:pointer',
+            'font-family:inherit',
+            'transition:all .15s',
+        ].join(';');
+        var variants = document.querySelectorAll('.sp-variant[id]');
+        for (var i = 0; i < variants.length; i++) {
+            var el = variants[i];
+            if (el.querySelector('.sp-demo-code-wrap')) continue;
+            var id = el.id;
+            var parts = id.split('-');
+            var variantName = parts[parts.length - 1];
+            if (!variantName) continue;
+            var v = (variantName === 'default') ? 'basic' : variantName;
+            var code;
+            try {
+                code = sp.demo(JSON.stringify({ family: fn, variant: v }));
+            } catch (e) { continue; }
+            if (!code || !code.trim()) continue;
+            var wrap = document.createElement('div');
+            wrap.className = 'sp-demo-code-wrap';
+            var lbl = document.createElement('div');
+            lbl.style.cssText = labelStyle;
+            lbl.textContent = 'Code';
+            var pre = document.createElement('pre');
+            pre.style.cssText = codeStyle;
+            var codeEl = document.createElement('code');
+            codeEl.textContent = code;
+            var copyBtn = document.createElement('button');
+            copyBtn.style.cssText = copyBtnStyle;
+            copyBtn.textContent = 'Copy';
+            copyBtn.addEventListener('click', (function (txt, btn) {
+                return function () {
+                    navigator.clipboard && navigator.clipboard.writeText(txt).then(function () {
+                        btn.textContent = 'Copied!';
+                        setTimeout(function () { btn.textContent = 'Copy'; }, 1500);
+                    });
+                };
+            })(code, copyBtn));
+            pre.appendChild(codeEl);
+            pre.appendChild(copyBtn);
+            wrap.appendChild(lbl);
+            wrap.appendChild(pre);
+            if (window.hljs) {
+                try { (hljs.highlightElement || hljs.highlightBlock).call(hljs, codeEl); } catch (e) {}
+            }
+            var preview = el.querySelector('.sp-preview-label');
+            if (preview) {
+                el.insertBefore(wrap, preview);
+            } else {
+                var meta = el.querySelector('.sp-vmeta');
+                if (meta && meta.nextSibling) { el.insertBefore(wrap, meta.nextSibling); }
+                else { el.appendChild(wrap); }
+            }
+        }
     }
 
     function init() {
