@@ -333,6 +333,19 @@ macro_rules! impl_wasm_bindings {
             let v = i.variant.unwrap_or_else(|| "basic".to_string());
             crate::demo_snippet(&f, &v).unwrap_or_default()
         }
+
+        #[wasm_bindgen(js_name = "chartAliases")]
+        pub fn chart_aliases() -> String {
+            let mut obj = serde_json::Map::new();
+            for (alias, target) in crate::bindings::registry_macro::CHART_ALIASES {
+                let camel: String = target.split('_').enumerate().map(|(i, s)| {
+                    if i == 0 { s.to_string() }
+                    else { let mut c = s.chars(); c.next().map(|ch| ch.to_uppercase().collect::<String>() + c.as_str()).unwrap_or_default() }
+                }).collect();
+                obj.insert(alias.to_string(), serde_json::Value::String(camel));
+            }
+            serde_json::to_string(&serde_json::Value::Object(obj)).unwrap_or_default()
+        }
     };
 }
 
