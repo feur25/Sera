@@ -63,6 +63,7 @@
         currentVariant: 0,
         debTimer: null,
         lastSent: '',
+        wasmAliases: null,
     };
 
     function pageSlug() {
@@ -125,12 +126,29 @@
     function ensureWasm(cb) {
         var sp = window.SeraplotWASM;
         if (!sp) { setTimeout(function () { ensureWasm(cb); }, 80); return; }
-        if (sp.__ready) { cb(); return; }
-        if (sp.__loading) { sp.__loading.then(cb); return; }
-        sp.__loading = sp.__init(getThemeBase() + 'seraplot_bg.wasm').then(cb).catch(function (e) {
+        if (sp.__ready) { if (!state.wasmAliases) state.wasmAliases = buildDynamicAliases(sp); cb(); return; }
+        if (sp.__loading) { sp.__loading.then(function () { if (!state.wasmAliases) state.wasmAliases = buildDynamicAliases(window.SeraplotWASM); cb(); }); return; }
+        sp.__loading = sp.__init(getThemeBase() + 'seraplot_bg.wasm').then(function () { state.wasmAliases = buildDynamicAliases(window.SeraplotWASM); cb(); }).catch(function (e) {
             setStatus('err', 'WASM load failed');
             showLoader('Failed to load WASM module.<br>' + (e && e.message ? e.message : ''));
         });
+    }
+
+    function buildDynamicAliases(sp) {
+        var aliases = {};
+        var keys = Object.keys(sp);
+        for (var i = 0; i < keys.length; i++) {
+            var k = keys[i];
+            if (typeof sp[k] !== 'function') continue;
+            var snake = k.replace(/[A-Z]/g, function (c) { return '_' + c.toLowerCase(); });
+            var base = snake.indexOf('build_') === 0 ? snake.slice(6) : snake;
+            var stripped = base.length > 6 && base.slice(-6) === '_chart' ? base.slice(0, -6) : base;
+            aliases[base] = k;
+            if (stripped !== base) aliases[stripped] = k;
+            if (base.slice(-1) !== 's') { aliases[base + 's'] = k; }
+            if (stripped !== base && stripped.slice(-1) !== 's') { aliases[stripped + 's'] = k; }
+        }
+        return aliases;
     }
 
     function fnCandidates(fn) {
@@ -152,9 +170,19 @@
     function resolveWasmFn(fn) {
         var sp = window.SeraplotWASM;
         if (!sp) return null;
+        var aliases = state.wasmAliases;
+        var resolved = (aliases && aliases[fn]) ? aliases[fn] : null;
+        if (resolved && typeof sp[resolved] === 'function') return { name: resolved, fn: sp[resolved] };
         var cands = fnCandidates(fn);
         for (var i = 0; i < cands.length; i++) {
             if (typeof sp[cands[i]] === 'function') return { name: cands[i], fn: sp[cands[i]] };
+        }
+        if (fn.slice(-1) === 's') {
+            var singular = fn.slice(0, -1);
+            var cands2 = fnCandidates(singular);
+            for (var j = 0; j < cands2.length; j++) {
+                if (typeof sp[cands2[j]] === 'function') return { name: cands2[j], fn: sp[cands2[j]] };
+            }
         }
         return null;
     }
