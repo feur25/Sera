@@ -73,36 +73,35 @@ Aliases: `sp.line`, `sp.lines`, `sp.line_unified`, `sp.lines_unified`, `sp.line_
 
 ## Parameters
 
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | required | all | Chart title |
-| `labels` | `list[str]` | `None` | basic, stepped, spline, filled, dashed, connected_scatter, gapped | Category labels for x-axis |
-| `values` | `list[float]` | `None` | single-series variants | Y-values |
-| `series` | `list[(str, list[float])]` | `None` | multi, sparkline | Named series tuples |
-| `x_labels` | `list[str]` | `None` | multi | Shared x-axis labels |
-| `variant` | `str` | `"basic"` | — | Which variant to render |
-| `step_shape` | `str` | `"hv"` | stepped | `"hv"`, `"vh"`, `"hvh"` or `"vhv"` |
-| `spline_tension` | `float` | `0.5` | spline | Catmull-Rom tension (0–1) |
-| `fill_opacity` | `float` | `0.3` | filled | Fill alpha (0–1) |
-| `stack_fill` | `bool` | `False` | filled | Stack multiple filled series |
-| `dash_pattern` | `str` | `"8,4"` | dashed | SVG `stroke-dasharray` |
-| `stroke_width` | `float` | `2.0` | all | Line thickness in px |
-| `marker_size` | `int` | `4` | connected_scatter | Marker radius in px |
-| `gap_threshold` | `float` | `NaN` | gapped | Break line when |Δy| > threshold |
-| `spark_cols` | `int` | `3` | sparkline | Columns in the grid |
-| `spark_cell_w` | `int` | `220` | sparkline | Each cell width in px |
-| `spark_cell_h` | `int` | `60` | sparkline | Each cell height in px |
-| `show_points` | `bool` | `True` | all | Render data-point markers |
-| `color_hex` | `int` | `0` | single-series | Override line color (hex int) |
-| `palette` | `list[int]` | `None` | all | Custom color list |
-| `width` | `int` | `900` | all | Canvas width in px |
-| `height` | `int` | `480` | all | Canvas height in px |
-| `x_label` | `str` | `""` | all | X-axis label |
-| `y_label` | `str` | `""` | all | Y-axis label |
-| `gridlines` | `bool` | `False` | all | Show horizontal gridlines |
-| `sort_order` | `str` | `"none"` | basic | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, `"none"` |
-| `legend_position` | `str` | `"right"` | multi, sparkline | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | all | Background CSS color; `None` = transparent |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `color_hex` | basic, connected_scatter, dashed, filled, gapped, sparkline, spline, stepped |
+| `dash_pattern` | dashed |
+| `fill_opacity` | filled |
+| `gap_threshold` | gapped |
+| `gridlines` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `height` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `hover` | basic, multi |
+| `labels` | basic, connected_scatter, dashed, filled, gapped, neon, spline, stepped |
+| `legend_position` | connected_scatter, dashed, filled, gapped, multi, neon |
+| `marker_size` | connected_scatter, gapped, spline, stepped |
+| `palette` | connected_scatter, dashed, filled, gapped, multi, neon, sparkline |
+| `series` | connected_scatter, dashed, filled, gapped, multi, neon, sparkline |
+| `show_points` | basic, gapped, multi, neon, spline, stepped |
+| `sort_order` | basic, multi |
+| `spark_cell_h` | sparkline |
+| `spark_cell_w` | sparkline |
+| `spark_cols` | sparkline |
+| `spline_tension` | spline |
+| `stack_fill` | filled |
+| `step_shape` | stepped |
+| `stroke_width` | connected_scatter, dashed, filled, gapped, sparkline, spline, stepped |
+| `title` | all |
+| `values` | basic, connected_scatter, dashed, filled, gapped, neon, sparkline, spline, stepped |
+| `width` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `x_label` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `x_labels` | connected_scatter, dashed, filled, gapped, multi, neon |
+| `y_label` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
 
 ---
 
@@ -281,36 +280,35 @@ Alias : `sp.line`, `sp.lines`, `sp.line_unified`, `sp.lines_unified`, `sp.line_f
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Variantes | Description |
-|-----------|------|--------|-----------|-------------|
-| `title` | `str` | requis | toutes | Titre du graphique |
-| `labels` | `list[str]` | `None` | basic, stepped, spline, filled, dashed, connected_scatter, gapped | Étiquettes de l'axe x |
-| `values` | `list[float]` | `None` | variantes mono-série | Valeurs y |
-| `series` | `list[(str, list[float])]` | `None` | multi, sparkline | Tuples (nom, valeurs) par série |
-| `x_labels` | `list[str]` | `None` | multi | Étiquettes partagées de l'axe x |
-| `variant` | `str` | `"basic"` | — | Variante à rendre |
-| `step_shape` | `str` | `"hv"` | stepped | `"hv"`, `"vh"`, `"hvh"` ou `"vhv"` |
-| `spline_tension` | `float` | `0.5` | spline | Tension Catmull-Rom (0–1) |
-| `fill_opacity` | `float` | `0.3` | filled | Alpha de remplissage (0–1) |
-| `stack_fill` | `bool` | `False` | filled | Empile plusieurs séries remplies |
-| `dash_pattern` | `str` | `"8,4"` | dashed | `stroke-dasharray` SVG |
-| `stroke_width` | `float` | `2.0` | toutes | Épaisseur du trait en px |
-| `marker_size` | `int` | `4` | connected_scatter | Rayon des marqueurs en px |
-| `gap_threshold` | `float` | `NaN` | gapped | Coupe la ligne quand |Δy| > seuil |
-| `spark_cols` | `int` | `3` | sparkline | Colonnes dans la grille |
-| `spark_cell_w` | `int` | `220` | sparkline | Largeur d'une cellule en px |
-| `spark_cell_h` | `int` | `60` | sparkline | Hauteur d'une cellule en px |
-| `show_points` | `bool` | `True` | toutes | Affiche les marqueurs |
-| `color_hex` | `int` | `0` | mono-série | Couleur de ligne (entier hex) |
-| `palette` | `list[int]` | `None` | toutes | Palette de couleurs personnalisée |
-| `width` | `int` | `900` | toutes | Largeur du canvas en px |
-| `height` | `int` | `480` | toutes | Hauteur du canvas en px |
-| `x_label` | `str` | `""` | toutes | Étiquette de l'axe x |
-| `y_label` | `str` | `""` | toutes | Étiquette de l'axe y |
-| `gridlines` | `bool` | `False` | toutes | Affiche les lignes de grille horizontales |
-| `sort_order` | `str` | `"none"` | basic | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, `"none"` |
-| `legend_position` | `str` | `"right"` | multi, sparkline | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | toutes | Couleur de fond CSS ; `None` = transparent |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `color_hex` | basic, connected_scatter, dashed, filled, gapped, sparkline, spline, stepped |
+| `dash_pattern` | dashed |
+| `fill_opacity` | filled |
+| `gap_threshold` | gapped |
+| `gridlines` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `height` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `hover` | basic, multi |
+| `labels` | basic, connected_scatter, dashed, filled, gapped, neon, spline, stepped |
+| `legend_position` | connected_scatter, dashed, filled, gapped, multi, neon |
+| `marker_size` | connected_scatter, gapped, spline, stepped |
+| `palette` | connected_scatter, dashed, filled, gapped, multi, neon, sparkline |
+| `series` | connected_scatter, dashed, filled, gapped, multi, neon, sparkline |
+| `show_points` | basic, gapped, multi, neon, spline, stepped |
+| `sort_order` | basic, multi |
+| `spark_cell_h` | sparkline |
+| `spark_cell_w` | sparkline |
+| `spark_cols` | sparkline |
+| `spline_tension` | spline |
+| `stack_fill` | filled |
+| `step_shape` | stepped |
+| `stroke_width` | connected_scatter, dashed, filled, gapped, sparkline, spline, stepped |
+| `title` | toutes |
+| `values` | basic, connected_scatter, dashed, filled, gapped, neon, sparkline, spline, stepped |
+| `width` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `x_label` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `x_labels` | connected_scatter, dashed, filled, gapped, multi, neon |
+| `y_label` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
 
 ---
 

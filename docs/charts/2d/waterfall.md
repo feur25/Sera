@@ -65,15 +65,13 @@ Aliases: `sp.waterfall`, `sp.build_waterfall`
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `title`     | `str`         | required  | Chart title |
-| `labels`    | `list[str]`   | required  | Step labels (left to right) |
-| `values`    | `list[float]` | required  | Step deltas (use 0 + total-keyword label for subtotals) |
-| `variant`   | `str`         | `"basic"` | Geometry variant (see table) |
-| `show_text` | `bool`        | `True`    | Show value annotations above bars |
-| `width`     | `int`         | `900`     | Canvas width (px) |
-| `height`    | `int`         | `480`     | Canvas height (px) |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `gridlines` | horizontal |
+| `height` | horizontal |
+| `show_text` | all |
+| `title` | horizontal |
+| `width` | horizontal |
 
 ## Returns
 

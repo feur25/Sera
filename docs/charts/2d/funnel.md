@@ -63,16 +63,11 @@ Aliases: `sp.funnel`, `sp.build_funnel_chart`
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `title`     | `str`         | required   | Chart title |
-| `labels`    | `list[str]`   | required   | Stage labels (top → bottom) |
-| `values`    | `list[float]` | required   | Stage values (descending recommended) |
-| `variant`   | `str`         | `"basic"` | Geometry variant (see table) |
-| `palette`   | `list[int]`   | `None`     | Custom per-stage palette |
-| `show_text` | `bool`        | `True`     | Show inside labels + side annotations |
-| `width`     | `int`         | `800`      | Canvas width (px) |
-| `height`    | `int`         | `480`      | Canvas height (px) |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `palette` | all |
+| `show_text` | all |
+| `width` | all |
 
 ## Returns
 
@@ -186,16 +181,11 @@ Alias : `sp.funnel`, `sp.build_funnel_chart`
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Description |
-|---|---|---|---|
-| `title`     | `str`         | requis     | Titre du graphique |
-| `labels`    | `list[str]`   | requis     | Labels d’étape (haut → bas) |
-| `values`    | `list[float]` | requis     | Valeurs (décroissantes recommandées) |
-| `variant`   | `str`         | `"basic"` | Variante de géométrie |
-| `palette`   | `list[int]`   | `None`     | Palette personnalisée par étape |
-| `show_text` | `bool`        | `True`     | Afficher labels internes + annotations |
-| `width`     | `int`         | `800`      | Largeur (px) |
-| `height`    | `int`         | `480`      | Hauteur (px) |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `palette` | toutes |
+| `show_text` | toutes |
+| `width` | toutes |
 
 <h2>Retour</h2>
 

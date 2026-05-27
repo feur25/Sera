@@ -66,24 +66,13 @@ Aliases: `sp.ridgeline`, `sp.build_ridgeline_chart`
 
 ## Parameters
 
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | required | all | Chart title |
-| `categories` | `list[str]` | required | all | Per-value group label |
-| `values` | `list[float]` | required | all | Numeric samples |
-| `variant` | `str` | `"basic"` | — | Rendering variant (see table) |
-| `overlap` | `float` | `0.5` | all (except spaced) | Vertical ridge overlap factor (0..2) |
-| `bandwidth` | `float` | `0.0` | all | KDE bandwidth. 0 = Scott's rule (auto) |
-| `n_points` | `int` | `60` | all | KDE evaluation points along X |
-| `fill_opacity` | `int` | `56` | filled variants | Fill alpha 0..255 |
-| `palette` | `list[int]` | `None` | all | Custom per-ridge palette |
-| `width` | `int` | `900` | all | Canvas width (px) |
-| `height` | `int` | `520` | all | Canvas height (px) |
-| `x_label` | `str` | `""` | all | X-axis label |
-| `y_label` | `str` | `""` | all | Y-axis label |
-| `gridlines` | `bool` | `False` | all | Show vertical gridlines |
-| `sort_order` | `str` | `"none"` | all | `none` / `asc` / `desc` (sort ridges by mean) |
-| `background` | `str` | `None` | all | Background CSS color |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `fill_opacity` | basic, mean, quartiles, rug, spaced |
+| `height` | deluxe |
+| `palette` | basic, gradient, heatmap, lines, mean, quartiles, rug, spaced |
+| `title` | deluxe |
+| `width` | deluxe |
 
 ---
 
@@ -192,24 +181,13 @@ Alias : `sp.ridgeline`, `sp.build_ridgeline_chart`
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Variantes | Description |
-|-----------|------|--------|-----------|-------------|
-| `title` | `str` | requis | toutes | Titre du graphique |
-| `categories` | `list[str]` | requis | toutes | Étiquette de groupe par valeur |
-| `values` | `list[float]` | requis | toutes | Échantillons numériques |
-| `variant` | `str` | `"basic"` | — | Variante de rendu |
-| `overlap` | `float` | `0.5` | toutes (sauf spaced) | Recouvrement vertical (0..2) |
-| `bandwidth` | `float` | `0.0` | toutes | Bande passante KDE. 0 = règle de Scott |
-| `n_points` | `int` | `60` | toutes | Points d'évaluation KDE |
-| `fill_opacity` | `int` | `56` | variantes remplies | Alpha de remplissage 0..255 |
-| `palette` | `list[int]` | `None` | toutes | Palette personnalisée |
-| `width` | `int` | `900` | toutes | Largeur (px) |
-| `height` | `int` | `520` | toutes | Hauteur (px) |
-| `x_label` | `str` | `""` | toutes | Libellé axe X |
-| `y_label` | `str` | `""` | toutes | Libellé axe Y |
-| `gridlines` | `bool` | `False` | toutes | Afficher la grille verticale |
-| `sort_order` | `str` | `"none"` | toutes | `none` / `asc` / `desc` (tri des crêtes par moyenne) |
-| `background` | `str` | `None` | toutes | Couleur de fond CSS |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `fill_opacity` | basic, mean, quartiles, rug, spaced |
+| `height` | deluxe |
+| `palette` | basic, gradient, heatmap, lines, mean, quartiles, rug, spaced |
+| `title` | deluxe |
+| `width` | deluxe |
 
 ---
 

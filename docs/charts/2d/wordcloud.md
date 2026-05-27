@@ -77,29 +77,13 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `title` | `str` | required | Chart title |
-| `words` | `list[str]` | required | Tokens (all variants except labelmap) |
-| `frequencies` | `list[float]` | required | Weight per word (controls size) |
-| `variant` | `str` | "basic" | Rendering mode (see Variants) |
-| `shape` | `str` | "rect" | Sub-shape for `basic` variant (see Shapes) |
-| `mask` | `list[int]` | None | Binary mask (`image` variant) - row-major, 1=inside |
-| `mask_width` | `int` | 0 | Mask width in pixels (`image` variant) |
-| `mask_height` | `int` | 0 | Mask height in pixels (`image` variant) |
-| `points_x` | `list[float]` | None | Scatter x coords (`labelmap` variant) |
-| `points_y` | `list[float]` | None | Scatter y coords (`labelmap` variant) |
-| `category_indices` | `list[int]` | None | Cluster id per point/word (`labelmap`, `context`) |
-| `cluster_labels` | `list[str]` | None | Label per cluster (`labelmap` variant) |
-| `edges_i` | `list[int]` | None | Edge source indices (`network`, `context` variants) |
-| `edges_j` | `list[int]` | None | Edge target indices (`network`, `context` variants) |
-| `edges_w` | `list[float]` | None | Edge weights (`network`, `context` variants) |
-| `min_font` | `float` | 12.0 | Smallest rendered font size |
-| `max_font` | `float` | 72.0 | Largest rendered font size |
-| `palette` | `list[int]` | None | Custom palette |
-| `bg_color` | `str` | auto | Background color |
-| `width` | `int` | 900 | Canvas width (px) |
-| `height` | `int` | 500 | Canvas height (px) |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `height` | all |
+| `hover` | all |
+| `palette` | all |
+| `title` | all |
+| `width` | all |
 
 ## Returns
 

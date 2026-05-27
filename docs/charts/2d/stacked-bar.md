@@ -19,19 +19,36 @@ A stacked bar chart divides each bar into colored segments representing sub-seri
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | `str` | required | Chart title |
-| `category_labels` | `list[str]` | required | X-axis category labels |
-| `series_values` | `list[float]` | required | Flat row-major values: all series 1 values, then series 2, etc. |
-| `show_values` | `bool` | `False` | Show numeric labels inside each segment |
-| `series_names` | `list[str] \| None` | `None` | Legend labels per series |
-| `palette` | `list[int] \| None` | `None` | Colors per series |
-| `width` | `int` | `900` | Canvas width in pixels |
-| `height` | `int` | `480` | Canvas height in pixels |
-| `legend_position` | `str` | `"right"` | Legend position: `"right"`, `"bottom"`, `"top"`, `"none"` |
-| `gridlines` | `bool` | `False` | Show horizontal gridlines |
-| `no_y_axis` | `bool` | `False` | Hide Y-axis ticks and labels |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `bar_gap` | grouped_stacked, relative |
+| `bargroup_gap` | grouped_stacked |
+| `category_labels` | grouped, grouped_stacked, marimekko, multicategory, relative |
+| `color_groups` | basic |
+| `color_hex` | basic, deluxe, pictogram, prism |
+| `corner_radius` | grouped_stacked, relative |
+| `gridlines` | basic, deluxe, grouped, grouped_stacked, marimekko, multicategory, prism, relative |
+| `height` | all |
+| `hover` | basic, deluxe, grouped, prism |
+| `icon_size` | pictogram |
+| `labels` | basic, deluxe, pictogram, prism |
+| `legend_position` | grouped, grouped_stacked, marimekko, multicategory, relative |
+| `max_icons_per_column` | pictogram |
+| `offset_groups` | grouped_stacked |
+| `orientation` | grouped |
+| `palette` | all |
+| `series` | grouped, grouped_stacked, marimekko, multicategory, relative |
+| `show_text` | basic, deluxe, grouped, marimekko, prism |
+| `sort_order` | basic, grouped |
+| `super_categories` | multicategory |
+| `title` | all |
+| `unit_description` | pictogram |
+| `units_per_icon` | pictogram |
+| `values` | basic, deluxe, multicategory, pictogram, prism |
+| `width` | all |
+| `widths` | marimekko |
+| `x_label` | basic, grouped, grouped_stacked, marimekko, multicategory, relative |
+| `y_label` | basic, grouped, grouped_stacked, marimekko, multicategory, relative |
 
 ---
 
@@ -72,19 +89,36 @@ Un graphique en barres empilées divise chaque barre en segments colorés repré
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `title` | `str` | requis | Titre du graphique |
-| `category_labels` | `list[str]` | requis | Étiquettes des catégories de l'axe X |
-| `series_values` | `list[float]` | requis | Valeurs row-major : toutes les valeurs de la série 1, puis série 2, etc. |
-| `show_values` | `bool` | `False` | Afficher les étiquettes numériques dans chaque segment |
-| `series_names` | `list[str] \| None` | `None` | Étiquettes de légende par série |
-| `palette` | `list[int] \| None` | `None` | Couleurs par série |
-| `width` | `int` | `900` | Largeur du canvas en pixels |
-| `height` | `int` | `480` | Hauteur du canvas en pixels |
-| `legend_position` | `str` | `"right"` | Position de la légende : `"right"`, `"bottom"`, `"top"`, `"none"` |
-| `gridlines` | `bool` | `False` | Afficher les lignes de grille horizontales |
-| `no_y_axis` | `bool` | `False` | Masquer les graduations et étiquettes de l'axe Y |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `bar_gap` | grouped_stacked, relative |
+| `bargroup_gap` | grouped_stacked |
+| `category_labels` | grouped, grouped_stacked, marimekko, multicategory, relative |
+| `color_groups` | basic |
+| `color_hex` | basic, deluxe, pictogram, prism |
+| `corner_radius` | grouped_stacked, relative |
+| `gridlines` | basic, deluxe, grouped, grouped_stacked, marimekko, multicategory, prism, relative |
+| `height` | toutes |
+| `hover` | basic, deluxe, grouped, prism |
+| `icon_size` | pictogram |
+| `labels` | basic, deluxe, pictogram, prism |
+| `legend_position` | grouped, grouped_stacked, marimekko, multicategory, relative |
+| `max_icons_per_column` | pictogram |
+| `offset_groups` | grouped_stacked |
+| `orientation` | grouped |
+| `palette` | toutes |
+| `series` | grouped, grouped_stacked, marimekko, multicategory, relative |
+| `show_text` | basic, deluxe, grouped, marimekko, prism |
+| `sort_order` | basic, grouped |
+| `super_categories` | multicategory |
+| `title` | toutes |
+| `unit_description` | pictogram |
+| `units_per_icon` | pictogram |
+| `values` | basic, deluxe, multicategory, pictogram, prism |
+| `width` | toutes |
+| `widths` | marimekko |
+| `x_label` | basic, grouped, grouped_stacked, marimekko, multicategory, relative |
+| `y_label` | basic, grouped, grouped_stacked, marimekko, multicategory, relative |
 
 ---
 

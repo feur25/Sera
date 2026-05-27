@@ -63,19 +63,13 @@ Aliases: `sp.slope`, `sp.build_slope_chart`
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `title`        | `str`             | required   | Chart title |
-| `labels`       | `list[str]`       | required   | One label per row |
-| `left`         | `list[float]`     | required   | Values for the left axis |
-| `right`        | `list[float]`     | required   | Values for the right axis |
-| `variant`      | `str`             | `"basic"` | Connector variant (see table) |
-| `left_label`   | `str`             | `"Before"`| Header above the left axis |
-| `right_label`  | `str`             | `"After"` | Header above the right axis |
-| `palette`      | `list[int]`       | `None`     | Custom per-row palette |
-| `show_text`    | `bool`            | `True`     | Show `label (value)` annotations |
-| `width`        | `int`             | `700`      | Canvas width (px) |
-| `height`       | `int`             | `500`      | Canvas height (px) |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `left_label` | diverging |
+| `palette` | bumps, monochrome |
+| `right_label` | diverging |
+| `show_text` | basic, bumps, curved, highlighted, monochrome, stepped, thick |
+| `width` | diverging |
 
 ## Returns
 
@@ -189,19 +183,13 @@ Alias : `sp.slope`, `sp.build_slope_chart`
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Description |
-|---|---|---|---|
-| `title`        | `str`             | requis     | Titre du graphique |
-| `labels`       | `list[str]`       | requis     | Un label par ligne |
-| `left`         | `list[float]`     | requis     | Valeurs de l’axe gauche |
-| `right`        | `list[float]`     | requis     | Valeurs de l’axe droite |
-| `variant`      | `str`             | `"basic"` | Variante de connecteur |
-| `left_label`   | `str`             | `"Before"`| En-tête au-dessus de l’axe gauche |
-| `right_label`  | `str`             | `"After"` | En-tête au-dessus de l’axe droite |
-| `palette`      | `list[int]`       | `None`     | Palette personnalisée par ligne |
-| `show_text`    | `bool`            | `True`     | Afficher annotations `label (valeur)` |
-| `width`        | `int`             | `700`      | Largeur (px) |
-| `height`       | `int`             | `500`      | Hauteur (px) |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `left_label` | diverging |
+| `palette` | bumps, monochrome |
+| `right_label` | diverging |
+| `show_text` | basic, bumps, curved, highlighted, monochrome, stepped, thick |
+| `width` | diverging |
 
 <h2>Retour</h2>
 

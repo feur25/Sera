@@ -19,22 +19,35 @@ An area chart is a line chart where the region between the line and the horizont
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | `str` | — | Chart title displayed at the top |
-| `x_labels` | `list[str]` | — | Ordered X axis labels shared by all series |
-| `series_values` | `list[list[float]]` | — | One inner list per series; all must have the same length as `x_labels` |
-| `stacked` | `bool` | `False` | Stack series cumulatively instead of overlapping |
-| `series_names` | `list[str] \| None` | `None` | Legend label for each series |
-| `palette` | `list[int] \| None` | `None` | Custom series colors as hex integers |
-| `width` | `int` | `900` | Canvas width in pixels |
-| `height` | `int` | `480` | Canvas height in pixels |
-| `x_label` | `str` | `""` | Label for the X axis |
-| `y_label` | `str` | `""` | Label for the Y axis |
-| `gridlines` | `bool` | `True` | Draw horizontal gridlines |
-| `background` | `str \| None` | `None` | CSS background color override |
-| `legend_position` | `str` | `"top"` | Legend placement: `"top"`, `"right"`, `"bottom"`, or `"left"` |
-| `hover_json` | `str \| None` | `None` | JSON string for custom tooltip data |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `color_hex` | basic, connected_scatter, dashed, filled, gapped, sparkline, spline, stepped |
+| `dash_pattern` | dashed |
+| `fill_opacity` | filled |
+| `gap_threshold` | gapped |
+| `gridlines` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `height` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `hover` | basic, multi |
+| `labels` | basic, connected_scatter, dashed, filled, gapped, neon, spline, stepped |
+| `legend_position` | connected_scatter, dashed, filled, gapped, multi, neon |
+| `marker_size` | connected_scatter, gapped, spline, stepped |
+| `palette` | connected_scatter, dashed, filled, gapped, multi, neon, sparkline |
+| `series` | connected_scatter, dashed, filled, gapped, multi, neon, sparkline |
+| `show_points` | basic, gapped, multi, neon, spline, stepped |
+| `sort_order` | basic, multi |
+| `spark_cell_h` | sparkline |
+| `spark_cell_w` | sparkline |
+| `spark_cols` | sparkline |
+| `spline_tension` | spline |
+| `stack_fill` | filled |
+| `step_shape` | stepped |
+| `stroke_width` | connected_scatter, dashed, filled, gapped, sparkline, spline, stepped |
+| `title` | all |
+| `values` | basic, connected_scatter, dashed, filled, gapped, neon, sparkline, spline, stepped |
+| `width` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `x_label` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `x_labels` | connected_scatter, dashed, filled, gapped, multi, neon |
+| `y_label` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
 
 ---
 
@@ -75,22 +88,35 @@ Un graphique de zone est un graphique en ligne dont la région entre la courbe e
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `title` | `str` | — | Titre du graphique affiché en haut |
-| `x_labels` | `list[str]` | — | Labels de l'axe X partagés par toutes les séries |
-| `series_values` | `list[list[float]]` | — | Une liste interne par série ; toutes doivent avoir la même longueur que `x_labels` |
-| `stacked` | `bool` | `False` | Empiler les séries de façon cumulative au lieu de les superposer |
-| `series_names` | `list[str] \| None` | `None` | Label de légende pour chaque série |
-| `palette` | `list[int] \| None` | `None` | Couleurs de série personnalisées en entiers hexadécimaux |
-| `width` | `int` | `900` | Largeur du canevas en pixels |
-| `height` | `int` | `480` | Hauteur du canevas en pixels |
-| `x_label` | `str` | `""` | Label de l'axe X |
-| `y_label` | `str` | `""` | Label de l'axe Y |
-| `gridlines` | `bool` | `True` | Afficher des lignes de grille horizontales |
-| `background` | `str \| None` | `None` | Couleur de fond CSS |
-| `legend_position` | `str` | `"top"` | Position de la légende : `"top"`, `"right"`, `"bottom"` ou `"left"` |
-| `hover_json` | `str \| None` | `None` | JSON pour les données d'info-bulle personnalisées |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `color_hex` | basic, connected_scatter, dashed, filled, gapped, sparkline, spline, stepped |
+| `dash_pattern` | dashed |
+| `fill_opacity` | filled |
+| `gap_threshold` | gapped |
+| `gridlines` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `height` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `hover` | basic, multi |
+| `labels` | basic, connected_scatter, dashed, filled, gapped, neon, spline, stepped |
+| `legend_position` | connected_scatter, dashed, filled, gapped, multi, neon |
+| `marker_size` | connected_scatter, gapped, spline, stepped |
+| `palette` | connected_scatter, dashed, filled, gapped, multi, neon, sparkline |
+| `series` | connected_scatter, dashed, filled, gapped, multi, neon, sparkline |
+| `show_points` | basic, gapped, multi, neon, spline, stepped |
+| `sort_order` | basic, multi |
+| `spark_cell_h` | sparkline |
+| `spark_cell_w` | sparkline |
+| `spark_cols` | sparkline |
+| `spline_tension` | spline |
+| `stack_fill` | filled |
+| `step_shape` | stepped |
+| `stroke_width` | connected_scatter, dashed, filled, gapped, sparkline, spline, stepped |
+| `title` | toutes |
+| `values` | basic, connected_scatter, dashed, filled, gapped, neon, sparkline, spline, stepped |
+| `width` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `x_label` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+| `x_labels` | connected_scatter, dashed, filled, gapped, multi, neon |
+| `y_label` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
 
 ---
 

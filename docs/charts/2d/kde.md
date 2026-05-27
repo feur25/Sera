@@ -65,25 +65,21 @@ Aliases: `sp.kde`, `sp.build_kde_chart`
 
 ## Parameters
 
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | required | all | Chart title |
-| `values` | `list[float]` | required | all | Raw numeric samples |
-| `variant` | `str` | `"basic"` | — | Rendering variant (see table) |
-| `categories` | `list[str]` | `None` | all | Per-value group label for multi-series |
-| `bandwidth` | `float` | `0.0` | all | KDE bandwidth. 0 = Scott's rule (auto) |
-| `filled` | `bool` | `True` | basic, stepped, normalized | Fill area under curve |
-| `fill_opacity` | `int` | `50` | all (filled) | Fill alpha in 0..255 |
-| `bins` | `int` | `30` | histogram | Histogram bin count |
-| `n_points` | `int` | `80` | all | KDE evaluation points along X |
-| `palette` | `list[int]` | `None` | all | Custom per-series palette |
-| `width` | `int` | `900` | all | Canvas width (px) |
-| `height` | `int` | `420` | all | Canvas height (px) |
-| `x_label` | `str` | `""` | all | X-axis label |
-| `y_label` | `str` | `"Density"` | all | Y-axis label |
-| `gridlines` | `bool` | `False` | all | Show gridlines |
-| `sort_order` | `str` | `"none"` | all | `none` / `asc` / `desc` (sort series by mean) |
-| `background` | `str` | `None` | all | Background CSS color |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `bandwidth` | all |
+| `bins` | histogram |
+| `fill_opacity` | basic, normalized, rug, stepped |
+| `filled` | basic, normalized, rug |
+| `gridlines` | all |
+| `height` | all |
+| `hover` | all |
+| `n_points` | all |
+| `palette` | all |
+| `title` | all |
+| `width` | all |
+| `x_label` | all |
+| `y_label` | all |
 
 ---
 
@@ -185,25 +181,21 @@ Alias : `sp.kde`, `sp.build_kde_chart`
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Variantes | Description |
-|-----------|------|--------|-----------|-------------|
-| `title` | `str` | requis | toutes | Titre du graphique |
-| `values` | `list[float]` | requis | toutes | Échantillons numériques bruts |
-| `variant` | `str` | `"basic"` | — | Variante de rendu |
-| `categories` | `list[str]` | `None` | toutes | Étiquette de groupe par valeur |
-| `bandwidth` | `float` | `0.0` | toutes | Bande passante KDE. 0 = règle de Scott |
-| `filled` | `bool` | `True` | basic, stepped, normalized | Remplir l'aire sous la courbe |
-| `fill_opacity` | `int` | `50` | toutes (remplies) | Alpha de remplissage 0..255 |
-| `bins` | `int` | `30` | histogram | Nombre de classes de l'histogramme |
-| `n_points` | `int` | `80` | toutes | Points d'évaluation de la KDE |
-| `palette` | `list[int]` | `None` | toutes | Palette personnalisée |
-| `width` | `int` | `900` | toutes | Largeur (px) |
-| `height` | `int` | `420` | toutes | Hauteur (px) |
-| `x_label` | `str` | `""` | toutes | Libellé axe X |
-| `y_label` | `str` | `"Density"` | toutes | Libellé axe Y |
-| `gridlines` | `bool` | `False` | toutes | Afficher la grille |
-| `sort_order` | `str` | `"none"` | toutes | `none` / `asc` / `desc` (tri par moyenne) |
-| `background` | `str` | `None` | toutes | Couleur de fond CSS |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `bandwidth` | toutes |
+| `bins` | histogram |
+| `fill_opacity` | basic, normalized, rug, stepped |
+| `filled` | basic, normalized, rug |
+| `gridlines` | toutes |
+| `height` | toutes |
+| `hover` | toutes |
+| `n_points` | toutes |
+| `palette` | toutes |
+| `title` | toutes |
+| `width` | toutes |
+| `x_label` | toutes |
+| `y_label` | toutes |
 
 ---
 

@@ -71,28 +71,22 @@ Aliases: `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.v
 
 ## Parameters
 
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | — | all | Chart title shown at the top |
-| `labels` | `list[str]` | `None` | all | One category label per sample (flat list) |
-| `values` | `list[float]` | `None` | all | Flat list of numeric samples aligned with `labels` |
-| `variant` | `str` | `"box"` | all | Selects the violin variant |
-| `bandwidth` | `float` | `1.0` | all | KDE bandwidth multiplier (Silverman rule scaled) |
-| `fill_opacity` | `float` | `0.55` | all | Violin body fill opacity (0–1) |
-| `stroke_width` | `float` | `1.4` | all | Violin outline stroke width in pixels |
-| `jitter` | `float` | `0.35` | points, strip | Horizontal scatter spread (0–1) |
-| `show_points` | `bool` | `False` | basic, box | Overlay individual samples on top |
-| `show_box` | `bool` | `False` | basic, quartile | Force inner IQR box on non-box variants |
-| `show_mean` | `bool` | `False` | basic, box, quartile | Force mean dashed line |
-| `palette` | `list[int]` | `None` | all except rainbow | Per-category fill colors as hex integers |
-| `width` | `int` | `900` | all | Canvas width in pixels |
-| `height` | `int` | `500` | all | Canvas height in pixels |
-| `x_label` | `str` | `""` | all | X-axis label |
-| `y_label` | `str` | `""` | all | Y-axis label |
-| `gridlines` | `bool` | `False` | all | Show gridlines on the value axis |
-| `sort_order` | `str` | `"none"` | all | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, or `"none"` |
-| `legend_position` | `str` | `"right"` | all | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | all | Background CSS color; `None` = transparent |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `bandwidth` | aurora, basic, crystal, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
+| `categories` | all |
+| `fill_opacity` | aurora, basic, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
+| `gridlines` | all |
+| `hover` | all |
+| `jitter` | points, strip |
+| `kde_steps` | aurora, basic, crystal, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
+| `palette` | basic, half, horizontal, mean, points, quartile, split, strip, with_box |
+| `sort_order` | all |
+| `stroke_width` | aurora, basic, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
+| `title` | all |
+| `values` | all |
+| `x_label` | all |
+| `y_label` | all |
 
 ---
 
@@ -280,28 +274,22 @@ Alias : `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.vi
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Variantes | Description |
-|-----------|------|--------|-----------|-------------|
-| `title` | `str` | — | toutes | Titre du graphique |
-| `labels` | `list[str]` | `None` | toutes | Une étiquette de catégorie par échantillon (liste plate) |
-| `values` | `list[float]` | `None` | toutes | Liste plate des valeurs alignées sur `labels` |
-| `variant` | `str` | `"box"` | toutes | Sélectionne la variante |
-| `bandwidth` | `float` | `1.0` | toutes | Multiplicateur de largeur de bande KDE (règle de Silverman) |
-| `fill_opacity` | `float` | `0.55` | toutes | Opacité de remplissage du violon (0–1) |
-| `stroke_width` | `float` | `1.4` | toutes | Épaisseur du contour en pixels |
-| `jitter` | `float` | `0.35` | points, strip | Étalement horizontal du nuage (0–1) |
-| `show_points` | `bool` | `False` | basic, box | Superpose les échantillons individuels |
-| `show_box` | `bool` | `False` | basic, quartile | Force la boîte IQR interne sur les variantes sans boîte |
-| `show_mean` | `bool` | `False` | basic, box, quartile | Force l'affichage de la ligne moyenne |
-| `palette` | `list[int]` | `None` | toutes sauf rainbow | Couleurs par catégorie (entiers hex) |
-| `width` | `int` | `900` | toutes | Largeur du canevas en px |
-| `height` | `int` | `500` | toutes | Hauteur du canevas en px |
-| `x_label` | `str` | `""` | toutes | Label axe X |
-| `y_label` | `str` | `""` | toutes | Label axe Y |
-| `gridlines` | `bool` | `False` | toutes | Lignes de grille sur l'axe des valeurs |
-| `sort_order` | `str` | `"none"` | toutes | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, `"none"` |
-| `legend_position` | `str` | `"right"` | toutes | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | toutes | Couleur de fond CSS ; `None` = transparent |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `bandwidth` | aurora, basic, crystal, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
+| `categories` | toutes |
+| `fill_opacity` | aurora, basic, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
+| `gridlines` | toutes |
+| `hover` | toutes |
+| `jitter` | points, strip |
+| `kde_steps` | aurora, basic, crystal, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
+| `palette` | basic, half, horizontal, mean, points, quartile, split, strip, with_box |
+| `sort_order` | toutes |
+| `stroke_width` | aurora, basic, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
+| `title` | toutes |
+| `values` | toutes |
+| `x_label` | toutes |
+| `y_label` | toutes |
 
 ---
 

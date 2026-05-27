@@ -69,31 +69,28 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 ## Parameters
 
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | required | all | Chart title |
-| `x_values` | `list[float]` | required | all | Horizontal coordinate of each point |
-| `y_values` | `list[float]` | required | all | Vertical coordinate of each point |
-| `variant` | `str` | `"basic"` | — | Rendering variant (see table) |
-| `categories` | `list[str]` | `None` | categorical, symbols | Per-point group name |
-| `labels` | `list[str]` | `None` | all (hover) / labeled (rendered) | Per-point text label |
-| `color_values` | `list[float]` | `None` | gradient | Continuous numeric value for colorscale |
-| `color_hex` | `int` | `0x6366F1` | basic, regression | Single fill color |
-| `color_low` | `int` | `0x6366F1` | gradient | Low end of color scale |
-| `color_high` | `int` | `0xF43F5E` | gradient, regression | High end of color scale / regression line |
-| `point_size` | `float` | `5.0` | all | Marker radius in pixels |
-| `stroke_width` | `float` | `1.0` | all | Marker stroke width |
-| `symbol` | `str` | `"circle"` | all | Default marker shape (`circle`, `square`, `diamond`, `triangle`, `cross`, `plus`, `star`, `triangle-down`) |
-| `symbols` | `list[str]` | `None` | symbols | Per-point marker shape override |
-| `regression_type` | `str` | `"linear"` | regression | `"linear"` or `"polynomial2"` |
-| `palette` | `list[int]` | `None` | categorical, symbols | Custom color palette |
-| `width` | `int` | `900` | all | Canvas width (px) |
-| `height` | `int` | `500` | all | Canvas height (px) |
-| `x_label` | `str` | `""` | all | X-axis label |
-| `y_label` | `str` | `""` | all | Y-axis label |
-| `gridlines` | `bool` | `False` | all | Show gridlines |
-| `legend_position` | `str` | `"right"` | categorical, symbols | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | all | Background CSS color (None = transparent) |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `categories` | categorical, labeled, symbols |
+| `color_hex` | basic, labeled, regression, symbols |
+| `color_high` | gradient, regression |
+| `color_low` | gradient |
+| `color_values` | galaxy, gradient, nova |
+| `gridlines` | all |
+| `hover` | all |
+| `labels` | basic, deluxe, galaxy, gradient, labeled, nova, regression |
+| `palette` | categorical, labeled, symbols |
+| `point_size` | all |
+| `regression_type` | regression |
+| `stroke_width` | basic, categorical, gradient, labeled, regression, symbols |
+| `symbol` | basic, categorical, gradient, labeled, regression |
+| `symbols` | symbols |
+| `title` | all |
+| `width` | categorical, gradient, symbols |
+| `x_label` | all |
+| `x_values` | all |
+| `y_label` | all |
+| `y_values` | all |
 
 ---
 
@@ -261,31 +258,28 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Variantes | Description |
-|-----------|------|--------|-----------|-------------|
-| `title` | `str` | requis | toutes | Titre du graphique |
-| `x_values` | `list[float]` | requis | toutes | Coordonnée horizontale de chaque point |
-| `y_values` | `list[float]` | requis | toutes | Coordonnée verticale de chaque point |
-| `variant` | `str` | `"basic"` | — | Variante de rendu |
-| `categories` | `list[str]` | `None` | categorical, symbols | Nom de groupe par point |
-| `labels` | `list[str]` | `None` | toutes (hover) / labeled (rendu) | Étiquette texte par point |
-| `color_values` | `list[float]` | `None` | gradient | Valeur numérique continue pour l'échelle de couleur |
-| `color_hex` | `int` | `0x6366F1` | basic, regression | Couleur unique de remplissage |
-| `color_low` | `int` | `0x6366F1` | gradient | Borne basse de l'échelle |
-| `color_high` | `int` | `0xF43F5E` | gradient, regression | Borne haute / couleur de la régression |
-| `point_size` | `float` | `5.0` | toutes | Rayon du marqueur (px) |
-| `stroke_width` | `float` | `1.0` | toutes | Largeur du contour |
-| `symbol` | `str` | `"circle"` | toutes | Forme par défaut (`circle`, `square`, `diamond`, `triangle`, `cross`, `plus`, `star`, `triangle-down`) |
-| `symbols` | `list[str]` | `None` | symbols | Forme du marqueur point par point |
-| `regression_type` | `str` | `"linear"` | regression | `"linear"` ou `"polynomial2"` |
-| `palette` | `list[int]` | `None` | categorical, symbols | Palette personnalisée |
-| `width` | `int` | `900` | toutes | Largeur (px) |
-| `height` | `int` | `500` | toutes | Hauteur (px) |
-| `x_label` | `str` | `""` | toutes | Légende axe X |
-| `y_label` | `str` | `""` | toutes | Légende axe Y |
-| `gridlines` | `bool` | `False` | toutes | Afficher la grille |
-| `legend_position` | `str` | `"right"` | categorical, symbols | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | toutes | Couleur de fond CSS (None = transparent) |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `categories` | categorical, labeled, symbols |
+| `color_hex` | basic, labeled, regression, symbols |
+| `color_high` | gradient, regression |
+| `color_low` | gradient |
+| `color_values` | galaxy, gradient, nova |
+| `gridlines` | toutes |
+| `hover` | toutes |
+| `labels` | basic, deluxe, galaxy, gradient, labeled, nova, regression |
+| `palette` | categorical, labeled, symbols |
+| `point_size` | toutes |
+| `regression_type` | regression |
+| `stroke_width` | basic, categorical, gradient, labeled, regression, symbols |
+| `symbol` | basic, categorical, gradient, labeled, regression |
+| `symbols` | symbols |
+| `title` | toutes |
+| `width` | categorical, gradient, symbols |
+| `x_label` | toutes |
+| `x_values` | toutes |
+| `y_label` | toutes |
+| `y_values` | toutes |
 
 ---
 

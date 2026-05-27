@@ -67,34 +67,25 @@ Aliases: `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 
 ## Parameters
 
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | required | all | Chart title |
-| `x_values` | `list[float]` | required | all | Horizontal position of each bubble |
-| `y_values` | `list[float]` | required | all | Vertical position of each bubble |
-| `sizes` | `list[float]` | required | all | Raw size values mapped to bubble area (signed in `negative`) |
-| `variant` | `str` | `"basic"` | — | Rendering variant (see table above) |
-| `categories` | `list[str]` | `None` | categorical, outlined, labeled | Per-point group name for color partitioning |
-| `labels` | `list[str]` | `None` | all (hover) / labeled (rendered) | Per-point text label |
-| `color_values` | `list[float]` | `None` | gradient | Continuous numeric value driving colorscale |
-| `color_hex` | `int` | `0` | basic | Single fill color as hex int (auto when `0`) |
-| `color_low` | `int` | `0x6366F1` | gradient, negative | Low end of color scale |
-| `color_high` | `int` | `0xF43F5E` | gradient, negative | High end of color scale |
-| `min_size` | `float` | `4.0` | all | Minimum bubble radius in pixels |
-| `max_size` | `float` | `40.0` | all | Maximum bubble radius in pixels |
-| `show_text` | `bool` | `False` | all | Force always-on text labels (auto-on for `labeled`) |
-| `stroke_width` | `float` | `1.5` | all | Bubble stroke width in pixels |
-| `palette` | `list[int]` | `None` | categorical, outlined, labeled | Custom color palette for groups |
-| `width` | `int` | `900` | all | Canvas width in pixels |
-| `height` | `int` | `500` | all | Canvas height in pixels |
-| `x_label` | `str` | `""` | all | X-axis label |
-| `y_label` | `str` | `""` | all | Y-axis label |
-| `gridlines` | `bool` | `False` | all | Show gridlines |
-| `sort_order` | `str` | `"none"` | all | `"asc"`, `"desc"` or `"none"` — draw order by abs(size) |
-| `legend_position` | `str` | `"right"` | categorical, outlined | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | all | Background CSS color; `None` = transparent |
-| `no_x_axis` | `bool` | `False` | all | Hide X axis |
-| `no_y_axis` | `bool` | `False` | all | Hide Y axis |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `categories` | categorical, labeled, outlined |
+| `color_hex` | basic, labeled, negative, outlined |
+| `color_high` | gradient, negative |
+| `color_low` | gradient, negative |
+| `color_values` | gradient |
+| `gridlines` | all |
+| `hover` | all |
+| `labels` | basic, deluxe, gradient, labeled, negative, outlined, plasma |
+| `palette` | categorical, labeled, outlined |
+| `sizes` | gradient, negative |
+| `stroke_width` | basic, categorical, gradient, labeled, negative, outlined |
+| `title` | all |
+| `width` | categorical, gradient, negative, outlined |
+| `x_label` | all |
+| `x_values` | all |
+| `y_label` | all |
+| `y_values` | all |
 
 ---
 
@@ -221,30 +212,25 @@ Alias : `sp.bubble`, `sp.bubbles`, `sp.bubble_unified`, `sp.bubble_family`
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Variantes | Description |
-|-----------|------|--------|-----------|-------------|
-| `title` | `str` | requis | toutes | Titre du graphique |
-| `x_values` | `list[float]` | requis | toutes | Position horizontale |
-| `y_values` | `list[float]` | requis | toutes | Position verticale |
-| `sizes` | `list[float]` | requis | toutes | Tailles brutes (signées en `negative`) |
-| `variant` | `str` | `"basic"` | — | Variante de rendu |
-| `categories` | `list[str]` | `None` | categorical, outlined, labeled | Groupe de chaque point |
-| `labels` | `list[str]` | `None` | toutes (hover) / labeled (rendu) | Étiquette texte par point |
-| `color_values` | `list[float]` | `None` | gradient | Valeur continue pour la colorscale |
-| `color_hex` | `int` | `0` | basic | Couleur unique (hex) |
-| `color_low` | `int` | `0x6366F1` | gradient, negative | Couleur basse de l'échelle |
-| `color_high` | `int` | `0xF43F5E` | gradient, negative | Couleur haute de l'échelle |
-| `min_size` / `max_size` | `float` | `4.0` / `40.0` | toutes | Rayon mini/maxi en pixels |
-| `show_text` | `bool` | `False` | toutes | Force l'affichage permanent des labels |
-| `stroke_width` | `float` | `1.5` | toutes | Épaisseur du contour |
-| `palette` | `list[int]` | `None` | categorical, outlined, labeled | Palette personnalisée |
-| `width` / `height` | `int` | `900` / `500` | toutes | Dimensions |
-| `x_label` / `y_label` | `str` | `""` | toutes | Étiquettes des axes |
-| `gridlines` | `bool` | `False` | toutes | Affiche la grille |
-| `sort_order` | `str` | `"none"` | toutes | `"asc"`, `"desc"` ou `"none"` (par |size|) |
-| `legend_position` | `str` | `"right"` | categorical, outlined | Position de la légende |
-| `background` | `str` | `None` | toutes | Couleur de fond |
-| `no_x_axis` / `no_y_axis` | `bool` | `False` | toutes | Cache les axes |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `categories` | categorical, labeled, outlined |
+| `color_hex` | basic, labeled, negative, outlined |
+| `color_high` | gradient, negative |
+| `color_low` | gradient, negative |
+| `color_values` | gradient |
+| `gridlines` | toutes |
+| `hover` | toutes |
+| `labels` | basic, deluxe, gradient, labeled, negative, outlined, plasma |
+| `palette` | categorical, labeled, outlined |
+| `sizes` | gradient, negative |
+| `stroke_width` | basic, categorical, gradient, labeled, negative, outlined |
+| `title` | toutes |
+| `width` | categorical, gradient, negative, outlined |
+| `x_label` | toutes |
+| `x_values` | toutes |
+| `y_label` | toutes |
+| `y_values` | toutes |
 
 ---
 

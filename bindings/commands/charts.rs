@@ -456,6 +456,7 @@ pub fn build_bar_chart(input: &str) -> String {
 /// Unified bar-family entry point. Dispatches by `variant` keyword:
 /// "basic" | "horizontal" | "grouped" | "stacked" | "relative" |
 /// "grouped_stacked" | "marimekko" | "pictogram" | "multicategory".
+#[crate::sera_alias("bar", "bar_chart", "bars", "bar_unified", "bars_unified", "bar_family")]
 pub fn build_bar(input: &str) -> String {
     use crate::plot::statistical::{BarVariant, BarConfig, render_bar_html, ChartTheme};
     let (title_s, a, o) = parse_all(input);
@@ -524,6 +525,7 @@ pub fn build_bar(input: &str) -> String {
     if native { apply_h(html, &o) } else { apply(html, &o) }
 }
 
+#[crate::sera_alias("line", "line_chart", "line_unified", "lines_unified", "line_family", "lines_family")]
 pub fn build_line(input: &str) -> String {
     use crate::plot::statistical::{LineVariant, LineConfig, render_line_html};
     let (title_s, a, o) = parse_all(input);
@@ -578,6 +580,7 @@ pub fn build_line(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("hbar", "barh", "horizontal_bar")]
 pub fn build_hbar(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -607,6 +610,7 @@ pub fn build_line_chart(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("dbscan", "dbscans", "dbscan_chart", "DBSCAN")]
 pub fn build_dbscan_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -624,6 +628,7 @@ pub fn build_dbscan_chart(input: &str) -> String {
     crate::html::hover::apply_opts(html, bg_str.as_deref(), !o.no_x(), !o.no_y())
 }
 
+#[crate::sera_alias("dbscan3d", "dbscan_3d", "dbscan3d_chart")]
 pub fn build_dbscan_chart_3d(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -658,6 +663,7 @@ pub fn build_dbscan_chart_3d(input: &str) -> String {
     apply_bg3d(html, &o)
 }
 
+#[crate::sera_alias("kmeans", "kmeans_chart")]
 pub fn build_kmeans_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -676,6 +682,7 @@ pub fn build_kmeans_chart(input: &str) -> String {
     crate::html::hover::apply_opts(html, bg_str.as_deref(), !o.no_x(), !o.no_y())
 }
 
+#[crate::sera_alias("scatter", "scatter_chart", "scatter_family", "scatter_unified", "scatters")]
 pub fn build_scatter_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -733,6 +740,7 @@ pub fn build_scatter_chart(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("hist", "histogram", "histograms", "histogram_family", "histogram_unified")]
 pub fn build_histogram(input: &str) -> String {
     use crate::plot::statistical::{HistogramConfig, HistogramVariant, render_histogram_html};
     let (title_s, a, o) = parse_all(input);
@@ -801,6 +809,7 @@ pub fn build_histogram_overlay(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("grouped_bar", "grouped_bars", "grouped_bar_chart", "group_bar")]
 pub fn build_grouped_bar(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -825,6 +834,7 @@ pub fn build_grouped_bar(input: &str) -> String {
     apply_h(html, &o)
 }
 
+#[crate::sera_alias("stacked_bar", "stacked_bars", "stacked_bar_chart", "stack_bar")]
 pub fn build_stacked_bar(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -849,6 +859,7 @@ pub fn build_stacked_bar(input: &str) -> String {
     apply_h(html, &o)
 }
 
+#[crate::sera_alias("heatmap", "heatmaps", "heatmap_family", "heatmap_unified")]
 pub fn build_heatmap(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -883,6 +894,7 @@ pub fn build_heatmap(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("pie_chart", "pie_chart_legacy", "basic_pie")]
 pub fn build_pie_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -903,6 +915,7 @@ pub fn build_pie_chart(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("donut", "donut_chart")]
 pub fn build_donut_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -924,6 +937,7 @@ pub fn build_donut_chart(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("pie", "pie_unified", "pie_family", "pies", "semi_pie", "half_pie", "kpi_pie", "kpi_donut", "nested_pie", "concentric_pie", "pattern_pie")]
 pub fn build_pie(input: &str) -> String {
     use crate::plot::statistical::{PieConfig, PieVariant, render_pie_html};
     let (title_s, a, o) = parse_all(input);
@@ -970,6 +984,7 @@ pub fn build_pie(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("boxplot", "box_plot")]
 pub fn build_boxplot(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1011,6 +1026,7 @@ pub fn build_boxplot(input: &str) -> String {
     if native { apply_h(html, &o) } else { apply(html, &o) }
 }
 
+#[crate::sera_alias("violin", "violins", "violin_chart", "violin_family", "violin_unified")]
 pub fn build_violin(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1040,6 +1056,7 @@ pub fn build_violin(input: &str) -> String {
     if native { apply_h(html, &o) } else { apply(html, &o) }
 }
 
+#[crate::sera_alias("slope", "slopes", "slope_chart", "slope_family", "slopegraph")]
 pub fn build_slope(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1060,6 +1077,7 @@ pub fn build_slope(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("sunburst", "sunbursts", "sunburst_chart", "sunburst_family", "sunburst_unified")]
 pub fn build_sunburst(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1076,6 +1094,7 @@ pub fn build_sunburst(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("funnel", "funnels", "funnel_chart", "funnel_family", "funnel_unified")]
 pub fn build_funnel(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1092,6 +1111,7 @@ pub fn build_funnel(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("treemap", "treemaps", "treemap_chart", "treemap_family", "treemap_unified")]
 pub fn build_treemap(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1109,6 +1129,7 @@ pub fn build_treemap(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("multiline", "multilines", "multiline_chart", "multiline_family", "multi_line", "multi_line_chart")]
 pub fn build_multiline_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1128,6 +1149,7 @@ pub fn build_multiline_chart(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("area", "area_chart")]
 pub fn build_area_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1148,6 +1170,7 @@ pub fn build_area_chart(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("waterfall", "waterfalls", "waterfall_chart", "waterfall_family")]
 pub fn build_waterfall(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1165,6 +1188,7 @@ pub fn build_waterfall(input: &str) -> String {
     apply_h(html, &o)
 }
 
+#[crate::sera_alias("bullet", "bullets", "bullet_chart", "bullet_family", "bullet_graph")]
 pub fn build_bullet(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1186,6 +1210,7 @@ pub fn build_bullet(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("bubble_map", "bubblemap", "bubble_map_chart", "geo_bubble", "geo_bubble_map")]
 pub fn build_bubble_map(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1196,6 +1221,7 @@ pub fn build_bubble_map(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("choropleth", "choropleths", "choropleth_map", "choropleth_chart", "geo_map")]
 pub fn build_choropleth(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1206,6 +1232,7 @@ pub fn build_choropleth(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("scatter3d", "scatter_3d", "scatter3d_chart", "scatter3d_family", "scatters3d")]
 pub fn build_scatter3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1222,6 +1249,7 @@ pub fn build_scatter3d_chart(input: &str) -> String {
     apply_bg3d(html, &o)
 }
 
+#[crate::sera_alias("bar3d", "bar_3d", "bar3d_chart", "bar3d_family", "bars3d")]
 pub fn build_bar3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1238,6 +1266,7 @@ pub fn build_bar3d_chart(input: &str) -> String {
     apply_bg3d(html, &o)
 }
 
+#[crate::sera_alias("line3d", "line_3d", "line3d_chart", "line3d_family", "lines3d")]
 pub fn build_line3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1254,6 +1283,7 @@ pub fn build_line3d_chart(input: &str) -> String {
     apply_bg3d(html, &o)
 }
 
+#[crate::sera_alias("radar", "radar_chart")]
 pub fn build_radar_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1272,6 +1302,7 @@ pub fn build_radar_chart(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("radar3d", "radar_3d", "radar3d_chart", "radar3d_family")]
 pub fn build_radar3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1298,6 +1329,7 @@ pub fn build_radar3d_chart(input: &str) -> String {
     ), &o)
 }
 
+#[crate::sera_alias("lollipop", "lollipops", "lollipop_chart", "lollipop_family", "lollipop_unified")]
 pub fn build_lollipop_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1321,6 +1353,7 @@ pub fn build_lollipop_chart(input: &str) -> String {
     apply_h(html, &o)
 }
 
+#[crate::sera_alias("lollipop3d", "lollipop_3d", "lollipop3d_chart")]
 pub fn build_lollipop3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1335,6 +1368,7 @@ pub fn build_lollipop3d_chart(input: &str) -> String {
     ), &o)
 }
 
+#[crate::sera_alias("kde", "kdes", "kde_chart", "kde_family", "density", "density_plot")]
 pub fn build_kde_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1366,6 +1400,7 @@ pub fn build_kde_chart(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("kde3d", "kde_3d", "kde3d_chart", "density3d")]
 pub fn build_kde3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1407,6 +1442,7 @@ pub fn build_kde3d_chart(input: &str) -> String {
     ), &o)
 }
 
+#[crate::sera_alias("ridgeline", "ridgelines", "ridgeline_chart", "ridgeline_family", "joy_plot", "joyplot")]
 pub fn build_ridgeline_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1424,6 +1460,7 @@ pub fn build_ridgeline_chart(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("ridgeline3d", "ridgeline_3d", "ridgeline3d_chart", "joy_plot3d")]
 pub fn build_ridgeline3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1461,6 +1498,7 @@ pub fn build_ridgeline3d_chart(input: &str) -> String {
     ), &o)
 }
 
+#[crate::sera_alias("bubble3d", "bubble_3d", "bubble3d_chart", "bubble3d_family", "bubbles3d")]
 pub fn build_bubble3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1485,6 +1523,7 @@ pub fn build_bubble3d_chart(input: &str) -> String {
     apply_bg3d(html, &o)
 }
 
+#[crate::sera_alias("pie3d", "pie_3d", "pie3d_chart", "pie3d_family", "pies3d")]
 pub fn build_pie3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1505,6 +1544,7 @@ pub fn build_pie3d_chart(input: &str) -> String {
     apply_bg3d(html, &o)
 }
 
+#[crate::sera_alias("violin3d", "violin_3d", "violin3d_chart", "violins3d")]
 pub fn build_violin3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1546,6 +1586,7 @@ pub fn build_violin3d_chart(input: &str) -> String {
     ), &o)
 }
 
+#[crate::sera_alias("heatmap3d", "heatmap_3d", "heatmap3d_chart", "heatmaps3d")]
 pub fn build_heatmap3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1570,6 +1611,7 @@ pub fn build_heatmap3d_chart(input: &str) -> String {
     ), &o)
 }
 
+#[crate::sera_alias("candlestick3d", "candlestick_3d", "candlestick3d_chart", "ohlc3d")]
 pub fn build_candlestick3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1595,6 +1637,7 @@ pub fn build_candlestick3d_chart(input: &str) -> String {
     ), &o)
 }
 
+#[crate::sera_alias("dumbbell3d", "dumbbell_3d", "dumbbell3d_chart")]
 pub fn build_dumbbell3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1617,6 +1660,7 @@ pub fn build_dumbbell3d_chart(input: &str) -> String {
     ), &o)
 }
 
+#[crate::sera_alias("funnel3d", "funnel_3d", "funnel3d_chart")]
 pub fn build_funnel3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1636,6 +1680,7 @@ pub fn build_funnel3d_chart(input: &str) -> String {
     ), &o)
 }
 
+#[crate::sera_alias("sunburst3d", "sunburst_3d", "sunburst3d_chart")]
 pub fn build_sunburst3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1661,6 +1706,7 @@ pub fn build_sunburst3d_chart(input: &str) -> String {
     ), &o)
 }
 
+#[crate::sera_alias("stacked_bar3d", "stacked_bar_3d", "stacked_bar3d_chart")]
 pub fn build_stacked_bar3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1689,6 +1735,7 @@ pub fn build_stacked_bar3d_chart(input: &str) -> String {
     ), &o)
 }
 
+#[crate::sera_alias("globe3d", "globe_3d", "globe3d_chart", "globe")]
 pub fn build_globe3d_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1706,6 +1753,7 @@ pub fn build_globe3d_chart(input: &str) -> String {
     ), &o)
 }
 
+#[crate::sera_alias("wordcloud", "word_cloud", "wordCloud", "tag_cloud", "tagcloud", "cloud", "token_cloud", "text_cloud")]
 pub fn build_wordcloud(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1739,6 +1787,7 @@ pub fn build_wordcloud(input: &str) -> String {
     apply_bg3d(html, &o)
 }
 
+#[crate::sera_alias("candlestick", "candlesticks", "candlestick_chart", "candlestick_family", "ohlc", "ohlc_chart")]
 pub fn build_candlestick(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1759,6 +1808,7 @@ pub fn build_candlestick(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("dumbbell", "dumbbells", "dumbbell_chart", "dumbbell_family", "dumbbell_plot")]
 pub fn build_dumbbell(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1779,6 +1829,7 @@ pub fn build_dumbbell(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("bubble", "bubble_family", "bubble_unified", "bubbles")]
 pub fn build_bubble(input: &str) -> String {
     use crate::plot::statistical::bubble::{BubbleConfig, BubbleVariant, render_bubble_html};
     use crate::plot::statistical::ChartTheme;
@@ -1815,6 +1866,7 @@ pub fn build_bubble(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("gauge", "gauges", "gauge_chart", "gauge_family", "speedometer")]
 pub fn build_gauge(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1832,6 +1884,7 @@ pub fn build_gauge(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("parallel", "parallels", "parallel_chart", "parallel_family", "parallel_coordinates", "parcoords")]
 pub fn build_parallel(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -1855,6 +1908,7 @@ pub fn build_parallel(input: &str) -> String {
     apply(html, &o)
 }
 
+#[crate::sera_alias("plot", "chart", "draw", "render")]
 pub fn plot_chart(input: &str) -> String {
     #[derive(Deserialize, Default)]
     struct I {
@@ -1896,6 +1950,7 @@ pub fn plot_chart(input: &str) -> String {
     }
 }
 
+#[crate::sera_alias("grid", "grids", "chart_grid", "subplot_grid")]
 pub fn build_grid(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
@@ -2012,6 +2067,7 @@ pub fn build_hover_json(input: &str) -> String {
     slots_to_json(&slots)
 }
 
+#[crate::sera_alias("dbscan_fit_predict", "ml_dbscan", "DBSCAN_fit_predict", "cluster_dbscan")]
 pub fn ml_dbscan_fit_predict(input: &str) -> String {
     #[derive(Deserialize, Default)]
     struct I { data: Option<Vec<Vec<f64>>>, eps: Option<f64>, min_samples: Option<usize> }
@@ -2026,6 +2082,7 @@ pub fn ml_dbscan_fit_predict(input: &str) -> String {
         n_clusters, n_noise)
 }
 
+#[crate::sera_alias("kmeans_fit_predict", "ml_kmeans", "KMeans_fit_predict", "cluster_kmeans")]
 pub fn ml_kmeans_fit_predict(input: &str) -> String {
     #[derive(Deserialize, Default)]
     struct I { data: Option<Vec<Vec<f64>>>, k: Option<usize>, max_iter: Option<usize>, n_init: Option<usize> }
@@ -2047,6 +2104,7 @@ pub fn ml_kmeans_fit_predict(input: &str) -> String {
         serde_json::to_string(&labels).unwrap_or_default(), inertia)
 }
 
+#[crate::sera_alias("metric_score", "ml_metric", "score_metric")]
 pub fn ml_metric_score(input: &str) -> String {
     use crate::ml::metrics::*;
     #[derive(Deserialize, Default)]
@@ -2140,6 +2198,7 @@ pub fn ml_metric_score(input: &str) -> String {
     else { format!("{{\"value\":{}}}", value) }
 }
 
+#[crate::sera_alias("metric_curve", "ml_curve", "roc_curve", "pr_curve")]
 pub fn ml_metric_curve(input: &str) -> String {
     use crate::ml::metrics::*;
     #[derive(Deserialize, Default)]
@@ -2172,6 +2231,7 @@ pub fn ml_metric_curve(input: &str) -> String {
     }
 }
 
+#[crate::sera_alias("fit_transform", "ml_transform", "preprocess_fit_transform")]
 pub fn ml_fit_transform(input: &str) -> String {
     use crate::ml::preprocessing::transformers::*;
     use crate::ml::preprocessing::scalers::*;
@@ -2264,6 +2324,7 @@ pub fn ml_fit_transform(input: &str) -> String {
         serde_json::to_string(&data).unwrap_or_default(), n, cols, extra)
 }
 
+#[crate::sera_alias("kfold_split", "ml_kfold", "kfold", "cv_split")]
 pub fn ml_kfold_split(input: &str) -> String {
     use crate::ml::model_selection::split::*;
     #[derive(Deserialize, Default)]
@@ -2290,6 +2351,7 @@ pub fn ml_kfold_split(input: &str) -> String {
     serde_json::to_string(&payload).unwrap_or_else(|_| "[]".to_string())
 }
 
+#[crate::sera_alias("isolation_forest", "ml_iforest", "iforest", "anomaly_isolation_forest")]
 pub fn ml_isolation_forest(input: &str) -> String {
     use crate::ml::anomaly::isolation_forest::IsolationForest;
     #[derive(Deserialize, Default)]
@@ -2338,6 +2400,7 @@ pub fn ml_isolation_forest(input: &str) -> String {
         test_payload)
 }
 
+#[crate::sera_alias("permutation_importance", "ml_perm_importance", "perm_importance", "feature_importance")]
 pub fn ml_permutation_importance(input: &str) -> String {
     use crate::ml::model_selection::permutation::*;
     #[derive(Deserialize, Default)]
@@ -2505,6 +2568,7 @@ pub fn chart_append(input: &str) -> String {
     serde_json::json!({"html":html,"x":xs,"y":ys}).to_string()
 }
 
+#[crate::sera_alias("save_model", "ml_save", "export_model")]
 pub fn ml_save_model(input: &str) -> String {
     #[derive(serde::Deserialize)]
     struct In { kind: String, state: serde_json::Value, path: Option<String> }
@@ -2520,6 +2584,7 @@ pub fn ml_save_model(input: &str) -> String {
     serde_json::json!({"ok":true,"data":s}).to_string()
 }
 
+#[crate::sera_alias("load_model", "ml_load", "import_model")]
 pub fn ml_load_model(input: &str) -> String {
     #[derive(serde::Deserialize)]
     struct In { path: Option<String>, data: Option<String> }
@@ -2973,6 +3038,7 @@ fn parse_tree_criterion(s: &str) -> crate::ml::tree::decision_tree::TreeCriterio
     match s { "entropy" => C::Entropy, "mse" => C::MSE, _ => C::Gini }
 }
 
+#[crate::sera_alias("linear_regression", "ml_linreg", "linreg", "LinearRegression", "ols")]
 pub fn ml_linear_regression(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let yt = yf(&v);
@@ -2982,6 +3048,7 @@ pub fn ml_linear_regression(input: &str) -> String {
     serde_json::json!({"predictions": preds, "coef": m.coef, "intercept": m.intercept}).to_string()
 }
 
+#[crate::sera_alias("ridge", "ridge_regression", "Ridge")]
 pub fn ml_ridge(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let yt = yf(&v);
@@ -2991,6 +3058,7 @@ pub fn ml_ridge(input: &str) -> String {
     serde_json::json!({"predictions": preds, "coef": m.coef, "intercept": m.intercept}).to_string()
 }
 
+#[crate::sera_alias("lasso", "lasso_regression", "Lasso")]
 pub fn ml_lasso(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let yt = yf(&v);
@@ -3000,6 +3068,7 @@ pub fn ml_lasso(input: &str) -> String {
     serde_json::json!({"predictions": preds}).to_string()
 }
 
+#[crate::sera_alias("elastic_net", "elasticnet", "ElasticNet")]
 pub fn ml_elastic_net(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let yt = yf(&v);
@@ -3009,6 +3078,7 @@ pub fn ml_elastic_net(input: &str) -> String {
     serde_json::json!({"predictions": preds, "coef": m.coef, "intercept": m.intercept}).to_string()
 }
 
+#[crate::sera_alias("logistic_regression", "ml_logreg", "logreg", "LogisticRegression")]
 pub fn ml_logistic_regression(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let yt = yi(&v);
@@ -3018,6 +3088,7 @@ pub fn ml_logistic_regression(input: &str) -> String {
     serde_json::json!({"predictions": preds, "classes": m.classes}).to_string()
 }
 
+#[crate::sera_alias("decision_tree_classifier", "dt_classifier", "DecisionTreeClassifier", "tree_classifier")]
 pub fn ml_decision_tree_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let yt = yi(&v);
@@ -3029,6 +3100,7 @@ pub fn ml_decision_tree_classifier(input: &str) -> String {
     serde_json::json!({"predictions": preds, "classes": m.classes, "feature_importances": m.feature_importances}).to_string()
 }
 
+#[crate::sera_alias("decision_tree_regressor", "dt_regressor", "DecisionTreeRegressor", "tree_regressor")]
 pub fn ml_decision_tree_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let yt = yf(&v);
@@ -3039,6 +3111,7 @@ pub fn ml_decision_tree_regressor(input: &str) -> String {
     serde_json::json!({"predictions": preds, "feature_importances": m.feature_importances}).to_string()
 }
 
+#[crate::sera_alias("random_forest_classifier", "rf_classifier", "RandomForestClassifier", "forest_classifier")]
 pub fn ml_random_forest_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let yt = yi(&v);
@@ -3049,6 +3122,7 @@ pub fn ml_random_forest_classifier(input: &str) -> String {
     serde_json::json!({"predictions": preds, "classes": m.classes, "feature_importances": m.feature_importances}).to_string()
 }
 
+#[crate::sera_alias("random_forest_regressor", "rf_regressor", "RandomForestRegressor", "forest_regressor")]
 pub fn ml_random_forest_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let yt = yf(&v);
@@ -3059,6 +3133,7 @@ pub fn ml_random_forest_regressor(input: &str) -> String {
     serde_json::json!({"predictions": preds, "feature_importances": m.feature_importances}).to_string()
 }
 
+#[crate::sera_alias("gradient_boosting_classifier", "gb_classifier", "GradientBoostingClassifier", "gbm_classifier")]
 pub fn ml_gradient_boosting_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let yt = yi(&v);
@@ -3068,6 +3143,7 @@ pub fn ml_gradient_boosting_classifier(input: &str) -> String {
     serde_json::json!({"predictions": preds, "classes": m.classes}).to_string()
 }
 
+#[crate::sera_alias("gradient_boosting_regressor", "gb_regressor", "GradientBoostingRegressor", "gbm_regressor")]
 pub fn ml_gradient_boosting_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let yt = yf(&v);
@@ -3077,6 +3153,7 @@ pub fn ml_gradient_boosting_regressor(input: &str) -> String {
     serde_json::json!({"predictions": preds}).to_string()
 }
 
+#[crate::sera_alias("knn_classifier", "knn_clf", "KNeighborsClassifier", "kneighbors_classifier")]
 pub fn ml_knn_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let yt = yi(&v);
@@ -3087,6 +3164,7 @@ pub fn ml_knn_classifier(input: &str) -> String {
     serde_json::json!({"predictions": preds, "classes": m.classes}).to_string()
 }
 
+#[crate::sera_alias("knn_regressor", "knn_reg", "KNeighborsRegressor", "kneighbors_regressor")]
 pub fn ml_knn_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let yt = yf(&v);

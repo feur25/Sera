@@ -80,37 +80,36 @@ Aliases: `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_famil
 
 ## Parameters
 
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | required | all | Chart title |
-| `labels` | `list[str]` | `None` | all | Category labels |
-| `values` | `list[float]` | `None` | basic, horizontal, pictogram, multicategory | Single-series values |
-| `variant` | `str` | `"basic"` | — | Rendering variant (see table above) |
-| `series` | `list[list[float]]` | `None` | grouped, stacked, relative, grouped_stacked, marimekko, multicategory | Multi-series data |
-| `series_names` | `list[str]` | `None` | multi-series | Legend label per series |
-| `offset_groups` | `list[str]` | `None` | grouped_stacked | Stack-group name per series |
-| `widths` | `list[float]` | `None` | marimekko | Relative column width per category |
-| `super_categories` | `list[str]` | `None` | multicategory | Bracket label per bar |
-| `icon_size` | `int` | `24` | pictogram | Icon square size in px |
-| `max_icons_per_column` | `int` | `10` | pictogram | Max icons per column before wrap |
-| `units_per_icon` | `float` | `1.0` | pictogram | Data units each icon represents |
-| `unit_description` | `str` | `""` | pictogram | Unit label shown in header |
-| `color_hex` | `int` | `0` | basic, horizontal, pictogram | Single override color as hex int |
-| `palette` | `list[int]` | `None` | all | Custom color list |
-| `show_text` | `bool` | `False` | basic, horizontal, marimekko | Render value labels on bars |
-| `corner_radius` | `int` | `0` | basic, horizontal | Rounded-corner radius in px |
-| `bar_gap` | `float` | `0.2` | basic, horizontal, relative, grouped_stacked | Fraction of category width as spacing |
-| `bargroup_gap` | `float` | `0.1` | grouped, grouped_stacked | Fraction of group width as gap between bars |
-| `width` | `int` | `900` | all | Canvas width in pixels |
-| `height` | `int` | `480` | all | Canvas height in pixels |
-| `x_label` | `str` | `""` | all | X-axis label |
-| `y_label` | `str` | `""` | all | Y-axis label |
-| `gridlines` | `bool` | `False` | all | Show horizontal gridlines |
-| `sort_order` | `str` | `"none"` | basic, horizontal | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, or `"none"` |
-| `legend_position` | `str` | `"right"` | multi-series | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | all | Background CSS color; `None` = transparent |
-| `no_x_axis` | `bool` | `False` | all | Hide X axis |
-| `no_y_axis` | `bool` | `False` | all | Hide Y axis |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `bar_gap` | grouped_stacked, relative |
+| `bargroup_gap` | grouped_stacked |
+| `category_labels` | grouped, grouped_stacked, marimekko, multicategory, relative |
+| `color_groups` | basic |
+| `color_hex` | basic, deluxe, pictogram, prism |
+| `corner_radius` | grouped_stacked, relative |
+| `gridlines` | basic, deluxe, grouped, grouped_stacked, marimekko, multicategory, prism, relative |
+| `height` | all |
+| `hover` | basic, deluxe, grouped, prism |
+| `icon_size` | pictogram |
+| `labels` | basic, deluxe, pictogram, prism |
+| `legend_position` | grouped, grouped_stacked, marimekko, multicategory, relative |
+| `max_icons_per_column` | pictogram |
+| `offset_groups` | grouped_stacked |
+| `orientation` | grouped |
+| `palette` | all |
+| `series` | grouped, grouped_stacked, marimekko, multicategory, relative |
+| `show_text` | basic, deluxe, grouped, marimekko, prism |
+| `sort_order` | basic, grouped |
+| `super_categories` | multicategory |
+| `title` | all |
+| `unit_description` | pictogram |
+| `units_per_icon` | pictogram |
+| `values` | basic, deluxe, multicategory, pictogram, prism |
+| `width` | all |
+| `widths` | marimekko |
+| `x_label` | basic, grouped, grouped_stacked, marimekko, multicategory, relative |
+| `y_label` | basic, grouped, grouped_stacked, marimekko, multicategory, relative |
 
 ---
 
@@ -292,37 +291,36 @@ Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Variantes | Description |
-|-----------|------|--------|-----------|-------------|
-| `title` | `str` | requis | toutes | Titre du graphique |
-| `labels` | `list[str]` | `None` | toutes | Labels de catégorie |
-| `values` | `list[float]` | `None` | basic, horizontal, pictogram, multicategory | Valeurs série unique |
-| `variant` | `str` | `"basic"` | — | Variante de rendu |
-| `series` | `list[list[float]]` | `None` | multi-séries | Données multi-séries |
-| `series_names` | `list[str]` | `None` | multi-séries | Noms des séries (légende) |
-| `offset_groups` | `list[str]` | `None` | grouped_stacked | Groupe d'empilement par série |
-| `widths` | `list[float]` | `None` | marimekko | Largeur relative de chaque colonne |
-| `super_categories` | `list[str]` | `None` | multicategory | Label chapeau de chaque barre |
-| `icon_size` | `int` | `24` | pictogram | Taille des icônes en px |
-| `max_icons_per_column` | `int` | `10` | pictogram | Icônes max par colonne |
-| `units_per_icon` | `float` | `1.0` | pictogram | Unités par icône |
-| `unit_description` | `str` | `""` | pictogram | Label unité |
-| `color_hex` | `int` | `0` | basic, horizontal, pictogram | Couleur unique (entier hex) |
-| `palette` | `list[int]` | `None` | toutes | Palette personnalisée |
-| `show_text` | `bool` | `False` | basic, horizontal, marimekko | Afficher les valeurs sur les barres |
-| `corner_radius` | `int` | `0` | basic, horizontal | Rayon des coins en px |
-| `bar_gap` | `float` | `0.2` | basic, horizontal, relative, grouped_stacked | Espacement entre catégories |
-| `bargroup_gap` | `float` | `0.1` | grouped, grouped_stacked | Espacement entre barres d'un groupe |
-| `width` | `int` | `900` | toutes | Largeur du canevas en px |
-| `height` | `int` | `480` | toutes | Hauteur du canevas en px |
-| `x_label` | `str` | `""` | toutes | Label axe X |
-| `y_label` | `str` | `""` | toutes | Label axe Y |
-| `gridlines` | `bool` | `False` | toutes | Lignes de grille horizontales |
-| `sort_order` | `str` | `"none"` | basic, horizontal | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, `"none"` |
-| `legend_position` | `str` | `"right"` | multi-séries | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | toutes | Couleur de fond CSS |
-| `no_x_axis` | `bool` | `False` | toutes | Masquer l'axe X |
-| `no_y_axis` | `bool` | `False` | toutes | Masquer l'axe Y |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `bar_gap` | grouped_stacked, relative |
+| `bargroup_gap` | grouped_stacked |
+| `category_labels` | grouped, grouped_stacked, marimekko, multicategory, relative |
+| `color_groups` | basic |
+| `color_hex` | basic, deluxe, pictogram, prism |
+| `corner_radius` | grouped_stacked, relative |
+| `gridlines` | basic, deluxe, grouped, grouped_stacked, marimekko, multicategory, prism, relative |
+| `height` | toutes |
+| `hover` | basic, deluxe, grouped, prism |
+| `icon_size` | pictogram |
+| `labels` | basic, deluxe, pictogram, prism |
+| `legend_position` | grouped, grouped_stacked, marimekko, multicategory, relative |
+| `max_icons_per_column` | pictogram |
+| `offset_groups` | grouped_stacked |
+| `orientation` | grouped |
+| `palette` | toutes |
+| `series` | grouped, grouped_stacked, marimekko, multicategory, relative |
+| `show_text` | basic, deluxe, grouped, marimekko, prism |
+| `sort_order` | basic, grouped |
+| `super_categories` | multicategory |
+| `title` | toutes |
+| `unit_description` | pictogram |
+| `units_per_icon` | pictogram |
+| `values` | basic, deluxe, multicategory, pictogram, prism |
+| `width` | toutes |
+| `widths` | marimekko |
+| `x_label` | basic, grouped, grouped_stacked, marimekko, multicategory, relative |
+| `y_label` | basic, grouped, grouped_stacked, marimekko, multicategory, relative |
 
 ---
 

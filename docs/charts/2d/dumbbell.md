@@ -64,19 +64,9 @@ Aliases: `sp.dumbbell`, `sp.build_dumbbell`
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `title` | `str` | required | Chart title |
-| `labels` | `list[str]` | required | Row labels |
-| `start` | `list[float]` | required | Starting values (one per label) |
-| `end` | `list[float]` | required | Ending values (one per label) |
-| `variant` | `str` | `"basic"` | Visual style (see table) |
-| `series_name_start` | `str` | `"Start"` | Legend label for the start series |
-| `series_name_end` | `str` | `"End"` | Legend label for the end series |
-| `palette` | `list[int]` | `None` | Custom palette: `[c_start, c_end, ...]` |
-| `sort_order` | `str` | `"none"` | `"none"`, `"asc"` or `"desc"` |
-| `width` | `int` | `1000` | Canvas width (px) |
-| `height` | `int` | `500` | Canvas height (px) |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `series_names` | all |
 
 ## Returns
 

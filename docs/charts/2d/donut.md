@@ -19,19 +19,34 @@ A donut chart is a pie chart with a circular cutout at the center, reducing the 
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | `str` | — | Chart title displayed at the top |
-| `labels` | `list[str]` | — | Category name for each slice |
-| `values` | `list[float]` | — | Numeric value for each slice; automatically normalized to 100% |
-| `show_pct` | `bool` | `True` | Display percentage labels beside each slice |
-| `inner_radius_ratio` | `float` | `0.55` | Ratio of the inner hole radius to the outer radius (0.0–0.9) |
-| `width` | `int` | `700` | Canvas width in pixels |
-| `height` | `int` | `480` | Canvas height in pixels |
-| `palette` | `list[int] \| None` | `None` | Custom slice colors as hex integers |
-| `background` | `str \| None` | `None` | CSS background color override |
-| `hover_json` | `str \| None` | `None` | JSON string for custom tooltip data |
-| `legend_position` | `str` | `"right"` | Legend placement: `"top"`, `"right"`, `"bottom"`, or `"left"` |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `center_subtext` | kpi, nested, proportional |
+| `center_text` | kpi, nested, proportional |
+| `donut` | nested, proportional, subplots |
+| `gridlines` | proportional |
+| `height` | nested, proportional, subplots |
+| `hover` | proportional |
+| `labels` | nested, proportional, subplots |
+| `legend_position` | proportional |
+| `min_label_frac` | proportional |
+| `palette` | proportional, subplots |
+| `pattern` | proportional |
+| `proportional` | proportional, subplots |
+| `pull` | basic, donut, exploded, kpi, pattern, proportional, semi |
+| `secondary_labels` | nested, proportional |
+| `secondary_values` | nested, proportional |
+| `series` | proportional, subplots |
+| `show_pct` | proportional |
+| `sort_order` | proportional |
+| `subplot_cols` | proportional, subplots |
+| `subplot_titles` | proportional, subplots |
+| `title` | nested, proportional, subplots |
+| `values` | exploded, kpi, nested, proportional |
+| `variant` | proportional |
+| `width` | nested, proportional, subplots |
+| `x_label` | proportional |
+| `y_label` | proportional |
 
 ---
 
@@ -72,19 +87,34 @@ Un graphique en anneau est un graphique en secteurs avec un trou circulaire au c
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `title` | `str` | — | Titre du graphique affiché en haut |
-| `labels` | `list[str]` | — | Nom de catégorie pour chaque tranche |
-| `values` | `list[float]` | — | Valeur numérique pour chaque tranche ; normalisée automatiquement à 100 % |
-| `show_pct` | `bool` | `True` | Afficher les pourcentages à côté de chaque tranche |
-| `inner_radius_ratio` | `float` | `0.55` | Rapport du rayon intérieur au rayon extérieur (0.0–0.9) |
-| `width` | `int` | `700` | Largeur du canevas en pixels |
-| `height` | `int` | `480` | Hauteur du canevas en pixels |
-| `palette` | `list[int] \| None` | `None` | Couleurs de tranche personnalisées en entiers hexadécimaux |
-| `background` | `str \| None` | `None` | Couleur de fond CSS |
-| `hover_json` | `str \| None` | `None` | JSON pour les données d'info-bulle personnalisées |
-| `legend_position` | `str` | `"right"` | Position de la légende : `"top"`, `"right"`, `"bottom"` ou `"left"` |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `center_subtext` | kpi, nested, proportional |
+| `center_text` | kpi, nested, proportional |
+| `donut` | nested, proportional, subplots |
+| `gridlines` | proportional |
+| `height` | nested, proportional, subplots |
+| `hover` | proportional |
+| `labels` | nested, proportional, subplots |
+| `legend_position` | proportional |
+| `min_label_frac` | proportional |
+| `palette` | proportional, subplots |
+| `pattern` | proportional |
+| `proportional` | proportional, subplots |
+| `pull` | basic, donut, exploded, kpi, pattern, proportional, semi |
+| `secondary_labels` | nested, proportional |
+| `secondary_values` | nested, proportional |
+| `series` | proportional, subplots |
+| `show_pct` | proportional |
+| `sort_order` | proportional |
+| `subplot_cols` | proportional, subplots |
+| `subplot_titles` | proportional, subplots |
+| `title` | nested, proportional, subplots |
+| `values` | exploded, kpi, nested, proportional |
+| `variant` | proportional |
+| `width` | nested, proportional, subplots |
+| `x_label` | proportional |
+| `y_label` | proportional |
 
 ---
 

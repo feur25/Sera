@@ -62,21 +62,17 @@ Aliases: `sp.lollipop`, `sp.build_lollipop_chart`
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `title` | `str` | required | Chart title |
-| `labels` | `list[str]` | required | Category labels (one per stick) |
-| `values` | `list[float]` | required | Value per label |
-| `variant` | `str` | "basic" | Visual style (see table) |
-| `color_groups` | `list[str]` | None | Group label per item - enables Office variant grouping |
-| `highlight_index` | `int` | -1 | Item to spotlight (Highlight variant); -1 = auto-max |
-| `color_hex` | `int` | 0x6366F1 | Default stick color |
-| `palette` | `list[int]` | None | Custom palette |
-| `show_values` | `bool` | False | Print value next to each dot |
-| `gridlines` | `bool` | False | Toggle background grid |
-| `sort_order` | `str` | "none" | "none" / "asc" / "desc" / "alpha" |
-| `width` | `int` | 900 | Canvas width (px) |
-| `height` | `int` | 480 | Canvas height (px) |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `color_hex` | highlight |
+| `gridlines` | basic, cleveland, highlight, office |
+| `height` | circular |
+| `highlight_index` | highlight |
+| `palette` | office |
+| `show_values` | basic, cleveland, diverging |
+| `title` | circular |
+| `width` | circular |
+| `y_label` | basic, diverging, highlight, office |
 
 ## Returns
 

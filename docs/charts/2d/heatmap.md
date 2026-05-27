@@ -77,28 +77,23 @@ Aliases: `sp.heatmap`, `sp.heat_map`
 
 ## Parameters
 
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | — | all | Chart title shown at the top |
-| `labels` | `list[str]` | `None` | all | Row labels |
-| `col_labels` | `list[str]` | `None` | all | Column labels |
-| `values` | `list[float]` | `None` | all | Flat row-major matrix (`len(labels) * len(col_labels)`) |
-| `variant` | `str` | `"basic"` | all | Selects the heatmap variant |
-| `colorscale` | `str` | `""` | most | Named gradient, see list below |
-| `colorbar_position` | `str` | `"right"` | continuous | `"right"` (vertical) or `"bottom"` (horizontal) |
-| `origin_lower` | `bool` | `False` | all | Flip the y-axis so row 0 is at the bottom |
-| `show_values` | `bool` | `True` | all | Print numeric values in cells |
-| `bins` | `int` | `0` | discrete | Number of quantized bands (3–9) |
-| `palette` | `list[int]` | `None` | categorical, discrete | Hex colors for categorical/discrete cells |
-| `widths` | `list[float]` | `None` | unequal | Per-column width multipliers |
-| `ranges` | `list[float]` | `None` | unequal | Per-row height multipliers |
-| `color_low` | `int` | `0x6366F1` | basic, annotated, log, contour | Low-value hex color (3-stop interp) |
-| `color_mid` | `int` | `0xFAFBFC` | basic, annotated, log, contour | Mid-value hex color |
-| `color_high` | `int` | `0xF43F5E` | basic, annotated, log, contour | High-value hex color |
-| `width` | `int` | `720` | all | Canvas width in pixels |
-| `height` | `int` | `440` | all | Canvas height in pixels |
-| `sort_order` | `str` | `"none"` | all | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, or `"none"` |
-| `background` | `str` | `None` | all | Background CSS color; `None` = transparent |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `col_labels` | bubble, cluster, marginal, pivot, unequal |
+| `colorscale` | confusion |
+| `contour_levels` | contour |
+| `discrete_steps` | discrete |
+| `diverging` | bubble, marginal, pivot |
+| `flat_matrix` | bubble, cluster, marginal, pivot |
+| `height` | bubble, marginal, pivot |
+| `hover` | bubble, marginal, pivot |
+| `palette` | categorical |
+| `row_labels` | bubble, cluster, marginal, pivot, unequal |
+| `show_values` | categorical |
+| `title` | bubble, marginal, pivot |
+| `width` | bubble, marginal, pivot |
+| `x_widths` | unequal |
+| `y_heights` | unequal |
 
 ---
 
@@ -319,38 +314,23 @@ Alias : `sp.heatmap`, `sp.heat_map`, `sp.heatmap_chart`
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Variantes | Description |
-|-----------|------|--------|-----------|-------------|
-| `title` | `str` | requis | toutes | Titre du graphique |
-| `matrix` | `list[list[float]]` | requis | toutes sauf density, pivot | Matrice 2D des valeurs |
-| `x_labels` | `list[str]` | `None` | toutes | Labels des colonnes |
-| `y_labels` | `list[str]` | `None` | toutes | Labels des lignes |
-| `variant` | `str` | `"basic"` | — | Variante de rendu |
-| `colorscale` | `str` | `"viridis"` | toutes | Palette continue (`"viridis"`, `"plasma"`, `"inferno"`, …) |
-| `annotation_format` | `str` | `".2f"` | annotated | Format des valeurs affichées |
-| `categories` | `list[str]` | `None` | categorical | Catégories pour palette discrète |
-| `x_widths` | `list[float]` | `None` | unequal | Largeur relative de chaque colonne |
-| `y_heights` | `list[float]` | `None` | unequal | Hauteur relative de chaque ligne |
-| `levels` | `int` ou `list[float]` | `5` | discrete, contour | Nombre de bandes / contours |
-| `mask_upper` | `bool` | `False` | correlation | Masque le triangle supérieur |
-| `x` / `y` | `list[float]` | `None` | density | Coordonnées brutes pour binning |
-| `bins` | `int` ou `tuple` | `30` | density | Nombre de bins pour la densité |
-| `n_contours` | `int` | `8` | contour | Nombre de courbes de niveau |
-| `time_axis` | `str` | `"hour-day"` | temporal | `"hour-day"`, `"day-week"`, `"day-month"` |
-| `cluster_method` | `str` | `"ward"` | cluster | Méthode de liaison (`"ward"`, `"single"`, `"complete"`) |
-| `size_matrix` | `list[list[float]]` | `None` | bubble | Matrice de tailles des bulles |
-| `class_labels` | `list[str]` | `None` | confusion | Noms des classes |
-| `data` | `list[dict]` | `None` | pivot | Données longues à pivoter |
-| `index` | `str` | `None` | pivot | Colonne pour l'axe Y |
-| `columns` | `str` | `None` | pivot | Colonne pour l'axe X |
-| `values` | `str` | `None` | pivot | Colonne agrégée |
-| `palette` | `list[int]` | `None` | toutes | Palette personnalisée |
-| `width` | `int` | `800` | toutes | Largeur du canevas en px |
-| `height` | `int` | `600` | toutes | Hauteur du canevas en px |
-| `x_label` | `str` | `""` | toutes | Label axe X |
-| `y_label` | `str` | `""` | toutes | Label axe Y |
-| `show_colorbar` | `bool` | `True` | toutes | Afficher la barre de couleur |
-| `background` | `str` | `None` | toutes | Couleur de fond CSS |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `col_labels` | bubble, cluster, marginal, pivot, unequal |
+| `colorscale` | confusion |
+| `contour_levels` | contour |
+| `discrete_steps` | discrete |
+| `diverging` | bubble, marginal, pivot |
+| `flat_matrix` | bubble, cluster, marginal, pivot |
+| `height` | bubble, marginal, pivot |
+| `hover` | bubble, marginal, pivot |
+| `palette` | categorical |
+| `row_labels` | bubble, cluster, marginal, pivot, unequal |
+| `show_values` | categorical |
+| `title` | bubble, marginal, pivot |
+| `width` | bubble, marginal, pivot |
+| `x_widths` | unequal |
+| `y_heights` | unequal |
 
 ---
 

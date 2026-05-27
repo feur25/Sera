@@ -66,19 +66,15 @@ Aliases: `sp.radar`, `sp.build_radar_chart`
 
 ## Parameters
 
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | required | all | Chart title |
-| `axes` | `list[str]` | required | all | Axis labels (≥3) |
-| `series` | `list[list[float]]` | required | all | One row per series, length must match `axes` |
-| `series_names` | `list[str]` | `None` | all | Legend labels (one per series) |
-| `variant` | `str` | `"basic"` | — | Rendering variant (see table) |
-| `filled` | `bool` | `True` | basic | Fill polygons (basic only) |
-| `fill_opacity` | `int` | `50` | filled variants | Fill alpha 0..255 |
-| `palette` | `list[int]` | `None` | all | Custom per-series palette |
-| `width` | `int` | `700` | all | Canvas width (px) |
-| `height` | `int` | `560` | all | Canvas height (px) |
-| `background` | `str` | `None` | all | Background CSS color |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `axes` | deluxe |
+| `fill_opacity` | basic, filled, polar_bar, stacked |
+| `height` | deluxe |
+| `palette` | all |
+| `series` | filled, polar_bar, stacked |
+| `title` | deluxe |
+| `width` | deluxe |
 
 ---
 
@@ -183,19 +179,15 @@ Alias : `sp.radar`, `sp.build_radar_chart`
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Variantes | Description |
-|-----------|------|--------|-----------|-------------|
-| `title` | `str` | requis | toutes | Titre du graphique |
-| `axes` | `list[str]` | requis | toutes | Libellés d'axes (≥3) |
-| `series` | `list[list[float]]` | requis | toutes | Une ligne par série, longueur = `axes` |
-| `series_names` | `list[str]` | `None` | toutes | Libellés de légende |
-| `variant` | `str` | `"basic"` | — | Variante de rendu |
-| `filled` | `bool` | `True` | basic | Remplir les polygones (basic seul) |
-| `fill_opacity` | `int` | `50` | variantes remplies | Alpha 0..255 |
-| `palette` | `list[int]` | `None` | toutes | Palette personnalisée |
-| `width` | `int` | `700` | toutes | Largeur (px) |
-| `height` | `int` | `560` | toutes | Hauteur (px) |
-| `background` | `str` | `None` | toutes | Couleur de fond CSS |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `axes` | deluxe |
+| `fill_opacity` | basic, filled, polar_bar, stacked |
+| `height` | deluxe |
+| `palette` | toutes |
+| `series` | filled, polar_bar, stacked |
+| `title` | deluxe |
+| `width` | deluxe |
 
 ---
 

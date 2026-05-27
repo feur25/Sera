@@ -67,24 +67,34 @@ Aliases: `sp.pie`, `sp.pie_chart`, `sp.pie_unified`, `sp.pie_family`, `sp.pies`
 
 ## Parameters
 
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | — | all | Chart title shown at the top |
-| `labels` | `list[str]` | `None` | all | Slice labels (shared across subplots) |
-| `values` | `list[float]` | `None` | basic, donut, exploded | Single-series numeric values |
-| `series` | `list[list[float]]` | `None` | subplots, proportional | One values list per pie in the grid |
-| `subplot_titles` | `list[str]` | `None` | subplots, proportional | Caption shown below each pie |
-| `subplot_cols` | `int` | `0` (auto) | subplots, proportional | Number of columns in the grid |
-| `pull` | `list[float]` | `None` | exploded | Per-slice radial offset as a fraction of radius (0–0.6) |
-| `inner_radius_ratio` | `float` | `0.0` | donut | Hole radius as a fraction of the outer radius |
-| `show_pct` | `bool` | `True` | all | Render percentage labels inside slices |
-| `min_label_frac` | `float` | `0.04` | all | Hide percentage label below this fraction |
-| `palette` | `list[int]` | `None` | all | Custom slice colors as hex integers |
-| `width` | `int` | `720` | all | Canvas width in pixels |
-| `height` | `int` | `440` | all | Canvas height in pixels |
-| `sort_order` | `str` | `"none"` | basic, donut, exploded | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, or `"none"` |
-| `legend_position` | `str` | `"right"` | all | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | all | Background CSS color; `None` = transparent |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `center_subtext` | kpi, nested, proportional |
+| `center_text` | kpi, nested, proportional |
+| `donut` | nested, proportional, subplots |
+| `gridlines` | proportional |
+| `height` | nested, proportional, subplots |
+| `hover` | proportional |
+| `labels` | nested, proportional, subplots |
+| `legend_position` | proportional |
+| `min_label_frac` | proportional |
+| `palette` | proportional, subplots |
+| `pattern` | proportional |
+| `proportional` | proportional, subplots |
+| `pull` | basic, donut, exploded, kpi, pattern, proportional, semi |
+| `secondary_labels` | nested, proportional |
+| `secondary_values` | nested, proportional |
+| `series` | proportional, subplots |
+| `show_pct` | proportional |
+| `sort_order` | proportional |
+| `subplot_cols` | proportional, subplots |
+| `subplot_titles` | proportional, subplots |
+| `title` | nested, proportional, subplots |
+| `values` | exploded, kpi, nested, proportional |
+| `variant` | proportional |
+| `width` | nested, proportional, subplots |
+| `x_label` | proportional |
+| `y_label` | proportional |
 
 ---
 
@@ -224,25 +234,34 @@ Alias : `sp.pie`, `sp.pie_chart`, `sp.donut`
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Variantes | Description |
-|-----------|------|--------|-----------|-------------|
-| `title` | `str` | requis | toutes | Titre du graphique |
-| `labels` | `list[str]` | `None` | toutes sauf subplots, nested | Labels de tranche |
-| `values` | `list[float]` | `None` | toutes sauf subplots, nested | Valeurs (normalisées en %) |
-| `variant` | `str` | `"basic"` | — | Variante de rendu |
-| `inner_radius` | `float` | `0.0` | basic, donut, exploded, kpi | Rayon du trou (0–0.95) |
-| `pull` | `list[float]` | `None` | exploded | Distance d'extraction par tranche |
-| `panels` | `list[dict]` | `None` | subplots, proportional | Liste de panneaux `{title, labels, values}` |
-| `total_basis` | `str` | `"max"` | proportional | `"max"`, `"sum"` ou valeur de référence |
-| `center_text` | `str` | `""` | kpi | Texte central du KPI |
-| `rings` | `list[dict]` | `None` | nested | Anneaux concentriques |
-| `patterns` | `list[str]` | `None` | pattern | Motifs (`"dots"`, `"lines"`, `"cross"`, …) |
-| `palette` | `list[int]` | `None` | toutes | Couleurs personnalisées |
-| `width` | `int` | `700` | toutes | Largeur du canevas en px |
-| `height` | `int` | `500` | toutes | Hauteur du canevas en px |
-| `legend_position` | `str` | `"right"` | toutes | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `show_text` | `bool` | `True` | toutes | Afficher pourcentages sur les tranches |
-| `background` | `str` | `None` | toutes | Couleur de fond CSS |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `center_subtext` | kpi, nested, proportional |
+| `center_text` | kpi, nested, proportional |
+| `donut` | nested, proportional, subplots |
+| `gridlines` | proportional |
+| `height` | nested, proportional, subplots |
+| `hover` | proportional |
+| `labels` | nested, proportional, subplots |
+| `legend_position` | proportional |
+| `min_label_frac` | proportional |
+| `palette` | proportional, subplots |
+| `pattern` | proportional |
+| `proportional` | proportional, subplots |
+| `pull` | basic, donut, exploded, kpi, pattern, proportional, semi |
+| `secondary_labels` | nested, proportional |
+| `secondary_values` | nested, proportional |
+| `series` | proportional, subplots |
+| `show_pct` | proportional |
+| `sort_order` | proportional |
+| `subplot_cols` | proportional, subplots |
+| `subplot_titles` | proportional, subplots |
+| `title` | nested, proportional, subplots |
+| `values` | exploded, kpi, nested, proportional |
+| `variant` | proportional |
+| `width` | nested, proportional, subplots |
+| `x_label` | proportional |
+| `y_label` | proportional |
 
 ---
 

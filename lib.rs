@@ -5,12 +5,26 @@ pub mod ml;
 pub mod cloud;
 pub mod telemetry;
 
-pub use seraplot_macros::chart_demo;
+pub use seraplot_macros::{chart_demo, params, sera_alias};
 
 include!(concat!(env!("OUT_DIR"), "/demo_registry.rs"));
+include!(concat!(env!("OUT_DIR"), "/params_registry.rs"));
+include!(concat!(env!("OUT_DIR"), "/sera_aliases.rs"));
+include!(concat!(env!("OUT_DIR"), "/chart_alias_registry.rs"));
 
 pub fn demo_kwargs(family: &str, variant: &str) -> Option<&'static str> {
     DEMO_REGISTRY.iter().find(|(f, v, _)| *f == family && *v == variant).map(|(_, _, k)| *k)
+}
+
+pub fn required_params(family: &str, variant: &str) -> Option<&'static [&'static str]> {
+    if let Some(e) = PARAMS_REGISTRY.iter().find(|(f, v, _)| *f == family && *v == variant) {
+        return Some(e.2);
+    }
+    PARAMS_REGISTRY.iter().find(|(f, v, _)| *f == family && *v == "basic").map(|e| e.2)
+}
+
+pub fn sera_aliases_for(key: &str) -> Option<&'static [&'static str]> {
+    SERA_ALIASES.iter().find(|(k, _)| *k == key).map(|e| e.1)
 }
 
 pub fn demo_snippet(family: &str, variant: &str) -> Option<String> {
@@ -1061,9 +1075,9 @@ pub fn py_demos() -> Vec<&'static str> {
 }
 
 #[cfg(feature = "python")]
-#[pyfunction]
+#[pyfunction(name = "params")]
 #[pyo3(signature = (chart=None, variant=None))]
-pub fn params(py: Python<'_>, chart: Option<&str>, variant: Option<&str>) -> PyResult<PyObject> {
+pub fn py_params(py: Python<'_>, chart: Option<&str>, variant: Option<&str>) -> PyResult<PyObject> {
     use pyo3::types::PyDict;
     let root = PyDict::new(py);
     for (f, v, k) in crate::DEMO_REGISTRY.iter() {
@@ -1083,6 +1097,33 @@ pub fn params(py: Python<'_>, chart: Option<&str>, variant: Option<&str>) -> PyR
             return Ok(val.into());
         }
         return Ok(sub.into());
+    }
+    Ok(root.into())
+}
+
+#[cfg(feature = "python")]
+#[pyfunction(name = "required_params")]
+#[pyo3(signature = (chart=None, variant=None))]
+pub fn py_required_params(py: Python<'_>, chart: Option<&str>, variant: Option<&str>) -> PyResult<PyObject> {
+    use pyo3::types::{PyDict, PyList};
+    if let (Some(c), Some(v)) = (chart, variant) {
+        let list = crate::required_params(c, v).unwrap_or(&[]);
+        return Ok(PyList::new(py, list).into());
+    }
+    if let Some(c) = chart {
+        let d = PyDict::new(py);
+        for (f, v, p) in crate::PARAMS_REGISTRY.iter() {
+            if *f == c { d.set_item(*v, PyList::new(py, *p))?; }
+        }
+        return Ok(d.into());
+    }
+    let root = PyDict::new(py);
+    for (f, v, p) in crate::PARAMS_REGISTRY.iter() {
+        let inner: &PyDict = match root.get_item(*f)? {
+            Some(d) => d.downcast()?,
+            None => { let d = PyDict::new(py); root.set_item(*f, d)?; d }
+        };
+        inner.set_item(*v, PyList::new(py, *p))?;
     }
     Ok(root.into())
 }
@@ -1569,7 +1610,8 @@ fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(chart_variants, m)?)?;
     m.add_function(wrap_pyfunction!(py_demo, m)?)?;
     m.add_function(wrap_pyfunction!(py_demos, m)?)?;
-    m.add_function(wrap_pyfunction!(params, m)?)?;
+    m.add_function(wrap_pyfunction!(py_params, m)?)?;
+    m.add_function(wrap_pyfunction!(py_required_params, m)?)?;
     m.add_function(wrap_pyfunction!(config, m)?)?;
     m.add_function(wrap_pyfunction!(reset_config, m)?)?;
 

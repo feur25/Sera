@@ -72,27 +72,27 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 
 ## Parameters
 
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | — | all | Chart title shown at the top |
-| `labels` | `list[str]` | `None` | all | One category label per sample (flat list) |
-| `values` | `list[float]` | `None` | all except grouped | Flat list of numeric samples aligned with `labels` |
-| `series` | `list[list[float]]` | `None` | grouped | One flat list per series, split evenly across categories |
-| `series_names` | `list[str]` | `None` | grouped | Legend labels for each series |
-| `variant` | `str` | `"basic"` | all | Selects the box-plot variant |
-| `notch` | `bool` | `False` | basic, notched, points, outliers, grouped | Render a notched waist around the median (95% CI) |
-| `show_points` | `bool` | `False` | basic, points | Overlay individual samples on top of the box |
-| `jitter` | `float` | `0.35` | points, strip, grouped | Horizontal scatter spread (0–1) |
-| `boxen_depth` | `int` | `4` | letter_value | Number of nested quantile bands (2–7) |
-| `palette` | `list[int]` | `None` | all | Per-category fill colors as hex integers |
-| `width` | `int` | `900` | all | Canvas width in pixels |
-| `height` | `int` | `500` | all | Canvas height in pixels |
-| `x_label` | `str` | `""` | all | X-axis label |
-| `y_label` | `str` | `""` | all | Y-axis label |
-| `gridlines` | `bool` | `False` | all | Show horizontal gridlines |
-| `sort_order` | `str` | `"none"` | all | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, or `"none"` |
-| `legend_position` | `str` | `"right"` | all | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | all | Background CSS color; `None` = transparent |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `boxen_depth` | letter_value |
+| `category_labels` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
+| `fill_opacity` | basic, grouped, horizontal, rainbow, violin |
+| `gridlines` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
+| `height` | horizontal |
+| `hover` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
+| `jitter` | basic, strip |
+| `notch` | basic, grouped, outliers, points, rainbow, violin |
+| `palette` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
+| `series` | grouped |
+| `series_names` | grouped |
+| `show_points` | basic, notched |
+| `sort_order` | basic, horizontal, letter_value, rainbow, strip, violin |
+| `stroke_width` | basic, grouped, horizontal, rainbow, violin |
+| `title` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
+| `values` | basic, horizontal, letter_value, rainbow, strip, violin |
+| `width` | horizontal |
+| `x_label` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
+| `y_label` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
 
 ---
 
@@ -253,27 +253,27 @@ Alias : `sp.boxplot`, `sp.box_plot`
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Variantes | Description |
-|-----------|------|--------|-----------|-------------|
-| `title` | `str` | — | toutes | Titre du graphique |
-| `labels` | `list[str]` | `None` | toutes | Une étiquette de catégorie par échantillon |
-| `values` | `list[float]` | `None` | toutes sauf grouped | Liste plate des valeurs alignées sur `labels` |
-| `series` | `list[list[float]]` | `None` | grouped | Une liste plate par série |
-| `series_names` | `list[str]` | `None` | grouped | Noms de séries (légende) |
-| `variant` | `str` | `"basic"` | toutes | Sélectionne la variante |
-| `notch` | `bool` | `False` | basic, notched, points, outliers, grouped | Affiche une encoche autour de la médiane (IC 95 %) |
-| `show_points` | `bool` | `False` | basic, points | Superpose les échantillons individuels |
-| `jitter` | `float` | `0.35` | points, strip, grouped | Étalement horizontal du nuage (0–1) |
-| `boxen_depth` | `int` | `4` | letter_value | Nombre de bandes de quantiles imbriquées (2–7) |
-| `palette` | `list[int]` | `None` | toutes | Couleurs par catégorie (entiers hex) |
-| `width` | `int` | `900` | toutes | Largeur du canevas en px |
-| `height` | `int` | `500` | toutes | Hauteur du canevas en px |
-| `x_label` | `str` | `""` | toutes | Label axe X |
-| `y_label` | `str` | `""` | toutes | Label axe Y |
-| `gridlines` | `bool` | `False` | toutes | Lignes de grille horizontales |
-| `sort_order` | `str` | `"none"` | toutes | `"asc"`, `"desc"`, `"alpha"`, `"alpha_desc"`, `"none"` |
-| `legend_position` | `str` | `"right"` | toutes | `"right"`, `"left"`, `"top"`, `"bottom"` |
-| `background` | `str` | `None` | toutes | Couleur de fond CSS ; `None` = transparent |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `boxen_depth` | letter_value |
+| `category_labels` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
+| `fill_opacity` | basic, grouped, horizontal, rainbow, violin |
+| `gridlines` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
+| `height` | horizontal |
+| `hover` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
+| `jitter` | basic, strip |
+| `notch` | basic, grouped, outliers, points, rainbow, violin |
+| `palette` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
+| `series` | grouped |
+| `series_names` | grouped |
+| `show_points` | basic, notched |
+| `sort_order` | basic, horizontal, letter_value, rainbow, strip, violin |
+| `stroke_width` | basic, grouped, horizontal, rainbow, violin |
+| `title` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
+| `values` | basic, horizontal, letter_value, rainbow, strip, violin |
+| `width` | horizontal |
+| `x_label` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
+| `y_label` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
 
 ---
 

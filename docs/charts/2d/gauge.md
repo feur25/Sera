@@ -65,18 +65,12 @@ Aliases: `sp.gauge`, `sp.build_gauge`
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `title` | `str` | required | Chart title |
-| `value` | `float` | required | Current value to display |
-| `min_val` | `float` | `0.0` | Scale minimum |
-| `max_val` | `float` | `100.0` | Scale maximum |
-| `variant` | `str` | `"basic"` | Visual style (see table) |
-| `label` | `str` | `""` | Sub-label below value |
-| `comparison` | `float` | `0.0` | Comparison value (for `concentric`) |
-| `thresholds` | `list[(float,int)]` | `None` | `[(value, color_hex), ...]` thresholds |
-| `width` | `int` | `400` | Canvas width (px) |
-| `height` | `int` | `300` | Canvas height (px) |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `comparison` | concentric |
+| `max_val` | arc270, concentric, tick |
+| `min_val` | arc270, tick |
+| `value` | concentric, sleek |
 
 ## Returns
 

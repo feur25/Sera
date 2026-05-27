@@ -63,19 +63,18 @@ Aliases: `sp.build_parallel` &middot; `sp.parallel` &middot; `sp.parallel_coords
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `title` | `str` | required | Chart title |
-| `axes` | `list[str]` | required | Axis labels (left to right) |
-| `series` | `list[list[float]]` | required | Profiles - one inner list per axis |
-| `variant` | `str` | "basic" | Rendering style (see table) |
-| `series_names` | `list[str]` | None | Optional row names for hover/legend |
-| `category_indices` | `list[int]` | None | Category id per row (categorical variant) |
-| `highlight_index` | `int` | -1 | Row to spotlight (highlight variant) |
-| `color_axis` | `int` | -1 | Axis index to drive gradient color (gradient variant) |
-| `palette` | `list[int]` | None | Custom palette |
-| `width` | `int` | 1000 | Canvas width (px) |
-| `height` | `int` | 500 | Canvas height (px) |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `axes` | arc, deluxe, gradient, ribbon |
+| `categories` | categorical |
+| `color_axis` | gradient |
+| `height` | arc, deluxe, ribbon |
+| `highlight_index` | highlight |
+| `palette` | arc, basic, categorical, deluxe, density, highlight, ribbon, smooth |
+| `series_names` | all |
+| `series_values` | all |
+| `title` | arc, ribbon |
+| `width` | arc, categorical, deluxe, gradient, ribbon |
 
 ## Returns
 

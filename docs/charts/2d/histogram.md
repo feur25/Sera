@@ -65,26 +65,29 @@ Aliases: `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_
 
 ## Parameters
 
-| Parameter | Type | Default | Variants | Description |
-|-----------|------|---------|----------|-------------|
-| `title` | `str` | required | all | Chart title |
-| `values` | `list[float]` | required | all | Numeric values to bin |
-| `variant` | `str` | `"basic"` | — | Rendering variant (see table) |
-| `bins` | `int` | `0` | all | Number of bins. 0 = auto (Sturges) |
-| `color_hex` | `int` | `0x6366F1` | all | Primary bar color |
-| `overlay_values` | `list[float]` | `None` | overlay | Second distribution |
-| `overlay_color_hex` | `int` | `0xF43F5E` | overlay | Overlay color |
-| `color_groups` | `list[str]` | `None` | stacked | Per-value group label |
-| `palette` | `list[int]` | `None` | stacked | Custom group palette |
-| `series_names` | `list[str]` | `None` | overlay | Two legend names |
-| `show_counts` | `bool` | `False` | basic, horizontal | Show count labels on bars |
-| `stroke_width` | `float` | `1.0` | step | Outline stroke width |
-| `width` | `int` | `860` | all | Canvas width (px) |
-| `height` | `int` | `380` | all | Canvas height (px) |
-| `x_label` | `str` | `""` | all | X-axis label |
-| `y_label` | `str` | `"Count"` | all | Y-axis label |
-| `gridlines` | `bool` | `False` | all | Show gridlines |
-| `background` | `str` | `None` | all | Background CSS color |
+| Parameter | Used by variants |
+|-----------|------------------|
+| `bins` | all |
+| `categories` | overlay, stacked |
+| `color` | basic, cumulative, horizontal, normalized, overlay, step |
+| `count_scale` | basic |
+| `gap` | basic, deluxe, horizontal, normalized, overlay, stacked |
+| `gridlines` | all |
+| `height` | all |
+| `hover` | all |
+| `opacity` | basic, cumulative, horizontal, normalized |
+| `overlay_color` | basic, overlay |
+| `overlay_values` | basic, overlay |
+| `palette` | overlay, stacked |
+| `series_names` | basic, overlay |
+| `show_counts` | basic, deluxe, horizontal |
+| `sort_order` | basic |
+| `stroke_width` | step |
+| `title` | all |
+| `values` | all |
+| `width` | all |
+| `x_label` | basic, cumulative, horizontal, normalized, overlay, stacked, step |
+| `y_label` | basic, cumulative, horizontal, normalized, overlay, stacked, step |
 
 ---
 
@@ -241,26 +244,29 @@ Alias : `sp.histogram`, `sp.histograms`, `sp.histogram_unified`, `sp.histogram_f
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Variantes | Description |
-|-----------|------|--------|-----------|-------------|
-| `title` | `str` | requis | toutes | Titre du graphique |
-| `values` | `list[float]` | requis | toutes | Valeurs numériques à binner |
-| `variant` | `str` | `"basic"` | — | Variante de rendu |
-| `bins` | `int` | `0` | toutes | Nombre de bins. 0 = auto (Sturges) |
-| `color_hex` | `int` | `0x6366F1` | toutes | Couleur principale |
-| `overlay_values` | `list[float]` | `None` | overlay | Deuxième distribution |
-| `overlay_color_hex` | `int` | `0xF43F5E` | overlay | Couleur d'overlay |
-| `color_groups` | `list[str]` | `None` | stacked | Étiquette de groupe par valeur |
-| `palette` | `list[int]` | `None` | stacked | Palette personnalisée |
-| `series_names` | `list[str]` | `None` | overlay | Deux noms de légende |
-| `show_counts` | `bool` | `False` | basic, horizontal | Afficher les comptes |
-| `stroke_width` | `float` | `1.0` | step | Largeur du contour |
-| `width` | `int` | `860` | toutes | Largeur (px) |
-| `height` | `int` | `380` | toutes | Hauteur (px) |
-| `x_label` | `str` | `""` | toutes | Légende axe X |
-| `y_label` | `str` | `"Count"` | toutes | Légende axe Y |
-| `gridlines` | `bool` | `False` | toutes | Afficher la grille |
-| `background` | `str` | `None` | toutes | Couleur de fond CSS |
+| Paramètre | Utilisé par variantes |
+|-----------|----------------------|
+| `bins` | toutes |
+| `categories` | overlay, stacked |
+| `color` | basic, cumulative, horizontal, normalized, overlay, step |
+| `count_scale` | basic |
+| `gap` | basic, deluxe, horizontal, normalized, overlay, stacked |
+| `gridlines` | toutes |
+| `height` | toutes |
+| `hover` | toutes |
+| `opacity` | basic, cumulative, horizontal, normalized |
+| `overlay_color` | basic, overlay |
+| `overlay_values` | basic, overlay |
+| `palette` | overlay, stacked |
+| `series_names` | basic, overlay |
+| `show_counts` | basic, deluxe, horizontal |
+| `sort_order` | basic |
+| `stroke_width` | step |
+| `title` | toutes |
+| `values` | toutes |
+| `width` | toutes |
+| `x_label` | basic, cumulative, horizontal, normalized, overlay, stacked, step |
+| `y_label` | basic, cumulative, horizontal, normalized, overlay, stacked, step |
 
 ---
 
