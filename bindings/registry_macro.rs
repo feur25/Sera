@@ -81,7 +81,7 @@ macro_rules! for_each_chart_class {
 
 pub const CHART_ALIASES: &[(&str, &str)] = &[
     ("bar",            "build_bar"),
-    ("bar_chart",      "build_bar_chart"),
+    ("bar_chart",      "build_bar"),
     ("bars",           "build_bar"),
     ("bar_unified",    "build_bar"),
     ("bars_unified",   "build_bar"),
