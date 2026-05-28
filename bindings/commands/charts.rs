@@ -3175,3 +3175,60 @@ pub fn ml_knn_regressor(input: &str) -> String {
     serde_json::json!({"predictions": preds}).to_string()
 }
 
+#[crate::sera_alias("plan", "cloud_plan")]
+pub fn scale_plan(input: &str) -> String {
+    #[derive(serde::Deserialize, Default)]
+    struct In { n_rows: Option<usize>, n_cols: Option<usize>, mem_budget_mb: Option<u64> }
+    let v: In = serde_json::from_str(input).unwrap_or_default();
+    let p = crate::cloud::planner::plan(
+        v.n_rows.unwrap_or(0),
+        v.n_cols.unwrap_or(0),
+        v.mem_budget_mb.unwrap_or(512),
+    );
+    crate::cloud::planner::to_json(&p)
+}
+
+#[crate::sera_alias("profile", "cloud_profile", "system_info")]
+pub fn system_profile(_input: &str) -> String {
+    let r = crate::cloud::profile::current();
+    crate::cloud::profile::to_json(&r)
+}
+
+#[crate::sera_alias("count_rows", "csv_rows")]
+pub fn csv_count_rows(input: &str) -> String {
+    #[derive(serde::Deserialize, Default)]
+    struct In { path: String, has_header: Option<bool> }
+    let v: In = serde_json::from_str(input).unwrap_or_default();
+    if v.path.is_empty() { return "{\"error\":\"path required\"}".to_string(); }
+    match crate::cloud::chunker::count_rows(&v.path, v.has_header.unwrap_or(true)) {
+        Ok(n) => serde_json::json!({"rows": n}).to_string(),
+        Err(e) => serde_json::json!({"error": e.to_string()}).to_string(),
+    }
+}
+
+#[crate::sera_alias("read_chunk", "csv_chunk")]
+pub fn csv_chunk_read(input: &str) -> String {
+    #[derive(serde::Deserialize, Default)]
+    struct In { path: String, offset_rows: Option<usize>, chunk_rows: Option<usize>, has_header: Option<bool>, delimiter: Option<u8> }
+    let v: In = serde_json::from_str(input).unwrap_or_default();
+    if v.path.is_empty() { return "{\"error\":\"path required\"}".to_string(); }
+    let delim = v.delimiter.unwrap_or(b',');
+    let chunk = v.chunk_rows.unwrap_or(1000).max(1);
+    let offset = v.offset_rows.unwrap_or(0);
+    let has_header = v.has_header.unwrap_or(true);
+    let mut reader = match crate::cloud::chunker::CsvChunkReader::open(&v.path, chunk + offset, has_header, delim) {
+        Ok(r) => r,
+        Err(e) => return serde_json::json!({"error": e.to_string()}).to_string(),
+    };
+    let header = reader.header.clone();
+    let all = match reader.next_chunk() {
+        Ok(Some(rows)) => rows,
+        Ok(None) => vec![],
+        Err(e) => return serde_json::json!({"error": e.to_string()}).to_string(),
+    };
+    let n = all.len();
+    let data: Vec<Vec<f64>> = if offset < n { all.into_iter().skip(offset).collect() } else { vec![] };
+    let rows = data.len();
+    serde_json::json!({"header": header, "data": data, "rows": rows}).to_string()
+}
+

@@ -5,6 +5,7 @@ pub mod compact_state;
 pub mod data_processor;
 pub mod simd_ops;
 pub mod arena_alloc;
+pub mod adaptive_buf;
 pub mod bitset;
 pub mod lazy_builders;
 
@@ -15,6 +16,7 @@ pub use compact_state::*;
 pub use data_processor::*;
 pub use simd_ops::*;
 pub use arena_alloc::*;
+pub use adaptive_buf::*;
 pub use bitset::*;
 pub use lazy_builders::*;
 

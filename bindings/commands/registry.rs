@@ -9,7 +9,7 @@ use super::native::*;
 
 use crate::for_each_chart_fn;
 use crate::for_each_chart_class;
-use crate::bindings::registry_macro::{for_each_json_chart_fn, for_each_ml_oneshot_fn};
+use crate::bindings::registry_macro::{for_each_json_chart_fn, for_each_ml_oneshot_fn, for_each_auto_util_fn};
 
 #[cfg(feature = "python")]
 pub fn register_submodules(py: Python<'_>, m: &PyModule) -> PyResult<()> {
@@ -25,6 +25,7 @@ pub fn register_submodules(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     }
     for_each_chart_fn!(add_fn);
     for_each_ml_oneshot_fn!(add_fn);
+    for_each_auto_util_fn!(add_fn);
 
     macro_rules! add_class {
         ($cls:ident) => { m.add_class::<$cls>()?; }

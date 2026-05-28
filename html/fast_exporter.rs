@@ -1,5 +1,7 @@
 use crate::bindings::utils::simd_ops;
 use crate::bindings::utils::lazy_builders::{LazyJsonBuilder};
+use crate::bindings::utils::{RingBuffer, RenderArena};
+use crate::data::Dataset;
 use super::fast_builders::{SvgBuilder, HtmlBuilder};
 
 pub struct FastHtmlExporter {
@@ -18,6 +20,46 @@ impl FastHtmlExporter {
             title,
             colors: parking_lot::Mutex::new(Vec::with_capacity(100000)),
         }
+    }
+
+    #[inline(always)]
+    pub fn build_from_dataset(&self, data: Dataset<f64>) -> String {
+        let n = data.len();
+        if n == 0 { return String::new(); }
+
+        let values = data.to_values_vec();
+        let (_, max_val) = simd_ops::find_minmax(&values);
+        let max_val = max_val.max(1.0);
+
+        let mut color_cache: RingBuffer<u32, 512> = RingBuffer::new();
+        let mut colors_raw: Vec<u32> = Vec::with_capacity(n.min(512));
+        simd_ops::compute_hex_colors_batch_into(n, &mut colors_raw);
+        for &c in &colors_raw { color_cache.push(c); }
+
+        let bar_width = 1200.0 / (n as f32).max(1.0);
+        let mut arena = RenderArena::new(n * 80, n * 64);
+        let mut svg = SvgBuilder::new(self.width as f32, self.height as f32, n * 80);
+        let scale_factor = 500.0 / max_val;
+
+        for i in 0..n {
+            let height = (values[i] * scale_factor) as i32;
+            let x = (i as f32 * bar_width) as i32;
+            let y = 550 - height;
+            let w = bar_width as i32;
+            let color = color_cache.get(i % 512).unwrap_or(0x6464C8);
+            svg.add_bar_fast(x, y, w, height, color);
+        }
+
+        let svg_str = svg.finish();
+        let mut json_builder = LazyJsonBuilder::new(n);
+        for (label, &val) in data.labels().zip(values.iter()) {
+            json_builder.add_point(label.to_string(), val);
+        }
+        let json = json_builder.build().to_string();
+        let _ = arena.svg_buf();
+        drop(arena);
+
+        HtmlBuilder::new(&self.title, &svg_str, &json).build()
     }
 
     #[inline(always)]

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
-use super::processor::{Dataset, DataPoint};
+use super::dataset::Dataset;
 
 #[derive(Clone, Debug)]
 pub struct CsvData {
@@ -60,12 +60,8 @@ impl CsvData {
             .collect()
     }
 
-    pub fn to_dataset<T>(&self, col: &str, converter: impl Fn(&str) -> Option<T>) -> Dataset<T>
-    where
-        T: Clone + 'static,
-    {
-        let mut dataset = Dataset::new(col.to_string());
-        
+    pub fn to_dataset<T: Copy>(&self, col: &str, converter: impl Fn(&str) -> Option<T>) -> Dataset<T> {
+        let mut ds = Dataset::with_capacity(col, self.rows.len());
         for (idx, row) in self.rows.iter().enumerate() {
             if let Some(val_str) = row.get(col) {
                 if let Some(value) = converter(val_str) {
@@ -73,22 +69,16 @@ impl CsvData {
                         .or_else(|| row.get("label"))
                         .cloned()
                         .unwrap_or_else(|| idx.to_string());
-                    
-                    let point = DataPoint::new(value, label);
-                    dataset = dataset.add_point(point);
+                    ds.push(value, label);
                 }
             }
         }
-        
-        dataset
+        ds
     }
 
+    #[inline]
     pub fn to_numeric_dataset(&self, col: &str) -> Dataset<f64> {
-        self.to_dataset(col, |s| s.parse::<f64>().ok())
-    }
-
-    pub fn to_string_dataset(&self, col: &str) -> Dataset<String> {
-        self.to_dataset(col, |s| Some(s.to_string()))
+        self.to_dataset(col, |s| s.parse().ok())
     }
 
     pub fn len(&self) -> usize {

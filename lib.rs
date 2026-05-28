@@ -5,7 +5,10 @@ pub mod ml;
 pub mod cloud;
 pub mod telemetry;
 
-pub use seraplot_macros::{chart_demo, params, sera_alias};
+pub use data::{Dataset, DataPoint, DatasetStats};
+pub use crate::core::hw_profile::{hw, HwProfile};
+
+pub use seraplot_macros::{chart_demo, params, sera_alias, sera_bind};
 
 include!(concat!(env!("OUT_DIR"), "/demo_registry.rs"));
 include!(concat!(env!("OUT_DIR"), "/params_registry.rs"));
@@ -45,9 +48,6 @@ pub mod html;
 
 pub use core::math::{self, mean, median, std_dev};
 pub use data::loader;
-pub use data::processor;
-pub use data::conversion;
-pub use data::index;
 pub use plot::canvas::Canvas;
 
 #[cfg(any(feature = "python", feature = "gui"))]
@@ -1278,6 +1278,118 @@ pub fn reset_config() {
 }
 
 #[cfg(feature = "python")]
+#[pyclass(name = "HwProfile", module = "seraplot")]
+pub struct PyHwProfile {
+    #[pyo3(get)] pub cpu_threads: usize,
+    #[pyo3(get)] pub par_threshold: usize,
+    #[pyo3(get)] pub l2_chunk_elems: usize,
+}
+
+#[cfg(feature = "python")]
+#[pymethods]
+impl PyHwProfile {
+    fn __repr__(&self) -> String {
+        format!("HwProfile(cpu_threads={}, par_threshold={}, l2_chunk_elems={})",
+            self.cpu_threads, self.par_threshold, self.l2_chunk_elems)
+    }
+}
+
+#[cfg(feature = "python")]
+#[pyfunction(name = "hw")]
+fn py_hw() -> PyHwProfile {
+    let p = crate::core::hw_profile::hw();
+    PyHwProfile { cpu_threads: p.cpu_threads, par_threshold: p.par_threshold, l2_chunk_elems: p.l2_chunk_elems }
+}
+
+#[cfg(feature = "python")]
+#[pyclass(name = "DatasetStats", module = "seraplot")]
+pub struct PyDatasetStats {
+    #[pyo3(get)] pub min: f64,
+    #[pyo3(get)] pub max: f64,
+    #[pyo3(get)] pub mean: f64,
+    #[pyo3(get)] pub std_dev: f64,
+    #[pyo3(get)] pub sum: f64,
+    #[pyo3(get)] pub count: usize,
+}
+
+#[cfg(feature = "python")]
+#[pymethods]
+impl PyDatasetStats {
+    fn __repr__(&self) -> String {
+        format!("DatasetStats(min={:.4}, max={:.4}, mean={:.4}, std_dev={:.4}, count={})",
+            self.min, self.max, self.mean, self.std_dev, self.count)
+    }
+}
+
+#[cfg(feature = "python")]
+#[pyclass(name = "Dataset", module = "seraplot")]
+pub struct PyDataset {
+    inner: crate::data::Dataset<f64>,
+}
+
+#[cfg(feature = "python")]
+#[pymethods]
+impl PyDataset {
+    #[staticmethod]
+    #[pyo3(signature = (values, labels=None))]
+    fn from_list(values: Vec<f64>, labels: Option<Vec<String>>) -> Self {
+        let mut ds = crate::data::Dataset::with_capacity("dataset", values.len());
+        for (i, v) in values.iter().enumerate() {
+            let lbl = labels.as_ref().and_then(|l| l.get(i)).map(|s| s.as_str()).unwrap_or("").to_string();
+            ds.push(*v, lbl);
+        }
+        PyDataset { inner: ds }
+    }
+
+    fn par_stats(&self) -> PyDatasetStats {
+        let s = self.inner.par_stats();
+        PyDatasetStats { min: s.min, max: s.max, mean: s.mean, std_dev: s.std_dev, sum: s.sum, count: s.count }
+    }
+
+    fn into_chunks(&self, n: usize) -> Vec<PyDataset> {
+        let vals: Vec<f64> = self.inner.values().collect();
+        let labels: Vec<String> = self.inner.labels().map(|s| s.to_string()).collect();
+        if n == 0 || vals.is_empty() { return vec![]; }
+        let chunk_size = (vals.len() + n - 1) / n;
+        vals.chunks(chunk_size).enumerate().map(|(ci, chunk)| {
+            let lbl_slice = &labels[ci * chunk_size..ci * chunk_size + chunk.len()];
+            let mut ds = crate::data::Dataset::with_capacity(&format!("chunk_{ci}"), chunk.len());
+            for (v, l) in chunk.iter().zip(lbl_slice.iter()) { ds.push(*v, l.as_str()); }
+            PyDataset { inner: ds }
+        }).collect()
+    }
+
+    fn values(&self) -> Vec<f64> {
+        self.inner.values().collect()
+    }
+
+    fn labels(&self) -> Vec<String> {
+        self.inner.labels().map(|s| s.to_string()).collect()
+    }
+
+    fn __len__(&self) -> usize { self.inner.len() }
+
+    fn __repr__(&self) -> String {
+        format!("Dataset(name={:?}, len={})", self.inner.name, self.inner.len())
+    }
+}
+
+#[sera_bind(python, ffi)]
+pub fn set_adaptive_retry(on: bool) {
+    crate::core::adaptive_exec::set_adaptive_retry(on);
+}
+
+#[sera_bind(python, ffi)]
+pub fn reset_perf_state() {
+    crate::core::adaptive_exec::reset_perf_state();
+}
+
+#[sera_bind(python, ffi)]
+pub fn adaptive_degrade_level() -> usize {
+    crate::core::adaptive_exec::degrade_level()
+}
+
+#[cfg(feature = "python")]
 pub(crate) fn py_to_f64_vec(_py: Python<'_>, obj: &PyAny) -> PyResult<Vec<f64>> {
     if let Ok(list) = obj.extract::<Vec<f64>>() {
         return Ok(list);
@@ -1599,8 +1711,15 @@ fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
         }
     }
     m.add_class::<Chart>()?;
+    m.add_class::<PyHwProfile>()?;
+    m.add_class::<PyDatasetStats>()?;
+    m.add_class::<PyDataset>()?;
     m.add("__version__", VERSION)?;
 
+    m.add_function(wrap_pyfunction!(py_hw, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_set_adaptive_retry, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_reset_perf_state, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_adaptive_degrade_level, m)?)?;
     m.add_function(wrap_pyfunction!(set_global_background, m)?)?;
     m.add_function(wrap_pyfunction!(reset_global_background, m)?)?;
     m.add_function(wrap_pyfunction!(set_auto_display, m)?)?;

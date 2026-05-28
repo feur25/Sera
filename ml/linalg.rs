@@ -1,6 +1,5 @@
 use rayon::prelude::*;
-
-const PAR_THRESHOLD: usize = 16_384;
+use crate::core::hw_profile::hw;
 
 #[inline(always)]
 pub fn splitmix64(state: u64) -> u64 {
@@ -33,7 +32,7 @@ pub fn dot(a: &[f64], b: &[f64]) -> f64 {
 
 pub fn mat_vec(a: &[f64], rows: usize, cols: usize, x: &[f64], out: &mut [f64]) {
     if rows == 0 || cols == 0 { for v in out.iter_mut() { *v = 0.0; } return; }
-    if rows >= 32_768 {
+    if rows >= hw().par_threshold {
         out.par_chunks_mut(2048).enumerate().for_each(|(ci, chunk)| {
             let r0 = ci * 2048;
             for (k, v) in chunk.iter_mut().enumerate() {
@@ -75,8 +74,8 @@ pub fn mat_t_vec(a: &[f64], rows: usize, cols: usize, x: &[f64], out: &mut [f64]
 pub fn mat_t_mat(a: &[f64], n: usize, p: usize, out: &mut [f64]) {
     for v in out[..p * p].iter_mut() { *v = 0.0; }
     if n == 0 || p == 0 { return; }
-    if p <= 64 || n * p * p < 32_768 {
-        if n >= 1024 {
+    if p <= 64 || n * p * p < hw().par_threshold {
+        if n >= hw().par_threshold / 32 {
             let chunk = 2048usize.min(n);
             let nc = (n + chunk - 1) / chunk;
             let partials: Vec<Vec<f64>> = (0..nc).into_par_iter().map(|c| {

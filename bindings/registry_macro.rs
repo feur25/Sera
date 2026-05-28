@@ -1,6 +1,7 @@
 ﻿include!(concat!(env!("OUT_DIR"), "/chart_fn_macro.rs"));
 include!(concat!(env!("OUT_DIR"), "/ml_fn_macro.rs"));
 include!(concat!(env!("OUT_DIR"), "/util_fn_macro.rs"));
+include!(concat!(env!("OUT_DIR"), "/auto_util_fn_macro.rs"));
 
 #[macro_export]
 macro_rules! for_each_chart_fn {
@@ -256,6 +257,7 @@ macro_rules! impl_python_bindings {
             };
         }
         for_each_ml_oneshot_fn!(impl_python_json);
+        for_each_auto_util_fn!(impl_python_json);
 
         #[pyfunction]
         #[pyo3(name = "set_bg", signature = (html, color=None))]

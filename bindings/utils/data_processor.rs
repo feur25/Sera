@@ -1,3 +1,5 @@
+use crate::core::hw_profile::hw;
+
 pub struct DataProcessor {
     chunk_size: usize,
 }
@@ -6,6 +8,11 @@ impl DataProcessor {
     #[inline]
     pub fn new(chunk_size: usize) -> Self {
         Self { chunk_size }
+    }
+
+    #[inline]
+    pub fn adaptive() -> Self {
+        Self { chunk_size: hw().l2_chunk_elems }
     }
 
     #[inline(always)]

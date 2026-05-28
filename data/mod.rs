@@ -1,7 +1,6 @@
 pub mod loader;
-pub mod processor;
-pub mod index;
-pub mod conversion;
+pub mod dataset;
+pub use dataset::{Dataset, DataPoint, DatasetStats};
 
 
 

@@ -1,5 +1,6 @@
 use std::ffi::{CStr, CString};
 use std::os::raw::{c_char, c_uint};
+use crate::data::Dataset;
 
 #[repr(C)]
 pub struct FastChartConfig {
@@ -58,6 +59,13 @@ impl FastChartRenderer {
         self.labels = labels;
         self.values = values;
         self
+    }
+
+    #[inline]
+    pub fn from_dataset(config: FastChartConfig, title: &str, data: Dataset<f64>) -> Self {
+        let labels = data.to_labels_vec();
+        let values = data.to_values_vec();
+        Self::new(config, title).with_data(labels, values)
     }
 
     fn render_svg_axes(&self, svg: &mut String, pad: i32, plot_width: i32, plot_height: i32, max_val: f64) {
