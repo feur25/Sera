@@ -4,6 +4,7 @@ pub mod plot;
 pub mod ml;
 pub mod cloud;
 pub mod telemetry;
+#[path = "bindings/doc_registry.rs"]
 pub mod doc_registry;
 
 pub use data::{Dataset, DataPoint, DatasetStats};
@@ -77,83 +78,50 @@ impl SeraPlot {
 #[cfg(feature = "python")]
 use pyo3::prelude::*;
 
-#[cfg(feature = "python")]
 static GLOBAL_BACKGROUND: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 
-#[cfg(feature = "python")]
 static GLOBAL_PALETTE: std::sync::Mutex<Option<Vec<u32>>> = std::sync::Mutex::new(None);
 
-#[cfg(feature = "python")]
 static GLOBAL_GRIDLINES: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
-#[cfg(feature = "python")]
 static GLOBAL_THEME_NAME: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 
-#[cfg(feature = "python")]
 static AUTO_DISPLAY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
 
-#[cfg(feature = "python")]
 static GLOBAL_FONT: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
-#[cfg(feature = "python")]
 static GLOBAL_FONT_SIZE: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
-#[cfg(feature = "python")]
 static GLOBAL_TITLE_SIZE: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
-#[cfg(feature = "python")]
 static GLOBAL_BORDER_RADIUS: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
-#[cfg(feature = "python")]
 static GLOBAL_OPACITY: std::sync::Mutex<Option<f64>> = std::sync::Mutex::new(None);
-#[cfg(feature = "python")]
 static GLOBAL_RESPONSIVE: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
-#[cfg(feature = "python")]
 static GLOBAL_ANIMATION: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
-#[cfg(feature = "python")]
 static GLOBAL_ANIMATION_DURATION: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(300);
-#[cfg(feature = "python")]
 static GLOBAL_CROSSHAIR: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
-#[cfg(feature = "python")]
 static GLOBAL_ZOOM: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
-#[cfg(feature = "python")]
 static GLOBAL_TOOLTIP: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
-#[cfg(feature = "python")]
 static GLOBAL_LOCALE: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
-#[cfg(feature = "python")]
 static GLOBAL_THOUSANDS_SEP: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
-#[cfg(feature = "python")]
 static GLOBAL_MARGIN: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
-#[cfg(feature = "python")]
 static GLOBAL_EXPORT_BTN: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
-#[cfg(feature = "python")]
 static GLOBAL_TEXT_AUTO: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
-#[cfg(feature = "python")]
 static GLOBAL_TEXT_POSITION: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
-#[cfg(feature = "python")]
 static GLOBAL_TEXT_ANGLE: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(i32::MIN);
-#[cfg(feature = "python")]
 static GLOBAL_TEXT_FONT_SIZE: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
-#[cfg(feature = "python")]
 static GLOBAL_TEXT_FONT_COLOR: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
-#[cfg(feature = "python")]
 static GLOBAL_UNIFORM_TEXT_MIN: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
-#[cfg(feature = "python")]
 static GLOBAL_UNIFORM_TEXT_MODE: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
-#[cfg(feature = "python")]
 static GLOBAL_BAR_CORNER_RADIUS: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
-#[cfg(feature = "python")]
 static GLOBAL_HOVER_INFO: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
-#[cfg(feature = "python")]
 static GLOBAL_PATTERN_SHAPE: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 
-#[cfg(feature = "python")]
 pub fn get_global_background() -> Option<String> {
     GLOBAL_BACKGROUND.lock().ok().and_then(|g| g.clone())
 }
 
-#[cfg(feature = "python")]
 pub fn get_global_palette() -> Option<Vec<u32>> {
     GLOBAL_PALETTE.lock().ok().and_then(|g| g.clone())
 }
 
-#[cfg(feature = "python")]
 pub fn get_global_gridlines() -> bool {
     GLOBAL_GRIDLINES.load(std::sync::atomic::Ordering::Relaxed)
 }
@@ -983,27 +951,24 @@ fn auto_show_in_jupyter(py: Python<'_>, chart: &Chart) {
     })();
 }
 
-#[cfg(feature = "python")]
 #[sera_doc(category = "config", file = "config/global.md", en = "Sets a global background color applied to all charts created after this call.", fr = "Définit une couleur d'arrière-plan globale appliquée à tous les graphiques créés après cet appel.", param(name = "color", ty = "str", en = "CSS color string (hex, rgb, named). Empty string removes it.", fr = "Couleur CSS (hex, rgb, nommée). Chaîne vide pour la supprimer."))]
-#[pyfunction]
+#[sera_bind(python)]
 pub fn set_global_background(color: &str) {
     if let Ok(mut bg) = GLOBAL_BACKGROUND.lock() {
         *bg = Some(color.to_string());
     }
 }
 
-#[cfg(feature = "python")]
 #[sera_doc(category = "config", file = "config/global.md", en = "Clears the global background color so charts use their default background.", fr = "Efface la couleur d'arrière-plan globale afin que les graphiques utilisent leur arrière-plan par défaut.")]
-#[pyfunction]
+#[sera_bind(python, ffi)]
 pub fn reset_global_background() {
     if let Ok(mut bg) = GLOBAL_BACKGROUND.lock() {
         *bg = None;
     }
 }
 
-#[cfg(feature = "python")]
 #[sera_doc(category = "config", file = "config/global.md", en = "Enables or disables automatic display of charts in Jupyter notebooks upon creation.", fr = "Active ou désactive l'affichage automatique des graphiques dans les notebooks Jupyter à la création.", param(name = "enabled", ty = "bool", en = "True to auto-display charts in Jupyter; False to suppress auto-display.", fr = "True pour afficher automatiquement les graphiques dans Jupyter; False pour supprimer l'affichage automatique."))]
-#[pyfunction]
+#[sera_bind(python, ffi)]
 pub fn set_auto_display(enabled: bool) {
     AUTO_DISPLAY.store(enabled, std::sync::atomic::Ordering::Relaxed);
 }
@@ -1100,9 +1065,8 @@ pub fn theme(name: &str) -> PyResult<()> {
     Ok(())
 }
 
-#[cfg(feature = "python")]
 #[sera_doc(category = "theme", file = "theme/theme.md", en = "Resets the active theme back to the framework default.", fr = "Réinitialise le thème actif vers le thème par défaut du framework.")]
-#[pyfunction]
+#[sera_bind(python, ffi)]
 pub fn reset_theme() {
     if let Ok(mut bg) = GLOBAL_BACKGROUND.lock() { *bg = None; }
     if let Ok(mut pal) = GLOBAL_PALETTE.lock() { *pal = None; }
@@ -1110,9 +1074,8 @@ pub fn reset_theme() {
     if let Ok(mut tn) = GLOBAL_THEME_NAME.lock() { *tn = None; }
 }
 
-#[cfg(feature = "python")]
 #[sera_doc(category = "theme", file = "theme/theme.md", en = "Returns a list of all available theme names.", fr = "Retourne la liste de tous les noms de thèmes disponibles.")]
-#[pyfunction]
+#[sera_bind(python)]
 pub fn themes() -> Vec<String> {
     vec!["dark", "light", "scientific", "apple", "notion", "minimal", "neon"]
         .into_iter().map(String::from).collect()
@@ -1129,10 +1092,9 @@ pub fn py_demo(chart: &str, variant: Option<&str>) -> PyResult<String> {
     })
 }
 
-#[cfg(feature = "python")]
-#[sera_doc(name = "demos", category = "utility", file = "api/reference.md", en = "Returns a list of all available chart family names that have demo snippets.", fr = "Retourne la liste de tous les noms de familles de graphiques ayant des extraits de démonstration.")]
-#[pyfunction(name = "demos")]
-pub fn py_demos() -> Vec<&'static str> {
+#[sera_doc(category = "utility", file = "api/reference.md", en = "Returns a list of all available chart family names that have demo snippets.", fr = "Retourne la liste de tous les noms de familles de graphiques ayant des extraits de démonstration.")]
+#[sera_bind(python)]
+pub fn demos() -> Vec<&'static str> {
     let mut out: Vec<&'static str> = crate::DEMO_REGISTRY.iter().map(|(f, _, _)| *f).collect();
     out.sort(); out.dedup(); out
 }
@@ -1309,9 +1271,8 @@ fn reset_text_auto() {
     if let Ok(mut g) = GLOBAL_TEXT_AUTO.lock() { *g = None; }
 }
 
-#[cfg(feature = "python")]
 #[sera_doc(category = "config", file = "config/config.md", en = "Resets all global config settings applied via config() back to their defaults.", fr = "Réinitialise tous les paramètres de configuration globale définis via config() à leurs valeurs par défaut.")]
-#[pyfunction]
+#[sera_bind(python, ffi)]
 pub fn reset_config() {
     use std::sync::atomic::Ordering::Relaxed;
     if let Ok(mut f) = GLOBAL_FONT.lock() { *f = None; }
@@ -1708,27 +1669,22 @@ fn sysmon(bg_color: &str, update_interval_ms: u32) -> Chart {
     build_sysmon(bg_color, update_interval_ms)
 }
 
-#[cfg(feature = "python")]
 #[sera_doc(category = "telemetry", file = "about/telemetry.md", en = "Enables or disables usage telemetry collection. Disabled by default.", fr = "Active ou désactive la collecte de télémétrie d'utilisation. Désactivé par défaut.", param(name = "enabled", ty = "bool", en = "True to enable telemetry, False to disable.", fr = "True pour activer la télémétrie, False pour désactiver."))]
-#[pyfunction]
+#[sera_bind(python, ffi)]
 fn telemetry_consent(enabled: bool) {
     crate::telemetry::set_consent(enabled);
 }
 
-#[cfg(feature = "python")]
-#[sera_doc(name = "telemetry_path", category = "telemetry", file = "about/telemetry.md", en = "Returns the filesystem path where telemetry data is stored.", fr = "Retourne le chemin du système de fichiers où les données de télémétrie sont stockées.")]
-#[pyfunction]
-fn telemetry_path_fn() -> String {
+#[sera_doc(category = "telemetry", file = "about/telemetry.md", en = "Returns the filesystem path where telemetry data is stored.", fr = "Retourne le chemin du système de fichiers où les données de télémétrie sont stockées.")]
+#[sera_bind(python)]
+fn telemetry_path() -> String {
     crate::telemetry::telemetry_file_path()
 }
 
-#[cfg(feature = "python")]
 #[sera_doc(category = "telemetry", file = "about/telemetry.md", en = "Returns a JSON string with aggregated usage metrics summary.", fr = "Retourne une chaîne JSON avec un résumé des métriques d'utilisation agrégées.")]
-#[pyfunction]
-fn get_metrics() -> PyResult<String> {
-    let summary = crate::telemetry::get_metrics_summary();
-    serde_json::to_string(&summary)
-        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))
+#[sera_bind(python)]
+fn get_metrics() -> String {
+    serde_json::to_string(&crate::telemetry::get_metrics_summary()).unwrap_or_default()
 }
 
 #[cfg(feature = "python")]
@@ -1857,19 +1813,19 @@ fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(__sera_py_set_adaptive_retry, m)?)?;
     m.add_function(wrap_pyfunction!(__sera_py_reset_perf_state, m)?)?;
     m.add_function(wrap_pyfunction!(__sera_py_adaptive_degrade_level, m)?)?;
-    m.add_function(wrap_pyfunction!(set_global_background, m)?)?;
-    m.add_function(wrap_pyfunction!(reset_global_background, m)?)?;
-    m.add_function(wrap_pyfunction!(set_auto_display, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_set_global_background, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_reset_global_background, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_set_auto_display, m)?)?;
     m.add_function(wrap_pyfunction!(theme, m)?)?;
-    m.add_function(wrap_pyfunction!(reset_theme, m)?)?;
-    m.add_function(wrap_pyfunction!(themes, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_reset_theme, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_themes, m)?)?;
     m.add_function(wrap_pyfunction!(chart_variants, m)?)?;
     m.add_function(wrap_pyfunction!(py_demo, m)?)?;
-    m.add_function(wrap_pyfunction!(py_demos, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_demos, m)?)?;
     m.add_function(wrap_pyfunction!(py_params, m)?)?;
     m.add_function(wrap_pyfunction!(py_required_params, m)?)?;
     m.add_function(wrap_pyfunction!(config, m)?)?;
-    m.add_function(wrap_pyfunction!(reset_config, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_reset_config, m)?)?;
 
     bindings::commands::registry::register_submodules(py, m)?;
 
@@ -1877,9 +1833,9 @@ fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(grid, m)?)?;
     m.add_function(wrap_pyfunction!(build_sysmon, m)?)?;
     m.add_function(wrap_pyfunction!(sysmon, m)?)?;
-    m.add_function(wrap_pyfunction!(telemetry_consent, m)?)?;
-    m.add_function(wrap_pyfunction!(telemetry_path_fn, m)?)?;
-    m.add_function(wrap_pyfunction!(get_metrics, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_telemetry_consent, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_telemetry_path, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_get_metrics, m)?)?;
     m.add_function(wrap_pyfunction!(push_telemetry, m)?)?;
     m.add_function(wrap_pyfunction!(py_docs, m)?)?;
     m.add_function(wrap_pyfunction!(py_doc, m)?)?;
