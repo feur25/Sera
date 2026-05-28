@@ -1,4 +1,4 @@
-﻿include!(concat!(env!("OUT_DIR"), "/chart_fn_macro.rs"));
+include!(concat!(env!("OUT_DIR"), "/chart_fn_macro.rs"));
 include!(concat!(env!("OUT_DIR"), "/ml_fn_macro.rs"));
 include!(concat!(env!("OUT_DIR"), "/util_fn_macro.rs"));
 include!(concat!(env!("OUT_DIR"), "/auto_util_fn_macro.rs"));
@@ -416,8 +416,8 @@ macro_rules! impl_python_bindings {
             if let Ok(cols_obj) = x.getattr("columns") {
                 let cols: Vec<String> = cols_obj.extract()?;
                 if cols.len() >= 2 {
-                    let xv = crate::py_to_f64_vec(py, x.get_item(&cols[0])?)?;
-                    let yv = crate::py_to_f64_vec(py, x.get_item(&cols[1])?)?;
+                    let xv = crate::extract_f64_vec(py, x.get_item(&cols[0])?)?;
+                    let yv = crate::extract_f64_vec(py, x.get_item(&cols[1])?)?;
                     let auto_title = if title.is_empty() { format!("{} vs {}", cols[0], cols[1]) } else { title.to_string() };
                     let result = Ok(crate::Chart::new_doc(
                         crate::bindings::commands::charts::plot_chart(
@@ -428,8 +428,8 @@ macro_rules! impl_python_bindings {
                     return result;
                 }
             }
-            let xv = crate::py_to_f64_vec(py, x)?;
-            let yv: Option<Vec<f64>> = if let Some(yobj) = y { Some(crate::py_to_f64_vec(py, yobj)?) } else { None };
+            let xv = crate::extract_f64_vec(py, x)?;
+            let yv: Option<Vec<f64>> = if let Some(yobj) = y { Some(crate::extract_f64_vec(py, yobj)?) } else { None };
             let res = Ok(crate::Chart::new_doc(
                 crate::bindings::commands::charts::plot_chart(
                     &serde_json::json!({"x":xv,"y":yv,"kind":kind,"title":title,"color_hex":color_hex,"show_points":show_points,"width":width,"height":height,"x_label":x_label,"y_label":y_label,"gridlines":grid,"palette":pal_opt,"background":bg}).to_string()

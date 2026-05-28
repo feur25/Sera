@@ -1,13 +1,13 @@
 use std::sync::OnceLock;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, serde::Serialize)]
 pub enum MemTier {
     Constrained,
     Normal,
     Generous,
 }
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, serde::Serialize)]
 pub struct HwProfile {
     pub cpu_threads: usize,
     pub par_threshold: usize,

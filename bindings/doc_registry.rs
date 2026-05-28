@@ -1,3 +1,4 @@
+#[derive(serde::Serialize)]
 pub struct ParamDoc {
     pub name: &'static str,
     pub ty: &'static str,
@@ -5,6 +6,7 @@ pub struct ParamDoc {
     pub fr: &'static str,
 }
 
+#[derive(serde::Serialize)]
 pub struct FnDoc {
     pub name: &'static str,
     pub category: &'static str,
