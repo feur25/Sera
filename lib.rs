@@ -4,11 +4,12 @@ pub mod plot;
 pub mod ml;
 pub mod cloud;
 pub mod telemetry;
+pub mod doc_registry;
 
 pub use data::{Dataset, DataPoint, DatasetStats};
 pub use crate::core::hw_profile::{hw, HwProfile};
 
-pub use seraplot_macros::{chart_demo, params, sera_alias, sera_bind};
+pub use seraplot_macros::{chart_demo, params, sera_alias, sera_bind, sera_doc, sera_doc_impl};
 
 include!(concat!(env!("OUT_DIR"), "/demo_registry.rs"));
 include!(concat!(env!("OUT_DIR"), "/params_registry.rs"));
@@ -248,6 +249,7 @@ fn inject_labels(html: &str, pos: &str, labels: &[String], colors: &[String]) ->
 }
 
 #[cfg(feature = "python")]
+#[sera_doc_impl]
 #[pymethods]
 impl Chart {
     #[getter]
@@ -290,6 +292,7 @@ impl Chart {
         !self.html.is_empty()
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Renders the chart inline in a Jupyter notebook using IPython display.", fr = "Affiche le graphique en ligne dans un notebook Jupyter via IPython display.")]
     fn show(&self, py: Python<'_>) -> PyResult<()> {
         let ipython = py.import("IPython.display")?;
         let html_cls = ipython.getattr("HTML")?;
@@ -299,63 +302,76 @@ impl Chart {
         Ok(())
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/export.md", en = "Saves the chart HTML to a file at the given path.", fr = "Enregistre le HTML du graphique dans un fichier au chemin indiqué.", param(name = "path", ty = "str", en = "Destination file path (e.g. 'chart.html').", fr = "Chemin du fichier de destination (ex: 'chart.html')."))]
     #[pyo3(signature = (path))]
     fn save(&self, path: &str) -> PyResult<()> {
         std::fs::write(path, &self.html)?;
         Ok(())
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Sets the background color of the chart. Pass None to remove the background.", fr = "Définit la couleur d'arrière-plan du graphique. Passez None pour supprimer l'arrière-plan.", param(name = "color", ty = "str | None", en = "CSS color string (hex, rgb, named). None removes the background.", fr = "Couleur CSS (hex, rgb, nommée). None supprime l'arrière-plan."))]
     #[pyo3(signature = (color=None))]
     fn set_bg(&self, color: Option<&str>) -> Chart {
         self.propagate(crate::html::hover::apply_bg(self.html.clone(), color))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Injects a raw CSS string into the chart's <head> element.", fr = "Injecte une chaîne CSS brute dans l'élément <head> du graphique.", param(name = "css", ty = "str", en = "Raw CSS rules to inject.", fr = "Règles CSS brutes à injecter."))]
     #[pyo3(signature = (css))]
     fn inject_css(&self, css: &str) -> Chart {
         self.propagate(self.html.replacen("</head>", &format!("<style>{css}</style></head>"), 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Injects a raw JavaScript string into the chart's <body> element.", fr = "Injecte une chaîne JavaScript brute dans l'élément <body> du graphique.", param(name = "js", ty = "str", en = "Raw JavaScript code to inject.", fr = "Code JavaScript brut à injecter."))]
     #[pyo3(signature = (js))]
     fn inject_js(&self, js: &str) -> Chart {
         self.propagate(self.html.replacen("</body>", &format!("<script>{js}</script></body>"), 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Hides the X axis, its ticks, and its label.", fr = "Masque l'axe X, ses graduations et son étiquette.")]
     fn no_x_axis(&self) -> Chart {
         self.propagate(self.html.replacen("</head>", "<style>.sp-ax-x,.sp-xt,.sp-xl{display:none}</style></head>", 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Disables the hover tooltip and removes hover highlighting on data elements.", fr = "Désactive l'infobulle au survol et supprime le surlignage des éléments au survol.")]
     fn no_hover(&self) -> Chart {
         self.propagate(self.html.replacen("</head>", "<style>#sp-tip{display:none!important}[data-idx]{pointer-events:none!important}[data-idx]:hover{filter:none!important}</style></head>", 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Hides the Y axis, its ticks, and its label.", fr = "Masque l'axe Y, ses graduations et son étiquette.")]
     fn no_y_axis(&self) -> Chart {
         self.propagate(self.html.replacen("</head>", "<style>.sp-ax-y,.sp-yt,.sp-yl{display:none}</style></head>", 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Hides both X and Y axes along with their ticks and labels.", fr = "Masque les axes X et Y ainsi que leurs graduations et étiquettes.")]
     fn no_axes(&self) -> Chart {
         self.propagate(self.html.replacen("</head>", "<style>.sp-ax-x,.sp-ax-y,.sp-xt,.sp-yt,.sp-xl,.sp-yl{display:none}</style></head>", 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Shows horizontal and vertical grid lines on the chart background.", fr = "Affiche les lignes de grille horizontales et verticales en arrière-plan du graphique.")]
     fn show_grid(&self) -> Chart {
         self.propagate(self.html.replacen("</head>", "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>", 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Hides the grid lines if they were previously enabled.", fr = "Masque les lignes de grille si elles étaient précédemment activées.")]
     fn hide_grid(&self) -> Chart {
         self.propagate(self.html.replacen("</head>", "<style>.sp-gl{display:none!important}</style></head>", 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Overrides all SVG text elements to the specified font size in pixels.", fr = "Remplace la taille de police de tous les éléments texte SVG par la valeur spécifiée en pixels.", param(name = "px", ty = "int", en = "Font size in pixels.", fr = "Taille de police en pixels."))]
     #[pyo3(signature = (px))]
     fn set_font_size(&self, px: u32) -> Chart {
         let style = format!("<style>svg text{{font-size:{}px!important}}</style></head>", px);
         self.propagate(self.html.replacen("</head>", &style, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Scales the entire SVG by a given factor from the top-left origin.", fr = "Met à l'échelle l'intégralité du SVG par un facteur donné depuis le coin supérieur gauche.", param(name = "factor", ty = "float", en = "Scale multiplier (e.g. 1.5 for 150%).", fr = "Multiplicateur d'échelle (ex: 1.5 pour 150%)."))]
     #[pyo3(signature = (factor))]
     fn scale(&self, factor: f64) -> Chart {
         let style = format!("<style>svg{{transform:scale({});transform-origin:top left}}</style></head>", factor);
         self.propagate(self.html.replacen("</head>", &style, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Sets the background color of the SVG/canvas frame. Use 'transparent' or None to remove it.", fr = "Définit la couleur d'arrière-plan du cadre SVG/canvas. Utilisez 'transparent' ou None pour le supprimer.", param(name = "color", ty = "str | None", en = "CSS color for the frame background.", fr = "Couleur CSS pour l'arrière-plan du cadre."))]
     #[pyo3(signature = (color=None))]
     fn set_frame(&self, color: Option<&str>) -> Chart {
         let bg = match color {
@@ -366,6 +382,7 @@ impl Chart {
         self.propagate(self.html.replacen("</head>", &style, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Adds an interactive series filter overlay with clickable pill-shaped labels.", fr = "Ajoute une superposition de filtre de séries interactif avec des étiquettes en forme de pilule cliquables.", param(name = "position", ty = "str", en = "Position of the overlay: 'top', 'bottom', 'left', 'right'.", fr = "Position de la superposition: 'top', 'bottom', 'left', 'right'."), param(name = "labels", ty = "list[str] | None", en = "Custom label names. Auto-detected if None.", fr = "Noms d'étiquettes personnalisés. Détection automatique si None."), param(name = "colors", ty = "list[str] | None", en = "Custom color hex strings matching labels.", fr = "Couleurs hex personnalisées correspondant aux étiquettes."))]
     #[pyo3(signature = (position="bottom", labels=None, colors=None))]
     fn show_labels(&self, position: &str, labels: Option<Vec<String>>, colors: Option<Vec<String>>) -> Chart {
         let lb = labels.unwrap_or_default();
@@ -373,6 +390,7 @@ impl Chart {
         self.propagate(inject_labels(&self.html, position, &lb, &co))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/export.md", en = "Extracts and returns the raw SVG string from the chart HTML.", fr = "Extrait et retourne la chaîne SVG brute depuis le HTML du graphique.")]
     fn to_svg(&self) -> PyResult<String> {
         let h = &self.html;
         let start = h.find("<svg").ok_or_else(|| pyo3::exceptions::PyValueError::new_err("No SVG in chart"))?;
@@ -380,12 +398,14 @@ impl Chart {
         Ok(h[start..end].to_string())
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/export.md", en = "Saves the chart's SVG to a file. Raises ValueError if no SVG is present.", fr = "Enregistre le SVG du graphique dans un fichier. Lève ValueError si aucun SVG n'est présent.", param(name = "path", ty = "str", en = "Destination .svg file path.", fr = "Chemin du fichier .svg de destination."))]
     #[pyo3(signature = (path))]
     fn export_svg(&self, path: &str) -> PyResult<()> {
         let svg = self.to_svg()?;
         std::fs::write(path, svg).map_err(|e| pyo3::exceptions::PyOSError::new_err(e.to_string()))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/export.md", en = "Exports the chart as a PNG image via cairosvg. Requires: pip install cairosvg.", fr = "Exporte le graphique en image PNG via cairosvg. Nécessite: pip install cairosvg.", param(name = "path", ty = "str", en = "Destination .png file path.", fr = "Chemin du fichier .png de destination."), param(name = "scale", ty = "float", en = "Resolution scale factor (default 2.0 for 2x resolution).", fr = "Facteur d'échelle de résolution (défaut 2.0 pour une résolution 2x)."))]
     #[pyo3(signature = (path, scale=2.0))]
     fn export_png(&self, py: Python<'_>, path: &str, scale: f64) -> PyResult<()> {
         let svg = self.to_svg()?;
@@ -403,32 +423,39 @@ impl Chart {
         }
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Sets the font family for all SVG text and body text in the chart.", fr = "Définit la famille de polices pour tous les textes SVG et les textes du corps du graphique.", param(name = "name", ty = "str", en = "Font family name (e.g. 'Roboto', 'Inter').", fr = "Nom de la famille de polices (ex: 'Roboto', 'Inter')."))]
     #[pyo3(signature = (name))]
     fn font(&self, name: &str) -> Chart {
         self.propagate(self.html.replacen("</head>", &format!("<style>svg text,body{{font-family:'{}',system-ui,sans-serif!important}}</style></head>", name), 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Sets the font size of the chart title in pixels.", fr = "Définit la taille de police du titre du graphique en pixels.", param(name = "px", ty = "int", en = "Title font size in pixels.", fr = "Taille de police du titre en pixels."))]
     #[pyo3(signature = (px))]
     fn title_size(&self, px: i32) -> Chart {
         self.propagate(self.html.replacen("</head>", &format!("<style>.sp-ttl{{font-size:{}px!important}}</style></head>", px), 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Adds an interactive crosshair that follows the mouse cursor across the SVG.", fr = "Ajoute un réticule interactif qui suit le curseur de la souris sur le SVG.")]
     fn crosshair(&self) -> Chart {
         self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_CROSSHAIR_JS), 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Enables mouse-wheel zoom and click-drag panning on the chart. Double-click to reset.", fr = "Active le zoom à la molette et le déplacement par glisser-cliquer. Double-clic pour réinitialiser.")]
     fn zoom(&self) -> Chart {
         self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_ZOOM_JS), 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Flips a vertical bar chart into a horizontal bar chart by recalculating bar positions.", fr = "Transforme un graphique à barres verticales en graphique à barres horizontales en recalculant les positions.")]
     fn flip(&self) -> Chart {
         self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_FLIP_JS), 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Alias for flip(). Renders the chart with horizontal bars.", fr = "Alias de flip(). Affiche le graphique avec des barres horizontales.")]
     fn horizontal(&self) -> Chart {
         self.flip()
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Rotates the entire chart by a snapped angle (0, 90, 180 or 270 degrees).", fr = "Fait pivoter l'int\u{00e9}gralit\u{00e9} du graphique selon un angle arrondi (0, 90, 180 ou 270 degr\u{00e9}s).", param(name = "deg", ty = "int", en = "Rotation in degrees, snapped to nearest 90\u{00b0}. Default: 90.", fr = "Rotation en degr\u{00e9}s, arrondie au 90\u{00b0} le plus proche. D\u{00e9}faut: 90."))]
     #[pyo3(signature = (deg=90))]
     fn rotate(&self, deg: i32) -> Chart {
         let d = ((deg % 360) + 360) % 360;
@@ -441,6 +468,7 @@ impl Chart {
         self.propagate(crate::html::hover::apply_rotation(self.html.clone(), snapped))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Sorts chart bars by value or label using a client-side JavaScript re-render.", fr = "Trie les barres du graphique par valeur ou étiquette via un rendu JavaScript côté client.", param(name = "order", ty = "str", en = "Sort order: 'desc' (default), 'asc', 'alpha', 'alpha_desc', 'none'.", fr = "Ordre de tri: 'desc' (défaut), 'asc', 'alpha', 'alpha_desc', 'none'."))]
     #[pyo3(signature = (order="desc"))]
     fn sort_by(&self, order: &str) -> Chart {
         let ord = match order { "asc" | "desc" | "alpha" | "alpha_desc" | "none" => order, _ => "desc" };
@@ -448,6 +476,7 @@ impl Chart {
         self.propagate(self.html.replacen("</body>", &snippet, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Repositions the chart legend and enables interactive series toggling by click.", fr = "Repositionne la légende du graphique et active la bascule interactive des séries au clic.", param(name = "position", ty = "str", en = "Legend position: 'right' (default), 'left', 'top', 'bottom', 'none'.", fr = "Position de la légende: 'right' (défaut), 'left', 'top', 'bottom', 'none'."))]
     #[pyo3(signature = (position="right"))]
     fn legend(&self, position: &str) -> Chart {
         let pos = match position { "right" | "left" | "top" | "bottom" | "none" => position, _ => "right" };
@@ -458,16 +487,19 @@ impl Chart {
         self.propagate(self.html.replacen("</body>", &snippet, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Rotates X axis tick labels by the specified angle in degrees.", fr = "Fait pivoter les étiquettes de graduation de l'axe X de l'angle spécifié en degrés.", param(name = "angle", ty = "int", en = "Rotation angle in degrees (e.g. -45 for diagonal labels).", fr = "Angle de rotation en degrés (ex: -45 pour des étiquettes diagonales)."))]
     #[pyo3(signature = (angle))]
     fn rotate_labels(&self, angle: i32) -> Chart {
         let css = format!("<style>.sp-xt{{transform-box:fill-box;transform-origin:center;transform:rotate({}deg)}}</style></head>", angle);
         self.propagate(self.html.replacen("</head>", &css, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Makes the SVG width 100% of its container while keeping proportional height.", fr = "Rend la largeur du SVG égale à 100% de son conteneur tout en conservant une hauteur proportionnelle.")]
     fn responsive(&self) -> Chart {
         self.propagate(self.html.replacen("</head>", "<style>svg{width:100%!important;height:auto!important}</style></head>", 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Adds a staggered entry animation to data elements (bars, circles, areas).", fr = "Ajoute une animation d'entrée décalée aux éléments de données (barres, cercles, zones).", param(name = "duration", ty = "int", en = "Animation duration in milliseconds. Default: 300.", fr = "Durée de l'animation en millisecondes. Défaut: 300."))]
     #[pyo3(signature = (duration=300))]
     fn animate(&self, duration: i32) -> Chart {
         let css = format!("<style>@keyframes sp-in{{from{{opacity:0;transform:translateY(8px)}}to{{opacity:1;transform:none}}}}svg rect[data-idx],svg circle[data-idx],svg path.sp-area{{animation:sp-in {}ms ease-out both}}</style></head>", duration);
@@ -475,17 +507,20 @@ impl Chart {
         self.propagate(self.html.replacen("</head>", &css, 1).replacen("</body>", js, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Applies a CSS border-radius to the chart container element.", fr = "Applique un border-radius CSS à l'élément conteneur du graphique.", param(name = "px", ty = "int", en = "Corner radius in pixels.", fr = "Rayon des coins en pixels."))]
     #[pyo3(signature = (px))]
     fn border_radius(&self, px: i32) -> Chart {
         self.propagate(self.html.replacen("</head>", &format!("<style>[id^='spp'],.c3w{{border-radius:{}px!important;overflow:hidden}}</style></head>", px), 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Sets the opacity of all data elements (bars, circles, areas) in the chart.", fr = "Définit l'opacité de tous les éléments de données (barres, cercles, zones) du graphique.", param(name = "value", ty = "float", en = "Opacity between 0.0 (invisible) and 1.0 (fully opaque).", fr = "Opacité entre 0.0 (invisible) et 1.0 (totalement opaque)."))]
     #[pyo3(signature = (value))]
     fn set_opacity(&self, value: f64) -> Chart {
         let v = value.clamp(0.0, 1.0);
         self.propagate(self.html.replacen("</head>", &format!("<style>svg rect[data-idx],svg circle[data-idx],svg path.sp-area{{opacity:{}!important}}</style></head>", v), 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Adds internal padding to the chart and adjusts data element positions accordingly.", fr = "Ajoute un espacement interne au graphique et ajuste en conséquence les positions des éléments de données.", param(name = "px", ty = "int", en = "Margin in pixels applied to all four sides.", fr = "Marge en pixels appliquée aux quatre côtés."))]
     #[pyo3(signature = (px))]
     fn set_margin(&self, px: i32) -> Chart {
         let css = format!("<style>body{{padding:{px}px!important;box-sizing:border-box}}[id^='spp'],.c3w{{margin:{px}px!important}}</style></head>");
@@ -504,6 +539,7 @@ impl Chart {
         self.propagate(h.replacen("</body>", &snippet, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Adjusts the gap ratio between bars. Higher values create thinner bars with more space.", fr = "Ajuste le ratio d'espacement entre les barres. Des valeurs plus élevées créent des barres plus fines.", param(name = "ratio", ty = "float", en = "Gap ratio between 0.0 (no gap) and 0.95 (almost no bar). Default: 0.3.", fr = "Ratio d'espacement entre 0.0 (sans espacement) et 0.95 (presque sans barre). Défaut: 0.3."))]
     #[pyo3(signature = (ratio=0.3))]
     fn bar_gap(&self, ratio: f64) -> Chart {
         let r = ratio.clamp(0.0, 0.95);
@@ -511,12 +547,14 @@ impl Chart {
         self.propagate(self.html.replacen("</body>", &snippet, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Applies CSS padding to the chart container element.", fr = "Applique un padding CSS à l'élément conteneur du graphique.", param(name = "px", ty = "int", en = "Padding in pixels applied to all four sides.", fr = "Padding en pixels appliqué aux quatre côtés."))]
     #[pyo3(signature = (px))]
     fn set_padding(&self, px: i32) -> Chart {
         let css = format!("<style>[id^='spp'],.c3w{{padding:{px}px!important;box-sizing:border-box}}</style></head>");
         self.propagate(self.html.replacen("</head>", &css, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Rotates X and/or Y axis tick labels independently.", fr = "Fait pivoter indépendamment les étiquettes de graduation des axes X et/ou Y.", param(name = "x_angle", ty = "int | None", en = "Rotation angle for X axis labels in degrees.", fr = "Angle de rotation des étiquettes de l'axe X en degrés."), param(name = "y_angle", ty = "int | None", en = "Rotation angle for Y axis labels in degrees.", fr = "Angle de rotation des étiquettes de l'axe Y en degrés."))]
     #[pyo3(signature = (x_angle=None, y_angle=None))]
     fn axis_label_angle(&self, x_angle: Option<i32>, y_angle: Option<i32>) -> Chart {
         let mut css = String::from("<style>");
@@ -530,36 +568,44 @@ impl Chart {
         self.propagate(self.html.replacen("</head>", &css, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Hides the chart legend.", fr = "Masque la légende du graphique.")]
     fn no_legend(&self) -> Chart {
         self.propagate(self.html.replacen("</head>", "<style>g[data-legend]{display:none!important}</style></head>", 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Hides the chart title.", fr = "Masque le titre du graphique.")]
     fn no_title(&self) -> Chart {
         self.propagate(self.html.replacen("</head>", "<style>.sp-ttl{display:none!important}</style></head>", 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Forces the chart title to be visible with a contrast stroke for readability.", fr = "Force le titre du graphique à être visible avec un contour de contraste pour la lisibilité.")]
     fn show_title(&self) -> Chart {
         self.propagate(self.html.replacen("</head>", "<style>.sp-ttl{display:block!important;visibility:visible!important;opacity:1!important;fill:#e2e8f0!important;paint-order:stroke;stroke:rgba(0,0,0,.6);stroke-width:.6px}</style></head>", 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Forces the chart legend to be visible even if it was hidden.", fr = "Force la légende du graphique à être visible même si elle était masquée.")]
     fn show_legend(&self) -> Chart {
         self.propagate(self.html.replacen("</head>", "<style>g[data-legend]{display:block!important;visibility:visible!important}</style></head>", 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Alias for legend(position). Repositions the chart legend.", fr = "Alias de legend(position). Repositionne la légende du graphique.", param(name = "position", ty = "str", en = "Legend position: 'right', 'left', 'top', 'bottom', 'none'.", fr = "Position de la légende: 'right', 'left', 'top', 'bottom', 'none'."))]
     #[pyo3(signature = (position="right"))]
     fn legend_position(&self, position: &str) -> Chart {
         self.legend(position)
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Alias for show_labels(position). Adds an interactive legend overlay at the given position.", fr = "Alias de show_labels(position). Ajoute une superposition de légende interactive à la position donnée.", param(name = "position", ty = "str", en = "Overlay position: 'top', 'bottom', 'left', 'right'.", fr = "Position de la superposition: 'top', 'bottom', 'left', 'right'."))]
     #[pyo3(signature = (position="bottom"))]
     fn label_position(&self, position: &str) -> Chart {
         self.show_labels(position, None, None)
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/export.md", en = "Adds a floating download button (\u{2b07}) to the chart that saves the full HTML on click.", fr = "Ajoute un bouton de t\u{00e9}l\u{00e9}chargement flottant (\u{2b07}) au graphique qui sauvegarde le HTML complet au clic.")]
     fn export_button(&self) -> Chart {
         self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_EXPORT_JS), 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Overlays data value labels on all chart elements. Supports format strings and positioning.", fr = "Superpose des étiquettes de valeurs de données sur tous les éléments du graphique. Supporte les chaînes de format et le positionnement.", param(name = "format", ty = "bool | str | None", en = "Format string (e.g. '.2f', '.0%') or True for auto. None disables.", fr = "Chaîne de format (ex: '.2f', '.0%') ou True pour automatique. None désactive."), param(name = "position", ty = "str | None", en = "Label position: 'auto', 'inside', 'outside'.", fr = "Position de l'étiquette: 'auto', 'inside', 'outside'."), param(name = "angle", ty = "int | None", en = "Label rotation angle in degrees.", fr = "Angle de rotation des étiquettes en degrés."), param(name = "font_size", ty = "int | None", en = "Font size of the data labels in pixels.", fr = "Taille de police des étiquettes de données en pixels."), param(name = "color", ty = "str | None", en = "Color of the data labels.", fr = "Couleur des étiquettes de données."))]
     #[pyo3(signature = (format=None, position=None, angle=None, font_size=None, color=None))]
     fn text_auto(&self, py: Python<'_>, format: Option<&PyAny>, position: Option<&str>, angle: Option<i32>, font_size: Option<i32>, color: Option<&str>) -> Chart {
         let _ = py;
@@ -582,18 +628,21 @@ impl Chart {
         self.propagate(self.html.replacen("</body>", &snippet, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Sets the position for data value labels on chart elements.", fr = "Définit la position des étiquettes de valeurs de données sur les éléments du graphique.", param(name = "position", ty = "str", en = "Position: 'auto', 'inside', 'outside'.", fr = "Position: 'auto', 'inside', 'outside'."))]
     #[pyo3(signature = (position))]
     fn text_position(&self, position: &str) -> Chart {
         let snippet = format!("<script>window.__sp_text__=Object.assign(window.__sp_text__||{{}},{{position:{}}});{}</script></body>", json_str(position), SP_TEXT_JS);
         self.propagate(self.html.replacen("</body>", &snippet, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Sets the rotation angle for data value labels.", fr = "Définit l'angle de rotation des étiquettes de valeurs de données.", param(name = "degrees", ty = "int", en = "Rotation angle in degrees.", fr = "Angle de rotation en degrés."))]
     #[pyo3(signature = (degrees))]
     fn text_angle(&self, degrees: i32) -> Chart {
         let snippet = format!("<script>window.__sp_text__=Object.assign(window.__sp_text__||{{}},{{angle:{}}});{}</script></body>", degrees, SP_TEXT_JS);
         self.propagate(self.html.replacen("</body>", &snippet, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Sets font family, size, and color for data value labels.", fr = "Définit la famille de polices, la taille et la couleur des étiquettes de valeurs de données.", param(name = "family", ty = "str | None", en = "Font family name.", fr = "Nom de la famille de polices."), param(name = "size", ty = "int | None", en = "Font size in pixels.", fr = "Taille de police en pixels."), param(name = "color", ty = "str | None", en = "Label text color.", fr = "Couleur du texte des étiquettes."))]
     #[pyo3(signature = (family=None, size=None, color=None))]
     fn text_font(&self, family: Option<&str>, size: Option<i32>, color: Option<&str>) -> Chart {
         let mut opts = String::from("window.__sp_text__=Object.assign(window.__sp_text__||{},{");
@@ -605,12 +654,14 @@ impl Chart {
         self.propagate(self.html.replacen("</body>", &snippet, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Enforces a minimum font size for data labels; hides or shows labels that don't fit.", fr = "Impose une taille de police minimale pour les étiquettes de données; masque ou affiche les étiquettes qui ne tiennent pas.", param(name = "min_size", ty = "int", en = "Minimum font size in pixels.", fr = "Taille de police minimale en pixels."), param(name = "mode", ty = "str", en = "Behaviour when label doesn't fit: 'hide' or 'show'.", fr = "Comportement quand l'étiquette ne tient pas: 'hide' ou 'show'."))]
     #[pyo3(signature = (min_size=8, mode="hide"))]
     fn uniform_text(&self, min_size: i32, mode: &str) -> Chart {
         let snippet = format!("<script>window.__sp_text__=Object.assign(window.__sp_text__||{{}},{{uniform_min:{},uniform_mode:{}}});{}</script></body>", min_size, json_str(mode), SP_TEXT_JS);
         self.propagate(self.html.replacen("</body>", &snippet, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Applies a corner radius to all bar rectangles in the chart.", fr = "Applique un rayon de coin à tous les rectangles de barres du graphique.", param(name = "radius", ty = "int | str", en = "Radius in pixels or percentage string (e.g. '50%').", fr = "Rayon en pixels ou chaîne de pourcentage (ex: '50%')."))]
     #[pyo3(signature = (radius))]
     fn corner_radius_bars(&self, py: Python<'_>, radius: &PyAny) -> Chart {
         let _ = py;
@@ -636,12 +687,14 @@ impl Chart {
         Ok(())
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Returns a textual diff between this chart's HTML and another chart's HTML.", fr = "Retourne un diff textuel entre le HTML de ce graphique et celui d'un autre graphique.", param(name = "other", ty = "Chart", en = "The other Chart instance to compare against.", fr = "L'autre instance Chart à comparer."))]
     fn diff(&self, other: &Chart) -> String {
         crate::bindings::commands::charts::chart_diff(
             &serde_json::json!({"a": self.html, "b": other.html}).to_string()
         )
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Removes inline event handlers to make the chart compatible with strict Content-Security-Policy environments.", fr = "Supprime les gestionnaires d'événements inline pour rendre le graphique compatible avec les environnements à politique de sécurité de contenu stricte.")]
     fn csp_safe(&self) -> Chart {
         let mut out = String::with_capacity(self.html.len());
         let mut rest = self.html.as_str();
@@ -673,6 +726,7 @@ impl Chart {
         self.propagate(injected)
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Adds ARIA accessibility attributes (title and description) to the SVG element.", fr = "Ajoute des attributs d'accessibilité ARIA (titre et description) à l'élément SVG.", param(name = "title", ty = "str", en = "Accessible title for screen readers.", fr = "Titre accessible pour les lecteurs d'écran."), param(name = "desc", ty = "str", en = "Accessible description for screen readers.", fr = "Description accessible pour les lecteurs d'écran."))]
     #[pyo3(signature = (title="", desc=""))]
     fn a11y(&self, title: &str, desc: &str) -> Chart {
         let snippet = format!(
@@ -684,6 +738,7 @@ impl Chart {
         self.propagate(self.html.replacen("<svg", &snippet, 1))
     }
 
+    #[sera_doc(category = "chart_method", file = "charts/chart.md", en = "Downsamples line chart data using the LTTB algorithm to reduce visual clutter.", fr = "Réduit les données du graphique en courbes via l'algorithme LTTB pour diminuer l'encombrement visuel.", param(name = "n", ty = "int", en = "Target number of data points after downsampling.", fr = "Nombre cible de points de données après réduction."), param(name = "method", ty = "str", en = "Downsampling method. Currently only 'lttb' is supported.", fr = "Méthode de réduction. Seul 'lttb' est actuellement supporté."))]
     #[pyo3(signature = (n=2000, method="lttb"))]
     fn downsample(&self, n: usize, method: &str) -> Chart {
         let _ = method;
@@ -929,6 +984,7 @@ fn auto_show_in_jupyter(py: Python<'_>, chart: &Chart) {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "config", file = "config/global.md", en = "Sets a global background color applied to all charts created after this call.", fr = "Définit une couleur d'arrière-plan globale appliquée à tous les graphiques créés après cet appel.", param(name = "color", ty = "str", en = "CSS color string (hex, rgb, named). Empty string removes it.", fr = "Couleur CSS (hex, rgb, nommée). Chaîne vide pour la supprimer."))]
 #[pyfunction]
 pub fn set_global_background(color: &str) {
     if let Ok(mut bg) = GLOBAL_BACKGROUND.lock() {
@@ -937,6 +993,7 @@ pub fn set_global_background(color: &str) {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "config", file = "config/global.md", en = "Clears the global background color so charts use their default background.", fr = "Efface la couleur d'arrière-plan globale afin que les graphiques utilisent leur arrière-plan par défaut.")]
 #[pyfunction]
 pub fn reset_global_background() {
     if let Ok(mut bg) = GLOBAL_BACKGROUND.lock() {
@@ -945,6 +1002,7 @@ pub fn reset_global_background() {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "config", file = "config/global.md", en = "Enables or disables automatic display of charts in Jupyter notebooks upon creation.", fr = "Active ou désactive l'affichage automatique des graphiques dans les notebooks Jupyter à la création.", param(name = "enabled", ty = "bool", en = "True to auto-display charts in Jupyter; False to suppress auto-display.", fr = "True pour afficher automatiquement les graphiques dans Jupyter; False pour supprimer l'affichage automatique."))]
 #[pyfunction]
 pub fn set_auto_display(enabled: bool) {
     AUTO_DISPLAY.store(enabled, std::sync::atomic::Ordering::Relaxed);
@@ -1021,6 +1079,7 @@ fn resolve_theme(name: &str) -> Option<&'static ThemePreset> {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "theme", file = "theme/theme.md", en = "Applies a named color theme to all subsequent chart renders.", fr = "Applique un thème de couleurs nommé à tous les rendus de graphiques suivants.", param(name = "name", ty = "str", en = "Theme name (e.g. 'dark', 'light', 'ocean'). Use sp.themes() to list all.", fr = "Nom du thème (ex: 'dark', 'light', 'ocean'). Utilisez sp.themes() pour lister tous les thèmes."))]
 #[pyfunction]
 #[pyo3(signature = (name))]
 pub fn theme(name: &str) -> PyResult<()> {
@@ -1042,6 +1101,7 @@ pub fn theme(name: &str) -> PyResult<()> {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "theme", file = "theme/theme.md", en = "Resets the active theme back to the framework default.", fr = "Réinitialise le thème actif vers le thème par défaut du framework.")]
 #[pyfunction]
 pub fn reset_theme() {
     if let Ok(mut bg) = GLOBAL_BACKGROUND.lock() { *bg = None; }
@@ -1051,6 +1111,7 @@ pub fn reset_theme() {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "theme", file = "theme/theme.md", en = "Returns a list of all available theme names.", fr = "Retourne la liste de tous les noms de thèmes disponibles.")]
 #[pyfunction]
 pub fn themes() -> Vec<String> {
     vec!["dark", "light", "scientific", "apple", "notion", "minimal", "neon"]
@@ -1058,6 +1119,7 @@ pub fn themes() -> Vec<String> {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(name = "demo", category = "utility", file = "api/reference.md", en = "Returns a Python code snippet demonstrating how to create the specified chart type.", fr = "Retourne un extrait de code Python illustrant comment créer le type de graphique spécifié.", param(name = "chart", ty = "str", en = "Chart family name (e.g. 'bar', 'line', 'scatter').", fr = "Nom de la famille de graphique (ex: 'bar', 'line', 'scatter')."), param(name = "variant", ty = "str | None", en = "Variant name. Defaults to 'basic' if None.", fr = "Nom de la variante. Par défaut 'basic' si None."))]
 #[pyfunction(name = "demo")]
 #[pyo3(signature = (chart, variant=None))]
 pub fn py_demo(chart: &str, variant: Option<&str>) -> PyResult<String> {
@@ -1068,6 +1130,7 @@ pub fn py_demo(chart: &str, variant: Option<&str>) -> PyResult<String> {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(name = "demos", category = "utility", file = "api/reference.md", en = "Returns a list of all available chart family names that have demo snippets.", fr = "Retourne la liste de tous les noms de familles de graphiques ayant des extraits de démonstration.")]
 #[pyfunction(name = "demos")]
 pub fn py_demos() -> Vec<&'static str> {
     let mut out: Vec<&'static str> = crate::DEMO_REGISTRY.iter().map(|(f, _, _)| *f).collect();
@@ -1075,6 +1138,7 @@ pub fn py_demos() -> Vec<&'static str> {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(name = "params", category = "utility", file = "api/reference.md", en = "Returns a dict of all optional keyword arguments accepted by the specified chart type.", fr = "Retourne un dictionnaire de tous les arguments nommés optionnels acceptés par le type de graphique spécifié.", param(name = "chart", ty = "str | None", en = "Chart family name. Returns all params if None.", fr = "Nom de la famille de graphique. Retourne tous les paramètres si None."), param(name = "variant", ty = "str | None", en = "Variant name for variant-specific params.", fr = "Nom de la variante pour les paramètres spécifiques à la variante."))]
 #[pyfunction(name = "params")]
 #[pyo3(signature = (chart=None, variant=None))]
 pub fn py_params(py: Python<'_>, chart: Option<&str>, variant: Option<&str>) -> PyResult<PyObject> {
@@ -1102,6 +1166,7 @@ pub fn py_params(py: Python<'_>, chart: Option<&str>, variant: Option<&str>) -> 
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(name = "required_params", category = "utility", file = "api/reference.md", en = "Returns a list of required positional argument names for the specified chart type.", fr = "Retourne la liste des noms d'arguments positionnels requis pour le type de graphique spécifié.", param(name = "chart", ty = "str | None", en = "Chart family name.", fr = "Nom de la famille de graphique."), param(name = "variant", ty = "str | None", en = "Variant name.", fr = "Nom de la variante."))]
 #[pyfunction(name = "required_params")]
 #[pyo3(signature = (chart=None, variant=None))]
 pub fn py_required_params(py: Python<'_>, chart: Option<&str>, variant: Option<&str>) -> PyResult<PyObject> {
@@ -1129,6 +1194,7 @@ pub fn py_required_params(py: Python<'_>, chart: Option<&str>, variant: Option<&
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "utility", file = "api/reference.md", en = "Returns a dict mapping each chart family name to its list of available variant names.", fr = "Retourne un dictionnaire associant chaque nom de famille de graphique à sa liste de variantes disponibles.")]
 #[pyfunction]
 pub fn chart_variants(py: Python<'_>) -> PyResult<PyObject> {
     use pyo3::types::{PyDict, PyList};
@@ -1194,6 +1260,7 @@ pub fn chart_variants(py: Python<'_>) -> PyResult<PyObject> {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "config", file = "config/config.md", en = "Configures global chart rendering defaults: font, sizes, animation, tooltips, and more.", fr = "Configure les paramètres de rendu globaux des graphiques: police, tailles, animation, infobulles, etc.", param(name = "font", ty = "str | None", en = "Global font family name.", fr = "Nom de la famille de polices globale."), param(name = "font_size", ty = "int | None", en = "Global font size in pixels.", fr = "Taille de police globale en pixels."), param(name = "title_size", ty = "int | None", en = "Title font size in pixels.", fr = "Taille de police du titre en pixels."), param(name = "border_radius", ty = "int | None", en = "Corner radius for chart containers in pixels.", fr = "Rayon de coin pour les conteneurs de graphiques en pixels."), param(name = "opacity", ty = "float | None", en = "Default data element opacity (0.0-1.0).", fr = "Opacité par défaut des éléments de données (0.0-1.0)."), param(name = "responsive", ty = "bool | None", en = "If True, SVG fills container width.", fr = "Si True, le SVG remplit la largeur du conteneur."), param(name = "animation", ty = "bool | None", en = "If True, enables entry animation for data elements.", fr = "Si True, active l'animation d'entrée pour les éléments de données."), param(name = "animation_duration", ty = "int | None", en = "Animation duration in milliseconds.", fr = "Durée de l'animation en millisecondes."), param(name = "crosshair", ty = "bool | None", en = "If True, adds a crosshair to all charts.", fr = "Si True, ajoute un réticule à tous les graphiques."), param(name = "zoom", ty = "bool | None", en = "If True, enables zoom on all charts.", fr = "Si True, active le zoom sur tous les graphiques."), param(name = "margin", ty = "int | None", en = "Global chart margin in pixels.", fr = "Marge globale des graphiques en pixels."), param(name = "export_button", ty = "bool | None", en = "If True, adds a download button to all charts.", fr = "Si True, ajoute un bouton de téléchargement à tous les graphiques."), param(name = "background", ty = "str | None", en = "Global chart background color.", fr = "Couleur d'arrière-plan globale des graphiques."), param(name = "gridlines", ty = "bool | None", en = "If True, shows grid lines on all charts.", fr = "Si True, affiche les lignes de grille sur tous les graphiques."), param(name = "text_auto", ty = "bool | str | None", en = "Auto data label format. True for default, string for custom format.", fr = "Format d'étiquette de données automatique. True pour défaut, chaîne pour format personnalisé."))]
 #[pyfunction]
 #[pyo3(signature = (*, font=None, font_size=None, title_size=None, border_radius=None, opacity=None, responsive=None, animation=None, animation_duration=None, crosshair=None, zoom=None, tooltip=None, locale=None, thousands_sep=None, margin=None, export_button=None, palette=None, background=None, gridlines=None, text_auto=None, text_position=None, text_angle=None, text_font_size=None, text_font_color=None, uniform_text_min_size=None, uniform_text_mode=None, bar_corner_radius=None))]
 pub fn config(font: Option<&str>, font_size: Option<i32>, title_size: Option<i32>, border_radius: Option<i32>, opacity: Option<f64>, responsive: Option<bool>, animation: Option<bool>, animation_duration: Option<i32>, crosshair: Option<bool>, zoom: Option<bool>, tooltip: Option<&str>, locale: Option<&str>, thousands_sep: Option<&str>, margin: Option<i32>, export_button: Option<bool>, palette: Option<Vec<u32>>, background: Option<&str>, gridlines: Option<bool>, text_auto: Option<&PyAny>, text_position: Option<&str>, text_angle: Option<i32>, text_font_size: Option<i32>, text_font_color: Option<&str>, uniform_text_min_size: Option<i32>, uniform_text_mode: Option<&str>, bar_corner_radius: Option<&PyAny>) {
@@ -1243,6 +1310,7 @@ fn reset_text_auto() {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "config", file = "config/config.md", en = "Resets all global config settings applied via config() back to their defaults.", fr = "Réinitialise tous les paramètres de configuration globale définis via config() à leurs valeurs par défaut.")]
 #[pyfunction]
 pub fn reset_config() {
     use std::sync::atomic::Ordering::Relaxed;
@@ -1295,6 +1363,7 @@ impl PyHwProfile {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(name = "hw", category = "performance", file = "config/performance.md", en = "Returns hardware profile information: CPU thread count, parallelism threshold, and L2 cache chunk size.", fr = "Retourne les informations du profil matériel: nombre de threads CPU, seuil de parallélisme et taille de chunk du cache L2.")]
 #[pyfunction(name = "hw")]
 fn py_hw() -> PyHwProfile {
     let p = crate::core::hw_profile::hw();
@@ -1328,9 +1397,11 @@ pub struct PyDataset {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc_impl]
 #[pymethods]
 impl PyDataset {
     #[staticmethod]
+    #[sera_doc(category = "data", file = "api/dataset.md", en = "Creates a Dataset from a Python list of float values.", fr = "Crée un Dataset à partir d'une liste Python de valeurs float.", param(name = "values", ty = "list[float]", en = "List of numeric values.", fr = "Liste de valeurs numériques."))]
     #[pyo3(signature = (values, labels=None))]
     fn from_list(values: Vec<f64>, labels: Option<Vec<String>>) -> Self {
         let mut ds = crate::data::Dataset::with_capacity("dataset", values.len());
@@ -1341,11 +1412,13 @@ impl PyDataset {
         PyDataset { inner: ds }
     }
 
+    #[sera_doc(category = "data", file = "api/dataset.md", en = "Computes descriptive statistics in parallel: min, max, mean, variance, std_dev, sum, count.", fr = "Calcule des statistiques descriptives en parallèle: min, max, mean, variance, std_dev, sum, count.")]
     fn par_stats(&self) -> PyDatasetStats {
         let s = self.inner.par_stats();
         PyDatasetStats { min: s.min, max: s.max, mean: s.mean, std_dev: s.std_dev, sum: s.sum, count: s.count }
     }
 
+    #[sera_doc(category = "data", file = "api/dataset.md", en = "Splits the dataset into n equal-sized chunks and returns them as a list of Dataset objects.", fr = "Divise le dataset en n morceaux de taille égale et les retourne sous forme de liste d'objets Dataset.", param(name = "n", ty = "int", en = "Number of chunks to split into.", fr = "Nombre de morceaux en lesquels diviser."))]
     fn into_chunks(&self, n: usize) -> Vec<PyDataset> {
         let vals: Vec<f64> = self.inner.values().collect();
         let labels: Vec<String> = self.inner.labels().map(|s| s.to_string()).collect();
@@ -1374,16 +1447,19 @@ impl PyDataset {
     }
 }
 
+#[sera_doc(category = "performance", file = "config/performance.md", en = "Enables or disables the adaptive retry system. When enabled, operations that panic will auto-degrade chunk sizes and retry.", fr = "Active ou désactive le système de réessai adaptatif. Quand activé, les opérations qui paniquent réduisent automatiquement les tailles de chunks et réessaient.", param(name = "on", ty = "bool", en = "True to enable adaptive retry (default). False to disable.", fr = "True pour activer le réessai adaptatif (défaut). False pour désactiver."))]
 #[sera_bind(python, ffi)]
 pub fn set_adaptive_retry(on: bool) {
     crate::core::adaptive_exec::set_adaptive_retry(on);
 }
 
+#[sera_doc(category = "performance", file = "config/performance.md", en = "Resets the degradation level back to 0 (full-speed operation).", fr = "Réinitialise le niveau de dégradation à 0 (opération à pleine vitesse).")]
 #[sera_bind(python, ffi)]
 pub fn reset_perf_state() {
     crate::core::adaptive_exec::reset_perf_state();
 }
 
+#[sera_doc(category = "performance", file = "config/performance.md", en = "Returns the current degradation level (0 = full speed, 4 = maximum degradation).", fr = "Retourne le niveau de dégradation actuel (0 = pleine vitesse, 4 = dégradation maximale).")]
 #[sera_bind(python, ffi)]
 pub fn adaptive_degrade_level() -> usize {
     crate::core::adaptive_exec::degrade_level()
@@ -1445,6 +1521,7 @@ pub(crate) fn merge_global_opts(background: Option<&str>, palette: Option<Vec<u3
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "layout", file = "charts/layout.md", en = "Arranges multiple Chart objects in a responsive grid layout and returns a single Chart.", fr = "Organise plusieurs objets Chart dans une mise en page grille responsive et retourne un seul Chart.", param(name = "charts", ty = "list[Chart]", en = "List of Chart objects to arrange in the grid.", fr = "Liste d'objets Chart à organiser dans la grille."), param(name = "cols", ty = "int", en = "Number of columns in the grid. Default: 3.", fr = "Nombre de colonnes dans la grille. Défaut: 3."), param(name = "gap", ty = "int", en = "Gap between cells in pixels. Default: 16.", fr = "Espacement entre les cellules en pixels. Défaut: 16."), param(name = "bg_color", ty = "str", en = "Background color for the grid container. Default: '#0a0f1c'.", fr = "Couleur d'arrière-plan du conteneur de grille. Défaut: '#0a0f1c'."), param(name = "title", ty = "str", en = "Optional title displayed above the grid.", fr = "Titre optionnel affiché au-dessus de la grille."), param(name = "cell_height", ty = "int | None", en = "Fixed height for each cell in pixels. Auto-detected if None.", fr = "Hauteur fixe de chaque cellule en pixels. Détection automatique si None."))]
 #[pyfunction]
 #[pyo3(signature = (charts, cols=3, gap=16, bg_color="#0a0f1c", title="", cell_height=None))]
 fn build_grid(
@@ -1503,6 +1580,7 @@ fn build_grid(
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "layout", file = "charts/layout.md", en = "Alias for build_grid(). Arranges multiple Chart objects in a responsive grid.", fr = "Alias de build_grid(). Organise plusieurs objets Chart dans une grille responsive.", param(name = "charts", ty = "list[Chart]", en = "List of Chart objects to arrange.", fr = "Liste d'objets Chart à organiser."), param(name = "cols", ty = "int", en = "Number of grid columns. Default: 3.", fr = "Nombre de colonnes de la grille. Défaut: 3."), param(name = "gap", ty = "int", en = "Gap in pixels. Default: 16.", fr = "Espacement en pixels. Défaut: 16."), param(name = "bg_color", ty = "str", en = "Grid background color. Default: '#0a0f1c'.", fr = "Couleur d'arrière-plan de la grille. Défaut: '#0a0f1c'."), param(name = "title", ty = "str", en = "Optional grid title.", fr = "Titre optionnel de la grille."), param(name = "cell_height", ty = "int | None", en = "Fixed cell height in pixels or None for auto.", fr = "Hauteur fixe des cellules en pixels ou None pour automatique."))]
 #[pyfunction]
 #[pyo3(signature = (charts, cols=3, gap=16, bg_color="#0a0f1c", title="", cell_height=None))]
 fn grid(
@@ -1518,6 +1596,7 @@ fn grid(
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "layout", file = "charts/layout.md", en = "Builds a live system monitor dashboard showing CPU, memory, disk usage, and system info.", fr = "Construit un tableau de bord de surveillance système en direct montrant l'utilisation du CPU, de la mémoire, des disques et les informations système.", param(name = "bg_color", ty = "str", en = "Dashboard background color. Default: '#0a0f1c'.", fr = "Couleur d'arrière-plan du tableau de bord. Défaut: '#0a0f1c'."), param(name = "update_interval_ms", ty = "int", en = "Simulated refresh interval in milliseconds. Default: 2000.", fr = "Intervalle de rafraîchissement simulé en millisecondes. Défaut: 2000."))]
 #[pyfunction]
 #[pyo3(signature = (bg_color="#0a0f1c", update_interval_ms=2000u32))]
 fn build_sysmon(bg_color: &str, update_interval_ms: u32) -> Chart {
@@ -1622,6 +1701,7 @@ setInterval(function(){T=Object.assign({},T,{cpu_pct:Math.min(100,Math.max(0,T.c
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "layout", file = "charts/layout.md", en = "Alias for build_sysmon(). Returns a live system monitor dashboard as a Chart.", fr = "Alias de build_sysmon(). Retourne un tableau de bord de surveillance système en direct sous forme de Chart.", param(name = "bg_color", ty = "str", en = "Background color. Default: '#0a0f1c'.", fr = "Couleur d'arrière-plan. Défaut: '#0a0f1c'."), param(name = "update_interval_ms", ty = "int", en = "Refresh interval in milliseconds. Default: 2000.", fr = "Intervalle de rafraîchissement en millisecondes. Défaut: 2000."))]
 #[pyfunction]
 #[pyo3(signature = (bg_color="#0a0f1c", update_interval_ms=2000u32))]
 fn sysmon(bg_color: &str, update_interval_ms: u32) -> Chart {
@@ -1629,18 +1709,21 @@ fn sysmon(bg_color: &str, update_interval_ms: u32) -> Chart {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "telemetry", file = "about/telemetry.md", en = "Enables or disables usage telemetry collection. Disabled by default.", fr = "Active ou désactive la collecte de télémétrie d'utilisation. Désactivé par défaut.", param(name = "enabled", ty = "bool", en = "True to enable telemetry, False to disable.", fr = "True pour activer la télémétrie, False pour désactiver."))]
 #[pyfunction]
 fn telemetry_consent(enabled: bool) {
     crate::telemetry::set_consent(enabled);
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(name = "telemetry_path", category = "telemetry", file = "about/telemetry.md", en = "Returns the filesystem path where telemetry data is stored.", fr = "Retourne le chemin du système de fichiers où les données de télémétrie sont stockées.")]
 #[pyfunction]
 fn telemetry_path_fn() -> String {
     crate::telemetry::telemetry_file_path()
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "telemetry", file = "about/telemetry.md", en = "Returns a JSON string with aggregated usage metrics summary.", fr = "Retourne une chaîne JSON avec un résumé des métriques d'utilisation agrégées.")]
 #[pyfunction]
 fn get_metrics() -> PyResult<String> {
     let summary = crate::telemetry::get_metrics_summary();
@@ -1649,6 +1732,7 @@ fn get_metrics() -> PyResult<String> {
 }
 
 #[cfg(feature = "python")]
+#[sera_doc(category = "telemetry", file = "about/telemetry.md", en = "Uploads pending telemetry events to the specified endpoint with an auth token.", fr = "Téléverse les événements de télémétrie en attente vers l'endpoint spécifié avec un jeton d'authentification.", param(name = "endpoint", ty = "str", en = "HTTPS URL of the telemetry collection endpoint.", fr = "URL HTTPS de l'endpoint de collecte de télémétrie."), param(name = "token", ty = "str", en = "Authentication token for the endpoint.", fr = "Jeton d'authentification pour l'endpoint."))]
 #[pyfunction]
 #[pyo3(signature = (endpoint, token))]
 fn push_telemetry(py: Python<'_>, endpoint: &str, token: &str) -> PyResult<usize> {
@@ -1693,6 +1777,59 @@ fn push_telemetry(py: Python<'_>, endpoint: &str, token: &str) -> PyResult<usize
             "HTTP {status}"
         ))),
         Err(e) => Err(pyo3::exceptions::PyRuntimeError::new_err(e.to_string())),
+    }
+}
+
+#[cfg(feature = "python")]
+#[pyfunction(name = "docs")]
+fn py_docs(py: Python<'_>) -> PyResult<PyObject> {
+    let list = pyo3::types::PyList::empty(py);
+    for doc in crate::doc_registry::all_docs() {
+        let d = pyo3::types::PyDict::new(py);
+        d.set_item("name", doc.name)?;
+        d.set_item("category", doc.category)?;
+        d.set_item("file", doc.file)?;
+        d.set_item("en", doc.en)?;
+        d.set_item("fr", doc.fr)?;
+        let params = pyo3::types::PyList::empty(py);
+        for p in doc.params {
+            let pd = pyo3::types::PyDict::new(py);
+            pd.set_item("name", p.name)?;
+            pd.set_item("ty", p.ty)?;
+            pd.set_item("en", p.en)?;
+            pd.set_item("fr", p.fr)?;
+            params.append(pd)?;
+        }
+        d.set_item("params", params)?;
+        list.append(d)?;
+    }
+    Ok(list.into())
+}
+
+#[cfg(feature = "python")]
+#[pyfunction(name = "doc")]
+fn py_doc(py: Python<'_>, name: &str) -> PyObject {
+    match crate::doc_registry::doc_for(name) {
+        None => py.None(),
+        Some(doc) => {
+            let d = pyo3::types::PyDict::new(py);
+            let _ = d.set_item("name", doc.name);
+            let _ = d.set_item("category", doc.category);
+            let _ = d.set_item("file", doc.file);
+            let _ = d.set_item("en", doc.en);
+            let _ = d.set_item("fr", doc.fr);
+            let params = pyo3::types::PyList::empty(py);
+            for p in doc.params {
+                let pd = pyo3::types::PyDict::new(py);
+                let _ = pd.set_item("name", p.name);
+                let _ = pd.set_item("ty", p.ty);
+                let _ = pd.set_item("en", p.en);
+                let _ = pd.set_item("fr", p.fr);
+                let _ = params.append(pd);
+            }
+            let _ = d.set_item("params", params);
+            d.into()
+        }
     }
 }
 
@@ -1744,6 +1881,8 @@ fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(telemetry_path_fn, m)?)?;
     m.add_function(wrap_pyfunction!(get_metrics, m)?)?;
     m.add_function(wrap_pyfunction!(push_telemetry, m)?)?;
+    m.add_function(wrap_pyfunction!(py_docs, m)?)?;
+    m.add_function(wrap_pyfunction!(py_doc, m)?)?;
 
     Ok(())
 }
