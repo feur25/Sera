@@ -1,6 +1,6 @@
 [package]
 name = "seraplot"
-version = "2.7.6"
+version = "2.7.7"
 edition = "2021"
 authors = ["feur25"]
 description = "Rust data visualization framework - The modern Plotly alternative"
@@ -49,6 +49,7 @@ numpy = { version = "0.21", optional = true }
 matrixmultiply = { version = "0.3", features = ["threading"] }
 candle-core = { version = "0.7", optional = true, default-features = false }
 seraplot-macros = { path = "seraplot-macros" }
+inventory = "0.3"
 
 [dev-dependencies]
 criterion = "0.5"
