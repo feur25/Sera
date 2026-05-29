@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[crate::model(category = "Preprocessing", domain = "ml")]
 pub struct LabelEncoder {
     pub classes: Vec<String>,
     map: HashMap<String, i32>,
@@ -45,6 +46,7 @@ impl LabelEncoder {
     }
 }
 
+#[crate::model(category = "Preprocessing", domain = "ml")]
 pub struct OrdinalEncoder {
     pub categories: Vec<Vec<String>>,
     maps: Vec<HashMap<String, f64>>,
@@ -103,6 +105,7 @@ impl OrdinalEncoder {
     }
 }
 
+#[crate::model(category = "Preprocessing", domain = "ml")]
 pub struct OneHotEncoder {
     pub categories: Vec<Vec<String>>,
     maps: Vec<HashMap<String, usize>>,

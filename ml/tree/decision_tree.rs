@@ -96,6 +96,7 @@ pub fn bin_data_with_edges(x: &[f64], n: usize, p: usize, edges: &[Vec<f64>]) ->
     binned
 }
 
+#[crate::model(category = "Tree-Based", domain = "ml")]
 pub struct DecisionTreeClassifier {
     pub max_depth: usize,
     pub min_samples_split: usize,
@@ -480,6 +481,7 @@ impl DecisionTreeClassifier {
 }
 
 #[derive(Clone)]
+#[crate::model(category = "Tree-Based", domain = "ml")]
 pub struct DecisionTreeRegressor {
     pub max_depth: usize,
     pub min_samples_split: usize,

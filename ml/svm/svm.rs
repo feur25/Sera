@@ -1,6 +1,7 @@
 use crate::ml::linalg::{dot, splitmix64, solve_spd};
 use rayon::prelude::*;
 
+#[crate::model(category = "SVM", domain = "ml")]
 pub struct LinearSVC {
     pub c: f64,
     pub max_iter: usize,
@@ -93,6 +94,7 @@ impl LinearSVC {
     pub fn intercept(&self) -> &[f64] { &self.intercepts }
 }
 
+#[crate::model(category = "SVM", domain = "ml")]
 pub struct LinearSVR {
     pub c: f64,
     pub epsilon: f64,

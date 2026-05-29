@@ -1,6 +1,7 @@
 use crate::ml::tree::decision_tree::{DecisionTreeClassifier, DecisionTreeRegressor, TreeCriterion, compute_bins, BinInfo};
 use rayon::prelude::*;
 
+#[crate::model(category = "Tree-Based", domain = "ml")]
 pub struct RandomForestClassifier {
     pub n_estimators: usize,
     pub max_depth: usize,
@@ -118,6 +119,7 @@ impl RandomForestClassifier {
     }
 }
 
+#[crate::model(category = "Tree-Based", domain = "ml")]
 pub struct RandomForestRegressor {
     pub n_estimators: usize,
     pub max_depth: usize,

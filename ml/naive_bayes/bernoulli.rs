@@ -1,5 +1,6 @@
 use rayon::prelude::*;
 
+#[crate::model(category = "Naive Bayes", domain = "ml")]
 pub struct BernoulliNB {
     pub classes: Vec<i32>,
     log_priors: Vec<f64>,

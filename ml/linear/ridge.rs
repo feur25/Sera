@@ -1,6 +1,7 @@
 use crate::ml::linalg::{solve_spd, dot, mat_vec};
 use rayon::prelude::*;
 
+#[crate::model(category = "Linear", domain = "ml")]
 pub struct Ridge {
     pub coef: Vec<f64>,
     pub intercept: f64,
@@ -108,6 +109,7 @@ impl Ridge {
     }
 }
 
+#[crate::model(category = "Linear", domain = "ml")]
 pub struct RidgeClassifier {
     pub ridge: Ridge,
     pub classes: Vec<i32>,

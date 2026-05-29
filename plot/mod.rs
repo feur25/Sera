@@ -8,6 +8,7 @@ pub mod containers_3d;
 pub mod controller;
 pub mod default;
 pub mod scale_renderer;
+pub mod models;
 pub mod map;
 pub mod seaborn;
 pub mod statistical;

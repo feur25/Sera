@@ -1,6 +1,7 @@
 use crate::ml::linalg::{dot, col_means, col_std, soft_threshold, mat_vec};
 use rayon::prelude::*;
 
+#[crate::model(category = "Linear", domain = "ml")]
 pub struct ElasticNet {
     pub coef: Vec<f64>,
     pub intercept: f64,

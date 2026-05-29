@@ -1,6 +1,7 @@
 use std::f64::consts::PI;
 use rayon::prelude::*;
 
+#[crate::model(category = "Naive Bayes", domain = "ml")]
 pub struct GaussianNB {
     pub classes: Vec<i32>,
     pub var_smoothing: f64,

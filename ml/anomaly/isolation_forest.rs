@@ -91,6 +91,7 @@ impl IsolationTree {
     }
 }
 
+#[crate::model(category = "Anomaly Detection", domain = "ml")]
 pub struct IsolationForest {
     pub n_estimators: usize,
     pub max_samples: usize,

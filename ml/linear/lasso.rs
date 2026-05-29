@@ -1,5 +1,6 @@
 use crate::ml::linear::elastic_net::ElasticNet;
 
+#[crate::model(category = "Linear", domain = "ml")]
 pub struct Lasso {
     inner: ElasticNet,
 }

@@ -127,6 +127,7 @@ fn fit_stump_exact(
     }
 }
 
+#[crate::model(category = "Tree-Based", domain = "ml")]
 pub struct AdaBoostClassifier {
     pub n_estimators: usize,
     pub learning_rate: f64,
@@ -304,6 +305,7 @@ impl AdaBoostClassifier {
     }
 }
 
+#[crate::model(category = "Tree-Based", domain = "ml")]
 pub struct AdaBoostRegressor {
     pub n_estimators: usize,
     pub learning_rate: f64,

@@ -6,11 +6,13 @@ pub mod cloud;
 pub mod telemetry;
 #[path = "bindings/doc_registry.rs"]
 pub mod doc_registry;
+#[path = "bindings/model_registry.rs"]
+pub mod model_registry;
 
 pub use data::{Dataset, DataPoint, DatasetStats};
 pub use crate::core::hw_profile::HwProfile;
 
-pub use seraplot_macros::{chart_demo, ml_doc, params, sera_alias, sera_bind, sera_class, sera_doc, sera_doc_impl, sera_impl, sera_sig};
+pub use seraplot_macros::{chart_demo, ml_doc, model, params, sera_alias, sera_bind, sera_class, sera_doc, sera_doc_impl, sera_impl, sera_sig};
 
 include!(concat!(env!("OUT_DIR"), "/demo_registry.rs"));
 include!(concat!(env!("OUT_DIR"), "/params_registry.rs"));
@@ -1728,6 +1730,24 @@ pub fn docs() -> Vec<&'static crate::doc_registry::FnDoc> {
 #[sera_bind(serde)]
 pub fn doc(name: &str) -> Option<&'static crate::doc_registry::FnDoc> {
     crate::doc_registry::doc_for(name)
+}
+
+#[sera_doc(category = "utility", file = "api/reference.md", en = "Returns all registered ML and plot model structs with their fields and categories.", fr = "Retourne tous les modèles ML et plot enregistrés avec leurs champs et catégories.")]
+#[sera_bind(serde)]
+pub fn models() -> Vec<&'static crate::model_registry::ModelInfo> {
+    crate::model_registry::all_models()
+}
+
+#[sera_doc(category = "utility", file = "api/reference.md", en = "Returns all models for a given category.", fr = "Retourne tous les modèles pour une catégorie donnée.", param(name = "category", ty = "str", en = "Category name.", fr = "Nom de la catégorie."))]
+#[sera_bind(serde)]
+pub fn models_for_category(category: &str) -> Vec<&'static crate::model_registry::ModelInfo> {
+    crate::model_registry::models_by_category(category)
+}
+
+#[sera_doc(category = "utility", file = "api/reference.md", en = "Returns all models for a given domain (ml or plot).", fr = "Retourne tous les modèles pour un domaine donné (ml ou plot).", param(name = "domain", ty = "str", en = "Domain: 'ml' or 'plot'.", fr = "Domaine: 'ml' ou 'plot'."))]
+#[sera_bind(serde)]
+pub fn models_for_domain(domain: &str) -> Vec<&'static crate::model_registry::ModelInfo> {
+    crate::model_registry::models_by_domain(domain)
 }
 
 #[cfg(feature = "python")]

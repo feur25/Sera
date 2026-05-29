@@ -1,6 +1,7 @@
 use crate::ml::linalg::{mat_t_mat, mat_t_y, solve_spd, qr_solve, dot, mat_vec};
 use rayon::prelude::*;
 
+#[crate::model(category = "Linear", domain = "ml")]
 pub struct LinearRegression {
     pub coef: Vec<f64>,
     pub intercept: f64,

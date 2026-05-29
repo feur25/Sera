@@ -1,6 +1,7 @@
 use crate::ml::tree::decision_tree::{DecisionTreeRegressor, compute_bins};
 use rayon::prelude::*;
 
+#[crate::model(category = "Tree-Based", domain = "ml")]
 pub struct GradientBoostingClassifier {
     pub n_estimators: usize,
     pub learning_rate: f64,
@@ -114,6 +115,7 @@ impl GradientBoostingClassifier {
     }
 }
 
+#[crate::model(category = "Tree-Based", domain = "ml")]
 pub struct GradientBoostingRegressor {
     pub n_estimators: usize,
     pub learning_rate: f64,

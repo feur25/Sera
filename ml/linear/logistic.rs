@@ -25,6 +25,7 @@ fn lbfgs_direction(grad: &[f64], s_vecs: &[Vec<f64>], y_vecs: &[Vec<f64>], rhos:
 }
 
 
+#[crate::model(category = "Linear", domain = "ml")]
 pub struct LogisticRegression {
     pub coef: Vec<f64>,
     pub intercept: f64,

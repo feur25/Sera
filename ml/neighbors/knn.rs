@@ -168,6 +168,7 @@ fn heap_sift_down(h: &mut [(f64, u32)], mut pos: usize) {
 #[derive(Clone, Copy)]
 pub enum KnnWeights { Uniform, Distance }
 
+#[crate::model(category = "Neighbors", domain = "ml")]
 pub struct KNeighborsClassifier {
     pub k: usize,
     pub weights: KnnWeights,
@@ -412,6 +413,7 @@ impl KNeighborsClassifier {
     }
 }
 
+#[crate::model(category = "Neighbors", domain = "ml")]
 pub struct KNeighborsRegressor {
     pub k: usize,
     pub weights: KnnWeights,
@@ -546,6 +548,7 @@ impl KNeighborsRegressor {
     }
 }
 
+#[crate::model(category = "Neighbors", domain = "ml")]
 pub struct NearestCentroid {
     centroids: Vec<f64>,
     pub classes: Vec<i32>,

@@ -1,3 +1,4 @@
+#[crate::model(category = "Preprocessing", domain = "ml")]
 pub struct SimpleImputer {
     pub strategy: String,
     pub fill_value: f64,
@@ -54,6 +55,7 @@ impl SimpleImputer {
     }
 }
 
+#[crate::model(category = "Preprocessing", domain = "ml")]
 pub struct PolynomialFeatures {
     pub degree: usize,
     pub interaction_only: bool,
@@ -137,6 +139,7 @@ impl PolynomialFeatures {
     pub fn n_output_features(&self) -> usize { self.powers.len() }
 }
 
+#[crate::model(category = "Preprocessing", domain = "ml")]
 pub struct KBinsDiscretizer {
     pub n_bins: usize,
     pub strategy: String,
@@ -201,6 +204,7 @@ impl KBinsDiscretizer {
     }
 }
 
+#[crate::model(category = "Preprocessing", domain = "ml")]
 pub struct PowerTransformer {
     pub method: String,
     pub lambdas: Vec<f64>,
@@ -264,6 +268,7 @@ fn optimize_lambda(col: &[f64], method: &str) -> f64 {
     best
 }
 
+#[crate::model(category = "Preprocessing", domain = "ml")]
 pub struct QuantileTransformer {
     pub n_quantiles: usize,
     pub output_distribution: String,

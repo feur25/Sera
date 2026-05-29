@@ -1,5 +1,6 @@
 use rayon::prelude::*;
 
+#[crate::model(category = "Preprocessing", domain = "ml")]
 pub struct StandardScaler {
     pub mean: Vec<f64>,
     pub scale: Vec<f64>,
@@ -169,6 +170,7 @@ impl StandardScaler {
     }
 }
 
+#[crate::model(category = "Preprocessing", domain = "ml")]
 pub struct MinMaxScaler {
     pub min: Vec<f64>,
     pub range: Vec<f64>,
@@ -306,6 +308,7 @@ impl MinMaxScaler {
     }
 }
 
+#[crate::model(category = "Preprocessing", domain = "ml")]
 pub struct RobustScaler {
     pub center: Vec<f64>,
     pub scale: Vec<f64>,
@@ -402,6 +405,7 @@ impl RobustScaler {
     }
 }
 
+#[crate::model(category = "Preprocessing", domain = "ml")]
 pub struct MaxAbsScaler {
     pub max_abs: Vec<f64>,
     pub n_samples_seen: u64,
@@ -492,6 +496,7 @@ impl MaxAbsScaler {
     }
 }
 
+#[crate::model(category = "Preprocessing", domain = "ml")]
 pub struct Normalizer {
     pub norm: NormType,
 }

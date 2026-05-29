@@ -1,6 +1,7 @@
 use crate::ml::linalg::{dot, svd_truncated, svd_randomized, col_means, symeig};
 use rayon::prelude::*;
 
+#[crate::model(category = "Decomposition", domain = "ml")]
 pub struct PCA {
     pub n_components: usize,
     pub components: Vec<f64>,
@@ -182,6 +183,7 @@ impl PCA {
     }
 }
 
+#[crate::model(category = "Decomposition", domain = "ml")]
 pub struct TruncatedSVD {
     pub n_components: usize,
     pub components: Vec<f64>,

@@ -1,6 +1,7 @@
 use crate::ml::linalg::{dot, sigmoid};
 use rayon::prelude::*;
 
+#[crate::model(category = "Linear", domain = "ml")]
 pub struct SGDClassifier {
     pub coef: Vec<f64>,
     pub intercept: f64,
@@ -224,6 +225,7 @@ impl SGDClassifier {
     }
 }
 
+#[crate::model(category = "Linear", domain = "ml")]
 pub struct SGDRegressor {
     pub coef: Vec<f64>,
     pub intercept: f64,

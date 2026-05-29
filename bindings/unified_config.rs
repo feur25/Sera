@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[crate::model(category = "Chart Config", domain = "plot")]
 #[derive(Clone)]
 pub struct ChartConfig {
     pub title: String,
@@ -16,6 +17,7 @@ pub struct ChartConfig {
     pub tooltip_text: (u8, u8, u8, u8),
 }
 
+#[crate::model(category = "Chart Config", domain = "plot")]
 #[derive(Clone)]
 pub struct ChartPoint {
     pub label: String,

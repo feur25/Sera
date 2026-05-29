@@ -1,6 +1,7 @@
 #[macro_use]
 pub mod registry_macro;
 pub mod doc_registry;
+pub mod model_registry;
 pub mod fast_render;
 pub mod utils;
 pub mod chart_types;
