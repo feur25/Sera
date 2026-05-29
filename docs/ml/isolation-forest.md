@@ -1,129 +1,170 @@
-# Isolation Forest
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>IsolationForest</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-anom">Detector</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">🚨 Anomaly Detection</span>
+      </div>
+      <p class="ml-pg-tagline">IsolationForest — anomaly detection via random partitioning trees. / IsolationForest — détection d'anomalies via arbres de partition aléatoire.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
 
-<div class="lang-en">
-
-Unsupervised anomaly / outlier detector. Builds an ensemble of *isolation trees* (iTrees) where each split picks a feature and threshold uniformly at random. Anomalies have **shorter expected path lengths** because they are easier to isolate.
-
-## API Reference
-
-**Signature (Python)**
-
-```python
-clf = sp.IsolationForest(
-    n_estimators=100,
-    max_samples=256,
-    contamination=0.1,
-    seed=42,
-)
-clf.fit(X)
-labels  = clf.predict(X)            -> ndarray[int32]   {-1, +1}
-scores  = clf.score_samples(X)      -> ndarray[float64] (lower = more anomalous)
-margin  = clf.decision_function(X)  -> ndarray[float64] (negative = anomalous)
-labels  = clf.fit_predict(X)
-```
-
-**Cross-language JSON dispatcher**
-
-Available from Python / WebAssembly / C FFI as `ml_isolation_forest`:
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
 
 ```python
-sp.ml_isolation_forest(json.dumps({
-    "data":          [[0.0, 0.0], [0.1, 0.1], [10.0, 10.0]],
-    "x_test":        [[0.0, 0.05], [9.5, 9.5]],
-    "n_estimators":  100,
-    "max_samples":   256,
-    "contamination": 0.1,
-    "seed":          42,
-}))
+import seraplot as sp, numpy as np
+X = np.random.randn(300, 4)
+X[0] = [10, 10, 10, 10]
+iso = sp.IsolationForest(n_estimators=100, contamination=0.05)
+iso.fit(X)
+print(iso.predict(X[:5]))
 ```
-
-Returns:
-
-```json
-{
-  "labels":      [1, 1, -1],
-  "scores":      [-0.42, -0.41, -0.54],
-  "threshold":   -0.49,
-  "test_labels": [1, -1],
-  "test_scores": [-0.43, -0.55]
-}
-```
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `n_estimators` | `int` | `100` | Number of iTrees |
-| `max_samples` | `int` | `256` | Sub-sample size $\psi$ used to build each tree |
-| `contamination` | `float` | `0.1` | Expected outlier fraction (calibrates `threshold_`) |
-| `seed` | `int` | `42` | Master RNG seed |
-
-Attribute: `threshold_ : float` — the score below which a point is flagged as outlier (`-1`).
-
-## Algorithmic Functioning
-
-For each iTree we recursively pick a random feature $f$ and a threshold $t \sim \mathcal{U}(\min_f, \max_f)$ until the node is pure or depth reaches $\lceil \log_2 \psi \rceil$. The path length $h(x)$ is the depth at which $x$ falls.
-
-The anomaly score is
-
-<div>$$s(x) = -2^{-\,\frac{\mathrm{E}[h(x)]}{c(\psi)}},\qquad c(\psi) = 2 H(\psi-1) - \frac{2(\psi-1)}{\psi}$$</div>
-
-where $H(k) \approx \ln k + 0.5772$ is the harmonic number. Lower $s(x)$ = more anomalous. The `threshold_` is the empirical $\lceil \texttt{contamination} \cdot n \rceil$-th lowest training score.
 
 </div>
 
-<div class="lang-fr">
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.IsolationForest</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
 
-Détecteur d'anomalies non supervisé. Construit un ensemble d'*arbres d'isolation* (iTrees) où chaque coupure choisit aléatoirement une feature et un seuil. Les anomalies ont une **profondeur d'isolement attendue plus faible** car plus faciles à séparer.
+---
+
+<div class="lang-en">
+
+## API Reference
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
+
+`ml_isolation_forest` — aliases: `isolation_forest`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
+
+```python
+sp.IsolationForest(n_estimators=100, max_samples=256, contamination=0.1, seed=42)
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>n_estimators</code></td><td><code>int</code></td><td><code>100</code></td><td>Number of isolation trees.</td></tr>
+<tr><td><code>max_samples</code></td><td><code>int</code></td><td><code>256</code></td><td>Max samples per tree.</td></tr>
+<tr><td><code>contamination</code></td><td><code>float</code></td><td><code>0.1</code></td><td>Expected fraction of outliers.</td></tr>
+<tr><td><code>seed</code></td><td><code>int</code></td><td><code>42</code></td><td>Random seed.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `labels` (1 = inlier, −1 = outlier), `scores`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$s(x) = 2^{-E[h(x)]/c(n)}, \quad c(n) = 2H_{n-1} - \frac{2(n-1)}{n}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(300, 4)
+X[0] = [10, 10, 10, 10]
+iso = sp.IsolationForest(n_estimators=100, contamination=0.05)
+iso.fit(X)
+print(iso.predict(X[:5]))
+```
+
+</div>
+
+</div>
+
+---
+
+<div class="lang-fr">
 
 ## Référence API
 
-**Signature (Python)**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_isolation_forest` — alias : `isolation_forest`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
 
 ```python
-clf = sp.IsolationForest(
-    n_estimators=100,
-    max_samples=256,
-    contamination=0.1,
-    seed=42,
-)
-clf.fit(X)
-labels  = clf.predict(X)            -> ndarray[int32]   {-1, +1}
-scores  = clf.score_samples(X)      -> ndarray[float64] (plus bas = plus anormal)
-margin  = clf.decision_function(X)  -> ndarray[float64] (négatif = anormal)
-labels  = clf.fit_predict(X)
+sp.IsolationForest(n_estimators=100, max_samples=256, contamination=0.1, seed=42)
 ```
 
-**Dispatcher JSON inter-langage**
+</div>
 
-Disponible depuis Python / WebAssembly / C FFI via `ml_isolation_forest` :
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>n_estimators</code></td><td><code>int</code></td><td><code>100</code></td><td>Nombre d'arbres d'isolation.</td></tr>
+<tr><td><code>max_samples</code></td><td><code>int</code></td><td><code>256</code></td><td>Max échantillons par arbre.</td></tr>
+<tr><td><code>contamination</code></td><td><code>float</code></td><td><code>0.1</code></td><td>Fraction attendue de valeurs aberrantes.</td></tr>
+<tr><td><code>seed</code></td><td><code>int</code></td><td><code>42</code></td><td>Graine aléatoire.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
+
+JSON avec `labels` (1 = normal, −1 = anomalie), `scores`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
+
+$$s(x) = 2^{-E[h(x)]/c(n)}, \quad c(n) = 2H_{n-1} - \frac{2(n-1)}{n}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
 
 ```python
-sp.ml_isolation_forest(json.dumps({
-    "data":          [[0.0, 0.0], [0.1, 0.1], [10.0, 10.0]],
-    "x_test":        [[0.0, 0.05], [9.5, 9.5]],
-    "n_estimators":  100,
-    "max_samples":   256,
-    "contamination": 0.1,
-    "seed":          42,
-}))
+import seraplot as sp, numpy as np
+X = np.random.randn(300, 4)
+X[0] = [10, 10, 10, 10]
+iso = sp.IsolationForest(n_estimators=100, contamination=0.05)
+iso.fit(X)
+print(iso.predict(X[:5]))
 ```
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `n_estimators` | `int` | `100` | Nombre d'iTrees |
-| `max_samples` | `int` | `256` | Taille du sous-échantillon $\psi$ par arbre |
-| `contamination` | `float` | `0.1` | Fraction d'anomalies attendue (calibre `threshold_`) |
-| `seed` | `int` | `42` | Graine maître |
-
-Attribut : `threshold_ : float` — score sous lequel un point est marqué `-1`.
-
-## Fonctionnement algorithmique
-
-Chaque iTree choisit récursivement une feature $f$ et un seuil $t \sim \mathcal{U}(\min_f, \max_f)$ jusqu'à pureté du nœud ou profondeur $\lceil \log_2 \psi \rceil$. La longueur de chemin $h(x)$ est la profondeur à laquelle $x$ tombe.
-
-Le score d'anomalie est
-
-<div>$$s(x) = -2^{-\,\frac{\mathrm{E}[h(x)]}{c(\psi)}},\qquad c(\psi) = 2 H(\psi-1) - \frac{2(\psi-1)}{\psi}$$</div>
-
-où $H(k) \approx \ln k + 0.5772$ est le nombre harmonique. Plus $s(x)$ est bas, plus le point est anormal. Le `threshold_` est le $\lceil \texttt{contamination} \cdot n \rceil$-ième score le plus bas du jeu d'entraînement.
+</div>
 
 </div>

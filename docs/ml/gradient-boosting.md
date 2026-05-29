@@ -1,193 +1,347 @@
-﻿# GradientBoostingClassifier / GradientBoostingRegressor
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>GradientBoostingClassifier</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-cls">Classifier</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">🌲 Tree-Based</span>
+      </div>
+      <p class="ml-pg-tagline">Gradient Boosting classifier — sequential additive model with log-loss. / Gradient Boosting classifieur — modèle additif séquentiel avec log-loss.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
+
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
+
+```python
+import seraplot as sp
+from sklearn.datasets import make_classification
+X, y = make_classification(n_samples=500, n_features=10)
+gb = sp.GradientBoostingClassifier(n_estimators=100, learning_rate=0.1)
+gb.fit(X, y)
+print(gb.score(X, y))
+```
+
+</div>
+
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.GradientBoostingClassifier</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
+
+---
 
 <div class="lang-en">
 
 ## API Reference
 
-**Signature**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
+
+`ml_gradient_boosting_classifier` — aliases: `gradient_boosting_classifier`, `gb_cls`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
 
 ```python
-clf = sp.GradientBoostingClassifier(
-    n_estimators=100, learning_rate=0.1, max_depth=3,
-    min_samples_split=2, min_samples_leaf=1
-)
-reg = sp.GradientBoostingRegressor(
-    n_estimators=100, learning_rate=0.1, max_depth=3,
-    min_samples_split=2, min_samples_leaf=1
-)
-
-model.fit(X, y)
-model.predict(X)               -> list[int] | list[float]
-model.predict_proba(X)         -> ndarray (n, K)   # classifier only
-model.score(X, y)              -> float
-model.get_params()             -> dict
-model.set_params(n_estimators=..., learning_rate=..., max_depth=...)
+sp.GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, min_samples_split=2, min_samples_leaf=1)
 ```
 
-**Constructor parameters**
+</div>
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `n_estimators` | `int` | `100` | Number of boosting stages (trees) |
-| `learning_rate` | `float` | `0.1` | Shrinkage applied to each tree's contribution |
-| `max_depth` | `int` | `3` | Maximum depth per tree |
-| `min_samples_split` | `int` | `2` | Minimum samples to split a node |
-| `min_samples_leaf` | `int` | `1` | Minimum samples at a leaf |
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
 
-**Attributes**
+<table class="ml-pg-table">
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>n_estimators</code></td><td><code>int</code></td><td><code>100</code></td><td>Number of boosting rounds.</td></tr>
+<tr><td><code>learning_rate</code></td><td><code>float</code></td><td><code>0.1</code></td><td>Shrinkage applied to each tree.</td></tr>
+<tr><td><code>max_depth</code></td><td><code>int</code></td><td><code>3</code></td><td>Maximum tree depth.</td></tr>
+<tr><td><code>min_samples_split</code></td><td><code>int</code></td><td><code>2</code></td><td>Min samples to split.</td></tr>
+<tr><td><code>min_samples_leaf</code></td><td><code>int</code></td><td><code>1</code></td><td>Min samples in leaf.</td></tr>
+</tbody>
+</table>
 
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `classes_` | `list[int]` | Unique class labels (classifier only) |
-| `n_estimators_` | `int` | Number of trees |
-| `learning_rate_` | `float` | Shrinkage factor |
-| `max_depth_` | `int` | Tree depth |
+</div>
 
-<details>
-<summary><strong>Example</strong></summary>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$F_m(x) = F_{m-1}(x) + \eta \cdot h_m(x)$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
 
 ```python
 import seraplot as sp
-import numpy as np
-
-X = np.random.randn(600, 8)
-y = (X[:, 0] ** 2 + X[:, 1] > 1).astype(int)
-
-clf = sp.GradientBoostingClassifier(n_estimators=150, learning_rate=0.05, max_depth=4)
-clf.fit(X, y)
-print(f"Accuracy: {clf.score(X, y):.4f}")
+from sklearn.datasets import make_classification
+X, y = make_classification(n_samples=500, n_features=10)
+gb = sp.GradientBoostingClassifier(n_estimators=100, learning_rate=0.1)
+gb.fit(X, y)
+print(gb.score(X, y))
 ```
 
-</details>
-
----
-
-## Algorithmic Functioning
-
-Gradient Boosting constructs an **additive model** $F_M(x)$ by sequentially fitting shallow trees to the negative gradient of the loss.
-
-**Initialisation** with the optimal constant prediction:
-
-<div>$$F_0(x) = \underset{\gamma}{\arg\min} \sum_{i=1}^n \mathcal{L}(y_i, \gamma)$$</div>
-
-**Boosting iteration** $m = 1, \ldots, M$:
-
-**1.** Compute **pseudo-residuals** (negative gradient of the loss w.r.t. the current prediction):
-
-<div>$$r_{im} = -\frac{\partial \mathcal{L}(y_i, F(x_i))}{\partial F(x_i)}\Bigg|_{F = F_{m-1}}$$</div>
-
-**2.** Fit a decision tree $h_m$ to the pseudo-residuals $\{(x_i, r_{im})\}$.
-
-**3.** Update the model with shrinkage $\nu$ (learning rate):
-
-<div>$$F_m(x) = F_{m-1}(x) + \nu \cdot h_m(x)$$</div>
-
-**Regressor (L2 loss)** — pseudo-residuals are simply the ordinary residuals:
-
-<div>$$r_{im} = y_i - F_{m-1}(x_i)$$</div>
-
-**Classifier (log loss / deviance)** — models the log-odds. Pseudo-residuals are:
-
-<div>$$r_{im} = y_i - p_{m-1}(x_i), \qquad p_{m-1}(x_i) = \sigma(F_{m-1}(x_i))$$</div>
-
-Multiclass: $K$ trees are grown per stage, one per class (OvR log-loss).
-
-**Effect of `learning_rate`** — smaller $\nu$ requires more trees but generalises better. The optimal model balances $M$ and $\nu$ jointly.
+</div>
 
 </div>
+
+---
 
 <div class="lang-fr">
 
 ## Référence API
 
-**Signature**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_gradient_boosting_classifier` — alias : `gradient_boosting_classifier`, `gb_cls`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
 
 ```python
-clf = sp.GradientBoostingClassifier(
-    n_estimators=100, learning_rate=0.1, max_depth=3,
-    min_samples_split=2, min_samples_leaf=1
-)
-reg = sp.GradientBoostingRegressor(
-    n_estimators=100, learning_rate=0.1, max_depth=3,
-    min_samples_split=2, min_samples_leaf=1
-)
-
-model.fit(X, y)
-model.predict(X)               -> list[int] | list[float]
-model.predict_proba(X)         -> ndarray (n, K)   # classificateur seulement
-model.score(X, y)              -> float
-model.get_params()             -> dict
-model.set_params(n_estimators=..., learning_rate=..., max_depth=...)
+sp.GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=3, min_samples_split=2, min_samples_leaf=1)
 ```
 
-**Paramètres du constructeur**
+</div>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `n_estimators` | `int` | `100` | Nombre de stages de boosting (arbres) |
-| `learning_rate` | `float` | `0.1` | Rétrécissement appliqué à la contribution de chaque arbre |
-| `max_depth` | `int` | `3` | Profondeur maximale par arbre |
-| `min_samples_split` | `int` | `2` | Nombre minimum d'échantillons pour diviser un nœud |
-| `min_samples_leaf` | `int` | `1` | Nombre minimum d'échantillons dans une feuille |
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
 
-**Attributs**
+<table class="ml-pg-table">
+<thead><tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>n_estimators</code></td><td><code>int</code></td><td><code>100</code></td><td>Nombre de tours de boosting.</td></tr>
+<tr><td><code>learning_rate</code></td><td><code>float</code></td><td><code>0.1</code></td><td>Shrinkage appliqué à chaque arbre.</td></tr>
+<tr><td><code>max_depth</code></td><td><code>int</code></td><td><code>3</code></td><td>Profondeur maximale de chaque arbre.</td></tr>
+<tr><td><code>min_samples_split</code></td><td><code>int</code></td><td><code>2</code></td><td>Min d'échantillons pour diviser.</td></tr>
+<tr><td><code>min_samples_leaf</code></td><td><code>int</code></td><td><code>1</code></td><td>Min d'échantillons en feuille.</td></tr>
+</tbody>
+</table>
 
-| Attribut | Type | Description |
-|----------|------|-------------|
-| `classes_` | `list[int]` | Labels de classes uniques (classificateur seulement) |
-| `n_estimators_` | `int` | Nombre d'arbres |
-| `learning_rate_` | `float` | Facteur de rétrécissement |
-| `max_depth_` | `int` | Profondeur des arbres |
+</div>
 
-<details>
-<summary><strong>Exemple</strong></summary>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
+
+JSON avec `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
+
+$$F_m(x) = F_{m-1}(x) + \eta \cdot h_m(x)$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
 
 ```python
 import seraplot as sp
-import numpy as np
-
-X = np.random.randn(600, 8)
-y = (X[:, 0] ** 2 + X[:, 1] > 1).astype(int)
-
-clf = sp.GradientBoostingClassifier(n_estimators=150, learning_rate=0.05, max_depth=4)
-clf.fit(X, y)
-print(f"Précision : {clf.score(X, y):.4f}")
+from sklearn.datasets import make_classification
+X, y = make_classification(n_samples=500, n_features=10)
+gb = sp.GradientBoostingClassifier(n_estimators=100, learning_rate=0.1)
+gb.fit(X, y)
+print(gb.score(X, y))
 ```
 
-</details>
+</div>
+
+</div>
 
 ---
 
-## Fonctionnement algorithmique
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>GradientBoostingRegressor</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-reg">Regressor</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">🌲 Tree-Based</span>
+      </div>
+      <p class="ml-pg-tagline">Gradient Boosting regressor — sequential additive model minimising MSE. / Gradient Boosting régresseur — modèle additif séquentiel minimisant la MSE.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
 
-Le Gradient Boosting construit un **modèle additif** $F_M(x)$ en ajustant séquentiellement des arbres peu profonds au gradient négatif de la perte.
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
 
-**Initialisation** avec la prédiction constante optimale :
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(400, 5)
+y = X[:, 0] ** 2 - X[:, 1] + np.random.randn(400) * 0.3
+gb = sp.GradientBoostingRegressor(n_estimators=100, learning_rate=0.05)
+gb.fit(X, y)
+print(gb.score(X, y))
+```
 
-<div>$$F_0(x) = \underset{\gamma}{\arg\min} \sum_{i=1}^n \mathcal{L}(y_i, \gamma)$$</div>
+</div>
 
-**Itération de boosting** $m = 1, \ldots, M$ :
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.GradientBoostingRegressor</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
 
-**1.** Calcul des **pseudo-résidus** (gradient négatif de la perte par rapport à la prédiction courante) :
+---
 
-<div>$$r_{im} = -\frac{\partial \mathcal{L}(y_i, F(x_i))}{\partial F(x_i)}\Bigg|_{F = F_{m-1}}$$</div>
+<div class="lang-en">
 
-**2.** Ajuster un arbre de décision $h_m$ aux pseudo-résidus $\{(x_i, r_{im})\}$.
+## API Reference
 
-**3.** Mettre à jour le modèle avec le rétrécissement $\nu$ (learning rate) :
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
 
-<div>$$F_m(x) = F_{m-1}(x) + \nu \cdot h_m(x)$$</div>
+`ml_gradient_boosting_regressor` — aliases: `gradient_boosting_regressor`, `gb_reg`
 
-**Régresseur (perte L2)** — les pseudo-résidus sont simplement les résidus ordinaires :
+</div>
 
-<div>$$r_{im} = y_i - F_{m-1}(x_i)$$</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
 
-**Classificateur (log loss / déviance)** — modélise les log-odds. Pseudo-résidus :
+```python
+sp.GradientBoostingRegressor(n_estimators=100, learning_rate=0.1, max_depth=3, min_samples_split=2, min_samples_leaf=1)
+```
 
-<div>$$r_{im} = y_i - p_{m-1}(x_i), \qquad p_{m-1}(x_i) = \sigma(F_{m-1}(x_i))$$</div>
+</div>
 
-Multiclasse : $K$ arbres sont construits par stage, un par classe (log-loss OvR).
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
 
-**Effet du `learning_rate`** — un $\nu$ plus petit nécessite plus d'arbres mais généralise mieux. Le modèle optimal équilibre $M$ et $\nu$ conjointement.
+<table class="ml-pg-table">
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>n_estimators</code></td><td><code>int</code></td><td><code>100</code></td><td>Number of boosting rounds.</td></tr>
+<tr><td><code>learning_rate</code></td><td><code>float</code></td><td><code>0.1</code></td><td>Shrinkage applied to each tree.</td></tr>
+<tr><td><code>max_depth</code></td><td><code>int</code></td><td><code>3</code></td><td>Maximum tree depth.</td></tr>
+<tr><td><code>min_samples_split</code></td><td><code>int</code></td><td><code>2</code></td><td>Min samples to split.</td></tr>
+<tr><td><code>min_samples_leaf</code></td><td><code>int</code></td><td><code>1</code></td><td>Min samples in leaf.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$F_m(x) = F_{m-1}(x) + \eta \cdot h_m(x), \quad h_m = \arg\min_h \sum_i(r_i - h(x_i))^2$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(400, 5)
+y = X[:, 0] ** 2 - X[:, 1] + np.random.randn(400) * 0.3
+gb = sp.GradientBoostingRegressor(n_estimators=100, learning_rate=0.05)
+gb.fit(X, y)
+print(gb.score(X, y))
+```
+
+</div>
+
+</div>
+
+---
+
+<div class="lang-fr">
+
+## Référence API
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_gradient_boosting_regressor` — alias : `gradient_boosting_regressor`, `gb_reg`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
+
+```python
+sp.GradientBoostingRegressor(n_estimators=100, learning_rate=0.1, max_depth=3, min_samples_split=2, min_samples_leaf=1)
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>n_estimators</code></td><td><code>int</code></td><td><code>100</code></td><td>Nombre de tours de boosting.</td></tr>
+<tr><td><code>learning_rate</code></td><td><code>float</code></td><td><code>0.1</code></td><td>Shrinkage appliqué à chaque arbre.</td></tr>
+<tr><td><code>max_depth</code></td><td><code>int</code></td><td><code>3</code></td><td>Profondeur maximale.</td></tr>
+<tr><td><code>min_samples_split</code></td><td><code>int</code></td><td><code>2</code></td><td>Min d'échantillons pour diviser.</td></tr>
+<tr><td><code>min_samples_leaf</code></td><td><code>int</code></td><td><code>1</code></td><td>Min d'échantillons en feuille.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
+
+JSON avec `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
+
+$$F_m(x) = F_{m-1}(x) + \eta \cdot h_m(x), \quad r_i = y_i - F_{m-1}(x_i)$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(400, 5)
+y = X[:, 0] ** 2 - X[:, 1] + np.random.randn(400) * 0.3
+gb = sp.GradientBoostingRegressor(n_estimators=100, learning_rate=0.05)
+gb.fit(X, y)
+print(gb.score(X, y))
+```
+
+</div>
 
 </div>

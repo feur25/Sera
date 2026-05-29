@@ -100,7 +100,7 @@ macro_rules! impl_python_build_hover_json {
 macro_rules! impl_wasm_bindings {
     () => {
         use wasm_bindgen::prelude::*;
-        macro_rules! impl_wasm {
+        macro_rules! impl_wasm_chart {
             ($fn:ident, $js:literal) => {
                 #[wasm_bindgen(js_name = $js)]
                 pub fn $fn(input: &str) -> String {
@@ -108,7 +108,27 @@ macro_rules! impl_wasm_bindings {
                 }
             };
         }
-        crate::for_each_fn!(impl_wasm);
+        crate::for_each_json_chart_fn!(impl_wasm_chart);
+
+        macro_rules! impl_wasm_ml {
+            ($fn:ident, $js:literal) => {
+                #[wasm_bindgen(js_name = $js)]
+                pub fn $fn(input: &str) -> String {
+                    crate::bindings::commands::ml::$fn(input)
+                }
+            };
+        }
+        crate::for_each_ml_oneshot_fn!(impl_wasm_ml);
+
+        macro_rules! impl_wasm_util {
+            ($fn:ident, $js:literal) => {
+                #[wasm_bindgen(js_name = $js)]
+                pub fn $fn(input: &str) -> String {
+                    crate::bindings::commands::charts::$fn(input)
+                }
+            };
+        }
+        crate::for_each_util_fn!(impl_wasm_util);
 
         #[wasm_bindgen(js_name = "demo")]
         pub fn demo(input: &str) -> String {
@@ -138,7 +158,7 @@ macro_rules! impl_wasm_bindings {
 #[macro_export]
 macro_rules! impl_cffi_bindings {
     () => {
-        macro_rules! impl_cffi {
+        macro_rules! impl_cffi_chart {
             ($fn:ident, $_js:literal) => {
                 #[no_mangle]
                 pub unsafe extern "C" fn $fn(input: *const std::os::raw::c_char) -> *mut std::os::raw::c_char {
@@ -149,7 +169,33 @@ macro_rules! impl_cffi_bindings {
                 }
             };
         }
-        crate::for_each_fn!(impl_cffi);
+        crate::for_each_json_chart_fn!(impl_cffi_chart);
+
+        macro_rules! impl_cffi_ml {
+            ($fn:ident, $_js:literal) => {
+                #[no_mangle]
+                pub unsafe extern "C" fn $fn(input: *const std::os::raw::c_char) -> *mut std::os::raw::c_char {
+                    let s = std::ffi::CStr::from_ptr(input).to_str().unwrap_or("");
+                    std::ffi::CString::new(crate::bindings::commands::ml::$fn(s))
+                        .unwrap_or_default()
+                        .into_raw()
+                }
+            };
+        }
+        crate::for_each_ml_oneshot_fn!(impl_cffi_ml);
+
+        macro_rules! impl_cffi_util {
+            ($fn:ident, $_js:literal) => {
+                #[no_mangle]
+                pub unsafe extern "C" fn $fn(input: *const std::os::raw::c_char) -> *mut std::os::raw::c_char {
+                    let s = std::ffi::CStr::from_ptr(input).to_str().unwrap_or("");
+                    std::ffi::CString::new(crate::bindings::commands::charts::$fn(s))
+                        .unwrap_or_default()
+                        .into_raw()
+                }
+            };
+        }
+        crate::for_each_util_fn!(impl_cffi_util);
         #[no_mangle]
         pub unsafe extern "C" fn seraplot_free(ptr: *mut std::os::raw::c_char) {
             if !ptr.is_null() { drop(std::ffi::CString::from_raw(ptr)); }
@@ -248,7 +294,17 @@ macro_rules! impl_python_bindings {
         }
         for_each_json_chart_fn!(impl_python);
 
-        macro_rules! impl_python_json {
+        macro_rules! impl_python_json_ml {
+            ($fn:ident, $_js:literal) => {
+                #[pyfunction]
+                pub fn $fn(input: &str) -> String {
+                    crate::bindings::commands::ml::$fn(input)
+                }
+            };
+        }
+        for_each_ml_oneshot_fn!(impl_python_json_ml);
+
+        macro_rules! impl_python_json_util {
             ($fn:ident, $_js:literal) => {
                 #[pyfunction]
                 pub fn $fn(input: &str) -> String {
@@ -256,8 +312,7 @@ macro_rules! impl_python_bindings {
                 }
             };
         }
-        for_each_ml_oneshot_fn!(impl_python_json);
-        for_each_auto_util_fn!(impl_python_json);
+        for_each_auto_util_fn!(impl_python_json_util);
 
         #[pyfunction]
         #[pyo3(name = "set_bg", signature = (html, color=None))]
@@ -593,11 +648,11 @@ macro_rules! impl_python_bindings {
                 let payload_for_call = payload.clone();
                 let name_owned = name.clone();
                 let raw = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| match name_owned.as_str() {
-                    "logistic" => crate::bindings::commands::charts::ml_logistic_regression(&payload_for_call),
-                    "knn" => crate::bindings::commands::charts::ml_knn_classifier(&payload_for_call),
-                    "decision_tree" => crate::bindings::commands::charts::ml_decision_tree_classifier(&payload_for_call),
-                    "random_forest" => crate::bindings::commands::charts::ml_random_forest_classifier(&payload_for_call),
-                    "gradient_boosting" => crate::bindings::commands::charts::ml_gradient_boosting_classifier(&payload_for_call),
+                    "logistic" => crate::bindings::commands::ml::ml_logistic_regression(&payload_for_call),
+                    "knn" => crate::bindings::commands::ml::ml_knn_classifier(&payload_for_call),
+                    "decision_tree" => crate::bindings::commands::ml::ml_decision_tree_classifier(&payload_for_call),
+                    "random_forest" => crate::bindings::commands::ml::ml_random_forest_classifier(&payload_for_call),
+                    "gradient_boosting" => crate::bindings::commands::ml::ml_gradient_boosting_classifier(&payload_for_call),
                     _ => String::new(),
                 }));
                 let raw = match raw {

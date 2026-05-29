@@ -1,252 +1,490 @@
-# GaussianNB / MultinomialNB / BernoulliNB
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>GaussianNb</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-cls">Classifier</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">📊 Naive Bayes</span>
+      </div>
+      <p class="ml-pg-tagline">Gaussian Naive Bayes — likelihood modelled as Gaussian per class per feature. / Naive Bayes Gaussien — vraisemblance modélisée comme Gaussienne par classe et feature.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
+
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
+
+```python
+import seraplot as sp
+from sklearn.datasets import load_iris
+X, y = load_iris(return_X_y=True)
+gnb = sp.GaussianNB()
+gnb.fit(X, y)
+print(gnb.score(X, y))
+```
+
+</div>
+
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.GaussianNb</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
+
+---
 
 <div class="lang-en">
 
 ## API Reference
 
-**Signature**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
+
+`ml_gaussian_nb` — aliases: `gaussian_nb`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
 
 ```python
-clf = sp.GaussianNB(var_smoothing=1e-9)
-clf = sp.MultinomialNB(alpha=1.0)
-clf = sp.BernoulliNB(alpha=1.0, binarize=0.0)
-
-model.fit(X, y)
-model.predict(X)               -> list[int]
-model.predict_proba(X)         -> ndarray (n, K)
-model.score(X, y)              -> float
-model.get_params()             -> dict
-model.set_params(var_smoothing=...) | set_params(alpha=...)
+sp.GaussianNb()
 ```
 
-**Constructor parameters — GaussianNB**
+</div>
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `var_smoothing` | `float` | `1e-9` | Fraction of the largest variance added to all variances for stability |
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
 
-**Constructor parameters — MultinomialNB**
+<p><em>No constructor parameters.</em></p>
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `alpha` | `float` | `1.0` | Laplace/Lidstone smoothing parameter |
+</div>
 
-**Constructor parameters — BernoulliNB**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `alpha` | `float` | `1.0` | Laplace/Lidstone smoothing parameter |
-| `binarize` | `float` | `0.0` | Threshold for binarising features (values >= become 1, < become 0) |
+JSON with `predictions`.
 
-**Attributes (all variants)**
+</div>
 
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `classes_` | `list[int]` | Unique class labels |
-| `class_prior_` | `list[float]` | Prior probability $P(y=k)$ per class |
-| `theta_` | `list[list[float]]` | Per-class, per-feature mean (GaussianNB only) |
-| `var_` | `list[list[float]]` | Per-class, per-feature variance (GaussianNB only) |
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
 
-<details>
-<summary><strong>Example</strong></summary>
+$$P(x_j | y=c) = \frac{1}{\sqrt{2\pi\sigma_{cj}^2}} \exp\!\left(-\frac{(x_j-\mu_{cj})^2}{2\sigma_{cj}^2}\right)$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
 
 ```python
 import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 6)
-y = (X[:, 0] + X[:, 1] > 0).astype(int)
-
+from sklearn.datasets import load_iris
+X, y = load_iris(return_X_y=True)
 gnb = sp.GaussianNB()
 gnb.fit(X, y)
-print(f"GaussianNB accuracy: {gnb.score(X, y):.4f}")
-
-X_counts = np.random.randint(0, 10, (500, 6)).astype(float)
-mnb = sp.MultinomialNB(alpha=1.0)
-mnb.fit(X_counts, y)
-print(f"MultinomialNB accuracy: {mnb.score(X_counts, y):.4f}")
-
-X_bin = (X > 0).astype(float)
-bnb = sp.BernoulliNB(alpha=1.0)
-bnb.fit(X_bin, y)
-print(f"BernoulliNB accuracy: {bnb.score(X_bin, y):.4f}")
+print(gnb.score(X, y))
 ```
 
-</details>
-
----
-
-## Algorithmic Functioning
-
-All three variants apply **Bayes' theorem** with class-conditional independence:
-
-<div>$$\hat{y} = \underset{k}{\arg\max}\; P(y=k) \prod_{j=1}^p P(x_j \mid y=k)$$</div>
-
-The three models differ only in how $P(x_j \mid y=k)$ is modelled.
-
----
-
-### GaussianNB — continuous features
-
-Assumes each feature is Gaussian within each class. Parameters are estimated from training data:
-
-<div>$$\mu_{kj} = \frac{1}{n_k}\sum_{i: y_i=k} x_{ij}, \qquad \sigma^2_{kj} = \frac{1}{n_k}\sum_{i: y_i=k}(x_{ij} - \mu_{kj})^2 + \varepsilon_{\text{smooth}}$$</div>
-
-where $\varepsilon_{\text{smooth}} = \texttt{var\_smoothing} \cdot \max_j \hat{\sigma}^2_j$ prevents zero variances.
-
-Likelihood:
-
-<div>$$P(x_j \mid y=k) = \frac{1}{\sqrt{2\pi\sigma^2_{kj}}} \exp\!\left(-\frac{(x_j - \mu_{kj})^2}{2\sigma^2_{kj}}\right)$$</div>
-
----
-
-### MultinomialNB — count features
-
-Designed for count data (e.g. word frequencies). Feature conditional is a **multinomial** distribution:
-
-<div>$$P(x_j \mid y=k) = \frac{N_{kj} + \alpha}{N_k + \alpha p}$$</div>
-
-where $N_{kj} = \sum_{i:y_i=k} x_{ij}$ is the total count of feature $j$ in class $k$, $N_k = \sum_j N_{kj}$, and $\alpha$ is the Laplace smoothing term.
-
----
-
-### BernoulliNB — binary features
-
-Designed for binary/boolean feature vectors. For each feature $j$:
-
-<div>$$P(x_j = 1 \mid y=k) = \frac{N_{kj} + \alpha}{n_k + 2\alpha}$$</div>
-
-and the likelihood explicitly accounts for absent features:
-
-<div>$$P(x_j \mid y=k) = P(x_j=1 \mid y=k)^{x_j}\cdot\bigl(1 - P(x_j=1 \mid y=k)\bigr)^{1-x_j}$$</div>
-
-All three variants compute the final log-probability in log-space to avoid underflow:
-
-<div>$$\log P(y=k \mid x) \propto \log P(y=k) + \sum_{j=1}^p \log P(x_j \mid y=k)$$</div>
+</div>
 
 </div>
+
+---
 
 <div class="lang-fr">
 
 ## Référence API
 
-**Signature**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_gaussian_nb` — alias : `gaussian_nb`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
 
 ```python
-clf = sp.GaussianNB(var_smoothing=1e-9)
-clf = sp.MultinomialNB(alpha=1.0)
-clf = sp.BernoulliNB(alpha=1.0, binarize=0.0)
-
-model.fit(X, y)
-model.predict(X)               -> list[int]
-model.predict_proba(X)         -> ndarray (n, K)
-model.score(X, y)              -> float
-model.get_params()             -> dict
-model.set_params(var_smoothing=...) | set_params(alpha=...)
+sp.GaussianNb()
 ```
 
-**Paramètres du constructeur — GaussianNB**
+</div>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `var_smoothing` | `float` | `1e-9` | Fraction de la plus grande variance ajoutée à toutes les variances pour la stabilité |
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
 
-**Paramètres du constructeur — MultinomialNB**
+<p><em>Aucun paramètre de constructeur.</em></p>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `alpha` | `float` | `1.0` | Paramètre de lissage Laplace/Lidstone |
+</div>
 
-**Paramètres du constructeur — BernoulliNB**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `alpha` | `float` | `1.0` | Paramètre de lissage Laplace/Lidstone |
+JSON avec `predictions`.
 
-**Attributs (toutes variantes)**
+</div>
 
-| Attribut | Type | Description |
-|----------|------|-------------|
-| `classes_` | `list[int]` | Labels de classes uniques |
-| `class_prior_` | `list[float]` | Probabilité a priori $P(y=k)$ par classe |
-| `theta_` | `list[list[float]]` | Moyenne par classe et feature (GaussianNB) |
-| `var_` | `list[list[float]]` | Variance par classe et feature (GaussianNB) |
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
 
-<details>
-<summary><strong>Exemple</strong></summary>
+$$P(x_j | y=c) = \frac{1}{\sqrt{2\pi\sigma_{cj}^2}} \exp\!\left(-\frac{(x_j-\mu_{cj})^2}{2\sigma_{cj}^2}\right)$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
 
 ```python
 import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 6)
-y = (X[:, 0] + X[:, 1] > 0).astype(int)
-
+from sklearn.datasets import load_iris
+X, y = load_iris(return_X_y=True)
 gnb = sp.GaussianNB()
 gnb.fit(X, y)
-print(f"Précision GaussianNB : {gnb.score(X, y):.4f}")
-
-X_counts = np.random.randint(0, 10, (500, 6)).astype(float)
-mnb = sp.MultinomialNB(alpha=1.0)
-mnb.fit(X_counts, y)
-print(f"Précision MultinomialNB : {mnb.score(X_counts, y):.4f}")
-
-X_bin = (X > 0).astype(float)
-bnb = sp.BernoulliNB(alpha=1.0)
-bnb.fit(X_bin, y)
-print(f"Précision BernoulliNB : {bnb.score(X_bin, y):.4f}")
+print(gnb.score(X, y))
 ```
 
-</details>
+</div>
+
+</div>
 
 ---
 
-## Fonctionnement algorithmique
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>MultinomialNb</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-cls">Classifier</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">📊 Naive Bayes</span>
+      </div>
+      <p class="ml-pg-tagline">Multinomial Naive Bayes — for count/frequency features (text, bag-of-words). / Naive Bayes Multinomial — pour features de comptage/fréquence (texte, sac de mots).</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
 
-Les trois variantes appliquent le **théorème de Bayes** avec indépendance conditionnelle aux classes :
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
 
-<div>$$\hat{y} = \underset{k}{\arg\max}\; P(y=k) \prod_{j=1}^p P(x_j \mid y=k)$$</div>
+```python
+import seraplot as sp, numpy as np
+X = np.random.randint(0, 10, size=(300, 5)).astype(float)
+y = (X[:, 0] > 5).astype(int)
+mnb = sp.MultinomialNB(alpha=1.0)
+mnb.fit(X, y)
+print(mnb.score(X, y))
+```
 
-Les trois modèles diffèrent uniquement dans la façon dont $P(x_j \mid y=k)$ est modélisé.
+</div>
+
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.MultinomialNb</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
 
 ---
 
-### GaussianNB — features continues
+<div class="lang-en">
 
-Suppose que chaque feature suit une loi gaussienne au sein de chaque classe. Les paramètres sont estimés à partir des données d'entraînement :
+## API Reference
 
-<div>$$\mu_{kj} = \frac{1}{n_k}\sum_{i: y_i=k} x_{ij}, \qquad \sigma^2_{kj} = \frac{1}{n_k}\sum_{i: y_i=k}(x_{ij} - \mu_{kj})^2 + \varepsilon_{\text{smooth}}$$</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
 
-où $\varepsilon_{\text{smooth}} = \texttt{var\_smoothing} \cdot \max_j \hat{\sigma}^2_j$ évite les variances nulles.
+`ml_multinomial_nb` — aliases: `multinomial_nb`
 
-Vraisemblance :
+</div>
 
-<div>$$P(x_j \mid y=k) = \frac{1}{\sqrt{2\pi\sigma^2_{kj}}} \exp\!\left(-\frac{(x_j - \mu_{kj})^2}{2\sigma^2_{kj}}\right)$$</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
+
+```python
+sp.MultinomialNb(alpha=1.0)
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>alpha</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Additive (Laplace) smoothing.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$P(x|y=c) = \frac{N_{cy} + \alpha}{N_c + \alpha p}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randint(0, 10, size=(300, 5)).astype(float)
+y = (X[:, 0] > 5).astype(int)
+mnb = sp.MultinomialNB(alpha=1.0)
+mnb.fit(X, y)
+print(mnb.score(X, y))
+```
+
+</div>
+
+</div>
 
 ---
 
-### MultinomialNB — features de comptage
+<div class="lang-fr">
 
-Conçu pour les données de comptage (par ex. fréquences de mots). La conditionnelle de feature est une distribution **multinomiale** :
+## Référence API
 
-<div>$$P(x_j \mid y=k) = \frac{N_{kj} + \alpha}{N_k + \alpha p}$$</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
 
-où $N_{kj} = \sum_{i:y_i=k} x_{ij}$ est le comptage total de la feature $j$ dans la classe $k$, $N_k = \sum_j N_{kj}$, et $\alpha$ est le terme de lissage de Laplace.
+`ml_multinomial_nb` — alias : `multinomial_nb`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
+
+```python
+sp.MultinomialNb(alpha=1.0)
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>alpha</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Lissage additif (Laplace).</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
+
+JSON avec `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
+
+$$P(x|y=c) = \frac{N_{cy} + \alpha}{N_c + \alpha p}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randint(0, 10, size=(300, 5)).astype(float)
+y = (X[:, 0] > 5).astype(int)
+mnb = sp.MultinomialNB(alpha=1.0)
+mnb.fit(X, y)
+print(mnb.score(X, y))
+```
+
+</div>
+
+</div>
 
 ---
 
-### BernoulliNB — features binaires
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>BernoulliNb</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-cls">Classifier</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">📊 Naive Bayes</span>
+      </div>
+      <p class="ml-pg-tagline">Bernoulli Naive Bayes — for binary/boolean features. / Naive Bayes Bernoulli — pour features binaires/booléennes.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
 
-Conçu pour les vecteurs de features binaires/booléens. Pour chaque feature $j$ :
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
 
-<div>$$P(x_j = 1 \mid y=k) = \frac{N_{kj} + \alpha}{n_k + 2\alpha}$$</div>
+```python
+import seraplot as sp, numpy as np
+X = (np.random.randn(400, 6) > 0).astype(float)
+y = (X[:, 0] & X[:, 1]).astype(int)
+bnb = sp.BernoulliNB(alpha=1.0)
+bnb.fit(X, y)
+print(bnb.score(X, y))
+```
 
-et la vraisemblance prend explicitement en compte les features absentes :
+</div>
 
-<div>$$P(x_j \mid y=k) = P(x_j=1 \mid y=k)^{x_j}\cdot\bigl(1 - P(x_j=1 \mid y=k)\bigr)^{1-x_j}$$</div>
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.BernoulliNb</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
 
-Les trois variantes calculent la log-probabilité finale dans l'espace logarithmique pour éviter le sous-dépassement :
+---
 
-<div>$$\log P(y=k \mid x) \propto \log P(y=k) + \sum_{j=1}^p \log P(x_j \mid y=k)$$</div>
+<div class="lang-en">
+
+## API Reference
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
+
+`ml_bernoulli_nb` — aliases: `bernoulli_nb`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
+
+```python
+sp.BernoulliNb(alpha=1.0, binarize=0.0)
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>alpha</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Additive (Laplace) smoothing.</td></tr>
+<tr><td><code>binarize</code></td><td><code>float</code></td><td><code>0.0</code></td><td>Threshold for binarising features.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$P(x_j|y=c) = p_{cj}^{x_j}(1-p_{cj})^{1-x_j}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp, numpy as np
+X = (np.random.randn(400, 6) > 0).astype(float)
+y = (X[:, 0] & X[:, 1]).astype(int)
+bnb = sp.BernoulliNB(alpha=1.0)
+bnb.fit(X, y)
+print(bnb.score(X, y))
+```
+
+</div>
+
+</div>
+
+---
+
+<div class="lang-fr">
+
+## Référence API
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_bernoulli_nb` — alias : `bernoulli_nb`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
+
+```python
+sp.BernoulliNb(alpha=1.0, binarize=0.0)
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>alpha</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Lissage additif (Laplace).</td></tr>
+<tr><td><code>binarize</code></td><td><code>float</code></td><td><code>0.0</code></td><td>Seuil pour binariser les features.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
+
+JSON avec `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
+
+$$P(x_j|y=c) = p_{cj}^{x_j}(1-p_{cj})^{1-x_j}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
+
+```python
+import seraplot as sp, numpy as np
+X = (np.random.randn(400, 6) > 0).astype(float)
+y = (X[:, 0] & X[:, 1]).astype(int)
+bnb = sp.BernoulliNB(alpha=1.0)
+bnb.fit(X, y)
+print(bnb.score(X, y))
+```
+
+</div>
 
 </div>

@@ -1,237 +1,331 @@
-# PCA / TruncatedSVD
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>Pca</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-trx">Transformer</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">🔬 Decomposition</span>
+      </div>
+      <p class="ml-pg-tagline">PCA — Principal Component Analysis via truncated SVD. / PCA — Analyse en Composantes Principales via SVD tronquée.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
+
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(300, 10)
+pca = sp.PCA(n_components=3)
+pca.fit(X)
+Xt = pca.transform(X)
+print(Xt.shape, pca.explained_variance_ratio_)
+```
+
+</div>
+
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.Pca</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
+
+---
 
 <div class="lang-en">
 
 ## API Reference
 
-**Signature**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
 
-```python
-pca  = sp.PCA(n_components=2, whiten=False)
-tsvd = sp.TruncatedSVD(n_components=2)
-
-model.fit(X)
-X_reduced  = model.transform(X)        -> ndarray (n, k)
-X_back     = model.inverse_transform(T) -> ndarray (n, p)
-X_reduced  = model.fit_transform(X)    -> ndarray (n, k)
-model.get_params()                     -> dict
-model.set_params(n_components=...)
-```
-
-**Constructor parameters — PCA**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `n_components` | `int` | `2` | Number of principal components to keep |
-| `whiten` | `bool` | `False` | Scale components to unit variance |
-
-**Constructor parameters — TruncatedSVD**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `n_components` | `int` | `2` | Number of singular vectors to compute |
-
-**Attributes**
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `components_` | `ndarray (k, p)` | Principal axes in feature space |
-| `explained_variance_` | `list[float]` | Variance explained per component |
-| `explained_variance_ratio_` | `list[float]` | Fraction of total variance per component |
-| `singular_values_` | `list[float]` | Singular values of the centred data matrix |
-| `mean_` | `list[float]` | Per-feature mean used for centring (PCA only) |
-
-<details>
-<summary><strong>Example</strong></summary>
-
-```python
-import seraplot as sp
-import numpy as np
-
-X = np.random.randn(400, 20)
-
-pca = sp.PCA(n_components=5)
-T = pca.fit_transform(X)
-print(f"Explained variance ratio: {[f'{v:.3f}' for v in pca.explained_variance_ratio_]}")
-print(f"Reduced shape: {T.shape}")   # (400, 5)
-
-tsvd = sp.TruncatedSVD(n_components=5)
-T2 = tsvd.fit_transform(X)
-print(f"TruncatedSVD shape: {T2.shape}")
-```
-
-</details>
-
----
-
-## Algorithmic Functioning
-
-Both algorithms find low-dimensional **linear projections** that maximise preserved variance.
-
----
-
-### PCA — Principal Component Analysis
-
-**1. Centre** the data matrix:
-
-<div>$$\tilde{X} = X - \mathbf{1}\mu^\top, \qquad \mu_j = \frac{1}{n}\sum_i x_{ij}$$</div>
-
-**2. Compute** the covariance matrix and its eigendecomposition:
-
-<div>$$C = \frac{1}{n}\tilde{X}^\top\tilde{X} = V \Lambda V^\top$$</div>
-
-where $V \in \mathbb{R}^{p \times p}$ has eigenvectors as columns and $\Lambda = \text{diag}(\lambda_1, \ldots, \lambda_p)$ with $\lambda_1 \geq \cdots \geq \lambda_p \geq 0$.
-
-In practice this is computed via the **economy SVD** of $\tilde{X}$:
-
-<div>$$\tilde{X} = U \Sigma V^\top \implies \lambda_i = \frac{\sigma_i^2}{n}$$</div>
-
-**3. Project** onto the $k$ leading components:
-
-<div>$$T = \tilde{X} V_k, \qquad V_k = V[:, :k]$$</div>
-
-**Whitening** (optional): $T_{\text{white}} = T \cdot \text{diag}(\lambda_1^{-1/2}, \ldots, \lambda_k^{-1/2})$, giving each component unit variance.
-
-**Explained variance ratio:**
-
-<div>$$\text{EVR}_i = \frac{\lambda_i}{\sum_j \lambda_j}$$</div>
-
-**Inverse transform** (approximate reconstruction):
-
-<div>$$\hat{X} = T V_k^\top + \mu^\top$$</div>
-
----
-
-### TruncatedSVD
-
-Directly computes a **rank-$k$ SVD** without centring, making it suitable for sparse matrices (e.g. TF-IDF):
-
-<div>$$X \approx U_k \Sigma_k V_k^\top$$</div>
-
-Uses a **randomised power iteration** algorithm:
-
-<div>$$Y = (XX^\top)^q X \Omega, \quad \Omega \in \mathbb{R}^{p \times (k + \text{oversampling})}$$</div>
-
-where $q = \lceil\texttt{n\_iter}/2\rceil$ power steps amplify the signal of the top singular vectors. The QR factorisation of $Y$ gives an orthonormal basis, and the final SVD is computed on the reduced system.
-
-**Projection**: $T = X V_k$, with inverse $\hat{X} = T V_k^\top$.
+`ml_pca` — aliases: `pca`
 
 </div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
+
+```python
+sp.Pca(n_components=2)
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>n_components</code></td><td><code>int</code></td><td><code>2</code></td><td>Number of principal components.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `transformed` (n×k matrix), `explained_variance_ratio`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$X_{\text{proj}} = X W_k, \quad W_k = \text{top-}k\text{ right singular vectors of } \tilde{X}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(300, 10)
+pca = sp.PCA(n_components=3)
+pca.fit(X)
+Xt = pca.transform(X)
+print(Xt.shape, pca.explained_variance_ratio_)
+```
+
+</div>
+
+</div>
+
+---
 
 <div class="lang-fr">
 
 ## Référence API
 
-**Signature**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_pca` — alias : `pca`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
 
 ```python
-pca  = sp.PCA(n_components=2, whiten=False)
-tsvd = sp.TruncatedSVD(n_components=2)
-
-model.fit(X)
-X_reduced  = model.transform(X)        -> ndarray (n, k)
-X_back     = model.inverse_transform(T) -> ndarray (n, p)
-X_reduced  = model.fit_transform(X)    -> ndarray (n, k)
-model.get_params()                     -> dict
-model.set_params(n_components=...)
+sp.Pca(n_components=2)
 ```
 
-**Paramètres du constructeur — PCA**
+</div>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `n_components` | `int` | `2` | Nombre de composantes principales à conserver |
-| `whiten` | `bool` | `False` | Mettre les composantes à variance unitaire |
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
 
-**Paramètres du constructeur — TruncatedSVD**
+<table class="ml-pg-table">
+<thead><tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>n_components</code></td><td><code>int</code></td><td><code>2</code></td><td>Nombre de composantes principales.</td></tr>
+</tbody>
+</table>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `n_components` | `int` | `2` | Nombre de vecteurs singuliers à calculer |
+</div>
 
-**Attributs**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
 
-| Attribut | Type | Description |
-|----------|------|-------------|
-| `components_` | `ndarray (k, p)` | Axes principaux dans l'espace des features |
-| `explained_variance_` | `list[float]` | Variance expliquée par composante |
-| `explained_variance_ratio_` | `list[float]` | Fraction de la variance totale par composante |
-| `singular_values_` | `list[float]` | Valeurs singulières de la matrice de données centrée |
-| `mean_` | `list[float]` | Moyenne par feature pour le centrage (PCA seulement) |
+JSON avec `transformed` (matrice n×k), `explained_variance_ratio`.
 
-<details>
-<summary><strong>Exemple</strong></summary>
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
+
+$$X_{\text{proj}} = X W_k, \quad W_k = k\text{ premiers vecteurs singuliers droits de } \tilde{X}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
 
 ```python
-import seraplot as sp
-import numpy as np
-
-X = np.random.randn(400, 20)
-
-pca = sp.PCA(n_components=5)
-T = pca.fit_transform(X)
-print(f"Ratio de variance expliquée : {[f'{v:.3f}' for v in pca.explained_variance_ratio_]}")
-print(f"Forme réduite : {T.shape}")   # (400, 5)
-
-tsvd = sp.TruncatedSVD(n_components=5)
-T2 = tsvd.fit_transform(X)
-print(f"Forme TruncatedSVD : {T2.shape}")
+import seraplot as sp, numpy as np
+X = np.random.randn(300, 10)
+pca = sp.PCA(n_components=3)
+pca.fit(X)
+Xt = pca.transform(X)
+print(Xt.shape, pca.explained_variance_ratio_)
 ```
 
-</details>
+</div>
+
+</div>
 
 ---
 
-## Fonctionnement algorithmique
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>TruncatedSvd</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-trx">Transformer</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">🔬 Decomposition</span>
+      </div>
+      <p class="ml-pg-tagline">TruncatedSVD — truncated Singular Value Decomposition (no centering, sparse-friendly). / TruncatedSVD — Décomposition en Valeurs Singulières tronquée (sans centrage, compatible sparse).</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
 
-Les deux algorithmes trouvent des **projections linéaires** de faible dimension qui maximisent la variance préservée.
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.abs(np.random.randn(200, 15))
+svd = sp.TruncatedSVD(n_components=5)
+svd.fit(X)
+Xt = svd.transform(X)
+print(Xt.shape)
+```
+
+</div>
+
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.TruncatedSvd</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
 
 ---
 
-### PCA — Analyse en Composantes Principales
+<div class="lang-en">
 
-**1. Centrer** la matrice de données :
+## API Reference
 
-<div>$$\tilde{X} = X - \mathbf{1}\mu^\top, \qquad \mu_j = \frac{1}{n}\sum_i x_{ij}$$</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
 
-**2. Calculer** la matrice de covariance et sa décomposition propre :
+`ml_truncated_svd` — aliases: `truncated_svd`
 
-<div>$$C = \frac{1}{n}\tilde{X}^\top\tilde{X} = V \Lambda V^\top$$</div>
+</div>
 
-où $V \in \mathbb{R}^{p \times p}$ a les vecteurs propres en colonnes et $\Lambda = \text{diag}(\lambda_1, \ldots, \lambda_p)$ avec $\lambda_1 \geq \cdots \geq \lambda_p \geq 0$.
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
 
-En pratique, cela est calculé via la **SVD économique** de $\tilde{X}$ :
+```python
+sp.TruncatedSvd(n_components=2)
+```
 
-<div>$$\tilde{X} = U \Sigma V^\top \implies \lambda_i = \frac{\sigma_i^2}{n}$$</div>
+</div>
 
-**3. Projeter** sur les $k$ composantes principales :
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
 
-<div>$$T = \tilde{X} V_k, \qquad V_k = V[:, :k]$$</div>
+<table class="ml-pg-table">
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>n_components</code></td><td><code>int</code></td><td><code>2</code></td><td>Number of components to keep.</td></tr>
+</tbody>
+</table>
 
-**Blanchiment** (optionnel) : $T_{\text{blanc}} = T \cdot \text{diag}(\lambda_1^{-1/2}, \ldots, \lambda_k^{-1/2})$, donnant à chaque composante une variance unitaire.
+</div>
 
-**Ratio de variance expliquée :**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
 
-<div>$$\text{EVR}_i = \frac{\lambda_i}{\sum_j \lambda_j}$$</div>
+JSON with `transformed`, `explained_variance_ratio`.
 
-**Transformation inverse** (reconstruction approchée) :
+</div>
 
-<div>$$\hat{X} = T V_k^\top + \mu^\top$$</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$X \approx U_k \Sigma_k V_k^T$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.abs(np.random.randn(200, 15))
+svd = sp.TruncatedSVD(n_components=5)
+svd.fit(X)
+Xt = svd.transform(X)
+print(Xt.shape)
+```
+
+</div>
+
+</div>
 
 ---
 
-### TruncatedSVD
+<div class="lang-fr">
 
-Calcule directement une **SVD de rang $k$** sans centrage, la rendant adaptée aux matrices creuses (ex. TF-IDF) :
+## Référence API
 
-<div>$$X \approx U_k \Sigma_k V_k^\top$$</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
 
-Utilise un algorithme d'**itération de puissance randomisée** :
+`ml_truncated_svd` — alias : `truncated_svd`
 
-<div>$$Y = (XX^\top)^q X \Omega, \quad \Omega \in \mathbb{R}^{p \times (k + \text{sursampling})}$$</div>
+</div>
 
-où $q = \lceil\texttt{n\_iter}/2\rceil$ étapes de puissance amplifient le signal des vecteurs singuliers principaux. La factorisation QR de $Y$ fournit une base orthonormale, et la SVD finale est calculée sur le système réduit.
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
 
-**Projection** : $T = X V_k$, avec inverse $\hat{X} = T V_k^\top$.
+```python
+sp.TruncatedSvd(n_components=2)
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>n_components</code></td><td><code>int</code></td><td><code>2</code></td><td>Nombre de composantes à conserver.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
+
+JSON avec `transformed`, `explained_variance_ratio`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
+
+$$X \approx U_k \Sigma_k V_k^T$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.abs(np.random.randn(200, 15))
+svd = sp.TruncatedSVD(n_components=5)
+svd.fit(X)
+Xt = svd.transform(X)
+print(Xt.shape)
+```
+
+</div>
 
 </div>

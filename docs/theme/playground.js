@@ -842,15 +842,14 @@
         var fn = slug.replace(/-/g, '_');
         var slugSegments = slug.split('-').length;
         var codeStyle = [
-            'background:transparent',
-            'border-top:1px solid rgba(99,102,241,.18)',
-            'border-bottom:none',
-            'border-left:none',
-            'border-right:none',
-            'border-radius:0',
-            'padding:12px 2px 4px',
+            'background:#0d1117',
+            'border:1px solid #334155',
+            'border-radius:8px',
+            'padding:14px 16px',
             'margin:0 0 14px',
             'overflow-x:auto',
+            'width:100%',
+            'box-sizing:border-box',
             'font-family:"Cascadia Code","JetBrains Mono","Fira Code","Consolas",monospace',
             'font-size:12.5px',
             'line-height:1.6',

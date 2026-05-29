@@ -1,213 +1,341 @@
-# LinearSVC / LinearSVR
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>LinearSvc</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-cls">Classifier</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">⚡ SVM</span>
+      </div>
+      <p class="ml-pg-tagline">LinearSVC — linear Support Vector Machine for classification via dual coordinate descent. / LinearSVC — Machine à vecteurs de support linéaire pour classification.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
+
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
+
+```python
+import seraplot as sp
+from sklearn.datasets import make_classification
+X, y = make_classification(n_samples=500, n_features=8)
+svc = sp.LinearSVC(C=1.0)
+svc.fit(X, y)
+print(svc.score(X, y))
+```
+
+</div>
+
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.LinearSvc</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
+
+---
 
 <div class="lang-en">
 
 ## API Reference
 
-**Signature**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
+
+`ml_linear_svc` — aliases: `linear_svc`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
 
 ```python
-clf = sp.LinearSVC(
-    C=1.0, max_iter=1000, tol=1e-4, fit_intercept=True
-)
-reg = sp.LinearSVR(
-    C=1.0, epsilon=0.1, max_iter=1000, tol=1e-4, fit_intercept=True
-)
-
-model.fit(X, y)
-model.predict(X)               -> list[int] | list[float]
-model.score(X, y)              -> float
-clf.decision_function(X)       -> list[float]   # LinearSVC only
-model.get_params()             -> dict
-model.set_params(C=..., max_iter=..., tol=...)
+sp.LinearSvc(C=1.0, max_iter=1000, tol=1e-4)
 ```
 
-**Constructor parameters — LinearSVC**
+</div>
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `C` | `float` | `1.0` | Inverse regularisation strength (smaller = stronger) |
-| `max_iter` | `int` | `1000` | Maximum training epochs |
-| `tol` | `float` | `1e-4` | Convergence tolerance |
-| `fit_intercept` | `bool` | `True` | Fit a bias term |
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
 
-**Constructor parameters — LinearSVR**
+<table class="ml-pg-table">
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>C</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Regularisation parameter (inverse margin).</td></tr>
+<tr><td><code>max_iter</code></td><td><code>int</code></td><td><code>1000</code></td><td>Maximum iterations.</td></tr>
+<tr><td><code>tol</code></td><td><code>float</code></td><td><code>1e-4</code></td><td>Convergence tolerance.</td></tr>
+</tbody>
+</table>
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `C` | `float` | `1.0` | Inverse regularisation strength |
-| `epsilon` | `float` | `0.1` | Half-width of the $\varepsilon$-insensitive tube |
-| `max_iter` | `int` | `1000` | Maximum training epochs |
-| `tol` | `float` | `1e-4` | Convergence tolerance |
-| `fit_intercept` | `bool` | `True` | Fit a bias term |
+</div>
 
-**Attributes**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
 
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `classes_` | `list[int]` | Unique class labels (LinearSVC only) |
-| `coef_` | `list[list[float]]` | Weight vectors — shape `(K, p)` for classifier, `(p,)` list for SVR |
-| `intercept_` | `list[float]` | Bias term(s)|`intercept_` | `list[float]` | Bias term(s) |
-| `C_` | `float` | Regularisation parameter |
+JSON with `predictions`.
 
-<details>
-<summary><strong>Example</strong></summary>
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$\min_{w,b}\frac{1}{2}\|w\|^2 + C\sum_i \max(0, 1 - y_i(w^Tx_i + b))$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
 
 ```python
 import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 4)
-y = (X[:, 0] + X[:, 1] > 0).astype(int)
-
-clf = sp.LinearSVC(
-    C=1.0, fit_intercept=True)
-clf.fit(X, y)
-print(f"Accuracy: {clf.score(X, y):.4f}")
-print(f"Margins: {clf.decision_function(X[:3])}")
-
-reg = sp.LinearSVR(
-    C=1.0, epsilon=0.05)
-reg.fit(X, X[:, 0] * 2 - X[:, 2])
-print(f"R²: {reg.score(X, X[:, 0] * 2 - X[:, 2]):.4f}")
+from sklearn.datasets import make_classification
+X, y = make_classification(n_samples=500, n_features=8)
+svc = sp.LinearSVC(C=1.0)
+svc.fit(X, y)
+print(svc.score(X, y))
 ```
 
-</details>
-
----
-
-## Algorithmic Functioning
-
-Both models are solved via the **dual coordinate descent** method on the kernelised SVM dual problem restricted to a linear kernel.
-
-**LinearSVC — Primal objective** (hinge loss + L2 regularisation):
-
-<div>$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, 1 - y_i(w^\top x_i + b)\bigr)$$</div>
-
-The constraint $y_i(w^\top x_i + b) \geq 1$ defines the **margin**; misclassified points contribute a hinge penalty.
-
-**Dual form** — introduce per-sample dual variables $\alpha_i \in [0, C]$:
-
-<div>$$\max_{\alpha} \sum_{i=1}^n \alpha_i - \frac{1}{2}\sum_{i,j} \alpha_i \alpha_j y_i y_j x_i^\top x_j \quad \text{s.t.} \quad \sum_i \alpha_i y_i = 0$$</div>
-
-Dual coordinate descent updates one $\alpha_i$ at a time, solving the 1-d quadratic subproblem analytically with clipping to $[0, C]$.
-
-**Prediction** — signed margin:
-
-<div>$$f(x) = w^\top x + b = \sum_{i} \alpha_i y_i x_i^\top x + b$$</div>
-
-For **multiclass** (OvR): $K$ binary SVMs are trained, and the class with the highest margin wins.
-
-**LinearSVR — Primal objective** ($\varepsilon$-insensitive loss):
-
-<div>$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, |y_i - (w^\top x_i + b)| - \varepsilon\bigr)$$</div>
-
-Residuals smaller than $\varepsilon$ incur zero penalty — the model ignores small errors and focuses on larger deviations.
+</div>
 
 </div>
+
+---
 
 <div class="lang-fr">
 
 ## Référence API
 
-**Signature**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_linear_svc` — alias : `linear_svc`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
 
 ```python
-clf = sp.LinearSVC(
-    C=1.0, max_iter=1000, tol=1e-4, fit_intercept=True
-)
-reg = sp.LinearSVR(
-    C=1.0, epsilon=0.1, max_iter=1000, tol=1e-4, fit_intercept=True
-)
-
-model.fit(X, y)
-model.predict(X)               -> list[int] | list[float]
-model.score(X, y)              -> float
-clf.decision_function(X)       -> list[float]   # LinearSVC seulement
-model.get_params()             -> dict
-model.set_params(C=..., max_iter=..., tol=...)
+sp.LinearSvc(C=1.0, max_iter=1000, tol=1e-4)
 ```
 
-**Paramètres du constructeur — LinearSVC**
+</div>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `C` | `float` | `1.0` | Inverse de la force de régularisation (plus petit = plus fort) |
-| `max_iter` | `int` | `1000` | Nombre maximum d'époques d'entraînement |
-| `tol` | `float` | `1e-4` | Tolérance de convergence |
-| `fit_intercept` | `bool` | `True` | Ajuster un terme de biais |
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
 
-**Paramètres du constructeur — LinearSVR**
+<table class="ml-pg-table">
+<thead><tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>C</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Paramètre de régularisation (inverse de la marge).</td></tr>
+<tr><td><code>max_iter</code></td><td><code>int</code></td><td><code>1000</code></td><td>Nombre maximum d'itérations.</td></tr>
+<tr><td><code>tol</code></td><td><code>float</code></td><td><code>1e-4</code></td><td>Tolérance de convergence.</td></tr>
+</tbody>
+</table>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `C` | `float` | `1.0` | Inverse de la force de régularisation |
-| `epsilon` | `float` | `0.1` | Demi-largeur du tube $\varepsilon$-insensible |
-| `max_iter` | `int` | `1000` | Nombre maximum d'époques d'entraînement |
-| `tol` | `float` | `1e-4` | Tolérance de convergence |
-| `fit_intercept` | `bool` | `True` | Ajuster un terme de biais |
+</div>
 
-**Attributs**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
 
-| Attribut | Type | Description |
-|----------|------|-------------|
-| `classes_` | `list[int]` | Labels de classes uniques (LinearSVC seulement) |
-| `coef_` | `list` | Coefficients de poids — forme `(K, p)` pour SVC multiclasse, `(p,)` pour SVR |
-| `intercept_` | `list[float]` | Bias term(s)| list[float]` | Terme(s) de biais |
-| `C_` | `float` | Paramètre de régularisation |
+JSON avec `predictions`.
 
-<details>
-<summary><strong>Exemple</strong></summary>
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
+
+$$\min_{w,b}\frac{1}{2}\|w\|^2 + C\sum_i \max(0, 1 - y_i(w^Tx_i + b))$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
 
 ```python
 import seraplot as sp
-import numpy as np
-
-X = np.random.randn(500, 4)
-y = (X[:, 0] + X[:, 1] > 0).astype(int)
-
-clf = sp.LinearSVC(
-    C=1.0, fit_intercept=True)
-clf.fit(X, y)
-print(f"Précision : {clf.score(X, y):.4f}")
-print(f"Marges : {clf.decision_function(X[:3])}")
-
-reg = sp.LinearSVR(
-    C=1.0, epsilon=0.05)
-reg.fit(X, X[:, 0] * 2 - X[:, 2])
-print(f"R² : {reg.score(X, X[:, 0] * 2 - X[:, 2]):.4f}")
+from sklearn.datasets import make_classification
+X, y = make_classification(n_samples=500, n_features=8)
+svc = sp.LinearSVC(C=1.0)
+svc.fit(X, y)
+print(svc.score(X, y))
 ```
 
-</details>
+</div>
+
+</div>
 
 ---
 
-## Fonctionnement algorithmique
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>LinearSvr</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-reg">Regressor</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">⚡ SVM</span>
+      </div>
+      <p class="ml-pg-tagline">LinearSVR — epsilon-insensitive linear Support Vector Regression. / LinearSVR — régression linéaire par vecteurs de support avec perte epsilon-insensible.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
 
-Les deux modèles sont résolus via la méthode de **descente de coordonnées duale** sur le problème dual SVM noyauté restreint au noyau linéaire.
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
 
-**LinearSVC — Objectif primal** (perte hinge + régularisation L2) :
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(400, 4)
+y = X[:, 0] * 2 - X[:, 2] + np.random.randn(400) * 0.5
+svr = sp.LinearSVR(C=1.0, epsilon=0.1)
+svr.fit(X, y)
+print(svr.score(X, y))
+```
 
-<div>$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, 1 - y_i(w^\top x_i + b)\bigr)$$</div>
+</div>
 
-La contrainte $y_i(w^\top x_i + b) \geq 1$ définit la **marge** ; les points mal classifiés contribuent une pénalité hinge.
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.LinearSvr</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
 
-**Forme duale** — introduire des variables duales $\alpha_i \in [0, C]$ par échantillon :
+---
 
-<div>$$\max_{\alpha} \sum_{i=1}^n \alpha_i - \frac{1}{2}\sum_{i,j} \alpha_i \alpha_j y_i y_j x_i^\top x_j \quad \text{s.t.} \quad \sum_i \alpha_i y_i = 0$$</div>
+<div class="lang-en">
 
-La descente de coordonnées duale met à jour un $\alpha_i$ à la fois, résolvant analytiquement le sous-problème quadratique 1-d avec écrêtage à $[0, C]$.
+## API Reference
 
-**Prédiction** — marge signée :
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
 
-<div>$$f(x) = w^\top x + b = \sum_{i} \alpha_i y_i x_i^\top x + b$$</div>
+`ml_linear_svr` — aliases: `linear_svr`
 
-Pour le **multiclasse** (OvR) : $K$ SVMs binaires sont entraînés, et la classe avec la marge la plus haute l'emporte.
+</div>
 
-**LinearSVR — Objectif primal** (perte $\varepsilon$-insensible) :
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
 
-<div>$$\min_{w, b} \frac{1}{2}\|w\|^2 + C \sum_{i=1}^n \max\!\bigl(0,\, |y_i - (w^\top x_i + b)| - \varepsilon\bigr)$$</div>
+```python
+sp.LinearSvr(C=1.0, epsilon=0.1, max_iter=1000, tol=1e-4)
+```
 
-Les résidus plus petits que $\varepsilon$ n'entraînent aucune pénalité — le modèle ignore les petites erreurs et se concentre sur les déviations plus grandes.
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>C</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Regularisation parameter.</td></tr>
+<tr><td><code>epsilon</code></td><td><code>float</code></td><td><code>0.1</code></td><td>Epsilon-tube width.</td></tr>
+<tr><td><code>max_iter</code></td><td><code>int</code></td><td><code>1000</code></td><td>Maximum iterations.</td></tr>
+<tr><td><code>tol</code></td><td><code>float</code></td><td><code>1e-4</code></td><td>Convergence tolerance.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$\min_{w,b}\frac{1}{2}\|w\|^2 + C\sum_i \max(0, |y_i - (w^Tx_i+b)| - \varepsilon)$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(400, 4)
+y = X[:, 0] * 2 - X[:, 2] + np.random.randn(400) * 0.5
+svr = sp.LinearSVR(C=1.0, epsilon=0.1)
+svr.fit(X, y)
+print(svr.score(X, y))
+```
+
+</div>
+
+</div>
+
+---
+
+<div class="lang-fr">
+
+## Référence API
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_linear_svr` — alias : `linear_svr`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
+
+```python
+sp.LinearSvr(C=1.0, epsilon=0.1, max_iter=1000, tol=1e-4)
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>C</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Paramètre de régularisation.</td></tr>
+<tr><td><code>epsilon</code></td><td><code>float</code></td><td><code>0.1</code></td><td>Largeur du tube epsilon.</td></tr>
+<tr><td><code>max_iter</code></td><td><code>int</code></td><td><code>1000</code></td><td>Nombre maximum d'itérations.</td></tr>
+<tr><td><code>tol</code></td><td><code>float</code></td><td><code>1e-4</code></td><td>Tolérance de convergence.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
+
+JSON avec `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
+
+$$\min_{w,b}\frac{1}{2}\|w\|^2 + C\sum_i \max(0, |y_i - (w^Tx_i+b)| - \varepsilon)$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(400, 4)
+y = X[:, 0] * 2 - X[:, 2] + np.random.randn(400) * 0.5
+svr = sp.LinearSVR(C=1.0, epsilon=0.1)
+svr.fit(X, y)
+print(svr.score(X, y))
+```
+
+</div>
 
 </div>

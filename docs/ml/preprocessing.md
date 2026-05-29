@@ -1,281 +1,614 @@
-# StandardScaler / MinMaxScaler / RobustScaler / MaxAbsScaler / Normalizer
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>StandardScaler</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-trx">Transformer</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">🔧 Preprocessing</span>
+      </div>
+      <p class="ml-pg-tagline">StandardScaler — zero-mean unit-variance standardisation. / StandardScaler — standardisation à moyenne nulle et variance unitaire.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
+
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(200, 4) * [3, 0.5, 10, 1]
+scaler = sp.StandardScaler()
+scaler.fit(X)
+Xt = scaler.transform(X)
+print(Xt.mean(0), Xt.std(0))
+```
+
+</div>
+
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.StandardScaler</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
+
+---
 
 <div class="lang-en">
 
 ## API Reference
 
-**Signature**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
 
-```python
-scaler = sp.StandardScaler(with_mean=True, with_std=True)
-scaler = sp.MinMaxScaler(feature_range_min=0.0, feature_range_max=1.0)
-scaler = sp.RobustScaler(with_centering=True, with_scaling=True, quantile_range=(25.0, 75.0))
-scaler = sp.MaxAbsScaler()
-scaler = sp.Normalizer(norm="l2")
-
-scaler.fit(X)
-X_scaled  = scaler.transform(X)       -> ndarray
-X_scaled  = scaler.fit_transform(X)   -> ndarray
-```
-
-**Constructor parameters — StandardScaler**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `with_mean` | `bool` | `True` | Subtract the mean |
-| `with_std` | `bool` | `True` | Divide by standard deviation |
-
-**Constructor parameters — MinMaxScaler**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `feature_range_min` | `float` | `0.0` | Lower bound of output range |
-| `feature_range_max` | `float` | `1.0` | Upper bound of output range |
-
-**Constructor parameters — RobustScaler**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `with_centering` | `bool` | `True` | Subtract the median |
-| `with_scaling` | `bool` | `True` | Divide by IQR |
-| `quantile_range` | `tuple(float,float)` | `(25.0, 75.0)` | Quantile range for IQR |
-
-**Constructor parameters — Normalizer**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `norm` | `str` | `"l2"` | Per-sample norm: `"l1"`, `"l2"`, `"max"` |
-
-**Attributes**
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `mean_` | `list[float]` | Per-feature mean (StandardScaler) |
-| `scale_` | `list[float]` | Per-feature scale factor |
-| `data_min_` | `list[float]` | Per-feature minimum (MinMaxScaler) |
-| `data_range_` | `list[float]` | Per-feature range (MinMaxScaler) |
-| `center_` | `list[float]` | Per-feature median (RobustScaler) |
-| `max_abs_` | `list[float]` | Per-feature maximum absolute value (MaxAbsScaler) |
-
-<details>
-<summary><strong>Example</strong></summary>
-
-```python
-import seraplot as sp
-import numpy as np
-
-X_train = np.random.randn(300, 4) * [5, 2, 0.1, 100]
-X_test  = np.random.randn(50, 4)  * [5, 2, 0.1, 100]
-
-scaler = sp.StandardScaler()
-X_tr = scaler.fit_transform(X_train)
-X_te = scaler.transform(X_test)
-print(f"Train mean˜0: {X_tr.mean(0).round(3)}")
-
-mm = sp.MinMaxScaler(feature_range_min=0.0, feature_range_max=1.0)
-print(f"MinMax range: {mm.fit_transform(X_train).min(0).round(3)}, {mm.fit_transform(X_train).max(0).round(3)}")
-```
-
-</details>
-
----
-
-## Algorithmic Functioning
-
-Each scaler applies a **column-wise linear transformation** fitted on the training set and applied identically to any new data.
-
----
-
-### StandardScaler
-
-Standardises features to zero mean and unit variance:
-
-<div>$$x'_j = \frac{x_j - \mu_j}{\sigma_j}$$</div>
-
-where $\mu_j = \frac{1}{n}\sum_i x_{ij}$ and $\sigma_j = \sqrt{\frac{1}{n}\sum_i (x_{ij}-\mu_j)^2}$.
-
----
-
-### MinMaxScaler
-
-Rescales each feature into the interval $[a, b]$ (`feature_range`):
-
-<div>$$x'_j = a + \frac{x_j - \min_j}{\max_j - \min_j}(b - a)$$</div>
-
-Sensitive to outliers since it uses $\min$ and $\max$.
-
----
-
-### RobustScaler
-
-Uses **median** and **interquartile range** (IQR), making it robust to outliers:
-
-<div>$$x'_j = \frac{x_j - Q_{50}(j)}{Q_{75}(j) - Q_{25}(j)}$$</div>
-
-where $Q_p(j)$ is the $p$-th percentile of feature $j$.
-
----
-
-### MaxAbsScaler
-
-Scales each feature by its maximum absolute value, preserving sparsity and the origin:
-
-<div>$$x'_j = \frac{x_j}{\max_i |x_{ij}|}$$</div>
-
-Result lies in $[-1, 1]$.
-
----
-
-### Normalizer
-
-Scales each **sample** (row) to unit norm, applied independently of fit:
-
-<div>$$x'_i = \frac{x_i}{\|x_i\|_p}, \qquad p \in \{1, 2, \infty\}$$</div>
-
-No `fit` step is required — the transformation is stateless.
-
-**Inverse transform** is defined for StandardScaler, MinMaxScaler, RobustScaler, and MaxAbsScaler:
-
-<div>$$x_j = x'_j \cdot \text{scale}_j + \text{center}_j$$</div>
+`ml_standard_scaler` — aliases: `standard_scaler`, `standardize`
 
 </div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
+
+```python
+sp.StandardScaler()
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
+
+<p><em>No constructor parameters.</em></p>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `transformed` matrix.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$x' = \frac{x - \mu}{\sigma}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(200, 4) * [3, 0.5, 10, 1]
+scaler = sp.StandardScaler()
+scaler.fit(X)
+Xt = scaler.transform(X)
+print(Xt.mean(0), Xt.std(0))
+```
+
+</div>
+
+</div>
+
+---
 
 <div class="lang-fr">
 
 ## Référence API
 
-**Signature**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_standard_scaler` — alias : `standard_scaler`, `standardize`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
 
 ```python
-scaler = sp.StandardScaler(with_mean=True, with_std=True)
-scaler = sp.MinMaxScaler(feature_range_min=0.0, feature_range_max=1.0)
-scaler = sp.RobustScaler(with_centering=True, with_scaling=True, quantile_range=(25.0, 75.0))
-scaler = sp.MaxAbsScaler()
-scaler = sp.Normalizer(norm="l2")
-
-scaler.fit(X)
-X_scaled  = scaler.transform(X)       -> ndarray
-X_scaled  = scaler.fit_transform(X)   -> ndarray
+sp.StandardScaler()
 ```
 
-**Paramètres du constructeur — StandardScaler**
+</div>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `with_mean` | `bool` | `True` | Soustraire la moyenne |
-| `with_std` | `bool` | `True` | Diviser par l'écart-type |
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
 
-**Paramètres du constructeur — MinMaxScaler**
+<p><em>Aucun paramètre de constructeur.</em></p>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `feature_range_min` | `float` | `0.0` | Borne inférieure de la plage de sortie |
-| `feature_range_max` | `float` | `1.0` | Borne supérieure de la plage de sortie |
+</div>
 
-**Paramètres du constructeur — RobustScaler**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `with_centering` | `bool` | `True` | Soustraire la médiane |
-| `with_scaling` | `bool` | `True` | Diviser par l'IQR |
-| `quantile_range` | `tuple(float,float)` | `(25.0, 75.0)` | Plage de quantiles pour l'IQR |
+JSON avec matrice `transformed`.
 
-**Paramètres du constructeur — Normalizer**
+</div>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `norm` | `str` | `"l2"` | Norme par échantillon : `"l1"`, `"l2"`, `"max"` |
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
 
-**Attributs**
+$$x' = \frac{x - \mu}{\sigma}$$
 
-| Attribut | Type | Description |
-|----------|------|-------------|
-| `mean_` | `list[float]` | Moyenne par feature (StandardScaler) |
-| `scale_` | `list[float]` | Facteur d'échelle par feature |
-| `min_` | `list[float]` | Minimum par feature (MinMaxScaler) |
-| `data_range_` | `list[float]` | Plage par feature (MinMaxScaler) |
-| `center_` | `list[float]` | Médiane par feature (RobustScaler) |
-| `max_abs_` | `list[float]` | Valeur absolue maximale par feature (MaxAbsScaler) |
-
-<details>
-<summary><strong>Exemple</strong></summary>
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
 
 ```python
-import seraplot as sp
-import numpy as np
-
-X_train = np.random.randn(300, 4) * [5, 2, 0.1, 100]
-X_test  = np.random.randn(50, 4)  * [5, 2, 0.1, 100]
-
+import seraplot as sp, numpy as np
+X = np.random.randn(200, 4) * [3, 0.5, 10, 1]
 scaler = sp.StandardScaler()
-X_tr = scaler.fit_transform(X_train)
-X_te = scaler.transform(X_test)
-print(f"Moyenne train˜0 : {X_tr.mean(0).round(3)}")
-
-mm = sp.MinMaxScaler(feature_range_min=0.0, feature_range_max=1.0)
-print(f"Plage MinMax : {mm.fit_transform(X_train).min(0).round(3)}, {mm.fit_transform(X_train).max(0).round(3)}")
+scaler.fit(X)
+Xt = scaler.transform(X)
+print(Xt.mean(0), Xt.std(0))
 ```
 
-</details>
+</div>
+
+</div>
 
 ---
 
-## Fonctionnement algorithmique
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>MinmaxScaler</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-trx">Transformer</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">🔧 Preprocessing</span>
+      </div>
+      <p class="ml-pg-tagline">MinMaxScaler — scale features to [0, 1] range. / MinMaxScaler — mise à l'échelle des features dans l'intervalle [0, 1].</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
 
-Chaque scaler applique une **transformation linéaire colonne par colonne** ajustée sur l'ensemble d'entraînement et appliquée de manière identique à toute nouvelle donnée.
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
 
----
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(200, 3) * 100
+scaler = sp.MinMaxScaler()
+Xt = scaler.fit_transform(X)
+print(Xt.min(), Xt.max())
+```
 
-### StandardScaler
+</div>
 
-Standardise les features à moyenne nulle et variance unitaire :
-
-<div>$$x'_j = \frac{x_j - \mu_j}{\sigma_j}$$</div>
-
-où $\mu_j = \frac{1}{n}\sum_i x_{ij}$ et $\sigma_j = \sqrt{\frac{1}{n}\sum_i (x_{ij}-\mu_j)^2}$.
-
----
-
-### MinMaxScaler
-
-Redimensionne chaque feature dans l'intervalle $[a, b]$ (`feature_range`) :
-
-<div>$$x'_j = a + \frac{x_j - \min_j}{\max_j - \min_j}(b - a)$$</div>
-
-Sensible aux valeurs aberrantes car il utilise $\min$ et $\max$.
-
----
-
-### RobustScaler
-
-Utilise la **médiane** et l'**écart interquartile** (IQR), le rendant robuste aux valeurs aberrantes :
-
-<div>$$x'_j = \frac{x_j - Q_{50}(j)}{Q_{75}(j) - Q_{25}(j)}$$</div>
-
-où $Q_p(j)$ est le $p$-ième percentile de la feature $j$.
-
----
-
-### MaxAbsScaler
-
-Met à l'échelle chaque feature par sa valeur absolue maximale, préservant la sparsité et l'origine :
-
-<div>$$x'_j = \frac{x_j}{\max_i |x_{ij}|}$$</div>
-
-Le résultat est dans $[-1, 1]$.
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.MinmaxScaler</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
 
 ---
 
-### Normalizer
+<div class="lang-en">
 
-Met à l'échelle chaque **échantillon** (ligne) à une norme unitaire, appliqué indépendamment du fit :
+## API Reference
 
-<div>$$x'_i = \frac{x_i}{\|x_i\|_p}, \qquad p \in \{1, 2, \infty\}$$</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
 
-Aucune étape `fit` n'est requise — la transformation est sans état.
+`ml_minmax_scaler` — aliases: `minmax_scaler`, `min_max_scaler`
 
-**Transformation inverse** définie pour StandardScaler, MinMaxScaler, RobustScaler et MaxAbsScaler :
+</div>
 
-<div>$$x_j = x'_j \cdot \text{scale}_j + \text{center}_j$$</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
+
+```python
+sp.MinmaxScaler()
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
+
+<p><em>No constructor parameters.</em></p>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `transformed` matrix.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$x' = \frac{x - x_{\min}}{x_{\max} - x_{\min}}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(200, 3) * 100
+scaler = sp.MinMaxScaler()
+Xt = scaler.fit_transform(X)
+print(Xt.min(), Xt.max())
+```
+
+</div>
+
+</div>
+
+---
+
+<div class="lang-fr">
+
+## Référence API
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_minmax_scaler` — alias : `minmax_scaler`, `min_max_scaler`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
+
+```python
+sp.MinmaxScaler()
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
+
+<p><em>Aucun paramètre de constructeur.</em></p>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
+
+JSON avec matrice `transformed`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
+
+$$x' = \frac{x - x_{\min}}{x_{\max} - x_{\min}}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(200, 3) * 100
+scaler = sp.MinMaxScaler()
+Xt = scaler.fit_transform(X)
+print(Xt.min(), Xt.max())
+```
+
+</div>
+
+</div>
+
+---
+
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>RobustScaler</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-trx">Transformer</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">🔧 Preprocessing</span>
+      </div>
+      <p class="ml-pg-tagline">RobustScaler — scale using median and IQR, robust to outliers. / RobustScaler — mise à l'échelle par médiane et IQR, robuste aux valeurs aberrantes.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
+
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(300, 4)
+X[0, :] = 100
+scaler = sp.RobustScaler()
+Xt = scaler.fit_transform(X)
+print(Xt.mean(0))
+```
+
+</div>
+
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.RobustScaler</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
+
+---
+
+<div class="lang-en">
+
+## API Reference
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
+
+`ml_robust_scaler` — aliases: `robust_scaler`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
+
+```python
+sp.RobustScaler()
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
+
+<p><em>No constructor parameters.</em></p>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `transformed` matrix.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$x' = \frac{x - \text{median}}{\text{IQR}}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(300, 4)
+X[0, :] = 100
+scaler = sp.RobustScaler()
+Xt = scaler.fit_transform(X)
+print(Xt.mean(0))
+```
+
+</div>
+
+</div>
+
+---
+
+<div class="lang-fr">
+
+## Référence API
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_robust_scaler` — alias : `robust_scaler`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
+
+```python
+sp.RobustScaler()
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
+
+<p><em>Aucun paramètre de constructeur.</em></p>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
+
+JSON avec matrice `transformed`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
+
+$$x' = \frac{x - \text{médiane}}{\text{IQR}}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(300, 4)
+X[0, :] = 100
+scaler = sp.RobustScaler()
+Xt = scaler.fit_transform(X)
+print(Xt.mean(0))
+```
+
+</div>
+
+</div>
+
+---
+
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>FitTransform</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-trx">Transformer</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">🔧 Preprocessing</span>
+      </div>
+      <p class="ml-pg-tagline">Unified fit_transform — dispatches to StandardScaler/MinMaxScaler/RobustScaler by name. / fit_transform unifié — dispatche vers StandardScaler/MinMaxScaler/RobustScaler par nom.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
+
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
+
+```python
+import seraplot as sp, numpy as np
+import json
+X = np.random.randn(100, 3) * 5
+res = json.loads(sp.ml_fit_transform(json.dumps({"X_train": X.tolist(), "scaler": "minmax"})))
+```
+
+</div>
+
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.FitTransform</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
+
+---
+
+<div class="lang-en">
+
+## API Reference
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
+
+`ml_fit_transform` — aliases: `fit_transform`, `preprocess`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
+
+```python
+sp.FitTransform(scaler=standard)
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>scaler</code></td><td><code>str</code></td><td><code>standard</code></td><td>Scaler type: `standard`, `minmax`, `robust`.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `transformed` matrix.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp, numpy as np
+import json
+X = np.random.randn(100, 3) * 5
+res = json.loads(sp.ml_fit_transform(json.dumps({"X_train": X.tolist(), "scaler": "minmax"})))
+```
+
+</div>
+
+</div>
+
+---
+
+<div class="lang-fr">
+
+## Référence API
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_fit_transform` — alias : `fit_transform`, `preprocess`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
+
+```python
+sp.FitTransform(scaler=standard)
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>scaler</code></td><td><code>str</code></td><td><code>standard</code></td><td>Type de scaler : `standard`, `minmax`, `robust`.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
+
+JSON avec matrice `transformed`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
+
+```python
+import seraplot as sp, numpy as np
+import json
+X = np.random.randn(100, 3) * 5
+res = json.loads(sp.ml_fit_transform(json.dumps({"X_train": X.tolist(), "scaler": "minmax"})))
+```
+
+</div>
 
 </div>

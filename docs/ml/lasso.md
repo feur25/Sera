@@ -1,159 +1,170 @@
-﻿# Lasso
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>Lasso</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-reg">Regressor</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">📈 Linear</span>
+      </div>
+      <p class="ml-pg-tagline">Lasso regression — L1-penalised OLS via coordinate descent. / Régression Lasso — OLS pénalisée L1 par descente de coordonnées.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
+
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(200, 10)
+y = X[:, 0] * 2 + X[:, 3] * -1.5 + np.random.randn(200) * 0.3
+model = sp.Lasso(alpha=0.1)
+model.fit(X, y)
+print([f"{c:.3f}" for c in model.coef_])
+```
+
+</div>
+
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.Lasso</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
+
+---
 
 <div class="lang-en">
 
 ## API Reference
 
-**Signature**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
 
-```python
-model = sp.Lasso(alpha=1.0, max_iter=1000, tol=1e-4, fit_intercept=True)
-
-model.fit(X, y)
-model.predict(X)   -> list[float]
-model.score(X, y)  -> float
-model.get_params() -> dict
-model.set_params(alpha=..., max_iter=..., tol=..., fit_intercept=...)
-```
-
-**Constructor parameters**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `alpha` | `float` | `1.0` | L1 penalty strength |
-| `max_iter` | `int` | `1000` | Maximum coordinate descent iterations |
-| `tol` | `float` | `1e-4` | Convergence tolerance |
-| `fit_intercept` | `bool` | `True` | Fit a bias term |
-
-**Attributes**
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `coef_` | `list[float]` | Fitted coefficients (sparse) |
-| `intercept_` | `float` | Bias term |
-| `alpha_` | `float` | Regularisation parameter |
-| `n_iter_` | `int` | Actual iterations performed |
-
-<details>
-<summary><strong>Example</strong></summary>
-
-```python
-import seraplot as sp
-import numpy as np
-
-X = np.random.randn(300, 20)
-true_coef = np.zeros(20)
-true_coef[:3] = [3.0, -2.0, 1.5]
-y = X @ true_coef + np.random.randn(300) * 0.2
-
-model = sp.Lasso(alpha=0.1)
-model.fit(X, y)
-non_zero = sum(1 for c in model.coef_ if abs(c) > 1e-6)
-print(f"R2: {model.score(X, y):.4f}")
-print(f"Non-zero coefficients: {non_zero} / 20")
-```
-
-</details>
-
----
-
-## Algorithmic Functioning
-
-Lasso minimises the L1-penalised objective:
-
-<div>$$\hat{\beta} = \underset{\beta}{\arg\min}\ \frac{1}{2n}\|y - X\beta\|_2^2 + \alpha\|\beta\|_1$$</div>
-
-**Coordinate descent** updates one coefficient at a time while holding the rest fixed. For each $j$:
-
-<div>$$r_j = y - X_{-j}\hat{\beta}_{-j}$$</div>
-
-<div>$$\hat{\beta}_j \leftarrow \frac{S\!\left(X_j^T r_j / n,\ \alpha\right)}{\|X_j\|_2^2 / n}$$</div>
-
-where $S(\cdot, \lambda)$ is the **soft-threshold operator**:
-
-<div>$$S(z, \lambda) = \text{sign}(z)\max(|z| - \lambda, 0)$$</div>
-
-This sets small coefficients exactly to zero, producing **sparse solutions**.
-
-**Convergence** — iterations stop when $\max_j |\beta_j^{(t)} - \beta_j^{(t-1)}| < \texttt{tol}$ or after `max_iter` passes. The `checkpoint_id` argument enables training resumed across multiple Python calls.
+`ml_lasso` — aliases: `lasso`
 
 </div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
+
+```python
+sp.Lasso(alpha=1.0, max_iter=1000, tol=1e-4, fit_intercept=true)
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>alpha</code></td><td><code>float</code></td><td><code>1.0</code></td><td>L1 regularisation strength.</td></tr>
+<tr><td><code>max_iter</code></td><td><code>int</code></td><td><code>1000</code></td><td>Maximum iterations.</td></tr>
+<tr><td><code>tol</code></td><td><code>float</code></td><td><code>1e-4</code></td><td>Convergence tolerance.</td></tr>
+<tr><td><code>fit_intercept</code></td><td><code>bool</code></td><td><code>true</code></td><td>Fit an intercept term.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `predictions`, `coef`, `intercept`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$\hat{\beta} = \arg\min_{\beta}\|y - X\beta\|_2^2 + \alpha\|\beta\|_1$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(200, 10)
+y = X[:, 0] * 2 + X[:, 3] * -1.5 + np.random.randn(200) * 0.3
+model = sp.Lasso(alpha=0.1)
+model.fit(X, y)
+print([f"{c:.3f}" for c in model.coef_])
+```
+
+</div>
+
+</div>
+
+---
 
 <div class="lang-fr">
 
 ## Référence API
 
-**Signature**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_lasso` — alias : `lasso`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
 
 ```python
-model = sp.Lasso(alpha=1.0, max_iter=1000, tol=1e-4, fit_intercept=True)
-
-model.fit(X, y)
-model.predict(X)   -> list[float]
-model.score(X, y)  -> float
-model.get_params() -> dict
-model.set_params(alpha=..., max_iter=..., tol=..., fit_intercept=...)
+sp.Lasso(alpha=1.0, max_iter=1000, tol=1e-4, fit_intercept=true)
 ```
 
-**Paramètres du constructeur**
+</div>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `alpha` | `float` | `1.0` | Force de pénalité L1 |
-| `max_iter` | `int` | `1000` | Nombre maximum d'itérations de descente de coordonnées |
-| `tol` | `float` | `1e-4` | Tolérance de convergence |
-| `fit_intercept` | `bool` | `True` | Ajuster un terme de biais |
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
 
-**Attributs**
+<table class="ml-pg-table">
+<thead><tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>alpha</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Force de régularisation L1.</td></tr>
+<tr><td><code>max_iter</code></td><td><code>int</code></td><td><code>1000</code></td><td>Nombre maximum d'itérations.</td></tr>
+<tr><td><code>tol</code></td><td><code>float</code></td><td><code>1e-4</code></td><td>Tolérance de convergence.</td></tr>
+<tr><td><code>fit_intercept</code></td><td><code>bool</code></td><td><code>true</code></td><td>Ajuster un terme d'intercept.</td></tr>
+</tbody>
+</table>
 
-| Attribut | Type | Description |
-|----------|------|-------------|
-| `coef_` | `list[float]` | Coefficients ajustés (creux) |
-| `intercept_` | `float` | Terme de biais |
-| `alpha_` | `float` | Paramètre de régularisation |
-| `n_iter_` | `int` | Nombre d'itérations réalisées |
+</div>
 
-<details>
-<summary><strong>Exemple</strong></summary>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
+
+JSON avec `predictions`, `coef`, `intercept`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
+
+$$\hat{\beta} = \arg\min_{\beta}\|y - X\beta\|_2^2 + \alpha\|\beta\|_1$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
 
 ```python
-import seraplot as sp
-import numpy as np
-
-X = np.random.randn(300, 20)
-true_coef = np.zeros(20)
-true_coef[:3] = [3.0, -2.0, 1.5]
-y = X @ true_coef + np.random.randn(300) * 0.2
-
+import seraplot as sp, numpy as np
+X = np.random.randn(200, 10)
+y = X[:, 0] * 2 + X[:, 3] * -1.5 + np.random.randn(200) * 0.3
 model = sp.Lasso(alpha=0.1)
 model.fit(X, y)
-non_zero = sum(1 for c in model.coef_ if abs(c) > 1e-6)
-print(f"R2 : {model.score(X, y):.4f}")
-print(f"Coefficients non nuls : {non_zero} / 20")
+print([f"{c:.3f}" for c in model.coef_])
 ```
 
-</details>
-
----
-
-## Fonctionnement algorithmique
-
-Lasso minimise l'objectif avec pénalité L1 :
-
-<div>$$\hat{\beta} = \underset{\beta}{\arg\min}\ \frac{1}{2n}\|y - X\beta\|_2^2 + \alpha\|\beta\|_1$$</div>
-
-La **descente de coordonnées** met à jour un coefficient à la fois en fixant les autres. Pour chaque $j$ :
-
-<div>$$r_j = y - X_{-j}\hat{\beta}_{-j}$$</div>
-
-<div>$$\hat{\beta}_j \leftarrow \frac{S\!\left(X_j^T r_j / n,\ \alpha\right)}{\|X_j\|_2^2 / n}$$</div>
-
-où $S(\cdot, \lambda)$ est l'**opérateur de seuillage doux** :
-
-<div>$$S(z, \lambda) = \text{sign}(z)\max(|z| - \lambda, 0)$$</div>
-
-Cela annule exactement les petits coefficients, produisant des **solutions creuses**.
-
-**Convergence** — Les itérations s'arrêtent quand $\max_j |\beta_j^{(t)} - \beta_j^{(t-1)}| < \texttt{tol}$ ou après `max_iter` passes. L'argument `checkpoint_id` permet un entraînement repris entre plusieurs appels Python.
+</div>
 
 </div>

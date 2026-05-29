@@ -1,5 +1,6 @@
 pub mod linalg;
 pub mod cache;
+pub mod bindings;
 pub mod linear;
 pub mod tree;
 pub mod neighbors;

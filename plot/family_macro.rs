@@ -12,6 +12,9 @@ macro_rules! plot_family {
 
         impl $name {
             pub fn from_str(s: &str) -> Self {
+                let s = s.strip_prefix("fr_").or_else(|| s.strip_prefix("en_"))
+                    .or_else(|| s.strip_prefix("fr-")).or_else(|| s.strip_prefix("en-"))
+                    .unwrap_or(s);
                 match s {
                     $( $key $( | $alias )* => $name::$variant, )*
                     _ => $name::$default,

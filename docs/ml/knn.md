@@ -1,245 +1,492 @@
-# KNeighborsClassifier / KNeighborsRegressor
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>KnnClassifier</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-cls">Classifier</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">🔍 Neighbors</span>
+      </div>
+      <p class="ml-pg-tagline">K-Nearest Neighbors classifier — majority vote among k nearest neighbors. / K plus proches voisins classifieur — vote majoritaire parmi les k voisins les plus proches.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
+
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
+
+```python
+import seraplot as sp
+from sklearn.datasets import load_iris
+X, y = load_iris(return_X_y=True)
+knn = sp.KNeighborsClassifier(n_neighbors=5)
+knn.fit(X, y)
+print(knn.score(X, y))
+```
+
+</div>
+
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.KnnClassifier</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
+
+---
 
 <div class="lang-en">
 
 ## API Reference
 
-**Signature**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
+
+`ml_knn_classifier` — aliases: `knn_classifier`, `knn_cls`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
 
 ```python
-clf = sp.KNeighborsClassifier(n_neighbors=5, weights="uniform")
-reg = sp.KNeighborsRegressor(n_neighbors=5, weights="uniform")
-
-model.fit(X, y)
-model.predict(X)               -> list[int] | list[float]
-model.predict_proba(X)         -> ndarray (n, K)   # classifier only
-model.score(X, y)              -> float
-model.get_params()             -> dict
-model.set_params(n_neighbors=...)
-```
-
-**Constructor parameters**
-
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `n_neighbors` | `int` | `5` | Number of nearest neighbours $k$ |
-| `weights` | `str` | `"uniform"` | Weighting strategy: `"uniform"` (equal) or `"distance"` (inverse distance) |
-
-**Attributes**
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `classes_` | `list[int]` | Unique class labels (classifier only) |
-| `n_neighbors_` | `int` | The $k$ value in use |
-| `weights_` | `str` | The weighting strategy in use |
-
-<details>
-<summary><strong>Example</strong></summary>
-
-```python
-import seraplot as sp
-import numpy as np
-
-X = np.random.randn(400, 4)
-y = (X[:, 0] ** 2 + X[:, 1] ** 2 < 1).astype(int)
-
-clf = sp.KNeighborsClassifier(n_neighbors=7)
-clf.fit(X, y)
-print(f"Accuracy: {clf.score(X, y):.4f}")
-
-reg = sp.KNeighborsRegressor(n_neighbors=7)
-reg.fit(X, X[:, 0] + X[:, 1])
-print(f"R\u00b2: {reg.score(X, X[:, 0] + X[:, 1]):.4f}")
-```
-
-</details>
-
----
-
-## Algorithmic Functioning
-
-$k$-Nearest Neighbours is a **non-parametric, lazy** algorithm: no model is fitted at training time \u2014 the entire dataset is stored and queried at prediction time.
-
-**Distance metric** \u2014 Euclidean distance between two points $x, x' \in \mathbb{R}^p$:
-
-<div>$$d(x, x') = \|x - x'\|_2 = \sqrt{\sum_{j=1}^p (x_j - x'_j)^2}$$</div>
-
-**Neighbourhood** \u2014 for a query point $x$, the $k$ nearest training samples:
-
-<div>$$\mathcal{N}_k(x) = \text{top-}k \text{ smallest } d(x, x_i), \quad x_i \in \mathcal{D}_{\text{train}}$$</div>
-
-**Classifier \u2014 majority vote** across the $k$ neighbours:
-
-<div>$$\hat{y} = \underset{c}{\arg\max} \sum_{x_i \in \mathcal{N}_k(x)} \mathbf{1}[y_i = c]$$</div>
-
-**Class probability estimate:**
-
-<div>$$\hat{p}(y = c \mid x) = \frac{1}{k}\sum_{x_i \in \mathcal{N}_k(x)} \mathbf{1}[y_i = c]$$</div>
-
-**Regressor \u2014 mean of neighbours:**
-
-<div>$$\hat{y} = \frac{1}{k}\sum_{x_i \in \mathcal{N}_k(x)} y_i$$</div>
-
-**Complexity trade-offs:**
-- Training: $O(1)$ \u2014 just store $\mathcal{D}$
-- Prediction: $O(nd)$ \u2014 brute-force scan (no index built)
-- Memory: $O(nd)$ \u2014 full training set retained
-
-**Effect of $k$** \u2014 small $k$ fits the training data tightly (high variance); large $k$ smooths the decision boundary (high bias). Optimal $k$ is tuned via cross-validation.
-
----
-
-## NearestCentroid
-
-**Signature**
-
-```python
-clf = sp.NearestCentroid()
-
-clf.fit(X, y)
-clf.predict(X)   -> list[int]
-clf.score(X, y)  -> float
-```
-
-**Attributes**
-
-| Attribute | Type | Description |
-|-----------|------|-------------|
-| `classes_` | `list[int]` | Unique class labels |
-
-No constructor parameters. Assigns each query point to the class whose centroid (mean of training points) is closest.
-
-```python
-import seraplot as sp
-import numpy as np
-
-X = np.random.randn(300, 4)
-y = (X[:, 0] + X[:, 1] > 0).astype(int)
-clf = sp.NearestCentroid()
-clf.fit(X, y)
-print(f"Accuracy: {clf.score(X, y):.4f}")
+sp.KnnClassifier(n_neighbors=5, weights=uniform)
 ```
 
 </div>
 
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>n_neighbors</code></td><td><code>int</code></td><td><code>5</code></td><td>Number of nearest neighbors.</td></tr>
+<tr><td><code>weights</code></td><td><code>str</code></td><td><code>uniform</code></td><td>Weighting: `uniform` or `distance`.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$\hat{y} = \arg\max_c \sum_{i \in \mathcal{N}_k(x)} w_i \mathbf{1}[y_i = c]$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp
+from sklearn.datasets import load_iris
+X, y = load_iris(return_X_y=True)
+knn = sp.KNeighborsClassifier(n_neighbors=5)
+knn.fit(X, y)
+print(knn.score(X, y))
+```
+
+</div>
+
+</div>
+
+---
+
 <div class="lang-fr">
 
-## R\u00e9f\u00e9rence API
+## Référence API
 
-**Signature**
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
 
-```python
-clf = sp.KNeighborsClassifier(n_neighbors=5, weights="uniform")
-reg = sp.KNeighborsRegressor(n_neighbors=5, weights="uniform")
+`ml_knn_classifier` — alias : `knn_classifier`, `knn_cls`
 
-model.fit(X, y)
-model.predict(X)               -> list[int] | list[float]
-model.predict_proba(X)         -> ndarray (n, K)   # classificateur seulement
-model.score(X, y)              -> float
-model.get_params()             -> dict
-model.set_params(n_neighbors=...)
-```
+</div>
 
-**Param\u00e8tres du constructeur**
-
-| Param\u00e8tre | Type | D\u00e9faut | Description |
-|-----------|------|--------|-------------|
-| `n_neighbors` | `int` | `5` | Nombre de voisins les plus proches $k$ |
-| `weights` | `str` | `"uniform"` | Pond\u00e9ration\u00a0: `"uniform"` (\u00e9gale) ou `"distance"` (distance inverse) |
-
-**Attributs**
-
-| Attribut | Type | Description |
-|----------|------|-------------|
-| `classes_` | `list[int]` | Labels de classes uniques (classificateur seulement) |
-| `n_neighbors_` | `int` | La valeur $k$ utilis\u00e9e |
-| `weights_` | `str` | La strat\u00e9gie de pond\u00e9ration utilis\u00e9e |
-
-<details>
-<summary><strong>Exemple</strong></summary>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
 
 ```python
-import seraplot as sp
-import numpy as np
-
-X = np.random.randn(400, 4)
-y = (X[:, 0] ** 2 + X[:, 1] ** 2 < 1).astype(int)
-
-clf = sp.KNeighborsClassifier(n_neighbors=7)
-clf.fit(X, y)
-print(f"Pr\u00e9cision\u00a0: {clf.score(X, y):.4f}")
-
-reg = sp.KNeighborsRegressor(n_neighbors=7)
-reg.fit(X, X[:, 0] + X[:, 1])
-print(f"R\u00b2\u00a0: {reg.score(X, X[:, 0] + X[:, 1]):.4f}")
+sp.KnnClassifier(n_neighbors=5, weights=uniform)
 ```
 
-</details>
+</div>
 
----
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
 
-## Fonctionnement algorithmique
+<table class="ml-pg-table">
+<thead><tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>n_neighbors</code></td><td><code>int</code></td><td><code>5</code></td><td>Nombre de voisins les plus proches.</td></tr>
+<tr><td><code>weights</code></td><td><code>str</code></td><td><code>uniform</code></td><td>Pondération : `uniform` ou `distance`.</td></tr>
+</tbody>
+</table>
 
-$k$-Nearest Neighbours est un algorithme **non-param\u00e9trique et paresseux**\u00a0: aucun mod\u00e8le n'est ajust\u00e9 lors de l'entra\u00eenement \u2014 l'ensemble du jeu de donn\u00e9es est stock\u00e9 et interrog\u00e9 au moment de la pr\u00e9diction.
+</div>
 
-**M\u00e9trique de distance** \u2014 distance euclidienne entre deux points $x, x' \in \mathbb{R}^p$\u00a0:
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
 
-<div>$$d(x, x') = \|x - x'\|_2 = \sqrt{\sum_{j=1}^p (x_j - x'_j)^2}$$</div>
+JSON avec `predictions`.
 
-**Voisinage** \u2014 pour un point de requ\u00eate $x$, les $k$ \u00e9chantillons d'entra\u00eenement les plus proches\u00a0:
+</div>
 
-<div>$$\mathcal{N}_k(x) = \text{top-}k \text{ plus petites } d(x, x_i), \quad x_i \in \mathcal{D}_{\text{train}}$$</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
 
-**Classificateur \u2014 vote majoritaire** parmi les $k$ voisins\u00a0:
+$$\hat{y} = \arg\max_c \sum_{i \in \mathcal{N}_k(x)} w_i \mathbf{1}[y_i = c]$$
 
-<div>$$\hat{y} = \underset{c}{\arg\max} \sum_{x_i \in \mathcal{N}_k(x)} \mathbf{1}[y_i = c]$$</div>
-
-**Estimation de la probabilit\u00e9 de classe\u00a0:**
-
-<div>$$\hat{p}(y = c \mid x) = \frac{1}{k}\sum_{x_i \in \mathcal{N}_k(x)} \mathbf{1}[y_i = c]$$</div>
-
-**R\u00e9gresseur \u2014 moyenne des voisins\u00a0:**
-
-<div>$$\hat{y} = \frac{1}{k}\sum_{x_i \in \mathcal{N}_k(x)} y_i$$</div>
-
-**Compromis de complexit\u00e9\u00a0:**
-- Entra\u00eenement\u00a0: $O(1)$ \u2014 juste stocker $\mathcal{D}$
-- Pr\u00e9diction\u00a0: $O(nd)$ \u2014 scan brute-force (aucun index construit)
-- M\u00e9moire\u00a0: $O(nd)$ \u2014 ensemble d'entra\u00eenement complet retenu
-
-**Effet de $k$** \u2014 un $k$ petit ajuste \u00e9troitement les donn\u00e9es d'entra\u00eenement (haute variance)\u00a0; un grand $k$ lisse la fronti\u00e8re de d\u00e9cision (biais \u00e9lev\u00e9). Le $k$ optimal est ajust\u00e9 par validation crois\u00e9e.
-
----
-
-## NearestCentroid
-
-**Signature**
-
-```python
-clf = sp.NearestCentroid()
-
-clf.fit(X, y)
-clf.predict(X)   -> list[int]
-clf.score(X, y)  -> float
-```
-
-**Attributs**
-
-| Attribut | Type | Description |
-|----------|------|-------------|
-| `classes_` | `list[int]` | Labels de classes uniques |
-
-Aucun param\u00e8tre de constructeur. Affecte chaque point de requ\u00eate \u00e0 la classe dont le centro\u00efde (moyenne des points d'entra\u00eenement) est le plus proche.
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
 
 ```python
 import seraplot as sp
-import numpy as np
-
-X = np.random.randn(300, 4)
-y = (X[:, 0] + X[:, 1] > 0).astype(int)
-clf = sp.NearestCentroid()
-clf.fit(X, y)
-print(f"Pr\u00e9cision\u00a0: {clf.score(X, y):.4f}")
+from sklearn.datasets import load_iris
+X, y = load_iris(return_X_y=True)
+knn = sp.KNeighborsClassifier(n_neighbors=5)
+knn.fit(X, y)
+print(knn.score(X, y))
 ```
+
+</div>
+
+</div>
+
+---
+
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>KnnRegressor</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-reg">Regressor</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">🔍 Neighbors</span>
+      </div>
+      <p class="ml-pg-tagline">K-Nearest Neighbors regressor — weighted average of k nearest neighbors. / K plus proches voisins régresseur — moyenne pondérée des k voisins les plus proches.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
+
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(300, 3)
+y = X[:, 0] ** 2 + X[:, 1] + np.random.randn(300) * 0.5
+knn = sp.KNeighborsRegressor(n_neighbors=7, weights="distance")
+knn.fit(X, y)
+print(knn.score(X, y))
+```
+
+</div>
+
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.KnnRegressor</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
+
+---
+
+<div class="lang-en">
+
+## API Reference
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
+
+`ml_knn_regressor` — aliases: `knn_regressor`, `knn_reg`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
+
+```python
+sp.KnnRegressor(n_neighbors=5, weights=uniform)
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>n_neighbors</code></td><td><code>int</code></td><td><code>5</code></td><td>Number of nearest neighbors.</td></tr>
+<tr><td><code>weights</code></td><td><code>str</code></td><td><code>uniform</code></td><td>Weighting: `uniform` or `distance`.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$\hat{y} = \frac{\sum_{i \in \mathcal{N}_k(x)} w_i y_i}{\sum_{i \in \mathcal{N}_k(x)} w_i}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(300, 3)
+y = X[:, 0] ** 2 + X[:, 1] + np.random.randn(300) * 0.5
+knn = sp.KNeighborsRegressor(n_neighbors=7, weights="distance")
+knn.fit(X, y)
+print(knn.score(X, y))
+```
+
+</div>
+
+</div>
+
+---
+
+<div class="lang-fr">
+
+## Référence API
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_knn_regressor` — alias : `knn_regressor`, `knn_reg`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
+
+```python
+sp.KnnRegressor(n_neighbors=5, weights=uniform)
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
+
+<table class="ml-pg-table">
+<thead><tr><th>Paramètre</th><th>Type</th><th>Défaut</th><th>Description</th></tr></thead>
+<tbody>
+<tr><td><code>n_neighbors</code></td><td><code>int</code></td><td><code>5</code></td><td>Nombre de voisins les plus proches.</td></tr>
+<tr><td><code>weights</code></td><td><code>str</code></td><td><code>uniform</code></td><td>Pondération : `uniform` ou `distance`.</td></tr>
+</tbody>
+</table>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
+
+JSON avec `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
+
+$$\hat{y} = \frac{\sum_{i \in \mathcal{N}_k(x)} w_i y_i}{\sum_{i \in \mathcal{N}_k(x)} w_i}$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
+
+```python
+import seraplot as sp, numpy as np
+X = np.random.randn(300, 3)
+y = X[:, 0] ** 2 + X[:, 1] + np.random.randn(300) * 0.5
+knn = sp.KNeighborsRegressor(n_neighbors=7, weights="distance")
+knn.fit(X, y)
+print(knn.score(X, y))
+```
+
+</div>
+
+</div>
+
+---
+
+<div class="ml-pg-header">
+  <div class="ml-pg-header-top">
+    <div class="ml-pg-title-group">
+      <h1 class="ml-pg-title"><code>NearestCentroid</code></h1>
+      <div class="ml-pg-tags">
+        <span class="ml-pg-tag ml-pg-tag-cls">Classifier</span>
+        <span class="ml-pg-tag ml-pg-tag-trx">sklearn-compatible</span>
+        <span class="ml-pg-tag ml-pg-tag-cat">🔍 Neighbors</span>
+      </div>
+      <p class="ml-pg-tagline">Nearest Centroid classifier — assigns class by closest class mean. / Classificateur par centroïde le plus proche — assigne la classe par la moyenne de classe la plus proche.</p>
+    </div>
+    <div class="ml-pg-badges">
+      <span class="ml-pg-badge ml-pg-badge-speed-hi">⚡ Rust-native</span>
+      <span class="ml-pg-badge ml-pg-badge-parity-hi">✓ sklearn parity</span>
+    </div>
+  </div>
+</div>
+
+<div class="ml-pg-qs">
+  <div class="ml-pg-qs-header">
+    <span class="ml-pg-qs-title">Quick start — Python</span>
+  </div>
+
+```python
+import seraplot as sp
+from sklearn.datasets import load_iris
+X, y = load_iris(return_X_y=True)
+nc = sp.NearestCentroid()
+nc.fit(X, y)
+print(nc.score(X, y))
+```
+
+</div>
+
+<div class="ml-pg-note ml-pg-note-tip">
+  <span class="ml-pg-note-icon">💡</span>
+  <div><strong>EN</strong> — Drop-in replacement: <code>sp.NearestCentroid</code> has the same API as sklearn.<br><strong>FR</strong> — Remplacement direct : même API que sklearn, changez l'import.</div>
+</div>
+
+---
+
+<div class="lang-en">
+
+## API Reference
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">JSON function name</div>
+
+`ml_nearest_centroid` — aliases: `nearest_centroid`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Python class</div>
+
+```python
+sp.NearestCentroid()
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Constructor Parameters</div>
+
+<p><em>No constructor parameters.</em></p>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Returns</div>
+
+JSON with `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithm</div>
+
+$$\hat{y} = \arg\min_c \|x - \mu_c\|_2^2$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Example</div>
+
+```python
+import seraplot as sp
+from sklearn.datasets import load_iris
+X, y = load_iris(return_X_y=True)
+nc = sp.NearestCentroid()
+nc.fit(X, y)
+print(nc.score(X, y))
+```
+
+</div>
+
+</div>
+
+---
+
+<div class="lang-fr">
+
+## Référence API
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Nom de fonction JSON</div>
+
+`ml_nearest_centroid` — alias : `nearest_centroid`
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Classe Python</div>
+
+```python
+sp.NearestCentroid()
+```
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Paramètres du constructeur</div>
+
+<p><em>Aucun paramètre de constructeur.</em></p>
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Retourne</div>
+
+JSON avec `predictions`.
+
+</div>
+
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Algorithme</div>
+
+$$\hat{y} = \arg\min_c \|x - \mu_c\|_2^2$$
+
+</div>
+<div class="ml-pg-section">
+<div class="ml-pg-section-title">Exemple</div>
+
+```python
+import seraplot as sp
+from sklearn.datasets import load_iris
+X, y = load_iris(return_X_y=True)
+nc = sp.NearestCentroid()
+nc.fit(X, y)
+print(nc.score(X, y))
+```
+
+</div>
 
 </div>
