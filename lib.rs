@@ -12,7 +12,7 @@ pub mod model_registry;
 pub use data::{Dataset, DataPoint, DatasetStats};
 pub use crate::core::hw_profile::HwProfile;
 
-pub use seraplot_macros::{chart_demo, ml_doc, model, params, sera_alias, sera_bind, sera_class, sera_doc, sera_doc_impl, sera_impl, sera_sig};
+pub use seraplot_macros::{chart_demo, ml_doc, model, params, sera_alias, sera_bind, sera_builder, sera_class, sera_doc, sera_doc_impl, sera_impl, sera_sig};
 
 include!(concat!(env!("OUT_DIR"), "/demo_registry.rs"));
 include!(concat!(env!("OUT_DIR"), "/params_registry.rs"));
@@ -379,10 +379,10 @@ impl Chart {
 #[cfg(feature = "python")]
 fn auto_show_in_jupyter(py: Python<'_>, chart: &Chart) {
     let _ = (|| -> PyResult<()> {
-        let ipython = py.import("IPython")?;
+        let ipython = py.import_bound("IPython")?;
         let ip = ipython.getattr("get_ipython")?.call0()?;
         if ip.is_none() { return Ok(()); }
-        let display_mod = py.import("IPython.display")?;
+        let display_mod = py.import_bound("IPython.display")?;
         let html_cls = display_mod.getattr("HTML")?;
         let display_fn = display_mod.getattr("display")?;
         let html_obj = html_cls.call1((chart.chart_iframe().as_str(),))?;
@@ -1228,7 +1228,7 @@ pub fn chart_variants() -> serde_json::Value {
 #[sera_doc(category = "config", file = "config/config.md", en = "Configures global chart rendering defaults: font, sizes, animation, tooltips, and more.", fr = "Configure les paramÃ¨tres de rendu globaux des graphiques: police, tailles, animation, infobulles, etc.", param(name = "font", ty = "str | None", en = "Global font family name.", fr = "Nom de la famille de polices globale."), param(name = "font_size", ty = "int | None", en = "Global font size in pixels.", fr = "Taille de police globale en pixels."), param(name = "title_size", ty = "int | None", en = "Title font size in pixels.", fr = "Taille de police du titre en pixels."), param(name = "border_radius", ty = "int | None", en = "Corner radius for chart containers in pixels.", fr = "Rayon de coin pour les conteneurs de graphiques en pixels."), param(name = "opacity", ty = "float | None", en = "Default data element opacity (0.0-1.0).", fr = "OpacitÃ© par dÃ©faut des Ã©lÃ©ments de donnÃ©es (0.0-1.0)."), param(name = "responsive", ty = "bool | None", en = "If True, SVG fills container width.", fr = "Si True, le SVG remplit la largeur du conteneur."), param(name = "animation", ty = "bool | None", en = "If True, enables entry animation for data elements.", fr = "Si True, active l'animation d'entrÃ©e pour les Ã©lÃ©ments de donnÃ©es."), param(name = "animation_duration", ty = "int | None", en = "Animation duration in milliseconds.", fr = "DurÃ©e de l'animation en millisecondes."), param(name = "crosshair", ty = "bool | None", en = "If True, adds a crosshair to all charts.", fr = "Si True, ajoute un rÃ©ticule Ã  tous les graphiques."), param(name = "zoom", ty = "bool | None", en = "If True, enables zoom on all charts.", fr = "Si True, active le zoom sur tous les graphiques."), param(name = "margin", ty = "int | None", en = "Global chart margin in pixels.", fr = "Marge globale des graphiques en pixels."), param(name = "export_button", ty = "bool | None", en = "If True, adds a download button to all charts.", fr = "Si True, ajoute un bouton de tÃ©lÃ©chargement Ã  tous les graphiques."), param(name = "background", ty = "str | None", en = "Global chart background color.", fr = "Couleur d'arriÃ¨re-plan globale des graphiques."), param(name = "gridlines", ty = "bool | None", en = "If True, shows grid lines on all charts.", fr = "Si True, affiche les lignes de grille sur tous les graphiques."), param(name = "text_auto", ty = "bool | str | None", en = "Auto data label format. True for default, string for custom format.", fr = "Format d'Ã©tiquette de donnÃ©es automatique. True pour dÃ©faut, chaÃ®ne pour format personnalisÃ©."))]
 #[pyfunction]
 #[pyo3(signature = (*, font=None, font_size=None, title_size=None, border_radius=None, opacity=None, responsive=None, animation=None, animation_duration=None, crosshair=None, zoom=None, tooltip=None, locale=None, thousands_sep=None, margin=None, export_button=None, palette=None, background=None, gridlines=None, text_auto=None, text_position=None, text_angle=None, text_font_size=None, text_font_color=None, uniform_text_min_size=None, uniform_text_mode=None, bar_corner_radius=None))]
-pub fn config(font: Option<&str>, font_size: Option<i32>, title_size: Option<i32>, border_radius: Option<i32>, opacity: Option<f64>, responsive: Option<bool>, animation: Option<bool>, animation_duration: Option<i32>, crosshair: Option<bool>, zoom: Option<bool>, tooltip: Option<&str>, locale: Option<&str>, thousands_sep: Option<&str>, margin: Option<i32>, export_button: Option<bool>, palette: Option<Vec<u32>>, background: Option<&str>, gridlines: Option<bool>, text_auto: Option<&PyAny>, text_position: Option<&str>, text_angle: Option<i32>, text_font_size: Option<i32>, text_font_color: Option<&str>, uniform_text_min_size: Option<i32>, uniform_text_mode: Option<&str>, bar_corner_radius: Option<&PyAny>) {
+pub fn config(font: Option<&str>, font_size: Option<i32>, title_size: Option<i32>, border_radius: Option<i32>, opacity: Option<f64>, responsive: Option<bool>, animation: Option<bool>, animation_duration: Option<i32>, crosshair: Option<bool>, zoom: Option<bool>, tooltip: Option<&str>, locale: Option<&str>, thousands_sep: Option<&str>, margin: Option<i32>, export_button: Option<bool>, palette: Option<Vec<u32>>, background: Option<&str>, gridlines: Option<bool>, text_auto: Option<&Bound<'_, PyAny>>, text_position: Option<&str>, text_angle: Option<i32>, text_font_size: Option<i32>, text_font_color: Option<&str>, uniform_text_min_size: Option<i32>, uniform_text_mode: Option<&str>, bar_corner_radius: Option<&Bound<'_, PyAny>>) {
     use std::sync::atomic::Ordering::Relaxed;
     if let Some(v) = font { if let Ok(mut f) = GLOBAL_FONT.lock() { *f = Some(v.to_string()); } }
     if let Some(v) = font_size { GLOBAL_FONT_SIZE.store(v, Relaxed); }
@@ -1411,7 +1411,7 @@ pub fn adaptive_degrade_level() -> usize {
 }
 
 #[cfg(feature = "python")]
-pub(crate) fn extract_f64_vec(_py: Python<'_>, obj: &PyAny) -> PyResult<Vec<f64>> {
+pub(crate) fn extract_f64_vec(_py: Python<'_>, obj: &Bound<'_, PyAny>) -> PyResult<Vec<f64>> {
     if let Ok(list) = obj.extract::<Vec<f64>>() {
         return Ok(list);
     }
@@ -1431,7 +1431,8 @@ pub(crate) fn extract_f64_vec(_py: Python<'_>, obj: &PyAny) -> PyResult<Vec<f64>
 }
 
 #[cfg(feature = "python")]
-pub(crate) fn extract_str_vec(_py: Python<'_>, obj: &PyAny) -> PyResult<Vec<String>> {
+#[allow(dead_code)]
+pub(crate) fn extract_str_vec(_py: Python<'_>, obj: &Bound<'_, PyAny>) -> PyResult<Vec<String>> {
     if let Ok(list) = obj.extract::<Vec<String>>() {
         return Ok(list);
     }
@@ -1752,8 +1753,8 @@ pub fn models_for_domain(domain: &str) -> Vec<&'static crate::model_registry::Mo
 
 #[cfg(feature = "python")]
 #[pymodule]
-fn seraplot(py: Python<'_>, m: &PyModule) -> PyResult<()> {
-    if let Ok(sys) = py.import("sys") {
+fn seraplot(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
+    if let Ok(sys) = py.import_bound("sys") {
         if let Ok(vi) = sys.getattr("version_info") {
             if let (Ok(maj), Ok(min), Ok(mic)) = (
                 vi.getattr("major").and_then(|v| v.extract::<u32>()),

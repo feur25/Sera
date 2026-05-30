@@ -18,7 +18,7 @@ pub struct Plot3DRenderContext<'a> {
 pub type Plot3DRenderer = fn(Plot3DRenderContext);
 pub type Plot3DPositioner = fn(&[f64], f64, &[usize], &crate::plot::containers_3d::CameraController, egui::Rect) -> Vec<(egui::Pos2, usize)>;
 
-struct Plot3DRegistry {
+pub(crate) struct Plot3DRegistry {
     entries: HashMap<u8, (String, Plot3DRenderer)>,
     positioners: HashMap<u8, Plot3DPositioner>,
 }
@@ -96,7 +96,7 @@ impl Plot3DGroupRegistry {
 static REGISTRY: OnceLock<Mutex<Plot3DRegistry>> = OnceLock::new();
 static GROUP_REGISTRY: OnceLock<Mutex<Plot3DGroupRegistry>> = OnceLock::new();
 
-pub fn get_registry() -> &'static Mutex<Plot3DRegistry> {
+pub(crate) fn get_registry() -> &'static Mutex<Plot3DRegistry> {
     REGISTRY.get_or_init(|| Mutex::new(Plot3DRegistry::new()))
 }
 
@@ -164,7 +164,7 @@ impl Plot3DGroupBuilder {
 }
 
 #[no_mangle]
-pub extern "C" fn sera_register_plot_3d_type(id: u8, name: *const c_char, _renderer_id: u32) -> bool {
+pub extern "C" fn sera_register_plot_3d_type(_id: u8, _name: *const c_char, _renderer_id: u32) -> bool {
     false
 }
 

@@ -1,3 +1,4 @@
+use crate::plot::{parse_all, apply_h};
 pub mod variant;
 pub mod config;
 pub mod common;
@@ -23,3 +24,30 @@ pub fn render_lollipop_html(cfg: &LollipopConfig) -> String {
     }
 }
 
+
+pub use build as build_lollipop_chart;
+
+#[crate::sera_alias("lollipop", "lollipops", "lollipop_chart", "lollipop_family", "lollipop_unified")]
+#[crate::sera_builder("build_lollipop_chart")]
+pub fn build(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let labels = a.labels.unwrap_or_default();
+    let values = a.values.unwrap_or_default();
+    use crate::plot::statistical::{LollipopConfig, LollipopVariant, render_lollipop_html};
+    let mut variant = LollipopVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+    let orient = o.orient_byte();
+    if o.variant.is_none() && orient == b'h' { variant = LollipopVariant::Cleveland; }
+    let groups = o.color_groups.clone().unwrap_or_default();
+    let hover = o.hj();
+    let html = render_lollipop_html(&LollipopConfig {
+        variant, title, labels: &labels, values: &values, groups: &groups,
+        x_label: &o.xl(), y_label: &o.yl(),
+        palette: &o.pal(), color_hex: o.color_hex.unwrap_or(0), gridlines: o.grid(),
+        show_values: o.show_values.unwrap_or(false),
+        highlight_index: o.highlight_index.unwrap_or(-1),
+        sort_order: &o.srt(), width: o.w(900), height: o.h(480), hover: &hover,
+        legend_position: &o.lp(),
+    });
+    apply_h(html, &o)
+}

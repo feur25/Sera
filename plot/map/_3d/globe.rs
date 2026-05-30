@@ -1,3 +1,4 @@
+use crate::plot::{parse_all, apply_bg3d};
 use crate::plot::containers_3d::CameraController;
 use crate::plot::camera::Point3D;
 use crate::core::math::{spherical_to_cartesian, heat_color};
@@ -46,7 +47,7 @@ pub fn render_globe_3d(ctx: Globe3DRenderContext) {
         fill: egui::Color32,
         stroke: egui::Stroke,
         z_order: f32,
-        idx: Option<usize>,
+        _idx: Option<usize>,
     }
 
     let mut all_polys: Vec<CountryRender> = Vec::new();
@@ -101,7 +102,7 @@ pub fn render_globe_3d(ctx: Globe3DRenderContext) {
                 fill,
                 stroke,
                 z_order: z_avg,
-                idx: data_idx,
+                _idx: data_idx,
             });
         }
     }
@@ -198,5 +199,21 @@ fn index_to_globe_latlon(idx: usize) -> (f64, f64) {
     let lon = -180.0 + (idx as f64 * 7.3) % 360.0;
     (lat, lon)
 }
-
-
+#[crate::sera_builder]
+#[crate::sera_alias("globe3d", "globe_3d", "globe3d_chart", "globe")]
+pub fn build_globe3d_chart(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let latitudes = a.lats.unwrap_or_default();
+    let longitudes = a.lons.unwrap_or_default();
+    let values = a.values.unwrap_or_default();
+    let n = latitudes.len().min(longitudes.len()).min(values.len());
+    let lbl = o.point_labels.clone().unwrap_or_default();
+    let cl = if lbl.is_empty() { (0..n).map(|i| format!("Point {}", i + 1)).collect() } else { lbl };
+    let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
+    let bg_str = o.bg_str();
+    apply_bg3d(crate::plot::map::_3d::render_globe3d_html(
+        title, &longitudes[..n], &latitudes[..n], &values[..n],
+        ("Longitude", "Latitude", "Value"), &cv, &cl, o.w(800), o.h(600), bg_str.as_deref(),
+    ), &o)
+}

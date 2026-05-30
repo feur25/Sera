@@ -309,7 +309,7 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
             for row in 0..n_rows {
                 let ry0 = pad_top + ys[row];
                 let ry1 = pad_top + ys[row + 1];
-                let cy = (ry0 + ry1) / 2;
+                let _cy = (ry0 + ry1) / 2;
                 for col in 0..n_cols.saturating_sub(1) {
                     let a = data[row * n_cols + col];
                     let b = data[row * n_cols + col + 1];

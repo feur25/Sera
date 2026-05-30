@@ -6,10 +6,14 @@ pub mod svg;
 pub mod chart;
 
 pub use bar::{render_bars, render_bars_fast, render_bars_html};
+pub use bar::build_hbar;
 pub use line::{render_lines, render_lines_fast, render_lines_html};
 pub mod kmeans;
 pub use scatter::{render_points, render_scatter_fast, render_scatter_html, render_dbscan_html};
 pub use kmeans::{KMeansConfig, render_kmeans_html, kmeans_core_2d, minibatch_kmeans_core_2d, kmeans_core_nd, minibatch_kmeans_core_nd, kmeans_core_flat, kmeans_core_flat_ninit, minibatch_kmeans_core_flat};
+pub use scatter::build_dbscan_chart;
+pub use scatter::build_dbscan_chart_3d;
+pub use kmeans::build_kmeans_chart;
 pub use _3d::render_scatter3d_html;
 pub use _3d::render_bar3d_html;
 pub use _3d::render_line3d_html;
@@ -18,6 +22,8 @@ pub use _3d::*;
 pub use svg::SvgChart;
 pub use chart::register_default_types;
 pub use crate::plot::controller::chart_controller::{ChartTypeBuilder, ChartGroupBuilder, render_by_type, get_current_group_types, set_current_chart_group};
+pub use bar::build_bar_chart;
+pub use line::build_line_chart;
 
 pub struct PlotRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -46,7 +52,7 @@ pub fn render_chart_by_type(
     max_val: f64,
     vertical: bool,
 ) {
-    if let Ok(reg) = crate::plot::controller::chart_controller::get_registry().lock() {
+    if let Ok(_reg) = crate::plot::controller::chart_controller::get_registry().lock() {
         if let Some(ctx) = crate::plot::controller::chart_controller::get_svg_renderer(chart_type) {
             ctx(svg, values, colors, pad, plot_width, plot_height, max_val, vertical);
         }

@@ -1,3 +1,4 @@
+use crate::plot::{parse_all, apply};
 use crate::plot::default::PlotRenderContext;
 use super::world_data;
 
@@ -195,6 +196,7 @@ pub fn render_svg_bubble_map(
     }
 }
 
+#[allow(dead_code)]
 fn parse_label_coords(label: &str) -> (f64, f64) {
     if let Some((lat_str, lon_str)) = label.split_once(',') {
         if let (Ok(lat), Ok(lon)) = (lat_str.trim().parse::<f64>(), lon_str.trim().parse::<f64>()) {
@@ -231,3 +233,15 @@ pub fn render_bubble_map_html(
 }
 
 
+
+#[crate::sera_alias("bubble_map", "bubblemap", "bubble_map_chart", "geo_bubble", "geo_bubble_map")]
+#[crate::sera_builder]
+pub fn build_bubble_map(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let labels = a.labels.unwrap_or_default();
+    let values = a.values.unwrap_or_default();
+    let hover = o.hj();
+    let html = crate::plot::map::render_bubble_map_html(title, &labels, &values, o.w(1200), o.h(600), &hover);
+    apply(html, &o)
+}

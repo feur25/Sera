@@ -1,3 +1,4 @@
+use crate::plot::{parse_all, apply, apply_h};
 pub struct Bar;
 
 pub fn render_bars_fast(
@@ -359,3 +360,38 @@ pub fn render_bars_html(
 }
 
 
+
+#[crate::sera_alias("bar_chart")]
+#[crate::sera_builder]
+pub fn build_bar_chart(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let labels = a.labels.unwrap_or_default();
+    let values = a.values.unwrap_or_default();
+    let orient = o.orient_byte();
+    let groups = o.color_groups.clone().unwrap_or_default();
+    let hover = o.hj();
+    let html = crate::plot::default::render_bars_html(
+        title, &labels, &values, o.w(900), o.h(480), &hover, orient,
+        &groups, o.show_text.unwrap_or(false), &o.xl(), &o.yl(),
+        &o.pal(), o.color_hex.unwrap_or(0), o.grid(), &o.srt(),
+    );
+    apply_h(html, &o)
+}
+
+#[crate::sera_alias("hbar", "barh", "horizontal_bar")]
+#[crate::sera_builder]
+pub fn build_hbar(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let labels = a.labels.unwrap_or_default();
+    let values = a.values.unwrap_or_default();
+    let groups = o.color_groups.clone().unwrap_or_default();
+    let hover = o.hj();
+    let html = crate::plot::default::render_bars_html(
+        title, &labels, &values, o.w(900), o.h(500), &hover, b'h',
+        &groups, o.show_text.unwrap_or(true), &o.xl(), &o.yl(),
+        &o.pal(), o.color_hex.unwrap_or(0), o.grid(), &o.srt(),
+    );
+    apply(html, &o)
+}

@@ -1,11 +1,10 @@
-use crate::core::*;
 use std::collections::HashMap;
 
 #[derive(Clone)]
 pub struct Canvas {
     width: f32,
     height: f32,
-    labels: Vec<String>,
+    _labels: Vec<String>,
     values: Vec<f64>,
     type_id: u8,
     selection: HashMap<String, Vec<usize>>,
@@ -14,7 +13,7 @@ pub struct Canvas {
 
 impl Canvas {
     pub fn new(width: f32, height: f32, labels: Vec<String>, values: Vec<f64>, type_id: u8) -> Self {
-        Self { width, height, labels, values, type_id, selection: HashMap::new(), hover_point: None }
+        Self { width, height, _labels: labels, values, type_id, selection: HashMap::new(), hover_point: None }
     }
 
     pub fn new_with_data(labels: &[String], values: &[f64], type_id: u8) -> Self {

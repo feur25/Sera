@@ -1,3 +1,4 @@
+use crate::plot::{parse_all, apply_bg3d};
 use crate::html::js_3d::render_3d_html;
 
 pub fn render_lollipop3d_html(
@@ -13,3 +14,19 @@ pub fn render_lollipop3d_html(
 }
 
 
+
+#[crate::sera_alias("lollipop3d", "lollipop_3d", "lollipop3d_chart")]
+#[crate::sera_builder]
+pub fn build_lollipop3d_chart(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let x = a.x.unwrap_or_default();
+    let y = a.y.unwrap_or_default();
+    let z = a.z.unwrap_or_default();
+    let cl = o.color_labels.clone().unwrap_or_default();
+    let bg_str = o.bg_str();
+    apply_bg3d(crate::plot::statistical::_3d::render_lollipop3d_html(
+        title, &x, &y, &z, (&o.xl(), &o.yl(), &o.zl()), &[], &cl,
+        o.w(900), o.h(560), bg_str.as_deref(),
+    ), &o)
+}

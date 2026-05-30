@@ -1,3 +1,4 @@
+use crate::plot::{parse_all, apply};
 pub mod variant;
 pub mod config;
 pub mod common;
@@ -27,3 +28,23 @@ pub fn render_funnel_html(cfg: &FunnelConfig) -> String {
     }
 }
 
+
+pub use build as build_funnel;
+
+#[crate::sera_alias("funnel", "funnels", "funnel_chart", "funnel_family", "funnel_unified")]
+#[crate::sera_builder("build_funnel")]
+pub fn build(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let labels = a.labels.unwrap_or_default();
+    let values = a.values.unwrap_or_default();
+    use crate::plot::statistical::{FunnelConfig, FunnelVariant, render_funnel_html};
+    let hover = o.hj();
+    let variant = FunnelVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+    let html = render_funnel_html(&FunnelConfig {
+        title, variant, labels: &labels, values: &values, palette: &o.pal(),
+        show_text: o.show_text.unwrap_or(true), width: o.w(800), height: o.h(480),
+        sort_order: &o.srt(), hover: &hover, ..FunnelConfig::default()
+    });
+    apply(html, &o)
+}

@@ -1,3 +1,6 @@
+#![allow(dead_code)]
+
+use crate::plot::parse_all;
 use crate::html::hover::{html_id, html_prefix, html_suffix};
 use crate::plot::statistical::common::{push_b, push_i, push_f2, hex6, palette_color};
 use crate::bindings::utils::simd_ops::find_minmax;
@@ -332,7 +335,7 @@ std::thread_local! {
     static BLAS_BUF: std::cell::RefCell<Vec<f64>> = std::cell::RefCell::new(Vec::new());
 }
 
-fn blas_assign_par(x: &[f64], n: usize, p: usize, k: usize,
+fn blas_assign_par(x: &[f64], _n: usize, p: usize, k: usize,
                    centroids: &[f64], x_norms_sq: &[f64], c_norms: &[f64],
                    labels: &mut [i32]) -> f64 {
     labels.par_chunks_mut(BLAS_CHUNK)
@@ -949,3 +952,23 @@ pub fn render_kmeans_html(cfg: &KMeansConfig) -> String {
 }
 
 
+
+#[crate::sera_alias("kmeans", "kmeans_chart")]
+#[crate::sera_builder]
+pub fn build_kmeans_chart(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let x = a.x.unwrap_or_default();
+    let y = a.y.unwrap_or_default();
+    let k = o.k.unwrap_or(3);
+    let max_iter = o.max_iter.unwrap_or(300);
+    let pal = o.pal();
+    let bg_str = o.bg_str();
+    let html = crate::plot::default::render_kmeans_html(&crate::plot::default::KMeansConfig {
+        title, x_values: &x, y_values: &y, k, max_iter, tol: 1e-4,
+        mini_batch: false, batch_size: 1000, width: o.w(1000), height: o.h(580),
+        x_label: &o.xl(), y_label: &o.yl(), gridlines: o.grid(), palette: &pal,
+        ..Default::default()
+    });
+    crate::html::hover::apply_opts(html, bg_str.as_deref(), !o.no_x(), !o.no_y())
+}

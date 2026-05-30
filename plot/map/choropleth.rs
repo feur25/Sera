@@ -1,3 +1,4 @@
+use crate::plot::{parse_all, apply};
 use crate::plot::default::PlotRenderContext;
 use crate::core::math::heat_color;
 use super::world_data;
@@ -74,7 +75,7 @@ fn render_svg_country_outlines(svg: &mut String, width: i32, height: i32) {
 }
 
 pub fn render_choropleth(ctx: PlotRenderContext) {
-    let n = ctx.visible_indices.len();
+    let _n = ctx.visible_indices.len();
 
     ctx.painter.rect_filled(ctx.plot_rect, 0.0, egui::Color32::from_rgb(15, 15, 30));
 
@@ -206,3 +207,15 @@ pub fn render_choropleth_html(
 }
 
 
+
+#[crate::sera_alias("choropleth", "choropleths", "choropleth_map", "choropleth_chart", "geo_map")]
+#[crate::sera_builder]
+pub fn build_choropleth(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let labels = a.labels.unwrap_or_default();
+    let values = a.values.unwrap_or_default();
+    let hover = o.hj();
+    let html = crate::plot::map::render_choropleth_html(title, &labels, &values, o.w(1200), o.h(600), &hover);
+    apply(html, &o)
+}

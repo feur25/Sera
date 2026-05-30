@@ -1,3 +1,4 @@
+use crate::plot::{parse_all, apply_bg3d};
 pub struct Scatter;
 
 pub fn render_scatter_fast(
@@ -628,6 +629,7 @@ pub fn render_scatter_html(
     unsafe { String::from_utf8_unchecked(buf) }
 }
 
+#[allow(dead_code)]
 #[inline] fn scat_xml_esc(s: &str) -> String { s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;") }
 
 fn dbscan_core(x: &[f64], y: &[f64], eps: f64, min_samples: usize) -> (Vec<i32>, usize) {
@@ -721,7 +723,7 @@ fn dbscan_core(x: &[f64], y: &[f64], eps: f64, min_samples: usize) -> (Vec<i32>,
 
     std::thread::scope(|scope| {
         for _ in 0..ncpu {
-            let (xf, yf, sx, sy, si, cs, co, is_core, cell_cross_cnt, task) =
+            let (xf, yf, sx, sy, _si, cs, co, is_core, cell_cross_cnt, task) =
                 (&xf, &yf, &sx, &sy, &si, &cs, &co, &is_core, &cell_cross_cnt, &task);
             scope.spawn(move || {
                 loop {
@@ -798,7 +800,7 @@ fn dbscan_core(x: &[f64], y: &[f64], eps: f64, min_samples: usize) -> (Vec<i32>,
     let task3 = std::sync::atomic::AtomicUsize::new(0);
     std::thread::scope(|scope| {
         for _ in 0..ncpu {
-            let (sx, sy, si, cs, co, is_core, uf, cell_rep, task3) =
+            let (sx, sy, si, cs, _co, is_core, uf, cell_rep, task3) =
                 (&sx, &sy, &si, &cs, &co, &is_core, &uf, &cell_rep, &task3);
             scope.spawn(move || {
                 loop {
@@ -809,7 +811,7 @@ fn dbscan_core(x: &[f64], y: &[f64], eps: f64, min_samples: usize) -> (Vec<i32>,
                         let kr0 = cell_rep[c];
                         if kr0 == u32::MAX { continue; }
                         let oi = si[kr0 as usize] as usize;
-                        let (xi, yi) = (sx[kr0 as usize], sy[kr0 as usize]);
+                        let (_xi, _yi) = (sx[kr0 as usize], sy[kr0 as usize]);
                         for ny in cy.saturating_sub(2)..=(cy + 2).min(gh - 1) {
                             for nx in cx.saturating_sub(2)..=(cx + 2).min(gw - 1) {
                                 let nc = ny * gw + nx;
@@ -1383,3 +1385,58 @@ pub fn render_dbscan_html(
 }
 
 
+
+#[crate::sera_alias("dbscan", "dbscans", "dbscan_chart", "DBSCAN")]
+#[crate::sera_builder]
+pub fn build_dbscan_chart(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let x = a.x.unwrap_or_default();
+    let y = a.y.unwrap_or_default();
+    let eps = o.eps.unwrap_or(0.5);
+    let min_samples = o.min_samples.unwrap_or(5);
+    let normalize = o.normalize.unwrap_or(false);
+    let pal = o.pal();
+    let bg_str = o.bg_str();
+    let html = crate::plot::default::render_dbscan_html(
+        title, &x, &y, eps, min_samples, &o.xl(), &o.yl(),
+        o.w(900), o.h(540), o.grid(), normalize, &pal,
+    );
+    crate::html::hover::apply_opts(html, bg_str.as_deref(), !o.no_x(), !o.no_y())
+}
+
+#[crate::sera_alias("dbscan3d", "dbscan_3d", "dbscan3d_chart")]
+#[crate::sera_builder]
+pub fn build_dbscan_chart_3d(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let x = a.x.unwrap_or_default();
+    let y = a.y.unwrap_or_default();
+    let z = a.z.unwrap_or_default();
+    let eps = o.eps.unwrap_or(0.5);
+    let min_samples = o.min_samples.unwrap_or(5);
+    let normalize = o.normalize.unwrap_or(false);
+    let n = x.len().min(y.len()).min(z.len());
+    let (xn, yn, zn) = if normalize && n > 0 {
+        let norm = |v: &[f64]| {
+            let mn = v.iter().cloned().fold(f64::INFINITY, f64::min);
+            let mx = v.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+            let r = (mx - mn).max(1e-12);
+            v.iter().map(|&val| (val - mn) / r).collect::<Vec<_>>()
+        };
+        (norm(&x[..n]), norm(&y[..n]), norm(&z[..n]))
+    } else {
+        (x[..n].to_vec(), y[..n].to_vec(), z[..n].to_vec())
+    };
+    let data: Vec<Vec<f64>> = (0..n).map(|i| vec![xn[i], yn[i], zn[i]]).collect();
+    let (labels, _) = crate::plot::default::scatter::dbscan_core_nd(&data, eps, min_samples);
+    let color_labels: Vec<String> = labels.iter().map(|&l| {
+        if l < 0 { "Noise".to_string() } else { format!("Cluster {}", l + 1) }
+    }).collect();
+    let bg_str = o.bg_str();
+    let html = crate::plot::default::render_scatter3d_html(
+        title, &xn, &yn, &zn, (&o.xl(), &o.yl(), &o.zl()), &[], &color_labels,
+        o.w(900), o.h(560), bg_str.as_deref(),
+    );
+    apply_bg3d(html, &o)
+}

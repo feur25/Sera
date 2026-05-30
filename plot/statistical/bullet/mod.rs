@@ -1,3 +1,4 @@
+use crate::plot::{parse_all, apply};
 pub mod variant;
 pub mod config;
 pub mod common;
@@ -27,3 +28,28 @@ pub fn render_bullet_html(cfg: &BulletConfig) -> String {
     }
 }
 
+
+pub use build as build_bullet;
+
+#[crate::sera_alias("bullet", "bullets", "bullet_chart", "bullet_family", "bullet_graph")]
+#[crate::sera_builder("build_bullet")]
+pub fn build(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let labels = a.labels.unwrap_or_default();
+    let values = a.values.unwrap_or_default();
+    use crate::plot::statistical::{BulletConfig, BulletVariant, render_bullet_html};
+    let variant = BulletVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
+    let targets = o.targets.clone().unwrap_or_default();
+    let max_vals = o.max_vals.clone().unwrap_or_default();
+    let ranges = o.ranges.clone().unwrap_or_default();
+    let comparisons = o.comparisons.clone().unwrap_or_default();
+    let hover = o.hj();
+    let html = render_bullet_html(&BulletConfig {
+        variant, title, labels: &labels, values: &values, targets: &targets,
+        max_vals: &max_vals, ranges: &ranges, comparisons: &comparisons,
+        width: o.w(800), height: o.h(300),
+        hover: &hover, ..BulletConfig::default()
+    });
+    apply(html, &o)
+}

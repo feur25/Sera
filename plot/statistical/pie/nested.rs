@@ -43,7 +43,7 @@ pub fn render(cfg: &PieConfig) -> String {
     }
 
     if !inner_values.is_empty() {
-        let inner_radius_factor = (outer_donut.max(0.35) - 0.10).clamp(0.25, 0.75);
+        let _inner_radius_factor = (outer_donut.max(0.35) - 0.10).clamp(0.25, 0.75);
         let inner_piece = PiePiece {
             area_x: 0.0,
             area_y: title_pad,

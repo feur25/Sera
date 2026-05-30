@@ -1,3 +1,4 @@
+use crate::plot::{parse_all, apply};
 pub mod variant;
 pub mod config;
 pub mod common;
@@ -42,3 +43,41 @@ pub fn render_heatmap_html(cfg: &HeatmapConfig) -> String {
     }
 }
 
+
+pub use build as build_heatmap;
+
+#[crate::sera_alias("heatmap", "heatmaps", "heatmap_family", "heatmap_unified")]
+#[crate::sera_builder("build_heatmap")]
+pub fn build(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let labels = a.labels.unwrap_or_default();
+    let flat_matrix = a.values.unwrap_or_default();
+    use crate::plot::statistical::{HeatmapConfig, HeatmapVariant, render_heatmap_html};
+    let col_lbl = o.col_labels.clone().unwrap_or_default();
+    let hover = o.hj();
+    let palette = o.pal();
+    let variant = HeatmapVariant::from_str(&o.variant.clone().unwrap_or_default());
+    let x_widths: Vec<f64> = o.widths.clone().unwrap_or_default();
+    let y_heights: Vec<f64> = o.ranges.clone().unwrap_or_default();
+    let colorscale = o.colorscale.clone().unwrap_or_default();
+    let colorbar_position = o.colorbar_position.clone().unwrap_or_else(|| "right".to_string());
+    let html = render_heatmap_html(&HeatmapConfig {
+        title, variant,
+        row_labels: &labels, col_labels: &col_lbl, flat_matrix: &flat_matrix,
+        show_values: o.show_values.unwrap_or(true),
+        color_low: o.color_low.unwrap_or(0x6366F1),
+        color_mid: o.color_mid.unwrap_or(0xfafbfc),
+        color_high: o.color_high.unwrap_or(0xF43F5E),
+        palette: &palette,
+        discrete_steps: o.bins.unwrap_or(0).max(0) as usize,
+        x_widths: &x_widths,
+        y_heights: &y_heights,
+        colorscale: &colorscale,
+        colorbar_position: &colorbar_position,
+        origin_lower: o.origin_lower.unwrap_or(false),
+        width: o.w(720), height: o.h(440), hover: &hover,
+        sort_order: &o.srt(), ..HeatmapConfig::default()
+    });
+    apply(html, &o)
+}

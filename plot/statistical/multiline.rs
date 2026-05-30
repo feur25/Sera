@@ -1,3 +1,4 @@
+use crate::plot::{parse_all, apply};
 use super::common::{sorted, sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
 use crate::html::hover::slots_to_json;
 
@@ -105,3 +106,24 @@ pub fn render_multiline_html(cfg: &MultiLineConfig) -> String {
 }
 
 
+
+#[crate::sera_alias("multiline", "multilines", "multiline_chart", "multiline_family", "multi_line", "multi_line_chart")]
+#[crate::sera_builder]
+pub fn build_multiline_chart(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let x_labels = a.x_labels.or(a.labels).unwrap_or_default();
+    let series_flat = a.series.unwrap_or_default();
+    use crate::plot::statistical::{MultiLineConfig, render_multiline_html};
+    let hover = o.hj();
+    let sn = o.series_names.clone().unwrap_or_default();
+    let names: Vec<String> = if sn.is_empty() { (0..series_flat.len()).map(|_| String::new()).collect() } else { sn };
+    let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(series_flat.into_iter()).collect();
+    let html = render_multiline_html(&MultiLineConfig {
+        title, x_labels: &x_labels, series: &series, palette: &o.pal(),
+        x_label: &o.xl(), y_label: &o.yl(), show_points: o.show_points.unwrap_or(true),
+        gridlines: o.grid(), width: o.w(1100), height: o.h(480), hover: &hover,
+        sort_order: &o.srt(), ..MultiLineConfig::default()
+    });
+    apply(html, &o)
+}

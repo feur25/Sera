@@ -12,6 +12,20 @@ pub mod funnel3d;
 pub mod sunburst3d;
 pub mod stacked_bar3d;
 
+pub use radar3d::build_radar3d_chart;
+pub use lollipop3d::build_lollipop3d_chart;
+pub use kde3d::build_kde3d_chart;
+pub use ridgeline3d::build_ridgeline3d_chart;
+pub use plot_3d_types::build_bubble3d_chart;
+pub use pie3d::build_pie3d_chart;
+pub use violin3d::build_violin3d_chart;
+pub use heatmap3d::build_heatmap3d_chart;
+pub use candlestick3d::build_candlestick3d_chart;
+pub use dumbbell3d::build_dumbbell3d_chart;
+pub use funnel3d::build_funnel3d_chart;
+pub use sunburst3d::build_sunburst3d_chart;
+pub use stacked_bar3d::build_stacked_bar3d_chart;
+
 pub use plot_3d_types::register_statistical_3d_types;
 pub use radar3d::render_radar3d_html;
 pub use lollipop3d::render_lollipop3d_html;

@@ -1,3 +1,4 @@
+use crate::plot::{parse_all, apply};
 pub struct Line;
 
 pub fn render_lines_fast(
@@ -162,7 +163,7 @@ pub fn render_lines_html(
     sort_order: &str,
 ) -> String {
     use crate::html::hover::{slots_to_json, html_id, html_prefix, html_suffix};
-    use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, palette_color, truncate, PALETTE, apply_sort};
+    use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, palette_color, truncate, apply_sort};
     let n = values.len().min(labels.len());
     if n < 2 { return String::new(); }
     let (labels, values) = apply_sort(&labels[..n], &values[..n], sort_order);
@@ -277,7 +278,25 @@ pub fn render_lines_html(
     unsafe { String::from_utf8_unchecked(b) }
 }
 
+#[allow(dead_code)]
 #[inline] fn line_xml_esc(s: &str) -> String { s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;") }
+#[allow(dead_code)]
 #[inline] fn line_trunc(s: &str, max: usize) -> &str { if s.len() <= max { s } else { &s[..max] } }
 
 
+
+#[crate::sera_alias("line_chart")]
+#[crate::sera_builder]
+pub fn build_line_chart(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let labels = a.labels.unwrap_or_default();
+    let values = a.values.unwrap_or_default();
+    let hover = o.hj();
+    let html = crate::plot::default::render_lines_html(
+        title, &labels, &values, o.w(900), o.h(480), &hover,
+        o.color_hex.unwrap_or(0x6366F1), &o.xl(), &o.yl(),
+        o.grid(), o.show_points.unwrap_or(true), &o.srt(),
+    );
+    apply(html, &o)
+}

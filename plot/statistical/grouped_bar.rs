@@ -1,3 +1,4 @@
+use crate::plot::{parse_all, apply_h};
 use super::common::{sorted, sort_indices, palette_color, push_b, push_i, push_f2, escape_xml, hex6, truncate, svg_legend_item, Frame};
 use crate::html::hover::slots_to_json;
 
@@ -251,3 +252,55 @@ fn render_grouped_bar_horiz(cfg: &GroupedBarConfig) -> String {
 }
 
 
+
+#[crate::sera_alias("grouped_bar", "grouped_bars", "grouped_bar_chart", "group_bar")]
+#[crate::sera_builder]
+pub fn build_grouped_bar(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let category_labels = a.labels.unwrap_or_default();
+    let series_flat: Vec<f64> = a.values.unwrap_or_default();
+    use crate::plot::statistical::{GroupedBarConfig, render_grouped_bar_html};
+    let hover = o.hj();
+    let sn = o.series_names.clone().unwrap_or_default();
+    let n_cats = category_labels.len();
+    let n_series = if !sn.is_empty() { sn.len() } else if n_cats > 0 { (series_flat.len() + n_cats - 1) / n_cats } else { 0 };
+    let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_series).map(|_| String::new()).collect() };
+    let series: Vec<(String, Vec<f64>)> = names.iter().enumerate().map(|(si, name)| {
+        let vals: Vec<f64> = (0..n_cats).map(|ci| series_flat.get(si * n_cats + ci).copied().unwrap_or(0.0)).collect();
+        (name.clone(), vals)
+    }).collect();
+    let html = render_grouped_bar_html(&GroupedBarConfig {
+        title, category_labels: &category_labels, series: &series,
+        palette: &o.pal(), x_label: &o.xl(), y_label: &o.yl(),
+        show_values: o.show_values.unwrap_or(false), gridlines: o.grid(),
+        sort_order: &o.srt(), hover: &hover, orientation: o.orient_byte(), ..GroupedBarConfig::default()
+    });
+    apply_h(html, &o)
+}
+
+#[crate::sera_alias("stacked_bar", "stacked_bars", "stacked_bar_chart", "stack_bar")]
+#[crate::sera_builder]
+pub fn build_stacked_bar(input: &str) -> String {
+    let (title_s, a, o) = parse_all(input);
+    let title = title_s.as_str();
+    let category_labels = a.labels.unwrap_or_default();
+    let series_flat: Vec<f64> = a.values.unwrap_or_default();
+    use crate::plot::statistical::{GroupedBarConfig, render_grouped_bar_html};
+    let hover = o.hj();
+    let sn = o.series_names.clone().unwrap_or_default();
+    let n_cats = category_labels.len();
+    let n_series = if !sn.is_empty() { sn.len() } else if n_cats > 0 { (series_flat.len() + n_cats - 1) / n_cats } else { 0 };
+    let names: Vec<String> = if !sn.is_empty() { sn } else { (0..n_series).map(|_| String::new()).collect() };
+    let series: Vec<(String, Vec<f64>)> = names.iter().enumerate().map(|(si, name)| {
+        let vals: Vec<f64> = (0..n_cats).map(|ci| series_flat.get(si * n_cats + ci).copied().unwrap_or(0.0)).collect();
+        (name.clone(), vals)
+    }).collect();
+    let html = render_grouped_bar_html(&GroupedBarConfig {
+        title, category_labels: &category_labels, series: &series,
+        palette: &o.pal(), x_label: &o.xl(), y_label: &o.yl(),
+        show_values: o.show_values.unwrap_or(false), gridlines: o.grid(),
+        sort_order: &o.srt(), hover: &hover, stacked: true, orientation: o.orient_byte(), ..GroupedBarConfig::default()
+    });
+    apply_h(html, &o)
+}
