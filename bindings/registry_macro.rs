@@ -1,5 +1,8 @@
 include!(concat!(env!("OUT_DIR"), "/chart_fn_macro.rs"));
+include!(concat!(env!("OUT_DIR"), "/chart_py_wrapper_macro.rs"));
 include!(concat!(env!("OUT_DIR"), "/ml_fn_macro.rs"));
+include!(concat!(env!("OUT_DIR"), "/ml_pyclass_macro.rs"));
+include!(concat!(env!("OUT_DIR"), "/ml_pyfn_macro.rs"));
 include!(concat!(env!("OUT_DIR"), "/util_fn_macro.rs"));
 include!(concat!(env!("OUT_DIR"), "/auto_util_fn_macro.rs"));
 
@@ -12,10 +15,7 @@ macro_rules! for_each_chart_fn {
 
 #[macro_export]
 macro_rules! for_each_chart_class {
-    ($mac:ident) => {
-        $mac!(DbscanModel);
-        $mac!(KMeansModel);
-    };
+    ($mac:ident) => {};
 }
 
 pub use crate::CHART_ALIAS_REGISTRY as CHART_ALIASES;

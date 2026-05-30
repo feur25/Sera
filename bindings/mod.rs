@@ -1,8 +1,6 @@
 #[macro_use]
 pub mod registry_macro;
-pub mod python_bindings;
-pub mod wasm_bindings;
-pub mod cffi_bindings;
+pub mod cross_bindings;
 pub mod doc_registry;
 pub mod model_registry;
 pub mod fast_render;

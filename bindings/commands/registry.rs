@@ -2,28 +2,28 @@
 use pyo3::prelude::*;
 
 #[cfg(feature = "python")]
-use crate::Chart;
+use super::python::*;
 
-#[cfg(feature = "python")]
-use super::native::*;
-
-use crate::for_each_chart_fn;
 use crate::for_each_chart_class;
-use crate::bindings::registry_macro::{for_each_json_chart_fn, for_each_ml_oneshot_fn, for_each_auto_util_fn};
+use crate::bindings::registry_macro::{for_each_json_chart_py_wrapper_fn, for_each_ml_oneshot_fn, for_each_auto_util_fn};
 
 #[cfg(feature = "python")]
 pub fn register_submodules(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(set_bg_fn, m)?)?;
-    m.add_function(wrap_pyfunction!(show_chart_value, m)?)?;
-    m.add_function(wrap_pyfunction!(bench_chart_value, m)?)?;
-    m.add_function(wrap_pyfunction!(set_chart_kind, m)?)?;
-    m.add_function(wrap_pyfunction!(set_chart_orientation, m)?)?;
-    m.add_function(wrap_pyfunction!(bench_pure_rust, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_set_bg, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_show_chart_value, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_bench_chart_value, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_set_chart_kind, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_set_chart_orientation, m)?)?;
+    m.add_function(wrap_pyfunction!(__sera_py_bench_pure_rust, m)?)?;
+
+    macro_rules! add_chart_py_fn {
+        ($fn:ident) => { m.add_function(wrap_pyfunction!($fn, m)?)?; }
+    }
+    for_each_json_chart_py_wrapper_fn!(add_chart_py_fn);
 
     macro_rules! add_fn {
         ($fn:ident, $_js:literal) => { m.add_function(wrap_pyfunction!($fn, m)?)?; }
     }
-    for_each_chart_fn!(add_fn);
     for_each_ml_oneshot_fn!(add_fn);
     for_each_auto_util_fn!(add_fn);
 

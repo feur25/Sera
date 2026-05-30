@@ -12,7 +12,7 @@ pub mod model_registry;
 pub use data::{Dataset, DataPoint, DatasetStats};
 pub use crate::core::hw_profile::HwProfile;
 
-pub use seraplot_macros::{chart_demo, ml_doc, model, params, sera_alias, sera_bind, sera_builder, sera_class, sera_doc, sera_doc_impl, sera_impl, sera_sig};
+pub use seraplot_macros::{chart_demo, ml_doc, model, params, sera_alias, sera_bind, sera_binding, sera_builder, sera_class, sera_doc, sera_doc_impl, sera_impl, sera_sig};
 
 include!(concat!(env!("OUT_DIR"), "/demo_registry.rs"));
 include!(concat!(env!("OUT_DIR"), "/params_registry.rs"));
