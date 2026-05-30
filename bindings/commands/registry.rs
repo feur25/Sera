@@ -27,11 +27,17 @@ pub fn register_submodules(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult
     for_each_ml_oneshot_fn!(add_fn);
     for_each_auto_util_fn!(add_fn);
 
+    #[allow(unused_macros)]
     macro_rules! add_class {
         ($cls:ident) => { m.add_class::<$cls>()?; }
     }
     for_each_chart_class!(add_class);
 
+    m.add_function(wrap_pyfunction!(build_grid, m)?)?;
+    m.add_function(wrap_pyfunction!(grid, m)?)?;
+    m.add_function(wrap_pyfunction!(build_slideshow, m)?)?;
+    m.add_function(wrap_pyfunction!(build_sysmon, m)?)?;
+    m.add_function(wrap_pyfunction!(sysmon, m)?)?;
     m.add_function(wrap_pyfunction!(build_hover_json, m)?)?;
     m.add_function(wrap_pyfunction!(plot_chart, m)?)?;
 
