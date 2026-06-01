@@ -1,4 +1,4 @@
-use crate::ml::tree::decision_tree::{DecisionTreeClassifier, DecisionTreeRegressor, compute_bins, bin_data_with_edges, BinInfo};
+use crate::ml::tree::decision_tree::{DecisionTreeClassifier, DecisionTreeRegressor, compute_bins, BinInfo};
 use crate::ml::linalg::{discover_classes, weighted_bootstrap};
 use rayon::prelude::*;
 

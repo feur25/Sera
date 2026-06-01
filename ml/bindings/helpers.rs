@@ -1,5 +1,3 @@
-use serde::Deserialize;
-
 pub fn parse_x2d(v: &serde_json::Value, key: &str, alias: &str) -> Vec<Vec<f64>> {
     let raw = v.get(key).or_else(|| v.get(alias));
     if let Some(x) = raw {

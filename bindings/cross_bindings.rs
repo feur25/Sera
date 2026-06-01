@@ -1,16 +1,16 @@
 #[macro_export]
 macro_rules! impl_native_string_binding {
-    (wasm, $fn:ident, $js:literal, $module:path) => {
+    (wasm, $path:path, $fn:ident, $js:literal) => {
         #[wasm_bindgen(js_name = $js)]
         pub fn $fn(input: &str) -> String {
-            $module::$fn(input)
+            $path(input)
         }
     };
-    (cffi, $fn:ident, $_js:literal, $module:path) => {
+    (cffi, $path:path, $fn:ident, $_js:literal) => {
         #[no_mangle]
         pub unsafe extern "C" fn $fn(input: *const std::os::raw::c_char) -> *mut std::os::raw::c_char {
             let s = std::ffi::CStr::from_ptr(input).to_str().unwrap_or("");
-            std::ffi::CString::new($module::$fn(s))
+            std::ffi::CString::new($path(s))
                 .unwrap_or_default()
                 .into_raw()
         }
@@ -23,21 +23,22 @@ macro_rules! impl_wasm_bindings {
         use wasm_bindgen::prelude::*;
         macro_rules! impl_wasm_chart {
             ($fn:ident, $js:literal) => {
-                crate::impl_native_string_binding!(wasm, $fn, $js, crate::bindings::commands::charts);
+                crate::impl_native_string_binding!(wasm, crate::bindings::commands::charts::$fn, $fn, $js);
             };
         }
         crate::for_each_json_chart_fn!(impl_wasm_chart);
 
+        #[allow(unused_macros)]
         macro_rules! impl_wasm_ml {
             ($fn:ident, $js:literal) => {
-                crate::impl_native_string_binding!(wasm, $fn, $js, crate::bindings::commands::ml);
+                crate::impl_native_string_binding!(wasm, crate::bindings::commands::ml::$fn, $fn, $js);
             };
         }
         crate::for_each_ml_oneshot_fn!(impl_wasm_ml);
 
         macro_rules! impl_wasm_util {
             ($fn:ident, $js:literal) => {
-                crate::impl_native_string_binding!(wasm, $fn, $js, crate::bindings::commands::charts);
+                crate::impl_native_string_binding!(wasm, crate::bindings::commands::charts::$fn, $fn, $js);
             };
         }
         crate::for_each_util_fn!(impl_wasm_util);
@@ -72,21 +73,22 @@ macro_rules! impl_cffi_bindings {
     () => {
         macro_rules! impl_cffi_chart {
             ($fn:ident, $_js:literal) => {
-                crate::impl_native_string_binding!(cffi, $fn, $_js, crate::bindings::commands::charts);
+                crate::impl_native_string_binding!(cffi, crate::bindings::commands::charts::$fn, $fn, $_js);
             };
         }
         crate::for_each_json_chart_fn!(impl_cffi_chart);
 
+        #[allow(unused_macros)]
         macro_rules! impl_cffi_ml {
             ($fn:ident, $_js:literal) => {
-                crate::impl_native_string_binding!(cffi, $fn, $_js, crate::bindings::commands::ml);
+                crate::impl_native_string_binding!(cffi, crate::bindings::commands::ml::$fn, $fn, $_js);
             };
         }
         crate::for_each_ml_oneshot_fn!(impl_cffi_ml);
 
         macro_rules! impl_cffi_util {
             ($fn:ident, $_js:literal) => {
-                crate::impl_native_string_binding!(cffi, $fn, $_js, crate::bindings::commands::charts);
+                crate::impl_native_string_binding!(cffi, crate::bindings::commands::charts::$fn, $fn, $_js);
             };
         }
         crate::for_each_util_fn!(impl_cffi_util);

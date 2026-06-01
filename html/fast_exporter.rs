@@ -8,6 +8,7 @@ pub struct FastHtmlExporter {
     width: i32,
     height: i32,
     title: String,
+    #[allow(dead_code)]
     colors: parking_lot::Mutex<Vec<u32>>,
 }
 

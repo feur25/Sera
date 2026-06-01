@@ -2,7 +2,6 @@ use std::sync::{Arc, Mutex};
 use std::ffi::CStr;
 use std::os::raw::c_char;
 use std::collections::HashMap;
-use image::ImageDecoder;
 use super::image_loader::ImageLoader;
 use super::cache::{RenderCache, ColorCache, CacheKey};
 use super::viewer_3d::AdvancedViewer3D;
@@ -12,9 +11,7 @@ use super::render::{AdvancedBatchRenderer, AdvancedBatchRendererBuilder, RenderS
 use crate::plot::default::{PlotRenderContext, render_plot_by_type};
 use crate::plot::controller::plot_3d_controller::{Plot3DRenderContext, render_by_type as render_3d_by_type};
 use crate::plot::CameraController;
-use crate::bindings::{HtmlExporter, HtmlExportConfig, HtmlTheme};
-use crate::html::HtmlTemplate;
-use crate::bindings::utils::{BitSet, DataProcessor, simd_ops};
+use crate::bindings::utils::{BitSet, simd_ops};
 
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -126,6 +123,7 @@ impl PlotMetrics {
     }
 }
 
+#[allow(dead_code)]
 trait PlotRenderer {
     fn render_axes(&self, painter: &egui::Painter, plot_rect: egui::Rect, max_val: f64);
     fn detect_hover(&self, rel_pos: egui::Vec2, plot_rect: egui::Rect, point_count: usize, values: &[f64], max_val: f64) -> Option<usize>;
@@ -136,9 +134,10 @@ struct GenericPlotRenderer {
 }
 
 impl GenericPlotRenderer {
+    #[allow(dead_code)]
     fn map_point(&self, idx: usize, value: f64, max_val: f64, point_count: usize, plot_rect: egui::Rect) -> egui::Pos2 {
         let norm_val = value / max_val.max(1.0);
-        let (mut x, mut y);
+        let (x, y);
         
         if self.vertical {
             x = plot_rect.left() + (plot_rect.width() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
@@ -214,6 +213,7 @@ struct ChartApp {
     sort_mode: i32,
     current_chart_kind: u8,
     is_3d_mode: bool,
+    #[allow(dead_code)]
     camera_controller: CameraController,
     advanced_viewer_3d: AdvancedViewer3D,
     render_cache: RenderCache,
@@ -331,7 +331,7 @@ fn launch_chart_app(app: ChartApp) -> bool {
     true
 }
 
-fn render_svg_by_type(chart_type: u8, _labels: &[String], values: &[f64], colors: &[u32], indices: &[usize], orientation: bool, pad_left: f32, _pad_top: f32, _pad_right: f32, _pad_bottom: f32, plot_w: f32, plot_h: f32, scale_max: f32, _width: f32, _height: f32, svg: &mut String) {
+fn render_svg_by_type(chart_type: u8, _labels: &[String], values: &[f64], colors: &[u32], _indices: &[usize], orientation: bool, pad_left: f32, _pad_top: f32, _pad_right: f32, _pad_bottom: f32, plot_w: f32, plot_h: f32, scale_max: f32, _width: f32, _height: f32, svg: &mut String) {
     let hex_colors: Vec<&'static str> = colors.iter().map(|&c| {
         let r = ((c >> 16) & 0xFF) as u8;
         let g = ((c >> 8) & 0xFF) as u8;
@@ -973,7 +973,7 @@ impl ChartApp {
                 
                 self.batch_renderer.clear();
                 
-                let element_width = if visible_count > 1 {
+                let _element_width = if visible_count > 1 {
                     plot_rect.width() / visible_count as f32
                 } else {
                     plot_rect.width()
@@ -1219,7 +1219,7 @@ impl ChartApp {
     }
 
     fn apply_processor_filter(&mut self) {
-        let (values, count) = {
+        let (values, _count) = {
             if let Ok(data) = self.data.lock() {
                 if let Some(d) = data.as_ref() {
                     (d.values.clone(), d.values.len())
@@ -1344,6 +1344,7 @@ impl ChartApp {
         }
     }
 
+    #[allow(dead_code)]
     fn generate_svg(&self, d: &ChartData) -> String {
         use crate::bindings::FastChartRenderer;
         use crate::bindings::FastChartConfig;

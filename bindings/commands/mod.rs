@@ -4,8 +4,6 @@ pub mod ml;
 #[cfg(feature = "python")]
 pub mod docs;
 #[cfg(feature = "python")]
-pub mod python;
-#[cfg(feature = "python")]
 pub mod registry;
 
 #[cfg(feature = "python")]

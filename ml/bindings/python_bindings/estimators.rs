@@ -1,6 +1,3 @@
-    };
-}
-
 #[pyclass(module = "seraplot", name = "LinearRegression")]
 pub struct PyLinearRegression { inner: crate::ml::linear::ols::LinearRegression }
 
@@ -194,7 +191,7 @@ impl PyLogisticRegression {
         else { Ok(self.inner.multi_intercept.clone().into_pyarray_bound(py).into_py(py)) }
     }
     #[getter] fn n_iter_(&self) -> usize { self.inner.n_iter }
-    #[getter] fn C_(&self) -> f64 { self.inner.c }
+    #[getter] #[allow(non_snake_case)] fn C_(&self) -> f64 { self.inner.c }
     #[getter] fn max_iter_(&self) -> usize { self.inner.max_iter }
     #[getter] fn tol_(&self) -> f64 { self.inner.tol }
     #[getter] fn fit_intercept_(&self) -> bool { self.inner.fit_intercept }
@@ -831,7 +828,7 @@ impl PyLinearSVC {
     #[getter] fn coef_(&self) -> Vec<Vec<f64>> { self.inner.coef().to_vec() }
     #[getter] fn intercept_(&self) -> Vec<f64> { self.inner.intercept().to_vec() }
     #[getter] fn classes_(&self) -> Vec<i32> { self.inner.classes.clone() }
-    #[getter] fn C_(&self) -> f64 { self.inner.c }
+    #[getter] #[allow(non_snake_case)] fn C_(&self) -> f64 { self.inner.c }
     #[getter] fn max_iter_(&self) -> usize { self.inner.max_iter }
     #[getter] fn tol_(&self) -> f64 { self.inner.tol }
     #[getter] fn fit_intercept_(&self) -> bool { self.inner.fit_intercept }
@@ -860,7 +857,7 @@ impl PyLinearSVR {
     }
     #[getter] fn coef_(&self) -> Vec<f64> { self.inner.coef().to_vec() }
     #[getter] fn intercept_(&self) -> f64 { self.inner.intercept() }
-    #[getter] fn C_(&self) -> f64 { self.inner.c }
+    #[getter] #[allow(non_snake_case)] fn C_(&self) -> f64 { self.inner.c }
     #[getter] fn epsilon_(&self) -> f64 { self.inner.epsilon }
     #[getter] fn max_iter_(&self) -> usize { self.inner.max_iter }
     #[getter] fn tol_(&self) -> f64 { self.inner.tol }

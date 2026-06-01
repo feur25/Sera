@@ -11,6 +11,7 @@ pub struct CacheKey {
 
 pub struct ProjectionCache {
     positions: Vec<egui::Pos2>,
+    #[allow(dead_code)]
     key: CacheKey,
 }
 

@@ -2,7 +2,7 @@
 use pyo3::prelude::*;
 
 #[cfg(feature = "python")]
-use super::python::*;
+use crate::python::*;
 
 use crate::for_each_chart_class;
 use crate::bindings::registry_macro::{for_each_json_chart_py_wrapper_fn, for_each_ml_oneshot_fn, for_each_auto_util_fn};
@@ -40,6 +40,7 @@ pub fn register_submodules(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult
     m.add_function(wrap_pyfunction!(sysmon, m)?)?;
     m.add_function(wrap_pyfunction!(build_hover_json, m)?)?;
     m.add_function(wrap_pyfunction!(plot_chart, m)?)?;
+    m.add_function(wrap_pyfunction!(push_telemetry, m)?)?;
 
     for (alias, canonical) in crate::bindings::registry_macro::CHART_ALIASES {
         if let Ok(func) = m.getattr(*canonical) {

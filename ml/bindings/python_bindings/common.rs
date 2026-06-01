@@ -187,3 +187,5 @@ macro_rules! impl_cls_fit_predict_score {
                 Ok(crate::ml::metrics::classification::accuracy_score(&yl, &preds))
             }
         }
+    };
+}

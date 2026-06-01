@@ -1,3 +1,4 @@
+#[pyfunction]
 fn ml_registry(py: Python<'_>) -> PyResult<PyObject> {
     let dict = pyo3::types::PyDict::new_bound(py);
     dict.set_item("regression", vec!["LinearRegression", "Ridge", "Lasso", "ElasticNet", "SGDRegressor", "DecisionTreeRegressor", "RandomForestRegressor", "GradientBoostingRegressor", "AdaBoostRegressor", "KNeighborsRegressor", "LinearSVR"])?;

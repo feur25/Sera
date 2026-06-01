@@ -457,5 +457,3 @@ impl PyHalvingRandomSearchCV {
     #[getter]
     fn n_iterations_(&self) -> usize { self.n_iterations }
 }
-
-#[pyfunction]

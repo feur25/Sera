@@ -1,5 +1,4 @@
 use serde::Deserialize;
-use super::helpers::*;
 
 #[crate::sera_doc(category = "Clustering", en = "DBSCAN — density-based spatial clustering, no preset number of clusters.", fr = "DBSCAN — clustering spatial basé sur la densité, sans nombre de clusters prédéfini.", file = "dbscan.md")]
 #[crate::sera_alias("dbscan_fit_predict", "ml_dbscan", "DBSCAN_fit_predict", "cluster_dbscan")]

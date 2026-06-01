@@ -25,7 +25,7 @@ impl RandomForestClassifier {
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) {
-        let mut classes: Vec<i32> = crate::ml::linalg::discover_classes(y);
+        let classes: Vec<i32> = crate::ml::linalg::discover_classes(y);
         self.classes = classes.clone();
         self.n_classes = self.classes.len();
 

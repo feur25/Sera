@@ -13,6 +13,8 @@ pub use data::{Dataset, DataPoint, DatasetStats};
 pub use crate::core::hw_profile::HwProfile;
 
 pub use seraplot_macros::{chart_demo, ml_doc, model, params, sera_alias, sera_bind, sera_binding, sera_builder, sera_class, sera_doc, sera_doc_impl, sera_impl, sera_sig};
+#[allow(unused_imports)]
+pub(crate) use crate::bindings::registry_macro::{for_each_json_chart_fn, for_each_ml_oneshot_fn, for_each_util_fn};
 
 include!(concat!(env!("OUT_DIR"), "/demo_registry.rs"));
 include!(concat!(env!("OUT_DIR"), "/params_registry.rs"));
@@ -44,7 +46,6 @@ pub fn demo_snippet(family: &str, variant: &str) -> Option<String> {
 }
 
 #[cfg(any(feature = "python", feature = "gui"))]
-
 pub mod viewer;
 pub mod bindings;
 pub mod wiki;
@@ -58,6 +59,9 @@ pub use plot::canvas::Canvas;
 pub use viewer::gui;
 
 pub use wiki::{WikiExport, MethodDoc, ModuleDoc, WikiExtractor};
+
+#[cfg(feature = "python")]
+pub mod python;
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
 
@@ -73,7 +77,7 @@ impl SeraPlot {
     }
 
     pub fn load_csv<P: AsRef<std::path::Path>>(path: P) -> Result<crate::data::loader::CsvData, Box<dyn std::error::Error>> {
-        crate::data::loader::CsvData::load(path).map_err(|e| Box::new(e) as Box<dyn std::error::Error>)
+        Ok(crate::data::loader::CsvData::load(path)?)
     }
 }
 
@@ -106,6 +110,7 @@ static GLOBAL_THOUSANDS_SEP: std::sync::Mutex<Option<String>> = std::sync::Mutex
 static GLOBAL_MARGIN: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
 static GLOBAL_EXPORT_BTN: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 static GLOBAL_TEXT_AUTO: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+
 static GLOBAL_TEXT_POSITION: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 static GLOBAL_TEXT_ANGLE: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(i32::MIN);
 static GLOBAL_TEXT_FONT_SIZE: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
@@ -228,6 +233,7 @@ pub(crate) const SP_LEGEND_JS: &str = "(function(){if(window.__spleg__)return;wi
 
 
 
+#[cfg(feature = "python")]
 const SP_AUTOCLASS_JS: &str = "(function(){if(window.__spac__)return;window.__spac__=1;var svgs=document.querySelectorAll('svg');svgs.forEach(function(svg){var d=svg.getAttribute('data-sp');if(!d)return;var p=d.split(',').map(Number),pL=p[0]||0,pT=p[1]||0,pW=p[2]||0,pH=p[3]||0;if(pW<=0||pH<=0)return;var bX=pT+pH;var lX=pL;svg.querySelectorAll('text').forEach(function(t){if(t.getAttribute('class'))return;if(t.hasAttribute('data-idx'))return;if(t.hasAttribute('data-series'))return;var tx=parseFloat(t.getAttribute('x'));var ty=parseFloat(t.getAttribute('y'));if(!isFinite(tx)||!isFinite(ty))return;var ta=t.getAttribute('text-anchor')||'';var inXBand=ty>=bX-2&&ty<=bX+30;var inYBand=ty>=pT-4&&ty<=pT+pH+4&&tx<=lX+2&&tx>=lX-80;if(inXBand&&tx>=pL-5&&tx<=pL+pW+5){t.setAttribute('class','sp-xt');}else if(inYBand||(ta==='end'&&tx<lX&&ty>=pT-2&&ty<=pT+pH+12)){t.setAttribute('class','sp-yt');}});});})()";
 
 const SP_BAR_GAP_JS: &str = "(function(){if(window.__spbg__)return;window.__spbg__=1;var gap=window.__sp_bar_gap__;if(gap==null)return;var svg=document.querySelector('svg');if(!svg)return;var d=svg.getAttribute('data-sp')||'';var sp=d.split(',').map(Number);var pL=sp[0]||50,pT=sp[1]||36,pW=sp[2]||700,pH=sp[3]||360;var rects=svg.querySelectorAll('rect[data-idx][data-v]');if(!rects.length)return;var isHoriz=parseFloat(rects[0].getAttribute('width'))>parseFloat(rects[0].getAttribute('height'));var n=rects.length;var maxV=0;rects.forEach(function(r){var v=parseFloat(r.getAttribute('data-v'))||0;if(v>maxV)maxV=v;});if(maxV<=0)return;if(isHoriz){var slotH=pH/n;var barH=slotH*(1-gap);rects.forEach(function(r,i){var v=parseFloat(r.getAttribute('data-v'))||0;var bw=(v/maxV)*pW;var by=pT+i*slotH+(slotH-barH)/2;r.setAttribute('y',by);r.setAttribute('height',barH);r.setAttribute('x',pL);r.setAttribute('width',Math.max(1,bw));});var xts=svg.querySelectorAll('.sp-xt');xts.forEach(function(t,i){if(i<n)t.setAttribute('y',pT+i*(pH/n)+(pH/n)/2+4);});}else{var slotW=pW/n;var barW=slotW*(1-gap);rects.forEach(function(r,i){var v=parseFloat(r.getAttribute('data-v'))||0;var bh=(v/maxV)*pH;var bx=pL+i*slotW+(slotW-barW)/2;var by=pT+pH-bh;r.setAttribute('x',bx);r.setAttribute('width',Math.max(1,barW));r.setAttribute('y',by);r.setAttribute('height',bh);});var xts=svg.querySelectorAll('.sp-xt');xts.forEach(function(t,i){if(i<n){var cx=pL+i*slotW+slotW/2;t.setAttribute('x',cx);}});}})()";
@@ -256,6 +262,7 @@ pub(crate) fn json_str(s: &str) -> String {
     out
 }
 
+#[cfg(feature = "python")]
 fn inject_global_cfg(html: String) -> String {
     use std::sync::atomic::Ordering::Relaxed;
     let mut css = String::new();
@@ -321,6 +328,7 @@ fn inject_global_cfg(html: String) -> String {
 }
 
 impl Chart {
+    #[cfg(feature = "python")]
     fn new(html: String) -> Self {
         let html = if let Some(bg) = get_global_background() {
             crate::html::hover::apply_bg(html, Some(&bg))
@@ -336,6 +344,7 @@ impl Chart {
         chart
     }
 
+    #[cfg(feature = "python")]
     fn new_doc(html: String, doc: &'static str) -> Self {
         let mut c = Self::new(html);
         c.doc_str = doc;
@@ -999,89 +1008,6 @@ pub fn set_auto_display(enabled: bool) {
     AUTO_DISPLAY.store(enabled, std::sync::atomic::Ordering::Relaxed);
 }
 
-struct ThemePreset {
-    bg: Option<&'static str>,
-    palette: &'static [u32],
-    gridlines: bool,
-}
-
-const THEME_DARK: ThemePreset = ThemePreset {
-    bg: Some("#0f172a"),
-    palette: &[0x818CF8, 0xFB7185, 0x34D399, 0xFBBF24, 0xA78BFA, 0x22D3EE, 0xF472B6, 0xA3E635, 0xF87171, 0x2DD4BF],
-    gridlines: true,
-};
-
-const THEME_LIGHT: ThemePreset = ThemePreset {
-    bg: None,
-    palette: &[0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B, 0x8B5CF6, 0x06B6D4, 0xEC4899, 0x84CC16, 0xEF4444, 0x14B8A6],
-    gridlines: false,
-};
-
-const THEME_SCIENTIFIC: ThemePreset = ThemePreset {
-    bg: Some("#fafafa"),
-    palette: &[0x1F77B4, 0xFF7F0E, 0x2CA02C, 0xD62728, 0x9467BD, 0x8C564B, 0xE377C2, 0x7F7F7F, 0xBCBD22, 0x17BECF],
-    gridlines: true,
-};
-
-const THEME_APPLE: ThemePreset = ThemePreset {
-    bg: Some("#000000"),
-    palette: &[0x0A84FF, 0x30D158, 0xFF453A, 0xFFD60A, 0xBF5AF2, 0x64D2FF, 0xFF9F0A, 0xFF375F, 0xAC8E68, 0x63E6E2],
-    gridlines: false,
-};
-
-const THEME_NOTION: ThemePreset = ThemePreset {
-    bg: Some("#191919"),
-    palette: &[0x529CCA, 0xD08B65, 0x6C9B7D, 0xCB7C7A, 0x9A6DD7, 0x868686, 0xCCAA55, 0x75B5AA, 0xD477A8, 0x507AA6],
-    gridlines: false,
-};
-
-const THEME_MINIMAL: ThemePreset = ThemePreset {
-    bg: None,
-    palette: &[0x374151, 0x6B7280, 0x9CA3AF, 0xD1D5DB, 0x111827, 0x4B5563, 0x1F2937, 0xE5E7EB, 0x030712, 0x6B7280],
-    gridlines: false,
-};
-
-const THEME_NEON: ThemePreset = ThemePreset {
-    bg: Some("#0a0a0a"),
-    palette: &[0x00FF87, 0xFF006E, 0x00B4D8, 0xFFBE0B, 0xE500A4, 0x8338EC, 0x3A86FF, 0xFB5607, 0xFF006E, 0x06D6A0],
-    gridlines: false,
-};
-
-fn resolve_theme(name: &str) -> Option<&'static ThemePreset> {
-    match name {
-        "dark" => Some(&THEME_DARK),
-        "light" => Some(&THEME_LIGHT),
-        "scientific" => Some(&THEME_SCIENTIFIC),
-        "apple" => Some(&THEME_APPLE),
-        "notion" => Some(&THEME_NOTION),
-        "minimal" => Some(&THEME_MINIMAL),
-        "neon" => Some(&THEME_NEON),
-        _ => None,
-    }
-}
-
-#[cfg(feature = "python")]
-#[sera_doc(category = "theme", file = "theme/theme.md", en = "Applies a named color theme to all subsequent chart renders.", fr = "Applique un thÃ¨me de couleurs nommÃ© Ã  tous les rendus de graphiques suivants.", param(name = "name", ty = "str", en = "Theme name (e.g. 'dark', 'light', 'ocean'). Use sp.themes() to list all.", fr = "Nom du thÃ¨me (ex: 'dark', 'light', 'ocean'). Utilisez sp.themes() pour lister tous les thÃ¨mes."))]
-#[pyfunction]
-#[pyo3(signature = (name))]
-pub fn theme(name: &str) -> PyResult<()> {
-    let preset = resolve_theme(name)
-        .ok_or_else(|| pyo3::exceptions::PyValueError::new_err(
-            format!("Unknown theme '{}'. Available: dark, light, scientific, apple, notion, minimal, neon", name)
-        ))?;
-    if let Ok(mut bg) = GLOBAL_BACKGROUND.lock() {
-        *bg = preset.bg.map(|s| s.to_string());
-    }
-    if let Ok(mut pal) = GLOBAL_PALETTE.lock() {
-        *pal = Some(preset.palette.to_vec());
-    }
-    GLOBAL_GRIDLINES.store(preset.gridlines, std::sync::atomic::Ordering::Relaxed);
-    if let Ok(mut tn) = GLOBAL_THEME_NAME.lock() {
-        *tn = Some(name.to_string());
-    }
-    Ok(())
-}
-
 #[sera_doc(category = "theme", file = "theme/theme.md", en = "Resets the active theme back to the framework default.", fr = "RÃ©initialise le thÃ¨me actif vers le thÃ¨me par dÃ©faut du framework.")]
 #[sera_bind]
 pub fn reset_theme() {
@@ -1224,56 +1150,6 @@ pub fn chart_variants() -> serde_json::Value {
     Value::Object(out)
 }
 
-#[cfg(feature = "python")]
-#[sera_doc(category = "config", file = "config/config.md", en = "Configures global chart rendering defaults: font, sizes, animation, tooltips, and more.", fr = "Configure les paramÃ¨tres de rendu globaux des graphiques: police, tailles, animation, infobulles, etc.", param(name = "font", ty = "str | None", en = "Global font family name.", fr = "Nom de la famille de polices globale."), param(name = "font_size", ty = "int | None", en = "Global font size in pixels.", fr = "Taille de police globale en pixels."), param(name = "title_size", ty = "int | None", en = "Title font size in pixels.", fr = "Taille de police du titre en pixels."), param(name = "border_radius", ty = "int | None", en = "Corner radius for chart containers in pixels.", fr = "Rayon de coin pour les conteneurs de graphiques en pixels."), param(name = "opacity", ty = "float | None", en = "Default data element opacity (0.0-1.0).", fr = "OpacitÃ© par dÃ©faut des Ã©lÃ©ments de donnÃ©es (0.0-1.0)."), param(name = "responsive", ty = "bool | None", en = "If True, SVG fills container width.", fr = "Si True, le SVG remplit la largeur du conteneur."), param(name = "animation", ty = "bool | None", en = "If True, enables entry animation for data elements.", fr = "Si True, active l'animation d'entrÃ©e pour les Ã©lÃ©ments de donnÃ©es."), param(name = "animation_duration", ty = "int | None", en = "Animation duration in milliseconds.", fr = "DurÃ©e de l'animation en millisecondes."), param(name = "crosshair", ty = "bool | None", en = "If True, adds a crosshair to all charts.", fr = "Si True, ajoute un rÃ©ticule Ã  tous les graphiques."), param(name = "zoom", ty = "bool | None", en = "If True, enables zoom on all charts.", fr = "Si True, active le zoom sur tous les graphiques."), param(name = "margin", ty = "int | None", en = "Global chart margin in pixels.", fr = "Marge globale des graphiques en pixels."), param(name = "export_button", ty = "bool | None", en = "If True, adds a download button to all charts.", fr = "Si True, ajoute un bouton de tÃ©lÃ©chargement Ã  tous les graphiques."), param(name = "background", ty = "str | None", en = "Global chart background color.", fr = "Couleur d'arriÃ¨re-plan globale des graphiques."), param(name = "gridlines", ty = "bool | None", en = "If True, shows grid lines on all charts.", fr = "Si True, affiche les lignes de grille sur tous les graphiques."), param(name = "text_auto", ty = "bool | str | None", en = "Auto data label format. True for default, string for custom format.", fr = "Format d'Ã©tiquette de donnÃ©es automatique. True pour dÃ©faut, chaÃ®ne pour format personnalisÃ©."))]
-#[pyfunction]
-#[pyo3(signature = (*, font=None, font_size=None, title_size=None, border_radius=None, opacity=None, responsive=None, animation=None, animation_duration=None, crosshair=None, zoom=None, tooltip=None, locale=None, thousands_sep=None, margin=None, export_button=None, palette=None, background=None, gridlines=None, text_auto=None, text_position=None, text_angle=None, text_font_size=None, text_font_color=None, uniform_text_min_size=None, uniform_text_mode=None, bar_corner_radius=None))]
-pub fn config(font: Option<&str>, font_size: Option<i32>, title_size: Option<i32>, border_radius: Option<i32>, opacity: Option<f64>, responsive: Option<bool>, animation: Option<bool>, animation_duration: Option<i32>, crosshair: Option<bool>, zoom: Option<bool>, tooltip: Option<&str>, locale: Option<&str>, thousands_sep: Option<&str>, margin: Option<i32>, export_button: Option<bool>, palette: Option<Vec<u32>>, background: Option<&str>, gridlines: Option<bool>, text_auto: Option<&Bound<'_, PyAny>>, text_position: Option<&str>, text_angle: Option<i32>, text_font_size: Option<i32>, text_font_color: Option<&str>, uniform_text_min_size: Option<i32>, uniform_text_mode: Option<&str>, bar_corner_radius: Option<&Bound<'_, PyAny>>) {
-    use std::sync::atomic::Ordering::Relaxed;
-    if let Some(v) = font { if let Ok(mut f) = GLOBAL_FONT.lock() { *f = Some(v.to_string()); } }
-    if let Some(v) = font_size { GLOBAL_FONT_SIZE.store(v, Relaxed); }
-    if let Some(v) = title_size { GLOBAL_TITLE_SIZE.store(v, Relaxed); }
-    if let Some(v) = border_radius { GLOBAL_BORDER_RADIUS.store(v, Relaxed); }
-    if let Some(v) = opacity { if let Ok(mut o) = GLOBAL_OPACITY.lock() { *o = if v < 1.0 { Some(v) } else { None }; } }
-    if let Some(v) = responsive { GLOBAL_RESPONSIVE.store(v, Relaxed); }
-    if let Some(v) = animation { GLOBAL_ANIMATION.store(v, Relaxed); }
-    if let Some(v) = animation_duration { GLOBAL_ANIMATION_DURATION.store(v, Relaxed); }
-    if let Some(v) = crosshair { GLOBAL_CROSSHAIR.store(v, Relaxed); }
-    if let Some(v) = zoom { GLOBAL_ZOOM.store(v, Relaxed); }
-    if let Some(v) = tooltip { if let Ok(mut t) = GLOBAL_TOOLTIP.lock() { *t = Some(v.to_string()); } }
-    if let Some(v) = locale { if let Ok(mut l) = GLOBAL_LOCALE.lock() { *l = Some(v.to_string()); } }
-    if let Some(v) = thousands_sep { if let Ok(mut s) = GLOBAL_THOUSANDS_SEP.lock() { *s = Some(v.to_string()); } }
-    if let Some(v) = margin { GLOBAL_MARGIN.store(v, Relaxed); }
-    if let Some(v) = export_button { GLOBAL_EXPORT_BTN.store(v, Relaxed); }
-    if let Some(v) = background { if let Ok(mut b) = GLOBAL_BACKGROUND.lock() { *b = Some(v.to_string()); } }
-    if let Some(p) = palette { if let Ok(mut pl) = GLOBAL_PALETTE.lock() { *pl = Some(p); } }
-    if let Some(v) = gridlines { GLOBAL_GRIDLINES.store(v, Relaxed); }
-    if let Some(v) = text_auto {
-        let s = if let Ok(b) = v.extract::<bool>() { if b { String::from("") } else { return reset_text_auto(); } }
-            else if let Ok(s) = v.extract::<String>() { s }
-            else { return; };
-        if let Ok(mut g) = GLOBAL_TEXT_AUTO.lock() { *g = Some(s); }
-    }
-    if let Some(v) = text_position { if let Ok(mut g) = GLOBAL_TEXT_POSITION.lock() { *g = Some(v.to_string()); } }
-    if let Some(v) = text_angle { GLOBAL_TEXT_ANGLE.store(v, Relaxed); }
-    if let Some(v) = text_font_size { GLOBAL_TEXT_FONT_SIZE.store(v, Relaxed); }
-    if let Some(v) = text_font_color { if let Ok(mut g) = GLOBAL_TEXT_FONT_COLOR.lock() { *g = Some(v.to_string()); } }
-    if let Some(v) = uniform_text_min_size { GLOBAL_UNIFORM_TEXT_MIN.store(v, Relaxed); }
-    if let Some(v) = uniform_text_mode { if let Ok(mut g) = GLOBAL_UNIFORM_TEXT_MODE.lock() { *g = Some(v.to_string()); } }
-    if let Some(v) = bar_corner_radius {
-        let s = if let Ok(i) = v.extract::<i32>() { i.to_string() }
-            else if let Ok(f) = v.extract::<f64>() { f.to_string() }
-            else if let Ok(s) = v.extract::<String>() { s }
-            else { return; };
-        if let Ok(mut g) = GLOBAL_BAR_CORNER_RADIUS.lock() { *g = Some(s); }
-    }
-}
-
-#[cfg(feature = "python")]
-fn reset_text_auto() {
-    if let Ok(mut g) = GLOBAL_TEXT_AUTO.lock() { *g = None; }
-}
-
 #[sera_doc(category = "config", file = "config/config.md", en = "Resets all global config settings applied via config() back to their defaults.", fr = "RÃ©initialise tous les paramÃ¨tres de configuration globale dÃ©finis via config() Ã  leurs valeurs par dÃ©faut.")]
 #[sera_bind]
 pub fn reset_config() {
@@ -1410,62 +1286,6 @@ pub fn adaptive_degrade_level() -> usize {
     crate::core::adaptive_exec::degrade_level()
 }
 
-#[cfg(feature = "python")]
-pub(crate) fn extract_f64_vec(_py: Python<'_>, obj: &Bound<'_, PyAny>) -> PyResult<Vec<f64>> {
-    if let Ok(list) = obj.extract::<Vec<f64>>() {
-        return Ok(list);
-    }
-    if let Ok(arr) = obj.getattr("tolist") {
-        if let Ok(list) = arr.call0()?.extract::<Vec<f64>>() {
-            return Ok(list);
-        }
-    }
-    if let Ok(series) = obj.getattr("values") {
-        if let Ok(arr) = series.getattr("tolist") {
-            if let Ok(list) = arr.call0()?.extract::<Vec<f64>>() {
-                return Ok(list);
-            }
-        }
-    }
-    Err(pyo3::exceptions::PyTypeError::new_err("Expected list, numpy array, or pandas Series of numbers"))
-}
-
-#[cfg(feature = "python")]
-#[allow(dead_code)]
-pub(crate) fn extract_str_vec(_py: Python<'_>, obj: &Bound<'_, PyAny>) -> PyResult<Vec<String>> {
-    if let Ok(list) = obj.extract::<Vec<String>>() {
-        return Ok(list);
-    }
-    if let Ok(arr) = obj.getattr("tolist") {
-        if let Ok(list) = arr.call0()?.extract::<Vec<String>>() {
-            return Ok(list);
-        }
-    }
-    if let Ok(series) = obj.getattr("values") {
-        if let Ok(arr) = series.getattr("tolist") {
-            if let Ok(list) = arr.call0()?.extract::<Vec<String>>() {
-                return Ok(list);
-            }
-        }
-    }
-    if let Ok(list) = obj.extract::<Vec<f64>>() {
-        return Ok(list.into_iter().map(|v| v.to_string()).collect());
-    }
-    Err(pyo3::exceptions::PyTypeError::new_err("Expected list, numpy array, or pandas Series of strings"))
-}
-
-#[cfg(feature = "python")]
-pub(crate) fn merge_global_opts(background: Option<&str>, palette: Option<Vec<u32>>, gridlines: bool) -> (Option<String>, Vec<u32>, bool) {
-    let bg = background.map(|s| s.to_string()).or_else(get_global_background);
-    let pal = if palette.as_ref().map(|p| !p.is_empty()).unwrap_or(false) {
-        palette.unwrap()
-    } else {
-        get_global_palette().unwrap_or_default()
-    };
-    let grid = gridlines || get_global_gridlines();
-    (bg, pal, grid)
-}
-
 #[sera_doc(category = "telemetry", file = "about/telemetry.md", en = "Enables or disables usage telemetry collection. Disabled by default.", fr = "Active ou dÃ©sactive la collecte de tÃ©lÃ©mÃ©trie d'utilisation. DÃ©sactivÃ© par dÃ©faut.", param(name = "enabled", ty = "bool", en = "True to enable telemetry, False to disable.", fr = "True pour activer la tÃ©lÃ©mÃ©trie, False pour dÃ©sactiver."))]
 #[sera_bind]
 fn telemetry_consent(enabled: bool) {
@@ -1482,55 +1302,6 @@ fn telemetry_path() -> String {
 #[sera_bind]
 fn get_metrics() -> String {
     serde_json::to_string(&crate::telemetry::get_metrics_summary()).unwrap_or_default()
-}
-
-#[cfg(feature = "python")]
-#[sera_doc(category = "telemetry", file = "about/telemetry.md", en = "Uploads pending telemetry events to the specified endpoint with an auth token.", fr = "TÃ©lÃ©verse les Ã©vÃ©nements de tÃ©lÃ©mÃ©trie en attente vers l'endpoint spÃ©cifiÃ© avec un jeton d'authentification.", param(name = "endpoint", ty = "str", en = "HTTPS URL of the telemetry collection endpoint.", fr = "URL HTTPS de l'endpoint de collecte de tÃ©lÃ©mÃ©trie."), param(name = "token", ty = "str", en = "Authentication token for the endpoint.", fr = "Jeton d'authentification pour l'endpoint."))]
-#[pyfunction]
-#[pyo3(signature = (endpoint, token))]
-fn push_telemetry(py: Python<'_>, endpoint: &str, token: &str) -> PyResult<usize> {
-    let events = crate::telemetry::read_pending();
-    let count = events.len();
-    if count == 0 {
-        return Ok(0);
-    }
-    
-    let summary = crate::telemetry::get_metrics_summary();
-    let system = summary.get("system").cloned().unwrap_or_else(|| serde_json::json!({}));
-    
-    let payload = serde_json::json!({
-        "secret": token,
-        "events": events,
-        "system": system
-    });
-    let body = serde_json::to_string(&payload)
-        .map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
-    let result = py.allow_threads(|| -> Result<u16, String> {
-        let rt = tokio::runtime::Runtime::new()
-            .map_err(|e| e.to_string())?;
-        rt.block_on(async {
-            let client = reqwest::Client::new();
-            let resp = client
-                .post(endpoint)
-                .header("Content-Type", "application/json")
-                .header("User-Agent", format!("seraplot/{VERSION}"))
-                .body(body)
-                .send()
-                .await
-                .map_err(|e| e.to_string())?;
-            Ok::<u16, String>(resp.status().as_u16())
-        })
-    });
-    match result {
-        Ok(status) if status < 300 => {
-            crate::telemetry::clear_pending();
-            Ok(count)
-        }
-        Ok(status) => Err(pyo3::exceptions::PyRuntimeError::new_err(format!(
-            "HTTP {status}"
-        ))),
-        Err(e) => Err(pyo3::exceptions::PyRuntimeError::new_err(e.to_string())),
-    }
 }
 
 #[sera_doc(category = "utility", file = "api/reference.md", en = "Returns all documented functions with their signatures, parameters, and bilingual descriptions.", fr = "Retourne toutes les fonctions documentÃ©es avec leurs signatures, paramÃ¨tres et descriptions bilingues.")]
@@ -1586,28 +1357,9 @@ fn seraplot(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(__sera_py_set_adaptive_retry, m)?)?;
     m.add_function(wrap_pyfunction!(__sera_py_reset_perf_state, m)?)?;
     m.add_function(wrap_pyfunction!(__sera_py_adaptive_degrade_level, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_set_global_background, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_reset_global_background, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_set_auto_display, m)?)?;
-    m.add_function(wrap_pyfunction!(theme, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_reset_theme, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_themes, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_demos, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_demo, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_chart_variants, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_params, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_required_params, m)?)?;
-    m.add_function(wrap_pyfunction!(config, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_reset_config, m)?)?;
+    crate::python::register_root_functions(m)?;
 
     bindings::commands::registry::register_submodules(py, m)?;
-
-    m.add_function(wrap_pyfunction!(__sera_py_telemetry_consent, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_telemetry_path, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_get_metrics, m)?)?;
-    m.add_function(wrap_pyfunction!(push_telemetry, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_docs, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_doc, m)?)?;
 
     Ok(())
 }

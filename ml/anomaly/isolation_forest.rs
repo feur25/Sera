@@ -11,6 +11,7 @@ struct INode {
     depth: u16,
 }
 
+#[allow(dead_code)]
 #[derive(Clone)]
 pub struct IsolationTree {
     nodes: Vec<INode>,
@@ -24,9 +25,9 @@ fn average_path_length(n: f64) -> f64 {
 }
 
 impl IsolationTree {
-    fn build(x: &[f64], n: usize, p: usize, sample_idx: &[u32], height_limit: u16, mut rng: u64) -> Self {
+    fn build(x: &[f64], _n: usize, p: usize, sample_idx: &[u32], height_limit: u16, mut rng: u64) -> Self {
         let mut nodes: Vec<INode> = Vec::with_capacity(sample_idx.len() * 2);
-        let mut stack: Vec<(Vec<u32>, u16)> = vec![(sample_idx.to_vec(), 0)];
+        let stack: Vec<(Vec<u32>, u16)> = vec![(sample_idx.to_vec(), 0)];
         let mut node_starts: Vec<i32> = Vec::new();
         node_starts.push(0);
 

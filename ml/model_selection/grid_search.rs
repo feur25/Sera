@@ -1,7 +1,7 @@
 use rayon::prelude::*;
 use crate::ml::linalg::splitmix64;
 use crate::ml::model_selection::split::{kfold_indices, stratified_kfold_indices};
-use crate::ml::{MlRegressor, MlClassifier};
+
 pub struct FoldData {
     pub x_train: Vec<f64>,
     pub x_test: Vec<f64>,
@@ -43,7 +43,7 @@ pub fn precompute_folds_reg(
 }
 
 pub fn precompute_folds_cls(
-    x: &[f64], n: usize, p: usize, y: &[i32], cv: usize, seed: u64,
+    x: &[f64], _n: usize, p: usize, y: &[i32], cv: usize, seed: u64,
 ) -> Vec<FoldData> {
     let folds = stratified_kfold_indices(y, cv, seed);
     folds.into_iter().map(|(train_idx, test_idx)| {
@@ -440,6 +440,7 @@ pub struct GramCache {
     p: usize,
 }
 
+#[allow(dead_code)]
 pub struct KnnDistCache {
     nn: Vec<Vec<(f64, usize)>>,
     max_k: usize,
@@ -984,7 +985,7 @@ pub fn grid_search_parallel_cached_resumable<F>(
 ) -> GridSearchResult
 where F: Fn(usize, &FoldData, &ModelCache) -> f64 + Send + Sync,
 {
-    use crate::ml::cache::{task_load, task_update, task_complete, PartialState};
+    use crate::ml::cache::{task_load, task_update, task_complete};
     let mut partial = task_id
         .and_then(|id| task_load(id))
         .filter(|e| matches!(e.status, crate::ml::cache::TaskStatus::Running { .. }))
@@ -1026,7 +1027,7 @@ pub fn randomized_search_parallel_cached_resumable<F>(
 ) -> GridSearchResult
 where F: Fn(usize, &FoldData, &ModelCache) -> f64 + Send + Sync,
 {
-    use crate::ml::cache::{task_load, task_update, task_complete, PartialState};
+    use crate::ml::cache::{task_load, task_update, task_complete};
     let mut partial = task_id
         .and_then(|id| task_load(id))
         .filter(|e| matches!(e.status, crate::ml::cache::TaskStatus::Running { .. }))

@@ -2,6 +2,7 @@ use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::collections::HashMap;
 
+#[cfg(not(target_arch = "wasm32"))]
 const GITHUB_DISPATCH_URL: &str = "https://api.github.com/repos/feur25/seraplot/dispatches";
 const GITHUB_TOKEN: &str = "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";
 
@@ -66,6 +67,7 @@ fn seraplot_dir() -> PathBuf {
         .join(".seraplot")
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 fn parse_bytes(s: &str) -> f64 {
     s.chars()
         .filter(|c| c.is_ascii_digit())
@@ -272,6 +274,53 @@ pub fn read_pending() -> Vec<serde_json::Value> {
 
 pub fn clear_pending() {
     let _ = std::fs::write(seraplot_dir().join("telemetry.jsonl"), b"");
+}
+
+pub fn push_pending_to_endpoint(endpoint: &str, token: &str) -> Result<usize, String> {
+    let events = read_pending();
+    let count = events.len();
+    if count == 0 {
+        return Ok(0);
+    }
+
+    let summary = get_metrics_summary();
+    let system = summary.get("system").cloned().unwrap_or_else(|| serde_json::json!({}));
+    let body = serde_json::to_string(&serde_json::json!({
+        "secret": token,
+        "events": events,
+        "system": system,
+    }))
+    .map_err(|error| error.to_string())?;
+
+    #[cfg(target_arch = "wasm32")]
+    {
+        let _ = endpoint;
+        let _ = body;
+        return Err("push_telemetry is unavailable on wasm targets".to_string());
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        let status = reqwest::blocking::Client::builder()
+            .timeout(std::time::Duration::from_secs(15))
+            .build()
+            .map_err(|error| error.to_string())?
+            .post(endpoint)
+            .header("Content-Type", "application/json")
+            .header("User-Agent", format!("seraplot/{}", crate::VERSION))
+            .body(body)
+            .send()
+            .map_err(|error| error.to_string())?
+            .status()
+            .as_u16();
+
+        if status < 300 {
+            clear_pending();
+            Ok(count)
+        } else {
+            Err(format!("HTTP {status}"))
+        }
+    }
 }
 
 pub fn flush_pending() {

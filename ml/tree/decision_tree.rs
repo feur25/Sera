@@ -16,12 +16,14 @@ thread_local! {
 #[derive(Clone)]
 pub enum TreeCriterion { Gini, Entropy, MSE }
 
+#[allow(dead_code)]
 #[derive(Clone)]
 enum NodeKind {
     Leaf { value: f64, class: i32, dist: Vec<f64> },
     Split { feature: usize, threshold: f64, left: usize, right: usize },
 }
 
+#[allow(dead_code)]
 #[derive(Clone)]
 struct TreeNode {
     kind: NodeKind,
@@ -497,6 +499,7 @@ enum TreeNodeRegKind {
     Split { feature: usize, threshold: f64, left: usize, right: usize },
 }
 
+#[allow(dead_code)]
 #[derive(Clone)]
 struct TreeNodeReg {
     kind: TreeNodeRegKind,

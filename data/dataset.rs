@@ -4,7 +4,6 @@ pub struct DataPoint<T: Copy> {
 }
 
 use crate::core::dispatch::{map_par, stats_par, std_dev_par};
-use rayon::prelude::*;
 
 impl<T: Copy> DataPoint<T> {
     #[inline]

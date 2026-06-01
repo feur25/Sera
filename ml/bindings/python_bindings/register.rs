@@ -14,3 +14,4 @@ pub fn register_ml_classes(m: &Bound<'_, PyModule>) -> PyResult<()> {
 
 pub fn register_full_ml(m: &Bound<'_, PyModule>) -> PyResult<()> {
     register_ml_classes(m)
+}

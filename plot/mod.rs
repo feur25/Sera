@@ -14,6 +14,7 @@ pub mod seaborn;
 pub mod statistical;
 pub mod utils;
 pub mod chart_input;
+pub mod layout;
 
 pub use canvas::*;
 pub use renderers::*;
@@ -32,4 +33,5 @@ pub use seaborn::*;
 pub use statistical::*;
 pub use utils::*;
 pub use chart_input::*;
+pub use layout::*;
 

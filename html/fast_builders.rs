@@ -1,6 +1,8 @@
 pub struct SvgBuilder {
     buf: Vec<u8>,
+    #[allow(dead_code)]
     width: f32,
+    #[allow(dead_code)]
     height: f32,
     max_bars: usize,
 }
@@ -123,6 +125,7 @@ impl SvgBuilder {
 
 pub struct HtmlBuilder {
     buf: Vec<u8>,
+    #[allow(dead_code)]
     capacity: usize,
 }
 

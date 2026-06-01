@@ -334,6 +334,7 @@ pub enum RenderingStrategy {
 
 pub struct VisibilityOptimizer {
     viewport_padding: f32,
+    #[allow(dead_code)]
     use_frustum_culling: bool,
 }
 
