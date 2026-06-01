@@ -136,3 +136,25 @@ setInterval(function(){T=Object.assign({},T,{cpu_pct:Math.min(100,Math.max(0,T.c
         r#"<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>SeraPlot Sysmon</title><style>{css}</style></head><body><div class="sm-header"><div class="sm-title">System Monitor</div><div class="sm-sub">{host_display} &middot; {os_display} &middot; {cpu_count} cores</div></div><div class="sm-grid" id="sm-grid"></div><div class="sm-ts" id="sm-ts">Snapshot taken</div><script>{js}</script></body></html>"#
     )
 }
+
+pub fn build_sysmon(input: &str) -> String {
+    #[cfg(target_arch = "wasm32")]
+    {
+        let _ = input;
+        return "<!DOCTYPE html><html><body style=\"margin:0;display:flex;align-items:center;justify-content:center;min-height:100vh;background:#0a0f1c;color:#e2e8f0;font-family:system-ui\">System monitor is unavailable on wasm targets.</body></html>".to_string();
+    }
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        #[derive(serde::Deserialize, Default)]
+        struct In { bg_color: Option<String>, update_interval_ms: Option<u32> }
+        let i: In = serde_json::from_str(input).unwrap_or_default();
+        build_sysmon_html(
+            i.bg_color.as_deref().unwrap_or("#0a0f1c"),
+            i.update_interval_ms.unwrap_or(2000),
+        )
+    }
+}
+
+pub fn sysmon(input: &str) -> String {
+    build_sysmon(input)
+}

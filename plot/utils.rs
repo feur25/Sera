@@ -457,33 +457,57 @@ pub fn drift_ks(input: &str) -> String {
     }).to_string()
 }
 
-pub fn bench_chart_value(s: &str) -> bool {
+pub(crate) fn bench_chart_value_inner(s: &str) -> bool {
     serde_json::from_str::<serde_json::Value>(s).is_ok()
 }
 
+pub fn bench_chart_value(input: &str) -> String {
+    bench_chart_value_inner(input).to_string()
+}
+
 #[cfg(any(feature = "python", feature = "gui"))]
-pub fn set_chart_kind(kind: u8) {
+pub(crate) fn set_chart_kind_raw(kind: u8) {
     crate::viewer::chart::sera_set_current_chart_kind(kind);
 }
 #[cfg(not(any(feature = "python", feature = "gui")))]
-pub fn set_chart_kind(_kind: u8) {}
+pub(crate) fn set_chart_kind_raw(_kind: u8) {}
+
+pub fn set_chart_kind(input: &str) -> String {
+    let kind = serde_json::from_str::<serde_json::Value>(input).ok()
+        .and_then(|v| v.get("kind").and_then(|k| k.as_u64()).or_else(|| v.as_u64()))
+        .unwrap_or(0) as u8;
+    set_chart_kind_raw(kind);
+    "true".to_string()
+}
 
 #[cfg(any(feature = "python", feature = "gui"))]
-pub fn set_chart_orientation(vertical: bool) {
+pub(crate) fn set_chart_orientation_raw(vertical: bool) {
     crate::viewer::chart::sera_set_chart_orientation(vertical);
 }
 #[cfg(not(any(feature = "python", feature = "gui")))]
-pub fn set_chart_orientation(_vertical: bool) {}
+pub(crate) fn set_chart_orientation_raw(_vertical: bool) {}
+
+pub fn set_chart_orientation(input: &str) -> String {
+    let vertical = serde_json::from_str::<serde_json::Value>(input).ok()
+        .and_then(|v| v.get("vertical").and_then(|b| b.as_bool()).or_else(|| v.as_bool()))
+        .unwrap_or(false);
+    set_chart_orientation_raw(vertical);
+    "true".to_string()
+}
 
 #[cfg(any(feature = "python", feature = "gui"))]
-pub fn show_chart_value(s: &str) -> bool {
+pub(crate) fn show_chart_value_inner(s: &str) -> bool {
     let c = std::ffi::CString::new(s).unwrap_or_default();
     crate::viewer::chart::sera_show_chart_value(c.as_ptr())
 }
 #[cfg(not(any(feature = "python", feature = "gui")))]
-pub fn show_chart_value(_s: &str) -> bool { false }
+pub(crate) fn show_chart_value_inner(_s: &str) -> bool { false }
 
-pub fn bench_pure_rust(n: usize) -> (f64, f64, f64, f64) {
+pub fn show_chart_value(input: &str) -> String {
+    show_chart_value_inner(input).to_string()
+}
+
+pub(crate) fn bench_pure_rust_raw(n: usize) -> (f64, f64, f64, f64) {
     use std::time::Instant;
     let ages: Vec<f64> = (0..891).map(|i| 10.0 + (i % 70) as f64).collect();
     let fare: Vec<f64> = (0..891).map(|i| (i % 50) as f64 * 2.5).collect();
@@ -516,6 +540,19 @@ pub fn bench_pure_rust(n: usize) -> (f64, f64, f64, f64) {
     }
     let heatmap_ms = t0.elapsed().as_secs_f64() * 1000.0 / n as f64;
     (hist_ms, bar_ms, scatter_ms, heatmap_ms)
+}
+
+pub fn bench_pure_rust(input: &str) -> String {
+    let n = serde_json::from_str::<serde_json::Value>(input).ok()
+        .and_then(|v| v.get("n").and_then(|c| c.as_u64()).or_else(|| v.as_u64()))
+        .unwrap_or(2000) as usize;
+    let (hist_ms, bar_ms, scatter_ms, heatmap_ms) = bench_pure_rust_raw(n);
+    serde_json::json!({
+        "histogram_ms": hist_ms,
+        "bar_ms": bar_ms,
+        "scatter_ms": scatter_ms,
+        "heatmap_ms": heatmap_ms,
+    }).to_string()
 }
 
 #[crate::sera_alias("plan", "cloud_plan")]

@@ -2,16 +2,12 @@ use numpy::PyReadonlyArray1;
 use pyo3::prelude::*;
 use pyo3::types::PyAny;
 
-pub mod charts;
+pub mod api;
 pub mod ml;
-pub mod root;
-pub mod telemetry;
+pub mod registry;
 
-pub use charts::*;
 #[allow(unused_imports)]
 pub use ml::*;
-pub use root::*;
-pub use telemetry::*;
 
 pub fn python_chart_from_html(html: String, doc: &'static str) -> crate::Chart {
     crate::Chart::new_doc(html, doc)

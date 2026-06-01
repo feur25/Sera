@@ -3,4 +3,3 @@ crate::impl_wasm_bindings!();
 
 #[cfg(feature = "ffi")]
 crate::impl_cffi_bindings!();
-

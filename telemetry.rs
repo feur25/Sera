@@ -403,4 +403,17 @@ pub fn get_metrics_summary() -> serde_json::Value {
     })
 }
 
+pub fn push_telemetry(input: &str) -> String {
+    #[derive(serde::Deserialize, Default)]
+    struct In { endpoint: Option<String>, token: Option<String> }
+    let payload: In = serde_json::from_str(input).unwrap_or_default();
+    match push_pending_to_endpoint(
+        payload.endpoint.as_deref().unwrap_or(""),
+        payload.token.as_deref().unwrap_or(""),
+    ) {
+        Ok(count) => serde_json::json!({"ok": true, "count": count}).to_string(),
+        Err(error) => serde_json::json!({"ok": false, "error": error}).to_string(),
+    }
+}
+
 

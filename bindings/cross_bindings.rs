@@ -99,3 +99,18 @@ macro_rules! impl_cffi_bindings {
         }
     };
 }
+
+#[macro_export]
+macro_rules! impl_python_bindings {
+    () => {
+        macro_rules! impl_python_chart {
+            ($fn:ident, $_js:literal) => {
+                #[crate::sera_binding(python, py_json, chart)]
+                fn $fn(input: &str) -> String {
+                    crate::bindings::commands::charts::$fn(input)
+                }
+            };
+        }
+        crate::for_each_json_chart_fn!(impl_python_chart);
+    };
+}

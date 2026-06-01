@@ -607,4 +607,13 @@ pub fn html_suffix(buf: &mut Vec<u8>, id: u64, hover_json: &str) {
     buf.extend_from_slice(b"</div></body></html>");
 }
 
+pub fn set_bg(input: &str) -> String {
+    #[derive(serde::Deserialize, Default)]
+    struct In { html: Option<String>, color: Option<String> }
+    if let Ok(payload) = serde_json::from_str::<In>(input) {
+        return apply_bg(payload.html.unwrap_or_default(), payload.color.as_deref());
+    }
+    apply_bg(input.to_string(), None)
+}
+
 
