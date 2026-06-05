@@ -2,7 +2,6 @@
 
 <div class="lang-en">
 
-Aliases: `sp.hbar`, `sp.barh`, `sp.horizontal_bar`
 
 ---
 
@@ -59,9 +58,6 @@ A horizontal bar chart draws bars along the horizontal axis instead of the verti
 ---
 
 <style>.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}.sp-tb{padding:7px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}.sp-tb:hover{color:#e2e8f0}.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}.sp-tc{display:none}.sp-tc.sp-on{display:block}</style>
-<script>function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})}document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc.sp-on code').forEach(function(c){try{(hljs.highlightElement||hljs.highlightBlock).call(hljs,c)}catch(e){}})});</script>
-
-
 </div>
 
 <iframe src="../../previews/hbar.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
@@ -72,7 +68,6 @@ A horizontal bar chart draws bars along the horizontal axis instead of the verti
 
 <div class="lang-fr">
 
-Aliases: `sp.hbar`, `sp.barh`, `sp.horizontal_bar`
 
 ---
 
@@ -127,7 +122,6 @@ Un graphique à barres horizontales trace les barres le long de l'axe horizontal
 `Chart`
 
 ---
-
 
 </div>
 

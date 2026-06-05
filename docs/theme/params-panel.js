@@ -134,10 +134,83 @@
 
     return {
       signature:  sig    ? sig.main   : "",
+      functionName: signatureFunctionName(sig ? sig.main : ""),
       alias:      sig    ? sig.alias  : "",
       parameters: params ? params.main : "",
       returns:    rets   ? rets.main   : ""
     };
+  }
+
+  function escapeAttr(s) {
+    return String(s || "")
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  function signatureFunctionName(html) {
+    if (!html) return "";
+    var div = document.createElement("div");
+    div.innerHTML = html;
+    var text = div.textContent || "";
+    var m = text.match(/\bsp\.([A-Za-z_][A-Za-z0-9_]*)\s*\(/);
+    return m ? m[1] : "";
+  }
+
+  function autoAliasHtml(fn) {
+    return fn ? '<p class="sp-auto-alias" data-sp-alias-for="' + escapeAttr(fn) + '"></p>' : "";
+  }
+
+  function aliasMap() {
+    var sp = window.SeraplotWASM;
+    if (!sp || typeof sp.chartAliases !== "function") return null;
+    try { return JSON.parse(sp.chartAliases()); } catch (e) { return null; }
+  }
+
+  function aliasesFor(fn, map) {
+    if (!fn || !map) return [];
+    var target = map[fn] || null;
+    if (!target && fn.slice(-1) === "s") target = map[fn.slice(0, -1)] || null;
+    if (!target) return map[fn] ? [fn] : [];
+    var out = [];
+    Object.keys(map).forEach(function (alias) {
+      if (map[alias] === target) out.push(alias);
+    });
+    return out;
+  }
+
+  function hydrateAliases(root) {
+    var nodes = Array.prototype.slice.call((root || document).querySelectorAll(".sp-auto-alias"));
+    if (!nodes.length) return;
+    nodes.forEach(function (node) {
+      var sec = node.closest ? node.closest(".sp-psec-alias") : null;
+      if (sec) sec.style.display = "none";
+    });
+    var tries = 0;
+    function paint() {
+      var map = aliasMap();
+      if (!map) return false;
+      nodes.forEach(function (node) {
+        var fn = node.getAttribute("data-sp-alias-for") || "";
+        var aliases = aliasesFor(fn, map);
+        var sec = node.closest ? node.closest(".sp-psec-alias") : null;
+        if (!aliases.length) {
+          if (sec) sec.style.display = "none";
+          return;
+        }
+        node.innerHTML = aliases.map(function (alias) {
+          return '<code>sp.' + escapeAttr(alias) + '</code>';
+        }).join(", ");
+        if (sec) sec.style.display = "";
+      });
+      return true;
+    }
+    if (paint()) return;
+    var timer = setInterval(function () {
+      tries += 1;
+      if (paint() || tries > 120) clearInterval(timer);
+    }, 80);
   }
 
   function isChartPage() {
@@ -178,9 +251,10 @@
     var scopeMatch = remappedSig.match(/\bid="(pp-[a-z0-9_-]+)"/i);
     var previewId = scopeMatch ? scopeMatch[1] + "-preview" : "";
     addSec(remappedSig,                        labels.sig,   "sp-psec-sig");
-    addSec(remapPanelHtml(data.alias),          labels.alias, "sp-psec-alias");
+    addSec(remapPanelHtml(data.alias || autoAliasHtml(data.functionName)), labels.alias, "sp-psec-alias");
     addSec(remapPanelHtml(data.parameters),     labels.par,   "sp-psec-params");
     addSec(remapPanelHtml(data.returns),        labels.ret,   "sp-psec-returns");
+    hydrateAliases(body);
 
     // ── Code example tabs ────────────────────────────────────────────────
     var tabsHtml = (lang === "fr" ? exampleData.fr : exampleData.en) || exampleData.en || exampleData.fr;
