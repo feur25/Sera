@@ -1,13 +1,16 @@
+use std::collections::HashMap;
 use std::path::PathBuf;
 use std::time::{SystemTime, UNIX_EPOCH};
-use std::collections::HashMap;
 
 #[cfg(not(target_arch = "wasm32"))]
 const GITHUB_DISPATCH_URL: &str = "https://api.github.com/repos/feur25/seraplot/dispatches";
-const GITHUB_TOKEN: &str = "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";
+#[cfg(not(target_arch = "wasm32"))]
+const GITHUB_TOKEN_ENV: &str = "SERAPLOT_GITHUB_TOKEN";
 
 static PYTHON_VER: std::sync::OnceLock<String> = std::sync::OnceLock::new();
 static SYS_INFO_CACHE: std::sync::OnceLock<serde_json::Value> = std::sync::OnceLock::new();
+#[cfg(not(target_arch = "wasm32"))]
+static GITHUB_TOKEN_CACHE: std::sync::OnceLock<Option<String>> = std::sync::OnceLock::new();
 
 pub fn set_python_version(v: &str) {
     let _ = PYTHON_VER.set(v.to_string());
@@ -79,8 +82,13 @@ fn parse_bytes(s: &str) -> f64 {
 fn collect_system_info() -> serde_json::Value {
     let os = std::env::consts::OS;
     let arch = std::env::consts::ARCH;
-    let cpu_count = std::thread::available_parallelism().map(|n| n.get()).unwrap_or(1);
-    let python_version = PYTHON_VER.get().cloned().unwrap_or_else(|| "unknown".to_string());
+    let cpu_count = std::thread::available_parallelism()
+        .map(|n| n.get())
+        .unwrap_or(1);
+    let python_version = PYTHON_VER
+        .get()
+        .cloned()
+        .unwrap_or_else(|| "unknown".to_string());
 
     let (ram_gb, available_ram_gb, cpu_brand) = {
         #[cfg(target_os = "windows")]
@@ -95,7 +103,11 @@ fn collect_system_info() -> serde_json::Value {
             let parts: Vec<&str> = out.trim().splitn(3, '|').collect();
             let ram = parse_bytes(parts.first().unwrap_or(&"0")) / 1024.0_f64.powi(3);
             let avail = parse_bytes(parts.get(1).unwrap_or(&"0")) / (1024.0 * 1024.0);
-            let brand = parts.get(2).map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).unwrap_or_else(|| "Unknown".to_string());
+            let brand = parts
+                .get(2)
+                .map(|s| s.trim().to_string())
+                .filter(|s| !s.is_empty())
+                .unwrap_or_else(|| "Unknown".to_string());
             (ram, avail, brand)
         }
         #[cfg(target_os = "linux")]
@@ -117,7 +129,15 @@ fn collect_system_info() -> serde_json::Value {
             }
             let cpu_brand = std::fs::read_to_string("/proc/cpuinfo")
                 .ok()
-                .and_then(|s| s.lines().find(|l| l.starts_with("model name:")).map(|l| l.splitn(2, ':').nth(1).unwrap_or("Unknown").trim().to_string()))
+                .and_then(|s| {
+                    s.lines().find(|l| l.starts_with("model name:")).map(|l| {
+                        l.splitn(2, ':')
+                            .nth(1)
+                            .unwrap_or("Unknown")
+                            .trim()
+                            .to_string()
+                    })
+                })
                 .unwrap_or_else(|| "Unknown".to_string());
             (ram_gb, available_ram_gb, cpu_brand)
         }
@@ -125,30 +145,38 @@ fn collect_system_info() -> serde_json::Value {
         {
             let ram_gb = std::process::Command::new("sysctl")
                 .args(["-n", "hw.memsize"])
-                .output().ok()
+                .output()
+                .ok()
                 .and_then(|o| String::from_utf8(o.stdout).ok())
                 .and_then(|s| s.trim().parse::<f64>().ok())
                 .map(|b| b / 1024.0_f64.powi(3))
                 .unwrap_or(0.0);
             let available_ram_gb = std::process::Command::new("vm_stat")
-                .output().ok()
+                .output()
+                .ok()
                 .and_then(|o| String::from_utf8(o.stdout).ok())
-                .and_then(|s| s.lines().find(|l| l.contains("Pages free")).and_then(|l| {
-                    l.split_whitespace().nth(2)
-                        .and_then(|n| n.trim_end_matches('.').parse::<f64>().ok())
-                        .map(|p| p * 4096.0 / 1024.0_f64.powi(3))
-                }))
+                .and_then(|s| {
+                    s.lines().find(|l| l.contains("Pages free")).and_then(|l| {
+                        l.split_whitespace()
+                            .nth(2)
+                            .and_then(|n| n.trim_end_matches('.').parse::<f64>().ok())
+                            .map(|p| p * 4096.0 / 1024.0_f64.powi(3))
+                    })
+                })
                 .unwrap_or(0.0);
             let cpu_brand = std::process::Command::new("sysctl")
                 .args(["-n", "machdep.cpu.brand_string"])
-                .output().ok()
+                .output()
+                .ok()
                 .and_then(|o| String::from_utf8(o.stdout).ok())
                 .map(|s| s.trim().to_string())
                 .unwrap_or_else(|| "Unknown".to_string());
             (ram_gb, available_ram_gb, cpu_brand)
         }
         #[cfg(not(any(target_os = "windows", target_os = "linux", target_os = "macos")))]
-        { (0.0_f64, 0.0_f64, "Unknown".to_string()) }
+        {
+            (0.0_f64, 0.0_f64, "Unknown".to_string())
+        }
     };
 
     serde_json::json!({
@@ -166,10 +194,65 @@ fn sys_info() -> &'static serde_json::Value {
     SYS_INFO_CACHE.get_or_init(collect_system_info)
 }
 
-fn try_send_event(event: serde_json::Value) -> bool {
-    if GITHUB_TOKEN.is_empty() {
-        return false;
+#[cfg(not(target_arch = "wasm32"))]
+fn clean_token(value: &str) -> Option<String> {
+    let token = value
+        .trim()
+        .trim_matches('"')
+        .trim_matches('\'')
+        .to_string();
+    if token.is_empty() {
+        None
+    } else {
+        Some(token)
     }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn dotenv_token() -> Option<String> {
+    let mut candidates = Vec::new();
+    if let Ok(cwd) = std::env::current_dir() {
+        for dir in cwd.ancestors().take(6) {
+            candidates.push(dir.join(".env"));
+        }
+    }
+    candidates.push(seraplot_dir().join(".env"));
+
+    for path in candidates {
+        let Ok(text) = std::fs::read_to_string(path) else {
+            continue;
+        };
+        for line in text.lines() {
+            let line = line.trim();
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            let Some((key, value)) = line.split_once('=') else {
+                continue;
+            };
+            if key.trim() == GITHUB_TOKEN_ENV {
+                if let Some(token) = clean_token(value) {
+                    return Some(token);
+                }
+            }
+        }
+    }
+    None
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+fn github_token() -> Option<&'static str> {
+    GITHUB_TOKEN_CACHE
+        .get_or_init(|| {
+            std::env::var(GITHUB_TOKEN_ENV)
+                .ok()
+                .and_then(|value| clean_token(&value))
+                .or_else(dotenv_token)
+        })
+        .as_deref()
+}
+
+fn try_send_event(event: serde_json::Value) -> bool {
     let body = match serde_json::to_string(&serde_json::json!({
         "event_type": "seraplot-telemetry",
         "client_payload": { "events": [event] }
@@ -178,21 +261,32 @@ fn try_send_event(event: serde_json::Value) -> bool {
         Err(_) => return false,
     };
     #[cfg(target_arch = "wasm32")]
-    { let _ = body; return false; }
+    {
+        let _ = body;
+        return false;
+    }
     #[cfg(not(target_arch = "wasm32"))]
-    reqwest::blocking::Client::builder()
-        .timeout(std::time::Duration::from_secs(5))
-        .build().ok()
-        .and_then(|c| c
-            .post(GITHUB_DISPATCH_URL)
-            .header("Authorization", format!("token {}", GITHUB_TOKEN))
-            .header("Accept", "application/vnd.github+json")
-            .header("Content-Type", "application/json")
-            .header("User-Agent", format!("seraplot/{}", crate::VERSION))
-            .body(body)
-            .send().ok())
-        .map(|r| r.status().as_u16() == 204)
-        .unwrap_or(false)
+    {
+        let Some(token) = github_token() else {
+            return false;
+        };
+        reqwest::blocking::Client::builder()
+            .timeout(std::time::Duration::from_secs(5))
+            .build()
+            .ok()
+            .and_then(|c| {
+                c.post(GITHUB_DISPATCH_URL)
+                    .header("Authorization", format!("token {}", token))
+                    .header("Accept", "application/vnd.github+json")
+                    .header("Content-Type", "application/json")
+                    .header("User-Agent", format!("seraplot/{}", crate::VERSION))
+                    .body(body)
+                    .send()
+                    .ok()
+            })
+            .map(|r| r.status().as_u16() == 204)
+            .unwrap_or(false)
+    }
 }
 
 pub fn is_consent_given() -> bool {
@@ -200,7 +294,8 @@ pub fn is_consent_given() -> bool {
     if !path.exists() {
         return false;
     }
-    std::fs::read_to_string(&path).ok()
+    std::fs::read_to_string(&path)
+        .ok()
         .and_then(|t| serde_json::from_str::<serde_json::Value>(&t).ok())
         .and_then(|v| v.get("enabled").and_then(|e| e.as_bool()))
         .unwrap_or(false)
@@ -211,7 +306,11 @@ pub fn set_consent(enabled: bool) {
     let _ = std::fs::create_dir_all(&dir);
     let _ = std::fs::write(
         dir.join("consent.json"),
-        format!("{{\"enabled\":{},\"version\":\"{}\"}}", enabled, crate::VERSION),
+        format!(
+            "{{\"enabled\":{},\"version\":\"{}\"}}",
+            enabled,
+            crate::VERSION
+        ),
     );
 }
 
@@ -229,11 +328,21 @@ fn build_event_json(event: &TelemetryEvent, ts: u64) -> serde_json::Value {
                 obj.insert(k.clone(), v.clone());
             }
         }
-        if let Some(n) = event.data_count    { obj.insert("data_count".into(),   n.into()); }
-        if let Some(s) = event.data_size_mb  { obj.insert("data_size_mb".into(), ((s * 100.0).round() / 100.0).into()); }
-        if let Some(ref i) = event.input_shape  { obj.insert("input_shape".into(),  i.clone().into()); }
-        if let Some(ref o) = event.output_shape { obj.insert("output_shape".into(), o.clone().into()); }
-        if let Some(ref a) = event.algorithm    { obj.insert("algorithm".into(),    a.clone().into()); }
+        if let Some(n) = event.data_count {
+            obj.insert("data_count".into(), n.into());
+        }
+        if let Some(s) = event.data_size_mb {
+            obj.insert("data_size_mb".into(), ((s * 100.0).round() / 100.0).into());
+        }
+        if let Some(ref i) = event.input_shape {
+            obj.insert("input_shape".into(), i.clone().into());
+        }
+        if let Some(ref o) = event.output_shape {
+            obj.insert("output_shape".into(), o.clone().into());
+        }
+        if let Some(ref a) = event.algorithm {
+            obj.insert("algorithm".into(), a.clone().into());
+        }
     }
     ev
 }
@@ -249,7 +358,11 @@ pub fn record(event: TelemetryEvent) {
     let ev = build_event_json(&event, ts);
     let path = seraplot_dir().join("telemetry.jsonl");
     use std::io::Write;
-    if let Ok(mut f) = std::fs::OpenOptions::new().create(true).append(true).open(&path) {
+    if let Ok(mut f) = std::fs::OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&path)
+    {
         let _ = writeln!(f, "{}", ev);
     }
     std::thread::spawn(move || {
@@ -258,7 +371,10 @@ pub fn record(event: TelemetryEvent) {
 }
 
 pub fn telemetry_file_path() -> String {
-    seraplot_dir().join("telemetry.jsonl").to_string_lossy().into_owned()
+    seraplot_dir()
+        .join("telemetry.jsonl")
+        .to_string_lossy()
+        .into_owned()
 }
 
 pub fn read_pending() -> Vec<serde_json::Value> {
@@ -268,7 +384,11 @@ pub fn read_pending() -> Vec<serde_json::Value> {
     }
     std::fs::read_to_string(&path)
         .ok()
-        .map(|t| t.lines().filter_map(|l| serde_json::from_str(l).ok()).collect())
+        .map(|t| {
+            t.lines()
+                .filter_map(|l| serde_json::from_str(l).ok())
+                .collect()
+        })
         .unwrap_or_default()
 }
 
@@ -284,7 +404,10 @@ pub fn push_pending_to_endpoint(endpoint: &str, token: &str) -> Result<usize, St
     }
 
     let summary = get_metrics_summary();
-    let system = summary.get("system").cloned().unwrap_or_else(|| serde_json::json!({}));
+    let system = summary
+        .get("system")
+        .cloned()
+        .unwrap_or_else(|| serde_json::json!({}));
     let body = serde_json::to_string(&serde_json::json!({
         "secret": token,
         "events": events,
@@ -328,7 +451,10 @@ pub fn flush_pending() {
     if events.is_empty() {
         return;
     }
-    let sent = events.iter().filter(|e| try_send_event((*e).clone())).count();
+    let sent = events
+        .iter()
+        .filter(|e| try_send_event((*e).clone()))
+        .count();
     if sent == events.len() {
         clear_pending();
     }
@@ -369,31 +495,40 @@ pub fn get_metrics_summary() -> serde_json::Value {
             let mut sorted = durs.clone();
             sorted.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
             let p = |frac: f64| {
-                let idx = ((sorted.len() as f64 * frac) as usize).min(sorted.len().saturating_sub(1));
+                let idx =
+                    ((sorted.len() as f64 * frac) as usize).min(sorted.len().saturating_sub(1));
                 sorted.get(idx).copied().unwrap_or(0.0)
             };
-            (method.clone(), serde_json::json!({
-                "count": count,
-                "total_ms": r(total),
-                "min_ms": r(min),
-                "max_ms": r(max),
-                "avg_ms": r(total / count as f64),
-                "p50_ms": r(p(0.5)),
-                "p95_ms": r(p(0.95)),
-                "p99_ms": r(p(0.99)),
-            }))
+            (
+                method.clone(),
+                serde_json::json!({
+                    "count": count,
+                    "total_ms": r(total),
+                    "min_ms": r(min),
+                    "max_ms": r(max),
+                    "avg_ms": r(total / count as f64),
+                    "p50_ms": r(p(0.5)),
+                    "p95_ms": r(p(0.95)),
+                    "p99_ms": r(p(0.99)),
+                }),
+            )
         })
         .collect();
 
-    let system = events.first().map(|e| serde_json::json!({
-        "os":                e.get("os"),
-        "arch":              e.get("arch"),
-        "cpu_count":         e.get("cpu_count"),
-        "ram_gb":            e.get("ram_gb"),
-        "available_ram_gb":  e.get("available_ram_gb"),
-        "cpu_brand":         e.get("cpu_brand"),
-        "python_version":    e.get("python_version"),
-    })).unwrap_or(serde_json::json!({}));
+    let system = events
+        .first()
+        .map(|e| {
+            serde_json::json!({
+                "os":                e.get("os"),
+                "arch":              e.get("arch"),
+                "cpu_count":         e.get("cpu_count"),
+                "ram_gb":            e.get("ram_gb"),
+                "available_ram_gb":  e.get("available_ram_gb"),
+                "cpu_brand":         e.get("cpu_brand"),
+                "python_version":    e.get("python_version"),
+            })
+        })
+        .unwrap_or(serde_json::json!({}));
 
     serde_json::json!({
         "system": system,
@@ -405,7 +540,10 @@ pub fn get_metrics_summary() -> serde_json::Value {
 
 pub fn push_telemetry(input: &str) -> String {
     #[derive(serde::Deserialize, Default)]
-    struct In { endpoint: Option<String>, token: Option<String> }
+    struct In {
+        endpoint: Option<String>,
+        token: Option<String>,
+    }
     let payload: In = serde_json::from_str(input).unwrap_or_default();
     match push_pending_to_endpoint(
         payload.endpoint.as_deref().unwrap_or(""),
@@ -415,5 +553,3 @@ pub fn push_telemetry(input: &str) -> String {
         Err(error) => serde_json::json!({"ok": false, "error": error}).to_string(),
     }
 }
-
-

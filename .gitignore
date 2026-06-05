@@ -1,6 +1,7 @@
 book/
 target/
 *.lock
+.env
 .DS_Store
 src/telemetry/
 *.csv
