@@ -1,9 +1,7 @@
 pub mod classification;
-pub mod regression;
 pub mod clustering;
+pub mod regression;
 
 pub use classification::*;
-pub use regression::*;
 pub use clustering::*;
-
-
+pub use regression::*;

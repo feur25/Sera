@@ -1,7 +1,7 @@
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::{Mutex, OnceLock};
-use serde::{Serialize, Deserialize};
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct ModelRecord {
@@ -45,7 +45,9 @@ fn dirs_home() -> Option<PathBuf> {
         .map(PathBuf::from)
 }
 
-fn index_path() -> PathBuf { registry_dir().join("index.json") }
+fn index_path() -> PathBuf {
+    registry_dir().join("index.json")
+}
 
 fn load_disk() -> RegistryIndex {
     let p = index_path();
@@ -69,9 +71,20 @@ fn now_ms() -> u64 {
         .unwrap_or(0)
 }
 
-pub fn register(name: &str, kind: &str, payload: &str, params: HashMap<String, String>, metrics: HashMap<String, f64>, tags: Vec<String>) -> ModelRecord {
+pub fn register(
+    name: &str,
+    kind: &str,
+    payload: &str,
+    params: HashMap<String, String>,
+    metrics: HashMap<String, f64>,
+    tags: Vec<String>,
+) -> ModelRecord {
     let mut g = store().lock().unwrap();
-    let v = g.entries.get(name).map(|l| l.iter().map(|r| r.version).max().unwrap_or(0) + 1).unwrap_or(1);
+    let v = g
+        .entries
+        .get(name)
+        .map(|l| l.iter().map(|r| r.version).max().unwrap_or(0) + 1)
+        .unwrap_or(1);
     let rec = ModelRecord {
         name: name.to_string(),
         version: v,
@@ -82,7 +95,10 @@ pub fn register(name: &str, kind: &str, payload: &str, params: HashMap<String, S
         payload: payload.to_string(),
         tags,
     };
-    g.entries.entry(name.to_string()).or_default().push(rec.clone());
+    g.entries
+        .entry(name.to_string())
+        .or_default()
+        .push(rec.clone());
     flush_disk(&g);
     rec
 }
@@ -110,7 +126,9 @@ pub fn delete(name: &str, version: Option<u32>) -> usize {
             let before = list.len();
             list.retain(|r| r.version != v);
             before - list.len()
-        } else { 0 }
+        } else {
+            0
+        }
     } else {
         g.entries.remove(name).map(|l| l.len()).unwrap_or(0)
     };
@@ -131,7 +149,9 @@ pub fn promote(name: &str, version: u32, tag: &str) -> bool {
     if let Some(list) = g.entries.get_mut(name) {
         for r in list.iter_mut() {
             if r.version == version {
-                if !r.tags.iter().any(|t| t == tag) { r.tags.push(tag.to_string()); }
+                if !r.tags.iter().any(|t| t == tag) {
+                    r.tags.push(tag.to_string());
+                }
                 flush_disk(&g);
                 return true;
             }
@@ -142,7 +162,10 @@ pub fn promote(name: &str, version: u32, tag: &str) -> bool {
 
 pub fn by_tag(name: &str, tag: &str) -> Option<ModelRecord> {
     let g = store().lock().unwrap();
-    g.entries.get(name)?.iter().filter(|r| r.tags.iter().any(|t| t == tag)).max_by_key(|r| r.version).cloned()
+    g.entries
+        .get(name)?
+        .iter()
+        .filter(|r| r.tags.iter().any(|t| t == tag))
+        .max_by_key(|r| r.version)
+        .cloned()
 }
-
-

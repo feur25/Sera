@@ -1,32 +1,48 @@
+use super::common::{place_words, prepare};
 use super::config::WordCloudConfig;
-use super::common::{prepare, place_words};
-use crate::plot::statistical::common::{palette_color, push_b, push_i, push_f2, escape_xml, hex6};
-use crate::html::hover::{slots_to_json, build_chart_html};
+use crate::html::hover::{build_chart_html, slots_to_json};
+use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i};
 
 #[crate::chart_demo("words=[\"rust\",\"python\",\"wasm\",\"plot\",\"data\",\"viz\",\"chart\",\"graph\",\"fast\",\"native\",\"async\",\"macro\",\"trait\",\"enum\",\"crate\"], frequencies=[42,38,30,28,25,22,18,15,12,10,9,8,7,6,5]")]
 
 pub fn render(cfg: &WordCloudConfig) -> String {
-    let p = match prepare(cfg) { Some(p) => p, None => return String::new() };
+    let p = match prepare(cfg) {
+        Some(p) => p,
+        None => return String::new(),
+    };
 
     let test = |x: f64, y: f64, w: f64, h: f64, _cx: f64, _cy: f64, _rx: f64, _ry: f64| -> bool {
         let _ = (x, y, w, h);
         true
     };
-    let placed = place_words(&p.words, &p.sizes, cfg.width as f64, cfg.height as f64, p.pad_t, &test);
+    let placed = place_words(
+        &p.words,
+        &p.sizes,
+        cfg.width as f64,
+        cfg.height as f64,
+        p.pad_t,
+        &test,
+    );
 
     let n_placed = placed.len();
-    let nodes: Vec<(f64, f64, usize)> = placed.iter().map(|pw| {
-        let cx = pw.x + pw.w / 2.0;
-        let cy = pw.y + pw.h / 2.0;
-        (cx, cy, pw.idx)
-    }).collect();
+    let nodes: Vec<(f64, f64, usize)> = placed
+        .iter()
+        .map(|pw| {
+            let cx = pw.x + pw.w / 2.0;
+            let cy = pw.y + pw.h / 2.0;
+            (cx, cy, pw.idx)
+        })
+        .collect();
 
     let w = cfg.width as f64;
     let h = cfg.height as f64;
 
     let mut buf = Vec::<u8>::with_capacity(n_placed * 800 + 4096);
 
-    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_b(
+        &mut buf,
+        b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"",
+    );
     push_i(&mut buf, cfg.width);
     push_b(&mut buf, b"\" height=\"");
     push_i(&mut buf, cfg.height);
@@ -35,16 +51,37 @@ pub fn render(cfg: &WordCloudConfig) -> String {
     push_b(&mut buf, b" ");
     push_i(&mut buf, cfg.height);
     push_b(&mut buf, b"\">");
-    push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#080d1a\"/>");
+    push_b(
+        &mut buf,
+        b"<rect width=\"100%\" height=\"100%\" fill=\"#080d1a\"/>",
+    );
 
     push_b(&mut buf, b"<defs>");
-    push_b(&mut buf, b"<filter id=\"nrngf\" x=\"-60%\" y=\"-60%\" width=\"320%\" height=\"320%\">");
-    push_b(&mut buf, b"<feGaussianBlur stdDeviation=\"4\" result=\"b\"/>");
-    push_b(&mut buf, b"<feMerge><feMergeNode in=\"b\"/><feMergeNode in=\"SourceGraphic\"/></feMerge>");
+    push_b(
+        &mut buf,
+        b"<filter id=\"nrngf\" x=\"-60%\" y=\"-60%\" width=\"320%\" height=\"320%\">",
+    );
+    push_b(
+        &mut buf,
+        b"<feGaussianBlur stdDeviation=\"4\" result=\"b\"/>",
+    );
+    push_b(
+        &mut buf,
+        b"<feMerge><feMergeNode in=\"b\"/><feMergeNode in=\"SourceGraphic\"/></feMerge>",
+    );
     push_b(&mut buf, b"</filter>");
-    push_b(&mut buf, b"<filter id=\"nrnwf\" x=\"-80%\" y=\"-80%\" width=\"360%\" height=\"360%\">");
-    push_b(&mut buf, b"<feGaussianBlur stdDeviation=\"2.5\" result=\"b\"/>");
-    push_b(&mut buf, b"<feMerge><feMergeNode in=\"b\"/><feMergeNode in=\"SourceGraphic\"/></feMerge>");
+    push_b(
+        &mut buf,
+        b"<filter id=\"nrnwf\" x=\"-80%\" y=\"-80%\" width=\"360%\" height=\"360%\">",
+    );
+    push_b(
+        &mut buf,
+        b"<feGaussianBlur stdDeviation=\"2.5\" result=\"b\"/>",
+    );
+    push_b(
+        &mut buf,
+        b"<feMerge><feMergeNode in=\"b\"/><feMergeNode in=\"SourceGraphic\"/></feMerge>",
+    );
     push_b(&mut buf, b"</filter>");
     push_b(&mut buf, b"</defs>");
 
@@ -101,7 +138,11 @@ pub fn render(cfg: &WordCloudConfig) -> String {
         let word = &p.words[pw.idx];
         let freq = p.freqs[pw.idx];
         let color = palette_color(cfg.palette, p.orig_idx[pw.idx]);
-        let pct = if p.total > 0.0 { freq / p.total * 100.0 } else { 0.0 };
+        let pct = if p.total > 0.0 {
+            freq / p.total * 100.0
+        } else {
+            0.0
+        };
         let cx = pw.x + pw.w / 2.0;
         let cy = pw.y + pw.h / 2.0;
         let node_r = (pw.font_size * 0.55).max(4.0);
@@ -115,7 +156,10 @@ pub fn render(cfg: &WordCloudConfig) -> String {
         push_f2(&mut buf, node_r * 1.6);
         push_b(&mut buf, b"\" fill=\"#");
         buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" fill-opacity=\"0.07\" filter=\"url(#nrngf)\"/>");
+        push_b(
+            &mut buf,
+            b"\" fill-opacity=\"0.07\" filter=\"url(#nrngf)\"/>",
+        );
 
         push_b(&mut buf, b"<circle cx=\"");
         push_f2(&mut buf, cx);
@@ -125,22 +169,35 @@ pub fn render(cfg: &WordCloudConfig) -> String {
         push_f2(&mut buf, node_r * 0.35);
         push_b(&mut buf, b"\" fill=\"#");
         buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" fill-opacity=\"0.9\" filter=\"url(#nrnwf)\"/>");
+        push_b(
+            &mut buf,
+            b"\" fill-opacity=\"0.9\" filter=\"url(#nrnwf)\"/>",
+        );
 
         push_b(&mut buf, b"<text data-idx=\"");
         push_i(&mut buf, pw.idx as i32);
-        push_b(&mut buf, b"\" data-lbl=\""); escape_xml(&mut buf, word);
-        push_b(&mut buf, b"\" data-v=\""); push_f2(&mut buf, freq);
-        push_b(&mut buf, b"\" data-kv-Pct=\""); push_f2(&mut buf, pct); buf.push(b'%');
+        push_b(&mut buf, b"\" data-lbl=\"");
+        escape_xml(&mut buf, word);
+        push_b(&mut buf, b"\" data-v=\"");
+        push_f2(&mut buf, freq);
+        push_b(&mut buf, b"\" data-kv-Pct=\"");
+        push_f2(&mut buf, pct);
+        buf.push(b'%');
         push_b(&mut buf, b"\" x=\"");
         push_f2(&mut buf, cx);
         push_b(&mut buf, b"\" y=\"");
         push_f2(&mut buf, cy + pw.font_size * 0.36);
-        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"'Segoe UI',Arial,sans-serif\" font-size=\"");
+        push_b(
+            &mut buf,
+            b"\" text-anchor=\"middle\" font-family=\"'Segoe UI',Arial,sans-serif\" font-size=\"",
+        );
         push_f2(&mut buf, pw.font_size);
         push_b(&mut buf, b"\" font-weight=\"700\" fill=\"#");
         buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" filter=\"url(#nrnwf)\" style=\"cursor:pointer\">");
+        push_b(
+            &mut buf,
+            b"\" filter=\"url(#nrnwf)\" style=\"cursor:pointer\">",
+        );
         escape_xml(&mut buf, word);
         push_b(&mut buf, b"</text>");
     }
@@ -150,7 +207,11 @@ pub fn render(cfg: &WordCloudConfig) -> String {
 
     let svg = unsafe { String::from_utf8_unchecked(buf) };
     let slots_json;
-    let json: &str = if cfg.hover.is_empty() { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
+    let json: &str = if cfg.hover.is_empty() {
+        "[]"
+    } else {
+        slots_json = slots_to_json(cfg.hover);
+        &slots_json
+    };
     build_chart_html(cfg.title, &svg, json)
 }
-

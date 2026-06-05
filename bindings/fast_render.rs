@@ -1,6 +1,6 @@
+use crate::data::Dataset;
 use std::ffi::{CStr, CString};
 use std::os::raw::{c_char, c_uint};
-use crate::data::Dataset;
 
 #[repr(C)]
 pub struct FastChartConfig {
@@ -49,8 +49,8 @@ impl FastChartRenderer {
             labels: Vec::new(),
             values: Vec::new(),
             colors: vec![
-                "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd",
-                "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf",
+                "#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2",
+                "#7f7f7f", "#bcbd22", "#17becf",
             ],
         }
     }
@@ -68,7 +68,14 @@ impl FastChartRenderer {
         Self::new(config, title).with_data(labels, values)
     }
 
-    fn render_svg_axes(&self, svg: &mut String, pad: i32, plot_width: i32, plot_height: i32, max_val: f64) {
+    fn render_svg_axes(
+        &self,
+        svg: &mut String,
+        pad: i32,
+        plot_width: i32,
+        plot_height: i32,
+        max_val: f64,
+    ) {
         for i in 0..=5 {
             let y = pad + ((1.0 - i as f64 / 5.0) * plot_height as f64) as i32;
             let val = (max_val / 5.0) * i as f64;
@@ -84,7 +91,14 @@ impl FastChartRenderer {
         ));
     }
 
-    fn render_chart(&self, svg: &mut String, pad: i32, plot_width: i32, plot_height: i32, max_val: f64) {
+    fn render_chart(
+        &self,
+        svg: &mut String,
+        pad: i32,
+        plot_width: i32,
+        plot_height: i32,
+        max_val: f64,
+    ) {
         crate::plot::default::render_chart_by_type(
             self.config.chart_type,
             svg,
@@ -113,20 +127,32 @@ impl FastChartRenderer {
 
         svg.push_str(&format!(
             "<text x=\"{}\" y=\"30\" class=\"title\" text-anchor=\"middle\">{}</text>",
-            w / 2, self.title
+            w / 2,
+            self.title
         ));
 
         let max_val = self.values.iter().copied().fold(0.0_f64, f64::max).max(1.0);
         let plot_width = (self.config.width - self.config.padding * 2.0).max(1.0);
         let plot_height = (self.config.height - self.config.padding * 2.0).max(1.0);
 
-        self.render_svg_axes(&mut svg, pad, plot_width as i32, plot_height as i32, max_val);
-        self.render_chart(&mut svg, pad, plot_width as i32, plot_height as i32, max_val);
+        self.render_svg_axes(
+            &mut svg,
+            pad,
+            plot_width as i32,
+            plot_height as i32,
+            max_val,
+        );
+        self.render_chart(
+            &mut svg,
+            pad,
+            plot_width as i32,
+            plot_height as i32,
+            max_val,
+        );
 
         svg.push_str("</svg>");
         svg
     }
-
 }
 
 #[no_mangle]
@@ -176,5 +202,3 @@ pub extern "C" fn sera_fast_chart_free(ptr: *mut c_char) {
         }
     }
 }
-
-

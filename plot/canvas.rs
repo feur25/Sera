@@ -12,8 +12,22 @@ pub struct Canvas {
 }
 
 impl Canvas {
-    pub fn new(width: f32, height: f32, labels: Vec<String>, values: Vec<f64>, type_id: u8) -> Self {
-        Self { width, height, _labels: labels, values, type_id, selection: HashMap::new(), hover_point: None }
+    pub fn new(
+        width: f32,
+        height: f32,
+        labels: Vec<String>,
+        values: Vec<f64>,
+        type_id: u8,
+    ) -> Self {
+        Self {
+            width,
+            height,
+            _labels: labels,
+            values,
+            type_id,
+            selection: HashMap::new(),
+            hover_point: None,
+        }
     }
 
     pub fn new_with_data(labels: &[String], values: &[f64], type_id: u8) -> Self {
@@ -25,16 +39,25 @@ impl Canvas {
     }
 
     pub fn select_point(&mut self, trace_id: &str, idx: usize) {
-        self.selection.entry(trace_id.to_string()).or_insert_with(Vec::new).push(idx);
+        self.selection
+            .entry(trace_id.to_string())
+            .or_insert_with(Vec::new)
+            .push(idx);
     }
 
     pub fn clear_selection(&mut self) {
         self.selection.clear();
     }
 
-    pub fn dimensions(&self) -> (f32, f32) { (self.width, self.height) }
-    pub fn hover(&self) -> Option<(f32, f32)> { self.hover_point }
-    pub fn selection(&self, trace_id: &str) -> Option<&Vec<usize>> { self.selection.get(trace_id) }
+    pub fn dimensions(&self) -> (f32, f32) {
+        (self.width, self.height)
+    }
+    pub fn hover(&self) -> Option<(f32, f32)> {
+        self.hover_point
+    }
+    pub fn selection(&self, trace_id: &str) -> Option<&Vec<usize>> {
+        self.selection.get(trace_id)
+    }
 
     pub fn render_svg(&self) -> String {
         if let Ok(reg) = crate::plot::controller::chart_controller::get_registry().lock() {
@@ -42,7 +65,16 @@ impl Canvas {
                 let mut svg = String::new();
                 let colors: Vec<&'static str> = vec!["#4a90e2"];
                 let max_val = self.values.iter().copied().fold(0.0, f64::max).max(1.0);
-                svg_renderer(&mut svg, &self.values, &colors, 0, self.width as i32, self.height as i32, max_val, true);
+                svg_renderer(
+                    &mut svg,
+                    &self.values,
+                    &colors,
+                    0,
+                    self.width as i32,
+                    self.height as i32,
+                    max_val,
+                    true,
+                );
                 return svg;
             }
         }
@@ -69,7 +101,12 @@ pub struct ViewerApp {
 
 impl ViewerApp {
     pub fn new(canvas: Canvas) -> Self {
-        Self { canvas, is_panning: false, pan_start: None, legend_visible: true }
+        Self {
+            canvas,
+            is_panning: false,
+            pan_start: None,
+            legend_visible: true,
+        }
     }
 
     pub fn on_mouse_down(&mut self, x: f32, y: f32) {
@@ -86,7 +123,8 @@ impl ViewerApp {
         self.canvas.set_hover(x, y);
         if self.is_panning {
             if let Some((sx, sy)) = self.pan_start {
-                self.canvas.pan((x - sx) as f64 / 100.0, (y - sy) as f64 / 100.0);
+                self.canvas
+                    .pan((x - sx) as f64 / 100.0, (y - sy) as f64 / 100.0);
                 self.pan_start = Some((x, y));
             }
         }
@@ -96,10 +134,16 @@ impl ViewerApp {
         self.canvas.zoom(_x as f64, _y as f64, 1.1);
     }
 
-    pub fn toggle_legend(&mut self) { self.legend_visible = !self.legend_visible; }
-    pub fn canvas(&self) -> &Canvas { &self.canvas }
-    pub fn canvas_mut(&mut self) -> &mut Canvas { &mut self.canvas }
-    pub fn legend_visible(&self) -> bool { self.legend_visible }
+    pub fn toggle_legend(&mut self) {
+        self.legend_visible = !self.legend_visible;
+    }
+    pub fn canvas(&self) -> &Canvas {
+        &self.canvas
+    }
+    pub fn canvas_mut(&mut self) -> &mut Canvas {
+        &mut self.canvas
+    }
+    pub fn legend_visible(&self) -> bool {
+        self.legend_visible
+    }
 }
-
-

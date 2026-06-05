@@ -1,6 +1,11 @@
 use super::helpers::*;
 
-#[crate::sera_doc(category = "Linear", en = "Ordinary Least Squares linear regression — analytical Gram/Cholesky solver.", fr = "Régression linéaire par moindres carrés ordinaires — solveur analytique Gram/Cholesky.", file = "linear-regression.md")]
+#[crate::sera_doc(
+    category = "Linear",
+    en = "Ordinary Least Squares linear regression — analytical Gram/Cholesky solver.",
+    fr = "Régression linéaire par moindres carrés ordinaires — solveur analytique Gram/Cholesky.",
+    file = "linear-regression.md"
+)]
 #[crate::sera_alias("linear_regression", "linreg")]
 pub fn ml_linear_regression(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -9,10 +14,12 @@ pub fn ml_linear_regression(input: &str) -> String {
     let y = yf(&v);
     model.fit(&xf, n, p, &y);
     let preds = model.predict(&xtf, nt, p);
-    format!(r#"{{"predictions":{},"coef":{},"intercept":{}}}"#,
+    format!(
+        r#"{{"predictions":{},"coef":{},"intercept":{}}}"#,
         serde_json::to_string(&preds).unwrap_or_default(),
         serde_json::to_string(&model.coef).unwrap_or_default(),
-        model.intercept)
+        model.intercept
+    )
 }
 
 #[crate::sera_alias("ridge", "ridge_regression")]
@@ -24,10 +31,12 @@ pub fn ml_ridge(input: &str) -> String {
     let y = yf(&v);
     model.fit(&xf, n, p, &y);
     let preds = model.predict(&xtf, nt, p);
-    format!(r#"{{"predictions":{},"coef":{},"intercept":{}}}"#,
+    format!(
+        r#"{{"predictions":{},"coef":{},"intercept":{}}}"#,
         serde_json::to_string(&preds).unwrap_or_default(),
         serde_json::to_string(&model.coef).unwrap_or_default(),
-        model.intercept)
+        model.intercept
+    )
 }
 
 #[crate::sera_alias("lasso")]
@@ -41,10 +50,12 @@ pub fn ml_lasso(input: &str) -> String {
     let y = yf(&v);
     model.fit_resumable(&xf, n, p, &y, None);
     let preds = model.predict(&xtf, nt, p);
-    format!(r#"{{"predictions":{},"coef":{},"intercept":{}}}"#,
+    format!(
+        r#"{{"predictions":{},"coef":{},"intercept":{}}}"#,
         serde_json::to_string(&preds).unwrap_or_default(),
         serde_json::to_string(&model.coef().to_vec()).unwrap_or_default(),
-        model.intercept())
+        model.intercept()
+    )
 }
 
 #[crate::sera_alias("elastic_net", "elasticnet")]
@@ -55,14 +66,22 @@ pub fn ml_elastic_net(input: &str) -> String {
     let max_iter = ju(&v, "max_iter", 1000);
     let tol = jf(&v, "tol", 1e-4);
     let fit_intercept = jb(&v, "fit_intercept", true);
-    let mut model = crate::ml::linear::elastic_net::ElasticNet::new(alpha, l1_ratio, max_iter, tol, fit_intercept);
+    let mut model = crate::ml::linear::elastic_net::ElasticNet::new(
+        alpha,
+        l1_ratio,
+        max_iter,
+        tol,
+        fit_intercept,
+    );
     let y = yf(&v);
     model.fit_resumable(&xf, n, p, &y, None);
     let preds = model.predict(&xtf, nt, p);
-    format!(r#"{{"predictions":{},"coef":{},"intercept":{}}}"#,
+    format!(
+        r#"{{"predictions":{},"coef":{},"intercept":{}}}"#,
         serde_json::to_string(&preds).unwrap_or_default(),
         serde_json::to_string(&model.coef).unwrap_or_default(),
-        model.intercept)
+        model.intercept
+    )
 }
 
 #[crate::sera_alias("logistic_regression", "logistic")]
@@ -72,15 +91,18 @@ pub fn ml_logistic_regression(input: &str) -> String {
     let max_iter = ju(&v, "max_iter", 100);
     let tol = jf(&v, "tol", 1e-4);
     let fit_intercept = jb(&v, "fit_intercept", true);
-    let mut model = crate::ml::linear::logistic::LogisticRegression::new(c, max_iter, tol, fit_intercept);
+    let mut model =
+        crate::ml::linear::logistic::LogisticRegression::new(c, max_iter, tol, fit_intercept);
     let y = yi(&v);
     model.fit(&xf, n, p, &y);
     let preds = model.predict(&xtf, nt, p);
-    format!(r#"{{"predictions":{},"coef":{},"intercept":{},"classes":{}}}"#,
+    format!(
+        r#"{{"predictions":{},"coef":{},"intercept":{},"classes":{}}}"#,
         serde_json::to_string(&preds).unwrap_or_default(),
         serde_json::to_string(&model.coef).unwrap_or_default(),
         model.intercept,
-        serde_json::to_string(&model.classes).unwrap_or_default())
+        serde_json::to_string(&model.classes).unwrap_or_default()
+    )
 }
 
 #[crate::sera_alias("ridge_classifier", "ridge_cls")]
@@ -91,7 +113,10 @@ pub fn ml_ridge_classifier(input: &str) -> String {
     let y = yi(&v);
     model.fit(&xf, n, p, &y);
     let preds = model.predict(&xtf, nt, p);
-    format!(r#"{{"predictions":{}}}"#, serde_json::to_string(&preds).unwrap_or_default())
+    format!(
+        r#"{{"predictions":{}}}"#,
+        serde_json::to_string(&preds).unwrap_or_default()
+    )
 }
 
 #[crate::sera_alias("sgd_classifier", "sgd_cls")]
@@ -108,14 +133,17 @@ pub fn ml_sgd_classifier(input: &str) -> String {
     let tol = jf(&v, "tol", 1e-3);
     let eta0 = jf(&v, "eta0", 1.0);
     let fit_intercept = jb(&v, "fit_intercept", true);
-    let mut model = crate::ml::linear::sgd::SGDClassifier::new(loss, alpha, max_iter, tol, eta0, fit_intercept);
+    let mut model =
+        crate::ml::linear::sgd::SGDClassifier::new(loss, alpha, max_iter, tol, eta0, fit_intercept);
     let y = yi(&v);
     model.fit(&xf, n, p, &y);
     let preds = model.predict(&xtf, nt, p);
-    format!(r#"{{"predictions":{},"coef":{},"intercept":{}}}"#,
+    format!(
+        r#"{{"predictions":{},"coef":{},"intercept":{}}}"#,
         serde_json::to_string(&preds).unwrap_or_default(),
         serde_json::to_string(&model.coef).unwrap_or_default(),
-        model.intercept)
+        model.intercept
+    )
 }
 
 #[crate::sera_alias("sgd_regressor", "sgd_reg")]
@@ -126,12 +154,15 @@ pub fn ml_sgd_regressor(input: &str) -> String {
     let tol = jf(&v, "tol", 1e-3);
     let eta0 = jf(&v, "eta0", 0.01);
     let fit_intercept = jb(&v, "fit_intercept", true);
-    let mut model = crate::ml::linear::sgd::SGDRegressor::new(alpha, max_iter, tol, eta0, fit_intercept);
+    let mut model =
+        crate::ml::linear::sgd::SGDRegressor::new(alpha, max_iter, tol, eta0, fit_intercept);
     let y = yf(&v);
     model.fit(&xf, n, p, &y);
     let preds = model.predict(&xtf, nt, p);
-    format!(r#"{{"predictions":{},"coef":{},"intercept":{}}}"#,
+    format!(
+        r#"{{"predictions":{},"coef":{},"intercept":{}}}"#,
         serde_json::to_string(&preds).unwrap_or_default(),
         serde_json::to_string(&model.coef).unwrap_or_default(),
-        model.intercept)
+        model.intercept
+    )
 }

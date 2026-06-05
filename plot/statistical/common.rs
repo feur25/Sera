@@ -1,6 +1,6 @@
 pub const PALETTE: &[u32] = &[
-    0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B, 0x8B5CF6,
-    0x06B6D4, 0xEC4899, 0x84CC16, 0xEF4444, 0x14B8A6,
+    0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B, 0x8B5CF6, 0x06B6D4, 0xEC4899, 0x84CC16, 0xEF4444,
+    0x14B8A6,
 ];
 
 #[inline(always)]
@@ -46,24 +46,45 @@ macro_rules! chart_config {
 }
 
 pub fn apply_sort(labels: &[String], values: &[f64], order: &str) -> (Vec<String>, Vec<f64>) {
-    if order.is_empty() || order == "none" { return (labels.to_vec(), values.to_vec()); }
+    if order.is_empty() || order == "none" {
+        return (labels.to_vec(), values.to_vec());
+    }
     let n = labels.len().min(values.len());
     let idx = sort_indices(n, values, labels, order);
     (sorted(&idx, labels), sorted(&idx, values))
 }
 
-pub fn apply_sort_groups(labels: &[String], values: &[f64], groups: &[String], order: &str) -> (Vec<String>, Vec<f64>, Vec<String>) {
-    if order.is_empty() || order == "none" { return (labels.to_vec(), values.to_vec(), groups.to_vec()); }
+pub fn apply_sort_groups(
+    labels: &[String],
+    values: &[f64],
+    groups: &[String],
+    order: &str,
+) -> (Vec<String>, Vec<f64>, Vec<String>) {
+    if order.is_empty() || order == "none" {
+        return (labels.to_vec(), values.to_vec(), groups.to_vec());
+    }
     let n = labels.len().min(values.len()).min(groups.len());
     let idx = sort_indices(n, values, labels, order);
-    (sorted(&idx, labels), sorted(&idx, values), sorted(&idx, groups))
+    (
+        sorted(&idx, labels),
+        sorted(&idx, values),
+        sorted(&idx, groups),
+    )
 }
 
 pub fn sort_indices<L: Ord>(n: usize, vals: &[f64], labels: &[L], order: &str) -> Vec<usize> {
     let mut idx: Vec<usize> = (0..n).collect();
     match order {
-        "asc" | "ascending" => idx.sort_by(|&a, &b| vals[a].partial_cmp(&vals[b]).unwrap_or(std::cmp::Ordering::Equal)),
-        "desc" | "descending" => idx.sort_by(|&a, &b| vals[b].partial_cmp(&vals[a]).unwrap_or(std::cmp::Ordering::Equal)),
+        "asc" | "ascending" => idx.sort_by(|&a, &b| {
+            vals[a]
+                .partial_cmp(&vals[b])
+                .unwrap_or(std::cmp::Ordering::Equal)
+        }),
+        "desc" | "descending" => idx.sort_by(|&a, &b| {
+            vals[b]
+                .partial_cmp(&vals[a])
+                .unwrap_or(std::cmp::Ordering::Equal)
+        }),
         "alpha" | "alphabetical" => idx.sort_by(|&a, &b| labels[a].cmp(&labels[b])),
         "alpha_desc" => idx.sort_by(|&a, &b| labels[b].cmp(&labels[a])),
         _ => {}
@@ -77,115 +98,216 @@ pub fn sorted<T: Clone>(idx: &[usize], data: &[T]) -> Vec<T> {
 
 pub fn svg_open(buf: &mut Vec<u8>, w: i32, h: i32) {
     push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
-    push_i(buf, w); push_b(buf, b"\" height=\"");
-    push_i(buf, h); push_b(buf, b"\" viewBox=\"0 0 ");
-    push_i(buf, w); push_b(buf, b" ");
-    push_i(buf, h); push_b(buf, b"\">");
-    push_b(buf, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
+    push_i(buf, w);
+    push_b(buf, b"\" height=\"");
+    push_i(buf, h);
+    push_b(buf, b"\" viewBox=\"0 0 ");
+    push_i(buf, w);
+    push_b(buf, b" ");
+    push_i(buf, h);
+    push_b(buf, b"\">");
+    push_b(
+        buf,
+        b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>",
+    );
 }
 
-pub fn svg_open_rescalable(buf: &mut Vec<u8>, w: i32, h: i32, pad_l: i32, pad_t: i32, plot_w: i32, plot_h: i32) {
+pub fn svg_open_rescalable(
+    buf: &mut Vec<u8>,
+    w: i32,
+    h: i32,
+    pad_l: i32,
+    pad_t: i32,
+    plot_w: i32,
+    plot_h: i32,
+) {
     push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
-    push_i(buf, w); push_b(buf, b"\" height=\"");
-    push_i(buf, h); push_b(buf, b"\" viewBox=\"0 0 ");
-    push_i(buf, w); push_b(buf, b" ");
-    push_i(buf, h); push_b(buf, b"\" data-sp=\"");
-    push_i(buf, pad_l); push_b(buf, b",");
-    push_i(buf, pad_t); push_b(buf, b",");
-    push_i(buf, plot_w); push_b(buf, b",");
-    push_i(buf, plot_h); push_b(buf, b"\">");
-    push_b(buf, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
+    push_i(buf, w);
+    push_b(buf, b"\" height=\"");
+    push_i(buf, h);
+    push_b(buf, b"\" viewBox=\"0 0 ");
+    push_i(buf, w);
+    push_b(buf, b" ");
+    push_i(buf, h);
+    push_b(buf, b"\" data-sp=\"");
+    push_i(buf, pad_l);
+    push_b(buf, b",");
+    push_i(buf, pad_t);
+    push_b(buf, b",");
+    push_i(buf, plot_w);
+    push_b(buf, b",");
+    push_i(buf, plot_h);
+    push_b(buf, b"\">");
+    push_b(
+        buf,
+        b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>",
+    );
 }
 
 pub fn svg_title(buf: &mut Vec<u8>, title: &str, cx: i32, y: i32) {
-    if title.is_empty() { return; }
-    push_b(buf, b"<text x=\""); push_i(buf, cx);
-    push_b(buf, b"\" y=\""); push_i(buf, y);
+    if title.is_empty() {
+        return;
+    }
+    push_b(buf, b"<text x=\"");
+    push_i(buf, cx);
+    push_b(buf, b"\" y=\"");
+    push_i(buf, y);
     push_b(buf, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\" class=\"sp-ttl\">");
     escape_xml(buf, title);
     push_b(buf, b"</text>");
 }
 
 pub fn svg_axis_lines(buf: &mut Vec<u8>, pad_l: i32, pad_t: i32, plot_w: i32, plot_h: i32) {
-    push_b(buf, b"<line x1=\""); push_i(buf, pad_l);
-    push_b(buf, b"\" y1=\""); push_i(buf, pad_t);
-    push_b(buf, b"\" x2=\""); push_i(buf, pad_l);
-    push_b(buf, b"\" y2=\""); push_i(buf, pad_t + plot_h);
-    push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-y\"/>");
-    push_b(buf, b"<line x1=\""); push_i(buf, pad_l);
-    push_b(buf, b"\" y1=\""); push_i(buf, pad_t + plot_h);
-    push_b(buf, b"\" x2=\""); push_i(buf, pad_l + plot_w);
-    push_b(buf, b"\" y2=\""); push_i(buf, pad_t + plot_h);
-    push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-x\"/>");
+    push_b(buf, b"<line x1=\"");
+    push_i(buf, pad_l);
+    push_b(buf, b"\" y1=\"");
+    push_i(buf, pad_t);
+    push_b(buf, b"\" x2=\"");
+    push_i(buf, pad_l);
+    push_b(buf, b"\" y2=\"");
+    push_i(buf, pad_t + plot_h);
+    push_b(
+        buf,
+        b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-y\"/>",
+    );
+    push_b(buf, b"<line x1=\"");
+    push_i(buf, pad_l);
+    push_b(buf, b"\" y1=\"");
+    push_i(buf, pad_t + plot_h);
+    push_b(buf, b"\" x2=\"");
+    push_i(buf, pad_l + plot_w);
+    push_b(buf, b"\" y2=\"");
+    push_i(buf, pad_t + plot_h);
+    push_b(
+        buf,
+        b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-x\"/>",
+    );
 }
 
 pub fn svg_x_label(buf: &mut Vec<u8>, label: &str, cx: i32, y: i32) {
-    if label.is_empty() { return; }
-    push_b(buf, b"<text x=\""); push_i(buf, cx);
-    push_b(buf, b"\" y=\""); push_i(buf, y);
+    if label.is_empty() {
+        return;
+    }
+    push_b(buf, b"<text x=\"");
+    push_i(buf, cx);
+    push_b(buf, b"\" y=\"");
+    push_i(buf, y);
     push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" class=\"sp-xl\">");
     escape_xml(buf, label);
     push_b(buf, b"</text>");
 }
 
 pub fn svg_y_label(buf: &mut Vec<u8>, label: &str, x: i32, pad_t: i32, plot_h: i32) {
-    if label.is_empty() { return; }
+    if label.is_empty() {
+        return;
+    }
     let ym = pad_t + plot_h / 2;
-    push_b(buf, b"<text x=\""); push_i(buf, x);
-    push_b(buf, b"\" y=\""); push_i(buf, ym);
+    push_b(buf, b"<text x=\"");
+    push_i(buf, x);
+    push_b(buf, b"\" y=\"");
+    push_i(buf, ym);
     push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" transform=\"rotate(-90,");
-    push_i(buf, x); push_b(buf, b","); push_i(buf, ym); push_b(buf, b")\" class=\"sp-yl\">");
+    push_i(buf, x);
+    push_b(buf, b",");
+    push_i(buf, ym);
+    push_b(buf, b")\" class=\"sp-yl\">");
     escape_xml(buf, label);
     push_b(buf, b"</text>");
 }
 
-pub fn svg_legend_item(buf: &mut Vec<u8>, si: i32, name: &str, color: u32, x: i32, y: i32, max_len: usize) {
-    if name.is_empty() { return; }
+pub fn svg_legend_item(
+    buf: &mut Vec<u8>,
+    si: i32,
+    name: &str,
+    color: u32,
+    x: i32,
+    y: i32,
+    max_len: usize,
+) {
+    if name.is_empty() {
+        return;
+    }
     let hx = hex6(color);
-    push_b(buf, b"<g data-legend=\"1\" data-series=\""); push_i(buf, si);
+    push_b(buf, b"<g data-legend=\"1\" data-series=\"");
+    push_i(buf, si);
     push_b(buf, b"\">");
-    push_b(buf, b"<rect x=\""); push_i(buf, x);
-    push_b(buf, b"\" y=\""); push_i(buf, y);
-    push_b(buf, b"\" width=\"12\" height=\"12\" rx=\"2\" fill=\"#"); buf.extend_from_slice(&hx);
+    push_b(buf, b"<rect x=\"");
+    push_i(buf, x);
+    push_b(buf, b"\" y=\"");
+    push_i(buf, y);
+    push_b(buf, b"\" width=\"12\" height=\"12\" rx=\"2\" fill=\"#");
+    buf.extend_from_slice(&hx);
     push_b(buf, b"\"/>");
-    push_b(buf, b"<text x=\""); push_i(buf, x + 16);
-    push_b(buf, b"\" y=\""); push_i(buf, y + 10);
-    push_b(buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\">");
+    push_b(buf, b"<text x=\"");
+    push_i(buf, x + 16);
+    push_b(buf, b"\" y=\"");
+    push_i(buf, y + 10);
+    push_b(
+        buf,
+        b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\">",
+    );
     escape_xml(buf, truncate(name, max_len));
     push_b(buf, b"</text></g>");
 }
 
 pub fn svg_hgrid(buf: &mut Vec<u8>, x1: i32, x2: i32, y: i32) {
-    push_b(buf, b"<line x1=\""); push_i(buf, x1);
-    push_b(buf, b"\" y1=\""); push_i(buf, y);
-    push_b(buf, b"\" x2=\""); push_i(buf, x2);
-    push_b(buf, b"\" y2=\""); push_i(buf, y);
-    push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"0.8\" stroke-opacity=\"0.65\" class=\"sp-gl\"/>");
+    push_b(buf, b"<line x1=\"");
+    push_i(buf, x1);
+    push_b(buf, b"\" y1=\"");
+    push_i(buf, y);
+    push_b(buf, b"\" x2=\"");
+    push_i(buf, x2);
+    push_b(buf, b"\" y2=\"");
+    push_i(buf, y);
+    push_b(
+        buf,
+        b"\" stroke=\"#cbd5e1\" stroke-width=\"0.8\" stroke-opacity=\"0.65\" class=\"sp-gl\"/>",
+    );
 }
 
 pub fn svg_vgrid(buf: &mut Vec<u8>, x: i32, y1: i32, y2: i32) {
-    push_b(buf, b"<line x1=\""); push_i(buf, x);
-    push_b(buf, b"\" y1=\""); push_i(buf, y1);
-    push_b(buf, b"\" x2=\""); push_i(buf, x);
-    push_b(buf, b"\" y2=\""); push_i(buf, y2);
-    push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"0.8\" stroke-opacity=\"0.65\" class=\"sp-gl\"/>");
+    push_b(buf, b"<line x1=\"");
+    push_i(buf, x);
+    push_b(buf, b"\" y1=\"");
+    push_i(buf, y1);
+    push_b(buf, b"\" x2=\"");
+    push_i(buf, x);
+    push_b(buf, b"\" y2=\"");
+    push_i(buf, y2);
+    push_b(
+        buf,
+        b"\" stroke=\"#cbd5e1\" stroke-width=\"0.8\" stroke-opacity=\"0.65\" class=\"sp-gl\"/>",
+    );
 }
 
 pub fn svg_tick_y(buf: &mut Vec<u8>, x: i32, y: i32, val: f64) {
-    push_b(buf, b"<text x=\""); push_i(buf, x);
-    push_b(buf, b"\" y=\""); push_i(buf, y);
+    push_b(buf, b"<text x=\"");
+    push_i(buf, x);
+    push_b(buf, b"\" y=\"");
+    push_i(buf, y);
     push_b(buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
-    if val.abs() >= 1000.0 { push_i(buf, val as i32); } else { push_f2(buf, val); }
+    if val.abs() >= 1000.0 {
+        push_i(buf, val as i32);
+    } else {
+        push_f2(buf, val);
+    }
     push_b(buf, b"</text>");
 }
 
 pub fn svg_tick_x(buf: &mut Vec<u8>, x: i32, y: i32, val: f64) {
-    push_b(buf, b"<text x=\""); push_i(buf, x);
-    push_b(buf, b"\" y=\""); push_i(buf, y);
+    push_b(buf, b"<text x=\"");
+    push_i(buf, x);
+    push_b(buf, b"\" y=\"");
+    push_i(buf, y);
     push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-xt\">");
-    if val >= 10000.0 { push_i(buf, (val / 1000.0) as i32); push_b(buf, b"k"); }
-    else if val >= 1000.0 { push_i(buf, val as i32); }
-    else { push_f2(buf, val); }
+    if val >= 10000.0 {
+        push_i(buf, (val / 1000.0) as i32);
+        push_b(buf, b"k");
+    } else if val >= 1000.0 {
+        push_i(buf, val as i32);
+    } else {
+        push_f2(buf, val);
+    }
     push_b(buf, b"</text>");
 }
 
@@ -202,9 +324,12 @@ pub fn push_b(buf: &mut Vec<u8>, b: &[u8]) {
 pub fn hex6(c: u32) -> [u8; 6] {
     let h = b"0123456789abcdef";
     [
-        h[((c >> 20) & 0xF) as usize], h[((c >> 16) & 0xF) as usize],
-        h[((c >> 12) & 0xF) as usize], h[((c >> 8) & 0xF) as usize],
-        h[((c >> 4) & 0xF) as usize],  h[(c & 0xF) as usize],
+        h[((c >> 20) & 0xF) as usize],
+        h[((c >> 16) & 0xF) as usize],
+        h[((c >> 12) & 0xF) as usize],
+        h[((c >> 8) & 0xF) as usize],
+        h[((c >> 4) & 0xF) as usize],
+        h[(c & 0xF) as usize],
     ]
 }
 
@@ -215,18 +340,24 @@ pub fn push_hex(buf: &mut Vec<u8>, c: u32) {
 }
 
 pub fn escape_xml(buf: &mut Vec<u8>, s: &str) {
-    if !s.bytes().any(|b| b == b'&' || b == b'<' || b == b'>' || b == b'"' || b == b'\'') {
+    if !s
+        .bytes()
+        .any(|b| b == b'&' || b == b'<' || b == b'>' || b == b'"' || b == b'\'')
+    {
         buf.extend_from_slice(s.as_bytes());
         return;
     }
     for ch in s.chars() {
         match ch {
-            '&'  => buf.extend_from_slice(b"&amp;"),
-            '<'  => buf.extend_from_slice(b"&lt;"),
-            '>'  => buf.extend_from_slice(b"&gt;"),
-            '"'  => buf.extend_from_slice(b"&quot;"),
+            '&' => buf.extend_from_slice(b"&amp;"),
+            '<' => buf.extend_from_slice(b"&lt;"),
+            '>' => buf.extend_from_slice(b"&gt;"),
+            '"' => buf.extend_from_slice(b"&quot;"),
             '\'' => buf.extend_from_slice(b"&#39;"),
-            c    => { let mut tmp = [0u8; 4]; buf.extend_from_slice(c.encode_utf8(&mut tmp).as_bytes()); }
+            c => {
+                let mut tmp = [0u8; 4];
+                buf.extend_from_slice(c.encode_utf8(&mut tmp).as_bytes());
+            }
         }
     }
 }
@@ -238,7 +369,11 @@ pub fn escape_xml_s(s: &str) -> String {
 }
 
 pub fn truncate(s: &str, max: usize) -> &str {
-    if s.len() <= max { s } else { &s[..max] }
+    if s.len() <= max {
+        s
+    } else {
+        &s[..max]
+    }
 }
 
 pub fn write_f2(buf: &mut Vec<u8>, v: f64) {
@@ -259,29 +394,64 @@ pub fn write_i(buf: &mut Vec<u8>, v: i32) {
 
 #[inline(always)]
 pub fn push_i(buf: &mut Vec<u8>, mut n: i32) {
-    if n < 0 { buf.push(b'-'); n = -n; }
-    if n == 0 { buf.push(b'0'); return; }
-    let mut d = [0u8; 10]; let mut len = 0;
-    while n > 0 { d[len] = (n % 10) as u8 + b'0'; n /= 10; len += 1; }
-    for &b in d[..len].iter().rev() { buf.push(b); }
+    if n < 0 {
+        buf.push(b'-');
+        n = -n;
+    }
+    if n == 0 {
+        buf.push(b'0');
+        return;
+    }
+    let mut d = [0u8; 10];
+    let mut len = 0;
+    while n > 0 {
+        d[len] = (n % 10) as u8 + b'0';
+        n /= 10;
+        len += 1;
+    }
+    for &b in d[..len].iter().rev() {
+        buf.push(b);
+    }
 }
 
 #[inline(always)]
 pub fn push_f2(buf: &mut Vec<u8>, v: f64) {
     let neg = v < 0.0;
     let vi = (v.abs() * 100.0 + 0.5) as u64;
-    let whole = vi / 100; let frac = vi % 100;
-    if neg { buf.push(b'-'); }
-    let mut d = [0u8; 20]; let mut len = 0; let mut w = whole;
-    if w == 0 { d[0] = b'0'; len = 1; } else { while w > 0 { d[len] = (w % 10) as u8 + b'0'; w /= 10; len += 1; } }
-    for &b in d[..len].iter().rev() { buf.push(b); }
-    buf.push(b'.'); buf.push((frac / 10) as u8 + b'0'); buf.push((frac % 10) as u8 + b'0');
+    let whole = vi / 100;
+    let frac = vi % 100;
+    if neg {
+        buf.push(b'-');
+    }
+    let mut d = [0u8; 20];
+    let mut len = 0;
+    let mut w = whole;
+    if w == 0 {
+        d[0] = b'0';
+        len = 1;
+    } else {
+        while w > 0 {
+            d[len] = (w % 10) as u8 + b'0';
+            w /= 10;
+            len += 1;
+        }
+    }
+    for &b in d[..len].iter().rev() {
+        buf.push(b);
+    }
+    buf.push(b'.');
+    buf.push((frac / 10) as u8 + b'0');
+    buf.push((frac % 10) as u8 + b'0');
 }
 
 fn itoa_i32(mut n: i32) -> String {
-    if n == 0 { return "0".to_string(); }
+    if n == 0 {
+        return "0".to_string();
+    }
     let neg = n < 0;
-    if neg { n = -n; }
+    if neg {
+        n = -n;
+    }
     let mut digits = [0u8; 11];
     let mut pos = 11;
     while n > 0 {
@@ -289,7 +459,10 @@ fn itoa_i32(mut n: i32) -> String {
         digits[pos] = (n % 10) as u8 + b'0';
         n /= 10;
     }
-    if neg { pos -= 1; digits[pos] = b'-'; }
+    if neg {
+        pos -= 1;
+        digits[pos] = b'-';
+    }
     String::from_utf8_lossy(&digits[pos..]).to_string()
 }
 
@@ -321,12 +494,29 @@ pub struct Frame {
 impl Frame {
     #[inline]
     pub fn new(w: i32, h: i32, pl: i32, pt: i32, pb: i32, pr: i32, cap: usize) -> Self {
-        Self { buf: Vec::with_capacity(cap), w, h, pl, pt, pw: w - pl - pr, ph: h - pt - pb, hid: 0 }
+        Self {
+            buf: Vec::with_capacity(cap),
+            w,
+            h,
+            pl,
+            pt,
+            pw: w - pl - pr,
+            ph: h - pt - pb,
+            hid: 0,
+        }
     }
 
     pub fn open(&mut self, title: &str, rescalable: bool) {
         if rescalable {
-            svg_open_rescalable(&mut self.buf, self.w, self.h, self.pl, self.pt, self.pw, self.ph);
+            svg_open_rescalable(
+                &mut self.buf,
+                self.w,
+                self.h,
+                self.pl,
+                self.pt,
+                self.pw,
+                self.ph,
+            );
         } else {
             svg_open(&mut self.buf, self.w, self.h);
         }
@@ -339,7 +529,9 @@ impl Frame {
             let f = i as f64 / n as f64;
             let y = self.pt + ((1.0 - f) * self.ph as f64) as i32;
             let v = y_min + f * rng;
-            if grid && i > 0 { svg_hgrid(&mut self.buf, self.pl, self.pl + self.pw, y); }
+            if grid && i > 0 {
+                svg_hgrid(&mut self.buf, self.pl, self.pl + self.pw, y);
+            }
             svg_tick_y(&mut self.buf, self.pl - 4, y + 4, v);
         }
     }
@@ -352,14 +544,23 @@ impl Frame {
             let y = self.pt + ((1.0 - f) * self.ph as f64) as i32;
             let v = y_min + f * rng;
             if grid && i > 0 {
-                push_b(&mut self.buf, b"<line x1=\""); push_i(&mut self.buf, self.pl);
-                push_b(&mut self.buf, b"\" y1=\""); push_i(&mut self.buf, y);
-                push_b(&mut self.buf, b"\" x2=\""); push_i(&mut self.buf, self.pl + self.pw);
-                push_b(&mut self.buf, b"\" y2=\""); push_i(&mut self.buf, y);
-                push_b(&mut self.buf, b"\" stroke=\"#e2e8f0\" stroke-width=\".5\" class=\"sp-gl\"/>");
+                push_b(&mut self.buf, b"<line x1=\"");
+                push_i(&mut self.buf, self.pl);
+                push_b(&mut self.buf, b"\" y1=\"");
+                push_i(&mut self.buf, y);
+                push_b(&mut self.buf, b"\" x2=\"");
+                push_i(&mut self.buf, self.pl + self.pw);
+                push_b(&mut self.buf, b"\" y2=\"");
+                push_i(&mut self.buf, y);
+                push_b(
+                    &mut self.buf,
+                    b"\" stroke=\"#e2e8f0\" stroke-width=\".5\" class=\"sp-gl\"/>",
+                );
             }
-            push_b(&mut self.buf, b"<text x=\""); push_i(&mut self.buf, self.pl - 4);
-            push_b(&mut self.buf, b"\" y=\""); push_i(&mut self.buf, y + 3);
+            push_b(&mut self.buf, b"<text x=\"");
+            push_i(&mut self.buf, self.pl - 4);
+            push_b(&mut self.buf, b"\" y=\"");
+            push_i(&mut self.buf, y + 3);
             push_b(&mut self.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
             push_f2(&mut self.buf, v);
             push_b(&mut self.buf, b"</text>");
@@ -371,9 +572,13 @@ impl Frame {
             let f = i as f64 / n as f64;
             let y = self.pt + ((1.0 - f) * self.ph as f64) as i32;
             let v = (f * max_count).round() as i32;
-            if grid && i > 0 { svg_hgrid(&mut self.buf, self.pl, self.pl + self.pw, y); }
-            push_b(&mut self.buf, b"<text x=\""); push_i(&mut self.buf, self.pl - 4);
-            push_b(&mut self.buf, b"\" y=\""); push_i(&mut self.buf, y + 3);
+            if grid && i > 0 {
+                svg_hgrid(&mut self.buf, self.pl, self.pl + self.pw, y);
+            }
+            push_b(&mut self.buf, b"<text x=\"");
+            push_i(&mut self.buf, self.pl - 4);
+            push_b(&mut self.buf, b"\" y=\"");
+            push_i(&mut self.buf, y + 3);
             push_b(&mut self.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
             push_i(&mut self.buf, v);
             push_b(&mut self.buf, b"</text>");
@@ -386,7 +591,9 @@ impl Frame {
             let f = i as f64 / n as f64;
             let x = self.pl + (f * self.pw as f64) as i32;
             let v = x_min + f * rng;
-            if grid && i > 0 { svg_vgrid(&mut self.buf, x, self.pt, self.pt + self.ph); }
+            if grid && i > 0 {
+                svg_vgrid(&mut self.buf, x, self.pt, self.pt + self.ph);
+            }
             svg_tick_x(&mut self.buf, x, self.pt + self.ph + 14, v);
         }
     }
@@ -399,7 +606,15 @@ impl Frame {
 
     pub fn legend(&mut self, names: &[&str], palette: &[u32], x: i32) {
         for (i, name) in names.iter().enumerate() {
-            svg_legend_item(&mut self.buf, i as i32, name, palette_color(palette, i), x, self.pt + i as i32 * 22, 14);
+            svg_legend_item(
+                &mut self.buf,
+                i as i32,
+                name,
+                palette_color(palette, i),
+                x,
+                self.pt + i as i32 * 22,
+                14,
+            );
         }
     }
 
@@ -414,7 +629,15 @@ impl Frame {
         };
         let _ = anchor;
         for (i, name) in names.iter().enumerate() {
-            svg_legend_item(&mut self.buf, i as i32, name, palette_color(palette, i), x, y_start + i as i32 * 22, 14);
+            svg_legend_item(
+                &mut self.buf,
+                i as i32,
+                name,
+                palette_color(palette, i),
+                x,
+                y_start + i as i32 * 22,
+                14,
+            );
         }
     }
 
@@ -429,12 +652,28 @@ impl Frame {
         unsafe { String::from_utf8_unchecked(self.buf) }
     }
 
-    pub fn new_html(title: &str, w: i32, h: i32, pl: i32, pt: i32, pb: i32, pr: i32, cap: usize) -> Self {
+    pub fn new_html(
+        title: &str,
+        w: i32,
+        h: i32,
+        pl: i32,
+        pt: i32,
+        pb: i32,
+        pr: i32,
+        cap: usize,
+    ) -> Self {
         let hid = crate::html::hover::html_id();
         let mut buf = Vec::with_capacity(cap + 14_000);
         crate::html::hover::html_prefix(&mut buf, title, hid);
-        Self { buf, w, h, pl, pt, pw: w - pl - pr, ph: h - pt - pb, hid }
+        Self {
+            buf,
+            w,
+            h,
+            pl,
+            pt,
+            pw: w - pl - pr,
+            ph: h - pt - pb,
+            hid,
+        }
     }
 }
-
-

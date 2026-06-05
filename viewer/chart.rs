@@ -1,17 +1,22 @@
-use std::sync::{Arc, Mutex};
-use std::ffi::CStr;
-use std::os::raw::c_char;
-use std::collections::HashMap;
+use super::cache::{CacheKey, ColorCache, RenderCache};
 use super::image_loader::ImageLoader;
-use super::cache::{RenderCache, ColorCache, CacheKey};
+use super::manager::button_manager::{ButtonId, ButtonManager};
+use super::render::{
+    AdvancedBatchRenderer, AdvancedBatchRendererBuilder, PointComputeBuilder, RenderState,
+    VisibilityOptimizer,
+};
 use super::viewer_3d::AdvancedViewer3D;
 use super::wiki_viewer::WikiViewer;
-use super::manager::button_manager::{ButtonManager, ButtonId};
-use super::render::{AdvancedBatchRenderer, AdvancedBatchRendererBuilder, RenderState, PointComputeBuilder, VisibilityOptimizer};
-use crate::plot::default::{PlotRenderContext, render_plot_by_type};
-use crate::plot::controller::plot_3d_controller::{Plot3DRenderContext, render_by_type as render_3d_by_type};
+use crate::bindings::utils::{simd_ops, BitSet};
+use crate::plot::controller::plot_3d_controller::{
+    render_by_type as render_3d_by_type, Plot3DRenderContext,
+};
+use crate::plot::default::{render_plot_by_type, PlotRenderContext};
 use crate::plot::CameraController;
-use crate::bindings::utils::{BitSet, simd_ops};
+use std::collections::HashMap;
+use std::ffi::CStr;
+use std::os::raw::c_char;
+use std::sync::{Arc, Mutex};
 
 #[repr(C)]
 #[derive(Copy, Clone)]
@@ -49,29 +54,29 @@ impl Hover3DDetector {
             threshold: 25.0,
         }
     }
-    
+
     fn detect(&self, mouse_pos: egui::Pos2) -> Option<usize> {
         if !mouse_pos.is_finite() {
             return None;
         }
-        
+
         let mut closest_idx = None;
         let mut closest_dist = self.threshold;
-        
+
         for &(screen_pos, actual_idx) in &self.positions {
             if !screen_pos.is_finite() {
                 continue;
             }
-            
+
             let delta = mouse_pos - screen_pos;
             let dist = (delta.x * delta.x + delta.y * delta.y).sqrt();
-            
+
             if dist < closest_dist {
                 closest_dist = dist;
                 closest_idx = Some(actual_idx);
             }
         }
-        
+
         closest_idx
     }
 }
@@ -112,7 +117,10 @@ impl PlotMetrics {
     }
 
     fn allocate_size(&self) -> egui::Vec2 {
-        egui::Vec2::new(self.width + self.pad_x * 2.0, self.height + self.pad_y * 2.0)
+        egui::Vec2::new(
+            self.width + self.pad_x * 2.0,
+            self.height + self.pad_y * 2.0,
+        )
     }
 
     fn with_rect(&self, base_min: egui::Pos2) -> egui::Rect {
@@ -126,7 +134,14 @@ impl PlotMetrics {
 #[allow(dead_code)]
 trait PlotRenderer {
     fn render_axes(&self, painter: &egui::Painter, plot_rect: egui::Rect, max_val: f64);
-    fn detect_hover(&self, rel_pos: egui::Vec2, plot_rect: egui::Rect, point_count: usize, values: &[f64], max_val: f64) -> Option<usize>;
+    fn detect_hover(
+        &self,
+        rel_pos: egui::Vec2,
+        plot_rect: egui::Rect,
+        point_count: usize,
+        values: &[f64],
+        max_val: f64,
+    ) -> Option<usize>;
 }
 
 struct GenericPlotRenderer {
@@ -135,16 +150,25 @@ struct GenericPlotRenderer {
 
 impl GenericPlotRenderer {
     #[allow(dead_code)]
-    fn map_point(&self, idx: usize, value: f64, max_val: f64, point_count: usize, plot_rect: egui::Rect) -> egui::Pos2 {
+    fn map_point(
+        &self,
+        idx: usize,
+        value: f64,
+        max_val: f64,
+        point_count: usize,
+        plot_rect: egui::Rect,
+    ) -> egui::Pos2 {
         let norm_val = value / max_val.max(1.0);
         let (x, y);
-        
+
         if self.vertical {
-            x = plot_rect.left() + (plot_rect.width() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
+            x = plot_rect.left()
+                + (plot_rect.width() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
             y = plot_rect.bottom() - norm_val as f32 * plot_rect.height();
         } else {
             x = plot_rect.left() + norm_val as f32 * plot_rect.width();
-            y = plot_rect.top() + (plot_rect.height() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
+            y = plot_rect.top()
+                + (plot_rect.height() / (point_count as f32 - 1.0).max(1.0)) * idx as f32;
         }
 
         egui::pos2(x, y)
@@ -154,48 +178,86 @@ impl GenericPlotRenderer {
 impl PlotRenderer for GenericPlotRenderer {
     fn render_axes(&self, painter: &egui::Painter, plot_rect: egui::Rect, max_val: f64) {
         painter.line_segment(
-            [egui::pos2(plot_rect.left(), plot_rect.bottom()), egui::pos2(plot_rect.right(), plot_rect.bottom())],
+            [
+                egui::pos2(plot_rect.left(), plot_rect.bottom()),
+                egui::pos2(plot_rect.right(), plot_rect.bottom()),
+            ],
             egui::Stroke::new(1.5, egui::Color32::from_gray(200)),
         );
         painter.line_segment(
-            [egui::pos2(plot_rect.left(), plot_rect.top()), egui::pos2(plot_rect.left(), plot_rect.bottom())],
+            [
+                egui::pos2(plot_rect.left(), plot_rect.top()),
+                egui::pos2(plot_rect.left(), plot_rect.bottom()),
+            ],
             egui::Stroke::new(1.5, egui::Color32::from_gray(200)),
         );
-        
+
         let font_size = 11.0;
         for i in 0..=5 {
             let val = (max_val / 5.0) * i as f64;
             let (pos, align) = if self.vertical {
                 let y = plot_rect.bottom() - (plot_rect.height() / 5.0) * i as f32;
-                (egui::pos2(plot_rect.left() - 15.0, y), egui::Align2::RIGHT_CENTER)
+                (
+                    egui::pos2(plot_rect.left() - 15.0, y),
+                    egui::Align2::RIGHT_CENTER,
+                )
             } else {
                 let x = plot_rect.left() + (plot_rect.width() / 5.0) * i as f32;
-                (egui::pos2(x, plot_rect.bottom() + 15.0), egui::Align2::CENTER_TOP)
+                (
+                    egui::pos2(x, plot_rect.bottom() + 15.0),
+                    egui::Align2::CENTER_TOP,
+                )
             };
-            painter.text(pos, align, &format!("{:.1}", val), egui::FontId::proportional(font_size), egui::Color32::from_gray(100));
+            painter.text(
+                pos,
+                align,
+                &format!("{:.1}", val),
+                egui::FontId::proportional(font_size),
+                egui::Color32::from_gray(100),
+            );
         }
     }
 
-    fn detect_hover(&self, rel_pos: egui::Vec2, plot_rect: egui::Rect, point_count: usize, values: &[f64], max_val: f64) -> Option<usize> {
-        if rel_pos.x < 0.0 || rel_pos.x > plot_rect.width() || rel_pos.y < 0.0 || rel_pos.y > plot_rect.height() {
+    fn detect_hover(
+        &self,
+        rel_pos: egui::Vec2,
+        plot_rect: egui::Rect,
+        point_count: usize,
+        values: &[f64],
+        max_val: f64,
+    ) -> Option<usize> {
+        if rel_pos.x < 0.0
+            || rel_pos.x > plot_rect.width()
+            || rel_pos.y < 0.0
+            || rel_pos.y > plot_rect.height()
+        {
             return None;
         }
-        
+
         let threshold = 12.0;
         let mut closest_idx = None;
         let mut closest_dist = threshold;
-        
+
         for idx in 0..point_count {
-            let point = self.map_point(idx, values.get(idx).copied().unwrap_or(0.0), max_val, point_count, plot_rect);
-            let delta = egui::Vec2::new(point.x - (plot_rect.left() + rel_pos.x), point.y - (plot_rect.top() + rel_pos.y));
+            let point = self.map_point(
+                idx,
+                values.get(idx).copied().unwrap_or(0.0),
+                max_val,
+                point_count,
+                plot_rect,
+            );
+            let delta = egui::Vec2::new(
+                point.x - (plot_rect.left() + rel_pos.x),
+                point.y - (plot_rect.top() + rel_pos.y),
+            );
             let dist = (delta.x * delta.x + delta.y * delta.y).sqrt();
-            
+
             if dist < closest_dist {
                 closest_dist = dist;
                 closest_idx = Some(idx);
             }
         }
-        
+
         closest_idx
     }
 }
@@ -283,7 +345,9 @@ impl ChartAppBuilder {
             color_cache: ColorCache::new(),
             last_data_hash: 0,
             last_render_state: (true, 1, 0, false),
-            batch_renderer: AdvancedBatchRendererBuilder::new().with_capacity(100000).build(),
+            batch_renderer: AdvancedBatchRendererBuilder::new()
+                .with_capacity(100000)
+                .build(),
             render_state: RenderState::new(1200.0, 600.0),
             selection_start: None,
             selection_end: None,
@@ -295,15 +359,14 @@ impl ChartAppBuilder {
 }
 
 fn launch_chart_app(app: ChartApp) -> bool {
-    let mut viewport = egui::ViewportBuilder::default()
-        .with_inner_size([1200.0, 600.0]);
-    
+    let mut viewport = egui::ViewportBuilder::default().with_inner_size([1200.0, 600.0]);
+
     let icon_paths = vec![
         "src/asset/logo.png",
         "../src/asset/logo.png",
         "../../v2/src/asset/logo.png",
     ];
-    
+
     for path in icon_paths {
         if let Ok(img) = image::open(path) {
             let rgba = img.to_rgba8();
@@ -316,32 +379,58 @@ fn launch_chart_app(app: ChartApp) -> bool {
             break;
         }
     }
-    
+
     let native_options = eframe::NativeOptions {
         viewport,
         ..Default::default()
     };
-    
-    let _ = eframe::run_native(
-        "SeraPlot",
-        native_options,
-        Box::new(|_| Box::new(app)),
-    );
+
+    let _ = eframe::run_native("SeraPlot", native_options, Box::new(|_| Box::new(app)));
 
     true
 }
 
-fn render_svg_by_type(chart_type: u8, _labels: &[String], values: &[f64], colors: &[u32], _indices: &[usize], orientation: bool, pad_left: f32, _pad_top: f32, _pad_right: f32, _pad_bottom: f32, plot_w: f32, plot_h: f32, scale_max: f32, _width: f32, _height: f32, svg: &mut String) {
-    let hex_colors: Vec<&'static str> = colors.iter().map(|&c| {
-        let r = ((c >> 16) & 0xFF) as u8;
-        let g = ((c >> 8) & 0xFF) as u8;
-        let b = (c & 0xFF) as u8;
-        let hex = format!("#{:02x}{:02x}{:02x}", r, g, b);
-        Box::leak(hex.into_boxed_str()) as &'static str
-    }).collect();
-    
-    if let Some(renderer) = crate::plot::controller::chart_controller::get_svg_renderer(chart_type) {
-        renderer(svg, values, &hex_colors, pad_left as i32, plot_w as i32, plot_h as i32, scale_max as f64, orientation);
+fn render_svg_by_type(
+    chart_type: u8,
+    _labels: &[String],
+    values: &[f64],
+    colors: &[u32],
+    _indices: &[usize],
+    orientation: bool,
+    pad_left: f32,
+    _pad_top: f32,
+    _pad_right: f32,
+    _pad_bottom: f32,
+    plot_w: f32,
+    plot_h: f32,
+    scale_max: f32,
+    _width: f32,
+    _height: f32,
+    svg: &mut String,
+) {
+    let hex_colors: Vec<&'static str> = colors
+        .iter()
+        .map(|&c| {
+            let r = ((c >> 16) & 0xFF) as u8;
+            let g = ((c >> 8) & 0xFF) as u8;
+            let b = (c & 0xFF) as u8;
+            let hex = format!("#{:02x}{:02x}{:02x}", r, g, b);
+            Box::leak(hex.into_boxed_str()) as &'static str
+        })
+        .collect();
+
+    if let Some(renderer) = crate::plot::controller::chart_controller::get_svg_renderer(chart_type)
+    {
+        renderer(
+            svg,
+            values,
+            &hex_colors,
+            pad_left as i32,
+            plot_w as i32,
+            plot_h as i32,
+            scale_max as f64,
+            orientation,
+        );
     }
 }
 
@@ -351,13 +440,15 @@ impl eframe::App for ChartApp {
             self.current_chart_kind = *kind;
         }
 
-        let is_map_group = if let Ok(grp_reg) = crate::plot::controller::get_group_registry().lock() {
+        let is_map_group = if let Ok(grp_reg) = crate::plot::controller::get_group_registry().lock()
+        {
             grp_reg.get_current() == "map"
         } else {
             false
         };
-        self.button_manager.set_hidden(ButtonId::Region, !is_map_group);
-        
+        self.button_manager
+            .set_hidden(ButtonId::Region, !is_map_group);
+
         egui::TopBottomPanel::top("controls").show(ctx, |ui| {
             ui.horizontal(|ui| {
                 let zoom_label = if self.zoom >= 1.0 {
@@ -543,7 +634,7 @@ impl eframe::App for ChartApp {
                 .show(ctx, |ui| {
                     ui.heading("Elements");
                     ui.separator();
-                    
+
                     egui::ScrollArea::vertical()
                         .auto_shrink([false; 2])
                         .show(ui, |ui| {
@@ -576,15 +667,21 @@ impl eframe::App for ChartApp {
         };
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            
             if let Some(ref d) = d_clone {
                 let mut data_hash = 0u64;
                 for &val in &d.values {
-                    data_hash = data_hash.wrapping_mul(31).wrapping_add(val.to_bits() as u64);
+                    data_hash = data_hash
+                        .wrapping_mul(31)
+                        .wrapping_add(val.to_bits() as u64);
                 }
-                
-                let render_state = (self.orientation, self.current_chart_kind, self.sort_mode, self.is_3d_mode);
-                
+
+                let render_state = (
+                    self.orientation,
+                    self.current_chart_kind,
+                    self.sort_mode,
+                    self.is_3d_mode,
+                );
+
                 if data_hash != self.last_data_hash || render_state != self.last_render_state {
                     self.last_data_hash = data_hash;
                     self.last_render_state = render_state;
@@ -597,13 +694,13 @@ impl eframe::App for ChartApp {
                     self.render_cache.invalidate_except(new_cache_key);
                 }
             }
-            
+
             if let Some(d) = d_clone {
                 ui.vertical_centered(|ui| {
                     ui.heading(&d.title);
                 });
                 ui.separator();
-                
+
                 if d.values.is_empty() {
                     ui.label("No data");
                 } else if self.is_3d_mode {
@@ -614,7 +711,7 @@ impl eframe::App for ChartApp {
             } else {
                 ui.label("Waiting for data...");
             }
-            
+
             ctx.request_repaint_after(std::time::Duration::from_millis(16));
         });
 
@@ -625,22 +722,25 @@ impl eframe::App for ChartApp {
             let mut apply_limit = false;
             let mut compute_stats = false;
             let mut reset_all = false;
-            
+
             egui::Window::new("⚙ Processor")
                 .open(&mut self.show_processor_menu)
                 .default_width(350.0)
                 .show(ctx, |ui| {
                     ui.label("Data Processing Operations");
                     ui.separator();
-                    
+
                     ui.label("Filter");
                     ui.horizontal(|ui| {
-                        ui.add(egui::Slider::new(&mut filter_threshold, 0.0..=100.0).text("Threshold %"));
+                        ui.add(
+                            egui::Slider::new(&mut filter_threshold, 0.0..=100.0)
+                                .text("Threshold %"),
+                        );
                         if ui.button("Apply").clicked() {
                             apply_filter = true;
                         }
                     });
-                    
+
                     ui.separator();
                     ui.label("Limit");
                     ui.horizontal(|ui| {
@@ -654,22 +754,22 @@ impl eframe::App for ChartApp {
                             apply_limit = true;
                         }
                     });
-                    
+
                     ui.separator();
                     ui.label("Statistics");
                     if ui.button("Compute").clicked() {
                         compute_stats = true;
                     }
-                    
+
                     ui.separator();
                     if ui.button("Reset All").clicked() {
                         reset_all = true;
                     }
                 });
-            
+
             self.filter_threshold = filter_threshold;
             self.limit_value = limit_value;
-            
+
             if apply_filter {
                 self.apply_processor_filter();
             }
@@ -705,14 +805,14 @@ impl eframe::App for ChartApp {
 
         if self.show_transform_menu {
             let chart_types = crate::plot::default::get_current_group_types();
-            
+
             egui::Window::new("Transform")
                 .open(&mut self.show_transform_menu)
                 .default_width(200.0)
                 .show(ctx, |ui| {
                     ui.label("Chart Types");
                     ui.separator();
-                    
+
                     for (kind, name) in &chart_types {
                         let is_selected = self.current_chart_kind == *kind;
                         let button_text = if is_selected {
@@ -720,7 +820,7 @@ impl eframe::App for ChartApp {
                         } else {
                             name.to_string()
                         };
-                        
+
                         if ui.button(&button_text).clicked() {
                             self.current_chart_kind = *kind;
                             sera_set_current_chart_kind(*kind);
@@ -778,11 +878,15 @@ impl eframe::App for ChartApp {
                 });
 
             if select_all {
-                for v in self.active_regions.iter_mut() { *v = true; }
+                for v in self.active_regions.iter_mut() {
+                    *v = true;
+                }
                 apply_region_filter = true;
             }
             if deselect_all {
-                for v in self.active_regions.iter_mut() { *v = false; }
+                for v in self.active_regions.iter_mut() {
+                    *v = false;
+                }
                 apply_region_filter = true;
             }
 
@@ -794,18 +898,26 @@ impl eframe::App for ChartApp {
 }
 
 impl ChartApp {
-    fn render_tooltip(&mut self, ctx: &egui::Context, painter: &egui::Painter, pos: egui::Pos2, rect: egui::Rect, actual_idx: usize, d: &ChartData) {
+    fn render_tooltip(
+        &mut self,
+        ctx: &egui::Context,
+        painter: &egui::Painter,
+        pos: egui::Pos2,
+        rect: egui::Rect,
+        actual_idx: usize,
+        d: &ChartData,
+    ) {
         let hover = &d.hover_data[actual_idx];
-        
+
         if hover.is_empty() {
             return;
         }
-        
+
         let img_size = 60.0;
         let line_height = 15.0;
         let padding = 8.0;
         let mut tooltip_height = 0.0;
-        
+
         for (k, _) in hover {
             if k == "image" {
                 tooltip_height += img_size + padding;
@@ -814,36 +926,37 @@ impl ChartApp {
             }
         }
 
-        let max_line_width = hover.iter()
+        let max_line_width = hover
+            .iter()
             .filter(|(k, _)| k != "image")
             .map(|(_, v)| v.len() as f32 * 6.5)
             .fold(0.0, f32::max)
             .max(img_size);
-        
+
         let mut tooltip_x = pos.x + 15.0;
         let mut tooltip_y = pos.y - 80.0;
-        
+
         if tooltip_x + max_line_width > rect.right() {
             tooltip_x = (pos.x - max_line_width - 10.0).max(rect.left());
         }
-        
+
         if tooltip_y + tooltip_height > rect.bottom() {
             tooltip_y = (pos.y + 20.0).min(rect.bottom() - tooltip_height - 5.0);
         }
-        
+
         if tooltip_y < rect.top() {
             tooltip_y = rect.top() + 5.0;
         }
-        
+
         let mut current_y = tooltip_y;
-        
+
         let text_color = egui::Color32::from_rgba_unmultiplied(
-            d.tooltip_text_color.0, 
-            d.tooltip_text_color.1, 
-            d.tooltip_text_color.2, 
-            d.tooltip_text_color.3
+            d.tooltip_text_color.0,
+            d.tooltip_text_color.1,
+            d.tooltip_text_color.2,
+            d.tooltip_text_color.3,
         );
-        
+
         for (k, v) in hover {
             if k == "image" {
                 if let Some(color_img) = self.image_loader.load_image(v) {
@@ -851,8 +964,14 @@ impl ChartApp {
                         egui::pos2(tooltip_x, current_y),
                         egui::vec2(img_size, img_size),
                     );
-                    let texture = ctx.load_texture("tooltip_img", color_img, egui::TextureOptions::LINEAR);
-                    painter.image(texture.id(), img_rect, egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)), egui::Color32::WHITE);
+                    let texture =
+                        ctx.load_texture("tooltip_img", color_img, egui::TextureOptions::LINEAR);
+                    painter.image(
+                        texture.id(),
+                        img_rect,
+                        egui::Rect::from_min_max(egui::pos2(0.0, 0.0), egui::pos2(1.0, 1.0)),
+                        egui::Color32::WHITE,
+                    );
                     current_y += img_size + padding;
                 }
             } else {
@@ -871,7 +990,7 @@ impl ChartApp {
 
     fn get_sorted_visible_indices(&self, d: &ChartData) -> Vec<usize> {
         let mut visible = Vec::with_capacity(d.values.len());
-        
+
         for i in self.visible_elements.iter_set() {
             if i < d.values.len() && self.selected_elements.get(i) {
                 visible.push(i);
@@ -879,14 +998,30 @@ impl ChartApp {
         }
 
         match self.sort_mode {
-            1 => visible.sort_by(|&a, &b| d.values[a].partial_cmp(&d.values[b]).unwrap_or(std::cmp::Ordering::Equal)),
-            2 => visible.sort_by(|&a, &b| d.values[b].partial_cmp(&d.values[a]).unwrap_or(std::cmp::Ordering::Equal)),
+            1 => visible.sort_by(|&a, &b| {
+                d.values[a]
+                    .partial_cmp(&d.values[b])
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            }),
+            2 => visible.sort_by(|&a, &b| {
+                d.values[b]
+                    .partial_cmp(&d.values[a])
+                    .unwrap_or(std::cmp::Ordering::Equal)
+            }),
             _ => {}
         }
         visible
     }
 
-    fn get_bar_bounds(&self, vis_idx: usize, value: f64, max_val: f64, visible_count: usize, plot_rect: egui::Rect, vertical: bool) -> (f32, f32, f32, f32) {
+    fn get_bar_bounds(
+        &self,
+        vis_idx: usize,
+        value: f64,
+        max_val: f64,
+        visible_count: usize,
+        plot_rect: egui::Rect,
+        vertical: bool,
+    ) -> (f32, f32, f32, f32) {
         let element_size = if visible_count > 1 {
             if vertical {
                 plot_rect.width() / visible_count as f32
@@ -894,7 +1029,11 @@ impl ChartApp {
                 plot_rect.height() / visible_count as f32
             }
         } else {
-            if vertical { plot_rect.width() } else { plot_rect.height() }
+            if vertical {
+                plot_rect.width()
+            } else {
+                plot_rect.height()
+            }
         };
 
         let norm_val = (value as f32 / max_val as f32).min(1.0).max(0.0);
@@ -907,23 +1046,44 @@ impl ChartApp {
             let bar_top = plot_rect.bottom() - norm_val * plot_rect.height();
             let bar_bottom = plot_rect.bottom();
 
-            (bar_left - margin_x, bar_right + margin_x, bar_top - margin_y, bar_bottom + margin_y)
+            (
+                bar_left - margin_x,
+                bar_right + margin_x,
+                bar_top - margin_y,
+                bar_bottom + margin_y,
+            )
         } else {
             let bar_top = plot_rect.top() + (element_size * vis_idx as f32);
             let bar_bottom = bar_top + element_size;
             let bar_left = plot_rect.left();
             let bar_right = plot_rect.left() + norm_val * plot_rect.width();
 
-            (bar_left - margin_x, bar_right + margin_x, bar_top - margin_y, bar_bottom + margin_y)
+            (
+                bar_left - margin_x,
+                bar_right + margin_x,
+                bar_top - margin_y,
+                bar_bottom + margin_y,
+            )
         }
     }
 
-    fn render_plot(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData, vertical: bool, chart_type: u8) {
+    fn render_plot(
+        &mut self,
+        ctx: &egui::Context,
+        ui: &mut egui::Ui,
+        d: &ChartData,
+        vertical: bool,
+        chart_type: u8,
+    ) {
         let renderer = GenericPlotRenderer { vertical };
-        let metrics = if vertical { PlotMetrics::vertical(self.zoom) } else { PlotMetrics::horizontal(self.zoom) };
+        let metrics = if vertical {
+            PlotMetrics::vertical(self.zoom)
+        } else {
+            PlotMetrics::horizontal(self.zoom)
+        };
         let (_, max_val) = simd_ops::find_minmax(&d.values);
         let max_val = max_val.max(1.0);
-        
+
         let cache_key = CacheKey {
             chart_type,
             is_3d: self.is_3d_mode,
@@ -931,17 +1091,17 @@ impl ChartApp {
             sort_mode: self.sort_mode,
         };
         self.render_cache.update_active(cache_key);
-        
+
         let visible_indices = self.get_sorted_visible_indices(d);
         let visible_count = visible_indices.len();
-        
+
         if visible_count == 0 {
             ui.label("No visible data");
             return;
         }
-        
+
         let mut vis_optimizer = VisibilityOptimizer::new();
-        
+
         let scroll_id = egui::Id::new((chart_type, vertical, self.sort_mode));
         egui::ScrollArea::both()
             .auto_shrink([false; 2])
@@ -951,13 +1111,14 @@ impl ChartApp {
                     egui::Vec2::new(metrics.allocate_size().x, metrics.allocate_size().y),
                     egui::Sense::click_and_drag(),
                 );
-                
-                self.render_state.update_viewport(response.rect.width(), response.rect.height());
+
+                self.render_state
+                    .update_viewport(response.rect.width(), response.rect.height());
                 self.render_state.update_zoom(self.zoom);
-                
+
                 let plot_rect = metrics.with_rect(response.rect.min);
                 renderer.render_axes(&painter, plot_rect, max_val as f64);
-                
+
                 let colors = self.color_cache.colors();
                 let point_computer = PointComputeBuilder::new().build();
                 let points = point_computer.compute_points(
@@ -967,48 +1128,62 @@ impl ChartApp {
                     plot_rect,
                     vertical,
                 );
-                
+
                 vis_optimizer.set_padding(20.0);
                 let _visible_point_indices = vis_optimizer.filter_visible(&points, plot_rect);
-                
+
                 self.batch_renderer.clear();
-                
+
                 let _element_width = if visible_count > 1 {
                     plot_rect.width() / visible_count as f32
                 } else {
                     plot_rect.width()
                 };
-                
+
                 if response.drag_started() {
-                    let pos = response.interact_pointer_pos().unwrap_or(plot_rect.center());
+                    let pos = response
+                        .interact_pointer_pos()
+                        .unwrap_or(plot_rect.center());
                     self.selection_start = Some(pos);
                     self.selection_end = Some(pos);
                     self.selection_active = true;
                 }
-                
+
                 if self.selection_active {
                     if let Some(pos) = response.interact_pointer_pos() {
                         self.selection_end = Some(pos);
                     }
                 }
-                
+
                 if response.drag_stopped() {
                     if let (Some(start), Some(end)) = (self.selection_start, self.selection_end) {
                         let sel_min_x = start.x.min(end.x);
                         let sel_max_x = start.x.max(end.x);
                         let sel_min_y = start.y.min(end.y);
                         let sel_max_y = start.y.max(end.y);
-                        
+
                         let threshold = 5.0;
-                        if (sel_max_x - sel_min_x) > threshold && (sel_max_y - sel_min_y) > threshold {
+                        if (sel_max_x - sel_min_x) > threshold
+                            && (sel_max_y - sel_min_y) > threshold
+                        {
                             self.selected_elements.clear_all();
                             for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
                                 let value = d.values.get(actual_idx).copied().unwrap_or(0.0);
-                                let (bar_min_x, bar_max_x, bar_min_y, bar_max_y) = self.get_bar_bounds(vis_idx, value, max_val, visible_count, plot_rect, vertical);
-                                
-                                let intersects = sel_min_x < bar_max_x && sel_max_x > bar_min_x && 
-                                               sel_min_y < bar_max_y && sel_max_y > bar_min_y;
-                                
+                                let (bar_min_x, bar_max_x, bar_min_y, bar_max_y) = self
+                                    .get_bar_bounds(
+                                        vis_idx,
+                                        value,
+                                        max_val,
+                                        visible_count,
+                                        plot_rect,
+                                        vertical,
+                                    );
+
+                                let intersects = sel_min_x < bar_max_x
+                                    && sel_max_x > bar_min_x
+                                    && sel_min_y < bar_max_y
+                                    && sel_max_y > bar_min_y;
+
                                 if intersects {
                                     self.selected_elements.set(actual_idx);
                                 }
@@ -1019,7 +1194,7 @@ impl ChartApp {
                     self.selection_end = None;
                     self.selection_active = false;
                 }
-                
+
                 let plot_ctx = PlotRenderContext {
                     painter: &painter,
                     plot_rect,
@@ -1031,26 +1206,34 @@ impl ChartApp {
                     vertical,
                     labels: &d.labels,
                 };
-                
+
                 render_plot_by_type(chart_type, plot_ctx);
-                
+
                 if self.selection_active {
                     if let (Some(start), Some(end)) = (self.selection_start, self.selection_end) {
                         let min_x = start.x.min(end.x);
                         let max_x = start.x.max(end.x);
                         let min_y = start.y.min(end.y);
                         let max_y = start.y.max(end.y);
-                        
+
                         let rect = egui::Rect::from_min_max(
                             egui::pos2(min_x, min_y),
                             egui::pos2(max_x, max_y),
                         );
-                        
-                        painter.rect_stroke(rect, 0.0, egui::Stroke::new(2.0, egui::Color32::from_rgb(31, 119, 180)));
-                        painter.rect_filled(rect, 0.0, egui::Color32::from_rgba_premultiplied(31, 119, 180, 20));
+
+                        painter.rect_stroke(
+                            rect,
+                            0.0,
+                            egui::Stroke::new(2.0, egui::Color32::from_rgb(31, 119, 180)),
+                        );
+                        painter.rect_filled(
+                            rect,
+                            0.0,
+                            egui::Color32::from_rgba_premultiplied(31, 119, 180, 20),
+                        );
                     }
                 }
-                
+
                 for (i, &point) in points.iter().enumerate() {
                     if let Some(&actual_idx) = visible_indices.get(i) {
                         if self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false) {
@@ -1066,7 +1249,7 @@ impl ChartApp {
                         }
                     }
                 }
-                
+
                 let is_map_type = chart_type == 20 || chart_type == 21;
 
                 if is_map_type && response.clicked() {
@@ -1076,31 +1259,49 @@ impl ChartApp {
                             let ny = (pos.y - plot_rect.top()) / plot_rect.height();
                             let all_indices: Vec<usize> = (0..d.labels.len()).collect();
                             if let Some(idx) = crate::plot::map::world_data::detect_hovered_country(
-                                nx, ny, &d.labels, &all_indices,
+                                nx,
+                                ny,
+                                &d.labels,
+                                &all_indices,
                             ) {
                                 self.toggle_country_visibility(idx);
                             }
                         }
                     }
                 }
-                
+
                 if response.hovered() && !self.selection_active {
                     if let Some(pos) = ctx.pointer_latest_pos() {
                         if plot_rect.contains(pos) {
                             if is_map_type {
                                 let nx = (pos.x - plot_rect.left()) / plot_rect.width();
                                 let ny = (pos.y - plot_rect.top()) / plot_rect.height();
-                                self.hovered_idx = crate::plot::map::world_data::detect_hovered_country(
-                                    nx, ny, &d.labels, &visible_indices,
-                                );
+                                self.hovered_idx =
+                                    crate::plot::map::world_data::detect_hovered_country(
+                                        nx,
+                                        ny,
+                                        &d.labels,
+                                        &visible_indices,
+                                    );
                             } else {
                                 let mut hovered = None;
                                 for (vis_idx, &actual_idx) in visible_indices.iter().enumerate() {
                                     let value = d.values.get(actual_idx).copied().unwrap_or(0.0);
-                                    let (bar_min_x, bar_max_x, bar_min_y, bar_max_y) = self.get_bar_bounds(vis_idx, value, max_val, visible_count, plot_rect, vertical);
-                                    
-                                    if pos.x >= bar_min_x && pos.x <= bar_max_x && 
-                                       pos.y >= bar_min_y && pos.y <= bar_max_y {
+                                    let (bar_min_x, bar_max_x, bar_min_y, bar_max_y) = self
+                                        .get_bar_bounds(
+                                            vis_idx,
+                                            value,
+                                            max_val,
+                                            visible_count,
+                                            plot_rect,
+                                            vertical,
+                                        );
+
+                                    if pos.x >= bar_min_x
+                                        && pos.x <= bar_max_x
+                                        && pos.y >= bar_min_y
+                                        && pos.y <= bar_max_y
+                                    {
                                         hovered = Some(actual_idx);
                                         break;
                                     }
@@ -1119,48 +1320,50 @@ impl ChartApp {
 
     fn render_3d_viewer(&mut self, ctx: &egui::Context, ui: &mut egui::Ui, d: &ChartData) {
         self.advanced_viewer_3d.render_controls(ui);
-        
-        let (response, painter) = ui.allocate_painter(
-            egui::Vec2::new(800.0, 600.0),
-            egui::Sense::click_and_drag(),
-        );
-        
+
+        let (response, painter) =
+            ui.allocate_painter(egui::Vec2::new(800.0, 600.0), egui::Sense::click_and_drag());
+
         if response.drag_started() {
             self.advanced_viewer_3d.is_dragging = true;
             self.advanced_viewer_3d.last_mouse_pos = response.interact_pointer_pos();
         }
-        
+
         if self.advanced_viewer_3d.is_dragging {
             if let Some(curr_pos) = response.interact_pointer_pos() {
                 if let Some(last_pos) = self.advanced_viewer_3d.last_mouse_pos {
                     let delta_x = (curr_pos.x - last_pos.x) * 0.01;
                     let delta_y = (curr_pos.y - last_pos.y) * 0.01;
-                    self.advanced_viewer_3d.camera_controller.rotate_orbit(delta_x, -delta_y);
+                    self.advanced_viewer_3d
+                        .camera_controller
+                        .rotate_orbit(delta_x, -delta_y);
                 }
                 self.advanced_viewer_3d.last_mouse_pos = Some(curr_pos);
             }
         }
-        
+
         if response.drag_stopped() {
             self.advanced_viewer_3d.is_dragging = false;
             self.advanced_viewer_3d.last_mouse_pos = None;
         }
-        
+
         let scroll = ui.input(|i| i.raw_scroll_delta.y);
         if scroll != 0.0 {
             let zoom_factor = if scroll > 0.0 { 0.85 } else { 1.15 };
             self.advanced_viewer_3d.camera_controller.zoom(zoom_factor);
         }
-        
+
         let rect_width = response.rect.width();
         let rect_height = response.rect.height();
-        self.advanced_viewer_3d.camera_controller.set_viewport(rect_width, rect_height);
-        
+        self.advanced_viewer_3d
+            .camera_controller
+            .set_viewport(rect_width, rect_height);
+
         let visible_indices = self.get_sorted_visible_indices(d);
-        
+
         let max_val = d.values.iter().copied().fold(0.0_f64, f64::max).max(1.0);
         let colors = self.color_cache.colors();
-        
+
         let chart_type = self.current_chart_kind;
         let chart_id = get_3d_type_for_2d(chart_type);
         let ctx_3d = Plot3DRenderContext {
@@ -1175,7 +1378,7 @@ impl ChartApp {
             labels: &d.labels,
         };
         render_3d_by_type(chart_id, ctx_3d);
-        
+
         for &actual_idx in &visible_indices {
             if self.hovered_idx.map(|h| h == actual_idx).unwrap_or(false) {
                 if let Some(pos) = ctx.pointer_latest_pos() {
@@ -1183,7 +1386,7 @@ impl ChartApp {
                 }
             }
         }
-        
+
         if response.hovered() {
             if let Some(mouse_pos) = ctx.pointer_latest_pos() {
                 if response.rect.contains(mouse_pos) {
@@ -1233,7 +1436,7 @@ impl ChartApp {
 
         let (_, max_val) = simd_ops::find_minmax(&values);
         let cutoff = max_val * self.filter_threshold.clamp(0.0, 100.0) / 100.0;
-        
+
         self.visible_elements.clear_all();
         for (idx, &value) in values.iter().enumerate() {
             if value >= cutoff {
@@ -1265,7 +1468,7 @@ impl ChartApp {
         };
 
         let sorted_indices = self.get_sorted_visible_indices(&temp_d);
-        
+
         self.visible_elements.clear_all();
         for (count, &idx) in sorted_indices.iter().enumerate() {
             if count < self.limit_value {
@@ -1289,18 +1492,25 @@ impl ChartApp {
                 Vec::new()
             }
         };
-        
+
         self.aggregation_results.clear();
         if !values.is_empty() {
             let sum: f64 = values.iter().sum();
             let len = values.len() as f64;
-            [("Sum", sum),
-             ("Mean", sum / len),
-             ("Max", values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b))),
-             ("Min", values.iter().fold(f64::INFINITY, |a, &b| a.min(b))),
-             ("Count", len)]
-                .into_iter()
-                .for_each(|(k, v)| { self.aggregation_results.insert(k.to_string(), v); });
+            [
+                ("Sum", sum),
+                ("Mean", sum / len),
+                (
+                    "Max",
+                    values.iter().fold(f64::NEG_INFINITY, |a, &b| a.max(b)),
+                ),
+                ("Min", values.iter().fold(f64::INFINITY, |a, &b| a.min(b))),
+                ("Count", len),
+            ]
+            .into_iter()
+            .for_each(|(k, v)| {
+                self.aggregation_results.insert(k.to_string(), v);
+            });
         }
     }
 
@@ -1346,28 +1556,30 @@ impl ChartApp {
 
     #[allow(dead_code)]
     fn generate_svg(&self, d: &ChartData) -> String {
-        use crate::bindings::FastChartRenderer;
         use crate::bindings::FastChartConfig;
+        use crate::bindings::FastChartRenderer;
 
         let visible_indices = self.get_sorted_visible_indices(d);
-        
-        let filtered_labels: Vec<String> = visible_indices.iter()
+
+        let filtered_labels: Vec<String> = visible_indices
+            .iter()
             .map(|&idx| d.labels.get(idx).cloned().unwrap_or_default())
             .collect();
-        
-        let filtered_values: Vec<f64> = visible_indices.iter()
+
+        let filtered_values: Vec<f64> = visible_indices
+            .iter()
             .map(|&idx| d.values.get(idx).copied().unwrap_or(0.0))
             .collect();
 
         let chart_type = self.current_chart_kind;
         let vertical = self.orientation;
-        
+
         let (width, height, padding) = if vertical {
             (800.0, 600.0, 60.0)
         } else {
             (1000.0, 800.0, 300.0)
         };
-        
+
         let config = FastChartConfig {
             chart_type,
             width,
@@ -1376,9 +1588,9 @@ impl ChartApp {
             vertical,
         };
 
-        let renderer = FastChartRenderer::new(config, &d.title)
-            .with_data(filtered_labels, filtered_values);
-        
+        let renderer =
+            FastChartRenderer::new(config, &d.title).with_data(filtered_labels, filtered_values);
+
         renderer.render_svg()
     }
 }
@@ -1428,7 +1640,7 @@ pub extern "C" fn sera_show_chart_data_full(
     txt_a: u8,
 ) -> bool {
     crate::bindings::init_chart_types();
-    
+
     if labels.is_null() || values.is_null() || title.is_null() {
         return false;
     }
@@ -1438,7 +1650,7 @@ pub extern "C" fn sera_show_chart_data_full(
     } else {
         unsafe { CStr::from_ptr(group_name).to_string_lossy().into_owned() }
     };
-    
+
     crate::bindings::load_group(&group);
     crate::plot::controller::set_current_chart_group(&group);
     {
@@ -1451,12 +1663,13 @@ pub extern "C" fn sera_show_chart_data_full(
 
     let title_str = unsafe { CStr::from_ptr(title).to_string_lossy().into_owned() };
     let interner = crate::bindings::utils::get_interner();
-    
+
     let mut label_vec = Vec::with_capacity(count as usize);
     let mut value_vec = Vec::with_capacity(count as usize);
     let mut hover_data_vec = Vec::with_capacity(count as usize);
-    let mut hover_map: std::collections::HashMap<u32, Vec<(String, String)>> = std::collections::HashMap::new();
-    
+    let mut hover_map: std::collections::HashMap<u32, Vec<(String, String)>> =
+        std::collections::HashMap::new();
+
     if !hover_items.is_null() {
         let mut j = 0;
         loop {
@@ -1475,9 +1688,12 @@ pub extern "C" fn sera_show_chart_data_full(
                 } else {
                     String::new()
                 };
-                
+
                 if !key.is_empty() && !value.is_empty() {
-                    hover_map.entry(item.index).or_insert_with(Vec::new).push((key, value));
+                    hover_map
+                        .entry(item.index)
+                        .or_insert_with(Vec::new)
+                        .push((key, value));
                 }
             }
             j += 1;
@@ -1510,7 +1726,12 @@ pub extern "C" fn sera_show_chart_data_full(
 }
 
 #[no_mangle]
-pub extern "C" fn sera_show_chart(_svg: *const c_char, _title: *const c_char, _width: u32, _height: u32) -> bool {
+pub extern "C" fn sera_show_chart(
+    _svg: *const c_char,
+    _title: *const c_char,
+    _width: u32,
+    _height: u32,
+) -> bool {
     true
 }
 
@@ -1524,7 +1745,7 @@ pub extern "C" fn sera_show_chart_data_json(
     hover_json: *const c_char,
 ) -> bool {
     crate::bindings::init_chart_types();
-    
+
     if labels.is_null() || values.is_null() || title.is_null() {
         return false;
     }
@@ -1534,7 +1755,7 @@ pub extern "C" fn sera_show_chart_data_json(
     } else {
         unsafe { CStr::from_ptr(group_name).to_string_lossy().into_owned() }
     };
-    
+
     crate::bindings::load_group(&group);
     crate::plot::controller::set_current_chart_group(&group);
     {
@@ -1558,11 +1779,14 @@ pub extern "C" fn sera_show_chart_data_json(
         value_vec.push(unsafe { *(values.add(i)) });
     }
 
-    let mut hover_map: std::collections::HashMap<u32, Vec<(String, String)>> = std::collections::HashMap::new();
-    
+    let mut hover_map: std::collections::HashMap<u32, Vec<(String, String)>> =
+        std::collections::HashMap::new();
+
     if !hover_json.is_null() {
         let json_str = unsafe { CStr::from_ptr(hover_json).to_string_lossy().into_owned() };
-        if let Ok(serde_json::Value::Array(items)) = serde_json::from_str::<serde_json::Value>(&json_str) {
+        if let Ok(serde_json::Value::Array(items)) =
+            serde_json::from_str::<serde_json::Value>(&json_str)
+        {
             for item in items {
                 if let serde_json::Value::Object(obj) = item {
                     if let Some(serde_json::Value::Number(idx)) = obj.get("index") {
@@ -1574,7 +1798,10 @@ pub extern "C" fn sera_show_chart_data_json(
                             for (k, v) in obj.iter() {
                                 if k != "index" {
                                     if let serde_json::Value::String(val) = v {
-                                        hover_map.entry(index).or_insert_with(Vec::new).push((k.clone(), val.clone()));
+                                        hover_map
+                                            .entry(index)
+                                            .or_insert_with(Vec::new)
+                                            .push((k.clone(), val.clone()));
                                     }
                                 }
                             }
@@ -1606,7 +1833,7 @@ pub extern "C" fn sera_show_chart_data_json(
 #[no_mangle]
 pub extern "C" fn sera_show_chart_value(chart_json: *const c_char) -> bool {
     crate::bindings::init_chart_types();
-    
+
     if chart_json.is_null() {
         return false;
     }
@@ -1615,18 +1842,20 @@ pub extern "C" fn sera_show_chart_value(chart_json: *const c_char) -> bool {
     let Ok(root) = serde_json::from_str::<serde_json::Value>(&json_str) else {
         return false;
     };
-    
+
     let obj = match root {
         serde_json::Value::Object(o) => o,
         _ => return false,
     };
 
-    let title_str = obj.get("title")
+    let title_str = obj
+        .get("title")
         .and_then(|v| v.as_str())
         .unwrap_or("Chart")
         .to_string();
-    
-    let group = obj.get("group")
+
+    let group = obj
+        .get("group")
         .and_then(|v| v.as_str())
         .unwrap_or("default")
         .to_string();
@@ -1661,8 +1890,9 @@ pub extern "C" fn sera_show_chart_value(chart_json: *const c_char) -> bool {
         }
     }
 
-    let mut hover_map: std::collections::HashMap<u32, Vec<(String, String)>> = std::collections::HashMap::new();
-    
+    let mut hover_map: std::collections::HashMap<u32, Vec<(String, String)>> =
+        std::collections::HashMap::new();
+
     if let Some(serde_json::Value::Array(hover_items)) = obj.get("hover") {
         for item in hover_items {
             if let serde_json::Value::Object(item_obj) = item {
@@ -1673,8 +1903,13 @@ pub extern "C" fn sera_show_chart_value(chart_json: *const c_char) -> bool {
                             for field in fields {
                                 if let serde_json::Value::Array(pair) = field {
                                     if pair.len() == 2 {
-                                        if let (Some(serde_json::Value::String(key)), Some(serde_json::Value::String(val))) = (pair.get(0), pair.get(1)) {
-                                            hover_map.entry(index)
+                                        if let (
+                                            Some(serde_json::Value::String(key)),
+                                            Some(serde_json::Value::String(val)),
+                                        ) = (pair.get(0), pair.get(1))
+                                        {
+                                            hover_map
+                                                .entry(index)
                                                 .or_insert_with(Vec::new)
                                                 .push((key.clone(), val.clone()));
                                         }
@@ -1709,7 +1944,9 @@ pub extern "C" fn sera_show_chart_value(chart_json: *const c_char) -> bool {
 static CHART_ORIENTATION: std::sync::OnceLock<Mutex<bool>> = std::sync::OnceLock::new();
 static CHART_SORT: std::sync::OnceLock<Mutex<i32>> = std::sync::OnceLock::new();
 static CHART_KIND: std::sync::Mutex<u8> = std::sync::Mutex::new(1);
-static VARIANT_REGISTRY: std::sync::LazyLock<std::sync::Mutex<std::collections::HashMap<u8, String>>> = std::sync::LazyLock::new(|| std::sync::Mutex::new(std::collections::HashMap::new()));
+static VARIANT_REGISTRY: std::sync::LazyLock<
+    std::sync::Mutex<std::collections::HashMap<u8, String>>,
+> = std::sync::LazyLock::new(|| std::sync::Mutex::new(std::collections::HashMap::new()));
 static VARIANT_SELECTOR_ENABLED: std::sync::Mutex<bool> = std::sync::Mutex::new(false);
 
 fn get_orientation() -> &'static Mutex<bool> {
@@ -1792,4 +2029,3 @@ pub extern "C" fn sera_show_with_variants(enable_transform: bool, default_kind: 
     sera_set_current_chart_kind(default_kind);
     true
 }
-

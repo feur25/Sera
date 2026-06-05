@@ -4,7 +4,11 @@ use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i, Frame};
 
 fn spectrum_color(i: usize, n: usize) -> (u32, u32) {
-    let t = if n <= 1 { 0.5 } else { i as f64 / (n - 1) as f64 };
+    let t = if n <= 1 {
+        0.5
+    } else {
+        i as f64 / (n - 1) as f64
+    };
     let stops = [
         (0x06B6D4_u32, 0x22D3EE_u32),
         (0x6366F1, 0x818CF8),
@@ -21,30 +25,57 @@ fn spectrum_color(i: usize, n: usize) -> (u32, u32) {
 #[crate::chart_demo("values=[2.1,2.3,2.7,3.1,3.4,3.6,3.9,4.0,4.2,4.5,4.6,4.8,5.0,5.3,5.7,6.1,6.3,6.5,6.8,7.0,3.2,4.1,5.2,4.7,3.8,4.4,5.1,4.9,5.5,6.2]")]
 
 pub fn render(cfg: &HistogramConfig) -> String {
-    if cfg.values.is_empty() { return String::new(); }
+    if cfg.values.is_empty() {
+        return String::new();
+    }
     let (bin_counts, edges) = compute_bins(cfg.values, cfg.bins);
     let n_bins = bin_counts.len();
-    if n_bins == 0 { return String::new(); }
+    if n_bins == 0 {
+        return String::new();
+    }
     let max_count = (*bin_counts.iter().max().unwrap_or(&1) as f64).max(1.0);
 
     let pad_l: i32 = 52;
     let pad_r: i32 = 20;
     let plot_w = cfg.width - pad_l - pad_r;
     let bw = plot_w as f64 / n_bins as f64;
-    let mut f = Frame::new_html(cfg.title, cfg.width, cfg.height, pad_l, 36, 46, pad_r, n_bins * 300 + 4096);
+    let mut f = Frame::new_html(
+        cfg.title,
+        cfg.width,
+        cfg.height,
+        pad_l,
+        36,
+        46,
+        pad_r,
+        n_bins * 300 + 4096,
+    );
     f.open(cfg.title, false);
 
     push_b(&mut f.buf, b"<defs>");
-    push_b(&mut f.buf, b"<filter id=\"dlxhf\" x=\"-30%\" y=\"-30%\" width=\"160%\" height=\"160%\">");
-    push_b(&mut f.buf, b"<feGaussianBlur stdDeviation=\"3\" result=\"b\"/>");
-    push_b(&mut f.buf, b"<feMerge><feMergeNode in=\"b\"/><feMergeNode in=\"SourceGraphic\"/></feMerge>");
+    push_b(
+        &mut f.buf,
+        b"<filter id=\"dlxhf\" x=\"-30%\" y=\"-30%\" width=\"160%\" height=\"160%\">",
+    );
+    push_b(
+        &mut f.buf,
+        b"<feGaussianBlur stdDeviation=\"3\" result=\"b\"/>",
+    );
+    push_b(
+        &mut f.buf,
+        b"<feMerge><feMergeNode in=\"b\"/><feMergeNode in=\"SourceGraphic\"/></feMerge>",
+    );
     push_b(&mut f.buf, b"</filter>");
     for i in 0..n_bins {
         let (base, bright) = spectrum_color(i, n_bins);
-        push_b(&mut f.buf, b"<linearGradient id=\"dlxhg"); push_i(&mut f.buf, i as i32);
+        push_b(&mut f.buf, b"<linearGradient id=\"dlxhg");
+        push_i(&mut f.buf, i as i32);
         push_b(&mut f.buf, b"\" x1=\"0\" y1=\"1\" x2=\"0\" y2=\"0\">");
-        push_b(&mut f.buf, b"<stop offset=\"0\" stop-color=\"#"); f.buf.extend_from_slice(&hex6(base)); push_b(&mut f.buf, b"\" stop-opacity=\"0.9\"/>");
-        push_b(&mut f.buf, b"<stop offset=\"1\" stop-color=\"#"); f.buf.extend_from_slice(&hex6(bright)); push_b(&mut f.buf, b"\" stop-opacity=\"1\"/>");
+        push_b(&mut f.buf, b"<stop offset=\"0\" stop-color=\"#");
+        f.buf.extend_from_slice(&hex6(base));
+        push_b(&mut f.buf, b"\" stop-opacity=\"0.9\"/>");
+        push_b(&mut f.buf, b"<stop offset=\"1\" stop-color=\"#");
+        f.buf.extend_from_slice(&hex6(bright));
+        push_b(&mut f.buf, b"\" stop-opacity=\"1\"/>");
         push_b(&mut f.buf, b"</linearGradient>");
     }
     push_b(&mut f.buf, b"</defs>");
@@ -57,23 +88,40 @@ pub fn render(cfg: &HistogramConfig) -> String {
         let x = f.pl + (i as f64 * bw) as i32;
         let y = f.pt + f.ph - bh;
         let w_px = ((bw as i32) - cfg.gap.max(0)).max(1);
-        push_b(&mut f.buf, b"<rect data-idx=\""); push_i(&mut f.buf, i as i32);
-        push_b(&mut f.buf, b"\" data-kv-Count=\""); push_i(&mut f.buf, cnt as i32);
-        push_b(&mut f.buf, b"\" data-kv-Min=\""); push_f2(&mut f.buf, edges[i]);
-        push_b(&mut f.buf, b"\" data-kv-Max=\""); push_f2(&mut f.buf, edges.get(i+1).copied().unwrap_or(edges[i]));
-        push_b(&mut f.buf, b"\" x=\""); push_i(&mut f.buf, x);
-        push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, y);
-        push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, w_px);
-        push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, bh.max(1));
-        push_b(&mut f.buf, b"\" fill=\"url(#dlxhg"); push_i(&mut f.buf, i as i32);
+        push_b(&mut f.buf, b"<rect data-idx=\"");
+        push_i(&mut f.buf, i as i32);
+        push_b(&mut f.buf, b"\" data-kv-Count=\"");
+        push_i(&mut f.buf, cnt as i32);
+        push_b(&mut f.buf, b"\" data-kv-Min=\"");
+        push_f2(&mut f.buf, edges[i]);
+        push_b(&mut f.buf, b"\" data-kv-Max=\"");
+        push_f2(&mut f.buf, edges.get(i + 1).copied().unwrap_or(edges[i]));
+        push_b(&mut f.buf, b"\" x=\"");
+        push_i(&mut f.buf, x);
+        push_b(&mut f.buf, b"\" y=\"");
+        push_i(&mut f.buf, y);
+        push_b(&mut f.buf, b"\" width=\"");
+        push_i(&mut f.buf, w_px);
+        push_b(&mut f.buf, b"\" height=\"");
+        push_i(&mut f.buf, bh.max(1));
+        push_b(&mut f.buf, b"\" fill=\"url(#dlxhg");
+        push_i(&mut f.buf, i as i32);
         push_b(&mut f.buf, b")\" rx=\"3\" filter=\"url(#dlxhf)\"/>");
-        push_b(&mut f.buf, b"<rect x=\""); push_i(&mut f.buf, x);
-        push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, y);
-        push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, w_px);
-        push_b(&mut f.buf, b"\" height=\"3\" fill=\"#ffffff\" fill-opacity=\"0.22\" rx=\"2\"/>");
+        push_b(&mut f.buf, b"<rect x=\"");
+        push_i(&mut f.buf, x);
+        push_b(&mut f.buf, b"\" y=\"");
+        push_i(&mut f.buf, y);
+        push_b(&mut f.buf, b"\" width=\"");
+        push_i(&mut f.buf, w_px);
+        push_b(
+            &mut f.buf,
+            b"\" height=\"3\" fill=\"#ffffff\" fill-opacity=\"0.22\" rx=\"2\"/>",
+        );
         if cfg.show_counts && bh > 16 {
-            push_b(&mut f.buf, b"<text x=\""); push_i(&mut f.buf, x + w_px / 2);
-            push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, y + 12);
+            push_b(&mut f.buf, b"<text x=\"");
+            push_i(&mut f.buf, x + w_px / 2);
+            push_b(&mut f.buf, b"\" y=\"");
+            push_i(&mut f.buf, y + 12);
             push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#fff\">");
             push_i(&mut f.buf, cnt as i32);
             push_b(&mut f.buf, b"</text>");
@@ -83,9 +131,15 @@ pub fn render(cfg: &HistogramConfig) -> String {
     let tick_step = ((n_bins as f64 / 8.0).ceil() as usize).max(1);
     for i in (0..=n_bins).step_by(tick_step) {
         let x = f.pl + (i as f64 * bw) as i32;
-        let val = if i < edges.len() { edges[i] } else { *edges.last().unwrap_or(&0.0) };
-        push_b(&mut f.buf, b"<text x=\""); push_i(&mut f.buf, x);
-        push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, f.pt + f.ph + 14);
+        let val = if i < edges.len() {
+            edges[i]
+        } else {
+            *edges.last().unwrap_or(&0.0)
+        };
+        push_b(&mut f.buf, b"<text x=\"");
+        push_i(&mut f.buf, x);
+        push_b(&mut f.buf, b"\" y=\"");
+        push_i(&mut f.buf, f.pt + f.ph + 14);
         push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#64748b\" class=\"sp-xt\">");
         push_f2(&mut f.buf, val);
         push_b(&mut f.buf, b"</text>");
@@ -94,4 +148,3 @@ pub fn render(cfg: &HistogramConfig) -> String {
     let _ = (escape_xml, bin_to_edges);
     f.html(&slots_to_json(cfg.hover))
 }
-

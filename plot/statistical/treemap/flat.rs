@@ -1,16 +1,25 @@
-use super::common::{prepare, open_svg, finalize, leaf_color, label_inside, tile_data_attrs, rect_attrs, fill_hex};
+use super::common::{
+    fill_hex, finalize, label_inside, leaf_color, open_svg, prepare, rect_attrs, tile_data_attrs,
+};
 use super::config::TreemapConfig;
 use crate::plot::statistical::common::push_b;
 
-#[crate::chart_demo("labels=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\"], values=[40,25,20,10,5,8,12]")]
+#[crate::chart_demo(
+    "labels=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\"], values=[40,25,20,10,5,8,12]"
+)]
 
 pub fn render(cfg: &TreemapConfig) -> String {
-    let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
+    let p = match prepare(cfg) {
+        Some(v) => v,
+        None => return String::new(),
+    };
     let mut b = Vec::<u8>::with_capacity(p.leaf_indices.len() * 180 + 2048);
     open_svg(&mut b, cfg);
     for ri in 0..p.leaf_indices.len() {
         let r = p.rects[ri];
-        if r.w < 0.5 || r.h < 0.5 { continue; }
+        if r.w < 0.5 || r.h < 0.5 {
+            continue;
+        }
         push_b(&mut b, b"<rect");
         tile_data_attrs(&mut b, &p, ri);
         rect_attrs(&mut b, r);
@@ -20,4 +29,3 @@ pub fn render(cfg: &TreemapConfig) -> String {
     }
     finalize(b, cfg)
 }
-

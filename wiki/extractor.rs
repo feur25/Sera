@@ -15,7 +15,10 @@ impl WikiExtractor {
     }
 
     pub fn register_method(&mut self, module: String, method: MethodDoc) {
-        self.registry.entry(module).or_insert_with(Vec::new).push(method);
+        self.registry
+            .entry(module)
+            .or_insert_with(Vec::new)
+            .push(method);
     }
 
     pub fn register_methods(&mut self, module: String, methods: Vec<MethodDoc>) {
@@ -33,20 +36,32 @@ impl WikiExtractor {
             .collect()
     }
 
-    pub fn export_json<P: AsRef<Path>>(&self, path: P, export: &crate::wiki::WikiExport) -> std::io::Result<()> {
-        let json = export.to_json().map_err(|e| {
-            std::io::Error::new(std::io::ErrorKind::InvalidData, e)
-        })?;
+    pub fn export_json<P: AsRef<Path>>(
+        &self,
+        path: P,
+        export: &crate::wiki::WikiExport,
+    ) -> std::io::Result<()> {
+        let json = export
+            .to_json()
+            .map_err(|e| std::io::Error::new(std::io::ErrorKind::InvalidData, e))?;
         fs::write(path, json)
     }
 
-    pub fn export_markdown<P: AsRef<Path>>(&self, path: P, export: &crate::wiki::WikiExport) -> std::io::Result<()> {
+    pub fn export_markdown<P: AsRef<Path>>(
+        &self,
+        path: P,
+        export: &crate::wiki::WikiExport,
+    ) -> std::io::Result<()> {
         let lang = crate::wiki::ProgrammingLanguage::Python;
         let md = export.to_markdown(&lang);
         fs::write(path, md)
     }
 
-    pub fn export_html<P: AsRef<Path>>(&self, path: P, export: &crate::wiki::WikiExport) -> std::io::Result<()> {
+    pub fn export_html<P: AsRef<Path>>(
+        &self,
+        path: P,
+        export: &crate::wiki::WikiExport,
+    ) -> std::io::Result<()> {
         let lang = crate::wiki::ProgrammingLanguage::Python;
         let html = export.to_html(&lang);
         fs::write(path, html)
@@ -106,5 +121,3 @@ macro_rules! param_doc {
         $crate::wiki::extractor::create_param_doc($name, $type, $desc)
     };
 }
-
-

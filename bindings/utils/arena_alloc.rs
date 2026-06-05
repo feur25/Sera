@@ -6,7 +6,9 @@ struct PooledBuf {
 
 impl PooledBuf {
     fn new() -> Self {
-        Self { bufs: Vec::with_capacity(8) }
+        Self {
+            bufs: Vec::with_capacity(8),
+        }
     }
 
     fn acquire(&mut self, capacity: usize) -> String {

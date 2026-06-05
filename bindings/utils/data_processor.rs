@@ -12,7 +12,9 @@ impl DataProcessor {
 
     #[inline]
     pub fn adaptive() -> Self {
-        Self { chunk_size: hw().l2_chunk_elems }
+        Self {
+            chunk_size: hw().l2_chunk_elems,
+        }
     }
 
     #[inline(always)]
@@ -32,9 +34,13 @@ impl DataProcessor {
         for chunk in values.chunks(self.chunk_size) {
             let local_max = Self::find_max_chunk(chunk);
             let local_min = Self::find_min_chunk(chunk);
-            
-            if local_max > max { max = local_max; }
-            if local_min < min { min = local_min; }
+
+            if local_max > max {
+                max = local_max;
+            }
+            if local_min < min {
+                min = local_min;
+            }
         }
 
         (min, max)
@@ -42,13 +48,13 @@ impl DataProcessor {
 
     pub fn normalize_vec(&self, values: &[f64], max_val: f64) -> Vec<f32> {
         let mut result = Vec::with_capacity(values.len());
-        
+
         if max_val > 0.0 {
             for &v in values {
                 result.push((v / max_val) as f32);
             }
         }
-        
+
         result
     }
 }

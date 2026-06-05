@@ -9,5 +9,3 @@ crate::plot_family! {
         Neuron   => "neuron" | "neural" | "brain" | "synapse" | "network_glow" | "nodes",
     }
 }
-
-

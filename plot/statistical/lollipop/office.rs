@@ -1,11 +1,18 @@
-use super::common::{prepare, open, finalize, color_for, dot, data_attrs, unique_groups};
+use super::common::{color_for, data_attrs, dot, finalize, open, prepare, unique_groups};
 use super::config::LollipopConfig;
-use crate::plot::statistical::common::{push_b, push_i, push_f2, escape_xml, hex6, svg_hgrid, svg_y_label, svg_tick_y};
+use crate::plot::statistical::common::{
+    escape_xml, hex6, push_b, push_f2, push_i, svg_hgrid, svg_tick_y, svg_y_label,
+};
 
-#[crate::chart_demo("labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]")]
+#[crate::chart_demo(
+    "labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]"
+)]
 
 pub fn render(cfg: &LollipopConfig) -> String {
-    let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
+    let p = match prepare(cfg) {
+        Some(v) => v,
+        None => return String::new(),
+    };
     let (mut b, pl, pt, pw, ph) = open(cfg, 64, 56, 26, 52);
     let max_val = p.vmax + (p.vmax - p.vmin).abs() * 0.08;
     let min_val = (p.vmin - (p.vmax - p.vmin).abs() * 0.08).min(0.0);
@@ -34,11 +41,16 @@ pub fn render(cfg: &LollipopConfig) -> String {
             let hx = hex6(col);
             push_b(&mut b, b"<line");
             data_attrs(&mut b, &p, i);
-            push_b(&mut b, b" x1=\""); push_i(&mut b, cx);
-            push_b(&mut b, b"\" y1=\""); push_i(&mut b, pt + ph);
-            push_b(&mut b, b"\" x2=\""); push_i(&mut b, cx);
-            push_b(&mut b, b"\" y2=\""); push_i(&mut b, y_v);
-            push_b(&mut b, b"\" stroke=\"#"); b.extend_from_slice(&hx);
+            push_b(&mut b, b" x1=\"");
+            push_i(&mut b, cx);
+            push_b(&mut b, b"\" y1=\"");
+            push_i(&mut b, pt + ph);
+            push_b(&mut b, b"\" x2=\"");
+            push_i(&mut b, cx);
+            push_b(&mut b, b"\" y2=\"");
+            push_i(&mut b, y_v);
+            push_b(&mut b, b"\" stroke=\"#");
+            b.extend_from_slice(&hx);
             push_b(&mut b, b"\" stroke-width=\"1.6\" opacity=\"0.7\"/>");
             dot(&mut b, &p, i, cx, y_v, 4, col);
         }
@@ -59,40 +71,68 @@ pub fn render(cfg: &LollipopConfig) -> String {
     let usable = pw as f64 - total_gap;
     for (gi, idxs) in group_indices.iter().enumerate() {
         let count = idxs.len();
-        if count == 0 { continue; }
+        if count == 0 {
+            continue;
+        }
         let g_w = usable * (count as f64 / total);
         let g_x0 = x_cursor;
         let g_x1 = x_cursor + g_w;
         let mut g_mean = 0.0_f64;
-        for &i in idxs.iter() { g_mean += p.values[i]; }
+        for &i in idxs.iter() {
+            g_mean += p.values[i];
+        }
         g_mean /= count as f64;
         let pal = if !cfg.palette.is_empty() {
             crate::plot::statistical::common::palette_color(cfg.palette, gi)
-        } else { 0x6366F1 };
+        } else {
+            0x6366F1
+        };
         let hx_g = hex6(pal);
 
         let y_mean = pt + ph - (((g_mean - min_val) / range) * ph as f64) as i32;
-        push_b(&mut b, b"<rect x=\""); push_f2(&mut b, g_x0);
-        push_b(&mut b, b"\" y=\""); push_i(&mut b, pt);
-        push_b(&mut b, b"\" width=\""); push_f2(&mut b, g_w);
-        push_b(&mut b, b"\" height=\""); push_i(&mut b, ph);
-        push_b(&mut b, b"\" fill=\"#"); b.extend_from_slice(&hx_g);
+        push_b(&mut b, b"<rect x=\"");
+        push_f2(&mut b, g_x0);
+        push_b(&mut b, b"\" y=\"");
+        push_i(&mut b, pt);
+        push_b(&mut b, b"\" width=\"");
+        push_f2(&mut b, g_w);
+        push_b(&mut b, b"\" height=\"");
+        push_i(&mut b, ph);
+        push_b(&mut b, b"\" fill=\"#");
+        b.extend_from_slice(&hx_g);
         push_b(&mut b, b"\" opacity=\"0.04\"/>");
-        push_b(&mut b, b"<line x1=\""); push_f2(&mut b, g_x0 + 4.0);
-        push_b(&mut b, b"\" y1=\""); push_i(&mut b, y_mean);
-        push_b(&mut b, b"\" x2=\""); push_f2(&mut b, g_x1 - 4.0);
-        push_b(&mut b, b"\" y2=\""); push_i(&mut b, y_mean);
-        push_b(&mut b, b"\" stroke=\"#"); b.extend_from_slice(&hx_g);
-        push_b(&mut b, b"\" stroke-width=\"4\" stroke-linecap=\"round\" opacity=\"0.85\"/>");
+        push_b(&mut b, b"<line x1=\"");
+        push_f2(&mut b, g_x0 + 4.0);
+        push_b(&mut b, b"\" y1=\"");
+        push_i(&mut b, y_mean);
+        push_b(&mut b, b"\" x2=\"");
+        push_f2(&mut b, g_x1 - 4.0);
+        push_b(&mut b, b"\" y2=\"");
+        push_i(&mut b, y_mean);
+        push_b(&mut b, b"\" stroke=\"#");
+        b.extend_from_slice(&hx_g);
+        push_b(
+            &mut b,
+            b"\" stroke-width=\"4\" stroke-linecap=\"round\" opacity=\"0.85\"/>",
+        );
 
         let g_cx = (g_x0 + g_x1) / 2.0;
-        push_b(&mut b, b"<rect x=\""); push_f2(&mut b, g_cx - 38.0);
-        push_b(&mut b, b"\" y=\""); push_i(&mut b, pt - 26);
-        push_b(&mut b, b"\" width=\"76\" height=\"18\" rx=\"4\" fill=\"none\" stroke=\"#"); b.extend_from_slice(&hx_g);
+        push_b(&mut b, b"<rect x=\"");
+        push_f2(&mut b, g_cx - 38.0);
+        push_b(&mut b, b"\" y=\"");
+        push_i(&mut b, pt - 26);
+        push_b(
+            &mut b,
+            b"\" width=\"76\" height=\"18\" rx=\"4\" fill=\"none\" stroke=\"#",
+        );
+        b.extend_from_slice(&hx_g);
         push_b(&mut b, b"\" stroke-width=\"1\"/>");
-        push_b(&mut b, b"<text x=\""); push_f2(&mut b, g_cx);
-        push_b(&mut b, b"\" y=\""); push_i(&mut b, pt - 13);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" font-weight=\"600\" fill=\"#"); b.extend_from_slice(&hx_g);
+        push_b(&mut b, b"<text x=\"");
+        push_f2(&mut b, g_cx);
+        push_b(&mut b, b"\" y=\"");
+        push_i(&mut b, pt - 13);
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" font-weight=\"600\" fill=\"#");
+        b.extend_from_slice(&hx_g);
         push_b(&mut b, b"\">");
         escape_xml(&mut b, &groups[gi]);
         push_b(&mut b, b"</text>");
@@ -101,22 +141,32 @@ pub fn render(cfg: &LollipopConfig) -> String {
         for (k, &i) in idxs.iter().enumerate() {
             let cx = g_x0 + inner_step * 0.5 + inner_step * k as f64;
             let y_v = pt + ph - (((p.values[i] - min_val) / range) * ph as f64) as i32;
-            push_b(&mut b, b"<line data-idx=\""); push_i(&mut b, i as i32);
-            push_b(&mut b, b"\" data-y=\""); push_f2(&mut b, p.values[i]);
-            push_b(&mut b, b"\" data-lbl=\""); escape_xml(&mut b, &p.labels[i]);
-            push_b(&mut b, b"\" x1=\""); push_f2(&mut b, cx);
-            push_b(&mut b, b"\" y1=\""); push_i(&mut b, y_mean);
-            push_b(&mut b, b"\" x2=\""); push_f2(&mut b, cx);
-            push_b(&mut b, b"\" y2=\""); push_i(&mut b, y_v);
-            push_b(&mut b, b"\" stroke=\"#"); b.extend_from_slice(&hx_g);
+            push_b(&mut b, b"<line data-idx=\"");
+            push_i(&mut b, i as i32);
+            push_b(&mut b, b"\" data-y=\"");
+            push_f2(&mut b, p.values[i]);
+            push_b(&mut b, b"\" data-lbl=\"");
+            escape_xml(&mut b, &p.labels[i]);
+            push_b(&mut b, b"\" x1=\"");
+            push_f2(&mut b, cx);
+            push_b(&mut b, b"\" y1=\"");
+            push_i(&mut b, y_mean);
+            push_b(&mut b, b"\" x2=\"");
+            push_f2(&mut b, cx);
+            push_b(&mut b, b"\" y2=\"");
+            push_i(&mut b, y_v);
+            push_b(&mut b, b"\" stroke=\"#");
+            b.extend_from_slice(&hx_g);
             push_b(&mut b, b"\" stroke-width=\"1.2\" opacity=\"0.55\"/>");
-            push_b(&mut b, b"<circle cx=\""); push_f2(&mut b, cx);
-            push_b(&mut b, b"\" cy=\""); push_i(&mut b, y_v);
-            push_b(&mut b, b"\" r=\"3.2\" fill=\"#"); b.extend_from_slice(&hx_g);
+            push_b(&mut b, b"<circle cx=\"");
+            push_f2(&mut b, cx);
+            push_b(&mut b, b"\" cy=\"");
+            push_i(&mut b, y_v);
+            push_b(&mut b, b"\" r=\"3.2\" fill=\"#");
+            b.extend_from_slice(&hx_g);
             push_b(&mut b, b"\" opacity=\"0.9\"/>");
         }
         x_cursor = g_x1 + pw as f64 * gap_pct;
     }
     finalize(b, cfg)
 }
-

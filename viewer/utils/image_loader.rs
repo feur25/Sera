@@ -23,7 +23,7 @@ impl ImageLoader {
 
     pub fn load_image(&self, path: &str) -> Option<egui::ColorImage> {
         let cache_key = path.to_string();
-        
+
         {
             let cache = self.cache.lock().unwrap();
             if let Some(img) = cache.get(&cache_key) {
@@ -66,18 +66,9 @@ impl ImageLoader {
         }
 
         let rt = tokio::runtime::Runtime::new().ok()?;
-        let bytes = rt.block_on(async {
-            reqwest::get(url)
-                .await
-                .ok()?
-                .bytes()
-                .await
-                .ok()
-        })?;
+        let bytes = rt.block_on(async { reqwest::get(url).await.ok()?.bytes().await.ok() })?;
 
         std::fs::write(&cache_path, &bytes).ok()?;
         self.load_local_image(&cache_path)
     }
 }
-
-

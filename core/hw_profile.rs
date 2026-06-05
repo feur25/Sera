@@ -41,5 +41,10 @@ fn detect() -> HwProfile {
         Ok("high") => MemTier::Generous,
         _ => MemTier::Normal,
     };
-    HwProfile { cpu_threads: threads, par_threshold, l2_chunk_elems, mem_tier }
+    HwProfile {
+        cpu_threads: threads,
+        par_threshold,
+        l2_chunk_elems,
+        mem_tier,
+    }
 }

@@ -20,5 +20,3 @@ crate::chart_config!(LollipopConfig, 900, 480;
         highlight_index: -1,
     }
 );
-
-

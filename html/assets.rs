@@ -270,5 +270,3 @@ window.rbs = resetSelection;
 window.of = () => alert('Fullscreen not implemented');
 "#;
 }
-
-

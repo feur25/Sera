@@ -1,6 +1,11 @@
 use super::helpers::*;
 
-#[crate::sera_doc(category = "SVM", en = "LinearSVC — linear Support Vector Machine for classification via dual coordinate descent.", fr = "LinearSVC — Machine à vecteurs de support linéaire pour classification.", file = "svm.md")]
+#[crate::sera_doc(
+    category = "SVM",
+    en = "LinearSVC — linear Support Vector Machine for classification via dual coordinate descent.",
+    fr = "LinearSVC — Machine à vecteurs de support linéaire pour classification.",
+    file = "svm.md"
+)]
 #[crate::sera_alias("linear_svc", "svc")]
 pub fn ml_linear_svc(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -11,7 +16,10 @@ pub fn ml_linear_svc(input: &str) -> String {
     let y = yi(&v);
     model.fit(&xf, n, p, &y);
     let preds = model.predict(&xtf, nt, p);
-    format!(r#"{{"predictions":{}}}"#, serde_json::to_string(&preds).unwrap_or_default())
+    format!(
+        r#"{{"predictions":{}}}"#,
+        serde_json::to_string(&preds).unwrap_or_default()
+    )
 }
 
 #[crate::sera_alias("linear_svr", "svr")]
@@ -25,5 +33,8 @@ pub fn ml_linear_svr(input: &str) -> String {
     let y = yf(&v);
     model.fit(&xf, n, p, &y);
     let preds = model.predict(&xtf, nt, p);
-    format!(r#"{{"predictions":{}}}"#, serde_json::to_string(&preds).unwrap_or_default())
+    format!(
+        r#"{{"predictions":{}}}"#,
+        serde_json::to_string(&preds).unwrap_or_default()
+    )
 }

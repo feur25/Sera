@@ -1,6 +1,6 @@
 use super::common::{render_pie_svg, PiePiece};
 use super::config::PieConfig;
-use crate::plot::statistical::common::{palette_color, push_b, push_i, hex6, escape_xml, truncate};
+use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_i, truncate};
 
 #[crate::chart_demo("labels=[\"A\",\"B\",\"C\",\"D\"], series=[[40,25,20,15],[30,30,20,20],[50,20,15,15]], series_names=[\"P1\",\"P2\",\"P3\"]")]
 
@@ -12,15 +12,22 @@ pub fn render(cfg: &PieConfig) -> String {
     let labels = cfg.labels.to_vec();
     let label_names: Vec<String> = if labels.is_empty() {
         (0..cfg.series.iter().map(|s| s.len()).max().unwrap_or(0))
-            .map(|i| format!("S{}", i + 1)).collect()
-    } else { labels };
+            .map(|i| format!("S{}", i + 1))
+            .collect()
+    } else {
+        labels
+    };
     let n_cats = label_names.len();
 
     let cols = if cfg.subplot_cols > 0 {
         cfg.subplot_cols
-    } else if n_pies <= 2 { n_pies.max(1) }
-    else if n_pies <= 4 { 2 }
-    else { 3 };
+    } else if n_pies <= 2 {
+        n_pies.max(1)
+    } else if n_pies <= 4 {
+        2
+    } else {
+        3
+    };
     let rows = (n_pies + cols - 1) / cols;
 
     let w = cfg.width.max(420);
@@ -38,7 +45,11 @@ pub fn render(cfg: &PieConfig) -> String {
     let cell_w = avail_w / cols as f64;
     let cell_h = avail_h / rows as f64;
 
-    let totals: Vec<f64> = cfg.series.iter().map(|s| s.iter().filter(|v| v.is_finite() && **v >= 0.0).sum()).collect();
+    let totals: Vec<f64> = cfg
+        .series
+        .iter()
+        .map(|s| s.iter().filter(|v| v.is_finite() && **v >= 0.0).sum())
+        .collect();
     let max_total = totals.iter().cloned().fold(0.0f64, f64::max).max(1e-9);
 
     for pi in 0..n_pies {
@@ -56,7 +67,9 @@ pub fn render(cfg: &PieConfig) -> String {
 
         let radius_scale = if cfg.proportional {
             (totals[pi] / max_total).sqrt().max(0.15)
-        } else { 1.0 };
+        } else {
+            1.0
+        };
 
         let sub_title = cfg.subplot_titles.get(pi).cloned().unwrap_or_default();
 
@@ -83,15 +96,26 @@ pub fn render(cfg: &PieConfig) -> String {
         let hx = hex6(c);
         let label = truncate(&label_names[i], 18);
         let est_w = 18 + label.len() as i32 * 6 + 18;
-        if acc_x + est_w > max_x { break; }
-        push_b(&mut buf, b"<g data-legend=\"1\" data-series=\""); push_i(&mut buf, i as i32);
-        push_b(&mut buf, b"\"><rect x=\""); push_i(&mut buf, acc_x);
-        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, legend_y - 6);
+        if acc_x + est_w > max_x {
+            break;
+        }
+        push_b(&mut buf, b"<g data-legend=\"1\" data-series=\"");
+        push_i(&mut buf, i as i32);
+        push_b(&mut buf, b"\"><rect x=\"");
+        push_i(&mut buf, acc_x);
+        push_b(&mut buf, b"\" y=\"");
+        push_i(&mut buf, legend_y - 6);
         push_b(&mut buf, b"\" width=\"12\" height=\"12\" rx=\"3\" fill=\"#");
-        buf.extend_from_slice(&hx); push_b(&mut buf, b"\"/>");
-        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, acc_x + 16);
-        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, legend_y + 4);
-        push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#cbd5e1\">");
+        buf.extend_from_slice(&hx);
+        push_b(&mut buf, b"\"/>");
+        push_b(&mut buf, b"<text x=\"");
+        push_i(&mut buf, acc_x + 16);
+        push_b(&mut buf, b"\" y=\"");
+        push_i(&mut buf, legend_y + 4);
+        push_b(
+            &mut buf,
+            b"\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#cbd5e1\">",
+        );
         escape_xml(&mut buf, label);
         push_b(&mut buf, b"</text></g>");
         acc_x += est_w;
@@ -100,4 +124,3 @@ pub fn render(cfg: &PieConfig) -> String {
     push_b(&mut buf, b"</svg>");
     unsafe { String::from_utf8_unchecked(buf) }
 }
-

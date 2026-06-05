@@ -12,33 +12,56 @@ pub struct HoverSlot {
 
 impl Default for HoverSlot {
     fn default() -> Self {
-        HoverSlot { title: String::new(), kv: Vec::new(), image: None, video: None, html: None }
+        HoverSlot {
+            title: String::new(),
+            kv: Vec::new(),
+            image: None,
+            video: None,
+            html: None,
+        }
     }
 }
 
 impl HoverSlot {
     pub fn new(title: impl Into<String>) -> Self {
-        HoverSlot { title: title.into(), ..Default::default() }
+        HoverSlot {
+            title: title.into(),
+            ..Default::default()
+        }
     }
     pub fn kv(mut self, k: impl Into<String>, v: impl Into<String>) -> Self {
-        self.kv.push((k.into(), v.into())); self
+        self.kv.push((k.into(), v.into()));
+        self
     }
-    pub fn image(mut self, url: impl Into<String>) -> Self { self.image = Some(url.into()); self }
-    pub fn video(mut self, url: impl Into<String>) -> Self { self.video = Some(url.into()); self }
-    pub fn html(mut self, h: impl Into<String>) -> Self { self.html = Some(h.into()); self }
+    pub fn image(mut self, url: impl Into<String>) -> Self {
+        self.image = Some(url.into());
+        self
+    }
+    pub fn video(mut self, url: impl Into<String>) -> Self {
+        self.video = Some(url.into());
+        self
+    }
+    pub fn html(mut self, h: impl Into<String>) -> Self {
+        self.html = Some(h.into());
+        self
+    }
 }
 
 pub fn slots_to_json(slots: &[HoverSlot]) -> String {
     let mut buf = Vec::with_capacity(slots.len() * 128 + 4);
     buf.push(b'[');
     for (i, s) in slots.iter().enumerate() {
-        if i > 0 { buf.push(b','); }
+        if i > 0 {
+            buf.push(b',');
+        }
         buf.push(b'{');
         buf.extend_from_slice(b"\"title\":");
         json_str(&mut buf, &s.title);
         buf.extend_from_slice(b",\"kv\":[");
         for (ki, (k, v)) in s.kv.iter().enumerate() {
-            if ki > 0 { buf.push(b','); }
+            if ki > 0 {
+                buf.push(b',');
+            }
             buf.push(b'[');
             json_str(&mut buf, k);
             buf.push(b',');
@@ -68,7 +91,7 @@ fn json_str(buf: &mut Vec<u8>, s: &str) {
     buf.push(b'"');
     for byte in s.bytes() {
         match byte {
-            b'"'  => buf.extend_from_slice(b"\\\""),
+            b'"' => buf.extend_from_slice(b"\\\""),
             b'\\' => buf.extend_from_slice(b"\\\\"),
             b'\n' => buf.extend_from_slice(b"\\n"),
             b'\r' => buf.extend_from_slice(b"\\r"),
@@ -86,31 +109,52 @@ fn json_str(buf: &mut Vec<u8>, s: &str) {
 }
 
 pub fn parse_hover_json(json: &str) -> Vec<HoverSlot> {
-    if json.is_empty() { return Vec::new(); }
-    let Ok(arr) = serde_json::from_str::<serde_json::Value>(json) else { return Vec::new(); };
-    let serde_json::Value::Array(arr) = arr else { return Vec::new(); };
-    arr.into_iter().map(|obj| {
-        let mut slot = HoverSlot::default();
-        if let serde_json::Value::Object(map) = obj {
-            if let Some(serde_json::Value::String(t)) = map.get("title") { slot.title = t.clone(); }
-            if let Some(serde_json::Value::Array(kv)) = map.get("kv") {
-                slot.kv = kv.iter().filter_map(|pair| {
-                    let serde_json::Value::Array(p) = pair else { return None; };
-                    let k = p.first().and_then(|v| v.as_str()).unwrap_or("").to_string();
-                    let v = p.get(1).and_then(|v| v.as_str()).unwrap_or("").to_string();
-                    Some((k, v))
-                }).collect();
+    if json.is_empty() {
+        return Vec::new();
+    }
+    let Ok(arr) = serde_json::from_str::<serde_json::Value>(json) else {
+        return Vec::new();
+    };
+    let serde_json::Value::Array(arr) = arr else {
+        return Vec::new();
+    };
+    arr.into_iter()
+        .map(|obj| {
+            let mut slot = HoverSlot::default();
+            if let serde_json::Value::Object(map) = obj {
+                if let Some(serde_json::Value::String(t)) = map.get("title") {
+                    slot.title = t.clone();
+                }
+                if let Some(serde_json::Value::Array(kv)) = map.get("kv") {
+                    slot.kv = kv
+                        .iter()
+                        .filter_map(|pair| {
+                            let serde_json::Value::Array(p) = pair else {
+                                return None;
+                            };
+                            let k = p.first().and_then(|v| v.as_str()).unwrap_or("").to_string();
+                            let v = p.get(1).and_then(|v| v.as_str()).unwrap_or("").to_string();
+                            Some((k, v))
+                        })
+                        .collect();
+                }
+                if let Some(serde_json::Value::String(s)) = map.get("image") {
+                    slot.image = Some(s.clone());
+                }
+                if let Some(serde_json::Value::String(s)) = map.get("video") {
+                    slot.video = Some(s.clone());
+                }
+                if let Some(serde_json::Value::String(s)) = map.get("html") {
+                    slot.html = Some(s.clone());
+                }
             }
-            if let Some(serde_json::Value::String(s)) = map.get("image") { slot.image = Some(s.clone()); }
-            if let Some(serde_json::Value::String(s)) = map.get("video") { slot.video = Some(s.clone()); }
-            if let Some(serde_json::Value::String(s)) = map.get("html")  { slot.html  = Some(s.clone()); }
-        }
-        slot
-    }).collect()
+            slot
+        })
+        .collect()
 }
 
 pub const HOVER_CSS: &str = "";
-pub const HOVER_JS:  &str = "";
+pub const HOVER_JS: &str = "";
 
 pub const DEFAULT_BG: &str = "transparent";
 
@@ -118,16 +162,16 @@ pub const DEFAULT_BG: &str = "transparent";
 fn resolve_named_color(c: &str) -> &str {
     match c {
         "none" | "transparent" => "transparent",
-        "red"    => "#e63946",
-        "blue"   => "#1d7ce7",
-        "green"  => "#2a9d8f",
+        "red" => "#e63946",
+        "blue" => "#1d7ce7",
+        "green" => "#2a9d8f",
         "yellow" => "#ffd166",
         "orange" => "#f4a261",
         "purple" => "#9d4edd",
-        "pink"   => "#e91e8c",
+        "pink" => "#e91e8c",
         "grey" | "gray" => "#6c757d",
-        "white"  => "#ffffff",
-        "black"  => "#1a1a2e",
+        "white" => "#ffffff",
+        "black" => "#1a1a2e",
         other => other,
     }
 }
@@ -140,29 +184,54 @@ pub fn apply_bg(html: String, bg: Option<&str>) -> String {
     };
     let color = resolve_named_color(raw);
     let h = if let Some(pos) = html.find(".sp-bg{fill:") {
-        let end = html[pos..].find('}').map(|i| pos + i + 1).unwrap_or(html.len());
+        let end = html[pos..]
+            .find('}')
+            .map(|i| pos + i + 1)
+            .unwrap_or(html.len());
         let mut s = html;
         s.replace_range(pos..end, &format!(".sp-bg{{fill:{color}}}"));
         s
     } else {
         html
     };
-    h.replacen("</head>", &format!("<style>html,body{{background:{color}!important}}</style></head>"), 1)
+    h.replacen(
+        "</head>",
+        &format!("<style>html,body{{background:{color}!important}}</style></head>"),
+        1,
+    )
 }
 
 #[inline]
 pub fn apply_opts(html: String, bg: Option<&str>, show_x: bool, show_y: bool) -> String {
     let mut h = apply_bg(html, bg);
-    if !show_x { h = h.replacen("</head>", "<style>.sp-ax-x,.sp-xt,.sp-xl{display:none}</style></head>", 1); }
-    if !show_y { h = h.replacen("</head>", "<style>.sp-ax-y,.sp-yt,.sp-yl{display:none}</style></head>", 1); }
+    if !show_x {
+        h = h.replacen(
+            "</head>",
+            "<style>.sp-ax-x,.sp-xt,.sp-xl{display:none}</style></head>",
+            1,
+        );
+    }
+    if !show_y {
+        h = h.replacen(
+            "</head>",
+            "<style>.sp-ax-y,.sp-yt,.sp-yl{display:none}</style></head>",
+            1,
+        );
+    }
     h
 }
 
 #[inline]
 pub fn apply_rotation(html: String, deg: i32) -> String {
-    if deg == 0 { return html; }
+    if deg == 0 {
+        return html;
+    }
     let (sw, sh) = extract_svg_dims(&html);
-    let (cw, ch) = if deg == 90 || deg == 270 { (sh, sw) } else { (sw, sh) };
+    let (cw, ch) = if deg == 90 || deg == 270 {
+        (sh, sw)
+    } else {
+        (sw, sh)
+    };
     let counter = -deg;
     let css = format!(
         "<style>.sp-rot-wrap{{display:inline-block;position:relative;width:{cw}px;height:{ch}px;overflow:visible}}.sp-rot-inner{{position:absolute;top:50%;left:50%;width:{sw}px;height:{sh}px;transform:translate(-50%,-50%) rotate({deg}deg);transform-origin:center center}}.sp-rot-inner > svg{{display:block}}.sp-rot-inner svg text{{transform-box:fill-box;transform-origin:center;transform:rotate({counter}deg)}}</style>"
@@ -173,7 +242,11 @@ pub fn apply_rotation(html: String, deg: i32) -> String {
         "border-radius:12px;overflow:visible;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)\"><div class=\"sp-rot-wrap\"><div class=\"sp-rot-inner\">",
         1,
     );
-    h.replacen("<div class=\"sp-sel-ov\"", "</div></div><div class=\"sp-sel-ov\"", 1)
+    h.replacen(
+        "<div class=\"sp-sel-ov\"",
+        "</div></div><div class=\"sp-sel-ov\"",
+        1,
+    )
 }
 
 fn extract_svg_dims(html: &str) -> (i32, i32) {
@@ -181,12 +254,14 @@ fn extract_svg_dims(html: &str) -> (i32, i32) {
     let needle = b"<svg";
     let mut i = 0usize;
     while i + needle.len() <= s.len() {
-        if &s[i..i+needle.len()] == needle {
+        if &s[i..i + needle.len()] == needle {
             let end = (i..s.len()).find(|&k| s[k] == b'>').unwrap_or(s.len());
             let chunk = &html[i..end];
             let w = parse_attr_int(chunk, "width=\"");
             let h = parse_attr_int(chunk, "height=\"");
-            if w > 0 && h > 0 { return (w, h); }
+            if w > 0 && h > 0 {
+                return (w, h);
+            }
         }
         i += 1;
     }
@@ -203,11 +278,10 @@ fn parse_attr_int(s: &str, key: &str) -> i32 {
     0
 }
 
-
-
 const JS_P1: &str = "<script>(function(){\nvar wrap=document.getElementById('";
 
-const JS_P2: &str = "');if(!wrap)return;wrap.removeAttribute('id');\nvar svg=wrap.querySelector('svg');var data=";
+const JS_P2: &str =
+    "');if(!wrap)return;wrap.removeAttribute('id');\nvar svg=wrap.querySelector('svg');var data=";
 
 const JS_P3: &str = r#";
 
@@ -473,8 +547,14 @@ pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
         "</style>"
     );
 
-    let cap = 256 + title.len() + CSS.len() + svg.len()
-        + JS_P1.len() + JS_P2.len() + hover_json.len() + JS_P3.len();
+    let cap = 256
+        + title.len()
+        + CSS.len()
+        + svg.len()
+        + JS_P1.len()
+        + JS_P2.len()
+        + hover_json.len()
+        + JS_P3.len();
     let mut buf = Vec::with_capacity(cap);
     buf.extend_from_slice(b"<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>");
     buf.extend_from_slice(html_attr_esc(title).as_bytes());
@@ -498,9 +578,14 @@ pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
 
 #[inline]
 fn html_attr_esc(s: &str) -> std::borrow::Cow<'_, str> {
-    if s.bytes().any(|b| b == b'<' || b == b'>' || b == b'&' || b == b'"') {
+    if s.bytes()
+        .any(|b| b == b'<' || b == b'>' || b == b'&' || b == b'"')
+    {
         std::borrow::Cow::Owned(
-            s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;").replace('"', "&quot;"),
+            s.replace('&', "&amp;")
+                .replace('<', "&lt;")
+                .replace('>', "&gt;")
+                .replace('"', "&quot;"),
         )
     } else {
         std::borrow::Cow::Borrowed(s)
@@ -513,11 +598,20 @@ pub fn html_id() -> u64 {
 
 #[inline(always)]
 fn push_u64(buf: &mut Vec<u8>, mut n: u64) {
-    if n == 0 { buf.push(b'0'); return; }
+    if n == 0 {
+        buf.push(b'0');
+        return;
+    }
     let mut d = [0u8; 20];
     let mut len = 0;
-    while n > 0 { d[len] = (n % 10) as u8 + b'0'; n /= 10; len += 1; }
-    for &b in d[..len].iter().rev() { buf.push(b); }
+    while n > 0 {
+        d[len] = (n % 10) as u8 + b'0';
+        n /= 10;
+        len += 1;
+    }
+    for &b in d[..len].iter().rev() {
+        buf.push(b);
+    }
 }
 
 #[inline(always)]
@@ -527,9 +621,8 @@ fn push_pid(buf: &mut Vec<u8>, id: u64) {
 }
 
 pub fn html_prefix(buf: &mut Vec<u8>, title: &str, id: u64) {
-    const TPL: &[u8] = concat!(
-        "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>",
-    ).as_bytes();
+    const TPL: &[u8] =
+        concat!("<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>",).as_bytes();
     const TPL2: &[u8] = concat!(
         "</title>",
         "<style>",
@@ -597,7 +690,8 @@ pub fn html_prefix(buf: &mut Vec<u8>, title: &str, id: u64) {
 }
 
 pub fn html_suffix(buf: &mut Vec<u8>, id: u64, hover_json: &str) {
-    const SUFF1: &[u8] = b"<div class=\"sp-sel-ov\" style=\"display:none\"></div><div class=\"sp-cpanel\"></div>";
+    const SUFF1: &[u8] =
+        b"<div class=\"sp-sel-ov\" style=\"display:none\"></div><div class=\"sp-cpanel\"></div>";
     buf.extend_from_slice(SUFF1);
     buf.extend_from_slice(JS_P1.as_bytes());
     push_pid(buf, id);
@@ -609,11 +703,12 @@ pub fn html_suffix(buf: &mut Vec<u8>, id: u64, hover_json: &str) {
 
 pub fn set_bg(input: &str) -> String {
     #[derive(serde::Deserialize, Default)]
-    struct In { html: Option<String>, color: Option<String> }
+    struct In {
+        html: Option<String>,
+        color: Option<String>,
+    }
     if let Ok(payload) = serde_json::from_str::<In>(input) {
         return apply_bg(payload.html.unwrap_or_default(), payload.color.as_deref());
     }
     apply_bg(input.to_string(), None)
 }
-
-

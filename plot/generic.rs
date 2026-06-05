@@ -1,4 +1,4 @@
-use super::renderers::{ChartConfig, ChartPoint, hsv_to_rgb};
+use super::renderers::{hsv_to_rgb, ChartConfig, ChartPoint};
 
 pub struct PlotState {
     pub dims: PlotDimensions,
@@ -15,7 +15,12 @@ pub struct PlotDimensions {
 
 impl PlotDimensions {
     pub fn new(width: f32, height: f32, pad_x: f32, pad_y: f32) -> Self {
-        Self { width, height, pad_x, pad_y }
+        Self {
+            width,
+            height,
+            pad_x,
+            pad_y,
+        }
     }
 
     pub fn vertical(zoom: f32) -> Self {
@@ -43,25 +48,53 @@ impl PlotDimensions {
 }
 
 pub trait PointMapper: Sized {
-    fn map(&self, idx: usize, point: &ChartPoint, max_val: f64, plot_rect: egui::Rect) -> egui::Pos2;
-    fn detect(&self, rel_pos: egui::Vec2, plot_rect: egui::Rect, config: &ChartConfig) -> Option<usize>;
+    fn map(
+        &self,
+        idx: usize,
+        point: &ChartPoint,
+        max_val: f64,
+        plot_rect: egui::Rect,
+    ) -> egui::Pos2;
+    fn detect(
+        &self,
+        rel_pos: egui::Vec2,
+        plot_rect: egui::Rect,
+        config: &ChartConfig,
+    ) -> Option<usize>;
 }
 
 pub struct VerticalMapper;
 impl PointMapper for VerticalMapper {
-    fn map(&self, idx: usize, point: &ChartPoint, max_val: f64, plot_rect: egui::Rect) -> egui::Pos2 {
+    fn map(
+        &self,
+        idx: usize,
+        point: &ChartPoint,
+        max_val: f64,
+        plot_rect: egui::Rect,
+    ) -> egui::Pos2 {
         let x = plot_rect.left() + ((idx as f32 + 0.5) / 10.0) * plot_rect.width();
         let norm_y = (point.value / max_val.max(1.0)) as f32;
         let y = plot_rect.bottom() - norm_y * plot_rect.height();
         egui::pos2(x, y)
     }
 
-    fn detect(&self, rel_pos: egui::Vec2, plot_rect: egui::Rect, config: &ChartConfig) -> Option<usize> {
-        if rel_pos.x < 0.0 || rel_pos.x > plot_rect.width() || rel_pos.y < 0.0 || rel_pos.y > plot_rect.height() {
+    fn detect(
+        &self,
+        rel_pos: egui::Vec2,
+        plot_rect: egui::Rect,
+        config: &ChartConfig,
+    ) -> Option<usize> {
+        if rel_pos.x < 0.0
+            || rel_pos.x > plot_rect.width()
+            || rel_pos.y < 0.0
+            || rel_pos.y > plot_rect.height()
+        {
             return None;
         }
         let visible_count = config.visible_points().len();
-        if visible_count == 0 { return None; }
+        if visible_count == 0 {
+            return None;
+        }
         let norm_x = rel_pos.x / plot_rect.width();
         let vis_idx = ((norm_x * visible_count as f32) as usize).min(visible_count - 1);
         Some(vis_idx)
@@ -70,19 +103,36 @@ impl PointMapper for VerticalMapper {
 
 pub struct HorizontalMapper;
 impl PointMapper for HorizontalMapper {
-    fn map(&self, idx: usize, point: &ChartPoint, max_val: f64, plot_rect: egui::Rect) -> egui::Pos2 {
+    fn map(
+        &self,
+        idx: usize,
+        point: &ChartPoint,
+        max_val: f64,
+        plot_rect: egui::Rect,
+    ) -> egui::Pos2 {
         let norm_x = (point.value / max_val.max(1.0)) as f32;
         let x = plot_rect.left() + norm_x * plot_rect.width();
         let y = plot_rect.top() + ((idx as f32 + 0.5) / 10.0) * plot_rect.height();
         egui::pos2(x, y)
     }
 
-    fn detect(&self, rel_pos: egui::Vec2, plot_rect: egui::Rect, config: &ChartConfig) -> Option<usize> {
-        if rel_pos.x < 0.0 || rel_pos.x > plot_rect.width() || rel_pos.y < 0.0 || rel_pos.y > plot_rect.height() {
+    fn detect(
+        &self,
+        rel_pos: egui::Vec2,
+        plot_rect: egui::Rect,
+        config: &ChartConfig,
+    ) -> Option<usize> {
+        if rel_pos.x < 0.0
+            || rel_pos.x > plot_rect.width()
+            || rel_pos.y < 0.0
+            || rel_pos.y > plot_rect.height()
+        {
             return None;
         }
         let visible_count = config.visible_points().len();
-        if visible_count == 0 { return None; }
+        if visible_count == 0 {
+            return None;
+        }
         let norm_y = rel_pos.y / plot_rect.height();
         let vis_idx = ((norm_y * visible_count as f32) as usize).min(visible_count - 1);
         Some(vis_idx)
@@ -90,13 +140,26 @@ impl PointMapper for HorizontalMapper {
 }
 
 pub trait RenderStrategy {
-    fn draw_geometry(&self, painter: &egui::Painter, config: &ChartConfig, state: &PlotState, plot_rect: egui::Rect);
+    fn draw_geometry(
+        &self,
+        painter: &egui::Painter,
+        config: &ChartConfig,
+        state: &PlotState,
+        plot_rect: egui::Rect,
+    );
     fn draw_point(&self, painter: &egui::Painter, pos: egui::Pos2, idx: usize, is_hovered: bool);
 }
 
 pub struct PointRenderer;
 impl RenderStrategy for PointRenderer {
-    fn draw_geometry(&self, _painter: &egui::Painter, _config: &ChartConfig, _state: &PlotState, _plot_rect: egui::Rect) {}
+    fn draw_geometry(
+        &self,
+        _painter: &egui::Painter,
+        _config: &ChartConfig,
+        _state: &PlotState,
+        _plot_rect: egui::Rect,
+    ) {
+    }
 
     fn draw_point(&self, painter: &egui::Painter, pos: egui::Pos2, _idx: usize, is_hovered: bool) {
         let (radius, color) = if is_hovered {
@@ -112,7 +175,14 @@ impl RenderStrategy for PointRenderer {
 
 pub struct BarRenderer;
 impl RenderStrategy for BarRenderer {
-    fn draw_geometry(&self, _painter: &egui::Painter, _config: &ChartConfig, _state: &PlotState, _plot_rect: egui::Rect) {}
+    fn draw_geometry(
+        &self,
+        _painter: &egui::Painter,
+        _config: &ChartConfig,
+        _state: &PlotState,
+        _plot_rect: egui::Rect,
+    ) {
+    }
 
     fn draw_point(&self, painter: &egui::Painter, pos: egui::Pos2, idx: usize, is_hovered: bool) {
         let color = if is_hovered {
@@ -123,7 +193,11 @@ impl RenderStrategy for BarRenderer {
         };
         let rect = egui::Rect::from_center_size(pos, egui::vec2(40.0, 20.0));
         painter.rect_filled(rect, 0.0, color);
-        painter.rect_stroke(rect, 0.0, egui::Stroke::new(1.0, egui::Color32::from_gray(100)));
+        painter.rect_stroke(
+            rect,
+            0.0,
+            egui::Stroke::new(1.0, egui::Color32::from_gray(100)),
+        );
     }
 }
 
@@ -195,7 +269,9 @@ impl TooltipHandler for RichTooltipHandler {
         zoom: f32,
     ) {
         let has_image = point.hover_data.contains_key("image");
-        let field_count = point.hover_data.iter()
+        let field_count = point
+            .hover_data
+            .iter()
             .filter(|(k, _)| k.as_str() != "image")
             .count() as f32;
 
@@ -208,11 +284,13 @@ impl TooltipHandler for RichTooltipHandler {
         for (key, val) in &point.hover_data {
             if key != "image" {
                 let display = format!("{}: {}", key, val);
-                let galley = ctx.fonts(|f| f.layout_no_wrap(
-                    display,
-                    egui::FontId::proportional(10.0),
-                    egui::Color32::WHITE,
-                ));
+                let galley = ctx.fonts(|f| {
+                    f.layout_no_wrap(
+                        display,
+                        egui::FontId::proportional(10.0),
+                        egui::Color32::WHITE,
+                    )
+                });
                 max_text_width = max_text_width.max(galley.rect.width());
             }
         }
@@ -284,11 +362,17 @@ impl TooltipHandler for RichTooltipHandler {
 
 pub fn draw_axes(painter: &egui::Painter, plot_rect: egui::Rect) {
     painter.line_segment(
-        [egui::pos2(plot_rect.left(), plot_rect.bottom()), egui::pos2(plot_rect.right(), plot_rect.bottom())],
+        [
+            egui::pos2(plot_rect.left(), plot_rect.bottom()),
+            egui::pos2(plot_rect.right(), plot_rect.bottom()),
+        ],
         egui::Stroke::new(1.5, egui::Color32::from_gray(200)),
     );
     painter.line_segment(
-        [egui::pos2(plot_rect.left(), plot_rect.top()), egui::pos2(plot_rect.left(), plot_rect.bottom())],
+        [
+            egui::pos2(plot_rect.left(), plot_rect.top()),
+            egui::pos2(plot_rect.left(), plot_rect.bottom()),
+        ],
         egui::Stroke::new(1.5, egui::Color32::from_gray(200)),
     );
 }
@@ -373,7 +457,9 @@ impl<M: PointMapper, S: RenderStrategy, T: TooltipHandler> GenericRenderer<M, S,
         draw_axes(&painter, plot_rect);
         draw_scale(&painter, plot_rect, max_val, dims.width > dims.height);
 
-        let visible_indices: Vec<usize> = config.points.iter()
+        let visible_indices: Vec<usize> = config
+            .points
+            .iter()
             .enumerate()
             .filter(|(_, p)| p.visible)
             .map(|(i, _)| i)
@@ -383,9 +469,11 @@ impl<M: PointMapper, S: RenderStrategy, T: TooltipHandler> GenericRenderer<M, S,
             let point = &config.points[actual_idx];
             let pos = self.mapper.map(vis_idx, point, max_val, plot_rect);
             let is_hovered = hovered_idx.map(|h| h == actual_idx).unwrap_or(false);
-            self.strategy.draw_point(&painter, pos, actual_idx, is_hovered);
+            self.strategy
+                .draw_point(&painter, pos, actual_idx, is_hovered);
             if is_hovered {
-                self.tooltip.render_tooltip(&painter, ctx, point, pos, config.zoom);
+                self.tooltip
+                    .render_tooltip(&painter, ctx, point, pos, config.zoom);
             }
         }
 
@@ -408,7 +496,11 @@ pub struct ChartBuilder<M: PointMapper, S: RenderStrategy> {
 
 impl<M: PointMapper, S: RenderStrategy> ChartBuilder<M, S> {
     pub fn new(mapper: M, strategy: S) -> Self {
-        Self { mapper, strategy, tooltip_style: None }
+        Self {
+            mapper,
+            strategy,
+            tooltip_style: None,
+        }
     }
 
     pub fn with_default_tooltip(mut self) -> Self {
@@ -417,7 +509,9 @@ impl<M: PointMapper, S: RenderStrategy> ChartBuilder<M, S> {
     }
 
     pub fn build(self) -> GenericRenderer<M, S, RichTooltipHandler> {
-        let tooltip_style = self.tooltip_style.unwrap_or_else(TooltipStyle::default_dark);
+        let tooltip_style = self
+            .tooltip_style
+            .unwrap_or_else(TooltipStyle::default_dark);
         let tooltip = RichTooltipHandler::with_style(tooltip_style);
         GenericRenderer::with_tooltip(self.mapper, self.strategy, tooltip)
     }
@@ -426,5 +520,3 @@ impl<M: PointMapper, S: RenderStrategy> ChartBuilder<M, S> {
         GenericRenderer::new(self.mapper, self.strategy)
     }
 }
-
-

@@ -82,7 +82,12 @@ impl ChartConfig {
 
     #[inline]
     pub fn add_point(&mut self, label: String, value: f64, hover_data: HashMap<String, String>) {
-        self.points.push(ChartPoint { label, value, hover_data, visible: true });
+        self.points.push(ChartPoint {
+            label,
+            value,
+            hover_data,
+            visible: true,
+        });
     }
 
     #[inline]
@@ -92,7 +97,9 @@ impl ChartConfig {
 
     #[inline]
     pub fn max_value(&self) -> f64 {
-        self.visible_points().iter().fold(0.0_f64, |a, p| a.max(p.value))
+        self.visible_points()
+            .iter()
+            .fold(0.0_f64, |a, p| a.max(p.value))
     }
 
     #[inline]
@@ -138,7 +145,12 @@ impl ChartConfigBuilder {
     }
 
     #[inline]
-    pub fn add_point(mut self, label: String, value: f64, hover_data: HashMap<String, String>) -> Self {
+    pub fn add_point(
+        mut self,
+        label: String,
+        value: f64,
+        hover_data: HashMap<String, String>,
+    ) -> Self {
         self.config.add_point(label, value, hover_data);
         self
     }
@@ -148,5 +160,3 @@ impl ChartConfigBuilder {
         self.config
     }
 }
-
-

@@ -1,4 +1,6 @@
-use crate::plot::controller::plot_3d_controller::{Plot3DRenderContext, Plot3DTypeBuilder, get_group_registry, Plot3DPositioner};
+use crate::plot::controller::plot_3d_controller::{
+    get_group_registry, Plot3DPositioner, Plot3DRenderContext, Plot3DTypeBuilder,
+};
 
 fn render_globe_wrapper(ctx: Plot3DRenderContext) {
     let labels: Vec<String> = ctx.labels.to_vec();
@@ -23,12 +25,26 @@ fn get_positions_globe_wrapper(
     camera_controller: &crate::plot::containers_3d::CameraController,
     plot_rect: egui::Rect,
 ) -> Vec<(egui::Pos2, usize)> {
-    super::globe::get_globe_3d_positions(values, max_val, visible_indices, camera_controller, plot_rect)
+    super::globe::get_globe_3d_positions(
+        values,
+        max_val,
+        visible_indices,
+        camera_controller,
+        plot_rect,
+    )
 }
 
-const MAP_3D_TYPES: &[(u8, &str, crate::plot::controller::plot_3d_controller::Plot3DRenderer, Plot3DPositioner)] = &[
-    (23, "globe_3d", render_globe_wrapper as crate::plot::controller::plot_3d_controller::Plot3DRenderer, get_positions_globe_wrapper as Plot3DPositioner),
-];
+const MAP_3D_TYPES: &[(
+    u8,
+    &str,
+    crate::plot::controller::plot_3d_controller::Plot3DRenderer,
+    Plot3DPositioner,
+)] = &[(
+    23,
+    "globe_3d",
+    render_globe_wrapper as crate::plot::controller::plot_3d_controller::Plot3DRenderer,
+    get_positions_globe_wrapper as Plot3DPositioner,
+)];
 
 pub fn register_map_3d_types() {
     let mut ids = Vec::new();
@@ -47,5 +63,3 @@ pub fn register_map_3d_types() {
         grp_reg.register_group("map".to_string(), ids);
     }
 }
-
-

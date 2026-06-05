@@ -152,11 +152,18 @@ pub struct Annotation {
 }
 
 fn fmt_pos(v: f64, frac: bool) -> String {
-    if frac { format!("{:.2}%", v * 100.0) } else { format!("{}", v) }
+    if frac {
+        format!("{:.2}%", v * 100.0)
+    } else {
+        format!("{}", v)
+    }
 }
 
 fn ann_escape(s: &str) -> String {
-    s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;").replace('"', "&quot;")
+    s.replace('&', "&amp;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('"', "&quot;")
 }
 
 pub fn apply_annotations(html: String, o: &ChartOpts) -> String {
@@ -170,9 +177,17 @@ pub fn apply_annotations(html: String, o: &ChartOpts) -> String {
         let color = a.color.as_deref().unwrap_or("#ef4444");
         let sw = a.stroke_width.unwrap_or(1.5);
         let dash = a.dash.as_deref().unwrap_or("");
-        let dash_attr = if dash.is_empty() { String::new() } else { format!(" stroke-dasharray=\"{}\"", dash) };
+        let dash_attr = if dash.is_empty() {
+            String::new()
+        } else {
+            format!(" stroke-dasharray=\"{}\"", dash)
+        };
         let opacity = a.opacity.unwrap_or(1.0);
-        let op_attr = if (opacity - 1.0).abs() < 1e-6 { String::new() } else { format!(" opacity=\"{:.2}\"", opacity) };
+        let op_attr = if (opacity - 1.0).abs() < 1e-6 {
+            String::new()
+        } else {
+            format!(" opacity=\"{:.2}\"", opacity)
+        };
         match a.kind.as_str() {
             "hline" => {
                 let y = fmt_pos(a.y.unwrap_or(0.5), frac);
@@ -199,7 +214,11 @@ pub fn apply_annotations(html: String, o: &ChartOpts) -> String {
                 if a.kind == "arrow" {
                     buf.push_str(&format!("<defs><marker id=\"{arrow_id}\" viewBox=\"0 0 10 10\" refX=\"9\" refY=\"5\" markerWidth=\"6\" markerHeight=\"6\" orient=\"auto\"><path d=\"M0,0 L10,5 L0,10 z\" fill=\"{color}\"/></marker></defs>"));
                 }
-                let m_attr = if a.kind == "arrow" { format!(" marker-end=\"url(#{arrow_id})\"") } else { String::new() };
+                let m_attr = if a.kind == "arrow" {
+                    format!(" marker-end=\"url(#{arrow_id})\"")
+                } else {
+                    String::new()
+                };
                 buf.push_str(&format!("<line x1=\"{x1}\" y1=\"{y1}\" x2=\"{x2}\" y2=\"{y2}\" stroke=\"{color}\" stroke-width=\"{sw}\"{dash_attr}{op_attr}{m_attr}/>"));
             }
             "rect" => {
@@ -222,7 +241,9 @@ pub fn apply_annotations(html: String, o: &ChartOpts) -> String {
             _ => {}
         }
     }
-    if buf.is_empty() { return html; }
+    if buf.is_empty() {
+        return html;
+    }
     if let Some(idx) = html.rfind("</svg>") {
         let mut out = String::with_capacity(html.len() + buf.len() + 64);
         out.push_str(&html[..idx]);
@@ -237,43 +258,102 @@ pub fn apply_annotations(html: String, o: &ChartOpts) -> String {
 }
 
 impl ChartOpts {
-    pub fn w(&self, default: i32) -> i32 { self.width.unwrap_or(default) }
-    pub fn h(&self, default: i32) -> i32 { self.height.unwrap_or(default) }
-    pub fn xl(&self) -> String { self.x_label.clone().unwrap_or_default() }
-    pub fn yl(&self) -> String { self.y_label.clone().unwrap_or_default() }
-    pub fn zl(&self) -> String { self.z_label.clone().unwrap_or_else(|| "Z".to_string()) }
-    pub fn grid(&self) -> bool { self.gridlines.unwrap_or(false) || crate::plot::get_global_grid() }
-    pub fn srt(&self) -> String { self.sort_order.clone().unwrap_or_else(|| "none".to_string()) }
-    pub fn lp(&self) -> String { self.legend_position.clone().unwrap_or_else(|| "right".to_string()) }
+    pub fn w(&self, default: i32) -> i32 {
+        self.width.unwrap_or(default)
+    }
+    pub fn h(&self, default: i32) -> i32 {
+        self.height.unwrap_or(default)
+    }
+    pub fn xl(&self) -> String {
+        self.x_label.clone().unwrap_or_default()
+    }
+    pub fn yl(&self) -> String {
+        self.y_label.clone().unwrap_or_default()
+    }
+    pub fn zl(&self) -> String {
+        self.z_label.clone().unwrap_or_else(|| "Z".to_string())
+    }
+    pub fn grid(&self) -> bool {
+        self.gridlines.unwrap_or(false) || crate::plot::get_global_grid()
+    }
+    pub fn srt(&self) -> String {
+        self.sort_order
+            .clone()
+            .unwrap_or_else(|| "none".to_string())
+    }
+    pub fn lp(&self) -> String {
+        self.legend_position
+            .clone()
+            .unwrap_or_else(|| "right".to_string())
+    }
     pub fn pal(&self) -> Vec<u32> {
-        if let Some(p) = &self.palette { if !p.is_empty() { return p.clone(); } }
-        let g = crate::plot::get_global_pal(); if !g.is_empty() { g } else { Vec::new() }
+        if let Some(p) = &self.palette {
+            if !p.is_empty() {
+                return p.clone();
+            }
+        }
+        let g = crate::plot::get_global_pal();
+        if !g.is_empty() {
+            g
+        } else {
+            Vec::new()
+        }
     }
     pub fn hj(&self) -> Vec<crate::html::hover::HoverSlot> {
-        self.hover_json.as_ref().filter(|s| !s.is_empty())
+        self.hover_json
+            .as_ref()
+            .filter(|s| !s.is_empty())
             .map(|s| crate::plot::statistical::parse_hover_json(s))
             .unwrap_or_default()
     }
     pub fn bg_str(&self) -> Option<String> {
-        self.background.clone().or_else(|| self.bg_color.clone()).filter(|s| !s.is_empty())
+        self.background
+            .clone()
+            .or_else(|| self.bg_color.clone())
+            .filter(|s| !s.is_empty())
     }
-    pub fn no_x(&self) -> bool { self.no_x_axis.unwrap_or(false) }
-    pub fn no_y(&self) -> bool { self.no_y_axis.unwrap_or(false) }
+    pub fn no_x(&self) -> bool {
+        self.no_x_axis.unwrap_or(false)
+    }
+    pub fn no_y(&self) -> bool {
+        self.no_y_axis.unwrap_or(false)
+    }
     pub fn is_horiz(&self) -> bool {
         match self.orientation.as_deref() {
             Some(s) => {
                 let l = s.to_ascii_lowercase();
-                l == "h" || l == "horiz" || l == "horizontal" || l == "rotated" || l == "hbar" || l == "hbox" || l == "barh"
+                l == "h"
+                    || l == "horiz"
+                    || l == "horizontal"
+                    || l == "rotated"
+                    || l == "hbar"
+                    || l == "hbox"
+                    || l == "barh"
             }
             None => false,
         }
     }
-    pub fn orient_byte(&self) -> u8 { if self.is_horiz() { b'h' } else { b'v' } }
+    pub fn orient_byte(&self) -> u8 {
+        if self.is_horiz() {
+            b'h'
+        } else {
+            b'v'
+        }
+    }
     pub fn rotation_deg(&self) -> i32 {
         if let Some(opt) = self.orientation_option {
-            return match opt { 2 => 90, 3 => 180, 4 => 270, _ => 0 };
+            return match opt {
+                2 => 90,
+                3 => 180,
+                4 => 270,
+                _ => 0,
+            };
         }
-        if self.is_horiz() { 90 } else { 0 }
+        if self.is_horiz() {
+            90
+        } else {
+            0
+        }
     }
     pub fn rotation_deg_native(&self) -> i32 {
         match self.orientation_option.unwrap_or(0) {
@@ -352,7 +432,9 @@ pub fn apply(html: String, o: &ChartOpts) -> String {
     let h = apply_kwarg_chains(h, o);
     if let Some(ref t) = o.theme {
         crate::plot::statistical::apply_chart_theme(h, t)
-    } else { h }
+    } else {
+        h
+    }
 }
 
 pub fn apply_h(html: String, o: &ChartOpts) -> String {
@@ -364,15 +446,20 @@ pub fn apply_h(html: String, o: &ChartOpts) -> String {
     let h = apply_kwarg_chains(h, o);
     if let Some(ref t) = o.theme {
         crate::plot::statistical::apply_chart_theme(h, t)
-    } else { h }
+    } else {
+        h
+    }
 }
 
 #[cfg(feature = "python")]
 fn apply_kwarg_chains(html: String, o: &ChartOpts) -> String {
-    use crate::{SP_LEGEND_JS, json_str};
+    use crate::{json_str, SP_LEGEND_JS};
     let mut snip = String::new();
     if let Some(ref lp) = o.legend_position {
-        let pos = match lp.as_str() { "right" | "left" | "top" | "bottom" => lp.as_str(), _ => "right" };
+        let pos = match lp.as_str() {
+            "right" | "left" | "top" | "bottom" => lp.as_str(),
+            _ => "right",
+        };
         snip.push_str(&format!("window.__sp_legend_pos__={};", json_str(pos)));
         snip.push_str(SP_LEGEND_JS);
         snip.push(';');
@@ -385,7 +472,9 @@ fn apply_kwarg_chains(html: String, o: &ChartOpts) -> String {
 }
 
 #[cfg(not(feature = "python"))]
-fn apply_kwarg_chains(html: String, _o: &ChartOpts) -> String { html }
+fn apply_kwarg_chains(html: String, _o: &ChartOpts) -> String {
+    html
+}
 
 pub fn apply_bg3d(html: String, o: &ChartOpts) -> String {
     let bg_str = o.bg_str().or_else(crate::plot::get_global_bg);
@@ -396,7 +485,6 @@ pub fn apply_bg3d(html: String, o: &ChartOpts) -> String {
     };
     apply_annotations(h, o)
 }
-
 
 pub fn build_html_chart(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);

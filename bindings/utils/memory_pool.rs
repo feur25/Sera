@@ -1,5 +1,5 @@
-use std::sync::Arc;
 use parking_lot::RwLock;
+use std::sync::Arc;
 
 pub struct RingBuffer<T: Copy, const N: usize> {
     buf: [T; N],
@@ -10,7 +10,11 @@ pub struct RingBuffer<T: Copy, const N: usize> {
 impl<T: Copy + Default, const N: usize> RingBuffer<T, N> {
     #[inline]
     pub fn new() -> Self {
-        Self { buf: [T::default(); N], head: 0, len: 0 }
+        Self {
+            buf: [T::default(); N],
+            head: 0,
+            len: 0,
+        }
     }
 
     #[inline]
@@ -26,18 +30,26 @@ impl<T: Copy + Default, const N: usize> RingBuffer<T, N> {
 
     #[inline]
     pub fn get(&self, idx: usize) -> Option<T> {
-        if idx >= self.len { return None; }
+        if idx >= self.len {
+            return None;
+        }
         Some(self.buf[(self.head + idx) % N])
     }
 
     #[inline]
-    pub fn len(&self) -> usize { self.len }
+    pub fn len(&self) -> usize {
+        self.len
+    }
 
     #[inline]
-    pub fn is_empty(&self) -> bool { self.len == 0 }
+    pub fn is_empty(&self) -> bool {
+        self.len == 0
+    }
 
     #[inline]
-    pub fn is_full(&self) -> bool { self.len == N }
+    pub fn is_full(&self) -> bool {
+        self.len == N
+    }
 
     #[inline]
     pub fn iter(&self) -> impl Iterator<Item = T> + '_ {
@@ -61,13 +73,17 @@ impl<T: Copy + Default + std::iter::Sum, const N: usize> RingBuffer<T, N> {
 impl<const N: usize> RingBuffer<f64, N> {
     #[inline]
     pub fn mean(&self) -> f64 {
-        if self.len == 0 { return 0.0; }
+        if self.len == 0 {
+            return 0.0;
+        }
         self.iter().sum::<f64>() / self.len as f64
     }
 
     #[inline]
     pub fn std_dev(&self) -> f64 {
-        if self.len < 2 { return 0.0; }
+        if self.len < 2 {
+            return 0.0;
+        }
         let m = self.mean();
         let v = self.iter().map(|x| (x - m) * (x - m)).sum::<f64>() / (self.len - 1) as f64;
         v.sqrt()
@@ -103,7 +119,7 @@ impl StringInterner {
         if let Some(&idx) = lookup.get(s) {
             return Arc::clone(&self.strings.read()[idx]);
         }
-        
+
         let mut strings = self.strings.write();
         let interned: Arc<str> = Arc::from(s);
         lookup.insert(s.to_string(), strings.len());
@@ -151,5 +167,3 @@ impl MemoryPool {
         *stored = buf;
     }
 }
-
-

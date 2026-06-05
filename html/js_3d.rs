@@ -1,4 +1,4 @@
-use crate::plot::statistical::common::{push_b, push_i, push_f2, PALETTE};
+use crate::plot::statistical::common::{push_b, push_f2, push_i, PALETTE};
 use std::sync::atomic::{AtomicU32, Ordering};
 
 static ID3D: AtomicU32 = AtomicU32::new(0);
@@ -50,20 +50,41 @@ pub(crate) fn render_3d_html_impl(
         None => "#0e1117",
     };
 
-    push_b(&mut buf, b"<!DOCTYPE html><html><head><meta charset=\"utf-8\"><style>");
+    push_b(
+        &mut buf,
+        b"<!DOCTYPE html><html><head><meta charset=\"utf-8\"><style>",
+    );
     push_b(&mut buf, b"body{margin:0;background:");
     buf.extend_from_slice(bg.as_bytes());
-    push_b(&mut buf, b";display:flex;justify-content:center;padding:16px 0}");
+    push_b(
+        &mut buf,
+        b";display:flex;justify-content:center;padding:16px 0}",
+    );
     push_b(&mut buf, b".c3w{position:relative;display:inline-block;user-select:none;cursor:grab;border-radius:12px;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.06)}");
     push_b(&mut buf, b".c3w:active{cursor:grabbing}");
-    push_b(&mut buf, b".c3t{position:absolute;z-index:99;pointer-events:none;opacity:0;");
-    push_b(&mut buf, b"transition:opacity .15s,transform .15s;transform:translateY(4px) scale(.97);");
-    push_b(&mut buf, b"background:rgba(11,14,24,.92);color:#f1f5f9;backdrop-filter:blur(8px);");
+    push_b(
+        &mut buf,
+        b".c3t{position:absolute;z-index:99;pointer-events:none;opacity:0;",
+    );
+    push_b(
+        &mut buf,
+        b"transition:opacity .15s,transform .15s;transform:translateY(4px) scale(.97);",
+    );
+    push_b(
+        &mut buf,
+        b"background:rgba(11,14,24,.92);color:#f1f5f9;backdrop-filter:blur(8px);",
+    );
     push_b(&mut buf, b"font:12px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;border-radius:10px;");
     push_b(&mut buf, b"padding:10px 14px;min-width:140px;box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.08)}");
     push_b(&mut buf, b".c3t.v{opacity:1;transform:translateY(0) scale(1)}.c3t.p{pointer-events:auto;cursor:default}");
-    push_b(&mut buf, b".c3t b{font-size:13px;display:block;margin-bottom:6px;color:#e2e8f0}");
-    push_b(&mut buf, b".c3t span{color:#64748b;margin-right:6px;font-size:11px}");
+    push_b(
+        &mut buf,
+        b".c3t b{font-size:13px;display:block;margin-bottom:6px;color:#e2e8f0}",
+    );
+    push_b(
+        &mut buf,
+        b".c3t span{color:#64748b;margin-right:6px;font-size:11px}",
+    );
     push_b(&mut buf, b".c3t .tv{color:#f8fafc;font-weight:600}");
     push_b(&mut buf, b"</style></head><body>");
 
@@ -99,23 +120,31 @@ pub(crate) fn render_3d_html_impl(
     buf.extend_from_slice(bg.as_bytes());
     push_b(&mut buf, b"';var X=[");
     for i in 0..n {
-        if i > 0 { buf.push(b','); }
+        if i > 0 {
+            buf.push(b',');
+        }
         push_f2(&mut buf, x[i]);
     }
     push_b(&mut buf, b"],Y=[");
     for i in 0..n {
-        if i > 0 { buf.push(b','); }
+        if i > 0 {
+            buf.push(b',');
+        }
         push_f2(&mut buf, y[i]);
     }
     push_b(&mut buf, b"],Z=[");
     for i in 0..n {
-        if i > 0 { buf.push(b','); }
+        if i > 0 {
+            buf.push(b',');
+        }
         push_f2(&mut buf, z[i]);
     }
     push_b(&mut buf, b"],C=[");
     if uc {
         for i in 0..n {
-            if i > 0 { buf.push(b','); }
+            if i > 0 {
+                buf.push(b',');
+            }
             push_i(&mut buf, colors[i].round() as i32);
         }
     }
@@ -124,7 +153,9 @@ pub(crate) fn render_3d_html_impl(
     push_b(&mut buf, b"var PAL=[");
     let hx = b"0123456789abcdef";
     for (i, &c) in PALETTE.iter().enumerate() {
-        if i > 0 { buf.push(b','); }
+        if i > 0 {
+            buf.push(b',');
+        }
         push_b(&mut buf, b"'#");
         buf.extend_from_slice(&[
             hx[((c >> 20) & 0xf) as usize],
@@ -140,7 +171,9 @@ pub(crate) fn render_3d_html_impl(
 
     push_b(&mut buf, b"var CL=[");
     for (i, lbl) in color_labels.iter().enumerate() {
-        if i > 0 { buf.push(b','); }
+        if i > 0 {
+            buf.push(b',');
+        }
         buf.push(b'\'');
         js_esc(&mut buf, lbl);
         buf.push(b'\'');
@@ -180,7 +213,20 @@ pub fn render_3d_html(
     h: i32,
     bg_color: Option<&str>,
 ) -> String {
-    render_3d_html_impl(mode, title, x, y, z, axis_labels, colors, color_labels, w, h, bg_color, b"")
+    render_3d_html_impl(
+        mode,
+        title,
+        x,
+        y,
+        z,
+        axis_labels,
+        colors,
+        color_labels,
+        w,
+        h,
+        bg_color,
+        b"",
+    )
 }
 
 const ENGINE_3D: &[u8] = br##"
@@ -1285,5 +1331,3 @@ wrap.addEventListener('touchmove',function(e){
 },{passive:false});
 wrap.addEventListener('touchend',function(e){if(e.touches.length===0){dg=false;t0d=0;if(!mv){var bx=wrap.getBoundingClientRect(),ex=dwX-bx.left,ey=dwY-bx.top;var idx=ht(ex,ey);if(idx>=0){pin=true;piI=idx;sT(idx,dwX,dwY);R();}else{pin=false;piI=-1;tip.className='c3t';}}}});
 "##;
-
-

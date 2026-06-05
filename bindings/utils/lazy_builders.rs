@@ -30,7 +30,7 @@ impl LazyJsonBuilder {
         if self.dirty || self.cached.is_none() {
             let mut json = String::with_capacity(self.labels.len() * 25 + self.values.len() * 15);
             json.push_str("{\"l\":[");
-            
+
             for (i, label) in self.labels.iter().enumerate() {
                 if i > 0 {
                     json.push(',');
@@ -52,7 +52,7 @@ impl LazyJsonBuilder {
                 }
                 json.push('"');
             }
-            
+
             json.push_str("],\"v\":[");
             for (i, &val) in self.values.iter().enumerate() {
                 if i > 0 {
@@ -62,11 +62,11 @@ impl LazyJsonBuilder {
                 let _ = write!(json, "{:.2}", val);
             }
             json.push_str("]}");
-            
+
             self.cached = Some(json);
             self.dirty = false;
         }
-        
+
         self.cached.as_ref().unwrap()
     }
 
@@ -100,14 +100,14 @@ impl VectorizedHtmlBuilder {
     #[inline(always)]
     pub fn build(&mut self) -> String {
         use std::fmt::Write;
-        
+
         self.template_cache.clear();
         let _ = write!(
             self.template_cache,
             "<!DOCTYPE html><html><head><meta charset=UTF-8><title>{}</title><style>*{{margin:0;padding:0;box-sizing:border-box}}body{{background:#f5f5f5;font:12px sans-serif}}.chart-container{{width:100%;height:100vh;display:flex;align-items:center;justify-content:center;background:#fff;position:relative;overflow:hidden}}svg{{width:90%;height:90%;max-width:1200px;max-height:600px;display:block}}</style></head><body><div class=chart-container>{}</div><script>window.__SERAPLOT_STATE__={}</script></body></html>",
             self.title, self.svg, self.json
         );
-        
+
         self.template_cache.clone()
     }
 
@@ -183,7 +183,10 @@ impl StatefulExporter {
 
     #[inline(always)]
     pub fn visible_count(&self) -> usize {
-        self.visibility.iter_set().take_while(|&idx| self.selection.get(idx)).count()
+        self.visibility
+            .iter_set()
+            .take_while(|&idx| self.selection.get(idx))
+            .count()
     }
 
     pub fn reset(&mut self) {
@@ -193,5 +196,3 @@ impl StatefulExporter {
         self.selection.clear_all();
     }
 }
-
-

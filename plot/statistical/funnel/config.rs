@@ -14,5 +14,3 @@ crate::chart_config!(FunnelConfig, 800, 480;
         show_text: true,
     }
 );
-
-

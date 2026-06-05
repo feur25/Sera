@@ -1,14 +1,14 @@
-use crate::plot::default::register_default_types;
 use crate::plot::default::_3d::register_default_3d_types;
-use crate::plot::map::register_map_types;
+use crate::plot::default::register_default_types;
 use crate::plot::map::register_map_3d_types;
-use crate::plot::seaborn::register_seaborn_types;
+use crate::plot::map::register_map_types;
 use crate::plot::seaborn::register_seaborn_3d_types;
-use crate::plot::statistical::register_statistical_types;
+use crate::plot::seaborn::register_seaborn_types;
 use crate::plot::statistical::register_statistical_3d_types;
+use crate::plot::statistical::register_statistical_types;
 
-use std::sync::{OnceLock, Mutex};
 use std::collections::HashMap;
+use std::sync::{Mutex, OnceLock};
 
 type GroupLoader = fn();
 
@@ -71,5 +71,3 @@ pub fn init_chart_types() {
         }
     });
 }
-
-

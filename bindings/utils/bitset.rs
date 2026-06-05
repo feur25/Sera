@@ -66,18 +66,15 @@ impl BitSet {
 
     #[inline(always)]
     pub fn iter_set(&self) -> impl Iterator<Item = usize> + '_ {
-        self.words
-            .iter()
-            .enumerate()
-            .flat_map(|(word_idx, &word)| {
-                (0..64).filter_map(move |bit_idx| {
-                    if (word >> bit_idx) & 1 == 1 {
-                        Some(word_idx * 64 + bit_idx)
-                    } else {
-                        None
-                    }
-                })
+        self.words.iter().enumerate().flat_map(|(word_idx, &word)| {
+            (0..64).filter_map(move |bit_idx| {
+                if (word >> bit_idx) & 1 == 1 {
+                    Some(word_idx * 64 + bit_idx)
+                } else {
+                    None
+                }
             })
+        })
     }
 }
 
@@ -139,5 +136,3 @@ impl<T> CacheAlignedData<T> {
         self.data
     }
 }
-
-

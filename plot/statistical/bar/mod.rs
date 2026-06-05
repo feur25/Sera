@@ -1,50 +1,55 @@
-use crate::plot::{parse_all, apply, apply_h};
-pub mod variant;
-pub mod config;
+use crate::plot::{apply, apply_h, parse_all};
 pub mod basic;
+pub mod config;
+pub mod deluxe;
 pub mod grouped;
-pub mod relative;
 pub mod grouped_stacked;
 pub mod marimekko;
-pub mod pictogram;
 pub mod multicategory;
-pub mod deluxe;
+pub mod pictogram;
 pub mod prism;
+pub mod relative;
+pub mod variant;
 
-pub use variant::BarVariant;
 pub use config::BarConfig;
+pub use variant::BarVariant;
 
 pub fn render_bar_html(cfg: &BarConfig) -> String {
     use crate::plot::statistical::theme::ChartTheme;
     match cfg.theme {
         ChartTheme::Deluxe => return deluxe::render(cfg, cfg.orientation),
-        ChartTheme::Prism  => return prism::render(cfg),
-        _                  => {}
+        ChartTheme::Prism => return prism::render(cfg),
+        _ => {}
     }
     use BarVariant::*;
     match cfg.variant {
-        Basic           => basic::render(cfg, cfg.orientation),
-        Horizontal      => basic::render(cfg, b'h'),
-        Grouped         => grouped::render(cfg, false),
-        Stacked         => grouped::render(cfg, true),
-        Relative        => relative::render(cfg),
-        GroupedStacked  => grouped_stacked::render(cfg),
-        Marimekko       => marimekko::render(cfg),
-        Pictogram       => pictogram::render(cfg),
-        Multicategory   => multicategory::render(cfg),
-        Deluxe          => deluxe::render(cfg, b'v'),
-        Prism           => prism::render(cfg),
+        Basic => basic::render(cfg, cfg.orientation),
+        Horizontal => basic::render(cfg, b'h'),
+        Grouped => grouped::render(cfg, false),
+        Stacked => grouped::render(cfg, true),
+        Relative => relative::render(cfg),
+        GroupedStacked => grouped_stacked::render(cfg),
+        Marimekko => marimekko::render(cfg),
+        Pictogram => pictogram::render(cfg),
+        Multicategory => multicategory::render(cfg),
+        Deluxe => deluxe::render(cfg, b'v'),
+        Prism => prism::render(cfg),
     }
 }
 
-
-
 pub use build as build_bar;
 
-#[crate::sera_alias("bar", "bar_chart", "bars", "bar_unified", "bars_unified", "bar_family")]
+#[crate::sera_alias(
+    "bar",
+    "bar_chart",
+    "bars",
+    "bar_unified",
+    "bars_unified",
+    "bar_family"
+)]
 #[crate::sera_builder("build_bar")]
 pub fn build(input: &str) -> String {
-    use crate::plot::statistical::{BarVariant, BarConfig, render_bar_html, ChartTheme};
+    use crate::plot::statistical::{render_bar_html, BarConfig, BarVariant, ChartTheme};
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
     let variant = BarVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
@@ -59,40 +64,62 @@ pub fn build(input: &str) -> String {
     let widths = o.widths.clone().unwrap_or_default();
     let super_categories = o.super_categories.clone().unwrap_or_default();
     let unit_desc = o.unit_description.clone().unwrap_or_default();
-    let xl = o.xl(); let yl = o.yl(); let srt = o.srt(); let lp = o.lp();
+    let xl = o.xl();
+    let yl = o.yl();
+    let srt = o.srt();
+    let lp = o.lp();
 
     let series: Vec<(String, Vec<f64>)> = {
         let sn = o.series_names.clone().unwrap_or_default();
         let n_cats = category_labels.len();
         if let Some(s) = a.series.as_ref() {
-            s.iter().enumerate().map(|(si, vals)| (
-                sn.get(si).cloned().unwrap_or_else(|| format!("S{}", si + 1)),
-                vals.clone(),
-            )).collect()
+            s.iter()
+                .enumerate()
+                .map(|(si, vals)| {
+                    (
+                        sn.get(si)
+                            .cloned()
+                            .unwrap_or_else(|| format!("S{}", si + 1)),
+                        vals.clone(),
+                    )
+                })
+                .collect()
         } else if !sn.is_empty() && n_cats > 0 {
             let flat = a.values.clone().unwrap_or_default();
-            sn.iter().enumerate().map(|(si, name)| {
-                let vals: Vec<f64> = (0..n_cats)
-                    .map(|ci| flat.get(si * n_cats + ci).copied().unwrap_or(0.0))
-                    .collect();
-                (name.clone(), vals)
-            }).collect()
+            sn.iter()
+                .enumerate()
+                .map(|(si, name)| {
+                    let vals: Vec<f64> = (0..n_cats)
+                        .map(|ci| flat.get(si * n_cats + ci).copied().unwrap_or(0.0))
+                        .collect();
+                    (name.clone(), vals)
+                })
+                .collect()
         } else {
             Vec::new()
         }
     };
 
     let cfg = BarConfig {
-        variant, title,
-        x_label: &xl, y_label: &yl,
-        width: o.w(900), height: o.h(480),
-        gridlines: o.grid(), sort_order: &srt, legend_position: &lp,
-        hover: &hover, palette: &palette,
-        labels: &labels, values: &values,
+        variant,
+        title,
+        x_label: &xl,
+        y_label: &yl,
+        width: o.w(900),
+        height: o.h(480),
+        gridlines: o.grid(),
+        sort_order: &srt,
+        legend_position: &lp,
+        hover: &hover,
+        palette: &palette,
+        labels: &labels,
+        values: &values,
         color_hex: o.color_hex.unwrap_or(0),
         color_groups: &groups,
-        category_labels: &category_labels, series: &series,
-        offset_groups: &offset_groups, widths: &widths,
+        category_labels: &category_labels,
+        series: &series,
+        offset_groups: &offset_groups,
+        widths: &widths,
         super_categories: &super_categories,
         icon_size: o.icon_size.unwrap_or(24),
         max_icons_per_column: o.max_icons_per_column.unwrap_or(10),
@@ -108,5 +135,9 @@ pub fn build(input: &str) -> String {
     let html = render_bar_html(&cfg);
     use crate::plot::statistical::BarVariant::*;
     let native = matches!(variant, Basic | Horizontal | Grouped | Stacked);
-    if native { apply_h(html, &o) } else { apply(html, &o) }
+    if native {
+        apply_h(html, &o)
+    } else {
+        apply(html, &o)
+    }
 }

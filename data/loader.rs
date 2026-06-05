@@ -1,7 +1,7 @@
+use super::dataset::Dataset;
 use std::collections::HashMap;
 use std::fs::File;
 use std::path::Path;
-use super::dataset::Dataset;
 
 #[derive(Clone, Debug)]
 pub struct CsvData {
@@ -14,7 +14,11 @@ impl CsvData {
     pub fn load<P: AsRef<Path>>(path: P) -> Result<Self, csv::Error> {
         let file = File::open(path)?;
         let mut reader = csv::Reader::from_reader(file);
-        let headers = reader.headers()?.iter().map(|h| h.to_string()).collect::<Vec<_>>();
+        let headers = reader
+            .headers()?
+            .iter()
+            .map(|h| h.to_string())
+            .collect::<Vec<_>>();
 
         let mut rows = Vec::new();
         for result in reader.records() {
@@ -29,11 +33,16 @@ impl CsvData {
         }
 
         let numeric_columns = Self::detect_numeric(&headers, &rows);
-        Ok(CsvData { headers, rows, numeric_columns })
+        Ok(CsvData {
+            headers,
+            rows,
+            numeric_columns,
+        })
     }
 
     fn detect_numeric(headers: &[String], rows: &[HashMap<String, String>]) -> Vec<String> {
-        headers.iter()
+        headers
+            .iter()
             .filter(|col| {
                 rows.iter().all(|row| {
                     row.get(*col)
@@ -46,26 +55,30 @@ impl CsvData {
     }
 
     pub fn get_numeric_column(&self, col: &str) -> Vec<f64> {
-        self.rows.iter()
-            .filter_map(|row| {
-                row.get(col)
-                    .and_then(|v| v.parse::<f64>().ok())
-            })
+        self.rows
+            .iter()
+            .filter_map(|row| row.get(col).and_then(|v| v.parse::<f64>().ok()))
             .collect()
     }
 
     pub fn get_string_column(&self, col: &str) -> Vec<String> {
-        self.rows.iter()
+        self.rows
+            .iter()
             .filter_map(|row| row.get(col).cloned())
             .collect()
     }
 
-    pub fn to_dataset<T: Copy>(&self, col: &str, converter: impl Fn(&str) -> Option<T>) -> Dataset<T> {
+    pub fn to_dataset<T: Copy>(
+        &self,
+        col: &str,
+        converter: impl Fn(&str) -> Option<T>,
+    ) -> Dataset<T> {
         let mut ds = Dataset::with_capacity(col, self.rows.len());
         for (idx, row) in self.rows.iter().enumerate() {
             if let Some(val_str) = row.get(col) {
                 if let Some(value) = converter(val_str) {
-                    let label = row.get("id")
+                    let label = row
+                        .get("id")
                         .or_else(|| row.get("label"))
                         .cloned()
                         .unwrap_or_else(|| idx.to_string());
@@ -108,5 +121,3 @@ mod tests {
         assert!(!numeric.contains(&"name".to_string()));
     }
 }
-
-

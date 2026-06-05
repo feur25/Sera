@@ -10,5 +10,3 @@ crate::plot_family! {
         Mono     => "mono" | "monochrome" | "single" | "uniform",
     }
 }
-
-

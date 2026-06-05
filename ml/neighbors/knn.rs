@@ -6,13 +6,20 @@ fn dist_sq(a: &[f64], b: &[f64], p: usize) -> f64 {
     let mut i = 0;
     while i + 4 <= p {
         let d0 = unsafe { *a.get_unchecked(i) - *b.get_unchecked(i) };
-        let d1 = unsafe { *a.get_unchecked(i+1) - *b.get_unchecked(i+1) };
-        let d2 = unsafe { *a.get_unchecked(i+2) - *b.get_unchecked(i+2) };
-        let d3 = unsafe { *a.get_unchecked(i+3) - *b.get_unchecked(i+3) };
-        s0 += d0*d0; s1 += d1*d1; s2 += d2*d2; s3 += d3*d3;
+        let d1 = unsafe { *a.get_unchecked(i + 1) - *b.get_unchecked(i + 1) };
+        let d2 = unsafe { *a.get_unchecked(i + 2) - *b.get_unchecked(i + 2) };
+        let d3 = unsafe { *a.get_unchecked(i + 3) - *b.get_unchecked(i + 3) };
+        s0 += d0 * d0;
+        s1 += d1 * d1;
+        s2 += d2 * d2;
+        s3 += d3 * d3;
         i += 4;
     }
-    while i < p { let d = unsafe { *a.get_unchecked(i) - *b.get_unchecked(i) }; s0 += d*d; i += 1; }
+    while i < p {
+        let d = unsafe { *a.get_unchecked(i) - *b.get_unchecked(i) };
+        s0 += d * d;
+        i += 1;
+    }
     s0 + s1 + s2 + s3
 }
 
@@ -45,31 +52,61 @@ impl BallTree {
         Self::build_rec(data, &mut perm, 0, n, p, &mut nodes, &mut centers);
         let mut perm_data = vec![0.0f64; n * p];
         for (i, &idx) in perm.iter().enumerate() {
-            perm_data[i * p..(i + 1) * p].copy_from_slice(&data[idx as usize * p..(idx as usize + 1) * p]);
+            perm_data[i * p..(i + 1) * p]
+                .copy_from_slice(&data[idx as usize * p..(idx as usize + 1) * p]);
         }
-        BallTree { nodes, centers, perm, perm_data, p }
+        BallTree {
+            nodes,
+            centers,
+            perm,
+            perm_data,
+            p,
+        }
     }
 
-    fn build_rec(data: &[f64], perm: &mut [u32], s: usize, e: usize, p: usize, nodes: &mut Vec<BtNode>, centers: &mut Vec<f64>) -> u32 {
+    fn build_rec(
+        data: &[f64],
+        perm: &mut [u32],
+        s: usize,
+        e: usize,
+        p: usize,
+        nodes: &mut Vec<BtNode>,
+        centers: &mut Vec<f64>,
+    ) -> u32 {
         let ni = nodes.len() as u32;
         let count = e - s;
         let co = centers.len();
         centers.extend(std::iter::repeat(0.0).take(p));
         for i in s..e {
             let idx = perm[i] as usize;
-            for j in 0..p { centers[co + j] += data[idx * p + j]; }
+            for j in 0..p {
+                centers[co + j] += data[idx * p + j];
+            }
         }
         let inv = 1.0 / count as f64;
-        for j in 0..p { centers[co + j] *= inv; }
+        for j in 0..p {
+            centers[co + j] *= inv;
+        }
         let mut radius_sq = 0.0f64;
         for i in s..e {
             let idx = perm[i] as usize;
             let mut d = 0.0;
-            for j in 0..p { let diff = data[idx * p + j] - centers[co + j]; d += diff * diff; }
-            if d > radius_sq { radius_sq = d; }
+            for j in 0..p {
+                let diff = data[idx * p + j] - centers[co + j];
+                d += diff * diff;
+            }
+            if d > radius_sq {
+                radius_sq = d;
+            }
         }
         if count <= BT_LEAF {
-            nodes.push(BtNode { radius: radius_sq.sqrt(), left: u32::MAX, right: u32::MAX, start: s as u32, end: e as u32 });
+            nodes.push(BtNode {
+                radius: radius_sq.sqrt(),
+                left: u32::MAX,
+                right: u32::MAX,
+                start: s as u32,
+                end: e as u32,
+            });
             return ni;
         }
         let mut best_dim = 0;
@@ -79,16 +116,31 @@ impl BallTree {
             let mut hi = f64::MIN;
             for i in s..e {
                 let v = data[perm[i] as usize * p + j];
-                if v < lo { lo = v; }
-                if v > hi { hi = v; }
+                if v < lo {
+                    lo = v;
+                }
+                if v > hi {
+                    hi = v;
+                }
             }
-            if hi - lo > best_spread { best_spread = hi - lo; best_dim = j; }
+            if hi - lo > best_spread {
+                best_spread = hi - lo;
+                best_dim = j;
+            }
         }
         let mid = s + count / 2;
         perm[s..e].select_nth_unstable_by(mid - s, |&a, &b| {
-            data[a as usize * p + best_dim].partial_cmp(&data[b as usize * p + best_dim]).unwrap()
+            data[a as usize * p + best_dim]
+                .partial_cmp(&data[b as usize * p + best_dim])
+                .unwrap()
         });
-        nodes.push(BtNode { radius: radius_sq.sqrt(), left: 0, right: 0, start: s as u32, end: e as u32 });
+        nodes.push(BtNode {
+            radius: radius_sq.sqrt(),
+            left: 0,
+            right: 0,
+            start: s as u32,
+            end: e as u32,
+        });
         let left = Self::build_rec(data, perm, s, mid, p, nodes, centers);
         let right = Self::build_rec(data, perm, mid, e, p, nodes, centers);
         nodes[ni as usize].left = left;
@@ -107,18 +159,29 @@ impl BallTree {
         let p = self.p;
         let co = ni as usize * p;
         let mut dc = 0.0;
-        for j in 0..p { let d = q[j] - self.centers[co + j]; dc += d * d; }
+        for j in 0..p {
+            let d = q[j] - self.centers[co + j];
+            dc += d * d;
+        }
         if heap.len() >= k {
             let bound = heap[0].0.sqrt() + node.radius;
-            if dc >= bound * bound { return; }
+            if dc >= bound * bound {
+                return;
+            }
         }
         if node.left == u32::MAX {
             for i in node.start..node.end {
                 let i_us = i as usize;
-                let d = dist_sq(q, unsafe { self.perm_data.get_unchecked(i_us * p..(i_us + 1) * p) }, p);
+                let d = dist_sq(
+                    q,
+                    unsafe { self.perm_data.get_unchecked(i_us * p..(i_us + 1) * p) },
+                    p,
+                );
                 if heap.len() < k {
                     heap.push((d, i));
-                    if heap.len() == k { heap_build(heap); }
+                    if heap.len() == k {
+                        heap_build(heap);
+                    }
                 } else if d < heap[0].0 {
                     heap[0] = (d, i);
                     heap_sift_down(heap, 0);
@@ -131,8 +194,10 @@ impl BallTree {
         let mut dl = 0.0;
         let mut dr = 0.0;
         for j in 0..p {
-            let ld = q[j] - self.centers[lco + j]; dl += ld * ld;
-            let rd = q[j] - self.centers[rco + j]; dr += rd * rd;
+            let ld = q[j] - self.centers[lco + j];
+            dl += ld * ld;
+            let rd = q[j] - self.centers[rco + j];
+            dr += rd * rd;
         }
         if dl <= dr {
             self.query_rec(q, node.left, k, heap);
@@ -147,7 +212,9 @@ impl BallTree {
 #[inline]
 fn heap_build(h: &mut [(f64, u32)]) {
     let n = h.len();
-    for i in (0..n / 2).rev() { heap_sift_down(h, i); }
+    for i in (0..n / 2).rev() {
+        heap_sift_down(h, i);
+    }
 }
 
 #[inline]
@@ -157,16 +224,25 @@ fn heap_sift_down(h: &mut [(f64, u32)], mut pos: usize) {
         let l = 2 * pos + 1;
         let r = 2 * pos + 2;
         let mut largest = pos;
-        if l < n && h[l].0 > h[largest].0 { largest = l; }
-        if r < n && h[r].0 > h[largest].0 { largest = r; }
-        if largest == pos { break; }
+        if l < n && h[l].0 > h[largest].0 {
+            largest = l;
+        }
+        if r < n && h[r].0 > h[largest].0 {
+            largest = r;
+        }
+        if largest == pos {
+            break;
+        }
         h.swap(pos, largest);
         pos = largest;
     }
 }
 
 #[derive(Clone, Copy)]
-pub enum KnnWeights { Uniform, Distance }
+pub enum KnnWeights {
+    Uniform,
+    Distance,
+}
 
 #[crate::model(category = "Neighbors", domain = "ml")]
 pub struct KNeighborsClassifier {
@@ -183,7 +259,17 @@ pub struct KNeighborsClassifier {
 
 impl KNeighborsClassifier {
     pub fn new(k: usize, weights: KnnWeights) -> Self {
-        Self { k, weights, data: Vec::new(), labels: Vec::new(), label_idx: Vec::new(), n: 0, p: 0, classes: Vec::new(), tree: None }
+        Self {
+            k,
+            weights,
+            data: Vec::new(),
+            labels: Vec::new(),
+            label_idx: Vec::new(),
+            n: 0,
+            p: 0,
+            classes: Vec::new(),
+            tree: None,
+        }
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) {
@@ -195,7 +281,10 @@ impl KNeighborsClassifier {
         c.sort_unstable();
         c.dedup();
         self.classes = c;
-        self.label_idx = y.iter().map(|&v| self.classes.iter().position(|&c| c == v).unwrap() as u8).collect();
+        self.label_idx = y
+            .iter()
+            .map(|&v| self.classes.iter().position(|&c| c == v).unwrap() as u8)
+            .collect();
         if n >= TREE_THRESH && p <= TREE_MAX_DIM {
             self.tree = Some(BallTree::build(x, n, p));
         } else {
@@ -217,11 +306,17 @@ impl KNeighborsClassifier {
                     let mut wts = [0.0f64; 256];
                     for &(d, idx) in heap.iter() {
                         let dist = d.sqrt().max(1e-10);
-                        wts[self.label_idx[tree.perm[idx as usize] as usize] as usize] += 1.0 / dist;
+                        wts[self.label_idx[tree.perm[idx as usize] as usize] as usize] +=
+                            1.0 / dist;
                     }
                     let mut best = 0;
                     let mut best_w = 0.0;
-                    for c in 0..nc { if wts[c] > best_w { best_w = wts[c]; best = c; } }
+                    for c in 0..nc {
+                        if wts[c] > best_w {
+                            best_w = wts[c];
+                            best = c;
+                        }
+                    }
                     self.classes[best]
                 } else {
                     let mut counts = [0u32; 256];
@@ -230,7 +325,12 @@ impl KNeighborsClassifier {
                     }
                     let mut best = 0;
                     let mut best_c = 0u32;
-                    for c in 0..nc { if counts[c] > best_c { best_c = counts[c]; best = c; } }
+                    for c in 0..nc {
+                        if counts[c] > best_c {
+                            best_c = counts[c];
+                            best = c;
+                        }
+                    }
                     self.classes[best]
                 }
             };
@@ -246,10 +346,16 @@ impl KNeighborsClassifier {
                 let xi = &x[i * p..(i + 1) * p];
                 let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
                 for j in 0..n_train {
-                    let d = dist_sq(xi, unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) }, p_);
+                    let d = dist_sq(
+                        xi,
+                        unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) },
+                        p_,
+                    );
                     if heap.len() < k {
                         heap.push((d, j as u32));
-                        if heap.len() == k { heap_build(&mut heap); }
+                        if heap.len() == k {
+                            heap_build(&mut heap);
+                        }
                     } else if d < heap[0].0 {
                         heap[0] = (d, j as u32);
                         heap_sift_down(&mut heap, 0);
@@ -263,7 +369,12 @@ impl KNeighborsClassifier {
                     }
                     let mut best = 0;
                     let mut best_w = 0.0;
-                    for c in 0..nc { if wts[c] > best_w { best_w = wts[c]; best = c; } }
+                    for c in 0..nc {
+                        if wts[c] > best_w {
+                            best_w = wts[c];
+                            best = c;
+                        }
+                    }
                     self.classes[best]
                 } else {
                     let mut counts = [0u32; 256];
@@ -272,7 +383,12 @@ impl KNeighborsClassifier {
                     }
                     let mut best = 0;
                     let mut best_c = 0u32;
-                    for c in 0..nc { if counts[c] > best_c { best_c = counts[c]; best = c; } }
+                    for c in 0..nc {
+                        if counts[c] > best_c {
+                            best_c = counts[c];
+                            best = c;
+                        }
+                    }
                     self.classes[best]
                 }
             };
@@ -305,7 +421,9 @@ impl KNeighborsClassifier {
                         wsum += w;
                     }
                     let inv_w = 1.0 / wsum;
-                    for v in probs.iter_mut() { *v *= inv_w; }
+                    for v in probs.iter_mut() {
+                        *v *= inv_w;
+                    }
                 } else {
                     for &(_, idx) in heap.iter() {
                         probs[self.label_idx[tree.perm[idx as usize] as usize] as usize] += inv;
@@ -335,10 +453,16 @@ impl KNeighborsClassifier {
                 let xi = &x[i * p..(i + 1) * p];
                 let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
                 for j in 0..n_train {
-                    let d = dist_sq(xi, unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) }, p_);
+                    let d = dist_sq(
+                        xi,
+                        unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) },
+                        p_,
+                    );
                     if heap.len() < k {
                         heap.push((d, j as u32));
-                        if heap.len() == k { heap_build(&mut heap); }
+                        if heap.len() == k {
+                            heap_build(&mut heap);
+                        }
                     } else if d < heap[0].0 {
                         heap[0] = (d, j as u32);
                         heap_sift_down(&mut heap, 0);
@@ -354,9 +478,13 @@ impl KNeighborsClassifier {
                         wsum += w;
                     }
                     let inv_w = 1.0 / wsum;
-                    for v in probs.iter_mut() { *v *= inv_w; }
+                    for v in probs.iter_mut() {
+                        *v *= inv_w;
+                    }
                 } else {
-                    for &(_, idx) in heap.iter() { probs[self.label_idx[idx as usize] as usize] += inv; }
+                    for &(_, idx) in heap.iter() {
+                        probs[self.label_idx[idx as usize] as usize] += inv;
+                    }
                 }
                 probs
             };
@@ -386,9 +514,15 @@ impl KNeighborsClassifier {
                 let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
                 tree.query_k(xi, k, &mut heap);
                 heap.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
-                heap.iter().map(|&(d, idx)| (d, tree.perm[idx as usize] as usize)).collect()
+                heap.iter()
+                    .map(|&(d, idx)| (d, tree.perm[idx as usize] as usize))
+                    .collect()
             };
-            if n >= 64 { (0..n).into_par_iter().map(q).collect() } else { (0..n).map(q).collect() }
+            if n >= 64 {
+                (0..n).into_par_iter().map(q).collect()
+            } else {
+                (0..n).map(q).collect()
+            }
         } else {
             let p_ = self.p;
             let n_train = self.n;
@@ -396,10 +530,16 @@ impl KNeighborsClassifier {
                 let xi = &x[i * p..(i + 1) * p];
                 let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
                 for j in 0..n_train {
-                    let d = dist_sq(xi, unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) }, p_);
+                    let d = dist_sq(
+                        xi,
+                        unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) },
+                        p_,
+                    );
                     if heap.len() < k {
                         heap.push((d, j as u32));
-                        if heap.len() == k { heap_build(&mut heap); }
+                        if heap.len() == k {
+                            heap_build(&mut heap);
+                        }
                     } else if d < heap[0].0 {
                         heap[0] = (d, j as u32);
                         heap_sift_down(&mut heap, 0);
@@ -408,7 +548,11 @@ impl KNeighborsClassifier {
                 heap.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
                 heap.iter().map(|&(d, idx)| (d, idx as usize)).collect()
             };
-            if n >= 64 { (0..n).into_par_iter().map(q).collect() } else { (0..n).map(q).collect() }
+            if n >= 64 {
+                (0..n).into_par_iter().map(q).collect()
+            } else {
+                (0..n).map(q).collect()
+            }
         }
     }
 }
@@ -426,7 +570,15 @@ pub struct KNeighborsRegressor {
 
 impl KNeighborsRegressor {
     pub fn new(k: usize, weights: KnnWeights) -> Self {
-        Self { k, weights, data: Vec::new(), targets: Vec::new(), n: 0, p: 0, tree: None }
+        Self {
+            k,
+            weights,
+            data: Vec::new(),
+            targets: Vec::new(),
+            n: 0,
+            p: 0,
+            tree: None,
+        }
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) {
@@ -462,7 +614,9 @@ impl KNeighborsRegressor {
                     vsum / wsum
                 } else {
                     let mut sum = 0.0;
-                    for &(_, idx) in heap.iter() { sum += self.targets[tree.perm[idx as usize] as usize]; }
+                    for &(_, idx) in heap.iter() {
+                        sum += self.targets[tree.perm[idx as usize] as usize];
+                    }
                     sum / k as f64
                 }
             };
@@ -479,10 +633,16 @@ impl KNeighborsRegressor {
                 let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
                 let k_ = k.min(n_train);
                 for j in 0..n_train {
-                    let d = dist_sq(xi, unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) }, p_);
+                    let d = dist_sq(
+                        xi,
+                        unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) },
+                        p_,
+                    );
                     if heap.len() < k_ {
                         heap.push((d, j as u32));
-                        if heap.len() == k_ { heap_build(&mut heap); }
+                        if heap.len() == k_ {
+                            heap_build(&mut heap);
+                        }
                     } else if d < heap[0].0 {
                         heap[0] = (d, j as u32);
                         heap_sift_down(&mut heap, 0);
@@ -500,7 +660,9 @@ impl KNeighborsRegressor {
                     vsum / wsum
                 } else {
                     let mut sum = 0.0;
-                    for &(_, idx) in heap.iter() { sum += self.targets[idx as usize]; }
+                    for &(_, idx) in heap.iter() {
+                        sum += self.targets[idx as usize];
+                    }
                     sum / heap.len() as f64
                 }
             };
@@ -520,9 +682,15 @@ impl KNeighborsRegressor {
                 let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
                 tree.query_k(xi, k, &mut heap);
                 heap.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
-                heap.iter().map(|&(d, idx)| (d, tree.perm[idx as usize] as usize)).collect()
+                heap.iter()
+                    .map(|&(d, idx)| (d, tree.perm[idx as usize] as usize))
+                    .collect()
             };
-            if n >= 64 { (0..n).into_par_iter().map(q).collect() } else { (0..n).map(q).collect() }
+            if n >= 64 {
+                (0..n).into_par_iter().map(q).collect()
+            } else {
+                (0..n).map(q).collect()
+            }
         } else {
             let p_ = self.p;
             let n_train = self.n;
@@ -531,10 +699,16 @@ impl KNeighborsRegressor {
                 let mut heap: Vec<(f64, u32)> = Vec::with_capacity(k + 1);
                 let k_ = k.min(n_train);
                 for j in 0..n_train {
-                    let d = dist_sq(xi, unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) }, p_);
+                    let d = dist_sq(
+                        xi,
+                        unsafe { self.data.get_unchecked(j * p_..(j + 1) * p_) },
+                        p_,
+                    );
                     if heap.len() < k_ {
                         heap.push((d, j as u32));
-                        if heap.len() == k_ { heap_build(&mut heap); }
+                        if heap.len() == k_ {
+                            heap_build(&mut heap);
+                        }
                     } else if d < heap[0].0 {
                         heap[0] = (d, j as u32);
                         heap_sift_down(&mut heap, 0);
@@ -543,7 +717,11 @@ impl KNeighborsRegressor {
                 heap.sort_by(|a, b| a.0.partial_cmp(&b.0).unwrap_or(std::cmp::Ordering::Equal));
                 heap.iter().map(|&(d, idx)| (d, idx as usize)).collect()
             };
-            if n >= 64 { (0..n).into_par_iter().map(q).collect() } else { (0..n).map(q).collect() }
+            if n >= 64 {
+                (0..n).into_par_iter().map(q).collect()
+            } else {
+                (0..n).map(q).collect()
+            }
         }
     }
 }
@@ -557,7 +735,11 @@ pub struct NearestCentroid {
 
 impl NearestCentroid {
     pub fn new() -> Self {
-        Self { centroids: Vec::new(), classes: Vec::new(), p: 0 }
+        Self {
+            centroids: Vec::new(),
+            classes: Vec::new(),
+            p: 0,
+        }
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) {
@@ -572,12 +754,16 @@ impl NearestCentroid {
         for i in 0..n {
             let pos = self.classes.iter().position(|&c| c == y[i]).unwrap();
             counts[pos] += 1;
-            for j in 0..p { self.centroids[pos * p + j] += x[i * p + j]; }
+            for j in 0..p {
+                self.centroids[pos * p + j] += x[i * p + j];
+            }
         }
         for c in 0..k {
             if counts[c] > 0 {
                 let inv = 1.0 / counts[c] as f64;
-                for j in 0..p { self.centroids[c * p + j] *= inv; }
+                for j in 0..p {
+                    self.centroids[c * p + j] *= inv;
+                }
             }
         }
     }
@@ -589,7 +775,10 @@ impl NearestCentroid {
             let mut best_d = f64::MAX;
             for (c, _) in self.classes.iter().enumerate() {
                 let d = dist_sq(xi, &self.centroids[c * p..(c + 1) * p], p);
-                if d < best_d { best_d = d; best = c; }
+                if d < best_d {
+                    best_d = d;
+                    best = c;
+                }
             }
             self.classes[best]
         };
@@ -602,13 +791,19 @@ impl NearestCentroid {
 }
 
 impl crate::ml::MlClassifier for KNeighborsClassifier {
-    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) { self.fit(x, n, p, y); }
-    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> { self.predict(x, n, p) }
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) {
+        self.fit(x, n, p, y);
+    }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> {
+        self.predict(x, n, p)
+    }
 }
 
 impl crate::ml::MlRegressor for KNeighborsRegressor {
-    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) { self.fit(x, n, p, y); }
-    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> { self.predict(x, n, p) }
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) {
+        self.fit(x, n, p, y);
+    }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        self.predict(x, n, p)
+    }
 }
-
-

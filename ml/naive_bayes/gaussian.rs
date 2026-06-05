@@ -1,5 +1,5 @@
-use std::f64::consts::PI;
 use rayon::prelude::*;
+use std::f64::consts::PI;
 
 #[crate::model(category = "Naive Bayes", domain = "ml")]
 pub struct GaussianNB {
@@ -16,13 +16,31 @@ pub struct GaussianNB {
 
 impl GaussianNB {
     pub fn new() -> Self {
-        Self { classes: Vec::new(), var_smoothing: 1e-9, means: Vec::new(), vars: Vec::new(), priors: Vec::new(),
-               log_prior: Vec::new(), log_norm: Vec::new(), inv_2var: Vec::new(), p: 0 }
+        Self {
+            classes: Vec::new(),
+            var_smoothing: 1e-9,
+            means: Vec::new(),
+            vars: Vec::new(),
+            priors: Vec::new(),
+            log_prior: Vec::new(),
+            log_norm: Vec::new(),
+            inv_2var: Vec::new(),
+            p: 0,
+        }
     }
 
     pub fn with_var_smoothing(var_smoothing: f64) -> Self {
-        Self { classes: Vec::new(), var_smoothing, means: Vec::new(), vars: Vec::new(), priors: Vec::new(),
-               log_prior: Vec::new(), log_norm: Vec::new(), inv_2var: Vec::new(), p: 0 }
+        Self {
+            classes: Vec::new(),
+            var_smoothing,
+            means: Vec::new(),
+            vars: Vec::new(),
+            priors: Vec::new(),
+            log_prior: Vec::new(),
+            log_norm: Vec::new(),
+            inv_2var: Vec::new(),
+            p: 0,
+        }
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) {
@@ -36,7 +54,9 @@ impl GaussianNB {
         let cmax = *self.classes.iter().max().unwrap();
         let crange = (cmax - cmin + 1) as usize;
         let mut cmap = vec![0u8; crange];
-        for (i, &c) in self.classes.iter().enumerate() { cmap[(c - cmin) as usize] = i as u8; }
+        for (i, &c) in self.classes.iter().enumerate() {
+            cmap[(c - cmin) as usize] = i as u8;
+        }
 
         let mut sums = vec![0.0f64; kp];
         let mut sq_sums = vec![0.0f64; kp];
@@ -48,12 +68,26 @@ impl GaussianNB {
             let base = c * p;
             let mut j = 0;
             while j + 4 <= p {
-                let v0 = row[j]; let v1 = row[j+1]; let v2 = row[j+2]; let v3 = row[j+3];
-                sums[base+j] += v0; sums[base+j+1] += v1; sums[base+j+2] += v2; sums[base+j+3] += v3;
-                sq_sums[base+j] += v0*v0; sq_sums[base+j+1] += v1*v1; sq_sums[base+j+2] += v2*v2; sq_sums[base+j+3] += v3*v3;
+                let v0 = row[j];
+                let v1 = row[j + 1];
+                let v2 = row[j + 2];
+                let v3 = row[j + 3];
+                sums[base + j] += v0;
+                sums[base + j + 1] += v1;
+                sums[base + j + 2] += v2;
+                sums[base + j + 3] += v3;
+                sq_sums[base + j] += v0 * v0;
+                sq_sums[base + j + 1] += v1 * v1;
+                sq_sums[base + j + 2] += v2 * v2;
+                sq_sums[base + j + 3] += v3 * v3;
                 j += 4;
             }
-            while j < p { let v = row[j]; sums[base+j] += v; sq_sums[base+j] += v*v; j += 1; }
+            while j < p {
+                let v = row[j];
+                sums[base + j] += v;
+                sq_sums[base + j] += v * v;
+                j += 1;
+            }
         }
 
         self.means = vec![0.0; kp];
@@ -61,14 +95,17 @@ impl GaussianNB {
         self.priors = vec![0.0; k];
         for c in 0..k {
             let inv = 1.0 / counts[c].max(1) as f64;
-            for j in 0..p { self.means[c * p + j] = sums[c * p + j] * inv; }
+            for j in 0..p {
+                self.means[c * p + j] = sums[c * p + j] * inv;
+            }
             self.priors[c] = counts[c] as f64 / n as f64;
         }
         for c in 0..k {
             let inv = 1.0 / counts[c].max(1) as f64;
             for j in 0..p {
                 let m = self.means[c * p + j];
-                self.vars[c * p + j] = (sq_sums[c * p + j] * inv - m * m).max(0.0) + self.var_smoothing;
+                self.vars[c * p + j] =
+                    (sq_sums[c * p + j] * inv - m * m).max(0.0) + self.var_smoothing;
             }
         }
 
@@ -91,7 +128,10 @@ impl GaussianNB {
             let mut best_ll = f64::NEG_INFINITY;
             for c in 0..self.classes.len() {
                 let ll = self.log_likelihood_fast(c, xi);
-                if ll > best_ll { best_ll = ll; best = c; }
+                if ll > best_ll {
+                    best_ll = ll;
+                    best = c;
+                }
             }
             self.classes[best]
         };
@@ -111,7 +151,9 @@ impl GaussianNB {
             for c in 0..k {
                 let ll = self.log_likelihood_fast(c, xi);
                 out[i * k + c] = ll;
-                if ll > max_ll { max_ll = ll; }
+                if ll > max_ll {
+                    max_ll = ll;
+                }
             }
             let mut sum = 0.0;
             for c in 0..k {
@@ -119,7 +161,9 @@ impl GaussianNB {
                 sum += out[i * k + c];
             }
             let inv = 1.0 / sum;
-            for c in 0..k { out[i * k + c] *= inv; }
+            for c in 0..k {
+                out[i * k + c] *= inv;
+            }
         }
         out
     }
@@ -149,15 +193,25 @@ impl GaussianNB {
         ll
     }
 
-    pub fn theta(&self) -> &[f64] { &self.means }
-    pub fn var(&self) -> &[f64] { &self.vars }
-    pub fn class_prior(&self) -> &[f64] { &self.priors }
-    pub fn n_features(&self) -> usize { self.p }
+    pub fn theta(&self) -> &[f64] {
+        &self.means
+    }
+    pub fn var(&self) -> &[f64] {
+        &self.vars
+    }
+    pub fn class_prior(&self) -> &[f64] {
+        &self.priors
+    }
+    pub fn n_features(&self) -> usize {
+        self.p
+    }
 }
 
 impl crate::ml::MlClassifier for GaussianNB {
-    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) { self.fit(x, n, p, y); }
-    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> { self.predict(x, n, p) }
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) {
+        self.fit(x, n, p, y);
+    }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> {
+        self.predict(x, n, p)
+    }
 }
-
-

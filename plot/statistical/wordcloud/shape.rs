@@ -1,4 +1,3 @@
-
 crate::plot_family! {
     pub enum WordCloudShape default Rect {
         Rect    => "rect" | "rectangle" | "default" | "spiral" | "box",
@@ -10,5 +9,3 @@ crate::plot_family! {
         Star    => "star" | "polygon" | "celestial",
     }
 }
-
-

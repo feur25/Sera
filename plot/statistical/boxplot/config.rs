@@ -30,5 +30,3 @@ crate::chart_config!(BoxplotConfig, 900, 500;
         stroke_width: 1.6,
     }
 );
-
-

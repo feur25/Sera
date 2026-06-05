@@ -1,8 +1,8 @@
+use super::fast_builders::{HtmlBuilder, SvgBuilder};
+use crate::bindings::utils::lazy_builders::LazyJsonBuilder;
 use crate::bindings::utils::simd_ops;
-use crate::bindings::utils::lazy_builders::{LazyJsonBuilder};
-use crate::bindings::utils::{RingBuffer, RenderArena};
+use crate::bindings::utils::{RenderArena, RingBuffer};
 use crate::data::Dataset;
-use super::fast_builders::{SvgBuilder, HtmlBuilder};
 
 pub struct FastHtmlExporter {
     width: i32,
@@ -26,7 +26,9 @@ impl FastHtmlExporter {
     #[inline(always)]
     pub fn build_from_dataset(&self, data: Dataset<f64>) -> String {
         let n = data.len();
-        if n == 0 { return String::new(); }
+        if n == 0 {
+            return String::new();
+        }
 
         let values = data.to_values_vec();
         let (_, max_val) = simd_ops::find_minmax(&values);
@@ -35,7 +37,9 @@ impl FastHtmlExporter {
         let mut color_cache: RingBuffer<u32, 512> = RingBuffer::new();
         let mut colors_raw: Vec<u32> = Vec::with_capacity(n.min(512));
         simd_ops::compute_hex_colors_batch_into(n, &mut colors_raw);
-        for &c in &colors_raw { color_cache.push(c); }
+        for &c in &colors_raw {
+            color_cache.push(c);
+        }
 
         let bar_width = 1200.0 / (n as f32).max(1.0);
         let mut arena = RenderArena::new(n * 80, n * 64);
@@ -91,7 +95,7 @@ impl FastHtmlExporter {
 
         let svg_str = svg.finish();
         let mut json_builder = LazyJsonBuilder::new(n);
-        
+
         for i in 0..n {
             json_builder.add_point(labels[i].clone(), values[i]);
         }
@@ -114,5 +118,3 @@ impl FastHtmlExporter {
         self.build_optimized(labels, values)
     }
 }
-
-

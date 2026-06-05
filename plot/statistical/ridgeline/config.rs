@@ -20,5 +20,3 @@ crate::chart_config!(RidgelineConfig, 900, 520;
         fill_opacity: 56,
     }
 );
-
-

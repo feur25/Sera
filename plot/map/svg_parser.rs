@@ -22,12 +22,18 @@ pub fn parse_world_svg(svg: &str) -> Vec<CountryShape> {
 
             let id = match extract_attr(tag, "id") {
                 Some(v) if v.len() == 2 && v.chars().all(|c| c.is_ascii_uppercase()) => v,
-                _ => { pos = end + 2; continue; }
+                _ => {
+                    pos = end + 2;
+                    continue;
+                }
             };
             let name = extract_attr(tag, "title").unwrap_or_default();
             let d = match extract_attr(tag, "d") {
                 Some(v) => v,
-                None => { pos = end + 2; continue; }
+                None => {
+                    pos = end + 2;
+                    continue;
+                }
             };
 
             let polygons = parse_path_d(&d);
@@ -161,14 +167,31 @@ fn tokenize_path(d: &str) -> Vec<Token> {
     while i < len {
         let b = bytes[i];
         match b {
-            b'M' => { tokens.push(Token::MAbs); i += 1; }
-            b'm' => { tokens.push(Token::MRel); i += 1; }
-            b'L' => { tokens.push(Token::LAbs); i += 1; }
-            b'l' => { tokens.push(Token::LRel); i += 1; }
-            b'z' | b'Z' => { tokens.push(Token::Z); i += 1; }
+            b'M' => {
+                tokens.push(Token::MAbs);
+                i += 1;
+            }
+            b'm' => {
+                tokens.push(Token::MRel);
+                i += 1;
+            }
+            b'L' => {
+                tokens.push(Token::LAbs);
+                i += 1;
+            }
+            b'l' => {
+                tokens.push(Token::LRel);
+                i += 1;
+            }
+            b'z' | b'Z' => {
+                tokens.push(Token::Z);
+                i += 1;
+            }
             b'-' | b'0'..=b'9' | b'.' => {
                 let start = i;
-                if b == b'-' { i += 1; }
+                if b == b'-' {
+                    i += 1;
+                }
                 let mut has_dot = false;
                 let mut has_e = false;
                 while i < len {
@@ -192,12 +215,14 @@ fn tokenize_path(d: &str) -> Vec<Token> {
                     tokens.push(Token::Num(val));
                 }
             }
-            b',' | b' ' | b'\n' | b'\r' | b'\t' => { i += 1; }
-            _ => { i += 1; }
+            b',' | b' ' | b'\n' | b'\r' | b'\t' => {
+                i += 1;
+            }
+            _ => {
+                i += 1;
+            }
         }
     }
 
     tokens
 }
-
-

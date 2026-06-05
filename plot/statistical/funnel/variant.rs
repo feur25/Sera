@@ -10,5 +10,3 @@ crate::plot_family! {
         Conversion => "conversion" | "dropoff" | "rate" | "steps",
     }
 }
-
-

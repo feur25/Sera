@@ -1,11 +1,16 @@
-use super::common::{prepare, open_svg, draw_grid, polygon_pts, draw_legend, finalize, angle_at, project};
+use super::common::{
+    angle_at, draw_grid, draw_legend, finalize, open_svg, polygon_pts, prepare, project,
+};
 use super::config::RadarConfig;
-use crate::plot::statistical::common::{palette_color, push_b, push_i, push_f2, hex6};
+use crate::plot::statistical::common::{hex6, palette_color, push_b, push_f2, push_i};
 
 #[crate::chart_demo("axes=[\"Speed\",\"Power\",\"Range\",\"Cost\",\"Style\"], series=[[80,65,70,40,75],[60,80,55,60,70]], series_names=[\"A\",\"B\"]")]
 
 pub fn render(cfg: &RadarConfig) -> String {
-    let mut p = match prepare(cfg) { Some(v) => v, None => return String::new() };
+    let mut p = match prepare(cfg) {
+        Some(v) => v,
+        None => return String::new(),
+    };
 
     let mut cum = vec![0.0_f64; p.n_axes];
     for (_, vals) in cfg.series.iter() {
@@ -26,28 +31,37 @@ pub fn render(cfg: &RadarConfig) -> String {
         for ai in 0..p.n_axes {
             totals[ai] += vals.get(ai).copied().unwrap_or(0.0).max(0.0);
         }
-        let pts: Vec<(f64, f64)> = (0..p.n_axes).map(|ai| {
-            let frac = (totals[ai] / p.global_max).min(1.0);
-            let a = angle_at(ai, p.n_axes);
-            project(p.layout.plot_cx, p.layout.plot_cy, p.layout.r, frac, a)
-        }).collect();
+        let pts: Vec<(f64, f64)> = (0..p.n_axes)
+            .map(|ai| {
+                let frac = (totals[ai] / p.global_max).min(1.0);
+                let a = angle_at(ai, p.n_axes);
+                project(p.layout.plot_cx, p.layout.plot_cy, p.layout.r, frac, a)
+            })
+            .collect();
         layers.push(pts);
     }
 
     for si in (0..p.n_ser).rev() {
         let color = palette_color(cfg.palette, si);
         let hx = hex6(color);
-        push_b(&mut b, b"<g data-series=\""); push_i(&mut b, si as i32); push_b(&mut b, b"\">");
+        push_b(&mut b, b"<g data-series=\"");
+        push_i(&mut b, si as i32);
+        push_b(&mut b, b"\">");
         polygon_pts(&mut b, &layers[si]);
-        push_b(&mut b, b" fill=\"#"); b.extend_from_slice(&hx);
+        push_b(&mut b, b" fill=\"#");
+        b.extend_from_slice(&hx);
         let op = ((cfg.fill_opacity as f64 / 255.0) * 1.7).clamp(0.25, 0.95);
-        push_b(&mut b, b"\" fill-opacity=\""); push_f2(&mut b, op);
-        push_b(&mut b, b"\" stroke=\"#"); b.extend_from_slice(&hx);
-        push_b(&mut b, b"\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/>");
+        push_b(&mut b, b"\" fill-opacity=\"");
+        push_f2(&mut b, op);
+        push_b(&mut b, b"\" stroke=\"#");
+        b.extend_from_slice(&hx);
+        push_b(
+            &mut b,
+            b"\" stroke-width=\"1.5\" stroke-linejoin=\"round\"/>",
+        );
         push_b(&mut b, b"</g>");
     }
 
     draw_legend(&mut b, cfg, &p);
     finalize(b, cfg)
 }
-

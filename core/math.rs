@@ -1,5 +1,5 @@
+use serde::{Deserialize, Serialize};
 use std::f64;
-use serde::{Serialize, Deserialize};
 
 pub fn mean(values: &[f64]) -> Option<f64> {
     if values.is_empty() {
@@ -23,17 +23,13 @@ pub fn median(mut values: Vec<f64>) -> Option<f64> {
 
 pub fn std_dev(values: &[f64]) -> Option<f64> {
     let mean_val = mean(values)?;
-    let variance = values.iter()
-        .map(|x| (x - mean_val).powi(2))
-        .sum::<f64>() / values.len() as f64;
+    let variance = values.iter().map(|x| (x - mean_val).powi(2)).sum::<f64>() / values.len() as f64;
     Some(variance.sqrt())
 }
 
 pub fn variance(values: &[f64]) -> Option<f64> {
     let mean_val = mean(values)?;
-    Some(values.iter()
-        .map(|x| (x - mean_val).powi(2))
-        .sum::<f64>() / values.len() as f64)
+    Some(values.iter().map(|x| (x - mean_val).powi(2)).sum::<f64>() / values.len() as f64)
 }
 
 pub fn percentile(mut values: Vec<f64>, p: f64) -> Option<f64> {
@@ -57,7 +53,8 @@ pub fn outliers(values: &[f64]) -> Vec<f64> {
         let iqr = q3 - q1;
         let lower = q1 - 1.5 * iqr;
         let upper = q3 + 1.5 * iqr;
-        values.iter()
+        values
+            .iter()
             .filter(|&&v| v < lower || v > upper)
             .copied()
             .collect()
@@ -133,7 +130,9 @@ pub fn correlation(x: &[f64], y: &[f64]) -> Option<f64> {
     let mean_x = mean(x_slice)?;
     let mean_y = mean(y_slice)?;
 
-    let numerator: f64 = x_slice.iter().zip(y_slice.iter())
+    let numerator: f64 = x_slice
+        .iter()
+        .zip(y_slice.iter())
         .map(|(xi, yi)| (xi - mean_x) * (yi - mean_y))
         .sum();
 
@@ -151,7 +150,8 @@ pub fn moving_average(values: &[f64], window: usize) -> Vec<f64> {
     if window == 0 || values.is_empty() {
         return values.to_vec();
     }
-    values.windows(window.min(values.len()))
+    values
+        .windows(window.min(values.len()))
         .map(|w| w.iter().sum::<f64>() / w.len() as f64)
         .collect()
 }
@@ -173,31 +173,34 @@ pub fn exponential_moving_average(values: &[f64], alpha: f64) -> Vec<f64> {
 }
 
 pub fn interpolate_linear(x: &[f64], y: &[f64], new_x: &[f64]) -> Vec<f64> {
-    new_x.iter().map(|xi| {
-        let mut low = 0;
-        let mut high = x.len() - 1;
+    new_x
+        .iter()
+        .map(|xi| {
+            let mut low = 0;
+            let mut high = x.len() - 1;
 
-        while low < high {
-            let mid = (low + high) / 2;
-            if x[mid] < *xi {
-                low = mid + 1;
-            } else {
-                high = mid;
+            while low < high {
+                let mid = (low + high) / 2;
+                if x[mid] < *xi {
+                    low = mid + 1;
+                } else {
+                    high = mid;
+                }
             }
-        }
 
-        if low == 0 {
-            y[0]
-        } else if low >= x.len() {
-            y[x.len() - 1]
-        } else {
-            let x0 = x[low - 1];
-            let x1 = x[low];
-            let y0 = y[low - 1];
-            let y1 = y[low];
-            y0 + (y1 - y0) * (xi - x0) / (x1 - x0)
-        }
-    }).collect()
+            if low == 0 {
+                y[0]
+            } else if low >= x.len() {
+                y[x.len() - 1]
+            } else {
+                let x0 = x[low - 1];
+                let x1 = x[low];
+                let y0 = y[low - 1];
+                let y1 = y[low];
+                y0 + (y1 - y0) * (xi - x0) / (x1 - x0)
+            }
+        })
+        .collect()
 }
 
 pub fn histogram(values: &[f64], bins: usize) -> Vec<u32> {
@@ -225,8 +228,14 @@ pub fn aggregate(values: &[f64], op: &AggOp) -> Option<f64> {
     match op {
         AggOp::Sum => Some(values.iter().sum()),
         AggOp::Avg => mean(values),
-        AggOp::Min => values.iter().cloned().min_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal)),
-        AggOp::Max => values.iter().cloned().max_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal)),
+        AggOp::Min => values
+            .iter()
+            .cloned()
+            .min_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal)),
+        AggOp::Max => values
+            .iter()
+            .cloned()
+            .max_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal)),
         AggOp::Count => Some(values.len() as f64),
         AggOp::Median => median(values.to_vec()),
         AggOp::Std => std_dev(values),
@@ -252,7 +261,8 @@ pub fn group_by_bins(x: &[f64], y: &[f64], bins: usize, op: AggOp) -> (Vec<f64>,
         }
     }
 
-    let agg_vals: Vec<f64> = bin_values.iter()
+    let agg_vals: Vec<f64> = bin_values
+        .iter()
         .enumerate()
         .filter_map(|(i, vals)| {
             if vals.is_empty() {
@@ -287,16 +297,33 @@ pub struct Range {
 }
 
 impl Range {
-    pub fn new(min: f64, max: f64) -> Self { Self { min, max } }
+    pub fn new(min: f64, max: f64) -> Self {
+        Self { min, max }
+    }
     pub fn from_slice(values: &[f64]) -> Option<Self> {
-        if values.is_empty() { return None; }
-        let (min, max) = (values.iter().cloned().fold(f64::INFINITY, f64::min), values.iter().cloned().fold(f64::NEG_INFINITY, f64::max));
+        if values.is_empty() {
+            return None;
+        }
+        let (min, max) = (
+            values.iter().cloned().fold(f64::INFINITY, f64::min),
+            values.iter().cloned().fold(f64::NEG_INFINITY, f64::max),
+        );
         Some(Self { min, max })
     }
-    pub fn width(&self) -> f64 { self.max - self.min }
-    pub fn center(&self) -> f64 { (self.min + self.max) / 2.0 }
-    pub fn pad(&mut self, percent: f64) { let w = self.width() * percent; self.min -= w; self.max += w; }
-    pub fn contains(&self, value: f64) -> bool { self.min <= value && value <= self.max }
+    pub fn width(&self) -> f64 {
+        self.max - self.min
+    }
+    pub fn center(&self) -> f64 {
+        (self.min + self.max) / 2.0
+    }
+    pub fn pad(&mut self, percent: f64) {
+        let w = self.width() * percent;
+        self.min -= w;
+        self.max += w;
+    }
+    pub fn contains(&self, value: f64) -> bool {
+        self.min <= value && value <= self.max
+    }
 }
 
 pub fn mercator_project(lat: f64, lon: f64) -> (f64, f64) {
@@ -377,4 +404,3 @@ pub fn heat_color(value: f64, max_val: f64) -> (u8, u8, u8) {
     let b = (255.0 * (1.0 - 2.0 * t).clamp(0.0, 1.0)) as u8;
     (r, g, b)
 }
-

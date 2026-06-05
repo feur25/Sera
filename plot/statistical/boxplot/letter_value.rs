@@ -1,7 +1,6 @@
 use super::common::{
-
-    compute_box, draw_cat_label, finish_frame, global_range, group_values, make_frame,
-    open_axes, quartile, sorted_groups,
+    compute_box, draw_cat_label, finish_frame, global_range, group_values, make_frame, open_axes,
+    quartile, sorted_groups,
 };
 use super::config::BoxplotConfig;
 use crate::html::hover::slots_to_json;
@@ -33,7 +32,9 @@ pub fn render(cfg: &BoxplotConfig) -> String {
         let cx = f.pl + (ci as f64 * slot_w + slot_w / 2.0) as i32;
         let color = palette_color(cfg.palette, ci);
         let hx = hex6(color);
-        push_b(&mut f.buf, b"<g data-series=\""); push_i(&mut f.buf, ci as i32); push_b(&mut f.buf, b"\">");
+        push_b(&mut f.buf, b"<g data-series=\"");
+        push_i(&mut f.buf, ci as i32);
+        push_b(&mut f.buf, b"\">");
 
         let mut sorted_vals: Vec<f64> = grp.iter().copied().filter(|v| v.is_finite()).collect();
         sorted_vals.sort_by(|a, b| a.partial_cmp(b).unwrap_or(std::cmp::Ordering::Equal));
@@ -51,40 +52,70 @@ pub fn render(cfg: &BoxplotConfig) -> String {
             let hw = ((max_hw as f64) * scale).max(4.0) as i32;
             let opacity = 0.18 + 0.55 * scale;
 
-            push_b(&mut f.buf, b"<rect data-idx=\""); push_i(&mut f.buf, ci as i32);
-            push_b(&mut f.buf, b"\" data-lbl=\""); escape_xml(&mut f.buf, cat);
-            push_b(&mut f.buf, b"\" data-kv-Quantile=\""); push_f2(&mut f.buf, frac * 100.0);
-            push_b(&mut f.buf, b"\" data-kv-LowerVal=\""); push_f2(&mut f.buf, q_lo);
-            push_b(&mut f.buf, b"\" data-kv-UpperVal=\""); push_f2(&mut f.buf, q_hi);
-            push_b(&mut f.buf, b"\" x=\""); push_i(&mut f.buf, cx - hw);
-            push_b(&mut f.buf, b"\" y=\""); push_i(&mut f.buf, band_top);
-            push_b(&mut f.buf, b"\" width=\""); push_i(&mut f.buf, hw * 2);
-            push_b(&mut f.buf, b"\" height=\""); push_i(&mut f.buf, band_h);
-            push_b(&mut f.buf, b"\" fill=\"#"); f.buf.extend_from_slice(&hx);
-            push_b(&mut f.buf, b"\" fill-opacity=\""); push_f2(&mut f.buf, opacity);
-            push_b(&mut f.buf, b"\" stroke=\"#fff\" stroke-width=\"0.6\" rx=\"2\"/>");
+            push_b(&mut f.buf, b"<rect data-idx=\"");
+            push_i(&mut f.buf, ci as i32);
+            push_b(&mut f.buf, b"\" data-lbl=\"");
+            escape_xml(&mut f.buf, cat);
+            push_b(&mut f.buf, b"\" data-kv-Quantile=\"");
+            push_f2(&mut f.buf, frac * 100.0);
+            push_b(&mut f.buf, b"\" data-kv-LowerVal=\"");
+            push_f2(&mut f.buf, q_lo);
+            push_b(&mut f.buf, b"\" data-kv-UpperVal=\"");
+            push_f2(&mut f.buf, q_hi);
+            push_b(&mut f.buf, b"\" x=\"");
+            push_i(&mut f.buf, cx - hw);
+            push_b(&mut f.buf, b"\" y=\"");
+            push_i(&mut f.buf, band_top);
+            push_b(&mut f.buf, b"\" width=\"");
+            push_i(&mut f.buf, hw * 2);
+            push_b(&mut f.buf, b"\" height=\"");
+            push_i(&mut f.buf, band_h);
+            push_b(&mut f.buf, b"\" fill=\"#");
+            f.buf.extend_from_slice(&hx);
+            push_b(&mut f.buf, b"\" fill-opacity=\"");
+            push_f2(&mut f.buf, opacity);
+            push_b(
+                &mut f.buf,
+                b"\" stroke=\"#fff\" stroke-width=\"0.6\" rx=\"2\"/>",
+            );
         }
 
         let y_med = yv(st.median);
-        push_b(&mut f.buf, b"<line x1=\""); push_i(&mut f.buf, cx - max_hw);
-        push_b(&mut f.buf, b"\" y1=\""); push_i(&mut f.buf, y_med);
-        push_b(&mut f.buf, b"\" x2=\""); push_i(&mut f.buf, cx + max_hw);
-        push_b(&mut f.buf, b"\" y2=\""); push_i(&mut f.buf, y_med);
-        push_b(&mut f.buf, b"\" stroke=\"#"); f.buf.extend_from_slice(&hx);
+        push_b(&mut f.buf, b"<line x1=\"");
+        push_i(&mut f.buf, cx - max_hw);
+        push_b(&mut f.buf, b"\" y1=\"");
+        push_i(&mut f.buf, y_med);
+        push_b(&mut f.buf, b"\" x2=\"");
+        push_i(&mut f.buf, cx + max_hw);
+        push_b(&mut f.buf, b"\" y2=\"");
+        push_i(&mut f.buf, y_med);
+        push_b(&mut f.buf, b"\" stroke=\"#");
+        f.buf.extend_from_slice(&hx);
         push_b(&mut f.buf, b"\" stroke-width=\"2.2\"/>");
 
         for &ov in &st.outliers {
             let oy = yv(ov);
-            push_b(&mut f.buf, b"<circle cx=\""); push_i(&mut f.buf, cx);
-            push_b(&mut f.buf, b"\" cy=\""); push_i(&mut f.buf, oy);
-            push_b(&mut f.buf, b"\" r=\"2.5\" fill=\"#9ca3af\" fill-opacity=\"0.7\"/>");
+            push_b(&mut f.buf, b"<circle cx=\"");
+            push_i(&mut f.buf, cx);
+            push_b(&mut f.buf, b"\" cy=\"");
+            push_i(&mut f.buf, oy);
+            push_b(
+                &mut f.buf,
+                b"\" r=\"2.5\" fill=\"#9ca3af\" fill-opacity=\"0.7\"/>",
+            );
         }
 
         draw_cat_label(&mut f, cx, cat);
         push_b(&mut f.buf, b"</g>");
     }
 
-    finish_frame(&mut f, &cats, cfg.palette, cfg.x_label, cfg.y_label, legend_w);
+    finish_frame(
+        &mut f,
+        &cats,
+        cfg.palette,
+        cfg.x_label,
+        cfg.y_label,
+        legend_w,
+    );
     f.html(&slots_to_json(cfg.hover))
 }
-

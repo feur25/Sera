@@ -16,5 +16,3 @@ crate::chart_config!(RadarConfig, 700, 560;
         fill_opacity: 50,
     }
 );
-
-

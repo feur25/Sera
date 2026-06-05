@@ -1,5 +1,5 @@
+use crate::bindings::{FastChartConfig, FastChartRenderer};
 use std::sync::{Arc, Mutex};
-use crate::bindings::{FastChartRenderer, FastChartConfig};
 
 lazy_static::lazy_static! {
     static ref CHART_SORT: Mutex<usize> = Mutex::new(0);
@@ -37,7 +37,11 @@ impl HybridChartApp {
     pub fn set_data(&mut self, labels: Vec<String>, values: Vec<f64>, title: String) {
         {
             let mut data = self.data.lock().unwrap();
-            *data = Some(ChartData { labels, values, title });
+            *data = Some(ChartData {
+                labels,
+                values,
+                title,
+            });
         }
         self.regenerate_svg();
     }
@@ -56,11 +60,17 @@ impl HybridChartApp {
     pub fn render_fast(&mut self, ctx: &egui::Context) {
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.horizontal(|ui| {
-                if ui.selectable_label(self.mode == RenderMode::FastSVG, "Fast SVG").clicked() {
+                if ui
+                    .selectable_label(self.mode == RenderMode::FastSVG, "Fast SVG")
+                    .clicked()
+                {
                     self.mode = RenderMode::FastSVG;
                     self.use_fast_svg = true;
                 }
-                if ui.selectable_label(self.mode == RenderMode::Interactive, "Interactive").clicked() {
+                if ui
+                    .selectable_label(self.mode == RenderMode::Interactive, "Interactive")
+                    .clicked()
+                {
                     self.mode = RenderMode::Interactive;
                     self.use_fast_svg = false;
                 }
@@ -74,7 +84,7 @@ impl HybridChartApp {
                         ui.heading("SVG Rendered (Instant)");
                         let mut svg_text = self.svg_cache.clone();
                         ui.text_edit_multiline(&mut svg_text);
-                        
+
                         if ui.button("Save SVG").clicked() {
                             let _ = std::fs::write("export.svg", &self.svg_cache);
                         }
@@ -111,5 +121,3 @@ impl eframe::App for HybridChartApp {
         HybridChartApp::update(self, ctx);
     }
 }
-
-

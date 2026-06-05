@@ -18,13 +18,17 @@ impl AdvancedViewer3D {
     }
 
     pub fn handle_input(&mut self, ui: &egui::Ui) {
-        let response = ui.interact(ui.available_rect_before_wrap(), ui.id(), egui::Sense::click_and_drag());
-        
+        let response = ui.interact(
+            ui.available_rect_before_wrap(),
+            ui.id(),
+            egui::Sense::click_and_drag(),
+        );
+
         if response.drag_started() {
             self.is_dragging = true;
             self.last_mouse_pos = response.interact_pointer_pos();
         }
-        
+
         if self.is_dragging {
             if let Some(curr_pos) = response.interact_pointer_pos() {
                 if let Some(last_pos) = self.last_mouse_pos {
@@ -35,21 +39,21 @@ impl AdvancedViewer3D {
                 self.last_mouse_pos = Some(curr_pos);
             }
         }
-        
+
         if response.drag_stopped() {
             self.is_dragging = false;
             self.last_mouse_pos = None;
         }
-        
+
         let scroll = ui.input(|i| i.raw_scroll_delta.y);
         if scroll != 0.0 {
             let zoom_factor = if scroll > 0.0 { 0.85 } else { 1.15 };
             self.camera_controller.zoom(zoom_factor);
         }
-        
+
         let mut pan_dx = 0.0;
         let mut pan_dy = 0.0;
-        
+
         ui.input(|i| {
             if i.key_pressed(egui::Key::ArrowLeft) || i.key_pressed(egui::Key::A) {
                 pan_dx -= 0.3;
@@ -64,7 +68,7 @@ impl AdvancedViewer3D {
                 pan_dy -= 0.3;
             }
         });
-        
+
         if pan_dx != 0.0 || pan_dy != 0.0 {
             self.camera_controller.pan(pan_dx, pan_dy);
         }
@@ -81,9 +85,9 @@ impl AdvancedViewer3D {
             if ui.button("Rotation Z").clicked() {
                 self.camera_controller.rotate_orbit(0.2, 0.2);
             }
-            
+
             ui.separator();
-            
+
             if ui.button("Zoom In").clicked() {
                 self.camera_controller.zoom(0.8);
             }
@@ -93,7 +97,7 @@ impl AdvancedViewer3D {
             if ui.button("↺ Reset").clicked() {
                 self.camera_controller.reset();
             }
-            
+
             if ui.button("ℹInfo").clicked() {
                 self.show_info = !self.show_info;
             }
@@ -119,5 +123,3 @@ impl Default for AdvancedViewer3D {
         Self::new()
     }
 }
-
-

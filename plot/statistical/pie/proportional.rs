@@ -1,9 +1,14 @@
 use super::config::PieConfig;
 
-#[crate::chart_demo("labels=[\"Apple\",\"Banana\",\"Cherry\",\"Date\",\"Fig\"], values=[40,25,20,10,5]")]
+#[crate::chart_demo(
+    "labels=[\"Apple\",\"Banana\",\"Cherry\",\"Date\",\"Fig\"], values=[40,25,20,10,5]"
+)]
 
 pub fn render(cfg: &PieConfig) -> String {
-    let forced = PieConfig { proportional: true, ..clone_cfg(cfg) };
+    let forced = PieConfig {
+        proportional: true,
+        ..clone_cfg(cfg)
+    };
     super::subplots::render(&forced)
 }
 
@@ -37,4 +42,3 @@ fn clone_cfg<'a>(cfg: &'a PieConfig<'a>) -> PieConfig<'a> {
         pattern: cfg.pattern,
     }
 }
-

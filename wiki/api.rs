@@ -1,4 +1,4 @@
-use crate::wiki::{WikiExport, MethodDoc, ModuleDoc, ParamDoc, CodeExample};
+use crate::wiki::{CodeExample, MethodDoc, ModuleDoc, ParamDoc, WikiExport};
 
 fn p(name: &str, t: &str, desc: &str) -> ParamDoc {
     ParamDoc {
@@ -117,7 +117,8 @@ pub fn generate_seraplot_docs() -> WikiExport {
 
     export.add_module(ModuleDoc {
         name: "Charts2D".to_string(),
-        description: "2D chart builders — bar, line, scatter, histogram, pie, and more.".to_string(),
+        description: "2D chart builders — bar, line, scatter, histogram, pie, and more."
+            .to_string(),
         methods: charts_2d,
     });
     export.add_module(ModuleDoc {
@@ -143,5 +144,3 @@ pub fn generate_seraplot_docs() -> WikiExport {
 
     export
 }
-
-

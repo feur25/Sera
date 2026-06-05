@@ -17,9 +17,15 @@ fn galaxy_color(t: f64) -> u32 {
         let (t0, c0) = w[0];
         let (t1, c1) = w[1];
         if t <= t1 {
-            let s = if (t1 - t0).abs() < 1e-12 { 0.0 } else { ((t - t0) / (t1 - t0)).clamp(0.0, 1.0) };
-            let r = (((c0 >> 16) & 0xFF) as f64 * (1.0 - s) + ((c1 >> 16) & 0xFF) as f64 * s).round() as u32;
-            let g = (((c0 >> 8) & 0xFF) as f64 * (1.0 - s) + ((c1 >> 8) & 0xFF) as f64 * s).round() as u32;
+            let s = if (t1 - t0).abs() < 1e-12 {
+                0.0
+            } else {
+                ((t - t0) / (t1 - t0)).clamp(0.0, 1.0)
+            };
+            let r = (((c0 >> 16) & 0xFF) as f64 * (1.0 - s) + ((c1 >> 16) & 0xFF) as f64 * s)
+                .round() as u32;
+            let g = (((c0 >> 8) & 0xFF) as f64 * (1.0 - s) + ((c1 >> 8) & 0xFF) as f64 * s).round()
+                as u32;
             let b = ((c0 & 0xFF) as f64 * (1.0 - s) + (c1 & 0xFF) as f64 * s).round() as u32;
             return (r << 16) | (g << 8) | b;
         }
@@ -30,13 +36,25 @@ fn galaxy_color(t: f64) -> u32 {
 #[crate::chart_demo("x=[1,2,3,4,5,6,7,8,9,10], y=[2,5,3,8,7,9,6,11,9,13]")]
 
 pub fn render(cfg: &ScatterConfig) -> String {
-    let layout = match compute_layout(cfg) { Some(l) => l, None => return String::new() };
+    let layout = match compute_layout(cfg) {
+        Some(l) => l,
+        None => return String::new(),
+    };
     let mut f = make_frame(cfg, layout.n, 20);
     f.open(cfg.title, true);
 
-    push_b(&mut f.buf, b"<defs><filter id=\"spgf\" x=\"-120%\" y=\"-120%\" width=\"340%\" height=\"340%\">");
-    push_b(&mut f.buf, b"<feGaussianBlur stdDeviation=\"3.5\" result=\"b\"/>");
-    push_b(&mut f.buf, b"<feMerge><feMergeNode in=\"b\"/><feMergeNode in=\"SourceGraphic\"/></feMerge>");
+    push_b(
+        &mut f.buf,
+        b"<defs><filter id=\"spgf\" x=\"-120%\" y=\"-120%\" width=\"340%\" height=\"340%\">",
+    );
+    push_b(
+        &mut f.buf,
+        b"<feGaussianBlur stdDeviation=\"3.5\" result=\"b\"/>",
+    );
+    push_b(
+        &mut f.buf,
+        b"<feMerge><feMergeNode in=\"b\"/><feMergeNode in=\"SourceGraphic\"/></feMerge>",
+    );
     push_b(&mut f.buf, b"</filter></defs>");
 
     f.x_grid(6, layout.xmin2, layout.xmax2, cfg.gridlines);
@@ -59,23 +77,38 @@ pub fn render(cfg: &ScatterConfig) -> String {
         let hx = hex6(col);
         let r = cfg.point_size.max(2.5);
 
-        push_b(&mut f.buf, b"<g data-idx=\""); push_i(&mut f.buf, i as i32);
-        push_b(&mut f.buf, b"\" data-x=\""); push_f2(&mut f.buf, cfg.x_values[i]);
-        push_b(&mut f.buf, b"\" data-y=\""); push_f2(&mut f.buf, cfg.y_values[i]);
+        push_b(&mut f.buf, b"<g data-idx=\"");
+        push_i(&mut f.buf, i as i32);
+        push_b(&mut f.buf, b"\" data-x=\"");
+        push_f2(&mut f.buf, cfg.x_values[i]);
+        push_b(&mut f.buf, b"\" data-y=\"");
+        push_f2(&mut f.buf, cfg.y_values[i]);
         if i < cfg.labels.len() {
-            push_b(&mut f.buf, b"\" data-lbl=\""); escape_xml(&mut f.buf, &cfg.labels[i]);
+            push_b(&mut f.buf, b"\" data-lbl=\"");
+            escape_xml(&mut f.buf, &cfg.labels[i]);
         }
         push_b(&mut f.buf, b"\">");
-        push_b(&mut f.buf, b"<circle cx=\""); push_i(&mut f.buf, cx);
-        push_b(&mut f.buf, b"\" cy=\""); push_i(&mut f.buf, cy);
-        push_b(&mut f.buf, b"\" r=\""); push_f2(&mut f.buf, r);
-        push_b(&mut f.buf, b"\" fill=\"#"); f.buf.extend_from_slice(&hx);
-        push_b(&mut f.buf, b"\" fill-opacity=\"0.92\" filter=\"url(#spgf)\"/>");
+        push_b(&mut f.buf, b"<circle cx=\"");
+        push_i(&mut f.buf, cx);
+        push_b(&mut f.buf, b"\" cy=\"");
+        push_i(&mut f.buf, cy);
+        push_b(&mut f.buf, b"\" r=\"");
+        push_f2(&mut f.buf, r);
+        push_b(&mut f.buf, b"\" fill=\"#");
+        f.buf.extend_from_slice(&hx);
+        push_b(
+            &mut f.buf,
+            b"\" fill-opacity=\"0.92\" filter=\"url(#spgf)\"/>",
+        );
         push_b(&mut f.buf, b"</g>");
     }
 
     let slots_json;
-    let json: &str = if cfg.hover.is_empty() { "[]" } else { slots_json = slots_to_json(cfg.hover); &slots_json };
+    let json: &str = if cfg.hover.is_empty() {
+        "[]"
+    } else {
+        slots_json = slots_to_json(cfg.hover);
+        &slots_json
+    };
     f.html(json)
 }
-

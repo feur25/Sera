@@ -1,4 +1,5 @@
-pub const DOC_BUILD_HTML_CHART: &str = "build_html_chart(title, labels, values, width, height) -> Chart
+pub const DOC_BUILD_HTML_CHART: &str =
+    "build_html_chart(title, labels, values, width, height) -> Chart
 
 Simple bar chart from raw values.
 
@@ -1779,7 +1780,8 @@ no_x_axis : bool, optional
 no_y_axis : bool, optional
     Hide the Y axis. Default False.";
 
-pub const DOC_BUILD_GRID: &str = "build_grid(charts, cols=2, gap=16, bg=None, cell_height=520) -> Chart
+pub const DOC_BUILD_GRID: &str =
+    "build_grid(charts, cols=2, gap=16, bg=None, cell_height=520) -> Chart
 
 Arrange multiple charts in a responsive grid layout.
 
@@ -1796,7 +1798,8 @@ bg : str or None, optional
 cell_height : int, optional
     Height of each cell in pixels. Default 520.";
 
-pub const DOC_BUILD_SLIDESHOW: &str = "build_slideshow(charts, interval_ms=2500, title='', width=900, height=520) -> Chart
+pub const DOC_BUILD_SLIDESHOW: &str =
+    "build_slideshow(charts, interval_ms=2500, title='', width=900, height=520) -> Chart
 
 Slideshow that cycles through multiple charts.
 
@@ -1841,7 +1844,8 @@ n_clusters_ : int
 n_noise_ : int
     Number of noise points.";
 
-pub const DOC_KMEANS_MODEL: &str = "KMeans(k=3, max_iter=300, tol=1e-4, mini_batch=False, batch_size=1000, n_init=10)
+pub const DOC_KMEANS_MODEL: &str =
+    "KMeans(k=3, max_iter=300, tol=1e-4, mini_batch=False, batch_size=1000, n_init=10)
 
 K-Means clustering algorithm with optional Mini-Batch variant.
 
@@ -1971,7 +1975,8 @@ intercept_ : float
 n_iter_ : int
     Number of iterations run.";
 
-pub const DOC_ELASTIC_NET: &str = "ElasticNet(alpha=1.0, l1_ratio=0.5, max_iter=1000, tol=1e-4, fit_intercept=True)
+pub const DOC_ELASTIC_NET: &str =
+    "ElasticNet(alpha=1.0, l1_ratio=0.5, max_iter=1000, tol=1e-4, fit_intercept=True)
 
 Combined L1/L2 regularized linear regression.
 
@@ -2006,7 +2011,8 @@ intercept_ : float
 n_iter_ : int
     Number of iterations run.";
 
-pub const DOC_LOGISTIC_REGRESSION: &str = "LogisticRegression(c=1.0, max_iter=1000, tol=1e-4, fit_intercept=True)
+pub const DOC_LOGISTIC_REGRESSION: &str =
+    "LogisticRegression(c=1.0, max_iter=1000, tol=1e-4, fit_intercept=True)
 
 Logistic regression for binary and multi-class classification.
 
@@ -2037,7 +2043,8 @@ coef_ : list[float]
 intercept_ : float
     Intercept term.";
 
-pub const DOC_SGD_CLASSIFIER: &str = "SGDClassifier(loss='hinge', alpha=0.0001, max_iter=1000, tol=1e-3, fit_intercept=True)
+pub const DOC_SGD_CLASSIFIER: &str =
+    "SGDClassifier(loss='hinge', alpha=0.0001, max_iter=1000, tol=1e-3, fit_intercept=True)
 
 Stochastic gradient descent classifier.
 
@@ -2063,7 +2070,8 @@ predict(X) -> list[int]
 score(X, y) -> float
     Return accuracy.";
 
-pub const DOC_SGD_REGRESSOR: &str = "SGDRegressor(loss='squared_error', alpha=0.0001, max_iter=1000, tol=1e-3, fit_intercept=True)
+pub const DOC_SGD_REGRESSOR: &str =
+    "SGDRegressor(loss='squared_error', alpha=0.0001, max_iter=1000, tol=1e-3, fit_intercept=True)
 
 Stochastic gradient descent regressor.
 
@@ -2271,7 +2279,8 @@ predict(X) -> list[float]
 score(X, y) -> float
     Return R^2.";
 
-pub const DOC_ADABOOST_CLASSIFIER: &str = "AdaBoostClassifier(n_estimators=50, learning_rate=1.0, max_depth=1)
+pub const DOC_ADABOOST_CLASSIFIER: &str =
+    "AdaBoostClassifier(n_estimators=50, learning_rate=1.0, max_depth=1)
 
 AdaBoost classifier.
 
@@ -2293,7 +2302,8 @@ predict(X) -> list[int]
 score(X, y) -> float
     Return accuracy.";
 
-pub const DOC_ADABOOST_REGRESSOR: &str = "AdaBoostRegressor(n_estimators=50, learning_rate=1.0, max_depth=3, loss='linear')
+pub const DOC_ADABOOST_REGRESSOR: &str =
+    "AdaBoostRegressor(n_estimators=50, learning_rate=1.0, max_depth=3, loss='linear')
 
 AdaBoost regressor.
 
@@ -2481,7 +2491,8 @@ coef_ : list[float]
 intercept_ : float
     Intercept term.";
 
-pub const DOC_LINEAR_SVR: &str = "LinearSVR(c=1.0, epsilon=0.0, max_iter=1000, tol=1e-4, fit_intercept=True)
+pub const DOC_LINEAR_SVR: &str =
+    "LinearSVR(c=1.0, epsilon=0.0, max_iter=1000, tol=1e-4, fit_intercept=True)
 
 Linear support vector regressor.
 
@@ -2540,5 +2551,3 @@ coef_ : list[float]
     Estimated coefficients.
 intercept_ : float
     Intercept term.";
-
-

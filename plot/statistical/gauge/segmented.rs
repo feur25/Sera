@@ -1,6 +1,8 @@
-use super::common::{prepare, open_svg, color_for, value_text, label_text, min_max_labels, finalize};
+use super::common::{
+    color_for, finalize, label_text, min_max_labels, open_svg, prepare, value_text,
+};
 use super::config::GaugeConfig;
-use crate::plot::statistical::common::{push_b, push_f2, hex6};
+use crate::plot::statistical::common::{hex6, push_b, push_f2};
 
 #[crate::chart_demo("value=72, min_val=0, max_val=100, label=\"Score\"")]
 
@@ -27,12 +29,25 @@ pub fn render(cfg: &GaugeConfig) -> String {
         let mid = (i as f64 + 0.5) / n_seg as f64;
         let on = mid <= p.frac;
         push_b(&mut b, b"<path d=\"M ");
-        push_f2(&mut b, x1); push_b(&mut b, b" "); push_f2(&mut b, y1);
-        push_b(&mut b, b" A "); push_f2(&mut b, p.radius); push_b(&mut b, b" "); push_f2(&mut b, p.radius);
-        push_b(&mut b, b" 0 0 1 "); push_f2(&mut b, x2); push_b(&mut b, b" "); push_f2(&mut b, y2);
+        push_f2(&mut b, x1);
+        push_b(&mut b, b" ");
+        push_f2(&mut b, y1);
+        push_b(&mut b, b" A ");
+        push_f2(&mut b, p.radius);
+        push_b(&mut b, b" ");
+        push_f2(&mut b, p.radius);
+        push_b(&mut b, b" 0 0 1 ");
+        push_f2(&mut b, x2);
+        push_b(&mut b, b" ");
+        push_f2(&mut b, y2);
         push_b(&mut b, b"\" fill=\"none\" stroke=\"#");
-        if on { b.extend_from_slice(&hx_active); } else { b.extend_from_slice(&hx_off); }
-        push_b(&mut b, b"\" stroke-width=\""); push_f2(&mut b, p.arc_w + 2.0);
+        if on {
+            b.extend_from_slice(&hx_active);
+        } else {
+            b.extend_from_slice(&hx_off);
+        }
+        push_b(&mut b, b"\" stroke-width=\"");
+        push_f2(&mut b, p.arc_w + 2.0);
         push_b(&mut b, b"\" stroke-linecap=\"round\"/>");
     }
     value_text(&mut b, cfg, p.cx, p.cy + 30.0, 28);
@@ -40,4 +55,3 @@ pub fn render(cfg: &GaugeConfig) -> String {
     min_max_labels(&mut b, cfg, &p);
     finalize(b, cfg)
 }
-

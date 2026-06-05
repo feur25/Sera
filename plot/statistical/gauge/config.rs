@@ -18,5 +18,3 @@ crate::chart_config!(GaugeConfig, 400, 300;
         comparison: 0.0,
     }
 );
-
-

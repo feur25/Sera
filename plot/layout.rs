@@ -81,18 +81,30 @@ pub fn build_sysmon_html(bg_color: &str, update_interval_ms: u32) -> String {
         .take(6)
         .filter_map(|d| {
             let total = d.total_space();
-            if total == 0 { return None; }
+            if total == 0 {
+                return None;
+            }
             let name = d.name().to_string_lossy().to_string();
-            let name = if name.is_empty() { String::from("Disk") } else { name };
+            let name = if name.is_empty() {
+                String::from("Disk")
+            } else {
+                name
+            };
             let avail = d.available_space();
             let used = total.saturating_sub(avail);
             let pct = (used as f64 / total as f64 * 100.0) as u32;
             let name_esc = name.replace('"', "\\\"");
-            Some(format!("{{\"name\":\"{name_esc}\",\"used\":{used},\"total\":{total},\"pct\":{pct}}}"))
+            Some(format!(
+                "{{\"name\":\"{name_esc}\",\"used\":{used},\"total\":{total},\"pct\":{pct}}}"
+            ))
         })
         .collect();
 
-    let core_parts: Vec<String> = core_usage.iter().take(8).map(|v| format!("{:.1}", v)).collect();
+    let core_parts: Vec<String> = core_usage
+        .iter()
+        .take(8)
+        .map(|v| format!("{:.1}", v))
+        .collect();
 
     let data_json = format!(
         "{{\"cpu_pct\":{cpu_pct:.1},\"cpu_count\":{cpu_count},\"cpu_cores\":[{cores}],\"mem_pct\":{mem_pct:.1},\"used_mem\":{used_mem},\"total_mem\":{total_mem},\"disks\":[{disks}],\"processes\":{procs},\"uptime_s\":{uptime_s}}}",
@@ -146,7 +158,10 @@ pub fn build_sysmon(input: &str) -> String {
     #[cfg(not(target_arch = "wasm32"))]
     {
         #[derive(serde::Deserialize, Default)]
-        struct In { bg_color: Option<String>, update_interval_ms: Option<u32> }
+        struct In {
+            bg_color: Option<String>,
+            update_interval_ms: Option<u32>,
+        }
         let i: In = serde_json::from_str(input).unwrap_or_default();
         build_sysmon_html(
             i.bg_color.as_deref().unwrap_or("#0a0f1c"),

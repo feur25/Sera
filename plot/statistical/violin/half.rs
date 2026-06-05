@@ -1,7 +1,6 @@
 use super::common::{
-
-    draw_cat_label_v, estimate_bw, finish, group_data, kde_curve, make_frame,
-    open_axes_y, sort_groups, value_range, write_violin_v, Side,
+    draw_cat_label_v, estimate_bw, finish, group_data, kde_curve, make_frame, open_axes_y,
+    sort_groups, value_range, write_violin_v, Side,
 };
 use super::config::ViolinConfig;
 use crate::html::hover::slots_to_json;
@@ -11,7 +10,9 @@ use crate::plot::statistical::common::{hex6, palette_color, push_b, push_f2, pus
 
 pub fn render(cfg: &ViolinConfig) -> String {
     let groups = group_data(cfg.categories, cfg.values);
-    if groups.is_empty() { return String::new(); }
+    if groups.is_empty() {
+        return String::new();
+    }
     let groups = sort_groups(groups, cfg.sort_order);
     let n_cats = groups.len();
     let vr = value_range(&groups);
@@ -25,27 +26,60 @@ pub fn render(cfg: &ViolinConfig) -> String {
     for (ci, g) in groups.iter().enumerate() {
         let cx = f.pl + (ci as f64 * slot_w + slot_w / 2.0) as i32 - half_w / 2;
         let color = palette_color(cfg.palette, ci);
-        push_b(&mut f.buf, b"<g data-series=\""); push_i(&mut f.buf, ci as i32);
+        push_b(&mut f.buf, b"<g data-series=\"");
+        push_i(&mut f.buf, ci as i32);
         push_b(&mut f.buf, b"\">");
         let bw = estimate_bw(&g.sorted, cfg.bandwidth);
         let dens = kde_curve(&g.sorted, vr.min, vr.range, cfg.kde_steps, bw);
         let max_d = dens.iter().copied().fold(0.0_f64, f64::max).max(1e-12);
-        let kv = [("Median", g.median), ("Q1", g.q1), ("Q3", g.q3), ("Mean", g.mean), ("N", g.n as f64)];
-        write_violin_v(&mut f, cx, half_w, Side::Right, &dens, max_d, vr.min, vr.range,
-            color, cfg.fill_opacity, cfg.stroke_width, ci as i32, &g.label, &kv);
+        let kv = [
+            ("Median", g.median),
+            ("Q1", g.q1),
+            ("Q3", g.q3),
+            ("Mean", g.mean),
+            ("N", g.n as f64),
+        ];
+        write_violin_v(
+            &mut f,
+            cx,
+            half_w,
+            Side::Right,
+            &dens,
+            max_d,
+            vr.min,
+            vr.range,
+            color,
+            cfg.fill_opacity,
+            cfg.stroke_width,
+            ci as i32,
+            &g.label,
+            &kv,
+        );
         let yv = |v: f64| f.pt + f.ph - ((v - vr.min) / vr.range * f.ph as f64) as i32;
         let hx = hex6(color);
-        push_b(&mut f.buf, b"<line x1=\""); push_i(&mut f.buf, cx);
-        push_b(&mut f.buf, b"\" y1=\""); push_i(&mut f.buf, yv(g.median));
-        push_b(&mut f.buf, b"\" x2=\""); push_i(&mut f.buf, cx + (half_w as f64 * 0.7) as i32);
-        push_b(&mut f.buf, b"\" y2=\""); push_i(&mut f.buf, yv(g.median));
+        push_b(&mut f.buf, b"<line x1=\"");
+        push_i(&mut f.buf, cx);
+        push_b(&mut f.buf, b"\" y1=\"");
+        push_i(&mut f.buf, yv(g.median));
+        push_b(&mut f.buf, b"\" x2=\"");
+        push_i(&mut f.buf, cx + (half_w as f64 * 0.7) as i32);
+        push_b(&mut f.buf, b"\" y2=\"");
+        push_i(&mut f.buf, yv(g.median));
         push_b(&mut f.buf, b"\" stroke=\"#1a202c\" stroke-width=\"2\"/>");
-        push_b(&mut f.buf, b"<line x1=\""); push_i(&mut f.buf, cx);
-        push_b(&mut f.buf, b"\" y1=\""); push_i(&mut f.buf, yv(g.mean));
-        push_b(&mut f.buf, b"\" x2=\""); push_i(&mut f.buf, cx + (half_w as f64 * 0.5) as i32);
-        push_b(&mut f.buf, b"\" y2=\""); push_i(&mut f.buf, yv(g.mean));
-        push_b(&mut f.buf, b"\" stroke=\"#"); f.buf.extend_from_slice(&hx);
-        push_b(&mut f.buf, b"\" stroke-width=\"1.4\" stroke-dasharray=\"5 3\" stroke-opacity=\"");
+        push_b(&mut f.buf, b"<line x1=\"");
+        push_i(&mut f.buf, cx);
+        push_b(&mut f.buf, b"\" y1=\"");
+        push_i(&mut f.buf, yv(g.mean));
+        push_b(&mut f.buf, b"\" x2=\"");
+        push_i(&mut f.buf, cx + (half_w as f64 * 0.5) as i32);
+        push_b(&mut f.buf, b"\" y2=\"");
+        push_i(&mut f.buf, yv(g.mean));
+        push_b(&mut f.buf, b"\" stroke=\"#");
+        f.buf.extend_from_slice(&hx);
+        push_b(
+            &mut f.buf,
+            b"\" stroke-width=\"1.4\" stroke-dasharray=\"5 3\" stroke-opacity=\"",
+        );
         push_f2(&mut f.buf, 0.85);
         push_b(&mut f.buf, b"\"/>");
         draw_cat_label_v(&mut f, cx + (half_w as f64 * 0.35) as i32, &g.label);
@@ -53,7 +87,13 @@ pub fn render(cfg: &ViolinConfig) -> String {
     }
 
     let names: Vec<&str> = groups.iter().map(|g| g.label.as_str()).collect();
-    finish(&mut f, &names, cfg.palette, cfg.x_label, cfg.y_label, legend_w);
+    finish(
+        &mut f,
+        &names,
+        cfg.palette,
+        cfg.x_label,
+        cfg.y_label,
+        legend_w,
+    );
     f.html(&slots_to_json(cfg.hover))
 }
-

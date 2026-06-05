@@ -1,6 +1,11 @@
 use serde::Deserialize;
 
-#[crate::sera_doc(category = "Metrics", en = "Compute a named metric score (accuracy, r2, f1, etc.) from predictions.", fr = "Calcule un score de métrique nommée (accuracy, r2, f1, etc.) à partir des prédictions.", file = "metrics.md")]
+#[crate::sera_doc(
+    category = "Metrics",
+    en = "Compute a named metric score (accuracy, r2, f1, etc.) from predictions.",
+    fr = "Calcule un score de métrique nommée (accuracy, r2, f1, etc.) à partir des prédictions.",
+    file = "metrics.md"
+)]
 #[crate::sera_alias("metric_score", "ml_metric", "score_metric")]
 pub fn ml_metric_score(input: &str) -> String {
     use crate::ml::metrics::*;
@@ -68,7 +73,12 @@ pub fn ml_metric_score(input: &str) -> String {
             let n = rows.len();
             let p = if n > 0 { rows[0].len() } else { 0 };
             let mut flat = Vec::with_capacity(n * p);
-            for r in &rows { flat.extend_from_slice(&r[..p.min(r.len())]); if r.len() < p { flat.extend(std::iter::repeat(0.0).take(p - r.len())); } }
+            for r in &rows {
+                flat.extend_from_slice(&r[..p.min(r.len())]);
+                if r.len() < p {
+                    flat.extend(std::iter::repeat(0.0).take(p - r.len()));
+                }
+            }
             let labs = i.labels.clone().unwrap_or_default();
             match name.as_str() {
                 "silhouette_score" => silhouette_score(&flat, &labs, n, p),
@@ -76,8 +86,12 @@ pub fn ml_metric_score(input: &str) -> String {
                 _ => calinski_harabasz_score(&flat, &labs, n, p),
             }
         }
-        "adjusted_rand_score" | "normalized_mutual_info_score" | "fowlkes_mallows_score"
-        | "homogeneity_score" | "completeness_score" | "v_measure_score" => {
+        "adjusted_rand_score"
+        | "normalized_mutual_info_score"
+        | "fowlkes_mallows_score"
+        | "homogeneity_score"
+        | "completeness_score"
+        | "v_measure_score" => {
             let lt = i.labels_true.clone().unwrap_or_default();
             let lp = i.labels_pred.clone().unwrap_or_default();
             match name.as_str() {
@@ -91,8 +105,11 @@ pub fn ml_metric_score(input: &str) -> String {
         }
         _ => f64::NAN,
     };
-    if value.is_nan() { format!("{{\"error\":\"unknown metric: {}\"}}", name) }
-    else { format!("{{\"value\":{}}}", value) }
+    if value.is_nan() {
+        format!("{{\"error\":\"unknown metric: {}\"}}", name)
+    } else {
+        format!("{{\"value\":{}}}", value)
+    }
 }
 
 #[crate::sera_alias("metric_curve", "ml_curve", "pr_curve")]
@@ -106,23 +123,32 @@ pub fn ml_metric_curve(input: &str) -> String {
         pos_label: Option<i32>,
     }
     let i: I = serde_json::from_str(input).unwrap_or_default();
-    let yt: Vec<i32> = i.y_true.unwrap_or_default().iter().map(|v| *v as i32).collect();
+    let yt: Vec<i32> = i
+        .y_true
+        .unwrap_or_default()
+        .iter()
+        .map(|v| *v as i32)
+        .collect();
     let ys = i.y_score.unwrap_or_default();
     let pos = i.pos_label.unwrap_or(1);
     match i.name.as_deref().unwrap_or("") {
         "roc_curve" => {
             let (a, b, c) = roc_curve(&yt, &ys, pos);
-            format!("{{\"fpr\":{},\"tpr\":{},\"thresholds\":{}}}",
+            format!(
+                "{{\"fpr\":{},\"tpr\":{},\"thresholds\":{}}}",
                 serde_json::to_string(&a).unwrap_or_default(),
                 serde_json::to_string(&b).unwrap_or_default(),
-                serde_json::to_string(&c).unwrap_or_default())
+                serde_json::to_string(&c).unwrap_or_default()
+            )
         }
         "precision_recall_curve" => {
             let (a, b, c) = precision_recall_curve(&yt, &ys, pos);
-            format!("{{\"precision\":{},\"recall\":{},\"thresholds\":{}}}",
+            format!(
+                "{{\"precision\":{},\"recall\":{},\"thresholds\":{}}}",
                 serde_json::to_string(&a).unwrap_or_default(),
                 serde_json::to_string(&b).unwrap_or_default(),
-                serde_json::to_string(&c).unwrap_or_default())
+                serde_json::to_string(&c).unwrap_or_default()
+            )
         }
         n => format!("{{\"error\":\"unknown curve: {}\"}}", n),
     }

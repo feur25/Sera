@@ -41,5 +41,3 @@ impl Point2D {
         egui::pos2(self.x, self.y)
     }
 }
-
-

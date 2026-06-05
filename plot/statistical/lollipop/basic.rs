@@ -1,11 +1,18 @@
-use super::common::{prepare, open, finalize, color_for, dot, data_attrs, x_tick_label};
+use super::common::{color_for, data_attrs, dot, finalize, open, prepare, x_tick_label};
 use super::config::LollipopConfig;
-use crate::plot::statistical::common::{push_b, push_i, push_f2, hex6, svg_axis_lines, svg_hgrid, svg_y_label, svg_tick_y};
+use crate::plot::statistical::common::{
+    hex6, push_b, push_f2, push_i, svg_axis_lines, svg_hgrid, svg_tick_y, svg_y_label,
+};
 
-#[crate::chart_demo("labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]")]
+#[crate::chart_demo(
+    "labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]"
+)]
 
 pub fn render(cfg: &LollipopConfig) -> String {
-    let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
+    let p = match prepare(cfg) {
+        Some(v) => v,
+        None => return String::new(),
+    };
     let (mut b, pl, pt, pw, ph) = open(cfg, 56, 42, 20, 52);
     let max_val = p.vmax.max(0.0);
     let min_val = p.vmin.min(0.0);
@@ -35,16 +42,23 @@ pub fn render(cfg: &LollipopConfig) -> String {
         let hx = hex6(col);
         push_b(&mut b, b"<line");
         data_attrs(&mut b, &p, i);
-        push_b(&mut b, b" x1=\""); push_i(&mut b, cx);
-        push_b(&mut b, b"\" y1=\""); push_i(&mut b, baseline);
-        push_b(&mut b, b"\" x2=\""); push_i(&mut b, cx);
-        push_b(&mut b, b"\" y2=\""); push_i(&mut b, y_v);
-        push_b(&mut b, b"\" stroke=\"#"); b.extend_from_slice(&hx);
+        push_b(&mut b, b" x1=\"");
+        push_i(&mut b, cx);
+        push_b(&mut b, b"\" y1=\"");
+        push_i(&mut b, baseline);
+        push_b(&mut b, b"\" x2=\"");
+        push_i(&mut b, cx);
+        push_b(&mut b, b"\" y2=\"");
+        push_i(&mut b, y_v);
+        push_b(&mut b, b"\" stroke=\"#");
+        b.extend_from_slice(&hx);
         push_b(&mut b, b"\" stroke-width=\"1.8\"/>");
         dot(&mut b, &p, i, cx, y_v, 5, col);
         if cfg.show_values {
-            push_b(&mut b, b"<text x=\""); push_i(&mut b, cx);
-            push_b(&mut b, b"\" y=\""); push_i(&mut b, y_v - 9);
+            push_b(&mut b, b"<text x=\"");
+            push_i(&mut b, cx);
+            push_b(&mut b, b"\" y=\"");
+            push_i(&mut b, y_v - 9);
             push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" fill=\"#374151\">");
             push_f2(&mut b, v);
             push_b(&mut b, b"</text>");
@@ -55,4 +69,3 @@ pub fn render(cfg: &LollipopConfig) -> String {
     }
     finalize(b, cfg)
 }
-

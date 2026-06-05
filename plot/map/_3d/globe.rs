@@ -1,11 +1,11 @@
-use crate::plot::{parse_all, apply_bg3d};
-use crate::plot::containers_3d::CameraController;
+use crate::core::math::{heat_color, spherical_to_cartesian};
 use crate::plot::camera::Point3D;
-use crate::core::math::{spherical_to_cartesian, heat_color};
 use crate::plot::containers_3d::render_3d_grid;
+use crate::plot::containers_3d::CameraController;
 use crate::plot::containers_3d::Cube3DContainer;
-use crate::plot::scale_renderer::render_scale_labels;
 use crate::plot::map::world_data;
+use crate::plot::scale_renderer::render_scale_labels;
+use crate::plot::{apply_bg3d, parse_all};
 
 const GLOBE_RADIUS: f32 = 0.45;
 
@@ -32,9 +32,12 @@ pub fn render_globe_3d(ctx: Globe3DRenderContext) {
     let half_w = ctx.plot_rect.width() / 2.0;
     let half_h = ctx.plot_rect.height() / 2.0;
 
-    let mut label_map: std::collections::HashMap<String, (usize, f64)> = std::collections::HashMap::new();
+    let mut label_map: std::collections::HashMap<String, (usize, f64)> =
+        std::collections::HashMap::new();
     for &actual_idx in ctx.visible_indices.iter() {
-        if actual_idx >= ctx.labels.len() { continue; }
+        if actual_idx >= ctx.labels.len() {
+            continue;
+        }
         let key = ctx.labels[actual_idx].to_uppercase();
         label_map.insert(key, (actual_idx, ctx.values[actual_idx]));
     }
@@ -53,22 +56,35 @@ pub fn render_globe_3d(ctx: Globe3DRenderContext) {
     let mut all_polys: Vec<CountryRender> = Vec::new();
 
     for shape in world_data::all_countries() {
-        let entry = label_map.get(&shape.id).or_else(|| label_map.get(&shape.name.to_uppercase()));
+        let entry = label_map
+            .get(&shape.id)
+            .or_else(|| label_map.get(&shape.name.to_uppercase()));
 
         let (fill, stroke) = if let Some(&(idx, value)) = entry {
             let is_hov = ctx.hovered_idx.map(|h| h == idx).unwrap_or(false);
             if is_hov {
-                (egui::Color32::from_rgb(255, 220, 50), egui::Stroke::new(1.5, egui::Color32::WHITE))
+                (
+                    egui::Color32::from_rgb(255, 220, 50),
+                    egui::Stroke::new(1.5, egui::Color32::WHITE),
+                )
             } else {
                 let (r, g, b) = heat_color(value, max_val);
-                (egui::Color32::from_rgb(r, g, b), egui::Stroke::new(0.5, egui::Color32::from_rgba_premultiplied(255, 255, 255, 60)))
+                (
+                    egui::Color32::from_rgb(r, g, b),
+                    egui::Stroke::new(
+                        0.5,
+                        egui::Color32::from_rgba_premultiplied(255, 255, 255, 60),
+                    ),
+                )
             }
         } else {
             (base_fill, egui::Stroke::new(0.3, border_color))
         };
 
         for poly in &shape.polygons {
-            if poly.len() < 3 { continue; }
+            if poly.len() < 3 {
+                continue;
+            }
 
             let mut projected = Vec::with_capacity(poly.len());
             let mut z_sum: f32 = 0.0;
@@ -92,7 +108,9 @@ pub fn render_globe_3d(ctx: Globe3DRenderContext) {
                 }
             }
 
-            if !all_visible || projected.len() < 3 { continue; }
+            if !all_visible || projected.len() < 3 {
+                continue;
+            }
 
             let z_avg = z_sum / projected.len() as f32;
             let data_idx = entry.map(|e| e.0);
@@ -107,7 +125,11 @@ pub fn render_globe_3d(ctx: Globe3DRenderContext) {
         }
     }
 
-    all_polys.sort_by(|a, b| a.z_order.partial_cmp(&b.z_order).unwrap_or(std::cmp::Ordering::Equal));
+    all_polys.sort_by(|a, b| {
+        a.z_order
+            .partial_cmp(&b.z_order)
+            .unwrap_or(std::cmp::Ordering::Equal)
+    });
 
     for cr in &all_polys {
         let mut path = egui::epaint::PathShape::closed_line(cr.projected.clone(), cr.stroke);
@@ -124,7 +146,9 @@ pub fn get_globe_3d_positions(
     plot_rect: egui::Rect,
 ) -> Vec<(egui::Pos2, usize)> {
     let n = visible_indices.len();
-    if n == 0 { return Vec::new(); }
+    if n == 0 {
+        return Vec::new();
+    }
 
     let center = plot_rect.center();
     let half_w = plot_rect.width() / 2.0;
@@ -159,7 +183,9 @@ pub fn get_globe_3d_positions_with_labels(
     plot_rect: egui::Rect,
 ) -> Vec<(egui::Pos2, usize)> {
     let n = visible_indices.len();
-    if n == 0 { return Vec::new(); }
+    if n == 0 {
+        return Vec::new();
+    }
 
     let center = plot_rect.center();
     let half_w = plot_rect.width() / 2.0;
@@ -168,7 +194,9 @@ pub fn get_globe_3d_positions_with_labels(
     let mut positions = Vec::with_capacity(n);
 
     for &actual_idx in visible_indices.iter() {
-        if actual_idx >= labels.len() { continue; }
+        if actual_idx >= labels.len() {
+            continue;
+        }
         let label = &labels[actual_idx];
 
         let (lat, lon) = if let Some(shape) = world_data::lookup_country(label) {
@@ -209,11 +237,26 @@ pub fn build_globe3d_chart(input: &str) -> String {
     let values = a.values.unwrap_or_default();
     let n = latitudes.len().min(longitudes.len()).min(values.len());
     let lbl = o.point_labels.clone().unwrap_or_default();
-    let cl = if lbl.is_empty() { (0..n).map(|i| format!("Point {}", i + 1)).collect() } else { lbl };
+    let cl = if lbl.is_empty() {
+        (0..n).map(|i| format!("Point {}", i + 1)).collect()
+    } else {
+        lbl
+    };
     let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
     let bg_str = o.bg_str();
-    apply_bg3d(crate::plot::map::_3d::render_globe3d_html(
-        title, &longitudes[..n], &latitudes[..n], &values[..n],
-        ("Longitude", "Latitude", "Value"), &cv, &cl, o.w(800), o.h(600), bg_str.as_deref(),
-    ), &o)
+    apply_bg3d(
+        crate::plot::map::_3d::render_globe3d_html(
+            title,
+            &longitudes[..n],
+            &latitudes[..n],
+            &values[..n],
+            ("Longitude", "Latitude", "Value"),
+            &cv,
+            &cl,
+            o.w(800),
+            o.h(600),
+            bg_str.as_deref(),
+        ),
+        &o,
+    )
 }

@@ -20,5 +20,3 @@ crate::chart_config!(SlopeConfig, 700, 500;
         show_text: true,
     }
 );
-
-

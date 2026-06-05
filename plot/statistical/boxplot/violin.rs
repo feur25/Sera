@@ -1,5 +1,4 @@
 use super::common::{
-
     compute_box, draw_box_vertical, draw_cat_label, draw_outliers_vertical, finish_frame,
     global_range, group_values, make_frame, open_axes, sorted_groups,
 };
@@ -33,7 +32,9 @@ pub fn render(cfg: &BoxplotConfig) -> String {
         let cx = f.pl + (ci as f64 * slot_w + slot_w / 2.0) as i32;
         let color = palette_color(cfg.palette, ci);
         let hx = hex6(color);
-        push_b(&mut f.buf, b"<g data-series=\""); push_i(&mut f.buf, ci as i32); push_b(&mut f.buf, b"\">");
+        push_b(&mut f.buf, b"<g data-series=\"");
+        push_i(&mut f.buf, ci as i32);
+        push_b(&mut f.buf, b"\">");
 
         let density = kde_profile(grp, gr.y_min, gr.y_max, 64);
         let max_d = density.iter().map(|d| d.1).fold(0f64, f64::max).max(1e-9);
@@ -65,16 +66,39 @@ pub fn render(cfg: &BoxplotConfig) -> String {
         f.buf.extend_from_slice(&hx);
         push_b(&mut f.buf, b"\" fill-opacity=\"0.22\" stroke=\"#");
         f.buf.extend_from_slice(&hx);
-        push_b(&mut f.buf, b"\" stroke-width=\"1.4\" stroke-opacity=\"0.85\"/>");
+        push_b(
+            &mut f.buf,
+            b"\" stroke-width=\"1.4\" stroke-opacity=\"0.85\"/>",
+        );
         let _ = push_f2;
 
-        draw_box_vertical(&mut f, cx, box_hw, st, color, cfg.fill_opacity + 0.18, cfg.stroke_width, cfg.notch, cat, ci as i32, gr.y_min, gr.range_y);
+        draw_box_vertical(
+            &mut f,
+            cx,
+            box_hw,
+            st,
+            color,
+            cfg.fill_opacity + 0.18,
+            cfg.stroke_width,
+            cfg.notch,
+            cat,
+            ci as i32,
+            gr.y_min,
+            gr.range_y,
+        );
         draw_outliers_vertical(&mut f, cx, st, color, 3.0, gr.y_min, gr.range_y);
         draw_cat_label(&mut f, cx, cat);
         push_b(&mut f.buf, b"</g>");
     }
 
-    finish_frame(&mut f, &cats, cfg.palette, cfg.x_label, cfg.y_label, legend_w);
+    finish_frame(
+        &mut f,
+        &cats,
+        cfg.palette,
+        cfg.x_label,
+        cfg.y_label,
+        legend_w,
+    );
     f.html(&slots_to_json(cfg.hover))
 }
 
@@ -102,4 +126,3 @@ fn kde_profile(vals: &[f64], y_min: f64, y_max: f64, n_pts: usize) -> Vec<(f64, 
         })
         .collect()
 }
-

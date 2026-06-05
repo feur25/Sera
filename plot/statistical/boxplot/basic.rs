@@ -1,5 +1,4 @@
 use super::common::{
-
     compute_box, draw_box_vertical, draw_cat_label, draw_outliers_vertical, finish_frame,
     global_range, group_values, make_frame, open_axes, rng_next, sorted_groups,
 };
@@ -13,7 +12,12 @@ pub fn render(cfg: &BoxplotConfig) -> String {
     render_with(cfg, cfg.notch, cfg.show_points, false)
 }
 
-pub fn render_with(cfg: &BoxplotConfig, notch: bool, show_points: bool, big_outliers: bool) -> String {
+pub fn render_with(
+    cfg: &BoxplotConfig,
+    notch: bool,
+    show_points: bool,
+    big_outliers: bool,
+) -> String {
     let n = cfg.category_labels.len().min(cfg.values.len());
     if n == 0 {
         return String::new();
@@ -39,7 +43,20 @@ pub fn render_with(cfg: &BoxplotConfig, notch: bool, show_points: bool, big_outl
         push_b(&mut f.buf, b"<g data-series=\"");
         push_i(&mut f.buf, ci as i32);
         push_b(&mut f.buf, b"\">");
-        draw_box_vertical(&mut f, cx, box_hw, st, color, cfg.fill_opacity, cfg.stroke_width, notch, cat, ci as i32, gr.y_min, gr.range_y);
+        draw_box_vertical(
+            &mut f,
+            cx,
+            box_hw,
+            st,
+            color,
+            cfg.fill_opacity,
+            cfg.stroke_width,
+            notch,
+            cat,
+            ci as i32,
+            gr.y_min,
+            gr.range_y,
+        );
         let outlier_r = if big_outliers { 4.5 } else { 3.0 };
         draw_outliers_vertical(&mut f, cx, st, color, outlier_r, gr.y_min, gr.range_y);
         if show_points {
@@ -66,7 +83,10 @@ pub fn render_with(cfg: &BoxplotConfig, notch: bool, show_points: bool, big_outl
                 push_i(&mut f.buf, cx + 8);
                 push_b(&mut f.buf, b"\" y=\"");
                 push_i(&mut f.buf, oy + 3);
-                push_b(&mut f.buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">#");
+                push_b(
+                    &mut f.buf,
+                    b"\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">#",
+                );
                 push_i(&mut f.buf, oi as i32 + 1);
                 push_b(&mut f.buf, b"</text>");
             }
@@ -75,7 +95,13 @@ pub fn render_with(cfg: &BoxplotConfig, notch: bool, show_points: bool, big_outl
         push_b(&mut f.buf, b"</g>");
     }
 
-    finish_frame(&mut f, &cats, cfg.palette, cfg.x_label, cfg.y_label, legend_w);
+    finish_frame(
+        &mut f,
+        &cats,
+        cfg.palette,
+        cfg.x_label,
+        cfg.y_label,
+        legend_w,
+    );
     f.html(&slots_to_json(cfg.hover))
 }
-

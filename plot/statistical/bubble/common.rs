@@ -15,40 +15,79 @@ pub struct BubbleLayout {
 }
 
 pub fn compute_layout(cfg: &BubbleConfig) -> Option<BubbleLayout> {
-    let n = cfg.x_values.len().min(cfg.y_values.len()).min(cfg.sizes.len());
-    if n == 0 { return None; }
+    let n = cfg
+        .x_values
+        .len()
+        .min(cfg.y_values.len())
+        .min(cfg.sizes.len());
+    if n == 0 {
+        return None;
+    }
 
-    let mut xmin = f64::INFINITY; let mut xmax = f64::NEG_INFINITY;
-    let mut ymin = f64::INFINITY; let mut ymax = f64::NEG_INFINITY;
-    let mut smin_abs = f64::INFINITY; let mut smax_abs = f64::NEG_INFINITY;
+    let mut xmin = f64::INFINITY;
+    let mut xmax = f64::NEG_INFINITY;
+    let mut ymin = f64::INFINITY;
+    let mut ymax = f64::NEG_INFINITY;
+    let mut smin_abs = f64::INFINITY;
+    let mut smax_abs = f64::NEG_INFINITY;
     for i in 0..n {
-        if cfg.x_values[i] < xmin { xmin = cfg.x_values[i]; }
-        if cfg.x_values[i] > xmax { xmax = cfg.x_values[i]; }
-        if cfg.y_values[i] < ymin { ymin = cfg.y_values[i]; }
-        if cfg.y_values[i] > ymax { ymax = cfg.y_values[i]; }
+        if cfg.x_values[i] < xmin {
+            xmin = cfg.x_values[i];
+        }
+        if cfg.x_values[i] > xmax {
+            xmax = cfg.x_values[i];
+        }
+        if cfg.y_values[i] < ymin {
+            ymin = cfg.y_values[i];
+        }
+        if cfg.y_values[i] > ymax {
+            ymax = cfg.y_values[i];
+        }
         let a = cfg.sizes[i].abs();
-        if a < smin_abs { smin_abs = a; }
-        if a > smax_abs { smax_abs = a; }
+        if a < smin_abs {
+            smin_abs = a;
+        }
+        if a > smax_abs {
+            smax_abs = a;
+        }
     }
     let xr = (xmax - xmin).max(1e-9);
     let yr = (ymax - ymin).max(1e-9);
-    let xpad = xr * 0.08; let ypad = yr * 0.08;
-    let xmin2 = xmin - xpad; let xmax2 = xmax + xpad;
-    let ymin2 = ymin - ypad; let ymax2 = ymax + ypad;
+    let xpad = xr * 0.08;
+    let ypad = yr * 0.08;
+    let xmin2 = xmin - xpad;
+    let xmax2 = xmax + xpad;
+    let ymin2 = ymin - ypad;
+    let ymax2 = ymax + ypad;
 
     let mut indices: Vec<usize> = (0..n).collect();
     let asc = cfg.sort_order == "asc" || cfg.sort_order == "ascending";
     if asc {
-        indices.sort_by(|&a, &b| cfg.sizes[a].abs().partial_cmp(&cfg.sizes[b].abs()).unwrap_or(std::cmp::Ordering::Equal));
+        indices.sort_by(|&a, &b| {
+            cfg.sizes[a]
+                .abs()
+                .partial_cmp(&cfg.sizes[b].abs())
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
     } else {
-        indices.sort_by(|&a, &b| cfg.sizes[b].abs().partial_cmp(&cfg.sizes[a].abs()).unwrap_or(std::cmp::Ordering::Equal));
+        indices.sort_by(|&a, &b| {
+            cfg.sizes[b]
+                .abs()
+                .partial_cmp(&cfg.sizes[a].abs())
+                .unwrap_or(std::cmp::Ordering::Equal)
+        });
     }
 
     Some(BubbleLayout {
         n,
-        xmin2, xmax2, ymin2, ymax2,
-        xr2: xmax2 - xmin2, yr2: ymax2 - ymin2,
-        smin: smin_abs, smax_abs,
+        xmin2,
+        xmax2,
+        ymin2,
+        ymax2,
+        xr2: xmax2 - xmin2,
+        yr2: ymax2 - ymin2,
+        smin: smin_abs,
+        smax_abs,
         indices,
     })
 }
@@ -80,7 +119,14 @@ pub fn lerp_color(a: u32, b: u32, t: f64) -> u32 {
 }
 
 pub fn make_frame(cfg: &BubbleConfig, n: usize, legend_w: i32) -> Frame {
-    Frame::new_html(cfg.title, cfg.width, cfg.height, 56, 38, 52, legend_w, n * 320 + 4096)
+    Frame::new_html(
+        cfg.title,
+        cfg.width,
+        cfg.height,
+        56,
+        38,
+        52,
+        legend_w,
+        n * 320 + 4096,
+    )
 }
-
-

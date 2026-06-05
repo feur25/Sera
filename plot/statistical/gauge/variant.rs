@@ -10,5 +10,3 @@ crate::plot_family! {
         Concentric => "concentric" | "rings" | "target" | "dual",
     }
 }
-
-

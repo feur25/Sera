@@ -1,7 +1,7 @@
 use std::collections::HashMap;
-use std::sync::{Mutex, OnceLock};
 use std::ffi::CStr;
 use std::os::raw::c_char;
+use std::sync::{Mutex, OnceLock};
 
 pub struct Plot3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -16,7 +16,13 @@ pub struct Plot3DRenderContext<'a> {
 }
 
 pub type Plot3DRenderer = fn(Plot3DRenderContext);
-pub type Plot3DPositioner = fn(&[f64], f64, &[usize], &crate::plot::containers_3d::CameraController, egui::Rect) -> Vec<(egui::Pos2, usize)>;
+pub type Plot3DPositioner = fn(
+    &[f64],
+    f64,
+    &[usize],
+    &crate::plot::containers_3d::CameraController,
+    egui::Rect,
+) -> Vec<(egui::Pos2, usize)>;
 
 pub(crate) struct Plot3DRegistry {
     entries: HashMap<u8, (String, Plot3DRenderer)>,
@@ -48,7 +54,8 @@ impl Plot3DRegistry {
     }
 
     fn list(&self) -> Vec<(u8, String)> {
-        self.entries.iter()
+        self.entries
+            .iter()
             .map(|(&id, (name, _))| (id, name.clone()))
             .collect()
     }
@@ -133,13 +140,13 @@ impl Plot3DTypeBuilder {
         if self.name.is_empty() {
             return Err("Name required".to_string());
         }
-        
+
         let renderer = self.renderer.ok_or("Renderer required")?;
-        
+
         if let Ok(mut reg) = get_registry().lock() {
             reg.register(self.id, self.name.clone(), renderer);
         }
-        
+
         Ok(())
     }
 }
@@ -164,12 +171,20 @@ impl Plot3DGroupBuilder {
 }
 
 #[no_mangle]
-pub extern "C" fn sera_register_plot_3d_type(_id: u8, _name: *const c_char, _renderer_id: u32) -> bool {
+pub extern "C" fn sera_register_plot_3d_type(
+    _id: u8,
+    _name: *const c_char,
+    _renderer_id: u32,
+) -> bool {
     false
 }
 
 #[no_mangle]
-pub extern "C" fn sera_register_plot_3d_group(group_name: *const c_char, type_ids: *const u8, count: u32) -> bool {
+pub extern "C" fn sera_register_plot_3d_group(
+    group_name: *const c_char,
+    type_ids: *const u8,
+    count: u32,
+) -> bool {
     if group_name.is_null() || type_ids.is_null() || count == 0 {
         return false;
     }
@@ -210,7 +225,10 @@ pub extern "C" fn sera_get_current_plot_3d_group() -> *const c_char {
 }
 
 #[no_mangle]
-pub extern "C" fn sera_get_plot_3d_group_types(group_name: *const c_char, count: *mut u32) -> *const u8 {
+pub extern "C" fn sera_get_plot_3d_group_types(
+    group_name: *const c_char,
+    count: *mut u32,
+) -> *const u8 {
     if group_name.is_null() || count.is_null() {
         return std::ptr::null();
     }
@@ -243,7 +261,7 @@ pub extern "C" fn sera_list_plot_3d_groups(count: *mut u32) -> *const *const c_c
             .into_iter()
             .map(|g| Box::leak(g.into_boxed_str()) as *const str as *const c_char)
             .collect();
-        
+
         unsafe { *count = result.len() as u32 };
         Box::leak(result.into_boxed_slice()).as_ptr()
     } else {
@@ -262,7 +280,13 @@ pub fn get_3d_positions(
 ) -> Vec<(egui::Pos2, usize)> {
     if let Ok(reg) = get_registry().lock() {
         if let Some(positioner) = reg.get_positioner(chart_type) {
-            return positioner(values, max_val, visible_indices, camera_controller, plot_rect);
+            return positioner(
+                values,
+                max_val,
+                visible_indices,
+                camera_controller,
+                plot_rect,
+            );
         }
     }
     Vec::new()
@@ -305,7 +329,8 @@ pub fn get_current_group_types() -> Vec<(u8, String)> {
         let group_name = grp_reg.get_current().to_string();
         if let Some(type_ids) = grp_reg.get_group(&group_name) {
             if let Ok(reg) = get_registry().lock() {
-                return type_ids.into_iter()
+                return type_ids
+                    .into_iter()
                     .filter_map(|id| reg.get(id).map(|(name, _)| (id, name)))
                     .collect();
             }
@@ -321,5 +346,3 @@ pub fn set_current_group(name: &str) -> bool {
         false
     }
 }
-
-

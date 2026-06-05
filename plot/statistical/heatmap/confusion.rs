@@ -9,9 +9,12 @@ pub fn render(cfg: &HeatmapConfig) -> String {
         annotate: true,
         show_values: true,
         smooth: true,
-        colorscale: if cfg.colorscale.is_empty() { "blues" } else { cfg.colorscale },
+        colorscale: if cfg.colorscale.is_empty() {
+            "blues"
+        } else {
+            cfg.colorscale
+        },
         ..clone_cfg(cfg)
     };
     render_core(&c)
 }
-

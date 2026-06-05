@@ -1,1 +1,1 @@
-pub use crate::ml::decomposition::{PCA, TruncatedSVD};
+pub use crate::ml::decomposition::{TruncatedSVD, PCA};

@@ -10,5 +10,3 @@ crate::plot_family! {
         Range    => "range" | "hl" | "highlow" | "spread",
     }
 }
-
-

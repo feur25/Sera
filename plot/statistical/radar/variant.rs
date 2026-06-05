@@ -11,5 +11,3 @@ crate::plot_family! {
         Deluxe   => "deluxe" | "premium" | "neon" | "glow",
     }
 }
-
-

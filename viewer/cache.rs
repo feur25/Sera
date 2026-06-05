@@ -1,5 +1,5 @@
-use std::collections::HashMap;
 use egui::Color32;
+use std::collections::HashMap;
 
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub struct CacheKey {
@@ -34,7 +34,7 @@ impl RenderCache {
         compute_fn: impl FnOnce() -> Vec<egui::Pos2>,
     ) -> Vec<egui::Pos2> {
         self.active_key = Some(key);
-        
+
         if let Some(cache) = self.projections.get(&key) {
             return cache.positions.clone();
         }
@@ -67,7 +67,10 @@ impl RenderCache {
     }
 
     pub fn memory_usage(&self) -> usize {
-        self.projections.values().map(|c| c.positions.len() * 16).sum()
+        self.projections
+            .values()
+            .map(|c| c.positions.len() * 16)
+            .sum()
     }
 }
 
@@ -116,10 +119,25 @@ mod tests {
 
     #[test]
     fn test_cache_key_equality() {
-        let key1 = CacheKey { chart_type: 0, is_3d: false, vertical: true, sort_mode: 0 };
-        let key2 = CacheKey { chart_type: 0, is_3d: false, vertical: true, sort_mode: 0 };
-        let key3 = CacheKey { chart_type: 0, is_3d: true, vertical: true, sort_mode: 0 };
-        
+        let key1 = CacheKey {
+            chart_type: 0,
+            is_3d: false,
+            vertical: true,
+            sort_mode: 0,
+        };
+        let key2 = CacheKey {
+            chart_type: 0,
+            is_3d: false,
+            vertical: true,
+            sort_mode: 0,
+        };
+        let key3 = CacheKey {
+            chart_type: 0,
+            is_3d: true,
+            vertical: true,
+            sort_mode: 0,
+        };
+
         assert_eq!(key1, key2);
         assert_ne!(key1, key3);
     }
@@ -127,12 +145,16 @@ mod tests {
     #[test]
     fn test_render_cache_basic() {
         let mut cache = RenderCache::new();
-        let key = CacheKey { chart_type: 0, is_3d: false, vertical: true, sort_mode: 0 };
-        
-        let positions = cache.get_or_create_positions(key, || {
-            vec![egui::pos2(0.0, 0.0), egui::pos2(100.0, 50.0)]
-        });
-        
+        let key = CacheKey {
+            chart_type: 0,
+            is_3d: false,
+            vertical: true,
+            sort_mode: 0,
+        };
+
+        let positions = cache
+            .get_or_create_positions(key, || vec![egui::pos2(0.0, 0.0), egui::pos2(100.0, 50.0)]);
+
         assert_eq!(positions.len(), 2);
         assert_eq!(cache.active_key, Some(key));
     }
@@ -140,44 +162,70 @@ mod tests {
     #[test]
     fn test_render_cache_hit() {
         let mut cache = RenderCache::new();
-        let key = CacheKey { chart_type: 0, is_3d: false, vertical: true, sort_mode: 0 };
-        
-        let pos1 = cache.get_or_create_positions(key, || {
-            vec![egui::pos2(0.0, 0.0)]
-        });
-        
-        let pos2 = cache.get_or_create_positions(key, || {
-            vec![egui::pos2(99.0, 99.0)]
-        });
-        
+        let key = CacheKey {
+            chart_type: 0,
+            is_3d: false,
+            vertical: true,
+            sort_mode: 0,
+        };
+
+        let pos1 = cache.get_or_create_positions(key, || vec![egui::pos2(0.0, 0.0)]);
+
+        let pos2 = cache.get_or_create_positions(key, || vec![egui::pos2(99.0, 99.0)]);
+
         assert_eq!(pos1, pos2);
     }
 
     #[test]
     fn test_render_cache_update_active() {
         let mut cache = RenderCache::new();
-        let key1 = CacheKey { chart_type: 0, is_3d: false, vertical: true, sort_mode: 0 };
-        let key2 = CacheKey { chart_type: 1, is_3d: false, vertical: true, sort_mode: 0 };
-        
+        let key1 = CacheKey {
+            chart_type: 0,
+            is_3d: false,
+            vertical: true,
+            sort_mode: 0,
+        };
+        let key2 = CacheKey {
+            chart_type: 1,
+            is_3d: false,
+            vertical: true,
+            sort_mode: 0,
+        };
+
         cache.get_or_create_positions(key1, || vec![egui::pos2(0.0, 0.0)]);
         cache.update_active(key2);
-        
+
         assert_eq!(cache.active_key, Some(key2));
     }
 
     #[test]
     fn test_render_cache_invalidate_except() {
         let mut cache = RenderCache::new();
-        let key1 = CacheKey { chart_type: 0, is_3d: false, vertical: true, sort_mode: 0 };
-        let key2 = CacheKey { chart_type: 1, is_3d: false, vertical: true, sort_mode: 0 };
-        let key3 = CacheKey { chart_type: 2, is_3d: false, vertical: true, sort_mode: 0 };
-        
+        let key1 = CacheKey {
+            chart_type: 0,
+            is_3d: false,
+            vertical: true,
+            sort_mode: 0,
+        };
+        let key2 = CacheKey {
+            chart_type: 1,
+            is_3d: false,
+            vertical: true,
+            sort_mode: 0,
+        };
+        let key3 = CacheKey {
+            chart_type: 2,
+            is_3d: false,
+            vertical: true,
+            sort_mode: 0,
+        };
+
         cache.get_or_create_positions(key1, || vec![egui::pos2(0.0, 0.0)]);
         cache.get_or_create_positions(key2, || vec![egui::pos2(1.0, 1.0)]);
         cache.get_or_create_positions(key3, || vec![egui::pos2(2.0, 2.0)]);
-        
+
         cache.invalidate_except(key2);
-        
+
         assert_eq!(cache.projections.len(), 1);
         assert!(cache.projections.contains_key(&key2));
     }
@@ -186,9 +234,7 @@ mod tests {
     fn test_color_cache() {
         let cache = ColorCache::new();
         let colors = cache.colors();
-        
+
         assert_eq!(colors.len(), 10);
     }
 }
-
-

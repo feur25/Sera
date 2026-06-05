@@ -1,6 +1,11 @@
 use super::helpers::*;
 
-#[crate::sera_doc(category = "Naive Bayes", en = "Gaussian Naive Bayes — likelihood modelled as Gaussian per class per feature.", fr = "Naive Bayes Gaussien — vraisemblance modélisée comme Gaussienne par classe et feature.", file = "naive-bayes.md")]
+#[crate::sera_doc(
+    category = "Naive Bayes",
+    en = "Gaussian Naive Bayes — likelihood modelled as Gaussian per class per feature.",
+    fr = "Naive Bayes Gaussien — vraisemblance modélisée comme Gaussienne par classe et feature.",
+    file = "naive-bayes.md"
+)]
 #[crate::sera_alias("gaussian_nb")]
 pub fn ml_gaussian_nb(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -10,7 +15,10 @@ pub fn ml_gaussian_nb(input: &str) -> String {
     let y = yi(&v);
     model.fit(&xf, n, p, &y);
     let preds = model.predict(&xtf, nt, p);
-    format!(r#"{{"predictions":{}}}"#, serde_json::to_string(&preds).unwrap_or_default())
+    format!(
+        r#"{{"predictions":{}}}"#,
+        serde_json::to_string(&preds).unwrap_or_default()
+    )
 }
 
 #[crate::sera_alias("multinomial_nb")]
@@ -21,7 +29,10 @@ pub fn ml_multinomial_nb(input: &str) -> String {
     let y = yi(&v);
     model.fit(&xf, n, p, &y);
     let preds = model.predict(&xtf, nt, p);
-    format!(r#"{{"predictions":{}}}"#, serde_json::to_string(&preds).unwrap_or_default())
+    format!(
+        r#"{{"predictions":{}}}"#,
+        serde_json::to_string(&preds).unwrap_or_default()
+    )
 }
 
 #[crate::sera_alias("bernoulli_nb")]
@@ -33,5 +44,8 @@ pub fn ml_bernoulli_nb(input: &str) -> String {
     let y = yi(&v);
     model.fit(&xf, n, p, &y);
     let preds = model.predict(&xtf, nt, p);
-    format!(r#"{{"predictions":{}}}"#, serde_json::to_string(&preds).unwrap_or_default())
+    format!(
+        r#"{{"predictions":{}}}"#,
+        serde_json::to_string(&preds).unwrap_or_default()
+    )
 }

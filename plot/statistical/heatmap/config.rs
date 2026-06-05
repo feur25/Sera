@@ -72,5 +72,3 @@ crate::chart_config!(HeatmapConfig, 720, 0;
         secondary_matrix: &[],
     }
 );
-
-

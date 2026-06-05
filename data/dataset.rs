@@ -8,12 +8,18 @@ use crate::core::dispatch::{map_par, stats_par, std_dev_par};
 impl<T: Copy> DataPoint<T> {
     #[inline]
     pub fn new(value: T, label: impl Into<String>) -> Self {
-        Self { value, label: label.into() }
+        Self {
+            value,
+            label: label.into(),
+        }
     }
 
     #[inline]
     pub fn map_value<U: Copy, F: Fn(T) -> U>(&self, f: F) -> DataPoint<U> {
-        DataPoint { value: f(self.value), label: self.label.clone() }
+        DataPoint {
+            value: f(self.value),
+            label: self.label.clone(),
+        }
     }
 }
 
@@ -25,12 +31,18 @@ pub struct Dataset<T: Copy> {
 impl<T: Copy> Dataset<T> {
     #[inline]
     pub fn new(name: impl Into<String>) -> Self {
-        Self { name: name.into(), points: Vec::new() }
+        Self {
+            name: name.into(),
+            points: Vec::new(),
+        }
     }
 
     #[inline]
     pub fn with_capacity(name: impl Into<String>, cap: usize) -> Self {
-        Self { name: name.into(), points: Vec::with_capacity(cap) }
+        Self {
+            name: name.into(),
+            points: Vec::with_capacity(cap),
+        }
     }
 
     #[inline]
@@ -134,8 +146,8 @@ impl Dataset<f64> {
             return 0.0;
         }
         let m = self.mean();
-        let variance = self.values().map(|x| (x - m) * (x - m)).sum::<f64>()
-            / (self.points.len() - 1) as f64;
+        let variance =
+            self.values().map(|x| (x - m) * (x - m)).sum::<f64>() / (self.points.len() - 1) as f64;
         variance.sqrt()
     }
 
@@ -153,10 +165,7 @@ impl Dataset<f64> {
     }
 
     pub fn map_par<F: Fn(f64) -> f64 + Sync + Send>(&self, f: F) -> Dataset<f64> {
-        let vals: Vec<f64> = map_par(
-            self.points.as_slice(),
-            move |p| f(p.value),
-        );
+        let vals: Vec<f64> = map_par(self.points.as_slice(), move |p| f(p.value));
         let mut out = Dataset::with_capacity(self.name.clone(), vals.len());
         for (v, p) in vals.into_iter().zip(self.points.iter()) {
             out.push(v, p.label.as_str());
@@ -169,17 +178,28 @@ impl Dataset<f64> {
         let s = stats_par(&vals);
         let mean = s.mean();
         let std_dev = std_dev_par(&vals, mean);
-        DatasetStats { min: s.min, max: s.max, mean, std_dev, sum: s.sum, count: s.count }
+        DatasetStats {
+            min: s.min,
+            max: s.max,
+            mean,
+            std_dev,
+            sum: s.sum,
+            count: s.count,
+        }
     }
 
     pub fn into_chunks(self, n: usize) -> Vec<Dataset<f64>> {
         let chunk_size = (self.points.len() + n.max(1) - 1) / n.max(1);
-        if chunk_size == 0 { return vec![self]; }
+        if chunk_size == 0 {
+            return vec![self];
+        }
         self.points
             .chunks(chunk_size)
             .map(|chunk| {
                 let mut ds = Dataset::with_capacity(self.name.clone(), chunk.len());
-                for p in chunk { ds.push(p.value, p.label.as_str()); }
+                for p in chunk {
+                    ds.push(p.value, p.label.as_str());
+                }
                 ds
             })
             .collect()

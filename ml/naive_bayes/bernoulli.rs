@@ -14,8 +14,13 @@ pub struct BernoulliNB {
 impl BernoulliNB {
     pub fn new(alpha: f64, binarize: f64) -> Self {
         Self {
-            classes: Vec::new(), log_priors: Vec::new(), log_probs: Vec::new(),
-            log_neg_probs: Vec::new(), alpha, binarize, p: 0,
+            classes: Vec::new(),
+            log_priors: Vec::new(),
+            log_probs: Vec::new(),
+            log_neg_probs: Vec::new(),
+            alpha,
+            binarize,
+            p: 0,
         }
     }
 
@@ -33,41 +38,59 @@ impl BernoulliNB {
         let cmax = *self.classes.iter().max().unwrap();
         let crange = (cmax - cmin + 1) as usize;
         let mut cmap = vec![0u8; crange];
-        for (i, &c) in self.classes.iter().enumerate() { cmap[(c - cmin) as usize] = i as u8; }
-        let class_map: Vec<usize> = y.iter().map(|&v| cmap[(v - cmin) as usize] as usize).collect();
+        for (i, &c) in self.classes.iter().enumerate() {
+            cmap[(c - cmin) as usize] = i as u8;
+        }
+        let class_map: Vec<usize> = y
+            .iter()
+            .map(|&v| cmap[(v - cmin) as usize] as usize)
+            .collect();
 
         let chunk = 4096usize;
         let (feature_counts_f, class_counts_v) = if n >= 8192 {
             let nc = (n + chunk - 1) / chunk;
-            (0..nc).into_par_iter().fold(
-                || (vec![0.0f64; kp], vec![0.0f64; k]),
-                |(mut fc, mut cc), ci| {
-                    let start = ci * chunk;
-                    let end = (start + chunk).min(n);
-                    for i in start..end {
-                        let c = class_map[i];
-                        cc[c] += 1.0;
-                        for j in 0..p {
-                            if x[i * p + j] > binarize { fc[c * p + j] += 1.0; }
+            (0..nc)
+                .into_par_iter()
+                .fold(
+                    || (vec![0.0f64; kp], vec![0.0f64; k]),
+                    |(mut fc, mut cc), ci| {
+                        let start = ci * chunk;
+                        let end = (start + chunk).min(n);
+                        for i in start..end {
+                            let c = class_map[i];
+                            cc[c] += 1.0;
+                            for j in 0..p {
+                                if x[i * p + j] > binarize {
+                                    fc[c * p + j] += 1.0;
+                                }
+                            }
                         }
-                    }
-                    (fc, cc)
-                }
-            ).reduce(
-                || (vec![0.0f64; kp], vec![0.0f64; k]),
-                |(mut a, mut b), (a2, b2)| {
-                    for i in 0..kp { a[i] += a2[i]; }
-                    for i in 0..k { b[i] += b2[i]; }
-                    (a, b)
-                }
-            )
+                        (fc, cc)
+                    },
+                )
+                .reduce(
+                    || (vec![0.0f64; kp], vec![0.0f64; k]),
+                    |(mut a, mut b), (a2, b2)| {
+                        for i in 0..kp {
+                            a[i] += a2[i];
+                        }
+                        for i in 0..k {
+                            b[i] += b2[i];
+                        }
+                        (a, b)
+                    },
+                )
         } else {
             let mut fc = vec![0.0f64; kp];
             let mut cc = vec![0.0f64; k];
             for i in 0..n {
                 let c = class_map[i];
                 cc[c] += 1.0;
-                for j in 0..p { if x[i * p + j] > binarize { fc[c * p + j] += 1.0; } }
+                for j in 0..p {
+                    if x[i * p + j] > binarize {
+                        fc[c * p + j] += 1.0;
+                    }
+                }
             }
             (fc, cc)
         };
@@ -81,7 +104,8 @@ impl BernoulliNB {
         self.log_neg_probs = vec![0.0; k * p];
         for c in 0..k {
             for j in 0..p {
-                let prob = (feature_counts[c * p + j] + self.alpha) / (class_counts[c] + 2.0 * self.alpha);
+                let prob =
+                    (feature_counts[c * p + j] + self.alpha) / (class_counts[c] + 2.0 * self.alpha);
                 self.log_probs[c * p + j] = prob.ln();
                 self.log_neg_probs[c * p + j] = (1.0 - prob).ln();
             }
@@ -96,10 +120,16 @@ impl BernoulliNB {
             for c in 0..self.classes.len() {
                 let mut s = self.log_priors[c];
                 for j in 0..p {
-                    if xi[j] > self.binarize { s += self.log_probs[c * p + j]; }
-                    else { s += self.log_neg_probs[c * p + j]; }
+                    if xi[j] > self.binarize {
+                        s += self.log_probs[c * p + j];
+                    } else {
+                        s += self.log_neg_probs[c * p + j];
+                    }
                 }
-                if s > best_s { best_s = s; best = c; }
+                if s > best_s {
+                    best_s = s;
+                    best = c;
+                }
             }
             self.classes[best]
         };
@@ -114,20 +144,30 @@ impl BernoulliNB {
         let k = self.classes.len();
         let compute_row = |i: usize| -> Vec<f64> {
             let xi = &x[i * p..(i + 1) * p];
-            let scores: Vec<f64> = (0..k).map(|c| {
-                let mut s = self.log_priors[c];
-                for j in 0..p {
-                    if xi[j] > self.binarize { s += self.log_probs[c * p + j]; }
-                    else { s += self.log_neg_probs[c * p + j]; }
-                }
-                s
-            }).collect();
+            let scores: Vec<f64> = (0..k)
+                .map(|c| {
+                    let mut s = self.log_priors[c];
+                    for j in 0..p {
+                        if xi[j] > self.binarize {
+                            s += self.log_probs[c * p + j];
+                        } else {
+                            s += self.log_neg_probs[c * p + j];
+                        }
+                    }
+                    s
+                })
+                .collect();
             let max_s = scores.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
             let mut row = vec![0.0; k];
             let mut sum = 0.0;
-            for c in 0..k { row[c] = (scores[c] - max_s).exp(); sum += row[c]; }
+            for c in 0..k {
+                row[c] = (scores[c] - max_s).exp();
+                sum += row[c];
+            }
             let inv = 1.0 / sum;
-            for v in row.iter_mut() { *v *= inv; }
+            for v in row.iter_mut() {
+                *v *= inv;
+            }
             row
         };
         if n >= 512 {
@@ -139,8 +179,10 @@ impl BernoulliNB {
 }
 
 impl crate::ml::MlClassifier for BernoulliNB {
-    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) { self.fit(x, n, p, y); }
-    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> { self.predict(x, n, p) }
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) {
+        self.fit(x, n, p, y);
+    }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> {
+        self.predict(x, n, p)
+    }
 }
-
-

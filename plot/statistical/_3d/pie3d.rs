@@ -1,19 +1,32 @@
-use crate::plot::{parse_all, apply_bg3d};
 use crate::html::js_3d::render_3d_html;
+use crate::plot::{apply_bg3d, parse_all};
 
 pub fn render_pie3d_html(
     title: &str,
-    x: &[f64], y: &[f64], z: &[f64],
+    x: &[f64],
+    y: &[f64],
+    z: &[f64],
     axis_labels: (&str, &str, &str),
     colors: &[f64],
     color_labels: &[String],
-    w: i32, h: i32,
+    w: i32,
+    h: i32,
     bg_color: Option<&str>,
 ) -> String {
-    render_3d_html(7, title, x, y, z, axis_labels, colors, color_labels, w, h, bg_color)
+    render_3d_html(
+        7,
+        title,
+        x,
+        y,
+        z,
+        axis_labels,
+        colors,
+        color_labels,
+        w,
+        h,
+        bg_color,
+    )
 }
-
-
 
 #[crate::sera_alias("pie3d", "pie_3d", "pie3d_chart", "pie3d_family", "pies3d")]
 #[crate::sera_builder]
@@ -31,8 +44,16 @@ pub fn build_pie3d_chart(input: &str) -> String {
     let cv: Vec<f64> = (0..n).map(|i| i as f64).collect();
     let bg_str = o.bg_str();
     let html = crate::plot::statistical::_3d::render_pie3d_html(
-        title, &xv, &yv, &values[..n], ("", "", ""), &cv, &labels[..n].to_vec(),
-        o.w(700), o.h(560), bg_str.as_deref(),
+        title,
+        &xv,
+        &yv,
+        &values[..n],
+        ("", "", ""),
+        &cv,
+        &labels[..n].to_vec(),
+        o.w(700),
+        o.h(560),
+        bg_str.as_deref(),
     );
     apply_bg3d(html, &o)
 }

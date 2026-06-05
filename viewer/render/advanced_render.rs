@@ -132,14 +132,13 @@ impl AdvancedBatchRenderer {
         self.circles.extend(commands);
     }
 
-    pub fn add_line(
-        &mut self,
-        from: egui::Pos2,
-        to: egui::Pos2,
-        color: egui::Color32,
-        width: f32,
-    ) {
-        self.lines.push(LineCommand { from, to, color, width });
+    pub fn add_line(&mut self, from: egui::Pos2, to: egui::Pos2, color: egui::Color32, width: f32) {
+        self.lines.push(LineCommand {
+            from,
+            to,
+            color,
+            width,
+        });
     }
 
     pub fn add_text(&mut self, pos: egui::Pos2, text: String, color: egui::Color32) {
@@ -314,5 +313,3 @@ impl DataCache {
         self.is_valid = true;
     }
 }
-
-

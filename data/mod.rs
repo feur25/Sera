@@ -1,6 +1,3 @@
-pub mod loader;
 pub mod dataset;
-pub use dataset::{Dataset, DataPoint, DatasetStats};
-
-
-
+pub mod loader;
+pub use dataset::{DataPoint, Dataset, DatasetStats};

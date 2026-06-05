@@ -11,5 +11,3 @@ crate::plot_family! {
         Ribbon      => "ribbon" | "flow" | "band" | "filled_bezier",
     }
 }
-
-

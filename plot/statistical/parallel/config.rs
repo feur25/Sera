@@ -22,5 +22,3 @@ crate::chart_config!(ParallelConfig, 1000, 500;
         color_axis: -1,
     }
 );
-
-

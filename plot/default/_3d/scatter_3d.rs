@@ -1,7 +1,7 @@
-use super::super::super::containers_3d::{CameraController, Cube3DContainer};
 use super::super::super::camera::Point3D;
-use super::super::super::scale_renderer::render_scale_labels;
 use super::super::super::containers_3d::render_3d_grid;
+use super::super::super::containers_3d::{CameraController, Cube3DContainer};
+use super::super::super::scale_renderer::render_scale_labels;
 
 pub struct Scatter3DRenderContext<'a> {
     pub painter: &'a egui::Painter,
@@ -41,9 +41,21 @@ pub fn render_points_3d(ctx: Scatter3DRenderContext) {
         let y_idx = (vis_idx % (cube_size * cube_size)) / cube_size;
         let z_idx = vis_idx / (cube_size * cube_size);
 
-        let u = if cube_size > 1 { x_idx as f32 / (cube_size - 1) as f32 } else { 0.5 };
-        let v = if cube_size > 1 { y_idx as f32 / (cube_size - 1) as f32 } else { 0.5 };
-        let w = if cube_size > 1 { z_idx as f32 / (cube_size - 1) as f32 } else { norm_val };
+        let u = if cube_size > 1 {
+            x_idx as f32 / (cube_size - 1) as f32
+        } else {
+            0.5
+        };
+        let v = if cube_size > 1 {
+            y_idx as f32 / (cube_size - 1) as f32
+        } else {
+            0.5
+        };
+        let w = if cube_size > 1 {
+            z_idx as f32 / (cube_size - 1) as f32
+        } else {
+            norm_val
+        };
 
         let point_3d = cube.point_normalized(u, v, w);
 
@@ -101,9 +113,21 @@ pub fn get_3d_positions(
         let y_idx = (vis_idx % (cube_size * cube_size)) / cube_size;
         let z_idx = vis_idx / (cube_size * cube_size);
 
-        let u = if cube_size > 1 { x_idx as f32 / (cube_size - 1) as f32 } else { 0.5 };
-        let v = if cube_size > 1 { y_idx as f32 / (cube_size - 1) as f32 } else { 0.5 };
-        let w = if cube_size > 1 { z_idx as f32 / (cube_size - 1) as f32 } else { norm_val };
+        let u = if cube_size > 1 {
+            x_idx as f32 / (cube_size - 1) as f32
+        } else {
+            0.5
+        };
+        let v = if cube_size > 1 {
+            y_idx as f32 / (cube_size - 1) as f32
+        } else {
+            0.5
+        };
+        let w = if cube_size > 1 {
+            z_idx as f32 / (cube_size - 1) as f32
+        } else {
+            norm_val
+        };
 
         let point_3d = cube.point_normalized(u, v, w);
 
@@ -130,8 +154,16 @@ pub fn render_scatter3d_html(
     bg_color: Option<&str>,
 ) -> String {
     crate::html::js_3d::render_3d_html(
-        0, title, x_values, y_values, z_values,
-        axis_labels, color_values, color_labels, width, height, bg_color,
+        0,
+        title,
+        x_values,
+        y_values,
+        z_values,
+        axis_labels,
+        color_values,
+        color_labels,
+        width,
+        height,
+        bg_color,
     )
 }
-

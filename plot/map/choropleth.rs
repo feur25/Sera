@@ -1,7 +1,7 @@
-use crate::plot::{parse_all, apply};
-use crate::plot::default::PlotRenderContext;
-use crate::core::math::heat_color;
 use super::world_data;
+use crate::core::math::heat_color;
+use crate::plot::default::PlotRenderContext;
+use crate::plot::{apply, parse_all};
 
 pub fn render_choropleth_fast(
     values: &[f64],
@@ -10,7 +10,9 @@ pub fn render_choropleth_fast(
     height: i32,
 ) -> String {
     let n = values.len().min(labels.len());
-    if n == 0 { return String::new(); }
+    if n == 0 {
+        return String::new();
+    }
 
     let (_, max_val) = crate::bindings::utils::simd_ops::find_minmax(values);
     let max_val = max_val.max(1.0);
@@ -37,7 +39,9 @@ pub fn render_choropleth_fast(
                 for (j, pt) in poly.iter().enumerate() {
                     let px = pt[0] * width as f32;
                     let py = pt[1] * height as f32;
-                    if j > 0 { svg.push_str(" L"); }
+                    if j > 0 {
+                        svg.push_str(" L");
+                    }
                     svg.push_str(&format!("{:.1},{:.1}", px, py));
                 }
                 svg.push_str(" Z\" fill=\"rgb(");
@@ -61,12 +65,16 @@ fn render_svg_country_outlines(svg: &mut String, width: i32, height: i32) {
     for shape in world_data::all_countries() {
         let polys = world_data::normalized_polygons(shape);
         for poly in &polys {
-            if poly.len() < 3 { continue; }
+            if poly.len() < 3 {
+                continue;
+            }
             svg.push_str("<path d=\"M");
             for (j, pt) in poly.iter().enumerate() {
                 let px = pt[0] * width as f32;
                 let py = pt[1] * height as f32;
-                if j > 0 { svg.push_str(" L"); }
+                if j > 0 {
+                    svg.push_str(" L");
+                }
                 svg.push_str(&format!("{:.1},{:.1}", px, py));
             }
             svg.push_str(" Z\" fill=\"#1a1a2e\" stroke=\"#2a2a4a\" stroke-width=\"0.3\"/>");
@@ -77,7 +85,8 @@ fn render_svg_country_outlines(svg: &mut String, width: i32, height: i32) {
 pub fn render_choropleth(ctx: PlotRenderContext) {
     let _n = ctx.visible_indices.len();
 
-    ctx.painter.rect_filled(ctx.plot_rect, 0.0, egui::Color32::from_rgb(15, 15, 30));
+    ctx.painter
+        .rect_filled(ctx.plot_rect, 0.0, egui::Color32::from_rgb(15, 15, 30));
 
     let max_val = ctx.max_val.max(1.0);
     let w = ctx.plot_rect.width();
@@ -85,37 +94,57 @@ pub fn render_choropleth(ctx: PlotRenderContext) {
     let ox = ctx.plot_rect.left();
     let oy = ctx.plot_rect.top();
 
-    let mut label_map: std::collections::HashMap<String, (usize, f64)> = std::collections::HashMap::new();
+    let mut label_map: std::collections::HashMap<String, (usize, f64)> =
+        std::collections::HashMap::new();
     for &actual_idx in ctx.visible_indices.iter() {
-        if actual_idx >= ctx.labels.len() { continue; }
+        if actual_idx >= ctx.labels.len() {
+            continue;
+        }
         let key = ctx.labels[actual_idx].to_uppercase();
         label_map.insert(key, (actual_idx, ctx.values[actual_idx]));
     }
 
-    let border_stroke = egui::Stroke::new(0.4, egui::Color32::from_rgba_premultiplied(50, 50, 80, 100));
+    let border_stroke =
+        egui::Stroke::new(0.4, egui::Color32::from_rgba_premultiplied(50, 50, 80, 100));
     let base_fill = egui::Color32::from_rgb(26, 26, 46);
 
     for shape in world_data::all_countries() {
         let polys = world_data::normalized_polygons(shape);
-        let entry = label_map.get(&shape.id).or_else(|| label_map.get(&shape.name.to_uppercase()));
+        let entry = label_map
+            .get(&shape.id)
+            .or_else(|| label_map.get(&shape.name.to_uppercase()));
 
         let (fill, stroke, is_data) = if let Some(&(idx, value)) = entry {
             let is_hov = ctx.hovered_idx.map(|h| h == idx).unwrap_or(false);
             if is_hov {
-                (egui::Color32::from_rgb(255, 220, 50), egui::Stroke::new(1.5, egui::Color32::WHITE), true)
+                (
+                    egui::Color32::from_rgb(255, 220, 50),
+                    egui::Stroke::new(1.5, egui::Color32::WHITE),
+                    true,
+                )
             } else {
                 let (r, g, b) = heat_color(value, max_val);
-                (egui::Color32::from_rgb(r, g, b), egui::Stroke::new(0.6, egui::Color32::from_rgba_premultiplied(255, 255, 255, 60)), true)
+                (
+                    egui::Color32::from_rgb(r, g, b),
+                    egui::Stroke::new(
+                        0.6,
+                        egui::Color32::from_rgba_premultiplied(255, 255, 255, 60),
+                    ),
+                    true,
+                )
             }
         } else {
             (base_fill, border_stroke, false)
         };
 
         for poly in &polys {
-            if poly.len() < 3 { continue; }
-            let points: Vec<egui::Pos2> = poly.iter().map(|pt| {
-                egui::pos2(ox + pt[0] * w, oy + pt[1] * h)
-            }).collect();
+            if poly.len() < 3 {
+                continue;
+            }
+            let points: Vec<egui::Pos2> = poly
+                .iter()
+                .map(|pt| egui::pos2(ox + pt[0] * w, oy + pt[1] * h))
+                .collect();
             let path = egui::epaint::PathShape::closed_line(points.clone(), stroke);
             let mut path = path;
             path.fill = fill;
@@ -155,7 +184,9 @@ pub fn render_svg_choropleth(
     _vertical: bool,
 ) {
     let n = values.len();
-    if n == 0 { return; }
+    if n == 0 {
+        return;
+    }
     let max_val = max_val.max(1.0);
 
     for i in 0..n {
@@ -190,14 +221,21 @@ pub fn render_choropleth_html(
     height: i32,
     hover: &[crate::html::hover::HoverSlot],
 ) -> String {
-    use crate::html::hover::{HoverSlot, slots_to_json, build_chart_html};
+    use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
     let n = values.len().min(labels.len());
-    if n == 0 { return String::new(); }
+    if n == 0 {
+        return String::new();
+    }
     let auto = hover.is_empty();
-    let mut auto_slots: Vec<HoverSlot> = if auto { Vec::with_capacity(n) } else { Vec::new() };
+    let mut auto_slots: Vec<HoverSlot> = if auto {
+        Vec::with_capacity(n)
+    } else {
+        Vec::new()
+    };
     if auto {
         for i in 0..n {
-            auto_slots.push(HoverSlot::new(labels[i].clone()).kv("Valeur", format!("{:.2}", values[i])));
+            auto_slots
+                .push(HoverSlot::new(labels[i].clone()).kv("Valeur", format!("{:.2}", values[i])));
         }
     }
     let mut svg = render_choropleth_fast(values, labels, width, height);
@@ -206,9 +244,13 @@ pub fn render_choropleth_html(
     build_chart_html(title, &svg, &slots_to_json(slots))
 }
 
-
-
-#[crate::sera_alias("choropleth", "choropleths", "choropleth_map", "choropleth_chart", "geo_map")]
+#[crate::sera_alias(
+    "choropleth",
+    "choropleths",
+    "choropleth_map",
+    "choropleth_chart",
+    "geo_map"
+)]
 #[crate::sera_builder]
 pub fn build_choropleth(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
@@ -216,6 +258,13 @@ pub fn build_choropleth(input: &str) -> String {
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
     let hover = o.hj();
-    let html = crate::plot::map::render_choropleth_html(title, &labels, &values, o.w(1200), o.h(600), &hover);
+    let html = crate::plot::map::render_choropleth_html(
+        title,
+        &labels,
+        &values,
+        o.w(1200),
+        o.h(600),
+        &hover,
+    );
     apply(html, &o)
 }

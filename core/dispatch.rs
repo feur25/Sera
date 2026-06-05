@@ -1,6 +1,6 @@
-use rayon::prelude::*;
+use super::adaptive_exec::{effective_chunk, effective_par_threshold, with_retry};
 use super::hw_profile::hw;
-use super::adaptive_exec::{effective_par_threshold, effective_chunk, with_retry};
+use rayon::prelude::*;
 
 #[inline]
 pub fn map_par<T, U, F>(data: &[T], f: F) -> Vec<U>
@@ -75,20 +75,22 @@ pub fn minmax_par(data: &[f64]) -> (f64, f64) {
         if data.len() >= effective_par_threshold() {
             data.par_chunks(chunk)
                 .map(|c| {
-                    c.iter().copied().fold(
-                        (f64::INFINITY, f64::NEG_INFINITY),
-                        |(mn, mx), v| (mn.min(v), mx.max(v)),
-                    )
+                    c.iter()
+                        .copied()
+                        .fold((f64::INFINITY, f64::NEG_INFINITY), |(mn, mx), v| {
+                            (mn.min(v), mx.max(v))
+                        })
                 })
                 .reduce(
                     || (f64::INFINITY, f64::NEG_INFINITY),
                     |(amn, amx), (bmn, bmx)| (amn.min(bmn), amx.max(bmx)),
                 )
         } else {
-            data.iter().copied().fold(
-                (f64::INFINITY, f64::NEG_INFINITY),
-                |(mn, mx), v| (mn.min(v), mx.max(v)),
-            )
+            data.iter()
+                .copied()
+                .fold((f64::INFINITY, f64::NEG_INFINITY), |(mn, mx), v| {
+                    (mn.min(v), mx.max(v))
+                })
         }
     })
 }
@@ -112,14 +114,23 @@ pub struct SliceStats {
 impl SliceStats {
     #[inline]
     pub fn mean(&self) -> f64 {
-        if self.count == 0 { 0.0 } else { self.sum / self.count as f64 }
+        if self.count == 0 {
+            0.0
+        } else {
+            self.sum / self.count as f64
+        }
     }
 }
 
 #[inline]
 pub fn stats_par(data: &[f64]) -> SliceStats {
     if data.is_empty() {
-        return SliceStats { min: 0.0, max: 0.0, sum: 0.0, count: 0 };
+        return SliceStats {
+            min: 0.0,
+            max: 0.0,
+            sum: 0.0,
+            count: 0,
+        };
     }
     let chunk = effective_chunk(hw().l2_chunk_elems);
     let (min, max, sum) = with_retry(|| {
@@ -127,7 +138,11 @@ pub fn stats_par(data: &[f64]) -> SliceStats {
             data.par_chunks(chunk)
                 .map(|c| {
                     let (mut mn, mut mx, mut s) = (f64::INFINITY, f64::NEG_INFINITY, 0.0f64);
-                    for &v in c { mn = mn.min(v); mx = mx.max(v); s += v; }
+                    for &v in c {
+                        mn = mn.min(v);
+                        mx = mx.max(v);
+                        s += v;
+                    }
                     (mn, mx, s)
                 })
                 .reduce(
@@ -136,16 +151,27 @@ pub fn stats_par(data: &[f64]) -> SliceStats {
                 )
         } else {
             let (mut mn, mut mx, mut s) = (f64::INFINITY, f64::NEG_INFINITY, 0.0f64);
-            for &v in data { mn = mn.min(v); mx = mx.max(v); s += v; }
+            for &v in data {
+                mn = mn.min(v);
+                mx = mx.max(v);
+                s += v;
+            }
             (mn, mx, s)
         }
     });
-    SliceStats { min, max, sum, count: data.len() }
+    SliceStats {
+        min,
+        max,
+        sum,
+        count: data.len(),
+    }
 }
 
 #[inline]
 pub fn std_dev_par(data: &[f64], mean: f64) -> f64 {
-    if data.len() < 2 { return 0.0; }
+    if data.len() < 2 {
+        return 0.0;
+    }
     let chunk = effective_chunk(hw().l2_chunk_elems);
     let sum_sq = if data.len() >= effective_par_threshold() {
         data.par_chunks(chunk)

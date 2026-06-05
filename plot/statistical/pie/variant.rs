@@ -11,5 +11,3 @@ crate::plot_family! {
         Pattern      => "pattern" | "patterned" | "textured" | "hatched",
     }
 }
-
-

@@ -40,5 +40,3 @@ crate::chart_config!(WordCloudConfig, 900, 500;
         edges_w: &[],
     }
 );
-
-

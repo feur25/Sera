@@ -36,5 +36,3 @@ crate::chart_config!(BubbleConfig, 900, 500;
         stroke_width: 1.5,
     }
 );
-
-

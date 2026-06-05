@@ -1,19 +1,32 @@
-use crate::plot::{parse_all, apply_bg3d};
 use crate::html::js_3d::render_3d_html;
+use crate::plot::{apply_bg3d, parse_all};
 
 pub fn render_sunburst3d_html(
     title: &str,
-    x: &[f64], y: &[f64], z: &[f64],
+    x: &[f64],
+    y: &[f64],
+    z: &[f64],
     axis_labels: (&str, &str, &str),
     colors: &[f64],
     color_labels: &[String],
-    w: i32, h: i32,
+    w: i32,
+    h: i32,
     bg_color: Option<&str>,
 ) -> String {
-    render_3d_html(13, title, x, y, z, axis_labels, colors, color_labels, w, h, bg_color)
+    render_3d_html(
+        13,
+        title,
+        x,
+        y,
+        z,
+        axis_labels,
+        colors,
+        color_labels,
+        w,
+        h,
+        bg_color,
+    )
 }
-
-
 
 #[crate::sera_alias("sunburst3d", "sunburst_3d", "sunburst3d_chart")]
 #[crate::sera_builder]
@@ -26,18 +39,35 @@ pub fn build_sunburst3d_chart(input: &str) -> String {
     let n = labels.len().min(parents.len()).min(values.len());
     let mut ring_map: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
     ring_map.insert(String::new(), 0);
-    let mut xv = Vec::new(); let mut yv = Vec::new(); let mut zv = Vec::new();
-    let mut cv = Vec::new(); let mut cl = Vec::new();
+    let mut xv = Vec::new();
+    let mut yv = Vec::new();
+    let mut zv = Vec::new();
+    let mut cv = Vec::new();
+    let mut cl = Vec::new();
     for i in 0..n {
         let parent_ring = ring_map.get(&parents[i]).copied().unwrap_or(0);
         let my_ring = parent_ring + 1;
         ring_map.insert(labels[i].clone(), my_ring);
-        xv.push(i as f64); yv.push(my_ring as f64); zv.push(values[i]);
-        cv.push(i as f64); cl.push(labels[i].clone());
+        xv.push(i as f64);
+        yv.push(my_ring as f64);
+        zv.push(values[i]);
+        cv.push(i as f64);
+        cl.push(labels[i].clone());
     }
     let bg_str = o.bg_str();
-    apply_bg3d(crate::plot::statistical::_3d::render_sunburst3d_html(
-        title, &xv, &yv, &zv, ("", "Ring", "Value"), &cv, &cl,
-        o.w(700), o.h(560), bg_str.as_deref(),
-    ), &o)
+    apply_bg3d(
+        crate::plot::statistical::_3d::render_sunburst3d_html(
+            title,
+            &xv,
+            &yv,
+            &zv,
+            ("", "Ring", "Value"),
+            &cv,
+            &cl,
+            o.w(700),
+            o.h(560),
+            bg_str.as_deref(),
+        ),
+        &o,
+    )
 }

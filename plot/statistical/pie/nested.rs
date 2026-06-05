@@ -1,6 +1,6 @@
-use super::common::{render_pie_svg, PiePiece, open_svg, write_title};
+use super::common::{open_svg, render_pie_svg, write_title, PiePiece};
 use super::config::PieConfig;
-use crate::plot::statistical::common::{push_b, push_i, escape_xml};
+use crate::plot::statistical::common::{escape_xml, push_b, push_i};
 
 #[crate::chart_demo("labels=[\"Apple\",\"Banana\",\"Cherry\",\"Date\",\"Fig\"], values=[40,25,20,10,5], secondary_labels=[\"X\",\"Y\",\"Z\"], secondary_values=[55,30,15]")]
 
@@ -39,7 +39,14 @@ pub fn render(cfg: &PieConfig) -> String {
         ..PiePiece::default()
     };
     if !outer_values.is_empty() {
-        render_pie_svg(&mut buf, cfg, &outer_labels, &outer_values, &pull_empty, &outer_piece);
+        render_pie_svg(
+            &mut buf,
+            cfg,
+            &outer_labels,
+            &outer_values,
+            &pull_empty,
+            &outer_piece,
+        );
     }
 
     if !inner_values.is_empty() {
@@ -58,12 +65,21 @@ pub fn render(cfg: &PieConfig) -> String {
             center_subtext: cfg.center_subtext.to_string(),
             ..PiePiece::default()
         };
-        render_pie_svg(&mut buf, cfg, &inner_labels, &inner_values, &pull_empty, &inner_piece);
+        render_pie_svg(
+            &mut buf,
+            cfg,
+            &inner_labels,
+            &inner_values,
+            &pull_empty,
+            &inner_piece,
+        );
     } else if !cfg.center_text.is_empty() {
         let cx = (w as f64) * 0.31;
         let cy = title_pad + (h as f64 - title_pad) * 0.52;
-        push_b(&mut buf, b"<text x=\""); push_i(&mut buf, cx as i32);
-        push_b(&mut buf, b"\" y=\""); push_i(&mut buf, cy as i32);
+        push_b(&mut buf, b"<text x=\"");
+        push_i(&mut buf, cx as i32);
+        push_b(&mut buf, b"\" y=\"");
+        push_i(&mut buf, cy as i32);
         push_b(&mut buf, b"\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"-apple-system,Arial,sans-serif\" font-weight=\"800\" font-size=\"22\" fill=\"#f1f5f9\">");
         escape_xml(&mut buf, cfg.center_text);
         push_b(&mut buf, b"</text>");
@@ -72,4 +88,3 @@ pub fn render(cfg: &PieConfig) -> String {
     push_b(&mut buf, b"</svg>");
     unsafe { String::from_utf8_unchecked(buf) }
 }
-

@@ -10,5 +10,3 @@ crate::plot_family! {
         Stepped     => "stepped" | "step" | "elbow" | "rectilinear",
     }
 }
-
-

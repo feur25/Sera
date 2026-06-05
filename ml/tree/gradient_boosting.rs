@@ -1,4 +1,4 @@
-use crate::ml::tree::decision_tree::{DecisionTreeRegressor, compute_bins};
+use crate::ml::tree::decision_tree::{compute_bins, DecisionTreeRegressor};
 use rayon::prelude::*;
 
 #[crate::model(category = "Tree-Based", domain = "ml")]
@@ -14,10 +14,22 @@ pub struct GradientBoostingClassifier {
 }
 
 impl GradientBoostingClassifier {
-    pub fn new(n_estimators: usize, learning_rate: f64, max_depth: usize, min_samples_split: usize, min_samples_leaf: usize) -> Self {
+    pub fn new(
+        n_estimators: usize,
+        learning_rate: f64,
+        max_depth: usize,
+        min_samples_split: usize,
+        min_samples_leaf: usize,
+    ) -> Self {
         Self {
-            n_estimators, learning_rate, max_depth, min_samples_split, min_samples_leaf,
-            classes: Vec::new(), trees: Vec::new(), base_scores: Vec::new(),
+            n_estimators,
+            learning_rate,
+            max_depth,
+            min_samples_split,
+            min_samples_leaf,
+            classes: Vec::new(),
+            trees: Vec::new(),
+            base_scores: Vec::new(),
         }
     }
 
@@ -36,7 +48,9 @@ impl GradientBoostingClassifier {
             self.base_scores[j] = (self.base_scores[j] / n as f64).max(1e-15).ln();
         }
         for i in 0..n {
-            for j in 0..k { scores[i * k + j] = self.base_scores[j]; }
+            for j in 0..k {
+                scores[i * k + j] = self.base_scores[j];
+            }
         }
 
         self.trees = vec![Vec::new(); k];
@@ -46,21 +60,29 @@ impl GradientBoostingClassifier {
         for _ in 0..self.n_estimators {
             let probs = softmax_rows(&scores, n, k);
 
-            let new_trees: Vec<(DecisionTreeRegressor, Vec<f64>)> = (0..k).into_par_iter().map(|c| {
-                let mut residuals = vec![0.0; n];
-                let mut hessians = vec![0.0; n];
-                for i in 0..n {
-                    let target = if y[i] == classes[c] { 1.0 } else { 0.0 };
-                    let pc = probs[i * k + c];
-                    residuals[i] = target - pc;
-                    hessians[i] = (pc * (1.0 - pc)).max(1e-7);
-                }
-                let mut tree = DecisionTreeRegressor::new(self.max_depth, self.min_samples_split, self.min_samples_leaf, None);
-                tree.fit_with_bins(&residuals, &bins);
-                tree.update_leaves_newton(x, n, p, &residuals, &hessians);
-                let preds = tree.predict(x, n, p);
-                (tree, preds)
-            }).collect();
+            let new_trees: Vec<(DecisionTreeRegressor, Vec<f64>)> = (0..k)
+                .into_par_iter()
+                .map(|c| {
+                    let mut residuals = vec![0.0; n];
+                    let mut hessians = vec![0.0; n];
+                    for i in 0..n {
+                        let target = if y[i] == classes[c] { 1.0 } else { 0.0 };
+                        let pc = probs[i * k + c];
+                        residuals[i] = target - pc;
+                        hessians[i] = (pc * (1.0 - pc)).max(1e-7);
+                    }
+                    let mut tree = DecisionTreeRegressor::new(
+                        self.max_depth,
+                        self.min_samples_split,
+                        self.min_samples_leaf,
+                        None,
+                    );
+                    tree.fit_with_bins(&residuals, &bins);
+                    tree.update_leaves_newton(x, n, p, &residuals, &hessians);
+                    let preds = tree.predict(x, n, p);
+                    (tree, preds)
+                })
+                .collect();
 
             for (c, (tree, preds)) in new_trees.into_iter().enumerate() {
                 for i in 0..n {
@@ -74,23 +96,34 @@ impl GradientBoostingClassifier {
     pub fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> {
         let scores = self.decision_function(x, n, p);
         let k = self.classes.len();
-        (0..n).map(|i| {
-            let row = &scores[i * k..(i + 1) * k];
-            let best = row.iter().enumerate().max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap()).map(|(i, _)| i).unwrap_or(0);
-            self.classes[best]
-        }).collect()
+        (0..n)
+            .map(|i| {
+                let row = &scores[i * k..(i + 1) * k];
+                let best = row
+                    .iter()
+                    .enumerate()
+                    .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
+                    .map(|(i, _)| i)
+                    .unwrap_or(0);
+                self.classes[best]
+            })
+            .collect()
     }
 
     pub fn decision_function(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
         let k = self.classes.len();
         let mut scores = vec![0.0; n * k];
         for i in 0..n {
-            for j in 0..k { scores[i * k + j] = self.base_scores[j]; }
+            for j in 0..k {
+                scores[i * k + j] = self.base_scores[j];
+            }
         }
         for c in 0..k {
             for tree in &self.trees[c] {
                 let preds = tree.predict(x, n, p);
-                for i in 0..n { scores[i * k + c] += self.learning_rate * preds[i]; }
+                for i in 0..n {
+                    scores[i * k + c] += self.learning_rate * preds[i];
+                }
             }
         }
         scores
@@ -109,7 +142,9 @@ impl GradientBoostingClassifier {
                 sum += *v;
             }
             let inv = 1.0 / sum;
-            for v in row.iter_mut() { *v *= inv; }
+            for v in row.iter_mut() {
+                *v *= inv;
+            }
         }
         out
     }
@@ -127,10 +162,21 @@ pub struct GradientBoostingRegressor {
 }
 
 impl GradientBoostingRegressor {
-    pub fn new(n_estimators: usize, learning_rate: f64, max_depth: usize, min_samples_split: usize, min_samples_leaf: usize) -> Self {
+    pub fn new(
+        n_estimators: usize,
+        learning_rate: f64,
+        max_depth: usize,
+        min_samples_split: usize,
+        min_samples_leaf: usize,
+    ) -> Self {
         Self {
-            n_estimators, learning_rate, max_depth, min_samples_split, min_samples_leaf,
-            trees: Vec::new(), base_score: 0.0,
+            n_estimators,
+            learning_rate,
+            max_depth,
+            min_samples_split,
+            min_samples_leaf,
+            trees: Vec::new(),
+            base_score: 0.0,
         }
     }
 
@@ -142,10 +188,17 @@ impl GradientBoostingRegressor {
         let bins = compute_bins(x, n, p);
         for _ in 0..self.n_estimators {
             let residuals: Vec<f64> = (0..n).map(|i| y[i] - preds[i]).collect();
-            let mut tree = DecisionTreeRegressor::new(self.max_depth, self.min_samples_split, self.min_samples_leaf, None);
+            let mut tree = DecisionTreeRegressor::new(
+                self.max_depth,
+                self.min_samples_split,
+                self.min_samples_leaf,
+                None,
+            );
             tree.fit_with_bins(&residuals, &bins);
             let tp = tree.predict(x, n, p);
-            for i in 0..n { preds[i] += self.learning_rate * tp[i]; }
+            for i in 0..n {
+                preds[i] += self.learning_rate * tp[i];
+            }
             self.trees.push(tree);
         }
     }
@@ -156,7 +209,9 @@ impl GradientBoostingRegressor {
         let predict_one = |i: usize| -> f64 {
             let xi = &x[i * p..(i + 1) * p];
             let mut s = base;
-            for tree in &self.trees { s += lr * tree.predict_single(xi); }
+            for tree in &self.trees {
+                s += lr * tree.predict_single(xi);
+            }
             s
         };
         if n >= 256 {
@@ -168,13 +223,21 @@ impl GradientBoostingRegressor {
 }
 
 impl crate::ml::MlClassifier for GradientBoostingClassifier {
-    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) { self.fit(x, n, p, y); }
-    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> { self.predict(x, n, p) }
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) {
+        self.fit(x, n, p, y);
+    }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> {
+        self.predict(x, n, p)
+    }
 }
 
 impl crate::ml::MlRegressor for GradientBoostingRegressor {
-    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) { self.fit(x, n, p, y); }
-    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> { self.predict(x, n, p) }
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) {
+        self.fit(x, n, p, y);
+    }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        self.predict(x, n, p)
+    }
 }
 
 fn softmax_rows(scores: &[f64], n: usize, k: usize) -> Vec<f64> {
@@ -187,9 +250,9 @@ fn softmax_rows(scores: &[f64], n: usize, k: usize) -> Vec<f64> {
             out[i * k + j] = (row[j] - max_s).exp();
             sum += out[i * k + j];
         }
-        for j in 0..k { out[i * k + j] /= sum; }
+        for j in 0..k {
+            out[i * k + j] /= sum;
+        }
     }
     out
 }
-
-

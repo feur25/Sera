@@ -5,7 +5,11 @@ use super::config::HeatmapConfig;
 
 pub fn render(cfg: &HeatmapConfig) -> String {
     let n_rows = cfg.row_labels.len();
-    let cols_lbl = if cfg.col_labels.is_empty() { cfg.row_labels } else { cfg.col_labels };
+    let cols_lbl = if cfg.col_labels.is_empty() {
+        cfg.row_labels
+    } else {
+        cfg.col_labels
+    };
     let n_cols = cols_lbl.len();
     if n_rows == 0 || n_cols == 0 || cfg.flat_matrix.len() < n_rows * n_cols {
         return String::new();
@@ -30,8 +34,14 @@ pub fn render(cfg: &HeatmapConfig) -> String {
         })
         .collect();
     col_score.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
-    let new_rows: Vec<String> = row_score.iter().map(|(i, _)| cfg.row_labels[*i].clone()).collect();
-    let new_cols: Vec<String> = col_score.iter().map(|(i, _)| cols_lbl[*i].clone()).collect();
+    let new_rows: Vec<String> = row_score
+        .iter()
+        .map(|(i, _)| cfg.row_labels[*i].clone())
+        .collect();
+    let new_cols: Vec<String> = col_score
+        .iter()
+        .map(|(i, _)| cols_lbl[*i].clone())
+        .collect();
     let mut new_mat = vec![0.0f64; n_rows * n_cols];
     for (nr, (orig_r, _)) in row_score.iter().enumerate() {
         for (nc, (orig_c, _)) in col_score.iter().enumerate() {
@@ -48,4 +58,3 @@ pub fn render(cfg: &HeatmapConfig) -> String {
     };
     render_core(&c)
 }
-

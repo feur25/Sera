@@ -8,7 +8,10 @@ pub struct LabelEncoder {
 
 impl LabelEncoder {
     pub fn new() -> Self {
-        Self { classes: Vec::new(), map: HashMap::new() }
+        Self {
+            classes: Vec::new(),
+            map: HashMap::new(),
+        }
     }
 
     pub fn fit(&mut self, y: &[String]) {
@@ -30,7 +33,9 @@ impl LabelEncoder {
     }
 
     pub fn transform(&self, y: &[String]) -> Vec<i32> {
-        y.iter().map(|s| *self.map.get(s.as_str()).unwrap_or(&-1)).collect()
+        y.iter()
+            .map(|s| *self.map.get(s.as_str()).unwrap_or(&-1))
+            .collect()
     }
 
     pub fn fit_transform(&mut self, y: &[String]) -> Vec<i32> {
@@ -39,10 +44,15 @@ impl LabelEncoder {
     }
 
     pub fn inverse_transform(&self, y: &[i32]) -> Vec<String> {
-        y.iter().map(|&i| {
-            if i >= 0 && (i as usize) < self.classes.len() { self.classes[i as usize].clone() }
-            else { String::new() }
-        }).collect()
+        y.iter()
+            .map(|&i| {
+                if i >= 0 && (i as usize) < self.classes.len() {
+                    self.classes[i as usize].clone()
+                } else {
+                    String::new()
+                }
+            })
+            .collect()
     }
 }
 
@@ -54,7 +64,10 @@ pub struct OrdinalEncoder {
 
 impl OrdinalEncoder {
     pub fn new() -> Self {
-        Self { categories: Vec::new(), maps: Vec::new() }
+        Self {
+            categories: Vec::new(),
+            maps: Vec::new(),
+        }
     }
 
     pub fn fit(&mut self, x: &[String], n: usize, p: usize) {
@@ -65,7 +78,9 @@ impl OrdinalEncoder {
             cats.sort();
             cats.dedup();
             let mut m = HashMap::new();
-            for (k, c) in cats.iter().enumerate() { m.insert(c.clone(), k as f64); }
+            for (k, c) in cats.iter().enumerate() {
+                m.insert(c.clone(), k as f64);
+            }
             self.categories.push(cats);
             self.maps.push(m);
         }
@@ -91,7 +106,9 @@ impl OrdinalEncoder {
             self.categories = vec![Vec::new(); p];
             self.maps = vec![HashMap::new(); p];
         }
-        if self.categories.len() != p { return; }
+        if self.categories.len() != p {
+            return;
+        }
         for j in 0..p {
             for i in 0..n {
                 let v = &x[i * p + j];
@@ -114,7 +131,11 @@ pub struct OneHotEncoder {
 
 impl OneHotEncoder {
     pub fn new() -> Self {
-        Self { categories: Vec::new(), maps: Vec::new(), total_cols: 0 }
+        Self {
+            categories: Vec::new(),
+            maps: Vec::new(),
+            total_cols: 0,
+        }
     }
 
     pub fn fit(&mut self, x: &[String], n: usize, p: usize) {
@@ -126,7 +147,9 @@ impl OneHotEncoder {
             cats.sort();
             cats.dedup();
             let mut m = HashMap::new();
-            for (k, c) in cats.iter().enumerate() { m.insert(c.clone(), self.total_cols + k); }
+            for (k, c) in cats.iter().enumerate() {
+                m.insert(c.clone(), self.total_cols + k);
+            }
             self.total_cols += cats.len();
             self.categories.push(cats);
             self.maps.push(m);
@@ -156,12 +179,15 @@ impl OneHotEncoder {
             self.maps = vec![HashMap::new(); p];
             self.total_cols = 0;
         }
-        if self.categories.len() != p { return; }
+        if self.categories.len() != p {
+            return;
+        }
         let mut added = false;
         for j in 0..p {
             for i in 0..n {
                 let v = &x[i * p + j];
-                let exists = self.maps[j].contains_key(v) || self.categories[j].iter().any(|c| c == v);
+                let exists =
+                    self.maps[j].contains_key(v) || self.categories[j].iter().any(|c| c == v);
                 if !exists {
                     self.categories[j].push(v.clone());
                     added = true;
@@ -182,7 +208,7 @@ impl OneHotEncoder {
         }
     }
 
-    pub fn n_output_features(&self) -> usize { self.total_cols }
+    pub fn n_output_features(&self) -> usize {
+        self.total_cols
+    }
 }
-
-

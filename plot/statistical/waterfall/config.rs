@@ -14,5 +14,3 @@ crate::chart_config!(WaterfallConfig, 900, 480;
         orientation: b'v',
     }
 );
-
-

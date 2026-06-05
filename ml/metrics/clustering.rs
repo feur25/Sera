@@ -10,30 +10,63 @@ fn pair_dist(x: &[f64], i: usize, j: usize, p: usize) -> f64 {
 }
 
 pub fn silhouette_score(x: &[f64], labels: &[i32], n: usize, p: usize) -> f64 {
-    if n < 2 { return 0.0; }
+    if n < 2 {
+        return 0.0;
+    }
     let mut classes: Vec<i32> = labels.to_vec();
     classes.sort_unstable();
     classes.dedup();
-    if classes.len() < 2 { return 0.0; }
-    let buckets: Vec<Vec<usize>> = classes.iter().map(|&c| {
-        labels.iter().enumerate().filter(|(_, &l)| l == c).map(|(i, _)| i).collect()
-    }).collect();
-    let scores: Vec<f64> = (0..n).into_par_iter().map(|i| {
-        let li = labels[i];
-        let own_idx = classes.iter().position(|&c| c == li).unwrap();
-        let own = &buckets[own_idx];
-        if own.len() < 2 { return 0.0; }
-        let a: f64 = own.iter().filter(|&&j| j != i).map(|&j| pair_dist(x, i, j, p)).sum::<f64>() / (own.len() - 1) as f64;
-        let mut b = f64::INFINITY;
-        for (k, b_idx) in buckets.iter().enumerate() {
-            if k == own_idx || b_idx.is_empty() { continue; }
-            let mean: f64 = b_idx.iter().map(|&j| pair_dist(x, i, j, p)).sum::<f64>() / b_idx.len() as f64;
-            if mean < b { b = mean; }
-        }
-        if b.is_infinite() { return 0.0; }
-        let m = a.max(b);
-        if m < 1e-15 { 0.0 } else { (b - a) / m }
-    }).collect();
+    if classes.len() < 2 {
+        return 0.0;
+    }
+    let buckets: Vec<Vec<usize>> = classes
+        .iter()
+        .map(|&c| {
+            labels
+                .iter()
+                .enumerate()
+                .filter(|(_, &l)| l == c)
+                .map(|(i, _)| i)
+                .collect()
+        })
+        .collect();
+    let scores: Vec<f64> = (0..n)
+        .into_par_iter()
+        .map(|i| {
+            let li = labels[i];
+            let own_idx = classes.iter().position(|&c| c == li).unwrap();
+            let own = &buckets[own_idx];
+            if own.len() < 2 {
+                return 0.0;
+            }
+            let a: f64 = own
+                .iter()
+                .filter(|&&j| j != i)
+                .map(|&j| pair_dist(x, i, j, p))
+                .sum::<f64>()
+                / (own.len() - 1) as f64;
+            let mut b = f64::INFINITY;
+            for (k, b_idx) in buckets.iter().enumerate() {
+                if k == own_idx || b_idx.is_empty() {
+                    continue;
+                }
+                let mean: f64 =
+                    b_idx.iter().map(|&j| pair_dist(x, i, j, p)).sum::<f64>() / b_idx.len() as f64;
+                if mean < b {
+                    b = mean;
+                }
+            }
+            if b.is_infinite() {
+                return 0.0;
+            }
+            let m = a.max(b);
+            if m < 1e-15 {
+                0.0
+            } else {
+                (b - a) / m
+            }
+        })
+        .collect();
     scores.iter().sum::<f64>() / n as f64
 }
 
@@ -42,17 +75,25 @@ pub fn davies_bouldin_score(x: &[f64], labels: &[i32], n: usize, p: usize) -> f6
     classes.sort_unstable();
     classes.dedup();
     let k = classes.len();
-    if k < 2 { return 0.0; }
+    if k < 2 {
+        return 0.0;
+    }
     let mut centroids = vec![0.0f64; k * p];
     let mut counts = vec![0usize; k];
     for i in 0..n {
         let ci = classes.iter().position(|&c| c == labels[i]).unwrap();
-        for j in 0..p { centroids[ci * p + j] += x[i * p + j]; }
+        for j in 0..p {
+            centroids[ci * p + j] += x[i * p + j];
+        }
         counts[ci] += 1;
     }
     for c in 0..k {
-        if counts[c] == 0 { continue; }
-        for j in 0..p { centroids[c * p + j] /= counts[c] as f64; }
+        if counts[c] == 0 {
+            continue;
+        }
+        for j in 0..p {
+            centroids[c * p + j] /= counts[c] as f64;
+        }
     }
     let mut s = vec![0.0f64; k];
     for i in 0..n {
@@ -64,21 +105,31 @@ pub fn davies_bouldin_score(x: &[f64], labels: &[i32], n: usize, p: usize) -> f6
         }
         s[ci] += d.sqrt();
     }
-    for c in 0..k { if counts[c] > 0 { s[c] /= counts[c] as f64; } }
+    for c in 0..k {
+        if counts[c] > 0 {
+            s[c] /= counts[c] as f64;
+        }
+    }
     let mut acc = 0.0;
     for i in 0..k {
         let mut best = 0.0f64;
         for j in 0..k {
-            if i == j { continue; }
+            if i == j {
+                continue;
+            }
             let mut m = 0.0;
             for d in 0..p {
                 let v = centroids[i * p + d] - centroids[j * p + d];
                 m += v * v;
             }
             let m = m.sqrt();
-            if m < 1e-15 { continue; }
+            if m < 1e-15 {
+                continue;
+            }
             let r = (s[i] + s[j]) / m;
-            if r > best { best = r; }
+            if r > best {
+                best = r;
+            }
         }
         acc += best;
     }
@@ -90,7 +141,9 @@ pub fn calinski_harabasz_score(x: &[f64], labels: &[i32], n: usize, p: usize) ->
     classes.sort_unstable();
     classes.dedup();
     let k = classes.len();
-    if k < 2 || n <= k { return 0.0; }
+    if k < 2 || n <= k {
+        return 0.0;
+    }
     let mut centroids = vec![0.0f64; k * p];
     let mut counts = vec![0usize; k];
     let mut overall = vec![0.0f64; p];
@@ -102,10 +155,16 @@ pub fn calinski_harabasz_score(x: &[f64], labels: &[i32], n: usize, p: usize) ->
         }
         counts[ci] += 1;
     }
-    for j in 0..p { overall[j] /= n as f64; }
+    for j in 0..p {
+        overall[j] /= n as f64;
+    }
     for c in 0..k {
-        if counts[c] == 0 { continue; }
-        for j in 0..p { centroids[c * p + j] /= counts[c] as f64; }
+        if counts[c] == 0 {
+            continue;
+        }
+        for j in 0..p {
+            centroids[c * p + j] /= counts[c] as f64;
+        }
     }
     let mut bcss = 0.0;
     for c in 0..k {
@@ -124,15 +183,23 @@ pub fn calinski_harabasz_score(x: &[f64], labels: &[i32], n: usize, p: usize) ->
             wcss += v * v;
         }
     }
-    if wcss < 1e-15 { return 0.0; }
+    if wcss < 1e-15 {
+        return 0.0;
+    }
     (bcss / (k - 1) as f64) / (wcss / (n - k) as f64)
 }
 
 pub fn adjusted_rand_score(labels_true: &[i32], labels_pred: &[i32]) -> f64 {
     let n = labels_true.len().min(labels_pred.len());
-    if n < 2 { return 0.0; }
-    let mut t: Vec<i32> = labels_true.to_vec(); t.sort_unstable(); t.dedup();
-    let mut p: Vec<i32> = labels_pred.to_vec(); p.sort_unstable(); p.dedup();
+    if n < 2 {
+        return 0.0;
+    }
+    let mut t: Vec<i32> = labels_true.to_vec();
+    t.sort_unstable();
+    t.dedup();
+    let mut p: Vec<i32> = labels_pred.to_vec();
+    p.sort_unstable();
+    p.dedup();
     let r = t.len();
     let c = p.len();
     let mut mat = vec![0u64; r * c];
@@ -141,23 +208,43 @@ pub fn adjusted_rand_score(labels_true: &[i32], labels_pred: &[i32]) -> f64 {
         let b = p.iter().position(|&v| v == labels_pred[i]).unwrap();
         mat[a * c + b] += 1;
     }
-    let comb2 = |x: u64| -> f64 { if x < 2 { 0.0 } else { (x * (x - 1) / 2) as f64 } };
-    let row_sums: Vec<u64> = (0..r).map(|i| (0..c).map(|j| mat[i * c + j]).sum()).collect();
-    let col_sums: Vec<u64> = (0..c).map(|j| (0..r).map(|i| mat[i * c + j]).sum()).collect();
+    let comb2 = |x: u64| -> f64 {
+        if x < 2 {
+            0.0
+        } else {
+            (x * (x - 1) / 2) as f64
+        }
+    };
+    let row_sums: Vec<u64> = (0..r)
+        .map(|i| (0..c).map(|j| mat[i * c + j]).sum())
+        .collect();
+    let col_sums: Vec<u64> = (0..c)
+        .map(|j| (0..r).map(|i| mat[i * c + j]).sum())
+        .collect();
     let sum_comb: f64 = mat.iter().map(|&v| comb2(v)).sum();
     let sum_a: f64 = row_sums.iter().map(|&v| comb2(v)).sum();
     let sum_b: f64 = col_sums.iter().map(|&v| comb2(v)).sum();
     let total = comb2(n as u64);
     let expected = sum_a * sum_b / total.max(1e-15);
     let max_idx = 0.5 * (sum_a + sum_b);
-    if (max_idx - expected).abs() < 1e-15 { 0.0 } else { (sum_comb - expected) / (max_idx - expected) }
+    if (max_idx - expected).abs() < 1e-15 {
+        0.0
+    } else {
+        (sum_comb - expected) / (max_idx - expected)
+    }
 }
 
 pub fn normalized_mutual_info_score(labels_true: &[i32], labels_pred: &[i32]) -> f64 {
     let n = labels_true.len().min(labels_pred.len());
-    if n == 0 { return 0.0; }
-    let mut t: Vec<i32> = labels_true.to_vec(); t.sort_unstable(); t.dedup();
-    let mut p: Vec<i32> = labels_pred.to_vec(); p.sort_unstable(); p.dedup();
+    if n == 0 {
+        return 0.0;
+    }
+    let mut t: Vec<i32> = labels_true.to_vec();
+    t.sort_unstable();
+    t.dedup();
+    let mut p: Vec<i32> = labels_pred.to_vec();
+    p.sort_unstable();
+    p.dedup();
     let r = t.len();
     let c = p.len();
     let mut mat = vec![0u64; r * c];
@@ -175,14 +262,18 @@ pub fn normalized_mutual_info_score(labels_true: &[i32], labels_pred: &[i32]) ->
     for i in 0..r {
         for j in 0..c {
             let nij = mat[i * c + j] as f64;
-            if nij == 0.0 { continue; }
+            if nij == 0.0 {
+                continue;
+            }
             mi += (nij / nf) * (nij * nf / (ru[i] as f64 * cu[j] as f64)).ln();
         }
     }
     let h = |counts: &[u64]| -> f64 {
         let mut s = 0.0;
         for &v in counts {
-            if v == 0 { continue; }
+            if v == 0 {
+                continue;
+            }
             let p = v as f64 / nf;
             s -= p * p.ln();
         }
@@ -191,12 +282,18 @@ pub fn normalized_mutual_info_score(labels_true: &[i32], labels_pred: &[i32]) ->
     let ht = h(&ru);
     let hp = h(&cu);
     let denom = (ht * hp).sqrt();
-    if denom < 1e-15 { 0.0 } else { mi / denom }
+    if denom < 1e-15 {
+        0.0
+    } else {
+        mi / denom
+    }
 }
 
 pub fn fowlkes_mallows_score(labels_true: &[i32], labels_pred: &[i32]) -> f64 {
     let n = labels_true.len().min(labels_pred.len());
-    if n < 2 { return 0.0; }
+    if n < 2 {
+        return 0.0;
+    }
     let mut tp = 0u64;
     let mut fp = 0u64;
     let mut fn_ = 0u64;
@@ -212,9 +309,15 @@ pub fn fowlkes_mallows_score(labels_true: &[i32], labels_pred: &[i32]) -> f64 {
             }
         }
     }
-    if tp == 0 { return 0.0; }
+    if tp == 0 {
+        return 0.0;
+    }
     let denom = ((tp + fp) as f64 * (tp + fn_) as f64).sqrt();
-    if denom < 1e-15 { 0.0 } else { tp as f64 / denom }
+    if denom < 1e-15 {
+        0.0
+    } else {
+        tp as f64 / denom
+    }
 }
 
 pub fn homogeneity_score(labels_true: &[i32], labels_pred: &[i32]) -> f64 {
@@ -227,14 +330,24 @@ pub fn completeness_score(labels_true: &[i32], labels_pred: &[i32]) -> f64 {
 
 pub fn v_measure_score(labels_true: &[i32], labels_pred: &[i32]) -> f64 {
     let (h, c) = nmi_homogeneity(labels_true, labels_pred);
-    if h + c < 1e-15 { 0.0 } else { 2.0 * h * c / (h + c) }
+    if h + c < 1e-15 {
+        0.0
+    } else {
+        2.0 * h * c / (h + c)
+    }
 }
 
 fn nmi_homogeneity(labels_true: &[i32], labels_pred: &[i32]) -> (f64, f64) {
     let n = labels_true.len().min(labels_pred.len());
-    if n == 0 { return (0.0, 0.0); }
-    let mut t: Vec<i32> = labels_true.to_vec(); t.sort_unstable(); t.dedup();
-    let mut p: Vec<i32> = labels_pred.to_vec(); p.sort_unstable(); p.dedup();
+    if n == 0 {
+        return (0.0, 0.0);
+    }
+    let mut t: Vec<i32> = labels_true.to_vec();
+    t.sort_unstable();
+    t.dedup();
+    let mut p: Vec<i32> = labels_pred.to_vec();
+    p.sort_unstable();
+    p.dedup();
     let r = t.len();
     let c = p.len();
     let mut mat = vec![0u64; r * c];
@@ -251,7 +364,9 @@ fn nmi_homogeneity(labels_true: &[i32], labels_pred: &[i32]) -> (f64, f64) {
     let h = |counts: &[u64]| -> f64 {
         let mut s = 0.0;
         for &v in counts {
-            if v == 0 { continue; }
+            if v == 0 {
+                continue;
+            }
             let p = v as f64 / nf;
             s -= p * p.ln();
         }
@@ -263,7 +378,9 @@ fn nmi_homogeneity(labels_true: &[i32], labels_pred: &[i32]) -> (f64, f64) {
     for i in 0..r {
         for j in 0..c {
             let nij = mat[i * c + j] as f64;
-            if nij == 0.0 { continue; }
+            if nij == 0.0 {
+                continue;
+            }
             mi += (nij / nf) * (nij * nf / (ru[i] as f64 * cu[j] as f64)).ln();
         }
     }
@@ -271,5 +388,3 @@ fn nmi_homogeneity(labels_true: &[i32], labels_pred: &[i32]) -> (f64, f64) {
     let comp = if hp < 1e-15 { 1.0 } else { mi / hp };
     (homo, comp)
 }
-
-

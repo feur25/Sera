@@ -22,7 +22,16 @@ impl SvgChart for super::bar::Bar {
         max_val: f64,
         vertical: bool,
     ) {
-        super::bar::render_svg_bars(svg, values, colors, pad, plot_width, plot_height, max_val, vertical);
+        super::bar::render_svg_bars(
+            svg,
+            values,
+            colors,
+            pad,
+            plot_width,
+            plot_height,
+            max_val,
+            vertical,
+        );
     }
 }
 
@@ -37,7 +46,16 @@ impl SvgChart for super::line::Line {
         max_val: f64,
         vertical: bool,
     ) {
-        super::line::render_svg_lines(svg, values, colors, pad, plot_width, plot_height, max_val, vertical);
+        super::line::render_svg_lines(
+            svg,
+            values,
+            colors,
+            pad,
+            plot_width,
+            plot_height,
+            max_val,
+            vertical,
+        );
     }
 }
 
@@ -52,8 +70,15 @@ impl SvgChart for super::scatter::Scatter {
         max_val: f64,
         vertical: bool,
     ) {
-        super::scatter::render_svg_scatter(svg, values, colors, pad, plot_width, plot_height, max_val, vertical);
+        super::scatter::render_svg_scatter(
+            svg,
+            values,
+            colors,
+            pad,
+            plot_width,
+            plot_height,
+            max_val,
+            vertical,
+        );
     }
 }
-
-

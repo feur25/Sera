@@ -69,5 +69,3 @@ impl<'a> Default for PieConfig<'a> {
 }
 
 pub struct Pie;
-
-

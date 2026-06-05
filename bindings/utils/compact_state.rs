@@ -1,5 +1,5 @@
+use super::memory_pool::{MemoryPool, StringInterner};
 use std::sync::{Arc, OnceLock};
-use super::memory_pool::{StringInterner, MemoryPool};
 
 static INTERNER: OnceLock<StringInterner> = OnceLock::new();
 static POOL: OnceLock<MemoryPool> = OnceLock::new();
@@ -39,10 +39,12 @@ impl CompactChartState {
     pub fn to_minimal_json(&self) -> String {
         let mut json = get_pool().take_json();
         json.reserve(self.labels_interned.len() * 30 + self.values.len() * 15);
-        
+
         json.push_str("{\"l\":[");
         for (i, label) in self.labels_interned.iter().enumerate() {
-            if i > 0 { json.push(','); }
+            if i > 0 {
+                json.push(',');
+            }
             json.push('"');
             for &ch in label.as_bytes() {
                 match ch {
@@ -54,30 +56,30 @@ impl CompactChartState {
                     ch if ch < 32 => {
                         use std::fmt::Write;
                         let _ = write!(json, "\\u{:04x}", ch as u32);
-                    },
+                    }
                     ch => json.push(ch as char),
                 }
             }
             json.push('"');
         }
-        
+
         json.push_str("],\"v\":[");
         for (i, &v) in self.values.iter().enumerate() {
-            if i > 0 { json.push(','); }
+            if i > 0 {
+                json.push(',');
+            }
             use std::fmt::Write;
             let _ = write!(json, "{}", v);
         }
         json.push_str("]}");
-        
+
         json
     }
 
     #[inline]
     pub fn memory_used(&self) -> usize {
-        std::mem::size_of::<Self>() 
+        std::mem::size_of::<Self>()
             + self.labels_interned.len() * std::mem::size_of::<Arc<str>>()
             + self.values.len() * std::mem::size_of::<f64>()
     }
 }
-
-

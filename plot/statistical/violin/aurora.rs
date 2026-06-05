@@ -1,7 +1,6 @@
 use super::common::{
-
-    draw_cat_label_v, draw_inner_box_v, estimate_bw, finish, group_data, kde_curve,
-    make_frame, open_axes_y, sort_groups, value_range,
+    draw_cat_label_v, draw_inner_box_v, estimate_bw, finish, group_data, kde_curve, make_frame,
+    open_axes_y, sort_groups, value_range,
 };
 use super::config::ViolinConfig;
 use crate::html::hover::slots_to_json;
@@ -22,7 +21,9 @@ fn aurora_palette(ci: usize) -> (u32, u32) {
 
 pub fn render(cfg: &ViolinConfig) -> String {
     let groups = group_data(cfg.categories, cfg.values);
-    if groups.is_empty() { return String::new(); }
+    if groups.is_empty() {
+        return String::new();
+    }
     let groups = sort_groups(groups, cfg.sort_order);
     let n_cats = groups.len();
     let vr = value_range(&groups);
@@ -34,9 +35,18 @@ pub fn render(cfg: &ViolinConfig) -> String {
     open_axes_y(&mut f, cfg.title, cfg.gridlines, vr.min, vr.max);
 
     push_b(&mut f.buf, b"<defs>");
-    push_b(&mut f.buf, b"<filter id=\"aurgf\" x=\"-60%\" y=\"-10%\" width=\"220%\" height=\"120%\">");
-    push_b(&mut f.buf, b"<feGaussianBlur stdDeviation=\"4\" result=\"b\"/>");
-    push_b(&mut f.buf, b"<feMerge><feMergeNode in=\"b\"/><feMergeNode in=\"SourceGraphic\"/></feMerge>");
+    push_b(
+        &mut f.buf,
+        b"<filter id=\"aurgf\" x=\"-60%\" y=\"-10%\" width=\"220%\" height=\"120%\">",
+    );
+    push_b(
+        &mut f.buf,
+        b"<feGaussianBlur stdDeviation=\"4\" result=\"b\"/>",
+    );
+    push_b(
+        &mut f.buf,
+        b"<feMerge><feMergeNode in=\"b\"/><feMergeNode in=\"SourceGraphic\"/></feMerge>",
+    );
     push_b(&mut f.buf, b"</filter>");
     for ci in 0..n_cats {
         let (bot, top) = aurora_palette(ci);
@@ -55,7 +65,8 @@ pub fn render(cfg: &ViolinConfig) -> String {
 
     for (ci, g) in groups.iter().enumerate() {
         let cx = f.pl + (ci as f64 * slot_w + slot_w / 2.0) as i32;
-        push_b(&mut f.buf, b"<g data-series=\""); push_i(&mut f.buf, ci as i32);
+        push_b(&mut f.buf, b"<g data-series=\"");
+        push_i(&mut f.buf, ci as i32);
         push_b(&mut f.buf, b"\">");
 
         let bw = estimate_bw(&g.sorted, cfg.bandwidth);
@@ -69,29 +80,44 @@ pub fn render(cfg: &ViolinConfig) -> String {
             ("N", g.n as f64),
         ];
         let steps = dens.len() - 1;
-        let yv = |si: usize| -> i32 { f.pt + f.ph - (si as f64 / steps as f64 * f.ph as f64) as i32 };
+        let yv =
+            |si: usize| -> i32 { f.pt + f.ph - (si as f64 / steps as f64 * f.ph as f64) as i32 };
         let w_at = |si: usize| -> i32 { (dens[si] / max_d * half_w as f64) as i32 };
 
-        push_b(&mut f.buf, b"<path data-idx=\""); push_i(&mut f.buf, ci as i32);
-        push_b(&mut f.buf, b"\" data-lbl=\""); escape_xml(&mut f.buf, &g.label);
+        push_b(&mut f.buf, b"<path data-idx=\"");
+        push_i(&mut f.buf, ci as i32);
+        push_b(&mut f.buf, b"\" data-lbl=\"");
+        escape_xml(&mut f.buf, &g.label);
         for (k, v) in &kv {
-            push_b(&mut f.buf, b"\" data-kv-"); push_b(&mut f.buf, k.as_bytes());
-            push_b(&mut f.buf, b"=\""); push_f2(&mut f.buf, *v);
+            push_b(&mut f.buf, b"\" data-kv-");
+            push_b(&mut f.buf, k.as_bytes());
+            push_b(&mut f.buf, b"=\"");
+            push_f2(&mut f.buf, *v);
         }
         push_b(&mut f.buf, b"\" d=\"M ");
-        push_i(&mut f.buf, cx + w_at(0)); f.buf.push(b' '); push_i(&mut f.buf, yv(0));
+        push_i(&mut f.buf, cx + w_at(0));
+        f.buf.push(b' ');
+        push_i(&mut f.buf, yv(0));
         for si in 1..=steps {
-            push_b(&mut f.buf, b" L "); push_i(&mut f.buf, cx + w_at(si));
-            f.buf.push(b' '); push_i(&mut f.buf, yv(si));
+            push_b(&mut f.buf, b" L ");
+            push_i(&mut f.buf, cx + w_at(si));
+            f.buf.push(b' ');
+            push_i(&mut f.buf, yv(si));
         }
         for si in (0..=steps).rev() {
-            push_b(&mut f.buf, b" L "); push_i(&mut f.buf, cx - w_at(si));
-            f.buf.push(b' '); push_i(&mut f.buf, yv(si));
+            push_b(&mut f.buf, b" L ");
+            push_i(&mut f.buf, cx - w_at(si));
+            f.buf.push(b' ');
+            push_i(&mut f.buf, yv(si));
         }
-        push_b(&mut f.buf, b" Z\" fill=\"url(#aurg"); push_i(&mut f.buf, ci as i32);
-        push_b(&mut f.buf, b")\" fill-opacity=\""); push_f2(&mut f.buf, (cfg.fill_opacity + 0.1).min(0.85));
-        push_b(&mut f.buf, b"\" stroke=\"url(#aurg"); push_i(&mut f.buf, ci as i32);
-        push_b(&mut f.buf, b")\" stroke-width=\""); push_f2(&mut f.buf, cfg.stroke_width);
+        push_b(&mut f.buf, b" Z\" fill=\"url(#aurg");
+        push_i(&mut f.buf, ci as i32);
+        push_b(&mut f.buf, b")\" fill-opacity=\"");
+        push_f2(&mut f.buf, (cfg.fill_opacity + 0.1).min(0.85));
+        push_b(&mut f.buf, b"\" stroke=\"url(#aurg");
+        push_i(&mut f.buf, ci as i32);
+        push_b(&mut f.buf, b")\" stroke-width=\"");
+        push_f2(&mut f.buf, cfg.stroke_width);
         push_b(&mut f.buf, b"\" filter=\"url(#aurgf)\"/>");
 
         draw_inner_box_v(&mut f, cx, half_w, g, vr.min, vr.range);
@@ -103,4 +129,3 @@ pub fn render(cfg: &ViolinConfig) -> String {
     finish(&mut f, &names, &palette, cfg.x_label, cfg.y_label, legend_w);
     f.html(&slots_to_json(cfg.hover))
 }
-

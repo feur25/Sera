@@ -1,4 +1,4 @@
-use super::camera::{Point3D, Point2D};
+use super::camera::{Point2D, Point3D};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Matrix4x4 {
@@ -20,7 +20,7 @@ impl Matrix4x4 {
     pub fn perspective(fov: f32, aspect: f32, near: f32, far: f32) -> Self {
         let f = 1.0 / (fov / 2.0).tan();
         let range = far - near;
-        
+
         Self {
             data: [
                 [f / aspect, 0.0, 0.0, 0.0],
@@ -35,13 +35,18 @@ impl Matrix4x4 {
         let width = right - left;
         let height = top - bottom;
         let depth = far - near;
-        
+
         Self {
             data: [
                 [2.0 / width, 0.0, 0.0, 0.0],
                 [0.0, 2.0 / height, 0.0, 0.0],
                 [0.0, 0.0, -2.0 / depth, 0.0],
-                [-(right + left) / width, -(top + bottom) / height, -(far + near) / depth, 1.0],
+                [
+                    -(right + left) / width,
+                    -(top + bottom) / height,
+                    -(far + near) / depth,
+                    1.0,
+                ],
             ],
         }
     }
@@ -109,7 +114,7 @@ impl Matrix4x4 {
 
     pub fn mul(&self, other: &Matrix4x4) -> Self {
         let mut result = [[0.0; 4]; 4];
-        
+
         for i in 0..4 {
             for j in 0..4 {
                 let mut sum = 0.0;
@@ -119,33 +124,33 @@ impl Matrix4x4 {
                 result[i][j] = sum;
             }
         }
-        
+
         Self { data: result }
     }
 
     pub fn mul_vec(&self, p: Point3D) -> Point3D {
         let v = [p.x, p.y, p.z, 1.0];
         let mut result = [0.0; 4];
-        
+
         for i in 0..4 {
             for j in 0..4 {
                 result[i] += self.data[i][j] * v[j];
             }
         }
-        
+
         Point3D::new(result[0], result[1], result[2])
     }
 
     pub fn mul_vec_homo(&self, p: Point3D) -> [f32; 4] {
         let v = [p.x, p.y, p.z, 1.0];
         let mut result = [0.0; 4];
-        
+
         for i in 0..4 {
             for j in 0..4 {
                 result[i] += self.data[i][j] * v[j];
             }
         }
-        
+
         result
     }
 }
@@ -178,54 +183,54 @@ impl PerspectiveCamera {
         let f_y = self.target.y - self.eye.y;
         let f_z = self.target.z - self.eye.z;
         let f_len = (f_x * f_x + f_y * f_y + f_z * f_z).sqrt();
-        
+
         if f_len < 0.0001 {
             return None;
         }
-        
+
         let f_x_n = f_x / f_len;
         let f_y_n = f_y / f_len;
         let f_z_n = f_z / f_len;
-        
+
         let r_x = self.up.y * f_z_n - self.up.z * f_y_n;
         let r_y = self.up.z * f_x_n - self.up.x * f_z_n;
         let r_z = self.up.x * f_y_n - self.up.y * f_x_n;
         let r_len = (r_x * r_x + r_y * r_y + r_z * r_z).sqrt();
-        
+
         let r_x = r_x / r_len.max(0.0001);
         let r_y = r_y / r_len.max(0.0001);
         let r_z = r_z / r_len.max(0.0001);
-        
+
         let u_x = f_y_n * r_z - f_z_n * r_y;
         let u_y = f_z_n * r_x - f_x_n * r_z;
         let u_z = f_x_n * r_y - f_y_n * r_x;
-        
+
         let p_x = p.x - self.eye.x;
         let p_y = p.y - self.eye.y;
         let p_z = p.z - self.eye.z;
-        
+
         let depth = p_x * f_x_n + p_y * f_y_n + p_z * f_z_n;
-        
+
         if depth < self.near || depth > self.far {
             return None;
         }
-        
+
         let x_cam = p_x * r_x + p_y * r_y + p_z * r_z;
         let y_cam = p_x * u_x + p_y * u_y + p_z * u_z;
-        
+
         let tan_half = (self.fov / 2.0).tan();
         let scale = tan_half * self.aspect;
         let x_screen = (x_cam / depth) / scale;
         let y_screen = (y_cam / depth) / tan_half;
-        
+
         if !x_screen.is_finite() || !y_screen.is_finite() {
             return None;
         }
-        
+
         if x_screen.abs() > 2.0 || y_screen.abs() > 2.0 {
             return None;
         }
-        
+
         Some(Point2D::new(x_screen, y_screen))
     }
 }
@@ -240,5 +245,3 @@ impl Default for PerspectiveCamera {
         )
     }
 }
-
-

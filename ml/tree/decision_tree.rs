@@ -14,13 +14,26 @@ thread_local! {
 }
 
 #[derive(Clone)]
-pub enum TreeCriterion { Gini, Entropy, MSE }
+pub enum TreeCriterion {
+    Gini,
+    Entropy,
+    MSE,
+}
 
 #[allow(dead_code)]
 #[derive(Clone)]
 enum NodeKind {
-    Leaf { value: f64, class: i32, dist: Vec<f64> },
-    Split { feature: usize, threshold: f64, left: usize, right: usize },
+    Leaf {
+        value: f64,
+        class: i32,
+        dist: Vec<f64>,
+    },
+    Split {
+        feature: usize,
+        threshold: f64,
+        left: usize,
+        right: usize,
+    },
 }
 
 #[allow(dead_code)]
@@ -39,25 +52,28 @@ pub struct BinInfo {
 }
 
 pub fn compute_bins(x: &[f64], n: usize, p: usize) -> BinInfo {
-    let (edges, n_bins): (Vec<Vec<f64>>, Vec<usize>) = (0..p).into_par_iter().map(|j| {
-        let mut col: Vec<f64> = (0..n).map(|i| x[i * p + j]).collect();
-        col.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
-        col.dedup();
-        let nb = col.len().min(MAX_BINS);
-        if nb <= 1 {
-            return (vec![f64::MAX], 1);
-        }
-        let step = col.len() as f64 / nb as f64;
-        let mut e = Vec::with_capacity(nb);
-        for b in 1..nb {
-            let idx = (b as f64 * step) as usize;
-            let idx = idx.min(col.len() - 1);
-            e.push((col[idx - 1] + col[idx]) * 0.5);
-        }
-        e.push(f64::MAX);
-        let actual_bins = e.len();
-        (e, actual_bins)
-    }).unzip();
+    let (edges, n_bins): (Vec<Vec<f64>>, Vec<usize>) = (0..p)
+        .into_par_iter()
+        .map(|j| {
+            let mut col: Vec<f64> = (0..n).map(|i| x[i * p + j]).collect();
+            col.sort_unstable_by(|a, b| a.partial_cmp(b).unwrap());
+            col.dedup();
+            let nb = col.len().min(MAX_BINS);
+            if nb <= 1 {
+                return (vec![f64::MAX], 1);
+            }
+            let step = col.len() as f64 / nb as f64;
+            let mut e = Vec::with_capacity(nb);
+            for b in 1..nb {
+                let idx = (b as f64 * step) as usize;
+                let idx = idx.min(col.len() - 1);
+                e.push((col[idx - 1] + col[idx]) * 0.5);
+            }
+            e.push(f64::MAX);
+            let actual_bins = e.len();
+            (e, actual_bins)
+        })
+        .unzip();
 
     let mut binned = vec![0u8; n * p];
     let edges_ref = &edges;
@@ -76,7 +92,13 @@ pub fn compute_bins(x: &[f64], n: usize, p: usize) -> BinInfo {
             }
         }
     }
-    BinInfo { edges, n_bins, binned, p, n }
+    BinInfo {
+        edges,
+        n_bins,
+        binned,
+        p,
+        n,
+    }
 }
 
 pub fn bin_data_with_edges(x: &[f64], n: usize, p: usize, edges: &[Vec<f64>]) -> Vec<u8> {
@@ -113,11 +135,24 @@ pub struct DecisionTreeClassifier {
 }
 
 impl DecisionTreeClassifier {
-    pub fn new(max_depth: usize, min_samples_split: usize, min_samples_leaf: usize, max_features: Option<usize>, criterion: TreeCriterion) -> Self {
+    pub fn new(
+        max_depth: usize,
+        min_samples_split: usize,
+        min_samples_leaf: usize,
+        max_features: Option<usize>,
+        criterion: TreeCriterion,
+    ) -> Self {
         Self {
-            max_depth, min_samples_split, min_samples_leaf, max_features,
-            criterion, n_classes: 0, classes: Vec::new(), nodes: Vec::new(),
-            feature_importances: Vec::new(), need_dist: true,
+            max_depth,
+            min_samples_split,
+            min_samples_leaf,
+            max_features,
+            criterion,
+            n_classes: 0,
+            classes: Vec::new(),
+            nodes: Vec::new(),
+            feature_importances: Vec::new(),
+            need_dist: true,
         }
     }
 
@@ -141,7 +176,9 @@ impl DecisionTreeClassifier {
         let cmax = *self.classes.iter().max().unwrap_or(&0);
         let crange = (cmax - cmin + 1) as usize;
         let mut cmap = vec![0u8; crange];
-        for (i, &c) in self.classes.iter().enumerate() { cmap[(c - cmin) as usize] = i as u8; }
+        for (i, &c) in self.classes.iter().enumerate() {
+            cmap[(c - cmin) as usize] = i as u8;
+        }
         let y_idx: Vec<u8> = y.iter().map(|&v| cmap[(v - cmin) as usize]).collect();
         self.nodes.clear();
         self.feature_importances = vec![0.0; p];
@@ -152,39 +189,82 @@ impl DecisionTreeClassifier {
 
         let sum: f64 = self.feature_importances.iter().sum();
         if sum > 0.0 {
-            for v in &mut self.feature_importances { *v /= sum; }
+            for v in &mut self.feature_importances {
+                *v /= sum;
+            }
         }
     }
 
-    fn build_node(&mut self, bins: &BinInfo, y: &[u8], indices: &mut [usize], depth: usize, rng: &mut u64) -> usize {
+    fn build_node(
+        &mut self,
+        bins: &BinInfo,
+        y: &[u8],
+        indices: &mut [usize],
+        depth: usize,
+        rng: &mut u64,
+    ) -> usize {
         let nc = self.n_classes;
         let n = indices.len();
         let p = bins.p;
         let bn = bins.n;
         let idx = self.nodes.len();
-        self.nodes.push(TreeNode { kind: NodeKind::Leaf { value: 0.0, class: 0, dist: Vec::new() }, n_samples: n });
+        self.nodes.push(TreeNode {
+            kind: NodeKind::Leaf {
+                value: 0.0,
+                class: 0,
+                dist: Vec::new(),
+            },
+            n_samples: n,
+        });
 
         let mut cnts = [0u32; MAX_NC];
-        for &i in indices.iter() { unsafe { *cnts.get_unchecked_mut(*y.get_unchecked(i) as usize) += 1; } }
-        let majority = cnts[..nc].iter().enumerate().max_by_key(|(_, &v)| v).map(|(i, _)| i).unwrap_or(0);
+        for &i in indices.iter() {
+            unsafe {
+                *cnts.get_unchecked_mut(*y.get_unchecked(i) as usize) += 1;
+            }
+        }
+        let majority = cnts[..nc]
+            .iter()
+            .enumerate()
+            .max_by_key(|(_, &v)| v)
+            .map(|(i, _)| i)
+            .unwrap_or(0);
 
-        if depth >= self.max_depth || n < self.min_samples_split || cnts[..nc].iter().filter(|&&v| v > 0).count() <= 1 {
-            let dist: Vec<f64> = if self.need_dist { cnts[..nc].iter().map(|&v| v as f64).collect() } else { Vec::new() };
-            self.nodes[idx].kind = NodeKind::Leaf { value: cnts[majority] as f64, class: self.classes[majority], dist };
+        if depth >= self.max_depth
+            || n < self.min_samples_split
+            || cnts[..nc].iter().filter(|&&v| v > 0).count() <= 1
+        {
+            let dist: Vec<f64> = if self.need_dist {
+                cnts[..nc].iter().map(|&v| v as f64).collect()
+            } else {
+                Vec::new()
+            };
+            self.nodes[idx].kind = NodeKind::Leaf {
+                value: cnts[majority] as f64,
+                class: self.classes[majority],
+                dist,
+            };
             return idx;
         }
 
         let max_f = self.max_features.unwrap_or(p);
         let mut feats_arr = [0usize; 64];
         let features: &[usize] = if max_f >= p {
-            for i in 0..p { feats_arr[i] = i; }
+            for i in 0..p {
+                feats_arr[i] = i;
+            }
             &feats_arr[..p]
         } else {
             let mut len = 0;
             while len < max_f {
-                *rng ^= *rng << 13; *rng ^= *rng >> 7; *rng ^= *rng << 17;
+                *rng ^= *rng << 13;
+                *rng ^= *rng >> 7;
+                *rng ^= *rng << 17;
                 let f = *rng as usize % p;
-                if !feats_arr[..len].contains(&f) { feats_arr[len] = f; len += 1; }
+                if !feats_arr[..len].contains(&f) {
+                    feats_arr[len] = f;
+                    len += 1;
+                }
             }
             &feats_arr[..max_f]
         };
@@ -205,7 +285,9 @@ impl DecisionTreeClassifier {
                 for &i in indices.iter() {
                     let b = unsafe { *bins.binned.get_unchecked(col_off + i) } as usize;
                     let ci = unsafe { *y.get_unchecked(i) } as usize;
-                    unsafe { *ws.get_unchecked_mut(b * nc + ci) += 1; }
+                    unsafe {
+                        *ws.get_unchecked_mut(b * nc + ci) += 1;
+                    }
                 }
                 let mut lcnts = [0u32; MAX_NC];
                 let mut rcnts = cnts;
@@ -215,38 +297,68 @@ impl DecisionTreeClassifier {
                 for b in 0..nb.saturating_sub(1) {
                     let row = unsafe { ws.get_unchecked(b * nc..(b + 1) * nc) };
                     let bn_row: u32 = row.iter().sum();
-                    if bn_row == 0 { continue; }
-                    for c in 0..nc { lcnts[c] += row[c]; rcnts[c] -= row[c]; }
+                    if bn_row == 0 {
+                        continue;
+                    }
+                    for c in 0..nc {
+                        lcnts[c] += row[c];
+                        rcnts[c] -= row[c];
+                    }
                     nl += bn_row as usize;
                     let nr = n - nl;
-                    if nl < min_sl || nr < min_sl { continue; }
+                    if nl < min_sl || nr < min_sl {
+                        continue;
+                    }
                     let il = gini_from_counts(&lcnts[..nc], nl);
                     let ir = gini_from_counts(&rcnts[..nc], nr);
-                    let gain = parent_impurity - (nl as f64 / n as f64) * il - (nr as f64 / n as f64) * ir;
-                    if gain > bg { bg = gain; bb = b; }
+                    let gain =
+                        parent_impurity - (nl as f64 / n as f64) * il - (nr as f64 / n as f64) * ir;
+                    if gain > bg {
+                        bg = gain;
+                        bb = b;
+                    }
                 }
                 (bg, bb)
             })
         };
 
         if features.len() >= 8 && n >= 1000 {
-            let results: Vec<(f64, usize, usize)> = features.par_iter().map(|&feat| {
-                let (g, b) = scan_feat(feat);
-                (g, feat, b)
-            }).collect();
+            let results: Vec<(f64, usize, usize)> = features
+                .par_iter()
+                .map(|&feat| {
+                    let (g, b) = scan_feat(feat);
+                    (g, feat, b)
+                })
+                .collect();
             for (g, f, b) in results {
-                if g > best_gain { best_gain = g; best_feat = f; best_bin = b; }
+                if g > best_gain {
+                    best_gain = g;
+                    best_feat = f;
+                    best_bin = b;
+                }
             }
         } else {
             for &feat in features.iter() {
                 let (g, b) = scan_feat(feat);
-                if g > best_gain { best_gain = g; best_feat = feat; best_bin = b; }
+                if g > best_gain {
+                    best_gain = g;
+                    best_feat = feat;
+                    best_bin = b;
+                }
             }
         }
 
         if best_gain <= 0.0 {
-            let dist: Vec<f64> = if self.need_dist { cnts[..nc].iter().map(|&v| v as f64).collect() } else { Vec::new() };
-            self.nodes[idx].kind = NodeKind::Leaf { value: cnts[majority] as f64, class: self.classes[majority], dist };
+            let dist: Vec<f64> = if self.need_dist {
+                cnts[..nc].iter().map(|&v| v as f64).collect()
+            } else {
+                Vec::new()
+            };
+            self.nodes[idx].kind = NodeKind::Leaf {
+                value: cnts[majority] as f64,
+                class: self.classes[majority],
+                dist,
+            };
             return idx;
         }
 
@@ -269,7 +381,12 @@ impl DecisionTreeClassifier {
         let (left_sl, right_sl) = indices.split_at_mut(lo);
         let left = self.build_node(bins, y, left_sl, depth + 1, rng);
         let right = self.build_node(bins, y, right_sl, depth + 1, rng);
-        self.nodes[idx].kind = NodeKind::Split { feature: best_feat, threshold: best_thr, left, right };
+        self.nodes[idx].kind = NodeKind::Split {
+            feature: best_feat,
+            threshold: best_thr,
+            left,
+            right,
+        };
         idx
     }
 
@@ -283,7 +400,9 @@ impl DecisionTreeClassifier {
         let cmax = *self.classes.iter().max().unwrap_or(&0);
         let crange = (cmax - cmin + 1) as usize;
         let mut cmap = vec![0u8; crange];
-        for (i, &c) in self.classes.iter().enumerate() { cmap[(c - cmin) as usize] = i as u8; }
+        for (i, &c) in self.classes.iter().enumerate() {
+            cmap[(c - cmin) as usize] = i as u8;
+        }
         let y_idx: Vec<u8> = y.iter().map(|&v| cmap[(v - cmin) as usize]).collect();
         self.nodes.clear();
         self.feature_importances = vec![0.0; p];
@@ -291,45 +410,83 @@ impl DecisionTreeClassifier {
         let mut indices: Vec<usize> = (0..n).collect();
         self.build_node_weighted(bins, &y_idx, weights, &mut indices, 0, &mut rng);
         let sum: f64 = self.feature_importances.iter().sum();
-        if sum > 0.0 { for v in &mut self.feature_importances { *v /= sum; } }
+        if sum > 0.0 {
+            for v in &mut self.feature_importances {
+                *v /= sum;
+            }
+        }
     }
 
-    fn build_node_weighted(&mut self, bins: &BinInfo, y: &[u8], weights: &[f64], indices: &mut [usize], depth: usize, rng: &mut u64) -> usize {
+    fn build_node_weighted(
+        &mut self,
+        bins: &BinInfo,
+        y: &[u8],
+        weights: &[f64],
+        indices: &mut [usize],
+        depth: usize,
+        rng: &mut u64,
+    ) -> usize {
         let nc = self.n_classes;
         let n = indices.len();
         let p = bins.p;
         let bn = bins.n;
         let idx = self.nodes.len();
-        self.nodes.push(TreeNode { kind: NodeKind::Leaf { value: 0.0, class: 0, dist: Vec::new() }, n_samples: n });
+        self.nodes.push(TreeNode {
+            kind: NodeKind::Leaf {
+                value: 0.0,
+                class: 0,
+                dist: Vec::new(),
+            },
+            n_samples: n,
+        });
 
         let mut cwts = [0.0f64; MAX_NC];
         let mut total_w = 0.0f64;
         for &i in indices.iter() {
             let w = unsafe { *weights.get_unchecked(i) };
-            unsafe { *cwts.get_unchecked_mut(*y.get_unchecked(i) as usize) += w; }
+            unsafe {
+                *cwts.get_unchecked_mut(*y.get_unchecked(i) as usize) += w;
+            }
             total_w += w;
         }
-        let majority = cwts[..nc].iter().enumerate()
+        let majority = cwts[..nc]
+            .iter()
+            .enumerate()
             .max_by(|(_, a), (_, b)| a.partial_cmp(b).unwrap())
-            .map(|(i, _)| i).unwrap_or(0);
+            .map(|(i, _)| i)
+            .unwrap_or(0);
 
-        if depth >= self.max_depth || n < self.min_samples_split || cwts[..nc].iter().filter(|&&v| v > 1e-15).count() <= 1 {
+        if depth >= self.max_depth
+            || n < self.min_samples_split
+            || cwts[..nc].iter().filter(|&&v| v > 1e-15).count() <= 1
+        {
             let dist: Vec<f64> = cwts[..nc].to_vec();
-            self.nodes[idx].kind = NodeKind::Leaf { value: cwts[majority], class: self.classes[majority], dist };
+            self.nodes[idx].kind = NodeKind::Leaf {
+                value: cwts[majority],
+                class: self.classes[majority],
+                dist,
+            };
             return idx;
         }
 
         let max_f = self.max_features.unwrap_or(p);
         let mut feats_arr = [0usize; 64];
         let features: &[usize] = if max_f >= p {
-            for i in 0..p { feats_arr[i] = i; }
+            for i in 0..p {
+                feats_arr[i] = i;
+            }
             &feats_arr[..p]
         } else {
             let mut len = 0;
             while len < max_f {
-                *rng ^= *rng << 13; *rng ^= *rng >> 7; *rng ^= *rng << 17;
+                *rng ^= *rng << 13;
+                *rng ^= *rng >> 7;
+                *rng ^= *rng << 17;
                 let f = *rng as usize % p;
-                if !feats_arr[..len].contains(&f) { feats_arr[len] = f; len += 1; }
+                if !feats_arr[..len].contains(&f) {
+                    feats_arr[len] = f;
+                    len += 1;
+                }
             }
             &feats_arr[..max_f]
         };
@@ -350,7 +507,9 @@ impl DecisionTreeClassifier {
                     let b = unsafe { *bins.binned.get_unchecked(col_off + i) } as usize;
                     let ci = unsafe { *y.get_unchecked(i) } as usize;
                     let w = unsafe { *weights.get_unchecked(i) };
-                    unsafe { *ws.get_unchecked_mut(b * nc + ci) += w; }
+                    unsafe {
+                        *ws.get_unchecked_mut(b * nc + ci) += w;
+                    }
                 }
                 let mut lwts = [0.0f64; MAX_NC];
                 let mut rwts = [0.0f64; MAX_NC];
@@ -361,38 +520,63 @@ impl DecisionTreeClassifier {
                 for b in 0..nb.saturating_sub(1) {
                     let row = unsafe { ws.get_unchecked(b * nc..(b + 1) * nc) };
                     let bw: f64 = row[..nc].iter().sum();
-                    if bw <= 0.0 { continue; }
-                    for c in 0..nc { lwts[c] += row[c]; rwts[c] -= row[c]; }
+                    if bw <= 0.0 {
+                        continue;
+                    }
+                    for c in 0..nc {
+                        lwts[c] += row[c];
+                        rwts[c] -= row[c];
+                    }
                     wl += bw;
                     let wr = total_w - wl;
-                    if wl < 1e-15 || wr < 1e-15 { continue; }
+                    if wl < 1e-15 || wr < 1e-15 {
+                        continue;
+                    }
                     let il = gini_weighted(&lwts[..nc], wl);
                     let ir = gini_weighted(&rwts[..nc], wr);
                     let gain = parent_impurity - (wl / total_w) * il - (wr / total_w) * ir;
-                    if gain > bg { bg = gain; bb = b; }
+                    if gain > bg {
+                        bg = gain;
+                        bb = b;
+                    }
                 }
                 (bg, bb)
             })
         };
 
         if features.len() >= 8 && n >= 1000 {
-            let results: Vec<(f64, usize, usize)> = features.par_iter().map(|&feat| {
-                let (g, b) = scan_feat(feat);
-                (g, feat, b)
-            }).collect();
+            let results: Vec<(f64, usize, usize)> = features
+                .par_iter()
+                .map(|&feat| {
+                    let (g, b) = scan_feat(feat);
+                    (g, feat, b)
+                })
+                .collect();
             for (g, f, b) in results {
-                if g > best_gain { best_gain = g; best_feat = f; best_bin = b; }
+                if g > best_gain {
+                    best_gain = g;
+                    best_feat = f;
+                    best_bin = b;
+                }
             }
         } else {
             for &feat in features.iter() {
                 let (g, b) = scan_feat(feat);
-                if g > best_gain { best_gain = g; best_feat = feat; best_bin = b; }
+                if g > best_gain {
+                    best_gain = g;
+                    best_feat = feat;
+                    best_bin = b;
+                }
             }
         }
 
         if best_gain <= 0.0 {
             let dist: Vec<f64> = cwts[..nc].to_vec();
-            self.nodes[idx].kind = NodeKind::Leaf { value: cwts[majority], class: self.classes[majority], dist };
+            self.nodes[idx].kind = NodeKind::Leaf {
+                value: cwts[majority],
+                class: self.classes[majority],
+                dist,
+            };
             return idx;
         }
 
@@ -415,29 +599,41 @@ impl DecisionTreeClassifier {
         let (left_sl, right_sl) = indices.split_at_mut(lo);
         let left = self.build_node_weighted(bins, y, weights, left_sl, depth + 1, rng);
         let right = self.build_node_weighted(bins, y, weights, right_sl, depth + 1, rng);
-        self.nodes[idx].kind = NodeKind::Split { feature: best_feat, threshold: best_thr, left, right };
+        self.nodes[idx].kind = NodeKind::Split {
+            feature: best_feat,
+            threshold: best_thr,
+            left,
+            right,
+        };
         idx
     }
 
     pub fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> {
         if n >= 256 {
-            (0..n).into_par_iter().map(|i| {
-                let row = &x[i * p..(i + 1) * p];
-                self.predict_single(row)
-            }).collect()
+            (0..n)
+                .into_par_iter()
+                .map(|i| {
+                    let row = &x[i * p..(i + 1) * p];
+                    self.predict_single(row)
+                })
+                .collect()
         } else {
-            (0..n).map(|i| {
-                let row = &x[i * p..(i + 1) * p];
-                self.predict_single(row)
-            }).collect()
+            (0..n)
+                .map(|i| {
+                    let row = &x[i * p..(i + 1) * p];
+                    self.predict_single(row)
+                })
+                .collect()
         }
     }
 
     pub fn predict_proba(&self, x: &[f64], n: usize, p: usize) -> Vec<Vec<f64>> {
-        (0..n).map(|i| {
-            let row = &x[i * p..(i + 1) * p];
-            self.predict_proba_single(row)
-        }).collect()
+        (0..n)
+            .map(|i| {
+                let row = &x[i * p..(i + 1) * p];
+                self.predict_proba_single(row)
+            })
+            .collect()
     }
 
     pub fn predict_single(&self, row: &[f64]) -> i32 {
@@ -445,8 +641,17 @@ impl DecisionTreeClassifier {
         loop {
             match &self.nodes[node].kind {
                 NodeKind::Leaf { class, .. } => return *class,
-                NodeKind::Split { feature, threshold, left, right } => {
-                    node = if row[*feature] <= *threshold { *left } else { *right };
+                NodeKind::Split {
+                    feature,
+                    threshold,
+                    left,
+                    right,
+                } => {
+                    node = if row[*feature] <= *threshold {
+                        *left
+                    } else {
+                        *right
+                    };
                 }
             }
         }
@@ -458,10 +663,23 @@ impl DecisionTreeClassifier {
             match &self.nodes[node].kind {
                 NodeKind::Leaf { dist, .. } => {
                     let sum: f64 = dist.iter().sum();
-                    return if sum > 0.0 { dist.iter().map(|&v| v / sum).collect() } else { dist.clone() };
+                    return if sum > 0.0 {
+                        dist.iter().map(|&v| v / sum).collect()
+                    } else {
+                        dist.clone()
+                    };
                 }
-                NodeKind::Split { feature, threshold, left, right } => {
-                    node = if row[*feature] <= *threshold { *left } else { *right };
+                NodeKind::Split {
+                    feature,
+                    threshold,
+                    left,
+                    right,
+                } => {
+                    node = if row[*feature] <= *threshold {
+                        *left
+                    } else {
+                        *right
+                    };
                 }
             }
         }
@@ -472,14 +690,25 @@ impl DecisionTreeClassifier {
         loop {
             match &self.nodes[node].kind {
                 NodeKind::Leaf { dist, .. } => return dist,
-                NodeKind::Split { feature, threshold, left, right } => {
-                    node = if row[*feature] <= *threshold { *left } else { *right };
+                NodeKind::Split {
+                    feature,
+                    threshold,
+                    left,
+                    right,
+                } => {
+                    node = if row[*feature] <= *threshold {
+                        *left
+                    } else {
+                        *right
+                    };
                 }
             }
         }
     }
 
-    pub fn n_classes(&self) -> usize { self.classes.len() }
+    pub fn n_classes(&self) -> usize {
+        self.classes.len()
+    }
 }
 
 #[derive(Clone)]
@@ -495,8 +724,15 @@ pub struct DecisionTreeRegressor {
 
 #[derive(Clone)]
 enum TreeNodeRegKind {
-    Leaf { value: f64 },
-    Split { feature: usize, threshold: f64, left: usize, right: usize },
+    Leaf {
+        value: f64,
+    },
+    Split {
+        feature: usize,
+        threshold: f64,
+        left: usize,
+        right: usize,
+    },
 }
 
 #[allow(dead_code)]
@@ -507,8 +743,20 @@ struct TreeNodeReg {
 }
 
 impl DecisionTreeRegressor {
-    pub fn new(max_depth: usize, min_samples_split: usize, min_samples_leaf: usize, max_features: Option<usize>) -> Self {
-        Self { max_depth, min_samples_split, min_samples_leaf, max_features, nodes: Vec::new(), feature_importances: Vec::new() }
+    pub fn new(
+        max_depth: usize,
+        min_samples_split: usize,
+        min_samples_leaf: usize,
+        max_features: Option<usize>,
+    ) -> Self {
+        Self {
+            max_depth,
+            min_samples_split,
+            min_samples_leaf,
+            max_features,
+            nodes: Vec::new(),
+            feature_importances: Vec::new(),
+        }
     }
 
     pub fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) {
@@ -529,35 +777,61 @@ impl DecisionTreeRegressor {
         let mut rng = 0x123456789ABCDEFu64;
         self.build_node(bins, y, &mut indices, 0, &mut rng);
         let sum: f64 = self.feature_importances.iter().sum();
-        if sum > 0.0 { for v in &mut self.feature_importances { *v /= sum; } }
+        if sum > 0.0 {
+            for v in &mut self.feature_importances {
+                *v /= sum;
+            }
+        }
     }
 
-    fn build_node(&mut self, bins: &BinInfo, y: &[f64], indices: &mut [usize], depth: usize, rng: &mut u64) -> usize {
+    fn build_node(
+        &mut self,
+        bins: &BinInfo,
+        y: &[f64],
+        indices: &mut [usize],
+        depth: usize,
+        rng: &mut u64,
+    ) -> usize {
         let n = indices.len();
         let p = bins.p;
         let bn = bins.n;
         let idx = self.nodes.len();
         let (sum_y, sum_y2) = indices.iter().fold((0.0f64, 0.0f64), |(s, s2), &i| {
-            let yi = unsafe { *y.get_unchecked(i) }; (s + yi, s2 + yi * yi)
+            let yi = unsafe { *y.get_unchecked(i) };
+            (s + yi, s2 + yi * yi)
         });
         let mean_y = sum_y / n as f64;
-        self.nodes.push(TreeNodeReg { kind: TreeNodeRegKind::Leaf { value: mean_y }, n_samples: n });
+        self.nodes.push(TreeNodeReg {
+            kind: TreeNodeRegKind::Leaf { value: mean_y },
+            n_samples: n,
+        });
 
-        if depth >= self.max_depth || n < self.min_samples_split { return idx; }
+        if depth >= self.max_depth || n < self.min_samples_split {
+            return idx;
+        }
         let parent_mse = sum_y2 / n as f64 - mean_y * mean_y;
-        if parent_mse < 1e-15 { return idx; }
+        if parent_mse < 1e-15 {
+            return idx;
+        }
 
         let max_f = self.max_features.unwrap_or(p);
         let mut feats_arr = [0usize; 64];
         let features: &[usize] = if max_f >= p {
-            for i in 0..p { feats_arr[i] = i; }
+            for i in 0..p {
+                feats_arr[i] = i;
+            }
             &feats_arr[..p]
         } else {
             let mut len = 0;
             while len < max_f {
-                *rng ^= *rng << 13; *rng ^= *rng >> 7; *rng ^= *rng << 17;
+                *rng ^= *rng << 13;
+                *rng ^= *rng >> 7;
+                *rng ^= *rng << 17;
                 let f = *rng as usize % p;
-                if !feats_arr[..len].contains(&f) { feats_arr[len] = f; len += 1; }
+                if !feats_arr[..len].contains(&f) {
+                    feats_arr[len] = f;
+                    len += 1;
+                }
             }
             &feats_arr[..max_f]
         };
@@ -592,37 +866,62 @@ impl DecisionTreeRegressor {
                 let mut bg = 0.0f64;
                 let mut bb = 0usize;
                 for b in 0..nb.saturating_sub(1) {
-                    sl += bin_sum[b]; ssl += bin_sq[b]; nl += bin_cnt[b] as usize;
-                    if nl == 0 { continue; }
+                    sl += bin_sum[b];
+                    ssl += bin_sq[b];
+                    nl += bin_cnt[b] as usize;
+                    if nl == 0 {
+                        continue;
+                    }
                     let nr = n - nl;
-                    if nl < min_sl || nr < min_sl { continue; }
-                    let sr = sum_y - sl; let ssr = sum_y2 - ssl;
-                    let ml = sl / nl as f64; let mr = sr / nr as f64;
+                    if nl < min_sl || nr < min_sl {
+                        continue;
+                    }
+                    let sr = sum_y - sl;
+                    let ssr = sum_y2 - ssl;
+                    let ml = sl / nl as f64;
+                    let mr = sr / nr as f64;
                     let gl = ssl / nl as f64 - ml * ml;
                     let gr = ssr / nr as f64 - mr * mr;
-                    let gain = parent_mse - (nl as f64 / n as f64) * gl - (nr as f64 / n as f64) * gr;
-                    if gain > bg { bg = gain; bb = b; }
+                    let gain =
+                        parent_mse - (nl as f64 / n as f64) * gl - (nr as f64 / n as f64) * gr;
+                    if gain > bg {
+                        bg = gain;
+                        bb = b;
+                    }
                 }
                 (bg, bb)
             })
         };
 
         if features.len() >= 8 && n >= 1000 {
-            let results: Vec<(f64, usize, usize)> = features.par_iter().map(|&feat| {
-                let (g, b) = scan_feat(feat);
-                (g, feat, b)
-            }).collect();
+            let results: Vec<(f64, usize, usize)> = features
+                .par_iter()
+                .map(|&feat| {
+                    let (g, b) = scan_feat(feat);
+                    (g, feat, b)
+                })
+                .collect();
             for (g, f, b) in results {
-                if g > best_gain { best_gain = g; best_feat = f; best_bin = b; }
+                if g > best_gain {
+                    best_gain = g;
+                    best_feat = f;
+                    best_bin = b;
+                }
             }
         } else {
             for &feat in features.iter() {
                 let (g, b) = scan_feat(feat);
-                if g > best_gain { best_gain = g; best_feat = feat; best_bin = b; }
+                if g > best_gain {
+                    best_gain = g;
+                    best_feat = feat;
+                    best_bin = b;
+                }
             }
         }
 
-        if best_gain <= 0.0 { return idx; }
+        if best_gain <= 0.0 {
+            return idx;
+        }
 
         let best_thr = bins.edges[best_feat][best_bin];
         self.feature_importances[best_feat] += best_gain * n as f64;
@@ -643,7 +942,12 @@ impl DecisionTreeRegressor {
         let (left_sl, right_sl) = indices.split_at_mut(lo);
         let left = self.build_node(bins, y, left_sl, depth + 1, rng);
         let right = self.build_node(bins, y, right_sl, depth + 1, rng);
-        self.nodes[idx].kind = TreeNodeRegKind::Split { feature: best_feat, threshold: best_thr, left, right };
+        self.nodes[idx].kind = TreeNodeRegKind::Split {
+            feature: best_feat,
+            threshold: best_thr,
+            left,
+            right,
+        };
         idx
     }
 
@@ -652,8 +956,17 @@ impl DecisionTreeRegressor {
         loop {
             match &self.nodes[node].kind {
                 TreeNodeRegKind::Leaf { value } => return *value,
-                TreeNodeRegKind::Split { feature, threshold, left, right } => {
-                    node = if row[*feature] <= *threshold { *left } else { *right };
+                TreeNodeRegKind::Split {
+                    feature,
+                    threshold,
+                    left,
+                    right,
+                } => {
+                    node = if row[*feature] <= *threshold {
+                        *left
+                    } else {
+                        *right
+                    };
                 }
             }
         }
@@ -661,17 +974,25 @@ impl DecisionTreeRegressor {
 
     pub fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
         if n >= 256 {
-            (0..n).into_par_iter().map(|i| {
-                self.predict_single(&x[i * p..(i + 1) * p])
-            }).collect()
+            (0..n)
+                .into_par_iter()
+                .map(|i| self.predict_single(&x[i * p..(i + 1) * p]))
+                .collect()
         } else {
-            (0..n).map(|i| {
-                self.predict_single(&x[i * p..(i + 1) * p])
-            }).collect()
+            (0..n)
+                .map(|i| self.predict_single(&x[i * p..(i + 1) * p]))
+                .collect()
         }
     }
 
-    pub fn update_leaves_newton(&mut self, x: &[f64], n: usize, p: usize, grad: &[f64], hess: &[f64]) {
+    pub fn update_leaves_newton(
+        &mut self,
+        x: &[f64],
+        n: usize,
+        p: usize,
+        grad: &[f64],
+        hess: &[f64],
+    ) {
         let nn = self.nodes.len();
         let mut gs = vec![0.0; nn];
         let mut hs = vec![0.0; nn];
@@ -682,7 +1003,9 @@ impl DecisionTreeRegressor {
         }
         for idx in 0..nn {
             if let TreeNodeRegKind::Leaf { ref mut value } = self.nodes[idx].kind {
-                if hs[idx] > 1e-10 { *value = gs[idx] / hs[idx]; }
+                if hs[idx] > 1e-10 {
+                    *value = gs[idx] / hs[idx];
+                }
             }
         }
     }
@@ -692,8 +1015,17 @@ impl DecisionTreeRegressor {
         loop {
             match &self.nodes[node].kind {
                 TreeNodeRegKind::Leaf { .. } => return node,
-                TreeNodeRegKind::Split { feature, threshold, left, right } => {
-                    node = if row[*feature] <= *threshold { *left } else { *right };
+                TreeNodeRegKind::Split {
+                    feature,
+                    threshold,
+                    left,
+                    right,
+                } => {
+                    node = if row[*feature] <= *threshold {
+                        *left
+                    } else {
+                        *right
+                    };
                 }
             }
         }
@@ -701,30 +1033,44 @@ impl DecisionTreeRegressor {
 }
 
 impl crate::ml::MlClassifier for DecisionTreeClassifier {
-    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) { self.fit(x, n, p, y); }
-    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> { self.predict(x, n, p) }
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[i32]) {
+        self.fit(x, n, p, y);
+    }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<i32> {
+        self.predict(x, n, p)
+    }
 }
 
 impl crate::ml::MlRegressor for DecisionTreeRegressor {
-    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) { self.fit(x, n, p, y); }
-    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> { self.predict(x, n, p) }
+    fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]) {
+        self.fit(x, n, p, y);
+    }
+    fn predict(&self, x: &[f64], n: usize, p: usize) -> Vec<f64> {
+        self.predict(x, n, p)
+    }
 }
 
 #[inline(always)]
 fn gini_from_counts(cnts: &[u32], n: usize) -> f64 {
     let inv = 1.0 / n as f64;
     let mut s = 1.0;
-    for &c in cnts { let p = c as f64 * inv; s -= p * p; }
+    for &c in cnts {
+        let p = c as f64 * inv;
+        s -= p * p;
+    }
     s
 }
 
 #[inline(always)]
 fn gini_weighted(cnts: &[f64], total: f64) -> f64 {
-    if total <= 0.0 { return 0.0; }
+    if total <= 0.0 {
+        return 0.0;
+    }
     let inv = 1.0 / total;
     let mut s = 1.0;
-    for &c in cnts { let p = c * inv; s -= p * p; }
+    for &c in cnts {
+        let p = c * inv;
+        s -= p * p;
+    }
     s
 }
-
-

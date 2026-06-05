@@ -16,16 +16,18 @@ fn render_lines_3d_wrapper(ctx: Plot3DRenderContext) {
 }
 
 fn render_points_3d_wrapper(ctx: Plot3DRenderContext) {
-    crate::plot::default::_3d::render_points_3d(crate::plot::default::_3d::Scatter3DRenderContext {
-        painter: ctx.painter,
-        plot_rect: ctx.plot_rect,
-        colors: ctx.colors,
-        hovered_idx: ctx.hovered_idx,
-        values: ctx.values,
-        max_val: ctx.max_val,
-        visible_indices: ctx.visible_indices,
-        camera_controller: ctx.camera_controller,
-    });
+    crate::plot::default::_3d::render_points_3d(
+        crate::plot::default::_3d::Scatter3DRenderContext {
+            painter: ctx.painter,
+            plot_rect: ctx.plot_rect,
+            colors: ctx.colors,
+            hovered_idx: ctx.hovered_idx,
+            values: ctx.values,
+            max_val: ctx.max_val,
+            visible_indices: ctx.visible_indices,
+            camera_controller: ctx.camera_controller,
+        },
+    );
 }
 
 fn render_bars_3d_wrapper(ctx: Plot3DRenderContext) {
@@ -132,5 +134,3 @@ pub fn register_seaborn_3d_types() {
         grp_reg.register_group("seaborn".to_string(), ids);
     }
 }
-
-

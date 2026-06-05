@@ -1,5 +1,5 @@
+use super::svg_parser::{parse_world_svg, CountryShape};
 use std::sync::OnceLock;
-use super::svg_parser::{CountryShape, parse_world_svg};
 
 const SVG_WIDTH: f32 = 1009.6727;
 const SVG_HEIGHT: f32 = 665.96301;
@@ -20,7 +20,9 @@ fn get_countries() -> &'static Vec<CountryShape> {
 pub fn lookup_country(key: &str) -> Option<&'static CountryShape> {
     let countries = get_countries();
     let key_upper = key.to_uppercase();
-    countries.iter().find(|c| c.id == key_upper || c.name.eq_ignore_ascii_case(key))
+    countries
+        .iter()
+        .find(|c| c.id == key_upper || c.name.eq_ignore_ascii_case(key))
 }
 
 pub fn all_countries() -> &'static [CountryShape] {
@@ -28,11 +30,15 @@ pub fn all_countries() -> &'static [CountryShape] {
 }
 
 pub fn normalized_polygons(shape: &CountryShape) -> Vec<Vec<[f32; 2]>> {
-    shape.polygons.iter().map(|poly| {
-        poly.iter().map(|[x, y]| {
-            [x / SVG_WIDTH, y / SVG_HEIGHT]
-        }).collect()
-    }).collect()
+    shape
+        .polygons
+        .iter()
+        .map(|poly| {
+            poly.iter()
+                .map(|[x, y]| [x / SVG_WIDTH, y / SVG_HEIGHT])
+                .collect()
+        })
+        .collect()
 }
 
 pub fn svg_to_latlon(sx: f32, sy: f32) -> (f64, f64) {
@@ -44,7 +50,9 @@ pub fn svg_to_latlon(sx: f32, sy: f32) -> (f64, f64) {
 }
 
 pub fn polygon_centroid(poly: &[[f32; 2]]) -> [f32; 2] {
-    if poly.is_empty() { return [0.0, 0.0]; }
+    if poly.is_empty() {
+        return [0.0, 0.0];
+    }
     let mut sx: f64 = 0.0;
     let mut sy: f64 = 0.0;
     for p in poly {
@@ -72,11 +80,47 @@ pub fn shape_centroid(shape: &CountryShape) -> [f32; 2] {
 
 pub fn countries_in_region(region: &str) -> Vec<&'static str> {
     let region_map: &[(&str, &[&str])] = &[
-        ("Africa", &["DZ","AO","BJ","BW","BF","BI","CV","CM","CF","TD","KM","CG","CD","CI","DJ","EG","GQ","ER","SZ","ET","GA","GM","GH","GN","GW","KE","LS","LR","LY","MG","MW","ML","MR","MU","MA","MZ","NA","NE","NG","RW","ST","SN","SC","SL","SO","ZA","SS","SD","TZ","TG","TN","UG","ZM","ZW"]),
-        ("Europe", &["AL","AD","AT","BY","BE","BA","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IS","IE","IT","XK","LV","LI","LT","LU","MT","MD","MC","ME","NL","MK","NO","PL","PT","RO","RU","SM","RS","SK","SI","ES","SE","CH","UA","GB","VA"]),
-        ("Asia", &["AF","AM","AZ","BH","BD","BT","BN","KH","CN","GE","IN","ID","IR","IQ","IL","JP","JO","KZ","KW","KG","LA","LB","MY","MV","MN","MM","NP","KP","OM","PK","PS","PH","QA","SA","SG","KR","LK","SY","TW","TJ","TH","TL","TR","TM","AE","UZ","VN","YE"]),
-        ("Americas", &["AG","AR","BS","BB","BZ","BO","BR","CA","CL","CO","CR","CU","DM","DO","EC","SV","GD","GT","GY","HT","HN","JM","MX","NI","PA","PY","PE","KN","LC","VC","SR","TT","US","UY","VE"]),
-        ("Oceania", &["AU","FJ","KI","MH","FM","NR","NZ","PW","PG","WS","SB","TO","TV","VU"]),
+        (
+            "Africa",
+            &[
+                "DZ", "AO", "BJ", "BW", "BF", "BI", "CV", "CM", "CF", "TD", "KM", "CG", "CD", "CI",
+                "DJ", "EG", "GQ", "ER", "SZ", "ET", "GA", "GM", "GH", "GN", "GW", "KE", "LS", "LR",
+                "LY", "MG", "MW", "ML", "MR", "MU", "MA", "MZ", "NA", "NE", "NG", "RW", "ST", "SN",
+                "SC", "SL", "SO", "ZA", "SS", "SD", "TZ", "TG", "TN", "UG", "ZM", "ZW",
+            ],
+        ),
+        (
+            "Europe",
+            &[
+                "AL", "AD", "AT", "BY", "BE", "BA", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR",
+                "DE", "GR", "HU", "IS", "IE", "IT", "XK", "LV", "LI", "LT", "LU", "MT", "MD", "MC",
+                "ME", "NL", "MK", "NO", "PL", "PT", "RO", "RU", "SM", "RS", "SK", "SI", "ES", "SE",
+                "CH", "UA", "GB", "VA",
+            ],
+        ),
+        (
+            "Asia",
+            &[
+                "AF", "AM", "AZ", "BH", "BD", "BT", "BN", "KH", "CN", "GE", "IN", "ID", "IR", "IQ",
+                "IL", "JP", "JO", "KZ", "KW", "KG", "LA", "LB", "MY", "MV", "MN", "MM", "NP", "KP",
+                "OM", "PK", "PS", "PH", "QA", "SA", "SG", "KR", "LK", "SY", "TW", "TJ", "TH", "TL",
+                "TR", "TM", "AE", "UZ", "VN", "YE",
+            ],
+        ),
+        (
+            "Americas",
+            &[
+                "AG", "AR", "BS", "BB", "BZ", "BO", "BR", "CA", "CL", "CO", "CR", "CU", "DM", "DO",
+                "EC", "SV", "GD", "GT", "GY", "HT", "HN", "JM", "MX", "NI", "PA", "PY", "PE", "KN",
+                "LC", "VC", "SR", "TT", "US", "UY", "VE",
+            ],
+        ),
+        (
+            "Oceania",
+            &[
+                "AU", "FJ", "KI", "MH", "FM", "NR", "NZ", "PW", "PG", "WS", "SB", "TO", "TV", "VU",
+            ],
+        ),
     ];
 
     let r = region.to_lowercase();
@@ -90,7 +134,9 @@ pub fn countries_in_region(region: &str) -> Vec<&'static str> {
 
 pub fn point_in_polygon(px: f32, py: f32, poly: &[[f32; 2]]) -> bool {
     let n = poly.len();
-    if n < 3 { return false; }
+    if n < 3 {
+        return false;
+    }
     let mut inside = false;
     let mut j = n - 1;
     for i in 0..n {
@@ -128,7 +174,9 @@ pub fn detect_hovered_country(
     }
 
     for shape in all_countries() {
-        let entry = label_map.get(&shape.id).or_else(|| label_map.get(&shape.name.to_uppercase()));
+        let entry = label_map
+            .get(&shape.id)
+            .or_else(|| label_map.get(&shape.name.to_uppercase()));
         if let Some(&idx) = entry {
             if hit_test_country(mouse_nx, mouse_ny, shape) {
                 return Some(idx);
@@ -152,5 +200,3 @@ pub fn region_for_country(code: &str) -> Option<&'static str> {
     }
     None
 }
-
-

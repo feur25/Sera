@@ -1,7 +1,9 @@
 use super::common::render_with;
 use super::config::PieConfig;
 
-#[crate::chart_demo("labels=[\"Apple\",\"Banana\",\"Cherry\",\"Date\",\"Fig\"], values=[40,25,20,10,5]")]
+#[crate::chart_demo(
+    "labels=[\"Apple\",\"Banana\",\"Cherry\",\"Date\",\"Fig\"], values=[40,25,20,10,5]"
+)]
 
 pub fn render(cfg: &PieConfig) -> String {
     if !cfg.pull.is_empty() {
@@ -18,8 +20,9 @@ pub fn render(cfg: &PieConfig) -> String {
         }
     }
     if let Some((idx, _)) = best {
-        if idx < n { auto[idx] = 0.18; }
+        if idx < n {
+            auto[idx] = 0.18;
+        }
     }
     render_with(cfg, &auto, |_, _| {})
 }
-

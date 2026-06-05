@@ -22,7 +22,9 @@ impl<T: Copy, const N: usize> AdaptiveBuf<T, N> {
             Some(ref mut v) => v.push(val),
             None => {
                 if self.len < N {
-                    unsafe { self.inline[self.len].as_mut_ptr().write(val); }
+                    unsafe {
+                        self.inline[self.len].as_mut_ptr().write(val);
+                    }
                     self.len += 1;
                 } else {
                     let mut v: Vec<T> = Vec::with_capacity(N * 2);
@@ -38,7 +40,9 @@ impl<T: Copy, const N: usize> AdaptiveBuf<T, N> {
 
     #[inline]
     pub fn extend_from_slice(&mut self, slice: &[T]) {
-        for &v in slice { self.push(v); }
+        for &v in slice {
+            self.push(v);
+        }
     }
 
     #[inline]
@@ -53,7 +57,11 @@ impl<T: Copy, const N: usize> AdaptiveBuf<T, N> {
 
     #[inline]
     pub fn get(&self, idx: usize) -> Option<T> {
-        if idx < self.len() { Some(self.as_slice()[idx]) } else { None }
+        if idx < self.len() {
+            Some(self.as_slice()[idx])
+        } else {
+            None
+        }
     }
 
     #[inline]
@@ -65,13 +73,22 @@ impl<T: Copy, const N: usize> AdaptiveBuf<T, N> {
     }
 
     #[inline]
-    pub fn is_empty(&self) -> bool { self.len() == 0 }
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 
     #[inline]
     pub fn clear(&mut self) {
-        if let Some(ref mut v) = self.overflow { v.clear(); }
+        if let Some(ref mut v) = self.overflow {
+            v.clear();
+        }
         self.len = 0;
-        if self.overflow.as_ref().map(|v| v.is_empty()).unwrap_or(false) {
+        if self
+            .overflow
+            .as_ref()
+            .map(|v| v.is_empty())
+            .unwrap_or(false)
+        {
             self.overflow = None;
         }
     }
@@ -83,5 +100,7 @@ impl<T: Copy, const N: usize> AdaptiveBuf<T, N> {
 }
 
 impl<T: Copy, const N: usize> Default for AdaptiveBuf<T, N> {
-    fn default() -> Self { Self::new() }
+    fn default() -> Self {
+        Self::new()
+    }
 }

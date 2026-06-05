@@ -118,7 +118,14 @@ impl HtmlTemplate {
     </div>
     "#;
 
-    pub fn build_style(_theme: &str, accent: &str, bg: &str, text: &str, dark_bg: &str, border: &str) -> String {
+    pub fn build_style(
+        _theme: &str,
+        accent: &str,
+        bg: &str,
+        text: &str,
+        dark_bg: &str,
+        border: &str,
+    ) -> String {
         format!(
             r#"
     <style>
@@ -237,5 +244,3 @@ impl HtmlTemplate {
         )
     }
 }
-
-

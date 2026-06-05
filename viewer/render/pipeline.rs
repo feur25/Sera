@@ -197,7 +197,13 @@ pub struct ChunkRenderer {
 }
 
 impl ChunkRenderer {
-    pub fn render(&self, painter: &egui::Painter, points: &[egui::Pos2], colors: &[egui::Color32], radius: f32) {
+    pub fn render(
+        &self,
+        painter: &egui::Painter,
+        points: &[egui::Pos2],
+        colors: &[egui::Color32],
+        radius: f32,
+    ) {
         if self.enable_lod && points.len() > self.lod_threshold {
             self.render_lod(painter, points, colors, radius);
         } else {
@@ -346,11 +352,7 @@ impl VisibilityOptimizer {
         }
     }
 
-    pub fn filter_visible(
-        &self,
-        points: &[egui::Pos2],
-        viewport: egui::Rect,
-    ) -> Vec<usize> {
+    pub fn filter_visible(&self, points: &[egui::Pos2], viewport: egui::Rect) -> Vec<usize> {
         let padded_rect = egui::Rect::from_min_max(
             egui::pos2(
                 viewport.left() - self.viewport_padding,
@@ -380,5 +382,3 @@ impl Default for VisibilityOptimizer {
         Self::new()
     }
 }
-
-

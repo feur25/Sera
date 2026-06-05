@@ -1,37 +1,36 @@
-use crate::plot::{parse_all, apply};
-pub mod variant;
-pub mod config;
-pub mod common;
+use crate::plot::{apply, parse_all};
 pub mod basic;
+pub mod common;
+pub mod config;
 pub mod donut;
 pub mod exploded;
-pub mod subplots;
-pub mod proportional;
-pub mod semi;
 pub mod kpi;
 pub mod nested;
 pub mod pattern;
+pub mod proportional;
+pub mod semi;
+pub mod subplots;
+pub mod variant;
 
-pub use variant::PieVariant;
 pub use config::{Pie, PieConfig};
+pub use variant::PieVariant;
 
-use crate::html::hover::{slots_to_json, build_chart_html};
+use crate::html::hover::{build_chart_html, slots_to_json};
 
 pub fn render_pie_html(cfg: &PieConfig) -> String {
     let svg = match cfg.variant {
-        PieVariant::Basic        => basic::render(cfg),
-        PieVariant::Donut        => donut::render(cfg),
-        PieVariant::Exploded     => exploded::render(cfg),
-        PieVariant::Subplots     => subplots::render(cfg),
+        PieVariant::Basic => basic::render(cfg),
+        PieVariant::Donut => donut::render(cfg),
+        PieVariant::Exploded => exploded::render(cfg),
+        PieVariant::Subplots => subplots::render(cfg),
         PieVariant::Proportional => proportional::render(cfg),
-        PieVariant::Semi         => semi::render(cfg),
-        PieVariant::Kpi          => kpi::render(cfg),
-        PieVariant::Nested       => nested::render(cfg),
-        PieVariant::Pattern      => pattern::render(cfg),
+        PieVariant::Semi => semi::render(cfg),
+        PieVariant::Kpi => kpi::render(cfg),
+        PieVariant::Nested => nested::render(cfg),
+        PieVariant::Pattern => pattern::render(cfg),
     };
     build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }
-
 
 #[crate::sera_alias("pie_chart", "pie_chart_legacy", "basic_pie")]
 #[crate::sera_builder]
@@ -40,14 +39,20 @@ pub fn build_pie_chart(input: &str) -> String {
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
-    use crate::plot::statistical::{PieConfig, PieVariant, render_pie_html};
+    use crate::plot::statistical::{render_pie_html, PieConfig, PieVariant};
     let hover = o.hj();
     let pull = o.pull.clone().unwrap_or_default();
     let html = render_pie_html(&PieConfig {
         variant: PieVariant::Basic,
-        title, labels: &labels, values: &values, palette: &o.pal(),
-        show_pct: o.show_pct.unwrap_or(true), sort_order: &o.srt(),
-        width: o.w(720), height: o.h(440), hover: &hover,
+        title,
+        labels: &labels,
+        values: &values,
+        palette: &o.pal(),
+        show_pct: o.show_pct.unwrap_or(true),
+        sort_order: &o.srt(),
+        width: o.w(720),
+        height: o.h(440),
+        hover: &hover,
         pull: &pull,
         min_label_frac: o.min_label_frac.unwrap_or(0.04),
         ..PieConfig::default()
@@ -62,14 +67,20 @@ pub fn build_donut_chart(input: &str) -> String {
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
-    use crate::plot::statistical::{PieConfig, PieVariant, render_pie_html};
+    use crate::plot::statistical::{render_pie_html, PieConfig, PieVariant};
     let hover = o.hj();
     let pull = o.pull.clone().unwrap_or_default();
     let html = render_pie_html(&PieConfig {
         variant: PieVariant::Donut,
-        title, labels: &labels, values: &values, palette: &o.pal(),
-        show_pct: o.show_pct.unwrap_or(true), sort_order: &o.srt(),
-        width: o.w(720), height: o.h(440), hover: &hover,
+        title,
+        labels: &labels,
+        values: &values,
+        palette: &o.pal(),
+        show_pct: o.show_pct.unwrap_or(true),
+        sort_order: &o.srt(),
+        width: o.w(720),
+        height: o.h(440),
+        hover: &hover,
         donut: o.inner_radius_ratio.unwrap_or(0.55).clamp(0.0, 0.9),
         pull: &pull,
         min_label_frac: o.min_label_frac.unwrap_or(0.04),
@@ -80,10 +91,22 @@ pub fn build_donut_chart(input: &str) -> String {
 
 pub use build as build_pie;
 
-#[crate::sera_alias("pie", "pie_unified", "pie_family", "pies", "semi_pie", "half_pie", "kpi_pie", "kpi_donut", "nested_pie", "concentric_pie", "pattern_pie")]
+#[crate::sera_alias(
+    "pie",
+    "pie_unified",
+    "pie_family",
+    "pies",
+    "semi_pie",
+    "half_pie",
+    "kpi_pie",
+    "kpi_donut",
+    "nested_pie",
+    "concentric_pie",
+    "pattern_pie"
+)]
 #[crate::sera_builder("build_pie")]
 pub fn build(input: &str) -> String {
-    use crate::plot::statistical::{PieConfig, PieVariant, render_pie_html};
+    use crate::plot::statistical::{render_pie_html, PieConfig, PieVariant};
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
     let variant = PieVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
@@ -103,12 +126,18 @@ pub fn build(input: &str) -> String {
     let lp = o.lp();
 
     let cfg = PieConfig {
-        variant, title,
-        x_label: "", y_label: "",
-        gridlines: false, sort_order: &srt,
-        hover: &hover, legend_position: &lp,
-        width: o.w(720), height: o.h(440),
-        labels: &labels, values: &values,
+        variant,
+        title,
+        x_label: "",
+        y_label: "",
+        gridlines: false,
+        sort_order: &srt,
+        hover: &hover,
+        legend_position: &lp,
+        width: o.w(720),
+        height: o.h(440),
+        labels: &labels,
+        values: &values,
         donut: o.inner_radius_ratio.unwrap_or(0.0).clamp(0.0, 0.9),
         show_pct: o.show_pct.unwrap_or(true),
         min_label_frac: o.min_label_frac.unwrap_or(0.04),

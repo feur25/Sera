@@ -1,21 +1,34 @@
-use super::common::{prepare, open_svg, finalize, label_inside, tile_data_attrs, rect_attrs, fill_hex, lerp_color};
+use super::common::{
+    fill_hex, finalize, label_inside, lerp_color, open_svg, prepare, rect_attrs, tile_data_attrs,
+};
 use super::config::TreemapConfig;
 use crate::plot::statistical::common::push_b;
 
-#[crate::chart_demo("labels=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\"], values=[40,25,20,10,5,8,12]")]
+#[crate::chart_demo(
+    "labels=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\"], values=[40,25,20,10,5,8,12]"
+)]
 
 pub fn render(cfg: &TreemapConfig) -> String {
-    let p = match prepare(cfg) { Some(v) => v, None => return String::new() };
+    let p = match prepare(cfg) {
+        Some(v) => v,
+        None => return String::new(),
+    };
     let mut b = Vec::<u8>::with_capacity(p.leaf_indices.len() * 200 + 2048);
     open_svg(&mut b, cfg);
     let vmin = p.leaf_values.iter().cloned().fold(f64::INFINITY, f64::min);
-    let vmax = p.leaf_values.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
+    let vmax = p
+        .leaf_values
+        .iter()
+        .cloned()
+        .fold(f64::NEG_INFINITY, f64::max);
     let span = (vmax - vmin).max(1e-9);
     let cold: u32 = 0x1E3A8A;
     let warm: u32 = 0xDC2626;
     for ri in 0..p.leaf_indices.len() {
         let r = p.rects[ri];
-        if r.w < 0.5 || r.h < 0.5 { continue; }
+        if r.w < 0.5 || r.h < 0.5 {
+            continue;
+        }
         let t = (p.leaf_values[ri] - vmin) / span;
         let c = lerp_color(cold, warm, t);
         push_b(&mut b, b"<rect");
@@ -28,4 +41,3 @@ pub fn render(cfg: &TreemapConfig) -> String {
     }
     finalize(b, cfg)
 }
-

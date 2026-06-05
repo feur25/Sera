@@ -56,32 +56,57 @@ pub fn model_free(handle: ModelHandle) {
 }
 
 pub fn model_fit(handle: ModelHandle, x_json: &str, y_json: &str) -> Result<(), BindingError> {
-    let mut s = STORE.lock().map_err(|_| BindingError::ComputeError("store lock".into()))?;
-    let m = s.entries.get_mut(&handle.0).ok_or(BindingError::UnknownHandle)?;
+    let mut s = STORE
+        .lock()
+        .map_err(|_| BindingError::ComputeError("store lock".into()))?;
+    let m = s
+        .entries
+        .get_mut(&handle.0)
+        .ok_or(BindingError::UnknownHandle)?;
     m.fit_json(x_json, y_json)
 }
 
 pub fn model_predict(handle: ModelHandle, x_json: &str) -> Result<String, BindingError> {
-    let s = STORE.lock().map_err(|_| BindingError::ComputeError("store lock".into()))?;
-    let m = s.entries.get(&handle.0).ok_or(BindingError::UnknownHandle)?;
+    let s = STORE
+        .lock()
+        .map_err(|_| BindingError::ComputeError("store lock".into()))?;
+    let m = s
+        .entries
+        .get(&handle.0)
+        .ok_or(BindingError::UnknownHandle)?;
     m.predict_json(x_json)
 }
 
 pub fn model_score(handle: ModelHandle, x_json: &str, y_json: &str) -> Result<f64, BindingError> {
-    let s = STORE.lock().map_err(|_| BindingError::ComputeError("store lock".into()))?;
-    let m = s.entries.get(&handle.0).ok_or(BindingError::UnknownHandle)?;
+    let s = STORE
+        .lock()
+        .map_err(|_| BindingError::ComputeError("store lock".into()))?;
+    let m = s
+        .entries
+        .get(&handle.0)
+        .ok_or(BindingError::UnknownHandle)?;
     m.score_json(x_json, y_json)
 }
 
 pub fn model_get_params(handle: ModelHandle) -> Result<String, BindingError> {
-    let s = STORE.lock().map_err(|_| BindingError::ComputeError("store lock".into()))?;
-    let m = s.entries.get(&handle.0).ok_or(BindingError::UnknownHandle)?;
+    let s = STORE
+        .lock()
+        .map_err(|_| BindingError::ComputeError("store lock".into()))?;
+    let m = s
+        .entries
+        .get(&handle.0)
+        .ok_or(BindingError::UnknownHandle)?;
     Ok(m.get_params_json())
 }
 
 pub fn model_set_params(handle: ModelHandle, params_json: &str) -> Result<(), BindingError> {
-    let mut s = STORE.lock().map_err(|_| BindingError::ComputeError("store lock".into()))?;
-    let m = s.entries.get_mut(&handle.0).ok_or(BindingError::UnknownHandle)?;
+    let mut s = STORE
+        .lock()
+        .map_err(|_| BindingError::ComputeError("store lock".into()))?;
+    let m = s
+        .entries
+        .get_mut(&handle.0)
+        .ok_or(BindingError::UnknownHandle)?;
     m.set_params_json(params_json)
 }
 
@@ -94,7 +119,10 @@ pub fn model_create(kind: &str, params_json: &str) -> Result<ModelHandle, Bindin
             inner: crate::ml::linear::ols::LinearRegression::new(jb(&v, "fit_intercept", true)),
         }),
         "ridge" => Box::new(RidgeHandle {
-            inner: crate::ml::linear::ridge::Ridge::new(jf(&v, "alpha", 1.0), jb(&v, "fit_intercept", true)),
+            inner: crate::ml::linear::ridge::Ridge::new(
+                jf(&v, "alpha", 1.0),
+                jb(&v, "fit_intercept", true),
+            ),
         }),
         _ => return Err(BindingError::UnknownKind(kind.into())),
     };
@@ -107,10 +135,10 @@ struct LinearRegressionHandle {
 
 impl Model for LinearRegressionHandle {
     fn fit_json(&mut self, x_json: &str, y_json: &str) -> Result<(), BindingError> {
-        let x: Vec<Vec<f64>> = serde_json::from_str(x_json)
-            .map_err(|e| BindingError::InvalidParams(e.to_string()))?;
-        let y: Vec<f64> = serde_json::from_str(y_json)
-            .map_err(|e| BindingError::InvalidParams(e.to_string()))?;
+        let x: Vec<Vec<f64>> =
+            serde_json::from_str(x_json).map_err(|e| BindingError::InvalidParams(e.to_string()))?;
+        let y: Vec<f64> =
+            serde_json::from_str(y_json).map_err(|e| BindingError::InvalidParams(e.to_string()))?;
         let n = x.len();
         let p = x.first().map(|r| r.len()).unwrap_or(0);
         let flat: Vec<f64> = x.into_iter().flatten().collect();
@@ -119,8 +147,8 @@ impl Model for LinearRegressionHandle {
     }
 
     fn predict_json(&self, x_json: &str) -> Result<String, BindingError> {
-        let x: Vec<Vec<f64>> = serde_json::from_str(x_json)
-            .map_err(|e| BindingError::InvalidParams(e.to_string()))?;
+        let x: Vec<Vec<f64>> =
+            serde_json::from_str(x_json).map_err(|e| BindingError::InvalidParams(e.to_string()))?;
         let n = x.len();
         let p = x.first().map(|r| r.len()).unwrap_or(0);
         let flat: Vec<f64> = x.into_iter().flatten().collect();
@@ -129,10 +157,10 @@ impl Model for LinearRegressionHandle {
     }
 
     fn score_json(&self, x_json: &str, y_json: &str) -> Result<f64, BindingError> {
-        let x: Vec<Vec<f64>> = serde_json::from_str(x_json)
-            .map_err(|e| BindingError::InvalidParams(e.to_string()))?;
-        let y: Vec<f64> = serde_json::from_str(y_json)
-            .map_err(|e| BindingError::InvalidParams(e.to_string()))?;
+        let x: Vec<Vec<f64>> =
+            serde_json::from_str(x_json).map_err(|e| BindingError::InvalidParams(e.to_string()))?;
+        let y: Vec<f64> =
+            serde_json::from_str(y_json).map_err(|e| BindingError::InvalidParams(e.to_string()))?;
         let n = x.len();
         let p = x.first().map(|r| r.len()).unwrap_or(0);
         let flat: Vec<f64> = x.into_iter().flatten().collect();
@@ -159,10 +187,10 @@ struct RidgeHandle {
 
 impl Model for RidgeHandle {
     fn fit_json(&mut self, x_json: &str, y_json: &str) -> Result<(), BindingError> {
-        let x: Vec<Vec<f64>> = serde_json::from_str(x_json)
-            .map_err(|e| BindingError::InvalidParams(e.to_string()))?;
-        let y: Vec<f64> = serde_json::from_str(y_json)
-            .map_err(|e| BindingError::InvalidParams(e.to_string()))?;
+        let x: Vec<Vec<f64>> =
+            serde_json::from_str(x_json).map_err(|e| BindingError::InvalidParams(e.to_string()))?;
+        let y: Vec<f64> =
+            serde_json::from_str(y_json).map_err(|e| BindingError::InvalidParams(e.to_string()))?;
         let n = x.len();
         let p = x.first().map(|r| r.len()).unwrap_or(0);
         let flat: Vec<f64> = x.into_iter().flatten().collect();
@@ -171,8 +199,8 @@ impl Model for RidgeHandle {
     }
 
     fn predict_json(&self, x_json: &str) -> Result<String, BindingError> {
-        let x: Vec<Vec<f64>> = serde_json::from_str(x_json)
-            .map_err(|e| BindingError::InvalidParams(e.to_string()))?;
+        let x: Vec<Vec<f64>> =
+            serde_json::from_str(x_json).map_err(|e| BindingError::InvalidParams(e.to_string()))?;
         let n = x.len();
         let p = x.first().map(|r| r.len()).unwrap_or(0);
         let flat: Vec<f64> = x.into_iter().flatten().collect();
@@ -181,10 +209,10 @@ impl Model for RidgeHandle {
     }
 
     fn score_json(&self, x_json: &str, y_json: &str) -> Result<f64, BindingError> {
-        let x: Vec<Vec<f64>> = serde_json::from_str(x_json)
-            .map_err(|e| BindingError::InvalidParams(e.to_string()))?;
-        let y: Vec<f64> = serde_json::from_str(y_json)
-            .map_err(|e| BindingError::InvalidParams(e.to_string()))?;
+        let x: Vec<Vec<f64>> =
+            serde_json::from_str(x_json).map_err(|e| BindingError::InvalidParams(e.to_string()))?;
+        let y: Vec<f64> =
+            serde_json::from_str(y_json).map_err(|e| BindingError::InvalidParams(e.to_string()))?;
         let n = x.len();
         let p = x.first().map(|r| r.len()).unwrap_or(0);
         let flat: Vec<f64> = x.into_iter().flatten().collect();
@@ -192,7 +220,10 @@ impl Model for RidgeHandle {
     }
 
     fn get_params_json(&self) -> String {
-        format!(r#"{{"alpha":{},"fit_intercept":{}}}"#, self.inner.alpha, self.inner.fit_intercept)
+        format!(
+            r#"{{"alpha":{},"fit_intercept":{}}}"#,
+            self.inner.alpha, self.inner.fit_intercept
+        )
     }
 
     fn set_params_json(&mut self, params_json: &str) -> Result<(), BindingError> {

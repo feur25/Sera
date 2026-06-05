@@ -6,14 +6,17 @@ const MAP_RENDERERS: &[(u8, &str, ChartRenderer)] = &[
 ];
 
 const MAP_SVG_RENDERERS: &[(u8, SvgChartRenderer)] = &[
-    (20, super::choropleth::render_svg_choropleth as SvgChartRenderer),
-    (21, super::bubble_map::render_svg_bubble_map as SvgChartRenderer),
+    (
+        20,
+        super::choropleth::render_svg_choropleth as SvgChartRenderer,
+    ),
+    (
+        21,
+        super::bubble_map::render_svg_bubble_map as SvgChartRenderer,
+    ),
 ];
 
-const MAP_COLORS: &[(u8, u32)] = &[
-    (20, 0xF43F5E),
-    (21, 0x6366F1),
-];
+const MAP_COLORS: &[(u8, u32)] = &[(20, 0xF43F5E), (21, 0x6366F1)];
 
 pub fn register_map_types() {
     let mut ids = Vec::new();
@@ -41,5 +44,3 @@ pub fn register_map_types() {
         grp_reg.register_group("map".to_string(), ids);
     }
 }
-
-

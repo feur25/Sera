@@ -1,43 +1,80 @@
 use super::config::HeatmapConfig;
 use crate::html::hover::{build_chart_html, slots_to_json};
-use crate::plot::statistical::common::{escape_xml, hex6, lerp_color, palette_color, push_b, push_f2, push_i, truncate};
+use crate::plot::statistical::common::{
+    escape_xml, hex6, lerp_color, palette_color, push_b, push_f2, push_i, truncate,
+};
 
 pub fn clone_cfg<'a>(cfg: &HeatmapConfig<'a>) -> HeatmapConfig<'a> {
     HeatmapConfig {
-        title: cfg.title, x_label: cfg.x_label, y_label: cfg.y_label,
-        gridlines: cfg.gridlines, sort_order: cfg.sort_order, hover: cfg.hover,
-        legend_position: cfg.legend_position, width: cfg.width, height: cfg.height,
-        variant: cfg.variant, row_labels: cfg.row_labels, col_labels: cfg.col_labels,
-        flat_matrix: cfg.flat_matrix, show_values: cfg.show_values,
-        value_min_cell: cfg.value_min_cell, value_decimals: cfg.value_decimals,
-        col_label_angle: cfg.col_label_angle, color_low: cfg.color_low,
-        color_mid: cfg.color_mid, color_high: cfg.color_high, palette: cfg.palette,
-        discrete_steps: cfg.discrete_steps, log_scale: cfg.log_scale,
-        diverging: cfg.diverging, x_widths: cfg.x_widths, y_heights: cfg.y_heights,
-        annotate: cfg.annotate, categorical: cfg.categorical,
-        smooth: cfg.smooth, viridis: cfg.viridis,
-        contour: cfg.contour, contour_levels: cfg.contour_levels,
-        colorscale: cfg.colorscale, colorbar_position: cfg.colorbar_position,
+        title: cfg.title,
+        x_label: cfg.x_label,
+        y_label: cfg.y_label,
+        gridlines: cfg.gridlines,
+        sort_order: cfg.sort_order,
+        hover: cfg.hover,
+        legend_position: cfg.legend_position,
+        width: cfg.width,
+        height: cfg.height,
+        variant: cfg.variant,
+        row_labels: cfg.row_labels,
+        col_labels: cfg.col_labels,
+        flat_matrix: cfg.flat_matrix,
+        show_values: cfg.show_values,
+        value_min_cell: cfg.value_min_cell,
+        value_decimals: cfg.value_decimals,
+        col_label_angle: cfg.col_label_angle,
+        color_low: cfg.color_low,
+        color_mid: cfg.color_mid,
+        color_high: cfg.color_high,
+        palette: cfg.palette,
+        discrete_steps: cfg.discrete_steps,
+        log_scale: cfg.log_scale,
+        diverging: cfg.diverging,
+        x_widths: cfg.x_widths,
+        y_heights: cfg.y_heights,
+        annotate: cfg.annotate,
+        categorical: cfg.categorical,
+        smooth: cfg.smooth,
+        viridis: cfg.viridis,
+        contour: cfg.contour,
+        contour_levels: cfg.contour_levels,
+        colorscale: cfg.colorscale,
+        colorbar_position: cfg.colorbar_position,
         origin_lower: cfg.origin_lower,
-        bubble_mode: cfg.bubble_mode, marginal_mode: cfg.marginal_mode,
-        confusion_mode: cfg.confusion_mode, pivot_mode: cfg.pivot_mode,
+        bubble_mode: cfg.bubble_mode,
+        marginal_mode: cfg.marginal_mode,
+        confusion_mode: cfg.confusion_mode,
+        pivot_mode: cfg.pivot_mode,
         cluster_mode: cfg.cluster_mode,
-        row_totals: cfg.row_totals, col_totals: cfg.col_totals,
+        row_totals: cfg.row_totals,
+        col_totals: cfg.col_totals,
         secondary_matrix: cfg.secondary_matrix,
     }
 }
 
-
 pub fn finite_minmax(data: &[f64]) -> (f64, f64) {
     let mut mn = f64::INFINITY;
     let mut mx = f64::NEG_INFINITY;
-    for &v in data { if v.is_finite() { if v < mn { mn = v; } if v > mx { mx = v; } } }
-    if !mn.is_finite() { return (0.0, 1.0); }
+    for &v in data {
+        if v.is_finite() {
+            if v < mn {
+                mn = v;
+            }
+            if v > mx {
+                mx = v;
+            }
+        }
+    }
+    if !mn.is_finite() {
+        return (0.0, 1.0);
+    }
     (mn, mx)
 }
 
 pub fn map_value_to_t(val: f64, vmin: f64, vmax: f64, log: bool, diverging: bool) -> f64 {
-    if !val.is_finite() { return 0.5; }
+    if !val.is_finite() {
+        return 0.5;
+    }
     if diverging {
         let m = vmin.abs().max(vmax.abs()).max(1e-12);
         return ((val / m) * 0.5 + 0.5).clamp(0.0, 1.0);
@@ -53,7 +90,9 @@ pub fn map_value_to_t(val: f64, vmin: f64, vmax: f64, log: bool, diverging: bool
 }
 
 pub fn quantize_t(t: f64, steps: usize) -> f64 {
-    if steps == 0 { return t; }
+    if steps == 0 {
+        return t;
+    }
     let s = steps.max(2) as f64;
     ((t * s).floor().min(s - 1.0)) / (s - 1.0)
 }
@@ -85,11 +124,26 @@ pub fn colorscale_color(name: &str, t: f64) -> u32 {
         "inferno" => &[0x000004, 0x420A68, 0x932667, 0xDD513A, 0xFCA50A, 0xFCFFA4],
         "magma" => &[0x000004, 0x3B0F70, 0x8C2981, 0xDE4968, 0xFE9F6D, 0xFCFDBF],
         "cividis" => &[0x00224E, 0x35446B, 0x666970, 0x958F78, 0xCAB969, 0xFEE838],
-        "turbo" => &[0x30123B, 0x4145AB, 0x4675ED, 0x39A2FC, 0x1BCFD4, 0x24EC9F, 0x61FC6C, 0xA4FC3D, 0xD1E834, 0xF3C63A, 0xFE9B2D, 0xF36315, 0xC92903, 0x7A0403],
-        "rdbu_r" | "rdbu" => &[0x053061, 0x2166AC, 0x4393C3, 0x92C5DE, 0xD1E5F0, 0xF7F7F7, 0xFDDBC7, 0xF4A582, 0xD6604D, 0xB2182B, 0x67001F],
-        "blues" => &[0xF7FBFF, 0xDEEBF7, 0xC6DBEF, 0x9ECAE1, 0x6BAED6, 0x4292C6, 0x2171B5, 0x08519C, 0x08306B],
-        "reds" => &[0xFFF5F0, 0xFEE0D2, 0xFCBBA1, 0xFC9272, 0xFB6A4A, 0xEF3B2C, 0xCB181D, 0xA50F15, 0x67000D],
-        "greens" => &[0xF7FCF5, 0xE5F5E0, 0xC7E9C0, 0xA1D99B, 0x74C476, 0x41AB5D, 0x238B45, 0x006D2C, 0x00441B],
+        "turbo" => &[
+            0x30123B, 0x4145AB, 0x4675ED, 0x39A2FC, 0x1BCFD4, 0x24EC9F, 0x61FC6C, 0xA4FC3D,
+            0xD1E834, 0xF3C63A, 0xFE9B2D, 0xF36315, 0xC92903, 0x7A0403,
+        ],
+        "rdbu_r" | "rdbu" => &[
+            0x053061, 0x2166AC, 0x4393C3, 0x92C5DE, 0xD1E5F0, 0xF7F7F7, 0xFDDBC7, 0xF4A582,
+            0xD6604D, 0xB2182B, 0x67001F,
+        ],
+        "blues" => &[
+            0xF7FBFF, 0xDEEBF7, 0xC6DBEF, 0x9ECAE1, 0x6BAED6, 0x4292C6, 0x2171B5, 0x08519C,
+            0x08306B,
+        ],
+        "reds" => &[
+            0xFFF5F0, 0xFEE0D2, 0xFCBBA1, 0xFC9272, 0xFB6A4A, 0xEF3B2C, 0xCB181D, 0xA50F15,
+            0x67000D,
+        ],
+        "greens" => &[
+            0xF7FCF5, 0xE5F5E0, 0xC7E9C0, 0xA1D99B, 0x74C476, 0x41AB5D, 0x238B45, 0x006D2C,
+            0x00441B,
+        ],
         _ => &[0x440154, 0x3B528B, 0x21908C, 0x5DC863, 0xFDE725],
     };
     if name.eq_ignore_ascii_case("rdbu_r") {
@@ -104,9 +158,14 @@ fn interp_stops(stops: &[u32], t: f64) -> u32 {
     let i0 = (p.floor() as usize).min(n);
     let i1 = (i0 + 1).min(n);
     let f = p - i0 as f64;
-    let a = stops[i0]; let b = stops[i1];
-    let ar = ((a >> 16) & 0xFF) as f64; let ag = ((a >> 8) & 0xFF) as f64; let ab = (a & 0xFF) as f64;
-    let br = ((b >> 16) & 0xFF) as f64; let bg = ((b >> 8) & 0xFF) as f64; let bb = (b & 0xFF) as f64;
+    let a = stops[i0];
+    let b = stops[i1];
+    let ar = ((a >> 16) & 0xFF) as f64;
+    let ag = ((a >> 8) & 0xFF) as f64;
+    let ab = (a & 0xFF) as f64;
+    let br = ((b >> 16) & 0xFF) as f64;
+    let bg = ((b >> 8) & 0xFF) as f64;
+    let bb = (b & 0xFF) as f64;
     let r = (ar + (br - ar) * f).round() as u32;
     let g = (ag + (bg - ag) * f).round() as u32;
     let bl = (ab + (bb - ab) * f).round() as u32;
@@ -120,9 +179,14 @@ pub fn viridis_color(t: f64) -> u32 {
     let i0 = p.floor() as usize;
     let i1 = (i0 + 1).min(n);
     let f = p - i0 as f64;
-    let a = stops[i0]; let b = stops[i1];
-    let ar = ((a >> 16) & 0xFF) as f64; let ag = ((a >> 8) & 0xFF) as f64; let ab = (a & 0xFF) as f64;
-    let br = ((b >> 16) & 0xFF) as f64; let bg = ((b >> 8) & 0xFF) as f64; let bb = (b & 0xFF) as f64;
+    let a = stops[i0];
+    let b = stops[i1];
+    let ar = ((a >> 16) & 0xFF) as f64;
+    let ag = ((a >> 8) & 0xFF) as f64;
+    let ab = (a & 0xFF) as f64;
+    let br = ((b >> 16) & 0xFF) as f64;
+    let bg = ((b >> 8) & 0xFF) as f64;
+    let bb = (b & 0xFF) as f64;
     let r = (ar + (br - ar) * f).round() as u32;
     let g = (ag + (bg - ag) * f).round() as u32;
     let bl = (ab + (bb - ab) * f).round() as u32;
@@ -130,14 +194,24 @@ pub fn viridis_color(t: f64) -> u32 {
 }
 
 pub fn categorical_color(val: f64, cfg: &HeatmapConfig) -> u32 {
-    let key = if val.is_finite() { val.to_bits() as usize } else { 0 };
+    let key = if val.is_finite() {
+        val.to_bits() as usize
+    } else {
+        0
+    };
     palette_color(cfg.palette, key.wrapping_mul(2654435761) as usize % 256)
 }
 
 pub fn cumulative(arr: &[f64], total_px: i32) -> Vec<i32> {
     let n = arr.len();
-    if n == 0 { return vec![0]; }
-    let sum: f64 = arr.iter().filter(|v| v.is_finite() && **v > 0.0).sum::<f64>().max(1e-12);
+    if n == 0 {
+        return vec![0];
+    }
+    let sum: f64 = arr
+        .iter()
+        .filter(|v| v.is_finite() && **v > 0.0)
+        .sum::<f64>()
+        .max(1e-12);
     let mut out = Vec::with_capacity(n + 1);
     out.push(0);
     let mut acc = 0.0;
@@ -151,7 +225,11 @@ pub fn cumulative(arr: &[f64], total_px: i32) -> Vec<i32> {
 
 pub fn render_core(cfg: &HeatmapConfig) -> String {
     let n_rows = cfg.row_labels.len();
-    let col_lbls: &[String] = if cfg.col_labels.is_empty() { cfg.row_labels } else { cfg.col_labels };
+    let col_lbls: &[String] = if cfg.col_labels.is_empty() {
+        cfg.row_labels
+    } else {
+        cfg.col_labels
+    };
     let n_cols = col_lbls.len();
     if n_rows == 0 || n_cols == 0 || cfg.flat_matrix.len() < n_rows * n_cols {
         return String::new();
@@ -193,7 +271,10 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
     let total_cells = n_rows * n_cols;
     let mut buf = Vec::<u8>::with_capacity(total_cells * 220 + 2048);
 
-    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_b(
+        &mut buf,
+        b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"",
+    );
     push_i(&mut buf, svg_w);
     push_b(&mut buf, b"\" height=\"");
     push_i(&mut buf, svg_h);
@@ -202,7 +283,10 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
     push_b(&mut buf, b" ");
     push_i(&mut buf, svg_h);
     push_b(&mut buf, b"\">");
-    push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#f8f9fa\"/>");
+    push_b(
+        &mut buf,
+        b"<rect width=\"100%\" height=\"100%\" fill=\"#f8f9fa\"/>",
+    );
 
     if !cfg.title.is_empty() {
         push_b(&mut buf, b"<text x=\"");
@@ -277,7 +361,10 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
             if cfg.smooth {
                 push_b(&mut buf, b"\" stroke=\"none\"/>");
             } else {
-                push_b(&mut buf, b"\" rx=\"2\" stroke=\"#e2e8f0\" stroke-width=\"0.4\"/>");
+                push_b(
+                    &mut buf,
+                    b"\" rx=\"2\" stroke=\"#e2e8f0\" stroke-width=\"0.4\"/>",
+                );
             }
 
             let show = cfg.show_values || cfg.annotate;
@@ -286,7 +373,11 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
                 let lum = 0.299 * ((color >> 16 & 0xFF) as f64)
                     + 0.587 * ((color >> 8 & 0xFF) as f64)
                     + 0.114 * ((color & 0xFF) as f64);
-                let text_col = if lum > 140.0 { b"#1f2937".as_ref() } else { b"#f9fafb".as_ref() };
+                let text_col = if lum > 140.0 {
+                    b"#1f2937".as_ref()
+                } else {
+                    b"#f9fafb".as_ref()
+                };
                 push_b(&mut buf, b"<text x=\"");
                 push_i(&mut buf, cx0 + cw / 2);
                 push_b(&mut buf, b"\" y=\"");
@@ -328,7 +419,10 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
                         push_i(&mut buf, cx);
                         push_b(&mut buf, b"\" y2=\"");
                         push_i(&mut buf, ry1);
-                        push_b(&mut buf, b"\" stroke=\"#ffffff\" stroke-width=\"1.2\" stroke-opacity=\"0.85\"/>");
+                        push_b(
+                            &mut buf,
+                            b"\" stroke=\"#ffffff\" stroke-width=\"1.2\" stroke-opacity=\"0.85\"/>",
+                        );
                     }
                 }
             }
@@ -350,7 +444,10 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
                         push_i(&mut buf, cx1);
                         push_b(&mut buf, b"\" y2=\"");
                         push_i(&mut buf, (ry0 + ry2) / 2);
-                        push_b(&mut buf, b"\" stroke=\"#ffffff\" stroke-width=\"1.2\" stroke-opacity=\"0.85\"/>");
+                        push_b(
+                            &mut buf,
+                            b"\" stroke=\"#ffffff\" stroke-width=\"1.2\" stroke-opacity=\"0.85\"/>",
+                        );
                         let _ = cx;
                     }
                 }
@@ -359,7 +456,11 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
     }
 
     if !cfg.categorical {
-        let n_steps = if cfg.discrete_steps > 0 { cfg.discrete_steps.max(2) } else { 64 };
+        let n_steps = if cfg.discrete_steps > 0 {
+            cfg.discrete_steps.max(2)
+        } else {
+            64
+        };
         let (lo_v, hi_v) = if cfg.diverging {
             let m = vmin.abs().max(vmax.abs());
             (-m, m)
@@ -399,7 +500,10 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
             push_i(&mut buf, bar_w);
             push_b(&mut buf, b"\" height=\"");
             push_i(&mut buf, bar_h);
-            push_b(&mut buf, b"\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.6\"/>");
+            push_b(
+                &mut buf,
+                b"\" fill=\"none\" stroke=\"#94a3b8\" stroke-width=\"0.6\"/>",
+            );
             let n_ticks = 5;
             for ti in 0..n_ticks {
                 let frac = ti as f64 / (n_ticks - 1) as f64;
@@ -452,7 +556,11 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
             let label_y = scale_y + 22;
             let scale_pw = svg_w - pad_left - pad_right;
             let label_static = b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-xt\">";
-            for (lx, lv) in [(pad_left, lo_v), (pad_left + scale_pw / 2, mid_v), (pad_left + scale_pw, hi_v)] {
+            for (lx, lv) in [
+                (pad_left, lo_v),
+                (pad_left + scale_pw / 2, mid_v),
+                (pad_left + scale_pw, hi_v),
+            ] {
                 push_b(&mut buf, b"<text x=\"");
                 push_i(&mut buf, lx);
                 push_b(&mut buf, b"\" y=\"");
@@ -473,8 +581,10 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
 
     push_b(&mut buf, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(buf) };
-    let hover_json = if auto_hover { "[]".to_string() } else { slots_to_json(cfg.hover) };
+    let hover_json = if auto_hover {
+        "[]".to_string()
+    } else {
+        slots_to_json(cfg.hover)
+    };
     build_chart_html(cfg.title, &svg, &hover_json)
 }
-
-

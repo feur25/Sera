@@ -36,5 +36,3 @@ crate::chart_config!(HistogramConfig, 860, 380;
         orientation: b'v',
     }
 );
-
-

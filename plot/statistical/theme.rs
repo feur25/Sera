@@ -11,13 +11,18 @@ crate::plot_family! {
 
 fn extract_sp_id(html: &str) -> &str {
     html.find("id=\"sp")
-        .and_then(|p| { let r = &html[p + 4..]; r.find('"').map(|q| &r[..q]) })
+        .and_then(|p| {
+            let r = &html[p + 4..];
+            r.find('"').map(|q| &r[..q])
+        })
         .unwrap_or("sp-0")
 }
 
 pub fn apply_chart_theme(html: String, theme_str: &str) -> String {
     let t = ChartTheme::from_str(theme_str);
-    if t == ChartTheme::None { return html; }
+    if t == ChartTheme::None {
+        return html;
+    }
     if html.contains("class=\"c3w\"") {
         return apply_3d_theme(html, t);
     }
@@ -51,21 +56,25 @@ fn inject_theme(html: String, t: ChartTheme) -> String {
     let cls = format!("sp-t-{}", t.name());
 
     let (bg, dark_ui) = match t {
-        ChartTheme::Deluxe  => ("#060d1c", true),
-        ChartTheme::Prism   => ("#0d001a", false),
-        ChartTheme::Aurora  => ("#01060f", true),
+        ChartTheme::Deluxe => ("#060d1c", true),
+        ChartTheme::Prism => ("#0d001a", false),
+        ChartTheme::Aurora => ("#01060f", true),
         ChartTheme::Inferno => ("#080000", true),
-        ChartTheme::Frost   => ("#000c1a", true),
-        ChartTheme::None    => ("transparent", false),
+        ChartTheme::Frost => ("#000c1a", true),
+        ChartTheme::None => ("transparent", false),
     };
 
     let extra = match t {
-        ChartTheme::Deluxe  => "saturate(1.3) brightness(1.05) drop-shadow(0 0 8px rgba(0,200,255,0.5))",
-        ChartTheme::Prism   => "saturate(2) brightness(1.05) drop-shadow(0 0 6px rgba(200,80,255,0.45))",
-        ChartTheme::Aurora  => "brightness(1.04) drop-shadow(0 0 6px rgba(80,170,255,0.4))",
+        ChartTheme::Deluxe => {
+            "saturate(1.3) brightness(1.05) drop-shadow(0 0 8px rgba(0,200,255,0.5))"
+        }
+        ChartTheme::Prism => {
+            "saturate(2) brightness(1.05) drop-shadow(0 0 6px rgba(200,80,255,0.45))"
+        }
+        ChartTheme::Aurora => "brightness(1.04) drop-shadow(0 0 6px rgba(80,170,255,0.4))",
         ChartTheme::Inferno => "brightness(1.04) drop-shadow(0 0 5px rgba(160,40,0,0.45))",
-        ChartTheme::Frost   => "brightness(1.06) drop-shadow(0 0 7px rgba(100,200,255,0.45))",
-        ChartTheme::None    => "",
+        ChartTheme::Frost => "brightness(1.06) drop-shadow(0 0 7px rgba(100,200,255,0.45))",
+        ChartTheme::None => "",
     };
 
     let fid_f = format!("{fid}-f");
@@ -98,7 +107,10 @@ fn inject_theme(html: String, t: ChartTheme) -> String {
         ));
     }
 
-    let mut h = html.replace(&format!("id=\"{id}\""), &format!("id=\"{id}\" class=\"{cls}\""));
+    let mut h = html.replace(
+        &format!("id=\"{id}\""),
+        &format!("id=\"{id}\" class=\"{cls}\""),
+    );
     h = h.replacen("</title>", &format!("</title><style>{css}</style>"), 1);
     h = h.replacen("</svg>", &format!("<defs>{defs}</defs></svg>"), 1);
     h = h.replace("filter=\"url(#dlxgf)\"", &format!("filter=\"url(#{fid})\""));
@@ -392,7 +404,3 @@ fn build_flat_filter(fid: &str, t: ChartTheme) -> String {
         ChartTheme::None => String::new(),
     }
 }
-
-
-
-

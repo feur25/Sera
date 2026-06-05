@@ -18,5 +18,3 @@ crate::chart_config!(BulletConfig, 800, 300;
         comparisons: &[],
     }
 );
-
-

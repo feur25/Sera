@@ -1,4 +1,4 @@
-﻿use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
 
 static RETRY: AtomicBool = AtomicBool::new(true);
 static DEGRADE: AtomicUsize = AtomicUsize::new(0);
@@ -23,9 +23,15 @@ pub fn degrade_level() -> usize {
 }
 
 pub fn degrade_once() {
-    DEGRADE.fetch_update(Ordering::AcqRel, Ordering::Acquire, |v| {
-        if v < MAX_DEGRADE { Some(v + 1) } else { None }
-    }).ok();
+    DEGRADE
+        .fetch_update(Ordering::AcqRel, Ordering::Acquire, |v| {
+            if v < MAX_DEGRADE {
+                Some(v + 1)
+            } else {
+                None
+            }
+        })
+        .ok();
 }
 
 pub fn effective_par_threshold() -> usize {

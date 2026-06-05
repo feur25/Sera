@@ -35,7 +35,12 @@ impl ChartConfig {
     }
 
     pub fn add_point(&mut self, label: String, value: f64, hover_data: HashMap<String, String>) {
-        self.points.push(ChartPoint { label, value, hover_data, visible: true });
+        self.points.push(ChartPoint {
+            label,
+            value,
+            hover_data,
+            visible: true,
+        });
     }
 
     pub fn visible_points(&self) -> Vec<&ChartPoint> {
@@ -43,7 +48,10 @@ impl ChartConfig {
     }
 
     pub fn max_value(&self) -> f64 {
-        self.points.iter().filter(|p| p.visible).fold(0.0_f64, |a, p| a.max(p.value))
+        self.points
+            .iter()
+            .filter(|p| p.visible)
+            .fold(0.0_f64, |a, p| a.max(p.value))
     }
 
     pub fn visible_count(&self) -> usize {
@@ -57,17 +65,21 @@ pub struct ChartConfigBuilder {
 
 impl ChartConfigBuilder {
     pub fn new(title: impl Into<String>) -> Self {
-        Self { config: ChartConfig::new(title) }
+        Self {
+            config: ChartConfig::new(title),
+        }
     }
 
     #[inline]
     pub fn zoom(mut self, zoom: f32) -> Self {
-        self.config.zoom = zoom; self
+        self.config.zoom = zoom;
+        self
     }
 
     #[inline]
     pub fn orientation(mut self, vertical: bool) -> Self {
-        self.config.orientation = vertical; self
+        self.config.orientation = vertical;
+        self
     }
 
     #[inline]
@@ -78,8 +90,14 @@ impl ChartConfigBuilder {
     }
 
     #[inline]
-    pub fn add_point(mut self, label: String, value: f64, hover_data: HashMap<String, String>) -> Self {
-        self.config.add_point(label, value, hover_data); self
+    pub fn add_point(
+        mut self,
+        label: String,
+        value: f64,
+        hover_data: HashMap<String, String>,
+    ) -> Self {
+        self.config.add_point(label, value, hover_data);
+        self
     }
 
     #[inline]
@@ -95,19 +113,27 @@ pub struct GenericChart {
 
 impl GenericChart {
     pub fn new(config: ChartConfig) -> Self {
-        Self { config, hovered_idx: None }
+        Self {
+            config,
+            hovered_idx: None,
+        }
     }
 
     #[inline]
     pub fn with_hovered(mut self, idx: Option<usize>) -> Self {
-        self.hovered_idx = idx; self
+        self.hovered_idx = idx;
+        self
     }
 
     #[inline]
-    pub fn config(&self) -> &ChartConfig { &self.config }
-    
+    pub fn config(&self) -> &ChartConfig {
+        &self.config
+    }
+
     #[inline]
-    pub fn hovered(&self) -> Option<usize> { self.hovered_idx }
+    pub fn hovered(&self) -> Option<usize> {
+        self.hovered_idx
+    }
 }
 
 pub fn hsv_to_rgb(h: f32, s: f32, v: f32) -> egui::Color32 {
@@ -123,7 +149,9 @@ pub fn hsv_to_rgb(h: f32, s: f32, v: f32) -> egui::Color32 {
         _ => (c, 0.0, x),
     };
     let m = v - c;
-    egui::Color32::from_rgb(((r + m) * 255.0) as u8, ((g + m) * 255.0) as u8, ((b + m) * 255.0) as u8)
+    egui::Color32::from_rgb(
+        ((r + m) * 255.0) as u8,
+        ((g + m) * 255.0) as u8,
+        ((b + m) * 255.0) as u8,
+    )
 }
-
-

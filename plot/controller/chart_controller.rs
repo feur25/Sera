@@ -1,7 +1,7 @@
 use std::collections::HashMap;
-use std::sync::{Mutex, OnceLock};
 use std::ffi::CStr;
 use std::os::raw::c_char;
+use std::sync::{Mutex, OnceLock};
 
 pub type ChartRenderer = fn(crate::plot::default::PlotRenderContext);
 pub type SvgChartRenderer = fn(&mut String, &[f64], &[&'static str], i32, i32, i32, f64, bool);
@@ -42,7 +42,8 @@ impl ChartRegistry {
     }
 
     fn list(&self) -> Vec<(u8, String, u32)> {
-        self.entries.iter()
+        self.entries
+            .iter()
             .map(|(&id, (name, _))| {
                 let color = self.colors.get(&id).copied().unwrap_or(0x4a90e2);
                 (id, name.clone(), color)
@@ -106,7 +107,11 @@ pub fn get_svg_renderer(id: u8) -> Option<SvgChartRenderer> {
 }
 
 pub fn list_dataset_types() -> Vec<(u8, String, u32)> {
-    get_registry().lock().ok().map(|reg| reg.list()).unwrap_or_default()
+    get_registry()
+        .lock()
+        .ok()
+        .map(|reg| reg.list())
+        .unwrap_or_default()
 }
 
 pub fn get_group_registry() -> &'static Mutex<ChartGroupRegistry> {
@@ -149,16 +154,16 @@ impl ChartTypeBuilder {
         if self.name.is_empty() {
             return Err("Name required".to_string());
         }
-        
+
         let renderer = self.renderer.ok_or("Renderer required")?;
-        
+
         if let Ok(mut reg) = get_registry().lock() {
             reg.register(self.id, self.name.clone(), renderer);
             if let Some(svg_rend) = self.svg_renderer {
                 reg.register_svg(self.id, svg_rend);
             }
         }
-        
+
         Ok(())
     }
 }
@@ -183,7 +188,11 @@ impl ChartGroupBuilder {
 }
 
 #[no_mangle]
-pub extern "C" fn sera_register_chart_group(group_name: *const c_char, type_ids: *const u8, count: u32) -> bool {
+pub extern "C" fn sera_register_chart_group(
+    group_name: *const c_char,
+    type_ids: *const u8,
+    count: u32,
+) -> bool {
     if group_name.is_null() || type_ids.is_null() || count == 0 {
         return false;
     }
@@ -224,7 +233,10 @@ pub extern "C" fn sera_get_current_chart_group() -> *const c_char {
 }
 
 #[no_mangle]
-pub extern "C" fn sera_get_chart_group_types(group_name: *const c_char, count: *mut u32) -> *const u8 {
+pub extern "C" fn sera_get_chart_group_types(
+    group_name: *const c_char,
+    count: *mut u32,
+) -> *const u8 {
     if group_name.is_null() || count.is_null() {
         return std::ptr::null();
     }
@@ -257,7 +269,7 @@ pub extern "C" fn sera_list_chart_groups(count: *mut u32) -> *const *const c_cha
             .into_iter()
             .map(|g| Box::leak(g.into_boxed_str()) as *const str as *const c_char)
             .collect();
-        
+
         unsafe { *count = result.len() as u32 };
         Box::leak(result.into_boxed_slice()).as_ptr()
     } else {
@@ -297,7 +309,8 @@ pub fn get_current_group_types() -> Vec<(u8, String)> {
         let group_name = grp_reg.get_current().to_string();
         if let Some(type_ids) = grp_reg.get_group(&group_name) {
             if let Ok(reg) = get_registry().lock() {
-                return type_ids.into_iter()
+                return type_ids
+                    .into_iter()
                     .filter_map(|id| reg.get(id).map(|(name, _)| (id, name)))
                     .collect();
             }
@@ -313,6 +326,3 @@ pub fn set_current_chart_group(name: &str) -> bool {
         false
     }
 }
-
-
-

@@ -1,1 +1,1 @@
-pub use crate::bindings::unified_config::{ChartConfig, ChartPoint, ChartConfigBuilder};
+pub use crate::bindings::unified_config::{ChartConfig, ChartConfigBuilder, ChartPoint};

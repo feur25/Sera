@@ -1,34 +1,34 @@
-pub mod linalg;
-pub mod cache;
-pub mod handle;
-pub mod bindings;
-pub mod models;
-pub mod linear;
-pub mod tree;
-pub mod neighbors;
-pub mod naive_bayes;
-pub mod svm;
-pub mod preprocessing;
-pub mod decomposition;
-pub mod model_selection;
-pub mod metrics;
 pub mod anomaly;
-pub mod registry;
+pub mod bindings;
+pub mod cache;
+pub mod decomposition;
+pub mod distributed;
 pub mod export;
 pub mod gpu;
-pub mod distributed;
+pub mod handle;
+pub mod linalg;
+pub mod linear;
+pub mod metrics;
+pub mod model_selection;
+pub mod models;
+pub mod naive_bayes;
+pub mod neighbors;
+pub mod preprocessing;
+pub mod registry;
+pub mod svm;
+pub mod tree;
 
+pub use anomaly::*;
+pub use decomposition::*;
 pub use linalg::*;
 pub use linear::*;
-pub use tree::*;
-pub use neighbors::*;
-pub use naive_bayes::*;
-pub use svm::*;
-pub use preprocessing::*;
-pub use decomposition::*;
-pub use model_selection::*;
 pub use metrics::*;
-pub use anomaly::*;
+pub use model_selection::*;
+pub use naive_bayes::*;
+pub use neighbors::*;
+pub use preprocessing::*;
+pub use svm::*;
+pub use tree::*;
 
 pub trait MlRegressor: Send + Sync {
     fn fit(&mut self, x: &[f64], n: usize, p: usize, y: &[f64]);
@@ -47,5 +47,3 @@ pub trait MlClassifier: Send + Sync {
         crate::ml::metrics::classification::accuracy_score(y, &preds)
     }
 }
-
-
