@@ -1222,6 +1222,23 @@ let wasm_bindgen = (function(exports) {
     exports.chartAliases = chartAliases;
 
     /**
+     * @returns {string}
+     */
+    function chartVariants() {
+        let deferred1_0;
+        let deferred1_1;
+        try {
+            const ret = wasm.chartVariants();
+            deferred1_0 = ret[0];
+            deferred1_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free(deferred1_0, deferred1_1, 1);
+        }
+    }
+    exports.chartVariants = chartVariants;
+
+    /**
      * @param {string} input
      * @returns {string}
      */
