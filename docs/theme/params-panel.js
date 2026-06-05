@@ -223,6 +223,76 @@
   // \u2500\u2500 Dynamic variant injection \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
   // Extracts unique variant names from the ## Parameters table HTML.
   // "all" / "toutes" rows are skipped \u2014 only explicit variant names count.
+  var VARIANT_ICONS = {
+    "basic":           '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="5" width="3" height="9" rx=".5"/><rect x="6.5" y="3" width="3" height="11" rx=".5"/><rect x="11" y="7" width="3" height="7" rx=".5"/></svg>',
+    "grouped":         '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="7" width="2.5" height="7" rx=".5"/><rect x="4" y="4" width="2.5" height="10" rx=".5"/><rect x="9" y="7" width="2.5" height="7" rx=".5"/><rect x="12" y="4" width="2.5" height="10" rx=".5"/></svg>',
+    "grouped_stacked": '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="8" width="2" height="6" rx=".5"/><rect x="1" y="5" width="2" height="3" rx=".5" opacity=".5"/><rect x="4" y="6" width="2" height="8" rx=".5"/><rect x="4" y="3" width="2" height="3" rx=".5" opacity=".5"/><rect x="9" y="9" width="2" height="5" rx=".5"/><rect x="9" y="6" width="2" height="3" rx=".5" opacity=".5"/><rect x="12" y="5" width="2" height="9" rx=".5"/><rect x="12" y="2" width="2" height="3" rx=".5" opacity=".5"/></svg>',
+    "stacked":         '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="8" width="4" height="6" rx=".5"/><rect x="2" y="4" width="4" height="4" rx=".5" opacity=".5"/><rect x="2" y="2" width="4" height="2" rx=".5" opacity=".25"/><rect x="10" y="6" width="4" height="8" rx=".5"/><rect x="10" y="3" width="4" height="3" rx=".5" opacity=".5"/></svg>',
+    "relative":        '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="2" width="4" height="12" rx=".5" opacity=".2"/><rect x="2" y="6" width="4" height="8" rx=".5" opacity=".38"/><rect x="2" y="10" width="4" height="4" rx=".5"/><rect x="10" y="2" width="4" height="12" rx=".5" opacity=".2"/><rect x="10" y="5" width="4" height="9" rx=".5" opacity=".38"/><rect x="10" y="9" width="4" height="5" rx=".5"/></svg>',
+    "marimekko":       '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="3" width="5" height="11" rx=".5"/><rect x="1" y="3" width="5" height="6" rx=".5" opacity=".38"/><rect x="7" y="2" width="8" height="12" rx=".5"/><rect x="7" y="2" width="8" height="7" rx=".5" opacity=".32"/></svg>',
+    "multicategory":   '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="6" height="6" rx=".5"/><rect x="9" y="1" width="6" height="6" rx=".5"/><rect x="1" y="9" width="6" height="6" rx=".5"/><rect x="9" y="9" width="6" height="6" rx=".5"/></svg>',
+    "pictogram":       '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3" cy="3" r="1.3"/><circle cx="7" cy="3" r="1.3"/><circle cx="11" cy="3" r="1.3"/><circle cx="3" cy="7" r="1.3"/><circle cx="7" cy="7" r="1.3"/><circle cx="11" cy="7" r="1.3"/><circle cx="3" cy="11" r="1.3"/><circle cx="7" cy="11" r=".8" opacity=".4"/><circle cx="11" cy="11" r=".4" opacity=".2"/></svg>',
+    "prism":           '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><polygon points="8,2 15,11 1,11"/><polygon points="8,5 12,11 4,11" fill="currentColor" opacity=".15" stroke="none"/></svg>',
+    "deluxe":          '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><polygon points="8,1.5 9.5,5.5 13.8,6 10.9,8.8 11.7,13 8,10.9 4.3,13 5.1,8.8 2.2,6 6.5,5.5"/></svg>',
+    "regression":      '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor"><circle cx="3" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="7" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="11" cy="5" r="1.5" fill="currentColor" stroke="none"/><circle cx="13" cy="10" r="1.5" fill="currentColor" stroke="none"/><line x1="2" y1="13.5" x2="14" y2="3.5" stroke-width="1.5"/></svg>',
+    "categorical":     '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="4" cy="11" r="2.2"/><circle cx="8" cy="6" r="2.2" opacity=".6"/><circle cx="12" cy="9" r="2.2" opacity=".35"/><circle cx="5" cy="4" r="1.5" opacity=".8"/></svg>',
+    "gradient":        '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="4" cy="11" r="2" opacity=".2"/><circle cx="8" cy="7" r="2.5" opacity=".55"/><circle cx="12" cy="4" r="2" opacity=".9"/></svg>',
+    "labeled":         '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="5" cy="11" r="2" fill="currentColor" stroke="none"/><circle cx="11" cy="5" r="2" fill="currentColor" stroke="none"/><rect x="7" y="3" width="6" height="3" rx="1"/><rect x="1" y="9" width="6" height="3" rx="1"/></svg>',
+    "nova":            '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="2" fill="currentColor"/><line x1="8" y1="1" x2="8" y2="4.5"/><line x1="8" y1="11.5" x2="8" y2="15"/><line x1="1" y1="8" x2="4.5" y2="8"/><line x1="11.5" y1="8" x2="15" y2="8"/><line x1="3.2" y1="3.2" x2="5.5" y2="5.5"/><line x1="10.5" y1="10.5" x2="12.8" y2="12.8"/><line x1="12.8" y1="3.2" x2="10.5" y2="5.5"/><line x1="5.5" y1="10.5" x2="3.2" y2="12.8"/></svg>',
+    "galaxy":          '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M8 8 Q12 3 14 8 Q12 13 8 8 Q4 13 2 8 Q4 3 8 8"/><circle cx="8" cy="8" r="1.5" fill="currentColor" stroke="none"/></svg>',
+    "symbols":         '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><polygon points="4,1.5 5.8,5.5 2,5.5"/><rect x="9.5" y="1.5" width="4" height="4" rx=".5"/><circle cx="4" cy="12" r="2.5"/><polygon points="11.5,9.5 14.5,14 8.5,14"/></svg>',
+    "line":            '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1.5,12 5,7 9,9 14.5,3"/></svg>',
+    "area":            '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M1.5 12 L5 7 L9 9 L14.5 3 L14.5 14 L1.5 14 Z" fill="currentColor" opacity=".3"/><polyline points="1.5,12 5,7 9,9 14.5,3" fill="none" stroke="currentColor" stroke-width="2"/></svg>',
+    "stepped":         '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1.5,12 5,12 5,7 9,7 9,9 14.5,9 14.5,3"/></svg>',
+    "smooth":          '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M1.5 12 C4 12 4 4 8 6 C11 8 11 2 14.5 3"/></svg>',
+    "multiline":       '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="1.5,10 5,6 9,8 14.5,4"/><polyline points="1.5,13 5,11 9,12 14.5,9" opacity=".5"/></svg>',
+    "violin":          '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M8 2 C5 2 3.5 5 3.5 8 C3.5 11 5 14 8 14 C11 14 12.5 11 12.5 8 C12.5 5 11 2 8 2"/><ellipse cx="8" cy="8" rx="3" ry="1.5" fill="currentColor" opacity=".3" stroke="none"/></svg>',
+    "box":             '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="6" height="7" rx=".5"/><line x1="8" y1="5" x2="8" y2="2"/><line x1="8" y1="12" x2="8" y2="14.5"/><line x1="8" y1="8.5" x2="11" y2="8.5"/><line x1="6" y1="2" x2="10" y2="2"/><line x1="6" y1="14.5" x2="10" y2="14.5"/></svg>',
+    "kde":             '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M1 13 C2 13 3 3 8 3 C13 3 14 13 15 13 L15 14 L1 14 Z" fill="currentColor" opacity=".2"/><path d="M1 13 C2 13 3 3 8 3 C13 3 14 13 15 13" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>',
+    "histogram":       '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="9" width="3" height="5.5" rx=".5"/><rect x="5" y="4" width="3" height="10.5" rx=".5"/><rect x="9" y="6" width="3" height="8.5" rx=".5"/><rect x="13" y="11" width="2" height="3.5" rx=".5"/></svg>',
+    "waterfall":       '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="8" width="3" height="6.5" rx=".5"/><rect x="5" y="5" width="3" height="3" rx=".5" opacity=".7"/><rect x="9" y="3" width="3" height="2" rx=".5"/><rect x="13" y="2" width="2" height="5" rx=".5" opacity=".6"/></svg>',
+    "funnel":          '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="2" width="12" height="3" rx="1"/><rect x="4" y="6.5" width="8" height="2.5" rx="1"/><rect x="6" y="10.5" width="4" height="2" rx="1"/><rect x="7" y="13.5" width="2" height="1.5" rx=".5"/></svg>',
+    "bubble":          '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="4" cy="11" r="3" opacity=".5"/><circle cx="10" cy="6" r="4.5" opacity=".3"/><circle cx="13" cy="12" r="2" opacity=".6"/></svg>',
+    "lollipop":        '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><line x1="3" y1="14" x2="3" y2="5.5"/><circle cx="3" cy="4" r="2" fill="currentColor" stroke="none"/><line x1="8" y1="14" x2="8" y2="3.5"/><circle cx="8" cy="2.5" r="2" fill="currentColor" stroke="none"/><line x1="13" y1="14" x2="13" y2="7.5"/><circle cx="13" cy="6.5" r="2" fill="currentColor" stroke="none"/></svg>',
+    "slope":           '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="3" cy="12" r="1.8" fill="currentColor" stroke="none"/><circle cx="13" cy="4" r="1.8" fill="currentColor" stroke="none"/><line x1="3" y1="12" x2="13" y2="4"/></svg>',
+    "heatmap":         '<svg width="16" height="16" viewBox="0 0 16 16"><rect x="1" y="1" width="4" height="4" rx=".5" fill="currentColor" opacity=".9"/><rect x="6" y="1" width="4" height="4" rx=".5" fill="currentColor" opacity=".5"/><rect x="11" y="1" width="4" height="4" rx=".5" fill="currentColor" opacity=".2"/><rect x="1" y="6" width="4" height="4" rx=".5" fill="currentColor" opacity=".4"/><rect x="6" y="6" width="4" height="4" rx=".5" fill="currentColor" opacity=".85"/><rect x="11" y="6" width="4" height="4" rx=".5" fill="currentColor" opacity=".3"/><rect x="1" y="11" width="4" height="4" rx=".5" fill="currentColor" opacity=".15"/><rect x="6" y="11" width="4" height="4" rx=".5" fill="currentColor" opacity=".6"/><rect x="11" y="11" width="4" height="4" rx=".5" fill="currentColor"/></svg>',
+    "parallel":        '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><line x1="3" y1="2" x2="3" y2="14"/><line x1="8" y1="2" x2="8" y2="14"/><line x1="13" y1="2" x2="13" y2="14"/><path d="M3 4 L8 9 L13 6" opacity=".8"/><path d="M3 7 L8 5 L13 11" opacity=".5"/></svg>',
+    "radar":           '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><polygon points="8,1.5 14.2,5.8 11.8,13 4.2,13 1.8,5.8"/><polygon points="8,4 11.6,6.5 10.2,11 5.8,11 4.4,6.5" fill="currentColor" opacity=".2"/></svg>',
+    "wordcloud":       '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="2" width="8" height="3" rx=".5"/><rect x="1" y="6.5" width="5" height="2" rx=".5" opacity=".7"/><rect x="7" y="6.5" width="8" height="2" rx=".5" opacity=".5"/><rect x="1" y="10" width="10" height="2" rx=".5" opacity=".8"/><rect x="12" y="10" width="3" height="2" rx=".5" opacity=".4"/><rect x="1" y="13" width="6" height="2" rx=".5" opacity=".6"/><rect x="8" y="13" width="4" height="2" rx=".5" opacity=".3"/></svg>',
+    "dumbbell":        '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="3" cy="5" r="2" fill="currentColor" stroke="none"/><circle cx="13" cy="5" r="2" fill="currentColor" stroke="none"/><line x1="5" y1="5" x2="11" y2="5"/><circle cx="3" cy="11" r="2" fill="currentColor" stroke="none"/><circle cx="11" cy="11" r="2" fill="currentColor" stroke="none"/><line x1="5" y1="11" x2="9" y2="11"/></svg>',
+    "donut":           '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="3.5"><circle cx="8" cy="8" r="4"/></svg>',
+    "pie":             '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 8 L8 2 A6 6 0 0 1 14 8 Z" opacity=".9"/><path d="M8 8 L14 8 A6 6 0 0 1 3.1 13.2 Z" opacity=".6"/><path d="M8 8 L3.1 13.2 A6 6 0 1 1 8 2 Z" opacity=".3"/></svg>',
+    "ridgeline":       '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M1 12 Q4 7 7 10 Q9 12 12 4 Q14 .5 15 12 L15 13 L1 13 Z" fill="currentColor" opacity=".2"/><path d="M1 12 Q4 7 7 10 Q9 12 12 4 Q14 .5 15 12" fill="none" stroke="currentColor" stroke-width="1.3"/><path d="M1 10 Q4 5 7 8 Q9 10 12 2 Q14 0 15 10" fill="none" stroke="currentColor" stroke-width="1.3" opacity=".45"/></svg>',
+    "gauge":           '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M2 13 A7 7 0 0 1 14 13" fill="none" stroke="currentColor" stroke-width="3" opacity=".2"/><path d="M2 13 A7 7 0 0 1 10.5 3.5" fill="none" stroke="currentColor" stroke-width="3"/><line x1="8" y1="13" x2="10" y2="6" stroke="currentColor" stroke-width="1.5"/></svg>',
+    "scatter":         '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="4" cy="11" r="1.5"/><circle cx="7" cy="7" r="1.5"/><circle cx="11" cy="4" r="1.5"/><circle cx="5" cy="5" r="1.5"/><circle cx="12" cy="10" r="1.5"/></svg>',
+    "band":            '<svg width="16" height="16" viewBox="0 0 16 16"><path d="M1.5 4 L5 3 L9 5 L14.5 2 L14.5 8 L9 11 L5 9 L1.5 10 Z" fill="currentColor" opacity=".2"/><polyline points="1.5,4 5,3 9,5 14.5,2" fill="none" stroke="currentColor" stroke-width="1.5"/><polyline points="1.5,10 5,9 9,11 14.5,8" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>'
+  };
+
+  function variantIcon(name) {
+    var svg = VARIANT_ICONS[name];
+    if (!svg && name.indexOf("stacked") !== -1) svg = VARIANT_ICONS["stacked"];
+    if (!svg && name.indexOf("group")   !== -1) svg = VARIANT_ICONS["grouped"];
+    if (!svg && name.indexOf("line")    !== -1) svg = VARIANT_ICONS["line"];
+    if (!svg && name.indexOf("area")    !== -1) svg = VARIANT_ICONS["area"];
+    return svg || '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>';
+  }
+
+  function updateAliasForVariant(panel, clsId, variantName) {
+    var varDiv = document.getElementById(clsId + "-" + variantName);
+    if (!varDiv) return;
+    var codeEl = varDiv.querySelector("pre code");
+    if (!codeEl) return;
+    var code = codeEl.textContent || "";
+    var m = code.match(/\bsp\.([A-Za-z_][A-Za-z0-9_]*)\s*\(/);
+    if (!m) return;
+    var alias = m[1];
+    var node = panel.querySelector(".sp-auto-alias");
+    if (!node) return;
+    node.innerHTML = '<code>sp.' + escapeAttr(alias) + '</code>';
+    var sec = node.closest ? node.closest(".sp-psec-alias") : null;
+    if (sec) sec.style.display = "";
+  }
+
   function extractVariantNames(paramsHtml) {
     if (!paramsHtml) return [];
     var div = document.createElement("div");
@@ -287,7 +357,7 @@
       var btn = document.createElement("button");
       btn.className = "sp-cls-tab" + (i === 0 ? " sp-cact" : "");
       btn.setAttribute("onclick", "spCls('" + clsId + "','" + v.replace(/'/g, "\\'") + "',this)");
-      btn.innerHTML = '<span class="sp-clb">' + escapeAttr(v) + "</span>";
+      btn.innerHTML = '<span class="sp-cic">' + variantIcon(v) + '</span><span class="sp-clb">' + escapeAttr(v) + '</span>';
       clsDiv.appendChild(btn);
 
       var varDiv = document.createElement("div");
@@ -306,6 +376,10 @@
     });
 
     body.appendChild(clsDiv);
+
+    if (sp && typeof sp.demo === "function") {
+      updateAliasForVariant(panel, clsId, variants[0]);
+    }
 
     // If WASM was not ready yet, poll and fill code + rebuild rail when it loads.
     if (!sp || typeof sp.demo !== "function") {
@@ -336,6 +410,7 @@
           });
           hoistClassRails(panel);
           refreshRailToggleLabel();
+          updateAliasForVariant(panel, clsId, variants[0]);
         }
       }, 80);
     }
@@ -529,6 +604,7 @@
             v.style.display = "block";
           }
           btn.classList.add("sp-cact");
+          updateAliasForVariant(panel, scope, name);
           if (window.hljs && v) {
             v.querySelectorAll("code").forEach(function (c) {
               try { (hljs.highlightElement || hljs.highlightBlock).call(hljs, c); } catch (e) {}
