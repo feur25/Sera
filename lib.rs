@@ -50,6 +50,10 @@ pub mod viewer;
 pub mod bindings;
 pub mod wiki;
 pub mod html;
+#[cfg(feature = "python")]
+pub mod _py;
+#[cfg(feature = "python")]
+pub mod python;
 include!(concat!(env!("OUT_DIR"), "/adapters.rs"));
 
 pub use core::math::{self, mean, median, std_dev};
@@ -131,10 +135,11 @@ pub fn get_global_gridlines() -> bool {
     GLOBAL_GRIDLINES.load(std::sync::atomic::Ordering::Relaxed)
 }
 
+#[cfg_attr(feature = "python", pyo3::prelude::pyclass(name = "Chart", module = "seraplot"))]
 #[sera_class]
 pub struct Chart {
-    html: String,
-    doc_str: &'static str,
+    pub(crate) html: String,
+    pub(crate) doc_str: &'static str,
 }
 
 fn build_labels_js(pos: &str, forced: &str) -> String {
