@@ -1,8 +1,8 @@
 #[macro_use]
 pub mod registry_macro;
 pub mod cross_bindings;
-#[cfg(feature = "python")]
 pub mod fn_registry;
+pub mod exports;
 pub mod doc_registry;
 pub mod model_registry;
 pub mod fast_render;

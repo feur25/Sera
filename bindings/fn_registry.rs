@@ -1,18 +1,25 @@
-#[cfg(feature = "python")]
-use pyo3::prelude::*;
-
-#[cfg(feature = "python")]
-pub struct PyFnEntry {
-    pub register: fn(&Bound<'_, PyModule>) -> PyResult<()>,
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum InputKind {
+    Json,
+    ChartHtml,
 }
 
-#[cfg(feature = "python")]
-inventory::collect!(PyFnEntry);
+#[derive(Clone, Copy, Debug, PartialEq)]
+pub enum OutputKind {
+    Html,
+    Json,
+    Bool,
+}
 
-#[cfg(feature = "python")]
-pub fn register_all(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    for entry in inventory::iter::<PyFnEntry>() {
-        (entry.register)(m)?;
-    }
-    Ok(())
+pub struct FnEntry {
+    pub name: &'static str,
+    pub input: InputKind,
+    pub output: OutputKind,
+    pub invoke: fn(&str) -> String,
+}
+
+inventory::collect!(FnEntry);
+
+pub fn iter_entries() -> impl Iterator<Item = &'static FnEntry> {
+    inventory::iter::<FnEntry>()
 }

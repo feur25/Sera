@@ -1,5 +1,6 @@
 pub mod linalg;
 pub mod cache;
+pub mod handle;
 pub mod bindings;
 pub mod models;
 pub mod linear;

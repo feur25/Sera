@@ -101,7 +101,7 @@ pub fn launch_hybrid_viewer(labels: Vec<String>, values: Vec<f64>, title: String
     let _ = eframe::run_native(
         "SeraPlot Hybrid Viewer",
         options,
-        Box::new(|_cc| Ok(Box::new(app))),
+        Box::new(|_cc| Box::new(app)),
     );
 }
 

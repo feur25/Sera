@@ -50,8 +50,7 @@ pub mod viewer;
 pub mod bindings;
 pub mod wiki;
 pub mod html;
-#[cfg(feature = "python")]
-pub mod python;
+include!(concat!(env!("OUT_DIR"), "/adapters.rs"));
 
 pub use core::math::{self, mean, median, std_dev};
 pub use data::loader;
@@ -1287,19 +1286,19 @@ pub fn adaptive_degrade_level() -> usize {
 
 #[sera_doc(category = "telemetry", file = "about/telemetry.md", en = "Enables or disables usage telemetry collection. Disabled by default.", fr = "Active ou dÃ©sactive la collecte de tÃ©lÃ©mÃ©trie d'utilisation. DÃ©sactivÃ© par dÃ©faut.", param(name = "enabled", ty = "bool", en = "True to enable telemetry, False to disable.", fr = "True pour activer la tÃ©lÃ©mÃ©trie, False pour dÃ©sactiver."))]
 #[sera_bind]
-fn telemetry_consent(enabled: bool) {
+pub fn telemetry_consent(enabled: bool) {
     crate::telemetry::set_consent(enabled);
 }
 
 #[sera_doc(category = "telemetry", file = "about/telemetry.md", en = "Returns the filesystem path where telemetry data is stored.", fr = "Retourne le chemin du systÃ¨me de fichiers oÃ¹ les donnÃ©es de tÃ©lÃ©mÃ©trie sont stockÃ©es.")]
 #[sera_bind]
-fn telemetry_path() -> String {
+pub fn telemetry_path() -> String {
     crate::telemetry::telemetry_file_path()
 }
 
 #[sera_doc(category = "telemetry", file = "about/telemetry.md", en = "Returns a JSON string with aggregated usage metrics summary.", fr = "Retourne une chaÃ®ne JSON avec un rÃ©sumÃ© des mÃ©triques d'utilisation agrÃ©gÃ©es.")]
 #[sera_bind]
-fn get_metrics() -> String {
+pub fn get_metrics() -> String {
     serde_json::to_string(&crate::telemetry::get_metrics_summary()).unwrap_or_default()
 }
 
@@ -1407,6 +1406,7 @@ fn resolve_theme(name: &str) -> Option<&'static ThemePreset> {
 
 #[cfg(feature = "python")]
 #[sera_doc(category = "theme", file = "theme/theme.md", en = "Applies a named color theme to all subsequent chart renders.", fr = "Applique un thème de couleurs nommé à tous les rendus de graphiques suivants.", param(name = "name", ty = "str", en = "Theme name (e.g. 'dark', 'light', 'ocean'). Use sp.themes() to list all.", fr = "Nom du thème (ex: 'dark', 'light', 'ocean'). Utilisez sp.themes() pour lister tous les thèmes."))]
+#[sera_register]
 #[pyfunction]
 #[pyo3(signature = (name))]
 pub fn theme(name: &str) -> PyResult<()> {
@@ -1430,6 +1430,7 @@ pub fn theme(name: &str) -> PyResult<()> {
 }
 
 #[cfg(feature = "python")]
+#[sera_register]
 #[pyfunction]
 #[pyo3(signature = (*, font=None, font_size=None, title_size=None, border_radius=None, opacity=None, responsive=None, animation=None, animation_duration=None, crosshair=None, zoom=None, tooltip=None, locale=None, thousands_sep=None, margin=None, export_button=None, palette=None, background=None, gridlines=None, text_auto=None, text_position=None, text_angle=None, text_font_size=None, text_font_color=None, uniform_text_min_size=None, uniform_text_mode=None, bar_corner_radius=None))]
 pub fn config(font: Option<&str>, font_size: Option<i32>, title_size: Option<i32>, border_radius: Option<i32>, opacity: Option<f64>, responsive: Option<bool>, animation: Option<bool>, animation_duration: Option<i32>, crosshair: Option<bool>, zoom: Option<bool>, tooltip: Option<&str>, locale: Option<&str>, thousands_sep: Option<&str>, margin: Option<i32>, export_button: Option<bool>, palette: Option<Vec<u32>>, background: Option<&str>, gridlines: Option<bool>, text_auto: Option<&Bound<'_, PyAny>>, text_position: Option<&str>, text_angle: Option<i32>, text_font_size: Option<i32>, text_font_color: Option<&str>, uniform_text_min_size: Option<i32>, uniform_text_mode: Option<&str>, bar_corner_radius: Option<&Bound<'_, PyAny>>) {
@@ -1503,38 +1504,7 @@ fn seraplot(py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
             }
         }
     }
-    m.add_class::<Chart>()?;
-    m.add_class::<PyDatasetStats>()?;
-    m.add_class::<PyDataset>()?;
-    m.add("__version__", VERSION)?;
-
-    m.add_function(wrap_pyfunction!(__sera_py_hw, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_set_adaptive_retry, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_reset_perf_state, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_adaptive_degrade_level, m)?)?;
-
-    m.add_function(wrap_pyfunction!(__sera_py_set_global_background, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_reset_global_background, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_set_auto_display, m)?)?;
-    m.add_function(wrap_pyfunction!(theme, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_reset_theme, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_themes, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_demos, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_demo, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_chart_variants, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_params, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_required_params, m)?)?;
-    m.add_function(wrap_pyfunction!(config, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_reset_config, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_telemetry_consent, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_telemetry_path, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_get_metrics, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_docs, m)?)?;
-    m.add_function(wrap_pyfunction!(__sera_py_doc, m)?)?;
-
-    python::registry::register_submodules(py, m)?;
-
-    Ok(())
+    _py::__init(py, m)
 }
 
 
