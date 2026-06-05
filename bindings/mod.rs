@@ -1,6 +1,5 @@
 #[macro_use]
 pub mod registry_macro;
-pub mod cross_bindings;
 pub mod fn_registry;
 pub mod exports;
 pub mod doc_registry;
