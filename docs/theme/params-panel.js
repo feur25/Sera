@@ -220,6 +220,127 @@
     return !!(test && findH2(test, ["parameters", "param\u00e8tres"]));
   }
 
+  // \u2500\u2500 Dynamic variant injection \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+  // Extracts unique variant names from the ## Parameters table HTML.
+  // "all" / "toutes" rows are skipped \u2014 only explicit variant names count.
+  function extractVariantNames(paramsHtml) {
+    if (!paramsHtml) return [];
+    var div = document.createElement("div");
+    div.innerHTML = paramsHtml;
+    var seen = Object.create(null);
+    var variants = [];
+    div.querySelectorAll("tr").forEach(function (tr) {
+      var cells = tr.querySelectorAll("td");
+      if (cells.length < 2) return;
+      cells[1].textContent.split(",").forEach(function (v) {
+        v = v.trim().toLowerCase();
+        if (!v || v === "all" || v === "toutes" || v === "all variants") return;
+        if (!seen[v]) { seen[v] = true; variants.push(v); }
+      });
+    });
+    return variants.sort(function (a, b) {
+      if (a === "basic") return -1;
+      if (b === "basic") return 1;
+      return a.localeCompare(b);
+    });
+  }
+
+  // Builds the inner HTML for a single-tab code block.
+  function buildVariantCodeHtml(code) {
+    var esc = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    return '<div class="sp-tabs">' +
+      '<div class="sp-tab-btns"><button class="sp-tb sp-act">Python</button></div>' +
+      '<div class="sp-tc sp-on"><pre><code class="language-python">' + esc + "</code></pre></div>" +
+      "</div>";
+  }
+
+  // Returns variant list for a family: prefers WASM chartVariants() over DOM parsing.
+  function variantsFor(family, paramsHtml) {
+    var sp = window.SeraplotWASM;
+    if (sp && typeof sp.chartVariants === "function") {
+      try {
+        var map = JSON.parse(sp.chartVariants());
+        if (map && map[family] && map[family].length) return map[family];
+      } catch (e) {}
+    }
+    return extractVariantNames(paramsHtml);
+  }
+
+  // Injects a .sp-cls container (+ .sp-variant children) into the panel body
+  // so hoistClassRails can build the variant rail from it.
+  function injectVariantCls(panel, body, data, lang) {
+    var family = data.functionName;
+    if (!family) return;
+    var variants = variantsFor(family, data.parameters);
+    if (!variants.length) return;
+
+    var clsId = "pp-" + family + "-cls";
+    if (document.getElementById(clsId)) return;
+
+    var sp = window.SeraplotWASM;
+
+    var clsDiv = document.createElement("div");
+    clsDiv.className = "sp-cls";
+    clsDiv.id = clsId;
+
+    variants.forEach(function (v, i) {
+      var btn = document.createElement("button");
+      btn.className = "sp-cls-tab" + (i === 0 ? " sp-cact" : "");
+      btn.setAttribute("onclick", "spCls('" + clsId + "','" + v.replace(/'/g, "\\'") + "',this)");
+      btn.innerHTML = '<span class="sp-clb">' + escapeAttr(v) + "</span>";
+      clsDiv.appendChild(btn);
+
+      var varDiv = document.createElement("div");
+      varDiv.id = clsId + "-" + v;
+      varDiv.className = "sp-variant" + (i === 0 ? " sp-von" : "");
+      varDiv.style.display = i === 0 ? "block" : "none";
+
+      if (sp && typeof sp.demo === "function") {
+        try {
+          var code = sp.demo(JSON.stringify({ family: family, variant: v })) || "";
+          if (code) varDiv.innerHTML = buildVariantCodeHtml(code);
+        } catch (e) {}
+      }
+
+      clsDiv.appendChild(varDiv);
+    });
+
+    body.appendChild(clsDiv);
+
+    // If WASM was not ready yet, poll and fill code + rebuild rail when it loads.
+    if (!sp || typeof sp.demo !== "function") {
+      var tries = 0;
+      var timer = setInterval(function () {
+        tries++;
+        var sp2 = window.SeraplotWASM;
+        if ((sp2 && typeof sp2.demo === "function") || tries > 120) {
+          clearInterval(timer);
+          if (!sp2 || typeof sp2.demo !== "function") return;
+          var root = document.getElementById(clsId);
+          if (!root) return;
+          root.querySelectorAll(".sp-variant").forEach(function (varDiv) {
+            if (varDiv.innerHTML.trim()) return;
+            var variant = varDiv.id.slice((clsId + "-").length);
+            try {
+              var code = sp2.demo(JSON.stringify({ family: family, variant: variant })) || "";
+              if (code) {
+                varDiv.innerHTML = buildVariantCodeHtml(code);
+                if (window.hljs) {
+                  var hFn = hljs.highlightElement || hljs.highlightBlock;
+                  if (hFn) varDiv.querySelectorAll("pre code").forEach(function (c) {
+                    try { hFn.call(hljs, c); } catch (e) {}
+                  });
+                }
+              }
+            } catch (e) {}
+          });
+          hoistClassRails(panel);
+          refreshRailToggleLabel();
+        }
+      }, 80);
+    }
+  }
+
   function renderBody(panel) {
     var body = panel.querySelector(".sp-pb");
     if (!body) return;
@@ -255,6 +376,7 @@
     addSec(remapPanelHtml(data.parameters),     labels.par,   "sp-psec-params");
     addSec(remapPanelHtml(data.returns),        labels.ret,   "sp-psec-returns");
     hydrateAliases(body);
+    injectVariantCls(panel, body, data, lang);
 
     // ── Code example tabs ────────────────────────────────────────────────
     var tabsHtml = (lang === "fr" ? exampleData.fr : exampleData.en) || exampleData.en || exampleData.fr;
