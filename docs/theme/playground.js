@@ -243,21 +243,67 @@
 
     function discoverVariants() {
         var slug = state.slug;
+        var fn = state.baseFn || (slug ? slug.replace(/-/g, '_') : '');
+        var sp = window.SeraplotWASM;
+        if (sp && typeof sp.chartVariants === 'function' && fn) {
+            try {
+                var map = JSON.parse(sp.chartVariants());
+                var fromWasm = normalizeVariantList(map && map[fn]);
+                if (fromWasm.length) return fromWasm;
+            } catch (e) {}
+        }
         var lang = detectLang();
         var nodes = document.querySelectorAll('.sp-variant[id^="' + slug + '-' + lang + '-"]');
         if (nodes.length === 0) {
             nodes = document.querySelectorAll('.sp-variant[id^="' + slug + '-"]');
         }
+        if (nodes.length === 0) {
+            nodes = document.querySelectorAll('.sp-variant[data-variant]');
+        }
         var seen = {}, out = [];
         for (var i = 0; i < nodes.length; i++) {
             var id = nodes[i].id;
             var parts = id.split('-');
-            var name = parts[parts.length - 1];
+            var name = nodes[i].getAttribute('data-variant') || parts[parts.length - 1];
+            name = normalizeVariantName(name);
             if (!name || seen[name]) continue;
             seen[name] = true;
-            out.push(name);
+            out.push({ key: name, aliases: [name] });
         }
         return out;
+    }
+
+    function normalizeVariantName(name) {
+        return String(name || '').trim().replace(/-/g, '_');
+    }
+
+    function normalizeVariantList(raw) {
+        if (!raw) return [];
+        if (Array.isArray(raw)) {
+            return raw.map(function (v) {
+                if (typeof v === 'string') return { key: normalizeVariantName(v), aliases: [normalizeVariantName(v)] };
+                return {
+                    key: normalizeVariantName(v.key || v.name || ''),
+                    aliases: Array.isArray(v.aliases) ? v.aliases.slice() : []
+                };
+            }).filter(function (v) { return v.key; });
+        }
+        if (raw.variants) return normalizeVariantList(raw.variants);
+        return [];
+    }
+
+    function variantKey(item) {
+        return typeof item === 'string' ? normalizeVariantName(item) : normalizeVariantName(item && item.key);
+    }
+
+    function variantLabel(item) {
+        if (typeof item === 'string') return item;
+        var aliases = item && item.aliases;
+        return aliases && aliases.length ? aliases[0] : variantKey(item);
+    }
+
+    function escAttr(s) {
+        return String(s || '').replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
     function findVariantParamHints() {
@@ -306,6 +352,7 @@
     }
 
     function buildCode(variantName) {
+        variantName = variantKey(variantName);
         var fn = state.baseFn || (state.slug ? state.slug.replace(/-/g, '_') : 'bar');
         if (isFullPagePlayground()) fn = state.baseFn || 'bar';
         try {
@@ -649,13 +696,14 @@
     }
 
     function selectVariant(idx) {
-        var name = state.variants[idx];
+        var item = state.variants[idx];
+        var name = variantKey(item);
         if (!name) return;
         state.currentVariant = idx;
         var tabs = document.querySelectorAll('.sp-pg-wrap .sp-pg-tab');
         for (var i = 0; i < tabs.length; i++) tabs[i].classList.toggle('sp-active', i === idx);
         if (state.editor) {
-            state.editor.setValue(buildCode(name));
+            state.editor.setValue(buildCode(item));
             runOnce(true);
         }
     }
@@ -679,7 +727,7 @@
 
         var tabsHtml = '';
         for (var i = 0; i < variants.length; i++) {
-            tabsHtml += '<button class="sp-pg-tab' + (i === 0 ? ' sp-active' : '') + '" type="button">' + variants[i] + '</button>';
+            tabsHtml += '<button class="sp-pg-tab' + (i === 0 ? ' sp-active' : '') + '" type="button">' + escAttr(variantLabel(variants[i])) + '</button>';
         }
 
         var wrap = document.createElement('div');
@@ -693,7 +741,7 @@
             (variants.length > 1 ? '<div class="sp-pg-tabs">' + tabsHtml + '</div>' : '') +
             '<div class="sp-pg-main">' +
                 '<div class="sp-pg-ecol">' +
-                    '<div class="sp-pg-ehdr"><div class="sp-pg-etab">' + slug + '.py</div></div>' +
+                    '<div class="sp-pg-ehdr"><div class="sp-pg-etab">' + slug + '-' + escAttr(variantLabel(variants[0])) + '.py</div></div>' +
                     '<div class="sp-pg-cm-wrap"><div class="sp-pg-monaco" style="position:absolute;inset:0"></div></div>' +
                 '</div>' +
                 '<div class="sp-pg-divider"></div>' +
@@ -725,15 +773,18 @@
         var ecol = wrap.querySelector('.sp-pg-ecol');
         var monacoHost = wrap.querySelector('.sp-pg-monaco');
         var tabs = wrap.querySelectorAll('.sp-pg-tab');
+        var fileTab = wrap.querySelector('.sp-pg-etab');
         for (var t = 0; t < tabs.length; t++) {
             (function (idx) {
                 tabs[idx].addEventListener('click', function () {
                     if (isFullPagePlayground()) {
-                        state.baseFn = variants[idx];
+                        state.baseFn = variantKey(variants[idx]);
                         state.currentVariant = 0;
                         for (var ti = 0; ti < tabs.length; ti++) tabs[ti].classList.toggle('sp-active', ti === idx);
+                        if (fileTab) fileTab.textContent = state.baseFn + '.py';
                         if (state.editor) { state.editor.setValue(buildCode('basic')); runOnce(true); }
                     } else {
+                        if (fileTab) fileTab.textContent = slug + '-' + variantLabel(variants[idx]) + '.py';
                         selectVariant(idx);
                     }
                 });
@@ -839,8 +890,7 @@
         if (!sp || typeof sp.demo !== 'function') return;
         var slug = state.slug;
         if (!slug || slug === 'playground') return;
-        var fn = slug.replace(/-/g, '_');
-        var slugSegments = slug.split('-').length;
+        var fn = state.baseFn || slug.replace(/-/g, '_');
         var codeStyle = [
             'background:#0d1117',
             'border:1px solid #334155',
@@ -878,7 +928,8 @@
             if (el.querySelector('.sp-demo-code-wrap')) continue;
             var id = el.id;
             var parts = id.split('-');
-            var v = parts.slice(slugSegments + 1).join('_');
+            var v = el.getAttribute('data-variant') || parts[parts.length - 1];
+            v = normalizeVariantName(v);
             if (!v || v === 'default') v = 'basic';
             var code;
             try {

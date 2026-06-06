@@ -99,18 +99,17 @@
       });
   }
 
-  function extractAndHide(h2El, splitAlias) {
+  function extractAndHide(h2El, splitAlias, hide) {
     if (!h2El) return null;
-    h2El.classList.add("sp-moved");
+    if (hide !== false) h2El.classList.add("sp-moved");
     var sigHtml = "";
     var aliasHtml = "";
     var sib = h2El.nextElementSibling;
     while (sib && sib.tagName !== "H2") {
-      // Stop before code-example elements so they stay in the main content.
       if (isExampleBoundary(sib)) break;
       var next = sib.nextElementSibling;
-      var html = sib.outerHTML; // capture BEFORE adding .sp-moved
-      sib.classList.add("sp-moved");
+      var html = sib.outerHTML;
+      if (hide !== false) sib.classList.add("sp-moved");
       if (splitAlias && isAliasNode(sib)) {
         aliasHtml += html;
       } else if (!isHrNode(sib)) {
@@ -128,9 +127,9 @@
     var retH2 = findH2(container, ["returns", "retour", "retours", "retourne"]);
     if (!parH2) return null;
 
-    var sig    = extractAndHide(sigH2, true);
-    var params = extractAndHide(parH2, false);
-    var rets   = extractAndHide(retH2, false);
+    var sig    = extractAndHide(sigH2, true, true);
+    var params = extractAndHide(parH2, false, false);
+    var rets   = extractAndHide(retH2, false, true);
 
     return {
       signature:  sig    ? sig.main   : "",
@@ -178,6 +177,20 @@
       if (map[alias] === target) out.push(alias);
     });
     return out;
+  }
+
+  function normalizeVariantName(name) {
+    return String(name || "").trim().replace(/-/g, "_");
+  }
+
+  function variantDomId(scope, key) {
+    return scope + "-v-" + normalizeVariantName(key).replace(/[^A-Za-z0-9_]/g, "_");
+  }
+
+  function variantLabel(item) {
+    if (!item) return "";
+    var aliases = item.aliases || [];
+    return aliases.length ? aliases[0] : item.key;
   }
 
   function hydrateAliases(root) {
@@ -278,19 +291,7 @@
   }
 
   function updateAliasForVariant(panel, clsId, variantName) {
-    var varDiv = document.getElementById(clsId + "-" + variantName);
-    if (!varDiv) return;
-    var codeEl = varDiv.querySelector("pre code");
-    if (!codeEl) return;
-    var code = codeEl.textContent || "";
-    var m = code.match(/\bsp\.([A-Za-z_][A-Za-z0-9_]*)\s*\(/);
-    if (!m) return;
-    var alias = m[1];
-    var node = panel.querySelector(".sp-auto-alias");
-    if (!node) return;
-    node.innerHTML = '<code>sp.' + escapeAttr(alias) + '</code>';
-    var sec = node.closest ? node.closest(".sp-psec-alias") : null;
-    if (sec) sec.style.display = "";
+    hydrateAliases(panel);
   }
 
   function extractVariantNames(paramsHtml) {
@@ -324,20 +325,35 @@
       "</div>";
   }
 
-  // Returns variant list for a family: prefers WASM chartVariants() over DOM parsing.
+  function normalizeVariantList(raw) {
+    if (!raw) return [];
+    if (Array.isArray(raw)) {
+      return raw.map(function (v) {
+        if (typeof v === "string") return { key: normalizeVariantName(v), aliases: [normalizeVariantName(v)] };
+        return {
+          key: normalizeVariantName(v.key || v.name || ""),
+          aliases: Array.isArray(v.aliases) ? v.aliases.slice() : []
+        };
+      }).filter(function (v) { return v.key; });
+    }
+    if (raw.variants) return normalizeVariantList(raw.variants);
+    return [];
+  }
+
   function variantsFor(family, paramsHtml) {
     var sp = window.SeraplotWASM;
     if (sp && typeof sp.chartVariants === "function") {
       try {
         var map = JSON.parse(sp.chartVariants());
-        if (map && map[family] && map[family].length) return map[family];
+        var fromWasm = normalizeVariantList(map && map[family]);
+        if (fromWasm.length) return fromWasm;
       } catch (e) {}
     }
-    return extractVariantNames(paramsHtml);
+    return extractVariantNames(paramsHtml).map(function (v) {
+      return { key: normalizeVariantName(v), aliases: [normalizeVariantName(v)] };
+    });
   }
 
-  // Injects a .sp-cls container (+ .sp-variant children) into the panel body
-  // so hoistClassRails can build the variant rail from it.
   function injectVariantCls(panel, body, data, lang) {
     var family = data.functionName;
     if (!family) return;
@@ -353,15 +369,20 @@
     clsDiv.className = "sp-cls";
     clsDiv.id = clsId;
 
-    variants.forEach(function (v, i) {
+    variants.forEach(function (item, i) {
+      var v = item.key;
+      var label = variantLabel(item);
       var btn = document.createElement("button");
       btn.className = "sp-cls-tab" + (i === 0 ? " sp-cact" : "");
       btn.setAttribute("onclick", "spCls('" + clsId + "','" + v.replace(/'/g, "\\'") + "',this)");
-      btn.innerHTML = '<span class="sp-cic">' + variantIcon(v) + '</span><span class="sp-clb">' + escapeAttr(v) + '</span>';
+      btn.setAttribute("data-variant", v);
+      btn.setAttribute("data-aliases", JSON.stringify((item.aliases || []).map(function (a) { return "sp." + a; })));
+      btn.innerHTML = '<span class="sp-cic">' + variantIcon(v) + '</span><span class="sp-clb">' + escapeAttr(label) + '</span>';
       clsDiv.appendChild(btn);
 
       var varDiv = document.createElement("div");
-      varDiv.id = clsId + "-" + v;
+      varDiv.id = variantDomId(clsId, v);
+      varDiv.setAttribute("data-variant", v);
       varDiv.className = "sp-variant" + (i === 0 ? " sp-von" : "");
       varDiv.style.display = i === 0 ? "block" : "none";
 
@@ -394,7 +415,7 @@
           if (!root) return;
           root.querySelectorAll(".sp-variant").forEach(function (varDiv) {
             if (varDiv.innerHTML.trim()) return;
-            var variant = varDiv.id.slice((clsId + "-").length);
+            var variant = varDiv.getAttribute("data-variant") || "basic";
             try {
               var code = sp2.demo(JSON.stringify({ family: family, variant: variant })) || "";
               if (code) {
@@ -585,6 +606,7 @@
         btn.className = "sp-rail-btn" + (origBtn.classList.contains("sp-cact") ? " sp-cact" : "");
         btn.setAttribute("data-scope", scope);
         btn.setAttribute("data-name",  name);
+        btn.setAttribute("data-variant", origBtn.getAttribute("data-variant") || name);
         btn.innerHTML =
           '<span class="sp-cic">'  + (icon ? icon.innerHTML   : "") + '</span>' +
           '<span class="sp-clb">'  + (lbl  ? lbl.textContent  : name) + '</span>';
@@ -592,13 +614,13 @@
         btn.addEventListener("click", function () {
           var root = document.getElementById(scope);
           if (!root) return;
-          // Toggle variant — also set inline style as bulletproof display fix
           root.querySelectorAll(".sp-variant").forEach(function (s) {
             s.classList.remove("sp-von");
             s.style.display = "none";
           });
           rail.querySelectorAll('.sp-rail-btn[data-scope="' + scope + '"]').forEach(function (b) { b.classList.remove("sp-cact"); });
-          var v = document.getElementById(scope + "-" + name);
+          var variantKey = btn.getAttribute("data-variant") || name;
+          var v = document.getElementById(variantDomId(scope, variantKey));
           if (v) {
             v.classList.add("sp-von");
             v.style.display = "block";
