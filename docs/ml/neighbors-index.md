@@ -1,10 +1,21 @@
-﻿# Neighbors
+# Neighbors
 
-> **EN** — Instance-based learning methods using nearest neighbor search.
->
-> **FR** — Méthodes d'apprentissage par instances utilisant la recherche de voisins les plus proches.
+<div class="lang-en">
 
-## Contents
+## Description
 
-- [KNN / NearestCentroid](knn.md)
+Nearest-neighbor estimators registered in the ML bindings.
 
+<div data-sp-ml-category data-category="Neighbors"></div>
+
+</div>
+
+<div class="lang-fr">
+
+<h2>Description</h2>
+
+Estimateurs par plus proches voisins enregistres dans les bindings ML.
+
+<div data-sp-ml-category data-category="Neighbors"></div>
+
+</div>

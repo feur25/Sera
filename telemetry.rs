@@ -20,7 +20,6 @@ static GITHUB_TOKEN_CACHE: std::sync::OnceLock<Option<String>> = std::sync::Once
 pub fn set_python_version(v: &str) {
     let _ = PYTHON_VER.set(v.to_string());
 }
-
 #[derive(Clone, Debug)]
 pub struct TelemetryEvent {
     pub method: String,

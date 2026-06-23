@@ -20,24 +20,13 @@
 ## Description
 
 `sp.violin()` is the unified entry point for the entire violin-plot family. The `variant` keyword selects the rendering strategy — every other argument stays consistent across variants. The kernel-density estimation, quartiles and statistics are computed in pure Rust, no NumPy or pandas required.
+## Variants
+
+<div data-sp-registry-table="variants" data-family="violin"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `bandwidth` | aurora, basic, crystal, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
-| `categories` | all |
-| `fill_opacity` | aurora, basic, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
-| `gridlines` | all |
-| `hover` | all |
-| `jitter` | points, strip |
-| `kde_steps` | aurora, basic, crystal, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
-| `palette` | basic, half, horizontal, mean, points, quartile, split, strip, with_box |
-| `sort_order` | all |
-| `stroke_width` | aurora, basic, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
-| `title` | all |
-| `values` | all |
-| `x_label` | all |
-| `y_label` | all |
+<div data-sp-registry-table="options" data-family="violin"></div>
 
 ---
 
@@ -59,24 +48,13 @@
 <h2>Description</h2>
 
 `sp.violin()` est le point d'entrée unique pour toute la famille des violons. Le paramètre `variant` sélectionne la stratégie de rendu — tous les autres arguments restent identiques entre les variantes. L'estimation de densité par noyau (KDE), les quartiles et les statistiques sont calculés en pur Rust, sans NumPy ni pandas.
+<h2>Variantes</h2>
+
+<div data-sp-registry-table="variants" data-family="violin"></div>
+
 <h2>Paramètres</h2>
 
-| Paramètre | Utilisé par variantes |
-|-----------|----------------------|
-| `bandwidth` | aurora, basic, crystal, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
-| `categories` | toutes |
-| `fill_opacity` | aurora, basic, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
-| `gridlines` | toutes |
-| `hover` | toutes |
-| `jitter` | points, strip |
-| `kde_steps` | aurora, basic, crystal, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
-| `palette` | basic, half, horizontal, mean, points, quartile, split, strip, with_box |
-| `sort_order` | toutes |
-| `stroke_width` | aurora, basic, deluxe, half, horizontal, mean, points, quartile, rainbow, split, with_box |
-| `title` | toutes |
-| `values` | toutes |
-| `x_label` | toutes |
-| `y_label` | toutes |
+<div data-sp-registry-table="options" data-family="violin"></div>
 
 ---
 

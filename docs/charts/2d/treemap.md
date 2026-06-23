@@ -22,19 +22,13 @@
 
 > **Hierarchical mode** — pass `parents` (one parent label per leaf, can be empty string `""` for a flat treemap). Internal totals are auto-computed from leaves. Sort leaves with the `sort_order` parameter (`"desc"` recommended).
 
+## Variants
+
+<div data-sp-registry-table="variants" data-family="treemap"></div>
+
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `title`    | `str`         | required  | Chart title |
-| `labels`   | `list[str]`   | required  | Tile labels (one per leaf) |
-| `values`   | `list[float]` | required  | Leaf values (area) |
-| `parents`  | `list[str]`   | `None`    | Parent label of each leaf (`""` -> flat) |
-| `variant`  | `str`         | `"basic"` | Visual style (see table) |
-| `palette`  | `list[int]`   | `None`    | Custom color palette (per parent or per tile) |
-| `sort_order` | `str`       | `"none"` | `"none"`, `"asc"` or `"desc"` for leaves |
-| `width`    | `int`         | `1100`    | Canvas width (px) |
-| `height`   | `int`         | `520`     | Canvas height (px) |
+<div data-sp-registry-table="options" data-family="treemap"></div>
 
 ## Returns
 
@@ -57,19 +51,13 @@
 
 > **Mode hierarchique** — passez `parents` (un libelle parent par feuille, chaine vide `""` pour un treemap plat). Les totaux internes sont auto-calcules. Triez les feuilles avec `sort_order` (`"desc"` recommande).
 
-<h2>Parametres</h2>
+<h2>Variantes</h2>
 
-| Parametre | Type | Defaut | Description |
-|---|---|---|---|
-| `title`    | `str`         | requis    | Titre du graphique |
-| `labels`   | `list[str]`   | requis    | Libelles des tuiles (un par feuille) |
-| `values`   | `list[float]` | requis    | Valeurs feuilles (aire) |
-| `parents`  | `list[str]`   | `None`    | Parent de chaque feuille (`""` -> plat) |
-| `variant`  | `str`         | `"basic"` | Style visuel (voir tableau) |
-| `palette`  | `list[int]`   | `None`    | Palette de couleurs (par parent ou tuile) |
-| `sort_order` | `str`       | `"none"` | `"none"`, `"asc"` ou `"desc"` pour les feuilles |
-| `width`    | `int`         | `1100`    | Largeur du canvas (px) |
-| `height`   | `int`         | `520`     | Hauteur du canvas (px) |
+<div data-sp-registry-table="variants" data-family="treemap"></div>
+
+<h2>Paramètres</h2>
+
+<div data-sp-registry-table="options" data-family="treemap"></div>
 
 <h2>Retour</h2>
 

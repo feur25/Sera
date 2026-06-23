@@ -20,20 +20,13 @@
 
 `sp.build_parallel()` renders a **parallel-coordinates** chart - one vertical axis per dimension, one polyline per row. Six variants cover the classical use cases: straight lines, smooth Bezier curves, categorical coloring, single-row highlight, density-blended overlay, and gradient coloring driven by any axis. Perfect for high-dimensional EDA, profile comparison, and class separability inspection.
 
+## Variants
+
+<div data-sp-registry-table="variants" data-family="parallel"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `axes` | arc, deluxe, gradient, ribbon |
-| `categories` | categorical |
-| `color_axis` | gradient |
-| `height` | arc, deluxe, ribbon |
-| `highlight_index` | highlight |
-| `palette` | arc, basic, categorical, deluxe, density, highlight, ribbon, smooth |
-| `series_names` | all |
-| `series_values` | all |
-| `title` | arc, ribbon |
-| `width` | arc, categorical, deluxe, gradient, ribbon |
+<div data-sp-registry-table="options" data-family="parallel"></div>
 
 ## Returns
 
@@ -54,21 +47,13 @@
 
 `sp.build_parallel()` rend un graphique **parallel-coordinates** - un axe vertical par dimension, une polyligne par ligne. Six variantes couvrent les cas classiques : lignes droites, courbes Bezier, couleur par categorie, mise en avant d une ligne, overlay de densite, et degrade pilote par un axe. Ideal pour l EDA haute-dimension, la comparaison de profils, et l inspection de separabilite de classes.
 
-<h2>Parametres</h2>
+<h2>Variantes</h2>
 
-| Parametre | Type | Defaut | Description |
-|---|---|---|---|
-| `title` | `str` | requis | Titre du graphique |
-| `axes` | `list[str]` | requis | Etiquettes des axes (gauche vers droite) |
-| `series` | `list[list[float]]` | requis | Profils - une liste interne par axe |
-| `variant` | `str` | "basic" | Style de rendu (voir tableau) |
-| `series_names` | `list[str]` | None | Noms optionnels par ligne (hover/legende) |
-| `category_indices` | `list[int]` | None | Id de categorie par ligne (variant categorical) |
-| `highlight_index` | `int` | -1 | Ligne a mettre en avant (variant highlight) |
-| `color_axis` | `int` | -1 | Index de l axe pilotant la couleur (variant gradient) |
-| `palette` | `list[int]` | None | Palette personnalisee |
-| `width` | `int` | 1000 | Largeur (px) |
-| `height` | `int` | 500 | Hauteur (px) |
+<div data-sp-registry-table="variants" data-family="parallel"></div>
+
+<h2>Paramètres</h2>
+
+<div data-sp-registry-table="options" data-family="parallel"></div>
 
 <h2>Retour</h2>
 

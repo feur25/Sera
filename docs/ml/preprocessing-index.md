@@ -1,10 +1,21 @@
-﻿# Preprocessing
+# Preprocessing
 
-> **EN** — Feature scaling and transformation utilities.
->
-> **FR** — Utilitaires de mise à l'échelle et de transformation des features.
+<div class="lang-en">
 
-## Contents
+## Description
 
-- [Scalers](preprocessing.md)
+Preprocessing transformers registered in Rust.
 
+<div data-sp-ml-category data-category="Preprocessing"></div>
+
+</div>
+
+<div class="lang-fr">
+
+<h2>Description</h2>
+
+Transformers de preprocessing enregistres en Rust.
+
+<div data-sp-ml-category data-category="Preprocessing"></div>
+
+</div>

@@ -19,15 +19,13 @@
 ## Description
 
 `sp.ridgeline()` is the unified entry point for the entire ridgeline family — also known as joyplot. The `variant` keyword selects the rendering strategy — every other argument keeps the same name across variants. A ridgeline plot stacks one KDE curve per category along a shared X axis with a controllable vertical overlap, making it ideal to compare distributions across many groups (years, regions, segments…). SeraPlot renders everything in pure Rust SVG, with quartile/mean overlays, rug ticks, gradient fills and a built-in viridis colormap.
+## Variants
+
+<div data-sp-registry-table="variants" data-family="ridgeline"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `fill_opacity` | basic, mean, quartiles, rug, spaced |
-| `height` | deluxe |
-| `palette` | basic, gradient, heatmap, lines, mean, quartiles, rug, spaced |
-| `title` | deluxe |
-| `width` | deluxe |
+<div data-sp-registry-table="options" data-family="ridgeline"></div>
 
 ---
 
@@ -49,15 +47,13 @@
 <h2>Description</h2>
 
 `sp.ridgeline()` est le point d'entrée unifié pour toute la famille ridgeline — aussi appelé joyplot. Le mot-clé `variant` sélectionne la stratégie de rendu — tous les autres arguments conservent le même nom d'une variante à l'autre. Un ridgeline empile une courbe KDE par catégorie sur un axe X partagé avec un recouvrement vertical réglable, idéal pour comparer des distributions à travers plusieurs groupes (années, régions, segments…). SeraPlot rend tout en SVG Rust natif, avec marqueurs quartiles/moyenne, ticks rug, dégradés et palette viridis intégrée.
+<h2>Variantes</h2>
+
+<div data-sp-registry-table="variants" data-family="ridgeline"></div>
+
 <h2>Paramètres</h2>
 
-| Paramètre | Utilisé par variantes |
-|-----------|----------------------|
-| `fill_opacity` | basic, mean, quartiles, rug, spaced |
-| `height` | deluxe |
-| `palette` | basic, gradient, heatmap, lines, mean, quartiles, rug, spaced |
-| `title` | deluxe |
-| `width` | deluxe |
+<div data-sp-registry-table="options" data-family="ridgeline"></div>
 
 ---
 

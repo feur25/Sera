@@ -126,6 +126,7 @@
     var parH2 = findH2(container, ["parameters", "param\u00e8tres", "parametres"]);
     var retH2 = findH2(container, ["returns", "retour", "retours", "retourne"]);
     if (!parH2) return null;
+    var parSource = !!(parH2.closest && parH2.closest("[data-sp-panel-source], .sp-panel-source"));
 
     var sig    = extractAndHide(sigH2, true, true);
     var params = extractAndHide(parH2, false, false);
@@ -136,6 +137,7 @@
       functionName: signatureFunctionName(sig ? sig.main : ""),
       alias:      sig    ? sig.alias  : "",
       parameters: params ? params.main : "",
+      parametersSource: parSource,
       returns:    rets   ? rets.main   : ""
     };
   }
@@ -189,8 +191,26 @@
 
   function variantLabel(item) {
     if (!item) return "";
-    var aliases = item.aliases || [];
-    return aliases.length ? aliases[0] : item.key;
+    return item.key || "";
+  }
+
+  function aliasesForItem(item) {
+    var key = item && item.key ? item.key : "";
+    var aliases = item && Array.isArray(item.aliases) ? item.aliases.slice() : [];
+    var out = [];
+    [key].concat(aliases).forEach(function (a) {
+      a = String(a || "").trim();
+      if (a && out.indexOf(a) === -1) out.push(a);
+    });
+    return out;
+  }
+
+  function buildVariantAliasesHtml(item, lang) {
+    var aliases = aliasesForItem(item);
+    if (!aliases.length) return "";
+    return '<div class="sp-vmeta"><span>' + (lang === "fr" ? "Alias" : "Aliases") + '</span>' +
+      aliases.map(function (a) { return '<code>' + escapeAttr(a) + '</code>'; }).join("") +
+      '</div>';
   }
 
   function hydrateAliases(root) {
@@ -291,7 +311,45 @@
   }
 
   function updateAliasForVariant(panel, clsId, variantName) {
+    updatePanelParamsForVariant(panel, clsId, variantName);
     hydrateAliases(panel);
+  }
+
+  function familyFromClsId(clsId) {
+    return String(clsId || "").replace(/^pp-/, "").replace(/-cls$/, "");
+  }
+
+  function variantKeyFromValue(variantName) {
+    if (variantName && typeof variantName === "object") return variantName.key || "";
+    return String(variantName || "");
+  }
+
+  function panelParamsHtml(family, variant, lang) {
+    var rows = registryVariantRows(family);
+    if (!rows.length) return "";
+    var row = rows.filter(function (r) { return r.key === variant; })[0];
+    if ((!row || !((row.required && row.required.length) || (row.demo && row.demo.length))) && variant === "horizontal") {
+      row = rows.filter(function (r) { return r.key === "basic"; })[0] || row;
+    }
+    if (!row) row = rows[0];
+    var params = (row.required && row.required.length ? row.required : row.demo || []).slice().sort();
+    if (!params.length) {
+      return '<p>' + (lang === "fr" ? "Aucun param\u00e8tre sp\u00e9cifique pour cette variante." : "No variant-specific parameters.") + '</p>';
+    }
+    var title = lang === "fr" ? "Variante" : "Variant";
+    var head = lang === "fr" ? "Param\u00e8tre" : "Parameter";
+    return '<div class="sp-param-variant"><span>' + title + '</span><code>' + escapeAttr(row.key) + '</code></div>' +
+      '<table><thead><tr><th>' + head + '</th></tr></thead><tbody>' +
+      params.map(function (p) { return '<tr><td><code>' + escapeAttr(p) + '</code></td></tr>'; }).join("") +
+      '</tbody></table>';
+  }
+
+  function updatePanelParamsForVariant(panel, clsId, variantName) {
+    if (!panel) return;
+    var target = panel.querySelector(".sp-psec-params .sp-psec-content");
+    if (!target) return;
+    var html = panelParamsHtml(familyFromClsId(clsId), variantKeyFromValue(variantName), getLang());
+    if (html) target.innerHTML = html;
   }
 
   function extractVariantNames(paramsHtml) {
@@ -300,6 +358,27 @@
     div.innerHTML = paramsHtml;
     var seen = Object.create(null);
     var variants = [];
+    var table = div.querySelector("table");
+    if (table) {
+      var heads = Array.prototype.slice.call(table.querySelectorAll("thead th, tr:first-child th, tr:first-child td")).map(function (h) {
+        return (h.textContent || "").trim().toLowerCase();
+      });
+      var variantCol = heads.indexOf("variant");
+      if (variantCol >= 0) {
+        table.querySelectorAll("tbody tr, tr").forEach(function (tr) {
+          var cells = tr.querySelectorAll("td");
+          if (cells.length <= variantCol) return;
+          var v = (cells[variantCol].textContent || "").trim().toLowerCase().replace(/`/g, "");
+          if (!v || v === "variant" || v === "all" || v === "toutes" || v === "all variants") return;
+          if (!seen[v]) { seen[v] = true; variants.push(v); }
+        });
+        return variants.sort(function (a, b) {
+          if (a === "basic") return -1;
+          if (b === "basic") return 1;
+          return a.localeCompare(b);
+        });
+      }
+    }
     div.querySelectorAll("tr").forEach(function (tr) {
       var cells = tr.querySelectorAll("td");
       if (cells.length < 2) return;
@@ -319,20 +398,185 @@
   // Builds the inner HTML for a single-tab code block.
   function buildVariantCodeHtml(code) {
     var esc = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    return '<div class="sp-tabs">' +
+    return '<div class="sp-demo-code-wrap"><div class="sp-tabs">' +
       '<div class="sp-tab-btns"><button class="sp-tb sp-act">Python</button></div>' +
       '<div class="sp-tc sp-on"><pre><code class="language-python">' + esc + "</code></pre></div>" +
-      "</div>";
+      "</div></div>";
+  }
+
+  function fitPreviewHtml(html) {
+    var fit = '<style>html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#fff}body>*{max-width:100%!important}svg,canvas{max-width:100%!important;height:auto!important;display:block;margin:0 auto}.chart-container,.plot-container,#chart,#plot{max-width:100%!important;width:100%!important;height:auto!important;box-sizing:border-box}</style>';
+    if (/<\/head>/i.test(html)) return html.replace(/<\/head>/i, fit + "</head>");
+    if (/<body[^>]*>/i.test(html)) return html.replace(/<body[^>]*>/i, function (m) { return m + fit; });
+    return fit + html;
+  }
+
+  function splitTopLevel(s) {
+    var out = [], buf = "", depth = 0, inStr = false, q = "";
+    for (var i = 0; i < s.length; i++) {
+      var c = s[i];
+      if (inStr) {
+        buf += c;
+        if (c === "\\" && i + 1 < s.length) { buf += s[++i]; continue; }
+        if (c === q) inStr = false;
+      } else {
+        if (c === '"' || c === "'") { inStr = true; q = c; buf += c; }
+        else if (c === "[" || c === "(" || c === "{") { depth++; buf += c; }
+        else if (c === "]" || c === ")" || c === "}") { depth--; buf += c; }
+        else if (c === "," && depth === 0) { if (buf.trim()) out.push(buf.trim()); buf = ""; }
+        else buf += c;
+      }
+    }
+    if (buf.trim()) out.push(buf.trim());
+    return out;
+  }
+
+  function parseDemoValue(raw) {
+    raw = String(raw || "").trim();
+    if (!raw) return null;
+    if (raw === "True") return true;
+    if (raw === "False") return false;
+    if (raw === "None") return null;
+    if (/^0x[0-9a-fA-F]+$/.test(raw)) return parseInt(raw, 16);
+    if (raw[0] === '"' || raw[0] === "'") return raw.slice(1, -1).replace(/\\"/g, '"').replace(/\\'/g, "'");
+    if (raw[0] === "[") {
+      try { return JSON.parse(raw.replace(/'/g, '"')); } catch (e) { return null; }
+    }
+    var n = Number(raw);
+    return isNaN(n) ? raw : n;
+  }
+
+  function parseDemoInput(code) {
+    var call = code ? String(code).match(/sp\.([A-Za-z_][A-Za-z0-9_]*)\s*\(/) : null;
+    if (!call) return null;
+    var idx = call.index;
+    if (idx < 0) return null;
+    var start = idx + call[0].length, depth = 1, inStr = false, q = "", end = start;
+    for (; end < code.length; end++) {
+      var c = code[end];
+      if (inStr) {
+        if (c === "\\" && end + 1 < code.length) { end++; continue; }
+        if (c === q) inStr = false;
+      } else {
+        if (c === '"' || c === "'") { inStr = true; q = c; }
+        else if (c === "(") depth++;
+        else if (c === ")") { depth--; if (depth === 0) break; }
+      }
+    }
+    var parts = splitTopLevel(code.slice(start, end));
+    var input = {};
+    parts.forEach(function (p, i) {
+      var eq = -1, d = 0, s = false, qq = "";
+      for (var j = 0; j < p.length; j++) {
+        var ch = p[j];
+        if (s) {
+          if (ch === "\\" && j + 1 < p.length) { j++; continue; }
+          if (ch === qq) s = false;
+        } else {
+          if (ch === '"' || ch === "'") { s = true; qq = ch; }
+          else if (ch === "[" || ch === "(" || ch === "{") d++;
+          else if (ch === "]" || ch === ")" || ch === "}") d--;
+          else if (ch === "=" && d === 0) { eq = j; break; }
+        }
+      }
+      if (eq < 0) {
+        if (i === 0) input.title = parseDemoValue(p);
+      } else {
+        input[p.slice(0, eq).trim()] = parseDemoValue(p.slice(eq + 1));
+      }
+    });
+    return { fn: call[1], input: input };
+  }
+
+  function buildDynamicAliases(sp) {
+    if (!sp) return {};
+    if (typeof sp.chartAliases === "function") {
+      try { return JSON.parse(sp.chartAliases()); } catch (e) {}
+    }
+    var aliases = {};
+    Object.keys(sp).forEach(function (k) {
+      if (typeof sp[k] !== "function") return;
+      var snake = k.replace(/[A-Z]/g, function (c) { return "_" + c.toLowerCase(); });
+      var base = snake.indexOf("build_") === 0 ? snake.slice(6) : snake;
+      var stripped = base.length > 6 && base.slice(-6) === "_chart" ? base.slice(0, -6) : base;
+      aliases[base] = k;
+      aliases[stripped] = k;
+      if (base.slice(-1) !== "s") aliases[base + "s"] = k;
+      if (stripped.slice(-1) !== "s") aliases[stripped + "s"] = k;
+    });
+    return aliases;
+  }
+
+  function fnCandidates(fn) {
+    fn = normalizeVariantName(fn);
+    var camel = fn.split("_").map(function (s, i) {
+      return i === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1);
+    }).join("");
+    var base = camel.charAt(0).toUpperCase() + camel.slice(1);
+    var out = [];
+    if (camel.indexOf("build") === 0) out.push(camel);
+    else {
+      out.push("build" + base);
+      out.push("build" + base + "Chart");
+      out.push(camel);
+    }
+    out.push("build" + base + "Chart");
+    var seen = {};
+    return out.filter(function (name) {
+      if (seen[name]) return false;
+      seen[name] = true;
+      return true;
+    });
+  }
+
+  function resolveWasmFn(sp, fn) {
+    if (!sp || !fn) return null;
+    var aliases = buildDynamicAliases(sp);
+    var resolved = aliases && aliases[fn] ? aliases[fn] : null;
+    if (resolved && typeof sp[resolved] === "function") return sp[resolved];
+    var cands = fnCandidates(fn);
+    for (var i = 0; i < cands.length; i++) {
+      if (typeof sp[cands[i]] === "function") return sp[cands[i]];
+    }
+    if (fn.slice(-1) === "s") return resolveWasmFn(sp, fn.slice(0, -1));
+    return null;
+  }
+
+  function buildChartPreviewHtml(sp, family, variant, code) {
+    if (!sp || !code) return "";
+    try {
+      var parsed = parseDemoInput(code);
+      if (!parsed) return "";
+      var input = parsed.input || {};
+      if (!input.variant) input.variant = variant;
+      input.width = 900;
+      input.height = 480;
+      var build = resolveWasmFn(sp, parsed.fn || family);
+      return build ? build(JSON.stringify(input)) || "" : "";
+    } catch (e) {
+      return "";
+    }
+  }
+
+  function buildVariantPreviewHtml(html, label) {
+    if (!html) return "";
+    var src = fitPreviewHtml(html)
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    return '<div class="sp-preview-label">' + escapeAttr(label || "Preview") + '</div>' +
+      '<iframe class="sp-preview-frame" srcdoc="' + src + '" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe>';
   }
 
   function normalizeVariantList(raw) {
     if (!raw) return [];
     if (Array.isArray(raw)) {
       return raw.map(function (v) {
-        if (typeof v === "string") return { key: normalizeVariantName(v), aliases: [normalizeVariantName(v)] };
+        if (typeof v === "string") return { key: normalizeVariantName(v), aliases: [] };
         return {
           key: normalizeVariantName(v.key || v.name || ""),
-          aliases: Array.isArray(v.aliases) ? v.aliases.slice() : []
+          aliases: Array.isArray(v.aliases) ? v.aliases.map(function (a) { return String(a || "").trim(); }).filter(Boolean) : []
         };
       }).filter(function (v) { return v.key; });
     }
@@ -340,17 +584,29 @@
     return [];
   }
 
+  function chartVariantsMap() {
+    return registryJson("chartVariants", null, null);
+  }
+
+  function canonicalFamilyName(family, variantsMap) {
+    if (!family || !variantsMap) return family || "";
+    if (variantsMap[family]) return family;
+    var aliases = aliasMap();
+    var target = aliases && aliases[family] ? aliases[family] : null;
+    if (target && variantsMap[target]) return target;
+    if (family.slice(-1) === "s" && variantsMap[family.slice(0, -1)]) return family.slice(0, -1);
+    return family;
+  }
+
   function variantsFor(family, paramsHtml) {
-    var sp = window.SeraplotWASM;
-    if (sp && typeof sp.chartVariants === "function") {
-      try {
-        var map = JSON.parse(sp.chartVariants());
-        var fromWasm = normalizeVariantList(map && map[family]);
-        if (fromWasm.length) return fromWasm;
-      } catch (e) {}
+    var map = chartVariantsMap();
+    if (map) {
+      var canonical = canonicalFamilyName(family, map);
+      var fromWasm = normalizeVariantList(map && map[canonical]);
+      if (fromWasm.length) return fromWasm;
     }
     return extractVariantNames(paramsHtml).map(function (v) {
-      return { key: normalizeVariantName(v), aliases: [normalizeVariantName(v)] };
+      return { key: normalizeVariantName(v), aliases: [] };
     });
   }
 
@@ -376,7 +632,7 @@
       btn.className = "sp-cls-tab" + (i === 0 ? " sp-cact" : "");
       btn.setAttribute("onclick", "spCls('" + clsId + "','" + v.replace(/'/g, "\\'") + "',this)");
       btn.setAttribute("data-variant", v);
-      btn.setAttribute("data-aliases", JSON.stringify((item.aliases || []).map(function (a) { return "sp." + a; })));
+      btn.setAttribute("data-aliases", JSON.stringify(aliasesForItem(item).map(function (a) { return "sp." + a; })));
       btn.innerHTML = '<span class="sp-cic">' + variantIcon(v) + '</span><span class="sp-clb">' + escapeAttr(label) + '</span>';
       clsDiv.appendChild(btn);
 
@@ -385,22 +641,23 @@
       varDiv.setAttribute("data-variant", v);
       varDiv.className = "sp-variant" + (i === 0 ? " sp-von" : "");
       varDiv.style.display = i === 0 ? "block" : "none";
+      varDiv.innerHTML = buildVariantAliasesHtml(item, lang);
 
       if (sp && typeof sp.demo === "function") {
         try {
           var code = sp.demo(JSON.stringify({ family: family, variant: v })) || "";
-          if (code) varDiv.innerHTML = buildVariantCodeHtml(code);
+          if (code) varDiv.innerHTML += buildVariantCodeHtml(code);
         } catch (e) {}
       }
+      var previewHtml = buildVariantPreviewHtml(buildChartPreviewHtml(sp, family, v, code), lang === "fr" ? "Aper\u00e7u" : "Preview");
+      if (previewHtml) varDiv.innerHTML += previewHtml;
 
       clsDiv.appendChild(varDiv);
     });
 
     body.appendChild(clsDiv);
 
-    if (sp && typeof sp.demo === "function") {
-      updateAliasForVariant(panel, clsId, variants[0]);
-    }
+    updateAliasForVariant(panel, clsId, variants[0]);
 
     // If WASM was not ready yet, poll and fill code + rebuild rail when it loads.
     if (!sp || typeof sp.demo !== "function") {
@@ -413,13 +670,21 @@
           if (!sp2 || typeof sp2.demo !== "function") return;
           var root = document.getElementById(clsId);
           if (!root) return;
+          var liveVariants = variantsFor(family, data.parameters);
+          root.querySelectorAll(".sp-cls-tab").forEach(function (btn) {
+            var variant = btn.getAttribute("data-variant") || "";
+            var item = liveVariants.filter(function (it) { return it.key === variant; })[0] || { key: variant, aliases: [] };
+            btn.setAttribute("data-aliases", JSON.stringify(aliasesForItem(item).map(function (a) { return "sp." + a; })));
+          });
           root.querySelectorAll(".sp-variant").forEach(function (varDiv) {
-            if (varDiv.innerHTML.trim()) return;
             var variant = varDiv.getAttribute("data-variant") || "basic";
+            var item = liveVariants.filter(function (it) { return it.key === variant; })[0] || { key: variant, aliases: [] };
             try {
               var code = sp2.demo(JSON.stringify({ family: family, variant: variant })) || "";
               if (code) {
-                varDiv.innerHTML = buildVariantCodeHtml(code);
+                varDiv.innerHTML = buildVariantAliasesHtml(item, getLang());
+                if (code) varDiv.innerHTML += buildVariantCodeHtml(code);
+                varDiv.innerHTML += buildVariantPreviewHtml(buildChartPreviewHtml(sp2, family, variant, code), getLang() === "fr" ? "Aper\u00e7u" : "Preview");
                 if (window.hljs) {
                   var hFn = hljs.highlightElement || hljs.highlightBlock;
                   if (hFn) varDiv.querySelectorAll("pre code").forEach(function (c) {
@@ -431,7 +696,7 @@
           });
           hoistClassRails(panel);
           refreshRailToggleLabel();
-          updateAliasForVariant(panel, clsId, variants[0]);
+          updateAliasForVariant(panel, clsId, liveVariants[0] || variants[0]);
         }
       }, 80);
     }
@@ -626,7 +891,7 @@
             v.style.display = "block";
           }
           btn.classList.add("sp-cact");
-          updateAliasForVariant(panel, scope, name);
+          updateAliasForVariant(panel, scope, variantKey);
           if (window.hljs && v) {
             v.querySelectorAll("code").forEach(function (c) {
               try { (hljs.highlightElement || hljs.highlightBlock).call(hljs, c); } catch (e) {}
@@ -840,6 +1105,165 @@
     });
   }
 
+  function registryJson(fn, input, fallback) {
+    var reg = window.SeraPlotDocRegistry;
+    var sp = window.SeraplotWASM;
+    if (sp && typeof sp[fn] === "function") {
+      try {
+        var parsed = JSON.parse(input == null ? sp[fn]() : sp[fn](JSON.stringify(input)));
+        if (fn === "chartVariants" && reg && reg.variants) {
+          var keys = parsed && typeof parsed === "object" ? Object.keys(parsed) : [];
+          var first = keys.length ? parsed[keys[0]] : null;
+          if (Array.isArray(first)) return reg.variants;
+        }
+        return parsed;
+      } catch (e) {}
+    }
+    if (!reg) return fallback;
+    if (fn === "chartVariants") return reg.variants || fallback;
+    if (fn === "chartThemes") return reg.themes || fallback;
+    if (fn === "params" && input) {
+      return reg.params && reg.params[(input.family || input.chart || "") + ":" + (input.variant || "")] || fallback;
+    }
+    if (fn === "requiredParams" && input) {
+      return reg.required && reg.required[(input.family || input.chart || "") + ":" + (input.variant || "")] || fallback;
+    }
+    return fallback;
+  }
+
+  function registryFamily(el) {
+    var f = el.getAttribute("data-family") || "";
+    if (f) return f;
+    var data = sectionData[getLang()] || sectionData.en || sectionData.fr;
+    return data && data.functionName ? data.functionName : "";
+  }
+
+  function codeList(items) {
+    items = (items || []).filter(Boolean);
+    return items.length ? items.map(function (x) { return "<code>" + escapeAttr(x) + "</code>"; }).join(", ") : "-";
+  }
+
+  function demoArgNames(src) {
+    var out = [];
+    var seen = Object.create(null);
+    var s = String(src || "").replace(/\\"/g, '"');
+    var depth = 0;
+    var inStr = false;
+    var esc = false;
+    var start = 0;
+    function add(chunk) {
+      var m = String(chunk || "").match(/^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=/);
+      if (m && m[1] !== "variant" && !seen[m[1]]) {
+        seen[m[1]] = true;
+        out.push(m[1]);
+      }
+    }
+    for (var i = 0; i < s.length; i++) {
+      var ch = s.charAt(i);
+      if (esc) { esc = false; continue; }
+      if (ch === "\\") { if (inStr) esc = true; continue; }
+      if (ch === '"') { inStr = !inStr; continue; }
+      if (inStr) continue;
+      if (ch === "[" || ch === "{" || ch === "(") depth++;
+      else if (ch === "]" || ch === "}" || ch === ")") depth = Math.max(0, depth - 1);
+      else if (ch === "," && depth === 0) {
+        add(s.slice(start, i));
+        start = i + 1;
+      }
+    }
+    add(s.slice(start));
+    return out;
+  }
+
+  function registryVariantRows(family) {
+    var variantsMap = registryJson("chartVariants", null, null);
+    var canonical = canonicalFamilyName(family, variantsMap || {});
+    var raw = variantsMap && variantsMap[canonical];
+    var variants = normalizeVariantList(raw);
+    var def = raw && raw.default ? raw.default : "";
+    return variants.map(function (item) {
+      var demo = registryJson("params", { family: canonical, variant: item.key }, null);
+      if (typeof demo !== "string") {
+        var code = "";
+        var sp = window.SeraplotWASM;
+        try { code = sp && sp.demo ? sp.demo(JSON.stringify({ family: canonical, variant: item.key })) : ""; } catch (e) {}
+        var parsed = parseDemoInput(code);
+        demo = parsed && parsed.input ? Object.keys(parsed.input).filter(function (k) { return k !== "variant"; }).join(",") : "";
+      }
+      var required = registryJson("requiredParams", { family: canonical, variant: item.key }, []);
+      var aliases = aliasesForItem(item);
+      if (item.key === def && aliases.indexOf("default") === -1) aliases.push("default");
+      var demoKeys = demoArgNames(demo);
+      return {
+        key: item.key,
+        aliases: aliases.filter(function (a) { return a !== item.key; }),
+        required: Array.isArray(required) ? required : [],
+        demo: demoKeys
+      };
+    });
+  }
+
+  function renderRegistryVariants(el, family, lang) {
+    var rows = registryVariantRows(family);
+    if (!rows.length) return false;
+    var head = lang === "fr"
+      ? "<tr><th>Variante</th><th>Alias</th><th>Requis</th><th>Arguments de demo</th></tr>"
+      : "<tr><th>Variant</th><th>Aliases</th><th>Required</th><th>Demo args</th></tr>";
+    el.innerHTML = "<table><thead>" + head + "</thead><tbody>" + rows.map(function (r) {
+      return "<tr><td><code>" + escapeAttr(r.key) + "</code></td><td>" + codeList(r.aliases) + "</td><td>" + codeList(r.required) + "</td><td>" + codeList(r.demo) + "</td></tr>";
+    }).join("") + "</tbody></table>";
+    return true;
+  }
+
+  function renderRegistryOptions(el, family, lang) {
+    var rows = registryVariantRows(family);
+    if (!rows.length) return false;
+    var byParam = {};
+    rows.forEach(function (r) {
+      r.required.forEach(function (p) {
+        if (!byParam[p]) byParam[p] = [];
+        if (byParam[p].indexOf(r.key) === -1) byParam[p].push(r.key);
+      });
+    });
+    var keys = Object.keys(byParam).sort();
+    var head = lang === "fr"
+      ? "<tr><th>Paramètre</th><th>Variantes</th></tr>"
+      : "<tr><th>Parameter</th><th>Variants</th></tr>";
+    el.innerHTML = "<table><thead>" + head + "</thead><tbody>" + keys.map(function (k) {
+      return "<tr><td><code>" + escapeAttr(k) + "</code></td><td>" + codeList(byParam[k]) + "</td></tr>";
+    }).join("") + "</tbody></table>";
+    return true;
+  }
+
+  function renderRegistryThemes(el, lang) {
+    var raw = registryJson("chartThemes", null, null);
+    var themes = normalizeVariantList(raw && raw.themes ? raw.themes : []);
+    var def = raw && raw.default ? raw.default : "";
+    if (!themes.length) return false;
+    var head = lang === "fr"
+      ? "<tr><th>Thème</th><th>Alias</th></tr>"
+      : "<tr><th>Theme</th><th>Aliases</th></tr>";
+    el.innerHTML = "<table><thead>" + head + "</thead><tbody>" + themes.map(function (t) {
+      var aliases = aliasesForItem(t).filter(function (a) { return a !== t.key; });
+      if (t.key === def && aliases.indexOf("default") === -1) aliases.push("default");
+      return "<tr><td><code>" + escapeAttr(t.key) + "</code></td><td>" + codeList(aliases) + "</td></tr>";
+    }).join("") + "</tbody></table>";
+    return true;
+  }
+
+  function renderRegistryTables(root) {
+    var lang = getLang();
+    (root || document).querySelectorAll("[data-sp-registry-table]").forEach(function (el) {
+      var family = registryFamily(el);
+      var kind = el.getAttribute("data-sp-registry-table");
+      var ok = false;
+      if (kind === "variants") ok = renderRegistryVariants(el, family, lang);
+      else if (kind === "options") ok = renderRegistryOptions(el, family, lang);
+      else if (kind === "themes") ok = renderRegistryThemes(el, lang);
+      if (!ok) el.innerHTML = "<p>Loading...</p>";
+    });
+  }
+
   function buildPanel() {
     if (document.getElementById(PANEL_ID)) return;
     if (!isChartPage()) return;
@@ -916,6 +1340,7 @@
     });
 
     renderBody(panel);
+    renderRegistryTables(document);
     refreshRailToggleLabel();
   }
 
@@ -955,10 +1380,20 @@
         var colBtn = panel.querySelector(".sp-pc-col");
         if (posBtn) applyPos(panel, posBtn);
         if (colBtn) applyCollapsed(panel, colBtn);
+        renderRegistryTables(document);
         refreshRailToggleLabel();
       }
     }
   }, 250);
+
+  var registryTries = 0;
+  var registryTimer = setInterval(function () {
+    registryTries++;
+    var pending = document.querySelector("[data-sp-registry-table]");
+    if (pending) renderRegistryTables(document);
+    var sp = window.SeraplotWASM;
+    if (!pending || registryTries > 120 || (sp && sp.__ready)) clearInterval(registryTimer);
+  }, 150);
 
   function tryBuild() {
     if (document.getElementById(PANEL_ID)) return;

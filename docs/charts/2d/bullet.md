@@ -20,20 +20,13 @@
 
 `sp.bullet()` is the unified entry point for the bullet-chart family. Inspired by Edward Tufte, a bullet packs an actual value, a target, qualitative ranges and a scale into a single horizontal row - perfect for KPI dashboards where space is precious. The `variant` keyword switches the visual treatment (zones, traffic light, thermometer, progress pill, dot, ghost-bar comparison) without touching the data.
 
+## Variants
+
+<div data-sp-registry-table="variants" data-family="bullet"></div>
+
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `title` | `str` | required | Chart title |
-| `labels` | `list[str]` | required | Row labels |
-| `values` | `list[float]` | required | Actual values |
-| `variant` | `str` | `"basic"` | Visual style (see table) |
-| `targets` | `list[float]` | `None` | Target tick value per row |
-| `max_vals` | `list[float]` | `None` | Per-row scale maximum (auto if 0) |
-| `ranges` | `list[float]` | `None` | Qualitative range threshold per row |
-| `comparisons` | `list[float]` | `None` | Comparison values for `compare` variant |
-| `width` | `int` | `800` | Canvas width (px) |
-| `height` | `int` | `300` | Canvas height (px, auto-grows with rows) |
+<div data-sp-registry-table="options" data-family="bullet"></div>
 
 ## Returns
 
@@ -54,20 +47,13 @@
 
 `sp.bullet()` est le point d entree unique pour la famille bullet. Inspire par Edward Tufte, le bullet condense valeur, cible, zones qualitatives et echelle dans une seule ligne horizontale - parfait pour des dashboards KPIs serres. Le mot-cle `variant` change l aspect (zones, feu tricolore, thermometre, pillule de progression, point, comparaison par barre fantome) sans toucher aux donnees.
 
-<h2>Parametres</h2>
+<h2>Variantes</h2>
 
-| Parametre | Type | Defaut | Description |
-|---|---|---|---|
-| `title` | `str` | requis | Titre du graphique |
-| `labels` | `list[str]` | requis | Libelles de ligne |
-| `values` | `list[float]` | requis | Valeurs reelles |
-| `variant` | `str` | `"basic"` | Style visuel (voir tableau) |
-| `targets` | `list[float]` | `None` | Valeur cible par ligne |
-| `max_vals` | `list[float]` | `None` | Maximum d echelle par ligne (auto si 0) |
-| `ranges` | `list[float]` | `None` | Seuil de zone qualitative par ligne |
-| `comparisons` | `list[float]` | `None` | Valeurs de comparaison pour la variante `compare` |
-| `width` | `int` | `800` | Largeur (px) |
-| `height` | `int` | `300` | Hauteur (px, auto si trop petite) |
+<div data-sp-registry-table="variants" data-family="bullet"></div>
+
+<h2>Paramètres</h2>
+
+<div data-sp-registry-table="options" data-family="bullet"></div>
 
 <h2>Retour</h2>
 

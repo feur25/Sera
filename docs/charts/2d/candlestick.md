@@ -22,24 +22,13 @@
 
 > **Color convention** — by default green = up (`close >= open`) and red = down. Override with `palette=[up_color, down_color]`. Bars are rendered left-to-right in input order; use `sort_order="asc"` to sort by close price.
 
+## Variants
+
+<div data-sp-registry-table="variants" data-family="candlestick"></div>
+
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `title`    | `str`         | required  | Chart title |
-| `labels`   | `list[str]`   | required  | Period labels (e.g. dates) |
-| `open`     | `list[float]` | required  | Opening price per period |
-| `high`     | `list[float]` | required  | Highest price per period |
-| `low`      | `list[float]` | required  | Lowest price per period |
-| `close`    | `list[float]` | required  | Closing price per period |
-| `variant`  | `str`         | `"basic"` | Visual style (see table) |
-| `palette`  | `list[int]`   | `None`    | `[up_color, down_color]` (defaults: green/red) |
-| `gridlines`| `bool`        | `False`   | Horizontal price gridlines |
-| `x_label`  | `str`         | `""`      | X-axis label |
-| `y_label`  | `str`         | `""`      | Y-axis label |
-| `sort_order` | `str`       | `"none"` | `"none"`, `"asc"`, `"desc"` (by close) |
-| `width`    | `int`         | `1100`    | Canvas width (px) |
-| `height`   | `int`         | `500`     | Canvas height (px) |
+<div data-sp-registry-table="options" data-family="candlestick"></div>
 
 ## Returns
 
@@ -62,24 +51,13 @@
 
 > **Convention de couleur** — par defaut vert = hausse (`close >= open`) et rouge = baisse. Surchargez avec `palette=[couleur_hausse, couleur_baisse]`. Les barres sont rendues de gauche a droite dans l ordre d entree ; `sort_order="asc"` pour trier par prix de cloture.
 
-<h2>Parametres</h2>
+<h2>Variantes</h2>
 
-| Parametre | Type | Defaut | Description |
-|---|---|---|---|
-| `title`    | `str`         | requis    | Titre du graphique |
-| `labels`   | `list[str]`   | requis    | Libelles de periode (ex. dates) |
-| `open`     | `list[float]` | requis    | Prix d ouverture par periode |
-| `high`     | `list[float]` | requis    | Prix le plus haut par periode |
-| `low`      | `list[float]` | requis    | Prix le plus bas par periode |
-| `close`    | `list[float]` | requis    | Prix de cloture par periode |
-| `variant`  | `str`         | `"basic"` | Style visuel (voir tableau) |
-| `palette`  | `list[int]`   | `None`    | `[hausse, baisse]` (defaut : vert/rouge) |
-| `gridlines`| `bool`        | `False`   | Lignes de grille horizontales |
-| `x_label`  | `str`         | `""`      | Libelle axe X |
-| `y_label`  | `str`         | `""`      | Libelle axe Y |
-| `sort_order` | `str`       | `"none"` | `"none"`, `"asc"`, `"desc"` (par cloture) |
-| `width`    | `int`         | `1100`    | Largeur du canvas (px) |
-| `height`   | `int`         | `500`     | Hauteur du canvas (px) |
+<div data-sp-registry-table="variants" data-family="candlestick"></div>
+
+<h2>Paramètres</h2>
+
+<div data-sp-registry-table="options" data-family="candlestick"></div>
 
 <h2>Retour</h2>
 

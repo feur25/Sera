@@ -34,15 +34,13 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 | `"diamond"` | `diamond / rhombus / lozenge` | Rotated square / rhombus silhouette. |
 | `"star"` | `star / starburst / 5-point` | 5-pointed star silhouette. |
 
+## Variants
+
+<div data-sp-registry-table="variants" data-family="wordcloud"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `height` | all |
-| `hover` | all |
-| `palette` | all |
-| `title` | all |
-| `width` | all |
+<div data-sp-registry-table="options" data-family="wordcloud"></div>
 
 ## Returns
 
@@ -77,31 +75,13 @@ La variante `basic` accepte un argument `shape=` :
 | `"diamond"` | `diamond / rhombus / lozenge` | Rotated square / rhombus silhouette. |
 | `"star"` | `star / starburst / 5-point` | 5-pointed star silhouette. |
 
-<h2>Parametres</h2>
+<h2>Variantes</h2>
 
-| Parametre | Type | Defaut | Description |
-|---|---|---|---|
-| `title` | `str` | requis | Titre du graphique |
-| `words` | `list[str]` | requis | Tokens (toutes variantes sauf labelmap) |
-| `frequencies` | `list[float]` | requis | Poids par mot (controle la taille) |
-| `variant` | `str` | "basic" | Mode de rendu (voir Variantes) |
-| `shape` | `str` | "rect" | Sous-forme pour `basic` (voir Formes) |
-| `mask` | `list[int]` | None | Masque binaire (variante `image`) - row-major, 1=interieur |
-| `mask_width` | `int` | 0 | Largeur du masque (variante `image`) |
-| `mask_height` | `int` | 0 | Hauteur du masque (variante `image`) |
-| `points_x` | `list[float]` | None | Coords x du scatter (variante `labelmap`) |
-| `points_y` | `list[float]` | None | Coords y du scatter (variante `labelmap`) |
-| `category_indices` | `list[int]` | None | Id de cluster par point/mot (`labelmap`, `context`) |
-| `cluster_labels` | `list[str]` | None | Etiquette par cluster (variante `labelmap`) |
-| `edges_i` | `list[int]` | None | Indices source des aretes (variantes `network`, `context`) |
-| `edges_j` | `list[int]` | None | Indices cible des aretes (variantes `network`, `context`) |
-| `edges_w` | `list[float]` | None | Poids des aretes (variantes `network`, `context`) |
-| `min_font` | `float` | 12.0 | Plus petite taille de police rendue |
-| `max_font` | `float` | 72.0 | Plus grande taille de police rendue |
-| `palette` | `list[int]` | None | Palette personnalisee |
-| `bg_color` | `str` | auto | Couleur de fond |
-| `width` | `int` | 900 | Largeur du canvas (px) |
-| `height` | `int` | 500 | Hauteur du canvas (px) |
+<div data-sp-registry-table="variants" data-family="wordcloud"></div>
+
+<h2>Paramètres</h2>
+
+<div data-sp-registry-table="options" data-family="wordcloud"></div>
 
 <h2>Retour</h2>
 

@@ -3,65 +3,51 @@
 <div class="lang-en">
 
 <style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.2em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155;flex-wrap:wrap}
-.sp-tb{padding:8px 14px;border:none;background:none;color:#64748b;cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-
+.lang-en table,.lang-fr table{width:100%}
+.sp-panel-source{display:none!important}
 </style>
+
 ## Signature
 
-`sp.bar(title, labels=None, values=None, *, variant="basic", series=None, **kwargs) -> Chart`
+`sp.bar(title, labels=None, values=None, *, variant="basic", series=None, series_names=None, theme="none", **kwargs) -> Chart`
 
+Aliases: `sp.bar_chart()`, `sp.bars()`, `sp.bar_unified()`, `sp.bars_unified()`, `sp.bar_family()`.
 
 ## Description
 
-`sp.bar()` is the unified entry point for the entire bar-chart family. The `variant` keyword selects the rendering strategy — all other arguments remain consistent across variants.
+`sp.bar()` is the unified entry point for the SeraPlot bar-chart family. It renders standalone Rust-generated HTML/SVG charts. The `variant` keyword selects the renderer, and shared chart options are applied by the common chart pipeline.
+
+The default renderer is a vertical categorical bar chart. The same API also covers every bar variant registered in Rust.
+
+## Variants
+
+<div data-sp-registry-table="variants" data-family="bar"></div>
+
+Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
+
+## Data
+
+`labels` are category labels for bar variants. Single-series variants use `values`. Multi-series variants use `series`, where each inner list is one series, and `series_names` supplies legend names.
+
+When `series` is missing but `series_names` is provided, `values` is interpreted as a flattened matrix split by `len(labels)`: the first category-length block is the first series, the next block is the second series, and so on.
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `bar_gap` | grouped_stacked, relative |
-| `bargroup_gap` | grouped_stacked |
-| `category_labels` | grouped, grouped_stacked, marimekko, multicategory, relative |
-| `color_groups` | basic |
-| `color_hex` | basic, deluxe, pictogram, prism |
-| `corner_radius` | grouped_stacked, relative |
-| `gridlines` | basic, deluxe, grouped, grouped_stacked, marimekko, multicategory, prism, relative |
-| `height` | all |
-| `hover` | basic, deluxe, grouped, prism |
-| `icon_size` | pictogram |
-| `labels` | basic, deluxe, pictogram, prism |
-| `legend_position` | grouped, grouped_stacked, marimekko, multicategory, relative |
-| `max_icons_per_column` | pictogram |
-| `offset_groups` | grouped_stacked |
-| `orientation` | grouped |
-| `palette` | all |
-| `series` | grouped, grouped_stacked, marimekko, multicategory, relative |
-| `show_text` | basic, deluxe, grouped, marimekko, prism |
-| `sort_order` | basic, grouped |
-| `super_categories` | multicategory |
-| `title` | all |
-| `unit_description` | pictogram |
-| `units_per_icon` | pictogram |
-| `values` | basic, deluxe, multicategory, pictogram, prism |
-| `width` | all |
-| `widths` | marimekko |
-| `x_label` | basic, grouped, grouped_stacked, marimekko, multicategory, relative |
-| `y_label` | basic, grouped, grouped_stacked, marimekko, multicategory, relative |
+<div data-sp-registry-table="options" data-family="bar"></div>
 
----
+## Themes
+
+<div data-sp-registry-table="themes" data-family="bar"></div>
 
 ## Returns
 
-`Chart` — object with `.html` property and `.show()` method.
+`Chart` object with an `.html` property and a `.show()` method.
 
----
+<div class="sp-panel-source">
+<h2>Parameters</h2>
 
----
+<div data-sp-registry-table="variants" data-family="bar"></div>
+</div>
 
 </div><!-- /lang-en -->
 
@@ -69,53 +55,44 @@
 
 <h2>Signature</h2>
 
-`sp.bar(title, labels=None, values=None, *, variant="basic", series=None, **kwargs) -> Chart`
+`sp.bar(title, labels=None, values=None, *, variant="basic", series=None, series_names=None, theme="none", **kwargs) -> Chart`
 
+Alias : `sp.bar_chart()`, `sp.bars()`, `sp.bar_unified()`, `sp.bars_unified()`, `sp.bar_family()`.
 
 <h2>Description</h2>
 
-`sp.bar()` est le point d'entrée unique pour toute la famille de graphiques en barres. Le paramètre `variant` sélectionne la stratégie de rendu.
+`sp.bar()` est le point d'entrée unifié de la famille de graphiques en barres de SeraPlot. Il génère des graphiques HTML/SVG autonomes depuis Rust. Le mot-clé `variant` choisit le renderer, et les options communes passent par le pipeline commun.
+
+Le rendu par défaut est un bar chart catégoriel vertical. La même API couvre toutes les variantes bar enregistrées côté Rust.
+
+<h2>Variantes</h2>
+
+<div data-sp-registry-table="variants" data-family="bar"></div>
+
+Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
+
+<h2>Données</h2>
+
+`labels` sert de liste de catégories pour les variantes bar. Les variantes mono-série utilisent `values`. Les variantes multi-séries utilisent `series`, où chaque liste interne est une série, et `series_names` fournit les noms de légende.
+
+Quand `series` manque mais que `series_names` est fourni, `values` est interprété comme une matrice aplatie découpée par `len(labels)` : le premier bloc appartient à la première série, le suivant à la deuxième, etc.
+
 <h2>Paramètres</h2>
 
-| Paramètre | Utilisé par variantes |
-|-----------|----------------------|
-| `bar_gap` | grouped_stacked, relative |
-| `bargroup_gap` | grouped_stacked |
-| `category_labels` | grouped, grouped_stacked, marimekko, multicategory, relative |
-| `color_groups` | basic |
-| `color_hex` | basic, deluxe, pictogram, prism |
-| `corner_radius` | grouped_stacked, relative |
-| `gridlines` | basic, deluxe, grouped, grouped_stacked, marimekko, multicategory, prism, relative |
-| `height` | toutes |
-| `hover` | basic, deluxe, grouped, prism |
-| `icon_size` | pictogram |
-| `labels` | basic, deluxe, pictogram, prism |
-| `legend_position` | grouped, grouped_stacked, marimekko, multicategory, relative |
-| `max_icons_per_column` | pictogram |
-| `offset_groups` | grouped_stacked |
-| `orientation` | grouped |
-| `palette` | toutes |
-| `series` | grouped, grouped_stacked, marimekko, multicategory, relative |
-| `show_text` | basic, deluxe, grouped, marimekko, prism |
-| `sort_order` | basic, grouped |
-| `super_categories` | multicategory |
-| `title` | toutes |
-| `unit_description` | pictogram |
-| `units_per_icon` | pictogram |
-| `values` | basic, deluxe, multicategory, pictogram, prism |
-| `width` | toutes |
-| `widths` | marimekko |
-| `x_label` | basic, grouped, grouped_stacked, marimekko, multicategory, relative |
-| `y_label` | basic, grouped, grouped_stacked, marimekko, multicategory, relative |
+<div data-sp-registry-table="options" data-family="bar"></div>
 
----
+<h2>Thèmes</h2>
 
-<h2>Retourne</h2>
+<div data-sp-registry-table="themes" data-family="bar"></div>
 
-`Chart` — objet avec la propriété `.html` et la méthode `.show()`.
+<h2>Retour</h2>
 
----
+Objet `Chart` avec une propriété `.html` et une méthode `.show()`.
 
----
+<div class="sp-panel-source">
+<h2>Paramètres</h2>
+
+<div data-sp-registry-table="variants" data-family="bar"></div>
+</div>
 
 </div><!-- /lang-fr -->

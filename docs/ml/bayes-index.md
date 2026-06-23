@@ -1,10 +1,21 @@
-﻿# Naive Bayes
+# Naive Bayes
 
-> **EN** — Probabilistic classifiers based on Bayes theorem with feature independence.
->
-> **FR** — Classificateurs probabilistes basés sur le théorème de Bayes avec indépendance des features.
+<div class="lang-en">
 
-## Contents
+## Description
 
-- [GaussianNB / MultinomialNB / BernoulliNB](naive-bayes.md)
+Naive Bayes estimators registered in the ML bindings.
 
+<div data-sp-ml-category data-category="Naive Bayes"></div>
+
+</div>
+
+<div class="lang-fr">
+
+<h2>Description</h2>
+
+Estimateurs Naive Bayes enregistres dans les bindings ML.
+
+<div data-sp-ml-category data-category="Naive Bayes"></div>
+
+</div>

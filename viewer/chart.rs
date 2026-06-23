@@ -467,7 +467,7 @@ impl eframe::App for ChartApp {
                     self.zoom = 1.0;
                     self.pan_x = 0.0;
                 }
-                
+
                 if ui.button("🔄 Reset Selection").clicked() {
                     self.visible_elements.set_all();
                     self.selected_elements.set_all();
@@ -564,7 +564,7 @@ impl eframe::App for ChartApp {
                         svg.push_str(&format!("<svg viewBox=\"0 0 {} {}\" xmlns=\"http://www.w3.org/2000/svg\" width=\"{}\" height=\"{}\" style=\"background:white\">", width as i32, height as i32, width as i32, height as i32));
 
                         let colors = [0x1f77b4u32, 0xff7f0e, 0x2ca02c, 0xd62728, 0x9467bd, 0x8c564b, 0xe377c2, 0x7f7f7f, 0xbcbd22, 0x17becf];
-                        
+
                         render_svg_by_type(chart_type, &filtered_labels, &filtered_values, &colors, &original_indices, orientation, pad_left, pad_top, pad_right, pad_bottom, plot_w, plot_h, scale_max, width, height, &mut svg);
 
                         svg.push_str(&format!("<line x1=\"{:.1}\" y1=\"{:.1}\" x2=\"{:.1}\" y2=\"{:.1}\" stroke=\"#000\" stroke-width=\"2\"/>", pad_left, pad_top + plot_h, pad_left, pad_top));
@@ -572,7 +572,7 @@ impl eframe::App for ChartApp {
 
                         let tick_count = 5i32;
                         let tick_step = scale_max / tick_count as f32;
-                        
+
                         for i in 0..=tick_count {
                             let val = i as f32 * tick_step;
                             let y = pad_top + plot_h - (val * (plot_h / scale_max));

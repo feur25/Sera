@@ -20,25 +20,13 @@
 ## Description
 
 `sp.heatmap()` is the unified entry point for the entire heatmap family. The `variant` keyword selects the rendering strategy — every other argument stays consistent across variants. Cell colors are computed in pure Rust, no NumPy required. The matrix is passed as a flat list of length `len(labels) * len(col_labels)` (row-major).
+## Variants
+
+<div data-sp-registry-table="variants" data-family="heatmap"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `col_labels` | bubble, cluster, marginal, pivot, unequal |
-| `colorscale` | confusion |
-| `contour_levels` | contour |
-| `discrete_steps` | discrete |
-| `diverging` | bubble, marginal, pivot |
-| `flat_matrix` | bubble, cluster, marginal, pivot |
-| `height` | bubble, marginal, pivot |
-| `hover` | bubble, marginal, pivot |
-| `palette` | categorical |
-| `row_labels` | bubble, cluster, marginal, pivot, unequal |
-| `show_values` | categorical |
-| `title` | bubble, marginal, pivot |
-| `width` | bubble, marginal, pivot |
-| `x_widths` | unequal |
-| `y_heights` | unequal |
+<div data-sp-registry-table="options" data-family="heatmap"></div>
 
 ---
 
@@ -60,25 +48,13 @@
 <h2>Description</h2>
 
 `sp.heatmap()` est le point d'entrée unique pour toute la famille des cartes de chaleur. Le paramètre `variant` sélectionne la stratégie de rendu — annotée, catégorielle, log, contour, clustering hiérarchique, etc. — tout en partageant la même API de base.
+<h2>Variantes</h2>
+
+<div data-sp-registry-table="variants" data-family="heatmap"></div>
+
 <h2>Paramètres</h2>
 
-| Paramètre | Utilisé par variantes |
-|-----------|----------------------|
-| `col_labels` | bubble, cluster, marginal, pivot, unequal |
-| `colorscale` | confusion |
-| `contour_levels` | contour |
-| `discrete_steps` | discrete |
-| `diverging` | bubble, marginal, pivot |
-| `flat_matrix` | bubble, cluster, marginal, pivot |
-| `height` | bubble, marginal, pivot |
-| `hover` | bubble, marginal, pivot |
-| `palette` | categorical |
-| `row_labels` | bubble, cluster, marginal, pivot, unequal |
-| `show_values` | categorical |
-| `title` | bubble, marginal, pivot |
-| `width` | bubble, marginal, pivot |
-| `x_widths` | unequal |
-| `y_heights` | unequal |
+<div data-sp-registry-table="options" data-family="heatmap"></div>
 
 ---
 

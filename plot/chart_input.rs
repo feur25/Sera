@@ -312,12 +312,17 @@ impl ChartOpts {
             .or_else(|| self.bg_color.clone())
             .filter(|s| !s.is_empty())
     }
+
     pub fn no_x(&self) -> bool {
         self.no_x_axis.unwrap_or(false)
     }
     pub fn no_y(&self) -> bool {
         self.no_y_axis.unwrap_or(false)
     }
+    pub fn no_background(&self) -> bool {
+        self.background.is_none() && self.bg_color.is_none()
+    }
+
     pub fn is_horiz(&self) -> bool {
         match self.orientation.as_deref() {
             Some(s) => {

@@ -19,19 +19,13 @@
 
 `sp.lollipop()` is the unified entry point for the lollipop family. Each item becomes a thin stick capped by a dot - lighter ink than a bar chart for the same ranking, and the family includes circular, diverging, focused and grouped editorial layouts (the Office variant reproduces the season-rating panel pattern).
 
+## Variants
+
+<div data-sp-registry-table="variants" data-family="lollipop"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `color_hex` | highlight |
-| `gridlines` | basic, cleveland, highlight, office |
-| `height` | circular |
-| `highlight_index` | highlight |
-| `palette` | office |
-| `show_values` | basic, cleveland, diverging |
-| `title` | circular |
-| `width` | circular |
-| `y_label` | basic, diverging, highlight, office |
+<div data-sp-registry-table="options" data-family="lollipop"></div>
 
 ## Returns
 
@@ -52,23 +46,13 @@
 
 `sp.lollipop()` est le point d entree unique pour la famille lollipop. Chaque item devient un baton fin termine par un point - moins d encre qu un bar chart pour le meme classement, et la famille couvre des layouts circulaires, divergents, focalises et editoriaux groupes (la variante Office reproduit le motif des saisons IMDb de The Office).
 
-<h2>Parametres</h2>
+<h2>Variantes</h2>
 
-| Parametre | Type | Defaut | Description |
-|---|---|---|---|
-| `title` | `str` | requis | Titre du graphique |
-| `labels` | `list[str]` | requis | Libelles categoriels (un par baton) |
-| `values` | `list[float]` | requis | Valeur par libelle |
-| `variant` | `str` | "basic" | Style visuel (voir tableau) |
-| `color_groups` | `list[str]` | None | Groupe par item - active le groupage Office |
-| `highlight_index` | `int` | -1 | Index a mettre en avant (Highlight); -1 = auto-max |
-| `color_hex` | `int` | 0x6366F1 | Couleur par defaut |
-| `palette` | `list[int]` | None | Palette personnalisee |
-| `show_values` | `bool` | False | Afficher la valeur a cote de chaque point |
-| `gridlines` | `bool` | False | Activer la grille de fond |
-| `sort_order` | `str` | "none" | "none" / "asc" / "desc" / "alpha" |
-| `width` | `int` | 900 | Largeur (px) |
-| `height` | `int` | 480 | Hauteur (px) |
+<div data-sp-registry-table="variants" data-family="lollipop"></div>
+
+<h2>Paramètres</h2>
+
+<div data-sp-registry-table="options" data-family="lollipop"></div>
 
 <h2>Retour</h2>
 

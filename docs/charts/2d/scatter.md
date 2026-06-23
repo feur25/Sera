@@ -19,30 +19,13 @@
 ## Description
 
 `sp.scatter()` is the unified entry point for the entire scatter family. The `variant` keyword selects the rendering strategy — every other argument keeps the same name across variants. Scatter plots are the canonical way to display the joint distribution of two numeric variables; SeraPlot adds optional grouping, continuous color, distinct marker shapes, on-point labels and OLS regression — all in pure Rust SVG, thousands of times faster than Plotly.
+## Variants
+
+<div data-sp-registry-table="variants" data-family="scatter"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `categories` | categorical, labeled, symbols |
-| `color_hex` | basic, labeled, regression, symbols |
-| `color_high` | gradient, regression |
-| `color_low` | gradient |
-| `color_values` | galaxy, gradient, nova |
-| `gridlines` | all |
-| `hover` | all |
-| `labels` | basic, deluxe, galaxy, gradient, labeled, nova, regression |
-| `palette` | categorical, labeled, symbols |
-| `point_size` | all |
-| `regression_type` | regression |
-| `stroke_width` | basic, categorical, gradient, labeled, regression, symbols |
-| `symbol` | basic, categorical, gradient, labeled, regression |
-| `symbols` | symbols |
-| `title` | all |
-| `width` | categorical, gradient, symbols |
-| `x_label` | all |
-| `x_values` | all |
-| `y_label` | all |
-| `y_values` | all |
+<div data-sp-registry-table="options" data-family="scatter"></div>
 
 ---
 
@@ -73,30 +56,13 @@
 <h2>Description</h2>
 
 `sp.scatter()` est le point d'entrée unifié de toute la famille scatter. Le mot-clé `variant` sélectionne la stratégie de rendu — tous les autres arguments gardent le même nom d'une variante à l'autre. Les nuages de points sont la façon canonique d'afficher la distribution conjointe de deux variables numériques ; SeraPlot ajoute groupement optionnel, couleur continue, formes de marqueurs distinctes, étiquettes sur les points et régression OLS — le tout en SVG Rust pur, des milliers de fois plus rapide que Plotly.
+<h2>Variantes</h2>
+
+<div data-sp-registry-table="variants" data-family="scatter"></div>
+
 <h2>Paramètres</h2>
 
-| Paramètre | Utilisé par variantes |
-|-----------|----------------------|
-| `categories` | categorical, labeled, symbols |
-| `color_hex` | basic, labeled, regression, symbols |
-| `color_high` | gradient, regression |
-| `color_low` | gradient |
-| `color_values` | galaxy, gradient, nova |
-| `gridlines` | toutes |
-| `hover` | toutes |
-| `labels` | basic, deluxe, galaxy, gradient, labeled, nova, regression |
-| `palette` | categorical, labeled, symbols |
-| `point_size` | toutes |
-| `regression_type` | regression |
-| `stroke_width` | basic, categorical, gradient, labeled, regression, symbols |
-| `symbol` | basic, categorical, gradient, labeled, regression |
-| `symbols` | symbols |
-| `title` | toutes |
-| `width` | categorical, gradient, symbols |
-| `x_label` | toutes |
-| `x_values` | toutes |
-| `y_label` | toutes |
-| `y_values` | toutes |
+<div data-sp-registry-table="options" data-family="scatter"></div>
 
 ---
 

@@ -22,18 +22,13 @@
 
 > **Hierarchy encoding** — `labels` lists every node, `parents` gives the parent label of each node ("" for a root). Leaf values are taken from `values`; internal node values are auto-rolled-up from descendants when set to 0.
 
+## Variants
+
+<div data-sp-registry-table="variants" data-family="sunburst"></div>
+
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|---|---|---|---|
-| `title`    | `str`         | required  | Chart title |
-| `labels`   | `list[str]`   | required  | Node labels (one per row) |
-| `parents`  | `list[str]`   | required  | Parent label of each node ("" for roots) |
-| `values`   | `list[float]` | required  | Leaf values; internal zeros are auto-rolled-up |
-| `variant`  | `str`         | `"basic"` | Visual style (see table) |
-| `palette`  | `list[int]`   | `None`    | Per-root color palette (rotates if shorter) |
-| `width`    | `int`         | `700`     | Canvas width (px) |
-| `height`   | `int`         | `700`     | Canvas height (px) |
+<div data-sp-registry-table="options" data-family="sunburst"></div>
 
 ## Returns
 
@@ -56,18 +51,13 @@
 
 > **Encodage de la hierarchie** — `labels` liste tous les noeuds, `parents` donne le libelle du parent de chaque noeud ("" pour une racine). Les valeurs des feuilles viennent de `values` ; les noeuds internes a 0 sont calcules automatiquement comme la somme de leurs descendants.
 
-<h2>Parametres</h2>
+<h2>Variantes</h2>
 
-| Parametre | Type | Defaut | Description |
-|---|---|---|---|
-| `title`    | `str`         | requis    | Titre du graphique |
-| `labels`   | `list[str]`   | requis    | Libelles des noeuds (un par ligne) |
-| `parents`  | `list[str]`   | requis    | Parent de chaque noeud ("" pour les racines) |
-| `values`   | `list[float]` | requis    | Valeurs feuilles ; zeros internes calcules auto |
-| `variant`  | `str`         | `"basic"` | Style visuel (voir tableau) |
-| `palette`  | `list[int]`   | `None`    | Palette couleurs par racine (rotation si trop courte) |
-| `width`    | `int`         | `700`     | Largeur du canvas (px) |
-| `height`   | `int`         | `700`     | Hauteur du canvas (px) |
+<div data-sp-registry-table="variants" data-family="sunburst"></div>
+
+<h2>Paramètres</h2>
+
+<div data-sp-registry-table="options" data-family="sunburst"></div>
 
 <h2>Retour</h2>
 

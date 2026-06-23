@@ -22,15 +22,13 @@
 
 > **Totals** — set a value to `0` and use a label containing `total`, `net`, `final`, `gross` or `ebitda` to mark a subtotal bar; it is rendered with the totals color and anchored on the running sum.
 
+## Variants
+
+<div data-sp-registry-table="variants" data-family="waterfall"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `gridlines` | horizontal |
-| `height` | horizontal |
-| `show_text` | all |
-| `title` | horizontal |
-| `width` | horizontal |
+<div data-sp-registry-table="options" data-family="waterfall"></div>
 
 ## Returns
 
@@ -53,17 +51,13 @@
 
 > **Totaux** — mettez la valeur a `0` et utilisez un libelle contenant `total`, `net`, `final`, `gross` ou `ebitda` pour marquer une barre de sous-total ; elle est rendue avec la couleur des totaux et ancree sur le cumul courant.
 
-<h2>Parametres</h2>
+<h2>Variantes</h2>
 
-| Parametre | Type | Defaut | Description |
-|---|---|---|---|
-| `title`     | `str`         | requis    | Titre du graphique |
-| `labels`    | `list[str]`   | requis    | Libelles des etapes (gauche -> droite) |
-| `values`    | `list[float]` | requis    | Deltas par etape (mettez 0 + libelle "total" pour les sous-totaux) |
-| `variant`   | `str`         | `"basic"` | Variante geometrique (voir tableau) |
-| `show_text` | `bool`        | `True`    | Afficher les annotations de valeur au-dessus des barres |
-| `width`     | `int`         | `900`     | Largeur du canvas (px) |
-| `height`    | `int`         | `480`     | Hauteur du canvas (px) |
+<div data-sp-registry-table="variants" data-family="waterfall"></div>
+
+<h2>Paramètres</h2>
+
+<div data-sp-registry-table="options" data-family="waterfall"></div>
 
 <h2>Retour</h2>
 

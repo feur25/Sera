@@ -20,29 +20,13 @@
 ## Description
 
 `sp.boxplot()` is the unified entry point for the entire box-plot family. The `variant` keyword selects the rendering strategy — every other argument stays consistent across variants. Quartiles, 1.5×IQR whiskers and outliers are computed in pure Rust without NumPy or pandas.
+## Variants
+
+<div data-sp-registry-table="variants" data-family="boxplot"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `boxen_depth` | letter_value |
-| `category_labels` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
-| `fill_opacity` | basic, grouped, horizontal, rainbow, violin |
-| `gridlines` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
-| `height` | horizontal |
-| `hover` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
-| `jitter` | basic, strip |
-| `notch` | basic, grouped, outliers, points, rainbow, violin |
-| `palette` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
-| `series` | grouped |
-| `series_names` | grouped |
-| `show_points` | basic, notched |
-| `sort_order` | basic, horizontal, letter_value, rainbow, strip, violin |
-| `stroke_width` | basic, grouped, horizontal, rainbow, violin |
-| `title` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
-| `values` | basic, horizontal, letter_value, rainbow, strip, violin |
-| `width` | horizontal |
-| `x_label` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
-| `y_label` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
+<div data-sp-registry-table="options" data-family="boxplot"></div>
 
 ---
 
@@ -64,29 +48,13 @@
 <h2>Description</h2>
 
 `sp.boxplot()` est le point d'entrée unique pour toute la famille des boîtes à moustaches. Le paramètre `variant` sélectionne la stratégie de rendu — tous les autres arguments restent identiques entre les variantes. Quartiles, moustaches 1,5×IQR et valeurs aberrantes sont calculés en pur Rust, sans NumPy ni pandas.
+<h2>Variantes</h2>
+
+<div data-sp-registry-table="variants" data-family="boxplot"></div>
+
 <h2>Paramètres</h2>
 
-| Paramètre | Utilisé par variantes |
-|-----------|----------------------|
-| `boxen_depth` | letter_value |
-| `category_labels` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
-| `fill_opacity` | basic, grouped, horizontal, rainbow, violin |
-| `gridlines` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
-| `height` | horizontal |
-| `hover` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
-| `jitter` | basic, strip |
-| `notch` | basic, grouped, outliers, points, rainbow, violin |
-| `palette` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
-| `series` | grouped |
-| `series_names` | grouped |
-| `show_points` | basic, notched |
-| `sort_order` | basic, horizontal, letter_value, rainbow, strip, violin |
-| `stroke_width` | basic, grouped, horizontal, rainbow, violin |
-| `title` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
-| `values` | basic, horizontal, letter_value, rainbow, strip, violin |
-| `width` | horizontal |
-| `x_label` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
-| `y_label` | basic, grouped, horizontal, letter_value, rainbow, strip, violin |
+<div data-sp-registry-table="options" data-family="boxplot"></div>
 
 ---
 

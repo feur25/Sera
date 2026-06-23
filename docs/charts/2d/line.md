@@ -20,37 +20,13 @@
 ## Description
 
 `sp.line()` is the unified entry point for the entire line-chart family. The `variant` keyword selects the rendering strategy — every other argument is shared across variants.
+## Variants
+
+<div data-sp-registry-table="variants" data-family="line"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `color_hex` | basic, connected_scatter, dashed, filled, gapped, sparkline, spline, stepped |
-| `dash_pattern` | dashed |
-| `fill_opacity` | filled |
-| `gap_threshold` | gapped |
-| `gridlines` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
-| `height` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
-| `hover` | basic, multi |
-| `labels` | basic, connected_scatter, dashed, filled, gapped, neon, spline, stepped |
-| `legend_position` | connected_scatter, dashed, filled, gapped, multi, neon |
-| `marker_size` | connected_scatter, gapped, spline, stepped |
-| `palette` | connected_scatter, dashed, filled, gapped, multi, neon, sparkline |
-| `series` | connected_scatter, dashed, filled, gapped, multi, neon, sparkline |
-| `show_points` | basic, gapped, multi, neon, spline, stepped |
-| `sort_order` | basic, multi |
-| `spark_cell_h` | sparkline |
-| `spark_cell_w` | sparkline |
-| `spark_cols` | sparkline |
-| `spline_tension` | spline |
-| `stack_fill` | filled |
-| `step_shape` | stepped |
-| `stroke_width` | connected_scatter, dashed, filled, gapped, sparkline, spline, stepped |
-| `title` | all |
-| `values` | basic, connected_scatter, dashed, filled, gapped, neon, sparkline, spline, stepped |
-| `width` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
-| `x_label` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
-| `x_labels` | connected_scatter, dashed, filled, gapped, multi, neon |
-| `y_label` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+<div data-sp-registry-table="options" data-family="line"></div>
 
 ---
 
@@ -72,37 +48,13 @@
 <h2>Description</h2>
 
 `sp.line()` est le point d'entrée unifié pour toute la famille de graphiques en ligne. Le mot-clé `variant` sélectionne la stratégie de rendu — tous les autres arguments sont partagés entre les variantes.
+<h2>Variantes</h2>
+
+<div data-sp-registry-table="variants" data-family="line"></div>
+
 <h2>Paramètres</h2>
 
-| Paramètre | Utilisé par variantes |
-|-----------|----------------------|
-| `color_hex` | basic, connected_scatter, dashed, filled, gapped, sparkline, spline, stepped |
-| `dash_pattern` | dashed |
-| `fill_opacity` | filled |
-| `gap_threshold` | gapped |
-| `gridlines` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
-| `height` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
-| `hover` | basic, multi |
-| `labels` | basic, connected_scatter, dashed, filled, gapped, neon, spline, stepped |
-| `legend_position` | connected_scatter, dashed, filled, gapped, multi, neon |
-| `marker_size` | connected_scatter, gapped, spline, stepped |
-| `palette` | connected_scatter, dashed, filled, gapped, multi, neon, sparkline |
-| `series` | connected_scatter, dashed, filled, gapped, multi, neon, sparkline |
-| `show_points` | basic, gapped, multi, neon, spline, stepped |
-| `sort_order` | basic, multi |
-| `spark_cell_h` | sparkline |
-| `spark_cell_w` | sparkline |
-| `spark_cols` | sparkline |
-| `spline_tension` | spline |
-| `stack_fill` | filled |
-| `step_shape` | stepped |
-| `stroke_width` | connected_scatter, dashed, filled, gapped, sparkline, spline, stepped |
-| `title` | toutes |
-| `values` | basic, connected_scatter, dashed, filled, gapped, neon, sparkline, spline, stepped |
-| `width` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
-| `x_label` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
-| `x_labels` | connected_scatter, dashed, filled, gapped, multi, neon |
-| `y_label` | basic, connected_scatter, dashed, filled, gapped, multi, neon, spline, stepped |
+<div data-sp-registry-table="options" data-family="line"></div>
 
 ---
 

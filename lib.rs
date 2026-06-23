@@ -2345,6 +2345,36 @@ pub fn chart_variants() -> serde_json::Value {
     Value::Object(out)
 }
 
+pub fn chart_themes() -> serde_json::Value {
+    use crate::plot::statistical::theme::ChartTheme;
+    use serde_json::{Map, Value};
+
+    let mut out = Map::new();
+    out.insert(
+        "default".to_string(),
+        Value::String(ChartTheme::default_key().to_string()),
+    );
+    let arr: Vec<Value> = ChartTheme::keys_and_aliases()
+        .iter()
+        .map(|(k, aliases)| {
+            let mut item = Map::new();
+            item.insert("key".to_string(), Value::String((*k).to_string()));
+            item.insert(
+                "aliases".to_string(),
+                Value::Array(
+                    aliases
+                        .iter()
+                        .map(|a| Value::String((*a).to_string()))
+                        .collect(),
+                ),
+            );
+            Value::Object(item)
+        })
+        .collect();
+    out.insert("themes".to_string(), Value::Array(arr));
+    Value::Object(out)
+}
+
 #[sera_doc(
     category = "config",
     file = "config/config.md",

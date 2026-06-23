@@ -20,11 +20,13 @@
 
 `sp.dumbbell()` is the unified entry point for the dumbbell-chart family. Each row plots two values - typically a before and an after - linked by a connector, making it the chart of choice for change, gap or comparison-over-time analyses (salary equity, turnaround KPIs, A/B uplifts, etc.). The `variant` keyword switches the visual treatment without touching the data.
 
+## Variants
+
+<div data-sp-registry-table="variants" data-family="dumbbell"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `series_names` | all |
+<div data-sp-registry-table="options" data-family="dumbbell"></div>
 
 ## Returns
 
@@ -45,21 +47,13 @@
 
 `sp.dumbbell()` est le point d entree unique pour la famille dumbbell. Chaque ligne montre deux valeurs - typiquement avant/apres - reliees par un connecteur, ce qui en fait le choix naturel pour visualiser un changement, un ecart ou une evolution (equite salariale, KPIs de redressement, uplifts A/B, etc.). Le mot-cle `variant` change le style visuel sans toucher aux donnees.
 
-<h2>Parametres</h2>
+<h2>Variantes</h2>
 
-| Parametre | Type | Defaut | Description |
-|---|---|---|---|
-| `title` | `str` | requis | Titre du graphique |
-| `labels` | `list[str]` | requis | Libelles de ligne |
-| `start` | `list[float]` | requis | Valeurs de depart |
-| `end` | `list[float]` | requis | Valeurs d arrivee |
-| `variant` | `str` | `"basic"` | Style visuel (voir tableau) |
-| `series_name_start` | `str` | `"Start"` | Label legende serie depart |
-| `series_name_end` | `str` | `"End"` | Label legende serie arrivee |
-| `palette` | `list[int]` | `None` | Palette personnalisee: `[c_start, c_end, ...]` |
-| `sort_order` | `str` | `"none"` | `"none"`, `"asc"` or `"desc"` |
-| `width` | `int` | `1000` | Largeur (px) |
-| `height` | `int` | `500` | Hauteur (px) |
+<div data-sp-registry-table="variants" data-family="dumbbell"></div>
+
+<h2>Paramètres</h2>
+
+<div data-sp-registry-table="options" data-family="dumbbell"></div>
 
 <h2>Retour</h2>
 

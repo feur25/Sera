@@ -1,10 +1,21 @@
-﻿# Support Vector Machines
+# SVM
 
-> **EN** — Linear SVM models for classification and regression.
->
-> **FR** — Modèles SVM linéaires pour la classification et la régression.
+<div class="lang-en">
 
-## Contents
+## Description
 
-- [LinearSVC / LinearSVR](svm.md)
+Linear SVM estimators registered in the ML bindings.
 
+<div data-sp-ml-category data-category="SVM"></div>
+
+</div>
+
+<div class="lang-fr">
+
+<h2>Description</h2>
+
+Estimateurs SVM lineaires enregistres dans les bindings ML.
+
+<div data-sp-ml-category data-category="SVM"></div>
+
+</div>

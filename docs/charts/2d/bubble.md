@@ -19,27 +19,13 @@
 ## Description
 
 `sp.bubble()` is the unified entry point for the entire bubble-chart family. The `variant` keyword selects the rendering strategy — all other arguments remain consistent across variants. A bubble chart extends a 2D scatter plot with a third numeric dimension represented as bubble **area** (not radius), following best practices for perceptual accuracy.
+## Variants
+
+<div data-sp-registry-table="variants" data-family="bubble"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `categories` | categorical, labeled, outlined |
-| `color_hex` | basic, labeled, negative, outlined |
-| `color_high` | gradient, negative |
-| `color_low` | gradient, negative |
-| `color_values` | gradient |
-| `gridlines` | all |
-| `hover` | all |
-| `labels` | basic, deluxe, gradient, labeled, negative, outlined, plasma |
-| `palette` | categorical, labeled, outlined |
-| `sizes` | gradient, negative |
-| `stroke_width` | basic, categorical, gradient, labeled, negative, outlined |
-| `title` | all |
-| `width` | categorical, gradient, negative, outlined |
-| `x_label` | all |
-| `x_values` | all |
-| `y_label` | all |
-| `y_values` | all |
+<div data-sp-registry-table="options" data-family="bubble"></div>
 
 ---
 
@@ -63,27 +49,13 @@
 <h2>Description</h2>
 
 `sp.bubble()` est le point d'entrée unique de toute la famille des graphiques à bulles. Le paramètre `variant` choisit la stratégie de rendu — tous les autres arguments restent cohérents entre variantes. Une bulle représente une troisième dimension via son **aire** (et non son rayon), pour une lecture perceptive correcte.
+<h2>Variantes</h2>
+
+<div data-sp-registry-table="variants" data-family="bubble"></div>
+
 <h2>Paramètres</h2>
 
-| Paramètre | Utilisé par variantes |
-|-----------|----------------------|
-| `categories` | categorical, labeled, outlined |
-| `color_hex` | basic, labeled, negative, outlined |
-| `color_high` | gradient, negative |
-| `color_low` | gradient, negative |
-| `color_values` | gradient |
-| `gridlines` | toutes |
-| `hover` | toutes |
-| `labels` | basic, deluxe, gradient, labeled, negative, outlined, plasma |
-| `palette` | categorical, labeled, outlined |
-| `sizes` | gradient, negative |
-| `stroke_width` | basic, categorical, gradient, labeled, negative, outlined |
-| `title` | toutes |
-| `width` | categorical, gradient, negative, outlined |
-| `x_label` | toutes |
-| `x_values` | toutes |
-| `y_label` | toutes |
-| `y_values` | toutes |
+<div data-sp-registry-table="options" data-family="bubble"></div>
 
 ---
 

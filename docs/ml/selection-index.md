@@ -1,12 +1,21 @@
-﻿# Model Selection
+# Model Selection
 
-> **EN** — Cross-validation, hyperparameter tuning, and feature importance.
->
-> **FR** — Validation croisée, optimisation des hyperparamètres et importance des features.
+<div class="lang-en">
 
-## Contents
+## Description
 
-- [GridSearchCV](grid-search.md)
-- [Cross-Validation](cv-splitters.md)
-- [Permutation Importance](permutation-importance.md)
+Cross-validation, search and inspection utilities registered in ML.
 
+<div data-sp-ml-category data-category="Model Selection"></div>
+
+</div>
+
+<div class="lang-fr">
+
+<h2>Description</h2>
+
+Utilitaires de validation croisee, recherche et inspection enregistres en ML.
+
+<div data-sp-ml-category data-category="Model Selection"></div>
+
+</div>

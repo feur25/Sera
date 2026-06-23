@@ -19,23 +19,13 @@
 ## Description
 
 `sp.kde()` is the unified entry point for the entire Kernel Density Estimate family. The `variant` keyword selects the rendering strategy — every other argument keeps the same name across variants. KDE produces a smooth, continuous density estimate from a sample of points using a Gaussian kernel with Scott's rule for automatic bandwidth selection. SeraPlot renders the curves as pure Rust SVG, with native multi-series, normalization, CDF, rug, histogram overlay and gradient fills.
+## Variants
+
+<div data-sp-registry-table="variants" data-family="kde"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `bandwidth` | all |
-| `bins` | histogram |
-| `fill_opacity` | basic, normalized, rug, stepped |
-| `filled` | basic, normalized, rug |
-| `gridlines` | all |
-| `height` | all |
-| `hover` | all |
-| `n_points` | all |
-| `palette` | all |
-| `title` | all |
-| `width` | all |
-| `x_label` | all |
-| `y_label` | all |
+<div data-sp-registry-table="options" data-family="kde"></div>
 
 ---
 
@@ -57,23 +47,13 @@
 <h2>Description</h2>
 
 `sp.kde()` est le point d'entrée unifié pour toute la famille KDE (Kernel Density Estimate). Le mot-clé `variant` sélectionne la stratégie de rendu — tous les autres arguments conservent le même nom d'une variante à l'autre. La KDE produit une estimation de densité continue lissée à partir d'un échantillon de points avec un noyau gaussien et la règle de Scott pour le choix automatique de la bande passante. SeraPlot rend les courbes en SVG Rust natif, avec multi-séries, normalisation, CDF, rug, histogramme superposé et remplissage en dégradé.
+<h2>Variantes</h2>
+
+<div data-sp-registry-table="variants" data-family="kde"></div>
+
 <h2>Paramètres</h2>
 
-| Paramètre | Utilisé par variantes |
-|-----------|----------------------|
-| `bandwidth` | toutes |
-| `bins` | histogram |
-| `fill_opacity` | basic, normalized, rug, stepped |
-| `filled` | basic, normalized, rug |
-| `gridlines` | toutes |
-| `height` | toutes |
-| `hover` | toutes |
-| `n_points` | toutes |
-| `palette` | toutes |
-| `title` | toutes |
-| `width` | toutes |
-| `x_label` | toutes |
-| `y_label` | toutes |
+<div data-sp-registry-table="options" data-family="kde"></div>
 
 ---
 

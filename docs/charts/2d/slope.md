@@ -19,15 +19,13 @@
 ## Description
 
 `sp.slope()` renders the entire slope-chart family: two parallel value axes (left / right) with one connector per row. The `variant` keyword swaps the connector style without changing any other parameter. Slope charts excel at before/after comparisons, A/B test outcomes, ranking shifts, KPI changes between periods, and any pair-wise change across many entities.
+## Variants
+
+<div data-sp-registry-table="variants" data-family="slope"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `left_label` | diverging |
-| `palette` | bumps, monochrome |
-| `right_label` | diverging |
-| `show_text` | basic, bumps, curved, highlighted, monochrome, stepped, thick |
-| `width` | diverging |
+<div data-sp-registry-table="options" data-family="slope"></div>
 
 ## Returns
 
@@ -54,15 +52,13 @@
 <h2>Description</h2>
 
 `sp.slope()` produit toute la famille des slope charts : deux axes de valeurs parallèles (gauche / droite) avec un connecteur par ligne. Le mot-clé `variant` permute le style du connecteur sans changer aucun autre paramètre. Idéal pour comparer avant/après, résultats A/B, changements de classement, KPI entre périodes, et toute évolution par paire sur de nombreuses entités.
+<h2>Variantes</h2>
+
+<div data-sp-registry-table="variants" data-family="slope"></div>
+
 <h2>Paramètres</h2>
 
-| Paramètre | Utilisé par variantes |
-|-----------|----------------------|
-| `left_label` | diverging |
-| `palette` | bumps, monochrome |
-| `right_label` | diverging |
-| `show_text` | basic, bumps, curved, highlighted, monochrome, stepped, thick |
-| `width` | diverging |
+<div data-sp-registry-table="options" data-family="slope"></div>
 
 <h2>Retour</h2>
 

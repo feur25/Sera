@@ -20,14 +20,13 @@
 
 `sp.gauge()` is the unified entry point for the gauge family. A gauge maps a single scalar to a colored arc with optional thresholds - perfect for status / health / utilization KPIs. The `variant` keyword switches the geometry (half, three-quarter, full ring), the embellishments (needle, ticks, glow) and the layering (single arc vs. concentric arcs for value-vs-target).
 
+## Variants
+
+<div data-sp-registry-table="variants" data-family="gauge"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `comparison` | concentric |
-| `max_val` | arc270, concentric, tick |
-| `min_val` | arc270, tick |
-| `value` | concentric, sleek |
+<div data-sp-registry-table="options" data-family="gauge"></div>
 
 ## Returns
 
@@ -48,20 +47,13 @@
 
 `sp.gauge()` est le point d entree unique pour la famille jauge. Une jauge associe un scalaire unique a un arc colore avec des seuils optionnels - parfait pour des KPIs de statut / sante / utilisation. Le mot-cle `variant` change la geometrie (demi, trois-quart, anneau complet), les ornements (aiguille, ticks, glow) et la composition (arc simple ou arcs concentriques pour valeur-vs-cible).
 
-<h2>Parametres</h2>
+<h2>Variantes</h2>
 
-| Parametre | Type | Defaut | Description |
-|---|---|---|---|
-| `title` | `str` | requis | Titre du graphique |
-| `value` | `float` | requis | Valeur courante a afficher |
-| `min_val` | `float` | `0.0` | Minimum de l echelle |
-| `max_val` | `float` | `100.0` | Maximum de l echelle |
-| `variant` | `str` | `"basic"` | Style visuel (voir tableau) |
-| `label` | `str` | `""` | Sous-libelle sous la valeur |
-| `comparison` | `float` | `0.0` | Valeur de comparaison (pour `concentric`) |
-| `seuils` | `list[(float,int)]` | `None` | `[(value, color_hex), ...]` seuils |
-| `width` | `int` | `400` | Largeur (px) |
-| `height` | `int` | `300` | Hauteur (px) |
+<div data-sp-registry-table="variants" data-family="gauge"></div>
+
+<h2>Paramètres</h2>
+
+<div data-sp-registry-table="options" data-family="gauge"></div>
 
 <h2>Retour</h2>
 

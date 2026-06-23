@@ -19,13 +19,13 @@
 ## Description
 
 `sp.funnel()` renders the entire funnel-chart family: a stacked sequence of stages where each step’s width encodes a value. The `variant` keyword switches the geometry without changing any other parameter. Funnels are the standard for conversion analytics (visitors → signups → paid), recruiting pipelines, sales pipelines, process drop-off and any descending-cohort analysis.
+## Variants
+
+<div data-sp-registry-table="variants" data-family="funnel"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `palette` | all |
-| `show_text` | all |
-| `width` | all |
+<div data-sp-registry-table="options" data-family="funnel"></div>
 
 ## Returns
 
@@ -52,13 +52,13 @@
 <h2>Description</h2>
 
 `sp.funnel()` produit toute la famille des entonnoirs : une séquence d’étapes empilées dont la largeur encode une valeur. Le mot-clé `variant` permute la géométrie sans changer aucun autre paramètre. Standard pour l’analyse de conversion (visiteurs → inscrits → payants), pipelines de recrutement, pipelines commerciaux, fuites de processus et toute analyse de cohorte décroissante.
+<h2>Variantes</h2>
+
+<div data-sp-registry-table="variants" data-family="funnel"></div>
+
 <h2>Paramètres</h2>
 
-| Paramètre | Utilisé par variantes |
-|-----------|----------------------|
-| `palette` | toutes |
-| `show_text` | toutes |
-| `width` | toutes |
+<div data-sp-registry-table="options" data-family="funnel"></div>
 
 <h2>Retour</h2>
 

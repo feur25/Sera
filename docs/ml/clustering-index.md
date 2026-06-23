@@ -1,11 +1,21 @@
-﻿# Clustering
+# Clustering
 
-> **EN** — Density-based and centroid-based clustering algorithms.
->
-> **FR** — Algorithmes de clustering basés sur la densité et les centroïdes.
+<div class="lang-en">
 
-## Contents
+## Description
 
-- [K-Means](kmeans.md)
-- [DBSCAN](dbscan.md)
+Clustering functions registered in the ML bindings.
 
+<div data-sp-ml-category data-category="Clustering"></div>
+
+</div>
+
+<div class="lang-fr">
+
+<h2>Description</h2>
+
+Fonctions de clustering enregistrees dans les bindings ML.
+
+<div data-sp-ml-category data-category="Clustering"></div>
+
+</div>

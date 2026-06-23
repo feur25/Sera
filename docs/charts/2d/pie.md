@@ -20,36 +20,13 @@
 ## Description
 
 `sp.pie()` is the unified entry point for the entire pie-chart family. The `variant` keyword selects the rendering strategy — all other arguments remain consistent across variants.
+## Variants
+
+<div data-sp-registry-table="variants" data-family="pie"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `center_subtext` | kpi, nested, proportional |
-| `center_text` | kpi, nested, proportional |
-| `donut` | nested, proportional, subplots |
-| `gridlines` | proportional |
-| `height` | nested, proportional, subplots |
-| `hover` | proportional |
-| `labels` | nested, proportional, subplots |
-| `legend_position` | proportional |
-| `min_label_frac` | proportional |
-| `palette` | proportional, subplots |
-| `pattern` | proportional |
-| `proportional` | proportional, subplots |
-| `pull` | basic, donut, exploded, kpi, pattern, proportional, semi |
-| `secondary_labels` | nested, proportional |
-| `secondary_values` | nested, proportional |
-| `series` | proportional, subplots |
-| `show_pct` | proportional |
-| `sort_order` | proportional |
-| `subplot_cols` | proportional, subplots |
-| `subplot_titles` | proportional, subplots |
-| `title` | nested, proportional, subplots |
-| `values` | exploded, kpi, nested, proportional |
-| `variant` | proportional |
-| `width` | nested, proportional, subplots |
-| `x_label` | proportional |
-| `y_label` | proportional |
+<div data-sp-registry-table="options" data-family="pie"></div>
 
 ---
 
@@ -71,36 +48,13 @@
 <h2>Description</h2>
 
 `sp.pie()` est le point d'entrée unique pour toute la famille des camemberts. Le paramètre `variant` sélectionne la stratégie de rendu — donut, éclaté, KPI, semi-cercle ou imbriqué — tout en conservant la même API simple.
+<h2>Variantes</h2>
+
+<div data-sp-registry-table="variants" data-family="pie"></div>
+
 <h2>Paramètres</h2>
 
-| Paramètre | Utilisé par variantes |
-|-----------|----------------------|
-| `center_subtext` | kpi, nested, proportional |
-| `center_text` | kpi, nested, proportional |
-| `donut` | nested, proportional, subplots |
-| `gridlines` | proportional |
-| `height` | nested, proportional, subplots |
-| `hover` | proportional |
-| `labels` | nested, proportional, subplots |
-| `legend_position` | proportional |
-| `min_label_frac` | proportional |
-| `palette` | proportional, subplots |
-| `pattern` | proportional |
-| `proportional` | proportional, subplots |
-| `pull` | basic, donut, exploded, kpi, pattern, proportional, semi |
-| `secondary_labels` | nested, proportional |
-| `secondary_values` | nested, proportional |
-| `series` | proportional, subplots |
-| `show_pct` | proportional |
-| `sort_order` | proportional |
-| `subplot_cols` | proportional, subplots |
-| `subplot_titles` | proportional, subplots |
-| `title` | nested, proportional, subplots |
-| `values` | exploded, kpi, nested, proportional |
-| `variant` | proportional |
-| `width` | nested, proportional, subplots |
-| `x_label` | proportional |
-| `y_label` | proportional |
+<div data-sp-registry-table="options" data-family="pie"></div>
 
 ---
 

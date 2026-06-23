@@ -1,13 +1,21 @@
-﻿# Tree-Based Models
+# Tree-Based Models
 
-> **EN** — Decision trees and ensemble methods based on tree structures.
->
-> **FR** — Arbres de décision et méthodes d'ensemble basées sur des structures d'arbres.
+<div class="lang-en">
 
-## Contents
+## Description
 
-- [DecisionTree](decision-tree.md)
-- [RandomForest](random-forest.md)
-- [GradientBoosting](gradient-boosting.md)
-- [AdaBoost](adaboost.md)
+Tree ensembles and CART-based models registered in the ML bindings.
 
+<div data-sp-ml-category data-category="Tree-Based"></div>
+
+</div>
+
+<div class="lang-fr">
+
+<h2>Description</h2>
+
+Ensembles d arbres et modeles bases CART enregistres dans les bindings ML.
+
+<div data-sp-ml-category data-category="Tree-Based"></div>
+
+</div>

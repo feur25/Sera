@@ -1,10 +1,21 @@
-﻿# Decomposition
+# Decomposition
 
-> **EN** — Dimensionality reduction via matrix factorisation.
->
-> **FR** — Réduction de dimensionnalité par factorisation matricielle.
+<div class="lang-en">
 
-## Contents
+## Description
 
-- [PCA / TruncatedSVD](decomposition.md)
+Dimensionality-reduction models registered in Rust.
 
+<div data-sp-ml-category data-category="Decomposition"></div>
+
+</div>
+
+<div class="lang-fr">
+
+<h2>Description</h2>
+
+Modeles de reduction de dimension enregistres en Rust.
+
+<div data-sp-ml-category data-category="Decomposition"></div>
+
+</div>

@@ -142,6 +142,39 @@ fn _demo(chart: &str, variant: Option<String>) -> Option<String> {
     crate::demo(chart, variant.as_deref())
 }
 
+#[pyfunction]
+#[pyo3(signature = (chart = None, variant = None))]
+fn _params_json(chart: Option<&str>, variant: Option<&str>) -> String {
+    serde_json::to_string(&crate::params(chart, variant)).unwrap_or_default()
+}
+
+#[pyfunction]
+#[pyo3(signature = (chart = None, variant = None))]
+fn _required_params_json(chart: Option<&str>, variant: Option<&str>) -> String {
+    serde_json::to_string(&crate::required_params(chart, variant)).unwrap_or_default()
+}
+
+#[pyfunction]
+fn _chart_variants_json() -> String {
+    serde_json::to_string(&crate::chart_variants()).unwrap_or_default()
+}
+
+#[pyfunction]
+fn _chart_themes_json() -> String {
+    serde_json::to_string(&crate::chart_themes()).unwrap_or_default()
+}
+
+#[pyfunction]
+fn _docs_json() -> String {
+    serde_json::to_string(&crate::doc_registry::all_docs()).unwrap_or_default()
+}
+
+#[pyfunction]
+fn chart_info(chart: &crate::Chart) -> String {
+    let payload = serde_json::json!({ "html": chart.html }).to_string();
+    crate::plot::utils::chart_info(&payload)
+}
+
 #[pymethods]
 impl crate::Chart {
     #[new]
@@ -537,6 +570,12 @@ pub fn __init(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(_reset_config, m)?)?;
     m.add_function(wrap_pyfunction!(_demos, m)?)?;
     m.add_function(wrap_pyfunction!(_demo, m)?)?;
+    m.add_function(wrap_pyfunction!(_params_json, m)?)?;
+    m.add_function(wrap_pyfunction!(_required_params_json, m)?)?;
+    m.add_function(wrap_pyfunction!(_chart_variants_json, m)?)?;
+    m.add_function(wrap_pyfunction!(_chart_themes_json, m)?)?;
+    m.add_function(wrap_pyfunction!(_docs_json, m)?)?;
+    m.add_function(wrap_pyfunction!(chart_info, m)?)?;
     for entry in inventory::iter::<PyFnEntry>() {
         (entry.register)(m)?;
     }

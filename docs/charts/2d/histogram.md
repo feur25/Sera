@@ -19,31 +19,13 @@
 ## Description
 
 `sp.histogram()` is the unified entry point for the entire histogram family. The `variant` keyword selects the rendering strategy — every other argument keeps the same name across variants. Histograms are the canonical way to visualize the distribution of a single numeric variable; SeraPlot adds horizontal layout, density normalization, cumulative distribution, stacked groups, A/B overlay and step outline — all in pure Rust SVG, thousands of times faster than Plotly.
+## Variants
+
+<div data-sp-registry-table="variants" data-family="histogram"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `bins` | all |
-| `categories` | overlay, stacked |
-| `color` | basic, cumulative, horizontal, normalized, overlay, step |
-| `count_scale` | basic |
-| `gap` | basic, deluxe, horizontal, normalized, overlay, stacked |
-| `gridlines` | all |
-| `height` | all |
-| `hover` | all |
-| `opacity` | basic, cumulative, horizontal, normalized |
-| `overlay_color` | basic, overlay |
-| `overlay_values` | basic, overlay |
-| `palette` | overlay, stacked |
-| `series_names` | basic, overlay |
-| `show_counts` | basic, deluxe, horizontal |
-| `sort_order` | basic |
-| `stroke_width` | step |
-| `title` | all |
-| `values` | all |
-| `width` | all |
-| `x_label` | basic, cumulative, horizontal, normalized, overlay, stacked, step |
-| `y_label` | basic, cumulative, horizontal, normalized, overlay, stacked, step |
+<div data-sp-registry-table="options" data-family="histogram"></div>
 
 ---
 
@@ -74,31 +56,13 @@
 <h2>Description</h2>
 
 `sp.histogram()` est le point d'entrée unifié de toute la famille histogramme. Le mot-clé `variant` sélectionne la stratégie de rendu — tous les autres arguments gardent le même nom d'une variante à l'autre. Les histogrammes sont la façon canonique de visualiser la distribution d'une variable numérique ; SeraPlot ajoute layout horizontal, normalisation densité, distribution cumulative, groupes empilés, superposition A/B et contour en escalier — le tout en SVG Rust pur, des milliers de fois plus rapide que Plotly.
+<h2>Variantes</h2>
+
+<div data-sp-registry-table="variants" data-family="histogram"></div>
+
 <h2>Paramètres</h2>
 
-| Paramètre | Utilisé par variantes |
-|-----------|----------------------|
-| `bins` | toutes |
-| `categories` | overlay, stacked |
-| `color` | basic, cumulative, horizontal, normalized, overlay, step |
-| `count_scale` | basic |
-| `gap` | basic, deluxe, horizontal, normalized, overlay, stacked |
-| `gridlines` | toutes |
-| `height` | toutes |
-| `hover` | toutes |
-| `opacity` | basic, cumulative, horizontal, normalized |
-| `overlay_color` | basic, overlay |
-| `overlay_values` | basic, overlay |
-| `palette` | overlay, stacked |
-| `series_names` | basic, overlay |
-| `show_counts` | basic, deluxe, horizontal |
-| `sort_order` | basic |
-| `stroke_width` | step |
-| `title` | toutes |
-| `values` | toutes |
-| `width` | toutes |
-| `x_label` | basic, cumulative, horizontal, normalized, overlay, stacked, step |
-| `y_label` | basic, cumulative, horizontal, normalized, overlay, stacked, step |
+<div data-sp-registry-table="options" data-family="histogram"></div>
 
 ---
 

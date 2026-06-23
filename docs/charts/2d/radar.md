@@ -19,17 +19,13 @@
 ## Description
 
 `sp.radar()` is the unified entry point for the entire radar / spider / star chart family. The `variant` keyword selects the rendering strategy — every other argument keeps the same name across variants. Radar charts are ideal for multivariate comparison across 3+ axes — performance profiles, KPIs, skill maps, scoring systems. SeraPlot draws everything in pure Rust SVG with concentric grid rings, axis lines, automatic ring tick labels, optional legend and per-series palette colors. The polar-bar variant turns the chart into a categorical polar histogram, the stacked variant builds a cumulative composition view.
+## Variants
+
+<div data-sp-registry-table="variants" data-family="radar"></div>
+
 ## Parameters
 
-| Parameter | Used by variants |
-|-----------|------------------|
-| `axes` | deluxe |
-| `fill_opacity` | basic, filled, polar_bar, stacked |
-| `height` | deluxe |
-| `palette` | all |
-| `series` | filled, polar_bar, stacked |
-| `title` | deluxe |
-| `width` | deluxe |
+<div data-sp-registry-table="options" data-family="radar"></div>
 
 ---
 
@@ -47,17 +43,13 @@
 <h2>Description</h2>
 
 `sp.radar()` est le point d'entrée unifié pour toute la famille radar / spider / star. Le mot-clé `variant` sélectionne la stratégie de rendu — tous les autres arguments conservent le même nom d'une variante à l'autre. Le radar est idéal pour comparer plusieurs séries sur 3 axes ou plus — profils de performance, KPI, cartographie de compétences, systèmes de notation. SeraPlot dessine tout en SVG Rust natif avec anneaux de grille concentriques, axes, labels automatiques de graduation, légende optionnelle et couleurs de palette par série. La variante polar_bar transforme le radar en histogramme polaire catégoriel, la variante stacked construit une vue de composition cumulative.
+<h2>Variantes</h2>
+
+<div data-sp-registry-table="variants" data-family="radar"></div>
+
 <h2>Paramètres</h2>
 
-| Paramètre | Utilisé par variantes |
-|-----------|----------------------|
-| `axes` | deluxe |
-| `fill_opacity` | basic, filled, polar_bar, stacked |
-| `height` | deluxe |
-| `palette` | toutes |
-| `series` | filled, polar_bar, stacked |
-| `title` | deluxe |
-| `width` | deluxe |
+<div data-sp-registry-table="options" data-family="radar"></div>
 
 ---
 
