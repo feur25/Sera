@@ -41,7 +41,7 @@
 <tr><td><code>ts</code><span class="tm-pill tm-core">CORE</span></td><td>timestamp</td><td>Unix timestamp for the event.</td><td>1746615600</td></tr>
 <tr><td><code>method</code><span class="tm-pill tm-core">CORE</span></td><td>string</td><td>Function or method name.</td><td>"scatter"</td></tr>
 <tr><td><code>duration_ms</code><span class="tm-pill tm-core">CORE</span></td><td>float</td><td>Execution time rounded to milliseconds.</td><td>0.113</td></tr>
-<tr><td><code>version</code><span class="tm-pill tm-core">CORE</span></td><td>string</td><td>Installed SeraPlot version.</td><td>"2.7.12"</td></tr>
+<tr><td><code>version</code><span class="tm-pill tm-core">CORE</span></td><td>string</td><td>Installed SeraPlot version.</td><td>"2.7.13"</td></tr>
 <tr><td><code>os</code>, <code>arch</code><span class="tm-pill tm-core">CORE</span></td><td>string</td><td>Operating system and CPU architecture.</td><td>"windows", "x86_64"</td></tr>
 <tr><td><code>cpu_count</code>, <code>ram_gb</code><span class="tm-pill tm-core">CORE</span></td><td>number</td><td>Basic system capacity information.</td><td>16, 32.0</td></tr>
 <tr><td><code>data_count</code><span class="tm-pill tm-opt">OPT</span></td><td>integer</td><td>Number of records processed, when available.</td><td>1000000</td></tr>
@@ -82,7 +82,7 @@ print(metrics)</div></div>
 <tr><td><code>ts</code><span class="tm-pill tm-core">CORE</span></td><td>timestamp</td><td>Horodatage Unix de l'evenement.</td><td>1746615600</td></tr>
 <tr><td><code>method</code><span class="tm-pill tm-core">CORE</span></td><td>string</td><td>Nom de la fonction ou methode.</td><td>"scatter"</td></tr>
 <tr><td><code>duration_ms</code><span class="tm-pill tm-core">CORE</span></td><td>float</td><td>Temps d'execution arrondi en millisecondes.</td><td>0.113</td></tr>
-<tr><td><code>version</code><span class="tm-pill tm-core">CORE</span></td><td>string</td><td>Version de SeraPlot installee.</td><td>"2.7.12"</td></tr>
+<tr><td><code>version</code><span class="tm-pill tm-core">CORE</span></td><td>string</td><td>Version de SeraPlot installee.</td><td>"2.7.13"</td></tr>
 <tr><td><code>os</code>, <code>arch</code><span class="tm-pill tm-core">CORE</span></td><td>string</td><td>Systeme et architecture CPU.</td><td>"windows", "x86_64"</td></tr>
 <tr><td><code>cpu_count</code>, <code>ram_gb</code><span class="tm-pill tm-core">CORE</span></td><td>number</td><td>Informations systeme generales.</td><td>16, 32.0</td></tr>
 <tr><td><code>data_count</code><span class="tm-pill tm-opt">OPT</span></td><td>integer</td><td>Nombre d'enregistrements traites si disponible.</td><td>1000000</td></tr>

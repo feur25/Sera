@@ -579,6 +579,20 @@ impl Chart {
     #[sera_doc(
         category = "chart_method",
         file = "charts/chart.md",
+        en = "Removes every chart background layer and keeps the output transparent.",
+        fr = "Supprime toutes les couches d'arrière-plan du graphique et conserve une sortie transparente."
+    )]
+    pub fn no_background(&self) -> Chart {
+        self.propagate(self.html.replacen(
+            "</head>",
+            "<style>html,body,.chart-container,.c3w,.sp-wrap,svg,canvas{background:transparent!important}.sp-bg{fill:transparent!important}</style></head>",
+            1,
+        ))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        file = "charts/chart.md",
         en = "Injects a raw CSS string into the chart's <head> element.",
         fr = "Injecte une chaîne CSS brute dans l'élément <head> du graphique.",
         param(
@@ -1798,6 +1812,14 @@ mod chart_ffi {
             unsafe { CStr::from_ptr(color) }.to_str().ok()
         };
         Box::into_raw(Box::new(c.set_bg(col)))
+    }
+
+    #[no_mangle]
+    pub extern "C" fn sera_chart_no_background(chart: *const Chart) -> *mut Chart {
+        if chart.is_null() {
+            return std::ptr::null_mut();
+        }
+        Box::into_raw(Box::new(unsafe { &*chart }.no_background()))
     }
 
     #[no_mangle]

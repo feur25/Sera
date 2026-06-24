@@ -71,14 +71,17 @@ impl PointCompute {
         let point_count = total_count as f32;
         let spacing = (point_count - 1.0).max(1.0);
 
-        if vertical {
-            let x = plot_rect.left() + (plot_rect.width() / spacing) * idx as f32;
-            let y = plot_rect.bottom() - norm_val * plot_rect.height();
-            egui::pos2(x, y)
-        } else {
-            let x = plot_rect.left() + norm_val * plot_rect.width();
-            let y = plot_rect.top() + (plot_rect.height() / spacing) * idx as f32;
-            egui::pos2(x, y)
+        match vertical {
+            true => {
+                let x = plot_rect.left() + (plot_rect.width() / spacing) * idx as f32;
+                let y = plot_rect.bottom() - norm_val * plot_rect.height();
+                egui::pos2(x, y)
+            }
+            false => {
+                let x = plot_rect.left() + norm_val * plot_rect.width();
+                let y = plot_rect.top() + (plot_rect.height() / spacing) * idx as f32;
+                egui::pos2(x, y)
+            }
         }
     }
 }

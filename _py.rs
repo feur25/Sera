@@ -299,6 +299,11 @@ impl crate::Chart {
         self.set_bg(color.as_deref())
     }
 
+    #[pyo3(name = "no_background")]
+    fn py_no_background(&self) -> crate::Chart {
+        self.no_background()
+    }
+
     #[pyo3(name = "inject_css")]
     fn py_inject_css(&self, css: &str) -> crate::Chart {
         self.inject_css(css)
