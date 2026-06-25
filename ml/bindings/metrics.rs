@@ -112,6 +112,12 @@ pub fn ml_metric_score(input: &str) -> String {
     }
 }
 
+#[crate::sera_doc(
+    category = "Metrics",
+    en = "metric_curve — computes ROC or precision-recall curve arrays.",
+    fr = "metric_curve — calcule les tableaux de courbe ROC ou precision-rappel.",
+    file = "metrics.md"
+)]
 #[crate::sera_alias("metric_curve", "ml_curve", "pr_curve")]
 pub fn ml_metric_curve(input: &str) -> String {
     use crate::ml::metrics::*;

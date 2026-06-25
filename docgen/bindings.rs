@@ -1,30 +1,13 @@
+use std::collections::HashSet;
 use std::fs;
 use std::path::{Path, PathBuf};
 
 use crate::build_common::{snake_to_camel, walk};
 
-const PUB_USE_FN_ALLOWLIST: &[&str] = &[
-    "plot_chart",
-    "themes",
-    "build_slideshow",
-    "build_hover_json",
-    "chart_append",
-    "export_svg",
-    "export_data_url",
-    "export_html_file",
-    "chart_info",
-    "validate_input",
-    "downsample_lttb",
-    "chart_diff",
-    "drift_ks",
-    "scale_plan",
-    "system_profile",
-    "csv_count_rows",
-    "csv_chunk_read",
-];
-
-fn keep_pub_use_fn(name: &str) -> bool {
-    name.starts_with("build_") || PUB_USE_FN_ALLOWLIST.contains(&name)
+#[derive(Default)]
+struct RegisteredFns {
+    exported: HashSet<String>,
+    custom_wrapped: HashSet<String>,
 }
 
 fn split_top_level_csv(input: &str) -> Vec<&str> {
@@ -46,7 +29,7 @@ fn split_top_level_csv(input: &str) -> Vec<&str> {
     out.into_iter().filter(|part| !part.is_empty()).collect()
 }
 
-fn collect_pub_use_names(stmt: &str, out: &mut Vec<String>) {
+fn collect_pub_use_names(stmt: &str, out: &mut Vec<String>, registered: &HashSet<String>) {
     let stmt = stmt.trim();
     if stmt.is_empty() {
         return;
@@ -54,7 +37,7 @@ fn collect_pub_use_names(stmt: &str, out: &mut Vec<String>) {
     if let (Some(lb), Some(rb)) = (stmt.find('{'), stmt.rfind('}')) {
         let inner = &stmt[lb + 1..rb];
         for part in split_top_level_csv(inner) {
-            collect_pub_use_names(part, out);
+            collect_pub_use_names(part, out, registered);
         }
         return;
     }
@@ -64,75 +47,85 @@ fn collect_pub_use_names(stmt: &str, out: &mut Vec<String>) {
         stmt.rsplit("::").next().unwrap_or_default().trim()
     };
     if !name.is_empty()
-        && keep_pub_use_fn(name)
+        && registered.contains(name)
         && name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_')
     {
         out.push(name.to_string());
     }
 }
 
-fn extract_input_str_fns(src: &str) -> Vec<String> {
+fn push_input_str_fn(src: &str, pos: usize, out: &mut Vec<String>) -> Option<String> {
+    let after = &src[pos + "pub fn ".len()..];
+    let paren = after.find('(')?;
+    let name = &after[..paren];
+    if name.is_empty() {
+        return None;
+    }
+    if !name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') {
+        return None;
+    }
+    let sig_end = after.find('{').unwrap_or(after.len());
+    let rest = &after[paren..sig_end];
+    let has_str_input = rest.contains(": &str)")
+        || rest.contains(": &str,")
+        || rest.contains("_: &str)")
+        || rest.contains("_: &str,");
+    if !has_str_input || !rest.contains("-> String") {
+        return None;
+    }
+    out.push(name.to_string());
+    Some(name.to_string())
+}
+
+fn extract_input_str_fns(src: &str, registered: &HashSet<String>) -> Vec<String> {
     let mut out = Vec::new();
     for line in src.lines() {
         let t = line.trim_start();
         if t.starts_with("pub use ") {
             let stmt = t[8..].trim();
             let stmt = stmt.split(';').next().unwrap_or_default().trim();
-            collect_pub_use_names(stmt, &mut out);
+            collect_pub_use_names(stmt, &mut out, registered);
             continue;
         }
-        if !t.starts_with("pub fn ") {
-            continue;
-        }
-        let after = &t[7..];
-        let Some(paren) = after.find('(') else {
-            continue;
-        };
-        let name = &after[..paren];
-        if name.is_empty() {
-            continue;
-        }
-        if !name.chars().all(|c| c.is_ascii_alphanumeric() || c == '_') {
-            continue;
-        }
-        let rest = &after[paren..];
-        let has_str_input = rest.contains(": &str)")
-            || rest.contains(": &str,")
-            || rest.contains("_: &str)")
-            || rest.contains("_: &str,");
-        if !has_str_input {
-            continue;
-        }
-        if !rest.contains("-> String") {
-            continue;
-        }
-        out.push(name.to_string());
+    }
+    let mut cur = 0;
+    while let Some(rel) = src[cur..].find("pub fn ") {
+        let pos = cur + rel;
+        push_input_str_fn(src, pos, &mut out);
+        cur = pos + "pub fn ".len();
     }
     out.sort();
     out.dedup();
     out
 }
 
-const PYTHON_CUSTOM_WRAPPED: &[&str] = &[
-    "build_grid",
-    "grid",
-    "build_sysmon",
-    "sysmon",
-    "build_slideshow",
-    "build_hover_json",
-    "plot_chart",
-    "plot",
-    "set_bg",
-    "show_chart_value",
-    "bench_chart_value",
-    "set_chart_kind",
-    "set_chart_orientation",
-    "bench_pure_rust",
-    "push_telemetry",
-    "export_svg",
-    "export_data_url",
-    "chart_info",
-];
+fn collect_registered_fns(root: &Path) -> RegisteredFns {
+    let mut files = Vec::new();
+    walk(root, &mut files);
+    files.sort();
+    let mut out = RegisteredFns::default();
+    for file in files {
+        let Ok(src) = fs::read_to_string(&file) else {
+            continue;
+        };
+        let mut cur = 0;
+        while let Some(rel) = src[cur..].find("pub fn ") {
+            let pos = cur + rel;
+            let attr_src = &src[cur..pos];
+            let mut names = Vec::new();
+            if attr_src.contains("sera_register") {
+                if let Some(name) = push_input_str_fn(&src, pos, &mut names) {
+                    out.exported.insert(name.clone());
+                    if attr_src.contains("sera_register(custom") {
+                        out.custom_wrapped.insert(name);
+                    }
+                }
+            }
+            cur = pos + "pub fn ".len();
+        }
+    }
+    out
+}
 
 #[allow(dead_code)]
 struct FnSpec<'a> {
@@ -461,6 +454,7 @@ pub(crate) fn write_all(
 ) {
     let ml_pyclasses: Vec<String> = Vec::new();
     let ml_pyfunctions: Vec<String> = Vec::new();
+    let registered = collect_registered_fns(&manifest.join("src"));
 
     let charts_path = bindings_root.join("commands").join("charts.rs");
     let charts_src = if charts_path.exists() {
@@ -501,25 +495,32 @@ pub(crate) fn write_all(
         let ml_path = bindings_root.join("commands").join("ml.rs");
         fs::read_to_string(&ml_path).unwrap_or_default()
     };
-    let all_fns = extract_input_str_fns(&charts_src);
+    let mut all_fns = extract_input_str_fns(&charts_src, &registered.exported);
+    for name in &registered.exported {
+        if !all_fns.contains(name) {
+            all_fns.push(name.clone());
+        }
+    }
+    all_fns.sort();
+    all_fns.dedup();
     let plot_utils_path = manifest.join("src").join("plot").join("utils.rs");
     let plot_utils_src = fs::read_to_string(&plot_utils_path).unwrap_or_default();
     println!("cargo:rerun-if-changed=src/plot/utils.rs");
-    let plot_util_fns = extract_input_str_fns(&plot_utils_src);
-    let ml_fns_vec = extract_input_str_fns(&ml_src);
+    let plot_util_fns = extract_input_str_fns(&plot_utils_src, &registered.exported);
+    let ml_fns_vec = extract_input_str_fns(&ml_src, &HashSet::new());
     let mut chart_fns: Vec<String> = Vec::new();
     let ml_fns: Vec<String> = ml_fns_vec;
     let mut util_fns: Vec<String> = Vec::new();
     let mut auto_util_fns: Vec<String> = Vec::new();
     for n in builder_fns {
-        if PYTHON_CUSTOM_WRAPPED.contains(&n.as_str()) {
+        if registered.custom_wrapped.contains(n) {
             util_fns.push(n.clone());
         } else {
             chart_fns.push(n.clone());
         }
     }
     for n in &all_fns {
-        if PYTHON_CUSTOM_WRAPPED.contains(&n.as_str()) {
+        if registered.custom_wrapped.contains(n) {
             if !util_fns.contains(n) {
                 util_fns.push(n.clone());
             }
@@ -534,7 +535,7 @@ pub(crate) fn write_all(
     }
     for n in &plot_util_fns {
         if !util_fns.contains(n) {
-            if PYTHON_CUSTOM_WRAPPED.contains(&n.as_str()) {
+            if registered.custom_wrapped.contains(n) {
                 util_fns.push(n.clone());
             } else {
                 util_fns.push(n.clone());

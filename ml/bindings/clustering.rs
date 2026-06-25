@@ -34,6 +34,12 @@ pub fn ml_dbscan_fit_predict(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Clustering",
+    en = "KMeans — centroid-based clustering with repeated initializations.",
+    fr = "KMeans — clustering par centroides avec initialisations repetees.",
+    file = "kmeans.md"
+)]
 #[crate::sera_alias(
     "kmeans_fit_predict",
     "ml_kmeans",

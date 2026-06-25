@@ -28,6 +28,12 @@ pub fn ml_pca(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Decomposition",
+    en = "TruncatedSVD — low-rank projection using truncated singular value decomposition.",
+    fr = "TruncatedSVD — projection bas rang par decomposition en valeurs singulieres tronquee.",
+    file = "decomposition.md"
+)]
 #[crate::sera_alias("truncated_svd")]
 pub fn ml_truncated_svd(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);

@@ -6,7 +6,7 @@ pub(crate) fn walk(dir: &Path, out: &mut Vec<PathBuf>) {
     for e in rd.flatten() {
         let p = e.path();
         if p.is_dir() {
-            if p.file_name().and_then(|s| s.to_str()) == Some("build") {
+            if p.file_name().and_then(|s| s.to_str()) == Some("docgen") {
                 continue;
             }
             walk(&p, out);
@@ -535,32 +535,45 @@ pub(crate) fn extract_pyfunction_names(src: &str) -> Vec<String> {
     out
 }
 
-const PARAMS_BLACKLIST: &[&str] = &[
-    "buf",
-    "pl",
-    "pt",
-    "pb",
-    "pw",
-    "ph",
-    "len",
-    "is_empty",
-    "iter",
-    "as_str",
-    "to_vec",
-    "to_string",
-    "max",
-    "min",
-    "clone",
-    "into",
-];
+pub(crate) fn struct_field_names(src: &str) -> Vec<String> {
+    let mut out: Vec<String> = Vec::new();
+    let needle = "pub ";
+    let mut cur = 0;
+    while let Some(pos) = src[cur..].find(needle) {
+        let start = cur + pos + needle.len();
+        let rest = &src[start..];
+        let mut end = 0;
+        for (i, c) in rest.char_indices() {
+            if c.is_ascii_alphanumeric() || c == '_' {
+                end = i + c.len_utf8();
+            } else {
+                break;
+            }
+        }
+        cur = start + end.max(1);
+        if end == 0 {
+            continue;
+        }
+        let name = &rest[..end];
+        let after = rest[end..].trim_start();
+        if after.starts_with(':') && !after.starts_with("::") {
+            out.push(name.to_string());
+        }
+    }
+    out.sort();
+    out.dedup();
+    out
+}
 
-pub(crate) fn filtered_auto_fields(src: &str) -> Vec<String> {
-    let raw = auto_cfg_fields(src);
-    raw.into_iter()
-        .filter(|s| {
-            !PARAMS_BLACKLIST.contains(&s.as_str())
-                && !s.is_empty()
-                && !s.chars().next().map(|c| c.is_ascii_digit()).unwrap_or(true)
-        })
+pub(crate) fn config_field_names(dir: &Path) -> Vec<String> {
+    fs::read_to_string(dir.join("config.rs"))
+        .map(|s| struct_field_names(&s))
+        .unwrap_or_default()
+}
+
+pub(crate) fn filtered_auto_fields(src: &str, allowed: &[String]) -> Vec<String> {
+    auto_cfg_fields(src)
+        .into_iter()
+        .filter(|s| allowed.contains(s))
         .collect()
 }

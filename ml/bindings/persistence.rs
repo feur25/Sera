@@ -31,6 +31,12 @@ pub fn ml_save_model(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Registry",
+    en = "Load model from the in-memory registry by name and optional version.",
+    fr = "Charge un modele depuis le registre en memoire par nom et version optionnelle.",
+    file = "registry.md"
+)]
 #[crate::sera_alias("load_model")]
 pub fn ml_load_model(input: &str) -> String {
     let v: serde_json::Value = serde_json::from_str(input).unwrap_or(serde_json::Value::Null);

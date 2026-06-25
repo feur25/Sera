@@ -149,6 +149,7 @@ setInterval(function(){T=Object.assign({},T,{cpu_pct:Math.min(100,Math.max(0,T.c
     )
 }
 
+#[crate::sera_register(custom)]
 pub fn build_sysmon(input: &str) -> String {
     #[cfg(target_arch = "wasm32")]
     {
@@ -170,6 +171,7 @@ pub fn build_sysmon(input: &str) -> String {
     }
 }
 
+#[crate::sera_register(custom)]
 pub fn sysmon(input: &str) -> String {
     build_sysmon(input)
 }

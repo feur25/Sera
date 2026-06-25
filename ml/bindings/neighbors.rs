@@ -21,6 +21,12 @@ pub fn ml_knn_classifier(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Neighbors",
+    en = "K-Nearest Neighbors regressor — distance-based average among k nearest neighbors.",
+    fr = "K plus proches voisins regresseur — moyenne par distance parmi les k voisins les plus proches.",
+    file = "knn.md"
+)]
 #[crate::sera_alias("knn_regressor", "knn_reg")]
 pub fn ml_knn_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -36,6 +42,12 @@ pub fn ml_knn_regressor(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Neighbors",
+    en = "NearestCentroid — centroid classifier using class means.",
+    fr = "NearestCentroid — classifieur par centroide utilisant les moyennes de classes.",
+    file = "knn.md"
+)]
 #[crate::sera_alias("nearest_centroid")]
 pub fn ml_nearest_centroid(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);

@@ -22,6 +22,12 @@ pub fn ml_linear_svc(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "SVM",
+    en = "LinearSVR — linear Support Vector Regressor.",
+    fr = "LinearSVR — regresseur a vecteurs de support lineaire.",
+    file = "svm.md"
+)]
 #[crate::sera_alias("linear_svr", "svr")]
 pub fn ml_linear_svr(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);

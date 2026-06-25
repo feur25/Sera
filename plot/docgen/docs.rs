@@ -221,12 +221,14 @@ pub fn collect(plot_root: &Path) -> PlotDocData {
         let params = if let Some(explicit) = crate::build_common::extract_params_required(&src) {
             explicit
         } else {
-            let mut fields = crate::build_common::filtered_auto_fields(&src);
-            if let Some(dir) = f.parent() {
+            let dir = f.parent();
+            let allowed = dir.map(crate::build_common::config_field_names).unwrap_or_default();
+            let mut fields = crate::build_common::filtered_auto_fields(&src, &allowed);
+            if let Some(dir) = dir {
                 for shared_name in ["common.rs", "shared.rs"] {
                     let shared_path = dir.join(shared_name);
                     if let Ok(shared_src) = fs::read_to_string(&shared_path) {
-                        for s in crate::build_common::filtered_auto_fields(&shared_src) {
+                        for s in crate::build_common::filtered_auto_fields(&shared_src, &allowed) {
                             if !fields.contains(&s) {
                                 fields.push(s);
                             }

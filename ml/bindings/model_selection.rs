@@ -26,6 +26,12 @@ pub fn ml_kfold_split(input: &str) -> String {
     serde_json::to_string(&result).unwrap_or_default()
 }
 
+#[crate::sera_doc(
+    category = "Model Selection",
+    en = "cross_val_score — evaluates a Ridge model with k-fold cross-validation.",
+    fr = "cross_val_score — evalue un modele Ridge par validation croisee k-fold.",
+    file = "cv-splitters.md"
+)]
 #[crate::sera_alias("cross_val_score")]
 pub fn ml_cross_val_score(input: &str) -> String {
     let (v, xf, n, p, _, _) = ml_parse(input);
@@ -72,6 +78,12 @@ pub fn ml_cross_val_score(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Model Selection",
+    en = "GridSearchCV — searches alpha values with k-fold validation.",
+    fr = "GridSearchCV — cherche des valeurs alpha avec validation k-fold.",
+    file = "grid-search.md"
+)]
 #[crate::sera_alias("grid_search_cv")]
 pub fn ml_grid_search_cv(input: &str) -> String {
     let (v, xf, n, p, _, _) = ml_parse(input);

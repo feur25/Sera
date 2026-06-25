@@ -50,6 +50,17 @@ details summary {
 pre code {
   font-size: 13px;
 }
+
+/* ── Registry tables (Variants / Parameters / Themes) — soften the default
+   highlight.js inline-code pill so it doesn't dominate the table ────────── */
+[data-sp-registry-table] code {
+  background: #131c2c !important;
+  border: 1px solid #223349 !important;
+  color: #9fb4cc !important;
+  font-weight: 500 !important;
+  padding: 1px 6px !important;
+  border-radius: 5px !important;
+}
 /* ── Chart preview iframes ────────────────────────────────────────── */
 /* Override the 520px inline height set in each .md — reduced to fit
    nicely alongside the API panel without being too tall.
@@ -1172,6 +1183,292 @@ body.sp-body-bottom .content {
   color: #38bdf8;
   border: 1px solid #1e3a5f;
   white-space: nowrap;
+}
+
+.ml-doc-shell {
+  margin: 18px 0 34px;
+}
+.ml-doc-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 22px;
+  margin: 14px 0 24px;
+  padding: 22px 24px;
+  border: 1px solid #25405f;
+  border-left: 5px solid #0ea5a3;
+  border-radius: 8px;
+  background:
+    linear-gradient(115deg, rgba(14, 165, 163, .18), rgba(245, 158, 11, .10) 55%, rgba(37, 99, 235, .08)),
+    #081321;
+}
+.ml-doc-hero p {
+  margin: 8px 0 0;
+  max-width: 760px;
+  color: #d5e2f0;
+  font-size: 15px;
+  line-height: 1.65;
+}
+.ml-doc-kicker {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border: 1px solid #0f766e;
+  border-radius: 999px;
+  background: rgba(15, 118, 110, .22);
+  color: #5eead4;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.ml-doc-counts {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  justify-content: flex-end;
+  gap: 8px;
+  min-width: 190px;
+}
+.ml-doc-counts span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 3px 10px;
+  border: 1px solid #344965;
+  border-radius: 999px;
+  background: #0f1c2e;
+  color: #bfdbfe;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.ml-doc-section {
+  margin: 28px 0;
+}
+.ml-doc-section h2 {
+  margin: 0 0 14px;
+  color: #dbeafe;
+  font-size: 22px;
+  letter-spacing: 0;
+}
+.ml-doc-api-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(285px, 1fr));
+  gap: 14px;
+}
+.ml-doc-api-card,
+.ml-doc-index-card,
+.ml-doc-example {
+  border: 1px solid #24354e;
+  border-radius: 8px;
+  background: #0a1424;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, .04) inset;
+}
+.ml-doc-api-card {
+  padding: 16px 18px;
+}
+.ml-doc-api-card h3 {
+  margin: 0 0 9px;
+  font-size: 15px;
+}
+.ml-doc-api-card h3 code,
+.ml-doc-table td:first-child code {
+  color: #a8c6e0;
+  font-weight: 700;
+}
+.ml-doc-api-card p {
+  min-height: 46px;
+  margin: 0 0 14px;
+  color: #cbd5e1;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.ml-doc-api-card dl {
+  display: grid;
+  grid-template-columns: 76px 1fr;
+  gap: 8px 12px;
+  margin: 0;
+}
+.ml-doc-api-card dt {
+  color: #8aa3c7;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.ml-doc-api-card dd {
+  margin: 0;
+  color: #dbeafe;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.ml-doc-api-card code,
+.ml-doc-table code,
+.ml-doc-example-head code,
+.ml-doc-index-card code {
+  display: inline-block;
+  margin: 1px 2px 1px 0;
+  padding: 1px 6px;
+  border: 1px solid #223349;
+  border-radius: 5px;
+  background: #131c2c;
+  color: #9fb4cc;
+  font-weight: 500;
+  font-size: 12px;
+}
+.ml-doc-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #22324a;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 13px;
+}
+.ml-doc-table thead {
+  background: #111d31;
+}
+.ml-doc-table th {
+  padding: 9px 12px;
+  color: #9db1cd;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-align: left;
+  text-transform: uppercase;
+}
+.ml-doc-table td {
+  padding: 9px 12px;
+  border-top: 1px solid #17243a;
+  color: #d5e2f0;
+  vertical-align: top;
+}
+.ml-doc-table tbody tr:nth-child(even) td {
+  background: rgba(255, 255, 255, .025);
+}
+.ml-doc-table tbody tr:hover td {
+  background: rgba(14, 165, 163, .075);
+}
+.ml-doc-type {
+  display: inline-flex;
+  padding: 2px 8px;
+  border: 1px solid #2a4356;
+  border-radius: 999px;
+  background: #0e2230;
+  color: #8fbdd6;
+  font-family: var(--mono-font);
+  font-size: 11px;
+  font-weight: 600;
+}
+.ml-doc-examples {
+  display: grid;
+  gap: 16px;
+}
+.ml-doc-example {
+  overflow: hidden;
+}
+.ml-doc-example-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #22324a;
+  background: #0d1a2c;
+}
+.ml-doc-example-head span {
+  color: #dbeafe;
+  font-size: 13px;
+  font-weight: 800;
+}
+.ml-doc-example pre {
+  margin: 0;
+  padding: 16px 18px;
+  border-radius: 0;
+  background: #06101e;
+  overflow-x: auto;
+}
+.ml-doc-example pre code {
+  display: block;
+  color: #dbeafe;
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre;
+}
+.ml-doc-index-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 18px;
+  margin: 24px 0 36px;
+}
+.ml-doc-index-card {
+  display: flex;
+  min-height: 250px;
+  flex-direction: column;
+  padding: 20px 20px 0;
+}
+.ml-doc-index-card h2 {
+  margin: 0 0 10px;
+  color: #67e8f9;
+  font-size: 24px;
+  letter-spacing: 0;
+  text-decoration: underline;
+  text-decoration-color: rgba(103, 232, 249, .5);
+  text-underline-offset: 4px;
+}
+.ml-doc-index-card p {
+  flex: 1;
+  margin: 0 0 14px;
+  color: #d5e2f0;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.ml-doc-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 14px -20px 0;
+  padding: 12px 20px;
+  border-top: 1px solid #24354e;
+  background: #0d1a2c;
+}
+.ml-doc-links a {
+  color: #67e8f9;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+.ml-doc-links a:hover {
+  color: #fbbf24;
+  text-decoration: underline;
+}
+.ml-doc-model-table td:last-child {
+  line-height: 1.7;
+}
+.ml-doc-empty,
+.ml-doc-muted {
+  color: #8aa3c7;
+}
+@media (max-width: 760px) {
+  .ml-doc-hero {
+    flex-direction: column;
+    padding: 18px;
+  }
+  .ml-doc-counts {
+    justify-content: flex-start;
+    min-width: 0;
+  }
+  .ml-doc-api-card dl {
+    grid-template-columns: 1fr;
+  }
+  .ml-doc-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .ml-doc-example-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
 
 /* ── Methods block ──────────────────────────────────────────────────── */

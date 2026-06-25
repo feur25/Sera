@@ -701,6 +701,7 @@ pub fn html_suffix(buf: &mut Vec<u8>, id: u64, hover_json: &str) {
     buf.extend_from_slice(b"</div></body></html>");
 }
 
+#[crate::sera_register(custom)]
 pub fn set_bg(input: &str) -> String {
     #[derive(serde::Deserialize, Default)]
     struct In {

@@ -31,6 +31,12 @@ pub fn ml_random_forest_classifier(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Tree-Based",
+    en = "Random Forest regressor — bagging of CART regression trees with feature subsampling.",
+    fr = "Random Forest regresseur — bagging d'arbres CART avec sous-echantillonnage de features.",
+    file = "random-forest.md"
+)]
 #[crate::sera_alias("random_forest_regressor", "rf_reg")]
 pub fn ml_random_forest_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -56,6 +62,12 @@ pub fn ml_random_forest_regressor(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Tree-Based",
+    en = "GradientBoostingClassifier — additive boosted decision trees for classification.",
+    fr = "GradientBoostingClassifier — arbres de decision boostes additifs pour classification.",
+    file = "gradient-boosting.md"
+)]
 #[crate::sera_alias("gradient_boosting_classifier", "gb_cls")]
 pub fn ml_gradient_boosting_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -80,6 +92,12 @@ pub fn ml_gradient_boosting_classifier(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Tree-Based",
+    en = "GradientBoostingRegressor — additive boosted decision trees for regression.",
+    fr = "GradientBoostingRegressor — arbres de decision boostes additifs pour regression.",
+    file = "gradient-boosting.md"
+)]
 #[crate::sera_alias("gradient_boosting_regressor", "gb_reg")]
 pub fn ml_gradient_boosting_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -104,6 +122,12 @@ pub fn ml_gradient_boosting_regressor(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Tree-Based",
+    en = "AdaBoostClassifier — boosted shallow trees for classification.",
+    fr = "AdaBoostClassifier — arbres peu profonds boostes pour classification.",
+    file = "adaboost.md"
+)]
 #[crate::sera_alias("adaboost_classifier", "ada_cls")]
 pub fn ml_adaboost_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -121,6 +145,12 @@ pub fn ml_adaboost_classifier(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Tree-Based",
+    en = "AdaBoostRegressor — boosted shallow trees for regression.",
+    fr = "AdaBoostRegressor — arbres peu profonds boostes pour regression.",
+    file = "adaboost.md"
+)]
 #[crate::sera_alias("adaboost_regressor", "ada_reg")]
 pub fn ml_adaboost_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);

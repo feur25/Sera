@@ -36,6 +36,12 @@ pub fn ml_decision_tree_classifier(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Tree-Based",
+    en = "Decision tree regressor — CART regression tree with binned splits.",
+    fr = "Arbre de decision regresseur — arbre CART avec splits binnes.",
+    file = "decision-tree.md"
+)]
 #[crate::sera_alias("decision_tree_regressor", "dt_reg")]
 pub fn ml_decision_tree_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);

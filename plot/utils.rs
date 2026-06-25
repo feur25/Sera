@@ -31,6 +31,7 @@ pub fn get_global_grid() -> bool {
     GLOBAL_GRID.with(|g| g.get())
 }
 
+#[crate::sera_register]
 pub fn set_global_background(input: &str) -> String {
     let color = input.trim().trim_matches('"');
     set_global_bg(if color.is_empty() {
@@ -41,11 +42,13 @@ pub fn set_global_background(input: &str) -> String {
     String::new()
 }
 
+#[crate::sera_register]
 pub fn reset_global_background(_: &str) -> String {
     set_global_bg(None);
     String::new()
 }
 
+#[crate::sera_register]
 pub fn set_theme(input: &str) -> String {
     let name = input.trim().trim_matches('"');
     let (bg, pal, grid): (Option<&str>, &[u32], bool) = match name {
@@ -113,6 +116,7 @@ pub fn set_theme(input: &str) -> String {
     String::new()
 }
 
+#[crate::sera_register]
 pub fn reset_theme(_: &str) -> String {
     set_global_bg(None);
     set_global_pal(Vec::new());
@@ -120,11 +124,13 @@ pub fn reset_theme(_: &str) -> String {
     String::new()
 }
 
+#[crate::sera_register]
 pub fn themes(_: &str) -> String {
     "[\"dark\",\"light\",\"scientific\",\"apple\",\"notion\",\"minimal\",\"neon\"]".to_string()
 }
 
 #[crate::sera_alias("plot", "chart", "draw", "render")]
+#[crate::sera_register(custom)]
 pub fn plot_chart(input: &str) -> String {
     #[derive(Deserialize, Default)]
     struct In {
@@ -167,6 +173,7 @@ pub fn plot_chart(input: &str) -> String {
 }
 
 #[crate::sera_alias("grid", "grids", "chart_grid", "subplot_grid")]
+#[crate::sera_register(custom)]
 pub fn build_grid(input: &str) -> String {
     let (title_s, args, opts) = crate::plot::parse_all(input);
     let title = title_s.as_str();
@@ -199,6 +206,7 @@ pub fn build_grid(input: &str) -> String {
     buf
 }
 
+#[crate::sera_register(custom)]
 pub fn build_slideshow(input: &str) -> String {
     let (title_s, args, opts) = crate::plot::parse_all(input);
     let title = title_s.as_str();
@@ -263,6 +271,7 @@ pub fn build_slideshow(input: &str) -> String {
     )
 }
 
+#[crate::sera_register(custom)]
 pub fn build_hover_json(input: &str) -> String {
     #[derive(Deserialize, Default)]
     struct In {
@@ -295,6 +304,7 @@ pub fn build_hover_json(input: &str) -> String {
     slots_to_json(&slots)
 }
 
+#[crate::sera_register]
 pub fn chart_append(input: &str) -> String {
     #[derive(Deserialize)]
     struct In {
@@ -343,6 +353,7 @@ pub fn chart_append(input: &str) -> String {
     serde_json::json!({"html":html,"x":xs,"y":ys}).to_string()
 }
 
+#[crate::sera_register(custom)]
 pub fn export_svg(input: &str) -> String {
     #[derive(serde::Deserialize)]
     struct In {
@@ -364,6 +375,7 @@ pub fn export_svg(input: &str) -> String {
     h[start..end].to_string()
 }
 
+#[crate::sera_register(custom)]
 pub fn export_data_url(input: &str) -> String {
     use base64::Engine;
     let svg = export_svg(input);
@@ -374,6 +386,7 @@ pub fn export_data_url(input: &str) -> String {
     format!("data:image/svg+xml;base64,{b64}")
 }
 
+#[crate::sera_register]
 pub fn export_html_file(input: &str) -> String {
     #[derive(serde::Deserialize)]
     struct In {
@@ -396,6 +409,7 @@ pub fn export_html_file(input: &str) -> String {
     }
 }
 
+#[crate::sera_register(custom)]
 pub fn chart_info(input: &str) -> String {
     #[derive(serde::Deserialize)]
     struct In {
@@ -414,6 +428,7 @@ pub fn chart_info(input: &str) -> String {
     serde_json::json!({"size":len,"paths":n_paths,"rects":n_rects,"circles":n_circles,"has_svg":has_svg}).to_string()
 }
 
+#[crate::sera_register]
 pub fn validate_input(input: &str) -> String {
     #[derive(serde::Deserialize)]
     struct In {
@@ -449,6 +464,7 @@ pub fn validate_input(input: &str) -> String {
     serde_json::json!({"ok":true}).to_string()
 }
 
+#[crate::sera_register]
 pub fn downsample_lttb(input: &str) -> String {
     #[derive(serde::Deserialize)]
     struct In {
@@ -512,6 +528,7 @@ pub fn downsample_lttb(input: &str) -> String {
         .to_string()
 }
 
+#[crate::sera_register]
 pub fn chart_diff(input: &str) -> String {
     #[derive(serde::Deserialize)]
     struct In {
@@ -561,6 +578,7 @@ fn extract_svg(html: &str) -> String {
     html[start..end].to_string()
 }
 
+#[crate::sera_register]
 pub fn drift_ks(input: &str) -> String {
     #[derive(serde::Deserialize)]
     struct In {
@@ -627,6 +645,7 @@ pub(crate) fn bench_chart_value_inner(s: &str) -> bool {
     serde_json::from_str::<serde_json::Value>(s).is_ok()
 }
 
+#[crate::sera_register(custom)]
 pub fn bench_chart_value(input: &str) -> String {
     bench_chart_value_inner(input).to_string()
 }
@@ -638,6 +657,7 @@ pub(crate) fn set_chart_kind_raw(kind: u8) {
 #[cfg(not(any(feature = "python", feature = "gui")))]
 pub(crate) fn set_chart_kind_raw(_kind: u8) {}
 
+#[crate::sera_register(custom)]
 pub fn set_chart_kind(input: &str) -> String {
     let kind = serde_json::from_str::<serde_json::Value>(input)
         .ok()
@@ -658,6 +678,7 @@ pub(crate) fn set_chart_orientation_raw(vertical: bool) {
 #[cfg(not(any(feature = "python", feature = "gui")))]
 pub(crate) fn set_chart_orientation_raw(_vertical: bool) {}
 
+#[crate::sera_register(custom)]
 pub fn set_chart_orientation(input: &str) -> String {
     let vertical = serde_json::from_str::<serde_json::Value>(input)
         .ok()
@@ -681,6 +702,7 @@ pub(crate) fn show_chart_value_inner(_s: &str) -> bool {
     false
 }
 
+#[crate::sera_register(custom)]
 pub fn show_chart_value(input: &str) -> String {
     show_chart_value_inner(input).to_string()
 }
@@ -772,6 +794,7 @@ pub(crate) fn bench_pure_rust_raw(n: usize) -> (f64, f64, f64, f64) {
     (hist_ms, bar_ms, scatter_ms, heatmap_ms)
 }
 
+#[crate::sera_register(custom)]
 pub fn bench_pure_rust(input: &str) -> String {
     let n = serde_json::from_str::<serde_json::Value>(input)
         .ok()
@@ -788,6 +811,7 @@ pub fn bench_pure_rust(input: &str) -> String {
 }
 
 #[crate::sera_alias("plan", "cloud_plan")]
+#[crate::sera_register]
 pub fn scale_plan(input: &str) -> String {
     #[derive(serde::Deserialize, Default)]
     struct In {
@@ -805,12 +829,14 @@ pub fn scale_plan(input: &str) -> String {
 }
 
 #[crate::sera_alias("profile", "cloud_profile", "system_info")]
+#[crate::sera_register]
 pub fn system_profile(_input: &str) -> String {
     let r = crate::cloud::profile::current();
     crate::cloud::profile::to_json(&r)
 }
 
 #[crate::sera_alias("count_rows", "csv_rows")]
+#[crate::sera_register]
 pub fn csv_count_rows(input: &str) -> String {
     #[derive(serde::Deserialize, Default)]
     struct In {
@@ -828,6 +854,7 @@ pub fn csv_count_rows(input: &str) -> String {
 }
 
 #[crate::sera_alias("read_chunk", "csv_chunk")]
+#[crate::sera_register]
 pub fn csv_chunk_read(input: &str) -> String {
     #[derive(serde::Deserialize, Default)]
     struct In {

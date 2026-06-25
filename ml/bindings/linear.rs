@@ -22,6 +22,12 @@ pub fn ml_linear_regression(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Linear",
+    en = "Ridge regression — L2-regularized linear regression.",
+    fr = "Regression Ridge — regression lineaire regularisee L2.",
+    file = "ridge.md"
+)]
 #[crate::sera_alias("ridge", "ridge_regression")]
 pub fn ml_ridge(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -39,6 +45,12 @@ pub fn ml_ridge(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Linear",
+    en = "Lasso regression — L1-regularized linear regression.",
+    fr = "Regression Lasso — regression lineaire regularisee L1.",
+    file = "lasso.md"
+)]
 #[crate::sera_alias("lasso")]
 pub fn ml_lasso(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -58,6 +70,12 @@ pub fn ml_lasso(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Linear",
+    en = "Elastic Net regression — combined L1 and L2 regularization.",
+    fr = "Regression Elastic Net — regularisation combinee L1 et L2.",
+    file = "elastic-net.md"
+)]
 #[crate::sera_alias("elastic_net", "elasticnet")]
 pub fn ml_elastic_net(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -84,6 +102,12 @@ pub fn ml_elastic_net(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Linear",
+    en = "Logistic regression — linear classifier trained with iterative optimization.",
+    fr = "Regression logistique — classifieur lineaire entraine par optimisation iterative.",
+    file = "logistic-regression.md"
+)]
 #[crate::sera_alias("logistic_regression", "logistic")]
 pub fn ml_logistic_regression(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -105,6 +129,12 @@ pub fn ml_logistic_regression(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Linear",
+    en = "RidgeClassifier — L2-regularized linear classifier.",
+    fr = "RidgeClassifier — classifieur lineaire regularise L2.",
+    file = "ridge.md"
+)]
 #[crate::sera_alias("ridge_classifier", "ridge_cls")]
 pub fn ml_ridge_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -119,6 +149,12 @@ pub fn ml_ridge_classifier(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Linear",
+    en = "SGDClassifier — linear classifier optimized with stochastic gradient descent.",
+    fr = "SGDClassifier — classifieur lineaire optimise par descente de gradient stochastique.",
+    file = "sgd.md"
+)]
 #[crate::sera_alias("sgd_classifier", "sgd_cls")]
 pub fn ml_sgd_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -146,6 +182,12 @@ pub fn ml_sgd_classifier(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Linear",
+    en = "SGDRegressor — linear regressor optimized with stochastic gradient descent.",
+    fr = "SGDRegressor — regresseur lineaire optimise par descente de gradient stochastique.",
+    file = "sgd.md"
+)]
 #[crate::sera_alias("sgd_regressor", "sgd_reg")]
 pub fn ml_sgd_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);

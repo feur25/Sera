@@ -247,6 +247,7 @@
   }
 
   function isChartPage() {
+    if (document.querySelector("[data-sp-ml-doc], [data-sp-ml-category], [data-sp-ml-index]")) return false;
     var en = document.querySelector(".lang-en");
     var fr = document.querySelector(".lang-fr");
     var test = en || fr;
@@ -310,46 +311,8 @@
     return svg || '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="4"/></svg>';
   }
 
-  function updateAliasForVariant(panel, clsId, variantName) {
-    updatePanelParamsForVariant(panel, clsId, variantName);
+  function updateAliasForVariant(panel) {
     hydrateAliases(panel);
-  }
-
-  function familyFromClsId(clsId) {
-    return String(clsId || "").replace(/^pp-/, "").replace(/-cls$/, "");
-  }
-
-  function variantKeyFromValue(variantName) {
-    if (variantName && typeof variantName === "object") return variantName.key || "";
-    return String(variantName || "");
-  }
-
-  function panelParamsHtml(family, variant, lang) {
-    var rows = registryVariantRows(family);
-    if (!rows.length) return "";
-    var row = rows.filter(function (r) { return r.key === variant; })[0];
-    if ((!row || !((row.required && row.required.length) || (row.demo && row.demo.length))) && variant === "horizontal") {
-      row = rows.filter(function (r) { return r.key === "basic"; })[0] || row;
-    }
-    if (!row) row = rows[0];
-    var params = (row.required && row.required.length ? row.required : row.demo || []).slice().sort();
-    if (!params.length) {
-      return '<p>' + (lang === "fr" ? "Aucun param\u00e8tre sp\u00e9cifique pour cette variante." : "No variant-specific parameters.") + '</p>';
-    }
-    var title = lang === "fr" ? "Variante" : "Variant";
-    var head = lang === "fr" ? "Param\u00e8tre" : "Parameter";
-    return '<div class="sp-param-variant"><span>' + title + '</span><code>' + escapeAttr(row.key) + '</code></div>' +
-      '<table><thead><tr><th>' + head + '</th></tr></thead><tbody>' +
-      params.map(function (p) { return '<tr><td><code>' + escapeAttr(p) + '</code></td></tr>'; }).join("") +
-      '</tbody></table>';
-  }
-
-  function updatePanelParamsForVariant(panel, clsId, variantName) {
-    if (!panel) return;
-    var target = panel.querySelector(".sp-psec-params .sp-psec-content");
-    if (!target) return;
-    var html = panelParamsHtml(familyFromClsId(clsId), variantKeyFromValue(variantName), getLang());
-    if (html) target.innerHTML = html;
   }
 
   function extractVariantNames(paramsHtml) {
@@ -657,7 +620,7 @@
 
     body.appendChild(clsDiv);
 
-    updateAliasForVariant(panel, clsId, variants[0]);
+    updateAliasForVariant(panel);
 
     // If WASM was not ready yet, poll and fill code + rebuild rail when it loads.
     if (!sp || typeof sp.demo !== "function") {
@@ -696,7 +659,7 @@
           });
           hoistClassRails(panel);
           refreshRailToggleLabel();
-          updateAliasForVariant(panel, clsId, liveVariants[0] || variants[0]);
+          updateAliasForVariant(panel);
         }
       }, 80);
     }
@@ -734,36 +697,9 @@
     var previewId = scopeMatch ? scopeMatch[1] + "-preview" : "";
     addSec(remappedSig,                        labels.sig,   "sp-psec-sig");
     addSec(remapPanelHtml(data.alias || autoAliasHtml(data.functionName)), labels.alias, "sp-psec-alias");
-    addSec(remapPanelHtml(data.parameters),     labels.par,   "sp-psec-params");
     addSec(remapPanelHtml(data.returns),        labels.ret,   "sp-psec-returns");
     hydrateAliases(body);
     injectVariantCls(panel, body, data, lang);
-
-    // ── Code example tabs ────────────────────────────────────────────────
-    var tabsHtml = (lang === "fr" ? exampleData.fr : exampleData.en) || exampleData.en || exampleData.fr;
-    if (tabsHtml) {
-      var exLabel = lang === "fr" ? "Exemple" : "Example";
-      // Give each sp-tabs container inside the panel a unique id suffix to
-      // avoid duplicate-id conflicts with the same tabs in the main content.
-      var panelTabsHtml = tabsHtml.replace(
-        /\bid="([^"]+)"/g,
-        function (m, id) { return 'id="pp-' + id + '"'; }
-      ).replace(
-        /spTab\('([^']+)','([^']+)',this\)/g,
-        function (m, g, id) { return "spTab('pp-" + g + "','pp-" + id + "',this)"; }
-      );
-      var w = document.createElement("div");
-      w.className = "sp-psec sp-psec-example";
-      var l = document.createElement("div");
-      l.className = "sp-psec-lbl";
-      l.textContent = exLabel;
-      w.appendChild(l);
-      var c = document.createElement("div");
-      c.className = "sp-psec-content";
-      c.innerHTML = panelTabsHtml;
-      w.appendChild(c);
-      body.appendChild(w);
-    }
 
     // ── Chart preview iframe (full-size + CSS scale to fit panel width) ────
     if (exampleData.iframeSrc) {
@@ -891,7 +827,7 @@
             v.style.display = "block";
           }
           btn.classList.add("sp-cact");
-          updateAliasForVariant(panel, scope, variantKey);
+          updateAliasForVariant(panel);
           if (window.hljs && v) {
             v.querySelectorAll("code").forEach(function (c) {
               try { (hljs.highlightElement || hljs.highlightBlock).call(hljs, c); } catch (e) {}
@@ -1103,6 +1039,24 @@
       document.addEventListener("mousemove", onMove);
       document.addEventListener("mouseup", onUp);
     });
+  }
+
+  function themeBase() {
+    var els = document.querySelectorAll('link[href*="/theme/"],script[src*="/theme/"]');
+    for (var i = 0; i < els.length; i++) {
+      var u = els[i].href || els[i].src || "";
+      var m = u.match(/(.*\/theme\/)/);
+      if (m) return m[1];
+    }
+    return "theme/";
+  }
+
+  function ensureWasm(cb) {
+    var sp = window.SeraplotWASM;
+    if (!sp) { setTimeout(function () { ensureWasm(cb); }, 80); return; }
+    if (sp.__ready) { cb(); return; }
+    if (sp.__loading) { sp.__loading.then(cb); return; }
+    sp.__loading = sp.__init(themeBase() + "seraplot_bg.wasm").then(cb).catch(function () {});
   }
 
   function registryJson(fn, input, fallback) {
@@ -1342,6 +1296,12 @@
     renderBody(panel);
     renderRegistryTables(document);
     refreshRailToggleLabel();
+
+    ensureWasm(function () {
+      renderBody(panel);
+      renderRegistryTables(document);
+      refreshRailToggleLabel();
+    });
   }
 
   function refreshRailToggleLabel() {

@@ -620,6 +620,7 @@ pub fn get_metrics_summary() -> serde_json::Value {
     })
 }
 
+#[crate::sera_register(custom)]
 pub fn push_telemetry(input: &str) -> String {
     #[derive(serde::Deserialize, Default)]
     struct Input {

@@ -1,6 +1,12 @@
 use super::helpers::*;
 use serde::Deserialize;
 
+#[crate::sera_doc(
+    category = "Preprocessing",
+    en = "fit_transform — applies a named preprocessing transformer to tabular data.",
+    fr = "fit_transform — applique un transformeur de preprocessing nomme sur des donnees tabulaires.",
+    file = "preprocessing.md"
+)]
 #[crate::sera_alias("fit_transform", "ml_transform", "preprocess_fit_transform")]
 pub fn ml_fit_transform(input: &str) -> String {
     use crate::ml::preprocessing::scalers::*;
@@ -151,6 +157,12 @@ pub fn ml_standard_scaler(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Preprocessing",
+    en = "MinMaxScaler — rescales each feature into a configured numeric range.",
+    fr = "MinMaxScaler — remet chaque feature dans une plage numerique configuree.",
+    file = "preprocessing.md"
+)]
 #[crate::sera_alias("minmax_scaler", "ml_minmax_scaler", "MinMaxScaler")]
 pub fn ml_minmax_scaler(input: &str) -> String {
     use crate::ml::preprocessing::scalers::MinMaxScaler;
@@ -169,6 +181,12 @@ pub fn ml_minmax_scaler(input: &str) -> String {
     format!("{{\"data\":{}}}", data_str)
 }
 
+#[crate::sera_doc(
+    category = "Preprocessing",
+    en = "RobustScaler — centers and scales features with robust statistics.",
+    fr = "RobustScaler — centre et scale les features avec des statistiques robustes.",
+    file = "preprocessing.md"
+)]
 #[crate::sera_alias("robust_scaler", "ml_robust_scaler", "RobustScaler")]
 pub fn ml_robust_scaler(input: &str) -> String {
     use crate::ml::preprocessing::scalers::RobustScaler;

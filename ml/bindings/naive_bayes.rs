@@ -21,6 +21,12 @@ pub fn ml_gaussian_nb(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Naive Bayes",
+    en = "Multinomial Naive Bayes — count-based likelihood model for non-negative features.",
+    fr = "Naive Bayes multinomial — modele de vraisemblance par comptage pour features positives.",
+    file = "naive-bayes.md"
+)]
 #[crate::sera_alias("multinomial_nb")]
 pub fn ml_multinomial_nb(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -35,6 +41,12 @@ pub fn ml_multinomial_nb(input: &str) -> String {
     )
 }
 
+#[crate::sera_doc(
+    category = "Naive Bayes",
+    en = "Bernoulli Naive Bayes — binary-feature likelihood model.",
+    fr = "Naive Bayes Bernoulli — modele de vraisemblance pour features binaires.",
+    file = "naive-bayes.md"
+)]
 #[crate::sera_alias("bernoulli_nb")]
 pub fn ml_bernoulli_nb(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);

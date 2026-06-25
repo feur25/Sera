@@ -91,15 +91,22 @@ fn fn_body(src: &str, fn_pos: usize) -> Option<&str> {
 }
 
 fn extract_ml_params(src: &str, fn_name: &str) -> Vec<String> {
-    let mut out = vec![
-        "data".to_string(),
-        "target".to_string(),
-        "test_data".to_string(),
-    ];
+    let mut out = Vec::new();
     let Some(pos) = src.find(&format!("pub fn {fn_name}")) else {
         return out;
     };
     let body = fn_body(src, pos).unwrap_or(&src[pos..]);
+    if body.contains("ml_parse(input)") {
+        for name in ["data", "target", "test_data"] {
+            push_key(&mut out, name);
+        }
+    }
+    if body.contains("yf(&v)") || body.contains("yi(&v)") {
+        push_key(&mut out, "target");
+    }
+    if body.contains("parse_max_features(&v)") {
+        push_key(&mut out, "max_features");
+    }
     for helper in ["jf", "jb", "ju", "js"] {
         let needle = format!("{helper}(&v, \"");
         let mut cur = 0;
@@ -114,6 +121,15 @@ fn extract_ml_params(src: &str, fn_name: &str) -> Vec<String> {
             }
             cur = start;
         }
+    }
+    let mut cur = 0;
+    while let Some(p) = body[cur..].find("v.get(\"") {
+        let start = cur + p + "v.get(\"".len();
+        let rest = &body[start..];
+        if let Some(end) = rest.find('"') {
+            push_key(&mut out, &rest[..end]);
+        }
+        cur = start;
     }
     for form in ["struct I", "struct Input"] {
         if let Some(spos) = body.find(form) {
@@ -280,38 +296,47 @@ fn extract_ml_returns(src: &str, fn_name: &str) -> Vec<String> {
     extract_json_keys(body)
 }
 
-fn inferred_ml_file(name: &str, fallback: &str) -> String {
-    match name {
-        "ml_linear_regression" => "linear-regression.md",
-        "ml_ridge" | "ml_ridge_classifier" => "ridge.md",
-        "ml_lasso" => "lasso.md",
-        "ml_elastic_net" => "elastic-net.md",
-        "ml_logistic_regression" => "logistic-regression.md",
-        "ml_sgd_classifier" | "ml_sgd_regressor" => "sgd.md",
-        "ml_decision_tree_classifier" | "ml_decision_tree_regressor" => "decision-tree.md",
-        "ml_random_forest_classifier" | "ml_random_forest_regressor" => "random-forest.md",
-        "ml_gradient_boosting_classifier" | "ml_gradient_boosting_regressor" => {
-            "gradient-boosting.md"
+fn fn_attr_block(src: &str, start: usize, end: usize) -> Option<String> {
+    let window = &src[start.min(src.len())..end.min(src.len())];
+    let pos = window.rfind("sera_doc(")?;
+    let tail = &window[pos..];
+    let end = tail.find(")]")?;
+    Some(tail[..end + 2].to_string())
+}
+
+fn slugify(s: &str) -> String {
+    let mut out = String::new();
+    let mut dash = false;
+    for c in s.chars() {
+        if c.is_ascii_alphanumeric() {
+            if dash && !out.is_empty() {
+                out.push('-');
+            }
+            out.push(c.to_ascii_lowercase());
+            dash = false;
+        } else {
+            dash = true;
         }
-        "ml_adaboost_classifier" | "ml_adaboost_regressor" => "adaboost.md",
-        "ml_knn_classifier" | "ml_knn_regressor" | "ml_nearest_centroid" => "knn.md",
-        "ml_gaussian_nb" | "ml_multinomial_nb" | "ml_bernoulli_nb" => "naive-bayes.md",
-        "ml_linear_svc" | "ml_linear_svr" => "svm.md",
-        "ml_pca" | "ml_truncated_svd" => "decomposition.md",
-        "ml_dbscan_fit_predict" => "dbscan.md",
-        "ml_kmeans_fit_predict" => "kmeans.md",
-        "ml_kfold_split" | "ml_cross_val_score" => "cv-splitters.md",
-        "ml_grid_search_cv" => "grid-search.md",
-        "ml_permutation_importance" => "permutation-importance.md",
-        "ml_isolation_forest" => "isolation-forest.md",
-        "ml_metric_score" | "ml_metric_curve" => "metrics.md",
-        "ml_save_model" | "ml_load_model" => "registry.md",
-        "ml_standard_scaler" | "ml_minmax_scaler" | "ml_robust_scaler" | "ml_fit_transform" => {
-            "preprocessing.md"
-        }
-        _ => fallback,
     }
-    .to_string()
+    out
+}
+
+fn inferred_ml_file(source: &Path, name: &str, fallback: &str) -> String {
+    if !fallback.is_empty() {
+        return fallback.to_string();
+    }
+    let stem = name.strip_prefix("ml_").unwrap_or(name);
+    let base = stem
+        .strip_suffix("_classifier")
+        .or_else(|| stem.strip_suffix("_regressor"))
+        .or_else(|| stem.strip_suffix("_fit_predict"))
+        .unwrap_or(stem);
+    let slug = slugify(base);
+    if !slug.is_empty() {
+        return format!("{slug}.md");
+    }
+    let module = source.file_stem().and_then(|s| s.to_str()).unwrap_or("ml");
+    format!("{}.md", slugify(module))
 }
 
 fn extract_ml_docs(ml_root: &Path) -> Vec<MlDocEntry> {
@@ -325,30 +350,25 @@ fn extract_ml_docs(ml_root: &Path) -> Vec<MlDocEntry> {
             continue;
         };
         let mut cur = 0;
-        let mut current_category = String::new();
-        let mut current_file = String::new();
-        let mut current_en = String::new();
-        let mut current_fr = String::new();
         while let Some(pos_rel) = src[cur..].find("pub fn ml_") {
             let pos = cur + pos_rel;
-            if let Some(attr) = attr_block_before(&src, "sera_doc(", pos) {
-                let cat = attr_value(&attr, "category");
-                if !cat.is_empty() {
-                    current_category = cat;
-                }
-                let file = attr_value(&attr, "file");
-                if !file.is_empty() {
-                    current_file = file;
-                }
-                let en = attr_value(&attr, "en");
-                if !en.is_empty() {
-                    current_en = en;
-                }
-                let fr = attr_value(&attr, "fr");
-                if !fr.is_empty() {
-                    current_fr = fr;
-                }
-            }
+            let attr = fn_attr_block(&src, cur, pos);
+            let current_category = attr
+                .as_deref()
+                .map(|a| attr_value(a, "category"))
+                .unwrap_or_default();
+            let current_file = attr
+                .as_deref()
+                .map(|a| attr_value(a, "file"))
+                .unwrap_or_default();
+            let current_en = attr
+                .as_deref()
+                .map(|a| attr_value(a, "en"))
+                .unwrap_or_default();
+            let current_fr = attr
+                .as_deref()
+                .map(|a| attr_value(a, "fr"))
+                .unwrap_or_default();
             let name_start = pos + "pub fn ".len();
             let tail = &src[name_start..];
             let name: String = tail
@@ -363,7 +383,7 @@ fn extract_ml_docs(ml_root: &Path) -> Vec<MlDocEntry> {
                 cur = pos + 1;
                 continue;
             }
-            let file = inferred_ml_file(&name, &current_file);
+            let file = inferred_ml_file(&f, &name, &current_file);
             let aliases = attr_block_before(&src, "sera_alias(", pos)
                 .map(|a| crate::build_common::extract_sera_aliases(&a))
                 .unwrap_or_default();
