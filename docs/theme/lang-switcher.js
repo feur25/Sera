@@ -280,13 +280,7 @@
 // ── Global code-tab enhancements: copy + play + eye buttons ──────────────
 (function () {
   var COPY_SVG = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4.5" y="1.5" width="9" height="11" rx="1.5"/><path d="M3 4.5H2A1.5 1.5 0 0 0 .5 6v8A1.5 1.5 0 0 0 2 15.5h7.5A1.5 1.5 0 0 0 11 14v-1"/></svg>';
-  var PLAY_SVG = '<svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><polygon points="3,1.5 14,8 3,14.5"/></svg>';
   var EYE_SVG  = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
-
-  function getActiveLang(tabs) {
-    var activeBtn = tabs.querySelector(".sp-tb.sp-act");
-    return activeBtn ? activeBtn.textContent.trim() : "";
-  }
 
   function getActiveCode(tabs) {
     var pane = tabs.querySelector(".sp-tc.sp-on");
@@ -297,35 +291,6 @@
   function flashCopy(btn) {
     btn.classList.add("sp-copied");
     setTimeout(function () { btn.classList.remove("sp-copied"); }, 1500);
-  }
-
-  function openPlayground(lang, code) {
-    if (lang === "Rust") {
-      window.open(
-        "https://play.rust-lang.org/?version=stable&mode=debug&edition=2021&code=" +
-          encodeURIComponent(code),
-        "_blank", "noopener"
-      );
-    } else if (lang === "JavaScript") {
-      var f = document.createElement("form");
-      f.method = "post";
-      f.action = "https://jsfiddle.net/api/post/library/pure/";
-      f.target = "_blank";
-      var inp = document.createElement("input");
-      inp.type = "hidden"; inp.name = "js"; inp.value = code;
-      f.appendChild(inp);
-      document.body.appendChild(f);
-      f.submit();
-      document.body.removeChild(f);
-    } else if (lang === "TypeScript") {
-      if (navigator.clipboard) navigator.clipboard.writeText(code);
-      window.open("https://www.typescriptlang.org/play", "_blank", "noopener");
-    } else if (lang === "Python") {
-      if (navigator.clipboard) navigator.clipboard.writeText(code);
-      window.open("https://replit.com/new/python3", "_blank", "noopener");
-    } else {
-      if (navigator.clipboard) navigator.clipboard.writeText(code);
-    }
   }
 
   function injectButtons(tabs) {
@@ -348,16 +313,6 @@
       navigator.clipboard.writeText(code).then(function () { flashCopy(copyBtn); });
     });
     bar.appendChild(copyBtn);
-
-    // Play button
-    var playBtn = document.createElement("button");
-    playBtn.className = "sp-play-btn";
-    playBtn.title = "Open in playground";
-    playBtn.innerHTML = PLAY_SVG;
-    playBtn.addEventListener("click", function () {
-      openPlayground(getActiveLang(tabs), getActiveCode(tabs));
-    });
-    bar.appendChild(playBtn);
 
     // Eye button — only when there's a nearby preview iframe
     var variant = tabs.closest(".sp-variant") || tabs.closest(".sp-cls-item");

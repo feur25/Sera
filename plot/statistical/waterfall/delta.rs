@@ -65,7 +65,7 @@ pub fn render(cfg: &WaterfallConfig) -> String {
             };
             value_text(&mut b, bx + l.bar_w / 2, top - 16, v);
         }
-        if i > 0 && !p.is_total[i] && p.ends[i - 1].abs() > 1e-9 {
+        if cfg.show_text && i > 0 && !p.is_total[i] && p.ends[i - 1].abs() > 1e-9 {
             let pct = (p.values[i] / p.ends[i - 1].abs()) * 100.0;
             let badge_color: &[u8] = if pct >= 0.0 { b"#10b981" } else { b"#dc2626" };
             let arrow: &[u8] = if pct >= 0.0 {

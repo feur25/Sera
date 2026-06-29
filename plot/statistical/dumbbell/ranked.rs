@@ -19,13 +19,15 @@ pub fn render(cfg: &DumbbellConfig) -> String {
         let x1 = x_at(&f, &p, p.start[i]);
         let x2 = x_at(&f, &p, p.end[i]);
         let rank = n - i;
-        push_b(&mut f.buf, b"<text x=\"");
-        push_i(&mut f.buf, f.pl - 110);
-        push_b(&mut f.buf, b"\" y=\"");
-        push_i(&mut f.buf, cy + 4);
-        push_b(&mut f.buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"#6366F1\">#");
-        push_i(&mut f.buf, rank as i32);
-        push_b(&mut f.buf, b"</text>");
+        if cfg.show_text {
+            push_b(&mut f.buf, b"<text x=\"");
+            push_i(&mut f.buf, f.pl - 110);
+            push_b(&mut f.buf, b"\" y=\"");
+            push_i(&mut f.buf, cy + 4);
+            push_b(&mut f.buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"#6366F1\">#");
+            push_i(&mut f.buf, rank as i32);
+            push_b(&mut f.buf, b"</text>");
+        }
         push_b(&mut f.buf, b"<text x=\"");
         push_i(&mut f.buf, f.pl - 6);
         push_b(&mut f.buf, b"\" y=\"");

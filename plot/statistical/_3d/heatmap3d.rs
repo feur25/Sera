@@ -12,6 +12,7 @@ pub fn render_heatmap3d_html(
     w: i32,
     h: i32,
     bg_color: Option<&str>,
+    scene: &str,
 ) -> String {
     render_3d_html(
         9,
@@ -25,9 +26,12 @@ pub fn render_heatmap3d_html(
         w,
         h,
         bg_color,
+        scene,
     )
 }
 
+#[crate::chart_demo("labels=["R1","R2"], categories=["C1","C2"], matrix=[[1,2],[3,4]]")]
+#[crate::params(paramsList["title","labels","categories","matrix","x_labels","x_label","y_label","z_label","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_alias("heatmap3d", "heatmap_3d", "heatmap3d_chart", "heatmaps3d")]
 #[crate::sera_builder]
 pub fn build_heatmap3d_chart(input: &str) -> String {
@@ -66,6 +70,7 @@ pub fn build_heatmap3d_chart(input: &str) -> String {
             o.w(900),
             o.h(560),
             bg_str.as_deref(),
+            &o.scene3d(),
         ),
         &o,
     )

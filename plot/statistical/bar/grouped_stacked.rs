@@ -1,7 +1,46 @@
+use super::block3d::Bar3DBlock;
 use super::config::BarConfig;
 use crate::plot::statistical::common::{
     escape_xml, palette_color, push_b, push_hex, push_i, Frame,
 };
+
+pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    let n_cats = cfg.category_labels.len();
+    let n_ser = cfg.series.len();
+    if n_cats == 0 || n_ser == 0 {
+        return Vec::new();
+    }
+    let mut groups: Vec<(String, Vec<usize>)> = Vec::new();
+    for (si, _) in cfg.series.iter().enumerate() {
+        let g = cfg
+            .offset_groups
+            .get(si)
+            .cloned()
+            .unwrap_or_else(|| si.to_string());
+        if let Some((_, list)) = groups.iter_mut().find(|(name, _)| name == &g) {
+            list.push(si);
+        } else {
+            groups.push((g, vec![si]));
+        }
+    }
+    let n_groups = groups.len();
+    let mut out = Vec::new();
+    for ci in 0..n_cats {
+        for (gi, (_, members)) in groups.iter().enumerate() {
+            let cy = gi as f64 - (n_groups as f64 - 1.0) / 2.0;
+            let mut acc = 0.0;
+            for &si in members {
+                let v = cfg.series[si].1.get(ci).copied().unwrap_or(0.0);
+                if !v.is_finite() {
+                    continue;
+                }
+                out.push(Bar3DBlock::new(ci as f64, cy, acc, acc + v, 0.30, 0.30, si));
+                acc += v;
+            }
+        }
+    }
+    out
+}
 
 #[crate::chart_demo("labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], series=[[24,38,17,42],[18,29,33,21],[12,15,28,30],[20,25,18,22]], series_names=[\"2023 A\",\"2023 B\",\"2024 A\",\"2024 B\"], offset_groups=[\"2023\",\"2023\",\"2024\",\"2024\"]")]
 

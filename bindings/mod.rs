@@ -1,5 +1,6 @@
 #[macro_use]
 pub mod registry_macro;
+pub mod alias_registry;
 pub mod chart_types;
 pub mod commands;
 pub mod doc_registry;
@@ -7,6 +8,7 @@ pub mod exports;
 pub mod fast_export_c;
 pub mod fast_render;
 pub mod fn_registry;
+pub mod method_registry;
 pub mod model_registry;
 pub mod unified_config;
 pub mod utils;

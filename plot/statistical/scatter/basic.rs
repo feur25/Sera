@@ -19,7 +19,7 @@ pub fn render(cfg: &ScatterConfig) -> String {
     let color = if cfg.color_hex != 0 {
         cfg.color_hex
     } else {
-        0x6366F1
+        0x636EFA
     };
     let hx = hex6(color);
 

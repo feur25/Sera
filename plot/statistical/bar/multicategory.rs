@@ -1,7 +1,45 @@
+use super::block3d::Bar3DBlock;
 use super::config::BarConfig;
 use crate::plot::statistical::common::{
     escape_xml, palette_color, push_b, push_hex, push_i, Frame,
 };
+
+pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    let n_cats = cfg.category_labels.len();
+    let n_ser = cfg.series.len().max(1);
+    if n_cats == 0 {
+        return Vec::new();
+    }
+    let gap_extra = 0.6;
+    let mut positions = Vec::with_capacity(n_cats);
+    let mut cx = 0.0;
+    for ci in 0..n_cats {
+        if ci > 0 {
+            let same_band = cfg.super_categories.get(ci) == cfg.super_categories.get(ci - 1);
+            cx += if same_band { 1.0 } else { 1.0 + gap_extra };
+        }
+        positions.push(cx);
+    }
+    let mut out = Vec::new();
+    if cfg.series.is_empty() {
+        for ci in 0..n_cats {
+            let v = cfg.values.get(ci).copied().unwrap_or(0.0);
+            out.push(Bar3DBlock::new(positions[ci], 0.0, 0.0, v, 0.32, 0.32, ci));
+        }
+    } else {
+        for ci in 0..n_cats {
+            for (si, (_, vals)) in cfg.series.iter().enumerate() {
+                let v = vals.get(ci).copied().unwrap_or(0.0);
+                if !v.is_finite() {
+                    continue;
+                }
+                let cy = si as f64 - (n_ser as f64 - 1.0) / 2.0;
+                out.push(Bar3DBlock::new(positions[ci], cy, 0.0, v, 0.30, 0.30, si));
+            }
+        }
+    }
+    out
+}
 
 #[crate::chart_demo("labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], series=[[24,38,17,42],[18,29,33,21]], series_names=[\"2023\",\"2024\"], super_categories=[\"H1\",\"H1\",\"H2\",\"H2\"]")]
 

@@ -8,7 +8,7 @@ pub fn render(cfg: &LineConfig) -> String {
     let color = if cfg.color_hex != 0 {
         cfg.color_hex
     } else {
-        0x6366F1
+        0x636EFA
     };
     crate::plot::default::render_lines_html(
         cfg.title,

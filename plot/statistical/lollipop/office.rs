@@ -85,7 +85,7 @@ pub fn render(cfg: &LollipopConfig) -> String {
         let pal = if !cfg.palette.is_empty() {
             crate::plot::statistical::common::palette_color(cfg.palette, gi)
         } else {
-            0x6366F1
+            0x636EFA
         };
         let hx_g = hex6(pal);
 

@@ -66,7 +66,7 @@ pub fn render(cfg: &FunnelConfig) -> String {
                 p.values[i],
             );
         }
-        if i + 1 < p.n && p.values[i] > 0.0 {
+        if cfg.show_text && i + 1 < p.n && p.values[i] > 0.0 {
             let drop = (1.0 - p.values[i + 1] / p.values[i]) * 100.0;
             let yg = y + l.step_h + l.gap / 2 + 4;
             push_b(&mut b, b"<text x=\"");

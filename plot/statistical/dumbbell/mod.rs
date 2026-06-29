@@ -68,6 +68,7 @@ pub fn build(input: &str) -> String {
         gridlines: o.grid(),
         sort_order: &o.srt(),
         hover: &hover,
+        show_text: o.show_text.unwrap_or(false),
         ..DumbbellConfig::default()
     });
     apply(html, &o)

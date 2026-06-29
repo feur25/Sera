@@ -26,7 +26,7 @@ pub fn render(cfg: &TreemapConfig) -> String {
         push_b(&mut b, b" rx=\"4");
         fill_hex(&mut b, leaf_color(&p, ri));
         push_b(&mut b, b"\" stroke=\"#fff\" stroke-width=\"2\"/>");
-        label_inside(&mut b, &p, ri, b"#fff");
+        label_inside(&mut b, &p, ri, b"#fff", cfg.show_text);
     }
     finalize(b, cfg)
 }

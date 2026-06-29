@@ -61,7 +61,7 @@ pub fn render(cfg: &BarConfig, orient: u8) -> String {
 
     let base_colors = [
         0x06B6D4_u32,
-        0x6366F1,
+        0x636EFA,
         0x8B5CF6,
         0xF43F5E,
         0xF59E0B,

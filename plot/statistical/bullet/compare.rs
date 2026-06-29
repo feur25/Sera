@@ -55,7 +55,7 @@ pub fn render(cfg: &BulletConfig) -> String {
         }
         let value_w = ((p.values[i] / max_v).min(1.0) * p.plot_w as f64) as i32;
         data_value_rect(
-            &mut b, &p, i, p.pad_l, by, value_w, bar_h, 0x6366F1, 2, 0.95,
+            &mut b, &p, i, p.pad_l, by, value_w, bar_h, 0x636EFA, 2, 0.95,
         );
         if p.targets[i] > 0.0 {
             let tx = p.pad_l + ((p.targets[i] / max_v).min(1.0) * p.plot_w as f64) as i32;
@@ -70,12 +70,14 @@ pub fn render(cfg: &BulletConfig) -> String {
             push_b(&mut b, b"\" stroke=\"#dc2626\" stroke-width=\"2.4\"/>");
         }
         label_left(&mut b, &p, i, by, bar_h);
-        value_text(
-            &mut b,
-            p.values[i],
-            p.pad_l + value_w + 5,
-            by + bar_h / 2 + 4,
-        );
+        if cfg.show_text {
+            value_text(
+                &mut b,
+                p.values[i],
+                p.pad_l + value_w + 5,
+                by + bar_h / 2 + 4,
+            );
+        }
     }
     finalize(b, cfg)
 }

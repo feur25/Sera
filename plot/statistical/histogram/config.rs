@@ -22,7 +22,7 @@ crate::chart_config!(HistogramConfig, 860, 380;
         theme: crate::plot::statistical::theme::ChartTheme::None,
         values: &[],
         bins: 0,
-        color: 0x6366F1,
+        color: 0x636EFA,
         opacity: 204,
         overlay_values: None,
         overlay_color: 0xF43F5E,

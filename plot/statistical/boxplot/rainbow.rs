@@ -28,7 +28,7 @@ pub fn render(cfg: &BoxplotConfig) -> String {
     open_axes(&mut f, cfg.title, cfg.gridlines, gr.y_min, gr.y_max);
 
     let stops: [u32; 7] = [
-        0xEF4444, 0xF97316, 0xFACC15, 0x22C55E, 0x06B6D4, 0x6366F1, 0xA855F7,
+        0xEF4444, 0xF97316, 0xFACC15, 0x22C55E, 0x06B6D4, 0x636EFA, 0xA855F7,
     ];
     for (ci, (cat, st)) in cats.iter().zip(stats.iter()).enumerate() {
         let cx = f.pl + (ci as f64 * slot_w + slot_w / 2.0) as i32;
@@ -74,7 +74,7 @@ pub fn render(cfg: &BoxplotConfig) -> String {
 fn sample_palette(stops: &[u32], t: f64) -> u32 {
     let t = t.clamp(0.0, 1.0);
     if stops.is_empty() {
-        return 0x6366F1;
+        return 0x636EFA;
     }
     if stops.len() == 1 {
         return stops[0];

@@ -191,19 +191,21 @@ pub fn render_grouped_bar_html(cfg: &GroupedBarConfig) -> String {
             }
         }
     }
-    let leg_x = f.pl + f.pw + 12;
-    let leg_top = f.pt + 8;
-    for (si, (sname, _)) in series_ref.iter().enumerate() {
-        let color = palette_color(cfg.palette, si);
-        svg_legend_item(
-            &mut f.buf,
-            si as i32,
-            sname,
-            color,
-            leg_x,
-            leg_top + si as i32 * 22,
-            20,
-        );
+    if !cfg.legend_position.is_empty() && cfg.legend_position != "none" {
+        let leg_x = f.pl + f.pw + 12;
+        let leg_top = f.pt + 8;
+        for (si, (sname, _)) in series_ref.iter().enumerate() {
+            let color = palette_color(cfg.palette, si);
+            svg_legend_item(
+                &mut f.buf,
+                si as i32,
+                sname,
+                color,
+                leg_x,
+                leg_top + si as i32 * 22,
+                20,
+            );
+        }
     }
     let slots = cfg.hover;
     f.html(&slots_to_json(slots))
@@ -368,19 +370,21 @@ fn render_grouped_bar_horiz(cfg: &GroupedBarConfig) -> String {
             }
         }
     }
-    let leg_x = f.pl + f.pw + 12;
-    let leg_top = f.pt + 8;
-    for (si, (sname, _)) in series_ref.iter().enumerate() {
-        let color = palette_color(cfg.palette, si);
-        svg_legend_item(
-            &mut f.buf,
-            si as i32,
-            sname,
-            color,
-            leg_x,
-            leg_top + si as i32 * 22,
-            20,
-        );
+    if !cfg.legend_position.is_empty() && cfg.legend_position != "none" {
+        let leg_x = f.pl + f.pw + 12;
+        let leg_top = f.pt + 8;
+        for (si, (sname, _)) in series_ref.iter().enumerate() {
+            let color = palette_color(cfg.palette, si);
+            svg_legend_item(
+                &mut f.buf,
+                si as i32,
+                sname,
+                color,
+                leg_x,
+                leg_top + si as i32 * 22,
+                20,
+            );
+        }
     }
     let slots = cfg.hover;
     f.html(&slots_to_json(slots))

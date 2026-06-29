@@ -5,6 +5,33 @@ thread_local! {
     static GLOBAL_BG: RefCell<Option<String>> = RefCell::new(None);
     static GLOBAL_PAL: RefCell<Vec<u32>> = RefCell::new(Vec::new());
     static GLOBAL_GRID: std::cell::Cell<bool> = std::cell::Cell::new(false);
+    static GLOBAL_DESPINE: std::cell::Cell<bool> = std::cell::Cell::new(false);
+    static GLOBAL_WATERMARK: RefCell<Option<(String, f64)>> = RefCell::new(None);
+    static GLOBAL_SHADOW: RefCell<Option<(i32, Option<String>)>> = RefCell::new(None);
+}
+
+pub fn set_global_despine(v: bool) {
+    GLOBAL_DESPINE.with(|g| g.set(v));
+}
+
+pub fn get_global_despine() -> bool {
+    GLOBAL_DESPINE.with(|g| g.get())
+}
+
+pub fn set_global_watermark(v: Option<(String, f64)>) {
+    GLOBAL_WATERMARK.with(|g| *g.borrow_mut() = v);
+}
+
+pub fn get_global_watermark() -> Option<(String, f64)> {
+    GLOBAL_WATERMARK.with(|g| g.borrow().clone())
+}
+
+pub fn set_global_shadow(v: Option<(i32, Option<String>)>) {
+    GLOBAL_SHADOW.with(|g| *g.borrow_mut() = v);
+}
+
+pub fn get_global_shadow() -> Option<(i32, Option<String>)> {
+    GLOBAL_SHADOW.with(|g| g.borrow().clone())
 }
 
 pub fn set_global_bg(color: Option<String>) {
@@ -63,8 +90,8 @@ pub fn set_theme(input: &str) -> String {
         "light" => (
             None,
             &[
-                0x6366F1, 0x10B981, 0xF59E0B, 0xEF4444, 0x3B82F6, 0x8B5CF6, 0xEC4899, 0x14B8A6,
-                0xF97316, 0xEAB308,
+                0x636EFA, 0xEF553B, 0x00CC96, 0xAB63FA, 0xFFA15A, 0x19D3F3, 0xFF6692, 0xB6E880,
+                0xFF97FF, 0xFECB52,
             ],
             false,
         ),
@@ -151,7 +178,7 @@ pub fn plot_chart(input: &str) -> String {
     let payload: In = serde_json::from_str(input).unwrap_or_default();
     let xs = payload.x.unwrap_or_default();
     let title = payload.title.unwrap_or_default();
-    let color_hex = payload.color_hex.unwrap_or(0x6366F1);
+    let color_hex = payload.color_hex.unwrap_or(0x636EFA);
     let width = payload.width.unwrap_or(900);
     let height = payload.height.unwrap_or(480);
     let x_label = payload.x_label.unwrap_or_default();
@@ -342,7 +369,7 @@ pub fn chart_append(input: &str) -> String {
         }
     }
     let title = payload.title.unwrap_or_default();
-    let color = payload.color_hex.unwrap_or(0x6366F1);
+    let color = payload.color_hex.unwrap_or(0x636EFA);
     let width = payload.width.unwrap_or(900);
     let height = payload.height.unwrap_or(420);
     let base = serde_json::json!({"title":title,"x":xs,"y":ys,"color_hex":color,"width":width,"height":height,"show_points":true});
@@ -753,6 +780,7 @@ pub(crate) fn bench_pure_rust_raw(n: usize) -> (f64, f64, f64, f64) {
             0,
             true,
             "",
+            "none",
         );
     }
     let bar_ms = t0.elapsed().as_secs_f64() * 1000.0 / n as f64;

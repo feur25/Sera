@@ -2,15 +2,16 @@
 
 <div class="lang-en">
 
-`LiveStream` is a tiny, allocation-aware accumulator that turns a series of
-`(x, y)` samples arriving over time into a fully-rendered SeraPlot `Chart`.
-It maintains a bounded ring buffer (the `max_points` window) so memory is
-constant whatever the duration of the stream.
+`LiveStream` is a bounded ring-buffer accumulator that turns a series of
+`(x, y)` samples arriving over time into a continuously redrawn chart. Memory
+stays constant whatever the duration of the stream, since older samples are
+dropped past `max_points`.
 
-The same engine is exposed in JavaScript as `chartAppend(...)`, but Python
-gets the dedicated stateful class because it's by far the most common
-language for live data pipelines (sensors, sockets, message buses, ML training
-loops, etc.).
+What makes it smooth in a notebook: `push()` / `extend()` / `clear()` don't
+just re-render — they repaint the **same** Jupyter output cell in place via
+IPython's `display_id` mechanism (`display()` once, then `update_display()`
+on every following call). No new cells get appended, no scroll-jump, no
+clear-then-flash; the chart updates where it already is.
 
 ---
 
@@ -20,7 +21,7 @@ loops, etc.).
 sp.LiveStream(
     kind: str = "line",        # "line" or "scatter"
     title: str = "",
-    max_points: int = 500,     # ring buffer size
+    max_points: int = 500,      # ring buffer size
     color_hex: int = 0x6366F1,
     width: int = 900,
     height: int = 420,
@@ -29,10 +30,10 @@ sp.LiveStream(
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `kind` | `str` | `"line"` | Chart kind. `"line"` (categorical X) or `"scatter"` (numeric X). |
-| `title` | `str` | `""` | Chart title rendered on every `render()`. |
+| `kind` | `str` | `"line"` | Chart kind. `"line"` or `"scatter"`. |
+| `title` | `str` | `""` | Chart title rendered on every update. |
 | `max_points` | `int` | `500` | Maximum samples kept in the buffer. Older samples are dropped from the head. |
-| `color_hex` | `int` | `0x6366F1` | Series colour as a 24-bit RGB integer. |
+| `color_hex` | `int` | `0x6366F1` | Series color as a 24-bit RGB integer. |
 | `width` | `int` | `900` | Canvas width in pixels. |
 | `height` | `int` | `420` | Canvas height in pixels. |
 
@@ -42,92 +43,54 @@ sp.LiveStream(
 
 | Method | Effect |
 |--------|--------|
-| `push(x, y)` | Append a single sample. |
-| `extend(xs, ys)` | Append two lists in lock-step. |
-| `render() -> Chart` | Re-render the current buffer and return a fresh `Chart`. |
-| `clear()` | Empty the buffer. |
+| `push(x, y)` | Append a single sample, then redraw in place. |
+| `extend(xs, ys)` | Append two lists in lock-step, then redraw in place. |
+| `clear()` | Empty the buffer, then redraw the (now empty) chart in place. |
+| `render() -> Chart` | Render the current buffer to a standalone `Chart`, without touching the live display. |
 | `n` (getter) | Current sample count. |
+| `html` (getter) | Current chart HTML as a string. |
 
 Every mutating call enforces the `max_points` cap by dropping the oldest
-samples — so the buffer is **always** bounded.
+samples first — so the buffer is **always** bounded.
 
 ---
 
-## Example: Jupyter live plot
+## Example: live IoT sensor dashboard in Jupyter
 
 ```python
 import seraplot as sp
 import time, random
-from IPython.display import display, clear_output
 
-stream = sp.LiveStream(kind="line", title="Sensor", max_points=200)
+stream = sp.LiveStream(kind="line", title="Temperature sensor (°C)", max_points=60)
 
-for t in range(2000):
-    stream.push(t, 50 + 10 * random.gauss(0, 1))
-    if t % 20 == 0:
-        clear_output(wait=True)
-        display(stream.render())
-        time.sleep(0.05)
+value = 21.0
+for tick in range(300):
+    value += random.uniform(-0.4, 0.4)
+    stream.push(tick, value)
+    time.sleep(0.05)
 ```
 
----
+Run this in a single notebook cell: the chart appears once, then updates
+smoothly in place on every `push()` — no flicker, no new output cells.
 
-## Example: WebSocket / Kafka feed
-
-```python
-async def consume(ws):
-    stream = sp.LiveStream(kind="scatter", max_points=10_000)
-    async for msg in ws:
-        x, y = parse(msg)
-        stream.push(x, y)
-        if stream.n % 250 == 0:
-            broadcast_chart(stream.render())
-```
-
----
-
-## Underlying primitive (universal)
-
-Internally `LiveStream.render()` calls the universal `chart_append` function.
-The same primitive is reachable from JavaScript and the C-FFI:
-
-```js
-import * as sp from "seraplot";
-
-let prev_x = [], prev_y = [];
-
-function tick(x, y) {
-  const out = JSON.parse(sp.chartAppend(JSON.stringify({
-    kind: "line",
-    title: "Sensor",
-    x: [x], y: [y],
-    prev_x, prev_y,
-    max_points: 500,
-  })));
-  prev_x = out.x;
-  prev_y = out.y;
-  document.getElementById("plot").innerHTML = out.html;
-}
-```
-
-The JSON payload `{kind, x, y, prev_x, prev_y, max_points, title, color_hex,
-width, height}` is the contract — the same shape applies in any host
-language.
+See `v2/examples/iot_live_dashboard.py` for a fuller multi-sensor simulation.
 
 </div>
 
 <div class="lang-fr">
 
-`LiveStream` est un petit accumulateur économe en allocation qui transforme
-une série d'échantillons `(x, y)` arrivant dans le temps en un `Chart`
-SeraPlot entièrement rendu. Il maintient un buffer circulaire borné (la
-fenêtre `max_points`), donc la mémoire reste constante quelle que soit la
-durée du flux.
+`LiveStream` est un accumulateur à buffer circulaire borné qui transforme une
+série d'échantillons `(x, y)` arrivant dans le temps en un graphique redessiné
+en continu. La mémoire reste constante quelle que soit la durée du flux,
+puisque les échantillons les plus anciens sont supprimés au-delà de
+`max_points`.
 
-Le même moteur est exposé en JavaScript via `chartAppend(...)`, mais Python
-obtient une classe à état dédiée parce que c'est de loin le langage le plus
-utilisé pour les pipelines de données live (capteurs, sockets, bus de
-messages, boucles d'entraînement ML, etc.).
+Ce qui le rend fluide dans un notebook : `push()` / `extend()` / `clear()` ne
+font pas que re-rendre — ils repeignent la **même** cellule de sortie Jupyter
+sur place via le mécanisme `display_id` d'IPython (`display()` une fois, puis
+`update_display()` à chaque appel suivant). Aucune nouvelle cellule n'est
+ajoutée, pas de saut de défilement, pas de clear-puis-flash ; le graphique se
+met à jour là où il est déjà.
 
 ---
 
@@ -137,7 +100,7 @@ messages, boucles d'entraînement ML, etc.).
 sp.LiveStream(
     kind: str = "line",        # "line" ou "scatter"
     title: str = "",
-    max_points: int = 500,     # taille du buffer circulaire
+    max_points: int = 500,      # taille du buffer circulaire
     color_hex: int = 0x6366F1,
     width: int = 900,
     height: int = 420,
@@ -146,8 +109,8 @@ sp.LiveStream(
 
 | Paramètre | Type | Défaut | Description |
 |-----------|------|--------|-------------|
-| `kind` | `str` | `"line"` | Type de graphique. `"line"` (X catégoriel) ou `"scatter"` (X numérique). |
-| `title` | `str` | `""` | Titre rendu à chaque `render()`. |
+| `kind` | `str` | `"line"` | Type de graphique. `"line"` ou `"scatter"`. |
+| `title` | `str` | `""` | Titre rendu à chaque mise à jour. |
 | `max_points` | `int` | `500` | Nombre maximum d'échantillons gardés. Les plus anciens sont supprimés en tête. |
 | `color_hex` | `int` | `0x6366F1` | Couleur de la série en entier RGB 24 bits. |
 | `width` | `int` | `900` | Largeur du canvas en pixels. |
@@ -159,77 +122,38 @@ sp.LiveStream(
 
 | Méthode | Effet |
 |---------|-------|
-| `push(x, y)` | Ajoute un échantillon unique. |
-| `extend(xs, ys)` | Ajoute deux listes en parallèle. |
-| `render() -> Chart` | Re-rend le buffer courant et retourne un nouveau `Chart`. |
-| `clear()` | Vide le buffer. |
+| `push(x, y)` | Ajoute un échantillon unique, puis redessine sur place. |
+| `extend(xs, ys)` | Ajoute deux listes en parallèle, puis redessine sur place. |
+| `clear()` | Vide le buffer, puis redessine le graphique (désormais vide) sur place. |
+| `render() -> Chart` | Rend le buffer courant sous forme de `Chart` autonome, sans toucher à l'affichage live. |
 | `n` (getter) | Nombre d'échantillons courant. |
+| `html` (getter) | HTML courant du graphique sous forme de chaîne. |
 
-Chaque appel mutant applique la limite `max_points` en supprimant les
+Chaque appel mutant applique la limite `max_points` en supprimant d'abord les
 échantillons les plus anciens — le buffer est donc **toujours** borné.
 
 ---
 
-## Exemple : plot live dans Jupyter
+## Exemple : tableau de bord IoT live dans Jupyter
 
 ```python
 import seraplot as sp
 import time, random
-from IPython.display import display, clear_output
 
-stream = sp.LiveStream(kind="line", title="Capteur", max_points=200)
+stream = sp.LiveStream(kind="line", title="Capteur de température (°C)", max_points=60)
 
-for t in range(2000):
-    stream.push(t, 50 + 10 * random.gauss(0, 1))
-    if t % 20 == 0:
-        clear_output(wait=True)
-        display(stream.render())
-        time.sleep(0.05)
+value = 21.0
+for tick in range(300):
+    value += random.uniform(-0.4, 0.4)
+    stream.push(tick, value)
+    time.sleep(0.05)
 ```
 
----
+Exécute ceci dans une seule cellule de notebook : le graphique apparaît une
+fois, puis se met à jour de manière fluide sur place à chaque `push()` — sans
+scintillement, sans nouvelle cellule de sortie.
 
-## Exemple : flux WebSocket / Kafka
-
-```python
-async def consume(ws):
-    stream = sp.LiveStream(kind="scatter", max_points=10_000)
-    async for msg in ws:
-        x, y = parse(msg)
-        stream.push(x, y)
-        if stream.n % 250 == 0:
-            broadcast_chart(stream.render())
-```
-
----
-
-## Primitive sous-jacente (universelle)
-
-En interne, `LiveStream.render()` appelle la fonction universelle
-`chart_append`. La même primitive est accessible depuis JavaScript et le
-C-FFI :
-
-```js
-import * as sp from "seraplot";
-
-let prev_x = [], prev_y = [];
-
-function tick(x, y) {
-  const out = JSON.parse(sp.chartAppend(JSON.stringify({
-    kind: "line",
-    title: "Capteur",
-    x: [x], y: [y],
-    prev_x, prev_y,
-    max_points: 500,
-  })));
-  prev_x = out.x;
-  prev_y = out.y;
-  document.getElementById("plot").innerHTML = out.html;
-}
-```
-
-Le payload JSON `{kind, x, y, prev_x, prev_y, max_points, title, color_hex,
-width, height}` est le contrat — la même forme s'applique dans n'importe
-quelle langue hôte.
+Voir `v2/examples/iot_live_dashboard.py` pour une simulation multi-capteurs
+plus complète.
 
 </div>

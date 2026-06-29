@@ -356,6 +356,14 @@ fn generate_adapters(chart_fns: &[String], ml_fns: &[String], util_fns: &[String
     wasm_body.push_str("pub fn wasm_chart_variants_json() -> String {\n");
     wasm_body.push_str("    serde_json::to_string(&crate::chart_variants()).unwrap_or_default()\n");
     wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"chartAliases\")]\n");
+    wasm_body.push_str("pub fn wasm_chart_aliases_json() -> String {\n");
+    wasm_body.push_str("    serde_json::to_string(&crate::CHART_ALIAS_REGISTRY).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"applyChartMethod\")]\n");
+    wasm_body.push_str("pub fn wasm_apply_chart_method(html: &str, name: &str, args_json: &str) -> String {\n");
+    wasm_body.push_str("    crate::bindings::method_registry::apply_by_name(html, name, args_json).unwrap_or_else(|| html.to_string())\n");
+    wasm_body.push_str("}\n");
     wasm_body.push_str("#[wasm_bindgen(js_name = \"params\")]\n");
     wasm_body.push_str("pub fn wasm_params_json(input: &str) -> String {\n");
     wasm_body.push_str("    #[derive(serde::Deserialize, Default)] struct In { chart: Option<String>, family: Option<String>, variant: Option<String> }\n");
@@ -373,6 +381,38 @@ fn generate_adapters(chart_fns: &[String], ml_fns: &[String], util_fns: &[String
     wasm_body.push_str("#[wasm_bindgen(js_name = \"chartThemes\")]\n");
     wasm_body.push_str("pub fn wasm_chart_themes_json() -> String {\n");
     wasm_body.push_str("    serde_json::to_string(&crate::chart_themes()).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"scenes3d\")]\n");
+    wasm_body.push_str("pub fn wasm_scenes3d_json() -> String {\n");
+    wasm_body.push_str("    serde_json::to_string(&crate::scenes3d()).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"docs\")]\n");
+    wasm_body.push_str("pub fn wasm_docs_json() -> String {\n");
+    wasm_body.push_str("    serde_json::to_string(&crate::docs()).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"aliasAdd\")]\n");
+    wasm_body.push_str("pub fn wasm_alias_add(method: &str, alias: &str) -> bool {\n");
+    wasm_body.push_str("    crate::bindings::alias_registry::add_alias(method, alias)\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"aliasRemove\")]\n");
+    wasm_body.push_str("pub fn wasm_alias_remove(method: &str, alias: &str) -> bool {\n");
+    wasm_body.push_str("    crate::bindings::alias_registry::remove_alias(method, alias)\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"aliasReset\")]\n");
+    wasm_body.push_str("pub fn wasm_alias_reset() {\n");
+    wasm_body.push_str("    crate::bindings::alias_registry::reset();\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"aliasList\")]\n");
+    wasm_body.push_str("pub fn wasm_alias_list() -> String {\n");
+    wasm_body.push_str("    crate::bindings::alias_registry::aliases_json()\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"aliasResolve\")]\n");
+    wasm_body.push_str("pub fn wasm_alias_resolve(name: &str) -> Option<String> {\n");
+    wasm_body.push_str("    crate::bindings::alias_registry::resolve(name)\n");
+    wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"aliasLoadJson\")]\n");
+    wasm_body.push_str("pub fn wasm_alias_load_json(json: &str) -> bool {\n");
+    wasm_body.push_str("    crate::bindings::alias_registry::add_aliases_from_json(json)\n");
     wasm_body.push_str("}\n");
 
     let mut ffi_body = String::new();
@@ -393,6 +433,12 @@ fn generate_adapters(chart_fns: &[String], ml_fns: &[String], util_fns: &[String
     }
     ffi_body.push_str("#[no_mangle]\npub unsafe extern \"C\" fn seraplot_free(ptr: *mut std::os::raw::c_char) {\n");
     ffi_body.push_str("    if !ptr.is_null() { drop(std::ffi::CString::from_raw(ptr)); }\n}\n");
+    ffi_body.push_str("#[cfg(feature = \"ffi\")]\n#[no_mangle]\npub unsafe extern \"C\" fn sera_alias_add(method: *const std::os::raw::c_char, alias: *const std::os::raw::c_char) -> bool {\n    let method = unsafe { std::ffi::CStr::from_ptr(method).to_str().unwrap_or(\"\") };\n    let alias = unsafe { std::ffi::CStr::from_ptr(alias).to_str().unwrap_or(\"\") };\n    crate::bindings::alias_registry::add_alias(method, alias)\n}\n\n");
+    ffi_body.push_str("#[cfg(feature = \"ffi\")]\n#[no_mangle]\npub unsafe extern \"C\" fn sera_alias_remove(method: *const std::os::raw::c_char, alias: *const std::os::raw::c_char) -> bool {\n    let method = unsafe { std::ffi::CStr::from_ptr(method).to_str().unwrap_or(\"\") };\n    let alias = unsafe { std::ffi::CStr::from_ptr(alias).to_str().unwrap_or(\"\") };\n    crate::bindings::alias_registry::remove_alias(method, alias)\n}\n\n");
+    ffi_body.push_str("#[cfg(feature = \"ffi\")]\n#[no_mangle]\npub extern \"C\" fn sera_alias_reset() {\n    crate::bindings::alias_registry::reset();\n}\n\n");
+    ffi_body.push_str("#[cfg(feature = \"ffi\")]\n#[no_mangle]\npub extern \"C\" fn sera_alias_list() -> *mut std::os::raw::c_char {\n    std::ffi::CString::new(crate::bindings::alias_registry::aliases_json()).unwrap_or_default().into_raw()\n}\n\n");
+    ffi_body.push_str("#[cfg(feature = \"ffi\")]\n#[no_mangle]\npub unsafe extern \"C\" fn sera_alias_resolve(name: *const std::os::raw::c_char) -> *mut std::os::raw::c_char {\n    let name = unsafe { std::ffi::CStr::from_ptr(name).to_str().unwrap_or(\"\") };\n    let resolved = crate::bindings::alias_registry::resolve(name).unwrap_or_default();\n    std::ffi::CString::new(resolved).unwrap_or_default().into_raw()\n}\n\n");
+    ffi_body.push_str("#[cfg(feature = \"ffi\")]\n#[no_mangle]\npub unsafe extern \"C\" fn sera_alias_load_json(json: *const std::os::raw::c_char) -> bool {\n    let json = unsafe { std::ffi::CStr::from_ptr(json).to_str().unwrap_or(\"\") };\n    crate::bindings::alias_registry::add_aliases_from_json(json)\n}\n\n");
 
     let mut out = String::new();
     out.push_str("#[cfg(all(feature = \"js\", target_arch = \"wasm32\"))]\npub mod _wasm {\n");

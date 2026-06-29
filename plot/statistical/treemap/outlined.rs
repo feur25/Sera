@@ -29,7 +29,7 @@ pub fn render(cfg: &TreemapConfig) -> String {
         push_b(&mut b, b"\" fill-opacity=\"0.18\" stroke=\"#");
         b.extend_from_slice(&hx);
         push_b(&mut b, b"\" stroke-width=\"2\"/>");
-        label_inside(&mut b, &p, ri, b"#1f2937");
+        label_inside(&mut b, &p, ri, b"#1f2937", cfg.show_text);
     }
     finalize(b, cfg)
 }

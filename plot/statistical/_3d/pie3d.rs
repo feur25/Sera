@@ -12,6 +12,7 @@ pub fn render_pie3d_html(
     w: i32,
     h: i32,
     bg_color: Option<&str>,
+    scene: &str,
 ) -> String {
     render_3d_html(
         7,
@@ -25,9 +26,12 @@ pub fn render_pie3d_html(
         w,
         h,
         bg_color,
+        scene,
     )
 }
 
+#[crate::chart_demo("labels=["A","B","C"], values=[30,50,20]")]
+#[crate::params(paramsList["title","labels","values","sort_order","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_alias("pie3d", "pie_3d", "pie3d_chart", "pie3d_family", "pies3d")]
 #[crate::sera_builder]
 pub fn build_pie3d_chart(input: &str) -> String {
@@ -54,6 +58,7 @@ pub fn build_pie3d_chart(input: &str) -> String {
         o.w(700),
         o.h(560),
         bg_str.as_deref(),
+        &o.scene3d(),
     );
     apply_bg3d(html, &o)
 }

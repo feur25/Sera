@@ -1,6 +1,6 @@
 pub const PALETTE: &[u32] = &[
-    0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B, 0x8B5CF6, 0x06B6D4, 0xEC4899, 0x84CC16, 0xEF4444,
-    0x14B8A6,
+    0x636EFA, 0xEF553B, 0x00CC96, 0xAB63FA, 0xFFA15A, 0x19D3F3, 0xFF6692, 0xB6E880, 0xFF97FF,
+    0xFECB52,
 ];
 
 #[inline(always)]
@@ -35,7 +35,7 @@ macro_rules! chart_config {
                     gridlines: false,
                     sort_order: "none",
                     hover: &[],
-                    legend_position: "right",
+                    legend_position: "none",
                     width: $dw,
                     height: $dh,
                     $($d)*
@@ -619,6 +619,9 @@ impl Frame {
     }
 
     pub fn legend_pos(&mut self, names: &[&str], palette: &[u32], pos: &str) {
+        if pos.is_empty() || pos == "none" {
+            return;
+        }
         let n = names.len() as i32;
         let (x, y_start, anchor) = match pos {
             "left" | "top-left" => (self.pl + 8, self.pt + 4, "start"),

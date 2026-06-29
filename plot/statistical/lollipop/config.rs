@@ -15,7 +15,7 @@ crate::chart_config!(LollipopConfig, 900, 480;
         values: &[],
         groups: &[],
         palette: &[],
-        color_hex: 0x6366F1,
+        color_hex: 0x636EFA,
         show_values: false,
         highlight_index: -1,
     }

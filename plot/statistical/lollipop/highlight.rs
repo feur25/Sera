@@ -78,7 +78,7 @@ pub fn render(cfg: &LollipopConfig) -> String {
             push_b(&mut b, b"\" stroke-width=\"1.4\" opacity=\"0.7\"/>");
         }
         dot(&mut b, &p, i, cx, y_v, if is_hi { 7 } else { 4 }, col);
-        if is_hi {
+        if is_hi && cfg.show_values {
             push_b(&mut b, b"<text x=\"");
             push_i(&mut b, cx);
             push_b(&mut b, b"\" y=\"");

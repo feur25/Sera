@@ -7,6 +7,7 @@ crate::chart_config!(BulletConfig, 800, 300;
         pub max_vals: &'a [f64],
         pub ranges: &'a [f64],
         pub comparisons: &'a [f64],
+        pub show_text: bool,
     }
     defaults {
         variant: super::variant::BulletVariant::Basic,
@@ -16,5 +17,6 @@ crate::chart_config!(BulletConfig, 800, 300;
         max_vals: &[],
         ranges: &[],
         comparisons: &[],
+        show_text: false,
     }
 );

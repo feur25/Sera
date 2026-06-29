@@ -12,6 +12,7 @@ pub fn render_sunburst3d_html(
     w: i32,
     h: i32,
     bg_color: Option<&str>,
+    scene: &str,
 ) -> String {
     render_3d_html(
         13,
@@ -25,9 +26,12 @@ pub fn render_sunburst3d_html(
         w,
         h,
         bg_color,
+        scene,
     )
 }
 
+#[crate::chart_demo("labels=["Root","A","B"], parents=["","Root","Root"], values=[0,40,60]")]
+#[crate::params(paramsList["title","labels","parents","values","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_alias("sunburst3d", "sunburst_3d", "sunburst3d_chart")]
 #[crate::sera_builder]
 pub fn build_sunburst3d_chart(input: &str) -> String {
@@ -67,6 +71,7 @@ pub fn build_sunburst3d_chart(input: &str) -> String {
             o.w(700),
             o.h(560),
             bg_str.as_deref(),
+            &o.scene3d(),
         ),
         &o,
     )

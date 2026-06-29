@@ -25,6 +25,8 @@ pub fn render(cfg: &RidgelineConfig) -> String {
 
         push_b(&mut b, b"<g data-series=\"");
         push_i(&mut b, gi as i32);
+        push_b(&mut b, b"\" data-idx=\"");
+        push_i(&mut b, gi as i32);
         push_b(&mut b, b"\">");
         area_path(&mut b, &pts, base_y as f64);
         push_b(&mut b, b" fill=\"#ffffff\"/>");

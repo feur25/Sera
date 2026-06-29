@@ -1,176 +1,49 @@
-﻿# Pie Chart 3D
+# Pie Chart 3D
 
 <div class="lang-en">
 
+<style>
+.lang-en table,.lang-fr table{width:100%}
+</style>
+
 ## Signature
 
-```python
-sp.build_pie3d_chart(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    show_pct: bool = True,
-    extrusion: float = 0.2,
-    bg_color: str = "#1a1a2e",
-    palette: list[int] | None = None,
-    width: int = 700,
-    height: int = 600,
-    hover_json: str | None = None,
-) -> Chart
-```
+`sp.pie3d(title, labels=None, values=None, *, sort_order="none", bg_color="#1a1a2e", width=900, height=560, **kwargs) -> Chart`
 
-Aliases: `sp.pie3d`
-
----
+Aliases: `sp.build_pie3d_chart()`, `sp.pie_3d()`, `sp.pie3d_chart()`, `sp.pie3d_family()`, `sp.pies3d()`.
 
 ## Description
 
-3D pie chart rendered as extruded arc segments in a WebGL scene.
-
----
+`sp.pie3d()` renders a pie chart as an extruded 3D disc with wedge depth.
 
 ## Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `title` | `str` | required | Chart title |
-| `labels` | `list[str]` | required | Slice labels |
-| `values` | `list[float]` | required | Slice values |
-| `show_pct` | `bool` | `True` | Show percentage labels |
-| `extrusion` | `float` | `0.2` | Depth of pie extrusion |
-| `bg_color` | `str` | `"#1a1a2e"` | Background color |
-| `palette` | `list[int] \| None` | `None` | Custom palette |
-| `width` | `int` | `700` | Canvas width |
-| `height` | `int` | `600` | Canvas height |
-| `hover_json` | `str \| None` | `None` | Custom hover JSON |
-
----
+<div data-sp-registry-table="options" data-family="pie3d"></div>
 
 ## Returns
 
-`Chart`
+`Chart` object with an `.html` property and a `.show()` method.
 
----
+</div><!-- /lang-en -->
 
-## Examples
-
-
-
-
-
-<style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
-.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
-</style>
-<script>
-function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
-document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.querySelectorAll('.sp-tc code').forEach(function(c){hljs.highlightElement(c)})});
-</script>
-<div class="sp-tabs" id="pie3d">
-<div class="sp-tab-btns"><button class="sp-tb sp-act" onclick="spTab('pie3d','pie3d-py',this)">Python</button><button class="sp-tb" onclick="spTab('pie3d','pie3d-js',this)">JavaScript</button><button class="sp-tb" onclick="spTab('pie3d','pie3d-ts',this)">TypeScript</button></div>
-<div id="pie3d-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">import seraplot as sp
-chart = sp.build_pie3d_chart(
-    "Market Share 3D",
-    labels=["Chrome", "Safari", "Firefox", "Edge"],
-    values=[65, 19, 4, 4],
-)</code></pre></div>
-<div id="pie3d-js" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-javascript">const sp = require('seraplot');
-const chart = sp.build_pie3d_chart("Market Share 3D",
-["Chrome", "Safari", "Firefox", "Edge"],
-{
-    values: [65, 19, 4, 4]
-})</code></pre></div>
-<div id="pie3d-ts" class="sp-tc"><pre style="margin:0;border-radius:0"><code class="language-typescript">import * as sp from 'seraplot';
-const chart = sp.build_pie3d_chart("Market Share 3D",
-["Chrome", "Safari", "Firefox", "Edge"],
-{
-    values: [65, 19, 4, 4]
-})</code></pre></div>
-</div>
-
-
-<details open>
-<summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>
-
-<iframe src="../../previews/pie3d.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
-
-</details>
-
----
-
-</div>
-
-<div class="lang-fr">
+<div class="lang-fr" style="display:none">
 
 <h2>Signature</h2>
 
-```python
-sp.build_pie3d_chart(
-    title: str,
-    labels: list[str],
-    values: list[float],
-    *,
-    show_pct: bool = True,
-    extrusion: float = 0.2,
-    bg_color: str = "#1a1a2e",
-    palette: list[int] | None = None,
-    width: int = 700,
-    height: int = 600,
-    hover_json: str | None = None,
-) -> Chart
-```
+`sp.pie3d(title, labels=None, values=None, *, sort_order="none", bg_color="#1a1a2e", width=900, height=560, **kwargs) -> Chart`
 
-Aliases: `sp.pie3d`
-
----
+Alias : `sp.build_pie3d_chart()`, `sp.pie_3d()`, `sp.pie3d_chart()`, `sp.pie3d_family()`, `sp.pies3d()`.
 
 <h2>Description</h2>
 
-Camembert 3D rendu comme des segments d'arc extrudés dans une scène WebGL.
-
----
+`sp.pie3d()` rend un graphique en secteurs sous forme de disque 3D extrudé avec profondeur des parts.
 
 <h2>Paramètres</h2>
 
-| Paramètre | Type | Défaut | Description |
-|-----------|------|--------|-------------|
-| `title` | `str` | requis | Titre du graphique |
-| `labels` | `list[str]` | requis | Étiquettes des parts |
-| `values` | `list[float]` | requis | Valeurs des parts |
-| `show_pct` | `bool` | `True` | Afficher les pourcentages |
-| `extrusion` | `float` | `0.2` | Profondeur d'extrusion |
-| `bg_color` | `str` | `"#1a1a2e"` | Couleur de fond |
-| `palette` | `list[int] \| None` | `None` | Palette personnalisée |
-| `width` | `int` | `700` | Largeur du canvas |
-| `height` | `int` | `600` | Hauteur du canvas |
-| `hover_json` | `str \| None` | `None` | JSON d'infobulle personnalisée |
+<div data-sp-registry-table="options" data-family="pie3d"></div>
 
----
+<h2>Retour</h2>
 
-<h2>Retourne</h2>
+Objet `Chart` avec une propriété `.html` et une méthode `.show()`.
 
-`Chart`
-
----
-
-<h2>Exemples</h2>
-
-```python
-import seraplot as sp
-
-chart = sp.build_pie3d_chart(
-    "Parts de marché 3D",
-    labels=["Chrome", "Safari", "Firefox", "Edge"],
-    values=[65, 19, 4, 4],
-)
-```
-
----
-
-</div>
+</div><!-- /lang-fr -->

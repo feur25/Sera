@@ -1,4 +1,6 @@
+window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
 (function () {
+  var SP_WASM_BUILD = window.SP_WASM_BUILD;
   var POS_KEY    = "sp_params_pos";
   var COL_KEY    = "sp_params_col";
   var H_KEY      = "sp_params_h";
@@ -166,7 +168,12 @@
   function aliasMap() {
     var sp = window.SeraplotWASM;
     if (!sp || typeof sp.chartAliases !== "function") return null;
-    try { return JSON.parse(sp.chartAliases()); } catch (e) { return null; }
+    try {
+      var pairs = JSON.parse(sp.chartAliases());
+      var map = {};
+      for (var i = 0; i < pairs.length; i++) map[pairs[i][0]] = pairs[i][1];
+      return map;
+    } catch (e) { return null; }
   }
 
   function aliasesFor(fn, map) {
@@ -362,7 +369,7 @@
   function buildVariantCodeHtml(code) {
     var esc = code.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     return '<div class="sp-demo-code-wrap"><div class="sp-tabs">' +
-      '<div class="sp-tab-btns"><button class="sp-tb sp-act">Python</button></div>' +
+      '<div class="sp-tab-btns"></div>' +
       '<div class="sp-tc sp-on"><pre><code class="language-python">' + esc + "</code></pre></div>" +
       "</div></div>";
   }
@@ -505,13 +512,14 @@
     return null;
   }
 
-  function buildChartPreviewHtml(sp, family, variant, code) {
+  function buildChartPreviewHtml(sp, family, variant, code, geomVariant) {
     if (!sp || !code) return "";
     try {
       var parsed = parseDemoInput(code);
       if (!parsed) return "";
       var input = parsed.input || {};
-      if (!input.variant) input.variant = variant;
+      if (geomVariant) input.variant = geomVariant;
+      else if (!input.variant) input.variant = variant;
       input.width = 900;
       input.height = 480;
       var build = resolveWasmFn(sp, parsed.fn || family);
@@ -519,6 +527,69 @@
     } catch (e) {
       return "";
     }
+  }
+
+  var GEOMETRY_COMPANION = { bar_3d: "bar" };
+
+  function geometryOptionsFor(family) {
+    var companion = GEOMETRY_COMPANION[family];
+    if (!companion) return null;
+    var map = chartVariantsMap();
+    var opts = normalizeVariantList(map && map[companion]);
+    return opts.length ? opts : null;
+  }
+
+  function buildCombinedDemoCode(sceneCode, geomKey) {
+    if (!sceneCode || !geomKey || geomKey === "basic") return sceneCode;
+    var q = geomKey.replace(/"/g, "");
+    return sceneCode.replace(/\n\)\n$/, ',\n    variant="' + q + '"\n)\n');
+  }
+
+  function buildGeometryPickerHtml(clsId, sceneKey, options, lang) {
+    var label = lang === "fr" ? "Géométrie 2D (variant)" : "2D geometry (variant)";
+    var html = '<div class="sp-geom-picker" style="margin:8px 0;display:flex;align-items:center;gap:8px;font-size:12px">' +
+      '<label style="color:#94a3b8">' + escapeAttr(label) + '</label>' +
+      '<select class="sp-geom-select" data-cls="' + escapeAttr(clsId) + '" data-scene="' + escapeAttr(sceneKey) + '" style="background:rgba(15,23,42,.6);color:#e2e8f0;border:1px solid rgba(255,255,255,.12);border-radius:6px;padding:3px 8px">';
+    options.forEach(function (item) {
+      html += '<option value="' + escapeAttr(item.key) + '">' + escapeAttr(variantLabel(item)) + '</option>';
+    });
+    html += '</select></div>';
+    return html;
+  }
+
+  function wireGeometryPickers(root, sp, family, lang, panel) {
+    root.querySelectorAll(".sp-geom-select").forEach(function (sel) {
+      sel.addEventListener("change", function () {
+        var clsId = sel.getAttribute("data-cls");
+        var sceneKey = sel.getAttribute("data-scene");
+        var geomKey = sel.value;
+        var varDiv = document.getElementById(variantDomId(clsId, sceneKey));
+        if (!varDiv || !sp || typeof sp.demo !== "function") return;
+        try {
+          var sceneCode = sp.demo(JSON.stringify({ family: family, variant: sceneKey })) || "";
+          var code = buildCombinedDemoCode(sceneCode, geomKey);
+          var codeBlock = varDiv.querySelector(".sp-demo-code-wrap");
+          if (codeBlock) codeBlock.remove();
+          var oldWrap = varDiv.querySelector(".sp-iframe-wrap");
+          if (oldWrap) oldWrap.remove();
+          var oldLabel = varDiv.querySelector(".sp-preview-label");
+          if (oldLabel) oldLabel.remove();
+          var oldFrame = varDiv.querySelector(".sp-preview-frame");
+          if (oldFrame) oldFrame.remove();
+          if (code) varDiv.insertAdjacentHTML("beforeend", buildVariantCodeHtml(code));
+          var chartHtml = buildChartPreviewHtml(sp, family, sceneKey, code, geomKey);
+          var previewHtml = buildVariantPreviewHtml(chartHtml, lang === "fr" ? "Aperçu" : "Preview");
+          if (previewHtml) varDiv.insertAdjacentHTML("beforeend", previewHtml);
+          if (window.hljs) {
+            var hFn = hljs.highlightElement || hljs.highlightBlock;
+            if (hFn) varDiv.querySelectorAll("pre code").forEach(function (c) {
+              try { hFn.call(hljs, c); } catch (e) {}
+            });
+          }
+          if (panel) rescaleIframesInPanel(panel);
+        } catch (e) {}
+      });
+    });
   }
 
   function buildVariantPreviewHtml(html, label) {
@@ -573,9 +644,19 @@
     });
   }
 
+  function pageRegistryFamily() {
+    var el = document.querySelector("[data-sp-registry-table][data-family]");
+    return el ? el.getAttribute("data-family") : "";
+  }
+
   function injectVariantCls(panel, body, data, lang) {
     var family = data.functionName;
     if (!family) return;
+    var map = chartVariantsMap();
+    if (map && !map[family]) {
+      var pageFamily = pageRegistryFamily();
+      if (pageFamily && map[pageFamily]) family = pageFamily;
+    }
     var variants = variantsFor(family, data.parameters);
     if (!variants.length) return;
 
@@ -606,6 +687,9 @@
       varDiv.style.display = i === 0 ? "block" : "none";
       varDiv.innerHTML = buildVariantAliasesHtml(item, lang);
 
+      var geomOpts = geometryOptionsFor(family);
+      if (geomOpts) varDiv.innerHTML += buildGeometryPickerHtml(clsId, v, geomOpts, lang);
+
       if (sp && typeof sp.demo === "function") {
         try {
           var code = sp.demo(JSON.stringify({ family: family, variant: v })) || "";
@@ -619,6 +703,7 @@
     });
 
     body.appendChild(clsDiv);
+    wireGeometryPickers(clsDiv, sp, family, lang, panel);
 
     updateAliasForVariant(panel);
 
@@ -639,6 +724,7 @@
             var item = liveVariants.filter(function (it) { return it.key === variant; })[0] || { key: variant, aliases: [] };
             btn.setAttribute("data-aliases", JSON.stringify(aliasesForItem(item).map(function (a) { return "sp." + a; })));
           });
+          var geomOpts2 = geometryOptionsFor(family);
           root.querySelectorAll(".sp-variant").forEach(function (varDiv) {
             var variant = varDiv.getAttribute("data-variant") || "basic";
             var item = liveVariants.filter(function (it) { return it.key === variant; })[0] || { key: variant, aliases: [] };
@@ -646,6 +732,7 @@
               var code = sp2.demo(JSON.stringify({ family: family, variant: variant })) || "";
               if (code) {
                 varDiv.innerHTML = buildVariantAliasesHtml(item, getLang());
+                if (geomOpts2) varDiv.innerHTML += buildGeometryPickerHtml(clsId, variant, geomOpts2, getLang());
                 if (code) varDiv.innerHTML += buildVariantCodeHtml(code);
                 varDiv.innerHTML += buildVariantPreviewHtml(buildChartPreviewHtml(sp2, family, variant, code), getLang() === "fr" ? "Aper\u00e7u" : "Preview");
                 if (window.hljs) {
@@ -657,6 +744,7 @@
               }
             } catch (e) {}
           });
+          wireGeometryPickers(root, sp2, family, getLang(), panel);
           hoistClassRails(panel);
           refreshRailToggleLabel();
           updateAliasForVariant(panel);
@@ -1042,21 +1130,17 @@
   }
 
   function themeBase() {
-    var els = document.querySelectorAll('link[href*="/theme/"],script[src*="/theme/"]');
-    for (var i = 0; i < els.length; i++) {
-      var u = els[i].href || els[i].src || "";
-      var m = u.match(/(.*\/theme\/)/);
-      if (m) return m[1];
-    }
-    return "theme/";
+    var parts = window.location.pathname.split("/").filter(Boolean);
+    parts.pop();
+    return new Array(parts.length + 1).join("../") + "theme/";
   }
 
   function ensureWasm(cb) {
     var sp = window.SeraplotWASM;
     if (!sp) { setTimeout(function () { ensureWasm(cb); }, 80); return; }
     if (sp.__ready) { cb(); return; }
-    if (sp.__loading) { sp.__loading.then(cb); return; }
-    sp.__loading = sp.__init(themeBase() + "seraplot_bg.wasm").then(cb).catch(function () {});
+    if (sp.__loading) { sp.__loading.then(cb, function () { sp.__loading = null; }); return; }
+    sp.__loading = sp.__init(themeBase() + "seraplot_bg.wasm?v=" + SP_WASM_BUILD).then(cb).catch(function () { sp.__loading = null; });
   }
 
   function registryJson(fn, input, fallback) {
@@ -1205,6 +1289,41 @@
     return true;
   }
 
+  function renderRegistryMethods(el, files, lang) {
+    var all = registryJson("docs", null, null);
+    if (!all) return false;
+    var fileList = files.split(",").map(function (s) { return s.trim(); }).filter(Boolean);
+    var items = all.filter(function (it) { return fileList.indexOf(it.file) !== -1; });
+    if (!items.length) return false;
+    items.sort(function (a, b) { return a.name.localeCompare(b.name); });
+    var tag = lang === "fr" ? "chaînable" : "chainable";
+    el.innerHTML = items.map(function (it) {
+      var desc = (lang === "fr" ? it.fr : it.en) || (lang === "fr" ? it.en : it.fr);
+      var params = it.params || [];
+      var argNames = params.map(function (p) { return p.name; }).join(", ");
+      var sig = it.category === "chart_method"
+        ? "." + it.name + "(" + argNames + ")"
+        : "sp." + it.name + "(" + argNames + ")";
+      var paramRows = params.map(function (p) {
+        var pdesc = (lang === "fr" ? p.fr : p.en) || (lang === "fr" ? p.en : p.fr);
+        return "<div class=\"cm-param\"><code>" + escapeAttr(p.name) + "</code>" +
+          "<span class=\"cm-param-ty\">" + escapeAttr(p.ty) + "</span>" +
+          "<span class=\"cm-param-desc\">" + escapeAttr(pdesc) + "</span></div>";
+      }).join("");
+      var aliases = it.aliases || [];
+      var akaLabel = lang === "fr" ? "alias : " : "aka: ";
+      return "<div class=\"cm-card\">" +
+        "<div class=\"cm-name\"><code class=\"cm-fn\">" + escapeAttr(sig) + "</code>" +
+        (it.category === "chart_method" ? "<span class=\"cm-tag cm-tag-chain\">" + tag + "</span>" : "") +
+        (aliases.length ? "<span class=\"cm-tag cm-tag-alias\">" + escapeAttr(akaLabel + aliases.join(", ")) + "</span>" : "") +
+        "</div>" +
+        "<div class=\"cm-desc\">" + escapeAttr(desc) + "</div>" +
+        (paramRows ? "<div class=\"cm-params\">" + paramRows + "</div>" : "") +
+        "</div>";
+    }).join("");
+    return true;
+  }
+
   function renderRegistryTables(root) {
     var lang = getLang();
     (root || document).querySelectorAll("[data-sp-registry-table]").forEach(function (el) {
@@ -1214,6 +1333,7 @@
       if (kind === "variants") ok = renderRegistryVariants(el, family, lang);
       else if (kind === "options") ok = renderRegistryOptions(el, family, lang);
       else if (kind === "themes") ok = renderRegistryThemes(el, lang);
+      else if (kind === "methods") ok = renderRegistryMethods(el, el.getAttribute("data-file") || "", lang);
       if (!ok) el.innerHTML = "<p>Loading...</p>";
     });
   }
@@ -1308,6 +1428,12 @@
     var btn = document.querySelector("#" + PANEL_ID + " .sp-ph-rail-tog");
     if (!btn) return;
     var rail = document.querySelector(".sp-cls-rail-side");
+    var tabCount = rail ? rail.querySelectorAll(".sp-rail-btn").length : 0;
+    if (tabCount <= 1) {
+      btn.style.display = "none";
+      return;
+    }
+    btn.style.display = "";
     var wide = !!(rail && rail.classList.contains("sp-rail-wide"));
     var fr = getLang() === "fr";
     btn.textContent = wide
@@ -1345,6 +1471,10 @@
       }
     }
   }, 250);
+
+  if (document.querySelector("[data-sp-registry-table]")) {
+    ensureWasm(function () { renderRegistryTables(document); });
+  }
 
   var registryTries = 0;
   var registryTimer = setInterval(function () {

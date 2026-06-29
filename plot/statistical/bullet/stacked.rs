@@ -58,12 +58,14 @@ pub fn render(cfg: &BulletConfig) -> String {
             push_b(&mut b, b"\" stroke=\"#dc2626\" stroke-width=\"2.6\"/>");
         }
         label_left(&mut b, &p, i, by, bar_h);
-        value_text(
-            &mut b,
-            p.values[i],
-            p.pad_l + value_w + 5,
-            by + bar_h / 2 + 4,
-        );
+        if cfg.show_text {
+            value_text(
+                &mut b,
+                p.values[i],
+                p.pad_l + value_w + 5,
+                by + bar_h / 2 + 4,
+            );
+        }
     }
     finalize(b, cfg)
 }

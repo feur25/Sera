@@ -1,5 +1,7 @@
-use crate::html::js_3d::render_3d_html;
+use crate::html::js_3d::render_3d_html_impl;
 use crate::plot::{apply_bg3d, parse_all};
+
+const RING_GAP_CONTROL_JS: &str = "(function(){var wrap=document.getElementById(cid);if(!wrap)return;var outer=document.createElement('div');outer.style.cssText='display:flex;flex-direction:column;align-items:center;gap:10px;max-width:100%';wrap.parentElement.insertBefore(outer,wrap);outer.appendChild(wrap);var ctrl=document.createElement('div');ctrl.style.cssText='width:'+W+'px;max-width:100%;box-sizing:border-box;display:flex;align-items:center;gap:10px;font:11px -apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,sans-serif;color:#cbd5e1;background:rgba(15,23,42,.6);padding:7px 12px;border-radius:9px';var lbl=document.createElement('span');lbl.textContent='ring gap';lbl.style.cssText='white-space:nowrap;opacity:.75';var sl=document.createElement('input');sl.type='range';sl.min='0';sl.max='200';sl.step='1';sl.value=String(Math.round(RG*200));sl.style.cssText='flex:1;cursor:pointer';var val=document.createElement('span');val.textContent=RG.toFixed(2);val.style.cssText='width:32px;text-align:right;font-weight:700;color:#f1f5f9';sl.addEventListener('input',function(){RG=parseInt(sl.value,10)/200;val.textContent=RG.toFixed(2);R();});ctrl.appendChild(lbl);ctrl.appendChild(sl);ctrl.appendChild(val);outer.appendChild(ctrl);})();";
 
 pub fn render_radar3d_html(
     title: &str,
@@ -12,8 +14,11 @@ pub fn render_radar3d_html(
     w: i32,
     h: i32,
     bg_color: Option<&str>,
+    scene: &str,
+    ring_gap: f64,
 ) -> String {
-    render_3d_html(
+    let extra_js = format!("var RG={:.4};{}", ring_gap, RING_GAP_CONTROL_JS);
+    let html = render_3d_html_impl(
         3,
         title,
         x,
@@ -25,9 +30,21 @@ pub fn render_radar3d_html(
         w,
         h,
         bg_color,
+        scene,
+        extra_js.as_bytes(),
+    );
+    html.replacen(
+        "<body>",
+        &format!("<body><div height=\"{}\" style=\"display:none\"></div>", h + 60),
+        1,
     )
 }
 
+#[crate::chart_demo("axes=[\"Python\",\"Rust\",\"SQL\",\"ML\",\"DevOps\"], series=[[9,7,8,8,6],[5,10,6,4,9]], series_names=[\"Alice\",\"Bob\"]")]
+#[crate::params(paramsList[
+    "title", "axes", "series", "series_names", "palette", "bg_color", "scene", "orientation3d",
+    "width", "height", "max_val", "fill_opacity", "ring_gap"
+])]
 #[crate::sera_alias("radar3d", "radar_3d", "radar3d_chart", "radar3d_family")]
 #[crate::sera_builder]
 pub fn build_radar3d_chart(input: &str) -> String {
@@ -44,6 +61,7 @@ pub fn build_radar3d_chart(input: &str) -> String {
         .clone()
         .unwrap_or_else(|| (0..series_flat.len()).map(|_| String::new()).collect());
     let n_series = names.len().min(series_flat.len());
+    let ring_gap = o.ring_gap.unwrap_or(1.0).clamp(0.0, 1.0);
     let mut xv = Vec::new();
     let mut yv = Vec::new();
     let mut zv = Vec::new();
@@ -73,6 +91,8 @@ pub fn build_radar3d_chart(input: &str) -> String {
             o.w(900),
             o.h(560),
             bg_str.as_deref(),
+            &o.scene3d(),
+            ring_gap,
         ),
         &o,
     )

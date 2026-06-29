@@ -10,7 +10,7 @@ fn aurora_hue(gi: usize, n: usize) -> (u32, u32) {
     };
     let pairs = [
         (0x06B6D4_u32, 0x0EA5E9_u32),
-        (0x22D3EE, 0x6366F1),
+        (0x22D3EE, 0x636EFA),
         (0x8B5CF6, 0xA855F7),
         (0xF43F5E, 0xEC4899),
         (0xF59E0B, 0xFBBF24),
@@ -107,6 +107,8 @@ pub fn render(cfg: &RidgelineConfig) -> String {
         let pts = project_pts(&p, &p.curves[gi], base_y);
 
         push_b(&mut b, b"<g data-series=\"");
+        push_i(&mut b, gi as i32);
+        push_b(&mut b, b"\" data-idx=\"");
         push_i(&mut b, gi as i32);
         push_b(&mut b, b"\">");
         area_path(&mut b, &pts, base_y as f64);

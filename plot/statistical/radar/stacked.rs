@@ -46,6 +46,8 @@ pub fn render(cfg: &RadarConfig) -> String {
         let hx = hex6(color);
         push_b(&mut b, b"<g data-series=\"");
         push_i(&mut b, si as i32);
+        push_b(&mut b, b"\" data-idx=\"");
+        push_i(&mut b, si as i32);
         push_b(&mut b, b"\">");
         polygon_pts(&mut b, &layers[si]);
         push_b(&mut b, b" fill=\"#");

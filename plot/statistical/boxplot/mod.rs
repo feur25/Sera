@@ -68,6 +68,7 @@ pub fn build(input: &str) -> String {
             legend_position: &o.lp(),
             notch: o.notch.unwrap_or(false),
             show_points: o.show_points.unwrap_or(false),
+            show_text: o.show_text.unwrap_or(false),
             jitter: o.jitter.unwrap_or(0.35),
             violin_overlay: o.violin_overlay.unwrap_or(false),
             boxen_depth: o.boxen_depth.unwrap_or(4),

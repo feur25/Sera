@@ -76,7 +76,7 @@ pub fn render_with(
                 push_b(&mut f.buf, b"\" fill-opacity=\"0.55\"/>");
             }
         }
-        if big_outliers {
+        if big_outliers && cfg.show_text {
             for (oi, &ov) in st.outliers.iter().enumerate() {
                 let oy = f.pt + f.ph - ((ov - gr.y_min) / gr.range_y * f.ph as f64) as i32;
                 push_b(&mut f.buf, b"<text x=\"");

@@ -12,6 +12,7 @@ pub fn render_stacked_bar3d_html(
     w: i32,
     h: i32,
     bg_color: Option<&str>,
+    scene: &str,
 ) -> String {
     render_3d_html(
         14,
@@ -25,9 +26,12 @@ pub fn render_stacked_bar3d_html(
         w,
         h,
         bg_color,
+        scene,
     )
 }
 
+#[crate::chart_demo("labels=["Q1","Q2"], series=[[10,20],[15,25]]")]
+#[crate::params(paramsList["title","labels","series","x_label","y_label","z_label","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_alias("stacked_bar3d", "stacked_bar_3d", "stacked_bar3d_chart")]
 #[crate::sera_builder]
 pub fn build_stacked_bar3d_chart(input: &str) -> String {
@@ -75,6 +79,7 @@ pub fn build_stacked_bar3d_chart(input: &str) -> String {
             o.w(900),
             o.h(560),
             bg_str.as_deref(),
+            &o.scene3d(),
         ),
         &o,
     )

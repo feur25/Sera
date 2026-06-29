@@ -71,7 +71,7 @@ pub fn build(input: &str) -> String {
         col_labels: &col_lbl,
         flat_matrix: &flat_matrix,
         show_values: o.show_values.unwrap_or(true),
-        color_low: o.color_low.unwrap_or(0x6366F1),
+        color_low: o.color_low.unwrap_or(0x636EFA),
         color_mid: o.color_mid.unwrap_or(0xfafbfc),
         color_high: o.color_high.unwrap_or(0xF43F5E),
         palette: &palette,

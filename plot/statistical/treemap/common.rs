@@ -5,8 +5,8 @@ use crate::plot::statistical::common::{
 };
 
 pub const TM_PALETTE: &[u32] = &[
-    0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B, 0x8B5CF6, 0x06B6D4, 0xEC4899, 0x84CC16, 0xEF4444,
-    0x14B8A6, 0x818CF8, 0xFB7185, 0x34D399, 0xFBBF24, 0xA78BFA,
+    0x636EFA, 0xEF553B, 0x00CC96, 0xAB63FA, 0xFFA15A, 0x19D3F3, 0xFF6692, 0xB6E880, 0xFF97FF,
+    0xFECB52, 0x818CF8, 0xFB7185, 0x34D399, 0xFBBF24, 0xA78BFA,
 ];
 
 #[derive(Clone, Copy)]
@@ -366,7 +366,7 @@ pub fn tile_data_attrs(buf: &mut Vec<u8>, p: &Prepared, ri: usize) {
     push_b(buf, b"\"");
 }
 
-pub fn label_inside(buf: &mut Vec<u8>, p: &Prepared, ri: usize, fill: &[u8]) {
+pub fn label_inside(buf: &mut Vec<u8>, p: &Prepared, ri: usize, fill: &[u8], show_pct: bool) {
     let r = p.rects[ri];
     if r.w < 30.0 || r.h < 18.0 {
         return;
@@ -403,23 +403,25 @@ pub fn label_inside(buf: &mut Vec<u8>, p: &Prepared, ri: usize, fill: &[u8]) {
         push_b(buf, b"\" dy=\"-0.3em\" pointer-events=\"none\">");
         escape_xml(buf, truncate(label, max_chars));
         push_b(buf, b"</text>");
-        push_b(buf, b"<text x=\"");
-        push_f2(buf, cx);
-        push_b(buf, b"\" y=\"");
-        push_f2(buf, cy);
-        push_b(
-            buf,
-            b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"",
-        );
-        push_i(buf, font_size - 1);
-        push_b(buf, b"\" fill=\"");
-        buf.extend_from_slice(fill);
-        push_b(
-            buf,
-            b"\" opacity=\"0.78\" dy=\"1.0em\" pointer-events=\"none\">",
-        );
-        push_f2(buf, pct);
-        push_b(buf, b"%</text>");
+        if show_pct {
+            push_b(buf, b"<text x=\"");
+            push_f2(buf, cx);
+            push_b(buf, b"\" y=\"");
+            push_f2(buf, cy);
+            push_b(
+                buf,
+                b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"",
+            );
+            push_i(buf, font_size - 1);
+            push_b(buf, b"\" fill=\"");
+            buf.extend_from_slice(fill);
+            push_b(
+                buf,
+                b"\" opacity=\"0.78\" dy=\"1.0em\" pointer-events=\"none\">",
+            );
+            push_f2(buf, pct);
+            push_b(buf, b"%</text>");
+        }
     } else {
         push_b(buf, b"<text x=\"");
         push_f2(buf, cx);

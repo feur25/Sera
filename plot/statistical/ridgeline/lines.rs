@@ -21,6 +21,8 @@ pub fn render(cfg: &RidgelineConfig) -> String {
 
         push_b(&mut b, b"<g data-series=\"");
         push_i(&mut b, gi as i32);
+        push_b(&mut b, b"\" data-idx=\"");
+        push_i(&mut b, gi as i32);
         push_b(&mut b, b"\">");
         polyline(&mut b, &pts, &hx, 2.4);
         ridge_label(&mut b, &p.layout, base_y, &p.group_order[gi]);

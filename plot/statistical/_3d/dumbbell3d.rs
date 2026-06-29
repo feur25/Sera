@@ -12,6 +12,7 @@ pub fn render_dumbbell3d_html(
     w: i32,
     h: i32,
     bg_color: Option<&str>,
+    scene: &str,
 ) -> String {
     render_3d_html(
         11,
@@ -25,9 +26,12 @@ pub fn render_dumbbell3d_html(
         w,
         h,
         bg_color,
+        scene,
     )
 }
 
+#[crate::chart_demo("labels=["A","B","C"], start=[10,20,15], end=[30,25,40]")]
+#[crate::params(paramsList["title","labels","start","end","y_label","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_alias("dumbbell3d", "dumbbell_3d", "dumbbell3d_chart")]
 #[crate::sera_builder]
 pub fn build_dumbbell3d_chart(input: &str) -> String {
@@ -68,6 +72,7 @@ pub fn build_dumbbell3d_chart(input: &str) -> String {
             o.w(900),
             o.h(560),
             bg_str.as_deref(),
+            &o.scene3d(),
         ),
         &o,
     )

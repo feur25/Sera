@@ -14,7 +14,7 @@ pub fn render(cfg: &BulletConfig) -> String {
     let bar_h = 6;
     let dot_r = (p.row_h as f64 * 0.22).max(7.0) as i32;
     let hx_track = hex6(0xE5E7EB);
-    let hx_value = hex6(0x6366F1);
+    let hx_value = hex6(0x636EFA);
     for i in 0..p.n {
         let max_v = max_for(&p, i);
         let cy = p.pad_t + i as i32 * p.row_h + p.row_h / 2;
@@ -63,7 +63,9 @@ pub fn render(cfg: &BulletConfig) -> String {
         b.extend_from_slice(&hx_value);
         push_b(&mut b, b"\" stroke=\"#fff\" stroke-width=\"2\"/>");
         label_left(&mut b, &p, i, cy - 6, 12);
-        value_text(&mut b, p.values[i], cx + dot_r + 5, cy + 4);
+        if cfg.show_text {
+            value_text(&mut b, p.values[i], cx + dot_r + 5, cy + 4);
+        }
     }
     finalize(b, cfg)
 }

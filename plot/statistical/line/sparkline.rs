@@ -120,7 +120,9 @@ pub fn render(cfg: &LineConfig) -> String {
             push_b(&mut b, b"</text>");
         }
 
-        push_b(&mut b, b"<polyline fill=\"none\" stroke=\"#");
+        push_b(&mut b, b"<polyline data-idx=\"");
+        push_i(&mut b, si as i32);
+        push_b(&mut b, b"\" fill=\"none\" stroke=\"#");
         b.extend_from_slice(&hx);
         push_b(&mut b, b"\" stroke-width=\"");
         push_f2(&mut b, cfg.stroke_width);

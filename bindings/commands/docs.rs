@@ -102,7 +102,7 @@ no_x_axis : bool, optional
 no_y_axis : bool, optional
     Hide the Y axis. Default False.";
 
-pub const DOC_BUILD_LINE_CHART: &str = "build_line_chart(title, labels, values, *, color_hex=0x6366F1, show_points=True, width=900, height=480, x_label='', y_label='', gridlines=False, sort_order='none', hover_json='', legend_position='right', palette=None, series_names=None, background=None, no_x_axis=False, no_y_axis=False) -> Chart
+pub const DOC_BUILD_LINE_CHART: &str = "build_line_chart(title, labels, values, *, color_hex=0x636EFA, show_points=True, width=900, height=480, x_label='', y_label='', gridlines=False, sort_order='none', hover_json='', legend_position='right', palette=None, series_names=None, background=None, no_x_axis=False, no_y_axis=False) -> Chart
 
 Line chart with connected data points.
 
@@ -115,7 +115,7 @@ labels : list[str]
 values : list[float]
     Line values.
 color_hex : int, optional
-    Line color as hex integer. Default 0x6366F1.
+    Line color as hex integer. Default 0x636EFA.
 show_points : bool, optional
     Show data point markers. Default True.
 width : int, optional
@@ -250,7 +250,7 @@ palette : list[int], optional
 background : str or None, optional
     Background color. Default None.";
 
-pub const DOC_BUILD_SCATTER_CHART: &str = "build_scatter_chart(title, x_values, y_values, *, variant=None, categories=None, labels=None, color_values=None, color_low=0x6366F1, color_high=0xF43F5E, color_hex=0, point_size=5.0, stroke_width=1.0, symbol='circle', symbols=None, regression_type='linear', show_regression=False, show_text=False, sizes=None, color_groups=None, width=900, height=540, x_label='', y_label='', gridlines=False, legend_position='right', palette=None, hover_json='', background=None, no_x_axis=False, no_y_axis=False) -> Chart
+pub const DOC_BUILD_SCATTER_CHART: &str = "build_scatter_chart(title, x_values, y_values, *, variant=None, categories=None, labels=None, color_values=None, color_low=0x636EFA, color_high=0xF43F5E, color_hex=0, point_size=5.0, stroke_width=1.0, symbol='circle', symbols=None, regression_type='linear', show_regression=False, show_text=False, sizes=None, color_groups=None, width=900, height=540, x_label='', y_label='', gridlines=False, legend_position='right', palette=None, hover_json='', background=None, no_x_axis=False, no_y_axis=False) -> Chart
 
 Scatter plot of numeric X/Y data.
 
@@ -297,7 +297,7 @@ show_regression : bool, optional
 regression_type : str, optional
     Regression type: 'linear', 'polynomial', etc. Default 'linear'.";
 
-pub const DOC_BUILD_HISTOGRAM: &str = "build_histogram(title, values, *, variant='basic', orientation='v', bins=0, gap=2, color_hex=0x6366F1, overlay_values=None, overlay_color_hex=0xF43F5E, color_groups=None, palette=None, series_names=None, show_counts=False, stroke_width=1.0, width=860, height=380, x_label='', y_label='Count', gridlines=False, hover_json='', background=None, no_x_axis=False, no_y_axis=False) -> Chart
+pub const DOC_BUILD_HISTOGRAM: &str = "build_histogram(title, values, *, variant='basic', orientation='v', bins=0, gap=2, color_hex=0x636EFA, overlay_values=None, overlay_color_hex=0xF43F5E, color_groups=None, palette=None, series_names=None, show_counts=False, stroke_width=1.0, width=860, height=380, x_label='', y_label='Count', gridlines=False, hover_json='', background=None, no_x_axis=False, no_y_axis=False) -> Chart
 
 Unified histogram entry point. Dispatches by `variant`:
 'basic' | 'horizontal' | 'normalized' | 'cumulative' | 'stacked' | 'overlay' | 'step'.
@@ -319,7 +319,7 @@ bins : int, optional
 gap : int, optional
     Pixel gap between adjacent bars. Default 2.
 color_hex : int, optional
-    Primary bar color. 0 falls back to `palette[0]` then 0x6366F1. Default 0x6366F1.
+    Primary bar color. 0 falls back to `palette[0]` then 0x636EFA. Default 0x636EFA.
 overlay_values : list[float] or None, optional
     Second distribution (used by 'overlay'). Default None.
 overlay_color_hex : int, optional
@@ -354,7 +354,7 @@ no_x_axis : bool, optional
 no_y_axis : bool, optional
     Hide the Y axis.";
 
-pub const DOC_BUILD_HISTOGRAM_OVERLAY: &str = "build_histogram_overlay(title, values, overlay_values, *, color_hex=0x6366F1, overlay_color_hex=0xF43F5E, bins=0, width=860, height=380, x_label='', y_label='Count', gridlines=False, background=None, no_x_axis=False, no_y_axis=False) -> Chart
+pub const DOC_BUILD_HISTOGRAM_OVERLAY: &str = "build_histogram_overlay(title, values, overlay_values, *, color_hex=0x636EFA, overlay_color_hex=0xF43F5E, bins=0, width=860, height=380, x_label='', y_label='Count', gridlines=False, background=None, no_x_axis=False, no_y_axis=False) -> Chart
 
 Two overlapping histograms for distribution comparison.
 
@@ -367,7 +367,7 @@ values : list[float]
 overlay_values : list[float]
     Secondary distribution values.
 color_hex : int, optional
-    Primary histogram color. Default 0x6366F1.
+    Primary histogram color. Default 0x636EFA.
 overlay_color_hex : int, optional
     Overlay histogram color. Default 0xF43F5E.
 bins : int, optional
@@ -467,7 +467,7 @@ no_x_axis : bool, optional
 no_y_axis : bool, optional
     Hide the Y axis. Default False.";
 
-pub const DOC_BUILD_HEATMAP: &str = "build_heatmap(title, labels, flat_matrix, *, variant='basic', show_values=True, color_low=0x6366F1, color_mid=0xfafbfc, color_high=0xF43F5E, palette=None, bins=0, widths=None, ranges=None, col_labels=None, width=720, height=440, x_label='', y_label='', gridlines=False, background=None) -> Chart
+pub const DOC_BUILD_HEATMAP: &str = "build_heatmap(title, labels, flat_matrix, *, variant='basic', show_values=True, color_low=0x636EFA, color_mid=0xfafbfc, color_high=0xF43F5E, palette=None, bins=0, widths=None, ranges=None, col_labels=None, width=720, height=440, x_label='', y_label='', gridlines=False, background=None) -> Chart
 
 Color-coded matrix heatmap (7 variants).
 
@@ -1658,7 +1658,7 @@ no_x_axis : bool, optional
 no_y_axis : bool, optional
     Hide the Y axis. Default False.";
 
-pub const DOC_BUILD_BUBBLE: &str = "build_bubble(title, x_values, y_values, sizes, *, variant='basic', categories=None, labels=None, color_values=None, color_hex=0, color_low=0x6366F1, color_high=0xF43F5E, min_size=4.0, max_size=40.0, show_text=False, stroke_width=1.5, width=900, height=500, x_label='', y_label='', gridlines=False, sort_order='none', legend_position='right', palette=None, hover_json='', background=None, no_x_axis=False, no_y_axis=False) -> Chart
+pub const DOC_BUILD_BUBBLE: &str = "build_bubble(title, x_values, y_values, sizes, *, variant='basic', categories=None, labels=None, color_values=None, color_hex=0, color_low=0x636EFA, color_high=0xF43F5E, min_size=4.0, max_size=40.0, show_text=False, stroke_width=1.5, width=900, height=500, x_label='', y_label='', gridlines=False, sort_order='none', legend_position='right', palette=None, hover_json='', background=None, no_x_axis=False, no_y_axis=False) -> Chart
 
 2D bubble chart family. The `variant` keyword selects the rendering strategy.
 
@@ -1686,7 +1686,7 @@ color_values : list[float], optional
 color_hex : int, optional
     Single fill color when no group/gradient applies. Default 0 (auto).
 color_low : int, optional
-    Gradient/diverging low color. Default 0x6366F1.
+    Gradient/diverging low color. Default 0x636EFA.
 color_high : int, optional
     Gradient/diverging high color. Default 0xF43F5E.
 min_size : float, optional

@@ -56,6 +56,7 @@ pub fn build(input: &str) -> String {
         width: o.w(800),
         height: o.h(300),
         hover: &hover,
+        show_text: o.show_text.unwrap_or(false),
         ..BulletConfig::default()
     });
     apply(html, &o)

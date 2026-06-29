@@ -58,6 +58,7 @@ pub fn build(input: &str) -> String {
         height: o.h(520),
         hover: &hover,
         variant,
+        show_text: o.show_text.unwrap_or(false),
         ..TreemapConfig::default()
     });
     apply(html, &o)

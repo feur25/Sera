@@ -1,5 +1,6 @@
 use crate::plot::{apply, apply_h, parse_all};
 pub mod basic;
+pub mod block3d;
 pub mod config;
 pub mod deluxe;
 pub mod grouped;
@@ -11,8 +12,25 @@ pub mod prism;
 pub mod relative;
 pub mod variant;
 
+pub use block3d::Bar3DBlock;
 pub use config::BarConfig;
 pub use variant::BarVariant;
+
+pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    use BarVariant::*;
+    match cfg.variant {
+        Basic => basic::layout_3d(cfg),
+        Horizontal => basic::layout_3d_horizontal(cfg),
+        Grouped => grouped::layout_3d(cfg, false),
+        Stacked => grouped::layout_3d(cfg, true),
+        Relative => relative::layout_3d(cfg),
+        GroupedStacked => grouped_stacked::layout_3d(cfg),
+        Marimekko => marimekko::layout_3d(cfg),
+        Multicategory => multicategory::layout_3d(cfg),
+        Pictogram => pictogram::layout_3d(cfg),
+        Deluxe | Prism => basic::layout_3d(cfg),
+    }
+}
 
 pub fn render_bar_html(cfg: &BarConfig) -> String {
     use crate::plot::statistical::theme::ChartTheme;
@@ -38,6 +56,41 @@ pub fn render_bar_html(cfg: &BarConfig) -> String {
 }
 
 pub use build as build_bar;
+
+pub fn build_series(
+    a: &crate::plot::chart_input::ChartArgs,
+    o: &crate::plot::chart_input::ChartOpts,
+    category_labels: &[String],
+) -> Vec<(String, Vec<f64>)> {
+    let sn = o.series_names.clone().unwrap_or_default();
+    let n_cats = category_labels.len();
+    if let Some(s) = a.series.as_ref() {
+        s.iter()
+            .enumerate()
+            .map(|(si, vals)| {
+                (
+                    sn.get(si)
+                        .cloned()
+                        .unwrap_or_else(|| format!("S{}", si + 1)),
+                    vals.clone(),
+                )
+            })
+            .collect()
+    } else if !sn.is_empty() && n_cats > 0 {
+        let flat = a.values.clone().unwrap_or_default();
+        sn.iter()
+            .enumerate()
+            .map(|(si, name)| {
+                let vals: Vec<f64> = (0..n_cats)
+                    .map(|ci| flat.get(si * n_cats + ci).copied().unwrap_or(0.0))
+                    .collect();
+                (name.clone(), vals)
+            })
+            .collect()
+    } else {
+        Vec::new()
+    }
+}
 
 #[crate::sera_alias(
     "bar",
@@ -69,36 +122,7 @@ pub fn build(input: &str) -> String {
     let srt = o.srt();
     let lp = o.lp();
 
-    let series: Vec<(String, Vec<f64>)> = {
-        let sn = o.series_names.clone().unwrap_or_default();
-        let n_cats = category_labels.len();
-        if let Some(s) = a.series.as_ref() {
-            s.iter()
-                .enumerate()
-                .map(|(si, vals)| {
-                    (
-                        sn.get(si)
-                            .cloned()
-                            .unwrap_or_else(|| format!("S{}", si + 1)),
-                        vals.clone(),
-                    )
-                })
-                .collect()
-        } else if !sn.is_empty() && n_cats > 0 {
-            let flat = a.values.clone().unwrap_or_default();
-            sn.iter()
-                .enumerate()
-                .map(|(si, name)| {
-                    let vals: Vec<f64> = (0..n_cats)
-                        .map(|ci| flat.get(si * n_cats + ci).copied().unwrap_or(0.0))
-                        .collect();
-                    (name.clone(), vals)
-                })
-                .collect()
-        } else {
-            Vec::new()
-        }
-    };
+    let series: Vec<(String, Vec<f64>)> = build_series(&a, &o, &category_labels);
 
     let cfg = BarConfig {
         variant,

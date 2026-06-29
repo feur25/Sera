@@ -48,7 +48,7 @@ pub fn render(cfg: &BulletConfig) -> String {
     let tube_w = (col_w as f64 * 0.34) as i32;
     let bulb_r = (tube_w / 2 + 6).max(10);
     let hx_track = hex6(0xE5E7EB);
-    let hx_value = hex6(0x6366F1);
+    let hx_value = hex6(0x636EFA);
     for i in 0..p.n {
         let max_v = max_for(&p, i);
         let cx = pad_l + i as i32 * col_w + col_w / 2;

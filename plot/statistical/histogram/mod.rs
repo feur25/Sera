@@ -82,7 +82,7 @@ pub fn build(input: &str) -> String {
         variant = HistogramVariant::Horizontal;
     }
     let color = match o.color_hex {
-        Some(0) | None => palette.get(0).copied().unwrap_or(0x6366F1),
+        Some(0) | None => palette.get(0).copied().unwrap_or(0x636EFA),
         Some(c) => c,
     };
     let html = render_histogram_html(&HistogramConfig {
@@ -141,7 +141,7 @@ pub fn build_histogram_overlay(input: &str) -> String {
         variant: HistogramVariant::Overlay,
         values: &values,
         bins: o.bins.unwrap_or(0) as usize,
-        color: o.color_hex.unwrap_or(0x6366F1),
+        color: o.color_hex.unwrap_or(0x636EFA),
         overlay_color: o.overlay_color_hex.unwrap_or(0xF43F5E),
         overlay_values: Some(&overlay),
         x_label: &o.xl(),

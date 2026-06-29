@@ -46,7 +46,7 @@ pub fn render(cfg: &LineConfig) -> String {
     let color = if cfg.color_hex != 0 {
         cfg.color_hex
     } else {
-        0x6366F1
+        0x636EFA
     };
     let hx = hex6(color);
     let shape = match cfg.step_shape {
@@ -56,7 +56,7 @@ pub fn render(cfg: &LineConfig) -> String {
         _ => 0u8,
     };
 
-    push_b(&mut f.buf, b"<polyline fill=\"none\" stroke=\"#");
+    push_b(&mut f.buf, b"<polyline data-idx=\"0\" fill=\"none\" stroke=\"#");
     f.buf.extend_from_slice(&hx);
     push_b(&mut f.buf, b"\" stroke-width=\"");
     push_f2(&mut f.buf, cfg.stroke_width);

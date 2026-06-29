@@ -44,7 +44,7 @@ crate::chart_config!(HeatmapConfig, 720, 0;
         value_min_cell: 26,
         value_decimals: 2,
         col_label_angle: 40,
-        color_low: 0x6366F1,
+        color_low: 0x636EFA,
         color_mid: 0xfafbfc,
         color_high: 0xF43F5E,
         palette: &[],

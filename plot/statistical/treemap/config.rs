@@ -5,6 +5,7 @@ crate::chart_config!(TreemapConfig, 1100, 520;
         pub values: &'a [f64],
         pub parents: &'a [String],
         pub palette: &'a [u32],
+        pub show_text: bool,
     }
     defaults {
         variant: super::variant::TreemapVariant::Basic,
@@ -12,5 +13,6 @@ crate::chart_config!(TreemapConfig, 1100, 520;
         values: &[],
         parents: &[],
         palette: &[],
+        show_text: false,
     }
 );

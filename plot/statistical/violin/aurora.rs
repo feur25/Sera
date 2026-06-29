@@ -8,7 +8,7 @@ use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i
 
 fn aurora_palette(ci: usize) -> (u32, u32) {
     const STOPS: [(u32, u32); 5] = [
-        (0xF59E0B, 0x6366F1),
+        (0xF59E0B, 0x636EFA),
         (0xF97316, 0x8B5CF6),
         (0xEF4444, 0x06B6D4),
         (0xFBBF24, 0xA855F7),

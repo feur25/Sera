@@ -26,6 +26,8 @@ pub fn render(cfg: &RadarConfig) -> String {
         let hx = hex6(color);
         push_b(&mut b, b"<g data-series=\"");
         push_i(&mut b, si as i32);
+        push_b(&mut b, b"\" data-idx=\"");
+        push_i(&mut b, si as i32);
         push_b(&mut b, b"\">");
         for ai in 0..p.n_axes {
             let v = cfg.series[si].1.get(ai).copied().unwrap_or(0.0).max(0.0);

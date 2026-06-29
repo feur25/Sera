@@ -110,7 +110,7 @@ pub fn build(input: &str) -> String {
             color_values: &color_values,
             symbols: &syms,
             color_hex: o.color_hex.unwrap_or(0),
-            color_low: o.color_low.unwrap_or(0x6366F1),
+            color_low: o.color_low.unwrap_or(0x636EFA),
             color_high: o.color_high.unwrap_or(0xF43F5E),
             point_size: o.point_size.unwrap_or(5.0),
             stroke_width: o.stroke_width.unwrap_or(1.0),

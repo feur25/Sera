@@ -49,13 +49,15 @@ pub fn render(cfg: &BulletConfig) -> String {
         push_b(&mut b, b"\" fill=\"url(#sp-bp-grad)\" rx=\"");
         push_i(&mut b, bar_h / 2);
         push_b(&mut b, b"\"/>");
-        push_b(&mut b, b"<text x=\"");
-        push_i(&mut b, p.pad_l + p.plot_w / 2);
-        push_b(&mut b, b"\" y=\"");
-        push_i(&mut b, by + bar_h / 2 + 5);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"#0f172a\">");
-        push_f2(&mut b, frac * 100.0);
-        push_b(&mut b, b"%</text>");
+        if cfg.show_text {
+            push_b(&mut b, b"<text x=\"");
+            push_i(&mut b, p.pad_l + p.plot_w / 2);
+            push_b(&mut b, b"\" y=\"");
+            push_i(&mut b, by + bar_h / 2 + 5);
+            push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"#0f172a\">");
+            push_f2(&mut b, frac * 100.0);
+            push_b(&mut b, b"%</text>");
+        }
         if p.targets[i] > 0.0 {
             let tx = p.pad_l + ((p.targets[i] / max_v).min(1.0) * p.plot_w as f64) as i32;
             push_b(&mut b, b"<line x1=\"");

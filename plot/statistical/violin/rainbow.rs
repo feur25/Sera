@@ -25,7 +25,7 @@ pub fn render(cfg: &ViolinConfig) -> String {
 
     let mut rainbow_palette: Vec<u32> = (0..n_cats).map(|i| rainbow_color(i, n_cats)).collect();
     if rainbow_palette.is_empty() {
-        rainbow_palette.push(0x6366F1);
+        rainbow_palette.push(0x636EFA);
     }
 
     for (ci, g) in groups.iter().enumerate() {

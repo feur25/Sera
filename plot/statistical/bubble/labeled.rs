@@ -35,7 +35,7 @@ pub fn render(cfg: &BubbleConfig) -> String {
     let fixed_hex = if cfg.color_hex != 0 {
         cfg.color_hex
     } else {
-        0x6366F1
+        0x636EFA
     };
 
     for &i in &layout.indices {

@@ -84,7 +84,7 @@ pub fn build(input: &str) -> String {
         labels: &labels,
         color_values: &color_values,
         color_hex: o.color_hex.unwrap_or(0),
-        color_low: o.color_low.unwrap_or(0x6366F1),
+        color_low: o.color_low.unwrap_or(0x636EFA),
         color_high: o.color_high.unwrap_or(0xF43F5E),
         min_size: o.min_size.unwrap_or(4.0),
         max_size: o.max_size.unwrap_or(40.0),

@@ -1,7 +1,38 @@
+use super::block3d::Bar3DBlock;
 use super::config::BarConfig;
 use crate::plot::statistical::common::{
     escape_xml, palette_color, push_b, push_hex, push_i, Frame,
 };
+
+pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    let n_cats = cfg.category_labels.len();
+    let n_ser = cfg.series.len();
+    if n_cats == 0 || n_ser == 0 {
+        return Vec::new();
+    }
+    let mut out = Vec::new();
+    for ci in 0..n_cats {
+        let mut pos_acc = 0.0;
+        let mut neg_acc = 0.0;
+        for (si, (_, vals)) in cfg.series.iter().enumerate() {
+            let v = vals.get(ci).copied().unwrap_or(0.0);
+            if !v.is_finite() {
+                continue;
+            }
+            let (z0, z1) = if v >= 0.0 {
+                let z0 = pos_acc;
+                pos_acc += v;
+                (z0, pos_acc)
+            } else {
+                let z1 = neg_acc;
+                neg_acc += v;
+                (neg_acc, z1)
+            };
+            out.push(Bar3DBlock::new(ci as f64, 0.0, z0, z1, 0.32, 0.32, si));
+        }
+    }
+    out
+}
 
 #[crate::chart_demo("labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], series=[[24,38,17,42],[18,29,33,21],[12,15,28,30]], series_names=[\"Revenue\",\"Cost\",\"Tax\"]")]
 

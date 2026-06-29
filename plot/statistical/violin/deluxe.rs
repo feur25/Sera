@@ -8,7 +8,7 @@ use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i
 
 fn deluxe_palette(ci: usize) -> (u32, u32) {
     const STOPS: [(u32, u32); 6] = [
-        (0x06B6D4, 0x6366F1),
+        (0x06B6D4, 0x636EFA),
         (0x10B981, 0x0EA5E9),
         (0xA855F7, 0x06B6D4),
         (0xF43F5E, 0x8B5CF6),

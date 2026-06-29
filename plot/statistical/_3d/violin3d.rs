@@ -12,6 +12,7 @@ pub fn render_violin3d_html(
     w: i32,
     h: i32,
     bg_color: Option<&str>,
+    scene: &str,
 ) -> String {
     render_3d_html(
         8,
@@ -25,9 +26,12 @@ pub fn render_violin3d_html(
         w,
         h,
         bg_color,
+        scene,
     )
 }
 
+#[crate::chart_demo("categories=["A","B"], values=[[1,2,3,2],[4,5,6,5]]")]
+#[crate::params(paramsList["title","categories","labels","values","x_label","y_label","z_label","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_alias("violin3d", "violin_3d", "violin3d_chart", "violins3d")]
 #[crate::sera_builder]
 pub fn build_violin3d_chart(input: &str) -> String {
@@ -95,6 +99,7 @@ pub fn build_violin3d_chart(input: &str) -> String {
             o.w(900),
             o.h(560),
             bg_str.as_deref(),
+            &o.scene3d(),
         ),
         &o,
     )

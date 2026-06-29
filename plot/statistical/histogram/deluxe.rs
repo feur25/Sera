@@ -11,7 +11,7 @@ fn spectrum_color(i: usize, n: usize) -> (u32, u32) {
     };
     let stops = [
         (0x06B6D4_u32, 0x22D3EE_u32),
-        (0x6366F1, 0x818CF8),
+        (0x636EFA, 0x818CF8),
         (0x8B5CF6, 0xA78BFA),
         (0xF43F5E, 0xFB7185),
         (0xF59E0B, 0xFBBF24),

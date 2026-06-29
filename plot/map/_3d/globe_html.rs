@@ -13,6 +13,7 @@ pub fn render_globe3d_html(
     w: i32,
     h: i32,
     bg_color: Option<&str>,
+    scene: &str,
 ) -> String {
     let map_js = build_globe_map_js();
     render_3d_html_impl(
@@ -27,6 +28,7 @@ pub fn render_globe3d_html(
         w,
         h,
         bg_color,
+        scene,
         &map_js,
     )
 }

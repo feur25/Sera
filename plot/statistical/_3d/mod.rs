@@ -1,3 +1,4 @@
+pub mod bar3d;
 pub mod candlestick3d;
 pub mod dumbbell3d;
 pub mod funnel3d;
@@ -12,6 +13,7 @@ pub mod stacked_bar3d;
 pub mod sunburst3d;
 pub mod violin3d;
 
+pub use bar3d::render_bar3d_blocks_html;
 pub use candlestick3d::build_candlestick3d_chart;
 pub use dumbbell3d::build_dumbbell3d_chart;
 pub use funnel3d::build_funnel3d_chart;

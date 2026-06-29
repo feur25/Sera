@@ -49,7 +49,7 @@ pub fn prepare(cfg: &DumbbellConfig) -> Option<Prepared> {
     let c1 = if !cfg.palette.is_empty() {
         cfg.palette[0]
     } else {
-        0x6366F1
+        0x636EFA
     };
     let c2 = if cfg.palette.len() >= 2 {
         cfg.palette[1]

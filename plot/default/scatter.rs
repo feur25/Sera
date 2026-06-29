@@ -21,7 +21,7 @@ pub fn render_scatter_fast(values: &[f64], labels: &[String], width: i32, height
     svg.push_str("\"><defs><style>.s{fill-opacity:0.8}</style></defs>");
 
     let colors = [
-        0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B, 0x8B5CF6, 0x06B6D4, 0xEC4899, 0x84CC16,
+        0x636EFA, 0xEF553B, 0x00CC96, 0xAB63FA, 0xFFA15A, 0x19D3F3, 0xFF6692, 0xB6E880,
     ];
 
     for i in 0..n {
@@ -2222,6 +2222,7 @@ pub fn build_dbscan_chart_3d(input: &str) -> String {
         o.w(900),
         o.h(560),
         bg_str.as_deref(),
+        &o.scene3d(),
     );
     apply_bg3d(html, &o)
 }

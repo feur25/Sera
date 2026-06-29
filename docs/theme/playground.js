@@ -92,13 +92,9 @@
     }
 
     function getThemeBase() {
-        var els = document.querySelectorAll('link[href*="/theme/"],script[src*="/theme/"]');
-        for (var i = 0; i < els.length; i++) {
-            var u = els[i].href || els[i].src || '';
-            var m = u.match(/(.*\/theme\/)/);
-            if (m) return m[1];
-        }
-        return 'theme/';
+        var parts = window.location.pathname.split('/').filter(Boolean);
+        parts.pop();
+        return new Array(parts.length + 1).join('../') + 'theme/';
     }
 
     function loadMonaco(cb) {
@@ -120,8 +116,16 @@
         var sp = window.SeraplotWASM;
         if (!sp) { setTimeout(function () { ensureWasm(cb); }, 80); return; }
         if (sp.__ready) { if (!state.wasmAliases) state.wasmAliases = buildDynamicAliases(sp); cb(); return; }
-        if (sp.__loading) { sp.__loading.then(function () { if (!state.wasmAliases) state.wasmAliases = buildDynamicAliases(window.SeraplotWASM); cb(); }); return; }
-        sp.__loading = sp.__init(getThemeBase() + 'seraplot_bg.wasm').then(function () { state.wasmAliases = buildDynamicAliases(window.SeraplotWASM); cb(); }).catch(function (e) {
+        if (sp.__loading) {
+            sp.__loading.then(function () { if (!state.wasmAliases) state.wasmAliases = buildDynamicAliases(window.SeraplotWASM); cb(); }, function () {
+                sp.__loading = null;
+                setStatus('err', 'WASM load failed');
+                showLoader('Failed to load WASM module.');
+            });
+            return;
+        }
+        sp.__loading = sp.__init(getThemeBase() + 'seraplot_bg.wasm?v=' + (window.SP_WASM_BUILD || '0')).then(function () { state.wasmAliases = buildDynamicAliases(window.SeraplotWASM); cb(); }).catch(function (e) {
+            sp.__loading = null;
             setStatus('err', 'WASM load failed');
             showLoader('Failed to load WASM module.<br>' + (e && e.message ? e.message : ''));
         });
@@ -129,7 +133,17 @@
 
     function buildDynamicAliases(sp) {
         if (typeof sp.chartAliases === 'function') {
-            try { return JSON.parse(sp.chartAliases()); } catch (e) {}
+            try {
+                var pairs = JSON.parse(sp.chartAliases());
+                var fromRegistry = {};
+                for (var p = 0; p < pairs.length; p++) {
+                    var alias = pairs[p][0];
+                    var snakeFn = pairs[p][1];
+                    var camelFn = snakeFn.replace(/_([a-z0-9])/g, function (_m, c) { return c.toUpperCase(); });
+                    if (typeof sp[camelFn] === 'function') fromRegistry[alias] = camelFn;
+                }
+                if (Object.keys(fromRegistry).length) return fromRegistry;
+            } catch (e) {}
         }
         var aliases = {};
         var keys = Object.keys(sp);
@@ -582,6 +596,37 @@
         else { var k = s.slice(0, eq).trim(); var v = parsePyVal(s.slice(eq + 1)); kwargs[k] = v; }
     }
 
+    function readParenBody(code, bodyStart) {
+        var depth = 1, j = bodyStart, inStr = false, q = '';
+        while (j < code.length && depth > 0) {
+            var c = code[j];
+            if (inStr) { if (c === '\\') { j += 2; continue; } if (c === q) inStr = false; }
+            else {
+                if (c === '"' || c === "'") { inStr = true; q = c; }
+                else if (c === '(') depth++;
+                else if (c === ')') depth--;
+            }
+            j++;
+        }
+        return j;
+    }
+
+    function readChain(code, start) {
+        var chain = [], i = start;
+        while (true) {
+            var k = i;
+            while (k < code.length && /\s/.test(code[k])) k++;
+            var rest = code.slice(k);
+            var m = rest.match(/^\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/);
+            if (!m) break;
+            var bodyStart = k + m[0].length;
+            var j = readParenBody(code, bodyStart);
+            chain.push({ fn: m[1], body: code.slice(bodyStart, j - 1) });
+            i = j;
+        }
+        return { chain: chain, end: i };
+    }
+
     function extractAllCalls(code) {
         var calls = [], i = 0;
         while (i < code.length) {
@@ -590,19 +635,11 @@
             var rest = code.slice(idx);
             var m = rest.match(/^sp\.([a-zA-Z_][a-zA-Z0-9_]*)\s*\(/);
             if (!m) { i = idx + 3; continue; }
-            var bodyStart = idx + m[0].length, depth = 1, j = bodyStart, inStr = false, q = '';
-            while (j < code.length && depth > 0) {
-                var c = code[j];
-                if (inStr) { if (c === '\\') { j += 2; continue; } if (c === q) inStr = false; }
-                else {
-                    if (c === '"' || c === "'") { inStr = true; q = c; }
-                    else if (c === '(') depth++;
-                    else if (c === ')') depth--;
-                }
-                j++;
-            }
-            calls.push({ fn: m[1], body: code.slice(bodyStart, j - 1) });
-            i = j;
+            var bodyStart = idx + m[0].length;
+            var j = readParenBody(code, bodyStart);
+            var chained = readChain(code, j);
+            calls.push({ fn: m[1], body: code.slice(bodyStart, j - 1), chain: chained.chain });
+            i = chained.end;
         }
         return calls;
     }
@@ -639,6 +676,15 @@
                 state.lastInput = input;
                 state.lastFnName = entry.name;
                 lastHtml = entry.fn(JSON.stringify(input));
+                if (lastHtml && call.chain && call.chain.length && typeof sp.applyChartMethod === 'function') {
+                    for (var mIdx = 0; mIdx < call.chain.length; mIdx++) {
+                        var mCall = call.chain[mIdx];
+                        var mParsed = parsePyArgs(mCall.body);
+                        var mArgs = {};
+                        for (var mKey in mParsed.kwargs) if (mParsed.kwargs.hasOwnProperty(mKey)) mArgs[mKey] = mParsed.kwargs[mKey];
+                        lastHtml = sp.applyChartMethod(lastHtml, mCall.fn, JSON.stringify(mArgs));
+                    }
+                }
             } catch (e) {
                 showErr('Render error in sp.' + call.fn + ': ' + (e && e.message ? e.message : String(e)));
                 hideLoader();

@@ -1,7 +1,29 @@
+use super::block3d::Bar3DBlock;
 use super::config::BarConfig;
 use crate::plot::statistical::common::{
     escape_xml, palette_color, push_b, push_f2, push_hex, push_i, Frame,
 };
+
+pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    let n = cfg.values.len();
+    if n == 0 {
+        return Vec::new();
+    }
+    let upi = cfg.units_per_icon.max(1.0);
+    let max_per_col = cfg.max_icons_per_column.max(1) as usize;
+    let mut out = Vec::new();
+    for i in 0..n {
+        let count = ((cfg.values[i] / upi).round() as i64).max(0) as usize;
+        for k in 0..count {
+            let col = k / max_per_col;
+            let row = k % max_per_col;
+            let cx = i as f64 + col as f64 * 0.55;
+            let z0 = row as f64 * 0.22;
+            out.push(Bar3DBlock::new(cx, 0.0, z0, z0 + 0.18, 0.12, 0.12, i));
+        }
+    }
+    out
+}
 
 #[crate::chart_demo("labels=[\"Bikes\",\"Cars\",\"Buses\",\"Trains\"], values=[24,38,17,42], unit_description=\"units\", units_per_icon=2.0, icon_size=24, max_icons_per_column=10")]
 
@@ -88,13 +110,15 @@ pub fn render(cfg: &BarConfig) -> String {
         }
 
         let center_x = x_acc + (n_cols * col_w) / 2;
-        push_b(&mut f.buf, b"<text x=\"");
-        push_i(&mut f.buf, center_x);
-        push_b(&mut f.buf, b"\" y=\"");
-        push_i(&mut f.buf, pt - 4);
-        push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" font-weight=\"700\" fill=\"#1f2937\">");
-        push_f2(&mut f.buf, cfg.values[i]);
-        push_b(&mut f.buf, b"</text>");
+        if cfg.show_text {
+            push_b(&mut f.buf, b"<text x=\"");
+            push_i(&mut f.buf, center_x);
+            push_b(&mut f.buf, b"\" y=\"");
+            push_i(&mut f.buf, pt - 4);
+            push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"11\" font-weight=\"700\" fill=\"#1f2937\">");
+            push_f2(&mut f.buf, cfg.values[i]);
+            push_b(&mut f.buf, b"</text>");
+        }
 
         push_b(&mut f.buf, b"<text x=\"");
         push_i(&mut f.buf, center_x);

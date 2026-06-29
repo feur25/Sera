@@ -103,23 +103,25 @@ pub fn render(cfg: &SlopeConfig) -> String {
             baseline - bar_w - 6
         };
         let val_anchor = if pos { "start" } else { "end" };
-        push_b(&mut b, b"<text x=\"");
-        push_i(&mut b, val_x);
-        push_b(&mut b, b"\" y=\"");
-        push_i(&mut b, y_mid + 4);
-        push_b(&mut b, b"\" text-anchor=\"");
-        b.extend_from_slice(val_anchor.as_bytes());
-        push_b(
-            &mut b,
-            b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" font-weight=\"700\" fill=\"",
-        );
-        b.extend_from_slice(color);
-        push_b(&mut b, b"\">");
-        if d > 0.0 {
-            push_b(&mut b, b"+");
+        if cfg.show_text {
+            push_b(&mut b, b"<text x=\"");
+            push_i(&mut b, val_x);
+            push_b(&mut b, b"\" y=\"");
+            push_i(&mut b, y_mid + 4);
+            push_b(&mut b, b"\" text-anchor=\"");
+            b.extend_from_slice(val_anchor.as_bytes());
+            push_b(
+                &mut b,
+                b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" font-weight=\"700\" fill=\"",
+            );
+            b.extend_from_slice(color);
+            push_b(&mut b, b"\">");
+            if d > 0.0 {
+                push_b(&mut b, b"+");
+            }
+            push_f2(&mut b, d);
+            push_b(&mut b, b"</text>");
         }
-        push_f2(&mut b, d);
-        push_b(&mut b, b"</text>");
     }
     finalize(b, cfg)
 }

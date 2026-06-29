@@ -15,7 +15,7 @@ pub fn render(cfg: &TreemapConfig) -> String {
     let mut b = Vec::<u8>::with_capacity(n * 200 + 2048);
     open_svg(&mut b, cfg);
     let base: u32 = if p.palette.is_empty() {
-        0x6366F1
+        0x636EFA
     } else {
         p.palette[0]
     };
@@ -39,7 +39,7 @@ pub fn render(cfg: &TreemapConfig) -> String {
         push_b(&mut b, b"\" fill-opacity=\"");
         push_f2(&mut b, opacity);
         push_b(&mut b, b"\" stroke=\"#fff\" stroke-width=\"1.5\"/>");
-        label_inside(&mut b, &p, ri, b"#fff");
+        label_inside(&mut b, &p, ri, b"#fff", cfg.show_text);
     }
     finalize(b, cfg)
 }

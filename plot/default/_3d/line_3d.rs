@@ -140,6 +140,7 @@ pub fn render_line3d_html(
     width: i32,
     height: i32,
     bg_color: Option<&str>,
+    scene: &str,
 ) -> String {
     crate::html::js_3d::render_3d_html(
         2,
@@ -153,5 +154,6 @@ pub fn render_line3d_html(
         width,
         height,
         bg_color,
+        scene,
     )
 }

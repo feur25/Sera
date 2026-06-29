@@ -4,7 +4,7 @@ use crate::plot::statistical::common::{escape_xml, push_b, push_f2, push_i, sort
 
 pub const COLOR_POS: u32 = 0x10B981;
 pub const COLOR_NEG: u32 = 0xF43F5E;
-pub const COLOR_TOTAL: u32 = 0x6366F1;
+pub const COLOR_TOTAL: u32 = 0x636EFA;
 
 pub struct Layout {
     pub pad_l: i32,

@@ -25,7 +25,7 @@ pub fn render_lines_fast(values: &[f64], labels: &[String], width: i32, height: 
         "\"><defs><style>.l{stroke-width:2;fill:none}.p{fill:#fff;stroke-width:1}</style></defs>",
     );
 
-    let color = 0x6366F1;
+    let color = 0x636EFA;
     svg.push_str("<polyline class=\"l\" stroke=\"#");
     svg.push_str(&format!("{:06x}", color));
     svg.push_str("\" points=\"");
@@ -44,7 +44,7 @@ pub fn render_lines_fast(values: &[f64], labels: &[String], width: i32, height: 
 
     svg.push_str("\"/>");
 
-    let colors = [0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B];
+    let colors = [0x636EFA, 0xEF553B, 0x00CC96, 0xAB63FA];
     for i in 0..n {
         let x = (i as f64 * scale_x) as i32;
         let y = height - (values[i] * scale_y) as i32;
@@ -188,7 +188,7 @@ pub fn render_lines_html(
     let plot_w = width - pad_l - pad_r;
     let plot_h = height - pad_t - pad_b;
     let step_x = plot_w as f64 / (n - 1).max(1) as f64;
-    let line_color = if color_hex != 0 { color_hex } else { 0x6366F1 };
+    let line_color = if color_hex != 0 { color_hex } else { 0x636EFA };
     let auto = hover.is_empty();
     let hid = html_id();
     let mut b = Vec::<u8>::with_capacity(n * 80 + 24_000);
@@ -290,7 +290,14 @@ pub fn render_lines_html(
         push_b(&mut b, b"</text>");
     }
     let hx = hex6(line_color);
-    push_b(&mut b, b"<polyline fill=\"none\" stroke=\"#");
+    push_b(&mut b, b"<polyline data-idx=\"0\" data-pts=\"");
+    for i in 0..n {
+        if i > 0 {
+            b.push(b',');
+        }
+        push_f2(&mut b, values[i]);
+    }
+    push_b(&mut b, b"\" fill=\"none\" stroke=\"#");
     b.extend_from_slice(&hx);
     push_b(
         &mut b,
@@ -384,7 +391,7 @@ pub fn build_line_chart(input: &str) -> String {
         o.w(900),
         o.h(480),
         &hover,
-        o.color_hex.unwrap_or(0x6366F1),
+        o.color_hex.unwrap_or(0x636EFA),
         &o.xl(),
         &o.yl(),
         o.grid(),

@@ -81,6 +81,10 @@ iframe[loading="lazy"] {
 #sp-params-panel .sp-tc pre code {
   font-size: 11px !important;
 }
+.sp-demo-code-wrap .sp-tc pre code {
+  min-height: 6.5em;
+}
+
 /* ── Language tab panes (.sp-tabs) — fix padding + scroll on all pages ─── */
 .sp-tc pre {
   margin: 0;

@@ -373,12 +373,44 @@ wrap.addEventListener('mousemove',function(e){
 
 var origVB=svg.getAttribute('viewBox')||'';
 function parseVB(s){return s.split(/[\s,]+/).map(Number);}
+function svgRect(el){
+ var r=el.getBoundingClientRect();
+ if(!r.width&&!r.height)return null;
+ var ctm=svg.getScreenCTM();if(!ctm)return null;
+ var inv=ctm.inverse();
+ var p1=svg.createSVGPoint();p1.x=r.left;p1.y=r.top;var s1=p1.matrixTransform(inv);
+ var p2=svg.createSVGPoint();p2.x=r.right;p2.y=r.bottom;var s2=p2.matrixTransform(inv);
+ var x=Math.min(s1.x,s2.x),y=Math.min(s1.y,s2.y);
+ return{x:x,y:y,width:Math.abs(s2.x-s1.x),height:Math.abs(s2.y-s1.y)};}
 function animateVB(x,y,w,h){
  svg.style.transition='all 0.5s cubic-bezier(.4,0,.2,1)';
  svg.setAttribute('viewBox',x+' '+y+' '+w+' '+h);}
+var origTicksX=null,origTicksY=null;
+function captureTicks(){
+ if(origTicksX)return;
+ origTicksX=Array.prototype.slice.call(svg.querySelectorAll('.sp-xt')).map(function(t){return{x:parseFloat(t.getAttribute('x')),v:parseFloat(t.textContent),txt:t.textContent};}).filter(function(p){return isFinite(p.x);});
+ origTicksY=Array.prototype.slice.call(svg.querySelectorAll('.sp-yt')).map(function(t){return{y:parseFloat(t.getAttribute('y')),v:parseFloat(t.textContent),txt:t.textContent};}).filter(function(p){return isFinite(p.y);});}
+function linFit(pts,key){
+ if(!pts||pts.length<2||isNaN(pts[0].v))return null;
+ var a=pts[0],b=pts[pts.length-1];
+ if(a[key]===b[key])return null;
+ var m=(b.v-a.v)/(b[key]-a[key]);
+ return{m:m,c:a.v-m*a[key]};}
+function regenTicks(vb){
+ captureTicks();
+ var fx=linFit(origTicksX,'x'),fy=linFit(origTicksY,'y');
+ var xts=svg.querySelectorAll('.sp-xt'),yts=svg.querySelectorAll('.sp-yt');
+ if(fx&&xts.length){var n=xts.length;for(var i=0;i<n;i++){var px=vb[0]+(i+0.5)/n*vb[2];xts[i].setAttribute('x',px);xts[i].textContent=(fx.m*px+fx.c).toFixed(2);}}
+ if(fy&&yts.length){var n2=yts.length;for(var j=0;j<n2;j++){var py=vb[1]+vb[3]-(j+0.5)/n2*vb[3];yts[j].setAttribute('y',py);yts[j].textContent=(fy.m*py+fy.c).toFixed(2);}}}
+function restoreTicks(){
+ if(!origTicksX)return;
+ var xts=svg.querySelectorAll('.sp-xt'),yts=svg.querySelectorAll('.sp-yt');
+ for(var i=0;i<xts.length&&i<origTicksX.length;i++){xts[i].setAttribute('x',origTicksX[i].x);xts[i].textContent=origTicksX[i].txt;}
+ for(var j=0;j<yts.length&&j<origTicksY.length;j++){yts[j].setAttribute('y',origTicksY[j].y);yts[j].textContent=origTicksY[j].txt;}}
 function resetVB(){
  svg.style.transition='all 0.45s cubic-bezier(.4,0,.2,1)';
  if(origVB)svg.setAttribute('viewBox',origVB);
+ restoreTicks();
  setTimeout(function(){svg.style.transition='';},500);}
 function reAnim(){var els=svg.querySelectorAll('[data-idx]');els.forEach(function(el){el.style.animation='none';el.style.filter='';});void svg.offsetHeight;els.forEach(function(el,i){el.style.animation='';el.style.animationDelay=(i*14)+'ms';});}
 var ov=wrap.querySelector('.sp-sel-ov');var panel=wrap.querySelector('.sp-cpanel');
@@ -408,8 +440,10 @@ document.addEventListener('mouseup',function(e){if(!dragging)return;dragging=fal
  var p1=toS(rx1,ry1),p2=toS(rx2,ry2);
  var bx1=Math.min(p1.x,p2.x),by1=Math.min(p1.y,p2.y),bx2=Math.max(p1.x,p2.x),by2=Math.max(p1.y,p2.y);
  var pts=svg.querySelectorAll('[data-idx]');var sel=[],unsel=[];
- pts.forEach(function(el){try{var bb=el.getBBox();var ecx=bb.x+bb.width/2,ecy=bb.y+bb.height/2;
-  if(ecx>=bx1&&ecx<=bx2&&ecy>=by1&&ecy<=by2)sel.push(el);else unsel.push(el);}catch(ex){unsel.push(el);}});
+ pts.forEach(function(el){var bb=svgRect(el)||(function(){try{return el.getBBox();}catch(ex){return null;}})();
+  if(!bb){unsel.push(el);return;}
+  var ecx=bb.x+bb.width/2,ecy=bb.y+bb.height/2;
+  if(ecx>=bx1&&ecx<=bx2&&ecy>=by1&&ecy<=by2)sel.push(el);else unsel.push(el);});
  if(!sel.length)return;
  sel.forEach(function(el){el.style.stroke='#6366F1';el.style.strokeWidth='2.5';el.style.opacity='';el.style.transform='';});
  unsel.forEach(function(el){
@@ -419,9 +453,10 @@ document.addEventListener('mouseup',function(e){if(!dragging)return;dragging=fal
   setTimeout(function(){el.style.display='none';el.style.transition='';},300);});
 
  var mnx=Infinity,mny=Infinity,mxx=-Infinity,mxy=-Infinity;
- sel.forEach(function(el){try{var bb=el.getBBox();
+ sel.forEach(function(el){var bb=svgRect(el)||(function(){try{return el.getBBox();}catch(ex){return null;}})();
+  if(!bb)return;
   mnx=Math.min(mnx,bb.x);mny=Math.min(mny,bb.y);
-  mxx=Math.max(mxx,bb.x+bb.width);mxy=Math.max(mxy,bb.y+bb.height);}catch(ex){}});
+  mxx=Math.max(mxx,bb.x+bb.width);mxy=Math.max(mxy,bb.y+bb.height);});
  var vb=parseVB(origVB.length?origVB:(svg.getAttribute('viewBox')||'0 0 800 500'));
  var axL=mnx-vb[0],axT=mny-vb[1],axR=(vb[0]+vb[2])-mxx,axB=(vb[1]+vb[3])-mxy;
  var sw=mxx-mnx||1,sh=mxy-mny||1;
@@ -430,6 +465,7 @@ document.addEventListener('mouseup',function(e){if(!dragging)return;dragging=fal
  var pT=Math.max(sh*0.12,axT>0?axT*0.7:sh*0.12);
  var pB=Math.max(sh*0.20,axB>0?axB*0.8:sh*0.20);
  animateVB(mnx-pL,mny-pT,(mxx+pR)-(mnx-pL),(mxy+pB)-(mny-pT));
+ regenTicks([mnx-pL,mny-pT,(mxx+pR)-(mnx-pL),(mxy+pB)-(mny-pT)]);
 
  var xs=sel.map(function(el){return parseFloat(el.getAttribute('data-x'));}).filter(Number.isFinite);
  var ys=sel.map(function(el){return parseFloat(el.getAttribute('data-y'));}).filter(Number.isFinite);
@@ -458,7 +494,8 @@ svg.addEventListener('dblclick',function(e){
  if(!found)return;
  e.stopPropagation();
  var idx=parseInt(found.getAttribute('data-idx'),10);
- var bb;try{bb=found.getBBox();}catch(ex){return;}
+ var bb=svgRect(found)||(function(){try{return found.getBBox();}catch(ex){return null;}})();
+ if(!bb)return;
  var pad=Math.max(bb.width,bb.height)*1.5+30;
  svg.querySelectorAll('[data-idx]').forEach(function(el){
   var eli=parseInt(el.getAttribute('data-idx'),10);
@@ -467,6 +504,7 @@ svg.addEventListener('dblclick',function(e){
  var nx=Math.max(vb[0],bb.x-pad),ny=Math.max(vb[1],bb.y-pad);
  var nw=Math.min(vb[2],bb.width+pad*2),nh=Math.min(vb[3],bb.height+pad*2);
  animateVB(nx,ny,nw,nh);
+ regenTicks([nx,ny,nw,nh]);
  dblZoomed=true;
 },false);
 var legs=svg.querySelectorAll('[data-legend]');

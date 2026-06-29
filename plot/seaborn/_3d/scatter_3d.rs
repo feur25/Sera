@@ -1,5 +1,7 @@
 use crate::plot::{apply_bg3d, parse_all};
 
+#[crate::chart_demo("x=[1,2,3,4], y=[2,1,4,3], z=[10,20,15,25]")]
+#[crate::params(paramsList["title","x","y","z","color_hex","palette","bg_color","scene","orientation3d","width","height","x_label","y_label","z_label"])]
 #[crate::sera_alias(
     "scatter3d",
     "scatter_3d",
@@ -28,6 +30,7 @@ pub fn build_scatter3d_chart(input: &str) -> String {
         o.w(900),
         o.h(560),
         bg_str.as_deref(),
+        &o.scene3d(),
     );
     apply_bg3d(html, &o)
 }

@@ -33,7 +33,7 @@ const SEABORN_SVG_RENDERERS: &[(u8, SvgChartRenderer)] = &[
     ),
 ];
 
-const SEABORN_COLORS: &[(u8, u32)] = &[(40, 0x6366F1), (41, 0x10B981), (42, 0xF43F5E)];
+const SEABORN_COLORS: &[(u8, u32)] = &[(40, 0x636EFA), (41, 0x10B981), (42, 0xF43F5E)];
 
 pub fn register_seaborn_types() {
     let mut ids = Vec::new();

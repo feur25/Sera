@@ -16,7 +16,7 @@ pub fn render(cfg: &SunburstConfig) -> String {
     let mono_color: u32 = if !p.palette.is_empty() {
         p.palette[0]
     } else {
-        0x6366F1
+        0x636EFA
     };
     let hx = hex6(mono_color);
     let order = p.bfs_order.clone();

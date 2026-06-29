@@ -51,6 +51,8 @@ pub fn register_statistical_3d_types() {
     }
 }
 
+#[crate::chart_demo("x=[1,2,3], y=[1,2,3], z=[1,2,3], sizes=[10,20,30]")]
+#[crate::params(paramsList["title","x","y","z","sizes","palette","bg_color","scene","orientation3d","width","height","x_label","y_label","z_label"])]
 #[crate::sera_alias(
     "bubble3d",
     "bubble_3d",
@@ -99,6 +101,7 @@ pub fn build_bubble3d_chart(input: &str) -> String {
         o.w(900),
         o.h(560),
         bg_str.as_deref(),
+        &o.scene3d(),
         size_js.as_bytes(),
     );
     apply_bg3d(html, &o)

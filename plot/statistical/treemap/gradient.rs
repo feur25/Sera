@@ -44,7 +44,7 @@ pub fn render(cfg: &TreemapConfig) -> String {
             &mut b,
             b")\" stroke=\"rgba(255,255,255,0.5)\" stroke-width=\"1\"/>",
         );
-        label_inside(&mut b, &p, ri, b"#fff");
+        label_inside(&mut b, &p, ri, b"#fff", cfg.show_text);
     }
     finalize(b, cfg)
 }

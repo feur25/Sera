@@ -77,7 +77,7 @@ pub fn render(cfg: &LineConfig) -> String {
         let color = if cfg.color_hex != 0 {
             cfg.color_hex
         } else {
-            0x6366F1
+            0x636EFA
         };
         let _ = color;
         vec![(String::new(), cfg.values.to_vec())]
@@ -91,7 +91,7 @@ pub fn render(cfg: &LineConfig) -> String {
         } else if cfg.color_hex != 0 {
             cfg.color_hex
         } else {
-            0x6366F1
+            0x636EFA
         };
         let hx = hex6(color);
 
@@ -143,7 +143,9 @@ pub fn render(cfg: &LineConfig) -> String {
         }
         push_b(&mut f.buf, b" Z\"/>");
 
-        push_b(&mut f.buf, b"<polyline fill=\"none\" stroke=\"#");
+        push_b(&mut f.buf, b"<polyline data-idx=\"");
+        push_i(&mut f.buf, si as i32);
+        push_b(&mut f.buf, b"\" fill=\"none\" stroke=\"#");
         f.buf.extend_from_slice(&hx);
         push_b(&mut f.buf, b"\" stroke-width=\"");
         push_f2(&mut f.buf, cfg.stroke_width);

@@ -24,7 +24,7 @@ pub fn render_bars_fast(values: &[f64], labels: &[String], width: i32, height: i
     svg.push_str("\"><defs><style>.b{font:10px sans-serif}.v{fill:#1f77b4}.l{fill:#666;font-size:9px}</style></defs>");
 
     let colors = [
-        0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B, 0x8B5CF6, 0x06B6D4, 0xEC4899, 0x84CC16,
+        0x636EFA, 0xEF553B, 0x00CC96, 0xAB63FA, 0xFFA15A, 0x19D3F3, 0xFF6692, 0xB6E880,
     ];
 
     for i in 0..n {
@@ -186,6 +186,7 @@ pub fn render_bars_html(
     color_hex: u32,
     gridlines: bool,
     sort_order: &str,
+    legend_position: &str,
 ) -> String {
     use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json};
     use crate::plot::statistical::common::{
@@ -449,7 +450,7 @@ pub fn render_bars_html(
         }
     }
 
-    if has_groups {
+    if has_groups && !legend_position.is_empty() && legend_position != "none" {
         let leg_x = width - legend_w + 12;
         for (gi, gname) in group_names.iter().enumerate() {
             let ly = pad_t + 8 + gi as i32 * 18;
@@ -496,6 +497,7 @@ pub fn build_bar_chart(input: &str) -> String {
         o.color_hex.unwrap_or(0),
         o.grid(),
         &o.srt(),
+        &o.lp(),
     );
     apply_h(html, &o)
 }
@@ -525,6 +527,7 @@ pub fn build_hbar(input: &str) -> String {
         o.color_hex.unwrap_or(0),
         o.grid(),
         &o.srt(),
+        &o.lp(),
     );
     apply(html, &o)
 }

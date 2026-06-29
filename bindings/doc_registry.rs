@@ -14,6 +14,7 @@ pub struct FnDoc {
     pub en: &'static str,
     pub fr: &'static str,
     pub params: &'static [ParamDoc],
+    pub aliases: &'static [&'static str],
 }
 
 inventory::collect!(FnDoc);

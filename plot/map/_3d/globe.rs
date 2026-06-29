@@ -227,6 +227,8 @@ fn index_to_globe_latlon(idx: usize) -> (f64, f64) {
     let lon = -180.0 + (idx as f64 * 7.3) % 360.0;
     (lat, lon)
 }
+#[crate::chart_demo("lats=[10,20,-10], lons=[5,15,-20], values=[100,200,150]")]
+#[crate::params(paramsList["title","lats","lons","values","project","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_builder]
 #[crate::sera_alias("globe3d", "globe_3d", "globe3d_chart", "globe")]
 pub fn build_globe3d_chart(input: &str) -> String {
@@ -256,6 +258,7 @@ pub fn build_globe3d_chart(input: &str) -> String {
             o.w(800),
             o.h(600),
             bg_str.as_deref(),
+            &o.scene3d(),
         ),
         &o,
     )

@@ -1,7 +1,55 @@
+use super::block3d::Bar3DBlock;
 use super::config::BarConfig;
 use crate::plot::statistical::common::{
     escape_xml, palette_color, push_b, push_f2, push_hex, push_i, Frame,
 };
+
+pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
+    let n_cats = cfg.category_labels.len();
+    let n_ser = cfg.series.len();
+    if n_cats == 0 || n_ser == 0 {
+        return Vec::new();
+    }
+    let widths: Vec<f64> = if cfg.widths.len() == n_cats {
+        cfg.widths.to_vec()
+    } else {
+        vec![1.0; n_cats]
+    };
+    let mut cx_pos = 0.0;
+    let mut out = Vec::new();
+    for ci in 0..n_cats {
+        let w = widths[ci].max(0.05);
+        let cat_total: f64 = cfg
+            .series
+            .iter()
+            .filter_map(|(_, v)| v.get(ci).copied())
+            .filter(|v| v.is_finite() && *v >= 0.0)
+            .sum();
+        let cx = cx_pos + w / 2.0;
+        if cat_total > 0.0 {
+            let mut acc = 0.0;
+            for (si, (_, vals)) in cfg.series.iter().enumerate() {
+                let v = vals.get(ci).copied().unwrap_or(0.0).max(0.0);
+                if v <= 0.0 {
+                    continue;
+                }
+                let frac = v / cat_total;
+                out.push(Bar3DBlock::new(
+                    cx,
+                    0.0,
+                    acc,
+                    acc + frac,
+                    w / 2.0 * 0.92,
+                    0.32,
+                    si,
+                ));
+                acc += frac;
+            }
+        }
+        cx_pos += w;
+    }
+    out
+}
 
 #[crate::chart_demo("labels=[\"North\",\"South\",\"East\",\"West\"], series=[[42,28,33,17],[18,38,22,30],[24,15,28,20]], series_names=[\"Product A\",\"Product B\",\"Product C\"], widths=[2.0,1.5,1.0,1.2]")]
 

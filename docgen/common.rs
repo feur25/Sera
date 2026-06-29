@@ -27,14 +27,17 @@ pub(crate) fn family_variant(file: &Path, plot_root: &Path) -> Option<(String, S
     }
     let last = comps.last().unwrap();
     let variant = last.strip_suffix(".rs")?.to_string();
-    let family = comps[comps.len() - 2].clone();
-    Some((family, variant))
+    let parent = comps[comps.len() - 2].clone();
+    if parent == "_3d" {
+        return Some((variant, "basic".to_string()));
+    }
+    Some((parent, variant))
 }
 
 pub(crate) fn extract_kwargs(src: &str) -> Option<String> {
-    let needle = "chart_demo(\"";
-    let start = src.find(needle)? + needle.len();
-    let rest = &src[start..];
+    let needle = "chart_demo(";
+    let after = src.find(needle)? + needle.len();
+    let rest = src[after..].trim_start().strip_prefix('"')?;
     let mut end = 0;
     let mut esc = false;
     for (i, c) in rest.char_indices() {
@@ -577,3 +580,4 @@ pub(crate) fn filtered_auto_fields(src: &str, allowed: &[String]) -> Vec<String>
         .filter(|s| allowed.contains(s))
         .collect()
 }
+
