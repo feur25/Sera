@@ -209,6 +209,31 @@ fn _alias_load(path: Option<&str>) -> bool {
 }
 
 #[pyfunction]
+#[pyo3(signature = (bindings))]
+fn bind_colors(bindings: &Bound<'_, pyo3::types::PyDict>) -> PyResult<()> {
+    let mut vec: Vec<(String, u32)> = Vec::new();
+    for (k, v) in bindings.iter() {
+        let lbl = k.extract::<String>()?;
+        let col = if let Ok(i) = v.extract::<u64>() {
+            (i & 0xFFFFFF) as u32
+        } else if let Ok(s) = v.extract::<String>() {
+            let s = s.trim_start_matches('#');
+            u32::from_str_radix(s, 16).unwrap_or(0)
+        } else {
+            continue;
+        };
+        vec.push((lbl, col));
+    }
+    crate::bind_colors(vec);
+    Ok(())
+}
+
+#[pyfunction]
+fn clear_color_bindings() {
+    crate::clear_color_bindings();
+}
+
+#[pyfunction]
 fn chart_info(chart: &crate::Chart) -> String {
     let payload = serde_json::json!({ "html": chart.html }).to_string();
     crate::plot::utils::chart_info(&payload)
@@ -376,9 +401,21 @@ impl crate::Chart {
 
 pub fn __init(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<crate::Chart>()?;
+    m.add_class::<crate::canvas::Canvas>()?;
+    m.add_function(wrap_pyfunction!(crate::canvas::canvas, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::canvas::canvas_load, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::canvas::canvas_save_named, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::canvas::canvas_load_named, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::canvas::canvas_default_dir, m)?)?;
     m.add_class::<crate::PyDataset>()?;
+    m.add_class::<crate::data::Table>()?;
+    m.add_class::<crate::data::SeraDFrame_>()?;
+    m.add_class::<crate::data::SeraDFrameGroupBy>()?;
+    m.add_class::<crate::data::DFrameBuilder>()?;
     m.add_class::<crate::PyDatasetStats>()?;
     m.add_class::<crate::LiveStream>()?;
+    #[cfg(feature = "webapp")]
+    m.add_class::<crate::webapp::App>()?;
     m.add_function(wrap_pyfunction!(crate::theme, m)?)?;
     m.add_function(wrap_pyfunction!(crate::config, m)?)?;
     m.add_function(wrap_pyfunction!(_sera_call, m)?)?;
@@ -406,6 +443,8 @@ pub fn __init(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(_alias_save, m)?)?;
     m.add_function(wrap_pyfunction!(_alias_load, m)?)?;
     m.add_function(wrap_pyfunction!(chart_info, m)?)?;
+    m.add_function(wrap_pyfunction!(bind_colors, m)?)?;
+    m.add_function(wrap_pyfunction!(clear_color_bindings, m)?)?;
     for entry in inventory::iter::<PyFnEntry>() {
         (entry.register)(m)?;
     }
