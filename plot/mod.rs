@@ -1,8 +1,10 @@
 pub mod camera;
 pub mod canvas;
+pub mod canvas_points;
 pub mod chart_input;
 pub mod containers_3d;
 pub mod controller;
+pub mod decimate;
 pub mod default;
 pub mod family_macro;
 #[cfg(feature = "gui")]

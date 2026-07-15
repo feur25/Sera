@@ -547,5 +547,8 @@ pub fn write_registry(manifest: &Path, ml_root: &Path) {
         .join("docs")
         .join("theme")
         .join("ml-registry.js");
+    if let Some(parent) = path.parent() {
+        let _ = fs::create_dir_all(parent);
+    }
     fs::write(path, js).expect("write ml-registry.js");
 }

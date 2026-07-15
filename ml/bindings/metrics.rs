@@ -25,7 +25,8 @@ pub fn ml_metric_score(input: &str) -> String {
         alpha: Option<f64>,
         eps: Option<f64>,
     }
-    let i: I = serde_json::from_str(input).unwrap_or_default();
+    let sanitized = crate::plot::chart_input::sanitize_non_finite_json(input);
+    let i: I = serde_json::from_str(&sanitized).unwrap_or_default();
     let name: String = i.name.unwrap_or_default();
     let to_i32 = |v: &[f64]| v.iter().map(|x| *x as i32).collect::<Vec<i32>>();
     let yt_f = i.y_true.clone().unwrap_or_default();
@@ -128,7 +129,8 @@ pub fn ml_metric_curve(input: &str) -> String {
         y_score: Option<Vec<f64>>,
         pos_label: Option<i32>,
     }
-    let i: I = serde_json::from_str(input).unwrap_or_default();
+    let sanitized = crate::plot::chart_input::sanitize_non_finite_json(input);
+    let i: I = serde_json::from_str(&sanitized).unwrap_or_default();
     let yt: Vec<i32> = i
         .y_true
         .unwrap_or_default()

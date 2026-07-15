@@ -8,6 +8,13 @@ use crate::build_common::{snake_to_camel, walk};
 struct RegisteredFns {
     exported: HashSet<String>,
     custom_wrapped: HashSet<String>,
+    html_wrapped: HashSet<String>,
+}
+
+fn attr_block_before(src: &str, pos: usize) -> &str {
+    let prefix = &src[..pos];
+    let start = prefix.rfind("\n\n").map(|i| i + 2).unwrap_or(0);
+    &prefix[start..]
 }
 
 fn split_top_level_csv(input: &str) -> Vec<&str> {
@@ -111,13 +118,20 @@ fn collect_registered_fns(root: &Path) -> RegisteredFns {
         let mut cur = 0;
         while let Some(rel) = src[cur..].find("pub fn ") {
             let pos = cur + rel;
-            let attr_src = &src[cur..pos];
+            let attr_src = attr_block_before(&src, pos);
             let mut names = Vec::new();
             if attr_src.contains("sera_register") {
                 if let Some(name) = push_input_str_fn(&src, pos, &mut names) {
                     out.exported.insert(name.clone());
                     if attr_src.contains("sera_register(custom") {
                         out.custom_wrapped.insert(name);
+                    } else if attr_src.contains("chart") {
+                        out.html_wrapped.insert(name);
+                    }
+                    if attr_src.contains("chart") {
+                        if let Some(name) = names.last() {
+                            out.html_wrapped.insert(name.clone());
+                        }
                     }
                 }
             }
@@ -358,10 +372,13 @@ fn generate_adapters(chart_fns: &[String], ml_fns: &[String], util_fns: &[String
     wasm_body.push_str("}\n");
     wasm_body.push_str("#[wasm_bindgen(js_name = \"chartAliases\")]\n");
     wasm_body.push_str("pub fn wasm_chart_aliases_json() -> String {\n");
-    wasm_body.push_str("    serde_json::to_string(&crate::CHART_ALIAS_REGISTRY).unwrap_or_default()\n");
+    wasm_body
+        .push_str("    serde_json::to_string(&crate::CHART_ALIAS_REGISTRY).unwrap_or_default()\n");
     wasm_body.push_str("}\n");
     wasm_body.push_str("#[wasm_bindgen(js_name = \"applyChartMethod\")]\n");
-    wasm_body.push_str("pub fn wasm_apply_chart_method(html: &str, name: &str, args_json: &str) -> String {\n");
+    wasm_body.push_str(
+        "pub fn wasm_apply_chart_method(html: &str, name: &str, args_json: &str) -> String {\n",
+    );
     wasm_body.push_str("    crate::bindings::method_registry::apply_by_name(html, name, args_json).unwrap_or_else(|| html.to_string())\n");
     wasm_body.push_str("}\n");
     wasm_body.push_str("#[wasm_bindgen(js_name = \"params\")]\n");
@@ -558,9 +575,13 @@ pub(crate) fn write_all(
     let ml_fns: Vec<String> = ml_fns_vec;
     let mut util_fns: Vec<String> = Vec::new();
     let mut auto_util_fns: Vec<String> = Vec::new();
+    let mut html_util_fns: Vec<String> = Vec::new();
     for n in builder_fns {
         if registered.custom_wrapped.contains(n) {
             util_fns.push(n.clone());
+            if registered.html_wrapped.contains(n) {
+                html_util_fns.push(n.clone());
+            }
         } else {
             chart_fns.push(n.clone());
         }
@@ -569,6 +590,9 @@ pub(crate) fn write_all(
         if registered.custom_wrapped.contains(n) {
             if !util_fns.contains(n) {
                 util_fns.push(n.clone());
+            }
+            if registered.html_wrapped.contains(n) && !html_util_fns.contains(n) {
+                html_util_fns.push(n.clone());
             }
         } else {
             if !util_fns.contains(n) {
@@ -583,6 +607,9 @@ pub(crate) fn write_all(
         if !util_fns.contains(n) {
             if registered.custom_wrapped.contains(n) {
                 util_fns.push(n.clone());
+                if registered.html_wrapped.contains(n) && !html_util_fns.contains(n) {
+                    html_util_fns.push(n.clone());
+                }
             } else {
                 util_fns.push(n.clone());
                 auto_util_fns.push(n.clone());
@@ -664,4 +691,9 @@ pub(crate) fn write_all(
         emit_macro("for_each_auto_util_fn", &auto_util_fns),
     )
     .expect("write auto_util_fn_macro.rs");
+    fs::write(
+        out_dir.join("html_util_fn_macro.rs"),
+        emit_macro("for_each_html_util_fn", &html_util_fns),
+    )
+    .expect("write html_util_fn_macro.rs");
 }

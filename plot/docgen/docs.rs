@@ -1,6 +1,245 @@
 use std::fs;
 use std::path::Path;
 
+struct MethodDocParam {
+    name: String,
+    ty: String,
+    en: String,
+    fr: String,
+}
+
+struct MethodDocEntry {
+    name: String,
+    category: String,
+    file: String,
+    en: String,
+    fr: String,
+    aliases: Vec<String>,
+    params: Vec<MethodDocParam>,
+}
+
+fn extract_quoted_string(s: &str) -> Option<(String, usize)> {
+    if !s.starts_with('"') {
+        return None;
+    }
+    let mut out = String::new();
+    let mut esc = false;
+    for (i, c) in s[1..].char_indices() {
+        if esc {
+            out.push('\\');
+            out.push(c);
+            esc = false;
+        } else if c == '\\' {
+            esc = true;
+        } else if c == '"' {
+            return Some((out, i + 2));
+        } else {
+            out.push(c);
+        }
+    }
+    None
+}
+
+fn extract_paren_body(src: &str, at: usize) -> Option<(String, usize)> {
+    if src.as_bytes().get(at) != Some(&b'(') {
+        return None;
+    }
+    let mut depth = 0i32;
+    let mut in_str = false;
+    let mut esc = false;
+    let body_start = at + 1;
+    for (i, c) in src[at..].char_indices() {
+        if esc {
+            esc = false;
+            continue;
+        }
+        if c == '\\' && in_str {
+            esc = true;
+            continue;
+        }
+        if c == '"' {
+            in_str = !in_str;
+            continue;
+        }
+        if in_str {
+            continue;
+        }
+        match c {
+            '(' => depth += 1,
+            ')' => {
+                depth -= 1;
+                if depth == 0 {
+                    return Some((src[body_start..at + i].to_string(), at + i + 1));
+                }
+            }
+            _ => {}
+        }
+    }
+    None
+}
+
+fn kv_str(body: &str, key: &str) -> String {
+    let pattern = format!("{} = \"", key);
+    let Some(pos) = body.find(&pattern) else {
+        return String::new();
+    };
+    let s = &body[pos + pattern.len() - 1..];
+    extract_quoted_string(s).map(|(v, _)| v).unwrap_or_default()
+}
+
+fn parse_aliases_group(body: &str) -> Vec<String> {
+    let Some(pos) = body.find("aliases(") else {
+        return Vec::new();
+    };
+    let paren_pos = pos + "aliases".len();
+    let Some((content, _)) = extract_paren_body(body, paren_pos) else {
+        return Vec::new();
+    };
+    let mut result = Vec::new();
+    let mut rest = content.as_str();
+    loop {
+        let Some(q) = rest.find('"') else { break };
+        rest = &rest[q..];
+        let Some((s, consumed)) = extract_quoted_string(rest) else {
+            break;
+        };
+        result.push(s);
+        rest = &rest[consumed..];
+    }
+    result
+}
+
+fn parse_params_group(body: &str) -> Vec<MethodDocParam> {
+    let mut result = Vec::new();
+    let mut pos = 0;
+    while let Some(rel) = body[pos..].find("param(") {
+        let abs_paren = pos + rel + "param".len();
+        let Some((content, end)) = extract_paren_body(body, abs_paren) else {
+            pos += rel + 1;
+            continue;
+        };
+        let p = MethodDocParam {
+            name: kv_str(&content, "name"),
+            ty: kv_str(&content, "ty"),
+            en: kv_str(&content, "en"),
+            fr: kv_str(&content, "fr"),
+        };
+        if !p.name.is_empty() {
+            result.push(p);
+        }
+        pos = end;
+    }
+    result
+}
+
+fn skip_bracket_attr(s: &str) -> Option<usize> {
+    if !s.starts_with("#[") {
+        return None;
+    }
+    let mut depth = 0i32;
+    let mut in_str = false;
+    let mut esc = false;
+    for (i, c) in s[1..].char_indices() {
+        if esc {
+            esc = false;
+            continue;
+        }
+        if c == '\\' && in_str {
+            esc = true;
+            continue;
+        }
+        if c == '"' {
+            in_str = !in_str;
+            continue;
+        }
+        if in_str {
+            continue;
+        }
+        match c {
+            '[' => depth += 1,
+            ']' => {
+                depth -= 1;
+                if depth == 0 {
+                    return Some(i + 2);
+                }
+            }
+            _ => {}
+        }
+    }
+    None
+}
+
+fn find_fn_name_after(src: &str, from: usize) -> String {
+    let mut pos = from;
+    loop {
+        let trimmed = src[pos..].trim_start();
+        let ws = src[pos..].len() - trimmed.len();
+        pos += ws;
+        if trimmed.starts_with("#[") {
+            if let Some(skip) = skip_bracket_attr(trimmed) {
+                pos += skip;
+            } else {
+                break;
+            }
+        } else {
+            break;
+        }
+    }
+    let s = src[pos..].trim_start();
+    for prefix in &["pub async fn ", "pub fn ", "fn "] {
+        if let Some(rest) = s.strip_prefix(prefix) {
+            let end = rest
+                .find(|c: char| !c.is_ascii_alphanumeric() && c != '_')
+                .unwrap_or(rest.len());
+            return rest[..end].to_string();
+        }
+    }
+    String::new()
+}
+
+fn parse_method_docs(src: &str) -> Vec<MethodDocEntry> {
+    let mut entries = Vec::new();
+    let mut pos = 0;
+    while let Some(rel) = src[pos..].find("#[sera_doc(") {
+        let attr_start = pos + rel;
+        let paren_start = attr_start + "#[sera_doc".len();
+        let Some((body, paren_end)) = extract_paren_body(src, paren_start) else {
+            pos = attr_start + 1;
+            continue;
+        };
+        let after_attr = paren_end + 1;
+        let fn_name = find_fn_name_after(src, after_attr);
+        if !fn_name.is_empty() {
+            entries.push(MethodDocEntry {
+                name: fn_name,
+                category: kv_str(&body, "category"),
+                file: kv_str(&body, "file"),
+                en: kv_str(&body, "en"),
+                fr: kv_str(&body, "fr"),
+                aliases: parse_aliases_group(&body),
+                params: parse_params_group(&body),
+            });
+        }
+        pos = paren_end;
+    }
+    entries
+}
+
+fn doc_js_str(s: &str) -> String {
+    let mut out = String::with_capacity(s.len() + 4);
+    for c in s.chars() {
+        match c {
+            '\\' => out.push_str("\\\\"),
+            '"' => out.push_str("\\\""),
+            '\n' => out.push_str("\\n"),
+            '\r' => {}
+            '\t' => out.push_str("\\t"),
+            c => out.push(c),
+        }
+    }
+    out
+}
+
 pub struct PlotDocData {
     pub demo_entries: Vec<(String, String, String)>,
     pub param_entries: Vec<(String, String, Vec<String>)>,
@@ -371,11 +610,57 @@ pub fn write_registry(
         }
         js.push_str("]}");
     }
-    js.push_str("]}};\n");
+    js.push_str("]},docs:[");
+    let lib_src = fs::read_to_string(manifest.join("src").join("lib.rs")).unwrap_or_default();
+    let method_docs = parse_method_docs(&lib_src);
+    for (i, entry) in method_docs.iter().enumerate() {
+        if i > 0 {
+            js.push(',');
+        }
+        js.push_str("{name:\"");
+        js.push_str(&doc_js_str(&entry.name));
+        js.push_str("\",category:\"");
+        js.push_str(&doc_js_str(&entry.category));
+        js.push_str("\",file:\"");
+        js.push_str(&doc_js_str(&entry.file));
+        js.push_str("\",en:\"");
+        js.push_str(&doc_js_str(&entry.en));
+        js.push_str("\",fr:\"");
+        js.push_str(&doc_js_str(&entry.fr));
+        js.push_str("\",aliases:[");
+        for (ai, a) in entry.aliases.iter().enumerate() {
+            if ai > 0 {
+                js.push(',');
+            }
+            js.push('"');
+            js.push_str(&doc_js_str(a));
+            js.push('"');
+        }
+        js.push_str("],params:[");
+        for (pi, p) in entry.params.iter().enumerate() {
+            if pi > 0 {
+                js.push(',');
+            }
+            js.push_str("{name:\"");
+            js.push_str(&doc_js_str(&p.name));
+            js.push_str("\",ty:\"");
+            js.push_str(&doc_js_str(&p.ty));
+            js.push_str("\",en:\"");
+            js.push_str(&doc_js_str(&p.en));
+            js.push_str("\",fr:\"");
+            js.push_str(&doc_js_str(&p.fr));
+            js.push_str("\"}");
+        }
+        js.push_str("]}");
+    }
+    js.push_str("]};\n");
     let path = manifest
         .join("src")
         .join("docs")
         .join("theme")
         .join("doc-registry.js");
+    if let Some(parent) = path.parent() {
+        let _ = fs::create_dir_all(parent);
+    }
     fs::write(path, js).expect("write doc-registry.js");
 }

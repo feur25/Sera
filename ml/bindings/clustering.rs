@@ -19,7 +19,8 @@ pub fn ml_dbscan_fit_predict(input: &str) -> String {
         eps: Option<f64>,
         min_samples: Option<usize>,
     }
-    let i: I = serde_json::from_str(input).unwrap_or_default();
+    let sanitized = crate::plot::chart_input::sanitize_non_finite_json(input);
+    let i: I = serde_json::from_str(&sanitized).unwrap_or_default();
     let data = i.data.unwrap_or_default();
     let eps = i.eps.unwrap_or(0.5);
     let min_samples = i.min_samples.unwrap_or(5);
@@ -54,7 +55,8 @@ pub fn ml_kmeans_fit_predict(input: &str) -> String {
         max_iter: Option<usize>,
         n_init: Option<usize>,
     }
-    let i: I = serde_json::from_str(input).unwrap_or_default();
+    let sanitized = crate::plot::chart_input::sanitize_non_finite_json(input);
+    let i: I = serde_json::from_str(&sanitized).unwrap_or_default();
     let rows = i.data.unwrap_or_default();
     let k = i.k.unwrap_or(3);
     let max_iter = i.max_iter.unwrap_or(300);
