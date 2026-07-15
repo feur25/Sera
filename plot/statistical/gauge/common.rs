@@ -156,7 +156,7 @@ pub fn min_max_labels(buf: &mut Vec<u8>, cfg: &GaugeConfig, p: &Prepared) {
     push_f2(buf, p.cx - p.radius - 10.0);
     push_b(buf, b"\" y=\"");
     push_f2(buf, p.cy + 16.0);
-    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#94a3b8\">");
+    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#64748b\">");
     let s = format!("{:.0}", cfg.min_val);
     buf.extend_from_slice(s.as_bytes());
     push_b(buf, b"</text>");
@@ -164,7 +164,7 @@ pub fn min_max_labels(buf: &mut Vec<u8>, cfg: &GaugeConfig, p: &Prepared) {
     push_f2(buf, p.cx + p.radius + 10.0);
     push_b(buf, b"\" y=\"");
     push_f2(buf, p.cy + 16.0);
-    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#94a3b8\">");
+    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#64748b\">");
     let s = format!("{:.0}", cfg.max_val);
     buf.extend_from_slice(s.as_bytes());
     push_b(buf, b"</text>");
