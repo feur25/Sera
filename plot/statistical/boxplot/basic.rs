@@ -85,7 +85,7 @@ pub fn render_with(
                 push_i(&mut f.buf, oy + 3);
                 push_b(
                     &mut f.buf,
-                    b"\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">#",
+                    b"\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">#",
                 );
                 push_i(&mut f.buf, oi as i32 + 1);
                 push_b(&mut f.buf, b"</text>");

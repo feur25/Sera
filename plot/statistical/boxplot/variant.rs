@@ -9,6 +9,5 @@ crate::plot_family! {
         Strip       => "strip" | "swarm" | "jitter" | "stripplot",
         Violin      => "violin" | "kde_overlay" | "density",
         LetterValue => "letter_value" | "boxen" | "lv" | "tukey",
-        Rainbow     => "rainbow" | "gradient" | "spectrum" | "colorful",
     }
 }

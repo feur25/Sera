@@ -8,7 +8,6 @@ pub mod letter_value;
 pub mod notched;
 pub mod outliers;
 pub mod points;
-pub mod rainbow;
 pub mod strip;
 pub mod variant;
 pub mod violin;
@@ -28,7 +27,6 @@ pub fn render_boxplot_html(cfg: &BoxplotConfig) -> String {
         Strip => strip::render(cfg),
         Violin => violin::render(cfg),
         LetterValue => letter_value::render(cfg),
-        Rainbow => rainbow::render(cfg),
     }
 }
 
@@ -49,6 +47,24 @@ pub fn build(input: &str) -> String {
     if o.is_horiz() && matches!(variant, crate::plot::statistical::BoxplotVariant::Basic) {
         variant = crate::plot::statistical::BoxplotVariant::Horizontal;
     }
+    let (category_labels, values) = if values.is_empty()
+        && !series.is_empty()
+        && !matches!(variant, crate::plot::statistical::BoxplotVariant::Grouped)
+    {
+        let flat_len: usize = series.iter().map(|s| s.len()).sum();
+        let mut labels_flat = Vec::with_capacity(flat_len);
+        let mut values_flat = Vec::with_capacity(flat_len);
+        for (i, s) in series.iter().enumerate() {
+            let cat = category_labels.get(i).cloned().unwrap_or_default();
+            for &v in s {
+                labels_flat.push(cat.clone());
+                values_flat.push(v);
+            }
+        }
+        (labels_flat, values_flat)
+    } else {
+        (category_labels, values)
+    };
     let html =
         crate::plot::statistical::render_boxplot_html(&crate::plot::statistical::BoxplotConfig {
             title,
@@ -81,5 +97,23 @@ pub fn build(input: &str) -> String {
         apply_h(html, &o)
     } else {
         apply(html, &o)
+    }
+}
+
+#[cfg(test)]
+mod series_regression_tests {
+    #[test]
+    fn documented_chart_demo_example_renders_non_empty() {
+        let input = r#"{"labels":["A","B","C"],"series":[[1.2,2.4,2.7,3.1,3.5,3.8,4.2,5.1,6.0],[2.0,2.8,3.2,3.6,4.1,4.5,5.0,5.7,6.5],[1.8,2.2,2.6,3.0,3.4,3.9,4.3,4.9,5.5]]}"#;
+        let html = super::build(input);
+        assert!(!html.is_empty(), "boxplot's own documented series= example must not render empty");
+        assert!(html.contains("<svg"));
+    }
+
+    #[test]
+    fn grouped_variant_still_uses_series_as_multi_series_not_per_category() {
+        let input = r#"{"labels":["A","B"],"series":[[1.0,2.0],[3.0,4.0]],"variant":"grouped"}"#;
+        let html = super::build(input);
+        assert!(!html.is_empty(), "grouped variant should still render from raw series");
     }
 }

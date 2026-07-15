@@ -3,7 +3,7 @@ use super::config::BoxplotConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{
     escape_xml, hex6, palette_color, push_b, push_f2, push_i, svg_axis_lines, svg_legend_item,
-    svg_x_label, svg_y_label, Frame,
+    svg_x_label, svg_y_label, truncate, Frame,
 };
 
 #[crate::chart_demo("labels=[\"A\",\"B\",\"C\"], series=[[1.2,2.4,2.7,3.1,3.5,3.8,4.2,5.1,6.0],[2.0,2.8,3.2,3.6,4.1,4.5,5.0,5.7,6.5],[1.8,2.2,2.6,3.0,3.4,3.9,4.3,4.9,5.5]]")]
@@ -152,12 +152,7 @@ pub fn render(cfg: &BoxplotConfig) -> String {
         push_b(&mut f.buf, b"\" y=\"");
         push_i(&mut f.buf, cy + 4);
         push_b(&mut f.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
-        let trimmed = if cat.len() <= 18 {
-            cat.as_str()
-        } else {
-            &cat[..18]
-        };
-        escape_xml(&mut f.buf, trimmed);
+        escape_xml(&mut f.buf, truncate(cat, 18));
         push_b(&mut f.buf, b"</text>");
 
         push_b(&mut f.buf, b"</g>");

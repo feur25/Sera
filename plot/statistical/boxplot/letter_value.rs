@@ -101,7 +101,7 @@ pub fn render(cfg: &BoxplotConfig) -> String {
             push_i(&mut f.buf, oy);
             push_b(
                 &mut f.buf,
-                b"\" r=\"2.5\" fill=\"#9ca3af\" fill-opacity=\"0.7\"/>",
+                b"\" r=\"2.5\" fill=\"#6b7280\" fill-opacity=\"0.7\"/>",
             );
         }
 
