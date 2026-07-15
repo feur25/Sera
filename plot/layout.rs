@@ -8,7 +8,7 @@ pub fn build_grid_impl(
 ) -> String {
     let cols = if cols < 1 { 1 } else { cols };
     let mut cells = String::new();
-    for html in &html_parts {
+    for (cell_idx, html) in html_parts.iter().enumerate() {
         let h = if let Some(ch) = cell_height {
             ch as u32
         } else {
@@ -34,18 +34,23 @@ pub fn build_grid_impl(
             found
         };
         let esc = html.replace('&', "&amp;").replace('"', "&quot;");
+        let cell_label = format!("Chart {}", cell_idx + 1);
         cells.push_str(&format!(
-            r#"<div class="sp-gc"><iframe srcdoc="{esc}" style="width:100%;height:{h}px;border:none;display:block" frameborder="0" loading="lazy"></iframe></div>"#
+            r#"<div class="sp-gc" role="group" aria-label="{cell_label}"><iframe srcdoc="{esc}" title="{cell_label}" style="width:100%;height:{h}px;border:none;display:block" frameborder="0" loading="lazy"></iframe></div>"#
         ));
     }
+    let grid_label = if title.is_empty() {
+        "Chart grid".to_string()
+    } else {
+        title.replace('<', "&lt;").replace('>', "&gt;")
+    };
     let title_html = if title.is_empty() {
         String::new()
     } else {
-        let t = title.replace('<', "&lt;").replace('>', "&gt;");
-        format!(r#"<h1 class="sp-gtitle">{t}</h1>"#)
+        format!(r#"<h1 class="sp-gtitle">{grid_label}</h1>"#)
     };
     format!(
-        r#"<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{{box-sizing:border-box}}html,body{{margin:0;padding:0;background:{bg_color};font-family:system-ui,-apple-system,Arial,sans-serif}}body{{padding:16px}}.sp-gtitle{{color:#e2e8f0;font-size:22px;font-weight:700;text-align:center;margin:0 0 16px;letter-spacing:-.01em;border:none}}.sp-grid{{display:grid;grid-template-columns:repeat({cols},1fr);gap:{gap}px}}.sp-gc{{border-radius:10px;overflow:hidden;background:#0d1117;box-shadow:0 4px 20px rgba(0,0,0,.5)}}</style></head><body>{title_html}<div class="sp-grid">{cells}</div></body></html>"#
+        r#"<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>*{{box-sizing:border-box}}html,body{{margin:0;padding:0;background:{bg_color};font-family:system-ui,-apple-system,Arial,sans-serif}}body{{padding:16px}}.sp-gtitle{{color:#e2e8f0;font-size:22px;font-weight:700;text-align:center;margin:0 0 16px;letter-spacing:-.01em;border:none}}.sp-grid{{display:grid;grid-template-columns:repeat({cols},1fr);gap:{gap}px}}.sp-gc{{border-radius:10px;overflow:hidden;background:#0d1117;box-shadow:0 4px 20px rgba(0,0,0,.5)}}</style></head><body>{title_html}<div class="sp-grid" role="region" aria-label="{grid_label}">{cells}</div></body></html>"#
     )
 }
 
