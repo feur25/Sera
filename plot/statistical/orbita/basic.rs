@@ -33,7 +33,7 @@ fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool) -> Str
     let mut buf = Vec::<u8>::with_capacity(ns * nc * 150 + 4096);
     html_prefix(&mut buf, cfg.title, hid);
 
-    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"");
     push_i(&mut buf, cfg.width);
     push_b(&mut buf, b"\" height=\"");
     push_i(&mut buf, cfg.height);

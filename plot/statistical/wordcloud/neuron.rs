@@ -41,7 +41,7 @@ pub fn render(cfg: &WordCloudConfig) -> String {
 
     push_b(
         &mut buf,
-        b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"",
+        b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"",
     );
     push_i(&mut buf, cfg.width);
     push_b(&mut buf, b"\" height=\"");

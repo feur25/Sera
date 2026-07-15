@@ -33,7 +33,7 @@ pub fn render(cfg: &LineConfig) -> String {
     html_prefix(&mut b, cfg.title, hid);
     push_b(
         &mut b,
-        b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"",
+        b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"",
     );
     push_i(&mut b, total_w);
     push_b(&mut b, b"\" height=\"");

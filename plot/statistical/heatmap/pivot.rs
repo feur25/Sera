@@ -64,7 +64,7 @@ pub fn render(cfg: &HeatmapConfig) -> String {
     let mut buf = Vec::<u8>::with_capacity(n_rows * n_cols * 220 + 4096);
     push_b(
         &mut buf,
-        b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"",
+        b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"",
     );
     push_i(&mut buf, svg_w);
     push_b(&mut buf, b"\" height=\"");

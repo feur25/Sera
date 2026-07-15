@@ -27,7 +27,7 @@ pub fn render(cfg: &WaterfallConfig) -> String {
 
     push_b(
         &mut b,
-        b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"",
+        b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"",
     );
     push_i(&mut b, cfg.width);
     push_b(&mut b, b"\" height=\"");

@@ -78,7 +78,7 @@ pub fn val_to_y(p: &Prepared, v: f64) -> i32 {
 }
 
 pub fn open_svg(buf: &mut Vec<u8>, cfg: &SlopeConfig) {
-    push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"");
     push_i(buf, cfg.width);
     push_b(buf, b"\" height=\"");
     push_i(buf, cfg.height);

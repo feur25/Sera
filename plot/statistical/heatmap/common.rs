@@ -273,7 +273,7 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
 
     push_b(
         &mut buf,
-        b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"",
+        b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"",
     );
     push_i(&mut buf, svg_w);
     push_b(&mut buf, b"\" height=\"");
