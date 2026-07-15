@@ -42,6 +42,10 @@ pub fn build(input: &str) -> String {
     let labels = a.labels.unwrap_or_default();
     let values_start = a.start.unwrap_or_default();
     let values_end = a.end.unwrap_or_default();
+    let dec = crate::plot::decimate::Decimator::new(o.max_points, &values_start);
+    let labels = dec.apply(labels);
+    let values_start = dec.apply(values_start);
+    let values_end = dec.apply(values_end);
     use crate::plot::statistical::dumbbell::{
         render_dumbbell_html, DumbbellConfig, DumbbellVariant,
     };
