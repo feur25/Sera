@@ -286,7 +286,7 @@ const JS_P2: &str =
 const JS_P3: &str = r#";
 
 var dpts=Array.prototype.slice.call(svg.querySelectorAll('[data-idx]'));
-dpts.forEach(function(el,i){el.setAttribute('tabindex',i===0?'0':'-1');if(!el.hasAttribute('role'))el.setAttribute('role','img');var lb=el.getAttribute('data-lbl'),v=el.getAttribute('data-v');if(lb!=null||v!=null)el.setAttribute('aria-label',(lb||'')+(v!=null?' '+v:''));});
+dpts.forEach(function(el,i){el.setAttribute('tabindex',i===0?'0':'-1');if(!el.hasAttribute('role'))el.setAttribute('role','img');var lb=el.getAttribute('data-lbl'),v=el.getAttribute('data-v'),dx=el.getAttribute('data-x'),dy=el.getAttribute('data-y');var lbl;if(lb!=null||v!=null)lbl=(lb||'')+(v!=null?' '+v:'');else if(dx!=null||dy!=null)lbl='x '+(dx||'')+', y '+(dy||'');else lbl='Data point '+(i+1);el.setAttribute('aria-label',lbl.trim());});
 if(dpts.length)svg.addEventListener('keydown',function(ev){var cur=document.activeElement;var i=dpts.indexOf(cur);if(i<0)return;var ni=null;if(ev.key==='ArrowRight'||ev.key==='ArrowDown')ni=(i+1)%dpts.length;else if(ev.key==='ArrowLeft'||ev.key==='ArrowUp')ni=(i-1+dpts.length)%dpts.length;else if(ev.key==='Home')ni=0;else if(ev.key==='End')ni=dpts.length-1;if(ni===null)return;ev.preventDefault();dpts[i].setAttribute('tabindex','-1');dpts[ni].setAttribute('tabindex','0');dpts[ni].focus();});
 
 var tip=document.getElementById('sp-tip');
@@ -597,11 +597,16 @@ pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
           "box-shadow:0 8px 24px rgba(0,0,0,.4);z-index:20;white-space:nowrap;display:none}",
         ".sp-cls-x{cursor:pointer;color:#94a3b8;margin-left:6px;font-size:13px}",
         ".sp-cls-x:hover{color:#f87171}",
+        "@media (prefers-contrast: more){.sp-xt,.sp-yt,.sp-xl,.sp-yl{fill:#1f2937!important}",
+          ".sp-ax-x,.sp-ax-y{stroke:#000000!important;stroke-width:1.5!important}",
+          ".sp-gl{stroke:#94a3b8!important}}",
+        ".sp-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}",
         "</style>"
     );
 
+    let display_title = if title.is_empty() { "SeraPlot Chart" } else { title };
     let cap = 256
-        + title.len()
+        + display_title.len()
         + CSS.len()
         + svg.len()
         + JS_P1.len()
@@ -609,12 +614,14 @@ pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
         + hover_json.len()
         + JS_P3.len();
     let mut buf = Vec::with_capacity(cap);
-    buf.extend_from_slice(b"<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>");
-    buf.extend_from_slice(html_attr_esc(title).as_bytes());
+    buf.extend_from_slice(b"<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>");
+    buf.extend_from_slice(html_attr_esc(display_title).as_bytes());
     buf.extend_from_slice(b"</title>");
     buf.extend_from_slice(CSS.as_bytes());
     buf.extend_from_slice(b"<style>body{margin:0;background:transparent;display:flex;justify-content:center;padding:0}@keyframes sp-i{from{opacity:0;transform:translateY(8px) scale(.94)}}@keyframes sp-bar{from{opacity:0;transform:scaleY(0)}}@keyframes sp-pop{0%{opacity:0;transform:scale(0)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}@keyframes sp-arc{from{opacity:0;transform:scale(.82) rotate(-6deg)}}@keyframes sp-fn{from{opacity:0;transform:scaleX(.7) translateY(8px)}}svg rect[data-idx]{transform-box:fill-box;transform-origin:bottom center;animation:sp-bar .5s cubic-bezier(.22,.61,.36,1) both}svg circle[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-pop .42s cubic-bezier(.34,1.56,.64,1) both}svg path[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-arc .48s cubic-bezier(.22,.61,.36,1) both}svg polygon[data-idx]{transform-box:fill-box;transform-origin:center;animation:sp-fn .48s cubic-bezier(.22,.61,.36,1) both}svg line[data-idx]{animation:sp-i .45s cubic-bezier(.22,.61,.36,1) both}svg rect[data-idx]:hover{transform:scaleY(1.03);filter:brightness(1.12) saturate(1.1)}svg circle[data-idx]:hover{transform:scale(1.3);filter:brightness(1.15)}svg path[data-idx]:hover{filter:brightness(1.1) drop-shadow(0 2px 8px rgba(0,0,0,.2))}.sp-bg{fill:#ffffff}</style></head><body>");
-    buf.extend_from_slice(b"<div id=\"");
+    buf.extend_from_slice(b"<div role=\"main\"><h1 class=\"sp-sr-only\">");
+    buf.extend_from_slice(html_attr_esc(display_title).as_bytes());
+    buf.extend_from_slice(b"</h1><div id=\"");
     push_pid(&mut buf, id);
     buf.extend_from_slice(b"\" style=\"position:relative;display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)\">");
     buf.extend_from_slice(svg.as_bytes());
@@ -625,7 +632,7 @@ pub fn build_chart_html(title: &str, svg: &str, hover_json: &str) -> String {
     buf.extend_from_slice(JS_P2.as_bytes());
     buf.extend_from_slice(hover_json.as_bytes());
     buf.extend_from_slice(JS_P3.as_bytes());
-    buf.extend_from_slice(b"</div></body></html>");
+    buf.extend_from_slice(b"</div></div></body></html>");
     unsafe { String::from_utf8_unchecked(buf) }
 }
 
@@ -675,7 +682,7 @@ fn push_pid(buf: &mut Vec<u8>, id: u64) {
 
 pub fn html_prefix(buf: &mut Vec<u8>, title: &str, id: u64) {
     const TPL: &[u8] =
-        concat!("<!DOCTYPE html><html><head><meta charset=\"utf-8\"><title>",).as_bytes();
+        concat!("<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>",).as_bytes();
     const TPL2: &[u8] = concat!(
         "</title>",
         "<style>",
@@ -732,12 +739,20 @@ pub fn html_prefix(buf: &mut Vec<u8>, title: &str, id: u64) {
         "svg circle[data-idx]:hover{transform:scale(1.3);filter:brightness(1.15)}",
         "svg path[data-idx]:hover{filter:brightness(1.1) drop-shadow(0 2px 8px rgba(0,0,0,.2))}",
         ".sp-bg{fill:#ffffff}",
-        "</style></head><body><div id=\"",
+        "@media (prefers-contrast: more){.sp-xt,.sp-yt,.sp-xl,.sp-yl{fill:#1f2937!important}",
+          ".sp-ax-x,.sp-ax-y{stroke:#000000!important;stroke-width:1.5!important}",
+          ".sp-gl{stroke:#94a3b8!important}}",
+        ".sp-sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}",
+        "</style></head><body><div role=\"main\"><h1 class=\"sp-sr-only\">",
     ).as_bytes();
+    const TPL2B: &[u8] = b"</h1><div id=\"";
     const TPL3: &[u8] = b"\" style=\"position:relative;display:inline-block;border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)\">";
+    let display_title = if title.is_empty() { "SeraPlot Chart" } else { title };
     buf.extend_from_slice(TPL);
-    buf.extend_from_slice(html_attr_esc(title).as_bytes());
+    buf.extend_from_slice(html_attr_esc(display_title).as_bytes());
     buf.extend_from_slice(TPL2);
+    buf.extend_from_slice(html_attr_esc(display_title).as_bytes());
+    buf.extend_from_slice(TPL2B);
     push_pid(buf, id);
     buf.extend_from_slice(TPL3);
 }
@@ -751,7 +766,7 @@ pub fn html_suffix(buf: &mut Vec<u8>, id: u64, hover_json: &str) {
     buf.extend_from_slice(JS_P2.as_bytes());
     buf.extend_from_slice(hover_json.as_bytes());
     buf.extend_from_slice(JS_P3.as_bytes());
-    buf.extend_from_slice(b"</div></body></html>");
+    buf.extend_from_slice(b"</div></div></body></html>");
 }
 
 #[crate::sera_register(custom)]
