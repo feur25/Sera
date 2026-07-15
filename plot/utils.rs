@@ -156,8 +156,14 @@ pub fn themes(_: &str) -> String {
     "[\"dark\",\"light\",\"scientific\",\"apple\",\"notion\",\"minimal\",\"neon\"]".to_string()
 }
 
+#[crate::sera_alias("accessible_palette", "wcag_palette", "colorblind_palette")]
+#[crate::sera_register]
+pub fn accessible_palette(_: &str) -> String {
+    serde_json::to_string(crate::plot::statistical::common::PALETTE_ACCESSIBLE).unwrap_or_default()
+}
+
 #[crate::sera_alias("plot", "chart", "draw", "render")]
-#[crate::sera_register(custom)]
+#[crate::sera_register(custom, chart)]
 pub fn plot_chart(input: &str) -> String {
     #[derive(Deserialize, Default)]
     struct In {
@@ -175,7 +181,8 @@ pub fn plot_chart(input: &str) -> String {
         background: Option<String>,
         show_points: Option<bool>,
     }
-    let payload: In = serde_json::from_str(input).unwrap_or_default();
+    let sanitized = crate::plot::chart_input::sanitize_non_finite_json(input);
+    let payload: In = serde_json::from_str(&sanitized).unwrap_or_default();
     let xs = payload.x.unwrap_or_default();
     let title = payload.title.unwrap_or_default();
     let color_hex = payload.color_hex.unwrap_or(0x636EFA);
@@ -200,40 +207,23 @@ pub fn plot_chart(input: &str) -> String {
 }
 
 #[crate::sera_alias("grid", "grids", "chart_grid", "subplot_grid")]
-#[crate::sera_register(custom)]
+#[crate::sera_register(custom, chart)]
 pub fn build_grid(input: &str) -> String {
     let (title_s, args, opts) = crate::plot::parse_all(input);
     let title = title_s.as_str();
     let charts = args.charts.unwrap_or_default();
     let cols = opts.cols.unwrap_or(2).max(1);
-    let gap = opts.gap.unwrap_or(16);
+    let gap = opts.gap.unwrap_or(16).max(0);
     let bg_color = opts
         .background
         .clone()
         .or_else(crate::plot::get_global_bg)
         .unwrap_or_else(|| "transparent".to_string());
-    let bg_color = bg_color.as_str();
-    let cell_height = opts.cell_height.unwrap_or(520);
-    let mut buf = format!(
-        "<!DOCTYPE html><html><head><meta charset=\"utf-8\"><style>\
-        *{{box-sizing:border-box}}body{{margin:0;padding:{gap}px;background:{bg_color}}}\
-        .spg{{display:grid;grid-template-columns:repeat({cols},1fr);gap:{gap}px}}\
-        .spg-c iframe{{width:100%;height:{cell_height}px;border:none;display:block;\
-        border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07)}}\
-        </style></head><body><div class=\"spg\">"
-    );
-    let _ = title;
-    for html in &charts {
-        let esc = html.replace('&', "&amp;").replace('"', "&quot;");
-        buf.push_str("<div class=\"spg-c\"><iframe srcdoc=\"");
-        buf.push_str(&esc);
-        buf.push_str("\"></iframe></div>");
-    }
-    buf.push_str("</div></body></html>");
-    buf
+    let _ = opts.cell_height;
+    crate::bindings::chart_methods::build_grid_page(&charts, cols, Some(title), gap as u32, &bg_color)
 }
 
-#[crate::sera_register(custom)]
+#[crate::sera_register(custom, chart)]
 pub fn build_slideshow(input: &str) -> String {
     let (title_s, args, opts) = crate::plot::parse_all(input);
     let title = title_s.as_str();
@@ -255,12 +245,14 @@ pub fn build_slideshow(input: &str) -> String {
         format!("<div style=\"color:#1e293b;font-family:system-ui;font-size:22px;font-weight:700;text-align:center;margin-bottom:16px\">{}</div>", show_title)
     };
     let n = charts.len();
+    let slideshow_label = if show_title.is_empty() { "Slideshow" } else { show_title };
     let mut frames_html = String::new();
     for (i, html) in charts.iter().enumerate() {
         let esc = html.replace('&', "&amp;").replace('"', "&quot;");
         let vis = if i == 0 { "" } else { "display:none;" };
         frames_html.push_str(&format!(
-            "<iframe id=\"sp-s-{i}\" style=\"{vis}width:{width}px;height:{height}px;border:none;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.1)\" srcdoc=\"{esc}\"></iframe>"
+            "<iframe id=\"sp-s-{i}\" title=\"Slide {slide_n} of {n}\" style=\"{vis}width:{width}px;height:{height}px;border:none;border-radius:12px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,.1)\" srcdoc=\"{esc}\"></iframe>",
+            slide_n = i + 1
         ));
     }
     format!(
@@ -274,26 +266,34 @@ pub fn build_slideshow(input: &str) -> String {
         .sp-bar{{height:100%;background:#6366f1;border-radius:2px;width:0%}}\
         </style></head><body>\
         {title_html}\
+        <div role=\"region\" aria-label=\"{slideshow_label}\">\
         {frames_html}\
+        </div>\
         <div class=\"sp-ctrl\">\
-        <button class=\"sp-btn\" id=\"sp-p\">&#9664;</button>\
-        <div class=\"sp-ctr\" id=\"sp-c\">1 / {n}</div>\
-        <button class=\"sp-btn\" id=\"sp-n\">&#9654;</button>\
+        <button class=\"sp-btn\" id=\"sp-p\" aria-label=\"Previous slide\">&#9664;</button>\
+        <button class=\"sp-btn\" id=\"sp-play\" aria-label=\"Pause slideshow\">&#10074;&#10074;</button>\
+        <div class=\"sp-ctr\" id=\"sp-c\" role=\"status\" aria-live=\"polite\">1 / {n}</div>\
+        <button class=\"sp-btn\" id=\"sp-n\" aria-label=\"Next slide\">&#9654;</button>\
         </div>\
         <div class=\"sp-prog\"><div class=\"sp-bar\" id=\"sp-b\"></div></div>\
         <script>\
         const slides=document.querySelectorAll('[id^=\"sp-s-\"]');\
-        let idx=0,timer;\
+        let idx=0,timer,playing=true;\
+        const reduceMotion=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;\
+        const playBtn=document.getElementById('sp-play');\
         function show(i){{idx=((i%slides.length)+slides.length)%slides.length;\
           slides.forEach((s,j)=>{{s.style.display=j===idx?'':'none';}});\
           document.getElementById('sp-c').textContent=(idx+1)+' / '+slides.length;\
           const b=document.getElementById('sp-b');\
           b.style.transition='none';b.style.width='0%';\
-          setTimeout(()=>{{b.style.transition='width {ivms}ms linear';b.style.width='100%';}},20);}}\
-        function play(){{clearInterval(timer);timer=setInterval(()=>{{show(idx+1);}},{ivms});}}\
-        show(0);play();\
-        document.getElementById('sp-p').onclick=()=>{{clearInterval(timer);show(idx-1);play();}};\
-        document.getElementById('sp-n').onclick=()=>{{clearInterval(timer);show(idx+1);play();}};\
+          if(playing)setTimeout(()=>{{b.style.transition='width {ivms}ms linear';b.style.width='100%';}},20);}}\
+        function play(){{clearInterval(timer);playing=true;playBtn.textContent='\\u276c\\u276c';playBtn.setAttribute('aria-label','Pause slideshow');timer=setInterval(()=>{{show(idx+1);}},{ivms});}}\
+        function pause(){{clearInterval(timer);playing=false;playBtn.textContent='\\u25b6';playBtn.setAttribute('aria-label','Play slideshow');const b=document.getElementById('sp-b');b.style.transition='none';}}\
+        show(0);\
+        if(reduceMotion)pause();else play();\
+        document.getElementById('sp-p').onclick=()=>{{show(idx-1);if(playing)play();}};\
+        document.getElementById('sp-n').onclick=()=>{{show(idx+1);if(playing)play();}};\
+        playBtn.onclick=()=>{{playing?pause():play();}};\
         </script></body></html>"
     )
 }
