@@ -6,7 +6,6 @@ pub mod dashed;
 pub mod filled;
 pub mod gapped;
 pub mod multi;
-pub mod neon;
 pub mod sparkline;
 pub mod spline;
 pub mod stepped;
@@ -27,7 +26,6 @@ pub fn render_line_html(cfg: &LineConfig) -> String {
         Dashed => dashed::render(cfg),
         ConnectedScatter => connected_scatter::render(cfg),
         Gapped => gapped::render(cfg),
-        Neon => neon::render(cfg),
     }
 }
 
@@ -76,6 +74,34 @@ pub fn build(input: &str) -> String {
             Vec::new()
         }
     };
+
+    let (labels, values, x_labels, series) = if !series.is_empty() {
+        let dec = crate::plot::decimate::Decimator::for_series(o.max_points, &series);
+        (dec.apply(labels), values, dec.apply(x_labels), dec.apply_each(series))
+    } else {
+        let dec = crate::plot::decimate::Decimator::new(o.max_points, &values);
+        (dec.apply(labels), dec.apply(values), dec.apply(x_labels), series)
+    };
+
+    if series.is_empty() && o.max_points.is_none() && o.variant.is_none() && values.len() > 3000 {
+        let x_values: Vec<f64> = (0..values.len()).map(|i| i as f64).collect();
+        let spec = crate::plot::canvas_points::CanvasPlotSpec {
+            title,
+            width: o.w(900),
+            height: o.h(480),
+            x_label: &xl,
+            y_label: &yl,
+            gridlines: o.grid(),
+            mode: crate::plot::canvas_points::MODE_LINE,
+            color_hex: if o.color_hex.unwrap_or(0) != 0 {
+                o.color_hex.unwrap_or(0)
+            } else {
+                palette.first().copied().unwrap_or(0x636EFA)
+            },
+        };
+        let html = crate::plot::canvas_points::render_canvas_points_html(&spec, &x_values, &values);
+        return apply(html, &o);
+    }
 
     let step_shape = o
         .step_shape
