@@ -1,3 +1,8 @@
+﻿#[global_allocator]
+static GLOBAL_ALLOC: mimalloc::MiMalloc = mimalloc::MiMalloc;
+
+pub(crate) use bindings::chart_methods::apply::*;
+pub mod canvas;
 pub mod cloud;
 pub mod core;
 pub mod data;
@@ -14,7 +19,7 @@ pub use data::{DataPoint, Dataset, DatasetStats};
 
 #[allow(unused_imports)]
 pub(crate) use crate::bindings::registry_macro::{
-    for_each_json_chart_fn, for_each_ml_oneshot_fn, for_each_util_fn,
+    for_each_html_util_fn, for_each_json_chart_fn, for_each_ml_oneshot_fn, for_each_util_fn,
 };
 pub use seraplot_macros::{
     chart_demo, ml_doc, model, params, sera_alias, sera_bind, sera_binding, sera_builder,
@@ -85,6 +90,8 @@ pub mod html;
 pub mod python;
 #[cfg(any(feature = "python", feature = "gui"))]
 pub mod viewer;
+#[cfg(feature = "webapp")]
+pub mod webapp;
 pub mod wiki;
 include!(concat!(env!("OUT_DIR"), "/adapters.rs"));
 
@@ -95,6 +102,8 @@ pub use plot::canvas::Canvas;
 #[cfg(any(feature = "python", feature = "gui"))]
 pub use viewer::gui;
 
+#[cfg(feature = "python")]
+use crate::bindings::chart_methods::{build_compare_page, build_grid_page, cmp_score};
 pub use wiki::{MethodDoc, ModuleDoc, WikiExport, WikiExtractor};
 
 pub const VERSION: &str = env!("CARGO_PKG_VERSION");
@@ -164,6 +173,7 @@ static GLOBAL_UNIFORM_TEXT_MODE: std::sync::Mutex<Option<String>> = std::sync::M
 static GLOBAL_BAR_CORNER_RADIUS: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 static GLOBAL_HOVER_INFO: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 static GLOBAL_PATTERN_SHAPE: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
+pub(crate) static GLOBAL_COLOR_BINDINGS: std::sync::Mutex<Vec<(String, u32)>> = std::sync::Mutex::new(Vec::new());
 
 pub fn get_global_background() -> Option<String> {
     GLOBAL_BACKGROUND.lock().ok().and_then(|g| g.clone())
@@ -187,7 +197,7 @@ pub struct Chart {
     pub(crate) doc_str: &'static str,
 }
 
-fn build_labels_js(pos: &str, forced: &str) -> String {
+pub(crate) fn build_labels_js(pos: &str, forced: &str) -> String {
     let p = match pos {
         "top" | "left" | "right" | "bottom" => pos,
         _ => "bottom",
@@ -227,11 +237,11 @@ fn build_labels_js(pos: &str, forced: &str) -> String {
     s.push_str(
         "var rb=document.createElement('span');rb.textContent='\\u21BA';rb.title='Show all';",
     );
-    s.push_str("rb.style.cssText='display:none;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.6);color:#f1f5f9;font-size:13px;cursor:pointer;border:1px solid rgba(255,255,255,.2);align-items:center;justify-content:center;flex-shrink:0;backdrop-filter:blur(4px);';");
+    s.push_str("rb.style.cssText='display:none;width:22px;height:22px;border-radius:50%;background:rgba(0,0,0,.6);color:#f1f5f9;font-size:13px;cursor:pointer;border:1px solid rgba(255,255,255,.2);align-items:center;justify-content:center;flex-shrink:0;-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);';");
     s.push_str("rb.addEventListener('click',function(){dis.forEach(function(d){d.b.style.display='';setTimeout(function(){d.b.style.opacity='1';},10);if(svg){if(d.se!=null)svg.querySelectorAll('[data-series=\"'+d.se+'\"]:not([data-legend])').forEach(function(e){e.style.display='';});else if(d.ix!=null)svg.querySelectorAll('[data-idx=\"'+d.ix+'\"]').forEach(function(e){e.style.display='';});}});dis=[];rb.style.display='none';});");
     s.push_str("items.forEach(function(it){");
     s.push_str("var b=document.createElement('span');");
-    s.push_str("b.style.cssText='display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;user-select:none;transition:opacity .2s;background:rgba(0,0,0,.55);color:#f1f5f9;border:1px solid rgba(255,255,255,.15);backdrop-filter:blur(4px);white-space:nowrap;';");
+    s.push_str("b.style.cssText='display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:600;cursor:pointer;user-select:none;transition:opacity .2s;background:rgba(0,0,0,.55);color:#f1f5f9;border:1px solid rgba(255,255,255,.15);-webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);white-space:nowrap;';");
     s.push_str("if(it.co){var d=document.createElement('span');d.style.cssText='width:8px;height:8px;border-radius:50%;flex-shrink:0;background:'+it.co+';';b.appendChild(d);}");
     s.push_str("b.appendChild(document.createTextNode(esc(it.lb)));");
     s.push_str("b.addEventListener('click',function(){b.style.opacity='0';setTimeout(function(){b.style.display='none';},200);dis.push({b:b,se:it.se,ix:it.idx});rb.style.display='inline-flex';if(svg){if(it.se!=null)svg.querySelectorAll('[data-series=\"'+it.se+'\"]:not([data-legend])').forEach(function(e){e.style.display='none';});else if(it.idx!=null)svg.querySelectorAll('[data-idx=\"'+it.idx+'\"]').forEach(function(e){e.style.display='none';});}});");
@@ -241,7 +251,7 @@ fn build_labels_js(pos: &str, forced: &str) -> String {
     s
 }
 
-fn encode_forced(labels: &[String], colors: &[String]) -> String {
+pub(crate) fn encode_forced(labels: &[String], colors: &[String]) -> String {
     let mut j = String::from("[");
     for (i, lb) in labels.iter().enumerate() {
         if i > 0 {
@@ -273,7 +283,7 @@ fn encode_forced(labels: &[String], colors: &[String]) -> String {
     j
 }
 
-fn extract_c3d_id(html: &str) -> Option<&str> {
+pub(crate) fn extract_c3d_id(html: &str) -> Option<&str> {
     let start = html.find("class=\"c3w\"")?;
     let id_attr = html[..start].rfind("id=\"")? + 4;
     let rest = &html[id_attr..];
@@ -293,7 +303,7 @@ pub(crate) fn apply_3d_cfg(html: String, opts_json: &str) -> String {
     html.replacen("</body>", &snippet, 1)
 }
 
-fn inject_labels(html: &str, pos: &str, labels: &[String], colors: &[String]) -> String {
+pub(crate) fn inject_labels(html: &str, pos: &str, labels: &[String], colors: &[String]) -> String {
     if html.contains("class=\"c3w\"") {
         return apply_3d_cfg(html.to_string(), &format!("{{\"legend\":true,\"legendPos\":{}}}", json_str(pos)));
     }
@@ -310,7 +320,7 @@ fn inject_labels(html: &str, pos: &str, labels: &[String], colors: &[String]) ->
 
 const SP_CROSSHAIR_JS: &str = "(function(){if(window.__spc__)return;window.__spc__=1;var svg=document.querySelector('svg');if(!svg)return;var ns='http://www.w3.org/2000/svg';var vl=document.createElementNS(ns,'line');var hl=document.createElementNS(ns,'line');[vl,hl].forEach(function(l){l.setAttribute('stroke','#6366f1');l.setAttribute('stroke-width','1');l.setAttribute('stroke-dasharray','4,4');l.setAttribute('opacity','0.5');l.style.display='none';l.style.pointerEvents='none';svg.appendChild(l);});svg.addEventListener('mousemove',function(e){var r=svg.getBoundingClientRect();var x=e.clientX-r.left;var y=e.clientY-r.top;vl.setAttribute('x1',x);vl.setAttribute('x2',x);vl.setAttribute('y1',0);vl.setAttribute('y2',r.height);hl.setAttribute('x1',0);hl.setAttribute('x2',r.width);hl.setAttribute('y1',y);hl.setAttribute('y2',y);vl.style.display='';hl.style.display='';});svg.addEventListener('mouseleave',function(){vl.style.display='none';hl.style.display='none';});})()";
 
-const SP_ZOOM_JS: &str = "(function(){if(window.__spz__)return;window.__spz__=1;var svg=document.querySelector('svg');if(!svg)return;var s=1,tx=0,ty=0,dr=false,sx,sy;svg.style.cursor='grab';svg.addEventListener('wheel',function(e){e.preventDefault();var z=e.deltaY<0?1.1:0.9;s=Math.min(Math.max(s*z,0.5),10);svg.style.transform='scale('+s+') translate('+tx+'px,'+ty+'px)';svg.style.transformOrigin='center center';},{passive:false});svg.addEventListener('mousedown',function(e){dr=true;sx=e.clientX-tx;sy=e.clientY-ty;svg.style.cursor='grabbing';});window.addEventListener('mouseup',function(){dr=false;if(svg)svg.style.cursor='grab';});svg.addEventListener('mousemove',function(e){if(!dr)return;tx=e.clientX-sx;ty=e.clientY-sy;svg.style.transform='scale('+s+') translate('+tx+'px,'+ty+'px)';});svg.addEventListener('dblclick',function(){s=1;tx=0;ty=0;svg.style.transform='';});})()";
+const SP_ZOOM_JS: &str = crate::bindings::chart_methods::js::SP_ZOOM_JS;
 
 const SP_FLIP_JS: &str = "(function(){if(window.__spfl__)return;window.__spfl__=1;var svg=document.querySelector('svg');if(!svg)return;var m=svg.getAttribute('data-sp');if(!m)return;var p=m.split(',').map(Number),pL=p[0],pT=p[1],pW=p[2],pH=p[3];var rects=svg.querySelectorAll('rect[data-idx][data-v]');if(!rects.length)return;var n=rects.length,vals=[],ymax=0,ymin=0;for(var i=0;i<n;i++){var v=parseFloat(rects[i].getAttribute('data-v'));vals.push(v);if(v>ymax)ymax=v;if(v<ymin)ymin=v;}var rg=ymax-ymin;if(rg<1e-12)rg=1;var slotH=pH/n,barH=Math.max(2,slotH*0.7);for(var i=0;i<n;i++){var v=vals[i];var newW=Math.max(1,(v-ymin)/rg*pW);var ny=pT+i*slotH+(slotH-barH)/2;rects[i].setAttribute('x',pL);rects[i].setAttribute('y',ny);rects[i].setAttribute('width',newW);rects[i].setAttribute('height',barH);}var xts=svg.querySelectorAll('.sp-xt');for(var k=0;k<xts.length&&k<n;k++){xts[k].setAttribute('y',pT+k*slotH+slotH/2+4);xts[k].setAttribute('x',pL-8);xts[k].setAttribute('text-anchor','end');}var yts=svg.querySelectorAll('.sp-yt'),nT=yts.length;for(var j=0;j<nT;j++){var f=nT>1?j/(nT-1):0;var nx=pL+f*pW;var v2=ymin+f*rg;yts[j].setAttribute('x',nx);yts[j].setAttribute('y',pT+pH+16);yts[j].setAttribute('text-anchor','middle');yts[j].textContent=Math.abs(v2)>=1000?Math.round(v2).toString():(+v2).toFixed(2);}var gls=svg.querySelectorAll('.sp-gl');for(var g=0;g<gls.length;g++){var f=gls.length>1?(g+1)/(gls.length+1):0.5;var nx=pL+f*pW;gls[g].setAttribute('x1',nx);gls[g].setAttribute('x2',nx);gls[g].setAttribute('y1',pT);gls[g].setAttribute('y2',pT+pH);}})()";
 
@@ -342,6 +352,17 @@ const SP_ANNOTATE_EXTREME_JS: &str = "(function(){var cfg=window.__sp_annotate_e
 const SP_REFERENCE_BAND_JS: &str = "(function(){var cfg=window.__sp_ref_band__;if(!cfg)return;var svg=document.querySelector('svg');if(!svg)return;var d=svg.getAttribute('data-sp')||'';var sp=d.split(',').map(Number);var pL=sp[0]||50,pT=sp[1]||36,pW=sp[2]||700,pH=sp[3]||360;var rects=svg.querySelectorAll('rect[data-idx][data-v]');if(!rects.length)return;var maxV=0;rects.forEach(function(r){var v=parseFloat(r.getAttribute('data-v'))||0;if(v>maxV)maxV=v;});if(maxV<=0)return;var ns='http://www.w3.org/2000/svg';var yLow=pT+pH-(cfg.lo/maxV)*pH,yHigh=pT+pH-(cfg.hi/maxV)*pH;var rect=document.createElementNS(ns,'rect');rect.setAttribute('x',pL);rect.setAttribute('width',pW);rect.setAttribute('y',Math.min(yLow,yHigh));rect.setAttribute('height',Math.abs(yLow-yHigh));rect.setAttribute('fill',cfg.c);rect.setAttribute('opacity',cfg.op);var first=svg.querySelector('rect[data-idx]');svg.insertBefore(rect,first);})()";
 
 const SP_HLINE_JS: &str = "(function(){var cfg=window.__sp_hline__;if(!cfg)return;var svg=document.querySelector('svg');if(!svg)return;var d=svg.getAttribute('data-sp')||'';var sp=d.split(',').map(Number);var pL=sp[0]||50,pT=sp[1]||36,pW=sp[2]||700,pH=sp[3]||360;var rects=svg.querySelectorAll('rect[data-idx][data-v]');if(!rects.length)return;var maxV=0;rects.forEach(function(r){var v=parseFloat(r.getAttribute('data-v'))||0;if(v>maxV)maxV=v;});if(maxV<=0)return;var ns='http://www.w3.org/2000/svg';var y=pT+pH-(cfg.v/maxV)*pH;var ln=document.createElementNS(ns,'line');ln.setAttribute('x1',pL);ln.setAttribute('x2',pL+pW);ln.setAttribute('y1',y);ln.setAttribute('y2',y);ln.setAttribute('stroke',cfg.c);ln.setAttribute('stroke-width','1.5');ln.setAttribute('stroke-dasharray','6,4');svg.appendChild(ln);if(cfg.lbl){var tx=document.createElementNS(ns,'text');tx.setAttribute('x',pL+pW-4);tx.setAttribute('y',y-6);tx.setAttribute('text-anchor','end');tx.setAttribute('font-size','11');tx.setAttribute('fill',cfg.c);tx.textContent=cfg.lbl;svg.appendChild(tx);}})()";
+
+const SP_GROUP_HOVER_JS: &str = "(function(){if(window.__spgh__)return;window.__spgh__=1;var dim=window.__sp_group_dim__||0.15;var svg=document.querySelector('svg');if(!svg)return;var all=Array.prototype.slice.call(svg.querySelectorAll('[data-group],[data-lbl]'));if(!all.length)return;function getG(el){return el.getAttribute('data-group')||el.getAttribute('data-lbl')||'';}all.forEach(function(el){el.addEventListener('mouseenter',function(){var g=getG(el);all.forEach(function(e){if(getG(e)!==g){e.style.opacity=String(dim);e.style.transition='opacity .18s ease';}});});el.addEventListener('mouseleave',function(){all.forEach(function(e){e.style.opacity='';});});});})()";
+
+const SP_DESATURATE_JS: &str = "(function(){var cfg=window.__sp_desat__;if(!cfg)return;var svg=document.querySelector('svg');if(!svg)return;svg.querySelectorAll('[data-idx]').forEach(function(el){var idx=parseInt(el.getAttribute('data-idx'));if(cfg.i&&cfg.i.indexOf(idx)<0)return;el.style.filter='saturate('+cfg.f+')';el.style.transition='filter .2s';});})()";
+const SP_GRID_Y_ONLY_JS: &str = "(function(){var svg=document.querySelector('svg');if(!svg)return;svg.querySelectorAll('line.sp-gl').forEach(function(l){if(l.getAttribute('x1')!==l.getAttribute('x2'))l.style.display='none';});})()";
+const SP_GRID_X_ONLY_JS: &str = "(function(){var svg=document.querySelector('svg');if(!svg)return;svg.querySelectorAll('line.sp-gl').forEach(function(l){if(l.getAttribute('y1')!==l.getAttribute('y2'))l.style.display='none';});})()";
+const SP_GRID_AT_JS: &str = "(function(){var cfg=window.__sp_grid_at__;if(!cfg)return;var svg=document.querySelector('svg');if(!svg)return;var d=svg.getAttribute('data-sp')||'';var sp=d.split(',').map(Number);var pL=sp[0]||50,pT=sp[1]||36,pW=sp[2]||700,pH=sp[3]||360;var rects=svg.querySelectorAll('rect[data-idx][data-v]');if(!rects.length)return;var maxV=0;rects.forEach(function(r){var v=parseFloat(r.getAttribute('data-v'))||0;if(v>maxV)maxV=v;});if(maxV<=0)return;var ns='http://www.w3.org/2000/svg';var color=cfg.c||'#64748b';var first=svg.querySelector('rect[data-idx]');cfg.vs.forEach(function(val,i){var y=pT+pH-(val/maxV)*pH;if(y<pT-2||y>pT+pH+2)return;var ln=document.createElementNS(ns,'line');ln.setAttribute('x1',pL);ln.setAttribute('x2',pL+pW);ln.setAttribute('y1',y);ln.setAttribute('y2',y);ln.setAttribute('stroke',color);ln.setAttribute('stroke-width','1');ln.setAttribute('stroke-opacity','0.75');if(first)svg.insertBefore(ln,first);else svg.appendChild(ln);if(cfg.ls&&cfg.ls[i]!=null){var tx=document.createElementNS(ns,'text');tx.setAttribute('x',pL+pW-4);tx.setAttribute('y',y-4);tx.setAttribute('text-anchor','end');tx.setAttribute('font-size','10');tx.setAttribute('fill',color);tx.textContent=cfg.ls[i];svg.appendChild(tx);}});})()";
+const SP_CUT_BARS_JS: &str = "(function(){var cfg=window.__sp_cut_bars__;if(!cfg)return;var svg=document.querySelector('svg');if(!svg)return;var ns='http://www.w3.org/2000/svg';var d=svg.getAttribute('data-sp')||'';var sp=d.split(',').map(Number);var pH=sp[3]||360;var rects=svg.querySelectorAll('rect[data-idx][data-v]');if(!rects.length)return;var stepPx=cfg.sp>0?cfg.sp:Math.max(6,pH/12);var gapPx=cfg.gp>0?cfg.gp:2;var color=cfg.c||'#ffffff';var g=document.createElementNS(ns,'g');g.id='sp-cut-layer';rects.forEach(function(rect){var bX=parseFloat(rect.getAttribute('x'))||0;var bY=parseFloat(rect.getAttribute('y'))||0;var bW=parseFloat(rect.getAttribute('width'))||0;var bH=parseFloat(rect.getAttribute('height'))||0;var y=bY+stepPx;while(y<bY+bH-1){var r2=document.createElementNS(ns,'rect');r2.setAttribute('x',bX);r2.setAttribute('y',y);r2.setAttribute('width',bW);r2.setAttribute('height',gapPx);r2.setAttribute('fill',color);r2.setAttribute('pointer-events','none');g.appendChild(r2);y+=stepPx;}});svg.appendChild(g);})()";
+const SP_DRAW_TOOL_JS: &str = r"(function(){if(window.__sp_draw_init__)return;window.__sp_draw_init__=1;var cfg=window.__sp_draw_cfg__||{},color=cfg.color||'#ff0000',ns='http://www.w3.org/2000/svg';var svg=document.querySelector('svg');if(!svg)return;var cont=svg.parentElement||document.body;if(!cont.style.position||cont.style.position==='static')cont.style.position='relative';var dl=document.createElementNS(ns,'g');dl.id='sp-draw-layer';svg.appendChild(dl);var mode='draw',drawing=false,curPath=null,pts=[],selEls=[],selOvs=[],rxStart=null,activeInp=null,SIZES=[1,1.5,2.5,4,6,9],szIdx=2,tbDrag=false,tbDx=0,tbDy=0,collapsed=false,vert=false;function mkBtn(t,tip){var b=document.createElement('button');b.textContent=t;if(tip)b.title=tip;b.style.cssText='cursor:pointer;min-width:26px;height:26px;border:1px solid rgba(255,255,255,.12);border-radius:5px;font-size:12px;background:rgba(255,255,255,.07);color:#e2e8f0;display:inline-flex;align-items:center;justify-content:center;padding:0 4px;flex-shrink:0';return b;}function mkSep(){var d=document.createElement('div');d.className='sp-dr-sep';d.style.cssText='width:1px;height:20px;background:rgba(255,255,255,.1);flex-shrink:0';return d;}var tb=document.createElement('div');tb.style.cssText='position:absolute;top:6px;right:6px;z-index:9999;background:rgba(10,10,18,.93);border:1px solid rgba(255,255,255,.14);border-radius:9px;font-family:system-ui;box-shadow:0 4px 20px rgba(0,0,0,.5)';var hdr=document.createElement('div');hdr.style.cssText='display:flex;align-items:center;justify-content:space-between;padding:4px 8px;cursor:move;border-bottom:1px solid rgba(255,255,255,.07)';var grip=document.createElement('span');grip.textContent='⋮⋮';grip.style.cssText='color:#334155;font-size:11px;letter-spacing:-2px;pointer-events:none';var btnColl=document.createElement('button');btnColl.textContent='◂';btnColl.title='Collapse';btnColl.style.cssText='cursor:pointer;background:none;border:none;color:#64748b;font-size:13px;padding:0 2px;line-height:1';hdr.appendChild(grip);hdr.appendChild(btnColl);var body=document.createElement('div');body.style.cssText='display:flex;flex-wrap:wrap;gap:5px;padding:7px 8px 8px;align-items:center';var btnDraw=mkBtn('✏','Draw (freehand)');var btnText=mkBtn('T','Text');var btnSel=mkBtn('↖','Select / Move');var btnErase=mkBtn('⌫','Eraser');var ci=document.createElement('input');ci.type='color';ci.value=color;ci.title='Color';ci.style.cssText='width:26px;height:26px;border:1px solid rgba(255,255,255,.2);border-radius:5px;cursor:pointer;padding:1px 2px;background:rgba(255,255,255,.05);flex-shrink:0';ci.addEventListener('input',function(){color=ci.value;});var btnSzM=mkBtn('−','Thinner');var szDisp=document.createElement('span');szDisp.style.cssText='color:#94a3b8;font-size:10px;min-width:26px;text-align:center;flex-shrink:0;user-select:none';var btnSzP=mkBtn('+','Thicker');function updateSz(){szDisp.textContent=SIZES[szIdx]+'px';}updateSz();var btnClr=mkBtn('✕','Clear all');var btnSav=mkBtn('⬇','Save SVG');var btnOri=mkBtn('⇕','Toggle layout');[btnDraw,btnText,btnSel,btnErase,mkSep(),ci,btnSzM,szDisp,btnSzP,mkSep(),btnClr,btnSav,mkSep(),btnOri].forEach(function(el){body.appendChild(el);});tb.appendChild(hdr);tb.appendChild(body);cont.appendChild(tb);function getSP(e){var r=svg.getBoundingClientRect(),vb=svg.viewBox&&svg.viewBox.baseVal,sw=vb&&vb.width?vb.width:parseFloat(svg.getAttribute('width'))||r.width,sh=vb&&vb.height?vb.height:parseFloat(svg.getAttribute('height'))||r.height;return{x:(e.clientX-r.left)*sw/r.width,y:(e.clientY-r.top)*sh/r.height};}function clearSel(){selOvs.forEach(function(o){try{o.parentNode.removeChild(o);}catch(ex){}});selOvs=[];selEls=[];}function addSelOv(el){try{var bb=el.getBBox(),pad=3,r=document.createElementNS(ns,'rect');r.setAttribute('x',bb.x-pad);r.setAttribute('y',bb.y-pad);r.setAttribute('width',Math.max(6,bb.width+pad*2));r.setAttribute('height',Math.max(6,bb.height+pad*2));r.setAttribute('fill','rgba(99,102,241,.12)');r.setAttribute('stroke','#818cf8');r.setAttribute('stroke-width','1.2');r.setAttribute('stroke-dasharray','4 3');r.style.pointerEvents='none';dl.appendChild(r);selOvs.push(r);}catch(ex){}}function selectEl(el){if(selEls.indexOf(el)<0){selEls.push(el);addSelOv(el);}}function refreshOvs(){selOvs.forEach(function(ov,i){if(!selEls[i])return;try{var bb=selEls[i].getBBox(),pad=3;ov.setAttribute('x',bb.x-pad);ov.setAttribute('y',bb.y-pad);ov.setAttribute('width',Math.max(6,bb.width+pad*2));ov.setAttribute('height',Math.max(6,bb.height+pad*2));}catch(ex){}});}var rbRect=document.createElementNS(ns,'rect');rbRect.setAttribute('fill','rgba(99,102,241,.08)');rbRect.setAttribute('stroke','#818cf8');rbRect.setAttribute('stroke-width','1');rbRect.setAttribute('stroke-dasharray','4 2');rbRect.style.display='none';rbRect.style.pointerEvents='none';dl.appendChild(rbRect);function dismissInp(){if(activeInp&&document.body.contains(activeInp)){document.body.removeChild(activeInp);activeInp=null;}}function setMode(m){mode=m;var modes=['draw','text','select','erase'],btns=[btnDraw,btnText,btnSel,btnErase];btns.forEach(function(b,i){b.style.background=modes[i]===m?'rgba(99,102,241,.45)':'rgba(255,255,255,.07)';});svg.style.cursor=m==='draw'||m==='erase'?'crosshair':m==='text'?'text':'default';if(m!=='text')dismissInp();if(m!=='select')clearSel();}function moveEl(el,dx,dy){var tr=el.getAttribute('transform')||'',m=tr.match(/translate\(([^,]+),([^)]+)\)/),ox=m?parseFloat(m[1]):0,oy=m?parseFloat(m[2]):0;el.setAttribute('transform','translate('+(ox+dx)+','+(oy+dy)+')');}function finishRB(){var rx=parseFloat(rbRect.getAttribute('x')),ry=parseFloat(rbRect.getAttribute('y')),rw=parseFloat(rbRect.getAttribute('width')),rh=parseFloat(rbRect.getAttribute('height'));rxStart=null;rbRect.style.display='none';if(rw>3||rh>3){Array.prototype.slice.call(dl.querySelectorAll('[data-sp-draw]')).forEach(function(el){try{var bb=el.getBBox();if(bb.x+bb.width>rx&&bb.x<rx+rw&&bb.y+bb.height>ry&&bb.y<ry+rh){selectEl(el);}}catch(ex){}});}}svg.addEventListener('mousedown',function(e){if(e.button!==0)return;var pt=getSP(e);if(mode==='text'){dismissInp();var inp=document.createElement('input');inp.type='text';inp.style.cssText='position:fixed;left:'+e.clientX+'px;top:'+e.clientY+'px;z-index:99999;font-size:13px;border:1px solid #6366f1;border-radius:3px;background:#0a0f1c;color:'+color+';padding:2px 6px;min-width:80px;outline:none;font-family:system-ui';document.body.appendChild(inp);activeInp=inp;inp.focus();var escaped=false;var commitTx=function(){if(inp.value.trim()){var tx=document.createElementNS(ns,'text');tx.setAttribute('x',pt.x);tx.setAttribute('y',pt.y);tx.setAttribute('font-size','13');tx.setAttribute('fill',color);tx.setAttribute('font-weight','600');tx.textContent=inp.value.trim();tx.setAttribute('data-sp-draw','1');dl.appendChild(tx);}dismissInp();};inp.addEventListener('keydown',function(ke){ke.stopPropagation();if(ke.key==='Enter'){commitTx();}else if(ke.key==='Escape'){escaped=true;dismissInp();}});inp.addEventListener('blur',function(){if(!escaped)setTimeout(function(){if(activeInp===inp)commitTx();},180);});e.preventDefault();e.stopPropagation();return;}if(mode==='select'){var allDr=Array.prototype.slice.call(dl.querySelectorAll('[data-sp-draw]')),hit=null;for(var ii=allDr.length-1;ii>=0;ii--){try{var bb2=allDr[ii].getBBox();if(pt.x>=bb2.x-4&&pt.x<=bb2.x+bb2.width+4&&pt.y>=bb2.y-4&&pt.y<=bb2.y+bb2.height+4){hit=allDr[ii];break;}}catch(ex){}}if(hit){if(!e.shiftKey)clearSel();selectEl(hit);var dp=pt,dmov=false,snap=selEls.slice();var onDm=function(me){var mp=getSP(me),dx=mp.x-dp.x,dy=mp.y-dp.y;if(!dmov&&(Math.abs(dx)>1||Math.abs(dy)>1))dmov=true;if(dmov){snap.forEach(function(el){moveEl(el,dx,dy);});dp=mp;refreshOvs();}};var onDu=function(){document.removeEventListener('mousemove',onDm);document.removeEventListener('mouseup',onDu);};document.addEventListener('mousemove',onDm);document.addEventListener('mouseup',onDu);}else{if(!e.shiftKey)clearSel();rxStart=pt;rbRect.setAttribute('x',pt.x);rbRect.setAttribute('y',pt.y);rbRect.setAttribute('width',0);rbRect.setAttribute('height',0);rbRect.style.display='';}e.preventDefault();e.stopPropagation();return;}if(mode==='erase'){var eraseAt=function(p){Array.prototype.slice.call(dl.querySelectorAll('[data-sp-draw]')).forEach(function(el){try{var bb3=el.getBBox();if(p.x>=bb3.x-6&&p.x<=bb3.x+bb3.width+6&&p.y>=bb3.y-6&&p.y<=bb3.y+bb3.height+6){dl.removeChild(el);}}catch(ex){}});};eraseAt(pt);var erasing=true;var onEm=function(me){if(erasing)eraseAt(getSP(me));};var onEu=function(){erasing=false;document.removeEventListener('mousemove',onEm);document.removeEventListener('mouseup',onEu);};document.addEventListener('mousemove',onEm);document.addEventListener('mouseup',onEu);e.preventDefault();e.stopPropagation();return;}drawing=true;pts=[pt];curPath=document.createElementNS(ns,'path');curPath.setAttribute('d','M'+pt.x+','+pt.y);curPath.setAttribute('stroke',color);curPath.setAttribute('stroke-width',SIZES[szIdx]);curPath.setAttribute('fill','none');curPath.setAttribute('stroke-linecap','round');curPath.setAttribute('stroke-linejoin','round');curPath.setAttribute('data-sp-draw','1');dl.appendChild(curPath);e.preventDefault();e.stopPropagation();});svg.addEventListener('mousemove',function(e){if(mode==='select'&&rxStart){var pt2=getSP(e);rbRect.setAttribute('x',Math.min(rxStart.x,pt2.x));rbRect.setAttribute('y',Math.min(rxStart.y,pt2.y));rbRect.setAttribute('width',Math.abs(pt2.x-rxStart.x));rbRect.setAttribute('height',Math.abs(pt2.y-rxStart.y));return;}if(!drawing||!curPath)return;var pt2=getSP(e);pts.push(pt2);var d='M'+pts[0].x+','+pts[0].y;for(var j=1;j<pts.length;j++){var p0=pts[j-1],p1=pts[j];d+=' Q'+p0.x+','+p0.y+' '+((p0.x+p1.x)/2)+','+((p0.y+p1.y)/2);}curPath.setAttribute('d',d);e.preventDefault();});svg.addEventListener('mouseup',function(){if(rxStart){finishRB();return;}drawing=false;curPath=null;pts=[];});svg.addEventListener('mouseleave',function(){if(rxStart)return;drawing=false;curPath=null;pts=[];});document.addEventListener('mouseup',function(){if(rxStart)finishRB();});document.addEventListener('keydown',function(e){if((e.key==='Delete'||e.key==='Backspace')&&selEls.length&&!activeInp){selEls.forEach(function(el){try{el.parentNode.removeChild(el);}catch(ex){}});clearSel();e.preventDefault();}});document.addEventListener('mousedown',function(e){if(activeInp&&e.target!==activeInp&&!tb.contains(e.target)){dismissInp();}},true);btnDraw.addEventListener('click',function(){setMode('draw');});btnText.addEventListener('click',function(){setMode(mode==='text'?'draw':'text');});btnSel.addEventListener('click',function(){setMode('select');});btnErase.addEventListener('click',function(){setMode('erase');});btnSzM.addEventListener('click',function(){if(szIdx>0){szIdx--;updateSz();}});btnSzP.addEventListener('click',function(){if(szIdx<SIZES.length-1){szIdx++;updateSz();}});btnClr.addEventListener('click',function(){Array.prototype.slice.call(dl.querySelectorAll('[data-sp-draw]')).forEach(function(c){try{dl.removeChild(c);}catch(ex){}});clearSel();});btnSav.addEventListener('click',function(){var s=new XMLSerializer().serializeToString(svg);var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([s],{type:'image/svg+xml'}));a.download='chart-annotated.svg';a.click();});btnOri.addEventListener('click',function(){vert=!vert;btnOri.textContent=vert?'⇔':'⇕';body.style.flexDirection=vert?'column':'row';body.style.flexWrap=vert?'nowrap':'wrap';var seps=body.querySelectorAll('.sp-dr-sep');Array.prototype.forEach.call(seps,function(s){s.style.width=vert?'100%':'1px';s.style.height=vert?'1px':'20px';});});btnColl.addEventListener('click',function(){collapsed=!collapsed;body.style.display=collapsed?'none':'flex';btnColl.textContent=collapsed?'▸':'◂';});hdr.addEventListener('mousedown',function(e){if(e.target===btnColl)return;tbDrag=true;var r=tb.getBoundingClientRect();tbDx=e.clientX-r.left;tbDy=e.clientY-r.top;e.preventDefault();});document.addEventListener('mousemove',function(e){if(!tbDrag)return;var pr=cont.getBoundingClientRect();tb.style.left=Math.max(0,e.clientX-pr.left-tbDx)+'px';tb.style.top=Math.max(0,e.clientY-pr.top-tbDy)+'px';tb.style.right='auto';});document.addEventListener('mouseup',function(){tbDrag=false;});setMode('draw');})()";
+const SP_COLOR_DENSITY_JS: &str = "(function(){var svg=document.querySelector('svg');if(!svg)return;var els=Array.prototype.slice.call(svg.querySelectorAll('[data-idx][data-v]'));if(els.length<2)return;var vals=els.map(function(e){return parseFloat(e.getAttribute('data-v'))||0;});var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals),rng=mx-mn||1;var stops=[[99,102,241],[6,182,212],[34,197,94],[251,191,36],[239,68,68]];els.forEach(function(el){var t=(parseFloat(el.getAttribute('data-v'))||0-mn)/rng;t=Math.max(0,Math.min(1,t));var si=t*(stops.length-1),i=Math.floor(si),j=Math.min(i+1,stops.length-1),f=si-i;var r=Math.round(stops[i][0]+(stops[j][0]-stops[i][0])*f),g=Math.round(stops[i][1]+(stops[j][1]-stops[i][1])*f),b=Math.round(stops[i][2]+(stops[j][2]-stops[i][2])*f);el.style.setProperty('fill','rgb('+r+','+g+','+b+')','important');});})()";
+const SP_HIGHLIGHT_STATIC_JS: &str = "(function(){var cfg=window.__sp_hl_grp__;if(!cfg)return;var svg=document.querySelector('svg');if(!svg)return;var all=Array.prototype.slice.call(svg.querySelectorAll('[data-lbl],[data-group]'));if(!all.length)return;all.forEach(function(el){var lbl=el.getAttribute('data-lbl')||el.getAttribute('data-group')||'';if(cfg.g.indexOf(lbl)<0){el.style.opacity=String(cfg.d);el.style.transition='opacity .18s';}});})()";
 
 const SP_STACK_INIT_JS: &str = "window.__spStackTop=window.__spStackTop||{};window.__spStackClaim=window.__spStackClaim||function(i,h){var t=window.__spStackTop,c=t[i]||0;t[i]=c+h;return c;};";
 
@@ -392,533 +413,14 @@ const SP_SCATTER_REGRESSION_JS: &str = "(function(){var cfg=window.__sp_scatter_
 
 const SP_CLUSTER_JS: &str = "(function(){var cfg=window.__sp_cluster__;if(!cfg)return;var svg=document.querySelector('svg');if(!svg)return;var pts=Array.prototype.slice.call(svg.querySelectorAll('[data-idx][data-x][data-y]'));var oneD=false;if(pts.length<2){pts=Array.prototype.slice.call(svg.querySelectorAll('[data-idx][data-v]'));oneD=true;}if(pts.length<2)return;var P=oneD?pts.map(function(p){return{x:parseFloat(p.getAttribute('data-v'))||0,y:0};}):pts.map(function(p){return{x:parseFloat(p.getAttribute('data-x'))||0,y:parseFloat(p.getAttribute('data-y'))||0};});var n=P.length,labels=new Array(n).fill(-2),visited=new Array(n).fill(false);function neigh(i){var r=[];for(var j=0;j<n;j++){var dx=P[i].x-P[j].x,dy=P[i].y-P[j].y;if(Math.sqrt(dx*dx+dy*dy)<=cfg.eps)r.push(j);}return r;}var cid=0;for(var i=0;i<n;i++){if(visited[i])continue;visited[i]=true;var nb=neigh(i);if(nb.length<cfg.m){labels[i]=-1;continue;}labels[i]=cid;var q=nb.slice();while(q.length){var j=q.shift();if(!visited[j]){visited[j]=true;var nb2=neigh(j);if(nb2.length>=cfg.m)q=q.concat(nb2);}if(labels[j]<0)labels[j]=cid;}cid++;}var pal=['#6366f1','#22c55e','#f59e0b','#ef4444','#06b6d4','#ec4899','#84cc16','#8b5cf6'];pts.forEach(function(p,i){var col=labels[i]===-1?'#94a3b8':pal[labels[i]%pal.length];p.style.setProperty('fill',col,'important');p.style.setProperty('stroke',col,'important');});})()";
 
-pub(crate) fn apply_despine(html: String) -> String {
-    html.replacen(
-        "</head>",
-        "<style>.sp-ax-x,.sp-ax-y{display:none!important}</style></head>",
-        1,
-    )
-}
+const SP_COMPARE_JS: &str = "(function(){if(window.__spcm__)return;window.__spcm__=1;var fe=window.frameElement;if(!fe)return;var doc=window.parent.document,win=window.parent;var svg=document.querySelector('svg');var score=0;if(svg){svg.querySelectorAll('[data-idx][data-v],[data-idx][data-y]').forEach(function(e){var v=parseFloat(e.getAttribute('data-v')||e.getAttribute('data-y'));if(!isNaN(v))score+=v;});}var title=(document.querySelector('.sp-ttl')||{}).textContent||'Chart';fe.setAttribute('data-sp-cmp-score',score);fe.setAttribute('data-sp-cmp-title',title);if(!win.__spCmpInit){win.__spCmpInit=1;var st=doc.createElement('style');st.textContent='#sp-cmp-ticker{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:rgba(15,23,42,.95);color:#f1f5f9;padding:10px 24px;border-radius:40px;font:600 14px/1 system-ui,sans-serif;z-index:99999;display:none;box-shadow:0 4px 24px rgba(0,0,0,.4);white-space:nowrap}.sp-cmp-sel{outline:3px solid #818cf8!important;outline-offset:2px!important}';doc.head.appendChild(st);var tk=doc.createElement('div');tk.id='sp-cmp-ticker';doc.body.appendChild(tk);win.__spCmpUpdate=function(){var sel=Array.prototype.slice.call(doc.querySelectorAll('iframe[data-sp-cmp-sel]'));var tk2=doc.getElementById('sp-cmp-ticker');if(!tk2)return;if(sel.length<2){tk2.style.display='none';return;}sel.sort(function(a,b){return parseFloat(b.getAttribute('data-sp-cmp-score'))-parseFloat(a.getAttribute('data-sp-cmp-score'));});var sc=sel.map(function(f){return parseFloat(f.getAttribute('data-sp-cmp-score'))||0;});var parts=[];for(var i=0;i<sel.length;i++){var t=sel[i].getAttribute('data-sp-cmp-title')||('C'+(i+1));parts.push('<span style=\"color:#a5b4fc\">'+t+'</span>');if(i<sel.length-1){var diff=Math.abs(sc[0])>1e-9?Math.abs(sc[i]-sc[i+1])/Math.abs(sc[0]):0;var arr=diff>0.5?'>>>':diff>0.2?'>>':'>';parts.push(' <span style=\"color:#64748b\">'+arr+'</span> ');}}tk2.innerHTML=parts.join('');tk2.style.display='block';};}document.addEventListener('click',function(e){if(!e.shiftKey)return;e.preventDefault();if(fe.hasAttribute('data-sp-cmp-sel')){fe.removeAttribute('data-sp-cmp-sel');fe.classList.remove('sp-cmp-sel');}else{fe.setAttribute('data-sp-cmp-sel','1');fe.classList.add('sp-cmp-sel');}if(win.__spCmpUpdate)win.__spCmpUpdate();});})()";
 
-pub(crate) fn apply_watermark(html: String, text: &str, opacity: f64) -> String {
-    let o = opacity.clamp(0.0, 1.0);
-    let css = format!(
-        "<style>.sp-watermark{{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-28deg);font-size:42px;font-weight:800;letter-spacing:.08em;color:rgba(148,163,184,{o});pointer-events:none;z-index:1;white-space:nowrap;user-select:none;font-family:-apple-system,Arial,sans-serif}}</style></head>",
-    );
-    let html = html.replacen("</head>", &css, 1);
-    let snippet = format!(
-        "<div class=\"sp-watermark\">{}</div></body>",
-        text.replace('&', "&amp;").replace('<', "&lt;")
-    );
-    html.replacen("</body>", &snippet, 1)
-}
+const SP_PICK_JS: &str = "(function(){if(window.__sp_pick__)return;window.__sp_pick__=1;var svg=document.querySelector('svg');if(!svg)return;var els=Array.prototype.slice.call(svg.querySelectorAll('[data-idx]'));if(els.length<2)return;var d=svg.getAttribute('data-sp')||'';var sp=d.split(',').map(Number);var pL=sp[0]||50,pT=sp[1]||36,pW=sp[2]||700,pH=sp[3]||360;var sel={};var ns='http://www.w3.org/2000/svg';var bg=document.createElementNS(ns,'g');bg.id='sp-pick-g';svg.appendChild(bg);function gv(el){return parseFloat(el.getAttribute('data-v')||el.getAttribute('data-y')||'0');}function getLabel(el){var idx=parseInt(el.getAttribute('data-idx'));var cx=el.tagName==='rect'?parseFloat(el.getAttribute('x'))+parseFloat(el.getAttribute('width'))/2:parseFloat(el.getAttribute('cx')||el.getAttribute('x')||'0');var mid=pT+pH/2;var best=null,bd=Infinity;svg.querySelectorAll('text').forEach(function(t){var ty=parseFloat(t.getAttribute('y')||'0');if(ty>mid){var tx=parseFloat(t.getAttribute('x')||'0');var dd=Math.abs(tx-cx);if(dd<bd){bd=dd;best=t;}}});return best&&bd<60?best.textContent:'#'+idx;}function render(){var keys=Object.keys(sel);els.forEach(function(el){el.style.opacity=keys.length&&!sel[el.getAttribute('data-idx')]?'0.18':'';el.style.transition='opacity .15s';});var g=document.getElementById('sp-pick-g');while(g.firstChild)g.removeChild(g.firstChild);if(keys.length<2)return;var items=keys.map(function(k){return{label:getLabel(sel[k]),val:gv(sel[k])};});items.sort(function(a,b){return b.val-a.val;});var topV=Math.abs(items[0].val);var parts=[];items.forEach(function(it,i){parts.push(it.label+' ('+it.val.toFixed(2)+')');if(i<items.length-1){var diff=topV>1e-9?(it.val-items[i+1].val)/topV:0;parts.push(diff>0.4?'>>>':diff>0.15?'>>':'>');}});var txt=parts.join(' ');var tw=Math.min(pW*0.92,Math.max(110,txt.length*7+28));var bx=pL+pW/2,by=pT-8;var rct=document.createElementNS(ns,'rect');rct.setAttribute('x',bx-tw/2);rct.setAttribute('y',by-20);rct.setAttribute('width',tw);rct.setAttribute('height',24);rct.setAttribute('rx','12');rct.setAttribute('fill','rgba(15,23,42,.92)');rct.setAttribute('stroke','#818cf8');rct.setAttribute('stroke-width','1.5');g.appendChild(rct);var t=document.createElementNS(ns,'text');t.setAttribute('x',bx);t.setAttribute('y',by);t.setAttribute('text-anchor','middle');t.setAttribute('font-size','11');t.setAttribute('font-weight','600');t.setAttribute('fill','#f1f5f9');t.setAttribute('font-family','system-ui,sans-serif');t.textContent=txt;g.appendChild(t);}els.forEach(function(el){el.style.cursor='pointer';el.addEventListener('click',function(e){if(!e.shiftKey)return;e.preventDefault();e.stopPropagation();var idx=el.getAttribute('data-idx');if(sel[idx]){delete sel[idx];}else{sel[idx]=el;}render();});});})()";
 
-pub(crate) fn apply_caption(html: String, text: &str) -> String {
-    let css = "<style>.sp-caption{text-align:center;font-size:11px;color:#94a3b8;margin:6px 0 0;font-family:-apple-system,Arial,sans-serif}</style></head>";
-    let html = html.replacen("</head>", css, 1);
-    let snippet = format!(
-        "<script>window.__sp_caption__={};{}</script></body>",
-        json_str(text),
-        SP_CAPTION_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
+const SP_MEAN_JS: &str = "(function(){var cfg=window.__sp_mean__;if(!cfg)return;var svg=document.querySelector('svg');if(!svg)return;var d=svg.getAttribute('data-sp')||'';var sp=d.split(',').map(Number);var pL=sp[0]||50,pT=sp[1]||36,pW=sp[2]||700,pH=sp[3]||360;var els=svg.querySelectorAll('[data-idx][data-v],[data-idx][data-y]');if(!els.length)return;var vals=[],sum=0;els.forEach(function(e){var v=parseFloat(e.getAttribute('data-v')||e.getAttribute('data-y'));if(!isNaN(v)){vals.push(v);sum+=v;}});if(!vals.length)return;var stat=sum/vals.length;var yts=svg.querySelectorAll('.sp-yt');var tvs=[];yts.forEach(function(t){var v=parseFloat(t.textContent);if(!isNaN(v))tvs.push(v);});var minV=tvs.length>=2?Math.min.apply(null,tvs):0;var maxV=tvs.length>=2?Math.max.apply(null,tvs):Math.max.apply(null,vals);if(maxV<=minV)return;var y=pT+pH-(stat-minV)/(maxV-minV)*pH;if(y<pT-2||y>pT+pH+2)return;var ns='http://www.w3.org/2000/svg';var ln=document.createElementNS(ns,'line');ln.setAttribute('x1',pL);ln.setAttribute('x2',pL+pW);ln.setAttribute('y1',y);ln.setAttribute('y2',y);ln.setAttribute('stroke',cfg.c);ln.setAttribute('stroke-width','1.5');ln.setAttribute('stroke-dasharray','6,4');svg.appendChild(ln);var tx=document.createElementNS(ns,'text');tx.setAttribute('x',pL+pW-4);tx.setAttribute('y',y-5);tx.setAttribute('text-anchor','end');tx.setAttribute('font-size','10.5');tx.setAttribute('fill',cfg.c);tx.textContent='μ '+stat.toFixed(2);svg.appendChild(tx);})()";
 
-pub(crate) fn apply_glow(html: String, color: &str) -> String {
-    let mut html = html;
-    if let Some(svg_pos) = html.find("<svg") {
-        if let Some(rel_end) = html[svg_pos..].find('>') {
-            let insert_at = svg_pos + rel_end + 1;
-            let defs = format!(
-                "<defs><filter id=\"sp-glow-f\" x=\"-60%\" y=\"-60%\" width=\"220%\" height=\"160%\"><feDropShadow dx=\"0\" dy=\"0\" stdDeviation=\"4\" flood-color=\"{}\" flood-opacity=\"0.85\"/></filter></defs>",
-                color
-            );
-            html.insert_str(insert_at, &defs);
-        }
-    }
-    html.replacen(
-        "</head>",
-        "<style>svg [data-idx]{filter:url(#sp-glow-f)}</style></head>",
-        1,
-    )
-}
+const SP_MEDIAN_JS: &str = "(function(){var cfg=window.__sp_median__;if(!cfg)return;var svg=document.querySelector('svg');if(!svg)return;var d=svg.getAttribute('data-sp')||'';var sp=d.split(',').map(Number);var pL=sp[0]||50,pT=sp[1]||36,pW=sp[2]||700,pH=sp[3]||360;var els=svg.querySelectorAll('[data-idx][data-v],[data-idx][data-y]');if(!els.length)return;var vals=[];els.forEach(function(e){var v=parseFloat(e.getAttribute('data-v')||e.getAttribute('data-y'));if(!isNaN(v))vals.push(v);});if(!vals.length)return;var sorted=vals.slice().sort(function(a,b){return a-b;});var mid=Math.floor(sorted.length/2);var stat=sorted.length%2?sorted[mid]:(sorted[mid-1]+sorted[mid])/2;var yts=svg.querySelectorAll('.sp-yt');var tvs=[];yts.forEach(function(t){var v=parseFloat(t.textContent);if(!isNaN(v))tvs.push(v);});var minV=tvs.length>=2?Math.min.apply(null,tvs):0;var maxV=tvs.length>=2?Math.max.apply(null,tvs):Math.max.apply(null,vals);if(maxV<=minV)return;var y=pT+pH-(stat-minV)/(maxV-minV)*pH;if(y<pT-2||y>pT+pH+2)return;var ns='http://www.w3.org/2000/svg';var ln=document.createElementNS(ns,'line');ln.setAttribute('x1',pL);ln.setAttribute('x2',pL+pW);ln.setAttribute('y1',y);ln.setAttribute('y2',y);ln.setAttribute('stroke',cfg.c);ln.setAttribute('stroke-width','1.5');ln.setAttribute('stroke-dasharray','4,3');svg.appendChild(ln);var tx=document.createElementNS(ns,'text');tx.setAttribute('x',pL+pW-4);tx.setAttribute('y',y-5);tx.setAttribute('text-anchor','end');tx.setAttribute('font-size','10.5');tx.setAttribute('fill',cfg.c);tx.textContent='Med '+stat.toFixed(2);svg.appendChild(tx);})()";
 
-fn extract_bracket_range(html: &str, marker: &str) -> Option<(f64, f64)> {
-    let start = html.find(marker)? + marker.len();
-    let end = html[start..].find(']')? + start;
-    let mut lo = f64::INFINITY;
-    let mut hi = f64::NEG_INFINITY;
-    for tok in html[start..end].split(',') {
-        if let Ok(v) = tok.trim().parse::<f64>() {
-            if v < lo {
-                lo = v;
-            }
-            if v > hi {
-                hi = v;
-            }
-        }
-    }
-    if lo.is_finite() && hi.is_finite() {
-        Some((lo, hi))
-    } else {
-        None
-    }
-}
-
-fn extract_attr_range(html: &str, attr: &str) -> Option<(f64, f64)> {
-    let mut lo = f64::INFINITY;
-    let mut hi = f64::NEG_INFINITY;
-    let mut from = 0usize;
-    while let Some(rel) = html[from..].find(attr) {
-        let start = from + rel + attr.len();
-        let end = start + html[start..].find('"')?;
-        if let Ok(v) = html[start..end].parse::<f64>() {
-            if v < lo {
-                lo = v;
-            }
-            if v > hi {
-                hi = v;
-            }
-        }
-        from = end;
-    }
-    if lo.is_finite() && hi.is_finite() {
-        Some((lo, hi))
-    } else {
-        None
-    }
-}
-
-pub(crate) fn apply_colorbar(html: String, position: &str) -> String {
-    if html.contains("box-shadow:0 2px 8px rgba(0,0,0,.25),0 0 0 1px rgba(255,255,255,.15)") {
-        return html;
-    }
-    let pos = match position {
-        "left" | "right" | "top" | "bottom" => position,
-        _ => "right",
-    };
-    let is_3d = html.contains("class=\"c3w\"");
-    let range = if is_3d {
-        extract_bracket_range(&html, ",Z=[")
-    } else {
-        extract_attr_range(&html, "data-v=\"").or_else(|| extract_attr_range(&html, "data-y=\""))
-    };
-    let (lo, hi) = range.unwrap_or((0.0, 1.0));
-    let horizontal = pos == "top" || pos == "bottom";
-    let gradient = if horizontal {
-        "linear-gradient(to right,#00008f,#00ffff,#00ff00,#ffff00,#ff0000)"
-    } else {
-        "linear-gradient(to top,#00008f,#00ffff,#00ff00,#ffff00,#ff0000)"
-    };
-    let (css_pos, w, h) = match pos {
-        "left" => ("top:50%;left:10px;transform:translateY(-50%)", 14, 150),
-        "top" => ("top:10px;left:50%;transform:translateX(-50%)", 150, 14),
-        "bottom" => ("bottom:10px;left:50%;transform:translateX(-50%)", 150, 14),
-        _ => ("top:50%;right:10px;transform:translateY(-50%)", 14, 150),
-    };
-    let label_css = if horizontal {
-        "position:absolute;top:16px;font-size:10px;color:#94a3b8;font-family:-apple-system,Arial,sans-serif"
-    } else {
-        "position:absolute;left:18px;font-size:10px;color:#94a3b8;font-family:-apple-system,Arial,sans-serif"
-    };
-    let (lo_pos, hi_pos) = if horizontal {
-        ("left:0", "right:0")
-    } else {
-        ("bottom:0", "top:0")
-    };
-    let bar = format!(
-        "<div style=\"position:absolute;{};width:{}px;height:{}px;background:{};border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.25),0 0 0 1px rgba(255,255,255,.15);z-index:50\"><span style=\"{};{}\">{:.2}</span><span style=\"{};{}\">{:.2}</span></div>",
-        css_pos, w, h, gradient, label_css, lo_pos, lo, label_css, hi_pos, hi
-    );
-    if is_3d {
-        html.replacen("</button></div>", &format!("</button>{}</div>", bar), 1)
-    } else {
-        html.replacen(
-            "</div></body></html>",
-            &format!("{}</div></body></html>", bar),
-            1,
-        )
-    }
-}
-
-pub(crate) fn apply_orient3d(html: String, mode: &str) -> String {
-    let (yaw, pitch) = crate::plot::scene3d::Orientation3D::from_str(mode).angles();
-    let marker = "var yaw=";
-    if let Some(start) = html.find(marker) {
-        if let Some(rel) = html[start..].find(",zoom=") {
-            let end = start + rel;
-            let mut out = String::with_capacity(html.len() + 16);
-            out.push_str(&html[..start]);
-            out.push_str(&format!("var yaw={:.4},pitch={:.4}", yaw, pitch));
-            out.push_str(&html[end..]);
-            return out;
-        }
-    }
-    html
-}
-
-pub(crate) fn apply_highlight(html: String, index: usize, color: &str) -> String {
-    let css = format!(
-        "<style>svg [data-idx=\"{}\"]{{fill:{}!important;stroke:{}!important;filter:drop-shadow(0 0 6px {})}}</style></head>",
-        index, color, color, color
-    );
-    html.replacen("</head>", &css, 1)
-}
-
-pub(crate) fn apply_hline(html: String, value: f64, color: &str, label: Option<&str>) -> String {
-    let cfg = format!(
-        "{{\"v\":{},\"c\":{},\"lbl\":{}}}",
-        value,
-        json_str(color),
-        label.map(json_str).unwrap_or_else(|| "null".to_string())
-    );
-    let snippet = format!("<script>window.__sp_hline__={};{}</script></body>", cfg, SP_HLINE_JS);
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_trendline(html: String, color: &str, width: f64) -> String {
-    let cfg = format!("{{\"c\":{},\"w\":{}}}", json_str(color), width);
-    let snippet = format!(
-        "<script>window.__sp_trendline__={};{}</script></body>",
-        cfg, SP_TRENDLINE_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_annotate_extreme(
-    html: String,
-    mode: &str,
-    color: &str,
-    label: Option<&str>,
-) -> String {
-    let cfg = format!(
-        "{{\"mode\":{},\"c\":{},\"lbl\":{}}}",
-        json_str(mode),
-        json_str(color),
-        label.map(json_str).unwrap_or_else(|| "null".to_string())
-    );
-    let snippet = format!(
-        "<script>window.__sp_annotate_extreme__={};{}</script></body>",
-        cfg, SP_ANNOTATE_EXTREME_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_reference_band(html: String, low: f64, high: f64, color: &str, opacity: f64) -> String {
-    let cfg = format!(
-        "{{\"lo\":{},\"hi\":{},\"c\":{},\"op\":{}}}",
-        low,
-        high,
-        json_str(color),
-        opacity.clamp(0.0, 1.0)
-    );
-    let snippet = format!(
-        "<script>window.__sp_ref_band__={};{}</script></body>",
-        cfg, SP_REFERENCE_BAND_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_responsive(html: String) -> String {
-    html.replacen(
-        "</head>",
-        "<style>body>div{max-width:100%;min-width:0}svg{max-width:100%;height:auto;display:block}</style></head>",
-        1,
-    )
-}
-
-pub(crate) fn apply_value_labels(html: String, decimals: i32, color: &str) -> String {
-    let cfg = format!("{{\"d\":{},\"c\":{}}}", decimals.max(0), json_str(color));
-    let snippet = format!(
-        "<script>{}window.__sp_value_labels__={};{}</script></body>",
-        SP_STACK_INIT_JS, cfg, SP_VALUE_LABELS_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_error_bars(html: String, margin: f64, color: &str) -> String {
-    let cfg = format!("{{\"m\":{},\"c\":{}}}", margin.abs(), json_str(color));
-    let snippet = format!(
-        "<script>{}window.__sp_error_bars__={};{}</script></body>",
-        SP_STACK_INIT_JS, cfg, SP_ERROR_BARS_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_delta_labels(html: String, pos_color: &str, neg_color: &str) -> String {
-    let cfg = format!(
-        "{{\"pc\":{},\"nc\":{}}}",
-        json_str(pos_color),
-        json_str(neg_color)
-    );
-    let snippet = format!(
-        "<script>{}window.__sp_delta_labels__={};{}</script></body>",
-        SP_STACK_INIT_JS, cfg, SP_DELTA_LABELS_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_cumulative_line(html: String, color: &str) -> String {
-    let cfg = format!("{{\"c\":{}}}", json_str(color));
-    let snippet = format!(
-        "<script>window.__sp_cumulative_line__={};{}</script></body>",
-        cfg, SP_CUMULATIVE_LINE_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_rank_badges(html: String, top_n: usize, color: &str) -> String {
-    let cfg = format!("{{\"n\":{},\"c\":{}}}", top_n.max(1), json_str(color));
-    let snippet = format!(
-        "<script>{}window.__sp_rank_badges__={};{}</script></body>",
-        SP_STACK_INIT_JS, cfg, SP_RANK_BADGES_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_log_scale(html: String) -> String {
-    let snippet = format!("<script>{}</script></body>", SP_LOG_SCALE_JS);
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_moving_average(html: String, window: usize, color: &str) -> String {
-    let cfg = format!("{{\"w\":{},\"c\":{}}}", window.max(1), json_str(color));
-    let snippet = format!(
-        "<script>window.__sp_moving_avg__={};{}</script></body>",
-        cfg, SP_MOVING_AVG_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_outliers(html: String, threshold_std: f64, color: &str) -> String {
-    let cfg = format!("{{\"t\":{},\"c\":{}}}", threshold_std.max(0.1), json_str(color));
-    let snippet = format!(
-        "<script>window.__sp_outliers__={};{}</script></body>",
-        cfg, SP_OUTLIERS_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_fill_between(html: String, color: &str, opacity: f64) -> String {
-    let cfg = format!("{{\"c\":{},\"op\":{}}}", json_str(color), opacity.clamp(0.0, 1.0));
-    let snippet = format!(
-        "<script>window.__sp_fill_between__={};{}</script></body>",
-        cfg, SP_FILL_BETWEEN_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_box_annotate(html: String, color: &str) -> String {
-    let cfg = format!("{{\"c\":{}}}", json_str(color));
-    let snippet = format!(
-        "<script>window.__sp_box_annotate__={};{}</script></body>",
-        cfg, SP_BOX_ANNOTATE_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_pct_of_total(html: String, decimals: i32, color: &str) -> String {
-    let cfg = format!(
-        "{{\"d\":{},\"c\":{}}}",
-        decimals.max(0),
-        json_str(color)
-    );
-    let snippet = format!(
-        "<script>{}window.__sp_pct_of_total__={};{}</script></body>",
-        SP_STACK_INIT_JS, cfg, SP_PCT_OF_TOTAL_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_correlation_badge(html: String, color: &str) -> String {
-    let cfg = format!("{{\"c\":{}}}", json_str(color));
-    let snippet = format!(
-        "<script>window.__sp_correlation_badge__={};{}</script></body>",
-        cfg, SP_CORRELATION_BADGE_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_highlight_range(html: String, low: usize, high: usize, color: &str, opacity: f64) -> String {
-    let cfg = format!(
-        "{{\"lo\":{},\"hi\":{},\"c\":{},\"op\":{}}}",
-        low,
-        high,
-        json_str(color),
-        opacity.clamp(0.0, 1.0)
-    );
-    let snippet = format!(
-        "<script>window.__sp_highlight_range__={};{}</script></body>",
-        cfg, SP_HIGHLIGHT_RANGE_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_iqr_band(html: String, color: &str, opacity: f64) -> String {
-    let cfg = format!("{{\"c\":{},\"op\":{}}}", json_str(color), opacity.clamp(0.0, 1.0));
-    let snippet = format!(
-        "<script>window.__sp_iqr_band__={};{}</script></body>",
-        cfg, SP_IQR_BAND_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_growth_badge(html: String, color: &str) -> String {
-    let cfg = format!("{{\"c\":{}}}", json_str(color));
-    let snippet = format!(
-        "<script>window.__sp_growth_badge__={};{}</script></body>",
-        cfg, SP_GROWTH_BADGE_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_zscore_heat(html: String) -> String {
-    let snippet = format!(
-        "<script>window.__sp_zscore_heat__=true;{}</script></body>",
-        SP_ZSCORE_HEAT_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_pareto_marker(html: String, threshold_pct: f64, color: &str) -> String {
-    let cfg = format!(
-        "{{\"t\":{},\"c\":{}}}",
-        threshold_pct.clamp(1.0, 99.0),
-        json_str(color)
-    );
-    let snippet = format!(
-        "<script>window.__sp_pareto_marker__={};{}</script></body>",
-        cfg, SP_PARETO_MARKER_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_diff_from_mean(html: String, pos_color: &str, neg_color: &str) -> String {
-    let cfg = format!(
-        "{{\"pc\":{},\"nc\":{}}}",
-        json_str(pos_color),
-        json_str(neg_color)
-    );
-    let snippet = format!(
-        "<script>{}window.__sp_diff_from_mean__={};{}</script></body>",
-        SP_STACK_INIT_JS, cfg, SP_DIFF_FROM_MEAN_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_rolling_std_band(html: String, window: usize, color: &str, opacity: f64) -> String {
-    let cfg = format!(
-        "{{\"w\":{},\"c\":{},\"op\":{}}}",
-        window.max(1),
-        json_str(color),
-        opacity.clamp(0.0, 1.0)
-    );
-    let snippet = format!(
-        "<script>window.__sp_rolling_std_band__={};{}</script></body>",
-        cfg, SP_ROLLING_STD_BAND_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_forecast_line(html: String, periods: usize, color: &str) -> String {
-    let cfg = format!("{{\"n\":{},\"c\":{}}}", periods.max(1), json_str(color));
-    let snippet = format!(
-        "<script>window.__sp_forecast_line__={};{}</script></body>",
-        cfg, SP_FORECAST_LINE_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_percentile_band(html: String, low_pct: f64, high_pct: f64, color: &str, opacity: f64) -> String {
-    let cfg = format!(
-        "{{\"lo\":{},\"hi\":{},\"c\":{},\"op\":{}}}",
-        low_pct.clamp(0.0, 100.0),
-        high_pct.clamp(0.0, 100.0),
-        json_str(color),
-        opacity.clamp(0.0, 1.0)
-    );
-    let snippet = format!(
-        "<script>window.__sp_percentile_band__={};{}</script></body>",
-        cfg, SP_PERCENTILE_BAND_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_scatter_regression(html: String, color: &str, width: f64) -> String {
-    let cfg = format!("{{\"c\":{},\"w\":{}}}", json_str(color), width.max(0.5));
-    let snippet = format!(
-        "<script>window.__sp_scatter_regression__={};{}</script></body>",
-        cfg, SP_SCATTER_REGRESSION_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_cluster(html: String, eps: f64, min_samples: usize) -> String {
-    let cfg = format!("{{\"eps\":{},\"m\":{}}}", eps.max(0.001), min_samples.max(1));
-    let snippet = format!(
-        "<script>window.__sp_cluster__={};{}</script></body>",
-        cfg, SP_CLUSTER_JS
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_subtitle(html: String, text: &str) -> String {
-    let snippet = format!(
-        "<script>(function(){{var t=document.querySelector('.sp-ttl');if(!t)return;var ns='http://www.w3.org/2000/svg';var s=document.createElementNS(ns,'text');s.setAttribute('x',t.getAttribute('x')||'0');s.setAttribute('y',(parseFloat(t.getAttribute('y'))||0)+16);s.setAttribute('text-anchor',t.getAttribute('text-anchor')||'middle');s.setAttribute('font-family','-apple-system,Arial,sans-serif');s.setAttribute('font-size','12');s.setAttribute('fill','#94a3b8');s.setAttribute('class','sp-subtitle');s.textContent={};t.parentNode.insertBefore(s,t.nextSibling);}})();</script></body>",
-        json_str(text)
-    );
-    html.replacen("</body>", &snippet, 1)
-}
-
-pub(crate) fn apply_shadow(html: String, blur: i32, color: &str) -> String {
-    let css = format!(
-        "<style>body>:first-child{{box-shadow:0 {}px {}px -8px {} !important}}</style></head>",
-        blur / 2,
-        blur,
-        color
-    );
-    html.replacen("</head>", &css, 1)
-}
-
-pub(crate) fn apply_pulse(
-    html: String,
-    duration: f64,
-    indices: Option<&[usize]>,
-    above: Option<f64>,
-) -> String {
-    let d = duration.max(0.1);
-    let keyframes = "@keyframes sp-pulse{0%,100%{opacity:1}50%{opacity:.55}}";
-    if let Some(thr) = above {
-        let css = format!("<style>{}</style></head>", keyframes);
-        let html = html.replacen("</head>", &css, 1);
-        let snippet = format!(
-            "<script>(function(){{var thr={},d={};document.querySelectorAll('svg [data-v]').forEach(function(e){{if(parseFloat(e.getAttribute('data-v'))>thr){{e.style.setProperty('animation','sp-pulse '+d+'s ease-in-out infinite','important');}}}});}})();</script></body>",
-            thr, d
-        );
-        return html.replacen("</body>", &snippet, 1);
-    }
-    let selector = match indices {
-        Some(idxs) if !idxs.is_empty() => idxs
-            .iter()
-            .map(|i| format!("svg [data-idx=\"{}\"]", i))
-            .collect::<Vec<_>>()
-            .join(","),
-        _ => "svg [data-idx]".to_string(),
-    };
-    let css = format!(
-        "<style>{}{}{{animation:sp-pulse {}s ease-in-out infinite !important}}</style></head>",
-        keyframes, selector, d
-    );
-    html.replacen("</head>", &css, 1)
-}
-
-pub(crate) fn apply_outline(html: String, color: &str, width: f64) -> String {
-    let css = format!(
-        "<style>svg [data-idx]{{stroke:{} !important;stroke-width:{}px !important}}</style></head>",
-        color, width
-    );
-    html.replacen("</head>", &css, 1)
-}
 
 pub(crate) fn json_str(s: &str) -> String {
     let mut out = String::with_capacity(s.len() + 2);
@@ -1062,6 +564,38 @@ fn inject_global_cfg(html: String) -> String {
     out
 }
 
+pub(crate) fn hover_dedup_images(slots_json: &str) -> (String, String) {
+    use serde_json::Value;
+    let Ok(Value::Array(mut slots)) = serde_json::from_str::<Value>(slots_json) else {
+        return (slots_json.to_string(), String::new());
+    };
+    let mut imgs: Vec<String> = Vec::new();
+    let mut img_idx: std::collections::HashMap<String, usize> = std::collections::HashMap::new();
+    let mut any = false;
+    for slot in &mut slots {
+        if let Value::Object(map) = slot {
+            if let Some(Value::String(img)) = map.remove("image") {
+                let idx = if let Some(&i) = img_idx.get(&img) {
+                    i
+                } else {
+                    let i = imgs.len();
+                    img_idx.insert(img.clone(), i);
+                    imgs.push(img);
+                    i
+                };
+                map.insert("imgIdx".to_string(), Value::Number(idx.into()));
+                any = true;
+            }
+        }
+    }
+    if !any {
+        return (slots_json.to_string(), String::new());
+    }
+    let deduped = serde_json::to_string(&slots).unwrap_or_else(|_| slots_json.to_string());
+    let imgs_js = serde_json::to_string(&imgs).unwrap_or_else(|_| "[]".to_string());
+    (deduped, imgs_js)
+}
+
 impl Chart {
     #[cfg(feature = "python")]
     fn new(html: String) -> Self {
@@ -1094,36 +628,7 @@ impl Chart {
     }
 
     fn chart_iframe(&self) -> String {
-        fn sniff(s: &str, attr: &str, lo: u32, hi: u32, default: u32) -> u32 {
-            let needle = format!("{}=\"", attr);
-            let mut start = 0usize;
-            loop {
-                match s[start..].find(needle.as_str()) {
-                    None => return default,
-                    Some(rel) => {
-                        let abs = start + rel + needle.len();
-                        if let Some(end) = s[abs..].find('"') {
-                            if let Ok(v) = s[abs..abs + end].parse::<u32>() {
-                                if v >= lo && v <= hi {
-                                    return v;
-                                }
-                            }
-                        }
-                        start += rel + 1;
-                    }
-                }
-            }
-        }
-        let w = sniff(&self.html, "width", 150, 2000, 900);
-        let h = sniff(&self.html, "height", 150, 1600, 560) + 24;
-        let clean = self.html.replace(
-            "border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)",
-            "border-radius:0;overflow:hidden",
-        );
-        let esc = clean.replace('&', "&amp;").replace('"', "&quot;");
-        format!(
-            r#"<iframe srcdoc="{esc}" style="width:100%;max-width:{w}px;aspect-ratio:{w}/{h};border:none;display:block;border-radius:8px;overflow:hidden" frameborder="0"></iframe>"#
-        )
+        crate::bindings::chart_methods::chart_iframe(&self.html)
     }
 }
 
@@ -1144,2219 +649,59 @@ fn auto_show_in_jupyter(py: Python<'_>, chart: &Chart) {
     })();
 }
 
-#[sera_impl(html_display, pickle, export)]
+
+#[cfg(feature = "python")]
+#[pyo3::pymethods]
 impl Chart {
-    #[sera_python_skip]
-    pub fn html_str(&self) -> &str {
-        &self.html
-    }
-
-    #[sera_python_skip]
-    pub fn doc_str_val(&self) -> &'static str {
-        self.doc_str
-    }
-
-    #[sera_python_skip]
-    pub fn iframe(&self) -> String {
-        self.chart_iframe()
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/export.md",
-        en = "Saves the chart HTML to a file at the given path.",
-        fr = "Enregistre le HTML du graphique dans un fichier au chemin indiqué.",
-        aliases("save_html", "write", "export_html"),
-        param(
-            name = "path",
-            ty = "str",
-            en = "Destination file path (e.g. 'chart.html').",
-            fr = "Chemin du fichier de destination (ex: 'chart.html')."
-        )
-    )]
-    #[sera_sig(path)]
-    #[sera_wasm_skip]
-    pub fn save(&self, path: &str) -> Result<(), std::io::Error> {
-        std::fs::write(path, &self.html)
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("bg", "background"),
-        file = "charts/chart.md",
-        en = "Sets the background color of the chart. Pass None to remove the background.",
-        fr = "Définit la couleur d'arrière-plan du graphique. Passez None pour supprimer l'arrière-plan.",
-        param(
-            name = "color",
-            ty = "str | None",
-            en = "CSS color string (hex, rgb, named). None removes the background.",
-            fr = "Couleur CSS (hex, rgb, nommée). None supprime l'arrière-plan."
-        )
-    )]
-    #[sera_sig(color=None)]
-    pub fn set_bg(&self, color: Option<&str>) -> Chart {
-        self.propagate(crate::html::hover::apply_bg(self.html.clone(), color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("transparent_bg", "no_bg"),
-        file = "charts/chart.md",
-        en = "Removes every chart background layer and keeps the output transparent.",
-        fr = "Supprime toutes les couches d'arrière-plan du graphique et conserve une sortie transparente."
-    )]
-    pub fn no_background(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>html,body,.chart-container,.c3w,.sp-wrap,svg,canvas{background:transparent!important}.sp-bg{fill:transparent!important}body>:first-child{box-shadow:none!important}</style></head>",
-            1,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("css", "custom_css"),
-        file = "charts/chart.md",
-        en = "Injects a raw CSS string into the chart's <head> element.",
-        fr = "Injecte une chaîne CSS brute dans l'élément <head> du graphique.",
-        param(
-            name = "css",
-            ty = "str",
-            en = "Raw CSS rules to inject.",
-            fr = "Règles CSS brutes à injecter."
-        )
-    )]
-    #[sera_sig(css)]
-    pub fn inject_css(&self, css: &str) -> Chart {
-        self.propagate(
-            self.html
-                .replacen("</head>", &format!("<style>{css}</style></head>"), 1),
-        )
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("js", "custom_js"),
-        file = "charts/chart.md",
-        en = "Injects a raw JavaScript string into the chart's <body> element.",
-        fr = "Injecte une chaîne JavaScript brute dans l'élément <body> du graphique.",
-        param(
-            name = "js",
-            ty = "str",
-            en = "Raw JavaScript code to inject.",
-            fr = "Code JavaScript brut à injecter."
-        )
-    )]
-    #[sera_sig(js)]
-    pub fn inject_js(&self, js: &str) -> Chart {
-        self.propagate(
-            self.html
-                .replacen("</body>", &format!("<script>{js}</script></body>"), 1),
-        )
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("hide_x"),
-        file = "charts/chart.md",
-        en = "Hides the X axis, its ticks, and its label.",
-        fr = "Masque l'axe X, ses graduations et son étiquette."
-    )]
-    pub fn no_x_axis(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>.sp-ax-x,.sp-xt,.sp-xl{display:none}</style></head>",
-            1,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("no_tooltip"),
-        file = "charts/chart.md",
-        en = "Disables the hover tooltip and removes hover highlighting on data elements.",
-        fr = "Désactive l'infobulle au survol et supprime le surlignage des éléments au survol."
-    )]
-    pub fn no_hover(&self) -> Chart {
-        self.propagate(self.html.replacen("</head>", "<style>#sp-tip{display:none!important}[data-idx]{pointer-events:none!important}[data-idx]:hover{filter:none!important}</style></head>", 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("hide_y"),
-        file = "charts/chart.md",
-        en = "Hides the Y axis, its ticks, and its label.",
-        fr = "Masque l'axe Y, ses graduations et son étiquette."
-    )]
-    pub fn no_y_axis(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>.sp-ax-y,.sp-yt,.sp-yl{display:none}</style></head>",
-            1,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("hide_axes"),
-        file = "charts/chart.md",
-        en = "Hides both X and Y axes along with their ticks and labels.",
-        fr = "Masque les axes X et Y ainsi que leurs graduations et étiquettes."
-    )]
-    pub fn no_axes(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>.sp-ax-x,.sp-ax-y,.sp-xt,.sp-yt,.sp-xl,.sp-yl{display:none}</style></head>",
-            1,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("grid"),
-        file = "charts/chart.md",
-        en = "Shows horizontal and vertical grid lines on the chart background.",
-        fr = "Affiche les lignes de grille horizontales et verticales en arrière-plan du graphique."
-    )]
-    pub fn show_grid(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>",
-            1,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("no_grid"),
-        file = "charts/chart.md",
-        en = "Hides the grid lines if they were previously enabled.",
-        fr = "Masque les lignes de grille si elles étaient précédemment activées."
-    )]
-    pub fn hide_grid(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>.sp-gl{display:none!important}</style></head>",
-            1,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("font_size"),
-        file = "charts/chart.md",
-        en = "Overrides all SVG text elements to the specified font size in pixels.",
-        fr = "Remplace la taille de police de tous les éléments texte SVG par la valeur spécifiée en pixels.",
-        param(
-            name = "px",
-            ty = "int",
-            en = "Font size in pixels.",
-            fr = "Taille de police en pixels."
-        )
-    )]
-    #[sera_sig(px)]
-    pub fn set_font_size(&self, px: u32) -> Chart {
-        let style = format!(
-            "<style>svg text{{font-size:{}px!important}}</style></head>",
-            px
-        );
-        self.propagate(self.html.replacen("</head>", &style, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("resize"),
-        file = "charts/chart.md",
-        en = "Scales the entire SVG by a given factor from the top-left origin.",
-        fr = "Met à l'échelle l'intégralité du SVG par un facteur donné depuis le coin supérieur gauche.",
-        param(
-            name = "factor",
-            ty = "float",
-            en = "Scale multiplier (e.g. 1.5 for 150%).",
-            fr = "Multiplicateur d'échelle (ex: 1.5 pour 150%)."
-        )
-    )]
-    #[sera_sig(factor)]
-    pub fn scale(&self, factor: f64) -> Chart {
-        let style = format!(
-            "<style>svg{{transform:scale({});transform-origin:top left}}</style></head>",
-            factor
-        );
-        self.propagate(self.html.replacen("</head>", &style, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("frame"),
-        file = "charts/chart.md",
-        en = "Sets the background color of the SVG/canvas frame. Use 'transparent' or None to remove it.",
-        fr = "Définit la couleur d'arrière-plan du cadre SVG/canvas. Utilisez 'transparent' ou None pour le supprimer.",
-        param(
-            name = "color",
-            ty = "str | None",
-            en = "CSS color for the frame background.",
-            fr = "Couleur CSS pour l'arrière-plan du cadre."
-        )
-    )]
-    #[sera_sig(color=None)]
-    pub fn set_frame(&self, color: Option<&str>) -> Chart {
-        let bg = match color {
-            None | Some("none") | Some("transparent") | Some("") => "transparent".to_string(),
-            Some(c) => c.to_string(),
-        };
-        let style = format!("<style>svg{{background:{bg}!important}}.c3w canvas{{background:{bg}!important}}.c3w{{background:{bg}!important}}</style></head>");
-        self.propagate(self.html.replacen("</head>", &style, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("labels", "legend_labels"),
-        file = "charts/chart.md",
-        en = "Adds an interactive series filter overlay with clickable pill-shaped labels.",
-        fr = "Ajoute une superposition de filtre de séries interactif avec des étiquettes en forme de pilule cliquables.",
-        param(
-            name = "position",
-            ty = "str",
-            en = "Position of the overlay: 'top', 'bottom', 'left', 'right'.",
-            fr = "Position de la superposition: 'top', 'bottom', 'left', 'right'."
-        ),
-        param(
-            name = "labels",
-            ty = "list[str] | None",
-            en = "Custom label names. Auto-detected if None.",
-            fr = "Noms d'étiquettes personnalisés. Détection automatique si None."
-        ),
-        param(
-            name = "colors",
-            ty = "list[str] | None",
-            en = "Custom color hex strings matching labels.",
-            fr = "Couleurs hex personnalisées correspondant aux étiquettes."
-        )
-    )]
-    #[sera_sig(position="bottom", labels=None, colors=None)]
-    pub fn show_labels(
+    pub fn compare(
         &self,
-        position: &str,
-        labels: Option<Vec<String>>,
-        colors: Option<Vec<String>>,
+        others: Vec<pyo3::Bound<'_, Chart>>,
+        metric: Option<String>,
+        arrows: Option<bool>,
+        scale: Option<bool>,
+        scale_to: Option<usize>,
     ) -> Chart {
-        let lb = labels.unwrap_or_default();
-        let co = colors.unwrap_or_default();
-        self.propagate(inject_labels(&self.html, position, &lb, &co))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/export.md",
-        en = "Extracts and returns the raw SVG string from the chart HTML, or None if not present.",
-        fr = "Extrait et retourne la chaîne SVG brute depuis le HTML du graphique, ou None si absente.",
-        aliases("svg", "as_svg", "get_svg")
-    )]
-    pub fn to_svg(&self) -> Option<String> {
-        let h = &self.html;
-        let start = h.find("<svg")?;
-        let end = h.rfind("</svg>")? + 6;
-        Some(h[start..end].to_string())
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/export.md",
-        en = "Saves the chart's SVG to a file.",
-        fr = "Enregistre le SVG du graphique dans un fichier.",
-        aliases("save_svg", "svg_export", "write_svg"),
-        param(
-            name = "path",
-            ty = "str",
-            en = "Destination .svg file path.",
-            fr = "Chemin du fichier .svg de destination."
-        )
-    )]
-    #[sera_sig(path)]
-    #[sera_wasm_skip]
-    pub fn export_svg(&self, path: &str) -> Result<(), std::io::Error> {
-        let svg = self
-            .to_svg()
-            .ok_or_else(|| std::io::Error::new(std::io::ErrorKind::Other, "No SVG in chart"))?;
-        std::fs::write(path, svg)
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("set_font", "font_family"),
-        file = "charts/chart.md",
-        en = "Sets the font family for all SVG text and body text in the chart.",
-        fr = "Définit la famille de polices pour tous les textes SVG et les textes du corps du graphique.",
-        param(
-            name = "name",
-            ty = "str",
-            en = "Font family name (e.g. 'Roboto', 'Inter').",
-            fr = "Nom de la famille de polices (ex: 'Roboto', 'Inter')."
-        )
-    )]
-    #[sera_sig(name)]
-    pub fn font(&self, name: &str) -> Chart {
-        self.propagate(self.html.replacen("</head>", &format!("<style>svg text,body{{font-family:'{}',system-ui,sans-serif!important}}</style></head>", name), 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("ttl_size"),
-        file = "charts/chart.md",
-        en = "Sets the font size of the chart title in pixels.",
-        fr = "Définit la taille de police du titre du graphique en pixels.",
-        param(
-            name = "px",
-            ty = "int",
-            en = "Title font size in pixels.",
-            fr = "Taille de police du titre en pixels."
-        )
-    )]
-    #[sera_sig(px)]
-    pub fn title_size(&self, px: i32) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            &format!(
-                "<style>.sp-ttl{{font-size:{}px!important}}</style></head>",
-                px
-            ),
-            1,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("xhair"),
-        file = "charts/chart.md",
-        en = "Adds an interactive crosshair that follows the mouse cursor across the SVG.",
-        fr = "Ajoute un réticule interactif qui suit le curseur de la souris sur le SVG."
-    )]
-    pub fn crosshair(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</body>",
-            &format!("<script>{}</script></body>", SP_CROSSHAIR_JS),
-            1,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("magnify"),
-        file = "charts/chart.md",
-        en = "Enables mouse-wheel zoom and click-drag panning on the chart. Double-click to reset.",
-        fr = "Active le zoom à la molette et le déplacement par glisser-cliquer. Double-clic pour réinitialiser."
-    )]
-    pub fn zoom(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</body>",
-            &format!("<script>{}</script></body>", SP_ZOOM_JS),
-            1,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("swap_axes", "transpose"),
-        file = "charts/chart.md",
-        en = "Flips a vertical bar chart into a horizontal bar chart by recalculating bar positions.",
-        fr = "Transforme un graphique à barres verticales en graphique à barres horizontales en recalculant les positions."
-    )]
-    pub fn flip(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</body>",
-            &format!("<script>{}</script></body>", SP_FLIP_JS),
-            1,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("hbar", "flip_h"),
-        file = "charts/chart.md",
-        en = "Alias for flip(). Renders the chart with horizontal bars.",
-        fr = "Alias de flip(). Affiche le graphique avec des barres horizontales."
-    )]
-    pub fn horizontal(&self) -> Chart {
-        self.flip()
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("spin"),
-        file = "charts/chart.md",
-        en = "Rotates the entire chart by a snapped angle (0, 90, 180 or 270 degrees).",
-        fr = "Fait pivoter l'intégralité du graphique selon un angle arrondi (0, 90, 180 ou 270 degrés).",
-        param(
-            name = "deg",
-            ty = "int",
-            en = "Rotation in degrees, snapped to nearest 90°. Default: 90.",
-            fr = "Rotation en degrés, arrondie au 90° le plus proche. Défaut: 90."
-        )
-    )]
-    #[sera_sig(deg = 90)]
-    pub fn rotate(&self, deg: i32) -> Chart {
-        let d = ((deg % 360) + 360) % 360;
-        let snapped = match d {
-            0..=44 | 316..=359 => 0,
-            45..=134 => 90,
-            135..=224 => 180,
-            _ => 270,
+        let mut htmls = vec![self.html.clone()];
+        for bound in &others {
+            htmls.push(bound.borrow().html.clone());
+        }
+        let scale_target = if let Some(idx) = scale_to {
+            htmls.get(idx).map(|h| cmp_score(h, "max"))
+        } else if scale.unwrap_or(false) {
+            htmls.iter().map(|h| cmp_score(h, "max")).fold(None, |acc: Option<f64>, v| {
+                Some(acc.map_or(v, |a| a.max(v)))
+            })
+        } else {
+            None
         };
-        self.propagate(crate::html::hover::apply_rotation(
-            self.html.clone(),
-            snapped,
+        self.propagate(build_compare_page(
+            &htmls,
+            metric.as_deref().unwrap_or("sum"),
+            arrows.unwrap_or(false),
+            scale_target,
         ))
     }
 
-    #[sera_doc(
-        category = "chart_method",
-        aliases("sort", "order_by"),
-        file = "charts/chart.md",
-        en = "Sorts chart bars by value or label using a client-side JavaScript re-render.",
-        fr = "Trie les barres du graphique par valeur ou étiquette via un rendu JavaScript côté client.",
-        param(
-            name = "order",
-            ty = "str",
-            en = "Sort order: 'desc' (default), 'asc', 'alpha', 'alpha_desc', 'none'.",
-            fr = "Ordre de tri: 'desc' (défaut), 'asc', 'alpha', 'alpha_desc', 'none'."
-        )
-    )]
-    #[sera_sig(order = "desc")]
-    pub fn sort_by(&self, order: &str) -> Chart {
-        let ord = match order {
-            "asc" | "desc" | "alpha" | "alpha_desc" | "none" => order,
-            _ => "desc",
-        };
-        let snippet = format!(
-            "<script>window.__sp_sort__={};{}</script></body>",
-            json_str(ord),
-            SP_SORT_JS
-        );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("show_leg"),
-        file = "charts/chart.md",
-        en = "Repositions the chart legend and enables interactive series toggling by click.",
-        fr = "Repositionne la légende du graphique et active la bascule interactive des séries au clic.",
-        param(
-            name = "position",
-            ty = "str",
-            en = "Legend position: 'right' (default), 'left', 'top', 'bottom', 'none'.",
-            fr = "Position de la légende: 'right' (défaut), 'left', 'top', 'bottom', 'none'."
-        )
-    )]
-    #[sera_sig(position = "right")]
-    pub fn legend(&self, position: &str) -> Chart {
-        let pos = match position {
-            "right" | "left" | "top" | "bottom" | "none" => position,
-            _ => "right",
-        };
-        if pos == "none" {
-            return self.no_legend();
-        }
-        let snippet = format!(
-            "<script>window.__sp_legend_pos__={};{}</script></body>",
-            json_str(pos),
-            SP_LEGEND_JS
-        );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("tilt_labels"),
-        file = "charts/chart.md",
-        en = "Rotates X axis tick labels by the specified angle in degrees.",
-        fr = "Fait pivoter les étiquettes de graduation de l'axe X de l'angle spécifié en degrés.",
-        param(
-            name = "angle",
-            ty = "int",
-            en = "Rotation angle in degrees (e.g. -45 for diagonal labels).",
-            fr = "Angle de rotation en degrés (ex: -45 pour des étiquettes diagonales)."
-        )
-    )]
-    #[sera_sig(angle)]
-    pub fn rotate_labels(&self, angle: i32) -> Chart {
-        let css = format!("<style>.sp-xt{{transform-box:fill-box;transform-origin:center;transform:rotate({}deg)}}</style></head>", angle);
-        self.propagate(self.html.replacen("</head>", &css, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("fluid", "auto_size"),
-        file = "charts/chart.md",
-        en = "Makes the SVG width 100% of its container while keeping proportional height.",
-        fr = "Rend la largeur du SVG égale à 100% de son conteneur tout en conservant une hauteur proportionnelle."
-    )]
-    pub fn responsive(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>svg{width:100%!important;height:auto!important}</style></head>",
-            1,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("animation"),
-        file = "charts/chart.md",
-        en = "Adds a staggered entry animation to data elements (bars, circles, areas).",
-        fr = "Ajoute une animation d'entrée décalée aux éléments de données (barres, cercles, zones).",
-        param(
-            name = "duration",
-            ty = "int",
-            en = "Animation duration in milliseconds. Default: 300.",
-            fr = "Durée de l'animation en millisecondes. Défaut: 300."
-        )
-    )]
-    #[sera_sig(duration = 300)]
-    pub fn animate(&self, duration: i32) -> Chart {
-        let css = format!("<style>@keyframes sp-in{{from{{opacity:0;transform:translateY(8px)}}to{{opacity:1;transform:none}}}}svg rect[data-idx],svg circle[data-idx],svg path.sp-area{{animation:sp-in {}ms ease-out both}}</style></head>", duration);
-        let js = "<script>(function(){if(window.__spa__)return;window.__spa__=1;var els=document.querySelectorAll('svg [data-idx]');for(var i=0;i<els.length;i++)els[i].style.animationDelay=i*30+'ms';})();</script></body>";
-        self.propagate(
-            self.html
-                .replacen("</head>", &css, 1)
-                .replacen("</body>", js, 1),
-        )
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("radius", "corners"),
-        file = "charts/chart.md",
-        en = "Applies a CSS border-radius to the chart container element.",
-        fr = "Applique un border-radius CSS à l'élément conteneur du graphique.",
-        param(
-            name = "px",
-            ty = "int",
-            en = "Corner radius in pixels.",
-            fr = "Rayon des coins en pixels."
-        )
-    )]
-    #[sera_sig(px)]
-    pub fn border_radius(&self, px: i32) -> Chart {
-        self.propagate(self.html.replacen("</head>", &format!("<style>[id^='spp'],.c3w{{border-radius:{}px!important;overflow:hidden}}</style></head>", px), 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("opacity", "alpha"),
-        file = "charts/chart.md",
-        en = "Sets the opacity of all data elements (bars, circles, areas) in the chart.",
-        fr = "Définit l'opacité de tous les éléments de données (barres, cercles, zones) du graphique.",
-        param(
-            name = "value",
-            ty = "float",
-            en = "Opacity between 0.0 (invisible) and 1.0 (fully opaque).",
-            fr = "Opacité entre 0.0 (invisible) et 1.0 (totalement opaque)."
-        )
-    )]
-    #[sera_sig(value)]
-    pub fn set_opacity(&self, value: f64) -> Chart {
-        let v = value.clamp(0.0, 1.0);
-        self.propagate(self.html.replacen("</head>", &format!("<style>svg rect[data-idx],svg circle[data-idx],svg path.sp-area{{opacity:{}!important}}</style></head>", v), 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("margin"),
-        file = "charts/chart.md",
-        en = "Adds internal padding to the chart and adjusts data element positions accordingly.",
-        fr = "Ajoute un espacement interne au graphique et ajuste en conséquence les positions des éléments de données.",
-        param(
-            name = "px",
-            ty = "int",
-            en = "Margin in pixels applied to all four sides.",
-            fr = "Marge en pixels appliquée aux quatre côtés."
-        )
-    )]
-    #[sera_sig(px)]
-    pub fn set_margin(&self, px: i32) -> Chart {
-        let css = format!("<style>body{{padding:{px}px!important;box-sizing:border-box}}[id^='spp'],.c3w{{margin:{px}px!important}}</style></head>");
-        let gap_ratio = ((px as f64) / 80.0).clamp(0.0, 0.7);
-        let mut snippet = String::new();
-        snippet.push_str("<script>window.__sp_margin_px__=");
-        snippet.push_str(&px.to_string());
-        snippet.push_str(";window.__sp_bar_gap__=");
-        snippet.push_str(&format!("{:.4}", gap_ratio));
-        snippet.push(';');
-        snippet.push_str(SP_MARGIN_JS);
-        snippet.push(';');
-        snippet.push_str(SP_BAR_GAP_JS);
-        snippet.push_str(";</script></body>");
-        let h = self.html.replacen("</head>", &css, 1);
-        self.propagate(h.replacen("</body>", &snippet, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("gap"),
-        file = "charts/chart.md",
-        en = "Adjusts the gap ratio between bars. Higher values create thinner bars with more space.",
-        fr = "Ajuste le ratio d'espacement entre les barres. Des valeurs plus élevées créent des barres plus fines.",
-        param(
-            name = "ratio",
-            ty = "float",
-            en = "Gap ratio between 0.0 (no gap) and 0.95 (almost no bar). Default: 0.3.",
-            fr = "Ratio d'espacement entre 0.0 (sans espacement) et 0.95 (presque sans barre). Défaut: 0.3."
-        )
-    )]
-    #[sera_sig(ratio = 0.3)]
-    pub fn bar_gap(&self, ratio: f64) -> Chart {
-        let r = ratio.clamp(0.0, 0.95);
-        let snippet = format!(
-            "<script>window.__sp_bar_gap__={:.4};{}</script></body>",
-            r, SP_BAR_GAP_JS
-        );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("padding"),
-        file = "charts/chart.md",
-        en = "Applies CSS padding to the chart container element.",
-        fr = "Applique un padding CSS à l'élément conteneur du graphique.",
-        param(
-            name = "px",
-            ty = "int",
-            en = "Padding in pixels applied to all four sides.",
-            fr = "Padding en pixels appliqué aux quatre côtés."
-        )
-    )]
-    #[sera_sig(px)]
-    pub fn set_padding(&self, px: i32) -> Chart {
-        let css = format!("<style>[id^='spp'],.c3w{{padding:{px}px!important;box-sizing:border-box}}</style></head>");
-        self.propagate(self.html.replacen("</head>", &css, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("tick_angle", "label_angle"),
-        file = "charts/chart.md",
-        en = "Rotates X and/or Y axis tick labels independently.",
-        fr = "Fait pivoter indépendamment les étiquettes de graduation des axes X et/ou Y.",
-        param(
-            name = "x_angle",
-            ty = "int | None",
-            en = "Rotation angle for X axis labels in degrees.",
-            fr = "Angle de rotation des étiquettes de l'axe X en degrés."
-        ),
-        param(
-            name = "y_angle",
-            ty = "int | None",
-            en = "Rotation angle for Y axis labels in degrees.",
-            fr = "Angle de rotation des étiquettes de l'axe Y en degrés."
-        )
-    )]
-    #[sera_sig(x_angle=None, y_angle=None)]
-    pub fn axis_label_angle(&self, x_angle: Option<i32>, y_angle: Option<i32>) -> Chart {
-        let mut css = String::from("<style>");
-        if let Some(a) = x_angle {
-            css.push_str(&format!(
-                ".sp-xt{{transform-box:fill-box;transform-origin:center;transform:rotate({}deg)}}",
-                a
-            ));
-        }
-        if let Some(a) = y_angle {
-            css.push_str(&format!(
-                ".sp-yt{{transform-box:fill-box;transform-origin:center;transform:rotate({}deg)}}",
-                a
-            ));
-        }
-        css.push_str("</style></head>");
-        self.propagate(self.html.replacen("</head>", &css, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("hide_legend"),
-        file = "charts/chart.md",
-        en = "Hides the chart legend.",
-        fr = "Masque la légende du graphique."
-    )]
-    pub fn no_legend(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>g[data-legend]{display:none!important}</style></head>",
-            1,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("hide_title"),
-        file = "charts/chart.md",
-        en = "Hides the chart title.",
-        fr = "Masque le titre du graphique."
-    )]
-    pub fn no_title(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>.sp-ttl{display:none!important}</style></head>",
-            1,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("title_on"),
-        file = "charts/chart.md",
-        en = "Forces the chart title to be visible with a contrast stroke for readability.",
-        fr = "Force le titre du graphique à être visible avec un contour de contraste pour la lisibilité."
-    )]
-    pub fn show_title(&self) -> Chart {
-        self.propagate(self.html.replacen("</head>", "<style>.sp-ttl{display:block!important;visibility:visible!important;opacity:1!important;fill:#e2e8f0!important;paint-order:stroke;stroke:rgba(0,0,0,.6);stroke-width:.6px}</style></head>", 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("leg"),
-        file = "charts/chart.md",
-        en = "Forces the chart legend to be visible even if it was hidden.",
-        fr = "Force la légende du graphique à être visible même si elle était masquée."
-    )]
-    pub fn show_legend(&self) -> Chart {
-        self.propagate(self.html.replacen("</head>", "<style>g[data-legend]{display:block!important;visibility:visible!important}</style></head>", 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("leg_pos"),
-        file = "charts/chart.md",
-        en = "Alias for legend(position). Repositions the chart legend.",
-        fr = "Alias de legend(position). Repositionne la légende du graphique.",
-        param(
-            name = "position",
-            ty = "str",
-            en = "Legend position: 'right', 'left', 'top', 'bottom', 'none'.",
-            fr = "Position de la légende: 'right', 'left', 'top', 'bottom', 'none'."
-        )
-    )]
-    #[sera_sig(position = "right")]
-    pub fn legend_position(&self, position: &str) -> Chart {
-        self.legend(position)
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("labels_at"),
-        file = "charts/chart.md",
-        en = "Alias for show_labels(position). Adds an interactive legend overlay at the given position.",
-        fr = "Alias de show_labels(position). Ajoute une superposition de légende interactive à la position donnée.",
-        param(
-            name = "position",
-            ty = "str",
-            en = "Overlay position: 'top', 'bottom', 'left', 'right'.",
-            fr = "Position de la superposition: 'top', 'bottom', 'left', 'right'."
-        )
-    )]
-    #[sera_sig(position = "bottom")]
-    pub fn label_position(&self, position: &str) -> Chart {
-        self.show_labels(position, None, None)
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/export.md",
-        en = "Adds a floating download button to the chart that saves the full HTML on click.",
-        fr = "Ajoute un bouton de téléchargement flottant au graphique qui sauvegarde le HTML complet au clic.",
-        aliases("download_button", "export_btn", "with_export_button")
-    )]
-    pub fn export_button(&self) -> Chart {
-        if self.html.contains("class=\"c3w\"") {
-            return self.propagate(apply_3d_cfg(self.html.clone(), "{\"exportBtn\":true}"));
-        }
-        self.propagate(self.html.replacen(
-            "</body>",
-            &format!("<script>{}</script></body>", SP_EXPORT_JS),
-            1,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("ttl_color", "tc"),
-        file = "charts/chart.md",
-        en = "Sets the title color of a 3D chart (works on 3D canvas charts only). Default: white.",
-        fr = "Définit la couleur du titre d'un graphique 3D (fonctionne uniquement sur les graphiques canvas 3D). Défaut : blanc.",
-        param(
-            name = "color",
-            ty = "str",
-            en = "CSS color for the title text.",
-            fr = "Couleur CSS pour le texte du titre."
-        )
-    )]
-    #[sera_sig(color = "#ffffff")]
-    pub fn title_color(&self, color: &str) -> Chart {
-        if self.html.contains("class=\"c3w\"") {
-            return self.propagate(apply_3d_cfg(
-                self.html.clone(),
-                &format!("{{\"titleColor\":{}}}", json_str(color)),
-            ));
-        }
-        let css = format!(
-            "<style>.sp-ttl{{fill:{}!important}}</style></head>",
-            color
-        );
-        self.propagate(self.html.replacen("</head>", &css, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("auto_text", "data_labels"),
-        file = "charts/chart.md",
-        en = "Overlays data value labels on all chart elements. Supports format strings and positioning.",
-        fr = "Superpose des étiquettes de valeurs de données sur tous les éléments du graphique. Supporte les chaînes de format et le positionnement.",
-        param(
-            name = "format",
-            ty = "str | None",
-            en = "Format string (e.g. '.2f', '.0%') or empty string for auto. None disables.",
-            fr = "Chaîne de format (ex: '.2f', '.0%') ou chaîne vide pour automatique. None désactive."
-        ),
-        param(
-            name = "position",
-            ty = "str | None",
-            en = "Label position: 'auto', 'inside', 'outside'.",
-            fr = "Position de l'étiquette: 'auto', 'inside', 'outside'."
-        ),
-        param(
-            name = "angle",
-            ty = "int | None",
-            en = "Label rotation angle in degrees.",
-            fr = "Angle de rotation des étiquettes en degrés."
-        ),
-        param(
-            name = "font_size",
-            ty = "int | None",
-            en = "Font size of the data labels in pixels.",
-            fr = "Taille de police des étiquettes de données en pixels."
-        ),
-        param(
-            name = "color",
-            ty = "str | None",
-            en = "Color of the data labels.",
-            fr = "Couleur des étiquettes de données."
-        )
-    )]
-    #[sera_sig(format=None, position=None, angle=None, font_size=None, color=None)]
-    pub fn text_auto(
+    pub fn subplot(
         &self,
-        format: Option<&str>,
-        position: Option<&str>,
-        angle: Option<i32>,
-        font_size: Option<i32>,
-        color: Option<&str>,
+        others: Vec<pyo3::Bound<'_, Chart>>,
+        cols: Option<usize>,
+        title: Option<String>,
     ) -> Chart {
-        let mut opts = String::from("window.__sp_text__={");
-        if let Some(f) = format {
-            opts.push_str(&format!("format:{},", json_str(f)));
+        let mut htmls = vec![self.html.clone()];
+        for bound in &others {
+            htmls.push(bound.borrow().html.clone());
         }
-        if let Some(p) = position {
-            opts.push_str(&format!("position:{},", json_str(p)));
-        }
-        if let Some(a) = angle {
-            opts.push_str(&format!("angle:{},", a));
-        }
-        if let Some(s) = font_size {
-            opts.push_str(&format!("font_size:{},", s));
-        }
-        if let Some(c) = color {
-            opts.push_str(&format!("color:{},", json_str(c)));
-        }
-        opts.push_str("};");
-        let snippet = format!("<script>{}{}</script></body>", opts, SP_TEXT_JS);
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("text_pos"),
-        file = "charts/chart.md",
-        en = "Sets the position for data value labels on chart elements.",
-        fr = "Définit la position des étiquettes de valeurs de données sur les éléments du graphique.",
-        param(
-            name = "position",
-            ty = "str",
-            en = "Position: 'auto', 'inside', 'outside'.",
-            fr = "Position: 'auto', 'inside', 'outside'."
-        )
-    )]
-    #[sera_sig(position)]
-    pub fn text_position(&self, position: &str) -> Chart {
-        let snippet = format!("<script>window.__sp_text__=Object.assign(window.__sp_text__||{{}},{{position:{}}});{}</script></body>", json_str(position), SP_TEXT_JS);
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("rotate_text"),
-        file = "charts/chart.md",
-        en = "Sets the rotation angle for data value labels.",
-        fr = "Définit l'angle de rotation des étiquettes de valeurs de données.",
-        param(
-            name = "degrees",
-            ty = "int",
-            en = "Rotation angle in degrees.",
-            fr = "Angle de rotation en degrés."
-        )
-    )]
-    #[sera_sig(degrees)]
-    pub fn text_angle(&self, degrees: i32) -> Chart {
-        let snippet = format!("<script>window.__sp_text__=Object.assign(window.__sp_text__||{{}},{{angle:{}}});{}</script></body>", degrees, SP_TEXT_JS);
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("font_text"),
-        file = "charts/chart.md",
-        en = "Sets font family, size, and color for data value labels.",
-        fr = "Définit la famille de polices, la taille et la couleur des étiquettes de valeurs de données.",
-        param(
-            name = "family",
-            ty = "str | None",
-            en = "Font family name.",
-            fr = "Nom de la famille de polices."
-        ),
-        param(
-            name = "size",
-            ty = "int | None",
-            en = "Font size in pixels.",
-            fr = "Taille de police en pixels."
-        ),
-        param(
-            name = "color",
-            ty = "str | None",
-            en = "Label text color.",
-            fr = "Couleur du texte des étiquettes."
-        )
-    )]
-    #[sera_sig(family=None, size=None, color=None)]
-    pub fn text_font(&self, family: Option<&str>, size: Option<i32>, color: Option<&str>) -> Chart {
-        let mut opts = String::from("window.__sp_text__=Object.assign(window.__sp_text__||{},{");
-        if let Some(f) = family {
-            opts.push_str(&format!("font_family:{},", json_str(f)));
-        }
-        if let Some(s) = size {
-            opts.push_str(&format!("font_size:{},", s));
-        }
-        if let Some(c) = color {
-            opts.push_str(&format!("color:{},", json_str(c)));
-        }
-        opts.push_str("});");
-        let snippet = format!("<script>{}{}</script></body>", opts, SP_TEXT_JS);
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("uniform"),
-        file = "charts/chart.md",
-        en = "Enforces a minimum font size for data labels; hides or shows labels that don't fit.",
-        fr = "Impose une taille de police minimale pour les étiquettes de données; masque ou affiche les étiquettes qui ne tiennent pas.",
-        param(
-            name = "min_size",
-            ty = "int",
-            en = "Minimum font size in pixels.",
-            fr = "Taille de police minimale en pixels."
-        ),
-        param(
-            name = "mode",
-            ty = "str",
-            en = "Behaviour when label doesn't fit: 'hide' or 'show'.",
-            fr = "Comportement quand l'étiquette ne tient pas: 'hide' ou 'show'."
-        )
-    )]
-    #[sera_sig(min_size = 8, mode = "hide")]
-    pub fn uniform_text(&self, min_size: i32, mode: &str) -> Chart {
-        let snippet = format!("<script>window.__sp_text__=Object.assign(window.__sp_text__||{{}},{{uniform_min:{},uniform_mode:{}}});{}</script></body>", min_size, json_str(mode), SP_TEXT_JS);
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("bar_radius"),
-        file = "charts/chart.md",
-        en = "Applies a corner radius to all bar rectangles in the chart.",
-        fr = "Applique un rayon de coin à tous les rectangles de barres du graphique.",
-        param(
-            name = "radius",
-            ty = "str",
-            en = "Radius in pixels as string or percentage (e.g. '8' or '50%').",
-            fr = "Rayon en pixels sous forme de chaîne ou pourcentage (ex: '8' ou '50%')."
-        )
-    )]
-    #[sera_sig(radius)]
-    pub fn corner_radius_bars(&self, radius: &str) -> Chart {
-        let val = if radius.ends_with('%') {
-            json_str(radius)
-        } else {
-            radius
-                .parse::<f64>()
-                .map(|v| v.to_string())
-                .unwrap_or_else(|_| json_str(radius))
-        };
-        let snippet = format!(
-            "<script>window.__sp_bar_r__={};{}</script></body>",
-            val, SP_BAR_RADIUS_JS
-        );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("safe_csp"),
-        file = "charts/chart.md",
-        en = "Removes inline event handlers to make the chart compatible with strict Content-Security-Policy environments.",
-        fr = "Supprime les gestionnaires d'événements inline pour rendre le graphique compatible avec les environnements à politique de sécurité de contenu stricte."
-    )]
-    pub fn csp_safe(&self) -> Chart {
-        let mut out = String::with_capacity(self.html.len());
-        let mut rest = self.html.as_str();
-        let mut blob = String::new();
-        loop {
-            match rest.find("<script>") {
-                None => {
-                    out.push_str(rest);
-                    break;
-                }
-                Some(i) => {
-                    out.push_str(&rest[..i]);
-                    let after = &rest[i + 8..];
-                    match after.find("</script>") {
-                        None => {
-                            out.push_str("<script>");
-                            out.push_str(after);
-                            break;
-                        }
-                        Some(j) => {
-                            blob.push_str(&after[..j]);
-                            blob.push_str(";\n");
-                            rest = &after[j + 9..];
-                        }
-                    }
-                }
-            }
-        }
-        let injected = if blob.is_empty() {
-            out
-        } else {
-            let id = format!("sp-csp-{}", blob.len());
-            let tag = format!("<script type=\"application/json\" id=\"{id}\">{}</script><script nonce=\"sp-nonce\">eval(document.getElementById('{id}').textContent)</script></body>", blob.replace("</script>", "<\\/script>"));
-            out.replacen("</body>", &tag, 1)
-        };
-        self.propagate(injected)
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("accessibility", "aria"),
-        file = "charts/chart.md",
-        en = "Adds ARIA accessibility attributes (title and description) to the SVG element.",
-        fr = "Ajoute des attributs d'accessibilité ARIA (titre et description) à l'élément SVG.",
-        param(
-            name = "title",
-            ty = "str",
-            en = "Accessible title for screen readers.",
-            fr = "Titre accessible pour les lecteurs d'écran."
-        ),
-        param(
-            name = "desc",
-            ty = "str",
-            en = "Accessible description for screen readers.",
-            fr = "Description accessible pour les lecteurs d'écran."
-        )
-    )]
-    #[sera_sig(title = "", desc = "")]
-    pub fn a11y(&self, title: &str, desc: &str) -> Chart {
-        let snippet = format!(
-            "<svg role=\"img\" aria-label=\"{}\"><title>{}</title><desc>{}</desc>",
-            title.replace('"', "&quot;"),
-            title.replace('<', "&lt;"),
-            desc.replace('<', "&lt;"),
-        );
-        self.propagate(self.html.replacen("<svg", &snippet, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("compare"),
-        file = "charts/chart.md",
-        en = "Returns a textual diff between this chart's HTML and another chart's HTML.",
-        fr = "Retourne un diff textuel entre le HTML de ce graphique et celui d'un autre graphique.",
-        param(
-            name = "other",
-            ty = "Chart",
-            en = "The other Chart instance to compare against.",
-            fr = "L'autre instance Chart à comparer."
-        )
-    )]
-    pub fn diff(&self, other: &Chart) -> String {
-        crate::bindings::commands::charts::chart_diff(
-            &serde_json::json!({"a": self.html, "b": other.html}).to_string(),
-        )
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("decimate", "lod"),
-        file = "charts/chart.md",
-        en = "Downsamples line chart data using the LTTB algorithm to reduce visual clutter.",
-        fr = "Réduit les données du graphique en courbes via l'algorithme LTTB pour diminuer l'encombrement visuel.",
-        param(
-            name = "n",
-            ty = "int",
-            en = "Target number of data points after downsampling.",
-            fr = "Nombre cible de points de données après réduction."
-        ),
-        param(
-            name = "method",
-            ty = "str",
-            en = "Downsampling method. Currently only 'lttb' is supported.",
-            fr = "Méthode de réduction. Seul 'lttb' est actuellement supporté."
-        )
-    )]
-    #[sera_sig(n = 2000, method = "lttb")]
-    pub fn downsample(&self, n: usize, method: &str) -> Chart {
-        let _ = method;
-        let h = &self.html;
-        let mut out = String::with_capacity(h.len());
-        let mut rest = h.as_str();
-        loop {
-            match rest.find("data-x=\"") {
-                None => {
-                    out.push_str(rest);
-                    break;
-                }
-                Some(i) => {
-                    out.push_str(&rest[..i]);
-                    let after = &rest[i + 8..];
-                    let end = match after.find('"') {
-                        Some(e) => e,
-                        None => {
-                            out.push_str("data-x=\"");
-                            out.push_str(after);
-                            break;
-                        }
-                    };
-                    let xs_raw = &after[..end];
-                    let after2 = &after[end + 1..];
-                    let after_y = match after2.find("data-y=\"") {
-                        Some(j) => j,
-                        None => {
-                            out.push_str("data-x=\"");
-                            out.push_str(after);
-                            break;
-                        }
-                    };
-                    let ys_section = &after2[after_y + 8..];
-                    let ys_end = match ys_section.find('"') {
-                        Some(e) => e,
-                        None => {
-                            out.push_str("data-x=\"");
-                            out.push_str(after);
-                            break;
-                        }
-                    };
-                    let ys_raw = &ys_section[..ys_end];
-                    let xs: Vec<f64> = xs_raw.split(',').filter_map(|s| s.parse().ok()).collect();
-                    let ys: Vec<f64> = ys_raw.split(',').filter_map(|s| s.parse().ok()).collect();
-                    if xs.len() == ys.len() && xs.len() > n && n >= 3 {
-                        let payload = serde_json::json!({"x":xs,"y":ys,"threshold":n}).to_string();
-                        let res = crate::bindings::commands::charts::downsample_lttb(&payload);
-                        if let Ok(v) = serde_json::from_str::<serde_json::Value>(&res) {
-                            if v.get("ok").and_then(|b| b.as_bool()).unwrap_or(false) {
-                                let nx: Vec<String> = v
-                                    .get("x")
-                                    .and_then(|a| a.as_array())
-                                    .map(|a| {
-                                        a.iter()
-                                            .filter_map(|n| n.as_f64().map(|x| x.to_string()))
-                                            .collect()
-                                    })
-                                    .unwrap_or_default();
-                                let ny: Vec<String> = v
-                                    .get("y")
-                                    .and_then(|a| a.as_array())
-                                    .map(|a| {
-                                        a.iter()
-                                            .filter_map(|n| n.as_f64().map(|x| x.to_string()))
-                                            .collect()
-                                    })
-                                    .unwrap_or_default();
-                                out.push_str(&format!("data-x=\"{}\"", nx.join(",")));
-                                out.push_str(&after2[..after_y]);
-                                out.push_str(&format!("data-y=\"{}\"", ny.join(",")));
-                                rest = &ys_section[ys_end + 1..];
-                                continue;
-                            }
-                        }
-                    }
-                    out.push_str("data-x=\"");
-                    out.push_str(xs_raw);
-                    out.push('"');
-                    out.push_str(&after2[..after_y]);
-                    out.push_str("data-y=\"");
-                    out.push_str(ys_raw);
-                    out.push('"');
-                    rest = &ys_section[ys_end + 1..];
-                }
-            }
-        }
-        self.propagate(out)
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("tab_group"),
-        file = "charts/chart.md",
-        en = "Groups this chart with every other chart sharing the same group name into one navigable, clickable, interchangeable tabbed section. Works for any 2D or 3D chart, in a notebook or any HTML page.",
-        fr = "Regroupe ce graphique avec tous les autres graphiques partageant le même nom de groupe en une section à onglets navigable, cliquable et interchangeable. Fonctionne pour tout graphique 2D ou 3D, dans un notebook ou n'importe quelle page HTML.",
-        param(
-            name = "name",
-            ty = "str",
-            en = "Group identifier shared by every chart that should appear together.",
-            fr = "Identifiant de groupe partagé par tous les graphiques qui doivent apparaître ensemble."
-        ),
-        param(
-            name = "position",
-            ty = "str",
-            en = "Where the tab strip sits relative to the chart: 'top' (default), 'bottom', 'left' or 'right'.",
-            fr = "Où se place la barre d'onglets par rapport au graphique : 'top' (défaut), 'bottom', 'left' ou 'right'."
-        )
-    )]
-    #[sera_sig(name, position = "top")]
-    pub fn group(&self, name: &str, position: &str) -> Chart {
-        let pos = match position {
-            "bottom" | "left" | "right" => position,
-            _ => "top",
-        };
-        let snippet = format!(
-            "<script>window.__sp_group_name__={};window.__sp_group_pos__={};{}</script></body>",
-            json_str(name),
-            json_str(pos),
-            SP_GROUP_JS
-        );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("no_spines"),
-        file = "charts/chart.md",
-        en = "Removes the axis spine lines, keeping ticks and labels (seaborn-style despine).",
-        fr = "Retire les traits d'axe (spines) tout en gardant les graduations et les libellés (despine façon seaborn)."
-    )]
-    pub fn despine(&self) -> Chart {
-        self.propagate(apply_despine(self.html.clone()))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("wm"),
-        file = "charts/chart.md",
-        en = "Overlays a large diagonal watermark text across the whole chart, for branding or draft marks.",
-        fr = "Superpose un grand texte en filigrane diagonal sur tout le graphique, pour le branding ou les brouillons.",
-        param(
-            name = "text",
-            ty = "str",
-            en = "Watermark text.",
-            fr = "Texte du filigrane."
-        ),
-        param(
-            name = "opacity",
-            ty = "float",
-            en = "Watermark opacity between 0.0 and 1.0. Default: 0.08.",
-            fr = "Opacité du filigrane entre 0.0 et 1.0. Défaut : 0.08."
-        )
-    )]
-    #[sera_sig(text, opacity = 0.08)]
-    pub fn watermark(&self, text: &str, opacity: f64) -> Chart {
-        self.propagate(apply_watermark(self.html.clone(), text, opacity))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("footnote"),
-        file = "charts/chart.md",
-        en = "Adds a small footnote caption centered below the chart.",
-        fr = "Ajoute une petite légende de bas de page centrée sous le graphique.",
-        param(
-            name = "text",
-            ty = "str",
-            en = "Caption text.",
-            fr = "Texte de la légende."
-        )
-    )]
-    #[sera_sig(text)]
-    pub fn caption(&self, text: &str) -> Chart {
-        self.propagate(apply_caption(self.html.clone(), text))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("orientation3d", "tilt3d", "rotate3d"),
-        file = "charts/chart.md",
-        en = "Sets the initial camera orientation of a 3D chart: 'iso' (default), 'horizontal' (side-on), 'vertical' (top-down) or 'front'.",
-        fr = "Définit l'orientation initiale de la caméra d'un graphique 3D : 'iso' (défaut), 'horizontal' (vue de côté), 'vertical' (vue de dessus) ou 'front'.",
-        param(
-            name = "mode",
-            ty = "str",
-            en = "'iso', 'horizontal', 'vertical' or 'front'.",
-            fr = "'iso', 'horizontal', 'vertical' ou 'front'."
-        )
-    )]
-    #[sera_sig(mode = "iso")]
-    pub fn orient3d(&self, mode: &str) -> Chart {
-        self.propagate(apply_orient3d(self.html.clone(), mode))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("color_scale", "heat_legend", "color_legend"),
-        file = "charts/chart.md",
-        en = "Adds a heat colorbar legend showing the value range used to color the data points, in both 2D and 3D charts. Position can be 'right' (default), 'left', 'top' or 'bottom'.",
-        fr = "Ajoute une jauge de couleur (colorbar) montrant la plage de valeurs utilisée pour colorer les points, en 2D comme en 3D. La position peut être 'right' (défaut), 'left', 'top' ou 'bottom'.",
-        param(
-            name = "position",
-            ty = "str",
-            en = "'right', 'left', 'top' or 'bottom'.",
-            fr = "'right', 'left', 'top' ou 'bottom'."
-        )
-    )]
-    #[sera_sig(position = "right")]
-    pub fn colorbar(&self, position: &str) -> Chart {
-        self.propagate(apply_colorbar(self.html.clone(), position))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("neon"),
-        file = "charts/chart.md",
-        en = "Adds a neon drop-shadow glow behind every data element (bars, lines, points).",
-        fr = "Ajoute une lueur néon (drop-shadow) derrière chaque élément de données (barres, lignes, points).",
-        param(
-            name = "color",
-            ty = "str | None",
-            en = "Glow color. Defaults to the chart's accent color (#6366f1).",
-            fr = "Couleur de la lueur. Par défaut, la couleur d'accent du graphique (#6366f1)."
-        )
-    )]
-    #[sera_sig(color = None)]
-    pub fn glow(&self, color: Option<&str>) -> Chart {
-        self.propagate(apply_glow(self.html.clone(), color.unwrap_or("#6366f1")))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("mark", "spotlight"),
-        file = "charts/chart.md",
-        en = "Highlights a single data element by index with a distinct color and glow, dimming nothing else.",
-        fr = "Met en évidence un seul élément de données par son index avec une couleur distincte et une lueur, sans assombrir le reste.",
-        param(
-            name = "index",
-            ty = "int",
-            en = "Zero-based index of the data element to highlight.",
-            fr = "Index (à partir de 0) de l'élément de données à mettre en évidence."
-        ),
-        param(
-            name = "color",
-            ty = "str | None",
-            en = "Highlight color. Default: #f59e0b.",
-            fr = "Couleur de mise en évidence. Défaut : #f59e0b."
-        )
-    )]
-    #[sera_sig(index, color = None)]
-    pub fn highlight(&self, index: usize, color: Option<&str>) -> Chart {
-        self.propagate(apply_highlight(
-            self.html.clone(),
-            index,
-            color.unwrap_or("#f59e0b"),
+        let c = cols.unwrap_or(2).max(1);
+        self.propagate(build_grid_page(
+            &htmls,
+            c,
+            title.as_deref(),
+            12,
+            "transparent",
         ))
     }
 
-    #[sera_doc(
-        category = "chart_method",
-        aliases("hrule", "target_line"),
-        file = "charts/chart.md",
-        en = "Draws a dashed horizontal reference/threshold line at the given data value, on value-based bar charts.",
-        fr = "Trace une ligne de référence/seuil en pointillés à la valeur donnée, sur les graphiques en barres basés sur des valeurs.",
-        param(
-            name = "value",
-            ty = "float",
-            en = "Data value where the line is drawn.",
-            fr = "Valeur de donnée où la ligne est tracée."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Line color. Default: #ef4444.",
-            fr = "Couleur de la ligne. Défaut : #ef4444."
-        ),
-        param(
-            name = "label",
-            ty = "str | None",
-            en = "Optional label drawn next to the line.",
-            fr = "Étiquette optionnelle affichée près de la ligne."
-        )
-    )]
-    #[sera_sig(value, color = "#ef4444", label = None)]
-    pub fn hline(&self, value: f64, color: &str, label: Option<&str>) -> Chart {
-        self.propagate(apply_hline(self.html.clone(), value, color, label))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("sub"),
-        file = "charts/chart.md",
-        en = "Adds a small subtitle directly under the chart title.",
-        fr = "Ajoute un petit sous-titre directement sous le titre du graphique.",
-        param(
-            name = "text",
-            ty = "str",
-            en = "Subtitle text.",
-            fr = "Texte du sous-titre."
-        )
-    )]
-    #[sera_sig(text)]
-    pub fn subtitle(&self, text: &str) -> Chart {
-        self.propagate(apply_subtitle(self.html.clone(), text))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("drop_shadow"),
-        file = "charts/chart.md",
-        en = "Adds a soft drop-shadow behind the whole chart container.",
-        fr = "Ajoute une ombre douce derrière tout le conteneur du graphique.",
-        param(
-            name = "blur",
-            ty = "int",
-            en = "Shadow blur radius in pixels. Default: 24.",
-            fr = "Rayon de flou de l'ombre en pixels. Défaut : 24."
-        ),
-        param(
-            name = "color",
-            ty = "str | None",
-            en = "Shadow color. Defaults to a neutral dark shadow.",
-            fr = "Couleur de l'ombre. Par défaut, une ombre neutre sombre."
-        )
-    )]
-    #[sera_sig(blur = 24, color = None)]
-    pub fn shadow(&self, blur: i32, color: Option<&str>) -> Chart {
-        self.propagate(apply_shadow(
-            self.html.clone(),
-            blur,
-            color.unwrap_or("rgba(0,0,0,.35)"),
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("blink", "beacon"),
-        file = "charts/chart.md",
-        en = "Makes data elements gently pulse, drawing attention to the chart (e.g. for live dashboards). By default pulses every element; target specific ones with index, or every element above a value with above.",
-        fr = "Fait pulser des éléments de données, pour attirer l'attention (ex : tableaux de bord en direct). Par défaut, pulse tous les éléments ; cible des éléments précis avec index, ou tout élément au-dessus d'une valeur avec above.",
-        param(
-            name = "duration",
-            ty = "float",
-            en = "Pulse cycle duration in seconds. Default: 2.0.",
-            fr = "Durée du cycle de pulsation en secondes. Défaut : 2.0."
-        ),
-        param(
-            name = "index",
-            ty = "list[int] | None",
-            en = "Zero-based indices of the data elements to pulse (e.g. [0] for the first). Defaults to every element.",
-            fr = "Index (à partir de 0) des éléments à faire pulser (ex : [0] pour le premier). Par défaut, tous les éléments."
-        ),
-        param(
-            name = "above",
-            ty = "float | None",
-            en = "Only pulse data elements whose value exceeds this threshold.",
-            fr = "Ne fait pulser que les éléments de données dont la valeur dépasse ce seuil."
-        )
-    )]
-    #[sera_sig(duration = 2.0, index = None, above = None)]
-    pub fn pulse(&self, duration: f64, index: Option<Vec<usize>>, above: Option<f64>) -> Chart {
-        self.propagate(apply_pulse(
-            self.html.clone(),
-            duration,
-            index.as_deref(),
-            above,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("border", "stroke"),
-        file = "charts/chart.md",
-        en = "Draws a solid colored outline around every data element, without blurring like glow().",
-        fr = "Trace un contour coloré et net autour de chaque élément de données, sans flou comme glow().",
-        param(
-            name = "color",
-            ty = "str | None",
-            en = "Outline color. Defaults to the chart's accent color (#6366f1).",
-            fr = "Couleur du contour. Par défaut, la couleur d'accent du graphique (#6366f1)."
-        ),
-        param(
-            name = "width",
-            ty = "float",
-            en = "Outline width in pixels. Default: 2.0.",
-            fr = "Épaisseur du contour en pixels. Défaut : 2.0."
-        )
-    )]
-    #[sera_sig(color = None, width = 2.0)]
-    pub fn outline(&self, color: Option<&str>, width: f64) -> Chart {
-        self.propagate(apply_outline(
-            self.html.clone(),
-            color.unwrap_or("#6366f1"),
-            width,
-        ))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("trend", "regline"),
-        file = "charts/chart.md",
-        en = "Overlays a linear regression trend line computed from the chart's own values, on value-based bar charts.",
-        fr = "Superpose une droite de régression linéaire calculée à partir des valeurs du graphique, sur les graphiques en barres basés sur des valeurs.",
-        param(
-            name = "color",
-            ty = "str",
-            en = "Trend line color. Default: #10b981.",
-            fr = "Couleur de la droite de tendance. Défaut : #10b981."
-        ),
-        param(
-            name = "width",
-            ty = "float",
-            en = "Trend line width in pixels. Default: 2.0.",
-            fr = "Épaisseur de la droite de tendance en pixels. Défaut : 2.0."
-        )
-    )]
-    #[sera_sig(color = "#10b981", width = 2.0)]
-    pub fn trendline(&self, color: &str, width: f64) -> Chart {
-        self.propagate(apply_trendline(self.html.clone(), color, width))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("mark_max", "ann_max"),
-        file = "charts/chart.md",
-        en = "Highlights and labels the data element with the highest value, on value-based bar charts.",
-        fr = "Met en évidence et étiquette l'élément de données ayant la valeur la plus élevée, sur les graphiques en barres basés sur des valeurs.",
-        param(
-            name = "label",
-            ty = "str | None",
-            en = "Optional custom label text. Defaults to the value itself.",
-            fr = "Texte d'étiquette personnalisé optionnel. Par défaut, la valeur elle-même."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Highlight and label color. Default: #22c55e.",
-            fr = "Couleur de mise en évidence et de l'étiquette. Défaut : #22c55e."
-        )
-    )]
-    #[sera_sig(label = None, color = "#22c55e")]
-    pub fn annotate_max(&self, label: Option<&str>, color: &str) -> Chart {
-        self.propagate(apply_annotate_extreme(self.html.clone(), "max", color, label))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("mark_min", "ann_min"),
-        file = "charts/chart.md",
-        en = "Highlights and labels the data element with the lowest value, on value-based bar charts.",
-        fr = "Met en évidence et étiquette l'élément de données ayant la valeur la plus basse, sur les graphiques en barres basés sur des valeurs.",
-        param(
-            name = "label",
-            ty = "str | None",
-            en = "Optional custom label text. Defaults to the value itself.",
-            fr = "Texte d'étiquette personnalisé optionnel. Par défaut, la valeur elle-même."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Highlight and label color. Default: #ef4444.",
-            fr = "Couleur de mise en évidence et de l'étiquette. Défaut : #ef4444."
-        )
-    )]
-    #[sera_sig(label = None, color = "#ef4444")]
-    pub fn annotate_min(&self, label: Option<&str>, color: &str) -> Chart {
-        self.propagate(apply_annotate_extreme(self.html.clone(), "min", color, label))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("ref_band", "target_zone"),
-        file = "charts/chart.md",
-        en = "Draws a shaded reference band between two data values, on value-based bar charts (e.g. a target range).",
-        fr = "Trace une bande de référence ombrée entre deux valeurs, sur les graphiques en barres basés sur des valeurs (ex : une plage cible).",
-        param(
-            name = "low",
-            ty = "float",
-            en = "Lower bound of the band.",
-            fr = "Borne basse de la bande."
-        ),
-        param(
-            name = "high",
-            ty = "float",
-            en = "Upper bound of the band.",
-            fr = "Borne haute de la bande."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Band fill color. Default: #f59e0b.",
-            fr = "Couleur de remplissage de la bande. Défaut : #f59e0b."
-        ),
-        param(
-            name = "opacity",
-            ty = "float",
-            en = "Band opacity between 0.0 and 1.0. Default: 0.12.",
-            fr = "Opacité de la bande entre 0.0 et 1.0. Défaut : 0.12."
-        )
-    )]
-    #[sera_sig(low, high, color = "#f59e0b", opacity = 0.12)]
-    pub fn reference_band(&self, low: f64, high: f64, color: &str, opacity: f64) -> Chart {
-        self.propagate(apply_reference_band(self.html.clone(), low, high, color, opacity))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("vlabels", "bar_labels"),
-        file = "charts/chart.md",
-        en = "Prints the numeric value above each bar, like matplotlib's bar_label() or Plotly's textposition='auto'.",
-        fr = "Affiche la valeur numérique au-dessus de chaque barre, comme bar_label() de matplotlib ou textposition='auto' de Plotly.",
-        param(
-            name = "decimals",
-            ty = "int",
-            en = "Number of decimal places to show. Default: 0.",
-            fr = "Nombre de décimales à afficher. Défaut : 0."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Label text color. Default: #475569.",
-            fr = "Couleur du texte du label. Défaut : #475569."
-        )
-    )]
-    #[sera_sig(decimals = 0, color = "#475569")]
-    pub fn value_labels(&self, decimals: i32, color: &str) -> Chart {
-        self.propagate(apply_value_labels(self.html.clone(), decimals, color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Draws symmetric error-bar whiskers above and below each bar's top, like matplotlib's errorbar() or yerr.",
-        fr = "Dessine des moustaches symétriques (barres d'erreur) au-dessus et en-dessous du sommet de chaque barre, comme errorbar() ou yerr de matplotlib.",
-        aliases("errorbar"),
-        param(
-            name = "margin",
-            ty = "float",
-            en = "Error margin, expressed in the same units as the chart's values.",
-            fr = "Marge d'erreur, exprimée dans la même unité que les valeurs du graphique."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Whisker color. Default: #475569.",
-            fr = "Couleur des moustaches. Défaut : #475569."
-        )
-    )]
-    #[sera_sig(margin, color = "#475569")]
-    pub fn error_bars(&self, margin: f64, color: &str) -> Chart {
-        self.propagate(apply_error_bars(self.html.clone(), margin, color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Labels each bar with its percentage change versus the previous bar, handy for tracking growth (QoQ, MoM, ...).",
-        fr = "Annote chaque barre avec son évolution en pourcentage par rapport à la barre précédente, pratique pour suivre une croissance (trimestre, mois, ...).",
-        aliases("deltas", "pct_change"),
-        param(
-            name = "pos_color",
-            ty = "str",
-            en = "Color used for positive changes. Default: #22c55e.",
-            fr = "Couleur utilisée pour les évolutions positives. Défaut : #22c55e."
-        ),
-        param(
-            name = "neg_color",
-            ty = "str",
-            en = "Color used for negative changes. Default: #ef4444.",
-            fr = "Couleur utilisée pour les évolutions négatives. Défaut : #ef4444."
-        )
-    )]
-    #[sera_sig(pos_color = "#22c55e", neg_color = "#ef4444")]
-    pub fn delta_labels(&self, pos_color: &str, neg_color: &str) -> Chart {
-        self.propagate(apply_delta_labels(self.html.clone(), pos_color, neg_color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Overlays a cumulative-sum line (running total over the running grand total), the classic Pareto-chart finishing touch.",
-        fr = "Superpose une courbe de cumul (somme courante sur le total général), la touche finale classique d'un diagramme de Pareto.",
-        aliases("cumline"),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Line and marker color. Default: #6366f1.",
-            fr = "Couleur de la courbe et des marqueurs. Défaut : #6366f1."
-        )
-    )]
-    #[sera_sig(color = "#6366f1")]
-    pub fn cumulative_line(&self, color: &str) -> Chart {
-        self.propagate(apply_cumulative_line(self.html.clone(), color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Pins numbered rank badges (1, 2, 3, ...) on the top N highest-value bars, for quick leaderboard-style reads.",
-        fr = "Épingle des badges de classement numérotés (1, 2, 3, ...) sur les N barres aux valeurs les plus élevées, pour une lecture rapide façon classement.",
-        aliases("ranks"),
-        param(
-            name = "top_n",
-            ty = "int",
-            en = "How many of the highest-value bars to badge. Default: 3.",
-            fr = "Nombre de barres (les plus élevées) à marquer d'un badge. Défaut : 3."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Badge fill color. Default: #6366f1.",
-            fr = "Couleur de remplissage du badge. Défaut : #6366f1."
-        )
-    )]
-    #[sera_sig(top_n = 3, color = "#6366f1")]
-    pub fn rank_badges(&self, top_n: usize, color: &str) -> Chart {
-        self.propagate(apply_rank_badges(self.html.clone(), top_n, color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Switches the value axis to a logarithmic scale, like matplotlib's plt.yscale('log') — great for data spanning several orders of magnitude.",
-        fr = "Passe l'axe des valeurs en échelle logarithmique, comme plt.yscale('log') de matplotlib — idéal pour des données s'étalant sur plusieurs ordres de grandeur.",
-        aliases("logy")
-    )]
-    pub fn log_scale(&self) -> Chart {
-        self.propagate(apply_log_scale(self.html.clone()))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Overlays a moving-average line (trailing window), like pandas' .rolling(window).mean() — smooths out noisy series to reveal the underlying trend.",
-        fr = "Superpose une courbe de moyenne mobile (fenêtre glissante), comme .rolling(window).mean() de pandas — lisse une série bruitée pour révéler la tendance sous-jacente.",
-        aliases("rolling_mean"),
-        param(
-            name = "window",
-            ty = "int",
-            en = "Number of trailing points to average over.",
-            fr = "Nombre de points (précédents) sur lesquels moyenner."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Line color. Default: #f59e0b.",
-            fr = "Couleur de la courbe. Défaut : #f59e0b."
-        )
-    )]
-    #[sera_sig(window = 3, color = "#f59e0b")]
-    pub fn moving_average(&self, window: usize, color: &str) -> Chart {
-        self.propagate(apply_moving_average(self.html.clone(), window, color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Flags statistical outliers with a warning marker and a highlighted color. Works on any chart: bars/lollipops/etc are flagged by z-score on their value, scatter points by residual distance from their best-fit line.",
-        fr = "Signale les valeurs aberrantes statistiques avec un marqueur d'avertissement et une couleur de mise en évidence. Fonctionne sur tout type de graphique : barres/lollipops/etc sont signalés par z-score sur leur valeur, les points de scatter par distance résiduelle à leur droite de régression.",
-        aliases("flag_outliers", "anomalies", "scatter_outliers"),
-        param(
-            name = "threshold_std",
-            ty = "float",
-            en = "Number of standard deviations beyond which a value is flagged. Default: 2.0.",
-            fr = "Nombre d'écarts-types au-delà duquel une valeur est signalée. Défaut : 2.0."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Highlight color for flagged bars. Default: #ef4444.",
-            fr = "Couleur de mise en évidence des barres signalées. Défaut : #ef4444."
-        )
-    )]
-    #[sera_sig(threshold_std = 2.0, color = "#ef4444")]
-    pub fn outliers(&self, threshold_std: f64, color: &str) -> Chart {
-        self.propagate(apply_outliers(self.html.clone(), threshold_std, color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("fill_area", "area_fill"),
-        file = "charts/chart.md",
-        en = "Shades the area under a line chart's curve down to the baseline, like matplotlib's fill_between(x, y, 0).",
-        fr = "Colore la zone sous la courbe d'un line chart jusqu'à la ligne de base, comme fill_between(x, y, 0) de matplotlib.",
-        param(
-            name = "color",
-            ty = "str",
-            en = "Fill color. Default: #6366f1.",
-            fr = "Couleur de remplissage. Défaut : #6366f1."
-        ),
-        param(
-            name = "opacity",
-            ty = "float",
-            en = "Fill opacity between 0.0 and 1.0. Default: 0.15.",
-            fr = "Opacité du remplissage entre 0.0 et 1.0. Défaut : 0.15."
-        )
-    )]
-    #[sera_sig(color = "#6366f1", opacity = 0.15)]
-    pub fn fill_between(&self, color: &str, opacity: f64) -> Chart {
-        self.propagate(apply_fill_between(self.html.clone(), color, opacity))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("boxplot"),
-        file = "charts/chart.md",
-        en = "Draws a box-and-whisker summary (min, Q1, median, Q3, max) of the chart's own values as a small inset glyph, like a built-in boxplot companion.",
-        fr = "Dessine un résumé boîte-à-moustaches (min, Q1, médiane, Q3, max) des valeurs du graphique sous forme de petit glyphe en marge, comme un boxplot d'accompagnement intégré.",
-        param(
-            name = "color",
-            ty = "str",
-            en = "Box, whiskers and median line color. Default: #6366f1.",
-            fr = "Couleur de la boîte, des moustaches et de la médiane. Défaut : #6366f1."
-        )
-    )]
-    #[sera_sig(color = "#6366f1")]
-    pub fn box_annotate(&self, color: &str) -> Chart {
-        self.propagate(apply_box_annotate(self.html.clone(), color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Labels each bar with its share of the total (%) instead of its raw value.",
-        fr = "Annote chaque barre avec sa part du total (%) plutôt que sa valeur brute.",
-        aliases("pct"),
-        param(
-            name = "decimals",
-            ty = "int",
-            en = "Number of decimal places to show. Default: 1.",
-            fr = "Nombre de décimales à afficher. Défaut : 1."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Label text color. Default: #475569.",
-            fr = "Couleur du texte du label. Défaut : #475569."
-        )
-    )]
-    #[sera_sig(decimals = 1, color = "#475569")]
-    pub fn pct_of_total(&self, decimals: i32, color: &str) -> Chart {
-        self.propagate(apply_pct_of_total(self.html.clone(), decimals, color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Computes and displays the Pearson correlation coefficient (r) of a scatter chart's x/y values as a small badge.",
-        fr = "Calcule et affiche le coefficient de corrélation de Pearson (r) des valeurs x/y d'un scatter sous forme de petit badge.",
-        aliases("corr"),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Badge color. Default: #6366f1.",
-            fr = "Couleur du badge. Défaut : #6366f1."
-        )
-    )]
-    #[sera_sig(color = "#6366f1")]
-    pub fn correlation_badge(&self, color: &str) -> Chart {
-        self.propagate(apply_correlation_badge(self.html.clone(), color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Shades a contiguous range of bars/points by index, distinct from reference_band which shades by Y value.",
-        fr = "Colore une plage contiguë de barres/points par index, à la différence de reference_band qui colore par valeur Y.",
-        aliases("hl_range", "idx_band"),
-        param(
-            name = "low",
-            ty = "int",
-            en = "Start index of the range (inclusive).",
-            fr = "Index de début de la plage (inclus)."
-        ),
-        param(
-            name = "high",
-            ty = "int",
-            en = "End index of the range (inclusive).",
-            fr = "Index de fin de la plage (inclus)."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Highlight fill color. Default: #6366f1.",
-            fr = "Couleur de remplissage de la mise en évidence. Défaut : #6366f1."
-        ),
-        param(
-            name = "opacity",
-            ty = "float",
-            en = "Fill opacity between 0.0 and 1.0. Default: 0.12.",
-            fr = "Opacité du remplissage entre 0.0 et 1.0. Défaut : 0.12."
-        )
-    )]
-    #[sera_sig(low, high, color = "#6366f1", opacity = 0.12)]
-    pub fn highlight_range(&self, low: usize, high: usize, color: &str, opacity: f64) -> Chart {
-        self.propagate(apply_highlight_range(self.html.clone(), low, high, color, opacity))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("iqr"),
-        file = "charts/chart.md",
-        en = "Shades a horizontal band across the interquartile range (Q1 to Q3) of the chart's own values, to see at a glance which bars fall inside the 'normal' middle 50%.",
-        fr = "Colore une bande horizontale couvrant l'écart interquartile (Q1 à Q3) des valeurs du graphique, pour voir d'un coup d'œil quelles barres se trouvent dans les 50% centraux 'normaux'.",
-        param(
-            name = "color",
-            ty = "str",
-            en = "Band fill color. Default: #6366f1.",
-            fr = "Couleur de remplissage de la bande. Défaut : #6366f1."
-        ),
-        param(
-            name = "opacity",
-            ty = "float",
-            en = "Fill opacity between 0.0 and 1.0. Default: 0.10.",
-            fr = "Opacité du remplissage entre 0.0 et 1.0. Défaut : 0.10."
-        )
-    )]
-    #[sera_sig(color = "#6366f1", opacity = 0.10)]
-    pub fn iqr_band(&self, color: &str, opacity: f64) -> Chart {
-        self.propagate(apply_iqr_band(self.html.clone(), color, opacity))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Displays a badge with the total % change between the first and last bar — a quick growth-rate summary.",
-        fr = "Affiche un badge avec la variation totale en % entre la première et la dernière barre — un résumé rapide du taux de croissance.",
-        aliases("growth"),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Badge color. Default: #22c55e.",
-            fr = "Couleur du badge. Défaut : #22c55e."
-        )
-    )]
-    #[sera_sig(color = "#22c55e")]
-    pub fn growth_badge(&self, color: &str) -> Chart {
-        self.propagate(apply_growth_badge(self.html.clone(), color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("zheat", "heatbars"),
-        file = "charts/chart.md",
-        en = "Recolors every bar on a diverging blue-white-red scale based on its z-score, turning the chart into a heatmap-as-bars view of which values are unusually high or low.",
-        fr = "Recolore chaque barre sur une échelle divergente bleu-blanc-rouge selon son z-score, transformant le graphique en vue façon heatmap des valeurs anormalement hautes ou basses."
-    )]
-    pub fn zscore_heat(&self) -> Chart {
-        self.propagate(apply_zscore_heat(self.html.clone()))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Marks the bar at which the cumulative total crosses a threshold percentage (80% by default), the classic Pareto '80/20' cutoff point. Pairs well with cumulative_line().",
-        fr = "Marque la barre à partir de laquelle le total cumulé dépasse un pourcentage seuil (80% par défaut), le point de coupure Pareto '80/20' classique. Se combine bien avec cumulative_line().",
-        aliases("pareto", "eighty_twenty"),
-        param(
-            name = "threshold_pct",
-            ty = "float",
-            en = "Cumulative percentage threshold to mark. Default: 80.0.",
-            fr = "Pourcentage cumulé seuil à marquer. Défaut : 80.0."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Marker line and label color. Default: #ef4444.",
-            fr = "Couleur du trait et du label du marqueur. Défaut : #ef4444."
-        )
-    )]
-    #[sera_sig(threshold_pct = 80.0, color = "#ef4444")]
-    pub fn pareto_marker(&self, threshold_pct: f64, color: &str) -> Chart {
-        self.propagate(apply_pareto_marker(self.html.clone(), threshold_pct, color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        aliases("mean_diff"),
-        file = "charts/chart.md",
-        en = "Labels each bar with its absolute deviation from the dataset's mean, instead of percentage change versus the previous bar like delta_labels().",
-        fr = "Annote chaque barre avec son écart absolu par rapport à la moyenne du jeu de données, à la différence de delta_labels() qui compare au pourcentage de variation par rapport à la barre précédente.",
-        param(
-            name = "pos_color",
-            ty = "str",
-            en = "Color used for above-average bars. Default: #22c55e.",
-            fr = "Couleur utilisée pour les barres au-dessus de la moyenne. Défaut : #22c55e."
-        ),
-        param(
-            name = "neg_color",
-            ty = "str",
-            en = "Color used for below-average bars. Default: #ef4444.",
-            fr = "Couleur utilisée pour les barres en-dessous de la moyenne. Défaut : #ef4444."
-        )
-    )]
-    #[sera_sig(pos_color = "#22c55e", neg_color = "#ef4444")]
-    pub fn diff_from_mean(&self, pos_color: &str, neg_color: &str) -> Chart {
-        self.propagate(apply_diff_from_mean(self.html.clone(), pos_color, neg_color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Overlays a Bollinger-band-style shaded region (rolling mean ± rolling standard deviation) over a trailing window, the classic volatility envelope from financial charting.",
-        fr = "Superpose une zone ombrée façon bandes de Bollinger (moyenne mobile ± écart-type mobile) sur une fenêtre glissante, l'enveloppe de volatilité classique des graphiques financiers.",
-        aliases("bollinger_band", "volatility_band"),
-        param(
-            name = "window",
-            ty = "int",
-            en = "Number of trailing points used for the rolling mean and standard deviation.",
-            fr = "Nombre de points (précédents) utilisés pour la moyenne et l'écart-type mobiles."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Band fill color. Default: #6366f1.",
-            fr = "Couleur de remplissage de la bande. Défaut : #6366f1."
-        ),
-        param(
-            name = "opacity",
-            ty = "float",
-            en = "Fill opacity between 0.0 and 1.0. Default: 0.15.",
-            fr = "Opacité du remplissage entre 0.0 et 1.0. Défaut : 0.15."
-        )
-    )]
-    #[sera_sig(window = 5, color = "#6366f1", opacity = 0.15)]
-    pub fn rolling_std_band(&self, window: usize, color: &str, opacity: f64) -> Chart {
-        self.propagate(apply_rolling_std_band(self.html.clone(), window, color, opacity))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Extrapolates a linear-regression trend beyond the last data point, with a dashed line and ghost markers for each forecast step.",
-        fr = "Extrapole une tendance de régression linéaire au-delà du dernier point de données, avec un trait pointillé et des marqueurs fantômes pour chaque pas de prévision.",
-        aliases("forecast", "extrapolate"),
-        param(
-            name = "periods",
-            ty = "int",
-            en = "Number of future periods to forecast. Default: 3.",
-            fr = "Nombre de périodes futures à prévoir. Défaut : 3."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Forecast line and marker color. Default: #8b5cf6.",
-            fr = "Couleur du trait et des marqueurs de prévision. Défaut : #8b5cf6."
-        )
-    )]
-    #[sera_sig(periods = 3, color = "#8b5cf6")]
-    pub fn forecast_line(&self, periods: usize, color: &str) -> Chart {
-        self.propagate(apply_forecast_line(self.html.clone(), periods, color))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Shades a horizontal band between two arbitrary percentiles of the chart's own values, a generalization of iqr_band for any custom range (e.g. 5th-95th).",
-        fr = "Colore une bande horizontale entre deux percentiles arbitraires des valeurs du graphique, une généralisation de iqr_band pour toute plage personnalisée (ex : 5e-95e).",
-        aliases("pct_band"),
-        param(
-            name = "low_pct",
-            ty = "float",
-            en = "Lower percentile (0-100).",
-            fr = "Percentile bas (0-100)."
-        ),
-        param(
-            name = "high_pct",
-            ty = "float",
-            en = "Upper percentile (0-100).",
-            fr = "Percentile haut (0-100)."
-        ),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Band fill color. Default: #6366f1.",
-            fr = "Couleur de remplissage de la bande. Défaut : #6366f1."
-        ),
-        param(
-            name = "opacity",
-            ty = "float",
-            en = "Fill opacity between 0.0 and 1.0. Default: 0.10.",
-            fr = "Opacité du remplissage entre 0.0 et 1.0. Défaut : 0.10."
-        )
-    )]
-    #[sera_sig(low_pct, high_pct, color = "#6366f1", opacity = 0.10)]
-    pub fn percentile_band(&self, low_pct: f64, high_pct: f64, color: &str, opacity: f64) -> Chart {
-        self.propagate(apply_percentile_band(self.html.clone(), low_pct, high_pct, color, opacity))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Fits and draws a linear regression line through a scatter chart's points, like seaborn's regplot() or numpy.polyfit(x, y, 1).",
-        fr = "Calcule et trace une droite de régression linéaire à travers les points d'un scatter, comme regplot() de seaborn ou numpy.polyfit(x, y, 1).",
-        aliases("regression_line", "lmplot"),
-        param(
-            name = "color",
-            ty = "str",
-            en = "Line color. Default: #ef4444.",
-            fr = "Couleur de la droite. Défaut : #ef4444."
-        ),
-        param(
-            name = "width",
-            ty = "float",
-            en = "Line stroke width. Default: 2.0.",
-            fr = "Épaisseur de la droite. Défaut : 2.0."
-        )
-    )]
-    #[sera_sig(color = "#ef4444", width = 2.0)]
-    pub fn scatter_regression(&self, color: &str, width: f64) -> Chart {
-        self.propagate(apply_scatter_regression(self.html.clone(), color, width))
-    }
-
-    #[sera_doc(
-        category = "chart_method",
-        file = "charts/chart.md",
-        en = "Runs DBSCAN density clustering and recolors each element by its cluster, in-browser and dependency-free. Works on any chart: uses x/y for scatter points, or falls back to the single value for bars/lollipops/etc. Noise points (no dense neighborhood) are colored gray.",
-        fr = "Exécute un clustering par densité DBSCAN et recolore chaque élément selon son cluster, directement dans le navigateur sans dépendance. Fonctionne sur tout type de graphique : utilise x/y pour un scatter, ou se rabat sur la valeur seule pour les barres/lollipops/etc. Les points de bruit (sans voisinage dense) sont colorés en gris.",
-        aliases("dbscan"),
-        param(
-            name = "eps",
-            ty = "float",
-            en = "Maximum distance (in data units) between two points for them to be considered neighbors.",
-            fr = "Distance maximale (en unités de données) entre deux points pour qu'ils soient considérés voisins."
-        ),
-        param(
-            name = "min_samples",
-            ty = "int",
-            en = "Minimum neighborhood size (including the point itself) to seed a cluster. Default: 3.",
-            fr = "Taille minimale de voisinage (point inclus) pour amorcer un cluster. Défaut : 3."
-        )
-    )]
-    #[sera_sig(eps, min_samples = 3)]
-    pub fn cluster(&self, eps: f64, min_samples: usize) -> Chart {
-        self.propagate(apply_cluster(self.html.clone(), eps, min_samples))
-    }
 }
 
 #[cfg(feature = "ffi")]
@@ -3364,6 +709,18 @@ mod chart_ffi {
     use super::*;
     use std::ffi::{CStr, CString};
     use std::os::raw::c_char;
+
+    #[no_mangle]
+    pub extern "C" fn sera_chart_from_html(html: *const c_char) -> *mut Chart {
+        if html.is_null() {
+            return std::ptr::null_mut();
+        }
+        let html_str = unsafe { CStr::from_ptr(html) }.to_string_lossy().into_owned();
+        Box::into_raw(Box::new(Chart {
+            html: html_str,
+            doc_str: "",
+        }))
+    }
 
     #[no_mangle]
     pub extern "C" fn sera_chart_html(chart: *const Chart) -> *mut c_char {
@@ -3568,6 +925,211 @@ mod chart_ffi {
         }
         Box::into_raw(Box::new(unsafe { &*chart }.export_button()))
     }
+
+    #[no_mangle]
+    pub unsafe extern "C" fn sera_call(
+        name: *const c_char,
+        json: *const c_char,
+    ) -> *mut c_char {
+        let name = unsafe { CStr::from_ptr(name) }.to_str().unwrap_or("");
+        let json = unsafe { CStr::from_ptr(json) }.to_str().unwrap_or("{}");
+        let resolved = crate::bindings::alias_registry::resolve(name);
+        let target = resolved.as_deref().unwrap_or(name);
+        for entry in crate::bindings::fn_registry::iter_entries() {
+            if entry.name == target {
+                let result = (entry.invoke)(json);
+                return CString::new(result).unwrap_or_default().into_raw();
+            }
+        }
+        std::ptr::null_mut()
+    }
+
+    #[no_mangle]
+    pub extern "C" fn sera_list() -> *mut c_char {
+        let names: Vec<&str> = crate::bindings::fn_registry::iter_entries()
+            .map(|e| e.name)
+            .collect();
+        CString::new(serde_json::to_string(&names).unwrap_or_default())
+            .unwrap_or_default()
+            .into_raw()
+    }
+
+    #[no_mangle]
+    pub extern "C" fn sera_version() -> *mut c_char {
+        CString::new(env!("CARGO_PKG_VERSION"))
+            .unwrap_or_default()
+            .into_raw()
+    }
+
+    #[no_mangle]
+    pub unsafe extern "C" fn sera_params_json(
+        chart: *const c_char,
+        variant: *const c_char,
+    ) -> *mut c_char {
+        let chart = if chart.is_null() {
+            None
+        } else {
+            Some(unsafe { CStr::from_ptr(chart) }.to_str().unwrap_or(""))
+        };
+        let variant = if variant.is_null() {
+            None
+        } else {
+            Some(unsafe { CStr::from_ptr(variant) }.to_str().unwrap_or(""))
+        };
+        let s = serde_json::to_string(&crate::params(chart, variant)).unwrap_or_default();
+        CString::new(s).unwrap_or_default().into_raw()
+    }
+
+    #[no_mangle]
+    pub unsafe extern "C" fn sera_required_params_json(
+        chart: *const c_char,
+        variant: *const c_char,
+    ) -> *mut c_char {
+        let chart = if chart.is_null() {
+            None
+        } else {
+            Some(unsafe { CStr::from_ptr(chart) }.to_str().unwrap_or(""))
+        };
+        let variant = if variant.is_null() {
+            None
+        } else {
+            Some(unsafe { CStr::from_ptr(variant) }.to_str().unwrap_or(""))
+        };
+        let s =
+            serde_json::to_string(&crate::required_params(chart, variant)).unwrap_or_default();
+        CString::new(s).unwrap_or_default().into_raw()
+    }
+
+    #[no_mangle]
+    pub extern "C" fn sera_chart_variants_json() -> *mut c_char {
+        let s = serde_json::to_string(&crate::chart_variants()).unwrap_or_default();
+        CString::new(s).unwrap_or_default().into_raw()
+    }
+
+    #[no_mangle]
+    pub extern "C" fn sera_chart_themes_json() -> *mut c_char {
+        let s = serde_json::to_string(&crate::chart_themes()).unwrap_or_default();
+        CString::new(s).unwrap_or_default().into_raw()
+    }
+
+    #[no_mangle]
+    pub extern "C" fn sera_scenes3d_json() -> *mut c_char {
+        let s = serde_json::to_string(&crate::scenes3d()).unwrap_or_default();
+        CString::new(s).unwrap_or_default().into_raw()
+    }
+
+    #[no_mangle]
+    pub extern "C" fn sera_docs_json() -> *mut c_char {
+        let s = serde_json::to_string(&crate::doc_registry::all_docs()).unwrap_or_default();
+        CString::new(s).unwrap_or_default().into_raw()
+    }
+
+    #[no_mangle]
+    pub extern "C" fn sera_themes_list() -> *mut c_char {
+        let s = serde_json::to_string(&crate::themes()).unwrap_or_default();
+        CString::new(s).unwrap_or_default().into_raw()
+    }
+
+    #[no_mangle]
+    pub unsafe extern "C" fn sera_set_theme(name: *const c_char) {
+        let name = unsafe { CStr::from_ptr(name) }.to_str().unwrap_or("");
+        if let Some(preset) = crate::resolve_theme(name) {
+            if let Ok(mut bg) = crate::GLOBAL_BACKGROUND.lock() {
+                *bg = preset.bg.map(|v| v.to_string());
+            }
+            if let Ok(mut palette) = crate::GLOBAL_PALETTE.lock() {
+                *palette = Some(preset.palette.to_vec());
+            }
+            crate::GLOBAL_GRIDLINES.store(preset.gridlines, std::sync::atomic::Ordering::Relaxed);
+            if let Ok(mut tn) = crate::GLOBAL_THEME_NAME.lock() {
+                *tn = Some(name.to_string());
+            }
+        }
+    }
+
+    #[no_mangle]
+    pub unsafe extern "C" fn sera_set_bg(color: *const c_char) {
+        let color = unsafe { CStr::from_ptr(color) }.to_str().unwrap_or("");
+        crate::set_global_background(color);
+    }
+
+    #[no_mangle]
+    pub extern "C" fn sera_reset_bg() {
+        crate::reset_global_background();
+    }
+
+    #[no_mangle]
+    pub extern "C" fn sera_demos_list() -> *mut c_char {
+        let s = serde_json::to_string(&crate::demos()).unwrap_or_default();
+        CString::new(s).unwrap_or_default().into_raw()
+    }
+
+    #[no_mangle]
+    pub unsafe extern "C" fn sera_demo_code(
+        name: *const c_char,
+        variant: *const c_char,
+    ) -> *mut c_char {
+        let name = unsafe { CStr::from_ptr(name) }.to_str().unwrap_or("");
+        let variant = if variant.is_null() {
+            None
+        } else {
+            let s = unsafe { CStr::from_ptr(variant) }.to_str().unwrap_or("");
+            if s.is_empty() { None } else { Some(s) }
+        };
+        let result = crate::demo(name, variant).unwrap_or_default();
+        CString::new(result).unwrap_or_default().into_raw()
+    }
+}
+
+#[sera_doc(
+    category = "config",
+    file = "config/global.md",
+    en = "Binds label names to specific colors. Every chart built after this call will automatically apply these color overrides to elements matching those labels.",
+    fr = "Associe des noms de labels à des couleurs spécifiques. Tous les graphiques créés après cet appel appliquent automatiquement ces couleurs aux éléments correspondants."
+)]
+#[sera_bind]
+pub fn bind_colors(bindings: Vec<(String, u32)>) {
+    if let Ok(mut g) = GLOBAL_COLOR_BINDINGS.lock() {
+        for (lbl, col) in bindings {
+            if let Some(pos) = g.iter().position(|(k, _)| k == &lbl) {
+                g[pos].1 = col;
+            } else {
+                g.push((lbl, col));
+            }
+        }
+    }
+}
+
+#[sera_doc(
+    category = "config",
+    file = "config/global.md",
+    en = "Removes all label→color bindings registered via bind_colors().",
+    fr = "Supprime toutes les correspondances label→couleur enregistrées via bind_colors()."
+)]
+#[sera_bind]
+pub fn clear_color_bindings() {
+    if let Ok(mut g) = GLOBAL_COLOR_BINDINGS.lock() {
+        g.clear();
+    }
+}
+
+pub(crate) fn apply_global_color_bindings(html: String) -> String {
+    let bindings = match GLOBAL_COLOR_BINDINGS.lock() {
+        Ok(g) => g.clone(),
+        Err(_) => return html,
+    };
+    if bindings.is_empty() {
+        return html;
+    }
+    let entries: String = bindings.iter()
+        .map(|(lbl, col)| format!("\"{}\":\"#{:06X}\"", lbl.replace('"', "\\\""), col))
+        .collect::<Vec<_>>()
+        .join(",");
+    let js = format!(
+        "(function(){{var m={{{}}};var svg=document.querySelector('svg');if(!svg)return;svg.querySelectorAll('[data-lbl]').forEach(function(el){{var lbl=el.getAttribute('data-lbl');if(m[lbl])el.style.setProperty('fill',m[lbl],'important');}});}})()",
+        entries
+    );
+    html.replacen("</body>", &format!("<script>{}</script></body>", js), 1)
 }
 
 #[sera_doc(
@@ -4478,14 +2040,154 @@ pub fn models_for_domain(domain: &str) -> Vec<&'static crate::model_registry::Mo
     crate::model_registry::models_by_domain(domain)
 }
 
-#[cfg(feature = "python")]
+#[sera_bind(serde)]
+pub fn no_hover_html(html: String) -> String {
+    Chart { html, doc_str: "" }.no_hover().html
+}
+
+#[sera_bind(serde)]
+pub fn no_x_axis_html(html: String) -> String {
+    Chart { html, doc_str: "" }.no_x_axis().html
+}
+
+#[sera_bind(serde)]
+pub fn no_y_axis_html(html: String) -> String {
+    Chart { html, doc_str: "" }.no_y_axis().html
+}
+
+#[sera_bind(serde)]
+pub fn no_axes_html(html: String) -> String {
+    Chart { html, doc_str: "" }.no_axes().html
+}
+
+#[sera_bind(serde)]
+pub fn no_legend_html(html: String) -> String {
+    Chart { html, doc_str: "" }.no_legend().html
+}
+
+#[sera_bind(serde)]
+pub fn no_title_html(html: String) -> String {
+    Chart { html, doc_str: "" }.no_title().html
+}
+
+#[sera_bind(serde)]
+pub fn no_background_html(html: String) -> String {
+    Chart { html, doc_str: "" }.no_background().html
+}
+
+#[sera_bind(serde)]
+pub fn responsive_html(html: String) -> String {
+    Chart { html, doc_str: "" }.responsive().html
+}
+
+#[sera_bind(serde)]
+pub fn show_grid_html(html: String) -> String {
+    Chart { html, doc_str: "" }.show_grid().html
+}
+
+#[sera_bind(serde)]
+pub fn flip_html(html: String) -> String {
+    Chart { html, doc_str: "" }.flip().html
+}
+
+#[sera_bind(serde)]
+pub fn crosshair_html(html: String) -> String {
+    Chart { html, doc_str: "" }.crosshair().html
+}
+
+#[sera_bind(serde)]
+pub fn zoom_html(html: String) -> String {
+    Chart { html, doc_str: "" }.zoom().html
+}
+
+#[sera_bind(serde)]
+pub fn export_button_html(html: String) -> String {
+    Chart { html, doc_str: "" }.export_button().html
+}
+
+#[sera_bind(serde)]
+pub fn inject_css_html(html: String, css: String) -> String {
+    Chart { html, doc_str: "" }.inject_css(&css).html
+}
+
+#[sera_bind(serde)]
+pub fn inject_js_html(html: String, js: String) -> String {
+    Chart { html, doc_str: "" }.inject_js(&js).html
+}
+
+#[sera_bind(serde)]
+pub fn group_hover_opacity_html(html: String, dim: f64) -> String {
+    Chart { html, doc_str: "" }.group_hover_opacity(dim).html
+}
+
+#[sera_bind(serde)]
+pub fn desaturate_html(html: String, indices: Option<Vec<usize>>, factor: f64) -> String {
+    Chart { html, doc_str: "" }.desaturate(indices, factor).html
+}
+
+#[sera_bind(serde)]
+pub fn sparse_grid_html(html: String) -> String {
+    Chart { html, doc_str: "" }.sparse_grid().html
+}
+
+#[sera_bind(serde)]
+pub fn grid_y_html(html: String) -> String {
+    Chart { html, doc_str: "" }.grid_y().html
+}
+
+#[sera_bind(serde)]
+pub fn grid_x_html(html: String) -> String {
+    Chart { html, doc_str: "" }.grid_x().html
+}
+
+#[sera_bind(serde)]
+pub fn color_density_html(html: String) -> String {
+    Chart { html, doc_str: "" }.color_density().html
+}
+
+#[sera_bind(serde)]
+pub fn highlight_group_html(html: String, labels: Vec<String>, dim: f64) -> String {
+    Chart { html, doc_str: "" }.highlight_group(labels, dim).html
+}
+
+#[sera_bind(serde)]
+pub fn apply_color_bindings_html(html: String) -> String {
+    Chart { html, doc_str: "" }.apply_color_bindings().html
+}
+
+#[sera_bind(serde)]
+pub fn grid_at_html(html: String, value: f64, color: String, label: Option<String>) -> String {
+    Chart { html, doc_str: "" }.grid_at(value, &color, label.as_deref()).html
+}
+
+#[sera_bind(serde)]
+pub fn cut_bars_html(html: String, step: Option<f64>, gap: i32, color: Option<String>) -> String {
+    Chart { html, doc_str: "" }.cut_bars(step, gap, color.as_deref()).html
+}
+
+#[sera_bind(serde)]
+pub fn draw_tool_html(html: String, color: String) -> String {
+    Chart { html, doc_str: "" }.draw_tool(&color).html
+}
+
+#[sera_bind(serde)]
+pub fn no_select_html(html: String) -> String {
+    Chart { html, doc_str: "" }.no_select().html
+}
+
+#[sera_bind(serde)]
+pub fn hover_slots_html(html: String, slots_json: String) -> String {
+    Chart { html, doc_str: "" }.hover_slots(&slots_json).html
+}
+
+#[cfg(any(feature = "python", feature = "ffi"))]
 struct ThemePreset {
     bg: Option<&'static str>,
     palette: &'static [u32],
     gridlines: bool,
 }
 
-#[cfg(feature = "python")]
+#[cfg(any(feature = "python", feature = "ffi"))]
 const THEME_DARK: ThemePreset = ThemePreset {
     bg: Some("#0f172a"),
     palette: &[
@@ -4495,7 +2197,7 @@ const THEME_DARK: ThemePreset = ThemePreset {
     gridlines: true,
 };
 
-#[cfg(feature = "python")]
+#[cfg(any(feature = "python", feature = "ffi"))]
 const THEME_LIGHT: ThemePreset = ThemePreset {
     bg: None,
     palette: &[
@@ -4505,7 +2207,7 @@ const THEME_LIGHT: ThemePreset = ThemePreset {
     gridlines: false,
 };
 
-#[cfg(feature = "python")]
+#[cfg(any(feature = "python", feature = "ffi"))]
 const THEME_SCIENTIFIC: ThemePreset = ThemePreset {
     bg: Some("#fafafa"),
     palette: &[
@@ -4515,7 +2217,7 @@ const THEME_SCIENTIFIC: ThemePreset = ThemePreset {
     gridlines: true,
 };
 
-#[cfg(feature = "python")]
+#[cfg(any(feature = "python", feature = "ffi"))]
 const THEME_APPLE: ThemePreset = ThemePreset {
     bg: Some("#000000"),
     palette: &[
@@ -4525,7 +2227,7 @@ const THEME_APPLE: ThemePreset = ThemePreset {
     gridlines: false,
 };
 
-#[cfg(feature = "python")]
+#[cfg(any(feature = "python", feature = "ffi"))]
 const THEME_NOTION: ThemePreset = ThemePreset {
     bg: Some("#191919"),
     palette: &[
@@ -4535,7 +2237,7 @@ const THEME_NOTION: ThemePreset = ThemePreset {
     gridlines: false,
 };
 
-#[cfg(feature = "python")]
+#[cfg(any(feature = "python", feature = "ffi"))]
 const THEME_MINIMAL: ThemePreset = ThemePreset {
     bg: None,
     palette: &[
@@ -4545,7 +2247,7 @@ const THEME_MINIMAL: ThemePreset = ThemePreset {
     gridlines: false,
 };
 
-#[cfg(feature = "python")]
+#[cfg(any(feature = "python", feature = "ffi"))]
 const THEME_NEON: ThemePreset = ThemePreset {
     bg: Some("#0a0a0a"),
     palette: &[
@@ -4555,7 +2257,7 @@ const THEME_NEON: ThemePreset = ThemePreset {
     gridlines: false,
 };
 
-#[cfg(feature = "python")]
+#[cfg(any(feature = "python", feature = "ffi"))]
 fn resolve_theme(name: &str) -> Option<&'static ThemePreset> {
     match name {
         "dark" => Some(&THEME_DARK),
