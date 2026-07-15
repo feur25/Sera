@@ -89,7 +89,7 @@ pub fn render(cfg: &HistogramConfig) -> String {
         push_i(&mut f.buf, f.pl - 6);
         push_b(&mut f.buf, b"\" y=\"");
         push_i(&mut f.buf, y + 4);
-        push_b(&mut f.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
+        push_b(&mut f.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-yt\">");
         push_f2(&mut f.buf, val);
         push_b(&mut f.buf, b"</text>");
     }
