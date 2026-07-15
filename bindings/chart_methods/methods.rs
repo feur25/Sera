@@ -1423,13 +1423,32 @@ impl Chart {
     )]
     #[sera_sig(title = "", desc = "")]
     pub fn a11y(&self, title: &str, desc: &str) -> Chart {
-        let snippet = format!(
-            "<svg role=\"img\" aria-label=\"{}\"><title>{}</title><desc>{}</desc>",
-            title.replace('"', "&quot;"),
-            title.replace('<', "&lt;"),
-            desc.replace('<', "&lt;"),
-        );
-        self.propagate(self.html.replacen("<svg", &snippet, 1))
+        let esc_attr = title.replace('&', "&amp;").replace('"', "&quot;");
+        let esc_title = title.replace('&', "&amp;").replace('<', "&lt;");
+        let esc_desc = desc.replace('&', "&amp;").replace('<', "&lt;");
+        let html = match self.html.find("<svg") {
+            Some(open_start) => match self.html[open_start..].find('>') {
+                Some(rel_close) => {
+                    let tag_end = open_start + rel_close;
+                    let mut out = String::with_capacity(self.html.len() + esc_attr.len() + esc_title.len() + esc_desc.len() + 64);
+                    out.push_str(&self.html[..tag_end]);
+                    out.push_str(" aria-label=\"");
+                    out.push_str(&esc_attr);
+                    out.push('"');
+                    out.push_str(&self.html[tag_end..=tag_end]);
+                    out.push_str("<title>");
+                    out.push_str(&esc_title);
+                    out.push_str("</title><desc>");
+                    out.push_str(&esc_desc);
+                    out.push_str("</desc>");
+                    out.push_str(&self.html[tag_end + 1..]);
+                    out
+                }
+                None => self.html.clone(),
+            },
+            None => self.html.clone(),
+        };
+        self.propagate(html)
     }
 
     #[sera_doc(
