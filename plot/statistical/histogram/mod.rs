@@ -41,7 +41,6 @@ pub fn render_histogram_html(cfg: &HistogramConfig) -> String {
         HistogramVariant::Stacked => stacked::render(cfg),
         HistogramVariant::Overlay => overlay::render(cfg),
         HistogramVariant::Step => step::render(cfg),
-        HistogramVariant::Deluxe => deluxe::render(cfg),
     }
 }
 

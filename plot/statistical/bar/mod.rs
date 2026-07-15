@@ -28,7 +28,6 @@ pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
         Marimekko => marimekko::layout_3d(cfg),
         Multicategory => multicategory::layout_3d(cfg),
         Pictogram => pictogram::layout_3d(cfg),
-        Deluxe | Prism => basic::layout_3d(cfg),
     }
 }
 
@@ -50,8 +49,6 @@ pub fn render_bar_html(cfg: &BarConfig) -> String {
         Marimekko => marimekko::render(cfg),
         Pictogram => pictogram::render(cfg),
         Multicategory => multicategory::render(cfg),
-        Deluxe => deluxe::render(cfg, b'v'),
-        Prism => prism::render(cfg),
     }
 }
 

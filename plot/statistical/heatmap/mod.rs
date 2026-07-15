@@ -1,5 +1,6 @@
 use crate::plot::{apply, parse_all};
 pub mod annotated;
+pub mod polar;
 pub mod basic;
 pub mod bubble;
 pub mod categorical;
@@ -40,6 +41,7 @@ pub fn render_heatmap_html(cfg: &HeatmapConfig) -> String {
         HeatmapVariant::Marginal => marginal::render(cfg),
         HeatmapVariant::Confusion => confusion::render(cfg),
         HeatmapVariant::Pivot => pivot::render(cfg),
+        HeatmapVariant::Polar => polar::render(cfg),
     }
 }
 

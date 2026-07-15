@@ -47,6 +47,12 @@ pub fn build(input: &str) -> String {
     let high = a.high.unwrap_or_default();
     let low = a.low.unwrap_or_default();
     let close = a.close.unwrap_or_default();
+    let dec = crate::plot::decimate::Decimator::new(o.max_points, &close);
+    let labels = dec.apply(labels);
+    let open = dec.apply(open);
+    let high = dec.apply(high);
+    let low = dec.apply(low);
+    let close = dec.apply(close);
     use crate::plot::statistical::{
         render_candlestick_html, CandlestickConfig, CandlestickVariant,
     };

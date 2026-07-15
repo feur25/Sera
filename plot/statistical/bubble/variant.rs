@@ -6,7 +6,5 @@ crate::plot_family! {
         Labeled     => "labeled" | "labels" | "text" | "annotated",
         Outlined    => "outlined" | "hollow" | "ring" | "open",
         Negative    => "negative" | "signed" | "diverging",
-        Plasma      => "plasma" | "orb" | "sphere" | "3d" | "glow",
-        Deluxe      => "deluxe" | "premium" | "iridescent" | "soap",
     }
 }

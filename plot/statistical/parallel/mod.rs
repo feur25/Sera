@@ -32,7 +32,6 @@ pub fn render_parallel_html(cfg: &ParallelConfig) -> String {
         Highlight => highlight::render(cfg),
         Density => density::render(cfg),
         Gradient => gradient::render(cfg),
-        Deluxe => deluxe::render(cfg),
         Arc => arc::render(cfg),
         Ribbon => ribbon::render(cfg),
     }

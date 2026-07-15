@@ -39,13 +39,17 @@ pub fn build(input: &str) -> String {
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
+    let groups = o.color_groups.clone().unwrap_or_default();
+    let dec = crate::plot::decimate::Decimator::new(o.max_points, &values);
+    let labels = dec.apply(labels);
+    let values = dec.apply(values);
+    let groups = dec.apply(groups);
     use crate::plot::statistical::{render_lollipop_html, LollipopConfig, LollipopVariant};
     let mut variant = LollipopVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let orient = o.orient_byte();
     if o.variant.is_none() && orient == b'h' {
         variant = LollipopVariant::Cleveland;
     }
-    let groups = o.color_groups.clone().unwrap_or_default();
     let hover = o.hj();
     let html = render_lollipop_html(&LollipopConfig {
         variant,

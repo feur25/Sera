@@ -2,6 +2,15 @@ use super::common::{compute_layout, lerp_color, make_frame, point_px, radius};
 use super::config::BubbleConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i};
+use crate::plot::statistical::heatmap::common::colorscale_color;
+
+fn scale_color(cfg: &BubbleConfig, t: f64) -> u32 {
+    if cfg.colorscale.is_empty() {
+        lerp_color(cfg.color_low, cfg.color_high, t)
+    } else {
+        colorscale_color(cfg.colorscale, t)
+    }
+}
 
 #[crate::chart_demo(
     "x=[1,2,3,4,5,6,7], y=[3,5,2,7,6,8,4], sizes=[20,40,15,55,30,45,25], values=[1,2,3,4,5,6,7]"
@@ -27,14 +36,12 @@ pub fn render(cfg: &BubbleConfig) -> String {
     let cmin = cv.iter().cloned().fold(f64::INFINITY, f64::min);
     let cmax = cv.iter().cloned().fold(f64::NEG_INFINITY, f64::max);
     let cr = (cmax - cmin).max(1e-9);
-    let lo = cfg.color_low;
-    let hi = cfg.color_high;
 
     for &i in &layout.indices {
         let (cx, cy) = point_px(&layout, &f, cfg.x_values[i], cfg.y_values[i]);
         let r = radius(cfg, &layout, i);
         let t = (cv[i] - cmin) / cr;
-        let col = lerp_color(lo, hi, t);
+        let col = scale_color(cfg, t);
         let hx = hex6(col);
 
         push_b(&mut f.buf, b"<circle data-idx=\"");
@@ -69,14 +76,18 @@ pub fn render(cfg: &BubbleConfig) -> String {
     let grad_id = "spbg";
     push_b(&mut f.buf, b"<defs><linearGradient id=\"");
     push_b(&mut f.buf, grad_id.as_bytes());
-    push_b(
-        &mut f.buf,
-        b"\" x1=\"0\" y1=\"1\" x2=\"0\" y2=\"0\"><stop offset=\"0\" stop-color=\"#",
-    );
-    f.buf.extend_from_slice(&hex6(lo));
-    push_b(&mut f.buf, b"\"/><stop offset=\"1\" stop-color=\"#");
-    f.buf.extend_from_slice(&hex6(hi));
-    push_b(&mut f.buf, b"\"/></linearGradient></defs>");
+    push_b(&mut f.buf, b"\" x1=\"0\" y1=\"1\" x2=\"0\" y2=\"0\">");
+    let stops = 8usize;
+    for s in 0..stops {
+        let t = s as f64 / (stops - 1) as f64;
+        let col = scale_color(cfg, t);
+        push_b(&mut f.buf, b"<stop offset=\"");
+        push_f2(&mut f.buf, t);
+        push_b(&mut f.buf, b"\" stop-color=\"#");
+        f.buf.extend_from_slice(&hex6(col));
+        push_b(&mut f.buf, b"\"/>");
+    }
+    push_b(&mut f.buf, b"</linearGradient></defs>");
     push_b(&mut f.buf, b"<rect x=\"");
     push_i(&mut f.buf, bar_x);
     push_b(&mut f.buf, b"\" y=\"");

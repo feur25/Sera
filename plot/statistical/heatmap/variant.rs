@@ -15,5 +15,6 @@ crate::plot_family! {
         Marginal    => "marginal" | "with_marginals" | "histograms" | "side_bars",
         Confusion   => "confusion" | "confusion_matrix" | "classifier" | "cm",
         Pivot       => "pivot" | "pivot_table" | "totals" | "summary",
+        Polar       => "polar" | "wheel" | "clock" | "radial_heat" | "carbon_wheel",
     }
 }

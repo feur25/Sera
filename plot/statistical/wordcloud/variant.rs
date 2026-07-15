@@ -7,5 +7,6 @@ crate::plot_family! {
         Bubble   => "bubble" | "bubbles" | "packed" | "circles" | "packing" | "pack",
         Context  => "context" | "semantic" | "infranodus" | "text_network" | "textnetwork" | "force" | "force_directed",
         Neuron   => "neuron" | "neural" | "brain" | "synapse" | "network_glow" | "nodes",
+        Cosmos   => "cosmos" | "stars" | "galaxy" | "nebula" | "constellation" | "space" | "phyllotaxis",
     }
 }

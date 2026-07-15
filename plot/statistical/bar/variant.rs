@@ -9,7 +9,5 @@ crate::plot_family! {
         Marimekko       => "marimekko" | "mekko" | "mosaic",
         Pictogram       => "pictogram" | "icon",
         Multicategory   => "multicategory" | "multi" | "hierarchical",
-        Deluxe          => "deluxe" | "premium" | "neon" | "dark",
-        Prism           => "prism" | "crystal" | "glass" | "rainbow",
     }
 }

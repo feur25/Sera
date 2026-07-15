@@ -4,6 +4,7 @@ pub mod bubble;
 pub mod common;
 pub mod config;
 pub mod context;
+pub mod cosmos;
 pub mod image;
 pub mod labelmap;
 pub mod network;
@@ -25,6 +26,7 @@ pub fn render_wordcloud_html(cfg: &WordCloudConfig) -> String {
         Bubble => bubble::render(cfg),
         Context => context::render(cfg),
         Neuron => neuron::render(cfg),
+        Cosmos => cosmos::render(cfg),
     }
 }
 

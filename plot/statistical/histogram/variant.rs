@@ -7,6 +7,5 @@ crate::plot_family! {
         Stacked     => "stacked" | "stack" | "stack_by",
         Overlay     => "overlay" | "overlapping" | "compare" | "ab",
         Step        => "step" | "outline" | "stair",
-        Deluxe      => "deluxe" | "premium" | "neon" | "dark",
     }
 }

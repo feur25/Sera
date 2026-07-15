@@ -6,7 +6,6 @@ crate::plot_family! {
         Highlight   => "highlight" | "spotlight" | "focus" | "dim",
         Density     => "density" | "fade" | "translucent" | "alpha",
         Gradient    => "gradient" | "value" | "ramp" | "shaded",
-        Deluxe      => "deluxe" | "neon" | "dark" | "premium",
         Arc         => "arc" | "bezier_color" | "smooth_color" | "colored_bezier",
         Ribbon      => "ribbon" | "flow" | "band" | "filled_bezier",
     }
