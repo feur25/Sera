@@ -3,6 +3,11 @@ pub const PALETTE: &[u32] = &[
     0xFECB52,
 ];
 
+pub const PALETTE_ACCESSIBLE: &[u32] = &[
+    0x0072B2, 0xD55E00, 0x009E73, 0xCC79A7, 0xB8720A, 0x6A3D9A, 0x666666, 0x8B4513, 0x9A8B00,
+    0xA6183D,
+];
+
 #[inline(always)]
 pub fn palette_color(custom: &[u32], i: usize) -> u32 {
     let p = if custom.is_empty() { PALETTE } else { custom };
@@ -97,7 +102,7 @@ pub fn sorted<T: Clone>(idx: &[usize], data: &[T]) -> Vec<T> {
 }
 
 pub fn svg_open(buf: &mut Vec<u8>, w: i32, h: i32) {
-    push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" width=\"");
     push_i(buf, w);
     push_b(buf, b"\" height=\"");
     push_i(buf, h);
@@ -121,7 +126,7 @@ pub fn svg_open_rescalable(
     plot_w: i32,
     plot_h: i32,
 ) {
-    push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" width=\"");
     push_i(buf, w);
     push_b(buf, b"\" height=\"");
     push_i(buf, h);
@@ -148,6 +153,9 @@ pub fn svg_title(buf: &mut Vec<u8>, title: &str, cx: i32, y: i32) {
     if title.is_empty() {
         return;
     }
+    push_b(buf, b"<title>");
+    escape_xml(buf, title);
+    push_b(buf, b"</title>");
     push_b(buf, b"<text x=\"");
     push_i(buf, cx);
     push_b(buf, b"\" y=\"");
@@ -228,7 +236,9 @@ pub fn svg_legend_item(
         return;
     }
     let hx = hex6(color);
-    push_b(buf, b"<g data-legend=\"1\" data-series=\"");
+    push_b(buf, b"<g data-legend=\"1\" tabindex=\"0\" role=\"button\" aria-label=\"");
+    escape_xml(buf, truncate(name, max_len));
+    push_b(buf, b"\" data-series=\"");
     push_i(buf, si);
     push_b(buf, b"\">");
     push_b(buf, b"<rect x=\"");
@@ -285,7 +295,7 @@ pub fn svg_tick_y(buf: &mut Vec<u8>, x: i32, y: i32, val: f64) {
     push_i(buf, x);
     push_b(buf, b"\" y=\"");
     push_i(buf, y);
-    push_b(buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
+    push_b(buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-yt\">");
     if val.abs() >= 1000.0 {
         push_i(buf, val as i32);
     } else {
@@ -299,7 +309,7 @@ pub fn svg_tick_x(buf: &mut Vec<u8>, x: i32, y: i32, val: f64) {
     push_i(buf, x);
     push_b(buf, b"\" y=\"");
     push_i(buf, y);
-    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-xt\">");
+    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-xt\">");
     if val >= 10000.0 {
         push_i(buf, (val / 1000.0) as i32);
         push_b(buf, b"k");
@@ -372,7 +382,11 @@ pub fn truncate(s: &str, max: usize) -> &str {
     if s.len() <= max {
         s
     } else {
-        &s[..max]
+        let mut end = max;
+        while end > 0 && !s.is_char_boundary(end) {
+            end -= 1;
+        }
+        &s[..end]
     }
 }
 
@@ -561,7 +575,7 @@ impl Frame {
             push_i(&mut self.buf, self.pl - 4);
             push_b(&mut self.buf, b"\" y=\"");
             push_i(&mut self.buf, y + 3);
-            push_b(&mut self.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
+            push_b(&mut self.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-yt\">");
             push_f2(&mut self.buf, v);
             push_b(&mut self.buf, b"</text>");
         }
@@ -579,7 +593,7 @@ impl Frame {
             push_i(&mut self.buf, self.pl - 4);
             push_b(&mut self.buf, b"\" y=\"");
             push_i(&mut self.buf, y + 3);
-            push_b(&mut self.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
+            push_b(&mut self.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-yt\">");
             push_i(&mut self.buf, v);
             push_b(&mut self.buf, b"</text>");
         }
@@ -678,5 +692,67 @@ impl Frame {
             ph: h - pt - pb,
             hid,
         }
+    }
+}
+
+#[cfg(test)]
+mod accessible_palette_tests {
+    use super::PALETTE_ACCESSIBLE;
+
+    fn srgb_to_linear(c: f64) -> f64 {
+        if c <= 0.03928 { c / 12.92 } else { ((c + 0.055) / 1.055).powf(2.4) }
+    }
+
+    fn luminance(hex: u32) -> f64 {
+        let r = srgb_to_linear(((hex >> 16) & 0xFF) as f64 / 255.0);
+        let g = srgb_to_linear(((hex >> 8) & 0xFF) as f64 / 255.0);
+        let b = srgb_to_linear((hex & 0xFF) as f64 / 255.0);
+        0.2126 * r + 0.7152 * g + 0.0722 * b
+    }
+
+    fn contrast(a: u32, b: u32) -> f64 {
+        let (la, lb) = (luminance(a), luminance(b));
+        let (hi, lo) = if la > lb { (la, lb) } else { (lb, la) };
+        (hi + 0.05) / (lo + 0.05)
+    }
+
+    #[test]
+    fn every_accessible_palette_color_meets_wcag_non_text_contrast_against_white() {
+        for &c in PALETTE_ACCESSIBLE {
+            let ratio = contrast(c, 0xFFFFFF);
+            assert!(ratio >= 3.0, "color #{c:06X} has contrast {ratio:.2}:1 against white, below WCAG 1.4.11's 3:1 minimum");
+        }
+    }
+
+    #[test]
+    fn accessible_palette_has_ten_distinct_colors() {
+        let mut seen = std::collections::HashSet::new();
+        for &c in PALETTE_ACCESSIBLE {
+            assert!(seen.insert(c), "duplicate color #{c:06X} in accessible palette");
+        }
+        assert_eq!(PALETTE_ACCESSIBLE.len(), 10);
+    }
+}
+
+#[cfg(test)]
+mod truncate_tests {
+    use super::truncate;
+
+    #[test]
+    fn truncate_does_not_panic_when_max_falls_inside_a_multibyte_char() {
+        let s = "日本語<script>🎉&\"'";
+        let out = truncate(s, 18);
+        assert!(out.len() <= 18);
+        assert!(s.starts_with(out));
+    }
+
+    #[test]
+    fn truncate_leaves_short_strings_untouched() {
+        assert_eq!(truncate("abc", 10), "abc");
+    }
+
+    #[test]
+    fn truncate_cuts_ascii_at_exact_byte_offset() {
+        assert_eq!(truncate("abcdefgh", 3), "abc");
     }
 }
