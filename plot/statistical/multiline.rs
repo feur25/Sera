@@ -192,6 +192,9 @@ pub fn build_multiline_chart(input: &str) -> String {
         sn
     };
     let series: Vec<(String, Vec<f64>)> = names.into_iter().zip(series_flat.into_iter()).collect();
+    let dec = crate::plot::decimate::Decimator::for_series(o.max_points, &series);
+    let x_labels = dec.apply(x_labels);
+    let series = dec.apply_each(series);
     let html = render_multiline_html(&MultiLineConfig {
         title,
         x_labels: &x_labels,

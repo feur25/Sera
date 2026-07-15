@@ -101,6 +101,20 @@ pub fn x_tick_label(buf: &mut Vec<u8>, x: i32, y: i32, label: &str) {
     push_b(buf, b"</text>");
 }
 
+pub fn x_tick_label_rotated(buf: &mut Vec<u8>, x: i32, y: i32, label: &str) {
+    push_b(buf, b"<text x=\"");
+    push_i(buf, x);
+    push_b(buf, b"\" y=\"");
+    push_i(buf, y);
+    push_b(buf, b"\" transform=\"rotate(-40 ");
+    push_i(buf, x);
+    push_b(buf, b" ");
+    push_i(buf, y);
+    push_b(buf, b")\" text-anchor=\"end\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">");
+    escape_xml(buf, truncate(label, 16));
+    push_b(buf, b"</text>");
+}
+
 pub fn data_attrs(buf: &mut Vec<u8>, p: &Prepared, i: usize) {
     push_b(buf, b" data-idx=\"");
     push_i(buf, i as i32);

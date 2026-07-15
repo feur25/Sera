@@ -1,4 +1,4 @@
-use super::common::{data_attrs, dot, finalize, open, prepare, x_tick_label};
+use super::common::{data_attrs, dot, finalize, open, prepare, x_tick_label, x_tick_label_rotated};
 use super::config::LollipopConfig;
 use crate::plot::statistical::common::{
     hex6, push_b, push_f2, push_i, svg_axis_lines, svg_y_label,
@@ -13,7 +13,8 @@ pub fn render(cfg: &LollipopConfig) -> String {
         Some(v) => v,
         None => return String::new(),
     };
-    let (mut b, pl, pt, pw, ph) = open(cfg, 64, 42, 20, 52);
+    let pad_b = if p.n >= 8 { 72 } else { 52 };
+    let (mut b, pl, pt, pw, ph) = open(cfg, 64, 42, 20, pad_b);
     let mean: f64 = p.values.iter().sum::<f64>() / p.n as f64;
     let mut max_dev: f64 = 0.0;
     for v in p.values.iter() {
@@ -86,7 +87,11 @@ pub fn render(cfg: &LollipopConfig) -> String {
             push_b(&mut b, b"</text>");
         }
         if i % tick_step == 0 {
-            x_tick_label(&mut b, cx, pt + ph + 14, &p.labels[i]);
+            if p.n >= 8 {
+                x_tick_label_rotated(&mut b, cx, pt + ph + 14, &p.labels[i]);
+            } else {
+                x_tick_label(&mut b, cx, pt + ph + 14, &p.labels[i]);
+            }
         }
     }
     finalize(b, cfg)

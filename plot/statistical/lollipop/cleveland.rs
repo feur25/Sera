@@ -85,7 +85,7 @@ pub fn render(cfg: &LollipopConfig) -> String {
         push_i(&mut b, x);
         push_b(&mut b, b"\" y=\"");
         push_i(&mut b, pt + ph + 14);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#9ca3af\">");
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
         push_f2(&mut b, min_val + frac * range);
         push_b(&mut b, b"</text>");
     }
