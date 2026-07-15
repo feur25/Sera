@@ -3,11 +3,8 @@ pub mod basic;
 pub mod categorical;
 pub mod common;
 pub mod config;
-pub mod deluxe;
-pub mod galaxy;
 pub mod gradient;
 pub mod labeled;
-pub mod nova;
 pub mod regression;
 pub mod symbols;
 pub mod variant;
@@ -29,9 +26,6 @@ pub fn render_scatter_variant_html(cfg: &ScatterConfig) -> String {
         Symbols => symbols::render(cfg),
         Labeled => labeled::render(cfg),
         Regression => regression::render(cfg),
-        Nova => nova::render(cfg),
-        Galaxy => galaxy::render(cfg),
-        Deluxe => deluxe::render(cfg),
     }
 }
 
@@ -66,6 +60,15 @@ pub fn build(input: &str) -> String {
     } else {
         cgs.clone()
     };
+
+    let dec = crate::plot::decimate::Decimator::new(o.max_points, &y);
+    let x = dec.apply(x);
+    let y = dec.apply(y);
+    let lbls = dec.apply(lbls);
+    let sz = dec.apply(sz);
+    let cgs = dec.apply(cgs);
+    let categories = dec.apply(categories);
+
     if o.variant.is_some()
         || !o.color_values.clone().unwrap_or_default().is_empty()
         || o.symbol.is_some()
