@@ -102,7 +102,7 @@ pub fn sorted<T: Clone>(idx: &[usize], data: &[T]) -> Vec<T> {
 }
 
 pub fn svg_open(buf: &mut Vec<u8>, w: i32, h: i32) {
-    push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" width=\"");
+    push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"");
     push_i(buf, w);
     push_b(buf, b"\" height=\"");
     push_i(buf, h);
@@ -126,7 +126,7 @@ pub fn svg_open_rescalable(
     plot_w: i32,
     plot_h: i32,
 ) {
-    push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"img\" width=\"");
+    push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"");
     push_i(buf, w);
     push_b(buf, b"\" height=\"");
     push_i(buf, h);
@@ -150,12 +150,12 @@ pub fn svg_open_rescalable(
 }
 
 pub fn svg_title(buf: &mut Vec<u8>, title: &str, cx: i32, y: i32) {
+    push_b(buf, b"<title>");
+    escape_xml(buf, if title.is_empty() { "Chart" } else { title });
+    push_b(buf, b"</title>");
     if title.is_empty() {
         return;
     }
-    push_b(buf, b"<title>");
-    escape_xml(buf, title);
-    push_b(buf, b"</title>");
     push_b(buf, b"<text x=\"");
     push_i(buf, cx);
     push_b(buf, b"\" y=\"");
