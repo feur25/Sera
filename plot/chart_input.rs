@@ -1,5 +1,25 @@
 use serde::Deserialize;
 
+fn deser_opt_fill_opacity<'de, D>(d: D) -> Result<Option<i32>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let v: serde_json::Value = serde_json::Value::deserialize(d)?;
+    Ok(match &v {
+        serde_json::Value::Null => None,
+        serde_json::Value::Number(n) => {
+            if let Some(i) = n.as_i64() {
+                Some(i as i32)
+            } else if let Some(f) = n.as_f64() {
+                Some(if f > 0.0 && f <= 1.0 { (f * 100.0) as i32 } else { f as i32 })
+            } else {
+                None
+            }
+        }
+        _ => None,
+    })
+}
+
 #[derive(Deserialize, Default)]
 pub struct ChartOpts {
     pub width: Option<i32>,
@@ -27,6 +47,12 @@ pub struct ChartOpts {
     pub show_regression: Option<bool>,
     pub regression_type: Option<String>,
     pub bins: Option<i32>,
+    pub max_points: Option<usize>,
+    pub voxel_size: Option<f64>,
+    pub cone_size: Option<f64>,
+    pub tube_radius: Option<f64>,
+    pub n_steps: Option<usize>,
+    pub iso_level: Option<f64>,
     pub show_counts: Option<bool>,
     pub overlay_color_hex: Option<u32>,
     pub show_values: Option<bool>,
@@ -48,6 +74,7 @@ pub struct ChartOpts {
     pub color_values: Option<Vec<f64>>,
     pub color_labels: Option<Vec<String>>,
     pub filled: Option<bool>,
+    #[serde(default, deserialize_with = "deser_opt_fill_opacity")]
     pub fill_opacity: Option<i32>,
     pub bandwidth: Option<f64>,
     pub overlap: Option<f64>,
@@ -151,6 +178,7 @@ pub struct ChartOpts {
     pub pulse_duration: Option<f64>,
     pub pulse_index: Option<Vec<usize>>,
     pub pulse_above: Option<f64>,
+    pub pulse_color: Option<String>,
     pub outline_color: Option<String>,
     pub outline_width: Option<f64>,
     pub value_labels: Option<bool>,
@@ -462,6 +490,7 @@ pub struct ChartArgs {
     pub matrix: Option<Vec<Vec<f64>>>,
     pub parents: Option<Vec<String>>,
     pub categories: Option<Vec<String>>,
+    pub category_series: Option<Vec<Vec<String>>>,
     pub open: Option<Vec<f64>>,
     pub high: Option<Vec<f64>>,
     pub low: Option<Vec<f64>>,
@@ -481,14 +510,79 @@ pub struct ChartArgs {
     pub words: Option<Vec<String>>,
     pub frequencies: Option<Vec<f64>>,
     pub data: Option<Vec<Vec<f64>>>,
+    pub mesh_i: Option<Vec<i64>>,
+    pub mesh_j: Option<Vec<i64>>,
+    pub mesh_k: Option<Vec<i64>>,
+    pub u: Option<Vec<f64>>,
+    pub v: Option<Vec<f64>>,
+    pub w: Option<Vec<f64>>,
+    pub field: Option<Vec<f64>>,
+}
+
+pub fn sanitize_non_finite_json(input: &str) -> String {
+    const TOKENS: [(&str, &str); 3] = [("NaN", "0"), ("Infinity", "0"), ("-Infinity", "0")];
+    let chars: Vec<char> = input.chars().collect();
+    let n = chars.len();
+    let mut out = String::with_capacity(input.len());
+    let mut in_string = false;
+    let mut escaped = false;
+    let mut i = 0;
+    let is_word_char = |c: char| c.is_ascii_alphanumeric() || c == '_';
+    while i < n {
+        let c = chars[i];
+        if in_string {
+            out.push(c);
+            if escaped {
+                escaped = false;
+            } else if c == '\\' {
+                escaped = true;
+            } else if c == '"' {
+                in_string = false;
+            }
+            i += 1;
+            continue;
+        }
+        if c == '"' {
+            in_string = true;
+            out.push(c);
+            i += 1;
+            continue;
+        }
+        let mut matched = false;
+        for (token, replacement) in TOKENS.iter() {
+            let tlen = token.chars().count();
+            if i + tlen > n {
+                continue;
+            }
+            if chars[i..i + tlen].iter().collect::<String>() != *token {
+                continue;
+            }
+            let before_ok = i == 0 || !is_word_char(chars[i - 1]);
+            let after_ok = i + tlen >= n || !is_word_char(chars[i + tlen]);
+            if before_ok && after_ok {
+                out.push_str(replacement);
+                i += tlen;
+                matched = true;
+                break;
+            }
+        }
+        if matched {
+            continue;
+        }
+        out.push(c);
+        i += 1;
+    }
+    out
 }
 
 pub fn parse_opts(opts: &str) -> ChartOpts {
-    serde_json::from_str(opts).unwrap_or_default()
+    let sanitized = sanitize_non_finite_json(opts);
+    serde_json::from_str(&sanitized).unwrap_or_default()
 }
 
 pub fn parse_args(args: &str) -> ChartArgs {
-    serde_json::from_str(args).unwrap_or_default()
+    let sanitized = sanitize_non_finite_json(args);
+    serde_json::from_str(&sanitized).unwrap_or_default()
 }
 
 pub fn parse_all(input: &str) -> (String, ChartArgs, ChartOpts) {
@@ -501,8 +595,53 @@ pub fn parse_all(input: &str) -> (String, ChartArgs, ChartOpts) {
         #[serde(flatten)]
         opts: ChartOpts,
     }
-    let all: All = serde_json::from_str(input).unwrap_or_default();
+    let sanitized = sanitize_non_finite_json(input);
+    let all: All = serde_json::from_str(&sanitized).unwrap_or_default();
     (all.title, all.args, all.opts)
+}
+
+#[cfg(test)]
+mod sanitize_tests {
+    use super::*;
+
+    #[test]
+    fn leaves_normal_json_untouched() {
+        let s = r#"{"title":"t","values":[1.0,2.0,3.0]}"#;
+        assert_eq!(sanitize_non_finite_json(s), s);
+    }
+
+    #[test]
+    fn replaces_bare_nan_and_infinity_tokens_with_zero() {
+        let s = r#"{"values":[1.0, NaN, Infinity, -Infinity, 3.0]}"#;
+        let out = sanitize_non_finite_json(s);
+        let parsed: serde_json::Value = serde_json::from_str(&out).expect("sanitized output must be valid JSON");
+        let values = parsed["values"].as_array().unwrap();
+        assert_eq!(values.len(), 5);
+        assert_eq!(values[1], 0);
+        assert_eq!(values[2], 0);
+        assert_eq!(values[3], 0);
+    }
+
+    #[test]
+    fn does_not_corrupt_string_values_containing_those_words() {
+        let s = r#"{"labels":["NaN Corp","Infinity Stones","-Infinity Ltd"],"values":[1,2,3]}"#;
+        let out = sanitize_non_finite_json(s);
+        assert_eq!(out, s);
+        let parsed: serde_json::Value = serde_json::from_str(&out).unwrap();
+        assert_eq!(parsed["labels"][0], "NaN Corp");
+        assert_eq!(parsed["labels"][1], "Infinity Stones");
+        assert_eq!(parsed["labels"][2], "-Infinity Ltd");
+    }
+
+    #[test]
+    fn parse_all_recovers_valid_points_instead_of_whole_payload_going_empty() {
+        let input = r#"{"title":"t","labels":["A","B","C"],"values":[1.0, NaN, 3.0]}"#;
+        let (title, args, _opts) = parse_all(input);
+        assert_eq!(title, "t");
+        let values = args.values.expect("values should still deserialize");
+        assert_eq!(values, vec![1.0, 0.0, 3.0]);
+        assert_eq!(args.labels.unwrap().len(), 3);
+    }
 }
 
 pub fn apply(html: String, o: &ChartOpts) -> String {
@@ -513,6 +652,7 @@ pub fn apply(html: String, o: &ChartOpts) -> String {
     let h = crate::html::hover::apply_rotation(h, o.rotation_deg());
     let h = apply_annotations(h, o);
     let h = apply_kwarg_chains(h, o);
+    let h = crate::apply_global_color_bindings(h);
     if let Some(ref t) = o.theme {
         crate::plot::statistical::apply_chart_theme(h, t)
     } else {
@@ -528,6 +668,7 @@ pub fn apply_h(html: String, o: &ChartOpts) -> String {
     let h = crate::html::hover::apply_rotation(h, o.rotation_deg_native());
     let h = apply_annotations(h, o);
     let h = apply_kwarg_chains(h, o);
+    let h = crate::apply_global_color_bindings(h);
     if let Some(ref t) = o.theme {
         crate::plot::statistical::apply_chart_theme(h, t)
     } else {
@@ -625,7 +766,7 @@ fn apply_kwarg_chains(html: String, o: &ChartOpts) -> String {
         html = crate::apply_shadow(html, blur, color.as_deref().unwrap_or("rgba(0,0,0,.35)"));
     }
     if let Some(dur) = o.pulse_duration {
-        html = crate::apply_pulse(html, dur, o.pulse_index.as_deref(), o.pulse_above);
+        html = crate::apply_pulse(html, dur, o.pulse_index.as_deref(), o.pulse_above, o.pulse_color.as_deref());
     }
     if let Some(ref c) = o.outline_color {
         html = crate::apply_outline(html, c, o.outline_width.unwrap_or(2.0));
@@ -763,7 +904,8 @@ pub fn apply_bg3d(html: String, o: &ChartOpts) -> String {
         html
     };
     let h = apply_annotations(h, o);
-    apply_kwarg_chains(h, o)
+    let h = apply_kwarg_chains(h, o);
+    crate::apply_global_color_bindings(h)
 }
 
 pub fn build_html_chart(input: &str) -> String {
