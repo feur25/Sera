@@ -205,7 +205,7 @@ pub fn open_svg(buf: &mut Vec<u8>, cfg: &RidgelineConfig, layout: &Layout, x0: f
         push_i(buf, x);
         push_b(buf, b"\" y=\"");
         push_i(buf, layout.axis_y + 14);
-        push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#9ca3af\" class=\"sp-xt\">");
+        push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" class=\"sp-xt\">");
         push_f2(buf, val);
         push_b(buf, b"</text>");
     }

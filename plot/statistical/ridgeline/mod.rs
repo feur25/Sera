@@ -2,7 +2,6 @@ use crate::plot::{apply, parse_all};
 pub mod basic;
 pub mod common;
 pub mod config;
-pub mod deluxe;
 pub mod gradient;
 pub mod heatmap;
 pub mod lines;
@@ -26,7 +25,6 @@ pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
         Rug => rug::render(cfg),
         Heatmap => heatmap::render(cfg),
         Spaced => spaced::render(cfg),
-        Deluxe => deluxe::render(cfg),
     }
 }
 

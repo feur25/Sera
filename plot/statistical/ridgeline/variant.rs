@@ -8,6 +8,5 @@ crate::plot_family! {
         Rug       => "rug" | "ticks" | "carpet" | "rugplot",
         Heatmap   => "heatmap" | "heat" | "rainbow" | "colored",
         Spaced    => "spaced" | "separated" | "no_overlap" | "split",
-        Deluxe    => "deluxe" | "premium" | "aurora" | "neon",
     }
 }
