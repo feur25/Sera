@@ -8,6 +8,5 @@ crate::plot_family! {
         Stacked  => "stacked" | "stack" | "cumulative",
         PolarBar => "polar_bar" | "polar" | "bar" | "radial_bar",
         Gradient => "gradient" | "radial_gradient" | "shade" | "fade",
-        Deluxe   => "deluxe" | "premium" | "neon" | "glow",
     }
 }

@@ -3,7 +3,6 @@ pub mod basic;
 pub mod common;
 pub mod config;
 pub mod dashed;
-pub mod deluxe;
 pub mod filled;
 pub mod gradient;
 pub mod lines;
@@ -26,7 +25,6 @@ pub fn render_radar_html(cfg: &RadarConfig) -> String {
         Stacked => stacked::render(cfg),
         PolarBar => polar_bar::render(cfg),
         Gradient => gradient::render(cfg),
-        Deluxe => deluxe::render(cfg),
     }
 }
 

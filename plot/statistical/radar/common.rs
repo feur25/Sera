@@ -118,7 +118,7 @@ pub fn draw_grid(buf: &mut Vec<u8>, cfg: &RadarConfig, p: &Prepared) {
         push_f2(buf, ly);
         push_b(
             buf,
-            b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">",
+            b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">",
         );
         let val = frac * p.global_max;
         if val.fract() == 0.0 {
