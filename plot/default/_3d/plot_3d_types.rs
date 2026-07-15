@@ -1,6 +1,4 @@
-use crate::plot::controller::plot_3d_controller::{
-    get_group_registry, Plot3DPositioner, Plot3DRenderContext, Plot3DTypeBuilder,
-};
+use crate::plot::controller::plot_3d_controller::Plot3DRenderContext;
 
 fn render_lines_3d_wrapper(ctx: Plot3DRenderContext) {
     crate::plot::default::_3d::render_lines_3d(crate::plot::default::_3d::Line3DRenderContext {
@@ -91,46 +89,49 @@ fn get_positions_bar_3d_wrapper(
     )
 }
 
-const DEFAULT_3D_TYPES: &[(
-    u8,
-    &str,
-    crate::plot::controller::plot_3d_controller::Plot3DRenderer,
-    Plot3DPositioner,
-)] = &[
-    (
-        3,
-        "line_3d",
-        render_lines_3d_wrapper as crate::plot::controller::plot_3d_controller::Plot3DRenderer,
-        get_positions_line_3d_wrapper as Plot3DPositioner,
-    ),
-    (
-        4,
-        "scatter_3d",
-        render_points_3d_wrapper as crate::plot::controller::plot_3d_controller::Plot3DRenderer,
-        get_positions_scatter_3d_wrapper as Plot3DPositioner,
-    ),
-    (
-        5,
-        "bar_3d",
-        render_bars_3d_wrapper as crate::plot::controller::plot_3d_controller::Plot3DRenderer,
-        get_positions_bar_3d_wrapper as Plot3DPositioner,
-    ),
-];
+inventory::submit! {
+    crate::plot::controller::plot_3d_controller::Plot3DTypeEntry {
+        group: "default",
+        id: 3,
+        name: "line_3d",
+        renderer: render_lines_3d_wrapper,
+        positioner: get_positions_line_3d_wrapper,
+    }
+}
+inventory::submit! {
+    crate::plot::controller::plot_3d_controller::Plot3DTypeEntry {
+        group: "default",
+        id: 4,
+        name: "scatter_3d",
+        renderer: render_points_3d_wrapper,
+        positioner: get_positions_scatter_3d_wrapper,
+    }
+}
+inventory::submit! {
+    crate::plot::controller::plot_3d_controller::Plot3DTypeEntry {
+        group: "default",
+        id: 5,
+        name: "bar_3d",
+        renderer: render_bars_3d_wrapper,
+        positioner: get_positions_bar_3d_wrapper,
+    }
+}
 
 pub fn register_default_3d_types() {
-    let mut ids = Vec::new();
+    crate::plot::controller::plot_3d_controller::register_group_from_inventory("default");
+}
 
-    for (id, name, renderer, positioner) in DEFAULT_3D_TYPES {
-        let _ = Plot3DTypeBuilder::new(*id)
-            .with_name(name)
-            .with_renderer(*renderer)
-            .build();
+#[cfg(test)]
+mod inventory_tests {
+    use crate::plot::controller::plot_3d_controller::test_support::*;
 
-        crate::plot::controller::plot_3d_controller::register_positioner_for_type(*id, *positioner);
-        ids.push(*id);
+    #[test]
+    fn default_3d_group_is_well_formed() {
+        assert_group_well_formed("default");
     }
 
-    if let Ok(mut grp_reg) = get_group_registry().lock() {
-        grp_reg.register_group("default".to_string(), ids);
+    #[test]
+    fn register_default_3d_types_matches_inventory() {
+        assert_registered_group_matches_inventory("default", super::register_default_3d_types);
     }
 }

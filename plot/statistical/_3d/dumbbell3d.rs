@@ -77,3 +77,13 @@ pub fn build_dumbbell3d_chart(input: &str) -> String {
         &o,
     )
 }
+
+inventory::submit! {
+    crate::plot::controller::plot_3d_controller::Plot3DTypeEntry {
+        group: "statistical",
+        id: 78,
+        name: "dumbbell_3d",
+        renderer: crate::plot::controller::plot_3d_controller::noop_3d_renderer,
+        positioner: crate::plot::controller::plot_3d_controller::noop_3d_positioner,
+    }
+}

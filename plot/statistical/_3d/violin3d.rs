@@ -30,7 +30,7 @@ pub fn render_violin3d_html(
     )
 }
 
-#[crate::chart_demo("categories=["A","B"], values=[[1,2,3,2],[4,5,6,5]]")]
+#[crate::chart_demo("categories=[\"A\",\"A\",\"A\",\"A\",\"B\",\"B\",\"B\",\"B\"], values=[1,2,3,2,4,5,6,5]")]
 #[crate::params(paramsList["title","categories","labels","values","x_label","y_label","z_label","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_alias("violin3d", "violin_3d", "violin3d_chart", "violins3d")]
 #[crate::sera_builder]
@@ -103,4 +103,14 @@ pub fn build_violin3d_chart(input: &str) -> String {
         ),
         &o,
     )
+}
+
+inventory::submit! {
+    crate::plot::controller::plot_3d_controller::Plot3DTypeEntry {
+        group: "statistical",
+        id: 75,
+        name: "violin_3d",
+        renderer: crate::plot::controller::plot_3d_controller::noop_3d_renderer,
+        positioner: crate::plot::controller::plot_3d_controller::noop_3d_positioner,
+    }
 }

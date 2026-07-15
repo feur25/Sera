@@ -1,6 +1,4 @@
-use crate::plot::controller::plot_3d_controller::{
-    get_group_registry, Plot3DPositioner, Plot3DRenderContext, Plot3DTypeBuilder,
-};
+use crate::plot::controller::plot_3d_controller::Plot3DRenderContext;
 
 fn render_globe_wrapper(ctx: Plot3DRenderContext) {
     let labels: Vec<String> = ctx.labels.to_vec();
@@ -34,32 +32,31 @@ fn get_positions_globe_wrapper(
     )
 }
 
-const MAP_3D_TYPES: &[(
-    u8,
-    &str,
-    crate::plot::controller::plot_3d_controller::Plot3DRenderer,
-    Plot3DPositioner,
-)] = &[(
-    23,
-    "globe_3d",
-    render_globe_wrapper as crate::plot::controller::plot_3d_controller::Plot3DRenderer,
-    get_positions_globe_wrapper as Plot3DPositioner,
-)];
+inventory::submit! {
+    crate::plot::controller::plot_3d_controller::Plot3DTypeEntry {
+        group: "map",
+        id: 23,
+        name: "globe_3d",
+        renderer: render_globe_wrapper,
+        positioner: get_positions_globe_wrapper,
+    }
+}
 
 pub fn register_map_3d_types() {
-    let mut ids = Vec::new();
+    crate::plot::controller::plot_3d_controller::register_group_from_inventory("map");
+}
 
-    for (id, name, renderer, positioner) in MAP_3D_TYPES {
-        let _ = Plot3DTypeBuilder::new(*id)
-            .with_name(name)
-            .with_renderer(*renderer)
-            .build();
+#[cfg(test)]
+mod inventory_tests {
+    use crate::plot::controller::plot_3d_controller::test_support::*;
 
-        crate::plot::controller::plot_3d_controller::register_positioner_for_type(*id, *positioner);
-        ids.push(*id);
+    #[test]
+    fn map_3d_group_is_well_formed() {
+        assert_group_well_formed("map");
     }
 
-    if let Ok(mut grp_reg) = get_group_registry().lock() {
-        grp_reg.register_group("map".to_string(), ids);
+    #[test]
+    fn register_map_3d_types_matches_inventory() {
+        assert_registered_group_matches_inventory("map", super::register_map_3d_types);
     }
 }

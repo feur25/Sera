@@ -76,3 +76,13 @@ pub fn build_sunburst3d_chart(input: &str) -> String {
         &o,
     )
 }
+
+inventory::submit! {
+    crate::plot::controller::plot_3d_controller::Plot3DTypeEntry {
+        group: "statistical",
+        id: 80,
+        name: "sunburst_3d",
+        renderer: crate::plot::controller::plot_3d_controller::noop_3d_renderer,
+        positioner: crate::plot::controller::plot_3d_controller::noop_3d_positioner,
+    }
+}

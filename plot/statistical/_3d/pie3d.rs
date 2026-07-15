@@ -62,3 +62,13 @@ pub fn build_pie3d_chart(input: &str) -> String {
     );
     apply_bg3d(html, &o)
 }
+
+inventory::submit! {
+    crate::plot::controller::plot_3d_controller::Plot3DTypeEntry {
+        group: "statistical",
+        id: 74,
+        name: "pie_3d",
+        renderer: crate::plot::controller::plot_3d_controller::noop_3d_renderer,
+        positioner: crate::plot::controller::plot_3d_controller::noop_3d_positioner,
+    }
+}

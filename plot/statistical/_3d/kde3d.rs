@@ -30,7 +30,7 @@ pub fn render_kde3d_html(
     )
 }
 
-#[crate::chart_demo("categories=["A","B"], values=[[1,2,3],[4,5,6]]")]
+#[crate::chart_demo("categories=[\"A\",\"A\",\"A\",\"B\",\"B\",\"B\"], values=[1,2,3,4,5,6]")]
 #[crate::params(paramsList["title","categories","values","x_label","y_label","z_label","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_alias("kde3d", "kde_3d", "kde3d_chart", "density3d")]
 #[crate::sera_builder]
@@ -103,4 +103,14 @@ pub fn build_kde3d_chart(input: &str) -> String {
         ),
         &o,
     )
+}
+
+inventory::submit! {
+    crate::plot::controller::plot_3d_controller::Plot3DTypeEntry {
+        group: "statistical",
+        id: 72,
+        name: "kde_3d",
+        renderer: crate::plot::controller::plot_3d_controller::noop_3d_renderer,
+        positioner: crate::plot::controller::plot_3d_controller::noop_3d_positioner,
+    }
 }

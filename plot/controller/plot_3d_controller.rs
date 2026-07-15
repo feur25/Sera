@@ -24,6 +24,47 @@ pub type Plot3DPositioner = fn(
     egui::Rect,
 ) -> Vec<(egui::Pos2, usize)>;
 
+pub fn noop_3d_renderer(_ctx: Plot3DRenderContext) {}
+
+pub fn noop_3d_positioner(
+    _values: &[f64],
+    _max_val: f64,
+    _visible_indices: &[usize],
+    _camera_controller: &crate::plot::containers_3d::CameraController,
+    _plot_rect: egui::Rect,
+) -> Vec<(egui::Pos2, usize)> {
+    Vec::new()
+}
+
+pub struct Plot3DTypeEntry {
+    pub group: &'static str,
+    pub id: u8,
+    pub name: &'static str,
+    pub renderer: Plot3DRenderer,
+    pub positioner: Plot3DPositioner,
+}
+
+inventory::collect!(Plot3DTypeEntry);
+
+pub fn register_group_from_inventory(group: &'static str) {
+    let mut ids: Vec<u8> = inventory::iter::<Plot3DTypeEntry>()
+        .filter(|entry| entry.group == group)
+        .map(|entry| {
+            let _ = Plot3DTypeBuilder::new(entry.id)
+                .with_name(entry.name)
+                .with_renderer(entry.renderer)
+                .build();
+            register_positioner_for_type(entry.id, entry.positioner);
+            entry.id
+        })
+        .collect();
+    ids.sort_unstable();
+
+    if let Ok(mut grp_reg) = get_group_registry().lock() {
+        grp_reg.register_group(group.to_string(), ids);
+    }
+}
+
 pub(crate) struct Plot3DRegistry {
     entries: HashMap<u8, (String, Plot3DRenderer)>,
     positioners: HashMap<u8, Plot3DPositioner>,
@@ -344,5 +385,62 @@ pub fn set_current_group(name: &str) -> bool {
         grp_reg.set_current(name.to_string())
     } else {
         false
+    }
+}
+
+#[cfg(test)]
+pub(crate) mod test_support {
+    use super::Plot3DTypeEntry;
+    use std::collections::HashSet;
+
+    pub fn group_entries(group: &'static str) -> Vec<&'static Plot3DTypeEntry> {
+        inventory::iter::<Plot3DTypeEntry>().filter(|e| e.group == group).collect()
+    }
+
+    pub fn assert_group_well_formed(group: &'static str) {
+        let entries = group_entries(group);
+        assert!(!entries.is_empty(), "group '{group}' has no registered entries");
+
+        let ids: Vec<u8> = entries.iter().map(|e| e.id).collect();
+        let unique_ids: HashSet<u8> = ids.iter().copied().collect();
+        assert_eq!(ids.len(), unique_ids.len(), "duplicate ids in group '{group}': {ids:?}");
+
+        let names: Vec<&str> = entries.iter().map(|e| e.name).collect();
+        let unique_names: HashSet<&str> = names.iter().copied().collect();
+        assert_eq!(names.len(), unique_names.len(), "duplicate names in group '{group}': {names:?}");
+
+        for entry in &entries {
+            assert!(!entry.name.is_empty(), "entry id {} in group '{group}' has an empty name", entry.id);
+        }
+    }
+
+    pub fn assert_registered_group_matches_inventory(group: &'static str, register_fn: fn()) {
+        let inventory_ids: HashSet<u8> = group_entries(group).into_iter().map(|e| e.id).collect();
+
+        register_fn();
+        super::set_current_group(group);
+        let registered_ids: HashSet<u8> = super::get_current_group_types()
+            .into_iter()
+            .map(|(id, _)| id)
+            .collect();
+
+        assert_eq!(registered_ids, inventory_ids, "registered group '{group}' drifted from its inventory entries");
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::collections::HashSet;
+
+    #[test]
+    fn all_plot_3d_type_entries_share_a_globally_unique_id_space() {
+        let ids: Vec<u8> = inventory::iter::<Plot3DTypeEntry>().map(|e| e.id).collect();
+        let unique: HashSet<u8> = ids.iter().copied().collect();
+        assert_eq!(
+            ids.len(),
+            unique.len(),
+            "duplicate ids across Plot3DTypeEntry groups (they share one flat u8 registry): {ids:?}"
+        );
     }
 }

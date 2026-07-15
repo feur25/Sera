@@ -64,3 +64,13 @@ pub fn build_funnel3d_chart(input: &str) -> String {
         &o,
     )
 }
+
+inventory::submit! {
+    crate::plot::controller::plot_3d_controller::Plot3DTypeEntry {
+        group: "statistical",
+        id: 79,
+        name: "funnel_3d",
+        renderer: crate::plot::controller::plot_3d_controller::noop_3d_renderer,
+        positioner: crate::plot::controller::plot_3d_controller::noop_3d_positioner,
+    }
+}
