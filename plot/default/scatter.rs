@@ -1,3 +1,4 @@
+use crate::plot::statistical::common::truncate;
 use crate::plot::{apply_bg3d, parse_all};
 pub struct Scatter;
 
@@ -528,7 +529,7 @@ fn render_scatter_canvas_html(
                 buf.push(b',');
             }
             buf.push(b'\'');
-            push_js_str(&mut buf, if nm.len() > 22 { &nm[..22] } else { nm });
+            push_js_str(&mut buf, truncate(nm, 22));
             buf.push(b'\'');
         }
     }
@@ -551,7 +552,7 @@ fn render_scatter_canvas_html(
     );
     push_b(
         &mut buf,
-        b"ctx.fillStyle='#9ca3af';ctx.font='9px Arial';ctx.textAlign='end';",
+        b"ctx.fillStyle='#6b7280';ctx.font='9px Arial';ctx.textAlign='end';",
     );
     push_b(&mut buf, b"for(var i=0;i<=5;i++){var f=i/5,yp=pT+Math.round((1-f)*pH),yv=minY+f*rY;ctx.fillText(yv>=1000?Math.round(yv)+'':yv.toFixed(2),pL-4,yp+3);}");
     push_b(&mut buf, b"ctx.textAlign='center';");
@@ -599,7 +600,7 @@ fn render_scatter_canvas_html(
     }
     push_b(
         &mut buf,
-        b"ctx.fillStyle='#9ca3af';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText('n=",
+        b"ctx.fillStyle='#6b7280';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText('n=",
     );
     buf.extend_from_slice(format!("{}", n).as_bytes());
     push_b(&mut buf, b"',pL+4,pT+pH-8);");
@@ -843,7 +844,7 @@ pub fn render_scatter_html(
         push_i(&mut buf, pad_l - 4);
         push_b(&mut buf, b"\" y=\"");
         push_i(&mut buf, y + 3);
-        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
+        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-yt\">");
         push_f2(&mut buf, val);
         push_b(&mut buf, b"</text>");
         let xval = min_x + frac * range_x;
@@ -852,7 +853,7 @@ pub fn render_scatter_html(
         push_i(&mut buf, xi);
         push_b(&mut buf, b"\" y=\"");
         push_i(&mut buf, pad_t + plot_h + 14);
-        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-xt\">");
+        push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-xt\">");
         push_f2(&mut buf, xval);
         push_b(&mut buf, b"</text>");
     }
@@ -947,14 +948,7 @@ pub fn render_scatter_html(
             push_b(&mut buf, b"\" y=\"");
             push_i(&mut buf, cy - r - 3);
             push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#374151\">");
-            escape_xml(
-                &mut buf,
-                if labels[i].len() <= 14 {
-                    &labels[i]
-                } else {
-                    &labels[i][..14]
-                },
-            );
+            escape_xml(&mut buf, truncate(&labels[i], 14));
             push_b(&mut buf, b"</text>");
         }
     }
@@ -1008,7 +1002,7 @@ pub fn render_scatter_html(
                 &mut buf,
                 b"\" font-family=\"Arial,sans-serif\" font-size=\"11\" fill=\"#374151\">",
             );
-            escape_xml(&mut buf, if name.len() <= 20 { name } else { &name[..20] });
+            escape_xml(&mut buf, truncate(name, 20));
             push_b(&mut buf, b"</text></g>");
         }
     }
@@ -1069,7 +1063,7 @@ fn dbscan_core(x: &[f64], y: &[f64], eps: f64, min_samples: usize) -> (Vec<i32>,
     }
 
     let n = x.len().min(y.len());
-    if n == 0 {
+    if n == 0 || !eps.is_finite() || eps <= 0.0 {
         return (Vec::new(), 0);
     }
 
@@ -1080,6 +1074,10 @@ fn dbscan_core(x: &[f64], y: &[f64], eps: f64, min_samples: usize) -> (Vec<i32>,
 
     let xf: Vec<f32> = x[..n].iter().map(|&v| v as f32).collect();
     let yf: Vec<f32> = y[..n].iter().map(|&v| v as f32).collect();
+
+    if xf.iter().chain(yf.iter()).any(|v| !v.is_finite()) {
+        return (Vec::new(), 0);
+    }
 
     let (mut xmin, mut xmax, mut ymin, mut ymax) = (xf[0], xf[0], yf[0], yf[0]);
     for i in 1..n {
@@ -1097,8 +1095,20 @@ fn dbscan_core(x: &[f64], y: &[f64], eps: f64, min_samples: usize) -> (Vec<i32>,
         }
     }
 
-    let gw = (((xmax - xmin) * inv_cell).ceil() as usize).max(1) + 1;
-    let gh = (((ymax - ymin) * inv_cell).ceil() as usize).max(1) + 1;
+    // Grid dims computed in f64 first: an extreme outlier point can make the natural
+    // eps/2-spaced grid exceed usize::MAX, which previously overflowed (wrapping in
+    // release builds) into an out-of-bounds cell index. When that would happen, the
+    // spatial-grid fast path is abandoned in favor of an exact O(n^2) fallback, since
+    // such an extreme coordinate spread relative to eps only arises from pathological
+    // input, not real chart data volumes.
+    const MAX_GRID_DIM: f64 = 4096.0;
+    let gw_f = ((xmax - xmin) as f64 * inv_cell as f64).ceil() + 1.0;
+    let gh_f = ((ymax - ymin) as f64 * inv_cell as f64).ceil() + 1.0;
+    if gw_f > MAX_GRID_DIM || gh_f > MAX_GRID_DIM {
+        return dbscan_brute_force(&xf, &yf, eps_f, eps2, min_samples as u32);
+    }
+    let gw = gw_f as usize;
+    let gh = gh_f as usize;
     let tc = gw * gh;
 
     let mut co = vec![0u32; n];
@@ -1376,6 +1386,76 @@ fn dbscan_core(x: &[f64], y: &[f64], eps: f64, min_samples: usize) -> (Vec<i32>,
         }
     }
 
+    (labels, cid as usize)
+}
+
+fn dbscan_brute_force(xf: &[f32], yf: &[f32], eps_f: f32, eps2: f32, ms: u32) -> (Vec<i32>, usize) {
+    let n = xf.len();
+    let _ = eps_f;
+    let mut neighbors: Vec<Vec<usize>> = vec![Vec::new(); n];
+    for i in 0..n {
+        for j in 0..n {
+            let dx = xf[i] - xf[j];
+            let dy = yf[i] - yf[j];
+            if dx * dx + dy * dy <= eps2 {
+                neighbors[i].push(j);
+            }
+        }
+    }
+    let is_core: Vec<bool> = (0..n).map(|i| neighbors[i].len() as u32 >= ms).collect();
+
+    let mut parent: Vec<usize> = (0..n).collect();
+    fn find(parent: &mut [usize], x: usize) -> usize {
+        if parent[x] != x {
+            parent[x] = find(parent, parent[x]);
+        }
+        parent[x]
+    }
+    fn union(parent: &mut [usize], a: usize, b: usize) {
+        let (ra, rb) = (find(parent, a), find(parent, b));
+        if ra != rb {
+            parent[ra] = rb;
+        }
+    }
+
+    for i in 0..n {
+        if !is_core[i] {
+            continue;
+        }
+        for &j in &neighbors[i] {
+            if is_core[j] {
+                union(&mut parent, i, j);
+            }
+        }
+    }
+
+    let mut labels = vec![-1i32; n];
+    for i in 0..n {
+        if is_core[i] {
+            labels[i] = find(&mut parent, i) as i32;
+        }
+    }
+    for i in 0..n {
+        if labels[i] >= 0 {
+            continue;
+        }
+        if let Some(&core_j) = neighbors[i].iter().find(|&&j| is_core[j]) {
+            labels[i] = find(&mut parent, core_j) as i32;
+        }
+    }
+
+    let mut rm = std::collections::HashMap::<i32, i32>::new();
+    let mut cid = 0i32;
+    for l in labels.iter_mut() {
+        if *l >= 0 {
+            let e = rm.entry(*l).or_insert_with(|| {
+                let v = cid;
+                cid += 1;
+                v
+            });
+            *l = *e;
+        }
+    }
     (labels, cid as usize)
 }
 
@@ -1957,7 +2037,7 @@ fn render_dbscan_canvas(
             buf.push(b',');
         }
         buf.push(b'\'');
-        push_js_str(&mut buf, if nm.len() > 22 { &nm[..22] } else { nm });
+        push_js_str(&mut buf, truncate(nm, 22));
         buf.push(b'\'');
     }
     push_b(&mut buf, b"];");
@@ -1979,7 +2059,7 @@ fn render_dbscan_canvas(
     );
     push_b(
         &mut buf,
-        b"ctx.fillStyle='#9ca3af';ctx.font='9px Arial';ctx.textAlign='end';",
+        b"ctx.fillStyle='#6b7280';ctx.font='9px Arial';ctx.textAlign='end';",
     );
     push_b(&mut buf, b"for(var i=0;i<=5;i++){var f=i/5,yp=pT+Math.round((1-f)*pH),yv=minY+f*rY;ctx.fillText(yv>=1000?Math.round(yv)+'':yv.toFixed(2),pL-4,yp+3);}");
     push_b(&mut buf, b"ctx.textAlign='center';");
@@ -2172,7 +2252,8 @@ pub fn build_dbscan_chart(input: &str) -> String {
         normalize,
         &pal,
     );
-    crate::html::hover::apply_opts(html, bg_str.as_deref(), !o.no_x(), !o.no_y())
+    let h = crate::html::hover::apply_opts(html, bg_str.as_deref(), !o.no_x(), !o.no_y());
+    crate::apply_global_color_bindings(h)
 }
 
 #[crate::sera_alias("dbscan3d", "dbscan_3d", "dbscan3d_chart")]
@@ -2225,4 +2306,42 @@ pub fn build_dbscan_chart_3d(input: &str) -> String {
         &o.scene3d(),
     );
     apply_bg3d(html, &o)
+}
+
+#[cfg(test)]
+mod dbscan_core_tests {
+    use super::dbscan_core;
+
+    #[test]
+    fn eps_le_zero_returns_no_clusters_instead_of_dividing_by_zero() {
+        let (labels, n_clusters) = dbscan_core(&[1.0, 2.0, 8.0, 9.0], &[1.0, 2.0, 8.0, 9.0], 0.0, 1);
+        assert_eq!(n_clusters, 0);
+        assert!(labels.iter().all(|&l| l == -1));
+    }
+
+    #[test]
+    fn extreme_outlier_coordinate_does_not_panic_and_returns_gracefully() {
+        let x = [1e300, 2.0, 2.1, 8.0];
+        let y = [1e300, 2.0, 2.1, 8.0];
+        let (labels, n_clusters) = dbscan_core(&x, &y, 1.5, 1);
+        assert_eq!(n_clusters, 0);
+        assert!(labels.is_empty() || labels.len() == 4);
+    }
+
+    #[test]
+    fn wide_but_finite_coordinate_spread_still_clusters_nearby_points() {
+        let x = [1.0e5, 2.0, 2.1, 8.0];
+        let y = [1.0e5, 2.0, 2.1, 8.0];
+        let (labels, n_clusters) = dbscan_core(&x, &y, 1.5, 1);
+        assert_eq!(labels.len(), 4);
+        assert!(n_clusters >= 1);
+        assert_eq!(labels[1], labels[2], "the two nearby points should share a cluster");
+    }
+
+    #[test]
+    fn non_finite_eps_returns_no_clusters() {
+        let (labels, n_clusters) = dbscan_core(&[1.0, 2.0], &[1.0, 2.0], f64::NAN, 1);
+        assert_eq!(n_clusters, 0);
+        assert!(labels.iter().all(|&l| l == -1));
+    }
 }
