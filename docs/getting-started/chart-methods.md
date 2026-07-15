@@ -18,10 +18,10 @@
 .cm-section h3{margin:0;font-size:18px;color:#e0e7ff;font-weight:700;border:none;padding:0}
 .cm-section p{margin:0 0 0 auto;color:#94a3b8;font-size:12.5px;font-style:italic}
 
-.cm-card{margin:1em 0 1.4em;padding:18px 20px;background:#0a0f1c;border:1px solid #1e293b;border-left:3px solid #475569;border-radius:0 10px 10px 0;box-shadow:0 6px 18px -8px rgba(0,0,0,.5)}
+.cm-card{margin:1em 0 1.4em;padding:18px 20px;background:#0a0f1c;border:1px solid #1e293b;border-left:3px solid #475569;border-radius:0 10px 10px 0;box-shadow:0 6px 18px -8px rgba(0,0,0,.5);overflow:hidden}
 .cm-card.cm-new{border-left-color:#22c55e}
 .cm-card .cm-name{display:flex;align-items:center;gap:10px;margin:0 0 6px;flex-wrap:wrap}
-.cm-card code.cm-fn{font-family:"JetBrains Mono",Consolas,monospace;font-size:14px;color:#a5b4fc;background:rgba(99,102,241,.10);padding:3px 9px;border-radius:6px;font-weight:600}
+.cm-card code.cm-fn{font-family:"JetBrains Mono",Consolas,monospace;font-size:14px;color:#a5b4fc;background:rgba(99,102,241,.10);padding:3px 9px;border-radius:6px;font-weight:600;word-break:break-all;max-width:100%}
 .cm-tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 .cm-tag.cm-tag-new{background:rgba(34,197,94,.15);color:#86efac;border:1px solid rgba(34,197,94,.35)}
 .cm-tag.cm-tag-chain{background:rgba(99,102,241,.15);color:#c7d2fe;border:1px solid rgba(99,102,241,.35)}
@@ -29,7 +29,7 @@
 .cm-tag.cm-tag-export{background:rgba(244,63,94,.15);color:#fda4af;border:1px solid rgba(244,63,94,.35)}
 .cm-tag.cm-tag-prop{background:rgba(168,85,247,.15);color:#d8b4fe;border:1px solid rgba(168,85,247,.35)}
 .cm-tag.cm-tag-alias{background:rgba(20,184,166,.15);color:#5eead4;border:1px solid rgba(20,184,166,.35);text-transform:none;font-weight:600}
-.cm-card .cm-desc{margin:6px 0 10px;color:#cbd5e1;font-size:13.5px;line-height:1.6}
+.cm-card .cm-desc{margin:6px 0 10px;color:#cbd5e1;font-size:13.5px;line-height:1.6;overflow-wrap:break-word;word-break:break-word}
 .cm-card pre{margin:0;border-radius:8px;background:#06080f;border:1px solid #131a2a;padding:12px 14px;overflow-x:auto}
 .cm-card pre code{font-size:12.5px;line-height:1.55;color:#e2e8f0;background:none;padding:0}
 .cm-params{display:flex;flex-direction:column;gap:6px;margin-top:8px}
@@ -37,6 +37,32 @@
 .cm-param code{background:#1e293b;padding:1px 7px;border-radius:5px;color:#e2e8f0;font-size:12px}
 .cm-param-ty{color:#818cf8;font-family:"JetBrains Mono",Consolas,monospace;font-size:11.5px}
 .cm-param-desc{color:#94a3b8}
+.cm-save{margin:1.2em 0;padding:14px 16px 14px 18px;background:#04060d;border:1px solid #1e293b;border-radius:10px;overflow:hidden}
+.cm-save-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
+.cm-save-ic{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#065f46,#047857);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+.cm-save-head span{font-size:12.5px;font-weight:700;color:#6ee7b7;letter-spacing:.02em}
+.cm-save pre{margin:0;border-radius:7px;background:#070c18;border:1px solid #0f1929;padding:10px 13px;overflow-x:auto}
+.cm-save pre code{font-size:12px;line-height:1.5;color:#e2e8f0;background:none;padding:0}
+.cm-feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:1.2em 0 1.6em}
+.cm-feat{border:1px solid #1e293b;border-radius:12px;overflow:hidden;background:#070c18;transition:border-color .15s}
+.cm-feat:hover{border-color:#334155}
+.cm-feat-hd{padding:14px 16px;border-bottom:1px solid #0f1929;display:flex;align-items:flex-start;gap:12px}
+.cm-feat-ic{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.cm-feat-ic.ic-grid{background:linear-gradient(135deg,#3730a3,#1e1b4b)}
+.cm-feat-ic.ic-slide{background:linear-gradient(135deg,#065f46,#047857)}
+.cm-feat-meta{flex:1;min-width:0}
+.cm-feat-meta strong{display:block;font-size:13.5px;color:#e0e7ff;font-weight:700;margin-bottom:3px}
+.cm-feat-meta code{font-size:11.5px;color:#818cf8;background:rgba(99,102,241,.1);padding:2px 7px;border-radius:5px}
+.cm-feat-bd{padding:12px 16px}
+.cm-feat-desc{color:#94a3b8;font-size:12.5px;line-height:1.6;margin:0 0 10px}
+.cm-feat-params{display:flex;flex-direction:column;gap:0;margin-bottom:11px;border:1px solid #0f1929;border-radius:7px;overflow:hidden}
+.cm-feat-param{display:flex;gap:0;font-size:11.5px;border-bottom:1px solid #0f1929}
+.cm-feat-param:last-child{border-bottom:none}
+.cm-feat-pk{padding:5px 9px;color:#e2e8f0;background:#0a0f1c;font-family:"JetBrains Mono",Consolas,monospace;white-space:nowrap;min-width:100px;border-right:1px solid #0f1929}
+.cm-feat-pt{padding:5px 8px;color:#6366f1;font-family:monospace;white-space:nowrap;border-right:1px solid #0f1929;min-width:80px}
+.cm-feat-pd{padding:5px 9px;color:#64748b;line-height:1.4}
+.cm-feat pre{margin:0;border-radius:7px;background:#04060d;border:1px solid #0f1929;padding:10px 13px;overflow-x:auto}
+.cm-feat pre code{font-size:11.5px;line-height:1.5;color:#e2e8f0;background:none;padding:0}
 
 .cm-table{width:100%;border-collapse:collapse;margin:1em 0;font-size:13px;background:#0a0f1c;border-radius:8px;overflow:hidden;border:1px solid #1e293b}
 .cm-table th{background:#0f172a;color:#a5b4fc;padding:10px 14px;text-align:left;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #1e293b}
@@ -70,12 +96,29 @@
 Set defaults once. <strong>Every chart</strong> created afterwards inherits this configuration automatically.
 
 <div data-sp-registry-table="methods" data-file="config/config.md,config/global.md"></div>
+<div class="cm-save">
+<div class="cm-save-head"><span class="cm-save-ic">💾</span><span>Persist aliases across sessions</span></div>
+<pre><code class="language-python">sp.config.add_alias("bar", "barchart")
+sp.config.add_alias("line", "linechart")
+sp.config.save()  # writes to ~/.seraplot/config.json
+</code></pre>
+<pre style="margin-top:7px"><code class="language-python">import seraplot as sp  # aliases are auto-loaded from ~/.seraplot/config.json
+</code></pre>
+</div>
 <div class="cm-section"><span class="cm-sn">2</span><h3>Themes</h3></div>
 
 Curated presets that combine palette, background and gridlines.
 
 <table class="cm-table"><thead><tr><th>Theme</th><th>Mood</th></tr></thead><tbody><tr><td><code>"dark"</code></td><td>High-contrast dark dashboard</td></tr><tr><td><code>"light"</code></td><td>Soft pastel light backdrop</td></tr><tr><td><code>"scientific"</code></td><td>Publication-style monochrome</td></tr><tr><td><code>"apple"</code></td><td>Glassy iOS-inspired palette</td></tr><tr><td><code>"notion"</code></td><td>Calm Notion-style neutrals</td></tr><tr><td><code>"minimal"</code></td><td>Bare lines, no chrome</td></tr><tr><td><code>"neon"</code></td><td>Vibrant cyberpunk neons</td></tr></tbody></table>
-<div data-sp-registry-table="methods" data-file="theme/theme.md"></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">sp.config(theme=...)</code><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Apply a theme globally to all charts created after this call. Combine with any other config keys.</div>
+<pre><code class="language-python">sp.config(theme="dark", gridlines=True, font="Inter")
+chart = sp.bar("Sales", labels=["Q1","Q2","Q3"], values=[120,180,150])
+chart.show()</code></pre>
+</div>
+<div class="cm-tip"><strong>Tip:</strong> Call <code>sp.reset_theme()</code> to return to the framework default at any point.</div>
 <div class="cm-section"><span class="cm-sn">3</span><h3>Chart methods</h3><p>Generated from #[sera_doc] in the Rust source</p></div>
 
 Every card below is generated straight from the <code>#[sera_doc(...)]</code> annotation on the matching Rust method — name, parameters and description always match the actual implementation.
@@ -84,17 +127,17 @@ Every card below is generated straight from the <code>#[sera_doc(...)]</code> an
 <div class="cm-section"><span class="cm-sn">4</span><h3>Magic properties</h3></div>
 
 <div class="cm-card">
-<div class="cm-name"><code class="cm-fn">.html  # property</code><span class="cm-tag cm-tag-prop">property</span></div>
+<div class="cm-name"><code class="cm-fn">.html &nbsp;<span style="color:#64748b;font-size:11px;font-weight:400">property</span></code><span class="cm-tag cm-tag-prop">read-only</span></div>
 <div class="cm-desc">Read the full HTML payload as a string.</div>
 <pre><code class="language-python">src = chart.html</code></pre>
 </div>
 <div class="cm-card">
-<div class="cm-name"><code class="cm-fn">len(chart) -&gt; int</code><span class="cm-tag cm-tag-prop">property</span></div>
+<div class="cm-name"><code class="cm-fn">len(chart) → int</code><span class="cm-tag cm-tag-prop">property</span></div>
 <div class="cm-desc">Returns the size of the HTML payload in bytes.</div>
 <pre><code class="language-python">print(len(chart))</code></pre>
 </div>
 <div class="cm-card">
-<div class="cm-name"><code class="cm-fn">bool(chart) -&gt; bool</code><span class="cm-tag cm-tag-prop">property</span></div>
+<div class="cm-name"><code class="cm-fn">bool(chart) → bool</code><span class="cm-tag cm-tag-prop">property</span></div>
 <div class="cm-desc"><code>True</code> when the chart has rendered output.</div>
 <pre><code class="language-python">if chart:
     chart.show()</code></pre>
@@ -103,8 +146,8 @@ Every card below is generated straight from the <code>#[sera_doc(...)]</code> an
 
 <div class="cm-card cm-new">
 <div class="cm-name"><code class="cm-fn">annotations=[...] (kwarg)</code><span class="cm-tag cm-tag-new">new</span><span class="cm-tag cm-tag-global">global</span></div>
-<div class="cm-desc">Pass a list of annotation dicts to <strong>any</strong> chart builder. Coordinates default to fractional canvas space (<code>0.0 - 1.0</code>); set <code>"frac": false</code> to use raw pixels. Supported <code>kind</code> values: <code>"hline"</code>, <code>"vline"</code>, <code>"line"</code>, <code>"arrow"</code>, <code>"rect"</code>, <code>"text"</code>.</div>
-<pre><code class="language-python">chart = sp.build_line_chart(
+<div class="cm-desc">Pass a list of annotation dicts to <strong>any</strong> chart builder. Coordinates default to fractional canvas space (<code>0.0–1.0</code>); set <code>"frac": false</code> to use raw pixels. Supported <code>kind</code>: <code>"hline"</code>, <code>"vline"</code>, <code>"line"</code>, <code>"arrow"</code>, <code>"rect"</code>, <code>"text"</code>.</div>
+<pre><code class="language-python">chart = sp.line(
     "Sales", labels=months, values=sales,
     annotations=[
         {"kind":"hline", "y":0.5, "color":"#22c55e", "dash":"6 4", "text":"Target"},
@@ -140,22 +183,52 @@ Every card below is generated straight from the <code>#[sera_doc(...)]</code> an
 
 <div class="cm-section"><span class="cm-sn">6</span><h3>Composers (Grid + Slideshow)</h3><p>Group charts into stories</p></div>
 
-<div class="cm-card cm-new">
-<div class="cm-name"><code class="cm-fn">sp.grid(charts, cols=3, gap=16, bg_color="#0a0f1c", title="", cell_height=None) -&gt; Chart</code><span class="cm-tag cm-tag-new">new</span></div>
-<div class="cm-desc">Compose any number of pre-built charts into a responsive CSS-grid layout, each chart hosted in its own iframe. <code>sp.build_grid</code> is an identical alias. <code>cell_height</code> defaults to the chart's own <code>height</code> attribute.</div>
-<pre><code class="language-python">bar  = sp.build_bar_chart("Q-Sales", labels=["Q1","Q2","Q3","Q4"], values=[120,180,150,210])
-line = sp.build_line_chart("Trend", labels=months, values=sales)
-pie  = sp.build_pie_chart("Mix", labels=["A","B","C"], values=[40,35,25])
-
-grid = sp.grid([bar, line, pie], cols=3, gap=14, title="Dashboard")
-grid.show()</code></pre>
+<div class="cm-feat-grid">
+<div class="cm-feat">
+<div class="cm-feat-hd">
+<span class="cm-feat-ic ic-grid">⊞</span>
+<div class="cm-feat-meta">
+<strong>sp.grid()</strong>
+<code>alias: sp.build_grid</code>
 </div>
-<div class="cm-card cm-new">
-<div class="cm-name"><code class="cm-fn">sp.build_slideshow(charts, interval_ms=2500, title='', width=900, height=520) -&gt; Chart</code><span class="cm-tag cm-tag-new">new</span></div>
-<div class="cm-desc">Build a navigable HTML carousel with previous / next buttons and an auto-advance progress bar - perfect for telling a story without a slide deck.</div>
-<pre><code class="language-python">slides = [sp.build_bar_chart(f"Slide {i+1}", labels=["A","B"], values=[i, i+1]) for i in range(4)]
-show = sp.build_slideshow(slides, interval_ms=2200, title="Quarterly Story")
-show.show()</code></pre>
+</div>
+<div class="cm-feat-bd">
+<p class="cm-feat-desc">Compose any number of pre-built charts into a responsive CSS-grid, each chart isolated in its own iframe.</p>
+<div class="cm-feat-params">
+<div class="cm-feat-param"><span class="cm-feat-pk">charts</span><span class="cm-feat-pt">list[Chart]</span><span class="cm-feat-pd">Charts to arrange</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">cols</span><span class="cm-feat-pt">int = 3</span><span class="cm-feat-pd">Number of columns</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">gap</span><span class="cm-feat-pt">int = 16</span><span class="cm-feat-pd">Gap between cells in px</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">bg_color</span><span class="cm-feat-pt">str</span><span class="cm-feat-pd">Grid background</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">title</span><span class="cm-feat-pt">str = ""</span><span class="cm-feat-pd">Optional header title</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">cell_height</span><span class="cm-feat-pt">int | None</span><span class="cm-feat-pd">Override each cell height</span></div>
+</div>
+<pre><code class="language-python">bar  = sp.bar("Sales", labels=["Q1","Q2","Q3","Q4"], values=[120,180,150,210])
+line = sp.line("Trend", labels=months, values=sales)
+pie  = sp.pie("Mix", labels=["A","B","C"], values=[40,35,25])
+sp.grid([bar, line, pie], cols=3, gap=14, title="Dashboard").show()</code></pre>
+</div>
+</div>
+<div class="cm-feat">
+<div class="cm-feat-hd">
+<span class="cm-feat-ic ic-slide">▶</span>
+<div class="cm-feat-meta">
+<strong>sp.build_slideshow()</strong>
+<code>navigable HTML carousel</code>
+</div>
+</div>
+<div class="cm-feat-bd">
+<p class="cm-feat-desc">Build a navigable HTML carousel with prev / next buttons and an auto-advance progress bar — tell a story without a slide deck.</p>
+<div class="cm-feat-params">
+<div class="cm-feat-param"><span class="cm-feat-pk">charts</span><span class="cm-feat-pt">list[Chart]</span><span class="cm-feat-pd">Ordered slide list</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">interval_ms</span><span class="cm-feat-pt">int = 2500</span><span class="cm-feat-pd">Auto-advance delay in ms</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">title</span><span class="cm-feat-pt">str = ""</span><span class="cm-feat-pd">Carousel title</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">width</span><span class="cm-feat-pt">int = 900</span><span class="cm-feat-pd">Output width in px</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">height</span><span class="cm-feat-pt">int = 520</span><span class="cm-feat-pd">Output height in px</span></div>
+</div>
+<pre><code class="language-python">slides = [sp.bar(f"Slide {i+1}", labels=["A","B"], values=[i, i+1]) for i in range(4)]
+sp.build_slideshow(slides, interval_ms=2200, title="Quarterly Story").show()</code></pre>
+</div>
+</div>
 </div>
 
 </div><!-- /lang-en -->
@@ -181,12 +254,29 @@ show.show()</code></pre>
 Définis les défauts une fois. <strong>Tous les graphiques</strong> créés ensuite héritent automatiquement de cette configuration.
 
 <div data-sp-registry-table="methods" data-file="config/config.md,config/global.md"></div>
+<div class="cm-save">
+<div class="cm-save-head"><span class="cm-save-ic">💾</span><span>Persister les aliases entre les sessions</span></div>
+<pre><code class="language-python">sp.config.add_alias("bar", "barchart")
+sp.config.add_alias("line", "linechart")
+sp.config.save()  # écrit dans ~/.seraplot/config.json
+</code></pre>
+<pre style="margin-top:7px"><code class="language-python">import seraplot as sp  # les aliases sont rechargés automatiquement
+</code></pre>
+</div>
 <div class="cm-section"><span class="cm-sn">2</span><h3>Thèmes</h3></div>
 
 Préréglages combinant palette, fond et grille.
 
 <table class="cm-table"><thead><tr><th>Thème</th><th>Ambiance</th></tr></thead><tbody><tr><td><code>"dark"</code></td><td>Tableau de bord sombre haut contraste</td></tr><tr><td><code>"light"</code></td><td>Fond clair pastel doux</td></tr><tr><td><code>"scientific"</code></td><td>Style publication monochrome</td></tr><tr><td><code>"apple"</code></td><td>Palette inspirée iOS, glassy</td></tr><tr><td><code>"notion"</code></td><td>Neutres calmes type Notion</td></tr><tr><td><code>"minimal"</code></td><td>Lignes pures, sans décoration</td></tr><tr><td><code>"neon"</code></td><td>Néons cyberpunk vibrants</td></tr></tbody></table>
-<div data-sp-registry-table="methods" data-file="theme/theme.md"></div>
+
+<div class="cm-card">
+<div class="cm-name"><code class="cm-fn">sp.config(theme=...)</code><span class="cm-tag cm-tag-global">global</span></div>
+<div class="cm-desc">Applique un thème à tous les graphiques créés après cet appel. Combinable avec n'importe quelle autre clé config.</div>
+<pre><code class="language-python">sp.config(theme="dark", gridlines=True, font="Inter")
+chart = sp.bar("Ventes", labels=["Q1","Q2","Q3"], values=[120,180,150])
+chart.show()</code></pre>
+</div>
+<div class="cm-tip"><strong>Astuce :</strong> Appelle <code>sp.reset_theme()</code> pour revenir au thème par défaut du framework.</div>
 <div class="cm-section"><span class="cm-sn">3</span><h3>Méthodes de Chart</h3><p>Générées depuis #[sera_doc] dans le code Rust</p></div>
 
 Chaque carte ci-dessous est générée directement depuis l'annotation <code>#[sera_doc(...)]</code> de la méthode Rust correspondante — nom, paramètres et description correspondent toujours à l'implémentation réelle.
@@ -195,17 +285,17 @@ Chaque carte ci-dessous est générée directement depuis l'annotation <code>#[s
 <div class="cm-section"><span class="cm-sn">4</span><h3>Propriétés magiques</h3></div>
 
 <div class="cm-card">
-<div class="cm-name"><code class="cm-fn">.html  # property</code><span class="cm-tag cm-tag-prop">property</span></div>
+<div class="cm-name"><code class="cm-fn">.html &nbsp;<span style="color:#64748b;font-size:11px;font-weight:400">property</span></code><span class="cm-tag cm-tag-prop">lecture seule</span></div>
 <div class="cm-desc">Lit le HTML complet sous forme de chaîne.</div>
 <pre><code class="language-python">src = chart.html</code></pre>
 </div>
 <div class="cm-card">
-<div class="cm-name"><code class="cm-fn">len(chart) -&gt; int</code><span class="cm-tag cm-tag-prop">property</span></div>
+<div class="cm-name"><code class="cm-fn">len(chart) → int</code><span class="cm-tag cm-tag-prop">property</span></div>
 <div class="cm-desc">Renvoie la taille du HTML en octets.</div>
 <pre><code class="language-python">print(len(chart))</code></pre>
 </div>
 <div class="cm-card">
-<div class="cm-name"><code class="cm-fn">bool(chart) -&gt; bool</code><span class="cm-tag cm-tag-prop">property</span></div>
+<div class="cm-name"><code class="cm-fn">bool(chart) → bool</code><span class="cm-tag cm-tag-prop">property</span></div>
 <div class="cm-desc"><code>True</code> si le chart a un rendu.</div>
 <pre><code class="language-python">if chart:
     chart.show()</code></pre>
@@ -214,8 +304,8 @@ Chaque carte ci-dessous est générée directement depuis l'annotation <code>#[s
 
 <div class="cm-card cm-new">
 <div class="cm-name"><code class="cm-fn">annotations=[...] (kwarg)</code><span class="cm-tag cm-tag-new">nouveau</span><span class="cm-tag cm-tag-global">global</span></div>
-<div class="cm-desc">Passe une liste de dictionnaires d'annotations à <strong>n'importe quel</strong> builder. Coordonnées fractionnaires par défaut (<code>0.0 - 1.0</code>) ; mets <code>"frac": false</code> pour utiliser des pixels. Valeurs supportées pour <code>kind</code> : <code>"hline"</code>, <code>"vline"</code>, <code>"line"</code>, <code>"arrow"</code>, <code>"rect"</code>, <code>"text"</code>.</div>
-<pre><code class="language-python">chart = sp.build_line_chart(
+<div class="cm-desc">Passe une liste de dicts à <strong>n'importe quel</strong> builder. Coordonnées fractionnaires par défaut (<code>0.0–1.0</code>) ; mets <code>"frac": false</code> pour des pixels. Valeurs de <code>kind</code> : <code>"hline"</code>, <code>"vline"</code>, <code>"line"</code>, <code>"arrow"</code>, <code>"rect"</code>, <code>"text"</code>.</div>
+<pre><code class="language-python">chart = sp.line(
     "Ventes", labels=mois, values=ventes,
     annotations=[
         {"kind":"hline", "y":0.5, "color":"#22c55e", "dash":"6 4", "text":"Cible"},
@@ -251,22 +341,52 @@ Chaque carte ci-dessous est générée directement depuis l'annotation <code>#[s
 
 <div class="cm-section"><span class="cm-sn">6</span><h3>Composers (Grid + Slideshow)</h3><p>Regroupe des charts en histoires</p></div>
 
-<div class="cm-card cm-new">
-<div class="cm-name"><code class="cm-fn">sp.grid(charts, cols=3, gap=16, bg_color="#0a0f1c", title="", cell_height=None) -&gt; Chart</code><span class="cm-tag cm-tag-new">nouveau</span></div>
-<div class="cm-desc">Empile N charts déjà construits dans une grille CSS responsive, chaque chart isolé dans son iframe. <code>sp.build_grid</code> est un alias identique. <code>cell_height</code> utilise par défaut la hauteur détectée dans le chart.</div>
-<pre><code class="language-python">bar  = sp.build_bar_chart("Ventes-Q", labels=["Q1","Q2","Q3","Q4"], values=[120,180,150,210])
-line = sp.build_line_chart("Tendance", labels=mois, values=ventes)
-pie  = sp.build_pie_chart("Mix", labels=["A","B","C"], values=[40,35,25])
-
-grid = sp.grid([bar, line, pie], cols=3, gap=14, title="Tableau de bord")
-grid.show()</code></pre>
+<div class="cm-feat-grid">
+<div class="cm-feat">
+<div class="cm-feat-hd">
+<span class="cm-feat-ic ic-grid">⊞</span>
+<div class="cm-feat-meta">
+<strong>sp.grid()</strong>
+<code>alias : sp.build_grid</code>
 </div>
-<div class="cm-card cm-new">
-<div class="cm-name"><code class="cm-fn">sp.build_slideshow(charts, interval_ms=2500, title='', width=900, height=520) -&gt; Chart</code><span class="cm-tag cm-tag-new">nouveau</span></div>
-<div class="cm-desc">Construit un carrousel HTML navigable avec boutons précédent/suivant et barre de progression - parfait pour raconter une histoire sans présentation externe.</div>
-<pre><code class="language-python">slides = [sp.build_bar_chart(f"Slide {i+1}", labels=["A","B"], values=[i, i+1]) for i in range(4)]
-show = sp.build_slideshow(slides, interval_ms=2200, title="Histoire trimestrielle")
-show.show()</code></pre>
+</div>
+<div class="cm-feat-bd">
+<p class="cm-feat-desc">Assemble N charts déjà construits dans une grille CSS responsive, chaque chart isolé dans son iframe.</p>
+<div class="cm-feat-params">
+<div class="cm-feat-param"><span class="cm-feat-pk">charts</span><span class="cm-feat-pt">list[Chart]</span><span class="cm-feat-pd">Charts à disposer</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">cols</span><span class="cm-feat-pt">int = 3</span><span class="cm-feat-pd">Nombre de colonnes</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">gap</span><span class="cm-feat-pt">int = 16</span><span class="cm-feat-pd">Espacement en px</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">bg_color</span><span class="cm-feat-pt">str</span><span class="cm-feat-pd">Fond de la grille</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">title</span><span class="cm-feat-pt">str = ""</span><span class="cm-feat-pd">Titre en en-tête</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">cell_height</span><span class="cm-feat-pt">int | None</span><span class="cm-feat-pd">Hauteur de chaque cellule</span></div>
+</div>
+<pre><code class="language-python">bar  = sp.bar("Ventes-Q", labels=["Q1","Q2","Q3","Q4"], values=[120,180,150,210])
+line = sp.line("Tendance", labels=mois, values=ventes)
+pie  = sp.pie("Mix", labels=["A","B","C"], values=[40,35,25])
+sp.grid([bar, line, pie], cols=3, gap=14, title="Tableau de bord").show()</code></pre>
+</div>
+</div>
+<div class="cm-feat">
+<div class="cm-feat-hd">
+<span class="cm-feat-ic ic-slide">▶</span>
+<div class="cm-feat-meta">
+<strong>sp.build_slideshow()</strong>
+<code>carrousel HTML navigable</code>
+</div>
+</div>
+<div class="cm-feat-bd">
+<p class="cm-feat-desc">Construit un carrousel HTML avec boutons précédent / suivant et barre de progression — parfait pour raconter une histoire.</p>
+<div class="cm-feat-params">
+<div class="cm-feat-param"><span class="cm-feat-pk">charts</span><span class="cm-feat-pt">list[Chart]</span><span class="cm-feat-pd">Slides dans l'ordre</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">interval_ms</span><span class="cm-feat-pt">int = 2500</span><span class="cm-feat-pd">Délai d'avancement auto (ms)</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">title</span><span class="cm-feat-pt">str = ""</span><span class="cm-feat-pd">Titre du carrousel</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">width</span><span class="cm-feat-pt">int = 900</span><span class="cm-feat-pd">Largeur en px</span></div>
+<div class="cm-feat-param"><span class="cm-feat-pk">height</span><span class="cm-feat-pt">int = 520</span><span class="cm-feat-pd">Hauteur en px</span></div>
+</div>
+<pre><code class="language-python">slides = [sp.bar(f"Slide {i+1}", labels=["A","B"], values=[i, i+1]) for i in range(4)]
+sp.build_slideshow(slides, interval_ms=2200, title="Histoire trimestrielle").show()</code></pre>
+</div>
+</div>
 </div>
 
 </div><!-- /lang-fr -->

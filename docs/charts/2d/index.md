@@ -2,7 +2,7 @@
 
 <div class="lang-en">
 
-SeraPlot provides 33 two-dimensional chart types, from basic bar and line charts to specialized plots like ridgeline, dumbbell, and slideshow.
+SeraPlot provides 41 two-dimensional chart types, from basic bar and line charts to specialized plots like ridgeline, dumbbell, sankey, chord, dendrogram, venn, correlogram, hive, pulse, and orbita.
 
 | Chart | Function |
 |---|---|
@@ -11,7 +11,6 @@ SeraPlot provides 33 two-dimensional chart types, from basic bar and line charts
 | [Line Chart](line.md) | `line()` |
 | [Scatter Chart](scatter.md) | `scatter()` |
 | [Histogram](histogram.md) | `histogram()` |
-| [Histogram Overlay](histogram-overlay.md) | `histogram_overlay()` |
 | [Grouped Bar](grouped-bar.md) | `grouped_bar()` |
 | [Stacked Bar](stacked-bar.md) | `stacked_bar()` |
 | [Heatmap](heatmap.md) | `heatmap()` |
@@ -37,14 +36,22 @@ SeraPlot provides 33 two-dimensional chart types, from basic bar and line charts
 | [KDE](kde.md) | `kde()` |
 | [Ridgeline](ridgeline.md) | `ridgeline()` |
 | [Radar](radar.md) | `radar()` |
-| [Grid Layout](grid.md) | `grid()` |
-| [Slideshow](slideshow.md) | `slideshow()` |
+| [Sankey](sankey.md) | `sankey()` |
+| [Chord Diagram](chord.md) | `chord()` |
+| [Circle Packing](circle-pack.md) | `circle_pack()` |
+| [Arc Diagram](arc-diagram.md) | `arc_diagram()` |
+| [Dendrogram](dendrogram.md) | `dendrogram()` |
+| [Venn Diagram](venn.md) | `venn()` |
+| [Correlogram](correlogram.md) | `correlogram()` |
+| [Hive Plot](hive.md) | `hive()` |
+| [Pulse Chart](pulse.md) | `pulse()` |
+| [Orbita Chart](orbita.md) | `orbita()` |
 
 </div>
 
 <div class="lang-fr">
 
-SeraPlot propose 33 types de graphiques 2D, des barres et courbes basiques aux graphiques spécialisés (ridgeline, haltère, slideshow…).
+SeraPlot propose 41 types de graphiques 2D, des barres et courbes basiques aux graphiques spécialisés (ridgeline, haltère, sankey, corde, dendrogramme, venn, corrélogramme, ruche, pulse et orbita).
 
 | Graphique | Fonction |
 |---|---|
@@ -53,7 +60,6 @@ SeraPlot propose 33 types de graphiques 2D, des barres et courbes basiques aux g
 | [Courbe](line.md) | `line()` |
 | [Nuage de points](scatter.md) | `scatter()` |
 | [Histogramme](histogram.md) | `histogram()` |
-| [Histogramme superposé](histogram-overlay.md) | `histogram_overlay()` |
 | [Barres groupées](grouped-bar.md) | `grouped_bar()` |
 | [Barres empilées](stacked-bar.md) | `stacked_bar()` |
 | [Heatmap](heatmap.md) | `heatmap()` |
@@ -79,8 +85,16 @@ SeraPlot propose 33 types de graphiques 2D, des barres et courbes basiques aux g
 | [KDE](kde.md) | `kde()` |
 | [Ridgeline](ridgeline.md) | `ridgeline()` |
 | [Radar](radar.md) | `radar()` |
-| [Grille](grid.md) | `grid()` |
-| [Diaporama](slideshow.md) | `slideshow()` |
+| [Sankey](sankey.md) | `sankey()` |
+| [Diagramme de corde](chord.md) | `chord()` |
+| [Packing de cercles](circle-pack.md) | `circle_pack()` |
+| [Diagramme d'arc](arc-diagram.md) | `arc_diagram()` |
+| [Dendrogramme](dendrogram.md) | `dendrogram()` |
+| [Diagramme de Venn](venn.md) | `venn()` |
+| [Corrélogramme](correlogram.md) | `correlogram()` |
+| [Graphe en ruche](hive.md) | `hive()` |
+| [Pulse radial](pulse.md) | `pulse()` |
+| [Orbita](orbita.md) | `orbita()` |
 
 </div>
 

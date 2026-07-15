@@ -273,8 +273,6 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
     "marimekko":       '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="3" width="5" height="11" rx=".5"/><rect x="1" y="3" width="5" height="6" rx=".5" opacity=".38"/><rect x="7" y="2" width="8" height="12" rx=".5"/><rect x="7" y="2" width="8" height="7" rx=".5" opacity=".32"/></svg>',
     "multicategory":   '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="1" y="1" width="6" height="6" rx=".5"/><rect x="9" y="1" width="6" height="6" rx=".5"/><rect x="1" y="9" width="6" height="6" rx=".5"/><rect x="9" y="9" width="6" height="6" rx=".5"/></svg>',
     "pictogram":       '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="3" cy="3" r="1.3"/><circle cx="7" cy="3" r="1.3"/><circle cx="11" cy="3" r="1.3"/><circle cx="3" cy="7" r="1.3"/><circle cx="7" cy="7" r="1.3"/><circle cx="11" cy="7" r="1.3"/><circle cx="3" cy="11" r="1.3"/><circle cx="7" cy="11" r=".8" opacity=".4"/><circle cx="11" cy="11" r=".4" opacity=".2"/></svg>',
-    "prism":           '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3"><polygon points="8,2 15,11 1,11"/><polygon points="8,5 12,11 4,11" fill="currentColor" opacity=".15" stroke="none"/></svg>',
-    "deluxe":          '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><polygon points="8,1.5 9.5,5.5 13.8,6 10.9,8.8 11.7,13 8,10.9 4.3,13 5.1,8.8 2.2,6 6.5,5.5"/></svg>',
     "regression":      '<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor"><circle cx="3" cy="12" r="1.5" fill="currentColor" stroke="none"/><circle cx="7" cy="8" r="1.5" fill="currentColor" stroke="none"/><circle cx="11" cy="5" r="1.5" fill="currentColor" stroke="none"/><circle cx="13" cy="10" r="1.5" fill="currentColor" stroke="none"/><line x1="2" y1="13.5" x2="14" y2="3.5" stroke-width="1.5"/></svg>',
     "categorical":     '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="4" cy="11" r="2.2"/><circle cx="8" cy="6" r="2.2" opacity=".6"/><circle cx="12" cy="9" r="2.2" opacity=".35"/><circle cx="5" cy="4" r="1.5" opacity=".8"/></svg>',
     "gradient":        '<svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="4" cy="11" r="2" opacity=".2"/><circle cx="8" cy="7" r="2.5" opacity=".55"/><circle cx="12" cy="4" r="2" opacity=".9"/></svg>',
@@ -1166,6 +1164,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
     if (fn === "requiredParams" && input) {
       return reg.required && reg.required[(input.family || input.chart || "") + ":" + (input.variant || "")] || fallback;
     }
+    if (fn === "docs") return reg.docs || fallback;
     return fallback;
   }
 
