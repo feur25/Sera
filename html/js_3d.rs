@@ -1,4 +1,4 @@
-use crate::plot::statistical::common::{push_b, push_f2, push_i, PALETTE};
+use crate::plot::statistical::common::{escape_xml_s, push_b, push_f2, push_i, PALETTE};
 use std::sync::atomic::{AtomicU32, Ordering};
 
 static ID3D: AtomicU32 = AtomicU32::new(0);
@@ -80,7 +80,7 @@ pub(crate) fn render_3d_html_impl(
     );
     push_b(
         &mut buf,
-        b"background:rgba(11,14,24,.92);color:#f1f5f9;backdrop-filter:blur(8px);",
+        b"background:rgba(11,14,24,.92);color:#f1f5f9;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);",
     );
     push_b(&mut buf, b"font:12px -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;border-radius:10px;");
     push_b(&mut buf, b"padding:10px 14px;min-width:140px;box-shadow:0 8px 24px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.08)}");
@@ -108,7 +108,10 @@ pub(crate) fn render_3d_html_impl(
 
     push_b(&mut buf, b"<canvas id=\"");
     buf.extend_from_slice(cid.as_bytes());
-    push_b(&mut buf, b"c\" style=\"width:100%;height:100%\"></canvas>");
+    push_b(&mut buf, b"c\" role=\"img\" aria-label=\"");
+    let aria_title = if title.is_empty() { "3D chart".to_string() } else { escape_xml_s(title) };
+    buf.extend_from_slice(aria_title.as_bytes());
+    push_b(&mut buf, b"\" style=\"width:100%;height:100%\"></canvas>");
 
     push_b(&mut buf, b"<div id=\"");
     buf.extend_from_slice(cid.as_bytes());
@@ -650,9 +653,9 @@ function R(){
   arw(or,pj(0.56,-0.5,-0.5),AX);arw(or,pj(-0.5,0.56,-0.5),AY);arw(or,pj(-0.5,-0.5,0.56),AZ);
   g.font='8.5px -apple-system,sans-serif';
   for(var k=0;k<=4;k++){var f=k/4;
-    var ax0=pj(f-0.5,-0.5,-0.5);if(ax0){g.textAlign='center';g.textBaseline='top';g.fillStyle=isDark?'rgba(244,114,182,0.55)':'#9ca3af';g.fillText((xmn+xr*f).toFixed(1),mx+ax0.x*sc,my-ax0.y*sc+5);}
-    var ay0=pj(0.5,f-0.5,-0.5);if(ay0){g.textAlign='center';g.textBaseline='top';g.fillStyle=isDark?'rgba(34,211,238,0.55)':'#9ca3af';g.fillText((ymn+yr*f).toFixed(1),mx+ay0.x*sc,my-ay0.y*sc+5);}
-    var az0=pj(0.5,-0.5,f-0.5);if(az0){g.textAlign='left';g.textBaseline='middle';g.fillStyle=isDark?'rgba(251,191,36,0.55)':'#9ca3af';g.fillText((zmn+zr*f).toFixed(1),mx+az0.x*sc+6,my-az0.y*sc);}
+    var ax0=pj(f-0.5,-0.5,-0.5);if(ax0){g.textAlign='center';g.textBaseline='top';g.fillStyle=isDark?'rgba(244,114,182,0.55)':'#6b7280';g.fillText((xmn+xr*f).toFixed(1),mx+ax0.x*sc,my-ax0.y*sc+5);}
+    var ay0=pj(0.5,f-0.5,-0.5);if(ay0){g.textAlign='center';g.textBaseline='top';g.fillStyle=isDark?'rgba(34,211,238,0.55)':'#6b7280';g.fillText((ymn+yr*f).toFixed(1),mx+ay0.x*sc,my-ay0.y*sc+5);}
+    var az0=pj(0.5,-0.5,f-0.5);if(az0){g.textAlign='left';g.textBaseline='middle';g.fillStyle=isDark?'rgba(251,191,36,0.55)':'#6b7280';g.fillText((zmn+zr*f).toFixed(1),mx+az0.x*sc+6,my-az0.y*sc);}
   }
   g.font='700 10.5px -apple-system,sans-serif';
   var lp=pj(0,-0.5,-0.5);if(lp){g.textAlign='center';g.textBaseline='top';g.fillStyle=AX;g.fillText(xl,mx+lp.x*sc,my-lp.y*sc+17);}
@@ -662,7 +665,7 @@ function R(){
   pp=[];
   if(typeof BN!=='undefined'){rBarBlocks(mx,my,sc);}
   else if(SCENE==='terrain'||SCENE==='tower'||SCENE==='radial'||SCENE==='podium'){rEnvBars(mx,my,sc);}
-  else if(M===0)rSgl(mx,my,sc);else if(M===1)rB(mx,my,sc);else if(M===2)rL(mx,my,sc);else if(M===3)rRdr(mx,my,sc);else if(M===4)rLol(mx,my,sc);else if(M===5)rKde(mx,my,sc);else if(M===6)rRdg(mx,my,sc);else if(M===7)rPie(mx,my,sc);else if(M===8)rVio(mx,my,sc);else if(M===9)rHm(mx,my,sc);else if(M===10)rCd(mx,my,sc);else if(M===11)rDu(mx,my,sc);else if(M===12)rFn(mx,my,sc);else if(M===13)rSb(mx,my,sc);else if(M===14)rStk(mx,my,sc);else if(M===15)rGlb(mx,my,sc);else if(M===16)rBb(mx,my,sc);
+  else if(M===0)rSgl(mx,my,sc);else if(M===1)rB(mx,my,sc);else if(M===2)rL(mx,my,sc);else if(M===3)rRdr(mx,my,sc);else if(M===4)rLol(mx,my,sc);else if(M===5)rKde(mx,my,sc);else if(M===6)rRdg(mx,my,sc);else if(M===7)rPie(mx,my,sc);else if(M===8)rVio(mx,my,sc);else if(M===9)rHm(mx,my,sc);else if(M===10)rCd(mx,my,sc);else if(M===11)rDu(mx,my,sc);else if(M===12)rFn(mx,my,sc);else if(M===13)rSb(mx,my,sc);else if(M===14)rStk(mx,my,sc);else if(M===15)rGlb(mx,my,sc);else if(M===16)rBb(mx,my,sc);else if(M===17)rMesh(mx,my,sc);
   drawLgd();
   g.font='9.5px -apple-system,sans-serif';g.fillStyle=isDark?'rgba(100,116,139,0.4)':'rgba(0,0,0,0.18)';
   g.textAlign='center';g.textBaseline='bottom';
@@ -1256,6 +1259,43 @@ function rHm(mx,my,sc){
     g.strokeStyle='rgba(255,255,255,0.08)';g.lineWidth=0.5;g.stroke();
     var cx2=(c.t[0].x+c.t[2].x)/2,cy2=(c.t[0].y+c.t[2].y)/2;
     pp.push({sx:mx+cx2*sc,sy:my-cy2*sc,i:c.i,r:8});
+  }
+}
+function meshCmap(t){
+  var stops=[[68,1,84],[59,82,139],[33,144,141],[93,201,99],[253,231,37]];
+  var s=stops.length-1,p=Math.max(0,Math.min(1,t))*s,i0=Math.min(s-1,Math.floor(p)),f=p-i0;
+  var a=stops[i0],b=stops[i0+1];
+  return [a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f,a[2]+(b[2]-a[2])*f];
+}
+function rMesh(mx,my,sc){
+  var nt=TI.length/3,tris=[];
+  for(var t=0;t<nt;t++){
+    var i0=TI[t*3],i1=TI[t*3+1],i2=TI[t*3+2];
+    var nx0=(X[i0]-xmn)/xr-0.5,ny0=(Y[i0]-ymn)/yr-0.5,nz0=(Z[i0]-zmn)/zr-0.5;
+    var nx1=(X[i1]-xmn)/xr-0.5,ny1=(Y[i1]-ymn)/yr-0.5,nz1=(Z[i1]-zmn)/zr-0.5;
+    var nx2=(X[i2]-xmn)/xr-0.5,ny2=(Y[i2]-ymn)/yr-0.5,nz2=(Z[i2]-zmn)/zr-0.5;
+    var p0=pj(nx0,ny0,nz0),p1=pj(nx1,ny1,nz1),p2=pj(nx2,ny2,nz2);
+    if(!p0||!p1||!p2)continue;
+    var ux=nx1-nx0,uy=ny1-ny0,uz=nz1-nz0,vx=nx2-nx0,vy=ny2-ny0,vz=nz2-nz0;
+    var fnx=uy*vz-uz*vy,fny=uz*vx-ux*vz,fnz=ux*vy-uy*vx;
+    var fl=Math.sqrt(fnx*fnx+fny*fny+fnz*fnz)||1e-9;
+    fnx/=fl;fny/=fl;fnz/=fl;
+    var Lx=0.35,Ly=0.55,Lz=0.76;
+    var lambert=Math.max(0,fnx*Lx+fny*Ly+fnz*Lz);
+    var shade=0.4+0.6*lambert;
+    var nv=(nz0+nz1+nz2)/3+0.5;
+    var col=meshCmap(nv);
+    var d2=(p0.d+p1.d+p2.d)/3;
+    tris.push({p:[p0,p1,p2],shade:shade,col:col,d:d2,i:i0});
+  }
+  tris.sort(function(a,b){return a.d-b.d;});
+  for(var k=0;k<tris.length;k++){
+    var tr=tris[k],p=tr.p,col=tr.col;
+    var r=Math.round(col[0]*tr.shade),gg=Math.round(col[1]*tr.shade),b=Math.round(col[2]*tr.shade);
+    g.beginPath();g.moveTo(mx+p[0].x*sc,my-p[0].y*sc);g.lineTo(mx+p[1].x*sc,my-p[1].y*sc);g.lineTo(mx+p[2].x*sc,my-p[2].y*sc);g.closePath();
+    if(WIRE){g.strokeStyle='rgb('+r+','+gg+','+b+')';g.lineWidth=1;g.stroke();}
+    else{g.fillStyle='rgb('+r+','+gg+','+b+')';g.fill();g.strokeStyle='rgba(255,255,255,0.07)';g.lineWidth=0.4;g.stroke();}
+    pp.push({sx:mx+((p[0].x+p[1].x+p[2].x)/3)*sc,sy:my-((p[0].y+p[1].y+p[2].y)/3)*sc,i:tr.i,r:6});
   }
 }
 function rCd(mx,my,sc){
