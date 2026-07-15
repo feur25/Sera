@@ -171,6 +171,10 @@ pub fn kmeans_pp_flat(data: &[f64], n: usize, dims: usize, k: usize, seed: u64) 
             total += dists[i];
         }
         if total <= 0.0 {
+            for kj in ki..k {
+                let fallback = (kj * 7 + 3) % n;
+                centroids.extend_from_slice(&data[fallback * dims..(fallback + 1) * dims]);
+            }
             break;
         }
         // Sample n_trials candidates, pick the one with lowest resulting potential
@@ -235,6 +239,10 @@ fn kmeans_pp_flat_par(data: &[f64], n: usize, dims: usize, k: usize, seed: u64) 
             })
             .sum();
         if total <= 0.0 {
+            for kj in ki..k {
+                let fallback = (kj * 7 + 3) % n;
+                centroids.extend_from_slice(&data[fallback * dims..(fallback + 1) * dims]);
+            }
             break;
         }
         // Trial candidates — pick the one with lowest resulting potential (parallel)
@@ -1573,7 +1581,7 @@ pub fn render_kmeans_html(cfg: &KMeansConfig) -> String {
     );
     push_b(&mut buf, b"if(GL){ctx.strokeStyle='#e2e8f0';ctx.lineWidth=0.5;for(var i=1;i<=5;i++){var gy=pT+Math.round((1-i/5)*pH);ctx.beginPath();ctx.moveTo(pL,gy);ctx.lineTo(pL+pW,gy);ctx.stroke();}}");
     push_b(&mut buf, b"ctx.strokeStyle='#cbd5e1';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(pL,pT);ctx.lineTo(pL,pT+pH);ctx.stroke();ctx.beginPath();ctx.moveTo(pL,pT+pH);ctx.lineTo(pL+pW,pT+pH);ctx.stroke();");
-    push_b(&mut buf, b"ctx.fillStyle='#9ca3af';ctx.font='9px Arial';ctx.textAlign='end';for(var i=0;i<=5;i++){var f=i/5,yp=pT+Math.round((1-f)*pH),yv=minY+f*rY;ctx.fillText(yv>=1000?Math.round(yv)+'':yv.toFixed(2),pL-4,yp+3);}");
+    push_b(&mut buf, b"ctx.fillStyle='#6b7280';ctx.font='9px Arial';ctx.textAlign='end';for(var i=0;i<=5;i++){var f=i/5,yp=pT+Math.round((1-f)*pH),yv=minY+f*rY;ctx.fillText(yv>=1000?Math.round(yv)+'':yv.toFixed(2),pL-4,yp+3);}");
     push_b(&mut buf, b"ctx.textAlign='center';for(var i=0;i<=5;i++){var f=i/5,xp=pL+Math.round(f*pW),xv=minX+f*rX;ctx.fillText(xv>=1000?Math.round(xv)+'':xv.toFixed(2),xp,pT+pH+14);}");
     if !cfg.y_label.is_empty() {
         push_b(&mut buf, b"ctx.save();ctx.translate(14,pT+pH/2);ctx.rotate(-Math.PI/2);ctx.font='11px Arial';ctx.fillStyle='#374151';ctx.textAlign='center';ctx.fillText('");
@@ -1618,7 +1626,7 @@ pub fn render_kmeans_html(cfg: &KMeansConfig) -> String {
         push_i(&mut buf, ly + 11);
         push_b(&mut buf, b");");
     }
-    push_b(&mut buf, b"ctx.globalAlpha=1;ctx.fillStyle='#9ca3af';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText('");
+    push_b(&mut buf, b"ctx.globalAlpha=1;ctx.fillStyle='#6b7280';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText('");
     push_js_str(&mut buf, &format!("inertia: {inertia:.0}"));
     push_b(&mut buf, b"',pL+4,pT+pH-8);}draw();");
     push_b(&mut buf, b"cv.addEventListener('click',function(e){var r=cv.getBoundingClientRect(),mx=e.clientX-r.left,my=e.clientY-r.top;");
@@ -1672,5 +1680,39 @@ pub fn build_kmeans_chart(input: &str) -> String {
         palette: &pal,
         ..Default::default()
     });
-    crate::html::hover::apply_opts(html, bg_str.as_deref(), !o.no_x(), !o.no_y())
+    let h = crate::html::hover::apply_opts(html, bg_str.as_deref(), !o.no_x(), !o.no_y());
+    crate::apply_global_color_bindings(h)
+}
+
+#[cfg(test)]
+mod kmeans_pp_degenerate_tests {
+    use super::*;
+
+    #[test]
+    fn kmeans_pp_flat_returns_k_centroids_even_when_all_points_are_identical() {
+        let data = vec![0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+        let k = 3;
+        let dims = 2;
+        let n = 5;
+        let centroids = kmeans_pp_flat(&data, n, dims, k, 42);
+        assert_eq!(centroids.len(), k * dims);
+    }
+
+    #[test]
+    fn kmeans_pp_flat_par_returns_k_centroids_even_when_all_points_are_identical() {
+        let data = vec![0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];
+        let k = 3;
+        let dims = 2;
+        let n = 5;
+        let centroids = kmeans_pp_flat_par(&data, n, dims, k, 42);
+        assert_eq!(centroids.len(), k * dims);
+    }
+
+    #[test]
+    fn build_kmeans_chart_does_not_panic_on_identical_points() {
+        let html = build_kmeans_chart(
+            r#"{"title":"t","x":[0.0,0.0,0.0,0.0,0.0],"y":[0.0,0.0,0.0,0.0,0.0],"k":2}"#,
+        );
+        assert!(!html.is_empty());
+    }
 }
