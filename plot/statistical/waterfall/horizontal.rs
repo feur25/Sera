@@ -1,6 +1,6 @@
 use super::common::{bar_color, finalize, prepare, COLOR_NEG, COLOR_POS, COLOR_TOTAL};
 use super::config::WaterfallConfig;
-use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i};
+use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i, truncate};
 
 #[crate::chart_demo("labels=[\"Start\",\"Q1\",\"Q2\",\"Q3\",\"End\"], values=[100,30,-15,40,155]")]
 
@@ -72,7 +72,7 @@ pub fn render(cfg: &WaterfallConfig) -> String {
         push_i(&mut b, x);
         push_b(&mut b, b"\" y=\"");
         push_i(&mut b, pad_t + plot_h + 14);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">");
         if v.abs() >= 1_000_000.0 {
             push_f2(&mut b, v / 1_000_000.0);
             push_b(&mut b, b"M");
@@ -154,13 +154,7 @@ pub fn render(cfg: &WaterfallConfig) -> String {
         push_b(&mut b, b"\" y=\"");
         push_i(&mut b, cy + 4);
         push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#475569\">");
-        let lbl = &p.labels[i];
-        let short = if lbl.len() > 18 {
-            &lbl[..18]
-        } else {
-            lbl.as_str()
-        };
-        escape_xml(&mut b, short);
+        escape_xml(&mut b, truncate(&p.labels[i], 18));
         push_b(&mut b, b"</text>");
 
         if cfg.show_text && w > 16 {

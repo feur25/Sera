@@ -1,6 +1,8 @@
 use super::config::WaterfallConfig;
 use crate::html::hover::{build_chart_html, slots_to_json};
-use crate::plot::statistical::common::{escape_xml, push_b, push_f2, push_i, sort_indices, sorted};
+use crate::plot::statistical::common::{
+    escape_xml, push_b, push_f2, push_i, sort_indices, sorted, truncate,
+};
 
 pub const COLOR_POS: u32 = 0x10B981;
 pub const COLOR_NEG: u32 = 0xF43F5E;
@@ -157,7 +159,7 @@ pub fn axes(buf: &mut Vec<u8>, cfg: &WaterfallConfig, p: &Prepared) {
         push_i(buf, l.pad_l - 4);
         push_b(buf, b"\" y=\"");
         push_i(buf, y + 4);
-        push_b(buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\">");
+        push_b(buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">");
         if v.abs() >= 1_000_000.0 {
             push_f2(buf, v / 1_000_000.0);
             push_b(buf, b"M");
@@ -194,8 +196,7 @@ pub fn xlabel(buf: &mut Vec<u8>, cx: i32, y: i32, lbl: &str) {
     push_b(buf, b"\" y=\"");
     push_i(buf, y);
     push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">");
-    let short = if lbl.len() > 10 { &lbl[..10] } else { lbl };
-    escape_xml(buf, short);
+    escape_xml(buf, truncate(lbl, 10));
     push_b(buf, b"</text>");
 }
 

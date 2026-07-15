@@ -28,7 +28,7 @@ pub fn render(cfg: &DumbbellConfig) -> String {
         push_i(&mut f.buf, cy);
         push_b(
             &mut f.buf,
-            b"\" stroke=\"#9ca3af\" stroke-width=\"2\" stroke-linecap=\"round\"/>",
+            b"\" stroke=\"#6b7280\" stroke-width=\"2\" stroke-linecap=\"round\"/>",
         );
         data_dot(&mut f, &p, i, 0, cfg.series_names.0, x1, cy, 6, p.c1);
         data_dot(&mut f, &p, i, 1, cfg.series_names.1, x2, cy, 6, p.c2);

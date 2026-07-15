@@ -1,6 +1,6 @@
 use super::common::{finalize, open_svg, prepare};
 use super::config::SlopeConfig;
-use crate::plot::statistical::common::{escape_xml, push_b, push_f2, push_i};
+use crate::plot::statistical::common::{escape_xml, push_b, push_f2, push_i, truncate};
 
 #[crate::chart_demo(
     "labels=[\"A\",\"B\",\"C\",\"D\",\"E\"], left=[20,35,15,42,28], right=[35,28,40,55,22]"
@@ -89,11 +89,7 @@ pub fn render(cfg: &SlopeConfig) -> String {
             &mut b,
             b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\">",
         );
-        let short = if p.labels[i].len() > 14 {
-            &p.labels[i][..14]
-        } else {
-            &p.labels[i]
-        };
+        let short = truncate(&p.labels[i], 14);
         escape_xml(&mut b, short);
         push_b(&mut b, b"</text>");
 

@@ -1,6 +1,8 @@
 use super::config::SlopeConfig;
 use crate::html::hover::{build_chart_html, slots_to_json};
-use crate::plot::statistical::common::{escape_xml, push_b, push_f2, push_i, sort_indices, sorted};
+use crate::plot::statistical::common::{
+    escape_xml, push_b, push_f2, push_i, sort_indices, sorted, truncate,
+};
 
 pub struct Layout {
     pub pad_l: i32,
@@ -158,8 +160,7 @@ pub fn label_left(buf: &mut Vec<u8>, x: i32, y: i32, lbl: &str, val: f64) {
     push_b(buf, b"\" y=\"");
     push_i(buf, y + 4);
     push_b(buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#374151\">");
-    let short = if lbl.len() > 14 { &lbl[..14] } else { lbl };
-    escape_xml(buf, short);
+    escape_xml(buf, truncate(lbl, 14));
     push_b(buf, b" (");
     push_f2(buf, val);
     push_b(buf, b")</text>");
@@ -171,8 +172,7 @@ pub fn label_right(buf: &mut Vec<u8>, x: i32, y: i32, lbl: &str, val: f64) {
     push_b(buf, b"\" y=\"");
     push_i(buf, y + 4);
     push_b(buf, b"\" text-anchor=\"start\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#374151\">");
-    let short = if lbl.len() > 14 { &lbl[..14] } else { lbl };
-    escape_xml(buf, short);
+    escape_xml(buf, truncate(lbl, 14));
     push_b(buf, b" (");
     push_f2(buf, val);
     push_b(buf, b")</text>");
