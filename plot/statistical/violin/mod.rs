@@ -1,16 +1,12 @@
 use crate::plot::{apply, apply_h, parse_all};
-pub mod aurora;
 pub mod basic;
 pub mod common;
 pub mod config;
-pub mod crystal;
-pub mod deluxe;
 pub mod half;
 pub mod horizontal;
 pub mod mean;
 pub mod points;
 pub mod quartile;
-pub mod rainbow;
 pub mod split;
 pub mod strip;
 pub mod variant;
@@ -31,10 +27,6 @@ pub fn render_violin_html(cfg: &ViolinConfig) -> String {
         Horizontal => horizontal::render(cfg),
         Split => split::render(cfg),
         Half => half::render(cfg),
-        Rainbow => rainbow::render(cfg),
-        Aurora => aurora::render(cfg),
-        Deluxe => deluxe::render(cfg),
-        Crystal => crystal::render(cfg),
     }
 }
 

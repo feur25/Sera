@@ -9,9 +9,5 @@ crate::plot_family! {
         Horizontal => "horizontal" | "horiz" | "h" | "rotated",
         Split      => "split" | "paired" | "back_to_back" | "mirror",
         Half       => "half" | "asymmetric" | "one_sided" | "single",
-        Rainbow    => "rainbow" | "gradient" | "spectrum" | "colorful",
-        Aurora     => "aurora" | "warm" | "ember" | "fire",
-        Deluxe     => "deluxe" | "premium" | "neon" | "dark",
-        Crystal    => "crystal" | "glass" | "prism" | "transparent",
     }
 }

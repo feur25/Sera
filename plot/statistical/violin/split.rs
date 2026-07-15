@@ -4,7 +4,7 @@ use super::common::{
 };
 use super::config::ViolinConfig;
 use crate::html::hover::slots_to_json;
-use crate::plot::statistical::common::{escape_xml, palette_color, push_b, push_i};
+use crate::plot::statistical::common::{escape_xml, palette_color, push_b, push_i, truncate};
 
 #[crate::chart_demo("labels=[\"A\",\"B\",\"C\"], values=[1.2,2.4,2.7,3.1,3.5,3.8,2.0,2.8,3.2,3.6,4.1,4.5,1.8,2.2,2.6,3.0,3.4,3.9], categories=[\"A\",\"A\",\"A\",\"A\",\"A\",\"A\",\"B\",\"B\",\"B\",\"B\",\"B\",\"B\",\"C\",\"C\",\"C\",\"C\",\"C\",\"C\"], color_groups=[\"L\",\"L\",\"L\",\"R\",\"R\",\"R\",\"L\",\"L\",\"L\",\"R\",\"R\",\"R\",\"L\",\"L\",\"L\",\"R\",\"R\",\"R\"]")]
 
@@ -95,12 +95,7 @@ pub fn render(cfg: &ViolinConfig) -> String {
         push_b(&mut f.buf, b"\" y=\"");
         push_i(&mut f.buf, f.pt + f.ph + 16);
         push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
-        let trimmed = if combined.len() <= 22 {
-            combined.as_str()
-        } else {
-            &combined[..22]
-        };
-        escape_xml(&mut f.buf, trimmed);
+        escape_xml(&mut f.buf, truncate(&combined, 22));
         push_b(&mut f.buf, b"</text>");
     }
     let _ = draw_cat_label_v;

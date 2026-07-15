@@ -1,7 +1,7 @@
 use super::config::ViolinConfig;
 use crate::plot::statistical::common::{
     escape_xml, hex6, palette_color, push_b, push_f2, push_i, sort_indices, svg_axis_lines,
-    svg_legend_item, svg_x_label, svg_y_label, Frame,
+    svg_legend_item, svg_x_label, svg_y_label, truncate, Frame,
 };
 
 pub struct GroupStat {
@@ -214,11 +214,7 @@ pub fn rng_next(state: &mut u64) -> f64 {
 }
 
 pub fn cat_label_short(cat: &str) -> &str {
-    if cat.len() <= 14 {
-        cat
-    } else {
-        &cat[..14]
-    }
+    truncate(cat, 14)
 }
 
 pub enum Side {
