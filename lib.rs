@@ -1,4 +1,5 @@
-﻿#[global_allocator]
+﻿#[cfg(not(target_arch = "wasm32"))]
+#[global_allocator]
 static GLOBAL_ALLOC: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 pub(crate) use bindings::chart_methods::apply::*;
