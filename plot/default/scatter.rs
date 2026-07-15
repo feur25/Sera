@@ -15,7 +15,7 @@ pub fn render_scatter_fast(values: &[f64], labels: &[String], width: i32, height
     let scale_y = height as f64 / max_val;
 
     let mut svg = String::with_capacity(n * 100 + 256);
-    svg.push_str("<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"");
+    svg.push_str("<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"");
     svg.push_str(&width.to_string());
     svg.push_str("\" height=\"");
     svg.push_str(&height.to_string());
@@ -789,7 +789,7 @@ pub fn render_scatter_html(
     html_prefix(&mut buf, title, hid);
     push_b(
         &mut buf,
-        b"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"",
+        b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"",
     );
     push_i(&mut buf, width);
     push_b(&mut buf, b"\" height=\"");
@@ -815,6 +815,9 @@ pub fn render_scatter_html(
         &mut buf,
         b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>",
     );
+    push_b(&mut buf, b"<title>");
+    escape_xml(&mut buf, if title.is_empty() { "Chart" } else { title });
+    push_b(&mut buf, b"</title>");
     if !title.is_empty() {
         push_b(&mut buf, b"<text x=\"");
         push_i(&mut buf, width / 2);
