@@ -238,7 +238,7 @@ pub fn render_lines_html(
         push_i(&mut b, pad_l - 4);
         push_b(&mut b, b"\" y=\"");
         push_i(&mut b, y + 3);
-        push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#9ca3af\" class=\"sp-yt\">");
+        push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-yt\">");
         if val >= 1000.0 {
             push_i(&mut b, val as i32);
         } else {
