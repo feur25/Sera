@@ -4,12 +4,11 @@ pub mod common;
 pub mod config;
 pub mod depth_fade;
 pub mod donut;
-pub mod flame;
 pub mod gapped;
 pub mod mono;
 pub mod outlined;
-pub mod rainbow;
 pub mod variant;
+pub mod zoomable;
 
 pub use config::SunburstConfig;
 pub use variant::SunburstVariant;
@@ -19,12 +18,11 @@ pub fn render_sunburst_html(cfg: &SunburstConfig) -> String {
     match cfg.variant {
         Basic => basic::render(cfg),
         Donut => donut::render(cfg),
-        Flame => flame::render(cfg),
-        Rainbow => rainbow::render(cfg),
         Outlined => outlined::render(cfg),
         Gapped => gapped::render(cfg),
         DepthFade => depth_fade::render(cfg),
         Mono => mono::render(cfg),
+        Zoomable => zoomable::render(cfg),
     }
 }
 

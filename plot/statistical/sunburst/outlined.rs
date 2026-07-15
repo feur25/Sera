@@ -47,6 +47,6 @@ pub fn render(cfg: &SunburstConfig) -> String {
     push_i(&mut b, p.layout.cy);
     push_b(&mut b, b"\" r=\"");
     push_i(&mut b, p.layout.r_hole - 1);
-    push_b(&mut b, b"\" fill=\"#fff\"/>");
+    push_b(&mut b, b"\" fill=\"none\"/>");
     finalize(b, cfg)
 }

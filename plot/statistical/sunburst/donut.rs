@@ -47,7 +47,7 @@ pub fn render(cfg: &SunburstConfig) -> String {
     push_i(&mut b, p.layout.r_hole - 1);
     push_b(
         &mut b,
-        b"\" fill=\"#ffffff\" stroke=\"#e5e7eb\" stroke-width=\"1\"/>",
+        b"\" fill=\"none\" stroke=\"rgba(255,255,255,0.18)\" stroke-width=\"1\"/>",
     );
     push_b(&mut b, b"<text x=\"");
     push_i(&mut b, p.layout.cx);
@@ -58,7 +58,7 @@ pub fn render(cfg: &SunburstConfig) -> String {
     push_i(&mut b, p.layout.cx);
     push_b(&mut b, b"\" y=\"");
     push_i(&mut b, p.layout.cy + 12);
-    push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1f2937\">");
+    push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#f1f5f9\">");
     if p.grand_total >= 1_000_000.0 {
         push_f2(&mut b, p.grand_total / 1_000_000.0);
         push_b(&mut b, b"M");
