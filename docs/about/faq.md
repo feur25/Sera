@@ -26,7 +26,7 @@ Pass `max_points=N` to `line()`/`bubble()`/`scatter()`/etc. for bounded, lossy d
 
 ## Where do I report a real bug?
 
-There's no public issue tracker link established yet in this documentation — until one exists, use the contact channel on the [Support & Contact](support.md) page.
+Open a [GitHub issue](https://github.com/feur25/seraplot/issues/new/choose) — bug report and feature request templates are provided. Include a minimal reproduction (the smallest `sp.xxx(...)` call that shows the problem) and your SeraPlot/Python/OS versions.
 
 </div>
 
@@ -56,6 +56,6 @@ Passez `max_points=N` à `line()`/`bubble()`/`scatter()`/etc. pour un sous-écha
 
 ## Où signaler un vrai bug ?
 
-Aucun lien de suivi d'issues public n'est encore établi dans cette documentation — en attendant, utilisez le canal de contact de la page [Support & Contact](support.md).
+Ouvrez une [issue GitHub](https://github.com/feur25/seraplot/issues/new/choose) — des modèles de rapport de bug et de demande de fonctionnalité sont fournis. Incluez une reproduction minimale (le plus petit appel `sp.xxx(...)` qui montre le problème) ainsi que vos versions de SeraPlot/Python/OS.
 
 </div>

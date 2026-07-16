@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://feur25.github.io/seraplot/introduction.html
+    about: Check the docs and FAQ before filing an issue — many questions are already answered there.
