@@ -1,13 +1,5 @@
-# SeraPlot for VS Code
-
-<p align="center">
-  <img src="logo_banner.png" alt="SeraPlot" width="420"/>
-</p>
-
 Live preview, gallery, theme studio and snippets for **SeraPlot** — high-performance
 Rust/Python charts.
-
-> Logo design by [SevenSoftware7](https://github.com/SevenSoftware7).
 
 ## Screenshots
 
@@ -75,6 +67,17 @@ Documentation: : <https://feur25.github.io/seraplot/introduction.html>
 `spscatter3d`, `spbar3d`, `spglobe`, `spmap`, `spchoro`, `spkmeans`, `spdbscan`,
 `spauto`, `spdrift`, `spfacet`, `spgrid`, `sppipe`, `sptts`, …
 
+> Logo design by [SevenSoftware7](https://github.com/SevenSoftware7).
+
+> Extension make it by : feur25
+
+> Documentation: : <https://feur25.github.io/seraplot/introduction.html>
+
+<p align="center">
+  <a href="https://feur25.github.io/seraplot/introduction.html"><img src="https://i.ibb.co/WpF73657/logo-banner.png" alt="Seraplot Banner" border="0"></a>
+</p>
+
 ## License
 
 MIT
+
