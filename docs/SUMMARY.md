@@ -13,6 +13,8 @@
 
 # SeraPlot
 
+- [Intro SeraPlot](getting-started/intro-seraplot.md)
+- [Showcase](showcase.md)
 - [Chart Methods](getting-started/chart-methods.md)
 - [2D Charts](charts/2d/index.md)
   - [Bar Charts](charts/2d/bar.md)
@@ -76,6 +78,10 @@
 - [Map Charts](charts/map/index.md)
   - [Bubble Map](charts/map/bubble-map.md)
   - [Choropleth](charts/map/choropleth.md)
+- [Canvas Composition](canvas/composition.md)
+- [Table (Data Engineering)](canvas/table.md)
+- [SeraDFrame](canvas/dframe.md)
+- [Web App (sp.App)](canvas/webapp.md)
 
 ---
 
