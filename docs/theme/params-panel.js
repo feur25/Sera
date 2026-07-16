@@ -1130,7 +1130,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
   function themeBase() {
     var parts = window.location.pathname.split("/").filter(Boolean);
     parts.pop();
-    return new Array(parts.length + 1).join("../") + "theme/";
+    return new Array(parts.length + 1).join("../") + "docs/theme/";
   }
 
   function ensureWasm(cb) {

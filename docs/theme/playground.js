@@ -94,7 +94,7 @@
     function getThemeBase() {
         var parts = window.location.pathname.split('/').filter(Boolean);
         parts.pop();
-        return new Array(parts.length + 1).join('../') + 'theme/';
+        return new Array(parts.length + 1).join('../') + 'docs/theme/';
     }
 
     function loadMonaco(cb) {
