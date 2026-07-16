@@ -62,10 +62,6 @@ Aliases: `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.v
 | `"horizontal"` | Rotated layout, ideal for many categories or long names | `bandwidth` |
 | `"split"` | Pairs of categories rendered back-to-back on shared axis | `bandwidth` |
 | `"half"` | Single-sided violin (right half only) with median + mean | `bandwidth` |
-| `"rainbow"` | Spectral hue rotation across categories with inner box | `bandwidth` |
-| `"deluxe"` / `"premium"` / `"neon"` | Dark neon gradient fills with glow | `labels`, `values` |
-| `"aurora"` | Warm/cool gradient pair fills, increased overlap | `labels`, `values` |
-| `"crystal"` | Translucent glass violin with horizontal stripe refraction | `labels`, `values` |
 
 ---
 
@@ -84,7 +80,7 @@ Aliases: `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.v
 | `show_points` | `bool` | `False` | basic, box | Overlay individual samples on top |
 | `show_box` | `bool` | `False` | basic, quartile | Force inner IQR box on non-box variants |
 | `show_mean` | `bool` | `False` | basic, box, quartile | Force mean dashed line |
-| `palette` | `list[int]` | `None` | all except rainbow | Per-category fill colors as hex integers |
+| `palette` | `list[int]` | `None` | all | Per-category fill colors as hex integers |
 | `width` | `int` | `900` | all | Canvas width in pixels |
 | `height` | `int` | `500` | all | Canvas height in pixels |
 | `x_label` | `str` | `""` | all | X-axis label |
@@ -113,12 +109,7 @@ Aliases: `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.v
 <button class="sp-cls-tab" onclick="spCls('vl-en','strip',this)"><span class="sp-cic">⋮</span><span class="sp-clb">Strip</span></button>
 <button class="sp-cls-tab" onclick="spCls('vl-en','horizontal',this)"><span class="sp-cic">⇆</span><span class="sp-clb">Horizontal</span></button>
 <button class="sp-cls-tab" onclick="spCls('vl-en','split',this)"><span class="sp-cic">◐</span><span class="sp-clb">Split</span></button>
-<button class="sp-cls-tab" onclick="spCls('vl-en','half',this)"><span class="sp-cic">◗</span><span class="sp-clb">Half</span></button>
-<button class="sp-cls-tab" onclick="spCls('vl-en','rainbow',this)"><span class="sp-cic">◑</span><span class="sp-clb">Rainbow</span></button>
-<button class="sp-cls-tab" onclick="spCls('vl-en','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
-<button class="sp-cls-tab" onclick="spCls('vl-en','aurora',this)"><span class="sp-cic">☄</span><span class="sp-clb">Aurora</span></button>
-<button class="sp-cls-tab" onclick="spCls('vl-en','crystal',this)"><span class="sp-cic">◇</span><span class="sp-clb">Crystal</span></button>
-</div>
+<button class="sp-cls-tab" onclick="spCls('vl-en','half',this)"><span class="sp-cic">◗</span><span class="sp-clb">Half</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant" id="vl-en-basic">
@@ -211,40 +202,6 @@ Aliases: `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.v
 
 </div>
 
-<div class="sp-variant" id="vl-en-rainbow">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"rainbow"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/violin-rainbow.html"></iframe>
-
-</div>
-
-<div class="sp-variant" id="vl-en-deluxe">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"deluxe"</code></span><span><strong>Aliases</strong> <code>deluxe / premium / neon</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/violin-deluxe.html"></iframe>
-</div>
-
-<div class="sp-variant" id="vl-en-aurora">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"aurora"</code></span><span><strong>Aliases</strong> <code>aurora / warm-cool / bicolor</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/violin-aurora.html"></iframe>
-</div>
-
-<div class="sp-variant" id="vl-en-crystal">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"crystal"</code></span><span><strong>Aliases</strong> <code>crystal / glass / prism / transparent</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/violin-crystal.html"></iframe>
-</div>
-
 </div>
 </div>
 
@@ -274,7 +231,6 @@ Alias : `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.vi
 | `"horizontal"` | Disposition pivotée, idéale pour longs noms ou nombreux groupes | `bandwidth` |
 | `"split"` | Paires de catégories rendues dos à dos sur axe partagé | `bandwidth` |
 | `"half"` | Violon mono-côté (moitié droite uniquement) avec médiane + moyenne | `bandwidth` |
-| `"rainbow"` | Rotation spectrale des teintes entre catégories avec boîte interne | `bandwidth` |
 
 ---
 
@@ -293,7 +249,7 @@ Alias : `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.vi
 | `show_points` | `bool` | `False` | basic, box | Superpose les échantillons individuels |
 | `show_box` | `bool` | `False` | basic, quartile | Force la boîte IQR interne sur les variantes sans boîte |
 | `show_mean` | `bool` | `False` | basic, box, quartile | Force l'affichage de la ligne moyenne |
-| `palette` | `list[int]` | `None` | toutes sauf rainbow | Couleurs par catégorie (entiers hex) |
+| `palette` | `list[int]` | `None` | toutes | Couleurs par catégorie (entiers hex) |
 | `width` | `int` | `900` | toutes | Largeur du canevas en px |
 | `height` | `int` | `500` | toutes | Hauteur du canevas en px |
 | `x_label` | `str` | `""` | toutes | Label axe X |
@@ -322,12 +278,7 @@ Alias : `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.vi
 <button class="sp-cls-tab" onclick="spCls('vl-fr','strip',this)"><span class="sp-cic">⋮</span><span class="sp-clb">Bande</span></button>
 <button class="sp-cls-tab" onclick="spCls('vl-fr','horizontal',this)"><span class="sp-cic">⇆</span><span class="sp-clb">Horizontal</span></button>
 <button class="sp-cls-tab" onclick="spCls('vl-fr','split',this)"><span class="sp-cic">◐</span><span class="sp-clb">Scindé</span></button>
-<button class="sp-cls-tab" onclick="spCls('vl-fr','half',this)"><span class="sp-cic">◗</span><span class="sp-clb">Demi</span></button>
-<button class="sp-cls-tab" onclick="spCls('vl-fr','rainbow',this)"><span class="sp-cic">◑</span><span class="sp-clb">Arc-en-ciel</span></button>
-<button class="sp-cls-tab" onclick="spCls('vl-fr','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
-<button class="sp-cls-tab" onclick="spCls('vl-fr','aurora',this)"><span class="sp-cic">☄</span><span class="sp-clb">Aurore</span></button>
-<button class="sp-cls-tab" onclick="spCls('vl-fr','crystal',this)"><span class="sp-cic">◇</span><span class="sp-clb">Cristal</span></button>
-</div>
+<button class="sp-cls-tab" onclick="spCls('vl-fr','half',this)"><span class="sp-cic">◗</span><span class="sp-clb">Demi</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant" id="vl-fr-basic"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-basic.html"></iframe></div>
@@ -347,14 +298,6 @@ Alias : `sp.violin`, `sp.violins`, `sp.violin_chart`, `sp.violin_family`, `sp.vi
 <div class="sp-variant" id="vl-fr-split"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"split"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-split.html"></iframe></div>
 
 <div class="sp-variant" id="vl-fr-half"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"half"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-half.html"></iframe></div>
-
-<div class="sp-variant" id="vl-fr-rainbow"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"rainbow"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-rainbow.html"></iframe></div>
-
-<div class="sp-variant" id="vl-fr-deluxe"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"deluxe"</code></span><span><strong>Alias</strong> <code>deluxe / premium / neon</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-deluxe.html"></iframe></div>
-
-<div class="sp-variant" id="vl-fr-aurora"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"aurora"</code></span><span><strong>Alias</strong> <code>aurora / warm-cool / bicolor</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-aurora.html"></iframe></div>
-
-<div class="sp-variant" id="vl-fr-crystal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"crystal"</code></span><span><strong>Alias</strong> <code>crystal / glass / prism / transparent</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-crystal.html"></iframe></div>
 
 </div>
 </div>

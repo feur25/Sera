@@ -69,12 +69,11 @@ Aliases: `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_famil
 | `"horizontal"` / `"h"` | Single series, horizontal | `labels`, `values` |
 | `"grouped"` / `"group"` | Multi-series side-by-side | `series`, `series_names` |
 | `"stacked"` / `"stack"` | Multi-series stacked | `series`, `series_names` |
-| `"relative"` / `"rel"` | Stacked + negatives below 0 | `series`, `series_names` |
+| `"relative"` / `"rel"` | 100% stacked — each column fills to 100% | `series`, `series_names` |
 | `"grouped_stacked"` | Groups of stacked bars | `series`, `series_names`, `offset_groups` |
 | `"marimekko"` / `"mekko"` / `"mosaic"` | Variable-width mosaic | `series`, `series_names`, `widths` |
 | `"pictogram"` / `"icon"` | Repeated-icon bar | `labels`, `values`, `units_per_icon` |
 | `"multicategory"` / `"multi"` | Two-level x axis | `labels`, `values`, `super_categories` |
-| `"deluxe"` / `"premium"` / `"neon"` | Dark glowing neon bars | `labels`, `values` |
 
 ---
 
@@ -132,8 +131,6 @@ Aliases: `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_famil
 <button class="sp-cls-tab" onclick="spCls('bar-en','marimekko',this)"><span class="sp-cic">▤</span><span class="sp-clb">Marimekko</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','pictogram',this)"><span class="sp-cic">☰</span><span class="sp-clb">Pictogram</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','multicategory',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Multicategory</span></button>
-<button class="sp-cls-tab" onclick="spCls('bar-en','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
-<button class="sp-cls-tab" onclick="spCls('bar-en','prism',this)"><span class="sp-cic">◈</span><span class="sp-clb">Prism</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -182,9 +179,9 @@ Series stacked vertically — shows part-to-whole within each category. Alias: `
 
 <div class="sp-variant" id="bar-en-relative">
 
-Stacked with **negative values below the zero baseline** — P&L, gains/losses. Alias: `"rel"`.
+100% stacked bars — every column fills from 0 to 100%, showing each series as a share of the total. Alias: `"rel"`.
 
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"relative"</code> / <code>"rel"</code></span><span><strong>Required</strong> <code>series</code>, <code>series_names</code></span><span><strong>Note</strong> negatives render below 0</span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"relative"</code> / <code>"rel"</code></span><span><strong>Required</strong> <code>series</code>, <code>series_names</code></span><span><strong>Note</strong> each column normalised to 100%</span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 
 <div class="sp-preview-label">Preview</div>
@@ -235,27 +232,6 @@ Two-level hierarchical x axis. `super_categories` groups adjacent bars under a b
 <iframe class="sp-preview-frame" src="../../previews/multicategory-bar.html"></iframe>
 </div>
 
-<div class="sp-variant" id="bar-en-deluxe">
-
-Dark background, per-bar neon gradient fill, gaussian glow filter, bright top highlight strip. Aliases: `"premium"`, `"neon"`, `"dark"`.
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"deluxe"</code> / <code>"premium"</code> / <code>"neon"</code></span><span><strong>Style</strong> dark background · neon gradients · glow</span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bar-deluxe.html"></iframe>
-
-</div>
-
-<div class="sp-variant" id="bar-en-prism">
-
-Prismatic crystal bars with diagonal facet lines and shine overlay. Each bar gets a vivid rainbow gradient with glowing highlights.
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"prism"</code></span><span><strong>Aliases</strong> <code>prism / crystal / glass / rainbow</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bar-prism.html"></iframe>
-</div>
-
 </div><!-- /sp-cls-body -->
 </div><!-- /bar-en -->
 
@@ -282,7 +258,7 @@ Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family
 | `"horizontal"` / `"h"` | Série unique, barres horizontales | `labels`, `values` |
 | `"grouped"` / `"group"` | Multi-séries côte à côte | `series`, `series_names` |
 | `"stacked"` / `"stack"` | Multi-séries empilées | `series`, `series_names` |
-| `"relative"` / `"rel"` | Empilé + négatifs sous 0 | `series`, `series_names` |
+| `"relative"` / `"rel"` | 100% empilé — chaque colonne normalisée à 100% | `series`, `series_names` |
 | `"grouped_stacked"` | Groupes de barres empilées | `series`, `series_names`, `offset_groups` |
 | `"marimekko"` / `"mekko"` | Mosaïque à largeur variable | `series`, `series_names`, `widths` |
 | `"pictogram"` / `"icon"` | Barre d'icônes répétées | `labels`, `values`, `units_per_icon` |
@@ -344,8 +320,6 @@ Alias : `sp.bar`, `sp.bars`, `sp.bar_unified`, `sp.bars_unified`, `sp.bar_family
 <button class="sp-cls-tab" onclick="spCls('bar-fr','marimekko',this)"><span class="sp-cic">▤</span><span class="sp-clb">Marimekko</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','pictogram',this)"><span class="sp-cic">☰</span><span class="sp-clb">Pictogramme</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','multicategory',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Multi-catégories</span></button>
-<button class="sp-cls-tab" onclick="spCls('bar-fr','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
-<button class="sp-cls-tab" onclick="spCls('bar-fr','prism',this)"><span class="sp-cic">◈</span><span class="sp-clb">Prisme</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -395,9 +369,9 @@ Séries empilées verticalement — montre la part de chaque série dans le tota
 
 <div class="sp-variant" id="bar-fr-relative">
 
-Empilé avec **valeurs négatives sous l'axe zéro** — flux de trésorerie, P&L. Alias : `"rel"`.
+100% empilé — chaque colonne est normalisée à 100%, montrant la part de chaque série dans le total. Alias : `"rel"`.
 
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"relative"</code> / <code>"rel"</code></span><span><strong>Requis</strong> <code>series</code>, <code>series_names</code></span><span><strong>Note</strong> les négatifs s'affichent sous 0</span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"relative"</code> / <code>"rel"</code></span><span><strong>Requis</strong> <code>series</code>, <code>series_names</code></span><span><strong>Note</strong> chaque colonne normalisée à 100%</span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
 
 <div class="sp-preview-label">Aperçu</div>
@@ -447,27 +421,6 @@ Axe x à deux niveaux. `super_categories` regroupe les barres adjacentes sous un
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/multicategory-bar.html"></iframe>
-</div>
-
-<div class="sp-variant" id="bar-fr-deluxe">
-
-Fond sombre, gradient néon par barre, filtre de glow gaussien, liseré blanc en haut. Alias : `"premium"`, `"neon"`, `"dark"`.
-
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"deluxe"</code> / <code>"premium"</code> / <code>"neon"</code></span><span><strong>Style</strong> fond sombre · dégradés néon · lueur</span><span><strong>Retourne</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/bar-deluxe.html"></iframe>
-
-</div>
-
-<div class="sp-variant" id="bar-fr-prism">
-
-Barres cristal prismatiques avec lignes de facettes diagonales et surbrillance. Chaque barre reçoit un dégradé arc-en-ciel vif avec effets lumineux.
-
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"prism"</code></span><span><strong>Alias</strong> <code>prism / crystal / glass / rainbow</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/bar-prism.html"></iframe>
 </div>
 
 </div><!-- /sp-cls-body -->

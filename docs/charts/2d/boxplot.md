@@ -66,7 +66,6 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 | `"strip"` / `"swarm"` | Pure jittered scatter (no box) with median line | `jitter` |
 | `"violin"` / `"density"` | Box wrapped in a kernel-density silhouette | `labels`, `values` |
 | `"letter_value"` / `"boxen"` | Tukey letter-value plot for tail-heavy data | `boxen_depth` |
-| `"rainbow"` / `"gradient"` | Spectral palette interpolated across categories | `labels`, `values` |
 
 ---
 
@@ -114,7 +113,6 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 <button class="sp-cls-tab" onclick="spCls('bx-en','strip',this)"><span class="sp-cic">⋮</span><span class="sp-clb">Strip</span></button>
 <button class="sp-cls-tab" onclick="spCls('bx-en','violin',this)"><span class="sp-cic">◇</span><span class="sp-clb">Violin</span></button>
 <button class="sp-cls-tab" onclick="spCls('bx-en','letter',this)"><span class="sp-cic">≡</span><span class="sp-clb">Letter-Value</span></button>
-<button class="sp-cls-tab" onclick="spCls('bx-en','rainbow',this)"><span class="sp-cic">◑</span><span class="sp-clb">Rainbow</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -208,15 +206,6 @@ Aliases: `sp.boxplot`, `sp.box_plot`
 
 </div>
 
-<div class="sp-variant" id="bx-en-rainbow">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"rainbow"</code> / <code>"gradient"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/boxplot-rainbow.html"></iframe>
-
-</div>
 
 </div>
 </div>
@@ -247,7 +236,6 @@ Alias : `sp.boxplot`, `sp.box_plot`
 | `"strip"` / `"swarm"` | Nuage de points avec ligne médiane | `jitter` |
 | `"violin"` / `"density"` | Boîte enveloppée d'une silhouette KDE | `labels`, `values` |
 | `"letter_value"` / `"boxen"` | Diagramme de Tukey à valeurs lettres | `boxen_depth` |
-| `"rainbow"` / `"gradient"` | Palette spectrale interpolée | `labels`, `values` |
 
 ---
 
@@ -295,7 +283,6 @@ Alias : `sp.boxplot`, `sp.box_plot`
 <button class="sp-cls-tab" onclick="spCls('bx-fr','strip',this)"><span class="sp-cic">⋮</span><span class="sp-clb">Bande</span></button>
 <button class="sp-cls-tab" onclick="spCls('bx-fr','violin',this)"><span class="sp-cic">◇</span><span class="sp-clb">Violon</span></button>
 <button class="sp-cls-tab" onclick="spCls('bx-fr','letter',this)"><span class="sp-cic">≡</span><span class="sp-clb">Valeurs-Lettres</span></button>
-<button class="sp-cls-tab" onclick="spCls('bx-fr','rainbow',this)"><span class="sp-cic">◑</span><span class="sp-clb">Arc-en-ciel</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -316,8 +303,6 @@ Alias : `sp.boxplot`, `sp.box_plot`
 <div class="sp-variant" id="bx-fr-violin"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"violin"</code> / <code>"density"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-violin.html"></iframe></div>
 
 <div class="sp-variant" id="bx-fr-letter"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"letter_value"</code> / <code>"boxen"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-letter_value.html"></iframe></div>
-
-<div class="sp-variant" id="bx-fr-rainbow"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"rainbow"</code> / <code>"gradient"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-rainbow.html"></iframe></div>
 
 </div>
 </div>

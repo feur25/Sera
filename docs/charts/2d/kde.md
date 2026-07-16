@@ -277,4 +277,3 @@ Alias : `sp.kde`, `sp.build_kde_chart`
 </div></div>
 
 </div>
-

@@ -61,9 +61,6 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 | `"symbols"` / `"shapes"` | Distinct marker shapes per group | `categories` |
 | `"labeled"` / `"text"` | Always-on per-point labels | `labels` |
 | `"regression"` / `"trendline"` | OLS fit overlay (linear / poly2) | `regression_type` |
-| `"deluxe"` / `"premium"` / `"stellar"` | Dark center → white-gold edges, glow filter | `x_values`, `y_values` |
-| `"galaxy"` | Multicolor glowing dots with amber haze | `x_values`, `y_values` |
-| `"nova"` | Starburst spike halos, chromatic rainbow spectrum | `x_values`, `y_values` |
 
 ---
 
@@ -111,11 +108,7 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 <button class="sp-cls-tab" onclick="spCls('scatter-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','symbols',this)"><span class="sp-cic">◆</span><span class="sp-clb">Symbols</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Labeled</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-en','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Regression</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-en','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-en','galaxy',this)"><span class="sp-cic">◆</span><span class="sp-clb">Galaxy</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-en','nova',this)"><span class="sp-cic">✸</span><span class="sp-clb">Nova</span></button>
-</div>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Regression</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="scatter-en-basic">
@@ -164,30 +157,6 @@ Aliases: `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-regression.html"></iframe>
-</div>
-
-<div class="sp-variant" id="scatter-en-deluxe">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"deluxe"</code></span><span><strong>Aliases</strong> <code>deluxe / premium / stellar</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-deluxe.html"></iframe>
-</div>
-
-<div class="sp-variant" id="scatter-en-galaxy">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"galaxy"</code></span><span><strong>Aliases</strong> <code>galaxy / multicolor / stellar</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-galaxy.html"></iframe>
-</div>
-
-<div class="sp-variant" id="scatter-en-nova">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"nova"</code></span><span><strong>Aliases</strong> <code>nova / burst / starburst / spike</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-nova.html"></iframe>
 </div>
 
 </div>
@@ -303,11 +272,7 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','symbols',this)"><span class="sp-cic">◆</span><span class="sp-clb">Symboles</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Étiquetés</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-fr','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Régression</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-fr','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-fr','galaxy',this)"><span class="sp-cic">◆</span><span class="sp-clb">Galaxie</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-fr','nova',this)"><span class="sp-cic">✸</span><span class="sp-clb">Nova</span></button>
-</div>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Régression</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="scatter-fr-basic">
@@ -356,30 +321,6 @@ Alias : `sp.scatter`, `sp.scatters`, `sp.scatter_unified`, `sp.scatter_family`
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-regression.html"></iframe>
-</div>
-
-<div class="sp-variant" id="scatter-fr-deluxe">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"deluxe"</code></span><span><strong>Aliases</strong> <code>deluxe / premium / stellar</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-deluxe.html"></iframe>
-</div>
-
-<div class="sp-variant" id="scatter-fr-galaxy">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"galaxy"</code></span><span><strong>Aliases</strong> <code>galaxy / multicolor / stellar</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-galaxy.html"></iframe>
-</div>
-
-<div class="sp-variant" id="scatter-fr-nova">
-
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"nova"</code></span><span><strong>Alias</strong> <code>nova / burst / starburst / spike</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-nova.html"></iframe>
 </div>
 
 </div>

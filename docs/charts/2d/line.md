@@ -124,9 +124,7 @@ Aliases: `sp.line`, `sp.lines`, `sp.line_unified`, `sp.lines_unified`, `sp.line_
 <button class="sp-cls-tab" onclick="spCls('line-en','sparkline',this)"><span class="sp-cic">⌁</span><span class="sp-clb">Sparkline</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-en','dashed',this)"><span class="sp-cic">┈</span><span class="sp-clb">Dashed</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-en','connected_scatter',this)"><span class="sp-cic">●</span><span class="sp-clb">Connected Scatter</span></button>
-<button class="sp-cls-tab" onclick="spCls('line-en','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Gapped</span></button>
-<button class="sp-cls-tab" onclick="spCls('line-en','neon',this)"><span class="sp-cic">⚡</span><span class="sp-clb">Neon</span></button>
-</div>
+<button class="sp-cls-tab" onclick="spCls('line-en','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Gapped</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="line-en-basic">
@@ -237,16 +235,6 @@ Line breaks where values exceed `gap_threshold`. Useful for time series with mis
 <iframe class="sp-preview-frame" src="../../previews/line-gapped.html"></iframe>
 </div>
 
-<div class="sp-variant" id="line-en-neon">
-
-Electric neon glow lines: filled area + double-layer glow stroke + glowing dots. Supports single and multi-series.
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"neon"</code></span><span><strong>Aliases</strong> <code>neon / glow / electric / cyber</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/line-neon.html"></iframe>
-</div>
-
 </div>
 </div>
 
@@ -332,9 +320,7 @@ Alias : `sp.line`, `sp.lines`, `sp.line_unified`, `sp.lines_unified`, `sp.line_f
 <button class="sp-cls-tab" onclick="spCls('line-fr','sparkline',this)"><span class="sp-cic">⌁</span><span class="sp-clb">Sparkline</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-fr','dashed',this)"><span class="sp-cic">┈</span><span class="sp-clb">Tirets</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-fr','connected_scatter',this)"><span class="sp-cic">●</span><span class="sp-clb">Scatter Connecté</span></button>
-<button class="sp-cls-tab" onclick="spCls('line-fr','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Avec lacunes</span></button>
-<button class="sp-cls-tab" onclick="spCls('line-fr','neon',this)"><span class="sp-cic">⚡</span><span class="sp-clb">Néon</span></button>
-</div>
+<button class="sp-cls-tab" onclick="spCls('line-fr','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Avec lacunes</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="line-fr-basic">
@@ -443,16 +429,6 @@ Rupture de ligne lorsque les valeurs dépassent `gap_threshold`. Utile pour des 
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/line-gapped.html"></iframe>
-</div>
-
-<div class="sp-variant" id="line-fr-neon">
-
-Lignes néon électriques : aire remplie + trait avec double couche de lueur + points lumineux. Supporte séries simples et multiples.
-
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"neon"</code></span><span><strong>Alias</strong> <code>neon / glow / electric / cyber</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/line-neon.html"></iframe>
 </div>
 
 </div>

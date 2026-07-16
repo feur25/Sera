@@ -91,9 +91,7 @@ Aliases: `sp.build_parallel` &middot; `sp.parallel` &middot; `sp.parallel_coords
 <button class="sp-cls-tab" onclick="spCls('parallel-en','categorical',this)"><span class="sp-cic">C</span><span class="sp-clb">Categorical</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-en','highlight',this)"><span class="sp-cic">H</span><span class="sp-clb">Highlight</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-en','density',this)"><span class="sp-cic">D</span><span class="sp-clb">Density</span></button>
-<button class="sp-cls-tab" onclick="spCls('parallel-en','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
-<button class="sp-cls-tab" onclick="spCls('parallel-en','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
-<button class="sp-cls-tab" onclick="spCls('parallel-en','arc',this)"><span class="sp-cic">∿</span><span class="sp-clb">Arc</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-en','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button><button class="sp-cls-tab" onclick="spCls('parallel-en','arc',this)"><span class="sp-cic">∿</span><span class="sp-clb">Arc</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-en','ribbon',this)"><span class="sp-cic">≈</span><span class="sp-clb">Ribbon</span></button>
 </div>
 <div class="sp-cls-body">
@@ -144,15 +142,6 @@ Aliases: `sp.build_parallel` &middot; `sp.parallel` &middot; `sp.parallel_coords
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-gradient.html"></iframe>
-</div>
-
-<div class="sp-variant" id="parallel-en-deluxe">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"deluxe"</code></span><span><strong>Aliases</strong> <code>deluxe / neon / dark / premium</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Dark neon style — deep navy background, glowing series lines rendered in two passes (soft glow + crisp stroke) with electric rainbow colors.</p>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-deluxe.html"></iframe>
 </div>
 
 <div class="sp-variant" id="parallel-en-arc">
@@ -228,9 +217,7 @@ Aliases: `sp.build_parallel` &middot; `sp.parallel` &middot; `sp.parallel_coords
 <button class="sp-cls-tab" onclick="spCls('parallel-fr','categorical',this)"><span class="sp-cic">C</span><span class="sp-clb">Categorical</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-fr','highlight',this)"><span class="sp-cic">H</span><span class="sp-clb">Highlight</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-fr','density',this)"><span class="sp-cic">D</span><span class="sp-clb">Density</span></button>
-<button class="sp-cls-tab" onclick="spCls('parallel-fr','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
-<button class="sp-cls-tab" onclick="spCls('parallel-fr','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
-<button class="sp-cls-tab" onclick="spCls('parallel-fr','arc',this)"><span class="sp-cic">∿</span><span class="sp-clb">Arc</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-fr','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button><button class="sp-cls-tab" onclick="spCls('parallel-fr','arc',this)"><span class="sp-cic">∿</span><span class="sp-clb">Arc</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-fr','ribbon',this)"><span class="sp-cic">≈</span><span class="sp-clb">Ribbon</span></button>
 </div>
 <div class="sp-cls-body">
@@ -281,15 +268,6 @@ Aliases: `sp.build_parallel` &middot; `sp.parallel` &middot; `sp.parallel_coords
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-gradient.html"></iframe>
-</div>
-
-<div class="sp-variant" id="parallel-fr-deluxe">
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"deluxe"</code></span><span><strong>Alias</strong> <code>deluxe / neon / dark / premium</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Style neon sombre - fond bleu nuit, lignes en double passe (lueur douce + trait net) avec des couleurs arc-en-ciel electriques.</p>
-
-<div class="sp-preview-label">Apercu</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-deluxe.html"></iframe>
 </div>
 
 <div class="sp-variant" id="parallel-fr-arc">

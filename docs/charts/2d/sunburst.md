@@ -58,8 +58,6 @@ Aliases: `sp.sunburst`, `sp.build_sunburst`
 |---|---|---|
 | `"basic"` | `basic / default / classic / ring` | Classic concentric rings with depth-based opacity and white separators. |
 | `"donut"` | `donut / hole / ring_hole / donut_ring` | Larger central hole with the formatted grand total displayed at the center. |
-| `"flame"` | `flame / warm / heat / fire` | Warm gradient (red -> amber -> cream) per ring, evokes a heatmap or fire. |
-| `"rainbow"` | `rainbow / spectrum / hue / prism` | HSL palette: hue derived from mid-angle, saturation/lightness softened with depth. |
 | `"outlined"` | `outlined / outline / stroke / wireframe` | Wireframe wedges: white fill + colored stroke that thins on deeper rings. |
 | `"gapped"` | `gapped / spaced / isolated / petals` | Angular and radial margins between every wedge for crisp petal-like separation. |
 | `"depth_fade"` | `depth_fade / fade / fading / depth` | Standard palette but opacity decreases with depth, focusing the eye on top levels. |
@@ -88,10 +86,7 @@ Aliases: `sp.sunburst`, `sp.build_sunburst`
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('sunburst-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('sunburst-en','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
-<button class="sp-cls-tab" onclick="spCls('sunburst-en','donut',this)"><span class="sp-cic">D</span><span class="sp-clb">Donut</span></button>
-<button class="sp-cls-tab" onclick="spCls('sunburst-en','flame',this)"><span class="sp-cic">F</span><span class="sp-clb">Flame</span></button>
-<button class="sp-cls-tab" onclick="spCls('sunburst-en','rainbow',this)"><span class="sp-cic">R</span><span class="sp-clb">Rainbow</span></button>
-<button class="sp-cls-tab" onclick="spCls('sunburst-en','outlined',this)"><span class="sp-cic">O</span><span class="sp-clb">Outlined</span></button>
+<button class="sp-cls-tab" onclick="spCls('sunburst-en','donut',this)"><span class="sp-cic">D</span><span class="sp-clb">Donut</span></button><button class="sp-cls-tab" onclick="spCls('sunburst-en','outlined',this)"><span class="sp-cic">O</span><span class="sp-clb">Outlined</span></button>
 <button class="sp-cls-tab" onclick="spCls('sunburst-en','gapped',this)"><span class="sp-cic">G</span><span class="sp-clb">Gapped</span></button>
 <button class="sp-cls-tab" onclick="spCls('sunburst-en','depth_fade',this)"><span class="sp-cic">X</span><span class="sp-clb">Depth fade</span></button>
 <button class="sp-cls-tab" onclick="spCls('sunburst-en','mono',this)"><span class="sp-cic">M</span><span class="sp-clb">Mono</span></button>
@@ -116,26 +111,6 @@ Aliases: `sp.sunburst`, `sp.build_sunburst`
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/sunburst-donut.html"></iframe>
-</div>
-
-<div class="sp-variant" id="sunburst-en-flame">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"flame"</code></span><span><strong>Aliases</strong> <code>flame / warm / heat / fire</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Warm gradient (red -> amber -> cream) per ring, evokes a heatmap or fire.</p>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-flame.html"></iframe>
-</div>
-
-<div class="sp-variant" id="sunburst-en-rainbow">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"rainbow"</code></span><span><strong>Aliases</strong> <code>rainbow / spectrum / hue / prism</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">HSL palette: hue derived from mid-angle, saturation/lightness softened with depth.</p>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-rainbow.html"></iframe>
 </div>
 
 <div class="sp-variant" id="sunburst-en-outlined">
@@ -203,8 +178,6 @@ Alias : `sp.sunburst`, `sp.build_sunburst`
 |---|---|---|
 | `"basic"` | `basic / default / classic / ring` | Anneaux concentriques classiques avec opacite degressive selon la profondeur. |
 | `"donut"` | `donut / hole / ring_hole / donut_ring` | Large trou central avec total general formate (k/M) au centre. |
-| `"flame"` | `flame / warm / heat / fire` | Degrade chaud (rouge -> ambre -> creme) par anneau, evoque chaleur ou feu. |
-| `"rainbow"` | `rainbow / spectrum / hue / prism` | Palette HSL : teinte derivee de l angle median, saturation/lumiere adoucies par profondeur. |
 | `"outlined"` | `outlined / outline / stroke / wireframe` | Quartiers en fil de fer : fond blanc + contour colore amincissant en profondeur. |
 | `"gapped"` | `gapped / spaced / isolated / petals` | Marges angulaires et radiales entre quartiers pour une separation nette en petales. |
 | `"depth_fade"` | `depth_fade / fade / fading / depth` | Palette standard mais opacite decroissante en profondeur pour concentrer le regard. |
@@ -233,10 +206,7 @@ Alias : `sp.sunburst`, `sp.build_sunburst`
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('sunburst-fr')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('sunburst-fr','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
-<button class="sp-cls-tab" onclick="spCls('sunburst-fr','donut',this)"><span class="sp-cic">D</span><span class="sp-clb">Donut</span></button>
-<button class="sp-cls-tab" onclick="spCls('sunburst-fr','flame',this)"><span class="sp-cic">F</span><span class="sp-clb">Flame</span></button>
-<button class="sp-cls-tab" onclick="spCls('sunburst-fr','rainbow',this)"><span class="sp-cic">R</span><span class="sp-clb">Rainbow</span></button>
-<button class="sp-cls-tab" onclick="spCls('sunburst-fr','outlined',this)"><span class="sp-cic">O</span><span class="sp-clb">Outlined</span></button>
+<button class="sp-cls-tab" onclick="spCls('sunburst-fr','donut',this)"><span class="sp-cic">D</span><span class="sp-clb">Donut</span></button><button class="sp-cls-tab" onclick="spCls('sunburst-fr','outlined',this)"><span class="sp-cic">O</span><span class="sp-clb">Outlined</span></button>
 <button class="sp-cls-tab" onclick="spCls('sunburst-fr','gapped',this)"><span class="sp-cic">G</span><span class="sp-clb">Gapped</span></button>
 <button class="sp-cls-tab" onclick="spCls('sunburst-fr','depth_fade',this)"><span class="sp-cic">X</span><span class="sp-clb">Depth fade</span></button>
 <button class="sp-cls-tab" onclick="spCls('sunburst-fr','mono',this)"><span class="sp-cic">M</span><span class="sp-clb">Mono</span></button>
@@ -261,26 +231,6 @@ Alias : `sp.sunburst`, `sp.build_sunburst`
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/sunburst-donut.html"></iframe>
-</div>
-
-<div class="sp-variant" id="sunburst-fr-flame">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"flame"</code></span><span><strong>Aliases</strong> <code>flame / warm / heat / fire</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Degrade chaud (rouge -> ambre -> creme) par anneau, evoque chaleur ou feu.</p>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-flame.html"></iframe>
-</div>
-
-<div class="sp-variant" id="sunburst-fr-rainbow">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"rainbow"</code></span><span><strong>Aliases</strong> <code>rainbow / spectrum / hue / prism</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Palette HSL : teinte derivee de l angle median, saturation/lumiere adoucies par profondeur.</p>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/sunburst-rainbow.html"></iframe>
 </div>
 
 <div class="sp-variant" id="sunburst-fr-outlined">
