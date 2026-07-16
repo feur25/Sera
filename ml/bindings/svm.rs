@@ -7,6 +7,7 @@ use super::helpers::*;
     file = "svm.md"
 )]
 #[crate::sera_alias("linear_svc", "svc")]
+#[crate::sera_builder]
 pub fn ml_linear_svc(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let c = jf(&v, "C", 1.0);
@@ -29,6 +30,7 @@ pub fn ml_linear_svc(input: &str) -> String {
     file = "svm.md"
 )]
 #[crate::sera_alias("linear_svr", "svr")]
+#[crate::sera_builder]
 pub fn ml_linear_svr(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let c = jf(&v, "C", 1.0);

@@ -7,6 +7,7 @@ use super::helpers::*;
     file = "decomposition.md"
 )]
 #[crate::sera_alias("pca")]
+#[crate::sera_builder]
 pub fn ml_pca(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let n_components = ju(&v, "n_components", p.min(2));
@@ -35,6 +36,7 @@ pub fn ml_pca(input: &str) -> String {
     file = "decomposition.md"
 )]
 #[crate::sera_alias("truncated_svd")]
+#[crate::sera_builder]
 pub fn ml_truncated_svd(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let n_components = ju(&v, "n_components", p.min(2));

@@ -7,6 +7,7 @@ use super::helpers::*;
     file = "knn.md"
 )]
 #[crate::sera_alias("knn_classifier", "knn_cls")]
+#[crate::sera_builder]
 pub fn ml_knn_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let k = ju(&v, "n_neighbors", 5);
@@ -28,6 +29,7 @@ pub fn ml_knn_classifier(input: &str) -> String {
     file = "knn.md"
 )]
 #[crate::sera_alias("knn_regressor", "knn_reg")]
+#[crate::sera_builder]
 pub fn ml_knn_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let k = ju(&v, "n_neighbors", 5);
@@ -49,6 +51,7 @@ pub fn ml_knn_regressor(input: &str) -> String {
     file = "knn.md"
 )]
 #[crate::sera_alias("nearest_centroid")]
+#[crate::sera_builder]
 pub fn ml_nearest_centroid(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let mut model = crate::ml::neighbors::knn::NearestCentroid::new();

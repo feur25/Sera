@@ -7,6 +7,7 @@ use super::helpers::*;
     file = "isolation-forest.md"
 )]
 #[crate::sera_alias("isolation_forest")]
+#[crate::sera_builder]
 pub fn ml_isolation_forest(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let n_estimators = ju(&v, "n_estimators", 100);

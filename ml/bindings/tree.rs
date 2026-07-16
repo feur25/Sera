@@ -7,6 +7,7 @@ use super::helpers::*;
     file = "decision-tree.md"
 )]
 #[crate::sera_alias("decision_tree_classifier", "dt_cls")]
+#[crate::sera_builder]
 pub fn ml_decision_tree_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let max_depth = ju(&v, "max_depth", usize::MAX);
@@ -43,6 +44,7 @@ pub fn ml_decision_tree_classifier(input: &str) -> String {
     file = "decision-tree.md"
 )]
 #[crate::sera_alias("decision_tree_regressor", "dt_reg")]
+#[crate::sera_builder]
 pub fn ml_decision_tree_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let max_depth = ju(&v, "max_depth", usize::MAX);

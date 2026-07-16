@@ -12,6 +12,7 @@ use serde::Deserialize;
     "DBSCAN_fit_predict",
     "cluster_dbscan"
 )]
+#[crate::sera_builder]
 pub fn ml_dbscan_fit_predict(input: &str) -> String {
     #[derive(Deserialize, Default)]
     struct I {
@@ -47,6 +48,7 @@ pub fn ml_dbscan_fit_predict(input: &str) -> String {
     "KMeans_fit_predict",
     "cluster_kmeans"
 )]
+#[crate::sera_builder]
 pub fn ml_kmeans_fit_predict(input: &str) -> String {
     #[derive(Deserialize, Default)]
     struct I {

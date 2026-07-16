@@ -8,6 +8,7 @@ use serde::Deserialize;
     file = "preprocessing.md"
 )]
 #[crate::sera_alias("fit_transform", "ml_transform", "preprocess_fit_transform")]
+#[crate::sera_builder]
 pub fn ml_fit_transform(input: &str) -> String {
     use crate::ml::preprocessing::scalers::*;
     use crate::ml::preprocessing::transformers::*;
@@ -135,6 +136,7 @@ pub fn ml_fit_transform(input: &str) -> String {
     file = "preprocessing.md"
 )]
 #[crate::sera_alias("standard_scaler", "ml_standard_scaler", "StandardScaler")]
+#[crate::sera_builder]
 pub fn ml_standard_scaler(input: &str) -> String {
     use crate::ml::preprocessing::scalers::StandardScaler;
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -164,6 +166,7 @@ pub fn ml_standard_scaler(input: &str) -> String {
     file = "preprocessing.md"
 )]
 #[crate::sera_alias("minmax_scaler", "ml_minmax_scaler", "MinMaxScaler")]
+#[crate::sera_builder]
 pub fn ml_minmax_scaler(input: &str) -> String {
     use crate::ml::preprocessing::scalers::MinMaxScaler;
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
@@ -188,6 +191,7 @@ pub fn ml_minmax_scaler(input: &str) -> String {
     file = "preprocessing.md"
 )]
 #[crate::sera_alias("robust_scaler", "ml_robust_scaler", "RobustScaler")]
+#[crate::sera_builder]
 pub fn ml_robust_scaler(input: &str) -> String {
     use crate::ml::preprocessing::scalers::RobustScaler;
     let (v, xf, n, p, xtf, nt) = ml_parse(input);

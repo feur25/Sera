@@ -7,6 +7,7 @@ use serde::Deserialize;
     file = "metrics.md"
 )]
 #[crate::sera_alias("metric_score", "ml_metric", "score_metric")]
+#[crate::sera_builder]
 pub fn ml_metric_score(input: &str) -> String {
     use crate::ml::metrics::*;
     #[derive(Deserialize, Default)]
@@ -120,6 +121,7 @@ pub fn ml_metric_score(input: &str) -> String {
     file = "metrics.md"
 )]
 #[crate::sera_alias("metric_curve", "ml_curve", "pr_curve")]
+#[crate::sera_builder]
 pub fn ml_metric_curve(input: &str) -> String {
     use crate::ml::metrics::*;
     #[derive(Deserialize, Default)]

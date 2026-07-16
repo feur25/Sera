@@ -7,6 +7,7 @@ use super::helpers::*;
     file = "random-forest.md"
 )]
 #[crate::sera_alias("random_forest_classifier", "rf_cls")]
+#[crate::sera_builder]
 pub fn ml_random_forest_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let n_estimators = ju(&v, "n_estimators", 100);
@@ -38,6 +39,7 @@ pub fn ml_random_forest_classifier(input: &str) -> String {
     file = "random-forest.md"
 )]
 #[crate::sera_alias("random_forest_regressor", "rf_reg")]
+#[crate::sera_builder]
 pub fn ml_random_forest_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let n_estimators = ju(&v, "n_estimators", 100);
@@ -69,6 +71,7 @@ pub fn ml_random_forest_regressor(input: &str) -> String {
     file = "gradient-boosting.md"
 )]
 #[crate::sera_alias("gradient_boosting_classifier", "gb_cls")]
+#[crate::sera_builder]
 pub fn ml_gradient_boosting_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let n_estimators = ju(&v, "n_estimators", 100);
@@ -99,6 +102,7 @@ pub fn ml_gradient_boosting_classifier(input: &str) -> String {
     file = "gradient-boosting.md"
 )]
 #[crate::sera_alias("gradient_boosting_regressor", "gb_reg")]
+#[crate::sera_builder]
 pub fn ml_gradient_boosting_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let n_estimators = ju(&v, "n_estimators", 100);
@@ -129,6 +133,7 @@ pub fn ml_gradient_boosting_regressor(input: &str) -> String {
     file = "adaboost.md"
 )]
 #[crate::sera_alias("adaboost_classifier", "ada_cls")]
+#[crate::sera_builder]
 pub fn ml_adaboost_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let n_estimators = ju(&v, "n_estimators", 50);
@@ -152,6 +157,7 @@ pub fn ml_adaboost_classifier(input: &str) -> String {
     file = "adaboost.md"
 )]
 #[crate::sera_alias("adaboost_regressor", "ada_reg")]
+#[crate::sera_builder]
 pub fn ml_adaboost_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let n_estimators = ju(&v, "n_estimators", 50);

@@ -7,6 +7,7 @@ use super::helpers::*;
     file = "naive-bayes.md"
 )]
 #[crate::sera_alias("gaussian_nb")]
+#[crate::sera_builder]
 pub fn ml_gaussian_nb(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let var_smoothing = jf(&v, "var_smoothing", 1e-9);
@@ -28,6 +29,7 @@ pub fn ml_gaussian_nb(input: &str) -> String {
     file = "naive-bayes.md"
 )]
 #[crate::sera_alias("multinomial_nb")]
+#[crate::sera_builder]
 pub fn ml_multinomial_nb(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let alpha = jf(&v, "alpha", 1.0);
@@ -48,6 +50,7 @@ pub fn ml_multinomial_nb(input: &str) -> String {
     file = "naive-bayes.md"
 )]
 #[crate::sera_alias("bernoulli_nb")]
+#[crate::sera_builder]
 pub fn ml_bernoulli_nb(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let alpha = jf(&v, "alpha", 1.0);

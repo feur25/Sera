@@ -7,6 +7,7 @@ use super::helpers::*;
     file = "permutation-importance.md"
 )]
 #[crate::sera_alias("permutation_importance")]
+#[crate::sera_builder]
 pub fn ml_permutation_importance(input: &str) -> String {
     let (v, xf, n, p, _, _) = ml_parse(input);
     let n_repeats = ju(&v, "n_repeats", 5);

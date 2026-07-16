@@ -7,6 +7,7 @@ use super::helpers::*;
     file = "cv-splitters.md"
 )]
 #[crate::sera_alias("kfold_split")]
+#[crate::sera_builder]
 pub fn ml_kfold_split(input: &str) -> String {
     let v: serde_json::Value = serde_json::from_str(input).unwrap_or(serde_json::Value::Null);
     let n = ju(&v, "n", 0);
@@ -33,6 +34,7 @@ pub fn ml_kfold_split(input: &str) -> String {
     file = "cv-splitters.md"
 )]
 #[crate::sera_alias("cross_val_score")]
+#[crate::sera_builder]
 pub fn ml_cross_val_score(input: &str) -> String {
     let (v, xf, n, p, _, _) = ml_parse(input);
     let k = ju(&v, "k", 5);
@@ -85,6 +87,7 @@ pub fn ml_cross_val_score(input: &str) -> String {
     file = "grid-search.md"
 )]
 #[crate::sera_alias("grid_search_cv")]
+#[crate::sera_builder]
 pub fn ml_grid_search_cv(input: &str) -> String {
     let (v, xf, n, p, _, _) = ml_parse(input);
     let k = ju(&v, "k", 5);

@@ -7,6 +7,7 @@ use super::helpers::*;
     file = "registry.md"
 )]
 #[crate::sera_alias("save_model")]
+#[crate::sera_builder]
 pub fn ml_save_model(input: &str) -> String {
     let v: serde_json::Value = serde_json::from_str(input).unwrap_or(serde_json::Value::Null);
     let name = js(&v, "name", "model");
@@ -38,6 +39,7 @@ pub fn ml_save_model(input: &str) -> String {
     file = "registry.md"
 )]
 #[crate::sera_alias("load_model")]
+#[crate::sera_builder]
 pub fn ml_load_model(input: &str) -> String {
     let v: serde_json::Value = serde_json::from_str(input).unwrap_or(serde_json::Value::Null);
     let name = js(&v, "name", "");

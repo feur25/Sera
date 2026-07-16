@@ -514,6 +514,7 @@ pub(crate) fn write_all(
     bindings_root: &Path,
     out_dir: &Path,
     builder_fns: &[String],
+    ml_builder_fns: &[String],
 ) {
     let ml_pyclasses: Vec<String> = Vec::new();
     let ml_pyfunctions: Vec<String> = Vec::new();
@@ -572,7 +573,14 @@ pub(crate) fn write_all(
     let plot_util_fns = extract_input_str_fns(&plot_utils_src, &registered.exported);
     let ml_fns_vec = extract_input_str_fns(&ml_src, &HashSet::new());
     let mut chart_fns: Vec<String> = Vec::new();
-    let ml_fns: Vec<String> = ml_fns_vec;
+    let mut ml_fns: Vec<String> = ml_fns_vec;
+    for n in ml_builder_fns {
+        if !ml_fns.contains(n) {
+            ml_fns.push(n.clone());
+        }
+    }
+    ml_fns.sort();
+    ml_fns.dedup();
     let mut util_fns: Vec<String> = Vec::new();
     let mut auto_util_fns: Vec<String> = Vec::new();
     let mut html_util_fns: Vec<String> = Vec::new();

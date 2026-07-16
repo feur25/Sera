@@ -7,6 +7,7 @@ use super::helpers::*;
     file = "linear-regression.md"
 )]
 #[crate::sera_alias("linear_regression", "linreg")]
+#[crate::sera_builder]
 pub fn ml_linear_regression(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let fit_intercept = jb(&v, "fit_intercept", true);
@@ -29,6 +30,7 @@ pub fn ml_linear_regression(input: &str) -> String {
     file = "ridge.md"
 )]
 #[crate::sera_alias("ridge", "ridge_regression")]
+#[crate::sera_builder]
 pub fn ml_ridge(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let alpha = jf(&v, "alpha", 1.0);
@@ -52,6 +54,7 @@ pub fn ml_ridge(input: &str) -> String {
     file = "lasso.md"
 )]
 #[crate::sera_alias("lasso")]
+#[crate::sera_builder]
 pub fn ml_lasso(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let alpha = jf(&v, "alpha", 1.0);
@@ -77,6 +80,7 @@ pub fn ml_lasso(input: &str) -> String {
     file = "elastic-net.md"
 )]
 #[crate::sera_alias("elastic_net", "elasticnet")]
+#[crate::sera_builder]
 pub fn ml_elastic_net(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let alpha = jf(&v, "alpha", 1.0);
@@ -109,6 +113,7 @@ pub fn ml_elastic_net(input: &str) -> String {
     file = "logistic-regression.md"
 )]
 #[crate::sera_alias("logistic_regression", "logistic")]
+#[crate::sera_builder]
 pub fn ml_logistic_regression(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let c = jf(&v, "C", 1.0);
@@ -136,6 +141,7 @@ pub fn ml_logistic_regression(input: &str) -> String {
     file = "ridge.md"
 )]
 #[crate::sera_alias("ridge_classifier", "ridge_cls")]
+#[crate::sera_builder]
 pub fn ml_ridge_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let alpha = jf(&v, "alpha", 1.0);
@@ -156,6 +162,7 @@ pub fn ml_ridge_classifier(input: &str) -> String {
     file = "sgd.md"
 )]
 #[crate::sera_alias("sgd_classifier", "sgd_cls")]
+#[crate::sera_builder]
 pub fn ml_sgd_classifier(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let loss = match js(&v, "loss", "hinge") {
@@ -189,6 +196,7 @@ pub fn ml_sgd_classifier(input: &str) -> String {
     file = "sgd.md"
 )]
 #[crate::sera_alias("sgd_regressor", "sgd_reg")]
+#[crate::sera_builder]
 pub fn ml_sgd_regressor(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let alpha = jf(&v, "alpha", 0.0001);
