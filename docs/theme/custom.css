@@ -3,6 +3,13 @@
   --content-max-width: 1200px;
 }
 
+/* ── Tables scroll within their own box instead of overflowing the page ──── */
+.content table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+}
+
 /* ── Language switcher button ────────────────────────────────────────────── */
 .lang-toggle-btn {
   background: none;
