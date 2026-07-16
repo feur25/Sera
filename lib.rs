@@ -3,6 +3,7 @@
 static GLOBAL_ALLOC: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 pub(crate) use bindings::chart_methods::apply::*;
+#[cfg(feature = "python")]
 pub mod canvas;
 pub mod cloud;
 pub mod core;
@@ -1088,7 +1089,7 @@ mod chart_ffi {
     en = "Binds label names to specific colors. Every chart built after this call will automatically apply these color overrides to elements matching those labels.",
     fr = "Associe des noms de labels à des couleurs spécifiques. Tous les graphiques créés après cet appel appliquent automatiquement ces couleurs aux éléments correspondants."
 )]
-#[sera_bind]
+#[sera_bind(ffi)]
 pub fn bind_colors(bindings: Vec<(String, u32)>) {
     if let Ok(mut g) = GLOBAL_COLOR_BINDINGS.lock() {
         for (lbl, col) in bindings {
