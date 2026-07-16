@@ -112,7 +112,7 @@ pub fn draw_axes(buf: &mut Vec<u8>, cfg: &SlopeConfig, p: &Prepared) {
     push_i(buf, l.pad_t + l.plot_h);
     push_b(
         buf,
-        b"\" stroke=\"#cbd5e1\" stroke-width=\"1.2\" class=\"sp-ax-y\"/>",
+        b"\" stroke=\"#6b7280\" stroke-width=\"1.2\" class=\"sp-ax-y\"/>",
     );
     push_b(buf, b"<line x1=\"");
     push_i(buf, l.x_right);
@@ -124,7 +124,7 @@ pub fn draw_axes(buf: &mut Vec<u8>, cfg: &SlopeConfig, p: &Prepared) {
     push_i(buf, l.pad_t + l.plot_h);
     push_b(
         buf,
-        b"\" stroke=\"#cbd5e1\" stroke-width=\"1.2\" class=\"sp-ax-y\"/>",
+        b"\" stroke=\"#6b7280\" stroke-width=\"1.2\" class=\"sp-ax-y\"/>",
     );
     push_b(buf, b"<text x=\"");
     push_i(buf, l.x_left);

@@ -86,7 +86,7 @@ fn render_impl(cfg: &ArcDiagramConfig, bilateral: bool, weighted: bool, gradient
     push_i(&mut buf, pad_l + plot_w);
     push_b(&mut buf, b"\" y2=\"");
     push_i(&mut buf, node_y);
-    push_b(&mut buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    push_b(&mut buf, b"\" stroke=\"#6b7280\" stroke-width=\"1\"/>");
 
     for i in 0..n {
         let x = pad_l as f64 + i as f64 * step;

@@ -42,7 +42,7 @@ pub fn render(cfg: &SlopeConfig) -> String {
         push_i(&mut b, l.x_right);
         push_b(&mut b, b"\" y2=\"");
         push_i(&mut b, y2);
-        push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1.2\" stroke-linecap=\"round\" opacity=\"0.5\"/>");
+        push_b(&mut b, b"\" stroke=\"#6b7280\" stroke-width=\"1.2\" stroke-linecap=\"round\" opacity=\"0.5\"/>");
         dot(&mut b, l.x_left, y1, b"#cbd5e1", 2.5);
         dot(&mut b, l.x_right, y2, b"#cbd5e1", 2.5);
     }

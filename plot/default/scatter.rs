@@ -870,7 +870,7 @@ pub fn render_scatter_html(
     push_i(&mut buf, pad_t + plot_h);
     push_b(
         &mut buf,
-        b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-y\"/>",
+        b"\" stroke=\"#6b7280\" stroke-width=\"1\" class=\"sp-ax-y\"/>",
     );
     push_b(&mut buf, b"<line x1=\"");
     push_i(&mut buf, pad_l);
@@ -882,7 +882,7 @@ pub fn render_scatter_html(
     push_i(&mut buf, pad_t + plot_h);
     push_b(
         &mut buf,
-        b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-x\"/>",
+        b"\" stroke=\"#6b7280\" stroke-width=\"1\" class=\"sp-ax-x\"/>",
     );
     if !y_label.is_empty() {
         push_b(&mut buf, b"<text x=\"14\" y=\"");

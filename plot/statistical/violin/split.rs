@@ -88,7 +88,7 @@ pub fn render(cfg: &ViolinConfig) -> String {
         push_i(&mut f.buf, f.pt + f.ph);
         push_b(
             &mut f.buf,
-            b"\" stroke=\"#cbd5e1\" stroke-width=\"0.6\" stroke-dasharray=\"3 3\"/>",
+            b"\" stroke=\"#6b7280\" stroke-width=\"0.6\" stroke-dasharray=\"3 3\"/>",
         );
         push_b(&mut f.buf, b"<text x=\"");
         push_i(&mut f.buf, cx);

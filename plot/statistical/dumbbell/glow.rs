@@ -28,7 +28,7 @@ pub fn render(cfg: &DumbbellConfig) -> String {
         push_i(&mut f.buf, x2);
         push_b(&mut f.buf, b"\" y2=\"");
         push_i(&mut f.buf, cy);
-        push_b(&mut f.buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1.4\"/>");
+        push_b(&mut f.buf, b"\" stroke=\"#6b7280\" stroke-width=\"1.4\"/>");
         push_b(&mut f.buf, b"<circle cx=\"");
         push_i(&mut f.buf, x1);
         push_b(&mut f.buf, b"\" cy=\"");

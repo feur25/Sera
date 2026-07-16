@@ -92,7 +92,7 @@ pub fn render(cfg: &WaterfallConfig) -> String {
     push_i(&mut b, zero_x);
     push_b(&mut b, b"\" y2=\"");
     push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"0.8\"/>");
+    push_b(&mut b, b"\" stroke=\"#6b7280\" stroke-width=\"0.8\"/>");
     push_b(&mut b, b"<line x1=\"");
     push_i(&mut b, pad_l);
     push_b(&mut b, b"\" y1=\"");
@@ -101,7 +101,7 @@ pub fn render(cfg: &WaterfallConfig) -> String {
     push_i(&mut b, pad_l + plot_w);
     push_b(&mut b, b"\" y2=\"");
     push_i(&mut b, pad_t + plot_h);
-    push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    push_b(&mut b, b"\" stroke=\"#6b7280\" stroke-width=\"1\"/>");
 
     let val_to_x = |v: f64| pad_l + (((v - min_x) / range) * plot_w as f64) as i32;
 
@@ -145,7 +145,7 @@ pub fn render(cfg: &WaterfallConfig) -> String {
             push_i(&mut b, next_y);
             push_b(
                 &mut b,
-                b"\" stroke=\"#cbd5e1\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/>",
+                b"\" stroke=\"#6b7280\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/>",
             );
         }
 

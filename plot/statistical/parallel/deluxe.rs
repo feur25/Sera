@@ -55,7 +55,7 @@ pub fn render(cfg: &ParallelConfig) -> String {
         push_i(&mut b, x);
         push_b(&mut b, b"\" y=\"");
         push_i(&mut b, p.pad_t + p.plot_h + 32);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#475569\">");
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#94a3b8\">");
         let s = format!("{:.1}", p.mins[ai]);
         b.extend_from_slice(s.as_bytes());
         push_b(&mut b, b"</text>");
@@ -63,7 +63,7 @@ pub fn render(cfg: &ParallelConfig) -> String {
         push_i(&mut b, x);
         push_b(&mut b, b"\" y=\"");
         push_i(&mut b, p.pad_t - 6);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#475569\">");
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#94a3b8\">");
         let s = format!("{:.1}", p.maxs[ai]);
         b.extend_from_slice(s.as_bytes());
         push_b(&mut b, b"</text>");

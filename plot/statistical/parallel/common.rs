@@ -79,7 +79,7 @@ pub fn axes_grid(buf: &mut Vec<u8>, cfg: &ParallelConfig, p: &Prepared) {
         push_i(buf, x);
         push_b(buf, b"\" y2=\"");
         push_i(buf, p.pad_t + p.plot_h);
-        push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+        push_b(buf, b"\" stroke=\"#6b7280\" stroke-width=\"1\"/>");
         push_b(buf, b"<text x=\"");
         push_i(buf, x);
         push_b(buf, b"\" y=\"");

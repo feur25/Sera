@@ -194,7 +194,7 @@ pub fn legend_bar(frame: &mut Frame, cfg: &HexbinConfig, p: &Prepared) {
     push_i(&mut frame.buf, bar_y + 8);
     push_b(
         &mut frame.buf,
-        b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#94a3b8\">",
+        b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">",
     );
     push_i(&mut frame.buf, p.max_count as i32);
     push_b(&mut frame.buf, b"</text>");
@@ -204,7 +204,7 @@ pub fn legend_bar(frame: &mut Frame, cfg: &HexbinConfig, p: &Prepared) {
     push_i(&mut frame.buf, bar_y + bar_h);
     push_b(
         &mut frame.buf,
-        b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#94a3b8\">",
+        b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">",
     );
     push_i(&mut frame.buf, p.min_count as i32);
     push_b(&mut frame.buf, b"</text>");

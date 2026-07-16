@@ -186,7 +186,7 @@ pub fn render(cfg: &BarConfig) -> String {
         push_i(&mut f.buf, cx);
         push_b(&mut f.buf, b"\" y=\"");
         push_i(&mut f.buf, f.pt + f.ph + 14);
-        push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#94a3b8\">");
+        push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
         escape_xml(&mut f.buf, &cfg.labels[i]);
         push_b(&mut f.buf, b"</text>");
         if cfg.show_text && bar_h > 16 {
@@ -208,7 +208,7 @@ pub fn render(cfg: &BarConfig) -> String {
     push_i(&mut f.buf, f.pl);
     push_b(&mut f.buf, b"\" y2=\"");
     push_i(&mut f.buf, f.pt + f.ph);
-    push_b(&mut f.buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>");
+    push_b(&mut f.buf, b"\" stroke=\"#6b7280\" stroke-width=\"1.5\"/>");
     push_b(&mut f.buf, b"<line x1=\"");
     push_i(&mut f.buf, f.pl);
     push_b(&mut f.buf, b"\" y1=\"");
@@ -217,7 +217,7 @@ pub fn render(cfg: &BarConfig) -> String {
     push_i(&mut f.buf, f.pl + f.pw);
     push_b(&mut f.buf, b"\" y2=\"");
     push_i(&mut f.buf, f.pt + f.ph);
-    push_b(&mut f.buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1.5\"/>");
+    push_b(&mut f.buf, b"\" stroke=\"#6b7280\" stroke-width=\"1.5\"/>");
 
     f.html(&slots_to_json(cfg.hover))
 }

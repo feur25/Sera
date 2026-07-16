@@ -178,7 +178,7 @@ pub fn axes(buf: &mut Vec<u8>, cfg: &WaterfallConfig, p: &Prepared) {
     push_i(buf, l.pad_l + l.plot_w);
     push_b(buf, b"\" y2=\"");
     push_i(buf, l.zero_y);
-    push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"0.8\"/>");
+    push_b(buf, b"\" stroke=\"#6b7280\" stroke-width=\"0.8\"/>");
     push_b(buf, b"<line x1=\"");
     push_i(buf, l.pad_l);
     push_b(buf, b"\" y1=\"");
@@ -187,7 +187,7 @@ pub fn axes(buf: &mut Vec<u8>, cfg: &WaterfallConfig, p: &Prepared) {
     push_i(buf, l.pad_l);
     push_b(buf, b"\" y2=\"");
     push_i(buf, l.pad_t + l.plot_h);
-    push_b(buf, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+    push_b(buf, b"\" stroke=\"#6b7280\" stroke-width=\"1\"/>");
 }
 
 pub fn xlabel(buf: &mut Vec<u8>, cx: i32, y: i32, lbl: &str) {

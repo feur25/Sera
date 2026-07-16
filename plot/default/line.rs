@@ -259,7 +259,7 @@ pub fn render_lines_html(
     push_i(&mut b, pad_t + plot_h);
     push_b(
         &mut b,
-        b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-y\"/>",
+        b"\" stroke=\"#6b7280\" stroke-width=\"1\" class=\"sp-ax-y\"/>",
     );
     push_b(&mut b, b"<line x1=\"");
     push_i(&mut b, pad_l);
@@ -271,7 +271,7 @@ pub fn render_lines_html(
     push_i(&mut b, pad_t + plot_h);
     push_b(
         &mut b,
-        b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-x\"/>",
+        b"\" stroke=\"#6b7280\" stroke-width=\"1\" class=\"sp-ax-x\"/>",
     );
     if !y_label.is_empty() {
         let ym = pad_t + plot_h / 2;

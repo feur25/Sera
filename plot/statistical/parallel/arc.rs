@@ -25,7 +25,7 @@ pub fn render(cfg: &ParallelConfig) -> String {
         push_i(&mut b, x);
         push_b(&mut b, b"\" y2=\"");
         push_i(&mut b, p.pad_t + p.plot_h);
-        push_b(&mut b, b"\" stroke=\"#cbd5e1\" stroke-width=\"1\"/>");
+        push_b(&mut b, b"\" stroke=\"#6b7280\" stroke-width=\"1\"/>");
         push_b(&mut b, b"<text x=\"");
         push_i(&mut b, x);
         push_b(&mut b, b"\" y=\"");

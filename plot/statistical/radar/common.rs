@@ -143,7 +143,7 @@ pub fn draw_grid(buf: &mut Vec<u8>, cfg: &RadarConfig, p: &Prepared) {
         push_f2(buf, epy);
         push_b(
             buf,
-            b"\" stroke=\"#cbd5e1\" stroke-width=\"0.8\" class=\"sp-ax-y\"/>",
+            b"\" stroke=\"#6b7280\" stroke-width=\"0.8\" class=\"sp-ax-y\"/>",
         );
         let anchor = if a.cos().abs() < 0.12 {
             "middle"

@@ -181,7 +181,7 @@ pub fn open_svg(buf: &mut Vec<u8>, cfg: &RidgelineConfig, layout: &Layout, x0: f
     push_i(buf, layout.axis_y);
     push_b(
         buf,
-        b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-x\"/>",
+        b"\" stroke=\"#6b7280\" stroke-width=\"1\" class=\"sp-ax-x\"/>",
     );
     for ti in 0..=n_xticks {
         let frac = ti as f64 / n_xticks as f64;

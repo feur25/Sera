@@ -176,7 +176,7 @@ pub fn svg_axis_lines(buf: &mut Vec<u8>, pad_l: i32, pad_t: i32, plot_w: i32, pl
     push_i(buf, pad_t + plot_h);
     push_b(
         buf,
-        b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-y\"/>",
+        b"\" stroke=\"#6b7280\" stroke-width=\"1\" class=\"sp-ax-y\"/>",
     );
     push_b(buf, b"<line x1=\"");
     push_i(buf, pad_l);
@@ -188,7 +188,7 @@ pub fn svg_axis_lines(buf: &mut Vec<u8>, pad_l: i32, pad_t: i32, plot_w: i32, pl
     push_i(buf, pad_t + plot_h);
     push_b(
         buf,
-        b"\" stroke=\"#cbd5e1\" stroke-width=\"1\" class=\"sp-ax-x\"/>",
+        b"\" stroke=\"#6b7280\" stroke-width=\"1\" class=\"sp-ax-x\"/>",
     );
 }
 
@@ -271,7 +271,7 @@ pub fn svg_hgrid(buf: &mut Vec<u8>, x1: i32, x2: i32, y: i32) {
     push_i(buf, y);
     push_b(
         buf,
-        b"\" stroke=\"#cbd5e1\" stroke-width=\"0.8\" stroke-opacity=\"0.65\" class=\"sp-gl\"/>",
+        b"\" stroke=\"#6b7280\" stroke-width=\"0.8\" stroke-opacity=\"0.65\" class=\"sp-gl\"/>",
     );
 }
 
@@ -286,7 +286,7 @@ pub fn svg_vgrid(buf: &mut Vec<u8>, x: i32, y1: i32, y2: i32) {
     push_i(buf, y2);
     push_b(
         buf,
-        b"\" stroke=\"#cbd5e1\" stroke-width=\"0.8\" stroke-opacity=\"0.65\" class=\"sp-gl\"/>",
+        b"\" stroke=\"#6b7280\" stroke-width=\"0.8\" stroke-opacity=\"0.65\" class=\"sp-gl\"/>",
     );
 }
 
