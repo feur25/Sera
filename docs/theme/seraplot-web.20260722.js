@@ -20,6 +20,26 @@ let wasm_bindgen = (function(exports) {
     exports.Chart = Chart;
 
     /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function accessiblePalette(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.accessiblePalette(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.accessiblePalette = accessiblePalette;
+
+    /**
      * @param {string} method
      * @param {string} alias
      * @returns {boolean}
@@ -125,6 +145,26 @@ let wasm_bindgen = (function(exports) {
         }
     }
     exports.applyChartMethod = applyChartMethod;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildArcDiagram(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildArcDiagram(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildArcDiagram = buildArcDiagram;
 
     /**
      * @param {string} input
@@ -350,6 +390,26 @@ let wasm_bindgen = (function(exports) {
      * @param {string} input
      * @returns {string}
      */
+    function buildChord(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildChord(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildChord = buildChord;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
     function buildChoropleth(input) {
         let deferred2_0;
         let deferred2_1;
@@ -365,6 +425,66 @@ let wasm_bindgen = (function(exports) {
         }
     }
     exports.buildChoropleth = buildChoropleth;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildCirclePack(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildCirclePack(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildCirclePack = buildCirclePack;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildConeChart(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildConeChart(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildConeChart = buildConeChart;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildCorrelogram(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildCorrelogram(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildCorrelogram = buildCorrelogram;
 
     /**
      * @param {string} input
@@ -405,6 +525,26 @@ let wasm_bindgen = (function(exports) {
         }
     }
     exports.buildDbscanChart3d = buildDbscanChart3d;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildDendrogram(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildDendrogram(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildDendrogram = buildDendrogram;
 
     /**
      * @param {string} input
@@ -470,6 +610,26 @@ let wasm_bindgen = (function(exports) {
      * @param {string} input
      * @returns {string}
      */
+    function buildEventplot(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildEventplot(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildEventplot = buildEventplot;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
     function buildFunnel(input) {
         let deferred2_0;
         let deferred2_1;
@@ -505,6 +665,26 @@ let wasm_bindgen = (function(exports) {
         }
     }
     exports.buildFunnel3dChart = buildFunnel3dChart;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildGantt(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildGantt(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildGantt = buildGantt;
 
     /**
      * @param {string} input
@@ -630,6 +810,26 @@ let wasm_bindgen = (function(exports) {
      * @param {string} input
      * @returns {string}
      */
+    function buildHexbin(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildHexbin(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildHexbin = buildHexbin;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
     function buildHistogram(input) {
         let deferred2_0;
         let deferred2_1;
@@ -645,6 +845,66 @@ let wasm_bindgen = (function(exports) {
         }
     }
     exports.buildHistogram = buildHistogram;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildHive(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildHive(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildHive = buildHive;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildIcicle(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildIcicle(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildIcicle = buildIcicle;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildIsosurfaceChart(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildIsosurfaceChart(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildIsosurfaceChart = buildIsosurfaceChart;
 
     /**
      * @param {string} input
@@ -810,6 +1070,26 @@ let wasm_bindgen = (function(exports) {
      * @param {string} input
      * @returns {string}
      */
+    function buildMesh3dChart(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildMesh3dChart(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildMesh3dChart = buildMesh3dChart;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
     function buildMultilineChart(input) {
         let deferred2_0;
         let deferred2_1;
@@ -830,6 +1110,26 @@ let wasm_bindgen = (function(exports) {
      * @param {string} input
      * @returns {string}
      */
+    function buildOrbita(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildOrbita(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildOrbita = buildOrbita;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
     function buildParallel(input) {
         let deferred2_0;
         let deferred2_1;
@@ -845,6 +1145,26 @@ let wasm_bindgen = (function(exports) {
         }
     }
     exports.buildParallel = buildParallel;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildParcats(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildParcats(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildParcats = buildParcats;
 
     /**
      * @param {string} input
@@ -905,6 +1225,46 @@ let wasm_bindgen = (function(exports) {
         }
     }
     exports.buildPieChart = buildPieChart;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildPlotWeb(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildPlotWeb(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildPlotWeb = buildPlotWeb;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildPulse(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildPulse(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildPulse = buildPulse;
 
     /**
      * @param {string} input
@@ -990,6 +1350,26 @@ let wasm_bindgen = (function(exports) {
      * @param {string} input
      * @returns {string}
      */
+    function buildSankey(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildSankey(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildSankey = buildSankey;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
     function buildScatter3dChart(input) {
         let deferred2_0;
         let deferred2_1;
@@ -1030,6 +1410,26 @@ let wasm_bindgen = (function(exports) {
      * @param {string} input
      * @returns {string}
      */
+    function buildScatterTernary(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildScatterTernary(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildScatterTernary = buildScatterTernary;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
     function buildSlope(input) {
         let deferred2_0;
         let deferred2_1;
@@ -1045,6 +1445,26 @@ let wasm_bindgen = (function(exports) {
         }
     }
     exports.buildSlope = buildSlope;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildSplom(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildSplom(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildSplom = buildSplom;
 
     /**
      * @param {string} input
@@ -1090,6 +1510,46 @@ let wasm_bindgen = (function(exports) {
      * @param {string} input
      * @returns {string}
      */
+    function buildStackplot(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildStackplot(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildStackplot = buildStackplot;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildStreamtubeChart(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildStreamtubeChart(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildStreamtubeChart = buildStreamtubeChart;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
     function buildSunburst(input) {
         let deferred2_0;
         let deferred2_1;
@@ -1130,6 +1590,26 @@ let wasm_bindgen = (function(exports) {
      * @param {string} input
      * @returns {string}
      */
+    function buildSurface3dChart(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildSurface3dChart(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildSurface3dChart = buildSurface3dChart;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
     function buildTreemap(input) {
         let deferred2_0;
         let deferred2_1;
@@ -1145,6 +1625,26 @@ let wasm_bindgen = (function(exports) {
         }
     }
     exports.buildTreemap = buildTreemap;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildVenn(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildVenn(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildVenn = buildVenn;
 
     /**
      * @param {string} input
@@ -1190,6 +1690,26 @@ let wasm_bindgen = (function(exports) {
      * @param {string} input
      * @returns {string}
      */
+    function buildVoxelsChart(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildVoxelsChart(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildVoxelsChart = buildVoxelsChart;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
     function buildWaterfall(input) {
         let deferred2_0;
         let deferred2_1;
@@ -1205,6 +1725,26 @@ let wasm_bindgen = (function(exports) {
         }
     }
     exports.buildWaterfall = buildWaterfall;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function buildWireframe3dChart(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.buildWireframe3dChart(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.buildWireframe3dChart = buildWireframe3dChart;
 
     /**
      * @param {string} input
@@ -1681,6 +2221,18 @@ let wasm_bindgen = (function(exports) {
     exports.wasm_adaptive_degrade_level = wasm_adaptive_degrade_level;
 
     /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_apply_color_bindings_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_apply_color_bindings_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_apply_color_bindings_html = wasm_apply_color_bindings_html;
+
+    /**
      * @returns {any}
      */
     function wasm_chart_variants() {
@@ -1688,6 +2240,56 @@ let wasm_bindgen = (function(exports) {
         return ret;
     }
     exports.wasm_chart_variants = wasm_chart_variants;
+
+    /**
+     * @returns {any}
+     */
+    function wasm_clear_color_bindings() {
+        const ret = wasm.wasm_clear_color_bindings();
+        return ret;
+    }
+    exports.wasm_clear_color_bindings = wasm_clear_color_bindings;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_color_density_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_color_density_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_color_density_html = wasm_color_density_html;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_crosshair_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_crosshair_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_crosshair_html = wasm_crosshair_html;
+
+    /**
+     * @param {string} html
+     * @param {number | null | undefined} step
+     * @param {number} gap
+     * @param {string | null} [color]
+     * @returns {any}
+     */
+    function wasm_cut_bars_html(html, step, gap, color) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        var ptr1 = isLikeNone(color) ? 0 : passStringToWasm0(color, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        var len1 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_cut_bars_html(ptr0, len0, !isLikeNone(step), isLikeNone(step) ? 0 : step, gap, ptr1, len1);
+        return ret;
+    }
+    exports.wasm_cut_bars_html = wasm_cut_bars_html;
 
     /**
      * @param {string} chart
@@ -1714,6 +2316,22 @@ let wasm_bindgen = (function(exports) {
     exports.wasm_demos = wasm_demos;
 
     /**
+     * @param {string} html
+     * @param {Uint32Array | null | undefined} indices
+     * @param {number} factor
+     * @returns {any}
+     */
+    function wasm_desaturate_html(html, indices, factor) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        var ptr1 = isLikeNone(indices) ? 0 : passArray32ToWasm0(indices, wasm.__wbindgen_malloc_command_export);
+        var len1 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_desaturate_html(ptr0, len0, ptr1, len1, factor);
+        return ret;
+    }
+    exports.wasm_desaturate_html = wasm_desaturate_html;
+
+    /**
      * @param {string} name
      * @returns {any}
      */
@@ -1735,6 +2353,45 @@ let wasm_bindgen = (function(exports) {
     exports.wasm_docs = wasm_docs;
 
     /**
+     * @param {string} html
+     * @param {string} color
+     * @returns {any}
+     */
+    function wasm_draw_tool_html(html, color) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(color, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len1 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_draw_tool_html(ptr0, len0, ptr1, len1);
+        return ret;
+    }
+    exports.wasm_draw_tool_html = wasm_draw_tool_html;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_export_button_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_export_button_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_export_button_html = wasm_export_button_html;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_flip_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_flip_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_flip_html = wasm_flip_html;
+
+    /**
      * @returns {any}
      */
     function wasm_get_metrics() {
@@ -1744,6 +2401,93 @@ let wasm_bindgen = (function(exports) {
     exports.wasm_get_metrics = wasm_get_metrics;
 
     /**
+     * @param {string} html
+     * @param {number} value
+     * @param {string} color
+     * @param {string | null} [label]
+     * @returns {any}
+     */
+    function wasm_grid_at_html(html, value, color, label) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(color, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len1 = WASM_VECTOR_LEN;
+        var ptr2 = isLikeNone(label) ? 0 : passStringToWasm0(label, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        var len2 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_grid_at_html(ptr0, len0, value, ptr1, len1, ptr2, len2);
+        return ret;
+    }
+    exports.wasm_grid_at_html = wasm_grid_at_html;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_grid_x_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_grid_x_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_grid_x_html = wasm_grid_x_html;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_grid_y_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_grid_y_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_grid_y_html = wasm_grid_y_html;
+
+    /**
+     * @param {string} html
+     * @param {number} dim
+     * @returns {any}
+     */
+    function wasm_group_hover_opacity_html(html, dim) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_group_hover_opacity_html(ptr0, len0, dim);
+        return ret;
+    }
+    exports.wasm_group_hover_opacity_html = wasm_group_hover_opacity_html;
+
+    /**
+     * @param {string} html
+     * @param {string[]} labels
+     * @param {number} dim
+     * @returns {any}
+     */
+    function wasm_highlight_group_html(html, labels, dim) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passArrayJsValueToWasm0(labels, wasm.__wbindgen_malloc_command_export);
+        const len1 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_highlight_group_html(ptr0, len0, ptr1, len1, dim);
+        return ret;
+    }
+    exports.wasm_highlight_group_html = wasm_highlight_group_html;
+
+    /**
+     * @param {string} html
+     * @param {string} slots_json
+     * @returns {any}
+     */
+    function wasm_hover_slots_html(html, slots_json) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(slots_json, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len1 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_hover_slots_html(ptr0, len0, ptr1, len1);
+        return ret;
+    }
+    exports.wasm_hover_slots_html = wasm_hover_slots_html;
+
+    /**
      * @returns {any}
      */
     function wasm_hw() {
@@ -1751,6 +2495,36 @@ let wasm_bindgen = (function(exports) {
         return ret;
     }
     exports.wasm_hw = wasm_hw;
+
+    /**
+     * @param {string} html
+     * @param {string} css
+     * @returns {any}
+     */
+    function wasm_inject_css_html(html, css) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(css, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len1 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_inject_css_html(ptr0, len0, ptr1, len1);
+        return ret;
+    }
+    exports.wasm_inject_css_html = wasm_inject_css_html;
+
+    /**
+     * @param {string} html
+     * @param {string} js
+     * @returns {any}
+     */
+    function wasm_inject_js_html(html, js) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(js, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len1 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_inject_js_html(ptr0, len0, ptr1, len1);
+        return ret;
+    }
+    exports.wasm_inject_js_html = wasm_inject_js_html;
 
     /**
      * @returns {any}
@@ -1784,6 +2558,102 @@ let wasm_bindgen = (function(exports) {
         return ret;
     }
     exports.wasm_models_for_domain = wasm_models_for_domain;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_no_axes_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_no_axes_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_no_axes_html = wasm_no_axes_html;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_no_background_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_no_background_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_no_background_html = wasm_no_background_html;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_no_hover_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_no_hover_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_no_hover_html = wasm_no_hover_html;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_no_legend_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_no_legend_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_no_legend_html = wasm_no_legend_html;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_no_select_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_no_select_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_no_select_html = wasm_no_select_html;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_no_title_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_no_title_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_no_title_html = wasm_no_title_html;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_no_x_axis_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_no_x_axis_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_no_x_axis_html = wasm_no_x_axis_html;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_no_y_axis_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_no_y_axis_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_no_y_axis_html = wasm_no_y_axis_html;
 
     /**
      * @param {string | null} [chart]
@@ -1852,6 +2722,18 @@ let wasm_bindgen = (function(exports) {
     exports.wasm_reset_theme = wasm_reset_theme;
 
     /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_responsive_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_responsive_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_responsive_html = wasm_responsive_html;
+
+    /**
      * @param {boolean} on
      * @returns {any}
      */
@@ -1884,6 +2766,30 @@ let wasm_bindgen = (function(exports) {
     exports.wasm_set_global_background = wasm_set_global_background;
 
     /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_show_grid_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_show_grid_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_show_grid_html = wasm_show_grid_html;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_sparse_grid_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_sparse_grid_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_sparse_grid_html = wasm_sparse_grid_html;
+
+    /**
      * @param {boolean} enabled
      * @returns {any}
      */
@@ -1910,6 +2816,18 @@ let wasm_bindgen = (function(exports) {
         return ret;
     }
     exports.wasm_themes = wasm_themes;
+
+    /**
+     * @param {string} html
+     * @returns {any}
+     */
+    function wasm_zoom_html(html) {
+        const ptr0 = passStringToWasm0(html, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ret = wasm.wasm_zoom_html(ptr0, len0);
+        return ret;
+    }
+    exports.wasm_zoom_html = wasm_zoom_html;
     function __wbg_get_imports() {
         const import0 = {
             __proto__: null,
@@ -1920,6 +2838,14 @@ let wasm_bindgen = (function(exports) {
             __wbg___wbindgen_is_string_6df3bf7ef1164ed3: function(arg0) {
                 const ret = typeof(arg0) === 'string';
                 return ret;
+            },
+            __wbg___wbindgen_string_get_7ed5322991caaec5: function(arg0, arg1) {
+                const obj = arg1;
+                const ret = typeof(obj) === 'string' ? obj : undefined;
+                var ptr1 = isLikeNone(ret) ? 0 : passStringToWasm0(ret, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+                var len1 = WASM_VECTOR_LEN;
+                getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
+                getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
             },
             __wbg___wbindgen_throw_6b64449b9b9ed33c: function(arg0, arg1) {
                 throw new Error(getStringFromWasm0(arg0, arg1));
@@ -1986,9 +2912,31 @@ let wasm_bindgen = (function(exports) {
         ? { register: () => {}, unregister: () => {} }
         : new FinalizationRegistry(ptr => wasm.__wbg_chart_free(ptr >>> 0, 1));
 
+    function addToExternrefTable0(obj) {
+        const idx = wasm.__externref_table_alloc_command_export();
+        wasm.__wbindgen_externrefs.set(idx, obj);
+        return idx;
+    }
+
+    let cachedDataViewMemory0 = null;
+    function getDataViewMemory0() {
+        if (cachedDataViewMemory0 === null || cachedDataViewMemory0.buffer.detached === true || (cachedDataViewMemory0.buffer.detached === undefined && cachedDataViewMemory0.buffer !== wasm.memory.buffer)) {
+            cachedDataViewMemory0 = new DataView(wasm.memory.buffer);
+        }
+        return cachedDataViewMemory0;
+    }
+
     function getStringFromWasm0(ptr, len) {
         ptr = ptr >>> 0;
         return decodeText(ptr, len);
+    }
+
+    let cachedUint32ArrayMemory0 = null;
+    function getUint32ArrayMemory0() {
+        if (cachedUint32ArrayMemory0 === null || cachedUint32ArrayMemory0.byteLength === 0) {
+            cachedUint32ArrayMemory0 = new Uint32Array(wasm.memory.buffer);
+        }
+        return cachedUint32ArrayMemory0;
     }
 
     let cachedUint8ArrayMemory0 = null;
@@ -2001,6 +2949,23 @@ let wasm_bindgen = (function(exports) {
 
     function isLikeNone(x) {
         return x === undefined || x === null;
+    }
+
+    function passArray32ToWasm0(arg, malloc) {
+        const ptr = malloc(arg.length * 4, 4) >>> 0;
+        getUint32ArrayMemory0().set(arg, ptr / 4);
+        WASM_VECTOR_LEN = arg.length;
+        return ptr;
+    }
+
+    function passArrayJsValueToWasm0(array, malloc) {
+        const ptr = malloc(array.length * 4, 4) >>> 0;
+        for (let i = 0; i < array.length; i++) {
+            const add = addToExternrefTable0(array[i]);
+            getDataViewMemory0().setUint32(ptr + 4 * i, add, true);
+        }
+        WASM_VECTOR_LEN = array.length;
+        return ptr;
     }
 
     function passStringToWasm0(arg, malloc, realloc) {
@@ -2065,6 +3030,8 @@ let wasm_bindgen = (function(exports) {
     function __wbg_finalize_init(instance, module) {
         wasm = instance.exports;
         wasmModule = module;
+        cachedDataViewMemory0 = null;
+        cachedUint32ArrayMemory0 = null;
         cachedUint8ArrayMemory0 = null;
         wasm.__wbindgen_start();
         return wasm;
