@@ -1,18 +1,15 @@
-# Export (SVG / PNG / Data URL / HTML)
+# Export (SVG / PNG / HTML)
 
 <div class="lang-en">
 
-SeraPlot exposes a small, **language-universal** export layer. Every function
-below is registered through the same `for_each_fn!` macro, so the exact same
-behaviour is available from Python, JavaScript and the C-FFI.
-
-The Python wrappers accept a `Chart` object directly (ergonomic sugar). The
-JavaScript / FFI wrappers take a JSON string — the chart's `.html` field must
-be passed inside `{"html": "..."}`.
+Export is exposed two ways: as `Chart` methods in Python (verified below against
+a real build), and as standalone `for_each_fn!`-registered functions callable
+from JavaScript / the C-FFI. The two are not a 1:1 mirror of each other today —
+`chart_info` is the one function that is genuinely callable from both sides.
 
 ---
 
-## `sp.savefig(chart, path)`
+## `chart.save(path)` / `chart.export_html(path)`
 
 Write the **complete HTML** of the chart to disk. The file is fully
 self-contained: it embeds the SVG, its scripts and styles. It can be opened in
@@ -21,58 +18,32 @@ any browser, attached to an email, or served statically — no server, no CDN.
 ```python
 import seraplot as sp
 
-chart = sp.build_bar_chart("Revenue", ["Q1", "Q2"], [120, 180])
-sp.savefig(chart, "revenue.html")
+chart = sp.bar(title="Revenue", labels=["Q1", "Q2"], values=[120, 180])
+chart.save("revenue.html")
 ```
-
-Errors are surfaced as `IOError`.
 
 ---
 
-## `sp.export_svg(chart) -> str`
+## `chart.export_svg(path)`
 
-Returns the raw `<svg>...</svg>` block extracted from the chart. Useful for:
-
-- Embedding the chart into a LaTeX / Word / Illustrator workflow
-- Post-processing the geometry (CSS overrides, masks, custom filters)
-- Server-side rasterisation with `cairosvg`, `resvg`, `librsvg`, etc.
+Extracts the `<svg>...</svg>` block from the chart and writes it to `path`.
+Useful for embedding into a LaTeX / Word / Illustrator workflow, or
+post-processing the geometry (CSS overrides, masks, custom filters).
 
 ```python
-svg = sp.export_svg(chart)
-with open("plot.svg", "w", encoding="utf-8") as f:
-    f.write(svg)
+chart.export_svg("plot.svg")
 ```
-
-Returns an empty string if no `<svg>` tag is found in the chart HTML.
 
 ---
 
-## `sp.export_png(chart, path)`
+## `chart.export_png(path)`
 
-Writes the SVG of the chart to disk under `path`. If `path` does not end in
-`.svg`, the extension is rewritten to `.svg`. To convert to a true PNG raster,
-pipe through any external converter — this keeps the binary small and avoids
-shipping a 30 MB rasteriser as a hard dependency.
-
-```python
-sp.export_png(chart, "plot.svg")
-
-import cairosvg
-cairosvg.svg2png(url="plot.svg", write_to="plot.png", output_width=1920)
-```
-
-A `ValueError` is raised if the chart contains no `<svg>` block.
-
----
-
-## `sp.export_data_url(chart) -> str`
-
-Returns a `data:image/svg+xml;base64,...` URL that can be dropped directly into
-an `<img src="...">`, a CSS `background-image: url(...)`, or any HTML email.
+Rasterizes the chart to PNG via `cairosvg`. Requires `pip install cairosvg` —
+raises a clear error naming the missing dependency if it is not installed,
+rather than failing silently.
 
 ```python
-url = sp.export_data_url(chart)
-html = f'<img src="{url}" alt="Plot" />'
+chart.export_png("plot.png")
 ```
 
 ---
@@ -84,17 +55,22 @@ for logging, telemetry, or asserting chart complexity in unit tests.
 
 ```python
 import json
+
 info = json.loads(sp.chart_info(chart))
 print(info)
 ```
 
 ```json
-{"size": 18432, "paths": 12, "rects": 47, "circles": 0, "has_svg": true}
+{"size": 25488, "paths": 0, "rects": 3, "circles": 0, "has_svg": true}
 ```
 
 ---
 
 ## JavaScript
+
+Only `buildBarChart` (and the equivalent `build*` function per chart family)
+and `exportHtmlFile` are registered on the JS/WASM side today — there is no
+JS equivalent of `export_svg`/`export_png`/`chart_info` yet.
 
 ```js
 import * as sp from "seraplot";
@@ -105,28 +81,22 @@ const chart = sp.buildBarChart(JSON.stringify({
   values: [120, 180],
 }));
 
-const svg     = sp.exportSvg(JSON.stringify({ html: chart }));
-const dataUrl = sp.exportDataUrl(JSON.stringify({ html: chart }));
 const written = sp.exportHtmlFile(JSON.stringify({ html: chart, path: "out.html" }));
-const meta    = JSON.parse(sp.chartInfo(JSON.stringify({ html: chart })));
 ```
 
 </div>
 
 <div class="lang-fr">
 
-SeraPlot expose une petite couche d'export **universelle entre langages**.
-Chaque fonction ci-dessous est enregistrée via la même macro `for_each_fn!`, le
-comportement est donc strictement identique depuis Python, JavaScript et le
-C-FFI.
-
-Les wrappers Python acceptent directement un objet `Chart` (sucre
-ergonomique). Côté JavaScript / FFI, on passe une chaîne JSON — le champ
-`.html` du chart doit être placé dans `{"html": "..."}`.
+L'export est exposé de deux façons : comme méthodes sur `Chart` en Python
+(vérifié ci-dessous contre un vrai build), et comme fonctions autonomes
+enregistrées via `for_each_fn!`, appelables depuis JavaScript / le C-FFI. Les
+deux ne sont pas un miroir 1:1 aujourd'hui — `chart_info` est la seule
+fonction réellement appelable des deux côtés.
 
 ---
 
-## `sp.savefig(chart, path)`
+## `chart.save(path)` / `chart.export_html(path)`
 
 Écrit l'**intégralité du HTML** du chart sur disque. Le fichier est
 auto-suffisant : il embarque le SVG, ses scripts et ses styles. Il s'ouvre
@@ -136,59 +106,32 @@ statique — aucun serveur, aucun CDN.
 ```python
 import seraplot as sp
 
-chart = sp.build_bar_chart("Chiffre d'affaires", ["T1", "T2"], [120, 180])
-sp.savefig(chart, "revenue.html")
+chart = sp.bar(title="Chiffre d'affaires", labels=["T1", "T2"], values=[120, 180])
+chart.save("revenue.html")
 ```
-
-Les erreurs remontent en `IOError`.
 
 ---
 
-## `sp.export_svg(chart) -> str`
+## `chart.export_svg(path)`
 
-Retourne le bloc `<svg>...</svg>` brut extrait du chart. Utile pour :
-
-- Embarquer le chart dans un flux LaTeX / Word / Illustrator
-- Post-traiter la géométrie (overrides CSS, masques, filtres custom)
-- Rasteriser côté serveur avec `cairosvg`, `resvg`, `librsvg`, etc.
+Extrait le bloc `<svg>...</svg>` du chart et l'écrit sous `path`. Utile pour
+l'intégrer dans un flux LaTeX / Word / Illustrator, ou post-traiter la
+géométrie (overrides CSS, masques, filtres custom).
 
 ```python
-svg = sp.export_svg(chart)
-with open("plot.svg", "w", encoding="utf-8") as f:
-    f.write(svg)
+chart.export_svg("plot.svg")
 ```
-
-Retourne une chaîne vide si aucune balise `<svg>` n'est trouvée.
 
 ---
 
-## `sp.export_png(chart, path)`
+## `chart.export_png(path)`
 
-Écrit le SVG du chart sur disque sous `path`. Si `path` ne finit pas par
-`.svg`, l'extension est réécrite en `.svg`. Pour obtenir un vrai PNG raster,
-on passe par un convertisseur externe — cela garde le binaire compact et évite
-d'embarquer un rasteriseur de 30 Mo en dépendance dure.
-
-```python
-sp.export_png(chart, "plot.svg")
-
-import cairosvg
-cairosvg.svg2png(url="plot.svg", write_to="plot.png", output_width=1920)
-```
-
-Un `ValueError` est levé si le chart ne contient aucun bloc `<svg>`.
-
----
-
-## `sp.export_data_url(chart) -> str`
-
-Retourne une URL `data:image/svg+xml;base64,...` directement injectable dans
-un `<img src="...">`, un `background-image: url(...)` CSS, ou n'importe quel
-mail HTML.
+Rasterise le chart en PNG via `cairosvg`. Nécessite `pip install cairosvg` —
+lève une erreur claire nommant la dépendance manquante plutôt que d'échouer
+silencieusement.
 
 ```python
-url = sp.export_data_url(chart)
-html = f'<img src="{url}" alt="Graphique" />'
+chart.export_png("plot.png")
 ```
 
 ---
@@ -201,17 +144,22 @@ d'un chart dans des tests unitaires.
 
 ```python
 import json
+
 info = json.loads(sp.chart_info(chart))
 print(info)
 ```
 
 ```json
-{"size": 18432, "paths": 12, "rects": 47, "circles": 0, "has_svg": true}
+{"size": 25488, "paths": 0, "rects": 3, "circles": 0, "has_svg": true}
 ```
 
 ---
 
 ## JavaScript
+
+Seuls `buildBarChart` (et l'équivalent `build*` par famille de chart) et
+`exportHtmlFile` sont enregistrés côté JS/WASM aujourd'hui — pas encore
+d'équivalent JS pour `export_svg`/`export_png`/`chart_info`.
 
 ```js
 import * as sp from "seraplot";
@@ -222,10 +170,7 @@ const chart = sp.buildBarChart(JSON.stringify({
   values: [120, 180],
 }));
 
-const svg     = sp.exportSvg(JSON.stringify({ html: chart }));
-const dataUrl = sp.exportDataUrl(JSON.stringify({ html: chart }));
 const written = sp.exportHtmlFile(JSON.stringify({ html: chart, path: "out.html" }));
-const meta    = JSON.parse(sp.chartInfo(JSON.stringify({ html: chart })));
 ```
 
 </div>

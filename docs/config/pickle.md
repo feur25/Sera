@@ -10,7 +10,7 @@
 import seraplot as sp
 import pickle
 
-chart = sp.bar([1,2,3], ["a","b","c"])
+chart = sp.bar("Revenue", ["a", "b", "c"], [1, 2, 3])
 blob = pickle.dumps(chart)
 
 restored = pickle.loads(blob)
@@ -21,15 +21,20 @@ Internally, only the HTML string is serialized — minimal payload, no transient
 
 ## ML models
 
-Native `ml_save_model` / `ml_load_model` are registered in the Rust core but **not yet exposed as Python attributes** in 2.3.89. For now use stdlib `pickle` directly on fitted estimators:
+`sp.ml_save_model()` / `sp.ml_load_model()` are real, working functions backed by an in-process model registry (name + optional version, arbitrary JSON payload, params/metrics/tags). Save whatever a training call returned, reload it later by name:
 
 ```python
-import pickle
-from seraplot import KNeighborsClassifier
+import json
+import seraplot as sp
 
-clf = KNeighborsClassifier(k=5).fit(X, y)
-blob = pickle.dumps(clf)
-restored = pickle.loads(blob)
+result = sp.knn_classifier(data=X_train, target=y_train, k=5)
+sp.ml_save_model(
+    name="knn_v1", kind="knn_classifier",
+    payload=json.dumps(result), params={"k": "5"}, metrics={}, tags=[],
+)
+
+loaded = sp.ml_load_model(name="knn_v1")
+restored_result = json.loads(loaded["payload"])
 ```
 
 </div>
@@ -44,7 +49,7 @@ Les objets `Chart` sont sérialisables via `__getstate__` / `__setstate__` — c
 import seraplot as sp
 import pickle
 
-chart = sp.bar([1,2,3], ["a","b","c"])
+chart = sp.bar("Revenu", ["a", "b", "c"], [1, 2, 3])
 blob = pickle.dumps(chart)
 
 restored = pickle.loads(blob)
@@ -55,15 +60,20 @@ En interne, seule la chaîne HTML est sérialisée — payload minimal, aucun é
 
 ## Modèles ML
 
-Les fonctions natives `ml_save_model` / `ml_load_model` sont enregistrées dans le cœur Rust mais **pas encore exposées comme attributs Python** en 2.3.89. Utilisez `pickle` standard sur les estimateurs entraînés :
+`sp.ml_save_model()` / `sp.ml_load_model()` sont des fonctions réelles et fonctionnelles, adossées à un registre de modèles en mémoire (nom + version optionnelle, payload JSON arbitraire, params/métriques/tags). Sauvegardez ce qu'un appel d'entraînement a retourné, rechargez-le plus tard par son nom :
 
 ```python
-import pickle
-from seraplot import KNeighborsClassifier
+import json
+import seraplot as sp
 
-clf = KNeighborsClassifier(k=5).fit(X, y)
-blob = pickle.dumps(clf)
-restored = pickle.loads(blob)
+result = sp.knn_classifier(data=X_train, target=y_train, k=5)
+sp.ml_save_model(
+    name="knn_v1", kind="knn_classifier",
+    payload=json.dumps(result), params={"k": "5"}, metrics={}, tags=[],
+)
+
+loaded = sp.ml_load_model(name="knn_v1")
+restored_result = json.loads(loaded["payload"])
 ```
 
 </div>

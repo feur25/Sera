@@ -56,27 +56,6 @@ Clears the global background, reverting to the per-chart default.
 
 ---
 
-### `set_bg_fn(html, color)`
-
-Applies a background color to an existing HTML chart string. Returns the modified HTML string.
-
-<div class="sp-tabs" id="bg-fn">
-<div class="sp-tab-btns">
-<button class="sp-tb sp-act" onclick="spTab('bg-fn','bg-fn-py',this)">Python</button>
-</div>
-<div id="bg-fn-py" class="sp-tc sp-on"><pre style="margin:0;border-radius:0"><code class="language-python">html_str = chart.to_html()
-html_with_bg = sp.set_bg_fn(html_str, "#0f172a")</code></pre></div>
-</div>
-
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `html` | `str` | HTML string from `Chart.to_html()` |
-| `color` | `str` | CSS background color |
-
-**Returns**: `str` — Modified HTML string. (Python only)
-
----
-
 ## Examples
 
 ### Dark theme dashboard
@@ -123,17 +102,6 @@ Définit une couleur de fond globale appliquée à tous les graphiques créés a
 ### `reset_global_background()`
 
 Efface le fond global, revenant à la valeur par défaut de chaque graphique.
-
-### `set_bg_fn(html, color)`
-
-Applique une couleur de fond à une chaîne HTML existante. Retourne la chaîne HTML modifiée.
-
-| Paramètre | Type | Description |
-|-----------|------|-------------|
-| `html` | `str` | Chaîne HTML de `Chart.to_html()` |
-| `color` | `str` | Couleur de fond CSS |
-
-**Retourne** : `str` — Chaîne HTML modifiée.
 
 ---
 

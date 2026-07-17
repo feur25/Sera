@@ -9,10 +9,12 @@ Reduce massive datasets while preserving visual shape using the **Largest-Triang
 ```python
 import seraplot as sp
 
-chart = sp.scatter(big_x, big_y).downsample(n=5000)
-
-points = sp.lttb(list(zip(big_x, big_y)), threshold=5000)
+chart = sp.scatter(title="Big scatter", x_values=big_x, y_values=big_y).downsample()
 ```
+
+`downsample` is a chainable `Chart` method, not a standalone `sp.` function —
+there is no Python `sp.lttb()`; the algorithm is only registered on the
+JS/WASM side today (`downsampleLttb`, below).
 
 ## JavaScript
 
@@ -40,10 +42,12 @@ Réduit les datasets massifs en préservant la forme visuelle avec l'algorithme 
 ```python
 import seraplot as sp
 
-chart = sp.scatter(big_x, big_y).downsample(n=5000)
-
-points = sp.lttb(list(zip(big_x, big_y)), threshold=5000)
+chart = sp.scatter(title="Grand scatter", x_values=big_x, y_values=big_y).downsample()
 ```
+
+`downsample` est une méthode chaînable sur `Chart`, pas une fonction `sp.`
+autonome — il n'y a pas de `sp.lttb()` en Python ; l'algorithme n'est
+enregistré que côté JS/WASM aujourd'hui (`downsampleLttb`, ci-dessous).
 
 ## JavaScript
 
