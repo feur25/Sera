@@ -29,6 +29,7 @@ Venn diagrams show set relationships using overlapping circles. Supply one value
 | `"filled"` | Fully opaque circles |
 | `"gradient"` | Radial gradient fill |
 | `"minimal"` | Stroke-only outlines |
+| `"heat"` | Colors each set circle by its value on a heat gradient instead of a fixed categorical palette — the largest set reads hottest, regardless of which set it is. |
 
 ## Parameters
 
@@ -66,6 +67,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('venn-en','filled',this)"><span class="sp-cic">●</span><span class="sp-clb">Filled</span></button>
 <button class="sp-cls-tab" onclick="spCls('venn-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('venn-en','minimal',this)"><span class="sp-cic">◌</span><span class="sp-clb">Minimal</span></button>
+<button class="sp-cls-tab" onclick="spCls('venn-en','heat',this)"><span class="sp-cic">◉</span><span class="sp-clb">Heat</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="venn-en-basic">
@@ -93,6 +95,11 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/venn-minimal.html"></iframe>
 </div>
+<div class="sp-variant" id="venn-en-heat">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"heat"</code></span><span><strong>Aliases</strong> <code>heat / magnitude / intensity</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/venn-heat.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -119,6 +126,7 @@ Les diagrammes de Venn montrent des relations entre ensembles à l'aide de cercl
 | `"filled"` | Cercles entièrement opaques |
 | `"gradient"` | Remplissage en dégradé radial |
 | `"minimal"` | Contours seuls |
+| `"heat"` | Colore chaque cercle selon sa valeur sur un dégradé de chaleur plutôt qu'une palette catégorielle fixe — le plus grand ensemble apparaît le plus « chaud », quel qu'il soit. |
 
 ## Paramètres
 
@@ -156,6 +164,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('venn-fr','filled',this)"><span class="sp-cic">●</span><span class="sp-clb">Plein</span></button>
 <button class="sp-cls-tab" onclick="spCls('venn-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('venn-fr','minimal',this)"><span class="sp-cic">◌</span><span class="sp-clb">Minimal</span></button>
+<button class="sp-cls-tab" onclick="spCls('venn-fr','heat',this)"><span class="sp-cic">◉</span><span class="sp-clb">Heat</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="venn-fr-basic">
@@ -182,6 +191,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / outline / thin</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/venn-minimal.html"></iframe>
+</div>
+<div class="sp-variant" id="venn-fr-heat">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"heat"</code></span><span><strong>Alias</strong> <code>heat / magnitude / intensity</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/venn-heat.html"></iframe>
 </div>
 </div>
 </div>

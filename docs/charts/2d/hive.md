@@ -29,6 +29,7 @@ Hive plots organize network nodes on radial axes by category. Each axis correspo
 | `"gradient"` | Curved + source-color gradient |
 | `"weighted"` | Stroke width proportional to edge weight |
 | `"minimal"` | Thin curved edges |
+| `"labeled"` | Prints each edge's weight at its midpoint — pairs well with `weighted` when the line-width cue alone isn't precise enough. |
 
 ## Parameters
 
@@ -73,6 +74,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('hive-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('hive-en','weighted',this)"><span class="sp-cic">≈</span><span class="sp-clb">Weighted</span></button>
 <button class="sp-cls-tab" onclick="spCls('hive-en','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
+<button class="sp-cls-tab" onclick="spCls('hive-en','labeled',this)"><span class="sp-cic">▪</span><span class="sp-clb">Labeled</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="hive-en-basic">
@@ -100,6 +102,11 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/hive-minimal.html"></iframe>
 </div>
+<div class="sp-variant" id="hive-en-labeled">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labelled / values / annotated</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/hive-labeled.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -126,6 +133,7 @@ Les hive plots organisent les nœuds d'un réseau sur des axes radiaux par caté
 | `"gradient"` | Courbé + dégradé de couleur source |
 | `"weighted"` | Épaisseur du trait proportionnelle au poids de l'arête |
 | `"minimal"` | Arêtes courbes fines |
+| `"labeled"` | Affiche le poids de chaque arête à son point médian — se combine bien avec `weighted` quand l'indice de largeur seul n'est pas assez précis. |
 
 ## Paramètres
 
@@ -170,6 +178,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('hive-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('hive-fr','weighted',this)"><span class="sp-cic">≈</span><span class="sp-clb">Pondéré</span></button>
 <button class="sp-cls-tab" onclick="spCls('hive-fr','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
+<button class="sp-cls-tab" onclick="spCls('hive-fr','labeled',this)"><span class="sp-cic">▪</span><span class="sp-clb">Labeled</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="hive-fr-basic">
@@ -196,6 +205,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/hive-minimal.html"></iframe>
+</div>
+<div class="sp-variant" id="hive-fr-labeled">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"labeled"</code></span><span><strong>Alias</strong> <code>labeled / labelled / values / annotated</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/hive-labeled.html"></iframe>
 </div>
 </div>
 </div>

@@ -29,6 +29,7 @@ Circle packing represents hierarchical data as nested circles, where the area of
 | `"outlined"` | Stroke-only circles |
 | `"gradient"` | Radial gradient fill per circle |
 | `"bubble"` | Alias for flat layout |
+| `"heat"` | Colors every circle by its own radius on a heat gradient instead of by category — bigger (= higher-value) circles read hotter, regardless of which branch they belong to. |
 
 ## Parameters
 
@@ -68,6 +69,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('cp-en','outlined',this)"><span class="sp-cic">◌</span><span class="sp-clb">Outlined</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-en','bubble',this)"><span class="sp-cic">◎</span><span class="sp-clb">Bubble</span></button>
+<button class="sp-cls-tab" onclick="spCls('cp-en','heat',this)"><span class="sp-cic">◉</span><span class="sp-clb">Heat</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="cp-en-basic">
@@ -95,6 +97,11 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/circle_pack-bubble.html"></iframe>
 </div>
+<div class="sp-variant" id="cp-en-heat">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"heat"</code></span><span><strong>Aliases</strong> <code>heat / magnitude / size_heat</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/circle_pack-heat.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -121,6 +128,7 @@ Le circle packing représente des données hiérarchiques sous forme de cercles 
 | `"outlined"` | Cercles en contour seul |
 | `"gradient"` | Remplissage en dégradé radial par cercle |
 | `"bubble"` | Alias de la disposition à plat |
+| `"heat"` | Colore chaque cercle selon son propre rayon sur un dégradé de chaleur plutôt que par catégorie — les cercles plus grands (= valeur plus élevée) apparaissent plus « chauds », quelle que soit leur branche. |
 
 ## Paramètres
 
@@ -160,6 +168,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('cp-fr','outlined',this)"><span class="sp-cic">◌</span><span class="sp-clb">Contour</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-fr','bubble',this)"><span class="sp-cic">◎</span><span class="sp-clb">Bulle</span></button>
+<button class="sp-cls-tab" onclick="spCls('cp-fr','heat',this)"><span class="sp-cic">◉</span><span class="sp-clb">Heat</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="cp-fr-basic">
@@ -186,6 +195,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"bubble"</code></span><span><strong>Alias</strong> <code>bubble / packed</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/circle_pack-bubble.html"></iframe>
+</div>
+<div class="sp-variant" id="cp-fr-heat">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"heat"</code></span><span><strong>Alias</strong> <code>heat / magnitude / size_heat</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/circle_pack-heat.html"></iframe>
 </div>
 </div>
 </div>

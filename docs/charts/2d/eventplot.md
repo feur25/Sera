@@ -26,6 +26,7 @@ Aliases: `sp.eventplot`, `sp.event_plot`, `sp.raster_plot`, `sp.spike_plot`, `sp
 |---|---|---|
 | `"basic"` | `basic / default / classic / ticks` | Tick marks only, one color per row. |
 | `"density"` | `density / kde / smoothed / rug` | Tick marks plus a smoothed density curve per row, computed with the same native kernel density estimator as [`kde()`](kde.md) (`scott_bw` bandwidth selection, Gaussian kernel) — a rug plot and a KDE in one chart. |
+| `"connected"` | `connected / sequence / path / trajectory` | Draws a thin line connecting each row's events in chronological order, on top of the usual ticks — traces the sequence/trajectory through time, not just where events landed. |
 
 ## Parameters
 
@@ -62,6 +63,7 @@ chart.show()
 <button class="sp-cls-tab sp-cact" onclick="spCls('eventplot-en','basic',this)"><span class="sp-cic">┃</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('eventplot-en','density',this)"><span class="sp-cic">∿</span><span class="sp-clb">Density</span></button>
 <button class="sp-cls-tab" onclick="spCls('eventplot-en','gradient',this)"><span class="sp-cic">▤</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('eventplot-en','connected',this)"><span class="sp-cic">⤳</span><span class="sp-clb">Connected</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="eventplot-en-basic">
@@ -79,6 +81,11 @@ chart.show()
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Ticks colored by their position along the time axis via <code>colorscale=</code> (any of the 10 shared colorscales) instead of one flat color per row — makes it easy to spot when, not just which row, events cluster.</p>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/eventplot-gradient.html"></iframe>
+</div>
+<div class="sp-variant" id="eventplot-en-connected">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"connected"</code></span><span><strong>Aliases</strong> <code>connected / sequence / path / trajectory</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/eventplot-connected.html"></iframe>
 </div>
 </div>
 </div>
@@ -104,6 +111,7 @@ Alias : `sp.eventplot`, `sp.event_plot`, `sp.raster_plot`, `sp.spike_plot`, `sp.
 | `"basic"` | `basic / default / classic / ticks` | Traits verticaux seuls, une couleur par ligne. |
 | `"density"` | `density / kde / smoothed / rug` | Traits verticaux plus une courbe de densité lissée par ligne, calculée avec le même estimateur de densité par noyau natif que [`kde()`](kde.md) (sélection de bande passante `scott_bw`, noyau gaussien) — un rug plot et un KDE en un seul graphique. |
 | `"gradient"` | `gradient / colorscale / heat / timeline` | Traits colorés selon leur position sur l'axe temporel via `colorscale=` (les 10 dégradés partagés du moteur continu), au lieu d'une couleur fixe par ligne — fait ressortir quand les événements se regroupent, pas seulement dans quelle ligne. |
+| `"connected"` | `connected / sequence / path / trajectory` | Trace un trait fin reliant les événements de chaque ligne dans l'ordre chronologique, par-dessus les graduations habituelles — trace la séquence/trajectoire dans le temps, pas seulement où les événements sont tombés. |
 
 ## Paramètres
 
@@ -140,6 +148,7 @@ chart.show()
 <button class="sp-cls-tab sp-cact" onclick="spCls('eventplot-fr','basic',this)"><span class="sp-cic">┃</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('eventplot-fr','density',this)"><span class="sp-cic">∿</span><span class="sp-clb">Density</span></button>
 <button class="sp-cls-tab" onclick="spCls('eventplot-fr','gradient',this)"><span class="sp-cic">▤</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('eventplot-fr','connected',this)"><span class="sp-cic">⤳</span><span class="sp-clb">Connected</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="eventplot-fr-basic">
@@ -157,6 +166,11 @@ chart.show()
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Traits colorés selon leur position sur l'axe temporel via <code>colorscale=</code>, au lieu d'une couleur fixe par ligne.</p>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/eventplot-gradient.html"></iframe>
+</div>
+<div class="sp-variant" id="eventplot-fr-connected">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"connected"</code></span><span><strong>Alias</strong> <code>connected / sequence / path / trajectory</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/eventplot-connected.html"></iframe>
 </div>
 </div>
 </div>

@@ -29,6 +29,7 @@ Dendrograms display hierarchical tree structures using right-angle elbow connect
 | `"radial"` | Circular radial tree layout |
 | `"compact"` | Tighter spacing, smaller font |
 | `"elegant"` | Smooth cubic bezier curves |
+| `"triangular"` | Connects parent to child with a single straight diagonal line — a third connector style alongside the right-angle elbows (vertical/horizontal) and smooth beziers (elegant). |
 
 ## Parameters
 
@@ -66,6 +67,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('dend-en','radial',this)"><span class="sp-cic">◎</span><span class="sp-clb">Radial</span></button>
 <button class="sp-cls-tab" onclick="spCls('dend-en','compact',this)"><span class="sp-cic">≡</span><span class="sp-clb">Compact</span></button>
 <button class="sp-cls-tab" onclick="spCls('dend-en','elegant',this)"><span class="sp-cic">∫</span><span class="sp-clb">Elegant</span></button>
+<button class="sp-cls-tab" onclick="spCls('dend-en','triangular',this)"><span class="sp-cic">△</span><span class="sp-clb">Triangular</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="dend-en-vertical">
@@ -93,6 +95,11 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/dendrogram-elegant.html"></iframe>
 </div>
+<div class="sp-variant" id="dend-en-triangular">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"triangular"</code></span><span><strong>Aliases</strong> <code>triangular / diagonal / straight / angular</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/dendrogram-triangular.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -119,6 +126,7 @@ Les dendrogrammes affichent des structures arborescentes hiérarchiques à l'aid
 | `"radial"` | Disposition arborescente radiale circulaire |
 | `"compact"` | Espacement resserré, police plus petite |
 | `"elegant"` | Courbes de bézier cubiques lisses |
+| `"triangular"` | Relie parent et enfant par une seule ligne diagonale droite — un troisième style de connecteur, aux côtés des coudes à angle droit (vertical/horizontal) et des courbes de bézier lisses (elegant). |
 
 ## Paramètres
 
@@ -156,6 +164,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('dend-fr','radial',this)"><span class="sp-cic">◎</span><span class="sp-clb">Radial</span></button>
 <button class="sp-cls-tab" onclick="spCls('dend-fr','compact',this)"><span class="sp-cic">≡</span><span class="sp-clb">Compact</span></button>
 <button class="sp-cls-tab" onclick="spCls('dend-fr','elegant',this)"><span class="sp-cic">∫</span><span class="sp-clb">Élégant</span></button>
+<button class="sp-cls-tab" onclick="spCls('dend-fr','triangular',this)"><span class="sp-cic">△</span><span class="sp-clb">Triangular</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="dend-fr-vertical">
@@ -182,6 +191,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"elegant"</code></span><span><strong>Alias</strong> <code>elegant / smooth / rounded</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/dendrogram-elegant.html"></iframe>
+</div>
+<div class="sp-variant" id="dend-fr-triangular">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"triangular"</code></span><span><strong>Alias</strong> <code>triangular / diagonal / straight / angular</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/dendrogram-triangular.html"></iframe>
 </div>
 </div>
 </div>

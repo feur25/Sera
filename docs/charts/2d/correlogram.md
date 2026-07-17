@@ -29,6 +29,7 @@ A correlogram visualizes a correlation matrix as a grid. Each cell encodes the P
 | `"text"` | Numeric correlation values only |
 | `"mixed"` | Circles + text overlay |
 | `"gradient"` | Same as circle with diverging color |
+| `"sorted"` | Reorders rows and columns by each variable's total absolute correlation with every other variable, so strongly related variables visually cluster instead of sitting in input order. |
 
 ## Parameters
 
@@ -69,6 +70,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('corr-en','text',this)"><span class="sp-cic">𝑟</span><span class="sp-clb">Text</span></button>
 <button class="sp-cls-tab" onclick="spCls('corr-en','mixed',this)"><span class="sp-cic">◑</span><span class="sp-clb">Mixed</span></button>
 <button class="sp-cls-tab" onclick="spCls('corr-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('corr-en','sorted',this)"><span class="sp-cic">⇆</span><span class="sp-clb">Sorted</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="corr-en-circle">
@@ -96,6 +98,11 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/correlogram-gradient.html"></iframe>
 </div>
+<div class="sp-variant" id="corr-en-sorted">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"sorted"</code></span><span><strong>Aliases</strong> <code>sorted / clustered / reordered</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/correlogram-sorted.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -122,6 +129,7 @@ Un correlogramme visualise une matrice de corrélation sous forme de grille. Cha
 | `"text"` | Valeurs de corrélation numériques seules |
 | `"mixed"` | Cercles + superposition de texte |
 | `"gradient"` | Identique à circle avec couleur divergente |
+| `"sorted"` | Réordonne lignes et colonnes selon la corrélation absolue totale de chaque variable avec toutes les autres, pour que les variables fortement liées se regroupent visuellement au lieu de rester dans l'ordre d'entrée. |
 
 ## Paramètres
 
@@ -162,6 +170,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('corr-fr','text',this)"><span class="sp-cic">𝑟</span><span class="sp-clb">Texte</span></button>
 <button class="sp-cls-tab" onclick="spCls('corr-fr','mixed',this)"><span class="sp-cic">◑</span><span class="sp-clb">Mixte</span></button>
 <button class="sp-cls-tab" onclick="spCls('corr-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
+<button class="sp-cls-tab" onclick="spCls('corr-fr','sorted',this)"><span class="sp-cic">⇆</span><span class="sp-clb">Sorted</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="corr-fr-circle">
@@ -188,6 +197,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color / diverging</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/correlogram-gradient.html"></iframe>
+</div>
+<div class="sp-variant" id="corr-fr-sorted">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"sorted"</code></span><span><strong>Alias</strong> <code>sorted / clustered / reordered</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/correlogram-sorted.html"></iframe>
 </div>
 </div>
 </div>

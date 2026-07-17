@@ -27,6 +27,7 @@ Aliases: `sp.gantt`, `sp.gantt_chart`, `sp.broken_barh`, `sp.timeline_chart`, `s
 | `"basic"` | `basic / default / classic / flat` | Flat colored bar per task. |
 | `"progress"` | `progress / percent / completion / filled` | Outlined bar with an inner fill proportional to `color_values` (0–1 completion fraction) and a `%` label. |
 | `"gradient"` | `gradient / duration / colorscale / heat` | Bars colored by task duration via `colorscale=` (any of the 10 shared colorscales) instead of by category — the longest and shortest tasks stand out at a glance. |
+| `"milestone"` | `milestone / diamonds / checkpoints / markers` | Renders zero-duration tasks (`start == end`) as a diamond marker instead of a degenerate bar — the standard way project-planning tools distinguish milestones from work items. |
 
 ## Parameters
 
@@ -69,6 +70,7 @@ chart.show()
 <button class="sp-cls-tab sp-cact" onclick="spCls('gantt-en','basic',this)"><span class="sp-cic">▬</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('gantt-en','progress',this)"><span class="sp-cic">▤</span><span class="sp-clb">Progress</span></button>
 <button class="sp-cls-tab" onclick="spCls('gantt-en','gradient',this)"><span class="sp-cic">▥</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('gantt-en','milestone',this)"><span class="sp-cic">◆</span><span class="sp-clb">Milestone</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="gantt-en-basic">
@@ -85,6 +87,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / duration / colorscale / heat</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/gantt-gradient.html"></iframe>
+</div>
+<div class="sp-variant" id="gantt-en-milestone">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"milestone"</code></span><span><strong>Aliases</strong> <code>milestone / diamonds / checkpoints / markers</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/gantt-milestone.html"></iframe>
 </div>
 </div>
 </div>
@@ -110,6 +117,7 @@ Alias : `sp.gantt`, `sp.gantt_chart`, `sp.broken_barh`, `sp.timeline_chart`, `sp
 | `"basic"` | `basic / default / classic / flat` | Barre colorée pleine par tâche. |
 | `"progress"` | `progress / percent / completion / filled` | Barre en contour avec un remplissage interne proportionnel à `color_values` (fraction de complétion 0–1) et un libellé `%`. |
 | `"gradient"` | `gradient / duration / colorscale / heat` | Barres colorées selon la durée de la tâche via `colorscale=`, au lieu d'une couleur par catégorie — les tâches les plus longues et les plus courtes ressortent immédiatement. |
+| `"milestone"` | `milestone / diamonds / checkpoints / markers` | Affiche les tâches de durée nulle (`start == end`) sous forme de losange plutôt qu'une barre dégénérée — la façon standard dont les outils de planification distinguent les jalons des tâches. |
 
 ## Paramètres
 
@@ -152,6 +160,7 @@ chart.show()
 <button class="sp-cls-tab sp-cact" onclick="spCls('gantt-fr','basic',this)"><span class="sp-cic">▬</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('gantt-fr','progress',this)"><span class="sp-cic">▤</span><span class="sp-clb">Progress</span></button>
 <button class="sp-cls-tab" onclick="spCls('gantt-fr','gradient',this)"><span class="sp-cic">▥</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('gantt-fr','milestone',this)"><span class="sp-cic">◆</span><span class="sp-clb">Milestone</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="gantt-fr-basic">
@@ -168,6 +177,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / duration / colorscale / heat</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/gantt-gradient.html"></iframe>
+</div>
+<div class="sp-variant" id="gantt-fr-milestone">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"milestone"</code></span><span><strong>Alias</strong> <code>milestone / diamonds / checkpoints / markers</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/gantt-milestone.html"></iframe>
 </div>
 </div>
 </div>

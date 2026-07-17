@@ -27,6 +27,7 @@ Aliases: `sp.scatterternary`, `sp.scatter_ternary`, `sp.ternary`, `sp.ternary_pl
 | `"basic"` | `basic / default / classic / dots` | Single palette color, semi-transparent markers. |
 | `"gradient"` | `gradient / color / colorscale / continuous` | Markers colored by a continuous value (`color_values`, defaults to the A component) via the same colorscale engine as [`heatmap()`](heatmap.md). |
 | `"bubble"` | `bubble / sized / weighted / proportional` | Point radius scales with `color_values` (4.5× range between smallest and largest) instead of a fixed `point_size` — a fourth variable encoded as size on top of the three ternary axes. |
+| `"labeled"` | `labeled / labelled / annotated / named` | Same layout as basic, with each point's label printed beside it — useful once you need to identify specific observations, not just see the overall distribution. |
 
 ## Parameters
 
@@ -70,6 +71,7 @@ chart.show()
 <button class="sp-cls-tab sp-cact" onclick="spCls('scatterternary-en','basic',this)"><span class="sp-cic">▲</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatterternary-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatterternary-en','bubble',this)"><span class="sp-cic">●</span><span class="sp-clb">Bubble</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatterternary-en','labeled',this)"><span class="sp-cic">●</span><span class="sp-clb">Labeled</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="scatterternary-en-basic">
@@ -86,6 +88,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code></span><span><strong>Aliases</strong> <code>bubble / sized / weighted / proportional</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatterternary-bubble.html"></iframe>
+</div>
+<div class="sp-variant" id="scatterternary-en-labeled">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labelled / annotated / named</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/scatterternary-labeled.html"></iframe>
 </div>
 </div>
 </div>
@@ -111,6 +118,7 @@ Alias : `sp.scatterternary`, `sp.scatter_ternary`, `sp.ternary`, `sp.ternary_plo
 | `"basic"` | `basic / default / classic / dots` | Couleur de palette unique, marqueurs semi-transparents. |
 | `"gradient"` | `gradient / color / colorscale / continuous` | Marqueurs colorés selon une valeur continue (`color_values`, par défaut la composante A) via le même moteur de dégradés que [`heatmap()`](heatmap.md). |
 | `"bubble"` | `bubble / sized / weighted / proportional` | Le rayon des points varie selon `color_values` (facteur 4.5 entre le plus petit et le plus grand) au lieu d'un `point_size` fixe — une quatrième variable encodée en taille en plus des trois axes ternaires. |
+| `"labeled"` | `labeled / labelled / annotated / named` | Même disposition que basic, avec le label de chaque point affiché à côté — utile dès qu'il faut identifier des observations précises, pas seulement voir la distribution globale. |
 
 ## Paramètres
 
@@ -154,6 +162,7 @@ chart.show()
 <button class="sp-cls-tab sp-cact" onclick="spCls('scatterternary-fr','basic',this)"><span class="sp-cic">▲</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatterternary-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatterternary-fr','bubble',this)"><span class="sp-cic">●</span><span class="sp-clb">Bulle</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatterternary-fr','labeled',this)"><span class="sp-cic">●</span><span class="sp-clb">Labeled</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="scatterternary-fr-basic">
@@ -170,6 +179,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"bubble"</code></span><span><strong>Alias</strong> <code>bubble / sized / weighted / proportional</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/scatterternary-bubble.html"></iframe>
+</div>
+<div class="sp-variant" id="scatterternary-fr-labeled">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"labeled"</code></span><span><strong>Alias</strong> <code>labeled / labelled / annotated / named</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/scatterternary-labeled.html"></iframe>
 </div>
 </div>
 </div>

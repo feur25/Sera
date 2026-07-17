@@ -29,6 +29,7 @@ Sankey diagrams visualize flows between nodes. Node widths and link widths are p
 | `"gapped"` | Increased node spacing |
 | `"ribbon"` | Wider nodes and ribbons |
 | `"minimal"` | Thin outline style |
+| `"labeled"` | Prints each link's flow weight at its midpoint, on top of the usual basic ribbon style — for when relative widths alone aren't enough and readers need the exact magnitude. |
 
 ## Parameters
 
@@ -68,6 +69,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('sankey-en','gapped',this)"><span class="sp-cic">⇥</span><span class="sp-clb">Gapped</span></button>
 <button class="sp-cls-tab" onclick="spCls('sankey-en','ribbon',this)"><span class="sp-cic">▬</span><span class="sp-clb">Ribbon</span></button>
 <button class="sp-cls-tab" onclick="spCls('sankey-en','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
+<button class="sp-cls-tab" onclick="spCls('sankey-en','labeled',this)"><span class="sp-cic">▪</span><span class="sp-clb">Labeled</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="sankey-en-basic">
@@ -95,6 +97,11 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/sankey-minimal.html"></iframe>
 </div>
+<div class="sp-variant" id="sankey-en-labeled">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labelled / values / annotated</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/sankey-labeled.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -121,6 +128,7 @@ Les diagrammes de Sankey visualisent des flux entre nœuds. La largeur des nœud
 | `"gapped"` | Espacement des nœuds augmenté |
 | `"ribbon"` | Nœuds et rubans plus larges |
 | `"minimal"` | Style filaire fin |
+| `"labeled"` | Affiche le poids du flux de chaque lien à son point médian, par-dessus le style ruban standard — pour quand les largeurs relatives seules ne suffisent pas et que les lecteurs ont besoin de la magnitude exacte. |
 
 ## Paramètres
 
@@ -160,6 +168,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('sankey-fr','gapped',this)"><span class="sp-cic">⇥</span><span class="sp-clb">Espacé</span></button>
 <button class="sp-cls-tab" onclick="spCls('sankey-fr','ribbon',this)"><span class="sp-cic">▬</span><span class="sp-clb">Ruban</span></button>
 <button class="sp-cls-tab" onclick="spCls('sankey-fr','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
+<button class="sp-cls-tab" onclick="spCls('sankey-fr','labeled',this)"><span class="sp-cic">▪</span><span class="sp-clb">Labeled</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="sankey-fr-basic">
@@ -186,6 +195,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / outline</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/sankey-minimal.html"></iframe>
+</div>
+<div class="sp-variant" id="sankey-fr-labeled">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"labeled"</code></span><span><strong>Alias</strong> <code>labeled / labelled / values / annotated</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/sankey-labeled.html"></iframe>
 </div>
 </div>
 </div>

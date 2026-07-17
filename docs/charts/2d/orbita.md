@@ -31,6 +31,7 @@ The Orbita chart is an original SeraPlot chart type that places multiple series 
 | `"trail"` | Closed polygon trail connecting series dots |
 | `"glow"` | Gaussian blur glow effect on dots |
 | `"minimal"` | Clean dots, no orbit decorations |
+| `"labeled"` | Prints each point's value just above its dot — for reading exact numbers off the chart instead of only comparing dot position/size between orbits. |
 
 ## Parameters
 
@@ -75,6 +76,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('orb-en','trail',this)"><span class="sp-cic">∿</span><span class="sp-clb">Trail</span></button>
 <button class="sp-cls-tab" onclick="spCls('orb-en','glow',this)"><span class="sp-cic">✦</span><span class="sp-clb">Glow</span></button>
 <button class="sp-cls-tab" onclick="spCls('orb-en','minimal',this)"><span class="sp-cic">·</span><span class="sp-clb">Minimal</span></button>
+<button class="sp-cls-tab" onclick="spCls('orb-en','labeled',this)"><span class="sp-cic">▪</span><span class="sp-clb">Labeled</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="orb-en-classic">
@@ -101,6 +103,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/orbita-minimal.html"></iframe>
+</div>
+<div class="sp-variant" id="orb-en-labeled">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labelled / values / annotated</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/orbita-labeled.html"></iframe>
 </div>
 </div>
 </div>
@@ -130,6 +137,7 @@ L'Orbita chart est un type de graphique original de SeraPlot qui place plusieurs
 | `"trail"` | Traînée en polygone fermé reliant les points d'une série |
 | `"glow"` | Effet de lueur (flou gaussien) sur les points |
 | `"minimal"` | Points épurés, sans décoration d'orbite |
+| `"labeled"` | Affiche la valeur de chaque point juste au-dessus de son point — pour lire les nombres exacts sur le graphique plutôt que seulement comparer position/taille des points entre orbites. |
 
 ## Paramètres
 
@@ -174,6 +182,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('orb-fr','trail',this)"><span class="sp-cic">∿</span><span class="sp-clb">Traînée</span></button>
 <button class="sp-cls-tab" onclick="spCls('orb-fr','glow',this)"><span class="sp-cic">✦</span><span class="sp-clb">Lueur</span></button>
 <button class="sp-cls-tab" onclick="spCls('orb-fr','minimal',this)"><span class="sp-cic">·</span><span class="sp-clb">Minimal</span></button>
+<button class="sp-cls-tab" onclick="spCls('orb-fr','labeled',this)"><span class="sp-cic">▪</span><span class="sp-clb">Labeled</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="orb-fr-classic">
@@ -200,6 +209,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/orbita-minimal.html"></iframe>
+</div>
+<div class="sp-variant" id="orb-fr-labeled">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"labeled"</code></span><span><strong>Alias</strong> <code>labeled / labelled / values / annotated</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/orbita-labeled.html"></iframe>
 </div>
 </div>
 </div>

@@ -29,6 +29,7 @@ Chord diagrams show relationships between entities using arcs and ribbons around
 | `"ribbon"` | Wider ribbon links |
 | `"arc"` | Arc-only (no filled ribbons) |
 | `"mono"` | Single-color monochrome |
+| `"labeled"` | Prints each ribbon's flow value near its midpoint — the chord equivalent of sankey's labeled variant, for reading exact magnitudes off the diagram instead of just relative ribbon width. |
 
 ## Parameters
 
@@ -71,6 +72,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('chord-en','ribbon',this)"><span class="sp-cic">▬</span><span class="sp-clb">Ribbon</span></button>
 <button class="sp-cls-tab" onclick="spCls('chord-en','arc',this)"><span class="sp-cic">◌</span><span class="sp-clb">Arc</span></button>
 <button class="sp-cls-tab" onclick="spCls('chord-en','mono',this)"><span class="sp-cic">○</span><span class="sp-clb">Mono</span></button>
+<button class="sp-cls-tab" onclick="spCls('chord-en','labeled',this)"><span class="sp-cic">▪</span><span class="sp-clb">Labeled</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="chord-en-basic">
@@ -98,6 +100,11 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/chord-mono.html"></iframe>
 </div>
+<div class="sp-variant" id="chord-en-labeled">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labelled / values / annotated</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/chord-labeled.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -124,6 +131,7 @@ Les diagrammes en accords (chord) montrent les relations entre entités à l'aid
 | `"ribbon"` | Liens en rubans plus larges |
 | `"arc"` | Arcs seuls (sans rubans pleins) |
 | `"mono"` | Monochrome, couleur unique |
+| `"labeled"` | Affiche la valeur de flux de chaque ruban près de son point médian — l'équivalent chord de la variante labeled de sankey, pour lire les magnitudes exactes sur le diagramme plutôt que la seule largeur relative. |
 
 ## Paramètres
 
@@ -166,6 +174,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('chord-fr','ribbon',this)"><span class="sp-cic">▬</span><span class="sp-clb">Ruban</span></button>
 <button class="sp-cls-tab" onclick="spCls('chord-fr','arc',this)"><span class="sp-cic">◌</span><span class="sp-clb">Arc</span></button>
 <button class="sp-cls-tab" onclick="spCls('chord-fr','mono',this)"><span class="sp-cic">○</span><span class="sp-clb">Mono</span></button>
+<button class="sp-cls-tab" onclick="spCls('chord-fr','labeled',this)"><span class="sp-cic">▪</span><span class="sp-clb">Labeled</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="chord-fr-basic">
@@ -192,6 +201,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"mono"</code></span><span><strong>Alias</strong> <code>mono / single</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/chord-mono.html"></iframe>
+</div>
+<div class="sp-variant" id="chord-fr-labeled">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"labeled"</code></span><span><strong>Alias</strong> <code>labeled / labelled / values / annotated</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/chord-labeled.html"></iframe>
 </div>
 </div>
 </div>

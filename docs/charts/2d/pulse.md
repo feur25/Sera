@@ -29,6 +29,7 @@ The Pulse chart is an original SeraPlot chart type that maps temporal or cyclic 
 | `"dot"` | Radial scatter with connecting spokes |
 | `"filled"` | Fully opaque arc bars |
 | `"gradient"` | Radial gradient arcs |
+| `"outlined"` | Stroke-only arc slices with no fill — the same radial clock-face layout, stripped down to outlines for a lighter, print-friendly look. |
 
 ## Parameters
 
@@ -66,6 +67,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('pulse-en','dot',this)"><span class="sp-cic">•</span><span class="sp-clb">Dot</span></button>
 <button class="sp-cls-tab" onclick="spCls('pulse-en','filled',this)"><span class="sp-cic">●</span><span class="sp-clb">Filled</span></button>
 <button class="sp-cls-tab" onclick="spCls('pulse-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('pulse-en','outlined',this)"><span class="sp-cic">○</span><span class="sp-clb">Outlined</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="pulse-en-radial">
@@ -93,6 +95,11 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/pulse-gradient.html"></iframe>
 </div>
+<div class="sp-variant" id="pulse-en-outlined">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"outlined"</code></span><span><strong>Aliases</strong> <code>outlined / outline / stroke / clean</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/pulse-outlined.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -119,6 +126,7 @@ Le Pulse chart est un type de graphique original de SeraPlot qui projette des do
 | `"dot"` | Nuage de points radial avec rayons de connexion |
 | `"filled"` | Barres en arc entièrement opaques |
 | `"gradient"` | Arcs en dégradé radial |
+| `"outlined"` | Secteurs en arc tracés en contour seul, sans remplissage — la même disposition radiale en cadran, allégée en simples contours pour un rendu plus léger, adapté à l'impression. |
 
 ## Paramètres
 
@@ -156,6 +164,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('pulse-fr','dot',this)"><span class="sp-cic">•</span><span class="sp-clb">Point</span></button>
 <button class="sp-cls-tab" onclick="spCls('pulse-fr','filled',this)"><span class="sp-cic">●</span><span class="sp-clb">Plein</span></button>
 <button class="sp-cls-tab" onclick="spCls('pulse-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
+<button class="sp-cls-tab" onclick="spCls('pulse-fr','outlined',this)"><span class="sp-cic">○</span><span class="sp-clb">Outlined</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="pulse-fr-radial">
@@ -182,6 +191,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color / heatring</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/pulse-gradient.html"></iframe>
+</div>
+<div class="sp-variant" id="pulse-fr-outlined">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"outlined"</code></span><span><strong>Alias</strong> <code>outlined / outline / stroke / clean</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/pulse-outlined.html"></iframe>
 </div>
 </div>
 </div>

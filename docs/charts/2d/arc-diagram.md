@@ -29,6 +29,7 @@ Arc diagrams place nodes on a horizontal axis and draw quadratic bezier arcs abo
 | `"weighted"` | Stroke width proportional to edge weight |
 | `"gradient"` | Color-interpolated arcs |
 | `"minimal"` | Thin uniform arcs |
+| `"labeled"` | Prints each edge's weight near the top of its arc — pairs well with `weighted` (stroke width) when you need the precise number, not just the relative thickness. |
 
 ## Parameters
 
@@ -69,6 +70,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('arc-en','weighted',this)"><span class="sp-cic">≈</span><span class="sp-clb">Weighted</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-en','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
+<button class="sp-cls-tab" onclick="spCls('arc-en','labeled',this)"><span class="sp-cic">▪</span><span class="sp-clb">Labeled</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="arc-en-basic">
@@ -96,6 +98,11 @@ chart.show()
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-minimal.html"></iframe>
 </div>
+<div class="sp-variant" id="arc-en-labeled">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labelled / values / annotated</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/arc_diagram-labeled.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -122,6 +129,7 @@ Les diagrammes en arcs placent les nœuds sur un axe horizontal et tracent des a
 | `"weighted"` | Épaisseur du trait proportionnelle au poids de l'arête |
 | `"gradient"` | Arcs à couleur interpolée |
 | `"minimal"` | Arcs fins uniformes |
+| `"labeled"` | Affiche le poids de chaque arête près du sommet de son arc — se combine bien avec `weighted` (épaisseur du trait) quand il faut le nombre précis, pas seulement l'épaisseur relative. |
 
 ## Paramètres
 
@@ -162,6 +170,7 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('arc-fr','weighted',this)"><span class="sp-cic">≈</span><span class="sp-clb">Pondéré</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-fr','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
+<button class="sp-cls-tab" onclick="spCls('arc-fr','labeled',this)"><span class="sp-cic">▪</span><span class="sp-clb">Labeled</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="arc-fr-basic">
@@ -188,6 +197,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-minimal.html"></iframe>
+</div>
+<div class="sp-variant" id="arc-fr-labeled">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"labeled"</code></span><span><strong>Alias</strong> <code>labeled / labelled / values / annotated</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/arc_diagram-labeled.html"></iframe>
 </div>
 </div>
 </div>
