@@ -26,6 +26,68 @@ fn parse_pts(pts: Vec<Vec<f64>>) -> Vec<(f64, f64)> {
         .collect()
 }
 
+fn line_intersect(p1: (f64, f64), p2: (f64, f64), a: f64, b: f64, c: f64) -> Option<(f64, f64)> {
+    let d1 = a * p1.0 + b * p1.1 - c;
+    let d2 = a * p2.0 + b * p2.1 - c;
+    let denom = d1 - d2;
+    if denom.abs() < 1e-12 {
+        return None;
+    }
+    let t = d1 / denom;
+    Some((p1.0 + t * (p2.0 - p1.0), p1.1 + t * (p2.1 - p1.1)))
+}
+
+fn clip_half_plane(poly: &[(f64, f64)], a: f64, b: f64, c: f64) -> Vec<(f64, f64)> {
+    let n = poly.len();
+    if n == 0 {
+        return Vec::new();
+    }
+    let mut out = Vec::with_capacity(n + 1);
+    for i in 0..n {
+        let cur = poly[i];
+        let prev = poly[(i + n - 1) % n];
+        let cur_in = a * cur.0 + b * cur.1 <= c;
+        let prev_in = a * prev.0 + b * prev.1 <= c;
+        if cur_in != prev_in {
+            if let Some(ix) = line_intersect(prev, cur, a, b, c) {
+                out.push(ix);
+            }
+        }
+        if cur_in {
+            out.push(cur);
+        }
+    }
+    out
+}
+
+/// Bounded Voronoi diagram via iterative half-plane clipping: each site's
+/// cell starts as the bounding box and is cut down by the perpendicular
+/// bisector against every other site. O(n^2) per cell, O(n^3) total —
+/// fine at the tens-to-low-hundreds site counts these diagrams are drawn
+/// at, and far simpler to get right than a Fortune's-algorithm sweep line.
+fn voronoi_cells(sites: &[(f64, f64)], bx: f64, by: f64, bw: f64, bh: f64) -> Vec<Vec<(f64, f64)>> {
+    let bbox = vec![(bx, by), (bx + bw, by), (bx + bw, by + bh), (bx, by + bh)];
+    sites
+        .iter()
+        .enumerate()
+        .map(|(i, &(sx, sy))| {
+            let mut poly = bbox.clone();
+            for (j, &(ox, oy)) in sites.iter().enumerate() {
+                if i == j || poly.is_empty() {
+                    continue;
+                }
+                let mx = (sx + ox) / 2.0;
+                let my = (sy + oy) / 2.0;
+                let a = ox - sx;
+                let b = oy - sy;
+                let c = a * mx + b * my;
+                poly = clip_half_plane(&poly, a, b, c);
+            }
+            poly
+        })
+        .collect()
+}
+
 fn pts_to_svg(pts: &[(f64, f64)]) -> String {
     pts.iter()
         .map(|(x, y)| format!("{:.2},{:.2}", x, y))
@@ -2145,6 +2207,48 @@ impl Canvas {
             name: name.to_string(),
         });
         element_idx
+    }
+
+    #[pyo3(signature = (sites, x, y, w, h, fills = None, stroke = "#0d1117",
+                        stroke_width = 1.0, opacity = 1.0, layer = "fg", name_prefix = "cell"))]
+    pub fn voronoi(
+        &mut self,
+        sites: Vec<Vec<f64>>,
+        x: f64,
+        y: f64,
+        w: f64,
+        h: f64,
+        fills: Option<Vec<String>>,
+        stroke: &str,
+        stroke_width: f64,
+        opacity: f64,
+        layer: &str,
+        name_prefix: &str,
+    ) -> Vec<usize> {
+        let pts = parse_pts(sites);
+        let cells = voronoi_cells(&pts, x, y, w, h);
+        let fills = fills.unwrap_or_default();
+        let mut out = Vec::with_capacity(cells.len());
+        for (i, cell) in cells.into_iter().enumerate() {
+            if cell.len() < 3 {
+                continue;
+            }
+            let fill = fills.get(i).cloned().unwrap_or_else(|| "none".to_string());
+            let name = format!("{}{}", name_prefix, i);
+            let element_idx = self.elements.len();
+            self.register_name(&name, element_idx);
+            self.elements.push(El::Polygon {
+                pts: cell,
+                fill,
+                stroke: stroke.to_string(),
+                sw: stroke_width,
+                opacity,
+                layer: Layer::from_str(layer),
+                name,
+            });
+            out.push(element_idx);
+        }
+        out
     }
 
     #[pyo3(signature = (d, fill = "none", stroke = "#ffffff",
