@@ -126,6 +126,20 @@ Alias : `sp.plot_web`, `sp.web_plot`, `sp.plotweb`, `sp.carbon_web`, `sp.web_cha
 
 `Chart` — objet avec une propriété `.html` et une méthode `.show()`.
 
+## Exemple
+
+```python
+import seraplot as sp
+chart = sp.plot_web(
+    "Node network",
+    x_values=[1, 2, 3, 4, 5],
+    y_values=[3, 1, 4, 1, 5],
+    sizes=[10, 20, 15, 25, 18],
+    labels=["A", "B", "C", "D", "E"],
+)
+chart.show()
+```
+
 <div class="sp-cls sp-open" id="plot-web-fr">
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('plot-web-fr')" title="Collapse / expand">⇆</button>
@@ -134,13 +148,13 @@ Alias : `sp.plot_web`, `sp.web_plot`, `sp.plotweb`, `sp.carbon_web`, `sp.web_cha
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="plot-web-fr-scatter">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"scatter"</code></span><span><strong>Aliases</strong> <code>scatter / web / connected / default / flow</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"scatter"</code></span><span><strong>Alias</strong> <code>scatter / web / connected / default / flow</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/plot-web.html"></iframe>
 </div>
 <div class="sp-variant" id="plot-web-fr-radial">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"radial"</code></span><span><strong>Aliases</strong> <code>radial / solar / stellar / mandala / spider</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"radial"</code></span><span><strong>Alias</strong> <code>radial / solar / stellar / mandala / spider</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/plot-web-radial.html"></iframe>
 </div>
 </div>

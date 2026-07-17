@@ -121,6 +121,19 @@ Alias : `sp.eventplot`, `sp.event_plot`, `sp.raster_plot`, `sp.spike_plot`, `sp.
 
 `Chart` — objet avec une propriété `.html` et une méthode `.show()`.
 
+## Exemple
+
+```python
+import seraplot as sp
+chart = sp.eventplot(
+    "Error Occurrences",
+    x_values=[1, 2, 2.5, 4, 5, 5.5, 6, 2, 3, 7],
+    categories=["ServiceA","ServiceA","ServiceA","ServiceA","ServiceA","ServiceB","ServiceB","ServiceB","ServiceB","ServiceB"],
+    variant="density",
+)
+chart.show()
+```
+
 <div class="sp-cls sp-open" id="eventplot-fr">
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('eventplot-fr')" title="Collapse / expand">⇆</button>
@@ -130,19 +143,19 @@ Alias : `sp.eventplot`, `sp.event_plot`, `sp.raster_plot`, `sp.spike_plot`, `sp.
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="eventplot-fr-basic">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / ticks</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / ticks</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/eventplot-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="eventplot-fr-density">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / kde / smoothed / rug</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"density"</code></span><span><strong>Alias</strong> <code>density / kde / smoothed / rug</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/eventplot-density.html"></iframe>
 </div>
 <div class="sp-variant" id="eventplot-fr-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / colorscale / heat / timeline</code></span></div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / colorscale / heat / timeline</code></span></div>
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Traits colorés selon leur position sur l'axe temporel via <code>colorscale=</code>, au lieu d'une couleur fixe par ligne.</p>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/eventplot-gradient.html"></iframe>
 </div>
 </div>

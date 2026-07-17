@@ -130,6 +130,22 @@ Alias : `sp.gantt`, `sp.gantt_chart`, `sp.broken_barh`, `sp.timeline_chart`, `sp
 
 `Chart` — objet avec une propriété `.html` et une méthode `.show()`.
 
+## Exemple
+
+```python
+import seraplot as sp
+chart = sp.gantt(
+    "Product Launch",
+    labels=["Design", "Build", "Test", "Launch"],
+    start=[0, 5, 12, 18],
+    end=[6, 14, 19, 22],
+    categories=["Plan", "Dev", "Dev", "Plan"],
+    variant="progress",
+    color_values=[1.0, 0.6, 0.25, 0.0],
+)
+chart.show()
+```
+
 <div class="sp-cls sp-open" id="gantt-fr">
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('gantt-fr')" title="Collapse / expand">⇆</button>
@@ -139,18 +155,18 @@ Alias : `sp.gantt`, `sp.gantt_chart`, `sp.broken_barh`, `sp.timeline_chart`, `sp
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="gantt-fr-basic">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / flat</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / flat</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/gantt-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="gantt-fr-progress">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"progress"</code></span><span><strong>Aliases</strong> <code>progress / percent / completion / filled</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"progress"</code></span><span><strong>Alias</strong> <code>progress / percent / completion / filled</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/gantt-progress.html"></iframe>
 </div>
 <div class="sp-variant" id="gantt-fr-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / duration / colorscale / heat</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / duration / colorscale / heat</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/gantt-gradient.html"></iframe>
 </div>
 </div>

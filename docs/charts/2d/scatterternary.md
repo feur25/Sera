@@ -134,6 +134,20 @@ Alias : `sp.scatterternary`, `sp.scatter_ternary`, `sp.ternary`, `sp.ternary_plo
 
 `Chart` — objet avec une propriété `.html` et une méthode `.show()`.
 
+## Exemple
+
+```python
+import seraplot as sp
+chart = sp.scatterternary(
+    "Soil Composition",
+    x_values=[0.7, 0.2, 0.1, 0.4, 0.33],
+    y_values=[0.2, 0.6, 0.1, 0.3, 0.33],
+    z_values=[0.1, 0.2, 0.8, 0.3, 0.34],
+    x_label="Sand", y_label="Silt", z_label="Clay",
+)
+chart.show()
+```
+
 <div class="sp-cls sp-open" id="scatterternary-fr">
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('scatterternary-fr')" title="Collapse / expand">⇆</button>
@@ -143,13 +157,13 @@ Alias : `sp.scatterternary`, `sp.scatter_ternary`, `sp.ternary`, `sp.ternary_plo
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="scatterternary-fr-basic">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / dots</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / dots</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/scatterternary-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="scatterternary-fr-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / color / colorscale / continuous</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color / colorscale / continuous</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/scatterternary-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="scatterternary-fr-bubble">

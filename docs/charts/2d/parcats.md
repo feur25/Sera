@@ -131,6 +131,25 @@ Alias : `sp.parcats`, `sp.parallel_categories`, `sp.parcats_chart`, `sp.parallel
 
 `Chart` — objet avec une propriété `.html` et une méthode `.show()`.
 
+## Exemple
+
+```python
+import seraplot as sp
+chart = sp.parcats(
+    "Titanic Survival",
+    axes=["Gender", "Survived", "Class"],
+    category_series=[
+        ["Male", "No", "3rd"],
+        ["Female", "Yes", "1st"],
+        ["Male", "No", "2nd"],
+        ["Female", "Yes", "1st"],
+        ["Male", "Yes", "1st"],
+        ["Female", "No", "3rd"],
+    ],
+)
+chart.show()
+```
+
 <div class="sp-cls sp-open" id="parcats-fr">
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('parcats-fr')" title="Collapse / expand">⇆</button>
@@ -140,18 +159,18 @@ Alias : `sp.parcats`, `sp.parallel_categories`, `sp.parcats_chart`, `sp.parallel
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="parcats-fr-basic">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / flat</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / flat</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/parcats-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="parcats-fr-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / color / smooth_color / shaded</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color / smooth_color / shaded</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/parcats-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="parcats-fr-highlight">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / dominant / spotlight / focus_flow</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"highlight"</code></span><span><strong>Alias</strong> <code>highlight / dominant / spotlight / focus_flow</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/parcats-highlight.html"></iframe>
 </div>
 </div>

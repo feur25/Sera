@@ -136,6 +136,20 @@ Alias : `sp.icicle`, `sp.icicles`, `sp.icicle_chart`, `sp.icicle_family`, `sp.bu
 
 `Chart` — objet avec une propriété `.html` et une méthode `.show()`.
 
+## Exemple
+
+```python
+import seraplot as sp
+chart = sp.icicle(
+    "Org Chart",
+    labels=["Company", "Eng", "Sales", "Backend", "Frontend", "EMEA", "AMER"],
+    parents=["", "Company", "Company", "Eng", "Eng", "Sales", "Sales"],
+    values=[0, 0, 0, 40, 25, 20, 15],
+    variant="basic",
+)
+chart.show()
+```
+
 <div class="sp-cls sp-open" id="icicle-fr">
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('icicle-fr')" title="Collapse / expand">⇆</button>
@@ -146,18 +160,18 @@ Alias : `sp.icicle`, `sp.icicles`, `sp.icicle_chart`, `sp.icicle_family`, `sp.bu
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="icicle-fr-basic">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / layers</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / layers</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/icicle-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="icicle-fr-gapped">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gapped"</code></span><span><strong>Aliases</strong> <code>gapped / spaced / isolated / padded</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gapped"</code></span><span><strong>Alias</strong> <code>gapped / spaced / isolated / padded</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/icicle-gapped.html"></iframe>
 </div>
 <div class="sp-variant" id="icicle-fr-horizontal">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Aliases</strong> <code>horizontal / h / sideways / left_to_right</code></span></div>
-<div class="sp-preview-label">Preview</div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"horizontal"</code></span><span><strong>Alias</strong> <code>horizontal / h / sideways / left_to_right</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/icicle-horizontal.html"></iframe>
 </div>
 <div class="sp-variant" id="icicle-fr-radial">
