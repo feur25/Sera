@@ -17,45 +17,51 @@ by_region = df.groupby("region").agg({"cost": "sum", "latency_ms": "mean"})
 top5 = by_region.sort_values("cost", ascending=False).head(5)
 ```
 
-## Construction
+Every table below is generated at page load straight from the `#[sera_doc(...)]`
+attributes on each method in `v2/src/data/dframe/` — not hand-maintained, so
+it cannot drift from what is actually implemented. `SeraDFrame` methods do
+not currently carry aliases the way chart functions do — one canonical name
+per method, matching the underlying pandas-shaped surface directly.
 
-| Constructor | Effect |
-|---|---|
-| `sp.SeraDFrame({"col": [...], ...})` | From a `dict[str, list]`. |
-| `sp.SeraDFrame.from_csv(path)` | Reads a CSV; per-column type inference (numeric/bool/string) runs in parallel across columns via `rayon`. |
-| `sp.SeraDFrame.from_pandas(df)` | From an existing `pandas.DataFrame`. |
-| `sp.DFrameBuilder().column(name, values)....build()` | Incremental, chainable builder — add columns one at a time, `build()` when done. |
+## Construction & Interop
 
-## Reading
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="construct"></div>
 
-`shape`, `columns()`, `dtypes()`, `head(n)`, `tail(n)`, `len(df)`,
-`df["col"]` / `df[["a", "b"]]`, `column_f64`/`column_str`, `to_records()`.
+## Reading & Attributes
 
-## Shaping
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="attrs"></div>
 
-`filter_eq/gt/lt/ge/le/in`, `sort_values(col, ascending=True)`,
-`drop_duplicates(subset=None)`, `dropna(subset=None)`, `fillna(value)`,
-`select(names)`, `rename(mapping)`, `assign(name, values)`,
-`apply(col, python_callable)` — calls back into Python per value, so it
-accepts **any** function, not just the built-in numeric ops.
+## Filtering & Masking
 
-## Relational & aggregate
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="filter,mask,query"></div>
 
-`merge(other, on, how="inner"|"left")`, `concat(other)`,
-`groupby(col)` returns a `SeraDFrameGroupBy` with `.agg({"col": "sum"|...})`,
-`.mean()`/`.sum()`/`.min()`/`.max()`/`.count()`/`.size()` (auto-selecting
-every numeric column, mirroring `pandas`' `groupby(col).mean()`).
+## Shaping & Transform
 
-## Stats
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="derive,elementwise,reshape,tools"></div>
 
-`describe()`, `corr(a, b)`, `value_counts(col)`, `unique(col)`,
-`nunique(col)`.
+## Relational & Combine
 
-## Interop
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="relational,combine"></div>
 
-`to_pandas() -> pandas.DataFrame`, `to_csv(path)`, `to_table() -> Table` —
-bridges into SeraPlot's `Table` so its chart-export helpers
-(`to_grouped_bar`, `pivot`, ...) are one call away.
+## GroupBy
+
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="groupby"></div>
+
+## Rolling & Expanding
+
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="rolling"></div>
+
+## Datetime
+
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="datetime"></div>
+
+## Stats & Reductions
+
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="stats,reduce"></div>
+
+## String Methods
+
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="strings"></div>
 
 ## Honest performance notes
 
@@ -111,49 +117,54 @@ by_region = df.groupby("region").agg({"cost": "sum", "latency_ms": "mean"})
 top5 = by_region.sort_values("cost", ascending=False).head(5)
 ```
 
-## Construction
+Chaque tableau ci-dessous est généré au chargement de la page directement
+depuis les attributs `#[sera_doc(...)]` de chaque méthode dans
+`v2/src/data/dframe/` — pas maintenu à la main, donc impossible de dériver
+de ce qui est réellement implémenté. Les méthodes `SeraDFrame` n'ont
+actuellement pas d'alias comme les fonctions de graphique — un seul nom
+canonique par méthode, reflétant directement la surface pandas sous-jacente.
 
-| Constructeur | Effet |
-|---|---|
-| `sp.SeraDFrame({"col": [...], ...})` | Depuis un `dict[str, list]`. |
-| `sp.SeraDFrame.from_csv(path)` | Lit un CSV ; l'inférence de type par colonne (numérique/booléen/chaîne) tourne en parallèle sur les colonnes via `rayon`. |
-| `sp.SeraDFrame.from_pandas(df)` | Depuis un `pandas.DataFrame` existant. |
-| `sp.DFrameBuilder().column(nom, valeurs)....build()` | Builder incrémental et chaînable — ajoutez les colonnes une à une, `build()` à la fin. |
+<h2>Construction & Interopérabilité</h2>
 
-## Lecture
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="construct"></div>
 
-`shape`, `columns()`, `dtypes()`, `head(n)`, `tail(n)`, `len(df)`,
-`df["col"]` / `df[["a", "b"]]`, `column_f64`/`column_str`, `to_records()`.
+<h2>Lecture & attributs</h2>
 
-## Mise en forme
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="attrs"></div>
 
-`filter_eq/gt/lt/ge/le/in`, `sort_values(col, ascending=True)`,
-`drop_duplicates(subset=None)`, `dropna(subset=None)`, `fillna(value)`,
-`select(names)`, `rename(mapping)`, `assign(name, values)`,
-`apply(col, fonction_python)` — rappelle Python pour chaque valeur, accepte
-donc **n'importe quelle** fonction, pas seulement les opérations numériques
-intégrées.
+<h2>Filtrage & masques</h2>
 
-## Relationnel & agrégation
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="filter,mask,query"></div>
 
-`merge(other, on, how="inner"|"left")`, `concat(other)`,
-`groupby(col)` renvoie un `SeraDFrameGroupBy` avec `.agg({"col": "sum"|...})`,
-`.mean()`/`.sum()`/`.min()`/`.max()`/`.count()`/`.size()` (sélectionne
-automatiquement toutes les colonnes numériques, comme `groupby(col).mean()`
-sous `pandas`).
+<h2>Mise en forme & transformation</h2>
 
-## Stats
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="derive,elementwise,reshape,tools"></div>
 
-`describe()`, `corr(a, b)`, `value_counts(col)`, `unique(col)`,
-`nunique(col)`.
+<h2>Relationnel & combinaison</h2>
 
-## Interopérabilité
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="relational,combine"></div>
 
-`to_pandas() -> pandas.DataFrame`, `to_csv(path)`, `to_table() -> Table` —
-passerelle vers le `Table` de SeraPlot pour profiter de ses aides
-d'export vers les charts (`to_grouped_bar`, `pivot`, ...) en un appel.
+<h2>GroupBy</h2>
 
-## Notes de performance honnêtes
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="groupby"></div>
+
+<h2>Fenêtres glissantes</h2>
+
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="rolling"></div>
+
+<h2>Dates & heures</h2>
+
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="datetime"></div>
+
+<h2>Stats & réductions</h2>
+
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="stats,reduce"></div>
+
+<h2>Méthodes de chaînes</h2>
+
+<div data-sp-data-table data-file="canvas/dframe.md" data-modules="strings"></div>
+
+<h2>Notes de performance honnêtes</h2>
 
 Benchmarké contre pandas 2.x, sur un échantillon de 250k lignes et sur les
 mêmes données répliquées à **3 000 000 lignes × 34 colonnes**
