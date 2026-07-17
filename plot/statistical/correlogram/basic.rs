@@ -30,7 +30,7 @@ fn corr_color(v: f64) -> ([u8; 6], [u8; 6]) {
     (fill, stroke)
 }
 
-#[crate::chart_demo("labels=[\"A\",\"B\",\"C\",\"D\"], matrix=[1,0.8,-0.3,0.5, 0.8,1,0.1,-0.2, -0.3,0.1,1,0.7, 0.5,-0.2,0.7,1]")]
+#[crate::chart_demo("labels=[\"A\",\"B\",\"C\",\"D\"], matrix=[[1,0.8,-0.3,0.5],[0.8,1,0.1,-0.2],[-0.3,0.1,1,0.7],[0.5,-0.2,0.7,1]]")]
 pub fn render(cfg: &CorrelogramConfig) -> String {
     render_impl(cfg, false, false, false, false)
 }

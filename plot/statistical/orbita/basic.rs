@@ -2,7 +2,7 @@ use super::config::OrbitaConfig;
 use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json};
 use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i};
 
-#[crate::chart_demo("series_names=[\"2021\",\"2022\",\"2023\"], labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], matrix=[0.4,0.7,0.5,0.8, 0.6,0.3,0.9,0.5, 0.8,0.6,0.4,0.7]")]
+#[crate::chart_demo("series_names=[\"2021\",\"2022\",\"2023\"], labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], matrix=[[0.4,0.7,0.5,0.8],[0.6,0.3,0.9,0.5],[0.8,0.6,0.4,0.7]]")]
 pub fn render(cfg: &OrbitaConfig) -> String {
     render_impl(cfg, false, false, false)
 }
