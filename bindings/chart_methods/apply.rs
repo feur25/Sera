@@ -216,11 +216,82 @@ pub(crate) fn apply_colorbar(html: String, position: &str) -> String {
     if is_3d {
         html.replacen("</button></div>", &format!("</button>{}</div>", bar), 1)
     } else {
-        html.replacen(
-            "</div></body></html>",
-            &format!("{}</div></body></html>", bar),
-            1,
-        )
+        let insert_at = html
+            .find("</body>")
+            .and_then(|body_pos| html[..body_pos].rfind("</div>"));
+        match insert_at {
+            Some(at) => {
+                let mut out = html;
+                out.insert_str(at, &bar);
+                out
+            }
+            None => html,
+        }
+    }
+}
+
+pub(crate) fn apply_heatify(html: String, position: &str) -> String {
+    let already_gauged =
+        html.contains("box-shadow:0 2px 8px rgba(0,0,0,.25),0 0 0 1px rgba(255,255,255,.15)");
+    let pos = match position {
+        "left" | "right" | "top" | "bottom" => position,
+        _ => "right",
+    };
+    let is_3d = html.contains("class=\"c3w\"");
+    let range = if is_3d {
+        extract_bracket_range(&html, ",Z=[")
+    } else {
+        extract_attr_range(&html, "data-v=\"").or_else(|| extract_attr_range(&html, "data-y=\""))
+    };
+    let (lo, hi) = range.unwrap_or((0.0, 1.0));
+    let horizontal = pos == "top" || pos == "bottom";
+    let gradient = if horizontal {
+        "linear-gradient(to right,#6366f1,#06b6d4,#22c55e,#fbbf24,#ef4444)"
+    } else {
+        "linear-gradient(to top,#6366f1,#06b6d4,#22c55e,#fbbf24,#ef4444)"
+    };
+    let (css_pos, w, h) = match pos {
+        "left" => ("top:50%;left:10px;transform:translateY(-50%)", 14, 150),
+        "top" => ("top:10px;left:50%;transform:translateX(-50%)", 150, 14),
+        "bottom" => ("bottom:10px;left:50%;transform:translateX(-50%)", 150, 14),
+        _ => ("top:50%;right:10px;transform:translateY(-50%)", 14, 150),
+    };
+    let label_css = if horizontal {
+        "position:absolute;top:16px;font-size:10px;color:#94a3b8;font-family:-apple-system,Arial,sans-serif"
+    } else {
+        "position:absolute;left:18px;font-size:10px;color:#94a3b8;font-family:-apple-system,Arial,sans-serif"
+    };
+    let (lo_pos, hi_pos) = if horizontal {
+        ("left:0", "right:0")
+    } else {
+        ("bottom:0", "top:0")
+    };
+    let bar = format!(
+        "<div style=\"position:absolute;{};width:{}px;height:{}px;background:{};border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.25),0 0 0 1px rgba(255,255,255,.15);z-index:50\"><span style=\"{};{}\">{:.2}</span><span style=\"{};{}\">{:.2}</span></div>",
+        css_pos, w, h, gradient, label_css, lo_pos, lo, label_css, hi_pos, hi
+    );
+    let recolored = html.replacen(
+        "</body>",
+        &format!("<script>{}</script></body>", SP_COLOR_DENSITY_JS),
+        1,
+    );
+    if already_gauged {
+        return recolored;
+    }
+    if is_3d {
+        recolored.replacen("</button></div>", &format!("</button>{}</div>", bar), 1)
+    } else {
+        let insert_at = recolored
+            .find("</body>")
+            .and_then(|body_pos| recolored[..body_pos].rfind("</div>"));
+        match insert_at {
+            Some(at) => {
+                let mut out = recolored;
+                out.insert_str(at, &bar);
+                out
+            }
+            None => recolored,
+        }
     }
 }
 

@@ -1704,6 +1704,24 @@ impl Chart {
 
     #[sera_doc(
         category = "chart_method",
+        aliases("heat_gauge", "value_heatmap"),
+        file = "charts/chart.md",
+        en = "Turns any plot into a heat-colored view in one chainable call: recolors every data element by its value on an indigo → cyan → green → amber → red gradient and attaches a matching colorbar gauge showing the value range, so the legend always matches the colors actually used. Position can be 'right' (default), 'left', 'top' or 'bottom'.",
+        fr = "Transforme n'importe quel graphique en vue chaleur en un seul appel chaînable : recolore chaque élément de données selon sa valeur sur un gradient indigo → cyan → vert → ambre → rouge et ajoute une jauge (colorbar) assortie montrant la plage de valeurs, pour que la légende corresponde toujours aux couleurs réellement utilisées. La position peut être 'right' (défaut), 'left', 'top' ou 'bottom'.",
+        param(
+            name = "position",
+            ty = "str",
+            en = "'right', 'left', 'top' or 'bottom'.",
+            fr = "'right', 'left', 'top' ou 'bottom'."
+        )
+    )]
+    #[sera_sig(position = "right")]
+    pub fn heatify(&self, position: &str) -> Chart {
+        self.propagate(apply_heatify(self.html.clone(), position))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
         aliases("neon"),
         file = "charts/chart.md",
         en = "Adds a neon drop-shadow glow behind every data element (bars, lines, points).",
