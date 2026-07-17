@@ -15,7 +15,7 @@ pub fn render_orbita_html(cfg: &OrbitaConfig) -> String {
         Trail   => basic::render_trail(cfg),
         Glow    => basic::render_glow(cfg),
         Minimal => basic::render_minimal(cfg),
-        Labeled => basic::render_labeled(cfg),
+        Delta   => basic::render_delta(cfg),
     }
 }
 

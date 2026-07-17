@@ -11,9 +11,9 @@ pub fn render_bubble(cfg: &OrbitaConfig)  -> String { render_impl(cfg, true,  fa
 pub fn render_trail(cfg: &OrbitaConfig)   -> String { render_impl(cfg, false, true,  false, false) }
 pub fn render_glow(cfg: &OrbitaConfig)    -> String { render_impl(cfg, false, false, true,  false) }
 pub fn render_minimal(cfg: &OrbitaConfig) -> String { render_impl(cfg, false, false, false, false) }
-pub fn render_labeled(cfg: &OrbitaConfig) -> String { render_impl(cfg, false, false, false, true)  }
+pub fn render_delta(cfg: &OrbitaConfig)   -> String { render_impl(cfg, false, false, false, true)  }
 
-fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool, labeled: bool) -> String {
+fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool, delta: bool) -> String {
     use std::f64::consts::PI;
 
     let ns = cfg.series_names.len();
@@ -151,12 +151,25 @@ fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool, labele
                 let py = cy + orbit_r * angle.sin();
                 let dot_r = if bubble { (v * 8.0 + 2.5).min(14.0) } else { 4.5 };
 
+                let dot_hx = if delta && si > 0 {
+                    let d = cfg.matrix[si * nc + ci] - cfg.matrix[(si - 1) * nc + ci];
+                    if d > 1e-9 {
+                        hex6(0x22C55E)
+                    } else if d < -1e-9 {
+                        hex6(0xEF4444)
+                    } else {
+                        hx
+                    }
+                } else {
+                    hx
+                };
+
                 push_b(&mut buf, b"<circle cx=\"");
                 push_f2(&mut buf, px);
                 push_b(&mut buf, b"\" cy=\""); push_f2(&mut buf, py);
                 push_b(&mut buf, b"\" r=\""); push_f2(&mut buf, dot_r);
                 push_b(&mut buf, b"\" fill=\"#");
-                buf.extend_from_slice(&hx);
+                buf.extend_from_slice(&dot_hx);
                 if glow {
                     push_b(&mut buf, b"\" filter=\"url(#og");
                     push_i(&mut buf, si as i32);
@@ -168,15 +181,6 @@ fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool, labele
                 push_i(&mut buf, (si * nc + ci) as i32);
                 push_b(&mut buf, b"\"/>");
 
-                if labeled {
-                    push_b(&mut buf, b"<text x=\"");
-                    push_f2(&mut buf, px);
-                    push_b(&mut buf, b"\" y=\"");
-                    push_f2(&mut buf, py - dot_r - 3.0);
-                    push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"7.5\" fill=\"#1e293b\" paint-order=\"stroke\" stroke=\"#fff\" stroke-width=\"2.5\">");
-                    push_f2(&mut buf, cfg.matrix[si * nc + ci]);
-                    push_b(&mut buf, b"</text>");
-                }
             }
         }
     }

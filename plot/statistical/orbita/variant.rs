@@ -5,6 +5,6 @@ crate::plot_family! {
         Trail    => "trail" | "line" | "connected",
         Glow     => "glow" | "neon" | "light",
         Minimal  => "minimal" | "thin" | "clean",
-        Labeled  => "labeled" | "labelled" | "values" | "annotated",
+        Delta    => "delta" | "change" | "trend" | "momentum",
     }
 }

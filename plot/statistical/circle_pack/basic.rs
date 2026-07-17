@@ -2,7 +2,7 @@ use super::common::build_circles;
 use super::config::CirclePackConfig;
 use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json};
 use crate::plot::statistical::common::{
-    escape_xml, heat_color, hex6, palette_color, push_b, push_f2, push_i, svg_open,
+    escape_xml, hex6, palette_color, push_b, push_f2, push_i, svg_open,
 };
 
 #[crate::chart_demo("labels=[\"Root\",\"A\",\"B\",\"C\",\"A1\",\"A2\",\"B1\"], parents=[\"\",\"Root\",\"Root\",\"Root\",\"A\",\"A\",\"B\"], values=[0,40,30,20,20,20,30]")]
@@ -18,11 +18,11 @@ pub fn render_gradient(cfg: &CirclePackConfig) -> String {
     render_impl(cfg, true, false, false)
 }
 
-pub fn render_heat(cfg: &CirclePackConfig) -> String {
+pub fn render_leaf_focus(cfg: &CirclePackConfig) -> String {
     render_impl(cfg, false, false, true)
 }
 
-fn render_impl(cfg: &CirclePackConfig, gradient: bool, outlined: bool, heat: bool) -> String {
+fn render_impl(cfg: &CirclePackConfig, gradient: bool, outlined: bool, leaves: bool) -> String {
     let n = cfg
         .labels
         .len()
@@ -93,15 +93,10 @@ fn render_impl(cfg: &CirclePackConfig, gradient: bool, outlined: bool, heat: boo
             .unwrap_or(std::cmp::Ordering::Equal)
     });
 
-    let max_r = circles.iter().map(|c| c.r).fold(1.0f64, f64::max);
-
     for &i in &sorted_idx {
         let c = &circles[i];
-        let color = if heat {
-            heat_color((c.r / max_r).clamp(0.0, 1.0))
-        } else {
-            palette_color(cfg.palette, c.color_idx)
-        };
+        let is_leaf = c.children.is_empty();
+        let color = palette_color(cfg.palette, c.color_idx);
         let hx = hex6(color);
 
         push_b(&mut buf, b"<circle cx=\"");
@@ -120,10 +115,16 @@ fn render_impl(cfg: &CirclePackConfig, gradient: bool, outlined: bool, heat: boo
             push_b(&mut buf, b"\" fill=\"url(#cpg");
             push_i(&mut buf, i as i32);
             push_b(&mut buf, b")\"");
-        } else if heat {
-            push_b(&mut buf, b"\" fill=\"#");
-            buf.extend_from_slice(&hx);
-            push_b(&mut buf, b"\" fill-opacity=\"0.88\" stroke=\"#fff\" stroke-width=\"0.75\"");
+        } else if leaves {
+            if is_leaf {
+                push_b(&mut buf, b"\" fill=\"#");
+                buf.extend_from_slice(&hx);
+                push_b(&mut buf, b"\" fill-opacity=\"0.85\" stroke=\"#fff\" stroke-width=\"0.75\"");
+            } else {
+                push_b(&mut buf, b"\" fill=\"none\" stroke=\"#");
+                buf.extend_from_slice(&hx);
+                push_b(&mut buf, b"\" stroke-width=\"1\" stroke-opacity=\"0.35\" stroke-dasharray=\"3,3\"");
+            }
         } else {
             push_b(&mut buf, b"\" fill=\"#");
             buf.extend_from_slice(&hx);
@@ -136,8 +137,8 @@ fn render_impl(cfg: &CirclePackConfig, gradient: bool, outlined: bool, heat: boo
         }
         push_b(&mut buf, b"/>");
 
-        if cfg.show_labels && c.r > 12.0 {
-            let txt_fill: &[u8] = if (gradient && c.depth <= 1) || heat {
+        if cfg.show_labels && c.r > 12.0 && (!leaves || is_leaf) {
+            let txt_fill: &[u8] = if (gradient && c.depth <= 1) || (leaves && is_leaf) {
                 b"rgba(255,255,255,0.92)"
             } else {
                 b"#1e293b"

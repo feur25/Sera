@@ -3,6 +3,7 @@
 <div class="lang-en">
 
 <style>
+.sp-panel-source{display:none!important}
 .sp-cls{display:flex;gap:0;margin:1.6em 0 1.6em 36px;border-radius:14px;background:linear-gradient(180deg,#0a0f1c 0%,#060912 100%);box-shadow:0 18px 50px -12px rgba(0,0,0,.6),0 0 0 1px #1e293b inset;position:relative;overflow:visible}.sp-cls-rail{display:flex;flex-direction:column;background:linear-gradient(180deg,#0d1426,#070b18);border-right:1px solid #1e293b;padding:18px 0;min-width:18px;transition:min-width .28s;position:relative;z-index:2;border-radius:14px 0 0 14px;overflow:visible}.sp-cls.sp-open .sp-cls-rail{min-width:170px;padding:18px 8px}.sp-cls-toggle{position:absolute;top:-14px;left:8px;padding:5px 9px;background:#1e293b;color:#a5b4fc;border:1px solid #312e81;border-radius:6px;cursor:pointer;font-size:12px;font-weight:700;line-height:1;z-index:5}.sp-cls-tab{position:relative;display:flex;align-items:center;gap:8px;margin:5px 0 5px -34px;padding:11px 16px 11px 14px;background:linear-gradient(90deg,#1a2540,#0f172a);color:#94a3b8;font-size:12px;font-weight:600;cursor:pointer;border:none;text-align:left;white-space:nowrap;border-radius:8px 0 0 8px;transition:all .25s;clip-path:polygon(0 0,calc(100% - 10px) 0,100% 50%,calc(100% - 10px) 100%,0 100%);min-height:18px}.sp-cls-tab.sp-cact{background:linear-gradient(90deg,#3730a3,#0f172a);color:#f5f3ff;margin-left:-46px;box-shadow:-3px 0 0 0 #818cf8 inset;font-weight:700;z-index:3}.sp-cls-tab .sp-cic{font-size:13px;flex-shrink:0;color:#a5b4fc;width:16px;text-align:center}.sp-cls-tab .sp-clb{display:none}.sp-cls.sp-open .sp-cls-tab .sp-clb{display:inline}.sp-cls-body{flex:1;padding:24px 26px 22px;background:#0a0f1c;min-width:0;border-radius:0 14px 14px 0;overflow:hidden}.sp-variant{display:none}.sp-variant.sp-von{display:block}.sp-vmeta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px;color:#94a3b8;margin:6px 0 16px;padding:10px 14px;background:rgba(99,102,241,.06);border-left:3px solid #6366f1;border-radius:0 6px 6px 0}.sp-vmeta strong{color:#a5b4fc;font-weight:700;margin-right:4px;text-transform:uppercase;font-size:11px}.sp-vmeta code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#e2e8f0;font-size:12px}.sp-preview-frame{width:100%;height:380px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px}.sp-preview-label{font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase}
 </style>
 <script>
@@ -22,45 +23,34 @@ Arc diagrams place nodes on a horizontal axis and draw quadratic bezier arcs abo
 
 ## Variants
 
-| Variant | Description |
-|---------|-------------|
-| `"basic"` | Arcs above the axis |
-| `"bilateral"` | Alternating arcs above and below |
-| `"weighted"` | Stroke width proportional to edge weight |
-| `"gradient"` | Color-interpolated arcs |
-| `"minimal"` | Thin uniform arcs |
-| `"labeled"` | Prints each edge's weight near the top of its arc — pairs well with `weighted` (stroke width) when you need the precise number, not just the relative thickness. |
+<div data-sp-registry-table="variants" data-family="arc_diagram"></div>
+
+Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
+
+## Data
+
+`labels` (`list[str]`) — Node names. `edges_i` (`list[int]`) — Source node indices. `edges_j` (`list[int]`) — Target node indices. `edges_w` (`list[float]`) — Edge weights. `width` / `height` (`int`) — Chart dimensions.
+
 
 ## Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `labels` | `list[str]` | Node names |
-| `edges_i` | `list[int]` | Source node indices |
-| `edges_j` | `list[int]` | Target node indices |
-| `edges_w` | `list[float]` | Edge weights |
-| `variant` | `str` | Rendering style |
-| `palette` | `list[int]` | Custom colors |
-| `node_r` | `float` | Node circle radius |
-| `width` / `height` | `int` | Chart dimensions |
+<div data-sp-registry-table="options" data-family="arc_diagram"></div>
+
+## Themes
+
+<div data-sp-registry-table="themes" data-family="arc_diagram"></div>
+
 
 ## Returns
 
 `Chart` — object with `.html` property and `.show()` method.
 
-## Example
 
-```python
-import seraplot as sp
-chart = sp.arc_diagram(
-    "Collaboration Network",
-    labels=["Alice", "Bob", "Carol", "Dave", "Eve", "Frank"],
-    edges_i=[0, 0, 1, 2, 3, 4],
-    edges_j=[1, 2, 3, 4, 5, 0],
-    edges_w=[3, 5, 2, 4, 6, 1],
-)
-chart.show()
-```
+<div class="sp-panel-source">
+<h2>Parameters</h2>
+
+<div data-sp-registry-table="variants" data-family="arc_diagram"></div>
+</div>
 
 <div class="sp-cls sp-open" id="arc-en">
 <div class="sp-cls-rail">
@@ -70,45 +60,51 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('arc-en','weighted',this)"><span class="sp-cic">≈</span><span class="sp-clb">Weighted</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-en','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
-<button class="sp-cls-tab" onclick="spCls('arc-en','labeled',this)"><span class="sp-cic">▪</span><span class="sp-clb">Labeled</span></button>
+<button class="sp-cls-tab" onclick="spCls('arc-en','directed',this)"><span class="sp-cic">➤</span><span class="sp-clb">Directed</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="arc-en-basic">
+<p>Arcs above the axis</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-en-bilateral">
+<p>Alternating arcs above and below</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bilateral"</code></span><span><strong>Aliases</strong> <code>bilateral / both / dual</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-bilateral.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-en-weighted">
+<p>Stroke width proportional to edge weight</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"weighted"</code></span><span><strong>Aliases</strong> <code>weighted / width / value</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-weighted.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-en-gradient">
+<p>Color-interpolated arcs</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / color</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-en-minimal">
+<p>Thin uniform arcs</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-minimal.html"></iframe>
 </div>
-<div class="sp-variant" id="arc-en-labeled">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"labeled"</code></span><span><strong>Aliases</strong> <code>labeled / labelled / values / annotated</code></span></div>
+<div class="sp-variant" id="arc-en-directed">
+<p>Draws a small arrowhead where each arc lands on its target node — turns the diagram into a proper directed graph, e.g. for dependency or citation edges where "which way" matters as much as "how much".</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"directed"</code></span><span><strong>Aliases</strong> <code>directed / arrows / flow / dependency</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/arc_diagram-labeled.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/arc_diagram-directed.html"></iframe>
 </div>
 </div>
 </div>
 
 </div>
 
-<div class="lang-fr">
+<div class="lang-fr" style="display:none">
 
 ## Signature
 
@@ -122,45 +118,34 @@ Les diagrammes en arcs placent les nœuds sur un axe horizontal et tracent des a
 
 ## Variantes
 
-| Variante | Description |
-|---------|-------------|
-| `"basic"` | Arcs au-dessus de l'axe |
-| `"bilateral"` | Arcs alternés au-dessus et en-dessous |
-| `"weighted"` | Épaisseur du trait proportionnelle au poids de l'arête |
-| `"gradient"` | Arcs à couleur interpolée |
-| `"minimal"` | Arcs fins uniformes |
-| `"labeled"` | Affiche le poids de chaque arête près du sommet de son arc — se combine bien avec `weighted` (épaisseur du trait) quand il faut le nombre précis, pas seulement l'épaisseur relative. |
+<div data-sp-registry-table="variants" data-family="arc_diagram"></div>
+
+Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
+
+## Données
+
+`labels` (`list[str]`) — Noms des nœuds. `edges_i` (`list[int]`) — Indices des nœuds source. `edges_j` (`list[int]`) — Indices des nœuds cible. `edges_w` (`list[float]`) — Poids des arêtes. `width` / `height` (`int`) — Dimensions du graphique.
+
 
 ## Paramètres
 
-| Paramètre | Type | Description |
-|-----------|------|-------------|
-| `labels` | `list[str]` | Noms des nœuds |
-| `edges_i` | `list[int]` | Indices des nœuds source |
-| `edges_j` | `list[int]` | Indices des nœuds cible |
-| `edges_w` | `list[float]` | Poids des arêtes |
-| `variant` | `str` | Style de rendu |
-| `palette` | `list[int]` | Couleurs personnalisées |
-| `node_r` | `float` | Rayon du cercle de nœud |
-| `width` / `height` | `int` | Dimensions du graphique |
+<div data-sp-registry-table="options" data-family="arc_diagram"></div>
+
+## Thèmes
+
+<div data-sp-registry-table="themes" data-family="arc_diagram"></div>
+
 
 ## Retour
 
 `Chart` — objet avec une propriété `.html` et une méthode `.show()`.
 
-## Exemple
 
-```python
-import seraplot as sp
-chart = sp.arc_diagram(
-    "Collaboration Network",
-    labels=["Alice", "Bob", "Carol", "Dave", "Eve", "Frank"],
-    edges_i=[0, 0, 1, 2, 3, 4],
-    edges_j=[1, 2, 3, 4, 5, 0],
-    edges_w=[3, 5, 2, 4, 6, 1],
-)
-chart.show()
-```
+<div class="sp-panel-source">
+<h2>Paramètres</h2>
+
+<div data-sp-registry-table="variants" data-family="arc_diagram"></div>
+</div>
 
 <div class="sp-cls sp-open" id="arc-fr">
 <div class="sp-cls-rail">
@@ -170,38 +155,44 @@ chart.show()
 <button class="sp-cls-tab" onclick="spCls('arc-fr','weighted',this)"><span class="sp-cic">≈</span><span class="sp-clb">Pondéré</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-fr','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
-<button class="sp-cls-tab" onclick="spCls('arc-fr','labeled',this)"><span class="sp-cic">▪</span><span class="sp-clb">Labeled</span></button>
+<button class="sp-cls-tab" onclick="spCls('arc-fr','directed',this)"><span class="sp-cic">➤</span><span class="sp-clb">Dirigé</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="arc-fr-basic">
+<p>Arcs au-dessus de l'axe</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-basic.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-fr-bilateral">
+<p>Arcs alternés au-dessus et en-dessous</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"bilateral"</code></span><span><strong>Alias</strong> <code>bilateral / both / dual</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-bilateral.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-fr-weighted">
+<p>Épaisseur du trait proportionnelle au poids de l'arête</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"weighted"</code></span><span><strong>Alias</strong> <code>weighted / width / value</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-weighted.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-fr-gradient">
+<p>Arcs à couleur interpolée</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="arc-fr-minimal">
+<p>Arcs fins uniformes</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-minimal.html"></iframe>
 </div>
-<div class="sp-variant" id="arc-fr-labeled">
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"labeled"</code></span><span><strong>Alias</strong> <code>labeled / labelled / values / annotated</code></span></div>
+<div class="sp-variant" id="arc-fr-directed">
+<p>Trace une petite flèche là où chaque arc arrive sur son nœud cible — transforme le diagramme en véritable graphe orienté, par ex. pour des arêtes de dépendance ou de citation où le sens compte autant que la quantité.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"directed"</code></span><span><strong>Alias</strong> <code>directed / arrows / flow / dependency</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/arc_diagram-labeled.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/arc_diagram-directed.html"></iframe>
 </div>
 </div>
 </div>

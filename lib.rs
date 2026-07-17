@@ -1382,13 +1382,26 @@ pub fn required_params(chart: Option<&str>, variant: Option<&str>) -> serde_json
 )]
 #[sera_bind(serde)]
 pub fn chart_variants() -> serde_json::Value {
+    use crate::plot::statistical::arc_diagram::ArcDiagramVariant;
     use crate::plot::statistical::bubble::BubbleVariant;
+    use crate::plot::statistical::chord::ChordVariant;
+    use crate::plot::statistical::circle_pack::CirclePackVariant;
+    use crate::plot::statistical::correlogram::CorrelogramVariant;
+    use crate::plot::statistical::dendrogram::DendrogramVariant;
+    use crate::plot::statistical::hive::HiveVariant;
+    use crate::plot::statistical::orbita::OrbitaVariant;
+    use crate::plot::statistical::pulse::PulseVariant;
+    use crate::plot::statistical::sankey::SankeyVariant;
     use crate::plot::statistical::scatter::ScatterVariant;
+    use crate::plot::statistical::venn::VennVariant;
     use crate::plot::statistical::{
         BarVariant, BoxplotVariant, BulletVariant, CandlestickVariant, DumbbellVariant,
-        FunnelVariant, GaugeVariant, HeatmapVariant, HistogramVariant, KdeVariant, LineVariant,
-        LollipopVariant, ParallelVariant, PieVariant, RadarVariant, RidgelineVariant, SlopeVariant,
-        SunburstVariant, TreemapVariant, ViolinVariant, WaterfallVariant, WordCloudVariant,
+        EventplotVariant, FunnelVariant, GanttVariant, GaugeVariant, HeatmapVariant,
+        HexbinVariant, HistogramVariant, IcicleVariant, KdeVariant, LineVariant,
+        LollipopVariant, ParallelVariant, ParcatsVariant, PieVariant, PlotWebVariant,
+        RadarVariant, RidgelineVariant, ScatterTernaryVariant, SlopeVariant, SplomVariant,
+        StackplotVariant, SunburstVariant, TreemapVariant, ViolinVariant, WaterfallVariant,
+        WordCloudVariant,
     };
     use serde_json::{Map, Value};
 
@@ -1577,6 +1590,109 @@ pub fn chart_variants() -> serde_json::Value {
         build(
             WordCloudVariant::keys_and_aliases(),
             WordCloudVariant::default_key(),
+        ),
+    );
+    out.insert(
+        "sankey".to_string(),
+        build(SankeyVariant::keys_and_aliases(), SankeyVariant::default_key()),
+    );
+    out.insert(
+        "chord".to_string(),
+        build(ChordVariant::keys_and_aliases(), ChordVariant::default_key()),
+    );
+    out.insert(
+        "circle_pack".to_string(),
+        build(
+            CirclePackVariant::keys_and_aliases(),
+            CirclePackVariant::default_key(),
+        ),
+    );
+    out.insert(
+        "arc_diagram".to_string(),
+        build(
+            ArcDiagramVariant::keys_and_aliases(),
+            ArcDiagramVariant::default_key(),
+        ),
+    );
+    out.insert(
+        "dendrogram".to_string(),
+        build(
+            DendrogramVariant::keys_and_aliases(),
+            DendrogramVariant::default_key(),
+        ),
+    );
+    out.insert(
+        "venn".to_string(),
+        build(VennVariant::keys_and_aliases(), VennVariant::default_key()),
+    );
+    out.insert(
+        "correlogram".to_string(),
+        build(
+            CorrelogramVariant::keys_and_aliases(),
+            CorrelogramVariant::default_key(),
+        ),
+    );
+    out.insert(
+        "hive".to_string(),
+        build(HiveVariant::keys_and_aliases(), HiveVariant::default_key()),
+    );
+    out.insert(
+        "pulse".to_string(),
+        build(PulseVariant::keys_and_aliases(), PulseVariant::default_key()),
+    );
+    out.insert(
+        "orbita".to_string(),
+        build(OrbitaVariant::keys_and_aliases(), OrbitaVariant::default_key()),
+    );
+    out.insert(
+        "eventplot".to_string(),
+        build(
+            EventplotVariant::keys_and_aliases(),
+            EventplotVariant::default_key(),
+        ),
+    );
+    out.insert(
+        "gantt".to_string(),
+        build(GanttVariant::keys_and_aliases(), GanttVariant::default_key()),
+    );
+    out.insert(
+        "hexbin".to_string(),
+        build(HexbinVariant::keys_and_aliases(), HexbinVariant::default_key()),
+    );
+    out.insert(
+        "icicle".to_string(),
+        build(IcicleVariant::keys_and_aliases(), IcicleVariant::default_key()),
+    );
+    out.insert(
+        "parcats".to_string(),
+        build(
+            ParcatsVariant::keys_and_aliases(),
+            ParcatsVariant::default_key(),
+        ),
+    );
+    out.insert(
+        "scatterternary".to_string(),
+        build(
+            ScatterTernaryVariant::keys_and_aliases(),
+            ScatterTernaryVariant::default_key(),
+        ),
+    );
+    out.insert(
+        "splom".to_string(),
+        build(SplomVariant::keys_and_aliases(), SplomVariant::default_key()),
+    );
+    out.insert(
+        "stackplot".to_string(),
+        build(
+            StackplotVariant::keys_and_aliases(),
+            StackplotVariant::default_key(),
+        ),
+    );
+    out.insert(
+        "plot_web".to_string(),
+        build(
+            PlotWebVariant::keys_and_aliases(),
+            PlotWebVariant::default_key(),
         ),
     );
     use crate::plot::scene3d::Scene3DVariant;

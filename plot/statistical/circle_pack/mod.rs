@@ -17,7 +17,7 @@ pub fn render_circle_pack_html(cfg: &CirclePackConfig) -> String {
         Outlined => basic::render_outlined(cfg),
         Gradient => basic::render_gradient(cfg),
         Bubble   => flat::render(cfg),
-        Heat     => basic::render_heat(cfg),
+        LeafFocus => basic::render_leaf_focus(cfg),
     }
 }
 

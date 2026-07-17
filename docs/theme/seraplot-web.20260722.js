@@ -1998,6 +1998,826 @@ let wasm_bindgen = (function(exports) {
      * @param {string} input
      * @returns {string}
      */
+    function mlAdaboostClassifier(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlAdaboostClassifier(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlAdaboostClassifier = mlAdaboostClassifier;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlAdaboostRegressor(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlAdaboostRegressor(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlAdaboostRegressor = mlAdaboostRegressor;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlBernoulliNb(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlBernoulliNb(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlBernoulliNb = mlBernoulliNb;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlCrossValScore(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlCrossValScore(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlCrossValScore = mlCrossValScore;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlDbscanFitPredict(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlDbscanFitPredict(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlDbscanFitPredict = mlDbscanFitPredict;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlDecisionTreeClassifier(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlDecisionTreeClassifier(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlDecisionTreeClassifier = mlDecisionTreeClassifier;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlDecisionTreeRegressor(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlDecisionTreeRegressor(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlDecisionTreeRegressor = mlDecisionTreeRegressor;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlElasticNet(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlElasticNet(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlElasticNet = mlElasticNet;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlFitTransform(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlFitTransform(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlFitTransform = mlFitTransform;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlGaussianNb(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlGaussianNb(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlGaussianNb = mlGaussianNb;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlGradientBoostingClassifier(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlGradientBoostingClassifier(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlGradientBoostingClassifier = mlGradientBoostingClassifier;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlGradientBoostingRegressor(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlGradientBoostingRegressor(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlGradientBoostingRegressor = mlGradientBoostingRegressor;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlGridSearchCv(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlGridSearchCv(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlGridSearchCv = mlGridSearchCv;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlIsolationForest(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlIsolationForest(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlIsolationForest = mlIsolationForest;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlKfoldSplit(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlKfoldSplit(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlKfoldSplit = mlKfoldSplit;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlKmeansFitPredict(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlKmeansFitPredict(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlKmeansFitPredict = mlKmeansFitPredict;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlKnnClassifier(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlKnnClassifier(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlKnnClassifier = mlKnnClassifier;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlKnnRegressor(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlKnnRegressor(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlKnnRegressor = mlKnnRegressor;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlLasso(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlLasso(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlLasso = mlLasso;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlLinearRegression(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlLinearRegression(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlLinearRegression = mlLinearRegression;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlLinearSvc(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlLinearSvc(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlLinearSvc = mlLinearSvc;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlLinearSvr(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlLinearSvr(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlLinearSvr = mlLinearSvr;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlLoadModel(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlLoadModel(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlLoadModel = mlLoadModel;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlLogisticRegression(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlLogisticRegression(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlLogisticRegression = mlLogisticRegression;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlMetricCurve(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlMetricCurve(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlMetricCurve = mlMetricCurve;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlMetricScore(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlMetricScore(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlMetricScore = mlMetricScore;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlMinmaxScaler(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlMinmaxScaler(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlMinmaxScaler = mlMinmaxScaler;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlMultinomialNb(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlMultinomialNb(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlMultinomialNb = mlMultinomialNb;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlNearestCentroid(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlNearestCentroid(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlNearestCentroid = mlNearestCentroid;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlPca(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlPca(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlPca = mlPca;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlPermutationImportance(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlPermutationImportance(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlPermutationImportance = mlPermutationImportance;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlRandomForestClassifier(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlRandomForestClassifier(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlRandomForestClassifier = mlRandomForestClassifier;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlRandomForestRegressor(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlRandomForestRegressor(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlRandomForestRegressor = mlRandomForestRegressor;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlRidge(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlRidge(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlRidge = mlRidge;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlRidgeClassifier(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlRidgeClassifier(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlRidgeClassifier = mlRidgeClassifier;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlRobustScaler(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlRobustScaler(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlRobustScaler = mlRobustScaler;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlSaveModel(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlSaveModel(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlSaveModel = mlSaveModel;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlSgdClassifier(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlSgdClassifier(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlSgdClassifier = mlSgdClassifier;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlSgdRegressor(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlSgdRegressor(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlSgdRegressor = mlSgdRegressor;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlStandardScaler(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlStandardScaler(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlStandardScaler = mlStandardScaler;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
+    function mlTruncatedSvd(input) {
+        let deferred2_0;
+        let deferred2_1;
+        try {
+            const ptr0 = passStringToWasm0(input, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ret = wasm.mlTruncatedSvd(ptr0, len0);
+            deferred2_0 = ret[0];
+            deferred2_1 = ret[1];
+            return getStringFromWasm0(ret[0], ret[1]);
+        } finally {
+            wasm.__wbindgen_free_command_export(deferred2_0, deferred2_1, 1);
+        }
+    }
+    exports.mlTruncatedSvd = mlTruncatedSvd;
+
+    /**
+     * @param {string} input
+     * @returns {string}
+     */
     function params(input) {
         let deferred2_0;
         let deferred2_1;
@@ -2904,7 +3724,7 @@ let wasm_bindgen = (function(exports) {
         };
         return {
             __proto__: null,
-            "./seraplot_bg.js": import0,
+            "./seraplot-web_bg.js": import0,
         };
     }
 

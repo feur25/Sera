@@ -3,9 +3,9 @@ pub mod basic;
 pub mod common;
 pub mod config;
 pub mod gapped;
-pub mod gradient;
 pub mod horizontal;
 pub mod radial;
+pub mod rank;
 pub mod variant;
 
 pub use config::IcicleConfig;
@@ -18,7 +18,7 @@ pub fn render_icicle_html(cfg: &IcicleConfig) -> String {
         Gapped => gapped::render(cfg),
         Horizontal => horizontal::render(cfg),
         Radial => radial::render(cfg),
-        Gradient => gradient::render(cfg),
+        Rank => rank::render(cfg),
     }
 }
 

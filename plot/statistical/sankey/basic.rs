@@ -1,4 +1,4 @@
-use super::common::{compute_layout, sankey_link_path};
+use super::common::{compute_layout, compute_layout_sorted, sankey_link_path};
 use super::config::SankeyConfig;
 use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json};
 use crate::plot::statistical::common::{
@@ -18,11 +18,11 @@ pub fn render_minimal(cfg: &SankeyConfig) -> String {
     render_impl(cfg, false, true, false)
 }
 
-pub fn render_labeled(cfg: &SankeyConfig) -> String {
+pub fn render_sorted(cfg: &SankeyConfig) -> String {
     render_impl(cfg, false, false, true)
 }
 
-fn render_impl(cfg: &SankeyConfig, gradient: bool, minimal: bool, labeled: bool) -> String {
+fn render_impl(cfg: &SankeyConfig, gradient: bool, minimal: bool, sorted: bool) -> String {
     let n = cfg.labels.len();
     let e = cfg.sources.len().min(cfg.targets.len()).min(cfg.weights.len());
     if n == 0 || e == 0 {
@@ -36,7 +36,8 @@ fn render_impl(cfg: &SankeyConfig, gradient: bool, minimal: bool, labeled: bool)
     let plot_w = cfg.width - pad_l - pad_r;
     let plot_h = cfg.height - pad_t - pad_b;
 
-    let layout = compute_layout(
+    let layout_fn = if sorted { compute_layout_sorted } else { compute_layout };
+    let layout = layout_fn(
         n,
         cfg.sources,
         cfg.targets,
@@ -119,18 +120,6 @@ fn render_impl(cfg: &SankeyConfig, gradient: bool, minimal: bool, labeled: bool)
         }
         sankey_link_path(&mut buf, layout.x[s], y0, layout.x[t], y1, src_h, tgt_h, cfg.node_width);
         push_b(&mut buf, b"\"/>");
-
-        if labeled {
-            let mx = (layout.x[s] + cfg.node_width as f64 + layout.x[t]) / 2.0;
-            let my = (y0 + src_h / 2.0 + y1 + tgt_h / 2.0) / 2.0;
-            push_b(&mut buf, b"<text x=\"");
-            push_f2(&mut buf, mx);
-            push_b(&mut buf, b"\" y=\"");
-            push_f2(&mut buf, my);
-            push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#1e293b\" font-weight=\"600\" paint-order=\"stroke\" stroke=\"#fff\" stroke-width=\"3\">");
-            push_f2(&mut buf, w);
-            push_b(&mut buf, b"</text>");
-        }
     }
 
     for i in 0..n {

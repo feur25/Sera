@@ -15,7 +15,7 @@ pub fn render_venn_html(cfg: &VennConfig) -> String {
         Filled   => basic::render_filled(cfg),
         Gradient => basic::render_gradient(cfg),
         Minimal  => basic::render_minimal(cfg),
-        Heat     => basic::render_heat(cfg),
+        Exclusive => basic::render_exclusive(cfg),
     }
 }
 

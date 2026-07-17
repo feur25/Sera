@@ -5,6 +5,6 @@ crate::plot_family! {
         Weighted   => "weighted" | "width" | "value",
         Gradient   => "gradient" | "color",
         Minimal    => "minimal" | "thin" | "clean",
-        Labeled    => "labeled" | "labelled" | "values" | "annotated",
+        Directed   => "directed" | "arrows" | "flow" | "dependency",
     }
 }

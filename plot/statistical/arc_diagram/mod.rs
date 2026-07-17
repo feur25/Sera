@@ -15,7 +15,7 @@ pub fn render_arc_diagram_html(cfg: &ArcDiagramConfig) -> String {
         Weighted  => basic::render_weighted(cfg),
         Gradient  => basic::render_gradient(cfg),
         Minimal   => basic::render_minimal(cfg),
-        Labeled   => basic::render_labeled(cfg),
+        Directed  => basic::render_directed(cfg),
     }
 }
 

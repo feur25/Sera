@@ -23,6 +23,47 @@ pub fn compute_layout(
     node_width: i32,
     node_gap: i32,
 ) -> SankeyLayout {
+    compute_layout_impl(
+        n, sources, targets, weights, width, height, pad_l, pad_t, plot_w, plot_h, node_width,
+        node_gap, false,
+    )
+}
+
+pub fn compute_layout_sorted(
+    n: usize,
+    sources: &[i32],
+    targets: &[i32],
+    weights: &[f64],
+    width: i32,
+    height: i32,
+    pad_l: i32,
+    pad_t: i32,
+    plot_w: i32,
+    plot_h: i32,
+    node_width: i32,
+    node_gap: i32,
+) -> SankeyLayout {
+    compute_layout_impl(
+        n, sources, targets, weights, width, height, pad_l, pad_t, plot_w, plot_h, node_width,
+        node_gap, true,
+    )
+}
+
+fn compute_layout_impl(
+    n: usize,
+    sources: &[i32],
+    targets: &[i32],
+    weights: &[f64],
+    width: i32,
+    height: i32,
+    pad_l: i32,
+    pad_t: i32,
+    plot_w: i32,
+    plot_h: i32,
+    node_width: i32,
+    node_gap: i32,
+    sort_by_value: bool,
+) -> SankeyLayout {
     let e = sources.len().min(targets.len()).min(weights.len());
 
     let mut depth = vec![0usize; n];
@@ -79,6 +120,11 @@ pub fn compute_layout(
     for i in 0..n {
         if node_val[i] == 0.0 {
             node_val[i] = 1.0;
+        }
+    }
+    if sort_by_value {
+        for layer in by_layer.iter_mut() {
+            layer.sort_by(|&a, &b| node_val[b].partial_cmp(&node_val[a]).unwrap_or(std::cmp::Ordering::Equal));
         }
     }
     let total: f64 = by_layer.iter().map(|layer| {

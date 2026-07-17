@@ -351,6 +351,28 @@ pub fn heat_color(t: f64) -> u32 {
     (r << 16) | (g << 8) | b
 }
 
+pub fn push_arrowhead(buf: &mut Vec<u8>, tip_x: f64, tip_y: f64, angle: f64, size: f64, color: &[u8]) {
+    let spread = 0.5_f64;
+    let back = angle + std::f64::consts::PI;
+    let (x1, y1) = (tip_x + size * (back - spread).cos(), tip_y + size * (back - spread).sin());
+    let (x2, y2) = (tip_x + size * (back + spread).cos(), tip_y + size * (back + spread).sin());
+    push_b(buf, b"<polygon points=\"");
+    push_f2(buf, tip_x);
+    push_b(buf, b",");
+    push_f2(buf, tip_y);
+    push_b(buf, b" ");
+    push_f2(buf, x1);
+    push_b(buf, b",");
+    push_f2(buf, y1);
+    push_b(buf, b" ");
+    push_f2(buf, x2);
+    push_b(buf, b",");
+    push_f2(buf, y2);
+    push_b(buf, b"\" fill=\"");
+    buf.extend_from_slice(color);
+    push_b(buf, b"\"/>");
+}
+
 pub fn hex6(c: u32) -> [u8; 6] {
     let h = b"0123456789abcdef";
     [

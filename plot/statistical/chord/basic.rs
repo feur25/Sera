@@ -2,7 +2,7 @@ use super::common::{arc_path, compute_layout, ribbon_path};
 use super::config::ChordConfig;
 use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json};
 use crate::plot::statistical::common::{
-    escape_xml, hex6, palette_color, push_b, push_f2, push_i, svg_open,
+    escape_xml, hex6, palette_color, push_arrowhead, push_b, push_f2, push_i, svg_open,
 };
 
 #[crate::chart_demo(
@@ -24,11 +24,11 @@ pub fn render_arc(cfg: &ChordConfig) -> String {
     render_impl(cfg, false, false, true, false)
 }
 
-pub fn render_labeled(cfg: &ChordConfig) -> String {
+pub fn render_directed(cfg: &ChordConfig) -> String {
     render_impl(cfg, false, false, false, true)
 }
 
-fn render_impl(cfg: &ChordConfig, gradient: bool, wide: bool, arc_only: bool, labeled: bool) -> String {
+fn render_impl(cfg: &ChordConfig, gradient: bool, wide: bool, arc_only: bool, directed: bool) -> String {
     let n = cfg.labels.len().min(cfg.matrix.len());
     if n == 0 {
         return String::new();
@@ -95,6 +95,12 @@ fn render_impl(cfg: &ChordConfig, gradient: bool, wide: bool, arc_only: bool, la
                 if v <= 0.0 || j < i {
                     continue;
                 }
+                let v_rev = cfg
+                    .matrix
+                    .get(j)
+                    .and_then(|r| r.get(i))
+                    .copied()
+                    .unwrap_or(0.0);
                 let (sa1, sa2) = lay.sub_arcs[i][j];
                 let (ta1, ta2) = lay.sub_arcs[j][i];
                 let fill = if gradient {
@@ -111,20 +117,24 @@ fn render_impl(cfg: &ChordConfig, gradient: bool, wide: bool, arc_only: bool, la
                 ribbon_path(&mut buf, lay.cx, lay.cy, lay.r_in, sa1, sa2, ta1, ta2);
                 push_b(&mut buf, b"\"/>");
 
-                if labeled && i != j {
+                if directed && i != j && (v - v_rev).abs() > 1e-9 {
                     let sam = (sa1 + sa2) / 2.0;
                     let tam = (ta1 + ta2) / 2.0;
                     let sx = lay.cx + lay.r_in * sam.cos();
                     let sy = lay.cy + lay.r_in * sam.sin();
                     let tx = lay.cx + lay.r_in * tam.cos();
                     let ty = lay.cy + lay.r_in * tam.sin();
-                    push_b(&mut buf, b"<text x=\"");
-                    push_f2(&mut buf, (sx + tx) / 2.0);
-                    push_b(&mut buf, b"\" y=\"");
-                    push_f2(&mut buf, (sy + ty) / 2.0);
-                    push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#1e293b\" font-weight=\"600\" paint-order=\"stroke\" stroke=\"#fff\" stroke-width=\"3\">");
-                    push_f2(&mut buf, v);
-                    push_b(&mut buf, b"</text>");
+                    let mx = (sx + tx) / 2.0;
+                    let my = (sy + ty) / 2.0;
+                    let angle = if v > v_rev {
+                        (ty - sy).atan2(tx - sx)
+                    } else {
+                        (sy - ty).atan2(sx - tx)
+                    };
+                    let sender = if v > v_rev { i } else { j };
+                    let ac = hex6(palette_color(cfg.palette, sender));
+                    let acolor = format!("#{}", std::str::from_utf8(&ac).unwrap_or("1e293b"));
+                    push_arrowhead(&mut buf, mx, my, angle, 10.0, acolor.as_bytes());
                 }
             }
         }

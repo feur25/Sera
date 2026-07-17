@@ -335,12 +335,12 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
       var heads = Array.prototype.slice.call(table.querySelectorAll("thead th, tr:first-child th, tr:first-child td")).map(function (h) {
         return (h.textContent || "").trim().toLowerCase();
       });
-      var variantCol = heads.indexOf("variant");
+      var variantCol = heads.findIndex(function (h) { return h === "variant" || h === "variante"; });
       if (variantCol >= 0) {
         table.querySelectorAll("tbody tr, tr").forEach(function (tr) {
           var cells = tr.querySelectorAll("td");
           if (cells.length <= variantCol) return;
-          var v = (cells[variantCol].textContent || "").trim().toLowerCase().replace(/`/g, "");
+          var v = (cells[variantCol].textContent || "").trim().toLowerCase().replace(/[`"']/g, "");
           if (!v || v === "variant" || v === "all" || v === "toutes" || v === "all variants") return;
           if (!seen[v]) { seen[v] = true; variants.push(v); }
         });
@@ -355,7 +355,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
       var cells = tr.querySelectorAll("td");
       if (cells.length !== 2) return;
       cells[1].textContent.split(",").forEach(function (v) {
-        v = v.trim().toLowerCase();
+        v = v.trim().toLowerCase().replace(/[`"']/g, "");
         if (!v || v === "all" || v === "toutes" || v === "all variants") return;
         if (!seen[v]) { seen[v] = true; variants.push(v); }
       });

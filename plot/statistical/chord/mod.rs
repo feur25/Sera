@@ -3,6 +3,7 @@ use crate::plot::{apply, parse_all};
 pub mod basic;
 pub mod common;
 pub mod config;
+pub mod directed;
 pub mod mono;
 pub mod variant;
 
@@ -17,7 +18,7 @@ pub fn render_chord_html(cfg: &ChordConfig) -> String {
         Ribbon   => basic::render_ribbon(cfg),
         Arc      => basic::render_arc(cfg),
         Mono     => mono::render(cfg),
-        Labeled  => basic::render_labeled(cfg),
+        Directed => directed::render(cfg),
     }
 }
 

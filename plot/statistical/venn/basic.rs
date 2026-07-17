@@ -1,6 +1,6 @@
 use super::config::VennConfig;
 use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json};
-use crate::plot::statistical::common::{escape_xml, heat_color, hex6, palette_color, push_b, push_f2, push_i};
+use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i};
 
 #[crate::chart_demo("labels=[\"Set A\",\"Set B\",\"Set C\"], values=[40,30,20,15,10,5,8]")]
 pub fn render(cfg: &VennConfig) -> String {
@@ -11,7 +11,7 @@ pub fn render_euler(cfg: &VennConfig)    -> String { render_impl(cfg, true,  fal
 pub fn render_filled(cfg: &VennConfig)   -> String { render_impl(cfg, false, true,  false, false) }
 pub fn render_gradient(cfg: &VennConfig) -> String { render_impl(cfg, false, false, true,  false) }
 pub fn render_minimal(cfg: &VennConfig)  -> String { render_impl(cfg, false, false, false, false)  }
-pub fn render_heat(cfg: &VennConfig)     -> String { render_impl(cfg, false, false, false, true)  }
+pub fn render_exclusive(cfg: &VennConfig) -> String { render_impl(cfg, false, false, false, true)  }
 
 struct SetCircle {
     cx: f64,
@@ -64,10 +64,9 @@ fn layout(n: usize, cx: f64, cy: f64, base_r: f64, euler: bool, values: &[f64]) 
     circles
 }
 
-fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, gradient: bool, heat: bool) -> String {
+fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, gradient: bool, exclusive: bool) -> String {
     let n = cfg.labels.len();
     if n == 0 { return String::new(); }
-    let max_v = cfg.values[..n.min(cfg.values.len())].iter().copied().fold(0.0f64, f64::max).max(1.0);
 
     let w = cfg.width as f64;
     let h = cfg.height as f64;
@@ -104,6 +103,33 @@ fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, gradient: bool, heat
         push_b(&mut buf, b"</defs>");
     }
 
+    if exclusive {
+        push_b(&mut buf, b"<defs>");
+        for (i, c) in circles.iter().enumerate() {
+            push_b(&mut buf, b"<mask id=\"vex");
+            push_i(&mut buf, i as i32);
+            push_b(&mut buf, b"\" maskUnits=\"userSpaceOnUse\"><rect x=\"0\" y=\"0\" width=\"100%\" height=\"100%\" fill=\"black\"/><circle cx=\"");
+            push_f2(&mut buf, c.cx);
+            push_b(&mut buf, b"\" cy=\"");
+            push_f2(&mut buf, c.cy);
+            push_b(&mut buf, b"\" r=\"");
+            push_f2(&mut buf, c.r);
+            push_b(&mut buf, b"\" fill=\"white\"/>");
+            for (j, o) in circles.iter().enumerate() {
+                if j == i { continue; }
+                push_b(&mut buf, b"<circle cx=\"");
+                push_f2(&mut buf, o.cx);
+                push_b(&mut buf, b"\" cy=\"");
+                push_f2(&mut buf, o.cy);
+                push_b(&mut buf, b"\" r=\"");
+                push_f2(&mut buf, o.r);
+                push_b(&mut buf, b"\" fill=\"black\"/>");
+            }
+            push_b(&mut buf, b"</mask>");
+        }
+        push_b(&mut buf, b"</defs>");
+    }
+
     if !cfg.title.is_empty() {
         push_b(&mut buf, b"<text x=\"");
         push_f2(&mut buf, w / 2.0);
@@ -113,12 +139,7 @@ fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, gradient: bool, heat
     }
 
     for (i, c) in circles.iter().enumerate() {
-        let color = if heat {
-            let v = cfg.values.get(i).copied().unwrap_or(0.0);
-            heat_color(v / max_v)
-        } else {
-            palette_color(cfg.palette, c.ci)
-        };
+        let color = palette_color(cfg.palette, c.ci);
         let hx = hex6(color);
         push_b(&mut buf, b"<circle cx=\"");
         push_f2(&mut buf, c.cx);
@@ -135,7 +156,11 @@ fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, gradient: bool, heat
             push_b(&mut buf, b")\" stroke=\"#");
             buf.extend_from_slice(&hx);
             push_b(&mut buf, b"\" stroke-width=\"1.5\" stroke-opacity=\"0.6\"");
-        } else if filled || heat {
+        } else if exclusive {
+            push_b(&mut buf, b" fill=\"#");
+            buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\" fill-opacity=\"0.14\" stroke=\"none\"");
+        } else if filled {
             push_b(&mut buf, b" fill=\"#");
             buf.extend_from_slice(&hx);
             push_b(&mut buf, b"\" fill-opacity=\"0.55\" stroke=\"none\"");
@@ -152,6 +177,24 @@ fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, gradient: bool, heat
             push_b(&mut buf, b"\" stroke-width=\"1.5\" stroke-opacity=\"0.5\"");
         }
         push_b(&mut buf, b"/>");
+    }
+
+    if exclusive {
+        for (i, c) in circles.iter().enumerate() {
+            let color = palette_color(cfg.palette, c.ci);
+            let hx = hex6(color);
+            push_b(&mut buf, b"<circle cx=\"");
+            push_f2(&mut buf, c.cx);
+            push_b(&mut buf, b"\" cy=\"");
+            push_f2(&mut buf, c.cy);
+            push_b(&mut buf, b"\" r=\"");
+            push_f2(&mut buf, c.r);
+            push_b(&mut buf, b"\" fill=\"#");
+            buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\" fill-opacity=\"0.7\" mask=\"url(#vex");
+            push_i(&mut buf, i as i32);
+            push_b(&mut buf, b")\"/>");
+        }
     }
 
     if cfg.show_labels {

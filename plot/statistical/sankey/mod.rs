@@ -5,6 +5,7 @@ pub mod common;
 pub mod config;
 pub mod gapped;
 pub mod ribbon;
+pub mod sorted;
 pub mod variant;
 
 pub use config::SankeyConfig;
@@ -18,7 +19,7 @@ pub fn render_sankey_html(cfg: &SankeyConfig) -> String {
         Gapped   => gapped::render(cfg),
         Ribbon   => ribbon::render(cfg),
         Minimal  => basic::render_minimal(cfg),
-        Labeled  => basic::render_labeled(cfg),
+        Sorted   => sorted::render(cfg),
     }
 }
 

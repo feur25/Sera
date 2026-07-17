@@ -5,6 +5,6 @@ crate::plot_family! {
         Ribbon   => "ribbon" | "wide" | "thick",
         Arc      => "arc" | "ring" | "outer",
         Mono     => "mono" | "monochrome" | "single",
-        Labeled  => "labeled" | "labelled" | "values" | "annotated",
+        Directed => "directed" | "asymmetric" | "flow_direction" | "arrows",
     }
 }
