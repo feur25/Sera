@@ -1,5 +1,6 @@
 window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
 (function () {
+  var SELF_SRC = document.currentScript ? document.currentScript.src : "";
   var SP_WASM_BUILD = window.SP_WASM_BUILD;
   var POS_KEY    = "sp_params_pos";
   var COL_KEY    = "sp_params_col";
@@ -1128,9 +1129,10 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
   }
 
   function themeBase() {
+    if (SELF_SRC) return SELF_SRC.replace(/[^/]*$/, "");
     var parts = window.location.pathname.split("/").filter(Boolean);
     parts.pop();
-    return new Array(parts.length + 1).join("../") + "docs/theme/";
+    return new Array(parts.length).join("../") + "docs/theme/";
   }
 
   function ensureWasm(cb) {
