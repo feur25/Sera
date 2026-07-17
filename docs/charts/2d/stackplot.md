@@ -26,6 +26,7 @@ Aliases: `sp.stackplot`, `sp.stack_plot`, `sp.stacked_area`, `sp.build_stackplot
 |---|---|---|
 | `"basic"` | `basic / default / classic / stacked` | Traditional zero-baseline stacking, each series added on top of the previous one's cumulative total. |
 | `"streamgraph"` | `streamgraph / stream / silhouette / themeriver` | Centered ("silhouette") baseline — at every x-point the stack is centered around zero (`baseline = -total/2`) instead of starting at zero, giving the flowing ThemeRiver look. |
+| `"normalized"` | `normalized / percent / hundred_percent / share` | 100%-stacked — every series is divided by the x-point's total before stacking, so the top of the stack is always 1.0. Shows share of total over time instead of absolute magnitude. |
 
 ## Parameters
 
@@ -63,6 +64,7 @@ chart.show()
 <button class="sp-cls-toggle" onclick="spClsTog('stackplot-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('stackplot-en','basic',this)"><span class="sp-cic">▮</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('stackplot-en','streamgraph',this)"><span class="sp-cic">〜</span><span class="sp-clb">Streamgraph</span></button>
+<button class="sp-cls-tab" onclick="spCls('stackplot-en','normalized',this)"><span class="sp-cic">▤</span><span class="sp-clb">Normalized</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="stackplot-en-basic">
@@ -74,6 +76,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"streamgraph"</code></span><span><strong>Aliases</strong> <code>streamgraph / stream / silhouette / themeriver</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/stackplot-streamgraph.html"></iframe>
+</div>
+<div class="sp-variant" id="stackplot-en-normalized">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"normalized"</code></span><span><strong>Aliases</strong> <code>normalized / percent / hundred_percent / share</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/stackplot-normalized.html"></iframe>
 </div>
 </div>
 </div>
@@ -98,6 +105,7 @@ Alias : `sp.stackplot`, `sp.stack_plot`, `sp.stacked_area`, `sp.build_stackplot`
 |---|---|---|
 | `"basic"` | `basic / default / classic / stacked` | Empilement classique à ligne de base zéro, chaque série ajoutée au-dessus du total cumulé de la précédente. |
 | `"streamgraph"` | `streamgraph / stream / silhouette / themeriver` | Ligne de base centrée ("silhouette") — à chaque point x, l'empilement est centré autour de zéro (`baseline = -total/2`) au lieu de partir de zéro, donnant le rendu fluide façon ThemeRiver. |
+| `"normalized"` | `normalized / percent / hundred_percent / share` | Empilement à 100% — chaque série est divisée par le total du point x avant l'empilement, donc le sommet est toujours à 1.0. Montre la part du total dans le temps plutôt que la magnitude absolue. |
 
 ## Paramètres
 
@@ -121,6 +129,7 @@ Alias : `sp.stackplot`, `sp.stack_plot`, `sp.stacked_area`, `sp.build_stackplot`
 <button class="sp-cls-toggle" onclick="spClsTog('stackplot-fr')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('stackplot-fr','basic',this)"><span class="sp-cic">▮</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('stackplot-fr','streamgraph',this)"><span class="sp-cic">〜</span><span class="sp-clb">Streamgraph</span></button>
+<button class="sp-cls-tab" onclick="spCls('stackplot-fr','normalized',this)"><span class="sp-cic">▤</span><span class="sp-clb">Normalized</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="stackplot-fr-basic">
@@ -132,6 +141,11 @@ Alias : `sp.stackplot`, `sp.stack_plot`, `sp.stacked_area`, `sp.build_stackplot`
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"streamgraph"</code></span><span><strong>Aliases</strong> <code>streamgraph / stream / silhouette / themeriver</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/stackplot-streamgraph.html"></iframe>
+</div>
+<div class="sp-variant" id="stackplot-fr-normalized">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"normalized"</code></span><span><strong>Aliases</strong> <code>normalized / percent / hundred_percent / share</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/stackplot-normalized.html"></iframe>
 </div>
 </div>
 </div>
