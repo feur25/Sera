@@ -35,22 +35,31 @@ The three pillars share the same conventions on purpose, so that switching betwe
 - **Native output, always.** A chart is real HTML/SVG, a model result is a real Python dict, a DataFrame column is real Rust-backed memory — never an opaque wrapper object you have to unwrap to get to the actual data.
 - **The fastest path is the default path.** Because computation happens in Rust before anything crosses into Python, the ergonomic way to write code and the fast way to write code are the same code.
 
-## Real metrics, measured on this codebase
+## The controller: one config call, every chart obeys it
 
-Numbers below come from this project's own source and test suite — not marketing copy.
+Every pillar reads from the same global controller instead of repeating options per call. Set it once — font, palette, animation, locale — and every `Chart` built afterward inherits it automatically, with any single call still free to override a value locally.
 
-| Metric | Value |
-|---|---|
-| SeraPlot rendering engine | ≈ 72,200 lines of Rust (`plot/` + `html/` + `canvas/` + `bindings/`) |
-| SeraML machine learning layer | ≈ 17,251 lines of Rust — 41 estimator functions, numerically verified against toy inputs (exact regression coefficients, correct PCA variance direction, coherent feature importances) |
-| SeraDFrame + Table | ≈ 5,783 lines of Rust |
-| Total native codebase | ≈ 105,000 lines of Rust across `v2/src/` |
-| 2D chart families / 3D types / map types | 61 / 24 / 2, each with several rendering variants |
-| Output size (bar chart, HTML) | ≈ 21 KB — no bundled JS runtime, vs. several MB for a Plotly-equivalent export |
-| Accessibility | WCAG AA contrast verified, `axe-core` automated audit passing (0 serious/critical violations) across sample charts |
-| Cross-browser | Chromium, Firefox, WebKit — real engines, 0 console errors across the chart catalog |
+```python
+import seraplot as sp
 
-See [Intro SeraPlot](getting-started/intro-seraplot.md) for chart-generation speed benchmarks against Plotly and Matplotlib specifically.
+sp.config(
+    font="Inter", font_size=13,
+    palette="viridis", background="#0d1117",
+    animation=True, animation_duration=420,
+    crosshair=True, zoom=True, tooltip=True,
+    locale="en-US", thousands_sep=",",
+    responsive=True, export_button=True,
+)
+
+sp.bar("Revenue", labels, values)          # inherits every setting above
+sp.bar("Revenue", labels, values, font_size=16)  # overrides just this one
+```
+
+`sp.config()` exposes 30+ knobs this way — typography, palette/background, gridlines and despine, text auto-formatting and rotation, bar corner radius, watermark, drop shadow, crosshair/zoom/tooltip behavior, locale-aware number formatting, responsive layout, export button visibility. `sp.reset_config()` reverts to defaults, `sp.theme()` swaps a whole preset in one call. See [Chart Methods](getting-started/chart-methods.md) for the full controller reference and every chainable per-chart method, and [Configuration](config/index.md) for the config surface in depth.
+
+## Accessibility and browser support, actually checked
+
+Not a claim — verified this way: `axe-core` runs against real Chromium for every chart family with zero serious/critical violations; text and non-text contrast is measured (relative luminance, not eyeballed) against WCAG AA; keyboard navigation (roving tabindex, arrow/Home/End) works on data points and legends; the whole catalog loads with zero console errors on real Chromium, Firefox, and WebKit engines, not just one.
 
 ## Where to start
 
@@ -87,22 +96,31 @@ Les trois piliers partagent les mêmes conventions volontairement, pour que pass
 - **Sortie native, toujours.** Un graphique est du vrai HTML/SVG, un résultat de modèle est un vrai dict Python, une colonne de DataFrame est de la vraie mémoire portée par Rust — jamais un objet wrapper opaque qu'il faut déballer pour accéder à la donnée réelle.
 - **Le chemin le plus ergonomique est le chemin le plus rapide.** Parce que le calcul se fait en Rust avant de traverser vers Python, la façon la plus naturelle d'écrire du code et la façon la plus rapide sont le même code.
 
-## Métriques réelles, mesurées sur ce code
+## Le contrôleur : un appel de config, tous les graphiques obéissent
 
-Les chiffres ci-dessous viennent du code source et de la suite de tests de ce projet — pas d'argument marketing.
+Chaque pilier lit depuis le même contrôleur global plutôt que de répéter les options à chaque appel. Configurez une fois — police, palette, animation, locale — et chaque `Chart` construit ensuite hérite automatiquement, tout en restant libre de surcharger une valeur localement.
 
-| Métrique | Valeur |
-|---|---|
-| Moteur de rendu SeraPlot | ≈ 72 200 lignes Rust (`plot/` + `html/` + `canvas/` + `bindings/`) |
-| Couche machine learning SeraML | ≈ 17 251 lignes Rust — 41 fonctions d'estimateurs, vérifiées numériquement sur des cas jouets (coefficients de régression exacts, direction de variance PCA correcte, importances de variables cohérentes) |
-| SeraDFrame + Table | ≈ 5 783 lignes Rust |
-| Total du code natif | ≈ 105 000 lignes Rust dans `v2/src/` |
-| Familles de charts 2D / types 3D / types carte | 61 / 24 / 2, chacun avec plusieurs variantes de rendu |
-| Taille de sortie (bar chart, HTML) | ≈ 21 Ko — aucun runtime JS embarqué, contre plusieurs Mo pour un export Plotly équivalent |
-| Accessibilité | Contraste WCAG AA vérifié, audit automatisé `axe-core` au vert (0 violation serious/critical) sur l'échantillon de charts |
-| Compatibilité navigateur | Chromium, Firefox, WebKit — moteurs réels, 0 erreur console sur le catalogue de charts |
+```python
+import seraplot as sp
 
-Voir [Intro SeraPlot](getting-started/intro-seraplot.md) pour les benchmarks de vitesse de génération face à Plotly et Matplotlib.
+sp.config(
+    font="Inter", font_size=13,
+    palette="viridis", background="#0d1117",
+    animation=True, animation_duration=420,
+    crosshair=True, zoom=True, tooltip=True,
+    locale="fr-FR", thousands_sep=" ",
+    responsive=True, export_button=True,
+)
+
+sp.bar("Revenu", labels, values)                  # hérite de tous les réglages ci-dessus
+sp.bar("Revenu", labels, values, font_size=16)     # surcharge juste celui-ci
+```
+
+`sp.config()` expose 30+ réglages de cette façon — typographie, palette/fond, gridlines et despine, formatage/rotation automatique du texte, rayon des coins de barre, watermark, ombre portée, comportement crosshair/zoom/tooltip, formatage numérique localisé, mise en page responsive, visibilité du bouton d'export. `sp.reset_config()` revient aux défauts, `sp.theme()` change tout un preset en un appel. Voir [Méthodes des graphiques](getting-started/chart-methods.md) pour la référence complète du contrôleur et chaque méthode chainable par graphique, et [Configuration](config/index.md) pour la surface de config en détail.
+
+## Accessibilité et compatibilité navigateur, réellement vérifiées
+
+Pas une affirmation — vérifié ainsi : `axe-core` s'exécute contre un vrai Chromium pour chaque famille de graphique, zéro violation serious/critical ; le contraste texte et non-texte est mesuré (luminance relative, pas à l'œil) contre WCAG AA ; la navigation clavier (tabindex flottant, flèches/Home/End) fonctionne sur les points de données et les légendes ; tout le catalogue charge sans erreur console sur de vrais moteurs Chromium, Firefox et WebKit, pas un seul.
 
 ## Par où commencer
 
