@@ -3,6 +3,7 @@ pub mod basic;
 pub mod common;
 pub mod config;
 pub mod outlined;
+pub mod spaced;
 pub mod variant;
 
 pub use config::HexbinConfig;
@@ -13,6 +14,7 @@ pub fn render_hexbin_html(cfg: &HexbinConfig) -> String {
     match cfg.variant {
         Basic => basic::render(cfg),
         Outlined => outlined::render(cfg),
+        Spaced => spaced::render(cfg),
     }
 }
 

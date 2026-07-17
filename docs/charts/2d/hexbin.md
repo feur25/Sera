@@ -26,6 +26,7 @@ Aliases: `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `
 |---|---|---|
 | `"basic"` | `basic / default / classic / filled` | Filled hexagons only, compact grid, right-side density legend. |
 | `"outlined"` | `outlined / outline / stroke / labeled` | White cell borders; count printed inside each hexagon once cells are large enough to fit text. |
+| `"spaced"` | `spaced / gapped / confetti / dotted` | Hexagons drawn at 72% size with a visible gap between neighbors — a "confetti" look instead of a solid tiled surface. |
 
 ## Parameters
 
@@ -61,6 +62,7 @@ chart.show()
 <button class="sp-cls-toggle" onclick="spClsTog('hexbin-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('hexbin-en','basic',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-en','outlined',this)"><span class="sp-cic">⬢</span><span class="sp-clb">Outlined</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-en','spaced',this)"><span class="sp-cic">⬣</span><span class="sp-clb">Spaced</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="hexbin-en-basic">
@@ -72,6 +74,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outlined"</code></span><span><strong>Aliases</strong> <code>outlined / outline / stroke / labeled</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/hexbin-outlined.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-en-spaced">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"spaced"</code></span><span><strong>Aliases</strong> <code>spaced / gapped / confetti / dotted</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-spaced.html"></iframe>
 </div>
 </div>
 </div>
@@ -96,6 +103,7 @@ Alias : `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `s
 |---|---|---|
 | `"basic"` | `basic / default / classic / filled` | Hexagones pleins uniquement, grille compacte, légende de densité à droite. |
 | `"outlined"` | `outlined / outline / stroke / labeled` | Contours blancs ; le comptage est affiché dans chaque hexagone assez grand pour contenir le texte. |
+| `"spaced"` | `spaced / gapped / confetti / dotted` | Hexagones dessinés à 72% de leur taille avec un espace visible entre voisins — un rendu confetti plutôt qu'une surface pavée pleine. |
 
 ## Paramètres
 
@@ -119,6 +127,7 @@ Alias : `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `s
 <button class="sp-cls-toggle" onclick="spClsTog('hexbin-fr')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('hexbin-fr','basic',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-fr','outlined',this)"><span class="sp-cic">⬢</span><span class="sp-clb">Outlined</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-fr','spaced',this)"><span class="sp-cic">⬣</span><span class="sp-clb">Espacé</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="hexbin-fr-basic">
@@ -130,6 +139,11 @@ Alias : `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `s
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outlined"</code></span><span><strong>Aliases</strong> <code>outlined / outline / stroke / labeled</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/hexbin-outlined.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-fr-spaced">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"spaced"</code></span><span><strong>Alias</strong> <code>spaced / gapped / confetti / dotted</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-spaced.html"></iframe>
 </div>
 </div>
 </div>
