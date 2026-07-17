@@ -2,6 +2,7 @@ use crate::plot::{apply, parse_all};
 pub mod basic;
 pub mod common;
 pub mod config;
+pub mod gradient;
 pub mod progress;
 pub mod variant;
 
@@ -13,6 +14,7 @@ pub fn render_gantt_html(cfg: &GanttConfig) -> String {
     match cfg.variant {
         Basic => basic::render(cfg),
         Progress => progress::render(cfg),
+        Gradient => gradient::render(cfg),
     }
 }
 
@@ -41,6 +43,7 @@ pub fn build(input: &str) -> String {
     let xl = o.xl();
     let yl = o.yl();
     let srt = o.srt();
+    let colorscale = o.colorscale.clone().unwrap_or_default();
     let html = render_gantt_html(&GanttConfig {
         variant,
         title,
@@ -54,6 +57,7 @@ pub fn build(input: &str) -> String {
         categories: &categories,
         progress: &progress,
         palette: &palette,
+        colorscale: &colorscale,
         hover: &hover,
         width: o.w(1000),
         height: o.h(520),

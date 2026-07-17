@@ -7,6 +7,7 @@ crate::chart_config!(GanttConfig, 1000, 520;
         pub categories: &'a [String],
         pub progress: &'a [f64],
         pub palette: &'a [u32],
+        pub colorscale: &'a str,
     }
     defaults {
         variant: super::variant::GanttVariant::Basic,
@@ -16,5 +17,6 @@ crate::chart_config!(GanttConfig, 1000, 520;
         categories: &[],
         progress: &[],
         palette: &[],
+        colorscale: "",
     }
 );
