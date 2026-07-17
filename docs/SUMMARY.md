@@ -57,6 +57,15 @@
   - [Hive Plot](charts/2d/hive.md)
   - [Pulse Chart](charts/2d/pulse.md)
   - [Orbita Chart](charts/2d/orbita.md)
+  - [Event Plot](charts/2d/eventplot.md)
+  - [Gantt Chart](charts/2d/gantt.md)
+  - [Hexbin](charts/2d/hexbin.md)
+  - [Icicle](charts/2d/icicle.md)
+  - [Parallel Categories](charts/2d/parcats.md)
+  - [Scatter Ternary](charts/2d/scatterternary.md)
+  - [SPLOM](charts/2d/splom.md)
+  - [Stackplot](charts/2d/stackplot.md)
+  - [Plot Web](charts/2d/plot-web.md)
 - [3D Charts](charts/3d/index.md)
   - [Scatter 3D](charts/3d/scatter3d.md)
   - [Bar 3D](charts/3d/bar3d.md)
@@ -79,8 +88,6 @@
   - [Bubble Map](charts/map/bubble-map.md)
   - [Choropleth](charts/map/choropleth.md)
 - [Canvas Composition](canvas/composition.md)
-- [Table (Data Engineering)](canvas/table.md)
-- [SeraDFrame](canvas/dframe.md)
 - [Web App (sp.App)](canvas/webapp.md)
 
 ---
@@ -131,6 +138,13 @@
     - [Regression Metrics](ml/metrics-regression.md)
     - [Clustering Metrics](ml/metrics-clustering.md)
   - [Train / Test Split](ml/train-test-split.md)
+
+---
+
+# SeraDFrame
+
+- [SeraDFrame](canvas/dframe.md)
+- [Table (Data Engineering)](canvas/table.md)
 
 ---
 
