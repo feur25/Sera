@@ -387,6 +387,31 @@
     renderDoc(el, l);
   }
 
+  function dataDocsFor(el) {
+    var r = reg();
+    var file = el.getAttribute("data-file") || "";
+    var modules = attrList(el, "data-modules");
+    return (r.docs || []).filter(function (d) {
+      if (!d.module) return false;
+      if (file && d.file !== file) return false;
+      if (modules.length && modules.indexOf(d.module) === -1) return false;
+      return true;
+    }).sort(byName);
+  }
+
+  function renderDataTable(el, l) {
+    var rows = dataDocsFor(el);
+    if (!rows.length) return false;
+    var head = l === "fr"
+      ? "<tr><th>Méthode</th><th>Effet</th></tr>"
+      : "<tr><th>Method</th><th>Effect</th></tr>";
+    el.innerHTML = "<table><thead>" + head + "</thead><tbody>" + rows.map(function (d) {
+      var sig = "<code>" + esc(d.name) + "(" + esc(d.params.join(", ")) + ")</code>";
+      return "<tr><td>" + sig + "</td><td>" + esc(textFor(d, l)) + "</td></tr>";
+    }).join("") + "</tbody></table>";
+    return true;
+  }
+
   function renderGlobalIndex(el, l) {
     var r = reg();
     var cats = {};
@@ -426,6 +451,9 @@
     });
     (root || document).querySelectorAll("[data-sp-ml-index]").forEach(function (el) {
       renderGlobalIndex(el, elemLang(el));
+    });
+    (root || document).querySelectorAll("[data-sp-data-table]").forEach(function (el) {
+      if (!renderDataTable(el, elemLang(el))) el.innerHTML = "<p>Loading...</p>";
     });
   }
 
