@@ -354,7 +354,6 @@ SeraPlot returns 21 KB of interactive HTML directly from RAM.
 - **[2D Charts](../charts/2d/bar.md)** — 33 chart types
 - **[3D Charts](../charts/3d/scatter3d.md)** — 17 chart types, WebGL GPU renderer
 - **[Machine Learning](../ml/dbscan.md)** — DBSCAN up to 600x faster than scikit-learn
-- **[API Reference](../api/index.md)** — complete function index
 
 </div>
 
@@ -677,6 +676,5 @@ SeraPlot retourne 21 Ko de HTML interactif directement depuis la RAM.
 - **[Graphiques 2D](../charts/2d/bar.md)** — 33 types
 - **[Graphiques 3D](../charts/3d/scatter3d.md)** — 17 types, rendu GPU WebGL
 - **[Machine Learning](../ml/dbscan.md)** — DBSCAN jusqu'à 600× plus rapide que scikit-learn
-- **[Référence API](../api/index.md)** — index complet des fonctions
 
 </div>

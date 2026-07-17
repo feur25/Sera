@@ -150,7 +150,6 @@
 
 # Controller & Config
 
-- [Data-Collected](controller_methods/telemetry.md)
 - [Configuration](config/index.md)
   - [Background](config/background.md)
   - [Palette](config/palette.md)
@@ -179,6 +178,4 @@
 
 # About
 
-- [Sera Framework](about/sera-framework.md)
-- [API Reference](api/api.md)
 - [Support & Contact](about/support.md)

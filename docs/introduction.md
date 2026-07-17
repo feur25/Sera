@@ -69,7 +69,6 @@ Not a claim — verified this way: `axe-core` runs against real Chromium for eve
 - **[Showcase](showcase.md)** — every chart family and variant, with a preview image
 - **[Machine Learning](ml/index.md)** — SeraML's estimator catalog
 - **[SeraDFrame](canvas/dframe.md)** — the native dataframe
-- **[API Reference](api/index.md)** — complete function index
 
 </div>
 
@@ -130,6 +129,5 @@ Pas une affirmation — vérifié ainsi : `axe-core` s'exécute contre un vrai C
 - **[Vitrine](showcase.md)** — toutes les familles de graphiques et variantes, avec un aperçu image
 - **[Machine Learning](ml/index.md)** — le catalogue d'estimateurs SeraML
 - **[SeraDFrame](canvas/dframe.md)** — le dataframe natif
-- **[Référence API](api/index.md)** — index complet des fonctions
 
 </div>
