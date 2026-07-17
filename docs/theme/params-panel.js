@@ -1325,11 +1325,15 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
     return true;
   }
 
+  function elemLang(el) {
+    return el.closest && el.closest(".lang-fr") ? "fr" : "en";
+  }
+
   function renderRegistryTables(root) {
-    var lang = getLang();
     (root || document).querySelectorAll("[data-sp-registry-table]").forEach(function (el) {
       var family = registryFamily(el);
       var kind = el.getAttribute("data-sp-registry-table");
+      var lang = elemLang(el);
       var ok = false;
       if (kind === "variants") ok = renderRegistryVariants(el, family, lang);
       else if (kind === "options") ok = renderRegistryOptions(el, family, lang);

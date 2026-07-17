@@ -20,8 +20,8 @@
     return window.SeraPlotMlRegistry || { docs: [], models: [] };
   }
 
-  function lang() {
-    return localStorage.getItem("seraplot_lang") || "en";
+  function elemLang(el) {
+    return el.closest && el.closest(".lang-fr") ? "fr" : "en";
   }
 
   function attrList(el, name) {
@@ -418,15 +418,14 @@
   }
 
   function render(root) {
-    var l = lang();
     (root || document).querySelectorAll("[data-sp-ml-doc]").forEach(function (el) {
-      renderDoc(el, l);
+      renderDoc(el, elemLang(el));
     });
     (root || document).querySelectorAll("[data-sp-ml-category]").forEach(function (el) {
-      renderCategoryIndex(el, l);
+      renderCategoryIndex(el, elemLang(el));
     });
     (root || document).querySelectorAll("[data-sp-ml-index]").forEach(function (el) {
-      renderGlobalIndex(el, l);
+      renderGlobalIndex(el, elemLang(el));
     });
   }
 
