@@ -11,6 +11,7 @@ struct MlDocEntry {
     aliases: Vec<String>,
     params: Vec<String>,
     returns: Vec<String>,
+    module: String,
 }
 
 #[derive(Clone)]
@@ -396,6 +397,119 @@ fn extract_ml_docs(ml_root: &Path) -> Vec<MlDocEntry> {
                 aliases,
                 params: extract_ml_params(&src, &name),
                 returns: extract_ml_returns(&src, &name),
+                module: String::new(),
+            });
+            cur = name_start + name.len();
+        }
+    }
+    out.sort_by(|a, b| a.name.cmp(&b.name));
+    out
+}
+
+fn extract_fn_params(src: &str, sig_start: usize) -> Vec<String> {
+    let rest = &src[sig_start..];
+    let Some(open_rel) = rest.find('(') else {
+        return Vec::new();
+    };
+    let open = sig_start + open_rel;
+    let mut depth = 0i32;
+    let mut close = open;
+    for (i, c) in src[open..].char_indices() {
+        match c {
+            '(' => depth += 1,
+            ')' => {
+                depth -= 1;
+                if depth == 0 {
+                    close = open + i;
+                    break;
+                }
+            }
+            _ => {}
+        }
+    }
+    let inner = &src[open + 1..close];
+    let mut out = Vec::new();
+    let mut depth = 0i32;
+    let mut part_start = 0usize;
+    let bytes = inner.as_bytes();
+    for (i, &b) in bytes.iter().enumerate() {
+        match b {
+            b'(' | b'<' | b'[' => depth += 1,
+            b')' | b'>' | b']' => depth -= 1,
+            b',' if depth == 0 => {
+                out.push(inner[part_start..i].to_string());
+                part_start = i + 1;
+            }
+            _ => {}
+        }
+    }
+    if part_start < inner.len() {
+        out.push(inner[part_start..].to_string());
+    }
+    out.into_iter()
+        .filter_map(|p| {
+            let p = p.trim();
+            if p.is_empty() || p.ends_with("self") {
+                return None;
+            }
+            let name = p.split(':').next().unwrap_or("").trim();
+            if name.is_empty() {
+                None
+            } else {
+                Some(name.to_string())
+            }
+        })
+        .collect()
+}
+
+fn extract_data_docs(data_root: &Path) -> Vec<MlDocEntry> {
+    let mut files = Vec::new();
+    crate::build_common::walk(data_root, &mut files);
+    files.sort();
+    let mut out = Vec::new();
+    for f in files {
+        let Ok(src) = fs::read_to_string(&f) else {
+            continue;
+        };
+        let mut cur = 0;
+        while let Some(pos_rel) = src[cur..].find("sera_doc(") {
+            let pos = cur + pos_rel;
+            let Some(attr_end) = src[pos..].find(")]") else {
+                break;
+            };
+            let attr = &src[pos..pos + attr_end + 2];
+            let after = &src[pos + attr_end + 2..];
+            let Some(fn_rel) = after.find("fn ") else {
+                cur = pos + attr_end + 2;
+                continue;
+            };
+            let name_start = pos + attr_end + 2 + fn_rel + "fn ".len();
+            let tail = &src[name_start..];
+            let name: String = tail
+                .chars()
+                .take_while(|c| c.is_ascii_alphanumeric() || *c == '_')
+                .collect();
+            if name.is_empty() {
+                cur = name_start;
+                continue;
+            }
+            let file = attr_value(attr, "file");
+            if file.is_empty() {
+                cur = name_start + name.len();
+                continue;
+            }
+            out.push(MlDocEntry {
+                name: name.clone(),
+                category: attr_value(attr, "category"),
+                file,
+                en: attr_value(attr, "en"),
+                fr: attr_value(attr, "fr"),
+                aliases: attr_block_before(&src, "sera_alias(", pos)
+                    .map(|a| crate::build_common::extract_sera_aliases(&a))
+                    .unwrap_or_default(),
+                params: extract_fn_params(&src, name_start + name.len()),
+                returns: Vec::new(),
+                module: f.file_stem().and_then(|s| s.to_str()).unwrap_or("").to_string(),
             });
             cur = name_start + name.len();
         }
@@ -470,8 +584,9 @@ fn extract_ml_models(ml_root: &Path) -> Vec<MlModelEntry> {
     out
 }
 
-pub fn write_registry(manifest: &Path, ml_root: &Path) {
-    let docs = extract_ml_docs(ml_root);
+pub fn write_registry(manifest: &Path, ml_root: &Path, data_root: &Path) {
+    let mut docs = extract_ml_docs(ml_root);
+    docs.extend(extract_data_docs(data_root));
     let models = extract_ml_models(ml_root);
     let mut js = String::from("window.SeraPlotMlRegistry={docs:[");
     for (i, d) in docs.iter().enumerate() {
@@ -515,7 +630,9 @@ pub fn write_registry(manifest: &Path, ml_root: &Path) {
             js.push_str(&crate::build_common::js_escape(r));
             js.push('"');
         }
-        js.push_str("]}");
+        js.push_str("],module:\"");
+        js.push_str(&crate::build_common::js_escape(&d.module));
+        js.push_str("\"}");
     }
     js.push_str("],models:[");
     for (i, m) in models.iter().enumerate() {
