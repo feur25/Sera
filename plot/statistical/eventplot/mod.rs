@@ -2,6 +2,7 @@ use crate::plot::{apply, parse_all};
 pub mod basic;
 pub mod common;
 pub mod config;
+pub mod connected;
 pub mod density;
 pub mod gradient;
 pub mod variant;
@@ -15,6 +16,7 @@ pub fn render_eventplot_html(cfg: &EventplotConfig) -> String {
         Basic => basic::render(cfg),
         Density => density::render(cfg),
         Gradient => gradient::render(cfg),
+        Connected => connected::render(cfg),
     }
 }
 

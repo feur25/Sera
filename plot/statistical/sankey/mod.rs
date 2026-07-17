@@ -18,6 +18,7 @@ pub fn render_sankey_html(cfg: &SankeyConfig) -> String {
         Gapped   => gapped::render(cfg),
         Ribbon   => ribbon::render(cfg),
         Minimal  => basic::render_minimal(cfg),
+        Labeled  => basic::render_labeled(cfg),
     }
 }
 

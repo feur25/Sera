@@ -1,16 +1,17 @@
 use super::config::VennConfig;
 use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json};
-use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i};
+use crate::plot::statistical::common::{escape_xml, heat_color, hex6, palette_color, push_b, push_f2, push_i};
 
 #[crate::chart_demo("labels=[\"Set A\",\"Set B\",\"Set C\"], values=[40,30,20,15,10,5,8]")]
 pub fn render(cfg: &VennConfig) -> String {
-    render_impl(cfg, false, false, false)
+    render_impl(cfg, false, false, false, false)
 }
 
-pub fn render_euler(cfg: &VennConfig)    -> String { render_impl(cfg, true,  false, false) }
-pub fn render_filled(cfg: &VennConfig)   -> String { render_impl(cfg, false, true,  false) }
-pub fn render_gradient(cfg: &VennConfig) -> String { render_impl(cfg, false, false, true)  }
-pub fn render_minimal(cfg: &VennConfig)  -> String { render_impl(cfg, false, false, false)  }
+pub fn render_euler(cfg: &VennConfig)    -> String { render_impl(cfg, true,  false, false, false) }
+pub fn render_filled(cfg: &VennConfig)   -> String { render_impl(cfg, false, true,  false, false) }
+pub fn render_gradient(cfg: &VennConfig) -> String { render_impl(cfg, false, false, true,  false) }
+pub fn render_minimal(cfg: &VennConfig)  -> String { render_impl(cfg, false, false, false, false)  }
+pub fn render_heat(cfg: &VennConfig)     -> String { render_impl(cfg, false, false, false, true)  }
 
 struct SetCircle {
     cx: f64,
@@ -63,9 +64,10 @@ fn layout(n: usize, cx: f64, cy: f64, base_r: f64, euler: bool, values: &[f64]) 
     circles
 }
 
-fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, gradient: bool) -> String {
+fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, gradient: bool, heat: bool) -> String {
     let n = cfg.labels.len();
     if n == 0 { return String::new(); }
+    let max_v = cfg.values[..n.min(cfg.values.len())].iter().copied().fold(0.0f64, f64::max).max(1.0);
 
     let w = cfg.width as f64;
     let h = cfg.height as f64;
@@ -111,7 +113,12 @@ fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, gradient: bool) -> S
     }
 
     for (i, c) in circles.iter().enumerate() {
-        let color = palette_color(cfg.palette, c.ci);
+        let color = if heat {
+            let v = cfg.values.get(i).copied().unwrap_or(0.0);
+            heat_color(v / max_v)
+        } else {
+            palette_color(cfg.palette, c.ci)
+        };
         let hx = hex6(color);
         push_b(&mut buf, b"<circle cx=\"");
         push_f2(&mut buf, c.cx);
@@ -128,7 +135,7 @@ fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, gradient: bool) -> S
             push_b(&mut buf, b")\" stroke=\"#");
             buf.extend_from_slice(&hx);
             push_b(&mut buf, b"\" stroke-width=\"1.5\" stroke-opacity=\"0.6\"");
-        } else if filled {
+        } else if filled || heat {
             push_b(&mut buf, b" fill=\"#");
             buf.extend_from_slice(&hx);
             push_b(&mut buf, b"\" fill-opacity=\"0.55\" stroke=\"none\"");

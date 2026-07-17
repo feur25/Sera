@@ -5,5 +5,6 @@ crate::plot_family! {
         Outlined => "outlined" | "outline" | "stroke",
         Gradient => "gradient" | "radial" | "glow",
         Bubble   => "bubble" | "bubbles" | "plain",
+        Heat     => "heat" | "magnitude" | "size_heat",
     }
 }

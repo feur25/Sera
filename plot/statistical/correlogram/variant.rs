@@ -5,5 +5,6 @@ crate::plot_family! {
         Text     => "text" | "number" | "value",
         Mixed    => "mixed" | "combo" | "both",
         Gradient => "gradient" | "color" | "diverging",
+        Sorted   => "sorted" | "clustered" | "reordered",
     }
 }

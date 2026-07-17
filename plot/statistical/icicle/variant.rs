@@ -4,5 +4,6 @@ crate::plot_family! {
         Gapped     => "gapped" | "spaced" | "isolated" | "padded",
         Horizontal => "horizontal" | "h" | "sideways" | "left_to_right",
         Radial     => "radial" | "sunburst" | "polar" | "mandala",
+        Gradient   => "gradient" | "heat" | "magnitude" | "share",
     }
 }

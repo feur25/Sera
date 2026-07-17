@@ -5,5 +5,6 @@ crate::plot_family! {
         Radial     => "radial" | "circular" | "polar",
         Compact    => "compact" | "dense" | "tight",
         Elegant    => "elegant" | "smooth" | "rounded",
+        Triangular => "triangular" | "diagonal" | "straight" | "angular",
     }
 }

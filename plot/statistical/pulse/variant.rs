@@ -5,5 +5,6 @@ crate::plot_family! {
         Dot      => "dot" | "scatter" | "bubble",
         Filled   => "filled" | "area" | "solid",
         Gradient => "gradient" | "color" | "heatring",
+        Outlined => "outlined" | "outline" | "stroke" | "clean",
     }
 }

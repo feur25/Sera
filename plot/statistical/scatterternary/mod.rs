@@ -4,6 +4,7 @@ pub mod bubble;
 pub mod common;
 pub mod config;
 pub mod gradient;
+pub mod labeled;
 pub mod variant;
 
 pub use config::ScatterTernaryConfig;
@@ -15,6 +16,7 @@ pub fn render_scatter_ternary_html(cfg: &ScatterTernaryConfig) -> String {
         Basic => basic::render(cfg),
         Gradient => gradient::render(cfg),
         Bubble => bubble::render(cfg),
+        Labeled => labeled::render(cfg),
     }
 }
 

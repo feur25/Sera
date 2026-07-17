@@ -3,5 +3,6 @@ crate::plot_family! {
         Basic    => "basic" | "default" | "classic" | "dots",
         Gradient => "gradient" | "color" | "colorscale" | "continuous",
         Bubble   => "bubble" | "sized" | "weighted" | "proportional",
+        Labeled  => "labeled" | "labelled" | "annotated" | "named",
     }
 }

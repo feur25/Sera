@@ -4,15 +4,16 @@ use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, 
 
 #[crate::chart_demo("labels=[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\"], values=[0.4,0.7,0.9,0.6,0.8,0.3,0.5]")]
 pub fn render(cfg: &PulseConfig) -> String {
-    render_impl(cfg, false, false, false)
+    render_impl(cfg, false, false, false, false)
 }
 
 pub fn render_wave(cfg: &PulseConfig)     -> String { render_wave_impl(cfg) }
 pub fn render_dot(cfg: &PulseConfig)      -> String { render_dot_impl(cfg) }
-pub fn render_filled(cfg: &PulseConfig)   -> String { render_impl(cfg, true,  false, false) }
-pub fn render_gradient(cfg: &PulseConfig) -> String { render_impl(cfg, false, false, true)  }
+pub fn render_filled(cfg: &PulseConfig)   -> String { render_impl(cfg, true,  false, false, false) }
+pub fn render_gradient(cfg: &PulseConfig) -> String { render_impl(cfg, false, false, true,  false) }
+pub fn render_outlined(cfg: &PulseConfig) -> String { render_impl(cfg, false, false, false, true)  }
 
-fn render_impl(cfg: &PulseConfig, filled: bool, _wave: bool, gradient: bool) -> String {
+fn render_impl(cfg: &PulseConfig, filled: bool, _wave: bool, gradient: bool, outlined: bool) -> String {
     use std::f64::consts::PI;
     let n = cfg.labels.len().max(cfg.values.len());
     if n == 0 { return String::new(); }
@@ -99,7 +100,9 @@ fn render_impl(cfg: &PulseConfig, filled: bool, _wave: bool, gradient: bool) -> 
         let y2o = cy + bar_r * angle_end.sin();
 
         push_b(&mut buf, b"<path fill=\"");
-        if gradient {
+        if outlined {
+            push_b(&mut buf, b"none");
+        } else if gradient {
             push_b(&mut buf, b"url(#pg");
             push_i(&mut buf, i as i32);
             push_b(&mut buf, b")\"");
@@ -109,7 +112,13 @@ fn render_impl(cfg: &PulseConfig, filled: bool, _wave: bool, gradient: bool) -> 
             push_b(&mut buf, b"\" fill-opacity=\"");
             if filled { push_b(&mut buf, b"0.75\""); } else { push_b(&mut buf, b"0.60\""); }
         }
-        push_b(&mut buf, b" stroke=\"#fff\" stroke-width=\"0.5\" data-idx=\"");
+        if outlined {
+            push_b(&mut buf, b"\" stroke=\"#");
+            buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\" stroke-width=\"1.6\" data-idx=\"");
+        } else {
+            push_b(&mut buf, b" stroke=\"#fff\" stroke-width=\"0.5\" data-idx=\"");
+        }
         push_i(&mut buf, i as i32);
         push_b(&mut buf, b"\" d=\"M");
         push_f2(&mut buf, x1i); push_b(&mut buf, b","); push_f2(&mut buf, y1i);
@@ -148,7 +157,7 @@ fn render_impl(cfg: &PulseConfig, filled: bool, _wave: bool, gradient: bool) -> 
 fn render_wave_impl(cfg: &PulseConfig) -> String {
     use std::f64::consts::PI;
     let n = cfg.values.len();
-    if n < 2 { return render_impl(cfg, false, false, false); }
+    if n < 2 { return render_impl(cfg, false, false, false, false); }
 
     let w = cfg.width as f64;
     let h = cfg.height as f64;

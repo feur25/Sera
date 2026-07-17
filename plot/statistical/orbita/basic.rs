@@ -4,15 +4,16 @@ use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, 
 
 #[crate::chart_demo("series_names=[\"2021\",\"2022\",\"2023\"], labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], matrix=[[0.4,0.7,0.5,0.8],[0.6,0.3,0.9,0.5],[0.8,0.6,0.4,0.7]]")]
 pub fn render(cfg: &OrbitaConfig) -> String {
-    render_impl(cfg, false, false, false)
+    render_impl(cfg, false, false, false, false)
 }
 
-pub fn render_bubble(cfg: &OrbitaConfig)  -> String { render_impl(cfg, true,  false, false) }
-pub fn render_trail(cfg: &OrbitaConfig)   -> String { render_impl(cfg, false, true,  false) }
-pub fn render_glow(cfg: &OrbitaConfig)    -> String { render_impl(cfg, false, false, true)  }
-pub fn render_minimal(cfg: &OrbitaConfig) -> String { render_impl(cfg, false, false, false) }
+pub fn render_bubble(cfg: &OrbitaConfig)  -> String { render_impl(cfg, true,  false, false, false) }
+pub fn render_trail(cfg: &OrbitaConfig)   -> String { render_impl(cfg, false, true,  false, false) }
+pub fn render_glow(cfg: &OrbitaConfig)    -> String { render_impl(cfg, false, false, true,  false) }
+pub fn render_minimal(cfg: &OrbitaConfig) -> String { render_impl(cfg, false, false, false, false) }
+pub fn render_labeled(cfg: &OrbitaConfig) -> String { render_impl(cfg, false, false, false, true)  }
 
-fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool) -> String {
+fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool, labeled: bool) -> String {
     use std::f64::consts::PI;
 
     let ns = cfg.series_names.len();
@@ -166,6 +167,16 @@ fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool) -> Str
                 push_b(&mut buf, b" fill-opacity=\"0.85\" stroke=\"#fff\" stroke-width=\"1.2\" data-idx=\"");
                 push_i(&mut buf, (si * nc + ci) as i32);
                 push_b(&mut buf, b"\"/>");
+
+                if labeled {
+                    push_b(&mut buf, b"<text x=\"");
+                    push_f2(&mut buf, px);
+                    push_b(&mut buf, b"\" y=\"");
+                    push_f2(&mut buf, py - dot_r - 3.0);
+                    push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"7.5\" fill=\"#1e293b\" paint-order=\"stroke\" stroke=\"#fff\" stroke-width=\"2.5\">");
+                    push_f2(&mut buf, cfg.matrix[si * nc + ci]);
+                    push_b(&mut buf, b"</text>");
+                }
             }
         }
     }

@@ -15,6 +15,7 @@ pub fn render_hive_html(cfg: &HiveConfig) -> String {
         Gradient => basic::render_gradient(cfg),
         Weighted => basic::render_weighted(cfg),
         Minimal  => basic::render_minimal(cfg),
+        Labeled  => basic::render_labeled(cfg),
     }
 }
 

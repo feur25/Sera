@@ -5,5 +5,6 @@ crate::plot_family! {
         Gapped   => "gapped" | "spaced" | "separated",
         Ribbon   => "ribbon" | "wide" | "thick",
         Minimal  => "minimal" | "thin" | "outline",
+        Labeled  => "labeled" | "labelled" | "values" | "annotated",
     }
 }

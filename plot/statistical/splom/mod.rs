@@ -4,6 +4,7 @@ pub mod common;
 pub mod config;
 pub mod correlation;
 pub mod density;
+pub mod regression;
 pub mod variant;
 
 pub use config::SplomConfig;
@@ -15,6 +16,7 @@ pub fn render_splom_html(cfg: &SplomConfig) -> String {
         Basic => basic::render(cfg),
         Correlation => correlation::render(cfg),
         Density => density::render(cfg),
+        Regression => regression::render(cfg),
     }
 }
 

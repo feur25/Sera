@@ -4,20 +4,21 @@ use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, 
 
 #[crate::chart_demo("axes=[\"Biology\",\"Chemistry\",\"Physics\"], labels=[\"n1\",\"n2\",\"n3\",\"n4\",\"n5\",\"n6\"], categories=[\"Biology\",\"Biology\",\"Chemistry\",\"Chemistry\",\"Physics\",\"Physics\"], values=[0.3,0.7,0.2,0.9,0.5,0.8], edges_i=[0,1,2,4], edges_j=[2,3,4,5], edges_w=[1,2,1.5,0.8]")]
 pub fn render(cfg: &HiveConfig) -> String {
-    render_impl(cfg, false, false, false)
+    render_impl(cfg, false, false, false, false)
 }
 
-pub fn render_curved(cfg: &HiveConfig)   -> String { render_impl(cfg, true,  false, false) }
-pub fn render_gradient(cfg: &HiveConfig) -> String { render_impl(cfg, true,  true,  false) }
-pub fn render_weighted(cfg: &HiveConfig) -> String { render_impl(cfg, false, false, true)  }
-pub fn render_minimal(cfg: &HiveConfig)  -> String { render_impl(cfg, true,  false, false) }
+pub fn render_curved(cfg: &HiveConfig)   -> String { render_impl(cfg, true,  false, false, false) }
+pub fn render_gradient(cfg: &HiveConfig) -> String { render_impl(cfg, true,  true,  false, false) }
+pub fn render_weighted(cfg: &HiveConfig) -> String { render_impl(cfg, false, false, true,  false) }
+pub fn render_minimal(cfg: &HiveConfig)  -> String { render_impl(cfg, true,  false, false, false) }
+pub fn render_labeled(cfg: &HiveConfig)  -> String { render_impl(cfg, false, false, false, true)  }
 
 fn node_pos(axis_angle: f64, value: f64, inner_r: f64, outer_r: f64) -> (f64, f64) {
     let r = inner_r + value.clamp(0.0, 1.0) * (outer_r - inner_r);
     (r * axis_angle.cos(), r * axis_angle.sin())
 }
 
-fn render_impl(cfg: &HiveConfig, curved: bool, gradient: bool, weighted: bool) -> String {
+fn render_impl(cfg: &HiveConfig, curved: bool, gradient: bool, weighted: bool, labeled: bool) -> String {
     use std::f64::consts::PI;
 
     let na = cfg.axes.len();
@@ -145,6 +146,17 @@ fn render_impl(cfg: &HiveConfig, curved: bool, gradient: bool, weighted: bool) -
         }
         push_f2(&mut buf, tx); push_b(&mut buf, b","); push_f2(&mut buf, ty);
         push_b(&mut buf, b"\"/>");
+
+        if labeled {
+            let w = cfg.weights.get(k).copied().unwrap_or(1.0);
+            push_b(&mut buf, b"<text x=\"");
+            push_f2(&mut buf, (sx + tx) / 2.0);
+            push_b(&mut buf, b"\" y=\"");
+            push_f2(&mut buf, (sy + ty) / 2.0);
+            push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8.5\" fill=\"#1e293b\" paint-order=\"stroke\" stroke=\"#fff\" stroke-width=\"3\">");
+            push_f2(&mut buf, w);
+            push_b(&mut buf, b"</text>");
+        }
     }
 
     for i in 0..n_nodes {

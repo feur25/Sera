@@ -331,6 +331,26 @@ pub fn push_b(buf: &mut Vec<u8>, b: &[u8]) {
     buf.extend_from_slice(b);
 }
 
+pub fn heat_color(t: f64) -> u32 {
+    const STOPS: [(f64, f64, f64); 5] = [
+        (99.0, 102.0, 241.0),
+        (6.0, 182.0, 212.0),
+        (34.0, 197.0, 94.0),
+        (251.0, 191.0, 36.0),
+        (239.0, 68.0, 68.0),
+    ];
+    let n = STOPS.len() - 1;
+    let s = t.clamp(0.0, 1.0) * n as f64;
+    let i = (s.floor() as usize).min(n - 1);
+    let f = s - i as f64;
+    let (r0, g0, b0) = STOPS[i];
+    let (r1, g1, b1) = STOPS[i + 1];
+    let r = (r0 + (r1 - r0) * f).round() as u32;
+    let g = (g0 + (g1 - g0) * f).round() as u32;
+    let b = (b0 + (b1 - b0) * f).round() as u32;
+    (r << 16) | (g << 8) | b
+}
+
 pub fn hex6(c: u32) -> [u8; 6] {
     let h = b"0123456789abcdef";
     [

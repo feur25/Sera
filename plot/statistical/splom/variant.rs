@@ -3,5 +3,6 @@ crate::plot_family! {
         Basic       => "basic" | "default" | "classic" | "dots",
         Correlation => "correlation" | "corr" | "heat" | "shaded",
         Density     => "density" | "alpha" | "overplot" | "cloud",
+        Regression  => "regression" | "trend" | "fit" | "lm",
     }
 }

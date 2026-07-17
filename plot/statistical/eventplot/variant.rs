@@ -3,5 +3,6 @@ crate::plot_family! {
         Basic    => "basic" | "default" | "classic" | "ticks",
         Density  => "density" | "kde" | "smoothed" | "rug",
         Gradient => "gradient" | "colorscale" | "heat" | "timeline",
+        Connected => "connected" | "sequence" | "path" | "trajectory",
     }
 }

@@ -17,6 +17,7 @@ pub fn render_chord_html(cfg: &ChordConfig) -> String {
         Ribbon   => basic::render_ribbon(cfg),
         Arc      => basic::render_arc(cfg),
         Mono     => mono::render(cfg),
+        Labeled  => basic::render_labeled(cfg),
     }
 }
 

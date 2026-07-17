@@ -9,22 +9,26 @@ use crate::plot::statistical::common::{
     "labels=[\"A\",\"B\",\"C\",\"D\"], matrix=[[0,10,5,8],[10,0,7,3],[5,7,0,12],[8,3,12,0]]"
 )]
 pub fn render(cfg: &ChordConfig) -> String {
-    render_impl(cfg, false, false, false)
+    render_impl(cfg, false, false, false, false)
 }
 
 pub fn render_gradient(cfg: &ChordConfig) -> String {
-    render_impl(cfg, true, false, false)
+    render_impl(cfg, true, false, false, false)
 }
 
 pub fn render_ribbon(cfg: &ChordConfig) -> String {
-    render_impl(cfg, false, true, false)
+    render_impl(cfg, false, true, false, false)
 }
 
 pub fn render_arc(cfg: &ChordConfig) -> String {
-    render_impl(cfg, false, false, true)
+    render_impl(cfg, false, false, true, false)
 }
 
-fn render_impl(cfg: &ChordConfig, gradient: bool, wide: bool, arc_only: bool) -> String {
+pub fn render_labeled(cfg: &ChordConfig) -> String {
+    render_impl(cfg, false, false, false, true)
+}
+
+fn render_impl(cfg: &ChordConfig, gradient: bool, wide: bool, arc_only: bool, labeled: bool) -> String {
     let n = cfg.labels.len().min(cfg.matrix.len());
     if n == 0 {
         return String::new();
@@ -106,6 +110,22 @@ fn render_impl(cfg: &ChordConfig, gradient: bool, wide: bool, arc_only: bool) ->
                 push_b(&mut buf, b"\" d=\"");
                 ribbon_path(&mut buf, lay.cx, lay.cy, lay.r_in, sa1, sa2, ta1, ta2);
                 push_b(&mut buf, b"\"/>");
+
+                if labeled && i != j {
+                    let sam = (sa1 + sa2) / 2.0;
+                    let tam = (ta1 + ta2) / 2.0;
+                    let sx = lay.cx + lay.r_in * sam.cos();
+                    let sy = lay.cy + lay.r_in * sam.sin();
+                    let tx = lay.cx + lay.r_in * tam.cos();
+                    let ty = lay.cy + lay.r_in * tam.sin();
+                    push_b(&mut buf, b"<text x=\"");
+                    push_f2(&mut buf, (sx + tx) / 2.0);
+                    push_b(&mut buf, b"\" y=\"");
+                    push_f2(&mut buf, (sy + ty) / 2.0);
+                    push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#1e293b\" font-weight=\"600\" paint-order=\"stroke\" stroke=\"#fff\" stroke-width=\"3\">");
+                    push_f2(&mut buf, v);
+                    push_b(&mut buf, b"</text>");
+                }
             }
         }
     }

@@ -16,6 +16,7 @@ pub fn render_dendrogram_html(cfg: &DendrogramConfig) -> String {
         Radial     => basic::render_radial(cfg),
         Compact    => basic::render_compact(cfg),
         Elegant    => basic::render_elegant(cfg),
+        Triangular => basic::render_triangular(cfg),
     }
 }
 

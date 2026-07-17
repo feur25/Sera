@@ -5,5 +5,6 @@ crate::plot_family! {
         Filled   => "filled" | "solid" | "opaque",
         Gradient => "gradient" | "color",
         Minimal  => "minimal" | "outline" | "thin",
+        Heat     => "heat" | "magnitude" | "intensity",
     }
 }

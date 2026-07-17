@@ -4,14 +4,15 @@ use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, 
 
 #[crate::chart_demo("labels=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\"], edges_i=[0,0,1,2,3,4], edges_j=[1,2,3,4,5,0], edges_w=[3,5,2,4,6,1]")]
 pub fn render(cfg: &ArcDiagramConfig) -> String {
-    render_impl(cfg, false, false, false)
+    render_impl(cfg, false, false, false, false)
 }
-pub fn render_bilateral(cfg: &ArcDiagramConfig)  -> String { render_impl(cfg, true,  false, false) }
-pub fn render_weighted(cfg: &ArcDiagramConfig)   -> String { render_impl(cfg, false, true,  false) }
-pub fn render_gradient(cfg: &ArcDiagramConfig)   -> String { render_impl(cfg, false, false, true)  }
-pub fn render_minimal(cfg: &ArcDiagramConfig)    -> String { render_impl(cfg, false, false, false)  }
+pub fn render_bilateral(cfg: &ArcDiagramConfig)  -> String { render_impl(cfg, true,  false, false, false) }
+pub fn render_weighted(cfg: &ArcDiagramConfig)   -> String { render_impl(cfg, false, true,  false, false) }
+pub fn render_gradient(cfg: &ArcDiagramConfig)   -> String { render_impl(cfg, false, false, true, false)  }
+pub fn render_minimal(cfg: &ArcDiagramConfig)    -> String { render_impl(cfg, false, false, false, false)  }
+pub fn render_labeled(cfg: &ArcDiagramConfig)    -> String { render_impl(cfg, false, false, false, true)  }
 
-fn render_impl(cfg: &ArcDiagramConfig, bilateral: bool, weighted: bool, gradient: bool) -> String {
+fn render_impl(cfg: &ArcDiagramConfig, bilateral: bool, weighted: bool, gradient: bool, labeled: bool) -> String {
     let n = cfg.labels.len();
     let e = cfg.sources.len().min(cfg.targets.len());
     if n == 0 { return String::new(); }
@@ -76,6 +77,17 @@ fn render_impl(cfg: &ArcDiagramConfig, bilateral: bool, weighted: bool, gradient
         push_b(&mut buf, b"Q"); push_f2(&mut buf, mid_x); push_b(&mut buf, b","); push_f2(&mut buf, arc_y);
         push_b(&mut buf, b" "); push_f2(&mut buf, x2); push_b(&mut buf, b","); push_f2(&mut buf, node_y as f64);
         push_b(&mut buf, b"\"/>");
+
+        if labeled {
+            let apex_y = (node_y as f64 + arc_y) / 2.0;
+            push_b(&mut buf, b"<text x=\"");
+            push_f2(&mut buf, mid_x);
+            push_b(&mut buf, b"\" y=\"");
+            push_f2(&mut buf, apex_y);
+            push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"8.5\" fill=\"#1e293b\" paint-order=\"stroke\" stroke=\"#fff\" stroke-width=\"3\">");
+            push_f2(&mut buf, w);
+            push_b(&mut buf, b"</text>");
+        }
     }
 
     push_b(&mut buf, b"<line x1=\"");

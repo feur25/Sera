@@ -2,6 +2,7 @@ use crate::plot::{apply, parse_all};
 pub mod basic;
 pub mod common;
 pub mod config;
+pub mod highlight;
 pub mod outlined;
 pub mod spaced;
 pub mod variant;
@@ -15,6 +16,7 @@ pub fn render_hexbin_html(cfg: &HexbinConfig) -> String {
         Basic => basic::render(cfg),
         Outlined => outlined::render(cfg),
         Spaced => spaced::render(cfg),
+        Highlight => highlight::render(cfg),
     }
 }
 
