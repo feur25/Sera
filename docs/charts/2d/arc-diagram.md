@@ -20,6 +20,8 @@ Aliases: `sp.arc_diagram`, `sp.arc_chart`, `sp.arc_plot`, `sp.arc_graph`, `sp.li
 
 Arc diagrams place nodes on a horizontal axis and draw quadratic bezier arcs above (and optionally below) the axis to represent connections. They are particularly effective for showing sequential or ordered relationships.
 
+## Variants
+
 | Variant | Description |
 |---------|-------------|
 | `"basic"` | Arcs above the axis |
@@ -40,6 +42,10 @@ Arc diagrams place nodes on a horizontal axis and draw quadratic bezier arcs abo
 | `palette` | `list[int]` | Custom colors |
 | `node_r` | `float` | Node circle radius |
 | `width` / `height` | `int` | Chart dimensions |
+
+## Returns
+
+`Chart` — object with `.html` property and `.show()` method.
 
 ## Example
 
@@ -88,6 +94,99 @@ chart.show()
 <div class="sp-variant" id="arc-en-minimal">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/arc_diagram-minimal.html"></iframe>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="lang-fr">
+
+## Signature
+
+`sp.arc_diagram(title, labels, edges_i, edges_j, edges_w, *, variant="basic", **kwargs) -> Chart`
+
+Alias : `sp.arc_diagram`, `sp.arc_chart`, `sp.arc_plot`, `sp.arc_graph`, `sp.linear_network`
+
+## Description
+
+Les diagrammes en arcs placent les nœuds sur un axe horizontal et tracent des arcs de bézier quadratiques au-dessus (et optionnellement en-dessous) de l'axe pour représenter les connexions. Ils sont particulièrement efficaces pour montrer des relations séquentielles ou ordonnées.
+
+## Variantes
+
+| Variante | Description |
+|---------|-------------|
+| `"basic"` | Arcs au-dessus de l'axe |
+| `"bilateral"` | Arcs alternés au-dessus et en-dessous |
+| `"weighted"` | Épaisseur du trait proportionnelle au poids de l'arête |
+| `"gradient"` | Arcs à couleur interpolée |
+| `"minimal"` | Arcs fins uniformes |
+
+## Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `labels` | `list[str]` | Noms des nœuds |
+| `edges_i` | `list[int]` | Indices des nœuds source |
+| `edges_j` | `list[int]` | Indices des nœuds cible |
+| `edges_w` | `list[float]` | Poids des arêtes |
+| `variant` | `str` | Style de rendu |
+| `palette` | `list[int]` | Couleurs personnalisées |
+| `node_r` | `float` | Rayon du cercle de nœud |
+| `width` / `height` | `int` | Dimensions du graphique |
+
+## Retour
+
+`Chart` — objet avec une propriété `.html` et une méthode `.show()`.
+
+## Exemple
+
+```python
+import seraplot as sp
+chart = sp.arc_diagram(
+    "Collaboration Network",
+    labels=["Alice", "Bob", "Carol", "Dave", "Eve", "Frank"],
+    edges_i=[0, 0, 1, 2, 3, 4],
+    edges_j=[1, 2, 3, 4, 5, 0],
+    edges_w=[3, 5, 2, 4, 6, 1],
+)
+chart.show()
+```
+
+<div class="sp-cls sp-open" id="arc-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('arc-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('arc-fr','basic',this)"><span class="sp-cic">⌒</span><span class="sp-clb">Basique</span></button>
+<button class="sp-cls-tab" onclick="spCls('arc-fr','bilateral',this)"><span class="sp-cic">⌓</span><span class="sp-clb">Bilatéral</span></button>
+<button class="sp-cls-tab" onclick="spCls('arc-fr','weighted',this)"><span class="sp-cic">≈</span><span class="sp-clb">Pondéré</span></button>
+<button class="sp-cls-tab" onclick="spCls('arc-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
+<button class="sp-cls-tab" onclick="spCls('arc-fr','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
+</div>
+<div class="sp-cls-body">
+<div class="sp-variant sp-von" id="arc-fr-basic">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/arc_diagram-basic.html"></iframe>
+</div>
+<div class="sp-variant" id="arc-fr-bilateral">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"bilateral"</code></span><span><strong>Alias</strong> <code>bilateral / both / dual</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/arc_diagram-bilateral.html"></iframe>
+</div>
+<div class="sp-variant" id="arc-fr-weighted">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"weighted"</code></span><span><strong>Alias</strong> <code>weighted / width / value</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/arc_diagram-weighted.html"></iframe>
+</div>
+<div class="sp-variant" id="arc-fr-gradient">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/arc_diagram-gradient.html"></iframe>
+</div>
+<div class="sp-variant" id="arc-fr-minimal">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / clean</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-minimal.html"></iframe>
 </div>
 </div>

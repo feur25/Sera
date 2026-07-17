@@ -20,6 +20,8 @@ Aliases: `sp.circle_pack`, `sp.circle_packing`, `sp.pack`, `sp.bubble_pack`
 
 Circle packing represents hierarchical data as nested circles, where the area of each circle is proportional to its value. Parent–child relationships are defined by the `parents` list (empty string = root node).
 
+## Variants
+
 | Variant | Description |
 |---------|-------------|
 | `"basic"` | Filled nested circles with depth-based opacity |
@@ -40,6 +42,10 @@ Circle packing represents hierarchical data as nested circles, where the area of
 | `show_labels` | `bool` | Show node labels (default `True`) |
 | `padding` | `float` | Gap between circles |
 | `width` / `height` | `int` | Chart dimensions |
+
+## Returns
+
+`Chart` — object with `.html` property and `.show()` method.
 
 ## Example
 
@@ -87,6 +93,98 @@ chart.show()
 <div class="sp-variant" id="cp-en-bubble">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code></span><span><strong>Aliases</strong> <code>bubble / packed</code></span></div>
 <div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/circle_pack-bubble.html"></iframe>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="lang-fr">
+
+## Signature
+
+`sp.circle_pack(title, labels, parents, values, *, variant="basic", **kwargs) -> Chart`
+
+Alias : `sp.circle_pack`, `sp.circle_packing`, `sp.pack`, `sp.bubble_pack`
+
+## Description
+
+Le circle packing représente des données hiérarchiques sous forme de cercles imbriqués, où l'aire de chaque cercle est proportionnelle à sa valeur. Les relations parent-enfant sont définies par la liste `parents` (chaîne vide = nœud racine).
+
+## Variantes
+
+| Variante | Description |
+|---------|-------------|
+| `"basic"` | Cercles imbriqués pleins, opacité selon la profondeur |
+| `"flat"` | Disposition en bulles à un seul niveau (pas d'imbrication) |
+| `"outlined"` | Cercles en contour seul |
+| `"gradient"` | Remplissage en dégradé radial par cercle |
+| `"bubble"` | Alias de la disposition à plat |
+
+## Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `labels` | `list[str]` | Noms des nœuds |
+| `parents` | `list[str]` | Nom du parent de chaque nœud (`""` = racine) |
+| `values` | `list[float]` | Taille de chaque nœud feuille |
+| `variant` | `str` | Style de rendu |
+| `palette` | `list[int]` | Couleurs personnalisées |
+| `show_labels` | `bool` | Afficher les labels des nœuds (défaut `True`) |
+| `padding` | `float` | Espace entre les cercles |
+| `width` / `height` | `int` | Dimensions du graphique |
+
+## Retour
+
+`Chart` — objet avec une propriété `.html` et une méthode `.show()`.
+
+## Exemple
+
+```python
+import seraplot as sp
+chart = sp.circle_pack(
+    "Market Segments",
+    labels=["Market", "Tech", "Finance", "Health", "A", "B", "C", "D"],
+    parents=["", "Market", "Market", "Market", "Tech", "Tech", "Finance", "Health"],
+    values=[0, 0, 0, 0, 60, 40, 50, 30],
+)
+chart.show()
+```
+
+<div class="sp-cls sp-open" id="cp-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('cp-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('cp-fr','basic',this)"><span class="sp-cic">●</span><span class="sp-clb">Basique</span></button>
+<button class="sp-cls-tab" onclick="spCls('cp-fr','flat',this)"><span class="sp-cic">○</span><span class="sp-clb">Plat</span></button>
+<button class="sp-cls-tab" onclick="spCls('cp-fr','outlined',this)"><span class="sp-cic">◌</span><span class="sp-clb">Contour</span></button>
+<button class="sp-cls-tab" onclick="spCls('cp-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
+<button class="sp-cls-tab" onclick="spCls('cp-fr','bubble',this)"><span class="sp-cic">◎</span><span class="sp-clb">Bulle</span></button>
+</div>
+<div class="sp-cls-body">
+<div class="sp-variant sp-von" id="cp-fr-basic">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / nested</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/circle_pack-basic.html"></iframe>
+</div>
+<div class="sp-variant" id="cp-fr-flat">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"flat"</code></span><span><strong>Alias</strong> <code>flat / single</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/circle_pack-flat.html"></iframe>
+</div>
+<div class="sp-variant" id="cp-fr-outlined">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"outlined"</code></span><span><strong>Alias</strong> <code>outlined / stroke / border</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/circle_pack-outlined.html"></iframe>
+</div>
+<div class="sp-variant" id="cp-fr-gradient">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / radial</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/circle_pack-gradient.html"></iframe>
+</div>
+<div class="sp-variant" id="cp-fr-bubble">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"bubble"</code></span><span><strong>Alias</strong> <code>bubble / packed</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/circle_pack-bubble.html"></iframe>
 </div>
 </div>

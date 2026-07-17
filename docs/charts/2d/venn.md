@@ -20,6 +20,8 @@ Aliases: `sp.venn`, `sp.venn_diagram`, `sp.euler`, `sp.set_diagram`, `sp.overlap
 
 Venn diagrams show set relationships using overlapping circles. Supply one value per set for circle sizes. The `"euler"` variant scales circle radii proportionally to the first N values.
 
+## Variants
+
 | Variant | Description |
 |---------|-------------|
 | `"basic"` | Semi-transparent overlapping circles |
@@ -39,6 +41,10 @@ Venn diagrams show set relationships using overlapping circles. Supply one value
 | `opacity` | `float` | Fill opacity (default `0.38`) |
 | `show_labels` | `bool` | Show set labels and counts |
 | `width` / `height` | `int` | Chart dimensions |
+
+## Returns
+
+`Chart` — object with `.html` property and `.show()` method.
 
 ## Example
 
@@ -85,6 +91,96 @@ chart.show()
 <div class="sp-variant" id="venn-en-minimal">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / outline / thin</code></span></div>
 <div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/venn-minimal.html"></iframe>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="lang-fr">
+
+## Signature
+
+`sp.venn(title, labels, values, *, variant="basic", **kwargs) -> Chart`
+
+Alias : `sp.venn`, `sp.venn_diagram`, `sp.euler`, `sp.set_diagram`, `sp.overlap`
+
+## Description
+
+Les diagrammes de Venn montrent des relations entre ensembles à l'aide de cercles qui se chevauchent. Fournissez une valeur par ensemble pour la taille des cercles. La variante `"euler"` met à l'échelle les rayons des cercles proportionnellement aux N premières valeurs.
+
+## Variantes
+
+| Variante | Description |
+|---------|-------------|
+| `"basic"` | Cercles semi-transparents qui se chevauchent |
+| `"euler"` | Aires de cercles proportionnelles (diagramme d'Euler) |
+| `"filled"` | Cercles entièrement opaques |
+| `"gradient"` | Remplissage en dégradé radial |
+| `"minimal"` | Contours seuls |
+
+## Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `labels` | `list[str]` | Noms des ensembles |
+| `values` | `list[float]` | Tailles des ensembles (les N premières entrées pilotent les rayons Euler) |
+| `variant` | `str` | Style de rendu |
+| `palette` | `list[int]` | Couleurs personnalisées |
+| `opacity` | `float` | Opacité du remplissage (défaut `0.38`) |
+| `show_labels` | `bool` | Afficher les labels et effectifs des ensembles |
+| `width` / `height` | `int` | Dimensions du graphique |
+
+## Retour
+
+`Chart` — objet avec une propriété `.html` et une méthode `.show()`.
+
+## Exemple
+
+```python
+import seraplot as sp
+chart = sp.venn(
+    "Skill Sets",
+    labels=["Python", "Rust", "Both"],
+    values=[120, 80, 35],
+)
+chart.show()
+```
+
+<div class="sp-cls sp-open" id="venn-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('venn-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('venn-fr','basic',this)"><span class="sp-cic">⊙</span><span class="sp-clb">Basique</span></button>
+<button class="sp-cls-tab" onclick="spCls('venn-fr','euler',this)"><span class="sp-cic">⊗</span><span class="sp-clb">Euler</span></button>
+<button class="sp-cls-tab" onclick="spCls('venn-fr','filled',this)"><span class="sp-cic">●</span><span class="sp-clb">Plein</span></button>
+<button class="sp-cls-tab" onclick="spCls('venn-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
+<button class="sp-cls-tab" onclick="spCls('venn-fr','minimal',this)"><span class="sp-cic">◌</span><span class="sp-clb">Minimal</span></button>
+</div>
+<div class="sp-cls-body">
+<div class="sp-variant sp-von" id="venn-fr-basic">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/venn-basic.html"></iframe>
+</div>
+<div class="sp-variant" id="venn-fr-euler">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"euler"</code></span><span><strong>Alias</strong> <code>euler / proportional / area</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/venn-euler.html"></iframe>
+</div>
+<div class="sp-variant" id="venn-fr-filled">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"filled"</code></span><span><strong>Alias</strong> <code>filled / solid / opaque</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/venn-filled.html"></iframe>
+</div>
+<div class="sp-variant" id="venn-fr-gradient">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/venn-gradient.html"></iframe>
+</div>
+<div class="sp-variant" id="venn-fr-minimal">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / outline / thin</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/venn-minimal.html"></iframe>
 </div>
 </div>

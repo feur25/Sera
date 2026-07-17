@@ -20,6 +20,8 @@ Aliases: `sp.dendrogram`, `sp.dendro`, `sp.tree`, `sp.tree_diagram`, `sp.hierarc
 
 Dendrograms display hierarchical tree structures using right-angle elbow connectors (vertical/horizontal) or smooth bezier curves (elegant) or a radial circular layout. Parent–child relationships are defined by the `parents` list.
 
+## Variants
+
 | Variant | Description |
 |---------|-------------|
 | `"vertical"` | Root at top, leaves at bottom (elbow connectors) |
@@ -39,6 +41,10 @@ Dendrograms display hierarchical tree structures using right-angle elbow connect
 | `show_labels` | `bool` | Show node labels |
 | `line_width` | `float` | Connector line thickness |
 | `width` / `height` | `int` | Chart dimensions |
+
+## Returns
+
+`Chart` — object with `.html` property and `.show()` method.
 
 ## Example
 
@@ -85,6 +91,96 @@ chart.show()
 <div class="sp-variant" id="dend-en-elegant">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"elegant"</code></span><span><strong>Aliases</strong> <code>elegant / smooth / rounded</code></span></div>
 <div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/dendrogram-elegant.html"></iframe>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="lang-fr">
+
+## Signature
+
+`sp.dendrogram(title, labels, parents, *, variant="vertical", **kwargs) -> Chart`
+
+Alias : `sp.dendrogram`, `sp.dendro`, `sp.tree`, `sp.tree_diagram`, `sp.hierarchy`, `sp.hierarchical`
+
+## Description
+
+Les dendrogrammes affichent des structures arborescentes hiérarchiques à l'aide de connecteurs en coude à angle droit (vertical/horizontal), de courbes de bézier lisses (elegant), ou d'une disposition radiale circulaire. Les relations parent-enfant sont définies par la liste `parents`.
+
+## Variantes
+
+| Variante | Description |
+|---------|-------------|
+| `"vertical"` | Racine en haut, feuilles en bas (connecteurs en coude) |
+| `"horizontal"` | Racine à gauche, feuilles à droite |
+| `"radial"` | Disposition arborescente radiale circulaire |
+| `"compact"` | Espacement resserré, police plus petite |
+| `"elegant"` | Courbes de bézier cubiques lisses |
+
+## Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `labels` | `list[str]` | Noms des nœuds |
+| `parents` | `list[str]` | Nom du parent de chaque nœud (`""` = racine) |
+| `variant` | `str` | Style de disposition |
+| `palette` | `list[int]` | Couleurs personnalisées par branche |
+| `show_labels` | `bool` | Afficher les labels des nœuds |
+| `line_width` | `float` | Épaisseur des lignes de connexion |
+| `width` / `height` | `int` | Dimensions du graphique |
+
+## Retour
+
+`Chart` — objet avec une propriété `.html` et une méthode `.show()`.
+
+## Exemple
+
+```python
+import seraplot as sp
+chart = sp.dendrogram(
+    "Organization Chart",
+    labels=["CEO", "CTO", "CFO", "Eng", "Design", "Finance", "Legal"],
+    parents=["", "CEO", "CEO", "CTO", "CTO", "CFO", "CFO"],
+)
+chart.show()
+```
+
+<div class="sp-cls sp-open" id="dend-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('dend-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('dend-fr','vertical',this)"><span class="sp-cic">↓</span><span class="sp-clb">Vertical</span></button>
+<button class="sp-cls-tab" onclick="spCls('dend-fr','horizontal',this)"><span class="sp-cic">→</span><span class="sp-clb">Horizontal</span></button>
+<button class="sp-cls-tab" onclick="spCls('dend-fr','radial',this)"><span class="sp-cic">◎</span><span class="sp-clb">Radial</span></button>
+<button class="sp-cls-tab" onclick="spCls('dend-fr','compact',this)"><span class="sp-cic">≡</span><span class="sp-clb">Compact</span></button>
+<button class="sp-cls-tab" onclick="spCls('dend-fr','elegant',this)"><span class="sp-cic">∫</span><span class="sp-clb">Élégant</span></button>
+</div>
+<div class="sp-cls-body">
+<div class="sp-variant sp-von" id="dend-fr-vertical">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"vertical"</code></span><span><strong>Alias</strong> <code>vertical / top / default / classic</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/dendrogram-vertical.html"></iframe>
+</div>
+<div class="sp-variant" id="dend-fr-horizontal">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"horizontal"</code></span><span><strong>Alias</strong> <code>horizontal / left / h</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/dendrogram-horizontal.html"></iframe>
+</div>
+<div class="sp-variant" id="dend-fr-radial">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"radial"</code></span><span><strong>Alias</strong> <code>radial / circular / polar</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/dendrogram-radial.html"></iframe>
+</div>
+<div class="sp-variant" id="dend-fr-compact">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"compact"</code></span><span><strong>Alias</strong> <code>compact / dense / tight</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/dendrogram-compact.html"></iframe>
+</div>
+<div class="sp-variant" id="dend-fr-elegant">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"elegant"</code></span><span><strong>Alias</strong> <code>elegant / smooth / rounded</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/dendrogram-elegant.html"></iframe>
 </div>
 </div>

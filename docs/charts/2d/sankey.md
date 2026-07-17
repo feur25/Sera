@@ -20,6 +20,8 @@ Aliases: `sp.sankey`, `sp.sankeys`, `sp.sankey_chart`, `sp.sankey_diagram`, `sp.
 
 Sankey diagrams visualize flows between nodes. Node widths and link widths are proportional to flow volumes. Edges are defined by source indices (`edges_i`), target indices (`edges_j`), and weights (`edges_w`). Nodes are laid out in columns by BFS depth.
 
+## Variants
+
 | Variant | Description |
 |---------|-------------|
 | `"basic"` | Standard bezier ribbon links |
@@ -39,6 +41,10 @@ Sankey diagrams visualize flows between nodes. Node widths and link widths are p
 | `variant` | `str` | Rendering style |
 | `palette` | `list[int]` | Custom colors |
 | `width` / `height` | `int` | Chart dimensions |
+
+## Returns
+
+`Chart` — object with `.html` property and `.show()` method.
 
 ## Example
 
@@ -87,6 +93,98 @@ chart.show()
 <div class="sp-variant" id="sankey-en-minimal">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / thin / outline</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 <div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/sankey-minimal.html"></iframe>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="lang-fr">
+
+## Signature
+
+`sp.sankey(title, labels, edges_i, edges_j, edges_w, *, variant="basic", **kwargs) -> Chart`
+
+Alias : `sp.sankey`, `sp.sankeys`, `sp.sankey_chart`, `sp.sankey_diagram`, `sp.flow_chart`
+
+## Description
+
+Les diagrammes de Sankey visualisent des flux entre nœuds. La largeur des nœuds et des liens est proportionnelle au volume du flux. Les arêtes sont définies par des indices source (`edges_i`), des indices cible (`edges_j`), et des poids (`edges_w`). Les nœuds sont disposés en colonnes par profondeur BFS.
+
+## Variantes
+
+| Variante | Description |
+|---------|-------------|
+| `"basic"` | Liens en rubans bézier standards |
+| `"gradient"` | Liens à couleur interpolée |
+| `"gapped"` | Espacement des nœuds augmenté |
+| `"ribbon"` | Nœuds et rubans plus larges |
+| `"minimal"` | Style filaire fin |
+
+## Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `labels` | `list[str]` | Noms des nœuds |
+| `edges_i` | `list[int]` | Indices des nœuds source |
+| `edges_j` | `list[int]` | Indices des nœuds cible |
+| `edges_w` | `list[float]` | Poids des flux |
+| `variant` | `str` | Style de rendu |
+| `palette` | `list[int]` | Couleurs personnalisées |
+| `width` / `height` | `int` | Dimensions du graphique |
+
+## Retour
+
+`Chart` — objet avec une propriété `.html` et une méthode `.show()`.
+
+## Exemple
+
+```python
+import seraplot as sp
+chart = sp.sankey(
+    "Energy Flow",
+    labels=["Coal", "Gas", "Nuclear", "Electricity", "Heat", "Loss"],
+    edges_i=[0, 1, 2, 3, 3],
+    edges_j=[3, 3, 3, 4, 5],
+    edges_w=[25, 30, 20, 40, 15],
+)
+chart.show()
+```
+
+<div class="sp-cls sp-open" id="sankey-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('sankey-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('sankey-fr','basic',this)"><span class="sp-cic">⇉</span><span class="sp-clb">Basique</span></button>
+<button class="sp-cls-tab" onclick="spCls('sankey-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
+<button class="sp-cls-tab" onclick="spCls('sankey-fr','gapped',this)"><span class="sp-cic">⇥</span><span class="sp-clb">Espacé</span></button>
+<button class="sp-cls-tab" onclick="spCls('sankey-fr','ribbon',this)"><span class="sp-cic">▬</span><span class="sp-clb">Ruban</span></button>
+<button class="sp-cls-tab" onclick="spCls('sankey-fr','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
+</div>
+<div class="sp-cls-body">
+<div class="sp-variant sp-von" id="sankey-fr-basic">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/sankey-basic.html"></iframe>
+</div>
+<div class="sp-variant" id="sankey-fr-gradient">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color / flow</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/sankey-gradient.html"></iframe>
+</div>
+<div class="sp-variant" id="sankey-fr-gapped">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gapped"</code></span><span><strong>Alias</strong> <code>gapped / spaced / separated</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/sankey-gapped.html"></iframe>
+</div>
+<div class="sp-variant" id="sankey-fr-ribbon">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"ribbon"</code></span><span><strong>Alias</strong> <code>ribbon / wide / thick</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/sankey-ribbon.html"></iframe>
+</div>
+<div class="sp-variant" id="sankey-fr-minimal">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / outline</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/sankey-minimal.html"></iframe>
 </div>
 </div>

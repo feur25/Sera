@@ -18,7 +18,9 @@ Aliases: `sp.correlogram`, `sp.corrplot`, `sp.correlation_matrix`, `sp.corr`, `s
 
 ## Description
 
-A correlogram visualizes a correlation matrix as a grid. Each cell encodes the Pearson correlation coefficient (–1 to +1) using color (red = positive, blue = negative) and either circle area, square fill, or text. The `matrix` is a flat N×N list in row-major order.
+A correlogram visualizes a correlation matrix as a grid. Each cell encodes the Pearson correlation coefficient (–1 to +1) using color (red = positive, blue = negative) and either circle area, square fill, or text. `matrix` is a nested N×N list — one inner list per row.
+
+## Variants
 
 | Variant | Description |
 |---------|-------------|
@@ -33,10 +35,14 @@ A correlogram visualizes a correlation matrix as a grid. Each cell encodes the P
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `labels` | `list[str]` | Variable names (length N) |
-| `matrix` | `list[float]` | Flat N×N correlation matrix |
+| `matrix` | `list[list[float]]` | N×N correlation matrix, one row per inner list |
 | `variant` | `str` | Rendering style |
 | `show_values` | `bool` | Overlay correlation values on cells |
 | `width` / `height` | `int` | Chart dimensions |
+
+## Returns
+
+`Chart` — object with `.html` property and `.show()` method.
 
 ## Example
 
@@ -46,10 +52,10 @@ chart = sp.correlogram(
     "Variable Correlations",
     labels=["Sales", "Price", "Rating", "Stock"],
     matrix=[
-         1.0,  0.8, -0.3,  0.5,
-         0.8,  1.0,  0.1, -0.2,
-        -0.3,  0.1,  1.0,  0.7,
-         0.5, -0.2,  0.7,  1.0,
+        [ 1.0,  0.8, -0.3,  0.5],
+        [ 0.8,  1.0,  0.1, -0.2],
+        [-0.3,  0.1,  1.0,  0.7],
+        [ 0.5, -0.2,  0.7,  1.0],
     ],
 )
 chart.show()
@@ -88,6 +94,99 @@ chart.show()
 <div class="sp-variant" id="corr-en-gradient">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / color / diverging</code></span></div>
 <div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/correlogram-gradient.html"></iframe>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="lang-fr">
+
+## Signature
+
+`sp.correlogram(title, labels, matrix, *, variant="circle", **kwargs) -> Chart`
+
+Alias : `sp.correlogram`, `sp.corrplot`, `sp.correlation_matrix`, `sp.corr`, `sp.correlation_map`
+
+## Description
+
+Un correlogramme visualise une matrice de corrélation sous forme de grille. Chaque cellule encode le coefficient de corrélation de Pearson (–1 à +1) à l'aide de la couleur (rouge = positif, bleu = négatif) et soit l'aire d'un cercle, soit le remplissage d'un carré, soit du texte. `matrix` est une liste imbriquée N×N — une liste interne par ligne.
+
+## Variantes
+
+| Variante | Description |
+|---------|-------------|
+| `"circle"` | Cercles dont le rayon encode |r| |
+| `"heatmap"` | Carrés pleins (heatmap standard) |
+| `"text"` | Valeurs de corrélation numériques seules |
+| `"mixed"` | Cercles + superposition de texte |
+| `"gradient"` | Identique à circle avec couleur divergente |
+
+## Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `labels` | `list[str]` | Noms des variables (longueur N) |
+| `matrix` | `list[list[float]]` | Matrice de corrélation N×N, une ligne par liste interne |
+| `variant` | `str` | Style de rendu |
+| `show_values` | `bool` | Superposer les valeurs de corrélation sur les cellules |
+| `width` / `height` | `int` | Dimensions du graphique |
+
+## Retour
+
+`Chart` — objet avec une propriété `.html` et une méthode `.show()`.
+
+## Exemple
+
+```python
+import seraplot as sp
+chart = sp.correlogram(
+    "Variable Correlations",
+    labels=["Sales", "Price", "Rating", "Stock"],
+    matrix=[
+        [ 1.0,  0.8, -0.3,  0.5],
+        [ 0.8,  1.0,  0.1, -0.2],
+        [-0.3,  0.1,  1.0,  0.7],
+        [ 0.5, -0.2,  0.7,  1.0],
+    ],
+)
+chart.show()
+```
+
+<div class="sp-cls sp-open" id="corr-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('corr-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('corr-fr','circle',this)"><span class="sp-cic">●</span><span class="sp-clb">Cercle</span></button>
+<button class="sp-cls-tab" onclick="spCls('corr-fr','heatmap',this)"><span class="sp-cic">▦</span><span class="sp-clb">Heatmap</span></button>
+<button class="sp-cls-tab" onclick="spCls('corr-fr','text',this)"><span class="sp-cic">𝑟</span><span class="sp-clb">Texte</span></button>
+<button class="sp-cls-tab" onclick="spCls('corr-fr','mixed',this)"><span class="sp-cic">◑</span><span class="sp-clb">Mixte</span></button>
+<button class="sp-cls-tab" onclick="spCls('corr-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
+</div>
+<div class="sp-cls-body">
+<div class="sp-variant sp-von" id="corr-fr-circle">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"circle"</code></span><span><strong>Alias</strong> <code>circle / default / classic</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/correlogram-circle.html"></iframe>
+</div>
+<div class="sp-variant" id="corr-fr-heatmap">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"heatmap"</code></span><span><strong>Alias</strong> <code>heatmap / heat / square</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/correlogram-heatmap.html"></iframe>
+</div>
+<div class="sp-variant" id="corr-fr-text">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"text"</code></span><span><strong>Alias</strong> <code>text / number / value</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/correlogram-text.html"></iframe>
+</div>
+<div class="sp-variant" id="corr-fr-mixed">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"mixed"</code></span><span><strong>Alias</strong> <code>mixed / combo / both</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/correlogram-mixed.html"></iframe>
+</div>
+<div class="sp-variant" id="corr-fr-gradient">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color / diverging</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/correlogram-gradient.html"></iframe>
 </div>
 </div>

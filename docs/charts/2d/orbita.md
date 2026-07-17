@@ -20,7 +20,9 @@ Aliases: `sp.orbita`, `sp.orbit`, `sp.orbit_chart`, `sp.orbital`, `sp.multi_orbi
 
 The Orbita chart is an original SeraPlot chart type that places multiple series on concentric ring orbits. Each series (orbit) maps categories to angular positions. The result is a planetary-system-style comparison across series and categories simultaneously, ideal for multi-period cross-category analysis.
 
-`matrix` is a flat S×C array in row-major order (S = number of series, C = number of categories).
+`matrix` is a nested S×C list — one inner list per series (S = number of series, C = number of categories).
+
+## Variants
 
 | Variant | Description |
 |---------|-------------|
@@ -36,13 +38,17 @@ The Orbita chart is an original SeraPlot chart type that places multiple series 
 |-----------|------|-------------|
 | `series_names` | `list[str]` | One name per orbit (e.g. years) |
 | `labels` | `list[str]` | Category names (angular positions) |
-| `matrix` | `list[float]` | Flat S×C value matrix |
+| `matrix` | `list[list[float]]` | S×C value matrix, one row per series |
 | `variant` | `str` | Rendering style |
 | `palette` | `list[int]` | Custom colors (one per series) |
 | `inner_r` | `float` | Radius of innermost orbit |
 | `orbit_gap` | `float` | Spacing between orbits |
 | `show_labels` | `bool` | Show category labels |
 | `width` / `height` | `int` | Chart dimensions (default 580×580) |
+
+## Returns
+
+`Chart` — object with `.html` property and `.show()` method.
 
 ## Example
 
@@ -53,9 +59,9 @@ chart = sp.orbita(
     series_names=["2022", "2023", "2024"],
     labels=["Q1", "Q2", "Q3", "Q4"],
     matrix=[
-        0.4, 0.7, 0.5, 0.8,
-        0.6, 0.5, 0.9, 0.6,
-        0.8, 0.7, 0.6, 0.9,
+        [0.4, 0.7, 0.5, 0.8],
+        [0.6, 0.5, 0.9, 0.6],
+        [0.8, 0.7, 0.6, 0.9],
     ],
 )
 chart.show()
@@ -94,6 +100,105 @@ chart.show()
 <div class="sp-variant" id="orb-en-minimal">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/orbita-minimal.html"></iframe>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="lang-fr">
+
+## Signature
+
+`sp.orbita(title, series_names, labels, matrix, *, variant="classic", **kwargs) -> Chart`
+
+Alias : `sp.orbita`, `sp.orbit`, `sp.orbit_chart`, `sp.orbital`, `sp.multi_orbit`, `sp.concentric`
+
+## Description
+
+L'Orbita chart est un type de graphique original de SeraPlot qui place plusieurs séries sur des orbites en anneaux concentriques. Chaque série (orbite) associe des catégories à des positions angulaires. Le résultat est une comparaison façon système planétaire à travers séries et catégories simultanément, idéale pour l'analyse croisée multi-période/multi-catégorie.
+
+`matrix` est une liste imbriquée S×C — une liste interne par série (S = nombre de séries, C = nombre de catégories).
+
+## Variantes
+
+| Variante | Description |
+|---------|-------------|
+| `"classic"` | Points de taille fixe sur les orbites |
+| `"bubble"` | Rayon des points proportionnel à la valeur |
+| `"trail"` | Traînée en polygone fermé reliant les points d'une série |
+| `"glow"` | Effet de lueur (flou gaussien) sur les points |
+| `"minimal"` | Points épurés, sans décoration d'orbite |
+
+## Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `series_names` | `list[str]` | Un nom par orbite (ex. années) |
+| `labels` | `list[str]` | Noms des catégories (positions angulaires) |
+| `matrix` | `list[list[float]]` | Matrice de valeurs S×C, une ligne par série |
+| `variant` | `str` | Style de rendu |
+| `palette` | `list[int]` | Couleurs personnalisées (une par série) |
+| `inner_r` | `float` | Rayon de l'orbite la plus intérieure |
+| `orbit_gap` | `float` | Espacement entre orbites |
+| `show_labels` | `bool` | Afficher les labels de catégorie |
+| `width` / `height` | `int` | Dimensions du graphique (défaut 580×580) |
+
+## Retour
+
+`Chart` — objet avec une propriété `.html` et une méthode `.show()`.
+
+## Exemple
+
+```python
+import seraplot as sp
+chart = sp.orbita(
+    "Quarterly Performance by Year",
+    series_names=["2022", "2023", "2024"],
+    labels=["Q1", "Q2", "Q3", "Q4"],
+    matrix=[
+        [0.4, 0.7, 0.5, 0.8],
+        [0.6, 0.5, 0.9, 0.6],
+        [0.8, 0.7, 0.6, 0.9],
+    ],
+)
+chart.show()
+```
+
+<div class="sp-cls sp-open" id="orb-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('orb-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('orb-fr','classic',this)"><span class="sp-cic">◎</span><span class="sp-clb">Classique</span></button>
+<button class="sp-cls-tab" onclick="spCls('orb-fr','bubble',this)"><span class="sp-cic">●</span><span class="sp-clb">Bulle</span></button>
+<button class="sp-cls-tab" onclick="spCls('orb-fr','trail',this)"><span class="sp-cic">∿</span><span class="sp-clb">Traînée</span></button>
+<button class="sp-cls-tab" onclick="spCls('orb-fr','glow',this)"><span class="sp-cic">✦</span><span class="sp-clb">Lueur</span></button>
+<button class="sp-cls-tab" onclick="spCls('orb-fr','minimal',this)"><span class="sp-cic">·</span><span class="sp-clb">Minimal</span></button>
+</div>
+<div class="sp-cls-body">
+<div class="sp-variant sp-von" id="orb-fr-classic">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"classic"</code></span><span><strong>Alias</strong> <code>classic / default / basic</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/orbita-classic.html"></iframe>
+</div>
+<div class="sp-variant" id="orb-fr-bubble">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"bubble"</code></span><span><strong>Alias</strong> <code>bubble / sized / area</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/orbita-bubble.html"></iframe>
+</div>
+<div class="sp-variant" id="orb-fr-trail">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"trail"</code></span><span><strong>Alias</strong> <code>trail / line / connected</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/orbita-trail.html"></iframe>
+</div>
+<div class="sp-variant" id="orb-fr-glow">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"glow"</code></span><span><strong>Alias</strong> <code>glow / neon / light</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/orbita-glow.html"></iframe>
+</div>
+<div class="sp-variant" id="orb-fr-minimal">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / clean</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/orbita-minimal.html"></iframe>
 </div>
 </div>

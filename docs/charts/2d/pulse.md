@@ -20,6 +20,8 @@ Aliases: `sp.pulse`, `sp.pulse_chart`, `sp.radial_bar`, `sp.clock_chart`, `sp.rh
 
 The Pulse chart is an original SeraPlot chart type that maps temporal or cyclic data onto a radial clock-face layout. Each slice is a time period (hour, day, month…) and the bar height encodes the intensity value. The `"wave"` variant connects data points into a smooth radial polygon.
 
+## Variants
+
 | Variant | Description |
 |---------|-------------|
 | `"radial"` | Clock-face arc bars per period |
@@ -39,6 +41,10 @@ The Pulse chart is an original SeraPlot chart type that maps temporal or cyclic 
 | `inner_r` | `float` | Inner ring radius (default 60) |
 | `show_labels` | `bool` | Show period labels |
 | `width` / `height` | `int` | Chart dimensions (default 560×560) |
+
+## Returns
+
+`Chart` — object with `.html` property and `.show()` method.
 
 ## Example
 
@@ -85,6 +91,96 @@ chart.show()
 <div class="sp-variant" id="pulse-en-gradient">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / color / heatring</code></span></div>
 <div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/pulse-gradient.html"></iframe>
+</div>
+</div>
+</div>
+
+</div>
+
+<div class="lang-fr">
+
+## Signature
+
+`sp.pulse(title, labels, values, *, variant="radial", **kwargs) -> Chart`
+
+Alias : `sp.pulse`, `sp.pulse_chart`, `sp.radial_bar`, `sp.clock_chart`, `sp.rhythm`, `sp.radial_rhythm`
+
+## Description
+
+Le Pulse chart est un type de graphique original de SeraPlot qui projette des données temporelles ou cycliques sur une disposition radiale façon cadran d'horloge. Chaque secteur est une période temporelle (heure, jour, mois…) et la hauteur de la barre encode la valeur d'intensité. La variante `"wave"` relie les points de données en un polygone radial lissé.
+
+## Variantes
+
+| Variante | Description |
+|---------|-------------|
+| `"radial"` | Barres en arc façon cadran par période |
+| `"wave"` | Polygone radial fermé et lissé |
+| `"dot"` | Nuage de points radial avec rayons de connexion |
+| `"filled"` | Barres en arc entièrement opaques |
+| `"gradient"` | Arcs en dégradé radial |
+
+## Paramètres
+
+| Paramètre | Type | Description |
+|-----------|------|-------------|
+| `labels` | `list[str]` | Labels de période (ex. jours, heures) |
+| `values` | `list[float]` | Intensité par période (échelle libre) |
+| `variant` | `str` | Style de rendu |
+| `palette` | `list[int]` | Couleurs personnalisées (une par segment) |
+| `inner_r` | `float` | Rayon de l'anneau intérieur (défaut 60) |
+| `show_labels` | `bool` | Afficher les labels de période |
+| `width` / `height` | `int` | Dimensions du graphique (défaut 560×560) |
+
+## Retour
+
+`Chart` — objet avec une propriété `.html` et une méthode `.show()`.
+
+## Exemple
+
+```python
+import seraplot as sp
+chart = sp.pulse(
+    "Weekly Activity",
+    labels=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    values=[0.6, 0.9, 0.75, 0.5, 0.85, 0.3, 0.4],
+)
+chart.show()
+```
+
+<div class="sp-cls sp-open" id="pulse-fr">
+<div class="sp-cls-rail">
+<button class="sp-cls-toggle" onclick="spClsTog('pulse-fr')" title="Réduire / déplier">⇆</button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('pulse-fr','radial',this)"><span class="sp-cic">◉</span><span class="sp-clb">Radial</span></button>
+<button class="sp-cls-tab" onclick="spCls('pulse-fr','wave',this)"><span class="sp-cic">∿</span><span class="sp-clb">Onde</span></button>
+<button class="sp-cls-tab" onclick="spCls('pulse-fr','dot',this)"><span class="sp-cic">•</span><span class="sp-clb">Point</span></button>
+<button class="sp-cls-tab" onclick="spCls('pulse-fr','filled',this)"><span class="sp-cic">●</span><span class="sp-clb">Plein</span></button>
+<button class="sp-cls-tab" onclick="spCls('pulse-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
+</div>
+<div class="sp-cls-body">
+<div class="sp-variant sp-von" id="pulse-fr-radial">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"radial"</code></span><span><strong>Alias</strong> <code>radial / default / classic</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/pulse-radial.html"></iframe>
+</div>
+<div class="sp-variant" id="pulse-fr-wave">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"wave"</code></span><span><strong>Alias</strong> <code>wave / sine / smooth</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/pulse-wave.html"></iframe>
+</div>
+<div class="sp-variant" id="pulse-fr-dot">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"dot"</code></span><span><strong>Alias</strong> <code>dot / scatter / bubble</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/pulse-dot.html"></iframe>
+</div>
+<div class="sp-variant" id="pulse-fr-filled">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"filled"</code></span><span><strong>Alias</strong> <code>filled / area / solid</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/pulse-filled.html"></iframe>
+</div>
+<div class="sp-variant" id="pulse-fr-gradient">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color / heatring</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/pulse-gradient.html"></iframe>
 </div>
 </div>
