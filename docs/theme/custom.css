@@ -365,6 +365,13 @@ iframe[loading="lazy"] {
   box-shadow: 0 0 0 1px rgba(99,102,241,.5), 0 2px 8px rgba(80,70,200,.35);
 }
 
+/* ── Per-variant Signature/Aliases/Code/Preview lives in the floating API
+   panel only (built live by injectVariantCls from the registry + WASM,
+   independent of this markup) — the static .sp-cls block some chart pages
+   embed inline is 1:1 redundant with it and never needs to render on the
+   page itself, only exist for the panel machinery to read. ──────────── */
+.content .sp-cls { display: none !important; }
+
 /* ── Classeur inside panel: hide built-in rail, strip container decorations ─ */
 #sp-params-panel .sp-pb .sp-cls {
   margin: 0 !important;
