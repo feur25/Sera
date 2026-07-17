@@ -78,7 +78,7 @@ chart.show()
 <div class="sp-variant" id="plot-web-en-radial">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"radial"</code></span><span><strong>Aliases</strong> <code>radial / solar / stellar / mandala / spider</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/plot-web.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/plot-web-radial.html"></iframe>
 </div>
 </div>
 </div>
@@ -141,7 +141,7 @@ Alias : `sp.plot_web`, `sp.web_plot`, `sp.plotweb`, `sp.carbon_web`, `sp.web_cha
 <div class="sp-variant" id="plot-web-fr-radial">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"radial"</code></span><span><strong>Aliases</strong> <code>radial / solar / stellar / mandala / spider</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/plot-web.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/plot-web-radial.html"></iframe>
 </div>
 </div>
 </div>
