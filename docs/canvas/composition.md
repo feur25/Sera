@@ -53,18 +53,265 @@ chart** updates that chart in place instead of stacking a duplicate — so
 
 ---
 
-## Shapes and text
+## Micro-tools: shared conventions
 
 `text`, `line`, `curve`, `connector`, `circle`, `ring`, `rect`, `polygon`,
-`path`, `arrow`, `annotate`, `gradient` draw directly on the canvas SVG layers
-(`layer="bg"` renders under the placed charts, `layer="fg"` — the default —
-renders on top). Every one of them accepts `name=""` for later addressing.
+`path`, `arrow`, `annotate` and `gradient` are the low-level drawing
+primitives everything else in `Canvas` (including `voronoi()`, below) is
+built from. They draw directly on the canvas SVG, and share two keywords:
+
+- `layer="fg"|"bg"` — `"bg"` renders under every `place()`d chart/image,
+  `"fg"` (the default) renders on top. Use `"bg"` for backdrops, card
+  panels and watermark-style decoration; `"fg"` for annotations, callouts
+  and anything that should sit above the data.
+- `name=""` — makes the element addressable afterward by `nudge`, `resize`,
+  `style`, `script`, `group`, `link`, and draggable in `dev()` mode. Naming
+  is free; name anything you might want to touch again.
+
+None of them require a `Chart` — a canvas full of nothing but these
+primitives is a valid way to hand-draw a diagram SeraPlot has no dedicated
+chart function for (see the closing example on this page).
+
+---
+
+## Lines, curves & connectors
+
+Four ways to draw *between* points — pick based on how many points and how
+rigid the shape between them needs to be.
+
+### `line` — straight segment
 
 ```python
-cv.rect(40, 40, 300, 200, fill="#171724", stroke="rgba(148,163,184,.15)",
-        rx=18, layer="bg", name="card")
-cv.text("Revenue", 60, 70, size=16, color="#f8fafc", weight="700", name="title")
+cv.line(x1, y1, x2, y2, color="#ffffff", width=1.5, dash="", opacity=1.0,
+         cap="round", layer="fg", hover_group="", name="")
 ```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `x1, y1, x2, y2` | `float` | required | Endpoints, in canvas pixels |
+| `color` | `str` | `"#ffffff"` | Stroke color |
+| `width` | `float` | `1.5` | Stroke width |
+| `dash` | `str` | `""` | SVG `stroke-dasharray`, e.g. `"6,4"` for a dashed line |
+| `opacity` | `float` | `1.0` | 0–1 |
+| `cap` | `str` | `"round"` | Line-end style: `"round"`, `"butt"`, or `"square"` |
+| `hover_group` | `str` | `""` | Adds an invisible wide hit-area alongside the (often thin) visible stroke, so the line reacts to hover as part of a `link()` group |
+| `name` | `str` | `""` | Addressable name |
+
+The plain straight-line primitive — axes, dividers, guide lines, or one leg
+of a hand-built diagram.
+
+### `curve` — smooth line through N points
+
+```python
+cv.curve(points, color="#ffffff", width=1.5, opacity=1.0, tension=1.0,
+          fill="none", layer="fg", name="")
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `points` | `list[[x, y]]` | required | Three or more waypoints the curve passes through |
+| `tension` | `float` | `1.0` | Catmull-Rom tension: `0` collapses to straight segments between points, `1` is a standard smooth spline, higher values pull the curve into more pronounced bulges past each point |
+| `fill` | `str` | `"none"` | Fills the area under the curve when set — a hand-drawn area-chart look |
+| *(color / width / opacity / layer / name — same as `line`)* | | | |
+
+Unlike `connector` (below), which always routes between exactly two points,
+`curve` interpolates through an arbitrary polyline of waypoints. Reach for
+it for hand-drawn trend lines, sparkline-style decoration, or free-form
+organic strokes that aren't tied to a `Chart`'s own axes:
+
+```python
+cv.curve([[40, 300], [140, 120], [260, 260], [400, 80]],
+          color="#22c55e", width=3, tension=0.8, name="trend-doodle")
+```
+
+### `connector` — S-curve between two points
+
+```python
+cv.connector(x1, y1, x2, y2, color="#ffffff", width=1.5, opacity=1.0,
+              bend=0.5, layer="fg", name="")
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `bend` | `float` | `0.5` | Fraction along the dominant axis (whichever of dx/dy is larger) where the bezier control points sit — `0.5` gives a symmetric S-curve; values toward `0` or `1` skew the curve's midpoint toward one end |
+| *(others — same as `line`)* | | | |
+
+The "flowchart wire" primitive: one cubic bezier that always produces a
+clean S- or L-shaped route between two points, regardless of their relative
+position. Use it to link two `place()`d panels or two named elements
+without hand-computing control points — `connect()` (under **Connecting
+two charts**, below) draws the exact same curve, but reads its endpoints
+from registered *pins* instead of raw coordinates.
+
+### `arrow` — directional line with an arrowhead
+
+```python
+cv.arrow(x1, y1, x2, y2, color="#ffffff", width=1.5, head_size=4.0,
+          opacity=1.0, layer="fg", name="")
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `head_size` | `float` | `4.0` | Arrowhead size in px — the marker scales with this, not with `width` |
+| *(others — same as `line`)* | | | |
+
+A `line` with an SVG `<marker>` arrowhead baked onto its end, for pointing
+*at* something rather than just connecting two things.
+
+---
+
+## Shapes
+
+Five ways to fill or stroke a region, from most constrained to most free-form.
+
+### `circle` / `ring`
+
+```python
+cv.circle(cx, cy, r, fill="none", stroke="#ffffff", stroke_width=1.5,
+           opacity=1.0, layer="fg", hover_group="", name="")
+cv.ring(cx, cy, inner_r, outer_r, fill="#ffffff", stroke="none",
+         stroke_width=0.0, opacity=1.0, layer="fg", name="")
+```
+
+`ring` is a donut: the filled region strictly between `inner_r` and
+`outer_r`, built from two arcs combined with `fill-rule="evenodd"` rather
+than a solid `<circle>`. Use it for radial progress rings, avatar frames,
+or halo highlights — anywhere `circle`'s solid disc would cover whatever
+sits underneath it.
+
+### `rect`
+
+```python
+cv.rect(x, y, w, h, fill="none", stroke="#ffffff", stroke_width=1.5,
+         rx=0.0, opacity=1.0, rotation=0.0, layer="fg", name="")
+```
+
+`rx` rounds the corners; `rotation` (degrees) spins the rect around its own
+center. The two together cover card backgrounds, chips/badges, and simple
+category-key swatches.
+
+### `polygon`
+
+```python
+cv.polygon(points, fill="none", stroke="#ffffff", stroke_width=1.5,
+            opacity=1.0, layer="fg", name="")
+```
+
+A closed shape through an arbitrary `list[[x, y]]` of vertices — the
+primitive `voronoi()` itself is built from (each cell it returns is one
+`polygon()` call under the hood). Use it directly for triangular/diamond
+markers, custom badge shapes, or any closed region `rect`/`circle` can't
+express.
+
+### `path`
+
+```python
+cv.path(d, fill="none", stroke="#ffffff", stroke_width=1.5, opacity=1.0,
+          layer="fg", name="")
+```
+
+The escape hatch: `d` is a raw SVG path-data string (`"M ... L ... A ... Z"`)
+for shapes none of the other primitives cover — logos, icons, arcs with a
+specific sweep, or geometry computed by your own code. This is exactly how
+[`icicle()`](../charts/2d/icicle.md)'s `"radial"` variant draws its annular
+sectors internally: hand-built `M`/`A`/`L`/`Z` strings, no separate arc
+primitive needed.
+
+---
+
+## Text & annotations
+
+### `text`
+
+```python
+cv.text(content, x, y, size=24.0, color="#ffffff", weight="normal",
+          anchor="start", rotation=0.0, letter_spacing=0.0,
+          font="sans-serif", opacity=1.0, layer="fg", name="")
+```
+
+`anchor` is the SVG text-anchor (`"start"`, `"middle"`, `"end"`) relative
+to `(x, y)` — `"middle"` centers a title over a panel, `"end"` right-aligns
+a value next to an axis.
+
+### `annotate` — leader-line label
+
+```python
+cv.annotate(text, ax, ay, tx, ty, color="#ffffff", size=13.0,
+             line_dash="", line_width=1.0, bg="", layer="fg", name="")
+```
+
+| Parameter | Type | Default | Description |
+|---|---|---|---|
+| `ax, ay` | `float` | required | The point being annotated — where the leader line starts |
+| `tx, ty` | `float` | required | Where the text itself sits — where the leader line ends |
+| `text` | `str` | required | Supports `\n` for multi-line labels |
+| `line_dash` | `str` | `""` | Dash pattern for the leader line, e.g. `"4,3"` |
+| `bg` | `str` | `""` | Background color behind the text; `""`/`"none"` draws no box |
+
+Unlike a plain `text()` + `line()` pair, `annotate()` auto-routes a clean
+two-segment elbow between `(ax, ay)` and `(tx, ty)` (picking the elbow
+point from whichever axis has the larger offset) and sizes its own
+background box to fit the text. The tool for "this specific point,
+labeled, with a callout line" — a bar's peak, a scatter outlier.
+`annotate_at()` (under **Connecting two charts**, below) is the
+pin-aware version of this same primitive, for labeling a point inside a
+`place()`d chart instead of a raw canvas coordinate.
+
+---
+
+## Color: `gradient`
+
+```python
+cv.gradient(id, from_color, to_color, x1=0.0, y1=0.0, x2=1.0, y2=0.0)
+```
+
+Registers an SVG `linearGradient` definition — `x1/y1/x2/y2` live in the
+`0..1` objectBoundingBox space, so `(0,0)→(1,0)` is left-to-right and
+`(0,0)→(0,1)` is top-to-bottom. It draws nothing by itself; call it once,
+then reference `fill=f"url(#{id})"` on any subsequent `rect`/`circle`/
+`polygon`/`path`:
+
+```python
+cv.gradient("card-glow", "#6366f1", "#0a0a0f", x1=0, y1=0, x2=0, y2=1)
+cv.rect(40, 40, 300, 200, fill="url(#card-glow)", rx=18, name="card")
+```
+
+---
+
+## Composing micro-tools: a radial dial
+
+None of the primitives above need a `Chart` at all — a canvas built only
+from them is a fully valid way to hand-draw a widget SeraPlot has no
+dedicated chart function for. `ring` only ever draws a *complete* annulus,
+so a partial-sweep progress dial needs `path` with a hand-computed SVG arc
+— exactly the "escape hatch" role described above:
+
+```python
+import math
+import seraplot as sp
+
+def arc_path(cx, cy, r, pct):
+    start = -math.pi / 2
+    end = start + 2 * math.pi * pct
+    x1, y1 = cx + r * math.cos(start), cy + r * math.sin(start)
+    x2, y2 = cx + r * math.cos(end), cy + r * math.sin(end)
+    large_arc = 1 if pct > 0.5 else 0
+    return f"M {x1:.2f},{y1:.2f} A {r},{r} 0 {large_arc},1 {x2:.2f},{y2:.2f}"
+
+cv = sp.Canvas(300, 300, bg="#0a0a0f")
+cv.gradient("dial-g", "#6366f1", "#22d3ee", x1=0, y1=0, x2=1, y2=1)
+cv.ring(150, 150, 100, 112, fill="#1e293b", name="track")
+cv.path(arc_path(150, 150, 106, 0.72), fill="none", stroke="url(#dial-g)",
+         stroke_width=12, name="progress")
+cv.text("72%", 150, 158, size=34, color="#f8fafc", weight="800",
+          anchor="middle", name="pct-label")
+chart = cv.build()
+```
+
+`ring` draws the static background track, `path` draws the live progress
+arc on top of it (stroked with the `gradient` defined a line earlier), and
+`text` centers the number — three primitives from three different sections
+above, one small self-contained gauge.
 
 ---
 
@@ -257,19 +504,277 @@ name="panel")` peut donc être rappelé sans risque.
 
 ---
 
-## Formes et texte
+## Micro-outils : conventions communes
 
 `text`, `line`, `curve`, `connector`, `circle`, `ring`, `rect`, `polygon`,
-`path`, `arrow`, `annotate`, `gradient` dessinent directement sur les
-couches SVG du canvas (`layer="bg"` sous les charts placés, `layer="fg"` —
-par défaut — au-dessus). Chacune accepte `name=""` pour un adressage
-ultérieur.
+`path`, `arrow`, `annotate` et `gradient` sont les primitives de dessin bas
+niveau à partir desquelles tout le reste de `Canvas` (y compris `voronoi()`,
+plus bas) est construit. Elles dessinent directement sur le SVG du canvas,
+et partagent deux mots-clés :
+
+- `layer="fg"|"bg"` — `"bg"` s'affiche sous chaque chart/image `place()`é,
+  `"fg"` (par défaut) s'affiche au-dessus. Utilisez `"bg"` pour les fonds,
+  panneaux-cartes et décorations façon filigrane ; `"fg"` pour les
+  annotations, callouts et tout ce qui doit rester au-dessus des données.
+- `name=""` — rend l'élément adressable ensuite par `nudge`, `resize`,
+  `style`, `script`, `group`, `link`, et déplaçable au glisser-déposer en
+  mode `dev()`. Nommer est gratuit ; nommez tout ce que vous pourriez
+  vouloir retoucher.
+
+Aucune de ces primitives ne nécessite un `Chart` — un canvas ne contenant
+que ces primitives est une façon parfaitement valide de dessiner à la main
+un diagramme pour lequel SeraPlot n'a pas de fonction de chart dédiée (voir
+l'exemple de clôture de cette page).
+
+---
+
+## Lignes, courbes & connecteurs
+
+Quatre façons de dessiner *entre* des points — le choix dépend du nombre de
+points et de la rigidité voulue pour la forme qui les relie.
+
+### `line` — segment droit
 
 ```python
-cv.rect(40, 40, 300, 200, fill="#171724", stroke="rgba(148,163,184,.15)",
-        rx=18, layer="bg", name="card")
-cv.text("Revenue", 60, 70, size=16, color="#f8fafc", weight="700", name="title")
+cv.line(x1, y1, x2, y2, color="#ffffff", width=1.5, dash="", opacity=1.0,
+         cap="round", layer="fg", hover_group="", name="")
 ```
+
+| Paramètre | Type | Défaut | Description |
+|---|---|---|---|
+| `x1, y1, x2, y2` | `float` | requis | Extrémités, en pixels canvas |
+| `color` | `str` | `"#ffffff"` | Couleur du trait |
+| `width` | `float` | `1.5` | Épaisseur du trait |
+| `dash` | `str` | `""` | `stroke-dasharray` SVG, ex. `"6,4"` pour un trait pointillé |
+| `opacity` | `float` | `1.0` | 0–1 |
+| `cap` | `str` | `"round"` | Style d'extrémité : `"round"`, `"butt"`, ou `"square"` |
+| `hover_group` | `str` | `""` | Ajoute une zone de survol invisible plus large que le trait visible (souvent fin), pour que la ligne réagisse au survol en tant que membre d'un groupe `link()` |
+| `name` | `str` | `""` | Nom adressable |
+
+La primitive ligne droite la plus simple — axes, séparateurs, lignes
+guides, ou un segment d'un diagramme construit à la main.
+
+### `curve` — ligne lissée passant par N points
+
+```python
+cv.curve(points, color="#ffffff", width=1.5, opacity=1.0, tension=1.0,
+          fill="none", layer="fg", name="")
+```
+
+| Paramètre | Type | Défaut | Description |
+|---|---|---|---|
+| `points` | `list[[x, y]]` | requis | Trois points ou plus par lesquels la courbe passe |
+| `tension` | `float` | `1.0` | Tension Catmull-Rom : `0` réduit la courbe à des segments droits entre les points, `1` donne une spline lissée standard, des valeurs plus hautes accentuent les bombements après chaque point |
+| `fill` | `str` | `"none"` | Remplit la zone sous la courbe si défini — effet aire dessinée à la main |
+| *(color / width / opacity / layer / name — comme `line`)* | | | |
+
+Contrairement à `connector` (ci-dessous), qui relie toujours exactement
+deux points, `curve` interpole à travers une polyligne arbitraire de
+points de passage. À utiliser pour des lignes de tendance dessinées à la
+main, des décorations façon sparkline, ou des traits organiques libres non
+liés aux axes d'un `Chart` :
+
+```python
+cv.curve([[40, 300], [140, 120], [260, 260], [400, 80]],
+          color="#22c55e", width=3, tension=0.8, name="trend-doodle")
+```
+
+### `connector` — courbe en S entre deux points
+
+```python
+cv.connector(x1, y1, x2, y2, color="#ffffff", width=1.5, opacity=1.0,
+              bend=0.5, layer="fg", name="")
+```
+
+| Paramètre | Type | Défaut | Description |
+|---|---|---|---|
+| `bend` | `float` | `0.5` | Fraction, le long de l'axe dominant (celui de dx/dy le plus grand), où se placent les points de contrôle de la bézier — `0.5` donne une courbe en S symétrique ; des valeurs vers `0` ou `1` décalent le milieu de la courbe vers une extrémité |
+| *(autres — comme `line`)* | | | |
+
+La primitive « fil de flowchart » : une seule bézier cubique qui produit
+toujours un tracé propre en S ou en L entre deux points, quelle que soit
+leur position relative. À utiliser pour relier deux panneaux `place()`és
+ou deux éléments nommés sans calculer les points de contrôle à la main —
+`connect()` (sous **Connecter deux charts**, plus bas) trace exactement la
+même courbe, mais lit ses extrémités depuis des *pins* enregistrés plutôt
+que des coordonnées brutes.
+
+### `arrow` — ligne directionnelle avec pointe de flèche
+
+```python
+cv.arrow(x1, y1, x2, y2, color="#ffffff", width=1.5, head_size=4.0,
+          opacity=1.0, layer="fg", name="")
+```
+
+| Paramètre | Type | Défaut | Description |
+|---|---|---|---|
+| `head_size` | `float` | `4.0` | Taille de la pointe en px — le marqueur suit cette valeur, pas `width` |
+| *(autres — comme `line`)* | | | |
+
+Une `line` avec une pointe de flèche SVG (`<marker>`) ajoutée à son
+extrémité, pour pointer *vers* quelque chose plutôt que simplement relier
+deux points.
+
+---
+
+## Formes
+
+Cinq façons de remplir ou tracer une région, de la plus contrainte à la
+plus libre.
+
+### `circle` / `ring`
+
+```python
+cv.circle(cx, cy, r, fill="none", stroke="#ffffff", stroke_width=1.5,
+           opacity=1.0, layer="fg", hover_group="", name="")
+cv.ring(cx, cy, inner_r, outer_r, fill="#ffffff", stroke="none",
+         stroke_width=0.0, opacity=1.0, layer="fg", name="")
+```
+
+`ring` est un anneau (donut) : la région remplie strictement entre
+`inner_r` et `outer_r`, construite à partir de deux arcs combinés avec
+`fill-rule="evenodd"` plutôt qu'un `<circle>` plein. À utiliser pour des
+anneaux de progression radiale, des cadres d'avatar, ou des halos de mise
+en valeur — partout où le disque plein de `circle` masquerait ce qu'il y a
+en dessous.
+
+### `rect`
+
+```python
+cv.rect(x, y, w, h, fill="none", stroke="#ffffff", stroke_width=1.5,
+         rx=0.0, opacity=1.0, rotation=0.0, layer="fg", name="")
+```
+
+`rx` arrondit les coins ; `rotation` (en degrés) fait pivoter le rectangle
+autour de son propre centre. Les deux ensemble couvrent les fonds de
+carte, badges/puces, et échantillons de légende de catégorie.
+
+### `polygon`
+
+```python
+cv.polygon(points, fill="none", stroke="#ffffff", stroke_width=1.5,
+            opacity=1.0, layer="fg", name="")
+```
+
+Une forme fermée à travers une liste arbitraire `list[[x, y]]` de
+sommets — la primitive à partir de laquelle `voronoi()` elle-même est
+construite (chaque cellule qu'elle renvoie est un appel `polygon()` en
+coulisses). À utiliser directement pour des marqueurs triangulaires/en
+losange, des formes de badge personnalisées, ou toute région fermée que
+`rect`/`circle` ne peuvent pas exprimer.
+
+### `path`
+
+```python
+cv.path(d, fill="none", stroke="#ffffff", stroke_width=1.5, opacity=1.0,
+          layer="fg", name="")
+```
+
+L'échappatoire : `d` est une chaîne de données de chemin SVG brute
+(`"M ... L ... A ... Z"`) pour les formes qu'aucune autre primitive ne
+couvre — logos, icônes, arcs avec un balayage spécifique, ou géométrie
+calculée par votre propre code. C'est exactement ainsi que la variante
+`"radial"` d'[`icicle()`](../charts/2d/icicle.md) dessine ses secteurs
+annulaires en interne : des chaînes `M`/`A`/`L`/`Z` construites à la main,
+sans primitive d'arc séparée.
+
+---
+
+## Texte & annotations
+
+### `text`
+
+```python
+cv.text(content, x, y, size=24.0, color="#ffffff", weight="normal",
+          anchor="start", rotation=0.0, letter_spacing=0.0,
+          font="sans-serif", opacity=1.0, layer="fg", name="")
+```
+
+`anchor` est le text-anchor SVG (`"start"`, `"middle"`, `"end"`) relatif à
+`(x, y)` — `"middle"` centre un titre au-dessus d'un panneau, `"end"`
+aligne une valeur à droite le long d'un axe.
+
+### `annotate` — étiquette avec ligne de rappel
+
+```python
+cv.annotate(text, ax, ay, tx, ty, color="#ffffff", size=13.0,
+             line_dash="", line_width=1.0, bg="", layer="fg", name="")
+```
+
+| Paramètre | Type | Défaut | Description |
+|---|---|---|---|
+| `ax, ay` | `float` | requis | Le point annoté — où commence la ligne de rappel |
+| `tx, ty` | `float` | requis | Où se trouve le texte lui-même — où finit la ligne de rappel |
+| `text` | `str` | requis | Supporte `\n` pour des étiquettes multi-lignes |
+| `line_dash` | `str` | `""` | Motif de tirets pour la ligne de rappel, ex. `"4,3"` |
+| `bg` | `str` | `""` | Couleur de fond derrière le texte ; `""`/`"none"` ne dessine aucun cadre |
+
+Contrairement à une paire `text()` + `line()`, `annotate()` route
+automatiquement un coude propre en deux segments entre `(ax, ay)` et
+`(tx, ty)` (le point de coude choisi selon l'axe ayant le plus grand
+écart) et dimensionne son propre cadre de fond pour s'ajuster au texte.
+L'outil pour « ce point précis, étiqueté, avec une ligne d'appel » — le
+pic d'une barre, un point aberrant sur un scatter. `annotate_at()` (sous
+**Connecter deux charts**, plus bas) est la version « pin-aware » de cette
+même primitive, pour étiqueter un point à l'intérieur d'un chart `place()`é
+plutôt qu'une coordonnée canvas brute.
+
+---
+
+## Couleur : `gradient`
+
+```python
+cv.gradient(id, from_color, to_color, x1=0.0, y1=0.0, x2=1.0, y2=0.0)
+```
+
+Enregistre une définition `linearGradient` SVG — `x1/y1/x2/y2` vivent dans
+l'espace objectBoundingBox `0..1`, donc `(0,0)→(1,0)` va de gauche à
+droite et `(0,0)→(0,1)` de haut en bas. Ne dessine rien par elle-même ;
+appelez-la une fois, puis référencez `fill=f"url(#{id})"` sur n'importe
+quel `rect`/`circle`/`polygon`/`path` suivant :
+
+```python
+cv.gradient("card-glow", "#6366f1", "#0a0a0f", x1=0, y1=0, x2=0, y2=1)
+cv.rect(40, 40, 300, 200, fill="url(#card-glow)", rx=18, name="card")
+```
+
+---
+
+## Composer les micro-outils : un cadran radial
+
+Aucune des primitives ci-dessus n'a besoin d'un `Chart` — un canvas
+construit uniquement à partir d'elles est une façon parfaitement valide de
+dessiner à la main un widget pour lequel SeraPlot n'a pas de fonction de
+chart dédiée. `ring` ne dessine jamais qu'un anneau *complet*, donc un
+cadran de progression à balayage partiel nécessite `path` avec un arc SVG
+calculé à la main — exactement le rôle d'« échappatoire » décrit plus haut :
+
+```python
+import math
+import seraplot as sp
+
+def arc_path(cx, cy, r, pct):
+    start = -math.pi / 2
+    end = start + 2 * math.pi * pct
+    x1, y1 = cx + r * math.cos(start), cy + r * math.sin(start)
+    x2, y2 = cx + r * math.cos(end), cy + r * math.sin(end)
+    large_arc = 1 if pct > 0.5 else 0
+    return f"M {x1:.2f},{y1:.2f} A {r},{r} 0 {large_arc},1 {x2:.2f},{y2:.2f}"
+
+cv = sp.Canvas(300, 300, bg="#0a0a0f")
+cv.gradient("dial-g", "#6366f1", "#22d3ee", x1=0, y1=0, x2=1, y2=1)
+cv.ring(150, 150, 100, 112, fill="#1e293b", name="track")
+cv.path(arc_path(150, 150, 106, 0.72), fill="none", stroke="url(#dial-g)",
+         stroke_width=12, name="progress")
+cv.text("72%", 150, 158, size=34, color="#f8fafc", weight="800",
+          anchor="middle", name="pct-label")
+chart = cv.build()
+```
+
+`ring` dessine la piste de fond statique, `path` dessine par-dessus l'arc
+de progression réel (tracé avec le `gradient` défini juste avant), et
+`text` centre le nombre — trois primitives issues de trois sections
+différentes ci-dessus, une seule jauge autonome.
 
 ---
 
