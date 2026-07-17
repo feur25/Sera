@@ -61,6 +61,7 @@ chart.show()
 <button class="sp-cls-toggle" onclick="spClsTog('eventplot-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('eventplot-en','basic',this)"><span class="sp-cic">┃</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('eventplot-en','density',this)"><span class="sp-cic">∿</span><span class="sp-clb">Density</span></button>
+<button class="sp-cls-tab" onclick="spCls('eventplot-en','gradient',this)"><span class="sp-cic">▤</span><span class="sp-clb">Gradient</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="eventplot-en-basic">
@@ -72,6 +73,12 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / kde / smoothed / rug</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/eventplot-density.html"></iframe>
+</div>
+<div class="sp-variant" id="eventplot-en-gradient">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / colorscale / heat / timeline</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Ticks colored by their position along the time axis via <code>colorscale=</code> (any of the 10 shared colorscales) instead of one flat color per row — makes it easy to spot when, not just which row, events cluster.</p>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/eventplot-gradient.html"></iframe>
 </div>
 </div>
 </div>
@@ -96,6 +103,7 @@ Alias : `sp.eventplot`, `sp.event_plot`, `sp.raster_plot`, `sp.spike_plot`, `sp.
 |---|---|---|
 | `"basic"` | `basic / default / classic / ticks` | Traits verticaux seuls, une couleur par ligne. |
 | `"density"` | `density / kde / smoothed / rug` | Traits verticaux plus une courbe de densité lissée par ligne, calculée avec le même estimateur de densité par noyau natif que [`kde()`](kde.md) (sélection de bande passante `scott_bw`, noyau gaussien) — un rug plot et un KDE en un seul graphique. |
+| `"gradient"` | `gradient / colorscale / heat / timeline` | Traits colorés selon leur position sur l'axe temporel via `colorscale=` (les 10 dégradés partagés du moteur continu), au lieu d'une couleur fixe par ligne — fait ressortir quand les événements se regroupent, pas seulement dans quelle ligne. |
 
 ## Paramètres
 
@@ -118,6 +126,7 @@ Alias : `sp.eventplot`, `sp.event_plot`, `sp.raster_plot`, `sp.spike_plot`, `sp.
 <button class="sp-cls-toggle" onclick="spClsTog('eventplot-fr')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('eventplot-fr','basic',this)"><span class="sp-cic">┃</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('eventplot-fr','density',this)"><span class="sp-cic">∿</span><span class="sp-clb">Density</span></button>
+<button class="sp-cls-tab" onclick="spCls('eventplot-fr','gradient',this)"><span class="sp-cic">▤</span><span class="sp-clb">Gradient</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="eventplot-fr-basic">
@@ -129,6 +138,12 @@ Alias : `sp.eventplot`, `sp.event_plot`, `sp.raster_plot`, `sp.spike_plot`, `sp.
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / kde / smoothed / rug</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/eventplot-density.html"></iframe>
+</div>
+<div class="sp-variant" id="eventplot-fr-gradient">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / colorscale / heat / timeline</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Traits colorés selon leur position sur l'axe temporel via <code>colorscale=</code>, au lieu d'une couleur fixe par ligne.</p>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/eventplot-gradient.html"></iframe>
 </div>
 </div>
 </div>

@@ -3,6 +3,7 @@ pub mod basic;
 pub mod common;
 pub mod config;
 pub mod density;
+pub mod gradient;
 pub mod variant;
 
 pub use config::EventplotConfig;
@@ -13,6 +14,7 @@ pub fn render_eventplot_html(cfg: &EventplotConfig) -> String {
     match cfg.variant {
         Basic => basic::render(cfg),
         Density => density::render(cfg),
+        Gradient => gradient::render(cfg),
     }
 }
 
@@ -31,6 +33,7 @@ pub fn build(input: &str) -> String {
     let palette = o.pal();
     let xl = o.xl();
     let yl = o.yl();
+    let colorscale = o.colorscale.clone().unwrap_or_default();
     let html = render_eventplot_html(&EventplotConfig {
         variant,
         title,
@@ -40,6 +43,7 @@ pub fn build(input: &str) -> String {
         x_values: &x_values,
         categories: &categories,
         palette: &palette,
+        colorscale: &colorscale,
         hover: &hover,
         width: o.w(900),
         height: o.h(500),
