@@ -18,6 +18,10 @@ Stacked bars are registered as the stacked variant of the Bar chart family.
 
 Chart object with an .html property and a .show() method.
 
+## Preview
+
+<iframe src="../../previews/stacked-bar.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+
 </div>
 
 <div class="lang-fr">
@@ -37,5 +41,9 @@ Les barres empilees sont enregistrees comme variante stacked de la famille Bar.
 <h2>Retour</h2>
 
 Objet Chart avec propriete .html et methode .show().
+
+<h2>Aperçu</h2>
+
+<iframe src="../../previews/stacked-bar.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 </div>

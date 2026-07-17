@@ -18,6 +18,10 @@ Area is the filled line-chart variant registered in the Line chart family.
 
 Chart object with an .html property and a .show() method.
 
+## Preview
+
+<iframe src="../../previews/area.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+
 </div>
 
 <div class="lang-fr">
@@ -37,5 +41,9 @@ Area est la variante remplie enregistree dans la famille Line.
 <h2>Retour</h2>
 
 Objet Chart avec propriete .html et methode .show().
+
+<h2>Aperçu</h2>
+
+<iframe src="../../previews/area.html" style="width:100%;height:380px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
 </div>
