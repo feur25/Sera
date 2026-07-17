@@ -26,6 +26,7 @@ Aliases: `sp.splom`, `sp.scatter_matrix`, `sp.splom_chart`, `sp.pairplot`, `sp.s
 |---|---|---|
 | `"basic"` | `basic / default / classic / dots` | Off-diagonal cells are plain scatter plots in a single palette color. |
 | `"correlation"` | `correlation / corr / heat / shaded` | Each off-diagonal cell's background is tinted by the Pearson correlation coefficient between its two dimensions (via the same continuous colorscale engine as [`heatmap()`](heatmap.md)), with points overlaid in a neutral color — a heatmap and a SPLOM in one chart. |
+| `"density"` | `density / alpha / overplot / cloud` | Every point drawn at 14% opacity with no stroke — overlapping points accumulate into darker regions, revealing density in datasets too large for solid dots to stay readable. |
 
 ## Parameters
 
@@ -62,6 +63,7 @@ chart.show()
 <button class="sp-cls-toggle" onclick="spClsTog('splom-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('splom-en','basic',this)"><span class="sp-cic">⬤</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('splom-en','correlation',this)"><span class="sp-cic">◐</span><span class="sp-clb">Correlation</span></button>
+<button class="sp-cls-tab" onclick="spCls('splom-en','density',this)"><span class="sp-cic">░</span><span class="sp-clb">Density</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="splom-en-basic">
@@ -73,6 +75,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"correlation"</code></span><span><strong>Aliases</strong> <code>correlation / corr / heat / shaded</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/splom-correlation.html"></iframe>
+</div>
+<div class="sp-variant" id="splom-en-density">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / alpha / overplot / cloud</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/splom-density.html"></iframe>
 </div>
 </div>
 </div>
@@ -97,6 +104,7 @@ Alias : `sp.splom`, `sp.scatter_matrix`, `sp.splom_chart`, `sp.pairplot`, `sp.sc
 |---|---|---|
 | `"basic"` | `basic / default / classic / dots` | Cellules hors-diagonale en nuage de points simple, couleur de palette unique. |
 | `"correlation"` | `correlation / corr / heat / shaded` | Le fond de chaque cellule hors-diagonale est teinté selon le coefficient de corrélation de Pearson entre ses deux dimensions (via le même moteur de dégradés continus que [`heatmap()`](heatmap.md)), avec les points superposés en couleur neutre — une heatmap et un SPLOM en un seul graphique. |
+| `"density"` | `density / alpha / overplot / cloud` | Chaque point dessiné à 14% d'opacité sans contour — les points superposés s'accumulent en zones plus sombres, révélant la densité sur des jeux de données trop grands pour rester lisibles en points pleins. |
 
 ## Paramètres
 
@@ -120,6 +128,7 @@ Alias : `sp.splom`, `sp.scatter_matrix`, `sp.splom_chart`, `sp.pairplot`, `sp.sc
 <button class="sp-cls-toggle" onclick="spClsTog('splom-fr')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('splom-fr','basic',this)"><span class="sp-cic">⬤</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('splom-fr','correlation',this)"><span class="sp-cic">◐</span><span class="sp-clb">Correlation</span></button>
+<button class="sp-cls-tab" onclick="spCls('splom-fr','density',this)"><span class="sp-cic">░</span><span class="sp-clb">Densité</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="splom-fr-basic">
@@ -131,6 +140,11 @@ Alias : `sp.splom`, `sp.scatter_matrix`, `sp.splom_chart`, `sp.pairplot`, `sp.sc
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"correlation"</code></span><span><strong>Aliases</strong> <code>correlation / corr / heat / shaded</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/splom-correlation.html"></iframe>
+</div>
+<div class="sp-variant" id="splom-fr-density">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"density"</code></span><span><strong>Alias</strong> <code>density / alpha / overplot / cloud</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/splom-density.html"></iframe>
 </div>
 </div>
 </div>
