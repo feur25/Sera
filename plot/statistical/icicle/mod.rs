@@ -4,6 +4,7 @@ pub mod common;
 pub mod config;
 pub mod gapped;
 pub mod horizontal;
+pub mod radial;
 pub mod variant;
 
 pub use config::IcicleConfig;
@@ -15,6 +16,7 @@ pub fn render_icicle_html(cfg: &IcicleConfig) -> String {
         Basic => basic::render(cfg),
         Gapped => gapped::render(cfg),
         Horizontal => horizontal::render(cfg),
+        Radial => radial::render(cfg),
     }
 }
 

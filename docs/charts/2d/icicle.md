@@ -29,6 +29,7 @@ Aliases: `sp.icicle`, `sp.icicles`, `sp.icicle_chart`, `sp.icicle_family`, `sp.b
 | `"basic"` | `basic / default / classic / layers` | Root row at the top, depth-based opacity, white separators between bands. |
 | `"gapped"` | `gapped / spaced / isolated / padded` | Rounded corners with a small gap between every node, both across and between rows. |
 | `"horizontal"` | `horizontal / h / sideways / left_to_right` | Root column on the left, depth grows rightward instead of downward. |
+| `"radial"` | `radial / sunburst / polar / mandala` | The same hierarchy in polar coordinates instead of cartesian — depth becomes ring radius, horizontal span becomes angular span. The classic icicle/sunburst duality: identical data, identical layout math (`xspan`, `depth`), different coordinate system. |
 
 ## Parameters
 
@@ -67,6 +68,7 @@ chart.show()
 <button class="sp-cls-tab sp-cact" onclick="spCls('icicle-en','basic',this)"><span class="sp-cic">▤</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('icicle-en','gapped',this)"><span class="sp-cic">▥</span><span class="sp-clb">Gapped</span></button>
 <button class="sp-cls-tab" onclick="spCls('icicle-en','horizontal',this)"><span class="sp-cic">▦</span><span class="sp-clb">Horizontal</span></button>
+<button class="sp-cls-tab" onclick="spCls('icicle-en','radial',this)"><span class="sp-cic">◉</span><span class="sp-clb">Radial</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="icicle-en-basic">
@@ -83,6 +85,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Aliases</strong> <code>horizontal / h / sideways / left_to_right</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/icicle-horizontal.html"></iframe>
+</div>
+<div class="sp-variant" id="icicle-en-radial">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"radial"</code></span><span><strong>Aliases</strong> <code>radial / sunburst / polar / mandala</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/icicle-radial.html"></iframe>
 </div>
 </div>
 </div>
@@ -110,6 +117,7 @@ Alias : `sp.icicle`, `sp.icicles`, `sp.icicle_chart`, `sp.icicle_family`, `sp.bu
 | `"basic"` | `basic / default / classic / layers` | Rangée racine en haut, opacité dégressive selon la profondeur, séparateurs blancs entre bandes. |
 | `"gapped"` | `gapped / spaced / isolated / padded` | Coins arrondis avec un petit espace entre chaque nœud, en largeur comme entre rangées. |
 | `"horizontal"` | `horizontal / h / sideways / left_to_right` | Colonne racine à gauche, la profondeur se développe vers la droite au lieu du bas. |
+| `"radial"` | `radial / sunburst / polar / mandala` | La même hiérarchie en coordonnées polaires plutôt que cartésiennes — la profondeur devient un rayon d'anneau, l'empan horizontal devient un empan angulaire. La dualité classique icicle/sunburst : mêmes données, même calcul de mise en page (`xspan`, `depth`), système de coordonnées différent. |
 
 ## Paramètres
 
@@ -134,6 +142,7 @@ Alias : `sp.icicle`, `sp.icicles`, `sp.icicle_chart`, `sp.icicle_family`, `sp.bu
 <button class="sp-cls-tab sp-cact" onclick="spCls('icicle-fr','basic',this)"><span class="sp-cic">▤</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('icicle-fr','gapped',this)"><span class="sp-cic">▥</span><span class="sp-clb">Gapped</span></button>
 <button class="sp-cls-tab" onclick="spCls('icicle-fr','horizontal',this)"><span class="sp-cic">▦</span><span class="sp-clb">Horizontal</span></button>
+<button class="sp-cls-tab" onclick="spCls('icicle-fr','radial',this)"><span class="sp-cic">◉</span><span class="sp-clb">Radial</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="icicle-fr-basic">
@@ -150,6 +159,11 @@ Alias : `sp.icicle`, `sp.icicles`, `sp.icicle_chart`, `sp.icicle_family`, `sp.bu
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"horizontal"</code></span><span><strong>Aliases</strong> <code>horizontal / h / sideways / left_to_right</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/icicle-horizontal.html"></iframe>
+</div>
+<div class="sp-variant" id="icicle-fr-radial">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"radial"</code></span><span><strong>Alias</strong> <code>radial / sunburst / polar / mandala</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/icicle-radial.html"></iframe>
 </div>
 </div>
 </div>

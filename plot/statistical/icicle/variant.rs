@@ -3,5 +3,6 @@ crate::plot_family! {
         Basic      => "basic" | "default" | "classic" | "layers",
         Gapped     => "gapped" | "spaced" | "isolated" | "padded",
         Horizontal => "horizontal" | "h" | "sideways" | "left_to_right",
+        Radial     => "radial" | "sunburst" | "polar" | "mandala",
     }
 }
