@@ -68,6 +68,37 @@ cv.text("Revenue", 60, 70, size=16, color="#f8fafc", weight="700", name="title")
 
 ---
 
+## Organic layouts: Voronoi
+
+`voronoi(sites, x, y, w, h, fills=None, stroke=..., stroke_width=..., opacity=...)`
+computes a bounded Voronoi diagram — one cell per site, each cell the region
+closer to that site than to any other — and adds every cell to the canvas as
+a `polygon()` in one call, returning their element indices for later
+addressing (hover groups, `derive()`, etc.). This is the same organic,
+cell-based layout technique behind editorial data-journalism pieces like
+[Nadieh Bremer's Highly Hazardous Pesticides](https://www.visualcinnamon.com/portfolio/highly-hazardous-pesticides/)
+— no off-the-shelf "voronoi chart type" needed, just the primitive.
+
+```python
+import random
+cv = sp.Canvas(900, 540)
+sites = [[random.uniform(30, 870), random.uniform(30, 510)] for _ in range(22)]
+palette = ["#6366f1", "#ec4899", "#22c55e", "#f59e0b", "#06b6d4", "#8b5cf6", "#ef4444"]
+fills = [palette[i % len(palette)] for i in range(len(sites))]
+cv.voronoi(sites, 0, 0, 900, 540, fills=fills, stroke="#0d1117", stroke_width=2, opacity=0.88)
+```
+
+<iframe src="../previews/canvas-voronoi.html" style="width:100%;height:420px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+
+Cell size follows site density automatically — cluster sites tightly to
+shrink their cells, useful for a treemap-like "one cell per record, colored
+by category, sized by local density" layout without a separate packing
+algorithm. Implemented natively (iterative half-plane clipping against
+every other site, no external geometry crate) rather than pulled in as a
+dependency.
+
+---
+
 ## Custom CSS / JS
 
 | Method | Effect |
@@ -239,6 +270,38 @@ cv.rect(40, 40, 300, 200, fill="#171724", stroke="rgba(148,163,184,.15)",
         rx=18, layer="bg", name="card")
 cv.text("Revenue", 60, 70, size=16, color="#f8fafc", weight="700", name="title")
 ```
+
+---
+
+## Mises en page organiques : Voronoi
+
+`voronoi(sites, x, y, w, h, fills=None, stroke=..., stroke_width=..., opacity=...)`
+calcule un diagramme de Voronoi borné — une cellule par site, chaque cellule
+étant la région plus proche de ce site que de tout autre — et ajoute chaque
+cellule au canvas comme un `polygon()` en un seul appel, en renvoyant leurs
+indices d'éléments pour un adressage ultérieur (groupes de survol,
+`derive()`, etc.). C'est la même technique de mise en page organique par
+cellules derrière des pièces éditoriales de data-journalisme comme
+[Highly Hazardous Pesticides de Nadieh Bremer](https://www.visualcinnamon.com/portfolio/highly-hazardous-pesticides/)
+— pas besoin d'un "type de chart voronoi" tout fait, juste la primitive.
+
+```python
+import random
+cv = sp.Canvas(900, 540)
+sites = [[random.uniform(30, 870), random.uniform(30, 510)] for _ in range(22)]
+palette = ["#6366f1", "#ec4899", "#22c55e", "#f59e0b", "#06b6d4", "#8b5cf6", "#ef4444"]
+fills = [palette[i % len(palette)] for i in range(len(sites))]
+cv.voronoi(sites, 0, 0, 900, 540, fills=fills, stroke="#0d1117", stroke_width=2, opacity=0.88)
+```
+
+<iframe src="../previews/canvas-voronoi.html" style="width:100%;height:420px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+
+La taille des cellules suit automatiquement la densité des sites — resserrer
+des sites rétrécit leurs cellules, utile pour une mise en page façon treemap
+("une cellule par enregistrement, colorée par catégorie, dimensionnée par
+densité locale") sans algorithme de packing séparé. Implémenté nativement
+(découpage itératif par demi-plans contre chaque autre site, aucune
+dépendance de géométrie externe).
 
 ---
 
