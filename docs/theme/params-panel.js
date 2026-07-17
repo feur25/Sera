@@ -126,12 +126,14 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
   function collectFrom(container) {
     if (!container) return null;
     var sigH2 = findH2(container, ["signature"]);
+    var varH2 = findH2(container, ["variants", "variantes"]);
     var parH2 = findH2(container, ["parameters", "param\u00e8tres", "parametres"]);
     var retH2 = findH2(container, ["returns", "retour", "retours", "retourne"]);
     if (!parH2) return null;
     var parSource = !!(parH2.closest && parH2.closest("[data-sp-panel-source], .sp-panel-source"));
 
     var sig    = extractAndHide(sigH2, true, true);
+    var vars   = extractAndHide(varH2, false, false);
     var params = extractAndHide(parH2, false, false);
     var rets   = extractAndHide(retH2, false, true);
 
@@ -139,6 +141,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
       signature:  sig    ? sig.main   : "",
       functionName: signatureFunctionName(sig ? sig.main : ""),
       alias:      sig    ? sig.alias  : "",
+      variantsHtml: vars ? vars.main   : "",
       parameters: params ? params.main : "",
       parametersSource: parSource,
       returns:    rets   ? rets.main   : ""
@@ -350,7 +353,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
     }
     div.querySelectorAll("tr").forEach(function (tr) {
       var cells = tr.querySelectorAll("td");
-      if (cells.length < 2) return;
+      if (cells.length !== 2) return;
       cells[1].textContent.split(",").forEach(function (v) {
         v = v.trim().toLowerCase();
         if (!v || v === "all" || v === "toutes" || v === "all variants") return;
@@ -656,7 +659,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
       var pageFamily = pageRegistryFamily();
       if (pageFamily && map[pageFamily]) family = pageFamily;
     }
-    var variants = variantsFor(family, data.parameters);
+    var variants = variantsFor(family, data.variantsHtml || data.parameters);
     if (!variants.length) return;
 
     var clsId = "pp-" + family + "-cls";
@@ -717,7 +720,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
           if (!sp2 || typeof sp2.demo !== "function") return;
           var root = document.getElementById(clsId);
           if (!root) return;
-          var liveVariants = variantsFor(family, data.parameters);
+          var liveVariants = variantsFor(family, data.variantsHtml || data.parameters);
           root.querySelectorAll(".sp-cls-tab").forEach(function (btn) {
             var variant = btn.getAttribute("data-variant") || "";
             var item = liveVariants.filter(function (it) { return it.key === variant; })[0] || { key: variant, aliases: [] };
