@@ -1,5 +1,6 @@
 use crate::plot::{apply, parse_all};
 pub mod basic;
+pub mod bubble;
 pub mod common;
 pub mod config;
 pub mod gradient;
@@ -13,6 +14,7 @@ pub fn render_scatter_ternary_html(cfg: &ScatterTernaryConfig) -> String {
     match cfg.variant {
         Basic => basic::render(cfg),
         Gradient => gradient::render(cfg),
+        Bubble => bubble::render(cfg),
     }
 }
 
