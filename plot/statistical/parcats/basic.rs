@@ -9,14 +9,18 @@ use crate::plot::statistical::sankey::common::{compute_layout, sankey_link_path}
 )]
 
 pub fn render(cfg: &ParcatsConfig) -> String {
-    render_impl(cfg, false)
+    render_impl(cfg, false, false)
 }
 
 pub fn render_gradient(cfg: &ParcatsConfig) -> String {
-    render_impl(cfg, true)
+    render_impl(cfg, true, false)
 }
 
-fn render_impl(cfg: &ParcatsConfig, gradient: bool) -> String {
+pub fn render_highlight(cfg: &ParcatsConfig) -> String {
+    render_impl(cfg, false, true)
+}
+
+fn render_impl(cfg: &ParcatsConfig, gradient: bool, highlight: bool) -> String {
     let p = match prepare(cfg) {
         Some(v) => v,
         None => return String::new(),
@@ -45,6 +49,19 @@ fn render_impl(cfg: &ParcatsConfig, gradient: bool) -> String {
         cfg.node_width,
         cfg.node_gap,
     );
+
+    let dominant_max = if highlight {
+        let mut m = vec![0.0f64; n];
+        for k in 0..e {
+            let s = p.sources[k] as usize;
+            if p.weights[k] > m[s] {
+                m[s] = p.weights[k];
+            }
+        }
+        m
+    } else {
+        Vec::new()
+    };
 
     let hid = html_id();
     let mut buf = Vec::<u8>::with_capacity(n * 200 + e * 400 + 8192);
@@ -107,7 +124,17 @@ fn render_impl(cfg: &ParcatsConfig, gradient: bool) -> String {
         push_f2(&mut buf, w);
         push_b(&mut buf, b"\" fill=\"");
         buf.extend_from_slice(color.as_bytes());
-        push_b(&mut buf, b"\" fill-opacity=\"0.45\" d=\"");
+        if highlight {
+            let is_dom = w >= dominant_max[s];
+            push_b(&mut buf, b"\" fill-opacity=\"");
+            push_b(&mut buf, if is_dom { b"0.78" } else { b"0.10" });
+            if is_dom {
+                push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"0.75\" stroke-opacity=\"0.6");
+            }
+        } else {
+            push_b(&mut buf, b"\" fill-opacity=\"0.45");
+        }
+        push_b(&mut buf, b"\" d=\"");
         sankey_link_path(&mut buf, layout.x[s], y0, layout.x[t], y1, src_h, tgt_h, cfg.node_width);
         push_b(&mut buf, b"\"/>");
     }

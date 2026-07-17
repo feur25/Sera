@@ -28,6 +28,7 @@ Aliases: `sp.parcats`, `sp.parallel_categories`, `sp.parcats_chart`, `sp.paralle
 |---|---|---|
 | `"basic"` | `basic / default / classic / flat` | Flat semi-transparent ribbons colored by their source node. |
 | `"gradient"` | `gradient / color / smooth_color / shaded` | Each ribbon fades from its source node's color to its target node's color. |
+| `"highlight"` | `highlight / dominant / spotlight / focus_flow` | Dims every ribbon except each node's single heaviest outgoing flow, which is boosted to full opacity with a thin white outline — traces the dominant path through the categories. |
 
 ## Parameters
 
@@ -69,6 +70,7 @@ chart.show()
 <button class="sp-cls-toggle" onclick="spClsTog('parcats-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('parcats-en','basic',this)"><span class="sp-cic">▤</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('parcats-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('parcats-en','highlight',this)"><span class="sp-cic">★</span><span class="sp-clb">Highlight</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="parcats-en-basic">
@@ -80,6 +82,11 @@ chart.show()
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / color / smooth_color / shaded</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parcats-gradient.html"></iframe>
+</div>
+<div class="sp-variant" id="parcats-en-highlight">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / dominant / spotlight / focus_flow</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parcats-highlight.html"></iframe>
 </div>
 </div>
 </div>
@@ -106,6 +113,7 @@ Alias : `sp.parcats`, `sp.parallel_categories`, `sp.parcats_chart`, `sp.parallel
 |---|---|---|
 | `"basic"` | `basic / default / classic / flat` | Rubans plats semi-transparents colorés selon leur nœud source. |
 | `"gradient"` | `gradient / color / smooth_color / shaded` | Chaque ruban dégrade de la couleur de son nœud source vers celle de son nœud cible. |
+| `"highlight"` | `highlight / dominant / spotlight / focus_flow` | Estompe tous les rubans sauf le flux sortant le plus lourd de chaque nœud, poussé à pleine opacité avec un fin contour blanc — trace le chemin dominant à travers les catégories. |
 
 ## Paramètres
 
@@ -128,6 +136,7 @@ Alias : `sp.parcats`, `sp.parallel_categories`, `sp.parcats_chart`, `sp.parallel
 <button class="sp-cls-toggle" onclick="spClsTog('parcats-fr')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('parcats-fr','basic',this)"><span class="sp-cic">▤</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('parcats-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('parcats-fr','highlight',this)"><span class="sp-cic">★</span><span class="sp-clb">Highlight</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="parcats-fr-basic">
@@ -139,6 +148,11 @@ Alias : `sp.parcats`, `sp.parallel_categories`, `sp.parcats_chart`, `sp.parallel
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / color / smooth_color / shaded</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parcats-gradient.html"></iframe>
+</div>
+<div class="sp-variant" id="parcats-fr-highlight">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / dominant / spotlight / focus_flow</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/parcats-highlight.html"></iframe>
 </div>
 </div>
 </div>

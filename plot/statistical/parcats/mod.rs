@@ -12,6 +12,7 @@ pub fn render_parcats_html(cfg: &ParcatsConfig) -> String {
     match cfg.variant {
         Basic => basic::render(cfg),
         Gradient => basic::render_gradient(cfg),
+        Highlight => basic::render_highlight(cfg),
     }
 }
 
