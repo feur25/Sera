@@ -4,7 +4,7 @@ use super::common::{
 use super::config::BulletConfig;
 use crate::plot::statistical::common::{hex6, push_b, push_i};
 
-#[crate::chart_demo("labels=[\"Revenue\",\"Profit\",\"CSAT\"], values=[80,65,4.2], targets=[90,70,4.5], max_vals=[120,100,5], ranges=[[40,70,100],[30,60,90],[2,3,4]]")]
+#[crate::chart_demo("labels=[\"Revenue\",\"Profit\",\"CSAT\"], values=[80,65,4.2], targets=[90,70,4.5], max_vals=[120,100,5]")]
 
 pub fn render(cfg: &BulletConfig) -> String {
     let p = match prepare(cfg) {

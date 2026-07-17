@@ -4,7 +4,7 @@ use crate::plot::statistical::common::{
     escape_xml, hex6, push_b, push_f2, push_i, svg_axis_lines, svg_vgrid, truncate,
 };
 
-#[crate::chart_demo("labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], series=[[24,38,17,42,29],[18,28,22,35,33]], series_names=[\"2023\",\"2024\"]")]
+#[crate::chart_demo("labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]")]
 
 pub fn render(cfg: &LollipopConfig) -> String {
     let p = match prepare(cfg) {
