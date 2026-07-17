@@ -46,7 +46,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
     if (!el) return false;
     var tag = el.tagName;
     if (tag === "STYLE" || tag === "SCRIPT" || tag === "IFRAME") return true;
-    if (tag === "DIV" && el.classList.contains("sp-tabs")) return true;
+    if (tag === "DIV" && (el.classList.contains("sp-tabs") || el.classList.contains("sp-cls"))) return true;
     return false;
   }
 
