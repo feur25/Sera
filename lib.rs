@@ -87,8 +87,6 @@ pub fn demo_snippet(family: &str, variant: &str) -> Option<String> {
 pub mod _py;
 pub mod bindings;
 pub mod html;
-#[cfg(feature = "python")]
-pub mod python;
 #[cfg(any(feature = "python", feature = "gui"))]
 pub mod viewer;
 #[cfg(feature = "webapp")]
