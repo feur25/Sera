@@ -401,12 +401,12 @@ impl crate::Chart {
 
 pub fn __init(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_class::<crate::Chart>()?;
-    m.add_class::<crate::canvas::Canvas>()?;
-    m.add_function(wrap_pyfunction!(crate::canvas::canvas, m)?)?;
-    m.add_function(wrap_pyfunction!(crate::canvas::canvas_load, m)?)?;
-    m.add_function(wrap_pyfunction!(crate::canvas::canvas_save_named, m)?)?;
-    m.add_function(wrap_pyfunction!(crate::canvas::canvas_load_named, m)?)?;
-    m.add_function(wrap_pyfunction!(crate::canvas::canvas_default_dir, m)?)?;
+    m.add_class::<crate::plot::dashboard::Canvas>()?;
+    m.add_function(wrap_pyfunction!(crate::plot::dashboard::canvas, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::plot::dashboard::canvas_load, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::plot::dashboard::canvas_save_named, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::plot::dashboard::canvas_load_named, m)?)?;
+    m.add_function(wrap_pyfunction!(crate::plot::dashboard::canvas_default_dir, m)?)?;
     m.add_class::<crate::PyDataset>()?;
     m.add_class::<crate::data::Table>()?;
     m.add_class::<crate::data::SeraDFrame_>()?;

@@ -3,9 +3,6 @@
 static GLOBAL_ALLOC: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 pub(crate) use bindings::chart_methods::apply::*;
-#[cfg(feature = "python")]
-pub mod canvas;
-pub mod cloud;
 pub mod core;
 #[path = "bindings/doc_registry.rs"]
 pub mod doc_registry;

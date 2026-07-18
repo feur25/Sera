@@ -2,8 +2,11 @@ pub mod camera;
 pub mod canvas;
 pub mod canvas_points;
 pub mod chart_input;
+pub mod cloud;
 pub mod containers_3d;
 pub mod controller;
+#[cfg(feature = "python")]
+pub mod dashboard;
 pub mod decimate;
 pub mod default;
 pub mod family_macro;

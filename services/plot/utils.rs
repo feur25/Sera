@@ -848,19 +848,19 @@ pub fn scale_plan(input: &str) -> String {
         mem_budget_mb: Option<u64>,
     }
     let v: In = serde_json::from_str(input).unwrap_or_default();
-    let p = crate::cloud::planner::plan(
+    let p = super::cloud::planner::plan(
         v.n_rows.unwrap_or(0),
         v.n_cols.unwrap_or(0),
         v.mem_budget_mb.unwrap_or(512),
     );
-    crate::cloud::planner::to_json(&p)
+    super::cloud::planner::to_json(&p)
 }
 
 #[crate::sera_alias("profile", "cloud_profile", "system_info")]
 #[crate::sera_register]
 pub fn system_profile(_input: &str) -> String {
-    let r = crate::cloud::profile::current();
-    crate::cloud::profile::to_json(&r)
+    let r = super::cloud::profile::current();
+    super::cloud::profile::to_json(&r)
 }
 
 #[crate::sera_alias("count_rows", "csv_rows")]
@@ -875,7 +875,7 @@ pub fn csv_count_rows(input: &str) -> String {
     if v.path.is_empty() {
         return "{\"error\":\"path required\"}".to_string();
     }
-    match crate::cloud::chunker::count_rows(&v.path, v.has_header.unwrap_or(true)) {
+    match super::cloud::chunker::count_rows(&v.path, v.has_header.unwrap_or(true)) {
         Ok(n) => serde_json::json!({"rows": n}).to_string(),
         Err(e) => serde_json::json!({"error": e.to_string()}).to_string(),
     }
@@ -900,7 +900,7 @@ pub fn csv_chunk_read(input: &str) -> String {
     let chunk = v.chunk_rows.unwrap_or(1000).max(1);
     let offset = v.offset_rows.unwrap_or(0);
     let has_header = v.has_header.unwrap_or(true);
-    let mut reader = match crate::cloud::chunker::CsvChunkReader::open(
+    let mut reader = match super::cloud::chunker::CsvChunkReader::open(
         &v.path,
         chunk + offset,
         has_header,
