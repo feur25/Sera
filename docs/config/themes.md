@@ -14,7 +14,7 @@
 import seraplot as sp
 
 sp.theme("dark")
-chart = sp.bar("Revenue", labels, values)
+chart = sp.bar("Revenue", labels=["Q1", "Q2", "Q3"], values=[120, 145, 98])
 
 sp.reset_theme()
 ```
@@ -32,12 +32,12 @@ sp.reset_theme()
 | Theme | Background | Gridlines | Inspiration | Primary palette |
 |---|---|:---:|---|---|
 | `"dark"` | <span class="sp-bg" style="background:#0f172a"></span> `#0f172a` | ✓ | Deep space / Tailwind indigo | <span class="sp-pal"><span class="sp-sw" style="background:#818CF8"></span><span class="sp-sw" style="background:#FB7185"></span><span class="sp-sw" style="background:#34D399"></span><span class="sp-sw" style="background:#FBBF24"></span><span class="sp-sw" style="background:#A78BFA"></span></span> |
-| `"light"` | transparent | — | Clean minimal | <span class="sp-pal"><span class="sp-sw" style="background:#6366F1"></span><span class="sp-sw" style="background:#F43F5E"></span><span class="sp-sw" style="background:#10B981"></span><span class="sp-sw" style="background:#F59E0B"></span><span class="sp-sw" style="background:#8B5CF6"></span></span> |
+| `"light"` | transparent | — | Clean minimal | <span class="sp-pal"><span class="sp-sw" style="background:#636EFA"></span><span class="sp-sw" style="background:#EF553B"></span><span class="sp-sw" style="background:#00CC96"></span><span class="sp-sw" style="background:#AB63FA"></span><span class="sp-sw" style="background:#FFA15A"></span></span> |
 | `"scientific"` | <span class="sp-bg" style="background:#fafafa;border:1px solid #ccc"></span> `#fafafa` | ✓ | Matplotlib / D3 academic | <span class="sp-pal"><span class="sp-sw" style="background:#1F77B4"></span><span class="sp-sw" style="background:#FF7F0E"></span><span class="sp-sw" style="background:#2CA02C"></span><span class="sp-sw" style="background:#D62728"></span><span class="sp-sw" style="background:#9467BD"></span></span> |
 | `"apple"` | <span class="sp-bg" style="background:#000000"></span> `#000000` | — | Apple dark mode (iOS/macOS) | <span class="sp-pal"><span class="sp-sw" style="background:#0A84FF"></span><span class="sp-sw" style="background:#30D158"></span><span class="sp-sw" style="background:#FF453A"></span><span class="sp-sw" style="background:#FFD60A"></span><span class="sp-sw" style="background:#BF5AF2"></span></span> |
-| `"notion"` | <span class="sp-bg" style="background:#191919"></span> `#191919` | — | Notion editorial dark | <span class="sp-pal"><span class="sp-sw" style="background:#E3E3E3"></span><span class="sp-sw" style="background:#A0A0A0"></span><span class="sp-sw" style="background:#CB9D6D"></span><span class="sp-sw" style="background:#7C9E7E"></span><span class="sp-sw" style="background:#7B8FC4"></span></span> |
+| `"notion"` | <span class="sp-bg" style="background:#191919"></span> `#191919` | — | Notion editorial dark | <span class="sp-pal"><span class="sp-sw" style="background:#529CCA"></span><span class="sp-sw" style="background:#D08B65"></span><span class="sp-sw" style="background:#6C9B7D"></span><span class="sp-sw" style="background:#CB7C7A"></span><span class="sp-sw" style="background:#9A6DD7"></span></span> |
 | `"minimal"` | transparent | — | Monochrome grayscale | <span class="sp-pal"><span class="sp-sw" style="background:#374151"></span><span class="sp-sw" style="background:#6B7280"></span><span class="sp-sw" style="background:#9CA3AF"></span><span class="sp-sw" style="background:#D1D5DB"></span><span class="sp-sw" style="background:#111827"></span></span> |
-| `"neon"` | <span class="sp-bg" style="background:#0a0a0a"></span> `#0a0a0a` | — | Cyberpunk / retrowave | <span class="sp-pal"><span class="sp-sw" style="background:#00FFF0"></span><span class="sp-sw" style="background:#FF00FF"></span><span class="sp-sw" style="background:#00FF41"></span><span class="sp-sw" style="background:#FF6B00"></span><span class="sp-sw" style="background:#FFFF00"></span></span> |
+| `"neon"` | <span class="sp-bg" style="background:#0a0a0a"></span> `#0a0a0a` | — | Cyberpunk / retrowave | <span class="sp-pal"><span class="sp-sw" style="background:#00FF87"></span><span class="sp-sw" style="background:#FF006E"></span><span class="sp-sw" style="background:#00B4D8"></span><span class="sp-sw" style="background:#FFBE0B"></span><span class="sp-sw" style="background:#E500A4"></span></span> |
 
 ---
 
@@ -53,8 +53,8 @@ sp.reset_theme()
 ### `"light"`
 
 ```python
-[0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B, 0x8B5CF6,
- 0x06B6D4, 0xEC4899, 0x84CC16, 0xEF4444, 0x14B8A6]
+[0x636EFA, 0xEF553B, 0x00CC96, 0xAB63FA, 0xFFA15A,
+ 0x19D3F3, 0xFF6692, 0xB6E880, 0xFF97FF, 0xFECB52]
 ```
 
 ### `"scientific"`
@@ -74,8 +74,8 @@ sp.reset_theme()
 ### `"notion"`
 
 ```python
-[0xE3E3E3, 0xA0A0A0, 0xCB9D6D, 0x7C9E7E, 0x7B8FC4,
- 0xC17B7B, 0xD4A76A, 0x8BA4B0, 0xB39DDB, 0x80CBC4]
+[0x529CCA, 0xD08B65, 0x6C9B7D, 0xCB7C7A, 0x9A6DD7,
+ 0x868686, 0xCCAA55, 0x75B5AA, 0xD477A8, 0x507AA6]
 ```
 
 ### `"minimal"`
@@ -88,8 +88,8 @@ sp.reset_theme()
 ### `"neon"`
 
 ```python
-[0x00FFF0, 0xFF00FF, 0x00FF41, 0xFF6B00, 0xFFFF00,
- 0xFF1493, 0x00BFFF, 0xFF4500, 0x7FFF00, 0xDA70D6]
+[0x00FF87, 0xFF006E, 0x00B4D8, 0xFFBE0B, 0xE500A4,
+ 0x8338EC, 0x3A86FF, 0xFB5607, 0xFF006E, 0x06D6A0]
 ```
 
 ---
@@ -100,13 +100,13 @@ sp.reset_theme()
 import seraplot as sp
 
 sp.theme("dark")
-sp.bar("Revenue", ["Q1", "Q2", "Q3", "Q4"], [120, 145, 98, 180]).show()
+sp.bar("Revenue", labels=["Q1", "Q2", "Q3", "Q4"], values=[120, 145, 98, 180]).show()
 
 sp.theme("neon")
-sp.scatter("Clusters", x, y).show()
+sp.scatter(title="Clusters", x=[1, 2, 3, 4, 5, 6], y=[2, 5, 3, 8, 7, 9]).show()
 
 sp.theme("scientific")
-sp.line("Population Growth", years, values).show()
+sp.line(title="Population Growth", x_labels=["2020", "2021", "2022", "2023"], values=[100, 112, 121, 135]).show()
 
 sp.reset_theme()
 ```
@@ -147,7 +147,7 @@ sp.config(font_size=16, border_radius=12)
 import seraplot as sp
 
 sp.theme("dark")
-graphique = sp.bar("Revenus", labels, values)
+graphique = sp.bar("Revenus", labels=["T1", "T2", "T3"], values=[120, 145, 98])
 
 sp.reset_theme()
 ```
@@ -159,12 +159,12 @@ sp.reset_theme()
 | Thème | Fond | Quadrillage | Inspiration | Palette principale |
 |---|---|:---:|---|---|
 | `"dark"` | <span class="sp-bg" style="background:#0f172a"></span> `#0f172a` | ✓ | Espace profond / indigo Tailwind | <span class="sp-pal"><span class="sp-sw" style="background:#818CF8"></span><span class="sp-sw" style="background:#FB7185"></span><span class="sp-sw" style="background:#34D399"></span><span class="sp-sw" style="background:#FBBF24"></span><span class="sp-sw" style="background:#A78BFA"></span></span> |
-| `"light"` | transparent | — | Épuré minimal | <span class="sp-pal"><span class="sp-sw" style="background:#6366F1"></span><span class="sp-sw" style="background:#F43F5E"></span><span class="sp-sw" style="background:#10B981"></span><span class="sp-sw" style="background:#F59E0B"></span><span class="sp-sw" style="background:#8B5CF6"></span></span> |
+| `"light"` | transparent | — | Épuré minimal | <span class="sp-pal"><span class="sp-sw" style="background:#636EFA"></span><span class="sp-sw" style="background:#EF553B"></span><span class="sp-sw" style="background:#00CC96"></span><span class="sp-sw" style="background:#AB63FA"></span><span class="sp-sw" style="background:#FFA15A"></span></span> |
 | `"scientific"` | <span class="sp-bg" style="background:#fafafa;border:1px solid #ccc"></span> `#fafafa` | ✓ | Matplotlib / D3 académique | <span class="sp-pal"><span class="sp-sw" style="background:#1F77B4"></span><span class="sp-sw" style="background:#FF7F0E"></span><span class="sp-sw" style="background:#2CA02C"></span><span class="sp-sw" style="background:#D62728"></span><span class="sp-sw" style="background:#9467BD"></span></span> |
 | `"apple"` | <span class="sp-bg" style="background:#000000"></span> `#000000` | — | Mode sombre Apple (iOS/macOS) | <span class="sp-pal"><span class="sp-sw" style="background:#0A84FF"></span><span class="sp-sw" style="background:#30D158"></span><span class="sp-sw" style="background:#FF453A"></span><span class="sp-sw" style="background:#FFD60A"></span><span class="sp-sw" style="background:#BF5AF2"></span></span> |
-| `"notion"` | <span class="sp-bg" style="background:#191919"></span> `#191919` | — | Notion éditorial sombre | <span class="sp-pal"><span class="sp-sw" style="background:#E3E3E3"></span><span class="sp-sw" style="background:#A0A0A0"></span><span class="sp-sw" style="background:#CB9D6D"></span><span class="sp-sw" style="background:#7C9E7E"></span><span class="sp-sw" style="background:#7B8FC4"></span></span> |
+| `"notion"` | <span class="sp-bg" style="background:#191919"></span> `#191919` | — | Notion éditorial sombre | <span class="sp-pal"><span class="sp-sw" style="background:#529CCA"></span><span class="sp-sw" style="background:#D08B65"></span><span class="sp-sw" style="background:#6C9B7D"></span><span class="sp-sw" style="background:#CB7C7A"></span><span class="sp-sw" style="background:#9A6DD7"></span></span> |
 | `"minimal"` | transparent | — | Nuances de gris monochrome | <span class="sp-pal"><span class="sp-sw" style="background:#374151"></span><span class="sp-sw" style="background:#6B7280"></span><span class="sp-sw" style="background:#9CA3AF"></span><span class="sp-sw" style="background:#D1D5DB"></span><span class="sp-sw" style="background:#111827"></span></span> |
-| `"neon"` | <span class="sp-bg" style="background:#0a0a0a"></span> `#0a0a0a` | — | Cyberpunk / retrowave | <span class="sp-pal"><span class="sp-sw" style="background:#00FFF0"></span><span class="sp-sw" style="background:#FF00FF"></span><span class="sp-sw" style="background:#00FF41"></span><span class="sp-sw" style="background:#FF6B00"></span><span class="sp-sw" style="background:#FFFF00"></span></span> |
+| `"neon"` | <span class="sp-bg" style="background:#0a0a0a"></span> `#0a0a0a` | — | Cyberpunk / retrowave | <span class="sp-pal"><span class="sp-sw" style="background:#00FF87"></span><span class="sp-sw" style="background:#FF006E"></span><span class="sp-sw" style="background:#00B4D8"></span><span class="sp-sw" style="background:#FFBE0B"></span><span class="sp-sw" style="background:#E500A4"></span></span> |
 
 ---
 
@@ -180,8 +180,8 @@ sp.reset_theme()
 ### `"light"`
 
 ```python
-[0x6366F1, 0xF43F5E, 0x10B981, 0xF59E0B, 0x8B5CF6,
- 0x06B6D4, 0xEC4899, 0x84CC16, 0xEF4444, 0x14B8A6]
+[0x636EFA, 0xEF553B, 0x00CC96, 0xAB63FA, 0xFFA15A,
+ 0x19D3F3, 0xFF6692, 0xB6E880, 0xFF97FF, 0xFECB52]
 ```
 
 ### `"scientific"`
@@ -201,8 +201,8 @@ sp.reset_theme()
 ### `"notion"`
 
 ```python
-[0xE3E3E3, 0xA0A0A0, 0xCB9D6D, 0x7C9E7E, 0x7B8FC4,
- 0xC17B7B, 0xD4A76A, 0x8BA4B0, 0xB39DDB, 0x80CBC4]
+[0x529CCA, 0xD08B65, 0x6C9B7D, 0xCB7C7A, 0x9A6DD7,
+ 0x868686, 0xCCAA55, 0x75B5AA, 0xD477A8, 0x507AA6]
 ```
 
 ### `"minimal"`
@@ -215,8 +215,8 @@ sp.reset_theme()
 ### `"neon"`
 
 ```python
-[0x00FFF0, 0xFF00FF, 0x00FF41, 0xFF6B00, 0xFFFF00,
- 0xFF1493, 0x00BFFF, 0xFF4500, 0x7FFF00, 0xDA70D6]
+[0x00FF87, 0xFF006E, 0x00B4D8, 0xFFBE0B, 0xE500A4,
+ 0x8338EC, 0x3A86FF, 0xFB5607, 0xFF006E, 0x06D6A0]
 ```
 
 ---
@@ -227,13 +227,13 @@ sp.reset_theme()
 import seraplot as sp
 
 sp.theme("dark")
-sp.bar("Revenus", ["T1", "T2", "T3", "T4"], [120, 145, 98, 180]).show()
+sp.bar("Revenus", labels=["T1", "T2", "T3", "T4"], values=[120, 145, 98, 180]).show()
 
 sp.theme("neon")
-sp.scatter("Clusters", x, y).show()
+sp.scatter(title="Clusters", x=[1, 2, 3, 4, 5, 6], y=[2, 5, 3, 8, 7, 9]).show()
 
 sp.theme("scientific")
-sp.line("Croissance démographique", annees, valeurs).show()
+sp.line(title="Croissance démographique", x_labels=["2020", "2021", "2022", "2023"], values=[100, 112, 121, 135]).show()
 
 sp.reset_theme()
 ```

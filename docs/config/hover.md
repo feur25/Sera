@@ -1,4 +1,4 @@
-# Infobulles personnalisées
+# Custom Tooltips
 
 <div class="lang-en">
 
@@ -11,7 +11,7 @@ chart.hover_json(slots_json: str) -> Chart
 `hover_json` is a chainable `Chart` method — not a standalone `sp.` function.
 It takes a single JSON string and returns a new `Chart` with the tooltip
 override applied, the same chaining shape as every other `Chart` method
-(`chart.title(...).hover_json(...).show()`).
+(`chart.subtitle(...).hover_json(...).show()`).
 
 ---
 
@@ -57,7 +57,7 @@ chart.hover_json(slots_json: str) -> Chart
 `hover_json` est une méthode chaînable sur `Chart` — pas une fonction `sp.`
 autonome. Elle prend une seule chaîne JSON et retourne un nouveau `Chart`
 avec l'override de tooltip appliqué, la même forme chaînable que toute autre
-méthode `Chart` (`chart.title(...).hover_json(...).show()`).
+méthode `Chart` (`chart.subtitle(...).hover_json(...).show()`).
 
 ---
 

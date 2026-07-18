@@ -1,4 +1,4 @@
-# Affichage automatique (Jupyter)
+# Auto-Display (Jupyter)
 
 <div class="lang-en">
 

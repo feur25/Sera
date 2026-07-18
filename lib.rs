@@ -1150,6 +1150,7 @@ pub fn set_global_background(color: &str) {
     if let Ok(mut bg) = GLOBAL_BACKGROUND.lock() {
         *bg = Some(color.to_string());
     }
+    crate::plot::set_global_bg(Some(color.to_string()));
 }
 
 #[sera_doc(
@@ -1163,6 +1164,7 @@ pub fn reset_global_background() {
     if let Ok(mut bg) = GLOBAL_BACKGROUND.lock() {
         *bg = None;
     }
+    crate::plot::set_global_bg(None);
 }
 
 #[sera_doc(
@@ -1200,6 +1202,9 @@ pub fn reset_theme() {
     if let Ok(mut tn) = GLOBAL_THEME_NAME.lock() {
         *tn = None;
     }
+    crate::plot::set_global_bg(None);
+    crate::plot::set_global_pal(Vec::new());
+    crate::plot::set_global_grid(false);
 }
 
 #[sera_doc(
@@ -2421,6 +2426,9 @@ pub fn theme(name: &str) -> PyResult<()> {
     if let Ok(mut theme_name) = GLOBAL_THEME_NAME.lock() {
         *theme_name = Some(name.to_string());
     }
+    crate::plot::set_global_bg(preset.bg.map(|value| value.to_string()));
+    crate::plot::set_global_pal(preset.palette.to_vec());
+    crate::plot::set_global_grid(preset.gridlines);
     Ok(())
 }
 
@@ -2573,14 +2581,17 @@ pub fn config(
         if let Ok(mut field) = GLOBAL_BACKGROUND.lock() {
             *field = Some(value.to_string());
         }
+        crate::plot::set_global_bg(Some(value.to_string()));
     }
     if let Some(value) = palette {
         if let Ok(mut field) = GLOBAL_PALETTE.lock() {
-            *field = Some(value);
+            *field = Some(value.clone());
         }
+        crate::plot::set_global_pal(value);
     }
     if let Some(value) = gridlines {
         GLOBAL_GRIDLINES.store(value, Relaxed);
+        crate::plot::set_global_grid(value);
     }
     if let Some(value) = text_auto {
         let text = if let Ok(boolean) = value.extract::<bool>() {

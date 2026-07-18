@@ -429,7 +429,8 @@
             '@keyframes sp-ripple{0%{box-shadow:0 0 0 0 rgba(34,197,94,.55)}100%{box-shadow:0 0 0 14px rgba(34,197,94,0)}}',
             '@keyframes sp-orb{0%{transform:translate3d(0,0,0)}50%{transform:translate3d(40px,-30px,0)}100%{transform:translate3d(0,0,0)}}',
             '@keyframes sp-rotate-bg{0%{background-position:0% 50%}100%{background-position:200% 50%}}',
-            '.sp-pg-wrap{position:relative;display:flex;flex-direction:column;overflow:hidden;margin:0 0 2.6rem;font-family:"Inter","Segoe UI",sans-serif;background:#0a0f1c;box-shadow:0 24px 70px -20px rgba(0,0,0,.7),0 0 0 1px #1e293b,inset 0 1px 0 rgba(255,255,255,.04)}',
+            '.sp-pg-wrap{position:relative;display:flex;flex-direction:column;overflow:hidden;margin:2.4em 0 2.6rem;font-family:"Inter","Segoe UI",sans-serif;background:#0a0f1c;box-shadow:0 24px 70px -20px rgba(0,0,0,.7),0 0 0 1px #1e293b,inset 0 1px 0 rgba(255,255,255,.04)}',
+            '.sp-pg-wrap.sp-pg-flush{margin-top:0}',
             '.sp-pg-wrap::before{content:"";position:absolute;inset:-1px;border-radius:15px;padding:1px;background:linear-gradient(120deg,rgba(99,102,241,.4),rgba(168,85,247,.3),rgba(34,211,238,.35),rgba(99,102,241,.4));background-size:200% 200%;animation:sp-rotate-bg 14s linear infinite;-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.5;z-index:0}',
             '.sp-pg-hdr,.sp-pg-tabs,.sp-pg-main{position:relative;z-index:1}',
             '.sp-pg-hdr{display:flex;align-items:center;gap:14px;padding:9px 14px;background:#0d1426;border-bottom:1px solid #1e293b;flex-wrap:wrap;row-gap:8px}',
@@ -756,6 +757,43 @@
         }
     }
 
+    function fitWrapWidth(wrap) {
+        var main = wrap.closest('main');
+        var content = main ? (main.closest('.content') || main.parentElement) : null;
+        if (!main || !content) return;
+        var pad = parseFloat(getComputedStyle(content).paddingLeft || '0') + parseFloat(getComputedStyle(content).paddingRight || '0');
+        var avail = content.clientWidth - pad;
+        var mainW = main.clientWidth;
+        if (avail <= mainW + 4) {
+            wrap.style.width = '';
+            wrap.style.marginLeft = '';
+            wrap.style.marginRight = '';
+            return;
+        }
+        var offset = (avail - mainW) / 2;
+        wrap.style.width = avail + 'px';
+        wrap.style.marginLeft = (-offset) + 'px';
+        wrap.style.marginRight = (-offset) + 'px';
+    }
+
+    function watchWrapWidth(wrap) {
+        var scheduled = false;
+        function schedule() {
+            if (scheduled) return;
+            scheduled = true;
+            requestAnimationFrame(function () { scheduled = false; fitWrapWidth(wrap); });
+        }
+        window.addEventListener('resize', schedule);
+        var toggle = document.getElementById('mdbook-sidebar-toggle-anchor');
+        if (toggle) toggle.addEventListener('change', function () { setTimeout(schedule, 320); });
+        var pageWrapper = document.querySelector('.page-wrapper');
+        if (pageWrapper) pageWrapper.addEventListener('transitionend', schedule);
+        if (window.ResizeObserver) {
+            var main = wrap.closest('main');
+            if (main) new ResizeObserver(schedule).observe(main);
+        }
+    }
+
     function buildUI() {
         injectStyles();
         var slug = state.slug;
@@ -803,7 +841,7 @@
 
         var contentRoot = document.querySelector('main') || document.querySelector('.content') || document.body;
         if (isFullPagePlayground()) {
-            wrap.style.margin = '0';
+            wrap.classList.add('sp-pg-flush');
             wrap.querySelector('.sp-pg-main').style.height = 'calc(100vh - 200px)';
             var h1 = contentRoot.querySelector('h1');
             if (h1 && h1.parentNode) h1.parentNode.insertBefore(wrap, h1.nextSibling);
@@ -811,6 +849,9 @@
         } else {
             contentRoot.appendChild(wrap);
         }
+
+        fitWrapWidth(wrap);
+        watchWrapWidth(wrap);
 
         state.iframe = wrap.querySelector('.sp-pg-iframe');
         state.statusDot = wrap.querySelector('.sp-pg-dot');

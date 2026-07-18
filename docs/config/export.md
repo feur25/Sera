@@ -80,9 +80,20 @@ const chart = sp.buildBarChart(JSON.stringify({
   labels: ["Q1", "Q2"],
   values: [120, 180],
 }));
-
-const written = sp.exportHtmlFile(JSON.stringify({ html: chart, path: "out.html" }));
 ```
+
+`exportHtmlFile` exists but currently always fails at runtime — the crate
+targets `wasm32-unknown-unknown`, which has no filesystem access to back
+`std::fs::write`, in Node or the browser alike:
+
+```js
+sp.exportHtmlFile(JSON.stringify({ html: chart, path: "out.html" }));
+// => '{"ok":false,"error":"operation not supported on this platform"}'
+```
+
+Write the returned HTML string to disk on the JS side instead
+(`fs.writeFileSync("out.html", chart)` in Node, or a `Blob` download in the
+browser).
 
 </div>
 
@@ -169,8 +180,19 @@ const chart = sp.buildBarChart(JSON.stringify({
   labels: ["T1", "T2"],
   values: [120, 180],
 }));
-
-const written = sp.exportHtmlFile(JSON.stringify({ html: chart, path: "out.html" }));
 ```
+
+`exportHtmlFile` existe mais échoue toujours à l'exécution aujourd'hui — le
+crate cible `wasm32-unknown-unknown`, qui n'a aucun accès au système de
+fichiers pour appuyer `std::fs::write`, ni dans Node ni dans le navigateur :
+
+```js
+sp.exportHtmlFile(JSON.stringify({ html: chart, path: "out.html" }));
+// => '{"ok":false,"error":"operation not supported on this platform"}'
+```
+
+Écrivez plutôt la chaîne HTML retournée sur disque côté JS
+(`fs.writeFileSync("out.html", chart)` en Node, ou un téléchargement `Blob`
+dans le navigateur).
 
 </div>
