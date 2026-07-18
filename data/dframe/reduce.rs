@@ -232,4 +232,28 @@ impl SeraDFrame_ {
         }
         best.ok_or_else(|| pyo3::exceptions::PyValueError::new_err("no non-NaN values"))
     }
+
+    #[sera_doc(
+        name = "SeraDFrame.first",
+        category = "data_method", file = "canvas/dframe.md", en = "First value of a numeric column.", fr = "Premiere valeur d'une colonne numerique.")]
+    fn first(&self, col: &str) -> PyResult<f64> {
+        self.inner
+            .get(col)?
+            .to_f64_vec()
+            .first()
+            .copied()
+            .ok_or_else(|| pyo3::exceptions::PyValueError::new_err("empty column"))
+    }
+
+    #[sera_doc(
+        name = "SeraDFrame.last",
+        category = "data_method", file = "canvas/dframe.md", en = "Last value of a numeric column.", fr = "Derniere valeur d'une colonne numerique.")]
+    fn last(&self, col: &str) -> PyResult<f64> {
+        self.inner
+            .get(col)?
+            .to_f64_vec()
+            .last()
+            .copied()
+            .ok_or_else(|| pyo3::exceptions::PyValueError::new_err("empty column"))
+    }
 }

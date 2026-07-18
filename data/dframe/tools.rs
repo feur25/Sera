@@ -9,84 +9,14 @@ use std::sync::Arc;
 #[sera_doc_impl]
 #[pymethods]
 impl SeraDFrame_ {
-    #[pyo3(name = "sort", signature = (cols, ascending = true))]
-    fn sort_alias(&self, cols: super::groupby::GroupKeys, ascending: bool) -> PyResult<SeraDFrame_> {
-        self.sort_values(cols, ascending)
-    }
-
     #[pyo3(name = "group_by")]
     fn group_by_alias(&self, keys: super::groupby::GroupKeys) -> SeraDFrameGroupBy {
         self.groupby(keys)
     }
 
-    #[pyo3(name = "dedupe", signature = (subset = None))]
-    fn dedupe_alias(&self, subset: Option<Vec<String>>) -> PyResult<SeraDFrame_> {
-        self.drop_duplicates(subset)
-    }
-
-    #[pyo3(name = "counts")]
-    fn counts_alias(&self, name: &str) -> PyResult<SeraDFrame_> {
-        self.value_counts(name)
-    }
-
-    #[pyo3(name = "where_eq")]
-    fn where_eq_alias(&self, name: &str, value: super::series::PyCell) -> PyResult<SeraDFrame_> {
-        self.filter_eq(name, value)
-    }
-
-    #[pyo3(name = "join", signature = (other, on, how = "inner"))]
-    fn join_alias(&self, other: &SeraDFrame_, on: super::groupby::GroupKeys, how: &str) -> PyResult<SeraDFrame_> {
-        self.merge(other, on, how)
-    }
-
-    #[pyo3(name = "unpivot")]
-    fn unpivot_alias(&self, id_vars: Vec<String>, value_vars: Vec<String>) -> PyResult<SeraDFrame_> {
-        self.melt(id_vars, value_vars)
-    }
-
-    #[pyo3(name = "is_null")]
-    fn is_null_alias(&self) -> SeraDFrame_ {
-        self.isna()
-    }
-
-    #[pyo3(name = "is_not_null")]
-    fn is_not_null_alias(&self) -> SeraDFrame_ {
-        self.notna()
-    }
-
-    #[pyo3(name = "isnull")]
-    fn isnull_alias(&self) -> SeraDFrame_ {
-        self.isna()
-    }
-
-    #[pyo3(name = "notnull")]
-    fn notnull_alias(&self) -> SeraDFrame_ {
-        self.notna()
-    }
-
     #[pyo3(name = "kurtosis")]
     fn kurtosis_alias(&self, col: &str) -> PyResult<f64> {
         self.kurt(col)
-    }
-
-    #[pyo3(name = "aggregate")]
-    fn aggregate_alias(&self, spec: &Bound<'_, PyDict>) -> PyResult<SeraDFrame_> {
-        self.agg(spec)
-    }
-
-    #[pyo3(name = "T")]
-    fn t_alias(&self) -> PyResult<SeraDFrame_> {
-        self.transpose(None)
-    }
-
-    #[pyo3(name = "filter")]
-    fn filter_alias(&self, expr: &str) -> PyResult<SeraDFrame_> {
-        self.query(expr)
-    }
-
-    #[pyo3(name = "map")]
-    fn map_alias(&self, col: &str, mapping: HashMap<String, String>) -> PyResult<SeraDFrame_> {
-        self.map_values(col, mapping)
     }
 
     #[pyo3(name = "is_in")]
@@ -97,16 +27,6 @@ impl SeraDFrame_ {
     #[pyo3(name = "is_duplicated", signature = (subset = None))]
     fn is_duplicated_alias(&self, subset: Option<Vec<String>>) -> PyResult<Vec<bool>> {
         self.duplicated(subset)
-    }
-
-    #[pyo3(name = "top_k")]
-    fn top_k_alias(&self, col: &str, n: usize) -> PyResult<SeraDFrame_> {
-        self.nlargest(col, n)
-    }
-
-    #[pyo3(name = "bottom_k")]
-    fn bottom_k_alias(&self, col: &str, n: usize) -> PyResult<SeraDFrame_> {
-        self.nsmallest(col, n)
     }
 
     #[pyo3(name = "to_dicts")]

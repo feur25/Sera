@@ -6,16 +6,6 @@ use pyo3::types::PyDict;
 #[sera_doc_impl]
 #[pymethods]
 impl Table {
-    #[pyo3(name = "sort", signature = (name, desc = false))]
-    fn sort_alias(&self, name: &str, desc: bool) -> PyResult<Table> {
-        self.sort_by(name, desc)
-    }
-
-    #[pyo3(name = "group_by_agg", signature = (group_col, value_col, agg = "sum"))]
-    fn group_by_agg_alias(&self, group_col: &str, value_col: &str, agg: &str) -> PyResult<Table> {
-        self.groupby_agg(group_col, value_col, agg)
-    }
-
     fn pipe(&self, func: &Bound<'_, PyAny>) -> PyResult<PyObject> {
         func.call1((self.clone(),)).map(|r| r.into())
     }

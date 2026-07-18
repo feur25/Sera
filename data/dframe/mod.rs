@@ -1,6 +1,7 @@
 mod attrs;
 mod bigdata;
 mod builder;
+mod chartbridge;
 mod combine;
 mod construct;
 mod datetime;
@@ -12,6 +13,7 @@ mod mask;
 mod query;
 mod reduce;
 mod relational;
+mod resample;
 mod reshape;
 mod rolling;
 mod series;

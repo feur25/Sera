@@ -1,4 +1,55 @@
 use crate::core::hw_profile::hw;
+use rayon::prelude::*;
+
+fn agg_bucket(vals: &[f64], agg: &str) -> f64 {
+    match agg {
+        "sum" => vals.iter().sum(),
+        "min" => vals.iter().copied().fold(f64::INFINITY, f64::min),
+        "max" => vals.iter().copied().fold(f64::NEG_INFINITY, f64::max),
+        "first" => vals[0],
+        "last" => vals[vals.len() - 1],
+        "median" => {
+            let mut sorted: Vec<f64> = vals.to_vec();
+            sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());
+            sorted[sorted.len() / 2]
+        }
+        _ => vals.iter().sum::<f64>() / vals.len() as f64,
+    }
+}
+
+pub fn bucket_downsample(x: &[f64], y: &[f64], max_points: usize, agg: &str) -> (Vec<f64>, Vec<f64>) {
+    let n = x.len().min(y.len());
+    if n == 0 || max_points == 0 || n <= max_points {
+        return (x[..n].to_vec(), y[..n].to_vec());
+    }
+    let chunk = (n + max_points - 1) / max_points;
+    let x_chunks: Vec<&[f64]> = x[..n].chunks(chunk).collect();
+    let y_chunks: Vec<&[f64]> = y[..n].chunks(chunk).collect();
+    x_chunks
+        .par_iter()
+        .zip(y_chunks.par_iter())
+        .map(|(xs, ys)| (xs[xs.len() / 2], agg_bucket(ys, agg)))
+        .unzip()
+}
+
+pub fn bucket_downsample_multi(
+    x: &[f64],
+    ys: &[&[f64]],
+    max_points: usize,
+    agg: &str,
+) -> (Vec<f64>, Vec<Vec<f64>>) {
+    let n = x.len();
+    if n == 0 || max_points == 0 || n <= max_points {
+        return (x.to_vec(), ys.iter().map(|y| y.to_vec()).collect());
+    }
+    let chunk = (n + max_points - 1) / max_points;
+    let out_x: Vec<f64> = x.chunks(chunk).map(|xs| xs[xs.len() / 2]).collect();
+    let out_ys: Vec<Vec<f64>> = ys
+        .par_iter()
+        .map(|y| y.chunks(chunk).map(|ys| agg_bucket(ys, agg)).collect())
+        .collect();
+    (out_x, out_ys)
+}
 
 pub struct DataProcessor {
     chunk_size: usize,
