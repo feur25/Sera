@@ -2967,6 +2967,51 @@ impl Chart {
 
     #[sera_doc(
         category = "chart_method",
+        aliases("gap_annotation", "compare_bars", "delta_bracket", "bracket_diff"),
+        file = "charts/chart.md",
+        en = "Draws a bracket connecting two specific data-point indices with the absolute and percentage difference between them — for comparing two arbitrary elements directly (e.g. Q1 vs Q4), unlike delta_labels() which only shows each point's change versus its immediate predecessor.",
+        fr = "Trace une accolade reliant deux index de points de donnée précis avec la différence absolue et en pourcentage entre eux — pour comparer deux éléments arbitraires directement (ex. T1 vs T4), contrairement à delta_labels() qui ne montre que le changement de chaque point face à son prédécesseur immédiat.",
+        param(name = "idx1", ty = "int", en = "Index of the first data point.", fr = "Index du premier point de donnée."),
+        param(name = "idx2", ty = "int", en = "Index of the second data point.", fr = "Index du second point de donnée."),
+        param(name = "color", ty = "str", en = "Bracket and label color. Default: #6366f1.", fr = "Couleur de l'accolade et du label. Défaut : #6366f1.")
+    )]
+    #[sera_sig(idx1, idx2, color = "#6366f1")]
+    pub fn annotate_gap(&self, idx1: usize, idx2: usize, color: &str) -> Chart {
+        self.propagate(apply_annotate_gap(self.html.clone(), idx1, idx2, color))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        aliases("annotate", "speech_bubble", "point_out", "flag_point"),
+        file = "charts/chart.md",
+        en = "Draws a free-text speech-bubble callout pointing at a specific data-point index — for a manual note ('data revised', 'one-off event') rather than a computed label like value_labels()/delta_labels().",
+        fr = "Dessine une bulle de texte libre pointant vers un index de point de donnée précis — pour une note manuelle ('donnée révisée', 'événement ponctuel') plutôt qu'un label calculé comme value_labels()/delta_labels().",
+        param(name = "index", ty = "int", en = "Data-point index to point at.", fr = "Index du point de donnée visé."),
+        param(name = "text", ty = "str", en = "Callout text.", fr = "Texte de la bulle."),
+        param(name = "color", ty = "str", en = "Callout background color. Default: #1e293b.", fr = "Couleur de fond de la bulle. Défaut : #1e293b.")
+    )]
+    #[sera_sig(index, text, color = "#1e293b")]
+    pub fn callout(&self, index: usize, text: &str, color: &str) -> Chart {
+        self.propagate(apply_callout(self.html.clone(), index, text, color))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        aliases("crossing_markers", "threshold_markers", "cross_points"),
+        file = "charts/chart.md",
+        en = "Marks every point where the series crosses a threshold value, with an up or down arrow, plus a dashed reference line at the threshold — answers 'when did we cross $1M' rather than flagging every value above/below it like reference_band()/highlight_range().",
+        fr = "Marque chaque point où la série franchit une valeur seuil, avec une flèche haut ou bas, plus une ligne de référence en pointillés au niveau du seuil — répond à « quand a-t-on dépassé 1M€ » plutôt que de signaler toutes les valeurs au-dessus/en-dessous comme reference_band()/highlight_range().",
+        param(name = "threshold", ty = "float", en = "Threshold value to detect crossings of.", fr = "Valeur seuil dont on détecte les franchissements."),
+        param(name = "up_color", ty = "str", en = "Color for upward crossings. Default: #22c55e.", fr = "Couleur des franchissements à la hausse. Défaut : #22c55e."),
+        param(name = "down_color", ty = "str", en = "Color for downward crossings. Default: #ef4444.", fr = "Couleur des franchissements à la baisse. Défaut : #ef4444.")
+    )]
+    #[sera_sig(threshold, up_color = "#22c55e", down_color = "#ef4444")]
+    pub fn threshold_crossings(&self, threshold: f64, up_color: &str, down_color: &str) -> Chart {
+        self.propagate(apply_threshold_crossings(self.html.clone(), threshold, up_color, down_color))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
         aliases("peaks_troughs", "local_extrema", "peak_finder", "swing_points"),
         file = "charts/chart.md",
         en = "Marks every local peak and trough along the series — not just the global max/min like annotate_max()/annotate_min() — with a small triangle above each peak and below each trough. Works on bar and scatter charts (ordered by data-idx).",

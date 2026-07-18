@@ -751,6 +751,43 @@ pub(crate) fn apply_sigma_bands(html: String, n: f64, color: &str, opacity: f64)
     html.replacen("</body>", &snippet, 1)
 }
 
+pub(crate) fn apply_annotate_gap(html: String, idx1: usize, idx2: usize, color: &str) -> String {
+    let cfg = format!("{{\"i1\":{},\"i2\":{},\"c\":{}}}", idx1, idx2, json_str(color));
+    let snippet = format!(
+        "<script>window.__sp_annotate_gap__={};{}</script></body>",
+        cfg, SP_ANNOTATE_GAP_JS
+    );
+    html.replacen("</body>", &snippet, 1)
+}
+
+pub(crate) fn apply_callout(html: String, index: usize, text: &str, color: &str) -> String {
+    let cfg = format!(
+        "{{\"i\":{},\"t\":{},\"c\":{}}}",
+        index,
+        json_str(text),
+        json_str(color)
+    );
+    let snippet = format!(
+        "<script>window.__sp_callout__={};{}</script></body>",
+        cfg, SP_CALLOUT_JS
+    );
+    html.replacen("</body>", &snippet, 1)
+}
+
+pub(crate) fn apply_threshold_crossings(html: String, threshold: f64, up_color: &str, down_color: &str) -> String {
+    let cfg = format!(
+        "{{\"t\":{},\"up\":{},\"dn\":{}}}",
+        threshold,
+        json_str(up_color),
+        json_str(down_color)
+    );
+    let snippet = format!(
+        "<script>window.__sp_threshold_crossings__={};{}</script></body>",
+        cfg, SP_THRESHOLD_CROSSINGS_JS
+    );
+    html.replacen("</body>", &snippet, 1)
+}
+
 pub(crate) fn apply_stats_badge(html: String, color: &str) -> String {
     let cfg = format!("{{\"c\":{}}}", json_str(color));
     let snippet = format!(

@@ -386,6 +386,58 @@ impl SeraDFrame_ {
         })
     }
 
+    #[sera_doc(
+        name = "SeraDFrame.insert",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Inserts a column at a specific position, unlike assign() which always appends at the end.",
+        fr = "Insere une colonne a une position precise, contrairement a assign() qui ajoute toujours a la fin."
+    )]
+    fn insert(&self, loc: usize, name: &str, values: &Bound<'_, PyAny>) -> PyResult<SeraDFrame_> {
+        let items: Vec<Bound<'_, PyAny>> = values.extract()?;
+        let series = column_from_pyobjects(items);
+        let mut order: Vec<String> = self.inner.order.iter().filter(|c| c.as_str() != name).cloned().collect();
+        let loc = loc.min(order.len());
+        order.insert(loc, name.to_string());
+        let mut columns = self.inner.columns.clone();
+        let nrows = series.len().max(self.inner.nrows);
+        columns.insert(name.to_string(), series);
+        Ok(SeraDFrame_ {
+            inner: Arc::new(SeraDFrame::from_parts(order, columns, nrows)),
+        })
+    }
+
+    #[sera_doc(
+        name = "SeraDFrame.copy",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Returns an independent copy of the frame.",
+        fr = "Retourne une copie independante du frame."
+    )]
+    fn copy(&self) -> SeraDFrame_ {
+        SeraDFrame_ {
+            inner: Arc::new((*self.inner).clone()),
+        }
+    }
+
+    #[sera_doc(
+        name = "SeraDFrame.info",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Human-readable summary: row/column count, each column's dtype, and estimated memory usage.",
+        fr = "Resume lisible : nombre de lignes/colonnes, type de chaque colonne, et memoire estimee."
+    )]
+    fn info(&self) -> String {
+        let mut out = format!("SeraDFrame: {} rows x {} columns\n", self.inner.nrows, self.inner.order.len());
+        for name in &self.inner.order {
+            let col = &self.inner.columns[name];
+            out.push_str(&format!("  {:<24} {}\n", name, col.dtype()));
+        }
+        let total_bytes: u64 = self.inner.order.iter().map(|n| self.inner.columns[n].byte_size()).sum();
+        out.push_str(&format!("memory usage: {:.1} KB\n", total_bytes as f64 / 1024.0));
+        out
+    }
+
     fn __len__(&self) -> usize {
         self.inner.nrows
     }

@@ -93,9 +93,10 @@ impl SeraDFrame_ {
         category = "data_method",
         file = "canvas/dframe.md",
         en = "Filters rows via a bounded expression string (single 'and'/'or' combinator, comparisons only).",
-        fr = "Filtre les lignes via une expression textuelle bornee (un seul combinateur 'and'/'or', comparaisons uniquement)."
+        fr = "Filtre les lignes via une expression textuelle bornee (un seul combinateur 'and'/'or', comparaisons uniquement).",
+        aliases("filter")
     )]
-    fn query(&self, expr: &str) -> PyResult<SeraDFrame_> {
+    pub(crate) fn query(&self, expr: &str) -> PyResult<SeraDFrame_> {
         let has_and = expr.contains(" and ");
         let has_or = expr.contains(" or ");
         if has_and && has_or {

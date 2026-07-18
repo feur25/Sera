@@ -79,6 +79,16 @@ impl SeraDFrame_ {
         self.transpose(None)
     }
 
+    #[pyo3(name = "filter")]
+    fn filter_alias(&self, expr: &str) -> PyResult<SeraDFrame_> {
+        self.query(expr)
+    }
+
+    #[pyo3(name = "map")]
+    fn map_alias(&self, col: &str, mapping: HashMap<String, String>) -> PyResult<SeraDFrame_> {
+        self.map_values(col, mapping)
+    }
+
     #[pyo3(name = "is_in")]
     fn is_in_alias(&self, col: &str, values: Vec<String>) -> PyResult<Vec<bool>> {
         self.isin(col, values)

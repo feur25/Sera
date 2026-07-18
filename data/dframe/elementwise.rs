@@ -181,9 +181,10 @@ impl SeraDFrame_ {
         category = "data_method",
         file = "canvas/dframe.md",
         en = "Substitutes column values via a dict mapping.",
-        fr = "Substitue les valeurs d'une colonne via un mapping dict."
+        fr = "Substitue les valeurs d'une colonne via un mapping dict.",
+        aliases("map")
     )]
-    fn map_values(&self, col: &str, mapping: HashMap<String, String>) -> PyResult<SeraDFrame_> {
+    pub(crate) fn map_values(&self, col: &str, mapping: HashMap<String, String>) -> PyResult<SeraDFrame_> {
         let series = self.inner.get(col)?;
         let strs = series.to_str_vec();
         let mapped: Vec<String> = strs.into_par_iter().map(|s| mapping.get(&s).cloned().unwrap_or(s)).collect();

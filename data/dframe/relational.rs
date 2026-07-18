@@ -209,6 +209,47 @@ impl SeraDFrame_ {
         wtr.flush().map_err(|e| pyo3::exceptions::PyIOError::new_err(e.to_string()))
     }
 
+    #[pyo3(signature = (orient = "records"))]
+    #[sera_doc(
+        name = "SeraDFrame.to_json",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Serializes to a JSON string. orient='records' (default) is a list of row objects; orient='columns' is a dict of column name to value list.",
+        fr = "Serialise en chaine JSON. orient='records' (defaut) est une liste d'objets par ligne ; orient='columns' est un dict nom de colonne vers liste de valeurs."
+    )]
+    fn to_json(&self, orient: &str) -> PyResult<String> {
+        let value = if orient == "columns" {
+            let mut obj = serde_json::Map::new();
+            for name in &self.inner.order {
+                let series = &self.inner.columns[name];
+                let arr: Vec<serde_json::Value> = match series {
+                    Series::Num(v) => v.iter().map(|x| serde_json::json!(x)).collect(),
+                    Series::Str(v) => v.iter().map(|x| serde_json::json!(x.as_ref())).collect(),
+                    Series::Bool(v) => v.iter().map(|x| serde_json::json!(x)).collect(),
+                };
+                obj.insert(name.clone(), serde_json::Value::Array(arr));
+            }
+            serde_json::Value::Object(obj)
+        } else {
+            let rows: Vec<serde_json::Value> = (0..self.inner.nrows)
+                .map(|i| {
+                    let mut obj = serde_json::Map::new();
+                    for name in &self.inner.order {
+                        let v = match &self.inner.columns[name] {
+                            Series::Num(c) => serde_json::json!(c[i]),
+                            Series::Str(c) => serde_json::json!(c[i].as_ref()),
+                            Series::Bool(c) => serde_json::json!(c[i]),
+                        };
+                        obj.insert(name.clone(), v);
+                    }
+                    serde_json::Value::Object(obj)
+                })
+                .collect();
+            serde_json::Value::Array(rows)
+        };
+        serde_json::to_string(&value).map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))
+    }
+
     #[sera_doc(
         name = "SeraDFrame.to_records",
         category = "data_method", file = "canvas/dframe.md", en = "Row-oriented list of dicts.", fr = "Vue orientee ligne, liste de dicts.", aliases("to_dicts"))]
