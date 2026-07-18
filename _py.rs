@@ -50,8 +50,12 @@ pub fn python_py_args_to_json(
     serde_json::Value::Object(map).to_string()
 }
 
-pub fn python_chart_from_html(html: String, _doc: &str) -> crate::Chart {
-    crate::Chart { html, doc_str: "" }
+pub fn python_chart_from_html(html: String, doc: &'static str) -> crate::Chart {
+    if doc.is_empty() {
+        crate::Chart::new(html)
+    } else {
+        crate::Chart::new_doc(html, doc)
+    }
 }
 
 fn py_any_to_json(v: &Bound<'_, PyAny>) -> serde_json::Value {
@@ -244,7 +248,7 @@ impl crate::Chart {
     #[new]
     #[pyo3(signature = (html = String::new()))]
     fn py_new(html: String) -> Self {
-        crate::Chart { html, doc_str: "" }
+        crate::Chart::new(html)
     }
 
     #[getter]
