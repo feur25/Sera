@@ -41,17 +41,21 @@ lazy_static::lazy_static! {
     static ref STORE: Mutex<ModelStore> = Mutex::new(ModelStore { entries: HashMap::new() });
 }
 
-fn alloc(model: Box<dyn Model>) -> ModelHandle {
+fn alloc(model: Box<dyn Model>) -> Result<ModelHandle, BindingError> {
     let id = NEXT_HANDLE.fetch_add(1, Ordering::SeqCst);
-    if let Ok(mut s) = STORE.lock() {
-        s.entries.insert(id, model);
-    }
-    ModelHandle(id)
+    let mut s = STORE
+        .lock()
+        .map_err(|_| BindingError::ComputeError("store lock".into()))?;
+    s.entries.insert(id, model);
+    Ok(ModelHandle(id))
 }
 
 pub fn model_free(handle: ModelHandle) {
-    if let Ok(mut s) = STORE.lock() {
-        s.entries.remove(&handle.0);
+    match STORE.lock() {
+        Ok(mut s) => {
+            s.entries.remove(&handle.0);
+        }
+        Err(_) => eprintln!("seraplot ml: model_free({}) skipped, store lock poisoned", handle.0),
     }
 }
 
@@ -126,7 +130,7 @@ pub fn model_create(kind: &str, params_json: &str) -> Result<ModelHandle, Bindin
         }),
         _ => return Err(BindingError::UnknownKind(kind.into())),
     };
-    Ok(alloc(boxed))
+    alloc(boxed)
 }
 
 struct LinearRegressionHandle {

@@ -33,27 +33,28 @@ const DEFAULT_COLORS: &[(u8, u32)] = &[(0, 0x50c878), (1, 0xf39c12), (2, 0x4a90e
 pub fn register_default_types() {
     let mut ids = Vec::new();
     for (id, name, renderer) in DEFAULT_RENDERERS {
-        let _ = ChartTypeBuilder::new(*id)
+        if let Err(e) = ChartTypeBuilder::new(*id)
             .with_name(name)
             .with_renderer(*renderer)
-            .build();
+            .build()
+        {
+            eprintln!("seraplot: failed to register default chart type '{name}' (id {id}): {e}");
+        }
         ids.push(*id);
     }
 
     for (id, svg_renderer) in DEFAULT_SVG_RENDERERS {
-        if let Ok(mut reg) = crate::plot::controller::chart_controller::get_registry().lock() {
-            reg.register_svg(*id, *svg_renderer);
-        }
+        with_registry_mut("register_default_types/svg", |reg| reg.register_svg(*id, *svg_renderer));
     }
 
     for (id, color) in DEFAULT_COLORS {
-        if let Ok(mut reg) = crate::plot::controller::chart_controller::get_registry().lock() {
-            reg.register_color(*id, *color);
-        }
+        with_registry_mut("register_default_types/color", |reg| reg.register_color(*id, *color));
     }
 
     if let Ok(mut grp_reg) = get_group_registry().lock() {
         grp_reg.register_group("default".to_string(), ids);
+    } else {
+        eprintln!("seraplot: failed to register 'default' chart group, group registry lock poisoned");
     }
 }
 

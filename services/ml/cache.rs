@@ -470,15 +470,29 @@ pub fn task_cleanup_old(max_age_ms: u64) -> usize {
     count
 }
 
-pub fn checkpoint_save(id: u64, weights: &[f64], iteration: usize) {
-    if let Ok(mut s) = mem_store().lock() {
-        s.insert(
-            id,
-            CheckpointEntry {
-                weights: weights.to_vec(),
-                iteration,
-            },
+static MEM_STORE_LOCK_WARNED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+fn warn_mem_store_lock_once(caller: &str) {
+    if !MEM_STORE_LOCK_WARNED.swap(true, std::sync::atomic::Ordering::Relaxed) {
+        eprintln!(
+            "seraplot ml: checkpoint in-memory store lock poisoned in {caller} \
+             (disk-backed task state still updates; this warning prints once)"
         );
+    }
+}
+
+pub fn checkpoint_save(id: u64, weights: &[f64], iteration: usize) {
+    match mem_store().lock() {
+        Ok(mut s) => {
+            s.insert(
+                id,
+                CheckpointEntry {
+                    weights: weights.to_vec(),
+                    iteration,
+                },
+            );
+        }
+        Err(_) => warn_mem_store_lock_once("checkpoint_save"),
     }
     let mut entry = task_read(id).unwrap_or_else(|| TaskEntry {
         task_id: id,
@@ -517,8 +531,11 @@ pub fn checkpoint_load(id: u64) -> Option<CheckpointEntry> {
 }
 
 pub fn checkpoint_clear(id: u64) {
-    if let Ok(mut s) = mem_store().lock() {
-        s.remove(&id);
+    match mem_store().lock() {
+        Ok(mut s) => {
+            s.remove(&id);
+        }
+        Err(_) => warn_mem_store_lock_once("checkpoint_clear"),
     }
 }
 

@@ -96,18 +96,13 @@ impl GroupAcc {
     }
 
     fn resolve(&self, agg: &str) -> Vec<f64> {
-        match agg {
-            "sum" => self.sum.clone(),
-            "count" => self.count.iter().map(|c| *c as f64).collect(),
-            "min" => self.min.iter().map(|v| if v.is_finite() { *v } else { 0.0 }).collect(),
-            "max" => self.max.iter().map(|v| if v.is_finite() { *v } else { 0.0 }).collect(),
-            _ => self
-                .sum
-                .iter()
-                .zip(self.count.iter())
-                .map(|(s, c)| if *c > 0 { s / *c as f64 } else { 0.0 })
-                .collect(),
-        }
+        (0..self.sum.len())
+            .map(|g| {
+                let min = if self.min[g].is_finite() { self.min[g] } else { 0.0 };
+                let max = if self.max[g].is_finite() { self.max[g] } else { 0.0 };
+                crate::core::dispatch::resolve_agg(agg, self.sum[g], min, max, self.count[g] as f64)
+            })
+            .collect()
     }
 }
 

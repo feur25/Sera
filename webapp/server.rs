@@ -16,7 +16,9 @@ pub async fn run_server<D: EventDispatcher + 'static>(addr: &str, dispatcher: Ar
         let (stream, _) = listener.accept().await?;
         let dispatcher = dispatcher.clone();
         tokio::spawn(async move {
-            let _ = handle_connection(stream, dispatcher).await;
+            if let Err(e) = handle_connection(stream, dispatcher).await {
+                eprintln!("seraplot webapp: connection error: {e}");
+            }
         });
     }
 }
@@ -66,9 +68,9 @@ async fn handle_ws_loop<D: EventDispatcher + 'static>(mut stream: TcpStream, dis
         while let Some(frame) = decode_frame(&pending) {
             let consumed = frame.consumed;
             match frame.opcode {
-                OPCODE_TEXT => {
-                    if let Ok(text) = String::from_utf8(frame.payload) {
-                        if let Ok(msg) = serde_json::from_str::<serde_json::Value>(&text) {
+                OPCODE_TEXT => match String::from_utf8(frame.payload) {
+                    Ok(text) => match serde_json::from_str::<serde_json::Value>(&text) {
+                        Ok(msg) => {
                             let id = msg.get("id").and_then(|v| v.as_str()).unwrap_or("");
                             let value = msg.get("value").and_then(|v| v.as_str()).unwrap_or("");
                             for (out_id, html) in dispatcher.on_event(id, value) {
@@ -76,8 +78,10 @@ async fn handle_ws_loop<D: EventDispatcher + 'static>(mut stream: TcpStream, dis
                                 stream.write_all(&encode_text_frame(&update.to_string())).await?;
                             }
                         }
-                    }
-                }
+                        Err(e) => eprintln!("seraplot webapp: malformed ws message JSON: {e}"),
+                    },
+                    Err(e) => eprintln!("seraplot webapp: non-utf8 ws frame: {e}"),
+                },
                 OPCODE_PING => {
                     stream.write_all(&super::ws::encode_frame(OPCODE_PONG, &frame.payload)).await?;
                 }

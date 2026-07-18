@@ -57,14 +57,24 @@ pub fn sanitize_non_finite_json(input: &str) -> String {
     out
 }
 
+fn parse_or_default<T: serde::de::DeserializeOwned + Default>(sanitized: &str, what: &str) -> T {
+    match serde_json::from_str(sanitized) {
+        Ok(v) => v,
+        Err(e) => {
+            eprintln!("seraplot: failed to parse {what} JSON ({e}), using defaults");
+            T::default()
+        }
+    }
+}
+
 pub fn parse_opts(opts: &str) -> ChartOpts {
     let sanitized = sanitize_non_finite_json(opts);
-    serde_json::from_str(&sanitized).unwrap_or_default()
+    parse_or_default(&sanitized, "chart opts")
 }
 
 pub fn parse_args(args: &str) -> ChartArgs {
     let sanitized = sanitize_non_finite_json(args);
-    serde_json::from_str(&sanitized).unwrap_or_default()
+    parse_or_default(&sanitized, "chart args")
 }
 
 pub fn parse_all(input: &str) -> (String, ChartArgs, ChartOpts) {
@@ -78,7 +88,7 @@ pub fn parse_all(input: &str) -> (String, ChartArgs, ChartOpts) {
         opts: ChartOpts,
     }
     let sanitized = sanitize_non_finite_json(input);
-    let all: All = serde_json::from_str(&sanitized).unwrap_or_default();
+    let all: All = parse_or_default(&sanitized, "chart input");
     (all.title, all.args, all.opts)
 }
 

@@ -1,4 +1,4 @@
-use crate::ml::linalg::{dot, mat_vec, solve_spd};
+use crate::ml::linalg::{dot, mat_vec, qr_solve, solve_spd};
 use rayon::prelude::*;
 
 #[crate::model(category = "Linear", domain = "ml")]
@@ -126,7 +126,25 @@ impl Ridge {
         for j in 0..p {
             ata[j * p + j] += self.alpha;
         }
-        self.coef = solve_spd(&ata, p, &atb).unwrap_or_else(|| vec![0.0; p]);
+        self.coef = match solve_spd(&ata, p, &atb) {
+            Some(w) => w,
+            None => {
+                eprintln!("Ridge: normal-equation solve failed (ill-conditioned design matrix), falling back to QR least-squares");
+                if self.fit_intercept {
+                    let mut xc = vec![0.0f64; n * p];
+                    let mut yc = vec![0.0f64; n];
+                    for i in 0..n {
+                        for j in 0..p {
+                            xc[i * p + j] = x[i * p + j] - means[j];
+                        }
+                        yc[i] = y[i] - y_mean;
+                    }
+                    qr_solve(&xc, n, p, &yc)
+                } else {
+                    qr_solve(x, n, p, y)
+                }
+            }
+        };
         self.intercept = if self.fit_intercept {
             y_mean - dot(&self.coef, &means)
         } else {

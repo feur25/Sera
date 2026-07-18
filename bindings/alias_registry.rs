@@ -92,12 +92,13 @@ pub fn save_to_disk(path: Option<&str>) -> Result<String, String> {
     Ok(p.to_string_lossy().to_string())
 }
 
-pub fn load_from_disk(path: Option<&str>) -> bool {
+pub fn load_from_disk(path: Option<&str>) -> Result<bool, String> {
     let p = path
         .map(std::path::PathBuf::from)
         .unwrap_or_else(default_config_path);
     match std::fs::read_to_string(&p) {
-        Ok(content) => add_aliases_from_json(&content),
-        Err(_) => false,
+        Ok(content) => Ok(add_aliases_from_json(&content)),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(false),
+        Err(e) => Err(e.to_string()),
     }
 }

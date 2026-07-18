@@ -44,11 +44,17 @@ impl CsvData {
         headers
             .iter()
             .filter(|col| {
-                rows.iter().all(|row| {
-                    row.get(*col)
-                        .map(|v| v.parse::<f64>().is_ok())
-                        .unwrap_or(true)
-                })
+                let mut has_value = false;
+                let all_parseable_where_present = rows.iter().all(|row| match row.get(*col) {
+                    Some(v) => {
+                        has_value = true;
+                        v.parse::<f64>().is_ok()
+                    }
+                    // a missing cell doesn't disqualify the column -- only a
+                    // present-but-non-numeric one does
+                    None => true,
+                });
+                all_parseable_where_present && has_value
             })
             .cloned()
             .collect()

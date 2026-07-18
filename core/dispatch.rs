@@ -120,6 +120,28 @@ impl SliceStats {
             self.sum / self.count as f64
         }
     }
+
+    #[inline]
+    pub fn resolve(&self, kind: &str) -> f64 {
+        resolve_agg(kind, self.sum, self.min, self.max, self.count as f64)
+    }
+}
+
+#[inline]
+pub fn resolve_agg(kind: &str, sum: f64, min: f64, max: f64, count: f64) -> f64 {
+    match kind {
+        "sum" => sum,
+        "min" => min,
+        "max" => max,
+        "count" => count,
+        _ => {
+            if count > 0.0 {
+                sum / count
+            } else {
+                0.0
+            }
+        }
+    }
 }
 
 #[inline]

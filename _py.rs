@@ -208,8 +208,9 @@ fn _alias_save(path: Option<&str>) -> PyResult<String> {
 
 #[pyfunction]
 #[pyo3(signature = (path = None))]
-fn _alias_load(path: Option<&str>) -> bool {
+fn _alias_load(path: Option<&str>) -> PyResult<bool> {
     crate::bindings::alias_registry::load_from_disk(path)
+        .map_err(pyo3::exceptions::PyOSError::new_err)
 }
 
 #[pyfunction]

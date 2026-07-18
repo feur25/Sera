@@ -21,26 +21,27 @@ const MAP_COLORS: &[(u8, u32)] = &[(20, 0xF43F5E), (21, 0x636EFA)];
 pub fn register_map_types() {
     let mut ids = Vec::new();
     for (id, name, renderer) in MAP_RENDERERS {
-        let _ = ChartTypeBuilder::new(*id)
+        if let Err(e) = ChartTypeBuilder::new(*id)
             .with_name(name)
             .with_renderer(*renderer)
-            .build();
+            .build()
+        {
+            eprintln!("seraplot: failed to register map chart type '{name}' (id {id}): {e}");
+        }
         ids.push(*id);
     }
 
     for (id, svg_renderer) in MAP_SVG_RENDERERS {
-        if let Ok(mut reg) = get_registry().lock() {
-            reg.register_svg(*id, *svg_renderer);
-        }
+        with_registry_mut("register_map_types/svg", |reg| reg.register_svg(*id, *svg_renderer));
     }
 
     for (id, color) in MAP_COLORS {
-        if let Ok(mut reg) = get_registry().lock() {
-            reg.register_color(*id, *color);
-        }
+        with_registry_mut("register_map_types/color", |reg| reg.register_color(*id, *color));
     }
 
     if let Ok(mut grp_reg) = get_group_registry().lock() {
         grp_reg.register_group("map".to_string(), ids);
+    } else {
+        eprintln!("seraplot: failed to register 'map' chart group, group registry lock poisoned");
     }
 }

@@ -47,14 +47,7 @@ impl SeraDFrame_ {
             let mut out_vals = Vec::with_capacity(bucket_order.len());
             for b in &bucket_order {
                 let sub: Vec<f64> = bucket_rows[b].iter().map(|&i| vals[i]).collect();
-                let s = stats_par(&sub);
-                out_vals.push(match agg_kind.as_str() {
-                    "sum" => s.sum,
-                    "min" => s.min,
-                    "max" => s.max,
-                    "count" => s.count as f64,
-                    _ => s.mean(),
-                });
+                out_vals.push(stats_par(&sub).resolve(&agg_kind));
             }
             order.push(out_name.clone());
             columns.insert(out_name, Series::Num(Arc::new(out_vals)));

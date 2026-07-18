@@ -170,16 +170,22 @@ pub fn register_statistical_types() {
     let names = ["pie", "heatmap", "histogram", "grouped_bar"];
 
     for (&id, &name) in ids.iter().zip(names.iter()) {
-        let _ = ChartTypeBuilder::new(id)
+        if let Err(e) = ChartTypeBuilder::new(id)
             .with_name(name)
             .with_renderer(noop_renderer)
-            .build();
-        if let Ok(mut reg) = crate::plot::controller::chart_controller::get_registry().lock() {
-            reg.register_svg(id, noop_svg_renderer);
+            .build()
+        {
+            eprintln!("seraplot: failed to register statistical chart type '{name}' (id {id}): {e}");
         }
+        crate::plot::controller::chart_controller::with_registry_mut(
+            "register_statistical_types/svg",
+            |reg| reg.register_svg(id, noop_svg_renderer),
+        );
     }
 
     if let Ok(mut grp_reg) = get_group_registry().lock() {
         grp_reg.register_group("statistical".to_string(), ids);
+    } else {
+        eprintln!("seraplot: failed to register 'statistical' chart group, group registry lock poisoned");
     }
 }

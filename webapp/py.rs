@@ -11,6 +11,15 @@ pub struct App {
     state: Arc<Mutex<AppState>>,
 }
 
+impl App {
+    fn with_state(&self, caller: &str, f: impl FnOnce(&mut AppState)) {
+        match self.state.lock() {
+            Ok(mut state) => f(&mut state),
+            Err(_) => eprintln!("seraplot webapp: App.{caller} skipped, state lock poisoned"),
+        }
+    }
+}
+
 #[pymethods]
 impl App {
     #[new]
@@ -21,9 +30,7 @@ impl App {
 
     #[pyo3(signature = (path, title = None))]
     fn page(slf: PyRefMut<'_, Self>, path: String, title: Option<String>) -> PyRefMut<'_, Self> {
-        if let Ok(mut state) = slf.state.lock() {
-            state.page(&path, title);
-        }
+        slf.with_state("page", |state| state.page(&path, title));
         slf
     }
 
@@ -31,9 +38,7 @@ impl App {
     fn dropdown(slf: PyRefMut<'_, Self>, id: String, options: Vec<String>, value: Option<String>) -> PyRefMut<'_, Self> {
         let selected = value.unwrap_or_else(|| options.first().cloned().unwrap_or_default());
         let html = dropdown_html(&id, &options, &selected);
-        if let Ok(mut state) = slf.state.lock() {
-            state.add_component(&id, html, &selected);
-        }
+        slf.with_state("dropdown", |state| state.add_component(&id, html, &selected));
         slf
     }
 
@@ -41,52 +46,42 @@ impl App {
     fn slider(slf: PyRefMut<'_, Self>, id: String, min: f64, max: f64, step: f64, value: Option<f64>) -> PyRefMut<'_, Self> {
         let v = value.unwrap_or(min);
         let html = slider_html(&id, min, max, step, v);
-        if let Ok(mut state) = slf.state.lock() {
-            state.add_component(&id, html, &v.to_string());
-        }
+        slf.with_state("slider", |state| state.add_component(&id, html, &v.to_string()));
         slf
     }
 
     #[pyo3(signature = (id, label))]
     fn button(slf: PyRefMut<'_, Self>, id: String, label: String) -> PyRefMut<'_, Self> {
         let html = button_html(&id, &label);
-        if let Ok(mut state) = slf.state.lock() {
-            state.add_component(&id, html, "");
-        }
+        slf.with_state("button", |state| state.add_component(&id, html, ""));
         slf
     }
 
     #[pyo3(signature = (id, value = String::new(), placeholder = String::new()))]
     fn text_input(slf: PyRefMut<'_, Self>, id: String, value: String, placeholder: String) -> PyRefMut<'_, Self> {
         let html = text_input_html(&id, &value, &placeholder);
-        if let Ok(mut state) = slf.state.lock() {
-            state.add_component(&id, html, &value);
-        }
+        slf.with_state("text_input", |state| state.add_component(&id, html, &value));
         slf
     }
 
     #[pyo3(signature = (id, label, checked = false))]
     fn checkbox(slf: PyRefMut<'_, Self>, id: String, label: String, checked: bool) -> PyRefMut<'_, Self> {
         let html = checkbox_html(&id, &label, checked);
-        if let Ok(mut state) = slf.state.lock() {
-            state.add_component(&id, html, if checked { "true" } else { "false" });
-        }
+        slf.with_state("checkbox", |state| {
+            state.add_component(&id, html, if checked { "true" } else { "false" })
+        });
         slf
     }
 
     #[pyo3(signature = (id, html = String::new()))]
     fn chart(slf: PyRefMut<'_, Self>, id: String, html: String) -> PyRefMut<'_, Self> {
-        if let Ok(mut state) = slf.state.lock() {
-            state.set_output(&id, html);
-        }
+        slf.with_state("chart", |state| state.set_output(&id, html));
         slf
     }
 
     #[pyo3(signature = (inputs, output, handler))]
     fn add_callback(slf: PyRefMut<'_, Self>, inputs: Vec<String>, output: String, handler: PyObject) -> PyRefMut<'_, Self> {
-        if let Ok(mut state) = slf.state.lock() {
-            state.add_callback(inputs, &output, handler);
-        }
+        slf.with_state("add_callback", |state| state.add_callback(inputs, &output, handler));
         slf
     }
 

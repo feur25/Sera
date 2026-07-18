@@ -314,14 +314,7 @@ impl SeraDFrame_ {
             let col_name: String = k.extract()?;
             let agg_kind: String = v.extract()?;
             let vals = self.inner.get(&col_name)?.to_f64_vec();
-            let s = stats_par(&vals);
-            let result = match agg_kind.as_str() {
-                "sum" => s.sum,
-                "min" => s.min,
-                "max" => s.max,
-                "count" => s.count as f64,
-                _ => s.mean(),
-            };
+            let result = stats_par(&vals).resolve(&agg_kind);
             order.push(col_name.clone());
             columns.insert(col_name, Series::Num(Arc::new(vec![result])));
         }

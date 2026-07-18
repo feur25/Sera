@@ -285,13 +285,7 @@ impl SeraDFrame_ {
                     if n == 0.0 {
                         return f64::NAN;
                     }
-                    match agg {
-                        "sum" => sums[cell],
-                        "count" => n,
-                        "min" => mins[cell],
-                        "max" => maxs[cell],
-                        _ => sums[cell] / n,
-                    }
+                    crate::core::dispatch::resolve_agg(agg, sums[cell], mins[cell], maxs[cell], n)
                 })
                 .collect();
             out_columns.insert(cname.clone(), Series::Num(Arc::new(col_out)));

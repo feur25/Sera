@@ -102,16 +102,44 @@ pub fn get_registry() -> &'static Mutex<ChartRegistry> {
     REGISTRY.get_or_init(|| Mutex::new(ChartRegistry::new()))
 }
 
+static REGISTRY_LOCK_WARNED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+fn warn_registry_lock_once(caller: &str) {
+    if !REGISTRY_LOCK_WARNED.swap(true, std::sync::atomic::Ordering::Relaxed) {
+        eprintln!(
+            "seraplot: chart registry lock poisoned in {caller} -- chart type lookups/registration \
+             will silently fail from here on; this warning prints once"
+        );
+    }
+}
+
+/// Locks the chart registry and applies `f`, logging once (not per-call) if
+/// the lock is poisoned instead of silently doing nothing.
+pub fn with_registry_mut(caller: &str, f: impl FnOnce(&mut ChartRegistry)) {
+    match get_registry().lock() {
+        Ok(mut reg) => f(&mut reg),
+        Err(_) => warn_registry_lock_once(caller),
+    }
+}
+
 pub fn get_svg_renderer(id: u8) -> Option<SvgChartRenderer> {
-    get_registry().lock().ok().and_then(|reg| reg.get_svg(id))
+    match get_registry().lock() {
+        Ok(reg) => reg.get_svg(id),
+        Err(_) => {
+            warn_registry_lock_once("get_svg_renderer");
+            None
+        }
+    }
 }
 
 pub fn list_dataset_types() -> Vec<(u8, String, u32)> {
-    get_registry()
-        .lock()
-        .ok()
-        .map(|reg| reg.list())
-        .unwrap_or_default()
+    match get_registry().lock() {
+        Ok(reg) => reg.list(),
+        Err(_) => {
+            warn_registry_lock_once("list_dataset_types");
+            Vec::new()
+        }
+    }
 }
 
 pub fn get_group_registry() -> &'static Mutex<ChartGroupRegistry> {
@@ -157,12 +185,12 @@ impl ChartTypeBuilder {
 
         let renderer = self.renderer.ok_or("Renderer required")?;
 
-        if let Ok(mut reg) = get_registry().lock() {
+        with_registry_mut("ChartTypeBuilder::build", |reg| {
             reg.register(self.id, self.name.clone(), renderer);
             if let Some(svg_rend) = self.svg_renderer {
                 reg.register_svg(self.id, svg_rend);
             }
-        }
+        });
 
         Ok(())
     }
