@@ -3,15 +3,6 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::process::Command;
 
-fn snake_to_camel(s: &str) -> String {
-    let mut out = String::new();
-    let mut cap = false;
-    for c in s.chars() {
-        if c == '_' { cap = true; } else if cap { out.push(c.to_ascii_uppercase()); cap = false; } else { out.push(c); }
-    }
-    out
-}
-
 fn positional_count(fn_name: &str) -> usize {
     match fn_name {
         "build_histogram" | "build_kde_chart" | "build_kde3d_chart" |
@@ -652,7 +643,7 @@ fn inject_logo_into_hover(html: String, logo: &str) -> String {
         let mut depth2 = 0i32;
         let mut obj_start = 0usize;
         let image_kv = format!(",\"image\":\"{}\"", esc(logo));
-        for (i, &ch) in ab.iter().enumerate() {
+        for &ch in ab.iter() {
             match ch {
                 b'[' | b'{' => {
                     if depth2 == 0 { result.push(ch as char); }
@@ -693,72 +684,6 @@ fn inject_logo_into_hover(html: String, logo: &str) -> String {
     out.push_str(&new_array);
     out.push_str(&html[end..]);
     out
-}
-
-fn extract_body_content(html: String) -> String {
-    let head_end = html.find("</head>").unwrap_or(0);
-    let head = &html[..head_end];
-    let mut out = String::new();
-    let mut hpos = 0;
-    while let Some(rel) = head[hpos..].find("<style") {
-        let abs = hpos + rel;
-        if let Some(end_rel) = head[abs..].find("</style>") {
-            let abs_end = abs + end_rel + 8;
-            out.push_str(&head[abs..abs_end]);
-            hpos = abs_end;
-        } else {
-            break;
-        }
-    }
-
-    if let Some(body_open) = html.find("<body") {
-        let after_tag = &html[body_open..];
-        if let Some(gt) = after_tag.find('>') {
-            let body_start = body_open + gt + 1;
-            let body_end = html[body_start..]
-                .rfind("</body>")
-                .map(|p| body_start + p)
-                .unwrap_or(html.len());
-            out.push_str(&html[body_start..body_end]);
-        }
-    }
-
-    if out.is_empty() { html } else { out }
-}
-
-fn inject_preview(content: &str, iframe_src: &str) -> String {
-    let preview = format!(
-        "\n\n<details open>\n<summary style=\"cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8\">&#9654;&nbsp;Live Preview</summary>\n\n<iframe src=\"{iframe_src}\" style=\"width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117\" loading=\"lazy\"></iframe>\n\n</details>\n"
-    );
-
-    let mut in_examples = false;
-    let mut in_code = false;
-    let mut insert_at: Option<usize> = None;
-    let mut pos = 0usize;
-
-    for line in content.lines() {
-        let byte_len = line.len() + 1;
-        if line.starts_with("## Example") {
-            in_examples = true;
-        }
-        if in_examples && line.trim().starts_with("```python") {
-            in_code = true;
-        }
-        if in_examples && in_code && line.trim() == "```" {
-            insert_at = Some(pos + byte_len);
-            break;
-        }
-        pos += byte_len;
-    }
-
-    if let Some(i) = insert_at {
-        let mut out = content[..i].to_string();
-        out.push_str(&preview);
-        out.push_str(&content[i..]);
-        out
-    } else {
-        content.to_string()
-    }
 }
 
 fn html_unescape(s: &str) -> String {
