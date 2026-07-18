@@ -584,7 +584,7 @@ fn extract_ml_models(ml_root: &Path) -> Vec<MlModelEntry> {
     out
 }
 
-pub fn write_registry(manifest: &Path, ml_root: &Path, data_root: &Path) {
+pub fn write_registry(src_root: &Path, ml_root: &Path, data_root: &Path) {
     let mut docs = extract_ml_docs(ml_root);
     docs.extend(extract_data_docs(data_root));
     let models = extract_ml_models(ml_root);
@@ -659,7 +659,6 @@ pub fn write_registry(manifest: &Path, ml_root: &Path, data_root: &Path) {
         js.push_str("]}");
     }
     js.push_str("]};\n");
-    let src_root = ml_root.parent().unwrap_or(manifest);
     let path = src_root.join("docs").join("theme").join("ml-registry.js");
     if let Some(parent) = path.parent() {
         let _ = fs::create_dir_all(parent);

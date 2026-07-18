@@ -6,28 +6,29 @@ use std::path::PathBuf;
 mod build_bindings;
 #[path = "docgen/common.rs"]
 mod build_common;
-#[path = "ml/docgen/mod.rs"]
+#[path = "services/ml/docgen/mod.rs"]
 mod build_ml;
-#[path = "plot/docgen/mod.rs"]
+#[path = "services/plot/docgen/mod.rs"]
 mod build_plot;
 #[path = "docgen/registry.rs"]
 mod build_registry;
 
 fn main() {
     let manifest = PathBuf::from(env::var("CARGO_MANIFEST_DIR").unwrap());
-    let plot_root = manifest.join("plot");
-    let ml_root = manifest.join("ml");
-    let data_root = manifest.join("data");
-    let bindings_root = manifest.join("bindings");
+    let src_root = manifest.clone();
+    let plot_root = src_root.join("services").join("plot");
+    let ml_root = src_root.join("services").join("ml");
+    let data_root = src_root.join("services").join("data");
+    let bindings_root = src_root.join("bindings");
     let out_dir = PathBuf::from(env::var("OUT_DIR").unwrap());
 
-    println!("cargo:rerun-if-changed=plot");
-    println!("cargo:rerun-if-changed=ml");
-    println!("cargo:rerun-if-changed=data");
+    println!("cargo:rerun-if-changed=services/plot");
+    println!("cargo:rerun-if-changed=services/ml");
+    println!("cargo:rerun-if-changed=services/data");
     println!("cargo:rerun-if-changed=bindings");
     println!("cargo:rerun-if-changed=docgen");
-    println!("cargo:rerun-if-changed=plot/docgen");
-    println!("cargo:rerun-if-changed=ml/docgen");
+    println!("cargo:rerun-if-changed=services/plot/docgen");
+    println!("cargo:rerun-if-changed=services/ml/docgen");
 
     let mut plot_files: Vec<PathBuf> = Vec::new();
     build_common::walk(&plot_root, &mut plot_files);
@@ -43,12 +44,12 @@ fn main() {
 
     let plot_doc_data = build_plot::docs::collect(&plot_root);
     build_plot::docs::write_registry(
-        &manifest,
+        &src_root,
         &plot_root,
         &plot_doc_data.demo_entries,
         &plot_doc_data.param_entries,
     );
-    build_ml::docs::write_registry(&manifest, &ml_root, &data_root);
+    build_ml::docs::write_registry(&src_root, &ml_root, &data_root);
 
     let mut chart_alias_pairs: Vec<(String, String)> = Vec::new();
     let mut builder_fns: Vec<String> = Vec::new();
@@ -79,5 +80,5 @@ fn main() {
     build_registry::write_params_registry(&out_dir, &plot_doc_data.param_entries);
     build_registry::write_sera_aliases(&out_dir, &plot_doc_data.alias_entries);
     build_registry::write_chart_alias_registry(&out_dir, &chart_alias_pairs);
-    build_bindings::write_all(&manifest, &bindings_root, &out_dir, &builder_fns, &ml_builder_fns);
+    build_bindings::write_all(&src_root, &bindings_root, &out_dir, &builder_fns, &ml_builder_fns);
 }

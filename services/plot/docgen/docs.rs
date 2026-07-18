@@ -499,7 +499,7 @@ pub fn collect(plot_root: &Path) -> PlotDocData {
 }
 
 pub fn write_registry(
-    manifest: &Path,
+    src_root: &Path,
     plot_root: &Path,
     demo_entries: &[(String, String, String)],
     param_entries: &[(String, String, Vec<String>)],
@@ -611,7 +611,6 @@ pub fn write_registry(
         js.push_str("]}");
     }
     js.push_str("]},docs:[");
-    let src_root = plot_root.parent().unwrap_or(manifest);
     let lib_src = fs::read_to_string(src_root.join("lib.rs")).unwrap_or_default();
     let method_docs = parse_method_docs(&lib_src);
     for (i, entry) in method_docs.iter().enumerate() {

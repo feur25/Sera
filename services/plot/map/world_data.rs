@@ -12,7 +12,7 @@ static COUNTRIES: OnceLock<Vec<CountryShape>> = OnceLock::new();
 
 fn get_countries() -> &'static Vec<CountryShape> {
     COUNTRIES.get_or_init(|| {
-        let svg = include_str!("../../asset/world.svg");
+        let svg = include_str!("../../../asset/world.svg");
         parse_world_svg(svg)
     })
 }

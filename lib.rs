@@ -7,13 +7,12 @@ pub(crate) use bindings::chart_methods::apply::*;
 pub mod canvas;
 pub mod cloud;
 pub mod core;
-pub mod data;
 #[path = "bindings/doc_registry.rs"]
 pub mod doc_registry;
-pub mod ml;
 #[path = "bindings/model_registry.rs"]
 pub mod model_registry;
-pub mod plot;
+pub mod services;
+pub use services::{data, ml, plot};
 pub mod telemetry;
 
 pub use crate::core::hw_profile::HwProfile;
