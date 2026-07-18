@@ -13,6 +13,7 @@ repository = "https://github.com/feur25/seraplot"
 readme = "README.md"
 exclude = [
     "docs/**",
+    "!docs/gen/**",
     "book/**",
     "examples/**",
     "tools/**",

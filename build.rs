@@ -2,15 +2,15 @@ use std::env;
 use std::fs;
 use std::path::PathBuf;
 
-#[path = "docgen/bindings.rs"]
+#[path = "docs/gen/bindings.rs"]
 mod build_bindings;
-#[path = "docgen/common.rs"]
+#[path = "docs/gen/common.rs"]
 mod build_common;
-#[path = "services/ml/docgen/mod.rs"]
+#[path = "docs/gen/ml_docs.rs"]
 mod build_ml;
-#[path = "services/plot/docgen/mod.rs"]
+#[path = "docs/gen/plot_docs.rs"]
 mod build_plot;
-#[path = "docgen/registry.rs"]
+#[path = "docs/gen/registry.rs"]
 mod build_registry;
 
 fn main() {
@@ -26,9 +26,7 @@ fn main() {
     println!("cargo:rerun-if-changed=services/ml");
     println!("cargo:rerun-if-changed=services/data");
     println!("cargo:rerun-if-changed=bindings");
-    println!("cargo:rerun-if-changed=docgen");
-    println!("cargo:rerun-if-changed=services/plot/docgen");
-    println!("cargo:rerun-if-changed=services/ml/docgen");
+    println!("cargo:rerun-if-changed=docs/gen");
 
     let mut plot_files: Vec<PathBuf> = Vec::new();
     build_common::walk(&plot_root, &mut plot_files);
@@ -42,14 +40,14 @@ fn main() {
     build_common::walk(&bindings_root, &mut bindings_files);
     bindings_files.sort();
 
-    let plot_doc_data = build_plot::docs::collect(&plot_root);
-    build_plot::docs::write_registry(
+    let plot_doc_data = build_plot::collect(&plot_root);
+    build_plot::write_registry(
         &src_root,
         &plot_root,
         &plot_doc_data.demo_entries,
         &plot_doc_data.param_entries,
     );
-    build_ml::docs::write_registry(&src_root, &ml_root, &data_root);
+    build_ml::write_registry(&src_root, &ml_root, &data_root);
 
     let mut chart_alias_pairs: Vec<(String, String)> = Vec::new();
     let mut builder_fns: Vec<String> = Vec::new();
