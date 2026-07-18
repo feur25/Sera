@@ -332,6 +332,42 @@ impl SeraDFrame_ {
         }
     }
 
+    #[pyo3(signature = (label_col = None))]
+    #[sera_doc(
+        name = "SeraDFrame.transpose",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Swaps rows and columns: former column names become the first column (or values from `label_col` if given), and each row becomes a new column named row0, row1, ... Cells are coerced to string since a transposed row can mix the original per-column types.",
+        fr = "Echange lignes et colonnes : les anciens noms de colonnes deviennent la premiere colonne (ou les valeurs de `label_col` si fourni), et chaque ligne devient une nouvelle colonne nommee row0, row1, ... Les cellules sont converties en chaine car une ligne transposee peut melanger les types des colonnes d'origine.",
+        aliases("T")
+    )]
+    pub(crate) fn transpose(&self, label_col: Option<&str>) -> PyResult<SeraDFrame_> {
+        let source_order = self.inner.order.clone();
+        let row_labels: Vec<String> = match label_col {
+            Some(name) => self.inner.get(name)?.to_str_vec(),
+            None => (0..self.inner.nrows).map(|i| format!("row{i}")).collect(),
+        };
+        let field_names: Vec<String> = match label_col {
+            Some(name) => source_order.iter().filter(|c| c.as_str() != name).cloned().collect(),
+            None => source_order.clone(),
+        };
+        let mut order = vec!["field".to_string()];
+        let mut columns = HashMap::new();
+        columns.insert("field".to_string(), super::str_series(field_names.clone()));
+        for r in 0..self.inner.nrows {
+            let col_name = row_labels.get(r).cloned().unwrap_or_else(|| format!("row{r}"));
+            let cell_vals: Vec<String> = field_names
+                .iter()
+                .map(|fname| self.inner.columns[fname].value_str(r))
+                .collect();
+            order.push(col_name.clone());
+            columns.insert(col_name, super::str_series(cell_vals));
+        }
+        Ok(SeraDFrame_ {
+            inner: Arc::new(SeraDFrame::from_parts(order, columns, field_names.len())),
+        })
+    }
+
     #[sera_doc(
         name = "SeraDFrame.assign",
         category = "data_method", file = "canvas/dframe.md", en = "Adds or replaces a column.", fr = "Ajoute ou remplace une colonne.")]

@@ -226,4 +226,79 @@ impl SeraDFrame_ {
             inner: Arc::new(SeraDFrame::from_parts(order, columns, n)),
         })
     }
+
+    #[pyo3(signature = (index, columns, values, agg = "mean"))]
+    #[sera_doc(
+        name = "SeraDFrame.pivot",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Reshapes long data into wide form: unique `index` values become rows, unique `columns` values become new columns, cells hold `values` aggregated by `agg` ('mean', 'sum', 'count', 'min', or 'max'). The inverse of melt()/unpivot().",
+        fr = "Transforme des donnees longues en format large : les valeurs uniques de `index` deviennent des lignes, celles de `columns` deviennent de nouvelles colonnes, les cellules contiennent `values` agregees par `agg` ('mean', 'sum', 'count', 'min' ou 'max'). L'inverse de melt()/unpivot()."
+    )]
+    fn pivot(&self, index: &str, columns: &str, values: &str, agg: &str) -> PyResult<SeraDFrame_> {
+        let idx_vals = self.inner.get(index)?.to_str_vec();
+        let col_vals = self.inner.get(columns)?.to_str_vec();
+        let val_vals = self.inner.get(values)?.to_f64_vec();
+        let mut row_uniques: Vec<String> = Vec::new();
+        let mut row_index: HashMap<String, usize> = HashMap::new();
+        let mut col_uniques: Vec<String> = Vec::new();
+        let mut col_index: HashMap<String, usize> = HashMap::new();
+        for r in &idx_vals {
+            if !row_index.contains_key(r) {
+                row_index.insert(r.clone(), row_uniques.len());
+                row_uniques.push(r.clone());
+            }
+        }
+        for c in &col_vals {
+            if !col_index.contains_key(c) {
+                col_index.insert(c.clone(), col_uniques.len());
+                col_uniques.push(c.clone());
+            }
+        }
+        let ncols = col_uniques.len();
+        let mut sums = vec![0.0; row_uniques.len() * ncols];
+        let mut counts = vec![0.0; row_uniques.len() * ncols];
+        let mut mins = vec![f64::INFINITY; row_uniques.len() * ncols];
+        let mut maxs = vec![f64::NEG_INFINITY; row_uniques.len() * ncols];
+        for ((r, c), v) in idx_vals.iter().zip(col_vals.iter()).zip(val_vals.iter()) {
+            let ri = row_index[r];
+            let ci = col_index[c];
+            let cell = ri * ncols + ci;
+            sums[cell] += v;
+            counts[cell] += 1.0;
+            if *v < mins[cell] {
+                mins[cell] = *v;
+            }
+            if *v > maxs[cell] {
+                maxs[cell] = *v;
+            }
+        }
+        let mut order = vec![index.to_string()];
+        order.extend(col_uniques.iter().cloned());
+        let mut out_columns = HashMap::new();
+        out_columns.insert(index.to_string(), super::str_series(row_uniques.clone()));
+        for (ci, cname) in col_uniques.iter().enumerate() {
+            let col_out: Vec<f64> = (0..row_uniques.len())
+                .map(|ri| {
+                    let cell = ri * ncols + ci;
+                    let n = counts[cell];
+                    if n == 0.0 {
+                        return f64::NAN;
+                    }
+                    match agg {
+                        "sum" => sums[cell],
+                        "count" => n,
+                        "min" => mins[cell],
+                        "max" => maxs[cell],
+                        _ => sums[cell] / n,
+                    }
+                })
+                .collect();
+            out_columns.insert(cname.clone(), Series::Num(Arc::new(col_out)));
+        }
+        let n = row_uniques.len();
+        Ok(SeraDFrame_ {
+            inner: Arc::new(SeraDFrame::from_parts(order, out_columns, n)),
+        })
+    }
 }

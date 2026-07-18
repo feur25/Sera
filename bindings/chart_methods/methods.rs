@@ -2940,4 +2940,124 @@ impl Chart {
     pub fn void_bg(&self, color: Option<&str>) -> Chart {
         self.propagate(apply_void(self.html.clone(), color.unwrap_or("#07090f")))
     }
+
+    #[sera_doc(
+        category = "chart_method",
+        aliases("pattern_fill", "hatch", "hatching", "fill_pattern", "shape_texture"),
+        file = "charts/chart.md",
+        en = "Overlays a repeating SVG pattern (dots, diagonal, crosshatch, grid, noise) on every filled element, without touching each element's own color underneath — a texture layer that reads consistently across bars, points, arcs and any other shape, on any chart family. Same idea as neon_bloom()/void_bg() as a chainable aesthetic theme, but for texture instead of glow or background.",
+        fr = "Superpose un motif SVG répétitif (points, diagonal, croisillon, grille, bruit) sur chaque élément rempli, sans toucher à la couleur propre de chaque élément en dessous — une couche de texture cohérente sur les barres, points, arcs et toute autre forme, sur n'importe quelle famille de graphique. Même principe que neon_bloom()/void_bg() en tant que thème esthétique chaînable, mais pour la texture plutôt que la lueur ou le fond.",
+        param(
+            name = "pattern",
+            ty = "str",
+            en = "Pattern name: 'dots', 'diagonal', 'crosshatch', 'grid', or 'noise'. Default: 'diagonal'.",
+            fr = "Nom du motif : 'dots', 'diagonal', 'crosshatch', 'grid' ou 'noise'. Défaut : 'diagonal'."
+        ),
+        param(
+            name = "opacity",
+            ty = "float",
+            en = "Overlay opacity between 0.0 and 1.0. Default: 0.2.",
+            fr = "Opacité de la superposition entre 0.0 et 1.0. Défaut : 0.2."
+        )
+    )]
+    #[sera_sig(pattern = "diagonal", opacity = 0.2)]
+    pub fn pattern_overlay(&self, pattern: &str, opacity: f64) -> Chart {
+        self.propagate(apply_texture(self.html.clone(), pattern, opacity))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        aliases("peaks_troughs", "local_extrema", "peak_finder", "swing_points"),
+        file = "charts/chart.md",
+        en = "Marks every local peak and trough along the series — not just the global max/min like annotate_max()/annotate_min() — with a small triangle above each peak and below each trough. Works on bar and scatter charts (ordered by data-idx).",
+        fr = "Marque chaque pic et creux local le long de la série — pas seulement le max/min global comme annotate_max()/annotate_min() — avec un petit triangle au-dessus de chaque pic et en dessous de chaque creux. Fonctionne sur les charts bar et scatter (ordonnés par data-idx).",
+        param(
+            name = "peak_color",
+            ty = "str",
+            en = "Peak marker color. Default: #22c55e.",
+            fr = "Couleur du marqueur de pic. Défaut : #22c55e."
+        ),
+        param(
+            name = "trough_color",
+            ty = "str",
+            en = "Trough marker color. Default: #ef4444.",
+            fr = "Couleur du marqueur de creux. Défaut : #ef4444."
+        )
+    )]
+    #[sera_sig(peak_color = "#22c55e", trough_color = "#ef4444")]
+    pub fn turning_points(&self, peak_color: &str, trough_color: &str) -> Chart {
+        self.propagate(apply_turning_points(self.html.clone(), peak_color, trough_color))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        aliases("control_band", "process_band", "std_envelope"),
+        file = "charts/chart.md",
+        en = "Shades a static mean ± n·σ band across the whole series with a dashed mean line — the classic statistical process control envelope, computed once over the full dataset (unlike rolling_std_band(), which is a trailing window). Works on bar, scatter, and other value-based charts.",
+        fr = "Affiche une bande statique moyenne ± n·σ sur toute la série avec une ligne de moyenne en pointillés — l'enveloppe classique de contrôle statistique de processus, calculée une fois sur tout le dataset (contrairement à rolling_std_band(), qui utilise une fenêtre glissante). Fonctionne sur les charts bar, scatter et autres charts basés sur des valeurs.",
+        param(
+            name = "n",
+            ty = "float",
+            en = "Number of standard deviations on each side of the mean. Default: 2.0.",
+            fr = "Nombre d'écarts-types de chaque côté de la moyenne. Défaut : 2.0."
+        ),
+        param(
+            name = "color",
+            ty = "str",
+            en = "Band and mean-line color. Default: #6366f1.",
+            fr = "Couleur de la bande et de la ligne de moyenne. Défaut : #6366f1."
+        ),
+        param(
+            name = "opacity",
+            ty = "float",
+            en = "Band fill opacity between 0.0 and 1.0. Default: 0.15.",
+            fr = "Opacité de remplissage entre 0.0 et 1.0. Défaut : 0.15."
+        )
+    )]
+    #[sera_sig(n = 2.0, color = "#6366f1", opacity = 0.15)]
+    pub fn sigma_bands(&self, n: f64, color: &str, opacity: f64) -> Chart {
+        self.propagate(apply_sigma_bands(self.html.clone(), n, color, opacity))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        aliases("summary_badge", "kpi_stats", "stats_panel", "describe_badge"),
+        file = "charts/chart.md",
+        en = "Draws a floating summary box with n, mean, median, std, min and max computed from the chart's own rendered data — a pandas describe() at a glance, directly on the chart. Works on bar, scatter, and other value-based charts.",
+        fr = "Affiche un encadré flottant avec n, moyenne, médiane, écart-type, min et max calculés depuis les données déjà rendues du graphique — un describe() pandas en un coup d'œil, directement sur le graphique. Fonctionne sur les charts bar, scatter et autres charts basés sur des valeurs.",
+        param(
+            name = "color",
+            ty = "str",
+            en = "Box border and value text color. Default: #6366f1.",
+            fr = "Couleur de la bordure et des valeurs. Défaut : #6366f1."
+        )
+    )]
+    #[sera_sig(color = "#6366f1")]
+    pub fn stats_badge(&self, color: &str) -> Chart {
+        self.propagate(apply_stats_badge(self.html.clone(), color))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        aliases("annotate_events", "milestones", "mark_events", "event_lines"),
+        file = "charts/chart.md",
+        en = "Drops a dashed vertical line with a rotated label at each given data-point index — mark real-world events (a launch, a policy change, an incident) directly on the timeline instead of computing pixel coordinates by hand like trace(vertical=True). Works on bar and scatter charts.",
+        fr = "Ajoute une ligne verticale en pointillés avec un label pivoté à chaque index de point de donnée indiqué — marquez des événements réels (lancement, changement de politique, incident) directement sur la chronologie sans calculer de coordonnées pixel à la main comme avec trace(vertical=True). Fonctionne sur les charts bar et scatter.",
+        param(name = "indices", ty = "list[int]", en = "Data-point indices to mark, matching each element's data-idx.", fr = "Indices des points de donnée à marquer, correspondant au data-idx de chaque élément."),
+        param(name = "labels", ty = "list[str]", en = "Label text for each index, same length as indices.", fr = "Texte du label pour chaque indice, même longueur que indices."),
+        param(name = "color", ty = "str", en = "Line and label color. Default: #f59e0b.", fr = "Couleur de la ligne et du label. Défaut : #f59e0b.")
+    )]
+    #[sera_sig(indices, labels, color = "#f59e0b")]
+    pub fn event_markers(&self, indices: Vec<usize>, labels: Vec<String>, color: &str) -> Chart {
+        let idx_js = format!("[{}]", indices.iter().map(|i| i.to_string()).collect::<Vec<_>>().join(","));
+        let labels_js = format!(
+            "[{}]",
+            labels.iter().map(|s| json_str(s)).collect::<Vec<_>>().join(",")
+        );
+        let js = format!(
+            "(function(){{var svg=document.querySelector('svg');if(!svg)return;var idxs={};var labels={};var color={};var d=svg.getAttribute('data-sp')||'';var sp=d.split(',').map(Number);var pT=sp[1]||36,pH=sp[3]||360;var ns='http://www.w3.org/2000/svg';var els=Array.prototype.slice.call(svg.querySelectorAll('[data-idx]'));idxs.forEach(function(idx,i){{var match=null;for(var k=0;k<els.length;k++){{if(parseInt(els[k].getAttribute('data-idx'))===idx){{match=els[k];break;}}}}if(!match)return;var x=match.hasAttribute('cx')?parseFloat(match.getAttribute('cx')):(parseFloat(match.getAttribute('x')||0)+parseFloat(match.getAttribute('width')||0)/2);var ln=document.createElementNS(ns,'line');ln.setAttribute('x1',x);ln.setAttribute('x2',x);ln.setAttribute('y1',pT);ln.setAttribute('y2',pT+pH);ln.setAttribute('stroke',color);ln.setAttribute('stroke-width','1.5');ln.setAttribute('stroke-dasharray','4,3');ln.setAttribute('opacity','0.85');svg.appendChild(ln);var t=document.createElementNS(ns,'text');t.setAttribute('x',x+4);t.setAttribute('y',pT+12);t.setAttribute('font-size','10.5');t.setAttribute('font-weight','700');t.setAttribute('fill',color);t.setAttribute('transform','rotate(-90 '+(x+4)+' '+(pT+12)+')');t.textContent=labels[i]||'';svg.appendChild(t);}});}})();",
+            idx_js, labels_js, json_str(color)
+        );
+        self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", js), 1))
+    }
 }

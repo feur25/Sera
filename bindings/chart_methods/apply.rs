@@ -723,3 +723,100 @@ pub(crate) fn apply_outline(html: String, color: &str, width: f64) -> String {
     );
     html.replacen("</head>", &css, 1)
 }
+
+pub(crate) fn apply_turning_points(html: String, peak_color: &str, trough_color: &str) -> String {
+    let cfg = format!(
+        "{{\"pc\":{},\"tc\":{}}}",
+        json_str(peak_color),
+        json_str(trough_color)
+    );
+    let snippet = format!(
+        "<script>window.__sp_turning_points__={};{}</script></body>",
+        cfg, SP_TURNING_POINTS_JS
+    );
+    html.replacen("</body>", &snippet, 1)
+}
+
+pub(crate) fn apply_sigma_bands(html: String, n: f64, color: &str, opacity: f64) -> String {
+    let cfg = format!(
+        "{{\"n\":{},\"c\":{},\"op\":{}}}",
+        n,
+        json_str(color),
+        opacity.clamp(0.0, 1.0)
+    );
+    let snippet = format!(
+        "<script>window.__sp_sigma_bands__={};{}</script></body>",
+        cfg, SP_SIGMA_BANDS_JS
+    );
+    html.replacen("</body>", &snippet, 1)
+}
+
+pub(crate) fn apply_stats_badge(html: String, color: &str) -> String {
+    let cfg = format!("{{\"c\":{}}}", json_str(color));
+    let snippet = format!(
+        "<script>window.__sp_stats_badge__={};{}</script></body>",
+        cfg, SP_STATS_BADGE_JS
+    );
+    html.replacen("</body>", &snippet, 1)
+}
+
+fn texture_pattern_body(pattern: &str) -> (&'static str, u32, u32, &'static str) {
+    match pattern {
+        "dots" | "dotted" => (
+            "<circle cx=\"5\" cy=\"5\" r=\"1.1\" fill=\"#000\"/>",
+            10,
+            10,
+            "",
+        ),
+        "diagonal" | "diag" => (
+            "<rect width=\"12\" height=\"1.4\" fill=\"#000\"/>",
+            12,
+            12,
+            " patternTransform=\"rotate(45)\"",
+        ),
+        "crosshatch" | "hatch" | "hatching" | "cross" => (
+            "<path d=\"M0,0L12,12M12,0L0,12\" stroke=\"#000\" stroke-width=\"0.6\" fill=\"none\"/>",
+            12,
+            12,
+            "",
+        ),
+        "grid" | "waffle" => (
+            "<path d=\"M12,0L0,0L0,12\" stroke=\"#000\" stroke-width=\"0.6\" fill=\"none\"/>",
+            12,
+            12,
+            "",
+        ),
+        "noise" | "static" | "grain" => (
+            "<circle cx=\"2\" cy=\"2\" r=\"0.5\" fill=\"#000\"/><circle cx=\"7\" cy=\"4.5\" r=\"0.45\" fill=\"#000\"/><circle cx=\"4\" cy=\"8\" r=\"0.4\" fill=\"#000\"/>",
+            10,
+            10,
+            "",
+        ),
+        _ => (
+            "<rect width=\"12\" height=\"1.4\" fill=\"#000\"/>",
+            12,
+            12,
+            "",
+        ),
+    }
+}
+
+pub(crate) fn apply_texture(html: String, pattern: &str, opacity: f64) -> String {
+    let mut html = html;
+    let (body, w, h, transform) = texture_pattern_body(pattern);
+    if let Some(svg_pos) = html.find("<svg") {
+        if let Some(rel_end) = html[svg_pos..].find('>') {
+            let insert_at = svg_pos + rel_end + 1;
+            let defs = format!(
+                "<defs><pattern id=\"sp-texture-pat\" width=\"{w}\" height=\"{h}\" patternUnits=\"userSpaceOnUse\"{transform}>{body}</pattern></defs>"
+            );
+            html.insert_str(insert_at, &defs);
+        }
+    }
+    let cfg = format!("{{\"op\":{}}}", opacity.clamp(0.0, 1.0));
+    let snippet = format!(
+        "<script>window.__sp_texture__={};{}</script></body>",
+        cfg, SP_TEXTURE_JS
+    );
+    html.replacen("</body>", &snippet, 1)
+}

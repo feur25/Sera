@@ -15,7 +15,7 @@ impl SeraDFrame_ {
         file = "canvas/dframe.md",
         en = "Per-cell missing-value boolean mask.",
         fr = "Masque booleen par cellule des valeurs manquantes.",
-        aliases("is_null")
+        aliases("is_null", "isnull")
     )]
     pub(crate) fn isna(&self) -> SeraDFrame_ {
         let columns: HashMap<String, Series> = self
@@ -38,7 +38,7 @@ impl SeraDFrame_ {
 
     #[sera_doc(
         name = "SeraDFrame.notna",
-        category = "data_method", file = "canvas/dframe.md", en = "Inverse of isna.", fr = "Inverse de isna.", aliases("is_not_null"))]
+        category = "data_method", file = "canvas/dframe.md", en = "Inverse of isna.", fr = "Inverse de isna.", aliases("is_not_null", "notnull"))]
     pub(crate) fn notna(&self) -> SeraDFrame_ {
         let na = self.isna();
         let columns: HashMap<String, Series> = na

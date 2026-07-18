@@ -324,9 +324,10 @@ impl SeraDFrame_ {
         category = "data_method",
         file = "canvas/dframe.md",
         en = "Sample-adjusted excess kurtosis of a numeric column.",
-        fr = "Kurtosis en exces (ajustee echantillon) d'une colonne numerique."
+        fr = "Kurtosis en exces (ajustee echantillon) d'une colonne numerique.",
+        aliases("kurtosis")
     )]
-    fn kurt(&self, col: &str) -> PyResult<f64> {
+    pub(crate) fn kurt(&self, col: &str) -> PyResult<f64> {
         let vals: Vec<f64> = self.inner.get(col)?.to_f64_vec().into_iter().filter(|v| !v.is_nan()).collect();
         let n = vals.len();
         if n < 4 {

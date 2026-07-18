@@ -304,9 +304,10 @@ impl SeraDFrame_ {
         category = "data_method",
         file = "canvas/dframe.md",
         en = "Whole-frame aggregation into a single-row SeraDFrame.",
-        fr = "Agregation de tout le frame en un SeraDFrame d'une ligne."
+        fr = "Agregation de tout le frame en un SeraDFrame d'une ligne.",
+        aliases("aggregate")
     )]
-    fn agg(&self, spec: &Bound<'_, PyDict>) -> PyResult<SeraDFrame_> {
+    pub(crate) fn agg(&self, spec: &Bound<'_, PyDict>) -> PyResult<SeraDFrame_> {
         let mut order = Vec::new();
         let mut columns = HashMap::new();
         for (k, v) in spec.iter() {

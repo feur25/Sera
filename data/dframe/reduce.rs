@@ -102,6 +102,16 @@ impl SeraDFrame_ {
     }
 
     #[sera_doc(
+        name = "SeraDFrame.var",
+        category = "data_method", file = "canvas/dframe.md", en = "Sample variance of a numeric column.", fr = "Variance echantillon d'une colonne numerique.")]
+    fn var(&self, col: &str) -> PyResult<f64> {
+        let vals = self.numeric_clean(col)?;
+        let mean = stats_par(&vals).mean();
+        let sd = std_dev_par(&vals, mean);
+        Ok(sd * sd)
+    }
+
+    #[sera_doc(
         name = "SeraDFrame.median",
         category = "data_method", file = "canvas/dframe.md", en = "Median of a numeric column via O(n) selection.", fr = "Mediane d'une colonne numerique via selection O(n).")]
     fn median(&self, col: &str) -> PyResult<f64> {

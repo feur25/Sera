@@ -2,6 +2,7 @@ use super::series::Series;
 use super::{SeraDFrame, SeraDFrame_, SeraDFrameGroupBy};
 use crate::sera_doc_impl;
 use pyo3::prelude::*;
+use pyo3::types::PyDict;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -51,6 +52,31 @@ impl SeraDFrame_ {
     #[pyo3(name = "is_not_null")]
     fn is_not_null_alias(&self) -> SeraDFrame_ {
         self.notna()
+    }
+
+    #[pyo3(name = "isnull")]
+    fn isnull_alias(&self) -> SeraDFrame_ {
+        self.isna()
+    }
+
+    #[pyo3(name = "notnull")]
+    fn notnull_alias(&self) -> SeraDFrame_ {
+        self.notna()
+    }
+
+    #[pyo3(name = "kurtosis")]
+    fn kurtosis_alias(&self, col: &str) -> PyResult<f64> {
+        self.kurt(col)
+    }
+
+    #[pyo3(name = "aggregate")]
+    fn aggregate_alias(&self, spec: &Bound<'_, PyDict>) -> PyResult<SeraDFrame_> {
+        self.agg(spec)
+    }
+
+    #[pyo3(name = "T")]
+    fn t_alias(&self) -> PyResult<SeraDFrame_> {
+        self.transpose(None)
     }
 
     #[pyo3(name = "is_in")]
