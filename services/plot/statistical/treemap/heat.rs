@@ -1,8 +1,8 @@
 use super::common::{
-    fill_hex, finalize, label_inside, lerp_color, open_svg, prepare, rect_attrs, tile_data_attrs,
+    fill_hex, finalize, label_inside, open_svg, prepare, rect_attrs, tile_data_attrs,
 };
 use super::config::TreemapConfig;
-use crate::plot::statistical::common::push_b;
+use crate::plot::statistical::common::{lerp_rgb, push_b};
 
 #[crate::chart_demo(
     "labels=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\",\"G\"], values=[40,25,20,10,5,8,12]"
@@ -30,7 +30,7 @@ pub fn render(cfg: &TreemapConfig) -> String {
             continue;
         }
         let t = (p.leaf_values[ri] - vmin) / span;
-        let c = lerp_color(cold, warm, t);
+        let c = lerp_rgb(cold, warm, t);
         push_b(&mut b, b"<rect");
         tile_data_attrs(&mut b, &p, ri);
         rect_attrs(&mut b, r);

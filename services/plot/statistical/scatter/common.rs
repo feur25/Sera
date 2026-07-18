@@ -59,20 +59,6 @@ pub fn point_px(layout: &ScatterLayout, frame: &Frame, x: f64, y: f64) -> (i32, 
     (cx, cy)
 }
 
-pub fn lerp_color(a: u32, b: u32, t: f64) -> u32 {
-    let t = t.clamp(0.0, 1.0);
-    let ar = ((a >> 16) & 0xFF) as f64;
-    let ag = ((a >> 8) & 0xFF) as f64;
-    let ab = (a & 0xFF) as f64;
-    let br = ((b >> 16) & 0xFF) as f64;
-    let bg = ((b >> 8) & 0xFF) as f64;
-    let bb = (b & 0xFF) as f64;
-    let r = (ar + (br - ar) * t).round() as u32;
-    let g = (ag + (bg - ag) * t).round() as u32;
-    let bl = (ab + (bb - ab) * t).round() as u32;
-    (r << 16) | (g << 8) | bl
-}
-
 pub fn make_frame(cfg: &ScatterConfig, n: usize, legend_w: i32) -> Frame {
     Frame::new_html(
         cfg.title,

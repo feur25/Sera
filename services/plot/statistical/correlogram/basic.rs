@@ -1,6 +1,6 @@
 use super::config::CorrelogramConfig;
 use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json};
-use crate::plot::statistical::common::{escape_xml, push_b, push_f2, push_i};
+use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i};
 
 fn corr_color(v: f64) -> ([u8; 6], [u8; 6]) {
     let t = v.clamp(-1.0, 1.0);
@@ -11,23 +11,8 @@ fn corr_color(v: f64) -> ([u8; 6], [u8; 6]) {
         let u = ((-t) * 255.0) as u8;
         ((u as f64 * 0.35) as u8, (u as f64 * 0.55) as u8, u)
     };
-
-    fn to_hex(n: u8) -> [u8; 6] {
-        let hi = n >> 4;
-        let lo = n & 0xf;
-        fn h(x: u8) -> u8 { if x < 10 { b'0' + x } else { b'a' + x - 10 } }
-        [h(hi), h(lo), h(hi), h(lo), h(hi), h(lo)]
-    }
-    let hx = to_hex(r);
-    let _ = g; let _ = b;
-
-    let hi_r = r >> 4; let lo_r = r & 0xf;
-    let hi_g = g >> 4; let lo_g = g & 0xf;
-    let hi_b = b >> 4; let lo_b = b & 0xf;
-    fn h(x: u8) -> u8 { if x < 10 { b'0' + x } else { b'a' + x - 10 } }
-    let fill = [h(hi_r), h(lo_r), h(hi_g), h(lo_g), h(hi_b), h(lo_b)];
-    let stroke = fill;
-    (fill, stroke)
+    let fill = hex6(((r as u32) << 16) | ((g as u32) << 8) | (b as u32));
+    (fill, fill)
 }
 
 #[crate::chart_demo("labels=[\"A\",\"B\",\"C\",\"D\"], matrix=[[1,0.8,-0.3,0.5],[0.8,1,0.1,-0.2],[-0.3,0.1,1,0.7],[0.5,-0.2,0.7,1]]")]

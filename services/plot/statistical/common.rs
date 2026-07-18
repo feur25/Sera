@@ -14,6 +14,20 @@ pub fn palette_color(custom: &[u32], i: usize) -> u32 {
     p[i % p.len()]
 }
 
+pub fn lerp_rgb(a: u32, b: u32, t: f64) -> u32 {
+    let t = t.clamp(0.0, 1.0);
+    let ar = ((a >> 16) & 0xFF) as f64;
+    let ag = ((a >> 8) & 0xFF) as f64;
+    let ab = (a & 0xFF) as f64;
+    let br = ((b >> 16) & 0xFF) as f64;
+    let bg = ((b >> 8) & 0xFF) as f64;
+    let bb = (b & 0xFF) as f64;
+    let r = (ar + (br - ar) * t).round() as u32;
+    let g = (ag + (bg - ag) * t).round() as u32;
+    let bl = (ab + (bb - ab) * t).round() as u32;
+    (r << 16) | (g << 8) | bl
+}
+
 #[macro_export]
 macro_rules! chart_config {
     ($name:ident, $dw:expr, $dh:expr;

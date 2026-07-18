@@ -471,17 +471,3 @@ pub fn fill_hex(buf: &mut Vec<u8>, color: u32) {
     push_b(buf, b"\" fill=\"#");
     buf.extend_from_slice(&hx);
 }
-
-pub fn lerp_color(a: u32, b: u32, t: f64) -> u32 {
-    let t = t.clamp(0.0, 1.0);
-    let ar = ((a >> 16) & 0xFF) as f64;
-    let ag = ((a >> 8) & 0xFF) as f64;
-    let ab = (a & 0xFF) as f64;
-    let br = ((b >> 16) & 0xFF) as f64;
-    let bg = ((b >> 8) & 0xFF) as f64;
-    let bb = (b & 0xFF) as f64;
-    let r = (ar + (br - ar) * t) as u32;
-    let g = (ag + (bg - ag) * t) as u32;
-    let bl = (ab + (bb - ab) * t) as u32;
-    (r << 16) | (g << 8) | bl
-}

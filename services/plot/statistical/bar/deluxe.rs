@@ -1,19 +1,11 @@
 use super::config::BarConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{
-    escape_xml, hex6, palette_color, push_b, push_f2, push_i, Frame,
+    escape_xml, hex6, lerp_rgb, palette_color, push_b, push_f2, push_i, Frame,
 };
 
-fn lerp(a: u32, b: u32, t: f64) -> u32 {
-    let t = t.clamp(0.0, 1.0);
-    let r = (((a >> 16) & 0xFF) as f64 * (1.0 - t) + ((b >> 16) & 0xFF) as f64 * t).round() as u32;
-    let g = (((a >> 8) & 0xFF) as f64 * (1.0 - t) + ((b >> 8) & 0xFF) as f64 * t).round() as u32;
-    let bl = ((a & 0xFF) as f64 * (1.0 - t) + (b & 0xFF) as f64 * t).round() as u32;
-    (r << 16) | (g << 8) | bl
-}
-
 fn lighten(c: u32) -> u32 {
-    lerp(c, 0xFFFFFF, 0.55)
+    lerp_rgb(c, 0xFFFFFF, 0.55)
 }
 
 #[crate::chart_demo(
@@ -87,7 +79,7 @@ pub fn render(cfg: &BarConfig, orient: u8) -> String {
         f.buf.extend_from_slice(&hex6(base));
         push_b(&mut f.buf, b"\" stop-opacity=\"0.9\"/>");
         push_b(&mut f.buf, b"<stop offset=\"0.6\" stop-color=\"#");
-        f.buf.extend_from_slice(&hex6(lerp(base, top, 0.6)));
+        f.buf.extend_from_slice(&hex6(lerp_rgb(base, top, 0.6)));
         push_b(&mut f.buf, b"\" stop-opacity=\"0.95\"/>");
         push_b(&mut f.buf, b"<stop offset=\"1\" stop-color=\"#");
         f.buf.extend_from_slice(&hex6(top));

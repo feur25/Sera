@@ -1,16 +1,8 @@
 use super::config::BarConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{
-    escape_xml, hex6, palette_color, push_b, push_f2, push_i, Frame,
+    escape_xml, hex6, lerp_rgb, palette_color, push_b, push_f2, push_i, Frame,
 };
-
-fn lerp(a: u32, b: u32, t: f64) -> u32 {
-    let t = t.clamp(0.0, 1.0);
-    let r = (((a >> 16) & 0xFF) as f64 * (1.0 - t) + ((b >> 16) & 0xFF) as f64 * t).round() as u32;
-    let g = (((a >> 8) & 0xFF) as f64 * (1.0 - t) + ((b >> 8) & 0xFF) as f64 * t).round() as u32;
-    let bl = ((a & 0xFF) as f64 * (1.0 - t) + (b & 0xFF) as f64 * t).round() as u32;
-    (r << 16) | (g << 8) | bl
-}
 
 fn prism_color(i: usize) -> u32 {
     const COLS: [u32; 8] = [
@@ -67,8 +59,8 @@ pub fn render(cfg: &BarConfig) -> String {
         } else {
             prism_color(i)
         };
-        let mid = lerp(base, 0xFFFFFF, 0.35);
-        let bright = lerp(base, 0xFFFFFF, 0.7);
+        let mid = lerp_rgb(base, 0xFFFFFF, 0.35);
+        let bright = lerp_rgb(base, 0xFFFFFF, 0.7);
         push_b(&mut f.buf, b"<linearGradient id=\"prsmg");
         push_i(&mut f.buf, i as i32);
         push_b(&mut f.buf, b"\" x1=\"0\" y1=\"1\" x2=\"0\" y2=\"0\">");

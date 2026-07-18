@@ -2,20 +2,7 @@ use super::common::{
     area_path, close_svg, finalize, open_svg, polyline, prepare, project_pts, ridge_label,
 };
 use super::config::RidgelineConfig;
-use crate::plot::statistical::common::{hex6, push_b, push_i};
-
-fn lerp(a: u32, b: u32, t: f64) -> u32 {
-    let ar = ((a >> 16) & 0xFF) as f64;
-    let ag = ((a >> 8) & 0xFF) as f64;
-    let ab = (a & 0xFF) as f64;
-    let br = ((b >> 16) & 0xFF) as f64;
-    let bg = ((b >> 8) & 0xFF) as f64;
-    let bb = (b & 0xFF) as f64;
-    let r = (ar + (br - ar) * t).round() as u32;
-    let g = (ag + (bg - ag) * t).round() as u32;
-    let bl = (ab + (bb - ab) * t).round() as u32;
-    (r << 16) | (g << 8) | bl
-}
+use crate::plot::statistical::common::{hex6, lerp_rgb, push_b, push_i};
 
 fn viridis(t: f64) -> u32 {
     let stops: [u32; 5] = [0x440154, 0x3B528B, 0x21918C, 0x5EC962, 0xFDE725];
@@ -24,7 +11,7 @@ fn viridis(t: f64) -> u32 {
     let pos = t * n as f64;
     let lo = (pos.floor() as usize).min(n);
     let hi = (lo + 1).min(n);
-    lerp(stops[lo], stops[hi], pos - lo as f64)
+    lerp_rgb(stops[lo], stops[hi], pos - lo as f64)
 }
 
 #[crate::chart_demo("categories=[\"A\",\"A\",\"A\",\"A\",\"A\",\"B\",\"B\",\"B\",\"B\",\"B\",\"C\",\"C\",\"C\",\"C\",\"C\",\"D\",\"D\",\"D\",\"D\",\"D\"], values=[1.2,2.4,2.7,3.1,3.5,2.0,2.8,3.2,3.6,4.1,1.8,2.2,2.6,3.0,3.4,2.3,2.9,3.5,3.9,4.4]")]
