@@ -39,7 +39,7 @@ impl Table {
                 .map(|row| {
                     let raw = row.get(header).cloned().unwrap_or_default();
                     if is_numeric {
-                        Cell::Num(raw.parse().unwrap_or(0.0))
+                        Cell::Num(raw.parse().unwrap_or(f64::NAN))
                     } else {
                         Cell::Str(raw)
                     }

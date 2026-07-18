@@ -20,17 +20,7 @@ impl ImageProcessor {
     }
 
     pub fn get_mime_type(path: &str) -> &'static str {
-        if path.ends_with(".png") {
-            "image/png"
-        } else if path.ends_with(".jpg") || path.ends_with(".jpeg") {
-            "image/jpeg"
-        } else if path.ends_with(".gif") {
-            "image/gif"
-        } else if path.ends_with(".webp") {
-            "image/webp"
-        } else {
-            "image/png"
-        }
+        crate::core::dispatch::guess_mime(path, "image/png")
     }
 
     pub fn to_data_url(path: &str) -> Option<String> {

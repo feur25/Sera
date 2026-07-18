@@ -1,5 +1,17 @@
 use std::collections::HashMap;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
+
+static STATE_LOCK_WARNED: AtomicBool = AtomicBool::new(false);
+
+fn warn_state_lock_once(caller: &str) {
+    if !STATE_LOCK_WARNED.swap(true, Ordering::Relaxed) {
+        eprintln!(
+            "seraplot: webapp AppState mutex poisoned in {caller} -- page renders and event \
+             callbacks will silently stop updating from here on; this warning prints once"
+        );
+    }
+}
 
 use pyo3::prelude::*;
 use pyo3::types::PyTuple;
@@ -95,13 +107,25 @@ fn extract_html(py: Python<'_>, obj: &PyObject) -> PyResult<String> {
 
 impl EventDispatcher for Mutex<AppState> {
     fn page_html(&self, path: &str) -> Option<String> {
-        self.lock().ok()?.render_page(path)
+        match self.lock() {
+            Ok(state) => state.render_page(path),
+            Err(_) => {
+                warn_state_lock_once("page_html");
+                None
+            }
+        }
     }
 
     fn on_event(&self, component_id: &str, value: &str) -> Vec<(String, String)> {
         let mut updates = Vec::new();
         Python::with_gil(|py| {
-            let Ok(mut state) = self.lock() else { return };
+            let mut state = match self.lock() {
+                Ok(state) => state,
+                Err(_) => {
+                    warn_state_lock_once("on_event");
+                    return;
+                }
+            };
             state.values.insert(component_id.to_string(), value.to_string());
 
             let matching: Vec<usize> = state

@@ -50,18 +50,25 @@ pub fn register_group_from_inventory(group: &'static str) {
     let mut ids: Vec<u8> = inventory::iter::<Plot3DTypeEntry>()
         .filter(|entry| entry.group == group)
         .map(|entry| {
-            let _ = Plot3DTypeBuilder::new(entry.id)
+            if let Err(e) = Plot3DTypeBuilder::new(entry.id)
                 .with_name(entry.name)
                 .with_renderer(entry.renderer)
-                .build();
+                .build()
+            {
+                eprintln!(
+                    "seraplot: failed to register 3D chart type '{}' (id {}) in group '{group}': {e}",
+                    entry.name, entry.id
+                );
+            }
             register_positioner_for_type(entry.id, entry.positioner);
             entry.id
         })
         .collect();
     ids.sort_unstable();
 
-    if let Ok(mut grp_reg) = get_group_registry().lock() {
-        grp_reg.register_group(group.to_string(), ids);
+    match get_group_registry().lock() {
+        Ok(mut grp_reg) => grp_reg.register_group(group.to_string(), ids),
+        Err(_) => warn_registry_lock_once("register_group_from_inventory"),
     }
 }
 
@@ -148,6 +155,26 @@ pub(crate) fn get_registry() -> &'static Mutex<Plot3DRegistry> {
     REGISTRY.get_or_init(|| Mutex::new(Plot3DRegistry::new()))
 }
 
+static REGISTRY_LOCK_WARNED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+fn warn_registry_lock_once(caller: &str) {
+    if !REGISTRY_LOCK_WARNED.swap(true, std::sync::atomic::Ordering::Relaxed) {
+        eprintln!(
+            "seraplot: 3D chart registry lock poisoned in {caller} -- 3D chart type lookups/registration \
+             will silently fail from here on; this warning prints once"
+        );
+    }
+}
+
+/// Locks the 3D chart registry and applies `f`, logging once (not per-call) if
+/// the lock is poisoned instead of silently doing nothing.
+pub(crate) fn with_registry_mut(caller: &str, f: impl FnOnce(&mut Plot3DRegistry)) {
+    match get_registry().lock() {
+        Ok(mut reg) => f(&mut reg),
+        Err(_) => warn_registry_lock_once(caller),
+    }
+}
+
 pub fn get_group_registry() -> &'static Mutex<Plot3DGroupRegistry> {
     GROUP_REGISTRY.get_or_init(|| Mutex::new(Plot3DGroupRegistry::new()))
 }
@@ -184,9 +211,9 @@ impl Plot3DTypeBuilder {
 
         let renderer = self.renderer.ok_or("Renderer required")?;
 
-        if let Ok(mut reg) = get_registry().lock() {
+        with_registry_mut("Plot3DTypeBuilder::build", |reg| {
             reg.register(self.id, self.name.clone(), renderer);
-        }
+        });
 
         Ok(())
     }
@@ -334,9 +361,9 @@ pub fn get_3d_positions(
 }
 
 pub fn register_positioner_for_type(chart_type: u8, positioner: Plot3DPositioner) {
-    if let Ok(mut reg) = get_registry().lock() {
+    with_registry_mut("register_positioner_for_type", |reg| {
         reg.register_positioner(chart_type, positioner);
-    }
+    });
 }
 
 #[no_mangle]

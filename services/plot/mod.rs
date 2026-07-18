@@ -10,8 +10,6 @@ pub mod dashboard;
 pub mod decimate;
 pub mod default;
 pub mod family_macro;
-#[cfg(feature = "gui")]
-pub mod generic;
 pub mod html;
 pub mod layout;
 pub mod map;
@@ -30,8 +28,6 @@ pub use chart_input::*;
 pub use containers_3d::*;
 #[allow(ambiguous_glob_reexports)]
 pub use default::*;
-#[cfg(feature = "gui")]
-pub use generic::*;
 pub use layout::*;
 #[allow(ambiguous_glob_reexports)]
 pub use map::*;

@@ -230,8 +230,6 @@ pub fn write_violin_v(
     side: Side,
     dens: &[f64],
     max_dens: f64,
-    v_min: f64,
-    range: f64,
     color: u32,
     fill_opacity: f64,
     stroke_width: f64,
@@ -242,7 +240,6 @@ pub fn write_violin_v(
     if dens.is_empty() || max_dens <= 0.0 {
         return;
     }
-    let _ = (v_min, range);
     let hx = hex6(color);
     let steps = dens.len() - 1;
     let yv = |si: usize| -> i32 {
@@ -316,8 +313,6 @@ pub fn write_violin_h(
     half_h: i32,
     dens: &[f64],
     max_dens: f64,
-    x_min: f64,
-    range: f64,
     color: u32,
     fill_opacity: f64,
     stroke_width: f64,
@@ -327,7 +322,6 @@ pub fn write_violin_h(
     if dens.is_empty() || max_dens <= 0.0 {
         return;
     }
-    let _ = (x_min, range);
     let hx = hex6(color);
     let steps = dens.len() - 1;
     let xv = |si: usize| -> i32 {

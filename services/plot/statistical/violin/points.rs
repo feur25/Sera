@@ -47,8 +47,6 @@ pub fn render(cfg: &ViolinConfig) -> String {
             Side::Both,
             &dens,
             max_d,
-            vr.min,
-            vr.range,
             color,
             cfg.fill_opacity * 0.45,
             cfg.stroke_width,

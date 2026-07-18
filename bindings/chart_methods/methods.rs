@@ -714,7 +714,13 @@ impl Chart {
     pub fn apply_color_bindings(&self) -> Chart {
         let bindings = match GLOBAL_COLOR_BINDINGS.lock() {
             Ok(g) => g.clone(),
-            Err(_) => return self.propagate(self.html.clone()),
+            Err(_) => {
+                eprintln!(
+                    "seraplot: global color-bindings mutex poisoned in apply_color_bindings -- \
+                     returning the chart with no color bindings applied"
+                );
+                return self.propagate(self.html.clone());
+            }
         };
         if bindings.is_empty() {
             return self.propagate(self.html.clone());

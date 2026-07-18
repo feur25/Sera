@@ -51,16 +51,31 @@ fn index_path() -> PathBuf {
 
 fn load_disk() -> RegistryIndex {
     let p = index_path();
-    if let Ok(s) = std::fs::read_to_string(&p) {
-        serde_json::from_str(&s).unwrap_or_default()
-    } else {
-        RegistryIndex::default()
+    match std::fs::read_to_string(&p) {
+        Ok(s) => serde_json::from_str(&s).unwrap_or_else(|e| {
+            eprintln!(
+                "seraplot: model registry index at '{}' is corrupted ({e}) -- starting from an \
+                 empty registry; the file will be overwritten on the next write unless backed up now",
+                p.display()
+            );
+            RegistryIndex::default()
+        }),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => RegistryIndex::default(),
+        Err(e) => {
+            eprintln!("seraplot: cannot read model registry index at '{}': {e}", p.display());
+            RegistryIndex::default()
+        }
     }
 }
 
 fn flush_disk(idx: &RegistryIndex) {
-    if let Ok(s) = serde_json::to_string(idx) {
-        let _ = std::fs::write(index_path(), s);
+    match serde_json::to_string(idx) {
+        Ok(s) => {
+            if let Err(e) = std::fs::write(index_path(), s) {
+                eprintln!("seraplot: failed to write model registry index: {e}");
+            }
+        }
+        Err(e) => eprintln!("seraplot: failed to serialize model registry index: {e}"),
     }
 }
 

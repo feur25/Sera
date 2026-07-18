@@ -130,11 +130,11 @@ pub(super) fn scatter_bounds(x_vals: &[f64], y_vals: &[f64], n: usize) -> Option
     let mut max_x = f64::NEG_INFINITY;
     let mut min_y = f64::INFINITY;
     let mut max_y = f64::NEG_INFINITY;
-    for i in 0..n {
-        min_x = min_x.min(x_vals[i]);
-        max_x = max_x.max(x_vals[i]);
-        min_y = min_y.min(y_vals[i]);
-        max_y = max_y.max(y_vals[i]);
+    for (&x, &y) in x_vals.iter().zip(y_vals).take(n) {
+        min_x = min_x.min(x);
+        max_x = max_x.max(x);
+        min_y = min_y.min(y);
+        max_y = max_y.max(y);
     }
     let range_x = (max_x - min_x).max(1.0);
     let range_y = (max_y - min_y).max(1.0);

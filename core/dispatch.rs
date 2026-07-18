@@ -144,6 +144,25 @@ pub fn resolve_agg(kind: &str, sum: f64, min: f64, max: f64, count: f64) -> f64 
     }
 }
 
+const MIME_TABLE: &[(&str, &str)] = &[
+    (".png", "image/png"),
+    (".jpg", "image/jpeg"),
+    (".jpeg", "image/jpeg"),
+    (".gif", "image/gif"),
+    (".webp", "image/webp"),
+    (".svg", "image/svg+xml"),
+];
+
+#[inline]
+pub fn guess_mime(path: &str, default: &'static str) -> &'static str {
+    let lower = path.to_lowercase();
+    MIME_TABLE
+        .iter()
+        .find(|(ext, _)| lower.ends_with(ext))
+        .map(|(_, mime)| *mime)
+        .unwrap_or(default)
+}
+
 #[inline]
 pub fn stats_par(data: &[f64]) -> SliceStats {
     if data.is_empty() {

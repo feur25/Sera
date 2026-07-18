@@ -162,9 +162,6 @@ pub fn render(cfg: &ScatterConfig) -> String {
     };
 
     if !curve.is_empty() {
-        let frame_pl = f.pl;
-        let frame_pt = f.pt;
-        let _ = (frame_pl, frame_pt);
         let mut tmp: Vec<u8> = Vec::with_capacity(curve.len() * 16);
         if curve.len() >= 2 {
             let hx = hex6(line_color);

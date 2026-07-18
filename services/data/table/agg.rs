@@ -185,16 +185,14 @@ impl Table {
         }
         let mut columns = HashMap::new();
         for name in &order {
-            let mut merged = self
-                .columns
-                .get(name)
+            let self_col = self.columns.get(name);
+            let other_col = other.columns.get(name);
+            let mut merged = self_col
                 .cloned()
-                .unwrap_or_else(|| vec![Cell::Num(0.0); self.nrows]);
-            let other_vals = other
-                .columns
-                .get(name)
+                .unwrap_or_else(|| vec![Cell::default_for(other_col); self.nrows]);
+            let other_vals = other_col
                 .cloned()
-                .unwrap_or_else(|| vec![Cell::Num(0.0); other.nrows]);
+                .unwrap_or_else(|| vec![Cell::default_for(self_col); other.nrows]);
             merged.extend(other_vals);
             columns.insert(name.clone(), merged);
         }
@@ -243,7 +241,8 @@ impl Table {
                     }
                     for name in &right_others {
                         let out_name = right_rename.get(name).cloned().unwrap_or_else(|| name.clone());
-                        columns.get_mut(&out_name).unwrap().push(Cell::Num(0.0));
+                        let fill = Cell::default_for(other.columns.get(name));
+                        columns.get_mut(&out_name).unwrap().push(fill);
                     }
                     nrows += 1;
                 }

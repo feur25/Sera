@@ -44,8 +44,6 @@ pub fn render(cfg: &RadarConfig) -> String {
             let outer_r = r * frac;
             let (x0o, y0o) = project(cx, cy, outer_r, 1.0, a0);
             let (x1o, y1o) = project(cx, cy, outer_r, 1.0, a1);
-            let (x0i, y0i) = (cx + 0.0_f64, cy - 0.0_f64);
-            let _ = (x0i, y0i);
             push_b(&mut b, b"<path d=\"M ");
             push_f2(&mut b, cx);
             b.push(b' ');

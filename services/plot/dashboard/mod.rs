@@ -155,20 +155,7 @@ fn grp_attr(group: &str) -> String {
 }
 
 fn guess_mime(path: &str) -> &'static str {
-    let lower = path.to_lowercase();
-    if lower.ends_with(".png") {
-        "image/png"
-    } else if lower.ends_with(".jpg") || lower.ends_with(".jpeg") {
-        "image/jpeg"
-    } else if lower.ends_with(".gif") {
-        "image/gif"
-    } else if lower.ends_with(".webp") {
-        "image/webp"
-    } else if lower.ends_with(".svg") {
-        "image/svg+xml"
-    } else {
-        "application/octet-stream"
-    }
+    crate::core::dispatch::guess_mime(path, "application/octet-stream")
 }
 
 #[derive(Clone, PartialEq, Serialize, Deserialize)]
@@ -1857,8 +1844,8 @@ impl Canvas {
         let Some(bounds) = anchors::scatter_bounds(&x_vals, &y_vals, n) else {
             return;
         };
-        for i in 0..n {
-            let (px, py) = anchors::project_scatter(plot, bounds, x_vals[i], y_vals[i]);
+        for (i, (&x, &y)) in x_vals.iter().zip(&y_vals).take(n).enumerate() {
+            let (px, py) = anchors::project_scatter(plot, bounds, x, y);
             if let Some(label) = labels.get(i) {
                 if !label.is_empty() {
                     self.register_native_pin(chart_ref, label, px, py);
@@ -2586,15 +2573,26 @@ struct CanvasIndex {
     canvases: HashMap<String, CanvasIndexEntry>,
 }
 
-fn load_index() -> CanvasIndex {
+fn load_index() -> PyResult<CanvasIndex> {
     let path = canvas_index_path();
-    fs::read_to_string(&path)
-        .ok()
-        .and_then(|s| serde_json::from_str(&s).ok())
-        .unwrap_or(CanvasIndex {
+    match fs::read_to_string(&path) {
+        Ok(s) => serde_json::from_str(&s).map_err(|e| {
+            pyo3::exceptions::PyValueError::new_err(format!(
+                "canvas index at '{}' is corrupted: {}",
+                path.display(),
+                e
+            ))
+        }),
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(CanvasIndex {
             version: 1,
             canvases: HashMap::new(),
-        })
+        }),
+        Err(e) => Err(pyo3::exceptions::PyIOError::new_err(format!(
+            "cannot read canvas index at '{}': {}",
+            path.display(),
+            e
+        ))),
+    }
 }
 
 fn save_index(index: &CanvasIndex) -> PyResult<()> {
@@ -2629,7 +2627,7 @@ pub fn canvas_save_named(canvas: &Canvas, name: &str) -> PyResult<String> {
     let dir = seraplot_home_dir();
     let path = dir.join(format!("{}.json", name));
     canvas.save(&path.to_string_lossy())?;
-    let mut index = load_index();
+    let mut index = load_index()?;
     let updated_at = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map(|d| d.as_secs())
@@ -2647,7 +2645,7 @@ pub fn canvas_save_named(canvas: &Canvas, name: &str) -> PyResult<String> {
 
 #[pyfunction]
 pub fn canvas_load_named(name: &str) -> PyResult<Canvas> {
-    let index = load_index();
+    let index = load_index()?;
     let entry = index.canvases.get(name).ok_or_else(|| {
         pyo3::exceptions::PyKeyError::new_err(format!("no saved canvas named '{}'", name))
     })?;

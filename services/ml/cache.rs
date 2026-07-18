@@ -90,12 +90,29 @@ fn task_read(id: u64) -> Option<TaskEntry> {
     serde_json::from_slice(&bytes).ok()
 }
 
+static TASK_WRITE_FAILED_WARNED: std::sync::atomic::AtomicBool =
+    std::sync::atomic::AtomicBool::new(false);
+
+fn warn_task_write_failed_once(task_id: u64, detail: &str) {
+    if !TASK_WRITE_FAILED_WARNED.swap(true, std::sync::atomic::Ordering::Relaxed) {
+        eprintln!(
+            "seraplot ml: failed to persist task {task_id} state to disk ({detail}) -- task \
+             progress/results may be lost on crash or restart; this warning prints once"
+        );
+    }
+}
+
 fn task_write(entry: &TaskEntry) {
     if !persistence_enabled() {
         return;
     }
-    if let Ok(json) = serde_json::to_vec(entry) {
-        let _ = std::fs::write(task_path(entry.task_id), json);
+    match serde_json::to_vec(entry) {
+        Ok(json) => {
+            if let Err(e) = std::fs::write(task_path(entry.task_id), json) {
+                warn_task_write_failed_once(entry.task_id, &e.to_string());
+            }
+        }
+        Err(e) => warn_task_write_failed_once(entry.task_id, &e.to_string()),
     }
 }
 

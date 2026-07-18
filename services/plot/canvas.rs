@@ -60,25 +60,28 @@ impl Canvas {
     }
 
     pub fn render_svg(&self) -> String {
-        if let Ok(reg) = crate::plot::controller::chart_controller::get_registry().lock() {
-            if let Some(svg_renderer) = reg.get_svg(self.type_id) {
-                let mut svg = String::new();
-                let colors: Vec<&'static str> = vec!["#4a90e2"];
-                let max_val = self.values.iter().copied().fold(0.0, f64::max).max(1.0);
-                svg_renderer(
-                    &mut svg,
-                    &self.values,
-                    &colors,
-                    0,
-                    self.width as i32,
-                    self.height as i32,
-                    max_val,
-                    true,
-                );
-                return svg;
-            }
-        }
-        String::new()
+        let Some(svg_renderer) = crate::plot::controller::chart_controller::get_svg_renderer(self.type_id) else {
+            eprintln!(
+                "seraplot: Canvas::render_svg found no SVG renderer registered for chart type {} \
+                 -- rendering a blank chart",
+                self.type_id
+            );
+            return String::new();
+        };
+        let mut svg = String::new();
+        let colors: Vec<&'static str> = vec!["#4a90e2"];
+        let max_val = self.values.iter().copied().fold(0.0, f64::max).max(1.0);
+        svg_renderer(
+            &mut svg,
+            &self.values,
+            &colors,
+            0,
+            self.width as i32,
+            self.height as i32,
+            max_val,
+            true,
+        );
+        svg
     }
 
     pub fn zoom(&mut self, _center_x: f64, _center_y: f64, _factor: f32) {

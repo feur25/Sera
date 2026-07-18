@@ -15,6 +15,14 @@ pub enum Cell {
 }
 
 impl Cell {
+    pub(crate) fn default_for(col: Option<&Vec<Cell>>) -> Cell {
+        match col.and_then(|c| c.first()) {
+            Some(Cell::Str(_)) => Cell::Str(String::new()),
+            Some(Cell::Bool(_)) => Cell::Bool(false),
+            _ => Cell::Num(f64::NAN),
+        }
+    }
+
     pub(crate) fn as_f64(&self) -> Option<f64> {
         match self {
             Cell::Num(n) => Some(*n),

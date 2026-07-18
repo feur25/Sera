@@ -348,7 +348,9 @@ pub fn chart_append(input: &str) -> String {
     }
     let payload: In = match serde_json::from_str(input) {
         Ok(v) => v,
-        Err(_) => return String::new(),
+        Err(e) => {
+            return serde_json::json!({"ok":false,"error":format!("invalid JSON: {e}")}).to_string()
+        }
     };
     let mut xs = payload.prev_x.unwrap_or_default();
     let mut ys = payload.prev_y.unwrap_or_default();
@@ -388,16 +390,25 @@ pub fn export_svg(input: &str) -> String {
     }
     let v: In = match serde_json::from_str(input) {
         Ok(v) => v,
-        Err(_) => return String::new(),
+        Err(e) => {
+            eprintln!("seraplot: export_svg received invalid JSON: {e}");
+            return String::new();
+        }
     };
     let h = v.html;
     let start = match h.find("<svg") {
         Some(i) => i,
-        None => return String::new(),
+        None => {
+            eprintln!("seraplot: export_svg found no <svg> tag in the supplied html");
+            return String::new();
+        }
     };
     let end = match h[start..].find("</svg>") {
         Some(i) => start + i + 6,
-        None => return String::new(),
+        None => {
+            eprintln!("seraplot: export_svg found an unterminated <svg> tag (no matching </svg>)");
+            return String::new();
+        }
     };
     h[start..end].to_string()
 }
@@ -422,7 +433,9 @@ pub fn export_html_file(input: &str) -> String {
     }
     let v: In = match serde_json::from_str(input) {
         Ok(v) => v,
-        Err(_) => return "{\"ok\":false}".to_string(),
+        Err(e) => {
+            return serde_json::json!({"ok":false,"error":format!("invalid JSON: {e}")}).to_string()
+        }
     };
     match std::fs::write(&v.path, v.html) {
         Ok(_) => format!(
@@ -444,7 +457,9 @@ pub fn chart_info(input: &str) -> String {
     }
     let v: In = match serde_json::from_str(input) {
         Ok(v) => v,
-        Err(_) => return "{}".to_string(),
+        Err(e) => {
+            return serde_json::json!({"ok":false,"error":format!("invalid JSON: {e}")}).to_string()
+        }
     };
     let h = v.html;
     let len = h.len();
