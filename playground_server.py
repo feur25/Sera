@@ -57,68 +57,40 @@ def _signature(fn_name):
         return None
 
 
-async def _exec(run_id, code, send):
-    sp = _sp()
-    if not sp:
-        await send(json.dumps({"t": "err", "id": run_id, "msg": "seraplot not found — activate your venv"}))
-        return
+def _html_of(obj):
+    for attr in ("_repr_html_", "html", "to_html"):
+        member = getattr(obj, attr, None)
+        if member is None:
+            continue
+        return member() if callable(member) else member
+    return None
 
+
+def _emit(loop, queue, item):
+    loop.call_soon_threadsafe(queue.put_nowait, item)
+
+
+async def _stream_job(run_id, send, job):
     loop = asyncio.get_event_loop()
     queue = asyncio.Queue()
 
     def _stream(chart):
-        html = None
-        if hasattr(chart, "_repr_html_"):
-            html = chart._repr_html_()
-        elif hasattr(chart, "html"):
-            html = chart.html
-        elif hasattr(chart, "to_html"):
-            html = chart.to_html()
+        html = _html_of(chart)
         if html:
-            loop.call_soon_threadsafe(
-                queue.put_nowait,
-                {"t": "frame", "id": run_id, "html": html}
-            )
+            _emit(loop, queue, {"t": "frame", "id": run_id, "html": html})
 
-    ns = {
-        "sp": sp,
-        "_stream": _stream,
-        "__builtins__": __builtins__,
-    }
-
-    def _run():
+    def _worker():
         try:
-            exec(compile(code, "<playground>", "exec"), ns)
-            result = None
-            for name in ("c", "chart", "fig", "result", "out"):
-                if name in ns and ns[name] is not None:
-                    result = ns[name]
-                    break
-            if result is not None:
-                html = None
-                if hasattr(result, "_repr_html_"):
-                    html = result._repr_html_()
-                elif hasattr(result, "html"):
-                    html = result.html
-                elif hasattr(result, "to_html"):
-                    html = result.to_html()
-                if html:
-                    loop.call_soon_threadsafe(
-                        queue.put_nowait,
-                        {"t": "frame", "id": run_id, "html": html}
-                    )
+            result = job(_stream)
+            html = _html_of(result) if result is not None else None
+            if html:
+                _emit(loop, queue, {"t": "frame", "id": run_id, "html": html})
         except Exception:
-            loop.call_soon_threadsafe(
-                queue.put_nowait,
-                {"t": "err", "id": run_id, "msg": traceback.format_exc()}
-            )
+            _emit(loop, queue, {"t": "err", "id": run_id, "msg": traceback.format_exc()})
         finally:
-            loop.call_soon_threadsafe(
-                queue.put_nowait,
-                {"t": "done", "id": run_id}
-            )
+            _emit(loop, queue, {"t": "done", "id": run_id})
 
-    threading.Thread(target=_run, daemon=True).start()
+    threading.Thread(target=_worker, daemon=True).start()
 
     while True:
         item = await queue.get()
@@ -127,27 +99,75 @@ async def _exec(run_id, code, send):
             break
 
 
+def _exec_job(code):
+    def job(_stream):
+        sp = _sp()
+        ns = {"sp": sp, "_stream": _stream, "__builtins__": __builtins__}
+        exec(compile(code, "<playground>", "exec"), ns)
+        for name in ("c", "chart", "fig", "result", "out"):
+            if name in ns and ns[name] is not None:
+                return ns[name]
+        return None
+    return job
+
+
+def _call_job(fn_name, kwargs):
+    def job(_stream):
+        sp = _sp()
+        fn = getattr(sp, fn_name, None) if sp else None
+        if fn is None:
+            raise NameError(f"sp.{fn_name} is not a known function")
+        return fn(**kwargs)
+    return job
+
+
+async def _handle_ping(ws, msg):
+    sp = _sp()
+    ver = getattr(sp, "__version__", "?") if sp else "not found"
+    await ws.send(json.dumps({"t": "pong", "version": ver}))
+
+
+async def _handle_list(ws, msg):
+    await ws.send(json.dumps({"t": "list", "fns": _list_fns()}))
+
+
+async def _handle_sig(ws, msg):
+    params = _signature(msg.get("fn", ""))
+    await ws.send(json.dumps({"t": "sig", "fn": msg.get("fn"), "params": params}))
+
+
+async def _handle_run(ws, msg):
+    run_id = msg.get("id", 0)
+    if not _sp():
+        await ws.send(json.dumps({"t": "err", "id": run_id, "msg": "seraplot not found — activate your venv"}))
+        return
+    await _stream_job(run_id, ws.send, _exec_job(msg.get("code", "")))
+
+
+async def _handle_call(ws, msg):
+    run_id = msg.get("id", 0)
+    if not _sp():
+        await ws.send(json.dumps({"t": "err", "id": run_id, "msg": "seraplot not found — activate your venv"}))
+        return
+    await _stream_job(run_id, ws.send, _call_job(msg.get("fn", ""), msg.get("kwargs") or {}))
+
+
+_ACTIONS = {
+    "ping": _handle_ping,
+    "list": _handle_list,
+    "sig": _handle_sig,
+    "run": _handle_run,
+    "call": _handle_call,
+}
+
+
 async def _handler(ws):
     async for raw in ws:
         try:
             msg = json.loads(raw)
-            a = msg.get("a")
-
-            if a == "ping":
-                sp = _sp()
-                ver = getattr(sp, "__version__", "?") if sp else "not found"
-                await ws.send(json.dumps({"t": "pong", "version": ver}))
-
-            elif a == "list":
-                await ws.send(json.dumps({"t": "list", "fns": _list_fns()}))
-
-            elif a == "sig":
-                params = _signature(msg.get("fn", ""))
-                await ws.send(json.dumps({"t": "sig", "fn": msg.get("fn"), "params": params}))
-
-            elif a == "run":
-                await _exec(msg.get("id", 0), msg.get("code", ""), ws.send)
-
+            handler = _ACTIONS.get(msg.get("a"))
+            if handler:
+                await handler(ws, msg)
         except Exception:
             try:
                 await ws.send(json.dumps({"t": "err", "id": 0, "msg": traceback.format_exc()}))
