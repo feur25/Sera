@@ -1,5 +1,5 @@
 [workspace]
-members = [".", "seraplot-macros"]
+members = [".", "bindings/macros"]
 resolver = "2"
 
 [package]
@@ -50,7 +50,7 @@ rayon = "1.10"
 sysinfo = { version = "0.30", optional = true }
 matrixmultiply = { version = "0.3", features = ["threading"] }
 candle-core = { version = "0.7", optional = true, default-features = false }
-seraplot-macros = { path = "seraplot-macros" }
+seraplot-macros = { path = "bindings/macros" }
 inventory = "0.3"
 serde-wasm-bindgen = { version = "0.6", optional = true }
 pyo3 = { version = "0.21", optional = true, features = ["extension-module", "multiple-pymethods"] }
