@@ -12,6 +12,7 @@ pub mod default;
 pub mod family_macro;
 #[cfg(feature = "gui")]
 pub mod generic;
+pub mod html;
 pub mod layout;
 pub mod map;
 pub mod models;

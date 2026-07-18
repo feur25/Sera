@@ -83,7 +83,7 @@ pub fn demo_snippet(family: &str, variant: &str) -> Option<String> {
 #[cfg(feature = "python")]
 pub mod _py;
 pub mod bindings;
-pub mod html;
+pub use services::plot::html;
 #[cfg(any(feature = "python", feature = "gui"))]
 pub mod viewer;
 #[cfg(feature = "webapp")]
