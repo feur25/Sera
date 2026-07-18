@@ -518,7 +518,8 @@ pub(crate) fn write_all(
 ) {
     let ml_pyclasses: Vec<String> = Vec::new();
     let ml_pyfunctions: Vec<String> = Vec::new();
-    let registered = collect_registered_fns(&manifest.join("src"));
+    let src_root = bindings_root.parent().unwrap_or(manifest).to_path_buf();
+    let registered = collect_registered_fns(&src_root);
 
     let charts_path = bindings_root.join("commands").join("charts.rs");
     let charts_src = if charts_path.exists() {
@@ -526,7 +527,7 @@ pub(crate) fn write_all(
     } else {
         let charts_dir = bindings_root.join("commands").join("charts");
         if charts_dir.is_dir() {
-            println!("cargo:rerun-if-changed=src/bindings/commands/charts");
+            println!("cargo:rerun-if-changed={}", charts_dir.display());
             let mut src = String::new();
             let mut chart_files: Vec<PathBuf> = Vec::new();
             walk(&charts_dir, &mut chart_files);
@@ -567,9 +568,9 @@ pub(crate) fn write_all(
     }
     all_fns.sort();
     all_fns.dedup();
-    let plot_utils_path = manifest.join("src").join("plot").join("utils.rs");
+    let plot_utils_path = src_root.join("plot").join("utils.rs");
     let plot_utils_src = fs::read_to_string(&plot_utils_path).unwrap_or_default();
-    println!("cargo:rerun-if-changed=src/plot/utils.rs");
+    println!("cargo:rerun-if-changed={}", plot_utils_path.display());
     let plot_util_fns = extract_input_str_fns(&plot_utils_src, &registered.exported);
     let ml_fns_vec = extract_input_str_fns(&ml_src, &HashSet::new());
     let mut chart_fns: Vec<String> = Vec::new();

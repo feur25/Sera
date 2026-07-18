@@ -611,7 +611,8 @@ pub fn write_registry(
         js.push_str("]}");
     }
     js.push_str("]},docs:[");
-    let lib_src = fs::read_to_string(manifest.join("src").join("lib.rs")).unwrap_or_default();
+    let src_root = plot_root.parent().unwrap_or(manifest);
+    let lib_src = fs::read_to_string(src_root.join("lib.rs")).unwrap_or_default();
     let method_docs = parse_method_docs(&lib_src);
     for (i, entry) in method_docs.iter().enumerate() {
         if i > 0 {
@@ -654,11 +655,7 @@ pub fn write_registry(
         js.push_str("]}");
     }
     js.push_str("]};\n");
-    let path = manifest
-        .join("src")
-        .join("docs")
-        .join("theme")
-        .join("doc-registry.js");
+    let path = src_root.join("docs").join("theme").join("doc-registry.js");
     if let Some(parent) = path.parent() {
         let _ = fs::create_dir_all(parent);
     }
