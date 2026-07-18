@@ -666,6 +666,32 @@ impl Chart {
 
     #[sera_doc(
         category = "chart_method",
+        aliases("colorize", "value_gradient", "recolor_by_value"),
+        file = "charts/chart.md",
+        en = "Colors each data element by its own value on a continuous color scale — the chainable, cross-chart replacement for a family-specific \"gradient\" variant. Works on any chart whose elements carry a data-v attribute (bars, points, nodes, cells...). `colorscale` picks one of the shared scales (\"viridis\", \"plasma\", \"inferno\", \"magma\", \"cividis\", \"turbo\", \"rdbu\", \"blues\", \"reds\", \"greens\"); omit it for the default indigo → cyan → green → amber → red density gradient.",
+        fr = "Colore chaque élément de données selon sa propre valeur sur une échelle de couleur continue — le remplaçant chaînable et inter-graphiques d'une variante « gradient » propre à une famille. Fonctionne sur tout graphique dont les éléments portent un attribut data-v (barres, points, nœuds, cellules...). `colorscale` choisit l'une des échelles partagées (\"viridis\", \"plasma\", \"inferno\", \"magma\", \"cividis\", \"turbo\", \"rdbu\", \"blues\", \"reds\", \"greens\") ; l'omettre pour le gradient de densité indigo → cyan → vert → ambre → rouge par défaut.",
+        param(
+            name = "colorscale",
+            ty = "str | None",
+            en = "Named continuous colorscale, or None for the default density gradient.",
+            fr = "Échelle de couleur continue nommée, ou None pour le gradient de densité par défaut."
+        )
+    )]
+    #[sera_sig(colorscale = None)]
+    pub fn gradient(&self, colorscale: Option<&str>) -> Chart {
+        let cfg = match colorscale {
+            Some(s) => format!("window.__sp_gradient__={{scale:{}}};", json_str(s)),
+            None => String::new(),
+        };
+        self.propagate(self.html.replacen(
+            "</body>",
+            &format!("<script>{}{}</script></body>", cfg, SP_COLOR_DENSITY_JS),
+            1,
+        ))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
         aliases("highlight_labels", "focus_group"),
         file = "charts/chart.md",
         en = "Statically highlights elements whose label matches one of the given labels, dimming all others to the specified opacity.",
@@ -2191,6 +2217,72 @@ impl Chart {
     #[sera_sig(threshold_std = 2.0, color = "#ef4444")]
     pub fn outliers(&self, threshold_std: f64, color: &str) -> Chart {
         self.propagate(apply_outliers(self.html.clone(), threshold_std, color))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        aliases("robust_average", "median_trend"),
+        file = "charts/chart.md",
+        en = "Overlays a rolling-median line (trailing window), the robust-statistics counterpart to moving_average() — a median is not dragged around by a single spike the way a mean is, so this reads as a steadier trend on noisy or outlier-heavy series.",
+        fr = "Superpose une courbe de médiane mobile (fenêtre glissante), le pendant robuste de moving_average() — une médiane n'est pas déplacée par un seul pic comme peut l'être une moyenne, donc cette courbe lit une tendance plus stable sur des séries bruitées ou pleines de valeurs aberrantes.",
+        param(
+            name = "window",
+            ty = "int",
+            en = "Number of trailing points the median is computed over.",
+            fr = "Nombre de points (précédents) sur lesquels la médiane est calculée."
+        ),
+        param(
+            name = "color",
+            ty = "str",
+            en = "Line color. Default: #a855f7.",
+            fr = "Couleur de la courbe. Défaut : #a855f7."
+        )
+    )]
+    #[sera_sig(window = 3, color = "#a855f7")]
+    pub fn rolling_median(&self, window: usize, color: &str) -> Chart {
+        self.propagate(apply_rolling_median(self.html.clone(), window, color))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        aliases("regime_change", "spike_detector"),
+        file = "charts/chart.md",
+        en = "Marks points where the value jumps abnormally from the previous point — a sequential, point-to-point check, unlike outliers() which flags values far from the dataset's overall distribution. Useful for spotting regime changes or sudden spikes in ordered/time-series data.",
+        fr = "Marque les points où la valeur bondit anormalement par rapport au point précédent — une vérification séquentielle, point à point, à la différence de outliers() qui signale les valeurs éloignées de la distribution globale du jeu de données. Utile pour repérer des changements de régime ou des pics soudains dans des données ordonnées/temporelles.",
+        param(
+            name = "threshold_std",
+            ty = "float",
+            en = "Number of standard deviations (of the point-to-point deltas) beyond which a jump is flagged. Default: 2.0.",
+            fr = "Nombre d'écarts-types (des variations point à point) au-delà duquel un saut est signalé. Défaut : 2.0."
+        ),
+        param(
+            name = "color",
+            ty = "str",
+            en = "Marker color. Default: #f97316.",
+            fr = "Couleur du marqueur. Défaut : #f97316."
+        )
+    )]
+    #[sera_sig(threshold_std = 2.0, color = "#f97316")]
+    pub fn change_points(&self, threshold_std: f64, color: &str) -> Chart {
+        self.propagate(apply_change_points(self.html.clone(), threshold_std, color))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        aliases("rank_all", "full_ranks"),
+        file = "charts/chart.md",
+        en = "Labels every bar with its rank (#1, #2, ...) by value, without needing to pre-sort the data — the full-dataset counterpart to rank_badges(), which only marks the top N.",
+        fr = "Annote chaque barre de son rang (#1, #2, ...) selon sa valeur, sans avoir à trier les données au préalable — le pendant sur tout le jeu de données de rank_badges(), qui ne marque que les N premiers.",
+        param(
+            name = "ascending",
+            ty = "bool",
+            en = "If true, rank #1 goes to the smallest value instead of the largest. Default: False.",
+            fr = "Si vrai, le rang #1 va à la plus petite valeur plutôt qu'à la plus grande. Défaut : False."
+        )
+    )]
+    #[sera_sig(ascending = false)]
+    pub fn rank_labels(&self, ascending: bool) -> Chart {
+        self.propagate(apply_rank_labels(self.html.clone(), ascending))
     }
 
     #[sera_doc(

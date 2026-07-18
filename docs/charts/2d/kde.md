@@ -75,7 +75,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('kde-en','histogram',this)"><span class="sp-cic">H</span><span class="sp-clb">Histogram</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-en','normalized',this)"><span class="sp-cic">N</span><span class="sp-clb">Normalized</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-en','cumulative',this)"><span class="sp-cic">C</span><span class="sp-clb">Cumulative</span></button>
-<button class="sp-cls-tab" onclick="spCls('kde-en','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="kde-en-basic">
@@ -120,12 +119,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-cumulative.html"></iframe>
 </div>
-<div class="sp-variant" id="kde-en-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / shade / fade / ridge</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Vertical gradient fill (opaque top → transparent bottom).</p>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-gradient.html"></iframe>
-</div>
 </div></div>
 
 </div>
@@ -167,7 +160,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('kde-fr','histogram',this)"><span class="sp-cic">H</span><span class="sp-clb">Histogram</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-fr','normalized',this)"><span class="sp-cic">N</span><span class="sp-clb">Normalized</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-fr','cumulative',this)"><span class="sp-cic">C</span><span class="sp-clb">Cumulative</span></button>
-<button class="sp-cls-tab" onclick="spCls('kde-fr','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="kde-fr-basic">
@@ -211,12 +203,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Densité cumulée (CDF) dans [0, 1].</p>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-cumulative.html"></iframe>
-</div>
-<div class="sp-variant" id="kde-fr-gradient">
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / shade / fade / ridge</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Remplissage en dégradé vertical (opaque haut → transparent bas).</p>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/kde-gradient.html"></iframe>
 </div>
 </div></div>
 

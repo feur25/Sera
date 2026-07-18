@@ -14,7 +14,6 @@ pub fn render_chord_html(cfg: &ChordConfig) -> String {
     use ChordVariant::*;
     match cfg.variant {
         Basic    => basic::render(cfg),
-        Gradient => basic::render_gradient(cfg),
         Ribbon   => basic::render_ribbon(cfg),
         Arc      => basic::render_arc(cfg),
         Mono     => mono::render(cfg),

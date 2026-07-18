@@ -4,7 +4,6 @@ pub mod common;
 pub mod config;
 pub mod flat;
 pub mod gapped;
-pub mod gradient;
 pub mod heat;
 pub mod mono;
 pub mod nested;
@@ -19,7 +18,6 @@ pub fn render_treemap_html(cfg: &TreemapConfig) -> String {
     match cfg.variant {
         Basic => basic::render(cfg),
         Flat => flat::render(cfg),
-        Gradient => gradient::render(cfg),
         Outlined => outlined::render(cfg),
         Gapped => gapped::render(cfg),
         Nested => nested::render(cfg),

@@ -57,7 +57,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <button class="sp-cls-toggle" onclick="spClsTog('hive-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('hive-en','basic',this)"><span class="sp-cic">✦</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('hive-en','curved',this)"><span class="sp-cic">∫</span><span class="sp-clb">Curved</span></button>
-<button class="sp-cls-tab" onclick="spCls('hive-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('hive-en','weighted',this)"><span class="sp-cic">≈</span><span class="sp-clb">Weighted</span></button>
 <button class="sp-cls-tab" onclick="spCls('hive-en','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
 <button class="sp-cls-tab" onclick="spCls('hive-en','directed',this)"><span class="sp-cic">➤</span><span class="sp-clb">Directed</span></button>
@@ -75,12 +74,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/hive-curved.html"></iframe>
 </div>
-<div class="sp-variant" id="hive-en-gradient">
-<p>Curved + source-color gradient</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / color</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/hive-gradient.html"></iframe>
-</div>
 <div class="sp-variant" id="hive-en-weighted">
 <p>Stroke width proportional to edge weight</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"weighted"</code></span><span><strong>Aliases</strong> <code>weighted / width / value</code></span></div>
@@ -88,7 +81,7 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <iframe class="sp-preview-frame" src="../../previews/hive-weighted.html"></iframe>
 </div>
 <div class="sp-variant" id="hive-en-minimal">
-<p>Thin curved edges</p>
+<p>Straight (uncurved), thin, low-opacity edges with small strokeless nodes — a decluttered reading of dense hive plots that trades the curved-edge chrome for raw connectivity.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/hive-minimal.html"></iframe>
@@ -152,7 +145,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <button class="sp-cls-toggle" onclick="spClsTog('hive-fr')" title="Réduire / déplier">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('hive-fr','basic',this)"><span class="sp-cic">✦</span><span class="sp-clb">Basique</span></button>
 <button class="sp-cls-tab" onclick="spCls('hive-fr','curved',this)"><span class="sp-cic">∫</span><span class="sp-clb">Courbé</span></button>
-<button class="sp-cls-tab" onclick="spCls('hive-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('hive-fr','weighted',this)"><span class="sp-cic">≈</span><span class="sp-clb">Pondéré</span></button>
 <button class="sp-cls-tab" onclick="spCls('hive-fr','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
 <button class="sp-cls-tab" onclick="spCls('hive-fr','directed',this)"><span class="sp-cic">➤</span><span class="sp-clb">Dirigé</span></button>
@@ -170,12 +162,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/hive-curved.html"></iframe>
 </div>
-<div class="sp-variant" id="hive-fr-gradient">
-<p>Courbé + dégradé de couleur source</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/hive-gradient.html"></iframe>
-</div>
 <div class="sp-variant" id="hive-fr-weighted">
 <p>Épaisseur du trait proportionnelle au poids de l'arête</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"weighted"</code></span><span><strong>Alias</strong> <code>weighted / width / value</code></span></div>
@@ -183,7 +169,7 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <iframe class="sp-preview-frame" src="../../previews/hive-weighted.html"></iframe>
 </div>
 <div class="sp-variant" id="hive-fr-minimal">
-<p>Arêtes courbes fines</p>
+<p>Arêtes droites (non courbées), fines et peu opaques, avec de petits nœuds sans contour — une lecture épurée des hive plots denses qui sacrifie le chrome des arêtes courbées au profit de la connectivité brute.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/hive-minimal.html"></iframe>

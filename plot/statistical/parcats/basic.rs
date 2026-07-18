@@ -9,18 +9,14 @@ use crate::plot::statistical::sankey::common::{compute_layout, sankey_link_path}
 )]
 
 pub fn render(cfg: &ParcatsConfig) -> String {
-    render_impl(cfg, false, false)
-}
-
-pub fn render_gradient(cfg: &ParcatsConfig) -> String {
-    render_impl(cfg, true, false)
+    render_impl(cfg, false)
 }
 
 pub fn render_highlight(cfg: &ParcatsConfig) -> String {
-    render_impl(cfg, false, true)
+    render_impl(cfg, true)
 }
 
-fn render_impl(cfg: &ParcatsConfig, gradient: bool, highlight: bool) -> String {
+fn render_impl(cfg: &ParcatsConfig, highlight: bool) -> String {
     let p = match prepare(cfg) {
         Some(v) => v,
         None => return String::new(),
@@ -73,27 +69,6 @@ fn render_impl(cfg: &ParcatsConfig, gradient: bool, highlight: bool) -> String {
     push_b(&mut buf, b"\"><rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
     svg_title(&mut buf, cfg.title, cfg.width / 2, 24);
 
-    if gradient {
-        push_b(&mut buf, b"<defs>");
-        for k in 0..e {
-            let s = p.sources[k] as usize;
-            let t = p.targets[k] as usize;
-            let cs = hex6(palette_color(cfg.palette, s));
-            let ct = hex6(palette_color(cfg.palette, t));
-            push_b(&mut buf, b"<linearGradient id=\"pcg");
-            push_i(&mut buf, k as i32);
-            push_b(
-                &mut buf,
-                b"\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\"><stop offset=\"0%\" stop-color=\"#",
-            );
-            buf.extend_from_slice(&cs);
-            push_b(&mut buf, b"\" stop-opacity=\"0.55\"/><stop offset=\"100%\" stop-color=\"#");
-            buf.extend_from_slice(&ct);
-            push_b(&mut buf, b"\" stop-opacity=\"0.55\"/></linearGradient>");
-        }
-        push_b(&mut buf, b"</defs>");
-    }
-
     let mut src_offset = vec![0.0f64; n];
     let mut tgt_offset = vec![0.0f64; n];
 
@@ -111,12 +86,8 @@ fn render_impl(cfg: &ParcatsConfig, gradient: bool, highlight: bool) -> String {
         src_offset[s] += src_h;
         tgt_offset[t] += tgt_h;
 
-        let color = if gradient {
-            format!("url(#pcg{})", k)
-        } else {
-            let c = hex6(palette_color(cfg.palette, s));
-            format!("#{}", std::str::from_utf8(&c).unwrap_or("636efa"))
-        };
+        let c = hex6(palette_color(cfg.palette, s));
+        let color = format!("#{}", std::str::from_utf8(&c).unwrap_or("636efa"));
 
         push_b(&mut buf, b"<path data-idx=\"");
         push_i(&mut buf, k as i32);

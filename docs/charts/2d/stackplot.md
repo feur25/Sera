@@ -58,7 +58,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <button class="sp-cls-tab sp-cact" onclick="spCls('stackplot-en','basic',this)"><span class="sp-cic">▮</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('stackplot-en','streamgraph',this)"><span class="sp-cic">〜</span><span class="sp-clb">Streamgraph</span></button>
 <button class="sp-cls-tab" onclick="spCls('stackplot-en','normalized',this)"><span class="sp-cic">▤</span><span class="sp-clb">Normalized</span></button>
-<button class="sp-cls-tab" onclick="spCls('stackplot-en','gradient',this)"><span class="sp-cic">◈</span><span class="sp-clb">Gradient</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="stackplot-en-basic">
@@ -78,12 +77,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"normalized"</code></span><span><strong>Aliases</strong> <code>normalized / percent / hundred_percent / share</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/stackplot-normalized.html"></iframe>
-</div>
-<div class="sp-variant" id="stackplot-en-gradient">
-<p>Each stacked band fills with a top-to-bottom gradient (solid at the top edge, fading toward the bottom) instead of a flat color, for a sense of depth.</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / fade / depth / shaded</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/stackplot-gradient.html"></iframe>
 </div>
 </div>
 </div>
@@ -139,7 +132,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <button class="sp-cls-tab sp-cact" onclick="spCls('stackplot-fr','basic',this)"><span class="sp-cic">▮</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('stackplot-fr','streamgraph',this)"><span class="sp-cic">〜</span><span class="sp-clb">Streamgraph</span></button>
 <button class="sp-cls-tab" onclick="spCls('stackplot-fr','normalized',this)"><span class="sp-cic">▤</span><span class="sp-clb">Normalized</span></button>
-<button class="sp-cls-tab" onclick="spCls('stackplot-fr','gradient',this)"><span class="sp-cic">◈</span><span class="sp-clb">Gradient</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="stackplot-fr-basic">
@@ -159,12 +151,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"normalized"</code></span><span><strong>Alias</strong> <code>normalized / percent / hundred_percent / share</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/stackplot-normalized.html"></iframe>
-</div>
-<div class="sp-variant" id="stackplot-fr-gradient">
-<p>Chaque bande empilée se remplit d'un dégradé haut-bas (plein en haut, s'estompant vers le bas) au lieu d'une couleur plate, pour un effet de profondeur.</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / fade / depth / shaded</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/stackplot-gradient.html"></iframe>
 </div>
 </div>
 </div>

@@ -32,13 +32,12 @@ fn corr_color(v: f64) -> ([u8; 6], [u8; 6]) {
 
 #[crate::chart_demo("labels=[\"A\",\"B\",\"C\",\"D\"], matrix=[[1,0.8,-0.3,0.5],[0.8,1,0.1,-0.2],[-0.3,0.1,1,0.7],[0.5,-0.2,0.7,1]]")]
 pub fn render(cfg: &CorrelogramConfig) -> String {
-    render_impl(cfg, false, false, false, false)
+    render_impl(cfg, false, false, false)
 }
 
-pub fn render_heatmap(cfg: &CorrelogramConfig)  -> String { render_impl(cfg, true,  false, false, false) }
-pub fn render_text(cfg: &CorrelogramConfig)     -> String { render_impl(cfg, false, true,  false, false) }
-pub fn render_mixed(cfg: &CorrelogramConfig)    -> String { render_impl(cfg, false, false, true,  false) }
-pub fn render_gradient(cfg: &CorrelogramConfig) -> String { render_impl(cfg, false, false, false, true)  }
+pub fn render_heatmap(cfg: &CorrelogramConfig)  -> String { render_impl(cfg, true,  false, false) }
+pub fn render_text(cfg: &CorrelogramConfig)     -> String { render_impl(cfg, false, true,  false) }
+pub fn render_mixed(cfg: &CorrelogramConfig)    -> String { render_impl(cfg, false, false, true) }
 
 pub fn render_sorted(cfg: &CorrelogramConfig) -> String {
     let n = cfg.labels.len();
@@ -78,10 +77,10 @@ pub fn render_sorted(cfg: &CorrelogramConfig) -> String {
         palette: cfg.palette,
         show_values: cfg.show_values,
     };
-    render_impl(&sorted_cfg, false, false, false, false)
+    render_impl(&sorted_cfg, false, false, false)
 }
 
-fn render_impl(cfg: &CorrelogramConfig, heatmap: bool, text_only: bool, mixed: bool, _gradient: bool) -> String {
+fn render_impl(cfg: &CorrelogramConfig, heatmap: bool, text_only: bool, mixed: bool) -> String {
     let n = cfg.labels.len();
     if n == 0 || cfg.matrix.len() < n * n { return String::new(); }
 

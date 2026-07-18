@@ -14,7 +14,6 @@ pub fn render_correlogram_html(cfg: &CorrelogramConfig) -> String {
         Heatmap  => basic::render_heatmap(cfg),
         Text     => basic::render_text(cfg),
         Mixed    => basic::render_mixed(cfg),
-        Gradient => basic::render_gradient(cfg),
         Sorted   => basic::render_sorted(cfg),
     }
 }

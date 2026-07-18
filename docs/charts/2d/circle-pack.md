@@ -58,7 +58,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <button class="sp-cls-tab sp-cact" onclick="spCls('cp-en','basic',this)"><span class="sp-cic">●</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-en','flat',this)"><span class="sp-cic">○</span><span class="sp-clb">Flat</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-en','outlined',this)"><span class="sp-cic">◌</span><span class="sp-clb">Outlined</span></button>
-<button class="sp-cls-tab" onclick="spCls('cp-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-en','bubble',this)"><span class="sp-cic">◎</span><span class="sp-clb">Bubble</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-en','leaf_focus',this)"><span class="sp-cic">◍</span><span class="sp-clb">Leaf Focus</span></button>
 </div>
@@ -81,14 +80,8 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/circle_pack-outlined.html"></iframe>
 </div>
-<div class="sp-variant" id="cp-en-gradient">
-<p>Radial gradient fill per circle</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / radial</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-gradient.html"></iframe>
-</div>
 <div class="sp-variant" id="cp-en-bubble">
-<p>Alias for flat layout</p>
+<p>Runs a real greedy circle-packing layout: each circle is placed tangent to the best pair of already-placed circles (falling back to a spiral search when no tangent placement fits), producing a genuinely nested, non-overlapping bubble cluster instead of the grid-like flat layout.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"bubble"</code></span><span><strong>Aliases</strong> <code>bubble / packed</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/circle_pack-bubble.html"></iframe>
@@ -153,7 +146,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <button class="sp-cls-tab sp-cact" onclick="spCls('cp-fr','basic',this)"><span class="sp-cic">●</span><span class="sp-clb">Basique</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-fr','flat',this)"><span class="sp-cic">○</span><span class="sp-clb">Plat</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-fr','outlined',this)"><span class="sp-cic">◌</span><span class="sp-clb">Contour</span></button>
-<button class="sp-cls-tab" onclick="spCls('cp-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-fr','bubble',this)"><span class="sp-cic">◎</span><span class="sp-clb">Bulle</span></button>
 <button class="sp-cls-tab" onclick="spCls('cp-fr','leaf_focus',this)"><span class="sp-cic">◍</span><span class="sp-clb">Focus feuilles</span></button>
 </div>
@@ -176,14 +168,8 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/circle_pack-outlined.html"></iframe>
 </div>
-<div class="sp-variant" id="cp-fr-gradient">
-<p>Remplissage en dégradé radial par cercle</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / radial</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/circle_pack-gradient.html"></iframe>
-</div>
 <div class="sp-variant" id="cp-fr-bubble">
-<p>Alias de la disposition à plat</p>
+<p>Applique un véritable algorithme de tassement de cercles (« circle packing ») glouton : chaque cercle est placé tangent à la meilleure paire de cercles déjà posés (avec repli sur une recherche en spirale si aucun placement tangent ne convient), pour obtenir un amas de bulles réellement imbriqué et sans chevauchement, au lieu de la disposition en grille de la variante à plat.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"bubble"</code></span><span><strong>Alias</strong> <code>bubble / packed</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/circle_pack-bubble.html"></iframe>

@@ -453,6 +453,33 @@ pub(crate) fn apply_outliers(html: String, threshold_std: f64, color: &str) -> S
     html.replacen("</body>", &snippet, 1)
 }
 
+pub(crate) fn apply_rolling_median(html: String, window: usize, color: &str) -> String {
+    let cfg = format!("{{\"w\":{},\"c\":{}}}", window.max(1), json_str(color));
+    let snippet = format!(
+        "<script>window.__sp_rolling_median__={};{}</script></body>",
+        cfg, SP_ROLLING_MEDIAN_JS
+    );
+    html.replacen("</body>", &snippet, 1)
+}
+
+pub(crate) fn apply_change_points(html: String, threshold_std: f64, color: &str) -> String {
+    let cfg = format!("{{\"t\":{},\"c\":{}}}", threshold_std.max(0.1), json_str(color));
+    let snippet = format!(
+        "<script>window.__sp_change_points__={};{}</script></body>",
+        cfg, SP_CHANGE_POINTS_JS
+    );
+    html.replacen("</body>", &snippet, 1)
+}
+
+pub(crate) fn apply_rank_labels(html: String, ascending: bool) -> String {
+    let cfg = format!("{{\"asc\":{}}}", ascending);
+    let snippet = format!(
+        "<script>window.__sp_rank_labels__={};{}</script></body>",
+        cfg, SP_RANK_LABELS_JS
+    );
+    html.replacen("</body>", &snippet, 1)
+}
+
 pub(crate) fn apply_fill_between(html: String, color: &str, opacity: f64) -> String {
     let cfg = format!("{{\"c\":{},\"op\":{}}}", json_str(color), opacity.clamp(0.0, 1.0));
     let snippet = format!(

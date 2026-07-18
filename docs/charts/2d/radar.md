@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('radar-en','dashed',this)"><span class="sp-cic">D</span><span class="sp-clb">Dashed</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-en','stacked',this)"><span class="sp-cic">S</span><span class="sp-clb">Stacked</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-en','polar_bar',this)"><span class="sp-cic">P</span><span class="sp-clb">PolarBar</span></button>
-<button class="sp-cls-tab" onclick="spCls('radar-en','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button></div>
+</div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="radar-en-basic">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -117,12 +117,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-polar_bar.html"></iframe>
 </div>
-<div class="sp-variant" id="radar-en-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / radial_gradient / shade / fade</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Radial gradient fill from center (opaque) to edge (transparent).</p>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-gradient.html"></iframe>
-</div>
 </div></div>
 
 </div><!-- /lang-en -->
@@ -164,7 +158,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('radar-fr','dashed',this)"><span class="sp-cic">D</span><span class="sp-clb">Dashed</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-fr','stacked',this)"><span class="sp-cic">S</span><span class="sp-clb">Stacked</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-fr','polar_bar',this)"><span class="sp-cic">P</span><span class="sp-clb">PolarBar</span></button>
-<button class="sp-cls-tab" onclick="spCls('radar-fr','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button></div>
+</div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="radar-fr-basic">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
@@ -207,12 +201,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Barres radiales par axe groupées par série — histogramme polaire catégoriel.</p>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-polar_bar.html"></iframe>
-</div>
-<div class="sp-variant" id="radar-fr-gradient">
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / radial_gradient / shade / fade</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Remplissage en dégradé radial du centre (opaque) vers le bord (transparent).</p>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/radar-gradient.html"></iframe>
 </div>
 </div></div>
 

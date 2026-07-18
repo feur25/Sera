@@ -4,7 +4,6 @@ pub mod common;
 pub mod config;
 pub mod connected;
 pub mod density;
-pub mod gradient;
 pub mod variant;
 
 pub use config::EventplotConfig;
@@ -15,7 +14,6 @@ pub fn render_eventplot_html(cfg: &EventplotConfig) -> String {
     match cfg.variant {
         Basic => basic::render(cfg),
         Density => density::render(cfg),
-        Gradient => gradient::render(cfg),
         Connected => connected::render(cfg),
     }
 }

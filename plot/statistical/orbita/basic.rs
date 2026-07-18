@@ -4,16 +4,16 @@ use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, 
 
 #[crate::chart_demo("series_names=[\"2021\",\"2022\",\"2023\"], labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], matrix=[[0.4,0.7,0.5,0.8],[0.6,0.3,0.9,0.5],[0.8,0.6,0.4,0.7]]")]
 pub fn render(cfg: &OrbitaConfig) -> String {
-    render_impl(cfg, false, false, false, false)
+    render_impl(cfg, false, false, false, false, false)
 }
 
-pub fn render_bubble(cfg: &OrbitaConfig)  -> String { render_impl(cfg, true,  false, false, false) }
-pub fn render_trail(cfg: &OrbitaConfig)   -> String { render_impl(cfg, false, true,  false, false) }
-pub fn render_glow(cfg: &OrbitaConfig)    -> String { render_impl(cfg, false, false, true,  false) }
-pub fn render_minimal(cfg: &OrbitaConfig) -> String { render_impl(cfg, false, false, false, false) }
-pub fn render_delta(cfg: &OrbitaConfig)   -> String { render_impl(cfg, false, false, false, true)  }
+pub fn render_bubble(cfg: &OrbitaConfig)  -> String { render_impl(cfg, true,  false, false, false, false) }
+pub fn render_trail(cfg: &OrbitaConfig)   -> String { render_impl(cfg, false, true,  false, false, false) }
+pub fn render_glow(cfg: &OrbitaConfig)    -> String { render_impl(cfg, false, false, true,  false, false) }
+pub fn render_minimal(cfg: &OrbitaConfig) -> String { render_impl(cfg, false, false, false, false, true) }
+pub fn render_delta(cfg: &OrbitaConfig)   -> String { render_impl(cfg, false, false, false, true,  false) }
 
-fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool, delta: bool) -> String {
+fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool, delta: bool, minimal: bool) -> String {
     use std::f64::consts::PI;
 
     let ns = cfg.series_names.len();
@@ -62,13 +62,15 @@ fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool, delta:
 
     for si in 0..ns {
         let orbit_r = cfg.inner_r + (si as f64 + 0.5) * orbit_gap;
-        push_b(&mut buf, b"<circle cx=\"");
-        push_f2(&mut buf, cx);
-        push_b(&mut buf, b"\" cy=\"");
-        push_f2(&mut buf, cy);
-        push_b(&mut buf, b"\" r=\"");
-        push_f2(&mut buf, orbit_r);
-        push_b(&mut buf, b"\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"0.8\" stroke-dasharray=\"3,3\"/>");
+        if !minimal {
+            push_b(&mut buf, b"<circle cx=\"");
+            push_f2(&mut buf, cx);
+            push_b(&mut buf, b"\" cy=\"");
+            push_f2(&mut buf, cy);
+            push_b(&mut buf, b"\" r=\"");
+            push_f2(&mut buf, orbit_r);
+            push_b(&mut buf, b"\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"0.8\" stroke-dasharray=\"3,3\"/>");
+        }
 
         let color = palette_color(cfg.palette, si);
         let hx = hex6(color);
@@ -90,15 +92,17 @@ fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool, delta:
         for ci in 0..nc {
             let angle = -PI / 2.0 + ci as f64 * angle_step;
             let max_orbit = cfg.inner_r + (ns as f64 + 0.2) * orbit_gap;
-            push_b(&mut buf, b"<line x1=\"");
-            push_f2(&mut buf, cx + cfg.inner_r * 0.6 * angle.cos());
-            push_b(&mut buf, b"\" y1=\"");
-            push_f2(&mut buf, cy + cfg.inner_r * 0.6 * angle.sin());
-            push_b(&mut buf, b"\" x2=\"");
-            push_f2(&mut buf, cx + max_orbit * angle.cos());
-            push_b(&mut buf, b"\" y2=\"");
-            push_f2(&mut buf, cy + max_orbit * angle.sin());
-            push_b(&mut buf, b"\" stroke=\"#f1f5f9\" stroke-width=\"0.5\"/>");
+            if !minimal {
+                push_b(&mut buf, b"<line x1=\"");
+                push_f2(&mut buf, cx + cfg.inner_r * 0.6 * angle.cos());
+                push_b(&mut buf, b"\" y1=\"");
+                push_f2(&mut buf, cy + cfg.inner_r * 0.6 * angle.sin());
+                push_b(&mut buf, b"\" x2=\"");
+                push_f2(&mut buf, cx + max_orbit * angle.cos());
+                push_b(&mut buf, b"\" y2=\"");
+                push_f2(&mut buf, cy + max_orbit * angle.sin());
+                push_b(&mut buf, b"\" stroke=\"#f1f5f9\" stroke-width=\"0.5\"/>");
+            }
 
             if cfg.show_labels {
                 let lx = cx + (max_orbit + 14.0) * angle.cos();
@@ -149,7 +153,7 @@ fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool, delta:
                 let angle = -PI / 2.0 + ci as f64 * angle_step;
                 let px = cx + orbit_r * angle.cos();
                 let py = cy + orbit_r * angle.sin();
-                let dot_r = if bubble { (v * 8.0 + 2.5).min(14.0) } else { 4.5 };
+                let dot_r = if bubble { (v * 8.0 + 2.5).min(14.0) } else if minimal { 2.5 } else { 4.5 };
 
                 let dot_hx = if delta && si > 0 {
                     let d = cfg.matrix[si * nc + ci] - cfg.matrix[(si - 1) * nc + ci];
@@ -177,7 +181,11 @@ fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool, delta:
                 } else {
                     push_b(&mut buf, b"\"");
                 }
-                push_b(&mut buf, b" fill-opacity=\"0.85\" stroke=\"#fff\" stroke-width=\"1.2\" data-idx=\"");
+                if minimal {
+                    push_b(&mut buf, b" fill-opacity=\"0.9\" stroke=\"none\" data-idx=\"");
+                } else {
+                    push_b(&mut buf, b" fill-opacity=\"0.85\" stroke=\"#fff\" stroke-width=\"1.2\" data-idx=\"");
+                }
                 push_i(&mut buf, (si * nc + ci) as i32);
                 push_b(&mut buf, b"\"/>");
 

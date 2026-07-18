@@ -7,6 +7,5 @@ crate::plot_family! {
         Histogram   => "histogram" | "hist" | "with_hist" | "kdehist" | "distplot",
         Normalized  => "normalized" | "pdf" | "norm" | "density",
         Cumulative  => "cumulative" | "cdf" | "cum",
-        Gradient    => "gradient" | "shade" | "fade" | "ridge",
     }
 }

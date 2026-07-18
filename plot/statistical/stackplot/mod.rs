@@ -2,7 +2,6 @@ use crate::plot::{apply, parse_all};
 pub mod basic;
 pub mod common;
 pub mod config;
-pub mod gradient;
 pub mod normalized;
 pub mod streamgraph;
 pub mod variant;
@@ -16,7 +15,6 @@ pub fn render_stackplot_html(cfg: &StackplotConfig) -> String {
         Basic => basic::render(cfg),
         Streamgraph => streamgraph::render(cfg),
         Normalized => normalized::render(cfg),
-        Gradient => gradient::render(cfg),
     }
 }
 

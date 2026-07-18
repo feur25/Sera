@@ -56,7 +56,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('chord-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('chord-en','basic',this)"><span class="sp-cic">◉</span><span class="sp-clb">Basic</span></button>
-<button class="sp-cls-tab" onclick="spCls('chord-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('chord-en','ribbon',this)"><span class="sp-cic">▬</span><span class="sp-clb">Ribbon</span></button>
 <button class="sp-cls-tab" onclick="spCls('chord-en','arc',this)"><span class="sp-cic">◌</span><span class="sp-clb">Arc</span></button>
 <button class="sp-cls-tab" onclick="spCls('chord-en','mono',this)"><span class="sp-cic">○</span><span class="sp-clb">Mono</span></button>
@@ -68,12 +67,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/chord-basic.html"></iframe>
-</div>
-<div class="sp-variant" id="chord-en-gradient">
-<p>Color-interpolated ribbons</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / color</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/chord-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="chord-en-ribbon">
 <p>Wider ribbon links</p>
@@ -151,7 +144,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('chord-fr')" title="Réduire / déplier">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('chord-fr','basic',this)"><span class="sp-cic">◉</span><span class="sp-clb">Basique</span></button>
-<button class="sp-cls-tab" onclick="spCls('chord-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('chord-fr','ribbon',this)"><span class="sp-cic">▬</span><span class="sp-clb">Ruban</span></button>
 <button class="sp-cls-tab" onclick="spCls('chord-fr','arc',this)"><span class="sp-cic">◌</span><span class="sp-clb">Arc</span></button>
 <button class="sp-cls-tab" onclick="spCls('chord-fr','mono',this)"><span class="sp-cic">○</span><span class="sp-clb">Mono</span></button>
@@ -163,12 +155,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/chord-basic.html"></iframe>
-</div>
-<div class="sp-variant" id="chord-fr-gradient">
-<p>Rubans à couleur interpolée</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/chord-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="chord-fr-ribbon">
 <p>Liens en rubans plus larges</p>

@@ -15,7 +15,6 @@ pub fn render_sankey_html(cfg: &SankeyConfig) -> String {
     use SankeyVariant::*;
     match cfg.variant {
         Basic    => basic::render(cfg),
-        Gradient => basic::render_gradient(cfg),
         Gapped   => gapped::render(cfg),
         Ribbon   => ribbon::render(cfg),
         Minimal  => basic::render_minimal(cfg),

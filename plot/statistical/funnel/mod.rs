@@ -4,7 +4,6 @@ pub mod chevron;
 pub mod common;
 pub mod config;
 pub mod conversion;
-pub mod gradient;
 pub mod inverted;
 pub mod pyramid;
 pub mod rounded;
@@ -21,7 +20,6 @@ pub fn render_funnel_html(cfg: &FunnelConfig) -> String {
         Stepped => stepped::render(cfg),
         Rounded => rounded::render(cfg),
         Chevron => chevron::render(cfg),
-        Gradient => gradient::render(cfg),
         Pyramid => pyramid::render(cfg),
         Inverted => inverted::render(cfg),
         Conversion => conversion::render(cfg),

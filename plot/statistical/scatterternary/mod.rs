@@ -3,7 +3,6 @@ pub mod basic;
 pub mod bubble;
 pub mod common;
 pub mod config;
-pub mod gradient;
 pub mod labeled;
 pub mod variant;
 
@@ -14,7 +13,6 @@ pub fn render_scatter_ternary_html(cfg: &ScatterTernaryConfig) -> String {
     use variant::ScatterTernaryVariant::*;
     match cfg.variant {
         Basic => basic::render(cfg),
-        Gradient => gradient::render(cfg),
         Bubble => bubble::render(cfg),
         Labeled => labeled::render(cfg),
     }

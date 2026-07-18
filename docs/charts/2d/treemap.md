@@ -71,7 +71,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-toggle" onclick="spClsTog('treemap-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('treemap-en','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-en','flat',this)"><span class="sp-cic">F</span><span class="sp-clb">Flat</span></button>
-<button class="sp-cls-tab" onclick="spCls('treemap-en','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-en','outlined',this)"><span class="sp-cic">O</span><span class="sp-clb">Outlined</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-en','gapped',this)"><span class="sp-cic">P</span><span class="sp-clb">Gapped</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-en','nested',this)"><span class="sp-cic">N</span><span class="sp-clb">Nested</span></button>
@@ -98,14 +97,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/treemap-flat.html"></iframe>
 </div>
 
-<div class="sp-variant" id="treemap-en-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / fade / shaded / smooth</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Per-tile vertical gradient (opaque top, faded bottom) for a polished, modern feel.</p>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-gradient.html"></iframe>
-</div>
 
 <div class="sp-variant" id="treemap-en-outlined">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outlined"</code></span><span><strong>Aliases</strong> <code>outlined / outline / stroke / wireframe</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -190,7 +181,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-toggle" onclick="spClsTog('treemap-fr')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('treemap-fr','basic',this)"><span class="sp-cic">B</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','flat',this)"><span class="sp-cic">F</span><span class="sp-clb">Flat</span></button>
-<button class="sp-cls-tab" onclick="spCls('treemap-fr','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','outlined',this)"><span class="sp-cic">O</span><span class="sp-clb">Outlined</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','gapped',this)"><span class="sp-cic">P</span><span class="sp-clb">Gapped</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','nested',this)"><span class="sp-cic">N</span><span class="sp-clb">Nested</span></button>
@@ -217,14 +207,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/treemap-flat.html"></iframe>
 </div>
 
-<div class="sp-variant" id="treemap-fr-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / fade / shaded / smooth</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Degrade vertical par tuile (haut opaque, bas estompe) pour un rendu moderne et soigne.</p>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/treemap-gradient.html"></iframe>
-</div>
 
 <div class="sp-variant" id="treemap-fr-outlined">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"outlined"</code></span><span><strong>Aliases</strong> <code>outlined / outline / stroke / wireframe</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>

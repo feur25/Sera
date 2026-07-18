@@ -3,7 +3,6 @@ pub mod basic;
 pub mod categorical;
 pub mod common;
 pub mod config;
-pub mod gradient;
 pub mod labeled;
 pub mod regression;
 pub mod symbols;
@@ -22,7 +21,6 @@ pub fn render_scatter_variant_html(cfg: &ScatterConfig) -> String {
     match v {
         Basic => basic::render(cfg),
         Categorical => categorical::render(cfg),
-        Gradient => gradient::render(cfg),
         Symbols => symbols::render(cfg),
         Labeled => labeled::render(cfg),
         Regression => regression::render(cfg),

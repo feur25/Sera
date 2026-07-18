@@ -1,6 +1,7 @@
 use crate::plot::{apply, parse_all};
 
 pub mod basic;
+pub mod bubble;
 pub mod common;
 pub mod config;
 pub mod flat;
@@ -15,8 +16,7 @@ pub fn render_circle_pack_html(cfg: &CirclePackConfig) -> String {
         Basic    => basic::render(cfg),
         Flat     => flat::render(cfg),
         Outlined => basic::render_outlined(cfg),
-        Gradient => basic::render_gradient(cfg),
-        Bubble   => flat::render(cfg),
+        Bubble   => bubble::render(cfg),
         LeafFocus => basic::render_leaf_focus(cfg),
     }
 }

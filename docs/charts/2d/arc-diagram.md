@@ -58,7 +58,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <button class="sp-cls-tab sp-cact" onclick="spCls('arc-en','basic',this)"><span class="sp-cic">⌒</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-en','bilateral',this)"><span class="sp-cic">⌓</span><span class="sp-clb">Bilateral</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-en','weighted',this)"><span class="sp-cic">≈</span><span class="sp-clb">Weighted</span></button>
-<button class="sp-cls-tab" onclick="spCls('arc-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-en','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-en','directed',this)"><span class="sp-cic">➤</span><span class="sp-clb">Directed</span></button>
 </div>
@@ -81,14 +80,8 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-weighted.html"></iframe>
 </div>
-<div class="sp-variant" id="arc-en-gradient">
-<p>Color-interpolated arcs</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / color</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/arc_diagram-gradient.html"></iframe>
-</div>
 <div class="sp-variant" id="arc-en-minimal">
-<p>Thin uniform arcs</p>
+<p>Thin, low-opacity arcs with small strokeless nodes — strips away the visual weight so overlapping arcs stay legible in dense diagrams.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-minimal.html"></iframe>
@@ -153,7 +146,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <button class="sp-cls-tab sp-cact" onclick="spCls('arc-fr','basic',this)"><span class="sp-cic">⌒</span><span class="sp-clb">Basique</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-fr','bilateral',this)"><span class="sp-cic">⌓</span><span class="sp-clb">Bilatéral</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-fr','weighted',this)"><span class="sp-cic">≈</span><span class="sp-clb">Pondéré</span></button>
-<button class="sp-cls-tab" onclick="spCls('arc-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-fr','minimal',this)"><span class="sp-cic">—</span><span class="sp-clb">Minimal</span></button>
 <button class="sp-cls-tab" onclick="spCls('arc-fr','directed',this)"><span class="sp-cic">➤</span><span class="sp-clb">Dirigé</span></button>
 </div>
@@ -176,14 +168,8 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-weighted.html"></iframe>
 </div>
-<div class="sp-variant" id="arc-fr-gradient">
-<p>Arcs à couleur interpolée</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/arc_diagram-gradient.html"></iframe>
-</div>
 <div class="sp-variant" id="arc-fr-minimal">
-<p>Arcs fins uniformes</p>
+<p>Arcs fins et peu opaques, avec de petits nœuds sans contour — allège le rendu visuel pour que les arcs qui se chevauchent restent lisibles dans les diagrammes denses.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/arc_diagram-minimal.html"></iframe>

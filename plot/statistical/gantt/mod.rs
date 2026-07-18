@@ -2,7 +2,6 @@ use crate::plot::{apply, parse_all};
 pub mod basic;
 pub mod common;
 pub mod config;
-pub mod gradient;
 pub mod milestone;
 pub mod progress;
 pub mod variant;
@@ -15,7 +14,6 @@ pub fn render_gantt_html(cfg: &GanttConfig) -> String {
     match cfg.variant {
         Basic => basic::render(cfg),
         Progress => progress::render(cfg),
-        Gradient => gradient::render(cfg),
         Milestone => milestone::render(cfg),
     }
 }

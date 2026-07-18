@@ -4,7 +4,6 @@ pub mod categorical;
 pub mod common;
 pub mod config;
 pub mod deluxe;
-pub mod gradient;
 pub mod labeled;
 pub mod negative;
 pub mod outlined;
@@ -30,7 +29,6 @@ pub fn render_bubble_html(cfg: &BubbleConfig) -> String {
     match v {
         Basic => basic::render(cfg),
         Categorical => categorical::render(cfg),
-        Gradient => gradient::render(cfg),
         Labeled => labeled::render(cfg),
         Outlined => outlined::render(cfg),
         Negative => negative::render(cfg),

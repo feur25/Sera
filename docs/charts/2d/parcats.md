@@ -58,7 +58,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('parcats-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('parcats-en','basic',this)"><span class="sp-cic">▤</span><span class="sp-clb">Basic</span></button>
-<button class="sp-cls-tab" onclick="spCls('parcats-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('parcats-en','highlight',this)"><span class="sp-cic">★</span><span class="sp-clb">Highlight</span></button>
 </div>
 <div class="sp-cls-body">
@@ -67,12 +66,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / flat</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parcats-basic.html"></iframe>
-</div>
-<div class="sp-variant" id="parcats-en-gradient">
-<p>Each ribbon fades from its source node's color to its target node's color.</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / color / smooth_color / shaded</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parcats-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="parcats-en-highlight">
 <p>Dims every ribbon except each node's single heaviest outgoing flow, which is boosted to full opacity with a thin white outline — traces the dominant path through the categories.</p>
@@ -134,7 +127,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('parcats-fr')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('parcats-fr','basic',this)"><span class="sp-cic">▤</span><span class="sp-clb">Basic</span></button>
-<button class="sp-cls-tab" onclick="spCls('parcats-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('parcats-fr','highlight',this)"><span class="sp-cic">★</span><span class="sp-clb">Highlight</span></button>
 </div>
 <div class="sp-cls-body">
@@ -143,12 +135,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / flat</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/parcats-basic.html"></iframe>
-</div>
-<div class="sp-variant" id="parcats-fr-gradient">
-<p>Chaque ruban dégrade de la couleur de son nœud source vers celle de son nœud cible.</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color / smooth_color / shaded</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/parcats-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="parcats-fr-highlight">
 <p>Estompe tous les rubans sauf le flux sortant le plus lourd de chaque nœud, poussé à pleine opacité avec un fin contour blanc — trace le chemin dominant à travers les catégories.</p>

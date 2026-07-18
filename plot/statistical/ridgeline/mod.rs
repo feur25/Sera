@@ -2,7 +2,6 @@ use crate::plot::{apply, parse_all};
 pub mod basic;
 pub mod common;
 pub mod config;
-pub mod gradient;
 pub mod heatmap;
 pub mod lines;
 pub mod mean;
@@ -18,7 +17,6 @@ pub fn render_ridgeline_html(cfg: &RidgelineConfig) -> String {
     use variant::RidgelineVariant::*;
     match cfg.variant {
         Basic => basic::render(cfg),
-        Gradient => gradient::render(cfg),
         Lines => lines::render(cfg),
         Quartiles => quartiles::render(cfg),
         Mean => mean::render(cfg),

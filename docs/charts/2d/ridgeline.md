@@ -69,7 +69,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('ridgeline-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('ridgeline-en','basic',this)"><span class="sp-cic">I</span><span class="sp-clb">Basic</span></button>
-<button class="sp-cls-tab" onclick="spCls('ridgeline-en','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('ridgeline-en','lines',this)"><span class="sp-cic">L</span><span class="sp-clb">Lines</span></button>
 <button class="sp-cls-tab" onclick="spCls('ridgeline-en','quartiles',this)"><span class="sp-cic">Q</span><span class="sp-clb">Quartiles</span></button>
 <button class="sp-cls-tab" onclick="spCls('ridgeline-en','mean',this)"><span class="sp-cic">M</span><span class="sp-clb">Mean</span></button>
@@ -82,12 +81,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Stacked filled ridges (one per category) with white underlay.</p>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-basic.html"></iframe>
-</div>
-<div class="sp-variant" id="ridgeline-en-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / shade / fade / vgrad</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Vertical gradient fill per ridge (opaque top → transparent bottom).</p>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/ridgeline-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-en-lines">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"lines"</code></span><span><strong>Aliases</strong> <code>lines / outline / stroke / no_fill</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -160,7 +153,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('ridgeline-fr')" title="Réduire / déplier">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('ridgeline-fr','basic',this)"><span class="sp-cic">I</span><span class="sp-clb">Basic</span></button>
-<button class="sp-cls-tab" onclick="spCls('ridgeline-fr','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('ridgeline-fr','lines',this)"><span class="sp-cic">L</span><span class="sp-clb">Lines</span></button>
 <button class="sp-cls-tab" onclick="spCls('ridgeline-fr','quartiles',this)"><span class="sp-cic">Q</span><span class="sp-clb">Quartiles</span></button>
 <button class="sp-cls-tab" onclick="spCls('ridgeline-fr','mean',this)"><span class="sp-cic">M</span><span class="sp-clb">Mean</span></button>
@@ -173,12 +165,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Crêtes empilées remplies (une par catégorie) avec fond blanc.</p>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/ridgeline-basic.html"></iframe>
-</div>
-<div class="sp-variant" id="ridgeline-fr-gradient">
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / shade / fade / vgrad</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Remplissage en dégradé vertical par crête (opaque haut → transparent bas).</p>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/ridgeline-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="ridgeline-fr-lines">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"lines"</code></span><span><strong>Alias</strong> <code>lines / outline / stroke / no_fill</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>

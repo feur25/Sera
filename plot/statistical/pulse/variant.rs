@@ -4,7 +4,6 @@ crate::plot_family! {
         Wave     => "wave" | "sine" | "smooth",
         Dot      => "dot" | "scatter" | "bubble",
         Filled   => "filled" | "area" | "solid",
-        Gradient => "gradient" | "color" | "heatring",
         Outlined => "outlined" | "outline" | "stroke" | "clean",
     }
 }

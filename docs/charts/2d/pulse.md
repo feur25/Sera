@@ -59,7 +59,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <button class="sp-cls-tab" onclick="spCls('pulse-en','wave',this)"><span class="sp-cic">∿</span><span class="sp-clb">Wave</span></button>
 <button class="sp-cls-tab" onclick="spCls('pulse-en','dot',this)"><span class="sp-cic">•</span><span class="sp-clb">Dot</span></button>
 <button class="sp-cls-tab" onclick="spCls('pulse-en','filled',this)"><span class="sp-cic">●</span><span class="sp-clb">Filled</span></button>
-<button class="sp-cls-tab" onclick="spCls('pulse-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('pulse-en','outlined',this)"><span class="sp-cic">○</span><span class="sp-clb">Outlined</span></button>
 </div>
 <div class="sp-cls-body">
@@ -82,16 +81,10 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <iframe class="sp-preview-frame" src="../../previews/pulse-dot.html"></iframe>
 </div>
 <div class="sp-variant" id="pulse-en-filled">
-<p>Fully opaque arc bars</p>
+<p>Extends every slice into a continuous, gap-free ring at full opacity with no stroke — reads as a solid dial rather than a set of separated arc bars.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"filled"</code></span><span><strong>Aliases</strong> <code>filled / area / solid</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/pulse-filled.html"></iframe>
-</div>
-<div class="sp-variant" id="pulse-en-gradient">
-<p>Radial gradient arcs</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / color / heatring</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/pulse-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="pulse-en-outlined">
 <p>Stroke-only arc slices with no fill — the same radial clock-face layout, stripped down to outlines for a lighter, print-friendly look.</p>
@@ -154,7 +147,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <button class="sp-cls-tab" onclick="spCls('pulse-fr','wave',this)"><span class="sp-cic">∿</span><span class="sp-clb">Onde</span></button>
 <button class="sp-cls-tab" onclick="spCls('pulse-fr','dot',this)"><span class="sp-cic">•</span><span class="sp-clb">Point</span></button>
 <button class="sp-cls-tab" onclick="spCls('pulse-fr','filled',this)"><span class="sp-cic">●</span><span class="sp-clb">Plein</span></button>
-<button class="sp-cls-tab" onclick="spCls('pulse-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('pulse-fr','outlined',this)"><span class="sp-cic">○</span><span class="sp-clb">Outlined</span></button>
 </div>
 <div class="sp-cls-body">
@@ -177,16 +169,10 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <iframe class="sp-preview-frame" src="../../previews/pulse-dot.html"></iframe>
 </div>
 <div class="sp-variant" id="pulse-fr-filled">
-<p>Barres en arc entièrement opaques</p>
+<p>Étend chaque secteur en un anneau continu, sans espace, à pleine opacité et sans contour — se lit comme un cadran plein plutôt qu’un ensemble de barres en arc séparées.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"filled"</code></span><span><strong>Alias</strong> <code>filled / area / solid</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/pulse-filled.html"></iframe>
-</div>
-<div class="sp-variant" id="pulse-fr-gradient">
-<p>Arcs en dégradé radial</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color / heatring</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/pulse-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="pulse-fr-outlined">
 <p>Secteurs en arc tracés en contour seul, sans remplissage — la même disposition radiale en cadran, allégée en simples contours pour un rendu plus léger, adapté à l'impression.</p>

@@ -75,7 +75,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-toggle" onclick="spClsTog('bubble-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('bubble-en','basic',this)"><span class="sp-cic">●</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-en','categorical',this)"><span class="sp-cic">◓</span><span class="sp-clb">Categorical</span></button>
-<button class="sp-cls-tab" onclick="spCls('bubble-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-en','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Labeled</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-en','outlined',this)"><span class="sp-cic">○</span><span class="sp-clb">Outlined</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-en','negative',this)"><span class="sp-cic">±</span><span class="sp-clb">Negative</span></button></div>
@@ -99,14 +98,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/bubble-categorical.html"></iframe>
 </div>
 
-<div class="sp-variant" id="bubble-en-gradient">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code> / <code>"colorscale"</code></span><span><strong>Aliases</strong> <code>continuous</code> / <code>scaled</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/bubble-gradient.html"></iframe>
-</div>
 
 <div class="sp-variant" id="bubble-en-labeled">
 
@@ -174,7 +165,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-toggle" onclick="spClsTog('bubble-fr')" title="Réduire / développer">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('bubble-fr','basic',this)"><span class="sp-cic">●</span><span class="sp-clb">Basique</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-fr','categorical',this)"><span class="sp-cic">◓</span><span class="sp-clb">Catégoriel</span></button>
-<button class="sp-cls-tab" onclick="spCls('bubble-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-fr','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Étiqueté</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-fr','outlined',this)"><span class="sp-cic">○</span><span class="sp-clb">Contour</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-fr','negative',this)"><span class="sp-cic">±</span><span class="sp-clb">Négatif</span></button></div>
@@ -198,14 +188,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/bubble-categorical.html"></iframe>
 </div>
 
-<div class="sp-variant" id="bubble-fr-gradient">
-
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code> / <code>"colorscale"</code></span><span><strong>Alias</strong> <code>continuous</code> / <code>scaled</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
-
-
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/bubble-gradient.html"></iframe>
-</div>
 
 <div class="sp-variant" id="bubble-fr-labeled">
 

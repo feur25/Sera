@@ -73,7 +73,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-toggle" onclick="spClsTog('scatter-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('scatter-en','basic',this)"><span class="sp-cic">●</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','categorical',this)"><span class="sp-cic">◓</span><span class="sp-clb">Categorical</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','symbols',this)"><span class="sp-cic">◆</span><span class="sp-clb">Symbols</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Labeled</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Regression</span></button></div>
@@ -95,13 +94,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/scatter-categorical.html"></iframe>
 </div>
 
-<div class="sp-variant" id="scatter-en-gradient">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / colorscale / continuous</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-gradient.html"></iframe>
-</div>
 
 <div class="sp-variant" id="scatter-en-symbols">
 
@@ -164,7 +156,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-toggle" onclick="spClsTog('scatter-fr')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('scatter-fr','basic',this)"><span class="sp-cic">●</span><span class="sp-clb">De base</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','categorical',this)"><span class="sp-cic">◓</span><span class="sp-clb">Catégoriel</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','symbols',this)"><span class="sp-cic">◆</span><span class="sp-clb">Symboles</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Étiquetés</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Régression</span></button></div>
@@ -186,13 +177,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/scatter-categorical.html"></iframe>
 </div>
 
-<div class="sp-variant" id="scatter-fr-gradient">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / colorscale / continuous</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatter-gradient.html"></iframe>
-</div>
 
 <div class="sp-variant" id="scatter-fr-symbols">
 

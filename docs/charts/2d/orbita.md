@@ -90,7 +90,7 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <iframe class="sp-preview-frame" src="../../previews/orbita-glow.html"></iframe>
 </div>
 <div class="sp-variant" id="orb-en-minimal">
-<p>Clean dots, no orbit decorations</p>
+<p>Drops the dashed orbit rings and radial spoke lines, and shrinks each point to a small strokeless dot — a decluttered read focused purely on relative position.</p>
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"minimal"</code></span><span><strong>Aliases</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/orbita-minimal.html"></iframe>
@@ -187,7 +187,7 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <iframe class="sp-preview-frame" src="../../previews/orbita-glow.html"></iframe>
 </div>
 <div class="sp-variant" id="orb-fr-minimal">
-<p>Points épurés, sans décoration d'orbite</p>
+<p>Supprime les anneaux d'orbite en pointillés et les rayons radiaux, et réduit chaque point à un petit point sans contour — une lecture épurée centrée uniquement sur la position relative.</p>
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"minimal"</code></span><span><strong>Alias</strong> <code>minimal / thin / clean</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/orbita-minimal.html"></iframe>

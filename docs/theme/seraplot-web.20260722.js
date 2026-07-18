@@ -3724,7 +3724,7 @@ let wasm_bindgen = (function(exports) {
         };
         return {
             __proto__: null,
-            "./seraplot-web_bg.js": import0,
+            "./seraplot_bg.js": import0,
         };
     }
 

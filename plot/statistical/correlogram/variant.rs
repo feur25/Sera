@@ -4,7 +4,6 @@ crate::plot_family! {
         Heatmap  => "heatmap" | "heat" | "square",
         Text     => "text" | "number" | "value",
         Mixed    => "mixed" | "combo" | "both",
-        Gradient => "gradient" | "color" | "diverging",
         Sorted   => "sorted" | "clustered" | "reordered",
     }
 }

@@ -7,22 +7,18 @@ use crate::plot::statistical::common::{
 
 #[crate::chart_demo("labels=[\"A\",\"B\",\"C\",\"D\",\"E\"], edges_i=[0,0,1,2], edges_j=[2,3,4,4], edges_w=[10,5,8,7]")]
 pub fn render(cfg: &SankeyConfig) -> String {
-    render_impl(cfg, false, false, false)
-}
-
-pub fn render_gradient(cfg: &SankeyConfig) -> String {
-    render_impl(cfg, true, false, false)
+    render_impl(cfg, false, false)
 }
 
 pub fn render_minimal(cfg: &SankeyConfig) -> String {
-    render_impl(cfg, false, true, false)
+    render_impl(cfg, true, false)
 }
 
 pub fn render_sorted(cfg: &SankeyConfig) -> String {
-    render_impl(cfg, false, false, true)
+    render_impl(cfg, false, true)
 }
 
-fn render_impl(cfg: &SankeyConfig, gradient: bool, minimal: bool, sorted: bool) -> String {
+fn render_impl(cfg: &SankeyConfig, minimal: bool, sorted: bool) -> String {
     let n = cfg.labels.len();
     let e = cfg.sources.len().min(cfg.targets.len()).min(cfg.weights.len());
     if n == 0 || e == 0 {
@@ -64,25 +60,6 @@ fn render_impl(cfg: &SankeyConfig, gradient: bool, minimal: bool, sorted: bool) 
 
     svg_title(&mut buf, cfg.title, cfg.width / 2, 24);
 
-    if gradient {
-        push_b(&mut buf, b"<defs>");
-        for k in 0..e {
-            let s = cfg.sources[k] as usize;
-            let t = cfg.targets[k] as usize;
-            if s >= n || t >= n { continue; }
-            let cs = hex6(palette_color(cfg.palette, s));
-            let ct = hex6(palette_color(cfg.palette, t));
-            push_b(&mut buf, b"<linearGradient id=\"sg");
-            push_i(&mut buf, k as i32);
-            push_b(&mut buf, b"\" x1=\"0%\" y1=\"0%\" x2=\"100%\" y2=\"0%\"><stop offset=\"0%\" stop-color=\"#");
-            buf.extend_from_slice(&cs);
-            push_b(&mut buf, b"\" stop-opacity=\"0.55\"/><stop offset=\"100%\" stop-color=\"#");
-            buf.extend_from_slice(&ct);
-            push_b(&mut buf, b"\" stop-opacity=\"0.55\"/></linearGradient>");
-        }
-        push_b(&mut buf, b"</defs>");
-    }
-
     let mut src_offset = vec![0.0f64; n];
     let mut tgt_offset = vec![0.0f64; n];
 
@@ -102,12 +79,8 @@ fn render_impl(cfg: &SankeyConfig, gradient: bool, minimal: bool, sorted: bool) 
         src_offset[s] += src_h;
         tgt_offset[t] += tgt_h;
 
-        let color = if gradient {
-            format!("url(#sg{})", k)
-        } else {
-            let c = hex6(palette_color(cfg.palette, s));
-            format!("#{}", std::str::from_utf8(&c).unwrap_or("636efa"))
-        };
+        let c = hex6(palette_color(cfg.palette, s));
+        let color = format!("#{}", std::str::from_utf8(&c).unwrap_or("636efa"));
 
         push_b(&mut buf, b"<path fill=\"");
         buf.extend_from_slice(color.as_bytes());

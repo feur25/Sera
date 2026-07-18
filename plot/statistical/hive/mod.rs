@@ -12,7 +12,6 @@ pub fn render_hive_html(cfg: &HiveConfig) -> String {
     match cfg.variant {
         Basic    => basic::render(cfg),
         Curved   => basic::render_curved(cfg),
-        Gradient => basic::render_gradient(cfg),
         Weighted => basic::render_weighted(cfg),
         Minimal  => basic::render_minimal(cfg),
         Directed => basic::render_directed(cfg),

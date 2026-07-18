@@ -13,7 +13,6 @@ pub fn render_venn_html(cfg: &VennConfig) -> String {
         Basic    => basic::render(cfg),
         Euler    => basic::render_euler(cfg),
         Filled   => basic::render_filled(cfg),
-        Gradient => basic::render_gradient(cfg),
         Minimal  => basic::render_minimal(cfg),
         Exclusive => basic::render_exclusive(cfg),
     }

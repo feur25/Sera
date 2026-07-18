@@ -14,7 +14,6 @@ pub fn render_pulse_html(cfg: &PulseConfig) -> String {
         Wave     => basic::render_wave(cfg),
         Dot      => basic::render_dot(cfg),
         Filled   => basic::render_filled(cfg),
-        Gradient => basic::render_gradient(cfg),
         Outlined => basic::render_outlined(cfg),
     }
 }

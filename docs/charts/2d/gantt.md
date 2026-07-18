@@ -57,7 +57,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <button class="sp-cls-toggle" onclick="spClsTog('gantt-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('gantt-en','basic',this)"><span class="sp-cic">▬</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('gantt-en','progress',this)"><span class="sp-cic">▤</span><span class="sp-clb">Progress</span></button>
-<button class="sp-cls-tab" onclick="spCls('gantt-en','gradient',this)"><span class="sp-cic">▥</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('gantt-en','milestone',this)"><span class="sp-cic">◆</span><span class="sp-clb">Milestone</span></button>
 </div>
 <div class="sp-cls-body">
@@ -72,12 +71,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"progress"</code></span><span><strong>Aliases</strong> <code>progress / percent / completion / filled</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/gantt-progress.html"></iframe>
-</div>
-<div class="sp-variant" id="gantt-en-gradient">
-<p>Bars colored by task duration via `colorscale=` (any of the 10 shared colorscales) instead of by category — the longest and shortest tasks stand out at a glance.</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / duration / colorscale / heat</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/gantt-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="gantt-en-milestone">
 <p>Renders zero-duration tasks (`start == end`) as a diamond marker instead of a degenerate bar — the standard way project-planning tools distinguish milestones from work items.</p>
@@ -138,7 +131,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <button class="sp-cls-toggle" onclick="spClsTog('gantt-fr')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('gantt-fr','basic',this)"><span class="sp-cic">▬</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('gantt-fr','progress',this)"><span class="sp-cic">▤</span><span class="sp-clb">Progress</span></button>
-<button class="sp-cls-tab" onclick="spCls('gantt-fr','gradient',this)"><span class="sp-cic">▥</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('gantt-fr','milestone',this)"><span class="sp-cic">◆</span><span class="sp-clb">Milestone</span></button>
 </div>
 <div class="sp-cls-body">
@@ -153,12 +145,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"progress"</code></span><span><strong>Alias</strong> <code>progress / percent / completion / filled</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/gantt-progress.html"></iframe>
-</div>
-<div class="sp-variant" id="gantt-fr-gradient">
-<p>Barres colorées selon la durée de la tâche via `colorscale=`, au lieu d'une couleur par catégorie — les tâches les plus longues et les plus courtes ressortent immédiatement.</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / duration / colorscale / heat</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/gantt-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="gantt-fr-milestone">
 <p>Affiche les tâches de durée nulle (`start == end`) sous forme de losange plutôt qu'une barre dégénérée — la façon standard dont les outils de planification distinguent les jalons des tâches.</p>

@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('parallel-en','categorical',this)"><span class="sp-cic">C</span><span class="sp-clb">Categorical</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-en','highlight',this)"><span class="sp-cic">H</span><span class="sp-clb">Highlight</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-en','density',this)"><span class="sp-cic">D</span><span class="sp-clb">Density</span></button>
-<button class="sp-cls-tab" onclick="spCls('parallel-en','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button><button class="sp-cls-tab" onclick="spCls('parallel-en','arc',this)"><span class="sp-cic">∿</span><span class="sp-clb">Arc</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-en','arc',this)"><span class="sp-cic">∿</span><span class="sp-clb">Arc</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-en','ribbon',this)"><span class="sp-cic">≈</span><span class="sp-clb">Ribbon</span></button>
 </div>
 <div class="sp-cls-body">
@@ -115,14 +115,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-density.html"></iframe>
-</div>
-<div class="sp-variant" id="parallel-en-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / value / ramp / shaded</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Color encodes a chosen axis value via a continuous ramp.</p>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-gradient.html"></iframe>
 </div>
 
 <div class="sp-variant" id="parallel-en-arc">
@@ -179,7 +171,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('parallel-fr','categorical',this)"><span class="sp-cic">C</span><span class="sp-clb">Categorical</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-fr','highlight',this)"><span class="sp-cic">H</span><span class="sp-clb">Highlight</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-fr','density',this)"><span class="sp-cic">D</span><span class="sp-clb">Density</span></button>
-<button class="sp-cls-tab" onclick="spCls('parallel-fr','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button><button class="sp-cls-tab" onclick="spCls('parallel-fr','arc',this)"><span class="sp-cic">∿</span><span class="sp-clb">Arc</span></button>
+<button class="sp-cls-tab" onclick="spCls('parallel-fr','arc',this)"><span class="sp-cic">∿</span><span class="sp-clb">Arc</span></button>
 <button class="sp-cls-tab" onclick="spCls('parallel-fr','ribbon',this)"><span class="sp-cic">≈</span><span class="sp-clb">Ribbon</span></button>
 </div>
 <div class="sp-cls-body">
@@ -222,14 +214,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/parallel-density.html"></iframe>
-</div>
-<div class="sp-variant" id="parallel-fr-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / value / ramp / shaded</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">La couleur encode la valeur d un axe via un degrade continu.</p>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/parallel-gradient.html"></iframe>
 </div>
 
 <div class="sp-variant" id="parallel-fr-arc">

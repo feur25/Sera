@@ -3,7 +3,6 @@ pub mod basic;
 pub mod common;
 pub mod config;
 pub mod cumulative;
-pub mod gradient;
 pub mod histogram;
 pub mod normalized;
 pub mod outline;
@@ -25,7 +24,6 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
         Histogram => histogram::render(cfg),
         Normalized => normalized::render(cfg),
         Cumulative => cumulative::render(cfg),
-        Gradient => gradient::render(cfg),
     }
 }
 

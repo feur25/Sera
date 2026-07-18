@@ -77,7 +77,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('funnel-en','stepped',this)"><span class="sp-cic">S</span><span class="sp-clb">Stepped</span></button>
 <button class="sp-cls-tab" onclick="spCls('funnel-en','rounded',this)"><span class="sp-cic">R</span><span class="sp-clb">Rounded</span></button>
 <button class="sp-cls-tab" onclick="spCls('funnel-en','chevron',this)"><span class="sp-cic">V</span><span class="sp-clb">Chevron</span></button>
-<button class="sp-cls-tab" onclick="spCls('funnel-en','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('funnel-en','pyramid',this)"><span class="sp-cic">P</span><span class="sp-clb">Pyramid</span></button>
 <button class="sp-cls-tab" onclick="spCls('funnel-en','inverted',this)"><span class="sp-cic">I</span><span class="sp-clb">Inverted</span></button>
 <button class="sp-cls-tab" onclick="spCls('funnel-en','conversion',this)"><span class="sp-cic">C</span><span class="sp-clb">Conversion</span></button>
@@ -110,13 +109,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/funnel-chevron.html"></iframe>
-</div>
-<div class="sp-variant" id="funnel-en-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / fade / shade / vgrad</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Per-step vertical linear gradient (opaque top → 50%% bottom) for depth and texture.</p>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-en-pyramid">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"pyramid"</code></span><span><strong>Aliases</strong> <code>pyramid / triangle / cone / point</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
@@ -183,7 +175,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('funnel-fr','stepped',this)"><span class="sp-cic">S</span><span class="sp-clb">Stepped</span></button>
 <button class="sp-cls-tab" onclick="spCls('funnel-fr','rounded',this)"><span class="sp-cic">R</span><span class="sp-clb">Rounded</span></button>
 <button class="sp-cls-tab" onclick="spCls('funnel-fr','chevron',this)"><span class="sp-cic">V</span><span class="sp-clb">Chevron</span></button>
-<button class="sp-cls-tab" onclick="spCls('funnel-fr','gradient',this)"><span class="sp-cic">G</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('funnel-fr','pyramid',this)"><span class="sp-cic">P</span><span class="sp-clb">Pyramid</span></button>
 <button class="sp-cls-tab" onclick="spCls('funnel-fr','inverted',this)"><span class="sp-cic">I</span><span class="sp-clb">Inverted</span></button>
 <button class="sp-cls-tab" onclick="spCls('funnel-fr','conversion',this)"><span class="sp-cic">C</span><span class="sp-clb">Conversion</span></button>
@@ -216,13 +207,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/funnel-chevron.html"></iframe>
-</div>
-<div class="sp-variant" id="funnel-fr-gradient">
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / fade / shade / vgrad</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Dégradé linéaire vertical par étape (opaque en haut → 50%% en bas) pour la profondeur.</p>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/funnel-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="funnel-fr-pyramid">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"pyramid"</code></span><span><strong>Aliases</strong> <code>pyramid / triangle / cone / point</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>

@@ -10,11 +10,10 @@ pub fn render(cfg: &ArcDiagramConfig) -> String {
 }
 pub fn render_bilateral(cfg: &ArcDiagramConfig)  -> String { render_impl(cfg, true,  false, false, false) }
 pub fn render_weighted(cfg: &ArcDiagramConfig)   -> String { render_impl(cfg, false, true,  false, false) }
-pub fn render_gradient(cfg: &ArcDiagramConfig)   -> String { render_impl(cfg, false, false, true, false)  }
-pub fn render_minimal(cfg: &ArcDiagramConfig)    -> String { render_impl(cfg, false, false, false, false)  }
-pub fn render_directed(cfg: &ArcDiagramConfig)   -> String { render_impl(cfg, false, false, false, true)  }
+pub fn render_minimal(cfg: &ArcDiagramConfig)    -> String { render_impl(cfg, false, false, false, true)  }
+pub fn render_directed(cfg: &ArcDiagramConfig)   -> String { render_impl(cfg, false, false, true,  false) }
 
-fn render_impl(cfg: &ArcDiagramConfig, bilateral: bool, weighted: bool, gradient: bool, directed: bool) -> String {
+fn render_impl(cfg: &ArcDiagramConfig, bilateral: bool, weighted: bool, directed: bool, minimal: bool) -> String {
     let n = cfg.labels.len();
     let e = cfg.sources.len().min(cfg.targets.len());
     if n == 0 { return String::new(); }
@@ -52,7 +51,14 @@ fn render_impl(cfg: &ArcDiagramConfig, bilateral: bool, weighted: bool, gradient
         let t = cfg.targets[k] as usize;
         if s >= n || t >= n || s == t { continue; }
         let w = cfg.weights.get(k).copied().unwrap_or(1.0);
-        let sw = if weighted { (w / max_w * 4.0 + 0.5).max(0.5) } else { 1.2 };
+        let sw = if weighted {
+            (w / max_w * 4.0 + 0.5).max(0.5)
+        } else if minimal {
+            0.6
+        } else {
+            1.2
+        };
+        let s_opacity: &[u8] = if minimal { b"0.35" } else { b"0.65" };
 
         let x1 = pad_l as f64 + s as f64 * step;
         let x2 = pad_l as f64 + t as f64 * step;
@@ -61,20 +67,16 @@ fn render_impl(cfg: &ArcDiagramConfig, bilateral: bool, weighted: bool, gradient
         let above = !bilateral || k % 2 == 0;
         let arc_y = if above { node_y as f64 - arc_h } else { node_y as f64 + arc_h };
 
-        let color = if gradient {
-            let cs = hex6(palette_color(cfg.palette, s));
-            let ct = hex6(palette_color(cfg.palette, t));
-            format!("url(#ag{})", k)
-        } else {
-            let c = hex6(palette_color(cfg.palette, s));
-            format!("#{}", std::str::from_utf8(&c).unwrap_or("636efa"))
-        };
+        let c = hex6(palette_color(cfg.palette, s));
+        let color = format!("#{}", std::str::from_utf8(&c).unwrap_or("636efa"));
 
         push_b(&mut buf, b"<path fill=\"none\" stroke=\"");
         buf.extend_from_slice(color.as_bytes());
         push_b(&mut buf, b"\" stroke-width=\"");
         push_f2(&mut buf, sw);
-        push_b(&mut buf, b"\" stroke-opacity=\"0.65\" d=\"M");
+        push_b(&mut buf, b"\" stroke-opacity=\"");
+        buf.extend_from_slice(s_opacity);
+        push_b(&mut buf, b"\" d=\"M");
         push_f2(&mut buf, x1); push_b(&mut buf, b","); push_f2(&mut buf, node_y as f64);
         push_b(&mut buf, b"Q"); push_f2(&mut buf, mid_x); push_b(&mut buf, b","); push_f2(&mut buf, arc_y);
         push_b(&mut buf, b" "); push_f2(&mut buf, x2); push_b(&mut buf, b","); push_f2(&mut buf, node_y as f64);
@@ -106,11 +108,19 @@ fn render_impl(cfg: &ArcDiagramConfig, bilateral: bool, weighted: bool, gradient
         push_f2(&mut buf, x);
         push_b(&mut buf, b"\" cy=\"");
         push_i(&mut buf, node_y);
-        push_b(&mut buf, b"\" r=\"");
-        push_f2(&mut buf, cfg.node_r);
-        push_b(&mut buf, b"\" fill=\"#");
-        buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"1.5\" data-idx=\"");
+        if minimal {
+            push_b(&mut buf, b"\" r=\"");
+            push_f2(&mut buf, (cfg.node_r * 0.6).max(2.0));
+            push_b(&mut buf, b"\" fill=\"#");
+            buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\" stroke=\"none\" data-idx=\"");
+        } else {
+            push_b(&mut buf, b"\" r=\"");
+            push_f2(&mut buf, cfg.node_r);
+            push_b(&mut buf, b"\" fill=\"#");
+            buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"1.5\" data-idx=\"");
+        }
         push_i(&mut buf, i as i32);
         push_b(&mut buf, b"\"/>");
         push_b(&mut buf, b"<text x=\"");

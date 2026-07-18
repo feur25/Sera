@@ -10,17 +10,16 @@ pub fn render(cfg: &HiveConfig) -> String {
 }
 
 pub fn render_curved(cfg: &HiveConfig)   -> String { render_impl(cfg, true,  false, false, false) }
-pub fn render_gradient(cfg: &HiveConfig) -> String { render_impl(cfg, true,  true,  false, false) }
-pub fn render_weighted(cfg: &HiveConfig) -> String { render_impl(cfg, false, false, true,  false) }
-pub fn render_minimal(cfg: &HiveConfig)  -> String { render_impl(cfg, true,  false, false, false) }
-pub fn render_directed(cfg: &HiveConfig) -> String { render_impl(cfg, false, false, false, true)  }
+pub fn render_weighted(cfg: &HiveConfig) -> String { render_impl(cfg, false, true,  false, false) }
+pub fn render_minimal(cfg: &HiveConfig)  -> String { render_impl(cfg, false, false, false, true)  }
+pub fn render_directed(cfg: &HiveConfig) -> String { render_impl(cfg, false, false, true,  false) }
 
 fn node_pos(axis_angle: f64, value: f64, inner_r: f64, outer_r: f64) -> (f64, f64) {
     let r = inner_r + value.clamp(0.0, 1.0) * (outer_r - inner_r);
     (r * axis_angle.cos(), r * axis_angle.sin())
 }
 
-fn render_impl(cfg: &HiveConfig, curved: bool, gradient: bool, weighted: bool, directed: bool) -> String {
+fn render_impl(cfg: &HiveConfig, curved: bool, weighted: bool, directed: bool, minimal: bool) -> String {
     use std::f64::consts::PI;
 
     let na = cfg.axes.len();
@@ -125,7 +124,12 @@ fn render_impl(cfg: &HiveConfig, curved: bool, gradient: bool, weighted: bool, d
         let sw = if weighted {
             let w = cfg.weights.get(k).copied().unwrap_or(1.0);
             (w / max_w * 3.5 + 0.5).max(0.5)
-        } else { 1.2 };
+        } else if minimal {
+            0.6
+        } else {
+            1.2
+        };
+        let s_opacity: &[u8] = if minimal { b"0.28" } else { b"0.5" };
 
         let sai = axis_of_node.get(&si).copied().unwrap_or(0);
         let tai = axis_of_node.get(&ti).copied().unwrap_or(1);
@@ -136,7 +140,9 @@ fn render_impl(cfg: &HiveConfig, curved: bool, gradient: bool, weighted: bool, d
         buf.extend_from_slice(&hx);
         push_b(&mut buf, b"\" stroke-width=\"");
         push_f2(&mut buf, sw);
-        push_b(&mut buf, b"\" stroke-opacity=\"0.5\" d=\"M");
+        push_b(&mut buf, b"\" stroke-opacity=\"");
+        buf.extend_from_slice(s_opacity);
+        push_b(&mut buf, b"\" d=\"M");
         push_f2(&mut buf, sx); push_b(&mut buf, b","); push_f2(&mut buf, sy);
 
         if curved {
@@ -167,9 +173,15 @@ fn render_impl(cfg: &HiveConfig, curved: bool, gradient: bool, weighted: bool, d
         push_f2(&mut buf, px);
         push_b(&mut buf, b"\" cy=\"");
         push_f2(&mut buf, py);
-        push_b(&mut buf, b"\" r=\"4\" fill=\"#");
-        buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"1.2\" data-idx=\"");
+        if minimal {
+            push_b(&mut buf, b"\" r=\"2.2\" fill=\"#");
+            buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\" stroke=\"none\" data-idx=\"");
+        } else {
+            push_b(&mut buf, b"\" r=\"4\" fill=\"#");
+            buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"1.2\" data-idx=\"");
+        }
         push_i(&mut buf, i as i32);
         push_b(&mut buf, b"\"/>");
     }

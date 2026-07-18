@@ -56,7 +56,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('scatterternary-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('scatterternary-en','basic',this)"><span class="sp-cic">▲</span><span class="sp-clb">Basic</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatterternary-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatterternary-en','bubble',this)"><span class="sp-cic">●</span><span class="sp-clb">Bubble</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatterternary-en','labeled',this)"><span class="sp-cic">●</span><span class="sp-clb">Labeled</span></button>
 </div>
@@ -66,12 +65,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"basic"</code></span><span><strong>Aliases</strong> <code>basic / default / classic / dots</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatterternary-basic.html"></iframe>
-</div>
-<div class="sp-variant" id="scatterternary-en-gradient">
-<p>Markers colored by a continuous value (`color_values`, defaults to the A component) via the same colorscale engine as [`heatmap()`](heatmap.md).</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / color / colorscale / continuous</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/scatterternary-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="scatterternary-en-bubble">
 <p>Point radius scales with `color_values` (4.5× range between smallest and largest) instead of a fixed `point_size` — a fourth variable encoded as size on top of the three ternary axes.</p>
@@ -137,7 +130,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('scatterternary-fr')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('scatterternary-fr','basic',this)"><span class="sp-cic">▲</span><span class="sp-clb">Basic</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatterternary-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatterternary-fr','bubble',this)"><span class="sp-cic">●</span><span class="sp-clb">Bulle</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatterternary-fr','labeled',this)"><span class="sp-cic">●</span><span class="sp-clb">Labeled</span></button>
 </div>
@@ -147,12 +139,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"basic"</code></span><span><strong>Alias</strong> <code>basic / default / classic / dots</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/scatterternary-basic.html"></iframe>
-</div>
-<div class="sp-variant" id="scatterternary-fr-gradient">
-<p>Marqueurs colorés selon une valeur continue (`color_values`, par défaut la composante A) via le même moteur de dégradés que [`heatmap()`](heatmap.md).</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color / colorscale / continuous</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/scatterternary-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="scatterternary-fr-bubble">
 <p>Le rayon des points varie selon `color_values` (facteur 4.5 entre le plus petit et le plus grand) au lieu d'un `point_size` fixe — une quatrième variable encodée en taille en plus des trois axes ternaires.</p>

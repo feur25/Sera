@@ -57,7 +57,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <button class="sp-cls-toggle" onclick="spClsTog('eventplot-en')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('eventplot-en','basic',this)"><span class="sp-cic">┃</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('eventplot-en','density',this)"><span class="sp-cic">∿</span><span class="sp-clb">Density</span></button>
-<button class="sp-cls-tab" onclick="spCls('eventplot-en','gradient',this)"><span class="sp-cic">▤</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('eventplot-en','connected',this)"><span class="sp-cic">⤳</span><span class="sp-clb">Connected</span></button>
 </div>
 <div class="sp-cls-body">
@@ -72,12 +71,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"density"</code></span><span><strong>Aliases</strong> <code>density / kde / smoothed / rug</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/eventplot-density.html"></iframe>
-</div>
-<div class="sp-variant" id="eventplot-en-gradient">
-<p>Ticks colored by their position on the time axis via `colorscale=` (the 10 shared gradients from the continuous engine), instead of a fixed color per row — highlights when events cluster, not just which row they're in.</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / colorscale / heat / timeline</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/eventplot-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="eventplot-en-connected">
 <p>Draws a thin line connecting each row's events in chronological order, on top of the usual ticks — traces the sequence/trajectory through time, not just where events landed.</p>
@@ -138,7 +131,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <button class="sp-cls-toggle" onclick="spClsTog('eventplot-fr')" title="Collapse / expand">⇆</button>
 <button class="sp-cls-tab sp-cact" onclick="spCls('eventplot-fr','basic',this)"><span class="sp-cic">┃</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('eventplot-fr','density',this)"><span class="sp-cic">∿</span><span class="sp-clb">Density</span></button>
-<button class="sp-cls-tab" onclick="spCls('eventplot-fr','gradient',this)"><span class="sp-cic">▤</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('eventplot-fr','connected',this)"><span class="sp-cic">⤳</span><span class="sp-clb">Connected</span></button>
 </div>
 <div class="sp-cls-body">
@@ -153,12 +145,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"density"</code></span><span><strong>Alias</strong> <code>density / kde / smoothed / rug</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/eventplot-density.html"></iframe>
-</div>
-<div class="sp-variant" id="eventplot-fr-gradient">
-<p>Traits colorés selon leur position sur l'axe temporel via `colorscale=` (les 10 dégradés partagés du moteur continu), au lieu d'une couleur fixe par ligne — fait ressortir quand les événements se regroupent, pas seulement dans quelle ligne.</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / colorscale / heat / timeline</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/eventplot-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="eventplot-fr-connected">
 <p>Trace un trait fin reliant les événements de chaque ligne dans l'ordre chronologique, par-dessus les graduations habituelles — trace la séquence/trajectoire dans le temps, pas seulement où les événements sont tombés.</p>

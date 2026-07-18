@@ -4,16 +4,15 @@ use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, 
 
 #[crate::chart_demo("labels=[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\"], values=[0.4,0.7,0.9,0.6,0.8,0.3,0.5]")]
 pub fn render(cfg: &PulseConfig) -> String {
-    render_impl(cfg, false, false, false, false)
+    render_impl(cfg, false, false)
 }
 
 pub fn render_wave(cfg: &PulseConfig)     -> String { render_wave_impl(cfg) }
 pub fn render_dot(cfg: &PulseConfig)      -> String { render_dot_impl(cfg) }
-pub fn render_filled(cfg: &PulseConfig)   -> String { render_impl(cfg, true,  false, false, false) }
-pub fn render_gradient(cfg: &PulseConfig) -> String { render_impl(cfg, false, false, true,  false) }
-pub fn render_outlined(cfg: &PulseConfig) -> String { render_impl(cfg, false, false, false, true)  }
+pub fn render_filled(cfg: &PulseConfig)   -> String { render_impl(cfg, true,  false) }
+pub fn render_outlined(cfg: &PulseConfig) -> String { render_impl(cfg, false, true)  }
 
-fn render_impl(cfg: &PulseConfig, filled: bool, _wave: bool, gradient: bool, outlined: bool) -> String {
+fn render_impl(cfg: &PulseConfig, filled: bool, outlined: bool) -> String {
     use std::f64::consts::PI;
     let n = cfg.labels.len().max(cfg.values.len());
     if n == 0 { return String::new(); }
@@ -63,28 +62,13 @@ fn render_impl(cfg: &PulseConfig, filled: bool, _wave: bool, gradient: bool, out
     push_b(&mut buf, b"\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"0.5\"/>");
 
     let slice_angle = 2.0 * PI / n as f64;
-
-    if gradient {
-        push_b(&mut buf, b"<defs>");
-        for i in 0..n {
-            let color = palette_color(cfg.palette, i);
-            let hx = hex6(color);
-            push_b(&mut buf, b"<radialGradient id=\"pg");
-            push_i(&mut buf, i as i32);
-            push_b(&mut buf, b"\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop offset=\"0%\" stop-color=\"#");
-            buf.extend_from_slice(&hx);
-            push_b(&mut buf, b"\" stop-opacity=\"0.2\"/><stop offset=\"100%\" stop-color=\"#");
-            buf.extend_from_slice(&hx);
-            push_b(&mut buf, b"\" stop-opacity=\"0.85\"/></radialGradient>");
-        }
-        push_b(&mut buf, b"</defs>");
-    }
+    let gap_frac = if filled { 1.0 } else { 0.82 };
 
     for i in 0..n {
         let v = cfg.values.get(i).copied().unwrap_or(0.0) / max_v;
         let bar_r = inner_r + v * (outer_r - inner_r);
         let angle_start = -PI / 2.0 + i as f64 * slice_angle;
-        let angle_end   = angle_start + slice_angle * 0.82;
+        let angle_end   = angle_start + slice_angle * gap_frac;
         let mid_angle   = (angle_start + angle_end) / 2.0;
 
         let color = palette_color(cfg.palette, i);
@@ -102,20 +86,18 @@ fn render_impl(cfg: &PulseConfig, filled: bool, _wave: bool, gradient: bool, out
         push_b(&mut buf, b"<path fill=\"");
         if outlined {
             push_b(&mut buf, b"none");
-        } else if gradient {
-            push_b(&mut buf, b"url(#pg");
-            push_i(&mut buf, i as i32);
-            push_b(&mut buf, b")\"");
         } else {
             push_b(&mut buf, b"#");
             buf.extend_from_slice(&hx);
             push_b(&mut buf, b"\" fill-opacity=\"");
-            if filled { push_b(&mut buf, b"0.75\""); } else { push_b(&mut buf, b"0.60\""); }
+            if filled { push_b(&mut buf, b"0.92\""); } else { push_b(&mut buf, b"0.60\""); }
         }
         if outlined {
             push_b(&mut buf, b"\" stroke=\"#");
             buf.extend_from_slice(&hx);
             push_b(&mut buf, b"\" stroke-width=\"1.6\" data-idx=\"");
+        } else if filled {
+            push_b(&mut buf, b"\" stroke=\"none\" data-idx=\"");
         } else {
             push_b(&mut buf, b" stroke=\"#fff\" stroke-width=\"0.5\" data-idx=\"");
         }
@@ -157,7 +139,7 @@ fn render_impl(cfg: &PulseConfig, filled: bool, _wave: bool, gradient: bool, out
 fn render_wave_impl(cfg: &PulseConfig) -> String {
     use std::f64::consts::PI;
     let n = cfg.values.len();
-    if n < 2 { return render_impl(cfg, false, false, false, false); }
+    if n < 2 { return render_impl(cfg, false, false); }
 
     let w = cfg.width as f64;
     let h = cfg.height as f64;

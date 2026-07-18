@@ -13,7 +13,6 @@ pub fn render_arc_diagram_html(cfg: &ArcDiagramConfig) -> String {
         Basic     => basic::render(cfg),
         Bilateral => basic::render_bilateral(cfg),
         Weighted  => basic::render_weighted(cfg),
-        Gradient  => basic::render_gradient(cfg),
         Minimal   => basic::render_minimal(cfg),
         Directed  => basic::render_directed(cfg),
     }

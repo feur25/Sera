@@ -59,7 +59,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <button class="sp-cls-tab" onclick="spCls('corr-en','heatmap',this)"><span class="sp-cic">▦</span><span class="sp-clb">Heatmap</span></button>
 <button class="sp-cls-tab" onclick="spCls('corr-en','text',this)"><span class="sp-cic">𝑟</span><span class="sp-clb">Text</span></button>
 <button class="sp-cls-tab" onclick="spCls('corr-en','mixed',this)"><span class="sp-cic">◑</span><span class="sp-clb">Mixed</span></button>
-<button class="sp-cls-tab" onclick="spCls('corr-en','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('corr-en','sorted',this)"><span class="sp-cic">⇆</span><span class="sp-clb">Sorted</span></button>
 </div>
 <div class="sp-cls-body">
@@ -86,12 +85,6 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"mixed"</code></span><span><strong>Aliases</strong> <code>mixed / combo / both</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/correlogram-mixed.html"></iframe>
-</div>
-<div class="sp-variant" id="corr-en-gradient">
-<p>Same as circle with diverging color</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"gradient"</code></span><span><strong>Aliases</strong> <code>gradient / color / diverging</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="corr-en-sorted">
 <p>Reorders rows and columns by each variable's total absolute correlation with every other variable, so strongly related variables visually cluster instead of sitting in input order.</p>
@@ -154,7 +147,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <button class="sp-cls-tab" onclick="spCls('corr-fr','heatmap',this)"><span class="sp-cic">▦</span><span class="sp-clb">Heatmap</span></button>
 <button class="sp-cls-tab" onclick="spCls('corr-fr','text',this)"><span class="sp-cic">𝑟</span><span class="sp-clb">Texte</span></button>
 <button class="sp-cls-tab" onclick="spCls('corr-fr','mixed',this)"><span class="sp-cic">◑</span><span class="sp-clb">Mixte</span></button>
-<button class="sp-cls-tab" onclick="spCls('corr-fr','gradient',this)"><span class="sp-cic">◐</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('corr-fr','sorted',this)"><span class="sp-cic">⇆</span><span class="sp-clb">Sorted</span></button>
 </div>
 <div class="sp-cls-body">
@@ -181,12 +173,6 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"mixed"</code></span><span><strong>Alias</strong> <code>mixed / combo / both</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/correlogram-mixed.html"></iframe>
-</div>
-<div class="sp-variant" id="corr-fr-gradient">
-<p>Identique à circle avec couleur divergente</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"gradient"</code></span><span><strong>Alias</strong> <code>gradient / color / diverging</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-gradient.html"></iframe>
 </div>
 <div class="sp-variant" id="corr-fr-sorted">
 <p>Réordonne lignes et colonnes selon la corrélation absolue totale de chaque variable avec toutes les autres, pour que les variables fortement liées se regroupent visuellement au lieu de rester dans l'ordre d'entrée.</p>

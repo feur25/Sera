@@ -9,8 +9,7 @@ pub fn render(cfg: &VennConfig) -> String {
 
 pub fn render_euler(cfg: &VennConfig)    -> String { render_impl(cfg, true,  false, false, false) }
 pub fn render_filled(cfg: &VennConfig)   -> String { render_impl(cfg, false, true,  false, false) }
-pub fn render_gradient(cfg: &VennConfig) -> String { render_impl(cfg, false, false, true,  false) }
-pub fn render_minimal(cfg: &VennConfig)  -> String { render_impl(cfg, false, false, false, false)  }
+pub fn render_minimal(cfg: &VennConfig)  -> String { render_impl(cfg, false, false, true,  false)  }
 pub fn render_exclusive(cfg: &VennConfig) -> String { render_impl(cfg, false, false, false, true)  }
 
 struct SetCircle {
@@ -64,7 +63,7 @@ fn layout(n: usize, cx: f64, cy: f64, base_r: f64, euler: bool, values: &[f64]) 
     circles
 }
 
-fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, gradient: bool, exclusive: bool) -> String {
+fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, minimal: bool, exclusive: bool) -> String {
     let n = cfg.labels.len();
     if n == 0 { return String::new(); }
 
@@ -86,22 +85,6 @@ fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, gradient: bool, excl
     push_b(&mut buf, b"\" height=\"");
     push_i(&mut buf, cfg.height);
     push_b(&mut buf, b"\"><rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
-
-    if gradient {
-        push_b(&mut buf, b"<defs>");
-        for (i, c) in circles.iter().enumerate() {
-            let color = palette_color(cfg.palette, c.ci);
-            let hx = hex6(color);
-            push_b(&mut buf, b"<radialGradient id=\"vg");
-            push_i(&mut buf, i as i32);
-            push_b(&mut buf, b"\"><stop offset=\"0%\" stop-color=\"#");
-            buf.extend_from_slice(&hx);
-            push_b(&mut buf, b"\" stop-opacity=\"0.65\"/><stop offset=\"100%\" stop-color=\"#");
-            buf.extend_from_slice(&hx);
-            push_b(&mut buf, b"\" stop-opacity=\"0.15\"/></radialGradient>");
-        }
-        push_b(&mut buf, b"</defs>");
-    }
 
     if exclusive {
         push_b(&mut buf, b"<defs>");
@@ -150,13 +133,7 @@ fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, gradient: bool, excl
         push_b(&mut buf, b"\" data-idx=\"");
         push_i(&mut buf, i as i32);
         push_b(&mut buf, b"\"");
-        if gradient {
-            push_b(&mut buf, b" fill=\"url(#vg");
-            push_i(&mut buf, i as i32);
-            push_b(&mut buf, b")\" stroke=\"#");
-            buf.extend_from_slice(&hx);
-            push_b(&mut buf, b"\" stroke-width=\"1.5\" stroke-opacity=\"0.6\"");
-        } else if exclusive {
+        if exclusive {
             push_b(&mut buf, b" fill=\"#");
             buf.extend_from_slice(&hx);
             push_b(&mut buf, b"\" fill-opacity=\"0.14\" stroke=\"none\"");
@@ -164,7 +141,7 @@ fn render_impl(cfg: &VennConfig, euler: bool, filled: bool, gradient: bool, excl
             push_b(&mut buf, b" fill=\"#");
             buf.extend_from_slice(&hx);
             push_b(&mut buf, b"\" fill-opacity=\"0.55\" stroke=\"none\"");
-        } else if cfg.opacity < 0.05 {
+        } else if minimal || cfg.opacity < 0.05 {
             push_b(&mut buf, b" fill=\"none\" stroke=\"#");
             buf.extend_from_slice(&hx);
             push_b(&mut buf, b"\" stroke-width=\"2\"");

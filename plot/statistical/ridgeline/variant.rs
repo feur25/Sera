@@ -1,7 +1,6 @@
 crate::plot_family! {
     pub enum RidgelineVariant default Basic {
         Basic     => "basic" | "filled" | "default" | "single" | "multi",
-        Gradient  => "gradient" | "shade" | "fade" | "vgrad",
         Lines     => "lines" | "outline" | "stroke" | "no_fill",
         Quartiles => "quartiles" | "q" | "qrt" | "iqr",
         Mean      => "mean" | "average" | "avg" | "mean_dot",

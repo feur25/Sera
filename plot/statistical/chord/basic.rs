@@ -9,26 +9,22 @@ use crate::plot::statistical::common::{
     "labels=[\"A\",\"B\",\"C\",\"D\"], matrix=[[0,10,5,8],[10,0,7,3],[5,7,0,12],[8,3,12,0]]"
 )]
 pub fn render(cfg: &ChordConfig) -> String {
-    render_impl(cfg, false, false, false, false)
-}
-
-pub fn render_gradient(cfg: &ChordConfig) -> String {
-    render_impl(cfg, true, false, false, false)
+    render_impl(cfg, false, false, false)
 }
 
 pub fn render_ribbon(cfg: &ChordConfig) -> String {
-    render_impl(cfg, false, true, false, false)
+    render_impl(cfg, true, false, false)
 }
 
 pub fn render_arc(cfg: &ChordConfig) -> String {
-    render_impl(cfg, false, false, true, false)
+    render_impl(cfg, false, true, false)
 }
 
 pub fn render_directed(cfg: &ChordConfig) -> String {
-    render_impl(cfg, false, false, false, true)
+    render_impl(cfg, false, false, true)
 }
 
-fn render_impl(cfg: &ChordConfig, gradient: bool, wide: bool, arc_only: bool, directed: bool) -> String {
+fn render_impl(cfg: &ChordConfig, wide: bool, arc_only: bool, directed: bool) -> String {
     let n = cfg.labels.len().min(cfg.matrix.len());
     if n == 0 {
         return String::new();
@@ -52,37 +48,6 @@ fn render_impl(cfg: &ChordConfig, gradient: bool, wide: bool, arc_only: bool, di
         push_b(&mut buf, b"</text>");
     }
 
-    if gradient {
-        push_b(&mut buf, b"<defs>");
-        for i in 0..n {
-            for j in i..n {
-                if j == i {
-                    continue;
-                }
-                let ci = hex6(palette_color(cfg.palette, i));
-                let cj = hex6(palette_color(cfg.palette, j));
-                push_b(&mut buf, b"<linearGradient id=\"cg");
-                push_i(&mut buf, i as i32);
-                push_b(&mut buf, b"_");
-                push_i(&mut buf, j as i32);
-                push_b(&mut buf, b"\" gradientUnits=\"userSpaceOnUse\" x1=\"");
-                push_f2(&mut buf, lay.cx + lay.r_in * lay.arcs[i].0.cos());
-                push_b(&mut buf, b"\" y1=\"");
-                push_f2(&mut buf, lay.cy + lay.r_in * lay.arcs[i].0.sin());
-                push_b(&mut buf, b"\" x2=\"");
-                push_f2(&mut buf, lay.cx + lay.r_in * lay.arcs[j].0.cos());
-                push_b(&mut buf, b"\" y2=\"");
-                push_f2(&mut buf, lay.cy + lay.r_in * lay.arcs[j].0.sin());
-                push_b(&mut buf, b"\"><stop offset=\"0%\" stop-color=\"#");
-                buf.extend_from_slice(&ci);
-                push_b(&mut buf, b"\"/><stop offset=\"100%\" stop-color=\"#");
-                buf.extend_from_slice(&cj);
-                push_b(&mut buf, b"\"/></linearGradient>");
-            }
-        }
-        push_b(&mut buf, b"</defs>");
-    }
-
     if !arc_only {
         for i in 0..n {
             for j in 0..n {
@@ -103,12 +68,8 @@ fn render_impl(cfg: &ChordConfig, gradient: bool, wide: bool, arc_only: bool, di
                     .unwrap_or(0.0);
                 let (sa1, sa2) = lay.sub_arcs[i][j];
                 let (ta1, ta2) = lay.sub_arcs[j][i];
-                let fill = if gradient {
-                    format!("url(#cg{}_{}", i.min(j), i.max(j)) + ")"
-                } else {
-                    let c = hex6(palette_color(cfg.palette, i));
-                    format!("#{}", std::str::from_utf8(&c).unwrap_or("636efa"))
-                };
+                let c = hex6(palette_color(cfg.palette, i));
+                let fill = format!("#{}", std::str::from_utf8(&c).unwrap_or("636efa"));
                 push_b(&mut buf, b"<path fill=\"");
                 buf.extend_from_slice(fill.as_bytes());
                 push_b(&mut buf, b"\" fill-opacity=\"");
