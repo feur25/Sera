@@ -1,5 +1,5 @@
 use super::derive::splitmix64;
-use super::series::Series;
+use super::series::{FxBuildHasher, Series};
 use super::{SeraDFrame, SeraDFrame_};
 use crate::sera_doc_impl;
 use pyo3::prelude::*;
@@ -128,18 +128,19 @@ impl SeraDFrame_ {
                 let series = &self.inner.columns[name];
                 let count = match series {
                     Series::Num(v) => {
-                        let mut seen: std::collections::HashSet<u64> = std::collections::HashSet::with_capacity(v.len());
+                        let mut seen: std::collections::HashSet<u64, FxBuildHasher> =
+                            std::collections::HashSet::with_capacity_and_hasher(v.len(), FxBuildHasher::default());
                         for x in v.iter() {
                             seen.insert(x.to_bits());
                         }
                         seen.len()
                     }
                     Series::Str(v) => {
-                        let seen: std::collections::HashSet<&str> = v.iter().map(|s| s.as_ref()).collect();
+                        let seen: std::collections::HashSet<&str, FxBuildHasher> = v.iter().map(|s| s.as_ref()).collect();
                         seen.len()
                     }
                     Series::Bool(v) => {
-                        let seen: std::collections::HashSet<bool> = v.iter().copied().collect();
+                        let seen: std::collections::HashSet<bool, FxBuildHasher> = v.iter().copied().collect();
                         seen.len()
                     }
                 };

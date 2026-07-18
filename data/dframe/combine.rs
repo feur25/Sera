@@ -1,4 +1,4 @@
-use super::series::Series;
+use super::series::{FxBuildHasher, Series};
 use super::{SeraDFrame, SeraDFrame_};
 use crate::sera_doc_impl;
 use pyo3::prelude::*;
@@ -167,7 +167,7 @@ impl SeraDFrame_ {
                 &owned
             }
         };
-        let mut code_of: HashMap<Arc<str>, i64> = HashMap::new();
+        let mut code_of: HashMap<Arc<str>, i64, FxBuildHasher> = HashMap::default();
         let mut uniques: Vec<String> = Vec::new();
         let codes: Vec<i64> = vals
             .iter()
@@ -191,9 +191,9 @@ impl SeraDFrame_ {
         let rows = self.inner.get(row_col)?.to_str_vec();
         let cols = self.inner.get(col_col)?.to_str_vec();
         let mut row_uniques: Vec<String> = Vec::new();
-        let mut row_index: HashMap<String, usize> = HashMap::new();
+        let mut row_index: HashMap<String, usize, FxBuildHasher> = HashMap::default();
         let mut col_uniques: Vec<String> = Vec::new();
-        let mut col_index: HashMap<String, usize> = HashMap::new();
+        let mut col_index: HashMap<String, usize, FxBuildHasher> = HashMap::default();
         for r in &rows {
             if !row_index.contains_key(r) {
                 row_index.insert(r.clone(), row_uniques.len());
@@ -240,9 +240,9 @@ impl SeraDFrame_ {
         let col_vals = self.inner.get(columns)?.to_str_vec();
         let val_vals = self.inner.get(values)?.to_f64_vec();
         let mut row_uniques: Vec<String> = Vec::new();
-        let mut row_index: HashMap<String, usize> = HashMap::new();
+        let mut row_index: HashMap<String, usize, FxBuildHasher> = HashMap::default();
         let mut col_uniques: Vec<String> = Vec::new();
-        let mut col_index: HashMap<String, usize> = HashMap::new();
+        let mut col_index: HashMap<String, usize, FxBuildHasher> = HashMap::default();
         for r in &idx_vals {
             if !row_index.contains_key(r) {
                 row_index.insert(r.clone(), row_uniques.len());

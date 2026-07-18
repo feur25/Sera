@@ -1,4 +1,4 @@
-use super::series::Series;
+use super::series::{FxBuildHasher, Series};
 use super::{SeraDFrame, SeraDFrame_};
 use crate::core::dispatch::{stats_par, std_dev_par};
 use crate::sera_doc_impl;
@@ -62,7 +62,8 @@ impl SeraDFrame_ {
                 &owned
             }
         };
-        let mut seen = std::collections::HashSet::new();
+        let mut seen: std::collections::HashSet<Arc<str>, FxBuildHasher> =
+            std::collections::HashSet::with_capacity_and_hasher(64, FxBuildHasher::default());
         let mut out = Vec::new();
         for v in vals {
             if seen.insert(v.clone()) {
@@ -94,7 +95,8 @@ impl SeraDFrame_ {
                 &owned
             }
         };
-        let mut counts: HashMap<Arc<str>, f64> = HashMap::new();
+        let mut counts: HashMap<Arc<str>, f64, FxBuildHasher> =
+            HashMap::with_capacity_and_hasher(64, FxBuildHasher::default());
         let mut order_keys: Vec<String> = Vec::new();
         for v in vals {
             match counts.get_mut(v) {
@@ -259,7 +261,7 @@ impl SeraDFrame_ {
                 &owned
             }
         };
-        let mut counts: HashMap<Arc<str>, u32> = HashMap::new();
+        let mut counts: HashMap<Arc<str>, u32, FxBuildHasher> = HashMap::default();
         let mut order: Vec<Arc<str>> = Vec::new();
         for v in vals {
             match counts.get_mut(v) {
@@ -394,7 +396,7 @@ impl SeraDFrame_ {
             }
         };
         let mut categories: Vec<Arc<str>> = Vec::new();
-        let mut code_of: HashMap<Arc<str>, u32> = HashMap::new();
+        let mut code_of: HashMap<Arc<str>, u32, FxBuildHasher> = HashMap::default();
         for v in vals {
             if !code_of.contains_key(v) {
                 code_of.insert(v.clone(), categories.len() as u32);

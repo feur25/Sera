@@ -1,5 +1,5 @@
 use super::groupby::GroupKeys;
-use super::series::{f64_sort_key, row_hash, rows_equal, ColView, PassThroughBuildHasher, PyCell, Series};
+use super::series::{f64_sort_key, row_hash, rows_equal, ColView, FxBuildHasher, PassThroughBuildHasher, PyCell, Series};
 use super::{str_series, SeraDFrame, SeraDFrame_};
 use crate::sera_doc_impl;
 use pyo3::prelude::*;
@@ -313,7 +313,7 @@ impl SeraDFrame_ {
                     let mut uniq: Vec<&Arc<str>> = v.iter().collect();
                     uniq.sort_unstable();
                     uniq.dedup();
-                    let rank: HashMap<Arc<str>, u64> = uniq.into_iter().enumerate().map(|(i, s)| (s.clone(), i as u64)).collect();
+                    let rank: HashMap<Arc<str>, u64, FxBuildHasher> = uniq.into_iter().enumerate().map(|(i, s)| (s.clone(), i as u64)).collect();
                     v.par_iter().map(|s| rank[s]).collect()
                 }
             };
@@ -331,7 +331,7 @@ impl SeraDFrame_ {
                         let mut uniq: Vec<&Arc<str>> = v.iter().collect();
                         uniq.sort_unstable();
                         uniq.dedup();
-                        let rank: HashMap<Arc<str>, u64> = uniq.into_iter().enumerate().map(|(i, s)| (s.clone(), i as u64)).collect();
+                        let rank: HashMap<Arc<str>, u64, FxBuildHasher> = uniq.into_iter().enumerate().map(|(i, s)| (s.clone(), i as u64)).collect();
                         v.par_iter().map(|s| rank[s]).collect()
                     }
                 })

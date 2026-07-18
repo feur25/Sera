@@ -45,6 +45,32 @@ impl std::hash::Hasher for PassThroughHasher {
 
 pub type PassThroughBuildHasher = std::hash::BuildHasherDefault<PassThroughHasher>;
 
+#[derive(Default)]
+pub struct FxHasher(u64);
+
+impl std::hash::Hasher for FxHasher {
+    fn finish(&self) -> u64 {
+        self.0
+    }
+    fn write(&mut self, bytes: &[u8]) {
+        self.0 = fx_combine(self.0, fx_hash_bytes(bytes));
+    }
+    fn write_u8(&mut self, i: u8) {
+        self.0 = fx_combine(self.0, i as u64);
+    }
+    fn write_u32(&mut self, i: u32) {
+        self.0 = fx_combine(self.0, i as u64);
+    }
+    fn write_u64(&mut self, i: u64) {
+        self.0 = fx_combine(self.0, i);
+    }
+    fn write_usize(&mut self, i: usize) {
+        self.0 = fx_combine(self.0, i as u64);
+    }
+}
+
+pub type FxBuildHasher = std::hash::BuildHasherDefault<FxHasher>;
+
 #[inline]
 pub fn f64_sort_key(v: f64) -> u64 {
     let bits = v.to_bits();

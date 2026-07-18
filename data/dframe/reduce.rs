@@ -8,7 +8,7 @@ fn drop_nan(vals: &[f64]) -> Vec<f64> {
     vals.par_iter().copied().filter(|x| !x.is_nan()).collect()
 }
 
-fn nan_safe_sum_count(vals: &[f64]) -> (f64, usize) {
+fn nan_safe_sum_count_slow(vals: &[f64]) -> (f64, usize) {
     let threads = rayon::current_num_threads().max(1);
     if vals.len() < 50_000 {
         let mut sum = 0.0;
@@ -35,6 +35,25 @@ fn nan_safe_sum_count(vals: &[f64]) -> (f64, usize) {
             (sum, count)
         })
         .reduce(|| (0.0, 0usize), |a, b| (a.0 + b.0, a.1 + b.1))
+}
+
+fn nan_safe_sum_count(vals: &[f64]) -> (f64, usize) {
+    if vals.len() < 50_000 {
+        let sum: f64 = vals.iter().sum();
+        return if sum.is_nan() && vals.iter().any(|v| v.is_nan()) {
+            nan_safe_sum_count_slow(vals)
+        } else {
+            (sum, vals.len())
+        };
+    }
+    let threads = rayon::current_num_threads().max(1);
+    let chunk = (vals.len() / threads).max(4096);
+    let sum: f64 = vals.par_chunks(chunk).map(|c| c.iter().sum::<f64>()).sum();
+    if sum.is_nan() && vals.par_iter().any(|v| v.is_nan()) {
+        nan_safe_sum_count_slow(vals)
+    } else {
+        (sum, vals.len())
+    }
 }
 
 impl SeraDFrame_ {

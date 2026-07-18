@@ -1,4 +1,4 @@
-use super::series::{row_hash, rows_equal, ColView, PassThroughBuildHasher, Series};
+use super::series::{row_hash, rows_equal, ColView, FxBuildHasher, PassThroughBuildHasher, Series};
 use super::{SeraDFrame, SeraDFrame_};
 use crate::sera_doc_impl;
 use pyo3::prelude::*;
@@ -136,7 +136,8 @@ impl SeraDFrameGroupBy {
             }
         };
         let mut order: Vec<Arc<str>> = Vec::new();
-        let mut lookup: HashMap<Arc<str>, u32> = HashMap::new();
+        let mut lookup: HashMap<Arc<str>, u32, FxBuildHasher> =
+            HashMap::with_capacity_and_hasher(64, FxBuildHasher::default());
         let mut group_id = Vec::with_capacity(keys.len());
         for k in keys {
             let id = match lookup.get(k) {
