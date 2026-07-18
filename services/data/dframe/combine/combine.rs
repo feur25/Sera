@@ -1,5 +1,5 @@
-use super::series::{FxBuildHasher, Series};
-use super::{SeraDFrame, SeraDFrame_};
+use super::super::series::{FxBuildHasher, Series};
+use super::super::{SeraDFrame, SeraDFrame_};
 use crate::sera_doc_impl;
 use pyo3::prelude::*;
 use std::collections::HashMap;
@@ -216,7 +216,7 @@ impl SeraDFrame_ {
         let mut order = vec![row_col.to_string()];
         order.extend(col_uniques.iter().cloned());
         let mut columns = HashMap::new();
-        columns.insert(row_col.to_string(), super::str_series(row_uniques.clone()));
+        columns.insert(row_col.to_string(), super::super::str_series(row_uniques.clone()));
         for (ci, cname) in col_uniques.iter().enumerate() {
             let col_vals: Vec<f64> = (0..row_uniques.len()).map(|ri| counts[ri * ncols + ci]).collect();
             columns.insert(cname.clone(), Series::Num(Arc::new(col_vals)));
@@ -276,7 +276,7 @@ impl SeraDFrame_ {
         let mut order = vec![index.to_string()];
         order.extend(col_uniques.iter().cloned());
         let mut out_columns = HashMap::new();
-        out_columns.insert(index.to_string(), super::str_series(row_uniques.clone()));
+        out_columns.insert(index.to_string(), super::super::str_series(row_uniques.clone()));
         for (ci, cname) in col_uniques.iter().enumerate() {
             let col_out: Vec<f64> = (0..row_uniques.len())
                 .map(|ri| {

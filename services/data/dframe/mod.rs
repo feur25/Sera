@@ -1,27 +1,18 @@
 mod attrs;
-mod bigdata;
-mod builder;
-mod chartbridge;
-mod combine;
-mod construct;
-mod datetime;
-mod derive;
-mod elementwise;
-mod filter;
-mod groupby;
-mod mask;
-mod query;
-mod reduce;
-mod relational;
-mod resample;
-mod reshape;
-mod rolling;
-mod series;
-mod stats;
-mod strings;
 mod tools;
 
-pub use builder::DFrameBuilder;
+mod aggregate;
+mod combine;
+mod construct;
+mod scale;
+mod select;
+mod transform;
+mod window;
+
+pub(crate) mod groupby;
+pub(crate) mod series;
+
+pub use construct::builder::DFrameBuilder;
 pub use groupby::SeraDFrameGroupBy;
 pub use series::Series;
 

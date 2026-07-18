@@ -1,5 +1,5 @@
-use super::series::{column_from_pyobjects, Series};
-use super::{SeraDFrame, SeraDFrame_};
+use super::super::series::{column_from_pyobjects, Series};
+use super::super::{SeraDFrame, SeraDFrame_};
 use crate::core::dispatch::stats_par;
 use crate::sera_doc_impl;
 use pyo3::prelude::*;
@@ -257,7 +257,7 @@ impl SeraDFrame_ {
         let series = self.inner.get(col)?;
         let converted = match dtype {
             "float" | "float64" | "num" | "numeric" => Series::Num(Arc::new(series.to_f64_vec())),
-            "str" | "object" | "string" => super::str_series(series.to_str_vec()),
+            "str" | "object" | "string" => super::super::str_series(series.to_str_vec()),
             "bool" | "boolean" => Series::Bool(Arc::new(series.to_f64_vec().iter().map(|v| *v != 0.0).collect())),
             _ => {
                 return Err(pyo3::exceptions::PyValueError::new_err(format!(
@@ -354,7 +354,7 @@ impl SeraDFrame_ {
         })
     }
 
-    pub(super) fn push_derived(&self, col: &str, suffix: &str, series: Series) -> PyResult<SeraDFrame_> {
+    pub(crate) fn push_derived(&self, col: &str, suffix: &str, series: Series) -> PyResult<SeraDFrame_> {
         let name = format!("{}_{}", col, suffix);
         let mut order = self.inner.order.clone();
         let mut columns = self.inner.columns.clone();

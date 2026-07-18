@@ -1,4 +1,4 @@
-use super::SeraDFrame_;
+use super::super::SeraDFrame_;
 use crate::bindings::utils::data_processor::{bucket_downsample, bucket_downsample_multi};
 use crate::sera_doc_impl;
 use pyo3::prelude::*;

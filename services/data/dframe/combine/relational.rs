@@ -1,6 +1,6 @@
-use super::groupby::GroupKeys;
-use super::series::{column_from_pyobjects, row_hash, rows_equal_cross, ColView, PassThroughBuildHasher, Series};
-use super::{SeraDFrame, SeraDFrame_};
+use super::super::groupby::GroupKeys;
+use super::super::series::{column_from_pyobjects, row_hash, rows_equal_cross, ColView, PassThroughBuildHasher, Series};
+use super::super::{SeraDFrame, SeraDFrame_};
 use crate::sera_doc_impl;
 use pyo3::prelude::*;
 use pyo3::types::PyDict;
@@ -172,17 +172,17 @@ impl SeraDFrame_ {
                     (Some(l), None) => {
                         let mut v = l.to_str_vec();
                         v.extend(vec![String::new(); other.inner.nrows]);
-                        super::str_series(v)
+                        super::super::str_series(v)
                     }
                     (None, Some(r)) => {
                         let mut v = vec![String::new(); self.inner.nrows];
                         v.extend(r.to_str_vec());
-                        super::str_series(v)
+                        super::super::str_series(v)
                     }
                     (Some(l), Some(r)) => {
                         let mut v = l.to_str_vec();
                         v.extend(r.to_str_vec());
-                        super::str_series(v)
+                        super::super::str_series(v)
                     }
                     (None, None) => Series::Str(Arc::new(vec![])),
                 };

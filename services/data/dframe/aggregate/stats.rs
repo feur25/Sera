@@ -1,5 +1,5 @@
-use super::series::{FxBuildHasher, Series};
-use super::{SeraDFrame, SeraDFrame_};
+use super::super::series::{FxBuildHasher, Series};
+use super::super::{SeraDFrame, SeraDFrame_};
 use crate::core::dispatch::{stats_par, std_dev_par};
 use crate::sera_doc_impl;
 use pyo3::prelude::*;
@@ -110,7 +110,7 @@ impl SeraDFrame_ {
         let counts: HashMap<String, f64> = counts.into_iter().map(|(k, v)| (k.to_string(), v)).collect();
         order_keys.sort_by(|a, b| counts[b].partial_cmp(&counts[a]).unwrap());
         let mut columns = HashMap::new();
-        columns.insert(name.to_string(), super::str_series(order_keys.clone()));
+        columns.insert(name.to_string(), super::super::str_series(order_keys.clone()));
         columns.insert(
             "count".to_string(),
             Series::Num(Arc::new(order_keys.iter().map(|k| counts[k]).collect())),
@@ -178,7 +178,7 @@ impl SeraDFrame_ {
         let mut order = vec!["column".to_string()];
         order.extend(numeric.iter().cloned());
         let mut columns = HashMap::new();
-        columns.insert("column".to_string(), super::str_series(numeric.clone()));
+        columns.insert("column".to_string(), super::super::str_series(numeric.clone()));
         for (j, name) in numeric.iter().enumerate() {
             let col_vals: Vec<f64> = (0..n).map(|i| matrix[i][j]).collect();
             columns.insert(name.clone(), Series::Num(Arc::new(col_vals)));
@@ -236,7 +236,7 @@ impl SeraDFrame_ {
             })
             .collect();
         let mut columns = HashMap::new();
-        columns.insert("column".to_string(), super::str_series(common.clone()));
+        columns.insert("column".to_string(), super::super::str_series(common.clone()));
         columns.insert("corr".to_string(), Series::Num(Arc::new(corrs)));
         let n = common.len();
         SeraDFrame_ {
@@ -456,7 +456,7 @@ impl SeraDFrame_ {
             stds.push(std);
         }
         let mut columns = HashMap::new();
-        columns.insert("column".to_string(), super::str_series(names.clone()));
+        columns.insert("column".to_string(), super::super::str_series(names.clone()));
         columns.insert("count".to_string(), Series::Num(Arc::new(counts)));
         columns.insert("mean".to_string(), Series::Num(Arc::new(means)));
         columns.insert("min".to_string(), Series::Num(Arc::new(mins)));

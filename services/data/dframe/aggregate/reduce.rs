@@ -1,4 +1,4 @@
-use super::SeraDFrame_;
+use super::super::SeraDFrame_;
 use crate::core::dispatch::{stats_par, std_dev_par};
 use crate::sera_doc_impl;
 use pyo3::prelude::*;

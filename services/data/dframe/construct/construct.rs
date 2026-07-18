@@ -1,5 +1,5 @@
-use super::series::{column_from_pyobjects, Series};
-use super::{SeraDFrame, SeraDFrame_};
+use super::super::series::{column_from_pyobjects, Series};
+use super::super::{SeraDFrame, SeraDFrame_};
 use crate::data::table::Cell;
 use crate::data::Table;
 use crate::sera_doc_impl;
@@ -353,7 +353,7 @@ impl SeraDFrame_ {
         };
         let mut order = vec!["field".to_string()];
         let mut columns = HashMap::new();
-        columns.insert("field".to_string(), super::str_series(field_names.clone()));
+        columns.insert("field".to_string(), super::super::str_series(field_names.clone()));
         for r in 0..self.inner.nrows {
             let col_name = row_labels.get(r).cloned().unwrap_or_else(|| format!("row{r}"));
             let cell_vals: Vec<String> = field_names
@@ -361,7 +361,7 @@ impl SeraDFrame_ {
                 .map(|fname| self.inner.columns[fname].value_str(r))
                 .collect();
             order.push(col_name.clone());
-            columns.insert(col_name, super::str_series(cell_vals));
+            columns.insert(col_name, super::super::str_series(cell_vals));
         }
         Ok(SeraDFrame_ {
             inner: Arc::new(SeraDFrame::from_parts(order, columns, field_names.len())),
