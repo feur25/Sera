@@ -148,7 +148,7 @@ impl Ridge {
 
     pub fn score(&self, x: &[f64], n: usize, p: usize, y: &[f64]) -> f64 {
         let pred = self.predict(x, n, p);
-        super::ols::r2_score_pub(y, &pred)
+        crate::ml::metrics::regression::r2_score(y, &pred)
     }
 }
 

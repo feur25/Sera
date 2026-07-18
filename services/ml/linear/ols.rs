@@ -147,7 +147,7 @@ impl LinearRegression {
 
     pub fn score(&self, x: &[f64], n: usize, p: usize, y: &[f64]) -> f64 {
         let pred = self.predict(x, n, p);
-        r2_score(y, &pred)
+        crate::ml::metrics::regression::r2_score(y, &pred)
     }
 }
 
@@ -176,17 +176,3 @@ fn solve_normal(x: &[f64], n: usize, p: usize, y: &[f64]) -> Vec<f64> {
     qr_solve(x, n, p, y)
 }
 
-pub fn r2_score_pub(y: &[f64], pred: &[f64]) -> f64 {
-    r2_score(y, pred)
-}
-
-fn r2_score(y: &[f64], pred: &[f64]) -> f64 {
-    let n = y.len();
-    let mean = y.iter().sum::<f64>() / n as f64;
-    let ss_res: f64 = y.iter().zip(pred).map(|(a, b)| (a - b) * (a - b)).sum();
-    let ss_tot: f64 = y.iter().map(|a| (a - mean) * (a - mean)).sum();
-    if ss_tot < 1e-15 {
-        return 0.0;
-    }
-    1.0 - ss_res / ss_tot
-}
