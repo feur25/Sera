@@ -1,12 +1,12 @@
 # Playground
 
 <style>
-.pg-hero{margin:1.2em 0 1.6em;padding:22px 28px;border-radius:12px;background:linear-gradient(135deg,#0f172a 0%,#1e1b4b 60%,#312e81 100%);border:1px solid rgba(99,102,241,.3);position:relative;overflow:hidden}
+.pg-hero{margin:1.2em 0 1.6em;padding:22px 28px;border-radius:12px;background:linear-gradient(135deg,var(--sp-surface) 0%,var(--sp-surface-2) 60%,var(--sp-surface-2) 100%);border:1px solid rgba(99,102,241,.3);position:relative;overflow:hidden}
 .pg-hero::before{content:"";position:absolute;top:-50%;right:-5%;width:50%;height:200%;background:radial-gradient(ellipse,rgba(129,140,248,.15) 0%,transparent 65%);pointer-events:none}
-.pg-hero h2{margin:0 0 6px;font-size:18px;color:#f5f3ff;font-weight:700;border:none}
-.pg-hero p{margin:0;color:#94a3b8;font-size:13.5px;line-height:1.55;max-width:70ch;position:relative;z-index:1}
+.pg-hero h2{margin:0 0 6px;font-size:18px;color:var(--sp-text);font-weight:700;border:none}
+.pg-hero p{margin:0;color:var(--sp-text-muted);font-size:13.5px;line-height:1.55;max-width:70ch;position:relative;z-index:1}
 .pg-pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;position:relative;z-index:1}
-.pg-pill{padding:3px 10px;background:rgba(99,102,241,.14);border:1px solid rgba(165,180,252,.25);border-radius:999px;font-size:11px;font-weight:600;color:#c7d2fe;letter-spacing:.04em}
+.pg-pill{padding:3px 10px;background:rgba(99,102,241,.14);border:1px solid rgba(165,180,252,.25);border-radius:999px;font-size:11px;font-weight:600;color:var(--sp-important);letter-spacing:.04em}
 </style>
 
 <div class="lang-en">

@@ -90,11 +90,11 @@ Return Euclidean distance from each sample to each centroid (shape: n_samples ×
 
 
 <style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
-.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb.active{color:#f8fafc;border-bottom-color:#6366f1}
-.sp-tp{display:none;padding:18px 20px;background:#0b0e18}
+.sp-tabs{border:1px solid var(--sp-border);border-radius:8px;overflow:hidden;margin:1.5em 0}
+.sp-tab-btns{display:flex;background:var(--sp-surface);border-bottom:1px solid var(--sp-border)}
+.sp-tb{padding:9px 22px;border:none;background:none;color:var(--sp-text-muted);cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb.active{color:var(--sp-text);border-bottom-color:var(--sp-accent)}
+.sp-tp{display:none;padding:18px 20px;background:var(--sp-surface)}
 .sp-tp.active{display:block}
 pre{margin:0;background:transparent!important}
 </style>
