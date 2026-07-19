@@ -2769,9 +2769,10 @@ impl Canvas {
                 "<!DOCTYPE html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n",
                 "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n",
                 "<style>\n*{{box-sizing:border-box}}\n",
-                "html,body{{margin:0;padding:0;overflow:hidden;background:{bg}}}\n",
-                "#sp-canvas-root{{position:relative;width:{w}px;height:{h}px;",
-                "overflow:hidden;background:{bg};transform-origin:top left}}\n",
+                "html,body{{margin:0;padding:0;overflow:hidden;background:{bg};",
+                "width:100%;height:100%;display:flex;align-items:center;justify-content:center}}\n",
+                "#sp-canvas-root{{position:relative;width:{w}px;height:{h}px;flex-shrink:0;",
+                "overflow:hidden;background:{bg};transform-origin:center}}\n",
                 ".sp-cv{{position:absolute;top:0;left:0}}\n",
                 "{hover_css}",
                 "{extra_css}",
@@ -2793,10 +2794,6 @@ impl Canvas {
                 "var s=Math.min(vw/W,vh/H,1);",
                 "if(!isFinite(s)||s<=0)s=1;",
                 "root.style.transform='scale('+s+')';",
-                "document.documentElement.style.width=(W*s)+'px';",
-                "document.documentElement.style.height=(H*s)+'px';",
-                "document.body.style.width=(W*s)+'px';",
-                "document.body.style.height=(H*s)+'px';",
                 "}}",
                 "fit();window.addEventListener('resize',fit,{{passive:true}});",
                 "}})();</script>\n",
@@ -3018,6 +3015,15 @@ mod radial_tests {
         };
         render_el(&rib, &mut defs, &mut body);
         assert_eq!(body.matches(" Q 0.00,0.00 ").count(), 2);
+    }
+
+    #[test]
+    fn preview_html_centers_via_flex_instead_of_shrinking_the_document_box() {
+        let cv = Canvas::new(900, 540, "#0a0a0f");
+        let html = cv.build().html;
+        assert!(html.contains("display:flex;align-items:center;justify-content:center"));
+        assert!(!html.contains("document.body.style.width"));
+        assert!(!html.contains("document.documentElement.style.width"));
     }
 
     #[test]
