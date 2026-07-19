@@ -171,8 +171,8 @@ async def _handler(ws):
         except Exception:
             try:
                 await ws.send(json.dumps({"t": "err", "id": 0, "msg": traceback.format_exc()}))
-            except Exception:
-                pass
+            except Exception as e:
+                return print("playground server error sending err:", e, file=sys.stderr)
 
 
 async def _main():

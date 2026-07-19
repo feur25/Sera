@@ -12,15 +12,11 @@
 
 <div class="lang-en">
 
-Every chart family currently registered in SeraPlot, one live preview each — generated at page load from the same registry the docs site uses for variant tables and aliases, not a hand-maintained list. Click a card to open the full documentation page for that family.
-
 <div id="sp-showcase-en"></div>
 
 </div>
 
 <div class="lang-fr">
-
-Chaque famille de graphique actuellement enregistrée dans SeraPlot, avec un aperçu live — généré au chargement de la page depuis le même registre que celui utilisé pour les tableaux de variantes et les alias, pas une liste maintenue à la main. Cliquez sur une carte pour ouvrir la page de documentation complète de cette famille.
 
 <div id="sp-showcase-fr"></div>
 
