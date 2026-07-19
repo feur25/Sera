@@ -72,11 +72,11 @@ Use `iso_codes` for country-level data (the library resolves centroids automatic
 
 
 <style>
-.sp-tabs{border:1px solid #334155;border-radius:8px;overflow:hidden;margin:1.5em 0}
-.sp-tab-btns{display:flex;background:#0f172a;border-bottom:1px solid #334155}
-.sp-tb{padding:9px 22px;border:none;background:none;color:#64748b;cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:#e2e8f0}
-.sp-tb.sp-act{color:#6366f1;border-bottom-color:#6366f1}
+.sp-tabs{border:1px solid var(--sp-border);border-radius:8px;overflow:hidden;margin:1.5em 0}
+.sp-tab-btns{display:flex;background:var(--sp-surface);border-bottom:1px solid var(--sp-border)}
+.sp-tb{padding:9px 22px;border:none;background:none;color:var(--sp-text-muted);cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
+.sp-tb:hover{color:var(--sp-text)}
+.sp-tb.sp-act{color:var(--sp-accent);border-bottom-color:var(--sp-accent)}
 .sp-tc{display:none}
 .sp-tc.sp-on{display:block}
 </style>

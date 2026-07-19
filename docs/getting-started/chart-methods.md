@@ -34,14 +34,14 @@
 .cm-card pre code{font-size:12.5px;line-height:1.55;color:var(--sp-text);background:none;padding:0}
 .cm-params{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .cm-param{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-size:12.5px}
-.cm-param code{background:var(--sp-code-bg);padding:1px 7px;border-radius:5px;color:var(--sp-code-fg);font-size:12px}
+.cm-param code{background:var(--sp-surface-2);padding:1px 7px;border-radius:5px;color:var(--sp-text);font-size:12px}
 .cm-param-ty{color:var(--sp-important);font-family:"JetBrains Mono",Consolas,monospace;font-size:11.5px}
 .cm-param-desc{color:var(--sp-text-muted)}
 .cm-save{margin:1.2em 0;padding:14px 16px 14px 18px;background:var(--sp-surface);border:1px solid var(--sp-border);border-radius:10px;overflow:hidden}
 .cm-save-head{display:flex;align-items:center;gap:9px;margin-bottom:10px}
 .cm-save-ic{width:26px;height:26px;border-radius:7px;background:linear-gradient(135deg,#065f46,#047857);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
 .cm-save-head span{font-size:12.5px;font-weight:700;color:#6ee7b7;letter-spacing:.02em}
-.cm-save pre{margin:0;border-radius:7px;background:var(--sp-code-bg);border:1px solid var(--sp-border);padding:10px 13px;overflow-x:auto}
+.cm-save pre{margin:0;border-radius:7px;background:var(--sp-surface-2);border:1px solid var(--sp-border);padding:10px 13px;overflow-x:auto}
 .cm-save pre code{font-size:12px;line-height:1.5;color:var(--sp-text);background:none;padding:0}
 .cm-feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;margin:1.2em 0 1.6em}
 .cm-feat{border:1px solid var(--sp-border);border-radius:12px;overflow:hidden;background:var(--sp-surface);transition:border-color .15s}
@@ -61,14 +61,14 @@
 .cm-feat-pk{padding:5px 9px;color:var(--sp-text);background:var(--sp-surface);font-family:"JetBrains Mono",Consolas,monospace;white-space:nowrap;min-width:100px;border-right:1px solid var(--sp-border)}
 .cm-feat-pt{padding:5px 8px;color:var(--sp-accent);font-family:monospace;white-space:nowrap;border-right:1px solid var(--sp-border);min-width:80px}
 .cm-feat-pd{padding:5px 9px;color:var(--sp-text-muted);line-height:1.4}
-.cm-feat pre{margin:0;border-radius:7px;background:var(--sp-code-bg);border:1px solid var(--sp-border);padding:10px 13px;overflow-x:auto}
+.cm-feat pre{margin:0;border-radius:7px;background:var(--sp-surface-2);border:1px solid var(--sp-border);padding:10px 13px;overflow-x:auto}
 .cm-feat pre code{font-size:11.5px;line-height:1.5;color:var(--sp-text);background:none;padding:0}
 
 .cm-table{width:100%;border-collapse:collapse;margin:1em 0;font-size:13px;background:var(--sp-surface);border-radius:8px;overflow:hidden;border:1px solid var(--sp-border)}
 .cm-table th{background:var(--sp-surface);color:var(--sp-important);padding:10px 14px;text-align:left;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--sp-border)}
 .cm-table td{padding:9px 14px;color:var(--sp-text);border-bottom:1px solid var(--sp-surface);vertical-align:top}
 .cm-table tr:last-child td{border-bottom:none}
-.cm-table code{background:var(--sp-code-bg);padding:1px 6px;border-radius:4px;font-size:12px;color:var(--sp-code-fg)}
+.cm-table code{background:var(--sp-surface-2);padding:1px 6px;border-radius:4px;font-size:12px;color:var(--sp-text)}
 
 .cm-tip{margin:1em 0;padding:12px 16px;background:rgba(34,197,94,.06);border-left:3px solid var(--sp-ok);border-radius:0 6px 6px 0;color:var(--sp-text);font-size:13.5px;line-height:1.55}
 .cm-tip strong{color:var(--sp-ok);font-weight:700}
@@ -127,7 +127,7 @@ Every card below is generated straight from the <code>#[sera_doc(...)]</code> an
 <div class="cm-section"><span class="cm-sn">4</span><h3>Magic properties</h3></div>
 
 <div class="cm-card">
-<div class="cm-name"><code class="cm-fn">.html &nbsp;<span style="color:#64748b;font-size:11px;font-weight:400">property</span></code><span class="cm-tag cm-tag-prop">read-only</span></div>
+<div class="cm-name"><code class="cm-fn">.html &nbsp;<span style="color:var(--sp-text-muted);font-size:11px;font-weight:400">property</span></code><span class="cm-tag cm-tag-prop">read-only</span></div>
 <div class="cm-desc">Read the full HTML payload as a string.</div>
 <pre><code class="language-python">src = chart.html</code></pre>
 </div>
@@ -285,7 +285,7 @@ Chaque carte ci-dessous est générée directement depuis l'annotation <code>#[s
 <div class="cm-section"><span class="cm-sn">4</span><h3>Propriétés magiques</h3></div>
 
 <div class="cm-card">
-<div class="cm-name"><code class="cm-fn">.html &nbsp;<span style="color:#64748b;font-size:11px;font-weight:400">property</span></code><span class="cm-tag cm-tag-prop">lecture seule</span></div>
+<div class="cm-name"><code class="cm-fn">.html &nbsp;<span style="color:var(--sp-text-muted);font-size:11px;font-weight:400">property</span></code><span class="cm-tag cm-tag-prop">lecture seule</span></div>
 <div class="cm-desc">Lit le HTML complet sous forme de chaîne.</div>
 <pre><code class="language-python">src = chart.html</code></pre>
 </div>
