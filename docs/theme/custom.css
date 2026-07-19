@@ -443,9 +443,9 @@ iframe[loading="lazy"] {
   text-transform: uppercase;
 }
 #sp-params-panel .sp-vmeta code {
-  background: var(--sp-surface-2);
+  background: #fff;
   border: 1px solid var(--sp-border);
-  color: var(--sp-text);
+  color: #111;
   border-radius: 5px;
   padding: 2px 6px;
 }
@@ -465,9 +465,9 @@ iframe[loading="lazy"] {
   text-transform: uppercase;
 }
 #sp-params-panel .sp-param-variant code {
-  background: var(--sp-surface-2);
+  background: #fff;
   border: 1px solid var(--sp-border);
-  color: var(--sp-text);
+  color: #111;
   border-radius: 5px;
   padding: 2px 6px;
 }
@@ -697,12 +697,12 @@ body.sp-body-bottom .content {
   line-height: 1.6;
 }
 .sp-psec-alias code {
-  background: var(--sp-surface-2);
+  background: #fff;
   border: 1px solid var(--sp-border);
   border-radius: 4px;
   padding: 1px 5px;
   font-size: 11px;
-  color: var(--sp-text);
+  color: #111;
 }
 
 /* Params: custom table */

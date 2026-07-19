@@ -21,10 +21,10 @@
 .cm-card{margin:1em 0 1.4em;padding:18px 20px;background:var(--sp-surface);border:1px solid var(--sp-border);border-left:3px solid var(--sp-text-muted);border-radius:0 10px 10px 0;box-shadow:0 6px 18px -8px rgba(0,0,0,.5);overflow:hidden}
 .cm-card.cm-new{border-left-color:var(--sp-ok)}
 .cm-card .cm-name{display:flex;align-items:center;gap:10px;margin:0 0 6px;flex-wrap:wrap}
-.cm-card code.cm-fn{font-family:"JetBrains Mono",Consolas,monospace;font-size:14px;color:var(--sp-important);background:rgba(99,102,241,.10);padding:3px 9px;border-radius:6px;font-weight:600;word-break:break-all;max-width:100%}
+.cm-card code.cm-fn{font-family:"JetBrains Mono",Consolas,monospace;font-size:14px;color:#111;background:#fff;padding:3px 9px;border-radius:6px;font-weight:600;word-break:break-all;max-width:100%}
 .cm-tag{display:inline-block;padding:2px 8px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase}
 .cm-tag.cm-tag-new{background:rgba(34,197,94,.15);color:var(--sp-ok);border:1px solid rgba(34,197,94,.35)}
-.cm-tag.cm-tag-chain{background:rgba(99,102,241,.15);color:var(--sp-important);border:1px solid rgba(99,102,241,.35)}
+.cm-tag.cm-tag-chain{background:#fff;color:#111;border:1px solid rgba(99,102,241,.35)}
 .cm-tag.cm-tag-global{background:rgba(251,191,36,.15);color:var(--sp-warn);border:1px solid rgba(251,191,36,.35)}
 .cm-tag.cm-tag-export{background:rgba(244,63,94,.15);color:var(--sp-danger);border:1px solid rgba(244,63,94,.35)}
 .cm-tag.cm-tag-prop{background:rgba(168,85,247,.15);color:var(--sp-important);border:1px solid rgba(168,85,247,.35)}
