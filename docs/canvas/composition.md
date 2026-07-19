@@ -313,6 +313,55 @@ arc on top of it (stroked with the `gradient` defined a line earlier), and
 `text` centers the number — three primitives from three different sections
 above, one small self-contained gauge.
 
+The hand-rolled `arc_path` above is exactly what `arc`/`wedge` below do
+internally — reach for them first; `path` stays the escape hatch for shapes
+neither one covers.
+
+---
+
+## Radial drawing: `arc`, `wedge`, `ribbon`, `polar`
+
+`arc`, `wedge`, `ribbon`, `polar` and `radial_gradient` share one angle
+convention: **degrees, 0° at the top, increasing clockwise** — the same
+convention pie/donut/gauge charts already use, so radial compositions read
+the same way.
+
+| Method | Effect |
+|--------|--------|
+| `arc(cx, cy, r, start_deg, end_deg, color="#ffffff", width=1.5, opacity=1, cap="round", layer="fg", name="")` | A stroked circular arc — spokes, progress rings, radial tick marks. |
+| `wedge(cx, cy, r_inner, r_outer, start_deg, end_deg, fill="#ffffff", stroke="none", stroke_width=0, opacity=1, layer="fg", name="")` | A filled donut segment; `r_inner=0` collapses it to a pie slice. The building block for radial bar charts — one wedge per bar, `r_outer` mapped to the value. |
+| `ribbon(cx, cy, r, a_start, a_end, b_start, b_end, fill="#ffffff", opacity=0.7, layer="fg", name="")` | A curved band connecting two arc spans on the same circle through its center — chord-diagram-style links between categories. |
+| `polar(cx, cy, r, deg) -> (x, y)` | Pure coordinate math, no drawing — converts a radial position to `(x, y)` so you can place *any* other primitive (`text`, `circle`, `line`, a placed `Chart`) at a computed angle instead of hand-deriving trig every time. |
+| `radial_gradient(id, from_color, to_color, cx=0.5, cy=0.5, r=0.5)` | A radial counterpart to `gradient` — reference it the same way, `fill="url(#id)"`, for glows and center-out fades. |
+
+```python
+cv = sp.canvas(600, 600, "#0a0a12")
+cx, cy = 300, 300
+cv.radial_gradient("glow", "#312e81", "#0a0a12", r=0.75)
+cv.circle(cx, cy, 260, fill="url(#glow)", name="glow-bg")
+
+values = [8, 15, 6, 22, 11, 18, 4, 13]
+n = len(values)
+for i, v in enumerate(values):
+    a0 = i * 360 / n + 2
+    a1 = (i + 1) * 360 / n - 2
+    cv.wedge(cx, cy, 60, 60 + v * 7, a0, a1,
+             fill=f"hsl({i * 360 // n}, 70%, 60%)", name=f"bar-{i}")
+    lx, ly = cv.polar(cx, cy, 60 + v * 7 + 16, (a0 + a1) / 2)
+    cv.text(str(v), lx, ly, size=11, color="#f8fafc", anchor="middle", name=f"lbl-{i}")
+
+cv.ribbon(cx, cy, 58, 10, 30, 190, 210, fill="#a78bfa", opacity=0.35, name="link-a")
+chart = cv.build()
+```
+
+This is the same shape as the radial pieces at
+[visualcinnamon.com](https://www.visualcinnamon.com) — a center, a set of
+wedges swept around it, labels placed with `polar`, and ribbons crossing
+between spans. Nothing here is a dedicated "radial bar chart" type; it's the
+five primitives above composed by hand, the same way the rest of `Canvas`
+works — including mixing in a placed `Chart` at a `polar`-computed position
+if the story calls for it.
+
 ---
 
 ## Organic layouts: Voronoi
@@ -775,6 +824,56 @@ chart = cv.build()
 de progression réel (tracé avec le `gradient` défini juste avant), et
 `text` centre le nombre — trois primitives issues de trois sections
 différentes ci-dessus, une seule jauge autonome.
+
+Le `arc_path` codé à la main ci-dessus, c'est exactement ce que font
+`arc`/`wedge` en interne — utilisez-les en premier ; `path` reste
+l'échappatoire pour les formes qu'aucun des deux ne couvre.
+
+---
+
+## Dessin radial : `arc`, `wedge`, `ribbon`, `polar`
+
+`arc`, `wedge`, `ribbon`, `polar` et `radial_gradient` partagent une
+convention d'angle : **degrés, 0° en haut, croissant dans le sens horaire**
+— la même convention que les charts pie/donut/gauge, pour que les
+compositions radiales se lisent de la même façon.
+
+| Méthode | Effet |
+|--------|--------|
+| `arc(cx, cy, r, start_deg, end_deg, color="#ffffff", width=1.5, opacity=1, cap="round", layer="fg", name="")` | Un arc de cercle tracé — rayons, anneaux de progression, graduations radiales. |
+| `wedge(cx, cy, r_inner, r_outer, start_deg, end_deg, fill="#ffffff", stroke="none", stroke_width=0, opacity=1, layer="fg", name="")` | Un segment d'anneau rempli ; `r_inner=0` le réduit à une part de camembert. La brique de base des barres radiales — une wedge par barre, `r_outer` mappé sur la valeur. |
+| `ribbon(cx, cy, r, a_start, a_end, b_start, b_end, fill="#ffffff", opacity=0.7, layer="fg", name="")` | Une bande courbe reliant deux plages d'arc sur le même cercle en passant par son centre — liens façon chord diagram entre catégories. |
+| `polar(cx, cy, r, deg) -> (x, y)` | Du calcul de coordonnées pur, sans dessin — convertit une position radiale en `(x, y)` pour placer n'importe quelle autre primitive (`text`, `circle`, `line`, un `Chart` placé) à un angle calculé, sans refaire la trigonométrie à la main. |
+| `radial_gradient(id, from_color, to_color, cx=0.5, cy=0.5, r=0.5)` | Le pendant radial de `gradient` — se référence pareil, `fill="url(#id)"`, pour des lueurs et fondus centre-vers-bord. |
+
+```python
+cv = sp.canvas(600, 600, "#0a0a12")
+cx, cy = 300, 300
+cv.radial_gradient("glow", "#312e81", "#0a0a12", r=0.75)
+cv.circle(cx, cy, 260, fill="url(#glow)", name="glow-bg")
+
+values = [8, 15, 6, 22, 11, 18, 4, 13]
+n = len(values)
+for i, v in enumerate(values):
+    a0 = i * 360 / n + 2
+    a1 = (i + 1) * 360 / n - 2
+    cv.wedge(cx, cy, 60, 60 + v * 7, a0, a1,
+             fill=f"hsl({i * 360 // n}, 70%, 60%)", name=f"bar-{i}")
+    lx, ly = cv.polar(cx, cy, 60 + v * 7 + 16, (a0 + a1) / 2)
+    cv.text(str(v), lx, ly, size=11, color="#f8fafc", anchor="middle", name=f"lbl-{i}")
+
+cv.ribbon(cx, cy, 58, 10, 30, 190, 210, fill="#a78bfa", opacity=0.35, name="link-a")
+chart = cv.build()
+```
+
+C'est la même construction que les pièces radiales de
+[visualcinnamon.com](https://www.visualcinnamon.com) — un centre, des
+wedges disposées tout autour, des labels placés avec `polar`, et des
+ribbons qui traversent entre les plages. Rien ici n'est un type
+« radial bar chart » dédié ; ce sont les cinq primitives ci-dessus
+composées à la main, de la même façon que le reste de `Canvas` —
+y compris en mélangeant un `Chart` placé à une position calculée par
+`polar` si l'histoire le demande.
 
 ---
 

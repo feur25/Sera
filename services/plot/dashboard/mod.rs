@@ -88,6 +88,11 @@ fn voronoi_cells(sites: &[(f64, f64)], bx: f64, by: f64, bw: f64, bh: f64) -> Ve
         .collect()
 }
 
+fn polar_xy(cx: f64, cy: f64, r: f64, deg: f64) -> (f64, f64) {
+    let rad = (deg - 90.0) * std::f64::consts::PI / 180.0;
+    (cx + r * rad.cos(), cy + r * rad.sin())
+}
+
 fn pts_to_svg(pts: &[(f64, f64)]) -> String {
     pts.iter()
         .map(|(x, y)| format!("{:.2},{:.2}", x, y))
@@ -359,6 +364,54 @@ enum El {
         y1: f64,
         x2: f64,
         y2: f64,
+    },
+    Arc {
+        cx: f64,
+        cy: f64,
+        r: f64,
+        start_deg: f64,
+        end_deg: f64,
+        color: String,
+        width: f64,
+        opacity: f64,
+        cap: String,
+        layer: Layer,
+        name: String,
+    },
+    Wedge {
+        cx: f64,
+        cy: f64,
+        r_inner: f64,
+        r_outer: f64,
+        start_deg: f64,
+        end_deg: f64,
+        fill: String,
+        stroke: String,
+        sw: f64,
+        opacity: f64,
+        layer: Layer,
+        name: String,
+    },
+    Ribbon {
+        cx: f64,
+        cy: f64,
+        r: f64,
+        a_start: f64,
+        a_end: f64,
+        b_start: f64,
+        b_end: f64,
+        fill: String,
+        opacity: f64,
+        layer: Layer,
+        name: String,
+    },
+    RadialGradDef {
+        id: String,
+        from_color: String,
+        to_color: String,
+        cx: f64,
+        cy: f64,
+        r: f64,
     },
 }
 
@@ -755,6 +808,113 @@ fn render_el(el: &El, defs: &mut String, body: &mut String) {
             ));
         }
 
+        El::Arc {
+            cx,
+            cy,
+            r,
+            start_deg,
+            end_deg,
+            color,
+            width,
+            opacity,
+            cap,
+            name,
+            ..
+        } => {
+            let (x1, y1) = polar_xy(*cx, *cy, *r, *start_deg);
+            let (x2, y2) = polar_xy(*cx, *cy, *r, *end_deg);
+            let large = if (end_deg - start_deg).abs() > 180.0 { 1 } else { 0 };
+            let sweep = if *end_deg >= *start_deg { 1 } else { 0 };
+            body.push_str(&format!(
+                "<path d=\"M {:.2},{:.2} A {:.2},{:.2} 0 {},{} {:.2},{:.2}\" fill=\"none\" \
+                 stroke=\"{}\" stroke-width=\"{:.2}\" opacity=\"{:.4}\" stroke-linecap=\"{}\"{}/>\n",
+                x1, y1, r, r, large, sweep, x2, y2, color, width, opacity, cap, name_attr(name)
+            ));
+        }
+
+        El::Wedge {
+            cx,
+            cy,
+            r_inner,
+            r_outer,
+            start_deg,
+            end_deg,
+            fill,
+            stroke,
+            sw,
+            opacity,
+            name,
+            ..
+        } => {
+            let (ox1, oy1) = polar_xy(*cx, *cy, *r_outer, *start_deg);
+            let (ox2, oy2) = polar_xy(*cx, *cy, *r_outer, *end_deg);
+            let large = if (end_deg - start_deg).abs() > 180.0 { 1 } else { 0 };
+            let d = if *r_inner <= 0.001 {
+                format!(
+                    "M {:.2},{:.2} L {:.2},{:.2} A {:.2},{:.2} 0 {},1 {:.2},{:.2} Z",
+                    cx, cy, ox1, oy1, r_outer, r_outer, large, ox2, oy2
+                )
+            } else {
+                let (ix1, iy1) = polar_xy(*cx, *cy, *r_inner, *end_deg);
+                let (ix2, iy2) = polar_xy(*cx, *cy, *r_inner, *start_deg);
+                format!(
+                    "M {:.2},{:.2} A {:.2},{:.2} 0 {},1 {:.2},{:.2} L {:.2},{:.2} \
+                     A {:.2},{:.2} 0 {},0 {:.2},{:.2} Z",
+                    ox1, oy1, r_outer, r_outer, large, ox2, oy2, ix1, iy1, r_inner, r_inner, large, ix2, iy2
+                )
+            };
+            body.push_str(&format!(
+                "<path d=\"{}\" fill=\"{}\" stroke=\"{}\" stroke-width=\"{:.2}\" opacity=\"{:.4}\"{}/>\n",
+                d, fill, stroke, sw, opacity, name_attr(name)
+            ));
+        }
+
+        El::Ribbon {
+            cx,
+            cy,
+            r,
+            a_start,
+            a_end,
+            b_start,
+            b_end,
+            fill,
+            opacity,
+            name,
+            ..
+        } => {
+            let (s1x, s1y) = polar_xy(*cx, *cy, *r, *a_start);
+            let (s2x, s2y) = polar_xy(*cx, *cy, *r, *a_end);
+            let (t1x, t1y) = polar_xy(*cx, *cy, *r, *b_start);
+            let (t2x, t2y) = polar_xy(*cx, *cy, *r, *b_end);
+            let large_a = if (a_end - a_start).abs() > 180.0 { 1 } else { 0 };
+            let large_b = if (b_end - b_start).abs() > 180.0 { 1 } else { 0 };
+            body.push_str(&format!(
+                "<path d=\"M {:.2},{:.2} A {:.2},{:.2} 0 {},1 {:.2},{:.2} Q {:.2},{:.2} {:.2},{:.2} \
+                 A {:.2},{:.2} 0 {},1 {:.2},{:.2} Q {:.2},{:.2} {:.2},{:.2} Z\" \
+                 fill=\"{}\" opacity=\"{:.4}\"{}/>\n",
+                s1x, s1y, r, r, large_a, s2x, s2y, cx, cy, t2x, t2y,
+                r, r, large_b, t1x, t1y, cx, cy, s1x, s1y,
+                fill, opacity, name_attr(name)
+            ));
+        }
+
+        El::RadialGradDef {
+            id,
+            from_color,
+            to_color,
+            cx,
+            cy,
+            r,
+        } => {
+            defs.push_str(&format!(
+                "<radialGradient id=\"{}\" cx=\"{:.3}\" cy=\"{:.3}\" r=\"{:.3}\" gradientUnits=\"objectBoundingBox\">\
+                 <stop offset=\"0\" stop-color=\"{}\"/>\
+                 <stop offset=\"1\" stop-color=\"{}\"/>\
+                 </radialGradient>\n",
+                id, cx, cy, r, from_color, to_color
+            ));
+        }
+
         El::Chart { .. } | El::Image { .. } => {}
     }
 }
@@ -894,7 +1054,10 @@ fn el_layer(el: &El) -> Option<&Layer> {
         | El::Polygon { layer, .. }
         | El::RawPath { layer, .. }
         | El::Arrow { layer, .. }
-        | El::Annotate { layer, .. } => Some(layer),
+        | El::Annotate { layer, .. }
+        | El::Arc { layer, .. }
+        | El::Wedge { layer, .. }
+        | El::Ribbon { layer, .. } => Some(layer),
         _ => None,
     }
 }
@@ -955,7 +1118,11 @@ fn translate_element(el: &mut El, dx: f64, dy: f64) {
             *tx += dx;
             *ty += dy;
         }
-        El::RawPath { .. } | El::GradDef { .. } => {}
+        El::Arc { cx, cy, .. } | El::Wedge { cx, cy, .. } | El::Ribbon { cx, cy, .. } => {
+            *cx += dx;
+            *cy += dy;
+        }
+        El::RawPath { .. } | El::GradDef { .. } | El::RadialGradDef { .. } => {}
     }
 }
 
@@ -2132,6 +2299,127 @@ impl Canvas {
         element_idx
     }
 
+    #[pyo3(signature = (cx, cy, r, start_deg, end_deg, color = "#ffffff", width = 1.5,
+                        opacity = 1.0, cap = "round", layer = "fg", name = ""))]
+    pub fn arc(
+        &mut self,
+        cx: f64,
+        cy: f64,
+        r: f64,
+        start_deg: f64,
+        end_deg: f64,
+        color: &str,
+        width: f64,
+        opacity: f64,
+        cap: &str,
+        layer: &str,
+        name: &str,
+    ) -> usize {
+        let element_idx = self.elements.len();
+        self.register_name(name, element_idx);
+        self.elements.push(El::Arc {
+            cx,
+            cy,
+            r,
+            start_deg,
+            end_deg,
+            color: color.to_string(),
+            width,
+            opacity,
+            cap: cap.to_string(),
+            layer: Layer::from_str(layer),
+            name: name.to_string(),
+        });
+        element_idx
+    }
+
+    #[pyo3(signature = (cx, cy, r_inner, r_outer, start_deg, end_deg, fill = "#ffffff",
+                        stroke = "none", stroke_width = 0.0, opacity = 1.0, layer = "fg", name = ""))]
+    pub fn wedge(
+        &mut self,
+        cx: f64,
+        cy: f64,
+        r_inner: f64,
+        r_outer: f64,
+        start_deg: f64,
+        end_deg: f64,
+        fill: &str,
+        stroke: &str,
+        stroke_width: f64,
+        opacity: f64,
+        layer: &str,
+        name: &str,
+    ) -> usize {
+        let element_idx = self.elements.len();
+        self.register_name(name, element_idx);
+        self.elements.push(El::Wedge {
+            cx,
+            cy,
+            r_inner,
+            r_outer,
+            start_deg,
+            end_deg,
+            fill: fill.to_string(),
+            stroke: stroke.to_string(),
+            sw: stroke_width,
+            opacity,
+            layer: Layer::from_str(layer),
+            name: name.to_string(),
+        });
+        element_idx
+    }
+
+    #[pyo3(signature = (cx, cy, r, a_start, a_end, b_start, b_end, fill = "#ffffff",
+                        opacity = 0.7, layer = "fg", name = ""))]
+    pub fn ribbon(
+        &mut self,
+        cx: f64,
+        cy: f64,
+        r: f64,
+        a_start: f64,
+        a_end: f64,
+        b_start: f64,
+        b_end: f64,
+        fill: &str,
+        opacity: f64,
+        layer: &str,
+        name: &str,
+    ) -> usize {
+        let element_idx = self.elements.len();
+        self.register_name(name, element_idx);
+        self.elements.push(El::Ribbon {
+            cx,
+            cy,
+            r,
+            a_start,
+            a_end,
+            b_start,
+            b_end,
+            fill: fill.to_string(),
+            opacity,
+            layer: Layer::from_str(layer),
+            name: name.to_string(),
+        });
+        element_idx
+    }
+
+    #[pyo3(signature = (cx, cy, r, deg))]
+    pub fn polar(&self, cx: f64, cy: f64, r: f64, deg: f64) -> (f64, f64) {
+        polar_xy(cx, cy, r, deg)
+    }
+
+    #[pyo3(signature = (id, from_color, to_color, cx = 0.5, cy = 0.5, r = 0.5))]
+    pub fn radial_gradient(&mut self, id: &str, from_color: &str, to_color: &str, cx: f64, cy: f64, r: f64) {
+        self.elements.push(El::RadialGradDef {
+            id: id.to_string(),
+            from_color: from_color.to_string(),
+            to_color: to_color.to_string(),
+            cx,
+            cy,
+            r,
+        });
+    }
+
     #[pyo3(signature = (x, y, w, h, fill = "none", stroke = "#ffffff",
                         stroke_width = 1.5, rx = 0.0, opacity = 1.0, rotation = 0.0,
                         layer = "fg", name = ""))]
@@ -2650,4 +2938,98 @@ pub fn canvas_load_named(name: &str) -> PyResult<Canvas> {
         pyo3::exceptions::PyKeyError::new_err(format!("no saved canvas named '{}'", name))
     })?;
     canvas_load(&entry.path)
+}
+
+#[cfg(test)]
+mod radial_tests {
+    use super::*;
+
+    #[test]
+    fn polar_xy_places_cardinal_points_clockwise_from_top() {
+        let (x, y) = polar_xy(100.0, 100.0, 50.0, 0.0);
+        assert!((x - 100.0).abs() < 1e-9 && (y - 50.0).abs() < 1e-9);
+
+        let (x, y) = polar_xy(100.0, 100.0, 50.0, 90.0);
+        assert!((x - 150.0).abs() < 1e-9 && (y - 100.0).abs() < 1e-9);
+
+        let (x, y) = polar_xy(100.0, 100.0, 50.0, 180.0);
+        assert!((x - 100.0).abs() < 1e-9 && (y - 150.0).abs() < 1e-9);
+
+        let (x, y) = polar_xy(100.0, 100.0, 50.0, 270.0);
+        assert!((x - 50.0).abs() < 1e-9 && (y - 100.0).abs() < 1e-9);
+    }
+
+    #[test]
+    fn arc_renders_a_single_path_with_the_right_large_arc_flag() {
+        let mut defs = String::new();
+        let mut body = String::new();
+        let short = El::Arc {
+            cx: 0.0, cy: 0.0, r: 10.0, start_deg: 0.0, end_deg: 90.0,
+            color: "#fff".into(), width: 1.0, opacity: 1.0, cap: "round".into(),
+            layer: Layer::Fg, name: String::new(),
+        };
+        render_el(&short, &mut defs, &mut body);
+        assert!(body.contains(" A 10.00,10.00 0 0,1 "));
+
+        body.clear();
+        let long = El::Arc {
+            cx: 0.0, cy: 0.0, r: 10.0, start_deg: 0.0, end_deg: 270.0,
+            color: "#fff".into(), width: 1.0, opacity: 1.0, cap: "round".into(),
+            layer: Layer::Fg, name: String::new(),
+        };
+        render_el(&long, &mut defs, &mut body);
+        assert!(body.contains(" A 10.00,10.00 0 1,1 "));
+    }
+
+    #[test]
+    fn wedge_with_zero_inner_radius_starts_from_center() {
+        let mut defs = String::new();
+        let mut body = String::new();
+        let pie_slice = El::Wedge {
+            cx: 0.0, cy: 0.0, r_inner: 0.0, r_outer: 10.0, start_deg: 0.0, end_deg: 90.0,
+            fill: "#fff".into(), stroke: "none".into(), sw: 0.0, opacity: 1.0,
+            layer: Layer::Fg, name: String::new(),
+        };
+        render_el(&pie_slice, &mut defs, &mut body);
+        assert!(body.starts_with("<path d=\"M 0.00,0.00 L "));
+    }
+
+    #[test]
+    fn wedge_with_nonzero_inner_radius_forms_a_closed_donut_segment() {
+        let mut defs = String::new();
+        let mut body = String::new();
+        let segment = El::Wedge {
+            cx: 0.0, cy: 0.0, r_inner: 5.0, r_outer: 10.0, start_deg: 0.0, end_deg: 90.0,
+            fill: "#fff".into(), stroke: "none".into(), sw: 0.0, opacity: 1.0,
+            layer: Layer::Fg, name: String::new(),
+        };
+        render_el(&segment, &mut defs, &mut body);
+        assert!(body.contains(" Z\""));
+        assert!(!body.starts_with("<path d=\"M 0.00,0.00 L "));
+    }
+
+    #[test]
+    fn ribbon_connects_two_arc_spans_through_the_center() {
+        let mut defs = String::new();
+        let mut body = String::new();
+        let rib = El::Ribbon {
+            cx: 0.0, cy: 0.0, r: 10.0, a_start: 0.0, a_end: 30.0, b_start: 180.0, b_end: 210.0,
+            fill: "#fff".into(), opacity: 0.7, layer: Layer::Fg, name: String::new(),
+        };
+        render_el(&rib, &mut defs, &mut body);
+        assert_eq!(body.matches(" Q 0.00,0.00 ").count(), 2);
+    }
+
+    #[test]
+    fn radial_gradient_emits_a_radial_gradient_def_not_linear() {
+        let mut defs = String::new();
+        let mut body = String::new();
+        let grad = El::RadialGradDef {
+            id: "glow".into(), from_color: "#fff".into(), to_color: "#000".into(),
+            cx: 0.5, cy: 0.5, r: 0.6,
+        };
+        render_el(&grad, &mut defs, &mut body);
+        assert!(defs.contains("<radialGradient id=\"glow\""));
+        assert!(body.is_empty());
+    }
 }
