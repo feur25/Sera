@@ -1,4 +1,4 @@
-use super::*;
+use crate::Chart;
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
 

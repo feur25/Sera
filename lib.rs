@@ -10,7 +10,7 @@ pub mod doc_registry;
 pub mod model_registry;
 pub mod services;
 pub use services::{data, ml, plot};
-pub mod telemetry;
+pub use crate::core::telemetry;
 
 pub use crate::core::hw_profile::HwProfile;
 pub use data::{DataPoint, Dataset, DatasetStats};
@@ -653,9 +653,6 @@ impl Chart {
 
 }
 
-#[cfg(feature = "ffi")]
-mod chart_ffi;
-
 #[sera_doc(
     category = "config",
     file = "config/global.md",
@@ -1173,8 +1170,7 @@ pub fn hw() -> crate::core::hw_profile::HwProfile {
     *crate::core::hw_profile::hw()
 }
 
-mod py_dataset;
-pub use py_dataset::{PyDataset, PyDatasetStats};
+pub use crate::data::{PyDataset, PyDatasetStats};
 
 
 #[sera_doc(
@@ -1574,7 +1570,49 @@ pub fn config(
     shadow_blur: Option<i32>,
     shadow_color: Option<&str>,
 ) {
-    use std::sync::atomic::Ordering::Relaxed;
+    use std::sync::atomic::{AtomicBool, AtomicI32, Ordering::Relaxed};
+    use std::sync::Mutex;
+
+    fn set_atomic_i32(field: &AtomicI32, value: Option<i32>) {
+        if let Some(v) = value {
+            field.store(v, Relaxed);
+        }
+    }
+    fn set_atomic_bool(field: &AtomicBool, value: Option<bool>) {
+        if let Some(v) = value {
+            field.store(v, Relaxed);
+        }
+    }
+    fn set_string_field(field: &Mutex<Option<String>>, value: Option<&str>) {
+        if let Some(v) = value {
+            if let Ok(mut guard) = field.lock() {
+                *guard = Some(v.to_string());
+            }
+        }
+    }
+
+    set_atomic_i32(&GLOBAL_FONT_SIZE, font_size);
+    set_atomic_i32(&GLOBAL_TITLE_SIZE, title_size);
+    set_atomic_i32(&GLOBAL_BORDER_RADIUS, border_radius);
+    set_atomic_bool(&GLOBAL_RESPONSIVE, responsive);
+    set_atomic_bool(&GLOBAL_ANIMATION, animation);
+    set_atomic_i32(&GLOBAL_ANIMATION_DURATION, animation_duration);
+    set_atomic_bool(&GLOBAL_CROSSHAIR, crosshair);
+    set_atomic_bool(&GLOBAL_ZOOM, zoom);
+    set_atomic_i32(&GLOBAL_MARGIN, margin);
+    set_atomic_bool(&GLOBAL_EXPORT_BTN, export_button);
+    set_atomic_i32(&GLOBAL_TEXT_ANGLE, text_angle);
+    set_atomic_i32(&GLOBAL_TEXT_FONT_SIZE, text_font_size);
+    set_atomic_i32(&GLOBAL_UNIFORM_TEXT_MIN, uniform_text_min_size);
+
+    set_string_field(&GLOBAL_FONT, font);
+    set_string_field(&GLOBAL_TOOLTIP, tooltip);
+    set_string_field(&GLOBAL_LOCALE, locale);
+    set_string_field(&GLOBAL_THOUSANDS_SEP, thousands_sep);
+    set_string_field(&GLOBAL_TEXT_POSITION, text_position);
+    set_string_field(&GLOBAL_TEXT_FONT_COLOR, text_font_color);
+    set_string_field(&GLOBAL_UNIFORM_TEXT_MODE, uniform_text_mode);
+
     if let Some(value) = despine {
         crate::plot::utils::set_global_despine(value);
     }
@@ -1590,65 +1628,13 @@ pub fn config(
             shadow_color.map(|s| s.to_string()),
         )));
     }
-    if let Some(value) = font {
-        if let Ok(mut field) = GLOBAL_FONT.lock() {
-            *field = Some(value.to_string());
-        }
-    }
-    if let Some(value) = font_size {
-        GLOBAL_FONT_SIZE.store(value, Relaxed);
-    }
-    if let Some(value) = title_size {
-        GLOBAL_TITLE_SIZE.store(value, Relaxed);
-    }
-    if let Some(value) = border_radius {
-        GLOBAL_BORDER_RADIUS.store(value, Relaxed);
-    }
     if let Some(value) = opacity {
         if let Ok(mut field) = GLOBAL_OPACITY.lock() {
             *field = if value < 1.0 { Some(value) } else { None };
         }
     }
-    if let Some(value) = responsive {
-        GLOBAL_RESPONSIVE.store(value, Relaxed);
-    }
-    if let Some(value) = animation {
-        GLOBAL_ANIMATION.store(value, Relaxed);
-    }
-    if let Some(value) = animation_duration {
-        GLOBAL_ANIMATION_DURATION.store(value, Relaxed);
-    }
-    if let Some(value) = crosshair {
-        GLOBAL_CROSSHAIR.store(value, Relaxed);
-    }
-    if let Some(value) = zoom {
-        GLOBAL_ZOOM.store(value, Relaxed);
-    }
-    if let Some(value) = tooltip {
-        if let Ok(mut field) = GLOBAL_TOOLTIP.lock() {
-            *field = Some(value.to_string());
-        }
-    }
-    if let Some(value) = locale {
-        if let Ok(mut field) = GLOBAL_LOCALE.lock() {
-            *field = Some(value.to_string());
-        }
-    }
-    if let Some(value) = thousands_sep {
-        if let Ok(mut field) = GLOBAL_THOUSANDS_SEP.lock() {
-            *field = Some(value.to_string());
-        }
-    }
-    if let Some(value) = margin {
-        GLOBAL_MARGIN.store(value, Relaxed);
-    }
-    if let Some(value) = export_button {
-        GLOBAL_EXPORT_BTN.store(value, Relaxed);
-    }
     if let Some(value) = background {
-        if let Ok(mut field) = GLOBAL_BACKGROUND.lock() {
-            *field = Some(value.to_string());
-        }
+        set_string_field(&GLOBAL_BACKGROUND, Some(value));
         crate::plot::set_global_bg(Some(value.to_string()));
     }
     if let Some(value) = palette {
@@ -1678,30 +1664,6 @@ pub fn config(
             *field = Some(text);
         }
     }
-    if let Some(value) = text_position {
-        if let Ok(mut field) = GLOBAL_TEXT_POSITION.lock() {
-            *field = Some(value.to_string());
-        }
-    }
-    if let Some(value) = text_angle {
-        GLOBAL_TEXT_ANGLE.store(value, Relaxed);
-    }
-    if let Some(value) = text_font_size {
-        GLOBAL_TEXT_FONT_SIZE.store(value, Relaxed);
-    }
-    if let Some(value) = text_font_color {
-        if let Ok(mut field) = GLOBAL_TEXT_FONT_COLOR.lock() {
-            *field = Some(value.to_string());
-        }
-    }
-    if let Some(value) = uniform_text_min_size {
-        GLOBAL_UNIFORM_TEXT_MIN.store(value, Relaxed);
-    }
-    if let Some(value) = uniform_text_mode {
-        if let Ok(mut field) = GLOBAL_UNIFORM_TEXT_MODE.lock() {
-            *field = Some(value.to_string());
-        }
-    }
     if let Some(value) = bar_corner_radius {
         let radius = if let Ok(integer) = value.extract::<i32>() {
             integer.to_string()
@@ -1725,8 +1687,7 @@ fn reset_text_auto() {
     }
 }
 
-mod live_stream;
-pub use live_stream::LiveStream;
+pub use bindings::live_stream::LiveStream;
 
 #[cfg(feature = "python")]
 #[pymodule]

@@ -1,4 +1,4 @@
-use crate::plot::statistical::common::{hex6, palette_color, push_b, push_f2, push_i};
+use crate::plot::statistical::common::{push_b, push_f2, push_i};
 use std::f64::consts::PI;
 
 pub struct ChordLayout {
@@ -80,10 +80,6 @@ pub fn arc_path(buf: &mut Vec<u8>, cx: f64, cy: f64, r1: f64, r2: f64, a1: f64, 
 }
 
 pub fn ribbon_path(buf: &mut Vec<u8>, cx: f64, cy: f64, r: f64, sa1: f64, sa2: f64, ta1: f64, ta2: f64) {
-    let sm = (sa1 + sa2) / 2.0;
-    let tm = (ta1 + ta2) / 2.0;
-    let (sx, sy) = (cx + r * sm.cos(), cy + r * sm.sin());
-    let (tx, ty) = (cx + r * tm.cos(), cy + r * tm.sin());
     let large_s = if sa2 - sa1 > PI { 1 } else { 0 };
     let large_t = if ta2 - ta1 > PI { 1 } else { 0 };
 

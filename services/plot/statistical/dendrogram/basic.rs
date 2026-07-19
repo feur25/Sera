@@ -1,6 +1,5 @@
 use super::common::{assign_positions_horizontal, assign_positions_radial, assign_positions_vertical, build_tree};
 use super::config::DendrogramConfig;
-use super::variant::DendrogramVariant;
 use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json};
 use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i};
 

@@ -1,4 +1,4 @@
-use crate::plot::statistical::common::{hex6, palette_color, push_b, push_f2, push_i};
+use crate::plot::statistical::common::{push_b, push_f2};
 
 pub struct SankeyLayout {
     pub n_nodes:  usize,
@@ -14,8 +14,6 @@ pub fn compute_layout(
     sources: &[i32],
     targets: &[i32],
     weights: &[f64],
-    width: i32,
-    height: i32,
     pad_l: i32,
     pad_t: i32,
     plot_w: i32,
@@ -24,8 +22,7 @@ pub fn compute_layout(
     node_gap: i32,
 ) -> SankeyLayout {
     compute_layout_impl(
-        n, sources, targets, weights, width, height, pad_l, pad_t, plot_w, plot_h, node_width,
-        node_gap, false,
+        n, sources, targets, weights, pad_l, pad_t, plot_w, plot_h, node_width, node_gap, false,
     )
 }
 
@@ -34,8 +31,6 @@ pub fn compute_layout_sorted(
     sources: &[i32],
     targets: &[i32],
     weights: &[f64],
-    width: i32,
-    height: i32,
     pad_l: i32,
     pad_t: i32,
     plot_w: i32,
@@ -44,8 +39,7 @@ pub fn compute_layout_sorted(
     node_gap: i32,
 ) -> SankeyLayout {
     compute_layout_impl(
-        n, sources, targets, weights, width, height, pad_l, pad_t, plot_w, plot_h, node_width,
-        node_gap, true,
+        n, sources, targets, weights, pad_l, pad_t, plot_w, plot_h, node_width, node_gap, true,
     )
 }
 
@@ -54,8 +48,6 @@ fn compute_layout_impl(
     sources: &[i32],
     targets: &[i32],
     weights: &[f64],
-    width: i32,
-    height: i32,
     pad_l: i32,
     pad_t: i32,
     plot_w: i32,
@@ -136,7 +128,7 @@ fn compute_layout_impl(
     let mut node_h = vec![0.0f64; n];
     let mut node_y = vec![0.0f64; n];
     for l in 0..n_layers {
-        let mut y = pad_t as f64;
+        let y = pad_t as f64;
         let layer = &by_layer[l];
         let total_h: f64 = layer.iter().map(|&i| node_val[i] * scale).sum();
         let slack = (plot_h as f64 - total_h).max(0.0);

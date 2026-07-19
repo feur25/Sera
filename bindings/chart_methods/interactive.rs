@@ -1,4 +1,4 @@
-use seraplot_macros::{sera_impl, sera_doc};
+use seraplot_macros::sera_impl;
 use crate::Chart;
 use super::js::SP_DEV_JS;
 

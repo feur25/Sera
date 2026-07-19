@@ -2,7 +2,6 @@ use super::series::Series;
 use super::{SeraDFrame, SeraDFrame_, SeraDFrameGroupBy};
 use crate::sera_doc_impl;
 use pyo3::prelude::*;
-use pyo3::types::PyDict;
 use std::collections::HashMap;
 use std::sync::Arc;
 

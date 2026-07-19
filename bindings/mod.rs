@@ -1,6 +1,8 @@
 #[macro_use]
 pub mod registry_macro;
 pub mod alias_registry;
+#[cfg(feature = "ffi")]
+pub mod chart_ffi;
 pub mod chart_methods;
 pub mod chart_types;
 pub mod commands;
@@ -9,6 +11,7 @@ pub mod exports;
 pub mod fast_export_c;
 pub mod fast_render;
 pub mod fn_registry;
+pub mod live_stream;
 pub mod method_registry;
 pub mod model_registry;
 pub mod unified_config;

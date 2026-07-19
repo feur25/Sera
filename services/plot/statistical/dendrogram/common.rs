@@ -60,7 +60,7 @@ pub fn build_tree(labels: &[String], parents: &[String]) -> (Vec<TreeNode>, Vec<
 
 pub fn assign_positions_vertical(
     nodes: &mut Vec<TreeNode>,
-    roots: &[usize],
+    _roots: &[usize],
     width: f64, height: f64,
     pad_l: f64, pad_r: f64, pad_t: f64, pad_b: f64,
 ) {
@@ -109,7 +109,7 @@ pub fn assign_positions_vertical(
 
 pub fn assign_positions_horizontal(
     nodes: &mut Vec<TreeNode>,
-    roots: &[usize],
+    _roots: &[usize],
     width: f64, height: f64,
     pad_l: f64, pad_r: f64, pad_t: f64, pad_b: f64,
 ) {
@@ -158,7 +158,7 @@ pub fn assign_positions_horizontal(
 
 pub fn assign_positions_radial(
     nodes: &mut Vec<TreeNode>,
-    roots: &[usize],
+    _roots: &[usize],
     cx: f64, cy: f64, r_max: f64,
 ) {
     use std::f64::consts::PI;

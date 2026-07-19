@@ -8,8 +8,6 @@ pub(crate) mod layout;
 pub(crate) mod js;
 pub(crate) mod pages;
 
-pub(crate) use apply::*;
-
 #[cfg(feature = "python")]
 pub(crate) use pages::{build_compare_page, cmp_score};
 pub(crate) use pages::{build_grid_page, chart_iframe};

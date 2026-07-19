@@ -38,8 +38,6 @@ fn render_impl(cfg: &SankeyConfig, minimal: bool, sorted: bool) -> String {
         cfg.sources,
         cfg.targets,
         cfg.weights,
-        cfg.width,
-        cfg.height,
         pad_l,
         pad_t,
         plot_w,

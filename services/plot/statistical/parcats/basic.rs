@@ -36,8 +36,6 @@ fn render_impl(cfg: &ParcatsConfig, highlight: bool) -> String {
         &p.sources,
         &p.targets,
         &p.weights,
-        cfg.width,
-        cfg.height,
         pad_l,
         pad_t,
         plot_w,

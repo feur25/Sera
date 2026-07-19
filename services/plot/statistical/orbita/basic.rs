@@ -43,8 +43,6 @@ fn render_impl(cfg: &OrbitaConfig, bubble: bool, trail: bool, glow: bool, delta:
     if glow {
         push_b(&mut buf, b"<defs>");
         for si in 0..ns {
-            let color = palette_color(cfg.palette, si);
-            let hx = hex6(color);
             push_b(&mut buf, b"<filter id=\"og");
             push_i(&mut buf, si as i32);
             push_b(&mut buf, b"\"><feGaussianBlur stdDeviation=\"3\" result=\"b\"/><feMerge><feMergeNode in=\"b\"/><feMergeNode in=\"SourceGraphic\"/></feMerge></filter>");

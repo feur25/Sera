@@ -1,5 +1,3 @@
-use egui::mutex;
-
 #[derive(Clone, Copy)]
 pub(super) struct PlotFrame {
     pub left: f64,

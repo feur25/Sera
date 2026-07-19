@@ -1,4 +1,4 @@
-use seraplot_macros::{sera_impl, sera_doc, sera_sig};
+use seraplot_macros::sera_impl;
 use crate::Chart;
 use super::js::{SP_LEGEND_OFFSET_JS, SP_TITLE_OFFSET_JS, SP_X_LABELS_ROT_JS, SP_Y_LABELS_ROT_JS};
 
