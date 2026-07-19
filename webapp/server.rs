@@ -1,17 +1,36 @@
 use std::sync::Arc;
+use std::time::Duration;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::{TcpListener, TcpStream};
+use tokio::sync::broadcast;
 
-use super::http::{html_response, not_found_response, parse_request};
+use super::http::{authorized, html_response, not_found_response, not_authorized_response, parse_request};
 use super::ws::{accept_key, decode_frame, encode_text_frame, OPCODE_CLOSE, OPCODE_PING, OPCODE_PONG, OPCODE_TEXT};
 
 pub trait EventDispatcher: Send + Sync {
     fn page_html(&self, path: &str) -> Option<String>;
-    fn on_event(&self, component_id: &str, value: &str) -> Vec<(String, String)>;
+    fn on_event(&self, session: u64, component_id: &str, value: &str) -> Vec<(String, String)>;
+    fn open_session(&self) -> u64;
+    fn credentials(&self) -> Option<(String, String)>;
+    fn subscribe(&self) -> broadcast::Receiver<(String, String)>;
+    fn timer_intervals(&self) -> Vec<f64>;
+    fn tick_timer(&self, index: usize);
 }
 
 pub async fn run_server<D: EventDispatcher + 'static>(addr: &str, dispatcher: Arc<D>) -> std::io::Result<()> {
     let listener = TcpListener::bind(addr).await?;
+
+    for (index, secs) in dispatcher.timer_intervals().into_iter().enumerate() {
+        let dispatcher = dispatcher.clone();
+        tokio::spawn(async move {
+            let mut ticker = tokio::time::interval(Duration::from_secs_f64(secs.max(0.01)));
+            loop {
+                ticker.tick().await;
+                dispatcher.tick_timer(index);
+            }
+        });
+    }
+
     loop {
         let (stream, _) = listener.accept().await?;
         let dispatcher = dispatcher.clone();
@@ -35,6 +54,11 @@ async fn handle_connection<D: EventDispatcher + 'static>(mut stream: TcpStream, 
         None => return Ok(()),
     };
 
+    if !authorized(&req, dispatcher.credentials()) {
+        stream.write_all(not_authorized_response().as_bytes()).await?;
+        return Ok(());
+    }
+
     if req.path == "/ws" {
         if let Some(key) = req.headers.get("sec-websocket-key") {
             let accept = accept_key(key);
@@ -42,7 +66,9 @@ async fn handle_connection<D: EventDispatcher + 'static>(mut stream: TcpStream, 
                 "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: {accept}\r\n\r\n"
             );
             stream.write_all(response.as_bytes()).await?;
-            return handle_ws_loop(stream, dispatcher).await;
+            let session = dispatcher.open_session();
+            let pushes = dispatcher.subscribe();
+            return handle_ws_loop(stream, dispatcher, session, pushes).await;
         }
         return Ok(());
     }
@@ -55,42 +81,61 @@ async fn handle_connection<D: EventDispatcher + 'static>(mut stream: TcpStream, 
     Ok(())
 }
 
-async fn handle_ws_loop<D: EventDispatcher + 'static>(mut stream: TcpStream, dispatcher: Arc<D>) -> std::io::Result<()> {
+async fn handle_ws_loop<D: EventDispatcher + 'static>(
+    mut stream: TcpStream,
+    dispatcher: Arc<D>,
+    session: u64,
+    mut pushes: broadcast::Receiver<(String, String)>,
+) -> std::io::Result<()> {
     let mut pending = Vec::new();
     let mut chunk = [0u8; 4096];
     loop {
-        let n = stream.read(&mut chunk).await?;
-        if n == 0 {
-            return Ok(());
-        }
-        pending.extend_from_slice(&chunk[..n]);
-
-        while let Some(frame) = decode_frame(&pending) {
-            let consumed = frame.consumed;
-            match frame.opcode {
-                OPCODE_TEXT => match String::from_utf8(frame.payload) {
-                    Ok(text) => match serde_json::from_str::<serde_json::Value>(&text) {
-                        Ok(msg) => {
-                            let id = msg.get("id").and_then(|v| v.as_str()).unwrap_or("");
-                            let value = msg.get("value").and_then(|v| v.as_str()).unwrap_or("");
-                            for (out_id, html) in dispatcher.on_event(id, value) {
-                                let update = serde_json::json!({ "type": "update", "id": out_id, "html": html });
-                                stream.write_all(&encode_text_frame(&update.to_string())).await?;
-                            }
-                        }
-                        Err(e) => eprintln!("seraplot webapp: malformed ws message JSON: {e}"),
-                    },
-                    Err(e) => eprintln!("seraplot webapp: non-utf8 ws frame: {e}"),
-                },
-                OPCODE_PING => {
-                    stream.write_all(&super::ws::encode_frame(OPCODE_PONG, &frame.payload)).await?;
-                }
-                OPCODE_CLOSE => {
+        tokio::select! {
+            read = stream.read(&mut chunk) => {
+                let n = read?;
+                if n == 0 {
                     return Ok(());
                 }
-                _ => {}
+                pending.extend_from_slice(&chunk[..n]);
+
+                while let Some(frame) = decode_frame(&pending) {
+                    let consumed = frame.consumed;
+                    match frame.opcode {
+                        OPCODE_TEXT => match String::from_utf8(frame.payload) {
+                            Ok(text) => match serde_json::from_str::<serde_json::Value>(&text) {
+                                Ok(msg) => {
+                                    let id = msg.get("id").and_then(|v| v.as_str()).unwrap_or("");
+                                    let value = msg.get("value").and_then(|v| v.as_str()).unwrap_or("");
+                                    for (out_id, html) in dispatcher.on_event(session, id, value) {
+                                        let update = serde_json::json!({ "type": "update", "id": out_id, "html": html });
+                                        stream.write_all(&encode_text_frame(&update.to_string())).await?;
+                                    }
+                                }
+                                Err(e) => eprintln!("seraplot webapp: malformed ws message JSON: {e}"),
+                            },
+                            Err(e) => eprintln!("seraplot webapp: non-utf8 ws frame: {e}"),
+                        },
+                        OPCODE_PING => {
+                            stream.write_all(&super::ws::encode_frame(OPCODE_PONG, &frame.payload)).await?;
+                        }
+                        OPCODE_CLOSE => {
+                            return Ok(());
+                        }
+                        _ => {}
+                    }
+                    pending.drain(..consumed);
+                }
             }
-            pending.drain(..consumed);
+            pushed = pushes.recv() => {
+                match pushed {
+                    Ok((out_id, html)) => {
+                        let update = serde_json::json!({ "type": "update", "id": out_id, "html": html });
+                        stream.write_all(&encode_text_frame(&update.to_string())).await?;
+                    }
+                    Err(broadcast::error::RecvError::Lagged(_)) => {}
+                    Err(broadcast::error::RecvError::Closed) => {}
+                }
+            }
         }
     }
 }
@@ -100,7 +145,15 @@ mod tests {
     use super::*;
     use crate::webapp::ws::accept_key;
 
-    struct TestDispatcher;
+    struct TestDispatcher {
+        pushes: broadcast::Sender<(String, String)>,
+    }
+
+    impl TestDispatcher {
+        fn new() -> Self {
+            Self { pushes: broadcast::channel(8).0 }
+        }
+    }
 
     impl EventDispatcher for TestDispatcher {
         fn page_html(&self, path: &str) -> Option<String> {
@@ -111,15 +164,33 @@ mod tests {
             }
         }
 
-        fn on_event(&self, component_id: &str, value: &str) -> Vec<(String, String)> {
+        fn on_event(&self, _session: u64, component_id: &str, value: &str) -> Vec<(String, String)> {
             vec![("out".to_string(), format!("{component_id}:{value}"))]
         }
+
+        fn open_session(&self) -> u64 {
+            1
+        }
+
+        fn credentials(&self) -> Option<(String, String)> {
+            None
+        }
+
+        fn subscribe(&self) -> broadcast::Receiver<(String, String)> {
+            self.pushes.subscribe()
+        }
+
+        fn timer_intervals(&self) -> Vec<f64> {
+            Vec::new()
+        }
+
+        fn tick_timer(&self, _index: usize) {}
     }
 
     #[tokio::test]
     async fn full_http_and_websocket_round_trip_over_real_tcp() {
         let addr = "127.0.0.1:18787";
-        tokio::spawn(run_server(addr, Arc::new(TestDispatcher)));
+        tokio::spawn(run_server(addr, Arc::new(TestDispatcher::new())));
         tokio::time::sleep(std::time::Duration::from_millis(150)).await;
 
         let mut plain = TcpStream::connect(addr).await.unwrap();
@@ -167,5 +238,41 @@ mod tests {
         assert_eq!(v["type"], "update");
         assert_eq!(v["id"], "out");
         assert_eq!(v["html"], "dropdown-1:B");
+    }
+
+    #[tokio::test]
+    async fn wrong_basic_auth_credentials_get_401() {
+        struct AuthedDispatcher(broadcast::Sender<(String, String)>);
+        impl EventDispatcher for AuthedDispatcher {
+            fn page_html(&self, _path: &str) -> Option<String> {
+                Some("<html></html>".to_string())
+            }
+            fn on_event(&self, _session: u64, _id: &str, _value: &str) -> Vec<(String, String)> {
+                Vec::new()
+            }
+            fn open_session(&self) -> u64 {
+                1
+            }
+            fn credentials(&self) -> Option<(String, String)> {
+                Some(("admin".to_string(), "secret".to_string()))
+            }
+            fn subscribe(&self) -> broadcast::Receiver<(String, String)> {
+                self.0.subscribe()
+            }
+            fn timer_intervals(&self) -> Vec<f64> {
+                Vec::new()
+            }
+            fn tick_timer(&self, _index: usize) {}
+        }
+
+        let addr = "127.0.0.1:18788";
+        tokio::spawn(run_server(addr, Arc::new(AuthedDispatcher(broadcast::channel(1).0))));
+        tokio::time::sleep(std::time::Duration::from_millis(150)).await;
+
+        let mut stream = TcpStream::connect(addr).await.unwrap();
+        stream.write_all(b"GET / HTTP/1.1\r\nHost: x\r\n\r\n").await.unwrap();
+        let mut buf = vec![0u8; 4096];
+        let n = stream.read(&mut buf).await.unwrap();
+        assert!(String::from_utf8_lossy(&buf[..n]).starts_with("HTTP/1.1 401"));
     }
 }
