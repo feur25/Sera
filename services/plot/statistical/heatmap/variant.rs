@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum HeatmapVariant default Basic {
+    pub enum HeatmapVariant default Basic family "heatmap" {
         Basic       => "basic" | "simple" | "default" | "matrix",
         Annotated   => "annotated" | "annotate" | "labeled" | "values",
         Categorical => "categorical" | "category" | "discrete_labels" | "cat",

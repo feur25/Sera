@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum RadarVariant default Basic {
+    pub enum RadarVariant default Basic family "radar" {
         Basic    => "basic" | "default" | "classic",
         Lines    => "lines" | "outline" | "stroke" | "no_fill",
         Filled   => "filled" | "fill" | "solid" | "area",

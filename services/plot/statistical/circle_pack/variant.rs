@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum CirclePackVariant default Basic {
+    pub enum CirclePackVariant default Basic family "circle_pack" {
         Basic    => "basic" | "default" | "classic",
         Flat     => "flat" | "single" | "packed",
         Outlined => "outlined" | "outline" | "stroke",

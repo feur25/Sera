@@ -654,381 +654,7 @@ impl Chart {
 }
 
 #[cfg(feature = "ffi")]
-mod chart_ffi {
-    use super::*;
-    use std::ffi::{CStr, CString};
-    use std::os::raw::c_char;
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_from_html(html: *const c_char) -> *mut Chart {
-        if html.is_null() {
-            return std::ptr::null_mut();
-        }
-        let html_str = unsafe { CStr::from_ptr(html) }.to_string_lossy().into_owned();
-        Box::into_raw(Box::new(Chart {
-            html: html_str,
-            doc_str: "",
-        }))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_html(chart: *const Chart) -> *mut c_char {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        let h = &unsafe { &*chart }.html;
-        CString::new(h.as_str())
-            .map(|s| s.into_raw())
-            .unwrap_or(std::ptr::null_mut())
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_free_string(s: *mut c_char) {
-        if !s.is_null() {
-            unsafe {
-                drop(CString::from_raw(s));
-            }
-        }
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_free(chart: *mut Chart) {
-        if !chart.is_null() {
-            unsafe {
-                drop(Box::from_raw(chart));
-            }
-        }
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_save(chart: *const Chart, path: *const c_char) -> i32 {
-        if chart.is_null() || path.is_null() {
-            return -1;
-        }
-        let h = &unsafe { &*chart }.html;
-        let p = match unsafe { CStr::from_ptr(path) }.to_str() {
-            Ok(s) => s,
-            Err(_) => return -1,
-        };
-        match std::fs::write(p, h.as_str()) {
-            Ok(()) => 0,
-            Err(_) => -1,
-        }
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_to_svg(chart: *const Chart) -> *mut c_char {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        let h = &unsafe { &*chart }.html;
-        let result = h
-            .find("<svg")
-            .and_then(|start| h.rfind("</svg>").map(|end| h[start..end + 6].to_string()));
-        result
-            .and_then(|s| CString::new(s).ok())
-            .map(|s| s.into_raw())
-            .unwrap_or(std::ptr::null_mut())
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_inject_css(chart: *const Chart, css: *const c_char) -> *mut Chart {
-        if chart.is_null() || css.is_null() {
-            return std::ptr::null_mut();
-        }
-        let c = unsafe { &*chart };
-        let s = match unsafe { CStr::from_ptr(css) }.to_str() {
-            Ok(s) => s,
-            Err(_) => return std::ptr::null_mut(),
-        };
-        Box::into_raw(Box::new(c.inject_css(s)))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_inject_js(chart: *const Chart, js: *const c_char) -> *mut Chart {
-        if chart.is_null() || js.is_null() {
-            return std::ptr::null_mut();
-        }
-        let c = unsafe { &*chart };
-        let s = match unsafe { CStr::from_ptr(js) }.to_str() {
-            Ok(s) => s,
-            Err(_) => return std::ptr::null_mut(),
-        };
-        Box::into_raw(Box::new(c.inject_js(s)))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_set_bg(chart: *const Chart, color: *const c_char) -> *mut Chart {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        let c = unsafe { &*chart };
-        let col = if color.is_null() {
-            None
-        } else {
-            unsafe { CStr::from_ptr(color) }.to_str().ok()
-        };
-        Box::into_raw(Box::new(c.set_bg(col)))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_no_background(chart: *const Chart) -> *mut Chart {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        Box::into_raw(Box::new(unsafe { &*chart }.no_background()))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_no_x_axis(chart: *const Chart) -> *mut Chart {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        Box::into_raw(Box::new(unsafe { &*chart }.no_x_axis()))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_no_y_axis(chart: *const Chart) -> *mut Chart {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        Box::into_raw(Box::new(unsafe { &*chart }.no_y_axis()))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_no_axes(chart: *const Chart) -> *mut Chart {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        Box::into_raw(Box::new(unsafe { &*chart }.no_axes()))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_show_grid(chart: *const Chart) -> *mut Chart {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        Box::into_raw(Box::new(unsafe { &*chart }.show_grid()))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_hide_grid(chart: *const Chart) -> *mut Chart {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        Box::into_raw(Box::new(unsafe { &*chart }.hide_grid()))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_responsive(chart: *const Chart) -> *mut Chart {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        Box::into_raw(Box::new(unsafe { &*chart }.responsive()))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_flip(chart: *const Chart) -> *mut Chart {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        Box::into_raw(Box::new(unsafe { &*chart }.flip()))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_crosshair(chart: *const Chart) -> *mut Chart {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        Box::into_raw(Box::new(unsafe { &*chart }.crosshair()))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_zoom(chart: *const Chart) -> *mut Chart {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        Box::into_raw(Box::new(unsafe { &*chart }.zoom()))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_no_legend(chart: *const Chart) -> *mut Chart {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        Box::into_raw(Box::new(unsafe { &*chart }.no_legend()))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_no_title(chart: *const Chart) -> *mut Chart {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        Box::into_raw(Box::new(unsafe { &*chart }.no_title()))
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_export_button(chart: *const Chart) -> *mut Chart {
-        if chart.is_null() {
-            return std::ptr::null_mut();
-        }
-        Box::into_raw(Box::new(unsafe { &*chart }.export_button()))
-    }
-
-    #[no_mangle]
-    pub unsafe extern "C" fn sera_call(
-        name: *const c_char,
-        json: *const c_char,
-    ) -> *mut c_char {
-        let name = unsafe { CStr::from_ptr(name) }.to_str().unwrap_or("");
-        let json = unsafe { CStr::from_ptr(json) }.to_str().unwrap_or("{}");
-        let resolved = crate::bindings::alias_registry::resolve(name);
-        let target = resolved.as_deref().unwrap_or(name);
-        for entry in crate::bindings::fn_registry::iter_entries() {
-            if entry.name == target {
-                let result = (entry.invoke)(json);
-                return CString::new(result).unwrap_or_default().into_raw();
-            }
-        }
-        std::ptr::null_mut()
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_list() -> *mut c_char {
-        let names: Vec<&str> = crate::bindings::fn_registry::iter_entries()
-            .map(|e| e.name)
-            .collect();
-        CString::new(serde_json::to_string(&names).unwrap_or_default())
-            .unwrap_or_default()
-            .into_raw()
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_version() -> *mut c_char {
-        CString::new(env!("CARGO_PKG_VERSION"))
-            .unwrap_or_default()
-            .into_raw()
-    }
-
-    #[no_mangle]
-    pub unsafe extern "C" fn sera_params_json(
-        chart: *const c_char,
-        variant: *const c_char,
-    ) -> *mut c_char {
-        let chart = if chart.is_null() {
-            None
-        } else {
-            Some(unsafe { CStr::from_ptr(chart) }.to_str().unwrap_or(""))
-        };
-        let variant = if variant.is_null() {
-            None
-        } else {
-            Some(unsafe { CStr::from_ptr(variant) }.to_str().unwrap_or(""))
-        };
-        let s = serde_json::to_string(&crate::params(chart, variant)).unwrap_or_default();
-        CString::new(s).unwrap_or_default().into_raw()
-    }
-
-    #[no_mangle]
-    pub unsafe extern "C" fn sera_required_params_json(
-        chart: *const c_char,
-        variant: *const c_char,
-    ) -> *mut c_char {
-        let chart = if chart.is_null() {
-            None
-        } else {
-            Some(unsafe { CStr::from_ptr(chart) }.to_str().unwrap_or(""))
-        };
-        let variant = if variant.is_null() {
-            None
-        } else {
-            Some(unsafe { CStr::from_ptr(variant) }.to_str().unwrap_or(""))
-        };
-        let s =
-            serde_json::to_string(&crate::required_params(chart, variant)).unwrap_or_default();
-        CString::new(s).unwrap_or_default().into_raw()
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_variants_json() -> *mut c_char {
-        let s = serde_json::to_string(&crate::chart_variants()).unwrap_or_default();
-        CString::new(s).unwrap_or_default().into_raw()
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_chart_themes_json() -> *mut c_char {
-        let s = serde_json::to_string(&crate::chart_themes()).unwrap_or_default();
-        CString::new(s).unwrap_or_default().into_raw()
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_scenes3d_json() -> *mut c_char {
-        let s = serde_json::to_string(&crate::scenes3d()).unwrap_or_default();
-        CString::new(s).unwrap_or_default().into_raw()
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_docs_json() -> *mut c_char {
-        let s = serde_json::to_string(&crate::doc_registry::all_docs()).unwrap_or_default();
-        CString::new(s).unwrap_or_default().into_raw()
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_themes_list() -> *mut c_char {
-        let s = serde_json::to_string(&crate::themes()).unwrap_or_default();
-        CString::new(s).unwrap_or_default().into_raw()
-    }
-
-    #[no_mangle]
-    pub unsafe extern "C" fn sera_set_theme(name: *const c_char) {
-        let name = unsafe { CStr::from_ptr(name) }.to_str().unwrap_or("");
-        if let Some(preset) = crate::resolve_theme(name) {
-            if let Ok(mut bg) = crate::GLOBAL_BACKGROUND.lock() {
-                *bg = preset.bg.map(|v| v.to_string());
-            }
-            if let Ok(mut palette) = crate::GLOBAL_PALETTE.lock() {
-                *palette = Some(preset.palette.to_vec());
-            }
-            crate::GLOBAL_GRIDLINES.store(preset.gridlines, std::sync::atomic::Ordering::Relaxed);
-            if let Ok(mut tn) = crate::GLOBAL_THEME_NAME.lock() {
-                *tn = Some(name.to_string());
-            }
-        }
-    }
-
-    #[no_mangle]
-    pub unsafe extern "C" fn sera_set_bg(color: *const c_char) {
-        let color = unsafe { CStr::from_ptr(color) }.to_str().unwrap_or("");
-        crate::set_global_background(color);
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_reset_bg() {
-        crate::reset_global_background();
-    }
-
-    #[no_mangle]
-    pub extern "C" fn sera_demos_list() -> *mut c_char {
-        let s = serde_json::to_string(&crate::demos()).unwrap_or_default();
-        CString::new(s).unwrap_or_default().into_raw()
-    }
-
-    #[no_mangle]
-    pub unsafe extern "C" fn sera_demo_code(
-        name: *const c_char,
-        variant: *const c_char,
-    ) -> *mut c_char {
-        let name = unsafe { CStr::from_ptr(name) }.to_str().unwrap_or("");
-        let variant = if variant.is_null() {
-            None
-        } else {
-            let s = unsafe { CStr::from_ptr(variant) }.to_str().unwrap_or("");
-            if s.is_empty() { None } else { Some(s) }
-        };
-        let result = crate::demo(name, variant).unwrap_or_default();
-        CString::new(result).unwrap_or_default().into_raw()
-    }
-}
+mod chart_ffi;
 
 #[sera_doc(
     category = "config",
@@ -1085,12 +711,12 @@ pub(crate) fn apply_global_color_bindings(html: String) -> String {
     category = "config",
     file = "config/global.md",
     en = "Sets a global background color applied to all charts created after this call.",
-    fr = "DÃ©finit une couleur d'arriÃ¨re-plan globale appliquÃ©e Ã  tous les graphiques crÃ©Ã©s aprÃ¨s cet appel.",
+    fr = "Définit une couleur d'arrière-plan globale appliquée à tous les graphiques créés après cet appel.",
     param(
         name = "color",
         ty = "str",
         en = "CSS color string (hex, rgb, named). Empty string removes it.",
-        fr = "Couleur CSS (hex, rgb, nommÃ©e). ChaÃ®ne vide pour la supprimer."
+        fr = "Couleur CSS (hex, rgb, nommée). Chaîne vide pour la supprimer."
     )
 )]
 #[sera_bind]
@@ -1105,7 +731,7 @@ pub fn set_global_background(color: &str) {
     category = "config",
     file = "config/global.md",
     en = "Clears the global background color so charts use their default background.",
-    fr = "Efface la couleur d'arriÃ¨re-plan globale afin que les graphiques utilisent leur arriÃ¨re-plan par dÃ©faut."
+    fr = "Efface la couleur d'arrière-plan globale afin que les graphiques utilisent leur arrière-plan par défaut."
 )]
 #[sera_bind]
 pub fn reset_global_background() {
@@ -1119,7 +745,7 @@ pub fn reset_global_background() {
     category = "config",
     file = "config/global.md",
     en = "Enables or disables automatic display of charts in Jupyter notebooks upon creation.",
-    fr = "Active ou dÃ©sactive l'affichage automatique des graphiques dans les notebooks Jupyter Ã  la crÃ©ation.",
+    fr = "Active ou désactive l'affichage automatique des graphiques dans les notebooks Jupyter à la création.",
     param(
         name = "enabled",
         ty = "bool",
@@ -1136,7 +762,7 @@ pub fn set_auto_display(enabled: bool) {
     category = "theme",
     file = "theme/theme.md",
     en = "Resets the active theme back to the framework default.",
-    fr = "RÃ©initialise le thÃ¨me actif vers le thÃ¨me par dÃ©faut du framework."
+    fr = "Réinitialise le thème actif vers le thème par défaut du framework."
 )]
 #[sera_bind]
 pub fn reset_theme() {
@@ -1159,7 +785,7 @@ pub fn reset_theme() {
     category = "theme",
     file = "theme/theme.md",
     en = "Returns a list of all available theme names.",
-    fr = "Retourne la liste de tous les noms de thÃ¨mes disponibles."
+    fr = "Retourne la liste de tous les noms de thèmes disponibles."
 )]
 #[sera_bind]
 pub fn themes() -> Vec<String> {
@@ -1181,7 +807,7 @@ pub fn themes() -> Vec<String> {
     category = "utility",
     file = "api/reference.md",
     en = "Returns a list of all available chart family names that have demo snippets.",
-    fr = "Retourne la liste de tous les noms de familles de graphiques ayant des extraits de dÃ©monstration."
+    fr = "Retourne la liste de tous les noms de familles de graphiques ayant des extraits de démonstration."
 )]
 #[sera_bind]
 pub fn demos() -> Vec<&'static str> {
@@ -1195,7 +821,7 @@ pub fn demos() -> Vec<&'static str> {
     category = "utility",
     file = "api/reference.md",
     en = "Returns a Python code snippet demonstrating how to create the specified chart type, or None if unknown.",
-    fr = "Retourne un extrait de code Python illustrant comment crÃ©er le type de graphique spÃ©cifiÃ©, ou None si inconnu.",
+    fr = "Retourne un extrait de code Python illustrant comment créer le type de graphique spécifié, ou None si inconnu.",
     param(
         name = "chart",
         ty = "str",
@@ -1206,7 +832,7 @@ pub fn demos() -> Vec<&'static str> {
         name = "variant",
         ty = "str | None",
         en = "Variant name. Defaults to 'basic' if None.",
-        fr = "Nom de la variante. Par dÃ©faut 'basic' si None."
+        fr = "Nom de la variante. Par défaut 'basic' si None."
     )
 )]
 #[sera_sig(chart, variant=None)]
@@ -1219,7 +845,7 @@ pub fn demo(chart: &str, variant: Option<&str>) -> Option<String> {
     category = "utility",
     file = "api/reference.md",
     en = "Returns the optional keyword arguments accepted by the specified chart type.",
-    fr = "Retourne les arguments nommÃ©s optionnels acceptÃ©s par le type de graphique spÃ©cifiÃ©.",
+    fr = "Retourne les arguments nommés optionnels acceptés par le type de graphique spécifié.",
     param(
         name = "chart",
         ty = "str | None",
@@ -1230,7 +856,7 @@ pub fn demo(chart: &str, variant: Option<&str>) -> Option<String> {
         name = "variant",
         ty = "str | None",
         en = "Variant name for variant-specific params.",
-        fr = "Nom de la variante pour les paramÃ¨tres spÃ©cifiques Ã  la variante."
+        fr = "Nom de la variante pour les paramètres spécifiques à la variante."
     )
 )]
 #[sera_sig(chart=None, variant=None)]
@@ -1273,7 +899,7 @@ pub fn params(chart: Option<&str>, variant: Option<&str>) -> serde_json::Value {
     category = "utility",
     file = "api/reference.md",
     en = "Returns the required positional argument names for the specified chart type.",
-    fr = "Retourne les noms d'arguments positionnels requis pour le type de graphique spÃ©cifiÃ©.",
+    fr = "Retourne les noms d'arguments positionnels requis pour le type de graphique spécifié.",
     param(
         name = "chart",
         ty = "str | None",
@@ -1330,31 +956,10 @@ pub fn required_params(chart: Option<&str>, variant: Option<&str>) -> serde_json
     category = "utility",
     file = "api/reference.md",
     en = "Returns a mapping of each chart family name to its list of available variant names and aliases.",
-    fr = "Retourne une association de chaque nom de famille de graphique Ã  sa liste de variantes disponibles et alias."
+    fr = "Retourne une association de chaque nom de famille de graphique à sa liste de variantes disponibles et alias."
 )]
 #[sera_bind(serde)]
 pub fn chart_variants() -> serde_json::Value {
-    use crate::plot::statistical::arc_diagram::ArcDiagramVariant;
-    use crate::plot::statistical::bubble::BubbleVariant;
-    use crate::plot::statistical::chord::ChordVariant;
-    use crate::plot::statistical::circle_pack::CirclePackVariant;
-    use crate::plot::statistical::correlogram::CorrelogramVariant;
-    use crate::plot::statistical::dendrogram::DendrogramVariant;
-    use crate::plot::statistical::hive::HiveVariant;
-    use crate::plot::statistical::orbita::OrbitaVariant;
-    use crate::plot::statistical::pulse::PulseVariant;
-    use crate::plot::statistical::sankey::SankeyVariant;
-    use crate::plot::statistical::scatter::ScatterVariant;
-    use crate::plot::statistical::venn::VennVariant;
-    use crate::plot::statistical::{
-        BarVariant, BoxplotVariant, BulletVariant, CandlestickVariant, DumbbellVariant,
-        EventplotVariant, FunnelVariant, GanttVariant, GaugeVariant, HeatmapVariant,
-        HexbinVariant, HistogramVariant, IcicleVariant, KdeVariant, LineVariant,
-        LollipopVariant, ParallelVariant, ParcatsVariant, PieVariant, PlotWebVariant,
-        RadarVariant, RidgelineVariant, ScatterTernaryVariant, SlopeVariant, SplomVariant,
-        StackplotVariant, SunburstVariant, TreemapVariant, ViolinVariant, WaterfallVariant,
-        WordCloudVariant,
-    };
     use serde_json::{Map, Value};
 
     fn build(
@@ -1388,265 +993,12 @@ pub fn chart_variants() -> serde_json::Value {
     }
 
     let mut out = Map::new();
-    out.insert(
-        "bar".to_string(),
-        build(BarVariant::keys_and_aliases(), BarVariant::default_key()),
-    );
-    out.insert(
-        "line".to_string(),
-        build(LineVariant::keys_and_aliases(), LineVariant::default_key()),
-    );
-    out.insert(
-        "scatter".to_string(),
-        build(
-            ScatterVariant::keys_and_aliases(),
-            ScatterVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "bubble".to_string(),
-        build(
-            BubbleVariant::keys_and_aliases(),
-            BubbleVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "histogram".to_string(),
-        build(
-            HistogramVariant::keys_and_aliases(),
-            HistogramVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "heatmap".to_string(),
-        build(
-            HeatmapVariant::keys_and_aliases(),
-            HeatmapVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "pie".to_string(),
-        build(PieVariant::keys_and_aliases(), PieVariant::default_key()),
-    );
-    out.insert(
-        "boxplot".to_string(),
-        build(
-            BoxplotVariant::keys_and_aliases(),
-            BoxplotVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "violin".to_string(),
-        build(
-            ViolinVariant::keys_and_aliases(),
-            ViolinVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "kde".to_string(),
-        build(KdeVariant::keys_and_aliases(), KdeVariant::default_key()),
-    );
-    out.insert(
-        "ridgeline".to_string(),
-        build(
-            RidgelineVariant::keys_and_aliases(),
-            RidgelineVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "radar".to_string(),
-        build(
-            RadarVariant::keys_and_aliases(),
-            RadarVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "slope".to_string(),
-        build(
-            SlopeVariant::keys_and_aliases(),
-            SlopeVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "funnel".to_string(),
-        build(
-            FunnelVariant::keys_and_aliases(),
-            FunnelVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "sunburst".to_string(),
-        build(
-            SunburstVariant::keys_and_aliases(),
-            SunburstVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "waterfall".to_string(),
-        build(
-            WaterfallVariant::keys_and_aliases(),
-            WaterfallVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "treemap".to_string(),
-        build(
-            TreemapVariant::keys_and_aliases(),
-            TreemapVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "candlestick".to_string(),
-        build(
-            CandlestickVariant::keys_and_aliases(),
-            CandlestickVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "dumbbell".to_string(),
-        build(
-            DumbbellVariant::keys_and_aliases(),
-            DumbbellVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "bullet".to_string(),
-        build(
-            BulletVariant::keys_and_aliases(),
-            BulletVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "gauge".to_string(),
-        build(
-            GaugeVariant::keys_and_aliases(),
-            GaugeVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "lollipop".to_string(),
-        build(
-            LollipopVariant::keys_and_aliases(),
-            LollipopVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "parallel".to_string(),
-        build(
-            ParallelVariant::keys_and_aliases(),
-            ParallelVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "wordcloud".to_string(),
-        build(
-            WordCloudVariant::keys_and_aliases(),
-            WordCloudVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "sankey".to_string(),
-        build(SankeyVariant::keys_and_aliases(), SankeyVariant::default_key()),
-    );
-    out.insert(
-        "chord".to_string(),
-        build(ChordVariant::keys_and_aliases(), ChordVariant::default_key()),
-    );
-    out.insert(
-        "circle_pack".to_string(),
-        build(
-            CirclePackVariant::keys_and_aliases(),
-            CirclePackVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "arc_diagram".to_string(),
-        build(
-            ArcDiagramVariant::keys_and_aliases(),
-            ArcDiagramVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "dendrogram".to_string(),
-        build(
-            DendrogramVariant::keys_and_aliases(),
-            DendrogramVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "venn".to_string(),
-        build(VennVariant::keys_and_aliases(), VennVariant::default_key()),
-    );
-    out.insert(
-        "correlogram".to_string(),
-        build(
-            CorrelogramVariant::keys_and_aliases(),
-            CorrelogramVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "hive".to_string(),
-        build(HiveVariant::keys_and_aliases(), HiveVariant::default_key()),
-    );
-    out.insert(
-        "pulse".to_string(),
-        build(PulseVariant::keys_and_aliases(), PulseVariant::default_key()),
-    );
-    out.insert(
-        "orbita".to_string(),
-        build(OrbitaVariant::keys_and_aliases(), OrbitaVariant::default_key()),
-    );
-    out.insert(
-        "eventplot".to_string(),
-        build(
-            EventplotVariant::keys_and_aliases(),
-            EventplotVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "gantt".to_string(),
-        build(GanttVariant::keys_and_aliases(), GanttVariant::default_key()),
-    );
-    out.insert(
-        "hexbin".to_string(),
-        build(HexbinVariant::keys_and_aliases(), HexbinVariant::default_key()),
-    );
-    out.insert(
-        "icicle".to_string(),
-        build(IcicleVariant::keys_and_aliases(), IcicleVariant::default_key()),
-    );
-    out.insert(
-        "parcats".to_string(),
-        build(
-            ParcatsVariant::keys_and_aliases(),
-            ParcatsVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "scatterternary".to_string(),
-        build(
-            ScatterTernaryVariant::keys_and_aliases(),
-            ScatterTernaryVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "splom".to_string(),
-        build(SplomVariant::keys_and_aliases(), SplomVariant::default_key()),
-    );
-    out.insert(
-        "stackplot".to_string(),
-        build(
-            StackplotVariant::keys_and_aliases(),
-            StackplotVariant::default_key(),
-        ),
-    );
-    out.insert(
-        "plot_web".to_string(),
-        build(
-            PlotWebVariant::keys_and_aliases(),
-            PlotWebVariant::default_key(),
-        ),
-    );
+    for entry in crate::plot::family_macro::chart_families() {
+        out.insert(
+            entry.name.to_string(),
+            build((entry.keys_and_aliases)(), (entry.default_key)()),
+        );
+    }
     use crate::plot::scene3d::Scene3DVariant;
     let scene_keys = Scene3DVariant::keys_and_aliases();
     let scene_default = Scene3DVariant::default_key();
@@ -1741,7 +1093,7 @@ pub fn scenes3d() -> serde_json::Value {
     category = "config",
     file = "config/config.md",
     en = "Resets all global config settings applied via config() back to their defaults.",
-    fr = "RÃ©initialise tous les paramÃ¨tres de configuration globale dÃ©finis via config() Ã  leurs valeurs par dÃ©faut."
+    fr = "Réinitialise tous les paramètres de configuration globale définis via config() à leurs valeurs par défaut."
 )]
 #[sera_bind]
 pub fn reset_config() {
@@ -1814,161 +1166,27 @@ pub fn reset_config() {
     category = "performance",
     file = "config/performance.md",
     en = "Returns hardware profile information: CPU thread count, parallelism threshold, and L2 cache chunk size.",
-    fr = "Retourne les informations du profil matÃ©riel: nombre de threads CPU, seuil de parallÃ©lisme et taille de chunk du cache L2."
+    fr = "Retourne les informations du profil matériel: nombre de threads CPU, seuil de parallélisme et taille de chunk du cache L2."
 )]
 #[sera_bind(serde)]
 pub fn hw() -> crate::core::hw_profile::HwProfile {
     *crate::core::hw_profile::hw()
 }
 
-#[cfg(feature = "python")]
-#[pyclass(name = "DatasetStats", module = "seraplot")]
-pub struct PyDatasetStats {
-    #[pyo3(get)]
-    pub min: f64,
-    #[pyo3(get)]
-    pub max: f64,
-    #[pyo3(get)]
-    pub mean: f64,
-    #[pyo3(get)]
-    pub std_dev: f64,
-    #[pyo3(get)]
-    pub sum: f64,
-    #[pyo3(get)]
-    pub count: usize,
-}
+mod py_dataset;
+pub use py_dataset::{PyDataset, PyDatasetStats};
 
-#[cfg(feature = "python")]
-#[pymethods]
-impl PyDatasetStats {
-    fn __repr__(&self) -> String {
-        format!(
-            "DatasetStats(min={:.4}, max={:.4}, mean={:.4}, std_dev={:.4}, count={})",
-            self.min, self.max, self.mean, self.std_dev, self.count
-        )
-    }
-}
-
-#[cfg(feature = "python")]
-#[pyclass(name = "Dataset", module = "seraplot")]
-pub struct PyDataset {
-    inner: crate::data::Dataset<f64>,
-}
-
-#[cfg(feature = "python")]
-#[sera_doc_impl]
-#[pymethods]
-impl PyDataset {
-    #[staticmethod]
-    #[sera_doc(
-        category = "data",
-        file = "api/dataset.md",
-        en = "Creates a Dataset from a Python list of float values.",
-        fr = "CrÃ©e un Dataset Ã  partir d'une liste Python de valeurs float.",
-        param(
-            name = "values",
-            ty = "list[float]",
-            en = "List of numeric values.",
-            fr = "Liste de valeurs numÃ©riques."
-        )
-    )]
-    #[pyo3(signature = (values, labels=None))]
-    fn from_list(values: Vec<f64>, labels: Option<Vec<String>>) -> Self {
-        let mut ds = crate::data::Dataset::with_capacity("dataset", values.len());
-        for (i, v) in values.iter().enumerate() {
-            let lbl = labels
-                .as_ref()
-                .and_then(|l| l.get(i))
-                .map(|s| s.as_str())
-                .unwrap_or("")
-                .to_string();
-            ds.push(*v, lbl);
-        }
-        PyDataset { inner: ds }
-    }
-
-    #[sera_doc(
-        category = "data",
-        file = "api/dataset.md",
-        en = "Computes descriptive statistics in parallel: min, max, mean, variance, std_dev, sum, count.",
-        fr = "Calcule des statistiques descriptives en parallÃ¨le: min, max, mean, variance, std_dev, sum, count."
-    )]
-    fn par_stats(&self) -> PyDatasetStats {
-        let s = self.inner.par_stats();
-        PyDatasetStats {
-            min: s.min,
-            max: s.max,
-            mean: s.mean,
-            std_dev: s.std_dev,
-            sum: s.sum,
-            count: s.count,
-        }
-    }
-
-    #[sera_doc(
-        category = "data",
-        file = "api/dataset.md",
-        en = "Splits the dataset into n equal-sized chunks and returns them as a list of Dataset objects.",
-        fr = "Divise le dataset en n morceaux de taille Ã©gale et les retourne sous forme de liste d'objets Dataset.",
-        param(
-            name = "n",
-            ty = "int",
-            en = "Number of chunks to split into.",
-            fr = "Nombre de morceaux en lesquels diviser."
-        )
-    )]
-    fn into_chunks(&self, n: usize) -> Vec<PyDataset> {
-        let vals: Vec<f64> = self.inner.values().collect();
-        let labels: Vec<String> = self.inner.labels().map(|s| s.to_string()).collect();
-        if n == 0 || vals.is_empty() {
-            return vec![];
-        }
-        let chunk_size = (vals.len() + n - 1) / n;
-        vals.chunks(chunk_size)
-            .enumerate()
-            .map(|(ci, chunk)| {
-                let lbl_slice = &labels[ci * chunk_size..ci * chunk_size + chunk.len()];
-                let mut ds =
-                    crate::data::Dataset::with_capacity(&format!("chunk_{ci}"), chunk.len());
-                for (v, l) in chunk.iter().zip(lbl_slice.iter()) {
-                    ds.push(*v, l.as_str());
-                }
-                PyDataset { inner: ds }
-            })
-            .collect()
-    }
-
-    fn values(&self) -> Vec<f64> {
-        self.inner.values().collect()
-    }
-
-    fn labels(&self) -> Vec<String> {
-        self.inner.labels().map(|s| s.to_string()).collect()
-    }
-
-    fn __len__(&self) -> usize {
-        self.inner.len()
-    }
-
-    fn __repr__(&self) -> String {
-        format!(
-            "Dataset(name={:?}, len={})",
-            self.inner.name,
-            self.inner.len()
-        )
-    }
-}
 
 #[sera_doc(
     category = "performance",
     file = "config/performance.md",
     en = "Enables or disables the adaptive retry system. When enabled, operations that panic will auto-degrade chunk sizes and retry.",
-    fr = "Active ou dÃ©sactive le systÃ¨me de rÃ©essai adaptatif. Quand activÃ©, les opÃ©rations qui paniquent rÃ©duisent automatiquement les tailles de chunks et rÃ©essaient.",
+    fr = "Active ou désactive le système de réessai adaptatif. Quand activé, les opérations qui paniquent réduisent automatiquement les tailles de chunks et réessaient.",
     param(
         name = "on",
         ty = "bool",
         en = "True to enable adaptive retry (default). False to disable.",
-        fr = "True pour activer le rÃ©essai adaptatif (dÃ©faut). False pour dÃ©sactiver."
+        fr = "True pour activer le réessai adaptatif (défaut). False pour désactiver."
     )
 )]
 #[sera_bind]
@@ -1980,7 +1198,7 @@ pub fn set_adaptive_retry(on: bool) {
     category = "performance",
     file = "config/performance.md",
     en = "Resets the degradation level back to 0 (full-speed operation).",
-    fr = "RÃ©initialise le niveau de dÃ©gradation Ã  0 (opÃ©ration Ã  pleine vitesse)."
+    fr = "Réinitialise le niveau de dégradation à 0 (opération à pleine vitesse)."
 )]
 #[sera_bind]
 pub fn reset_perf_state() {
@@ -1991,7 +1209,7 @@ pub fn reset_perf_state() {
     category = "performance",
     file = "config/performance.md",
     en = "Returns the current degradation level (0 = full speed, 4 = maximum degradation).",
-    fr = "Retourne le niveau de dÃ©gradation actuel (0 = pleine vitesse, 4 = dÃ©gradation maximale)."
+    fr = "Retourne le niveau de dégradation actuel (0 = pleine vitesse, 4 = dégradation maximale)."
 )]
 #[sera_bind]
 pub fn adaptive_degrade_level() -> usize {
@@ -2002,12 +1220,12 @@ pub fn adaptive_degrade_level() -> usize {
     category = "telemetry",
     file = "about/telemetry.md",
     en = "Enables or disables usage telemetry collection. Disabled by default.",
-    fr = "Active ou dÃ©sactive la collecte de tÃ©lÃ©mÃ©trie d'utilisation. DÃ©sactivÃ© par dÃ©faut.",
+    fr = "Active ou désactive la collecte de télémétrie d'utilisation. Désactivé par défaut.",
     param(
         name = "enabled",
         ty = "bool",
         en = "True to enable telemetry, False to disable.",
-        fr = "True pour activer la tÃ©lÃ©mÃ©trie, False pour dÃ©sactiver."
+        fr = "True pour activer la télémétrie, False pour désactiver."
     )
 )]
 #[sera_bind]
@@ -2019,7 +1237,7 @@ pub fn telemetry_consent(enabled: bool) {
     category = "telemetry",
     file = "about/telemetry.md",
     en = "Returns the filesystem path where telemetry data is stored.",
-    fr = "Retourne le chemin du systÃ¨me de fichiers oÃ¹ les donnÃ©es de tÃ©lÃ©mÃ©trie sont stockÃ©es."
+    fr = "Retourne le chemin du système de fichiers où les données de télémétrie sont stockées."
 )]
 #[sera_bind]
 pub fn telemetry_path() -> String {
@@ -2030,7 +1248,7 @@ pub fn telemetry_path() -> String {
     category = "telemetry",
     file = "about/telemetry.md",
     en = "Returns a JSON string with aggregated usage metrics summary.",
-    fr = "Retourne une chaÃ®ne JSON avec un rÃ©sumÃ© des mÃ©triques d'utilisation agrÃ©gÃ©es."
+    fr = "Retourne une chaîne JSON avec un résumé des métriques d'utilisation agrégées."
 )]
 #[sera_bind]
 pub fn get_metrics() -> String {
@@ -2041,7 +1259,7 @@ pub fn get_metrics() -> String {
     category = "utility",
     file = "api/reference.md",
     en = "Returns all documented functions with their signatures, parameters, and bilingual descriptions.",
-    fr = "Retourne toutes les fonctions documentÃ©es avec leurs signatures, paramÃ¨tres et descriptions bilingues."
+    fr = "Retourne toutes les fonctions documentées avec leurs signatures, paramètres et descriptions bilingues."
 )]
 #[sera_bind(serde)]
 pub fn docs() -> Vec<&'static crate::doc_registry::FnDoc> {
@@ -2110,144 +1328,46 @@ pub fn models_for_domain(domain: &str) -> Vec<&'static crate::model_registry::Mo
     crate::model_registry::models_by_domain(domain)
 }
 
-#[sera_bind(serde)]
-pub fn no_hover_html(html: String) -> String {
-    Chart { html, doc_str: "" }.no_hover().html
+macro_rules! chart_html_fns {
+    ($( $fn_name:ident( $($arg:ident : $ty:ty),* ) => $method:ident( $($call:expr),* ); )+) => {
+        $(
+            #[sera_bind(serde)]
+            pub fn $fn_name(html: String, $($arg: $ty),*) -> String {
+                Chart { html, doc_str: "" }.$method($($call),*).html
+            }
+        )+
+    };
 }
 
-#[sera_bind(serde)]
-pub fn no_x_axis_html(html: String) -> String {
-    Chart { html, doc_str: "" }.no_x_axis().html
-}
-
-#[sera_bind(serde)]
-pub fn no_y_axis_html(html: String) -> String {
-    Chart { html, doc_str: "" }.no_y_axis().html
-}
-
-#[sera_bind(serde)]
-pub fn no_axes_html(html: String) -> String {
-    Chart { html, doc_str: "" }.no_axes().html
-}
-
-#[sera_bind(serde)]
-pub fn no_legend_html(html: String) -> String {
-    Chart { html, doc_str: "" }.no_legend().html
-}
-
-#[sera_bind(serde)]
-pub fn no_title_html(html: String) -> String {
-    Chart { html, doc_str: "" }.no_title().html
-}
-
-#[sera_bind(serde)]
-pub fn no_background_html(html: String) -> String {
-    Chart { html, doc_str: "" }.no_background().html
-}
-
-#[sera_bind(serde)]
-pub fn responsive_html(html: String) -> String {
-    Chart { html, doc_str: "" }.responsive().html
-}
-
-#[sera_bind(serde)]
-pub fn show_grid_html(html: String) -> String {
-    Chart { html, doc_str: "" }.show_grid().html
-}
-
-#[sera_bind(serde)]
-pub fn flip_html(html: String) -> String {
-    Chart { html, doc_str: "" }.flip().html
-}
-
-#[sera_bind(serde)]
-pub fn crosshair_html(html: String) -> String {
-    Chart { html, doc_str: "" }.crosshair().html
-}
-
-#[sera_bind(serde)]
-pub fn zoom_html(html: String) -> String {
-    Chart { html, doc_str: "" }.zoom().html
-}
-
-#[sera_bind(serde)]
-pub fn export_button_html(html: String) -> String {
-    Chart { html, doc_str: "" }.export_button().html
-}
-
-#[sera_bind(serde)]
-pub fn inject_css_html(html: String, css: String) -> String {
-    Chart { html, doc_str: "" }.inject_css(&css).html
-}
-
-#[sera_bind(serde)]
-pub fn inject_js_html(html: String, js: String) -> String {
-    Chart { html, doc_str: "" }.inject_js(&js).html
-}
-
-#[sera_bind(serde)]
-pub fn group_hover_opacity_html(html: String, dim: f64) -> String {
-    Chart { html, doc_str: "" }.group_hover_opacity(dim).html
-}
-
-#[sera_bind(serde)]
-pub fn desaturate_html(html: String, indices: Option<Vec<usize>>, factor: f64) -> String {
-    Chart { html, doc_str: "" }.desaturate(indices, factor).html
-}
-
-#[sera_bind(serde)]
-pub fn sparse_grid_html(html: String) -> String {
-    Chart { html, doc_str: "" }.sparse_grid().html
-}
-
-#[sera_bind(serde)]
-pub fn grid_y_html(html: String) -> String {
-    Chart { html, doc_str: "" }.grid_y().html
-}
-
-#[sera_bind(serde)]
-pub fn grid_x_html(html: String) -> String {
-    Chart { html, doc_str: "" }.grid_x().html
-}
-
-#[sera_bind(serde)]
-pub fn color_density_html(html: String) -> String {
-    Chart { html, doc_str: "" }.color_density().html
-}
-
-#[sera_bind(serde)]
-pub fn highlight_group_html(html: String, labels: Vec<String>, dim: f64) -> String {
-    Chart { html, doc_str: "" }.highlight_group(labels, dim).html
-}
-
-#[sera_bind(serde)]
-pub fn apply_color_bindings_html(html: String) -> String {
-    Chart { html, doc_str: "" }.apply_color_bindings().html
-}
-
-#[sera_bind(serde)]
-pub fn grid_at_html(html: String, value: f64, color: String, label: Option<String>) -> String {
-    Chart { html, doc_str: "" }.grid_at(value, &color, label.as_deref()).html
-}
-
-#[sera_bind(serde)]
-pub fn cut_bars_html(html: String, step: Option<f64>, gap: i32, color: Option<String>) -> String {
-    Chart { html, doc_str: "" }.cut_bars(step, gap, color.as_deref()).html
-}
-
-#[sera_bind(serde)]
-pub fn draw_tool_html(html: String, color: String) -> String {
-    Chart { html, doc_str: "" }.draw_tool(&color).html
-}
-
-#[sera_bind(serde)]
-pub fn no_select_html(html: String) -> String {
-    Chart { html, doc_str: "" }.no_select().html
-}
-
-#[sera_bind(serde)]
-pub fn hover_slots_html(html: String, slots_json: String) -> String {
-    Chart { html, doc_str: "" }.hover_slots(&slots_json).html
+chart_html_fns! {
+    no_hover_html() => no_hover();
+    no_x_axis_html() => no_x_axis();
+    no_y_axis_html() => no_y_axis();
+    no_axes_html() => no_axes();
+    no_legend_html() => no_legend();
+    no_title_html() => no_title();
+    no_background_html() => no_background();
+    responsive_html() => responsive();
+    show_grid_html() => show_grid();
+    flip_html() => flip();
+    crosshair_html() => crosshair();
+    zoom_html() => zoom();
+    export_button_html() => export_button();
+    inject_css_html(css: String) => inject_css(&css);
+    inject_js_html(js: String) => inject_js(&js);
+    group_hover_opacity_html(dim: f64) => group_hover_opacity(dim);
+    desaturate_html(indices: Option<Vec<usize>>, factor: f64) => desaturate(indices, factor);
+    sparse_grid_html() => sparse_grid();
+    grid_y_html() => grid_y();
+    grid_x_html() => grid_x();
+    color_density_html() => color_density();
+    highlight_group_html(labels: Vec<String>, dim: f64) => highlight_group(labels, dim);
+    apply_color_bindings_html() => apply_color_bindings();
+    grid_at_html(value: f64, color: String, label: Option<String>) => grid_at(value, &color, label.as_deref());
+    cut_bars_html(step: Option<f64>, gap: i32, color: Option<String>) => cut_bars(step, gap, color.as_deref());
+    draw_tool_html(color: String) => draw_tool(&color);
+    no_select_html() => no_select();
+    hover_slots_html(slots_json: String) => hover_slots(&slots_json);
 }
 
 #[cfg(any(feature = "python", feature = "ffi"))]
@@ -2605,252 +1725,8 @@ fn reset_text_auto() {
     }
 }
 
-static LIVE_STREAM_COUNTER: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
-
-#[cfg_attr(
-    feature = "python",
-    pyo3::prelude::pyclass(name = "LiveStream", module = "seraplot")
-)]
-pub struct LiveStream {
-    kind: String,
-    title: String,
-    xs: Vec<f64>,
-    ys: Vec<f64>,
-    max_points: usize,
-    color_hex: u32,
-    width: i32,
-    height: i32,
-    display_id: String,
-    started: bool,
-}
-
-impl LiveStream {
-    fn render_html(&self) -> String {
-        let base = serde_json::json!({
-            "title": self.title,
-            "x": self.xs,
-            "y": self.ys,
-            "color_hex": self.color_hex,
-            "width": self.width,
-            "height": self.height,
-            "show_points": true
-        });
-        match self.kind.as_str() {
-            "scatter" => crate::plot::statistical::scatter::build(&base.to_string()),
-            _ => crate::plot::default::build_line_chart(
-                &serde_json::json!({
-                    "title": self.title,
-                    "labels": self.xs.iter().map(|v| v.to_string()).collect::<Vec<_>>(),
-                    "values": self.ys,
-                    "color_hex": self.color_hex,
-                    "width": self.width,
-                    "height": self.height,
-                    "show_points": true
-                })
-                .to_string(),
-            ),
-        }
-    }
-
-    fn iframe_html(&self, html: &str) -> String {
-        let esc = html.replace('&', "&amp;").replace('"', "&quot;");
-        format!(
-            r#"<iframe id="{}" srcdoc="{}" style="width:100%;max-width:{}px;aspect-ratio:{}/{};border:none;display:block;border-radius:8px;overflow:hidden" frameborder="0"></iframe>"#,
-            self.display_id, esc, self.width, self.width, self.height
-        )
-    }
-
-    fn cap(&mut self) {
-        if self.xs.len() > self.max_points {
-            let cut = self.xs.len() - self.max_points;
-            self.xs.drain(..cut);
-            self.ys.drain(..cut);
-        }
-    }
-
-    #[cfg(feature = "python")]
-    fn live_update(&mut self, py: Python<'_>) -> PyResult<()> {
-        let wrapped = self.iframe_html(&self.render_html());
-        let display_mod = py.import_bound("IPython.display")?;
-        let html_obj = display_mod.getattr("HTML")?.call1((wrapped,))?;
-        let kwargs = pyo3::types::PyDict::new_bound(py);
-        kwargs.set_item("display_id", &self.display_id)?;
-        if !self.started {
-            display_mod
-                .getattr("display")?
-                .call((html_obj,), Some(&kwargs))?;
-            self.started = true;
-        } else {
-            display_mod
-                .getattr("update_display")?
-                .call((html_obj,), Some(&kwargs))?;
-        }
-        Ok(())
-    }
-}
-
-#[cfg(feature = "python")]
-#[pymethods]
-impl LiveStream {
-    #[new]
-    #[pyo3(signature = (kind = "line", title = "", max_points = 500, color_hex = 0x636EFA, width = 900, height = 420))]
-    fn new(kind: &str, title: &str, max_points: usize, color_hex: u32, width: i32, height: i32) -> Self {
-        let n = LIVE_STREAM_COUNTER.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-        LiveStream {
-            kind: kind.to_string(),
-            title: title.to_string(),
-            xs: Vec::new(),
-            ys: Vec::new(),
-            max_points: max_points.max(2),
-            color_hex,
-            width,
-            height,
-            display_id: format!("sp-live-{}", n),
-            started: false,
-        }
-    }
-
-    fn push(&mut self, py: Python<'_>, x: f64, y: f64) -> PyResult<()> {
-        self.xs.push(x);
-        self.ys.push(y);
-        self.cap();
-        self.live_update(py)
-    }
-
-    #[pyo3(name = "append")]
-    fn push_alias_append(&mut self, py: Python<'_>, x: f64, y: f64) -> PyResult<()> {
-        self.push(py, x, y)
-    }
-
-    #[pyo3(name = "add_point")]
-    fn push_alias_add_point(&mut self, py: Python<'_>, x: f64, y: f64) -> PyResult<()> {
-        self.push(py, x, y)
-    }
-
-    fn extend(&mut self, py: Python<'_>, xs: Vec<f64>, ys: Vec<f64>) -> PyResult<()> {
-        self.xs.extend(xs);
-        self.ys.extend(ys);
-        self.cap();
-        self.live_update(py)
-    }
-
-    #[pyo3(name = "add_points")]
-    fn extend_alias_add_points(&mut self, py: Python<'_>, xs: Vec<f64>, ys: Vec<f64>) -> PyResult<()> {
-        self.extend(py, xs, ys)
-    }
-
-    #[pyo3(name = "append_many")]
-    fn extend_alias_append_many(&mut self, py: Python<'_>, xs: Vec<f64>, ys: Vec<f64>) -> PyResult<()> {
-        self.extend(py, xs, ys)
-    }
-
-    fn clear(&mut self, py: Python<'_>) -> PyResult<()> {
-        self.xs.clear();
-        self.ys.clear();
-        self.live_update(py)
-    }
-
-    #[pyo3(name = "reset")]
-    fn clear_alias_reset(&mut self, py: Python<'_>) -> PyResult<()> {
-        self.clear(py)
-    }
-
-    fn render(&self) -> crate::Chart {
-        crate::Chart {
-            html: self.render_html(),
-            doc_str: "",
-        }
-    }
-
-    #[pyo3(name = "snapshot")]
-    fn render_alias_snapshot(&self) -> crate::Chart {
-        self.render()
-    }
-
-    #[pyo3(name = "to_chart")]
-    fn render_alias_to_chart(&self) -> crate::Chart {
-        self.render()
-    }
-
-    #[getter]
-    fn n(&self) -> usize {
-        self.xs.len()
-    }
-
-    #[getter]
-    fn html(&self) -> String {
-        self.render_html()
-    }
-}
-
-inventory::submit! {
-    crate::doc_registry::FnDoc {
-        name: "LiveStream",
-        category: "chart_method",
-        file: "config/streaming.md",
-        en: "A bounded ring-buffer accumulator that turns a series of (x, y) samples arriving over time into a continuously redrawn chart. push()/extend()/clear() repaint the same Jupyter output cell in place via IPython's display_id, so the chart updates smoothly with no flicker or new cells.",
-        fr: "Un accumulateur à buffer circulaire borné qui transforme une série d'échantillons (x, y) arrivant dans le temps en un graphique redessiné en continu. push()/extend()/clear() repeignent la même cellule de sortie Jupyter sur place via le display_id d'IPython, donc le graphique se met à jour sans scintillement ni nouvelle cellule.",
-        params: &[
-            crate::doc_registry::ParamDoc { name: "kind", ty: "str", en: "Chart kind: 'line' or 'scatter'. Default: 'line'.", fr: "Type de graphique : 'line' ou 'scatter'. Défaut : 'line'." },
-            crate::doc_registry::ParamDoc { name: "title", ty: "str", en: "Chart title.", fr: "Titre du graphique." },
-            crate::doc_registry::ParamDoc { name: "max_points", ty: "int", en: "Ring buffer size; oldest samples are dropped past this. Default: 500.", fr: "Taille du buffer circulaire ; les échantillons les plus anciens sont supprimés au-delà. Défaut : 500." },
-            crate::doc_registry::ParamDoc { name: "color_hex", ty: "int", en: "Series color as a 24-bit RGB integer.", fr: "Couleur de la série en entier RGB 24 bits." },
-            crate::doc_registry::ParamDoc { name: "width", ty: "int", en: "Canvas width in pixels.", fr: "Largeur du canvas en pixels." },
-            crate::doc_registry::ParamDoc { name: "height", ty: "int", en: "Canvas height in pixels.", fr: "Hauteur du canvas en pixels." },
-        ],
-        aliases: &[],
-    }
-}
-inventory::submit! {
-    crate::doc_registry::FnDoc {
-        name: "LiveStream.push",
-        category: "chart_method",
-        file: "config/streaming.md",
-        en: "Appends one (x, y) sample, enforces max_points, and redraws the live chart in place.",
-        fr: "Ajoute un échantillon (x, y), applique max_points, et redessine le graphique live sur place.",
-        params: &[
-            crate::doc_registry::ParamDoc { name: "x", ty: "float", en: "X value.", fr: "Valeur X." },
-            crate::doc_registry::ParamDoc { name: "y", ty: "float", en: "Y value.", fr: "Valeur Y." },
-        ],
-        aliases: &["append", "add_point"],
-    }
-}
-inventory::submit! {
-    crate::doc_registry::FnDoc {
-        name: "LiveStream.extend",
-        category: "chart_method",
-        file: "config/streaming.md",
-        en: "Appends two lists of samples in lock-step, enforces max_points, and redraws the live chart in place.",
-        fr: "Ajoute deux listes d'échantillons en parallèle, applique max_points, et redessine le graphique live sur place.",
-        params: &[
-            crate::doc_registry::ParamDoc { name: "xs", ty: "list[float]", en: "X values.", fr: "Valeurs X." },
-            crate::doc_registry::ParamDoc { name: "ys", ty: "list[float]", en: "Y values.", fr: "Valeurs Y." },
-        ],
-        aliases: &["add_points", "append_many"],
-    }
-}
-inventory::submit! {
-    crate::doc_registry::FnDoc {
-        name: "LiveStream.clear",
-        category: "chart_method",
-        file: "config/streaming.md",
-        en: "Empties the ring buffer and redraws the (now empty) live chart in place.",
-        fr: "Vide le buffer circulaire et redessine le graphique live (désormais vide) sur place.",
-        params: &[],
-        aliases: &["reset"],
-    }
-}
-inventory::submit! {
-    crate::doc_registry::FnDoc {
-        name: "LiveStream.render",
-        category: "chart_method",
-        file: "config/streaming.md",
-        en: "Renders the current buffer to a standalone Chart object, without touching the live display.",
-        fr: "Rend le buffer courant sous forme d'objet Chart autonome, sans toucher à l'affichage live.",
-        params: &[],
-        aliases: &["snapshot", "to_chart"],
-    }
-}
+mod live_stream;
+pub use live_stream::LiveStream;
 
 #[cfg(feature = "python")]
 #[pymodule]

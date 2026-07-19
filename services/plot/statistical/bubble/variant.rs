@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum BubbleVariant default Basic {
+    pub enum BubbleVariant default Basic family "bubble" {
         Basic       => "basic" | "simple",
         Categorical => "categorical" | "grouped" | "groups" | "category",
         Labeled     => "labeled" | "labels" | "text" | "annotated",

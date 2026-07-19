@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum SlopeVariant default Basic {
+    pub enum SlopeVariant default Basic family "slope" {
         Basic       => "basic" | "default" | "direction" | "classic",
         Monochrome  => "monochrome" | "mono" | "uniform" | "single_color",
         Highlighted => "highlighted" | "highlight" | "top" | "movers",

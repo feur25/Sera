@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum CorrelogramVariant default Circle {
+    pub enum CorrelogramVariant default Circle family "correlogram" {
         Circle   => "circle" | "default" | "classic",
         Heatmap  => "heatmap" | "heat" | "square",
         Text     => "text" | "number" | "value",

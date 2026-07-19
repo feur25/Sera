@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum SunburstVariant default Basic {
+    pub enum SunburstVariant default Basic family "sunburst" {
         Basic     => "basic" | "default" | "classic" | "ring",
         Donut     => "donut" | "hole" | "ring_hole" | "donut_ring",
         Outlined  => "outlined" | "outline" | "stroke" | "wireframe",

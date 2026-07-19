@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum OrbitaVariant default Classic {
+    pub enum OrbitaVariant default Classic family "orbita" {
         Classic  => "classic" | "default" | "basic",
         Bubble   => "bubble" | "sized" | "area",
         Trail    => "trail" | "line" | "connected",

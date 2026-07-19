@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum BoxplotVariant default Basic {
+    pub enum BoxplotVariant default Basic family "boxplot" {
         Basic       => "basic" | "simple" | "vertical",
         Horizontal  => "horizontal" | "hbox" | "horiz" | "h",
         Notched     => "notched" | "notch" | "ci" | "confidence",

@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum BulletVariant default Basic {
+    pub enum BulletVariant default Basic family "bullet" {
         Basic     => "basic" | "default" | "classic" | "standard",
         Stacked   => "stacked" | "stacked_ranges" | "zones" | "qualitative",
         Thermo    => "thermo" | "thermometer" | "vertical" | "column",

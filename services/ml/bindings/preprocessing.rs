@@ -75,7 +75,14 @@ pub fn ml_fit_transform(input: &str) -> String {
             (o, p, String::new())
         }
         "PowerTransformer" => {
-            let mut t = PowerTransformer::new(i.method.as_deref().unwrap_or("yeo-johnson"));
+            let method = i.method.as_deref().unwrap_or("yeo-johnson");
+            if !matches!(method, "yeo-johnson" | "box-cox") {
+                return format!(
+                    "{{\"error\":\"unknown PowerTransformer method: {}, expected yeo-johnson or box-cox\"}}",
+                    method
+                );
+            }
+            let mut t = PowerTransformer::new(method);
             t.fit(&flat, n, p);
             let o = t.transform(&flat, n, p);
             (
@@ -120,7 +127,7 @@ pub fn ml_fit_transform(input: &str) -> String {
             let o = t.transform(&flat, n, p);
             (o, p, String::new())
         }
-        n_ => return format!("{{\"error\":\"unknown transformer: {}}}", n_),
+        n_ => return format!("{{\"error\":\"unknown transformer: {}\"}}", n_),
     };
     let data_str = flat_to_json_str(&out, n, cols);
     format!(

@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum DendrogramVariant default Vertical {
+    pub enum DendrogramVariant default Vertical family "dendrogram" {
         Vertical   => "vertical" | "top" | "default" | "classic",
         Horizontal => "horizontal" | "left" | "h",
         Radial     => "radial" | "circular" | "polar",

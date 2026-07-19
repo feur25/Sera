@@ -46,18 +46,18 @@ impl CompactChartState {
                 json.push(',');
             }
             json.push('"');
-            for &ch in label.as_bytes() {
+            for ch in label.chars() {
                 match ch {
-                    b'"' => json.push_str("\\\""),
-                    b'\\' => json.push_str("\\\\"),
-                    b'\n' => json.push_str("\\n"),
-                    b'\r' => json.push_str("\\r"),
-                    b'\t' => json.push_str("\\t"),
-                    ch if ch < 32 => {
+                    '"' => json.push_str("\\\""),
+                    '\\' => json.push_str("\\\\"),
+                    '\n' => json.push_str("\\n"),
+                    '\r' => json.push_str("\\r"),
+                    '\t' => json.push_str("\\t"),
+                    ch if ch.is_control() => {
                         use std::fmt::Write;
                         let _ = write!(json, "\\u{:04x}", ch as u32);
                     }
-                    ch => json.push(ch as char),
+                    ch => json.push(ch),
                 }
             }
             json.push('"');

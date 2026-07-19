@@ -10,6 +10,17 @@ impl Table {
         name = "Table.with_column",
         category = "data_method", file = "canvas/table.md", en = "Adds a computed column (add/sub/mul/div).", fr = "Ajoute une colonne calculee (add/sub/mul/div).")]
     fn with_column(&self, name: &str, op: &str, left: &str, right: &Bound<'_, PyAny>) -> PyResult<Table> {
+        let apply: fn(f64, f64) -> f64 = match op {
+            "add" => |a, b| a + b,
+            "sub" => |a, b| a - b,
+            "mul" => |a, b| a * b,
+            "div" => |a, b| if b != 0.0 { a / b } else { 0.0 },
+            _ => {
+                return Err(pyo3::exceptions::PyValueError::new_err(format!(
+                    "Table.with_column: unknown op '{op}', expected one of add/sub/mul/div"
+                )))
+            }
+        };
         let lhs = self.col_f64(left)?;
         let rhs: Vec<f64> = if let Ok(col_name) = right.extract::<String>() {
             if let Ok(col) = self.col_f64(&col_name) {
@@ -25,22 +36,7 @@ impl Table {
         let computed: Vec<Cell> = lhs
             .iter()
             .zip(rhs.iter())
-            .map(|(a, b)| {
-                let v = match op {
-                    "add" => a + b,
-                    "sub" => a - b,
-                    "mul" => a * b,
-                    "div" => {
-                        if *b != 0.0 {
-                            a / b
-                        } else {
-                            0.0
-                        }
-                    }
-                    _ => 0.0,
-                };
-                Cell::Num(v)
-            })
+            .map(|(a, b)| Cell::Num(apply(*a, *b)))
             .collect();
         let mut columns = self.columns.clone();
         let mut order = self.order.clone();

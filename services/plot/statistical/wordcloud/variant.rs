@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum WordCloudVariant default Basic {
+    pub enum WordCloudVariant default Basic family "wordcloud" {
         Basic    => "basic" | "default" | "spiral" | "rect" | "shape" | "shaped",
         Image    => "image" | "img" | "mask" | "picture" | "photo" | "silhouette",
         LabelMap => "labelmap" | "label_map" | "datamap" | "datamapplot" | "topic_map" | "scatter_labels",

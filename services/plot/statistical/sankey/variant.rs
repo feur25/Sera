@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum SankeyVariant default Basic {
+    pub enum SankeyVariant default Basic family "sankey" {
         Basic    => "basic" | "default" | "classic",
         Gapped   => "gapped" | "spaced" | "separated",
         Ribbon   => "ribbon" | "wide" | "thick",

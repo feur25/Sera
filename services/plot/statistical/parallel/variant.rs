@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum ParallelVariant default Basic {
+    pub enum ParallelVariant default Basic family "parallel" {
         Basic       => "basic" | "default" | "classic" | "lines",
         Smooth      => "smooth" | "curved" | "bezier" | "spline",
         Categorical => "categorical" | "category" | "groups" | "colored",

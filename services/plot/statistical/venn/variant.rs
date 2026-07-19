@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum VennVariant default Basic {
+    pub enum VennVariant default Basic family "venn" {
         Basic    => "basic" | "default" | "classic",
         Euler    => "euler" | "proportional" | "area",
         Filled   => "filled" | "solid" | "opaque",

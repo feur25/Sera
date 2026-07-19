@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum KdeVariant default Basic {
+    pub enum KdeVariant default Basic family "kde" {
         Basic       => "basic" | "filled" | "default" | "single" | "multi",
         Outline     => "outline" | "line" | "stroke" | "compare" | "no_fill",
         Stepped     => "stepped" | "step" | "stair" | "stairs",

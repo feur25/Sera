@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum LineVariant default Basic {
+    pub enum LineVariant default Basic family "line" {
         Basic            => "basic",
         Multi            => "multi" | "multiline" | "multiple",
         Stepped          => "stepped" | "step" | "hv" | "vh" | "hvh" | "vhv",

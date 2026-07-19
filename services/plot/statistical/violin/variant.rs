@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum ViolinVariant default Box {
+    pub enum ViolinVariant default Box family "violin" {
         Basic      => "basic" | "simple" | "kde" | "density",
         Box        => "box" | "with_box" | "default" | "vertical",
         Quartile   => "quartile" | "quartiles" | "lines" | "iqr",

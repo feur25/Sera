@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum DumbbellVariant default Basic {
+    pub enum DumbbellVariant default Basic family "dumbbell" {
         Basic    => "basic" | "default" | "classic" | "dot",
         Arrow    => "arrow" | "directional" | "delta_arrow" | "flow",
         Delta    => "delta" | "change" | "diff" | "signed",

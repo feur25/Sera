@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum FunnelVariant default Basic {
+    pub enum FunnelVariant default Basic family "funnel" {
         Basic      => "basic" | "default" | "trapezoid" | "classic",
         Stepped    => "stepped" | "bar" | "rect" | "rectangle",
         Rounded    => "rounded" | "round" | "pill" | "smooth",

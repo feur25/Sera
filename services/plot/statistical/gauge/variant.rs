@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum GaugeVariant default Basic {
+    pub enum GaugeVariant default Basic family "gauge" {
         Basic      => "basic" | "default" | "half" | "classic",
         Radial     => "radial" | "donut" | "ring" | "full",
         Arc270     => "arc270" | "three_quarter" | "arc" | "wide",

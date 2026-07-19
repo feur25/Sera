@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum RidgelineVariant default Basic {
+    pub enum RidgelineVariant default Basic family "ridgeline" {
         Basic     => "basic" | "filled" | "default" | "single" | "multi",
         Lines     => "lines" | "outline" | "stroke" | "no_fill",
         Quartiles => "quartiles" | "q" | "qrt" | "iqr",

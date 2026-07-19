@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum HiveVariant default Basic {
+    pub enum HiveVariant default Basic family "hive" {
         Basic    => "basic" | "default" | "classic",
         Curved   => "curved" | "smooth" | "bezier",
         Weighted => "weighted" | "width" | "value",

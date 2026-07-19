@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum PieVariant default Basic {
+    pub enum PieVariant default Basic family "pie" {
         Basic        => "basic" | "pie",
         Donut        => "donut" | "ring" | "hole",
         Exploded     => "exploded" | "pulled" | "pull" | "explode",

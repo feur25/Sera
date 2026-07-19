@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum LollipopVariant default Basic {
+    pub enum LollipopVariant default Basic family "lollipop" {
         Basic     => "basic" | "default" | "classic" | "vertical",
         Cleveland => "cleveland" | "horizontal" | "h" | "row",
         Diverging => "diverging" | "div" | "signed" | "delta",

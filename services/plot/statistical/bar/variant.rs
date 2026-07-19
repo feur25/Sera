@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum BarVariant default Basic {
+    pub enum BarVariant default Basic family "bar" {
         Basic           => "basic",
         Horizontal      => "horizontal" | "h" | "hbar",
         Grouped         => "grouped" | "group",

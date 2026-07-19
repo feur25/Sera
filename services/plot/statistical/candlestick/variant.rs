@@ -1,5 +1,5 @@
 crate::plot_family! {
-    pub enum CandlestickVariant default Basic {
+    pub enum CandlestickVariant default Basic family "candlestick" {
         Basic    => "basic" | "default" | "classic" | "filled",
         Hollow   => "hollow" | "empty" | "japanese" | "white_up",
         Ohlc     => "ohlc" | "western" | "bar" | "tick",
