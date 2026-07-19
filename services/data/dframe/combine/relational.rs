@@ -138,6 +138,87 @@ impl SeraDFrame_ {
         })
     }
 
+    #[pyo3(signature = (other, left_on, right_on = None, direction = "backward"))]
+    #[sera_doc(
+        name = "SeraDFrame.join_asof",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Nearest-key join against a numeric column, like pandas.merge_asof: for each row, matches the closest row in other whose key is <= (direction='backward'), >= (direction='forward'), or nearest either way (direction='nearest'). other's key column must already be sorted ascending.",
+        fr = "Jointure par cle la plus proche sur une colonne numerique, comme pandas.merge_asof : pour chaque ligne, associe la ligne la plus proche de other dont la cle est <= (direction='backward'), >= (direction='forward'), ou la plus proche dans les deux sens (direction='nearest'). La colonne cle de other doit deja etre triee en ordre croissant.",
+        aliases("merge_asof", "asof_join")
+    )]
+    pub(crate) fn join_asof(&self, other: &SeraDFrame_, left_on: &str, right_on: Option<&str>, direction: &str) -> PyResult<SeraDFrame_> {
+        let right_on = right_on.unwrap_or(left_on);
+        let left_key = self.inner.get(left_on)?.to_f64_vec();
+        let right_key = other.inner.get(right_on)?.to_f64_vec();
+        if right_key.windows(2).any(|w| w[0] > w[1]) {
+            return Err(pyo3::exceptions::PyValueError::new_err(format!(
+                "join_asof: other's '{right_on}' column must be sorted ascending"
+            )));
+        }
+        let matches: Vec<Option<usize>> = left_key
+            .iter()
+            .map(|&k| {
+                let pos = right_key.partition_point(|&v| v <= k);
+                match direction {
+                    "forward" => {
+                        if pos > 0 && right_key[pos - 1] == k {
+                            Some(pos - 1)
+                        } else if pos < right_key.len() {
+                            Some(pos)
+                        } else {
+                            None
+                        }
+                    }
+                    "nearest" => {
+                        let before = pos.checked_sub(1);
+                        let after = if pos < right_key.len() { Some(pos) } else { None };
+                        match (before, after) {
+                            (Some(b), Some(a)) => {
+                                if (k - right_key[b]).abs() <= (right_key[a] - k).abs() {
+                                    Some(b)
+                                } else {
+                                    Some(a)
+                                }
+                            }
+                            (Some(b), None) => Some(b),
+                            (None, Some(a)) => Some(a),
+                            (None, None) => None,
+                        }
+                    }
+                    _ => pos.checked_sub(1),
+                }
+            })
+            .collect();
+        let left_others: Vec<String> = self.inner.order.clone();
+        let right_others: Vec<String> = other.inner.order.iter().filter(|c| c.as_str() != right_on).cloned().collect();
+        let mut rename: HashMap<String, String> = HashMap::new();
+        for n in &right_others {
+            if left_others.contains(n) {
+                rename.insert(n.clone(), format!("right_{}", n));
+            }
+        }
+        let mut order = left_others.clone();
+        order.extend(right_others.iter().map(|n| rename.get(n).cloned().unwrap_or_else(|| n.clone())));
+        let mut columns: HashMap<String, Series> = HashMap::new();
+        for n in &left_others {
+            columns.insert(n.clone(), self.inner.columns[n].clone());
+        }
+        for n in &right_others {
+            let out_name = rename.get(n).cloned().unwrap_or_else(|| n.clone());
+            let src = &other.inner.columns[n];
+            let vals = match src {
+                Series::Num(v) => Series::Num(Arc::new(matches.iter().map(|m| m.map(|j| v[j]).unwrap_or(f64::NAN)).collect())),
+                Series::Str(v) => Series::Str(Arc::new(matches.iter().map(|m| m.map(|j| v[j].clone()).unwrap_or_default()).collect())),
+                Series::Bool(v) => Series::Bool(Arc::new(matches.iter().map(|m| m.map(|j| v[j]).unwrap_or(false)).collect())),
+            };
+            columns.insert(out_name, vals);
+        }
+        Ok(SeraDFrame_ {
+            inner: Arc::new(SeraDFrame::from_parts(order, columns, self.inner.nrows)),
+        })
+    }
+
     #[sera_doc(
         name = "SeraDFrame.concat",
         category = "data_method", file = "canvas/dframe.md", en = "Vertical union with another SeraDFrame.", fr = "Union verticale avec un autre SeraDFrame.")]

@@ -192,4 +192,81 @@ impl SeraDFrame_ {
         let vals = series.to_str_vec();
         Ok(vals.par_iter().map(|s| re.is_match(s)).collect())
     }
+
+    #[sera_doc(
+        name = "SeraDFrame.str_cat",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Concatenates several string columns row-wise into a new column, joined by sep.",
+        fr = "Concatene plusieurs colonnes texte ligne par ligne dans une nouvelle colonne, jointes par sep.",
+        aliases("concat_str", "str_join")
+    )]
+    fn str_cat(&self, cols: Vec<String>, sep: &str, out: &str) -> PyResult<SeraDFrame_> {
+        let parts: Vec<Vec<String>> = cols
+            .iter()
+            .map(|c| self.inner.get(c).map(|s| s.to_str_vec()))
+            .collect::<PyResult<Vec<_>>>()?;
+        let joined: Vec<String> = (0..self.inner.nrows)
+            .into_par_iter()
+            .map(|i| parts.iter().map(|col| col[i].as_str()).collect::<Vec<_>>().join(sep))
+            .collect();
+        let mut order = self.inner.order.clone();
+        let mut columns = self.inner.columns.clone();
+        if !columns.contains_key(out) {
+            order.push(out.to_string());
+        }
+        columns.insert(out.to_string(), str_series(joined));
+        Ok(SeraDFrame_ {
+            inner: Arc::new(SeraDFrame::from_parts(order, columns, self.inner.nrows)),
+        })
+    }
+
+    #[pyo3(signature = (col, width, side = "left", fillchar = " "))]
+    #[sera_doc(
+        name = "SeraDFrame.str_pad",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Pads a string column to a fixed character width with fillchar; side is 'left', 'right', or 'both'. Values already at or over width are unchanged.",
+        fr = "Complete une colonne texte a une largeur fixe de caracteres avec fillchar ; side vaut 'left', 'right' ou 'both'. Les valeurs deja a ou au-dessus de width sont inchangees.",
+        aliases("pad_str")
+    )]
+    fn str_pad(&self, col: &str, width: usize, side: &str, fillchar: &str) -> PyResult<SeraDFrame_> {
+        let fill = fillchar.chars().next().unwrap_or(' ');
+        self.str_transform(col, |s| {
+            let len = s.chars().count();
+            if len >= width {
+                return s.to_string();
+            }
+            let pad = width - len;
+            match side {
+                "right" => format!("{}{}", s, fill.to_string().repeat(pad)),
+                "both" => {
+                    let left = pad / 2;
+                    let right = pad - left;
+                    format!("{}{}{}", fill.to_string().repeat(left), s, fill.to_string().repeat(right))
+                }
+                _ => format!("{}{}", fill.to_string().repeat(pad), s),
+            }
+        })
+    }
+
+    #[pyo3(signature = (col, start, end = None))]
+    #[sera_doc(
+        name = "SeraDFrame.str_slice",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Extracts a character substring [start, end) from a string column; end defaults to the string's own length. Negative start/end count from the end, like Python slicing.",
+        fr = "Extrait une sous-chaine de caracteres [start, end) d'une colonne texte ; end vaut par defaut la longueur propre de la chaine. Les start/end negatifs comptent depuis la fin, comme le slicing Python.",
+        aliases("substr")
+    )]
+    fn str_slice(&self, col: &str, start: i64, end: Option<i64>) -> PyResult<SeraDFrame_> {
+        self.str_transform(col, move |s| {
+            let chars: Vec<char> = s.chars().collect();
+            let len = chars.len() as i64;
+            let resolve = |i: i64| -> usize { (if i < 0 { (i + len).max(0) } else { i }).min(len) as usize };
+            let s0 = resolve(start);
+            let e0 = end.map(resolve).unwrap_or(len as usize).max(s0);
+            chars[s0..e0].iter().collect()
+        })
+    }
 }

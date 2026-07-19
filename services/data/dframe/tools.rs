@@ -38,6 +38,11 @@ impl SeraDFrame_ {
         self.memory_usage()
     }
 
+    #[pyo3(name = "row_at")]
+    fn row_at_alias(&self, py: Python<'_>, idx: i64) -> PyResult<PyObject> {
+        self.iloc(py, idx)
+    }
+
     #[sera_doc(
         name = "SeraDFrame.pipe",
         category = "data_method", file = "canvas/dframe.md", en = "Passes self into a Python function, chainable.", fr = "Passe self dans une fonction Python, chainable.")]

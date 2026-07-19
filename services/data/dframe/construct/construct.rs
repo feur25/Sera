@@ -138,6 +138,41 @@ impl SeraDFrame_ {
 
     #[staticmethod]
     #[sera_doc(
+        name = "SeraDFrame.from_records",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Builds a SeraDFrame from a list of row dicts -- the row-oriented counterpart to the dict-of-columns constructor. Missing keys in a row become NaN (numeric column) or an empty string (text column).",
+        fr = "Construit un SeraDFrame depuis une liste de dicts-ligne -- le pendant oriente-ligne du constructeur dict-de-colonnes. Les cles absentes d'une ligne deviennent NaN (colonne numerique) ou une chaine vide (colonne texte)."
+    )]
+    fn from_records(records: Vec<Bound<'_, PyDict>>) -> PyResult<Self> {
+        let mut order: Vec<String> = Vec::new();
+        for rec in &records {
+            for (k, _) in rec.iter() {
+                let key: String = k.extract()?;
+                if !order.contains(&key) {
+                    order.push(key);
+                }
+            }
+        }
+        let nrows = records.len();
+        let mut columns = HashMap::new();
+        for key in &order {
+            let items: Vec<Bound<'_, PyAny>> = records
+                .iter()
+                .map(|rec| match rec.get_item(key)? {
+                    Some(v) => Ok(v),
+                    None => Ok(pyo3::types::PyString::new_bound(rec.py(), "").into_any()),
+                })
+                .collect::<PyResult<Vec<_>>>()?;
+            columns.insert(key.clone(), column_from_pyobjects(items));
+        }
+        Ok(SeraDFrame_ {
+            inner: Arc::new(SeraDFrame::from_parts(order, columns, nrows)),
+        })
+    }
+
+    #[staticmethod]
+    #[sera_doc(
         name = "SeraDFrame.from_pandas",
         category = "data_method",
         file = "canvas/dframe.md",
@@ -186,6 +221,70 @@ impl SeraDFrame_ {
             })
             .collect();
         Table::from_parts(self.inner.order.clone(), columns, self.inner.nrows)
+    }
+
+    #[sera_doc(
+        name = "SeraDFrame.to_markdown",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Renders the frame as a GitHub-flavored markdown table string.",
+        fr = "Rend le frame sous forme de tableau markdown au format GitHub."
+    )]
+    fn to_markdown(&self) -> String {
+        let widths: Vec<usize> = self
+            .inner
+            .order
+            .iter()
+            .map(|n| {
+                let col = &self.inner.columns[n];
+                (0..self.inner.nrows)
+                    .map(|i| col.value_str(i).len())
+                    .fold(n.len(), |a, b| a.max(b))
+            })
+            .collect();
+        let mut out = String::new();
+        out.push('|');
+        for (n, w) in self.inner.order.iter().zip(&widths) {
+            out.push_str(&format!(" {:<w$} |", n, w = w));
+        }
+        out.push('\n');
+        out.push('|');
+        for w in &widths {
+            out.push_str(&format!(" {} |", "-".repeat(*w)));
+        }
+        out.push('\n');
+        for i in 0..self.inner.nrows {
+            out.push('|');
+            for (n, w) in self.inner.order.iter().zip(&widths) {
+                out.push_str(&format!(" {:<w$} |", self.inner.columns[n].value_str(i), w = w));
+            }
+            out.push('\n');
+        }
+        out
+    }
+
+    #[sera_doc(
+        name = "SeraDFrame.to_html",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Renders the frame as a standalone HTML table string.",
+        fr = "Rend le frame sous forme de chaine de tableau HTML autonome."
+    )]
+    fn to_html(&self) -> String {
+        let mut out = String::from("<table border=\"1\" class=\"dataframe\">\n<thead><tr>");
+        for n in &self.inner.order {
+            out.push_str(&format!("<th>{}</th>", n));
+        }
+        out.push_str("</tr></thead>\n<tbody>\n");
+        for i in 0..self.inner.nrows {
+            out.push_str("<tr>");
+            for n in &self.inner.order {
+                out.push_str(&format!("<td>{}</td>", self.inner.columns[n].value_str(i)));
+            }
+            out.push_str("</tr>\n");
+        }
+        out.push_str("</tbody>\n</table>");
+        out
     }
 
     #[getter]
@@ -267,6 +366,23 @@ impl SeraDFrame_ {
     }
 
     #[sera_doc(
+        name = "SeraDFrame.filter_columns",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Keeps only columns whose name matches a regex pattern (distinct from query()/filter(), which filter rows).",
+        fr = "Ne garde que les colonnes dont le nom correspond a un motif regex (distinct de query()/filter(), qui filtrent les lignes).",
+        aliases("columns_like")
+    )]
+    fn filter_columns(&self, pattern: &str) -> PyResult<SeraDFrame_> {
+        let re = regex::Regex::new(pattern).map_err(|e| pyo3::exceptions::PyValueError::new_err(e.to_string()))?;
+        let names: Vec<String> = self.inner.order.iter().filter(|n| re.is_match(n)).cloned().collect();
+        let columns: HashMap<String, Series> = names.iter().map(|n| (n.clone(), self.inner.columns[n].clone())).collect();
+        Ok(SeraDFrame_ {
+            inner: Arc::new(SeraDFrame::from_parts(names, columns, self.inner.nrows)),
+        })
+    }
+
+    #[sera_doc(
         name = "SeraDFrame.head",
         category = "data_method", file = "canvas/dframe.md", en = "First n rows.", fr = "Les n premieres lignes.")]
     fn head(&self, n: usize) -> SeraDFrame_ {
@@ -286,6 +402,62 @@ impl SeraDFrame_ {
         SeraDFrame_ {
             inner: Arc::new(self.inner.row_take(&idx)),
         }
+    }
+
+    #[sera_doc(
+        name = "SeraDFrame.take",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Selects rows by position, in the given order (duplicates and reordering allowed); negative indices count from the end, like Python indexing.",
+        fr = "Selectionne des lignes par position, dans l'ordre donne (doublons et reordonnancement autorises) ; les indices negatifs comptent depuis la fin, comme l'indexation Python."
+    )]
+    fn take(&self, indices: Vec<i64>) -> PyResult<SeraDFrame_> {
+        let n = self.inner.nrows as i64;
+        let idx: Vec<usize> = indices
+            .iter()
+            .map(|&i| {
+                let resolved = if i < 0 { i + n } else { i };
+                if resolved < 0 || resolved >= n {
+                    Err(pyo3::exceptions::PyIndexError::new_err(format!(
+                        "row index {i} out of range for a frame with {n} rows"
+                    )))
+                } else {
+                    Ok(resolved as usize)
+                }
+            })
+            .collect::<PyResult<Vec<_>>>()?;
+        Ok(SeraDFrame_ {
+            inner: Arc::new(self.inner.row_take(&idx)),
+        })
+    }
+
+    #[sera_doc(
+        name = "SeraDFrame.iloc",
+        category = "data_method",
+        file = "canvas/dframe.md",
+        en = "Returns one row as a dict, by position; negative indices count from the end, like Python indexing.",
+        fr = "Retourne une ligne sous forme de dict, par position ; les indices negatifs comptent depuis la fin, comme l'indexation Python.",
+        aliases("row_at")
+    )]
+    pub(crate) fn iloc(&self, py: Python<'_>, idx: i64) -> PyResult<PyObject> {
+        let n = self.inner.nrows as i64;
+        let resolved = if idx < 0 { idx + n } else { idx };
+        if resolved < 0 || resolved >= n {
+            return Err(pyo3::exceptions::PyIndexError::new_err(format!(
+                "row index {idx} out of range for a frame with {n} rows"
+            )));
+        }
+        let i = resolved as usize;
+        let dict = PyDict::new_bound(py);
+        for name in &self.inner.order {
+            let v = match &self.inner.columns[name] {
+                Series::Num(c) => c[i].into_py(py),
+                Series::Str(c) => c[i].to_string().into_py(py),
+                Series::Bool(c) => c[i].into_py(py),
+            };
+            dict.set_item(name, v)?;
+        }
+        Ok(dict.into())
     }
 
     fn column(&self, py: Python<'_>, name: &str) -> PyResult<PyObject> {
