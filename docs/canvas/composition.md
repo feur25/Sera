@@ -364,6 +364,100 @@ if the story calls for it.
 
 ---
 
+## Radial gallery: spiral, sunburst, network
+
+Three more shapes built from the same handful of primitives — no new API
+below this line, just `polar`, `curve`, `wedge` and `connector` combined
+differently each time.
+
+**A spiral** — each point's radius grows with its index instead of staying
+fixed, the technique behind timeline-as-spiral pieces like *Searching for
+Birds*:
+
+```python
+cx, cy = 300, 300
+n = 60
+cv = sp.canvas(600, 600, "#0a0a12")
+pts = []
+for i in range(n):
+    deg = i * 12
+    r = 20 + i * 4.2
+    pts.append(list(cv.polar(cx, cy, r, deg)))
+cv.curve(pts, color="#a78bfa", width=2, tension=0.8, name="spiral")
+for i in range(0, n, 4):
+    x, y = pts[i]
+    cv.circle(x, y, 3 + (i / n) * 5, fill="#22d3ee", name=f"pt-{i}")
+chart = cv.build()
+```
+
+**A sunburst** — two rings of `wedge`, the outer ring's spans computed from
+the inner ring's proportions instead of an even split, giving a hierarchical
+part-of-a-part-of-a-whole read:
+
+```python
+cx, cy = 300, 300
+cv = sp.canvas(600, 600, "#0a0a12")
+groups = [("Frontend", 40), ("Backend", 35), ("Data", 25)]
+subgroups = {
+    "Frontend": [("React", 20), ("CSS", 12), ("A11y", 8)],
+    "Backend": [("API", 18), ("Auth", 10), ("Jobs", 7)],
+    "Data": [("ETL", 14), ("ML", 11)],
+}
+
+total = sum(v for _, v in groups)
+cursor = 0.0
+for name, v in groups:
+    span = v / total * 360
+    cv.wedge(cx, cy, 60, 130, cursor, cursor + span - 2, fill="#6366f1", name=f"inner-{name}")
+    lx, ly = cv.polar(cx, cy, 95, cursor + span / 2)
+    cv.text(name, lx, ly, size=11, color="#fff", anchor="middle", name=f"inner-lbl-{name}")
+
+    sub_total = sum(sv for _, sv in subgroups[name])
+    sub_cursor = cursor
+    for sname, sv in subgroups[name]:
+        sub_span = sv / sub_total * span
+        cv.wedge(cx, cy, 135, 200, sub_cursor, sub_cursor + sub_span - 1,
+                 fill="#22d3ee", opacity=0.85, name=f"outer-{sname}")
+        lx, ly = cv.polar(cx, cy, 168, sub_cursor + sub_span / 2)
+        cv.text(sname, lx, ly, size=9, color="#0a0a12", anchor="middle", name=f"outer-lbl-{sname}")
+        sub_cursor += sub_span
+    cursor += span
+chart = cv.build()
+```
+
+**A radial network** — nodes placed on a circle with `polar`, random pairs
+joined with `connector`'s `bend` for a soft curve instead of a straight
+chord; the same "relationships between things" story `ribbon` tells, drawn
+node-and-edge instead of band-and-arc:
+
+```python
+import random
+
+cx, cy = 300, 300
+n = 14
+cv = sp.canvas(600, 600, "#0a0a12")
+cv.radial_gradient("net-glow", "#1e1b4b", "#0a0a12", r=0.85)
+cv.circle(cx, cy, 280, fill="url(#net-glow)", name="bg")
+
+nodes = [cv.polar(cx, cy, 220, i * 360 / n) for i in range(n)]
+
+edges = set()
+while len(edges) < 22:
+    a, b = random.sample(range(n), 2)
+    edges.add((min(a, b), max(a, b)))
+
+for a, b in edges:
+    ax, ay = nodes[a]
+    bx, by = nodes[b]
+    cv.connector(ax, ay, bx, by, color="#4c1d95", width=1, opacity=0.5, bend=0.15, name=f"edge-{a}-{b}")
+
+for i, (x, y) in enumerate(nodes):
+    cv.circle(x, y, 8, fill="#a78bfa", stroke="#0a0a12", stroke_width=2, name=f"node-{i}")
+chart = cv.build()
+```
+
+---
+
 ## Organic layouts: Voronoi
 
 `voronoi(sites, x, y, w, h, fills=None, stroke=..., stroke_width=..., opacity=...)`
@@ -874,6 +968,102 @@ ribbons qui traversent entre les plages. Rien ici n'est un type
 composées à la main, de la même façon que le reste de `Canvas` —
 y compris en mélangeant un `Chart` placé à une position calculée par
 `polar` si l'histoire le demande.
+
+---
+
+## Galerie radiale : spirale, sunburst, réseau
+
+Trois formes de plus construites à partir des mêmes primitives — aucune
+nouvelle API en dessous de cette ligne, juste `polar`, `curve`, `wedge` et
+`connector` combinés différemment à chaque fois.
+
+**Une spirale** — le rayon de chaque point grandit avec son index au lieu
+de rester fixe, la technique derrière les pièces façon timeline-en-spirale
+comme *Searching for Birds* :
+
+```python
+cx, cy = 300, 300
+n = 60
+cv = sp.canvas(600, 600, "#0a0a12")
+pts = []
+for i in range(n):
+    deg = i * 12
+    r = 20 + i * 4.2
+    pts.append(list(cv.polar(cx, cy, r, deg)))
+cv.curve(pts, color="#a78bfa", width=2, tension=0.8, name="spiral")
+for i in range(0, n, 4):
+    x, y = pts[i]
+    cv.circle(x, y, 3 + (i / n) * 5, fill="#22d3ee", name=f"pt-{i}")
+chart = cv.build()
+```
+
+**Un sunburst** — deux anneaux de `wedge`, les plages de l'anneau extérieur
+calculées à partir des proportions de l'anneau intérieur plutôt qu'un
+partage égal, pour une lecture hiérarchique « partie d'une partie d'un
+tout » :
+
+```python
+cx, cy = 300, 300
+cv = sp.canvas(600, 600, "#0a0a12")
+groups = [("Frontend", 40), ("Backend", 35), ("Data", 25)]
+subgroups = {
+    "Frontend": [("React", 20), ("CSS", 12), ("A11y", 8)],
+    "Backend": [("API", 18), ("Auth", 10), ("Jobs", 7)],
+    "Data": [("ETL", 14), ("ML", 11)],
+}
+
+total = sum(v for _, v in groups)
+cursor = 0.0
+for name, v in groups:
+    span = v / total * 360
+    cv.wedge(cx, cy, 60, 130, cursor, cursor + span - 2, fill="#6366f1", name=f"inner-{name}")
+    lx, ly = cv.polar(cx, cy, 95, cursor + span / 2)
+    cv.text(name, lx, ly, size=11, color="#fff", anchor="middle", name=f"inner-lbl-{name}")
+
+    sub_total = sum(sv for _, sv in subgroups[name])
+    sub_cursor = cursor
+    for sname, sv in subgroups[name]:
+        sub_span = sv / sub_total * span
+        cv.wedge(cx, cy, 135, 200, sub_cursor, sub_cursor + sub_span - 1,
+                 fill="#22d3ee", opacity=0.85, name=f"outer-{sname}")
+        lx, ly = cv.polar(cx, cy, 168, sub_cursor + sub_span / 2)
+        cv.text(sname, lx, ly, size=9, color="#0a0a12", anchor="middle", name=f"outer-lbl-{sname}")
+        sub_cursor += sub_span
+    cursor += span
+chart = cv.build()
+```
+
+**Un réseau radial** — des nœuds placés sur un cercle avec `polar`, des
+paires aléatoires reliées via le `bend` de `connector` pour une courbe
+douce plutôt qu'une corde droite ; la même histoire de « relations entre
+les choses » que raconte `ribbon`, dessinée nœuds-et-arêtes plutôt que
+bandes-et-arcs :
+
+```python
+import random
+
+cx, cy = 300, 300
+n = 14
+cv = sp.canvas(600, 600, "#0a0a12")
+cv.radial_gradient("net-glow", "#1e1b4b", "#0a0a12", r=0.85)
+cv.circle(cx, cy, 280, fill="url(#net-glow)", name="bg")
+
+nodes = [cv.polar(cx, cy, 220, i * 360 / n) for i in range(n)]
+
+edges = set()
+while len(edges) < 22:
+    a, b = random.sample(range(n), 2)
+    edges.add((min(a, b), max(a, b)))
+
+for a, b in edges:
+    ax, ay = nodes[a]
+    bx, by = nodes[b]
+    cv.connector(ax, ay, bx, by, color="#4c1d95", width=1, opacity=0.5, bend=0.15, name=f"edge-{a}-{b}")
+
+for i, (x, y) in enumerate(nodes):
+    cv.circle(x, y, 8, fill="#a78bfa", stroke="#0a0a12", stroke_width=2, name=f"node-{i}")
+chart = cv.build()
+```
 
 ---
 
