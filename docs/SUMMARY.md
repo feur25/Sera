@@ -7,7 +7,7 @@
 # Getting Started
 
 - [Installation](getting-started/installation.md)
-- [Quick Start](getting-started/quickstart.md)
+<!-- - [Quick Start](getting-started/quickstart.md) -->
 
 ---
 

@@ -77,7 +77,7 @@ SeraPlot ships as a compiled Rust extension (`.pyd` / `.so`) bundled in the whee
 <p class="sp-inst-desc">Standard Python package installer — works in any environment:</p>
 <div class="sp-inst-cmds">
 <pre><code class="language-bash">pip install seraplot</code></pre>
-<pre><code class="language-bash">pip install seraplot==2.3.61</code></pre>
+<pre><code class="language-bash">pip install seraplot</code></pre>
 <pre><code class="language-bash">pip install --upgrade seraplot</code></pre>
 </div>
 <div class="sp-inst-note"><span>💡</span><span>For project isolation, always install inside a virtual environment: <code>python -m venv .venv && .venv\Scripts\activate</code></span></div>
@@ -152,7 +152,7 @@ SeraPlot se distribue sous forme d'extension Rust compilée (`.pyd` / `.so`) inc
 <p class="sp-inst-desc">Gestionnaire de paquets Python standard — fonctionne dans tous les environnements :</p>
 <div class="sp-inst-cmds">
 <pre><code class="language-bash">pip install seraplot</code></pre>
-<pre><code class="language-bash">pip install seraplot==2.3.61</code></pre>
+<pre><code class="language-bash">pip install seraplot</code></pre>
 <pre><code class="language-bash">pip install --upgrade seraplot</code></pre>
 </div>
 <div class="sp-inst-note"><span>💡</span><span>Pour isoler votre projet, installez toujours dans un environnement virtuel : <code>python -m venv .venv && .venv\Scripts\activate</code></span></div>

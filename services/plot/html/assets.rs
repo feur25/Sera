@@ -193,7 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     svg.dataset.originalViewbox = svg.getAttribute('viewBox') || '0 0 1200 700';
     
-    // Apply pre-selection from app (visible_count)
     let visibleCount = state.visible_count || svg.querySelectorAll('[data-index]').length;
     if (visibleCount < svg.querySelectorAll('[data-index]').length) {
         svg.querySelectorAll('[data-index]').forEach(el => {
