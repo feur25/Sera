@@ -123,7 +123,7 @@
 </a>
 </div>
 
-<p class="sp-thanks">Thanks for using SeraPlot ✨</p>
+<p class="sp-thanks">Thanks for using Sera ✨</p>
 
 </div>
 
@@ -164,7 +164,7 @@
 </a>
 </div>
 
-<p class="sp-thanks">Merci d'utiliser SeraPlot ✨</p>
+<p class="sp-thanks">Merci d'utiliser Sera ✨</p>
 
 </div>
 
