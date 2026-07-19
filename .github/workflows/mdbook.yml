@@ -53,7 +53,7 @@ jobs:
         run: cargo build --release --manifest-path tools/Cargo.toml
 
       - name: Install SeraPlot (optional — previews skipped if unavailable)
-        run: pip install seraplot==2.3.47 || echo "seraplot not on PyPI — chart previews will be skipped"
+        run: pip install --upgrade seraplot || echo "seraplot not on PyPI — chart previews will be skipped"
 
       - name: Generate chart previews
         run: ./tools/target/release/gen_previews
