@@ -2,16 +2,16 @@
 
 <style>
 .badge { display: inline-block; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 4px; vertical-align: middle; margin-left: 4px; letter-spacing: .04em; }
-.badge-core { background: rgba(100,116,139,.12); border: 1px solid rgba(100,116,139,.3); color: #64748b; }
-.badge-opt  { background: rgba(180,140,80,.1); border: 1px solid rgba(180,140,80,.3); color: #92731f; }
+.badge-core { background: rgba(100,116,139,.12); border: 1px solid rgba(100,116,139,.3); color: var(--sp-text-muted); }
+.badge-opt  { background: rgba(180,140,80,.1); border: 1px solid rgba(180,140,80,.3); color: var(--sp-warn); }
 .note { border-left: 3px solid rgba(100,116,139,.4); padding: .5em 0 .5em 1em; margin: 1.2em 0; color: inherit; font-size: .93em; line-height: 1.65; }
 .note code { font-size: .9em; }
-.status-off { display: inline-flex; align-items: center; gap: 7px; font-size: .88em; font-weight: 600; color: #64748b; margin: .2em 0 1.6em; }
-.status-off::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #94a3b8; flex-shrink: 0; }
+.status-off { display: inline-flex; align-items: center; gap: 7px; font-size: .88em; font-weight: 600; color: var(--sp-text-muted); margin: .2em 0 1.6em; }
+.status-off::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--sp-text-muted); flex-shrink: 0; }
 .steps { list-style: none; padding: 0; margin: .8em 0 1.4em; counter-reset: step; }
 .steps li { counter-increment: step; display: flex; gap: .9em; align-items: flex-start; padding: .6em 0; border-bottom: 1px solid rgba(100,116,139,.1); font-size: .93em; line-height: 1.6; }
 .steps li:last-child { border-bottom: none; }
-.steps li::before { content: counter(step); min-width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(100,116,139,.3); color: #64748b; font-size: .8em; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.steps li::before { content: counter(step); min-width: 22px; height: 22px; border-radius: 50%; border: 1px solid rgba(100,116,139,.3); color: var(--sp-text-muted); font-size: .8em; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
 .steps li strong { font-weight: 700; margin-right: .3em; }
 </style>
 
