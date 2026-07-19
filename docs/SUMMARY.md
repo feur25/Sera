@@ -16,6 +16,21 @@
 - [Intro SeraPlot](getting-started/intro-seraplot.md)
 - [Showcase](showcase.md)
 - [Chart Methods](getting-started/chart-methods.md)
+  - [Configuration](config/index.md)
+    - [Background](config/background.md)
+    - [Palette](config/palette.md)
+    - [Themes](config/themes.md)
+    - [Hover & Tooltip](config/hover.md)
+    - [Auto Display](config/auto-display.md)
+    - [Downsampling](config/downsample.md)
+    - [Streaming](config/streaming.md)
+    - [Diff Mode](config/diff.md)
+    - [Drift Detection](config/drift.md)
+    - [Export](config/export.md)
+    - [ML Persistence](config/ml-persistence.md)
+    - [Pickle Support](config/pickle.md)
+    - [Accessibility](config/a11y.md)
+    - [CSP](config/csp.md)
 - [2D Charts](charts/2d/index.md)
   - [Bar Charts](charts/2d/bar.md)
   - [Horizontal Bar Charts](charts/2d/hbar.md)
@@ -145,26 +160,6 @@
 
 - [SeraDFrame](canvas/dframe.md)
 - [Table (Data Engineering)](canvas/table.md)
-
----
-
-# Controller & Config
-
-- [Configuration](config/index.md)
-  - [Background](config/background.md)
-  - [Palette](config/palette.md)
-  - [Themes](config/themes.md)
-  - [Hover & Tooltip](config/hover.md)
-  - [Auto Display](config/auto-display.md)
-  - [Downsampling](config/downsample.md)
-  - [Streaming](config/streaming.md)
-  - [Diff Mode](config/diff.md)
-  - [Drift Detection](config/drift.md)
-  - [Export](config/export.md)
-  - [ML Persistence](config/ml-persistence.md)
-  - [Pickle Support](config/pickle.md)
-  - [Accessibility](config/a11y.md)
-  - [CSP](config/csp.md)
 
 ---
 
