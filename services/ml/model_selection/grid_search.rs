@@ -1756,39 +1756,23 @@ fn score_reg(y_true: &[f64], y_pred: &[f64], scoring: &str) -> f64 {
 }
 
 fn score_cls(y_true: &[i32], y_pred: &[i32], scoring: &str) -> f64 {
-    match scoring {
-        "f1" | "f1_weighted" => crate::ml::metrics::classification::f1_score(
-            y_true,
-            y_pred,
-            crate::ml::metrics::classification::Average::Weighted,
-        ),
-        "f1_macro" => crate::ml::metrics::classification::f1_score(
-            y_true,
-            y_pred,
-            crate::ml::metrics::classification::Average::Macro,
-        ),
-        "precision" | "precision_weighted" => crate::ml::metrics::classification::precision_score(
-            y_true,
-            y_pred,
-            crate::ml::metrics::classification::Average::Weighted,
-        ),
-        "precision_macro" => crate::ml::metrics::classification::precision_score(
-            y_true,
-            y_pred,
-            crate::ml::metrics::classification::Average::Macro,
-        ),
-        "recall" | "recall_weighted" => crate::ml::metrics::classification::recall_score(
-            y_true,
-            y_pred,
-            crate::ml::metrics::classification::Average::Weighted,
-        ),
-        "recall_macro" => crate::ml::metrics::classification::recall_score(
-            y_true,
-            y_pred,
-            crate::ml::metrics::classification::Average::Macro,
-        ),
-        _ => crate::ml::metrics::classification::accuracy_score(y_true, y_pred),
-    }
+    use crate::ml::metrics::classification::{accuracy_score, f1_score, precision_score, recall_score, Average};
+    let scorers: &[(&str, fn(&[i32], &[i32]) -> f64)] = &[
+        ("f1", |t, p| f1_score(t, p, Average::Weighted)),
+        ("f1_weighted", |t, p| f1_score(t, p, Average::Weighted)),
+        ("f1_macro", |t, p| f1_score(t, p, Average::Macro)),
+        ("precision", |t, p| precision_score(t, p, Average::Weighted)),
+        ("precision_weighted", |t, p| precision_score(t, p, Average::Weighted)),
+        ("precision_macro", |t, p| precision_score(t, p, Average::Macro)),
+        ("recall", |t, p| recall_score(t, p, Average::Weighted)),
+        ("recall_weighted", |t, p| recall_score(t, p, Average::Weighted)),
+        ("recall_macro", |t, p| recall_score(t, p, Average::Macro)),
+    ];
+    scorers
+        .iter()
+        .find(|(k, _)| *k == scoring)
+        .map(|(_, f)| f(y_true, y_pred))
+        .unwrap_or_else(|| accuracy_score(y_true, y_pred))
 }
 
 fn is_default_scoring(scoring: &str) -> bool {

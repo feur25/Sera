@@ -1,20 +1,45 @@
 use crate::core::hw_profile::hw;
 use rayon::prelude::*;
 
+fn agg_sum(vals: &[f64]) -> f64 {
+    vals.iter().sum()
+}
+fn agg_min(vals: &[f64]) -> f64 {
+    vals.iter().copied().fold(f64::INFINITY, f64::min)
+}
+fn agg_max(vals: &[f64]) -> f64 {
+    vals.iter().copied().fold(f64::NEG_INFINITY, f64::max)
+}
+fn agg_first(vals: &[f64]) -> f64 {
+    vals[0]
+}
+fn agg_last(vals: &[f64]) -> f64 {
+    vals[vals.len() - 1]
+}
+fn agg_median(vals: &[f64]) -> f64 {
+    let mut sorted: Vec<f64> = vals.to_vec();
+    sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    sorted[sorted.len() / 2]
+}
+fn agg_mean(vals: &[f64]) -> f64 {
+    vals.iter().sum::<f64>() / vals.len() as f64
+}
+
+const AGGREGATORS: &[(&str, fn(&[f64]) -> f64)] = &[
+    ("sum", agg_sum),
+    ("min", agg_min),
+    ("max", agg_max),
+    ("first", agg_first),
+    ("last", agg_last),
+    ("median", agg_median),
+];
+
 fn agg_bucket(vals: &[f64], agg: &str) -> f64 {
-    match agg {
-        "sum" => vals.iter().sum(),
-        "min" => vals.iter().copied().fold(f64::INFINITY, f64::min),
-        "max" => vals.iter().copied().fold(f64::NEG_INFINITY, f64::max),
-        "first" => vals[0],
-        "last" => vals[vals.len() - 1],
-        "median" => {
-            let mut sorted: Vec<f64> = vals.to_vec();
-            sorted.sort_by(|a, b| a.partial_cmp(b).unwrap());
-            sorted[sorted.len() / 2]
-        }
-        _ => vals.iter().sum::<f64>() / vals.len() as f64,
-    }
+    AGGREGATORS
+        .iter()
+        .find(|(k, _)| *k == agg)
+        .map(|(_, f)| f(vals))
+        .unwrap_or_else(|| agg_mean(vals))
 }
 
 pub fn bucket_downsample(x: &[f64], y: &[f64], max_points: usize, agg: &str) -> (Vec<f64>, Vec<f64>) {

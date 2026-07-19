@@ -110,7 +110,9 @@ impl Table {
             .map(|i| {
                 let dict = PyDict::new_bound(py);
                 for name in &self.order {
-                    let _ = dict.set_item(name, self.columns[name][i].clone().into_py(py));
+                    if let Err(e) = dict.set_item(name, self.columns[name][i].clone().into_py(py)) {
+                        eprintln!("seraplot: Table.to_records could not set field '{name}' on row {i}: {e}");
+                    }
                 }
                 dict.into()
             })

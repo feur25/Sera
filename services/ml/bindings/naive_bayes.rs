@@ -11,8 +11,7 @@ use super::helpers::*;
 pub fn ml_gaussian_nb(input: &str) -> String {
     let (v, xf, n, p, xtf, nt) = ml_parse(input);
     let var_smoothing = jf(&v, "var_smoothing", 1e-9);
-    let mut model = crate::ml::naive_bayes::gaussian::GaussianNB::new();
-    let _ = var_smoothing;
+    let mut model = crate::ml::naive_bayes::gaussian::GaussianNB::with_var_smoothing(var_smoothing);
     let y = yi(&v);
     model.fit(&xf, n, p, &y);
     let preds = model.predict(&xtf, nt, p);

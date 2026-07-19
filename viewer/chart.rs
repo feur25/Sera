@@ -615,7 +615,9 @@ impl eframe::App for ChartApp {
                             .map(|d| d.as_secs())
                             .unwrap_or(0);
                         let filepath = format!("seraplot_export_{}.html", timestamp);
-                        let _ = std::fs::write(&filepath, html);
+                        if let Err(e) = std::fs::write(&filepath, html) {
+                            eprintln!("seraplot: failed to export chart to '{filepath}': {e}");
+                        }
                     });
                 }
                 ui.label(&zoom_label);
@@ -1957,17 +1959,35 @@ fn get_sort() -> &'static Mutex<i32> {
     CHART_SORT.get_or_init(|| Mutex::new(0))
 }
 
+static UI_MUTEX_WARNED: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
+
+fn warn_ui_mutex_poisoned_once() {
+    if !UI_MUTEX_WARNED.swap(true, std::sync::atomic::Ordering::Relaxed) {
+        eprintln!(
+            "seraplot viewer: a UI-state mutex is poisoned -- some chart toggles will silently \
+             stop updating/return defaults from here on; this warning prints once"
+        );
+    }
+}
+
 macro_rules! mutex_setter {
     ($val:expr, $lock:expr) => {
-        if let Ok(mut guard) = $lock {
-            *guard = $val;
+        match $lock {
+            Ok(mut guard) => *guard = $val,
+            Err(_) => warn_ui_mutex_poisoned_once(),
         }
     };
 }
 
 macro_rules! mutex_getter {
     ($lock:expr, $default:expr) => {
-        $lock.ok().map(|g| *g).unwrap_or($default)
+        match $lock {
+            Ok(g) => *g,
+            Err(_) => {
+                warn_ui_mutex_poisoned_once();
+                $default
+            }
+        }
     };
 }
 

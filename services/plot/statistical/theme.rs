@@ -29,15 +29,85 @@ pub fn apply_chart_theme(html: String, theme_str: &str) -> String {
     inject_theme(html, t)
 }
 
+#[derive(Clone, Copy)]
+struct ThemeStyle {
+    bg: &'static str,
+    dark_ui: bool,
+    canvas_filter: &'static str,
+    glow: &'static str,
+    sh_a: &'static str,
+    sh_b: &'static str,
+    extra_2d: &'static str,
+}
+
+const NONE_STYLE: ThemeStyle = ThemeStyle {
+    bg: "transparent",
+    dark_ui: false,
+    canvas_filter: "",
+    glow: "",
+    sh_a: "",
+    sh_b: "",
+    extra_2d: "",
+};
+
+const THEME_STYLES: &[(ChartTheme, ThemeStyle)] = &[
+    (ChartTheme::Deluxe, ThemeStyle {
+        bg: "#060d1c",
+        dark_ui: true,
+        canvas_filter: "saturate(1.9) hue-rotate(-20deg) brightness(0.92)",
+        glow: "0 0 0 1px rgba(0,200,255,0.18),0 0 60px rgba(0,180,255,0.5),0 0 120px rgba(0,80,200,0.25)",
+        sh_a: "rgba(0,200,255,0.12)",
+        sh_b: "rgba(0,60,180,0.09)",
+        extra_2d: "saturate(1.3) brightness(1.05) drop-shadow(0 0 8px rgba(0,200,255,0.5))",
+    }),
+    (ChartTheme::Prism, ThemeStyle {
+        bg: "#0d001a",
+        dark_ui: false,
+        canvas_filter: "saturate(2.2) contrast(1.08) hue-rotate(30deg) brightness(0.9)",
+        glow: "0 0 0 1px rgba(200,80,255,0.18),0 0 55px rgba(180,60,255,0.55)",
+        sh_a: "rgba(200,80,255,0.13)",
+        sh_b: "rgba(100,0,200,0.1)",
+        extra_2d: "saturate(2) brightness(1.05) drop-shadow(0 0 6px rgba(200,80,255,0.45))",
+    }),
+    (ChartTheme::Aurora, ThemeStyle {
+        bg: "#01060f",
+        dark_ui: true,
+        canvas_filter: "saturate(1.5) hue-rotate(195deg) brightness(1.0)",
+        glow: "0 0 0 1px rgba(80,170,255,0.16),0 0 50px rgba(80,160,255,0.5),0 0 100px rgba(40,80,200,0.22)",
+        sh_a: "rgba(100,180,255,0.11)",
+        sh_b: "rgba(60,100,220,0.09)",
+        extra_2d: "brightness(1.04) drop-shadow(0 0 6px rgba(80,170,255,0.4))",
+    }),
+    (ChartTheme::Inferno, ThemeStyle {
+        bg: "#080000",
+        dark_ui: true,
+        canvas_filter: "sepia(0.85) saturate(3.5) hue-rotate(-15deg) brightness(0.82)",
+        glow: "0 0 0 1px rgba(200,50,0,0.22),0 0 55px rgba(180,40,0,0.6),0 0 110px rgba(100,15,0,0.3)",
+        sh_a: "rgba(220,80,10,0.13)",
+        sh_b: "rgba(120,20,0,0.1)",
+        extra_2d: "brightness(1.04) drop-shadow(0 0 5px rgba(160,40,0,0.45))",
+    }),
+    (ChartTheme::Frost, ThemeStyle {
+        bg: "#000c1a",
+        dark_ui: true,
+        canvas_filter: "saturate(1.5) hue-rotate(185deg) brightness(1.08)",
+        glow: "0 0 0 1px rgba(120,210,255,0.2),0 0 60px rgba(100,200,255,0.55),0 0 120px rgba(50,130,220,0.28)",
+        sh_a: "rgba(140,220,255,0.13)",
+        sh_b: "rgba(60,130,230,0.1)",
+        extra_2d: "brightness(1.06) drop-shadow(0 0 7px rgba(100,200,255,0.45))",
+    }),
+];
+
+fn theme_style(t: ChartTheme) -> ThemeStyle {
+    THEME_STYLES
+        .iter()
+        .find(|(k, _)| *k == t)
+        .map(|(_, s)| *s)
+        .unwrap_or(NONE_STYLE)
+}
+
 fn apply_3d_theme(html: String, t: ChartTheme) -> String {
-    let (bg, canvas_f, glow, sh_a, sh_b) = match t {
-        ChartTheme::Deluxe  => ("#060d1c", "saturate(1.9) hue-rotate(-20deg) brightness(0.92)", "0 0 0 1px rgba(0,200,255,0.18),0 0 60px rgba(0,180,255,0.5),0 0 120px rgba(0,80,200,0.25)", "rgba(0,200,255,0.12)", "rgba(0,60,180,0.09)"),
-        ChartTheme::Prism   => ("#0d001a", "saturate(2.2) contrast(1.08) hue-rotate(30deg) brightness(0.9)", "0 0 0 1px rgba(200,80,255,0.18),0 0 55px rgba(180,60,255,0.55)", "rgba(200,80,255,0.13)", "rgba(100,0,200,0.1)"),
-        ChartTheme::Aurora  => ("#01060f", "saturate(1.5) hue-rotate(195deg) brightness(1.0)", "0 0 0 1px rgba(80,170,255,0.16),0 0 50px rgba(80,160,255,0.5),0 0 100px rgba(40,80,200,0.22)", "rgba(100,180,255,0.11)", "rgba(60,100,220,0.09)"),
-        ChartTheme::Inferno => ("#080000", "sepia(0.85) saturate(3.5) hue-rotate(-15deg) brightness(0.82)", "0 0 0 1px rgba(200,50,0,0.22),0 0 55px rgba(180,40,0,0.6),0 0 110px rgba(100,15,0,0.3)", "rgba(220,80,10,0.13)", "rgba(120,20,0,0.1)"),
-        ChartTheme::Frost   => ("#000c1a", "saturate(1.5) hue-rotate(185deg) brightness(1.08)", "0 0 0 1px rgba(120,210,255,0.2),0 0 60px rgba(100,200,255,0.55),0 0 120px rgba(50,130,220,0.28)", "rgba(140,220,255,0.13)", "rgba(60,130,230,0.1)"),
-        ChartTheme::None    => unreachable!(),
-    };
+    let ThemeStyle { bg, canvas_filter: canvas_f, glow, sh_a, sh_b, .. } = theme_style(t);
     let extra_css = format!(
         "body{{background:{bg}!important}}\
          .c3w{{box-shadow:{glow}!important}}\
@@ -55,27 +125,7 @@ fn inject_theme(html: String, t: ChartTheme) -> String {
     let fid = format!("{}-{}", t.name(), id.trim_start_matches("sp"));
     let cls = format!("sp-t-{}", t.name());
 
-    let (bg, dark_ui) = match t {
-        ChartTheme::Deluxe => ("#060d1c", true),
-        ChartTheme::Prism => ("#0d001a", false),
-        ChartTheme::Aurora => ("#01060f", true),
-        ChartTheme::Inferno => ("#080000", true),
-        ChartTheme::Frost => ("#000c1a", true),
-        ChartTheme::None => ("transparent", false),
-    };
-
-    let extra = match t {
-        ChartTheme::Deluxe => {
-            "saturate(1.3) brightness(1.05) drop-shadow(0 0 8px rgba(0,200,255,0.5))"
-        }
-        ChartTheme::Prism => {
-            "saturate(2) brightness(1.05) drop-shadow(0 0 6px rgba(200,80,255,0.45))"
-        }
-        ChartTheme::Aurora => "brightness(1.04) drop-shadow(0 0 6px rgba(80,170,255,0.4))",
-        ChartTheme::Inferno => "brightness(1.04) drop-shadow(0 0 5px rgba(160,40,0,0.45))",
-        ChartTheme::Frost => "brightness(1.06) drop-shadow(0 0 7px rgba(100,200,255,0.45))",
-        ChartTheme::None => "",
-    };
+    let ThemeStyle { bg, dark_ui, extra_2d: extra, .. } = theme_style(t);
 
     let fid_f = format!("{fid}-f");
     let defs = format!("{}{}", build_filter(&fid, t), build_flat_filter(&fid_f, t));

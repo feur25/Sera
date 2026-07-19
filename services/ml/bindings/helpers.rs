@@ -39,16 +39,22 @@ pub fn js<'a>(v: &'a serde_json::Value, k: &str, d: &'a str) -> &'a str {
     v.get(k).and_then(|x| x.as_str()).unwrap_or(d)
 }
 pub fn yf(v: &serde_json::Value) -> Vec<f64> {
-    v.get("y_train")
-        .or_else(|| v.get("y"))
-        .and_then(|x| serde_json::from_value(x.clone()).ok())
-        .unwrap_or_default()
+    match v.get("y_train").or_else(|| v.get("y")) {
+        Some(x) => serde_json::from_value(x.clone()).unwrap_or_else(|e| {
+            eprintln!("seraplot ml: y_train/y present but failed to parse as numeric labels: {e}");
+            Vec::new()
+        }),
+        None => Vec::new(),
+    }
 }
 pub fn yi(v: &serde_json::Value) -> Vec<i32> {
-    v.get("y_train")
-        .or_else(|| v.get("y"))
-        .and_then(|x| serde_json::from_value(x.clone()).ok())
-        .unwrap_or_default()
+    match v.get("y_train").or_else(|| v.get("y")) {
+        Some(x) => serde_json::from_value(x.clone()).unwrap_or_else(|e| {
+            eprintln!("seraplot ml: y_train/y present but failed to parse as integer labels: {e}");
+            Vec::new()
+        }),
+        None => Vec::new(),
+    }
 }
 
 pub fn parse_max_features(v: &serde_json::Value) -> crate::ml::tree::random_forest::MaxFeatures {

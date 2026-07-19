@@ -263,7 +263,9 @@ impl SeraDFrame_ {
                         Series::Str(c) => c[i].to_string().into_py(py),
                         Series::Bool(c) => c[i].into_py(py),
                     };
-                    let _ = dict.set_item(name, v);
+                    if let Err(e) = dict.set_item(name, v) {
+                        eprintln!("seraplot: DFrame.to_records could not set field '{name}' on row {i}: {e}");
+                    }
                 }
                 dict.into()
             })

@@ -5,7 +5,6 @@ pub mod decomposition;
 pub mod distributed;
 pub mod export;
 pub mod gpu;
-pub mod handle;
 pub mod linalg;
 pub mod linear;
 pub mod metrics;

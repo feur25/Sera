@@ -143,13 +143,23 @@ impl EventDispatcher for Mutex<AppState> {
                 };
                 let args: Vec<String> = input_ids.iter().map(|id| state.values.get(id).cloned().unwrap_or_default()).collect();
                 let py_args = PyTuple::new_bound(py, &args);
-                if let Ok(result) = handler.call1(py, py_args) {
-                    if let Ok(html) = extract_html(py, &result) {
-                        state.component_html.insert(output_id.clone(), html.clone());
-                        // render_page() only ever emits the DOM id "{output_id}-wrap" (see
-                        // below); the live-update message must target that same id or the
-                        // client's getElementById lookup silently finds nothing.
-                        updates.push((format!("{output_id}-wrap"), html));
+                match handler.call1(py, py_args) {
+                    Ok(result) => match extract_html(py, &result) {
+                        Ok(html) => {
+                            state.component_html.insert(output_id.clone(), html.clone());
+                            // render_page() only ever emits the DOM id "{output_id}-wrap" (see
+                            // below); the live-update message must target that same id or the
+                            // client's getElementById lookup silently finds nothing.
+                            updates.push((format!("{output_id}-wrap"), html));
+                        }
+                        Err(e) => eprintln!(
+                            "seraplot webapp: callback for output '{output_id}' did not return \
+                             renderable html/Chart: {e}"
+                        ),
+                    },
+                    Err(e) => {
+                        e.print(py);
+                        eprintln!("seraplot webapp: callback for output '{output_id}' raised an exception (see traceback above)");
                     }
                 }
             }

@@ -1,5 +1,4 @@
 pub mod charts;
-pub mod docs;
 pub mod ml;
 #[cfg(feature = "python")]
 pub mod registry;
