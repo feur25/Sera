@@ -34,7 +34,7 @@
 .cm-card pre code{font-size:12.5px;line-height:1.55;color:var(--sp-text);background:none;padding:0}
 .cm-params{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .cm-param{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;font-size:12.5px}
-.cm-param code{background:var(--sp-border);padding:1px 7px;border-radius:5px;color:var(--sp-text);font-size:12px}
+.cm-param code{background:var(--sp-code-bg);padding:1px 7px;border-radius:5px;color:var(--sp-code-fg);font-size:12px}
 .cm-param-ty{color:var(--sp-important);font-family:"JetBrains Mono",Consolas,monospace;font-size:11.5px}
 .cm-param-desc{color:var(--sp-text-muted)}
 .cm-save{margin:1.2em 0;padding:14px 16px 14px 18px;background:var(--sp-surface);border:1px solid var(--sp-border);border-radius:10px;overflow:hidden}
@@ -68,7 +68,7 @@
 .cm-table th{background:var(--sp-surface);color:var(--sp-important);padding:10px 14px;text-align:left;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid var(--sp-border)}
 .cm-table td{padding:9px 14px;color:var(--sp-text);border-bottom:1px solid var(--sp-surface);vertical-align:top}
 .cm-table tr:last-child td{border-bottom:none}
-.cm-table code{background:var(--sp-border);padding:1px 6px;border-radius:4px;font-size:12px;color:var(--sp-text)}
+.cm-table code{background:var(--sp-code-bg);padding:1px 6px;border-radius:4px;font-size:12px;color:var(--sp-code-fg)}
 
 .cm-tip{margin:1em 0;padding:12px 16px;background:rgba(34,197,94,.06);border-left:3px solid var(--sp-ok);border-radius:0 6px 6px 0;color:var(--sp-text);font-size:13.5px;line-height:1.55}
 .cm-tip strong{color:var(--sp-ok);font-weight:700}

@@ -7,20 +7,27 @@
      follows whichever theme is active instead of a single hardcoded dark
      palette. */
   --sp-surface: var(--sidebar-bg);
-  --sp-surface-2: var(--theme-popup-bg);
-  --sp-surface-hover: var(--theme-hover);
+  /* theme-popup-bg / theme-hover are not guaranteed to sit in the same
+     lightness family as sidebar-bg (the "rust" theme pairs a dark sidebar
+     with a light popup), so surface tiers are mixed from sidebar-bg/fg
+     instead — this keeps --sp-text legible on every tier in every theme. */
+  --sp-surface-2: color-mix(in srgb, var(--sidebar-bg) 88%, var(--sidebar-fg) 12%);
+  --sp-surface-hover: color-mix(in srgb, var(--sidebar-bg) 80%, var(--sidebar-fg) 20%);
   --sp-border: var(--table-border-color);
   --sp-text: var(--sidebar-fg);
-  --sp-text-muted: var(--icons);
-  --sp-accent: var(--links);
+  /* icons / links / blockquote-*-color are calibrated against --bg (the
+     page), not --sidebar-bg — mixing them 50/50 with sidebar-fg keeps their
+     hue for semantic meaning while guaranteeing contrast against --sp-surface. */
+  --sp-text-muted: color-mix(in srgb, var(--icons) 50%, var(--sidebar-fg) 50%);
+  --sp-accent: color-mix(in srgb, var(--links) 50%, var(--sidebar-fg) 50%);
   --sp-code-bg: var(--quote-bg);
   --sp-code-border: var(--quote-border);
   --sp-code-fg: var(--inline-code-color);
-  --sp-ok: var(--blockquote-tip-color);
-  --sp-info: var(--blockquote-note-color);
-  --sp-warn: var(--blockquote-warning-color);
-  --sp-danger: var(--blockquote-caution-color);
-  --sp-important: var(--blockquote-important-color);
+  --sp-ok: color-mix(in srgb, var(--blockquote-tip-color) 50%, var(--sidebar-fg) 50%);
+  --sp-info: color-mix(in srgb, var(--blockquote-note-color) 50%, var(--sidebar-fg) 50%);
+  --sp-warn: color-mix(in srgb, var(--blockquote-warning-color) 50%, var(--sidebar-fg) 50%);
+  --sp-danger: color-mix(in srgb, var(--blockquote-caution-color) 50%, var(--sidebar-fg) 50%);
+  --sp-important: color-mix(in srgb, var(--blockquote-important-color) 50%, var(--sidebar-fg) 50%);
 }
 
 /* ── Tables scroll within their own box instead of overflowing the page ──── */
@@ -960,7 +967,7 @@ body.sp-body-bottom .content {
 .ml-cat-h strong { font-size: 14px; color: var(--sp-text); }
 .ml-cat-h .ml-badge {
   font-size: 11px; padding: 2px 8px; border-radius: 999px;
-  background: var(--sp-border); color: var(--sp-important);
+  background: var(--sp-code-bg); color: var(--sp-code-fg);
 }
 .ml-cat ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7; }
 .ml-cat ul li a { color: var(--sp-text); text-decoration: none; }

@@ -43,7 +43,7 @@
   font-size: 18px; cursor: pointer; line-height: 1; padding: 1px 4px;
   border-radius: 4px; transition: color .15s, background .15s;
 }
-.sp-pip-x:hover { color: var(--sp-text); background: var(--sp-border); }
+.sp-pip-x:hover { color: var(--sp-text); background: var(--sp-surface-hover); }
 
 /* ── Install method switch ─────────────────────────────────────── */
 .sp-isw { border: 1px solid var(--sp-border); border-radius: 10px; overflow: hidden; margin: 1.5em 0; }
