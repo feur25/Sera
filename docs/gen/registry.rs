@@ -41,6 +41,31 @@ pub(crate) fn write_params_registry(
     fs::write(out_dir.join("params_registry.rs"), pbody).expect("write params_registry.rs");
 }
 
+pub(crate) fn write_required_registry(
+    out_dir: &Path,
+    required_entries: &[(String, String, Vec<String>)],
+) {
+    let mut rbody = String::from("pub static REQUIRED_REGISTRY: &[(&str, &str, &[&str])] = &[\n");
+    for (f, v, ps) in required_entries {
+        rbody.push_str("    (\"");
+        rbody.push_str(f);
+        rbody.push_str("\", \"");
+        rbody.push_str(v);
+        rbody.push_str("\", &[");
+        for (i, p) in ps.iter().enumerate() {
+            if i > 0 {
+                rbody.push_str(", ");
+            }
+            rbody.push('"');
+            rbody.push_str(p);
+            rbody.push('"');
+        }
+        rbody.push_str("]),\n");
+    }
+    rbody.push_str("];\n");
+    fs::write(out_dir.join("required_registry.rs"), rbody).expect("write required_registry.rs");
+}
+
 pub(crate) fn write_sera_aliases(out_dir: &Path, alias_entries: &[(String, Vec<String>)]) {
     let mut abody = String::from("pub static SERA_ALIASES: &[(&str, &[&str])] = &[\n");
     for (k, al) in alias_entries {

@@ -46,6 +46,7 @@ fn main() {
         &plot_root,
         &plot_doc_data.demo_entries,
         &plot_doc_data.param_entries,
+        &plot_doc_data.required_entries,
     );
     build_ml::write_registry(&src_root, &ml_root, &data_root);
 
@@ -76,6 +77,7 @@ fn main() {
 
     build_registry::write_demo_registry(&out_dir, &plot_doc_data.demo_entries);
     build_registry::write_params_registry(&out_dir, &plot_doc_data.param_entries);
+    build_registry::write_required_registry(&out_dir, &plot_doc_data.required_entries);
     build_registry::write_sera_aliases(&out_dir, &plot_doc_data.alias_entries);
     build_registry::write_chart_alias_registry(&out_dir, &chart_alias_pairs);
     build_bindings::write_all(&src_root, &bindings_root, &out_dir, &builder_fns, &ml_builder_fns);

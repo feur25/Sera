@@ -155,6 +155,12 @@ fn _required_params_json(chart: Option<&str>, variant: Option<&str>) -> String {
 }
 
 #[pyfunction]
+#[pyo3(signature = (chart = None, variant = None))]
+fn _true_required_params_json(chart: Option<&str>, variant: Option<&str>) -> String {
+    serde_json::to_string(&crate::true_required_params(chart, variant)).unwrap_or_default()
+}
+
+#[pyfunction]
 fn _chart_variants_json() -> String {
     serde_json::to_string(&crate::chart_variants()).unwrap_or_default()
 }
@@ -436,6 +442,7 @@ pub fn __init(_py: Python<'_>, m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(_demo, m)?)?;
     m.add_function(wrap_pyfunction!(_params_json, m)?)?;
     m.add_function(wrap_pyfunction!(_required_params_json, m)?)?;
+    m.add_function(wrap_pyfunction!(_true_required_params_json, m)?)?;
     m.add_function(wrap_pyfunction!(_chart_variants_json, m)?)?;
     m.add_function(wrap_pyfunction!(_chart_themes_json, m)?)?;
     m.add_function(wrap_pyfunction!(_scenes3d_json, m)?)?;

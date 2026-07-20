@@ -243,6 +243,7 @@ fn doc_js_str(s: &str) -> String {
 pub struct PlotDocData {
     pub demo_entries: Vec<(String, String, String)>,
     pub param_entries: Vec<(String, String, Vec<String>)>,
+    pub required_entries: Vec<(String, String, Vec<String>)>,
     pub alias_entries: Vec<(String, Vec<String>)>,
 }
 
@@ -348,6 +349,7 @@ fn inherit_dispatch_params(
     plot_root: &Path,
     param_entries: &mut Vec<(String, String, Vec<String>)>,
     demo_entries: &mut Vec<(String, String, String)>,
+    required_entries: &mut Vec<(String, String, Vec<String>)>,
 ) {
     let mut files = Vec::new();
     crate::build_common::walk(plot_root, &mut files);
@@ -421,7 +423,19 @@ fn inherit_dispatch_params(
                     .find(|(f, v, _)| f == family && v == module)
                     .cloned()
                 {
-                    demo_entries.push((family.to_string(), variant, demo));
+                    demo_entries.push((family.to_string(), variant.clone(), demo));
+                }
+            }
+            if !required_entries
+                .iter()
+                .any(|(f, v, _)| f == family && v == &variant)
+            {
+                if let Some((_, _, required)) = required_entries
+                    .iter()
+                    .find(|(f, v, _)| f == family && v == module)
+                    .cloned()
+                {
+                    required_entries.push((family.to_string(), variant, required));
                 }
             }
         }
@@ -430,6 +444,8 @@ fn inherit_dispatch_params(
     param_entries.dedup_by(|a, b| a.0 == b.0 && a.1 == b.1);
     demo_entries.sort();
     demo_entries.dedup_by(|a, b| a.0 == b.0 && a.1 == b.1);
+    required_entries.sort();
+    required_entries.dedup_by(|a, b| a.0 == b.0 && a.1 == b.1);
 }
 
 pub fn collect(plot_root: &Path) -> PlotDocData {
@@ -438,6 +454,7 @@ pub fn collect(plot_root: &Path) -> PlotDocData {
     files.sort();
     let mut demo_entries = Vec::new();
     let mut param_entries = Vec::new();
+    let mut required_entries = Vec::new();
     let mut alias_entries = Vec::new();
     for f in &files {
         let Ok(src) = fs::read_to_string(f) else {
@@ -478,6 +495,16 @@ pub fn collect(plot_root: &Path) -> PlotDocData {
             fields
         };
         if !params.is_empty() {
+            let dir = f.parent();
+            let true_required = dir.map(crate::build_common::required_data_fields).unwrap_or_default();
+            let required: Vec<String> = params
+                .iter()
+                .filter(|p| true_required.contains(p))
+                .cloned()
+                .collect();
+            if !required.is_empty() {
+                required_entries.push((family.clone(), variant.clone(), required));
+            }
             param_entries.push((family.clone(), variant.clone(), params));
         }
         let aliases = crate::build_common::extract_sera_aliases(&src);
@@ -489,11 +516,13 @@ pub fn collect(plot_root: &Path) -> PlotDocData {
     }
     demo_entries.sort();
     param_entries.sort();
-    inherit_dispatch_params(plot_root, &mut param_entries, &mut demo_entries);
+    required_entries.sort();
+    inherit_dispatch_params(plot_root, &mut param_entries, &mut demo_entries, &mut required_entries);
     alias_entries.sort();
     PlotDocData {
         demo_entries,
         param_entries,
+        required_entries,
         alias_entries,
     }
 }
@@ -503,6 +532,7 @@ pub fn write_registry(
     plot_root: &Path,
     demo_entries: &[(String, String, String)],
     param_entries: &[(String, String, Vec<String>)],
+    required_entries: &[(String, String, Vec<String>)],
 ) {
     let mut files = Vec::new();
     crate::build_common::walk(plot_root, &mut files);
@@ -576,6 +606,24 @@ pub fn write_registry(
     }
     js.push_str("},required:{");
     for (i, (f, v, ps)) in param_entries.iter().enumerate() {
+        if i > 0 {
+            js.push(',');
+        }
+        js.push('"');
+        js.push_str(&crate::build_common::js_escape(&format!("{f}:{v}")));
+        js.push_str("\":[");
+        for (pi, p) in ps.iter().enumerate() {
+            if pi > 0 {
+                js.push(',');
+            }
+            js.push('"');
+            js.push_str(&crate::build_common::js_escape(p));
+            js.push('"');
+        }
+        js.push(']');
+    }
+    js.push_str("},trueRequired:{");
+    for (i, (f, v, ps)) in required_entries.iter().enumerate() {
         if i > 0 {
             js.push(',');
         }

@@ -1,4 +1,4 @@
-window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
+window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260720";
 (function () {
   var SELF_SRC = document.currentScript ? document.currentScript.src : "";
   var SP_WASM_BUILD = window.SP_WASM_BUILD;
@@ -1169,6 +1169,9 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
     if (fn === "requiredParams" && input) {
       return reg.required && reg.required[(input.family || input.chart || "") + ":" + (input.variant || "")] || fallback;
     }
+    if (fn === "trueRequiredParams" && input) {
+      return reg.trueRequired && reg.trueRequired[(input.family || input.chart || "") + ":" + (input.variant || "")] || fallback;
+    }
     if (fn === "docs") return reg.docs || fallback;
     return fallback;
   }
@@ -1232,13 +1235,15 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
         var parsed = parseDemoInput(code);
         demo = parsed && parsed.input ? Object.keys(parsed.input).filter(function (k) { return k !== "variant"; }).join(",") : "";
       }
-      var required = registryJson("requiredParams", { family: canonical, variant: item.key }, []);
+      var params = registryJson("requiredParams", { family: canonical, variant: item.key }, []);
+      var required = registryJson("trueRequiredParams", { family: canonical, variant: item.key }, []);
       var aliases = aliasesForItem(item);
       if (item.key === def && aliases.indexOf("default") === -1) aliases.push("default");
       var demoKeys = demoArgNames(demo);
       return {
         key: item.key,
         aliases: aliases.filter(function (a) { return a !== item.key; }),
+        params: Array.isArray(params) ? params : [],
         required: Array.isArray(required) ? required : [],
         demo: demoKeys
       };
@@ -1249,10 +1254,10 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
     var rows = registryVariantRows(family);
     if (!rows.length) return false;
     var head = lang === "fr"
-      ? "<tr><th>Variante</th><th>Alias</th><th>Requis</th><th>Arguments de demo</th></tr>"
-      : "<tr><th>Variant</th><th>Aliases</th><th>Required</th><th>Demo args</th></tr>";
+      ? "<tr><th>Variante</th><th>Alias</th><th>Params</th><th>Requis</th><th>Arguments de demo</th></tr>"
+      : "<tr><th>Variant</th><th>Aliases</th><th>Params</th><th>Required</th><th>Demo args</th></tr>";
     el.innerHTML = "<table><thead>" + head + "</thead><tbody>" + rows.map(function (r) {
-      return "<tr><td><code>" + escapeAttr(r.key) + "</code></td><td>" + codeList(r.aliases) + "</td><td>" + codeList(r.required) + "</td><td>" + codeList(r.demo) + "</td></tr>";
+      return "<tr><td><code>" + escapeAttr(r.key) + "</code></td><td>" + codeList(r.aliases) + "</td><td>" + codeList(r.params) + "</td><td>" + codeList(r.required) + "</td><td>" + codeList(r.demo) + "</td></tr>";
     }).join("") + "</tbody></table>";
     return true;
   }

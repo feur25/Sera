@@ -26,6 +26,7 @@ pub use seraplot_macros::{
 
 include!(concat!(env!("OUT_DIR"), "/demo_registry.rs"));
 include!(concat!(env!("OUT_DIR"), "/params_registry.rs"));
+include!(concat!(env!("OUT_DIR"), "/required_registry.rs"));
 include!(concat!(env!("OUT_DIR"), "/sera_aliases.rs"));
 include!(concat!(env!("OUT_DIR"), "/chart_alias_registry.rs"));
 
@@ -44,6 +45,19 @@ pub fn required_params_for(family: &str, variant: &str) -> Option<&'static [&'st
         return Some(e.2);
     }
     PARAMS_REGISTRY
+        .iter()
+        .find(|(f, v, _)| *f == family && *v == "basic")
+        .map(|e| e.2)
+}
+
+pub fn true_required_params_for(family: &str, variant: &str) -> Option<&'static [&'static str]> {
+    if let Some(e) = REQUIRED_REGISTRY
+        .iter()
+        .find(|(f, v, _)| *f == family && *v == variant)
+    {
+        return Some(e.2);
+    }
+    REQUIRED_REGISTRY
         .iter()
         .find(|(f, v, _)| *f == family && *v == "basic")
         .map(|e| e.2)
@@ -952,6 +966,69 @@ pub fn required_params(chart: Option<&str>, variant: Option<&str>) -> serde_json
 #[sera_doc(
     category = "utility",
     file = "api/reference.md",
+    en = "Returns the data parameters a chart variant cannot render anything meaningful without \
+          (e.g. the labels/values a bar chart plots) -- a strict subset of required_params(), \
+          which lists every parameter the variant accepts rather than the ones that are truly \
+          mandatory.",
+    fr = "Retourne les paramètres de données sans lesquels une variante de graphique ne peut rien \
+          afficher de significatif (ex. les labels/values d'un bar chart) -- un sous-ensemble \
+          strict de required_params(), qui liste tous les paramètres acceptés par la variante \
+          plutôt que ceux réellement obligatoires.",
+    param(
+        name = "chart",
+        ty = "str | None",
+        en = "Chart family name.",
+        fr = "Nom de la famille de graphique."
+    ),
+    param(
+        name = "variant",
+        ty = "str | None",
+        en = "Variant name.",
+        fr = "Nom de la variante."
+    )
+)]
+#[sera_sig(chart=None, variant=None)]
+#[sera_bind(serde)]
+pub fn true_required_params(chart: Option<&str>, variant: Option<&str>) -> serde_json::Value {
+    use serde_json::{Map, Value};
+    if let (Some(c), Some(v)) = (chart, variant) {
+        let list = crate::true_required_params_for(c, v).unwrap_or(&[]);
+        return Value::Array(
+            list.iter()
+                .map(|s| Value::String((*s).to_string()))
+                .collect(),
+        );
+    }
+    if let Some(c) = chart {
+        let mut m = Map::new();
+        for (f, v, p) in crate::REQUIRED_REGISTRY.iter() {
+            if *f == c {
+                m.insert(
+                    (*v).to_string(),
+                    Value::Array(p.iter().map(|s| Value::String((*s).to_string())).collect()),
+                );
+            }
+        }
+        return Value::Object(m);
+    }
+    let mut root = Map::new();
+    for (f, v, p) in crate::REQUIRED_REGISTRY.iter() {
+        let entry = root
+            .entry((*f).to_string())
+            .or_insert_with(|| Value::Object(Map::new()));
+        if let Value::Object(inner) = entry {
+            inner.insert(
+                (*v).to_string(),
+                Value::Array(p.iter().map(|s| Value::String((*s).to_string())).collect()),
+            );
+        }
+    }
+    Value::Object(root)
+}
+
+#[sera_doc(
+    category = "utility",
+    file = "api/reference.md",
     en = "Returns a mapping of each chart family name to its list of available variant names and aliases.",
     fr = "Retourne une association de chaque nom de famille de graphique à sa liste de variantes disponibles et alias."
 )]
@@ -1170,6 +1247,7 @@ pub fn hw() -> crate::core::hw_profile::HwProfile {
     *crate::core::hw_profile::hw()
 }
 
+#[cfg(feature = "python")]
 pub use crate::data::{PyDataset, PyDatasetStats};
 
 

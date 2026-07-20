@@ -581,3 +581,194 @@ pub(crate) fn filtered_auto_fields(src: &str, allowed: &[String]) -> Vec<String>
         .collect()
 }
 
+fn scan_top_level_pairs(src: &str) -> Vec<(String, String)> {
+    let mut out = Vec::new();
+    let mut chars = src.char_indices().peekable();
+    while let Some((start, c)) = chars.next() {
+        if !(c.is_ascii_alphabetic() || c == '_') {
+            continue;
+        }
+        let mut end = start + c.len_utf8();
+        while let Some(&(i, c2)) = chars.peek() {
+            if c2.is_ascii_alphanumeric() || c2 == '_' {
+                end = i + c2.len_utf8();
+                chars.next();
+            } else {
+                break;
+            }
+        }
+        let name = &src[start..end];
+        let after = src[end..].trim_start();
+        if !after.starts_with(':') || after.starts_with("::") {
+            continue;
+        }
+        let val_start = end + (src[end..].len() - after.len()) + 1;
+        let mut depth = 0i32;
+        let mut in_str = false;
+        let mut esc = false;
+        let mut val_end = src.len();
+        let bytes = src.as_bytes();
+        let mut j = val_start;
+        while j < bytes.len() {
+            let b = bytes[j];
+            if esc {
+                esc = false;
+                j += 1;
+                continue;
+            }
+            match b {
+                b'\\' if in_str => esc = true,
+                b'"' => in_str = !in_str,
+                b'(' | b'[' | b'{' | b'<' if !in_str => depth += 1,
+                b')' | b']' | b'}' | b'>' if !in_str => {
+                    if depth == 0 {
+                        val_end = j;
+                        break;
+                    }
+                    depth -= 1;
+                }
+                b',' if !in_str && depth == 0 => {
+                    val_end = j;
+                    break;
+                }
+                _ => {}
+            }
+            j += 1;
+        }
+        if val_end > src.len() {
+            val_end = src.len();
+        }
+        out.push((name.to_string(), src[val_start..val_end].trim().to_string()));
+        while chars.peek().map(|&(i, _)| i < val_end).unwrap_or(false) {
+            chars.next();
+        }
+    }
+    out
+}
+
+fn is_collection_type(ty: &str) -> bool {
+    let t = ty.trim();
+    t.contains('[') || t.starts_with("Vec<") || t.starts_with("Vec ")
+}
+
+fn is_empty_default(expr: &str) -> bool {
+    matches!(expr.trim(), "&[]" | "[]" | "Vec::new()" | "vec![]" | "&Vec::new()")
+}
+
+const NON_DATA_COLLECTION_FIELDS: &[&str] = &[
+    "hover",
+    "palette",
+    "color_groups",
+    "thresholds",
+    "pull",
+    "x_widths",
+    "y_heights",
+    "row_totals",
+    "col_totals",
+    "secondary_matrix",
+    "mask",
+    "points_x",
+    "points_y",
+    "point_clusters",
+    "cluster_labels",
+    "edges_i",
+    "edges_j",
+    "edges_w",
+    "ranges",
+    "comparisons",
+];
+
+fn braced_block_after(src: &str, marker_pos: usize) -> Option<(usize, usize)> {
+    let brace_pos = marker_pos + src[marker_pos..].find('{')?;
+    let end = matching_brace(src, brace_pos)?;
+    Some((brace_pos + 1, end))
+}
+
+fn required_from_type_default_pairs(
+    types: &std::collections::HashMap<String, String>,
+    defaults: &[(String, String)],
+) -> Vec<String> {
+    let mut out = Vec::new();
+    for (name, default_expr) in defaults {
+        if NON_DATA_COLLECTION_FIELDS.contains(&name.as_str()) {
+            continue;
+        }
+        let Some(ty) = types.get(name) else { continue };
+        if is_collection_type(ty) && is_empty_default(default_expr) {
+            out.push(name.clone());
+        }
+    }
+    out.sort();
+    out
+}
+
+fn required_data_fields_macro_form(src: &str) -> Option<Vec<String>> {
+    let macro_pos = src.find("chart_config!")?;
+    let struct_kw = macro_pos + src[macro_pos..].find("struct")?;
+    let (struct_start, struct_end) = braced_block_after(src, struct_kw)?;
+    let types: std::collections::HashMap<String, String> =
+        scan_top_level_pairs(&src[struct_start..struct_end]).into_iter().collect();
+
+    let defaults_kw = struct_end + src[struct_end..].find("defaults")?;
+    let (def_start, def_end) = braced_block_after(src, defaults_kw)?;
+    let defaults = scan_top_level_pairs(&src[def_start..def_end]);
+
+    Some(required_from_type_default_pairs(&types, &defaults))
+}
+
+fn required_data_fields_verbose_form(src: &str) -> Option<Vec<String>> {
+    let struct_start = src.find("struct ")?;
+    let (struct_body_start, struct_body_end) = braced_block_after(src, struct_start)?;
+    let types: std::collections::HashMap<String, String> =
+        scan_top_level_pairs(&src[struct_body_start..struct_body_end]).into_iter().collect();
+
+    let default_fn = src.find("fn default()")?;
+    let self_kw = default_fn + src[default_fn..].find("Self")?;
+    let (self_body_start, self_body_end) = braced_block_after(src, self_kw)?;
+    let defaults = scan_top_level_pairs(&src[self_body_start..self_body_end]);
+
+    Some(required_from_type_default_pairs(&types, &defaults))
+}
+
+pub(crate) fn required_data_fields(dir: &Path) -> Vec<String> {
+    let Ok(src) = fs::read_to_string(dir.join("config.rs")) else {
+        return Vec::new();
+    };
+    required_data_fields_macro_form(&src)
+        .or_else(|| required_data_fields_verbose_form(&src))
+        .unwrap_or_default()
+}
+
+fn matching_brace(src: &str, open_pos: usize) -> Option<usize> {
+    let bytes = src.as_bytes();
+    if bytes.get(open_pos) != Some(&b'{') {
+        return None;
+    }
+    let mut depth = 0i32;
+    let mut in_str = false;
+    let mut esc = false;
+    let mut i = open_pos;
+    while i < bytes.len() {
+        let b = bytes[i];
+        if esc {
+            esc = false;
+            i += 1;
+            continue;
+        }
+        match b {
+            b'\\' if in_str => esc = true,
+            b'"' => in_str = !in_str,
+            b'{' if !in_str => depth += 1,
+            b'}' if !in_str => {
+                depth -= 1;
+                if depth == 0 {
+                    return Some(i);
+                }
+            }
+            _ => {}
+        }
+        i += 1;
+    }
+    None
+}
+

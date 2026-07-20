@@ -395,6 +395,13 @@ fn generate_adapters(chart_fns: &[String], ml_fns: &[String], util_fns: &[String
     wasm_body.push_str("    let chart = i.chart.or(i.family);\n");
     wasm_body.push_str("    serde_json::to_string(&crate::required_params(chart.as_deref(), i.variant.as_deref())).unwrap_or_default()\n");
     wasm_body.push_str("}\n");
+    wasm_body.push_str("#[wasm_bindgen(js_name = \"trueRequiredParams\")]\n");
+    wasm_body.push_str("pub fn wasm_true_required_params_json(input: &str) -> String {\n");
+    wasm_body.push_str("    #[derive(serde::Deserialize, Default)] struct In { chart: Option<String>, family: Option<String>, variant: Option<String> }\n");
+    wasm_body.push_str("    let i: In = serde_json::from_str(input).unwrap_or_default();\n");
+    wasm_body.push_str("    let chart = i.chart.or(i.family);\n");
+    wasm_body.push_str("    serde_json::to_string(&crate::true_required_params(chart.as_deref(), i.variant.as_deref())).unwrap_or_default()\n");
+    wasm_body.push_str("}\n");
     wasm_body.push_str("#[wasm_bindgen(js_name = \"chartThemes\")]\n");
     wasm_body.push_str("pub fn wasm_chart_themes_json() -> String {\n");
     wasm_body.push_str("    serde_json::to_string(&crate::chart_themes()).unwrap_or_default()\n");
