@@ -490,7 +490,7 @@ iframe[loading="lazy"] {
   top: 72px;
   bottom: 20px;
   border-radius: 12px;
-  clip-path: inset(-60px -60px -60px -1px round 12px);
+  /* clip-path: inset(-60px -60px -60px -1px round 12px); */
 }
 #sp-params-panel.sp-p-right.sp-p-collapsed {
   bottom: auto;
