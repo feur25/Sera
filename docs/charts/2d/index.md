@@ -7,12 +7,12 @@ SeraPlot provides 41 two-dimensional chart types, from basic bar and line charts
 | Chart | Function |
 |---|---|
 | [Bar Chart](bar.md) | `bar()` |
-| [Horizontal Bar](hbar.md) | `hbar()` |
+| [Horizontal Bar](bar.md) | `hbar()` |
 | [Line Chart](line.md) | `line()` |
 | [Scatter Chart](scatter.md) | `scatter()` |
 | [Histogram](histogram.md) | `histogram()` |
-| [Grouped Bar](grouped-bar.md) | `grouped_bar()` |
-| [Stacked Bar](stacked-bar.md) | `stacked_bar()` |
+| [Grouped Bar](bar.md) | `grouped_bar()` |
+| [Stacked Bar](bar.md) | `stacked_bar()` |
 | [Heatmap](heatmap.md) | `heatmap()` |
 | [Pie Chart](pie.md) | `pie()` |
 | [Donut Chart](donut.md) | `donut()` |
@@ -56,12 +56,12 @@ SeraPlot propose 41 types de graphiques 2D, des barres et courbes basiques aux g
 | Graphique | Fonction |
 |---|---|
 | [Graphique en barres](bar.md) | `bar()` |
-| [Barres horizontales](hbar.md) | `hbar()` |
+| [Barres horizontales](bar.md) | `hbar()` |
 | [Courbe](line.md) | `line()` |
 | [Nuage de points](scatter.md) | `scatter()` |
 | [Histogramme](histogram.md) | `histogram()` |
-| [Barres groupées](grouped-bar.md) | `grouped_bar()` |
-| [Barres empilées](stacked-bar.md) | `stacked_bar()` |
+| [Barres groupées](bar.md) | `grouped_bar()` |
+| [Barres empilées](bar.md) | `stacked_bar()` |
 | [Heatmap](heatmap.md) | `heatmap()` |
 | [Camembert](pie.md) | `pie()` |
 | [Anneau](donut.md) | `donut()` |
