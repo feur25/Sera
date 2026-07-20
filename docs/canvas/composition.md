@@ -544,75 +544,114 @@ to a project's list and a new connector + donut slice appear on the next
 which means canvas composition isn't limited to hand-drawn shapes: real
 `sp.line()`, `sp.bar()`, `sp.gauge()`, `sp.area()` panels can sit framed,
 connected, and annotated by the exact same primitives used everywhere else
-on this page. Combined with the chart-level chainable methods (`title()`,
-`palette()`, `gridlines()`, `width()`/`height()` — see
-[Chart Methods](../getting-started/chart-methods.md)), each panel can be
-restyled to match the composition before it's placed:
+on this page. The part that actually sells "dashboard" over "four charts
+in boxes" is the same trick as the RéciTAC network above: a **shared
+center every panel connects to**. One glowing hub, four color-matched
+spokes (`connector` + a `circle` anchor at each end), each spoke tinted to
+match the panel it comes from via the chart-level chainable methods
+(`palette()`, `gridlines()`, `width()`/`height()` — see
+[Chart Methods](../getting-started/chart-methods.md)) applied before
+`place()`:
 
 ```python
 import seraplot as sp
 
-W, H = 1400, 900
+W, H = 1500, 1000
+HX, HY, HR = 750, 500, 76
+
 cv = sp.Canvas(W, H)
-cv.radial_gradient("dashBg", "#151a2e", "#05070d", cx=0.5, cy=0.32, r=0.85)
+cv.radial_gradient("dashBg", "#1a2140", "#04050a", cx=0.5, cy=0.5, r=0.9)
 cv.rect(0, 0, W, H, fill="url(#dashBg)", layer="bg")
+cv.radial_gradient("hubGlow", "#22d3ee", "#04050a", cx=0.5, cy=0.5, r=0.5)
 
-cv.text("Mission Control", 48, 54, size=26, color="#f8fafc", weight="800")
-cv.text("A composed dashboard: real SeraPlot charts placed and framed with sp.Canvas primitives",
-         48, 78, size=13, color="#64748b")
-
-def panel(x, y, w, h, name):
-    cv.rect(x - 14, y - 14, w + 28, h + 28, fill="#0d1326", stroke="rgba(99,102,241,.25)",
-            stroke_width=1, rx=16, layer="bg", name=name)
+cv.text("Mission Control", 48, 54, size=27, color="#f8fafc", weight="800")
+cv.text("Every panel wired into one live hub — sp.Canvas place() + connectors + real SeraPlot charts",
+         48, 80, size=13, color="#64748b")
 
 PALETTE = [0x6366f1, 0x22d3ee, 0xf59e0b, 0xf472b6]
+HEX = [f"#{c:06x}" for c in PALETTE]
+PW, PH = 600, 300
+PANELS = [("trend", 60, 150, HEX[0]), ("revenue", 840, 150, HEX[1]),
+          ("health", 60, 590, HEX[2]), ("incidents", 840, 590, HEX[3])]
+
+def panel_frame(x, y, w, h, color, name):
+    cv.rect(x - 16, y - 16, w + 32, h + 32, fill="#0b1022", stroke="rgba(255,255,255,.06)",
+            stroke_width=1, rx=18, layer="bg", name=name)
+    cv.rect(x - 16, y - 16, w + 32, 4, fill=color, rx=2, layer="bg")
+
+for name, x, y, color in PANELS:
+    panel_frame(x, y, PW, PH, color, f"panel-{name}")
 
 trend = sp.line(labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
                   values=[820, 932, 901, 934, 1290, 1330, 1320], title="Weekly Active Users",
-                 ).width(560).height(300).palette(PALETTE).gridlines(False).background("#0d1326")
+                 ).width(PW).height(PH).palette(PALETTE).gridlines(False).background("#0b1022")
 
 revenue = sp.bar(labels=["Core","Cloud","API","Mobile","Support"],
                    values=[420, 680, 310, 240, 150], title="Revenue by Segment",
-                  ).width(560).height(300).palette(PALETTE).gridlines(False).background("#0d1326")
+                  ).width(PW).height(PH).palette(PALETTE).gridlines(False).background("#0b1022")
 
-health = sp.gauge(value=87, title="System Health").width(340).height(300).background("#0d1326")
+health = sp.gauge(value=87, title="System Health").width(PW).height(PH).background("#0b1022")
 
 incidents = sp.area(labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], values=[5, 3, 6, 2, 4, 1, 2],
                       title="Open Incidents",
-                     ).width(560).height(300).palette([0xf472b6]).gridlines(False).background("#0d1326")
+                     ).width(PW).height(PH).palette([PALETTE[3]]).gridlines(False).background("#0b1022")
 
-panel(60, 130, 560, 300, "panel-trend")
-panel(780, 130, 560, 300, "panel-revenue")
-panel(60, 500, 340, 300, "panel-health")
-panel(780, 500, 560, 300, "panel-incidents")
-cv.place(trend, 60, 130, 560, 300, name="chart-trend")
-cv.place(revenue, 780, 130, 560, 300, name="chart-revenue")
-cv.place(health, 60, 500, 340, 300, name="chart-health")
-cv.place(incidents, 780, 500, 560, 300, name="chart-incidents")
+cv.place(trend, 60, 150, PW, PH, name="chart-trend")
+cv.place(revenue, 840, 150, PW, PH, name="chart-revenue")
+cv.place(health, 60, 590, PW, PH, name="chart-health")
+cv.place(incidents, 840, 590, PW, PH, name="chart-incidents")
 
-cv.connector(420, 130, 500, 60, color="#6366f1", width=1.5, opacity=0.4, bend=0.3)
-cv.connector(1060, 130, 980, 60, color="#22d3ee", width=1.5, opacity=0.4, bend=0.3)
-cv.circle(500, 60, 5, fill="#6366f1")
-cv.circle(980, 60, 5, fill="#22d3ee")
+ANCHORS = {"trend": (660, 300), "revenue": (840, 300), "health": (660, 700), "incidents": (840, 700)}
+for name, x, y, color in PANELS:
+    ax, ay = ANCHORS[name]
+    cv.connector(ax, ay, HX, HY, color=color, width=2, opacity=0.55, bend=0.28, name=f"spoke-{name}")
+    cv.circle(ax, ay, 6, fill=color, stroke="#04050a", stroke_width=2, name=f"anchor-{name}")
+    cv.circle(ax, ay, 11, fill="none", stroke=color, stroke_width=1, opacity=0.4)
 
-cv.annotate("Trending up 61% since Monday", 420, 200, 700, 440, color="#94a3b8", size=12,
-             line_dash="4,3", bg="#0d1326")
+cv.circle(HX, HY, HR + 34, fill="url(#hubGlow)", opacity=0.35)
+cv.ring(HX, HY, HR + 18, HR + 22, fill="#22d3ee", opacity=0.25)
+cv.ring(HX, HY, HR + 6, HR + 9, fill="#22d3ee", opacity=0.45)
 
-cv.text("87", 660, 650, size=46, color="#22d3ee", weight="800", anchor="middle")
-cv.text("uptime score", 660, 675, size=12, color="#64748b", anchor="middle")
+start = 0.0
+for name, _, _, color in PANELS:
+    end = start + 90
+    cv.wedge(HX, HY, HR - 10, HR - 4, start, end, fill=color, opacity=0.85)
+    start = end
+
+cv.circle(HX, HY, HR - 14, fill="#0b1022", stroke="#f8fafc", stroke_width=2)
+cv.text("87", HX, HY - 4, size=40, color="#22d3ee", weight="800", anchor="middle")
+cv.text("SYSTEM SCORE", HX, HY + 22, size=10, color="#64748b", anchor="middle", letter_spacing=1.5)
+
+cv.link("hub-cluster", ["anchor-trend", "anchor-revenue", "anchor-health", "anchor-incidents"])
+
+cv.annotate("Trending up 61% since Monday", 250, 320, 250, 500, color="#94a3b8", size=12,
+             line_dash="4,3", bg="#0b1022")
+cv.annotate("5 open, 2 critical", 1050, 660, 1150, 500, color="#94a3b8", size=12,
+             line_dash="4,3", bg="#0b1022")
 
 chart = cv.build()
 ```
 
-<iframe src="../previews/canvas-dashboard.html" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<iframe src="../previews/canvas-dashboard.html" style="width:100%;height:680px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
-`panel()` is a two-line helper — a rounded, tinted `rect()` on the `"bg"`
-layer, one call per chart — that's it for the "glass panel" look. The one
-easy-to-miss detail: any decoration meant to sit *behind* a placed chart
-(background fill, panel frames) needs `layer="bg"` explicitly — `rect()`'s
-default `layer="fg"` renders **on top of** placed charts by design (so
-connectors and callouts can cross over them), which will silently hide a
-panel's contents if the panel itself is drawn on the foreground layer.
+The hub itself is a small radial gauge in disguise — four `wedge` slices
+(one per panel, in that panel's color) inside two `ring` pulse tracks,
+built from exactly the same primitives as the "Composing micro-tools"
+dial and the RéciTAC donut rings above. Reusing one visual language across
+every worked example on this page is the actual point: primitives don't
+know or care whether they're drawing a progress dial, a discipline ring,
+or a dashboard hub.
+
+`panel_frame()` draws a rounded card plus a thin color-matched top border
+— that accent color is the same one used for that panel's spoke and
+`palette()`, so the eye connects "this line is orange" to "this panel is
+orange" to "this spoke is orange" without a legend. The one easy-to-miss
+detail behind all of it: any decoration meant to sit *behind* a placed
+chart (background fill, panel frames) needs `layer="bg"` explicitly —
+`rect()`'s default `layer="fg"` renders **on top of** placed charts by
+design (so connectors and callouts can cross over them), which will
+silently hide a panel's contents if the panel itself is drawn on the
+foreground layer.
 
 ---
 
@@ -1313,74 +1352,112 @@ apparaissent au prochain `build()`.
 un canvas, ce qui signifie que la composition canvas ne se limite pas aux
 formes dessinées à la main : de vrais panneaux `sp.line()`, `sp.bar()`,
 `sp.gauge()`, `sp.area()` peuvent être encadrés, connectés et annotés par
-les mêmes primitives que partout ailleurs sur cette page. Combiné aux
-méthodes chainables de niveau chart (`title()`, `palette()`, `gridlines()`,
-`width()`/`height()` — voir
-[Méthodes de graphique](../getting-started/chart-methods.md)), chaque
-panneau peut être restylé pour correspondre à la composition avant d'être
-placé :
+les mêmes primitives que partout ailleurs sur cette page. Ce qui fait
+vraiment la différence entre "tableau de bord" et "quatre charts dans des
+boîtes", c'est la même astuce que le réseau RéciTAC ci-dessus : un
+**centre partagé auquel chaque panneau se connecte**. Un hub lumineux, 4
+rayons colorés (`connector` + une ancre `circle` à chaque bout), chaque
+rayon teinté pour correspondre à son panneau via les méthodes chainables
+de niveau chart (`palette()`, `gridlines()`, `width()`/`height()` — voir
+[Méthodes de graphique](../getting-started/chart-methods.md)) appliquées
+avant `place()` :
 
 ```python
 import seraplot as sp
 
-W, H = 1400, 900
+W, H = 1500, 1000
+HX, HY, HR = 750, 500, 76
+
 cv = sp.Canvas(W, H)
-cv.radial_gradient("dashBg", "#151a2e", "#05070d", cx=0.5, cy=0.32, r=0.85)
+cv.radial_gradient("dashBg", "#1a2140", "#04050a", cx=0.5, cy=0.5, r=0.9)
 cv.rect(0, 0, W, H, fill="url(#dashBg)", layer="bg")
+cv.radial_gradient("hubGlow", "#22d3ee", "#04050a", cx=0.5, cy=0.5, r=0.5)
 
-cv.text("Mission Control", 48, 54, size=26, color="#f8fafc", weight="800")
-cv.text("Un tableau de bord composé : de vrais charts SeraPlot placés et encadrés avec des primitives sp.Canvas",
-         48, 78, size=13, color="#64748b")
-
-def panel(x, y, w, h, name):
-    cv.rect(x - 14, y - 14, w + 28, h + 28, fill="#0d1326", stroke="rgba(99,102,241,.25)",
-            stroke_width=1, rx=16, layer="bg", name=name)
+cv.text("Mission Control", 48, 54, size=27, color="#f8fafc", weight="800")
+cv.text("Chaque panneau relié à un seul hub vivant — sp.Canvas place() + connecteurs + de vrais charts SeraPlot",
+         48, 80, size=13, color="#64748b")
 
 PALETTE = [0x6366f1, 0x22d3ee, 0xf59e0b, 0xf472b6]
+HEX = [f"#{c:06x}" for c in PALETTE]
+PW, PH = 600, 300
+PANELS = [("trend", 60, 150, HEX[0]), ("revenue", 840, 150, HEX[1]),
+          ("health", 60, 590, HEX[2]), ("incidents", 840, 590, HEX[3])]
+
+def panel_frame(x, y, w, h, color, name):
+    cv.rect(x - 16, y - 16, w + 32, h + 32, fill="#0b1022", stroke="rgba(255,255,255,.06)",
+            stroke_width=1, rx=18, layer="bg", name=name)
+    cv.rect(x - 16, y - 16, w + 32, 4, fill=color, rx=2, layer="bg")
+
+for name, x, y, color in PANELS:
+    panel_frame(x, y, PW, PH, color, f"panel-{name}")
 
 trend = sp.line(labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
                   values=[820, 932, 901, 934, 1290, 1330, 1320], title="Weekly Active Users",
-                 ).width(560).height(300).palette(PALETTE).gridlines(False).background("#0d1326")
+                 ).width(PW).height(PH).palette(PALETTE).gridlines(False).background("#0b1022")
 
 revenue = sp.bar(labels=["Core","Cloud","API","Mobile","Support"],
                    values=[420, 680, 310, 240, 150], title="Revenue by Segment",
-                  ).width(560).height(300).palette(PALETTE).gridlines(False).background("#0d1326")
+                  ).width(PW).height(PH).palette(PALETTE).gridlines(False).background("#0b1022")
 
-health = sp.gauge(value=87, title="System Health").width(340).height(300).background("#0d1326")
+health = sp.gauge(value=87, title="System Health").width(PW).height(PH).background("#0b1022")
 
 incidents = sp.area(labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], values=[5, 3, 6, 2, 4, 1, 2],
                       title="Open Incidents",
-                     ).width(560).height(300).palette([0xf472b6]).gridlines(False).background("#0d1326")
+                     ).width(PW).height(PH).palette([PALETTE[3]]).gridlines(False).background("#0b1022")
 
-panel(60, 130, 560, 300, "panel-trend")
-panel(780, 130, 560, 300, "panel-revenue")
-panel(60, 500, 340, 300, "panel-health")
-panel(780, 500, 560, 300, "panel-incidents")
-cv.place(trend, 60, 130, 560, 300, name="chart-trend")
-cv.place(revenue, 780, 130, 560, 300, name="chart-revenue")
-cv.place(health, 60, 500, 340, 300, name="chart-health")
-cv.place(incidents, 780, 500, 560, 300, name="chart-incidents")
+cv.place(trend, 60, 150, PW, PH, name="chart-trend")
+cv.place(revenue, 840, 150, PW, PH, name="chart-revenue")
+cv.place(health, 60, 590, PW, PH, name="chart-health")
+cv.place(incidents, 840, 590, PW, PH, name="chart-incidents")
 
-cv.connector(420, 130, 500, 60, color="#6366f1", width=1.5, opacity=0.4, bend=0.3)
-cv.connector(1060, 130, 980, 60, color="#22d3ee", width=1.5, opacity=0.4, bend=0.3)
-cv.circle(500, 60, 5, fill="#6366f1")
-cv.circle(980, 60, 5, fill="#22d3ee")
+ANCHORS = {"trend": (660, 300), "revenue": (840, 300), "health": (660, 700), "incidents": (840, 700)}
+for name, x, y, color in PANELS:
+    ax, ay = ANCHORS[name]
+    cv.connector(ax, ay, HX, HY, color=color, width=2, opacity=0.55, bend=0.28, name=f"spoke-{name}")
+    cv.circle(ax, ay, 6, fill=color, stroke="#04050a", stroke_width=2, name=f"anchor-{name}")
+    cv.circle(ax, ay, 11, fill="none", stroke=color, stroke_width=1, opacity=0.4)
 
-cv.annotate("Trending up 61% since Monday", 420, 200, 700, 440, color="#94a3b8", size=12,
-             line_dash="4,3", bg="#0d1326")
+cv.circle(HX, HY, HR + 34, fill="url(#hubGlow)", opacity=0.35)
+cv.ring(HX, HY, HR + 18, HR + 22, fill="#22d3ee", opacity=0.25)
+cv.ring(HX, HY, HR + 6, HR + 9, fill="#22d3ee", opacity=0.45)
 
-cv.text("87", 660, 650, size=46, color="#22d3ee", weight="800", anchor="middle")
-cv.text("uptime score", 660, 675, size=12, color="#64748b", anchor="middle")
+start = 0.0
+for name, _, _, color in PANELS:
+    end = start + 90
+    cv.wedge(HX, HY, HR - 10, HR - 4, start, end, fill=color, opacity=0.85)
+    start = end
+
+cv.circle(HX, HY, HR - 14, fill="#0b1022", stroke="#f8fafc", stroke_width=2)
+cv.text("87", HX, HY - 4, size=40, color="#22d3ee", weight="800", anchor="middle")
+cv.text("SYSTEM SCORE", HX, HY + 22, size=10, color="#64748b", anchor="middle", letter_spacing=1.5)
+
+cv.link("hub-cluster", ["anchor-trend", "anchor-revenue", "anchor-health", "anchor-incidents"])
+
+cv.annotate("Trending up 61% since Monday", 250, 320, 250, 500, color="#94a3b8", size=12,
+             line_dash="4,3", bg="#0b1022")
+cv.annotate("5 open, 2 critical", 1050, 660, 1150, 500, color="#94a3b8", size=12,
+             line_dash="4,3", bg="#0b1022")
 
 chart = cv.build()
 ```
 
-<iframe src="../previews/canvas-dashboard.html" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<iframe src="../previews/canvas-dashboard.html" style="width:100%;height:680px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
 
-`panel()` est un helper de deux lignes — un `rect()` arrondi et teinté sur
-la couche `"bg"`, un appel par chart — c'est tout pour l'effet "panneau
-verre dépoli". Le détail facile à manquer : toute décoration censée se
-trouver *derrière* un chart placé (fond, cadres de panneau) a besoin de
+Le hub lui-même est une petite jauge radiale déguisée — 4 parts de `wedge`
+(une par panneau, dans sa couleur) à l'intérieur de deux pistes `ring`
+pulsées, construites avec exactement les mêmes primitives que le cadran
+"Composer les micro-outils" et les anneaux donut RéciTAC ci-dessus.
+Réutiliser un seul langage visuel sur chaque exemple travaillé de cette
+page est tout l'intérêt : les primitives ne savent pas et ne se soucient
+pas de dessiner un cadran de progression, un anneau de discipline, ou un
+hub de tableau de bord.
+
+`panel_frame()` dessine une carte arrondie plus une fine bordure supérieure
+teintée — cette couleur d'accent est la même utilisée pour le rayon de ce
+panneau et son `palette()`, pour que l'œil relie "cette ligne est orange"
+à "ce panneau est orange" à "ce rayon est orange" sans légende. Le détail
+facile à manquer derrière tout ça : toute décoration censée se trouver
+*derrière* un chart placé (fond, cadres de panneau) a besoin de
 `layer="bg"` explicitement — le `layer="fg"` par défaut de `rect()` se
 dessine **au-dessus** des charts placés par conception (pour que
 connecteurs et annotations puissent les traverser), ce qui masquera
