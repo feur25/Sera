@@ -458,6 +458,164 @@ chart = cv.build()
 
 ---
 
+## Real-world composition: a RéciTAC-style network
+
+[RéciTAC](https://www.visualcinnamon.com/portfolio/recitac/) (Nadieh Bremer)
+is a d3.js/Canvas network diagram organizing a research program's projects,
+people, and outcomes into a central cluster flanked by two semi-circles —
+researchers' disciplines on one side, activities/outputs on the other —
+with small donut rings around each project node encoding the disciplinary
+mix of everyone connected to it. None of that needs a dedicated "network
+chart" type: it's `polar` for every node position, `wedge` stacked into a
+per-node donut, `connector` for the edges, and `link` so hovering a project
+highlights its whole neighborhood — the same primitives from every section
+above, composed around one idea.
+
+```python
+import seraplot as sp
+
+DISCIPLINES = {"Climate": "#38bdf8", "Social": "#f472b6", "Engineering": "#a3e635", "Policy": "#fbbf24"}
+RESEARCHERS = [("Amara", "Climate"), ("Lian", "Climate"), ("Devi", "Social"),
+               ("Noah", "Social"), ("Jamal", "Engineering"), ("Elin", "Policy")]
+ACTIVITIES = ["Workshops", "Sensors", "Policy Brief", "Dataset", "Exhibition"]
+PROJECTS = [
+    ("Coastal Lab", [0, 1, 3, 5], [0, 1]),
+    ("Urban Heat", [1, 2, 4], [1, 3]),
+    ("Youth Climate", [2, 3, 5], [2, 4]),
+]
+
+cx, cy = 450, 450
+cv = sp.Canvas(900, 900)
+cv.radial_gradient("bg", "#141b2e", "#05070d", cx=0.5, cy=0.46, r=0.75)
+cv.rect(0, 0, 900, 900, fill="url(#bg)", layer="bg")
+
+left = [cv.polar(cx, cy, 340, 210 + i * 25) for i in range(len(RESEARCHERS))]
+right = [cv.polar(cx, cy, 340, 30 + i * 25) for i in range(len(ACTIVITIES))]
+proj_pos = [cv.polar(cx, cy, 150, i * 360 / len(PROJECTS)) for i in range(len(PROJECTS))]
+
+for i, (name, disc) in enumerate(RESEARCHERS):
+    x, y = left[i]
+    cv.circle(x, y, 8, fill=DISCIPLINES[disc], stroke="#0b0e18", stroke_width=2, name=f"res{i}")
+
+for i, name in enumerate(ACTIVITIES):
+    x, y = right[i]
+    cv.rect(x - 6, y - 6, 12, 12, fill="#e2e8f0", rotation=45, name=f"act{i}")
+
+for pi, (name, r_idx, a_idx) in enumerate(PROJECTS):
+    px, py = proj_pos[pi]
+    for ri in r_idx:
+        rx, ry = left[ri]
+        cv.connector(rx, ry, px, py, color=DISCIPLINES[RESEARCHERS[ri][1]], width=1.2, opacity=0.35, bend=0.2)
+    for ai in a_idx:
+        ax, ay = right[ai]
+        cv.connector(px, py, ax, ay, color="#64748b", width=1, opacity=0.3, bend=0.2)
+
+    counts = {}
+    for ri in r_idx:
+        counts[RESEARCHERS[ri][1]] = counts.get(RESEARCHERS[ri][1], 0) + 1
+    start = 0.0
+    for d, count in counts.items():
+        end = start + count / len(r_idx) * 360
+        cv.wedge(px, py, 34, 42, start, end, fill=DISCIPLINES[d])
+        start = end
+    cv.circle(px, py, 30, fill="#111827", stroke="#f8fafc", stroke_width=2, name=f"proj{pi}")
+    cv.text(name, px, py + 4, size=11, color="#f8fafc", weight="600", anchor="middle")
+
+    members = [f"proj{pi}"] + [f"res{ri}" for ri in r_idx] + [f"act{ai}" for ai in a_idx]
+    cv.link(f"cluster{pi}", members)
+
+chart = cv.build()
+```
+
+<iframe src="../previews/canvas-recitac.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+
+The dataset above is synthetic — the point is the *composition pattern*, not
+a literal port of Nadieh's real research-program data (which comes from a
+private Google Sheet). Everything scales with the data: add a discipline to
+the dict and every donut ring picks it up automatically; add a researcher
+to a project's list and a new connector + donut slice appear on the next
+`build()`.
+
+---
+
+## Composing real charts: a mission-control dashboard
+
+`place()` embeds a full `Chart` — not just a primitive — inside a canvas,
+which means canvas composition isn't limited to hand-drawn shapes: real
+`sp.line()`, `sp.bar()`, `sp.gauge()`, `sp.area()` panels can sit framed,
+connected, and annotated by the exact same primitives used everywhere else
+on this page. Combined with the chart-level chainable methods (`title()`,
+`palette()`, `gridlines()`, `width()`/`height()` — see
+[Chart Methods](../getting-started/chart-methods.md)), each panel can be
+restyled to match the composition before it's placed:
+
+```python
+import seraplot as sp
+
+W, H = 1400, 900
+cv = sp.Canvas(W, H)
+cv.radial_gradient("dashBg", "#151a2e", "#05070d", cx=0.5, cy=0.32, r=0.85)
+cv.rect(0, 0, W, H, fill="url(#dashBg)", layer="bg")
+
+cv.text("Mission Control", 48, 54, size=26, color="#f8fafc", weight="800")
+cv.text("A composed dashboard: real SeraPlot charts placed and framed with sp.Canvas primitives",
+         48, 78, size=13, color="#64748b")
+
+def panel(x, y, w, h, name):
+    cv.rect(x - 14, y - 14, w + 28, h + 28, fill="#0d1326", stroke="rgba(99,102,241,.25)",
+            stroke_width=1, rx=16, layer="bg", name=name)
+
+PALETTE = [0x6366f1, 0x22d3ee, 0xf59e0b, 0xf472b6]
+
+trend = sp.line(labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+                  values=[820, 932, 901, 934, 1290, 1330, 1320], title="Weekly Active Users",
+                 ).width(560).height(300).palette(PALETTE).gridlines(False).background("#0d1326")
+
+revenue = sp.bar(labels=["Core","Cloud","API","Mobile","Support"],
+                   values=[420, 680, 310, 240, 150], title="Revenue by Segment",
+                  ).width(560).height(300).palette(PALETTE).gridlines(False).background("#0d1326")
+
+health = sp.gauge(value=87, title="System Health").width(340).height(300).background("#0d1326")
+
+incidents = sp.area(labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], values=[5, 3, 6, 2, 4, 1, 2],
+                      title="Open Incidents",
+                     ).width(560).height(300).palette([0xf472b6]).gridlines(False).background("#0d1326")
+
+panel(60, 130, 560, 300, "panel-trend")
+panel(780, 130, 560, 300, "panel-revenue")
+panel(60, 500, 340, 300, "panel-health")
+panel(780, 500, 560, 300, "panel-incidents")
+cv.place(trend, 60, 130, 560, 300, name="chart-trend")
+cv.place(revenue, 780, 130, 560, 300, name="chart-revenue")
+cv.place(health, 60, 500, 340, 300, name="chart-health")
+cv.place(incidents, 780, 500, 560, 300, name="chart-incidents")
+
+cv.connector(420, 130, 500, 60, color="#6366f1", width=1.5, opacity=0.4, bend=0.3)
+cv.connector(1060, 130, 980, 60, color="#22d3ee", width=1.5, opacity=0.4, bend=0.3)
+cv.circle(500, 60, 5, fill="#6366f1")
+cv.circle(980, 60, 5, fill="#22d3ee")
+
+cv.annotate("Trending up 61% since Monday", 420, 200, 700, 440, color="#94a3b8", size=12,
+             line_dash="4,3", bg="#0d1326")
+
+cv.text("87", 660, 650, size=46, color="#22d3ee", weight="800", anchor="middle")
+cv.text("uptime score", 660, 675, size=12, color="#64748b", anchor="middle")
+
+chart = cv.build()
+```
+
+<iframe src="../previews/canvas-dashboard.html" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+
+`panel()` is a two-line helper — a rounded, tinted `rect()` on the `"bg"`
+layer, one call per chart — that's it for the "glass panel" look. The one
+easy-to-miss detail: any decoration meant to sit *behind* a placed chart
+(background fill, panel frames) needs `layer="bg"` explicitly — `rect()`'s
+default `layer="fg"` renders **on top of** placed charts by design (so
+connectors and callouts can cross over them), which will silently hide a
+panel's contents if the panel itself is drawn on the foreground layer.
+
+---
+
 ## Organic layouts: Voronoi
 
 `voronoi(sites, x, y, w, h, fills=None, stroke=..., stroke_width=..., opacity=...)`
@@ -1064,6 +1222,170 @@ for i, (x, y) in enumerate(nodes):
     cv.circle(x, y, 8, fill="#a78bfa", stroke="#0a0a12", stroke_width=2, name=f"node-{i}")
 chart = cv.build()
 ```
+
+---
+
+## Composition réelle : un réseau façon RéciTAC
+
+[RéciTAC](https://www.visualcinnamon.com/portfolio/recitac/) (Nadieh Bremer)
+est un diagramme réseau d3.js/Canvas qui organise les projets, les
+personnes et les résultats d'un programme de recherche en un cluster
+central flanqué de deux demi-cercles — les disciplines des chercheurs d'un
+côté, les activités/résultats de l'autre — avec de petits anneaux donut
+autour de chaque nœud projet encodant le mix disciplinaire de tous ceux qui
+y sont connectés. Rien de tout cela ne nécessite un type "graphique réseau"
+dédié : c'est `polar` pour chaque position de nœud, `wedge` empilés en un
+donut par nœud, `connector` pour les arêtes, et `link` pour que survoler un
+projet mette en valeur tout son voisinage — les mêmes primitives que dans
+chaque section ci-dessus, composées autour d'une seule idée.
+
+```python
+import seraplot as sp
+
+DISCIPLINES = {"Climate": "#38bdf8", "Social": "#f472b6", "Engineering": "#a3e635", "Policy": "#fbbf24"}
+RESEARCHERS = [("Amara", "Climate"), ("Lian", "Climate"), ("Devi", "Social"),
+               ("Noah", "Social"), ("Jamal", "Engineering"), ("Elin", "Policy")]
+ACTIVITIES = ["Workshops", "Sensors", "Policy Brief", "Dataset", "Exhibition"]
+PROJECTS = [
+    ("Coastal Lab", [0, 1, 3, 5], [0, 1]),
+    ("Urban Heat", [1, 2, 4], [1, 3]),
+    ("Youth Climate", [2, 3, 5], [2, 4]),
+]
+
+cx, cy = 450, 450
+cv = sp.Canvas(900, 900)
+cv.radial_gradient("bg", "#141b2e", "#05070d", cx=0.5, cy=0.46, r=0.75)
+cv.rect(0, 0, 900, 900, fill="url(#bg)", layer="bg")
+
+left = [cv.polar(cx, cy, 340, 210 + i * 25) for i in range(len(RESEARCHERS))]
+right = [cv.polar(cx, cy, 340, 30 + i * 25) for i in range(len(ACTIVITIES))]
+proj_pos = [cv.polar(cx, cy, 150, i * 360 / len(PROJECTS)) for i in range(len(PROJECTS))]
+
+for i, (name, disc) in enumerate(RESEARCHERS):
+    x, y = left[i]
+    cv.circle(x, y, 8, fill=DISCIPLINES[disc], stroke="#0b0e18", stroke_width=2, name=f"res{i}")
+
+for i, name in enumerate(ACTIVITIES):
+    x, y = right[i]
+    cv.rect(x - 6, y - 6, 12, 12, fill="#e2e8f0", rotation=45, name=f"act{i}")
+
+for pi, (name, r_idx, a_idx) in enumerate(PROJECTS):
+    px, py = proj_pos[pi]
+    for ri in r_idx:
+        rx, ry = left[ri]
+        cv.connector(rx, ry, px, py, color=DISCIPLINES[RESEARCHERS[ri][1]], width=1.2, opacity=0.35, bend=0.2)
+    for ai in a_idx:
+        ax, ay = right[ai]
+        cv.connector(px, py, ax, ay, color="#64748b", width=1, opacity=0.3, bend=0.2)
+
+    counts = {}
+    for ri in r_idx:
+        counts[RESEARCHERS[ri][1]] = counts.get(RESEARCHERS[ri][1], 0) + 1
+    start = 0.0
+    for d, count in counts.items():
+        end = start + count / len(r_idx) * 360
+        cv.wedge(px, py, 34, 42, start, end, fill=DISCIPLINES[d])
+        start = end
+    cv.circle(px, py, 30, fill="#111827", stroke="#f8fafc", stroke_width=2, name=f"proj{pi}")
+    cv.text(name, px, py + 4, size=11, color="#f8fafc", weight="600", anchor="middle")
+
+    members = [f"proj{pi}"] + [f"res{ri}" for ri in r_idx] + [f"act{ai}" for ai in a_idx]
+    cv.link(f"cluster{pi}", members)
+
+chart = cv.build()
+```
+
+<iframe src="../previews/canvas-recitac.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+
+Le jeu de données ci-dessus est synthétique — l'intérêt est le *motif de
+composition*, pas un portage littéral des vraies données du programme de
+recherche de Nadieh (issues d'une feuille Google Sheets privée). Tout
+s'adapte aux données : ajouter une discipline au dict et chaque anneau
+donut la prend en compte automatiquement ; ajouter un chercheur à la liste
+d'un projet et un nouveau connecteur + une nouvelle part de donut
+apparaissent au prochain `build()`.
+
+---
+
+## Composer de vrais charts : un tableau de bord mission-control
+
+`place()` intègre un `Chart` complet — pas seulement une primitive — dans
+un canvas, ce qui signifie que la composition canvas ne se limite pas aux
+formes dessinées à la main : de vrais panneaux `sp.line()`, `sp.bar()`,
+`sp.gauge()`, `sp.area()` peuvent être encadrés, connectés et annotés par
+les mêmes primitives que partout ailleurs sur cette page. Combiné aux
+méthodes chainables de niveau chart (`title()`, `palette()`, `gridlines()`,
+`width()`/`height()` — voir
+[Méthodes de graphique](../getting-started/chart-methods.md)), chaque
+panneau peut être restylé pour correspondre à la composition avant d'être
+placé :
+
+```python
+import seraplot as sp
+
+W, H = 1400, 900
+cv = sp.Canvas(W, H)
+cv.radial_gradient("dashBg", "#151a2e", "#05070d", cx=0.5, cy=0.32, r=0.85)
+cv.rect(0, 0, W, H, fill="url(#dashBg)", layer="bg")
+
+cv.text("Mission Control", 48, 54, size=26, color="#f8fafc", weight="800")
+cv.text("Un tableau de bord composé : de vrais charts SeraPlot placés et encadrés avec des primitives sp.Canvas",
+         48, 78, size=13, color="#64748b")
+
+def panel(x, y, w, h, name):
+    cv.rect(x - 14, y - 14, w + 28, h + 28, fill="#0d1326", stroke="rgba(99,102,241,.25)",
+            stroke_width=1, rx=16, layer="bg", name=name)
+
+PALETTE = [0x6366f1, 0x22d3ee, 0xf59e0b, 0xf472b6]
+
+trend = sp.line(labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+                  values=[820, 932, 901, 934, 1290, 1330, 1320], title="Weekly Active Users",
+                 ).width(560).height(300).palette(PALETTE).gridlines(False).background("#0d1326")
+
+revenue = sp.bar(labels=["Core","Cloud","API","Mobile","Support"],
+                   values=[420, 680, 310, 240, 150], title="Revenue by Segment",
+                  ).width(560).height(300).palette(PALETTE).gridlines(False).background("#0d1326")
+
+health = sp.gauge(value=87, title="System Health").width(340).height(300).background("#0d1326")
+
+incidents = sp.area(labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], values=[5, 3, 6, 2, 4, 1, 2],
+                      title="Open Incidents",
+                     ).width(560).height(300).palette([0xf472b6]).gridlines(False).background("#0d1326")
+
+panel(60, 130, 560, 300, "panel-trend")
+panel(780, 130, 560, 300, "panel-revenue")
+panel(60, 500, 340, 300, "panel-health")
+panel(780, 500, 560, 300, "panel-incidents")
+cv.place(trend, 60, 130, 560, 300, name="chart-trend")
+cv.place(revenue, 780, 130, 560, 300, name="chart-revenue")
+cv.place(health, 60, 500, 340, 300, name="chart-health")
+cv.place(incidents, 780, 500, 560, 300, name="chart-incidents")
+
+cv.connector(420, 130, 500, 60, color="#6366f1", width=1.5, opacity=0.4, bend=0.3)
+cv.connector(1060, 130, 980, 60, color="#22d3ee", width=1.5, opacity=0.4, bend=0.3)
+cv.circle(500, 60, 5, fill="#6366f1")
+cv.circle(980, 60, 5, fill="#22d3ee")
+
+cv.annotate("Trending up 61% since Monday", 420, 200, 700, 440, color="#94a3b8", size=12,
+             line_dash="4,3", bg="#0d1326")
+
+cv.text("87", 660, 650, size=46, color="#22d3ee", weight="800", anchor="middle")
+cv.text("uptime score", 660, 675, size=12, color="#64748b", anchor="middle")
+
+chart = cv.build()
+```
+
+<iframe src="../previews/canvas-dashboard.html" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+
+`panel()` est un helper de deux lignes — un `rect()` arrondi et teinté sur
+la couche `"bg"`, un appel par chart — c'est tout pour l'effet "panneau
+verre dépoli". Le détail facile à manquer : toute décoration censée se
+trouver *derrière* un chart placé (fond, cadres de panneau) a besoin de
+`layer="bg"` explicitement — le `layer="fg"` par défaut de `rect()` se
+dessine **au-dessus** des charts placés par conception (pour que
+connecteurs et annotations puissent les traverser), ce qui masquera
+silencieusement le contenu d'un panneau si celui-ci est dessiné sur la
+couche de premier plan.
 
 ---
 

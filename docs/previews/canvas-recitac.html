@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;overflow:hidden;background:#0a0a0f;width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+#sp-canvas-root{position:relative;width:900px;height:900px;flex-shrink:0;overflow:hidden;background:#0a0a0f;transform-origin:center}
+.sp-cv{position:absolute;top:0;left:0}
+@keyframes sp-sat-pulse{0%,100%{filter:none;transform:scale(1)}50%{filter:drop-shadow(0 0 14px rgba(99,102,241,0.5));transform:scale(1.04)}}
+</style>
+</head>
+<body>
+<div id="sp-canvas-root">
+<svg class="sp-cv" style="z-index:0;pointer-events:none" width="900" height="900" xmlns="http://www.w3.org/2000/svg">
+<defs></defs>
+<rect x="0.00" y="0.00" width="900.00" height="900.00" fill="url(#bg)" stroke="#ffffff" stroke-width="1.50" rx="0.00" opacity="1.0000"/>
+</svg>
+<svg class="sp-cv" style="z-index:9999;pointer-events:none" width="900" height="900" xmlns="http://www.w3.org/2000/svg">
+<defs><radialGradient id="bg" cx="0.500" cy="0.460" r="0.750" gradientUnits="objectBoundingBox"><stop offset="0" stop-color="#141b2e"/><stop offset="1" stop-color="#05070d"/></radialGradient>
+</defs>
+<circle class="sp-anch" data-sp-grp="cluster0" data-r="8.00" cx="280.00" cy="744.45" r="8.00" fill="#38bdf8" stroke="#0b0e18" stroke-width="2.00" opacity="1.0000" data-sp-name="res0" pointer-events="none"/>
+<text x="266.00" y="748.45" font-size="11.00" fill="#cbd5e1" opacity="1.0000" font-weight="normal" text-anchor="end" font-family="sans-serif" letter-spacing="0.00">
+<tspan x="266.00" dy="0.00">Amara</tspan></text>
+<circle class="sp-anch" data-sp-grp="cluster1" data-r="8.00" cx="171.49" cy="645.02" r="8.00" fill="#38bdf8" stroke="#0b0e18" stroke-width="2.00" opacity="1.0000" data-sp-name="res1" pointer-events="none"/>
+<text x="157.49" y="649.02" font-size="11.00" fill="#cbd5e1" opacity="1.0000" font-weight="normal" text-anchor="end" font-family="sans-serif" letter-spacing="0.00">
+<tspan x="157.49" dy="0.00">Lian</tspan></text>
+<circle class="sp-anch" data-sp-grp="cluster2" data-r="8.00" cx="115.17" cy="509.04" r="8.00" fill="#f472b6" stroke="#0b0e18" stroke-width="2.00" opacity="1.0000" data-sp-name="res2" pointer-events="none"/>
+<text x="101.17" y="513.04" font-size="11.00" fill="#cbd5e1" opacity="1.0000" font-weight="normal" text-anchor="end" font-family="sans-serif" letter-spacing="0.00">
+<tspan x="101.17" dy="0.00">Devi</tspan></text>
+<circle class="sp-anch" data-sp-grp="cluster2" data-r="8.00" cx="121.59" cy="362.00" r="8.00" fill="#f472b6" stroke="#0b0e18" stroke-width="2.00" opacity="1.0000" data-sp-name="res3" pointer-events="none"/>
+<text x="107.59" y="366.00" font-size="11.00" fill="#cbd5e1" opacity="1.0000" font-weight="normal" text-anchor="end" font-family="sans-serif" letter-spacing="0.00">
+<tspan x="107.59" dy="0.00">Noah</tspan></text>
+<circle class="sp-anch" data-sp-grp="cluster1" data-r="8.00" cx="189.54" cy="231.45" r="8.00" fill="#a3e635" stroke="#0b0e18" stroke-width="2.00" opacity="1.0000" data-sp-name="res4" pointer-events="none"/>
+<text x="175.54" y="235.45" font-size="11.00" fill="#cbd5e1" opacity="1.0000" font-weight="normal" text-anchor="end" font-family="sans-serif" letter-spacing="0.00">
+<tspan x="175.54" dy="0.00">Jamal</tspan></text>
+<circle class="sp-anch" data-sp-grp="cluster2" data-r="8.00" cx="306.31" cy="141.86" r="8.00" fill="#fbbf24" stroke="#0b0e18" stroke-width="2.00" opacity="1.0000" data-sp-name="res5" pointer-events="none"/>
+<text x="292.31" y="145.86" font-size="11.00" fill="#cbd5e1" opacity="1.0000" font-weight="normal" text-anchor="end" font-family="sans-serif" letter-spacing="0.00">
+<tspan x="292.31" dy="0.00">Elin</tspan></text>
+<rect x="614.00" y="149.55" width="12.00" height="12.00" fill="#e2e8f0" stroke="#ffffff" stroke-width="1.50" rx="0.00" opacity="1.0000" transform="rotate(45.00,620.00,155.55)" data-sp-name="act0" data-sp-grp="cluster0"/>
+<text x="632.00" y="159.55" font-size="11.00" fill="#cbd5e1" opacity="1.0000" font-weight="normal" text-anchor="start" font-family="sans-serif" letter-spacing="0.00">
+<tspan x="632.00" dy="0.00">Workshops</tspan></text>
+<rect x="722.51" y="248.98" width="12.00" height="12.00" fill="#e2e8f0" stroke="#ffffff" stroke-width="1.50" rx="0.00" opacity="1.0000" transform="rotate(45.00,728.51,254.98)" data-sp-name="act1" data-sp-grp="cluster1"/>
+<text x="740.51" y="258.98" font-size="11.00" fill="#cbd5e1" opacity="1.0000" font-weight="normal" text-anchor="start" font-family="sans-serif" letter-spacing="0.00">
+<tspan x="740.51" dy="0.00">Sensors</tspan></text>
+<rect x="778.83" y="384.96" width="12.00" height="12.00" fill="#e2e8f0" stroke="#ffffff" stroke-width="1.50" rx="0.00" opacity="1.0000" transform="rotate(45.00,784.83,390.96)" data-sp-name="act2" data-sp-grp="cluster2"/>
+<text x="796.83" y="394.96" font-size="11.00" fill="#cbd5e1" opacity="1.0000" font-weight="normal" text-anchor="start" font-family="sans-serif" letter-spacing="0.00">
+<tspan x="796.83" dy="0.00">Policy Brief</tspan></text>
+<rect x="772.41" y="532.00" width="12.00" height="12.00" fill="#e2e8f0" stroke="#ffffff" stroke-width="1.50" rx="0.00" opacity="1.0000" transform="rotate(45.00,778.41,538.00)" data-sp-name="act3" data-sp-grp="cluster1"/>
+<text x="790.41" y="542.00" font-size="11.00" fill="#cbd5e1" opacity="1.0000" font-weight="normal" text-anchor="start" font-family="sans-serif" letter-spacing="0.00">
+<tspan x="790.41" dy="0.00">Dataset</tspan></text>
+<rect x="704.46" y="662.55" width="12.00" height="12.00" fill="#e2e8f0" stroke="#ffffff" stroke-width="1.50" rx="0.00" opacity="1.0000" transform="rotate(45.00,710.46,668.55)" data-sp-name="act4" data-sp-grp="cluster2"/>
+<text x="722.46" y="672.55" font-size="11.00" fill="#cbd5e1" opacity="1.0000" font-weight="normal" text-anchor="start" font-family="sans-serif" letter-spacing="0.00">
+<tspan x="722.46" dy="0.00">Exhibition</tspan></text>
+<path d="M 280.00,744.45 C 280.00,655.56 450.00,655.56 450.00,300.00" fill="none" stroke="#38bdf8" stroke-width="1.20" opacity="0.3500" stroke-linecap="round"/>
+<path d="M 171.49,645.02 C 171.49,576.01 450.00,576.01 450.00,300.00" fill="none" stroke="#38bdf8" stroke-width="1.20" opacity="0.3500" stroke-linecap="round"/>
+<path d="M 121.59,362.00 C 187.27,362.00 187.27,300.00 450.00,300.00" fill="none" stroke="#f472b6" stroke-width="1.20" opacity="0.3500" stroke-linecap="round"/>
+<path d="M 306.31,141.86 C 306.31,173.48 450.00,173.48 450.00,300.00" fill="none" stroke="#fbbf24" stroke-width="1.20" opacity="0.3500" stroke-linecap="round"/>
+<path d="M 450.00,300.00 C 484.00,300.00 484.00,155.55 620.00,155.55" fill="none" stroke="#64748b" stroke-width="1.00" opacity="0.3000" stroke-linecap="round"/>
+<path d="M 450.00,300.00 C 505.70,300.00 505.70,254.98 728.51,254.98" fill="none" stroke="#64748b" stroke-width="1.00" opacity="0.3000" stroke-linecap="round"/>
+<path d="M 171.49,645.02 C 253.17,645.02 253.17,525.00 579.90,525.00" fill="none" stroke="#38bdf8" stroke-width="1.20" opacity="0.3500" stroke-linecap="round"/>
+<path d="M 115.17,509.04 C 208.11,509.04 208.11,525.00 579.90,525.00" fill="none" stroke="#f472b6" stroke-width="1.20" opacity="0.3500" stroke-linecap="round"/>
+<path d="M 189.54,231.45 C 267.62,231.45 267.62,525.00 579.90,525.00" fill="none" stroke="#a3e635" stroke-width="1.20" opacity="0.3500" stroke-linecap="round"/>
+<path d="M 579.90,525.00 C 579.90,471.00 728.51,471.00 728.51,254.98" fill="none" stroke="#64748b" stroke-width="1.00" opacity="0.3000" stroke-linecap="round"/>
+<path d="M 579.90,525.00 C 619.61,525.00 619.61,538.00 778.41,538.00" fill="none" stroke="#64748b" stroke-width="1.00" opacity="0.3000" stroke-linecap="round"/>
+<path d="M 115.17,509.04 C 156.15,509.04 156.15,525.00 320.10,525.00" fill="none" stroke="#f472b6" stroke-width="1.20" opacity="0.3500" stroke-linecap="round"/>
+<path d="M 121.59,362.00 C 161.29,362.00 161.29,525.00 320.10,525.00" fill="none" stroke="#f472b6" stroke-width="1.20" opacity="0.3500" stroke-linecap="round"/>
+<path d="M 306.31,141.86 C 306.31,218.48 320.10,218.48 320.10,525.00" fill="none" stroke="#fbbf24" stroke-width="1.20" opacity="0.3500" stroke-linecap="round"/>
+<path d="M 320.10,525.00 C 413.04,525.00 413.04,390.96 784.83,390.96" fill="none" stroke="#64748b" stroke-width="1.00" opacity="0.3000" stroke-linecap="round"/>
+<path d="M 320.10,525.00 C 398.17,525.00 398.17,668.55 710.46,668.55" fill="none" stroke="#64748b" stroke-width="1.00" opacity="0.3000" stroke-linecap="round"/>
+<path d="M 450.00,258.00 A 42.00,42.00 0 0,1 450.00,342.00 L 450.00,334.00 A 34.00,34.00 0 0,0 450.00,266.00 Z" fill="#38bdf8" stroke="none" stroke-width="0.00" opacity="1.0000"/>
+<path d="M 450.00,342.00 A 42.00,42.00 0 0,1 408.00,300.00 L 416.00,300.00 A 34.00,34.00 0 0,0 450.00,334.00 Z" fill="#f472b6" stroke="none" stroke-width="0.00" opacity="1.0000"/>
+<path d="M 408.00,300.00 A 42.00,42.00 0 0,1 450.00,258.00 L 450.00,266.00 A 34.00,34.00 0 0,0 416.00,300.00 Z" fill="#fbbf24" stroke="none" stroke-width="0.00" opacity="1.0000"/>
+<circle class="sp-anch" data-sp-grp="cluster0" data-r="30.00" cx="450.00" cy="300.00" r="30.00" fill="#111827" stroke="#f8fafc" stroke-width="2.00" opacity="1.0000" data-sp-name="proj0" pointer-events="none"/>
+<text x="450.00" y="304.00" font-size="11.00" fill="#f8fafc" opacity="1.0000" font-weight="600" text-anchor="middle" font-family="sans-serif" letter-spacing="0.00">
+<tspan x="450.00" dy="0.00">Coastal Lab</tspan></text>
+<path d="M 579.90,483.00 A 42.00,42.00 0 0,1 616.28,546.00 L 609.35,542.00 A 34.00,34.00 0 0,0 579.90,491.00 Z" fill="#38bdf8" stroke="none" stroke-width="0.00" opacity="1.0000"/>
+<path d="M 616.28,546.00 A 42.00,42.00 0 0,1 543.53,546.00 L 550.46,542.00 A 34.00,34.00 0 0,0 609.35,542.00 Z" fill="#f472b6" stroke="none" stroke-width="0.00" opacity="1.0000"/>
+<path d="M 543.53,546.00 A 42.00,42.00 0 0,1 579.90,483.00 L 579.90,491.00 A 34.00,34.00 0 0,0 550.46,542.00 Z" fill="#a3e635" stroke="none" stroke-width="0.00" opacity="1.0000"/>
+<circle class="sp-anch" data-sp-grp="cluster1" data-r="30.00" cx="579.90" cy="525.00" r="30.00" fill="#111827" stroke="#f8fafc" stroke-width="2.00" opacity="1.0000" data-sp-name="proj1" pointer-events="none"/>
+<text x="579.90" y="529.00" font-size="11.00" fill="#f8fafc" opacity="1.0000" font-weight="600" text-anchor="middle" font-family="sans-serif" letter-spacing="0.00">
+<tspan x="579.90" dy="0.00">Urban Heat</tspan></text>
+<path d="M 320.10,483.00 A 42.00,42.00 0 1,1 283.72,546.00 L 290.65,542.00 A 34.00,34.00 0 1,0 320.10,491.00 Z" fill="#f472b6" stroke="none" stroke-width="0.00" opacity="1.0000"/>
+<path d="M 283.72,546.00 A 42.00,42.00 0 0,1 320.10,483.00 L 320.10,491.00 A 34.00,34.00 0 0,0 290.65,542.00 Z" fill="#fbbf24" stroke="none" stroke-width="0.00" opacity="1.0000"/>
+<circle class="sp-anch" data-sp-grp="cluster2" data-r="30.00" cx="320.10" cy="525.00" r="30.00" fill="#111827" stroke="#f8fafc" stroke-width="2.00" opacity="1.0000" data-sp-name="proj2" pointer-events="none"/>
+<text x="320.10" y="529.00" font-size="11.00" fill="#f8fafc" opacity="1.0000" font-weight="600" text-anchor="middle" font-family="sans-serif" letter-spacing="0.00">
+<tspan x="320.10" dy="0.00">Youth Climate</tspan></text>
+</svg>
+</div>
+<script>(function(){var W=900,H=900,root=document.getElementById('sp-canvas-root');function fit(){var vw=window.innerWidth||document.documentElement.clientWidth||W;var vh=window.innerHeight||document.documentElement.clientHeight||H;var s=Math.min(vw/W,vh/H,1);if(!isFinite(s)||s<=0)s=1;root.style.transform='scale('+s+')';}fit();window.addEventListener('resize',fit,{passive:true});})();</script>
+<script>(function(){var root=document.getElementById('sp-canvas-root');if(!root)return;var aG=null;function qL(g){return root.querySelectorAll('.sp-hvl[data-sp-grp="'+g+'"]');}function qA(g){return root.querySelectorAll('.sp-anch[data-sp-grp="'+g+'"]');}function qS(g){return root.querySelectorAll('div[data-sp-grp="'+g+'"],rect[data-sp-grp="'+g+'"],text[data-sp-grp="'+g+'"]');}function act(g){if(aG===g)return;if(aG)deact(aG);aG=g;qL(g).forEach(function(l){var c=l.getAttribute('stroke')||'#6366f1';l.style.filter='drop-shadow(0 0 4px '+c+') drop-shadow(0 0 10px '+c+'80)';l.setAttribute('stroke-opacity','1');l.setAttribute('stroke-width',String(parseFloat(l.getAttribute('data-sw')||'1.2')*2.2));});qA(g).forEach(function(c){var col=c.getAttribute('fill')||'#6366f1';c.setAttribute('r',String(parseFloat(c.getAttribute('data-r')||'5')*1.9));c.style.filter='drop-shadow(0 0 6px '+col+') drop-shadow(0 0 16px '+col+'60)';});qS(g).forEach(function(d){d.style.animation='sp-sat-pulse 1.4s ease-in-out infinite';d.style.transformOrigin='center center';d.style.transformBox='fill-box';});}function deact(g){if(!g)return;aG=null;qL(g).forEach(function(l){l.style.filter='';l.setAttribute('stroke-opacity',l.getAttribute('data-op')||'0.29');l.setAttribute('stroke-width',l.getAttribute('data-sw')||'1.2');});qA(g).forEach(function(c){c.setAttribute('r',c.getAttribute('data-r')||'5');c.style.filter='';});qS(g).forEach(function(d){d.style.animation='';});}root.querySelectorAll('.sp-hvh,div[data-sp-grp],rect[data-sp-grp],text[data-sp-grp],circle.sp-anch[data-sp-grp]').forEach(function(hit){var g=hit.getAttribute('data-sp-grp');if(!g)return;hit.style.cursor='pointer';hit.addEventListener('mouseenter',function(){act(g);});hit.addEventListener('mouseleave',function(e){var rt=e.relatedTarget;if(!rt||!rt.closest||!rt.closest('[data-sp-grp="'+g+'"]')){deact(g);}});});})();</script>
+</body>
+</html>

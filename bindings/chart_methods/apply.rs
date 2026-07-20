@@ -966,7 +966,7 @@ pub(crate) fn apply_set_size(html: String, w: Option<i32>, h: Option<i32>) -> St
 }
 
 fn collect_series_colors(html: &str) -> Vec<(usize, String)> {
-    let mut order: Vec<(usize, String)> = Vec::new();
+    let mut pairs: Vec<(usize, String)> = Vec::new();
     let mut seen = std::collections::HashSet::new();
     let mut idx = 0usize;
     let needle = "data-series=\"";
@@ -979,44 +979,47 @@ fn collect_series_colors(html: &str) -> Vec<(usize, String)> {
         if let Ok(series_idx) = series_str.parse::<usize>() {
             let tag_start = html[..pos].rfind('<').unwrap_or(pos);
             let tag_end = html[pos..].find('>').map(|e| pos + e).unwrap_or(html.len());
-            if let Some(frel) = html[tag_start..tag_end].find("fill=\"#") {
-                let fpos = tag_start + frel + "fill=\"".len();
-                if let Some(fend) = html[fpos..].find('"') {
-                    let color = html[fpos..fpos + fend].to_string();
-                    if seen.insert(series_idx) {
-                        order.push((series_idx, color));
+            let tag = &html[tag_start..tag_end];
+            for attr in ["fill=\"#", "stroke=\"#"] {
+                if let Some(frel) = tag.find(attr) {
+                    let fpos = tag_start + frel + attr.len() - 1;
+                    if let Some(fend) = html[fpos..].find('"') {
+                        let color = html[fpos..fpos + fend].to_string();
+                        if seen.insert((series_idx, color.clone())) {
+                            pairs.push((series_idx, color));
+                        }
                     }
                 }
             }
         }
         idx = pos + end_rel;
     }
-    order.sort_by_key(|(i, _)| *i);
-    order
+    pairs.sort_by_key(|(i, _)| *i);
+    pairs
 }
 
 pub(crate) fn apply_palette(html: String, colors: &[u32]) -> String {
     if colors.is_empty() {
         return html;
     }
-    let order = collect_series_colors(&html);
+    let pairs = collect_series_colors(&html);
     let mut out = html;
-    for (i, (_, old_color)) in order.iter().enumerate() {
+    for (i, (_, old_color)) in pairs.iter().enumerate() {
         let token = format!("@@SPPAL{}@@", i);
         out = out.replace(old_color.as_str(), &token);
     }
-    for i in 0..order.len() {
+    for (i, (series_idx, _)) in pairs.iter().enumerate() {
         let token = format!("@@SPPAL{}@@", i);
-        let new_color = format!("#{:06x}", colors[i % colors.len()] & 0xFFFFFF);
+        let new_color = format!("#{:06x}", colors[series_idx % colors.len()] & 0xFFFFFF);
         out = out.replace(&token, &new_color);
     }
     out
 }
 
 pub(crate) fn apply_color_hex(html: String, color: &str) -> String {
-    let order = collect_series_colors(&html);
+    let pairs = collect_series_colors(&html);
     let mut out = html;
-    for (_, old_color) in order {
+    for (_, old_color) in pairs {
         out = out.replace(old_color.as_str(), color);
     }
     out
