@@ -38,12 +38,13 @@ Examples of unacceptable behavior include:
 
 ## Enforcement Responsibilities
 
-Community leaders are responsible for clarifying and enforcing our standards of
-acceptable behavior and will take appropriate and fair corrective action in
-response to any behavior that they deem inappropriate, threatening, offensive,
-or harmful.
+SeraPlot is maintained by a single person ([@feur25](https://github.com/feur25))
+in their spare time, not a formal team. That one maintainer is responsible for
+clarifying and enforcing our standards of acceptable behavior and will take
+appropriate and fair corrective action in response to any behavior deemed
+inappropriate, threatening, offensive, or harmful.
 
-Community leaders have the right and responsibility to remove, edit, or reject
+The maintainer has the right and responsibility to remove, edit, or reject
 comments, commits, code, wiki edits, issues, and other contributions that are
 not aligned to this Code of Conduct, and will communicate reasons for moderation
 decisions when appropriate.
@@ -59,16 +60,18 @@ representative at an online or offline event.
 ## Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported to the community leaders responsible for enforcement at
-.
-All complaints will be reviewed and investigated promptly and fairly.
+reported by opening a GitHub issue on [feur25/Sera](https://github.com/feur25/Sera/issues)
+(mark it clearly as a Code of Conduct report), or via the contact details on
+the [Support & Contact](https://feur25.github.io/Sera/about/support.html) page
+if you'd rather not report it publicly. All complaints will be reviewed and
+investigated promptly and fairly.
 
-All community leaders are obligated to respect the privacy and security of the
+The maintainer is obligated to respect the privacy and security of the
 reporter of any incident.
 
 ## Enforcement Guidelines
 
-Community leaders will follow these Community Impact Guidelines in determining
+The maintainer will follow these Community Impact Guidelines in determining
 the consequences for any action they deem in violation of this Code of Conduct:
 
 ### 1. Correction

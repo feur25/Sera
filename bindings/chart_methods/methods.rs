@@ -792,7 +792,7 @@ impl Chart {
 
     #[sera_doc(
         category = "chart_method",
-        aliases("sort", "order_by"),
+        aliases("sort", "order_by", "sort_order"),
         file = "charts/chart.md",
         en = "Sorts chart bars by value or label using a client-side JavaScript re-render.",
         fr = "Trie les barres du graphique par valeur ou étiquette via un rendu JavaScript côté client.",
@@ -1092,6 +1092,129 @@ impl Chart {
     )]
     pub fn show_title(&self) -> Chart {
         self.propagate(self.html.replacen("</head>", "<style>.sp-ttl{display:block!important;visibility:visible!important;opacity:1!important;fill:#e2e8f0!important;paint-order:stroke;stroke:rgba(0,0,0,.6);stroke-width:.6px}</style></head>", 1))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        file = "charts/chart.md",
+        en = "Sets (or replaces) the chart's title text. Works whether or not the chart was built with an initial title.",
+        fr = "Definit (ou remplace) le texte du titre du graphique. Fonctionne que le graphique ait ete construit avec un titre initial ou non.",
+        param(name = "text", ty = "str", en = "New title text.", fr = "Nouveau texte du titre.")
+    )]
+    #[sera_sig(text)]
+    pub fn title(&self, text: &str) -> Chart {
+        self.propagate(apply_set_title(self.html.clone(), text))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        file = "charts/chart.md",
+        en = "Sets (or replaces) the chart's X axis label text.",
+        fr = "Definit (ou remplace) le texte du label de l'axe X.",
+        param(name = "text", ty = "str", en = "New X axis label.", fr = "Nouveau label de l'axe X.")
+    )]
+    #[sera_sig(text)]
+    pub fn x_label(&self, text: &str) -> Chart {
+        self.propagate(apply_set_x_label(self.html.clone(), text))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        file = "charts/chart.md",
+        en = "Sets (or replaces) the chart's Y axis label text.",
+        fr = "Definit (ou remplace) le texte du label de l'axe Y.",
+        param(name = "text", ty = "str", en = "New Y axis label.", fr = "Nouveau label de l'axe Y.")
+    )]
+    #[sera_sig(text)]
+    pub fn y_label(&self, text: &str) -> Chart {
+        self.propagate(apply_set_y_label(self.html.clone(), text))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        file = "charts/chart.md",
+        en = "Resizes the chart to an absolute pixel width and/or height. Pass only one to change a single dimension.",
+        fr = "Redimensionne le graphique a une largeur et/ou hauteur absolue en pixels. N'en passer qu'un pour changer une seule dimension.",
+        param(name = "width", ty = "int | None", en = "New width in pixels.", fr = "Nouvelle largeur en pixels."),
+        param(name = "height", ty = "int | None", en = "New height in pixels.", fr = "Nouvelle hauteur en pixels.")
+    )]
+    #[sera_sig(width = None, height = None)]
+    pub fn size(&self, width: Option<i32>, height: Option<i32>) -> Chart {
+        self.propagate(apply_set_size(self.html.clone(), width, height))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        aliases("width"),
+        file = "charts/chart.md",
+        en = "Resizes the chart to an absolute pixel width, keeping height unchanged.",
+        fr = "Redimensionne le graphique a une largeur absolue en pixels, sans changer la hauteur.",
+        param(name = "px", ty = "int", en = "New width in pixels.", fr = "Nouvelle largeur en pixels.")
+    )]
+    #[sera_sig(px)]
+    pub fn width_px(&self, px: i32) -> Chart {
+        self.propagate(apply_set_size(self.html.clone(), Some(px), None))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        aliases("height"),
+        file = "charts/chart.md",
+        en = "Resizes the chart to an absolute pixel height, keeping width unchanged.",
+        fr = "Redimensionne le graphique a une hauteur absolue en pixels, sans changer la largeur.",
+        param(name = "px", ty = "int", en = "New height in pixels.", fr = "Nouvelle hauteur en pixels.")
+    )]
+    #[sera_sig(px)]
+    pub fn height_px(&self, px: i32) -> Chart {
+        self.propagate(apply_set_size(self.html.clone(), None, Some(px)))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        file = "charts/chart.md",
+        en = "Recolors the chart's data series/categories in order, cycling through the given colors if there are more series than colors.",
+        fr = "Recolore les series/categories du graphique dans l'ordre, en reutilisant les couleurs en boucle s'il y a plus de series que de couleurs.",
+        param(name = "colors", ty = "list[int]", en = "New palette, as 0xRRGGBB integers, applied in series order.", fr = "Nouvelle palette, en entiers 0xRRGGBB, appliquee dans l'ordre des series.")
+    )]
+    #[sera_sig(colors)]
+    pub fn palette(&self, colors: Vec<u32>) -> Chart {
+        self.propagate(apply_palette(self.html.clone(), &colors))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        file = "charts/chart.md",
+        en = "Forces every data series/category to the same solid color.",
+        fr = "Force toutes les series/categories du graphique a une seule couleur unie.",
+        param(name = "color", ty = "str", en = "CSS color, e.g. '#6366f1'.", fr = "Couleur CSS, ex. '#6366f1'.")
+    )]
+    #[sera_sig(color)]
+    pub fn color_hex(&self, color: &str) -> Chart {
+        self.propagate(apply_color_hex(self.html.clone(), color))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        file = "charts/chart.md",
+        en = "Shows or hides the chart's grid lines.",
+        fr = "Affiche ou masque les lignes de grille du graphique.",
+        param(name = "on", ty = "bool", en = "True to show grid lines, False to hide them.", fr = "True pour afficher la grille, False pour la masquer.")
+    )]
+    #[sera_sig(on = true)]
+    pub fn gridlines(&self, on: bool) -> Chart {
+        self.propagate(apply_gridlines(self.html.clone(), on))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        file = "charts/chart.md",
+        en = "Enables or disables the hover tooltip. False is equivalent to no_hover(); True is a no-op since hover is on by default.",
+        fr = "Active ou desactive l'infobulle au survol. False equivaut a no_hover() ; True ne fait rien car le survol est actif par defaut.",
+        param(name = "on", ty = "bool", en = "True to enable hover, False to disable it.", fr = "True pour activer le survol, False pour le desactiver.")
+    )]
+    #[sera_sig(on = true)]
+    pub fn hover(&self, on: bool) -> Chart {
+        self.propagate(apply_hover_toggle(self.html.clone(), on))
     }
 
     #[sera_doc(

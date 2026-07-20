@@ -34,7 +34,6 @@
 - [2D Charts](charts/2d/index.md)
   - [Bar Charts](charts/2d/bar.md)
   - [Line Charts](charts/2d/line.md)
-  - [Multiline Charts](charts/2d/multiline.md)
   - [Area Charts](charts/2d/area.md)
   - [Scatter Charts](charts/2d/scatter.md)
   - [Bubble Charts](charts/2d/bubble.md)

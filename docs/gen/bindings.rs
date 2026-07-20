@@ -112,6 +112,12 @@ fn collect_registered_fns(root: &Path) -> RegisteredFns {
     files.sort();
     let mut out = RegisteredFns::default();
     for file in files {
+        let is_gen_dir = file.components().any(|c| c.as_os_str() == "gen")
+            && file.to_string_lossy().contains("docs");
+        let is_book_output = file.components().any(|c| c.as_os_str() == "book");
+        if is_gen_dir || is_book_output {
+            continue;
+        }
         let Ok(src) = fs::read_to_string(&file) else {
             continue;
         };

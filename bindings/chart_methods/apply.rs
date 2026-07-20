@@ -838,6 +838,217 @@ fn texture_pattern_body(pattern: &str) -> (&'static str, u32, u32, &'static str)
     }
 }
 
+fn escape_text(s: &str) -> String {
+    s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;")
+}
+
+fn parse_plot_rect(html: &str) -> Option<(f64, f64, f64, f64)> {
+    let pos = html.find("data-sp=\"")?;
+    let start = pos + "data-sp=\"".len();
+    let end = html[start..].find('"')? + start;
+    let mut parts = html[start..end].split(',');
+    let l: f64 = parts.next()?.trim().parse().ok()?;
+    let t: f64 = parts.next()?.trim().parse().ok()?;
+    let w: f64 = parts.next()?.trim().parse().ok()?;
+    let h: f64 = parts.next()?.trim().parse().ok()?;
+    Some((l, t, w, h))
+}
+
+fn replace_text_class(html: &str, class: &str, new_text: &str) -> Option<String> {
+    let marker = format!("class=\"{}\">", class);
+    let pos = html.find(&marker)?;
+    let start = pos + marker.len();
+    let end_rel = html[start..].find("</text>")?;
+    let mut out = String::with_capacity(html.len());
+    out.push_str(&html[..start]);
+    out.push_str(&escape_text(new_text));
+    out.push_str(&html[start + end_rel..]);
+    Some(out)
+}
+
+fn replace_attr(tag: &str, attr: &str, value: &str) -> String {
+    let marker = format!("{}=\"", attr);
+    if let Some(pos) = tag.find(&marker) {
+        let start = pos + marker.len();
+        if let Some(end_rel) = tag[start..].find('"') {
+            let mut out = String::with_capacity(tag.len());
+            out.push_str(&tag[..start]);
+            out.push_str(value);
+            out.push_str(&tag[start + end_rel..]);
+            return out;
+        }
+    }
+    tag.to_string()
+}
+
+pub(crate) fn apply_set_title(html: String, text: &str) -> String {
+    if let Some(out) = replace_text_class(&html, "sp-ttl", text) {
+        return out;
+    }
+    let Some((l, _t, w, _h)) = parse_plot_rect(&html) else {
+        return html;
+    };
+    let cx = l + w / 2.0;
+    let snippet = format!(
+        "<text x=\"{cx}\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\" class=\"sp-ttl\">{}</text>",
+        escape_text(text)
+    );
+    let Some(pos) = html.find("</svg>") else {
+        return html;
+    };
+    let mut out = html.clone();
+    out.insert_str(pos, &snippet);
+    out
+}
+
+pub(crate) fn apply_set_x_label(html: String, text: &str) -> String {
+    if let Some(out) = replace_text_class(&html, "sp-xl", text) {
+        return out;
+    }
+    let Some((l, t, w, h)) = parse_plot_rect(&html) else {
+        return html;
+    };
+    let cx = l + w / 2.0;
+    let y = t + h + 42.0;
+    let snippet = format!(
+        "<text x=\"{cx}\" y=\"{y}\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" class=\"sp-xl\">{}</text>",
+        escape_text(text)
+    );
+    let Some(pos) = html.find("</svg>") else {
+        return html;
+    };
+    let mut out = html.clone();
+    out.insert_str(pos, &snippet);
+    out
+}
+
+pub(crate) fn apply_set_y_label(html: String, text: &str) -> String {
+    if let Some(out) = replace_text_class(&html, "sp-yl", text) {
+        return out;
+    }
+    let Some((l, t, _w, h)) = parse_plot_rect(&html) else {
+        return html;
+    };
+    let cy = t + h / 2.0;
+    let x: f64 = (l - 54.0).max(14.0);
+    let snippet = format!(
+        "<text x=\"{x}\" y=\"{cy}\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" transform=\"rotate(-90,{x},{cy})\" class=\"sp-yl\">{}</text>",
+        escape_text(text)
+    );
+    let Some(pos) = html.find("</svg>") else {
+        return html;
+    };
+    let mut out = html.clone();
+    out.insert_str(pos, &snippet);
+    out
+}
+
+pub(crate) fn apply_set_size(html: String, w: Option<i32>, h: Option<i32>) -> String {
+    let Some(svg_pos) = html.find("<svg") else {
+        return html;
+    };
+    let Some(rel_end) = html[svg_pos..].find('>') else {
+        return html;
+    };
+    let tag_end = svg_pos + rel_end;
+    let mut tag = html[svg_pos..tag_end].to_string();
+    if let Some(neww) = w {
+        tag = replace_attr(&tag, "width", &neww.to_string());
+    }
+    if let Some(newh) = h {
+        tag = replace_attr(&tag, "height", &newh.to_string());
+    }
+    let mut out = String::with_capacity(html.len());
+    out.push_str(&html[..svg_pos]);
+    out.push_str(&tag);
+    out.push_str(&html[tag_end..]);
+    out
+}
+
+fn collect_series_colors(html: &str) -> Vec<(usize, String)> {
+    let mut order: Vec<(usize, String)> = Vec::new();
+    let mut seen = std::collections::HashSet::new();
+    let mut idx = 0usize;
+    let needle = "data-series=\"";
+    while let Some(rel) = html[idx..].find(needle) {
+        let pos = idx + rel + needle.len();
+        let Some(end_rel) = html[pos..].find('"') else {
+            break;
+        };
+        let series_str = &html[pos..pos + end_rel];
+        if let Ok(series_idx) = series_str.parse::<usize>() {
+            let tag_start = html[..pos].rfind('<').unwrap_or(pos);
+            let tag_end = html[pos..].find('>').map(|e| pos + e).unwrap_or(html.len());
+            if let Some(frel) = html[tag_start..tag_end].find("fill=\"#") {
+                let fpos = tag_start + frel + "fill=\"".len();
+                if let Some(fend) = html[fpos..].find('"') {
+                    let color = html[fpos..fpos + fend].to_string();
+                    if seen.insert(series_idx) {
+                        order.push((series_idx, color));
+                    }
+                }
+            }
+        }
+        idx = pos + end_rel;
+    }
+    order.sort_by_key(|(i, _)| *i);
+    order
+}
+
+pub(crate) fn apply_palette(html: String, colors: &[u32]) -> String {
+    if colors.is_empty() {
+        return html;
+    }
+    let order = collect_series_colors(&html);
+    let mut out = html;
+    for (i, (_, old_color)) in order.iter().enumerate() {
+        let token = format!("@@SPPAL{}@@", i);
+        out = out.replace(old_color.as_str(), &token);
+    }
+    for i in 0..order.len() {
+        let token = format!("@@SPPAL{}@@", i);
+        let new_color = format!("#{:06x}", colors[i % colors.len()] & 0xFFFFFF);
+        out = out.replace(&token, &new_color);
+    }
+    out
+}
+
+pub(crate) fn apply_color_hex(html: String, color: &str) -> String {
+    let order = collect_series_colors(&html);
+    let mut out = html;
+    for (_, old_color) in order {
+        out = out.replace(old_color.as_str(), color);
+    }
+    out
+}
+
+pub(crate) fn apply_gridlines(html: String, on: bool) -> String {
+    if on {
+        html.replacen(
+            "</head>",
+            "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>",
+            1,
+        )
+    } else {
+        html.replacen(
+            "</head>",
+            "<style>.sp-gl{display:none!important}</style></head>",
+            1,
+        )
+    }
+}
+
+pub(crate) fn apply_hover_toggle(html: String, on: bool) -> String {
+    if on {
+        return html;
+    }
+    html.replacen(
+        "</head>",
+        "<style>#sp-tip{display:none!important}[data-idx]{pointer-events:none!important}[data-idx]:hover{filter:none!important}</style></head>",
+        1,
+    )
+}
+
 pub(crate) fn apply_texture(html: String, pattern: &str, opacity: f64) -> String {
     let mut html = html;
     let (body, w, h, transform) = texture_pattern_body(pattern);
