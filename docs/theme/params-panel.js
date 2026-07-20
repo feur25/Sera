@@ -257,7 +257,12 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260720";
     }, 80);
   }
 
+  function isUnderChartsPath() {
+    return /\/charts\//.test(window.location.pathname);
+  }
+
   function isChartPage() {
+    if (!isUnderChartsPath()) return false;
     if (document.querySelector("[data-sp-ml-doc], [data-sp-ml-category], [data-sp-ml-index]")) return false;
     var en = document.querySelector(".lang-en");
     var fr = document.querySelector(".lang-fr");

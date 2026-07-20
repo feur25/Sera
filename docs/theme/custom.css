@@ -20,15 +20,15 @@
      of their hue for semantic meaning while guaranteeing contrast against
      --sp-surface (measured >=5.5:1 in the rust theme, the tightest case). */
   --sp-text-muted: color-mix(in srgb, var(--icons) 35%, var(--sidebar-fg) 65%);
-  --sp-accent: color-mix(in srgb, var(--links) 35%, var(--sidebar-fg) 65%);
+  --sp-accent: color-mix(in srgb, var(--links) 22%, var(--sidebar-fg) 78%);
   --sp-code-bg: var(--quote-bg);
   --sp-code-border: var(--quote-border);
   --sp-code-fg: var(--inline-code-color);
-  --sp-ok: color-mix(in srgb, var(--blockquote-tip-color) 35%, var(--sidebar-fg) 65%);
-  --sp-info: color-mix(in srgb, var(--blockquote-note-color) 35%, var(--sidebar-fg) 65%);
-  --sp-warn: color-mix(in srgb, var(--blockquote-warning-color) 35%, var(--sidebar-fg) 65%);
-  --sp-danger: color-mix(in srgb, var(--blockquote-caution-color) 35%, var(--sidebar-fg) 65%);
-  --sp-important: color-mix(in srgb, var(--blockquote-important-color) 35%, var(--sidebar-fg) 65%);
+  --sp-ok: color-mix(in srgb, var(--blockquote-tip-color) 22%, var(--sidebar-fg) 78%);
+  --sp-info: color-mix(in srgb, var(--blockquote-note-color) 22%, var(--sidebar-fg) 78%);
+  --sp-warn: color-mix(in srgb, var(--blockquote-warning-color) 22%, var(--sidebar-fg) 78%);
+  --sp-danger: color-mix(in srgb, var(--blockquote-caution-color) 22%, var(--sidebar-fg) 78%);
+  --sp-important: color-mix(in srgb, var(--blockquote-important-color) 22%, var(--sidebar-fg) 78%);
 }
 
 /* ── Tables scroll within their own box instead of overflowing the page ──── */

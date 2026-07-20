@@ -161,12 +161,16 @@
     else document.body.appendChild(btn);
   }
 
+  function unmangleMathSpan(span) {
+    return span.replace(/<em>/g, "_").replace(/<\/em>/g, "_")
+               .replace(/<strong>/g, "__").replace(/<\/strong>/g, "__");
+  }
+
   function fixMathDisplay() {
     document.querySelectorAll(".content p").forEach(function (p) {
       var html = p.innerHTML;
-      if (html.indexOf("$$") === -1) return;
-      var fixed = html.replace(/<em>/g, "_").replace(/<\/em>/g, "_");
-      fixed = fixed.replace(/<strong>/g, "__").replace(/<\/strong>/g, "__");
+      if (html.indexOf("$") === -1) return;
+      var fixed = html.replace(/\$\$[\s\S]+?\$\$|\$[^$\n]+?\$/g, unmangleMathSpan);
       if (fixed !== html) p.innerHTML = fixed;
     });
     if (window.MathJax && MathJax.Hub) {
