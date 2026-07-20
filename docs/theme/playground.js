@@ -833,7 +833,7 @@
                 '<div class="sp-pg-divider"></div>' +
                 '<div class="sp-pg-pcol">' +
                     '<div class="sp-pg-phdr">Live Preview</div>' +
-                    '<iframe class="sp-pg-iframe" sandbox="allow-scripts allow-same-origin"></iframe>' +
+                    '<iframe class="sp-pg-iframe" sandbox="allow-scripts"></iframe>' +
                     '<div class="sp-pg-loader"><div class="sp-pg-spinner"></div><div>Loading WASM</div></div>' +
                     '<div class="sp-pg-err"></div>' +
                 '</div>' +

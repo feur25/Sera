@@ -602,7 +602,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260720";
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
     return '<div class="sp-preview-label">' + escapeAttr(label || "Preview") + '</div>' +
-      '<iframe class="sp-preview-frame" srcdoc="' + src + '" scrolling="no" sandbox="allow-scripts allow-same-origin"></iframe>';
+      '<iframe class="sp-preview-frame" srcdoc="' + src + '" scrolling="no" sandbox="allow-scripts"></iframe>';
   }
 
   function normalizeVariantList(raw) {
