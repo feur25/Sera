@@ -2,29 +2,29 @@
 :root {
   --content-max-width: 1200px;
 
-  /* Semantic tokens for the API panel / per-page doc card — the "dark
-     island" look is intentional regardless of the active mdBook theme, so
-     these come straight from the Radix Colors dark scales
-     (https://www.radix-ui.com/colors — Slate for neutrals, Indigo/Green/
-     Blue/Amber/Red/Purple for semantic accents) instead of being derived
-     from mdBook's own theme variables. Each accent's step 11 is Radix's own
-     "accessible text on a dark neutral surface" step, so these are used
-     as-is rather than re-mixed. */
-  --sp-surface: #18191b;        /* slate-2 */
-  --sp-surface-2: #212225;      /* slate-3 */
-  --sp-surface-hover: #272a2d;  /* slate-4 */
-  --sp-border: #363a3f;         /* slate-6 */
-  --sp-text: #edeef0;           /* slate-12 */
-  --sp-text-muted: #b0b4ba;     /* slate-11 */
-  --sp-accent: #9eb1ff;         /* indigo-11 */
-  --sp-code-bg: #111113;        /* slate-1 */
+  /* Semantic tokens for the API panel / per-page doc card, built from the
+     Radix Colors (https://www.radix-ui.com/colors) *Bronze* scale — the
+     mdBook "rust" theme is a warm brown, so the card system follows that
+     hue instead of an unrelated neutral gray. Standard Radix scale usage:
+     steps 1-2 backgrounds, 3-5 interactive-component backgrounds, 6-8
+     borders/separators, 9-10 solid backgrounds, 11-12 accessible text.
+     Status accents use each hue's own light-scale step 11 (text-on-light),
+     since bronze-2/3 here are light backgrounds, not dark ones. */
+  --sp-surface: #fdf7f5;        /* bronze-2 */
+  --sp-surface-2: #f6edea;      /* bronze-3 */
+  --sp-surface-hover: #efe4df;  /* bronze-4 */
+  --sp-border: #d3bcb3;         /* bronze-7 */
+  --sp-text: #43302b;           /* bronze-12 */
+  --sp-text-muted: #7d5e54;     /* bronze-11 */
+  --sp-accent: #957468;         /* bronze-10 */
+  --sp-code-bg: #f6edea;        /* bronze-3 */
   --sp-code-border: var(--sp-border);
   --sp-code-fg: var(--sp-text);
-  --sp-ok: #3dd68c;             /* green-11 */
-  --sp-info: #70b8ff;           /* blue-11 */
-  --sp-warn: #ffca16;           /* amber-11 */
-  --sp-danger: #ff9592;         /* red-11 */
-  --sp-important: #d19dff;      /* purple-11 */
+  --sp-ok: #218358;             /* green-11 */
+  --sp-info: #0d74ce;           /* blue-11 */
+  --sp-warn: #ab6400;           /* amber-11 */
+  --sp-danger: #ce2c31;         /* red-11 */
+  --sp-important: #8145b5;      /* purple-11 */
 }
 
 /* ── Tables scroll within their own box instead of overflowing the page ──── */
