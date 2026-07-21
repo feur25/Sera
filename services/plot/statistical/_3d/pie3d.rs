@@ -30,7 +30,7 @@ pub fn render_pie3d_html(
     )
 }
 
-#[crate::chart_demo("labels=["A","B","C"], values=[30,50,20]")]
+#[crate::chart_demo("labels=[\"A\",\"B\",\"C\"], values=[30,50,20]")]
 #[crate::params(paramsList["title","labels","values","sort_order","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_alias("pie3d", "pie_3d", "pie3d_chart", "pie3d_family", "pies3d")]
 #[crate::sera_builder]

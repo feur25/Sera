@@ -30,7 +30,7 @@ pub fn render_sunburst3d_html(
     )
 }
 
-#[crate::chart_demo("labels=["Root","A","B"], parents=["","Root","Root"], values=[0,40,60]")]
+#[crate::chart_demo("labels=[\"Root\",\"A\",\"B\"], parents=[\"\",\"Root\",\"Root\"], values=[0,40,60]")]
 #[crate::params(paramsList["title","labels","parents","values","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_alias("sunburst3d", "sunburst_3d", "sunburst3d_chart")]
 #[crate::sera_builder]

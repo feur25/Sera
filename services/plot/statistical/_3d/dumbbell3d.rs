@@ -30,7 +30,7 @@ pub fn render_dumbbell3d_html(
     )
 }
 
-#[crate::chart_demo("labels=["A","B","C"], start=[10,20,15], end=[30,25,40]")]
+#[crate::chart_demo("labels=[\"A\",\"B\",\"C\"], start=[10,20,15], end=[30,25,40]")]
 #[crate::params(paramsList["title","labels","start","end","y_label","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_alias("dumbbell3d", "dumbbell_3d", "dumbbell3d_chart")]
 #[crate::sera_builder]

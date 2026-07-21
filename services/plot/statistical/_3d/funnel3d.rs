@@ -30,7 +30,7 @@ pub fn render_funnel3d_html(
     )
 }
 
-#[crate::chart_demo("labels=["Visit","Signup","Purchase"], values=[1000,400,150]")]
+#[crate::chart_demo("labels=[\"Visit\",\"Signup\",\"Purchase\"], values=[1000,400,150]")]
 #[crate::params(paramsList["title","labels","values","sort_order","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_alias("funnel3d", "funnel_3d", "funnel3d_chart")]
 #[crate::sera_builder]

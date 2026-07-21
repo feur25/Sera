@@ -4,6 +4,9 @@ use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
 use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i};
 use std::f64::consts::PI;
 
+#[crate::chart_demo(
+    "x_values=[12,25,40,55,70,85], y_values=[18,42,28,55,38,72], labels=[\"A\",\"B\",\"C\",\"D\",\"E\",\"F\"], groups=[\"G1\",\"G1\",\"G2\",\"G2\",\"G3\",\"G3\"]"
+)]
 pub fn render(cfg: &PlotWebConfig) -> String {
     let n = [
         cfg.x_values.len(),

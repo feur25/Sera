@@ -30,7 +30,7 @@ pub fn render_candlestick3d_html(
     )
 }
 
-#[crate::chart_demo("labels=["D1","D2","D3"], open=[10,12,11], high=[14,15,13], low=[9,10,9], close=[12,13,12]")]
+#[crate::chart_demo("labels=[\"D1\",\"D2\",\"D3\"], open=[10,12,11], high=[14,15,13], low=[9,10,9], close=[12,13,12]")]
 #[crate::params(paramsList["title","labels","open","high","low","close","x_label","y_label","z_label","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_alias("candlestick3d", "candlestick_3d", "candlestick3d_chart", "ohlc3d")]
 #[crate::sera_builder]

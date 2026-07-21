@@ -16,6 +16,32 @@ pub(crate) fn walk(dir: &Path, out: &mut Vec<PathBuf>) {
     }
 }
 
+/// Finds a `super::<module>::render(` call in `src` and returns `<module>`,
+/// i.e. a variant file that delegates its rendering to a sibling module
+/// rather than building the SVG itself. Skips `super::render(` (no module,
+/// self-delegation isn't a thing) and requires an identifier between the
+/// two `::`.
+pub(crate) fn super_render_delegate(src: &str) -> Option<String> {
+    let needle = "super::";
+    let mut cur = 0;
+    while let Some(pos) = src[cur..].find(needle) {
+        let start = cur + pos + needle.len();
+        let rest = &src[start..];
+        let end = rest
+            .find(|c: char| !(c.is_ascii_alphanumeric() || c == '_'))
+            .unwrap_or(rest.len());
+        let module = &rest[..end];
+        cur = start + end.max(1);
+        if module.is_empty() {
+            continue;
+        }
+        if rest[end..].starts_with("::render(") {
+            return Some(module.to_string());
+        }
+    }
+    None
+}
+
 pub(crate) fn family_variant(file: &Path, plot_root: &Path) -> Option<(String, String)> {
     let rel = file.strip_prefix(plot_root).ok()?;
     let comps: Vec<String> = rel
@@ -568,10 +594,37 @@ pub(crate) fn struct_field_names(src: &str) -> Vec<String> {
     out
 }
 
+/// Base fields injected into every config struct by the `chart_config!` macro
+/// (see `services/plot/statistical/common.rs`). The macro expands at Rust
+/// compile time, so these names never appear literally in a config.rs that
+/// merely invokes it — this scanner works on unexpanded source text, so it
+/// has to know the macro's fixed field list by hand.
+const CHART_CONFIG_BASE_FIELDS: &[&str] = &[
+    "title",
+    "x_label",
+    "y_label",
+    "gridlines",
+    "sort_order",
+    "hover",
+    "legend_position",
+    "width",
+    "height",
+];
+
 pub(crate) fn config_field_names(dir: &Path) -> Vec<String> {
-    fs::read_to_string(dir.join("config.rs"))
-        .map(|s| struct_field_names(&s))
-        .unwrap_or_default()
+    let Ok(src) = fs::read_to_string(dir.join("config.rs")) else {
+        return Vec::new();
+    };
+    let mut names = struct_field_names(&src);
+    if src.contains("chart_config!") {
+        for f in CHART_CONFIG_BASE_FIELDS {
+            if !names.iter().any(|n| n == f) {
+                names.push(f.to_string());
+            }
+        }
+        names.sort();
+    }
+    names
 }
 
 pub(crate) fn filtered_auto_fields(src: &str, allowed: &[String]) -> Vec<String> {

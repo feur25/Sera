@@ -491,6 +491,21 @@ pub fn collect(plot_root: &Path) -> PlotDocData {
                         }
                     }
                 }
+                // File-level delegation: `render()` builds a modified config and
+                // hands off to a sibling module's `render()` (e.g. sankey's
+                // gapped/ribbon tweaking node_gap/node_width then calling
+                // super::basic::render). That target's own fields (and its
+                // common.rs) are just as relevant to this variant's params.
+                if let Some(target_module) = crate::build_common::super_render_delegate(&src) {
+                    let target_path = dir.join(format!("{}.rs", target_module));
+                    if let Ok(target_src) = fs::read_to_string(&target_path) {
+                        for s in crate::build_common::filtered_auto_fields(&target_src, &allowed) {
+                            if !fields.contains(&s) {
+                                fields.push(s);
+                            }
+                        }
+                    }
+                }
             }
             fields
         };

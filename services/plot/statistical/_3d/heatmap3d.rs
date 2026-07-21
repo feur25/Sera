@@ -30,7 +30,7 @@ pub fn render_heatmap3d_html(
     )
 }
 
-#[crate::chart_demo("labels=["R1","R2"], categories=["C1","C2"], matrix=[[1,2],[3,4]]")]
+#[crate::chart_demo("labels=[\"R1\",\"R2\"], categories=[\"C1\",\"C2\"], matrix=[[1,2],[3,4]]")]
 #[crate::params(paramsList["title","labels","categories","matrix","x_labels","x_label","y_label","z_label","bg_color","scene","orientation3d","width","height"])]
 #[crate::sera_alias("heatmap3d", "heatmap_3d", "heatmap3d_chart", "heatmaps3d")]
 #[crate::sera_builder]
