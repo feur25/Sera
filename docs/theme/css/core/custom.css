@@ -2,33 +2,29 @@
 :root {
   --content-max-width: 1200px;
 
-  /* Semantic tokens for the API panel / per-page doc card, derived from
-     mdBook's own per-theme variables (see css/variables.css) so this design
-     follows whichever theme is active instead of a single hardcoded dark
-     palette. */
-  --sp-surface: var(--sidebar-bg);
-  /* theme-popup-bg / theme-hover are not guaranteed to sit in the same
-     lightness family as sidebar-bg (the "rust" theme pairs a dark sidebar
-     with a light popup), so surface tiers are mixed from sidebar-bg/fg
-     instead — this keeps --sp-text legible on every tier in every theme. */
-  --sp-surface-2: color-mix(in srgb, var(--sidebar-bg) 88%, var(--sidebar-fg) 12%);
-  --sp-surface-hover: color-mix(in srgb, var(--sidebar-bg) 80%, var(--sidebar-fg) 20%);
-  --sp-border: var(--table-border-color);
-  --sp-text: var(--sidebar-fg);
-  /* icons / links / blockquote-*-color are calibrated against --bg (the
-     page), not --sidebar-bg — mixing mostly toward sidebar-fg keeps a hint
-     of their hue for semantic meaning while guaranteeing contrast against
-     --sp-surface (measured >=5.5:1 in the rust theme, the tightest case). */
-  --sp-text-muted: color-mix(in srgb, var(--icons) 35%, var(--sidebar-fg) 65%);
-  --sp-accent: color-mix(in srgb, var(--links) 22%, var(--sidebar-fg) 78%);
-  --sp-code-bg: color-mix(in srgb, var(--sidebar-bg) 92%, black 8%);
+  /* Semantic tokens for the API panel / per-page doc card — the "dark
+     island" look is intentional regardless of the active mdBook theme, so
+     these come straight from the Radix Colors dark scales
+     (https://www.radix-ui.com/colors — Slate for neutrals, Indigo/Green/
+     Blue/Amber/Red/Purple for semantic accents) instead of being derived
+     from mdBook's own theme variables. Each accent's step 11 is Radix's own
+     "accessible text on a dark neutral surface" step, so these are used
+     as-is rather than re-mixed. */
+  --sp-surface: #18191b;        /* slate-2 */
+  --sp-surface-2: #212225;      /* slate-3 */
+  --sp-surface-hover: #272a2d;  /* slate-4 */
+  --sp-border: #363a3f;         /* slate-6 */
+  --sp-text: #edeef0;           /* slate-12 */
+  --sp-text-muted: #b0b4ba;     /* slate-11 */
+  --sp-accent: #9eb1ff;         /* indigo-11 */
+  --sp-code-bg: #111113;        /* slate-1 */
   --sp-code-border: var(--sp-border);
-  --sp-code-fg: var(--sidebar-fg);
-  --sp-ok: color-mix(in srgb, var(--blockquote-tip-color) 22%, var(--sidebar-fg) 78%);
-  --sp-info: color-mix(in srgb, var(--blockquote-note-color) 22%, var(--sidebar-fg) 78%);
-  --sp-warn: color-mix(in srgb, var(--blockquote-warning-color) 22%, var(--sidebar-fg) 78%);
-  --sp-danger: color-mix(in srgb, var(--blockquote-caution-color) 22%, var(--sidebar-fg) 78%);
-  --sp-important: color-mix(in srgb, var(--blockquote-important-color) 22%, var(--sidebar-fg) 78%);
+  --sp-code-fg: var(--sp-text);
+  --sp-ok: #3dd68c;             /* green-11 */
+  --sp-info: #70b8ff;           /* blue-11 */
+  --sp-warn: #ffca16;           /* amber-11 */
+  --sp-danger: #ff9592;         /* red-11 */
+  --sp-important: #d19dff;      /* purple-11 */
 }
 
 /* ── Tables scroll within their own box instead of overflowing the page ──── */
@@ -92,7 +88,7 @@ pre code {
    Use the [loading="lazy"] attribute to target only chart previews
    (not the sidebar <iframe> which never has that attribute). */
 /* Main content iframes keep their fixed height */
-iframe[loading="lazy"] {
+iframe[loading="lazy"]:not(.sp-sc-frame) {
   height: 380px !important;
 }
 /* sp-tabs inside the panel: compact, no margin overflow */
@@ -412,6 +408,7 @@ iframe[loading="lazy"] {
   padding: 0 !important;
   background: transparent !important;
   overflow: visible !important;
+  min-width: 0 !important;
 }
 
 /* The legacy "⇆" toggle sticking out of the in-page rail is replaced by the
@@ -419,9 +416,10 @@ iframe[loading="lazy"] {
 .sp-cls-toggle { display: none !important; }
 
 /* ── Variant + code-tab visibility (JS also sets inline styles as backup) ─── */
-#sp-params-panel .sp-variant { display: none; }
+#sp-params-panel .sp-variant { display: none; min-width: 0; }
 #sp-params-panel .sp-variant.sp-von {
   display: block !important;
+  min-width: 0 !important;
   animation: spFade .22s ease;
 }
 #sp-params-panel .sp-tc { display: none; }

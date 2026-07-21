@@ -29,6 +29,29 @@
     });
   }
 
+  var FALLBACK_W = 900, FALLBACK_H = 540;
+
+  function measureFrameContent(frame) {
+    try {
+      var doc = frame.contentDocument;
+      if (!doc || !doc.body) return null;
+      var w = Math.max(doc.body.scrollWidth, doc.documentElement.scrollWidth);
+      var h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight);
+      return (w && h) ? { w: w, h: h } : null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function fitFrame(frame, viewport) {
+    var size = measureFrameContent(frame) || { w: FALLBACK_W, h: FALLBACK_H };
+    frame.style.width = size.w + "px";
+    frame.style.height = size.h + "px";
+    var vw = viewport.clientWidth, vh = viewport.clientHeight;
+    var scale = Math.min(vw / size.w, vh / size.h);
+    frame.style.transform = "scale(" + scale + ")";
+  }
+
   function card(slug, category, title) {
     var wrap = document.createElement("div");
     wrap.className = "sp-sc-card";
@@ -42,6 +65,10 @@
     frame.className = "sp-sc-frame";
     frame.loading = "lazy";
     frame.scrolling = "no";
+    frame.style.width = FALLBACK_W + "px";
+    frame.style.height = FALLBACK_H + "px";
+    frame.style.transform = "scale(" + (180 / FALLBACK_H) + ")";
+    frame.onload = function () { fitFrame(frame, viewport); };
     viewport.appendChild(frame);
     wrap.appendChild(a);
     wrap.appendChild(viewport);

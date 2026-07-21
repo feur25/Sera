@@ -9,6 +9,22 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260720";
   var LANG_KEY   = "seraplot_lang";
   var PANEL_ID   = "sp-params-panel";
 
+  // Measures an iframe's actual rendered content size (SVG/canvas + any
+  // wrapper padding), since chart types don't share a single fixed canvas
+  // size (3D scenes in particular render taller than the 2D SVG default) —
+  // scaling against a hardcoded assumption crops whatever's larger.
+  function measureIframeContent(iframe, fallbackW, fallbackH) {
+    try {
+      var doc = iframe.contentDocument;
+      if (!doc || !doc.body) return { w: fallbackW, h: fallbackH };
+      var w = Math.max(doc.body.scrollWidth, doc.documentElement.scrollWidth) || fallbackW;
+      var h = Math.max(doc.body.scrollHeight, doc.documentElement.scrollHeight) || fallbackH;
+      return { w: w, h: h };
+    } catch (e) {
+      return { w: fallbackW, h: fallbackH };
+    }
+  }
+
   var state = {
     pos: localStorage.getItem(POS_KEY) || "right",
     collapsed: localStorage.getItem(COL_KEY) === "1",
@@ -599,15 +615,39 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260720";
     });
   }
 
+  // The srcdoc iframe below is sandboxed without allow-same-origin (a
+  // deliberate security fix), so contentDocument is unreachable from the
+  // parent — measure the real chart size straight from the HTML string we
+  // already hold in memory instead of trying to introspect the loaded
+  // iframe afterwards.
+  function measureChartHtml(html, fallbackW, fallbackH) {
+    var canvasTag = html.match(/<canvas[^>]*>/i);
+    if (canvasTag) {
+      var styleAttr = canvasTag[0].match(/\sstyle="([^"]*)"/i);
+      var style = styleAttr ? styleAttr[1] : "";
+      var cw = style.match(/width:\s*(\d+)px/i);
+      var ch = style.match(/height:\s*(\d+)px/i);
+      if (cw && ch) return { w: parseInt(cw[1], 10), h: parseInt(ch[1], 10) };
+    }
+    var svgTag = html.match(/<svg[^>]*>/i);
+    if (svgTag) {
+      var sw = svgTag[0].match(/\swidth="(\d+)"/i);
+      var sh = svgTag[0].match(/\sheight="(\d+)"/i);
+      if (sw && sh) return { w: parseInt(sw[1], 10), h: parseInt(sh[1], 10) };
+    }
+    return { w: fallbackW, h: fallbackH };
+  }
+
   function buildVariantPreviewHtml(html, label) {
     if (!html) return "";
+    var size = measureChartHtml(html, 900, 480);
     var src = fitPreviewHtml(html)
       .replace(/&/g, "&amp;")
       .replace(/"/g, "&quot;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
     return '<div class="sp-preview-label">' + escapeAttr(label || "Preview") + '</div>' +
-      '<iframe class="sp-preview-frame" srcdoc="' + src + '" scrolling="no" sandbox="allow-scripts"></iframe>';
+      '<iframe class="sp-preview-frame" data-sp-cw="' + size.w + '" data-sp-ch="' + size.h + '" srcdoc="' + src + '" scrolling="no" sandbox="allow-scripts"></iframe>';
   }
 
   function normalizeVariantList(raw) {
@@ -823,9 +863,12 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260720";
       function rescaleIframe() {
         var aw = wrap.offsetWidth;
         if (!aw) return;
-        var scale = aw / CHART_W;
+        var size = measureIframeContent(pIframe, CHART_W, CHART_H);
+        pIframe.style.width = size.w + "px";
+        pIframe.style.height = size.h + "px";
+        var scale = aw / size.w;
         pIframe.style.transform = "scale(" + scale + ")";
-        wrap.style.height = Math.ceil(CHART_H * scale) + "px";
+        wrap.style.height = Math.ceil(size.h * scale) + "px";
       }
       pIframe.onload = rescaleIframe;
       setTimeout(rescaleIframe, 50);
@@ -1042,9 +1085,19 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260720";
       function scale() {
         var aw = wrap.offsetWidth;
         if (!aw) return;
-        var sc = aw / CHART_W;
+        // srcdoc previews are sandboxed without allow-same-origin, so
+        // contentDocument is unreachable — those carry their real size as
+        // data attributes (set from the HTML string at build time, see
+        // buildVariantPreviewHtml). Non-sandboxed static previews (plain
+        // src="…previews/x.html") fall back to live measurement.
+        var cw = parseInt(iframe.getAttribute("data-sp-cw") || "", 10);
+        var ch = parseInt(iframe.getAttribute("data-sp-ch") || "", 10);
+        var size = (cw && ch) ? { w: cw, h: ch } : measureIframeContent(iframe, CHART_W, CHART_H);
+        iframe.style.width = size.w + "px";
+        iframe.style.height = size.h + "px";
+        var sc = aw / size.w;
         iframe.style.transform = "scale(" + sc + ")";
-        wrap.style.height = Math.ceil(CHART_H * sc) + "px";
+        wrap.style.height = Math.ceil(size.h * sc) + "px";
       }
       iframe.onload = scale;
       scale();
