@@ -16,35 +16,39 @@ sans équivalent).
 | Different cubehelix palettes | layered_bivariate_plot.html | joint | `joint::layered_bivariate` |
 | Facetted histogram | faceted_histogram.html | facet | `facet::grid(histogram, *)` |
 
-## Bivarié / joint (nouvelle famille `joint`)
+## Bivarié / joint (famille `joint`) — TOUS IMPLÉMENTÉS
 
-| Exemple | URL | Cible |
-|---|---|---|
-| Hexbin plot with marginal distributions | hexbin_marginals.html | `joint::hexbin_marginal` |
-| Scatterplot heatmap | heat_scatter.html | `joint::heat_scatter` |
-| Layered bivariate plot | layered_bivariate_plot.html | `joint::layered_bivariate` |
-| Joint histogram | joint_histogram.html | `joint::histogram` |
-| Joint kernel density estimate | joint_kde.html | `joint::kde` |
-| Overlapping bivariate KDE plots | multiple_bivariate_kde.html | `joint::kde_multi` |
-| Plotting on a large number of facets | marginal_ticks.html | `joint::marginal_ticks` |
-| Linear regression with marginal distributions | regression_marginals.html | `joint::regression` |
-| Smooth kernel density with marginal histograms | smooth_bivariate_kde.html | `joint::kde_smooth` |
+| Exemple | URL | Cible | Statut |
+|---|---|---|---|
+| Hexbin plot with marginal distributions | hexbin_marginals.html | `joint(variant="hexbin_marginal")` | fait |
+| Scatterplot heatmap | heat_scatter.html | `joint(variant="heat_scatter")` | fait |
+| Layered bivariate plot | layered_bivariate_plot.html | `joint(variant="layered_bivariate")` | fait |
+| Joint histogram | joint_histogram.html | `joint(variant="heat_scatter")` — alias `joint_histogram`/`histogram2d`, même technique, pas de duplication | fait (alias sur parent existant) |
+| Joint kernel density estimate | joint_kde.html | `joint(variant="joint_kde")` | fait |
+| Overlapping bivariate KDE plots | multiple_bivariate_kde.html | `joint(variant="multiple_bivariate_kde", categories=...)` | fait |
+| Plotting on a large number of facets (marginal ticks) | marginal_ticks.html | `joint(variant="marginal_ticks")` | fait |
+| Linear regression with marginal distributions | regression_marginals.html | `joint(variant="regression_marginals")` — droite de régression réutilisée depuis `scatter::regression::fit_linear` | fait |
+| Smooth kernel density with marginal histograms | smooth_bivariate_kde.html | `joint(variant="kde_smooth")` | fait |
 
-## Facettage générique (méta-mécanisme `facet`, hérite de n'importe quelle famille)
+## Facettage générique (méta-mécanisme `facet`, hérite de n'importe quelle famille) — IMPLÉMENTÉ
 
-| Exemple | URL | Cible |
-|---|---|---|
-| Facetted histogram | faceted_histogram.html | `facet::grid(histogram)` |
-| Facetted lineplot | faceted_lineplot.html | `facet::grid(line)` |
-| Many facets | many_facets.html | `facet::grid(*)` |
-| Radial facets | radial_facets.html | `facet::grid(polar)` |
-| Conditional small multiples of KDE | multiple_conditional_kde.html | `facet::grid(kde)` |
-| Multiple ECDFs | multiple_ecdf.html | `facet::grid(ecdf)` |
-| Facetted time series | timeseries_facets.html | `facet::grid(line)` |
-| 3-variable histogram | three_variable_histogram.html | `facet::grid(histogram2d)` |
-| Pair grid + KDE | pair_grid_with_kde.html | `facet::pairgrid(kde)` |
-| Paired point plots | paired_pointplots.html | `facet::pairgrid(pointplot)` |
-| Dot plot with several variables | pairgrid_dotplot.html | `facet::pairgrid(dot)` |
+Le mécanisme `facet(family=..., variant=..., facet_by=..., ...)` est générique et déjà câblé sur
+~30 familles (voir `services/plot/statistical/facet/mod.rs::dispatch`). Chaque ligne ci-dessous
+est donc déjà utilisable SANS code supplémentaire — juste un appel avec les bons paramètres.
+
+| Exemple | URL | Cible | Statut |
+|---|---|---|---|
+| Facetted histogram | faceted_histogram.html | `facet(family="histogram", facet_by=...)` | déjà couvert (mécanisme générique) |
+| Facetted lineplot | faceted_lineplot.html | `facet(family="line", facet_by=...)` | déjà couvert |
+| Many facets | many_facets.html | `facet(family=<any>, facet_by=...)` | déjà couvert |
+| Radial facets | radial_facets.html | `facet(family="radar", facet_by=...)` | déjà couvert |
+| Conditional small multiples of KDE | multiple_conditional_kde.html | `facet(family="kde", facet_by=...)` | déjà couvert |
+| Multiple ECDFs (overlaid, pas facetté) | multiple_ecdf.html | `histogram(variant="cumulative", categories=...)` ou `kde(variant="cumulative", categories=...)` | déjà couvert par un parent existant — ce n'est pas du facettage, seaborn superpose plusieurs ECDF dans UN panneau via le regroupement par catégorie déjà supporté |
+| Facetted time series | timeseries_facets.html | `facet(family="line", facet_by=...)` | déjà couvert |
+| 3-variable histogram | three_variable_histogram.html | `facet(family="joint", variant="histogram2d", facet_by=...)` | déjà couvert (combinaison facet + alias joint) |
+| Pair grid + KDE | pair_grid_with_kde.html | `splom(variant="density")` | déjà couvert par un parent existant — SPLOM est la matrice de nuages de points du framework, `density` (alpha/overplot) est l'équivalent le plus proche du KDE en diagonale |
+| Paired point plots | paired_pointplots.html | `splom(variant="basic")` | déjà couvert par un parent existant |
+| Dot plot with several variables | pairgrid_dotplot.html | `splom(variant="basic")` | déjà couvert par un parent existant |
 
 ## Déjà couvert par une famille existante (nouvelle variante seulement)
 
@@ -84,12 +88,17 @@ sans équivalent).
 
 ## Implémenté
 
-- `joint::hexbin_marginal`, `joint::heat_scatter`, `joint::layered_bivariate` — famille `joint`
-  (`services/plot/statistical/joint/`), aliases `joint`/`jointplot`/`joint_plot`/`bivariate`.
-- `facet::grid(*)` — mécanisme générique (`services/plot/statistical/facet/`), aliases
-  `facet`/`facet_grid`/`facetgrid`/`small_multiples`. Prend `family`, `facet_by` et n'importe
-  quel argument de la famille cible ; hérite automatiquement de toute famille enregistrée dans
-  `facet::dispatch` (aucun code par graphique).
+- Famille `joint` (`services/plot/statistical/joint/`) — 8 variantes : `hexbin_marginal`,
+  `heat_scatter` (+ alias `joint_histogram`/`histogram2d`), `layered_bivariate`, `joint_kde`,
+  `kde_smooth`, `multiple_bivariate_kde`, `marginal_ticks`, `regression_marginals`. Aliases
+  famille : `joint`/`jointplot`/`joint_plot`/`bivariate`. Doc : `docs/charts/2d/joint.md`.
+- `facet(family=..., variant=..., facet_by=...)` — mécanisme générique
+  (`services/plot/statistical/facet/`), aliases `facet`/`facet_grid`/`facetgrid`/`small_multiples`.
+  Prend `family`, `facet_by` et n'importe quel argument de la famille cible ; hérite
+  automatiquement de toute famille enregistrée dans `facet::dispatch` (aucun code par graphique).
+- Les items « déjà couvert par un parent existant » listés dans les tableaux ci-dessus n'ont
+  volontairement pas de nouveau code : `splom` couvre les 3 exemples pairgrid, et
+  `histogram`/`kde` avec `variant="cumulative"` + `categories=` couvrent les ECDF multiples.
 
 ## Notes d'architecture
 

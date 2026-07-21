@@ -1,8 +1,9 @@
 use super::config::JointConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{
-    hex6, push_b, push_f2, svg_axis_lines, svg_open, svg_title, svg_x_label, svg_y_label, Frame,
+    hex6, push_b, push_f2, push_i, svg_axis_lines, svg_open, svg_title, svg_x_label, svg_y_label, Frame,
 };
+use crate::plot::statistical::heatmap::common::colorscale_color;
 use crate::plot::statistical::histogram::common::compute_bins;
 use crate::plot::statistical::kde::common::{kde_eval, scott_bw};
 
@@ -250,4 +251,186 @@ pub fn right_kde(f: &mut Frame, l: &Layout, bounds: &Bounds, values: &[f64], col
 
 pub fn finalize(f: Frame, cfg: &JointConfig) -> String {
     f.html(&slots_to_json(cfg.hover))
+}
+
+pub fn kde_heat_grid(
+    f: &mut Frame,
+    l: &Layout,
+    bounds: &Bounds,
+    x_values: &[f64],
+    y_values: &[f64],
+    colorscale: &str,
+    grid_n: usize,
+) {
+    let n = x_values.len().min(y_values.len());
+    if n == 0 {
+        return;
+    }
+    let bw_x = scott_bw(x_values).max(1e-9);
+    let bw_y = scott_bw(y_values).max(1e-9);
+    let grid_n = grid_n.max(4);
+    let mut dens = vec![0f64; grid_n * grid_n];
+    let mut max_d = 1e-12f64;
+    for gy in 0..grid_n {
+        let gyv = bounds.ymin + (bounds.ymax - bounds.ymin) * gy as f64 / (grid_n - 1) as f64;
+        for gx in 0..grid_n {
+            let gxv = bounds.xmin + (bounds.xmax - bounds.xmin) * gx as f64 / (grid_n - 1) as f64;
+            let mut acc = 0f64;
+            for i in 0..n {
+                let ux = (gxv - x_values[i]) / bw_x;
+                let uy = (gyv - y_values[i]) / bw_y;
+                let e = ux * ux + uy * uy;
+                if e < 24.0 {
+                    acc += (-0.5 * e).exp();
+                }
+            }
+            dens[gy * grid_n + gx] = acc;
+            if acc > max_d {
+                max_d = acc;
+            }
+        }
+    }
+
+    let cell_w = l.pw as f64 / (grid_n - 1) as f64;
+    let cell_h = l.ph as f64 / (grid_n - 1) as f64;
+    let scale = if colorscale.is_empty() { "cividis" } else { colorscale };
+    for gy in 0..grid_n {
+        for gx in 0..grid_n {
+            let t = dens[gy * grid_n + gx] / max_d;
+            if t < 0.04 {
+                continue;
+            }
+            let col = colorscale_color(scale, t);
+            let x0 = l.pl as f64 + gx as f64 * cell_w - cell_w / 2.0;
+            let y0 = l.pt as f64 + l.ph as f64 - (gy as f64 * cell_h + cell_h / 2.0);
+            push_b(&mut f.buf, b"<rect x=\"");
+            push_f2(&mut f.buf, x0);
+            push_b(&mut f.buf, b"\" y=\"");
+            push_f2(&mut f.buf, y0);
+            push_b(&mut f.buf, b"\" width=\"");
+            push_f2(&mut f.buf, cell_w + 0.8);
+            push_b(&mut f.buf, b"\" height=\"");
+            push_f2(&mut f.buf, cell_h + 0.8);
+            push_b(&mut f.buf, b"\" fill=\"#");
+            f.buf.extend_from_slice(&hex6(col));
+            push_b(&mut f.buf, b"\" fill-opacity=\"");
+            push_f2(&mut f.buf, (0.25 + 0.55 * t).min(0.85));
+            push_b(&mut f.buf, b"\"/>");
+        }
+    }
+}
+
+pub fn kde_heat_contour(
+    f: &mut Frame,
+    l: &Layout,
+    bounds: &Bounds,
+    x_values: &[f64],
+    y_values: &[f64],
+    color: u32,
+    grid_n: usize,
+    threshold: f64,
+) {
+    let n = x_values.len().min(y_values.len());
+    if n == 0 {
+        return;
+    }
+    let bw_x = scott_bw(x_values).max(1e-9);
+    let bw_y = scott_bw(y_values).max(1e-9);
+    let grid_n = grid_n.max(4);
+    let mut dens = vec![0f64; grid_n * grid_n];
+    let mut max_d = 1e-12f64;
+    for gy in 0..grid_n {
+        let gyv = bounds.ymin + (bounds.ymax - bounds.ymin) * gy as f64 / (grid_n - 1) as f64;
+        for gx in 0..grid_n {
+            let gxv = bounds.xmin + (bounds.xmax - bounds.xmin) * gx as f64 / (grid_n - 1) as f64;
+            let mut acc = 0f64;
+            for i in 0..n {
+                let ux = (gxv - x_values[i]) / bw_x;
+                let uy = (gyv - y_values[i]) / bw_y;
+                let e = ux * ux + uy * uy;
+                if e < 24.0 {
+                    acc += (-0.5 * e).exp();
+                }
+            }
+            dens[gy * grid_n + gx] = acc;
+            if acc > max_d {
+                max_d = acc;
+            }
+        }
+    }
+
+    let cell_w = l.pw as f64 / (grid_n - 1) as f64;
+    let cell_h = l.ph as f64 / (grid_n - 1) as f64;
+    let hx = hex6(color);
+    for gy in 0..grid_n {
+        for gx in 0..grid_n {
+            let t = dens[gy * grid_n + gx] / max_d;
+            if t < threshold {
+                continue;
+            }
+            let x0 = l.pl as f64 + gx as f64 * cell_w - cell_w / 2.0;
+            let y0 = l.pt as f64 + l.ph as f64 - (gy as f64 * cell_h + cell_h / 2.0);
+            push_b(&mut f.buf, b"<rect x=\"");
+            push_f2(&mut f.buf, x0);
+            push_b(&mut f.buf, b"\" y=\"");
+            push_f2(&mut f.buf, y0);
+            push_b(&mut f.buf, b"\" width=\"");
+            push_f2(&mut f.buf, cell_w + 0.8);
+            push_b(&mut f.buf, b"\" height=\"");
+            push_f2(&mut f.buf, cell_h + 0.8);
+            push_b(&mut f.buf, b"\" fill=\"#");
+            f.buf.extend_from_slice(&hx);
+            push_b(&mut f.buf, b"\" fill-opacity=\"0.32\"/>");
+        }
+    }
+}
+
+pub fn top_rug(f: &mut Frame, l: &Layout, bounds: &Bounds, values: &[f64], color: u32) {
+    let hx = hex6(color);
+    let y0 = l.top_y1 - 12;
+    let y1 = l.top_y1 - 2;
+    push_b(&mut f.buf, b"<g stroke=\"#");
+    f.buf.extend_from_slice(&hx);
+    push_b(&mut f.buf, b"\" stroke-width=\"1\" stroke-opacity=\"0.55\">");
+    for &v in values {
+        if v < bounds.xmin || v > bounds.xmax {
+            continue;
+        }
+        let x = px(l, bounds, v);
+        push_b(&mut f.buf, b"<line x1=\"");
+        push_f2(&mut f.buf, x);
+        push_b(&mut f.buf, b"\" y1=\"");
+        push_i(&mut f.buf, y0);
+        push_b(&mut f.buf, b"\" x2=\"");
+        push_f2(&mut f.buf, x);
+        push_b(&mut f.buf, b"\" y2=\"");
+        push_i(&mut f.buf, y1);
+        push_b(&mut f.buf, b"\"/>");
+    }
+    push_b(&mut f.buf, b"</g>");
+}
+
+pub fn right_rug(f: &mut Frame, l: &Layout, bounds: &Bounds, values: &[f64], color: u32) {
+    let hx = hex6(color);
+    let x0 = l.right_x0 + 2;
+    let x1 = l.right_x0 + 12;
+    push_b(&mut f.buf, b"<g stroke=\"#");
+    f.buf.extend_from_slice(&hx);
+    push_b(&mut f.buf, b"\" stroke-width=\"1\" stroke-opacity=\"0.55\">");
+    for &v in values {
+        if v < bounds.ymin || v > bounds.ymax {
+            continue;
+        }
+        let y = py(l, bounds, v);
+        push_b(&mut f.buf, b"<line x1=\"");
+        push_i(&mut f.buf, x0);
+        push_b(&mut f.buf, b"\" y1=\"");
+        push_f2(&mut f.buf, y);
+        push_b(&mut f.buf, b"\" x2=\"");
+        push_i(&mut f.buf, x1);
+        push_b(&mut f.buf, b"\" y2=\"");
+        push_f2(&mut f.buf, y);
+        push_b(&mut f.buf, b"\"/>");
+    }
+    push_b(&mut f.buf, b"</g>");
 }

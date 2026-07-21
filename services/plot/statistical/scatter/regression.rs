@@ -3,7 +3,7 @@ use super::config::ScatterConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i};
 
-fn fit_linear(xs: &[f64], ys: &[f64]) -> Option<(f64, f64, f64)> {
+pub fn fit_linear(xs: &[f64], ys: &[f64]) -> Option<(f64, f64, f64)> {
     let n = xs.len() as f64;
     if xs.len() < 2 {
         return None;

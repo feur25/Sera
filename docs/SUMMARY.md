@@ -71,6 +71,7 @@
   - [Event Plot](charts/2d/eventplot.md)
   - [Gantt Chart](charts/2d/gantt.md)
   - [Hexbin](charts/2d/hexbin.md)
+  - [Joint](charts/2d/joint.md)
   - [Icicle](charts/2d/icicle.md)
   - [Parallel Categories](charts/2d/parcats.md)
   - [Scatter Ternary](charts/2d/scatterternary.md)
