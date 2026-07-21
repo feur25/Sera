@@ -33,7 +33,7 @@
         units_per_icon: '10',
         icon_size: '24',
         max_icons_per_column: '10',
-        parents: '[null,"Root","Root","A","A","B"]',
+        parents: '["","Root","Root","A","A","B"]',
         ids: '["Root","A","B","A1","A2","B1"]',
         offset_groups: '["G1","G1","G2","G2"]',
         regions: '["FR","DE","IT","ES","UK"]',
