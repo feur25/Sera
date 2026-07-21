@@ -34,8 +34,6 @@ Aliases: `sp.gantt`, `sp.gantt_chart`, `sp.broken_barh`, `sp.timeline_chart`, `s
 
 <div data-sp-registry-table="variants" data-family="gantt"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `labels` (`list[str]`) — Task names. `start` (`list[float]`) — Task start (numeric timeline unit). `end` (`list[float]`) — Task end. `categories` (`list[str]`) — Optional group per task; colors bars by group with a legend. `color_values` (`list[float]`) — Completion fraction (0–1) per task, used by the `"progress"` variant.
@@ -104,8 +102,6 @@ Alias : `sp.gantt`, `sp.gantt_chart`, `sp.broken_barh`, `sp.timeline_chart`, `sp
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="gantt"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

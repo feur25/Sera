@@ -35,8 +35,6 @@ Dendrograms display hierarchical tree structures using right-angle elbow connect
 
 <div data-sp-registry-table="variants" data-family="dendrogram"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `labels` (`list[str]`) — Node names. `parents` (`list[str]`) — Parent name per node (`""` = root). `width` / `height` (`int`) — Chart dimensions.
@@ -126,8 +124,6 @@ Les dendrogrammes affichent des structures arborescentes hiérarchiques à l'aid
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="dendrogram"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

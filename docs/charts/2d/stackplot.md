@@ -34,8 +34,6 @@ Aliases: `sp.stackplot`, `sp.stack_plot`, `sp.stacked_area`, `sp.build_stackplot
 
 <div data-sp-registry-table="variants" data-family="stackplot"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `x_labels` (`list[str]`) — Shared x-axis point labels. `series` (`list[list[float]]`) — One list of values per series, same length as `x_labels`. `series_names` (`list[str]`) — Legend label per series.
@@ -118,8 +116,6 @@ Alias : `sp.stackplot`, `sp.stack_plot`, `sp.stacked_area`, `sp.build_stackplot`
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="stackplot"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

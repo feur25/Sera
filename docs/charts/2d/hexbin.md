@@ -34,8 +34,6 @@ Aliases: `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `
 
 <div data-sp-registry-table="variants" data-family="hexbin"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `x_values` (`list[float]`) — X coordinates. `y_values` (`list[float]`) — Y coordinates.
@@ -111,8 +109,6 @@ Alias : `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `s
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="hexbin"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

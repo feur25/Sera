@@ -28,8 +28,6 @@ The default renderer is a vertical categorical bar chart. The same API also cove
 
 <div data-sp-registry-table="variants" data-family="bar"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `labels` are category labels for bar variants. Single-series variants use `values`. Multi-series variants use `series`, where each inner list is one series, and `series_names` supplies legend names.
@@ -179,8 +177,6 @@ Le rendu par défaut est un bar chart catégoriel vertical. La même API couvre 
 <h2>Variantes</h2>
 
 <div data-sp-registry-table="variants" data-family="bar"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 <h2>Données</h2>
 

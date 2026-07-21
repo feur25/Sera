@@ -24,8 +24,6 @@ Sankey diagrams visualize flows between nodes. Node widths and link widths are p
 
 <div data-sp-registry-table="variants" data-family="sankey"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `labels` (`list[str]`) — Node names. `edges_i` (`list[int]`) — Source node indices. `edges_j` (`list[int]`) — Target node indices. `edges_w` (`list[float]`) — Flow weights. `width` / `height` (`int`) — Chart dimensions.
@@ -108,8 +106,6 @@ Les diagrammes de Sankey visualisent des flux entre nœuds. La largeur des nœud
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="sankey"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

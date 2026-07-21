@@ -36,8 +36,6 @@ Aliases: `sp.parcats`, `sp.parallel_categories`, `sp.parcats_chart`, `sp.paralle
 
 <div data-sp-registry-table="variants" data-family="parcats"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `axes` (`list[str]`) — Axis names, left to right. `category_series` (`list[list[str]]`) — One row per observation, one category value per axis.
@@ -101,8 +99,6 @@ Alias : `sp.parcats`, `sp.parallel_categories`, `sp.parcats_chart`, `sp.parallel
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="parcats"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

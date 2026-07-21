@@ -36,8 +36,6 @@ The Orbita chart is an original SeraPlot chart type that places multiple series 
 
 <div data-sp-registry-table="variants" data-family="orbita"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `series_names` (`list[str]`) — One name per orbit (e.g. years). `labels` (`list[str]`) — Category names (angular positions). `matrix` (`list[list[float]]`) — S×C value matrix, one row per series. `width` / `height` (`int`) — Chart dimensions (default 580×580).
@@ -129,8 +127,6 @@ L'Orbita chart est un type de graphique original de SeraPlot qui place plusieurs
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="orbita"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

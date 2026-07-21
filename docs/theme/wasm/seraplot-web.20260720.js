@@ -3686,15 +3686,15 @@ let wasm_bindgen = (function(exports) {
     function __wbg_get_imports() {
         const import0 = {
             __proto__: null,
-            __wbg_Error_92b29b0548f8b746: function(arg0, arg1) {
+            __wbg_Error_960c155d3d49e4c2: function(arg0, arg1) {
                 const ret = Error(getStringFromWasm0(arg0, arg1));
                 return ret;
             },
-            __wbg___wbindgen_is_string_ea5e6cc2e4141dfe: function(arg0) {
+            __wbg___wbindgen_is_string_6df3bf7ef1164ed3: function(arg0) {
                 const ret = typeof(arg0) === 'string';
                 return ret;
             },
-            __wbg___wbindgen_string_get_b0ca35b86a603356: function(arg0, arg1) {
+            __wbg___wbindgen_string_get_7ed5322991caaec5: function(arg0, arg1) {
                 const obj = arg1;
                 const ret = typeof(obj) === 'string' ? obj : undefined;
                 var ptr1 = isLikeNone(ret) ? 0 : passStringToWasm0(ret, wasm.__wbindgen_malloc_command_export, wasm.__wbindgen_realloc_command_export);
@@ -3702,30 +3702,30 @@ let wasm_bindgen = (function(exports) {
                 getDataViewMemory0().setInt32(arg0 + 4 * 1, len1, true);
                 getDataViewMemory0().setInt32(arg0 + 4 * 0, ptr1, true);
             },
-            __wbg___wbindgen_throw_344f42d3211c4765: function(arg0, arg1) {
+            __wbg___wbindgen_throw_6b64449b9b9ed33c: function(arg0, arg1) {
                 throw new Error(getStringFromWasm0(arg0, arg1));
             },
-            __wbg_new_32b398fb48b6d94a: function() {
-                const ret = new Array();
-                return ret;
-            },
-            __wbg_new_7796ffc7ed656783: function() {
+            __wbg_new_34d45cc8e36aaead: function() {
                 const ret = new Map();
                 return ret;
             },
-            __wbg_new_da52cf8fe3429cb2: function() {
+            __wbg_new_682678e2f47e32bc: function() {
+                const ret = new Array();
+                return ret;
+            },
+            __wbg_new_aa8d0fa9762c29bd: function() {
                 const ret = new Object();
                 return ret;
             },
-            __wbg_set_575dd786d51585f8: function(arg0, arg1, arg2) {
-                const ret = arg0.set(arg1, arg2);
-                return ret;
+            __wbg_set_3bf1de9fab0cd644: function(arg0, arg1, arg2) {
+                arg0[arg1 >>> 0] = arg2;
             },
             __wbg_set_6be42768c690e380: function(arg0, arg1, arg2) {
                 arg0[arg1] = arg2;
             },
-            __wbg_set_8a16b38e4805b298: function(arg0, arg1, arg2) {
-                arg0[arg1 >>> 0] = arg2;
+            __wbg_set_fde2cec06c23692b: function(arg0, arg1, arg2) {
+                const ret = arg0.set(arg1, arg2);
+                return ret;
             },
             __wbindgen_cast_0000000000000001: function(arg0) {
                 // Cast intrinsic for `F64 -> Externref`.
@@ -3765,7 +3765,7 @@ let wasm_bindgen = (function(exports) {
 
     const ChartFinalization = (typeof FinalizationRegistry === 'undefined')
         ? { register: () => {}, unregister: () => {} }
-        : new FinalizationRegistry(ptr => wasm.__wbg_chart_free(ptr, 1));
+        : new FinalizationRegistry(ptr => wasm.__wbg_chart_free(ptr >>> 0, 1));
 
     function addToExternrefTable0(obj) {
         const idx = wasm.__externref_table_alloc_command_export();
@@ -3782,7 +3782,8 @@ let wasm_bindgen = (function(exports) {
     }
 
     function getStringFromWasm0(ptr, len) {
-        return decodeText(ptr >>> 0, len);
+        ptr = ptr >>> 0;
+        return decodeText(ptr, len);
     }
 
     let cachedUint32ArrayMemory0 = null;
@@ -3880,9 +3881,8 @@ let wasm_bindgen = (function(exports) {
 
     let WASM_VECTOR_LEN = 0;
 
-    let wasmModule, wasmInstance, wasm;
+    let wasmModule, wasm;
     function __wbg_finalize_init(instance, module) {
-        wasmInstance = instance;
         wasm = instance.exports;
         wasmModule = module;
         cachedDataViewMemory0 = null;

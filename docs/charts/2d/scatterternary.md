@@ -35,8 +35,6 @@ Aliases: `sp.scatterternary`, `sp.scatter_ternary`, `sp.ternary`, `sp.ternary_pl
 
 <div data-sp-registry-table="variants" data-family="scatterternary"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `x_values` (`list[float]`) — First component (A, top vertex). `y_values` (`list[float]`) — Second component (B, right vertex). `z_values` (`list[float]`) — Third component (C, left vertex). `x_label` (`str`) — Label for the top vertex. `y_label` (`str`) — Label for the right vertex. `z_label` (`str`) — Label for the left vertex. `color_values` (`list[float]`) — Continuous values for the `"gradient"` variant.
@@ -105,8 +103,6 @@ Alias : `sp.scatterternary`, `sp.scatter_ternary`, `sp.ternary`, `sp.ternary_plo
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="scatterternary"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

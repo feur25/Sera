@@ -35,8 +35,6 @@ Venn diagrams show set relationships using overlapping circles. Supply one value
 
 <div data-sp-registry-table="variants" data-family="venn"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `labels` (`list[str]`) — Set names. `values` (`list[float]`) — Set sizes (first N entries used for Euler radii). `width` / `height` (`int`) — Chart dimensions.
@@ -119,8 +117,6 @@ Les diagrammes de Venn montrent des relations entre ensembles à l'aide de cercl
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="venn"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

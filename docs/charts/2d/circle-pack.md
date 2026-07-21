@@ -34,8 +34,6 @@ Circle packing represents hierarchical data as nested circles, where the area of
 
 <div data-sp-registry-table="variants" data-family="circle_pack"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `labels` (`list[str]`) — Node names. `parents` (`list[str]`) — Parent name for each node (`""` = root). `values` (`list[float]`) — Size of each leaf node. `width` / `height` (`int`) — Chart dimensions.
@@ -118,8 +116,6 @@ Le circle packing représente des données hiérarchiques sous forme de cercles 
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="circle_pack"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

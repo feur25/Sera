@@ -34,8 +34,6 @@ Hive plots organize network nodes on radial axes by category. Each axis correspo
 
 <div data-sp-registry-table="variants" data-family="hive"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `axes` (`list[str]`) — Axis (group) names. `labels` (`list[str]`) — Node names. `categories` (`list[str]`) — Group assignment per node. `values` (`list[float]`) — Node position along axis (0–1). `edges_i` (`list[int]`) — Source node indices. `edges_j` (`list[int]`) — Target node indices. `edges_w` (`list[float]`) — Edge weights. `width` / `height` (`int`) — Chart dimensions.
@@ -118,8 +116,6 @@ Les hive plots organisent les nœuds d'un réseau sur des axes radiaux par caté
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="hive"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

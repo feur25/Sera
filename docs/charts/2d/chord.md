@@ -31,8 +31,6 @@ Chord diagrams show relationships between entities using arcs and ribbons around
 
 <div data-sp-registry-table="variants" data-family="chord"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `labels` (`list[str]`) — Node names. `matrix` (`list[list[float]]`) — N×N flow matrix. `width` / `height` (`int`) — Chart dimensions (default 700×700).
@@ -115,8 +113,6 @@ Les diagrammes en accords (chord) montrent les relations entre entités à l'aid
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="chord"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

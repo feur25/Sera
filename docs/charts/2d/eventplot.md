@@ -34,8 +34,6 @@ Aliases: `sp.eventplot`, `sp.event_plot`, `sp.raster_plot`, `sp.spike_plot`, `sp
 
 <div data-sp-registry-table="variants" data-family="eventplot"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `x_values` (`list[float]`) — Event positions. `categories` (`list[str]`) — Row assignment per event.
@@ -104,8 +102,6 @@ Alias : `sp.eventplot`, `sp.event_plot`, `sp.raster_plot`, `sp.spike_plot`, `sp.
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="eventplot"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

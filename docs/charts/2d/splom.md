@@ -35,8 +35,6 @@ Aliases: `sp.splom`, `sp.scatter_matrix`, `sp.splom_chart`, `sp.pairplot`, `sp.s
 
 <div data-sp-registry-table="variants" data-family="splom"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `axes` (`list[str]`) — Dimension names. `series` (`list[list[float]]`) — One row per observation, one value per dimension.
@@ -112,8 +110,6 @@ Alias : `sp.splom`, `sp.scatter_matrix`, `sp.splom_chart`, `sp.pairplot`, `sp.sc
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="splom"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

@@ -34,8 +34,6 @@ Aliases: `sp.plot_web`, `sp.web_plot`, `sp.plotweb`, `sp.carbon_web`, `sp.web_ch
 
 <div data-sp-registry-table="variants" data-family="plot_web"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `x_values` (`list[float]`) — Horizontal position (scatter) or angle-driving value (radial). `y_values` (`list[float]`) — Vertical position (scatter) or radius-driving value (radial). `sizes` (`list[float]`) — Per-node value driving bubble radius between `min_r` and `max_r`. `labels` (`list[str]`) — Per-node hover label. `groups` (`list[str]`) — Per-node category, colored from `palette`.
@@ -97,8 +95,6 @@ Alias : `sp.plot_web`, `sp.web_plot`, `sp.plotweb`, `sp.carbon_web`, `sp.web_cha
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="plot_web"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

@@ -34,8 +34,6 @@ The Pulse chart is an original SeraPlot chart type that maps temporal or cyclic 
 
 <div data-sp-registry-table="variants" data-family="pulse"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `labels` (`list[str]`) — Period labels (e.g. days, hours). `values` (`list[float]`) — Intensity per period (any scale). `width` / `height` (`int`) — Chart dimensions (default 560×560).
@@ -118,8 +116,6 @@ Le Pulse chart est un type de graphique original de SeraPlot qui projette des do
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="pulse"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

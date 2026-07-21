@@ -35,8 +35,6 @@ A correlogram visualizes a correlation matrix as a grid. Each cell encodes the P
 
 <div data-sp-registry-table="variants" data-family="correlogram"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `labels` (`list[str]`) — Variable names (length N). `matrix` (`list[list[float]]`) — N×N correlation matrix, one row per inner list. `width` / `height` (`int`) — Chart dimensions.
@@ -119,8 +117,6 @@ Un correlogramme visualise une matrice de corrélation sous forme de grille. Cha
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="correlogram"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

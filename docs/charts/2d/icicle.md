@@ -36,8 +36,6 @@ Aliases: `sp.icicle`, `sp.icicles`, `sp.icicle_chart`, `sp.icicle_family`, `sp.b
 
 <div data-sp-registry-table="variants" data-family="icicle"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `labels` (`list[str]`) — Node labels (one per row). `parents` (`list[str]`) — Parent label of each node (`""` for roots). `values` (`list[float]`) — Leaf values; internal zeros are auto-rolled-up.
@@ -122,8 +120,6 @@ Alias : `sp.icicle`, `sp.icicles`, `sp.icicle_chart`, `sp.icicle_family`, `sp.bu
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="icicle"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 

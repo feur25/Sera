@@ -35,8 +35,6 @@ Arc diagrams place nodes on a horizontal axis and draw quadratic bezier arcs abo
 
 <div data-sp-registry-table="variants" data-family="arc_diagram"></div>
 
-Unknown variant strings fall back to the registered default. Variant keys may be prefixed with `en_`, `fr_`, `en-` or `fr-`.
-
 ## Data
 
 `labels` (`list[str]`) — Node names. `edges_i` (`list[int]`) — Source node indices. `edges_j` (`list[int]`) — Target node indices. `edges_w` (`list[float]`) — Edge weights. `width` / `height` (`int`) — Chart dimensions.
@@ -119,8 +117,6 @@ Les diagrammes en arcs placent les nœuds sur un axe horizontal et tracent des a
 ## Variantes
 
 <div data-sp-registry-table="variants" data-family="arc_diagram"></div>
-
-Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés de variantes peuvent être préfixées par `en_`, `fr_`, `en-` ou `fr-`.
 
 ## Données
 
