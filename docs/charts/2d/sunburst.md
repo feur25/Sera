@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('sunburst-en','gapped',this)"><span class="sp-cic">G</span><span class="sp-clb">Gapped</span></button>
 <button class="sp-cls-tab" onclick="spCls('sunburst-en','depth_fade',this)"><span class="sp-cic">X</span><span class="sp-clb">Depth fade</span></button>
 <button class="sp-cls-tab" onclick="spCls('sunburst-en','mono',this)"><span class="sp-cic">M</span><span class="sp-clb">Mono</span></button>
+<button class="sp-cls-tab" onclick="spCls('sunburst-en','zoomable',this)"><span class="sp-cic">Z</span><span class="sp-clb">Zoomable</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -137,6 +138,16 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/sunburst-mono.html"></iframe>
 </div>
 
+<div class="sp-variant" id="sunburst-en-zoomable">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"zoomable"</code></span><span><strong>Aliases</strong> <code>zoomable / zoom / animated / interactive / drill</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Click a ring segment to zoom into that branch, animating every other segment to its new angle/radius. Click the center to zoom back out.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/sunburst-zoomable.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -178,6 +189,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('sunburst-fr','gapped',this)"><span class="sp-cic">G</span><span class="sp-clb">Gapped</span></button>
 <button class="sp-cls-tab" onclick="spCls('sunburst-fr','depth_fade',this)"><span class="sp-cic">X</span><span class="sp-clb">Depth fade</span></button>
 <button class="sp-cls-tab" onclick="spCls('sunburst-fr','mono',this)"><span class="sp-cic">M</span><span class="sp-clb">Mono</span></button>
+<button class="sp-cls-tab" onclick="spCls('sunburst-fr','zoomable',this)"><span class="sp-cic">Z</span><span class="sp-clb">Zoomable</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -239,6 +251,16 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/sunburst-mono.html"></iframe>
+</div>
+
+<div class="sp-variant" id="sunburst-fr-zoomable">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"zoomable"</code></span><span><strong>Alias</strong> <code>zoomable / zoom / animated / interactive / drill</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Cliquer un segment zoome sur cette branche, en animant chaque autre segment vers son nouvel angle/rayon. Cliquer le centre pour dezoomer.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/sunburst-zoomable.html"></iframe>
 </div>
 
 </div>

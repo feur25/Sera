@@ -21,9 +21,9 @@
      --sp-surface (measured >=5.5:1 in the rust theme, the tightest case). */
   --sp-text-muted: color-mix(in srgb, var(--icons) 35%, var(--sidebar-fg) 65%);
   --sp-accent: color-mix(in srgb, var(--links) 22%, var(--sidebar-fg) 78%);
-  --sp-code-bg: var(--quote-bg);
-  --sp-code-border: var(--quote-border);
-  --sp-code-fg: var(--inline-code-color);
+  --sp-code-bg: color-mix(in srgb, var(--sidebar-bg) 92%, black 8%);
+  --sp-code-border: var(--sp-border);
+  --sp-code-fg: var(--sidebar-fg);
   --sp-ok: color-mix(in srgb, var(--blockquote-tip-color) 22%, var(--sidebar-fg) 78%);
   --sp-info: color-mix(in srgb, var(--blockquote-note-color) 22%, var(--sidebar-fg) 78%);
   --sp-warn: color-mix(in srgb, var(--blockquote-warning-color) 22%, var(--sidebar-fg) 78%);
@@ -1270,7 +1270,6 @@ body.sp-body-bottom .content {
 }
 .ml-doc-section h2 {
   margin: 0 0 14px;
-  color: var(--sp-text);
   font-size: 22px;
   letter-spacing: 0;
 }
@@ -1345,6 +1344,7 @@ body.sp-body-bottom .content {
   border: 1px solid var(--sp-border);
   border-radius: 8px;
   overflow: hidden;
+  background: var(--sp-surface);
   font-size: 13px;
 }
 .ml-doc-table thead {

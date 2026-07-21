@@ -211,6 +211,7 @@ from_s=to_s={a0:HPI,a1:HPI+PI2,vd:0};
 drawS(state);
 })();"#;
 
+#[crate::chart_demo("labels=[\"Root\",\"A\",\"B\",\"A1\",\"A2\",\"B1\",\"B2\"], parents=[\"\",\"Root\",\"Root\",\"A\",\"A\",\"B\",\"B\"], values=[0,40,30,20,20,15,15]")]
 pub fn render(cfg: &SunburstConfig) -> String {
     let p = match prepare(cfg) {
         Some(v) => v,

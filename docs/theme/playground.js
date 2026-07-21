@@ -744,6 +744,33 @@
         document.addEventListener('touchend', up);
     }
 
+    function tabsHtmlFor(variants) {
+        var out = '';
+        for (var i = 0; i < variants.length; i++) {
+            out += '<button class="sp-pg-tab' + (i === 0 ? ' sp-active' : '') + '" type="button">' + escAttr(variantLabel(variants[i])) + '</button>';
+        }
+        return out;
+    }
+
+    function wireTabs(tabs, variants, wrap, slug, fileTab) {
+        for (var t = 0; t < tabs.length; t++) {
+            (function (idx) {
+                tabs[idx].addEventListener('click', function () {
+                    if (isFullPagePlayground()) {
+                        state.baseFn = variantKey(variants[idx]);
+                        state.currentVariant = 0;
+                        for (var ti = 0; ti < tabs.length; ti++) tabs[ti].classList.toggle('sp-active', ti === idx);
+                        if (fileTab) fileTab.textContent = state.baseFn + '.py';
+                        if (state.editor) { state.editor.setValue(buildCode('basic')); runOnce(true); }
+                    } else {
+                        if (fileTab) fileTab.textContent = slug + '-' + variantLabel(variants[idx]) + '.py';
+                        selectVariant(idx);
+                    }
+                });
+            })(t);
+        }
+    }
+
     function selectVariant(idx) {
         var item = state.variants[idx];
         var name = variantKey(item);
@@ -811,10 +838,7 @@
         }
         state.variants = variants;
 
-        var tabsHtml = '';
-        for (var i = 0; i < variants.length; i++) {
-            tabsHtml += '<button class="sp-pg-tab' + (i === 0 ? ' sp-active' : '') + '" type="button">' + escAttr(variantLabel(variants[i])) + '</button>';
-        }
+        var tabsHtml = tabsHtmlFor(variants);
 
         var wrap = document.createElement('div');
         wrap.className = 'sp-pg-wrap';
@@ -863,22 +887,7 @@
         var monacoHost = wrap.querySelector('.sp-pg-monaco');
         var tabs = wrap.querySelectorAll('.sp-pg-tab');
         var fileTab = wrap.querySelector('.sp-pg-etab');
-        for (var t = 0; t < tabs.length; t++) {
-            (function (idx) {
-                tabs[idx].addEventListener('click', function () {
-                    if (isFullPagePlayground()) {
-                        state.baseFn = variantKey(variants[idx]);
-                        state.currentVariant = 0;
-                        for (var ti = 0; ti < tabs.length; ti++) tabs[ti].classList.toggle('sp-active', ti === idx);
-                        if (fileTab) fileTab.textContent = state.baseFn + '.py';
-                        if (state.editor) { state.editor.setValue(buildCode('basic')); runOnce(true); }
-                    } else {
-                        if (fileTab) fileTab.textContent = slug + '-' + variantLabel(variants[idx]) + '.py';
-                        selectVariant(idx);
-                    }
-                });
-            })(t);
-        }
+        wireTabs(tabs, variants, wrap, slug, fileTab);
         setStatus('loading', 'Loading editor');
         loadMonaco(function () {
             setStatus('loading', 'Loading WASM');
@@ -906,6 +915,17 @@
             state.editor.onDidChangeModelContent(debouncedRun);
             attachResize(divider, ecol);
             ensureWasm(function () {
+                var fresh = discoverVariants();
+                if (fresh.length > variants.length) {
+                    variants = fresh;
+                    state.variants = fresh;
+                    var tabsBar = wrap.querySelector('.sp-pg-tabs');
+                    if (tabsBar) {
+                        tabsBar.innerHTML = tabsHtmlFor(variants);
+                        tabs = wrap.querySelectorAll('.sp-pg-tab');
+                        wireTabs(tabs, variants, wrap, slug, fileTab);
+                    }
+                }
                 setStatus('ready', 'Live · in-browser');
                 runOnce(true);
                 injectVariantCodeBlocks();
