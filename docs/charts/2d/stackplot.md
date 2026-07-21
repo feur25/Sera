@@ -64,6 +64,8 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <button class="sp-cls-tab sp-cact" onclick="spCls('stackplot-en','basic',this)"><span class="sp-cic">▮</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('stackplot-en','streamgraph',this)"><span class="sp-cic">〜</span><span class="sp-clb">Streamgraph</span></button>
 <button class="sp-cls-tab" onclick="spCls('stackplot-en','normalized',this)"><span class="sp-cic">▤</span><span class="sp-clb">Normalized</span></button>
+<button class="sp-cls-tab" onclick="spCls('stackplot-en','radial',this)"><span class="sp-cic">◎</span><span class="sp-clb">Radial</span></button>
+<button class="sp-cls-tab" onclick="spCls('stackplot-en','ribbon',this)"><span class="sp-cic">≈</span><span class="sp-clb">Ribbon</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="stackplot-en-basic">
@@ -83,6 +85,18 @@ Unknown variant strings fall back to the registered default. Variant keys may be
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"normalized"</code></span><span><strong>Aliases</strong> <code>normalized / percent / hundred_percent / share</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/stackplot-normalized.html"></iframe>
+</div>
+<div class="sp-variant" id="stackplot-en-radial">
+<p>Polar-wrapped stacking — each x-point becomes an angle around a circle instead of a position along an axis, and the cumulative bands grow outward as concentric rings from a small central hole. A genuinely different read on the same stacked data: total magnitude becomes an overall silhouette size, and each series' share becomes a colored band thickness at that angle.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"radial"</code></span><span><strong>Aliases</strong> <code>radial / polar / radar_stack / circular</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/stackplot-radial.html"></iframe>
+</div>
+<div class="sp-variant" id="stackplot-en-ribbon">
+<p>Cartesian stacking rendered as smooth, glowing ribbons: quadratic-bezier-smoothed band edges, a top-to-bottom depth gradient per series, and a soft drop-shadow separating each layer — a more atmospheric, editorial look than the sharp-edged basic stack.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"ribbon"</code></span><span><strong>Aliases</strong> <code>ribbon / glow / smooth / flow</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/stackplot-ribbon.html"></iframe>
 </div>
 </div>
 </div>
@@ -135,6 +149,8 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <button class="sp-cls-tab sp-cact" onclick="spCls('stackplot-fr','basic',this)"><span class="sp-cic">▮</span><span class="sp-clb">Basic</span></button>
 <button class="sp-cls-tab" onclick="spCls('stackplot-fr','streamgraph',this)"><span class="sp-cic">〜</span><span class="sp-clb">Streamgraph</span></button>
 <button class="sp-cls-tab" onclick="spCls('stackplot-fr','normalized',this)"><span class="sp-cic">▤</span><span class="sp-clb">Normalized</span></button>
+<button class="sp-cls-tab" onclick="spCls('stackplot-fr','radial',this)"><span class="sp-cic">◎</span><span class="sp-clb">Radial</span></button>
+<button class="sp-cls-tab" onclick="spCls('stackplot-fr','ribbon',this)"><span class="sp-cic">≈</span><span class="sp-clb">Ribbon</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="stackplot-fr-basic">
@@ -154,6 +170,18 @@ Une variante inconnue retombe sur la valeur par défaut enregistrée. Les clés 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"normalized"</code></span><span><strong>Alias</strong> <code>normalized / percent / hundred_percent / share</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/stackplot-normalized.html"></iframe>
+</div>
+<div class="sp-variant" id="stackplot-fr-radial">
+<p>Empilement enroulé en polaire — chaque point x devient un angle autour d'un cercle au lieu d'une position sur un axe, et les bandes cumulées s'étendent vers l'extérieur en anneaux concentriques depuis un petit trou central. Une lecture vraiment différente des mêmes données empilées : la magnitude totale devient une silhouette globale, et la part de chaque série devient l'épaisseur d'une bande colorée à cet angle.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"radial"</code></span><span><strong>Alias</strong> <code>radial / polar / radar_stack / circular</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/stackplot-radial.html"></iframe>
+</div>
+<div class="sp-variant" id="stackplot-fr-ribbon">
+<p>Empilement cartésien rendu en rubans lisses et lumineux : bords de bandes lissés par courbes de Bézier quadratiques, dégradé de profondeur haut-bas par série, et une ombre portée douce séparant chaque couche — un rendu plus atmosphérique et éditorial que l'empilement basique aux arêtes nettes.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"ribbon"</code></span><span><strong>Alias</strong> <code>ribbon / glow / smooth / flow</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/stackplot-ribbon.html"></iframe>
 </div>
 </div>
 </div>

@@ -82,9 +82,9 @@ jobs:
       - name: Build docs
         run: |
           mdbook build -d book/html
-          mkdir -p book/html/docs/theme
-          cp docs/theme/seraplot_bg.wasm book/html/docs/theme/seraplot_bg.wasm
-          cp docs/theme/seraplot_bg.wasm book/html/theme/seraplot_bg.wasm 2>/dev/null || true
+          mkdir -p book/html/docs/theme/wasm book/html/docs/theme/images
+          cp docs/theme/wasm/seraplot_bg.wasm book/html/docs/theme/wasm/seraplot_bg.wasm
+          cp docs/theme/images/logo_banner.png book/html/docs/theme/images/logo_banner.png
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

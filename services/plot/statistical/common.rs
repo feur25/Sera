@@ -250,7 +250,7 @@ pub fn svg_legend_item(
         return;
     }
     let hx = hex6(color);
-    push_b(buf, b"<g data-legend=\"1\" tabindex=\"0\" role=\"button\" aria-label=\"");
+    push_b(buf, b"<g data-legend=\"1\" style=\"display:none\" tabindex=\"0\" role=\"button\" aria-label=\"");
     escape_xml(buf, truncate(name, max_len));
     push_b(buf, b"\" data-series=\"");
     push_i(buf, si);

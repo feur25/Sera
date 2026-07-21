@@ -987,7 +987,7 @@ pub fn render_scatter_html(
         for (gi, name) in group_names.iter().enumerate() {
             let hx = hex6(palette_color(palette, gi));
             let ly = leg_top + gi as i32 * 22;
-            push_b(&mut buf, b"<g data-legend=\"1\" data-series=\"");
+            push_b(&mut buf, b"<g data-legend=\"1\" style=\"display:none\" data-series=\"");
             push_i(&mut buf, gi as i32);
             push_b(&mut buf, b"\">");
             push_b(&mut buf, b"<circle cx=\"");

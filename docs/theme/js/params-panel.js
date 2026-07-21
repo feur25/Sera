@@ -1137,10 +1137,10 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260720";
   }
 
   function themeBase() {
-    if (SELF_SRC) return SELF_SRC.replace(/[^/]*$/, "");
+    if (SELF_SRC) return SELF_SRC.replace(/[^/]*$/, "") + "../wasm/";
     var parts = window.location.pathname.split("/").filter(Boolean);
     parts.pop();
-    return new Array(parts.length).join("../") + "docs/theme/";
+    return new Array(parts.length).join("../") + "docs/theme/wasm/";
   }
 
   function ensureWasm(cb) {

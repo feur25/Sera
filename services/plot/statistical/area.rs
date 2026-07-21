@@ -184,7 +184,7 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
         let color = palette_color(cfg.palette, si);
         let hx = hex6(color);
         let ly = f.pt + 6 + si as i32 * 18;
-        push_b(&mut f.buf, b"<g data-legend=\"1\" data-series=\"");
+        push_b(&mut f.buf, b"<g data-legend=\"1\" style=\"display:none\" data-series=\"");
         push_i(&mut f.buf, si as i32);
         push_b(&mut f.buf, b"\"><rect x=\"");
         push_i(&mut f.buf, leg_x);

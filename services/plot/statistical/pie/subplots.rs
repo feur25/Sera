@@ -99,7 +99,7 @@ pub fn render(cfg: &PieConfig) -> String {
         if acc_x + est_w > max_x {
             break;
         }
-        push_b(&mut buf, b"<g data-legend=\"1\" data-series=\"");
+        push_b(&mut buf, b"<g data-legend=\"1\" style=\"display:none\" data-series=\"");
         push_i(&mut buf, i as i32);
         push_b(&mut buf, b"\"><rect x=\"");
         push_i(&mut buf, acc_x);

@@ -971,7 +971,8 @@ body.sp-body-bottom .content {
   background: var(--sp-surface-2); color: var(--sp-text);
 }
 .ml-cat ul { margin: 0; padding-left: 18px; font-size: 13px; line-height: 1.7; }
-.ml-cat ul li a { color: var(--sp-text); text-decoration: none; }
+.ml-cat ul li a:link,
+.ml-cat ul li a:visited { color: var(--sp-text); text-decoration: none; }
 .ml-cat ul li a:hover { color: var(--sp-info); text-decoration: underline; }
 
 .ml-bench {
@@ -1454,7 +1455,8 @@ body.sp-body-bottom .content {
   border-top: 1px solid var(--sp-border);
   background: var(--sp-surface-2);
 }
-.ml-doc-links a {
+.ml-doc-links a:link,
+.ml-doc-links a:visited {
   color: var(--sp-info);
   font-size: 13px;
   font-weight: 700;
@@ -1643,7 +1645,8 @@ body.sp-body-bottom .content {
 }
 .ml-pg-cat-table tr:last-child td { border-bottom: none; }
 .ml-pg-cat-table tr:hover td { background: var(--sp-surface-hover); }
-.ml-pg-cat-table td a { color: var(--sp-important); text-decoration: none; }
+.ml-pg-cat-table td a:link,
+.ml-pg-cat-table td a:visited { color: var(--sp-important); text-decoration: none; }
 .ml-pg-cat-table td a:hover { text-decoration: underline; color: var(--sp-info); }
 .ml-pg-cat-table td code { background: var(--sp-surface-2); padding: 1px 6px; border-radius: 4px; font-size: 12px; color: var(--sp-text); }
 
@@ -1673,7 +1676,8 @@ body.sp-body-bottom .content {
   color: var(--sp-text-muted);
   margin: -8px 0 20px;
 }
-.ml-pg-also a { color: var(--sp-important); }
+.ml-pg-also a:link,
+.ml-pg-also a:visited { color: var(--sp-important); }
 
 /* ── Type pill chips (used in HTML tables) ────────────────────────── */
 .ml-pg-type {

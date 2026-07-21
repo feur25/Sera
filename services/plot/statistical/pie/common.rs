@@ -298,7 +298,7 @@ pub fn render_pie_svg(
             let c = palette_color(cfg.palette, i + piece.palette_offset);
             let hx = hex6(c);
             let ly = leg_top + i as i32 * 22;
-            push_b(buf, b"<g data-legend=\"1\" data-series=\"");
+            push_b(buf, b"<g data-legend=\"1\" style=\"display:none\" data-series=\"");
             push_i(buf, i as i32);
             push_b(buf, b"\"><rect x=\"");
             push_i(buf, leg_x);

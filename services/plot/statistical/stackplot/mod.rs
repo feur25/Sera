@@ -3,6 +3,8 @@ pub mod basic;
 pub mod common;
 pub mod config;
 pub mod normalized;
+pub mod radial;
+pub mod ribbon;
 pub mod streamgraph;
 pub mod variant;
 
@@ -15,6 +17,8 @@ pub fn render_stackplot_html(cfg: &StackplotConfig) -> String {
         Basic => basic::render(cfg),
         Streamgraph => streamgraph::render(cfg),
         Normalized => normalized::render(cfg),
+        Radial => radial::render(cfg),
+        Ribbon => ribbon::render(cfg),
     }
 }
 
