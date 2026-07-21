@@ -52,13 +52,27 @@
     frame.style.transform = "scale(" + scale + ")";
   }
 
+  function stripChrome(frame) {
+    try {
+      var doc = frame.contentDocument;
+      if (!doc || !doc.head) return;
+      var style = doc.createElement("style");
+      style.textContent =
+        "html,body{background:transparent!important}" +
+        ".sp-bg{fill:transparent!important}";
+      doc.head.appendChild(style);
+      var wrap = doc.querySelector('[role="main"] > div');
+      if (wrap) {
+        wrap.style.boxShadow = "none";
+        wrap.style.borderRadius = "0";
+        wrap.style.background = "transparent";
+      }
+    } catch (e) {}
+  }
+
   function card(slug, category, title) {
     var wrap = document.createElement("div");
     wrap.className = "sp-sc-card";
-    var a = document.createElement("a");
-    a.className = "sp-sc-title";
-    a.href = "charts/" + category + "/" + slug + ".html";
-    a.textContent = title;
     var viewport = document.createElement("div");
     viewport.className = "sp-sc-viewport";
     var frame = document.createElement("iframe");
@@ -67,11 +81,18 @@
     frame.scrolling = "no";
     frame.style.width = FALLBACK_W + "px";
     frame.style.height = FALLBACK_H + "px";
-    frame.style.transform = "scale(" + (180 / FALLBACK_H) + ")";
-    frame.onload = function () { fitFrame(frame, viewport); };
+    frame.style.transform = "scale(" + (172 / FALLBACK_H) + ")";
+    frame.onload = function () {
+      stripChrome(frame);
+      fitFrame(frame, viewport);
+    };
     viewport.appendChild(frame);
-    wrap.appendChild(a);
+    var a = document.createElement("a");
+    a.className = "sp-sc-title";
+    a.href = "charts/" + category + "/" + slug + ".html";
+    a.textContent = title;
     wrap.appendChild(viewport);
+    wrap.appendChild(a);
     resolvePreviewSrc(slug, function (src) { frame.src = src; });
     return wrap;
   }
