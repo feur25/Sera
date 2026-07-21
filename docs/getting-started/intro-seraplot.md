@@ -39,12 +39,7 @@ SeraPlot is a complete data toolkit written in Rust. The same engine powers your
 .sp-tabs{border:1px solid var(--sp-border);border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:var(--sp-surface);border-bottom:1px solid var(--sp-border);overflow-x:auto}
 .sp-tb{padding:9px 22px;border:none;background:none;color:var(--sp-text-muted);cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap;flex:0 0 auto}
-.sp-tb:hover{color:var(--sp-text)}
-.sp-tb.sp-act{color:var(--sp-accent);border-bottom-color:var(--sp-accent)}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
 .sp-tc pre{margin:0;border-radius:0;overflow-x:auto;overflow-y:hidden;padding:14px 16px;box-sizing:border-box}
-.sp-tc code{display:block;line-height:1.45}
 </style>
 
 <div class="sp-tabs" id="g1">
@@ -356,7 +351,6 @@ SeraPlot returns 21 KB of interactive HTML directly from RAM.
 - **[Machine Learning](../ml/dbscan.md)** — DBSCAN up to 600x faster than scikit-learn
 
 </div>
-
 
 <div class="lang-fr">
 

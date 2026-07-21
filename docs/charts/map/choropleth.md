@@ -63,18 +63,10 @@ Countries without data receive the `null_color`. Provide `iso_codes` (ISO-3166 a
 
 ### Unemployment rate choropleth
 
-
-
-
-
 <style>
 .sp-tabs{border:1px solid var(--sp-border);border-radius:8px;overflow:hidden;margin:1.5em 0}
 .sp-tab-btns{display:flex;background:var(--sp-surface);border-bottom:1px solid var(--sp-border)}
 .sp-tb{padding:9px 22px;border:none;background:none;color:var(--sp-text-muted);cursor:pointer;font-size:13px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:var(--sp-text)}
-.sp-tb.sp-act{color:var(--sp-accent);border-bottom-color:var(--sp-accent)}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
 </style>
 <script>
 function spTab(g,id,btn){var r=document.getElementById(g);r.querySelectorAll('.sp-tc').forEach(function(e){e.classList.remove('sp-on')});r.querySelectorAll('.sp-tb').forEach(function(b){b.classList.remove('sp-act')});document.getElementById(id).classList.add('sp-on');btn.classList.add('sp-act');if(window.hljs)document.getElementById(id).querySelectorAll('code').forEach(function(c){hljs.highlightElement(c)})}
@@ -101,7 +93,6 @@ const chart = sp.build_choropleth("Unemployment Rate by Country",
     values: [7.1, 3.0, 11.8, 6.7, 6.2]
 })</code></pre></div>
 </div>
-
 
 <details open>
 <summary style="cursor:pointer;font-weight:600;padding:4px 0;color:#94a3b8">&#9654;&nbsp;Live Preview</summary>

@@ -2,10 +2,6 @@
 
 <div class="lang-en">
 
-<style>
-.lang-en table,.lang-fr table{width:100%}
-</style>
-
 ## Signature
 
 `sp.radar3d(title, axes=None, series=None, *, series_names=None, palette=None, bg_color="#1a1a2e", width=700, height=600, max_val=None, fill_opacity=0.25, ring_gap=1.0, **kwargs) -> Chart`

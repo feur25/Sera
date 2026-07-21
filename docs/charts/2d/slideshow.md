@@ -3,20 +3,11 @@
 <div class="lang-en">
 
 <style>
-.sp-tabs{border:1px solid var(--sp-border);border-radius:8px;overflow:hidden;margin:1.2em 0}
-.sp-tab-btns{display:flex;background:var(--sp-surface);border-bottom:1px solid var(--sp-border);flex-wrap:wrap}
-.sp-tb{padding:8px 14px;border:none;background:none;color:var(--sp-text-muted);cursor:pointer;font-size:12px;font-weight:600;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;white-space:nowrap}
-.sp-tb:hover{color:var(--sp-text)}
-.sp-tb.sp-act{color:var(--sp-accent);border-bottom-color:var(--sp-accent)}
-.sp-tc{display:none}
-.sp-tc.sp-on{display:block}
 .sp-preview-frame{width:100%;height:520px;border:none;border-radius:10px;display:block;background:#0d1117;margin-top:10px;box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
-.sp-preview-label{font-size:11px;letter-spacing:.14em;font-weight:700;color:#818cf8;margin:20px 0 8px;text-transform:uppercase}
 </style>
 ## Signature
 
 `sp.build_slideshow(charts, interval_ms=2500, title='', width=900, height=520) -> Chart`
-
 
 ## Description
 
@@ -48,7 +39,6 @@
 <h2>Signature</h2>
 
 `sp.build_slideshow(charts, interval_ms=2500, title='', width=900, height=520) -> Chart`
-
 
 <h2>Description</h2>
 

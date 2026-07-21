@@ -2,10 +2,6 @@
 
 <div class="lang-en">
 
-<style>
-.lang-en table,.lang-fr table{width:100%}
-</style>
-
 ## Signature
 
 `sp.heatmap3d(title, labels=None, categories=None, matrix=None, *, x_labels=None, x_label="", y_label="", z_label="", bg_color="#1a1a2e", width=900, height=560, **kwargs) -> Chart`

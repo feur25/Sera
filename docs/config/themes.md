@@ -23,12 +23,6 @@ sp.reset_theme()
 
 ## All 7 themes
 
-<style>
-.sp-sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:middle;margin-right:3px;border:1px solid rgba(255,255,255,.15)}
-.sp-bg{display:inline-block;width:60px;height:20px;border-radius:4px;vertical-align:middle;border:1px solid rgba(255,255,255,.15)}
-.sp-pal{display:flex;gap:3px;align-items:center}
-</style>
-
 | Theme | Background | Gridlines | Inspiration | Primary palette |
 |---|---|:---:|---|---|
 | `"dark"` | <span class="sp-bg" style="background:#0f172a"></span> `#0f172a` | ✓ | Deep space / Tailwind indigo | <span class="sp-pal"><span class="sp-sw" style="background:#818CF8"></span><span class="sp-sw" style="background:#FB7185"></span><span class="sp-sw" style="background:#34D399"></span><span class="sp-sw" style="background:#FBBF24"></span><span class="sp-sw" style="background:#A78BFA"></span></span> |

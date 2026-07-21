@@ -2,10 +2,6 @@
 
 <div class="lang-en">
 
-<style>
-.lang-en table,.lang-fr table{width:100%}
-</style>
-
 ## Signature
 
 `sp.globe3d(title, lats=None, lons=None, values=None, *, project="orthographic", bg_color="#0a0a1a", width=900, height=600, **kwargs) -> Chart`

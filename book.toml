@@ -8,7 +8,7 @@ language = "en"
 [output.html]
 default-theme = "rust"
 preferred-dark-theme = "navy"
-additional-css = ["docs/theme/custom.css"]
+additional-css = ["docs/theme/css/core/custom.css", "docs/theme/css/chart-tabs.css", "docs/theme/css/pages/support.css", "docs/theme/css/pages/themes.css", "docs/theme/css/pages/showcase.css", "docs/theme/css/pages/chart-methods.css", "docs/theme/css/pages/playground.css", "docs/theme/css/pages/vscode.css"]
 additional-js = ["docs/theme/lang-switcher.js", "docs/theme/donate-popup.js", "docs/theme/doc-registry.js", "docs/theme/ml-registry.js", "docs/theme/ml-docs.js", "docs/theme/params-panel.js", "docs/theme/wip-notice.js", "docs/theme/variant-pager.js", "docs/theme/seraplot-web.20260720.js", "docs/theme/playground.js", "docs/theme/showcase.js"]
 mathjax-support = true
 git-repository-url = "https://github.com/feur25/seraplot"

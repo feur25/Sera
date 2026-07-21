@@ -2,10 +2,6 @@
 
 <div class="lang-en">
 
-<style>
-.lang-en table,.lang-fr table{width:100%}
-</style>
-
 ## Signature
 
 `sp.scatter3d(title, x=None, y=None, z=None, *, color_hex=0x6366F1, palette=None, bg_color="#1a1a2e", width=900, height=600, x_label="", y_label="", z_label="", **kwargs) -> Chart`

@@ -2,10 +2,6 @@
 
 <div class="lang-en">
 
-<style>
-.lang-en table,.lang-fr table{width:100%}
-</style>
-
 ## Signature
 
 `sp.dumbbell3d(title, labels=None, start=None, end=None, *, y_label="", bg_color="#1a1a2e", width=900, height=560, **kwargs) -> Chart`

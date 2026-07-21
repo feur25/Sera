@@ -1,58 +1,5 @@
 ﻿# Installation
-<style>
-/* ── Install method switch ─────────────────────────────── */
-.sp-inst-sw { border: 1px solid var(--sp-border); border-radius: 10px; overflow: hidden; margin: 1.5em 0; }
-.sp-inst-tabs {
-  display: flex; background: var(--sp-surface);
-  border-bottom: 1px solid var(--sp-border); padding: 0 6px;
-}
-.sp-inst-tab {
-  padding: 11px 20px; border: none; background: none; color: var(--sp-text-muted);
-  font-size: 13px; font-weight: 600; cursor: pointer;
-  border-bottom: 2px solid transparent; margin-bottom: -1px;
-  transition: color .15s, border-color .15s; white-space: nowrap;
-}
-.sp-inst-tab:hover { color: var(--sp-text); }
-.sp-inst-tab.on { color: var(--sp-accent); border-bottom-color: var(--sp-accent); }
-.sp-inst-body { padding: 20px 22px; background: var(--sp-surface); }
-.sp-inst-pane { display: none; }
-.sp-inst-pane.on { display: block; }
-.sp-inst-desc { font-size: 13px; color: var(--sp-text-muted); margin: 0 0 10px; line-height: 1.6; }
-.sp-inst-pane pre { margin: 0 0 10px; border-radius: 7px !important; background: var(--sp-surface) !important; }
-.sp-inst-pane pre:last-of-type { margin-bottom: 0; }
-.sp-inst-pane code { font-size: 12.5px !important; }
-.sp-inst-tag {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: var(--sp-surface); border: 1px solid var(--sp-border); border-radius: 5px;
-  padding: 3px 9px; font-size: 11px; font-weight: 600; color: var(--sp-accent);
-  margin-bottom: 10px;
-}
-.sp-inst-note {
-  display: flex; align-items: flex-start; gap: 8px; margin-top: 12px;
-  background: var(--sp-surface); border: 1px solid var(--sp-border); border-radius: 7px;
-  padding: 10px 13px; font-size: 12px; color: var(--sp-text-muted); line-height: 1.55;
-}
-.sp-inst-cmds { display: flex; flex-direction: column; gap: 8px; }
 
-/* Why block */
-.sp-why-card {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
-  gap: 12px; margin: 1.5em 0;
-}
-.sp-why-item {
-  background: var(--sp-surface); border: 1px solid var(--sp-border); border-radius: 10px;
-  padding: 16px 18px;
-}
-.sp-why-item strong { display: block; font-size: 13px; color: var(--sp-text); margin-bottom: 5px; }
-.sp-why-item span { font-size: 12px; color: var(--sp-text-muted); line-height: 1.55; }
-.sp-size-cmp {
-  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
-  margin-top: 1.2em;
-}
-.sp-size-bar-wrap { flex: 1; min-width: 160px; }
-.sp-size-bar-wrap label { font-size: 12px; color: var(--sp-text-muted); display: flex; justify-content: space-between; margin-bottom: 5px; }
-.sp-size-bar { height: 8px; border-radius: 4px; }
-</style>
 <div class="lang-en">
 
 ## Requirements

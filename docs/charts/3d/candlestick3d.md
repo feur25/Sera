@@ -2,10 +2,6 @@
 
 <div class="lang-en">
 
-<style>
-.lang-en table,.lang-fr table{width:100%}
-</style>
-
 ## Signature
 
 `sp.candlestick3d(title, labels=None, open=None, high=None, low=None, close=None, *, x_label="Price", y_label="Bar", z_label="", bg_color="#1a1a2e", width=900, height=560, **kwargs) -> Chart`

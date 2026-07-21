@@ -2,10 +2,6 @@
 
 <div class="lang-en">
 
-<style>
-.lang-en table,.lang-fr table{width:100%}
-</style>
-
 ## Signature
 
 `sp.pie3d(title, labels=None, values=None, *, sort_order="none", bg_color="#1a1a2e", width=900, height=560, **kwargs) -> Chart`
