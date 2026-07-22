@@ -347,44 +347,6 @@ const SP_BAR_RADIUS_JS: &str = crate::bindings::chart_methods::js::SP_BAR_RADIUS
 
 const SP_EXPORT_JS: &str = crate::bindings::chart_methods::js::SP_EXPORT_JS;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 pub(crate) fn json_str(s: &str) -> String {
     let mut out = String::with_capacity(s.len() + 2);
     out.push('"');
