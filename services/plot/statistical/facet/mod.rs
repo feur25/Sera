@@ -109,7 +109,7 @@ fn facet_cell_html(group: &str, cell_w: i64, cell_h: i64, cell_html: &str) -> St
     format!(
         "<div class=\"sp-facet-cell\" style=\"width:{cw}px\">\
 <iframe class=\"sp-facet-frame\" style=\"width:{cw}px;height:{ch}px;border:0;background:transparent\" \
-sandbox=\"allow-scripts\" srcdoc=\"{doc}\"></iframe>\
+loading=\"lazy\" srcdoc=\"{doc}\"></iframe>\
 <div class=\"sp-facet-label\">{label}</div></div>",
         cw = cell_w,
         ch = cell_h,

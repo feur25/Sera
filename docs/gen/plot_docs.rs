@@ -471,6 +471,19 @@ pub fn collect(plot_root: &Path) -> PlotDocData {
         {
             continue;
         }
+        let family_variants = f
+            .parent()
+            .map(|p| p.join("variant.rs"))
+            .and_then(|p| fs::read_to_string(p).ok())
+            .map(|s| parse_plot_family(&s))
+            .unwrap_or_default();
+        if !family_variants.is_empty()
+            && !family_variants
+                .iter()
+                .any(|(key, aliases)| key == &variant || aliases.iter().any(|a| a == &variant))
+        {
+            continue;
+        }
         if let Some(kw) = crate::build_common::extract_kwargs(&src) {
             demo_entries.push((family.clone(), variant.clone(), kw));
         }

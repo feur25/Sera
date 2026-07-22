@@ -27,6 +27,13 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div data-sp-registry-table="options" data-family="histogram"></div>
 
+## Themes
+
+Pass `theme=` to restyle any variant above — themes are a cross-cutting rendering
+pass, not a separate variant, and apply the same way across every chart family.
+
+<div data-sp-registry-table="themes" data-family="histogram"></div>
+
 ---
 
 ## Returns
@@ -45,7 +52,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('histogram-en','stacked',this)"><span class="sp-cic">S</span><span class="sp-clb">Stacked</span></button>
 <button class="sp-cls-tab" onclick="spCls('histogram-en','overlay',this)"><span class="sp-cic">O</span><span class="sp-clb">Overlay</span></button>
 <button class="sp-cls-tab" onclick="spCls('histogram-en','step',this)"><span class="sp-cic">L</span><span class="sp-clb">Step</span></button>
-<button class="sp-cls-tab" onclick="spCls('histogram-en','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -105,14 +111,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/histogram-step.html"></iframe>
 </div>
 
-<div class="sp-variant" id="histogram-en-deluxe">
-
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"deluxe"</code></span><span><strong>Aliases</strong> <code>deluxe / premium / neon</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-deluxe.html"></iframe>
-</div>
-
 </div>
 </div>
 
@@ -134,6 +132,14 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div data-sp-registry-table="options" data-family="histogram"></div>
 
+<h2>Thèmes</h2>
+
+Passez `theme=` pour restyliser n'importe quelle variante ci-dessus — les thèmes sont
+une passe de rendu transversale, pas une variante séparée, et s'appliquent de la même
+façon sur toutes les familles de graphiques.
+
+<div data-sp-registry-table="themes" data-family="histogram"></div>
+
 ---
 
 <h2>Retour</h2>
@@ -152,7 +158,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('histogram-fr','stacked',this)"><span class="sp-cic">S</span><span class="sp-clb">Empilé</span></button>
 <button class="sp-cls-tab" onclick="spCls('histogram-fr','overlay',this)"><span class="sp-cic">O</span><span class="sp-clb">Superposé</span></button>
 <button class="sp-cls-tab" onclick="spCls('histogram-fr','step',this)"><span class="sp-cic">L</span><span class="sp-clb">Contour</span></button>
-<button class="sp-cls-tab" onclick="spCls('histogram-fr','deluxe',this)"><span class="sp-cic">✦</span><span class="sp-clb">Deluxe</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -210,14 +215,6 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/histogram-step.html"></iframe>
-</div>
-
-<div class="sp-variant" id="histogram-fr-deluxe">
-
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"deluxe"</code></span><span><strong>Alias</strong> <code>deluxe / premium / neon</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
-
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/histogram-deluxe.html"></iframe>
 </div>
 
 </div>
