@@ -1,4 +1,4 @@
-use super::common::{axis_values, build_region, cell_iframe, compose_page};
+use super::common::{axis_values, build_region, cell_iframe, cell_iframe_rotated, compose_page};
 use super::variant::resolve_legacy_panel;
 use crate::plot::chart_input::sanitize_non_finite_json;
 use crate::plot::statistical::chart_registry::dispatch;
@@ -76,12 +76,12 @@ pub fn build(input: &str) -> String {
         (String::new(), String::new())
     } else {
         let top_html = build_region(
-            &marginal_family, &marginal_variant, &x_values, panel_w, margin, &colorscale, &palette, bins, &color_hex, false,
+            &marginal_family, &marginal_variant, &x_values, panel_w, margin, &colorscale, &palette, bins, &color_hex,
         );
         let right_html = build_region(
-            &marginal_family, &marginal_variant, &y_values, margin, panel_h, &colorscale, &palette, bins, &color_hex, true,
+            &marginal_family, &marginal_variant, &y_values, panel_h, margin, &colorscale, &palette, bins, &color_hex,
         );
-        (cell_iframe(panel_w, margin, &top_html), cell_iframe(margin, panel_h, &right_html))
+        (cell_iframe(panel_w, margin, &top_html), cell_iframe_rotated(margin, panel_h, &right_html))
     };
 
     compose_page(&title, panel_w, panel_h, margin, &top_frame, &right_frame, &panel_frame)

@@ -78,9 +78,14 @@ loading=\"lazy\" srcdoc=\"{doc}\"></iframe>\
     )
 }
 
-pub(super) fn facet_page_html(title: &str, cols: usize, cell_w: i64, cells: &str) -> String {
+pub(super) fn facet_page_html(title: &str, cols: usize, cell_w: i64, cell_h: i64, n_groups: usize, cells: &str) -> String {
+    let cols = cols.max(1);
+    let rows = ((n_groups + cols - 1) / cols).max(1);
+    let total_w = cols as i64 * cell_w + (cols as i64 - 1).max(0) * 14 + 32;
+    let total_h = rows as i64 * (cell_h + 22) + (rows as i64 - 1).max(0) * 14 + 32 + if title.is_empty() { 0 } else { 27 };
     format!(
         "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>{title}</title>\
+<meta name=\"sp-content-size\" content=\"{total_w}x{total_h}\">\
 <style>\
 *{{box-sizing:border-box}}\
 body{{margin:0;padding:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:transparent}}\
@@ -93,7 +98,6 @@ body{{margin:0;padding:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe 
 <div class=\"sp-facet-grid\">{cells}</div>\
 </body></html>",
         title = html_text_escape(title),
-        cols = cols.max(1),
         cw = cell_w,
         heading = if title.is_empty() { String::new() } else { format!("<p class=\"sp-facet-title\">{}</p>", html_text_escape(title)) },
         cells = cells,

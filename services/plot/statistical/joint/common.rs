@@ -22,7 +22,6 @@ pub fn build_region(
     palette: &Value,
     bins: i64,
     color_hex: &Value,
-    vertical: bool,
 ) -> String {
     let Some(builder) = dispatch(family) else {
         return String::new();
@@ -39,9 +38,6 @@ pub fn build_region(
     o.insert("palette".to_string(), palette.clone());
     o.insert("bins".to_string(), Value::from(bins));
     o.insert("color_hex".to_string(), color_hex.clone());
-    if vertical {
-        o.insert("orientation".to_string(), Value::String("h".to_string()));
-    }
     if !variant.is_empty() {
         o.insert("variant".to_string(), Value::String(variant.to_string()));
     }
@@ -58,6 +54,23 @@ loading=\"lazy\" srcdoc=\"{doc}\"></iframe>",
     )
 }
 
+pub fn cell_iframe_rotated(target_w: i64, target_h: i64, html: &str) -> String {
+    const COUNTER_ROTATE_CSS: &str =
+        "<style>svg text{transform-box:fill-box;transform-origin:center;transform:rotate(90deg) !important}</style></head>";
+    let rotated_html = html.replacen("</head>", COUNTER_ROTATE_CSS, 1);
+    format!(
+        "<div style=\"width:{tw}px;height:{th}px;overflow:hidden;position:relative\">\
+<iframe style=\"width:{sw}px;height:{sh}px;border:0;background:transparent;display:block;\
+position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-90deg)\" \
+loading=\"lazy\" srcdoc=\"{doc}\"></iframe></div>",
+        tw = target_w,
+        th = target_h,
+        sw = target_h,
+        sh = target_w,
+        doc = escape_xml_s(&rotated_html),
+    )
+}
+
 #[allow(clippy::too_many_arguments)]
 pub fn compose_page(title: &str, panel_w: i64, panel_h: i64, margin: i64, top: &str, right: &str, panel: &str) -> String {
     let heading = if title.is_empty() {
@@ -65,8 +78,11 @@ pub fn compose_page(title: &str, panel_w: i64, panel_h: i64, margin: i64, top: &
     } else {
         format!("<p class=\"sp-joint-title\">{}</p>", escape_xml_s(title))
     };
+    let total_w = panel_w + 6 + margin + 32;
+    let total_h = margin + 6 + panel_h + 32 + if title.is_empty() { 0 } else { 27 };
     format!(
         "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>{title}</title>\
+<meta name=\"sp-content-size\" content=\"{total_w}x{total_h}\">\
 <style>\
 *{{box-sizing:border-box}}\
 body{{margin:0;padding:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:transparent}}\

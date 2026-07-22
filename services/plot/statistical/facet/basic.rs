@@ -52,5 +52,5 @@ pub fn build(input: &str) -> String {
         let cell_html = builder(&cell);
         cells.push_str(&facet_cell_html(g, cell_w, cell_h, &cell_html));
     }
-    facet_page_html(&title, cols, cell_w, &cells)
+    facet_page_html(&title, cols, cell_w, cell_h, groups.len(), &cells)
 }

@@ -621,6 +621,8 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
   // already hold in memory instead of trying to introspect the loaded
   // iframe afterwards.
   function measureChartHtml(html, fallbackW, fallbackH) {
+    var sizeMeta = html.match(/<meta\s+name="sp-content-size"\s+content="(\d+)x(\d+)"/i);
+    if (sizeMeta) return { w: parseInt(sizeMeta[1], 10), h: parseInt(sizeMeta[2], 10) };
     var canvasTag = html.match(/<canvas[^>]*>/i);
     if (canvasTag) {
       var styleAttr = canvasTag[0].match(/\sstyle="([^"]*)"/i);
@@ -647,7 +649,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260722";
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
     return '<div class="sp-preview-label">' + escapeAttr(label || "Preview") + '</div>' +
-      '<iframe class="sp-preview-frame" data-sp-cw="' + size.w + '" data-sp-ch="' + size.h + '" srcdoc="' + src + '" scrolling="no" sandbox="allow-scripts"></iframe>';
+      '<iframe class="sp-preview-frame" data-sp-cw="' + size.w + '" data-sp-ch="' + size.h + '" srcdoc="' + src + '" scrolling="no"></iframe>';
   }
 
   function normalizeVariantList(raw) {

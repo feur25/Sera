@@ -19,6 +19,23 @@
 <script>
 function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact')}
 function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
+function spFitPreview(iframe){
+  try{
+    var doc=iframe.contentDocument;
+    if(!doc)return;
+    var meta=doc.querySelector('meta[name="sp-content-size"]');
+    var h=null;
+    if(meta){var m=(meta.getAttribute('content')||'').match(/^(\d+)x(\d+)$/);if(m)h=parseInt(m[2],10);}
+    if(!h&&doc.body)h=Math.max(doc.body.scrollHeight,doc.documentElement.scrollHeight);
+    if(h)iframe.style.height=(h+20)+'px';
+  }catch(e){}
+}
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.sp-preview-frame').forEach(function(f){
+    f.addEventListener('load',function(){spFitPreview(f)});
+    if(f.contentDocument&&f.contentDocument.readyState==='complete')spFitPreview(f);
+  });
+});
 </script>
 
 ## Signature
