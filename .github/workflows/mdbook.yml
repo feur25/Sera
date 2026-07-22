@@ -41,44 +41,6 @@ jobs:
           chmod +x /usr/local/bin/mdbook
           mdbook --version
 
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
-
-      - name: Cache Rust build
-        uses: Swatinem/rust-cache@v2
-        with:
-          workspaces: tools
-
-      - name: Build tools
-        run: cargo build --release --manifest-path tools/Cargo.toml
-
-      - name: Install SeraPlot (optional — previews skipped if unavailable)
-        run: pip install --upgrade seraplot || echo "seraplot not on PyPI — chart previews will be skipped"
-
-      - name: Generate chart previews
-        run: ./tools/target/release/gen_previews
-
-      - name: Generate API index
-        run: ./tools/target/release/gen_index
-
-      - name: Check for docs changes
-        id: check_changes
-        run: |
-          if git diff --quiet docs/; then
-            echo "has_changes=false" >> $GITHUB_OUTPUT
-          else
-            echo "has_changes=true" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Commit docs changes
-        if: steps.check_changes.outputs.has_changes == 'true'
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add docs/
-          git diff --cached --quiet || git commit -m "docs: regenerate previews and index"
-          git push
-
       - name: Build docs
         run: |
           mdbook build -d book/html
