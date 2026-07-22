@@ -1,48 +1,8 @@
-use crate::plot::chart_input::sanitize_non_finite_json;
 use serde_json::{Map, Value};
 
-type BuilderFn = fn(&str) -> String;
+pub(super) use super::chart_registry::dispatch;
 
-fn dispatch(family: &str) -> Option<BuilderFn> {
-    use crate::plot::statistical as st;
-    Some(match family {
-        "area" => st::area::build_area_chart,
-        "bar" => st::bar::build_bar,
-        "boxplot" | "box" => st::boxplot::build_boxplot,
-        "bubble" => st::bubble::build_bubble,
-        "bullet" => st::bullet::build_bullet,
-        "candlestick" => st::candlestick::build_candlestick,
-        "dumbbell" => st::dumbbell::build_dumbbell,
-        "eventplot" => st::eventplot::build_eventplot,
-        "funnel" => st::funnel::build_funnel,
-        "gantt" => st::gantt::build_gantt,
-        "gauge" => st::gauge::build_gauge,
-        "heatmap" => st::heatmap::build_heatmap,
-        "hexbin" => st::hexbin::build_hexbin,
-        "histogram" | "hist" => st::histogram::build_histogram,
-        "icicle" => st::icicle::build_icicle,
-        "joint" | "jointplot" | "bivariate" => st::joint::build_joint,
-        "kde" | "density" => st::kde::build_kde_chart,
-        "line" | "lineplot" => st::line::build_line,
-        "lollipop" => st::lollipop::build_lollipop_chart,
-        "parallel" => st::parallel::build_parallel,
-        "pie" => st::pie::build_pie,
-        "radar" | "polar" => st::radar::build_radar_chart,
-        "ridgeline" => st::ridgeline::build_ridgeline_chart,
-        "scatter" => st::scatter::build_scatter_chart,
-        "slope" => st::slope::build_slope,
-        "splom" => st::splom::build_splom,
-        "stackplot" => st::stackplot::build_stackplot,
-        "sunburst" => st::sunburst::build_sunburst,
-        "treemap" => st::treemap::build_treemap,
-        "violin" => st::violin::build_violin,
-        "waterfall" => st::waterfall::build_waterfall,
-        "wordcloud" => st::wordcloud::build_wordcloud,
-        _ => return None,
-    })
-}
-
-fn value_to_key(v: &Value) -> String {
+pub(super) fn value_to_key(v: &Value) -> String {
     match v {
         Value::String(s) => s.clone(),
         Value::Number(n) => n.to_string(),
@@ -78,7 +38,7 @@ fn html_text_escape(s: &str) -> String {
     out
 }
 
-fn cell_input(obj: &Map<String, Value>, facet_key: &[String], n: usize, group: &str, cell_w: i64, cell_h: i64, title: &str) -> String {
+pub(super) fn cell_input(obj: &Map<String, Value>, facet_key: &[String], n: usize, group: &str, cell_w: i64, cell_h: i64, title: &str) -> String {
     let mut cell = Map::new();
     for (k, v) in obj.iter() {
         if k == "family" || k == "facet_by" || k == "cols" || k == "cell_width" || k == "cell_height" || k == "layout" {
@@ -105,7 +65,7 @@ fn cell_input(obj: &Map<String, Value>, facet_key: &[String], n: usize, group: &
     Value::Object(cell).to_string()
 }
 
-fn facet_cell_html(group: &str, cell_w: i64, cell_h: i64, cell_html: &str) -> String {
+pub(super) fn facet_cell_html(group: &str, cell_w: i64, cell_h: i64, cell_html: &str) -> String {
     format!(
         "<div class=\"sp-facet-cell\" style=\"width:{cw}px\">\
 <iframe class=\"sp-facet-frame\" style=\"width:{cw}px;height:{ch}px;border:0;background:transparent\" \
@@ -118,7 +78,7 @@ loading=\"lazy\" srcdoc=\"{doc}\"></iframe>\
     )
 }
 
-fn facet_page_html(title: &str, cols: usize, cell_w: i64, cells: &str) -> String {
+pub(super) fn facet_page_html(title: &str, cols: usize, cell_w: i64, cells: &str) -> String {
     format!(
         "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"utf-8\"><title>{title}</title>\
 <style>\
@@ -140,52 +100,8 @@ body{{margin:0;padding:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe 
     )
 }
 
-pub use build as build_facet;
-
-#[crate::sera_alias("facet", "facet_grid", "facetgrid", "small_multiples")]
-#[crate::sera_builder("build_facet")]
-pub fn build(input: &str) -> String {
-    let sanitized = sanitize_non_finite_json(input);
-    let root: Value = serde_json::from_str(&sanitized).unwrap_or(Value::Null);
-    let obj = match root.as_object() {
-        Some(o) => o,
-        None => return String::new(),
-    };
-    let family = obj.get("family").and_then(Value::as_str).unwrap_or("histogram");
-    let builder = match dispatch(family) {
-        Some(b) => b,
-        None => return String::new(),
-    };
-    let facet_key: Vec<String> = obj
-        .get("facet_by")
-        .and_then(Value::as_array)
-        .map(|a| a.iter().map(value_to_key).collect())
-        .unwrap_or_default();
-    let n = facet_key.len();
-    let title = obj.get("title").and_then(Value::as_str).unwrap_or("").to_string();
-    let cols = obj.get("cols").and_then(Value::as_u64).unwrap_or(3) as usize;
-    let cell_w = obj.get("cell_width").and_then(Value::as_i64).unwrap_or(320);
-    let cell_h = obj.get("cell_height").and_then(Value::as_i64).unwrap_or(280);
-
-    if n == 0 {
-        return builder(input);
-    }
-
-    let mut groups: Vec<String> = Vec::new();
-    for k in &facet_key {
-        if !groups.contains(k) {
-            groups.push(k.clone());
-        }
-    }
-
-    let mut cells = String::new();
-    for g in &groups {
-        let cell = cell_input(obj, &facet_key, n, g, cell_w, cell_h, &title);
-        let cell_html = builder(&cell);
-        cells.push_str(&facet_cell_html(g, cell_w, cell_h, &cell_html));
-    }
-    facet_page_html(&title, cols, cell_w, &cells)
-}
+pub mod basic;
+pub use basic::build_facet;
 
 #[cfg(test)]
 mod tests {
@@ -210,7 +126,7 @@ mod tests {
             "cols": 2,
         })
         .to_string();
-        let html = build(&input);
+        let html = build_facet(&input);
         assert!(html.contains("sp-facet-grid"));
         assert_eq!(html.matches("class=\"sp-facet-cell\"").count(), 4);
         assert!(html.contains("weather \u{2014} sun"));
@@ -223,7 +139,7 @@ mod tests {
             "values": [1.0, 2.0, 3.0, 4.0],
         })
         .to_string();
-        let html = build(&input);
+        let html = build_facet(&input);
         assert!(!html.contains("sp-facet-grid"));
         assert!(!html.is_empty());
     }
@@ -236,6 +152,6 @@ mod tests {
             "facet_by": ["a", "b"],
         })
         .to_string();
-        assert!(build(&input).is_empty());
+        assert!(build_facet(&input).is_empty());
     }
 }

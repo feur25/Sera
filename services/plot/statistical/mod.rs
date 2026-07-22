@@ -5,6 +5,7 @@ pub mod boxplot;
 pub mod bubble;
 pub mod bullet;
 pub mod candlestick;
+pub mod chart_registry;
 pub mod common;
 pub mod dumbbell;
 pub mod eventplot;
@@ -125,7 +126,6 @@ pub use histogram::{
 };
 pub use hexbin::{render_hexbin_html, HexbinConfig, HexbinVariant};
 pub use icicle::{render_icicle_html, IcicleConfig, IcicleVariant};
-pub use joint::{render_joint_html, JointConfig, JointVariant};
 pub use kde::{kde_eval, render_kde_html, scott_bw, KdeConfig, KdeVariant};
 pub use line::{render_line_html, LineConfig, LineVariant};
 pub use lollipop::{render_lollipop_html, LollipopConfig, LollipopVariant};

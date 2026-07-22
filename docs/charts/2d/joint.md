@@ -14,6 +14,7 @@
 .sp-vmeta{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:13px;color:#94a3b8;margin:6px 0 16px;padding:10px 14px;background:rgba(99,102,241,.06);border-left:3px solid #6366f1;border-radius:0 6px 6px 0}
 .sp-vmeta strong{color:#a5b4fc;font-weight:700;margin-right:4px;text-transform:uppercase;font-size:11px}
 .sp-vmeta code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#e2e8f0;font-size:12px}
+.sp-preview-frame{border:none;border-radius:10px;display:block;width:100%;height:560px;background:transparent}
 </style>
 <script>
 function spCls(scope,name,btn){var root=document.getElementById(scope);root.querySelectorAll('.sp-variant').forEach(function(s){s.classList.remove('sp-von')});root.querySelectorAll('.sp-cls-tab').forEach(function(b){b.classList.remove('sp-cact')});document.getElementById(scope+'-'+name).classList.add('sp-von');btn.classList.add('sp-cact')}
@@ -22,111 +23,78 @@ function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
 
 ## Signature
 
-`sp.joint(title, x_values, y_values, *, variant="hexbin", marginal="histogram", panel_variant="basic", show_points=False, show_regression=False, bins=24, colorscale=None, categories=None, **kwargs) -> Chart`
+`sp.joint(title, x, y, *, variant="hexbin", marginal="histogram", panel_variant="", marginal_variant="", bins=24, colorscale=None, categories=None, **kwargs) -> Chart`
 
 Aliases: `sp.joint`, `sp.jointplot`, `sp.joint_plot`, `sp.bivariate`, `sp.build_joint`
 
 ## Description
 
-`sp.joint()` composes a bivariate main panel with top and right marginal distributions — the SeraPlot equivalent of seaborn's `jointplot()` / `JointGrid`. The main panel and the marginals are two **independent** choices, not a fixed pairing: `variant=` picks the main-panel technique (`hexbin`, `heat_grid`, `kde_heat`, `kde_contour`, `scatter`) and `marginal=` picks the top/right technique (`histogram`, `kde`, `rug`, `none`) — any combination works, e.g. `sp.joint(x, y, variant="hexbin", marginal="kde")` puts KDE curves in the margins of a hexbin panel instead of the default histograms. When `variant="hexbin"`, `panel_variant=` additionally selects among [`hexbin()`](hexbin.md)'s own cell styles (`basic` / `outlined` / `spaced` / `highlight`) by calling straight into hexbin's own per-cell drawing code — no reimplementation. `show_points=True` overlays raw scatter points on any panel, `show_regression=True` overlays a least-squares fit line (reusing [`scatter()`](scatter.md)'s regression fit).
+`sp.joint()` composes a bivariate main panel with top and right marginal strips — the SeraPlot equivalent of seaborn's `jointplot()` / `JointGrid`. `variant=` (the panel, "inside") and `marginal=` (the top/right strips, "outside") are **independent, fully open choices** — not a fixed enum. Each accepts the name of *any* registered SeraPlot family from `services/plot/statistical/chart_registry.rs` (currently ~50: `hexbin`, `scatter`, `kde`, `histogram`, `bar`, `violin`, `boxplot`, `heatmap`, `orbita`, `splom`, … the same inventory [`facet()`](facet.md) dispatches through), and `panel_variant=` / `marginal_variant=` forward straight through as that family's own `variant=`, so hexbin's `outlined`/`spaced`/`highlight` styles, histogram's `cumulative`, etc. all work exactly as they do standalone.
 
-Every panel reuses existing framework primitives instead of duplicating geometry: hexagonal binning from [`hexbin()`](hexbin.md), 1D bin edges from [`histogram()`](histogram.md), the Gaussian KDE engine from [`kde()`](kde.md), and the continuous colorscale engine from [`heatmap()`](heatmap.md). Pass `categories=` alongside `x_values` / `y_values` to compare density surfaces across groups with `variant="kde_contour"` — the same `categories=` convention used by [`kde()`](kde.md) and [`histogram()`](histogram.md) for grouped series.
+```python
+sp.joint(x, y, variant="hexbin", marginal="kde")
+sp.joint(x, y, variant="kde", marginal="histogram")
+sp.joint(x, y, variant="scatter", marginal="bar")
+sp.joint(x, y, variant="hexbin", panel_variant="outlined", marginal="kde")
+```
 
-The 8 names from earlier SeraPlot releases (`hexbin_marginal`, `heat_scatter`, `layered_bivariate`, `joint_kde`, `kde_smooth`, `multiple_bivariate_kde`, `marginal_ticks`, `regression_marginals`, plus `joint_histogram` / `histogram2d`) still work unchanged as `variant=` values — each just resolves to a `(panel, marginal, show_points, show_regression)` preset under the hood, so nothing breaks.
+Each region — panel, top strip, right strip — is a real, independently-rendered SeraPlot chart embedded in its own frame, calling the exact same native `build_*` function [`facet()`](facet.md) uses for its cells; nothing is reimplemented. That also means regions are **not pixel-aligned** to a shared coordinate system the way a hand-tuned single-SVG composition would be — each chart keeps its own axes/padding — an inherent tradeoff for genuine "any family, any slot" freedom. Not every family produces something meaningful in every slot (e.g. `orbita`, which expects a hierarchy rather than raw points, renders blank as a panel) — that limitation belongs to the target family's own data shape, not to `joint()` itself.
 
-## Variants
+Pass `categories=` alongside `x` / `y` to compare density surfaces across groups with `variant="kde_contour"`, the same `categories=` convention used by [`kde()`](kde.md) and [`histogram()`](histogram.md).
 
-<div data-sp-registry-table="variants" data-family="joint"></div>
+The 8 preset names from earlier releases (`hexbin_marginal`, `heat_scatter` / `joint_histogram` / `histogram2d`, `layered_bivariate`, `joint_kde`, `kde_smooth`, `multiple_bivariate_kde`, `marginal_ticks`, `regression_marginals`) still work as `variant=` values and resolve to a real family under the hood (`resolve_legacy_panel()` in `joint/variant.rs`), so existing code keeps working.
 
 ## Data
 
-`x_values` (`list[float]`) — X coordinates. `y_values` (`list[float]`) — Y coordinates. `categories` (`list[str]`, optional) — group label per point, required for `variant="kde_contour"`.
+`x` (`list[float]`) — X coordinates. `y` (`list[float]`) — Y coordinates. `categories` (`list[str]`, optional) — group label per point, for `variant="kde_contour"`.
 
 ## Parameters
 
 <div data-sp-registry-table="options" data-family="joint"></div>
 
-## Themes
-
-<div data-sp-registry-table="themes" data-family="joint"></div>
-
 ## Returns
 
 `Chart` — object with `.html` property and `.show()` method.
 
-<div class="sp-panel-source">
-<h2>Parameters</h2>
-
-<div data-sp-registry-table="variants" data-family="joint"></div>
-</div>
-
 <div class="sp-cls sp-open" id="joint-en">
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('joint-en')" title="Collapse / expand">⇆</button>
-<button class="sp-cls-tab sp-cact" onclick="spCls('joint-en','hexbin_marginal',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Hexbin marginal</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-en','heat_scatter',this)"><span class="sp-cic">▦</span><span class="sp-clb">Heat scatter</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-en','layered_bivariate',this)"><span class="sp-cic">∿</span><span class="sp-clb">Layered bivariate</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-en','joint_kde',this)"><span class="sp-cic">◐</span><span class="sp-clb">Joint KDE</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-en','kde_smooth',this)"><span class="sp-cic">▤</span><span class="sp-clb">KDE smooth</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-en','multiple_bivariate_kde',this)"><span class="sp-cic">⊛</span><span class="sp-clb">Multiple bivariate KDE</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-en','marginal_ticks',this)"><span class="sp-cic">┆</span><span class="sp-clb">Marginal ticks</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-en','regression_marginals',this)"><span class="sp-cic">↗</span><span class="sp-clb">Regression marginals</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-en','custom_combo',this)"><span class="sp-cic">✦</span><span class="sp-clb">Custom composition</span></button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('joint-en','hexbin_kde',this)"><span class="sp-cic">⬡</span><span class="sp-clb">hexbin + kde</span></button>
+<button class="sp-cls-tab" onclick="spCls('joint-en','kde_histogram',this)"><span class="sp-cic">◐</span><span class="sp-clb">kde + histogram</span></button>
+<button class="sp-cls-tab" onclick="spCls('joint-en','scatter_bar',this)"><span class="sp-cic">●</span><span class="sp-clb">scatter + bar</span></button>
+<button class="sp-cls-tab" onclick="spCls('joint-en','hexbin_outlined_kde',this)"><span class="sp-cic">✦</span><span class="sp-clb">hexbin outlined + kde</span></button>
+<button class="sp-cls-tab" onclick="spCls('joint-en','layered_bivariate',this)"><span class="sp-cic">∿</span><span class="sp-clb">legacy: layered_bivariate</span></button>
 </div>
 <div class="sp-cls-body">
-<div class="sp-variant sp-von" id="joint-en-hexbin_marginal">
-<p>Hexagonal density binning in the main panel, 1D histogram marginals along both axes — the closest match to seaborn's <code>hexbin_marginals</code> example.</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"hexbin_marginal"</code></span><span><strong>Aliases</strong> <code>hexbin_marginal / hexbin / hexbin_marginals</code></span></div>
+<div class="sp-variant sp-von" id="joint-en-hexbin_kde">
+<p>Hexagonal density panel with KDE curve marginals instead of the default histograms.</p>
+<div class="sp-vmeta"><span><strong>Call</strong> <code>sp.joint(x, y, variant="hexbin", marginal="kde")</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-hexbin_marginal.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/joint-hexbin_kde.html"></iframe>
 </div>
-<div class="sp-variant" id="joint-en-heat_scatter">
-<p>Square-grid 2D histogram heatmap with histogram marginals — matches seaborn's <code>heat_scatter</code> / "Scatterplot heatmap" example. Same technique also reachable via the <code>joint_histogram</code> / <code>histogram2d</code> aliases.</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"heat_scatter"</code></span><span><strong>Aliases</strong> <code>heat_scatter / heatscatter / density_heat / joint_histogram / histogram2d / hist2d</code></span></div>
+<div class="sp-variant" id="joint-en-kde_histogram">
+<p>A 1D KDE panel with histogram marginals — mixing families freely, not just bivariate-native ones.</p>
+<div class="sp-vmeta"><span><strong>Call</strong> <code>sp.joint(x, y, variant="kde", marginal="histogram")</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-heat_scatter.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/joint-kde_histogram.html"></iframe>
+</div>
+<div class="sp-variant" id="joint-en-scatter_bar">
+<p>Scatter panel with bar-chart marginals.</p>
+<div class="sp-vmeta"><span><strong>Call</strong> <code>sp.joint(x, y, variant="scatter", marginal="bar")</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/joint-scatter_bar.html"></iframe>
+</div>
+<div class="sp-variant" id="joint-en-hexbin_outlined_kde">
+<p><code>panel_variant=</code> forwards to the panel family's own variant — here hexbin's <code>outlined</code> cell style, combined with KDE marginals.</p>
+<div class="sp-vmeta"><span><strong>Call</strong> <code>sp.joint(x, y, variant="hexbin", panel_variant="outlined", marginal="kde")</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/joint-hexbin_outlined_kde.html"></iframe>
 </div>
 <div class="sp-variant" id="joint-en-layered_bivariate">
-<p>Smooth 2D Gaussian KDE surface with a raw scatter overlay and KDE marginal curves — matches seaborn's <code>layered_bivariate_plot</code> example.</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"layered_bivariate"</code></span><span><strong>Aliases</strong> <code>layered_bivariate / kde_scatter / layered</code></span></div>
+<p>The pre-existing <code>layered_bivariate</code> preset name still resolves (to <code>variant="kde"</code> under the hood) — old code keeps working.</p>
+<div class="sp-vmeta"><span><strong>Call</strong> <code>sp.joint(x, y, variant="layered_bivariate")</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/joint-layered_bivariate.html"></iframe>
-</div>
-<div class="sp-variant" id="joint-en-joint_kde">
-<p>The same smooth 2D KDE surface as <code>layered_bivariate</code> with KDE marginal curves, but without the scatter overlay — matches seaborn's <code>joint_kde</code> example.</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"joint_kde"</code></span><span><strong>Aliases</strong> <code>joint_kde / kde_joint / bivariate_kde</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-joint_kde.html"></iframe>
-</div>
-<div class="sp-variant" id="joint-en-kde_smooth">
-<p>A finer 2D KDE surface paired with histogram marginals instead of KDE marginals — matches seaborn's <code>smooth_bivariate_kde</code> example.</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"kde_smooth"</code></span><span><strong>Aliases</strong> <code>kde_smooth / smooth_bivariate_kde / smooth_kde</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-kde_smooth.html"></iframe>
-</div>
-<div class="sp-variant" id="joint-en-multiple_bivariate_kde">
-<p>Overlapping translucent 2D KDE density islands, one per <code>categories=</code> group, no marginals — matches seaborn's "Overlapping bivariate KDE plots" example.</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"multiple_bivariate_kde"</code></span><span><strong>Aliases</strong> <code>multiple_bivariate_kde / kde_multi / overlapping_kde</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-multiple_bivariate_kde.html"></iframe>
-</div>
-<div class="sp-variant" id="joint-en-marginal_ticks">
-<p>Scatter main panel with rug tick marks in the margins instead of full marginal distributions — matches seaborn's <code>marginal_ticks</code> example.</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"marginal_ticks"</code></span><span><strong>Aliases</strong> <code>marginal_ticks / rug_marginal / rug</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-marginal_ticks.html"></iframe>
-</div>
-<div class="sp-variant" id="joint-en-regression_marginals">
-<p>Scatter plus a least-squares linear fit line, with histogram marginals — matches seaborn's <code>regression_marginals</code> example.</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"regression_marginals"</code></span><span><strong>Aliases</strong> <code>regression_marginals / regression_joint / joint_regression</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-regression_marginals.html"></iframe>
-</div>
-<div class="sp-variant" id="joint-en-custom_combo">
-<p>None of the 8 presets above is a fixed pairing — this is the same <code>hexbin</code> panel as the first tab, but with <code>panel_variant="outlined"</code> (hexbin's own outlined cell style) and <code>marginal="kde"</code> swapped in for the default histograms: <code>sp.joint(x, y, variant="hexbin", panel_variant="outlined", marginal="kde")</code>. Any panel × any marginal × (for hexbin) any panel_variant works.</p>
-<div class="sp-vmeta"><span><strong>variant</strong> <code>"hexbin"</code></span><span><strong>panel_variant</strong> <code>"outlined"</code></span><span><strong>marginal</strong> <code>"kde"</code></span></div>
-<div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-custom_combo.html"></iframe>
 </div>
 </div>
 </div>
@@ -137,109 +105,78 @@ The 8 names from earlier SeraPlot releases (`hexbin_marginal`, `heat_scatter`, `
 
 ## Signature
 
-`sp.joint(title, x_values, y_values, *, variant="hexbin_marginal", bins=24, colorscale=None, categories=None, **kwargs) -> Chart`
+`sp.joint(title, x, y, *, variant="hexbin", marginal="histogram", panel_variant="", marginal_variant="", bins=24, colorscale=None, categories=None, **kwargs) -> Chart`
 
 Alias : `sp.joint`, `sp.jointplot`, `sp.joint_plot`, `sp.bivariate`, `sp.build_joint`
 
 ## Description
 
-`sp.joint()` compose un panneau bivarié principal avec des distributions marginales en haut et à droite — l'équivalent SeraPlot de `jointplot()` / `JointGrid` de seaborn. Chaque variante réutilise les primitives existantes du framework plutôt que de dupliquer la géométrie : le binning hexagonal de [`hexbin()`](hexbin.md), les bornes de classes de [`histogram()`](histogram.md), le moteur de KDE gaussien de [`kde()`](kde.md), et le moteur de dégradés continus de [`heatmap()`](heatmap.md). Passez `categories=` en plus de `x_values` / `y_values` pour comparer des surfaces de densité entre groupes avec `variant="multiple_bivariate_kde"` — la même convention `categories=` que [`kde()`](kde.md) et [`histogram()`](histogram.md) pour les séries groupées.
+`sp.joint()` compose un panneau bivarié principal avec des bandes marginales en haut et à droite — l'équivalent SeraPlot de `jointplot()` / `JointGrid` de seaborn. `variant=` (le panneau, « intérieur ») et `marginal=` (les bandes haut/droite, « extérieur ») sont des choix **indépendants et totalement ouverts** — pas une énumération figée. Chacun accepte le nom de *n'importe quelle* famille SeraPlot enregistrée dans `services/plot/statistical/chart_registry.rs` (environ 50 actuellement : `hexbin`, `scatter`, `kde`, `histogram`, `bar`, `violin`, `boxplot`, `heatmap`, `orbita`, `splom`, … le même inventaire que celui utilisé par [`facet()`](facet.md)), et `panel_variant=` / `marginal_variant=` sont transmis tels quels comme le `variant=` propre à cette famille.
 
-`heat_scatter` répond aussi à `joint_histogram` / `histogram2d` / `hist2d` — un histogramme 2D avec marges est la même technique sous un autre nom, donc aucune variante séparée ne la duplique.
+```python
+sp.joint(x, y, variant="hexbin", marginal="kde")
+sp.joint(x, y, variant="kde", marginal="histogram")
+sp.joint(x, y, variant="scatter", marginal="bar")
+sp.joint(x, y, variant="hexbin", panel_variant="outlined", marginal="kde")
+```
 
-## Variantes
+Chaque région — panneau, bande haute, bande droite — est un vrai graphique SeraPlot rendu indépendamment dans son propre cadre, appelant exactement la même fonction `build_*` native que [`facet()`](facet.md) pour ses cellules ; rien n'est réimplémenté. Cela signifie aussi que les régions ne sont **pas alignées pixel par pixel** sur un système de coordonnées partagé comme le serait une composition SVG unique ajustée à la main — chaque graphique garde ses propres axes/marges — une contrepartie inhérente à une liberté « n'importe quelle famille, n'importe quel emplacement » authentique. Toutes les familles ne produisent pas quelque chose de pertinent dans tous les emplacements (par exemple `orbita`, qui attend une hiérarchie plutôt que des points bruts, reste vide en tant que panneau) — cette limite appartient à la forme de données propre à la famille cible, pas à `joint()` lui-même.
 
-<div data-sp-registry-table="variants" data-family="joint"></div>
+Passez `categories=` en plus de `x` / `y` pour comparer des surfaces de densité entre groupes avec `variant="kde_contour"`, la même convention `categories=` que [`kde()`](kde.md) et [`histogram()`](histogram.md).
+
+Les 8 noms préréglés des versions précédentes (`hexbin_marginal`, `heat_scatter` / `joint_histogram` / `histogram2d`, `layered_bivariate`, `joint_kde`, `kde_smooth`, `multiple_bivariate_kde`, `marginal_ticks`, `regression_marginals`) fonctionnent toujours comme valeurs de `variant=` et se résolvent vers une vraie famille en interne (`resolve_legacy_panel()` dans `joint/variant.rs`), donc le code existant continue de fonctionner.
 
 ## Données
 
-`x_values` (`list[float]`) — Coordonnées X. `y_values` (`list[float]`) — Coordonnées Y. `categories` (`list[str]`, optionnel) — étiquette de groupe par point, requis pour `multiple_bivariate_kde`.
+`x` (`list[float]`) — Coordonnées X. `y` (`list[float]`) — Coordonnées Y. `categories` (`list[str]`, optionnel) — étiquette de groupe par point, pour `variant="kde_contour"`.
 
 ## Paramètres
 
 <div data-sp-registry-table="options" data-family="joint"></div>
 
-## Thèmes
-
-<div data-sp-registry-table="themes" data-family="joint"></div>
-
 ## Retour
 
 `Chart` — objet avec une propriété `.html` et une méthode `.show()`.
 
-<div class="sp-panel-source">
-<h2>Paramètres</h2>
-
-<div data-sp-registry-table="variants" data-family="joint"></div>
-</div>
-
 <div class="sp-cls sp-open" id="joint-fr">
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('joint-fr')" title="Collapse / expand">⇆</button>
-<button class="sp-cls-tab sp-cact" onclick="spCls('joint-fr','hexbin_marginal',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Hexbin marginal</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-fr','heat_scatter',this)"><span class="sp-cic">▦</span><span class="sp-clb">Heat scatter</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-fr','layered_bivariate',this)"><span class="sp-cic">∿</span><span class="sp-clb">Layered bivariate</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-fr','joint_kde',this)"><span class="sp-cic">◐</span><span class="sp-clb">Joint KDE</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-fr','kde_smooth',this)"><span class="sp-cic">▤</span><span class="sp-clb">KDE smooth</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-fr','multiple_bivariate_kde',this)"><span class="sp-cic">⊛</span><span class="sp-clb">KDE bivariées multiples</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-fr','marginal_ticks',this)"><span class="sp-cic">┆</span><span class="sp-clb">Ticks marginaux</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-fr','regression_marginals',this)"><span class="sp-cic">↗</span><span class="sp-clb">Régression + marges</span></button>
-<button class="sp-cls-tab" onclick="spCls('joint-fr','custom_combo',this)"><span class="sp-cic">✦</span><span class="sp-clb">Composition libre</span></button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('joint-fr','hexbin_kde',this)"><span class="sp-cic">⬡</span><span class="sp-clb">hexbin + kde</span></button>
+<button class="sp-cls-tab" onclick="spCls('joint-fr','kde_histogram',this)"><span class="sp-cic">◐</span><span class="sp-clb">kde + histogramme</span></button>
+<button class="sp-cls-tab" onclick="spCls('joint-fr','scatter_bar',this)"><span class="sp-cic">●</span><span class="sp-clb">scatter + bar</span></button>
+<button class="sp-cls-tab" onclick="spCls('joint-fr','hexbin_outlined_kde',this)"><span class="sp-cic">✦</span><span class="sp-clb">hexbin outlined + kde</span></button>
+<button class="sp-cls-tab" onclick="spCls('joint-fr','layered_bivariate',this)"><span class="sp-cic">∿</span><span class="sp-clb">héritage : layered_bivariate</span></button>
 </div>
 <div class="sp-cls-body">
-<div class="sp-variant sp-von" id="joint-fr-hexbin_marginal">
-<p>Binning hexagonal en densité dans le panneau principal, marges en histogrammes 1D sur les deux axes — l'équivalent le plus proche de l'exemple <code>hexbin_marginals</code> de seaborn.</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"hexbin_marginal"</code></span><span><strong>Alias</strong> <code>hexbin_marginal / hexbin / hexbin_marginals</code></span></div>
+<div class="sp-variant sp-von" id="joint-fr-hexbin_kde">
+<p>Panneau de densité hexagonale avec des marges en courbes de KDE plutôt qu'en histogrammes par défaut.</p>
+<div class="sp-vmeta"><span><strong>Appel</strong> <code>sp.joint(x, y, variant="hexbin", marginal="kde")</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-hexbin_marginal.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/joint-hexbin_kde.html"></iframe>
 </div>
-<div class="sp-variant" id="joint-fr-heat_scatter">
-<p>Carte de chaleur d'histogramme 2D en grille carrée avec marges en histogrammes — correspond à l'exemple <code>heat_scatter</code> / « Scatterplot heatmap » de seaborn. Même technique accessible aussi via les alias <code>joint_histogram</code> / <code>histogram2d</code>.</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"heat_scatter"</code></span><span><strong>Alias</strong> <code>heat_scatter / heatscatter / density_heat / joint_histogram / histogram2d / hist2d</code></span></div>
+<div class="sp-variant" id="joint-fr-kde_histogram">
+<p>Un panneau de KDE 1D avec des marges en histogrammes — mélange libre de familles, pas seulement celles nativement bivariées.</p>
+<div class="sp-vmeta"><span><strong>Appel</strong> <code>sp.joint(x, y, variant="kde", marginal="histogram")</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-heat_scatter.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/joint-kde_histogram.html"></iframe>
+</div>
+<div class="sp-variant" id="joint-fr-scatter_bar">
+<p>Panneau en nuage de points avec des marges en bar chart.</p>
+<div class="sp-vmeta"><span><strong>Appel</strong> <code>sp.joint(x, y, variant="scatter", marginal="bar")</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/joint-scatter_bar.html"></iframe>
+</div>
+<div class="sp-variant" id="joint-fr-hexbin_outlined_kde">
+<p><code>panel_variant=</code> est transmis à la variante propre de la famille du panneau — ici le style de cellule <code>outlined</code> de hexbin, combiné à des marges KDE.</p>
+<div class="sp-vmeta"><span><strong>Appel</strong> <code>sp.joint(x, y, variant="hexbin", panel_variant="outlined", marginal="kde")</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/joint-hexbin_outlined_kde.html"></iframe>
 </div>
 <div class="sp-variant" id="joint-fr-layered_bivariate">
-<p>Surface de KDE gaussienne 2D lisse avec un nuage de points brut superposé et des courbes de KDE en marge — correspond à l'exemple <code>layered_bivariate_plot</code> de seaborn.</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"layered_bivariate"</code></span><span><strong>Alias</strong> <code>layered_bivariate / kde_scatter / layered</code></span></div>
+<p>L'ancien nom préréglé <code>layered_bivariate</code> se résout toujours (vers <code>variant="kde"</code> en interne) — le code existant continue de fonctionner.</p>
+<div class="sp-vmeta"><span><strong>Appel</strong> <code>sp.joint(x, y, variant="layered_bivariate")</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/joint-layered_bivariate.html"></iframe>
-</div>
-<div class="sp-variant" id="joint-fr-joint_kde">
-<p>La même surface de KDE 2D lisse que <code>layered_bivariate</code> avec des courbes de KDE en marge, mais sans le nuage de points superposé — correspond à l'exemple <code>joint_kde</code> de seaborn.</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"joint_kde"</code></span><span><strong>Alias</strong> <code>joint_kde / kde_joint / bivariate_kde</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-joint_kde.html"></iframe>
-</div>
-<div class="sp-variant" id="joint-fr-kde_smooth">
-<p>Une surface de KDE 2D plus fine associée à des marges en histogrammes plutôt qu'en KDE — correspond à l'exemple <code>smooth_bivariate_kde</code> de seaborn.</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"kde_smooth"</code></span><span><strong>Alias</strong> <code>kde_smooth / smooth_bivariate_kde / smooth_kde</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-kde_smooth.html"></iframe>
-</div>
-<div class="sp-variant" id="joint-fr-multiple_bivariate_kde">
-<p>Îlots de densité KDE 2D translucides et superposés, un par groupe <code>categories=</code>, sans marges — correspond à l'exemple « Overlapping bivariate KDE plots » de seaborn.</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"multiple_bivariate_kde"</code></span><span><strong>Alias</strong> <code>multiple_bivariate_kde / kde_multi / overlapping_kde</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-multiple_bivariate_kde.html"></iframe>
-</div>
-<div class="sp-variant" id="joint-fr-marginal_ticks">
-<p>Nuage de points dans le panneau principal avec des ticks en marge au lieu de distributions complètes — correspond à l'exemple <code>marginal_ticks</code> de seaborn.</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"marginal_ticks"</code></span><span><strong>Alias</strong> <code>marginal_ticks / rug_marginal / rug</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-marginal_ticks.html"></iframe>
-</div>
-<div class="sp-variant" id="joint-fr-regression_marginals">
-<p>Nuage de points avec une droite de régression par moindres carrés, marges en histogrammes — correspond à l'exemple <code>regression_marginals</code> de seaborn.</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"regression_marginals"</code></span><span><strong>Alias</strong> <code>regression_marginals / regression_joint / joint_regression</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-regression_marginals.html"></iframe>
-</div>
-<div class="sp-variant" id="joint-fr-custom_combo">
-<p>Aucun des 8 préréglages ci-dessus n'est une association figée — ceci reprend le même panneau <code>hexbin</code> que le premier onglet, mais avec <code>panel_variant="outlined"</code> (le style de cellule outlined propre à hexbin) et <code>marginal="kde"</code> à la place des histogrammes par défaut : <code>sp.joint(x, y, variant="hexbin", panel_variant="outlined", marginal="kde")</code>. N'importe quel panneau × n'importe quelle marge × (pour hexbin) n'importe quel panel_variant fonctionne.</p>
-<div class="sp-vmeta"><span><strong>variant</strong> <code>"hexbin"</code></span><span><strong>panel_variant</strong> <code>"outlined"</code></span><span><strong>marginal</strong> <code>"kde"</code></span></div>
-<div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/joint-custom_combo.html"></iframe>
 </div>
 </div>
 </div>
