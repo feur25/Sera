@@ -98,6 +98,8 @@ pub struct ChartOpts {
     pub images: Option<Vec<Option<String>>>,
     pub descriptions: Option<Vec<Vec<Vec<String>>>>,
     pub variant: Option<String>,
+    pub panel_variant: Option<String>,
+    pub marginal: Option<String>,
     pub offset_groups: Option<Vec<String>>,
     pub widths: Option<Vec<f64>>,
     pub super_categories: Option<Vec<String>>,

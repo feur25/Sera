@@ -72,6 +72,8 @@ declare namespace wasm_bindgen {
 
     export function buildEventplot(input: string): string;
 
+    export function buildFacet(input: string): string;
+
     export function buildFunnel(input: string): string;
 
     export function buildFunnel3dChart(input: string): string;
@@ -99,6 +101,8 @@ declare namespace wasm_bindgen {
     export function buildIcicle(input: string): string;
 
     export function buildIsosurfaceChart(input: string): string;
+
+    export function buildJoint(input: string): string;
 
     export function buildKde3dChart(input: string): string;
 
@@ -459,6 +463,7 @@ declare interface InitOutput {
     readonly buildDumbbell: (a: number, b: number) => [number, number];
     readonly buildDumbbell3dChart: (a: number, b: number) => [number, number];
     readonly buildEventplot: (a: number, b: number) => [number, number];
+    readonly buildFacet: (a: number, b: number) => [number, number];
     readonly buildFunnel: (a: number, b: number) => [number, number];
     readonly buildFunnel3dChart: (a: number, b: number) => [number, number];
     readonly buildGantt: (a: number, b: number) => [number, number];
@@ -473,6 +478,7 @@ declare interface InitOutput {
     readonly buildHive: (a: number, b: number) => [number, number];
     readonly buildIcicle: (a: number, b: number) => [number, number];
     readonly buildIsosurfaceChart: (a: number, b: number) => [number, number];
+    readonly buildJoint: (a: number, b: number) => [number, number];
     readonly buildKde3dChart: (a: number, b: number) => [number, number];
     readonly buildKdeChart: (a: number, b: number) => [number, number];
     readonly buildKmeansChart: (a: number, b: number) => [number, number];

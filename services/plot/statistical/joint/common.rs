@@ -1,4 +1,5 @@
 use super::config::JointConfig;
+use super::variant::JointMarginal;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{
     hex6, push_b, push_f2, push_i, svg_axis_lines, svg_open, svg_title, svg_x_label, svg_y_label, Frame,
@@ -251,6 +252,34 @@ pub fn right_kde(f: &mut Frame, l: &Layout, bounds: &Bounds, values: &[f64], col
 
 pub fn finalize(f: Frame, cfg: &JointConfig) -> String {
     f.html(&slots_to_json(cfg.hover))
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn draw_marginals(
+    f: &mut Frame,
+    l: &Layout,
+    bounds: &Bounds,
+    x_values: &[f64],
+    y_values: &[f64],
+    marginal: JointMarginal,
+    bins: usize,
+    color: u32,
+) {
+    match marginal {
+        JointMarginal::Histogram => {
+            top_histogram(f, l, bounds, x_values, bins, color);
+            right_histogram(f, l, bounds, y_values, bins, color);
+        }
+        JointMarginal::Kde => {
+            top_kde(f, l, bounds, x_values, color);
+            right_kde(f, l, bounds, y_values, color);
+        }
+        JointMarginal::Rug => {
+            top_rug(f, l, bounds, x_values, color);
+            right_rug(f, l, bounds, y_values, color);
+        }
+        JointMarginal::None => {}
+    }
 }
 
 pub fn kde_heat_grid(

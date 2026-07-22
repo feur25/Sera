@@ -166,6 +166,59 @@ pub fn hex_path(buf: &mut Vec<u8>, cx: f64, cy: f64, r: f64) {
     push_b(buf, b" Z");
 }
 
+pub fn highlight_cutoff(bins: &[Bin]) -> u32 {
+    let mut counts: Vec<u32> = bins.iter().map(|b| b.count).collect();
+    counts.sort_unstable();
+    let cutoff_idx = (counts.len() as f64 * 0.85) as usize;
+    counts.get(cutoff_idx.min(counts.len().saturating_sub(1))).copied().unwrap_or(0)
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn draw_hex_cell(
+    buf: &mut Vec<u8>,
+    idx: usize,
+    bin: &Bin,
+    radius: f64,
+    col: u32,
+    opacity: Option<f64>,
+    stroke: bool,
+    label: bool,
+) {
+    push_b(buf, b"<path data-idx=\"");
+    push_i(buf, idx as i32);
+    push_b(buf, b"\" data-y=\"");
+    push_i(buf, bin.count as i32);
+    push_b(buf, b"\" d=\"");
+    hex_path(buf, bin.cx, bin.cy, radius);
+    push_b(buf, b"\" fill=\"#");
+    buf.extend_from_slice(&hex6(col));
+    if let Some(op) = opacity {
+        push_b(buf, b"\" fill-opacity=\"");
+        push_f2(buf, op);
+        if stroke {
+            push_b(buf, b"\" stroke=\"#fff\" stroke-width=\"1.4\"/>");
+        } else {
+            push_b(buf, b"\"/>");
+        }
+    } else if stroke {
+        push_b(buf, b"\" stroke=\"#fff\" stroke-width=\"1\"/>");
+    } else {
+        push_b(buf, b"\"/>");
+    }
+    if label {
+        push_b(buf, b"<text x=\"");
+        push_f2(buf, bin.cx);
+        push_b(buf, b"\" y=\"");
+        push_f2(buf, bin.cy + 3.5);
+        push_b(
+            buf,
+            b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#fff\" pointer-events=\"none\">",
+        );
+        push_i(buf, bin.count as i32);
+        push_b(buf, b"</text>");
+    }
+}
+
 pub fn bin_color(cfg: &HexbinConfig, p: &Prepared, count: u32) -> u32 {
     bin_color_raw(cfg.colorscale, p.min_count, p.max_count, count)
 }

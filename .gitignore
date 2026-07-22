@@ -1,8 +1,10 @@
 book/
 target/
+pkg/
 *.lock
 .env
 .DS_Store
 src/telemetry/
 *.csv
 v2/
+tools/
