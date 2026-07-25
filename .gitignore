@@ -13,3 +13,6 @@ python/seraplot/*.pyd.bak
 python/seraplot/*.pyd.old
 python/seraplot/*.pdb
 python/seraplot/__pycache__/
+*.ipynb
+.ipynb_checkpoints/
+CAHIER_DES_CHARGES.md

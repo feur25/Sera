@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 ## Signature
 
-`sp.kde(title, values, *, variant="basic", categories=None, bandwidth=0.0, filled=True, fill_opacity=50, bins=30, n_points=80, palette=None, **kwargs) -> Chart`
+`sp.kde(title, values=None, *, x=None, y=None, variant="basic", categories=None, bandwidth=0.0, filled=True, fill_opacity=50, bins=30, n_points=80, palette=None, **kwargs) -> Chart`
 
 ## Description
 
@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('kde-en','histogram',this)"><span class="sp-cic">H</span><span class="sp-clb">Histogram</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-en','normalized',this)"><span class="sp-cic">N</span><span class="sp-clb">Normalized</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-en','cumulative',this)"><span class="sp-cic">C</span><span class="sp-clb">Cumulative</span></button>
+<button class="sp-cls-tab" onclick="spCls('kde-en','contour',this)"><span class="sp-cic">◌</span><span class="sp-clb">Contour</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="kde-en-basic">
@@ -89,6 +90,12 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-cumulative.html"></iframe>
 </div>
+<div class="sp-variant" id="kde-en-contour">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"contour"</code></span><span><strong>Aliases</strong> <code>contour / bivariate / kde2d / joint_density / smooth</code></span><span><strong>Required</strong> <code>x</code>, <code>y</code></span><span><strong>Optional</strong> <code>categories</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bivariate (2D) kernel density estimate — a product-kernel Gaussian evaluated on a grid and rendered as a shaded density surface with the raw points overlaid. Pass <code>categories</code> to overlay one density surface per group, each in its own color with a legend.</p>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/kde-contour.html"></iframe>
+</div>
 </div></div>
 
 </div>
@@ -97,7 +104,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <h2>Signature</h2>
 
-`sp.kde(title, values, *, variant="basic", categories=None, bandwidth=0.0, filled=True, fill_opacity=50, bins=30, n_points=80, palette=None, **kwargs) -> Chart`
+`sp.kde(title, values=None, *, x=None, y=None, variant="basic", categories=None, bandwidth=0.0, filled=True, fill_opacity=50, bins=30, n_points=80, palette=None, **kwargs) -> Chart`
 
 <h2>Description</h2>
 
@@ -128,6 +135,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('kde-fr','histogram',this)"><span class="sp-cic">H</span><span class="sp-clb">Histogram</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-fr','normalized',this)"><span class="sp-cic">N</span><span class="sp-clb">Normalized</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-fr','cumulative',this)"><span class="sp-cic">C</span><span class="sp-clb">Cumulative</span></button>
+<button class="sp-cls-tab" onclick="spCls('kde-fr','contour',this)"><span class="sp-cic">◌</span><span class="sp-clb">Contour</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="kde-fr-basic">
@@ -171,6 +179,12 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Densité cumulée (CDF) dans [0, 1].</p>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-cumulative.html"></iframe>
+</div>
+<div class="sp-variant" id="kde-fr-contour">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"contour"</code></span><span><strong>Alias</strong> <code>contour / bivariate / kde2d / joint_density / smooth</code></span><span><strong>Requis</strong> <code>x</code>, <code>y</code></span><span><strong>Optionnel</strong> <code>categories</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Estimation de densité bivariée (2D) — un noyau gaussien produit évalué sur une grille et rendu comme une surface de densité ombrée, avec les points bruts superposés. Passez <code>categories</code> pour superposer une surface de densité par groupe, chacune dans sa propre couleur avec une légende.</p>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/kde-contour.html"></iframe>
 </div>
 </div></div>
 

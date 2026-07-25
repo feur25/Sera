@@ -39,15 +39,28 @@ pub fn build(input: &str) -> String {
     let y_values = a.y.clone().unwrap_or_default();
     let values = a.x.clone().or_else(|| a.values.clone()).unwrap_or_default();
     use crate::plot::statistical::{render_kde_html, KdeConfig, KdeVariant};
+    let mut y_series: Vec<Vec<f64>> = Vec::new();
     let series: Vec<(String, Vec<f64>)> = if let Some(cats) = a.categories {
         let mut group_order: Vec<String> = Vec::new();
         let mut group_vals: std::collections::HashMap<String, Vec<f64>> =
             std::collections::HashMap::new();
-        for (v, c) in values.iter().zip(cats.iter()) {
+        let mut group_y_vals: std::collections::HashMap<String, Vec<f64>> =
+            std::collections::HashMap::new();
+        let has_y_per_point = y_values.len() == values.len();
+        for (i, (v, c)) in values.iter().zip(cats.iter()).enumerate() {
             group_vals.entry(c.clone()).or_default().push(*v);
+            if has_y_per_point {
+                group_y_vals.entry(c.clone()).or_default().push(y_values[i]);
+            }
             if !group_order.contains(c) {
                 group_order.push(c.clone());
             }
+        }
+        if has_y_per_point {
+            y_series = group_order
+                .iter()
+                .map(|k| group_y_vals.remove(k).unwrap_or_default())
+                .collect();
         }
         group_order
             .into_iter()
@@ -72,6 +85,7 @@ pub fn build(input: &str) -> String {
         variant,
         series: &series,
         y_values: &y_values,
+        y_series: &y_series,
         palette: &o.pal(),
         x_label: &xl,
         y_label: &yl,

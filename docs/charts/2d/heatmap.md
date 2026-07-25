@@ -54,6 +54,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('hm-en','marginal',this)"><span class="sp-cic">⊥</span><span class="sp-clb">Marginal</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-en','confusion',this)"><span class="sp-cic">⊠</span><span class="sp-clb">Confusion</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-en','pivot',this)"><span class="sp-cic">⊡</span><span class="sp-clb">Pivot</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-en','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polar</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -192,6 +193,15 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 </div>
 
+<div class="sp-variant" id="hm-en-polar">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"polar"</code> / <code>"wheel"</code> / <code>"clock"</code> / <code>"carbon_wheel"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/heatmap-polar.html"></iframe>
+
+</div>
+
 </div>
 </div>
 
@@ -240,6 +250,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('hm-fr','marginal',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Marginale</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-fr','confusion',this)"><span class="sp-cic">⊠</span><span class="sp-clb">Confusion</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-fr','pivot',this)"><span class="sp-cic">⊟</span><span class="sp-clb">Pivot</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polaire</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -272,6 +283,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-variant" id="hm-fr-confusion"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"confusion"</code> / <code>"cm"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>class_labels</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-confusion.html"></iframe></div>
 
 <div class="sp-variant" id="hm-fr-pivot"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"pivot"</code> / <code>"crosstab"</code></span><span><strong>Requis</strong> <code>data</code>, <code>index</code>, <code>columns</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-pivot.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-polar"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"polar"</code> / <code>"wheel"</code> / <code>"clock"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-polar.html"></iframe></div>
 
 </div>
 </div>
