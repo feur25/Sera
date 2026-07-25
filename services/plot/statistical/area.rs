@@ -217,6 +217,9 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
     f.html(json)
 }
 
+#[crate::chart_demo(
+    "x_labels=[\"Q1\",\"Q2\",\"Q3\",\"Q4\"], series=[[11800,11500,12300,12800],[10500,10900,11100,11400],[10700,10800,10500,11300]], series_names=[\"North\",\"South\",\"East\"], stacked=True"
+)]
 #[crate::sera_alias("area", "area_chart")]
 #[crate::sera_builder]
 pub fn build_area_chart(input: &str) -> String {

@@ -2,17 +2,7 @@ use super::config::PulseConfig;
 use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json};
 use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i};
 
-#[crate::chart_demo("labels=[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\",\"Sat\",\"Sun\"], values=[0.4,0.7,0.9,0.6,0.8,0.3,0.5]")]
-pub fn render(cfg: &PulseConfig) -> String {
-    render_impl(cfg, false, false)
-}
-
-pub fn render_wave(cfg: &PulseConfig)     -> String { render_wave_impl(cfg) }
-pub fn render_dot(cfg: &PulseConfig)      -> String { render_dot_impl(cfg) }
-pub fn render_filled(cfg: &PulseConfig)   -> String { render_impl(cfg, true,  false) }
-pub fn render_outlined(cfg: &PulseConfig) -> String { render_impl(cfg, false, true)  }
-
-fn render_impl(cfg: &PulseConfig, filled: bool, outlined: bool) -> String {
+pub fn render_impl(cfg: &PulseConfig, filled: bool, outlined: bool) -> String {
     use std::f64::consts::PI;
     let n = cfg.labels.len().max(cfg.values.len());
     if n == 0 { return String::new(); }
@@ -136,7 +126,7 @@ fn render_impl(cfg: &PulseConfig, filled: bool, outlined: bool) -> String {
     unsafe { String::from_utf8_unchecked(buf) }
 }
 
-fn render_wave_impl(cfg: &PulseConfig) -> String {
+pub fn render_wave_impl(cfg: &PulseConfig) -> String {
     use std::f64::consts::PI;
     let n = cfg.values.len();
     if n < 2 { return render_impl(cfg, false, false); }
@@ -211,10 +201,8 @@ fn render_wave_impl(cfg: &PulseConfig) -> String {
             let ly = cy + r * angle.sin();
             let label = cfg.labels.get(i).map(|s| s.as_str()).unwrap_or("");
             let anchor: &[u8] = if angle.cos() > 0.15 { b"start" } else if angle.cos() < -0.15 { b"end" } else { b"middle" };
-            push_b(&mut buf, b"<text x=\"");
-            push_f2(&mut buf, lx);
-            push_b(&mut buf, b"\" y=\"");
-            push_f2(&mut buf, ly + 4.0);
+            push_b(&mut buf, b"<text x=\""); push_f2(&mut buf, lx);
+            push_b(&mut buf, b"\" y=\""); push_f2(&mut buf, ly + 4.0);
             push_b(&mut buf, b"\" text-anchor=\"");
             buf.extend_from_slice(anchor);
             push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"9.5\" fill=\"#374151\">");
@@ -228,7 +216,7 @@ fn render_wave_impl(cfg: &PulseConfig) -> String {
     unsafe { String::from_utf8_unchecked(buf) }
 }
 
-fn render_dot_impl(cfg: &PulseConfig) -> String {
+pub fn render_dot_impl(cfg: &PulseConfig) -> String {
     use std::f64::consts::PI;
     let n = cfg.values.len();
     if n == 0 { return String::new(); }

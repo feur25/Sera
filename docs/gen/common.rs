@@ -54,7 +54,7 @@ pub(crate) fn family_variant(file: &Path, plot_root: &Path) -> Option<(String, S
     let last = comps.last().unwrap();
     let variant = last.strip_suffix(".rs")?.to_string();
     let parent = comps[comps.len() - 2].clone();
-    if parent == "_3d" {
+    if parent == "_3d" || parent == "statistical" {
         return Some((variant, "basic".to_string()));
     }
     Some((parent, variant))

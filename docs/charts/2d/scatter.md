@@ -42,7 +42,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('scatter-en','categorical',this)"><span class="sp-cic">◓</span><span class="sp-clb">Categorical</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','symbols',this)"><span class="sp-cic">◆</span><span class="sp-clb">Symbols</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Labeled</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-en','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Regression</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Regression</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','residual',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Residual</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="scatter-en-basic">
@@ -85,6 +86,14 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/scatter-regression.html"></iframe>
 </div>
 
+<div class="sp-variant" id="scatter-en-residual">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"residual"</code></span><span><strong>Aliases</strong> <code>residuals / residplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/scatter-residual.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -122,7 +131,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','categorical',this)"><span class="sp-cic">◓</span><span class="sp-clb">Catégoriel</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','symbols',this)"><span class="sp-cic">◆</span><span class="sp-clb">Symboles</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Étiquetés</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-fr','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Régression</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Régression</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','residual',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Résidus</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="scatter-fr-basic">
@@ -163,6 +173,14 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-regression.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-fr-residual">
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"residual"</code></span><span><strong>Alias</strong> <code>residuals / residplot</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/scatter-residual.html"></iframe>
 </div>
 
 </div>

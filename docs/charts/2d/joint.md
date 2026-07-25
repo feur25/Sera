@@ -76,14 +76,21 @@ The preset names from earlier releases (`hexbin_marginal`, `joint_histogram` / `
 <div class="sp-cls sp-open" id="joint-en">
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('joint-en')" title="Collapse / expand">⇆</button>
-<button class="sp-cls-tab sp-cact" onclick="spCls('joint-en','hexbin_kde',this)"><span class="sp-cic">⬡</span><span class="sp-clb">hexbin + kde</span></button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('joint-en','basic',this)"><span class="sp-cic">▦</span><span class="sp-clb">basic</span></button>
+<button class="sp-cls-tab" onclick="spCls('joint-en','hexbin_kde',this)"><span class="sp-cic">⬡</span><span class="sp-clb">hexbin + kde</span></button>
 <button class="sp-cls-tab" onclick="spCls('joint-en','kde_histogram',this)"><span class="sp-cic">◐</span><span class="sp-clb">kde + histogram</span></button>
 <button class="sp-cls-tab" onclick="spCls('joint-en','scatter_bar',this)"><span class="sp-cic">●</span><span class="sp-clb">scatter + bar</span></button>
 <button class="sp-cls-tab" onclick="spCls('joint-en','hexbin_outlined_kde',this)"><span class="sp-cic">✦</span><span class="sp-clb">hexbin outlined + kde</span></button>
 <button class="sp-cls-tab" onclick="spCls('joint-en','layered_bivariate',this)"><span class="sp-cic">∿</span><span class="sp-clb">legacy: layered_bivariate</span></button>
 </div>
 <div class="sp-cls-body">
-<div class="sp-variant sp-von" id="joint-en-hexbin_kde">
+<div class="sp-variant sp-von" id="joint-en-basic">
+<p>The raw entry point — <code>variant=</code> is simply the panel family's own name, and any registered family can fill it.</p>
+<div class="sp-vmeta"><span><strong>Call</strong> <code>sp.joint(x, y, variant="hexbin", marginal="histogram")</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/joint-basic.html"></iframe>
+</div>
+<div class="sp-variant" id="joint-en-hexbin_kde">
 <p>Hexagonal density panel with KDE curve marginals instead of the default histograms.</p>
 <div class="sp-vmeta"><span><strong>Call</strong> <code>sp.joint(x, y, variant="hexbin", marginal="kde")</code></span></div>
 <div class="sp-preview-label">Preview</div>
@@ -158,14 +165,21 @@ Les noms préréglés des versions précédentes (`hexbin_marginal`, `joint_hist
 <div class="sp-cls sp-open" id="joint-fr">
 <div class="sp-cls-rail">
 <button class="sp-cls-toggle" onclick="spClsTog('joint-fr')" title="Collapse / expand">⇆</button>
-<button class="sp-cls-tab sp-cact" onclick="spCls('joint-fr','hexbin_kde',this)"><span class="sp-cic">⬡</span><span class="sp-clb">hexbin + kde</span></button>
+<button class="sp-cls-tab sp-cact" onclick="spCls('joint-fr','basic',this)"><span class="sp-cic">▦</span><span class="sp-clb">basique</span></button>
+<button class="sp-cls-tab" onclick="spCls('joint-fr','hexbin_kde',this)"><span class="sp-cic">⬡</span><span class="sp-clb">hexbin + kde</span></button>
 <button class="sp-cls-tab" onclick="spCls('joint-fr','kde_histogram',this)"><span class="sp-cic">◐</span><span class="sp-clb">kde + histogramme</span></button>
 <button class="sp-cls-tab" onclick="spCls('joint-fr','scatter_bar',this)"><span class="sp-cic">●</span><span class="sp-clb">scatter + bar</span></button>
 <button class="sp-cls-tab" onclick="spCls('joint-fr','hexbin_outlined_kde',this)"><span class="sp-cic">✦</span><span class="sp-clb">hexbin outlined + kde</span></button>
 <button class="sp-cls-tab" onclick="spCls('joint-fr','layered_bivariate',this)"><span class="sp-cic">∿</span><span class="sp-clb">héritage : layered_bivariate</span></button>
 </div>
 <div class="sp-cls-body">
-<div class="sp-variant sp-von" id="joint-fr-hexbin_kde">
+<div class="sp-variant sp-von" id="joint-fr-basic">
+<p>Le point d'entrée brut — <code>variant=</code> est simplement le nom de la famille du panneau, et n'importe quelle famille enregistrée peut le remplir.</p>
+<div class="sp-vmeta"><span><strong>Appel</strong> <code>sp.joint(x, y, variant="hexbin", marginal="histogram")</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/joint-basic.html"></iframe>
+</div>
+<div class="sp-variant" id="joint-fr-hexbin_kde">
 <p>Panneau de densité hexagonale avec des marges en courbes de KDE plutôt qu'en histogrammes par défaut.</p>
 <div class="sp-vmeta"><span><strong>Appel</strong> <code>sp.joint(x, y, variant="hexbin", marginal="kde")</code></span></div>
 <div class="sp-preview-label">Aperçu</div>

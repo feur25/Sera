@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('bx-en','points',this)"><span class="sp-cic">⁝</span><span class="sp-clb">Points</span></button>
 <button class="sp-cls-tab" onclick="spCls('bx-en','outliers',this)"><span class="sp-cic">⊙</span><span class="sp-clb">Outliers</span></button>
 <button class="sp-cls-tab" onclick="spCls('bx-en','strip',this)"><span class="sp-cic">⋮</span><span class="sp-clb">Strip</span></button>
+<button class="sp-cls-tab" onclick="spCls('bx-en','swarm',this)"><span class="sp-cic">⁛</span><span class="sp-clb">Swarm</span></button>
 <button class="sp-cls-tab" onclick="spCls('bx-en','violin',this)"><span class="sp-cic">◇</span><span class="sp-clb">Violin</span></button>
 <button class="sp-cls-tab" onclick="spCls('bx-en','letter',this)"><span class="sp-cic">≡</span><span class="sp-clb">Letter-Value</span></button>
 </div>
@@ -107,10 +108,19 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-variant" id="bx-en-strip">
 
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"strip"</code> / <code>"swarm"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"strip"</code> / <code>"jitter"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/boxplot-strip.html"></iframe>
+
+</div>
+
+<div class="sp-variant" id="bx-en-swarm">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"swarm"</code> / <code>"beeswarm"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/boxplot-swarm.html"></iframe>
 
 </div>
 
@@ -172,6 +182,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('bx-fr','points',this)"><span class="sp-cic">⁝</span><span class="sp-clb">Points</span></button>
 <button class="sp-cls-tab" onclick="spCls('bx-fr','outliers',this)"><span class="sp-cic">⊙</span><span class="sp-clb">Aberrants</span></button>
 <button class="sp-cls-tab" onclick="spCls('bx-fr','strip',this)"><span class="sp-cic">⋮</span><span class="sp-clb">Bande</span></button>
+<button class="sp-cls-tab" onclick="spCls('bx-fr','swarm',this)"><span class="sp-cic">⁛</span><span class="sp-clb">Essaim</span></button>
 <button class="sp-cls-tab" onclick="spCls('bx-fr','violin',this)"><span class="sp-cic">◇</span><span class="sp-clb">Violon</span></button>
 <button class="sp-cls-tab" onclick="spCls('bx-fr','letter',this)"><span class="sp-cic">≡</span><span class="sp-clb">Valeurs-Lettres</span></button>
 </div>
@@ -189,7 +200,9 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-variant" id="bx-fr-outliers"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"outliers"</code> / <code>"fliers"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-outliers.html"></iframe></div>
 
-<div class="sp-variant" id="bx-fr-strip"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"strip"</code> / <code>"swarm"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-strip.html"></iframe></div>
+<div class="sp-variant" id="bx-fr-strip"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"strip"</code> / <code>"jitter"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-strip.html"></iframe></div>
+
+<div class="sp-variant" id="bx-fr-swarm"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"swarm"</code> / <code>"beeswarm"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-swarm.html"></iframe></div>
 
 <div class="sp-variant" id="bx-fr-violin"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"violin"</code> / <code>"density"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/boxplot-violin.html"></iframe></div>
 

@@ -1,4 +1,4 @@
-window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260725d";
+window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260725g";
 (function () {
   var SELF_SRC = document.currentScript ? document.currentScript.src : "";
   var SP_WASM_BUILD = window.SP_WASM_BUILD;
@@ -1326,8 +1326,9 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260725d";
     var rows = registryVariantRows(family);
     if (!rows.length) return false;
     var byParam = {};
+    var srcKey = rows.some(function (r) { return r.required && r.required.length; }) ? "required" : "params";
     rows.forEach(function (r) {
-      r.required.forEach(function (p) {
+      (r[srcKey] || []).forEach(function (p) {
         if (!byParam[p]) byParam[p] = [];
         if (byParam[p].indexOf(r.key) === -1) byParam[p].push(r.key);
       });

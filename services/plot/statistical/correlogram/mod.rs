@@ -1,7 +1,12 @@
 use crate::plot::{apply, parse_all};
 
-pub mod basic;
+pub mod circle;
+pub mod common;
 pub mod config;
+pub mod heatmap;
+pub mod mixed;
+pub mod sorted;
+pub mod text;
 pub mod variant;
 
 pub use config::CorrelogramConfig;
@@ -10,11 +15,11 @@ pub use variant::CorrelogramVariant;
 pub fn render_correlogram_html(cfg: &CorrelogramConfig) -> String {
     use CorrelogramVariant::*;
     match cfg.variant {
-        Circle   => basic::render(cfg),
-        Heatmap  => basic::render_heatmap(cfg),
-        Text     => basic::render_text(cfg),
-        Mixed    => basic::render_mixed(cfg),
-        Sorted   => basic::render_sorted(cfg),
+        Circle   => circle::render(cfg),
+        Heatmap  => heatmap::render(cfg),
+        Text     => text::render(cfg),
+        Mixed    => mixed::render(cfg),
+        Sorted   => sorted::render(cfg),
     }
 }
 

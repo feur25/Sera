@@ -58,6 +58,7 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 <button class="sp-cls-tab" onclick="spCls('wordcloud-en','labelmap',this)"><span class="sp-cic">L</span><span class="sp-clb">LabelMap</span></button>
 <button class="sp-cls-tab" onclick="spCls('wordcloud-en','network',this)"><span class="sp-cic">N</span><span class="sp-clb">Network</span></button>
 <button class="sp-cls-tab" onclick="spCls('wordcloud-en','neuron',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Neuron</span></button>
+<button class="sp-cls-tab" onclick="spCls('wordcloud-en','cosmos',this)"><span class="sp-cic">✦</span><span class="sp-clb">Cosmos</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="wordcloud-en-basic">
@@ -117,6 +118,15 @@ The `basic` variant accepts a `shape=` argument that selects the silhouette mask
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-neuron.html"></iframe>
 </div>
+
+<div class="sp-variant" id="wordcloud-en-cosmos">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"cosmos"</code></span><span><strong>Aliases</strong> <code>cosmos / stars / galaxy / nebula / constellation / space / phyllotaxis</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Words placed on a phyllotaxis (sunflower-seed) spiral on a starfield background, largest/most frequent words nearest the center — a constellation-like layout instead of a packed rectangle.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/wordcloud-cosmos.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -168,6 +178,7 @@ La variante `basic` accepte un argument `shape=` :
 <button class="sp-cls-tab" onclick="spCls('wordcloud-fr','labelmap',this)"><span class="sp-cic">L</span><span class="sp-clb">LabelMap</span></button>
 <button class="sp-cls-tab" onclick="spCls('wordcloud-fr','network',this)"><span class="sp-cic">N</span><span class="sp-clb">Network</span></button>
 <button class="sp-cls-tab" onclick="spCls('wordcloud-fr','neuron',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Neuron</span></button>
+<button class="sp-cls-tab" onclick="spCls('wordcloud-fr','cosmos',this)"><span class="sp-cic">✦</span><span class="sp-clb">Cosmos</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="wordcloud-fr-basic">
@@ -226,6 +237,15 @@ La variante `basic` accepte un argument `shape=` :
 
 <div class="sp-preview-label">Apercu</div>
 <iframe class="sp-preview-frame" src="../../previews/wordcloud-neuron.html"></iframe>
+</div>
+
+<div class="sp-variant" id="wordcloud-fr-cosmos">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"cosmos"</code></span><span><strong>Alias</strong> <code>cosmos / stars / galaxy / nebula / constellation / space / phyllotaxis</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Mots places sur une spirale de phyllotaxie (graines de tournesol) sur fond etoile, les mots les plus frequents pres du centre - une disposition en constellation plutot qu'un rectangle compact.</p>
+
+<div class="sp-preview-label">Apercu</div>
+<iframe class="sp-preview-frame" src="../../previews/wordcloud-cosmos.html"></iframe>
 </div>
 </div>
 </div>

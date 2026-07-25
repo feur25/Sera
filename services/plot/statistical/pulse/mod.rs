@@ -1,8 +1,13 @@
 use crate::plot::{apply, parse_all};
 
-pub mod basic;
+pub mod common;
 pub mod config;
+pub mod dot;
+pub mod filled;
+pub mod outlined;
+pub mod radial;
 pub mod variant;
+pub mod wave;
 
 pub use config::PulseConfig;
 pub use variant::PulseVariant;
@@ -10,11 +15,11 @@ pub use variant::PulseVariant;
 pub fn render_pulse_html(cfg: &PulseConfig) -> String {
     use PulseVariant::*;
     match cfg.variant {
-        Radial   => basic::render(cfg),
-        Wave     => basic::render_wave(cfg),
-        Dot      => basic::render_dot(cfg),
-        Filled   => basic::render_filled(cfg),
-        Outlined => basic::render_outlined(cfg),
+        Radial   => radial::render(cfg),
+        Wave     => wave::render(cfg),
+        Dot      => dot::render(cfg),
+        Filled   => filled::render(cfg),
+        Outlined => outlined::render(cfg),
     }
 }
 
