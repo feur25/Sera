@@ -400,7 +400,7 @@ pub fn draw_cat_label(f: &mut Frame, cx: i32, cat: &str) {
     push_b(&mut f.buf, b"\" y=\"");
     push_i(&mut f.buf, f.pt + f.ph + 16);
     push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" class=\"sp-xt\">");
-    escape_xml(&mut f.buf, truncate(cat, 14));
+    escape_xml(&mut f.buf, truncate(cat, 22));
     push_b(&mut f.buf, b"</text>");
 }
 
