@@ -57,13 +57,13 @@ sp.joint(x, y, variant="hexbin", panel_variant="outlined", marginal="kde")
 
 Each region — panel, top strip, right strip — is a real, independently-rendered SeraPlot chart embedded in its own frame, calling the exact same native `build_*` function [`facet()`](facet.md) uses for its cells; nothing is reimplemented. That also means regions are **not pixel-aligned** to a shared coordinate system the way a hand-tuned single-SVG composition would be — each chart keeps its own axes/padding — an inherent tradeoff for genuine "any family, any slot" freedom. Not every family produces something meaningful in every slot — that limitation belongs to the target family's own data shape, not to `joint()` itself. As a marginal, a family only ever receives the single axis of values being summarized (plus generic synthetic `labels`/`categories`/`series`/`sizes`/`words` so families expecting those shapes still degrade gracefully); families whose own data model is inherently 2D/matrix/hierarchical/paired — `candlestick`, `chord`, `circle_pack`, `correlogram`, `dendrogram`, `dumbbell`, `gantt`, `hive`, `heatmap`, `icicle`, `orbita`, `parcats`, `radar`, `sankey`, `scatterternary`, `slope`, `splom`, `sunburst` — render blank there, the same honest way `orbita` renders blank as a panel without a hierarchy.
 
-Pass `categories=` alongside `x` / `y` to compare density surfaces across groups with `variant="kde_contour"`, the same `categories=` convention used by [`kde()`](kde.md) and [`histogram()`](histogram.md).
+For a true bivariate (2D) density surface — not just `kde`'s own 1D curve — use `variant="kde", panel_variant="contour"`: [`kde()`](kde.md)'s `contour` variant fits a product-kernel Gaussian KDE jointly over `x` and `y` and shades a smooth density surface with the raw points overlaid, matching seaborn's `smooth_bivariate_kde` / `joint_kde` examples. Legacy preset names (`layered_bivariate`, `joint_kde`, `kde_smooth`, `smooth_bivariate_kde`, …) already resolve to exactly this.
 
 The 8 preset names from earlier releases (`hexbin_marginal`, `heat_scatter` / `joint_histogram` / `histogram2d`, `layered_bivariate`, `joint_kde`, `kde_smooth`, `multiple_bivariate_kde`, `marginal_ticks`, `regression_marginals`) still work as `variant=` values and resolve to a real family under the hood (`resolve_legacy_panel()` in `joint/variant.rs`), so existing code keeps working.
 
 ## Data
 
-`x` (`list[float]`) — X coordinates. `y` (`list[float]`) — Y coordinates. `categories` (`list[str]`, optional) — group label per point, for `variant="kde_contour"`.
+`x` (`list[float]`) — X coordinates. `y` (`list[float]`) — Y coordinates.
 
 ## Parameters
 
@@ -108,7 +108,7 @@ The 8 preset names from earlier releases (`hexbin_marginal`, `heat_scatter` / `j
 <iframe class="sp-preview-frame" src="../../previews/joint-hexbin_outlined_kde.html"></iframe>
 </div>
 <div class="sp-variant" id="joint-en-layered_bivariate">
-<p>The pre-existing <code>layered_bivariate</code> preset name still resolves (to <code>variant="kde"</code> under the hood) — old code keeps working.</p>
+<p>The pre-existing <code>layered_bivariate</code> preset name still resolves (to <code>variant="kde", panel_variant="contour"</code> under the hood — a genuine bivariate density surface, not a flat 1D curve) — old code keeps working, and now renders correctly.</p>
 <div class="sp-vmeta"><span><strong>Call</strong> <code>sp.joint(x, y, variant="layered_bivariate")</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/joint-layered_bivariate.html"></iframe>
@@ -139,13 +139,13 @@ sp.joint(x, y, variant="hexbin", panel_variant="outlined", marginal="kde")
 
 Chaque région — panneau, bande haute, bande droite — est un vrai graphique SeraPlot rendu indépendamment dans son propre cadre, appelant exactement la même fonction `build_*` native que [`facet()`](facet.md) pour ses cellules ; rien n'est réimplémenté. Cela signifie aussi que les régions ne sont **pas alignées pixel par pixel** sur un système de coordonnées partagé comme le serait une composition SVG unique ajustée à la main — chaque graphique garde ses propres axes/marges — une contrepartie inhérente à une liberté « n'importe quelle famille, n'importe quel emplacement » authentique. Toutes les familles ne produisent pas quelque chose de pertinent dans tous les emplacements — cette limite appartient à la forme de données propre à la famille cible, pas à `joint()` lui-même. En tant que marginale, une famille ne reçoit que l'axe unique de valeurs résumé (plus des `labels`/`categories`/`series`/`sizes`/`words` génériques synthétisés pour que les familles attendant ces formes se dégradent tout de même proprement) ; les familles dont le modèle de données est intrinsèquement 2D/matriciel/hiérarchique/apparié — `candlestick`, `chord`, `circle_pack`, `correlogram`, `dendrogram`, `dumbbell`, `gantt`, `hive`, `heatmap`, `icicle`, `orbita`, `parcats`, `radar`, `sankey`, `scatterternary`, `slope`, `splom`, `sunburst` — restent vides dans cet emplacement, de la même façon honnête qu'`orbita` reste vide en tant que panneau sans hiérarchie.
 
-Passez `categories=` en plus de `x` / `y` pour comparer des surfaces de densité entre groupes avec `variant="kde_contour"`, la même convention `categories=` que [`kde()`](kde.md) et [`histogram()`](histogram.md).
+Pour une véritable surface de densité bivariée (2D) — pas seulement la courbe 1D propre à `kde` — utilisez `variant="kde", panel_variant="contour"` : la variante `contour` de [`kde()`](kde.md) ajuste une estimation par noyau gaussien (produit de noyaux) conjointement sur `x` et `y` et affiche une surface de densité lissée avec les points bruts superposés, à l'image des exemples seaborn `smooth_bivariate_kde` / `joint_kde`. Les noms hérités (`layered_bivariate`, `joint_kde`, `kde_smooth`, `smooth_bivariate_kde`, …) se résolvent déjà exactement ainsi.
 
 Les 8 noms préréglés des versions précédentes (`hexbin_marginal`, `heat_scatter` / `joint_histogram` / `histogram2d`, `layered_bivariate`, `joint_kde`, `kde_smooth`, `multiple_bivariate_kde`, `marginal_ticks`, `regression_marginals`) fonctionnent toujours comme valeurs de `variant=` et se résolvent vers une vraie famille en interne (`resolve_legacy_panel()` dans `joint/variant.rs`), donc le code existant continue de fonctionner.
 
 ## Données
 
-`x` (`list[float]`) — Coordonnées X. `y` (`list[float]`) — Coordonnées Y. `categories` (`list[str]`, optionnel) — étiquette de groupe par point, pour `variant="kde_contour"`.
+`x` (`list[float]`) — Coordonnées X. `y` (`list[float]`) — Coordonnées Y.
 
 ## Paramètres
 
@@ -190,7 +190,7 @@ Les 8 noms préréglés des versions précédentes (`hexbin_marginal`, `heat_sca
 <iframe class="sp-preview-frame" src="../../previews/joint-hexbin_outlined_kde.html"></iframe>
 </div>
 <div class="sp-variant" id="joint-fr-layered_bivariate">
-<p>L'ancien nom préréglé <code>layered_bivariate</code> se résout toujours (vers <code>variant="kde"</code> en interne) — le code existant continue de fonctionner.</p>
+<p>L'ancien nom préréglé <code>layered_bivariate</code> se résout toujours (vers <code>variant="kde", panel_variant="contour"</code> en interne — une véritable surface de densité bivariée, pas une simple courbe 1D) — le code existant continue de fonctionner, et s'affiche désormais correctement.</p>
 <div class="sp-vmeta"><span><strong>Appel</strong> <code>sp.joint(x, y, variant="layered_bivariate")</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/joint-layered_bivariate.html"></iframe>

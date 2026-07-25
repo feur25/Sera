@@ -56,13 +56,13 @@ pub fn render(cfg: &HeatmapConfig) -> String {
     push_i(&mut buf, svg_h);
     push_b(
         &mut buf,
-        b"\"><rect width=\"100%\" height=\"100%\" fill=\"#0f172a\"/>",
+        b"\"><rect width=\"100%\" height=\"100%\" fill=\"#f8f9fa\"/>",
     );
 
     if !cfg.title.is_empty() {
         push_b(&mut buf, b"<text x=\"");
         push_i(&mut buf, svg_w / 2);
-        push_b(&mut buf, b"\" y=\"24\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#f1f5f9\">");
+        push_b(&mut buf, b"\" y=\"24\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#1a202c\">");
         escape_xml(&mut buf, cfg.title);
         push_b(&mut buf, b"</text>");
     }
@@ -73,7 +73,7 @@ pub fn render(cfg: &HeatmapConfig) -> String {
         push_i(&mut buf, cx);
         push_b(&mut buf, b"\" y=\"");
         push_i(&mut buf, cy);
-        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#cbd5e1\" transform=\"rotate(-40,");
+        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#4b5563\" transform=\"rotate(-40,");
         push_i(&mut buf, cx);
         push_b(&mut buf, b",");
         push_i(&mut buf, cy);
@@ -88,7 +88,7 @@ pub fn render(cfg: &HeatmapConfig) -> String {
         push_i(&mut buf, pad_left - 8);
         push_b(&mut buf, b"\" y=\"");
         push_i(&mut buf, cy + 3);
-        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#cbd5e1\">");
+        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#4b5563\">");
         escape_xml(&mut buf, truncate(&cfg.row_labels[row], 14));
         push_b(&mut buf, b"</text>");
         for col in 0..n_cols {
@@ -157,7 +157,7 @@ pub fn render(cfg: &HeatmapConfig) -> String {
         push_i(&mut buf, ty + 3);
         push_b(
             &mut buf,
-            b"\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#cbd5e1\">",
+            b"\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#4b5563\">",
         );
         push_f2(&mut buf, v);
         push_b(&mut buf, b"</text>");

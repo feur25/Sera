@@ -11,3 +11,12 @@ pub fn resolve_legacy_panel(name: &str) -> Option<&'static str> {
         _ => return None,
     })
 }
+
+pub fn resolve_legacy_panel_variant(name: &str) -> Option<&'static str> {
+    match name {
+        "layered_bivariate" | "kde_scatter" | "layered" | "joint_kde" | "kde_joint" | "bivariate_kde"
+        | "kde_smooth" | "smooth_bivariate_kde" | "smooth_kde" | "multiple_bivariate_kde" | "kde_multi"
+        | "overlapping_kde" => Some("contour"),
+        _ => None,
+    }
+}

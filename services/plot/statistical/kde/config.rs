@@ -2,6 +2,7 @@ crate::chart_config!(KdeConfig, 900, 420;
     struct {
         pub variant: super::variant::KdeVariant,
         pub series: &'a [(String, Vec<f64>)],
+        pub y_values: &'a [f64],
         pub palette: &'a [u32],
         pub bandwidth: f64,
         pub filled: bool,
@@ -12,6 +13,7 @@ crate::chart_config!(KdeConfig, 900, 420;
     defaults {
         variant: super::variant::KdeVariant::Basic,
         series: &[],
+        y_values: &[],
         palette: &[],
         bandwidth: 0.0,
         filled: true,

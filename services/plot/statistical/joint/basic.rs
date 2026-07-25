@@ -1,5 +1,5 @@
 use super::common::{axis_values, build_region, cell_iframe, cell_iframe_rotated, compose_page};
-use super::variant::resolve_legacy_panel;
+use super::variant::{resolve_legacy_panel, resolve_legacy_panel_variant};
 use crate::plot::chart_input::sanitize_non_finite_json;
 use crate::plot::statistical::chart_registry::dispatch;
 use serde_json::Value;
@@ -28,7 +28,13 @@ pub fn build(input: &str) -> String {
     let title = obj.get("title").and_then(Value::as_str).unwrap_or("").to_string();
     let requested = obj.get("variant").and_then(Value::as_str).unwrap_or("hexbin");
     let panel_family = resolve_legacy_panel(requested).unwrap_or(requested).to_string();
-    let panel_variant = obj.get("panel_variant").and_then(Value::as_str).unwrap_or("").to_string();
+    let panel_variant = obj
+        .get("panel_variant")
+        .and_then(Value::as_str)
+        .filter(|s| !s.is_empty())
+        .or_else(|| resolve_legacy_panel_variant(requested))
+        .unwrap_or("")
+        .to_string();
     let marginal_requested = obj.get("marginal").and_then(Value::as_str).unwrap_or("histogram");
     let marginal_family = resolve_legacy_panel(marginal_requested).unwrap_or(marginal_requested).to_string();
     let marginal_variant = obj.get("marginal_variant").and_then(Value::as_str).unwrap_or("").to_string();

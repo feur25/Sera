@@ -2,6 +2,7 @@ use crate::plot::{apply, parse_all};
 pub mod basic;
 pub mod common;
 pub mod config;
+pub mod contour;
 pub mod cumulative;
 pub mod histogram;
 pub mod normalized;
@@ -24,6 +25,7 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
         Histogram => histogram::render(cfg),
         Normalized => normalized::render(cfg),
         Cumulative => cumulative::render(cfg),
+        Contour => contour::render(cfg),
     }
 }
 
@@ -34,7 +36,8 @@ pub use build as build_kde_chart;
 pub fn build(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
-    let values = a.values.unwrap_or_default();
+    let y_values = a.y.clone().unwrap_or_default();
+    let values = a.x.clone().or_else(|| a.values.clone()).unwrap_or_default();
     use crate::plot::statistical::{render_kde_html, KdeConfig, KdeVariant};
     let series: Vec<(String, Vec<f64>)> = if let Some(cats) = a.categories {
         let mut group_order: Vec<String> = Vec::new();
@@ -57,17 +60,18 @@ pub fn build(input: &str) -> String {
         vec![("Series".to_string(), values)]
     };
     let hover = o.hj();
+    let variant = KdeVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let xl = o.xl();
-    let yl = if o.y_label.is_none() {
+    let yl = if o.y_label.is_none() && !matches!(variant, KdeVariant::Contour) {
         "Density".to_string()
     } else {
         o.yl()
     };
-    let variant = KdeVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let html = render_kde_html(&KdeConfig {
         title,
         variant,
         series: &series,
+        y_values: &y_values,
         palette: &o.pal(),
         x_label: &xl,
         y_label: &yl,

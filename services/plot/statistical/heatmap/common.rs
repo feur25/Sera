@@ -4,6 +4,85 @@ use crate::plot::statistical::common::{
     escape_xml, hex6, lerp_color, palette_color, push_b, push_f2, push_i, truncate,
 };
 
+enum ClusterTree {
+    Leaf(usize),
+    Node(Box<ClusterTree>, Box<ClusterTree>),
+}
+
+fn collect_leaves(t: &ClusterTree, out: &mut Vec<usize>) {
+    match t {
+        ClusterTree::Leaf(i) => out.push(*i),
+        ClusterTree::Node(l, r) => {
+            collect_leaves(l, out);
+            collect_leaves(r, out);
+        }
+    }
+}
+
+pub fn hierarchical_leaf_order(vectors: &[Vec<f64>]) -> Vec<usize> {
+    let n = vectors.len();
+    if n <= 1 {
+        return (0..n).collect();
+    }
+    let mut dist = vec![vec![0.0f64; n]; n];
+    for i in 0..n {
+        for j in (i + 1)..n {
+            let d = vectors[i]
+                .iter()
+                .zip(vectors[j].iter())
+                .map(|(a, b)| (a - b) * (a - b))
+                .sum::<f64>()
+                .sqrt();
+            dist[i][j] = d;
+            dist[j][i] = d;
+        }
+    }
+    let mut members: Vec<Vec<usize>> = (0..n).map(|i| vec![i]).collect();
+    let mut trees: Vec<ClusterTree> = (0..n).map(ClusterTree::Leaf).collect();
+    let mut alive: Vec<usize> = (0..n).collect();
+    while alive.len() > 1 {
+        let mut best_d = f64::INFINITY;
+        let mut best = (0usize, 1usize);
+        for ii in 0..alive.len() {
+            for jj in (ii + 1)..alive.len() {
+                let a = alive[ii];
+                let b = alive[jj];
+                let ma = &members[a];
+                let mb = &members[b];
+                let mut sum = 0.0;
+                for &x in ma {
+                    for &y in mb {
+                        sum += dist[x][y];
+                    }
+                }
+                let avg = sum / (ma.len() * mb.len()) as f64;
+                if avg < best_d {
+                    best_d = avg;
+                    best = (ii, jj);
+                }
+            }
+        }
+        let (ii, jj) = best;
+        let a = alive[ii];
+        let b = alive[jj];
+        let mut merged = members[a].clone();
+        merged.extend(members[b].iter().copied());
+        let node = ClusterTree::Node(
+            Box::new(std::mem::replace(&mut trees[a], ClusterTree::Leaf(usize::MAX))),
+            Box::new(std::mem::replace(&mut trees[b], ClusterTree::Leaf(usize::MAX))),
+        );
+        members.push(merged);
+        trees.push(node);
+        let new_idx = members.len() - 1;
+        alive.remove(jj);
+        alive.remove(ii);
+        alive.push(new_idx);
+    }
+    let mut order = Vec::with_capacity(n);
+    collect_leaves(&trees[alive[0]], &mut order);
+    order
+}
+
 pub fn clone_cfg<'a>(cfg: &HeatmapConfig<'a>) -> HeatmapConfig<'a> {
     HeatmapConfig {
         title: cfg.title,
@@ -602,4 +681,27 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
         slots_to_json(cfg.hover)
     };
     build_chart_html(cfg.title, &svg, &hover_json)
+}
+
+#[cfg(test)]
+mod hierarchical_leaf_order_tests {
+    use super::hierarchical_leaf_order;
+
+    #[test]
+    fn returns_a_valid_permutation_not_a_corrupted_index_set() {
+        let mat: Vec<f64> = vec![
+            5.0, 9.0, 7.0, 3.0, 1.0, 6.0, 12.0, 10.0, 4.0, 2.0, 8.0, 15.0, 13.0, 7.0, 3.0, 4.0, 8.0, 11.0, 5.0, 2.0,
+            3.0, 7.0, 9.0, 2.0, 1.0,
+        ];
+        let n_rows = 5;
+        let n_cols = 5;
+        let row_vectors: Vec<Vec<f64>> = (0..n_rows).map(|r| (0..n_cols).map(|c| mat[r * n_cols + c]).collect()).collect();
+        let col_vectors: Vec<Vec<f64>> = (0..n_cols).map(|c| (0..n_rows).map(|r| mat[r * n_cols + c]).collect()).collect();
+        let mut row_order = hierarchical_leaf_order(&row_vectors);
+        let mut col_order = hierarchical_leaf_order(&col_vectors);
+        row_order.sort();
+        col_order.sort();
+        assert_eq!(row_order, vec![0, 1, 2, 3, 4]);
+        assert_eq!(col_order, vec![0, 1, 2, 3, 4]);
+    }
 }
