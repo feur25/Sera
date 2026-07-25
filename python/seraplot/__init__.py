@@ -51,34 +51,70 @@ except ImportError:
     App = None
 
 import json as _json
+from functools import lru_cache, singledispatch, singledispatchmethod
+
+
+@lru_cache(maxsize=None)
+def _params_json_cached(chart, variant):
+    return _params_json(chart, variant)
+
+
+@lru_cache(maxsize=None)
+def _required_params_json_cached(chart, variant):
+    return _required_params_json(chart, variant)
+
+
+@lru_cache(maxsize=None)
+def _true_required_params_json_cached(chart, variant):
+    return _true_required_params_json(chart, variant)
+
+
+@lru_cache(maxsize=1)
+def _chart_variants_json_cached():
+    return _chart_variants_json()
+
+
+@lru_cache(maxsize=1)
+def _chart_themes_json_cached():
+    return _chart_themes_json()
+
+
+@lru_cache(maxsize=1)
+def _scenes3d_json_cached():
+    return _scenes3d_json()
+
+
+@lru_cache(maxsize=1)
+def _docs_json_cached():
+    return _docs_json()
 
 
 def params(chart=None, variant=None):
-    return _json.loads(_params_json(chart, variant))
+    return _json.loads(_params_json_cached(chart, variant))
 
 
 def required_params(chart=None, variant=None):
-    return _json.loads(_required_params_json(chart, variant))
+    return _json.loads(_required_params_json_cached(chart, variant))
 
 
 def true_required_params(chart=None, variant=None):
-    return _json.loads(_true_required_params_json(chart, variant))
+    return _json.loads(_true_required_params_json_cached(chart, variant))
 
 
 def chart_variants():
-    return _json.loads(_chart_variants_json())
+    return _json.loads(_chart_variants_json_cached())
 
 
 def chart_themes():
-    return _json.loads(_chart_themes_json())
+    return _json.loads(_chart_themes_json_cached())
 
 
 def scenes3d():
-    return _json.loads(_scenes3d_json())
+    return _json.loads(_scenes3d_json_cached())
 
 
 def docs():
-    return _json.loads(_docs_json())
+    return _json.loads(_docs_json_cached())
 
 
 def _json_ready(value):
@@ -93,14 +129,31 @@ def _json_ready(value):
     return value
 
 
+@singledispatch
+def _coerce_call_args(first, kwargs):
+    kwargs.setdefault("title", first)
+    return kwargs
+
+
+@_coerce_call_args.register(list)
+@_coerce_call_args.register(tuple)
+def _(first, kwargs):
+    if "charts" not in kwargs:
+        kwargs["charts"] = list(first)
+    return kwargs
+
+
+@_coerce_call_args.register(dict)
+def _(first, kwargs):
+    merged = dict(first)
+    merged.update(kwargs)
+    return merged
+
+
 def _make_fn(name):
     def _fn(*args, **kwargs):
         if args:
-            first = args[0]
-            if isinstance(first, (list, tuple)) and "charts" not in kwargs:
-                kwargs["charts"] = first
-            else:
-                kwargs.setdefault("title", first)
+            kwargs = _coerce_call_args(args[0], kwargs)
         kwargs = {k: _json_ready(v) for k, v in kwargs.items()}
         result = _sera_call(name, _json.dumps(kwargs))
         stripped = result.lstrip()
@@ -108,7 +161,7 @@ def _make_fn(name):
             try:
                 return _json.loads(result)
             except ValueError:
-                pass
+                raise ValueError(f"Failed to parse JSON result from {name!r}: {result!r}")
         return Chart(result)
     _fn.__name__ = name
     _fn.__qualname__ = name
@@ -133,6 +186,11 @@ def _default_visual_config_path():
     return _os.path.join(_os.path.expanduser("~"), ".seraplot", "config.json")
 
 
+@lru_cache(maxsize=1)
+def _alias_list_json_cached():
+    return _alias_list_json()
+
+
 class _ConfigProxy:
     def __init__(self):
         self._state = {}
@@ -144,11 +202,24 @@ class _ConfigProxy:
 
     @property
     def aliases(self):
-        return _json.loads(_alias_list_json())
+        return _json.loads(_alias_list_json_cached())
+
+    @singledispatchmethod
+    def add(self, spec, alias=None):
+        raise TypeError(f"config.add() does not support {type(spec).__name__!r}")
+
+    @add.register
+    def _(self, spec: str, alias=None):
+        return self.add_alias(spec, alias)
+
+    @add.register
+    def _(self, spec: dict, alias=None):
+        return self.add_aliases(spec)
 
     def add_alias(self, method_name, alias):
         for a in ([alias] if isinstance(alias, str) else alias):
             _alias_add(method_name, a)
+        _alias_list_json_cached.cache_clear()
         return self
 
     def add_aliases(self, mapping):
@@ -158,10 +229,12 @@ class _ConfigProxy:
 
     def remove_alias(self, method_name, alias):
         _alias_remove(method_name, alias)
+        _alias_list_json_cached.cache_clear()
         return self
 
     def reset(self):
         _alias_reset()
+        _alias_list_json_cached.cache_clear()
         return self
 
     def save(self, path=None):
