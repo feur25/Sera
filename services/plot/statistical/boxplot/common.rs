@@ -153,6 +153,46 @@ pub fn make_frame(cfg: &super::config::BoxplotConfig, n_cats: usize, legend_w: i
     )
 }
 
+pub fn beeswarm_offsets(py: &[i32], r: f64, max_offset: f64) -> Vec<f64> {
+    let n = py.len();
+    let mut order: Vec<usize> = (0..n).collect();
+    order.sort_by_key(|&i| py[i]);
+    let mut placed: Vec<(f64, f64)> = Vec::with_capacity(n);
+    let mut offsets = vec![0.0f64; n];
+    let step = (r * 1.05).max(1.0);
+    let min_dist = 2.0 * r;
+    for &i in &order {
+        let y = py[i] as f64;
+        let mut dx = 0.0f64;
+        let mut k = 0i32;
+        loop {
+            let candidate = if k == 0 {
+                0.0
+            } else if k % 2 == 1 {
+                ((k + 1) / 2) as f64 * step
+            } else {
+                -(k / 2) as f64 * step
+            };
+            let collides = placed.iter().any(|&(py2, pdx)| {
+                let dyv = y - py2;
+                if dyv.abs() >= min_dist {
+                    return false;
+                }
+                let dxv = candidate - pdx;
+                (dxv * dxv + dyv * dyv).sqrt() < min_dist
+            });
+            if !collides || candidate.abs() >= max_offset {
+                dx = candidate.clamp(-max_offset, max_offset);
+                break;
+            }
+            k += 1;
+        }
+        offsets[i] = dx;
+        placed.push((y, dx));
+    }
+    offsets
+}
+
 pub fn rng_next(state: &mut u64) -> f64 {
     *state ^= *state << 13;
     *state ^= *state >> 7;

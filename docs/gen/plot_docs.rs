@@ -730,7 +730,7 @@ pub fn write_registry(
         js.push_str("]}");
     }
     js.push_str("]};\n");
-    let path = src_root.join("docs").join("theme").join("doc-registry.js");
+    let path = src_root.join("docs").join("theme").join("js").join("doc-registry.js");
     if let Some(parent) = path.parent() {
         let _ = fs::create_dir_all(parent);
     }

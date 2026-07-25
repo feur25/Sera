@@ -30,8 +30,15 @@ pub fn build_region(
     o.insert("title".to_string(), Value::String(String::new()));
     o.insert("values".to_string(), Value::from(values.to_vec()));
     o.insert("x".to_string(), Value::from(values.to_vec()));
+    o.insert("y".to_string(), Value::from(values.to_vec()));
     let labels: Vec<String> = (1..=values.len()).map(|i| i.to_string()).collect();
-    o.insert("labels".to_string(), Value::from(labels));
+    o.insert("labels".to_string(), Value::from(labels.clone()));
+    o.insert("words".to_string(), Value::from(labels));
+    let categories: Vec<String> = (0..values.len()).map(|_| "Series".to_string()).collect();
+    o.insert("categories".to_string(), Value::from(categories));
+    o.insert("series".to_string(), Value::from(vec![values.to_vec()]));
+    let sizes: Vec<f64> = values.iter().map(|v| v.abs().max(1.0).min(60.0)).collect();
+    o.insert("sizes".to_string(), Value::from(sizes));
     o.insert("width".to_string(), Value::from(width));
     o.insert("height".to_string(), Value::from(height));
     o.insert("colorscale".to_string(), Value::String(colorscale.to_string()));

@@ -5,5 +5,6 @@ crate::plot_family! {
         Symbols     => "symbols" | "marker" | "markers" | "shape" | "shapes",
         Labeled     => "labeled" | "labels" | "text" | "annotated",
         Regression  => "regression" | "trendline" | "fit" | "ols",
+        Residual    => "residual" | "residuals" | "residplot",
     }
 }

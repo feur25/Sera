@@ -6,7 +6,8 @@ crate::plot_family! {
         Grouped     => "grouped" | "group" | "side_by_side" | "multi",
         Points      => "points" | "all_points" | "scatter" | "raw",
         Outliers    => "outliers" | "outlier" | "fliers" | "anomalies",
-        Strip       => "strip" | "swarm" | "jitter" | "stripplot",
+        Strip       => "strip" | "jitter" | "stripplot",
+        Swarm       => "swarm" | "beeswarm" | "swarmplot",
         Violin      => "violin" | "kde_overlay" | "density",
         LetterValue => "letter_value" | "boxen" | "lv" | "tukey",
     }

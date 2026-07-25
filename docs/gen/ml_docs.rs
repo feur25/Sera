@@ -659,7 +659,7 @@ pub fn write_registry(src_root: &Path, ml_root: &Path, data_root: &Path) {
         js.push_str("]}");
     }
     js.push_str("]};\n");
-    let path = src_root.join("docs").join("theme").join("ml-registry.js");
+    let path = src_root.join("docs").join("theme").join("js").join("ml-registry.js");
     if let Some(parent) = path.parent() {
         let _ = fs::create_dir_all(parent);
     }

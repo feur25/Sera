@@ -33,7 +33,7 @@ pub fn fit_linear(xs: &[f64], ys: &[f64]) -> Option<(f64, f64, f64)> {
     Some((slope, intercept, r2))
 }
 
-fn fit_poly2(xs: &[f64], ys: &[f64]) -> Option<(f64, f64, f64)> {
+pub fn fit_poly2(xs: &[f64], ys: &[f64]) -> Option<(f64, f64, f64)> {
     if xs.len() < 3 {
         return None;
     }

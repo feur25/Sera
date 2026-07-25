@@ -9,6 +9,7 @@ pub mod notched;
 pub mod outliers;
 pub mod points;
 pub mod strip;
+pub mod swarm;
 pub mod variant;
 pub mod violin;
 
@@ -25,6 +26,7 @@ pub fn render_boxplot_html(cfg: &BoxplotConfig) -> String {
         Points => points::render(cfg),
         Outliers => outliers::render(cfg),
         Strip => strip::render(cfg),
+        Swarm => swarm::render(cfg),
         Violin => violin::render(cfg),
         LetterValue => letter_value::render(cfg),
     }

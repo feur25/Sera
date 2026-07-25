@@ -5,6 +5,7 @@ pub mod common;
 pub mod config;
 pub mod labeled;
 pub mod regression;
+pub mod residual;
 pub mod symbols;
 pub mod variant;
 
@@ -24,6 +25,7 @@ pub fn render_scatter_variant_html(cfg: &ScatterConfig) -> String {
         Symbols => symbols::render(cfg),
         Labeled => labeled::render(cfg),
         Regression => regression::render(cfg),
+        Residual => residual::render(cfg),
     }
 }
 

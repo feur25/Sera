@@ -29,7 +29,8 @@ pub fn build(input: &str) -> String {
     let requested = obj.get("variant").and_then(Value::as_str).unwrap_or("hexbin");
     let panel_family = resolve_legacy_panel(requested).unwrap_or(requested).to_string();
     let panel_variant = obj.get("panel_variant").and_then(Value::as_str).unwrap_or("").to_string();
-    let marginal_family = obj.get("marginal").and_then(Value::as_str).unwrap_or("histogram").to_string();
+    let marginal_requested = obj.get("marginal").and_then(Value::as_str).unwrap_or("histogram");
+    let marginal_family = resolve_legacy_panel(marginal_requested).unwrap_or(marginal_requested).to_string();
     let marginal_variant = obj.get("marginal_variant").and_then(Value::as_str).unwrap_or("").to_string();
     let width = obj.get("width").and_then(Value::as_i64).unwrap_or(760);
     let height = obj.get("height").and_then(Value::as_i64).unwrap_or(760);
