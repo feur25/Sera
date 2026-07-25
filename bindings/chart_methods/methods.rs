@@ -68,11 +68,7 @@ impl Chart {
         fr = "Supprime toutes les couches d'arrière-plan du graphique et conserve une sortie transparente."
     )]
     pub fn no_background(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>html,body,.chart-container,.c3w,.sp-wrap,svg,canvas{background:transparent!important}.sp-bg{fill:transparent!important}body>:first-child{box-shadow:none!important}</style></head>",
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>html,body,.chart-container,.c3w,.sp-wrap,svg,canvas{background:transparent!important}.sp-bg{fill:transparent!important}body>:first-child{box-shadow:none!important}</style></head>"))
     }
 
     #[sera_doc(
@@ -125,11 +121,7 @@ impl Chart {
         fr = "Masque l'axe X, ses graduations et son étiquette."
     )]
     pub fn no_x_axis(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>.sp-ax-x,.sp-xt,.sp-xl{display:none}</style></head>",
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>.sp-ax-x,.sp-xt,.sp-xl{display:none}</style></head>"))
     }
 
     #[sera_doc(
@@ -151,11 +143,7 @@ impl Chart {
         fr = "Masque l'axe Y, ses graduations et son étiquette."
     )]
     pub fn no_y_axis(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>.sp-ax-y,.sp-yt,.sp-yl{display:none}</style></head>",
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>.sp-ax-y,.sp-yt,.sp-yl{display:none}</style></head>"))
     }
 
     #[sera_doc(
@@ -166,11 +154,7 @@ impl Chart {
         fr = "Masque les axes X et Y ainsi que leurs graduations et étiquettes."
     )]
     pub fn no_axes(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>.sp-ax-x,.sp-ax-y,.sp-xt,.sp-yt,.sp-xl,.sp-yl{display:none}</style></head>",
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>.sp-ax-x,.sp-ax-y,.sp-xt,.sp-yt,.sp-xl,.sp-yl{display:none}</style></head>"))
     }
 
     #[sera_doc(
@@ -181,11 +165,7 @@ impl Chart {
         fr = "Affiche les lignes de grille horizontales et verticales en arrière-plan du graphique."
     )]
     pub fn show_grid(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>",
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>"))
     }
 
     #[sera_doc(
@@ -196,11 +176,7 @@ impl Chart {
         fr = "Masque les lignes de grille si elles étaient précédemment activées."
     )]
     pub fn hide_grid(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>.sp-gl{display:none!important}</style></head>",
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>.sp-gl{display:none!important}</style></head>"))
     }
 
     #[sera_doc(
@@ -392,14 +368,10 @@ impl Chart {
     )]
     #[sera_sig(px)]
     pub fn title_size(&self, px: i32) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            &format!(
+        self.propagate(crate::html::hover::inject_before_head(&self.html, &format!(
                 "<style>.sp-ttl{{font-size:{}px!important}}</style></head>",
                 px
-            ),
-            1,
-        ))
+            )))
     }
 
     #[sera_doc(
@@ -410,11 +382,7 @@ impl Chart {
         fr = "Ajoute un réticule interactif qui suit le curseur de la souris sur le SVG."
     )]
     pub fn crosshair(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</body>",
-            &format!("<script>{}</script></body>", SP_CROSSHAIR_JS),
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_CROSSHAIR_JS)))
     }
 
     #[sera_doc(
@@ -425,11 +393,7 @@ impl Chart {
         fr = "Active le zoom à la molette et le déplacement par glisser-cliquer. Double-clic pour réinitialiser."
     )]
     pub fn zoom(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</body>",
-            &format!("<script>{}</script></body>", SP_ZOOM_JS),
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_ZOOM_JS)))
     }
 
     #[sera_doc(
@@ -445,11 +409,7 @@ impl Chart {
             dim.clamp(0.0, 1.0),
             SP_GROUP_HOVER_JS
         );
-        self.propagate(self.html.replacen(
-            "</body>",
-            &format!("<script>{}</script></body>", js),
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", js)))
     }
 
     #[sera_doc(
@@ -608,11 +568,7 @@ impl Chart {
     )]
     pub fn no_select(&self) -> Chart {
         const JS: &str = "(function(){var ov=document.querySelector('.sp-sel-ov');if(!ov)return;var obs=new MutationObserver(function(){if(ov.style.display!=='none'){obs.disconnect();ov.style.display='none';obs.observe(ov,{attributes:true,attributeFilter:['style']});}});obs.observe(ov,{attributes:true,attributeFilter:['style']});})()";
-        let h = self.html.replacen(
-            "</head>",
-            "<style>body,body *{user-select:none!important;-webkit-user-select:none!important}</style></head>",
-            1,
-        );
+        let h = crate::html::hover::inject_before_head(&self.html, "<style>body,body *{user-select:none!important;-webkit-user-select:none!important}</style></head>");
         self.propagate(crate::html::hover::inject_before_body(&h, &format!("<script>{}</script></body>", JS)))
     }
 
@@ -683,11 +639,7 @@ impl Chart {
             Some(s) => format!("window.__sp_gradient__={{scale:{}}};", json_str(s)),
             None => String::new(),
         };
-        self.propagate(self.html.replacen(
-            "</body>",
-            &format!("<script>{}{}</script></body>", cfg, SP_COLOR_DENSITY_JS),
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}{}</script></body>", cfg, SP_COLOR_DENSITY_JS)))
     }
 
     #[sera_doc(
@@ -744,11 +696,7 @@ impl Chart {
         fr = "Transforme un graphique à barres verticales en graphique à barres horizontales en recalculant les positions."
     )]
     pub fn flip(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</body>",
-            &format!("<script>{}</script></body>", SP_FLIP_JS),
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_FLIP_JS)))
     }
 
     #[sera_doc(
@@ -874,11 +822,7 @@ impl Chart {
         fr = "Rend la largeur du SVG égale à 100% de son conteneur tout en conservant une hauteur proportionnelle."
     )]
     pub fn responsive(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>svg{width:100%!important;height:auto!important}</style></head>",
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>svg{width:100%!important;height:auto!important}</style></head>"))
     }
 
     #[sera_doc(
@@ -1060,11 +1004,7 @@ impl Chart {
         fr = "Masque la légende du graphique."
     )]
     pub fn no_legend(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>g[data-legend]{display:none!important}</style></head>",
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>g[data-legend]{display:none!important}</style></head>"))
     }
 
     #[sera_doc(
@@ -1075,11 +1015,7 @@ impl Chart {
         fr = "Masque le titre du graphique."
     )]
     pub fn no_title(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</head>",
-            "<style>.sp-ttl{display:none!important}</style></head>",
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>.sp-ttl{display:none!important}</style></head>"))
     }
 
     #[sera_doc(
@@ -1274,11 +1210,7 @@ impl Chart {
         if self.html.contains("class=\"c3w\"") {
             return self.propagate(apply_3d_cfg(self.html.clone(), "{\"exportBtn\":true}"));
         }
-        self.propagate(self.html.replacen(
-            "</body>",
-            &format!("<script>{}</script></body>", SP_EXPORT_JS),
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_EXPORT_JS)))
     }
 
     #[sera_doc(

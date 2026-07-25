@@ -2820,11 +2820,7 @@ impl Canvas {
 
     pub fn dev(&self) -> crate::Chart {
         let chart = self.build();
-        let html = chart.html.replacen(
-            "</body>",
-            &format!("<script>{}</script></body>", CANVAS_DEV_JS),
-            1,
-        );
+        let html = crate::html::hover::inject_before_body(&chart.html, &format!("<script>{}</script></body>", CANVAS_DEV_JS));
         crate::Chart { html, doc_str: "" }
     }
 }

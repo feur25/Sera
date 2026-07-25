@@ -28,11 +28,7 @@ fn cleaned_html(html: &str) -> String {
         "border-radius:12px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.07),0 0 0 1px rgba(0,0,0,.04)",
         "border-radius:0;overflow:hidden",
     );
-    html.replacen(
-        "</head>",
-        "<style>html,body{margin:0!important;padding:0!important;overflow:hidden!important;background:transparent}body>div{max-width:100%!important;min-width:0!important}svg{max-width:100%!important;width:100%!important;height:auto!important;display:block}canvas,.c3w,.sp-wrap,.chart-container{max-width:100%!important;overflow:hidden!important}</style></head>",
-        1,
-    )
+    crate::html::hover::inject_before_head(&html, "<style>html,body{margin:0!important;padding:0!important;overflow:hidden!important;background:transparent}body>div{max-width:100%!important;min-width:0!important}svg{max-width:100%!important;width:100%!important;height:auto!important;display:block}canvas,.c3w,.sp-wrap,.chart-container{max-width:100%!important;overflow:hidden!important}</style></head>")
 }
 
 fn sniff_meta_size(s: &str) -> Option<(u32, u32)> {

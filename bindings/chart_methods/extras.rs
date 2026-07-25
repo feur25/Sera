@@ -16,11 +16,7 @@ impl Chart {
         fr = "Ajoute un bouton de téléchargement PNG au graphique. Au clic, le SVG est rasterise dans un canvas puis telecharge en PNG sans serveur."
     )]
     pub fn png_button(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</body>",
-            &format!("<script>{}</script></body>", SP_EXPORT_PNG_JS),
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_EXPORT_PNG_JS)))
     }
 
     #[sera_doc(
@@ -31,11 +27,7 @@ impl Chart {
         fr = "Active la selection rectangulaire sur les nuages de points. Shift+drag selectionne les points dans un rectangle ; les autres points sont attenues. Shift+clic dans une zone vide efface la selection."
     )]
     pub fn lasso(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</body>",
-            &format!("<script>{}</script></body>", SP_LASSO_JS),
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_LASSO_JS)))
     }
 
     #[sera_doc(
@@ -46,11 +38,7 @@ impl Chart {
         fr = "Ajoute un curseur de plage a deux poignees sous le graphique. Les poignees filtrent les elements visibles par indice."
     )]
     pub fn range_slider(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</body>",
-            &format!("<script>{}</script></body>", SP_RANGE_SLIDER_JS),
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_RANGE_SLIDER_JS)))
     }
 
     #[sera_doc(
@@ -61,11 +49,7 @@ impl Chart {
         fr = "Ajoute des boutons de plage predefinis 1M / 6M / YTD / 1A / Tout sous le graphique. Si les etiquettes des points se parsent comme des dates (Date.parse natif, sans dependance externe), les boutons filtrent par vraie plage calendaire depuis le dernier point ; sinon ils retombent sur une fenetre proportionnelle equivalente sur la plage d'index."
     )]
     pub fn range_buttons(&self) -> Chart {
-        self.propagate(self.html.replacen(
-            "</body>",
-            &format!("<script>{}</script></body>", SP_RANGE_BUTTONS_JS),
-            1,
-        ))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_RANGE_BUTTONS_JS)))
     }
 
     #[sera_doc(

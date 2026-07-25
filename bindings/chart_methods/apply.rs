@@ -2,11 +2,7 @@
 use super::js::*;
 
 pub(crate) fn apply_despine(html: String) -> String {
-    html.replacen(
-        "</head>",
-        "<style>.sp-ax-x,.sp-ax-y{display:none!important}</style></head>",
-        1,
-    )
+    crate::html::hover::inject_before_head(&html, "<style>.sp-ax-x,.sp-ax-y{display:none!important}</style></head>")
 }
 
 pub(crate) fn apply_watermark(html: String, text: &str, opacity: f64) -> String {
@@ -45,11 +41,7 @@ pub(crate) fn apply_glow(html: String, color: &str) -> String {
             html.insert_str(insert_at, &defs);
         }
     }
-    html.replacen(
-        "</head>",
-        "<style>svg [data-idx]{filter:url(#sp-glow-f)}</style></head>",
-        1,
-    )
+    crate::html::hover::inject_before_head(&html, "<style>svg [data-idx]{filter:url(#sp-glow-f)}</style></head>")
 }
 
 pub(crate) fn apply_neon_bloom(html: String, color: &str) -> String {
@@ -74,11 +66,7 @@ pub(crate) fn apply_neon_bloom(html: String, color: &str) -> String {
             html.insert_str(insert_at, &defs);
         }
     }
-    html.replacen(
-        "</head>",
-        "<style>svg [data-idx],svg path[stroke]:not([stroke=\"none\"]),svg circle[fill]:not([fill=\"none\"]),svg line[stroke]{filter:url(#sp-bloom)}</style></head>",
-        1,
-    )
+    crate::html::hover::inject_before_head(&html, "<style>svg [data-idx],svg path[stroke]:not([stroke=\"none\"]),svg circle[fill]:not([fill=\"none\"]),svg line[stroke]{filter:url(#sp-bloom)}</style></head>")
 }
 
 pub(crate) fn apply_void(html: String, bg_color: &str) -> String {
@@ -272,11 +260,7 @@ pub(crate) fn apply_heatify(html: String, position: &str) -> String {
         "<div style=\"position:absolute;{};width:{}px;height:{}px;background:{};border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,.25),0 0 0 1px rgba(255,255,255,.15);z-index:50\"><span style=\"{};{}\">{:.2}</span><span style=\"{};{}\">{:.2}</span></div>",
         css_pos, w, h, gradient, label_css, lo_pos, lo, label_css, hi_pos, hi
     );
-    let recolored = html.replacen(
-        "</body>",
-        &format!("<script>{}</script></body>", SP_COLOR_DENSITY_JS),
-        1,
-    );
+    let recolored = crate::html::hover::inject_before_body(&html, &format!("<script>{}</script></body>", SP_COLOR_DENSITY_JS));
     if already_gauged {
         return recolored;
     }
@@ -376,11 +360,7 @@ pub(crate) fn apply_reference_band(html: String, low: f64, high: f64, color: &st
 }
 
 pub(crate) fn apply_responsive(html: String) -> String {
-    html.replacen(
-        "</head>",
-        "<style>html,body{max-width:100%;overflow:hidden}body>div{max-width:100%;min-width:0}svg{max-width:100%;width:100%;height:auto;display:block}canvas,.c3w,.sp-wrap,.chart-container{max-width:100%;overflow:hidden}</style></head>",
-        1,
-    )
+    crate::html::hover::inject_before_head(&html, "<style>html,body{max-width:100%;overflow:hidden}body>div{max-width:100%;min-width:0}svg{max-width:100%;width:100%;height:auto;display:block}canvas,.c3w,.sp-wrap,.chart-container{max-width:100%;overflow:hidden}</style></head>")
 }
 
 pub(crate) fn apply_value_labels(html: String, decimals: i32, color: &str) -> String {
@@ -1029,17 +1009,9 @@ pub(crate) fn apply_color_hex(html: String, color: &str) -> String {
 
 pub(crate) fn apply_gridlines(html: String, on: bool) -> String {
     if on {
-        html.replacen(
-            "</head>",
-            "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>",
-            1,
-        )
+        crate::html::hover::inject_before_head(&html, "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>")
     } else {
-        html.replacen(
-            "</head>",
-            "<style>.sp-gl{display:none!important}</style></head>",
-            1,
-        )
+        crate::html::hover::inject_before_head(&html, "<style>.sp-gl{display:none!important}</style></head>")
     }
 }
 
@@ -1047,11 +1019,7 @@ pub(crate) fn apply_hover_toggle(html: String, on: bool) -> String {
     if on {
         return html;
     }
-    html.replacen(
-        "</head>",
-        "<style>#sp-tip{display:none!important}[data-idx]{pointer-events:none!important}[data-idx]:hover{filter:none!important}</style></head>",
-        1,
-    )
+    crate::html::hover::inject_before_head(&html, "<style>#sp-tip{display:none!important}[data-idx]{pointer-events:none!important}[data-idx]:hover{filter:none!important}</style></head>")
 }
 
 pub(crate) fn apply_texture(html: String, pattern: &str, opacity: f64) -> String {
