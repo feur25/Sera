@@ -7,7 +7,6 @@ crate::chart_config!(LollipopConfig, 900, 480;
         pub palette: &'a [u32],
         pub color_hex: u32,
         pub show_values: bool,
-        pub highlight_index: i32,
     }
     defaults {
         variant: super::variant::LollipopVariant::Basic,
@@ -17,6 +16,5 @@ crate::chart_config!(LollipopConfig, 900, 480;
         palette: &[],
         color_hex: 0x636EFA,
         show_values: false,
-        highlight_index: -1,
     }
 );

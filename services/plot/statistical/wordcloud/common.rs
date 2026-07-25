@@ -296,7 +296,7 @@ pub fn prepare(cfg: &WordCloudConfig) -> Option<Prepared> {
     })
 }
 
-fn svg_open(buf: &mut Vec<u8>, w: i32, h: i32, bg: &str) {
+fn svg_open(buf: &mut Vec<u8>, w: i32, h: i32) {
     push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"");
     push_i(buf, w);
     push_b(buf, b"\" height=\"");
@@ -306,9 +306,7 @@ fn svg_open(buf: &mut Vec<u8>, w: i32, h: i32, bg: &str) {
     push_b(buf, b" ");
     push_i(buf, h);
     push_b(buf, b"\">");
-    push_b(buf, b"<rect width=\"100%\" height=\"100%\" fill=\"");
-    push_b(buf, bg.as_bytes());
-    push_b(buf, b"\"/>");
+    push_b(buf, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
 }
 
 fn svg_title(buf: &mut Vec<u8>, w: i32, title: &str, fill: &str) {
@@ -324,7 +322,7 @@ fn svg_title(buf: &mut Vec<u8>, w: i32, title: &str, fill: &str) {
     push_b(buf, b"</text>");
 }
 
-fn finalize(cfg: &WordCloudConfig, buf: Vec<u8>) -> String {
+fn finalize_with_bg(cfg: &WordCloudConfig, buf: Vec<u8>, bg: &str) -> String {
     let auto_hover = cfg.hover.is_empty();
     let svg = unsafe { String::from_utf8_unchecked(buf) };
     let slots_json;
@@ -334,7 +332,13 @@ fn finalize(cfg: &WordCloudConfig, buf: Vec<u8>) -> String {
         slots_json = slots_to_json(cfg.hover);
         &slots_json
     };
-    build_chart_html(cfg.title, &svg, json)
+    let html = build_chart_html(cfg.title, &svg, json);
+    if bg.eq_ignore_ascii_case("#ffffff") {
+        html
+    } else {
+        let rule = format!(".sp-bg{{fill:{bg}}}");
+        crate::html::hover::apply_deep(&html, &|region| region.replacen(".sp-bg{fill:#ffffff}", &rule, 1))
+    }
 }
 
 pub fn render_basic(cfg: &WordCloudConfig) -> String {
@@ -356,11 +360,11 @@ pub fn render_basic(cfg: &WordCloudConfig) -> String {
     );
     let bg = cfg.bg_color.unwrap_or("#1a1a2e");
     let mut buf = Vec::<u8>::with_capacity(p.words.len() * 320 + 2048);
-    svg_open(&mut buf, cfg.width, cfg.height, bg);
+    svg_open(&mut buf, cfg.width, cfg.height);
     svg_title(&mut buf, cfg.width, cfg.title, "#fff");
     write_words(&mut buf, &placed, &p, cfg);
     push_b(&mut buf, b"</svg>");
-    finalize(cfg, buf)
+    finalize_with_bg(cfg, buf, bg)
 }
 
 pub fn render_image(cfg: &WordCloudConfig) -> String {
@@ -384,11 +388,11 @@ pub fn render_image(cfg: &WordCloudConfig) -> String {
     );
     let bg = cfg.bg_color.unwrap_or("#ffffff");
     let mut buf = Vec::<u8>::with_capacity(p.words.len() * 320 + 2048);
-    svg_open(&mut buf, cfg.width, cfg.height, bg);
+    svg_open(&mut buf, cfg.width, cfg.height);
     svg_title(&mut buf, cfg.width, cfg.title, "#0f172a");
     write_words(&mut buf, &placed, &p, cfg);
     push_b(&mut buf, b"</svg>");
-    finalize(cfg, buf)
+    finalize_with_bg(cfg, buf, bg)
 }
 
 fn write_words(buf: &mut Vec<u8>, placed: &[PlacedWord], p: &Prepared, cfg: &WordCloudConfig) {
@@ -434,13 +438,13 @@ fn write_words(buf: &mut Vec<u8>, placed: &[PlacedWord], p: &Prepared, cfg: &Wor
 pub fn render_labelmap(cfg: &WordCloudConfig) -> String {
     let bg = cfg.bg_color.unwrap_or("#fafafa");
     let mut buf = Vec::<u8>::with_capacity(8192);
-    svg_open(&mut buf, cfg.width, cfg.height, bg);
+    svg_open(&mut buf, cfg.width, cfg.height);
     svg_title(&mut buf, cfg.width, cfg.title, "#0f172a");
 
     let n = cfg.points_x.len().min(cfg.points_y.len());
     if n == 0 {
         push_b(&mut buf, b"</svg>");
-        return finalize(cfg, buf);
+        return finalize_with_bg(cfg, buf, bg);
     }
 
     let pad_t = if cfg.title.is_empty() { 12.0 } else { 42.0 };
@@ -574,7 +578,7 @@ pub fn render_labelmap(cfg: &WordCloudConfig) -> String {
     push_b(&mut buf, b"</g>");
 
     push_b(&mut buf, b"</svg>");
-    finalize(cfg, buf)
+    finalize_with_bg(cfg, buf, bg)
 }
 
 pub fn render_network(cfg: &WordCloudConfig) -> String {
@@ -584,7 +588,7 @@ pub fn render_network(cfg: &WordCloudConfig) -> String {
     };
     let bg = cfg.bg_color.unwrap_or("#ffffff");
     let mut buf = Vec::<u8>::with_capacity(p.words.len() * 360 + 4096);
-    svg_open(&mut buf, cfg.width, cfg.height, bg);
+    svg_open(&mut buf, cfg.width, cfg.height);
     svg_title(&mut buf, cfg.width, cfg.title, "#0f172a");
 
     let n = p.words.len();
@@ -699,7 +703,7 @@ pub fn render_network(cfg: &WordCloudConfig) -> String {
     push_b(&mut buf, b"</g>");
 
     push_b(&mut buf, b"</svg>");
-    finalize(cfg, buf)
+    finalize_with_bg(cfg, buf, bg)
 }
 
 pub fn render_bubble(cfg: &WordCloudConfig) -> String {
@@ -759,7 +763,7 @@ pub fn render_bubble(cfg: &WordCloudConfig) -> String {
     }
 
     let mut buf = Vec::<u8>::with_capacity(p.words.len() * 420 + 2048);
-    svg_open(&mut buf, cfg.width, cfg.height, bg);
+    svg_open(&mut buf, cfg.width, cfg.height);
     svg_title(&mut buf, cfg.width, cfg.title, "#e2e8f0");
 
     for &(bx, by, br, idx) in &circles {
@@ -810,7 +814,7 @@ pub fn render_bubble(cfg: &WordCloudConfig) -> String {
     }
 
     push_b(&mut buf, b"</svg>");
-    finalize(cfg, buf)
+    finalize_with_bg(cfg, buf, bg)
 }
 
 pub fn render_context(cfg: &WordCloudConfig) -> String {
@@ -911,7 +915,7 @@ pub fn render_context(cfg: &WordCloudConfig) -> String {
     let has_clusters = cfg.point_clusters.len() >= n;
 
     let mut buf = Vec::<u8>::with_capacity(n * 340 + 2048);
-    svg_open(&mut buf, cfg.width, cfg.height, bg);
+    svg_open(&mut buf, cfg.width, cfg.height);
     svg_title(&mut buf, cfg.width, cfg.title, "#0f172a");
 
     for i in 0..n {
@@ -953,5 +957,5 @@ pub fn render_context(cfg: &WordCloudConfig) -> String {
     }
 
     push_b(&mut buf, b"</svg>");
-    finalize(cfg, buf)
+    finalize_with_bg(cfg, buf, bg)
 }

@@ -53,7 +53,7 @@ pub fn render(cfg: &WordCloudConfig) -> String {
     push_b(&mut buf, b"\">");
     push_b(
         &mut buf,
-        b"<rect width=\"100%\" height=\"100%\" fill=\"#080d1a\"/>",
+        b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>",
     );
 
     push_b(&mut buf, b"<defs>");
@@ -213,5 +213,6 @@ pub fn render(cfg: &WordCloudConfig) -> String {
         slots_json = slots_to_json(cfg.hover);
         &slots_json
     };
-    build_chart_html(cfg.title, &svg, json)
+    let html = build_chart_html(cfg.title, &svg, json);
+    crate::html::hover::apply_deep(&html, &|region| region.replacen(".sp-bg{fill:#ffffff}", ".sp-bg{fill:#080d1a}", 1))
 }

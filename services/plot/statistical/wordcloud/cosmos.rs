@@ -78,7 +78,7 @@ pub fn render(cfg: &WordCloudConfig) -> String {
         </defs>",
     );
 
-    push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"url(#csbg)\"/>");
+    push_b(&mut buf, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
 
     let n_stars = ((w * h / 2600.0) as usize).clamp(90, 450);
     push_b(&mut buf, b"<g id=\"cs-stars\" pointer-events=\"none\">");
@@ -283,5 +283,6 @@ pub fn render(cfg: &WordCloudConfig) -> String {
         slots_json = slots_to_json(cfg.hover);
         &slots_json
     };
-    build_chart_html(cfg.title, &svg, json)
+    let html = build_chart_html(cfg.title, &svg, json);
+    crate::html::hover::apply_deep(&html, &|region| region.replacen(".sp-bg{fill:#ffffff}", ".sp-bg{fill:url(#csbg)}", 1))
 }

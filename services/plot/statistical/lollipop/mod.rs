@@ -3,10 +3,11 @@ pub mod basic;
 pub mod circular;
 pub mod cleveland;
 pub mod common;
+pub mod conditional_color;
 pub mod config;
 pub mod diverging;
-pub mod highlight;
 pub mod office;
+pub mod trend;
 pub mod variant;
 
 pub use config::LollipopConfig;
@@ -19,8 +20,9 @@ pub fn render_lollipop_html(cfg: &LollipopConfig) -> String {
         Cleveland => cleveland::render(cfg),
         Diverging => diverging::render(cfg),
         Circular => circular::render(cfg),
-        Highlight => highlight::render(cfg),
         Office => office::render(cfg),
+        ConditionalColor => conditional_color::render(cfg),
+        Trend => trend::render(cfg),
     }
 }
 
@@ -63,7 +65,6 @@ pub fn build(input: &str) -> String {
         color_hex: o.color_hex.unwrap_or(0),
         gridlines: o.grid(),
         show_values: o.show_values.unwrap_or(false),
-        highlight_index: o.highlight_index.unwrap_or(-1),
         sort_order: &o.srt(),
         width: o.w(900),
         height: o.h(480),

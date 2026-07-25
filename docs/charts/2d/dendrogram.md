@@ -23,13 +23,13 @@ function spClsTog(id){document.getElementById(id).classList.toggle('sp-open')}
 
 ## Signature
 
-`sp.dendrogram(title, labels, parents, *, variant="vertical", **kwargs) -> Chart`
+`sp.dendrogram(title, labels, *, matrix=None, parents=None, clusters=3, variant="vertical", **kwargs) -> Chart`
 
 Aliases: `sp.dendrogram`, `sp.dendro`, `sp.tree`, `sp.tree_diagram`, `sp.hierarchy`, `sp.hierarchical`
 
 ## Description
 
-Dendrograms display hierarchical tree structures using right-angle elbow connectors (vertical/horizontal) or smooth bezier curves (elegant) or a radial circular layout. Parent–child relationships are defined by the `parents` list.
+Dendrograms display hierarchical tree structures using right-angle elbow connectors (vertical/horizontal) or smooth bezier curves (elegant) or a radial circular layout. Pass `matrix` -- one row of numeric coordinates per label -- for a genuine average-linkage agglomerative clustering with real merge heights (matching hclust/scipy), including automatic coloring of the top `clusters` groups with the trunk above the cut shown in neutral gray. Without `matrix`, `parents` describes a plain hand-specified hierarchy (each entry names its parent's label, empty string for a root) with no real distance semantics.
 
 ## Variants
 
@@ -113,13 +113,13 @@ Dendrograms display hierarchical tree structures using right-angle elbow connect
 
 ## Signature
 
-`sp.dendrogram(title, labels, parents, *, variant="vertical", **kwargs) -> Chart`
+`sp.dendrogram(title, labels, *, matrix=None, parents=None, clusters=3, variant="vertical", **kwargs) -> Chart`
 
 Alias : `sp.dendrogram`, `sp.dendro`, `sp.tree`, `sp.tree_diagram`, `sp.hierarchy`, `sp.hierarchical`
 
 ## Description
 
-Les dendrogrammes affichent des structures arborescentes hiérarchiques à l'aide de connecteurs en coude à angle droit (vertical/horizontal), de courbes de bézier lisses (elegant), ou d'une disposition radiale circulaire. Les relations parent-enfant sont définies par la liste `parents`.
+Les dendrogrammes affichent des structures arborescentes hiérarchiques à l'aide de connecteurs en coude à angle droit (vertical/horizontal), de courbes de bézier lisses (elegant), ou d'une disposition radiale circulaire. Passez `matrix` -- une ligne de coordonnées numériques par label -- pour un vrai clustering hiérarchique par liaison moyenne avec des hauteurs de fusion réelles (comme hclust/scipy), avec coloration automatique des `clusters` groupes principaux et le tronc au-dessus de la coupe en gris neutre. Sans `matrix`, `parents` décrit une hiérarchie manuelle simple (chaque entrée nomme le label de son parent, chaîne vide pour une racine) sans réelle sémantique de distance.
 
 ## Variantes
 
