@@ -88,7 +88,7 @@ pub fn render(cfg: &WordCloudConfig) -> String {
     if !cfg.title.is_empty() {
         push_b(&mut buf, b"<text x=\"");
         push_i(&mut buf, cfg.width / 2);
-        push_b(&mut buf, b"\" y=\"24\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#e2e8f0\">");
+        push_b(&mut buf, b"\" y=\"24\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"15\" font-weight=\"700\" fill=\"#0f172a\">");
         escape_xml(&mut buf, cfg.title);
         push_b(&mut buf, b"</text>");
     }
@@ -214,5 +214,11 @@ pub fn render(cfg: &WordCloudConfig) -> String {
         &slots_json
     };
     let html = build_chart_html(cfg.title, &svg, json);
-    crate::html::hover::apply_deep(&html, &|region| region.replacen(".sp-bg{fill:#ffffff}", ".sp-bg{fill:#080d1a}", 1))
+    match cfg.bg_color {
+        Some(bg) if !bg.eq_ignore_ascii_case("#ffffff") => {
+            let rule = format!(".sp-bg{{fill:{bg}}}");
+            crate::html::hover::apply_deep(&html, &|region| region.replacen(".sp-bg{fill:#ffffff}", &rule, 1))
+        }
+        _ => html,
+    }
 }

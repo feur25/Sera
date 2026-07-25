@@ -96,7 +96,7 @@ pub fn x_tick_label(buf: &mut Vec<u8>, x: i32, y: i32, label: &str) {
     push_i(buf, x);
     push_b(buf, b"\" y=\"");
     push_i(buf, y);
-    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
+    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" class=\"sp-xt\">");
     escape_xml(buf, truncate(label, 12));
     push_b(buf, b"</text>");
 }
@@ -110,7 +110,7 @@ pub fn x_tick_label_rotated(buf: &mut Vec<u8>, x: i32, y: i32, label: &str) {
     push_i(buf, x);
     push_b(buf, b" ");
     push_i(buf, y);
-    push_b(buf, b")\" text-anchor=\"end\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\">");
+    push_b(buf, b")\" text-anchor=\"end\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#6b7280\" class=\"sp-xt\">");
     escape_xml(buf, truncate(label, 16));
     push_b(buf, b"</text>");
 }

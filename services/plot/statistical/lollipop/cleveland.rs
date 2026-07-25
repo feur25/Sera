@@ -61,7 +61,7 @@ pub fn render(cfg: &LollipopConfig) -> String {
         push_i(&mut b, pl - 8);
         push_b(&mut b, b"\" y=\"");
         push_i(&mut b, cy + 4);
-        push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" fill=\"#374151\">");
+        push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" fill=\"#374151\" class=\"sp-yt\">");
         escape_xml(&mut b, truncate(&p.labels[i], 18));
         push_b(&mut b, b"</text>");
         if cfg.show_values {
@@ -85,7 +85,7 @@ pub fn render(cfg: &LollipopConfig) -> String {
         push_i(&mut b, x);
         push_b(&mut b, b"\" y=\"");
         push_i(&mut b, pt + ph + 14);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" class=\"sp-xt\">");
         push_f2(&mut b, min_val + frac * range);
         push_b(&mut b, b"</text>");
     }

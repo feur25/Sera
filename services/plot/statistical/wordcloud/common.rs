@@ -358,10 +358,10 @@ pub fn render_basic(cfg: &WordCloudConfig) -> String {
         p.pad_t,
         &test,
     );
-    let bg = cfg.bg_color.unwrap_or("#1a1a2e");
+    let bg = cfg.bg_color.unwrap_or("#ffffff");
     let mut buf = Vec::<u8>::with_capacity(p.words.len() * 320 + 2048);
     svg_open(&mut buf, cfg.width, cfg.height);
-    svg_title(&mut buf, cfg.width, cfg.title, "#fff");
+    svg_title(&mut buf, cfg.width, cfg.title, "#0f172a");
     write_words(&mut buf, &placed, &p, cfg);
     push_b(&mut buf, b"</svg>");
     finalize_with_bg(cfg, buf, bg)
@@ -436,7 +436,7 @@ fn write_words(buf: &mut Vec<u8>, placed: &[PlacedWord], p: &Prepared, cfg: &Wor
 }
 
 pub fn render_labelmap(cfg: &WordCloudConfig) -> String {
-    let bg = cfg.bg_color.unwrap_or("#fafafa");
+    let bg = cfg.bg_color.unwrap_or("#ffffff");
     let mut buf = Vec::<u8>::with_capacity(8192);
     svg_open(&mut buf, cfg.width, cfg.height);
     svg_title(&mut buf, cfg.width, cfg.title, "#0f172a");
@@ -711,7 +711,7 @@ pub fn render_bubble(cfg: &WordCloudConfig) -> String {
         Some(p) => p,
         None => return String::new(),
     };
-    let bg = cfg.bg_color.unwrap_or("#1a1a2e");
+    let bg = cfg.bg_color.unwrap_or("#ffffff");
     let w = cfg.width as f64;
     let h = cfg.height as f64;
     let pad_t = p.pad_t;
@@ -764,7 +764,7 @@ pub fn render_bubble(cfg: &WordCloudConfig) -> String {
 
     let mut buf = Vec::<u8>::with_capacity(p.words.len() * 420 + 2048);
     svg_open(&mut buf, cfg.width, cfg.height);
-    svg_title(&mut buf, cfg.width, cfg.title, "#e2e8f0");
+    svg_title(&mut buf, cfg.width, cfg.title, "#0f172a");
 
     for &(bx, by, br, idx) in &circles {
         let word = &p.words[idx];
@@ -822,7 +822,7 @@ pub fn render_context(cfg: &WordCloudConfig) -> String {
         Some(p) => p,
         None => return String::new(),
     };
-    let bg = cfg.bg_color.unwrap_or("#fafafa");
+    let bg = cfg.bg_color.unwrap_or("#ffffff");
     let w = cfg.width as f64;
     let h = cfg.height as f64;
     let pad_t = p.pad_t;

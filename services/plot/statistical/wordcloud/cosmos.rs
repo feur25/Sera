@@ -60,8 +60,8 @@ pub fn render(cfg: &WordCloudConfig) -> String {
         &mut buf,
         b"<defs>\
         <radialGradient id=\"csbg\" cx=\"50%\" cy=\"50%\" r=\"72%\">\
-        <stop offset=\"0%\" stop-color=\"#111827\"/>\
-        <stop offset=\"100%\" stop-color=\"#030712\"/>\
+        <stop offset=\"0%\" stop-color=\"#f8fafc\"/>\
+        <stop offset=\"100%\" stop-color=\"#ffffff\"/>\
         </radialGradient>\
         <filter id=\"cs-outer\" x=\"-150%\" y=\"-150%\" width=\"500%\" height=\"500%\" color-interpolation-filters=\"sRGB\">\
         <feGaussianBlur stdDeviation=\"6\" result=\"blur\"/>\
@@ -98,7 +98,7 @@ pub fn render(cfg: &WordCloudConfig) -> String {
         push_f2(&mut buf, sy);
         push_b(&mut buf, b"\" r=\"");
         push_f2(&mut buf, sr);
-        push_b(&mut buf, b"\" fill=\"#ffffff\" fill-opacity=\"");
+        push_b(&mut buf, b"\" fill=\"#94a3b8\" fill-opacity=\"");
         push_f2(&mut buf, so);
         push_b(&mut buf, b"\"/>");
     }
@@ -107,7 +107,7 @@ pub fn render(cfg: &WordCloudConfig) -> String {
     if !cfg.title.is_empty() {
         push_b(&mut buf, b"<text x=\"");
         push_i(&mut buf, cfg.width / 2);
-        push_b(&mut buf, b"\" y=\"30\" text-anchor=\"middle\" font-family=\"'Segoe UI',Arial,sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#c8d5f0\" letter-spacing=\"1.5\">");
+        push_b(&mut buf, b"\" y=\"30\" text-anchor=\"middle\" font-family=\"'Segoe UI',Arial,sans-serif\" font-size=\"14\" font-weight=\"700\" fill=\"#1a202c\" letter-spacing=\"1.5\">");
         escape_xml(&mut buf, cfg.title);
         push_b(&mut buf, b"</text>");
     }
@@ -284,5 +284,11 @@ pub fn render(cfg: &WordCloudConfig) -> String {
         &slots_json
     };
     let html = build_chart_html(cfg.title, &svg, json);
-    crate::html::hover::apply_deep(&html, &|region| region.replacen(".sp-bg{fill:#ffffff}", ".sp-bg{fill:url(#csbg)}", 1))
+    match cfg.bg_color {
+        Some(bg) if !bg.eq_ignore_ascii_case("#ffffff") => {
+            let rule = format!(".sp-bg{{fill:{bg}}}");
+            crate::html::hover::apply_deep(&html, &|region| region.replacen(".sp-bg{fill:#ffffff}", &rule, 1))
+        }
+        _ => html,
+    }
 }

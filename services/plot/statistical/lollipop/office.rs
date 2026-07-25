@@ -5,7 +5,7 @@ use crate::plot::statistical::common::{
 };
 
 #[crate::chart_demo(
-    "labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\"], values=[24,38,17,42,29]"
+    "title=\"The Office IMDb ratings by season\", y_label=\"rating\", labels=[\"S1E1\",\"S1E2\",\"S1E3\",\"S1E4\",\"S2E1\",\"S2E2\",\"S2E3\",\"S3E1\",\"S3E2\",\"S3E3\",\"S4E1\",\"S4E2\",\"S5E1\",\"S5E2\",\"S6E1\",\"S6E2\"], values=[7.5,8.3,7.9,8.1,8.4,8.7,9.0,8.8,9.1,8.9,9.2,9.0,8.7,8.6,8.4,8.0], color_groups=[\"S1\",\"S1\",\"S1\",\"S1\",\"S2\",\"S2\",\"S2\",\"S3\",\"S3\",\"S3\",\"S4\",\"S4\",\"S5\",\"S5\",\"S6\",\"S6\"], variant=\"office\""
 )]
 
 pub fn render(cfg: &LollipopConfig) -> String {
