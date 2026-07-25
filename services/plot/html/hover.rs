@@ -182,46 +182,141 @@ pub fn apply_bg(html: String, bg: Option<&str>) -> String {
         None | Some("") => return html,
         Some(c) => c,
     };
-    let color = resolve_named_color(raw);
-    let h = if let Some(pos) = html.find(".sp-bg{fill:") {
-        let end = html[pos..]
-            .find('}')
-            .map(|i| pos + i + 1)
-            .unwrap_or(html.len());
-        let mut s = html;
-        s.replace_range(pos..end, &format!(".sp-bg{{fill:{color}}}"));
-        s
-    } else {
-        html
-    };
-    h.replacen(
-        "</head>",
-        &format!("<style>html,body{{background:{color}!important}}</style></head>"),
-        1,
-    )
+    let color = resolve_named_color(raw).to_string();
+    apply_deep(&html, &|region| {
+        let h = if let Some(pos) = region.find(".sp-bg{fill:") {
+            let end = region[pos..]
+                .find('}')
+                .map(|i| pos + i + 1)
+                .unwrap_or(region.len());
+            let mut s = region.to_string();
+            s.replace_range(pos..end, &format!(".sp-bg{{fill:{color}}}"));
+            s
+        } else {
+            region.to_string()
+        };
+        h.replacen(
+            "</head>",
+            &format!("<style>html,body{{background:{color}!important}}</style></head>"),
+            1,
+        )
+    })
 }
 
 #[inline]
 pub fn apply_opts(html: String, bg: Option<&str>, show_x: bool, show_y: bool) -> String {
     let mut h = apply_bg(html, bg);
     if !show_x {
-        h = h.replacen(
-            "</head>",
-            "<style>.sp-ax-x,.sp-xt,.sp-xl{display:none}</style></head>",
-            1,
-        );
+        h = inject_before_head(&h, "<style>.sp-ax-x,.sp-xt,.sp-xl{display:none}</style></head>");
     }
     if !show_y {
-        h = h.replacen(
-            "</head>",
-            "<style>.sp-ax-y,.sp-yt,.sp-yl{display:none}</style></head>",
-            1,
-        );
+        h = inject_before_head(&h, "<style>.sp-ax-y,.sp-yt,.sp-yl{display:none}</style></head>");
     }
     h
 }
 
 #[inline]
+fn html_unescape_attr(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    let mut rest = s;
+    while let Some(amp) = rest.find('&') {
+        out.push_str(&rest[..amp]);
+        let tail = &rest[amp..];
+        let (replacement, consumed) = if tail.starts_with("&amp;") {
+            ("&", 5)
+        } else if tail.starts_with("&lt;") {
+            ("<", 4)
+        } else if tail.starts_with("&gt;") {
+            (">", 4)
+        } else if tail.starts_with("&quot;") {
+            ("\"", 6)
+        } else if tail.starts_with("&#39;") {
+            ("'", 5)
+        } else {
+            ("&", 1)
+        };
+        out.push_str(replacement);
+        rest = &tail[consumed..];
+    }
+    out.push_str(rest);
+    out
+}
+
+fn html_escape_attr(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    for c in s.chars() {
+        match c {
+            '&' => out.push_str("&amp;"),
+            '<' => out.push_str("&lt;"),
+            '>' => out.push_str("&gt;"),
+            '"' => out.push_str("&quot;"),
+            '\'' => out.push_str("&#39;"),
+            other => out.push(other),
+        }
+    }
+    out
+}
+
+pub fn inject_before_head(html: &str, head_replacement: &str) -> String {
+    apply_deep(html, &|region| region.replacen("</head>", head_replacement, 1))
+}
+
+pub fn inject_before_body(html: &str, body_replacement: &str) -> String {
+    apply_deep(html, &|region| region.replacen("</body>", body_replacement, 1))
+}
+
+pub fn inject_before_svg_close(html: &str, svg_replacement: &str) -> String {
+    apply_deep(html, &|region| region.replacen("</svg>", svg_replacement, 1))
+}
+
+pub fn insert_after_svg_open(html: &str, insert: &str) -> String {
+    apply_deep(html, &|region| match region.find("<svg") {
+        Some(pos) => match region[pos..].find('>') {
+            Some(end) => {
+                let after_open = pos + end + 1;
+                let mut h = region.to_string();
+                h.insert_str(after_open, insert);
+                h
+            }
+            None => region.to_string(),
+        },
+        None => region.to_string(),
+    })
+}
+
+pub fn apply_deep(html: &str, transform: &dyn Fn(&str) -> String) -> String {
+    let updated = transform(html);
+    if !updated.contains("srcdoc=\"") {
+        return updated;
+    }
+    rewrite_nested_srcdocs(&updated, transform)
+}
+
+fn rewrite_nested_srcdocs(html: &str, transform: &dyn Fn(&str) -> String) -> String {
+    let needle = "srcdoc=\"";
+    let mut out = String::with_capacity(html.len());
+    let mut rest = html;
+    loop {
+        let Some(start) = rest.find(needle) else {
+            out.push_str(rest);
+            break;
+        };
+        let attr_val_start = start + needle.len();
+        out.push_str(&rest[..attr_val_start]);
+        let Some(end_rel) = rest[attr_val_start..].find('"') else {
+            out.push_str(&rest[attr_val_start..]);
+            break;
+        };
+        let end = attr_val_start + end_rel;
+        let decoded = html_unescape_attr(&rest[attr_val_start..end]);
+        let transformed = apply_deep(&decoded, transform);
+        out.push_str(&html_escape_attr(&transformed));
+        out.push('"');
+        rest = &rest[end + 1..];
+    }
+    out
+}
+
 pub fn apply_rotation(html: String, deg: i32) -> String {
     if deg == 0 {
         return html;
@@ -780,4 +875,50 @@ pub fn set_bg(input: &str) -> String {
         return apply_bg(payload.html.unwrap_or_default(), payload.color.as_deref());
     }
     apply_bg(input.to_string(), None)
+}
+
+#[cfg(test)]
+mod inject_marker_composition_tests {
+    use super::{inject_before_head, inject_before_svg_close, html_escape_attr};
+
+    fn make_composed_page(inner: &str) -> String {
+        format!(
+            "<!DOCTYPE html><html><head></head><body><iframe srcdoc=\"{}\"></iframe></body></html>",
+            html_escape_attr(inner)
+        )
+    }
+
+    #[test]
+    fn head_injection_reaches_into_nested_srcdoc_iframes() {
+        let inner = "<!DOCTYPE html><html><head></head><body><svg></svg></body></html>";
+        let composed = make_composed_page(inner);
+        let result = inject_before_head(&composed, "<style>x</style></head>");
+        assert!(!result.contains("<head></head>"), "outer head should have been rewritten too");
+        let iframe_start = result.find("srcdoc=\"").unwrap() + "srcdoc=\"".len();
+        let iframe_end = result[iframe_start..].find('"').unwrap() + iframe_start;
+        assert!(
+            result[iframe_start..iframe_end].contains("style"),
+            "injected style did not reach the nested iframe's own head"
+        );
+    }
+
+    #[test]
+    fn svg_injection_reaches_into_nested_srcdoc_iframes_even_when_outer_has_no_svg() {
+        let inner = "<!DOCTYPE html><html><head></head><body><svg><rect/></svg></body></html>";
+        let composed = make_composed_page(inner);
+        let result = inject_before_svg_close(&composed, "<circle/></svg>");
+        let iframe_start = result.find("srcdoc=\"").unwrap() + "srcdoc=\"".len();
+        let iframe_end = result[iframe_start..].find('"').unwrap() + iframe_start;
+        assert!(
+            result[iframe_start..iframe_end].contains("circle"),
+            "injected svg content did not reach the nested iframe, even though the outer page has no <svg> at all"
+        );
+    }
+
+    #[test]
+    fn non_composed_single_chart_html_is_unaffected() {
+        let single = "<!DOCTYPE html><html><head></head><body><svg></svg></body></html>";
+        let result = inject_before_head(single, "<style>x</style></head>");
+        assert_eq!(result, single.replacen("</head>", "<style>x</style></head>", 1));
+    }
 }

@@ -19,7 +19,7 @@ impl Chart {
             "<script>window.__sp_leg_off__={{dx:{},dy:{}}};{}</script></body>",
             dx, dy, SP_LEGEND_OFFSET_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -37,7 +37,7 @@ impl Chart {
             "<script>window.__sp_ttl_off__={{dx:{},dy:{}}};{}</script></body>",
             dx, dy, SP_TITLE_OFFSET_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -54,7 +54,7 @@ impl Chart {
             "<script>window.__sp_xlrot__={};{}</script></body>",
             degrees, SP_X_LABELS_ROT_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -71,6 +71,6 @@ impl Chart {
             "<script>window.__sp_ylrot__={};{}</script></body>",
             degrees, SP_Y_LABELS_ROT_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 }

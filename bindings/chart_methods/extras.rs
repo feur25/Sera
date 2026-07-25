@@ -129,7 +129,7 @@ impl Chart {
             labels_json,
             SP_FRAMES_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -178,7 +178,7 @@ impl Chart {
             label_json,
             SP_SECONDARY_Y_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -203,6 +203,6 @@ impl Chart {
             "<script>window.__sp_bar_scale__={};{}</script></body>",
             json, SP_BAR_SCALE_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 }

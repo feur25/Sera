@@ -157,7 +157,7 @@ static GLOBAL_GRIDLINES: std::sync::atomic::AtomicBool = std::sync::atomic::Atom
 
 static GLOBAL_THEME_NAME: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 
-static AUTO_DISPLAY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(true);
+static AUTO_DISPLAY: std::sync::atomic::AtomicBool = std::sync::atomic::AtomicBool::new(false);
 
 static GLOBAL_FONT: std::sync::Mutex<Option<String>> = std::sync::Mutex::new(None);
 static GLOBAL_FONT_SIZE: std::sync::atomic::AtomicI32 = std::sync::atomic::AtomicI32::new(0);
@@ -314,7 +314,7 @@ pub(crate) fn apply_3d_cfg(html: String, opts_json: &str) -> String {
         "<script>(function(){{var f=window['__sp3dCfg_{}'];if(f)f({});}})();</script></body>",
         cid, opts_json
     );
-    html.replacen("</body>", &snippet, 1)
+    crate::html::hover::inject_before_body(&html, &snippet)
 }
 
 pub(crate) fn inject_labels(html: &str, pos: &str, labels: &[String], colors: &[String]) -> String {
@@ -329,7 +329,7 @@ pub(crate) fn inject_labels(html: &str, pos: &str, labels: &[String], colors: &[
     } else {
         encode_forced(labels, colors)
     };
-    html.replacen("</body>", &build_labels_js(pos, &forced), 1)
+    crate::html::hover::inject_before_body(&html, &build_labels_js(pos, &forced))
 }
 
 const SP_CROSSHAIR_JS: &str = crate::bindings::chart_methods::js::SP_CROSSHAIR_JS;
@@ -487,9 +487,9 @@ fn inject_global_cfg(html: String) -> String {
     js.push(';');
     let mut out = html;
     if !css.is_empty() {
-        out = out.replacen("</head>", &format!("<style>{}</style></head>", css), 1);
+        out = crate::html::hover::inject_before_head(&out, &format!("<style>{}</style></head>", css));
     }
-    out = out.replacen("</body>", &format!("<script>{}</script></body>", js), 1);
+    out = crate::html::hover::inject_before_body(&out, &format!("<script>{}</script></body>", js));
     out
 }
 
@@ -681,7 +681,7 @@ pub(crate) fn apply_global_color_bindings(html: String) -> String {
         "(function(){{var m={{{}}};var svg=document.querySelector('svg');if(!svg)return;svg.querySelectorAll('[data-lbl]').forEach(function(el){{var lbl=el.getAttribute('data-lbl');if(m[lbl])el.style.setProperty('fill',m[lbl],'important');}});}})()",
         entries
     );
-    html.replacen("</body>", &format!("<script>{}</script></body>", js), 1)
+    crate::html::hover::inject_before_body(&html, &format!("<script>{}</script></body>", js))
 }
 
 #[sera_doc(

@@ -42,7 +42,7 @@ impl Chart {
             "<g style=\"mix-blend-mode:{};pointer-events:none;\" width=\"{}\" height=\"{}\">{}</g></svg>",
             mode, ow, oh, &other_svg[other_svg.find('>').map(|i| i + 1).unwrap_or(0)..other_svg.len() - 6]
         );
-        let html = self.html.replacen("</svg>", &inject, 1);
+        let html = crate::html::hover::inject_before_svg_close(&self.html, &inject);
         self.propagate(html)
     }
 
@@ -62,19 +62,7 @@ impl Chart {
             "<image href=\"{}\" x=\"0\" y=\"0\" width=\"100%\" height=\"100%\" preserveAspectRatio=\"xMidYMid slice\" opacity=\"{:.2}\"/>",
             url, op
         );
-        let html = if let Some(pos) = self.html.find("<svg") {
-            if let Some(end) = self.html[pos..].find('>') {
-                let after_open = pos + end + 1;
-                let mut h = self.html.clone();
-                h.insert_str(after_open, &insert);
-                h
-            } else {
-                self.html.clone()
-            }
-        } else {
-            self.html.clone()
-        };
-        self.propagate(html)
+        self.propagate(crate::html::hover::insert_after_svg_open(&self.html, &insert))
     }
 
     #[sera_doc(
@@ -204,7 +192,7 @@ impl Chart {
             ));
         }
         let layer = format!("<g class=\"sp-flourish\" style=\"pointer-events:none\">{}</g></svg>", circles);
-        let html = self.html.replacen("</svg>", &layer, 1);
+        let html = crate::html::hover::inject_before_svg_close(&self.html, &layer);
         self.propagate(html)
     }
 
@@ -229,7 +217,7 @@ impl Chart {
             "<text x=\"{:.1}%\" y=\"{:.1}%\" text-anchor=\"middle\" dominant-baseline=\"middle\" font-size=\"{:.0}\" font-weight=\"900\" fill=\"{}\" opacity=\"{:.3}\" pointer-events=\"none\" style=\"user-select:none;letter-spacing:0.08em;\">{}</text></svg>",
             x, y, size, color, op, escaped
         );
-        let html = self.html.replacen("</svg>", &node, 1);
+        let html = crate::html::hover::inject_before_svg_close(&self.html, &node);
         self.propagate(html)
     }
 

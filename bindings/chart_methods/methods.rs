@@ -90,10 +90,10 @@ impl Chart {
     )]
     #[sera_sig(css)]
     pub fn inject_css(&self, css: &str) -> Chart {
-        self.propagate(
-            self.html
-                .replacen("</head>", &format!("<style>{css}</style></head>"), 1),
-        )
+        self.propagate(crate::html::hover::inject_before_head(
+            &self.html,
+            &format!("<style>{css}</style></head>"),
+        ))
     }
 
     #[sera_doc(
@@ -111,10 +111,10 @@ impl Chart {
     )]
     #[sera_sig(js)]
     pub fn inject_js(&self, js: &str) -> Chart {
-        self.propagate(
-            self.html
-                .replacen("</body>", &format!("<script>{js}</script></body>"), 1),
-        )
+        self.propagate(crate::html::hover::inject_before_body(
+            &self.html,
+            &format!("<script>{js}</script></body>"),
+        ))
     }
 
     #[sera_doc(
@@ -140,7 +140,7 @@ impl Chart {
         fr = "Désactive l'infobulle au survol et supprime le surlignage des éléments au survol."
     )]
     pub fn no_hover(&self) -> Chart {
-        self.propagate(self.html.replacen("</head>", "<style>#sp-tip{display:none!important}[data-idx]{pointer-events:none!important}[data-idx]:hover{filter:none!important}</style></head>", 1))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>#sp-tip{display:none!important}[data-idx]{pointer-events:none!important}[data-idx]:hover{filter:none!important}</style></head>"))
     }
 
     #[sera_doc(
@@ -212,7 +212,7 @@ impl Chart {
     pub fn segment_bars(&self) -> Chart {
         use super::js::SP_SEGMENT_BARS_JS;
         let html = if self.html.contains("</body>") {
-            self.html.replacen("</body>", &(SP_SEGMENT_BARS_JS.to_string() + "</body>"), 1)
+            crate::html::hover::inject_before_body(&self.html, &(SP_SEGMENT_BARS_JS.to_string() + "</body>"))
         } else {
             self.html.clone()
         };
@@ -238,7 +238,7 @@ impl Chart {
             "<style>svg text{{font-size:{}px!important}}</style></head>",
             px
         );
-        self.propagate(self.html.replacen("</head>", &style, 1))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, &style))
     }
 
     #[sera_doc(
@@ -260,7 +260,7 @@ impl Chart {
             "<style>svg{{transform:scale({});transform-origin:top left}}</style></head>",
             factor
         );
-        self.propagate(self.html.replacen("</head>", &style, 1))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, &style))
     }
 
     #[sera_doc(
@@ -283,7 +283,7 @@ impl Chart {
             Some(c) => c.to_string(),
         };
         let style = format!("<style>svg{{background:{bg}!important}}.c3w canvas{{background:{bg}!important}}.c3w{{background:{bg}!important}}</style></head>");
-        self.propagate(self.html.replacen("</head>", &style, 1))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, &style))
     }
 
     #[sera_doc(
@@ -374,7 +374,7 @@ impl Chart {
     )]
     #[sera_sig(name)]
     pub fn font(&self, name: &str) -> Chart {
-        self.propagate(self.html.replacen("</head>", &format!("<style>svg text,body{{font-family:'{}',system-ui,sans-serif!important}}</style></head>", name), 1))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, &format!("<style>svg text,body{{font-family:'{}',system-ui,sans-serif!important}}</style></head>", name)))
     }
 
     #[sera_doc(
@@ -466,7 +466,7 @@ impl Chart {
             None => "null".into(),
         };
         let js = format!("window.__sp_desat__={{i:{},f:{:.2}}};{}", idx_json, factor.clamp(0.0, 1.0), SP_DESATURATE_JS);
-        self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", js), 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", js)))
     }
 
     #[sera_doc(
@@ -478,7 +478,7 @@ impl Chart {
     )]
     pub fn sparse_grid(&self) -> Chart {
         let style = "<style>line.sp-gl{stroke-dasharray:4 4!important;stroke-opacity:.4!important}</style></head>";
-        self.propagate(self.html.replacen("</head>", style, 1))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, style))
     }
 
     #[sera_doc(
@@ -489,8 +489,8 @@ impl Chart {
         fr = "Affiche uniquement les lignes de grille horizontales (niveaux de valeur Y), masquant les lignes verticales."
     )]
     pub fn grid_y(&self) -> Chart {
-        let mut html = self.html.replacen("</head>", "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>", 1);
-        html = html.replacen("</body>", &format!("<script>{}</script></body>", SP_GRID_Y_ONLY_JS), 1);
+        let mut html = crate::html::hover::inject_before_head(&self.html, "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>");
+        html = crate::html::hover::inject_before_body(&html, &format!("<script>{}</script></body>", SP_GRID_Y_ONLY_JS));
         self.propagate(html)
     }
 
@@ -502,8 +502,8 @@ impl Chart {
         fr = "Affiche uniquement les lignes de grille verticales (séparatrices de catégories X), masquant les lignes horizontales."
     )]
     pub fn grid_x(&self) -> Chart {
-        let mut html = self.html.replacen("</head>", "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>", 1);
-        html = html.replacen("</body>", &format!("<script>{}</script></body>", SP_GRID_X_ONLY_JS), 1);
+        let mut html = crate::html::hover::inject_before_head(&self.html, "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>");
+        html = crate::html::hover::inject_before_body(&html, &format!("<script>{}</script></body>", SP_GRID_X_ONLY_JS));
         self.propagate(html)
     }
 
@@ -542,7 +542,7 @@ impl Chart {
             "window.__sp_grid_at__={{vs:[{}],c:{},ls:[{}]}};",
             value, json_str(color), lbl
         );
-        self.propagate(self.html.replacen("</body>", &format!("<script>{}{}</script></body>", cfg, SP_GRID_AT_JS), 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}{}</script></body>", cfg, SP_GRID_AT_JS)))
     }
 
     #[sera_doc(
@@ -577,7 +577,7 @@ impl Chart {
             "window.__sp_cut_bars__={{sp:{},gp:{},c:{}}};",
             sp, gap.max(1), json_str(color.unwrap_or("#ffffff"))
         );
-        self.propagate(self.html.replacen("</body>", &format!("<script>{}{}</script></body>", cfg, SP_CUT_BARS_JS), 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}{}</script></body>", cfg, SP_CUT_BARS_JS)))
     }
 
     #[sera_doc(
@@ -596,7 +596,7 @@ impl Chart {
     #[sera_sig(color = "#ff0000")]
     pub fn draw_tool(&self, color: &str) -> Chart {
         let cfg = format!("window.__sp_draw_cfg__={{color:{}}};", json_str(color));
-        self.propagate(self.html.replacen("</body>", &format!("<script>{}{}</script></body>", cfg, SP_DRAW_TOOL_JS), 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}{}</script></body>", cfg, SP_DRAW_TOOL_JS)))
     }
 
     #[sera_doc(
@@ -613,7 +613,7 @@ impl Chart {
             "<style>body,body *{user-select:none!important;-webkit-user-select:none!important}</style></head>",
             1,
         );
-        self.propagate(h.replacen("</body>", &format!("<script>{}</script></body>", JS), 1))
+        self.propagate(crate::html::hover::inject_before_body(&h, &format!("<script>{}</script></body>", JS)))
     }
 
     #[sera_doc(
@@ -661,7 +661,7 @@ impl Chart {
         fr = "Colore chaque élément de données selon sa valeur sur un gradient de densité : faibles valeurs → bleu/indigo, hautes valeurs → jaune/rouge."
     )]
     pub fn color_density(&self) -> Chart {
-        self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", SP_COLOR_DENSITY_JS), 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_COLOR_DENSITY_JS)))
     }
 
     #[sera_doc(
@@ -701,7 +701,7 @@ impl Chart {
     pub fn highlight_group(&self, labels: Vec<String>, dim: f64) -> Chart {
         let labels_json = format!("[{}]", labels.iter().map(|l| format!("\"{}\"", l.replace('"', "\\\""))).collect::<Vec<_>>().join(","));
         let js = format!("window.__sp_hl_grp__={{g:{},d:{:.2}}};{}", labels_json, dim.clamp(0.0, 1.0), SP_HIGHLIGHT_STATIC_JS);
-        self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", js), 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", js)))
     }
 
     #[sera_doc(
@@ -733,7 +733,7 @@ impl Chart {
             "(function(){{var m={{{}}};var svg=document.querySelector('svg');if(!svg)return;svg.querySelectorAll('[data-lbl]').forEach(function(el){{var lbl=el.getAttribute('data-lbl');if(m[lbl])el.style.setProperty('fill',m[lbl],'important');}});}})()",
             entries
         );
-        self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", js), 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", js)))
     }
 
     #[sera_doc(
@@ -814,7 +814,7 @@ impl Chart {
             json_str(ord),
             SP_SORT_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -844,7 +844,7 @@ impl Chart {
             json_str(pos),
             SP_LEGEND_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -863,7 +863,7 @@ impl Chart {
     #[sera_sig(angle)]
     pub fn rotate_labels(&self, angle: i32) -> Chart {
         let css = format!("<style>.sp-xt{{transform-box:fill-box;transform-origin:center;transform:rotate({}deg)}}</style></head>", angle);
-        self.propagate(self.html.replacen("</head>", &css, 1))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, &css))
     }
 
     #[sera_doc(
@@ -898,11 +898,10 @@ impl Chart {
     pub fn animate(&self, duration: i32) -> Chart {
         let css = format!("<style>@keyframes sp-in{{from{{opacity:0;transform:translateY(8px)}}to{{opacity:1;transform:none}}}}svg rect[data-idx],svg circle[data-idx],svg path.sp-area{{animation:sp-in {}ms ease-out both}}</style></head>", duration);
         let js = "<script>(function(){if(window.__spa__)return;window.__spa__=1;var els=document.querySelectorAll('svg [data-idx]');for(var i=0;i<els.length;i++)els[i].style.animationDelay=i*30+'ms';})();</script></body>";
-        self.propagate(
-            self.html
-                .replacen("</head>", &css, 1)
-                .replacen("</body>", js, 1),
-        )
+        self.propagate(crate::html::hover::inject_before_body(
+            &crate::html::hover::inject_before_head(&self.html, &css),
+            js,
+        ))
     }
 
     #[sera_doc(
@@ -920,7 +919,7 @@ impl Chart {
     )]
     #[sera_sig(px)]
     pub fn border_radius(&self, px: i32) -> Chart {
-        self.propagate(self.html.replacen("</head>", &format!("<style>[id^='spp'],.c3w{{border-radius:{}px!important;overflow:hidden}}</style></head>", px), 1))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, &format!("<style>[id^='spp'],.c3w{{border-radius:{}px!important;overflow:hidden}}</style></head>", px)))
     }
 
     #[sera_doc(
@@ -939,7 +938,7 @@ impl Chart {
     #[sera_sig(value)]
     pub fn set_opacity(&self, value: f64) -> Chart {
         let v = value.clamp(0.0, 1.0);
-        self.propagate(self.html.replacen("</head>", &format!("<style>svg rect[data-idx],svg circle[data-idx],svg path.sp-area{{opacity:{}!important}}</style></head>", v), 1))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, &format!("<style>svg rect[data-idx],svg circle[data-idx],svg path.sp-area{{opacity:{}!important}}</style></head>", v)))
     }
 
     #[sera_doc(
@@ -969,8 +968,8 @@ impl Chart {
         snippet.push(';');
         snippet.push_str(SP_BAR_GAP_JS);
         snippet.push_str(";</script></body>");
-        let h = self.html.replacen("</head>", &css, 1);
-        self.propagate(h.replacen("</body>", &snippet, 1))
+        let h = crate::html::hover::inject_before_head(&self.html, &css);
+        self.propagate(crate::html::hover::inject_before_body(&h, &snippet))
     }
 
     #[sera_doc(
@@ -993,7 +992,7 @@ impl Chart {
             "<script>window.__sp_bar_gap__={:.4};{}</script></body>",
             r, SP_BAR_GAP_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -1012,7 +1011,7 @@ impl Chart {
     #[sera_sig(px)]
     pub fn set_padding(&self, px: i32) -> Chart {
         let css = format!("<style>[id^='spp'],.c3w{{padding:{px}px!important;box-sizing:border-box}}</style></head>");
-        self.propagate(self.html.replacen("</head>", &css, 1))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, &css))
     }
 
     #[sera_doc(
@@ -1050,7 +1049,7 @@ impl Chart {
             ));
         }
         css.push_str("</style></head>");
-        self.propagate(self.html.replacen("</head>", &css, 1))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, &css))
     }
 
     #[sera_doc(
@@ -1091,7 +1090,7 @@ impl Chart {
         fr = "Force le titre du graphique à être visible avec un contour de contraste pour la lisibilité."
     )]
     pub fn show_title(&self) -> Chart {
-        self.propagate(self.html.replacen("</head>", "<style>.sp-ttl{display:block!important;visibility:visible!important;opacity:1!important;fill:#e2e8f0!important;paint-order:stroke;stroke:rgba(0,0,0,.6);stroke-width:.6px}</style></head>", 1))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>.sp-ttl{display:block!important;visibility:visible!important;opacity:1!important;fill:#e2e8f0!important;paint-order:stroke;stroke:rgba(0,0,0,.6);stroke-width:.6px}</style></head>"))
     }
 
     #[sera_doc(
@@ -1225,7 +1224,7 @@ impl Chart {
         fr = "Force la légende du graphique à être visible même si elle était masquée."
     )]
     pub fn show_legend(&self) -> Chart {
-        self.propagate(self.html.replacen("</head>", "<style>g[data-legend]{display:block!important;visibility:visible!important}</style></head>", 1))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>g[data-legend]{display:block!important;visibility:visible!important}</style></head>"))
     }
 
     #[sera_doc(
@@ -1307,7 +1306,7 @@ impl Chart {
             "<style>.sp-ttl{{fill:{}!important}}</style></head>",
             color
         );
-        self.propagate(self.html.replacen("</head>", &css, 1))
+        self.propagate(crate::html::hover::inject_before_head(&self.html, &css))
     }
 
     #[sera_doc(
@@ -1374,7 +1373,7 @@ impl Chart {
         }
         opts.push_str("};");
         let snippet = format!("<script>{}{}</script></body>", opts, SP_TEXT_JS);
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -1393,7 +1392,7 @@ impl Chart {
     #[sera_sig(position)]
     pub fn text_position(&self, position: &str) -> Chart {
         let snippet = format!("<script>window.__sp_text__=Object.assign(window.__sp_text__||{{}},{{position:{}}});{}</script></body>", json_str(position), SP_TEXT_JS);
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -1412,7 +1411,7 @@ impl Chart {
     #[sera_sig(degrees)]
     pub fn text_angle(&self, degrees: i32) -> Chart {
         let snippet = format!("<script>window.__sp_text__=Object.assign(window.__sp_text__||{{}},{{angle:{}}});{}</script></body>", degrees, SP_TEXT_JS);
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -1454,7 +1453,7 @@ impl Chart {
         }
         opts.push_str("});");
         let snippet = format!("<script>{}{}</script></body>", opts, SP_TEXT_JS);
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -1479,7 +1478,7 @@ impl Chart {
     #[sera_sig(min_size = 8, mode = "hide")]
     pub fn uniform_text(&self, min_size: i32, mode: &str) -> Chart {
         let snippet = format!("<script>window.__sp_text__=Object.assign(window.__sp_text__||{{}},{{uniform_min:{},uniform_mode:{}}});{}</script></body>", min_size, json_str(mode), SP_TEXT_JS);
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -1509,7 +1508,7 @@ impl Chart {
             "<script>window.__sp_bar_r__={};{}</script></body>",
             val, SP_BAR_RADIUS_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -1552,7 +1551,7 @@ impl Chart {
         } else {
             let id = format!("sp-csp-{}", blob.len());
             let tag = format!("<script type=\"application/json\" id=\"{id}\">{}</script><script nonce=\"sp-nonce\">eval(document.getElementById('{id}').textContent)</script></body>", blob.replace("</script>", "<\\/script>"));
-            out.replacen("</body>", &tag, 1)
+            crate::html::hover::inject_before_body(&out, &tag)
         };
         self.propagate(injected)
     }
@@ -1765,7 +1764,7 @@ impl Chart {
             json_str(pos),
             SP_GROUP_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -2782,8 +2781,7 @@ impl Chart {
     )]
     pub fn pick(&self) -> Chart {
         self.propagate(
-            self.html
-                .replacen("</body>", &format!("<script>{}</script></body>", SP_PICK_JS), 1),
+            crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_PICK_JS)),
         )
     }
 
@@ -2796,8 +2794,7 @@ impl Chart {
     )]
     pub fn focus_mode(&self) -> Chart {
         self.propagate(
-            self.html
-                .replacen("</body>", &format!("<script>{}</script></body>", SP_FOCUS_MODE_JS), 1),
+            crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_FOCUS_MODE_JS)),
         )
     }
 
@@ -2818,7 +2815,7 @@ impl Chart {
             "(function(){{var svg=document.querySelector('svg');if(!svg)return;var keep={};var dim={};svg.querySelectorAll('[data-idx]').forEach(function(e){{var bright=keep.indexOf(parseInt(e.getAttribute('data-idx')))>=0;e.style.opacity=bright?'1':String(dim);e.style.transition='opacity .2s';}});}})();",
             keep_js, dim
         );
-        self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", js), 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", js)))
     }
 
     #[sera_doc(
@@ -2837,7 +2834,7 @@ impl Chart {
             "(function(){{var svg=document.querySelector('svg');if(!svg)return;var thr={};var dim={};svg.querySelectorAll('[data-idx][data-v],[data-idx][data-y]').forEach(function(e){{var v=parseFloat(e.getAttribute('data-v')||e.getAttribute('data-y'));var bright=!isNaN(v)&&v>=thr;e.style.opacity=bright?'1':String(dim);e.style.transition='opacity .2s';}});}})();",
             threshold, dim
         );
-        self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", js), 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", js)))
     }
 
     #[sera_doc(
@@ -2856,7 +2853,7 @@ impl Chart {
             "(function(){{var svg=document.querySelector('svg');if(!svg)return;var thr={};var dim={};svg.querySelectorAll('[data-idx][data-v],[data-idx][data-y]').forEach(function(e){{var v=parseFloat(e.getAttribute('data-v')||e.getAttribute('data-y'));var bright=!isNaN(v)&&v<=thr;e.style.opacity=bright?'1':String(dim);e.style.transition='opacity .2s';}});}})();",
             threshold, dim
         );
-        self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", js), 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", js)))
     }
 
     #[sera_doc(
@@ -2869,8 +2866,7 @@ impl Chart {
     #[sera_python_skip]
     pub fn compare_ticker(&self) -> Chart {
         self.propagate(
-            self.html
-                .replacen("</body>", &format!("<script>{}</script></body>", SP_COMPARE_JS), 1),
+            crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_COMPARE_JS)),
         )
     }
 
@@ -2931,8 +2927,7 @@ impl Chart {
             )
         };
         self.propagate(
-            self.html
-                .replacen("</body>", &format!("<script>{}</script></body>", js), 1),
+            crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", js)),
         )
     }
 
@@ -2951,7 +2946,7 @@ impl Chart {
             "<script>window.__sp_mean__={{c:{}}};{}</script></body>",
             c, SP_MEAN_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -2969,7 +2964,7 @@ impl Chart {
             "<script>window.__sp_median__={{c:{}}};{}</script></body>",
             c, SP_MEDIAN_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -3009,7 +3004,7 @@ impl Chart {
             "<script>window.__sp_cadrage__={{c:{},r:{},f:{}}};{}</script></body>",
             cols_json, rows_json, fc, SP_CADRAGE_JS
         );
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -3031,7 +3026,7 @@ impl Chart {
             step_js
         );
         let snippet = format!("<script>{}</script></body>", js);
-        self.propagate(self.html.replacen("</body>", &snippet, 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
 
     #[sera_doc(
@@ -3232,6 +3227,6 @@ impl Chart {
             "(function(){{var svg=document.querySelector('svg');if(!svg)return;var idxs={};var labels={};var color={};var d=svg.getAttribute('data-sp')||'';var sp=d.split(',').map(Number);var pT=sp[1]||36,pH=sp[3]||360;var ns='http://www.w3.org/2000/svg';var els=Array.prototype.slice.call(svg.querySelectorAll('[data-idx]'));idxs.forEach(function(idx,i){{var match=null;for(var k=0;k<els.length;k++){{if(parseInt(els[k].getAttribute('data-idx'))===idx){{match=els[k];break;}}}}if(!match)return;var x=match.hasAttribute('cx')?parseFloat(match.getAttribute('cx')):(parseFloat(match.getAttribute('x')||0)+parseFloat(match.getAttribute('width')||0)/2);var ln=document.createElementNS(ns,'line');ln.setAttribute('x1',x);ln.setAttribute('x2',x);ln.setAttribute('y1',pT);ln.setAttribute('y2',pT+pH);ln.setAttribute('stroke',color);ln.setAttribute('stroke-width','1.5');ln.setAttribute('stroke-dasharray','4,3');ln.setAttribute('opacity','0.85');svg.appendChild(ln);var t=document.createElementNS(ns,'text');t.setAttribute('x',x+4);t.setAttribute('y',pT+12);t.setAttribute('font-size','10.5');t.setAttribute('font-weight','700');t.setAttribute('fill',color);t.setAttribute('transform','rotate(-90 '+(x+4)+' '+(pT+12)+')');t.textContent=labels[i]||'';svg.appendChild(t);}});}})();",
             idx_js, labels_js, json_str(color)
         );
-        self.propagate(self.html.replacen("</body>", &format!("<script>{}</script></body>", js), 1))
+        self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", js)))
     }
 }

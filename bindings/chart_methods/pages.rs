@@ -38,11 +38,15 @@ fn cleaned_html(html: &str) -> String {
 fn sniff_meta_size(s: &str) -> Option<(u32, u32)> {
     let needle = "name=\"sp-size\" content=\"";
     let start = s.find(needle)? + needle.len();
+    
     let end = start + s[start..].find('"')?;
     let raw = &s[start..end];
+
     let (w, h) = raw.split_once('x')?;
+
     let w = w.parse::<u32>().ok()?;
     let h = h.parse::<u32>().ok()?;
+
     if (150..=8000).contains(&w) && (150..=8000).contains(&h) {
         Some((w, h))
     } else {
@@ -132,7 +136,7 @@ fn apply_visual_scale(html: String, target_max: f64) -> String {
         "<script>(function(){{var svg=document.querySelector('svg');if(!svg)return;var sp=(svg.getAttribute('data-sp')||'').split(',').map(Number);if(sp.length<4)return;var pl=sp[0],pt=sp[1],pw=sp[2],ph=sp[3];var tmax={};svg.querySelectorAll('[data-idx][data-v]').forEach(function(e){{var v=parseFloat(e.getAttribute('data-v'));if(isNaN(v))return;var nh=(v/tmax)*ph;var ny=pt+ph-nh;var tag=e.tagName.toLowerCase();if(tag==='rect'){{e.setAttribute('height',Math.max(0,nh));e.setAttribute('y',ny);}}else if(tag==='circle'){{e.setAttribute('cy',ny);}}}});}})();</script></body>",
         target_max
     );
-    html.replacen("</body>", &snippet, 1)
+    crate::html::hover::inject_before_body(&html, &snippet)
 }
 
 #[cfg(feature = "python")]

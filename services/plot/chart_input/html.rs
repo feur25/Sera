@@ -281,11 +281,11 @@ fn apply_kwarg_chains(html: String, o: &ChartOpts) -> String {
             html
         } else {
             let block = format!("<script>{}</script></body>", snip);
-            html.replacen("</body>", &block, 1)
+            crate::html::hover::inject_before_body(&html, &block)
         };
         if let Some(ref tc) = o.title_color {
             let css = format!("<style>.sp-ttl{{fill:{}!important}}</style></head>", tc);
-            html.replacen("</head>", &css, 1)
+            crate::html::hover::inject_before_head(&html, &css)
         } else {
             html
         }
