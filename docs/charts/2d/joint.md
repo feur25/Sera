@@ -59,7 +59,7 @@ Each region — panel, top strip, right strip — is a real, independently-rende
 
 For a true bivariate (2D) density surface — not just `kde`'s own 1D curve — use `variant="kde", panel_variant="contour"`: [`kde()`](kde.md)'s `contour` variant fits a product-kernel Gaussian KDE jointly over `x` and `y` and shades a smooth density surface with the raw points overlaid, matching seaborn's `smooth_bivariate_kde` / `joint_kde` examples. Legacy preset names (`layered_bivariate`, `joint_kde`, `kde_smooth`, `smooth_bivariate_kde`, …) already resolve to exactly this.
 
-The 8 preset names from earlier releases (`hexbin_marginal`, `heat_scatter` / `joint_histogram` / `histogram2d`, `layered_bivariate`, `joint_kde`, `kde_smooth`, `multiple_bivariate_kde`, `marginal_ticks`, `regression_marginals`) still work as `variant=` values and resolve to a real family under the hood (`resolve_legacy_panel()` in `joint/variant.rs`), so existing code keeps working.
+The preset names from earlier releases (`hexbin_marginal`, `joint_histogram` / `histogram2d`, `layered_bivariate`, `joint_kde`, `kde_smooth`, `multiple_bivariate_kde`, `marginal_ticks`, `regression_marginals`) still work as `variant=` values and resolve to a real family under the hood (`resolve_legacy_panel()` in `joint/variant.rs`), so existing code keeps working. `heat_scatter` — seaborn's *correlation matrix drawn as sized/colored scatter dots* — isn't a joint/marginal plot at all; use [`heatmap(variant="bubble")`](heatmap.md) directly.
 
 ## Data
 
@@ -141,7 +141,7 @@ Chaque région — panneau, bande haute, bande droite — est un vrai graphique 
 
 Pour une véritable surface de densité bivariée (2D) — pas seulement la courbe 1D propre à `kde` — utilisez `variant="kde", panel_variant="contour"` : la variante `contour` de [`kde()`](kde.md) ajuste une estimation par noyau gaussien (produit de noyaux) conjointement sur `x` et `y` et affiche une surface de densité lissée avec les points bruts superposés, à l'image des exemples seaborn `smooth_bivariate_kde` / `joint_kde`. Les noms hérités (`layered_bivariate`, `joint_kde`, `kde_smooth`, `smooth_bivariate_kde`, …) se résolvent déjà exactement ainsi.
 
-Les 8 noms préréglés des versions précédentes (`hexbin_marginal`, `heat_scatter` / `joint_histogram` / `histogram2d`, `layered_bivariate`, `joint_kde`, `kde_smooth`, `multiple_bivariate_kde`, `marginal_ticks`, `regression_marginals`) fonctionnent toujours comme valeurs de `variant=` et se résolvent vers une vraie famille en interne (`resolve_legacy_panel()` dans `joint/variant.rs`), donc le code existant continue de fonctionner.
+Les noms préréglés des versions précédentes (`hexbin_marginal`, `joint_histogram` / `histogram2d`, `layered_bivariate`, `joint_kde`, `kde_smooth`, `multiple_bivariate_kde`, `marginal_ticks`, `regression_marginals`) fonctionnent toujours comme valeurs de `variant=` et se résolvent vers une vraie famille en interne (`resolve_legacy_panel()` dans `joint/variant.rs`), donc le code existant continue de fonctionner. `heat_scatter` — la *matrice de corrélation de seaborn tracée en points dimensionnés/colorés* — n'est pas un graphique joint/marginal du tout ; utilisez directement [`heatmap(variant="bubble")`](heatmap.md).
 
 ## Données
 

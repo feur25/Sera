@@ -4,6 +4,8 @@ use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
 use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i};
 use std::f64::consts::PI;
 
+#[crate::chart_demo("labels=[\"North\",\"South\",\"East\",\"West\"], col_labels=[\"0h\",\"3h\",\"6h\",\"9h\",\"12h\",\"15h\",\"18h\",\"21h\"], values=[210,190,180,220,260,240,230,215,150,140,135,160,190,175,165,155,300,280,260,310,340,320,300,290,120,110,105,130,150,145,140,125]")]
+
 pub fn render(cfg: &HeatmapConfig) -> String {
     let nr = cfg.row_labels.len();
     let nc = if cfg.col_labels.is_empty() { 24 } else { cfg.col_labels.len() };

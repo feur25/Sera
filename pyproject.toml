@@ -1,0 +1,15 @@
+[build-system]
+requires = ["maturin>=1.0"]
+build-backend = "maturin"
+
+[project]
+name = "seraplot"
+version = "2.7.25"
+description = "Rust data visualization framework - The modern Plotly alternative"
+requires-python = ">=3.8"
+authors = [{name = "Quentin", email = "feur09@gmail.com"}]
+license = {text = "MIT"}
+
+[tool.maturin]
+features = ["python", "webapp"]
+python-source = "python"

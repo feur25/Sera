@@ -91,7 +91,7 @@ mod tests {
     fn legacy_preset_names_still_resolve_to_a_real_family() {
         for legacy in [
             "hexbin_marginal",
-            "heat_scatter",
+            "joint_histogram",
             "layered_bivariate",
             "joint_kde",
             "kde_smooth",

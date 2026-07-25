@@ -8,3 +8,8 @@ src/telemetry/
 *.csv
 v2/
 tools/
+python/seraplot/*.pyd
+python/seraplot/*.pyd.bak
+python/seraplot/*.pyd.old
+python/seraplot/*.pdb
+python/seraplot/__pycache__/
