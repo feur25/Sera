@@ -1,3 +1,14 @@
+crate::plot_family! {
+    pub enum JointVariant default Basic family "joint" {
+        Basic              => "basic",
+        HexbinKde          => "hexbin_kde",
+        HexbinOutlinedKde  => "hexbin_outlined_kde",
+        KdeHistogram       => "kde_histogram",
+        LayeredBivariate   => "layered_bivariate",
+        ScatterBar         => "scatter_bar",
+    }
+}
+
 pub fn resolve_legacy_panel(name: &str) -> Option<&'static str> {
     Some(match name {
         "hexbin_marginal" | "hexbin_marginals" => "hexbin",
