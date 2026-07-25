@@ -71,8 +71,9 @@
   }
 
   function card(slug, category, title) {
-    var wrap = document.createElement("div");
+    var wrap = document.createElement("a");
     wrap.className = "sp-sc-card";
+    wrap.href = "charts/" + category + "/" + slug + ".html";
     var viewport = document.createElement("div");
     viewport.className = "sp-sc-viewport";
     var frame = document.createElement("iframe");
@@ -87,27 +88,36 @@
       fitFrame(frame, viewport);
     };
     viewport.appendChild(frame);
-    var a = document.createElement("a");
-    a.className = "sp-sc-title";
-    a.href = "charts/" + category + "/" + slug + ".html";
-    a.textContent = title;
+    var body = document.createElement("div");
+    body.className = "sp-sc-cardbody";
+    var t = document.createElement("span");
+    t.className = "sp-sc-title";
+    t.textContent = title;
+    var arrow = document.createElement("span");
+    arrow.className = "sp-sc-arrow";
+    arrow.textContent = "→";
+    body.appendChild(t);
+    body.appendChild(arrow);
     wrap.appendChild(viewport);
-    wrap.appendChild(a);
+    wrap.appendChild(body);
     resolvePreviewSrc(slug, function (src) { frame.src = src; });
     return wrap;
   }
 
   function section(container, heading, entries, category) {
     if (!entries.length) return;
+    var sec = document.createElement("div");
+    sec.className = "sp-sc-section";
     var h = document.createElement("h3");
     h.textContent = heading;
-    container.appendChild(h);
+    sec.appendChild(h);
     var grid = document.createElement("div");
     grid.className = "sp-sc-grid";
     entries.forEach(function (e) {
       grid.appendChild(card(e.slug, category, e.title));
     });
-    container.appendChild(grid);
+    sec.appendChild(grid);
+    container.appendChild(sec);
   }
 
   function build(root, lang) {
@@ -128,10 +138,13 @@
       ? { d2: "Graphiques 2D", d3: "Graphiques 3D", map: "Cartes", count: "familles enregistrées — lu depuis le registre SeraPlot, rien de codé en dur." }
       : { d2: "2D Charts", d3: "3D Charts", map: "Map Charts", count: "registered families — read from the SeraPlot registry, nothing hardcoded." };
 
+    var intro = document.createElement("div");
+    intro.className = "sp-sc-intro";
     var count = document.createElement("p");
     count.className = "sp-sc-count";
     count.textContent = (twoD.length + threeD.length + maps.length) + " " + titles.count;
-    root.appendChild(count);
+    intro.appendChild(count);
+    root.appendChild(intro);
 
     section(root, titles.d2, twoD, "2d");
     section(root, titles.d3, threeD, "3d");

@@ -163,7 +163,7 @@ pub fn beeswarm_offsets(py: &[i32], r: f64, max_offset: f64) -> Vec<f64> {
     let min_dist = 2.0 * r;
     for &i in &order {
         let y = py[i] as f64;
-        let mut dx = 0.0f64;
+        let dx;
         let mut k = 0i32;
         loop {
             let candidate = if k == 0 {

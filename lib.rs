@@ -83,7 +83,11 @@ pub fn demo_snippet(family: &str, variant: &str) -> Option<String> {
         .next()
         .map(|f| f.to_uppercase().chain(c).collect::<String>())
         .unwrap_or_default();
-    let suffix = if variant == "basic" || variant == "default" {
+    let needle = format!("{}=\"", kwarg);
+    let already_set = k
+        .match_indices(&needle)
+        .any(|(i, _)| i == 0 || !k.as_bytes()[i - 1].is_ascii_alphanumeric() && k.as_bytes()[i - 1] != b'_');
+    let suffix = if variant == "basic" || variant == "default" || already_set {
         String::new()
     } else {
         format!(",\n    {}=\"{}\"", kwarg, variant)

@@ -64,23 +64,34 @@ pub(crate) fn extract_kwargs(src: &str) -> Option<String> {
     let needle = "chart_demo(";
     let after = src.find(needle)? + needle.len();
     let rest = src[after..].trim_start().strip_prefix('"')?;
-    let mut end = 0;
-    let mut esc = false;
-    for (i, c) in rest.char_indices() {
-        if esc {
-            esc = false;
-            continue;
+    let mut out = String::with_capacity(rest.len());
+    let mut chars = rest.chars().peekable();
+    while let Some(c) = chars.next() {
+        if c == '"' {
+            return Some(out);
         }
         if c == '\\' {
-            esc = true;
+            match chars.next() {
+                Some('\r') | Some('\n') => {
+                    if matches!(chars.peek(), Some('\n')) {
+                        chars.next();
+                    }
+                    while matches!(chars.peek(), Some(' ') | Some('\t')) {
+                        chars.next();
+                    }
+                }
+                Some('"') => out.push('"'),
+                Some('\\') => out.push('\\'),
+                Some('n') => out.push('\n'),
+                Some('t') => out.push('\t'),
+                Some(other) => out.push(other),
+                None => {}
+            }
             continue;
         }
-        if c == '"' {
-            end = i;
-            break;
-        }
+        out.push(c);
     }
-    Some(rest[..end].to_string())
+    None
 }
 
 pub(crate) fn extract_params_required(src: &str) -> Option<Vec<String>> {
@@ -391,7 +402,10 @@ pub(crate) fn extract_alias_fn_pairs(src: &str) -> Vec<(Vec<String>, String)> {
 }
 
 pub(crate) fn js_escape(s: &str) -> String {
-    s.replace('\\', "\\\\").replace('"', "\\\"")
+    s.replace('\\', "\\\\")
+        .replace('"', "\\\"")
+        .replace('\n', "\\n")
+        .replace('\r', "")
 }
 
 pub(crate) fn extract_marker_fn_names(src: &str, marker: &str) -> Vec<String> {

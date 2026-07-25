@@ -1,3 +1,4 @@
+use crate::build_common::js_escape as rust_escape;
 use std::fs;
 use std::path::Path;
 
@@ -5,11 +6,11 @@ pub(crate) fn write_demo_registry(out_dir: &Path, demo_entries: &[(String, Strin
     let mut body = String::from("pub static DEMO_REGISTRY: &[(&str, &str, &str)] = &[\n");
     for (f, v, k) in demo_entries {
         body.push_str("    (\"");
-        body.push_str(f);
+        body.push_str(&rust_escape(f));
         body.push_str("\", \"");
-        body.push_str(v);
+        body.push_str(&rust_escape(v));
         body.push_str("\", \"");
-        body.push_str(k);
+        body.push_str(&rust_escape(k));
         body.push_str("\"),\n");
     }
     body.push_str("];\n");

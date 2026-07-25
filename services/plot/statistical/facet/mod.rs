@@ -105,6 +105,11 @@ body{{margin:0;padding:16px;font-family:-apple-system,BlinkMacSystemFont,'Segoe 
 }
 
 pub mod basic;
+pub mod faceted_histogram;
+pub mod faceted_lineplot;
+pub mod many_facets;
+pub mod multiple_conditional_kde;
+pub mod three_variable_histogram;
 pub use basic::build_facet;
 
 #[cfg(test)]

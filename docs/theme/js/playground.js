@@ -495,12 +495,18 @@
     function renderHtmlInIframe(html) {
         if (!state.iframe) return;
         var fitStyle = '<style>html,body{margin:0;padding:0;width:100%;height:100%;overflow:auto;background:#fff}body{display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box}body>*{max-width:100%!important;max-height:100%!important;box-sizing:border-box}svg,canvas{max-width:100%!important;max-height:100%!important;width:auto!important;height:auto!important;display:block;margin:0 auto}.chart-container,.plot-container,#chart,#plot{max-width:100%!important;max-height:100%!important;width:auto!important;height:auto!important;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center}</style>';
+        var fitScript = '<script>(function(){function fit(){var b=document.body,h=document.documentElement;if(!b)return;var w=Math.max(b.scrollWidth,h.scrollWidth),ch=Math.max(b.scrollHeight,h.scrollHeight),vw=window.innerWidth,vh=window.innerHeight;if(w>vw||ch>vh){var s=Math.min(vw/w,vh/ch,1);if(s>0&&s<1){b.style.transformOrigin="top left";b.style.transform="scale("+s+")";b.style.width=(100/s)+"%"}}}if(document.readyState==="complete")setTimeout(fit,60);else window.addEventListener("load",function(){setTimeout(fit,60)})})();</' + 'script>';
         if (/<\/head>/i.test(html)) {
             html = html.replace(/<\/head>/i, fitStyle + '</head>');
         } else if (/<body[^>]*>/i.test(html)) {
             html = html.replace(/<body[^>]*>/i, function (m) { return m + fitStyle; });
         } else {
             html = fitStyle + html;
+        }
+        if (/<\/body>/i.test(html)) {
+            html = html.replace(/<\/body>/i, fitScript + '</body>');
+        } else {
+            html += fitScript;
         }
         var blob = new Blob([html], { type: 'text/html' });
         var url = URL.createObjectURL(blob);

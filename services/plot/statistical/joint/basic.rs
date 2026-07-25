@@ -87,3 +87,31 @@ pub fn build(input: &str) -> String {
 
     compose_page(&title, panel_w, panel_h, margin, &top_frame, &right_frame, &panel_frame)
 }
+
+#[cfg(test)]
+mod demo_snippet_check {
+    #[test]
+    fn recipe_demos_produce_runnable_non_conflicting_code() {
+        let cases = [
+            ("facet", "faceted_histogram"),
+            ("facet", "faceted_lineplot"),
+            ("facet", "many_facets"),
+            ("facet", "multiple_conditional_kde"),
+            ("facet", "three_variable_histogram"),
+            ("joint", "hexbin_kde"),
+            ("joint", "kde_histogram"),
+            ("joint", "scatter_bar"),
+            ("joint", "hexbin_outlined_kde"),
+            ("joint", "layered_bivariate"),
+        ];
+        for (family, variant) in cases {
+            let snippet = crate::demo_snippet(family, variant).unwrap_or_else(|| panic!("no demo for {family}:{variant}"));
+            let bytes = snippet.as_bytes();
+            let standalone_variant_keys = snippet
+                .match_indices("variant=\"")
+                .filter(|(i, _)| *i == 0 || !bytes[i - 1].is_ascii_alphanumeric() && bytes[i - 1] != b'_')
+                .count();
+            assert!(standalone_variant_keys <= 1, "{family}:{variant} produced duplicate variant= keys:\n{snippet}");
+        }
+    }
+}

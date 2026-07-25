@@ -1,5 +1,10 @@
 pub mod basic;
 pub mod common;
+pub mod hexbin_kde;
+pub mod hexbin_outlined_kde;
+pub mod kde_histogram;
+pub mod layered_bivariate;
+pub mod scatter_bar;
 pub mod variant;
 
 pub use basic::build_joint;
