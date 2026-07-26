@@ -108,7 +108,7 @@ pub use wordcloud::build_wordcloud;
 pub use crate::html::hover::{parse_hover_json, slots_to_json, HoverSlot};
 pub use _3d::register_statistical_3d_types;
 pub use _3d::*;
-pub use area::{render_area_html, Area, AreaConfig};
+pub use area::{render_area_html, AreaConfig, AreaVariant};
 pub use bar::{render_bar_html, BarConfig, BarVariant};
 pub use boxplot::{render_boxplot_html, BoxplotConfig, BoxplotVariant};
 pub use bubble::BubbleVariant;
