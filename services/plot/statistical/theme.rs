@@ -1,13 +1,16 @@
 crate::plot_family! {
     pub enum ChartTheme default None {
         None    => "none" | "default" | "standard" | "light",
-        Deluxe  => "deluxe" | "neon" | "dark" | "premium",
+        Deluxe  => "deluxe" | "retro" | "dark" | "premium",
         Prism   => "prism" | "crystal" | "rainbow",
-        Aurora  => "aurora" | "cosmic" | "nebula" | "space" | "galaxy",
+        Aurora  => "aurora" | "borealis",
         Inferno => "inferno" | "fire" | "lava" | "ember" | "volcanic",
         Frost   => "frost" | "ice" | "arctic" | "winter" | "blizzard",
-        Glow    => "glow" | "neon_glow" | "halo",
+        Glow    => "glow" | "halo",
         Glass   => "glass" | "translucent" | "frosted",
+        Neon    => "neon" | "neon_light" | "cyberpunk" | "vaporwave",
+        Cosmic  => "cosmic" | "universe" | "nebula" | "galaxy" | "space",
+        Plotly  => "plotly" | "simple" | "flat" | "minimal",
     }
 }
 
@@ -79,6 +82,21 @@ const THEME_STYLES: &[(ChartTheme, ThemeStyle)] = &[
         canvas_filter: "saturate(1.05) brightness(1.03) contrast(1.02)",
         glow: "0 0 0 1px rgba(255,255,255,0.25),0 8px 32px rgba(0,0,0,0.12)",
         extra_2d: "brightness(1.05) saturate(1.05) drop-shadow(0 2px 6px rgba(0,0,0,0.15))",
+    }),
+    (ChartTheme::Neon, ThemeStyle {
+        canvas_filter: "saturate(2.8) contrast(1.15) brightness(1.1)",
+        glow: "0 0 0 1px rgba(255,255,255,0.3),0 0 20px currentColor,0 0 60px rgba(255,0,180,0.4)",
+        extra_2d: "saturate(2.6) brightness(1.15) drop-shadow(0 0 3px #fff) drop-shadow(0 0 10px currentColor)",
+    }),
+    (ChartTheme::Cosmic, ThemeStyle {
+        canvas_filter: "saturate(1.7) hue-rotate(-8deg) brightness(0.95) contrast(1.08)",
+        glow: "0 0 0 1px rgba(180,140,255,0.22),0 0 55px rgba(140,90,255,0.5),0 0 110px rgba(60,20,120,0.28)",
+        extra_2d: "saturate(1.4) brightness(1.02) drop-shadow(0 0 7px rgba(160,110,255,0.45))",
+    }),
+    (ChartTheme::Plotly, ThemeStyle {
+        canvas_filter: "saturate(1.0) brightness(1.0)",
+        glow: "0 1px 3px rgba(0,0,0,0.08)",
+        extra_2d: "drop-shadow(0 1px 1px rgba(0,0,0,0.12))",
     }),
 ];
 
@@ -314,6 +332,41 @@ fn build_filter(fid: &str, t: ChartTheme) -> String {
              </filter>"
         ),
 
+        ChartTheme::Neon => format!(
+            "<filter id='{fid}' x='-60%' y='-60%' width='220%' height='220%'>\
+             <feColorMatrix in='SourceGraphic' type='saturate' values='2.8' result='vivid'/>\
+             <feComposite in='vivid' in2='SourceGraphic' operator='in' result='colored'/>\
+             <feGaussianBlur in='colored' stdDeviation='3' result='core'/>\
+             <feGaussianBlur in='colored' stdDeviation='9' result='outer'/>\
+             <feMerge><feMergeNode in='outer'/><feMergeNode in='core'/><feMergeNode in='colored'/></feMerge>\
+             </filter>"
+        ),
+
+        ChartTheme::Cosmic => format!(
+            "<filter id='{fid}' color-interpolation-filters='sRGB' x='-30%' y='-30%' width='160%' height='160%'>\
+             <feTurbulence type='fractalNoise' baseFrequency='0.012 0.02' numOctaves='4' seed='42' result='neb-n'/>\
+             <feColorMatrix in='neb-n' type='matrix' \
+               values='0.5 0 0.3 0 0.1  0.1 0 0.6 0 0.05  0.6 0 0.9 0 0.15  0 0 0 1 0' result='neb-col'/>\
+             <feComposite in='neb-col' in2='SourceGraphic' operator='in' result='nebula'/>\
+             <feBlend in='SourceGraphic' in2='nebula' mode='screen' result='blended'/>\
+             <feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7' result='stars-n'/>\
+             <feColorMatrix in='stars-n' type='matrix' \
+               values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 18 -16' result='stars'/>\
+             <feComposite in='stars' in2='SourceGraphic' operator='in' result='stars-clip'/>\
+             <feBlend in='blended' in2='stars-clip' mode='screen' result='full'/>\
+             <feGaussianBlur in='SourceGraphic' stdDeviation='8' result='halo-src'/>\
+             <feColorMatrix in='halo-src' type='matrix' \
+               values='0.55 0 0.35 0 0  0.25 0 0.5 0 0  0.75 0 0.95 0 0  0 0 0 1 0' result='halo-col'/>\
+             <feMerge><feMergeNode in='halo-col'/><feMergeNode in='full'/></feMerge>\
+             </filter>"
+        ),
+
+        ChartTheme::Plotly => format!(
+            "<filter id='{fid}' x='-10%' y='-10%' width='120%' height='120%'>\
+             <feDropShadow dx='0' dy='1' stdDeviation='1' flood-color='#000000' flood-opacity='0.15'/>\
+             </filter>"
+        ),
+
         ChartTheme::None => String::new(),
     }
 }
@@ -455,6 +508,36 @@ fn build_flat_filter(fid: &str, t: ChartTheme) -> String {
              <feComposite in='wht' in2='top-blur' operator='in' result='top-glow'/>\
              <feComponentTransfer in='SourceGraphic' result='soft'><feFuncA type='linear' slope='0.9'/></feComponentTransfer>\
              <feBlend in='soft' in2='top-glow' mode='screen'/>\
+             </filter>"
+        ),
+
+        ChartTheme::Neon => format!(
+            "<filter id='{fid}' x='-40%' y='-40%' width='180%' height='180%'>\
+             <feColorMatrix in='SourceGraphic' type='saturate' values='2.8' result='vivid'/>\
+             <feComposite in='vivid' in2='SourceGraphic' operator='in' result='colored'/>\
+             <feGaussianBlur in='colored' stdDeviation='2.5' result='core'/>\
+             <feGaussianBlur in='colored' stdDeviation='7' result='outer'/>\
+             <feMerge><feMergeNode in='outer'/><feMergeNode in='core'/><feMergeNode in='colored'/></feMerge>\
+             </filter>"
+        ),
+
+        ChartTheme::Cosmic => format!(
+            "<filter id='{fid}' color-interpolation-filters='sRGB' x='-20%' y='-20%' width='140%' height='140%'>\
+             <feTurbulence type='fractalNoise' baseFrequency='0.02 0.03' numOctaves='4' seed='42' result='neb-n'/>\
+             <feColorMatrix in='neb-n' type='matrix' \
+               values='0.5 0 0.3 0 0.1  0.1 0 0.6 0 0.05  0.6 0 0.9 0 0.15  0 0 0 1 0' result='neb-col'/>\
+             <feComposite in='neb-col' in2='SourceGraphic' operator='in' result='nebula'/>\
+             <feBlend in='SourceGraphic' in2='nebula' mode='screen' result='blended'/>\
+             <feGaussianBlur in='SourceGraphic' stdDeviation='5' result='halo-src'/>\
+             <feColorMatrix in='halo-src' type='matrix' \
+               values='0.55 0 0.35 0 0  0.25 0 0.5 0 0  0.75 0 0.95 0 0  0 0 0 1 0' result='halo-col'/>\
+             <feMerge><feMergeNode in='halo-col'/><feMergeNode in='blended'/></feMerge>\
+             </filter>"
+        ),
+
+        ChartTheme::Plotly => format!(
+            "<filter id='{fid}' x='-10%' y='-10%' width='120%' height='120%'>\
+             <feDropShadow dx='0' dy='1' stdDeviation='1' flood-color='#000000' flood-opacity='0.15'/>\
              </filter>"
         ),
 
