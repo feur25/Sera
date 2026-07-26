@@ -33,6 +33,7 @@ pub struct PieConfig<'a> {
     pub secondary_values: &'a [f64],
     pub secondary_labels: &'a [String],
     pub pattern: &'a str,
+    pub floating_labels: bool,
 }
 
 impl<'a> Default for PieConfig<'a> {
@@ -64,6 +65,7 @@ impl<'a> Default for PieConfig<'a> {
             secondary_values: &[],
             secondary_labels: &[],
             pattern: "",
+            floating_labels: false,
         }
     }
 }

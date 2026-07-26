@@ -61,6 +61,7 @@ pub struct ChartOpts {
     pub color_high: Option<u32>,
     pub col_labels: Option<Vec<String>>,
     pub show_pct: Option<bool>,
+    pub labeled: Option<bool>,
     pub inner_radius_ratio: Option<f64>,
     pub left_label: Option<String>,
     pub right_label: Option<String>,

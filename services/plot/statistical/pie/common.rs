@@ -20,6 +20,7 @@ pub struct PiePiece {
     pub pattern_id_offset: usize,
     pub center_text: String,
     pub center_subtext: String,
+    pub floating_labels: bool,
 }
 
 impl Default for PiePiece {
@@ -41,8 +42,60 @@ impl Default for PiePiece {
             pattern_id_offset: 0,
             center_text: String::new(),
             center_subtext: String::new(),
+            floating_labels: false,
         }
     }
+}
+
+fn draw_floating_label(
+    buf: &mut Vec<u8>,
+    cx: f64,
+    cy: f64,
+    r_outer: f64,
+    mid: f64,
+    hx: &[u8; 6],
+    label: &str,
+    frac: f64,
+) {
+    let lr = r_outer + 34.0;
+    let lx = cx + lr * mid.cos();
+    let ly = cy + lr * mid.sin();
+    let ax = cx + (r_outer + 4.0) * mid.cos();
+    let ay = cy + (r_outer + 4.0) * mid.sin();
+    push_b(buf, b"<line x1=\"");
+    push_f2(buf, ax);
+    push_b(buf, b"\" y1=\"");
+    push_f2(buf, ay);
+    push_b(buf, b"\" x2=\"");
+    push_f2(buf, lx);
+    push_b(buf, b"\" y2=\"");
+    push_f2(buf, ly);
+    push_b(buf, b"\" stroke=\"#");
+    buf.extend_from_slice(hx);
+    push_b(buf, b"\" stroke-width=\"1\" opacity=\"0.6\"/>");
+    let right = mid.cos() >= 0.0;
+    let anchor: &[u8] = if right { b"start" } else { b"end" };
+    let tx = if right { lx + 6.0 } else { lx - 6.0 };
+    push_b(buf, b"<text x=\"");
+    push_f2(buf, tx);
+    push_b(buf, b"\" y=\"");
+    push_f2(buf, ly - 3.0);
+    push_b(buf, b"\" text-anchor=\"");
+    buf.extend_from_slice(anchor);
+    push_b(buf, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"12\" font-weight=\"700\" fill=\"#");
+    buf.extend_from_slice(hx);
+    push_b(buf, b"\">");
+    push_i(buf, (frac * 100.0 + 0.5) as i32);
+    push_b(buf, b"%</text>");
+    push_b(buf, b"<text x=\"");
+    push_f2(buf, tx);
+    push_b(buf, b"\" y=\"");
+    push_f2(buf, ly + 11.0);
+    push_b(buf, b"\" text-anchor=\"");
+    buf.extend_from_slice(anchor);
+    push_b(buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#64748b\">");
+    escape_xml(buf, truncate(label, 16));
+    push_b(buf, b"</text>");
 }
 
 pub fn render_pie_svg(
@@ -247,7 +300,9 @@ pub fn render_pie_svg(
             }
         }
 
-        if cfg.show_pct && frac >= cfg.min_label_frac {
+        if piece.floating_labels {
+            draw_floating_label(buf, cxx, cyy, r, mid, &hx, &labels[i], frac);
+        } else if cfg.show_pct && frac >= cfg.min_label_frac {
             let lr = if r_inner > 0.0 {
                 (r + r_inner) / 2.0
             } else {
@@ -380,6 +435,7 @@ where
         pattern: cfg.pattern.to_string(),
         center_text: cfg.center_text.to_string(),
         center_subtext: cfg.center_subtext.to_string(),
+        floating_labels: cfg.floating_labels,
         ..PiePiece::default()
     };
     customize(&mut piece, cfg);

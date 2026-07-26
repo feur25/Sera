@@ -40,5 +40,6 @@ fn clone_cfg<'a>(cfg: &'a PieConfig<'a>) -> PieConfig<'a> {
         secondary_values: cfg.secondary_values,
         secondary_labels: cfg.secondary_labels,
         pattern: cfg.pattern,
+        floating_labels: cfg.floating_labels,
     }
 }
