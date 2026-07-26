@@ -47,6 +47,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('kde-en','cumulative',this)"><span class="sp-cic">C</span><span class="sp-clb">Cumulative</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-en','contour',this)"><span class="sp-cic">◌</span><span class="sp-clb">Contour</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-en','levels',this)"><span class="sp-cic">◎</span><span class="sp-clb">Levels</span></button>
+<button class="sp-cls-tab" onclick="spCls('kde-en','stack',this)"><span class="sp-cic">▧</span><span class="sp-clb">Stack</span></button>
+<button class="sp-cls-tab" onclick="spCls('kde-en','fill',this)"><span class="sp-cic">▩</span><span class="sp-clb">Fill</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="kde-en-basic">
@@ -103,6 +105,18 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-levels.html"></iframe>
 </div>
+<div class="sp-variant" id="kde-en-stack">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"stack"</code></span><span><strong>Aliases</strong> <code>stack / stacked / layered_stack</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Each group's density curve stacked on top of the previous one's (cumulative running total), all evaluated on one shared x-grid - matches seaborn's <code>kdeplot(hue=, multiple="stack")</code>.</p>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/kde-stack.html"></iframe>
+</div>
+<div class="sp-variant" id="kde-en-fill">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"fill"</code></span><span><strong>Aliases</strong> <code>fill / stack100 / percent_stack / filled_stack</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">100%-stacked density - at every x position the groups sum to 100%, showing the changing share of the total instead of absolute density - matches seaborn's <code>kdeplot(hue=, multiple="fill")</code>.</p>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/kde-fill.html"></iframe>
+</div>
 </div></div>
 
 </div>
@@ -144,6 +158,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('kde-fr','cumulative',this)"><span class="sp-cic">C</span><span class="sp-clb">Cumulative</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-fr','contour',this)"><span class="sp-cic">◌</span><span class="sp-clb">Contour</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-fr','levels',this)"><span class="sp-cic">◎</span><span class="sp-clb">Niveaux</span></button>
+<button class="sp-cls-tab" onclick="spCls('kde-fr','stack',this)"><span class="sp-cic">▧</span><span class="sp-clb">Empilé</span></button>
+<button class="sp-cls-tab" onclick="spCls('kde-fr','fill',this)"><span class="sp-cic">▩</span><span class="sp-clb">Rempli 100%</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="kde-fr-basic">
@@ -199,6 +215,18 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">KDE bivariée quantifiée en bandes iso-densité discrètes avec une bordure visible à chaque frontière de bande — reproduit le rendu par niveaux de <code>kdeplot(x=, y=, hue=, fill=True)</code> de seaborn, par opposition au dégradé continu de <code>contour</code>.</p>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-levels.html"></iframe>
+</div>
+<div class="sp-variant" id="kde-fr-stack">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"stack"</code></span><span><strong>Alias</strong> <code>stack / stacked / layered_stack</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">La courbe de densité de chaque groupe est empilée sur celle du précédent (total cumulé), toutes évaluées sur une même grille x partagée - reproduit <code>kdeplot(hue=, multiple="stack")</code> de seaborn.</p>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/kde-stack.html"></iframe>
+</div>
+<div class="sp-variant" id="kde-fr-fill">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"fill"</code></span><span><strong>Alias</strong> <code>fill / stack100 / percent_stack / filled_stack</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Densité empilée à 100% - à chaque position x, les groupes totalisent 100%, montrant la part changeante du total plutôt que la densité absolue - reproduit <code>kdeplot(hue=, multiple="fill")</code> de seaborn.</p>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/kde-fill.html"></iframe>
 </div>
 </div></div>
 
