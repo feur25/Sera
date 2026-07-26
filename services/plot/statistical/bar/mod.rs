@@ -1,6 +1,7 @@
 use crate::plot::{apply, apply_h, parse_all};
 pub mod basic;
 pub mod block3d;
+pub mod circular;
 pub mod config;
 pub mod deluxe;
 pub mod grouped;
@@ -9,6 +10,7 @@ pub mod marimekko;
 pub mod multicategory;
 pub mod pictogram;
 pub mod prism;
+pub mod pyramid;
 pub mod relative;
 pub mod variant;
 
@@ -28,6 +30,7 @@ pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
         Marimekko => marimekko::layout_3d(cfg),
         Multicategory => multicategory::layout_3d(cfg),
         Pictogram => pictogram::layout_3d(cfg),
+        Circular | CircularLabeled | CircularGrouped | CircularGrid | Pyramid => Vec::new(),
     }
 }
 
@@ -49,6 +52,11 @@ pub fn render_bar_html(cfg: &BarConfig) -> String {
         Marimekko => marimekko::render(cfg),
         Pictogram => pictogram::render(cfg),
         Multicategory => multicategory::render(cfg),
+        Circular => circular::render(cfg, false, false, false),
+        CircularLabeled => circular::render(cfg, true, false, false),
+        CircularGrouped => circular::render(cfg, true, false, true),
+        CircularGrid => circular::render(cfg, true, true, false),
+        Pyramid => pyramid::render(cfg),
     }
 }
 
