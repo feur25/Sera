@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-variant" id="vl-en-strip">
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"strip"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
-
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Raincloud layout - a translucent half-violin KDE silhouette on the left of each category paired with individual jittered points strictly on the right, so the density shape and the raw sample are both visible without ever overlapping.</p>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/violin-strip.html"></iframe>
 
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-variant" id="vl-fr-points"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"points"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-points.html"></iframe></div>
 
-<div class="sp-variant" id="vl-fr-strip"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"strip"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-strip.html"></iframe></div>
+<div class="sp-variant" id="vl-fr-strip"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"strip"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Disposition raincloud - une silhouette KDE translucide en demi-violon à gauche de chaque catégorie associée à des points individuels dispersés strictement à droite, pour que la forme de densité et l'échantillon brut soient tous deux visibles sans jamais se chevaucher.</p><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-strip.html"></iframe></div>
 
 <div class="sp-variant" id="vl-fr-horizontal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"horizontal"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/violin-horizontal.html"></iframe></div>
 

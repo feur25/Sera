@@ -47,6 +47,7 @@ Aliases: `sp.area`, `sp.area_chart`, `sp.area_family`, `sp.area_unified`, `sp.bu
 <button class="sp-cls-tab" onclick="spCls('area-en','spline',this)"><span class="sp-cic">~</span><span class="sp-clb">Spline</span></button>
 <button class="sp-cls-tab" onclick="spCls('area-en','step',this)"><span class="sp-cic">⌐</span><span class="sp-clb">Step</span></button>
 <button class="sp-cls-tab" onclick="spCls('area-en','gradient',this)"><span class="sp-cic">▽</span><span class="sp-clb">Gradient</span></button>
+<button class="sp-cls-tab" onclick="spCls('area-en','ribbon',this)"><span class="sp-cic">▤</span><span class="sp-clb">Ribbon</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -92,6 +93,13 @@ Aliases: `sp.area`, `sp.area_chart`, `sp.area_family`, `sp.area_unified`, `sp.bu
 <iframe class="sp-preview-frame" src="../../previews/area-gradient.html"></iframe>
 </div>
 
+<div class="sp-variant" id="area-en-ribbon">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"ribbon"</code></span><span><strong>Aliases</strong> <code>ribbon / outlined / bordered / ggplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">100%-stacked area with bold black borders around every band instead of colored ones - the ggplot2 <code>geom_area</code> look, ideal for many groups (works well beyond two) where the outline is what separates adjacent bands visually.</p>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/area-ribbon.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -134,6 +142,7 @@ Alias : `sp.area`, `sp.area_chart`, `sp.area_family`, `sp.area_unified`, `sp.bui
 <button class="sp-cls-tab" onclick="spCls('area-fr','spline',this)"><span class="sp-cic">~</span><span class="sp-clb">Lissé</span></button>
 <button class="sp-cls-tab" onclick="spCls('area-fr','step',this)"><span class="sp-cic">⌐</span><span class="sp-clb">Escalier</span></button>
 <button class="sp-cls-tab" onclick="spCls('area-fr','gradient',this)"><span class="sp-cic">▽</span><span class="sp-clb">Dégradé</span></button>
+<button class="sp-cls-tab" onclick="spCls('area-fr','ribbon',this)"><span class="sp-cic">▤</span><span class="sp-clb">Ruban</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -177,6 +186,13 @@ Alias : `sp.area`, `sp.area_chart`, `sp.area_family`, `sp.area_unified`, `sp.bui
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Frontière lissée remplie d'un dégradé vertical s'estompant de la couleur de la série vers la transparence à la ligne de base - un look de tableau de bord moderne.</p>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/area-gradient.html"></iframe>
+</div>
+
+<div class="sp-variant" id="area-fr-ribbon">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"ribbon"</code></span><span><strong>Alias</strong> <code>ribbon / outlined / bordered / ggplot</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Aire empilée à 100% avec des bordures noires marquées autour de chaque bande au lieu de bordures colorées - le look <code>geom_area</code> de ggplot2, idéal pour de nombreux groupes (fonctionne bien au-delà de deux) où le contour est ce qui sépare visuellement les bandes adjacentes.</p>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/area-ribbon.html"></iframe>
 </div>
 
 </div>
