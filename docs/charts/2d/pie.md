@@ -27,6 +27,23 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div data-sp-registry-table="options" data-family="pie"></div>
 
+## Floating labels
+
+Pass `labeled=True` to any variant built on the shared angle-sweep engine (`basic`, `donut`, `exploded`, `kpi`, `pattern`, `semi`) to replace the in-wedge percentage text with an outside callout: a thin connector line from the wedge edge to a label showing the percentage and the category name, colored to match its slice. This is the same style used by the reference "total breakdown" donut screenshots — it is not a separate variant, it is a display option any of those variants can turn on.
+
+```python
+import seraplot as sp
+
+c = sp.pie(
+    labels=["Acquisition", "Conversion", "Retention", "Referral", "Other"],
+    values=[42, 26, 16, 11, 5],
+    variant="donut",
+    center_text="27.3K",
+    center_subtext="TOTAL",
+    labeled=True,
+)
+```
+
 ---
 
 ## Returns
@@ -143,6 +160,23 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <h2>Paramètres</h2>
 
 <div data-sp-registry-table="options" data-family="pie"></div>
+
+<h2>Étiquettes flottantes</h2>
+
+Passe `labeled=True` à n'importe quelle variante construite sur le moteur partagé à secteurs angulaires (`basic`, `donut`, `exploded`, `kpi`, `pattern`, `semi`) pour remplacer le texte de pourcentage à l'intérieur du secteur par une étiquette extérieure : une fine ligne de connexion depuis le bord du secteur jusqu'à un label affichant le pourcentage et le nom de catégorie, colorée comme sa part. C'est le même style que les captures "répartition totale" en donut données en référence — ce n'est pas une variante séparée, c'est une option d'affichage que n'importe laquelle de ces variantes peut activer.
+
+```python
+import seraplot as sp
+
+c = sp.pie(
+    labels=["Acquisition", "Conversion", "Retention", "Referral", "Other"],
+    values=[42, 26, 16, 11, 5],
+    variant="donut",
+    center_text="27.3K",
+    center_subtext="TOTAL",
+    labeled=True,
+)
+```
 
 ---
 

@@ -64,6 +64,10 @@ When `series` is missing but `series_names` is provided, `values` is interpreted
 <button class="sp-cls-tab" onclick="spCls('bar-en','marimekko',this)"><span class="sp-cic">▤</span><span class="sp-clb">Marimekko</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','pictogram',this)"><span class="sp-cic">☰</span><span class="sp-clb">Pictogram</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','multicategory',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Multicategory</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-en','circular',this)"><span class="sp-cic">◔</span><span class="sp-clb">Circular</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-en','circular_grouped',this)"><span class="sp-cic">◕</span><span class="sp-clb">Circular Grouped</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-en','population_pyramid',this)"><span class="sp-cic">▲</span><span class="sp-clb">Population Pyramid</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-en','diverging',this)"><span class="sp-cic">↔</span><span class="sp-clb">Diverging</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -155,6 +159,46 @@ Two-level hierarchical x axis. `super_categories` groups adjacent bars under a b
 <iframe class="sp-preview-frame" src="../../previews/multicategory-bar.html"></iframe>
 </div>
 
+<div class="sp-variant" id="bar-en-circular">
+
+Bars arranged radially around a center, length proportional to value. Pass `show_values=True` for a value at each bar's tip, `gridlines=True` for labeled concentric rings. Aliases: `"circular_basic"`, `"radial_bar"`, `"polar_bar"`.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"circular"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Optional</strong> <code>show_values</code>, <code>gridlines</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/circular-bar.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bar-en-circular_grouped">
+
+Circular bars split into groups via `color_groups`, with an extra gap between groups. Same `show_values`/`gridlines` options as `circular`. Aliases: `"radial_grouped"`, `"circular_groups"`.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"circular_grouped"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code>, <code>color_groups</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/circular_grouped-bar.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bar-en-population_pyramid">
+
+Two horizontal bar sets mirrored left/right around a shared category axis, from the first two entries of `series`. Aliases: `"pyramid"`, `"age_pyramid"`.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"population_pyramid"</code></span><span><strong>Required</strong> <code>labels</code>, <code>series</code> (≥ 2), <code>series_names</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/population_pyramid-bar.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bar-en-diverging">
+
+Horizontal bars extending left or right from a zero line, one color regardless of sign, value printed inside the bar (white) when it's wide enough or just outside otherwise. Aliases: `"signed"`, `"delta"`, `"bidirectional"`.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"diverging"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/diverging-bar.html"></iframe>
+</div>
+
 </div><!-- /sp-cls-body -->
 </div>
 
@@ -214,6 +258,10 @@ Objet `Chart` avec une propriété `.html` et une méthode `.show()`.
 <button class="sp-cls-tab" onclick="spCls('bar-fr','marimekko',this)"><span class="sp-cic">▤</span><span class="sp-clb">Marimekko</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','pictogram',this)"><span class="sp-cic">☰</span><span class="sp-clb">Pictogramme</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','multicategory',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Multi-catégories</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-fr','circular',this)"><span class="sp-cic">◔</span><span class="sp-clb">Circulaire</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-fr','circular_grouped',this)"><span class="sp-cic">◕</span><span class="sp-clb">Circulaire groupé</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-fr','population_pyramid',this)"><span class="sp-cic">▲</span><span class="sp-clb">Pyramide des âges</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-fr','diverging',this)"><span class="sp-cic">↔</span><span class="sp-clb">Divergent</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -303,6 +351,46 @@ Axe x à deux niveaux. `super_categories` regroupe les barres adjacentes sous un
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/multicategory-bar.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bar-fr-circular">
+
+Barres disposées radialement autour d'un centre, longueur proportionnelle à la valeur. Passe `show_values=True` pour une valeur à l'extrémité de chaque barre, `gridlines=True` pour des anneaux concentriques étiquetés. Alias : `"circular_basic"`, `"radial_bar"`, `"polar_bar"`.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"circular"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Optionnel</strong> <code>show_values</code>, <code>gridlines</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/circular-bar.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bar-fr-circular_grouped">
+
+Barres circulaires réparties en groupes via `color_groups`, avec un écart supplémentaire entre groupes. Mêmes options `show_values`/`gridlines` que `circular`. Alias : `"radial_grouped"`, `"circular_groups"`.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"circular_grouped"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>color_groups</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/circular_grouped-bar.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bar-fr-population_pyramid">
+
+Deux jeux de barres horizontales en miroir de part et d'autre d'un axe catégoriel commun, à partir des deux premières entrées de `series`. Alias : `"pyramid"`, `"age_pyramid"`.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"population_pyramid"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>series</code> (≥ 2), <code>series_names</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/population_pyramid-bar.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bar-fr-diverging">
+
+Barres horizontales partant d'une ligne zéro vers la gauche ou la droite, une seule couleur peu importe le signe, valeur imprimée à l'intérieur de la barre (blanc) si assez large, sinon juste à l'extérieur. Alias : `"signed"`, `"delta"`, `"bidirectional"`.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"diverging"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/diverging-bar.html"></iframe>
 </div>
 
 </div><!-- /sp-cls-body -->
