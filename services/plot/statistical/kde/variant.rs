@@ -8,5 +8,6 @@ crate::plot_family! {
         Normalized  => "normalized" | "pdf" | "norm" | "density",
         Cumulative  => "cumulative" | "cdf" | "cum",
         Contour     => "contour" | "bivariate" | "kde2d" | "joint_density" | "smooth",
+        Levels      => "levels" | "bands" | "iso_bands" | "ring_contour" | "banded",
     }
 }
