@@ -1,7 +1,8 @@
 use super::block3d::Bar3DBlock;
 use super::config::BarConfig;
+use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{
-    escape_xml, palette_color, push_b, push_hex, push_i, Frame,
+    escape_xml, palette_color, push_b, push_f2, push_hex, push_i, Frame,
 };
 
 pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
@@ -115,7 +116,19 @@ pub fn render(cfg: &BarConfig) -> String {
                 let y_top = f.pt + (((max_val - acc - v) / max_val) * f.ph as f64) as i32;
                 let h = ((v / max_val) * f.ph as f64) as i32;
                 acc += v;
-                push_b(&mut f.buf, b"<rect x=\"");
+                let (sname, _) = &cfg.series[si];
+                let hover_idx = ci * n_ser + si;
+                push_b(&mut f.buf, b"<rect data-idx=\"");
+                push_i(&mut f.buf, hover_idx as i32);
+                push_b(&mut f.buf, b"\" data-series=\"");
+                push_i(&mut f.buf, si as i32);
+                push_b(&mut f.buf, b"\" data-v=\"");
+                push_f2(&mut f.buf, v);
+                push_b(&mut f.buf, b"\" data-lbl=\"");
+                escape_xml(&mut f.buf, sname);
+                push_b(&mut f.buf, b" \xe2\x80\x94 ");
+                escape_xml(&mut f.buf, &cfg.category_labels[ci]);
+                push_b(&mut f.buf, b"\" x=\"");
                 push_i(&mut f.buf, bx);
                 push_b(&mut f.buf, b"\" y=\"");
                 push_i(&mut f.buf, y_top);
@@ -144,5 +157,5 @@ pub fn render(cfg: &BarConfig) -> String {
 
     let names: Vec<&str> = cfg.series.iter().map(|(n, _)| n.as_str()).collect();
     f.legend_pos(&names, cfg.palette, cfg.legend_position);
-    f.html("[]")
+    f.html(&slots_to_json(cfg.hover))
 }
