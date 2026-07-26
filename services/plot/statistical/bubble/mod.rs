@@ -8,6 +8,7 @@ pub mod labeled;
 pub mod negative;
 pub mod outlined;
 pub mod plasma;
+pub mod split;
 pub mod variant;
 
 pub use config::BubbleConfig;
@@ -32,6 +33,7 @@ pub fn render_bubble_html(cfg: &BubbleConfig) -> String {
         Labeled => labeled::render(cfg),
         Outlined => outlined::render(cfg),
         Negative => negative::render(cfg),
+        Split => split::render(cfg),
     }
 }
 
@@ -54,6 +56,8 @@ pub fn build(input: &str) -> String {
         .or_else(|| o.color_groups.clone())
         .unwrap_or_default();
     let labels = a.labels.clone().unwrap_or_default();
+    let x_categories = a.x_categories.clone().unwrap_or_default();
+    let y_categories = a.y_categories.clone().unwrap_or_default();
     let color_values = o.color_values.clone().unwrap_or_default();
     let palette = o.pal();
     let hover = o.hj();
@@ -112,6 +116,8 @@ pub fn build(input: &str) -> String {
         y_values: &y_values,
         sizes: &sizes,
         categories: &categories,
+        x_categories: &x_categories,
+        y_categories: &y_categories,
         labels: &labels,
         color_values: &color_values,
         color_hex: o.color_hex.unwrap_or(0),
