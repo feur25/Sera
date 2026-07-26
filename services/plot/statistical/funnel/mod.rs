@@ -4,6 +4,7 @@ pub mod chevron;
 pub mod common;
 pub mod compare;
 pub mod config;
+pub mod grouped;
 pub mod conversion;
 pub mod inverted;
 pub mod pyramid;
@@ -17,7 +18,11 @@ pub use variant::FunnelVariant;
 pub fn render_funnel_html(cfg: &FunnelConfig) -> String {
     use variant::FunnelVariant::*;
     let v = if cfg.variant == Basic && cfg.series.len() > 1 {
-        Compare
+        if cfg.stage_labels.is_empty() {
+            Grouped
+        } else {
+            Compare
+        }
     } else {
         cfg.variant
     };
@@ -30,6 +35,7 @@ pub fn render_funnel_html(cfg: &FunnelConfig) -> String {
         Inverted => inverted::render(cfg),
         Conversion => conversion::render(cfg),
         Compare => compare::render(cfg),
+        Grouped => grouped::render(cfg),
     }
 }
 

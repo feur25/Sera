@@ -8,5 +8,6 @@ crate::plot_family! {
         Inverted   => "inverted" | "inverse" | "reverse" | "upside_down",
         Conversion => "conversion" | "dropoff" | "rate" | "steps",
         Compare    => "compare" | "multi" | "side_by_side" | "funnels",
+        Grouped    => "grouped" | "colored" | "by_color" | "shared_stages",
     }
 }
