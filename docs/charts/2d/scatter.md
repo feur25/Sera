@@ -46,7 +46,9 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('scatter-en','residual',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Residual</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','dual_style',this)"><span class="sp-cic">◈</span><span class="sp-clb">Dual Style</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','continuous_hue',this)"><span class="sp-cic">◍</span><span class="sp-clb">Continuous Hue</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-en','facet',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Facet</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','facet',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Facet</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','sized',this)"><span class="sp-cic">◉</span><span class="sp-clb">Sized</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','wide_form',this)"><span class="sp-cic">▤</span><span class="sp-clb">Wide form</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="scatter-en-basic">
@@ -127,6 +129,26 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/scatter-facet.html"></iframe>
 </div>
 
+<div class="sp-variant" id="scatter-en-sized">
+
+<p>Both marker radius and color are driven by the same continuous variable (<code>color_values</code>, scaled between <code>min_size</code> and <code>max_size</code>) with a combined size+color legend - seaborn's <code>hue=</code> and <code>size=</code> mapped to the same column, with <code>sizes=(min, max)</code>.</p>
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"sized"</code></span><span><strong>Aliases</strong> <code>sized / size_scale / bubble_scatter / magnitude_size</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/scatter-sized.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-en-wide_form">
+
+<p>Plots several numeric columns (<code>series</code>, named via <code>series_names</code>) against one shared <code>x_values</code> axis, one color per column with a legend - the native equivalent of calling <code>seaborn.scatterplot(data=wide_dataframe)</code> directly on a wide-form table.</p>
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"wide_form"</code></span><span><strong>Aliases</strong> <code>wide_form / wide / multi_series / columns</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/scatter-wide_form.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -168,7 +190,9 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','residual',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Résidus</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','dual_style',this)"><span class="sp-cic">◈</span><span class="sp-clb">Style double</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','continuous_hue',this)"><span class="sp-cic">◍</span><span class="sp-clb">Teinte continue</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-fr','facet',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Facettes</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','facet',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Facettes</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','sized',this)"><span class="sp-cic">◉</span><span class="sp-clb">Taille</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','wide_form',this)"><span class="sp-cic">▤</span><span class="sp-clb">Format large</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="scatter-fr-basic">
@@ -247,6 +271,26 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-facet.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-fr-sized">
+
+<p>Le rayon du marqueur et sa couleur sont pilotés par la même variable continue (<code>color_values</code>, mise à l'échelle entre <code>min_size</code> et <code>max_size</code>) avec une légende combinée taille+couleur - l'équivalent de <code>hue=</code> et <code>size=</code> pointant sur la même colonne en seaborn, avec <code>sizes=(min, max)</code>.</p>
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"sized"</code></span><span><strong>Alias</strong> <code>sized / size_scale / bubble_scatter / magnitude_size</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/scatter-sized.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-fr-wide_form">
+
+<p>Trace plusieurs colonnes numériques (<code>series</code>, nommées via <code>series_names</code>) sur un même axe <code>x_values</code> partagé, une couleur par colonne avec une légende - l'équivalent natif d'appeler <code>seaborn.scatterplot(data=wide_dataframe)</code> directement sur un tableau au format large.</p>
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"wide_form"</code></span><span><strong>Alias</strong> <code>wide_form / wide / multi_series / columns</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/scatter-wide_form.html"></iframe>
 </div>
 
 </div>
