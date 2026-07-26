@@ -856,6 +856,24 @@ pub fn render_scatter_html(
         push_b(&mut buf, b"</text>");
         let xval = min_x + frac * range_x;
         let xi = pad_l + (frac * plot_w as f64) as i32;
+        if i > 0 {
+            push_b(&mut buf, b"<line x1=\"");
+            push_i(&mut buf, xi);
+            push_b(&mut buf, b"\" y1=\"");
+            push_i(&mut buf, pad_t);
+            push_b(&mut buf, b"\" x2=\"");
+            push_i(&mut buf, xi);
+            push_b(&mut buf, b"\" y2=\"");
+            push_i(&mut buf, pad_t + plot_h);
+            push_b(
+                &mut buf,
+                b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"",
+            );
+            if !gridlines {
+                push_b(&mut buf, b" style=\"display:none\"");
+            }
+            push_b(&mut buf, b"/>");
+        }
         push_b(&mut buf, b"<text x=\"");
         push_i(&mut buf, xi);
         push_b(&mut buf, b"\" y=\"");

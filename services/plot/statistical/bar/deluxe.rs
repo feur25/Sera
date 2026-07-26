@@ -124,7 +124,7 @@ pub fn render(cfg: &BarConfig, orient: u8) -> String {
             push_i(&mut f.buf, i as i32);
             push_b(&mut f.buf, b"\" data-lbl=\"");
             escape_xml(&mut f.buf, &cfg.labels[i]);
-            push_b(&mut f.buf, b"\" data-y=\"");
+            push_b(&mut f.buf, b"\" data-v=\"");
             push_f2(&mut f.buf, cfg.values[i]);
             push_b(&mut f.buf, b"\" x=\"");
             push_i(&mut f.buf, f.pl);
@@ -157,7 +157,7 @@ pub fn render(cfg: &BarConfig, orient: u8) -> String {
             push_i(&mut f.buf, i as i32);
             push_b(&mut f.buf, b"\" data-lbl=\"");
             escape_xml(&mut f.buf, &cfg.labels[i]);
-            push_b(&mut f.buf, b"\" data-y=\"");
+            push_b(&mut f.buf, b"\" data-v=\"");
             push_f2(&mut f.buf, cfg.values[i]);
             push_b(&mut f.buf, b"\" x=\"");
             push_i(&mut f.buf, x);

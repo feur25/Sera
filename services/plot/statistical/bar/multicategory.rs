@@ -1,7 +1,7 @@
 use super::block3d::Bar3DBlock;
 use super::config::BarConfig;
 use crate::plot::statistical::common::{
-    escape_xml, palette_color, push_b, push_hex, push_i, Frame,
+    escape_xml, palette_color, push_b, push_f2, push_hex, push_i, Frame,
 };
 
 pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
@@ -92,7 +92,13 @@ pub fn render(cfg: &BarConfig) -> String {
             let h = ((v / max_val) * f.ph as f64) as i32;
             let bx = cx - bar_w / 2;
             let by = f.pt + f.ph - h;
-            push_b(&mut f.buf, b"<rect x=\"");
+            push_b(&mut f.buf, b"<rect data-idx=\"");
+            push_i(&mut f.buf, ci as i32);
+            push_b(&mut f.buf, b"\" data-v=\"");
+            push_f2(&mut f.buf, v);
+            push_b(&mut f.buf, b"\" data-lbl=\"");
+            escape_xml(&mut f.buf, &cfg.category_labels[ci]);
+            push_b(&mut f.buf, b"\" x=\"");
             push_i(&mut f.buf, bx);
             push_b(&mut f.buf, b"\" y=\"");
             push_i(&mut f.buf, by);
@@ -106,7 +112,7 @@ pub fn render(cfg: &BarConfig) -> String {
         } else {
             let group_w = cat_w * 0.85;
             let bw = (group_w / n_ser as f64) as i32;
-            for (si, (_, vals)) in cfg.series.iter().enumerate() {
+            for (si, (sname, vals)) in cfg.series.iter().enumerate() {
                 let v = vals.get(ci).copied().unwrap_or(0.0);
                 if !v.is_finite() {
                     continue;
@@ -115,7 +121,15 @@ pub fn render(cfg: &BarConfig) -> String {
                 let h = ((v / max_val) * f.ph as f64) as i32;
                 let bx = cx - (group_w / 2.0) as i32 + si as i32 * bw;
                 let by = f.pt + f.ph - h;
-                push_b(&mut f.buf, b"<rect x=\"");
+                push_b(&mut f.buf, b"<rect data-idx=\"");
+                push_i(&mut f.buf, (ci * n_ser + si) as i32);
+                push_b(&mut f.buf, b"\" data-v=\"");
+                push_f2(&mut f.buf, v);
+                push_b(&mut f.buf, b"\" data-lbl=\"");
+                escape_xml(&mut f.buf, sname);
+                push_b(&mut f.buf, b"\" data-group=\"");
+                escape_xml(&mut f.buf, sname);
+                push_b(&mut f.buf, b"\" x=\"");
                 push_i(&mut f.buf, bx);
                 push_b(&mut f.buf, b"\" y=\"");
                 push_i(&mut f.buf, by);

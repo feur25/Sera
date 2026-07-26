@@ -1578,91 +1578,48 @@ impl Chart {
     #[sera_sig(n = 2000, method = "lttb")]
     pub fn downsample(&self, n: usize, method: &str) -> Chart {
         let _ = method;
+        fn tag_attr(tag: &str, name: &str) -> Option<String> {
+            let needle = format!("{}=\"", name);
+            let start = tag.find(&needle)? + needle.len();
+            let end = tag[start..].find('"')? + start;
+            Some(tag[start..end].to_string())
+        }
         let h = &self.html;
-        let mut out = String::with_capacity(h.len());
-        let mut rest = h.as_str();
-        loop {
-            match rest.find("data-x=\"") {
-                None => {
-                    out.push_str(rest);
-                    break;
-                }
-                Some(i) => {
-                    out.push_str(&rest[..i]);
-                    let after = &rest[i + 8..];
-                    let end = match after.find('"') {
-                        Some(e) => e,
-                        None => {
-                            out.push_str("data-x=\"");
-                            out.push_str(after);
-                            break;
-                        }
-                    };
-                    let xs_raw = &after[..end];
-                    let after2 = &after[end + 1..];
-                    let after_y = match after2.find("data-y=\"") {
-                        Some(j) => j,
-                        None => {
-                            out.push_str("data-x=\"");
-                            out.push_str(after);
-                            break;
-                        }
-                    };
-                    let ys_section = &after2[after_y + 8..];
-                    let ys_end = match ys_section.find('"') {
-                        Some(e) => e,
-                        None => {
-                            out.push_str("data-x=\"");
-                            out.push_str(after);
-                            break;
-                        }
-                    };
-                    let ys_raw = &ys_section[..ys_end];
-                    let xs: Vec<f64> = xs_raw.split(',').filter_map(|s| s.parse().ok()).collect();
-                    let ys: Vec<f64> = ys_raw.split(',').filter_map(|s| s.parse().ok()).collect();
-                    if xs.len() == ys.len() && xs.len() > n && n >= 3 {
-                        let payload = serde_json::json!({"x":xs,"y":ys,"threshold":n}).to_string();
-                        let res = crate::bindings::commands::charts::downsample_lttb(&payload);
-                        if let Ok(v) = serde_json::from_str::<serde_json::Value>(&res) {
-                            if v.get("ok").and_then(|b| b.as_bool()).unwrap_or(false) {
-                                let nx: Vec<String> = v
-                                    .get("x")
-                                    .and_then(|a| a.as_array())
-                                    .map(|a| {
-                                        a.iter()
-                                            .filter_map(|n| n.as_f64().map(|x| x.to_string()))
-                                            .collect()
-                                    })
-                                    .unwrap_or_default();
-                                let ny: Vec<String> = v
-                                    .get("y")
-                                    .and_then(|a| a.as_array())
-                                    .map(|a| {
-                                        a.iter()
-                                            .filter_map(|n| n.as_f64().map(|x| x.to_string()))
-                                            .collect()
-                                    })
-                                    .unwrap_or_default();
-                                out.push_str(&format!("data-x=\"{}\"", nx.join(",")));
-                                out.push_str(&after2[..after_y]);
-                                out.push_str(&format!("data-y=\"{}\"", ny.join(",")));
-                                rest = &ys_section[ys_end + 1..];
-                                continue;
-                            }
-                        }
-                    }
-                    out.push_str("data-x=\"");
-                    out.push_str(xs_raw);
-                    out.push('"');
-                    out.push_str(&after2[..after_y]);
-                    out.push_str("data-y=\"");
-                    out.push_str(ys_raw);
-                    out.push('"');
-                    rest = &ys_section[ys_end + 1..];
+        let mut triples: Vec<(i64, f64)> = Vec::new();
+        let mut pos = 0usize;
+        while let Some(rel) = h[pos..].find('<') {
+            let tag_start = pos + rel;
+            let tag_end = match h[tag_start..].find('>') {
+                Some(e) => tag_start + e,
+                None => break,
+            };
+            let tag = &h[tag_start..=tag_end];
+            if let (Some(idx_s), Some(_), Some(y_s)) = (
+                tag_attr(tag, "data-idx"),
+                tag_attr(tag, "data-x"),
+                tag_attr(tag, "data-y"),
+            ) {
+                if let (Ok(idx), Ok(y)) = (idx_s.parse::<i64>(), y_s.parse::<f64>()) {
+                    triples.push((idx, y));
                 }
             }
+            pos = tag_end + 1;
         }
-        self.propagate(out)
+        if triples.is_empty() {
+            return self.propagate(self.html.clone());
+        }
+        let ys: Vec<f64> = triples.iter().map(|t| t.1).collect();
+        let keep = crate::plot::decimate::lttb_indices(&ys, n);
+        let keep_idx: Vec<i64> = keep.iter().map(|&k| triples[k].0).collect();
+        let json = serde_json::to_string(&keep_idx).unwrap_or_else(|_| "[]".to_string());
+        let js = format!(
+            "(function(){{var keep=new Set({});var svg=document.querySelector('svg');if(!svg)return;svg.querySelectorAll('[data-idx][data-x][data-y]').forEach(function(el){{var idx=parseInt(el.getAttribute('data-idx'));if(!keep.has(idx))el.style.display='none';}});}})()",
+            json
+        );
+        self.propagate(crate::html::hover::inject_before_body(
+            &self.html,
+            &format!("<script>{}</script></body>", js),
+        ))
     }
 
     #[sera_doc(

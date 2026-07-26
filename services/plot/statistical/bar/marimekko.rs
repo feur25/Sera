@@ -93,13 +93,14 @@ pub fn render(cfg: &BarConfig) -> String {
     f.axes(cfg.x_label, cfg.y_label);
 
     let mut x_acc = 0.0f64;
+    let mut idx = 0i32;
     for ci in 0..n_cats {
         let w_norm = widths[ci] / total_w;
         let bx = f.pl + (x_acc * f.pw as f64) as i32;
         let bw = (w_norm * f.pw as f64) as i32;
         let total = cat_totals[ci].max(1e-9);
         let mut acc = 0.0f64;
-        for (si, (_, vals)) in cfg.series.iter().enumerate() {
+        for (si, (sname, vals)) in cfg.series.iter().enumerate() {
             let v = vals.get(ci).copied().unwrap_or(0.0);
             if !v.is_finite() || v < 0.0 {
                 continue;
@@ -111,7 +112,16 @@ pub fn render(cfg: &BarConfig) -> String {
             let y_bot = f.pt + ((1.0 - p_start) * f.ph as f64) as i32;
             let h = (y_bot - y_top).max(1);
             acc += v;
-            push_b(&mut f.buf, b"<rect x=\"");
+            push_b(&mut f.buf, b"<rect data-idx=\"");
+            push_i(&mut f.buf, idx);
+            idx += 1;
+            push_b(&mut f.buf, b"\" data-v=\"");
+            push_f2(&mut f.buf, v);
+            push_b(&mut f.buf, b"\" data-lbl=\"");
+            escape_xml(&mut f.buf, sname);
+            push_b(&mut f.buf, b"\" data-group=\"");
+            escape_xml(&mut f.buf, sname);
+            push_b(&mut f.buf, b"\" x=\"");
             push_i(&mut f.buf, bx);
             push_b(&mut f.buf, b"\" y=\"");
             push_i(&mut f.buf, y_top);

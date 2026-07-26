@@ -94,7 +94,13 @@ pub fn render(cfg: &BarConfig) -> String {
             let cx = x_acc + ci * col_w + icon_size / 2;
             for k in 0..in_col {
                 let cy = baseline - k * (icon_size + icon_pad) - icon_size / 2;
-                push_b(&mut f.buf, b"<rect x=\"");
+                push_b(&mut f.buf, b"<rect data-idx=\"");
+                push_i(&mut f.buf, i as i32);
+                push_b(&mut f.buf, b"\" data-lbl=\"");
+                escape_xml(&mut f.buf, &cfg.labels[i]);
+                push_b(&mut f.buf, b"\" data-group=\"");
+                escape_xml(&mut f.buf, &cfg.labels[i]);
+                push_b(&mut f.buf, b"\" x=\"");
                 push_i(&mut f.buf, cx - icon_size / 2);
                 push_b(&mut f.buf, b"\" y=\"");
                 push_i(&mut f.buf, cy - icon_size / 2);
