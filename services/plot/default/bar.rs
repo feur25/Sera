@@ -269,6 +269,11 @@ pub fn render_bars_html(
             }
             svg_tick_y(&mut buf, pad_l - 4, y + 3, val);
         }
+        let bar_w_f = plot_w as f64 / n.max(1) as f64;
+        for i in 0..=n {
+            let x = pad_l + (i as f64 * bar_w_f) as i32;
+            svg_vgrid_vis(&mut buf, x, pad_t, pad_t + plot_h, gridlines);
+        }
     }
 
     svg_axis_lines(&mut buf, pad_l, pad_t, plot_w, plot_h);
