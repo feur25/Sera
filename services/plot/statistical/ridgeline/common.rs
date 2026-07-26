@@ -187,20 +187,19 @@ pub fn open_svg(buf: &mut Vec<u8>, cfg: &RidgelineConfig, layout: &Layout, x0: f
         let frac = ti as f64 / n_xticks as f64;
         let x = layout.pad_l + (layout.plot_w as f64 * frac) as i32;
         let val = x0 + xr * frac;
-        if cfg.gridlines {
-            push_b(buf, b"<line x1=\"");
-            push_i(buf, x);
-            push_b(buf, b"\" y1=\"");
-            push_i(buf, layout.title_h);
-            push_b(buf, b"\" x2=\"");
-            push_i(buf, x);
-            push_b(buf, b"\" y2=\"");
-            push_i(buf, layout.axis_y);
-            push_b(
-                buf,
-                b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"/>",
-            );
+        push_b(buf, b"<line x1=\"");
+        push_i(buf, x);
+        push_b(buf, b"\" y1=\"");
+        push_i(buf, layout.title_h);
+        push_b(buf, b"\" x2=\"");
+        push_i(buf, x);
+        push_b(buf, b"\" y2=\"");
+        push_i(buf, layout.axis_y);
+        push_b(buf, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"");
+        if !cfg.gridlines {
+            push_b(buf, b" style=\"display:none\"");
         }
+        push_b(buf, b"/>");
         push_b(buf, b"<text x=\"");
         push_i(buf, x);
         push_b(buf, b"\" y=\"");

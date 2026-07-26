@@ -1,6 +1,6 @@
 use super::common::{data_attrs, dot, finalize, open, prepare};
 use super::config::LollipopConfig;
-use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i, svg_axis_lines, svg_vgrid, truncate};
+use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i, svg_axis_lines, svg_vgrid_vis, truncate};
 
 #[crate::chart_demo("labels=[\"Alpha\",\"Beta\",\"Gamma\",\"Delta\",\"Epsilon\",\"Zeta\"], values=[24,-38,17,-12,29,-6], variant=\"conditional_color\"")]
 
@@ -14,11 +14,9 @@ pub fn render(cfg: &LollipopConfig) -> String {
     let min_val = p.vmin.min(0.0);
     let range = (max_val - min_val).max(1.0);
     let n_xticks: i32 = 5;
-    if cfg.gridlines {
-        for ti in 0..=n_xticks {
-            let x = pl + (pw as f64 * ti as f64 / n_xticks as f64) as i32;
-            svg_vgrid(&mut b, x, pt, pt + ph);
-        }
+    for ti in 0..=n_xticks {
+        let x = pl + (pw as f64 * ti as f64 / n_xticks as f64) as i32;
+        svg_vgrid_vis(&mut b, x, pt, pt + ph, cfg.gridlines);
     }
     svg_axis_lines(&mut b, pl, pt, pw, ph);
     let baseline = pl + ((-min_val) / range * pw as f64) as i32;

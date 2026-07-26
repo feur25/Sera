@@ -829,7 +829,7 @@ pub fn render_scatter_html(
         let frac = i as f64 / 5.0;
         let y = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
         let val = min_y + frac * range_y;
-        if gridlines && i > 0 {
+        if i > 0 {
             push_b(&mut buf, b"<line x1=\"");
             push_i(&mut buf, pad_l);
             push_b(&mut buf, b"\" y1=\"");
@@ -840,8 +840,12 @@ pub fn render_scatter_html(
             push_i(&mut buf, y);
             push_b(
                 &mut buf,
-                b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"/>",
+                b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"",
             );
+            if !gridlines {
+                push_b(&mut buf, b" style=\"display:none\"");
+            }
+            push_b(&mut buf, b"/>");
         }
         push_b(&mut buf, b"<text x=\"");
         push_i(&mut buf, pad_l - 4);

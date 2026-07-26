@@ -1,7 +1,7 @@
 use super::common::{color_for, data_attrs, dot, finalize, open, prepare, x_tick_label, x_tick_label_rotated};
 use super::config::LollipopConfig;
 use crate::plot::statistical::common::{
-    hex6, push_b, push_f2, push_i, svg_axis_lines, svg_hgrid, svg_tick_y, svg_y_label,
+    hex6, push_b, push_f2, push_i, svg_axis_lines, svg_hgrid_vis, svg_tick_y, svg_y_label,
 };
 
 #[crate::chart_demo(
@@ -19,11 +19,9 @@ pub fn render(cfg: &LollipopConfig) -> String {
     let min_val = p.vmin.min(0.0);
     let range = (max_val - min_val).max(1.0);
     let n_yticks: i32 = 5;
-    if cfg.gridlines {
-        for ti in 0..=n_yticks {
-            let y = pt + ph - (ph as f64 * ti as f64 / n_yticks as f64) as i32;
-            svg_hgrid(&mut b, pl, pl + pw, y);
-        }
+    for ti in 0..=n_yticks {
+        let y = pt + ph - (ph as f64 * ti as f64 / n_yticks as f64) as i32;
+        svg_hgrid_vis(&mut b, pl, pl + pw, y, cfg.gridlines);
     }
     svg_y_label(&mut b, cfg.y_label, 12, pt, ph);
     for ti in 0..=n_yticks {

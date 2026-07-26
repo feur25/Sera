@@ -1,7 +1,7 @@
 use super::config::BarConfig;
 use crate::plot::statistical::common::{
     apply_sort, escape_xml, hex6, push_b, push_f2, push_i, svg_open_rescalable, svg_title,
-    svg_vgrid, truncate,
+    svg_vgrid_vis, truncate,
 };
 
 #[crate::chart_demo(
@@ -37,12 +37,10 @@ pub fn render(cfg: &BarConfig) -> String {
     svg_title(&mut buf, cfg.title, w / 2, 26);
 
     let n_xticks = 5;
-    if cfg.gridlines {
-        for ti in 0..=n_xticks {
-            let frac = ti as f64 / n_xticks as f64;
-            let x = pad_l + (pw as f64 * frac) as i32;
-            svg_vgrid(&mut buf, x, pad_t, pad_t + ph);
-        }
+    for ti in 0..=n_xticks {
+        let frac = ti as f64 / n_xticks as f64;
+        let x = pad_l + (pw as f64 * frac) as i32;
+        svg_vgrid_vis(&mut buf, x, pad_t, pad_t + ph, cfg.gridlines);
     }
     for ti in 0..=n_xticks {
         let frac = ti as f64 / n_xticks as f64;

@@ -28,27 +28,30 @@ pub fn render(cfg: &PieConfig) -> String {
     let cy = title_pad + (h as f64 - title_pad) / 2.0;
     let r_max = ((w.min(h) as f64) * 0.5 - 56.0 - title_pad * 0.3).max(30.0);
 
-    if cfg.gridlines {
-        for ring in 1..=5 {
-            let rr = r_max * ring as f64 / 5.0;
-            push_b(&mut buf, b"<circle cx=\"");
-            push_f2(&mut buf, cx);
-            push_b(&mut buf, b"\" cy=\"");
-            push_f2(&mut buf, cy);
-            push_b(&mut buf, b"\" r=\"");
-            push_f2(&mut buf, rr);
-            push_b(
-                &mut buf,
-                b"\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"0.7\"/>",
-            );
-            push_b(&mut buf, b"<text x=\"");
-            push_f2(&mut buf, cx + 4.0);
-            push_b(&mut buf, b"\" y=\"");
-            push_f2(&mut buf, cy - rr - 2.0);
-            push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#94a3b8\">");
-            push_f2(&mut buf, vmax * ring as f64 / 5.0);
-            push_b(&mut buf, b"</text>");
+    for ring in 1..=5 {
+        let rr = r_max * ring as f64 / 5.0;
+        push_b(&mut buf, b"<circle class=\"sp-gl\" cx=\"");
+        push_f2(&mut buf, cx);
+        push_b(&mut buf, b"\" cy=\"");
+        push_f2(&mut buf, cy);
+        push_b(&mut buf, b"\" r=\"");
+        push_f2(&mut buf, rr);
+        push_b(&mut buf, b"\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"0.7\"");
+        if !cfg.gridlines {
+            push_b(&mut buf, b" style=\"display:none\"");
         }
+        push_b(&mut buf, b"/>");
+        push_b(&mut buf, b"<text class=\"sp-gl\" x=\"");
+        push_f2(&mut buf, cx + 4.0);
+        push_b(&mut buf, b"\" y=\"");
+        push_f2(&mut buf, cy - rr - 2.0);
+        push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#94a3b8\"");
+        if !cfg.gridlines {
+            push_b(&mut buf, b" style=\"display:none\"");
+        }
+        push_b(&mut buf, b">");
+        push_f2(&mut buf, vmax * ring as f64 / 5.0);
+        push_b(&mut buf, b"</text>");
     }
 
     let slice = TAU / n as f64;

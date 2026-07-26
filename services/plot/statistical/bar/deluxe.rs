@@ -96,17 +96,19 @@ pub fn render(cfg: &BarConfig, orient: u8) -> String {
             let frac = ti as f64 / 5.0;
             let x = f.pl + (frac * f.pw as f64) as i32;
             let v = tick_max * frac;
-            if cfg.gridlines {
-                push_b(&mut f.buf, b"<line x1=\"");
-                push_i(&mut f.buf, x);
-                push_b(&mut f.buf, b"\" y1=\"");
-                push_i(&mut f.buf, f.pt);
-                push_b(&mut f.buf, b"\" x2=\"");
-                push_i(&mut f.buf, x);
-                push_b(&mut f.buf, b"\" y2=\"");
-                push_i(&mut f.buf, f.pt + f.ph);
-                push_b(&mut f.buf, b"\" stroke=\"#1e293b\" stroke-width=\"1\"/>");
+            push_b(&mut f.buf, b"<line class=\"sp-gl\" x1=\"");
+            push_i(&mut f.buf, x);
+            push_b(&mut f.buf, b"\" y1=\"");
+            push_i(&mut f.buf, f.pt);
+            push_b(&mut f.buf, b"\" x2=\"");
+            push_i(&mut f.buf, x);
+            push_b(&mut f.buf, b"\" y2=\"");
+            push_i(&mut f.buf, f.pt + f.ph);
+            push_b(&mut f.buf, b"\" stroke=\"#1e293b\" stroke-width=\"1\"");
+            if !cfg.gridlines {
+                push_b(&mut f.buf, b" style=\"display:none\"");
             }
+            push_b(&mut f.buf, b"/>");
             push_b(&mut f.buf, b"<text x=\"");
             push_i(&mut f.buf, x);
             push_b(&mut f.buf, b"\" y=\"");

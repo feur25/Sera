@@ -191,8 +191,8 @@ pub fn render_bars_html(
     use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json};
     use crate::plot::statistical::common::{
         apply_sort, apply_sort_groups, escape_xml, hex6, palette_color, push_b, push_f2, push_i,
-        svg_axis_lines, svg_hgrid, svg_legend_item, svg_open_rescalable, svg_tick_x, svg_tick_y,
-        svg_title, svg_vgrid, svg_x_label, svg_y_label, truncate, PALETTE as DEFAULT_PAL,
+        svg_axis_lines, svg_hgrid_vis, svg_legend_item, svg_open_rescalable, svg_tick_x, svg_tick_y,
+        svg_title, svg_vgrid_vis, svg_x_label, svg_y_label, truncate, PALETTE as DEFAULT_PAL,
     };
     let n = values.len().min(labels.len());
     if n == 0 {
@@ -256,9 +256,7 @@ pub fn render_bars_html(
             let frac = ti as f64 / n_xticks as f64;
             let tx = pad_l + (frac * plot_w as f64) as i32;
             let val = frac * max_val;
-            if gridlines {
-                svg_vgrid(&mut buf, tx, pad_t, pad_t + plot_h);
-            }
+            svg_vgrid_vis(&mut buf, tx, pad_t, pad_t + plot_h, gridlines);
             svg_tick_x(&mut buf, tx, pad_t + plot_h + 14, val);
         }
     } else {
@@ -266,8 +264,8 @@ pub fn render_bars_html(
             let frac = i as f64 / 5.0;
             let y = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
             let val = frac * max_val;
-            if gridlines && i > 0 {
-                svg_hgrid(&mut buf, pad_l, pad_l + plot_w, y);
+            if i > 0 {
+                svg_hgrid_vis(&mut buf, pad_l, pad_l + plot_w, y, gridlines);
             }
             svg_tick_y(&mut buf, pad_l - 4, y + 3, val);
         }

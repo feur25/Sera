@@ -223,7 +223,7 @@ pub fn render_lines_html(
         let frac = i as f64 / 5.0;
         let y = pad_t + ((1.0 - frac) * plot_h as f64) as i32;
         let val = frac * max_val;
-        if gridlines && i > 0 {
+        if i > 0 {
             push_b(&mut b, b"<line x1=\"");
             push_i(&mut b, pad_l);
             push_b(&mut b, b"\" y1=\"");
@@ -234,8 +234,12 @@ pub fn render_lines_html(
             push_i(&mut b, y);
             push_b(
                 &mut b,
-                b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"/>",
+                b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"",
             );
+            if !gridlines {
+                push_b(&mut b, b" style=\"display:none\"");
+            }
+            push_b(&mut b, b"/>");
         }
         push_b(&mut b, b"<text x=\"");
         push_i(&mut b, pad_l - 4);

@@ -275,6 +275,10 @@ pub fn svg_legend_item(
 }
 
 pub fn svg_hgrid(buf: &mut Vec<u8>, x1: i32, x2: i32, y: i32) {
+    svg_hgrid_vis(buf, x1, x2, y, true);
+}
+
+pub fn svg_hgrid_vis(buf: &mut Vec<u8>, x1: i32, x2: i32, y: i32, visible: bool) {
     push_b(buf, b"<line x1=\"");
     push_i(buf, x1);
     push_b(buf, b"\" y1=\"");
@@ -285,11 +289,19 @@ pub fn svg_hgrid(buf: &mut Vec<u8>, x1: i32, x2: i32, y: i32) {
     push_i(buf, y);
     push_b(
         buf,
-        b"\" stroke=\"#6b7280\" stroke-width=\"0.8\" stroke-opacity=\"0.65\" class=\"sp-gl\"/>",
+        b"\" stroke=\"#6b7280\" stroke-width=\"0.8\" stroke-opacity=\"0.65\" class=\"sp-gl\"",
     );
+    if !visible {
+        push_b(buf, b" style=\"display:none\"");
+    }
+    push_b(buf, b"/>");
 }
 
 pub fn svg_vgrid(buf: &mut Vec<u8>, x: i32, y1: i32, y2: i32) {
+    svg_vgrid_vis(buf, x, y1, y2, true);
+}
+
+pub fn svg_vgrid_vis(buf: &mut Vec<u8>, x: i32, y1: i32, y2: i32, visible: bool) {
     push_b(buf, b"<line x1=\"");
     push_i(buf, x);
     push_b(buf, b"\" y1=\"");
@@ -300,8 +312,12 @@ pub fn svg_vgrid(buf: &mut Vec<u8>, x: i32, y1: i32, y2: i32) {
     push_i(buf, y2);
     push_b(
         buf,
-        b"\" stroke=\"#6b7280\" stroke-width=\"0.8\" stroke-opacity=\"0.65\" class=\"sp-gl\"/>",
+        b"\" stroke=\"#6b7280\" stroke-width=\"0.8\" stroke-opacity=\"0.65\" class=\"sp-gl\"",
     );
+    if !visible {
+        push_b(buf, b" style=\"display:none\"");
+    }
+    push_b(buf, b"/>");
 }
 
 pub fn svg_tick_y(buf: &mut Vec<u8>, x: i32, y: i32, val: f64) {
@@ -599,8 +615,8 @@ impl Frame {
             let f = i as f64 / n as f64;
             let y = self.pt + ((1.0 - f) * self.ph as f64) as i32;
             let v = y_min + f * rng;
-            if grid && i > 0 {
-                svg_hgrid(&mut self.buf, self.pl, self.pl + self.pw, y);
+            if i > 0 {
+                svg_hgrid_vis(&mut self.buf, self.pl, self.pl + self.pw, y, grid);
             }
             svg_tick_y(&mut self.buf, self.pl - 4, y + 4, v);
         }
@@ -613,7 +629,7 @@ impl Frame {
             let f = i as f64 / n as f64;
             let y = self.pt + ((1.0 - f) * self.ph as f64) as i32;
             let v = y_min + f * rng;
-            if grid && i > 0 {
+            if i > 0 {
                 push_b(&mut self.buf, b"<line x1=\"");
                 push_i(&mut self.buf, self.pl);
                 push_b(&mut self.buf, b"\" y1=\"");
@@ -624,8 +640,12 @@ impl Frame {
                 push_i(&mut self.buf, y);
                 push_b(
                     &mut self.buf,
-                    b"\" stroke=\"#e2e8f0\" stroke-width=\".5\" class=\"sp-gl\"/>",
+                    b"\" stroke=\"#e2e8f0\" stroke-width=\".5\" class=\"sp-gl\"",
                 );
+                if !grid {
+                    push_b(&mut self.buf, b" style=\"display:none\"");
+                }
+                push_b(&mut self.buf, b"/>");
             }
             push_b(&mut self.buf, b"<text x=\"");
             push_i(&mut self.buf, self.pl - 4);
@@ -642,8 +662,8 @@ impl Frame {
             let f = i as f64 / n as f64;
             let y = self.pt + ((1.0 - f) * self.ph as f64) as i32;
             let v = (f * max_count).round() as i32;
-            if grid && i > 0 {
-                svg_hgrid(&mut self.buf, self.pl, self.pl + self.pw, y);
+            if i > 0 {
+                svg_hgrid_vis(&mut self.buf, self.pl, self.pl + self.pw, y, grid);
             }
             push_b(&mut self.buf, b"<text x=\"");
             push_i(&mut self.buf, self.pl - 4);
@@ -661,8 +681,8 @@ impl Frame {
             let f = i as f64 / n as f64;
             let x = self.pl + (f * self.pw as f64) as i32;
             let v = x_min + f * rng;
-            if grid && i > 0 {
-                svg_vgrid(&mut self.buf, x, self.pt, self.pt + self.ph);
+            if i > 0 {
+                svg_vgrid_vis(&mut self.buf, x, self.pt, self.pt + self.ph, grid);
             }
             svg_tick_x(&mut self.buf, x, self.pt + self.ph + 14, v);
         }

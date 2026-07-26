@@ -54,7 +54,7 @@ pub fn render(cfg: &WaterfallConfig) -> String {
         let frac = ti as f64 / n_xticks as f64;
         let v = min_x + frac * range;
         let x = pad_l + (frac * plot_w as f64) as i32;
-        if cfg.gridlines && ti > 0 {
+        if ti > 0 {
             push_b(&mut b, b"<line x1=\"");
             push_i(&mut b, x);
             push_b(&mut b, b"\" y1=\"");
@@ -63,10 +63,11 @@ pub fn render(cfg: &WaterfallConfig) -> String {
             push_i(&mut b, x);
             push_b(&mut b, b"\" y2=\"");
             push_i(&mut b, pad_t + plot_h);
-            push_b(
-                &mut b,
-                b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"/>",
-            );
+            push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"0.5\" class=\"sp-gl\"");
+            if !cfg.gridlines {
+                push_b(&mut b, b" style=\"display:none\"");
+            }
+            push_b(&mut b, b"/>");
         }
         push_b(&mut b, b"<text x=\"");
         push_i(&mut b, x);

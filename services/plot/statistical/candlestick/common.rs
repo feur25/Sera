@@ -122,7 +122,7 @@ pub fn open_with_axes(buf: &mut Vec<u8>, cfg: &CandlestickConfig, p: &Prepared) 
         let frac = i as f64 / n_yticks as f64;
         let y = l.pad_t + ((1.0 - frac) * l.plot_h as f64) as i32;
         let val = l.vmin + frac * l.vrange;
-        if cfg.gridlines && i > 0 {
+        if i > 0 {
             push_b(buf, b"<line class=\"sp-gl\" x1=\"");
             push_i(buf, l.pad_l);
             push_b(buf, b"\" y1=\"");
@@ -131,7 +131,11 @@ pub fn open_with_axes(buf: &mut Vec<u8>, cfg: &CandlestickConfig, p: &Prepared) 
             push_i(buf, l.pad_l + l.plot_w);
             push_b(buf, b"\" y2=\"");
             push_i(buf, y);
-            push_b(buf, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.5\"/>");
+            push_b(buf, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.5\"");
+            if !cfg.gridlines {
+                push_b(buf, b" style=\"display:none\"");
+            }
+            push_b(buf, b"/>");
         }
         push_b(buf, b"<text class=\"sp-yt\" x=\"");
         push_i(buf, l.pad_l - 6);
