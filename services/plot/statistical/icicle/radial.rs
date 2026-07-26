@@ -12,7 +12,7 @@ pub fn render(cfg: &IcicleConfig) -> String {
         None => return String::new(),
     };
     let mut b = Vec::<u8>::with_capacity(p.n * 260 + 1536);
-    open_svg(&mut b, cfg);
+    open_svg(&mut b, cfg, &p.layout);
 
     let cx = cfg.width as f64 / 2.0;
     let cy = cfg.height as f64 / 2.0 + if cfg.title.is_empty() { 0.0 } else { 8.0 };

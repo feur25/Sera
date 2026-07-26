@@ -12,7 +12,7 @@ pub fn render(cfg: &IcicleConfig) -> String {
         None => return String::new(),
     };
     let mut b = Vec::<u8>::with_capacity(p.n * 240 + 1536);
-    open_svg(&mut b, cfg);
+    open_svg(&mut b, cfg, &p.layout);
     let gap = 2.0;
     let order = p.bfs_order.clone();
     for i in order {

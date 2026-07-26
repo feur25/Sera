@@ -211,7 +211,7 @@ pub fn shaded_color_hex(p: &Prepared, i: usize) -> [u8; 6] {
     hex6(lerp_rgb(base, 0xFFFFFF, t))
 }
 
-pub fn open_svg(buf: &mut Vec<u8>, cfg: &IcicleConfig) {
+pub fn open_svg(buf: &mut Vec<u8>, cfg: &IcicleConfig, l: &Layout) {
     push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"");
     push_i(buf, cfg.width);
     push_b(buf, b"\" height=\"");
@@ -220,6 +220,14 @@ pub fn open_svg(buf: &mut Vec<u8>, cfg: &IcicleConfig) {
     push_i(buf, cfg.width);
     push_b(buf, b" ");
     push_i(buf, cfg.height);
+    push_b(buf, b"\" data-sp=\"");
+    push_i(buf, l.plot_x);
+    push_b(buf, b",");
+    push_i(buf, l.plot_y);
+    push_b(buf, b",");
+    push_i(buf, l.plot_w);
+    push_b(buf, b",");
+    push_i(buf, l.plot_h);
     push_b(buf, b"\">");
     push_b(
         buf,

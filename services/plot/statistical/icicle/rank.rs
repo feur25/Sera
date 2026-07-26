@@ -12,7 +12,7 @@ pub fn render(cfg: &IcicleConfig) -> String {
         None => return String::new(),
     };
     let mut b = Vec::<u8>::with_capacity(p.n * 240 + 1536);
-    open_svg(&mut b, cfg);
+    open_svg(&mut b, cfg, &p.layout);
 
     let max_depth = p.depth.iter().copied().max().unwrap_or(0);
     let mut rank_frac = vec![0.0f64; p.n];
