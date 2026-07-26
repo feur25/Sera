@@ -3,6 +3,9 @@ pub mod basic;
 pub mod categorical;
 pub mod common;
 pub mod config;
+pub mod continuous_hue;
+pub mod dual_style;
+pub mod facet;
 pub mod labeled;
 pub mod regression;
 pub mod residual;
@@ -14,7 +17,13 @@ pub use variant::ScatterVariant;
 
 pub fn render_scatter_variant_html(cfg: &ScatterConfig) -> String {
     use ScatterVariant::*;
-    let v = if cfg.variant == Basic && !cfg.categories.is_empty() {
+    let v = if cfg.variant != Basic {
+        cfg.variant
+    } else if !cfg.categories.is_empty() && !cfg.categories2.is_empty() {
+        DualStyle
+    } else if !cfg.color_values.is_empty() {
+        ContinuousHue
+    } else if !cfg.categories.is_empty() {
         Categorical
     } else {
         cfg.variant
@@ -26,6 +35,9 @@ pub fn render_scatter_variant_html(cfg: &ScatterConfig) -> String {
         Labeled => labeled::render(cfg),
         Regression => regression::render(cfg),
         Residual => residual::render(cfg),
+        DualStyle => dual_style::render(cfg),
+        ContinuousHue => continuous_hue::render(cfg),
+        Facet => facet::render(cfg),
     }
 }
 
@@ -60,6 +72,7 @@ pub fn build(input: &str) -> String {
     } else {
         cgs.clone()
     };
+    let categories2 = a.categories2.clone().unwrap_or_default();
 
     let dec = crate::plot::decimate::Decimator::new(o.max_points, &y);
     let x = dec.apply(x);
@@ -68,9 +81,11 @@ pub fn build(input: &str) -> String {
     let sz = dec.apply(sz);
     let cgs = dec.apply(cgs);
     let categories = dec.apply(categories);
+    let categories2 = dec.apply(categories2);
 
     if o.variant.is_some()
         || !o.color_values.clone().unwrap_or_default().is_empty()
+        || !categories2.is_empty()
         || o.symbol.is_some()
         || o.symbols.is_some()
     {
@@ -109,6 +124,7 @@ pub fn build(input: &str) -> String {
             x_values: &x,
             y_values: &y,
             categories: &categories,
+            categories2: &categories2,
             labels: &lbls,
             color_values: &color_values,
             symbols: &syms,
