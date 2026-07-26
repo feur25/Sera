@@ -313,9 +313,7 @@
     }
 
     function variantLabel(item) {
-        if (typeof item === 'string') return item;
-        var aliases = item && item.aliases;
-        return aliases && aliases.length ? aliases[0] : variantKey(item);
+        return variantKey(item);
     }
 
     function escAttr(s) {
