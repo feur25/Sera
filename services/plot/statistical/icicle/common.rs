@@ -38,6 +38,7 @@ pub struct Prepared {
     pub layout: Layout,
     pub palette: Vec<u32>,
     pub grand_total: f64,
+    pub parent: Vec<Option<usize>>,
 }
 
 pub fn prepare(cfg: &IcicleConfig) -> Option<Prepared> {
@@ -165,6 +166,7 @@ pub fn prepare(cfg: &IcicleConfig) -> Option<Prepared> {
         roots,
         palette,
         grand_total,
+        parent: parent_of,
         layout: Layout {
             plot_x,
             plot_y,
@@ -244,6 +246,17 @@ pub fn rect_attrs(buf: &mut Vec<u8>, r: Rect) {
     push_b(buf, b"\"");
 }
 
+pub fn path_str(p: &Prepared, i: usize) -> String {
+    let mut chain = vec![i];
+    let mut cur = i;
+    while let Some(par) = p.parent[cur] {
+        chain.push(par);
+        cur = par;
+    }
+    chain.reverse();
+    chain.iter().map(|v| v.to_string()).collect::<Vec<_>>().join(".")
+}
+
 pub fn node_data_attrs(buf: &mut Vec<u8>, p: &Prepared, i: usize) {
     push_b(buf, b" data-idx=\"");
     push_i(buf, i as i32);
@@ -252,6 +265,10 @@ pub fn node_data_attrs(buf: &mut Vec<u8>, p: &Prepared, i: usize) {
     push_b(buf, b"\" data-kv-pct=\"");
     push_f2(buf, p.values_eff[i] / p.grand_total * 100.0);
     push_b(buf, b"%");
+    push_b(buf, b"\" data-path=\"");
+    push_b(buf, b".");
+    buf.extend_from_slice(path_str(p, i).as_bytes());
+    push_b(buf, b".");
     push_b(buf, b"\" data-lbl=\"");
     escape_xml(buf, &p.labels[i]);
     push_b(buf, b"\"");

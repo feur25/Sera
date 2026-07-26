@@ -90,6 +90,10 @@ fn render_impl(cfg: &SankeyConfig, minimal: bool, sorted: bool) -> String {
             push_b(&mut buf, b"\" fill-opacity=\"0.45\" d=\"");
         }
         sankey_link_path(&mut buf, layout.x[s], y0, layout.x[t], y1, src_h, tgt_h, cfg.node_width);
+        push_b(&mut buf, b"\" data-src=\"");
+        push_i(&mut buf, s as i32);
+        push_b(&mut buf, b"\" data-tgt=\"");
+        push_i(&mut buf, t as i32);
         push_b(&mut buf, b"\"/>");
     }
 
