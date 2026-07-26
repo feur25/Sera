@@ -443,27 +443,27 @@ impl Chart {
 
     #[sera_doc(
         category = "chart_method",
-        aliases("grid_horizontal", "y_grid"),
+        aliases("grid_vertical", "y_grid"),
         file = "charts/chart.md",
-        en = "Shows only horizontal (Y-axis value level) grid lines, hiding vertical category lines.",
-        fr = "Affiche uniquement les lignes de grille horizontales (niveaux de valeur Y), masquant les lignes verticales."
+        en = "Shows only vertical grid lines, hiding horizontal ones.",
+        fr = "Affiche uniquement les lignes de grille verticales, masquant les horizontales."
     )]
     pub fn grid_y(&self) -> Chart {
         let mut html = crate::html::hover::inject_before_head(&self.html, "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>");
-        html = crate::html::hover::inject_before_body(&html, &format!("<script>{}</script></body>", SP_GRID_Y_ONLY_JS));
+        html = crate::html::hover::inject_before_body(&html, &format!("<script>{}</script></body>", SP_GRID_X_ONLY_JS));
         self.propagate(html)
     }
 
     #[sera_doc(
         category = "chart_method",
-        aliases("grid_vertical", "x_grid"),
+        aliases("grid_horizontal", "x_grid"),
         file = "charts/chart.md",
-        en = "Shows only vertical (X-axis category separator) grid lines, hiding horizontal value lines.",
-        fr = "Affiche uniquement les lignes de grille verticales (séparatrices de catégories X), masquant les lignes horizontales."
+        en = "Shows only horizontal grid lines, hiding vertical ones.",
+        fr = "Affiche uniquement les lignes de grille horizontales, masquant les verticales."
     )]
     pub fn grid_x(&self) -> Chart {
         let mut html = crate::html::hover::inject_before_head(&self.html, "<style>.sp-gl{display:block!important;opacity:1!important}</style></head>");
-        html = crate::html::hover::inject_before_body(&html, &format!("<script>{}</script></body>", SP_GRID_X_ONLY_JS));
+        html = crate::html::hover::inject_before_body(&html, &format!("<script>{}</script></body>", SP_GRID_Y_ONLY_JS));
         self.propagate(html)
     }
 
