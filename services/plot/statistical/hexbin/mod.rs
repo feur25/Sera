@@ -2,12 +2,16 @@ use crate::plot::{apply, parse_all};
 pub mod basic;
 pub mod common;
 pub mod config;
+pub mod dotted;
 pub mod highlight;
+pub mod log_counts;
+pub mod marginals;
 pub mod mincnt;
 pub mod nested;
 pub mod outlined;
 pub mod spaced;
 pub mod variant;
+pub mod weighted;
 
 pub use config::HexbinConfig;
 pub use variant::HexbinVariant;
@@ -21,6 +25,10 @@ pub fn render_hexbin_html(cfg: &HexbinConfig) -> String {
         Highlight => highlight::render(cfg),
         Mincnt => mincnt::render(cfg),
         Nested => nested::render(cfg),
+        LogCounts => log_counts::render(cfg),
+        Weighted => weighted::render(cfg),
+        Dotted => dotted::render(cfg),
+        Marginals => marginals::render(cfg),
     }
 }
 
@@ -33,6 +41,7 @@ pub fn build(input: &str) -> String {
     let title = title_s.as_str();
     let x_values = a.x.unwrap_or_default();
     let y_values = a.y.unwrap_or_default();
+    let values = a.values.unwrap_or_default();
     use crate::plot::statistical::{render_hexbin_html, HexbinConfig, HexbinVariant};
     let hover = o.hj();
     let variant = HexbinVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
@@ -47,6 +56,7 @@ pub fn build(input: &str) -> String {
         gridlines: o.grid(),
         x_values: &x_values,
         y_values: &y_values,
+        values: &values,
         gridsize: o.bins.map(|b| b.max(2) as usize).unwrap_or(20),
         colorscale: &colorscale,
         palette: &o.pal(),
