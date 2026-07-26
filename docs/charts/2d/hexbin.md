@@ -65,6 +65,10 @@ Aliases: `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `
 <button class="sp-cls-tab" onclick="spCls('hexbin-en','highlight',this)"><span class="sp-cic">⬣</span><span class="sp-clb">Highlight</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-en','mincnt',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Mincnt</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-en','nested',this)"><span class="sp-cic">◎</span><span class="sp-clb">Nested</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-en','log_counts',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Log counts</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-en','weighted',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Weighted</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-en','dotted',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Dotted</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-en','marginals',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Marginals</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="hexbin-en-basic">
@@ -81,7 +85,7 @@ Aliases: `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `
 </div>
 <div class="sp-variant" id="hexbin-en-spaced">
 <p>Hexagons drawn at 72% size with a visible gap between neighbors — a "confetti" look instead of a solid tiled surface.</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"spaced"</code></span><span><strong>Aliases</strong> <code>spaced / gapped / confetti / dotted</code></span></div>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"spaced"</code></span><span><strong>Aliases</strong> <code>spaced / gapped / confetti</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/hexbin-spaced.html"></iframe>
 </div>
@@ -102,6 +106,30 @@ Aliases: `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"nested"</code></span><span><strong>Aliases</strong> <code>nested / magnitude / rings / centroids</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/hexbin-nested.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-en-log_counts">
+<p>Cell color is mapped on <code>log(count + 1)</code> instead of the raw count, matching matplotlib's <code>hexbin(bins="log")</code> — compresses the huge dynamic range that skewed point clouds produce so low-density cells stay visually distinguishable instead of collapsing near zero.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"log_counts"</code></span><span><strong>Aliases</strong> <code>log_counts / log / log_scale / logarithmic</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-log_counts.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-en-weighted">
+<p>Cell color encodes the average of a third variable (<code>values=</code>) inside each bin instead of the point count — the native equivalent of matplotlib's <code>hexbin(C=..., reduce_C_function=numpy.mean)</code>, for when the quantity of interest isn't density itself.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"weighted"</code></span><span><strong>Aliases</strong> <code>weighted / mean / aggregate / reduce_mean</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-weighted.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-en-dotted">
+<p>White dashed cell borders over a full continuous colorscale (defaults to <code>magma</code>) with no plot border — matches matplotlib's <code>hexbin(edgecolor="white", linestyle="dotted", linewidth=1.5)</code> styling exactly.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"dotted"</code></span><span><strong>Aliases</strong> <code>dotted / dashed / styled / magma</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-dotted.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-en-marginals">
+<p>Adds 1D density strips above and to the right of the hexbin grid — a joint-plot style combination, showing the marginal distribution of each axis alongside the 2D density.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"marginals"</code></span><span><strong>Aliases</strong> <code>marginals / joint / with_histograms / density_marginals</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-marginals.html"></iframe>
 </div>
 </div>
 </div>
@@ -155,6 +183,10 @@ Alias : `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `s
 <button class="sp-cls-tab" onclick="spCls('hexbin-fr','highlight',this)"><span class="sp-cic">⬣</span><span class="sp-clb">Highlight</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-fr','mincnt',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Mincnt</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-fr','nested',this)"><span class="sp-cic">◎</span><span class="sp-clb">Imbriqué</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-fr','log_counts',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Log</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-fr','weighted',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Pondéré</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-fr','dotted',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Pointillé</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-fr','marginals',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Marges</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="hexbin-fr-basic">
@@ -171,7 +203,7 @@ Alias : `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `s
 </div>
 <div class="sp-variant" id="hexbin-fr-spaced">
 <p>Hexagones dessinés à 72% de leur taille avec un espace visible entre voisins — un rendu confetti plutôt qu'une surface pavée pleine.</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"spaced"</code></span><span><strong>Alias</strong> <code>spaced / gapped / confetti / dotted</code></span></div>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"spaced"</code></span><span><strong>Alias</strong> <code>spaced / gapped / confetti</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/hexbin-spaced.html"></iframe>
 </div>
@@ -192,6 +224,30 @@ Alias : `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `s
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"nested"</code></span><span><strong>Alias</strong> <code>nested / magnitude / rings / centroids</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/hexbin-nested.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-fr-log_counts">
+<p>La couleur des cellules est basée sur <code>log(effectif + 1)</code> plutôt que sur l'effectif brut, comme <code>hexbin(bins="log")</code> en matplotlib — comprime la large plage dynamique des nuages de points asymétriques pour que les cellules peu denses restent visuellement distinguables au lieu de s'écraser près de zéro.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"log_counts"</code></span><span><strong>Alias</strong> <code>log_counts / log / log_scale / logarithmic</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-log_counts.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-fr-weighted">
+<p>La couleur des cellules encode la moyenne d'une troisième variable (<code>values=</code>) dans chaque cellule plutôt que l'effectif — l'équivalent natif de <code>hexbin(C=..., reduce_C_function=numpy.mean)</code> en matplotlib, quand la grandeur d'intérêt n'est pas la densité elle-même.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"weighted"</code></span><span><strong>Alias</strong> <code>weighted / mean / aggregate / reduce_mean</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-weighted.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-fr-dotted">
+<p>Contours pointillés blancs sur un dégradé continu complet (par défaut <code>magma</code>) sans bordure de graphique — reproduit exactement le style <code>hexbin(edgecolor="white", linestyle="dotted", linewidth=1.5)</code> de matplotlib.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"dotted"</code></span><span><strong>Alias</strong> <code>dotted / dashed / styled / magma</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-dotted.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-fr-marginals">
+<p>Ajoute des bandes de densité 1D au-dessus et à droite de la grille hexbin — une combinaison façon joint-plot, montrant la distribution marginale de chaque axe en plus de la densité 2D.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"marginals"</code></span><span><strong>Alias</strong> <code>marginals / joint / with_histograms / density_marginals</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-marginals.html"></iframe>
 </div>
 </div>
 </div>
