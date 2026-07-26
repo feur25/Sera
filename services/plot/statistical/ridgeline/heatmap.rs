@@ -1,4 +1,5 @@
 use super::common::{
+    draw_order,
     area_path, close_svg, finalize, open_svg, polyline, prepare, project_pts, ridge_label,
 };
 use super::config::RidgelineConfig;
@@ -30,7 +31,7 @@ pub fn render(cfg: &RidgelineConfig) -> String {
     } else {
         1.0
     };
-    for gi in (0..n_groups).rev() {
+    for gi in draw_order(n_groups, cfg.priority) {
         let t = gi as f64 / denom;
         let color = if cfg.palette.is_empty() {
             viridis(t)

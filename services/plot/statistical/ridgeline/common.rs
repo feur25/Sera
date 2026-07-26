@@ -30,6 +30,20 @@ pub struct Prepared {
     pub layout: Layout,
 }
 
+pub fn draw_order(n_groups: usize, priority: &[usize]) -> Vec<usize> {
+    let mut order: Vec<usize> = (0..n_groups).rev().collect();
+    for &p in priority {
+        if p >= n_groups {
+            continue;
+        }
+        if let Some(pos) = order.iter().position(|&g| g == p) {
+            order.remove(pos);
+        }
+        order.push(p);
+    }
+    order
+}
+
 pub fn prepare(cfg: &RidgelineConfig, overlap_override: Option<f64>) -> Option<Prepared> {
     let n = cfg.values.len().min(cfg.categories.len());
     if n == 0 {

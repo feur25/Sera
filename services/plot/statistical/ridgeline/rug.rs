@@ -1,4 +1,5 @@
 use super::common::{
+    draw_order,
     area_path, close_svg, finalize, open_svg, polyline, prepare, project_pts, ridge_label, x_to_px,
 };
 use super::config::RidgelineConfig;
@@ -17,7 +18,7 @@ pub fn render(cfg: &RidgelineConfig) -> String {
 
     let tick_h: f64 = 7.0;
 
-    for gi in (0..n_groups).rev() {
+    for gi in draw_order(n_groups, cfg.priority) {
         let color = palette_color(cfg.palette, gi);
         let hx = hex6(color);
         let base_y = p.layout.title_h + (gi + 1) as i32 * p.layout.row_h;

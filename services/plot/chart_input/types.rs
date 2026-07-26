@@ -186,6 +186,8 @@ pub struct ChartOpts {
     pub pulse_index: Option<Vec<usize>>,
     pub pulse_above: Option<f64>,
     pub pulse_color: Option<String>,
+    pub priority: Option<Vec<usize>>,
+    pub text_info: Option<String>,
     pub outline_color: Option<String>,
     pub outline_width: Option<f64>,
     pub value_labels: Option<bool>,

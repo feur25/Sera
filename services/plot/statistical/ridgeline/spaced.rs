@@ -1,4 +1,5 @@
 use super::common::{
+    draw_order,
     area_path, close_svg, finalize, open_svg, polyline, prepare, project_pts, ridge_label,
 };
 use super::config::RidgelineConfig;
@@ -15,7 +16,7 @@ pub fn render(cfg: &RidgelineConfig) -> String {
     let mut b = Vec::<u8>::with_capacity(n_groups * p.xs.len() * 24 + 2048);
     open_svg(&mut b, cfg, &p.layout, p.x0, p.xr);
 
-    for gi in (0..n_groups).rev() {
+    for gi in draw_order(n_groups, cfg.priority) {
         let color = palette_color(cfg.palette, gi);
         let hx = hex6(color);
         let base_y = p.layout.title_h + (gi + 1) as i32 * p.layout.row_h;

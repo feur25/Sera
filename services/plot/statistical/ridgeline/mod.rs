@@ -42,6 +42,7 @@ pub fn build(input: &str) -> String {
     let title = title_s.as_str();
     let values = a.values.unwrap_or_default();
     let categories = a.categories.or(a.labels).unwrap_or_default();
+    let priority = o.priority.clone().unwrap_or_default();
     use crate::plot::statistical::{render_ridgeline_html, RidgelineConfig, RidgelineVariant};
     let hover = o.hj();
     let variant = RidgelineVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
@@ -60,6 +61,7 @@ pub fn build(input: &str) -> String {
         gridlines: o.grid(),
         sort_order: &o.srt(),
         hover: &hover,
+        priority: &priority,
         ..RidgelineConfig::default()
     });
     apply(html, &o)

@@ -8,6 +8,7 @@ crate::chart_config!(RidgelineConfig, 900, 520;
         pub bandwidth: f64,
         pub n_points: usize,
         pub fill_opacity: u8,
+        pub priority: &'a [usize],
     }
     defaults {
         variant: super::variant::RidgelineVariant::Basic,
@@ -18,5 +19,6 @@ crate::chart_config!(RidgelineConfig, 900, 520;
         bandwidth: 0.0,
         n_points: 60,
         fill_opacity: 56,
+        priority: &[],
     }
 );
