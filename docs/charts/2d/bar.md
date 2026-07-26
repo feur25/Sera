@@ -191,7 +191,7 @@ Two horizontal bar sets mirrored left/right around a shared category axis, from 
 
 <div class="sp-variant" id="bar-en-diverging">
 
-Horizontal bars extending left or right from a zero line, one color regardless of sign, value printed inside the bar (white) when it's wide enough or just outside otherwise. Aliases: `"signed"`, `"delta"`, `"bidirectional"`.
+Horizontal bars extending left or right from a zero line, one color regardless of sign, value printed inside the bar (white) when it's wide enough or just outside otherwise. Aliases: `"signed"`, `"delta"`, `"bidirectional"`. The value label is controlled by `show_values` (bool) like every other bar variant — it defaults to `True` here so existing charts keep their look, unlike other variants where it defaults to `False`.
 
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"diverging"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
@@ -385,7 +385,7 @@ Deux jeux de barres horizontales en miroir de part et d'autre d'un axe catégori
 
 <div class="sp-variant" id="bar-fr-diverging">
 
-Barres horizontales partant d'une ligne zéro vers la gauche ou la droite, une seule couleur peu importe le signe, valeur imprimée à l'intérieur de la barre (blanc) si assez large, sinon juste à l'extérieur. Alias : `"signed"`, `"delta"`, `"bidirectional"`.
+Barres horizontales partant d'une ligne zéro vers la gauche ou la droite, une seule couleur peu importe le signe, valeur imprimée à l'intérieur de la barre (blanc) si assez large, sinon juste à l'extérieur. Alias : `"signed"`, `"delta"`, `"bidirectional"`. L'affichage de la valeur est piloté par `show_values` (bool) comme pour toutes les autres variantes de bar — il vaut `True` par défaut ici pour préserver l'apparence existante, contrairement aux autres variantes où il vaut `False` par défaut.
 
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"diverging"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 

@@ -99,27 +99,29 @@ pub fn render(cfg: &BarConfig) -> String {
         buf.extend_from_slice(&hx);
         push_b(&mut buf, b"\"/>");
 
-        let inside = bw > 32.0;
-        let (tx, anchor, fill): (i32, &[u8], &[u8]) = if inside {
-            let ex = if v >= 0.0 { x_v - 6 } else { x_v + 6 };
-            let anc: &[u8] = if v >= 0.0 { b"end" } else { b"start" };
-            (ex, anc, b"#ffffff")
-        } else {
-            let ex = if v >= 0.0 { x_v + 6 } else { x_v - 6 };
-            let anc: &[u8] = if v >= 0.0 { b"start" } else { b"end" };
-            (ex, anc, b"#111827")
-        };
-        push_b(&mut buf, b"<text x=\"");
-        push_i(&mut buf, tx);
-        push_b(&mut buf, b"\" y=\"");
-        push_f2(&mut buf, cy + bar_h / 2.0 + 4.0);
-        push_b(&mut buf, b"\" text-anchor=\"");
-        buf.extend_from_slice(anchor);
-        push_b(&mut buf, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" font-weight=\"700\" fill=\"");
-        buf.extend_from_slice(fill);
-        push_b(&mut buf, b"\">");
-        push_f2(&mut buf, v);
-        push_b(&mut buf, b"</text>");
+        if cfg.show_text {
+            let inside = bw > 32.0;
+            let (tx, anchor, fill): (i32, &[u8], &[u8]) = if inside {
+                let ex = if v >= 0.0 { x_v - 6 } else { x_v + 6 };
+                let anc: &[u8] = if v >= 0.0 { b"end" } else { b"start" };
+                (ex, anc, b"#ffffff")
+            } else {
+                let ex = if v >= 0.0 { x_v + 6 } else { x_v - 6 };
+                let anc: &[u8] = if v >= 0.0 { b"start" } else { b"end" };
+                (ex, anc, b"#111827")
+            };
+            push_b(&mut buf, b"<text x=\"");
+            push_i(&mut buf, tx);
+            push_b(&mut buf, b"\" y=\"");
+            push_f2(&mut buf, cy + bar_h / 2.0 + 4.0);
+            push_b(&mut buf, b"\" text-anchor=\"");
+            buf.extend_from_slice(anchor);
+            push_b(&mut buf, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" font-weight=\"700\" fill=\"");
+            buf.extend_from_slice(fill);
+            push_b(&mut buf, b"\">");
+            push_f2(&mut buf, v);
+            push_b(&mut buf, b"</text>");
+        }
 
         push_b(&mut buf, b"<text x=\"");
         push_i(&mut buf, pad_l - 8);

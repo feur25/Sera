@@ -157,7 +157,10 @@ pub fn build(input: &str) -> String {
         max_icons_per_column: o.max_icons_per_column.unwrap_or(10),
         units_per_icon: o.units_per_icon.unwrap_or(1.0),
         unit_description: &unit_desc,
-        show_text: o.show_values.or(o.show_text).unwrap_or(false),
+        show_text: o
+            .show_values
+            .or(o.show_text)
+            .unwrap_or(matches!(variant, BarVariant::Diverging)),
         corner_radius: o.corner_radius.unwrap_or(0),
         bar_gap: o.bar_gap.unwrap_or(0.2),
         bargroup_gap: o.bargroup_gap.unwrap_or(0.1),
