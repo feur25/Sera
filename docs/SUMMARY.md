@@ -40,7 +40,6 @@
   - [Histogram Charts](charts/2d/histogram.md)
   - [Heatmap Charts](charts/2d/heatmap.md)
   - [Pie Charts](charts/2d/pie.md)
-  - [Donut Charts](charts/2d/donut.md)
   - [Box-Plot Charts](charts/2d/boxplot.md)
   - [Violin Charts](charts/2d/violin.md)
   - [KDE Charts](charts/2d/kde.md)

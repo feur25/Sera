@@ -4,8 +4,11 @@ pub mod common;
 pub mod config;
 pub mod donut;
 pub mod exploded;
+pub mod glass;
+pub mod glow;
 pub mod kpi;
 pub mod nested;
+pub mod nightingale;
 pub mod pattern;
 pub mod proportional;
 pub mod semi;
@@ -28,6 +31,9 @@ pub fn render_pie_html(cfg: &PieConfig) -> String {
         PieVariant::Kpi => kpi::render(cfg),
         PieVariant::Nested => nested::render(cfg),
         PieVariant::Pattern => pattern::render(cfg),
+        PieVariant::Nightingale => nightingale::render(cfg),
+        PieVariant::Glow => glow::render(cfg),
+        PieVariant::Glass => glass::render(cfg),
     };
     build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }
@@ -130,7 +136,7 @@ pub fn build(input: &str) -> String {
         title,
         x_label: "",
         y_label: "",
-        gridlines: false,
+        gridlines: o.grid(),
         sort_order: &srt,
         hover: &hover,
         legend_position: &lp,

@@ -9,5 +9,8 @@ crate::plot_family! {
         Kpi          => "kpi" | "center" | "centered" | "indicator" | "donut_kpi" | "metric",
         Nested       => "nested" | "concentric" | "rings" | "double_ring" | "multi_ring",
         Pattern      => "pattern" | "patterned" | "textured" | "hatched",
+        Nightingale  => "nightingale" | "rose" | "coxcomb" | "polar_area",
+        Glow         => "glow" | "neon" | "neon_donut",
+        Glass        => "glass" | "nebula" | "glass_donut",
     }
 }
