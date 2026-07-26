@@ -3,9 +3,9 @@ use super::config::KdeConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i, Frame};
 
-const GROUP_HUES: [u32; 6] = [0x636EFA, 0xEF553B, 0x00CC96, 0xAB63FA, 0xFFA15A, 0x19D3F3];
+pub const GROUP_HUES: [u32; 6] = [0x636EFA, 0xEF553B, 0x00CC96, 0xAB63FA, 0xFFA15A, 0x19D3F3];
 
-fn gaussian_kernel_sum(x: f64, y: f64, xs: &[f64], ys: &[f64], bwx: f64, bwy: f64) -> f64 {
+pub fn gaussian_kernel_sum(x: f64, y: f64, xs: &[f64], ys: &[f64], bwx: f64, bwy: f64) -> f64 {
     if xs.is_empty() || bwx <= 0.0 || bwy <= 0.0 {
         return 0.0;
     }
@@ -23,9 +23,11 @@ fn gaussian_kernel_sum(x: f64, y: f64, xs: &[f64], ys: &[f64], bwx: f64, bwy: f6
     sum
 }
 
-#[crate::chart_demo("x=[1.2,2.4,2.1,3.6,3.1,3.9,4.2,4.6,4.4,4.9,5.5,5.1,5.8,2.2,3.3,3.7,4.1,1.8,2.6,3.4,4.3,5.2,3.2,3.8], y=[1.1,2.3,3.2,2.4,3.6,4.1,3.3,4.7,5.2,3.9,4.4,5.6,6.1,1.4,2.5,4.2,4.6,2.1,3.1,3.3,5.1,4.5,3.4,5.3], variant=\"contour\"")]
+#[crate::chart_demo(
+    "x=[55.4,60.0,51.3,59.0,54.0,54.0,62.6,55.6,54.8,57.9,59.5,54.9,57.4,51.1,53.5,53.2,49.7,49.0,81.6,78.4,82.3,82.6,85.2,78.8,77.0,77.0,75.1,79.8,76.1,85.3,70.7,74.5,75.2,69.5,89.5,68.0], y=[1.51,1.93,1.95,1.9,2.02,1.6,1.98,2.07,2.23,1.75,1.88,1.4,1.85,1.34,1.57,2.33,1.34,2.24,4.3,4.22,4.98,3.71,4.78,4.14,4.35,4.17,4.62,4.0,4.37,4.52,5.04,3.56,4.93,4.73,4.23,4.51], categories=[\"short\",\"short\",\"short\",\"short\",\"short\",\"short\",\"short\",\"short\",\"short\",\"short\",\"short\",\"short\",\"short\",\"short\",\"short\",\"short\",\"short\",\"short\",\"long\",\"long\",\"long\",\"long\",\"long\",\"long\",\"long\",\"long\",\"long\",\"long\",\"long\",\"long\",\"long\",\"long\",\"long\",\"long\",\"long\",\"long\"], x_label=\"waiting\", y_label=\"duration\", variant=\"contour\""
+)]
 
-fn group_hue(cfg: &KdeConfig, i: usize) -> u32 {
+pub fn group_hue(cfg: &KdeConfig, i: usize) -> u32 {
     if !cfg.palette.is_empty() {
         cfg.palette[i % cfg.palette.len()]
     } else {

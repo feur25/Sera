@@ -3,7 +3,9 @@ use super::config::KdeConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{hex6, palette_color, push_b, push_f2, push_i, Frame};
 
-#[crate::chart_demo("values=[2.1,2.3,2.7,3.1,3.4,3.6,3.9,4.0,4.2,4.5,4.6,4.8,5.0,5.3,5.7,6.1,6.3,6.5,6.8,7.0,3.2,4.1,5.2,4.7,3.8,4.4,5.1,4.9,5.5,6.2]")]
+#[crate::chart_demo(
+    "values=[4.74,5.51,4.77,4.68,4.07,4.79,6.11,5.42,6.04,5.25,5.39,5.19,3.33,5.86,5.51,5.5,3.31,3.26,4.11,4.53,5.31,4.95,5.52,4.36,5.31,5.39,4.34,6.72,5.56,6.2,4.38,4.26,4.66,4.89,5.63,5.25,4.55,4.04,4.48,6.22,4.19,5.24,5.43,3.51,5.05,6.31,2.99,4.68,4.89,4.18], categories=[\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Large group\",\"Small group\",\"Small group\",\"Small group\",\"Small group\",\"Small group\",\"Small group\",\"Small group\",\"Small group\",\"Small group\",\"Small group\"]"
+)]
 
 pub fn render(cfg: &KdeConfig) -> String {
     let series = ordered_series(cfg);

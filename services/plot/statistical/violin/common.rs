@@ -473,6 +473,23 @@ pub fn draw_points_v(
     jitter: f64,
     rng: &mut u64,
 ) {
+    draw_points_v_r(f, cx, half_w, g, v_min, range, color, jitter, rng, 1.8, 0.6);
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn draw_points_v_r(
+    f: &mut Frame,
+    cx: i32,
+    half_w: i32,
+    g: &GroupStat,
+    v_min: f64,
+    range: f64,
+    color: u32,
+    jitter: f64,
+    rng: &mut u64,
+    radius: f64,
+    opacity: f64,
+) {
     let yv = |v: f64| f.pt + f.ph - ((v - v_min) / range * f.ph as f64) as i32;
     let hx = hex6(color);
     let max_off = (half_w as f64 * 0.55).max(2.0) * jitter.clamp(0.0, 1.0);
@@ -486,9 +503,13 @@ pub fn draw_points_v(
         push_i(&mut f.buf, cx + dx as i32);
         push_b(&mut f.buf, b"\" cy=\"");
         push_i(&mut f.buf, py);
-        push_b(&mut f.buf, b"\" r=\"1.8\" fill=\"#");
+        push_b(&mut f.buf, b"\" r=\"");
+        push_f2(&mut f.buf, radius);
+        push_b(&mut f.buf, b"\" fill=\"#");
         f.buf.extend_from_slice(&hx);
-        push_b(&mut f.buf, b"\" fill-opacity=\"0.6\"/>");
+        push_b(&mut f.buf, b"\" fill-opacity=\"");
+        push_f2(&mut f.buf, opacity);
+        push_b(&mut f.buf, b"\" stroke=\"#fff\" stroke-width=\"0.8\"/>");
     }
 }
 

@@ -34,7 +34,7 @@ fn segment_runs(vals: &[f64], gap_threshold: f64) -> Vec<(usize, usize)> {
 }
 
 #[crate::chart_demo(
-    "x_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\"], values=[12,19,15,22,28,24]"
+    "x_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\",\"Jul\",\"Aug\"], values=[12,19,15,22,86,79,18,24], gap_threshold=30, show_points=True"
 )]
 
 pub fn render(cfg: &LineConfig) -> String {
