@@ -2,10 +2,12 @@ crate::plot_family! {
     pub enum ChartTheme default None {
         None    => "none" | "default" | "standard" | "light",
         Deluxe  => "deluxe" | "neon" | "dark" | "premium",
-        Prism   => "prism" | "crystal" | "glass" | "rainbow",
+        Prism   => "prism" | "crystal" | "rainbow",
         Aurora  => "aurora" | "cosmic" | "nebula" | "space" | "galaxy",
         Inferno => "inferno" | "fire" | "lava" | "ember" | "volcanic",
         Frost   => "frost" | "ice" | "arctic" | "winter" | "blizzard",
+        Glow    => "glow" | "neon_glow" | "halo",
+        Glass   => "glass" | "translucent" | "frosted",
     }
 }
 
@@ -31,70 +33,52 @@ pub fn apply_chart_theme(html: String, theme_str: &str) -> String {
 
 #[derive(Clone, Copy)]
 struct ThemeStyle {
-    bg: &'static str,
-    dark_ui: bool,
     canvas_filter: &'static str,
     glow: &'static str,
-    sh_a: &'static str,
-    sh_b: &'static str,
     extra_2d: &'static str,
 }
 
 const NONE_STYLE: ThemeStyle = ThemeStyle {
-    bg: "transparent",
-    dark_ui: false,
     canvas_filter: "",
     glow: "",
-    sh_a: "",
-    sh_b: "",
     extra_2d: "",
 };
 
 const THEME_STYLES: &[(ChartTheme, ThemeStyle)] = &[
     (ChartTheme::Deluxe, ThemeStyle {
-        bg: "#060d1c",
-        dark_ui: true,
         canvas_filter: "saturate(1.9) hue-rotate(-20deg) brightness(0.92)",
         glow: "0 0 0 1px rgba(0,200,255,0.18),0 0 60px rgba(0,180,255,0.5),0 0 120px rgba(0,80,200,0.25)",
-        sh_a: "rgba(0,200,255,0.12)",
-        sh_b: "rgba(0,60,180,0.09)",
         extra_2d: "saturate(1.3) brightness(1.05) drop-shadow(0 0 8px rgba(0,200,255,0.5))",
     }),
     (ChartTheme::Prism, ThemeStyle {
-        bg: "#0d001a",
-        dark_ui: false,
         canvas_filter: "saturate(2.2) contrast(1.08) hue-rotate(30deg) brightness(0.9)",
         glow: "0 0 0 1px rgba(200,80,255,0.18),0 0 55px rgba(180,60,255,0.55)",
-        sh_a: "rgba(200,80,255,0.13)",
-        sh_b: "rgba(100,0,200,0.1)",
         extra_2d: "saturate(2) brightness(1.05) drop-shadow(0 0 6px rgba(200,80,255,0.45))",
     }),
     (ChartTheme::Aurora, ThemeStyle {
-        bg: "#01060f",
-        dark_ui: true,
         canvas_filter: "saturate(1.5) hue-rotate(195deg) brightness(1.0)",
         glow: "0 0 0 1px rgba(80,170,255,0.16),0 0 50px rgba(80,160,255,0.5),0 0 100px rgba(40,80,200,0.22)",
-        sh_a: "rgba(100,180,255,0.11)",
-        sh_b: "rgba(60,100,220,0.09)",
         extra_2d: "brightness(1.04) drop-shadow(0 0 6px rgba(80,170,255,0.4))",
     }),
     (ChartTheme::Inferno, ThemeStyle {
-        bg: "#080000",
-        dark_ui: true,
         canvas_filter: "sepia(0.85) saturate(3.5) hue-rotate(-15deg) brightness(0.82)",
         glow: "0 0 0 1px rgba(200,50,0,0.22),0 0 55px rgba(180,40,0,0.6),0 0 110px rgba(100,15,0,0.3)",
-        sh_a: "rgba(220,80,10,0.13)",
-        sh_b: "rgba(120,20,0,0.1)",
         extra_2d: "brightness(1.04) drop-shadow(0 0 5px rgba(160,40,0,0.45))",
     }),
     (ChartTheme::Frost, ThemeStyle {
-        bg: "#000c1a",
-        dark_ui: true,
         canvas_filter: "saturate(1.5) hue-rotate(185deg) brightness(1.08)",
         glow: "0 0 0 1px rgba(120,210,255,0.2),0 0 60px rgba(100,200,255,0.55),0 0 120px rgba(50,130,220,0.28)",
-        sh_a: "rgba(140,220,255,0.13)",
-        sh_b: "rgba(60,130,230,0.1)",
         extra_2d: "brightness(1.06) drop-shadow(0 0 7px rgba(100,200,255,0.45))",
+    }),
+    (ChartTheme::Glow, ThemeStyle {
+        canvas_filter: "saturate(1.2) brightness(1.05)",
+        glow: "0 0 0 1px rgba(255,255,255,0.1),0 0 40px rgba(255,255,255,0.35)",
+        extra_2d: "brightness(1.08) drop-shadow(0 0 6px currentColor)",
+    }),
+    (ChartTheme::Glass, ThemeStyle {
+        canvas_filter: "saturate(1.05) brightness(1.03) contrast(1.02)",
+        glow: "0 0 0 1px rgba(255,255,255,0.25),0 8px 32px rgba(0,0,0,0.12)",
+        extra_2d: "brightness(1.05) saturate(1.05) drop-shadow(0 2px 6px rgba(0,0,0,0.15))",
     }),
 ];
 
@@ -107,15 +91,11 @@ fn theme_style(t: ChartTheme) -> ThemeStyle {
 }
 
 fn apply_3d_theme(html: String, t: ChartTheme) -> String {
-    let ThemeStyle { bg, canvas_filter: canvas_f, glow, sh_a, sh_b, .. } = theme_style(t);
+    let ThemeStyle { canvas_filter: canvas_f, glow, .. } = theme_style(t);
     let extra_css = format!(
-        "body{{background:{bg}!important}}\
+        "body{{}}\
          .c3w{{box-shadow:{glow}!important}}\
-         .c3w canvas{{filter:{canvas_f}!important}}\
-         .c3w::after{{content:'';position:absolute;inset:0;border-radius:12px;\
-           background:radial-gradient(ellipse at 22% 22%,{sh_a} 0%,transparent 55%),\
-                      radial-gradient(ellipse at 78% 78%,{sh_b} 0%,transparent 52%);\
-           pointer-events:none;z-index:1}}"
+         .c3w canvas{{filter:{canvas_f}!important}}"
     );
     html.replacen("</style>", &format!("{extra_css}</style>"), 1)
 }
@@ -125,7 +105,7 @@ fn inject_theme(html: String, t: ChartTheme) -> String {
     let fid = format!("{}-{}", t.name(), id.trim_start_matches("sp"));
     let cls = format!("sp-t-{}", t.name());
 
-    let ThemeStyle { bg, dark_ui, extra_2d: extra, .. } = theme_style(t);
+    let ThemeStyle { extra_2d: extra, .. } = theme_style(t);
 
     let fid_f = format!("{fid}-f");
     let defs = format!("{}{}", build_filter(&fid, t), build_flat_filter(&fid_f, t));
@@ -139,23 +119,10 @@ fn inject_theme(html: String, t: ChartTheme) -> String {
     );
     let sel_f = format!(".{cls} svg rect[data-idx]");
 
-    let mut css = format!(
-        ".{cls}{{background:{bg}!important;border-radius:12px}}\
-         .{cls} .sp-bg{{fill:{bg}!important}}\
-         {sel_r}{{filter:url(#{fid}) {extra}!important}}\
+    let css = format!(
+        "{sel_r}{{filter:url(#{fid}) {extra}!important}}\
          {sel_f}{{filter:url(#{fid_f}) {extra}!important}}"
     );
-
-    if dark_ui {
-        css.push_str(&format!(
-            ".{cls} .sp-ttl{{fill:#dce8f5!important}}\
-             .{cls} text{{fill:#8aaac8!important}}\
-             .{cls} .sp-yt,.{cls} .sp-xt,.{cls} .sp-xl,.{cls} .sp-yl{{fill:#6b8aaa!important}}\
-             .{cls} .sp-ax-x,.{cls} .sp-ax-y{{stroke:#1f3250!important}}\
-             .{cls} .sp-gl{{stroke:#0e1e35!important}}\
-             .{cls} svg line:not([data-idx]){{stroke:#1a2e48!important}}"
-        ));
-    }
 
     let mut h = html.replace(
         &format!("id=\"{id}\""),
@@ -326,6 +293,27 @@ fn build_filter(fid: &str, t: ChartTheme) -> String {
              </filter>"
         ),
 
+        ChartTheme::Glow => format!(
+            "<filter id='{fid}' x='-60%' y='-60%' width='220%' height='220%'>\
+             <feGaussianBlur in='SourceGraphic' stdDeviation='5' result='b'/>\
+             <feMerge><feMergeNode in='b'/><feMergeNode in='SourceGraphic'/></feMerge>\
+             </filter>"
+        ),
+
+        ChartTheme::Glass => format!(
+            "<filter id='{fid}' color-interpolation-filters='sRGB' x='-30%' y='-30%' width='160%' height='160%'>\
+             <feGaussianBlur in='SourceGraphic' stdDeviation='5' result='dome'/>\
+             <feSpecularLighting in='dome' surfaceScale='6' specularConstant='1.6' specularExponent='70' \
+               lighting-color='#ffffff' result='spec'>\
+               <feDistantLight azimuth='300' elevation='55'/>\
+             </feSpecularLighting>\
+             <feComposite in='spec' in2='SourceGraphic' operator='in' result='lit'/>\
+             <feComponentTransfer in='SourceGraphic' result='soft'><feFuncA type='linear' slope='0.88'/></feComponentTransfer>\
+             <feBlend in='soft' in2='lit' mode='screen' result='glassed'/>\
+             <feMerge><feMergeNode in='glassed'/></feMerge>\
+             </filter>"
+        ),
+
         ChartTheme::None => String::new(),
     }
 }
@@ -448,6 +436,25 @@ fn build_flat_filter(fid: &str, t: ChartTheme) -> String {
              <feFlood flood-color='#000510' flood-opacity='0.92' result='s-col'/>\
              <feComposite in='s-col' in2='s-blur' operator='in' result='shadow'/>\
              <feMerge><feMergeNode in='shadow'/><feMergeNode in='lit'/></feMerge>\
+             </filter>"
+        ),
+
+        ChartTheme::Glow => format!(
+            "<filter id='{fid}' x='-40%' y='-40%' width='180%' height='180%'>\
+             <feGaussianBlur in='SourceGraphic' stdDeviation='4' result='b'/>\
+             <feMerge><feMergeNode in='b'/><feMergeNode in='SourceGraphic'/></feMerge>\
+             </filter>"
+        ),
+
+        ChartTheme::Glass => format!(
+            "<filter id='{fid}' color-interpolation-filters='sRGB' x='-20%' y='-20%' width='140%' height='140%'>\
+             <feOffset in='SourceAlpha' dx='0' dy='2' result='shdn'/>\
+             <feComposite in='SourceAlpha' in2='shdn' operator='out' result='top-strip'/>\
+             <feGaussianBlur in='top-strip' stdDeviation='1' result='top-blur'/>\
+             <feFlood flood-color='#ffffff' flood-opacity='0.85' result='wht'/>\
+             <feComposite in='wht' in2='top-blur' operator='in' result='top-glow'/>\
+             <feComponentTransfer in='SourceGraphic' result='soft'><feFuncA type='linear' slope='0.9'/></feComponentTransfer>\
+             <feBlend in='soft' in2='top-glow' mode='screen'/>\
              </filter>"
         ),
 
