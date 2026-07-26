@@ -39,6 +39,8 @@ A correlogram visualizes a correlation matrix as a grid. Each cell encodes the P
 
 `labels` (`list[str]`) — Variable names (length N). `matrix` (`list[list[float]]`) — N×N correlation matrix, one row per inner list. `width` / `height` (`int`) — Chart dimensions.
 
+Every variant is really just a preset of three lower-level params you can mix freely on the base circle variant instead of picking a named one: `cell_shape` (`"circle" | "square" | "ellipse" | "pie" | "number"`) controls how a single cell is drawn, `cell_shape2` sets a second shape for the lower triangle when `layout="mixed"`, and `layout` (`"full" | "upper" | "lower" | "mixed"`) controls which half of the matrix gets filled — e.g. `sp.correlogram(labels=..., matrix=..., cell_shape="ellipse", layout="upper")`.
+
 ## Parameters
 
 <div data-sp-registry-table="options" data-family="correlogram"></div>
@@ -64,7 +66,9 @@ A correlogram visualizes a correlation matrix as a grid. Each cell encodes the P
 <button class="sp-cls-tab" onclick="spCls('corr-en','heatmap',this)"><span class="sp-cic">▦</span><span class="sp-clb">Heatmap</span></button>
 <button class="sp-cls-tab" onclick="spCls('corr-en','text',this)"><span class="sp-cic">𝑟</span><span class="sp-clb">Text</span></button>
 <button class="sp-cls-tab" onclick="spCls('corr-en','mixed',this)"><span class="sp-cic">◑</span><span class="sp-clb">Mixed</span></button>
-<button class="sp-cls-tab" onclick="spCls('corr-en','sorted',this)"><span class="sp-cic">⇆</span><span class="sp-clb">Sorted</span></button>
+<button class="sp-cls-tab" onclick="spCls('corr-en','ellipse',this)"><span class="sp-cic">⬭</span><span class="sp-clb">Ellipse</span></button>
+<button class="sp-cls-tab" onclick="spCls('corr-en','pie_square',this)"><span class="sp-cic">◐</span><span class="sp-clb">Pie + Square</span></button>
+<button class="sp-cls-tab" onclick="spCls('corr-en','circle_legend',this)"><span class="sp-cic">◔</span><span class="sp-clb">Circle + Legend</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="corr-en-circle">
@@ -91,11 +95,23 @@ A correlogram visualizes a correlation matrix as a grid. Each cell encodes the P
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/correlogram-mixed.html"></iframe>
 </div>
-<div class="sp-variant" id="corr-en-sorted">
-<p>Reorders rows and columns by each variable's total absolute correlation with every other variable, so strongly related variables visually cluster instead of sitting in input order.</p>
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"sorted"</code></span><span><strong>Aliases</strong> <code>sorted / clustered / reordered</code></span></div>
+<div class="sp-variant" id="corr-en-ellipse">
+<p>Each cell is an ellipse tilted "/" for positive correlation, "\" for negative, flattening toward a line as |r| approaches 1 and toward a circle as it approaches 0.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"ellipse"</code></span><span><strong>Aliases</strong> <code>ellipse / oval</code></span></div>
 <div class="sp-preview-label">Preview</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-sorted.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/correlogram-ellipse.html"></iframe>
+</div>
+<div class="sp-variant" id="corr-en-pie_square">
+<p>Upper triangle as pie wedges (wedge angle = |r|, color = sign), lower triangle as flat colored squares, diagonal left blank - the classic mixed correlogram layout, unsorted.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"pie_square"</code></span><span><strong>Aliases</strong> <code>pie_square / pie / mixed_pie</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/correlogram-pie_square.html"></iframe>
+</div>
+<div class="sp-variant" id="corr-en-circle_legend">
+<p>Upper-triangle-only circles (lower triangle and diagonal left blank) with a color/value legend bar alongside instead of numeric labels on the cells.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"circle_legend"</code></span><span><strong>Aliases</strong> <code>circle_legend / legend / scale</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/correlogram-circle_legend.html"></iframe>
 </div>
 </div>
 </div>
@@ -122,6 +138,8 @@ Un correlogramme visualise une matrice de corrélation sous forme de grille. Cha
 
 `labels` (`list[str]`) — Noms des variables (longueur N). `matrix` (`list[list[float]]`) — Matrice de corrélation N×N, une ligne par liste interne. `width` / `height` (`int`) — Dimensions du graphique.
 
+Chaque variante n'est en fait qu'un préréglage de trois paramètres de plus bas niveau que tu peux combiner librement sur la variante circle de base plutôt que d'en choisir une nommée : `cell_shape` (`"circle" | "square" | "ellipse" | "pie" | "number"`) contrôle le dessin d'une cellule, `cell_shape2` définit une seconde forme pour le triangle inférieur quand `layout="mixed"`, et `layout` (`"full" | "upper" | "lower" | "mixed"`) contrôle quelle moitié de la matrice est remplie — ex. `sp.correlogram(labels=..., matrix=..., cell_shape="ellipse", layout="upper")`.
+
 ## Paramètres
 
 <div data-sp-registry-table="options" data-family="correlogram"></div>
@@ -147,7 +165,9 @@ Un correlogramme visualise une matrice de corrélation sous forme de grille. Cha
 <button class="sp-cls-tab" onclick="spCls('corr-fr','heatmap',this)"><span class="sp-cic">▦</span><span class="sp-clb">Heatmap</span></button>
 <button class="sp-cls-tab" onclick="spCls('corr-fr','text',this)"><span class="sp-cic">𝑟</span><span class="sp-clb">Texte</span></button>
 <button class="sp-cls-tab" onclick="spCls('corr-fr','mixed',this)"><span class="sp-cic">◑</span><span class="sp-clb">Mixte</span></button>
-<button class="sp-cls-tab" onclick="spCls('corr-fr','sorted',this)"><span class="sp-cic">⇆</span><span class="sp-clb">Sorted</span></button>
+<button class="sp-cls-tab" onclick="spCls('corr-fr','ellipse',this)"><span class="sp-cic">⬭</span><span class="sp-clb">Ellipse</span></button>
+<button class="sp-cls-tab" onclick="spCls('corr-fr','pie_square',this)"><span class="sp-cic">◐</span><span class="sp-clb">Camembert + carré</span></button>
+<button class="sp-cls-tab" onclick="spCls('corr-fr','circle_legend',this)"><span class="sp-cic">◔</span><span class="sp-clb">Cercle + légende</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="corr-fr-circle">
@@ -174,11 +194,23 @@ Un correlogramme visualise une matrice de corrélation sous forme de grille. Cha
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/correlogram-mixed.html"></iframe>
 </div>
-<div class="sp-variant" id="corr-fr-sorted">
-<p>Réordonne lignes et colonnes selon la corrélation absolue totale de chaque variable avec toutes les autres, pour que les variables fortement liées se regroupent visuellement au lieu de rester dans l'ordre d'entrée.</p>
-<div class="sp-vmeta"><span><strong>Variante</strong> <code>"sorted"</code></span><span><strong>Alias</strong> <code>sorted / clustered / reordered</code></span></div>
+<div class="sp-variant" id="corr-fr-ellipse">
+<p>Chaque cellule est une ellipse inclinée "/" pour une corrélation positive, "\" pour une négative, s'aplatissant vers une ligne quand |r| approche 1 et vers un cercle quand |r| approche 0.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"ellipse"</code></span><span><strong>Alias</strong> <code>ellipse / oval</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
-<iframe class="sp-preview-frame" src="../../previews/correlogram-sorted.html"></iframe>
+<iframe class="sp-preview-frame" src="../../previews/correlogram-ellipse.html"></iframe>
+</div>
+<div class="sp-variant" id="corr-fr-pie_square">
+<p>Triangle supérieur en camemberts (angle = |r|, couleur = signe), triangle inférieur en carrés pleins colorés, diagonale laissée vide - la disposition mixte classique, non triée.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"pie_square"</code></span><span><strong>Alias</strong> <code>pie_square / pie / mixed_pie</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/correlogram-pie_square.html"></iframe>
+</div>
+<div class="sp-variant" id="corr-fr-circle_legend">
+<p>Cercles uniquement dans le triangle supérieur (triangle inférieur et diagonale vides) avec une barre de légende couleur/valeur au lieu de libellés numériques sur les cellules.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"circle_legend"</code></span><span><strong>Alias</strong> <code>circle_legend / legend / scale</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/correlogram-circle_legend.html"></iframe>
 </div>
 </div>
 </div>

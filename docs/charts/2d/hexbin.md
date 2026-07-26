@@ -63,6 +63,8 @@ Aliases: `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `
 <button class="sp-cls-tab" onclick="spCls('hexbin-en','outlined',this)"><span class="sp-cic">⬢</span><span class="sp-clb">Outlined</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-en','spaced',this)"><span class="sp-cic">⬣</span><span class="sp-clb">Spaced</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-en','highlight',this)"><span class="sp-cic">⬣</span><span class="sp-clb">Highlight</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-en','mincnt',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Mincnt</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-en','nested',this)"><span class="sp-cic">◎</span><span class="sp-clb">Nested</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="hexbin-en-basic">
@@ -88,6 +90,18 @@ Aliases: `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"highlight"</code></span><span><strong>Aliases</strong> <code>highlight / top / hotspot / peak</code></span></div>
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/hexbin-highlight.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-en-mincnt">
+<p>Bins below <code>min_count</code> are skipped entirely (left transparent) instead of drawn faint - a hard threshold rather than a dimmed gradient, matching R's <code>hexbin(mincnt=)</code>.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"mincnt"</code></span><span><strong>Aliases</strong> <code>mincnt / threshold / sparse</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-mincnt.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-en-nested">
+<p>Each cell's count is classed into an order-of-magnitude band (ones/tens/hundreds/thousands/10 thousands), colored and sized by band, with a smaller nested hexagon inside in the previous band's color - matching R hexbin's nested/centroid styles - plus a size+color legend.</p>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"nested"</code></span><span><strong>Aliases</strong> <code>nested / magnitude / rings / centroids</code></span></div>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-nested.html"></iframe>
 </div>
 </div>
 </div>
@@ -139,6 +153,8 @@ Alias : `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `s
 <button class="sp-cls-tab" onclick="spCls('hexbin-fr','outlined',this)"><span class="sp-cic">⬢</span><span class="sp-clb">Outlined</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-fr','spaced',this)"><span class="sp-cic">⬣</span><span class="sp-clb">Espacé</span></button>
 <button class="sp-cls-tab" onclick="spCls('hexbin-fr','highlight',this)"><span class="sp-cic">⬣</span><span class="sp-clb">Highlight</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-fr','mincnt',this)"><span class="sp-cic">⬡</span><span class="sp-clb">Mincnt</span></button>
+<button class="sp-cls-tab" onclick="spCls('hexbin-fr','nested',this)"><span class="sp-cic">◎</span><span class="sp-clb">Imbriqué</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="hexbin-fr-basic">
@@ -164,6 +180,18 @@ Alias : `sp.hexbin`, `sp.hexbins`, `sp.hexbin_chart`, `sp.hexagonal_binning`, `s
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"highlight"</code></span><span><strong>Alias</strong> <code>highlight / top / hotspot / peak</code></span></div>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/hexbin-highlight.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-fr-mincnt">
+<p>Les cellules sous <code>min_count</code> sont totalement ignorées (laissées transparentes) plutôt que dessinées en estompé - un seuil dur plutôt qu'un dégradé atténué, comme <code>hexbin(mincnt=)</code> en R.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"mincnt"</code></span><span><strong>Alias</strong> <code>mincnt / threshold / sparse</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-mincnt.html"></iframe>
+</div>
+<div class="sp-variant" id="hexbin-fr-nested">
+<p>L'effectif de chaque cellule est classé dans une bande d'ordre de grandeur (unités/dizaines/centaines/milliers/dizaines de milliers), colorée et dimensionnée selon la bande, avec un hexagone imbriqué plus petit à l'intérieur dans la couleur de la bande précédente - comme les styles imbriqués/centroïdes du package R hexbin - plus une légende taille+couleur.</p>
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"nested"</code></span><span><strong>Alias</strong> <code>nested / magnitude / rings / centroids</code></span></div>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/hexbin-nested.html"></iframe>
 </div>
 </div>
 </div>
