@@ -15,6 +15,7 @@ pub mod pictogram;
 pub mod population_pyramid;
 pub mod prism;
 pub mod relative;
+pub mod stacked;
 pub mod variant;
 
 pub use block3d::Bar3DBlock;
@@ -49,7 +50,7 @@ pub fn render_bar_html(cfg: &BarConfig) -> String {
         Basic => basic::render(cfg, cfg.orientation),
         Horizontal => basic::render(cfg, b'h'),
         Grouped => grouped::render(cfg, false),
-        Stacked => grouped::render(cfg, true),
+        Stacked => stacked::render(cfg),
         Relative => relative::render(cfg),
         GroupedStacked => grouped_stacked::render(cfg),
         Marimekko => marimekko::render(cfg),
