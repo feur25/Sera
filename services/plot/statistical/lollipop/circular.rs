@@ -36,6 +36,13 @@ pub fn render(cfg: &LollipopConfig) -> String {
             &mut b,
             b"\" fill=\"none\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"2,3\"/>",
         );
+        push_b(&mut b, b"<text x=\"");
+        push_f2(&mut b, cx + 4.0);
+        push_b(&mut b, b"\" y=\"");
+        push_f2(&mut b, cy - rr - 2.0);
+        push_b(&mut b, b"\" font-family=\"Arial,sans-serif\" font-size=\"8\" fill=\"#94a3b8\">");
+        push_f2(&mut b, min_val + (max_val - min_val) * ring as f64 / 4.0);
+        push_b(&mut b, b"</text>");
     }
     let two_pi = std::f64::consts::TAU;
     for i in 0..p.n {

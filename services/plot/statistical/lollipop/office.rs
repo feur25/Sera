@@ -123,7 +123,7 @@ pub fn render(cfg: &LollipopConfig) -> String {
         push_i(&mut b, pt - 26);
         push_b(
             &mut b,
-            b"\" width=\"76\" height=\"18\" rx=\"4\" fill=\"none\" stroke=\"#",
+            b"\" width=\"76\" height=\"18\" rx=\"9\" fill=\"none\" stroke=\"#",
         );
         b.extend_from_slice(&hx_g);
         push_b(&mut b, b"\" stroke-width=\"1\"/>");
