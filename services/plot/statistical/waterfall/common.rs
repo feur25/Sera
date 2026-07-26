@@ -81,7 +81,7 @@ pub fn prepare(cfg: &WaterfallConfig) -> Option<Prepared> {
     let plot_w = cfg.width - pad_l - 20;
     let plot_h = cfg.height - pad_t - pad_b;
     let bar_step = plot_w / n as i32;
-    let bar_w = (bar_step - 6).max(4);
+    let bar_w = ((bar_step as f64 * 0.62) as i32).max(4);
     let zero_y = pad_t + ((1.0 - (0.0 - min_val) / range) * plot_h as f64) as i32;
 
     Some(Prepared {

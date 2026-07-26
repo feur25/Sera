@@ -48,7 +48,7 @@ pub fn render(cfg: &WaterfallConfig) -> String {
             push_i(&mut b, cy);
             push_b(
                 &mut b,
-                b"\" stroke=\"#6b7280\" stroke-width=\"0.8\" stroke-dasharray=\"2,2\"/>",
+                b"\" stroke=\"#475569\" stroke-width=\"1.3\" stroke-dasharray=\"4,3\"/>",
             );
         }
         xlabel(
