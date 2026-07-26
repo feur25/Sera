@@ -9,6 +9,7 @@ pub mod spline;
 pub mod stacked;
 pub mod step;
 pub mod variant;
+pub mod wave;
 
 pub use config::AreaConfig;
 pub use variant::AreaVariant;
@@ -23,6 +24,7 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
         Step => step::render(cfg),
         Gradient => gradient::render(cfg),
         Ribbon => ribbon::render(cfg),
+        Wave => wave::render(cfg),
     }
 }
 

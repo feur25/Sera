@@ -7,5 +7,6 @@ crate::plot_family! {
         Step     => "step" | "stepped" | "stairs",
         Gradient => "gradient" | "glow" | "fade",
         Ribbon   => "ribbon" | "outlined" | "bordered" | "ggplot",
+        Wave     => "wave" | "signed" | "oscillating" | "stackplot",
     }
 }

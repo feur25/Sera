@@ -9,6 +9,7 @@ pub enum StackMode {
     None,
     Stacked,
     Percent,
+    Signed,
 }
 
 #[derive(Clone, Copy, PartialEq)]
@@ -127,7 +128,8 @@ pub fn render_with_style(
         let mut running = vec![0.0_f64; n_pts];
         for (_, svals) in series.iter() {
             for i in 0..n_pts {
-                let v = svals.get(i).copied().unwrap_or(0.0).max(0.0);
+                let raw = svals.get(i).copied().unwrap_or(0.0);
+                let v = if stack == StackMode::Signed { raw } else { raw.max(0.0) };
                 running[i] += v;
                 totals[i] += v;
             }
@@ -135,24 +137,52 @@ pub fn render_with_style(
         }
     }
 
-    let max_val = match stack {
-        StackMode::Percent => 100.0,
-        StackMode::Stacked => stacked_sums
-            .last()
-            .map(|s| s.iter().copied().fold(0.0_f64, f64::max))
-            .unwrap_or(1.0)
-            .max(1.0),
-        StackMode::None => series
-            .iter()
-            .flat_map(|(_, v)| v.iter().copied())
-            .filter(|v| v.is_finite())
-            .fold(0.0_f64, f64::max)
-            .max(1.0),
+    let (vmin, vmax) = match stack {
+        StackMode::Percent => (0.0, 100.0),
+        StackMode::Stacked => (
+            0.0,
+            stacked_sums
+                .last()
+                .map(|s| s.iter().copied().fold(0.0_f64, f64::max))
+                .unwrap_or(1.0)
+                .max(1.0),
+        ),
+        StackMode::Signed => {
+            let mut lo = 0.0_f64;
+            let mut hi = 0.0_f64;
+            for row in &stacked_sums {
+                for &v in row {
+                    lo = lo.min(v);
+                    hi = hi.max(v);
+                }
+            }
+            if (hi - lo).abs() < 1e-9 {
+                hi = lo + 1.0;
+            }
+            (lo, hi)
+        }
+        StackMode::None => {
+            let mut lo = 0.0_f64;
+            let mut hi = 0.0_f64;
+            for (_, v) in series.iter() {
+                for &val in v {
+                    if val.is_finite() {
+                        lo = lo.min(val);
+                        hi = hi.max(val);
+                    }
+                }
+            }
+            if (hi - lo).abs() < 1e-9 {
+                hi = lo + 1.0;
+            }
+            (lo, hi)
+        }
     };
+    let vrange = (vmax - vmin).max(1e-9);
 
     let value_at = |si: usize, i: usize| -> f64 {
         match stack {
-            StackMode::Stacked => stacked_sums[si][i],
+            StackMode::Stacked | StackMode::Signed => stacked_sums[si][i],
             StackMode::Percent => {
                 if totals[i] > 0.0 {
                     stacked_sums[si][i] / totals[i] * 100.0
@@ -168,7 +198,7 @@ pub fn render_with_style(
             return 0.0;
         }
         match stack {
-            StackMode::Stacked => stacked_sums[si - 1][i],
+            StackMode::Stacked | StackMode::Signed => stacked_sums[si - 1][i],
             StackMode::Percent => {
                 if totals[i] > 0.0 {
                     stacked_sums[si - 1][i] / totals[i] * 100.0
@@ -194,9 +224,9 @@ pub fn render_with_style(
         n_total * 60 + 2048,
     );
     let step_x = f.pw as f64 / (n_pts - 1).max(1) as f64;
-    let base_y = (f.pt + f.ph) as f64;
+    let base_y = f.pt as f64 + (1.0 - (0.0 - vmin) / vrange) * f.ph as f64;
     f.open(cfg.title, true);
-    f.y_grid_rc(6, 0.0, max_val, cfg.gridlines);
+    f.y_grid_rc(6, vmin, vmax, cfg.gridlines);
     f.axes(cfg.x_label, cfg.y_label);
 
     if gradient {
@@ -224,7 +254,7 @@ pub fn render_with_style(
         let top_pts: Vec<(f64, f64)> = (0..n_pts)
             .map(|i| {
                 let x = f.pl as f64 + i as f64 * step_x;
-                let frac = (value_at(si, i) / max_val).clamp(0.0, 1.0);
+                let frac = ((value_at(si, i) - vmin) / vrange).clamp(0.0, 1.0);
                 let y = f.pt as f64 + (1.0 - frac) * f.ph as f64;
                 (x, y)
             })
@@ -243,7 +273,7 @@ pub fn render_with_style(
                 .rev()
                 .map(|i| {
                     let x = f.pl as f64 + i as f64 * step_x;
-                    let frac = (base_val_at(si, i) / max_val).clamp(0.0, 1.0);
+                    let frac = ((base_val_at(si, i) - vmin) / vrange).clamp(0.0, 1.0);
                     let y = f.pt as f64 + (1.0 - frac) * f.ph as f64;
                     (x, y)
                 })
@@ -295,7 +325,7 @@ pub fn render_with_style(
         let mut sname_esc = Vec::with_capacity(sname.len() + 8);
         escape_xml(&mut sname_esc, sname);
         for i in (0..n_pts).step_by(hover_step) {
-            let frac = (value_at(si, i) / max_val).clamp(0.0, 1.0);
+            let frac = ((value_at(si, i) - vmin) / vrange).clamp(0.0, 1.0);
             let x = f.pl as f64 + i as f64 * step_x;
             let y = f.pt as f64 + (1.0 - frac) * f.ph as f64;
             let idx = (si * n_pts + i) as i32;

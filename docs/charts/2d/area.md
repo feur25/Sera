@@ -48,6 +48,7 @@ Aliases: `sp.area`, `sp.area_chart`, `sp.area_family`, `sp.area_unified`, `sp.bu
 <button class="sp-cls-tab" onclick="spCls('area-en','step',this)"><span class="sp-cic">⌐</span><span class="sp-clb">Step</span></button>
 <button class="sp-cls-tab" onclick="spCls('area-en','gradient',this)"><span class="sp-cic">▽</span><span class="sp-clb">Gradient</span></button>
 <button class="sp-cls-tab" onclick="spCls('area-en','ribbon',this)"><span class="sp-cic">▤</span><span class="sp-clb">Ribbon</span></button>
+<button class="sp-cls-tab" onclick="spCls('area-en','wave',this)"><span class="sp-cic">∿</span><span class="sp-clb">Wave</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -100,6 +101,13 @@ Aliases: `sp.area`, `sp.area_chart`, `sp.area_family`, `sp.area_unified`, `sp.bu
 <iframe class="sp-preview-frame" src="../../previews/area-ribbon.html"></iframe>
 </div>
 
+<div class="sp-variant" id="area-en-wave">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"wave"</code></span><span><strong>Aliases</strong> <code>wave / signed / oscillating / stackplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">True signed stacking - unlike <code>stacked</code>, negative values are never clamped to zero, so oscillating series (sin/cos-like data crossing above and below the baseline) stack correctly on both sides of zero. Matches matplotlib's <code>stackplot()</code> behavior for signed data.</p>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/area-wave.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -143,6 +151,7 @@ Alias : `sp.area`, `sp.area_chart`, `sp.area_family`, `sp.area_unified`, `sp.bui
 <button class="sp-cls-tab" onclick="spCls('area-fr','step',this)"><span class="sp-cic">⌐</span><span class="sp-clb">Escalier</span></button>
 <button class="sp-cls-tab" onclick="spCls('area-fr','gradient',this)"><span class="sp-cic">▽</span><span class="sp-clb">Dégradé</span></button>
 <button class="sp-cls-tab" onclick="spCls('area-fr','ribbon',this)"><span class="sp-cic">▤</span><span class="sp-clb">Ruban</span></button>
+<button class="sp-cls-tab" onclick="spCls('area-fr','wave',this)"><span class="sp-cic">∿</span><span class="sp-clb">Vague</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -193,6 +202,13 @@ Alias : `sp.area`, `sp.area_chart`, `sp.area_family`, `sp.area_unified`, `sp.bui
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Aire empilée à 100% avec des bordures noires marquées autour de chaque bande au lieu de bordures colorées - le look <code>geom_area</code> de ggplot2, idéal pour de nombreux groupes (fonctionne bien au-delà de deux) où le contour est ce qui sépare visuellement les bandes adjacentes.</p>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/area-ribbon.html"></iframe>
+</div>
+
+<div class="sp-variant" id="area-fr-wave">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"wave"</code></span><span><strong>Alias</strong> <code>wave / signed / oscillating / stackplot</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Empilement signé véritable - contrairement à <code>stacked</code>, les valeurs négatives ne sont jamais ramenées à zéro, si bien que des séries oscillantes (type sinus/cosinus traversant la ligne de base) s'empilent correctement des deux côtés de zéro. Reproduit le comportement de <code>stackplot()</code> de matplotlib pour des données signées.</p>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/area-wave.html"></iframe>
 </div>
 
 </div>
