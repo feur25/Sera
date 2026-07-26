@@ -5,6 +5,9 @@ crate::chart_config!(CorrelogramConfig, 560, 520;
         pub matrix:      &'a [f64],
         pub palette:     &'a [u32],
         pub show_values: bool,
+        pub shape:       &'a str,
+        pub shape2:      &'a str,
+        pub layout:      &'a str,
     }
     defaults {
         variant:     super::variant::CorrelogramVariant::Circle,
@@ -12,5 +15,8 @@ crate::chart_config!(CorrelogramConfig, 560, 520;
         matrix:      &[],
         palette:     &[],
         show_values: false,
+        shape:       "circle",
+        shape2:      "",
+        layout:      "full",
     }
 );
