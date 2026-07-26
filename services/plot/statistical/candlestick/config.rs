@@ -6,6 +6,7 @@ crate::chart_config!(CandlestickConfig, 1100, 500;
         pub high: &'a [f64],
         pub low: &'a [f64],
         pub close: &'a [f64],
+        pub volume: &'a [f64],
         pub palette: &'a [u32],
     }
     defaults {
@@ -15,6 +16,7 @@ crate::chart_config!(CandlestickConfig, 1100, 500;
         high: &[],
         low: &[],
         close: &[],
+        volume: &[],
         palette: &[],
     }
 );

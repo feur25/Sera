@@ -425,6 +425,7 @@ pub struct ChartArgs {
     pub high: Option<Vec<f64>>,
     pub low: Option<Vec<f64>>,
     pub close: Option<Vec<f64>>,
+    pub volume: Option<Vec<f64>>,
     pub sizes: Option<Vec<f64>>,
     pub overlay: Option<Vec<f64>>,
     pub left: Option<Vec<f64>>,

@@ -10,6 +10,7 @@ pub mod ohlc;
 pub mod outlined;
 pub mod range;
 pub mod variant;
+pub mod volume;
 
 pub use config::CandlestickConfig;
 pub use variant::CandlestickVariant;
@@ -25,6 +26,7 @@ pub fn render_candlestick_html(cfg: &CandlestickConfig) -> String {
         Line => line::render(cfg),
         Mountain => mountain::render(cfg),
         Range => range::render(cfg),
+        Volume => volume::render(cfg),
     }
 }
 
@@ -47,12 +49,14 @@ pub fn build(input: &str) -> String {
     let high = a.high.unwrap_or_default();
     let low = a.low.unwrap_or_default();
     let close = a.close.unwrap_or_default();
+    let volume = a.volume.unwrap_or_default();
     let dec = crate::plot::decimate::Decimator::new(o.max_points, &close);
     let labels = dec.apply(labels);
     let open = dec.apply(open);
     let high = dec.apply(high);
     let low = dec.apply(low);
     let close = dec.apply(close);
+    let volume = dec.apply(volume);
     use crate::plot::statistical::{
         render_candlestick_html, CandlestickConfig, CandlestickVariant,
     };
@@ -65,6 +69,7 @@ pub fn build(input: &str) -> String {
         high: &high,
         low: &low,
         close: &close,
+        volume: &volume,
         palette: &o.pal(),
         width: o.w(1100),
         height: o.h(500),

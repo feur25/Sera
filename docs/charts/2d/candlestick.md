@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('candlestick-en','line',this)"><span class="sp-cic">I</span><span class="sp-clb">Line</span></button>
 <button class="sp-cls-tab" onclick="spCls('candlestick-en','mountain',this)"><span class="sp-cic">M</span><span class="sp-clb">Mountain</span></button>
 <button class="sp-cls-tab" onclick="spCls('candlestick-en','range',this)"><span class="sp-cic">R</span><span class="sp-clb">Range</span></button>
+<button class="sp-cls-tab" onclick="spCls('candlestick-en','volume',this)"><span class="sp-cic">V</span><span class="sp-clb">Volume</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -122,6 +123,15 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/candlestick-range.html"></iframe>
 </div>
 
+<div class="sp-variant" id="candlestick-en-volume">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"volume"</code></span><span><strong>Aliases</strong> <code>volume / crypto / with_volume / trading</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Candlestick + volume histogram fusion — the standard crypto/trading terminal layout. Candles fill the upper ~78% of the plot; a volume bar strip (colored by that period's up/down candle) fills the remaining band beneath, sharing the same x-axis. Pass a <code>volume</code> array alongside <code>open</code>/<code>high</code>/<code>low</code>/<code>close</code>.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/candlestick-volume.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -164,6 +174,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('candlestick-fr','line',this)"><span class="sp-cic">I</span><span class="sp-clb">Line</span></button>
 <button class="sp-cls-tab" onclick="spCls('candlestick-fr','mountain',this)"><span class="sp-cic">M</span><span class="sp-clb">Mountain</span></button>
 <button class="sp-cls-tab" onclick="spCls('candlestick-fr','range',this)"><span class="sp-cic">R</span><span class="sp-clb">Range</span></button>
+<button class="sp-cls-tab" onclick="spCls('candlestick-fr','volume',this)"><span class="sp-cic">V</span><span class="sp-clb">Volume</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -237,6 +248,15 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/candlestick-range.html"></iframe>
+</div>
+
+<div class="sp-variant" id="candlestick-fr-volume">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"volume"</code></span><span><strong>Aliases</strong> <code>volume / crypto / with_volume / trading</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fusion chandelier + histogramme de volume — la mise en page standard des terminaux crypto/trading. Les chandeliers occupent les ~78% superieurs du graphique ; une bande de barres de volume (colorees selon la hausse/baisse de la periode) occupe le reste, partageant le meme axe x. Passez un tableau <code>volume</code> en plus de <code>open</code>/<code>high</code>/<code>low</code>/<code>close</code>.</p>
+
+<div class="sp-preview-label">Apercu</div>
+<iframe class="sp-preview-frame" src="../../previews/candlestick-volume.html"></iframe>
 </div>
 
 </div>

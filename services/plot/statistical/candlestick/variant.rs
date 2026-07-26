@@ -8,5 +8,6 @@ crate::plot_family! {
         Line     => "line" | "close" | "lineplot" | "trend",
         Mountain => "mountain" | "area" | "filled_area" | "shade",
         Range    => "range" | "hl" | "highlow" | "spread",
+        Volume   => "volume" | "crypto" | "with_volume" | "trading",
     }
 }
