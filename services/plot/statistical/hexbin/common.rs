@@ -288,3 +288,74 @@ pub fn legend_bar(frame: &mut Frame, cfg: &HexbinConfig, p: &Prepared) {
 pub fn finalize(frame: Frame, cfg: &HexbinConfig) -> String {
     frame.html(&slots_to_json(cfg.hover))
 }
+
+pub const MAGNITUDE_COLORS: [u32; 5] = [0x3b82f6, 0x22c55e, 0xf59e0b, 0xd946ef, 0x111827];
+pub const MAGNITUDE_LABELS: [&str; 5] = ["Ones", "Tens", "Hundreds", "Thousands", "10 Thousands"];
+
+pub fn magnitude_band(count: u32) -> usize {
+    if count == 0 {
+        0
+    } else {
+        ((count as f64).log10().floor() as usize).min(4)
+    }
+}
+
+pub fn draw_nested_cell(buf: &mut Vec<u8>, idx: usize, bin: &Bin, base_r: f64) {
+    let band = magnitude_band(bin.count);
+    let r = base_r * (0.5 + band as f64 * 0.13);
+    let outer = MAGNITUDE_COLORS[band];
+    let hx_outer = hex6(outer);
+    push_b(buf, b"<path data-idx=\"");
+    push_i(buf, idx as i32);
+    push_b(buf, b"\" data-y=\"");
+    push_i(buf, bin.count as i32);
+    push_b(buf, b"\" d=\"");
+    hex_path(buf, bin.cx, bin.cy, r);
+    push_b(buf, b"\" fill=\"#");
+    buf.extend_from_slice(&hx_outer);
+    push_b(buf, b"\" fill-opacity=\"0.88\" stroke=\"#fff\" stroke-width=\"0.8\"/>");
+    if band > 0 {
+        let inner_col = MAGNITUDE_COLORS[band - 1];
+        let hx_inner = hex6(inner_col);
+        push_b(buf, b"<path d=\"");
+        hex_path(buf, bin.cx, bin.cy, r * 0.55);
+        push_b(buf, b"\" fill=\"#");
+        buf.extend_from_slice(&hx_inner);
+        push_b(buf, b"\" fill-opacity=\"0.9\" pointer-events=\"none\"/>");
+    }
+}
+
+pub fn magnitude_legend(frame: &mut Frame, max_count: u32) {
+    let top_band = magnitude_band(max_count);
+    let x = frame.pl + frame.pw + 14;
+    let mut y = frame.pt + 8;
+    for band in (0..=top_band).rev() {
+        let col = MAGNITUDE_COLORS[band];
+        let hx = hex6(col);
+        push_b(&mut frame.buf, b"<text x=\"");
+        push_i(&mut frame.buf, x);
+        push_b(&mut frame.buf, b"\" y=\"");
+        push_i(&mut frame.buf, y);
+        push_b(
+            &mut frame.buf,
+            b"\" font-family=\"Arial,sans-serif\" font-size=\"10\" font-weight=\"700\" fill=\"#374151\">",
+        );
+        push_b(&mut frame.buf, MAGNITUDE_LABELS[band].as_bytes());
+        push_b(&mut frame.buf, b"</text>");
+        for k in 0..4 {
+            let cx = x + 10 + k * 16;
+            let cy = y + 16;
+            let r = 3.0 + k as f64 * 1.6;
+            push_b(&mut frame.buf, b"<circle cx=\"");
+            push_i(&mut frame.buf, cx);
+            push_b(&mut frame.buf, b"\" cy=\"");
+            push_i(&mut frame.buf, cy);
+            push_b(&mut frame.buf, b"\" r=\"");
+            push_f2(&mut frame.buf, r);
+            push_b(&mut frame.buf, b"\" fill=\"#");
+            frame.buf.extend_from_slice(&hx);
+            push_b(&mut frame.buf, b"\" fill-opacity=\"0.85\"/>");
+        }
+        y += 34;
+    }
+}

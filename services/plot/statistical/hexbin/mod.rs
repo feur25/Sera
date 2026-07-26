@@ -3,6 +3,8 @@ pub mod basic;
 pub mod common;
 pub mod config;
 pub mod highlight;
+pub mod mincnt;
+pub mod nested;
 pub mod outlined;
 pub mod spaced;
 pub mod variant;
@@ -17,6 +19,8 @@ pub fn render_hexbin_html(cfg: &HexbinConfig) -> String {
         Outlined => outlined::render(cfg),
         Spaced => spaced::render(cfg),
         Highlight => highlight::render(cfg),
+        Mincnt => mincnt::render(cfg),
+        Nested => nested::render(cfg),
     }
 }
 
@@ -46,6 +50,7 @@ pub fn build(input: &str) -> String {
         gridsize: o.bins.map(|b| b.max(2) as usize).unwrap_or(20),
         colorscale: &colorscale,
         palette: &o.pal(),
+        min_count: o.min_count.map(|v| v.max(0) as u32).unwrap_or(0),
         width: o.w(900),
         height: o.h(520),
         hover: &hover,

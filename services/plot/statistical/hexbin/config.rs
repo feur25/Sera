@@ -6,6 +6,7 @@ crate::chart_config!(HexbinConfig, 900, 520;
         pub gridsize: usize,
         pub colorscale: &'a str,
         pub palette: &'a [u32],
+        pub min_count: u32,
     }
     defaults {
         variant: super::variant::HexbinVariant::Basic,
@@ -14,5 +15,6 @@ crate::chart_config!(HexbinConfig, 900, 520;
         gridsize: 20,
         colorscale: "",
         palette: &[],
+        min_count: 0,
     }
 );
