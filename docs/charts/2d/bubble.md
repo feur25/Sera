@@ -44,7 +44,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('bubble-en','categorical',this)"><span class="sp-cic">◓</span><span class="sp-clb">Categorical</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-en','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Labeled</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-en','outlined',this)"><span class="sp-cic">○</span><span class="sp-clb">Outlined</span></button>
-<button class="sp-cls-tab" onclick="spCls('bubble-en','negative',this)"><span class="sp-cic">±</span><span class="sp-clb">Negative</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('bubble-en','negative',this)"><span class="sp-cic">±</span><span class="sp-clb">Negative</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubble-en','split',this)"><span class="sp-cic">◐</span><span class="sp-clb">Split</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="bubble-en-basic">
@@ -87,6 +88,16 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/bubble-negative.html"></iframe>
 </div>
 
+<div class="sp-variant" id="bubble-en-split">
+
+<p>A categorical bubble matrix: <code>x_categories</code> and <code>y_categories</code> place bubbles on a grid, each split into a left/right half-circle by a binary <code>categories</code> value, sized by <code>sizes</code> - a native version of matplotlib's <code>MarkerStyle(fillstyle="left"/"right")</code> split-marker bubble chart, plus a magenta size-scale legend column.</p>
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"split"</code></span><span><strong>Required</strong> <code>x_categories</code>, <code>y_categories</code>, <code>categories</code>, <code>sizes</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/bubble-split.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -126,7 +137,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('bubble-fr','categorical',this)"><span class="sp-cic">◓</span><span class="sp-clb">Catégoriel</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-fr','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Étiqueté</span></button>
 <button class="sp-cls-tab" onclick="spCls('bubble-fr','outlined',this)"><span class="sp-cic">○</span><span class="sp-clb">Contour</span></button>
-<button class="sp-cls-tab" onclick="spCls('bubble-fr','negative',this)"><span class="sp-cic">±</span><span class="sp-clb">Négatif</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('bubble-fr','negative',this)"><span class="sp-cic">±</span><span class="sp-clb">Négatif</span></button>
+<button class="sp-cls-tab" onclick="spCls('bubble-fr','split',this)"><span class="sp-cic">◐</span><span class="sp-clb">Divisé</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="bubble-fr-basic">
@@ -167,6 +179,16 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/bubble-negative.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bubble-fr-split">
+
+<p>Une matrice de bulles catégorielle : <code>x_categories</code> et <code>y_categories</code> placent les bulles sur une grille, chacune divisée en demi-cercle gauche/droite selon une valeur binaire de <code>categories</code>, dimensionnée par <code>sizes</code> - une version native du graphique à bulles à marqueurs divisés <code>MarkerStyle(fillstyle="left"/"right")</code> de matplotlib, plus une colonne de légende de taille en magenta.</p>
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"split"</code></span><span><strong>Requis</strong> <code>x_categories</code>, <code>y_categories</code>, <code>categories</code>, <code>sizes</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/bubble-split.html"></iframe>
 </div>
 
 </div>

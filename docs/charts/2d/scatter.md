@@ -43,7 +43,10 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('scatter-en','symbols',this)"><span class="sp-cic">◆</span><span class="sp-clb">Symbols</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Labeled</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Regression</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-en','residual',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Residual</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','residual',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Residual</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','dual_style',this)"><span class="sp-cic">◈</span><span class="sp-clb">Dual Style</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','continuous_hue',this)"><span class="sp-cic">◍</span><span class="sp-clb">Continuous Hue</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','facet',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Facet</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="scatter-en-basic">
@@ -94,6 +97,36 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/scatter-residual.html"></iframe>
 </div>
 
+<div class="sp-variant" id="scatter-en-dual_style">
+
+<p>Two independent categorical variables: <code>categories</code> drives color, <code>categories2</code> drives marker shape - matching seaborn's "hue and style with different variables" example.</p>
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"dual_style"</code></span><span><strong>Aliases</strong> <code>dual_style / hue_style / two_way</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/scatter-dual_style.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-en-continuous_hue">
+
+<p>Points colored by a continuous numeric variable (<code>color_values</code>) interpolated between <code>color_low</code> and <code>color_high</code>, with a gradient legend bar - seaborn's numeric hue mapping.</p>
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"continuous_hue"</code></span><span><strong>Aliases</strong> <code>continuous_hue / numeric_hue / colormap</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/scatter-continuous_hue.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-en-facet">
+
+<p>Splits the data into one small-multiple panel per unique <code>categories</code> value, all sharing the same x/y domain - a native equivalent of seaborn's <code>relplot()</code> faceting.</p>
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"facet"</code></span><span><strong>Aliases</strong> <code>facet / facets / small_multiples / relplot</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/scatter-facet.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -132,7 +165,10 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','symbols',this)"><span class="sp-cic">◆</span><span class="sp-clb">Symboles</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','labeled',this)"><span class="sp-cic">◉</span><span class="sp-clb">Étiquetés</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','regression',this)"><span class="sp-cic">↗</span><span class="sp-clb">Régression</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-fr','residual',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Résidus</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','residual',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Résidus</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','dual_style',this)"><span class="sp-cic">◈</span><span class="sp-clb">Style double</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','continuous_hue',this)"><span class="sp-cic">◍</span><span class="sp-clb">Teinte continue</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','facet',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Facettes</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="scatter-fr-basic">
@@ -181,6 +217,36 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-residual.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-fr-dual_style">
+
+<p>Deux variables catégorielles indépendantes : <code>categories</code> pilote la couleur, <code>categories2</code> pilote la forme du marqueur - comme l'exemple seaborn "hue and style" avec des variables différentes.</p>
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"dual_style"</code></span><span><strong>Alias</strong> <code>dual_style / hue_style / two_way</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/scatter-dual_style.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-fr-continuous_hue">
+
+<p>Points colorés selon une variable numérique continue (<code>color_values</code>) interpolée entre <code>color_low</code> et <code>color_high</code>, avec une barre de légende en dégradé - le mapping de teinte numérique de seaborn.</p>
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"continuous_hue"</code></span><span><strong>Alias</strong> <code>continuous_hue / numeric_hue / colormap</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/scatter-continuous_hue.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-fr-facet">
+
+<p>Sépare les données en un panneau petit-multiple par valeur unique de <code>categories</code>, tous partageant le même domaine x/y - un équivalent natif du facettage <code>relplot()</code> de seaborn.</p>
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"facet"</code></span><span><strong>Alias</strong> <code>facet / facets / small_multiples / relplot</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/scatter-facet.html"></iframe>
 </div>
 
 </div>
