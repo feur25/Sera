@@ -15,7 +15,7 @@ fn unique_groups(color_groups: &[String], n: usize) -> Vec<String> {
     uniq
 }
 
-pub fn render(cfg: &BarConfig, show_labels: bool, show_grid: bool, grouped: bool) -> String {
+pub(crate) fn render(cfg: &BarConfig, show_labels: bool, show_grid: bool, grouped: bool) -> String {
     let n = cfg.labels.len().min(cfg.values.len());
     if n == 0 {
         return String::new();
