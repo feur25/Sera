@@ -68,7 +68,9 @@ impl Chart {
         fr = "Supprime toutes les couches d'arrière-plan du graphique et conserve une sortie transparente."
     )]
     pub fn no_background(&self) -> Chart {
-        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>html,body,.chart-container,.c3w,.sp-wrap,svg,canvas{background:transparent!important}.sp-bg{fill:transparent!important}body>:first-child{box-shadow:none!important}</style></head>"))
+        let html = crate::html::hover::inject_before_head(&self.html, "<style>html,body,.chart-container,.c3w,.sp-wrap,svg,canvas{background:transparent!important}.sp-bg{fill:transparent!important}body>:first-child{box-shadow:none!important}</style></head>");
+        let html = crate::html::hover::inject_before_body(&html, &format!("<script>{}</script></body>", SP_NO_BG_DEEP_JS));
+        self.propagate(html)
     }
 
     #[sera_doc(
@@ -2684,6 +2686,19 @@ impl Chart {
     pub fn focus_mode(&self) -> Chart {
         self.propagate(
             crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_FOCUS_MODE_JS)),
+        )
+    }
+
+    #[sera_doc(
+        category = "chart_method",
+        aliases("hover_lineage", "highlight_family", "highlight_lineage", "family_hover", "hover_group"),
+        file = "charts/chart.md",
+        en = "On hover, highlights the hovered element plus every element structurally attached to it (its ancestors/descendants in a hierarchy like icicle/treemap, or its whole connected flow in a sankey) and fades everything else to near-transparent — reveals a single path/family/group at a time. Works natively on any chart exposing `data-path` (hierarchical) or `data-src`/`data-tgt` (flow) attributes, e.g. icicle, sankey.",
+        fr = "Au survol, met en évidence l'élément survolé ainsi que tous les éléments qui lui sont structurellement rattachés (ses ancêtres/descendants dans une hiérarchie type icicle/treemap, ou tout son flux connecté dans un sankey) et estompe le reste en quasi-transparence — ne révèle qu'un seul chemin/famille/groupe à la fois. Fonctionne nativement sur tout graphique exposant des attributs `data-path` (hiérarchique) ou `data-src`/`data-tgt` (flux), ex. icicle, sankey."
+    )]
+    pub fn hover_family(&self) -> Chart {
+        self.propagate(
+            crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_HOVER_FAMILY_JS)),
         )
     }
 
