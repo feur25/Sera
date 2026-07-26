@@ -6,23 +6,26 @@ use crate::plot::statistical::common::{
 
 enum ClusterTree {
     Leaf(usize),
-    Node(Box<ClusterTree>, Box<ClusterTree>),
+    Node(Box<ClusterTree>, Box<ClusterTree>, f64),
 }
 
 fn collect_leaves(t: &ClusterTree, out: &mut Vec<usize>) {
     match t {
         ClusterTree::Leaf(i) => out.push(*i),
-        ClusterTree::Node(l, r) => {
+        ClusterTree::Node(l, r, _) => {
             collect_leaves(l, out);
             collect_leaves(r, out);
         }
     }
 }
 
-pub fn hierarchical_leaf_order(vectors: &[Vec<f64>]) -> Vec<usize> {
+fn build_cluster_tree(vectors: &[Vec<f64>]) -> Option<ClusterTree> {
     let n = vectors.len();
-    if n <= 1 {
-        return (0..n).collect();
+    if n == 0 {
+        return None;
+    }
+    if n == 1 {
+        return Some(ClusterTree::Leaf(0));
     }
     let mut dist = vec![vec![0.0f64; n]; n];
     for i in 0..n {
@@ -70,6 +73,7 @@ pub fn hierarchical_leaf_order(vectors: &[Vec<f64>]) -> Vec<usize> {
         let node = ClusterTree::Node(
             Box::new(std::mem::replace(&mut trees[a], ClusterTree::Leaf(usize::MAX))),
             Box::new(std::mem::replace(&mut trees[b], ClusterTree::Leaf(usize::MAX))),
+            best_d,
         );
         members.push(merged);
         trees.push(node);
@@ -78,9 +82,83 @@ pub fn hierarchical_leaf_order(vectors: &[Vec<f64>]) -> Vec<usize> {
         alive.remove(ii);
         alive.push(new_idx);
     }
+    Some(std::mem::replace(
+        &mut trees[alive[0]],
+        ClusterTree::Leaf(usize::MAX),
+    ))
+}
+
+pub fn hierarchical_leaf_order(vectors: &[Vec<f64>]) -> Vec<usize> {
+    let n = vectors.len();
+    match build_cluster_tree(vectors) {
+        Some(t) => {
+            let mut order = Vec::with_capacity(n);
+            collect_leaves(&t, &mut order);
+            order
+        }
+        None => Vec::new(),
+    }
+}
+
+pub struct DendroMerge {
+    pub xl: f64,
+    pub hl: f64,
+    pub xr: f64,
+    pub hr: f64,
+    pub h: f64,
+}
+
+pub struct Dendrogram {
+    pub order: Vec<usize>,
+    pub merges: Vec<DendroMerge>,
+    pub max_height: f64,
+}
+
+fn place(
+    t: &ClusterTree,
+    pos_of_leaf: &[usize],
+    merges: &mut Vec<DendroMerge>,
+) -> (f64, f64) {
+    match t {
+        ClusterTree::Leaf(i) => (pos_of_leaf[*i] as f64, 0.0),
+        ClusterTree::Node(l, r, h) => {
+            let (xl, hl) = place(l, pos_of_leaf, merges);
+            let (xr, hr) = place(r, pos_of_leaf, merges);
+            merges.push(DendroMerge { xl, hl, xr, hr, h: *h });
+            ((xl + xr) / 2.0, *h)
+        }
+    }
+}
+
+pub fn hierarchical_dendrogram(vectors: &[Vec<f64>]) -> Dendrogram {
+    let n = vectors.len();
+    let tree = match build_cluster_tree(vectors) {
+        Some(t) => t,
+        None => {
+            return Dendrogram {
+                order: Vec::new(),
+                merges: Vec::new(),
+                max_height: 1.0,
+            }
+        }
+    };
     let mut order = Vec::with_capacity(n);
-    collect_leaves(&trees[alive[0]], &mut order);
-    order
+    collect_leaves(&tree, &mut order);
+    let mut pos_of_leaf = vec![0usize; n];
+    for (pos, &leaf) in order.iter().enumerate() {
+        pos_of_leaf[leaf] = pos;
+    }
+    let mut merges = Vec::new();
+    let (_, max_height) = if n > 1 {
+        place(&tree, &pos_of_leaf, &mut merges)
+    } else {
+        (0.0, 0.0)
+    };
+    Dendrogram {
+        order,
+        merges,
+        max_height: max_height.max(1e-9),
+    }
 }
 
 pub fn clone_cfg<'a>(cfg: &HeatmapConfig<'a>) -> HeatmapConfig<'a> {
@@ -128,6 +206,8 @@ pub fn clone_cfg<'a>(cfg: &HeatmapConfig<'a>) -> HeatmapConfig<'a> {
         row_totals: cfg.row_totals,
         col_totals: cfg.col_totals,
         secondary_matrix: cfg.secondary_matrix,
+        extra_pad_left: cfg.extra_pad_left,
+        extra_pad_top: cfg.extra_pad_top,
     }
 }
 
@@ -331,8 +411,8 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
     let data = &cfg.flat_matrix[..n_rows * n_cols];
     let (vmin, vmax) = finite_minmax(data);
 
-    let pad_left: i32 = 100;
-    let pad_top: i32 = 88;
+    let pad_left: i32 = 100 + cfg.extra_pad_left;
+    let pad_top: i32 = 88 + cfg.extra_pad_top;
     let right_bar = !cfg.categorical && cfg.colorbar_position.eq_ignore_ascii_case("right");
     let pad_right: i32 = if right_bar { 90 } else { 24 };
     let pad_bottom: i32 = 52;

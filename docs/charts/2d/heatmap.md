@@ -150,7 +150,9 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-variant" id="hm-en-cluster">
 
-<div class="sp-vmeta"><span><strong>Variant</strong> <code>"cluster"</code> / <code>"clustermap"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"cluster"</code> / <code>"clustermap"</code> / <code>"dendrogram"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Rows and columns are reordered by average-linkage hierarchical clustering (Euclidean distance on each row/column vector) so similar rows/columns sit next to each other, and the merge tree is drawn as a real dendrogram in the left and top margins — seaborn's <code>clustermap</code> / <code>structured_heatmap</code> look, fully native.</p>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/heatmap-cluster.html"></iframe>
@@ -274,7 +276,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-variant" id="hm-fr-temporal"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"temporal"</code> / <code>"calendar"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>time_axis</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-temporal.html"></iframe></div>
 
-<div class="sp-variant" id="hm-fr-cluster"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"cluster"</code> / <code>"dendro"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>cluster_method</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-cluster.html"></iframe></div>
+<div class="sp-variant" id="hm-fr-cluster"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"cluster"</code> / <code>"clustermap"</code> / <code>"dendrogram"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Les lignes et colonnes sont réordonnées par classification hiérarchique average-linkage (distance euclidienne sur chaque vecteur ligne/colonne) pour que les lignes/colonnes similaires se retrouvent côte à côte, et l'arbre de fusion est dessiné comme un vrai dendrogramme dans les marges gauche et haute — le look <code>clustermap</code> / <code>structured_heatmap</code> de seaborn, entièrement natif.</p><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-cluster.html"></iframe></div>
 
 <div class="sp-variant" id="hm-fr-bubble"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"bubble"</code> / <code>"dot"</code></span><span><strong>Requis</strong> <code>matrix</code>, <code>size_matrix</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-bubble.html"></iframe></div>
 

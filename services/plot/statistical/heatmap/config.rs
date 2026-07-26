@@ -34,6 +34,8 @@ crate::chart_config!(HeatmapConfig, 720, 0;
         pub row_totals: &'a [f64],
         pub col_totals: &'a [f64],
         pub secondary_matrix: &'a [f64],
+        pub extra_pad_left: i32,
+        pub extra_pad_top: i32,
     }
     defaults {
         variant: super::variant::HeatmapVariant::Basic,
@@ -70,5 +72,7 @@ crate::chart_config!(HeatmapConfig, 720, 0;
         row_totals: &[],
         col_totals: &[],
         secondary_matrix: &[],
+        extra_pad_left: 0,
+        extra_pad_top: 0,
     }
 );
