@@ -7,5 +7,6 @@ crate::plot_family! {
         Pyramid    => "pyramid" | "triangle" | "cone" | "point",
         Inverted   => "inverted" | "inverse" | "reverse" | "upside_down",
         Conversion => "conversion" | "dropoff" | "rate" | "steps",
+        Compare    => "compare" | "multi" | "side_by_side" | "funnels",
     }
 }

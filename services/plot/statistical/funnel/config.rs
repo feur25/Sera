@@ -5,6 +5,9 @@ crate::chart_config!(FunnelConfig, 800, 480;
         pub values: &'a [f64],
         pub palette: &'a [u32],
         pub show_text: bool,
+        pub series: &'a [(String, Vec<f64>)],
+        pub stage_labels: &'a [Vec<String>],
+        pub text_info: &'a str,
     }
     defaults {
         variant: super::variant::FunnelVariant::Basic,
@@ -12,5 +15,8 @@ crate::chart_config!(FunnelConfig, 800, 480;
         values: &[],
         palette: &[],
         show_text: true,
+        series: &[],
+        stage_labels: &[],
+        text_info: "value+percent_initial",
     }
 );
