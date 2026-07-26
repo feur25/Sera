@@ -9,5 +9,7 @@ crate::plot_family! {
         Cumulative  => "cumulative" | "cdf" | "cum",
         Contour     => "contour" | "bivariate" | "kde2d" | "joint_density" | "smooth",
         Levels      => "levels" | "bands" | "iso_bands" | "ring_contour" | "banded",
+        Stack       => "stack" | "stacked" | "layered_stack",
+        Fill        => "fill" | "stack100" | "percent_stack" | "filled_stack",
     }
 }

@@ -4,9 +4,11 @@ pub mod common;
 pub mod config;
 pub mod contour;
 pub mod cumulative;
+pub mod fill;
 pub mod histogram;
 pub mod levels;
 pub mod normalized;
+pub mod stack;
 pub mod outline;
 pub mod rug;
 pub mod stepped;
@@ -28,6 +30,8 @@ pub fn render_kde_html(cfg: &KdeConfig) -> String {
         Cumulative => cumulative::render(cfg),
         Contour => contour::render(cfg),
         Levels => levels::render(cfg),
+        Stack => stack::render(cfg),
+        Fill => fill::render(cfg),
     }
 }
 
@@ -77,7 +81,12 @@ pub fn build(input: &str) -> String {
     let hover = o.hj();
     let variant = KdeVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let xl = o.xl();
-    let yl = if o.y_label.is_none() && !matches!(variant, KdeVariant::Contour | KdeVariant::Levels) {
+    let yl = if o.y_label.is_none()
+        && !matches!(
+            variant,
+            KdeVariant::Contour | KdeVariant::Levels | KdeVariant::Stack | KdeVariant::Fill
+        )
+    {
         "Density".to_string()
     } else {
         o.yl()
