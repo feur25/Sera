@@ -1,4 +1,4 @@
-window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260727f";
+window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260727g";
 (function () {
   var SELF_SRC = document.currentScript ? document.currentScript.src : "";
   var SP_WASM_BUILD = window.SP_WASM_BUILD;
@@ -433,6 +433,7 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260727f";
     if (/^0x[0-9a-fA-F]+$/.test(raw)) return parseInt(raw, 16);
     if (raw[0] === '"' || raw[0] === "'") return raw.slice(1, -1).replace(/\\"/g, '"').replace(/\\'/g, "'");
     if (raw[0] === "[") {
+      try { return JSON.parse(raw); } catch (e) {}
       try { return JSON.parse(raw.replace(/'/g, '"')); } catch (e) { return null; }
     }
     var n = Number(raw);
