@@ -13,5 +13,6 @@ crate::plot_family! {
         CircularGrouped => "circular_grouped" | "radial_grouped" | "circular_groups",
         Pyramid         => "population_pyramid" | "pyramid" | "age_pyramid",
         Diverging       => "diverging" | "signed" | "delta" | "bidirectional",
+        Distribution    => "distribution" | "bar_box" | "boxbar" | "bar_boxplot",
     }
 }

@@ -68,6 +68,7 @@ When `series` is missing but `series_names` is provided, `values` is interpreted
 <button class="sp-cls-tab" onclick="spCls('bar-en','circular_grouped',this)"><span class="sp-cic">◕</span><span class="sp-clb">Circular Grouped</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','population_pyramid',this)"><span class="sp-cic">▲</span><span class="sp-clb">Population Pyramid</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-en','diverging',this)"><span class="sp-cic">↔</span><span class="sp-clb">Diverging</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-en','distribution',this)"><span class="sp-cic">⊥</span><span class="sp-clb">Distribution</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -199,6 +200,16 @@ Horizontal bars extending left or right from a zero line, one color regardless o
 <iframe class="sp-preview-frame" src="../../previews/diverging-bar.html"></iframe>
 </div>
 
+<div class="sp-variant" id="bar-en-distribution">
+
+Bar + boxplot fusion: a semi-transparent bar up to each category's mean, with a real box (Q1/median/Q3, whiskers) overlaid on top showing the distribution behind that mean — pass `series` as one raw sample array per category (same shape as boxplot's grouped input) instead of single aggregate values. Aliases: `"bar_box"`, `"boxbar"`, `"bar_boxplot"`.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"distribution"</code></span><span><strong>Required</strong> <code>labels</code>, <code>series</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/bar-distribution.html"></iframe>
+</div>
+
 </div><!-- /sp-cls-body -->
 </div>
 
@@ -262,6 +273,7 @@ Objet `Chart` avec une propriété `.html` et une méthode `.show()`.
 <button class="sp-cls-tab" onclick="spCls('bar-fr','circular_grouped',this)"><span class="sp-cic">◕</span><span class="sp-clb">Circulaire groupé</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','population_pyramid',this)"><span class="sp-cic">▲</span><span class="sp-clb">Pyramide des âges</span></button>
 <button class="sp-cls-tab" onclick="spCls('bar-fr','diverging',this)"><span class="sp-cic">↔</span><span class="sp-clb">Divergent</span></button>
+<button class="sp-cls-tab" onclick="spCls('bar-fr','distribution',this)"><span class="sp-cic">⊥</span><span class="sp-clb">Distribution</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -391,6 +403,16 @@ Barres horizontales partant d'une ligne zéro vers la gauche ou la droite, une s
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/diverging-bar.html"></iframe>
+</div>
+
+<div class="sp-variant" id="bar-fr-distribution">
+
+Fusion bar + boxplot : une barre semi-transparente jusqu'à la moyenne de chaque catégorie, avec une vraie boîte (Q1/médiane/Q3, moustaches) superposée montrant la distribution derrière cette moyenne — passez `series` comme un tableau d'échantillons bruts par catégorie (même forme que l'entrée groupée de boxplot) au lieu de valeurs agrégées uniques. Alias : `"bar_box"`, `"boxbar"`, `"bar_boxplot"`.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"distribution"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>series</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/bar-distribution.html"></iframe>
 </div>
 
 </div><!-- /sp-cls-body -->

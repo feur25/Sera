@@ -6,6 +6,7 @@ pub mod circular_common;
 pub mod circular_grouped;
 pub mod config;
 pub mod deluxe;
+pub mod distribution;
 pub mod diverging;
 pub mod grouped;
 pub mod grouped_stacked;
@@ -34,7 +35,7 @@ pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
         Marimekko => marimekko::layout_3d(cfg),
         Multicategory => multicategory::layout_3d(cfg),
         Pictogram => pictogram::layout_3d(cfg),
-        Circular | CircularGrouped | Pyramid | Diverging => Vec::new(),
+        Circular | CircularGrouped | Pyramid | Diverging | Distribution => Vec::new(),
     }
 }
 
@@ -60,6 +61,7 @@ pub fn render_bar_html(cfg: &BarConfig) -> String {
         CircularGrouped => circular_grouped::render(cfg),
         Pyramid => population_pyramid::render(cfg),
         Diverging => diverging::render(cfg),
+        Distribution => distribution::render(cfg),
     }
 }
 
