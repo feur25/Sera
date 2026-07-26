@@ -9,5 +9,7 @@ crate::plot_family! {
         DualStyle     => "dual_style" | "hue_style" | "two_way",
         ContinuousHue => "continuous_hue" | "numeric_hue" | "colormap",
         Facet         => "facet" | "facets" | "small_multiples" | "relplot",
+        Sized         => "sized" | "size_scale" | "bubble_scatter" | "magnitude_size",
+        WideForm      => "wide_form" | "wide" | "multi_series" | "columns",
     }
 }

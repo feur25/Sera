@@ -17,6 +17,9 @@ crate::chart_config!(ScatterConfig, 900, 500;
         pub show_text: bool,
         pub symbol: &'a str,
         pub regression_type: &'a str,
+        pub series: &'a [(String, Vec<f64>)],
+        pub size_min: f64,
+        pub size_max: f64,
     }
     defaults {
         variant: super::variant::ScatterVariant::Basic,
@@ -36,5 +39,8 @@ crate::chart_config!(ScatterConfig, 900, 500;
         show_text: false,
         symbol: "circle",
         regression_type: "linear",
+        series: &[],
+        size_min: 4.0,
+        size_max: 18.0,
     }
 );

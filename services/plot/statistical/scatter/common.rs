@@ -84,6 +84,17 @@ pub fn draw_marker(
     fill_opacity: f64,
 ) {
     let rr = r.max(1.0);
+    let sym = match sym {
+        "o" => "circle",
+        "s" => "square",
+        "D" | "d" => "diamond",
+        "^" => "triangle",
+        "v" => "triangle-down",
+        "x" => "cross",
+        "+" => "plus",
+        "*" => "star",
+        other => other,
+    };
     match sym {
         "square" => {
             let s = (rr * 1.7) as i32;

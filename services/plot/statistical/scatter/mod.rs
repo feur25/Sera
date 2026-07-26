@@ -9,8 +9,10 @@ pub mod facet;
 pub mod labeled;
 pub mod regression;
 pub mod residual;
+pub mod sized;
 pub mod symbols;
 pub mod variant;
+pub mod wide_form;
 
 pub use config::ScatterConfig;
 pub use variant::ScatterVariant;
@@ -19,6 +21,8 @@ pub fn render_scatter_variant_html(cfg: &ScatterConfig) -> String {
     use ScatterVariant::*;
     let v = if cfg.variant != Basic {
         cfg.variant
+    } else if !cfg.series.is_empty() {
+        WideForm
     } else if !cfg.categories.is_empty() && !cfg.categories2.is_empty() {
         DualStyle
     } else if !cfg.color_values.is_empty() {
@@ -38,6 +42,8 @@ pub fn render_scatter_variant_html(cfg: &ScatterConfig) -> String {
         DualStyle => dual_style::render(cfg),
         ContinuousHue => continuous_hue::render(cfg),
         Facet => facet::render(cfg),
+        Sized => sized::render(cfg),
+        WideForm => wide_form::render(cfg),
     }
 }
 
@@ -73,19 +79,54 @@ pub fn build(input: &str) -> String {
         cgs.clone()
     };
     let categories2 = a.categories2.clone().unwrap_or_default();
+    let series: Vec<(String, Vec<f64>)> = {
+        let sn = o.series_names.clone().unwrap_or_default();
+        a.series
+            .clone()
+            .unwrap_or_default()
+            .into_iter()
+            .enumerate()
+            .map(|(si, vals)| {
+                (
+                    sn.get(si)
+                        .cloned()
+                        .unwrap_or_else(|| format!("S{}", si + 1)),
+                    vals,
+                )
+            })
+            .collect()
+    };
 
-    let dec = crate::plot::decimate::Decimator::new(o.max_points, &y);
-    let x = dec.apply(x);
-    let y = dec.apply(y);
-    let lbls = dec.apply(lbls);
-    let sz = dec.apply(sz);
-    let cgs = dec.apply(cgs);
-    let categories = dec.apply(categories);
-    let categories2 = dec.apply(categories2);
+    let (x, y, lbls, sz, cgs, categories, categories2, series) = if !series.is_empty() {
+        let dec = crate::plot::decimate::Decimator::for_series(o.max_points, &series);
+        (
+            dec.apply(x),
+            y,
+            lbls,
+            sz,
+            cgs,
+            categories,
+            categories2,
+            dec.apply_each(series),
+        )
+    } else {
+        let dec = crate::plot::decimate::Decimator::new(o.max_points, &y);
+        (
+            dec.apply(x),
+            dec.apply(y),
+            dec.apply(lbls),
+            dec.apply(sz),
+            dec.apply(cgs),
+            dec.apply(categories),
+            dec.apply(categories2),
+            series,
+        )
+    };
 
     if o.variant.is_some()
         || !o.color_values.clone().unwrap_or_default().is_empty()
         || !categories2.is_empty()
+        || !series.is_empty()
         || o.symbol.is_some()
         || o.symbols.is_some()
     {
@@ -136,6 +177,9 @@ pub fn build(input: &str) -> String {
             show_text: o.show_values.or(o.show_text).unwrap_or(false),
             symbol: &symbol,
             regression_type: &reg_t,
+            series: &series,
+            size_min: o.min_size.unwrap_or(4.0),
+            size_max: o.max_size.unwrap_or(18.0),
         };
         let html = render_scatter_variant_html(&cfg);
         return apply(html, &o);
