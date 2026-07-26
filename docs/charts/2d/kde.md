@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('kde-en','normalized',this)"><span class="sp-cic">N</span><span class="sp-clb">Normalized</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-en','cumulative',this)"><span class="sp-cic">C</span><span class="sp-clb">Cumulative</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-en','contour',this)"><span class="sp-cic">◌</span><span class="sp-clb">Contour</span></button>
+<button class="sp-cls-tab" onclick="spCls('kde-en','levels',this)"><span class="sp-cic">◎</span><span class="sp-clb">Levels</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="kde-en-basic">
@@ -96,6 +97,12 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-contour.html"></iframe>
 </div>
+<div class="sp-variant" id="kde-en-levels">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"levels"</code></span><span><strong>Aliases</strong> <code>levels / bands / iso_bands / ring_contour / banded</code></span><span><strong>Required</strong> <code>x</code>, <code>y</code></span><span><strong>Optional</strong> <code>categories</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Bivariate KDE quantized into discrete iso-density bands with a visible ring border at each band boundary — matches seaborn's <code>kdeplot(x=, y=, hue=, fill=True)</code> stepped-level look, as opposed to <code>contour</code>'s continuous gradient.</p>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/kde-levels.html"></iframe>
+</div>
 </div></div>
 
 </div>
@@ -136,6 +143,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('kde-fr','normalized',this)"><span class="sp-cic">N</span><span class="sp-clb">Normalized</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-fr','cumulative',this)"><span class="sp-cic">C</span><span class="sp-clb">Cumulative</span></button>
 <button class="sp-cls-tab" onclick="spCls('kde-fr','contour',this)"><span class="sp-cic">◌</span><span class="sp-clb">Contour</span></button>
+<button class="sp-cls-tab" onclick="spCls('kde-fr','levels',this)"><span class="sp-cic">◎</span><span class="sp-clb">Niveaux</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="kde-fr-basic">
@@ -185,6 +193,12 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Estimation de densité bivariée (2D) — un noyau gaussien produit évalué sur une grille et rendu comme une surface de densité ombrée, avec les points bruts superposés. Passez <code>categories</code> pour superposer une surface de densité par groupe, chacune dans sa propre couleur avec une légende.</p>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/kde-contour.html"></iframe>
+</div>
+<div class="sp-variant" id="kde-fr-levels">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"levels"</code></span><span><strong>Alias</strong> <code>levels / bands / iso_bands / ring_contour / banded</code></span><span><strong>Requis</strong> <code>x</code>, <code>y</code></span><span><strong>Optionnel</strong> <code>categories</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">KDE bivariée quantifiée en bandes iso-densité discrètes avec une bordure visible à chaque frontière de bande — reproduit le rendu par niveaux de <code>kdeplot(x=, y=, hue=, fill=True)</code> de seaborn, par opposition au dégradé continu de <code>contour</code>.</p>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/kde-levels.html"></iframe>
 </div>
 </div></div>
 

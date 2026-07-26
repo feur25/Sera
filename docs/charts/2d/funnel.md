@@ -50,6 +50,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('funnel-en','pyramid',this)"><span class="sp-cic">P</span><span class="sp-clb">Pyramid</span></button>
 <button class="sp-cls-tab" onclick="spCls('funnel-en','inverted',this)"><span class="sp-cic">I</span><span class="sp-clb">Inverted</span></button>
 <button class="sp-cls-tab" onclick="spCls('funnel-en','conversion',this)"><span class="sp-cic">C</span><span class="sp-clb">Conversion</span></button>
+<button class="sp-cls-tab" onclick="spCls('funnel-en','compare',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Compare</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="funnel-en-basic">
@@ -101,6 +102,12 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/funnel-conversion.html"></iframe>
 </div>
+<div class="sp-variant" id="funnel-en-compare">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"compare"</code></span><span><strong>Aliases</strong> <code>compare / multi / side_by_side / funnels</code></span><span><strong>Required</strong> <code>series</code></span><span><strong>Optional</strong> <code>series_names</code>, <code>category_series</code>, <code>text_info</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Several independent funnels side by side, each with its own stage count and its own scale - the native equivalent of composing multiple <code>go.Funnel()</code> traces in Plotly, without ever building a trace by hand. Pass <code>series</code> (one value list per funnel), <code>series_names</code> (funnel names) and <code>category_series</code> (one stage-label list per funnel, since funnels can have different stage counts). Automatically selected whenever <code>series</code> has more than one entry, even without <code>variant="compare"</code>. <code>text_info</code> combines <code>"value"</code>, <code>"percent_initial"</code>, <code>"percent_previous"</code> and <code>"percent_total"</code> with <code>+</code>.</p>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/funnel-compare.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -146,6 +153,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('funnel-fr','pyramid',this)"><span class="sp-cic">P</span><span class="sp-clb">Pyramid</span></button>
 <button class="sp-cls-tab" onclick="spCls('funnel-fr','inverted',this)"><span class="sp-cic">I</span><span class="sp-clb">Inverted</span></button>
 <button class="sp-cls-tab" onclick="spCls('funnel-fr','conversion',this)"><span class="sp-cic">C</span><span class="sp-clb">Conversion</span></button>
+<button class="sp-cls-tab" onclick="spCls('funnel-fr','compare',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Comparer</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="funnel-fr-basic">
@@ -196,6 +204,12 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/funnel-conversion.html"></iframe>
+</div>
+<div class="sp-variant" id="funnel-fr-compare">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"compare"</code></span><span><strong>Alias</strong> <code>compare / multi / side_by_side / funnels</code></span><span><strong>Requis</strong> <code>series</code></span><span><strong>Optionnel</strong> <code>series_names</code>, <code>category_series</code>, <code>text_info</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Plusieurs entonnoirs indépendants côte à côte, chacun avec son propre nombre d'étapes et sa propre échelle - l'équivalent natif de composer plusieurs traces <code>go.Funnel()</code> en Plotly, sans jamais construire de trace à la main. Passez <code>series</code> (une liste de valeurs par entonnoir), <code>series_names</code> (noms des entonnoirs) et <code>category_series</code> (une liste d'étiquettes d'étapes par entonnoir, puisque les entonnoirs peuvent avoir des nombres d'étapes différents). Sélectionné automatiquement dès que <code>series</code> a plus d'une entrée, même sans <code>variant="compare"</code>. <code>text_info</code> combine <code>"value"</code>, <code>"percent_initial"</code>, <code>"percent_previous"</code> et <code>"percent_total"</code> avec <code>+</code>.</p>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/funnel-compare.html"></iframe>
 </div>
 </div>
 </div>

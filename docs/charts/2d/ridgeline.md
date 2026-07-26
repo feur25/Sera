@@ -14,11 +14,11 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 ## Signature
 
-`sp.ridgeline(title, categories, values, *, variant="basic", overlap=0.5, bandwidth=0.0, n_points=60, fill_opacity=56, palette=None, **kwargs) -> Chart`
+`sp.ridgeline(title, categories, values, *, variant="basic", overlap=0.5, bandwidth=0.0, n_points=60, fill_opacity=56, palette=None, priority=None, **kwargs) -> Chart`
 
 ## Description
 
-`sp.ridgeline()` is the unified entry point for the entire ridgeline family — also known as joyplot. The `variant` keyword selects the rendering strategy — every other argument keeps the same name across variants. A ridgeline plot stacks one KDE curve per category along a shared X axis with a controllable vertical overlap, making it ideal to compare distributions across many groups (years, regions, segments…). SeraPlot renders everything in pure Rust SVG, with quartile/mean overlays, rug ticks, gradient fills and a built-in viridis colormap.
+`sp.ridgeline()` is the unified entry point for the entire ridgeline family — also known as joyplot. The `variant` keyword selects the rendering strategy — every other argument keeps the same name across variants. A ridgeline plot stacks one KDE curve per category along a shared X axis with a controllable vertical overlap, making it ideal to compare distributions across many groups (years, regions, segments…). SeraPlot renders everything in pure Rust SVG, with quartile/mean overlays, rug ticks, gradient fills and a built-in viridis colormap. `priority` takes a list of row indices (in their displayed order) to draw last, on top of every other ridge - use it to force a specific distribution to visually climb over its neighbors regardless of its position in the stack.
 ## Variants
 
 <div data-sp-registry-table="variants" data-family="ridgeline"></div>
@@ -96,11 +96,11 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <h2>Signature</h2>
 
-`sp.ridgeline(title, categories, values, *, variant="basic", overlap=0.5, bandwidth=0.0, n_points=60, fill_opacity=56, palette=None, **kwargs) -> Chart`
+`sp.ridgeline(title, categories, values, *, variant="basic", overlap=0.5, bandwidth=0.0, n_points=60, fill_opacity=56, palette=None, priority=None, **kwargs) -> Chart`
 
 <h2>Description</h2>
 
-`sp.ridgeline()` est le point d'entrée unifié pour toute la famille ridgeline — aussi appelé joyplot. Le mot-clé `variant` sélectionne la stratégie de rendu — tous les autres arguments conservent le même nom d'une variante à l'autre. Un ridgeline empile une courbe KDE par catégorie sur un axe X partagé avec un recouvrement vertical réglable, idéal pour comparer des distributions à travers plusieurs groupes (années, régions, segments…). SeraPlot rend tout en SVG Rust natif, avec marqueurs quartiles/moyenne, ticks rug, dégradés et palette viridis intégrée.
+`sp.ridgeline()` est le point d'entrée unifié pour toute la famille ridgeline — aussi appelé joyplot. Le mot-clé `variant` sélectionne la stratégie de rendu — tous les autres arguments conservent le même nom d'une variante à l'autre. Un ridgeline empile une courbe KDE par catégorie sur un axe X partagé avec un recouvrement vertical réglable, idéal pour comparer des distributions à travers plusieurs groupes (années, régions, segments…). SeraPlot rend tout en SVG Rust natif, avec marqueurs quartiles/moyenne, ticks rug, dégradés et palette viridis intégrée. `priority` prend une liste d'index de lignes (dans leur ordre affiché) à dessiner en dernier, par-dessus toutes les autres crêtes - utile pour forcer une distribution donnée à visuellement monter sur ses voisines quelle que soit sa position dans l'empilement.
 <h2>Variantes</h2>
 
 <div data-sp-registry-table="variants" data-family="ridgeline"></div>
