@@ -227,6 +227,40 @@ pub fn build_tree_from_values(labels: &[String], vectors: &[Vec<f64>], clusters:
     (nodes, vec![root_slot])
 }
 
+fn collect_leaves(nodes: &[TreeNode], i: usize, out: &mut Vec<usize>) {
+    if nodes[i].children.is_empty() {
+        out.push(i);
+    } else {
+        for &c in &nodes[i].children {
+            collect_leaves(nodes, c, out);
+        }
+    }
+}
+
+fn collect_descendants(nodes: &[TreeNode], i: usize, out: &mut Vec<usize>) {
+    for &c in &nodes[i].children {
+        out.push(c);
+        collect_descendants(nodes, c, out);
+    }
+}
+
+fn collapse_frontier(nodes: &[TreeNode], roots: &[usize], max_depth: usize) -> Vec<usize> {
+    fn visit(nodes: &[TreeNode], i: usize, max_depth: usize, frontier: &mut Vec<usize>) {
+        if nodes[i].children.is_empty() || nodes[i].depth >= max_depth {
+            frontier.push(i);
+        } else {
+            for &c in &nodes[i].children {
+                visit(nodes, c, max_depth, frontier);
+            }
+        }
+    }
+    let mut frontier = Vec::new();
+    for &r in roots {
+        visit(nodes, r, max_depth, &mut frontier);
+    }
+    frontier
+}
+
 fn ordered_leaves(nodes: &[TreeNode], roots: &[usize]) -> Vec<usize> {
     let n = nodes.len();
     let mut leaves: Vec<usize> = (0..n).filter(|&i| nodes[i].children.is_empty()).collect();
@@ -382,11 +416,29 @@ pub fn render_impl(cfg: &DendrogramConfig, horizontal: bool, compact: bool) -> S
         assign_positions_vertical(&mut nodes, &roots, w, h, pad_l, pad_r, pad_t, pad_b);
     }
 
+    let frontier = if compact { collapse_frontier(&nodes, &roots, 2) } else { Vec::new() };
+    let hidden: std::collections::HashSet<usize> = if compact {
+        let mut hidden = std::collections::HashSet::new();
+        for &f in &frontier {
+            let mut desc = Vec::new();
+            collect_descendants(&nodes, f, &mut desc);
+            for d in desc {
+                hidden.insert(d);
+            }
+        }
+        hidden
+    } else {
+        std::collections::HashSet::new()
+    };
+
     let hid = html_id();
     let mut buf = Vec::<u8>::with_capacity(nodes.len() * 180 + 4096);
     svg_header(&mut buf, cfg, hid, w / 2.0);
 
     for i in 0..nodes.len() {
+        if hidden.contains(&i) {
+            continue;
+        }
         if let Some(pi) = nodes[i].parent {
             let hx = hex6(node_color(cfg, &nodes[i]));
             if horizontal {
@@ -417,8 +469,43 @@ pub fn render_impl(cfg: &DendrogramConfig, horizontal: bool, compact: bool) -> S
         }
     }
 
+    if compact {
+        for &f in &frontier {
+            if nodes[f].children.is_empty() {
+                continue;
+            }
+            let mut leaves_under = Vec::new();
+            collect_leaves(&nodes, f, &mut leaves_under);
+            let x_min = leaves_under.iter().map(|&li| nodes[li].x).fold(f64::INFINITY, f64::min);
+            let x_max = leaves_under.iter().map(|&li| nodes[li].x).fold(f64::NEG_INFINITY, f64::max);
+            let base_y = nodes[leaves_under[0]].y;
+            let hx = hex6(node_color(cfg, &nodes[f]));
+            push_b(&mut buf, b"<path d=\"M");
+            push_f2(&mut buf, nodes[f].x); push_b(&mut buf, b","); push_f2(&mut buf, nodes[f].y);
+            push_b(&mut buf, b"L"); push_f2(&mut buf, x_min); push_b(&mut buf, b","); push_f2(&mut buf, base_y);
+            push_b(&mut buf, b"L"); push_f2(&mut buf, x_max); push_b(&mut buf, b","); push_f2(&mut buf, base_y);
+            push_b(&mut buf, b"Z\" fill=\"#");
+            buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\" fill-opacity=\"0.28\" stroke=\"#");
+            buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\" stroke-width=\"1.2\" data-idx=\"");
+            push_i(&mut buf, f as i32);
+            push_b(&mut buf, b"\"/>");
+            push_b(&mut buf, b"<text x=\"");
+            push_f2(&mut buf, (x_min + x_max) / 2.0);
+            push_b(&mut buf, b"\" y=\"");
+            push_f2(&mut buf, base_y + 14.0);
+            push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" font-weight=\"700\" fill=\"#374151\">(");
+            push_i(&mut buf, leaves_under.len() as i32);
+            push_b(&mut buf, b")</text>");
+        }
+    }
+
     let font_size = if compact { 8.5f64 } else { 10.0 };
     for i in 0..nodes.len() {
+        if hidden.contains(&i) {
+            continue;
+        }
         let hx = hex6(node_color(cfg, &nodes[i]));
         push_b(&mut buf, b"<circle cx=\"");
         push_f2(&mut buf, nodes[i].x);
