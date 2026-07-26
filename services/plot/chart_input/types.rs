@@ -20,6 +20,29 @@ where
     })
 }
 
+fn deser_opt_usize_vec<'de, D>(d: D) -> Result<Option<Vec<usize>>, D::Error>
+where
+    D: serde::Deserializer<'de>,
+{
+    let v: serde_json::Value = serde_json::Value::deserialize(d)?;
+    Ok(match &v {
+        serde_json::Value::Null => None,
+        serde_json::Value::Array(items) => Some(
+            items
+                .iter()
+                .filter_map(|item| item.as_u64().map(|n| n as usize))
+                .collect(),
+        ),
+        serde_json::Value::Number(n) => n.as_u64().map(|i| vec![i as usize]),
+        serde_json::Value::String(s) => Some(
+            s.split(|c: char| c == ',' || c.is_whitespace())
+                .filter_map(|tok| tok.trim().parse::<usize>().ok())
+                .collect(),
+        ),
+        _ => None,
+    })
+}
+
 #[derive(Deserialize, Default)]
 pub struct ChartOpts {
     pub width: Option<i32>,
@@ -186,6 +209,7 @@ pub struct ChartOpts {
     pub pulse_index: Option<Vec<usize>>,
     pub pulse_above: Option<f64>,
     pub pulse_color: Option<String>,
+    #[serde(default, deserialize_with = "deser_opt_usize_vec")]
     pub priority: Option<Vec<usize>>,
     pub text_info: Option<String>,
     pub outline_color: Option<String>,
