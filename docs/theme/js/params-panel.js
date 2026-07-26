@@ -1287,13 +1287,15 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260726f";
     var variants = normalizeVariantList(raw);
     var def = raw && raw.default ? raw.default : "";
     return variants.map(function (item) {
+      var sp = window.SeraplotWASM;
+      var code = "";
+      try { code = sp && sp.demo ? sp.demo(JSON.stringify({ family: canonical, variant: item.key })) : ""; } catch (e) {}
+      var parsedCode = parseDemoInput(code);
+      var examples = parsedCode && parsedCode.input ? parsedCode.input : {};
+
       var demo = registryJson("params", { family: canonical, variant: item.key }, null);
       if (typeof demo !== "string") {
-        var code = "";
-        var sp = window.SeraplotWASM;
-        try { code = sp && sp.demo ? sp.demo(JSON.stringify({ family: canonical, variant: item.key })) : ""; } catch (e) {}
-        var parsed = parseDemoInput(code);
-        demo = parsed && parsed.input ? Object.keys(parsed.input).filter(function (k) { return k !== "variant"; }).join(",") : "";
+        demo = examples ? Object.keys(examples).filter(function (k) { return k !== "variant"; }).join(",") : "";
       }
       var params = registryJson("requiredParams", { family: canonical, variant: item.key }, []);
       var required = registryJson("trueRequiredParams", { family: canonical, variant: item.key }, []);
@@ -1305,9 +1307,18 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260726f";
         aliases: aliases.filter(function (a) { return a !== item.key; }),
         params: Array.isArray(params) ? params : [],
         required: Array.isArray(required) ? required : [],
-        demo: demoKeys
+        demo: demoKeys,
+        examples: examples
       };
     });
+  }
+
+  function exampleSnippet(v) {
+    if (v === undefined || v === null) return "";
+    var s;
+    try { s = typeof v === "string" ? v : JSON.stringify(v); } catch (e) { s = String(v); }
+    if (s == null) return "";
+    return s.length > 34 ? s.slice(0, 31) + "..." : s;
   }
 
   function renderRegistryVariants(el, family, lang) {
@@ -1326,19 +1337,23 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260726f";
     var rows = registryVariantRows(family);
     if (!rows.length) return false;
     var byParam = {};
+    var exByParam = {};
     var srcKey = rows.some(function (r) { return r.required && r.required.length; }) ? "required" : "params";
     rows.forEach(function (r) {
       (r[srcKey] || []).forEach(function (p) {
         if (!byParam[p]) byParam[p] = [];
         if (byParam[p].indexOf(r.key) === -1) byParam[p].push(r.key);
+        if (!exByParam[p] && r.examples && r.examples[p] !== undefined) {
+          exByParam[p] = exampleSnippet(r.examples[p]);
+        }
       });
     });
     var keys = Object.keys(byParam).sort();
     var head = lang === "fr"
-      ? "<tr><th>Paramètre</th><th>Variantes</th></tr>"
-      : "<tr><th>Parameter</th><th>Variants</th></tr>";
+      ? "<tr><th>Paramètre</th><th>Variantes</th><th>Exemple</th></tr>"
+      : "<tr><th>Parameter</th><th>Variants</th><th>Example</th></tr>";
     el.innerHTML = "<table><thead>" + head + "</thead><tbody>" + keys.map(function (k) {
-      return "<tr><td><code>" + escapeAttr(k) + "</code></td><td>" + codeList(byParam[k]) + "</td></tr>";
+      return "<tr><td><code>" + escapeAttr(k) + "</code></td><td>" + codeList(byParam[k]) + "</td><td>" + (exByParam[k] ? "<code>" + escapeAttr(exByParam[k]) + "</code>" : "") + "</td></tr>";
     }).join("") + "</tbody></table>";
     return true;
   }
