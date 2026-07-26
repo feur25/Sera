@@ -1,8 +1,10 @@
-use super::common::{color_hex, finalize, label_in_rect, node_data_attrs, node_rect, open_svg, prepare};
+use super::common::{finalize, label_in_rect, node_data_attrs, node_rect, open_svg, prepare, shaded_color_hex};
 use super::config::IcicleConfig;
 use crate::plot::statistical::common::push_b;
 
-#[crate::chart_demo("labels=[\"Root\",\"A\",\"B\",\"A1\",\"A2\",\"B1\",\"B2\"], parents=[\"\",\"Root\",\"Root\",\"A\",\"A\",\"B\",\"B\"], values=[0,40,30,20,20,15,15]")]
+#[crate::chart_demo(
+    "labels=[\"Company\",\"Engineering\",\"Sales\",\"Marketing\",\"Operations\",\"Backend\",\"Frontend\",\"Data\",\"Enterprise\",\"SMB\",\"Content\",\"Growth\",\"HR\",\"Finance\",\"API\",\"Infra\",\"Web\",\"Mobile\",\"ML\",\"Analytics\",\"NA\",\"EMEA\"], parents=[\"\",\"Company\",\"Company\",\"Company\",\"Company\",\"Engineering\",\"Engineering\",\"Engineering\",\"Sales\",\"Sales\",\"Marketing\",\"Marketing\",\"Operations\",\"Operations\",\"Backend\",\"Backend\",\"Frontend\",\"Frontend\",\"Data\",\"Data\",\"Enterprise\",\"Enterprise\"], values=[0,0,0,0,0,18,14,8,15,10,7,11,5,7,10,8,9,5,5,3,9,6]"
+)]
 
 pub fn render(cfg: &IcicleConfig) -> String {
     let p = match prepare(cfg) {
@@ -17,22 +19,14 @@ pub fn render(cfg: &IcicleConfig) -> String {
         if r.w < 0.5 {
             continue;
         }
-        let hx = color_hex(&p, i);
-        let opacity: &[u8] = match p.depth[i] {
-            0 => b"0.92",
-            1 => b"0.80",
-            2 => b"0.70",
-            _ => b"0.62",
-        };
+        let hx = shaded_color_hex(&p, i);
         push_b(&mut b, b"<rect");
         node_data_attrs(&mut b, &p, i);
         super::common::rect_attrs(&mut b, r);
         push_b(&mut b, b" fill=\"#");
         b.extend_from_slice(&hx);
-        push_b(&mut b, b"\" opacity=\"");
-        b.extend_from_slice(opacity);
         push_b(&mut b, b"\" stroke=\"#fff\" stroke-width=\"1\"/>");
-        label_in_rect(&mut b, &p, i, r, true);
+        label_in_rect(&mut b, &p, i, r, p.depth[i] < 2);
     }
     finalize(b, cfg)
 }

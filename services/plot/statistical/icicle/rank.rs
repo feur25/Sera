@@ -2,7 +2,9 @@ use super::common::{finalize, label_in_rect, node_data_attrs, node_rect, open_sv
 use super::config::IcicleConfig;
 use crate::plot::statistical::common::{heat_color, hex6, push_b};
 
-#[crate::chart_demo("labels=[\"Root\",\"A\",\"B\",\"A1\",\"A2\",\"B1\",\"B2\"], parents=[\"\",\"Root\",\"Root\",\"A\",\"A\",\"B\",\"B\"], values=[0,40,30,20,20,15,15]")]
+#[crate::chart_demo(
+    "labels=[\"Company\",\"Engineering\",\"Sales\",\"Marketing\",\"Operations\",\"Backend\",\"Frontend\",\"Data\",\"Enterprise\",\"SMB\",\"Content\",\"Growth\",\"HR\",\"Finance\",\"API\",\"Infra\",\"Web\",\"Mobile\",\"ML\",\"Analytics\",\"NA\",\"EMEA\"], parents=[\"\",\"Company\",\"Company\",\"Company\",\"Company\",\"Engineering\",\"Engineering\",\"Engineering\",\"Sales\",\"Sales\",\"Marketing\",\"Marketing\",\"Operations\",\"Operations\",\"Backend\",\"Backend\",\"Frontend\",\"Frontend\",\"Data\",\"Data\",\"Enterprise\",\"Enterprise\"], values=[0,0,0,0,0,18,14,8,15,10,7,11,5,7,10,8,9,5,5,3,9,6], variant=\"rank\""
+)]
 
 pub fn render(cfg: &IcicleConfig) -> String {
     let p = match prepare(cfg) {

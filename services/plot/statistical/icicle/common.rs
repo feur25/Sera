@@ -1,6 +1,6 @@
 use super::config::IcicleConfig;
 use crate::html::hover::{build_chart_html, slots_to_json};
-use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i, truncate};
+use crate::plot::statistical::common::{escape_xml, hex6, lerp_rgb, push_b, push_f2, push_i, truncate};
 use std::collections::HashMap;
 
 pub const ICICLE_PALETTE: &[u32] = &[
@@ -57,6 +57,7 @@ pub fn prepare(cfg: &IcicleConfig) -> Option<Prepared> {
     }
 
     let mut children: Vec<Vec<usize>> = vec![Vec::new(); n];
+    let mut parent_of: Vec<Option<usize>> = vec![None; n];
     let mut roots: Vec<usize> = Vec::new();
     for i in 0..n {
         let par = cfg.parents[i].as_str();
@@ -64,6 +65,7 @@ pub fn prepare(cfg: &IcicleConfig) -> Option<Prepared> {
             roots.push(i);
         } else if let Some(&pi) = label_idx.get(par) {
             children[pi].push(i);
+            parent_of[i] = Some(pi);
         }
     }
     if roots.is_empty() {
@@ -125,14 +127,16 @@ pub fn prepare(cfg: &IcicleConfig) -> Option<Prepared> {
     }
 
     let mut cidx: Vec<usize> = vec![0usize; n];
-    for (ri, &r) in roots.iter().enumerate() {
-        let mut stk: Vec<usize> = vec![r];
-        while let Some(i) = stk.pop() {
-            cidx[i] = ri;
-            for &c in &children[i] {
-                stk.push(c);
+    let mut next_branch = 0usize;
+    for &i in &bfs_order {
+        cidx[i] = match depth[i] {
+            0 | 1 => {
+                let b = next_branch;
+                next_branch += 1;
+                b
             }
-        }
+            _ => parent_of[i].map(|pi| cidx[pi]).unwrap_or(0),
+        };
     }
 
     let title_h: i32 = if cfg.title.is_empty() { 8 } else { 38 };
@@ -196,6 +200,13 @@ pub fn node_rect_horizontal(p: &Prepared, i: usize) -> Rect {
 
 pub fn color_hex(p: &Prepared, i: usize) -> [u8; 6] {
     hex6(p.palette[p.cidx[i] % p.palette.len()])
+}
+
+pub fn shaded_color_hex(p: &Prepared, i: usize) -> [u8; 6] {
+    let base = p.palette[p.cidx[i] % p.palette.len()];
+    let rel_depth = p.depth[i].saturating_sub(1);
+    let t = (rel_depth as f64 * 0.15).min(0.62);
+    hex6(lerp_rgb(base, 0xFFFFFF, t))
 }
 
 pub fn open_svg(buf: &mut Vec<u8>, cfg: &IcicleConfig) {
