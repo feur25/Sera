@@ -692,8 +692,8 @@ impl Chart {
         category = "chart_method",
         aliases("swap_axes", "transpose"),
         file = "charts/chart.md",
-        en = "Flips a vertical bar chart into a horizontal bar chart by recalculating bar positions.",
-        fr = "Transforme un graphique à barres verticales en graphique à barres horizontales en recalculant les positions."
+        en = "Flips a vertical bar chart into a horizontal bar chart by recalculating bar positions. On any other chart made of positioned rects with a data-idx (icicle, treemap-like layouts...), transposes the x/y geometry of every rect instead.",
+        fr = "Transforme un graphique à barres verticales en graphique à barres horizontales en recalculant les positions. Sur tout autre graphique composé de rectangles positionnés avec un data-idx (icicle, disposition type treemap...), transpose la géométrie x/y de chaque rectangle."
     )]
     pub fn flip(&self) -> Chart {
         self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", SP_FLIP_JS)))
