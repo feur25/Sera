@@ -5,6 +5,7 @@ pub mod cleveland;
 pub mod common;
 pub mod conditional_color;
 pub mod config;
+pub mod custom;
 pub mod diverging;
 pub mod office;
 pub mod trend;
@@ -23,6 +24,7 @@ pub fn render_lollipop_html(cfg: &LollipopConfig) -> String {
         Office => office::render(cfg),
         ConditionalColor => conditional_color::render(cfg),
         Trend => trend::render(cfg),
+        Custom => custom::render(cfg),
     }
 }
 

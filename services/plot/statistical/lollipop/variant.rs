@@ -7,5 +7,6 @@ crate::plot_family! {
         Office           => "office" | "grouped" | "season" | "panel",
         ConditionalColor => "conditional_color" | "conditional" | "threshold_color",
         Trend            => "trend" | "colormap" | "arrow" | "annotated",
+        Custom           => "custom" | "diamond" | "styled",
     }
 }
