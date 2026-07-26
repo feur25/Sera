@@ -102,6 +102,18 @@ fn append_curve(buf: &mut Vec<u8>, pts: &[(f64, f64)], curve: Curve) {
 }
 
 pub fn render_with(cfg: &AreaConfig, stack: StackMode, curve: Curve, gradient: bool) -> String {
+    render_with_style(cfg, stack, curve, gradient, None, None)
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn render_with_style(
+    cfg: &AreaConfig,
+    stack: StackMode,
+    curve: Curve,
+    gradient: bool,
+    stroke_override: Option<u32>,
+    fill_opacity_override: Option<f64>,
+) -> String {
     let n_pts = cfg.x_labels.len();
     let n_ser = cfg.series.len();
     if n_pts < 2 || n_ser == 0 {
@@ -261,10 +273,18 @@ pub fn render_with(cfg: &AreaConfig, stack: StackMode, curve: Curve, gradient: b
             f.buf.extend_from_slice(&hx);
         }
         push_b(&mut f.buf, b"\" fill-opacity=\"");
-        push_f2(&mut f.buf, if gradient { 1.0 } else { 0.35 });
+        push_f2(
+            &mut f.buf,
+            fill_opacity_override.unwrap_or(if gradient { 1.0 } else { 0.35 }),
+        );
         push_b(&mut f.buf, b"\" stroke=\"#");
-        f.buf.extend_from_slice(&hx);
-        push_b(&mut f.buf, b"\" stroke-width=\"1.5\"/>");
+        match stroke_override {
+            Some(sc) => f.buf.extend_from_slice(&hex6(sc)),
+            None => f.buf.extend_from_slice(&hx),
+        }
+        push_b(&mut f.buf, b"\" stroke-width=\"");
+        push_f2(&mut f.buf, if stroke_override.is_some() { 2.0 } else { 1.5 });
+        push_b(&mut f.buf, b"\"/>");
     }
 
     let hover_step = ((n_pts as f64 / 30.0).ceil() as usize).max(1);

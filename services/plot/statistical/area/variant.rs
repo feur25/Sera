@@ -6,5 +6,6 @@ crate::plot_family! {
         Spline   => "spline" | "smooth" | "curved",
         Step     => "step" | "stepped" | "stairs",
         Gradient => "gradient" | "glow" | "fade",
+        Ribbon   => "ribbon" | "outlined" | "bordered" | "ggplot",
     }
 }

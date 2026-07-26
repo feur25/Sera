@@ -4,6 +4,7 @@ pub mod common;
 pub mod config;
 pub mod gradient;
 pub mod percent;
+pub mod ribbon;
 pub mod spline;
 pub mod stacked;
 pub mod step;
@@ -21,6 +22,7 @@ pub fn render_area_html(cfg: &AreaConfig) -> String {
         Spline => spline::render(cfg),
         Step => step::render(cfg),
         Gradient => gradient::render(cfg),
+        Ribbon => ribbon::render(cfg),
     }
 }
 
