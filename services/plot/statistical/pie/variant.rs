@@ -10,5 +10,6 @@ crate::plot_family! {
         Nested       => "nested" | "concentric" | "rings" | "double_ring" | "multi_ring",
         Pattern      => "pattern" | "patterned" | "textured" | "hatched",
         Nightingale  => "nightingale" | "rose" | "coxcomb" | "polar_area",
+        Waffle       => "waffle" | "square" | "pie_square" | "grid_pie" | "squarepie",
     }
 }

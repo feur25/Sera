@@ -64,6 +64,7 @@ c = sp.pie(
 <button class="sp-cls-tab" onclick="spCls('pie-en','kpi',this)"><span class="sp-cic">◉</span><span class="sp-clb">KPI</span></button>
 <button class="sp-cls-tab" onclick="spCls('pie-en','nested',this)"><span class="sp-cic">◎</span><span class="sp-clb">Nested</span></button>
 <button class="sp-cls-tab" onclick="spCls('pie-en','pattern',this)"><span class="sp-cic">▦</span><span class="sp-clb">Pattern</span></button>
+<button class="sp-cls-tab" onclick="spCls('pie-en','waffle',this)"><span class="sp-cic">▧</span><span class="sp-clb">Waffle</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -139,6 +140,16 @@ c = sp.pie(
 <iframe class="sp-preview-frame" src="../../previews/pie-pattern.html"></iframe>
 </div>
 
+<div class="sp-variant" id="pie-en-waffle">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"waffle"</code> / <code>"square"</code> / <code>"pie_square"</code></span><span><strong>Required</strong> <code>labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">The "square pie" — a 10x10 grid of 100 cells filled proportionally to each category's share (largest-remainder allocation, so the cell count always sums to exactly 100), with a color-matched legend. Easier to read precise percentages from than wedge angles.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/pie-waffle.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -198,6 +209,7 @@ c = sp.pie(
 <button class="sp-cls-tab" onclick="spCls('pie-fr','kpi',this)"><span class="sp-cic">⊙</span><span class="sp-clb">KPI</span></button>
 <button class="sp-cls-tab" onclick="spCls('pie-fr','nested',this)"><span class="sp-cic">◎</span><span class="sp-clb">Imbriqué</span></button>
 <button class="sp-cls-tab" onclick="spCls('pie-fr','pattern',this)"><span class="sp-cic">▩</span><span class="sp-clb">Motifs</span></button>
+<button class="sp-cls-tab" onclick="spCls('pie-fr','waffle',this)"><span class="sp-cic">▧</span><span class="sp-clb">Gaufre</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -218,6 +230,8 @@ c = sp.pie(
 <div class="sp-variant" id="pie-fr-nested"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"nested"</code> / <code>"sunburst"</code></span><span><strong>Requis</strong> <code>rings</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-nested.html"></iframe></div>
 
 <div class="sp-variant" id="pie-fr-pattern"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"pattern"</code> / <code>"hatch"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code>, <code>patterns</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-pattern.html"></iframe></div>
+
+<div class="sp-variant" id="pie-fr-waffle"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"waffle"</code> / <code>"square"</code> / <code>"pie_square"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Le « pie carré » — une grille 10x10 de 100 cellules remplies proportionnellement à la part de chaque catégorie (allocation par plus grand reste, la somme des cellules vaut donc toujours exactement 100), avec une légende assortie aux couleurs. Plus facile à lire précisément que des angles de camembert.</p><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/pie-waffle.html"></iframe></div>
 
 </div>
 </div>

@@ -12,6 +12,7 @@ pub mod proportional;
 pub mod semi;
 pub mod subplots;
 pub mod variant;
+pub mod waffle;
 
 pub use config::{Pie, PieConfig};
 pub use variant::PieVariant;
@@ -30,6 +31,7 @@ pub fn render_pie_html(cfg: &PieConfig) -> String {
         PieVariant::Nested => nested::render(cfg),
         PieVariant::Pattern => pattern::render(cfg),
         PieVariant::Nightingale => nightingale::render(cfg),
+        PieVariant::Waffle => waffle::render(cfg),
     };
     build_chart_html(cfg.title, &svg, &slots_to_json(cfg.hover))
 }
