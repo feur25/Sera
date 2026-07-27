@@ -539,7 +539,7 @@ bubbles = sp.bubble(
 ).no_axes().no_background().gridlines(False)
 cv.place(bubbles, 20, 100, 280, 280, clip="circle", name="panel-bubbles")
 
-chart = cv.build()
+chart = cv.build().zoom()
 ```
 
 <iframe src="../previews/canvas-recitac.html" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe>
@@ -551,6 +551,11 @@ every ring/legend/embedded chart picks it up automatically; add a story and a
 new node, a new set of connectors, and a new hover-group member appear on the
 next `build()`.
 
+**`.zoom()`** on the built `Chart` (called above, `cv.build().zoom()`) turns
+on mouse-wheel/pinch zoom and drag-to-pan for the whole composition — useful
+once a canvas is dense enough that hovering individual hexagons or story
+nodes benefits from zooming in first.
+
 **A tip for very large canvases**: `chart` on its own (or `chart.show()`)
 sizes its inline `<iframe>` via CSS `aspect-ratio`, which some notebook
 frontends resolve unreliably for big square canvases like this one (1700×1700),
@@ -559,6 +564,79 @@ plus `IPython.display.IFrame(src=path, width=..., height=...)` sidesteps that
 by reserving an explicit pixel size upfront — the canvas's own internal
 viewport-fit script then scales the full composition down to whatever that
 turns out to be, so you always see it in full.
+
+---
+
+## A constellation of real charts: satellites on dashed leaders
+
+A different composition shape than RéciTAC's rings-and-hairball: one central
+`sp.scatter()` plotting every model's mean quality against its mean
+emissions, and one small satellite `sp.scatter()` per model — its own raw
+event cloud, `no_axes()`/`no_title()`/`hide_grid()`/`no_legend()`/
+`no_background()`'d down to just the dots — arranged in a ring around it.
+Each satellite connects back to its model's exact point on the central plot
+with a dashed `line()`.
+
+The satellite-to-point link uses `hover_group` directly on `line()`/`circle()`/
+`place()` instead of a separate `link()` call: pass the same `hover_group="sat-3"`
+string to every element that should glow together, and they're linked from the
+moment they're created — no `name=` + follow-up `cv.link(...)` pass needed.
+Both mechanisms end up in the same place; `hover_group` is the one-line version
+when you know the group at creation time.
+
+```python
+import math
+import random
+import seraplot as sp
+
+random.seed(3)
+MODELS = [("Titan-7B", "#6366f1"), ("Mixtral-Sparse", "#7c3aed"),
+          ("Codex-T5", "#0891b2"), ("VisionSpeak-VL", "#0ea5e9"),
+          ("DiffuGen-2", "#d97706"), ("BertCore", "#059669")]
+
+means = [(random.uniform(55, 95), random.uniform(3.8, 5.2)) for _ in MODELS]
+central = sp.scatter(
+    "Quality vs log(emissions)",
+    x=[m[0] for m in means], y=[m[1] for m in means],
+    labels=[name for name, _ in MODELS], groups=[name for name, _ in MODELS],
+    x_label="Quality score", y_label="log10 gCO2e", width=520, height=400,
+)
+
+CW = CH = 900
+CX = CY = 450
+R = 340
+cv = sp.Canvas(CW, CH, "#ffffff")
+cv.place(central, CX - 260, CY - 200, 520, 400)
+
+for i, (name, color) in enumerate(MODELS):
+    ang = math.radians(-90 + i * 360 / len(MODELS))
+    mx, my = CX + R * math.cos(ang), CY + R * math.sin(ang)
+    px = CX - 260 + 60 + (means[i][0] - 55) / 40 * 400
+    py = CY - 200 + 30 + (1 - (means[i][1] - 3.8) / 1.4) * 330
+    hg = f"sat-{i}"
+
+    cv.line(px, py, mx, my, color=color, width=1.2, dash="2 5", hover_group=hg)
+
+    mini = sp.scatter(
+        "", x=[random.gauss(0, 1) for _ in range(30)],
+        y=[random.gauss(0, 1) for _ in range(30)],
+        labels=[name] * 30, groups=[name] * 30, palette=[int(color[1:], 16)],
+        width=150, height=110,
+    ).no_axes().no_title().hide_grid().no_legend().no_background().no_hover()
+    cv.place(mini, mx - 75, my - 55, 150, 110, group=hg)
+    cv.text(name, mx, my - 62, size=9, color=color, anchor="middle", weight="bold")
+
+chart = cv.build()
+```
+
+<iframe src="../previews/canvas-constellation.html" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe>
+
+The dataset for the live preview above is synthetic too — recreated from the
+same `ai_story` data-story project's `constellation.py`, whose original CSVs
+no longer exist. 14 architectures, not 6, and each satellite's event cloud is
+real per-model data (up to 60 events) rather than a Gaussian stand-in — the
+technique is identical, just with more rows and a second sidecar dataset
+joined in by `model_id`.
 
 ---
 
@@ -1368,7 +1446,7 @@ bubbles = sp.bubble(
 ).no_axes().no_background().gridlines(False)
 cv.place(bubbles, 20, 100, 280, 280, clip="circle", name="panel-bubbles")
 
-chart = cv.build()
+chart = cv.build().zoom()
 ```
 
 <iframe src="../previews/canvas-recitac.html" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe>
@@ -1381,6 +1459,11 @@ chart intégré la prend en compte automatiquement ; ajouter une story fait
 apparaître un nouveau nœud, un nouveau jeu de connecteurs, et un nouveau
 membre de groupe de survol au prochain `build()`.
 
+**`.zoom()`** sur le `Chart` construit (appelé ci-dessus,
+`cv.build().zoom()`) active le zoom molette/pincement et le glisser-déposer
+pour toute la composition — utile dès qu'un canvas est assez dense pour que
+survoler un hexagone ou un nœud individuel bénéficie d'un zoom préalable.
+
 **Une astuce pour les très grands canvas** : `chart` seul (ou
 `chart.show()`) dimensionne son `<iframe>` en ligne via `aspect-ratio` CSS,
 que certains frontends de notebook résolvent de façon peu fiable pour de
@@ -1391,6 +1474,81 @@ contourne ce problème en réservant une taille en pixels explicite dès le
 départ — le script interne de mise à l'échelle du canvas réduit alors la
 composition complète à cette taille, donc vous la voyez toujours en
 intégralité.
+
+---
+
+## Une constellation de vrais charts : satellites sur des lignes en pointillés
+
+Une forme de composition différente des anneaux et du réseau central de
+RéciTAC : un `sp.scatter()` central traçant la qualité moyenne de chaque
+modèle contre ses émissions moyennes, et un petit `sp.scatter()` satellite
+par modèle — son propre nuage d'événements bruts, réduit à de simples points
+via `no_axes()`/`no_title()`/`hide_grid()`/`no_legend()`/`no_background()` —
+disposés en anneau autour. Chaque satellite se relie à son point exact sur
+le graphique central par une `line()` en pointillés.
+
+Le lien satellite-point utilise `hover_group` directement sur `line()`/
+`circle()`/`place()` plutôt qu'un appel `link()` séparé : passez la même
+chaîne `hover_group="sat-3"` à chaque élément qui doit briller ensemble, et
+ils sont liés dès leur création — pas besoin de `name=` puis d'un appel
+`cv.link(...)` après coup. Les deux mécanismes aboutissent au même résultat ;
+`hover_group` est la version en une ligne quand vous connaissez le groupe
+dès la création.
+
+```python
+import math
+import random
+import seraplot as sp
+
+random.seed(3)
+MODELS = [("Titan-7B", "#6366f1"), ("Mixtral-Sparse", "#7c3aed"),
+          ("Codex-T5", "#0891b2"), ("VisionSpeak-VL", "#0ea5e9"),
+          ("DiffuGen-2", "#d97706"), ("BertCore", "#059669")]
+
+means = [(random.uniform(55, 95), random.uniform(3.8, 5.2)) for _ in MODELS]
+central = sp.scatter(
+    "Quality vs log(emissions)",
+    x=[m[0] for m in means], y=[m[1] for m in means],
+    labels=[name for name, _ in MODELS], groups=[name for name, _ in MODELS],
+    x_label="Quality score", y_label="log10 gCO2e", width=520, height=400,
+)
+
+CW = CH = 900
+CX = CY = 450
+R = 340
+cv = sp.Canvas(CW, CH, "#ffffff")
+cv.place(central, CX - 260, CY - 200, 520, 400)
+
+for i, (name, color) in enumerate(MODELS):
+    ang = math.radians(-90 + i * 360 / len(MODELS))
+    mx, my = CX + R * math.cos(ang), CY + R * math.sin(ang)
+    px = CX - 260 + 60 + (means[i][0] - 55) / 40 * 400
+    py = CY - 200 + 30 + (1 - (means[i][1] - 3.8) / 1.4) * 330
+    hg = f"sat-{i}"
+
+    cv.line(px, py, mx, my, color=color, width=1.2, dash="2 5", hover_group=hg)
+
+    mini = sp.scatter(
+        "", x=[random.gauss(0, 1) for _ in range(30)],
+        y=[random.gauss(0, 1) for _ in range(30)],
+        labels=[name] * 30, groups=[name] * 30, palette=[int(color[1:], 16)],
+        width=150, height=110,
+    ).no_axes().no_title().hide_grid().no_legend().no_background().no_hover()
+    cv.place(mini, mx - 75, my - 55, 150, 110, group=hg)
+    cv.text(name, mx, my - 62, size=9, color=color, anchor="middle", weight="bold")
+
+chart = cv.build()
+```
+
+<iframe src="../previews/canvas-constellation.html" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe>
+
+Le jeu de données de l'aperçu ci-dessus est également synthétique — recréé
+à partir du même projet de data-story `ai_story`, dont le fichier
+`constellation.py` référençait des CSV qui n'existent plus. 14
+architectures au lieu de 6, et le nuage d'événements de chaque satellite
+provient de vraies données par modèle (jusqu'à 60 événements) plutôt que
+d'une approximation gaussienne — la technique est identique, juste avec
+plus de lignes et un second jeu de données jointu par `model_id`.
 
 ---
 
