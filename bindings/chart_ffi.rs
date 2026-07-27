@@ -225,8 +225,7 @@ pub unsafe extern "C" fn sera_call(
 ) -> *mut c_char {
     let name = unsafe { CStr::from_ptr(name) }.to_str().unwrap_or("");
     let json = unsafe { CStr::from_ptr(json) }.to_str().unwrap_or("{}");
-    let resolved = crate::bindings::alias_registry::resolve(name);
-    let target = resolved.as_deref().unwrap_or(name);
+    let target = crate::bindings::alias_registry::resolve_call_target(name);
     for entry in crate::bindings::fn_registry::iter_entries() {
         if entry.name == target {
             let result = (entry.invoke)(json);

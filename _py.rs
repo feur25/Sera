@@ -73,8 +73,7 @@ fn py_any_to_json(v: &Bound<'_, PyAny>) -> serde_json::Value {
 
 #[pyfunction]
 fn _sera_call(name: &str, json: &str) -> PyResult<String> {
-    let resolved = crate::bindings::alias_registry::resolve(name);
-    let target = resolved.as_deref().unwrap_or(name);
+    let target = crate::bindings::alias_registry::resolve_call_target(name);
     for entry in crate::bindings::fn_registry::iter_entries() {
         if entry.name == target {
             return Ok((entry.invoke)(json));

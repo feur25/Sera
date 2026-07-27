@@ -74,6 +74,13 @@ pub fn resolve(name: &str) -> Option<String> {
     })
 }
 
+pub fn resolve_call_target(name: &str) -> String {
+    if let Some((_, target)) = crate::CHART_ALIAS_REGISTRY.iter().find(|(a, _)| *a == name) {
+        return (*target).to_string();
+    }
+    resolve(name).unwrap_or_else(|| name.to_string())
+}
+
 pub fn default_config_path() -> std::path::PathBuf {
     let home = std::env::var("USERPROFILE")
         .or_else(|_| std::env::var("HOME"))
