@@ -1,4 +1,4 @@
-window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260727q";
+window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260727r";
 (function () {
   var SELF_SRC = document.currentScript ? document.currentScript.src : "";
   var SP_WASM_BUILD = window.SP_WASM_BUILD;
@@ -991,7 +991,8 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260727q";
 
     function positionRail() {
       if (!document.body.contains(panel)) return;
-      var isBottom    = panel.classList.contains("sp-p-bottom");
+      var isMobile    = document.documentElement.clientWidth <= 640;
+      var isBottom    = panel.classList.contains("sp-p-bottom") || isMobile;
       var isCollapsed = panel.classList.contains("sp-p-collapsed");
       if (isCollapsed) { rail.style.display = "none"; return; }
       rail.style.display = "";
