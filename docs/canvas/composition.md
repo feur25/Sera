@@ -329,7 +329,7 @@ the same way.
 | Method | Effect |
 |--------|--------|
 | `arc(cx, cy, r, start_deg, end_deg, color="#ffffff", width=1.5, opacity=1, cap="round", layer="fg", name="")` | A stroked circular arc — spokes, progress rings, radial tick marks. |
-| `wedge(cx, cy, r_inner, r_outer, start_deg, end_deg, fill="#ffffff", stroke="none", stroke_width=0, opacity=1, layer="fg", name="")` | A filled donut segment; `r_inner=0` collapses it to a pie slice. The building block for radial bar charts — one wedge per bar, `r_outer` mapped to the value. |
+| `wedge(cx, cy, r_inner, r_outer, start_deg, end_deg, fill="#ffffff", stroke="none", stroke_width=0, opacity=1, layer="fg", group="", name="")` | A filled donut segment; `r_inner=0` collapses it to a pie slice. The building block for radial bar charts — one wedge per bar, `r_outer` mapped to the value. `group` (or a later `link()` call by `name`) makes it join a hover-glow group like `circle`/`rect`/`text` can. |
 | `ribbon(cx, cy, r, a_start, a_end, b_start, b_end, fill="#ffffff", opacity=0.7, layer="fg", name="")` | A curved band connecting two arc spans on the same circle through its center — chord-diagram-style links between categories. |
 | `polar(cx, cy, r, deg) -> (x, y)` | Pure coordinate math, no drawing — converts a radial position to `(x, y)` so you can place *any* other primitive (`text`, `circle`, `line`, a placed `Chart`) at a computed angle instead of hand-deriving trig every time. |
 | `radial_gradient(id, from_color, to_color, cx=0.5, cy=0.5, r=0.5)` | A radial counterpart to `gradient` — reference it the same way, `fill="url(#id)"`, for glows and center-out fades. |
@@ -461,80 +461,93 @@ chart = cv.build()
 ## Real-world composition: a RéciTAC-style network
 
 [RéciTAC](https://www.visualcinnamon.com/portfolio/recitac/) (Nadieh Bremer)
-is a d3.js/Canvas network diagram organizing a research program's projects,
-people, and outcomes into a central cluster flanked by two semi-circles —
-researchers' disciplines on one side, activities/outputs on the other —
-with small donut rings around each project node encoding the disciplinary
-mix of everyone connected to it. None of that needs a dedicated "network
-chart" type: it's `polar` for every node position, `wedge` stacked into a
-per-node donut, `connector` for the edges, and `link` so hovering a project
-highlights its whole neighborhood — the same primitives from every section
-above, composed around one idea.
+is a d3.js/Canvas network diagram organizing a research program's disciplines,
+universities, actions and impact outcomes around a dense central network of
+"stories" and "people". None of it needs a dedicated "network chart" type:
+`wedge`+`polar` build the outer capsule-segment rings, `polygon`+`rect` build
+the hexagon impact clusters and their pill-shaped outcome labels,
+`circle`/`rect(rotation=45)` place the story/people nodes, `connector` draws
+every curved edge, and `link()` ties related elements — a hexagon cluster and
+every story it touches, a university and its disciplines, an action's color
+segments — into shared hover-glow groups. Two real `sp.bar()`/`sp.radar()`
+charts get `place()`d straight into the canvas's empty corners, summarizing
+the same dataset the hand-drawn diagram encodes — composition isn't an
+alternative to SeraPlot's chart functions, it's a way to combine them with
+hand-drawn diagrams in one scene.
+
+The full, runnable version (with the synthetic dataset, the university/action
+hover groups, and both embedded charts) lives at
+[`notebook/canva/recitac_remake.ipynb`](https://github.com/feur25/Sera/blob/main/notebook/canva/recitac_remake.ipynb).
+The trimmed sketch below shows the core technique — outer ring, one hexagon
+cluster, a handful of hairball nodes:
 
 ```python
+import random
 import seraplot as sp
 
-DISCIPLINES = {"Climate": "#38bdf8", "Social": "#f472b6", "Engineering": "#a3e635", "Policy": "#fbbf24"}
-RESEARCHERS = [("Amara", "Climate"), ("Lian", "Climate"), ("Devi", "Social"),
-               ("Noah", "Social"), ("Jamal", "Engineering"), ("Elin", "Policy")]
-ACTIVITIES = ["Workshops", "Sensors", "Policy Brief", "Dataset", "Exhibition"]
-PROJECTS = [
-    ("Coastal Lab", [0, 1, 3, 5], [0, 1]),
-    ("Urban Heat", [1, 2, 4], [1, 3]),
-    ("Youth Climate", [2, 3, 5], [2, 4]),
-]
+def tangent_rot(angle):
+    r = (angle - 90) % 360
+    return r - 180 if 90 < r < 270 else r
 
-cx, cy = 450, 450
-cv = sp.Canvas(900, 900)
-cv.radial_gradient("bg", "#141b2e", "#05070d", cx=0.5, cy=0.46, r=0.75)
-cv.rect(0, 0, 900, 900, fill="url(#bg)", layer="bg")
+W = H = 1700
+CX = CY = W / 2
+DISCIPLINES = [("Social Science", "#f59e0b"), ("Health", "#16a34a"), ("Engineering", "#38bdf8")]
 
-left = [cv.polar(cx, cy, 340, 210 + i * 25) for i in range(len(RESEARCHERS))]
-right = [cv.polar(cx, cy, 340, 30 + i * 25) for i in range(len(ACTIVITIES))]
-proj_pos = [cv.polar(cx, cy, 150, i * 360 / len(PROJECTS)) for i in range(len(PROJECTS))]
+cv = sp.Canvas(W, H, "#ffffff")
+cv.radial_gradient("glow", "#fef9f0", "#ffffff", cx=0.5, cy=0.58, r=0.6)
+cv.circle(CX, CY, 640, fill="url(#glow)", layer="bg")
 
-for i, (name, disc) in enumerate(RESEARCHERS):
-    x, y = left[i]
-    cv.circle(x, y, 8, fill=DISCIPLINES[disc], stroke="#0b0e18", stroke_width=2, name=f"res{i}")
+R = 700
+span = 120 / len(DISCIPLINES)
+for i, (name, color) in enumerate(DISCIPLINES):
+    a0, a1 = 200 + i * span, 200 + (i + 1) * span - 3
+    cv.wedge(CX, CY, R - 9, R + 9, a0, a1, fill=color, name=f"disc-{i}")
+    lx, ly = cv.polar(CX, CY, R - 26, (a0 + a1) / 2)
+    cv.text(name, lx, ly, size=11, anchor="middle", rotation=tangent_rot((a0 + a1) / 2))
 
-for i, name in enumerate(ACTIVITIES):
-    x, y = right[i]
-    cv.rect(x - 6, y - 6, 12, 12, fill="#e2e8f0", rotation=45, name=f"act{i}")
+def hexagon(cx, cy, r):
+    return [list(cv.polar(cx, cy, r, k * 60)) for k in range(6)]
 
-for pi, (name, r_idx, a_idx) in enumerate(PROJECTS):
-    px, py = proj_pos[pi]
-    for ri in r_idx:
-        rx, ry = left[ri]
-        cv.connector(rx, ry, px, py, color=DISCIPLINES[RESEARCHERS[ri][1]], width=1.2, opacity=0.35, bend=0.2)
-    for ai in a_idx:
-        ax, ay = right[ai]
-        cv.connector(px, py, ax, ay, color="#64748b", width=1, opacity=0.3, bend=0.2)
+hx, hy = CX - 190, CY - 240
+cv.polygon(hexagon(hx, hy, 125), fill="#ecfdf5", stroke="#22c55e", stroke_width=2.5, name="hex-TRUST")
+cv.rect(hx - 60, hy - 20, 108, 52, fill="#22c55e", rx=14, name="outcome-TRUST-0")
+cv.text("Trust in\nreciprocity", hx - 6, hy + 6, size=10.5, color="#fff", anchor="middle")
 
-    counts = {}
-    for ri in r_idx:
-        counts[RESEARCHERS[ri][1]] = counts.get(RESEARCHERS[ri][1], 0) + 1
-    start = 0.0
-    for d, count in counts.items():
-        end = start + count / len(r_idx) * 360
-        cv.wedge(px, py, 34, 42, start, end, fill=DISCIPLINES[d])
-        start = end
-    cv.circle(px, py, 30, fill="#111827", stroke="#f8fafc", stroke_width=2, name=f"proj{pi}")
-    cv.text(name, px, py + 4, size=11, color="#f8fafc", weight="600", anchor="middle")
+stories = []
+for i in range(12):
+    ang, rad = random.uniform(0, 360), random.uniform(60, 300)
+    x, y = cv.polar(CX, CY, rad, ang)
+    color = random.choice(DISCIPLINES)[1]
+    cv.circle(x, y, 10, fill=color, stroke="#fff", stroke_width=1.5, name=f"story-{i}")
+    cv.connector(x, y, hx, hy, color=color, width=0.8, opacity=0.15, bend=0.3)
+    stories.append(f"story-{i}")
 
-    members = [f"proj{pi}"] + [f"res{ri}" for ri in r_idx] + [f"act{ai}" for ai in a_idx]
-    cv.link(f"cluster{pi}", members)
+cv.link("impact-TRUST", ["hex-TRUST", "outcome-TRUST-0"] + stories)
+
+bar = sp.bar(labels=[d for d, _ in DISCIPLINES], values=[4, 5, 3], title="Stories / Discipline") \
+    .width(260).height(190).palette([int(c.lstrip("#"), 16) for _, c in DISCIPLINES])
+cv.place(bar, 40, 120, 260, 190, name="panel-bar")
 
 chart = cv.build()
 ```
 
-<iframe src="../previews/canvas-recitac.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<iframe src="../previews/canvas-recitac.html" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe>
 
-The dataset above is synthetic — the point is the *composition pattern*, not
-a literal port of Nadieh's real research-program data (which comes from a
-private Google Sheet). Everything scales with the data: add a discipline to
-the dict and every donut ring picks it up automatically; add a researcher
-to a project's list and a new connector + donut slice appear on the next
-`build()`.
+The dataset is synthetic — the point is the *composition pattern*, not a
+literal port of Nadieh's real research-program data (which comes from a
+private Google Sheet). Everything scales with the data: add a discipline and
+every ring/legend/embedded chart picks it up automatically; add a story and a
+new node, a new set of connectors, and a new hover-group member appear on the
+next `build()`.
+
+**A tip for very large canvases**: `chart` on its own (or `chart.show()`)
+sizes its inline `<iframe>` via CSS `aspect-ratio`, which some notebook
+frontends resolve unreliably for big square canvases like this one (1700×1700),
+silently cropping the output instead of shrinking it to fit. `chart.save(path)`
+plus `IPython.display.IFrame(src=path, width=..., height=...)` sidesteps that
+by reserving an explicit pixel size upfront — the canvas's own internal
+viewport-fit script then scales the full composition down to whatever that
+turns out to be, so you always see it in full.
 
 ---
 
@@ -1132,7 +1145,7 @@ compositions radiales se lisent de la même façon.
 | Méthode | Effet |
 |--------|--------|
 | `arc(cx, cy, r, start_deg, end_deg, color="#ffffff", width=1.5, opacity=1, cap="round", layer="fg", name="")` | Un arc de cercle tracé — rayons, anneaux de progression, graduations radiales. |
-| `wedge(cx, cy, r_inner, r_outer, start_deg, end_deg, fill="#ffffff", stroke="none", stroke_width=0, opacity=1, layer="fg", name="")` | Un segment d'anneau rempli ; `r_inner=0` le réduit à une part de camembert. La brique de base des barres radiales — une wedge par barre, `r_outer` mappé sur la valeur. |
+| `wedge(cx, cy, r_inner, r_outer, start_deg, end_deg, fill="#ffffff", stroke="none", stroke_width=0, opacity=1, layer="fg", group="", name="")` | Un segment d'anneau rempli ; `r_inner=0` le réduit à une part de camembert. La brique de base des barres radiales — une wedge par barre, `r_outer` mappé sur la valeur. `group` (ou un appel `link()` ultérieur par `name`) le fait rejoindre un groupe de survol comme `circle`/`rect`/`text`. |
 | `ribbon(cx, cy, r, a_start, a_end, b_start, b_end, fill="#ffffff", opacity=0.7, layer="fg", name="")` | Une bande courbe reliant deux plages d'arc sur le même cercle en passant par son centre — liens façon chord diagram entre catégories. |
 | `polar(cx, cy, r, deg) -> (x, y)` | Du calcul de coordonnées pur, sans dessin — convertit une position radiale en `(x, y)` pour placer n'importe quelle autre primitive (`text`, `circle`, `line`, un `Chart` placé) à un angle calculé, sans refaire la trigonométrie à la main. |
 | `radial_gradient(id, from_color, to_color, cx=0.5, cy=0.5, r=0.5)` | Le pendant radial de `gradient` — se référence pareil, `fill="url(#id)"`, pour des lueurs et fondus centre-vers-bord. |
@@ -1267,82 +1280,100 @@ chart = cv.build()
 ## Composition réelle : un réseau façon RéciTAC
 
 [RéciTAC](https://www.visualcinnamon.com/portfolio/recitac/) (Nadieh Bremer)
-est un diagramme réseau d3.js/Canvas qui organise les projets, les
-personnes et les résultats d'un programme de recherche en un cluster
-central flanqué de deux demi-cercles — les disciplines des chercheurs d'un
-côté, les activités/résultats de l'autre — avec de petits anneaux donut
-autour de chaque nœud projet encodant le mix disciplinaire de tous ceux qui
-y sont connectés. Rien de tout cela ne nécessite un type "graphique réseau"
-dédié : c'est `polar` pour chaque position de nœud, `wedge` empilés en un
-donut par nœud, `connector` pour les arêtes, et `link` pour que survoler un
-projet mette en valeur tout son voisinage — les mêmes primitives que dans
-chaque section ci-dessus, composées autour d'une seule idée.
+est un diagramme réseau d3.js/Canvas qui organise les disciplines, les
+universités, les actions et les résultats d'impact d'un programme de
+recherche autour d'un réseau central dense de « stories » et de
+« personnes ». Rien de tout cela ne nécessite un type « graphique réseau »
+dédié : `wedge`+`polar` construisent les anneaux extérieurs en capsules,
+`polygon`+`rect` construisent les clusters hexagonaux d'impact et leurs
+étiquettes en pilule, `circle`/`rect(rotation=45)` placent les nœuds
+story/personne, `connector` trace chaque arête courbe, et `link()` relie
+les éléments connexes — un cluster hexagonal et chaque story qui le
+touche, une université et ses disciplines, les segments de couleur d'une
+action — en groupes de survol partagés. Deux vrais charts
+`sp.bar()`/`sp.radar()` sont `place()`és directement dans les coins vides
+du canvas, résumant le même jeu de données que le diagramme dessiné à la
+main encode — la composition n'est pas une alternative aux fonctions de
+chart de SeraPlot, c'est un moyen de les combiner avec des diagrammes
+dessinés à la main dans une seule scène.
+
+La version complète et exécutable (avec le jeu de données synthétique, les
+groupes de survol université/action, et les deux charts intégrés) se
+trouve dans
+[`notebook/canva/recitac_remake.ipynb`](https://github.com/feur25/Sera/blob/main/notebook/canva/recitac_remake.ipynb).
+L'esquisse simplifiée ci-dessous montre la technique de base — anneau
+extérieur, un cluster hexagonal, une poignée de nœuds du réseau central :
 
 ```python
+import random
 import seraplot as sp
 
-DISCIPLINES = {"Climate": "#38bdf8", "Social": "#f472b6", "Engineering": "#a3e635", "Policy": "#fbbf24"}
-RESEARCHERS = [("Amara", "Climate"), ("Lian", "Climate"), ("Devi", "Social"),
-               ("Noah", "Social"), ("Jamal", "Engineering"), ("Elin", "Policy")]
-ACTIVITIES = ["Workshops", "Sensors", "Policy Brief", "Dataset", "Exhibition"]
-PROJECTS = [
-    ("Coastal Lab", [0, 1, 3, 5], [0, 1]),
-    ("Urban Heat", [1, 2, 4], [1, 3]),
-    ("Youth Climate", [2, 3, 5], [2, 4]),
-]
+def tangent_rot(angle):
+    r = (angle - 90) % 360
+    return r - 180 if 90 < r < 270 else r
 
-cx, cy = 450, 450
-cv = sp.Canvas(900, 900)
-cv.radial_gradient("bg", "#141b2e", "#05070d", cx=0.5, cy=0.46, r=0.75)
-cv.rect(0, 0, 900, 900, fill="url(#bg)", layer="bg")
+W = H = 1700
+CX = CY = W / 2
+DISCIPLINES = [("Social Science", "#f59e0b"), ("Health", "#16a34a"), ("Engineering", "#38bdf8")]
 
-left = [cv.polar(cx, cy, 340, 210 + i * 25) for i in range(len(RESEARCHERS))]
-right = [cv.polar(cx, cy, 340, 30 + i * 25) for i in range(len(ACTIVITIES))]
-proj_pos = [cv.polar(cx, cy, 150, i * 360 / len(PROJECTS)) for i in range(len(PROJECTS))]
+cv = sp.Canvas(W, H, "#ffffff")
+cv.radial_gradient("glow", "#fef9f0", "#ffffff", cx=0.5, cy=0.58, r=0.6)
+cv.circle(CX, CY, 640, fill="url(#glow)", layer="bg")
 
-for i, (name, disc) in enumerate(RESEARCHERS):
-    x, y = left[i]
-    cv.circle(x, y, 8, fill=DISCIPLINES[disc], stroke="#0b0e18", stroke_width=2, name=f"res{i}")
+R = 700
+span = 120 / len(DISCIPLINES)
+for i, (name, color) in enumerate(DISCIPLINES):
+    a0, a1 = 200 + i * span, 200 + (i + 1) * span - 3
+    cv.wedge(CX, CY, R - 9, R + 9, a0, a1, fill=color, name=f"disc-{i}")
+    lx, ly = cv.polar(CX, CY, R - 26, (a0 + a1) / 2)
+    cv.text(name, lx, ly, size=11, anchor="middle", rotation=tangent_rot((a0 + a1) / 2))
 
-for i, name in enumerate(ACTIVITIES):
-    x, y = right[i]
-    cv.rect(x - 6, y - 6, 12, 12, fill="#e2e8f0", rotation=45, name=f"act{i}")
+def hexagon(cx, cy, r):
+    return [list(cv.polar(cx, cy, r, k * 60)) for k in range(6)]
 
-for pi, (name, r_idx, a_idx) in enumerate(PROJECTS):
-    px, py = proj_pos[pi]
-    for ri in r_idx:
-        rx, ry = left[ri]
-        cv.connector(rx, ry, px, py, color=DISCIPLINES[RESEARCHERS[ri][1]], width=1.2, opacity=0.35, bend=0.2)
-    for ai in a_idx:
-        ax, ay = right[ai]
-        cv.connector(px, py, ax, ay, color="#64748b", width=1, opacity=0.3, bend=0.2)
+hx, hy = CX - 190, CY - 240
+cv.polygon(hexagon(hx, hy, 125), fill="#ecfdf5", stroke="#22c55e", stroke_width=2.5, name="hex-TRUST")
+cv.rect(hx - 60, hy - 20, 108, 52, fill="#22c55e", rx=14, name="outcome-TRUST-0")
+cv.text("Trust in\nreciprocity", hx - 6, hy + 6, size=10.5, color="#fff", anchor="middle")
 
-    counts = {}
-    for ri in r_idx:
-        counts[RESEARCHERS[ri][1]] = counts.get(RESEARCHERS[ri][1], 0) + 1
-    start = 0.0
-    for d, count in counts.items():
-        end = start + count / len(r_idx) * 360
-        cv.wedge(px, py, 34, 42, start, end, fill=DISCIPLINES[d])
-        start = end
-    cv.circle(px, py, 30, fill="#111827", stroke="#f8fafc", stroke_width=2, name=f"proj{pi}")
-    cv.text(name, px, py + 4, size=11, color="#f8fafc", weight="600", anchor="middle")
+stories = []
+for i in range(12):
+    ang, rad = random.uniform(0, 360), random.uniform(60, 300)
+    x, y = cv.polar(CX, CY, rad, ang)
+    color = random.choice(DISCIPLINES)[1]
+    cv.circle(x, y, 10, fill=color, stroke="#fff", stroke_width=1.5, name=f"story-{i}")
+    cv.connector(x, y, hx, hy, color=color, width=0.8, opacity=0.15, bend=0.3)
+    stories.append(f"story-{i}")
 
-    members = [f"proj{pi}"] + [f"res{ri}" for ri in r_idx] + [f"act{ai}" for ai in a_idx]
-    cv.link(f"cluster{pi}", members)
+cv.link("impact-TRUST", ["hex-TRUST", "outcome-TRUST-0"] + stories)
+
+bar = sp.bar(labels=[d for d, _ in DISCIPLINES], values=[4, 5, 3], title="Stories / Discipline") \
+    .width(260).height(190).palette([int(c.lstrip("#"), 16) for _, c in DISCIPLINES])
+cv.place(bar, 40, 120, 260, 190, name="panel-bar")
 
 chart = cv.build()
 ```
 
-<iframe src="../previews/canvas-recitac.html" style="width:100%;height:520px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<iframe src="../previews/canvas-recitac.html" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe>
 
-Le jeu de données ci-dessus est synthétique — l'intérêt est le *motif de
+Le jeu de données est synthétique — l'intérêt est le *motif de
 composition*, pas un portage littéral des vraies données du programme de
 recherche de Nadieh (issues d'une feuille Google Sheets privée). Tout
-s'adapte aux données : ajouter une discipline au dict et chaque anneau
-donut la prend en compte automatiquement ; ajouter un chercheur à la liste
-d'un projet et un nouveau connecteur + une nouvelle part de donut
-apparaissent au prochain `build()`.
+s'adapte aux données : ajouter une discipline et chaque anneau/légende/
+chart intégré la prend en compte automatiquement ; ajouter une story fait
+apparaître un nouveau nœud, un nouveau jeu de connecteurs, et un nouveau
+membre de groupe de survol au prochain `build()`.
+
+**Une astuce pour les très grands canvas** : `chart` seul (ou
+`chart.show()`) dimensionne son `<iframe>` en ligne via `aspect-ratio` CSS,
+que certains frontends de notebook résolvent de façon peu fiable pour de
+grands canvas carrés comme celui-ci (1700×1700), rognant silencieusement
+le rendu au lieu de le réduire pour qu'il tienne. `chart.save(path)`
+combiné à `IPython.display.IFrame(src=path, width=..., height=...)`
+contourne ce problème en réservant une taille en pixels explicite dès le
+départ — le script interne de mise à l'échelle du canvas réduit alors la
+composition complète à cette taille, donc vous la voyez toujours en
+intégralité.
 
 ---
 

@@ -60,11 +60,6 @@ fn clip_half_plane(poly: &[(f64, f64)], a: f64, b: f64, c: f64) -> Vec<(f64, f64
     out
 }
 
-/// Bounded Voronoi diagram via iterative half-plane clipping: each site's
-/// cell starts as the bounding box and is cut down by the perpendicular
-/// bisector against every other site. O(n^2) per cell, O(n^3) total —
-/// fine at the tens-to-low-hundreds site counts these diagrams are drawn
-/// at, and far simpler to get right than a Fortune's-algorithm sweep line.
 fn voronoi_cells(sites: &[(f64, f64)], bx: f64, by: f64, bw: f64, bh: f64) -> Vec<Vec<(f64, f64)>> {
     let bbox = vec![(bx, by), (bx + bw, by), (bx + bw, by + bh), (bx, by + bh)];
     sites
@@ -390,6 +385,7 @@ enum El {
         sw: f64,
         opacity: f64,
         layer: Layer,
+        group: String,
         name: String,
     },
     Ribbon {
@@ -853,6 +849,7 @@ fn render_el(el: &El, defs: &mut String, body: &mut String) {
             stroke,
             sw,
             opacity,
+            group,
             name,
             ..
         } => {
@@ -873,9 +870,17 @@ fn render_el(el: &El, defs: &mut String, body: &mut String) {
                     ox1, oy1, r_outer, r_outer, large, ox2, oy2, ix1, iy1, r_inner, r_inner, large, ix2, iy2
                 )
             };
+            let (cls, pe) = if group.is_empty() {
+                (String::new(), String::new())
+            } else {
+                (
+                    " class=\"sp-wedge\"".to_string(),
+                    " pointer-events=\"all\"".to_string(),
+                )
+            };
             body.push_str(&format!(
-                "<path d=\"{}\" fill=\"{}\" stroke=\"{}\" stroke-width=\"{:.2}\" opacity=\"{:.4}\"{}/>\n",
-                d, fill, stroke, sw, opacity, name_attr(name)
+                "<path d=\"{}\" fill=\"{}\" stroke=\"{}\" stroke-width=\"{:.2}\" opacity=\"{:.4}\"{}{}{}{}/>\n",
+                d, fill, stroke, sw, opacity, cls, name_attr(name), grp_attr(group), pe
             ));
         }
 
@@ -1763,6 +1768,7 @@ impl Canvas {
                 El::Circle { group, .. } => Some(group),
                 El::Text { group, .. } => Some(group),
                 El::Rect { group, .. } => Some(group),
+                El::Wedge { group, .. } => Some(group),
                 _ => None,
             };
             if let Some(g) = target {
@@ -2344,7 +2350,7 @@ impl Canvas {
     }
 
     #[pyo3(signature = (cx, cy, r_inner, r_outer, start_deg, end_deg, fill = "#ffffff",
-                        stroke = "none", stroke_width = 0.0, opacity = 1.0, layer = "fg", name = ""))]
+                        stroke = "none", stroke_width = 0.0, opacity = 1.0, layer = "fg", group = "", name = ""))]
     pub fn wedge(
         &mut self,
         cx: f64,
@@ -2358,6 +2364,7 @@ impl Canvas {
         stroke_width: f64,
         opacity: f64,
         layer: &str,
+        group: &str,
         name: &str,
     ) -> usize {
         let element_idx = self.elements.len();
@@ -2374,6 +2381,7 @@ impl Canvas {
             sw: stroke_width,
             opacity,
             layer: Layer::from_str(layer),
+            group: group.to_string(),
             name: name.to_string(),
         });
         element_idx
@@ -2677,7 +2685,7 @@ impl Canvas {
                 "var aG=null;",
                 "function qL(g){return root.querySelectorAll('.sp-hvl[data-sp-grp=\"'+g+'\"]');}",
                 "function qA(g){return root.querySelectorAll('.sp-anch[data-sp-grp=\"'+g+'\"]');}",
-                "function qS(g){return root.querySelectorAll('div[data-sp-grp=\"'+g+'\"],rect[data-sp-grp=\"'+g+'\"],text[data-sp-grp=\"'+g+'\"]');}",
+                "function qS(g){return root.querySelectorAll('div[data-sp-grp=\"'+g+'\"],rect[data-sp-grp=\"'+g+'\"],text[data-sp-grp=\"'+g+'\"],path.sp-wedge[data-sp-grp=\"'+g+'\"]');}",
                 "function act(g){",
                   "if(aG===g)return;if(aG)deact(aG);aG=g;",
                   "qL(g).forEach(function(l){",
@@ -2710,7 +2718,7 @@ impl Canvas {
                   "});",
                   "qS(g).forEach(function(d){d.style.animation='';});",
                 "}",
-                "root.querySelectorAll('.sp-hvh,div[data-sp-grp],rect[data-sp-grp],text[data-sp-grp],circle.sp-anch[data-sp-grp]').forEach(function(hit){",
+                "root.querySelectorAll('.sp-hvh,div[data-sp-grp],rect[data-sp-grp],text[data-sp-grp],circle.sp-anch[data-sp-grp],path.sp-wedge[data-sp-grp]').forEach(function(hit){",
                   "var g=hit.getAttribute('data-sp-grp');if(!g)return;",
                   "hit.style.cursor='pointer';",
                   "hit.addEventListener('mouseenter',function(){act(g);});",
@@ -2991,7 +2999,7 @@ mod radial_tests {
         let pie_slice = El::Wedge {
             cx: 0.0, cy: 0.0, r_inner: 0.0, r_outer: 10.0, start_deg: 0.0, end_deg: 90.0,
             fill: "#fff".into(), stroke: "none".into(), sw: 0.0, opacity: 1.0,
-            layer: Layer::Fg, name: String::new(),
+            layer: Layer::Fg, group: String::new(), name: String::new(),
         };
         render_el(&pie_slice, &mut defs, &mut body);
         assert!(body.starts_with("<path d=\"M 0.00,0.00 L "));
@@ -3004,7 +3012,7 @@ mod radial_tests {
         let segment = El::Wedge {
             cx: 0.0, cy: 0.0, r_inner: 5.0, r_outer: 10.0, start_deg: 0.0, end_deg: 90.0,
             fill: "#fff".into(), stroke: "none".into(), sw: 0.0, opacity: 1.0,
-            layer: Layer::Fg, name: String::new(),
+            layer: Layer::Fg, group: String::new(), name: String::new(),
         };
         render_el(&segment, &mut defs, &mut body);
         assert!(body.contains(" Z\""));
