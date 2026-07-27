@@ -1,7 +1,7 @@
 use super::config::PieConfig;
 
 #[crate::chart_demo(
-    "labels=[\"Apple\",\"Banana\",\"Cherry\",\"Date\",\"Fig\"], values=[40,25,20,10,5]"
+    "labels=[\"North\",\"South\",\"East\",\"West\"], series=[[120,80,60,40],[35,25,15,10],[8,6,4,2]], series_names=[\"Region A\",\"Region B\",\"Region C\"], variant=\"proportional\""
 )]
 
 pub fn render(cfg: &PieConfig) -> String {
