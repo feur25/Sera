@@ -5,6 +5,10 @@ pub(crate) fn apply_despine(html: String) -> String {
     crate::html::hover::inject_before_head(&html, "<style>.sp-ax-x,.sp-ax-y{display:none!important}</style></head>")
 }
 
+pub(crate) fn apply_no_value(html: String) -> String {
+    crate::html::hover::inject_before_head(&html, "<style>.sp-val{display:none!important}</style></head>")
+}
+
 pub(crate) fn apply_watermark(html: String, text: &str, opacity: f64) -> String {
     let o = opacity.clamp(0.0, 1.0);
     let css = format!(

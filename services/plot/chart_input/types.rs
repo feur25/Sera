@@ -195,6 +195,7 @@ pub struct ChartOpts {
     pub edges_w: Option<Vec<f64>>,
     pub theme: Option<String>,
     pub despine: Option<bool>,
+    pub no_value: Option<bool>,
     pub watermark_text: Option<String>,
     pub watermark_opacity: Option<f64>,
     pub caption: Option<String>,

@@ -1671,6 +1671,17 @@ impl Chart {
 
     #[sera_doc(
         category = "chart_method",
+        aliases("hide_value", "no_values", "hide_values", "no_data_labels"),
+        file = "charts/chart.md",
+        en = "Hides every displayed value/percentage the chart draws on top of its marks — a pie slice's percentage, a bar's value label, a gauge's readout, a treemap tile's number, a heatmap cell's annotation, and so on — across any chart family, native and consistent everywhere. Same effect as passing `no_value=True` at chart creation.",
+        fr = "Masque toute valeur/pourcentage que le graphique affiche par-dessus ses marques — le pourcentage d'une part de pie, l'étiquette de valeur d'une barre, la lecture d'une gauge, le nombre d'une case de treemap, l'annotation d'une cellule de heatmap, etc. — quelle que soit la famille de graphique, natif et cohérent partout. Même effet que passer `no_value=True` à la création du graphique."
+    )]
+    pub fn no_value(&self) -> Chart {
+        self.propagate(apply_no_value(self.html.clone()))
+    }
+
+    #[sera_doc(
+        category = "chart_method",
         aliases("wm"),
         file = "charts/chart.md",
         en = "Overlays a large diagonal watermark text across the whole chart, for branding or draft marks.",

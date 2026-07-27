@@ -53,6 +53,13 @@ const KWARG_STEPS: &[KwargStep] = &[
             html
         }
     },
+    |html, o, _is3d| {
+        if o.no_value.unwrap_or(false) {
+            crate::apply_no_value(html)
+        } else {
+            html
+        }
+    },
     |html, o, _is3d| match &o.watermark_text {
         Some(t) => crate::apply_watermark(html, t, o.watermark_opacity.unwrap_or(0.08)),
         None => match crate::plot::utils::get_global_watermark() {
