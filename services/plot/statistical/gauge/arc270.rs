@@ -10,6 +10,11 @@ pub fn render(cfg: &GaugeConfig) -> String {
     let p = prepare_with(cfg, 0.55, 0.36);
     let mut b = Vec::<u8>::with_capacity(4096);
     open_svg(&mut b, cfg);
+    draw(&mut b, cfg, &p);
+    finalize(b, cfg)
+}
+
+pub fn draw(b: &mut Vec<u8>, cfg: &GaugeConfig, p: &super::common::Prepared) {
     let start_a: f64 = std::f64::consts::PI + std::f64::consts::PI / 4.0;
     let total = std::f64::consts::PI * 1.5;
     for i in 0..p.thresholds.len() {
@@ -22,7 +27,7 @@ pub fn render(cfg: &GaugeConfig) -> String {
         let a0 = start_a - f0 * total;
         let a1 = start_a - f1 * total;
         arc_path(
-            &mut b,
+            b,
             p.cx,
             p.cy,
             p.radius,
@@ -37,7 +42,7 @@ pub fn render(cfg: &GaugeConfig) -> String {
         let a_end = start_a - p.frac * total;
         let col = color_for(&p, p.frac);
         arc_path(
-            &mut b,
+            b,
             p.cx,
             p.cy,
             p.radius,
@@ -48,23 +53,22 @@ pub fn render(cfg: &GaugeConfig) -> String {
             1.0,
         );
     }
-    value_text(&mut b, cfg, p.cx, p.cy + 8.0, 30);
-    label_text(&mut b, cfg, p.cx, p.cy + 30.0);
-    push_b(&mut b, b"<text x=\"");
-    push_f2(&mut b, p.cx - p.radius * 0.78);
-    push_b(&mut b, b"\" y=\"");
-    push_f2(&mut b, p.cy + p.radius * 0.85);
-    push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#94a3b8\">");
+    value_text(b, cfg, p.cx, p.cy + 8.0, 30);
+    label_text(b, cfg, p.cx, p.cy + 30.0);
+    push_b(b, b"<text x=\"");
+    push_f2(b, p.cx - p.radius * 0.78);
+    push_b(b, b"\" y=\"");
+    push_f2(b, p.cy + p.radius * 0.85);
+    push_b(b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#94a3b8\">");
     let s = format!("{:.0}", cfg.min_val);
     b.extend_from_slice(s.as_bytes());
-    push_b(&mut b, b"</text>");
-    push_b(&mut b, b"<text x=\"");
-    push_f2(&mut b, p.cx + p.radius * 0.78);
-    push_b(&mut b, b"\" y=\"");
-    push_f2(&mut b, p.cy + p.radius * 0.85);
-    push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#94a3b8\">");
+    push_b(b, b"</text>");
+    push_b(b, b"<text x=\"");
+    push_f2(b, p.cx + p.radius * 0.78);
+    push_b(b, b"\" y=\"");
+    push_f2(b, p.cy + p.radius * 0.85);
+    push_b(b, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#94a3b8\">");
     let s = format!("{:.0}", cfg.max_val);
     b.extend_from_slice(s.as_bytes());
-    push_b(&mut b, b"</text>");
-    finalize(b, cfg)
+    push_b(b, b"</text>");
 }

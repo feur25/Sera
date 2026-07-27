@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-variant" id="gauge-en-sparkline">
 <div class="sp-vmeta"><span><strong>Variant</strong> <code>"sparkline"</code></span><span><strong>Aliases</strong> <code>sparkline / trend / history / with_trend</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Gauge + trend sparkline fusion: the same arc, needle and value readout, with a small line chart of recent history (<code>history</code> array) drawn beneath — the current reading in context, without needing a second chart.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Gauge + trend sparkline fusion: any other gauge style (arc, needle, value readout — pick it with <code>base_style</code>, e.g. <code>"tick"</code>, <code>"radial"</code>, <code>"glow"</code>...) with a bordered history panel drawn beneath: gradient-filled trend line, highlighted latest point, and an up/down delta badge comparing it to the start of the <code>history</code> array — the current reading in context, without needing a second chart.</p>
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/gauge-sparkline.html"></iframe>
@@ -232,7 +232,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-variant" id="gauge-fr-sparkline">
 <div class="sp-vmeta"><span><strong>Variante</strong> <code>"sparkline"</code></span><span><strong>Alias</strong> <code>sparkline / trend / history / with_trend</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
 
-<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fusion gauge + sparkline de tendance : le même arc, la même aiguille et la valeur affichée, avec un petit graphique en ligne de l'historique récent (tableau <code>history</code>) dessiné en dessous — la mesure actuelle mise en contexte, sans avoir besoin d'un second graphique.</p>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fusion gauge + sparkline de tendance : n'importe quel autre style de gauge (arc, aiguille, valeur affichée — choisi via <code>base_style</code>, ex. <code>"tick"</code>, <code>"radial"</code>, <code>"glow"</code>...) avec un panneau d'historique dessiné en dessous : ligne de tendance à remplissage dégradé, dernier point mis en évidence, et un badge de variation ▲/▼ comparant à l'écart au début du tableau <code>history</code> — la mesure actuelle mise en contexte, sans avoir besoin d'un second graphique.</p>
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/gauge-sparkline.html"></iframe>

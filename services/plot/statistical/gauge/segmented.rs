@@ -10,6 +10,11 @@ pub fn render(cfg: &GaugeConfig) -> String {
     let p = prepare(cfg);
     let mut b = Vec::<u8>::with_capacity(4096);
     open_svg(&mut b, cfg);
+    draw(&mut b, cfg, &p);
+    finalize(b, cfg)
+}
+
+pub fn draw(b: &mut Vec<u8>, cfg: &GaugeConfig, p: &super::common::Prepared) {
     let start_a: f64 = std::f64::consts::PI;
     let total = std::f64::consts::PI;
     let n_seg = 14;
@@ -28,30 +33,29 @@ pub fn render(cfg: &GaugeConfig) -> String {
         let y2 = p.cy - p.radius * a1.sin();
         let mid = (i as f64 + 0.5) / n_seg as f64;
         let on = mid <= p.frac;
-        push_b(&mut b, b"<path d=\"M ");
-        push_f2(&mut b, x1);
-        push_b(&mut b, b" ");
-        push_f2(&mut b, y1);
-        push_b(&mut b, b" A ");
-        push_f2(&mut b, p.radius);
-        push_b(&mut b, b" ");
-        push_f2(&mut b, p.radius);
-        push_b(&mut b, b" 0 0 1 ");
-        push_f2(&mut b, x2);
-        push_b(&mut b, b" ");
-        push_f2(&mut b, y2);
-        push_b(&mut b, b"\" fill=\"none\" stroke=\"#");
+        push_b(b, b"<path d=\"M ");
+        push_f2(b, x1);
+        push_b(b, b" ");
+        push_f2(b, y1);
+        push_b(b, b" A ");
+        push_f2(b, p.radius);
+        push_b(b, b" ");
+        push_f2(b, p.radius);
+        push_b(b, b" 0 0 1 ");
+        push_f2(b, x2);
+        push_b(b, b" ");
+        push_f2(b, y2);
+        push_b(b, b"\" fill=\"none\" stroke=\"#");
         if on {
             b.extend_from_slice(&hx_active);
         } else {
             b.extend_from_slice(&hx_off);
         }
-        push_b(&mut b, b"\" stroke-width=\"");
-        push_f2(&mut b, p.arc_w + 2.0);
-        push_b(&mut b, b"\" stroke-linecap=\"round\"/>");
+        push_b(b, b"\" stroke-width=\"");
+        push_f2(b, p.arc_w + 2.0);
+        push_b(b, b"\" stroke-linecap=\"round\"/>");
     }
-    value_text(&mut b, cfg, p.cx, p.cy + 30.0, 28);
-    label_text(&mut b, cfg, p.cx, p.cy + 50.0);
-    min_max_labels(&mut b, cfg, &p);
-    finalize(b, cfg)
+    value_text(b, cfg, p.cx, p.cy + 30.0, 28);
+    label_text(b, cfg, p.cx, p.cy + 50.0);
+    min_max_labels(b, cfg, &p);
 }

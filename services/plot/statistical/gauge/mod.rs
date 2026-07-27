@@ -44,6 +44,7 @@ pub fn build(input: &str) -> String {
     let comparison = o.comparison.unwrap_or(0.0);
     let lbl = o.label.as_deref().unwrap_or("").to_string();
     let history = o.history.clone().unwrap_or_default();
+    let base_style = o.base_style.clone().unwrap_or_else(|| "basic".to_string());
     let html = render_gauge_html(&GaugeConfig {
         variant,
         title,
@@ -53,6 +54,7 @@ pub fn build(input: &str) -> String {
         label: &lbl,
         comparison,
         history: &history,
+        base_style: &base_style,
         width: o.w(400),
         height: o.h(300),
         hover: &hover,

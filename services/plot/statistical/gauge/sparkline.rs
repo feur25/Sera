@@ -1,16 +1,17 @@
 use super::common::{color_for, finalize, open_svg, prepare_with};
 use super::config::GaugeConfig;
+use super::variant::GaugeVariant;
 use crate::plot::statistical::common::{hex6, lerp_rgb, push_b, push_f2};
 
 #[crate::chart_demo(
-    "value=72, min_val=0, max_val=100, label=\"Score\", history=[55,58,60,57,63,66,64,68,70,72], variant=\"sparkline\""
+    "value=72, min_val=0, max_val=100, label=\"Score\", history=[55,58,60,57,63,66,64,68,70,72], base_style=\"tick\", variant=\"sparkline\""
 )]
 
 pub fn render(cfg: &GaugeConfig) -> String {
     let p = prepare_with(cfg, 0.42, 0.27);
     let mut b = Vec::<u8>::with_capacity(4096);
     open_svg(&mut b, cfg);
-    super::basic::draw(&mut b, cfg, &p);
+    draw_base(&mut b, cfg, &p);
 
     let n = cfg.history.len();
     if n > 1 {
@@ -164,4 +165,17 @@ pub fn render(cfg: &GaugeConfig) -> String {
     }
 
     finalize(b, cfg)
+}
+
+fn draw_base(b: &mut Vec<u8>, cfg: &GaugeConfig, p: &super::common::Prepared) {
+    match GaugeVariant::from_str(cfg.base_style) {
+        GaugeVariant::Radial => super::radial::draw(b, cfg, p),
+        GaugeVariant::Arc270 => super::arc270::draw(b, cfg, p),
+        GaugeVariant::Sleek => super::sleek::draw(b, cfg, p),
+        GaugeVariant::Tick => super::tick::draw(b, cfg, p),
+        GaugeVariant::Segmented => super::segmented::draw(b, cfg, p),
+        GaugeVariant::Glow => super::glow::draw(b, cfg, p),
+        GaugeVariant::Concentric => super::concentric::draw(b, cfg, p),
+        GaugeVariant::Basic | GaugeVariant::Sparkline => super::basic::draw(b, cfg, p),
+    }
 }
