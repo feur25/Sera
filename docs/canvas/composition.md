@@ -659,37 +659,76 @@ joined in by `model_id`.
 
 `place()` embeds a full `Chart` — not just a primitive — inside a canvas,
 which means canvas composition isn't limited to hand-drawn shapes: real
-`sp.line()`, `sp.bar()`, `sp.gauge()`, `sp.area()` panels can sit framed,
-connected, and annotated by the exact same primitives used everywhere else
-on this page. The part that actually sells "dashboard" over "four charts
-in boxes" is the same trick as the RéciTAC network above: a **shared
-center every panel connects to**. One glowing hub, four color-matched
-spokes (`connector` + a `circle` anchor at each end), each spoke tinted to
-match the panel it comes from via the chart-level chainable methods
-(`palette()`, `gridlines()`, `width()`/`height()` — see
+`sp.line()`, `sp.bar()`, `sp.gauge()`, `sp.area()`, `sp.donut()`,
+`sp.barh()` panels can sit framed, connected, and annotated by the exact
+same primitives used everywhere else on this page. The part that actually
+sells "dashboard" over "charts in boxes" is the same trick as the RéciTAC
+network above: a **shared center every core panel connects to**. One
+glowing hub, four color-matched spokes (`connector` + a `circle` anchor at
+each end), each spoke tinted to match the panel it comes from via the
+chart-level chainable methods (`palette()`, `gridlines()`,
+`width()`/`height()`, `title_color()` — see
 [Chart Methods](../getting-started/chart-methods.md)) applied before
-`place()`:
+`place()`. Beyond the four hub panels, a KPI ribbon with its own inline
+`sp.line()` sparklines sits above the grid, two more real charts flank it
+on the right on a subtler `hover_group`-linked connection, and a full-width
+throughput panel closes the composition at the bottom:
 
 ```python
+import random
 import seraplot as sp
 
-W, H = 1500, 1000
-HX, HY, HR = 750, 500, 76
+random.seed(3)
 
+W, H = 1950, 1380
 cv = sp.Canvas(W, H)
-cv.radial_gradient("dashBg", "#1a2140", "#04050a", cx=0.5, cy=0.5, r=0.9)
+
+cv.radial_gradient("dashBg", "#1a2140", "#04050a", cx=0.5, cy=0.42, r=1.0)
 cv.rect(0, 0, W, H, fill="url(#dashBg)", layer="bg")
 cv.radial_gradient("hubGlow", "#22d3ee", "#04050a", cx=0.5, cy=0.5, r=0.5)
 
-cv.text("Mission Control", 48, 54, size=27, color="#f8fafc", weight="800")
+cv.text("Mission Control", 48, 56, size=30, color="#f8fafc", weight="800")
 cv.text("Every panel wired into one live hub — sp.Canvas place() + connectors + real SeraPlot charts",
-         48, 80, size=13, color="#64748b")
+         48, 84, size=13, color="#64748b")
+
+cv.text("updated 2s ago", W - 60, 50, size=11, color="#475569", anchor="end")
+cv.circle(W - 260, 47, 5, fill="#22c55e", name="live-dot")
+cv.circle(W - 260, 47, 5, fill="none", stroke="#22c55e", stroke_width=1.5, opacity=0.6, name="live-pulse")
+cv.text("LIVE", W - 246, 52, size=12, color="#22c55e", weight="700", letter_spacing=1.5)
+
+KPI = [
+    ("ACTIVE USERS", "12,940", "+6.1%", "#6366f1", [820, 860, 901, 934, 990, 1120, 1180, 1290, 1330, 1320]),
+    ("MRR", "$184.2k", "+3.4%", "#22d3ee", [140, 148, 152, 149, 158, 165, 170, 176, 180, 184]),
+    ("UPTIME", "99.982%", "+0.02%", "#f59e0b", [99.9, 99.91, 99.95, 99.93, 99.96, 99.97, 99.98, 99.97, 99.98, 99.982]),
+    ("OPEN INCIDENTS", "5", "-2 today", "#f472b6", [9, 8, 8, 7, 6, 7, 6, 6, 5, 5]),
+]
+KPI_Y = 118
+KPI_W, KPI_H = 340, 92
+for i, (label, value, delta, color, series) in enumerate(KPI):
+    kx = 48 + i * (KPI_W + 20)
+    cv.rect(kx, KPI_Y, KPI_W, KPI_H, fill="#0b1022", stroke="rgba(255,255,255,.07)",
+            stroke_width=1, rx=14, layer="bg", name=f"kpi-{i}")
+    cv.rect(kx, KPI_Y, 4, KPI_H, fill=color, rx=2, layer="bg")
+    cv.text(label, kx + 20, KPI_Y + 26, size=10.5, color="#64748b", weight="700", letter_spacing=1.2)
+    cv.text(value, kx + 20, KPI_Y + 58, size=24, color="#f8fafc", weight="800")
+    cv.text(delta, kx + 20, KPI_Y + 78, size=11.5, color=color, weight="600")
+
+    spark = sp.line(labels=[str(j) for j in range(len(series))], values=series,
+                     color_hex=int(color.lstrip("#"), 16), width=150, height=64) \
+        .no_axes().no_title().hide_grid().no_legend().no_background().no_hover()
+    cv.place(spark, kx + KPI_W - 168, KPI_Y + 16, 150, 64, name=f"kpi-spark-{i}")
+
+GRID_Y0 = 250
+PW, PH = 660, 320
+GAP_X, GAP_Y = 100, 80
+COL0, COL1 = 60, 60 + PW + GAP_X
+ROW0, ROW1 = GRID_Y0, GRID_Y0 + PH + GAP_Y
+HX, HY, HR = (COL0 + PW + GAP_X / 2), (ROW0 + PH + GAP_Y / 2), 92
 
 PALETTE = [0x6366f1, 0x22d3ee, 0xf59e0b, 0xf472b6]
 HEX = [f"#{c:06x}" for c in PALETTE]
-PW, PH = 600, 300
-PANELS = [("trend", 60, 150, HEX[0]), ("revenue", 840, 150, HEX[1]),
-          ("health", 60, 590, HEX[2]), ("incidents", 840, 590, HEX[3])]
+PANELS = [("trend", COL0, ROW0, HEX[0]), ("revenue", COL1, ROW0, HEX[1]),
+          ("health", COL0, ROW1, HEX[2]), ("incidents", COL1, ROW1, HEX[3])]
 
 def panel_frame(x, y, w, h, color, name):
     cv.rect(x - 16, y - 16, w + 32, h + 32, fill="#0b1022", stroke="rgba(255,255,255,.06)",
@@ -699,26 +738,33 @@ def panel_frame(x, y, w, h, color, name):
 for name, x, y, color in PANELS:
     panel_frame(x, y, PW, PH, color, f"panel-{name}")
 
-trend = sp.line(labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-                  values=[820, 932, 901, 934, 1290, 1330, 1320], title="Weekly Active Users",
+trend = sp.line(labels=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                 values=[820, 932, 901, 934, 1290, 1330, 1320],
                  ).width(PW).height(PH).palette(PALETTE).gridlines(False).background("#0b1022")
 
-revenue = sp.bar(labels=["Core","Cloud","API","Mobile","Support"],
-                   values=[420, 680, 310, 240, 150], title="Revenue by Segment",
-                  ).width(PW).height(PH).palette(PALETTE).gridlines(False).background("#0b1022")
+revenue = sp.bar(labels=["Core", "Cloud", "API", "Mobile", "Support"],
+                  values=[420, 680, 310, 240, 150], title="Revenue by Segment",
+                  ).width(PW).height(PH).palette(PALETTE).gridlines(False).background("#0b1022").title_color("#e2e8f0")
 
-health = sp.gauge(value=87, title="System Health").width(PW).height(PH).background("#0b1022")
+health = sp.gauge(value=87).width(PW).height(PH).background("#0b1022")
 
-incidents = sp.area(labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], values=[5, 3, 6, 2, 4, 1, 2],
-                      title="Open Incidents",
-                     ).width(PW).height(PH).palette([PALETTE[3]]).gridlines(False).background("#0b1022")
+incidents = sp.area(labels=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], values=[5, 3, 6, 2, 4, 1, 2],
+                     title="Open Incidents",
+                     ).width(PW).height(PH).palette([PALETTE[3]]).gridlines(False).background("#0b1022").title_color("#e2e8f0")
 
-cv.place(trend, 60, 150, PW, PH, name="chart-trend")
-cv.place(revenue, 840, 150, PW, PH, name="chart-revenue")
-cv.place(health, 60, 590, PW, PH, name="chart-health")
-cv.place(incidents, 840, 590, PW, PH, name="chart-incidents")
+cv.place(trend, COL0, ROW0, PW, PH, name="chart-trend")
+cv.place(revenue, COL1, ROW0, PW, PH, name="chart-revenue")
+cv.place(health, COL0, ROW1, PW, PH, name="chart-health")
+cv.place(incidents, COL1, ROW1, PW, PH, name="chart-incidents")
+cv.text("Weekly Active Users", COL0 + 20, ROW0 + 26, size=13, color="#e2e8f0", weight="700")
+cv.text("System Health", COL0 + 20, ROW1 + 26, size=13, color="#e2e8f0", weight="700")
 
-ANCHORS = {"trend": (660, 300), "revenue": (840, 300), "health": (660, 700), "incidents": (840, 700)}
+ANCHORS = {
+    "trend": (COL0 + PW, ROW0 + PH / 2),
+    "revenue": (COL1, ROW0 + PH / 2),
+    "health": (COL0 + PW, ROW1 + PH / 2),
+    "incidents": (COL1, ROW1 + PH / 2),
+}
 for name, x, y, color in PANELS:
     ax, ay = ANCHORS[name]
     cv.connector(ax, ay, HX, HY, color=color, width=2, opacity=0.55, bend=0.28, name=f"spoke-{name}")
@@ -741,15 +787,53 @@ cv.text("SYSTEM SCORE", HX, HY + 22, size=10, color="#64748b", anchor="middle", 
 
 cv.link("hub-cluster", ["anchor-trend", "anchor-revenue", "anchor-health", "anchor-incidents"])
 
-cv.annotate("Trending up 61% since Monday", 250, 320, 250, 500, color="#94a3b8", size=12,
-             line_dash="4,3", bg="#0b1022")
-cv.annotate("5 open, 2 critical", 1050, 660, 1150, 500, color="#94a3b8", size=12,
-             line_dash="4,3", bg="#0b1022")
+cv.annotate("Trending up 61% since Monday", COL0 + 190, ROW0 + 170, COL0 + 40, ROW0 + PH + 55,
+            color="#94a3b8", size=12, line_dash="4,3", bg="#0b1022")
+cv.annotate("5 open, 2 critical", COL1 + 460, ROW1 + 90, COL1 + 40, ROW1 + PH + 55,
+            color="#94a3b8", size=12, line_dash="4,3", bg="#0b1022")
+
+SIDE_X = COL1 + PW + GAP_X
+SIDE_W = W - SIDE_X - 60
+panel_frame(SIDE_X, ROW0, SIDE_W, PH, "#a78bfa", "panel-region")
+panel_frame(SIDE_X, ROW1, SIDE_W, PH, "#34d399", "panel-latency")
+
+region = sp.donut(labels=["NA", "EU", "APAC", "LATAM"], values=[40, 28, 20, 12],
+                   title="Regional Split", width=SIDE_W, height=PH,
+                   palette=[0x6366f1, 0x22d3ee, 0xf59e0b, 0xf472b6]) \
+    .background("#0b1022").title_color("#e2e8f0")
+
+latency = sp.barh(labels=["p50", "p90", "p95", "p99"], values=[42, 118, 210, 480],
+                   title="Latency (ms)", width=SIDE_W, height=PH,
+                   palette=[0x34d399]) \
+    .gridlines(False).background("#0b1022").title_color("#e2e8f0")
+
+cv.place(region, SIDE_X, ROW0, SIDE_W, PH, group="side-link", name="panel-region-chart")
+cv.place(latency, SIDE_X, ROW1, SIDE_W, PH, group="side-link", name="panel-latency-chart")
+
+SIDE_LINK = [(ROW0, "#a78bfa"), (ROW1, "#34d399")]
+for row_y, color in SIDE_LINK:
+    ax, ay = COL1 + PW, row_y + PH / 2
+    bx, by = SIDE_X, row_y + PH / 2
+    cv.line(ax, ay, bx, by, color="#94a3b8", width=1, dash="2 5", hover_group="side-link")
+    cv.circle(ax, ay, 5, fill=color, stroke="#04050a", stroke_width=2)
+    cv.circle(bx, by, 5, fill=color, stroke="#04050a", stroke_width=2)
+
+STRIP_Y = ROW1 + PH + GAP_Y
+STRIP_H = H - STRIP_Y - 60
+panel_frame(60, STRIP_Y, W - 120, STRIP_H, "#22d3ee", "panel-throughput")
+
+hours = [f"{h:02d}:00" for h in range(0, 24, 2)]
+throughput = [random.randint(800, 2600) for _ in hours]
+throughput_chart = sp.bar(labels=hours, values=throughput, title="Requests/sec — last 24h",
+                           width=W - 120, height=STRIP_H,
+                           color_hex=0x22d3ee) \
+    .gridlines(False).background("#0b1022").title_color("#e2e8f0")
+cv.place(throughput_chart, 60, STRIP_Y, W - 120, STRIP_H, name="panel-throughput-chart")
 
 chart = cv.build()
 ```
 
-<iframe src="../previews/canvas-dashboard.html" style="width:100%;height:680px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<div class="sp-preview-frame"><iframe src="../previews/canvas-dashboard.html?v=0e335555" style="width:100%;height:680px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe></div>
 
 The hub itself is a small radial gauge in disguise — four `wedge` slices
 (one per panel, in that panel's color) inside two `ring` pulse tracks,
@@ -770,6 +854,27 @@ design (so connectors and callouts can cross over them), which will
 silently hide a panel's contents if the panel itself is drawn on the
 foreground layer.
 
+Two things needed fixing to get here from the original four-panel
+version. First, `title_color()`: `sp.bar()`/`sp.area()`/`sp.donut()`
+happily took an explicit title color, but `sp.line()`/`sp.gauge()`
+rendered their title in a barely visible default shade regardless —
+worked around by skipping the chart's own `title=` entirely for those two
+and drawing the panel name as a plain `cv.text()` at the same position
+instead, which also matches the KPI tiles' hand-drawn labels. Second, a
+chart's own y-axis tick generator reserves space proportional to the
+plot's own *requested* pixel size, not its `place()`d footprint — the
+bottom throughput strip's tick labels overlapped badly until its
+`sp.bar()` was requested at the strip's full native size (`width=W-120,
+height=STRIP_H`) rather than an undersized box meant to be stretched.
+
+The two right-hand panels (`Regional Split`, `Latency (ms)`) aren't wired
+into the hub — a fifth and sixth spoke would have overloaded the one
+visual idea the hub is supposed to communicate — but they're not
+orphaned either: a single `hover_group="side-link"` on both panels and
+their connecting line links them exactly like the RéciTAC satellites, so
+hovering either panel dims everything outside that pair via the same
+`Canvas`-level dim-the-rest hover behavior described above.
+
 ---
 
 ## Organic layouts: Voronoi
@@ -778,10 +883,7 @@ foreground layer.
 computes a bounded Voronoi diagram — one cell per site, each cell the region
 closer to that site than to any other — and adds every cell to the canvas as
 a `polygon()` in one call, returning their element indices for later
-addressing (hover groups, `derive()`, etc.). This is the same organic,
-cell-based layout technique behind editorial data-journalism pieces like
-[Nadieh Bremer's Highly Hazardous Pesticides](https://www.visualcinnamon.com/portfolio/highly-hazardous-pesticides/)
-— no off-the-shelf "voronoi chart type" needed, just the primitive.
+addressing (hover groups, `derive()`, etc.).
 
 ```python
 import random
@@ -1594,37 +1696,77 @@ plus de lignes et un second jeu de données jointu par `model_id`.
 `place()` intègre un `Chart` complet — pas seulement une primitive — dans
 un canvas, ce qui signifie que la composition canvas ne se limite pas aux
 formes dessinées à la main : de vrais panneaux `sp.line()`, `sp.bar()`,
-`sp.gauge()`, `sp.area()` peuvent être encadrés, connectés et annotés par
-les mêmes primitives que partout ailleurs sur cette page. Ce qui fait
-vraiment la différence entre "tableau de bord" et "quatre charts dans des
-boîtes", c'est la même astuce que le réseau RéciTAC ci-dessus : un
-**centre partagé auquel chaque panneau se connecte**. Un hub lumineux, 4
-rayons colorés (`connector` + une ancre `circle` à chaque bout), chaque
-rayon teinté pour correspondre à son panneau via les méthodes chainables
-de niveau chart (`palette()`, `gridlines()`, `width()`/`height()` — voir
+`sp.gauge()`, `sp.area()`, `sp.donut()`, `sp.barh()` peuvent être encadrés,
+connectés et annotés par les mêmes primitives que partout ailleurs sur
+cette page. Ce qui fait vraiment la différence entre "tableau de bord" et
+"charts dans des boîtes", c'est la même astuce que le réseau RéciTAC
+ci-dessus : un **centre partagé auquel chaque panneau central se
+connecte**. Un hub lumineux, 4 rayons colorés (`connector` + une ancre
+`circle` à chaque bout), chaque rayon teinté pour correspondre à son
+panneau via les méthodes chainables de niveau chart (`palette()`,
+`gridlines()`, `width()`/`height()`, `title_color()` — voir
 [Méthodes de graphique](../getting-started/chart-methods.md)) appliquées
-avant `place()` :
+avant `place()`. Au-delà des quatre panneaux du hub, un ruban de KPI avec
+ses propres mini-graphiques `sp.line()` en ligne surplombe la grille, deux
+vrais charts supplémentaires l'encadrent à droite via une connexion plus
+subtile en `hover_group`, et un panneau de débit pleine largeur referme la
+composition en bas :
 
 ```python
+import random
 import seraplot as sp
 
-W, H = 1500, 1000
-HX, HY, HR = 750, 500, 76
+random.seed(3)
 
+W, H = 1950, 1380
 cv = sp.Canvas(W, H)
-cv.radial_gradient("dashBg", "#1a2140", "#04050a", cx=0.5, cy=0.5, r=0.9)
+
+cv.radial_gradient("dashBg", "#1a2140", "#04050a", cx=0.5, cy=0.42, r=1.0)
 cv.rect(0, 0, W, H, fill="url(#dashBg)", layer="bg")
 cv.radial_gradient("hubGlow", "#22d3ee", "#04050a", cx=0.5, cy=0.5, r=0.5)
 
-cv.text("Mission Control", 48, 54, size=27, color="#f8fafc", weight="800")
+cv.text("Mission Control", 48, 56, size=30, color="#f8fafc", weight="800")
 cv.text("Chaque panneau relié à un seul hub vivant — sp.Canvas place() + connecteurs + de vrais charts SeraPlot",
-         48, 80, size=13, color="#64748b")
+         48, 84, size=13, color="#64748b")
+
+cv.text("mis à jour il y a 2s", W - 60, 50, size=11, color="#475569", anchor="end")
+cv.circle(W - 260, 47, 5, fill="#22c55e", name="live-dot")
+cv.circle(W - 260, 47, 5, fill="none", stroke="#22c55e", stroke_width=1.5, opacity=0.6, name="live-pulse")
+cv.text("LIVE", W - 246, 52, size=12, color="#22c55e", weight="700", letter_spacing=1.5)
+
+KPI = [
+    ("UTILISATEURS ACTIFS", "12 940", "+6.1%", "#6366f1", [820, 860, 901, 934, 990, 1120, 1180, 1290, 1330, 1320]),
+    ("MRR", "184.2k $", "+3.4%", "#22d3ee", [140, 148, 152, 149, 158, 165, 170, 176, 180, 184]),
+    ("DISPONIBILITÉ", "99.982%", "+0.02%", "#f59e0b", [99.9, 99.91, 99.95, 99.93, 99.96, 99.97, 99.98, 99.97, 99.98, 99.982]),
+    ("INCIDENTS OUVERTS", "5", "-2 aujourd'hui", "#f472b6", [9, 8, 8, 7, 6, 7, 6, 6, 5, 5]),
+]
+KPI_Y = 118
+KPI_W, KPI_H = 340, 92
+for i, (label, value, delta, color, series) in enumerate(KPI):
+    kx = 48 + i * (KPI_W + 20)
+    cv.rect(kx, KPI_Y, KPI_W, KPI_H, fill="#0b1022", stroke="rgba(255,255,255,.07)",
+            stroke_width=1, rx=14, layer="bg", name=f"kpi-{i}")
+    cv.rect(kx, KPI_Y, 4, KPI_H, fill=color, rx=2, layer="bg")
+    cv.text(label, kx + 20, KPI_Y + 26, size=10.5, color="#64748b", weight="700", letter_spacing=1.2)
+    cv.text(value, kx + 20, KPI_Y + 58, size=24, color="#f8fafc", weight="800")
+    cv.text(delta, kx + 20, KPI_Y + 78, size=11.5, color=color, weight="600")
+
+    spark = sp.line(labels=[str(j) for j in range(len(series))], values=series,
+                     color_hex=int(color.lstrip("#"), 16), width=150, height=64) \
+        .no_axes().no_title().hide_grid().no_legend().no_background().no_hover()
+    cv.place(spark, kx + KPI_W - 168, KPI_Y + 16, 150, 64, name=f"kpi-spark-{i}")
+
+GRID_Y0 = 250
+PW, PH = 660, 320
+GAP_X, GAP_Y = 100, 80
+COL0, COL1 = 60, 60 + PW + GAP_X
+ROW0, ROW1 = GRID_Y0, GRID_Y0 + PH + GAP_Y
+HX, HY, HR = (COL0 + PW + GAP_X / 2), (ROW0 + PH + GAP_Y / 2), 92
 
 PALETTE = [0x6366f1, 0x22d3ee, 0xf59e0b, 0xf472b6]
 HEX = [f"#{c:06x}" for c in PALETTE]
-PW, PH = 600, 300
-PANELS = [("trend", 60, 150, HEX[0]), ("revenue", 840, 150, HEX[1]),
-          ("health", 60, 590, HEX[2]), ("incidents", 840, 590, HEX[3])]
+PANELS = [("trend", COL0, ROW0, HEX[0]), ("revenue", COL1, ROW0, HEX[1]),
+          ("health", COL0, ROW1, HEX[2]), ("incidents", COL1, ROW1, HEX[3])]
 
 def panel_frame(x, y, w, h, color, name):
     cv.rect(x - 16, y - 16, w + 32, h + 32, fill="#0b1022", stroke="rgba(255,255,255,.06)",
@@ -1634,26 +1776,33 @@ def panel_frame(x, y, w, h, color, name):
 for name, x, y, color in PANELS:
     panel_frame(x, y, PW, PH, color, f"panel-{name}")
 
-trend = sp.line(labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
-                  values=[820, 932, 901, 934, 1290, 1330, 1320], title="Weekly Active Users",
+trend = sp.line(labels=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+                 values=[820, 932, 901, 934, 1290, 1330, 1320],
                  ).width(PW).height(PH).palette(PALETTE).gridlines(False).background("#0b1022")
 
-revenue = sp.bar(labels=["Core","Cloud","API","Mobile","Support"],
-                   values=[420, 680, 310, 240, 150], title="Revenue by Segment",
-                  ).width(PW).height(PH).palette(PALETTE).gridlines(False).background("#0b1022")
+revenue = sp.bar(labels=["Core", "Cloud", "API", "Mobile", "Support"],
+                  values=[420, 680, 310, 240, 150], title="Revenue by Segment",
+                  ).width(PW).height(PH).palette(PALETTE).gridlines(False).background("#0b1022").title_color("#e2e8f0")
 
-health = sp.gauge(value=87, title="System Health").width(PW).height(PH).background("#0b1022")
+health = sp.gauge(value=87).width(PW).height(PH).background("#0b1022")
 
-incidents = sp.area(labels=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"], values=[5, 3, 6, 2, 4, 1, 2],
-                      title="Open Incidents",
-                     ).width(PW).height(PH).palette([PALETTE[3]]).gridlines(False).background("#0b1022")
+incidents = sp.area(labels=["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"], values=[5, 3, 6, 2, 4, 1, 2],
+                     title="Open Incidents",
+                     ).width(PW).height(PH).palette([PALETTE[3]]).gridlines(False).background("#0b1022").title_color("#e2e8f0")
 
-cv.place(trend, 60, 150, PW, PH, name="chart-trend")
-cv.place(revenue, 840, 150, PW, PH, name="chart-revenue")
-cv.place(health, 60, 590, PW, PH, name="chart-health")
-cv.place(incidents, 840, 590, PW, PH, name="chart-incidents")
+cv.place(trend, COL0, ROW0, PW, PH, name="chart-trend")
+cv.place(revenue, COL1, ROW0, PW, PH, name="chart-revenue")
+cv.place(health, COL0, ROW1, PW, PH, name="chart-health")
+cv.place(incidents, COL1, ROW1, PW, PH, name="chart-incidents")
+cv.text("Weekly Active Users", COL0 + 20, ROW0 + 26, size=13, color="#e2e8f0", weight="700")
+cv.text("System Health", COL0 + 20, ROW1 + 26, size=13, color="#e2e8f0", weight="700")
 
-ANCHORS = {"trend": (660, 300), "revenue": (840, 300), "health": (660, 700), "incidents": (840, 700)}
+ANCHORS = {
+    "trend": (COL0 + PW, ROW0 + PH / 2),
+    "revenue": (COL1, ROW0 + PH / 2),
+    "health": (COL0 + PW, ROW1 + PH / 2),
+    "incidents": (COL1, ROW1 + PH / 2),
+}
 for name, x, y, color in PANELS:
     ax, ay = ANCHORS[name]
     cv.connector(ax, ay, HX, HY, color=color, width=2, opacity=0.55, bend=0.28, name=f"spoke-{name}")
@@ -1676,15 +1825,53 @@ cv.text("SYSTEM SCORE", HX, HY + 22, size=10, color="#64748b", anchor="middle", 
 
 cv.link("hub-cluster", ["anchor-trend", "anchor-revenue", "anchor-health", "anchor-incidents"])
 
-cv.annotate("Trending up 61% since Monday", 250, 320, 250, 500, color="#94a3b8", size=12,
-             line_dash="4,3", bg="#0b1022")
-cv.annotate("5 open, 2 critical", 1050, 660, 1150, 500, color="#94a3b8", size=12,
-             line_dash="4,3", bg="#0b1022")
+cv.annotate("Trending up 61% since Monday", COL0 + 190, ROW0 + 170, COL0 + 40, ROW0 + PH + 55,
+            color="#94a3b8", size=12, line_dash="4,3", bg="#0b1022")
+cv.annotate("5 open, 2 critical", COL1 + 460, ROW1 + 90, COL1 + 40, ROW1 + PH + 55,
+            color="#94a3b8", size=12, line_dash="4,3", bg="#0b1022")
+
+SIDE_X = COL1 + PW + GAP_X
+SIDE_W = W - SIDE_X - 60
+panel_frame(SIDE_X, ROW0, SIDE_W, PH, "#a78bfa", "panel-region")
+panel_frame(SIDE_X, ROW1, SIDE_W, PH, "#34d399", "panel-latency")
+
+region = sp.donut(labels=["NA", "EU", "APAC", "LATAM"], values=[40, 28, 20, 12],
+                   title="Regional Split", width=SIDE_W, height=PH,
+                   palette=[0x6366f1, 0x22d3ee, 0xf59e0b, 0xf472b6]) \
+    .background("#0b1022").title_color("#e2e8f0")
+
+latency = sp.barh(labels=["p50", "p90", "p95", "p99"], values=[42, 118, 210, 480],
+                   title="Latency (ms)", width=SIDE_W, height=PH,
+                   palette=[0x34d399]) \
+    .gridlines(False).background("#0b1022").title_color("#e2e8f0")
+
+cv.place(region, SIDE_X, ROW0, SIDE_W, PH, group="side-link", name="panel-region-chart")
+cv.place(latency, SIDE_X, ROW1, SIDE_W, PH, group="side-link", name="panel-latency-chart")
+
+SIDE_LINK = [(ROW0, "#a78bfa"), (ROW1, "#34d399")]
+for row_y, color in SIDE_LINK:
+    ax, ay = COL1 + PW, row_y + PH / 2
+    bx, by = SIDE_X, row_y + PH / 2
+    cv.line(ax, ay, bx, by, color="#94a3b8", width=1, dash="2 5", hover_group="side-link")
+    cv.circle(ax, ay, 5, fill=color, stroke="#04050a", stroke_width=2)
+    cv.circle(bx, by, 5, fill=color, stroke="#04050a", stroke_width=2)
+
+STRIP_Y = ROW1 + PH + GAP_Y
+STRIP_H = H - STRIP_Y - 60
+panel_frame(60, STRIP_Y, W - 120, STRIP_H, "#22d3ee", "panel-throughput")
+
+hours = [f"{h:02d}:00" for h in range(0, 24, 2)]
+throughput = [random.randint(800, 2600) for _ in hours]
+throughput_chart = sp.bar(labels=hours, values=throughput, title="Requests/sec — last 24h",
+                           width=W - 120, height=STRIP_H,
+                           color_hex=0x22d3ee) \
+    .gridlines(False).background("#0b1022").title_color("#e2e8f0")
+cv.place(throughput_chart, 60, STRIP_Y, W - 120, STRIP_H, name="panel-throughput-chart")
 
 chart = cv.build()
 ```
 
-<iframe src="../previews/canvas-dashboard.html" style="width:100%;height:680px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe>
+<div class="sp-preview-frame"><iframe src="../previews/canvas-dashboard.html?v=0e335555" style="width:100%;height:680px;border:none;border-radius:8px;display:block;background:#0d1117" loading="lazy"></iframe></div>
 
 Le hub lui-même est une petite jauge radiale déguisée — 4 parts de `wedge`
 (une par panneau, dans sa couleur) à l'intérieur de deux pistes `ring`
@@ -1707,6 +1894,30 @@ connecteurs et annotations puissent les traverser), ce qui masquera
 silencieusement le contenu d'un panneau si celui-ci est dessiné sur la
 couche de premier plan.
 
+Deux choses ont dû être corrigées pour arriver ici depuis la version à
+quatre panneaux d'origine. D'abord, `title_color()` : `sp.bar()`,
+`sp.area()` et `sp.donut()` acceptaient volontiers une couleur de titre
+explicite, mais `sp.line()`/`sp.gauge()` rendaient leur titre dans une
+teinte par défaut à peine visible quoi qu'il arrive — contourné en
+sautant complètement le `title=` propre au chart pour ces deux-là et en
+dessinant le nom du panneau comme un simple `cv.text()` à la même
+position, ce qui correspond aussi aux étiquettes dessinées à la main des
+tuiles KPI. Ensuite, le générateur de graduations Y d'un chart réserve un
+espace proportionnel à la taille en pixels *demandée* du plot, pas à son
+empreinte `place()`e — les étiquettes de graduation du bandeau de débit du
+bas se chevauchaient sérieusement jusqu'à ce que son `sp.bar()` soit
+demandé à la taille native complète du bandeau (`width=W-120,
+height=STRIP_H`) plutôt qu'une boîte sous-dimensionnée censée être étirée.
+
+Les deux panneaux de droite (`Regional Split`, `Latency (ms)`) ne sont pas
+câblés dans le hub — un cinquième et sixième rayon auraient surchargé
+l'unique idée visuelle que le hub est censé communiquer — mais ils ne sont
+pas orphelins pour autant : un seul `hover_group="side-link"` sur les deux
+panneaux et leur ligne de connexion les relie exactement comme les
+satellites RéciTAC, si bien que survoler l'un ou l'autre estompe tout ce
+qui est en dehors de cette paire via le même comportement de survol
+`Canvas` décrit plus haut.
+
 ---
 
 ## Mises en page organiques : Voronoi
@@ -1716,10 +1927,7 @@ calcule un diagramme de Voronoi borné — une cellule par site, chaque cellule
 étant la région plus proche de ce site que de tout autre — et ajoute chaque
 cellule au canvas comme un `polygon()` en un seul appel, en renvoyant leurs
 indices d'éléments pour un adressage ultérieur (groupes de survol,
-`derive()`, etc.). C'est la même technique de mise en page organique par
-cellules derrière des pièces éditoriales de data-journalisme comme
-[Highly Hazardous Pesticides de Nadieh Bremer](https://www.visualcinnamon.com/portfolio/highly-hazardous-pesticides/)
-— pas besoin d'un "type de chart voronoi" tout fait, juste la primitive.
+`derive()`, etc.).
 
 ```python
 import random
