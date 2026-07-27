@@ -249,6 +249,17 @@ fn chart_info(chart: &crate::Chart) -> String {
     crate::plot::utils::chart_info(&payload)
 }
 
+impl crate::Chart {
+    fn show_impl(&self, py: Python<'_>) -> PyResult<()> {
+        let ipython = py.import_bound("IPython.display")?;
+        let html_cls = ipython.getattr("HTML")?;
+        let display_fn = ipython.getattr("display")?;
+        let html_obj = html_cls.call1((self.chart_iframe().as_str(),))?;
+        display_fn.call1((html_obj,))?;
+        Ok(())
+    }
+}
+
 #[pymethods]
 impl crate::Chart {
     #[new]
@@ -307,12 +318,27 @@ impl crate::Chart {
     }
 
     fn show(&self, py: Python<'_>) -> PyResult<()> {
-        let ipython = py.import_bound("IPython.display")?;
-        let html_cls = ipython.getattr("HTML")?;
-        let display_fn = ipython.getattr("display")?;
-        let html_obj = html_cls.call1((self.chart_iframe().as_str(),))?;
-        display_fn.call1((html_obj,))?;
-        Ok(())
+        self.show_impl(py)
+    }
+
+    fn display(&self, py: Python<'_>) -> PyResult<()> {
+        self.show_impl(py)
+    }
+
+    fn render(&self, py: Python<'_>) -> PyResult<()> {
+        self.show_impl(py)
+    }
+
+    fn view(&self, py: Python<'_>) -> PyResult<()> {
+        self.show_impl(py)
+    }
+
+    fn plot(&self, py: Python<'_>) -> PyResult<()> {
+        self.show_impl(py)
+    }
+
+    fn preview(&self, py: Python<'_>) -> PyResult<()> {
+        self.show_impl(py)
     }
 
     fn doc(&self) -> &'static str {
