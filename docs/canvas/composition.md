@@ -470,19 +470,23 @@ instead of just decorating — `polygon`+`rect` build the hexagon impact
 clusters and their pill-shaped outcome labels, `connector` draws every curved
 edge, and `link()` ties related elements — a hexagon cluster and every story
 it touches, a university and its disciplines, an action's color segments —
-into shared hover-glow groups. The story nodes themselves are a real,
-`place()`d `sp.bubble()` chart rather than hand-drawn circles — its actual
-rendered positions are read back out of its own SVG (by `data-idx`, since
-`bubble()` reorders its DOM by category) so every connector line lands
-exactly on a real dot, with a fully transparent same-position `circle()` as
-the `link()` target `bubble()`'s own iframe can't expose directly. Two more
-real charts get `place()`d straight into the canvas's empty corners rather
-than boxed on top of it: a `sp.bubble()` "story constellation" stripped of
-axes/background and circle-clipped so it reads as one more circular motif,
-and a `sp.radar()` reach summary (already axis-free, being a polar chart) —
-both summarizing the same dataset the diagram encodes. Composition isn't an
-alternative to SeraPlot's chart functions, it's a way to combine them in one
-scene.
+into shared hover-glow, dim-the-rest groups (hovering any grouped element now
+fades everything outside its group to near-transparent, a `Canvas`-level
+generalization of `Chart.hover_family()`'s dim-the-rest effect, which only
+natively works on hierarchical/flow charts like icicle and sankey). The story
+nodes themselves are a real, `place()`d `sp.bubble()` chart rather than
+hand-drawn circles — its actual rendered positions are read back out of its
+own SVG (by `data-idx`, since `bubble()` reorders its DOM by category) so
+every connector line lands exactly on a real dot, with a fully transparent
+same-position `circle()` as the `link()` target `bubble()`'s own iframe can't
+expose directly. Three more real charts get `place()`d straight into the
+canvas's empty corners and lower edge rather than boxed on top of it: a
+`sp.bubble()` "story constellation" stripped of axes/background and
+circle-clipped so it reads as one more circular motif, a `sp.histogram()`
+"people per story" tilted into its own corner, and a `sp.barh()` "stories per
+discipline" sitting low and centered — all three summarizing the same dataset
+the diagram encodes, from different angles. Composition isn't an alternative
+to SeraPlot's chart functions, it's a way to combine them in one scene.
 
 The full, runnable version (with the synthetic dataset, the university/action
 hover groups, and both embedded charts) lives at
@@ -546,7 +550,7 @@ cv.place(bubbles, 20, 100, 280, 280, clip="circle", name="panel-bubbles")
 chart = cv.build().zoom()
 ```
 
-<div class="sp-preview-frame"><iframe src="../previews/canvas-recitac.html?v=860414d8" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
+<div class="sp-preview-frame"><iframe src="../previews/canvas-recitac.html?v=8865e503" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
 
 The dataset is synthetic — the point is the *composition pattern*, not a
 literal port of Nadieh's real research-program data (which comes from a
@@ -1384,21 +1388,25 @@ donc l'anneau lui-même porte de la donnée au lieu de seulement décorer —
 étiquettes en pilule, `connector` trace chaque arête courbe, et `link()`
 relie les éléments connexes — un cluster hexagonal et chaque story qui le
 touche, une université et ses disciplines, les segments de couleur d'une
-action — en groupes de survol partagés. Les nœuds story sont eux-mêmes un
-vrai chart `sp.bubble()` `place()`é, pas des cercles dessinés à la main —
-ses positions réellement rendues sont relues depuis son propre SVG (via
-`data-idx`, car `bubble()` réordonne son DOM par catégorie) pour que
-chaque ligne de connexion tombe exactement sur un vrai point, avec un
-`circle()` transparent à la même position comme cible de `link()`, ce que
-l'iframe propre de `bubble()` ne peut pas exposer directement. Deux
-autres vrais charts sont `place()`és directement dans les coins vides du
-canvas plutôt qu'encadrés par-dessus : un `sp.bubble()` « constellation
-de stories » débarrassé de ses axes/fond et rogné en cercle pour se
-lire comme un motif circulaire de plus, et un `sp.radar()` résumant la
-portée (déjà sans axes, étant un chart polaire) — tous deux résumant le
-même jeu de données que le diagramme encode. La composition n'est pas
-une alternative aux fonctions de chart de SeraPlot, c'est un moyen de
-les combiner dans une seule scène.
+action — en groupes de survol partagés qui estompent aussi tout le reste
+(survoler un élément d'un groupe fait maintenant tomber l'opacité de tout
+ce qui n'en fait pas partie — une généralisation au niveau `Canvas` de
+l'effet d'atténuation de `Chart.hover_family()`, qui ne fonctionne
+nativement que sur les charts hiérarchiques/flux comme icicle et sankey).
+Les nœuds story sont eux-mêmes un vrai chart `sp.bubble()` `place()`é, pas
+des cercles dessinés à la main — ses positions réellement rendues sont
+relues depuis son propre SVG (via `data-idx`, car `bubble()` réordonne son
+DOM par catégorie) pour que chaque ligne de connexion tombe exactement sur
+un vrai point, avec un `circle()` transparent à la même position comme
+cible de `link()`, ce que l'iframe propre de `bubble()` ne peut pas exposer
+directement. Trois autres vrais charts sont `place()`és directement dans
+les coins vides et le bas du canvas plutôt qu'encadrés par-dessus : un
+`sp.bubble()` « constellation de stories » débarrassé de ses axes/fond et
+rogné en cercle, un `sp.histogram()` « personnes par story » incliné dans
+son coin, et un `sp.barh()` « stories par discipline » posé bas et centré —
+les trois résumant le même jeu de données que le diagramme encode, sous des
+angles différents. La composition n'est pas une alternative aux fonctions
+de chart de SeraPlot, c'est un moyen de les combiner dans une seule scène.
 
 La version complète et exécutable (avec le jeu de données synthétique, les
 groupes de survol université/action, et les deux charts intégrés) se
@@ -1463,7 +1471,7 @@ cv.place(bubbles, 20, 100, 280, 280, clip="circle", name="panel-bubbles")
 chart = cv.build().zoom()
 ```
 
-<div class="sp-preview-frame"><iframe src="../previews/canvas-recitac.html?v=860414d8" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
+<div class="sp-preview-frame"><iframe src="../previews/canvas-recitac.html?v=8865e503" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
 
 Le jeu de données est synthétique — l'intérêt est le *motif de
 composition*, pas un portage littéral des vraies données du programme de
