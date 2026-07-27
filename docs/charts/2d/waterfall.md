@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('waterfall-en','arrowed',this)"><span class="sp-cic">A</span><span class="sp-clb">Arrowed</span></button>
 <button class="sp-cls-tab" onclick="spCls('waterfall-en','delta',this)"><span class="sp-cic">D</span><span class="sp-clb">Delta</span></button>
 <button class="sp-cls-tab" onclick="spCls('waterfall-en','horizontal',this)"><span class="sp-cic">H</span><span class="sp-clb">Horizontal</span></button>
+<button class="sp-cls-tab" onclick="spCls('waterfall-en','trend',this)"><span class="sp-cic">T</span><span class="sp-clb">Trend</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -107,6 +108,16 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/waterfall-horizontal.html"></iframe>
 </div>
 
+<div class="sp-variant" id="waterfall-en-trend">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"trend"</code></span><span><strong>Aliases</strong> <code>trend / running_total / cumulative_line / with_trend</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Waterfall + running-total trend line fusion — the same increment/decrement bars, semi-transparent, with a smooth line connecting each step's running total drawn on top (white halo + solid color), plus a dot marker per step. Reveals the trajectory at a glance without losing the per-step breakdown.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/waterfall-trend.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -147,6 +158,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('waterfall-fr','arrowed',this)"><span class="sp-cic">A</span><span class="sp-clb">Arrowed</span></button>
 <button class="sp-cls-tab" onclick="spCls('waterfall-fr','delta',this)"><span class="sp-cic">D</span><span class="sp-clb">Delta</span></button>
 <button class="sp-cls-tab" onclick="spCls('waterfall-fr','horizontal',this)"><span class="sp-cic">H</span><span class="sp-clb">Horizontal</span></button>
+<button class="sp-cls-tab" onclick="spCls('waterfall-fr','trend',this)"><span class="sp-cic">T</span><span class="sp-clb">Tendance</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -207,6 +219,16 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Waterfall pivote a 90 degres : les etapes deviennent des lignes empilees verticalement, chacune partant du cumul precedent. Layout editorial pour rapports avec libelles longs ou storytelling vertical.</p>
 <div class="sp-preview-label">Apercu</div>
 <iframe class="sp-preview-frame" src="../../previews/waterfall-horizontal.html"></iframe>
+</div>
+
+<div class="sp-variant" id="waterfall-fr-trend">
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"trend"</code></span><span><strong>Aliases</strong> <code>trend / running_total / cumulative_line / with_trend</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fusion waterfall + ligne de cumul progressif — les memes barres d'increment/decrement, semi-transparentes, avec une ligne lissee reliant le cumul de chaque etape dessinee par-dessus (halo blanc + couleur pleine), plus un marqueur point par etape. Revele la trajectoire d'un coup d'oeil sans perdre le detail par etape.</p>
+
+<div class="sp-preview-label">Apercu</div>
+<iframe class="sp-preview-frame" src="../../previews/waterfall-trend.html"></iframe>
 </div>
 
 </div>

@@ -6,5 +6,6 @@ crate::plot_family! {
         Arrowed    => "arrowed" | "arrow" | "directional" | "tipped",
         Delta      => "delta" | "percent" | "annotated" | "pct",
         Horizontal => "horizontal" | "rows" | "sideways" | "h",
+        Trend      => "trend" | "running_total" | "cumulative_line" | "with_trend",
     }
 }

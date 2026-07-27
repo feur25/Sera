@@ -7,6 +7,7 @@ pub mod delta;
 pub mod horizontal;
 pub mod lollipop;
 pub mod stepped;
+pub mod trend;
 pub mod variant;
 
 pub use config::WaterfallConfig;
@@ -21,6 +22,7 @@ pub fn render_waterfall_html(cfg: &WaterfallConfig) -> String {
         Arrowed => arrowed::render(cfg),
         Delta => delta::render(cfg),
         Horizontal => horizontal::render(cfg),
+        Trend => trend::render(cfg),
     }
 }
 
