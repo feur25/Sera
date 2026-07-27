@@ -11,5 +11,6 @@ crate::plot_family! {
         Facet         => "facet" | "facets" | "small_multiples" | "relplot",
         Sized         => "sized" | "size_scale" | "bubble_scatter" | "magnitude_size",
         WideForm      => "wide_form" | "wide" | "multi_series" | "columns",
+        Rug           => "rug" | "rugplot" | "marginal_ticks" | "carpet_ticks",
     }
 }

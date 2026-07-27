@@ -9,6 +9,7 @@ pub mod facet;
 pub mod labeled;
 pub mod regression;
 pub mod residual;
+pub mod rug;
 pub mod sized;
 pub mod symbols;
 pub mod variant;
@@ -44,6 +45,7 @@ pub fn render_scatter_variant_html(cfg: &ScatterConfig) -> String {
         Facet => facet::render(cfg),
         Sized => sized::render(cfg),
         WideForm => wide_form::render(cfg),
+        Rug => rug::render(cfg),
     }
 }
 

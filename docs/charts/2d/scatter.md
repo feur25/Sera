@@ -48,7 +48,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('scatter-en','continuous_hue',this)"><span class="sp-cic">◍</span><span class="sp-clb">Continuous Hue</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','facet',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Facet</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-en','sized',this)"><span class="sp-cic">◉</span><span class="sp-clb">Sized</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-en','wide_form',this)"><span class="sp-cic">▤</span><span class="sp-clb">Wide form</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','wide_form',this)"><span class="sp-cic">▤</span><span class="sp-clb">Wide form</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-en','rug',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Rug</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="scatter-en-basic">
@@ -149,6 +150,16 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/scatter-wide_form.html"></iframe>
 </div>
 
+<div class="sp-variant" id="scatter-en-rug">
+
+<p>Scatter + rug plot fusion: each point gets a short tick mark projected onto both axes, right at the plot edges — a Tufte-style view of the marginal distributions along x and y without the overhead of a separate marginal panel (unlike <code>joint()</code>, no iframe composition needed).</p>
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"rug"</code></span><span><strong>Aliases</strong> <code>rug / rugplot / marginal_ticks / carpet_ticks</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/scatter-rug.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -192,7 +203,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','continuous_hue',this)"><span class="sp-cic">◍</span><span class="sp-clb">Teinte continue</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','facet',this)"><span class="sp-cic">⊞</span><span class="sp-clb">Facettes</span></button>
 <button class="sp-cls-tab" onclick="spCls('scatter-fr','sized',this)"><span class="sp-cic">◉</span><span class="sp-clb">Taille</span></button>
-<button class="sp-cls-tab" onclick="spCls('scatter-fr','wide_form',this)"><span class="sp-cic">▤</span><span class="sp-clb">Format large</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','wide_form',this)"><span class="sp-cic">▤</span><span class="sp-clb">Format large</span></button>
+<button class="sp-cls-tab" onclick="spCls('scatter-fr','rug',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Rug</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="scatter-fr-basic">
@@ -291,6 +303,16 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/scatter-wide_form.html"></iframe>
+</div>
+
+<div class="sp-variant" id="scatter-fr-rug">
+
+<p>Fusion scatter + rug plot : chaque point projette une petite marque sur les deux axes, au bord du graphique — une vue façon Tufte des distributions marginales en x et en y sans le coût d'un panneau marginal séparé (contrairement à <code>joint()</code>, aucune composition iframe nécessaire).</p>
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"rug"</code></span><span><strong>Alias</strong> <code>rug / rugplot / marginal_ticks / carpet_ticks</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/scatter-rug.html"></iframe>
 </div>
 
 </div>
