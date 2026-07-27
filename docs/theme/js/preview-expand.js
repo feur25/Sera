@@ -1,4 +1,18 @@
 (function () {
+  function nudgeIframe(frame) {
+    var iframe = frame.querySelector('iframe');
+    if (!iframe || !iframe.contentWindow) return;
+    var fire = function () {
+      try {
+        iframe.contentWindow.dispatchEvent(new Event('resize'));
+      } catch (e) {}
+    };
+    fire();
+    requestAnimationFrame(fire);
+    setTimeout(fire, 60);
+    setTimeout(fire, 220);
+  }
+
   function collapse(frame, backdrop) {
     frame.classList.remove('sp-preview-expanded');
     backdrop.classList.remove('sp-preview-backdrop-active');
@@ -8,6 +22,7 @@
       btn.textContent = '⤢';
       btn.setAttribute('aria-label', 'Expand');
     }
+    nudgeIframe(frame);
   }
 
   function expand(frame, backdrop) {
@@ -19,6 +34,7 @@
       btn.textContent = '✕';
       btn.setAttribute('aria-label', 'Collapse');
     }
+    nudgeIframe(frame);
   }
 
   function init(frame, backdrop) {

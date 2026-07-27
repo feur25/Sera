@@ -460,8 +460,7 @@ chart = cv.build()
 
 ## Real-world composition: a RéciTAC-style network
 
-[RéciTAC](https://www.visualcinnamon.com/portfolio/recitac/) (Nadieh Bremer)
-is a d3.js/Canvas network diagram organizing a research program's disciplines,
+A radial network diagram organizing a research program's disciplines,
 universities, actions and impact outcomes around a dense central network of
 "stories" and "people". None of it needs a dedicated "network chart" type:
 `wedge`+`polar` build the outer capsule-segment rings — angular width
@@ -474,12 +473,20 @@ into shared hover-glow, dim-the-rest groups (hovering any grouped element now
 fades everything outside its group to near-transparent, a `Canvas`-level
 generalization of `Chart.hover_family()`'s dim-the-rest effect, which only
 natively works on hierarchical/flow charts like icicle and sankey). The story
-nodes themselves are a real, `place()`d `sp.bubble()` chart rather than
-hand-drawn circles — its actual rendered positions are read back out of its
-own SVG (by `data-idx`, since `bubble()` reorders its DOM by category) so
-every connector line lands exactly on a real dot, with a fully transparent
-same-position `circle()` as the `link()` target `bubble()`'s own iframe can't
-expose directly. Three more real charts get `place()`d straight into the
+nodes themselves are five real, `place()`d `sp.bubble()` charts — one per
+discipline, arranged in a rosette so each contributes its own color-clustered
+mass to a shared dense core instead of reading as one undifferentiated blob —
+rather than hand-drawn circles. Splitting the hairball this way also makes it
+addressable by `link()`: hovering a discipline's ring segment now dims every
+*other* discipline's cluster, isolating just its own. Each sub-chart's actual
+rendered positions are read back out of its own SVG (by `data-idx`, since
+`bubble()` reorders its DOM by category) so every connector line lands
+exactly on a real dot, with a fully transparent same-position `circle()` as
+the `link()` target `bubble()`'s own iframe can't expose directly, and
+`.no_hover()` disables each chart's own baked-in double-click zoom, which
+would otherwise shift a dot's position inside its iframe independently of the
+canvas-level connector lines drawn to its build-time coordinates. Three more
+real charts get `place()`d straight into the
 canvas's empty corners and lower edge rather than boxed on top of it: a
 `sp.bubble()` "story constellation" stripped of axes/background and
 circle-clipped so it reads as one more circular motif, a `sp.histogram()`
@@ -550,7 +557,7 @@ cv.place(bubbles, 20, 100, 280, 280, clip="circle", name="panel-bubbles")
 chart = cv.build().zoom()
 ```
 
-<div class="sp-preview-frame"><iframe src="../previews/canvas-recitac.html?v=8865e503" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
+<div class="sp-preview-frame"><iframe src="../previews/canvas-recitac.html?v=6c71919e" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
 
 The dataset is synthetic — the point is the *composition pattern*, not a
 literal port of Nadieh's real research-program data (which comes from a
@@ -1376,8 +1383,7 @@ chart = cv.build()
 
 ## Composition réelle : un réseau façon RéciTAC
 
-[RéciTAC](https://www.visualcinnamon.com/portfolio/recitac/) (Nadieh Bremer)
-est un diagramme réseau d3.js/Canvas qui organise les disciplines, les
+Un diagramme réseau radial qui organise les disciplines, les
 universités, les actions et les résultats d'impact d'un programme de
 recherche autour d'un réseau central dense de « stories » et de
 « personnes ». Rien de tout cela ne nécessite un type « graphique réseau »
@@ -1393,13 +1399,22 @@ action — en groupes de survol partagés qui estompent aussi tout le reste
 ce qui n'en fait pas partie — une généralisation au niveau `Canvas` de
 l'effet d'atténuation de `Chart.hover_family()`, qui ne fonctionne
 nativement que sur les charts hiérarchiques/flux comme icicle et sankey).
-Les nœuds story sont eux-mêmes un vrai chart `sp.bubble()` `place()`é, pas
-des cercles dessinés à la main — ses positions réellement rendues sont
-relues depuis son propre SVG (via `data-idx`, car `bubble()` réordonne son
-DOM par catégorie) pour que chaque ligne de connexion tombe exactement sur
-un vrai point, avec un `circle()` transparent à la même position comme
-cible de `link()`, ce que l'iframe propre de `bubble()` ne peut pas exposer
-directement. Trois autres vrais charts sont `place()`és directement dans
+Les nœuds story sont eux-mêmes cinq vrais charts `sp.bubble()` `place()`és —
+un par discipline, disposés en rosace pour que chacun apporte sa propre
+masse colorée à un noyau dense commun au lieu de former un seul bloc
+indifférencié — plutôt que des cercles dessinés à la main. Découper le
+hairball ainsi le rend aussi adressable par `link()` : survoler le segment
+d'anneau d'une discipline estompe maintenant le cluster de chaque *autre*
+discipline, isolant le sien. Les positions réellement rendues de chaque
+sous-chart sont relues depuis son propre SVG (via `data-idx`, car
+`bubble()` réordonne son DOM par catégorie) pour que chaque ligne de
+connexion tombe exactement sur un vrai point, avec un `circle()`
+transparent à la même position comme cible de `link()`, ce que l'iframe
+propre de `bubble()` ne peut pas exposer directement, et `.no_hover()`
+désactive le zoom par double-clic intégré à chaque chart, qui sinon
+déplacerait un point à l'intérieur de son iframe indépendamment des lignes
+de connexion tracées au niveau du canvas vers ses coordonnées de
+construction. Trois autres vrais charts sont `place()`és directement dans
 les coins vides et le bas du canvas plutôt qu'encadrés par-dessus : un
 `sp.bubble()` « constellation de stories » débarrassé de ses axes/fond et
 rogné en cercle, un `sp.histogram()` « personnes par story » incliné dans
@@ -1471,7 +1486,7 @@ cv.place(bubbles, 20, 100, 280, 280, clip="circle", name="panel-bubbles")
 chart = cv.build().zoom()
 ```
 
-<div class="sp-preview-frame"><iframe src="../previews/canvas-recitac.html?v=8865e503" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
+<div class="sp-preview-frame"><iframe src="../previews/canvas-recitac.html?v=6c71919e" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
 
 Le jeu de données est synthétique — l'intérêt est le *motif de
 composition*, pas un portage littéral des vraies données du programme de
