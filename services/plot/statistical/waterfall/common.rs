@@ -202,7 +202,7 @@ pub fn xlabel(buf: &mut Vec<u8>, cx: i32, y: i32, lbl: &str) {
 }
 
 pub fn value_text(buf: &mut Vec<u8>, cx: i32, y: i32, v: f64) {
-    push_b(buf, b"<text x=\"");
+    push_b(buf, b"<text class=\"sp-val\" x=\"");
     push_i(buf, cx);
     push_b(buf, b"\" y=\"");
     push_i(buf, y);

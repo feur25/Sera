@@ -97,7 +97,7 @@ pub fn render(cfg: &FunnelConfig) -> String {
             idx += 1;
             if cfg.show_text {
                 let previous = if i > 0 { values[i - 1] } else { initial };
-                push_b(&mut b, b"<text x=\"");
+                push_b(&mut b, b"<text class=\"sp-val\" x=\"");
                 push_i(&mut b, cx);
                 push_b(&mut b, b"\" y=\"");
                 push_i(&mut b, y + step_h / 2 - 2);

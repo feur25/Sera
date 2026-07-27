@@ -164,7 +164,7 @@ pub fn render(cfg: &WaterfallConfig) -> String {
             } else {
                 p.values[i]
             };
-            push_b(&mut b, b"<text x=\"");
+            push_b(&mut b, b"<text class=\"sp-val\" x=\"");
             push_i(&mut b, xe + 6);
             push_b(&mut b, b"\" y=\"");
             push_i(&mut b, cy + 4);

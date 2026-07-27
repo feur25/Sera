@@ -404,7 +404,7 @@ pub fn label_inside(buf: &mut Vec<u8>, p: &Prepared, ri: usize, fill: &[u8], sho
         escape_xml(buf, truncate(label, max_chars));
         push_b(buf, b"</text>");
         if show_pct {
-            push_b(buf, b"<text x=\"");
+            push_b(buf, b"<text class=\"sp-val\" x=\"");
             push_f2(buf, cx);
             push_b(buf, b"\" y=\"");
             push_f2(buf, cy);

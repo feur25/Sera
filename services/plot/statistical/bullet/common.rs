@@ -113,7 +113,7 @@ pub fn label_left(buf: &mut Vec<u8>, p: &Prepared, i: usize, by: i32, bar_h: i32
 }
 
 pub fn value_text(buf: &mut Vec<u8>, v: f64, x: i32, y: i32) {
-    push_b(buf, b"<text x=\"");
+    push_b(buf, b"<text class=\"sp-val\" x=\"");
     push_i(buf, x);
     push_b(buf, b"\" y=\"");
     push_i(buf, y);

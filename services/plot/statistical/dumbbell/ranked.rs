@@ -20,7 +20,7 @@ pub fn render(cfg: &DumbbellConfig) -> String {
         let x2 = x_at(&f, &p, p.end[i]);
         let rank = n - i;
         if cfg.show_text {
-            push_b(&mut f.buf, b"<text x=\"");
+            push_b(&mut f.buf, b"<text class=\"sp-val\" x=\"");
             push_i(&mut f.buf, f.pl - 110);
             push_b(&mut f.buf, b"\" y=\"");
             push_i(&mut f.buf, cy + 4);

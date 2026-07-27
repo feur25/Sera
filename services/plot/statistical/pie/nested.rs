@@ -76,7 +76,7 @@ pub fn render(cfg: &PieConfig) -> String {
     } else if !cfg.center_text.is_empty() {
         let cx = (w as f64) * 0.31;
         let cy = title_pad + (h as f64 - title_pad) * 0.52;
-        push_b(&mut buf, b"<text x=\"");
+        push_b(&mut buf, b"<text class=\"sp-val\" x=\"");
         push_i(&mut buf, cx as i32);
         push_b(&mut buf, b"\" y=\"");
         push_i(&mut buf, cy as i32);

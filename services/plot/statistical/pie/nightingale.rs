@@ -107,7 +107,7 @@ pub fn render(cfg: &PieConfig) -> String {
 
         if cfg.show_pct {
             let vr = r + 12.0;
-            push_b(&mut buf, b"<text x=\"");
+            push_b(&mut buf, b"<text class=\"sp-val\" x=\"");
             push_f2(&mut buf, cx + vr * mid.cos());
             push_b(&mut buf, b"\" y=\"");
             push_f2(&mut buf, cy + vr * mid.sin() + 3.0);

@@ -86,7 +86,7 @@ pub fn draw(b: &mut Vec<u8>, cfg: &GaugeConfig, p: &super::common::Prepared) {
     }
     value_text(b, cfg, p.cx, p.cy + 18.0, 28);
     label_text(b, cfg, p.cx, p.cy + 40.0);
-    push_b(b, b"<text x=\"");
+    push_b(b, b"<text class=\"sp-val\" x=\"");
     push_f2(b, p.cx);
     push_b(b, b"\" y=\"");
     push_f2(b, p.cy - 8.0);

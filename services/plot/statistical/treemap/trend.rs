@@ -38,7 +38,7 @@ pub fn render(cfg: &TreemapConfig) -> String {
                 let bw = (txt.chars().count() as f64 * 5.6 + 10.0).min(r.w - 8.0);
                 let bx = r.x + r.w - bw - 4.0;
                 let by = r.y + 4.0;
-                push_b(&mut b, b"<rect x=\"");
+                push_b(&mut b, b"<rect class=\"sp-val\" x=\"");
                 push_f2(&mut b, bx);
                 push_b(&mut b, b"\" y=\"");
                 push_f2(&mut b, by);
@@ -47,7 +47,7 @@ pub fn render(cfg: &TreemapConfig) -> String {
                 push_b(&mut b, b"\" height=\"15\" rx=\"7\" fill=\"");
                 b.extend_from_slice(badge_col);
                 push_b(&mut b, b"\" opacity=\"0.92\"/>");
-                push_b(&mut b, b"<text x=\"");
+                push_b(&mut b, b"<text class=\"sp-val\" x=\"");
                 push_f2(&mut b, bx + bw / 2.0);
                 push_b(&mut b, b"\" y=\"");
                 push_f2(&mut b, by + 11.0);

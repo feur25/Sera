@@ -344,7 +344,7 @@ pub fn render_bars_html(
             push_b(&mut buf, b"</text>");
 
             if show_text && bar_w > 8 {
-                push_b(&mut buf, b"<text data-series=\"");
+                push_b(&mut buf, b"<text class=\"sp-val\" data-series=\"");
                 push_i(&mut buf, series_idx as i32);
                 push_b(&mut buf, b"\" x=\"");
                 push_i(&mut buf, pad_l + bar_w + 4);
@@ -429,7 +429,7 @@ pub fn render_bars_html(
             push_b(&mut buf, b"</text>");
 
             if show_text && bh > 14 {
-                push_b(&mut buf, b"<text data-series=\"");
+                push_b(&mut buf, b"<text class=\"sp-val\" data-series=\"");
                 push_i(&mut buf, series_idx as i32);
                 push_b(&mut buf, b"\" x=\"");
                 push_i(&mut buf, x + w / 2);

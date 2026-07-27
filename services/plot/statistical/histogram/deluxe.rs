@@ -118,7 +118,7 @@ pub fn render(cfg: &HistogramConfig) -> String {
             b"\" height=\"3\" fill=\"#ffffff\" fill-opacity=\"0.22\" rx=\"2\"/>",
         );
         if cfg.show_counts && bh > 16 {
-            push_b(&mut f.buf, b"<text x=\"");
+            push_b(&mut f.buf, b"<text class=\"sp-val\" x=\"");
             push_i(&mut f.buf, x + w_px / 2);
             push_b(&mut f.buf, b"\" y=\"");
             push_i(&mut f.buf, y + 12);

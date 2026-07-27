@@ -16,7 +16,7 @@ pub fn corr_color(v: f64) -> [u8; 6] {
 
 fn draw_value_text(buf: &mut Vec<u8>, cx: f64, cy: f64, cell: f64, v: f64) {
     let label = format!("{:.2}", v);
-    push_b(buf, b"<text x=\"");
+    push_b(buf, b"<text class=\"sp-val\" x=\"");
     push_f2(buf, cx);
     push_b(buf, b"\" y=\"");
     push_f2(buf, cy + 4.0);

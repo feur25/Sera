@@ -74,7 +74,7 @@ pub fn render(cfg: &WaterfallConfig) -> String {
                 b"&#8595; "
             };
             let by = top - 4;
-            push_b(&mut b, b"<text x=\"");
+            push_b(&mut b, b"<text class=\"sp-val\" x=\"");
             push_i(&mut b, bx + l.bar_w / 2);
             push_b(&mut b, b"\" y=\"");
             push_i(&mut b, by);

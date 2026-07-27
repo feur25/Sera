@@ -552,7 +552,7 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
                 } else {
                     b"#f9fafb".as_ref()
                 };
-                push_b(&mut buf, b"<text x=\"");
+                push_b(&mut buf, b"<text class=\"sp-val\" x=\"");
                 push_i(&mut buf, cx0 + cw / 2);
                 push_b(&mut buf, b"\" y=\"");
                 push_i(&mut buf, ry0 + rh / 2);

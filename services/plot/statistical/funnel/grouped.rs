@@ -103,7 +103,7 @@ pub fn render(cfg: &FunnelConfig) -> String {
             push_b(&mut b, b"\" opacity=\"0.9\"/>");
 
             if cfg.show_text && bot_w > 16.0 {
-                push_b(&mut b, b"<text x=\"");
+                push_b(&mut b, b"<text class=\"sp-val\" x=\"");
                 push_f2(&mut b, cursor_bot + bot_w / 2.0);
                 push_b(&mut b, b"\" y=\"");
                 push_i(&mut b, y0 + step_h / 2 + 4);

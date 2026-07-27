@@ -58,7 +58,7 @@ pub fn render(cfg: &GaugeConfig) -> String {
             let bw = badge_txt.chars().count() as f64 * 6.0 + 14.0;
             let bx = panel_x + panel_w - bw - 8.0;
             let by = panel_y + 8.0;
-            push_b(&mut b, b"<rect x=\"");
+            push_b(&mut b, b"<rect class=\"sp-val\" x=\"");
             push_f2(&mut b, bx);
             push_b(&mut b, b"\" y=\"");
             push_f2(&mut b, by);
@@ -67,7 +67,7 @@ pub fn render(cfg: &GaugeConfig) -> String {
             push_b(&mut b, b"\" height=\"17\" rx=\"8.5\" fill=\"");
             b.extend_from_slice(badge_col);
             push_b(&mut b, b"\" opacity=\"0.94\"/>");
-            push_b(&mut b, b"<text x=\"");
+            push_b(&mut b, b"<text class=\"sp-val\" x=\"");
             push_f2(&mut b, bx + bw / 2.0);
             push_b(&mut b, b"\" y=\"");
             push_f2(&mut b, by + 12.5);

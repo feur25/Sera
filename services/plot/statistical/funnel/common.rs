@@ -110,7 +110,7 @@ pub fn label_left_pct(buf: &mut Vec<u8>, x: i32, cy: i32, val: f64, max_val: f64
     } else {
         0.0
     };
-    push_b(buf, b"<text x=\"");
+    push_b(buf, b"<text class=\"sp-val\" x=\"");
     push_i(buf, x);
     push_b(buf, b"\" y=\"");
     push_i(buf, cy + 4);
@@ -120,7 +120,7 @@ pub fn label_left_pct(buf: &mut Vec<u8>, x: i32, cy: i32, val: f64, max_val: f64
 }
 
 pub fn label_right_val(buf: &mut Vec<u8>, x: i32, cy: i32, val: f64) {
-    push_b(buf, b"<text x=\"");
+    push_b(buf, b"<text class=\"sp-val\" x=\"");
     push_i(buf, x);
     push_b(buf, b"\" y=\"");
     push_i(buf, cy + 4);

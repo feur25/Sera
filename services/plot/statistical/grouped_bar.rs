@@ -180,7 +180,7 @@ pub fn render_grouped_bar_html(cfg: &GroupedBarConfig) -> String {
                     b"\" rx=\"3\" fill-opacity=\"0.88\" stroke=\"#fff\" stroke-width=\"0.4\"/>",
                 );
                 if cfg.show_values && bh as i32 >= cfg.value_min_height {
-                    push_b(&mut f.buf, b"<text x=\"");
+                    push_b(&mut f.buf, b"<text class=\"sp-val\" x=\"");
                     push_f2(&mut f.buf, bx + bar_w / 2.0);
                     push_b(&mut f.buf, b"\" y=\"");
                     push_f2(&mut f.buf, by - 2.0);
@@ -359,7 +359,7 @@ fn render_grouped_bar_horiz(cfg: &GroupedBarConfig) -> String {
                     b"\" rx=\"3\" fill-opacity=\"0.88\" stroke=\"#fff\" stroke-width=\"0.4\"/>",
                 );
                 if cfg.show_values && bw as i32 >= cfg.value_min_height {
-                    push_b(&mut f.buf, b"<text x=\"");
+                    push_b(&mut f.buf, b"<text class=\"sp-val\" x=\"");
                     push_f2(&mut f.buf, bx + bw + 3.0);
                     push_b(&mut f.buf, b"\" y=\"");
                     push_f2(&mut f.buf, by + bar_h / 2.0 + 4.0);

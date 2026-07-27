@@ -126,7 +126,7 @@ pub fn color_for(p: &Prepared, frac: f64) -> u32 {
 }
 
 pub fn value_text(buf: &mut Vec<u8>, cfg: &GaugeConfig, x: f64, y: f64, size: i32) {
-    push_b(buf, b"<text x=\"");
+    push_b(buf, b"<text class=\"sp-val\" x=\"");
     push_f2(buf, x);
     push_b(buf, b"\" y=\"");
     push_f2(buf, y);

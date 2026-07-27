@@ -76,7 +76,7 @@ fn draw_floating_label(
     let right = mid.cos() >= 0.0;
     let anchor: &[u8] = if right { b"start" } else { b"end" };
     let tx = if right { lx + 6.0 } else { lx - 6.0 };
-    push_b(buf, b"<text x=\"");
+    push_b(buf, b"<text class=\"sp-val\" x=\"");
     push_f2(buf, tx);
     push_b(buf, b"\" y=\"");
     push_f2(buf, ly - 3.0);
@@ -308,7 +308,7 @@ pub fn render_pie_svg(
             } else {
                 r * 0.66
             };
-            push_b(buf, b"<text x=\"");
+            push_b(buf, b"<text class=\"sp-val\" x=\"");
             push_f2(buf, cxx + lr * mid.cos());
             push_b(buf, b"\" y=\"");
             push_f2(buf, cyy + lr * mid.sin());
@@ -325,7 +325,7 @@ pub fn render_pie_svg(
         } else {
             22.0
         };
-        push_b(buf, b"<text x=\"");
+        push_b(buf, b"<text class=\"sp-val\" x=\"");
         push_f2(buf, cx);
         push_b(buf, b"\" y=\"");
         push_f2(buf, cy);

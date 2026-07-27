@@ -67,7 +67,7 @@ pub fn render(cfg: &HistogramConfig) -> String {
             b"\" rx=\"2\" stroke=\"#fff\" stroke-width=\"0.4\"/>",
         );
         if cfg.show_counts && bw > 22 {
-            push_b(&mut f.buf, b"<text x=\"");
+            push_b(&mut f.buf, b"<text class=\"sp-val\" x=\"");
             push_i(&mut f.buf, x + bw - 4);
             push_b(&mut f.buf, b"\" y=\"");
             push_i(&mut f.buf, y + h_px / 2 + 3);
