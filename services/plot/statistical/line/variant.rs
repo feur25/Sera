@@ -9,5 +9,6 @@ crate::plot_family! {
         Dashed           => "dashed" | "dotted" | "styled",
         ConnectedScatter => "connected_scatter" | "markers" | "lines+markers",
         Gapped           => "gapped" | "gaps" | "missing",
+        Band             => "band" | "confidence_band" | "forecast" | "range_band",
     }
 }

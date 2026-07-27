@@ -46,7 +46,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('line-en','sparkline',this)"><span class="sp-cic">⌁</span><span class="sp-clb">Sparkline</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-en','dashed',this)"><span class="sp-cic">┈</span><span class="sp-clb">Dashed</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-en','connected_scatter',this)"><span class="sp-cic">●</span><span class="sp-clb">Connected Scatter</span></button>
-<button class="sp-cls-tab" onclick="spCls('line-en','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Gapped</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('line-en','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Gapped</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-en','band',this)"><span class="sp-cic">▨</span><span class="sp-clb">Band</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="line-en-basic">
@@ -139,6 +140,16 @@ Line breaks where values exceed `gap_threshold`. Useful for time series with mis
 <iframe class="sp-preview-frame" src="../../previews/line-gapped.html"></iframe>
 </div>
 
+<div class="sp-variant" id="line-en-band">
+
+Line + confidence/forecast band fusion: pass `series` as low/high pairs (`[group1_low, group1_high, group2_low, group2_high, ...]`) instead of single traces. Each group gets a shaded area between its two bounds, thin dashed edge lines, and a solid midline with markers — a forecast interval, min/max envelope or confidence band, natively.
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"band"</code></span><span><strong>Aliases</strong> <code>"band"</code> / <code>"confidence_band"</code> / <code>"forecast"</code> / <code>"range_band"</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/line-band.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -180,7 +191,8 @@ Line breaks where values exceed `gap_threshold`. Useful for time series with mis
 <button class="sp-cls-tab" onclick="spCls('line-fr','sparkline',this)"><span class="sp-cic">⌁</span><span class="sp-clb">Sparkline</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-fr','dashed',this)"><span class="sp-cic">┈</span><span class="sp-clb">Tirets</span></button>
 <button class="sp-cls-tab" onclick="spCls('line-fr','connected_scatter',this)"><span class="sp-cic">●</span><span class="sp-clb">Scatter Connecté</span></button>
-<button class="sp-cls-tab" onclick="spCls('line-fr','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Avec lacunes</span></button></div>
+<button class="sp-cls-tab" onclick="spCls('line-fr','gapped',this)"><span class="sp-cic">⋯</span><span class="sp-clb">Avec lacunes</span></button>
+<button class="sp-cls-tab" onclick="spCls('line-fr','band',this)"><span class="sp-cic">▨</span><span class="sp-clb">Bande</span></button></div>
 <div class="sp-cls-body">
 
 <div class="sp-variant sp-von" id="line-fr-basic">
@@ -271,6 +283,16 @@ Rupture de ligne lorsque les valeurs dépassent `gap_threshold`. Utile pour des 
 
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/line-gapped.html"></iframe>
+</div>
+
+<div class="sp-variant" id="line-fr-band">
+
+Fusion ligne + bande de confiance/prévision : passez `series` comme des paires bas/haut (`[groupe1_bas, groupe1_haut, groupe2_bas, groupe2_haut, ...]`) au lieu de traces simples. Chaque groupe reçoit une zone ombrée entre ses deux bornes, de fines lignes en pointillés sur les bords, et une ligne médiane pleine avec marqueurs — un intervalle de prévision, une enveloppe min/max ou une bande de confiance, nativement.
+
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"band"</code></span><span><strong>Alias</strong> <code>"band"</code> / <code>"confidence_band"</code> / <code>"forecast"</code> / <code>"range_band"</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/line-band.html"></iframe>
 </div>
 
 </div>

@@ -1,4 +1,5 @@
 use crate::plot::{apply, parse_all};
+pub mod band;
 pub mod basic;
 pub mod config;
 pub mod connected_scatter;
@@ -26,6 +27,7 @@ pub fn render_line_html(cfg: &LineConfig) -> String {
         Dashed => dashed::render(cfg),
         ConnectedScatter => connected_scatter::render(cfg),
         Gapped => gapped::render(cfg),
+        Band => band::render(cfg),
     }
 }
 
