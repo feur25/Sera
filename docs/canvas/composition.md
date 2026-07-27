@@ -464,16 +464,21 @@ chart = cv.build()
 is a d3.js/Canvas network diagram organizing a research program's disciplines,
 universities, actions and impact outcomes around a dense central network of
 "stories" and "people". None of it needs a dedicated "network chart" type:
-`wedge`+`polar` build the outer capsule-segment rings, `polygon`+`rect` build
-the hexagon impact clusters and their pill-shaped outcome labels,
-`circle`/`rect(rotation=45)` place the story/people nodes, `connector` draws
-every curved edge, and `link()` ties related elements — a hexagon cluster and
-every story it touches, a university and its disciplines, an action's color
-segments — into shared hover-glow groups. Two real `sp.bar()`/`sp.radar()`
-charts get `place()`d straight into the canvas's empty corners, summarizing
-the same dataset the hand-drawn diagram encodes — composition isn't an
-alternative to SeraPlot's chart functions, it's a way to combine them with
-hand-drawn diagrams in one scene.
+`wedge`+`polar` build the outer capsule-segment rings — angular width
+proportional to story count per discipline, so the ring itself carries data
+instead of just decorating — `polygon`+`rect` build the hexagon impact
+clusters and their pill-shaped outcome labels, `circle`/`rect(rotation=45)`
+place the story/people nodes, `connector` draws every curved edge, and
+`link()` ties related elements — a hexagon cluster and every story it
+touches, a university and its disciplines, an action's color segments — into
+shared hover-glow groups. Two real charts get `place()`d straight into the
+canvas's empty corners rather than boxed on top of it: a `sp.bubble()` "story
+constellation" stripped of axes/background and circle-clipped so it reads as
+one more circular motif, and a `sp.radar()` reach summary (already
+axis-free, being a polar chart) — both summarizing the same dataset the
+hand-drawn diagram encodes. Composition isn't an alternative to SeraPlot's
+chart functions, it's a way to combine them with hand-drawn diagrams in one
+scene.
 
 The full, runnable version (with the synthetic dataset, the university/action
 hover groups, and both embedded charts) lives at
@@ -524,9 +529,15 @@ for i in range(12):
 
 cv.link("impact-TRUST", ["hex-TRUST", "outcome-TRUST-0"] + stories)
 
-bar = sp.bar(labels=[d for d, _ in DISCIPLINES], values=[4, 5, 3], title="Stories / Discipline") \
-    .width(260).height(190).palette([int(c.lstrip("#"), 16) for _, c in DISCIPLINES])
-cv.place(bar, 40, 120, 260, 190, name="panel-bar")
+bubbles = sp.bubble(
+    categories=[random.choice(DISCIPLINES)[0] for _ in range(20)],
+    x_values=[random.uniform(0, 100) for _ in range(20)],
+    y_values=[random.uniform(0, 10) for _ in range(20)],
+    sizes=[random.uniform(10, 40) for _ in range(20)],
+    palette=[int(c.lstrip("#"), 16) for _, c in DISCIPLINES],
+    width=700, height=700,
+).no_axes().no_background().gridlines(False)
+cv.place(bubbles, 20, 100, 280, 280, clip="circle", name="panel-bubbles")
 
 chart = cv.build()
 ```
@@ -1347,9 +1358,15 @@ for i in range(12):
 
 cv.link("impact-TRUST", ["hex-TRUST", "outcome-TRUST-0"] + stories)
 
-bar = sp.bar(labels=[d for d, _ in DISCIPLINES], values=[4, 5, 3], title="Stories / Discipline") \
-    .width(260).height(190).palette([int(c.lstrip("#"), 16) for _, c in DISCIPLINES])
-cv.place(bar, 40, 120, 260, 190, name="panel-bar")
+bubbles = sp.bubble(
+    categories=[random.choice(DISCIPLINES)[0] for _ in range(20)],
+    x_values=[random.uniform(0, 100) for _ in range(20)],
+    y_values=[random.uniform(0, 10) for _ in range(20)],
+    sizes=[random.uniform(10, 40) for _ in range(20)],
+    palette=[int(c.lstrip("#"), 16) for _, c in DISCIPLINES],
+    width=700, height=700,
+).no_axes().no_background().gridlines(False)
+cv.place(bubbles, 20, 100, 280, 280, clip="circle", name="panel-bubbles")
 
 chart = cv.build()
 ```
