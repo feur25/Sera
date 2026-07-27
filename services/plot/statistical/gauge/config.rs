@@ -7,6 +7,7 @@ crate::chart_config!(GaugeConfig, 400, 300;
         pub label: &'a str,
         pub thresholds: &'a [(f64, u32)],
         pub comparison: f64,
+        pub history: &'a [f64],
     }
     defaults {
         variant: super::variant::GaugeVariant::Basic,
@@ -16,5 +17,6 @@ crate::chart_config!(GaugeConfig, 400, 300;
         label: "",
         thresholds: &[],
         comparison: 0.0,
+        history: &[],
     }
 );

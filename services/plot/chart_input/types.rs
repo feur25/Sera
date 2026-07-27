@@ -108,6 +108,7 @@ pub struct ChartOpts {
     pub min_val: Option<f64>,
     pub max_val: Option<f64>,
     pub label: Option<String>,
+    pub history: Option<Vec<f64>>,
     pub series_name_start: Option<String>,
     pub series_name_end: Option<String>,
     pub point_labels: Option<Vec<String>>,

@@ -8,5 +8,6 @@ crate::plot_family! {
         Segmented  => "segmented" | "battery" | "signal" | "chunked",
         Glow       => "glow" | "neon" | "halo" | "luminous",
         Concentric => "concentric" | "rings" | "target" | "dual",
+        Sparkline => "sparkline" | "trend" | "history" | "with_trend",
     }
 }

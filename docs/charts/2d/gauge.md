@@ -45,6 +45,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('gauge-en','segmented',this)"><span class="sp-cic">Z</span><span class="sp-clb">Segmented</span></button>
 <button class="sp-cls-tab" onclick="spCls('gauge-en','glow',this)"><span class="sp-cic">G</span><span class="sp-clb">Glow</span></button>
 <button class="sp-cls-tab" onclick="spCls('gauge-en','concentric',this)"><span class="sp-cic">C</span><span class="sp-clb">Concentric</span></button>
+<button class="sp-cls-tab" onclick="spCls('gauge-en','sparkline',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Sparkline</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="gauge-en-basic">
@@ -111,6 +112,15 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/gauge-concentric.html"></iframe>
 </div>
+
+<div class="sp-variant" id="gauge-en-sparkline">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"sparkline"</code></span><span><strong>Aliases</strong> <code>sparkline / trend / history / with_trend</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Gauge + trend sparkline fusion: the same arc, needle and value readout, with a small line chart of recent history (<code>history</code> array) drawn beneath — the current reading in context, without needing a second chart.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/gauge-sparkline.html"></iframe>
+</div>
 </div>
 </div>
 
@@ -151,6 +161,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('gauge-fr','segmented',this)"><span class="sp-cic">Z</span><span class="sp-clb">Segmented</span></button>
 <button class="sp-cls-tab" onclick="spCls('gauge-fr','glow',this)"><span class="sp-cic">G</span><span class="sp-clb">Glow</span></button>
 <button class="sp-cls-tab" onclick="spCls('gauge-fr','concentric',this)"><span class="sp-cic">C</span><span class="sp-clb">Concentric</span></button>
+<button class="sp-cls-tab" onclick="spCls('gauge-fr','sparkline',this)"><span class="sp-cic">⌇</span><span class="sp-clb">Sparkline</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="gauge-fr-basic">
@@ -216,6 +227,15 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/gauge-concentric.html"></iframe>
+</div>
+
+<div class="sp-variant" id="gauge-fr-sparkline">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"sparkline"</code></span><span><strong>Alias</strong> <code>sparkline / trend / history / with_trend</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fusion gauge + sparkline de tendance : le même arc, la même aiguille et la valeur affichée, avec un petit graphique en ligne de l'historique récent (tableau <code>history</code>) dessiné en dessous — la mesure actuelle mise en contexte, sans avoir besoin d'un second graphique.</p>
+
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/gauge-sparkline.html"></iframe>
 </div>
 </div>
 </div>

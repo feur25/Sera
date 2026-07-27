@@ -8,6 +8,7 @@ pub mod glow;
 pub mod radial;
 pub mod segmented;
 pub mod sleek;
+pub mod sparkline;
 pub mod tick;
 pub mod variant;
 
@@ -25,6 +26,7 @@ pub fn render_gauge_html(cfg: &GaugeConfig) -> String {
         Segmented => segmented::render(cfg),
         Glow => glow::render(cfg),
         Concentric => concentric::render(cfg),
+        Sparkline => sparkline::render(cfg),
     }
 }
 
@@ -41,6 +43,7 @@ pub fn build(input: &str) -> String {
     let variant = GaugeVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
     let comparison = o.comparison.unwrap_or(0.0);
     let lbl = o.label.as_deref().unwrap_or("").to_string();
+    let history = o.history.clone().unwrap_or_default();
     let html = render_gauge_html(&GaugeConfig {
         variant,
         title,
@@ -49,6 +52,7 @@ pub fn build(input: &str) -> String {
         max_val: o.max_val.unwrap_or(100.0),
         label: &lbl,
         comparison,
+        history: &history,
         width: o.w(400),
         height: o.h(300),
         hover: &hover,
