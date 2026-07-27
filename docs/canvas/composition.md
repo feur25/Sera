@@ -467,17 +467,21 @@ universities, actions and impact outcomes around a dense central network of
 `wedge`+`polar` build the outer capsule-segment rings — angular width
 proportional to story count per discipline, so the ring itself carries data
 instead of just decorating — `polygon`+`rect` build the hexagon impact
-clusters and their pill-shaped outcome labels, `circle`/`rect(rotation=45)`
-place the story/people nodes, `connector` draws every curved edge, and
-`link()` ties related elements — a hexagon cluster and every story it
-touches, a university and its disciplines, an action's color segments — into
-shared hover-glow groups. Two real charts get `place()`d straight into the
-canvas's empty corners rather than boxed on top of it: a `sp.bubble()` "story
-constellation" stripped of axes/background and circle-clipped so it reads as
-one more circular motif, and a `sp.radar()` reach summary (already
-axis-free, being a polar chart) — both summarizing the same dataset the
-hand-drawn diagram encodes. Composition isn't an alternative to SeraPlot's
-chart functions, it's a way to combine them with hand-drawn diagrams in one
+clusters and their pill-shaped outcome labels, `connector` draws every curved
+edge, and `link()` ties related elements — a hexagon cluster and every story
+it touches, a university and its disciplines, an action's color segments —
+into shared hover-glow groups. The story nodes themselves are a real,
+`place()`d `sp.bubble()` chart rather than hand-drawn circles — its actual
+rendered positions are read back out of its own SVG (by `data-idx`, since
+`bubble()` reorders its DOM by category) so every connector line lands
+exactly on a real dot, with a fully transparent same-position `circle()` as
+the `link()` target `bubble()`'s own iframe can't expose directly. Two more
+real charts get `place()`d straight into the canvas's empty corners rather
+than boxed on top of it: a `sp.bubble()` "story constellation" stripped of
+axes/background and circle-clipped so it reads as one more circular motif,
+and a `sp.radar()` reach summary (already axis-free, being a polar chart) —
+both summarizing the same dataset the diagram encodes. Composition isn't an
+alternative to SeraPlot's chart functions, it's a way to combine them in one
 scene.
 
 The full, runnable version (with the synthetic dataset, the university/action
@@ -1373,18 +1377,28 @@ est un diagramme réseau d3.js/Canvas qui organise les disciplines, les
 universités, les actions et les résultats d'impact d'un programme de
 recherche autour d'un réseau central dense de « stories » et de
 « personnes ». Rien de tout cela ne nécessite un type « graphique réseau »
-dédié : `wedge`+`polar` construisent les anneaux extérieurs en capsules,
+dédié : `wedge`+`polar` construisent les anneaux extérieurs en capsules —
+largeur angulaire proportionnelle au nombre de stories par discipline,
+donc l'anneau lui-même porte de la donnée au lieu de seulement décorer —
 `polygon`+`rect` construisent les clusters hexagonaux d'impact et leurs
-étiquettes en pilule, `circle`/`rect(rotation=45)` placent les nœuds
-story/personne, `connector` trace chaque arête courbe, et `link()` relie
-les éléments connexes — un cluster hexagonal et chaque story qui le
+étiquettes en pilule, `connector` trace chaque arête courbe, et `link()`
+relie les éléments connexes — un cluster hexagonal et chaque story qui le
 touche, une université et ses disciplines, les segments de couleur d'une
-action — en groupes de survol partagés. Deux vrais charts
-`sp.bar()`/`sp.radar()` sont `place()`és directement dans les coins vides
-du canvas, résumant le même jeu de données que le diagramme dessiné à la
-main encode — la composition n'est pas une alternative aux fonctions de
-chart de SeraPlot, c'est un moyen de les combiner avec des diagrammes
-dessinés à la main dans une seule scène.
+action — en groupes de survol partagés. Les nœuds story sont eux-mêmes un
+vrai chart `sp.bubble()` `place()`é, pas des cercles dessinés à la main —
+ses positions réellement rendues sont relues depuis son propre SVG (via
+`data-idx`, car `bubble()` réordonne son DOM par catégorie) pour que
+chaque ligne de connexion tombe exactement sur un vrai point, avec un
+`circle()` transparent à la même position comme cible de `link()`, ce que
+l'iframe propre de `bubble()` ne peut pas exposer directement. Deux
+autres vrais charts sont `place()`és directement dans les coins vides du
+canvas plutôt qu'encadrés par-dessus : un `sp.bubble()` « constellation
+de stories » débarrassé de ses axes/fond et rogné en cercle pour se
+lire comme un motif circulaire de plus, et un `sp.radar()` résumant la
+portée (déjà sans axes, étant un chart polaire) — tous deux résumant le
+même jeu de données que le diagramme encode. La composition n'est pas
+une alternative aux fonctions de chart de SeraPlot, c'est un moyen de
+les combiner dans une seule scène.
 
 La version complète et exécutable (avec le jeu de données synthétique, les
 groupes de survol université/action, et les deux charts intégrés) se
