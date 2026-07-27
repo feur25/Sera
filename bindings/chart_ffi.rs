@@ -75,147 +75,35 @@ pub extern "C" fn sera_chart_to_svg(chart: *const Chart) -> *mut c_char {
 }
 
 #[no_mangle]
-pub extern "C" fn sera_chart_inject_css(chart: *const Chart, css: *const c_char) -> *mut Chart {
-    if chart.is_null() || css.is_null() {
+pub unsafe extern "C" fn sera_chart_call(
+    chart: *const Chart,
+    method: *const c_char,
+    args_json: *const c_char,
+) -> *mut Chart {
+    if chart.is_null() || method.is_null() {
         return std::ptr::null_mut();
     }
-    let c = unsafe { &*chart };
-    let s = match unsafe { CStr::from_ptr(css) }.to_str() {
-        Ok(s) => s,
-        Err(_) => return std::ptr::null_mut(),
-    };
-    Box::into_raw(Box::new(c.inject_css(s)))
-}
-
-#[no_mangle]
-pub extern "C" fn sera_chart_inject_js(chart: *const Chart, js: *const c_char) -> *mut Chart {
-    if chart.is_null() || js.is_null() {
-        return std::ptr::null_mut();
-    }
-    let c = unsafe { &*chart };
-    let s = match unsafe { CStr::from_ptr(js) }.to_str() {
-        Ok(s) => s,
-        Err(_) => return std::ptr::null_mut(),
-    };
-    Box::into_raw(Box::new(c.inject_js(s)))
-}
-
-#[no_mangle]
-pub extern "C" fn sera_chart_set_bg(chart: *const Chart, color: *const c_char) -> *mut Chart {
-    if chart.is_null() {
-        return std::ptr::null_mut();
-    }
-    let c = unsafe { &*chart };
-    let col = if color.is_null() {
-        None
+    let method = unsafe { CStr::from_ptr(method) }.to_str().unwrap_or("");
+    let args = if args_json.is_null() {
+        "{}"
     } else {
-        unsafe { CStr::from_ptr(color) }.to_str().ok()
+        unsafe { CStr::from_ptr(args_json) }.to_str().unwrap_or("{}")
     };
-    Box::into_raw(Box::new(c.set_bg(col)))
+    let html = &unsafe { &*chart }.html;
+    match crate::bindings::method_registry::apply_by_name(html, method, args) {
+        Some(html) => Box::into_raw(Box::new(Chart { html, doc_str: "" })),
+        None => std::ptr::null_mut(),
+    }
 }
 
 #[no_mangle]
-pub extern "C" fn sera_chart_no_background(chart: *const Chart) -> *mut Chart {
-    if chart.is_null() {
-        return std::ptr::null_mut();
-    }
-    Box::into_raw(Box::new(unsafe { &*chart }.no_background()))
-}
-
-#[no_mangle]
-pub extern "C" fn sera_chart_no_x_axis(chart: *const Chart) -> *mut Chart {
-    if chart.is_null() {
-        return std::ptr::null_mut();
-    }
-    Box::into_raw(Box::new(unsafe { &*chart }.no_x_axis()))
-}
-
-#[no_mangle]
-pub extern "C" fn sera_chart_no_y_axis(chart: *const Chart) -> *mut Chart {
-    if chart.is_null() {
-        return std::ptr::null_mut();
-    }
-    Box::into_raw(Box::new(unsafe { &*chart }.no_y_axis()))
-}
-
-#[no_mangle]
-pub extern "C" fn sera_chart_no_axes(chart: *const Chart) -> *mut Chart {
-    if chart.is_null() {
-        return std::ptr::null_mut();
-    }
-    Box::into_raw(Box::new(unsafe { &*chart }.no_axes()))
-}
-
-#[no_mangle]
-pub extern "C" fn sera_chart_show_grid(chart: *const Chart) -> *mut Chart {
-    if chart.is_null() {
-        return std::ptr::null_mut();
-    }
-    Box::into_raw(Box::new(unsafe { &*chart }.show_grid()))
-}
-
-#[no_mangle]
-pub extern "C" fn sera_chart_hide_grid(chart: *const Chart) -> *mut Chart {
-    if chart.is_null() {
-        return std::ptr::null_mut();
-    }
-    Box::into_raw(Box::new(unsafe { &*chart }.hide_grid()))
-}
-
-#[no_mangle]
-pub extern "C" fn sera_chart_responsive(chart: *const Chart) -> *mut Chart {
-    if chart.is_null() {
-        return std::ptr::null_mut();
-    }
-    Box::into_raw(Box::new(unsafe { &*chart }.responsive()))
-}
-
-#[no_mangle]
-pub extern "C" fn sera_chart_flip(chart: *const Chart) -> *mut Chart {
-    if chart.is_null() {
-        return std::ptr::null_mut();
-    }
-    Box::into_raw(Box::new(unsafe { &*chart }.flip()))
-}
-
-#[no_mangle]
-pub extern "C" fn sera_chart_crosshair(chart: *const Chart) -> *mut Chart {
-    if chart.is_null() {
-        return std::ptr::null_mut();
-    }
-    Box::into_raw(Box::new(unsafe { &*chart }.crosshair()))
-}
-
-#[no_mangle]
-pub extern "C" fn sera_chart_zoom(chart: *const Chart) -> *mut Chart {
-    if chart.is_null() {
-        return std::ptr::null_mut();
-    }
-    Box::into_raw(Box::new(unsafe { &*chart }.zoom()))
-}
-
-#[no_mangle]
-pub extern "C" fn sera_chart_no_legend(chart: *const Chart) -> *mut Chart {
-    if chart.is_null() {
-        return std::ptr::null_mut();
-    }
-    Box::into_raw(Box::new(unsafe { &*chart }.no_legend()))
-}
-
-#[no_mangle]
-pub extern "C" fn sera_chart_no_title(chart: *const Chart) -> *mut Chart {
-    if chart.is_null() {
-        return std::ptr::null_mut();
-    }
-    Box::into_raw(Box::new(unsafe { &*chart }.no_title()))
-}
-
-#[no_mangle]
-pub extern "C" fn sera_chart_export_button(chart: *const Chart) -> *mut Chart {
-    if chart.is_null() {
-        return std::ptr::null_mut();
-    }
-    Box::into_raw(Box::new(unsafe { &*chart }.export_button()))
+pub extern "C" fn sera_chart_methods_json() -> *mut c_char {
+    let names: Vec<&str> = crate::bindings::method_registry::iter_entries()
+        .map(|e| e.name)
+        .collect();
+    CString::new(serde_json::to_string(&names).unwrap_or_default())
+        .unwrap_or_default()
+        .into_raw()
 }
 
 #[no_mangle]
