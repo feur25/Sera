@@ -120,6 +120,31 @@ fn js_method_blocks(
                 });
                 call_args.push(quote! { #var });
             }
+            "bool" => {
+                let d = default.unwrap_or_else(|| quote! { false });
+                decls.push(quote! {
+                    let #var: bool = __args.get(#name).and_then(|v| v.as_bool()).unwrap_or(#d);
+                });
+                call_args.push(quote! { #var });
+            }
+            "Vec<u32>" => {
+                decls.push(quote! {
+                    let #var: Vec<u32> = __args.get(#name).and_then(|v| v.as_array()).map(|a| a.iter().filter_map(|x| x.as_u64().map(|y| y as u32)).collect()).unwrap_or_default();
+                });
+                call_args.push(quote! { #var });
+            }
+            "Vec<String>" => {
+                decls.push(quote! {
+                    let #var: Vec<String> = __args.get(#name).and_then(|v| v.as_array()).map(|a| a.iter().filter_map(|x| x.as_str().map(|s| s.to_string())).collect()).unwrap_or_default();
+                });
+                call_args.push(quote! { #var });
+            }
+            "Option<Vec<String>>" => {
+                decls.push(quote! {
+                    let #var: Option<Vec<String>> = __args.get(#name).and_then(|v| v.as_array()).map(|a| a.iter().filter_map(|x| x.as_str().map(|s| s.to_string())).collect());
+                });
+                call_args.push(quote! { #var });
+            }
             "&str" => {
                 let d = default.unwrap_or_else(|| quote! { "" });
                 decls.push(quote! {
