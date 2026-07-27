@@ -7,5 +7,6 @@ crate::plot_family! {
         Dashed   => "dashed" | "dash" | "dotted",
         Stacked  => "stacked" | "stack" | "cumulative",
         PolarBar => "polar_bar" | "polar" | "bar" | "radial_bar",
+        Band     => "band" | "range" | "uncertainty" | "minmax",
     }
 }

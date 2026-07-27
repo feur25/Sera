@@ -1,4 +1,5 @@
 use crate::plot::{apply, parse_all};
+pub mod band;
 pub mod basic;
 pub mod common;
 pub mod config;
@@ -23,6 +24,7 @@ pub fn render_radar_html(cfg: &RadarConfig) -> String {
         Dashed => dashed::render(cfg),
         Stacked => stacked::render(cfg),
         PolarBar => polar_bar::render(cfg),
+        Band => band::render(cfg),
     }
 }
 

@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('radar-en','dashed',this)"><span class="sp-cic">D</span><span class="sp-clb">Dashed</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-en','stacked',this)"><span class="sp-cic">S</span><span class="sp-clb">Stacked</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-en','polar_bar',this)"><span class="sp-cic">P</span><span class="sp-clb">PolarBar</span></button>
+<button class="sp-cls-tab" onclick="spCls('radar-en','band',this)"><span class="sp-cic">▨</span><span class="sp-clb">Band</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="radar-en-basic">
@@ -87,6 +88,13 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-polar_bar.html"></iframe>
 </div>
+
+<div class="sp-variant" id="radar-en-band">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"band"</code></span><span><strong>Aliases</strong> <code>band / range / uncertainty / minmax</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Radar + uncertainty band fusion: instead of one line per series, each group gets a shaded ring between a low and a high bound per axis, with a dashed midline and markers — pass <code>series</code> as low/high pairs (<code>[group1_low, group1_high, group2_low, group2_high, ...]</code>). Ideal for confidence intervals, min/max ranges or forecast spreads across multiple dimensions at once.</p>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/radar-band.html"></iframe>
+</div>
 </div></div>
 
 </div><!-- /lang-en -->
@@ -126,6 +134,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('radar-fr','dashed',this)"><span class="sp-cic">D</span><span class="sp-clb">Dashed</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-fr','stacked',this)"><span class="sp-cic">S</span><span class="sp-clb">Stacked</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-fr','polar_bar',this)"><span class="sp-cic">P</span><span class="sp-clb">PolarBar</span></button>
+<button class="sp-cls-tab" onclick="spCls('radar-fr','band',this)"><span class="sp-cic">▨</span><span class="sp-clb">Bande</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="radar-fr-basic">
@@ -169,6 +178,13 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Barres radiales par axe groupées par série — histogramme polaire catégoriel.</p>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-polar_bar.html"></iframe>
+</div>
+
+<div class="sp-variant" id="radar-fr-band">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"band"</code></span><span><strong>Alias</strong> <code>band / range / uncertainty / minmax</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fusion radar + bande d'incertitude : au lieu d'une ligne par série, chaque groupe reçoit un anneau ombré entre une borne basse et haute par axe, avec une ligne médiane en pointillés et des marqueurs — passez <code>series</code> comme des paires bas/haut (<code>[groupe1_bas, groupe1_haut, groupe2_bas, groupe2_haut, ...]</code>). Idéal pour des intervalles de confiance, des plages min/max ou des écarts de prévision sur plusieurs dimensions à la fois.</p>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/radar-band.html"></iframe>
 </div>
 </div></div>
 
