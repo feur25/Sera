@@ -439,11 +439,16 @@ fn render_el(el: &El, defs: &mut String, body: &mut String) {
                 String::new()
             };
             let lines: Vec<&str> = content.split('\n').collect();
+            let pe = if group.is_empty() {
+                String::new()
+            } else {
+                " pointer-events=\"all\"".to_string()
+            };
             body.push_str(&format!(
                 "<text x=\"{:.2}\" y=\"{:.2}\" font-size=\"{:.2}\" fill=\"{}\" \
                  opacity=\"{:.4}\" font-weight=\"{}\" text-anchor=\"{}\" \
-                 font-family=\"{}\" letter-spacing=\"{:.2}\"{}{}{}>\n",
-                x, y, size, color, opacity, weight, anchor, font, ls, rot, name_attr(name), grp_attr(group)
+                 font-family=\"{}\" letter-spacing=\"{:.2}\"{}{}{}{}>\n",
+                x, y, size, color, opacity, weight, anchor, font, ls, rot, name_attr(name), grp_attr(group), pe
             ));
             for (i, line) in lines.iter().enumerate() {
                 let dy = if i == 0 { 0.0 } else { size * 1.25 };
@@ -568,7 +573,7 @@ fn render_el(el: &El, defs: &mut String, body: &mut String) {
                 body.push_str(&format!(
                     "<circle class=\"sp-anch\" data-sp-grp=\"{}\" data-r=\"{:.2}\" \
                      cx=\"{:.2}\" cy=\"{:.2}\" r=\"{:.2}\" fill=\"{}\" \
-                     stroke=\"{}\" stroke-width=\"{:.2}\" opacity=\"{:.4}\"{} pointer-events=\"none\"/>\n",
+                     stroke=\"{}\" stroke-width=\"{:.2}\" opacity=\"{:.4}\"{} pointer-events=\"all\"/>\n",
                     group, r, cx, cy, r, fill, stroke, sw, opacity, name_attr(name)
                 ));
             }
@@ -644,11 +649,16 @@ fn render_el(el: &El, defs: &mut String, body: &mut String) {
             } else {
                 String::new()
             };
+            let pe = if group.is_empty() {
+                String::new()
+            } else {
+                " pointer-events=\"all\"".to_string()
+            };
             body.push_str(&format!(
                 "<rect x=\"{:.2}\" y=\"{:.2}\" width=\"{:.2}\" height=\"{:.2}\" \
                  fill=\"{}\" stroke=\"{}\" stroke-width=\"{:.2}\" rx=\"{:.2}\" \
-                 opacity=\"{:.4}\"{}{}{}/>\n",
-                x, y, w, h, fill, stroke, sw, rx, opacity, rot, name_attr(name), grp_attr(group)
+                 opacity=\"{:.4}\"{}{}{}{}/>\n",
+                x, y, w, h, fill, stroke, sw, rx, opacity, rot, name_attr(name), grp_attr(group), pe
             ));
         }
 
