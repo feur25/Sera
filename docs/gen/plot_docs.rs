@@ -18,6 +18,103 @@ struct MethodDocEntry {
     params: Vec<MethodDocParam>,
 }
 
+struct PaletteThemePreset {
+    name: String,
+    bg: Option<String>,
+    palette: Vec<String>,
+    gridlines: bool,
+}
+
+fn const_block_body<'a>(src: &'a str, const_ident: &str) -> Option<&'a str> {
+    let needle = format!("const {const_ident}:");
+    let start = src.find(&needle)? + needle.len();
+    let open = start + src[start..].find('{')?;
+    let close = open + src[open..].find("};")?;
+    Some(&src[open + 1..close])
+}
+
+fn extract_bg(block: &str) -> Option<String> {
+    let pos = block.find("bg:")? + 3;
+    let rest = block[pos..].trim_start();
+    if rest.starts_with("None") {
+        return None;
+    }
+    let after_some = rest.strip_prefix("Some(")?.trim_start();
+    let (s, _) = extract_quoted_string(after_some)?;
+    Some(s)
+}
+
+fn extract_palette(block: &str) -> Vec<String> {
+    let Some(pos) = block.find("palette:") else {
+        return Vec::new();
+    };
+    let rest = &block[pos + 8..];
+    let Some(open) = rest.find('[') else {
+        return Vec::new();
+    };
+    let Some(close) = rest[open..].find(']') else {
+        return Vec::new();
+    };
+    rest[open + 1..open + close]
+        .split(',')
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty())
+        .map(|s| s.to_string())
+        .collect()
+}
+
+fn extract_gridlines(block: &str) -> bool {
+    block
+        .find("gridlines:")
+        .map(|p| block[p + 10..].trim_start().starts_with("true"))
+        .unwrap_or(false)
+}
+
+fn parse_palette_theme_presets(lib_src: &str) -> Vec<PaletteThemePreset> {
+    let mut out = Vec::new();
+    let Some(fn_pos) = lib_src.find("fn resolve_theme(") else {
+        return out;
+    };
+    let Some(body_start) = lib_src[fn_pos..].find('{') else {
+        return out;
+    };
+    let Some(body_end) = lib_src[fn_pos + body_start..].find("\n}") else {
+        return out;
+    };
+    let body = &lib_src[fn_pos + body_start..fn_pos + body_start + body_end];
+    let mut cur = 0;
+    while let Some(quote_pos) = body[cur..].find('"') {
+        let quote_start = cur + quote_pos;
+        let Some((name, len)) = extract_quoted_string(&body[quote_start..]) else {
+            break;
+        };
+        let after_name = quote_start + len;
+        let Some(arrow_pos) = body[after_name..].find("=>") else {
+            break;
+        };
+        let after_arrow = after_name + arrow_pos + 2;
+        let Some(amp_pos) = body[after_arrow..].find('&') else {
+            break;
+        };
+        let ident_start = after_arrow + amp_pos + 1;
+        let ident_tail = &body[ident_start..];
+        let ident_end = ident_tail
+            .find(|c: char| !(c.is_ascii_alphanumeric() || c == '_'))
+            .unwrap_or(ident_tail.len());
+        let const_ident = &ident_tail[..ident_end];
+        if let Some(block) = const_block_body(lib_src, const_ident) {
+            out.push(PaletteThemePreset {
+                name,
+                bg: extract_bg(block),
+                palette: extract_palette(block),
+                gridlines: extract_gridlines(block),
+            });
+        }
+        cur = ident_start + ident_end;
+    }
+    out
+}
+
 fn extract_quoted_string(s: &str) -> Option<(String, usize)> {
     if !s.starts_with('"') {
         return None;
@@ -726,6 +823,36 @@ pub fn write_registry(
             js.push_str("\",fr:\"");
             js.push_str(&doc_js_str(&p.fr));
             js.push_str("\"}");
+        }
+        js.push_str("]}");
+    }
+    js.push_str("],paletteThemes:[");
+    let palette_themes = parse_palette_theme_presets(&lib_src);
+    for (i, t) in palette_themes.iter().enumerate() {
+        if i > 0 {
+            js.push(',');
+        }
+        js.push_str("{name:\"");
+        js.push_str(&crate::build_common::js_escape(&t.name));
+        js.push_str("\",bg:");
+        match &t.bg {
+            Some(bg) => {
+                js.push('"');
+                js.push_str(&crate::build_common::js_escape(bg));
+                js.push('"');
+            }
+            None => js.push_str("null"),
+        }
+        js.push_str(",gridlines:");
+        js.push_str(if t.gridlines { "true" } else { "false" });
+        js.push_str(",palette:[");
+        for (pi, hex) in t.palette.iter().enumerate() {
+            if pi > 0 {
+                js.push(',');
+            }
+            js.push('"');
+            js.push_str(&crate::build_common::js_escape(hex));
+            js.push('"');
         }
         js.push_str("]}");
     }
