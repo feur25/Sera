@@ -2,8 +2,10 @@ use super::common::{clone_cfg, hierarchical_dendrogram, render_core, Dendrogram}
 use super::config::HeatmapConfig;
 use crate::plot::statistical::common::{push_b, push_f2};
 
-const EXTRA_PAD_LEFT: i32 = 70;
-const EXTRA_PAD_TOP: i32 = 60;
+const EXTRA_PAD_LEFT: i32 = 56;
+const EXTRA_PAD_TOP: i32 = 52;
+const CHAR_W: f64 = 5.3;
+const GAP: f64 = 6.0;
 
 #[crate::chart_demo("labels=[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\"], col_labels=[\"8h\",\"12h\",\"16h\",\"20h\"], values=[5,9,7,3,6,12,10,4,8,15,13,7,4,8,11,5,3,7,9,2]")]
 
@@ -90,23 +92,46 @@ pub fn render(cfg: &HeatmapConfig) -> String {
     let mut b = Vec::<u8>::with_capacity(
         (row_dendro.merges.len() + col_dendro.merges.len()) * 200 + 256,
     );
-    draw_row_dendrogram(&mut b, &row_dendro, pad_top, cell_h_uni);
-    draw_col_dendrogram(&mut b, &col_dendro, pad_left, cell_w_uni);
+    draw_row_dendrogram(&mut b, &row_dendro, &new_rows, pad_left, pad_top, cell_h_uni);
+    draw_col_dendrogram(
+        &mut b,
+        &col_dendro,
+        &new_cols,
+        pad_left,
+        pad_top,
+        cell_w_uni,
+        c.col_label_angle,
+    );
     let dendro_svg = unsafe { String::from_utf8_unchecked(b) };
     html.replacen("</svg>", &format!("{}</svg>", dendro_svg), 1)
 }
 
-fn draw_row_dendrogram(buf: &mut Vec<u8>, d: &Dendrogram, pad_top: i32, cell_h: i32) {
-    let x0 = 14.0;
-    let x1 = 64.0;
+fn label_px_w(label: &str) -> f64 {
+    label.chars().count().min(14) as f64 * CHAR_W
+}
+
+fn draw_row_dendrogram(
+    buf: &mut Vec<u8>,
+    d: &Dendrogram,
+    labels: &[String],
+    pad_left: i32,
+    pad_top: i32,
+    cell_h: i32,
+) {
+    let root_x = 12.0;
+    let leaf_ref_x = pad_left as f64 - 5.0 - GAP;
     let mh = d.max_height;
-    let x_of = |h: f64| x1 - (h / mh) * (x1 - x0);
+    let x_of = |h: f64| leaf_ref_x - (h / mh) * (leaf_ref_x - root_x);
     let y_of = |pos: f64| pad_top as f64 + (pos + 0.5) * cell_h as f64;
+    let leaf_tip_x = |pos: f64| -> f64 {
+        let lbl = labels.get(pos.round() as usize).map(String::as_str).unwrap_or("");
+        (pad_left as f64 - 5.0 - label_px_w(lbl) - GAP).max(root_x)
+    };
     for m in &d.merges {
         let yl = y_of(m.xl);
         let yr = y_of(m.xr);
-        let xlh = x_of(m.hl);
-        let xrh = x_of(m.hr);
+        let xlh = if m.hl <= 1e-9 { leaf_tip_x(m.xl) } else { x_of(m.hl) };
+        let xrh = if m.hr <= 1e-9 { leaf_tip_x(m.xr) } else { x_of(m.hr) };
         let xm = x_of(m.h);
         hline(buf, xlh, xm, yl);
         hline(buf, xrh, xm, yr);
@@ -114,17 +139,31 @@ fn draw_row_dendrogram(buf: &mut Vec<u8>, d: &Dendrogram, pad_top: i32, cell_h: 
     }
 }
 
-fn draw_col_dendrogram(buf: &mut Vec<u8>, d: &Dendrogram, pad_left: i32, cell_w: i32) {
-    let y0 = 28.0;
-    let y1 = 80.0;
+fn draw_col_dendrogram(
+    buf: &mut Vec<u8>,
+    d: &Dendrogram,
+    labels: &[String],
+    pad_left: i32,
+    pad_top: i32,
+    cell_w: i32,
+    angle_deg: i32,
+) {
+    let root_y = 26.0;
+    let leaf_ref_y = pad_top as f64 - 8.0 - GAP;
     let mh = d.max_height;
-    let y_of = |h: f64| y1 - (h / mh) * (y1 - y0);
+    let angle_rad = (angle_deg as f64).to_radians();
+    let sin_a = angle_rad.sin().abs().max(0.05);
+    let y_of = |h: f64| leaf_ref_y - (h / mh) * (leaf_ref_y - root_y);
     let x_of = |pos: f64| pad_left as f64 + (pos + 0.5) * cell_w as f64;
+    let leaf_tip_y = |pos: f64| -> f64 {
+        let lbl = labels.get(pos.round() as usize).map(String::as_str).unwrap_or("");
+        (pad_top as f64 - 8.0 - label_px_w(lbl) * sin_a - GAP).max(root_y)
+    };
     for m in &d.merges {
         let xl = x_of(m.xl);
         let xr = x_of(m.xr);
-        let ylh = y_of(m.hl);
-        let yrh = y_of(m.hr);
+        let ylh = if m.hl <= 1e-9 { leaf_tip_y(m.xl) } else { y_of(m.hl) };
+        let yrh = if m.hr <= 1e-9 { leaf_tip_y(m.xr) } else { y_of(m.hr) };
         let ym = y_of(m.h);
         vline(buf, xl, ylh, ym);
         vline(buf, xr, yrh, ym);
