@@ -46,6 +46,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('treemap-en','nested',this)"><span class="sp-cic">N</span><span class="sp-clb">Nested</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-en','heat',this)"><span class="sp-cic">H</span><span class="sp-clb">Heat</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-en','mono',this)"><span class="sp-cic">M</span><span class="sp-clb">Mono</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-en','trend',this)"><span class="sp-cic">▲</span><span class="sp-clb">Trend</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -112,6 +113,15 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/treemap-mono.html"></iframe>
 </div>
 
+<div class="sp-variant" id="treemap-en-trend">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"trend"</code></span><span><strong>Aliases</strong> <code>trend / change / delta / yoy</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Treemap + period-over-period change fusion: pass <code>comparisons</code> (prior-period values, aligned with <code>values</code>) and every tile big enough gets a small colored badge (▲/▼ + %) in its corner — the Finviz-style "market map" look, natively.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-trend.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -153,6 +163,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','nested',this)"><span class="sp-cic">N</span><span class="sp-clb">Nested</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','heat',this)"><span class="sp-cic">H</span><span class="sp-clb">Heat</span></button>
 <button class="sp-cls-tab" onclick="spCls('treemap-fr','mono',this)"><span class="sp-cic">M</span><span class="sp-clb">Mono</span></button>
+<button class="sp-cls-tab" onclick="spCls('treemap-fr','trend',this)"><span class="sp-cic">▲</span><span class="sp-clb">Tendance</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -217,6 +228,15 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/treemap-mono.html"></iframe>
+</div>
+
+<div class="sp-variant" id="treemap-fr-trend">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"trend"</code></span><span><strong>Alias</strong> <code>trend / change / delta / yoy</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fusion treemap + variation d'une periode a l'autre : passez <code>comparisons</code> (valeurs de la periode precedente, alignees avec <code>values</code>) et chaque case assez grande recoit un petit badge colore (▲/▼ + %) dans son coin — le look "market map" façon Finviz, nativement.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/treemap-trend.html"></iframe>
 </div>
 
 </div>

@@ -7,5 +7,6 @@ crate::plot_family! {
         Nested   => "nested" | "grouped" | "framed" | "parent",
         Heat     => "heat" | "ramp" | "magnitude" | "intensity",
         Mono     => "mono" | "monochrome" | "single" | "uniform",
+        Trend    => "trend" | "change" | "delta" | "yoy",
     }
 }

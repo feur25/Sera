@@ -8,6 +8,7 @@ pub mod heat;
 pub mod mono;
 pub mod nested;
 pub mod outlined;
+pub mod trend;
 pub mod variant;
 
 pub use config::TreemapConfig;
@@ -23,6 +24,7 @@ pub fn render_treemap_html(cfg: &TreemapConfig) -> String {
         Nested => nested::render(cfg),
         Heat => heat::render(cfg),
         Mono => mono::render(cfg),
+        Trend => trend::render(cfg),
     }
 }
 
@@ -42,6 +44,7 @@ pub fn build(input: &str) -> String {
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
     let pars = a.parents.unwrap_or_default();
+    let comparisons = o.comparisons.clone().unwrap_or_default();
     use crate::plot::statistical::{render_treemap_html, TreemapConfig, TreemapVariant};
     let hover = o.hj();
     let variant = TreemapVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
@@ -57,6 +60,7 @@ pub fn build(input: &str) -> String {
         hover: &hover,
         variant,
         show_text: o.show_text.unwrap_or(false),
+        prior_values: &comparisons,
         ..TreemapConfig::default()
     });
     apply(html, &o)
