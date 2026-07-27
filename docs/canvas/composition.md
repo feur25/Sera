@@ -546,7 +546,7 @@ cv.place(bubbles, 20, 100, 280, 280, clip="circle", name="panel-bubbles")
 chart = cv.build().zoom()
 ```
 
-<div class="sp-preview-frame"><iframe src="../previews/canvas-recitac.html?v=d9c2c258" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
+<div class="sp-preview-frame"><iframe src="../previews/canvas-recitac.html?v=860414d8" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
 
 The dataset is synthetic — the point is the *composition pattern*, not a
 literal port of Nadieh's real research-program data (which comes from a
@@ -1463,7 +1463,7 @@ cv.place(bubbles, 20, 100, 280, 280, clip="circle", name="panel-bubbles")
 chart = cv.build().zoom()
 ```
 
-<div class="sp-preview-frame"><iframe src="../previews/canvas-recitac.html?v=d9c2c258" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
+<div class="sp-preview-frame"><iframe src="../previews/canvas-recitac.html?v=860414d8" style="width:100%;height:640px;border:none;border-radius:8px;display:block;background:#ffffff" loading="lazy"></iframe></div>
 
 Le jeu de données est synthétique — l'intérêt est le *motif de
 composition*, pas un portage littéral des vraies données du programme de
