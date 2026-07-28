@@ -9,7 +9,8 @@ edition = "2021"
 authors = ["feur25"]
 description = "Rust data visualization framework - The modern Plotly alternative"
 license = "MIT"
-repository = "https://github.com/feur25/seraplot"
+repository = "https://github.com/feur25/Sera"
+homepage = "https://feur25.github.io/Sera/getting-started/intro-seraplot.html"
 readme = "README.md"
 exclude = [
     "docs/**",

@@ -10,6 +10,12 @@ requires-python = ">=3.8"
 authors = [{name = "Quentin", email = "feur09@gmail.com"}]
 license = {text = "MIT"}
 
+[project.urls]
+Homepage = "https://feur25.github.io/Sera/getting-started/intro-seraplot.html"
+Repository = "https://github.com/feur25/Sera"
+Documentation = "https://feur25.github.io/Sera/"
+Issues = "https://github.com/feur25/Sera/issues"
+
 [tool.maturin]
 features = ["python", "webapp"]
 python-source = "python"
