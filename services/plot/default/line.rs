@@ -298,11 +298,18 @@ pub fn render_lines_html(
     }
     let hx = hex6(line_color);
     push_b(&mut b, b"<polyline data-idx=\"0\" data-pts=\"");
+    let mut points_buf = Vec::<u8>::with_capacity(n * 12);
     for i in 0..n {
         if i > 0 {
             b.push(b',');
+            points_buf.push(b' ');
         }
         push_f2(&mut b, values[i]);
+        let x = pad_l + (i as f64 * step_x) as i32;
+        let y = pad_t + plot_h - ((values[i] / max_val) * plot_h as f64) as i32;
+        push_i(&mut points_buf, x);
+        points_buf.push(b',');
+        push_i(&mut points_buf, y);
     }
     push_b(&mut b, b"\" fill=\"none\" stroke=\"#");
     b.extend_from_slice(&hx);
@@ -310,16 +317,7 @@ pub fn render_lines_html(
         &mut b,
         b"\" stroke-width=\"2\" stroke-linecap=\"round\" points=\"",
     );
-    for i in 0..n {
-        let x = pad_l + (i as f64 * step_x) as i32;
-        let y = pad_t + plot_h - ((values[i] / max_val) * plot_h as f64) as i32;
-        if i > 0 {
-            b.push(b' ');
-        }
-        push_i(&mut b, x);
-        b.push(b',');
-        push_i(&mut b, y);
-    }
+    b.extend_from_slice(&points_buf);
     push_b(&mut b, b"\"/>");
     if show_points {
         let circ_step = ((n as f64 / 30.0).ceil() as usize).max(1);

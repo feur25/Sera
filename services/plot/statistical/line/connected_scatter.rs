@@ -104,19 +104,22 @@ pub fn render(cfg: &LineConfig) -> String {
         }
         push_b(&mut f.buf, b"\"/>");
 
-        for i in 0..n {
-            let v = vals.get(i).copied().unwrap_or(0.0);
-            let xi = f.pl + (i as f64 * step_x) as i32;
-            let yi = f.pt + ((1.0 - (v - mn) / range) * f.ph as f64) as i32;
-            push_b(&mut f.buf, b"<circle cx=\"");
-            push_i(&mut f.buf, xi);
-            push_b(&mut f.buf, b"\" cy=\"");
-            push_i(&mut f.buf, yi);
-            push_b(&mut f.buf, b"\" r=\"");
-            push_i(&mut f.buf, r_marker);
-            push_b(&mut f.buf, b"\" fill=\"#");
-            f.buf.extend_from_slice(&hx);
-            push_b(&mut f.buf, b"\" stroke=\"#fff\" stroke-width=\"1.5\"/>");
+        if cfg.show_points {
+            let circ_step = ((n as f64 / 400.0).ceil() as usize).max(1);
+            for i in (0..n).step_by(circ_step) {
+                let v = vals.get(i).copied().unwrap_or(0.0);
+                let xi = f.pl + (i as f64 * step_x) as i32;
+                let yi = f.pt + ((1.0 - (v - mn) / range) * f.ph as f64) as i32;
+                push_b(&mut f.buf, b"<circle cx=\"");
+                push_i(&mut f.buf, xi);
+                push_b(&mut f.buf, b"\" cy=\"");
+                push_i(&mut f.buf, yi);
+                push_b(&mut f.buf, b"\" r=\"");
+                push_i(&mut f.buf, r_marker);
+                push_b(&mut f.buf, b"\" fill=\"#");
+                f.buf.extend_from_slice(&hx);
+                push_b(&mut f.buf, b"\" stroke=\"#fff\" stroke-width=\"1.5\"/>");
+            }
         }
     }
 

@@ -126,7 +126,8 @@ pub fn render(cfg: &LineConfig) -> String {
         f.buf.extend_from_slice(&hx);
         push_b(&mut f.buf, b"\" stroke-width=\"2.4\"/>");
 
-        for i in 0..n {
+        let circ_step = ((n as f64 / 200.0).ceil() as usize).max(1);
+        for i in (0..n).step_by(circ_step) {
             let mid = (low[i] + high[i]) / 2.0;
             push_b(&mut f.buf, b"<circle data-idx=\"");
             push_i(&mut f.buf, (g * n_x + i) as i32);

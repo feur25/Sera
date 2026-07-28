@@ -15,8 +15,43 @@ pub mod variant;
 pub use config::LineConfig;
 pub use variant::LineVariant;
 
+const CANVAS_FALLBACK_THRESHOLD: usize = 3_000;
+
+fn canvas_fallback(cfg: &LineConfig) -> Option<String> {
+    use LineVariant::*;
+    if !cfg.series.is_empty() || cfg.values.len() <= CANVAS_FALLBACK_THRESHOLD {
+        return None;
+    }
+    let mode = match cfg.variant {
+        Basic | Spline | Stepped | Dashed | Gapped => crate::plot::canvas_points::MODE_LINE,
+        ConnectedScatter if !cfg.show_points => crate::plot::canvas_points::MODE_LINE,
+        _ => return None,
+    };
+    let x_values: Vec<f64> = (0..cfg.values.len()).map(|i| i as f64).collect();
+    let spec = crate::plot::canvas_points::CanvasPlotSpec {
+        title: cfg.title,
+        width: cfg.width,
+        height: cfg.height,
+        x_label: cfg.x_label,
+        y_label: cfg.y_label,
+        gridlines: cfg.gridlines,
+        mode,
+        color_hex: if cfg.color_hex != 0 {
+            cfg.color_hex
+        } else {
+            cfg.palette.first().copied().unwrap_or(0x636EFA)
+        },
+    };
+    Some(crate::plot::canvas_points::render_canvas_points_html(
+        &spec, &x_values, cfg.values,
+    ))
+}
+
 pub fn render_line_html(cfg: &LineConfig) -> String {
     use LineVariant::*;
+    if let Some(html) = canvas_fallback(cfg) {
+        return html;
+    }
     match cfg.variant {
         Basic => basic::render(cfg),
         Multi => multi::render(cfg),
@@ -84,26 +119,6 @@ pub fn build(input: &str) -> String {
         let dec = crate::plot::decimate::Decimator::new(o.max_points, &values);
         (dec.apply(labels), dec.apply(values), dec.apply(x_labels), series)
     };
-
-    if series.is_empty() && o.max_points.is_none() && o.variant.is_none() && values.len() > 3000 {
-        let x_values: Vec<f64> = (0..values.len()).map(|i| i as f64).collect();
-        let spec = crate::plot::canvas_points::CanvasPlotSpec {
-            title,
-            width: o.w(900),
-            height: o.h(480),
-            x_label: &xl,
-            y_label: &yl,
-            gridlines: o.grid(),
-            mode: crate::plot::canvas_points::MODE_LINE,
-            color_hex: if o.color_hex.unwrap_or(0) != 0 {
-                o.color_hex.unwrap_or(0)
-            } else {
-                palette.first().copied().unwrap_or(0x636EFA)
-            },
-        };
-        let html = crate::plot::canvas_points::render_canvas_points_html(&spec, &x_values, &values);
-        return apply(html, &o);
-    }
 
     let step_shape = o
         .step_shape
