@@ -19,6 +19,8 @@ fn collect_leaves(t: &ClusterTree, out: &mut Vec<usize>) {
     }
 }
 
+const CLUSTER_MAX_N: usize = 500;
+
 fn build_cluster_tree(vectors: &[Vec<f64>]) -> Option<ClusterTree> {
     let n = vectors.len();
     if n == 0 {
@@ -26,6 +28,9 @@ fn build_cluster_tree(vectors: &[Vec<f64>]) -> Option<ClusterTree> {
     }
     if n == 1 {
         return Some(ClusterTree::Leaf(0));
+    }
+    if n > CLUSTER_MAX_N {
+        return None;
     }
     let mut dist = vec![vec![0.0f64; n]; n];
     for i in 0..n {

@@ -52,7 +52,10 @@ pub fn render(cfg: &BoxplotConfig) -> String {
             b"\" stroke-opacity=\"0.65\" stroke-width=\"1.6\" stroke-dasharray=\"4,3\"/>",
         );
 
-        for &v in grp {
+        let mut escaped_cat = Vec::<u8>::with_capacity(cat.len() + 8);
+        escape_xml(&mut escaped_cat, cat);
+        let point_step = ((grp.len() as f64 / 6_000.0).ceil() as usize).max(1);
+        for &v in grp.iter().step_by(point_step) {
             if !v.is_finite() {
                 continue;
             }
@@ -61,7 +64,7 @@ pub fn render(cfg: &BoxplotConfig) -> String {
             push_b(&mut f.buf, b"<circle data-idx=\"");
             push_i(&mut f.buf, ci as i32);
             push_b(&mut f.buf, b"\" data-lbl=\"");
-            escape_xml(&mut f.buf, cat);
+            f.buf.extend_from_slice(&escaped_cat);
             push_b(&mut f.buf, b"\" data-y=\"");
             push_f2(&mut f.buf, v);
             push_b(&mut f.buf, b"\" cx=\"");

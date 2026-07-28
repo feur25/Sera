@@ -63,7 +63,8 @@ pub fn render(cfg: &ViolinConfig) -> String {
 
         let yv = |v: f64| f.pt + f.ph - ((v - vr.min) / vr.range * f.ph as f64) as i32;
         let strip_x0 = cx + (cloud_w as f64 * 0.28) as i32;
-        for &v in &g.sorted {
+        let point_step = ((g.sorted.len() as f64 / 6_000.0).ceil() as usize).max(1);
+        for &v in g.sorted.iter().step_by(point_step) {
             if !v.is_finite() {
                 continue;
             }

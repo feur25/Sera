@@ -163,6 +163,8 @@ pub fn beeswarm_offsets(py: &[i32], r: f64, max_offset: f64) -> Vec<f64> {
     let min_dist = 2.0 * r;
     for &i in &order {
         let y = py[i] as f64;
+        let start = placed.partition_point(|&(py2, _)| y - py2 >= min_dist);
+        let window = &placed[start..];
         let dx;
         let mut k = 0i32;
         loop {
@@ -173,11 +175,8 @@ pub fn beeswarm_offsets(py: &[i32], r: f64, max_offset: f64) -> Vec<f64> {
             } else {
                 -(k / 2) as f64 * step
             };
-            let collides = placed.iter().any(|&(py2, pdx)| {
+            let collides = window.iter().any(|&(py2, pdx)| {
                 let dyv = y - py2;
-                if dyv.abs() >= min_dist {
-                    return false;
-                }
                 let dxv = candidate - pdx;
                 (dxv * dxv + dyv * dyv).sqrt() < min_dist
             });

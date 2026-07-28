@@ -14,8 +14,28 @@ pub mod wave;
 pub use config::AreaConfig;
 pub use variant::AreaVariant;
 
+const CANVAS_FALLBACK_THRESHOLD: usize = 3_000;
+
 pub fn render_area_html(cfg: &AreaConfig) -> String {
     use variant::AreaVariant::*;
+    if matches!(cfg.variant, Basic | Spline | Step)
+        && cfg.series.len() == 1
+        && cfg.series[0].1.len() > CANVAS_FALLBACK_THRESHOLD
+    {
+        let values = &cfg.series[0].1;
+        let x_values: Vec<f64> = (0..values.len()).map(|i| i as f64).collect();
+        let spec = crate::plot::canvas_points::CanvasPlotSpec {
+            title: cfg.title,
+            width: cfg.width,
+            height: cfg.height,
+            x_label: cfg.x_label,
+            y_label: cfg.y_label,
+            gridlines: cfg.gridlines,
+            mode: crate::plot::canvas_points::MODE_LINE,
+            color_hex: cfg.palette.first().copied().unwrap_or(0x636EFA),
+        };
+        return crate::plot::canvas_points::render_canvas_points_html(&spec, &x_values, values);
+    }
     match cfg.variant {
         Basic => basic::render(cfg),
         Stacked => stacked::render(cfg),

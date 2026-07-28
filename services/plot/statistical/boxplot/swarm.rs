@@ -52,12 +52,16 @@ pub fn render(cfg: &BoxplotConfig) -> String {
             b"\" stroke-opacity=\"0.65\" stroke-width=\"1.6\" stroke-dasharray=\"4,3\"/>",
         );
 
+        let point_step = ((grp.len() as f64 / 4_000.0).ceil() as usize).max(1);
+        let grp: Vec<f64> = grp.iter().step_by(point_step).copied().collect();
         let py: Vec<i32> = grp
             .iter()
             .map(|&v| f.pt + f.ph - ((v - gr.y_min) / gr.range_y * f.ph as f64) as i32)
             .collect();
         let offsets = beeswarm_offsets(&py, radius, half);
 
+        let mut escaped_cat = Vec::<u8>::with_capacity(cat.len() + 8);
+        escape_xml(&mut escaped_cat, cat);
         for (pi, &v) in grp.iter().enumerate() {
             if !v.is_finite() {
                 continue;
@@ -65,7 +69,7 @@ pub fn render(cfg: &BoxplotConfig) -> String {
             push_b(&mut f.buf, b"<circle data-idx=\"");
             push_i(&mut f.buf, ci as i32);
             push_b(&mut f.buf, b"\" data-lbl=\"");
-            escape_xml(&mut f.buf, cat);
+            f.buf.extend_from_slice(&escaped_cat);
             push_b(&mut f.buf, b"\" data-y=\"");
             push_f2(&mut f.buf, v);
             push_b(&mut f.buf, b"\" cx=\"");

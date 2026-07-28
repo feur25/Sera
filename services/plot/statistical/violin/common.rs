@@ -493,7 +493,8 @@ pub fn draw_points_v_r(
     let yv = |v: f64| f.pt + f.ph - ((v - v_min) / range * f.ph as f64) as i32;
     let hx = hex6(color);
     let max_off = (half_w as f64 * 0.55).max(2.0) * jitter.clamp(0.0, 1.0);
-    for &v in &g.values {
+    let point_step = ((g.values.len() as f64 / 6_000.0).ceil() as usize).max(1);
+    for &v in g.values.iter().step_by(point_step) {
         if !v.is_finite() {
             continue;
         }

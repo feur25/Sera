@@ -14,6 +14,8 @@ pub mod variant;
 pub use config::BubbleConfig;
 pub use variant::BubbleVariant;
 
+const CANVAS_FALLBACK_THRESHOLD: usize = 3_000;
+
 pub fn render_bubble_html(cfg: &BubbleConfig) -> String {
     use crate::plot::statistical::theme::ChartTheme;
     match cfg.theme {
@@ -27,6 +29,23 @@ pub fn render_bubble_html(cfg: &BubbleConfig) -> String {
     } else {
         cfg.variant
     };
+    if matches!(v, Basic | Categorical) && cfg.x_values.len() > CANVAS_FALLBACK_THRESHOLD {
+        return crate::plot::default::scatter::render_scatter_canvas_html(
+            cfg.title,
+            cfg.x_values,
+            cfg.y_values,
+            cfg.categories,
+            cfg.palette,
+            cfg.x_label,
+            cfg.y_label,
+            cfg.color_hex,
+            cfg.width,
+            cfg.height,
+            cfg.gridlines,
+            false,
+            "linear",
+        );
+    }
     match v {
         Basic => basic::render(cfg),
         Categorical => categorical::render(cfg),
@@ -66,31 +85,6 @@ pub fn build(input: &str) -> String {
     let srt = o.srt();
     let lp = o.lp();
     let colorscale = o.colorscale.clone().unwrap_or_default();
-
-    if o.max_points.is_none()
-        && o.variant.is_none()
-        && categories.is_empty()
-        && color_values.is_empty()
-        && o.theme.is_none()
-        && x_values.len() > 3000
-    {
-        let spec = crate::plot::canvas_points::CanvasPlotSpec {
-            title,
-            width: o.w(900),
-            height: o.h(500),
-            x_label: &xl,
-            y_label: &yl,
-            gridlines: o.grid(),
-            mode: crate::plot::canvas_points::MODE_POINTS,
-            color_hex: if o.color_hex.unwrap_or(0) != 0 {
-                o.color_hex.unwrap_or(0)
-            } else {
-                palette.first().copied().unwrap_or(0x636EFA)
-            },
-        };
-        let html = crate::plot::canvas_points::render_canvas_points_html(&spec, &x_values, &y_values);
-        return apply(html, &o);
-    }
 
     let dec = crate::plot::decimate::Decimator::new(o.max_points, &y_values);
     let x_values = dec.apply(x_values);

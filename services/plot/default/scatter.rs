@@ -318,7 +318,7 @@ fn scatter_reg_curve(
     }
 }
 
-fn render_scatter_canvas_html(
+pub fn render_scatter_canvas_html(
     title: &str,
     x_values: &[f64],
     y_values: &[f64],
@@ -400,7 +400,9 @@ fn render_scatter_canvas_html(
     };
     let inv_rx = plot_w as f64 / range_x;
     let inv_ry = plot_h as f64 / range_y;
-    let mut group_raw: Vec<Vec<(i16, i16, f32, f32)>> = vec![Vec::with_capacity(n / ng + 8); ng];
+    let mut group_raw: Vec<Vec<u8>> = (0..ng)
+        .map(|_| Vec::with_capacity((n / ng + 8) * 4))
+        .collect();
     for i in 0..n {
         let px = ((x_values[i] - min_x) * inv_rx).clamp(0.0, (plot_w - 1) as f64) as i16;
         let py =
@@ -410,19 +412,10 @@ fn render_scatter_canvas_html(
         } else {
             0
         };
-        group_raw[gi].push((px, py, x_values[i] as f32, y_values[i] as f32));
+        group_raw[gi].extend_from_slice(&px.to_le_bytes());
+        group_raw[gi].extend_from_slice(&py.to_le_bytes());
     }
-    let group_b64: Vec<String> = group_raw
-        .iter()
-        .map(|pts| {
-            let mut raw = Vec::with_capacity(pts.len() * 4);
-            for &(px, py, _, _) in pts {
-                raw.extend_from_slice(&px.to_le_bytes());
-                raw.extend_from_slice(&py.to_le_bytes());
-            }
-            b64_encode(&raw)
-        })
-        .collect();
+    let group_b64: Vec<String> = group_raw.iter().map(|raw| b64_encode(raw)).collect();
     let reg_curve = if show_regression {
         scatter_reg_curve(
             x_values,

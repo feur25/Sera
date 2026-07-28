@@ -2,59 +2,61 @@ use super::types::{ChartArgs, ChartOpts};
 use serde::Deserialize;
 
 pub fn sanitize_non_finite_json(input: &str) -> String {
-    const TOKENS: [(&str, &str); 3] = [("NaN", "0"), ("Infinity", "0"), ("-Infinity", "0")];
-    let chars: Vec<char> = input.chars().collect();
-    let n = chars.len();
-    let mut out = String::with_capacity(input.len());
+    let bytes = input.as_bytes();
+    let n = bytes.len();
+    if !bytes.iter().any(|&b| b == b'N' || b == b'I' || b == b'-') {
+        return input.to_string();
+    }
+    #[inline]
+    fn is_word_byte(b: u8) -> bool {
+        b.is_ascii_alphanumeric() || b == b'_'
+    }
+    let mut out = Vec::<u8>::with_capacity(n);
     let mut in_string = false;
     let mut escaped = false;
     let mut i = 0;
-    let is_word_char = |c: char| c.is_ascii_alphanumeric() || c == '_';
     while i < n {
-        let c = chars[i];
+        let b = bytes[i];
         if in_string {
-            out.push(c);
+            out.push(b);
             if escaped {
                 escaped = false;
-            } else if c == '\\' {
+            } else if b == b'\\' {
                 escaped = true;
-            } else if c == '"' {
+            } else if b == b'"' {
                 in_string = false;
             }
             i += 1;
             continue;
         }
-        if c == '"' {
+        if b == b'"' {
             in_string = true;
-            out.push(c);
+            out.push(b);
             i += 1;
             continue;
         }
-        let mut matched = false;
-        for (token, replacement) in TOKENS.iter() {
-            let tlen = token.chars().count();
-            if i + tlen > n {
-                continue;
-            }
-            if chars[i..i + tlen].iter().collect::<String>() != *token {
-                continue;
-            }
-            let before_ok = i == 0 || !is_word_char(chars[i - 1]);
-            let after_ok = i + tlen >= n || !is_word_char(chars[i + tlen]);
+        let matched_len = if b == b'N' && bytes[i..].starts_with(b"NaN") {
+            3
+        } else if b == b'-' && bytes[i..].starts_with(b"-Infinity") {
+            9
+        } else if b == b'I' && bytes[i..].starts_with(b"Infinity") {
+            8
+        } else {
+            0
+        };
+        if matched_len > 0 {
+            let before_ok = i == 0 || !is_word_byte(bytes[i - 1]);
+            let after_ok = i + matched_len >= n || !is_word_byte(bytes[i + matched_len]);
             if before_ok && after_ok {
-                out.push_str(replacement);
-                i += tlen;
-                matched = true;
-                break;
+                out.push(b'0');
+                i += matched_len;
+                continue;
             }
         }
-        if matched {
-            continue;
-        }
-        out.push(c);
+        out.push(b);
         i += 1;
     }
-    out
+    unsafe { String::from_utf8_unchecked(out) }
 }
 
 fn parse_or_default<T: serde::de::DeserializeOwned + Default>(sanitized: &str, what: &str) -> T {
