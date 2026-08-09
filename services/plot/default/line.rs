@@ -170,7 +170,8 @@ pub fn render_lines_html(
 ) -> String {
     use crate::html::hover::{html_id, html_prefix, html_suffix, slots_to_json};
     use crate::plot::statistical::common::{
-        apply_sort, escape_xml, hex6, palette_color, push_b, push_f2, push_i, truncate,
+        apply_sort, escape_xml, hex6, palette_color, push_b, push_f2, push_i, svg_open_rescalable,
+        truncate,
     };
     let n = values.len().min(labels.len());
     if n < 2 {
@@ -193,22 +194,7 @@ pub fn render_lines_html(
     let hid = html_id();
     let mut b = Vec::<u8>::with_capacity(n * 80 + 24_000);
     html_prefix(&mut b, title, hid);
-    push_b(
-        &mut b,
-        b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"",
-    );
-    push_i(&mut b, width);
-    push_b(&mut b, b"\" height=\"");
-    push_i(&mut b, height);
-    push_b(&mut b, b"\" viewBox=\"0 0 ");
-    push_i(&mut b, width);
-    push_b(&mut b, b" ");
-    push_i(&mut b, height);
-    push_b(&mut b, b"\">");
-    push_b(
-        &mut b,
-        b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>",
-    );
+    svg_open_rescalable(&mut b, width, height, pad_l, pad_t, plot_w, plot_h);
     push_b(&mut b, b"<title>");
     escape_xml(&mut b, if title.is_empty() { "Chart" } else { title });
     push_b(&mut b, b"</title>");
@@ -381,6 +367,8 @@ fn line_trunc(s: &str, max: usize) -> &str {
     }
 }
 
+const LINE_CANVAS_FALLBACK_THRESHOLD: usize = 3_000;
+
 #[crate::sera_alias("line_chart")]
 #[crate::sera_builder]
 pub fn build_line_chart(input: &str) -> String {
@@ -388,6 +376,27 @@ pub fn build_line_chart(input: &str) -> String {
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
     let values = a.values.unwrap_or_default();
+
+    if values.len() > LINE_CANVAS_FALLBACK_THRESHOLD {
+        let x_values: Vec<f64> = (0..values.len()).map(|i| i as f64).collect();
+        let spec = crate::plot::canvas_points::CanvasPlotSpec {
+            title,
+            width: o.w(900),
+            height: o.h(480),
+            x_label: &o.xl(),
+            y_label: &o.yl(),
+            gridlines: o.grid(),
+            mode: crate::plot::canvas_points::MODE_LINE,
+            color_hex: if o.color_hex.unwrap_or(0) != 0 {
+                o.color_hex.unwrap()
+            } else {
+                0x636EFA
+            },
+        };
+        let html = crate::plot::canvas_points::render_canvas_points_html(&spec, &x_values, &values);
+        return apply(html, &o);
+    }
+
     let hover = o.hj();
     let html = crate::plot::default::render_lines_html(
         title,
@@ -404,4 +413,22 @@ pub fn build_line_chart(input: &str) -> String {
         &o.srt(),
     );
     apply(html, &o)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn render_lines_html_carries_the_data_sp_plot_bounds_attribute_used_by_legend_js_and_seravideo_masking() {
+        let labels: Vec<String> = (0..5).map(|i| i.to_string()).collect();
+        let values = vec![10.0, 20.0, 15.0, 25.0, 18.0];
+        let out = render_lines_html(
+            "t", &labels, &values, 900, 480, &[], 0x636EFA, "", "", true, false, "",
+        );
+        assert!(
+            out.contains("data-sp=\"52,36,828,396\""),
+            "render_lines_html must expose its plot bounds via the shared data-sp convention, matching pad_l=52,pad_t=36,plot_w=900-52-20,plot_h=480-36-48: {out}"
+        );
+    }
 }

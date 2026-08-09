@@ -268,6 +268,11 @@ pub struct ChartOpts {
     pub percentile_band_high: Option<f64>,
     pub percentile_band_color: Option<String>,
     pub percentile_band_opacity: Option<f64>,
+    pub error_low: Option<Vec<f64>>,
+    pub error_high: Option<Vec<f64>>,
+    pub overlay_line: Option<Vec<f64>>,
+    pub overlay_line_label: Option<String>,
+    pub capacity: Option<usize>,
 }
 
 impl ChartOpts {
