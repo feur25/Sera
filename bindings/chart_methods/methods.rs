@@ -134,7 +134,9 @@ impl Chart {
         fr = "Désactive l'infobulle au survol et supprime le surlignage des éléments au survol."
     )]
     pub fn no_hover(&self) -> Chart {
-        self.propagate(crate::html::hover::inject_before_head(&self.html, "<style>#sp-tip{display:none!important}[data-idx]{pointer-events:none!important}[data-idx]:hover{filter:none!important}</style></head>"))
+        let html = crate::html::hover::inject_before_head(&self.html, "<style>#sp-tip{display:none!important}div[id^=\"sptip\"]{display:none!important}[data-idx]{pointer-events:none!important}[data-idx]:hover{filter:none!important}</style></head>");
+        let html = crate::html::hover::inject_before_body(&html, "<script>document.querySelectorAll('canvas[id^=\"spcv\"]').forEach(function(c){c.parentNode.replaceChild(c.cloneNode(true),c);});</script></body>");
+        self.propagate(html)
     }
 
     #[sera_doc(
@@ -312,7 +314,27 @@ impl Chart {
         let h = &self.html;
         let start = h.find("<svg")?;
         let end = h.rfind("</svg>")? + 6;
-        Some(h[start..end].to_string())
+        let svg = &h[start..end];
+        let head = &h[..h.find("</head>").unwrap_or(start)];
+        let mut styles = String::new();
+        let mut cur = 0;
+        while let Some(rel) = head[cur..].find("<style>") {
+            let s = cur + rel + "<style>".len();
+            let Some(rel_end) = head[s..].find("</style>") else { break };
+            styles.push_str(&head[s..s + rel_end]);
+            cur = s + rel_end + "</style>".len();
+        }
+        if styles.is_empty() {
+            return Some(svg.to_string());
+        }
+        let tag_end = svg.find('>')? + 1;
+        let mut out = String::with_capacity(svg.len() + styles.len() + 17);
+        out.push_str(&svg[..tag_end]);
+        out.push_str("<style>");
+        out.push_str(&styles);
+        out.push_str("</style>");
+        out.push_str(&svg[tag_end..]);
+        Some(out)
     }
 
     #[sera_doc(
@@ -3143,5 +3165,74 @@ impl Chart {
             idx_js, labels_js, json_str(color)
         );
         self.propagate(crate::html::hover::inject_before_body(&self.html, &format!("<script>{}</script></body>", js)))
+    }
+}
+
+#[cfg(test)]
+mod to_svg_tests {
+    use super::Chart;
+
+    fn chart_with_head_and_svg(head_styles: &str, svg_body: &str) -> Chart {
+        let html = format!(
+            "<!DOCTYPE html><html><head>{head_styles}</head><body>{svg_body}</body></html>",
+        );
+        Chart { html, doc_str: "" }
+    }
+
+    #[test]
+    fn to_svg_carries_the_sp_bg_fill_rule_from_the_head_into_the_isolated_svg() {
+        let chart = chart_with_head_and_svg(
+            "<style>.sp-bg{fill:#ffffff}</style>",
+            "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/></svg>",
+        );
+        let svg = chart.to_svg().unwrap();
+        assert!(svg.starts_with("<svg"));
+        assert!(svg.contains(".sp-bg{fill:#ffffff}"), "background rule should travel with the isolated svg, got: {svg}");
+    }
+
+    #[test]
+    fn to_svg_carries_a_custom_background_color_set_via_apply_bg() {
+        let chart = chart_with_head_and_svg(
+            "<style>.sp-bg{fill:#0b0e18}</style>",
+            "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/></svg>",
+        );
+        let svg = chart.to_svg().unwrap();
+        assert!(svg.contains(".sp-bg{fill:#0b0e18}"));
+        assert!(!svg.contains("#ffffff"));
+    }
+
+    #[test]
+    fn to_svg_carries_axis_hiding_rules_from_the_head() {
+        let chart = chart_with_head_and_svg(
+            "<style>.sp-bg{fill:#ffffff}</style><style>.sp-ax-x,.sp-xt,.sp-xl{display:none}</style>",
+            "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/></svg>",
+        );
+        let svg = chart.to_svg().unwrap();
+        assert!(svg.contains(".sp-ax-x,.sp-xt,.sp-xl{display:none}"));
+    }
+
+    #[test]
+    fn to_svg_with_no_head_styles_returns_the_plain_svg_fragment_unchanged() {
+        let chart = chart_with_head_and_svg("", "<svg xmlns=\"http://www.w3.org/2000/svg\"><circle r=\"4\"/></svg>");
+        let svg = chart.to_svg().unwrap();
+        assert_eq!(svg, "<svg xmlns=\"http://www.w3.org/2000/svg\"><circle r=\"4\"/></svg>");
+    }
+
+    #[test]
+    fn to_svg_still_returns_none_when_there_is_no_svg_at_all() {
+        let chart = Chart { html: "<html><body>no svg here</body></html>".to_string(), doc_str: "" };
+        assert!(chart.to_svg().is_none());
+    }
+
+    #[test]
+    fn injected_style_sits_right_after_the_opening_svg_tag_not_after_its_children() {
+        let chart = chart_with_head_and_svg(
+            "<style>.sp-bg{fill:#ffffff}</style>",
+            "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"10\"><rect class=\"sp-bg\"/></svg>",
+        );
+        let svg = chart.to_svg().unwrap();
+        let style_pos = svg.find("<style>").unwrap();
+        let rect_pos = svg.find("<rect").unwrap();
+        assert!(style_pos < rect_pos, "the style block should be injected before the rect it styles, got: {svg}");
     }
 }
