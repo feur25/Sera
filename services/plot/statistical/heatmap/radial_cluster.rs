@@ -8,7 +8,12 @@ use std::f64::consts::PI;
 
 pub fn render(cfg: &HeatmapConfig) -> String {
     let nr = cfg.row_labels.len();
-    let nc = cfg.col_labels.len();
+    let cols_lbl = if cfg.col_labels.is_empty() {
+        cfg.row_labels
+    } else {
+        cfg.col_labels
+    };
+    let nc = cols_lbl.len();
     if nr == 0 || nc < 2 || cfg.flat_matrix.len() < nr * nc {
         return String::new();
     }
@@ -29,7 +34,7 @@ pub fn render(cfg: &HeatmapConfig) -> String {
         .collect();
     let dendro = hierarchical_dendrogram(&col_vectors);
     let order = &dendro.order;
-    let new_cols: Vec<String> = order.iter().map(|&i| cfg.col_labels[i].clone()).collect();
+    let new_cols: Vec<String> = order.iter().map(|&i| cols_lbl[i].clone()).collect();
     let mut new_mat = vec![0.0f64; nr * nc];
     for (nci, &orig_c) in order.iter().enumerate() {
         for r in 0..nr {
@@ -348,6 +353,16 @@ mod tests {
         let diff_ac = (pos_a as i64 - pos_c as i64).abs();
         let diff_ab = (pos_a as i64 - pos_b as i64).abs();
         assert!(diff_ac < diff_ab, "a (0.0) and c (1.0) are far closer to each other than either is to b (100.0), so clustering must place a next to c, not b");
+    }
+
+    #[test]
+    fn missing_col_labels_falls_back_to_a_square_matrix_using_row_labels_like_its_sibling_cluster_variant() {
+        let rows = vec!["r1".to_string(), "r2".to_string(), "r3".to_string()];
+        let no_cols: Vec<String> = vec![];
+        let values = vec![1.0, 2.0, 3.0, 2.0, 3.0, 4.0, 3.0, 4.0, 5.0];
+        let html = render(&cfg(&rows, &no_cols, &values));
+        assert!(!html.is_empty(), "labels+values with no col_labels must still render (title, labels, values, variant is the whole payload the playground sends)");
+        assert_eq!(html.matches("<path data-idx=").count(), 9);
     }
 
     #[test]
