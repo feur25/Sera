@@ -66,3 +66,8 @@
 .cm-tip strong{color:white;font-weight:700}
 .cm-warn{margin:1em 0;padding:12px 16px;background:rgba(251,146,60,.06);border-left:3px solid var(--sp-warn);border-radius:0 6px 6px 0;color:var(--sp-text);font-size:13.5px;line-height:1.55}
 .cm-warn strong{color:var(--sp-warn);font-weight:700}
+.cm-modnav{margin:1.4em 0}
+.cm-modnav .sp-tab-btns{overflow-x:auto}
+.cm-modnav .sp-tc{padding:16px 4px 4px}
+.cm-modcount{display:inline-block;margin-left:5px;padding:1px 6px;border-radius:999px;background:var(--sp-surface-2);color:var(--sp-text-muted);font-size:10.5px;font-weight:700}
+.sp-tb.sp-act .cm-modcount{background:rgba(99,102,241,.18);color:var(--sp-important)}

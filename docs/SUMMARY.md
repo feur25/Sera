@@ -101,6 +101,7 @@
   - [Choropleth](charts/map/choropleth.md)
 - [Canvas Composition](canvas/composition.md)
 - [Web App (sp.App)](canvas/webapp.md)
+- [Sera Pulse — Pricing & Activation](seraplot/pulse-pricing.md)
 
 ---
 

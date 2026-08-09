@@ -785,7 +785,9 @@ pub fn write_registry(
     }
     js.push_str("]},docs:[");
     let lib_src = fs::read_to_string(src_root.join("lib.rs")).unwrap_or_default();
-    let method_docs = parse_method_docs(&lib_src);
+    let mut method_docs = parse_method_docs(&lib_src);
+    let pulse_src = fs::read_to_string(src_root.join("services").join("plot").join("pulse").join("chart_methods.rs")).unwrap_or_default();
+    method_docs.extend(parse_method_docs(&pulse_src));
     for (i, entry) in method_docs.iter().enumerate() {
         if i > 0 {
             js.push(',');

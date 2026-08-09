@@ -1,5 +1,4 @@
 ﻿(function () {
-    var SELF_SRC = document.currentScript ? document.currentScript.src : "";
     var DEBOUNCE_MS = 500;
     var MONACO_BASE = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs';
 
@@ -93,10 +92,9 @@
     }
 
     function getThemeBase() {
-        if (SELF_SRC) return SELF_SRC.replace(/[^/]*$/, '') + '../wasm/';
         var parts = window.location.pathname.split('/').filter(Boolean);
         parts.pop();
-        return new Array(parts.length).join('../') + 'docs/theme/wasm/';
+        return '../'.repeat(parts.length) + 'theme/wasm/';
     }
 
     function loadMonaco(cb) {
