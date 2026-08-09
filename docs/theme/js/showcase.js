@@ -135,8 +135,8 @@
     var maps = MAPS.map(function (s) { return { slug: s, title: titleCase(s) }; });
 
     var titles = lang === "fr"
-      ? { d2: "Graphiques 2D", d3: "Graphiques 3D", map: "Cartes", count: "familles enregistrées — lu depuis le registre SeraPlot, rien de codé en dur." }
-      : { d2: "2D Charts", d3: "3D Charts", map: "Map Charts", count: "registered families — read from the SeraPlot registry, nothing hardcoded." };
+      ? { d2: "Graphiques 2D", d3: "Graphiques 3D", map: "Cartes", count: "familles enregistrées — lu depuis le registre SeraPlot" }
+      : { d2: "2D Charts", d3: "3D Charts", map: "Map Charts", count: "registered families — read from the SeraPlot registry" };
 
     var intro = document.createElement("div");
     intro.className = "sp-sc-intro";

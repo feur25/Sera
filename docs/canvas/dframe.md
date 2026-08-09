@@ -63,6 +63,15 @@ per method, matching the underlying pandas-shaped surface directly.
 
 <div data-sp-data-table data-file="canvas/dframe.md" data-modules="strings"></div>
 
+## Sera Secure — encrypted DataFrames (commercial)
+
+`SecureDFrame` is an AES-256-GCM encrypted counterpart to `SeraDFrame` —
+columns stay ciphertext at rest, decrypted only transiently for a single
+read or chart render. It's a **paid add-on**, not part of the free/open-source
+surface documented above: full description and method reference are on the
+[Sera Pulse pricing page](../seraplot/pulse-pricing.md), alongside the rest
+of SeraPlot's paid catalog.
+
 </div>
 
 <div class="lang-fr">
@@ -129,5 +138,15 @@ canonique par méthode, reflétant directement la surface pandas sous-jacente.
 <h2>Méthodes de chaînes</h2>
 
 <div data-sp-data-table data-file="canvas/dframe.md" data-modules="strings"></div>
+
+<h2>Sera Secure — DataFrames chiffrés (commercial)</h2>
+
+`SecureDFrame` est un équivalent chiffré en AES-256-GCM de `SeraDFrame` — les
+colonnes restent en texte chiffré au repos, déchiffrées seulement de façon
+transitoire pour une lecture ou un rendu de chart ponctuel. C'est un
+**module payant**, distinct de la surface gratuite/open-source documentée
+ci-dessus : description complète et référence des méthodes sur la
+[page de tarification Sera Pulse](../seraplot/pulse-pricing.md), avec le
+reste du catalogue payant de SeraPlot.
 
 </div>

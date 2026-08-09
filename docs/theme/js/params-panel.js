@@ -1,6 +1,5 @@
 window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260727t";
 (function () {
-  var SELF_SRC = document.currentScript ? document.currentScript.src : "";
   var SP_WASM_BUILD = window.SP_WASM_BUILD;
   var POS_KEY    = "sp_params_pos";
   var COL_KEY    = "sp_params_col";
@@ -1194,10 +1193,9 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260727t";
   }
 
   function themeBase() {
-    if (SELF_SRC) return SELF_SRC.replace(/[^/]*$/, "") + "../wasm/";
     var parts = window.location.pathname.split("/").filter(Boolean);
     parts.pop();
-    return new Array(parts.length).join("../") + "docs/theme/wasm/";
+    return "../".repeat(parts.length) + "theme/wasm/";
   }
 
   function ensureWasm(cb) {
@@ -1376,55 +1374,20 @@ window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260727t";
     return true;
   }
 
-  function renderRegistryMethods(el, files, lang) {
-    var all = registryJson("docs", null, null);
-    if (!all) return false;
-    var fileList = files.split(",").map(function (s) { return s.trim(); }).filter(Boolean);
-    var items = all.filter(function (it) { return fileList.indexOf(it.file) !== -1; });
-    if (!items.length) return false;
-    items.sort(function (a, b) { return a.name.localeCompare(b.name); });
-    var tag = lang === "fr" ? "chaînable" : "chainable";
-    el.innerHTML = items.map(function (it) {
-      var desc = (lang === "fr" ? it.fr : it.en) || (lang === "fr" ? it.en : it.fr);
-      var params = it.params || [];
-      var argNames = params.map(function (p) { return p.name; }).join(", ");
-      var sig = it.category === "chart_method"
-        ? "." + it.name + "(" + argNames + ")"
-        : "sp." + it.name + "(" + argNames + ")";
-      var paramRows = params.map(function (p) {
-        var pdesc = (lang === "fr" ? p.fr : p.en) || (lang === "fr" ? p.en : p.fr);
-        return "<div class=\"cm-param\"><code>" + escapeAttr(p.name) + "</code>" +
-          "<span class=\"cm-param-ty\">" + escapeAttr(p.ty) + "</span>" +
-          "<span class=\"cm-param-desc\">" + escapeAttr(pdesc) + "</span></div>";
-      }).join("");
-      var aliases = it.aliases || [];
-      var akaLabel = lang === "fr" ? "alias : " : "aka: ";
-      return "<div class=\"cm-card\">" +
-        "<div class=\"cm-name\"><code class=\"cm-fn\">" + escapeAttr(sig) + "</code>" +
-        (it.category === "chart_method" ? "<span class=\"cm-tag cm-tag-chain\">" + tag + "</span>" : "") +
-        (aliases.length ? "<span class=\"cm-tag cm-tag-alias\">" + escapeAttr(akaLabel + aliases.join(", ")) + "</span>" : "") +
-        "</div>" +
-        "<div class=\"cm-desc\">" + escapeAttr(desc) + "</div>" +
-        (paramRows ? "<div class=\"cm-params\">" + paramRows + "</div>" : "") +
-        "</div>";
-    }).join("");
-    return true;
-  }
-
   function elemLang(el) {
     return el.closest && el.closest(".lang-fr") ? "fr" : "en";
   }
 
   function renderRegistryTables(root) {
     (root || document).querySelectorAll("[data-sp-registry-table]").forEach(function (el) {
-      var family = registryFamily(el);
       var kind = el.getAttribute("data-sp-registry-table");
+      if (kind === "methods") return;
+      var family = registryFamily(el);
       var lang = elemLang(el);
       var ok = false;
       if (kind === "variants") ok = renderRegistryVariants(el, family, lang);
       else if (kind === "options") ok = renderRegistryOptions(el, family, lang);
       else if (kind === "themes") ok = renderRegistryThemes(el, lang);
-      else if (kind === "methods") ok = renderRegistryMethods(el, el.getAttribute("data-file") || "", lang);
       if (!ok) el.innerHTML = "<p>Loading...</p>";
     });
   }
