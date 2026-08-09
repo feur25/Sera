@@ -3,6 +3,7 @@ use base64::Engine;
 const MAGIC: &str = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
 pub const OPCODE_TEXT: u8 = 0x1;
+pub const OPCODE_BINARY: u8 = 0x2;
 pub const OPCODE_CLOSE: u8 = 0x8;
 pub const OPCODE_PING: u8 = 0x9;
 pub const OPCODE_PONG: u8 = 0xA;

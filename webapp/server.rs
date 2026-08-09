@@ -5,21 +5,26 @@ use tokio::net::{TcpListener, TcpStream};
 use tokio::sync::broadcast;
 
 use super::http::{authorized, html_response, not_found_response, not_authorized_response, parse_request};
-use super::ws::{accept_key, decode_frame, encode_text_frame, OPCODE_CLOSE, OPCODE_PING, OPCODE_PONG, OPCODE_TEXT};
+use super::ws::{accept_key, decode_frame, encode_frame, encode_text_frame, OPCODE_CLOSE, OPCODE_PING, OPCODE_PONG, OPCODE_TEXT};
 
 pub trait EventDispatcher: Send + Sync {
     fn page_html(&self, path: &str) -> Option<String>;
     fn on_event(&self, session: u64, component_id: &str, value: &str) -> Vec<(String, String)>;
     fn open_session(&self) -> u64;
     fn credentials(&self) -> Option<(String, String)>;
-    fn subscribe(&self) -> broadcast::Receiver<(String, String)>;
+    fn subscribe(&self) -> broadcast::Receiver<(u8, Vec<u8>)>;
     fn timer_intervals(&self) -> Vec<f64>;
     fn tick_timer(&self, index: usize);
+    fn on_disconnect(&self, _session: u64) {}
 }
 
-pub async fn run_server<D: EventDispatcher + 'static>(addr: &str, dispatcher: Arc<D>) -> std::io::Result<()> {
-    let listener = TcpListener::bind(addr).await?;
+pub fn bind_listener(addr: &str) -> std::io::Result<std::net::TcpListener> {
+    let listener = std::net::TcpListener::bind(addr)?;
+    listener.set_nonblocking(true)?;
+    Ok(listener)
+}
 
+pub async fn run_server<D: EventDispatcher + 'static>(listener: TcpListener, dispatcher: Arc<D>) -> std::io::Result<()> {
     for (index, secs) in dispatcher.timer_intervals().into_iter().enumerate() {
         let dispatcher = dispatcher.clone();
         tokio::spawn(async move {
@@ -82,10 +87,21 @@ async fn handle_connection<D: EventDispatcher + 'static>(mut stream: TcpStream, 
 }
 
 async fn handle_ws_loop<D: EventDispatcher + 'static>(
+    stream: TcpStream,
+    dispatcher: Arc<D>,
+    session: u64,
+    pushes: broadcast::Receiver<(u8, Vec<u8>)>,
+) -> std::io::Result<()> {
+    let result = handle_ws_messages(stream, dispatcher.clone(), session, pushes).await;
+    dispatcher.on_disconnect(session);
+    result
+}
+
+async fn handle_ws_messages<D: EventDispatcher + 'static>(
     mut stream: TcpStream,
     dispatcher: Arc<D>,
     session: u64,
-    mut pushes: broadcast::Receiver<(String, String)>,
+    mut pushes: broadcast::Receiver<(u8, Vec<u8>)>,
 ) -> std::io::Result<()> {
     let mut pending = Vec::new();
     let mut chunk = [0u8; 4096];
@@ -128,9 +144,8 @@ async fn handle_ws_loop<D: EventDispatcher + 'static>(
             }
             pushed = pushes.recv() => {
                 match pushed {
-                    Ok((out_id, html)) => {
-                        let update = serde_json::json!({ "type": "update", "id": out_id, "html": html });
-                        stream.write_all(&encode_text_frame(&update.to_string())).await?;
+                    Ok((opcode, payload)) => {
+                        stream.write_all(&encode_frame(opcode, &payload)).await?;
                     }
                     Err(broadcast::error::RecvError::Lagged(_)) => {}
                     Err(broadcast::error::RecvError::Closed) => {}
@@ -146,7 +161,7 @@ mod tests {
     use crate::webapp::ws::accept_key;
 
     struct TestDispatcher {
-        pushes: broadcast::Sender<(String, String)>,
+        pushes: broadcast::Sender<(u8, Vec<u8>)>,
     }
 
     impl TestDispatcher {
@@ -176,7 +191,7 @@ mod tests {
             None
         }
 
-        fn subscribe(&self) -> broadcast::Receiver<(String, String)> {
+        fn subscribe(&self) -> broadcast::Receiver<(u8, Vec<u8>)> {
             self.pushes.subscribe()
         }
 
@@ -190,7 +205,8 @@ mod tests {
     #[tokio::test]
     async fn full_http_and_websocket_round_trip_over_real_tcp() {
         let addr = "127.0.0.1:18787";
-        tokio::spawn(run_server(addr, Arc::new(TestDispatcher::new())));
+        let listener = TcpListener::from_std(bind_listener(addr).unwrap()).unwrap();
+        tokio::spawn(run_server(listener, Arc::new(TestDispatcher::new())));
         tokio::time::sleep(std::time::Duration::from_millis(150)).await;
 
         let mut plain = TcpStream::connect(addr).await.unwrap();
@@ -242,7 +258,7 @@ mod tests {
 
     #[tokio::test]
     async fn wrong_basic_auth_credentials_get_401() {
-        struct AuthedDispatcher(broadcast::Sender<(String, String)>);
+        struct AuthedDispatcher(broadcast::Sender<(u8, Vec<u8>)>);
         impl EventDispatcher for AuthedDispatcher {
             fn page_html(&self, _path: &str) -> Option<String> {
                 Some("<html></html>".to_string())
@@ -256,7 +272,7 @@ mod tests {
             fn credentials(&self) -> Option<(String, String)> {
                 Some(("admin".to_string(), "secret".to_string()))
             }
-            fn subscribe(&self) -> broadcast::Receiver<(String, String)> {
+            fn subscribe(&self) -> broadcast::Receiver<(u8, Vec<u8>)> {
                 self.0.subscribe()
             }
             fn timer_intervals(&self) -> Vec<f64> {
@@ -266,7 +282,8 @@ mod tests {
         }
 
         let addr = "127.0.0.1:18788";
-        tokio::spawn(run_server(addr, Arc::new(AuthedDispatcher(broadcast::channel(1).0))));
+        let listener = TcpListener::from_std(bind_listener(addr).unwrap()).unwrap();
+        tokio::spawn(run_server(listener, Arc::new(AuthedDispatcher(broadcast::channel(1).0))));
         tokio::time::sleep(std::time::Duration::from_millis(150)).await;
 
         let mut stream = TcpStream::connect(addr).await.unwrap();
