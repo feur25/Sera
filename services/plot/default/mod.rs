@@ -1,6 +1,7 @@
 pub mod _3d;
 pub mod bar;
 pub mod chart;
+pub mod firehose;
 pub mod line;
 pub mod scatter;
 pub mod svg;
@@ -20,6 +21,7 @@ pub use _3d::*;
 pub use _3d::{Bar3DRenderContext, Line3DRenderContext, Scatter3DRenderContext};
 pub use bar::build_bar_chart;
 pub use chart::register_default_types;
+pub use firehose::{build_firehose_chart, render_firehose_canvas_html_id};
 pub use kmeans::build_kmeans_chart;
 pub use kmeans::{
     kmeans_core_2d, kmeans_core_flat, kmeans_core_flat_ninit, kmeans_core_nd,
