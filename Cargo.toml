@@ -1,5 +1,5 @@
 [workspace]
-members = [".", "bindings/macros"]
+members = ["."]
 resolver = "2"
 
 [package]
@@ -52,10 +52,11 @@ rayon = "1.10"
 sysinfo = { version = "0.30", optional = true }
 matrixmultiply = { version = "0.3", features = ["threading"] }
 candle-core = { version = "0.7", optional = true, default-features = false }
-seraplot-macros = { path = "bindings/macros" }
+seraplot-macros = { path = "../seraplot-macros" }
 inventory = "0.3"
 serde-wasm-bindgen = { version = "0.6", optional = true }
 pyo3 = { version = "0.21", optional = true, features = ["extension-module", "multiple-pymethods"] }
+numpy = { version = "0.21", optional = true }
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 mimalloc = "0.1"
@@ -71,7 +72,7 @@ ffi = []
 telemetry-http = ["dep:reqwest", "dep:tokio"]
 webapp = ["dep:tokio"]
 sysmon = ["dep:sysinfo"]
-python = ["dep:pyo3"]
+python = ["dep:pyo3", "dep:numpy"]
 gpu = ["dep:candle-core"]
 cuda = ["gpu", "candle-core/cuda"]
 metal = ["gpu", "candle-core/metal"]
