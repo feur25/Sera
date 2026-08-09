@@ -106,6 +106,7 @@ inventory::submit! {
     crate::doc_registry::FnDoc {
         name: "Table",
         category: "data_method",
+        module: "",
         file: "canvas/table.md",
         en: "Small columnar data-shaping utility built from a dict of columns.",
         fr: "Petit outil de mise en forme de donnees en colonnes construit depuis un dict.",
