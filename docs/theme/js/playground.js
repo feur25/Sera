@@ -1,4 +1,5 @@
 ﻿(function () {
+    var SP_SELF_SRC = (document.currentScript && document.currentScript.src) || '';
     var DEBOUNCE_MS = 500;
     var MONACO_BASE = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.45.0/min/vs';
 
@@ -92,6 +93,14 @@
     }
 
     function getThemeBase() {
+        if (SP_SELF_SRC) {
+            var abs = new URL(SP_SELF_SRC, location.href);
+            var idx = abs.pathname.indexOf('/docs/theme/');
+            if (idx === -1) idx = abs.pathname.indexOf('/theme/');
+            if (idx !== -1) {
+                return abs.origin + abs.pathname.slice(0, idx) + '/theme/wasm/';
+            }
+        }
         var parts = window.location.pathname.split('/').filter(Boolean);
         parts.pop();
         return '../'.repeat(parts.length) + 'theme/wasm/';
