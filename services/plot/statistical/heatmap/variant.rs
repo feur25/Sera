@@ -16,5 +16,6 @@ crate::plot_family! {
         Confusion   => "confusion" | "confusion_matrix" | "classifier" | "cm",
         Pivot       => "pivot" | "pivot_table" | "totals" | "summary",
         Polar       => "polar" | "wheel" | "clock" | "radial_heat" | "carbon_wheel",
+        RadialCluster => "radial_cluster" | "circular_cluster" | "circos" | "radial_dendrogram" | "circular_dendrogram",
     }
 }
