@@ -1,6 +1,7 @@
 pub mod camera;
 pub mod canvas;
 pub mod canvas_points;
+pub mod chart_demo_registry;
 pub mod chart_input;
 pub mod cloud;
 pub mod containers_3d;
@@ -13,6 +14,13 @@ pub mod family_macro;
 pub mod html;
 pub mod layout;
 pub mod map;
+#[cfg(all(feature = "python", feature = "sera-pulse"))]
+pub mod pulse;
+#[cfg(all(feature = "python", feature = "sera-pulse"))]
+pub use pulse::{
+    anomaly_registry, chart_source_registry, features as pulse_features, firehose_registry, license, now_ms, push_registry,
+    record_registry,
+};
 pub mod models;
 pub mod projection;
 pub mod renderers;
@@ -21,6 +29,8 @@ pub mod scene3d;
 pub mod seaborn;
 pub mod statistical;
 pub mod utils;
+#[cfg(feature = "js")]
+pub mod wasm_export;
 
 pub use camera::*;
 pub use canvas::*;
