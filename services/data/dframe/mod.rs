@@ -12,6 +12,9 @@ mod window;
 pub(crate) mod groupby;
 pub(crate) mod series;
 
+#[cfg(feature = "sera-secure")]
+pub mod secure;
+
 pub use construct::builder::DFrameBuilder;
 pub use groupby::SeraDFrameGroupBy;
 pub use series::Series;
@@ -83,6 +86,7 @@ inventory::submit! {
     crate::doc_registry::FnDoc {
         name: "SeraDFrame",
         category: "data_method",
+        module: "",
         file: "canvas/dframe.md",
         en: "Columnar Rust-native dataframe built from a dict of columns.",
         fr: "Dataframe colonnaire natif Rust construit depuis un dict de colonnes.",

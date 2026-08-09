@@ -14,6 +14,7 @@ inventory::submit! {
     crate::doc_registry::FnDoc {
         name: "DFrameBuilder",
         category: "data_method",
+        module: "",
         file: "canvas/dframe.md",
         en: "Chainable column-by-column dataframe builder.",
         fr: "Constructeur de dataframe chainable colonne par colonne.",
