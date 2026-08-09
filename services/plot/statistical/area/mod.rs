@@ -55,8 +55,12 @@ pub use build as build_area_chart;
 pub fn build(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
-    let x_labels = a.x_labels.or(a.labels).unwrap_or_default();
-    let values_fallback = a.values;
+    let x_labels = a.x_labels.or(a.labels).unwrap_or_else(|| {
+        a.x.as_ref()
+            .map(|xs| xs.iter().map(|&v| crate::plot::statistical::common::format_axis_label(v)).collect())
+            .unwrap_or_default()
+    });
+    let values_fallback = a.values.or(a.y);
     let series_flat = a
         .series
         .unwrap_or_else(|| values_fallback.map(|v| vec![v]).unwrap_or_default());
@@ -95,4 +99,24 @@ pub fn build(input: &str) -> String {
         ..AreaConfig::default()
     });
     apply(html, &o)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn build_area_chart_accepts_x_y_as_an_alias_for_labels_values() {
+        let via_xy = build(r#"{"title":"t","x":[2010.0,2011.0,2012.0],"y":[10.0,20.0,15.0]}"#);
+        for needle in ["2010", "2011", "2012"] {
+            assert!(via_xy.contains(needle), "x/y input should carry the year {needle} through as a visible tick label: {via_xy}");
+        }
+    }
+
+    #[test]
+    fn build_area_chart_prefers_explicit_labels_values_over_x_y_when_both_are_present() {
+        let out = build(r#"{"title":"t","x":[8172.0,8173.0],"y":[8172.0,8173.0],"labels":["Alpha","Beta"],"values":[10.0,20.0]}"#);
+        assert!(!out.contains("8172") && !out.contains("8173"), "explicit labels/values must take priority over x/y when both are present, but the x-derived label leaked through: {out}");
+        assert!(out.contains("Alpha") && out.contains("Beta"), "the explicit labels must appear when labels/values win over x/y: {out}");
+    }
 }

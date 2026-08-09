@@ -23,7 +23,7 @@ fn canvas_fallback(cfg: &LineConfig) -> Option<String> {
         return None;
     }
     let mode = match cfg.variant {
-        Basic | Spline | Stepped | Dashed | Gapped => crate::plot::canvas_points::MODE_LINE,
+        Spline | Dashed | Gapped => crate::plot::canvas_points::MODE_LINE,
         ConnectedScatter if !cfg.show_points => crate::plot::canvas_points::MODE_LINE,
         _ => return None,
     };
@@ -83,9 +83,13 @@ pub fn build(input: &str) -> String {
     let title = title_s.as_str();
     let variant = LineVariant::from_str(o.variant.as_deref().unwrap_or("basic"));
 
-    let x_labels = a.x_labels.clone().unwrap_or_default();
+    let x_labels = a.x_labels.clone().unwrap_or_else(|| {
+        a.x.as_ref()
+            .map(|xs| xs.iter().map(|&v| crate::plot::statistical::common::format_axis_label(v)).collect())
+            .unwrap_or_default()
+    });
     let labels = a.labels.clone().unwrap_or_else(|| x_labels.clone());
-    let values = a.values.clone().unwrap_or_default();
+    let values = a.values.clone().unwrap_or_else(|| a.y.clone().unwrap_or_default());
     let hover = o.hj();
     let palette = o.pal();
     let xl = o.xl();
@@ -161,4 +165,101 @@ pub fn build(input: &str) -> String {
     };
     let html = render_line_html(&cfg);
     apply(html, &o)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn build_line_accepts_x_y_as_an_alias_for_labels_values() {
+        let via_xy = build(r#"{"title":"t","x":[2010.0,2011.0,2012.0],"y":[10.0,20.0,15.0]}"#);
+        for needle in ["2010", "2011", "2012"] {
+            assert!(via_xy.contains(needle), "x/y input should carry the year {needle} through as a visible tick label: {via_xy}");
+        }
+    }
+
+    #[test]
+    fn build_line_prefers_explicit_labels_values_over_x_y_when_both_are_present() {
+        let out = build(r#"{"title":"t","x":[8172.0,8173.0],"y":[8172.0,8173.0],"labels":["Alpha","Beta"],"values":[10.0,20.0]}"#);
+        assert!(!out.contains("8172") && !out.contains("8173"), "explicit labels/values must take priority over x/y when both are present, but the x-derived label leaked through: {out}");
+        assert!(out.contains("Alpha") && out.contains("Beta"), "the explicit labels must appear when labels/values win over x/y: {out}");
+    }
+
+    #[test]
+    fn build_line_with_x_y_and_connected_scatter_variant_renders_real_markers_not_an_empty_chart() {
+        let out = build(r#"{"title":"t","x":[1.0,2.0,3.0,4.0],"y":[5.0,9.0,3.0,7.0],"variant":"connected_scatter","show_points":true}"#);
+        assert!(out.contains("<circle"), "connected_scatter constructed from x/y must produce real point markers, not an empty fallback: {out}");
+    }
+
+    #[test]
+    fn build_line_with_x_y_still_works_below_the_canvas_fallback_threshold_for_every_variant() {
+        let x: Vec<f64> = (0..10).map(|i| 2000.0 + i as f64).collect();
+        let y: Vec<f64> = (0..10).map(|i| (i as f64) * 1.5).collect();
+        let input = serde_json::json!({"title": "t", "x": x, "y": y}).to_string();
+        let out = build(&input);
+        assert!(out.contains("2000"), "a small x/y-constructed line chart must carry real year labels through to the rendered output: {out}");
+    }
+
+    #[test]
+    fn build_line_with_stepped_variant_above_the_canvas_fallback_threshold_still_renders_the_real_step_shaped_polyline() {
+        let n = CANVAS_FALLBACK_THRESHOLD + 500;
+        let x: Vec<f64> = (0..n).map(|i| i as f64 * 0.05).collect();
+        let y: Vec<f64> = (0..n).map(|i| if (i / 400) % 2 == 0 { 18.0 } else { 21.0 }).collect();
+        let input = serde_json::json!({"title": "t", "x": x, "y": y, "variant": "stepped"}).to_string();
+        let out = build(&input);
+        assert!(out.contains("data-idx=\"0\""), "a large stepped chart must still go through stepped::render's own polyline, not silently disappear: {out}");
+        assert!(!out.contains("<canvas id="), "a large stepped chart must not fall back to the generic connect-the-dots canvas renderer, which cannot represent instant value jumps: {out}");
+    }
+
+    #[test]
+    fn perf_build_line_with_stepped_variant_on_a_large_dataset_stays_fast_without_the_canvas_fallback() {
+        let n = 8_000usize;
+        let x: Vec<f64> = (0..n).map(|i| i as f64 * 0.05).collect();
+        let y: Vec<f64> = (0..n).map(|i| if (i / 400) % 2 == 0 { 18.0 } else { 21.0 }).collect();
+        let input = serde_json::json!({"title": "t", "x": x, "y": y, "variant": "stepped"}).to_string();
+
+        let start = std::time::Instant::now();
+        let iterations = 20;
+        for _ in 0..iterations {
+            std::hint::black_box(build(&input));
+        }
+        let elapsed = start.elapsed();
+        let per_call = elapsed / iterations;
+        assert!(
+            per_call.as_millis() < 200,
+            "stepped::render on {n} points took {per_call:?}/call without the canvas fallback, expected comfortably under 200ms"
+        );
+    }
+
+    #[test]
+    fn build_line_with_basic_variant_above_the_canvas_fallback_threshold_still_renders_a_real_svg_polyline() {
+        let n = CANVAS_FALLBACK_THRESHOLD + 500;
+        let x: Vec<f64> = (0..n).map(|i| i as f64 * 0.02).collect();
+        let y: Vec<f64> = (0..n).map(|i| 50.0 + (i as f64 * 0.01).sin() * 10.0).collect();
+        let input = serde_json::json!({"title": "t", "x": x, "y": y, "variant": "basic"}).to_string();
+        let out = build(&input);
+        assert!(out.contains("data-idx=\"0\""), "a large basic line chart must still go through the real SVG polyline, not silently disappear: {out}");
+        assert!(!out.contains("<canvas id="), "a large basic line chart must not fall back to the non-rasterizable canvas+JS renderer, which SeraStudio's static export cannot execute: {out}");
+    }
+
+    #[test]
+    fn perf_build_line_with_basic_variant_on_a_large_dataset_stays_fast_without_the_canvas_fallback() {
+        let n = 8_000usize;
+        let x: Vec<f64> = (0..n).map(|i| i as f64 * 0.02).collect();
+        let y: Vec<f64> = (0..n).map(|i| 50.0 + (i as f64 * 0.01).sin() * 10.0).collect();
+        let input = serde_json::json!({"title": "t", "x": x, "y": y, "variant": "basic"}).to_string();
+
+        let start = std::time::Instant::now();
+        let iterations = 20;
+        for _ in 0..iterations {
+            std::hint::black_box(build(&input));
+        }
+        let elapsed = start.elapsed();
+        let per_call = elapsed / iterations;
+        assert!(
+            per_call.as_millis() < 200,
+            "basic::render on {n} points took {per_call:?}/call without the canvas fallback, expected comfortably under 200ms"
+        );
+    }
 }

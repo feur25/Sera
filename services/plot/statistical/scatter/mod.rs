@@ -125,6 +125,35 @@ pub fn build(input: &str) -> String {
         )
     };
 
+    const SCATTER_CANVAS_FALLBACK_THRESHOLD: usize = 3_000;
+    if y.len() > SCATTER_CANVAS_FALLBACK_THRESHOLD
+        && o.variant.is_none()
+        && o.color_values.clone().unwrap_or_default().is_empty()
+        && categories2.is_empty()
+        && series.is_empty()
+        && o.symbol.is_none()
+        && o.symbols.is_none()
+        && cgs.is_empty()
+        && categories.is_empty()
+    {
+        let html = crate::plot::default::scatter::render_scatter_canvas_html(
+            title,
+            &x,
+            &y,
+            &[],
+            &o.pal(),
+            &o.xl(),
+            &o.yl(),
+            o.color_hex.unwrap_or(0),
+            o.w(900),
+            o.h(540),
+            o.grid(),
+            o.show_regression.unwrap_or(false),
+            o.regression_type.as_deref().unwrap_or("linear"),
+        );
+        return apply(html, &o);
+    }
+
     if o.variant.is_some()
         || !o.color_values.clone().unwrap_or_default().is_empty()
         || !categories2.is_empty()
