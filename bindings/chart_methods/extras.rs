@@ -189,4 +189,37 @@ impl Chart {
         );
         self.propagate(crate::html::hover::inject_before_body(&self.html, &snippet))
     }
+
+    #[sera_doc(
+        category = "chart_method",
+        aliases("add_image", "overlay_media", "attach_media", "media"),
+        file = "charts/chart.md",
+        en = "Attaches an image, video or text block on top of any chart — a logo, a photo, a short clip or a caption placed near an axis or anywhere on the canvas. Works the same way across every chart type since it composes directly onto the rendered SVG. Position and size are fractions (0.0-1.0) of the chart canvas, so the overlay scales with the chart. src accepts a data: URI, a local file path (embedded automatically), or a plain URL; for kind='text', src is the text content itself.",
+        fr = "Attache une image, une video ou un bloc de texte par-dessus n'importe quel graphique — un logo, une photo, un court clip ou une legende placee pres d'un axe ou n'importe ou sur le canevas. Fonctionne de la meme facon pour tous les types de graphiques car elle se compose directement sur le SVG rendu. Position et taille sont des fractions (0.0-1.0) du canevas du graphique, donc l'incrustation s'adapte a l'echelle du graphique. src accepte une URI data:, un chemin de fichier local (integre automatiquement), ou une URL simple ; pour kind='text', src est le texte lui-meme.",
+        param(name = "kind", ty = "str", en = "'image', 'video' or 'text'.", fr = "'image', 'video' ou 'text'."),
+        param(name = "src", ty = "str", en = "Data URI, local file path, URL, or raw text (for kind='text').", fr = "URI data, chemin de fichier local, URL, ou texte brut (pour kind='text')."),
+        param(name = "x", ty = "float", en = "Left position as a fraction of chart width. Default 0.5.", fr = "Position gauche en fraction de la largeur du graphique. Defaut 0.5."),
+        param(name = "y", ty = "float", en = "Top position as a fraction of chart height. Default 0.5.", fr = "Position haute en fraction de la hauteur du graphique. Defaut 0.5."),
+        param(name = "width", ty = "float", en = "Width as a fraction of chart width. Default 0.2.", fr = "Largeur en fraction de la largeur du graphique. Defaut 0.2."),
+        param(name = "height", ty = "float", en = "Height as a fraction of chart height. Default 0.2.", fr = "Hauteur en fraction de la hauteur du graphique. Defaut 0.2."),
+        param(name = "shape", ty = "str", en = "'rect' or 'circle'. Default 'rect'.", fr = "'rect' ou 'circle'. Defaut 'rect'."),
+        param(name = "opacity", ty = "float", en = "Opacity 0.0-1.0. Default 1.0.", fr = "Opacite 0.0-1.0. Defaut 1.0.")
+    )]
+    #[sera_sig(kind, src, x = 0.5, y = 0.5, width = 0.2, height = 0.2, shape = "rect", opacity = 1.0)]
+    #[allow(clippy::too_many_arguments)]
+    pub fn add_media(
+        &self,
+        kind: &str,
+        src: &str,
+        x: f64,
+        y: f64,
+        width: f64,
+        height: f64,
+        shape: &str,
+        opacity: f64,
+    ) -> Chart {
+        self.propagate(crate::html::media_overlay::add_media(
+            &self.html, kind, src, x, y, width, height, shape, opacity,
+        ))
+    }
 }
