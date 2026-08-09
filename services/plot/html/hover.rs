@@ -344,7 +344,7 @@ pub fn apply_rotation(html: String, deg: i32) -> String {
     )
 }
 
-fn extract_svg_dims(html: &str) -> (i32, i32) {
+pub(crate) fn extract_svg_dims(html: &str) -> (i32, i32) {
     let s = html.as_bytes();
     let needle = b"<svg";
     let mut i = 0usize;

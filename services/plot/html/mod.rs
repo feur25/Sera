@@ -5,6 +5,7 @@ pub mod hover;
 pub mod html_export;
 pub mod html_template;
 pub mod js_3d;
+pub mod media_overlay;
 
 pub use assets::*;
 pub use fast_builders::*;
