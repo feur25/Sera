@@ -55,6 +55,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('hm-en','confusion',this)"><span class="sp-cic">⊠</span><span class="sp-clb">Confusion</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-en','pivot',this)"><span class="sp-cic">⊡</span><span class="sp-clb">Pivot</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-en','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polar</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-en','radial_cluster',this)"><span class="sp-cic">◍</span><span class="sp-clb">Radial Cluster</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -204,6 +205,17 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 </div>
 
+<div class="sp-variant" id="hm-en-radial_cluster">
+
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"radial_cluster"</code> / <code>"circular_cluster"</code> / <code>"circos"</code> / <code>"radial_dendrogram"</code> / <code>"circular_dendrogram"</code></span><span><strong>Required</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Columns are reordered by the same average-linkage hierarchical clustering as the <code>cluster</code> variant, then laid out as wedges around a ring instead of a straight axis, with the merge tree drawn as a real radial dendrogram in the center — rows become concentric colored bands. <code>col_labels</code> is optional: when omitted it falls back to <code>labels</code>, same as <code>cluster</code>, for a symmetric matrix.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/heatmap-radial_cluster.html"></iframe>
+
+</div>
+
 </div>
 </div>
 
@@ -253,6 +265,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('hm-fr','confusion',this)"><span class="sp-cic">⊠</span><span class="sp-clb">Confusion</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-fr','pivot',this)"><span class="sp-cic">⊟</span><span class="sp-clb">Pivot</span></button>
 <button class="sp-cls-tab" onclick="spCls('hm-fr','polar',this)"><span class="sp-cic">◎</span><span class="sp-clb">Polaire</span></button>
+<button class="sp-cls-tab" onclick="spCls('hm-fr','radial_cluster',this)"><span class="sp-cic">◍</span><span class="sp-clb">Cluster Radial</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -287,6 +300,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-variant" id="hm-fr-pivot"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"pivot"</code> / <code>"crosstab"</code></span><span><strong>Requis</strong> <code>data</code>, <code>index</code>, <code>columns</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-pivot.html"></iframe></div>
 
 <div class="sp-variant" id="hm-fr-polar"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"polar"</code> / <code>"wheel"</code> / <code>"clock"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-polar.html"></iframe></div>
+
+<div class="sp-variant" id="hm-fr-radial_cluster"><div class="sp-vmeta"><span><strong>Variante</strong> <code>"radial_cluster"</code> / <code>"circular_cluster"</code> / <code>"circos"</code> / <code>"radial_dendrogram"</code> / <code>"circular_dendrogram"</code></span><span><strong>Requis</strong> <code>labels</code>, <code>col_labels</code>, <code>values</code></span><span><strong>Retourne</strong> <code>Chart</code></span></div><p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Les colonnes sont réordonnées par la même classification hiérarchique average-linkage que la variante <code>cluster</code>, puis disposées en quartiers autour d'un anneau au lieu d'un axe droit, avec l'arbre de fusion dessiné comme un vrai dendrogramme radial au centre — les lignes deviennent des bandes colorées concentriques. <code>col_labels</code> est optionnel : si omis, retombe sur <code>labels</code>, comme <code>cluster</code>, pour une matrice symétrique.</p><div class="sp-preview-label">Aperçu</div><iframe class="sp-preview-frame" src="../../previews/heatmap-radial_cluster.html"></iframe></div>
 
 </div>
 </div>
