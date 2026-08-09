@@ -10,6 +10,7 @@ pub struct ParamDoc {
 pub struct FnDoc {
     pub name: &'static str,
     pub category: &'static str,
+    pub module: &'static str,
     pub file: &'static str,
     pub en: &'static str,
     pub fr: &'static str,

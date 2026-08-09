@@ -183,6 +183,7 @@ inventory::submit! {
     crate::doc_registry::FnDoc {
         name: "LiveStream",
         category: "chart_method",
+        module: "",
         file: "config/streaming.md",
         en: "A bounded ring-buffer accumulator that turns a series of (x, y) samples arriving over time into a continuously redrawn chart. push()/extend()/clear() repaint the same Jupyter output cell in place via IPython's display_id, so the chart updates smoothly with no flicker or new cells.",
         fr: "Un accumulateur à buffer circulaire borné qui transforme une série d'échantillons (x, y) arrivant dans le temps en un graphique redessiné en continu. push()/extend()/clear() repeignent la même cellule de sortie Jupyter sur place via le display_id d'IPython, donc le graphique se met à jour sans scintillement ni nouvelle cellule.",
@@ -201,6 +202,7 @@ inventory::submit! {
     crate::doc_registry::FnDoc {
         name: "LiveStream.push",
         category: "chart_method",
+        module: "",
         file: "config/streaming.md",
         en: "Appends one (x, y) sample, enforces max_points, and redraws the live chart in place.",
         fr: "Ajoute un échantillon (x, y), applique max_points, et redessine le graphique live sur place.",
@@ -215,6 +217,7 @@ inventory::submit! {
     crate::doc_registry::FnDoc {
         name: "LiveStream.extend",
         category: "chart_method",
+        module: "",
         file: "config/streaming.md",
         en: "Appends two lists of samples in lock-step, enforces max_points, and redraws the live chart in place.",
         fr: "Ajoute deux listes d'échantillons en parallèle, applique max_points, et redessine le graphique live sur place.",
@@ -229,6 +232,7 @@ inventory::submit! {
     crate::doc_registry::FnDoc {
         name: "LiveStream.clear",
         category: "chart_method",
+        module: "",
         file: "config/streaming.md",
         en: "Empties the ring buffer and redraws the (now empty) live chart in place.",
         fr: "Vide le buffer circulaire et redessine le graphique live (désormais vide) sur place.",
@@ -240,6 +244,7 @@ inventory::submit! {
     crate::doc_registry::FnDoc {
         name: "LiveStream.render",
         category: "chart_method",
+        module: "",
         file: "config/streaming.md",
         en: "Renders the current buffer to a standalone Chart object, without touching the live display.",
         fr: "Rend le buffer courant sous forme d'objet Chart autonome, sans toucher à l'affichage live.",

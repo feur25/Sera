@@ -132,10 +132,7 @@ fn push_js_str(buf: &mut Vec<u8>, s: &str) {
     }
 }
 
-fn b64_encode(data: &[u8]) -> String {
-    use base64::Engine;
-    base64::engine::general_purpose::STANDARD.encode(data)
-}
+use crate::plot::canvas_points::b64_encode;
 
 fn scatter_reg_curve(
     x_values: &[f64],
@@ -318,6 +315,39 @@ fn scatter_reg_curve(
     }
 }
 
+pub fn render_scatter_family_native(
+    title: &str,
+    x_values: &[f64],
+    y_values: &[f64],
+    opts: &crate::plot::canvas_points::NativeChartOpts,
+) -> String {
+    render_scatter_family_native_id(title, x_values, y_values, opts).0
+}
+
+pub fn render_scatter_family_native_id(
+    title: &str,
+    x_values: &[f64],
+    y_values: &[f64],
+    opts: &crate::plot::canvas_points::NativeChartOpts,
+) -> (String, u64) {
+    render_scatter_canvas_html_id(
+        title,
+        x_values,
+        y_values,
+        opts.categories,
+        &[],
+        opts.x_label,
+        opts.y_label,
+        opts.color_hex,
+        opts.width,
+        opts.height,
+        opts.gridlines,
+        opts.show_regression,
+        opts.regression_type,
+    )
+}
+
+#[allow(clippy::too_many_arguments)]
 pub fn render_scatter_canvas_html(
     title: &str,
     x_values: &[f64],
@@ -333,6 +363,29 @@ pub fn render_scatter_canvas_html(
     show_regression: bool,
     regression_type: &str,
 ) -> String {
+    render_scatter_canvas_html_id(
+        title, x_values, y_values, color_groups, palette, x_label, y_label, color_hex, width,
+        height, gridlines, show_regression, regression_type,
+    )
+    .0
+}
+
+#[allow(clippy::too_many_arguments)]
+pub fn render_scatter_canvas_html_id(
+    title: &str,
+    x_values: &[f64],
+    y_values: &[f64],
+    color_groups: &[String],
+    palette: &[u32],
+    x_label: &str,
+    y_label: &str,
+    color_hex: u32,
+    width: i32,
+    height: i32,
+    gridlines: bool,
+    show_regression: bool,
+    regression_type: &str,
+) -> (String, u64) {
     use crate::html::hover::{html_id, html_prefix, html_suffix};
     use crate::plot::statistical::common::{hex6, palette_color, push_b, push_f2, push_i};
     let n = x_values.len().min(y_values.len());
@@ -398,24 +451,26 @@ pub fn render_scatter_canvas_html(
     } else {
         1
     };
-    let inv_rx = plot_w as f64 / range_x;
-    let inv_ry = plot_h as f64 / range_y;
-    let mut group_raw: Vec<Vec<u8>> = (0..ng)
-        .map(|_| Vec::with_capacity((n / ng + 8) * 4))
-        .collect();
-    for i in 0..n {
-        let px = ((x_values[i] - min_x) * inv_rx).clamp(0.0, (plot_w - 1) as f64) as i16;
-        let py =
-            (plot_h as f64 - (y_values[i] - min_y) * inv_ry).clamp(0.0, (plot_h - 1) as f64) as i16;
-        let gi = if has_groups && i < group_map.len() {
-            group_map[i].min(ng - 1)
-        } else {
-            0
-        };
-        group_raw[gi].extend_from_slice(&px.to_le_bytes());
-        group_raw[gi].extend_from_slice(&py.to_le_bytes());
-    }
-    let group_b64: Vec<String> = group_raw.iter().map(|raw| b64_encode(raw)).collect();
+    let group_b64: Vec<String> = if !has_groups {
+        vec![crate::plot::canvas_points::pack_points_i16(
+            x_values, y_values, min_x, range_x, min_y, range_y, plot_w, plot_h,
+        )]
+    } else {
+        let inv_rx = plot_w as f64 / range_x;
+        let inv_ry = plot_h as f64 / range_y;
+        let mut group_raw: Vec<Vec<u8>> = (0..ng)
+            .map(|_| Vec::with_capacity((n / ng + 8) * 4))
+            .collect();
+        for i in 0..n {
+            let px = ((x_values[i] - min_x) * inv_rx).clamp(0.0, (plot_w - 1) as f64) as i16;
+            let py = (plot_h as f64 - (y_values[i] - min_y) * inv_ry)
+                .clamp(0.0, (plot_h - 1) as f64) as i16;
+            let gi = group_map.get(i).copied().unwrap_or(0).min(ng - 1);
+            group_raw[gi].extend_from_slice(&px.to_le_bytes());
+            group_raw[gi].extend_from_slice(&py.to_le_bytes());
+        }
+        group_raw.iter().map(|raw| b64_encode(raw)).collect()
+    };
     let reg_curve = if show_regression {
         scatter_reg_curve(
             x_values,
@@ -494,6 +549,8 @@ pub fn render_scatter_canvas_html(
         buf.push(b'\'');
     }
     push_b(&mut buf, b"];");
+    push_b(&mut buf, b"var GDD=[];for(var _gi=0;_gi<GD.length;_gi++){GDD[_gi]=b64(GD[_gi]);}");
+    crate::plot::canvas_points::push_delta_patch_js(&mut buf, hid, b"GDD[0]");
     push_b(&mut buf, b"var GC=[");
     if has_groups {
         for (gi, c) in group_colors.iter().enumerate() {
@@ -568,7 +625,7 @@ pub fn render_scatter_canvas_html(
         push_js_str(&mut buf, title);
         push_b(&mut buf, b"',W/2,22);");
     }
-    push_b(&mut buf, b"for(var gi=0;gi<GD.length;gi++){if(hidden[gi])continue;var a=b64(GD[gi]);ctx.fillStyle=GC[gi]||GC[0];for(var i=0;i<a.length;i+=2)ctx.fillRect(pL+a[i],pT+a[i+1],2,2);}");
+    push_b(&mut buf, b"for(var gi=0;gi<GD.length;gi++){if(hidden[gi])continue;var a=GDD[gi];ctx.fillStyle=GC[gi]||GC[0];for(var i=0;i<a.length;i+=2)ctx.fillRect(pL+a[i],pT+a[i+1],2,2);}");
     if let Some(curve) = &reg_curve {
         push_b(
             &mut buf,
@@ -651,7 +708,19 @@ pub fn render_scatter_canvas_html(
         push_b(&mut buf, b"});");
     }
     push_b(&mut buf, b"var _hx=-1,_hy=-1,_htimer=0;");
-    push_b(&mut buf, b"var allPts=[];for(var gi=0;gi<GD.length;gi++){if(!GD[gi])continue;var a=b64(GD[gi]);for(var i=0;i<a.length;i+=2)allPts.push([gi,pL+a[i],pT+a[i+1]]);}");
+    push_b(&mut buf, b"var allPts=[];");
+    crate::plot::canvas_points::nearest_grid_js(
+        &mut buf,
+        b"N",
+        b"allPts[i][1]",
+        b"allPts[i][2]",
+        b"pL",
+        b"pT",
+        b"pW",
+        b"pH",
+        b"hidden[allPts[i][0]]",
+        b"allPts=[];for(var gi=0;gi<GD.length;gi++){if(!GD[gi])continue;var a=GDD[gi];for(var _j=0;_j<a.length;_j+=2)allPts.push([gi,pL+a[_j],pT+a[_j+1]]);}",
+    );
     push_b(&mut buf, b"cv.addEventListener('mousemove',function(e){");
     push_b(
         &mut buf,
@@ -665,9 +734,8 @@ pub fn render_scatter_canvas_html(
         &mut buf,
         b"clearTimeout(_htimer);_htimer=setTimeout(function(){",
     );
-    push_b(&mut buf, b"var best=null,bd=1e9;");
-    push_b(&mut buf, b"for(var i=0;i<allPts.length;i++){var p=allPts[i];if(hidden[p[0]])continue;var dx=p[1]-mx,dy=p[2]-my,d=dx*dx+dy*dy;if(d<bd){bd=d;best=p;}}");
-    push_b(&mut buf, b"if(!best||bd>400){tip.style.opacity=0;return;}");
+    push_b(&mut buf, b"var bi=nearest(mx,my);if(bi<0){tip.style.opacity=0;return;}");
+    push_b(&mut buf, b"var best=allPts[bi],dx0=best[1]-mx,dy0=best[2]-my;if(dx0*dx0+dy0*dy0>400){tip.style.opacity=0;return;}");
     push_b(
         &mut buf,
         b"var xv=(best[1]-pL)/pW*rX+minX,yv=(1-(best[2]-pT)/pH)*rY+minY;",
@@ -696,7 +764,7 @@ pub fn render_scatter_canvas_html(
     );
     push_b(&mut buf, b"})();</script>");
     html_suffix(&mut buf, hid, "[]");
-    unsafe { String::from_utf8_unchecked(buf) }
+    (unsafe { String::from_utf8_unchecked(buf) }, hid)
 }
 
 pub fn render_scatter_html(
@@ -1002,7 +1070,7 @@ pub fn render_scatter_html(
         for (gi, name) in group_names.iter().enumerate() {
             let hx = hex6(palette_color(palette, gi));
             let ly = leg_top + gi as i32 * 22;
-            push_b(&mut buf, b"<g data-legend=\"1\" style=\"display:none\" data-series=\"");
+            push_b(&mut buf, b"<g data-legend=\"1\" data-series=\"");
             push_i(&mut buf, gi as i32);
             push_b(&mut buf, b"\">");
             push_b(&mut buf, b"<circle cx=\"");

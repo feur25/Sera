@@ -534,3 +534,196 @@ pub fn build_hbar(input: &str) -> String {
     );
     apply(html, &o)
 }
+
+pub const BAR_PAD_L: i32 = 56;
+pub const BAR_PAD_T: i32 = 36;
+pub const BAR_PAD_B: i32 = 48;
+pub const BAR_PAD_R: i32 = 20;
+
+pub fn bar_plot_h(height: i32) -> i32 {
+    (height - BAR_PAD_T - BAR_PAD_B).max(10)
+}
+
+pub fn render_bar_family_native(
+    title: &str,
+    labels: &[String],
+    values: &[f64],
+    opts: &crate::plot::canvas_points::NativeChartOpts,
+) -> (String, u64) {
+    use crate::html::hover::{html_id, html_prefix, html_suffix};
+    use crate::plot::canvas_points::{pack_scalar_i16, push_scalar_patch_js_oriented};
+    use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i};
+
+    let n = values.len().min(labels.len());
+    let horizontal = opts.variant == "horizontal";
+    let pad_l = if horizontal { 132 } else { BAR_PAD_L };
+    let pad_t = BAR_PAD_T;
+    let pad_r = BAR_PAD_R;
+    let plot_w = (opts.width - pad_l - pad_r).max(10);
+    let plot_h = bar_plot_h(opts.height);
+    let axis_y = pad_t + plot_h;
+    let axis_px = if horizontal { plot_w } else { plot_h };
+
+    let (min_v_raw, max_v) = crate::bindings::utils::simd_ops::find_minmax(values);
+    let min_v = min_v_raw.min(0.0);
+    let range_v = (max_v - min_v).max(1e-12);
+    let sizes_px = pack_scalar_i16(values, min_v, range_v, axis_px);
+    let color = hex6(if opts.color_hex != 0 { opts.color_hex } else { 0x636EFA });
+    let pitch = if horizontal { plot_h as f64 } else { plot_w as f64 } / (n.max(1) as f64);
+
+    let hid = html_id();
+    let svg_id = format!("spbarsvg{hid}");
+    let mut buf = Vec::<u8>::with_capacity(n * 24 + 8192);
+    html_prefix(&mut buf, title, hid);
+    push_b(&mut buf, b"<svg id=\"");
+    buf.extend_from_slice(svg_id.as_bytes());
+    push_b(&mut buf, b"\" width=\"");
+    push_i(&mut buf, opts.width);
+    push_b(&mut buf, b"\" height=\"");
+    push_i(&mut buf, opts.height);
+    push_b(&mut buf, b"\" style=\"display:block\">");
+
+    if opts.gridlines {
+        push_b(&mut buf, b"<g stroke=\"#e2e8f0\">");
+        for gi in 0..=4 {
+            if horizontal {
+                let gx = pad_l + (plot_w * gi) / 4;
+                push_b(&mut buf, b"<line x1=\"");
+                push_i(&mut buf, gx);
+                push_b(&mut buf, b"\" x2=\"");
+                push_i(&mut buf, gx);
+                push_b(&mut buf, b"\" y1=\"");
+                push_i(&mut buf, pad_t);
+                push_b(&mut buf, b"\" y2=\"");
+                push_i(&mut buf, pad_t + plot_h);
+                push_b(&mut buf, b"\"/>");
+            } else {
+                let gy = pad_t + (plot_h * gi) / 4;
+                push_b(&mut buf, b"<line x1=\"");
+                push_i(&mut buf, pad_l);
+                push_b(&mut buf, b"\" x2=\"");
+                push_i(&mut buf, pad_l + plot_w);
+                push_b(&mut buf, b"\" y1=\"");
+                push_i(&mut buf, gy);
+                push_b(&mut buf, b"\" y2=\"");
+                push_i(&mut buf, gy);
+                push_b(&mut buf, b"\"/>");
+            }
+        }
+        push_b(&mut buf, b"</g>");
+    }
+
+    if horizontal {
+        push_b(&mut buf, b"<line x1=\"");
+        push_i(&mut buf, pad_l);
+        push_b(&mut buf, b"\" x2=\"");
+        push_i(&mut buf, pad_l);
+        push_b(&mut buf, b"\" y1=\"");
+        push_i(&mut buf, pad_t);
+        push_b(&mut buf, b"\" y2=\"");
+        push_i(&mut buf, pad_t + plot_h);
+        push_b(&mut buf, b"\" stroke=\"#64748b\"/>");
+    } else {
+        push_b(&mut buf, b"<line x1=\"");
+        push_i(&mut buf, pad_l);
+        push_b(&mut buf, b"\" x2=\"");
+        push_i(&mut buf, pad_l + plot_w);
+        push_b(&mut buf, b"\" y1=\"");
+        push_i(&mut buf, axis_y);
+        push_b(&mut buf, b"\" y2=\"");
+        push_i(&mut buf, axis_y);
+        push_b(&mut buf, b"\" stroke=\"#64748b\"/>");
+    }
+
+    if !title.is_empty() {
+        push_b(&mut buf, b"<text x=\"");
+        push_i(&mut buf, opts.width / 2);
+        push_b(&mut buf, b"\" y=\"22\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-weight=\"700\" font-size=\"15\" fill=\"#1a202c\">");
+        escape_xml(&mut buf, title);
+        push_b(&mut buf, b"</text>");
+    }
+
+    let tick_count = n.min(6);
+    if tick_count > 0 && !horizontal {
+        push_b(&mut buf, b"<g fill=\"#6b7280\" font-family=\"Arial,sans-serif\" font-size=\"9\" text-anchor=\"middle\">");
+        for t in 0..tick_count {
+            let idx = if tick_count == 1 { 0 } else { t * (n - 1) / (tick_count - 1) };
+            let x = pad_l as f64 + (idx as f64 + 0.5) * pitch;
+            push_b(&mut buf, b"<text x=\"");
+            push_f2(&mut buf, x);
+            push_b(&mut buf, b"\" y=\"");
+            push_i(&mut buf, axis_y + 14);
+            push_b(&mut buf, b"\">");
+            escape_xml(&mut buf, &labels[idx]);
+            push_b(&mut buf, b"</text>");
+        }
+        push_b(&mut buf, b"</g>");
+    }
+
+    if horizontal {
+        push_b(&mut buf, b"<g fill=\"#374151\" font-family=\"Arial,sans-serif\" font-size=\"10\" text-anchor=\"end\">");
+        for i in 0..n {
+            let y = pad_t as f64 + (i as f64 + 0.5) * pitch;
+            push_b(&mut buf, b"<text x=\"");
+            push_i(&mut buf, pad_l - 8);
+            push_b(&mut buf, b"\" y=\"");
+            push_f2(&mut buf, y + 3.0);
+            push_b(&mut buf, b"\">");
+            escape_xml(&mut buf, crate::plot::statistical::common::truncate(&labels[i], 18));
+            push_b(&mut buf, b"</text>");
+        }
+        push_b(&mut buf, b"</g>");
+    }
+
+    push_b(&mut buf, b"<g>");
+    for i in 0..n {
+        if horizontal {
+            let y = pad_t as f64 + i as f64 * pitch + (pitch - (pitch - 1.0).max(1.0)) / 2.0;
+            let h = (pitch - 1.0).max(1.0);
+            push_b(&mut buf, b"<rect class=\"bar\" x=\"");
+            push_i(&mut buf, pad_l);
+            push_b(&mut buf, b"\" y=\"");
+            push_f2(&mut buf, y);
+            push_b(&mut buf, b"\" width=\"0\" height=\"");
+            push_f2(&mut buf, h);
+            push_b(&mut buf, b"\" fill=\"#");
+            buf.extend_from_slice(&color);
+            push_b(&mut buf, b"\"/>");
+        } else {
+            let x = pad_l as f64 + i as f64 * pitch;
+            let w = (pitch - 1.0).max(1.0);
+            push_b(&mut buf, b"<rect class=\"bar\" x=\"");
+            push_f2(&mut buf, x);
+            push_b(&mut buf, b"\" y=\"");
+            push_i(&mut buf, axis_y);
+            push_b(&mut buf, b"\" width=\"");
+            push_f2(&mut buf, w);
+            push_b(&mut buf, b"\" height=\"0\" fill=\"#");
+            buf.extend_from_slice(&color);
+            push_b(&mut buf, b"\"/>");
+        }
+    }
+    push_b(&mut buf, b"</g></svg>");
+
+    push_b(&mut buf, b"<script>(function(){");
+    push_b(&mut buf, b"var svg=document.getElementById('");
+    buf.extend_from_slice(svg_id.as_bytes());
+    push_b(&mut buf, b"');");
+    push_b(&mut buf, b"var BARS=svg.querySelectorAll('rect.bar');");
+    push_b(&mut buf, b"function b64(s){var b=atob(s),n=b.length,a=new Int16Array(n/2);for(var i=0;i<n;i+=2)a[i/2]=b.charCodeAt(i)|(b.charCodeAt(i+1)<<8);return a;}");
+    push_b(&mut buf, b"var H=b64('");
+    buf.extend_from_slice(sizes_px.as_bytes());
+    push_b(&mut buf, b"');");
+    if horizontal {
+        push_b(&mut buf, b"for(var i=0;i<BARS.length;i++){BARS[i].setAttribute('width',H[i]);}");
+    } else {
+        push_b(&mut buf, b"for(var i=0;i<BARS.length;i++){BARS[i].setAttribute('height',H[i]);BARS[i].setAttribute('y',");
+        push_i(&mut buf, axis_y);
+        push_b(&mut buf, b"-H[i]);}");
+    }
+    push_scalar_patch_js_oriented(&mut buf, hid, b"BARS", axis_px, !horizontal);
+    push_b(&mut buf, b"})();</script>");
+
+    html_suffix(&mut buf, hid, "[]");
+    (unsafe { String::from_utf8_unchecked(buf) }, hid)
+}
