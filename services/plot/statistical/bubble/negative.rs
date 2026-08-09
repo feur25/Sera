@@ -16,11 +16,7 @@ pub fn render(cfg: &BubbleConfig) -> String {
     f.y_grid(5, layout.ymin2, layout.ymax2, cfg.gridlines);
     f.axes(cfg.x_label, cfg.y_label);
 
-    let pos_hex = if cfg.color_hex != 0 {
-        cfg.color_hex
-    } else {
-        cfg.color_high
-    };
+    let pos_hex = cfg.color_high;
     let neg_hex = cfg.color_low;
     let pos_hx = hex6(pos_hex);
     let neg_hx = hex6(neg_hex);
@@ -112,4 +108,28 @@ pub fn render(cfg: &BubbleConfig) -> String {
         &slots_json
     };
     f.html(json)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::plot::statistical::bubble::config::BubbleConfig;
+
+    #[test]
+    fn positive_and_negative_bubbles_use_distinct_configured_colors_not_the_same_default() {
+        let x = vec![1.0, 2.0];
+        let y = vec![1.0, 2.0];
+        let sizes = vec![10.0, -10.0];
+        let cfg = BubbleConfig {
+            x_values: &x,
+            y_values: &y,
+            sizes: &sizes,
+            color_low: 0x111111,
+            color_high: 0x222222,
+            ..Default::default()
+        };
+        let out = render(&cfg);
+        assert!(out.contains("222222"), "positive bubble should use color_high: {out}");
+        assert!(out.contains("111111"), "negative bubble should use color_low: {out}");
+    }
 }
