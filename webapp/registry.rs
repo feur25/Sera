@@ -19,6 +19,7 @@ use tokio::sync::broadcast;
 
 use super::components::BOOTSTRAP_JS;
 use super::server::EventDispatcher;
+use super::ws::OPCODE_TEXT;
 
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub enum ComponentKind {
@@ -66,7 +67,7 @@ pub struct AppState {
     callbacks: Vec<RegisteredCallback>,
     timers: Vec<RegisteredTimer>,
     credentials: Option<(String, String)>,
-    push_tx: broadcast::Sender<(String, String)>,
+    push_tx: broadcast::Sender<(u8, Vec<u8>)>,
 }
 
 impl AppState {
@@ -132,7 +133,8 @@ impl AppState {
 
     pub fn push(&mut self, id: &str, html: String) {
         self.component_html.insert(id.to_string(), html.clone());
-        let _ = self.push_tx.send((format!("{id}-wrap"), html));
+        let update = serde_json::json!({ "type": "update", "id": format!("{id}-wrap"), "html": html });
+        let _ = self.push_tx.send((OPCODE_TEXT, update.to_string().into_bytes()));
     }
 
     fn new_session(&self) -> u64 {
@@ -214,7 +216,7 @@ impl EventDispatcher for Mutex<AppState> {
         }
     }
 
-    fn subscribe(&self) -> broadcast::Receiver<(String, String)> {
+    fn subscribe(&self) -> broadcast::Receiver<(u8, Vec<u8>)> {
         match self.lock() {
             Ok(state) => state.push_tx.subscribe(),
             Err(_) => broadcast::channel(1).1,

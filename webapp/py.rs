@@ -112,11 +112,15 @@ impl App {
     fn serve(&self, py: Python<'_>, port: u16, host: &str) -> PyResult<()> {
         let state = self.state.clone();
         let addr = format!("{host}:{port}");
+        let std_listener = super::server::bind_listener(&addr)
+            .map_err(|e| pyo3::exceptions::PyOSError::new_err(format!("seraplot: failed to bind {addr}: {e}")))?;
         py.allow_threads(move || {
             let rt = tokio::runtime::Runtime::new()
                 .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
             rt.block_on(async move {
-                run_server(&addr, state)
+                let listener = tokio::net::TcpListener::from_std(std_listener)
+                    .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))?;
+                run_server(listener, state)
                     .await
                     .map_err(|e| pyo3::exceptions::PyRuntimeError::new_err(e.to_string()))
             })
