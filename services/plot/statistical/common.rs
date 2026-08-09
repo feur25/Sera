@@ -250,7 +250,7 @@ pub fn svg_legend_item(
         return;
     }
     let hx = hex6(color);
-    push_b(buf, b"<g data-legend=\"1\" style=\"display:none\" tabindex=\"0\" role=\"button\" aria-label=\"");
+    push_b(buf, b"<g data-legend=\"1\" tabindex=\"0\" role=\"button\" aria-label=\"");
     escape_xml(buf, truncate(name, max_len));
     push_b(buf, b"\" data-series=\"");
     push_i(buf, si);
@@ -459,6 +459,14 @@ pub fn truncate(s: &str, max: usize) -> &str {
             end -= 1;
         }
         &s[..end]
+    }
+}
+
+pub fn format_axis_label(v: f64) -> String {
+    if v.is_finite() && v.fract().abs() < 1e-9 && v.abs() < 1e15 {
+        format!("{}", v as i64)
+    } else {
+        format!("{v:.2}")
     }
 }
 
@@ -807,6 +815,44 @@ mod accessible_palette_tests {
             assert!(seen.insert(c), "duplicate color #{c:06X} in accessible palette");
         }
         assert_eq!(PALETTE_ACCESSIBLE.len(), 10);
+    }
+}
+
+#[cfg(test)]
+mod svg_legend_item_tests {
+    use super::svg_legend_item;
+
+    #[test]
+    fn renders_visible_by_default_so_static_exports_that_never_run_the_click_to_toggle_js_still_show_it() {
+        let mut buf = Vec::new();
+        svg_legend_item(&mut buf, 0, "Nord", 0x636efa, 10, 10, 18);
+        let s = String::from_utf8(buf).unwrap();
+        assert!(s.contains("data-legend=\"1\""));
+        assert!(!s.contains("display:none"), "the legend item must not be hidden by default: a headless SVG rasterizer (used for every GIF/video export) never runs the JS that would otherwise reveal it, got: {s}");
+        assert!(s.contains("Nord"));
+    }
+
+    #[test]
+    fn skips_entirely_for_an_empty_name() {
+        let mut buf = Vec::new();
+        svg_legend_item(&mut buf, 0, "", 0x636efa, 10, 10, 18);
+        assert!(buf.is_empty());
+    }
+}
+
+#[cfg(test)]
+mod format_axis_label_tests {
+    use super::format_axis_label;
+
+    #[test]
+    fn renders_whole_numbers_without_a_decimal_point() {
+        assert_eq!(format_axis_label(2010.0), "2010");
+        assert_eq!(format_axis_label(-3.0), "-3");
+    }
+
+    #[test]
+    fn keeps_two_decimals_for_a_fractional_value() {
+        assert_eq!(format_axis_label(2010.5), "2010.50");
     }
 }
 
