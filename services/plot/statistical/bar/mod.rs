@@ -133,6 +133,10 @@ pub fn build(input: &str) -> String {
     let lp = o.lp();
 
     let series: Vec<(String, Vec<f64>)> = build_series(&a, &o, &category_labels);
+    let error_low = o.error_low.clone().unwrap_or_default();
+    let error_high = o.error_high.clone().unwrap_or_default();
+    let overlay_line = o.overlay_line.clone().unwrap_or_default();
+    let overlay_line_label = o.overlay_line_label.clone().unwrap_or_default();
 
     let cfg = BarConfig {
         variant,
@@ -149,7 +153,13 @@ pub fn build(input: &str) -> String {
         labels: &labels,
         values: &values,
         color_hex: o.color_hex.unwrap_or(0),
+        color_low: o.color_low.unwrap_or(0x636EFA),
+        color_high: o.color_high.unwrap_or(0xF43F5E),
         color_groups: &groups,
+        error_low: &error_low,
+        error_high: &error_high,
+        overlay_line: &overlay_line,
+        overlay_line_label: &overlay_line_label,
         category_labels: &category_labels,
         series: &series,
         offset_groups: &offset_groups,
