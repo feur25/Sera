@@ -1,41 +1,7 @@
 use super::config::LineConfig;
 use crate::plot::statistical::common::{
-    escape_xml, hex6, push_b, push_f2, push_i, truncate, Frame,
+    catmull_rom_path, escape_xml, hex6, push_b, push_f2, push_i, truncate, Frame,
 };
-
-fn catmull_rom_path(buf: &mut Vec<u8>, pts: &[(i32, i32)], tension: f64) {
-    if pts.len() < 2 {
-        return;
-    }
-    push_b(buf, b"M ");
-    push_i(buf, pts[0].0);
-    buf.push(b' ');
-    push_i(buf, pts[0].1);
-    let n = pts.len();
-    for i in 0..(n - 1) {
-        let p0 = if i == 0 { pts[0] } else { pts[i - 1] };
-        let p1 = pts[i];
-        let p2 = pts[i + 1];
-        let p3 = if i + 2 < n { pts[i + 2] } else { pts[i + 1] };
-        let t = tension.clamp(0.0, 1.0) / 6.0;
-        let c1x = p1.0 as f64 + (p2.0 - p0.0) as f64 * t;
-        let c1y = p1.1 as f64 + (p2.1 - p0.1) as f64 * t;
-        let c2x = p2.0 as f64 - (p3.0 - p1.0) as f64 * t;
-        let c2y = p2.1 as f64 - (p3.1 - p1.1) as f64 * t;
-        push_b(buf, b" C ");
-        push_i(buf, c1x as i32);
-        buf.push(b' ');
-        push_i(buf, c1y as i32);
-        buf.push(b' ');
-        push_i(buf, c2x as i32);
-        buf.push(b' ');
-        push_i(buf, c2y as i32);
-        buf.push(b' ');
-        push_i(buf, p2.0);
-        buf.push(b' ');
-        push_i(buf, p2.1);
-    }
-}
 
 #[crate::chart_demo(
     "x_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\"], values=[12,19,15,22,28,24]"

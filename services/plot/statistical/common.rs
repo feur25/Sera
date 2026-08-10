@@ -470,6 +470,112 @@ pub fn format_axis_label(v: f64) -> String {
     }
 }
 
+pub fn catmull_rom_path(buf: &mut Vec<u8>, pts: &[(i32, i32)], tension: f64) {
+    if pts.len() < 2 {
+        return;
+    }
+    push_b(buf, b"M ");
+    push_i(buf, pts[0].0);
+    buf.push(b' ');
+    push_i(buf, pts[0].1);
+    let n = pts.len();
+    for i in 0..(n - 1) {
+        let p0 = if i == 0 { pts[0] } else { pts[i - 1] };
+        let p1 = pts[i];
+        let p2 = pts[i + 1];
+        let p3 = if i + 2 < n { pts[i + 2] } else { pts[i + 1] };
+        let t = tension.clamp(0.0, 1.0) / 6.0;
+        let c1x = p1.0 as f64 + (p2.0 - p0.0) as f64 * t;
+        let c1y = p1.1 as f64 + (p2.1 - p0.1) as f64 * t;
+        let c2x = p2.0 as f64 - (p3.0 - p1.0) as f64 * t;
+        let c2y = p2.1 as f64 - (p3.1 - p1.1) as f64 * t;
+        push_b(buf, b" C ");
+        push_i(buf, c1x as i32);
+        buf.push(b' ');
+        push_i(buf, c1y as i32);
+        buf.push(b' ');
+        push_i(buf, c2x as i32);
+        buf.push(b' ');
+        push_i(buf, c2y as i32);
+        buf.push(b' ');
+        push_i(buf, p2.0);
+        buf.push(b' ');
+        push_i(buf, p2.1);
+    }
+}
+
+pub fn moving_average(values: &[f64], period: usize) -> Vec<f64> {
+    let period = period.max(1);
+    let n = values.len();
+    let mut out = Vec::with_capacity(n);
+    let mut sum = 0.0f64;
+    for i in 0..n {
+        sum += values[i];
+        let window = (i + 1).min(period);
+        if i >= period {
+            sum -= values[i - period];
+        }
+        out.push(sum / window as f64);
+    }
+    out
+}
+
+pub fn local_maxima_indices(values: &[f64], top_n: usize, min_gap: usize) -> Vec<usize> {
+    let n = values.len();
+    if n < 3 || top_n == 0 {
+        return Vec::new();
+    }
+    let mut candidates: Vec<usize> = (1..n - 1)
+        .filter(|&i| values[i] >= values[i - 1] && values[i] >= values[i + 1])
+        .collect();
+    candidates.sort_by(|&a, &b| values[b].partial_cmp(&values[a]).unwrap_or(std::cmp::Ordering::Equal));
+    let mut picked: Vec<usize> = Vec::with_capacity(top_n);
+    for c in candidates {
+        if picked.iter().all(|&p| c.abs_diff(p) >= min_gap) {
+            picked.push(c);
+        }
+        if picked.len() >= top_n {
+            break;
+        }
+    }
+    picked.sort_unstable();
+    picked
+}
+
+pub fn draw_point_callout(buf: &mut Vec<u8>, x: i32, y: i32, label: &str, color: u32, dir_up: bool) {
+    let hx = hex6(color);
+    let leader = 34i32;
+    let ly = if dir_up { y - leader } else { y + leader };
+    push_b(buf, b"<circle cx=\"");
+    push_i(buf, x);
+    push_b(buf, b"\" cy=\"");
+    push_i(buf, y);
+    push_b(buf, b"\" r=\"5\" fill=\"none\" stroke=\"#");
+    buf.extend_from_slice(&hx);
+    push_b(buf, b"\" stroke-width=\"2\"/>");
+    push_b(buf, b"<line x1=\"");
+    push_i(buf, x);
+    push_b(buf, b"\" y1=\"");
+    push_i(buf, y);
+    push_b(buf, b"\" x2=\"");
+    push_i(buf, x);
+    push_b(buf, b"\" y2=\"");
+    push_i(buf, ly);
+    push_b(buf, b"\" stroke=\"#");
+    buf.extend_from_slice(&hx);
+    push_b(buf, b"\" stroke-width=\"1.4\"/>");
+    let text_y = if dir_up { ly - 8 } else { ly + 16 };
+    push_b(buf, b"<text x=\"");
+    push_i(buf, x);
+    push_b(buf, b"\" y=\"");
+    push_i(buf, text_y);
+    push_b(buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-weight=\"700\" font-size=\"11\" fill=\"#");
+    buf.extend_from_slice(&hx);
+    push_b(buf, b"\">");
+    escape_xml(buf, label);
+    push_b(buf, b"</text>");
+}
+
 pub fn write_f2(buf: &mut Vec<u8>, v: f64) {
     let s = format!("{:.2}", v);
     buf.extend_from_slice(s.as_bytes());
