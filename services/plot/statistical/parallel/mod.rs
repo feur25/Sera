@@ -7,6 +7,7 @@ pub mod config;
 pub mod deluxe;
 pub mod density;
 pub mod highlight;
+pub mod lineage;
 pub mod ribbon;
 pub mod smooth;
 pub mod variant;
@@ -32,6 +33,7 @@ pub fn render_parallel_html(cfg: &ParallelConfig) -> String {
         Density => density::render(cfg),
         Arc => arc::render(cfg),
         Ribbon => ribbon::render(cfg),
+        Lineage => lineage::render(cfg),
     }
 }
 

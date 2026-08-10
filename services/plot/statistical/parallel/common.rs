@@ -187,6 +187,127 @@ pub fn write_polyline(
     push_b(buf, b"\"/>");
 }
 
+pub fn write_curve(
+    buf: &mut Vec<u8>,
+    p: &Prepared,
+    vals: &[f64],
+    hx: &[u8; 6],
+    sw: f64,
+    op: f64,
+    si: usize,
+    name: &str,
+) {
+    let m = p.n_axes.min(vals.len());
+    if m < 2 {
+        return;
+    }
+    let mut pts: Vec<(f64, f64)> = (0..m).map(|ai| point(p, ai, vals[ai])).collect();
+    let first = pts[0];
+    let last = pts[m - 1];
+    pts.insert(0, first);
+    pts.push(last);
+    push_b(buf, b"<path data-idx=\"");
+    push_i(buf, si as i32);
+    push_b(buf, b"\" data-series=\"");
+    push_i(buf, si as i32);
+    push_b(buf, b"\" data-lbl=\"");
+    escape_xml(buf, name);
+    push_b(buf, b"\" fill=\"none\" stroke=\"#");
+    buf.extend_from_slice(hx);
+    push_b(buf, b"\" stroke-width=\"");
+    push_f2(buf, sw);
+    push_b(buf, b"\" stroke-opacity=\"");
+    push_f2(buf, op);
+    push_b(buf, b"\" stroke-linejoin=\"round\" d=\"M ");
+    push_f2(buf, pts[1].0);
+    push_b(buf, b" ");
+    push_f2(buf, pts[1].1);
+    for i in 1..pts.len() - 2 {
+        let p0 = pts[i - 1];
+        let p1 = pts[i];
+        let p2 = pts[i + 1];
+        let p3 = pts[i + 2];
+        let c1x = p1.0 + (p2.0 - p0.0) / 6.0;
+        let c1y = p1.1 + (p2.1 - p0.1) / 6.0;
+        let c2x = p2.0 - (p3.0 - p1.0) / 6.0;
+        let c2y = p2.1 - (p3.1 - p1.1) / 6.0;
+        push_b(buf, b" C ");
+        push_f2(buf, c1x);
+        push_b(buf, b" ");
+        push_f2(buf, c1y);
+        push_b(buf, b", ");
+        push_f2(buf, c2x);
+        push_b(buf, b" ");
+        push_f2(buf, c2y);
+        push_b(buf, b", ");
+        push_f2(buf, p2.0);
+        push_b(buf, b" ");
+        push_f2(buf, p2.1);
+    }
+    push_b(buf, b"\"/>");
+}
+
+pub fn write_curve_from(
+    buf: &mut Vec<u8>,
+    p: &Prepared,
+    start_axis: usize,
+    vals: &[f64],
+    hx: &[u8; 6],
+    sw: f64,
+    op: f64,
+    si: usize,
+    name: &str,
+) {
+    let m = vals.len().min(p.n_axes.saturating_sub(start_axis));
+    if m < 2 {
+        return;
+    }
+    let mut pts: Vec<(f64, f64)> = (0..m).map(|i| point(p, start_axis + i, vals[i])).collect();
+    let first = pts[0];
+    let last = pts[m - 1];
+    pts.insert(0, first);
+    pts.push(last);
+    push_b(buf, b"<path data-idx=\"");
+    push_i(buf, si as i32);
+    push_b(buf, b"\" data-series=\"");
+    push_i(buf, si as i32);
+    push_b(buf, b"\" data-lbl=\"");
+    escape_xml(buf, name);
+    push_b(buf, b"\" fill=\"none\" stroke=\"#");
+    buf.extend_from_slice(hx);
+    push_b(buf, b"\" stroke-width=\"");
+    push_f2(buf, sw);
+    push_b(buf, b"\" stroke-opacity=\"");
+    push_f2(buf, op);
+    push_b(buf, b"\" stroke-linejoin=\"round\" d=\"M ");
+    push_f2(buf, pts[1].0);
+    push_b(buf, b" ");
+    push_f2(buf, pts[1].1);
+    for i in 1..pts.len() - 2 {
+        let p0 = pts[i - 1];
+        let p1 = pts[i];
+        let p2 = pts[i + 1];
+        let p3 = pts[i + 2];
+        let c1x = p1.0 + (p2.0 - p0.0) / 6.0;
+        let c1y = p1.1 + (p2.1 - p0.1) / 6.0;
+        let c2x = p2.0 - (p3.0 - p1.0) / 6.0;
+        let c2y = p2.1 - (p3.1 - p1.1) / 6.0;
+        push_b(buf, b" C ");
+        push_f2(buf, c1x);
+        push_b(buf, b" ");
+        push_f2(buf, c1y);
+        push_b(buf, b", ");
+        push_f2(buf, c2x);
+        push_b(buf, b" ");
+        push_f2(buf, c2y);
+        push_b(buf, b", ");
+        push_f2(buf, p2.0);
+        push_b(buf, b" ");
+        push_f2(buf, p2.1);
+    }
+    push_b(buf, b"\"/>");
+}
+
 pub fn write_dots(
     buf: &mut Vec<u8>,
     p: &Prepared,
