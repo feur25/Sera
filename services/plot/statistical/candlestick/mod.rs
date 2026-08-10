@@ -4,7 +4,9 @@ pub mod common;
 pub mod config;
 pub mod heikin;
 pub mod hollow;
+pub mod indicators;
 pub mod line;
+pub mod milestone;
 pub mod mountain;
 pub mod ohlc;
 pub mod outlined;
@@ -27,6 +29,8 @@ pub fn render_candlestick_html(cfg: &CandlestickConfig) -> String {
         Mountain => mountain::render(cfg),
         Range => range::render(cfg),
         Volume => volume::render(cfg),
+        Milestone => milestone::render(cfg),
+        Indicators => indicators::render(cfg),
     }
 }
 

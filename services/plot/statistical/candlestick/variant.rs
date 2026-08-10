@@ -9,5 +9,7 @@ crate::plot_family! {
         Mountain => "mountain" | "area" | "filled_area" | "shade",
         Range    => "range" | "hl" | "highlow" | "spread",
         Volume   => "volume" | "crypto" | "with_volume" | "trading",
+        Milestone   => "milestone" | "milestones" | "story" | "narrative" | "highlight_reel",
+        Indicators  => "indicators" | "multi_ma" | "moving_averages" | "technical" | "grafana",
     }
 }
