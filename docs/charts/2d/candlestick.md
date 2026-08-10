@@ -48,6 +48,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('candlestick-en','mountain',this)"><span class="sp-cic">M</span><span class="sp-clb">Mountain</span></button>
 <button class="sp-cls-tab" onclick="spCls('candlestick-en','range',this)"><span class="sp-cic">R</span><span class="sp-clb">Range</span></button>
 <button class="sp-cls-tab" onclick="spCls('candlestick-en','volume',this)"><span class="sp-cic">V</span><span class="sp-clb">Volume</span></button>
+<button class="sp-cls-tab" onclick="spCls('candlestick-en','milestone',this)"><span class="sp-cic">S</span><span class="sp-clb">Milestone</span></button>
+<button class="sp-cls-tab" onclick="spCls('candlestick-en','indicators',this)"><span class="sp-cic">T</span><span class="sp-clb">Indicators</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -132,6 +134,24 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <iframe class="sp-preview-frame" src="../../previews/candlestick-volume.html"></iframe>
 </div>
 
+<div class="sp-variant" id="candlestick-en-milestone">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"milestone"</code></span><span><strong>Aliases</strong> <code>milestone / milestones / story / narrative / highlight_reel</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Ghosted candles as background texture behind two smooth moving-average trend curves (short + long period), with the strongest local peaks of the short curve auto-detected and marked with a circle, leader line, and bold value label — the "story slide" look for a report or a landing page, built entirely from real OHLC data, no hand-placed annotations.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/candlestick-milestone.html"></iframe>
+</div>
+
+<div class="sp-variant" id="candlestick-en-indicators">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"indicators"</code></span><span><strong>Aliases</strong> <code>indicators / multi_ma / moving_averages / technical / grafana</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Candles, an optional volume pane, and five simultaneous moving averages (5/10/20/40/70-period, each its own color with a legend) overlaid on the same price axis — the full trading-terminal reading, matching what Grafana's candlestick panel offers (candles, volume, moving-average overlays) built natively in SVG.</p>
+
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/candlestick-indicators.html"></iframe>
+</div>
+
 </div>
 </div>
 
@@ -175,6 +195,8 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('candlestick-fr','mountain',this)"><span class="sp-cic">M</span><span class="sp-clb">Mountain</span></button>
 <button class="sp-cls-tab" onclick="spCls('candlestick-fr','range',this)"><span class="sp-cic">R</span><span class="sp-clb">Range</span></button>
 <button class="sp-cls-tab" onclick="spCls('candlestick-fr','volume',this)"><span class="sp-cic">V</span><span class="sp-clb">Volume</span></button>
+<button class="sp-cls-tab" onclick="spCls('candlestick-fr','milestone',this)"><span class="sp-cic">S</span><span class="sp-clb">Etapes</span></button>
+<button class="sp-cls-tab" onclick="spCls('candlestick-fr','indicators',this)"><span class="sp-cic">T</span><span class="sp-clb">Indicateurs</span></button>
 </div>
 <div class="sp-cls-body">
 
@@ -257,6 +279,24 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 
 <div class="sp-preview-label">Apercu</div>
 <iframe class="sp-preview-frame" src="../../previews/candlestick-volume.html"></iframe>
+</div>
+
+<div class="sp-variant" id="candlestick-fr-milestone">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"milestone"</code></span><span><strong>Aliases</strong> <code>milestone / milestones / story / narrative / highlight_reel</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chandeliers estompes en texture de fond derriere deux courbes de tendance lissees (moyenne courte + longue periode), avec les pics locaux les plus marquants de la courbe courte detectes automatiquement et signales par un cercle, une ligne de rappel, et une etiquette de valeur en gras — l'allure "diapositive de recit" pour un rapport ou une page produit, construite entierement a partir de vraies donnees OHLC, sans annotation placee a la main.</p>
+
+<div class="sp-preview-label">Apercu</div>
+<iframe class="sp-preview-frame" src="../../previews/candlestick-milestone.html"></iframe>
+</div>
+
+<div class="sp-variant" id="candlestick-fr-indicators">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"indicators"</code></span><span><strong>Aliases</strong> <code>indicators / multi_ma / moving_averages / technical / grafana</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chandeliers, une bande de volume optionnelle, et cinq moyennes mobiles simultanees (periodes 5/10/20/40/70, chacune sa couleur avec legende) superposees sur le meme axe de prix — la lecture complete de terminal de trading, correspondant a ce qu'offre le panneau chandelier de Grafana (chandeliers, volume, moyennes mobiles superposees), construite nativement en SVG.</p>
+
+<div class="sp-preview-label">Apercu</div>
+<iframe class="sp-preview-frame" src="../../previews/candlestick-indicators.html"></iframe>
 </div>
 
 </div>
