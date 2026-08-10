@@ -207,6 +207,121 @@ pub fn color_hex(c: u32) -> [u8; 6] {
     hex6(c)
 }
 
+pub fn layout_with_volume(p: &mut Prepared, has_vol: bool, vol_frac: f64) -> i32 {
+    let gap = 10;
+    let orig_h = p.layout.plot_h;
+    let vol_h = if has_vol {
+        (orig_h as f64 * vol_frac) as i32
+    } else {
+        0
+    };
+    let candle_h = (orig_h - vol_h - if has_vol { gap } else { 0 }).max(10);
+    p.layout.plot_h = candle_h;
+    vol_h
+}
+
+pub fn draw_candles(buf: &mut Vec<u8>, p: &Prepared, opacity: f64) {
+    let l = &p.layout;
+    let bw = l.body_w;
+    let op = opacity.clamp(0.0, 1.0);
+    for i in 0..p.n {
+        let cx = cx_at(l, i);
+        let y_high = val_to_y(l, p.high[i]);
+        let y_low = val_to_y(l, p.low[i]);
+        let y_open = val_to_y(l, p.open[i]);
+        let y_close = val_to_y(l, p.close[i]);
+        let up = p.close[i] >= p.open[i];
+        let col = if up { p.up_color } else { p.dn_color };
+        let hx = color_hex(col);
+        let (top, bot) = if y_open < y_close {
+            (y_open, y_close)
+        } else {
+            (y_close, y_open)
+        };
+        let bh = (bot - top).max(1);
+        push_b(buf, b"<line");
+        data_attrs(buf, p, i);
+        push_b(buf, b" x1=\"");
+        push_i(buf, cx);
+        push_b(buf, b"\" y1=\"");
+        push_i(buf, y_high);
+        push_b(buf, b"\" x2=\"");
+        push_i(buf, cx);
+        push_b(buf, b"\" y2=\"");
+        push_i(buf, y_low);
+        push_b(buf, b"\" stroke=\"#");
+        buf.extend_from_slice(&hx);
+        push_b(buf, b"\" stroke-width=\"1.4\" stroke-opacity=\"");
+        push_f2(buf, op);
+        push_b(buf, b"\"/>");
+        push_b(buf, b"<rect");
+        data_attrs(buf, p, i);
+        push_b(buf, b" x=\"");
+        push_i(buf, cx - bw / 2);
+        push_b(buf, b"\" y=\"");
+        push_i(buf, top);
+        push_b(buf, b"\" width=\"");
+        push_i(buf, bw);
+        push_b(buf, b"\" height=\"");
+        push_i(buf, bh);
+        push_b(buf, b"\" rx=\"1\" fill=\"#");
+        buf.extend_from_slice(&hx);
+        push_b(buf, b"\" fill-opacity=\"");
+        push_f2(buf, op);
+        push_b(buf, b"\"/>");
+    }
+}
+
+pub fn draw_volume_pane(buf: &mut Vec<u8>, cfg: &CandlestickConfig, p: &Prepared, vol_h: i32) {
+    let l = &p.layout;
+    let n = p.n;
+    if vol_h <= 0 || cfg.volume.len() < n {
+        return;
+    }
+    let gap = 10;
+    let vol_top = l.pad_t + l.plot_h + gap;
+    let vmax = cfg.volume[..n]
+        .iter()
+        .cloned()
+        .fold(0.0_f64, f64::max)
+        .max(1.0);
+    push_b(buf, b"<line x1=\"");
+    push_i(buf, l.pad_l);
+    push_b(buf, b"\" y1=\"");
+    push_i(buf, vol_top);
+    push_b(buf, b"\" x2=\"");
+    push_i(buf, l.pad_l + l.plot_w);
+    push_b(buf, b"\" y2=\"");
+    push_i(buf, vol_top);
+    push_b(buf, b"\" stroke=\"#e5e7eb\" stroke-width=\"0.6\"/>");
+    let bw = l.body_w;
+    for i in 0..n {
+        let cx = cx_at(l, i);
+        let v = cfg.volume[i].max(0.0);
+        let bh = ((v / vmax) * vol_h as f64).max(1.0) as i32;
+        let up = p.close[i] >= p.open[i];
+        let col = if up { p.up_color } else { p.dn_color };
+        let hx = color_hex(col);
+        push_b(buf, b"<rect data-idx=\"");
+        push_i(buf, i as i32);
+        push_b(buf, b"\" data-lbl=\"");
+        escape_xml(buf, &p.labels[i]);
+        push_b(buf, b"\" data-kv-Volume=\"");
+        push_f2(buf, v);
+        push_b(buf, b"\" x=\"");
+        push_i(buf, cx - bw / 2);
+        push_b(buf, b"\" y=\"");
+        push_i(buf, vol_top + vol_h - bh);
+        push_b(buf, b"\" width=\"");
+        push_i(buf, bw);
+        push_b(buf, b"\" height=\"");
+        push_i(buf, bh);
+        push_b(buf, b"\" fill=\"#");
+        buf.extend_from_slice(&hx);
+        push_b(buf, b"\" fill-opacity=\"0.55\"/>");
+    }
+}
+
 pub fn heikin_ashi(
     open: &[f64],
     high: &[f64],
