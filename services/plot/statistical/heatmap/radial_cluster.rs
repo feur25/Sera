@@ -1,7 +1,7 @@
 use super::common::{cell_color, finite_minmax, hierarchical_dendrogram, DendroMerge};
 use super::config::HeatmapConfig;
 use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
-use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i};
+use crate::plot::statistical::common::{angle_at, escape_xml, hex6, push_b, push_f2, push_i};
 use std::f64::consts::PI;
 
 #[crate::chart_demo("labels=[\"GSM1\",\"GSM2\",\"GSM3\",\"GSM4\",\"GSM5\",\"GSM6\"], col_labels=[\"10001_at\",\"10005_at\",\"10013_at\",\"10020_at\",\"10025_at\",\"10004_at\",\"10007_at\",\"10014_at\",\"10023_at\",\"10008_at\",\"10019_at\",\"10038_at\"], values=[9,9,10,8,10,7,4,3,5,2,4,3,10,9,11,9,11,8,5,4,6,3,5,4,8,8,9,7,9,6,3,2,4,1,3,2,11,10,12,10,12,9,6,5,7,4,6,5,7,7,8,6,8,5,2,1,3,0,2,1,12,11,13,11,13,10,7,6,8,5,7,6]")]
@@ -101,8 +101,8 @@ pub fn render(cfg: &HeatmapConfig) -> String {
             let col = cell_color(t, cfg);
             let hx = hex6(col);
 
-            let a0 = -PI * 0.5 + ci as f64 * 2.0 * PI / nc as f64 + gap_rad;
-            let a1 = -PI * 0.5 + (ci + 1) as f64 * 2.0 * PI / nc as f64 - gap_rad;
+            let a0 = angle_at(ci as f64, nc as f64, -PI * 0.5) + gap_rad;
+            let a1 = angle_at((ci + 1) as f64, nc as f64, -PI * 0.5) - gap_rad;
 
             let x00 = cx + r0 * a0.cos();
             let y00 = cy + r0 * a0.sin();
@@ -165,7 +165,7 @@ pub fn render(cfg: &HeatmapConfig) -> String {
     push_b(&mut buf, b"\" fill=\"none\" stroke=\"#1e293b\" stroke-width=\"1\"/>");
 
     for ci in 0..nc {
-        let a_mid = -PI * 0.5 + (ci as f64 + 0.5) * 2.0 * PI / nc as f64;
+        let a_mid = angle_at(ci as f64 + 0.5, nc as f64, -PI * 0.5);
         let tx0 = cx + outer_r * a_mid.cos();
         let ty0 = cy + outer_r * a_mid.sin();
         let tx1 = cx + (outer_r + 6.0) * a_mid.cos();
@@ -250,7 +250,7 @@ fn draw_radial_dendrogram(buf: &mut Vec<u8>, merges: &[DendroMerge], max_height:
     let leaf_r = inner_r * 0.92;
     let mh = max_height.max(1e-9);
     let r_of = |height: f64| leaf_r - (height / mh) * (leaf_r - root_r);
-    let angle_of = |pos: f64| -PI * 0.5 + (pos + 0.5) * 2.0 * PI / nc as f64;
+    let angle_of = |pos: f64| angle_at(pos + 0.5, nc as f64, -PI * 0.5);
 
     for m in merges {
         let al = angle_of(m.xl);

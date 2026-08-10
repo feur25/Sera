@@ -1,7 +1,7 @@
 use super::config::HeatmapConfig;
 use crate::html::hover::{build_chart_html, slots_to_json};
 use crate::plot::statistical::common::{
-    escape_xml, hex6, lerp_color, palette_color, push_b, push_f2, push_i, truncate,
+    colorscale_color, escape_xml, hex6, lerp_color, palette_color, push_b, push_f2, push_i, truncate,
 };
 
 enum ClusterTree {
@@ -280,76 +280,6 @@ pub fn cell_color(t: f64, cfg: &HeatmapConfig) -> u32 {
     lerp_color(qt, cfg.color_low, cfg.color_mid, cfg.color_high)
 }
 
-const VIRIDIS_STOPS: &[u32] = &[0x440154, 0x3B528B, 0x21908C, 0x5DC863, 0xFDE725];
-const PLASMA_STOPS: &[u32] = &[0x0D0887, 0x6A00A8, 0xB12A90, 0xE16462, 0xFCA636, 0xF0F921];
-const INFERNO_STOPS: &[u32] = &[0x000004, 0x420A68, 0x932667, 0xDD513A, 0xFCA50A, 0xFCFFA4];
-const MAGMA_STOPS: &[u32] = &[0x000004, 0x3B0F70, 0x8C2981, 0xDE4968, 0xFE9F6D, 0xFCFDBF];
-const CIVIDIS_STOPS: &[u32] = &[0x00224E, 0x35446B, 0x666970, 0x958F78, 0xCAB969, 0xFEE838];
-const TURBO_STOPS: &[u32] = &[
-    0x30123B, 0x4145AB, 0x4675ED, 0x39A2FC, 0x1BCFD4, 0x24EC9F, 0x61FC6C, 0xA4FC3D, 0xD1E834,
-    0xF3C63A, 0xFE9B2D, 0xF36315, 0xC92903, 0x7A0403,
-];
-const RDBU_STOPS: &[u32] = &[
-    0x053061, 0x2166AC, 0x4393C3, 0x92C5DE, 0xD1E5F0, 0xF7F7F7, 0xFDDBC7, 0xF4A582, 0xD6604D,
-    0xB2182B, 0x67001F,
-];
-const BLUES_STOPS: &[u32] = &[
-    0xF7FBFF, 0xDEEBF7, 0xC6DBEF, 0x9ECAE1, 0x6BAED6, 0x4292C6, 0x2171B5, 0x08519C, 0x08306B,
-];
-const REDS_STOPS: &[u32] = &[
-    0xFFF5F0, 0xFEE0D2, 0xFCBBA1, 0xFC9272, 0xFB6A4A, 0xEF3B2C, 0xCB181D, 0xA50F15, 0x67000D,
-];
-const GREENS_STOPS: &[u32] = &[
-    0xF7FCF5, 0xE5F5E0, 0xC7E9C0, 0xA1D99B, 0x74C476, 0x41AB5D, 0x238B45, 0x006D2C, 0x00441B,
-];
-
-const PALETTE_TABLE: &[(&str, &[u32])] = &[
-    ("viridis", VIRIDIS_STOPS),
-    ("plasma", PLASMA_STOPS),
-    ("inferno", INFERNO_STOPS),
-    ("magma", MAGMA_STOPS),
-    ("cividis", CIVIDIS_STOPS),
-    ("turbo", TURBO_STOPS),
-    ("rdbu_r", RDBU_STOPS),
-    ("rdbu", RDBU_STOPS),
-    ("blues", BLUES_STOPS),
-    ("reds", REDS_STOPS),
-    ("greens", GREENS_STOPS),
-];
-
-pub fn colorscale_color(name: &str, t: f64) -> u32 {
-    let t = t.clamp(0.0, 1.0);
-    let lower = name.to_ascii_lowercase();
-    let stops = PALETTE_TABLE
-        .iter()
-        .find(|(key, _)| *key == lower)
-        .map(|(_, stops)| *stops)
-        .unwrap_or(VIRIDIS_STOPS);
-    if lower == "rdbu_r" {
-        return interp_stops(stops, 1.0 - t);
-    }
-    interp_stops(stops, t)
-}
-
-fn interp_stops(stops: &[u32], t: f64) -> u32 {
-    let n = stops.len() - 1;
-    let p = t * n as f64;
-    let i0 = (p.floor() as usize).min(n);
-    let i1 = (i0 + 1).min(n);
-    let f = p - i0 as f64;
-    let a = stops[i0];
-    let b = stops[i1];
-    let ar = ((a >> 16) & 0xFF) as f64;
-    let ag = ((a >> 8) & 0xFF) as f64;
-    let ab = (a & 0xFF) as f64;
-    let br = ((b >> 16) & 0xFF) as f64;
-    let bg = ((b >> 8) & 0xFF) as f64;
-    let bb = (b & 0xFF) as f64;
-    let r = (ar + (br - ar) * f).round() as u32;
-    let g = (ag + (bg - ag) * f).round() as u32;
-    let bl = (ab + (bb - ab) * f).round() as u32;
-    (r << 16) | (g << 8) | bl
-}
 
 pub fn viridis_color(t: f64) -> u32 {
     let stops: [u32; 5] = [0x440154, 0x3B528B, 0x21908C, 0x5DC863, 0xFDE725];

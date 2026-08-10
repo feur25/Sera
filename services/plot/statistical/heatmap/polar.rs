@@ -1,7 +1,7 @@
 use super::common::{cell_color, finite_minmax};
 use super::config::HeatmapConfig;
 use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
-use crate::plot::statistical::common::{escape_xml, hex6, push_b, push_f2, push_i};
+use crate::plot::statistical::common::{angle_at, escape_xml, hex6, push_b, push_f2, push_i};
 use std::f64::consts::PI;
 
 #[crate::chart_demo("labels=[\"North\",\"South\",\"East\",\"West\"], col_labels=[\"0h\",\"3h\",\"6h\",\"9h\",\"12h\",\"15h\",\"18h\",\"21h\"], values=[210,190,180,220,260,240,230,215,150,140,135,160,190,175,165,155,300,280,260,310,340,320,300,290,120,110,105,130,150,145,140,125]")]
@@ -68,8 +68,8 @@ pub fn render(cfg: &HeatmapConfig) -> String {
             let col = cell_color(t, cfg);
             let hx = hex6(col);
 
-            let a0 = -PI * 0.5 + ci as f64 * 2.0 * PI / nc as f64 + gap_rad;
-            let a1 = -PI * 0.5 + (ci + 1) as f64 * 2.0 * PI / nc as f64 - gap_rad;
+            let a0 = angle_at(ci as f64, nc as f64, -PI * 0.5) + gap_rad;
+            let a1 = angle_at((ci + 1) as f64, nc as f64, -PI * 0.5) - gap_rad;
 
             let x00 = cx + r0 * a0.cos();
             let y00 = cy + r0 * a0.sin();
@@ -142,7 +142,7 @@ pub fn render(cfg: &HeatmapConfig) -> String {
     push_b(&mut buf, b"\" r=\"3\" fill=\"#6366f133\"/>");
 
     for ci in 0..nc {
-        let a_mid = -PI * 0.5 + (ci as f64 + 0.5) * 2.0 * PI / nc as f64;
+        let a_mid = angle_at(ci as f64 + 0.5, nc as f64, -PI * 0.5);
         let tx0 = cx + outer_r * a_mid.cos();
         let ty0 = cy + outer_r * a_mid.sin();
         let tx1 = cx + (outer_r + 7.0) * a_mid.cos();

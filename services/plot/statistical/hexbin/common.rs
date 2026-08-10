@@ -1,7 +1,7 @@
 use super::config::HexbinConfig;
 use crate::html::hover::slots_to_json;
 use crate::plot::statistical::common::{hex6, push_b, push_f2, push_i, Frame};
-use crate::plot::statistical::heatmap::common::colorscale_color;
+use crate::plot::statistical::common::colorscale_color;
 use std::collections::HashMap;
 
 pub struct Bounds {
