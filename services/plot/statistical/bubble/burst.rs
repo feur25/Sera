@@ -2,6 +2,7 @@ use super::config::BubbleConfig;
 use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
 use crate::plot::statistical::common::{
     angle_at, colorscale_color, escape_xml, hash01, hex6, lerp_rgb, polar_point, push_b, push_f2, push_i,
+    svg_open,
 };
 use std::f64::consts::PI;
 
@@ -82,14 +83,9 @@ pub fn render(cfg: &BubbleConfig) -> String {
     let mut slots: Vec<HoverSlot> = Vec::with_capacity(n);
     let mut buf = Vec::<u8>::with_capacity(n * 220 + 8192);
 
-    push_b(&mut buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"");
-    push_i(&mut buf, w);
-    push_b(&mut buf, b"\" height=\"");
-    push_i(&mut buf, h);
-    push_b(&mut buf, b"\">");
-    push_b(&mut buf, b"<rect width=\"100%\" height=\"100%\" fill=\"#050507\"/>");
+    svg_open(&mut buf, w, h);
 
-    push_b(&mut buf, b"<g stroke=\"#ffffff\" stroke-opacity=\"0.045\" stroke-width=\"1\">");
+    push_b(&mut buf, b"<g stroke=\"#94a3b8\" stroke-opacity=\"0.28\" stroke-width=\"1\">");
     let n_spokes = 72usize;
     for k in 0..n_spokes {
         let a = angle_at(k as f64, n_spokes as f64, 0.0);
@@ -107,7 +103,7 @@ pub fn render(cfg: &BubbleConfig) -> String {
     }
     push_b(&mut buf, b"</g>");
 
-    push_b(&mut buf, b"<g fill=\"none\" stroke=\"#ffffff\" stroke-opacity=\"0.07\" stroke-width=\"1\">");
+    push_b(&mut buf, b"<g fill=\"none\" stroke=\"#cbd5e1\" stroke-opacity=\"0.9\" stroke-width=\"1\">");
     let n_rings = 7usize;
     for k in 1..=n_rings {
         let r = inner_r + (outer_r - inner_r) * (k as f64 / n_rings as f64);
@@ -129,7 +125,7 @@ pub fn render(cfg: &BubbleConfig) -> String {
     push_f2(&mut buf, cx);
     push_b(&mut buf, b"\" y2=\"");
     push_f2(&mut buf, cy + outer_r * 1.1);
-    push_b(&mut buf, b"\" stroke=\"#ffffff\" stroke-opacity=\"0.16\" stroke-width=\"1\" stroke-dasharray=\"2,5\"/>");
+    push_b(&mut buf, b"\" stroke=\"#94a3b8\" stroke-opacity=\"0.75\" stroke-width=\"1\" stroke-dasharray=\"2,5\"/>");
 
     for i in 0..n {
         let is_a = cfg.categories[i] == cat_a;
@@ -185,7 +181,7 @@ pub fn render(cfg: &BubbleConfig) -> String {
     if !cfg.title.is_empty() {
         push_b(&mut buf, b"<text x=\"");
         push_f2(&mut buf, cx);
-        push_b(&mut buf, b"\" y=\"22\" text-anchor=\"middle\" font-family=\"system-ui,sans-serif\" font-size=\"11\" font-weight=\"700\" fill=\"#f1f5f9\" letter-spacing=\"3\">");
+        push_b(&mut buf, b"\" y=\"22\" text-anchor=\"middle\" font-family=\"system-ui,sans-serif\" font-size=\"11\" font-weight=\"700\" fill=\"#1e293b\" letter-spacing=\"3\">");
         escape_xml(&mut buf, cfg.title);
         push_b(&mut buf, b"</text>");
     }
@@ -200,7 +196,7 @@ pub fn render(cfg: &BubbleConfig) -> String {
     push_i(&mut buf, w / 2 - 78);
     push_b(&mut buf, b"\" y=\"");
     push_i(&mut buf, leg_y + 4);
-    push_b(&mut buf, b"\" font-family=\"system-ui,sans-serif\" font-size=\"9.5\" fill=\"#cbd5e1\">");
+    push_b(&mut buf, b"\" font-family=\"system-ui,sans-serif\" font-size=\"9.5\" fill=\"#475569\">");
     escape_xml(&mut buf, &cat_a);
     push_b(&mut buf, b"</text>");
     push_b(&mut buf, b"<circle cx=\"");
@@ -214,7 +210,7 @@ pub fn render(cfg: &BubbleConfig) -> String {
     push_i(&mut buf, w / 2 + 32);
     push_b(&mut buf, b"\" y=\"");
     push_i(&mut buf, leg_y + 4);
-    push_b(&mut buf, b"\" font-family=\"system-ui,sans-serif\" font-size=\"9.5\" fill=\"#cbd5e1\">");
+    push_b(&mut buf, b"\" font-family=\"system-ui,sans-serif\" font-size=\"9.5\" fill=\"#475569\">");
     escape_xml(&mut buf, &cat_b);
     push_b(&mut buf, b"</text>");
 
@@ -268,12 +264,13 @@ mod tests {
     }
 
     #[test]
-    fn renders_one_bubble_per_point_on_a_black_background() {
+    fn renders_one_bubble_per_point_with_a_viewbox_and_the_shared_theme_default_background() {
         let (x, sizes, cats, colv) = synth(20);
         let html = render(&cfg(&x, &sizes, &cats, &colv));
         assert!(!html.is_empty());
         assert_eq!(html.matches("<circle data-idx=").count(), 20);
-        assert!(html.contains("fill=\"#050507\""));
+        assert!(html.contains("class=\"sp-bg\""), "must use the shared theme-aware background rect, not a hardcoded fill");
+        assert!(html.contains("viewBox=\"0 0 900 700\""), "without a viewBox the canvas gets clipped instead of scaled by its container");
     }
 
     #[test]
