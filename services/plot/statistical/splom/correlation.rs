@@ -1,7 +1,7 @@
 use super::common::{axis_labels, cell_point_px, diagonal_label, finalize, open_svg, pearson, prepare};
 use super::config::SplomConfig;
 use crate::plot::statistical::common::{push_b, push_f2, push_i, hex6};
-use crate::plot::statistical::heatmap::common::colorscale_color;
+use crate::plot::statistical::common::colorscale_color;
 
 #[crate::chart_demo(
     "axes=[\"Speed\",\"Power\",\"Range\"], series=[[80,65,70],[60,80,55],[40,70,90],[90,40,60],[55,85,45],[70,55,80]]"
