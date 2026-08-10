@@ -300,6 +300,11 @@
         return String(name || '').trim().replace(/-/g, '_');
     }
 
+    function familyKey(fn) {
+        fn = String(fn || '');
+        return fn.indexOf('build_') === 0 ? fn.slice(6) : fn;
+    }
+
     function normalizeVariantList(raw) {
         if (!raw) return [];
         if (Array.isArray(raw)) {
@@ -836,7 +841,7 @@
         injectStyles();
         var slug = state.slug;
         var sig = findPageSignature();
-        if (sig) { state.baseFn = sig.fn; state.baseParams = sig.params; }
+        if (sig) { state.baseFn = familyKey(sig.fn); state.baseParams = sig.params; }
         else { state.baseFn = isFullPagePlayground() ? 'bar' : slug.replace(/-/g, '_'); state.baseParams = []; }
         state.variantHints = findVariantParamHints();
         var variants = discoverVariants();
