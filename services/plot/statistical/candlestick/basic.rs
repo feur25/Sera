@@ -1,6 +1,5 @@
-use super::common::{color_hex, cx_at, data_attrs, finalize, open_with_axes, prepare, val_to_y};
+use super::common::{draw_candles, finalize, open_with_axes, prepare};
 use super::config::CandlestickConfig;
-use crate::plot::statistical::common::{push_b, push_i};
 
 #[crate::chart_demo("labels=[\"Mon\",\"Tue\",\"Wed\",\"Thu\",\"Fri\"], open=[100,102,105,103,108], high=[105,107,109,110,114], low=[99,101,103,102,107], close=[102,105,103,108,112]")]
 
@@ -11,49 +10,6 @@ pub fn render(cfg: &CandlestickConfig) -> String {
     };
     let mut b = Vec::<u8>::with_capacity(p.n * 220 + 4096);
     open_with_axes(&mut b, cfg, &p);
-    let l = &p.layout;
-    let bw = l.body_w;
-    for i in 0..p.n {
-        let cx = cx_at(l, i);
-        let y_high = val_to_y(l, p.high[i]);
-        let y_low = val_to_y(l, p.low[i]);
-        let y_open = val_to_y(l, p.open[i]);
-        let y_close = val_to_y(l, p.close[i]);
-        let up = p.close[i] >= p.open[i];
-        let col = if up { p.up_color } else { p.dn_color };
-        let hx = color_hex(col);
-        let (top, bot) = if y_open < y_close {
-            (y_open, y_close)
-        } else {
-            (y_close, y_open)
-        };
-        let bh = (bot - top).max(1);
-        push_b(&mut b, b"<line");
-        data_attrs(&mut b, &p, i);
-        push_b(&mut b, b" x1=\"");
-        push_i(&mut b, cx);
-        push_b(&mut b, b"\" y1=\"");
-        push_i(&mut b, y_high);
-        push_b(&mut b, b"\" x2=\"");
-        push_i(&mut b, cx);
-        push_b(&mut b, b"\" y2=\"");
-        push_i(&mut b, y_low);
-        push_b(&mut b, b"\" stroke=\"#");
-        b.extend_from_slice(&hx);
-        push_b(&mut b, b"\" stroke-width=\"1.4\"/>");
-        push_b(&mut b, b"<rect");
-        data_attrs(&mut b, &p, i);
-        push_b(&mut b, b" x=\"");
-        push_i(&mut b, cx - bw / 2);
-        push_b(&mut b, b"\" y=\"");
-        push_i(&mut b, top);
-        push_b(&mut b, b"\" width=\"");
-        push_i(&mut b, bw);
-        push_b(&mut b, b"\" height=\"");
-        push_i(&mut b, bh);
-        push_b(&mut b, b"\" rx=\"1\" fill=\"#");
-        b.extend_from_slice(&hx);
-        push_b(&mut b, b"\"/>");
-    }
+    draw_candles(&mut b, &p, 1.0);
     finalize(b, cfg)
 }
