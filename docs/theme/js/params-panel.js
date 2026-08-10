@@ -1,4 +1,4 @@
-window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260810";
+window.SP_WASM_BUILD = window.SP_WASM_BUILD || "20260810b";
 (function () {
   var SP_SELF_SRC = (document.currentScript && document.currentScript.src) || "";
   var SP_WASM_BUILD = window.SP_WASM_BUILD;
