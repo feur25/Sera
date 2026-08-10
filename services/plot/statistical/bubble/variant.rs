@@ -6,5 +6,6 @@ crate::plot_family! {
         Outlined    => "outlined" | "hollow" | "ring" | "open",
         Negative    => "negative" | "signed" | "diverging",
         Split       => "split" | "half" | "binary" | "categorical_split",
+        Burst       => "burst" | "radial_burst" | "spiral" | "transition" | "topic_burst",
     }
 }

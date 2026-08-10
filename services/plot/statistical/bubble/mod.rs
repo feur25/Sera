@@ -1,5 +1,6 @@
 use crate::plot::{apply, parse_all};
 pub mod basic;
+pub mod burst;
 pub mod categorical;
 pub mod common;
 pub mod config;
@@ -53,6 +54,7 @@ pub fn render_bubble_html(cfg: &BubbleConfig) -> String {
         Outlined => outlined::render(cfg),
         Negative => negative::render(cfg),
         Split => split::render(cfg),
+        Burst => burst::render(cfg),
     }
 }
 
