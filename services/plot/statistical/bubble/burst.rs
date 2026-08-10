@@ -272,19 +272,6 @@ pub fn render(cfg: &BubbleConfig) -> String {
         }
     }
 
-    let sizes_legend = [cfg.min_size, (cfg.min_size + cfg.max_size) / 2.0, cfg.max_size];
-    let sl_x0 = w - 150;
-    for (k, &r) in sizes_legend.iter().enumerate() {
-        let sy = h - 26 - r as i32;
-        push_b(&mut buf, b"<circle cx=\"");
-        push_i(&mut buf, sl_x0 + k as i32 * 46);
-        push_b(&mut buf, b"\" cy=\"");
-        push_i(&mut buf, sy);
-        push_b(&mut buf, b"\" r=\"");
-        push_f2(&mut buf, r);
-        push_b(&mut buf, b"\" fill=\"none\" stroke=\"#94a3b8\" stroke-opacity=\"0.55\" stroke-width=\"1\"/>");
-    }
-
     push_b(&mut buf, b"</svg>");
     let svg = unsafe { String::from_utf8_unchecked(buf) };
     build_chart_html(cfg.title, &svg, &slots_to_json(&slots))
