@@ -489,33 +489,51 @@ pub fn render_genealogy_impl(cfg: &DendrogramConfig, twist: f64) -> String {
     let Some((mut nodes, roots)) = tree_for(cfg) else { return String::new(); };
     assign_positions_spiral(&mut nodes, &roots, cx, cy, r_max, twist);
 
+    let n = nodes.len();
+    let mut subtree_size = vec![1usize; n];
+    let mut by_depth_desc: Vec<usize> = (0..n).collect();
+    by_depth_desc.sort_by(|&a, &b| nodes[b].depth.cmp(&nodes[a].depth));
+    for &i in &by_depth_desc {
+        if let Some(pi) = nodes[i].parent {
+            subtree_size[pi] += subtree_size[i];
+        }
+    }
+    let max_subtree = subtree_size.iter().copied().max().unwrap_or(1).max(1) as f64;
+
     let hid = html_id();
-    let mut buf = Vec::<u8>::with_capacity(nodes.len() * 220 + 4096);
+    let mut buf = Vec::<u8>::with_capacity(n * 260 + 4096);
     svg_header(&mut buf, cfg, hid, cx);
 
-    for i in 0..nodes.len() {
+    for i in 0..n {
         if let Some(pi) = nodes[i].parent {
             let hx = hex6(node_color(cfg, &nodes[i]));
-            let fade = 0.16 + 0.5 * (nodes[i].depth as f64 / nodes.len().max(1) as f64).min(1.0);
+            let fade = 0.14 + 0.55 * (nodes[i].depth as f64 / n.max(1) as f64).min(1.0);
             write_radial_link(
                 &mut buf, cx, cy,
                 nodes[pi].x, nodes[pi].y, nodes[i].x, nodes[i].y,
-                &hx, cfg.line_width * 0.6, fade.max(0.22), true,
+                &hx, cfg.line_width * 2.2, fade * 0.22, true,
+            );
+            write_radial_link(
+                &mut buf, cx, cy,
+                nodes[pi].x, nodes[pi].y, nodes[i].x, nodes[i].y,
+                &hx, cfg.line_width * 0.55, fade.max(0.3), true,
             );
         }
     }
 
-    for i in 0..nodes.len() {
+    for i in 0..n {
         let hx = hex6(node_color(cfg, &nodes[i]));
+        let bump = (subtree_size[i] as f64 / max_subtree).sqrt();
+        let r = if nodes[i].children.is_empty() { 1.9 } else { 1.4 + bump * 4.6 };
         push_b(&mut buf, b"<circle cx=\"");
         push_f2(&mut buf, nodes[i].x);
         push_b(&mut buf, b"\" cy=\"");
         push_f2(&mut buf, nodes[i].y);
         push_b(&mut buf, b"\" r=\"");
-        push_f2(&mut buf, if nodes[i].children.is_empty() { 2.1 } else { 1.5 });
+        push_f2(&mut buf, r);
         push_b(&mut buf, b"\" fill=\"#");
         buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" fill-opacity=\"0.9\" data-idx=\"");
+        push_b(&mut buf, b"\" fill-opacity=\"0.92\" data-idx=\"");
         push_i(&mut buf, i as i32);
         push_b(&mut buf, b"\"/>");
 
@@ -617,7 +635,7 @@ mod genealogy_tests {
     }
 
     #[test]
-    fn renders_one_dot_and_one_link_per_node_minus_roots() {
+    fn renders_one_dot_and_a_glow_plus_crisp_link_per_node_minus_roots() {
         let (labels, parents) = forest(3, 2, 2);
         let n = labels.len();
         let n_roots = 3;
@@ -625,7 +643,7 @@ mod genealogy_tests {
         let html = render_genealogy_impl(&c, PI * 0.9);
         assert!(!html.is_empty());
         assert_eq!(html.matches("<circle").count(), n);
-        assert_eq!(html.matches("<path").count(), n - n_roots);
+        assert_eq!(html.matches("<path").count(), (n - n_roots) * 2);
         assert!(html.contains("class=\"sp-bg\""));
     }
 
@@ -636,6 +654,39 @@ mod genealogy_tests {
         let (nodes, roots) = tree_for(&c).unwrap();
         let colors: std::collections::HashSet<u32> = roots.iter().map(|&r| node_color(&c, &nodes[r])).collect();
         assert_eq!(colors.len(), 3);
+    }
+
+    #[test]
+    fn a_node_with_more_descendants_draws_a_bigger_circle_than_a_leaf() {
+        let (labels, parents) = forest(1, 3, 3);
+        let c = cfg(&labels, &parents);
+        let html = render_genealogy_impl(&c, PI * 0.9);
+        let mut by_idx: std::collections::HashMap<i32, f64> = std::collections::HashMap::new();
+        for tag in html.split("<circle").skip(1) {
+            let tag = &tag[..tag.find("/>").unwrap_or(tag.len())];
+            let r_key = "r=\"";
+            let r_start = tag.find(r_key).unwrap() + r_key.len();
+            let r: f64 = tag[r_start..].split('"').next().unwrap().parse().unwrap();
+            let idx_key = "data-idx=\"";
+            let idx_start = tag.find(idx_key).unwrap() + idx_key.len();
+            let idx: i32 = tag[idx_start..].split('"').next().unwrap().parse().unwrap();
+            by_idx.insert(idx, r);
+        }
+        let root_r = by_idx[&0];
+        let leaf_r = by_idx
+            .iter()
+            .filter(|(&i, _)| i != 0)
+            .map(|(_, &r)| r)
+            .fold(f64::INFINITY, f64::min);
+        assert!(root_r > leaf_r, "root radius {root_r} should exceed the smallest leaf radius {leaf_r}");
+    }
+
+    #[test]
+    fn the_svg_carries_a_matching_viewbox_so_it_scales_instead_of_clipping() {
+        let (labels, parents) = forest(2, 2, 2);
+        let c = cfg(&labels, &parents);
+        let html = render_genealogy_impl(&c, PI * 0.9);
+        assert!(html.contains("viewBox=\"0 0 600 600\""));
     }
 
     #[test]
@@ -663,6 +714,10 @@ fn svg_header(buf: &mut Vec<u8>, cfg: &DendrogramConfig, hid: u64, title_x: f64)
     push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"");
     push_i(buf, cfg.width);
     push_b(buf, b"\" height=\"");
+    push_i(buf, cfg.height);
+    push_b(buf, b"\" viewBox=\"0 0 ");
+    push_i(buf, cfg.width);
+    push_b(buf, b" ");
     push_i(buf, cfg.height);
     push_b(buf, b"\"><rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
     if !cfg.title.is_empty() {
