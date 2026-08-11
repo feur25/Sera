@@ -4,6 +4,7 @@ pub mod common;
 pub mod compact;
 pub mod config;
 pub mod elegant;
+pub mod genealogy;
 pub mod horizontal;
 pub mod radial;
 pub mod triangular;
@@ -22,6 +23,7 @@ pub fn render_dendrogram_html(cfg: &DendrogramConfig) -> String {
         Compact    => compact::render(cfg),
         Elegant    => elegant::render(cfg),
         Triangular => triangular::render(cfg),
+        Genealogy  => genealogy::render(cfg),
     }
 }
 
@@ -49,6 +51,8 @@ pub fn build(input: &str) -> String {
         clusters,
         palette:     &palette,
         hover:       &hover,
+        show_labels: o.show_values.unwrap_or(true),
+        line_width:  o.stroke_width.unwrap_or(1.5),
         width:       o.w(820),
         height:      o.h(480),
         ..DendrogramConfig::default()

@@ -386,6 +386,278 @@ pub fn assign_positions_radial(
     }
 }
 
+pub fn assign_positions_spiral(
+    nodes: &mut Vec<TreeNode>,
+    roots: &[usize],
+    cx: f64, cy: f64, r_max: f64,
+    twist: f64,
+) {
+    use std::f64::consts::PI;
+    let n = nodes.len();
+    let max_height = nodes.iter().map(|nd| nd.height).fold(0.0_f64, f64::max).max(1e-9);
+    let max_depth = nodes.iter().map(|nd| nd.depth).max().unwrap_or(0).max(1) as f64;
+
+    let leaves = ordered_leaves(nodes, roots);
+    let nl = leaves.len().max(1);
+
+    let r_of_height = |hgt: f64| -> f64 { r_max * (1.0 - hgt / max_height) };
+
+    let mut base_angle: Vec<f64> = vec![0.0; n];
+    for (k, &li) in leaves.iter().enumerate() {
+        base_angle[li] = 2.0 * PI * k as f64 / nl as f64 - PI / 2.0;
+    }
+
+    let mut order: Vec<usize> = (0..n).collect();
+    order.sort_by(|&a, &b| nodes[a].depth.cmp(&nodes[b].depth).reverse());
+    for &i in &order {
+        if !nodes[i].children.is_empty() {
+            base_angle[i] = nodes[i].children.iter().map(|&c| base_angle[c]).sum::<f64>()
+                / nodes[i].children.len() as f64;
+        }
+    }
+
+    for i in 0..n {
+        let r = r_of_height(nodes[i].height);
+        let a = base_angle[i] + twist * (nodes[i].depth as f64 / max_depth);
+        nodes[i].x = cx + r * a.cos();
+        nodes[i].y = cy + r * a.sin();
+    }
+}
+
+fn write_radial_link(
+    buf: &mut Vec<u8>,
+    cx: f64, cy: f64,
+    px: f64, py: f64,
+    x: f64, y: f64,
+    hx: &[u8; 6],
+    width: f64, opacity: f64,
+    smooth: bool,
+) {
+    fn angle_of(cx: f64, cy: f64, x: f64, y: f64) -> f64 {
+        (y - cy).atan2(x - cx)
+    }
+    let r_parent = ((px - cx).powi(2) + (py - cy).powi(2)).sqrt();
+    let a_parent = angle_of(cx, cy, px, py);
+    let a_child = angle_of(cx, cy, x, y);
+    push_b(buf, b"<path fill=\"none\" stroke=\"#");
+    buf.extend_from_slice(hx);
+    push_b(buf, b"\" stroke-width=\"");
+    push_f2(buf, width);
+    push_b(buf, b"\" stroke-opacity=\"");
+    push_f2(buf, opacity);
+    push_b(buf, b"\" d=\"M");
+    push_f2(buf, px);
+    push_b(buf, b",");
+    push_f2(buf, py);
+    if smooth {
+        let large_arc = if (a_child - a_parent).abs() > std::f64::consts::PI { 1 } else { 0 };
+        let sweep = if a_child > a_parent { 1 } else { 0 };
+        let ax = cx + r_parent * a_child.cos();
+        let ay = cy + r_parent * a_child.sin();
+        push_b(buf, b" A");
+        push_f2(buf, r_parent);
+        push_b(buf, b",");
+        push_f2(buf, r_parent);
+        push_b(buf, b" 0 ");
+        push_i(buf, large_arc);
+        push_b(buf, b",");
+        push_i(buf, sweep);
+        push_b(buf, b" ");
+        push_f2(buf, ax);
+        push_b(buf, b",");
+        push_f2(buf, ay);
+        push_b(buf, b" L");
+        push_f2(buf, x);
+        push_b(buf, b",");
+        push_f2(buf, y);
+    } else {
+        push_b(buf, b" L");
+        push_f2(buf, x);
+        push_b(buf, b",");
+        push_f2(buf, y);
+    }
+    push_b(buf, b"\"/>");
+}
+
+pub fn render_genealogy_impl(cfg: &DendrogramConfig, twist: f64) -> String {
+    let w = cfg.width as f64;
+    let h = cfg.height as f64;
+    let cx = w / 2.0;
+    let cy = h / 2.0;
+    let r_max = (w.min(h) / 2.0 - 26.0).max(20.0);
+
+    let Some((mut nodes, roots)) = tree_for(cfg) else { return String::new(); };
+    assign_positions_spiral(&mut nodes, &roots, cx, cy, r_max, twist);
+
+    let hid = html_id();
+    let mut buf = Vec::<u8>::with_capacity(nodes.len() * 220 + 4096);
+    svg_header(&mut buf, cfg, hid, cx);
+
+    for i in 0..nodes.len() {
+        if let Some(pi) = nodes[i].parent {
+            let hx = hex6(node_color(cfg, &nodes[i]));
+            let fade = 0.16 + 0.5 * (nodes[i].depth as f64 / nodes.len().max(1) as f64).min(1.0);
+            write_radial_link(
+                &mut buf, cx, cy,
+                nodes[pi].x, nodes[pi].y, nodes[i].x, nodes[i].y,
+                &hx, cfg.line_width * 0.6, fade.max(0.22), true,
+            );
+        }
+    }
+
+    for i in 0..nodes.len() {
+        let hx = hex6(node_color(cfg, &nodes[i]));
+        push_b(&mut buf, b"<circle cx=\"");
+        push_f2(&mut buf, nodes[i].x);
+        push_b(&mut buf, b"\" cy=\"");
+        push_f2(&mut buf, nodes[i].y);
+        push_b(&mut buf, b"\" r=\"");
+        push_f2(&mut buf, if nodes[i].children.is_empty() { 2.1 } else { 1.5 });
+        push_b(&mut buf, b"\" fill=\"#");
+        buf.extend_from_slice(&hx);
+        push_b(&mut buf, b"\" fill-opacity=\"0.9\" data-idx=\"");
+        push_i(&mut buf, i as i32);
+        push_b(&mut buf, b"\"/>");
+
+        if cfg.show_labels && nodes[i].children.is_empty() {
+            let dx = nodes[i].x - cx;
+            let dy = nodes[i].y - cy;
+            let len = (dx * dx + dy * dy).sqrt().max(1.0);
+            let tx = nodes[i].x + dx / len * 8.0;
+            let ty = nodes[i].y + dy / len * 8.0;
+            let anchor: &[u8] = if dx > 1.0 { b"start" } else if dx < -1.0 { b"end" } else { b"middle" };
+            push_b(&mut buf, b"<text x=\"");
+            push_f2(&mut buf, tx);
+            push_b(&mut buf, b"\" y=\"");
+            push_f2(&mut buf, ty + 3.0);
+            push_b(&mut buf, b"\" text-anchor=\"");
+            buf.extend_from_slice(anchor);
+            push_b(&mut buf, b"\" font-family=\"Arial,sans-serif\" font-size=\"7\" fill=\"#");
+            buf.extend_from_slice(&hx);
+            push_b(&mut buf, b"\">");
+            escape_xml(&mut buf, &nodes[i].label);
+            push_b(&mut buf, b"</text>");
+        }
+    }
+
+    push_b(&mut buf, b"</svg>");
+    html_suffix(&mut buf, hid, &slots_to_json(cfg.hover));
+    unsafe { String::from_utf8_unchecked(buf) }
+}
+
+#[cfg(test)]
+mod genealogy_tests {
+    use super::*;
+    use crate::plot::statistical::dendrogram::config::DendrogramConfig;
+    use std::f64::consts::PI;
+
+    fn forest(n_families: usize, gens: usize, branch: usize) -> (Vec<String>, Vec<String>) {
+        let mut labels = Vec::new();
+        let mut parents = Vec::new();
+        for f in 0..n_families {
+            let root = format!("f{f}g0");
+            labels.push(root.clone());
+            parents.push(String::new());
+            let mut frontier = vec![root];
+            for g in 1..=gens {
+                let mut next = Vec::new();
+                for p in &frontier {
+                    for b in 0..branch {
+                        let name = format!("{p}-{g}-{b}");
+                        labels.push(name.clone());
+                        parents.push(p.clone());
+                        next.push(name);
+                    }
+                }
+                frontier = next;
+            }
+        }
+        (labels, parents)
+    }
+
+    fn cfg<'a>(labels: &'a [String], parents: &'a [String]) -> DendrogramConfig<'a> {
+        DendrogramConfig {
+            title: "Test",
+            labels,
+            parents,
+            width: 600,
+            height: 600,
+            ..DendrogramConfig::default()
+        }
+    }
+
+    #[test]
+    fn every_family_root_lands_at_the_shared_center() {
+        let (labels, parents) = forest(3, 2, 2);
+        let c = cfg(&labels, &parents);
+        let (mut nodes, roots) = tree_for(&c).unwrap();
+        assert_eq!(roots.len(), 3);
+        assign_positions_spiral(&mut nodes, &roots, 300.0, 300.0, 250.0, PI * 0.9);
+        for &r in &roots {
+            assert!((nodes[r].x - 300.0).abs() < 1e-6);
+            assert!((nodes[r].y - 300.0).abs() < 1e-6);
+        }
+    }
+
+    #[test]
+    fn leaves_reach_the_outer_radius_and_stay_within_it() {
+        let (labels, parents) = forest(2, 3, 2);
+        let c = cfg(&labels, &parents);
+        let (mut nodes, roots) = tree_for(&c).unwrap();
+        assign_positions_spiral(&mut nodes, &roots, 300.0, 300.0, 250.0, PI * 0.9);
+        for n in &nodes {
+            let r = ((n.x - 300.0).powi(2) + (n.y - 300.0).powi(2)).sqrt();
+            assert!(r <= 250.0 + 1e-6, "node radius {r} exceeds r_max");
+        }
+        let max_r = nodes
+            .iter()
+            .map(|n| ((n.x - 300.0).powi(2) + (n.y - 300.0).powi(2)).sqrt())
+            .fold(0.0_f64, f64::max);
+        assert!((max_r - 250.0).abs() < 1e-6, "no node reached the outer radius: {max_r}");
+    }
+
+    #[test]
+    fn renders_one_dot_and_one_link_per_node_minus_roots() {
+        let (labels, parents) = forest(3, 2, 2);
+        let n = labels.len();
+        let n_roots = 3;
+        let c = cfg(&labels, &parents);
+        let html = render_genealogy_impl(&c, PI * 0.9);
+        assert!(!html.is_empty());
+        assert_eq!(html.matches("<circle").count(), n);
+        assert_eq!(html.matches("<path").count(), n - n_roots);
+        assert!(html.contains("class=\"sp-bg\""));
+    }
+
+    #[test]
+    fn distinct_family_roots_get_distinct_colors() {
+        let (labels, parents) = forest(3, 1, 1);
+        let c = DendrogramConfig { palette: &[0xFF0000, 0x00FF00, 0x0000FF], ..cfg(&labels, &parents) };
+        let (nodes, roots) = tree_for(&c).unwrap();
+        let colors: std::collections::HashSet<u32> = roots.iter().map(|&r| node_color(&c, &nodes[r])).collect();
+        assert_eq!(colors.len(), 3);
+    }
+
+    #[test]
+    fn empty_input_returns_empty_string() {
+        let labels: Vec<String> = vec![];
+        let parents: Vec<String> = vec![];
+        let c = cfg(&labels, &parents);
+        assert!(render_genealogy_impl(&c, PI * 0.9).is_empty());
+    }
+
+    #[test]
+    fn perf_rendering_a_large_multi_family_forest_stays_fast() {
+        let (labels, parents) = forest(6, 6, 2);
+        let c = cfg(&labels, &parents);
+        let start = std::time::Instant::now();
+        let html = render_genealogy_impl(&c, PI * 0.9);
+        let elapsed = start.elapsed();
+        assert!(elapsed.as_millis() < 200, "rendering took too long: {elapsed:?}");
+        assert!(!html.is_empty());
+    }
+}
+
 fn svg_header(buf: &mut Vec<u8>, cfg: &DendrogramConfig, hid: u64, title_x: f64) {
     html_prefix(buf, cfg.title, hid);
     push_b(buf, b"<svg xmlns=\"http://www.w3.org/2000/svg\" role=\"group\" width=\"");
@@ -569,52 +841,14 @@ pub fn render_radial_impl(cfg: &DendrogramConfig, smooth: bool) -> String {
         push_b(&mut buf, b"\" fill=\"none\" stroke=\"#e5e7eb\" stroke-width=\"0.6\" stroke-dasharray=\"2,3\"/>");
     }
 
-    fn angle_of(cx: f64, cy: f64, x: f64, y: f64) -> f64 {
-        (y - cy).atan2(x - cx)
-    }
-
     for i in 0..nodes.len() {
         if let Some(pi) = nodes[i].parent {
             let hx = hex6(node_color(cfg, &nodes[i]));
-            let r_parent = ((nodes[pi].x - cx).powi(2) + (nodes[pi].y - cy).powi(2)).sqrt();
-            let a_parent = angle_of(cx, cy, nodes[pi].x, nodes[pi].y);
-            let a_child = angle_of(cx, cy, nodes[i].x, nodes[i].y);
-            push_b(&mut buf, b"<path fill=\"none\" stroke=\"#");
-            buf.extend_from_slice(&hx);
-            push_b(&mut buf, b"\" stroke-width=\"");
-            push_f2(&mut buf, cfg.line_width);
-            push_b(&mut buf, b"\" stroke-opacity=\"0.85\" d=\"M");
-            push_f2(&mut buf, nodes[pi].x);
-            push_b(&mut buf, b",");
-            push_f2(&mut buf, nodes[pi].y);
-            if smooth {
-                let large_arc = if (a_child - a_parent).abs() > std::f64::consts::PI { 1 } else { 0 };
-                let sweep = if a_child > a_parent { 1 } else { 0 };
-                let ax = cx + r_parent * a_child.cos();
-                let ay = cy + r_parent * a_child.sin();
-                push_b(&mut buf, b" A");
-                push_f2(&mut buf, r_parent);
-                push_b(&mut buf, b",");
-                push_f2(&mut buf, r_parent);
-                push_b(&mut buf, b" 0 ");
-                push_i(&mut buf, large_arc);
-                push_b(&mut buf, b",");
-                push_i(&mut buf, sweep);
-                push_b(&mut buf, b" ");
-                push_f2(&mut buf, ax);
-                push_b(&mut buf, b",");
-                push_f2(&mut buf, ay);
-                push_b(&mut buf, b" L");
-                push_f2(&mut buf, nodes[i].x);
-                push_b(&mut buf, b",");
-                push_f2(&mut buf, nodes[i].y);
-            } else {
-                push_b(&mut buf, b" L");
-                push_f2(&mut buf, nodes[i].x);
-                push_b(&mut buf, b",");
-                push_f2(&mut buf, nodes[i].y);
-            }
-            push_b(&mut buf, b"\"/>");
+            write_radial_link(
+                &mut buf, cx, cy,
+                nodes[pi].x, nodes[pi].y, nodes[i].x, nodes[i].y,
+                &hx, cfg.line_width, 0.85, smooth,
+            );
         }
     }
 
