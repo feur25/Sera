@@ -498,7 +498,7 @@ fn hsl_to_rgb(h: f64, s: f64, l: f64) -> u32 {
     (r << 16) | (g << 8) | b
 }
 
-fn angular_color(x: f64, y: f64, cx: f64, cy: f64, r_max: f64) -> u32 {
+fn angular_color(x: f64, y: f64, cx: f64, cy: f64, r_max: f64, influence: f64) -> u32 {
     use std::f64::consts::PI;
     let dx = x - cx;
     let dy = y - cy;
@@ -508,7 +508,8 @@ fn angular_color(x: f64, y: f64, cx: f64, cy: f64, r_max: f64) -> u32 {
     }
     let hue = (dy.atan2(dx) + PI) / (2.0 * PI) * 360.0;
     let light = 0.30 + 0.20 * (r / r_max).min(1.0);
-    hsl_to_rgb(hue, 0.62, light)
+    let sat = 0.30 + 0.42 * influence.clamp(0.0, 1.0).sqrt();
+    hsl_to_rgb(hue, sat, light)
 }
 
 pub fn render_genealogy_impl(cfg: &DendrogramConfig, twist: f64) -> String {
@@ -532,7 +533,12 @@ pub fn render_genealogy_impl(cfg: &DendrogramConfig, twist: f64) -> String {
     }
     let max_subtree = subtree_size.iter().copied().max().unwrap_or(1).max(1) as f64;
 
-    let colors: Vec<u32> = (0..n).map(|i| angular_color(nodes[i].x, nodes[i].y, cx, cy, r_max)).collect();
+    let colors: Vec<u32> = (0..n)
+        .map(|i| {
+            let influence = (subtree_size[i] as f64 / max_subtree).sqrt();
+            angular_color(nodes[i].x, nodes[i].y, cx, cy, r_max, influence)
+        })
+        .collect();
 
     let hid = html_id();
     let mut buf = Vec::<u8>::with_capacity(n * 320 + 4096);
@@ -759,9 +765,9 @@ mod genealogy_tests {
         let cx = 300.0;
         let cy = 300.0;
         let r_max = 250.0;
-        let east = angular_color(cx + 200.0, cy, cx, cy, r_max);
-        let south = angular_color(cx, cy + 200.0, cx, cy, r_max);
-        let west = angular_color(cx - 200.0, cy, cx, cy, r_max);
+        let east = angular_color(cx + 200.0, cy, cx, cy, r_max, 0.5);
+        let south = angular_color(cx, cy + 200.0, cx, cy, r_max, 0.5);
+        let west = angular_color(cx - 200.0, cy, cx, cy, r_max, 0.5);
         let mut distinct = std::collections::HashSet::new();
         distinct.insert(east);
         distinct.insert(south);
@@ -771,8 +777,18 @@ mod genealogy_tests {
 
     #[test]
     fn angular_color_at_the_shared_center_stays_neutral() {
-        let c = angular_color(300.0, 300.0, 300.0, 300.0, 250.0);
+        let c = angular_color(300.0, 300.0, 300.0, 300.0, 250.0, 0.5);
         assert_eq!(c, 0x334155);
+    }
+
+    #[test]
+    fn angular_color_grows_more_saturated_with_more_influence() {
+        let cx = 300.0;
+        let cy = 300.0;
+        let r_max = 250.0;
+        let low = angular_color(cx + 200.0, cy, cx, cy, r_max, 0.0);
+        let high = angular_color(cx + 200.0, cy, cx, cy, r_max, 1.0);
+        assert_ne!(low, high, "influence should visibly change the color, not just the hue");
     }
 }
 
