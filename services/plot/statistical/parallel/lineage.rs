@@ -53,23 +53,15 @@ pub fn render(cfg: &ParallelConfig) -> String {
     let bottom_y = (p.pad_t + p.plot_h) as f64;
     let knot_y = |d: f64| -> f64 { top_y + (d / 100.0) * (bottom_y - top_y) };
 
-    let mut owner: Vec<i32> = vec![-1; n_fine];
+    let mut windows: Vec<(usize, usize)> = Vec::with_capacity(n);
+    let mut claimed: Vec<bool> = vec![false; n_fine];
     for m in 0..n {
         let own_fine = own_axis[m] * SUB;
         let span = reach[m] * SUB;
         let start = own_fine.saturating_sub(span);
+        windows.push((start, own_fine));
         for i in start..=own_fine {
-            let take = match owner[i] {
-                -1 => true,
-                cur => {
-                    let cur = cur as usize;
-                    let cur_own_fine = own_axis[cur] * SUB;
-                    (i as i64 - own_fine as i64).abs() < (i as i64 - cur_own_fine as i64).abs()
-                }
-            };
-            if take {
-                owner[i] = m as i32;
-            }
+            claimed[i] = true;
         }
     }
 
@@ -77,7 +69,7 @@ pub fn render(cfg: &ParallelConfig) -> String {
 
     push_b(&mut b, b"<g stroke=\"#e8ecf3\" stroke-width=\"1\">");
     for i in 0..n_fine {
-        if owner[i] >= 0 {
+        if claimed[i] {
             continue;
         }
         let x = fine_x(i);
@@ -100,13 +92,11 @@ pub fn render(cfg: &ParallelConfig) -> String {
         let kx = axis_x(own_axis[m]);
         let ky = knot_y(depth[m]);
 
+        let (win_start, win_end) = windows[m];
         push_b(&mut b, b"<g fill=\"none\" stroke=\"#");
         b.extend_from_slice(&hx);
-        push_b(&mut b, b"\" stroke-opacity=\"0.55\" stroke-width=\"1.1\">");
-        for (i, &o) in owner.iter().enumerate() {
-            if o != m as i32 {
-                continue;
-            }
+        push_b(&mut b, b"\" stroke-opacity=\"0.5\" stroke-width=\"1.1\">");
+        for i in win_start..=win_end {
             let x0 = fine_x(i);
             let c1y = top_y + (ky - top_y) * 0.62;
             let c2y = top_y + (ky - top_y) * 0.88;
