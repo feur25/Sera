@@ -6,5 +6,6 @@ crate::plot_family! {
         Compact    => "compact" | "dense" | "tight",
         Elegant    => "elegant" | "smooth" | "rounded",
         Triangular => "triangular" | "diagonal" | "straight" | "angular",
+        Genealogy  => "genealogy" | "evolution" | "generative" | "spiral_tree" | "design_space",
     }
 }
