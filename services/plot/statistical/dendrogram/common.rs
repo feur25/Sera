@@ -479,6 +479,38 @@ fn write_radial_link(
     push_b(buf, b"\"/>");
 }
 
+fn hsl_to_rgb(h: f64, s: f64, l: f64) -> u32 {
+    let h = h.rem_euclid(360.0) / 60.0;
+    let c = (1.0 - (2.0 * l - 1.0).abs()) * s;
+    let x = c * (1.0 - (h % 2.0 - 1.0).abs());
+    let m = l - c / 2.0;
+    let (r1, g1, b1) = match h as i32 {
+        0 => (c, x, 0.0),
+        1 => (x, c, 0.0),
+        2 => (0.0, c, x),
+        3 => (0.0, x, c),
+        4 => (x, 0.0, c),
+        _ => (c, 0.0, x),
+    };
+    let r = ((r1 + m) * 255.0).round().clamp(0.0, 255.0) as u32;
+    let g = ((g1 + m) * 255.0).round().clamp(0.0, 255.0) as u32;
+    let b = ((b1 + m) * 255.0).round().clamp(0.0, 255.0) as u32;
+    (r << 16) | (g << 8) | b
+}
+
+fn angular_color(x: f64, y: f64, cx: f64, cy: f64, r_max: f64) -> u32 {
+    use std::f64::consts::PI;
+    let dx = x - cx;
+    let dy = y - cy;
+    let r = (dx * dx + dy * dy).sqrt();
+    if r < 3.0 {
+        return 0x334155;
+    }
+    let hue = (dy.atan2(dx) + PI) / (2.0 * PI) * 360.0;
+    let light = 0.30 + 0.20 * (r / r_max).min(1.0);
+    hsl_to_rgb(hue, 0.62, light)
+}
+
 pub fn render_genealogy_impl(cfg: &DendrogramConfig, twist: f64) -> String {
     let w = cfg.width as f64;
     let h = cfg.height as f64;
@@ -500,31 +532,33 @@ pub fn render_genealogy_impl(cfg: &DendrogramConfig, twist: f64) -> String {
     }
     let max_subtree = subtree_size.iter().copied().max().unwrap_or(1).max(1) as f64;
 
+    let colors: Vec<u32> = (0..n).map(|i| angular_color(nodes[i].x, nodes[i].y, cx, cy, r_max)).collect();
+
     let hid = html_id();
-    let mut buf = Vec::<u8>::with_capacity(n * 260 + 4096);
+    let mut buf = Vec::<u8>::with_capacity(n * 320 + 4096);
     svg_header(&mut buf, cfg, hid, cx);
 
     for i in 0..n {
         if let Some(pi) = nodes[i].parent {
-            let hx = hex6(node_color(cfg, &nodes[i]));
-            let fade = 0.14 + 0.55 * (nodes[i].depth as f64 / n.max(1) as f64).min(1.0);
+            let hx = hex6(colors[i]);
+            let fade = 0.10 + 0.55 * (nodes[i].depth as f64 / n.max(1) as f64).min(1.0);
             write_radial_link(
                 &mut buf, cx, cy,
                 nodes[pi].x, nodes[pi].y, nodes[i].x, nodes[i].y,
-                &hx, cfg.line_width * 2.2, fade * 0.22, true,
+                &hx, cfg.line_width * 2.6, fade * 0.16, false,
             );
             write_radial_link(
                 &mut buf, cx, cy,
                 nodes[pi].x, nodes[pi].y, nodes[i].x, nodes[i].y,
-                &hx, cfg.line_width * 0.55, fade.max(0.3), true,
+                &hx, cfg.line_width * 0.45, fade.max(0.24), false,
             );
         }
     }
 
     for i in 0..n {
-        let hx = hex6(node_color(cfg, &nodes[i]));
+        let hx = hex6(colors[i]);
         let bump = (subtree_size[i] as f64 / max_subtree).sqrt();
-        let r = if nodes[i].children.is_empty() { 1.9 } else { 1.4 + bump * 4.6 };
+        let r = if nodes[i].children.is_empty() { 1.5 } else { 1.1 + bump * 4.8 };
         push_b(&mut buf, b"<circle cx=\"");
         push_f2(&mut buf, nodes[i].x);
         push_b(&mut buf, b"\" cy=\"");
@@ -706,6 +740,39 @@ mod genealogy_tests {
         let elapsed = start.elapsed();
         assert!(elapsed.as_millis() < 200, "rendering took too long: {elapsed:?}");
         assert!(!html.is_empty());
+    }
+
+    #[test]
+    fn perf_rendering_a_dense_thousand_plus_node_forest_stays_fast() {
+        let (labels, parents) = forest(7, 4, 5);
+        let c = cfg(&labels, &parents);
+        assert!(labels.len() > 1000, "forest only produced {} nodes, widen the fixture", labels.len());
+        let start = std::time::Instant::now();
+        let html = render_genealogy_impl(&c, PI * 0.9);
+        let elapsed = start.elapsed();
+        assert!(elapsed.as_millis() < 400, "rendering took too long: {elapsed:?}");
+        assert!(!html.is_empty());
+    }
+
+    #[test]
+    fn angular_color_sweeps_through_distinct_hues_around_the_circle() {
+        let cx = 300.0;
+        let cy = 300.0;
+        let r_max = 250.0;
+        let east = angular_color(cx + 200.0, cy, cx, cy, r_max);
+        let south = angular_color(cx, cy + 200.0, cx, cy, r_max);
+        let west = angular_color(cx - 200.0, cy, cx, cy, r_max);
+        let mut distinct = std::collections::HashSet::new();
+        distinct.insert(east);
+        distinct.insert(south);
+        distinct.insert(west);
+        assert_eq!(distinct.len(), 3, "opposite angles should map to visibly different hues");
+    }
+
+    #[test]
+    fn angular_color_at_the_shared_center_stays_neutral() {
+        let c = angular_color(300.0, 300.0, 300.0, 300.0, 250.0);
+        assert_eq!(c, 0x334155);
     }
 }
 
