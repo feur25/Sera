@@ -6,7 +6,7 @@ use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
 const SUB: usize = 10;
 
 #[crate::chart_demo(
-    "axes=[\"1880\",\"1890\",\"1900\",\"1910\",\"1920\",\"1930\",\"1940\",\"1950\",\"1960\",\"1970\",\"1980\",\"1990\"], series_names=[\"Art Nouveau\",\"Arts and Crafts\",\"Constructivism\",\"Art Deco\",\"Bauhaus\",\"Surrealism\",\"International Style\",\"Pop Art\",\"Psychedelic Art\"], series=[[1.0,1.0,45.0],[2.0,2.0,35.0],[3.0,3.0,70.0],[4.0,2.0,28.0],[5.0,3.0,58.0],[6.0,2.0,24.0],[7.0,4.0,74.0],[8.0,2.0,30.0],[9.0,2.0,42.0]], palette=[14037868,3120708,1087661,7358696,15764480,1667522,14692657,6727695,11419337], variant=\"lineage\", height=680"
+    "axes=[\"1880\",\"1890\",\"1900\",\"1910\",\"1920\",\"1930\",\"1940\",\"1950\",\"1960\",\"1970\",\"1980\",\"1990\"], series_names=[\"Art Nouveau\",\"Arts and Crafts\",\"Constructivism\",\"Art Deco\",\"Bauhaus\",\"Surrealism\",\"International Style\",\"Pop Art\",\"Psychedelic Art\"], series=[[8.2,55.0,23.5,10.0,4.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0],[6.3,24.1,42.0,18.0,7.7,3.3,0.0,0.0,0.0,0.0,0.0,0.0],[13.2,38.1,63.1,88.0,37.6,16.1,6.9,0.0,0.0,0.0,0.0,0.0],[0.0,0.0,5.2,20.1,35.0,15.0,6.4,2.7,0.0,0.0,0.0,0.0],[0.0,0.0,10.8,31.2,51.6,72.0,30.8,13.2,5.6,0.0,0.0,0.0],[0.0,0.0,0.0,0.0,4.5,17.2,30.0,12.8,5.5,2.3,0.0,0.0],[0.0,0.0,0.0,14.2,34.4,54.6,74.8,95.0,40.6,17.4,7.4,0.0],[0.0,0.0,0.0,0.0,0.0,0.0,5.7,21.8,38.0,16.2,6.9,3.0],[0.0,0.0,0.0,0.0,0.0,0.0,0.0,7.5,28.7,50.0,21.4,9.1]], palette=[14037868,3120708,1087661,7358696,15764480,1667522,14692657,6727695,11419337], variant=\"lineage\", height=680"
 )]
 
 pub fn render(cfg: &ParallelConfig) -> String {
@@ -21,13 +21,30 @@ pub fn render(cfg: &ParallelConfig) -> String {
 
     let mut own_axis = vec![0usize; n];
     let mut reach = vec![0usize; n];
-    let mut depth = vec![0.0f64; n];
+    let mut peak_value = vec![0.0f64; n];
     for m in 0..n {
         let row = &cfg.series_values[m];
-        own_axis[m] = row.first().copied().unwrap_or(0.0).round().clamp(0.0, (p.n_axes - 1) as f64) as usize;
-        reach[m] = row.get(1).copied().unwrap_or(0.0).round().max(0.0) as usize;
-        depth[m] = row.get(2).copied().unwrap_or(50.0).clamp(4.0, 96.0);
+        let len = row.len().min(p.n_axes);
+        let mut best = 0usize;
+        let mut best_val = f64::NEG_INFINITY;
+        for ai in 0..len {
+            if row[ai] > best_val {
+                best_val = row[ai];
+                best = ai;
+            }
+        }
+        own_axis[m] = best;
+        peak_value[m] = best_val.max(0.0);
+        let mut r = 0usize;
+        let mut ai = best;
+        while ai > 0 && row[ai - 1] > 0.5 {
+            r += 1;
+            ai -= 1;
+        }
+        reach[m] = r.max(1);
     }
+    let max_peak = peak_value.iter().cloned().fold(0.0f64, f64::max).max(1.0);
+    let depth: Vec<f64> = peak_value.iter().map(|&v| 16.0 + (v / max_peak) * 76.0).collect();
 
     let n_fine = (p.n_axes - 1) * SUB + 1;
     let fine_x = |i: usize| -> f64 { p.pad_l as f64 + (i as f64 / (n_fine - 1) as f64) * p.plot_w as f64 };
@@ -129,9 +146,9 @@ pub fn render(cfg: &ParallelConfig) -> String {
 
         slots.push(
             HoverSlot::new(cfg.series_names[m].clone())
-                .kv("Peak", cfg.axes.get(own_axis[m]).cloned().unwrap_or_default())
-                .kv("Reach", format!("{} decades", reach[m]))
-                .kv("Depth", format!("{:.0}%", depth[m])),
+                .kv("Peak decade", cfg.axes.get(own_axis[m]).cloned().unwrap_or_default())
+                .kv("Peak activity", format!("{:.0}", peak_value[m]))
+                .kv("Buildup", format!("{} decades", reach[m])),
         );
     }
 
@@ -223,7 +240,11 @@ mod tests {
         let axes: Vec<String> = (0..12).map(|i| format!("{}", 1880 + i * 10)).collect();
         let names: Vec<String> =
             vec!["Art Nouveau".into(), "Constructivism".into(), "Bauhaus".into()];
-        let values: Vec<Vec<f64>> = vec![vec![1.0, 1.0, 45.0], vec![3.0, 3.0, 70.0], vec![5.0, 3.0, 58.0]];
+        let values: Vec<Vec<f64>> = vec![
+            vec![0.0, 20.0, 40.0, 15.0, 6.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            vec![0.0, 0.0, 0.0, 30.0, 60.0, 90.0, 38.0, 16.0, 0.0, 0.0, 0.0, 0.0],
+            vec![0.0, 0.0, 0.0, 0.0, 0.0, 10.0, 30.0, 58.0, 25.0, 11.0, 0.0, 0.0],
+        ];
         (axes, names, values)
     }
 
@@ -239,11 +260,49 @@ mod tests {
         assert!(html.contains("class=\"sp-bg\""));
     }
 
+    fn stem_y1(html: &str, idx: i32) -> f64 {
+        let needle = format!("<line data-idx=\"{idx}\" x1=\"");
+        let start = html.find(&needle).expect("stem not found");
+        let after_y1 = &html[start..];
+        let y1_key = "y1=\"";
+        let y1_start = after_y1.find(y1_key).unwrap() + y1_key.len();
+        let rest = &after_y1[y1_start..];
+        let y1_end = rest.find('"').unwrap();
+        rest[..y1_end].parse().unwrap()
+    }
+
+    #[test]
+    fn the_convergence_knot_sits_deeper_for_a_higher_peak_activity_value() {
+        let (axes, names, values) = demo();
+        let html = render(&cfg(&axes, &names, &values));
+        let y_art_nouveau = stem_y1(&html, 0);
+        let y_constructivism = stem_y1(&html, 1);
+        assert!(
+            y_constructivism > y_art_nouveau,
+            "Constructivism peaks at 90 vs Art Nouveau's 40, its knot should sit further down: {y_constructivism} vs {y_art_nouveau}"
+        );
+    }
+
+    #[test]
+    fn peak_decade_is_the_axis_with_the_highest_activity_value() {
+        let axes: Vec<String> = (0..12).map(|i| format!("{}", 1880 + i * 10)).collect();
+        let names: Vec<String> = vec!["Bauhaus".into()];
+        let values: Vec<Vec<f64>> =
+            vec![vec![0.0, 0.0, 0.0, 0.0, 5.0, 20.0, 50.0, 22.0, 6.0, 0.0, 0.0, 0.0]];
+        let html = render(&cfg(&axes, &names, &values));
+        let expected_x = 50.0 + (6.0 / 11.0) * (1000.0 - 50.0 - 150.0);
+        let start = html.find("<line data-idx=\"0\" x1=\"").unwrap() + "<line data-idx=\"0\" x1=\"".len();
+        let rest = &html[start..];
+        let x1: f64 = rest[..rest.find('"').unwrap()].parse().unwrap();
+        assert!((x1 - expected_x).abs() < 0.5, "expected knot near axis 6 (x={expected_x}), got x1={x1}");
+    }
+
     #[test]
     fn unclaimed_years_stay_as_plain_straight_gridlines() {
         let axes: Vec<String> = (0..12).map(|i| format!("{}", 1880 + i * 10)).collect();
         let names: Vec<String> = vec!["Bauhaus".into()];
-        let values: Vec<Vec<f64>> = vec![vec![5.0, 1.0, 50.0]];
+        let values: Vec<Vec<f64>> =
+            vec![vec![0.0, 0.0, 0.0, 0.0, 0.0, 20.0, 50.0, 0.0, 0.0, 0.0, 0.0, 0.0]];
         let html = render(&cfg(&axes, &names, &values));
         assert!(html.contains("stroke=\"#e8ecf3\""));
     }
@@ -260,7 +319,16 @@ mod tests {
     fn perf_rendering_stays_fast() {
         let axes: Vec<String> = (0..12).map(|i| format!("{}", 1880 + i * 10)).collect();
         let names: Vec<String> = (0..9).map(|i| format!("Movement {i}")).collect();
-        let values: Vec<Vec<f64>> = (0..9).map(|i| vec![i as f64, 3.0, 30.0 + i as f64 * 6.0]).collect();
+        let values: Vec<Vec<f64>> = (0..9)
+            .map(|i| {
+                let mut row = vec![0.0; 12];
+                row[i] = 30.0 + i as f64 * 6.0;
+                if i > 0 {
+                    row[i - 1] = 10.0;
+                }
+                row
+            })
+            .collect();
         let start = std::time::Instant::now();
         let html = render(&cfg(&axes, &names, &values));
         let elapsed = start.elapsed();
