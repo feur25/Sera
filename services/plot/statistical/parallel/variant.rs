@@ -8,5 +8,6 @@ crate::plot_family! {
         Arc         => "arc" | "bezier_color" | "smooth_color" | "colored_bezier",
         Ribbon      => "ribbon" | "flow" | "band" | "filled_bezier",
         Lineage     => "lineage" | "movements" | "timeline_flow" | "influence" | "genealogy",
+        Chronicle   => "chronicle" | "category_flow" | "year_bundle" | "annual_flow" | "decade_in_review",
     }
 }

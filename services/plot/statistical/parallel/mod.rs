@@ -2,6 +2,7 @@ use crate::plot::{apply, parse_all};
 pub mod arc;
 pub mod basic;
 pub mod categorical;
+pub mod chronicle;
 pub mod common;
 pub mod config;
 pub mod deluxe;
@@ -34,6 +35,7 @@ pub fn render_parallel_html(cfg: &ParallelConfig) -> String {
         Arc => arc::render(cfg),
         Ribbon => ribbon::render(cfg),
         Lineage => lineage::render(cfg),
+        Chronicle => chronicle::render(cfg),
     }
 }
 
