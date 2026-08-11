@@ -7,5 +7,6 @@ crate::plot_family! {
         Negative    => "negative" | "signed" | "diverging",
         Split       => "split" | "half" | "binary" | "categorical_split",
         Burst       => "burst" | "radial_burst" | "spiral" | "transition" | "topic_burst",
+        RadialRows  => "radial_rows" | "polar_rows" | "circular_timeline" | "record_wheel" | "fastest",
     }
 }
