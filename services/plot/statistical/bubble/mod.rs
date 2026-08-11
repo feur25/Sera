@@ -9,6 +9,7 @@ pub mod labeled;
 pub mod negative;
 pub mod outlined;
 pub mod plasma;
+pub mod radial_rows;
 pub mod split;
 pub mod variant;
 
@@ -55,6 +56,7 @@ pub fn render_bubble_html(cfg: &BubbleConfig) -> String {
         Negative => negative::render(cfg),
         Split => split::render(cfg),
         Burst => burst::render(cfg),
+        RadialRows => radial_rows::render(cfg),
     }
 }
 
