@@ -16,6 +16,7 @@ pub mod pictogram;
 pub mod population_pyramid;
 pub mod prism;
 pub mod relative;
+pub mod spiral;
 pub mod stacked;
 pub mod variant;
 
@@ -35,7 +36,7 @@ pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
         Marimekko => marimekko::layout_3d(cfg),
         Multicategory => multicategory::layout_3d(cfg),
         Pictogram => pictogram::layout_3d(cfg),
-        Circular | CircularGrouped | Pyramid | Diverging | Distribution => Vec::new(),
+        Circular | CircularGrouped | Pyramid | Diverging | Distribution | Spiral => Vec::new(),
     }
 }
 
@@ -62,6 +63,7 @@ pub fn render_bar_html(cfg: &BarConfig) -> String {
         Pyramid => population_pyramid::render(cfg),
         Diverging => diverging::render(cfg),
         Distribution => distribution::render(cfg),
+        Spiral => spiral::render(cfg),
     }
 }
 
