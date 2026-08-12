@@ -10,6 +10,7 @@ pub mod distribution;
 pub mod diverging;
 pub mod grouped;
 pub mod grouped_stacked;
+pub mod hedgehog;
 pub mod marimekko;
 pub mod multicategory;
 pub mod pictogram;
@@ -36,7 +37,7 @@ pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
         Marimekko => marimekko::layout_3d(cfg),
         Multicategory => multicategory::layout_3d(cfg),
         Pictogram => pictogram::layout_3d(cfg),
-        Circular | CircularGrouped | Pyramid | Diverging | Distribution | Spiral => Vec::new(),
+        Circular | CircularGrouped | Pyramid | Diverging | Distribution | Spiral | Hedgehog => Vec::new(),
     }
 }
 
@@ -64,6 +65,7 @@ pub fn render_bar_html(cfg: &BarConfig) -> String {
         Diverging => diverging::render(cfg),
         Distribution => distribution::render(cfg),
         Spiral => spiral::render(cfg),
+        Hedgehog => hedgehog::render(cfg),
     }
 }
 

@@ -4,7 +4,7 @@ use crate::plot::statistical::common::{escape_xml, hex6, lerp_color, palette_col
 use std::f64::consts::PI;
 
 #[crate::chart_demo(
-    "labels=[\"Figma Design Systems\",\"Product Management\",\"Design Research\"], col_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\",\"Jul\",\"Aug\",\"Sep\",\"Oct\",\"Nov\",\"Dec\",\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\"], values=[61,25,42,25,61,42,25,42,61,42,25,61,86,100,42,61,84,25,61,86,42,61,25,42,61,86,42,25,61,86,100,42,61,61,25,42,25,86,42,25,100,86,61,25,42,25,61,86,25,25,61], variant=\"hex_grid\", width=760, height=230"
+    "labels=[\"Figma Design Systems\",\"Product Management\",\"Design Research\",\"Dev Web\"], col_labels=[\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\",\"Jun\",\"Jul\",\"Aug\",\"Sep\",\"Oct\",\"Nov\",\"Dec\",\"Jan\",\"Feb\",\"Mar\",\"Apr\",\"May\"], matrix=[[61,25,42,25,61,42,25,42,61,42,25,61,86,100,42,61,84],[25,61,86,42,61,25,42,61,86,42,25,61,86,100,42,61,61],[25,42,25,86,42,25,100,86,61,25,42,25,61,86,25,25,61],[62,54,54,21,12,25,36,36,54,89,56,96,69,58,54,85,65]], variant=\"hex_grid\", width=760, height=230"
 )]
 
 pub fn render(cfg: &HeatmapConfig) -> String {
