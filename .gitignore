@@ -8,6 +8,8 @@ src/telemetry/
 *.csv
 v2/
 tools/
+pulse/
+secret/
 python/seraplot/*.pyd
 python/seraplot/*.pyd.bak
 python/seraplot/*.pyd.old
