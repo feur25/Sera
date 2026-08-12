@@ -751,6 +751,119 @@ fn braced_block_after(src: &str, marker_pos: usize) -> Option<(usize, usize)> {
     Some((brace_pos + 1, end))
 }
 
+fn first_a_or_o_field(rhs: &str) -> Option<String> {
+    let bytes = rhs.as_bytes();
+    let n = bytes.len();
+    let mut k = 0;
+    while k + 2 <= n {
+        if (bytes[k] == b'a' || bytes[k] == b'o') && bytes.get(k + 1) == Some(&b'.') {
+            let prev_ok = k == 0 || !(bytes[k - 1].is_ascii_alphanumeric() || bytes[k - 1] == b'_');
+            if prev_ok {
+                let mut e = k + 2;
+                while e < n && (bytes[e].is_ascii_alphanumeric() || bytes[e] == b'_') {
+                    e += 1;
+                }
+                if e > k + 2 {
+                    return std::str::from_utf8(&bytes[k + 2..e]).ok().map(|s| s.to_string());
+                }
+            }
+        }
+        k += 1;
+    }
+    None
+}
+
+fn scan_let_kwarg_bindings(src: &str) -> std::collections::HashMap<String, String> {
+    let mut map = std::collections::HashMap::new();
+    let mut i = 0usize;
+    while let Some(pos) = src[i..].find("let ") {
+        let start = i + pos + 4;
+        let rest = &src[start..];
+        let Some(eq) = rest.find('=') else {
+            i = start;
+            continue;
+        };
+        let ident_part = rest[..eq].trim();
+        let ident = ident_part.split(':').next().unwrap_or("").trim();
+        let valid_ident = ident
+            .chars()
+            .next()
+            .map(|c| c.is_ascii_alphabetic() || c == '_')
+            .unwrap_or(false);
+        if !valid_ident {
+            i = start;
+            continue;
+        }
+        let val_start = start + eq + 1;
+        let bytes = src.as_bytes();
+        let mut depth = 0i32;
+        let mut in_str = false;
+        let mut esc = false;
+        let mut j = val_start;
+        while j < bytes.len() {
+            let b = bytes[j];
+            if esc {
+                esc = false;
+                j += 1;
+                continue;
+            }
+            match b {
+                b'\\' if in_str => esc = true,
+                b'"' => in_str = !in_str,
+                b'(' | b'[' | b'{' if !in_str => depth += 1,
+                b')' | b']' | b'}' if !in_str => depth -= 1,
+                b';' if !in_str && depth <= 0 => break,
+                _ => {}
+            }
+            j += 1;
+        }
+        let val_end = j.min(bytes.len());
+        let rhs = &src[val_start..val_end];
+        if let Some(kwarg) = first_a_or_o_field(rhs) {
+            map.entry(ident.to_string()).or_insert(kwarg);
+        }
+        i = val_end;
+    }
+    map
+}
+
+pub(crate) fn field_to_kwarg_map(dir: &Path) -> std::collections::HashMap<String, String> {
+    let mut result = std::collections::HashMap::new();
+    let Ok(src) = fs::read_to_string(dir.join("mod.rs")) else {
+        return result;
+    };
+    let Some(fn_pos) = src.find("fn build(") else {
+        return result;
+    };
+    let Some((body_start, body_end)) = braced_block_after(&src, fn_pos) else {
+        return result;
+    };
+    let body = &src[body_start..body_end];
+    let local_to_kwarg = scan_let_kwarg_bindings(body);
+
+    let mut search_from = 0usize;
+    while let Some(rel) = body[search_from..].find("Config {") {
+        let brace_pos = search_from + rel + "Config".len();
+        let Some((fstart, fend)) = braced_block_after(body, brace_pos) else {
+            break;
+        };
+        for (field, expr) in scan_top_level_pairs(&body[fstart..fend]) {
+            let cleaned = expr.trim_start_matches('&').trim();
+            let ident = cleaned
+                .split(|c: char| !(c.is_ascii_alphanumeric() || c == '_'))
+                .next()
+                .unwrap_or("");
+            if let Some(kwarg) = local_to_kwarg.get(ident) {
+                result.entry(field).or_insert_with(|| kwarg.clone());
+            } else if let Some(kwarg) = first_a_or_o_field(cleaned) {
+                result.entry(field).or_insert(kwarg);
+            }
+        }
+        search_from = fend;
+    }
+    result
+}
+
 fn required_from_type_default_pairs(
     types: &std::collections::HashMap<String, String>,
     defaults: &[(String, String)],
