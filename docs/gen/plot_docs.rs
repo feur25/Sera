@@ -622,15 +622,18 @@ pub fn collect(plot_root: &Path) -> PlotDocData {
         if !params.is_empty() {
             let dir = f.parent();
             let true_required = dir.map(crate::build_common::required_data_fields).unwrap_or_default();
+            let alias_map = dir.map(crate::build_common::field_to_kwarg_map).unwrap_or_default();
+            let to_kwarg = |field: &String| alias_map.get(field).cloned().unwrap_or_else(|| field.clone());
             let required: Vec<String> = params
                 .iter()
                 .filter(|p| true_required.contains(p))
-                .cloned()
+                .map(&to_kwarg)
                 .collect();
             if !required.is_empty() {
                 required_entries.push((family.clone(), variant.clone(), required));
             }
-            param_entries.push((family.clone(), variant.clone(), params));
+            let display_params: Vec<String> = params.iter().map(&to_kwarg).collect();
+            param_entries.push((family.clone(), variant.clone(), display_params));
         }
         let aliases = crate::build_common::extract_sera_aliases(&src);
         if !aliases.is_empty() {
