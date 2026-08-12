@@ -14,5 +14,6 @@ crate::plot_family! {
         Pyramid         => "population_pyramid" | "pyramid" | "age_pyramid",
         Diverging       => "diverging" | "signed" | "delta" | "bidirectional",
         Distribution    => "distribution" | "bar_box" | "boxbar" | "bar_boxplot",
+        Spiral          => "spiral" | "spiral_bar" | "nautilus" | "radial_spiral" | "growth_spiral",
     }
 }

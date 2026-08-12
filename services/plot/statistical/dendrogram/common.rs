@@ -103,10 +103,6 @@ fn pairwise_distances(vectors: &[Vec<f64>]) -> Vec<Vec<f64>> {
     dist
 }
 
-/// Real average-linkage agglomerative clustering. Returns a tree whose internal
-/// nodes carry a genuine merge height (average pairwise distance between the two
-/// merged clusters, monotonically increasing toward the root), matching what
-/// hclust/scipy show -- not a synthetic depth counter.
 pub fn build_tree_from_values(labels: &[String], vectors: &[Vec<f64>], clusters: usize) -> (Vec<TreeNode>, Vec<usize>) {
     let n = labels.len().min(vectors.len());
     if n == 0 { return (Vec::new(), Vec::new()); }
@@ -122,7 +118,6 @@ pub fn build_tree_from_values(labels: &[String], vectors: &[Vec<f64>], clusters:
 
     let dist = pairwise_distances(&vectors[..n]);
     let mut members: Vec<Vec<usize>> = (0..n).map(|i| vec![i]).collect();
-    // node_id[cluster_slot] -> arena index in `arena` below; children/height recorded per merge
     let mut arena_children: Vec<(usize, usize)> = Vec::new(); // (left_slot, right_slot) for slots >= n
     let mut arena_height: Vec<f64> = vec![0.0; n];
     let mut alive: Vec<usize> = (0..n).collect();
@@ -165,9 +160,6 @@ pub fn build_tree_from_values(labels: &[String], vectors: &[Vec<f64>], clusters:
     let root_slot = alive[0];
     let max_height = arena_height.iter().copied().fold(0.0_f64, f64::max).max(1e-9);
 
-    // Cut the tree into `clusters` top-level groups (standard "split the highest
-    // merge first" rule), coloring everything below a cut point and leaving the
-    // trunk above it in a neutral color.
     let k = clusters.max(1).min(n);
     let mut cut_slots: Vec<usize> = vec![root_slot];
     while cut_slots.len() < k {
