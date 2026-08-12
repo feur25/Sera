@@ -7,5 +7,6 @@ crate::plot_family! {
         Elegant    => "elegant" | "smooth" | "rounded",
         Triangular => "triangular" | "diagonal" | "straight" | "angular",
         Genealogy  => "genealogy" | "evolution" | "generative" | "spiral_tree" | "design_space",
+        Bloom      => "bloom" | "cluster_bloom" | "petal" | "emotion_map" | "constellation",
     }
 }
