@@ -30,11 +30,9 @@ pub fn render(cfg: &BarConfig) -> String {
 
     let mut vmax = f64::NEG_INFINITY;
     let mut vmin = f64::INFINITY;
-    let mut total = 0.0_f64;
     for &v in &cfg.values[..n] {
         vmax = vmax.max(v);
         vmin = vmin.min(v);
-        total += v;
     }
     let vr = (vmax - vmin).max(1e-9);
 
@@ -57,22 +55,6 @@ pub fn render(cfg: &BarConfig) -> String {
     svg_open_rescalable(&mut buf, w, h, 0, 0, w, h);
     push_b(&mut buf, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
     svg_title(&mut buf, cfg.title, w / 2, 24);
-
-    let pct = if cfg.values[0].abs() > 1e-9 {
-        (cfg.values[n - 1] - cfg.values[0]) / cfg.values[0].abs() * 100.0
-    } else {
-        0.0
-    };
-    push_b(&mut buf, b"<text x=\"");
-    push_f2(&mut buf, w as f64 / 2.0);
-    push_b(&mut buf, b"\" y=\"40\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#94a3b8\">Total ");
-    push_f2(&mut buf, total);
-    push_b(&mut buf, b" \xc2\xb7 ");
-    if pct >= 0.0 {
-        push_b(&mut buf, b"+");
-    }
-    push_f2(&mut buf, pct);
-    push_b(&mut buf, b"% depuis le d\xc3\xa9but</text>");
 
     push_b(&mut buf, b"<g stroke=\"#e2e8f0\" stroke-width=\"0.6\">");
     let n_spokes = (per_rev / 2).clamp(6, 16);

@@ -1,5 +1,6 @@
 use crate::plot::{apply, parse_all};
 
+pub mod bloom;
 pub mod common;
 pub mod compact;
 pub mod config;
@@ -24,6 +25,7 @@ pub fn render_dendrogram_html(cfg: &DendrogramConfig) -> String {
         Elegant    => elegant::render(cfg),
         Triangular => triangular::render(cfg),
         Genealogy  => genealogy::render(cfg),
+        Bloom      => bloom::render(cfg),
     }
 }
 
