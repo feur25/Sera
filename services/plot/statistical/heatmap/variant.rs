@@ -17,5 +17,6 @@ crate::plot_family! {
         Pivot       => "pivot" | "pivot_table" | "totals" | "summary",
         Polar       => "polar" | "wheel" | "clock" | "radial_heat" | "carbon_wheel",
         RadialCluster => "radial_cluster" | "circular_cluster" | "circos" | "radial_dendrogram" | "circular_dendrogram",
+        HexGrid => "hex_grid" | "hexbin_grid" | "hex_calendar" | "honeycomb" | "hex_matrix",
     }
 }
