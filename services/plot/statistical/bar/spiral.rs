@@ -109,40 +109,53 @@ pub fn render(cfg: &BarConfig) -> String {
     }
     push_b(&mut buf, b"\"/>");
 
-    let bar_angle = angle_step * 0.8;
+    let half_step = angle_step / 2.0;
     for i in 0..n {
         let a = theta(i);
+        let a0 = a - half_step;
+        let a1 = a + half_step;
         let rb = r_base(i);
         let t = (cfg.values[i] - vmin) / vr;
         let bar_len = 2.0 + t * (bar_max - 2.0);
         let re = rb + bar_len;
-        let x0 = cx + rb * a.cos();
-        let y0 = cy + rb * a.sin();
-        let x1 = cx + re * a.cos();
-        let y1 = cy + re * a.sin();
-        let px_width = (bar_angle * rb).clamp(1.4, 16.0);
+        let x00 = cx + rb * a0.cos();
+        let y00 = cy + rb * a0.sin();
+        let x01 = cx + re * a0.cos();
+        let y01 = cy + re * a0.sin();
+        let x11 = cx + re * a1.cos();
+        let y11 = cy + re * a1.sin();
+        let x10 = cx + rb * a1.cos();
+        let y10 = cy + rb * a1.sin();
         let color = lerp_color(t, cfg.color_low, mid_color, cfg.color_high);
         let hx = hex6(color);
 
-        push_b(&mut buf, b"<line data-idx=\"");
+        push_b(&mut buf, b"<path data-idx=\"");
         push_i(&mut buf, i as i32);
         push_b(&mut buf, b"\" data-v=\"");
         push_f2(&mut buf, cfg.values[i]);
         push_b(&mut buf, b"\" data-lbl=\"");
         escape_xml(&mut buf, &cfg.labels[i]);
-        push_b(&mut buf, b"\" x1=\"");
-        push_f2(&mut buf, x0);
-        push_b(&mut buf, b"\" y1=\"");
-        push_f2(&mut buf, y0);
-        push_b(&mut buf, b"\" x2=\"");
-        push_f2(&mut buf, x1);
-        push_b(&mut buf, b"\" y2=\"");
-        push_f2(&mut buf, y1);
+        push_b(&mut buf, b"\" d=\"M");
+        push_f2(&mut buf, x00);
+        push_b(&mut buf, b",");
+        push_f2(&mut buf, y00);
+        push_b(&mut buf, b" L");
+        push_f2(&mut buf, x01);
+        push_b(&mut buf, b",");
+        push_f2(&mut buf, y01);
+        push_b(&mut buf, b" L");
+        push_f2(&mut buf, x11);
+        push_b(&mut buf, b",");
+        push_f2(&mut buf, y11);
+        push_b(&mut buf, b" L");
+        push_f2(&mut buf, x10);
+        push_b(&mut buf, b",");
+        push_f2(&mut buf, y10);
+        push_b(&mut buf, b" Z\" fill=\"#");
+        buf.extend_from_slice(&hx);
         push_b(&mut buf, b"\" stroke=\"#");
         buf.extend_from_slice(&hx);
-        push_b(&mut buf, b"\" stroke-width=\"");
-        push_f2(&mut buf, px_width);
-        push_b(&mut buf, b"\" stroke-linecap=\"butt\" opacity=\"0.92\"/>");
+        push_b(&mut buf, b"\" stroke-width=\"0.4\" opacity=\"0.94\"/>");
 
         if i % per_rev == 0 {
             let r_lab = rb - 8.0;
@@ -271,7 +284,7 @@ mod tests {
         let (labels, values) = synth(60);
         let html = render(&cfg(&labels, &values));
         assert!(!html.is_empty());
-        assert_eq!(html.matches("<line data-idx=").count(), 60);
+        assert_eq!(html.matches("<path data-idx=").count(), 60);
         assert!(html.contains("class=\"sp-bg\""));
     }
 
