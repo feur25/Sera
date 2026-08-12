@@ -213,7 +213,10 @@ pub fn build(input: &str) -> String {
     let (title_s, a, o) = parse_all(input);
     let title = title_s.as_str();
     let labels = a.labels.unwrap_or_default();
-    let flat_matrix = a.values.unwrap_or_default();
+    let flat_matrix = match a.matrix {
+        Some(rows) => rows.into_iter().flatten().collect(),
+        None => a.values.unwrap_or_default(),
+    };
     use crate::plot::statistical::{render_heatmap_html, HeatmapConfig, HeatmapVariant};
     let col_lbl = o.col_labels.clone().unwrap_or_default();
     let hover = o.hj();

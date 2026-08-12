@@ -15,5 +15,6 @@ crate::plot_family! {
         Diverging       => "diverging" | "signed" | "delta" | "bidirectional",
         Distribution    => "distribution" | "bar_box" | "boxbar" | "bar_boxplot",
         Spiral          => "spiral" | "spiral_bar" | "nautilus" | "radial_spiral" | "growth_spiral",
+        Hedgehog        => "hedgehog" | "flow_fan" | "quill" | "spike_flow" | "relocation_fan",
     }
 }
