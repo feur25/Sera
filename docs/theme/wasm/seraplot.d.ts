@@ -1,441 +1,439 @@
-declare namespace wasm_bindgen {
-    /* tslint:disable */
-    /* eslint-disable */
-
-    export class Chart {
-        private constructor();
-        free(): void;
-        [Symbol.dispose](): void;
-    }
-
-    export function accessiblePalette(input: string): string;
-
-    export function aliasAdd(method: string, alias: string): boolean;
-
-    export function aliasList(): string;
-
-    export function aliasLoadJson(json: string): boolean;
-
-    export function aliasRemove(method: string, alias: string): boolean;
-
-    export function aliasReset(): void;
-
-    export function aliasResolve(name: string): string | undefined;
-
-    export function applyChartMethod(html: string, name: string, args_json: string): string;
-
-    export function buildArcDiagram(input: string): string;
-
-    export function buildAreaChart(input: string): string;
-
-    export function buildBar(input: string): string;
-
-    export function buildBar3dChart(input: string): string;
-
-    export function buildBarChart(input: string): string;
-
-    export function buildBoxplot(input: string): string;
-
-    export function buildBubble(input: string): string;
-
-    export function buildBubble3dChart(input: string): string;
-
-    export function buildBubbleMap(input: string): string;
-
-    export function buildBullet(input: string): string;
-
-    export function buildCandlestick(input: string): string;
-
-    export function buildCandlestick3dChart(input: string): string;
-
-    export function buildChord(input: string): string;
-
-    export function buildChoropleth(input: string): string;
-
-    export function buildCirclePack(input: string): string;
-
-    export function buildConeChart(input: string): string;
-
-    export function buildCorrelogram(input: string): string;
-
-    export function buildDbscanChart(input: string): string;
-
-    export function buildDbscanChart3d(input: string): string;
-
-    export function buildDendrogram(input: string): string;
-
-    export function buildDonutChart(input: string): string;
-
-    export function buildDumbbell(input: string): string;
-
-    export function buildDumbbell3dChart(input: string): string;
-
-    export function buildEventplot(input: string): string;
-
-    export function buildFacet(input: string): string;
-
-    export function buildFirehoseChart(input: string): string;
-
-    export function buildFunnel(input: string): string;
-
-    export function buildFunnel3dChart(input: string): string;
-
-    export function buildGantt(input: string): string;
-
-    export function buildGauge(input: string): string;
-
-    export function buildGlobe3dChart(input: string): string;
-
-    export function buildGroupedBar(input: string): string;
-
-    export function buildHbar(input: string): string;
-
-    export function buildHeatmap(input: string): string;
-
-    export function buildHeatmap3dChart(input: string): string;
-
-    export function buildHexbin(input: string): string;
-
-    export function buildHistogram(input: string): string;
-
-    export function buildHive(input: string): string;
-
-    export function buildIcicle(input: string): string;
-
-    export function buildIsosurfaceChart(input: string): string;
-
-    export function buildJoint(input: string): string;
-
-    export function buildKde3dChart(input: string): string;
-
-    export function buildKdeChart(input: string): string;
-
-    export function buildKmeansChart(input: string): string;
-
-    export function buildLine(input: string): string;
-
-    export function buildLine3dChart(input: string): string;
-
-    export function buildLineChart(input: string): string;
-
-    export function buildLollipop3dChart(input: string): string;
-
-    export function buildLollipopChart(input: string): string;
-
-    export function buildMesh3dChart(input: string): string;
-
-    export function buildMultilineChart(input: string): string;
-
-    export function buildOrbita(input: string): string;
-
-    export function buildParallel(input: string): string;
-
-    export function buildParcats(input: string): string;
-
-    export function buildPie(input: string): string;
-
-    export function buildPie3dChart(input: string): string;
-
-    export function buildPieChart(input: string): string;
-
-    export function buildPlotWeb(input: string): string;
-
-    export function buildPulse(input: string): string;
-
-    export function buildRadar3dChart(input: string): string;
-
-    export function buildRadarChart(input: string): string;
-
-    export function buildRidgeline3dChart(input: string): string;
-
-    export function buildRidgelineChart(input: string): string;
-
-    export function buildSankey(input: string): string;
-
-    export function buildScatter3dChart(input: string): string;
-
-    export function buildScatterChart(input: string): string;
-
-    export function buildScatterTernary(input: string): string;
-
-    export function buildSlope(input: string): string;
-
-    export function buildSplom(input: string): string;
-
-    export function buildStackedBar(input: string): string;
-
-    export function buildStackedBar3dChart(input: string): string;
-
-    export function buildStackplot(input: string): string;
-
-    export function buildStreamtubeChart(input: string): string;
-
-    export function buildSunburst(input: string): string;
-
-    export function buildSunburst3dChart(input: string): string;
-
-    export function buildSurface3dChart(input: string): string;
-
-    export function buildTreemap(input: string): string;
-
-    export function buildVenn(input: string): string;
-
-    export function buildViolin(input: string): string;
-
-    export function buildViolin3dChart(input: string): string;
-
-    export function buildVoxelsChart(input: string): string;
-
-    export function buildWaterfall(input: string): string;
-
-    export function buildWireframe3dChart(input: string): string;
-
-    export function buildWordcloud(input: string): string;
-
-    export function chartAliases(): string;
-
-    export function chartAppend(input: string): string;
-
-    export function chartDiff(input: string): string;
-
-    export function chartThemes(): string;
-
-    export function chartVariants(): string;
-
-    export function csvChunkRead(input: string): string;
-
-    export function csvCountRows(input: string): string;
-
-    export function demo(input: string): string;
-
-    export function docs(): string;
-
-    export function downsampleLttb(input: string): string;
-
-    export function driftKs(input: string): string;
-
-    export function exportHtmlFile(input: string): string;
-
-    export function mlAdaboostClassifier(input: string): string;
-
-    export function mlAdaboostRegressor(input: string): string;
-
-    export function mlBernoulliNb(input: string): string;
-
-    export function mlCrossValScore(input: string): string;
-
-    export function mlDbscanFitPredict(input: string): string;
-
-    export function mlDecisionTreeClassifier(input: string): string;
-
-    export function mlDecisionTreeRegressor(input: string): string;
-
-    export function mlElasticNet(input: string): string;
-
-    export function mlFitTransform(input: string): string;
-
-    export function mlGaussianNb(input: string): string;
-
-    export function mlGradientBoostingClassifier(input: string): string;
-
-    export function mlGradientBoostingRegressor(input: string): string;
-
-    export function mlGridSearchCv(input: string): string;
-
-    export function mlIsolationForest(input: string): string;
-
-    export function mlKfoldSplit(input: string): string;
-
-    export function mlKmeansFitPredict(input: string): string;
-
-    export function mlKnnClassifier(input: string): string;
-
-    export function mlKnnRegressor(input: string): string;
-
-    export function mlLasso(input: string): string;
-
-    export function mlLinearRegression(input: string): string;
-
-    export function mlLinearSvc(input: string): string;
-
-    export function mlLinearSvr(input: string): string;
-
-    export function mlLoadModel(input: string): string;
-
-    export function mlLogisticRegression(input: string): string;
-
-    export function mlMetricCurve(input: string): string;
-
-    export function mlMetricScore(input: string): string;
-
-    export function mlMinmaxScaler(input: string): string;
-
-    export function mlMultinomialNb(input: string): string;
-
-    export function mlNearestCentroid(input: string): string;
-
-    export function mlPca(input: string): string;
-
-    export function mlPermutationImportance(input: string): string;
-
-    export function mlRandomForestClassifier(input: string): string;
-
-    export function mlRandomForestRegressor(input: string): string;
-
-    export function mlRidge(input: string): string;
-
-    export function mlRidgeClassifier(input: string): string;
-
-    export function mlRobustScaler(input: string): string;
-
-    export function mlSaveModel(input: string): string;
-
-    export function mlSgdClassifier(input: string): string;
-
-    export function mlSgdRegressor(input: string): string;
-
-    export function mlStandardScaler(input: string): string;
-
-    export function mlTruncatedSvd(input: string): string;
-
-    export function params(input: string): string;
-
-    export function render_line_wasm(title: string, x: Float64Array, y: Float64Array, width: number, height: number, color_hex: number, gridlines: boolean, x_label: string, y_label: string): string;
-
-    export function render_scatter_wasm(title: string, x: Float64Array, y: Float64Array, width: number, height: number, color_hex: number, gridlines: boolean, x_label: string, y_label: string): string;
-
-    export function requiredParams(input: string): string;
-
-    export function resetGlobalBackground(input: string): string;
-
-    export function resetTheme(input: string): string;
-
-    export function scalePlan(input: string): string;
-
-    export function scenes3d(): string;
-
-    export function setGlobalBackground(input: string): string;
-
-    export function setTheme(input: string): string;
-
-    export function systemProfile(input: string): string;
-
-    export function themes(input: string): string;
-
-    export function trueRequiredParams(input: string): string;
-
-    export function validateInput(input: string): string;
-
-    export function wasm_adaptive_degrade_level(): any;
-
-    export function wasm_apply_color_bindings_html(html: string): any;
-
-    export function wasm_chart_variants(): any;
-
-    export function wasm_clear_color_bindings(): any;
-
-    export function wasm_color_density_html(html: string): any;
-
-    export function wasm_crosshair_html(html: string): any;
-
-    export function wasm_cut_bars_html(html: string, step: number | null | undefined, gap: number, color?: string | null): any;
-
-    export function wasm_demo(chart: string, variant?: string | null): any;
-
-    export function wasm_demos(): any;
-
-    export function wasm_desaturate_html(html: string, indices: Uint32Array | null | undefined, factor: number): any;
-
-    export function wasm_doc(name: string): any;
-
-    export function wasm_docs(): any;
-
-    export function wasm_draw_tool_html(html: string, color: string): any;
-
-    export function wasm_export_button_html(html: string): any;
-
-    export function wasm_flip_html(html: string): any;
-
-    export function wasm_get_metrics(): any;
-
-    export function wasm_grid_at_html(html: string, value: number, color: string, label?: string | null): any;
-
-    export function wasm_grid_x_html(html: string): any;
-
-    export function wasm_grid_y_html(html: string): any;
-
-    export function wasm_group_hover_opacity_html(html: string, dim: number): any;
-
-    export function wasm_highlight_group_html(html: string, labels: string[], dim: number): any;
-
-    export function wasm_hover_slots_html(html: string, slots_json: string): any;
-
-    export function wasm_hw(): any;
-
-    export function wasm_inject_css_html(html: string, css: string): any;
-
-    export function wasm_inject_js_html(html: string, js: string): any;
-
-    export function wasm_models(): any;
-
-    export function wasm_models_for_category(category: string): any;
-
-    export function wasm_models_for_domain(domain: string): any;
-
-    export function wasm_no_axes_html(html: string): any;
-
-    export function wasm_no_background_html(html: string): any;
-
-    export function wasm_no_hover_html(html: string): any;
-
-    export function wasm_no_legend_html(html: string): any;
-
-    export function wasm_no_select_html(html: string): any;
-
-    export function wasm_no_title_html(html: string): any;
-
-    export function wasm_no_x_axis_html(html: string): any;
-
-    export function wasm_no_y_axis_html(html: string): any;
-
-    export function wasm_params(chart?: string | null, variant?: string | null): any;
-
-    export function wasm_required_params(chart?: string | null, variant?: string | null): any;
-
-    export function wasm_reset_config(): any;
-
-    export function wasm_reset_global_background(): any;
-
-    export function wasm_reset_perf_state(): any;
-
-    export function wasm_reset_theme(): any;
-
-    export function wasm_responsive_html(html: string): any;
-
-    export function wasm_set_adaptive_retry(on: boolean): any;
-
-    export function wasm_set_auto_display(enabled: boolean): any;
-
-    export function wasm_set_global_background(color: string): any;
-
-    export function wasm_show_grid_html(html: string): any;
-
-    export function wasm_sparse_grid_html(html: string): any;
-
-    export function wasm_telemetry_consent(enabled: boolean): any;
-
-    export function wasm_telemetry_path(): any;
-
-    export function wasm_themes(): any;
-
-    export function wasm_true_required_params(chart?: string | null, variant?: string | null): any;
-
-    export function wasm_zoom_html(html: string): any;
-
+/* tslint:disable */
+/* eslint-disable */
+
+export class Chart {
+    private constructor();
+    free(): void;
+    [Symbol.dispose](): void;
 }
-declare type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
 
-declare interface InitOutput {
+export function accessiblePalette(input: string): string;
+
+export function aliasAdd(method: string, alias: string): boolean;
+
+export function aliasList(): string;
+
+export function aliasLoadJson(json: string): boolean;
+
+export function aliasRemove(method: string, alias: string): boolean;
+
+export function aliasReset(): void;
+
+export function aliasResolve(name: string): string | undefined;
+
+export function applyChartMethod(html: string, name: string, args_json: string): string;
+
+export function buildArcDiagram(input: string): string;
+
+export function buildAreaChart(input: string): string;
+
+export function buildBar(input: string): string;
+
+export function buildBar3dChart(input: string): string;
+
+export function buildBarChart(input: string): string;
+
+export function buildBoxplot(input: string): string;
+
+export function buildBubble(input: string): string;
+
+export function buildBubble3dChart(input: string): string;
+
+export function buildBubbleMap(input: string): string;
+
+export function buildBullet(input: string): string;
+
+export function buildCandlestick(input: string): string;
+
+export function buildCandlestick3dChart(input: string): string;
+
+export function buildChord(input: string): string;
+
+export function buildChoropleth(input: string): string;
+
+export function buildCirclePack(input: string): string;
+
+export function buildConeChart(input: string): string;
+
+export function buildCorrelogram(input: string): string;
+
+export function buildDbscanChart(input: string): string;
+
+export function buildDbscanChart3d(input: string): string;
+
+export function buildDendrogram(input: string): string;
+
+export function buildDonutChart(input: string): string;
+
+export function buildDumbbell(input: string): string;
+
+export function buildDumbbell3dChart(input: string): string;
+
+export function buildEventplot(input: string): string;
+
+export function buildFacet(input: string): string;
+
+export function buildFirehoseChart(input: string): string;
+
+export function buildFunnel(input: string): string;
+
+export function buildFunnel3dChart(input: string): string;
+
+export function buildGantt(input: string): string;
+
+export function buildGauge(input: string): string;
+
+export function buildGlobe3dChart(input: string): string;
+
+export function buildGroupedBar(input: string): string;
+
+export function buildHbar(input: string): string;
+
+export function buildHeatmap(input: string): string;
+
+export function buildHeatmap3dChart(input: string): string;
+
+export function buildHexbin(input: string): string;
+
+export function buildHistogram(input: string): string;
+
+export function buildHive(input: string): string;
+
+export function buildIcicle(input: string): string;
+
+export function buildIsosurfaceChart(input: string): string;
+
+export function buildJoint(input: string): string;
+
+export function buildKde3dChart(input: string): string;
+
+export function buildKdeChart(input: string): string;
+
+export function buildKmeansChart(input: string): string;
+
+export function buildLine(input: string): string;
+
+export function buildLine3dChart(input: string): string;
+
+export function buildLineChart(input: string): string;
+
+export function buildLollipop3dChart(input: string): string;
+
+export function buildLollipopChart(input: string): string;
+
+export function buildMesh3dChart(input: string): string;
+
+export function buildMultilineChart(input: string): string;
+
+export function buildOrbita(input: string): string;
+
+export function buildParallel(input: string): string;
+
+export function buildParcats(input: string): string;
+
+export function buildPie(input: string): string;
+
+export function buildPie3dChart(input: string): string;
+
+export function buildPieChart(input: string): string;
+
+export function buildPlotWeb(input: string): string;
+
+export function buildPulse(input: string): string;
+
+export function buildRadar3dChart(input: string): string;
+
+export function buildRadarChart(input: string): string;
+
+export function buildRidgeline3dChart(input: string): string;
+
+export function buildRidgelineChart(input: string): string;
+
+export function buildSankey(input: string): string;
+
+export function buildScatter3dChart(input: string): string;
+
+export function buildScatterChart(input: string): string;
+
+export function buildScatterTernary(input: string): string;
+
+export function buildSlope(input: string): string;
+
+export function buildSplom(input: string): string;
+
+export function buildStackedBar(input: string): string;
+
+export function buildStackedBar3dChart(input: string): string;
+
+export function buildStackplot(input: string): string;
+
+export function buildStreamtubeChart(input: string): string;
+
+export function buildSunburst(input: string): string;
+
+export function buildSunburst3dChart(input: string): string;
+
+export function buildSurface3dChart(input: string): string;
+
+export function buildTreemap(input: string): string;
+
+export function buildVenn(input: string): string;
+
+export function buildViolin(input: string): string;
+
+export function buildViolin3dChart(input: string): string;
+
+export function buildVoxelsChart(input: string): string;
+
+export function buildWaterfall(input: string): string;
+
+export function buildWireframe3dChart(input: string): string;
+
+export function buildWordcloud(input: string): string;
+
+export function chartAliases(): string;
+
+export function chartAppend(input: string): string;
+
+export function chartDiff(input: string): string;
+
+export function chartThemes(): string;
+
+export function chartVariants(): string;
+
+export function csvChunkRead(input: string): string;
+
+export function csvCountRows(input: string): string;
+
+export function demo(input: string): string;
+
+export function docs(): string;
+
+export function downsampleLttb(input: string): string;
+
+export function driftKs(input: string): string;
+
+export function exportHtmlFile(input: string): string;
+
+export function mlAdaboostClassifier(input: string): string;
+
+export function mlAdaboostRegressor(input: string): string;
+
+export function mlBernoulliNb(input: string): string;
+
+export function mlCrossValScore(input: string): string;
+
+export function mlDbscanFitPredict(input: string): string;
+
+export function mlDecisionTreeClassifier(input: string): string;
+
+export function mlDecisionTreeRegressor(input: string): string;
+
+export function mlElasticNet(input: string): string;
+
+export function mlFitTransform(input: string): string;
+
+export function mlGaussianNb(input: string): string;
+
+export function mlGradientBoostingClassifier(input: string): string;
+
+export function mlGradientBoostingRegressor(input: string): string;
+
+export function mlGridSearchCv(input: string): string;
+
+export function mlIsolationForest(input: string): string;
+
+export function mlKfoldSplit(input: string): string;
+
+export function mlKmeansFitPredict(input: string): string;
+
+export function mlKnnClassifier(input: string): string;
+
+export function mlKnnRegressor(input: string): string;
+
+export function mlLasso(input: string): string;
+
+export function mlLinearRegression(input: string): string;
+
+export function mlLinearSvc(input: string): string;
+
+export function mlLinearSvr(input: string): string;
+
+export function mlLoadModel(input: string): string;
+
+export function mlLogisticRegression(input: string): string;
+
+export function mlMetricCurve(input: string): string;
+
+export function mlMetricScore(input: string): string;
+
+export function mlMinmaxScaler(input: string): string;
+
+export function mlMultinomialNb(input: string): string;
+
+export function mlNearestCentroid(input: string): string;
+
+export function mlPca(input: string): string;
+
+export function mlPermutationImportance(input: string): string;
+
+export function mlRandomForestClassifier(input: string): string;
+
+export function mlRandomForestRegressor(input: string): string;
+
+export function mlRidge(input: string): string;
+
+export function mlRidgeClassifier(input: string): string;
+
+export function mlRobustScaler(input: string): string;
+
+export function mlSaveModel(input: string): string;
+
+export function mlSgdClassifier(input: string): string;
+
+export function mlSgdRegressor(input: string): string;
+
+export function mlStandardScaler(input: string): string;
+
+export function mlTruncatedSvd(input: string): string;
+
+export function params(input: string): string;
+
+export function render_line_wasm(title: string, x: Float64Array, y: Float64Array, width: number, height: number, color_hex: number, gridlines: boolean, x_label: string, y_label: string): string;
+
+export function render_scatter_wasm(title: string, x: Float64Array, y: Float64Array, width: number, height: number, color_hex: number, gridlines: boolean, x_label: string, y_label: string): string;
+
+export function requiredParams(input: string): string;
+
+export function resetGlobalBackground(input: string): string;
+
+export function resetTheme(input: string): string;
+
+export function scalePlan(input: string): string;
+
+export function scenes3d(): string;
+
+export function setGlobalBackground(input: string): string;
+
+export function setTheme(input: string): string;
+
+export function systemProfile(input: string): string;
+
+export function themes(input: string): string;
+
+export function trueRequiredParams(input: string): string;
+
+export function validateInput(input: string): string;
+
+export function wasm_adaptive_degrade_level(): any;
+
+export function wasm_apply_color_bindings_html(html: string): any;
+
+export function wasm_chart_variants(): any;
+
+export function wasm_clear_color_bindings(): any;
+
+export function wasm_color_density_html(html: string): any;
+
+export function wasm_crosshair_html(html: string): any;
+
+export function wasm_cut_bars_html(html: string, step: number | null | undefined, gap: number, color?: string | null): any;
+
+export function wasm_demo(chart: string, variant?: string | null): any;
+
+export function wasm_demos(): any;
+
+export function wasm_desaturate_html(html: string, indices: Uint32Array | null | undefined, factor: number): any;
+
+export function wasm_doc(name: string): any;
+
+export function wasm_docs(): any;
+
+export function wasm_draw_tool_html(html: string, color: string): any;
+
+export function wasm_export_button_html(html: string): any;
+
+export function wasm_flip_html(html: string): any;
+
+export function wasm_get_metrics(): any;
+
+export function wasm_grid_at_html(html: string, value: number, color: string, label?: string | null): any;
+
+export function wasm_grid_x_html(html: string): any;
+
+export function wasm_grid_y_html(html: string): any;
+
+export function wasm_group_hover_opacity_html(html: string, dim: number): any;
+
+export function wasm_highlight_group_html(html: string, labels: string[], dim: number): any;
+
+export function wasm_hover_slots_html(html: string, slots_json: string): any;
+
+export function wasm_hw(): any;
+
+export function wasm_inject_css_html(html: string, css: string): any;
+
+export function wasm_inject_js_html(html: string, js: string): any;
+
+export function wasm_models(): any;
+
+export function wasm_models_for_category(category: string): any;
+
+export function wasm_models_for_domain(domain: string): any;
+
+export function wasm_no_axes_html(html: string): any;
+
+export function wasm_no_background_html(html: string): any;
+
+export function wasm_no_hover_html(html: string): any;
+
+export function wasm_no_legend_html(html: string): any;
+
+export function wasm_no_select_html(html: string): any;
+
+export function wasm_no_title_html(html: string): any;
+
+export function wasm_no_x_axis_html(html: string): any;
+
+export function wasm_no_y_axis_html(html: string): any;
+
+export function wasm_params(chart?: string | null, variant?: string | null): any;
+
+export function wasm_required_params(chart?: string | null, variant?: string | null): any;
+
+export function wasm_reset_config(): any;
+
+export function wasm_reset_global_background(): any;
+
+export function wasm_reset_perf_state(): any;
+
+export function wasm_reset_theme(): any;
+
+export function wasm_responsive_html(html: string): any;
+
+export function wasm_set_adaptive_retry(on: boolean): any;
+
+export function wasm_set_auto_display(enabled: boolean): any;
+
+export function wasm_set_global_background(color: string): any;
+
+export function wasm_show_grid_html(html: string): any;
+
+export function wasm_sparse_grid_html(html: string): any;
+
+export function wasm_telemetry_consent(enabled: boolean): any;
+
+export function wasm_telemetry_path(): any;
+
+export function wasm_themes(): any;
+
+export function wasm_true_required_params(chart?: string | null, variant?: string | null): any;
+
+export function wasm_zoom_html(html: string): any;
+
+export type InitInput = RequestInfo | URL | Response | BufferSource | WebAssembly.Module;
+
+export interface InitOutput {
     readonly memory: WebAssembly.Memory;
     readonly __wbg_chart_free: (a: number, b: number) => void;
     readonly accessiblePalette: (a: number, b: number) => [number, number];
@@ -696,6 +694,18 @@ declare interface InitOutput {
     readonly __wbindgen_start: () => void;
 }
 
+export type SyncInitInput = BufferSource | WebAssembly.Module;
+
+/**
+ * Instantiates the given `module`, which can either be bytes or
+ * a precompiled `WebAssembly.Module`.
+ *
+ * @param {{ module: SyncInitInput }} module - Passing `SyncInitInput` directly is deprecated.
+ *
+ * @returns {InitOutput}
+ */
+export function initSync(module: { module: SyncInitInput } | SyncInitInput): InitOutput;
+
 /**
  * If `module_or_path` is {RequestInfo} or {URL}, makes a request and
  * for everything else, calls `WebAssembly.instantiate` directly.
@@ -704,4 +714,4 @@ declare interface InitOutput {
  *
  * @returns {Promise<InitOutput>}
  */
-declare function wasm_bindgen (module_or_path?: { module_or_path: InitInput | Promise<InitInput> } | InitInput | Promise<InitInput>): Promise<InitOutput>;
+export default function __wbg_init (module_or_path?: { module_or_path: InitInput | Promise<InitInput> } | InitInput | Promise<InitInput>): Promise<InitOutput>;
