@@ -7,7 +7,7 @@ use crate::plot::statistical::common::hex6;
 )]
 
 pub fn render(cfg: &BarConfig) -> String {
-    render_spiral(cfg, false)
+    render_spiral(cfg)
 }
 
 #[cfg(test)]
