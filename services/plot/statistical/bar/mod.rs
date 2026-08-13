@@ -109,6 +109,32 @@ pub fn build_series(
     }
 }
 
+pub fn build_series2(
+    a: &crate::plot::chart_input::ChartArgs,
+    o: &crate::plot::chart_input::ChartOpts,
+) -> Vec<(String, Vec<f64>)> {
+    let sn = o
+        .series2_names
+        .clone()
+        .or_else(|| o.series_names.clone())
+        .unwrap_or_default();
+    match a.series2.as_ref() {
+        Some(s) => s
+            .iter()
+            .enumerate()
+            .map(|(si, vals)| {
+                (
+                    sn.get(si)
+                        .cloned()
+                        .unwrap_or_else(|| format!("S{}", si + 1)),
+                    vals.clone(),
+                )
+            })
+            .collect(),
+        None => Vec::new(),
+    }
+}
+
 #[crate::sera_alias(
     "bar",
     "bar_chart",
@@ -140,6 +166,7 @@ pub fn build(input: &str) -> String {
     let lp = o.lp();
 
     let series: Vec<(String, Vec<f64>)> = build_series(&a, &o, &category_labels);
+    let series2: Vec<(String, Vec<f64>)> = build_series2(&a, &o);
     let error_low = o.error_low.clone().unwrap_or_default();
     let error_high = o.error_high.clone().unwrap_or_default();
     let overlay_line = o.overlay_line.clone().unwrap_or_default();
@@ -169,6 +196,7 @@ pub fn build(input: &str) -> String {
         overlay_line_label: &overlay_line_label,
         category_labels: &category_labels,
         series: &series,
+        series2: &series2,
         offset_groups: &offset_groups,
         widths: &widths,
         super_categories: &super_categories,
