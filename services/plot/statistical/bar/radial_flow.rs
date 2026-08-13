@@ -108,15 +108,15 @@ pub fn render(cfg: &BarConfig) -> String {
     }
     let vmax = vmax.max(1e-9);
 
-    let cx = wf * 0.56;
-    let cy = hf * 0.78;
-    let start = -195.0_f64.to_radians();
-    let end = 15.0_f64.to_radians();
+    let cx = wf * 0.58;
+    let cy = hf * 0.60;
+    let start = -205.0_f64.to_radians();
+    let end = 60.0_f64.to_radians();
     let sweep = end - start;
     let angle = |i: usize| -> f64 { start + sweep * i as f64 / (n - 1).max(1) as f64 };
 
     let r_city = hf * 0.22;
-    let bar_max = hf * 0.15;
+    let bar_max = hf * 0.14;
     let half_w = (r_city * (sweep.abs() / n as f64) * 0.30).min(8.0);
 
     let mut countries: Vec<String> = Vec::new();
@@ -136,9 +136,9 @@ pub fn render(cfg: &BarConfig) -> String {
     push_b(&mut buf, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
     svg_title(&mut buf, cfg.title, w / 2, 24);
 
-    let country_x = wf * 0.30;
-    let country_top = hf * 0.14;
-    let country_bottom = hf * 0.56;
+    let country_x = wf * 0.10;
+    let country_top = cy - r_city * 0.85;
+    let country_bottom = cy + r_city * 0.85;
     let country_gap = if n_countries > 1 { (country_bottom - country_top) / (n_countries - 1) as f64 } else { 0.0 };
     let country_pt: HashMap<String, (f64, f64)> = countries
         .iter()
@@ -278,10 +278,10 @@ pub fn render(cfg: &BarConfig) -> String {
         push_f2(&mut buf, ly);
         push_b(&mut buf, b")\">");
         escape_xml(&mut buf, truncate(&cfg.labels[i], 26));
-        push_b(&mut buf, b" $");
+        push_b(&mut buf, b"<tspan class=\"sp-val\"> $");
         let s = format!("{:.1}B", v);
         buf.extend_from_slice(s.as_bytes());
-        push_b(&mut buf, b"</text>");
+        push_b(&mut buf, b"</tspan></text>");
     }
 
     push_b(&mut buf, b"</svg>");
