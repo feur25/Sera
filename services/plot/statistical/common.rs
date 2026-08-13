@@ -105,6 +105,31 @@ pub fn wedge_quad(cx: f64, cy: f64, a0: f64, a1: f64, r0: f64, r1: f64) -> [(f64
     ]
 }
 
+pub fn oblique_quad(base: (f64, f64), dir: (f64, f64), length: f64, width: f64) -> [(f64, f64); 4] {
+    let perp = (-dir.1 * width / 2.0, dir.0 * width / 2.0);
+    let tip = (base.0 + dir.0 * length, base.1 + dir.1 * length);
+    [
+        (base.0 - perp.0, base.1 - perp.1),
+        (tip.0 - perp.0, tip.1 - perp.1),
+        (tip.0 + perp.0, tip.1 + perp.1),
+        (base.0 + perp.0, base.1 + perp.1),
+    ]
+}
+
+pub fn push_quad_path(buf: &mut Vec<u8>, quad: [(f64, f64); 4]) {
+    push_b(buf, b"M");
+    push_f2(buf, quad[0].0);
+    push_b(buf, b",");
+    push_f2(buf, quad[0].1);
+    for &(x, y) in &quad[1..] {
+        push_b(buf, b" L");
+        push_f2(buf, x);
+        push_b(buf, b",");
+        push_f2(buf, y);
+    }
+    push_b(buf, b" Z");
+}
+
 pub fn push_wedge_path(buf: &mut Vec<u8>, cx: f64, cy: f64, a0: f64, a1: f64, r0: f64, r1: f64) {
     let [(x00, y00), (x01, y01), (x11, y11), (x10, y10)] = wedge_quad(cx, cy, a0, a1, r0, r1);
     push_b(buf, b"M");

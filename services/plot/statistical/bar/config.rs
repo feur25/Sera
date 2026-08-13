@@ -17,6 +17,7 @@ pub struct BarConfig<'a> {
 
     pub labels: &'a [String],
     pub values: &'a [f64],
+    pub values2: &'a [f64],
     pub color_hex: u32,
     pub color_low: u32,
     pub color_high: u32,
@@ -29,6 +30,8 @@ pub struct BarConfig<'a> {
 
     pub category_labels: &'a [String],
     pub series: &'a [(String, Vec<f64>)],
+    pub series2: &'a [(String, Vec<f64>)],
+    pub base_variant: &'a str,
 
     pub offset_groups: &'a [String],
     pub widths: &'a [f64],
@@ -63,6 +66,7 @@ impl<'a> Default for BarConfig<'a> {
             palette: &[],
             labels: &[],
             values: &[],
+            values2: &[],
             color_hex: 0,
             color_low: 0x636EFA,
             color_high: 0xF43F5E,
@@ -73,6 +77,8 @@ impl<'a> Default for BarConfig<'a> {
             overlay_line_label: "",
             category_labels: &[],
             series: &[],
+            series2: &[],
+            base_variant: "multicategory",
             offset_groups: &[],
             widths: &[],
             super_categories: &[],

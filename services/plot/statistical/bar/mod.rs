@@ -8,12 +8,12 @@ pub mod config;
 pub mod deluxe;
 pub mod distribution;
 pub mod diverging;
+pub mod dual_arc;
 pub mod grouped;
 pub mod grouped_stacked;
 pub mod hedgehog;
 pub mod marimekko;
 pub mod multicategory;
-pub mod multicategory_arc;
 pub mod pictogram;
 pub mod population_pyramid;
 pub mod prism;
@@ -39,7 +39,7 @@ pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
         Marimekko => marimekko::layout_3d(cfg),
         Multicategory => multicategory::layout_3d(cfg),
         Pictogram => pictogram::layout_3d(cfg),
-        Circular | CircularGrouped | Pyramid | Diverging | Distribution | Spiral | Hedgehog | MulticategoryArc => Vec::new(),
+        Circular | CircularGrouped | Pyramid | Diverging | Distribution | Spiral | Hedgehog | DualArc => Vec::new(),
     }
 }
 
@@ -68,7 +68,7 @@ pub fn render_bar_html(cfg: &BarConfig) -> String {
         Distribution => distribution::render(cfg),
         Spiral => spiral::render(cfg),
         Hedgehog => hedgehog::render(cfg),
-        MulticategoryArc => multicategory_arc::render(cfg),
+        DualArc => dual_arc::render(cfg),
     }
 }
 
@@ -109,6 +109,32 @@ pub fn build_series(
     }
 }
 
+pub fn build_series2(
+    a: &crate::plot::chart_input::ChartArgs,
+    o: &crate::plot::chart_input::ChartOpts,
+) -> Vec<(String, Vec<f64>)> {
+    let sn = o
+        .series2_names
+        .clone()
+        .or_else(|| o.series_names.clone())
+        .unwrap_or_default();
+    match a.series2.as_ref() {
+        Some(s) => s
+            .iter()
+            .enumerate()
+            .map(|(si, vals)| {
+                (
+                    sn.get(si)
+                        .cloned()
+                        .unwrap_or_else(|| format!("S{}", si + 1)),
+                    vals.clone(),
+                )
+            })
+            .collect(),
+        None => Vec::new(),
+    }
+}
+
 #[crate::sera_alias(
     "bar",
     "bar_chart",
@@ -126,7 +152,9 @@ pub fn build(input: &str) -> String {
 
     let labels = a.labels.clone().unwrap_or_default();
     let values = a.values.clone().unwrap_or_default();
+    let values2 = a.values2.clone().unwrap_or_default();
     let category_labels = a.labels.clone().unwrap_or_default();
+    let base_variant = o.base_variant.clone().unwrap_or_else(|| "multicategory".to_string());
     let groups = o.color_groups.clone().unwrap_or_default();
     let hover = o.hj();
     let palette = o.pal();
@@ -140,6 +168,7 @@ pub fn build(input: &str) -> String {
     let lp = o.lp();
 
     let series: Vec<(String, Vec<f64>)> = build_series(&a, &o, &category_labels);
+    let series2: Vec<(String, Vec<f64>)> = build_series2(&a, &o);
     let error_low = o.error_low.clone().unwrap_or_default();
     let error_high = o.error_high.clone().unwrap_or_default();
     let overlay_line = o.overlay_line.clone().unwrap_or_default();
@@ -159,6 +188,7 @@ pub fn build(input: &str) -> String {
         palette: &palette,
         labels: &labels,
         values: &values,
+        values2: &values2,
         color_hex: o.color_hex.unwrap_or(0),
         color_low: o.color_low.unwrap_or(0x636EFA),
         color_high: o.color_high.unwrap_or(0xF43F5E),
@@ -169,6 +199,8 @@ pub fn build(input: &str) -> String {
         overlay_line_label: &overlay_line_label,
         category_labels: &category_labels,
         series: &series,
+        series2: &series2,
+        base_variant: &base_variant,
         offset_groups: &offset_groups,
         widths: &widths,
         super_categories: &super_categories,
