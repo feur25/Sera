@@ -8,7 +8,6 @@ pub mod config;
 pub mod deluxe;
 pub mod distribution;
 pub mod diverging;
-pub mod dual_arc;
 pub mod grouped;
 pub mod grouped_stacked;
 pub mod hedgehog;
@@ -17,8 +16,7 @@ pub mod multicategory;
 pub mod pictogram;
 pub mod population_pyramid;
 pub mod prism;
-pub mod radial_bars;
-pub mod radial_waves;
+pub mod radial_flow;
 pub mod relative;
 pub mod spiral;
 pub mod spiral_common;
@@ -41,7 +39,7 @@ pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
         Marimekko => marimekko::layout_3d(cfg),
         Multicategory => multicategory::layout_3d(cfg),
         Pictogram => pictogram::layout_3d(cfg),
-        Circular | CircularGrouped | Pyramid | Diverging | Distribution | Spiral | Hedgehog | DualArc | RadialBars | RadialWaves => Vec::new(),
+        Circular | CircularGrouped | Pyramid | Diverging | Distribution | Spiral | Hedgehog | RadialFlow => Vec::new(),
     }
 }
 
@@ -70,9 +68,7 @@ pub fn render_bar_html(cfg: &BarConfig) -> String {
         Distribution => distribution::render(cfg),
         Spiral => spiral::render(cfg),
         Hedgehog => hedgehog::render(cfg),
-        DualArc => dual_arc::render(cfg),
-        RadialBars => radial_bars::render(cfg),
-        RadialWaves => radial_waves::render(cfg),
+        RadialFlow => radial_flow::render(cfg),
     }
 }
 
@@ -131,7 +127,6 @@ pub fn build(input: &str) -> String {
     let labels = a.labels.clone().unwrap_or_default();
     let values = a.values.clone().unwrap_or_default();
     let category_labels = a.labels.clone().unwrap_or_default();
-    let base_variant = o.base_variant.clone().unwrap_or_else(|| "multicategory".to_string());
     let groups = o.color_groups.clone().unwrap_or_default();
     let hover = o.hj();
     let palette = o.pal();
@@ -174,7 +169,6 @@ pub fn build(input: &str) -> String {
         overlay_line_label: &overlay_line_label,
         category_labels: &category_labels,
         series: &series,
-        base_variant: &base_variant,
         offset_groups: &offset_groups,
         widths: &widths,
         super_categories: &super_categories,
