@@ -76,7 +76,7 @@ pub fn label_left(f: &mut Frame, name: &str, cy: f64) {
     push_f2(&mut f.buf, cy + 3.0);
     push_b(
         &mut f.buf,
-        b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\">",
+        b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\" class=\"sp-yt\">",
     );
     escape_xml(&mut f.buf, truncate(name, 18));
     push_b(&mut f.buf, b"</text>");

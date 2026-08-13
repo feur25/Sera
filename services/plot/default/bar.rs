@@ -339,7 +339,7 @@ pub fn render_bars_html(
             push_i(&mut buf, pad_l - 5);
             push_b(&mut buf, b"\" y=\"");
             push_i(&mut buf, bar_y + bar_h / 2 + 4);
-            push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\">");
+            push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\" class=\"sp-yt\">");
             escape_xml(&mut buf, truncate(&labels[i], 18));
             push_b(&mut buf, b"</text>");
 
@@ -645,7 +645,7 @@ pub fn render_bar_family_native(
 
     let tick_count = n.min(6);
     if tick_count > 0 && !horizontal {
-        push_b(&mut buf, b"<g fill=\"#6b7280\" font-family=\"Arial,sans-serif\" font-size=\"9\" text-anchor=\"middle\">");
+        push_b(&mut buf, b"<g class=\"sp-xt\" fill=\"#6b7280\" font-family=\"Arial,sans-serif\" font-size=\"9\" text-anchor=\"middle\">");
         for t in 0..tick_count {
             let idx = if tick_count == 1 { 0 } else { t * (n - 1) / (tick_count - 1) };
             let x = pad_l as f64 + (idx as f64 + 0.5) * pitch;
@@ -661,7 +661,7 @@ pub fn render_bar_family_native(
     }
 
     if horizontal {
-        push_b(&mut buf, b"<g fill=\"#374151\" font-family=\"Arial,sans-serif\" font-size=\"10\" text-anchor=\"end\">");
+        push_b(&mut buf, b"<g class=\"sp-yt\" fill=\"#374151\" font-family=\"Arial,sans-serif\" font-size=\"10\" text-anchor=\"end\">");
         for i in 0..n {
             let y = pad_t as f64 + (i as f64 + 0.5) * pitch;
             push_b(&mut buf, b"<text x=\"");

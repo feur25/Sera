@@ -121,7 +121,7 @@ pub fn label_left(f: &mut Frame, p: &Prepared, i: usize, cy: i32) {
     push_i(&mut f.buf, f.pl - 6);
     push_b(&mut f.buf, b"\" y=\"");
     push_i(&mut f.buf, cy + 3);
-    push_b(&mut f.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\">");
+    push_b(&mut f.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#374151\" class=\"sp-yt\">");
     escape_xml(&mut f.buf, truncate(&p.labels[i], 18));
     push_b(&mut f.buf, b"</text>");
 }

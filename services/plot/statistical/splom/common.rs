@@ -170,7 +170,7 @@ pub fn axis_labels(buf: &mut Vec<u8>, p: &Prepared, cfg: &SplomConfig) {
         push_f2(buf, p.pad_t - 8.0);
         push_b(
             buf,
-            b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#64748b\">",
+            b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#64748b\" class=\"sp-xt\">",
         );
         escape_xml(buf, short);
         push_b(buf, b"</text>");
