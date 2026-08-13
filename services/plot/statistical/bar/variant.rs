@@ -16,6 +16,6 @@ crate::plot_family! {
         Distribution    => "distribution" | "bar_box" | "boxbar" | "bar_boxplot",
         Spiral          => "spiral" | "spiral_bar" | "nautilus" | "radial_spiral" | "growth_spiral",
         Hedgehog        => "hedgehog" | "flow_fan" | "quill" | "spike_flow" | "relocation_fan",
-        SpiralGrouped   => "spiral_grouped" | "spiral_compare" | "grouped_spiral" | "radial_compare" | "spiral_clustered",
+        MulticategoryArc => "multicategory_arc" | "dual_view" | "arc_mirror" | "bent_multicategory" | "straight_and_curved",
     }
 }

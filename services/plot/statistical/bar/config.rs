@@ -29,7 +29,6 @@ pub struct BarConfig<'a> {
 
     pub category_labels: &'a [String],
     pub series: &'a [(String, Vec<f64>)],
-    pub series2: &'a [(String, Vec<f64>)],
 
     pub offset_groups: &'a [String],
     pub widths: &'a [f64],
@@ -74,7 +73,6 @@ impl<'a> Default for BarConfig<'a> {
             overlay_line_label: "",
             category_labels: &[],
             series: &[],
-            series2: &[],
             offset_groups: &[],
             widths: &[],
             super_categories: &[],
