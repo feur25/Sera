@@ -48,7 +48,7 @@ fn overlay_wedge(buf: &mut Vec<u8>, cx: f64, cy: f64, a0: f64, a1: f64, r0: f64,
     push_f2(buf, y10);
     push_b(buf, b" Z\" fill=\"#");
     buf.extend_from_slice(&hex6(color));
-    push_b(buf, b"\" fill-opacity=\"0.74\"/>");
+    push_b(buf, b"\" fill-opacity=\"0.74\" style=\"mix-blend-mode:multiply\"/>");
 }
 
 fn dashed_arc(buf: &mut Vec<u8>, cx: f64, cy: f64, r: f64, a0: f64, a1: f64) {
