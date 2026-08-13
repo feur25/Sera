@@ -88,7 +88,7 @@ fn flow_curve(buf: &mut Vec<u8>, p0: (f64, f64), p1: (f64, f64), color: u32, wid
 }
 
 #[crate::chart_demo(
-    "labels=[\"KKR\",\"Blackstone\",\"Warburg Pincus\",\"GTCR\",\"Thoma Bravo\",\"Francisco Partners\",\"Silver Lake\",\"Bain Capital\",\"Advent International\",\"CVC Capital Partners\",\"EQT\",\"Hg\",\"Brookfield Asset Management\",\"Ardian\",\"PAI Partners\",\"Hillhouse Capital Group\",\"China Merchants Capital\"], values=[117.9,95.7,34.2,30.2,98.2,25.8,47.1,40.5,38.2,113.3,72.5,21.6,23.8,25.4,18.0,59.9,20.7], super_categories=[\"New York\",\"New York\",\"New York\",\"Chicago\",\"Chicago\",\"San Francisco\",\"San Francisco\",\"Boston\",\"Boston\",\"London\",\"London\",\"London\",\"Toronto\",\"Paris\",\"Paris\",\"Hong Kong\",\"Hong Kong\"], offset_groups=[\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"UK\",\"UK\",\"UK\",\"Canada\",\"France\",\"France\",\"China\",\"China\"], palette=[3049182,1482885,1780298,9317439,8207041], variant=\"radial_flow\", width=1080, height=780"
+    "labels=[\"KKR\",\"Blackstone\",\"Clayton Dubilier & Rice\",\"Warburg Pincus\",\"General Atlantic\",\"GTCR\",\"Thoma Bravo\",\"Francisco Partners\",\"Silver Lake\",\"Andreessen Horowitz\",\"Clearlake Capital Group\",\"Bain Capital\",\"Advent International\",\"Summit Partners\",\"CVC Capital Partners\",\"Hg\",\"Bridgepoint\",\"EQT\",\"Nordic Capital\",\"Partners Group\",\"Brookfield Asset Management\",\"Ardian\",\"PAI Partners\",\"Hillhouse Capital Group\",\"China Merchants Capital\"], values=[117.9,95.7,49.8,34.2,44.7,30.2,98.2,25.8,47.1,34.2,45.2,40.5,38.2,22.2,113.3,21.6,29.3,72.5,23.6,27.2,23.8,25.4,18.0,59.9,20.7], super_categories=[\"New York\",\"New York\",\"New York\",\"New York\",\"New York\",\"Chicago\",\"Chicago\",\"San Francisco\",\"San Francisco\",\"Menlo Park\",\"Santa Monica\",\"Boston\",\"Boston\",\"Washington DC\",\"London\",\"London\",\"London\",\"Stockholm\",\"Stockholm\",\"Zug\",\"Toronto\",\"Paris\",\"Paris\",\"Hong Kong\",\"Hong Kong\"], offset_groups=[\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"UK\",\"UK\",\"UK\",\"Sweden\",\"Sweden\",\"Switzerland\",\"Canada\",\"France\",\"France\",\"China\",\"China\"], palette=[3049182,1482885,13934615,15277708,1780298,9317439,8207041], variant=\"radial_flow\", width=1080, height=900"
 )]
 
 pub fn render(cfg: &BarConfig) -> String {
@@ -136,8 +136,8 @@ pub fn render(cfg: &BarConfig) -> String {
     push_b(&mut buf, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
     svg_title(&mut buf, cfg.title, w / 2, 24);
 
-    let country_x = wf * 0.075;
-    let country_top = hf * 0.20;
+    let country_x = wf * 0.30;
+    let country_top = hf * 0.14;
     let country_bottom = hf * 0.56;
     let country_gap = if n_countries > 1 { (country_bottom - country_top) / (n_countries - 1) as f64 } else { 0.0 };
     let country_pt: HashMap<String, (f64, f64)> = countries
@@ -154,29 +154,41 @@ pub fn render(cfg: &BarConfig) -> String {
         e.1 += 1;
     }
 
-    let mut seen_pairs: Vec<(String, String)> = Vec::new();
-    for i in 0..n {
-        let country = cfg.offset_groups.get(i).cloned().unwrap_or_default();
-        let city = cfg.super_categories.get(i).cloned().unwrap_or_default();
-        let pair = (country, city);
-        if !seen_pairs.contains(&pair) {
-            seen_pairs.push(pair);
-        }
-    }
     push_b(&mut buf, b"<g style=\"isolation:isolate\">");
-    for (country, city) in &seen_pairs {
+    for i in 0..n {
+        let country = cfg.offset_groups.get(i).map(|s| s.as_str()).unwrap_or("");
         let p0 = match country_pt.get(country) {
             Some(p) => *p,
             None => continue,
         };
-        let a_mid = match city_angle_sum.get(city) {
-            Some((sum, cnt)) if *cnt > 0 => sum / *cnt as f64,
-            _ => continue,
-        };
-        let p1 = (cx + (r_city - 10.0) * a_mid.cos(), cy + (r_city - 10.0) * a_mid.sin());
-        flow_curve(&mut buf, p0, p1, color_of(country), 2.2);
+        let a = angle(i);
+        let p1 = (cx + (r_city - 10.0) * a.cos(), cy + (r_city - 10.0) * a.sin());
+        flow_curve(&mut buf, p0, p1, color_of(country), 1.3);
     }
     push_b(&mut buf, b"</g>");
+
+    {
+        let mut seen_cities: Vec<String> = Vec::new();
+        for i in 0..n {
+            let city = cfg.super_categories.get(i).cloned().unwrap_or_default();
+            if !seen_cities.contains(&city) {
+                seen_cities.push(city);
+            }
+        }
+        for city in &seen_cities {
+            let a_mid = match city_angle_sum.get(city) {
+                Some((sum, cnt)) if *cnt > 0 => sum / *cnt as f64,
+                _ => continue,
+            };
+            let bx = cx + r_city * a_mid.cos();
+            let by = cy + r_city * a_mid.sin();
+            push_b(&mut buf, b"<circle cx=\"");
+            push_f2(&mut buf, bx);
+            push_b(&mut buf, b"\" cy=\"");
+            push_f2(&mut buf, by);
+            push_b(&mut buf, b"\" r=\"5.5\" fill=\"#fff\" stroke=\"#94a3b8\" stroke-width=\"1.4\"/>");
+        }
+    }
 
     for (country, pt) in &country_pt {
         push_b(&mut buf, b"<circle cx=\"");
@@ -296,7 +308,7 @@ mod tests {
             super_categories: cities,
             offset_groups: countries,
             width: 1080,
-            height: 780,
+            height: 900,
             ..BarConfig::default()
         }
     }
