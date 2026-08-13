@@ -13,6 +13,7 @@ pub mod correlation;
 pub mod density;
 pub mod discrete;
 pub mod hex_grid;
+pub mod horizon;
 pub mod log;
 pub mod marginal;
 pub mod pivot;
@@ -46,6 +47,7 @@ pub fn render_heatmap_html(cfg: &HeatmapConfig) -> String {
         HeatmapVariant::Polar => polar::render(cfg),
         HeatmapVariant::RadialCluster => radial_cluster::render(cfg),
         HeatmapVariant::HexGrid => hex_grid::render(cfg),
+        HeatmapVariant::Horizon => horizon::render(cfg),
     }
 }
 
