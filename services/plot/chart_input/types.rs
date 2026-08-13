@@ -91,7 +91,6 @@ pub struct ChartOpts {
     pub right_label: Option<String>,
     pub stacked: Option<bool>,
     pub series_names: Option<Vec<String>>,
-    pub base_variant: Option<String>,
     pub targets: Option<Vec<f64>>,
     pub max_vals: Option<Vec<f64>>,
     pub ranges: Option<Vec<f64>>,
