@@ -96,6 +96,36 @@ pub fn polar_point(cx: f64, cy: f64, angle: f64, r: f64) -> (f64, f64) {
     (cx + r * angle.cos(), cy + r * angle.sin())
 }
 
+pub fn wedge_quad(cx: f64, cy: f64, a0: f64, a1: f64, r0: f64, r1: f64) -> [(f64, f64); 4] {
+    [
+        polar_point(cx, cy, a0, r0),
+        polar_point(cx, cy, a0, r1),
+        polar_point(cx, cy, a1, r1),
+        polar_point(cx, cy, a1, r0),
+    ]
+}
+
+pub fn push_wedge_path(buf: &mut Vec<u8>, cx: f64, cy: f64, a0: f64, a1: f64, r0: f64, r1: f64) {
+    let [(x00, y00), (x01, y01), (x11, y11), (x10, y10)] = wedge_quad(cx, cy, a0, a1, r0, r1);
+    push_b(buf, b"M");
+    push_f2(buf, x00);
+    push_b(buf, b",");
+    push_f2(buf, y00);
+    push_b(buf, b" L");
+    push_f2(buf, x01);
+    push_b(buf, b",");
+    push_f2(buf, y01);
+    push_b(buf, b" L");
+    push_f2(buf, x11);
+    push_b(buf, b",");
+    push_f2(buf, y11);
+    push_b(buf, b" L");
+    push_f2(buf, x10);
+    push_b(buf, b",");
+    push_f2(buf, y10);
+    push_b(buf, b" Z");
+}
+
 pub fn hash01(seed: usize) -> f64 {
     let mut x = seed as u64 ^ 0x9E3779B97F4A7C15;
     x ^= x >> 30;
