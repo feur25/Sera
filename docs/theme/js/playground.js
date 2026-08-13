@@ -921,12 +921,15 @@
                 tabSize: 4,
                 insertSpaces: true,
                 wordWrap: 'on',
-                bracketPairColorization: { enabled: true },
-                guides: { indentation: true, bracketPairs: true },
+                bracketPairColorization: { enabled: false },
+                guides: { indentation: true, bracketPairs: false },
                 padding: { top: 10, bottom: 10 },
-                smoothScrolling: true,
-                cursorBlinking: 'smooth',
+                smoothScrolling: false,
+                cursorBlinking: 'blink',
                 fixedOverflowWidgets: true,
+                occurrencesHighlight: 'off',
+                renderWhitespace: 'none',
+                folding: false,
             });
             state.editor.onDidChangeModelContent(debouncedRun);
             attachResize(divider, ecol);
