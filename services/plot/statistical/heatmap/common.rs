@@ -412,7 +412,7 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
         push_i(&mut buf, cx);
         push_b(&mut buf, b"\" y=\"");
         push_i(&mut buf, cy);
-        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#4b5563\" transform=\"rotate(-");
+        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#4b5563\" class=\"sp-xt\" transform=\"rotate(-");
         push_i(&mut buf, cfg.col_label_angle);
         push_b(&mut buf, b",");
         push_i(&mut buf, cx);
@@ -432,7 +432,7 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
         push_i(&mut buf, pad_left - 5);
         push_b(&mut buf, b"\" y=\"");
         push_i(&mut buf, ry0 + rh / 2 + 3);
-        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#4b5563\">");
+        push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#4b5563\" class=\"sp-yt\">");
         escape_xml(&mut buf, truncate(&cfg.row_labels[row], 14));
         push_b(&mut buf, b"</text>");
 
@@ -631,7 +631,7 @@ pub fn render_core(cfg: &HeatmapConfig) -> String {
                 push_i(&mut buf, bar_x + bar_w + 7);
                 push_b(&mut buf, b"\" y=\"");
                 push_i(&mut buf, ty + 3);
-                push_b(&mut buf, b"\" text-anchor=\"start\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#475569\">");
+                push_b(&mut buf, b"\" text-anchor=\"start\" font-family=\"Arial,sans-serif\" font-size=\"9\" fill=\"#475569\" class=\"sp-yt\">");
                 push_f2(&mut buf, v);
                 push_b(&mut buf, b"</text>");
             }

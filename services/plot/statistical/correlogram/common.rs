@@ -262,7 +262,7 @@ pub fn render_impl(cfg: &CorrelogramConfig, shape: &str, shape2: &str, layout: &
         push_f2(&mut buf, cy + 3.5);
         push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"");
         push_f2(&mut buf, fs_axis);
-        push_b(&mut buf, b"\" fill=\"#374151\">");
+        push_b(&mut buf, b"\" fill=\"#374151\" class=\"sp-yt\">");
         escape_xml(&mut buf, label);
         push_b(&mut buf, b"</text>");
 
@@ -272,7 +272,7 @@ pub fn render_impl(cfg: &CorrelogramConfig, shape: &str, shape2: &str, layout: &
         push_f2(&mut buf, pad_t + n as f64 * cell + 14.0);
         push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"");
         push_f2(&mut buf, fs_axis);
-        push_b(&mut buf, b"\" fill=\"#374151\">");
+        push_b(&mut buf, b"\" fill=\"#374151\" class=\"sp-xt\">");
         escape_xml(&mut buf, label);
         push_b(&mut buf, b"</text>");
     }

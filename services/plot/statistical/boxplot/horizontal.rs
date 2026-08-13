@@ -151,7 +151,7 @@ pub fn render(cfg: &BoxplotConfig) -> String {
         push_i(&mut f.buf, f.pl - 8);
         push_b(&mut f.buf, b"\" y=\"");
         push_i(&mut f.buf, cy + 4);
-        push_b(&mut f.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
+        push_b(&mut f.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" class=\"sp-yt\">");
         escape_xml(&mut f.buf, truncate(cat, 18));
         push_b(&mut f.buf, b"</text>");
 

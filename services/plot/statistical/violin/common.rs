@@ -519,7 +519,7 @@ pub fn draw_cat_label_v(f: &mut Frame, cx: i32, label: &str) {
     push_i(&mut f.buf, cx);
     push_b(&mut f.buf, b"\" y=\"");
     push_i(&mut f.buf, f.pt + f.ph + 16);
-    push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
+    push_b(&mut f.buf, b"\" text-anchor=\"middle\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" class=\"sp-xt\">");
     escape_xml(&mut f.buf, cat_label_short(label));
     push_b(&mut f.buf, b"</text>");
 }
@@ -529,7 +529,7 @@ pub fn draw_cat_label_h(f: &mut Frame, cy: i32, label: &str) {
     push_i(&mut f.buf, f.pl - 6);
     push_b(&mut f.buf, b"\" y=\"");
     push_i(&mut f.buf, cy + 4);
-    push_b(&mut f.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\">");
+    push_b(&mut f.buf, b"\" text-anchor=\"end\" font-family=\"Arial,sans-serif\" font-size=\"10\" fill=\"#6b7280\" class=\"sp-yt\">");
     escape_xml(&mut f.buf, cat_label_short(label));
     push_b(&mut f.buf, b"</text>");
 }
