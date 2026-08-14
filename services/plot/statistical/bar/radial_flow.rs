@@ -62,8 +62,8 @@ fn arc_path(buf: &mut Vec<u8>, cx: f64, cy: f64, r: f64, a0: f64, a1: f64) {
     push_b(buf, b"\"");
 }
 
-fn flow_curve(buf: &mut Vec<u8>, p0: (f64, f64), p1: (f64, f64), color: u32, width: f64) {
-    let midx = p0.0 + (p1.0 - p0.0) * 0.55;
+fn flow_curve(buf: &mut Vec<u8>, p0: (f64, f64), p1: (f64, f64), inner: (f64, f64), color: u32, width: f64) {
+    let c1 = (p0.0 + (inner.0 - p0.0) * 0.5, p0.1 + (inner.1 - p0.1) * 0.12);
     push_b(buf, b"<path fill=\"none\" stroke=\"#");
     buf.extend_from_slice(&hex6(color));
     push_b(buf, b"\" stroke-opacity=\"0.55\" stroke-width=\"");
@@ -73,13 +73,13 @@ fn flow_curve(buf: &mut Vec<u8>, p0: (f64, f64), p1: (f64, f64), color: u32, wid
     push_b(buf, b",");
     push_f2(buf, p0.1);
     push_b(buf, b" C");
-    push_f2(buf, midx);
+    push_f2(buf, c1.0);
     push_b(buf, b",");
-    push_f2(buf, p0.1);
+    push_f2(buf, c1.1);
     push_b(buf, b" ");
-    push_f2(buf, midx);
+    push_f2(buf, inner.0);
     push_b(buf, b",");
-    push_f2(buf, p1.1);
+    push_f2(buf, inner.1);
     push_b(buf, b" ");
     push_f2(buf, p1.0);
     push_b(buf, b",");
@@ -116,7 +116,7 @@ pub fn render(cfg: &BarConfig) -> String {
     let angle = |i: usize| -> f64 { start + sweep * i as f64 / (n - 1).max(1) as f64 };
 
     let r_city = hf * 0.22;
-    let bar_max = hf * 0.14;
+    let bar_max = hf * 0.12;
     let half_w = (r_city * (sweep.abs() / n as f64) * 0.30).min(8.0);
 
     let mut countries: Vec<String> = Vec::new();
@@ -136,7 +136,7 @@ pub fn render(cfg: &BarConfig) -> String {
     push_b(&mut buf, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
     svg_title(&mut buf, cfg.title, w / 2, 24);
 
-    let country_x = wf * 0.10;
+    let country_x = wf * 0.16;
     let country_top = cy - r_city * 0.85;
     let country_bottom = cy + r_city * 0.85;
     let country_gap = if n_countries > 1 { (country_bottom - country_top) / (n_countries - 1) as f64 } else { 0.0 };
@@ -163,7 +163,8 @@ pub fn render(cfg: &BarConfig) -> String {
         };
         let a = angle(i);
         let p1 = (cx + (r_city - 10.0) * a.cos(), cy + (r_city - 10.0) * a.sin());
-        flow_curve(&mut buf, p0, p1, color_of(country), 1.3);
+        let inner = (cx + r_city * 0.22 * a.cos(), cy + r_city * 0.22 * a.sin());
+        flow_curve(&mut buf, p0, p1, inner, color_of(country), 1.3);
     }
     push_b(&mut buf, b"</g>");
 
@@ -254,15 +255,34 @@ pub fn render(cfg: &BarConfig) -> String {
         let a = angle(i);
         let v = cfg.values[i];
         let t = (v / vmax).clamp(0.0, 1.0);
-        let len = 10.0 + t * (bar_max - 10.0);
+        let len = 26.0 + t * (bar_max - 26.0);
         let re = r_city + len;
         let country = cfg.offset_groups.get(i).map(|s| s.as_str()).unwrap_or("");
         let color = color_of(country);
         ray_bar(&mut buf, cx, cy, a, r_city, re, half_w, color, i as i32, v, &cfg.labels[i]);
 
+        let deg = if a.cos() < 0.0 { a.to_degrees() + 180.0 } else { a.to_degrees() };
+
+        let vr = r_city + len * 0.5;
+        let vx = cx + vr * a.cos();
+        let vy = cy + vr * a.sin();
+        push_b(&mut buf, b"<text class=\"sp-val\" x=\"");
+        push_f2(&mut buf, vx);
+        push_b(&mut buf, b"\" y=\"");
+        push_f2(&mut buf, vy);
+        push_b(&mut buf, b"\" text-anchor=\"middle\" dominant-baseline=\"central\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"6.5\" font-weight=\"700\" fill=\"#fff\" stroke=\"#0f172a\" stroke-width=\"2\" paint-order=\"stroke\" transform=\"rotate(");
+        push_f2(&mut buf, deg);
+        push_b(&mut buf, b" ");
+        push_f2(&mut buf, vx);
+        push_b(&mut buf, b" ");
+        push_f2(&mut buf, vy);
+        push_b(&mut buf, b")\">$");
+        let s = format!("{:.1}B", v);
+        buf.extend_from_slice(s.as_bytes());
+        push_b(&mut buf, b"</text>");
+
         let lx = cx + (re + 6.0) * a.cos();
         let ly = cy + (re + 6.0) * a.sin();
-        let deg = if a.cos() < 0.0 { a.to_degrees() + 180.0 } else { a.to_degrees() };
         let anchor: &[u8] = if a.cos() < 0.0 { b"end" } else { b"start" };
         push_b(&mut buf, b"<text x=\"");
         push_f2(&mut buf, lx);
@@ -278,10 +298,7 @@ pub fn render(cfg: &BarConfig) -> String {
         push_f2(&mut buf, ly);
         push_b(&mut buf, b")\">");
         escape_xml(&mut buf, truncate(&cfg.labels[i], 26));
-        push_b(&mut buf, b"<tspan class=\"sp-val\"> $");
-        let s = format!("{:.1}B", v);
-        buf.extend_from_slice(s.as_bytes());
-        push_b(&mut buf, b"</tspan></text>");
+        push_b(&mut buf, b"</text>");
     }
 
     push_b(&mut buf, b"</svg>");
