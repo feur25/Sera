@@ -435,19 +435,6 @@ mod tests {
     }
 
     #[test]
-    #[ignore]
-    fn write_preview_assets() {
-        use crate::plot::chart_demo_registry::{iter_entries, render_demo_html};
-        for entry in iter_entries() {
-            if !entry.file.replace('\\', "/").ends_with("bar/radial_flow.rs") {
-                continue;
-            }
-            let html = render_demo_html(entry).expect("demo html");
-            std::fs::write("docs/previews/bar-radial_flow.html", html).unwrap();
-        }
-    }
-
-    #[test]
     fn empty_input_returns_empty_string() {
         let labels: Vec<String> = vec![];
         let values: Vec<f64> = vec![];
