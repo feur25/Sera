@@ -89,7 +89,7 @@ fn callout(buf: &mut Vec<u8>, ax: f64, ay: f64, bx: f64, by: f64, lines: &[&str]
 }
 
 #[crate::chart_demo(
-    "labels=[\"1929\",\"1929\",\"1929\",\"1934\",\"1943\",\"1953\",\"1953\",\"1960\",\"1964\",\"1970\",\"1974\",\"1974\",\"1980\",\"1980\",\"1986\",\"1986\",\"1989\",\"1994\",\"1994\",\"1994\",\"1999\",\"1999\",\"2002\",\"2002\",\"2002\",\"2002\",\"2005\",\"2005\",\"2008\",\"2008\",\"2008\",\"2009\",\"2010\",\"2011\",\"2011\",\"2013\",\"2013\",\"2015\",\"2015\",\"2015\",\"2017\",\"2017\",\"2019\",\"2019\",\"2023\",\"2023\",\"2023\"], values=[20,51,84,65,56,12,71,29,74,29,38,54,72,90,13,48,80,41,60,75,32,90,37,44,58,78,54,63,44,45,90,35,8,74,83,50,86,15,22,79,51,64,18,56,46,49,88], color_groups=[\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\"], palette=[3316734,15547189], title=\"El Clasico - Every Goal, by Minute and Era\", width=1000, height=800"
+    "labels=[\"1929\",\"1943\",\"1953\",\"1953\",\"1964\",\"1974\",\"1974\",\"1974\",\"1986\",\"1994\",\"1994\",\"1994\",\"1994\",\"2002\",\"2002\",\"2009\",\"2011\",\"2017\",\"2017\",\"2023\"], values=[15,35,22,60,90,10,45,75,50,5,30,65,90,40,80,90,20,55,72,38], color_groups=[\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\"], palette=[3316734,15547189], title=\"El Clasico - Every Goal, by Minute and Era\", width=1000, height=800"
 )]
 
 pub fn render(cfg: &LollipopConfig) -> String {
@@ -202,9 +202,14 @@ pub fn render(cfg: &LollipopConfig) -> String {
             let x1 = cx + r * am.cos();
             let y1 = cy + r * am.sin();
             let sweep_flag: u8 = if am > a0 { 1 } else { 0 };
+            let full = p.values[i] >= vmax - 1e-6;
             push_b(&mut b, b"<path fill=\"none\" stroke=\"#");
             b.extend_from_slice(&hex6(col));
-            push_b(&mut b, b"\" stroke-width=\"1.3\" stroke-opacity=\"0.6\" d=\"M");
+            push_b(&mut b, b"\" stroke-width=\"");
+            push_f2(&mut b, if full { 2.2 } else { 1.3 });
+            push_b(&mut b, b"\" stroke-opacity=\"");
+            push_f2(&mut b, if full { 1.0 } else { 0.55 });
+            push_b(&mut b, b"\" d=\"M");
             push_f2(&mut b, x0);
             push_b(&mut b, b",");
             push_f2(&mut b, y0);
