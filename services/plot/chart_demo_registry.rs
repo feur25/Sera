@@ -2,6 +2,7 @@ pub struct ChartDemoEntry {
     pub file: &'static str,
     pub fn_name: &'static str,
     pub kwargs: &'static str,
+    pub media: &'static str,
 }
 inventory::collect!(ChartDemoEntry);
 
@@ -190,6 +191,38 @@ pub fn demo_payload(entry: &ChartDemoEntry) -> Option<DemoPayload> {
     })
 }
 
+pub fn apply_media(html: String, media_json: &str) -> String {
+    let trimmed = media_json.trim();
+    if trimmed.is_empty() {
+        return html;
+    }
+    let Ok(items) = serde_json::from_str::<Vec<serde_json::Value>>(trimmed) else {
+        return html;
+    };
+    let mut out = html;
+    for item in &items {
+        let kind = item.get("kind").and_then(|v| v.as_str()).unwrap_or("image");
+        let Some(src) = item.get("src").and_then(|v| v.as_str()) else {
+            continue;
+        };
+        let x = item.get("x").and_then(|v| v.as_f64()).unwrap_or(0.5);
+        let y = item.get("y").and_then(|v| v.as_f64()).unwrap_or(0.5);
+        let w = item.get("w").and_then(|v| v.as_f64()).unwrap_or(0.2);
+        let h = item.get("h").and_then(|v| v.as_f64()).unwrap_or(0.2);
+        let shape = item.get("shape").and_then(|v| v.as_str()).unwrap_or("rect");
+        let opacity = item.get("opacity").and_then(|v| v.as_f64()).unwrap_or(1.0);
+        out = crate::html::media_overlay::add_media(&out, kind, src, x, y, w, h, shape, opacity);
+    }
+    out
+}
+
+pub fn render_demo_html(entry: &ChartDemoEntry) -> Option<String> {
+    let payload = demo_payload(entry)?;
+    let fe = crate::bindings::fn_registry::iter_entries().find(|f| f.name == payload.builder)?;
+    let html = (fe.invoke)(&payload.json);
+    Some(apply_media(html, entry.media))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -275,6 +308,7 @@ mod tests {
             file: "src/services/plot/statistical/bar/config.rs",
             fn_name: "render",
             kwargs: "values=[1,2,3]",
+            media: "",
         };
         assert!(demo_payload(&entry).is_none());
     }
@@ -285,6 +319,7 @@ mod tests {
             file: "src/services/plot/statistical/bar/pictogram.rs",
             fn_name: "render",
             kwargs: "labels=[\"A\",\"B\"], values=[1,2]",
+            media: "",
         };
         let payload = demo_payload(&entry).unwrap();
         assert_eq!(payload.builder, "build_bar");
@@ -300,11 +335,13 @@ mod tests {
             file: "src/services/plot/statistical/_3d/mesh3d.rs",
             fn_name: "build_mesh3d_chart",
             kwargs: "x=[0,1,0,1], y=[0,0,1,1], z=[0,0,0,1], mesh_i=[0], mesh_j=[1], mesh_k=[2]",
+            media: "",
         };
         let wire = ChartDemoEntry {
             file: "src/services/plot/statistical/_3d/mesh3d.rs",
             fn_name: "build_wireframe3d_chart",
             kwargs: "x=[0,1,2], y=[0,1,2], matrix=[[0,1,0],[1,2,1],[0,1,0]]",
+            media: "",
         };
         let mesh_payload = demo_payload(&mesh).unwrap();
         let wire_payload = demo_payload(&wire).unwrap();
@@ -319,6 +356,7 @@ mod tests {
             file: "src/services/plot/statistical/boxplot/violin.rs",
             fn_name: "render",
             kwargs: "labels=[\"A\",\"B\"], series=[[1.0,2.0],[3.0,4.0]]",
+            media: "",
         };
         let payload = demo_payload(&entry).unwrap();
         assert_eq!(payload.builder, "build_boxplot");
