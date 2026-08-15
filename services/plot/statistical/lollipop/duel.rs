@@ -36,56 +36,6 @@ fn arc(buf: &mut Vec<u8>, cx: f64, cy: f64, r: f64, a0: f64, a1: f64, stroke: u3
     push_b(buf, b"\"/>");
 }
 
-fn lollipop_head(buf: &mut Vec<u8>, cx: f64, cy: f64, r: f64, frac: f64, color: u32) {
-    push_b(buf, b"<circle cx=\"");
-    push_f2(buf, cx);
-    push_b(buf, b"\" cy=\"");
-    push_f2(buf, cy);
-    push_b(buf, b"\" r=\"");
-    push_f2(buf, r);
-    push_b(buf, b"\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"1.1\"/>");
-    if frac >= 0.999 {
-        push_b(buf, b"<circle cx=\"");
-        push_f2(buf, cx);
-        push_b(buf, b"\" cy=\"");
-        push_f2(buf, cy);
-        push_b(buf, b"\" r=\"");
-        push_f2(buf, r);
-        push_b(buf, b"\" fill=\"#");
-        buf.extend_from_slice(&hex6(color));
-        push_b(buf, b"\"/>");
-        return;
-    }
-    let ha0 = -std::f64::consts::FRAC_PI_2;
-    let ha1 = ha0 + frac * std::f64::consts::TAU;
-    let x0 = cx + r * ha0.cos();
-    let y0 = cy + r * ha0.sin();
-    let x1 = cx + r * ha1.cos();
-    let y1 = cy + r * ha1.sin();
-    let large = if ha1 - ha0 > std::f64::consts::PI { 1 } else { 0 };
-    push_b(buf, b"<path fill=\"#");
-    buf.extend_from_slice(&hex6(color));
-    push_b(buf, b"\" d=\"M");
-    push_f2(buf, cx);
-    push_b(buf, b",");
-    push_f2(buf, cy);
-    push_b(buf, b" L");
-    push_f2(buf, x0);
-    push_b(buf, b",");
-    push_f2(buf, y0);
-    push_b(buf, b" A");
-    push_f2(buf, r);
-    push_b(buf, b",");
-    push_f2(buf, r);
-    push_b(buf, b" 0 ");
-    buf.push(large + b'0');
-    push_b(buf, b",1 ");
-    push_f2(buf, x1);
-    push_b(buf, b",");
-    push_f2(buf, y1);
-    push_b(buf, b" Z\"/>");
-}
-
 fn callout(buf: &mut Vec<u8>, ax: f64, ay: f64, bx: f64, by: f64, lines: &[&str], accent: u32) {
     let w = lines.iter().map(|l| l.chars().count()).max().unwrap_or(0) as f64 * 5.6 + 20.0;
     let h = lines.len() as f64 * 14.0 + 12.0;
@@ -180,9 +130,8 @@ pub fn render(cfg: &LollipopConfig) -> String {
         bounds.push((start_i, end_i));
         start_i = end_i;
     }
-    let n_matches = bounds.len().max(1);
-    let radius_of = |mi: usize| -> f64 { r_min + (r_max - r_min) * mi as f64 / (n_matches - 1).max(1) as f64 };
-    let max_goals = bounds.iter().map(|&(s, e)| e - s).max().unwrap_or(1).max(1);
+    let radius_of_row = |i: usize| -> f64 { r_min + (r_max - r_min) * i as f64 / (p.n - 1).max(1) as f64 };
+    let dot_r = |goals: usize| -> f64 { 3.2 + goals.clamp(1, 4).saturating_sub(1) as f64 };
 
     let mut b = Vec::<u8>::with_capacity(8192);
     svg_open_rescalable(&mut b, cfg.width, cfg.height, 0, 0, cfg.width, cfg.height);
@@ -237,63 +186,56 @@ pub fn render(cfg: &LollipopConfig) -> String {
             fastest_idx = i;
         }
     }
-    let mut biggest_mi = 0usize;
-    for (mi, (s, e)) in bounds.iter().enumerate() {
-        let (bs, be) = bounds[biggest_mi];
-        if e - s > be - bs {
-            biggest_mi = mi;
-        }
-    }
+    let biggest_goals = bounds.iter().map(|&(s, e)| e - s).max().unwrap_or(0);
+    let mut shown_busiest = false;
 
-    for (mi, &(s, e)) in bounds.iter().enumerate() {
-        let r = radius_of(mi);
-        let mut c0 = 0i32;
-        let mut c1 = 0i32;
+    for &(s, e) in bounds.iter() {
+        let goals = e - s;
         for i in s..e {
-            if teams.first().map(|t| t.as_str()) == Some(p.groups[i].as_str()) {
-                c0 += 1;
-            } else if teams.get(1).map(|t| t.as_str()) == Some(p.groups[i].as_str()) {
-                c1 += 1;
-            }
-        }
-        let arc_col = if c0 > c1 {
-            color_of_team(teams.first().map(|s| s.as_str()).unwrap_or(""))
-        } else if c1 > c0 {
-            color_of_team(teams.get(1).map(|s| s.as_str()).unwrap_or(""))
-        } else {
-            0x475569
-        };
-        arc(&mut b, cx, cy, r, a0, a1, arc_col, 1.1, 0.5);
-
-        let frac = ((e - s) as f64 / max_goals as f64).max(0.16);
-        for i in s..e {
+            let r = radius_of_row(i);
             let am = minute_angle(p.values[i]);
             let col = color_of_team(&p.groups[i]);
-            let x0 = cx + (r - 4.0) * am.cos();
-            let y0 = cy + (r - 4.0) * am.sin();
-            let x1 = cx + (r + 2.0) * am.cos();
-            let y1 = cy + (r + 2.0) * am.sin();
-            push_b(&mut b, b"<line data-idx=\"");
+            let x0 = cx + r * a0.cos();
+            let y0 = cy + r * a0.sin();
+            let x1 = cx + r * am.cos();
+            let y1 = cy + r * am.sin();
+            let sweep_flag: u8 = if am > a0 { 1 } else { 0 };
+            push_b(&mut b, b"<path fill=\"none\" stroke=\"#");
+            b.extend_from_slice(&hex6(col));
+            push_b(&mut b, b"\" stroke-width=\"1.3\" stroke-opacity=\"0.6\" d=\"M");
+            push_f2(&mut b, x0);
+            push_b(&mut b, b",");
+            push_f2(&mut b, y0);
+            push_b(&mut b, b" A");
+            push_f2(&mut b, r);
+            push_b(&mut b, b",");
+            push_f2(&mut b, r);
+            push_b(&mut b, b" 0 0,");
+            b.push(sweep_flag + b'0');
+            push_b(&mut b, b" ");
+            push_f2(&mut b, x1);
+            push_b(&mut b, b",");
+            push_f2(&mut b, y1);
+            push_b(&mut b, b"\"/>");
+
+            push_b(&mut b, b"<circle data-idx=\"");
             push_i(&mut b, i as i32);
             push_b(&mut b, b"\" data-y=\"");
             push_f2(&mut b, p.values[i]);
             push_b(&mut b, b"\" data-lbl=\"");
             escape_xml(&mut b, &p.labels[i]);
-            push_b(&mut b, b"\" x1=\"");
-            push_f2(&mut b, x0);
-            push_b(&mut b, b"\" y1=\"");
-            push_f2(&mut b, y0);
-            push_b(&mut b, b"\" x2=\"");
+            push_b(&mut b, b"\" cx=\"");
             push_f2(&mut b, x1);
-            push_b(&mut b, b"\" y2=\"");
+            push_b(&mut b, b"\" cy=\"");
             push_f2(&mut b, y1);
-            push_b(&mut b, b"\" stroke=\"#");
+            push_b(&mut b, b"\" r=\"");
+            push_f2(&mut b, dot_r(goals));
+            push_b(&mut b, b"\" fill=\"#");
             b.extend_from_slice(&hex6(col));
-            push_b(&mut b, b"\" stroke-width=\"1.6\"/>");
-            lollipop_head(&mut b, x1, y1, 5.6, frac, col);
+            push_b(&mut b, b"\"/>");
         }
 
-        let lr = cx + r;
+        let lr = cx + radius_of_row(s);
         let lx = lr;
         let ly = cy + 14.0;
         let deg = -55.0;
@@ -311,20 +253,35 @@ pub fn render(cfg: &LollipopConfig) -> String {
         escape_xml(&mut b, &p.labels[s]);
         push_b(&mut b, b"</text>");
 
-        if mi == biggest_mi {
+        if goals == biggest_goals && !shown_busiest {
+            shown_busiest = true;
             let anchor_i = e - 1;
+            let r = radius_of_row(anchor_i);
             let am = minute_angle(p.values[anchor_i]);
             let ax = cx + r * am.cos();
             let ay = cy + r * am.sin();
-            let line1 = format!("{} - {} goals", p.labels[s], e - s);
-            callout(&mut b, ax, ay, ax + 90.0, ay - 60.0, &[&line1, "busiest fixture on record"], arc_col);
+            let mut c0 = 0i32;
+            let mut c1 = 0i32;
+            for i in s..e {
+                if teams.first().map(|t| t.as_str()) == Some(p.groups[i].as_str()) {
+                    c0 += 1;
+                } else if teams.get(1).map(|t| t.as_str()) == Some(p.groups[i].as_str()) {
+                    c1 += 1;
+                }
+            }
+            let accent = if c1 > c0 {
+                color_of_team(teams.get(1).map(|s| s.as_str()).unwrap_or(""))
+            } else {
+                color_of_team(teams.first().map(|s| s.as_str()).unwrap_or(""))
+            };
+            let line1 = format!("{} - {} goals", p.labels[s], goals);
+            callout(&mut b, ax, ay, ax + 90.0, ay - 60.0, &[&line1, "busiest fixture on record"], accent);
         }
     }
 
     {
+        let r = radius_of_row(fastest_idx);
         let am = minute_angle(p.values[fastest_idx]);
-        let mi = bounds.iter().position(|&(s, e)| fastest_idx >= s && fastest_idx < e).unwrap_or(0);
-        let r = radius_of(mi);
         let ax = cx + r * am.cos();
         let ay = cy + r * am.sin();
         let line1 = format!("{}' - {}", p.values[fastest_idx] as i32, p.labels[fastest_idx]);
@@ -383,30 +340,46 @@ mod tests {
     }
 
     #[test]
-    fn renders_one_arc_per_match_and_one_dot_per_goal() {
+    fn renders_one_stem_arc_and_one_head_per_goal() {
         let (labels, values, groups) = synth();
         let n_goals = labels.len();
-        let n_matches = { let mut s: Vec<&str> = labels.iter().map(|s| s.as_str()).collect(); s.dedup(); s.len() };
         let html = render(&cfg(&labels, &values, &groups));
         assert!(!html.is_empty());
-        assert_eq!(html.matches("<line data-idx=").count(), n_goals);
-        assert_eq!(html.matches("<path fill=\"none\"").count(), n_matches + 1);
+        assert_eq!(html.matches("<circle data-idx=").count(), n_goals);
+        assert_eq!(html.matches("<path fill=\"none\"").count(), n_goals + 1);
     }
 
     #[test]
-    fn every_goal_dot_stays_within_the_outer_band_radius() {
+    fn every_goal_head_stays_within_the_outer_band_radius() {
         let (labels, values, groups) = synth();
         let cfg_v = cfg(&labels, &values, &groups);
         let html = render(&cfg_v);
         let cx = 96.0_f64;
         let cy = 730.0_f64;
         let r_band = 616.0_f64;
-        for line in html.split("<line data-idx=").skip(1) {
-            let x2 = line.split("x2=\"").nth(1).unwrap().split('"').next().unwrap().parse::<f64>().unwrap();
-            let y2 = line.split("y2=\"").nth(1).unwrap().split('"').next().unwrap().parse::<f64>().unwrap();
-            let r = ((x2 - cx).powi(2) + (y2 - cy).powi(2)).sqrt();
+        for chunk in html.split("<circle data-idx=").skip(1) {
+            let x = chunk.split("cx=\"").nth(1).unwrap().split('"').next().unwrap().parse::<f64>().unwrap();
+            let y = chunk.split("cy=\"").nth(1).unwrap().split('"').next().unwrap().parse::<f64>().unwrap();
+            let r = ((x - cx).powi(2) + (y - cy).powi(2)).sqrt();
             assert!(r <= r_band + 1.0);
         }
+    }
+
+    #[test]
+    fn goal_head_size_grows_with_goals_in_that_match_up_to_a_cap() {
+        let labels: Vec<String> = vec!["A", "A", "A", "A", "B"].into_iter().map(String::from).collect();
+        let values: Vec<f64> = vec![10.0, 20.0, 30.0, 40.0, 50.0];
+        let groups: Vec<String> = vec!["Real Madrid", "Real Madrid", "Real Madrid", "Real Madrid", "Barcelona"]
+            .into_iter()
+            .map(String::from)
+            .collect();
+        let html = render(&cfg(&labels, &values, &groups));
+        let radii: Vec<f64> = html
+            .split("<circle data-idx=")
+            .skip(1)
+            .map(|c| c.split("r=\"").nth(1).unwrap().split('"').next().unwrap().parse::<f64>().unwrap())
+            .collect();
+        assert!(radii[0] > radii[4]);
     }
 
     #[test]
