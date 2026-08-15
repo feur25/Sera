@@ -8,5 +8,6 @@ crate::plot_family! {
         ConditionalColor => "conditional_color" | "conditional" | "threshold_color",
         Trend            => "trend" | "colormap" | "arrow" | "annotated",
         Custom           => "custom" | "diamond" | "styled",
+        Duel             => "duel" | "head_to_head" | "versus" | "rivalry" | "radial_diverging",
     }
 }
