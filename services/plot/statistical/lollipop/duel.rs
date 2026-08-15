@@ -36,6 +36,56 @@ fn arc(buf: &mut Vec<u8>, cx: f64, cy: f64, r: f64, a0: f64, a1: f64, stroke: u3
     push_b(buf, b"\"/>");
 }
 
+fn lollipop_head(buf: &mut Vec<u8>, cx: f64, cy: f64, r: f64, frac: f64, color: u32) {
+    push_b(buf, b"<circle cx=\"");
+    push_f2(buf, cx);
+    push_b(buf, b"\" cy=\"");
+    push_f2(buf, cy);
+    push_b(buf, b"\" r=\"");
+    push_f2(buf, r);
+    push_b(buf, b"\" fill=\"none\" stroke=\"#e2e8f0\" stroke-width=\"1.1\"/>");
+    if frac >= 0.999 {
+        push_b(buf, b"<circle cx=\"");
+        push_f2(buf, cx);
+        push_b(buf, b"\" cy=\"");
+        push_f2(buf, cy);
+        push_b(buf, b"\" r=\"");
+        push_f2(buf, r);
+        push_b(buf, b"\" fill=\"#");
+        buf.extend_from_slice(&hex6(color));
+        push_b(buf, b"\"/>");
+        return;
+    }
+    let ha0 = -std::f64::consts::FRAC_PI_2;
+    let ha1 = ha0 + frac * std::f64::consts::TAU;
+    let x0 = cx + r * ha0.cos();
+    let y0 = cy + r * ha0.sin();
+    let x1 = cx + r * ha1.cos();
+    let y1 = cy + r * ha1.sin();
+    let large = if ha1 - ha0 > std::f64::consts::PI { 1 } else { 0 };
+    push_b(buf, b"<path fill=\"#");
+    buf.extend_from_slice(&hex6(color));
+    push_b(buf, b"\" d=\"M");
+    push_f2(buf, cx);
+    push_b(buf, b",");
+    push_f2(buf, cy);
+    push_b(buf, b" L");
+    push_f2(buf, x0);
+    push_b(buf, b",");
+    push_f2(buf, y0);
+    push_b(buf, b" A");
+    push_f2(buf, r);
+    push_b(buf, b",");
+    push_f2(buf, r);
+    push_b(buf, b" 0 ");
+    buf.push(large + b'0');
+    push_b(buf, b",1 ");
+    push_f2(buf, x1);
+    push_b(buf, b",");
+    push_f2(buf, y1);
+    push_b(buf, b" Z\"/>");
+}
+
 fn callout(buf: &mut Vec<u8>, ax: f64, ay: f64, bx: f64, by: f64, lines: &[&str], accent: u32) {
     let w = lines.iter().map(|l| l.chars().count()).max().unwrap_or(0) as f64 * 5.6 + 20.0;
     let h = lines.len() as f64 * 14.0 + 12.0;
@@ -132,15 +182,16 @@ pub fn render(cfg: &LollipopConfig) -> String {
     }
     let n_matches = bounds.len().max(1);
     let radius_of = |mi: usize| -> f64 { r_min + (r_max - r_min) * mi as f64 / (n_matches - 1).max(1) as f64 };
+    let max_goals = bounds.iter().map(|&(s, e)| e - s).max().unwrap_or(1).max(1);
 
     let mut b = Vec::<u8>::with_capacity(8192);
     svg_open_rescalable(&mut b, cfg.width, cfg.height, 0, 0, cfg.width, cfg.height);
-    push_b(&mut b, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\" style=\"fill:#0b1220\"/>");
+    push_b(&mut b, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
     push_b(&mut b, b"<title>");
     escape_xml(&mut b, if cfg.title.is_empty() { "Chart" } else { cfg.title });
     push_b(&mut b, b"</title>");
     if !cfg.title.is_empty() {
-        push_b(&mut b, b"<text x=\"24\" y=\"30\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"16\" font-weight=\"700\" fill=\"#f8fafc\" class=\"sp-ttl\">");
+        push_b(&mut b, b"<text x=\"24\" y=\"30\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"16\" font-weight=\"700\" fill=\"#1a202c\" class=\"sp-ttl\">");
         escape_xml(&mut b, cfg.title);
         push_b(&mut b, b"</text>");
     }
@@ -155,12 +206,12 @@ pub fn render(cfg: &LollipopConfig) -> String {
         push_b(&mut b, b"\"/>");
         push_b(&mut b, b"<text x=\"42\" y=\"");
         push_f2(&mut b, ly);
-        push_b(&mut b, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" font-weight=\"600\" fill=\"#cbd5e1\">");
+        push_b(&mut b, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" font-weight=\"600\" fill=\"#334155\">");
         escape_xml(&mut b, t);
         push_b(&mut b, b"</text>");
     }
 
-    arc(&mut b, cx, cy, r_band, a0, a1, 0xe2e8f0, 10.0, 1.0);
+    arc(&mut b, cx, cy, r_band, a0, a1, 0x0f172a, 10.0, 1.0);
 
     for m in [0.0_f64, 45.0, 90.0] {
         let am = minute_angle(m);
@@ -174,7 +225,7 @@ pub fn render(cfg: &LollipopConfig) -> String {
         push_f2(&mut b, yl + 3.0);
         push_b(&mut b, b"\" text-anchor=\"");
         b.extend_from_slice(anchor);
-        push_b(&mut b, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" font-weight=\"700\" fill=\"#64748b\">");
+        push_b(&mut b, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" font-weight=\"700\" fill=\"#475569\">");
         let s = format!("{}'", m as i32);
         b.extend_from_slice(s.as_bytes());
         push_b(&mut b, b"</text>");
@@ -214,13 +265,14 @@ pub fn render(cfg: &LollipopConfig) -> String {
         };
         arc(&mut b, cx, cy, r, a0, a1, arc_col, 1.1, 0.5);
 
+        let frac = ((e - s) as f64 / max_goals as f64).max(0.16);
         for i in s..e {
             let am = minute_angle(p.values[i]);
             let col = color_of_team(&p.groups[i]);
-            let x0 = cx + (r - 3.0) * am.cos();
-            let y0 = cy + (r - 3.0) * am.sin();
-            let x1 = cx + (r + 3.0) * am.cos();
-            let y1 = cy + (r + 3.0) * am.sin();
+            let x0 = cx + (r - 4.0) * am.cos();
+            let y0 = cy + (r - 4.0) * am.sin();
+            let x1 = cx + (r + 2.0) * am.cos();
+            let y1 = cy + (r + 2.0) * am.sin();
             push_b(&mut b, b"<line data-idx=\"");
             push_i(&mut b, i as i32);
             push_b(&mut b, b"\" data-y=\"");
@@ -238,13 +290,7 @@ pub fn render(cfg: &LollipopConfig) -> String {
             push_b(&mut b, b"\" stroke=\"#");
             b.extend_from_slice(&hex6(col));
             push_b(&mut b, b"\" stroke-width=\"1.6\"/>");
-            push_b(&mut b, b"<circle cx=\"");
-            push_f2(&mut b, x1);
-            push_b(&mut b, b"\" cy=\"");
-            push_f2(&mut b, y1);
-            push_b(&mut b, b"\" r=\"2.1\" fill=\"#");
-            b.extend_from_slice(&hex6(col));
-            push_b(&mut b, b"\"/>");
+            lollipop_head(&mut b, x1, y1, 5.6, frac, col);
         }
 
         let lr = cx + r;
