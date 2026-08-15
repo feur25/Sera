@@ -39,6 +39,12 @@ fn ray_bar(buf: &mut Vec<u8>, cx: f64, cy: f64, a: f64, r0: f64, r1: f64, half_w
     push_b(buf, b"\"/>");
 }
 
+fn angle_in_sweep(start: f64, end: f64, target: f64) -> bool {
+    let tau = std::f64::consts::TAU;
+    let t = (target - start).rem_euclid(tau) + start;
+    t <= end
+}
+
 fn arc_path(buf: &mut Vec<u8>, cx: f64, cy: f64, r: f64, a0: f64, a1: f64) {
     let x0 = cx + r * a0.cos();
     let y0 = cy + r * a0.sin();
@@ -63,7 +69,7 @@ fn arc_path(buf: &mut Vec<u8>, cx: f64, cy: f64, r: f64, a0: f64, a1: f64) {
 }
 
 fn flow_curve(buf: &mut Vec<u8>, p0: (f64, f64), p1: (f64, f64), inner: (f64, f64), color: u32, width: f64) {
-    let c1 = (p0.0 + (inner.0 - p0.0) * 0.5, p0.1 + (inner.1 - p0.1) * 0.12);
+    let c1 = (p0.0 + (inner.0 - p0.0) * 0.55, p0.1 + (inner.1 - p0.1) * 0.4);
     push_b(buf, b"<path fill=\"none\" stroke=\"#");
     buf.extend_from_slice(&hex6(color));
     push_b(buf, b"\" stroke-opacity=\"0.55\" stroke-width=\"");
@@ -88,7 +94,8 @@ fn flow_curve(buf: &mut Vec<u8>, p0: (f64, f64), p1: (f64, f64), inner: (f64, f6
 }
 
 #[crate::chart_demo(
-    "labels=[\"KKR\",\"Blackstone\",\"Clayton Dubilier & Rice\",\"Warburg Pincus\",\"General Atlantic\",\"GTCR\",\"Thoma Bravo\",\"Francisco Partners\",\"Silver Lake\",\"Andreessen Horowitz\",\"Clearlake Capital Group\",\"Bain Capital\",\"Advent International\",\"Summit Partners\",\"CVC Capital Partners\",\"Hg\",\"Bridgepoint\",\"EQT\",\"Nordic Capital\",\"Partners Group\",\"Brookfield Asset Management\",\"Ardian\",\"PAI Partners\",\"Hillhouse Capital Group\",\"China Merchants Capital\"], values=[117.9,95.7,49.8,34.2,44.7,30.2,98.2,25.8,47.1,34.2,45.2,40.5,38.2,22.2,113.3,21.6,29.3,72.5,23.6,27.2,23.8,25.4,18.0,59.9,20.7], super_categories=[\"New York\",\"New York\",\"New York\",\"New York\",\"New York\",\"Chicago\",\"Chicago\",\"San Francisco\",\"San Francisco\",\"Menlo Park\",\"Santa Monica\",\"Boston\",\"Boston\",\"Washington DC\",\"London\",\"London\",\"London\",\"Stockholm\",\"Stockholm\",\"Zug\",\"Toronto\",\"Paris\",\"Paris\",\"Hong Kong\",\"Hong Kong\"], offset_groups=[\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"UK\",\"UK\",\"UK\",\"Sweden\",\"Sweden\",\"Switzerland\",\"Canada\",\"France\",\"France\",\"China\",\"China\"], palette=[3049182,1482885,13934615,15277708,1780298,9317439,8207041], variant=\"radial_flow\", width=1080, height=900"
+    "labels=[\"KKR\",\"Blackstone\",\"Clayton Dubilier & Rice\",\"Warburg Pincus\",\"General Atlantic\",\"GTCR\",\"Thoma Bravo\",\"Francisco Partners\",\"Silver Lake\",\"Andreessen Horowitz\",\"Clearlake Capital Group\",\"Bain Capital\",\"Advent International\",\"Summit Partners\",\"CVC Capital Partners\",\"Hg\",\"Bridgepoint\",\"EQT\",\"Nordic Capital\",\"Partners Group\",\"Brookfield Asset Management\",\"Ardian\",\"PAI Partners\",\"Hillhouse Capital Group\",\"China Merchants Capital\"], values=[117.9,95.7,49.8,34.2,44.7,30.2,98.2,25.8,47.1,34.2,45.2,40.5,38.2,22.2,113.3,21.6,29.3,72.5,23.6,27.2,23.8,25.4,18.0,59.9,20.7], super_categories=[\"New York\",\"New York\",\"New York\",\"New York\",\"New York\",\"Chicago\",\"Chicago\",\"San Francisco\",\"San Francisco\",\"Menlo Park\",\"Santa Monica\",\"Boston\",\"Boston\",\"Washington DC\",\"London\",\"London\",\"London\",\"Stockholm\",\"Stockholm\",\"Zug\",\"Toronto\",\"Paris\",\"Paris\",\"Hong Kong\",\"Hong Kong\"], offset_groups=[\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"U.S.\",\"UK\",\"UK\",\"UK\",\"Sweden\",\"Sweden\",\"Switzerland\",\"Canada\",\"France\",\"France\",\"China\",\"China\"], palette=[3049182,1482885,13934615,15277708,1780298,9317439,8207041], variant=\"radial_flow\", title=\"Top Private Equity Firms by Capital Raised\", width=1080, height=900",
+    media = "[{\"kind\":\"image\",\"src\":\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAxNiI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE2IiBmaWxsPSIjQjIyMjM0Ii8+PHJlY3QgeT0iMy4yIiB3aWR0aD0iMjQiIGhlaWdodD0iMS42IiBmaWxsPSIjZmZmIi8+PHJlY3QgeT0iNi40IiB3aWR0aD0iMjQiIGhlaWdodD0iMS42IiBmaWxsPSIjZmZmIi8+PHJlY3QgeT0iOS42IiB3aWR0aD0iMjQiIGhlaWdodD0iMS42IiBmaWxsPSIjZmZmIi8+PHJlY3QgeT0iMTIuOCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjEuNiIgZmlsbD0iI2ZmZiIvPjxyZWN0IHdpZHRoPSIxMCIgaGVpZ2h0PSI5IiBmaWxsPSIjM0MzQjZFIi8+PC9zdmc+\",\"x\":0.3362,\"y\":0.4015,\"w\":0.0204,\"h\":0.0244,\"shape\":\"circle\",\"opacity\":1.0},{\"kind\":\"image\",\"src\":\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAxNiI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE2IiBmaWxsPSIjMDAyNDdEIi8+PHBhdGggZD0iTTAsMCBMMjQsMTYgTTI0LDAgTDAsMTYiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzLjIiLz48cGF0aCBkPSJNMCwwIEwyNCwxNiBNMjQsMCBMMCwxNiIgc3Ryb2tlPSIjQ0YxNDJCIiBzdHJva2Utd2lkdGg9IjEuNCIvPjxyZWN0IHg9IjEwIiB3aWR0aD0iNCIgaGVpZ2h0PSIxNiIgZmlsbD0iI2ZmZiIvPjxyZWN0IHk9IjYiIHdpZHRoPSIyNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIi8+PHJlY3QgeD0iMTAuOCIgd2lkdGg9IjIuNCIgaGVpZ2h0PSIxNiIgZmlsbD0iI0NGMTQyQiIvPjxyZWN0IHk9IjYuOCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjIuNCIgZmlsbD0iI0NGMTQyQiIvPjwvc3ZnPg==\",\"x\":0.3362,\"y\":0.4636,\"w\":0.0204,\"h\":0.0244,\"shape\":\"circle\",\"opacity\":1.0},{\"kind\":\"image\",\"src\":\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAxNiI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE2IiBmaWxsPSIjMDA2QUE3Ii8+PHJlY3QgeD0iOCIgd2lkdGg9IjMiIGhlaWdodD0iMTYiIGZpbGw9IiNGRUNDMDAiLz48cmVjdCB5PSI2LjUiIHdpZHRoPSIyNCIgaGVpZ2h0PSIzIiBmaWxsPSIjRkVDQzAwIi8+PC9zdmc+\",\"x\":0.3362,\"y\":0.5257,\"w\":0.0204,\"h\":0.0244,\"shape\":\"circle\",\"opacity\":1.0},{\"kind\":\"image\",\"src\":\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNiAxNiI+PHJlY3Qgd2lkdGg9IjE2IiBoZWlnaHQ9IjE2IiBmaWxsPSIjRDUyQjFFIi8+PHJlY3QgeD0iNi41IiB5PSIzIiB3aWR0aD0iMyIgaGVpZ2h0PSIxMCIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjMiIHk9IjYuNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjMiIGZpbGw9IiNmZmYiLz48L3N2Zz4=\",\"x\":0.3362,\"y\":0.5878,\"w\":0.0204,\"h\":0.0244,\"shape\":\"circle\",\"opacity\":1.0},{\"kind\":\"image\",\"src\":\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAxNiI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE2IiBmaWxsPSIjZmZmIi8+PHJlY3Qgd2lkdGg9IjYiIGhlaWdodD0iMTYiIGZpbGw9IiNGRjAwMDAiLz48cmVjdCB4PSIxOCIgd2lkdGg9IjYiIGhlaWdodD0iMTYiIGZpbGw9IiNGRjAwMDAiLz48cGF0aCBkPSJNMTIsNCBMMTMsNyBMMTYsNi40IEwxNC40LDkgTDE2LjQsOS42IEwxMy42LDExIEwxNCwxMy40IEwxMiwxMiBMMTAsMTMuNCBMMTAuNCwxMSBMNy42LDkuNiBMOS42LDkgTDgsNi40IEwxMSw3IFoiIGZpbGw9IiNGRjAwMDAiLz48L3N2Zz4=\",\"x\":0.3362,\"y\":0.6499,\"w\":0.0204,\"h\":0.0244,\"shape\":\"circle\",\"opacity\":1.0},{\"kind\":\"image\",\"src\":\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAxNiI+PHJlY3Qgd2lkdGg9IjgiIGhlaWdodD0iMTYiIGZpbGw9IiMwMDU1QTQiLz48cmVjdCB4PSI4IiB3aWR0aD0iOCIgaGVpZ2h0PSIxNiIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9IjE2IiB3aWR0aD0iOCIgaGVpZ2h0PSIxNiIgZmlsbD0iI0VGNDEzNSIvPjwvc3ZnPg==\",\"x\":0.3362,\"y\":0.712,\"w\":0.0204,\"h\":0.0244,\"shape\":\"circle\",\"opacity\":1.0},{\"kind\":\"image\",\"src\":\"data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAxNiI+PHJlY3Qgd2lkdGg9IjI0IiBoZWlnaHQ9IjE2IiBmaWxsPSIjREUyOTEwIi8+PHBhdGggZD0iTTQsMiBMNC45LDQuNiBMNy42LDQuNiBMNS40LDYuMiBMNi4zLDguOCBMNCw3LjIgTDEuNyw4LjggTDIuNiw2LjIgTDAuNCw0LjYgTDMuMSw0LjYgWiIgZmlsbD0iI0ZGREUwMCIvPjxjaXJjbGUgY3g9IjkiIGN5PSIxLjUiIHI9IjAuNiIgZmlsbD0iI0ZGREUwMCIvPjxjaXJjbGUgY3g9IjEwLjUiIGN5PSIzLjIiIHI9IjAuNiIgZmlsbD0iI0ZGREUwMCIvPjxjaXJjbGUgY3g9IjEwLjUiIGN5PSI1LjYiIHI9IjAuNiIgZmlsbD0iI0ZGREUwMCIvPjxjaXJjbGUgY3g9IjkiIGN5PSI3IiByPSIwLjYiIGZpbGw9IiNGRkRFMDAiLz48L3N2Zz4=\",\"x\":0.3362,\"y\":0.7741,\"w\":0.0204,\"h\":0.0244,\"shape\":\"circle\",\"opacity\":1.0}]"
 )]
 
 pub fn render(cfg: &BarConfig) -> String {
@@ -108,15 +115,52 @@ pub fn render(cfg: &BarConfig) -> String {
     }
     let vmax = vmax.max(1e-9);
 
+    let ring_rotation_deg: f64 = 80.0;
+    let ring_scale: f64 = 0.85;
+
     let cx = wf * 0.58;
     let cy = hf * 0.60;
-    let start = -205.0_f64.to_radians();
-    let end = 60.0_f64.to_radians();
+    let rotation = ring_rotation_deg.to_radians();
+    let start = -205.0_f64.to_radians() + rotation;
+    let end = 60.0_f64.to_radians() + rotation;
     let sweep = end - start;
     let angle = |i: usize| -> f64 { start + sweep * i as f64 / (n - 1).max(1) as f64 };
+    let gap_mid = (start + end + std::f64::consts::TAU) / 2.0;
 
-    let r_city = hf * 0.22;
-    let bar_max = hf * 0.12;
+    let density: f64 = (n as f64 / 20.0).clamp(0.95, 1.4);
+    let bar_ratio: f64 = 0.47;
+    let desired_r_city = hf * 0.30 * ring_scale * density;
+
+    let pi = std::f64::consts::PI;
+    let max_cos = if angle_in_sweep(start, end, 0.0) { 1.0 } else { start.cos().max(end.cos()) };
+    let min_cos = if angle_in_sweep(start, end, pi) { -1.0 } else { start.cos().min(end.cos()) };
+    let max_sin = if angle_in_sweep(start, end, pi / 2.0) { 1.0 } else { start.sin().max(end.sin()) };
+    let min_sin = if angle_in_sweep(start, end, -pi / 2.0) { -1.0 } else { start.sin().min(end.sin()) };
+
+    let label_pad = 70.0;
+    let top_pad = 24.0;
+    let country_ring_gap = 40.0 + (density - 1.0) * 60.0;
+
+    let mut r_cap = desired_r_city;
+    if max_cos > 0.0 {
+        r_cap = r_cap.min((wf - label_pad - cx) / (max_cos * (1.0 + bar_ratio)));
+    }
+    if max_sin > 0.0 {
+        r_cap = r_cap.min((hf - label_pad - cy) / (max_sin * (1.0 + bar_ratio)));
+    }
+    if min_sin < 0.0 {
+        r_cap = r_cap.min((cy - top_pad) / (-min_sin * (1.0 + bar_ratio)));
+    }
+    if min_cos < 0.0 {
+        let k = -min_cos;
+        let denom = (1.0 + bar_ratio) * k - 1.0;
+        if denom > 0.0 {
+            r_cap = r_cap.min((country_ring_gap - 20.0).max(30.0) / denom);
+        }
+    }
+
+    let r_city = r_cap.max(hf * 0.12);
+    let bar_max = r_city * bar_ratio;
     let half_w = (r_city * (sweep.abs() / n as f64) * 0.30).min(8.0);
 
     let mut countries: Vec<String> = Vec::new();
@@ -136,7 +180,7 @@ pub fn render(cfg: &BarConfig) -> String {
     push_b(&mut buf, b"<rect class=\"sp-bg\" width=\"100%\" height=\"100%\"/>");
     svg_title(&mut buf, cfg.title, w / 2, 24);
 
-    let country_x = wf * 0.16;
+    let country_x = cx - r_city - country_ring_gap;
     let country_top = cy - r_city * 0.85;
     let country_bottom = cy + r_city * 0.85;
     let country_gap = if n_countries > 1 { (country_bottom - country_top) / (n_countries - 1) as f64 } else { 0.0 };
@@ -145,14 +189,6 @@ pub fn render(cfg: &BarConfig) -> String {
         .enumerate()
         .map(|(ci, c)| (c.clone(), (country_x, country_top + ci as f64 * country_gap)))
         .collect();
-
-    let mut city_angle_sum: HashMap<String, (f64, usize)> = HashMap::new();
-    for i in 0..n {
-        let city = cfg.super_categories.get(i).cloned().unwrap_or_default();
-        let e = city_angle_sum.entry(city).or_insert((0.0, 0));
-        e.0 += angle(i);
-        e.1 += 1;
-    }
 
     push_b(&mut buf, b"<g style=\"isolation:isolate\">");
     for i in 0..n {
@@ -163,33 +199,13 @@ pub fn render(cfg: &BarConfig) -> String {
         };
         let a = angle(i);
         let p1 = (cx + (r_city - 10.0) * a.cos(), cy + (r_city - 10.0) * a.sin());
-        let inner = (cx + r_city * 0.22 * a.cos(), cy + r_city * 0.22 * a.sin());
-        flow_curve(&mut buf, p0, p1, inner, color_of(country), 1.3);
+        let country_idx = countries.iter().position(|c| c.as_str() == country).unwrap_or(0);
+        let lane = if n_countries > 1 { country_idx as f64 / (n_countries - 1) as f64 } else { 0.0 };
+        let inner_r = r_city * (0.15 + 0.15 * lane);
+        let inner = (cx + inner_r * gap_mid.cos(), cy + inner_r * gap_mid.sin());
+        flow_curve(&mut buf, p0, p1, inner, color_of(country), 1.1);
     }
     push_b(&mut buf, b"</g>");
-
-    {
-        let mut seen_cities: Vec<String> = Vec::new();
-        for i in 0..n {
-            let city = cfg.super_categories.get(i).cloned().unwrap_or_default();
-            if !seen_cities.contains(&city) {
-                seen_cities.push(city);
-            }
-        }
-        for city in &seen_cities {
-            let a_mid = match city_angle_sum.get(city) {
-                Some((sum, cnt)) if *cnt > 0 => sum / *cnt as f64,
-                _ => continue,
-            };
-            let bx = cx + r_city * a_mid.cos();
-            let by = cy + r_city * a_mid.sin();
-            push_b(&mut buf, b"<circle cx=\"");
-            push_f2(&mut buf, bx);
-            push_b(&mut buf, b"\" cy=\"");
-            push_f2(&mut buf, by);
-            push_b(&mut buf, b"\" r=\"5.5\" fill=\"#fff\" stroke=\"#94a3b8\" stroke-width=\"1.4\"/>");
-        }
-    }
 
     for (country, pt) in &country_pt {
         push_b(&mut buf, b"<circle cx=\"");
@@ -200,7 +216,7 @@ pub fn render(cfg: &BarConfig) -> String {
         buf.extend_from_slice(&hex6(color_of(country)));
         push_b(&mut buf, b"\"/>");
         push_b(&mut buf, b"<text x=\"");
-        push_f2(&mut buf, pt.0 - 10.0);
+        push_f2(&mut buf, pt.0 - 16.0);
         push_b(&mut buf, b"\" y=\"");
         push_f2(&mut buf, pt.1 + 3.5);
         push_b(&mut buf, b"\" text-anchor=\"end\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" font-weight=\"700\" fill=\"#1e293b\">");
@@ -221,32 +237,31 @@ pub fn render(cfg: &BarConfig) -> String {
                 end_i += 1;
             }
             let step = if n > 1 { sweep / (n - 1) as f64 } else { 0.0 };
-            let a0 = angle(start_i) - step * 0.4;
-            let a1 = angle(end_i - 1) + step * 0.4;
+            let a0 = angle(start_i) - step * 0.5;
+            let a1 = angle(end_i - 1) + step * 0.5;
             let country = cfg.offset_groups.get(start_i).map(|s| s.as_str()).unwrap_or("");
             let col = color_of(country);
             push_b(&mut buf, b"<g stroke=\"#");
             buf.extend_from_slice(&hex6(col));
-            push_b(&mut buf, b"\" stroke-width=\"3\">");
+            push_b(&mut buf, b"\" stroke-width=\"14\" stroke-linecap=\"butt\">");
             arc_path(&mut buf, cx, cy, r_city, a0, a1);
             push_b(&mut buf, b"/></g>");
-            let am = (a0 + a1) / 2.0;
-            let lx = cx + (r_city - 14.0) * am.cos();
-            let ly = cy + (r_city - 14.0) * am.sin();
-            let deg = am.to_degrees() + 90.0;
-            push_b(&mut buf, b"<text x=\"");
-            push_f2(&mut buf, lx);
-            push_b(&mut buf, b"\" y=\"");
-            push_f2(&mut buf, ly);
-            push_b(&mut buf, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"8.5\" fill=\"#fff\" font-weight=\"700\" transform=\"rotate(");
-            push_f2(&mut buf, deg);
-            push_b(&mut buf, b" ");
-            push_f2(&mut buf, lx);
-            push_b(&mut buf, b" ");
-            push_f2(&mut buf, ly);
-            push_b(&mut buf, b")\">");
-            escape_xml(&mut buf, cur);
-            push_b(&mut buf, b"</text>");
+
+            if start_i > 0 {
+                let x0 = cx + (r_city - 7.5) * a0.cos();
+                let y0 = cy + (r_city - 7.5) * a0.sin();
+                let x1 = cx + (r_city + 7.5) * a0.cos();
+                let y1 = cy + (r_city + 7.5) * a0.sin();
+                push_b(&mut buf, b"<line x1=\"");
+                push_f2(&mut buf, x0);
+                push_b(&mut buf, b"\" y1=\"");
+                push_f2(&mut buf, y0);
+                push_b(&mut buf, b"\" x2=\"");
+                push_f2(&mut buf, x1);
+                push_b(&mut buf, b"\" y2=\"");
+                push_f2(&mut buf, y1);
+                push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"1.6\"/>");
+            }
             start_i = end_i;
         }
     }
@@ -299,6 +314,48 @@ pub fn render(cfg: &BarConfig) -> String {
         push_b(&mut buf, b")\">");
         escape_xml(&mut buf, truncate(&cfg.labels[i], 26));
         push_b(&mut buf, b"</text>");
+    }
+
+    {
+        let mut start_i = 0usize;
+        while start_i < n {
+            let cur = cfg.super_categories.get(start_i).map(|s| s.as_str()).unwrap_or("");
+            let mut end_i = start_i + 1;
+            while end_i < n && cfg.super_categories.get(end_i).map(|s| s.as_str()).unwrap_or("") == cur {
+                end_i += 1;
+            }
+            let step = if n > 1 { sweep / (n - 1) as f64 } else { 0.0 };
+            let a0 = angle(start_i) - step * 0.5;
+            let a1 = angle(end_i - 1) + step * 0.5;
+            let am = (a0 + a1) / 2.0;
+            let country = cfg.offset_groups.get(start_i).map(|s| s.as_str()).unwrap_or("");
+            let col = color_of(country);
+
+            let r = r_city - 4.0;
+            let x = cx + r * am.cos();
+            let y = cy + r * am.sin();
+            let d = if am.cos() < 0.0 { am.to_degrees() + 180.0 } else { am.to_degrees() };
+            let anchor: &[u8] = if am.cos() < 0.0 { b"start" } else { b"end" };
+
+            push_b(&mut buf, b"<text x=\"");
+            push_f2(&mut buf, x);
+            push_b(&mut buf, b"\" y=\"");
+            push_f2(&mut buf, y);
+            push_b(&mut buf, b"\" text-anchor=\"");
+            buf.extend_from_slice(anchor);
+            push_b(&mut buf, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"8.5\" fill=\"#");
+            buf.extend_from_slice(&hex6(col));
+            push_b(&mut buf, b"\" stroke=\"#fff\" stroke-width=\"3\" paint-order=\"stroke\" font-weight=\"700\" transform=\"rotate(");
+            push_f2(&mut buf, d);
+            push_b(&mut buf, b" ");
+            push_f2(&mut buf, x);
+            push_b(&mut buf, b" ");
+            push_f2(&mut buf, y);
+            push_b(&mut buf, b")\">");
+            escape_xml(&mut buf, cur);
+            push_b(&mut buf, b"</text>");
+            start_i = end_i;
+        }
     }
 
     push_b(&mut buf, b"</svg>");
@@ -375,6 +432,19 @@ mod tests {
         assert!(html.contains(">New York<"));
         assert!(html.contains(">London<"));
         assert!(html.contains(">Hong Kong<"));
+    }
+
+    #[test]
+    #[ignore]
+    fn write_preview_assets() {
+        use crate::plot::chart_demo_registry::{iter_entries, render_demo_html};
+        for entry in iter_entries() {
+            if !entry.file.replace('\\', "/").ends_with("bar/radial_flow.rs") {
+                continue;
+            }
+            let html = render_demo_html(entry).expect("demo html");
+            std::fs::write("docs/previews/bar-radial_flow.html", html).unwrap();
+        }
     }
 
     #[test]
