@@ -38,7 +38,7 @@ fn value_arc(buf: &mut Vec<u8>, idx: usize, lbl: &str, v: f64, cx: f64, cy: f64,
 }
 
 #[crate::chart_demo(
-    "labels=[\"13\",\"14\",\"15\",\"16\",\"17\",\"18\",\"19\",\"20\",\"21\",\"22\",\"23\",\"24\",\"25\",\"26\",\"27\",\"28\",\"29\",\"30\",\"31\",\"32\",\"33\",\"34\",\"35\",\"36\",\"37\",\"38\",\"39\",\"40\",\"41\",\"42\",\"43\",\"44\",\"45\",\"46\",\"47\",\"48\",\"49\",\"50\",\"51\",\"52\",\"53\",\"54\",\"55\",\"56\",\"57\",\"58\",\"59\",\"60\"], series=[[2.4,2.7,2.9,3.2,3.5,3.7,4.0,4.2,4.5,4.7,4.9,5.0,5.1,5.2,5.2,5.2,5.1,5.0,4.9,4.7,4.5,4.3,4.0,3.8,3.5,3.2,3.0,2.7,2.5,2.2,2.0,1.8,1.6,1.5,1.3,1.2,1.1,1.0,0.9,0.9,0.8,0.8,0.7,0.7,0.7,0.7,0.6,0.6],[4.9,5.4,5.9,6.4,7.0,7.5,8.1,8.7,9.2,9.8,10.3,10.8,11.3,11.8,12.2,12.5,12.8,13.0,13.2,13.3,13.3,13.2,13.1,12.9,12.7,12.3,12.0,11.5,11.1,10.6,10.1,9.5,8.9,8.4,7.8,7.2,6.7,6.1,5.6,5.1,4.7,4.3,3.9,3.5,3.2,2.9,2.6,2.4]], series_names=[\"Women\",\"Men\"], variant=\"radial_pyramid\", title=\"Active Users by Age\", x_label=\"Age\", width=1200, height=860"
+    "labels=[\"13\",\"14\",\"15\",\"16\",\"17\",\"18\",\"19\",\"20\",\"21\",\"22\",\"23\",\"24\",\"25\",\"26\",\"27\",\"28\",\"29\",\"30\",\"31\",\"32\",\"33\",\"34\",\"35\",\"36\",\"37\",\"38\",\"39\",\"40\",\"41\",\"42\",\"43\",\"44\",\"45\",\"46\",\"47\",\"48\",\"49\",\"50\",\"51\",\"52\",\"53\",\"54\",\"55\",\"56\",\"57\",\"58\",\"59\",\"60\"], series=[[6.2,6.3,6.3,6.4,6.0,6.2,4.5,5.1,5.9,5.2,5.6,4.0,4.5,4.0,4.4,4.4,3.3,3.5,3.5,4.5,4.1,2.9,4.0,2.7,3.4,2.4,2.1,3.5,2.2,2.1,3.4,3.0,1.9,3.0,2.1,2.2,1.3,2.5,1.9,2.3,2.0,0.8,0.8,0.4,0.3,0.3,0.3,0.7],[14.4,13.8,12.8,14.8,11.8,13.1,14.1,11.2,12.5,12.4,10.3,11.1,11.8,10.8,11.3,9.3,9.2,8.6,9.5,10.6,9.3,9.6,8.0,8.9,6.6,6.9,7.9,7.8,6.5,5.2,5.5,5.0,4.9,6.4,4.1,6.1,5.8,2.8,3.6,3.7,1.9,2.9,4.2,1.4,2.6,0.8,2.0,2.8]], series_names=[\"Women\",\"Men\"], variant=\"radial_pyramid\", title=\"Active Users by Age\", x_label=\"Age\", width=1000, height=900"
 )]
 
 pub fn render(cfg: &BarConfig) -> String {
@@ -52,23 +52,22 @@ pub fn render(cfg: &BarConfig) -> String {
     let vmax_top = top.1.iter().fold(0.0_f64, |m, &v| m.max(v.abs())).max(1e-9);
     let vmax_bottom = bottom.1.iter().fold(0.0_f64, |m, &v| m.max(v.abs())).max(1e-9);
 
-    let cx = 420.0;
-    let cy = 430.0;
+    let cx = cfg.width as f64 / 2.0;
+    let cy = cfg.height as f64 * 0.46;
     let r_min = 30.0;
-    let r_max = 340.0;
+    let r_max = cfg.height as f64 * 0.38;
 
-    let gap = 0.065_f64;
-    let a0_top = -gap;
-    let a0_bottom = gap;
-    let a_top = -std::f64::consts::PI;
-    let a_bottom = std::f64::consts::PI;
+    let gap = 0.16_f64;
+    let theta0 = std::f64::consts::FRAC_PI_2;
+    let a_left_end = theta0 + std::f64::consts::PI - gap;
+    let a_right_end = theta0 - std::f64::consts::PI + gap;
 
-    let angle_top = |v: f64| -> f64 { a0_top + (a_top - a0_top) * (v.abs() / vmax_top).clamp(0.0, 1.0) };
-    let angle_bottom = |v: f64| -> f64 { a0_bottom + (a_bottom - a0_bottom) * (v.abs() / vmax_bottom).clamp(0.0, 1.0) };
+    let angle_left = |v: f64| -> f64 { theta0 + (a_left_end - theta0) * (v.abs() / vmax_top).clamp(0.0, 1.0) };
+    let angle_right = |v: f64| -> f64 { theta0 + (a_right_end - theta0) * (v.abs() / vmax_bottom).clamp(0.0, 1.0) };
     let radius_of = |i: usize| -> f64 { r_min + (r_max - r_min) * i as f64 / (n - 1).max(1) as f64 };
 
-    let col_top = palette_color(cfg.palette, 0);
-    let col_bottom = palette_color(cfg.palette, 1);
+    let col_left = palette_color(cfg.palette, 0);
+    let col_right = palette_color(cfg.palette, 1);
 
     let mut b = Vec::<u8>::with_capacity(n * 320 + 4096);
     svg_open_rescalable(&mut b, cfg.width, cfg.height, 0, 0, cfg.width, cfg.height);
@@ -76,12 +75,12 @@ pub fn render(cfg: &BarConfig) -> String {
     svg_title(&mut b, cfg.title, cfg.width / 2, 24);
 
     push_b(&mut b, b"<text x=\"24\" y=\"48\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"13\" font-weight=\"700\" fill=\"#");
-    b.extend_from_slice(&hex6(col_top));
+    b.extend_from_slice(&hex6(col_left));
     push_b(&mut b, b"\">");
     escape_xml(&mut b, &top.0);
     push_b(&mut b, b"</text>");
     push_b(&mut b, b"<text x=\"24\" y=\"68\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"13\" font-weight=\"700\" fill=\"#");
-    b.extend_from_slice(&hex6(col_bottom));
+    b.extend_from_slice(&hex6(col_right));
     push_b(&mut b, b"\">");
     escape_xml(&mut b, &bottom.0);
     push_b(&mut b, b"</text>");
@@ -91,17 +90,17 @@ pub fn render(cfg: &BarConfig) -> String {
     push_b(&mut b, b"\" y1=\"");
     push_f2(&mut b, cy);
     push_b(&mut b, b"\" x2=\"");
-    push_f2(&mut b, cx + r_max);
+    push_f2(&mut b, cx);
     push_b(&mut b, b"\" y2=\"");
-    push_f2(&mut b, cy);
+    push_f2(&mut b, cy + r_max);
     push_b(&mut b, b"\" stroke=\"#94a3b8\" stroke-width=\"1\"/>");
 
     if !cfg.x_label.is_empty() {
         push_b(&mut b, b"<text x=\"");
-        push_f2(&mut b, cx - 8.0);
+        push_f2(&mut b, cx);
         push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, cy + 4.0);
-        push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" font-weight=\"700\" fill=\"#334155\">");
+        push_f2(&mut b, cy - 10.0);
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" font-weight=\"700\" fill=\"#334155\">");
         escape_xml(&mut b, cfg.x_label);
         push_b(&mut b, b"</text>");
     }
@@ -112,28 +111,28 @@ pub fn render(cfg: &BarConfig) -> String {
         let r = radius_of(i);
 
         let vt = top.1.get(i).copied().unwrap_or(0.0);
-        let at = angle_top(vt);
-        value_arc(&mut b, i * 2, &cfg.category_labels[i], vt, cx, cy, r, a0_top, at, col_top, 5.4);
+        let al = angle_left(vt);
+        value_arc(&mut b, i * 2, &cfg.category_labels[i], vt, cx, cy, r, theta0, al, col_left, 5.4);
 
         let vb = bottom.1.get(i).copied().unwrap_or(0.0);
-        let ab = angle_bottom(vb);
-        value_arc(&mut b, i * 2 + 1, &cfg.category_labels[i], vb, cx, cy, r, a0_bottom, ab, col_bottom, 5.4);
+        let ar = angle_right(vb);
+        value_arc(&mut b, i * 2 + 1, &cfg.category_labels[i], vb, cx, cy, r, theta0, ar, col_right, 5.4);
 
         if i % label_step == 0 {
-            let tx = cx + r;
+            let ty = cy + r;
             push_b(&mut b, b"<line x1=\"");
-            push_f2(&mut b, tx);
+            push_f2(&mut b, cx - 3.0);
             push_b(&mut b, b"\" y1=\"");
-            push_f2(&mut b, cy - 3.0);
+            push_f2(&mut b, ty);
             push_b(&mut b, b"\" x2=\"");
-            push_f2(&mut b, tx);
+            push_f2(&mut b, cx + 3.0);
             push_b(&mut b, b"\" y2=\"");
-            push_f2(&mut b, cy + 3.0);
+            push_f2(&mut b, ty);
             push_b(&mut b, b"\" stroke=\"#94a3b8\" stroke-width=\"1\"/>");
             push_b(&mut b, b"<text x=\"");
-            push_f2(&mut b, tx);
+            push_f2(&mut b, cx);
             push_b(&mut b, b"\" y=\"");
-            push_f2(&mut b, cy + 16.0);
+            push_f2(&mut b, ty + 3.0);
             push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#475569\">");
             escape_xml(&mut b, truncate(&cfg.category_labels[i], 6));
             push_b(&mut b, b"</text>");
@@ -144,43 +143,43 @@ pub fn render(cfg: &BarConfig) -> String {
     for k in 1..=n_ticks {
         let frac = k as f64 / n_ticks as f64;
         let vt = vmax_top * frac;
-        let at = angle_top(vt);
-        let rt = r_max + 12.0;
-        let xt = cx + rt * at.cos();
-        let yt = cy + rt * at.sin();
+        let al = angle_left(vt);
+        let rl = r_max + 12.0;
+        let xl = cx + rl * al.cos();
+        let yl = cy + rl * al.sin();
         push_b(&mut b, b"<text x=\"");
-        push_f2(&mut b, xt);
+        push_f2(&mut b, xl);
         push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, yt);
+        push_f2(&mut b, yl);
         push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#");
-        b.extend_from_slice(&hex6(col_top));
+        b.extend_from_slice(&hex6(col_left));
         push_b(&mut b, b"\" transform=\"rotate(");
-        push_f2(&mut b, at.to_degrees() + 90.0);
+        push_f2(&mut b, al.to_degrees() + 90.0);
         push_b(&mut b, b" ");
-        push_f2(&mut b, xt);
+        push_f2(&mut b, xl);
         push_b(&mut b, b" ");
-        push_f2(&mut b, yt);
+        push_f2(&mut b, yl);
         push_b(&mut b, b")\">");
         escape_xml(&mut b, &format!("{:.0}", vt));
         push_b(&mut b, b"</text>");
 
         let vb = vmax_bottom * frac;
-        let ab = angle_bottom(vb) - if k == n_ticks { 0.07 } else { 0.0 };
-        let rb = r_max + 12.0;
-        let xb = cx + rb * ab.cos();
-        let yb = cy + rb * ab.sin();
+        let ar = angle_right(vb);
+        let rr = r_max + 12.0;
+        let xr = cx + rr * ar.cos();
+        let yr = cy + rr * ar.sin();
         push_b(&mut b, b"<text x=\"");
-        push_f2(&mut b, xb);
+        push_f2(&mut b, xr);
         push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, yb);
+        push_f2(&mut b, yr);
         push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#");
-        b.extend_from_slice(&hex6(col_bottom));
+        b.extend_from_slice(&hex6(col_right));
         push_b(&mut b, b"\" transform=\"rotate(");
-        push_f2(&mut b, ab.to_degrees() - 90.0);
+        push_f2(&mut b, ar.to_degrees() - 90.0);
         push_b(&mut b, b" ");
-        push_f2(&mut b, xb);
+        push_f2(&mut b, xr);
         push_b(&mut b, b" ");
-        push_f2(&mut b, yb);
+        push_f2(&mut b, yr);
         push_b(&mut b, b")\">");
         escape_xml(&mut b, &format!("{:.0}", vb));
         push_b(&mut b, b"</text>");
@@ -207,8 +206,8 @@ mod tests {
             title: "Test",
             category_labels,
             series,
-            width: 1200,
-            height: 860,
+            width: 1000,
+            height: 900,
             ..BarConfig::default()
         }
     }
@@ -246,18 +245,20 @@ mod tests {
     fn every_value_arc_stays_within_the_declared_radius() {
         let (cats, series) = synth();
         let html = render(&cfg(&cats, &series));
-        let cx = 420.0_f64;
-        let cy = 430.0_f64;
-        let r_max = 340.0_f64;
+        let cx = 500.0_f64;
+        let cy = 414.0_f64;
+        let r_max = 342.0_f64;
         for chunk in html.split("<path data-idx=").skip(1) {
             let d = chunk.split("d=\"M").nth(1).unwrap().split('"').next().unwrap();
-            for pair in d.split(|c: char| c == ' ' || c == ',' || c == 'A').filter(|s| !s.is_empty()) {
-                if let Some((xs, ys)) = pair.split_once(',') {
-                    if let (Ok(x), Ok(y)) = (xs.parse::<f64>(), ys.parse::<f64>()) {
-                        let r = ((x - cx).powi(2) + (y - cy).powi(2)).sqrt();
-                        assert!(r <= r_max + 1.0);
-                    }
-                }
+            let toks: Vec<&str> = d.split(' ').filter(|s| !s.is_empty()).collect();
+            let start = toks.first().unwrap();
+            let end = toks.last().unwrap();
+            for tok in [start, end] {
+                let (xs, ys) = tok.split_once(',').unwrap();
+                let x: f64 = xs.parse().unwrap();
+                let y: f64 = ys.parse().unwrap();
+                let r = ((x - cx).powi(2) + (y - cy).powi(2)).sqrt();
+                assert!(r <= r_max + 1.0);
             }
         }
     }
