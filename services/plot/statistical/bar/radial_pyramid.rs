@@ -4,39 +4,6 @@ use crate::plot::statistical::common::{
 };
 
 #[allow(clippy::too_many_arguments)]
-fn arc(buf: &mut Vec<u8>, cx: f64, cy: f64, r: f64, a0: f64, a1: f64, stroke: u32, width: f64, opacity: f64, round: bool) {
-    let x0 = cx + r * a0.cos();
-    let y0 = cy + r * a0.sin();
-    let x1 = cx + r * a1.cos();
-    let y1 = cy + r * a1.sin();
-    let sweep_flag: u8 = if a1 > a0 { 1 } else { 0 };
-    push_b(buf, b"<path fill=\"none\" stroke=\"#");
-    buf.extend_from_slice(&hex6(stroke));
-    push_b(buf, b"\" stroke-opacity=\"");
-    push_f2(buf, opacity);
-    push_b(buf, b"\" stroke-width=\"");
-    push_f2(buf, width);
-    if round {
-        push_b(buf, b"\" stroke-linecap=\"round");
-    }
-    push_b(buf, b"\" d=\"M");
-    push_f2(buf, x0);
-    push_b(buf, b",");
-    push_f2(buf, y0);
-    push_b(buf, b" A");
-    push_f2(buf, r);
-    push_b(buf, b",");
-    push_f2(buf, r);
-    push_b(buf, b" 0 0,");
-    buf.push(sweep_flag + b'0');
-    push_b(buf, b" ");
-    push_f2(buf, x1);
-    push_b(buf, b",");
-    push_f2(buf, y1);
-    push_b(buf, b"\"/>");
-}
-
-#[allow(clippy::too_many_arguments)]
 fn value_arc(buf: &mut Vec<u8>, idx: usize, lbl: &str, v: f64, cx: f64, cy: f64, r: f64, a0: f64, a1: f64, stroke: u32, width: f64) {
     let x0 = cx + r * a0.cos();
     let y0 = cy + r * a0.sin();
@@ -90,12 +57,14 @@ pub fn render(cfg: &BarConfig) -> String {
     let r_min = 30.0;
     let r_max = 340.0;
 
-    let a0 = 0.0_f64;
+    let gap = 0.065_f64;
+    let a0_top = -gap;
+    let a0_bottom = gap;
     let a_top = -std::f64::consts::PI;
     let a_bottom = std::f64::consts::PI;
 
-    let angle_top = |v: f64| -> f64 { a0 + (a_top - a0) * (v.abs() / vmax_top).clamp(0.0, 1.0) };
-    let angle_bottom = |v: f64| -> f64 { a0 + (a_bottom - a0) * (v.abs() / vmax_bottom).clamp(0.0, 1.0) };
+    let angle_top = |v: f64| -> f64 { a0_top + (a_top - a0_top) * (v.abs() / vmax_top).clamp(0.0, 1.0) };
+    let angle_bottom = |v: f64| -> f64 { a0_bottom + (a_bottom - a0_bottom) * (v.abs() / vmax_bottom).clamp(0.0, 1.0) };
     let radius_of = |i: usize| -> f64 { r_min + (r_max - r_min) * i as f64 / (n - 1).max(1) as f64 };
 
     let col_top = palette_color(cfg.palette, 0);
@@ -141,16 +110,14 @@ pub fn render(cfg: &BarConfig) -> String {
 
     for i in 0..n {
         let r = radius_of(i);
-        arc(&mut b, cx, cy, r, a0, a_top, 0xe2e8f0, 2.6, 1.0, true);
-        arc(&mut b, cx, cy, r, a0, a_bottom, 0xe2e8f0, 2.6, 1.0, true);
 
         let vt = top.1.get(i).copied().unwrap_or(0.0);
         let at = angle_top(vt);
-        value_arc(&mut b, i * 2, &cfg.category_labels[i], vt, cx, cy, r, a0, at, col_top, 5.4);
+        value_arc(&mut b, i * 2, &cfg.category_labels[i], vt, cx, cy, r, a0_top, at, col_top, 5.4);
 
         let vb = bottom.1.get(i).copied().unwrap_or(0.0);
         let ab = angle_bottom(vb);
-        value_arc(&mut b, i * 2 + 1, &cfg.category_labels[i], vb, cx, cy, r, a0, ab, col_bottom, 5.4);
+        value_arc(&mut b, i * 2 + 1, &cfg.category_labels[i], vb, cx, cy, r, a0_bottom, ab, col_bottom, 5.4);
 
         if i % label_step == 0 {
             let tx = cx + r;
