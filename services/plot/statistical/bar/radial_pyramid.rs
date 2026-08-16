@@ -38,7 +38,7 @@ fn value_arc(buf: &mut Vec<u8>, idx: usize, lbl: &str, v: f64, cx: f64, cy: f64,
 }
 
 #[crate::chart_demo(
-    "labels=[\"13\",\"14\",\"15\",\"16\",\"17\",\"18\",\"19\",\"20\",\"21\",\"22\",\"23\",\"24\",\"25\",\"26\",\"27\",\"28\",\"29\",\"30\",\"31\",\"32\",\"33\",\"34\",\"35\",\"36\",\"37\",\"38\",\"39\",\"40\",\"41\",\"42\",\"43\",\"44\",\"45\",\"46\",\"47\",\"48\",\"49\",\"50\",\"51\",\"52\",\"53\",\"54\",\"55\",\"56\",\"57\",\"58\",\"59\",\"60\"], series=[[6.2,6.3,6.3,6.4,6.0,6.2,4.5,5.1,5.9,5.2,5.6,4.0,4.5,4.0,4.4,4.4,3.3,3.5,3.5,4.5,4.1,2.9,4.0,2.7,3.4,2.4,2.1,3.5,2.2,2.1,3.4,3.0,1.9,3.0,2.1,2.2,1.3,2.5,1.9,2.3,2.0,0.8,0.8,0.4,0.3,0.3,0.3,0.7],[14.4,13.8,12.8,14.8,11.8,13.1,14.1,11.2,12.5,12.4,10.3,11.1,11.8,10.8,11.3,9.3,9.2,8.6,9.5,10.6,9.3,9.6,8.0,8.9,6.6,6.9,7.9,7.8,6.5,5.2,5.5,5.0,4.9,6.4,4.1,6.1,5.8,2.8,3.6,3.7,1.9,2.9,4.2,1.4,2.6,0.8,2.0,2.8]], series_names=[\"Women\",\"Men\"], variant=\"radial_pyramid\", title=\"Active Users by Age\", x_label=\"Age\", width=1100, height=740"
+    "labels=[\"13\",\"14\",\"15\",\"16\",\"17\",\"18\",\"19\",\"20\",\"21\",\"22\",\"23\",\"24\",\"25\",\"26\",\"27\",\"28\",\"29\",\"30\",\"31\",\"32\",\"33\",\"34\",\"35\",\"36\",\"37\",\"38\",\"39\",\"40\",\"41\",\"42\",\"43\",\"44\",\"45\",\"46\",\"47\",\"48\",\"49\",\"50\",\"51\",\"52\",\"53\",\"54\",\"55\",\"56\",\"57\",\"58\",\"59\",\"60\"], series=[[6.2,6.3,6.3,6.4,6.0,6.2,4.5,5.1,5.9,5.2,5.6,4.0,4.5,4.0,4.4,4.4,3.3,3.5,3.5,4.5,4.1,2.9,4.0,2.7,3.4,2.4,2.1,3.5,2.2,2.1,3.4,3.0,1.9,3.0,2.1,2.2,1.3,2.5,1.9,2.3,2.0,0.8,0.8,0.4,0.3,0.3,0.3,0.7],[14.4,13.8,12.8,14.8,11.8,13.1,14.1,11.2,12.5,12.4,10.3,11.1,11.8,10.8,11.3,9.3,9.2,8.6,9.5,10.6,9.3,9.6,8.0,8.9,6.6,6.9,7.9,7.8,6.5,5.2,5.5,5.0,4.9,6.4,4.1,6.1,5.8,2.8,3.6,3.7,1.9,2.9,4.2,1.4,2.6,0.8,2.0,2.8]], series_names=[\"Women\",\"Men\"], variant=\"radial_pyramid\", title=\"Active Users by Age\", x_label=\"Age\", width=950, height=1050"
 )]
 
 pub fn render(cfg: &BarConfig) -> String {
@@ -54,13 +54,13 @@ pub fn render(cfg: &BarConfig) -> String {
 
     let width = cfg.width as f64;
     let height = cfg.height as f64;
-    let px = width * 0.418;
-    let py = height * 0.446;
-    let offset = height * 0.351;
+    let px = width * 0.421;
+    let py = height * 0.495;
+    let offset = height * 0.25;
     let r_max = offset;
-    let r_min = height * 0.075;
+    let r_min = height * 0.053;
 
-    let angle_diag = -18.0_f64.to_radians();
+    let angle_diag = -62.0_f64.to_radians();
     let dx = angle_diag.cos();
     let dy = angle_diag.sin();
     let perp_x = -dy;
@@ -175,7 +175,7 @@ pub fn render(cfg: &BarConfig) -> String {
         push_b(&mut b, b"</text>");
     }
 
-    let label_step = ((n as f64 / 12.0).ceil() as usize).max(1);
+    let label_step = ((n as f64 / 8.0).ceil() as usize).max(1);
 
     for i in 0..n {
         let r = radius_of(i);
@@ -204,14 +204,17 @@ pub fn render(cfg: &BarConfig) -> String {
                 push_b(&mut b, b"\" y2=\"");
                 push_f2(&mut b, ty + perp_y * 3.0);
                 push_b(&mut b, b"\" stroke=\"#94a3b8\" stroke-width=\"1\"/>");
-                push_b(&mut b, b"<text x=\"");
-                push_f2(&mut b, tx + perp_x * 16.0);
-                push_b(&mut b, b"\" y=\"");
-                push_f2(&mut b, ty + perp_y * 16.0 + 3.0);
-                push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#475569\">");
-                escape_xml(&mut b, tick_txt);
-                push_b(&mut b, b"</text>");
             }
+
+            let tx = px + t * dx;
+            let ty = py + t * dy;
+            push_b(&mut b, b"<text x=\"");
+            push_f2(&mut b, tx + perp_x * 20.0);
+            push_b(&mut b, b"\" y=\"");
+            push_f2(&mut b, ty + perp_y * 20.0 + 3.0);
+            push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" font-weight=\"600\" fill=\"#334155\">");
+            escape_xml(&mut b, tick_txt);
+            push_b(&mut b, b"</text>");
         }
     }
 
@@ -278,11 +281,11 @@ mod tests {
 
         let width = 1000.0_f64;
         let height = 900.0_f64;
-        let px = width * 0.418;
-        let py = height * 0.446;
-        let offset = height * 0.351;
+        let px = width * 0.421;
+        let py = height * 0.495;
+        let offset = height * 0.25;
         let r_max = offset;
-        let angle_diag = -18.0_f64.to_radians();
+        let angle_diag = -62.0_f64.to_radians();
         let dx = angle_diag.cos();
         let dy = angle_diag.sin();
         let c1 = (px + offset * dx, py + offset * dy);
@@ -308,7 +311,7 @@ mod tests {
     fn the_two_series_circles_never_touch_beyond_the_shared_pivot() {
         let width = 1000.0_f64;
         let height = 900.0_f64;
-        let offset = height * 0.351;
+        let offset = height * 0.25;
         let r_max = offset;
         assert!(r_max <= offset + 1e-9, "outer radius must not exceed the center offset, or the two series disks would overlap");
         let _ = width;
