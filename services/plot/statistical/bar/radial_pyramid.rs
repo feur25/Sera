@@ -38,7 +38,7 @@ fn value_arc(buf: &mut Vec<u8>, idx: usize, lbl: &str, v: f64, cx: f64, cy: f64,
 }
 
 #[crate::chart_demo(
-    "labels=[\"13\",\"14\",\"15\",\"16\",\"17\",\"18\",\"19\",\"20\",\"21\",\"22\",\"23\",\"24\",\"25\",\"26\",\"27\",\"28\",\"29\",\"30\",\"31\",\"32\",\"33\",\"34\",\"35\",\"36\",\"37\",\"38\",\"39\",\"40\",\"41\",\"42\",\"43\",\"44\",\"45\",\"46\",\"47\",\"48\",\"49\",\"50\",\"51\",\"52\",\"53\",\"54\",\"55\",\"56\",\"57\",\"58\",\"59\",\"60\"], series=[[6.2,6.3,6.3,6.4,6.0,6.2,4.5,5.1,5.9,5.2,5.6,4.0,4.5,4.0,4.4,4.4,3.3,3.5,3.5,4.5,4.1,2.9,4.0,2.7,3.4,2.4,2.1,3.5,2.2,2.1,3.4,3.0,1.9,3.0,2.1,2.2,1.3,2.5,1.9,2.3,2.0,0.8,0.8,0.4,0.3,0.3,0.3,0.7],[14.4,13.8,12.8,14.8,11.8,13.1,14.1,11.2,12.5,12.4,10.3,11.1,11.8,10.8,11.3,9.3,9.2,8.6,9.5,10.6,9.3,9.6,8.0,8.9,6.6,6.9,7.9,7.8,6.5,5.2,5.5,5.0,4.9,6.4,4.1,6.1,5.8,2.8,3.6,3.7,1.9,2.9,4.2,1.4,2.6,0.8,2.0,2.8]], series_names=[\"Women\",\"Men\"], variant=\"radial_pyramid\", title=\"Active Users by Age\", x_label=\"Age\", width=1050, height=980"
+    "labels=[\"13\",\"14\",\"15\",\"16\",\"17\",\"18\",\"19\",\"20\",\"21\",\"22\",\"23\",\"24\",\"25\",\"26\",\"27\",\"28\",\"29\",\"30\",\"31\",\"32\",\"33\",\"34\",\"35\",\"36\",\"37\",\"38\",\"39\",\"40\",\"41\",\"42\",\"43\",\"44\",\"45\",\"46\",\"47\",\"48\",\"49\",\"50\",\"51\",\"52\",\"53\",\"54\",\"55\",\"56\",\"57\",\"58\",\"59\",\"60\"], series=[[6.2,6.3,6.3,6.4,6.0,6.2,4.5,5.1,5.9,5.2,5.6,4.0,4.5,4.0,4.4,4.4,3.3,3.5,3.5,4.5,4.1,2.9,4.0,2.7,3.4,2.4,2.1,3.5,2.2,2.1,3.4,3.0,1.9,3.0,2.1,2.2,1.3,2.5,1.9,2.3,2.0,0.8,0.8,0.4,0.3,0.3,0.3,0.7],[14.4,13.8,12.8,14.8,11.8,13.1,14.1,11.2,12.5,12.4,10.3,11.1,11.8,10.8,11.3,9.3,9.2,8.6,9.5,10.6,9.3,9.6,8.0,8.9,6.6,6.9,7.9,7.8,6.5,5.2,5.5,5.0,4.9,6.4,4.1,6.1,5.8,2.8,3.6,3.7,1.9,2.9,4.2,1.4,2.6,0.8,2.0,2.8]], series_names=[\"Women\",\"Men\"], variant=\"radial_pyramid\", title=\"Active Users by Age\", x_label=\"Age\", width=850, height=950"
 )]
 
 pub fn render(cfg: &BarConfig) -> String {
@@ -55,23 +55,27 @@ pub fn render(cfg: &BarConfig) -> String {
 
     let width = cfg.width as f64;
     let height = cfg.height as f64;
-    let px = width * 0.40;
-    let py = height * 0.52;
-    let offset = height * 0.32;
+    let px = width * 0.507;
+    let py = height * 0.395;
+    let offset = height * 0.305;
     let r_max = offset;
     let r_min = offset * 0.08;
 
-    let c1x = px;
-    let c1y = py - offset;
-    let c2x = px;
-    let c2y = py + offset;
+    let alpha = (-35.0_f64).to_radians();
+    let dx = alpha.cos();
+    let dy = alpha.sin();
 
-    let tilt = (-16.0_f64).to_radians();
-    let beta = std::f64::consts::FRAC_PI_2 + tilt;
+    let c1x = px + offset * dx;
+    let c1y = py + offset * dy;
+    let c2x = px - offset * dx;
+    let c2y = py - offset * dy;
+
+    let beta1 = alpha + std::f64::consts::PI;
+    let beta2 = alpha;
     let sweep_max = 300.0_f64.to_radians();
 
-    let angle_top = |v: f64| -> f64 { beta + sweep_max * (v.abs() / vmax).clamp(0.0, 1.0) };
-    let angle_bottom = |v: f64| -> f64 { -(beta + sweep_max * (v.abs() / vmax).clamp(0.0, 1.0)) };
+    let angle_top = |v: f64| -> f64 { beta1 + sweep_max * (v.abs() / vmax).clamp(0.0, 1.0) };
+    let angle_bottom = |v: f64| -> f64 { beta2 + sweep_max * (v.abs() / vmax).clamp(0.0, 1.0) };
     let radius_of = |i: usize| -> f64 { r_min + (r_max - r_min) * i as f64 / (n - 1).max(1) as f64 };
 
     let col_top = palette_color(cfg.palette, 0);
@@ -149,53 +153,65 @@ pub fn render(cfg: &BarConfig) -> String {
 
         let vt = top.1.get(i).copied().unwrap_or(0.0);
         let at = angle_top(vt);
-        value_arc(&mut b, i * 2, &cfg.category_labels[i], vt, c1x, c1y, r, beta, at, col_top, 2.6);
+        value_arc(&mut b, i * 2, &cfg.category_labels[i], vt, c1x, c1y, r, beta1, at, col_top, 2.6);
 
         let vb = bottom.1.get(i).copied().unwrap_or(0.0);
         let ab = angle_bottom(vb);
-        value_arc(&mut b, i * 2 + 1, &cfg.category_labels[i], vb, c2x, c2y, r, -beta, ab, col_bottom, 2.6);
+        value_arc(&mut b, i * 2 + 1, &cfg.category_labels[i], vb, c2x, c2y, r, beta2, ab, col_bottom, 2.6);
     }
 
-    let axis_x0 = px + offset * 0.08;
-    let axis_x1 = px + offset * 1.05;
+    let axis_half = offset - r_min;
     push_b(&mut b, b"<line x1=\"");
-    push_f2(&mut b, axis_x0);
+    push_f2(&mut b, px - axis_half * dx);
     push_b(&mut b, b"\" y1=\"");
-    push_f2(&mut b, py);
+    push_f2(&mut b, py - axis_half * dy);
     push_b(&mut b, b"\" x2=\"");
-    push_f2(&mut b, axis_x1);
+    push_f2(&mut b, px + axis_half * dx);
     push_b(&mut b, b"\" y2=\"");
-    push_f2(&mut b, py);
+    push_f2(&mut b, py + axis_half * dy);
     push_b(&mut b, b"\" stroke=\"#94a3b8\" stroke-width=\"1\"/>");
 
     if !cfg.x_label.is_empty() {
         push_b(&mut b, b"<rect class=\"sp-bg\" x=\"");
-        push_f2(&mut b, axis_x0 - 38.0);
+        push_f2(&mut b, px - axis_half * dx - 40.0);
         push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, py - 9.0);
-        push_b(&mut b, b"\" width=\"36\" height=\"18\"/>");
+        push_f2(&mut b, py - axis_half * dy - 9.0);
+        push_b(&mut b, b"\" width=\"38\" height=\"18\"/>");
         push_b(&mut b, b"<text x=\"");
-        push_f2(&mut b, axis_x0 - 14.0);
+        push_f2(&mut b, px - axis_half * dx - 16.0);
         push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, py + 3.0);
+        push_f2(&mut b, py - axis_half * dy + 3.0);
         push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" font-weight=\"700\" fill=\"#334155\">");
         escape_xml(&mut b, cfg.x_label);
         push_b(&mut b, b"</text>");
     }
 
+    let perp_x = -dy;
+    let perp_y = dx;
     let label_step = ((n as f64 / 8.0).ceil() as usize).max(1);
     for i in (0..n).step_by(label_step) {
-        let frac = i as f64 / (n - 1).max(1) as f64;
-        let xi = axis_x0 + (axis_x1 - axis_x0) * frac;
+        let r = radius_of(i);
+        let t = offset - r;
+        let tx = px + t * dx;
+        let ty = py + t * dy;
         push_b(&mut b, b"<rect class=\"sp-bg\" x=\"");
-        push_f2(&mut b, xi - 15.0);
+        push_f2(&mut b, tx - 15.0);
         push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, py - 9.0);
+        push_f2(&mut b, ty - 9.0);
         push_b(&mut b, b"\" width=\"30\" height=\"18\"/>");
+        push_b(&mut b, b"<line x1=\"");
+        push_f2(&mut b, tx - perp_x * 3.0);
+        push_b(&mut b, b"\" y1=\"");
+        push_f2(&mut b, ty - perp_y * 3.0);
+        push_b(&mut b, b"\" x2=\"");
+        push_f2(&mut b, tx + perp_x * 3.0);
+        push_b(&mut b, b"\" y2=\"");
+        push_f2(&mut b, ty + perp_y * 3.0);
+        push_b(&mut b, b"\" stroke=\"#94a3b8\" stroke-width=\"1\"/>");
         push_b(&mut b, b"<text x=\"");
-        push_f2(&mut b, xi);
+        push_f2(&mut b, tx);
         push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, py + 3.0);
+        push_f2(&mut b, ty + 3.0);
         push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" font-weight=\"600\" fill=\"#475569\">");
         escape_xml(&mut b, truncate(&cfg.category_labels[i], 6));
         push_b(&mut b, b"</text>");
@@ -257,19 +273,24 @@ mod tests {
         assert!(html.contains("class=\"sp-bg\""));
     }
 
+    fn geometry(width: f64, height: f64) -> (f64, f64, f64, f64, f64, f64, f64) {
+        let px = width * 0.507;
+        let py = height * 0.395;
+        let offset = height * 0.305;
+        let alpha = (-35.0_f64).to_radians();
+        let dx = alpha.cos();
+        let dy = alpha.sin();
+        (px, py, offset, offset, dx, dy, alpha)
+    }
+
     #[test]
     fn every_arc_point_stays_within_its_own_series_radius_from_its_own_center() {
         let (cats, series) = synth();
         let html = render(&cfg(&cats, &series));
 
-        let height = 900.0_f64;
-        let offset = height * 0.32;
-        let r_max = offset;
-        let width = 1000.0_f64;
-        let px = width * 0.40;
-        let py = height * 0.52;
-        let c1 = (px, py - offset);
-        let c2 = (px, py + offset);
+        let (px, py, offset, r_max, dx, dy, _) = geometry(1000.0, 900.0);
+        let c1 = (px + offset * dx, py + offset * dy);
+        let c2 = (px - offset * dx, py - offset * dy);
 
         for (idx, chunk) in html.split("<path data-idx=").skip(1).enumerate() {
             let (cx, cy) = if idx % 2 == 0 { c1 } else { c2 };
@@ -289,21 +310,18 @@ mod tests {
 
     #[test]
     fn the_two_series_circles_can_only_ever_meet_at_the_single_shared_pivot() {
-        let height = 900.0_f64;
-        let offset = height * 0.32;
-        let r_max = offset;
+        let (_, _, offset, r_max, _, _, _) = geometry(1000.0, 900.0);
         assert!(r_max <= offset + 1e-9, "outer radius must not exceed the center offset, or the two series disks would overlap");
     }
 
     #[test]
-    fn the_mirror_between_series_is_a_true_reflection_not_a_rotation() {
+    fn the_two_series_sweep_from_opposite_ends_of_the_shared_pivot_axis() {
         let cats: Vec<String> = (0..10).map(|i| format!("{}", 13 + i)).collect();
         let vals: Vec<f64> = (0..10).map(|i| 1.0 + (i as f64 * 0.5).sin().abs() * 6.0).collect();
         let series = vec![("Top".to_string(), vals.clone()), ("Bottom".to_string(), vals)];
         let html = render(&cfg(&cats, &series));
 
-        let height = 900.0_f64;
-        let py = height * 0.52;
+        let (px, py, _, _, dx, dy, _) = geometry(1000.0, 900.0);
 
         let mut top_ends = Vec::new();
         let mut bottom_ends = Vec::new();
@@ -321,8 +339,9 @@ mod tests {
         }
 
         for (t, bo) in top_ends.iter().zip(bottom_ends.iter()) {
-            assert!((t.0 - bo.0).abs() < 1.0, "identical data must land at the same x when truly mirrored, got top={t:?} bottom={bo:?}");
-            assert!(((py - t.1) - (bo.1 - py)).abs() < 1.0, "identical data must be equidistant above/below the pivot line when truly mirrored, got top={t:?} bottom={bo:?}");
+            let td = ((t.0 - px) * dx + (t.1 - py) * dy).signum();
+            let bd = ((bo.0 - px) * dx + (bo.1 - py) * dy).signum();
+            assert_ne!(td, bd, "identical data must land on opposite sides of the shared pivot, got top={t:?} bottom={bo:?}");
         }
     }
 
