@@ -17,6 +17,5 @@ crate::plot_family! {
         Spiral          => "spiral" | "spiral_bar" | "nautilus" | "radial_spiral" | "growth_spiral",
         Hedgehog        => "hedgehog" | "flow_fan" | "quill" | "spike_flow" | "relocation_fan",
         RadialFlow      => "radial_flow" | "capital_flow" | "hierarchical_radial" | "sankey_radial" | "flow_arc",
-        RadialPyramid   => "radial_pyramid" | "butterfly" | "mirror_radial" | "dual_arc_bar" | "back_to_back_radial",
     }
 }

@@ -17,7 +17,6 @@ pub mod pictogram;
 pub mod population_pyramid;
 pub mod prism;
 pub mod radial_flow;
-pub mod radial_pyramid;
 pub mod relative;
 pub mod spiral;
 pub mod spiral_common;
@@ -40,7 +39,7 @@ pub fn layout_3d(cfg: &BarConfig) -> Vec<Bar3DBlock> {
         Marimekko => marimekko::layout_3d(cfg),
         Multicategory => multicategory::layout_3d(cfg),
         Pictogram => pictogram::layout_3d(cfg),
-        Circular | CircularGrouped | Pyramid | Diverging | Distribution | Spiral | Hedgehog | RadialFlow | RadialPyramid => Vec::new(),
+        Circular | CircularGrouped | Pyramid | Diverging | Distribution | Spiral | Hedgehog | RadialFlow => Vec::new(),
     }
 }
 
@@ -70,7 +69,6 @@ pub fn render_bar_html(cfg: &BarConfig) -> String {
         Spiral => spiral::render(cfg),
         Hedgehog => hedgehog::render(cfg),
         RadialFlow => radial_flow::render(cfg),
-        RadialPyramid => radial_pyramid::render(cfg),
     }
 }
 
