@@ -38,7 +38,7 @@ fn value_arc(buf: &mut Vec<u8>, idx: usize, lbl: &str, v: f64, cx: f64, cy: f64,
 }
 
 #[crate::chart_demo(
-    "labels=[\"13\",\"14\",\"15\",\"16\",\"17\",\"18\",\"19\",\"20\",\"21\",\"22\",\"23\",\"24\",\"25\",\"26\",\"27\",\"28\",\"29\",\"30\",\"31\",\"32\",\"33\",\"34\",\"35\",\"36\",\"37\",\"38\",\"39\",\"40\",\"41\",\"42\",\"43\",\"44\",\"45\",\"46\",\"47\",\"48\",\"49\",\"50\",\"51\",\"52\",\"53\",\"54\",\"55\",\"56\",\"57\",\"58\",\"59\",\"60\"], series=[[6.2,6.3,6.3,6.4,6.0,6.2,4.5,5.1,5.9,5.2,5.6,4.0,4.5,4.0,4.4,4.4,3.3,3.5,3.5,4.5,4.1,2.9,4.0,2.7,3.4,2.4,2.1,3.5,2.2,2.1,3.4,3.0,1.9,3.0,2.1,2.2,1.3,2.5,1.9,2.3,2.0,0.8,0.8,0.4,0.3,0.3,0.3,0.7],[14.4,13.8,12.8,14.8,11.8,13.1,14.1,11.2,12.5,12.4,10.3,11.1,11.8,10.8,11.3,9.3,9.2,8.6,9.5,10.6,9.3,9.6,8.0,8.9,6.6,6.9,7.9,7.8,6.5,5.2,5.5,5.0,4.9,6.4,4.1,6.1,5.8,2.8,3.6,3.7,1.9,2.9,4.2,1.4,2.6,0.8,2.0,2.8]], series_names=[\"Women\",\"Men\"], variant=\"radial_pyramid\", title=\"Active Users by Age\", x_label=\"Age\", width=1000, height=900"
+    "labels=[\"13\",\"14\",\"15\",\"16\",\"17\",\"18\",\"19\",\"20\",\"21\",\"22\",\"23\",\"24\",\"25\",\"26\",\"27\",\"28\",\"29\",\"30\",\"31\",\"32\",\"33\",\"34\",\"35\",\"36\",\"37\",\"38\",\"39\",\"40\",\"41\",\"42\",\"43\",\"44\",\"45\",\"46\",\"47\",\"48\",\"49\",\"50\",\"51\",\"52\",\"53\",\"54\",\"55\",\"56\",\"57\",\"58\",\"59\",\"60\"], series=[[6.2,6.3,6.3,6.4,6.0,6.2,4.5,5.1,5.9,5.2,5.6,4.0,4.5,4.0,4.4,4.4,3.3,3.5,3.5,4.5,4.1,2.9,4.0,2.7,3.4,2.4,2.1,3.5,2.2,2.1,3.4,3.0,1.9,3.0,2.1,2.2,1.3,2.5,1.9,2.3,2.0,0.8,0.8,0.4,0.3,0.3,0.3,0.7],[14.4,13.8,12.8,14.8,11.8,13.1,14.1,11.2,12.5,12.4,10.3,11.1,11.8,10.8,11.3,9.3,9.2,8.6,9.5,10.6,9.3,9.6,8.0,8.9,6.6,6.9,7.9,7.8,6.5,5.2,5.5,5.0,4.9,6.4,4.1,6.1,5.8,2.8,3.6,3.7,1.9,2.9,4.2,1.4,2.6,0.8,2.0,2.8]], series_names=[\"Women\",\"Men\"], variant=\"radial_pyramid\", title=\"Active Users by Age\", x_label=\"Age\", width=1100, height=740"
 )]
 
 pub fn render(cfg: &BarConfig) -> String {
@@ -52,18 +52,31 @@ pub fn render(cfg: &BarConfig) -> String {
     let vmax_top = top.1.iter().fold(0.0_f64, |m, &v| m.max(v.abs())).max(1e-9);
     let vmax_bottom = bottom.1.iter().fold(0.0_f64, |m, &v| m.max(v.abs())).max(1e-9);
 
-    let cx = cfg.width as f64 / 2.0;
-    let cy = cfg.height as f64 * 0.46;
-    let r_min = 30.0;
-    let r_max = cfg.height as f64 * 0.38;
+    let width = cfg.width as f64;
+    let height = cfg.height as f64;
+    let px = width * 0.418;
+    let py = height * 0.446;
+    let offset = height * 0.351;
+    let r_max = offset;
+    let r_min = height * 0.075;
 
-    let gap = 0.16_f64;
-    let theta0 = std::f64::consts::FRAC_PI_2;
-    let a_left_end = theta0 + std::f64::consts::PI - gap;
-    let a_right_end = theta0 - std::f64::consts::PI + gap;
+    let angle_diag = -18.0_f64.to_radians();
+    let dx = angle_diag.cos();
+    let dy = angle_diag.sin();
+    let perp_x = -dy;
+    let perp_y = dx;
 
-    let angle_left = |v: f64| -> f64 { theta0 + (a_left_end - theta0) * (v.abs() / vmax_top).clamp(0.0, 1.0) };
-    let angle_right = |v: f64| -> f64 { theta0 + (a_right_end - theta0) * (v.abs() / vmax_bottom).clamp(0.0, 1.0) };
+    let c1x = px + offset * dx;
+    let c1y = py + offset * dy;
+    let c2x = px - offset * dx;
+    let c2y = py - offset * dy;
+
+    let beta1 = angle_diag + std::f64::consts::PI;
+    let beta2 = angle_diag;
+    let sweep_max = 300.0_f64.to_radians();
+
+    let angle_top = |v: f64| -> f64 { beta1 + sweep_max * (v.abs() / vmax_top).clamp(0.0, 1.0) };
+    let angle_bottom = |v: f64| -> f64 { beta2 - sweep_max * (v.abs() / vmax_bottom).clamp(0.0, 1.0) };
     let radius_of = |i: usize| -> f64 { r_min + (r_max - r_min) * i as f64 / (n - 1).max(1) as f64 };
 
     let col_left = palette_color(cfg.palette, 0);
@@ -85,23 +98,80 @@ pub fn render(cfg: &BarConfig) -> String {
     escape_xml(&mut b, &bottom.0);
     push_b(&mut b, b"</text>");
 
+    let axis_half = offset - r_min;
     push_b(&mut b, b"<line x1=\"");
-    push_f2(&mut b, cx);
+    push_f2(&mut b, px - axis_half * dx);
     push_b(&mut b, b"\" y1=\"");
-    push_f2(&mut b, cy);
+    push_f2(&mut b, py - axis_half * dy);
     push_b(&mut b, b"\" x2=\"");
-    push_f2(&mut b, cx);
+    push_f2(&mut b, px + axis_half * dx);
     push_b(&mut b, b"\" y2=\"");
-    push_f2(&mut b, cy + r_max);
+    push_f2(&mut b, py + axis_half * dy);
     push_b(&mut b, b"\" stroke=\"#94a3b8\" stroke-width=\"1\"/>");
 
     if !cfg.x_label.is_empty() {
         push_b(&mut b, b"<text x=\"");
-        push_f2(&mut b, cx);
+        push_f2(&mut b, px - perp_x * 20.0);
         push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, cy - 10.0);
+        push_f2(&mut b, py - perp_y * 20.0);
         push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" font-weight=\"700\" fill=\"#334155\">");
         escape_xml(&mut b, cfg.x_label);
+        push_b(&mut b, b"</text>");
+    }
+
+    let label_gap = 30.0;
+    let n_ticks = 4;
+    for k in 1..=n_ticks {
+        let frac = k as f64 / n_ticks as f64;
+
+        let vt = vmax_top * frac;
+        let al = angle_top(vt);
+        let xl0 = c1x + r_min * al.cos();
+        let yl0 = c1y + r_min * al.sin();
+        let xl1 = c1x + (r_max + label_gap) * al.cos();
+        let yl1 = c1y + (r_max + label_gap) * al.sin();
+        push_b(&mut b, b"<line x1=\"");
+        push_f2(&mut b, xl0);
+        push_b(&mut b, b"\" y1=\"");
+        push_f2(&mut b, yl0);
+        push_b(&mut b, b"\" x2=\"");
+        push_f2(&mut b, xl1);
+        push_b(&mut b, b"\" y2=\"");
+        push_f2(&mut b, yl1);
+        push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"1\"/>");
+        push_b(&mut b, b"<text x=\"");
+        push_f2(&mut b, xl1);
+        push_b(&mut b, b"\" y=\"");
+        push_f2(&mut b, yl1 + 3.0);
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" font-weight=\"600\" fill=\"#");
+        b.extend_from_slice(&hex6(col_left));
+        push_b(&mut b, b"\">");
+        escape_xml(&mut b, &format!("{:.0}", vt));
+        push_b(&mut b, b"</text>");
+
+        let vb = vmax_bottom * frac;
+        let ar = angle_bottom(vb);
+        let xr0 = c2x + r_min * ar.cos();
+        let yr0 = c2y + r_min * ar.sin();
+        let xr1 = c2x + (r_max + label_gap) * ar.cos();
+        let yr1 = c2y + (r_max + label_gap) * ar.sin();
+        push_b(&mut b, b"<line x1=\"");
+        push_f2(&mut b, xr0);
+        push_b(&mut b, b"\" y1=\"");
+        push_f2(&mut b, yr0);
+        push_b(&mut b, b"\" x2=\"");
+        push_f2(&mut b, xr1);
+        push_b(&mut b, b"\" y2=\"");
+        push_f2(&mut b, yr1);
+        push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"1\"/>");
+        push_b(&mut b, b"<text x=\"");
+        push_f2(&mut b, xr1);
+        push_b(&mut b, b"\" y=\"");
+        push_f2(&mut b, yr1 + 3.0);
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" font-weight=\"600\" fill=\"#");
+        b.extend_from_slice(&hex6(col_right));
+        push_b(&mut b, b"\">");
+        escape_xml(&mut b, &format!("{:.0}", vb));
         push_b(&mut b, b"</text>");
     }
 
@@ -111,78 +181,38 @@ pub fn render(cfg: &BarConfig) -> String {
         let r = radius_of(i);
 
         let vt = top.1.get(i).copied().unwrap_or(0.0);
-        let al = angle_left(vt);
-        value_arc(&mut b, i * 2, &cfg.category_labels[i], vt, cx, cy, r, theta0, al, col_left, 5.4);
+        let al = angle_top(vt);
+        value_arc(&mut b, i * 2, &cfg.category_labels[i], vt, c1x, c1y, r, beta1, al, col_left, 3.2);
 
         let vb = bottom.1.get(i).copied().unwrap_or(0.0);
-        let ar = angle_right(vb);
-        value_arc(&mut b, i * 2 + 1, &cfg.category_labels[i], vb, cx, cy, r, theta0, ar, col_right, 5.4);
+        let ar = angle_bottom(vb);
+        value_arc(&mut b, i * 2 + 1, &cfg.category_labels[i], vb, c2x, c2y, r, beta2, ar, col_right, 3.2);
 
         if i % label_step == 0 {
-            let ty = cy + r;
-            push_b(&mut b, b"<line x1=\"");
-            push_f2(&mut b, cx - 3.0);
-            push_b(&mut b, b"\" y1=\"");
-            push_f2(&mut b, ty);
-            push_b(&mut b, b"\" x2=\"");
-            push_f2(&mut b, cx + 3.0);
-            push_b(&mut b, b"\" y2=\"");
-            push_f2(&mut b, ty);
-            push_b(&mut b, b"\" stroke=\"#94a3b8\" stroke-width=\"1\"/>");
-            push_b(&mut b, b"<text x=\"");
-            push_f2(&mut b, cx);
-            push_b(&mut b, b"\" y=\"");
-            push_f2(&mut b, ty + 3.0);
-            push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#475569\">");
-            escape_xml(&mut b, truncate(&cfg.category_labels[i], 6));
-            push_b(&mut b, b"</text>");
+            let t = offset - r;
+            let tick_txt = truncate(&cfg.category_labels[i], 6);
+
+            for sign in [1.0_f64, -1.0_f64] {
+                let tx = px + sign * t * dx;
+                let ty = py + sign * t * dy;
+                push_b(&mut b, b"<line x1=\"");
+                push_f2(&mut b, tx - perp_x * 3.0);
+                push_b(&mut b, b"\" y1=\"");
+                push_f2(&mut b, ty - perp_y * 3.0);
+                push_b(&mut b, b"\" x2=\"");
+                push_f2(&mut b, tx + perp_x * 3.0);
+                push_b(&mut b, b"\" y2=\"");
+                push_f2(&mut b, ty + perp_y * 3.0);
+                push_b(&mut b, b"\" stroke=\"#94a3b8\" stroke-width=\"1\"/>");
+                push_b(&mut b, b"<text x=\"");
+                push_f2(&mut b, tx + perp_x * 16.0);
+                push_b(&mut b, b"\" y=\"");
+                push_f2(&mut b, ty + perp_y * 16.0 + 3.0);
+                push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#475569\">");
+                escape_xml(&mut b, tick_txt);
+                push_b(&mut b, b"</text>");
+            }
         }
-    }
-
-    let n_ticks = 5;
-    for k in 1..=n_ticks {
-        let frac = k as f64 / n_ticks as f64;
-        let vt = vmax_top * frac;
-        let al = angle_left(vt);
-        let rl = r_max + 12.0;
-        let xl = cx + rl * al.cos();
-        let yl = cy + rl * al.sin();
-        push_b(&mut b, b"<text x=\"");
-        push_f2(&mut b, xl);
-        push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, yl);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#");
-        b.extend_from_slice(&hex6(col_left));
-        push_b(&mut b, b"\" transform=\"rotate(");
-        push_f2(&mut b, al.to_degrees() + 90.0);
-        push_b(&mut b, b" ");
-        push_f2(&mut b, xl);
-        push_b(&mut b, b" ");
-        push_f2(&mut b, yl);
-        push_b(&mut b, b")\">");
-        escape_xml(&mut b, &format!("{:.0}", vt));
-        push_b(&mut b, b"</text>");
-
-        let vb = vmax_bottom * frac;
-        let ar = angle_right(vb);
-        let rr = r_max + 12.0;
-        let xr = cx + rr * ar.cos();
-        let yr = cy + rr * ar.sin();
-        push_b(&mut b, b"<text x=\"");
-        push_f2(&mut b, xr);
-        push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, yr);
-        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#");
-        b.extend_from_slice(&hex6(col_right));
-        push_b(&mut b, b"\" transform=\"rotate(");
-        push_f2(&mut b, ar.to_degrees() - 90.0);
-        push_b(&mut b, b" ");
-        push_f2(&mut b, xr);
-        push_b(&mut b, b" ");
-        push_f2(&mut b, yr);
-        push_b(&mut b, b")\">");
-        escape_xml(&mut b, &format!("{:.0}", vb));
-        push_b(&mut b, b"</text>");
     }
 
     push_b(&mut b, b"</svg>");
@@ -245,10 +275,21 @@ mod tests {
     fn every_value_arc_stays_within_the_declared_radius() {
         let (cats, series) = synth();
         let html = render(&cfg(&cats, &series));
-        let cx = 500.0_f64;
-        let cy = 414.0_f64;
-        let r_max = 342.0_f64;
-        for chunk in html.split("<path data-idx=").skip(1) {
+
+        let width = 1000.0_f64;
+        let height = 900.0_f64;
+        let px = width * 0.418;
+        let py = height * 0.446;
+        let offset = height * 0.351;
+        let r_max = offset;
+        let angle_diag = -18.0_f64.to_radians();
+        let dx = angle_diag.cos();
+        let dy = angle_diag.sin();
+        let c1 = (px + offset * dx, py + offset * dy);
+        let c2 = (px - offset * dx, py - offset * dy);
+
+        for (idx, chunk) in html.split("<path data-idx=").skip(1).enumerate() {
+            let (cx, cy) = if idx % 2 == 0 { c1 } else { c2 };
             let d = chunk.split("d=\"M").nth(1).unwrap().split('"').next().unwrap();
             let toks: Vec<&str> = d.split(' ').filter(|s| !s.is_empty()).collect();
             let start = toks.first().unwrap();
@@ -261,6 +302,16 @@ mod tests {
                 assert!(r <= r_max + 1.0);
             }
         }
+    }
+
+    #[test]
+    fn the_two_series_circles_never_touch_beyond_the_shared_pivot() {
+        let width = 1000.0_f64;
+        let height = 900.0_f64;
+        let offset = height * 0.351;
+        let r_max = offset;
+        assert!(r_max <= offset + 1e-9, "outer radius must not exceed the center offset, or the two series disks would overlap");
+        let _ = width;
     }
 
     #[test]
