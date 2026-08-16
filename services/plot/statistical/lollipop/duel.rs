@@ -89,7 +89,7 @@ fn callout(buf: &mut Vec<u8>, ax: f64, ay: f64, bx: f64, by: f64, lines: &[&str]
 }
 
 #[crate::chart_demo(
-    "labels=[\"1929\",\"1943\",\"1953\",\"1953\",\"1964\",\"1974\",\"1974\",\"1974\",\"1986\",\"1994\",\"1994\",\"1994\",\"1994\",\"2002\",\"2002\",\"2009\",\"2011\",\"2017\",\"2017\",\"2023\"], values=[15,35,22,60,90,10,45,75,50,5,30,65,90,40,80,90,20,55,72,38], color_groups=[\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\"], palette=[3316734,15547189], title=\"El Clasico - Every Goal, by Minute and Era\", width=960, height=960"
+    "labels=[\"1929\",\"1929\",\"1929\",\"1929\",\"1929\",\"1929\",\"1931\",\"1933\",\"1933\",\"1933\",\"1933\",\"1935\",\"1935\",\"1935\",\"1935\",\"1937\",\"1937\",\"1937\",\"1937\",\"1939\",\"1941\",\"1941\",\"1943\",\"1943\",\"1943\",\"1945\",\"1945\",\"1947\",\"1949\",\"1949\",\"1949\",\"1951\",\"1951\",\"1951\",\"1951\",\"1953\",\"1953\",\"1953\",\"1953\",\"1953\",\"1955\",\"1957\",\"1959\",\"1959\",\"1959\",\"1959\",\"1961\",\"1961\",\"1961\",\"1961\",\"1963\",\"1963\",\"1965\",\"1965\",\"1967\",\"1967\",\"1969\",\"1969\",\"1969\",\"1969\",\"1969\",\"1971\",\"1971\",\"1971\",\"1971\",\"1973\",\"1973\",\"1973\",\"1973\",\"1973\",\"1975\",\"1975\",\"1975\",\"1975\",\"1975\",\"1975\",\"1977\",\"1977\",\"1977\",\"1977\",\"1979\",\"1979\",\"1979\",\"1979\",\"1979\",\"1979\",\"1979\",\"1981\",\"1981\",\"1981\",\"1981\",\"1981\",\"1981\",\"1983\",\"1983\",\"1983\",\"1983\",\"1985\",\"1985\",\"1985\",\"1985\",\"1987\",\"1987\",\"1987\",\"1989\",\"1989\",\"1991\",\"1993\",\"1993\",\"1993\",\"1993\",\"1993\",\"1995\",\"1995\",\"1997\",\"1997\",\"1999\",\"1999\",\"1999\",\"1999\",\"1999\",\"1999\",\"2001\",\"2003\",\"2005\",\"2005\",\"2005\",\"2007\",\"2007\",\"2009\",\"2009\",\"2009\",\"2009\",\"2009\",\"2011\",\"2011\",\"2011\",\"2011\",\"2011\",\"2013\",\"2013\",\"2013\",\"2013\",\"2015\",\"2015\",\"2015\",\"2015\",\"2015\",\"2017\",\"2017\",\"2017\",\"2017\",\"2019\",\"2019\",\"2019\",\"2019\",\"2019\",\"2019\",\"2021\",\"2023\",\"2023\",\"2023\",\"2023\"], values=[1,27,28,88,73,81,40,13,16,18,32,66,17,54,83,76,24,27,51,19,79,10,82,48,80,18,74,30,25,26,71,11,54,31,33,63,77,9,17,30,28,3,8,32,12,17,67,75,85,89,5,40,40,41,6,90,11,44,46,4,64,2,75,33,54,57,59,75,40,77,15,64,79,85,26,67,57,64,26,82,28,29,50,75,6,9,36,49,53,67,81,5,10,36,74,18,83,19,31,35,69,10,26,88,61,29,67,12,21,29,51,1,44,65,83,32,34,40,42,69,54,71,9,69,18,20,61,57,64,57,68,72,33,72,27,90,79,26,90,4,69,16,73,69,32,35,52,61,14,25,41,68,5,20,25,30,64,75,26,3,49,82,81], color_groups=[\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\"], palette=[3316734,15547189], title=\"El Clasico - Every Goal, by Minute and Era\", width=1100, height=1100"
 )]
 
 pub fn render(cfg: &LollipopConfig) -> String {
@@ -98,10 +98,10 @@ pub fn render(cfg: &LollipopConfig) -> String {
         None => return String::new(),
     };
 
-    let cx = 460.0;
-    let cy = 500.0;
-    let r_min = 54.0;
-    let r_max = 360.0;
+    let cx = 520.0;
+    let cy = 560.0;
+    let r_min = 50.0;
+    let r_max = 430.0;
     let r_band = r_max + 16.0;
 
     let a0 = 0.0_f64;
@@ -190,6 +190,7 @@ pub fn render(cfg: &LollipopConfig) -> String {
     }
     let biggest_goals = bounds.iter().map(|&(s, e)| e - s).max().unwrap_or(0);
     let mut shown_busiest = false;
+    let mut busiest: Option<(f64, f64, String, u32)> = None;
 
     for &(s, e) in bounds.iter() {
         let goals = e - s;
@@ -285,8 +286,12 @@ pub fn render(cfg: &LollipopConfig) -> String {
                 color_of_team(teams.first().map(|s| s.as_str()).unwrap_or(""))
             };
             let line1 = format!("{} - {} goals", p.labels[s], goals);
-            callout(&mut b, ax, ay, ax + 90.0, ay - 60.0, &[&line1, "busiest fixture on record"], accent);
+            busiest = Some((ax, ay, line1, accent));
         }
+    }
+
+    if let Some((ax, ay, line1, accent)) = &busiest {
+        callout(&mut b, *ax, *ay, *ax + 90.0, *ay - 60.0, &[line1.as_str(), "busiest fixture on record"], *accent);
     }
 
     {
@@ -364,9 +369,9 @@ mod tests {
         let (labels, values, groups) = synth();
         let cfg_v = cfg(&labels, &values, &groups);
         let html = render(&cfg_v);
-        let cx = 460.0_f64;
-        let cy = 500.0_f64;
-        let r_band = 376.0_f64;
+        let cx = 520.0_f64;
+        let cy = 560.0_f64;
+        let r_band = 446.0_f64;
         for chunk in html.split("<circle data-idx=").skip(1) {
             let x = chunk.split("cx=\"").nth(1).unwrap().split('"').next().unwrap().parse::<f64>().unwrap();
             let y = chunk.split("cy=\"").nth(1).unwrap().split('"').next().unwrap().parse::<f64>().unwrap();
