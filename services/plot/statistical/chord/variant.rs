@@ -5,5 +5,6 @@ crate::plot_family! {
         Arc      => "arc" | "ring" | "outer",
         Mono     => "mono" | "monochrome" | "single",
         Directed => "directed" | "asymmetric" | "flow_direction" | "arrows",
+        Bipartite => "bipartite" | "impact_map" | "influence_map" | "attribute_flow" | "grouped_chord",
     }
 }
