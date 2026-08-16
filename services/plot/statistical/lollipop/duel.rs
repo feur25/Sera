@@ -89,7 +89,7 @@ fn callout(buf: &mut Vec<u8>, ax: f64, ay: f64, bx: f64, by: f64, lines: &[&str]
 }
 
 #[crate::chart_demo(
-    "labels=[\"1929\",\"1943\",\"1953\",\"1953\",\"1964\",\"1974\",\"1974\",\"1974\",\"1986\",\"1994\",\"1994\",\"1994\",\"1994\",\"2002\",\"2002\",\"2009\",\"2011\",\"2017\",\"2017\",\"2023\"], values=[15,35,22,60,90,10,45,75,50,5,30,65,90,40,80,90,20,55,72,38], color_groups=[\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\"], palette=[3316734,15547189], title=\"El Clasico - Every Goal, by Minute and Era\", width=1000, height=800"
+    "labels=[\"1929\",\"1943\",\"1953\",\"1953\",\"1964\",\"1974\",\"1974\",\"1974\",\"1986\",\"1994\",\"1994\",\"1994\",\"1994\",\"2002\",\"2002\",\"2009\",\"2011\",\"2017\",\"2017\",\"2023\"], values=[15,35,22,60,90,10,45,75,50,5,30,65,90,40,80,90,20,55,72,38], color_groups=[\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\",\"Barcelona\",\"Real Madrid\"], palette=[3316734,15547189], title=\"El Clasico - Every Goal, by Minute and Era\", width=960, height=960"
 )]
 
 pub fn render(cfg: &LollipopConfig) -> String {
@@ -98,14 +98,14 @@ pub fn render(cfg: &LollipopConfig) -> String {
         None => return String::new(),
     };
 
-    let cx = 96.0;
-    let cy = 730.0;
+    let cx = 460.0;
+    let cy = 500.0;
     let r_min = 54.0;
-    let r_max = 600.0;
+    let r_max = 360.0;
     let r_band = r_max + 16.0;
 
     let a0 = 0.0_f64;
-    let a1 = -std::f64::consts::FRAC_PI_2;
+    let a1 = -3.0 * std::f64::consts::FRAC_PI_2;
     let vmin = p.vmin.min(0.0);
     let vmax = p.vmax.max(vmin + 1e-9);
     let minute_angle = |v: f64| -> f64 { a0 + (a1 - a0) * ((v - vmin) / (vmax - vmin)).clamp(0.0, 1.0) };
@@ -202,6 +202,7 @@ pub fn render(cfg: &LollipopConfig) -> String {
             let x1 = cx + r * am.cos();
             let y1 = cy + r * am.sin();
             let sweep_flag: u8 = if am > a0 { 1 } else { 0 };
+            let large_flag: u8 = if (am - a0).abs() > std::f64::consts::PI { 1 } else { 0 };
             let full = p.values[i] >= vmax - 1e-6;
             push_b(&mut b, b"<path fill=\"none\" stroke=\"#");
             b.extend_from_slice(&hex6(col));
@@ -217,7 +218,9 @@ pub fn render(cfg: &LollipopConfig) -> String {
             push_f2(&mut b, r);
             push_b(&mut b, b",");
             push_f2(&mut b, r);
-            push_b(&mut b, b" 0 0,");
+            push_b(&mut b, b" 0 ");
+            b.push(large_flag + b'0');
+            push_b(&mut b, b",");
             b.push(sweep_flag + b'0');
             push_b(&mut b, b" ");
             push_f2(&mut b, x1);
@@ -311,8 +314,8 @@ mod tests {
             labels,
             values,
             groups,
-            width: 1000,
-            height: 800,
+            width: 960,
+            height: 960,
             ..LollipopConfig::default()
         }
     }
@@ -361,9 +364,9 @@ mod tests {
         let (labels, values, groups) = synth();
         let cfg_v = cfg(&labels, &values, &groups);
         let html = render(&cfg_v);
-        let cx = 96.0_f64;
-        let cy = 730.0_f64;
-        let r_band = 616.0_f64;
+        let cx = 460.0_f64;
+        let cy = 500.0_f64;
+        let r_band = 376.0_f64;
         for chunk in html.split("<circle data-idx=").skip(1) {
             let x = chunk.split("cx=\"").nth(1).unwrap().split('"').next().unwrap().parse::<f64>().unwrap();
             let y = chunk.split("cy=\"").nth(1).unwrap().split('"').next().unwrap().parse::<f64>().unwrap();
