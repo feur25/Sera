@@ -55,21 +55,24 @@ pub fn render(cfg: &BarConfig) -> String {
 
     let width = cfg.width as f64;
     let height = cfg.height as f64;
-    let max_radius = height * 0.30;
-    let scale = max_radius / vmax;
+    let px = width * 0.40;
+    let py = height * 0.52;
+    let offset = height * 0.32;
+    let r_max = offset;
+    let r_min = offset * 0.08;
 
-    let pad_l = max_radius + 24.0;
-    let pad_r = max_radius + 60.0;
-    let x_left = pad_l;
-    let x_right = (width - pad_r).max(x_left + 40.0);
-    let y_axis = height * 0.52;
+    let c1x = px;
+    let c1y = py - offset;
+    let c2x = px;
+    let c2y = py + offset;
 
-    let x_of = |i: usize| -> f64 { x_left + (x_right - x_left) * i as f64 / (n - 1).max(1) as f64 };
+    let tilt = (-16.0_f64).to_radians();
+    let beta = std::f64::consts::FRAC_PI_2 + tilt;
+    let sweep_max = 300.0_f64.to_radians();
 
-    let start_angle = std::f64::consts::PI;
-    let sweep = 145.0_f64.to_radians();
-    let angle_top = start_angle + sweep;
-    let angle_bottom = start_angle - sweep;
+    let angle_top = |v: f64| -> f64 { beta + sweep_max * (v.abs() / vmax).clamp(0.0, 1.0) };
+    let angle_bottom = |v: f64| -> f64 { -(beta + sweep_max * (v.abs() / vmax).clamp(0.0, 1.0)) };
+    let radius_of = |i: usize| -> f64 { r_min + (r_max - r_min) * i as f64 / (n - 1).max(1) as f64 };
 
     let col_top = palette_color(cfg.palette, 0);
     let col_bottom = palette_color(cfg.palette, 1);
@@ -90,83 +93,109 @@ pub fn render(cfg: &BarConfig) -> String {
     escape_xml(&mut b, &bottom.0);
     push_b(&mut b, b"</text>");
 
+    let label_gap = 22.0;
     let n_ticks = 4;
     for k in 1..=n_ticks {
         let frac = k as f64 / n_ticks as f64;
         let val = vmax * frac;
-        let dy = max_radius * frac;
 
-        for sy in [-1.0_f64, 1.0_f64] {
-            let gy = y_axis + sy * dy;
-            push_b(&mut b, b"<line x1=\"");
-            push_f2(&mut b, x_left);
-            push_b(&mut b, b"\" y1=\"");
-            push_f2(&mut b, gy);
-            push_b(&mut b, b"\" x2=\"");
-            push_f2(&mut b, x_right);
-            push_b(&mut b, b"\" y2=\"");
-            push_f2(&mut b, gy);
-            push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"1\" stroke-dasharray=\"2,3\"/>");
-            push_b(&mut b, b"<text x=\"");
-            push_f2(&mut b, x_right + 10.0);
-            push_b(&mut b, b"\" y=\"");
-            push_f2(&mut b, gy + 3.0);
-            push_b(&mut b, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#94a3b8\">");
-            escape_xml(&mut b, &format!("{:.0}%", val));
-            push_b(&mut b, b"</text>");
-        }
+        let at = angle_top(val);
+        let xt0 = c1x + r_min * at.cos();
+        let yt0 = c1y + r_min * at.sin();
+        let xt1 = c1x + (r_max + label_gap) * at.cos();
+        let yt1 = c1y + (r_max + label_gap) * at.sin();
+        push_b(&mut b, b"<line x1=\"");
+        push_f2(&mut b, xt0);
+        push_b(&mut b, b"\" y1=\"");
+        push_f2(&mut b, yt0);
+        push_b(&mut b, b"\" x2=\"");
+        push_f2(&mut b, xt1);
+        push_b(&mut b, b"\" y2=\"");
+        push_f2(&mut b, yt1);
+        push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"1\"/>");
+        push_b(&mut b, b"<text x=\"");
+        push_f2(&mut b, xt1);
+        push_b(&mut b, b"\" y=\"");
+        push_f2(&mut b, yt1 + 3.0);
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#94a3b8\">");
+        escape_xml(&mut b, &format!("{:.0}%", val));
+        push_b(&mut b, b"</text>");
+
+        let ab = angle_bottom(val);
+        let xb0 = c2x + r_min * ab.cos();
+        let yb0 = c2y + r_min * ab.sin();
+        let xb1 = c2x + (r_max + label_gap) * ab.cos();
+        let yb1 = c2y + (r_max + label_gap) * ab.sin();
+        push_b(&mut b, b"<line x1=\"");
+        push_f2(&mut b, xb0);
+        push_b(&mut b, b"\" y1=\"");
+        push_f2(&mut b, yb0);
+        push_b(&mut b, b"\" x2=\"");
+        push_f2(&mut b, xb1);
+        push_b(&mut b, b"\" y2=\"");
+        push_f2(&mut b, yb1);
+        push_b(&mut b, b"\" stroke=\"#e2e8f0\" stroke-width=\"1\"/>");
+        push_b(&mut b, b"<text x=\"");
+        push_f2(&mut b, xb1);
+        push_b(&mut b, b"\" y=\"");
+        push_f2(&mut b, yb1 + 3.0);
+        push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"#94a3b8\">");
+        escape_xml(&mut b, &format!("{:.0}%", val));
+        push_b(&mut b, b"</text>");
     }
-
-    let label_step = ((n as f64 / 10.0).ceil() as usize).max(1);
 
     for i in 0..n {
-        let xi = x_of(i);
+        let r = radius_of(i);
 
         let vt = top.1.get(i).copied().unwrap_or(0.0);
-        let rt = vt.abs() * scale;
-        value_arc(&mut b, i * 2, &cfg.category_labels[i], vt, xi, y_axis, rt, start_angle, angle_top, col_top, 2.6);
+        let at = angle_top(vt);
+        value_arc(&mut b, i * 2, &cfg.category_labels[i], vt, c1x, c1y, r, beta, at, col_top, 2.6);
 
         let vb = bottom.1.get(i).copied().unwrap_or(0.0);
-        let rb = vb.abs() * scale;
-        value_arc(&mut b, i * 2 + 1, &cfg.category_labels[i], vb, xi, y_axis, rb, start_angle, angle_bottom, col_bottom, 2.6);
+        let ab = angle_bottom(vb);
+        value_arc(&mut b, i * 2 + 1, &cfg.category_labels[i], vb, c2x, c2y, r, -beta, ab, col_bottom, 2.6);
     }
 
+    let axis_x0 = px + offset * 0.08;
+    let axis_x1 = px + offset * 1.05;
     push_b(&mut b, b"<line x1=\"");
-    push_f2(&mut b, x_left - 10.0);
+    push_f2(&mut b, axis_x0);
     push_b(&mut b, b"\" y1=\"");
-    push_f2(&mut b, y_axis);
+    push_f2(&mut b, py);
     push_b(&mut b, b"\" x2=\"");
-    push_f2(&mut b, x_right + 10.0);
+    push_f2(&mut b, axis_x1);
     push_b(&mut b, b"\" y2=\"");
-    push_f2(&mut b, y_axis);
+    push_f2(&mut b, py);
     push_b(&mut b, b"\" stroke=\"#94a3b8\" stroke-width=\"1\"/>");
 
     if !cfg.x_label.is_empty() {
         push_b(&mut b, b"<rect class=\"sp-bg\" x=\"");
-        push_f2(&mut b, x_left - 40.0);
+        push_f2(&mut b, axis_x0 - 38.0);
         push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, y_axis - 9.0);
-        push_b(&mut b, b"\" width=\"38\" height=\"18\"/>");
+        push_f2(&mut b, py - 9.0);
+        push_b(&mut b, b"\" width=\"36\" height=\"18\"/>");
         push_b(&mut b, b"<text x=\"");
-        push_f2(&mut b, x_left - 16.0);
+        push_f2(&mut b, axis_x0 - 14.0);
         push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, y_axis + 3.0);
+        push_f2(&mut b, py + 3.0);
         push_b(&mut b, b"\" text-anchor=\"end\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" font-weight=\"700\" fill=\"#334155\">");
         escape_xml(&mut b, cfg.x_label);
         push_b(&mut b, b"</text>");
     }
 
+    let label_step = ((n as f64 / 8.0).ceil() as usize).max(1);
     for i in (0..n).step_by(label_step) {
-        let xi = x_of(i);
+        let frac = i as f64 / (n - 1).max(1) as f64;
+        let xi = axis_x0 + (axis_x1 - axis_x0) * frac;
         push_b(&mut b, b"<rect class=\"sp-bg\" x=\"");
         push_f2(&mut b, xi - 15.0);
         push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, y_axis - 9.0);
+        push_f2(&mut b, py - 9.0);
         push_b(&mut b, b"\" width=\"30\" height=\"18\"/>");
         push_b(&mut b, b"<text x=\"");
         push_f2(&mut b, xi);
         push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, y_axis + 3.0);
+        push_f2(&mut b, py + 3.0);
         push_b(&mut b, b"\" text-anchor=\"middle\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10\" font-weight=\"600\" fill=\"#475569\">");
         escape_xml(&mut b, truncate(&cfg.category_labels[i], 6));
         push_b(&mut b, b"</text>");
@@ -229,55 +258,71 @@ mod tests {
     }
 
     #[test]
-    fn every_value_arc_is_anchored_on_the_shared_axis_at_its_own_category_position() {
+    fn every_arc_point_stays_within_its_own_series_radius_from_its_own_center() {
         let (cats, series) = synth();
         let html = render(&cfg(&cats, &series));
 
-        let width = 1000.0_f64;
         let height = 900.0_f64;
-        let max_radius = height * 0.30;
-        let pad_l = max_radius + 24.0;
-        let pad_r = max_radius + 60.0;
-        let x_left = pad_l;
-        let x_right = (width - pad_r).max(x_left + 40.0);
-        let y_axis = height * 0.52;
-        let n = cats.len();
-        let x_of = |i: usize| -> f64 { x_left + (x_right - x_left) * i as f64 / (n - 1).max(1) as f64 };
+        let offset = height * 0.32;
+        let r_max = offset;
+        let width = 1000.0_f64;
+        let px = width * 0.40;
+        let py = height * 0.52;
+        let c1 = (px, py - offset);
+        let c2 = (px, py + offset);
 
         for (idx, chunk) in html.split("<path data-idx=").skip(1).enumerate() {
-            let cat_i = idx / 2;
-            let cx = x_of(cat_i);
+            let (cx, cy) = if idx % 2 == 0 { c1 } else { c2 };
             let d = chunk.split("d=\"M").nth(1).unwrap().split('"').next().unwrap();
             let toks: Vec<&str> = d.split(' ').filter(|s| !s.is_empty()).collect();
             let start = toks.first().unwrap();
-            let (xs, ys) = start.split_once(',').unwrap();
-            let x: f64 = xs.parse().unwrap();
-            let y: f64 = ys.parse().unwrap();
-            assert!((y - y_axis).abs() < 1.0, "every arc must start exactly on the shared axis");
-            assert!(x <= cx + 1.0, "the start point must sit at or left of its own category anchor");
+            let end = toks.last().unwrap();
+            for tok in [start, end] {
+                let (xs, ys) = tok.split_once(',').unwrap();
+                let x: f64 = xs.parse().unwrap();
+                let y: f64 = ys.parse().unwrap();
+                let r = ((x - cx).powi(2) + (y - cy).powi(2)).sqrt();
+                assert!(r <= r_max + 1.0);
+            }
         }
     }
 
     #[test]
-    fn the_two_series_never_cross_the_shared_axis_into_each_others_half() {
-        let (cats, series) = synth();
+    fn the_two_series_circles_can_only_ever_meet_at_the_single_shared_pivot() {
+        let height = 900.0_f64;
+        let offset = height * 0.32;
+        let r_max = offset;
+        assert!(r_max <= offset + 1e-9, "outer radius must not exceed the center offset, or the two series disks would overlap");
+    }
+
+    #[test]
+    fn the_mirror_between_series_is_a_true_reflection_not_a_rotation() {
+        let cats: Vec<String> = (0..10).map(|i| format!("{}", 13 + i)).collect();
+        let vals: Vec<f64> = (0..10).map(|i| 1.0 + (i as f64 * 0.5).sin().abs() * 6.0).collect();
+        let series = vec![("Top".to_string(), vals.clone()), ("Bottom".to_string(), vals)];
         let html = render(&cfg(&cats, &series));
 
         let height = 900.0_f64;
-        let y_axis = height * 0.52;
+        let py = height * 0.52;
 
+        let mut top_ends = Vec::new();
+        let mut bottom_ends = Vec::new();
         for (idx, chunk) in html.split("<path data-idx=").skip(1).enumerate() {
-            let is_top = idx % 2 == 0;
             let d = chunk.split("d=\"M").nth(1).unwrap().split('"').next().unwrap();
             let toks: Vec<&str> = d.split(' ').filter(|s| !s.is_empty()).collect();
             let end = toks.last().unwrap();
-            let (_, ys) = end.split_once(',').unwrap();
-            let y: f64 = ys.parse().unwrap();
-            if is_top {
-                assert!(y <= y_axis + 1.0, "the top series must never dip below the shared axis");
+            let (xs, ys) = end.split_once(',').unwrap();
+            let point = (xs.parse::<f64>().unwrap(), ys.parse::<f64>().unwrap());
+            if idx % 2 == 0 {
+                top_ends.push(point);
             } else {
-                assert!(y >= y_axis - 1.0, "the bottom series must never rise above the shared axis");
+                bottom_ends.push(point);
             }
+        }
+
+        for (t, bo) in top_ends.iter().zip(bottom_ends.iter()) {
+            assert!((t.0 - bo.0).abs() < 1.0, "identical data must land at the same x when truly mirrored, got top={t:?} bottom={bo:?}");
+            assert!(((py - t.1) - (bo.1 - py)).abs() < 1.0, "identical data must be equidistant above/below the pivot line when truly mirrored, got top={t:?} bottom={bo:?}");
         }
     }
 
