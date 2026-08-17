@@ -7,6 +7,7 @@ pub mod dashed;
 pub mod filled;
 pub mod lines;
 pub mod markers;
+pub mod petal;
 pub mod polar_bar;
 pub mod stacked;
 pub mod variant;
@@ -25,6 +26,7 @@ pub fn render_radar_html(cfg: &RadarConfig) -> String {
         Stacked => stacked::render(cfg),
         PolarBar => polar_bar::render(cfg),
         Band => band::render(cfg),
+        Petal => petal::render(cfg),
     }
 }
 

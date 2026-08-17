@@ -8,5 +8,6 @@ crate::plot_family! {
         Stacked  => "stacked" | "stack" | "cumulative",
         PolarBar => "polar_bar" | "polar" | "bar" | "radial_bar",
         Band     => "band" | "range" | "uncertainty" | "minmax",
+        Petal    => "petal" | "flower" | "bloom" | "petal_diagram" | "nightingale_petal",
     }
 }
