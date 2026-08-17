@@ -32,15 +32,12 @@ pub fn render(cfg: &RadarConfig) -> String {
     let step = nice_step(global_max);
     let n_rings = (global_max / step).ceil().max(1.0) as usize;
 
-    let bg_hx = [0xf7, 0xf0, 0xe3];
+    let bg_hx = [0xff, 0xff, 0xff];
     let ink = "#33302c";
     let sub_ink = "#8a8378";
 
     let mut b = Vec::<u8>::with_capacity(4096 + n_axes * n_ser * 220);
     svg_open(&mut b, cfg.width, cfg.height);
-    push_b(&mut b, b"<rect fill=\"#");
-    push_hex3(&mut b, &bg_hx);
-    push_b(&mut b, b"\" width=\"100%\" height=\"100%\"/>");
 
     if !cfg.title.is_empty() {
         push_b(&mut b, b"<text x=\"32\" y=\"46\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"26\" font-weight=\"800\" fill=\"");
