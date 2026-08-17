@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('radar-en','stacked',this)"><span class="sp-cic">S</span><span class="sp-clb">Stacked</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-en','polar_bar',this)"><span class="sp-cic">P</span><span class="sp-clb">PolarBar</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-en','band',this)"><span class="sp-cic">▨</span><span class="sp-clb">Band</span></button>
+<button class="sp-cls-tab" onclick="spCls('radar-en','petal',this)"><span class="sp-cic">✿</span><span class="sp-clb">Petal</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="radar-en-basic">
@@ -95,6 +96,13 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <div class="sp-preview-label">Preview</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-band.html"></iframe>
 </div>
+
+<div class="sp-variant" id="radar-en-petal">
+<div class="sp-vmeta"><span><strong>Variant</strong> <code>"petal"</code></span><span><strong>Aliases</strong> <code>petal / flower / bloom / petal_diagram / nightingale_petal</code></span><span><strong>Returns</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Each axis grows a symmetric leaf-shaped petal per series instead of a shared polygon vertex — length still encodes the value, but the rounded silhouette reads as a bloom. Historical vs. projected categories get solid vs. outlined badge markers automatically.</p>
+<div class="sp-preview-label">Preview</div>
+<iframe class="sp-preview-frame" src="../../previews/radar-petal.html"></iframe>
+</div>
 </div></div>
 
 </div><!-- /lang-en -->
@@ -135,6 +143,7 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <button class="sp-cls-tab" onclick="spCls('radar-fr','stacked',this)"><span class="sp-cic">S</span><span class="sp-clb">Stacked</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-fr','polar_bar',this)"><span class="sp-cic">P</span><span class="sp-clb">PolarBar</span></button>
 <button class="sp-cls-tab" onclick="spCls('radar-fr','band',this)"><span class="sp-cic">▨</span><span class="sp-clb">Bande</span></button>
+<button class="sp-cls-tab" onclick="spCls('radar-fr','petal',this)"><span class="sp-cic">✿</span><span class="sp-clb">Pétale</span></button>
 </div>
 <div class="sp-cls-body">
 <div class="sp-variant sp-von" id="radar-fr-basic">
@@ -185,6 +194,13 @@ document.addEventListener('DOMContentLoaded',function(){if(window.hljs)document.
 <p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Fusion radar + bande d'incertitude : au lieu d'une ligne par série, chaque groupe reçoit un anneau ombré entre une borne basse et haute par axe, avec une ligne médiane en pointillés et des marqueurs — passez <code>series</code> comme des paires bas/haut (<code>[groupe1_bas, groupe1_haut, groupe2_bas, groupe2_haut, ...]</code>). Idéal pour des intervalles de confiance, des plages min/max ou des écarts de prévision sur plusieurs dimensions à la fois.</p>
 <div class="sp-preview-label">Aperçu</div>
 <iframe class="sp-preview-frame" src="../../previews/radar-band.html"></iframe>
+</div>
+
+<div class="sp-variant" id="radar-fr-petal">
+<div class="sp-vmeta"><span><strong>Variante</strong> <code>"petal"</code></span><span><strong>Alias</strong> <code>petal / flower / bloom / petal_diagram / nightingale_petal</code></span><span><strong>Retour</strong> <code>Chart</code></span></div>
+<p style="color:#94a3b8;font-size:13px;margin:0 0 14px">Chaque axe fait pousser un pétale symétrique en forme de feuille par série au lieu d'un sommet de polygone partagé — la longueur encode toujours la valeur, mais la silhouette arrondie se lit comme une fleur. Les catégories historiques vs. projetées reçoivent automatiquement des badges pleins vs. contour.</p>
+<div class="sp-preview-label">Aperçu</div>
+<iframe class="sp-preview-frame" src="../../previews/radar-petal.html"></iframe>
 </div>
 </div></div>
 
