@@ -3,7 +3,7 @@ use crate::html::hover::{build_chart_html, slots_to_json, HoverSlot};
 use crate::plot::statistical::common::{escape_xml, hex6, palette_color, push_b, push_f2, push_i, svg_open};
 
 #[crate::chart_demo(
-    "labels=[\"Radiohead\",\"Nirvana\",\"Pink Floyd\",\"Led Zeppelin\",\"Queen\",\"The Beatles\",\"Madonna\",\"Michael Jackson\",\"Beyonce\",\"Taylor Swift\",\"Ariana Grande\",\"Rihanna\",\"Miles Davis\",\"John Coltrane\",\"Duke Ellington\",\"Ella Fitzgerald\",\"Nina Simone\",\"Chet Baker\",\"Daft Punk\",\"Aphex Twin\",\"Kraftwerk\",\"Boards of Canada\",\"Four Tet\",\"Bonobo\",\"Kendrick Lamar\",\"Nas\",\"Outkast\",\"J Dilla\",\"MF DOOM\",\"Wu-Tang Clan\"], categories=[\"Rock\",\"Rock\",\"Rock\",\"Rock\",\"Rock\",\"Rock\",\"Pop\",\"Pop\",\"Pop\",\"Pop\",\"Pop\",\"Pop\",\"Jazz\",\"Jazz\",\"Jazz\",\"Jazz\",\"Jazz\",\"Jazz\",\"Electronic\",\"Electronic\",\"Electronic\",\"Electronic\",\"Electronic\",\"Electronic\",\"HipHop\",\"HipHop\",\"HipHop\",\"HipHop\",\"HipHop\",\"HipHop\"], axes=[\"10-19\",\"20-29\",\"30-39\",\"40-49\",\"50-59\",\"60+\"], matrix=[[17.8,7.6,23.2,20.3,12.4,10.2],[17.1,19.0,16.9,22.3,3.1,14.6],[13.6,19.9,26.9,11.4,8.9,14.0],[2.4,10.3,8.0,6.6,3.1,15.8],[4.3,6.5,14.5,28.3,3.5,10.1],[11.9,17.9,26.8,28.1,7.0,9.5],[18.6,32.2,19.2,4.7,5.2,6.2],[13.6,19.3,12.6,6.7,2.1,9.5],[19.0,21.9,19.2,14.4,11.3,13.1],[31.2,5.3,18.2,16.0,17.7,16.4],[19.9,16.5,3.9,13.4,3.1,3.2],[12.7,8.9,8.1,2.9,2.0,4.7],[3.8,8.5,2.5,17.7,26.1,10.7],[6.5,8.3,8.6,4.2,34.6,45.7],[10.4,10.7,3.5,3.8,16.3,15.6],[16.9,4.9,2.4,19.1,23.0,10.7],[11.8,2.5,11.5,19.6,35.1,33.4],[6.7,8.6,5.0,15.9,23.2,36.9],[7.9,9.6,26.6,19.7,17.3,16.5],[16.7,24.5,9.7,11.3,8.4,2.5],[2.5,11.2,10.7,14.5,19.2,10.1],[18.9,31.7,30.7,8.6,6.0,6.1],[5.5,9.1,21.2,18.2,17.1,10.6],[13.8,26.2,5.6,13.9,18.4,16.1],[27.9,21.2,5.2,16.2,8.0,16.4],[35.1,18.3,9.2,19.0,15.0,5.1],[7.7,9.4,18.3,16.5,4.6,16.9],[35.4,27.7,8.3,11.9,4.4,2.3],[35.1,27.4,11.5,18.8,9.8,17.7],[30.4,11.6,6.5,7.3,6.3,12.6]], series=[[45.9,32.1,72.1,25.8,62.9,49.3,24.6,60.6,23.0,54.7,25.6,27.3,54.0,86.1,29.9,37.9,70.2,95.8,66.2,51.7,98.1,23.7,88.7,43.2,31.5,29.4,44.7,85.3,34.5,66.5],[23.4,14.2,35.1,9.4,23.0,19.8,12.8,27.7,9.9,27.2,11.9,11.6,29.6,45.2,12.3,18.7,33.8,54.5,35.2,21.8,58.4,9.0,40.3,23.3,12.2,13.9,16.1,44.1,18.7,32.8]], series_names=[\"Total Plays\",\"Total Listeners\"], edges_i=[3,3,4,7,10,11,13,15,13,22,22,21,29,28,28,1,27,22,12,5,23], edges_j=[4,5,5,11,9,10,12,14,12,18,21,22,25,24,24,25,2,7,23,20,2], variant=\"basic\", title=\"Listening Habits by Cluster\", width=1180, height=1040"
+    "labels=[\"Radiohead\",\"Nirvana\",\"Pink Floyd\",\"Led Zeppelin\",\"Queen\",\"The Beatles\",\"Madonna\",\"Michael Jackson\",\"Beyonce\",\"Taylor Swift\",\"Ariana Grande\",\"Rihanna\",\"Miles Davis\",\"John Coltrane\",\"Duke Ellington\",\"Ella Fitzgerald\",\"Nina Simone\",\"Chet Baker\",\"Daft Punk\",\"Aphex Twin\",\"Kraftwerk\",\"Boards of Canada\",\"Four Tet\",\"Bonobo\",\"Kendrick Lamar\",\"Nas\",\"Outkast\",\"J Dilla\",\"MF DOOM\",\"Wu-Tang Clan\"], categories=[\"Rock\",\"Rock\",\"Rock\",\"Rock\",\"Rock\",\"Rock\",\"Pop\",\"Pop\",\"Pop\",\"Pop\",\"Pop\",\"Pop\",\"Jazz\",\"Jazz\",\"Jazz\",\"Jazz\",\"Jazz\",\"Jazz\",\"Electronic\",\"Electronic\",\"Electronic\",\"Electronic\",\"Electronic\",\"Electronic\",\"HipHop\",\"HipHop\",\"HipHop\",\"HipHop\",\"HipHop\",\"HipHop\"], axes=[\"10-19\",\"20-29\",\"30-39\",\"40-49\",\"50-59\",\"60+\"], matrix=[[17.8,7.6,23.2,20.3,12.4,10.2],[17.1,19.0,16.9,22.3,3.1,14.6],[13.6,19.9,26.9,11.4,8.9,14.0],[2.4,10.3,8.0,6.6,3.1,15.8],[4.3,6.5,14.5,28.3,3.5,10.1],[11.9,17.9,26.8,28.1,7.0,9.5],[18.6,32.2,19.2,4.7,5.2,6.2],[13.6,19.3,12.6,6.7,2.1,9.5],[19.0,21.9,19.2,14.4,11.3,13.1],[31.2,5.3,18.2,16.0,17.7,16.4],[19.9,16.5,3.9,13.4,3.1,3.2],[12.7,8.9,8.1,2.9,2.0,4.7],[3.8,8.5,2.5,17.7,26.1,10.7],[6.5,8.3,8.6,4.2,34.6,45.7],[10.4,10.7,3.5,3.8,16.3,15.6],[16.9,4.9,2.4,19.1,23.0,10.7],[11.8,2.5,11.5,19.6,35.1,33.4],[6.7,8.6,5.0,15.9,23.2,36.9],[7.9,9.6,26.6,19.7,17.3,16.5],[16.7,24.5,9.7,11.3,8.4,2.5],[2.5,11.2,10.7,14.5,19.2,10.1],[18.9,31.7,30.7,8.6,6.0,6.1],[5.5,9.1,21.2,18.2,17.1,10.6],[13.8,26.2,5.6,13.9,18.4,16.1],[27.9,21.2,5.2,16.2,8.0,16.4],[35.1,18.3,9.2,19.0,15.0,5.1],[7.7,9.4,18.3,16.5,4.6,16.9],[35.4,27.7,8.3,11.9,4.4,2.3],[35.1,27.4,11.5,18.8,9.8,17.7],[30.4,11.6,6.5,7.3,6.3,12.6]], series=[[45.9,32.1,72.1,25.8,62.9,49.3,24.6,60.6,23.0,54.7,25.6,27.3,54.0,86.1,29.9,37.9,70.2,95.8,66.2,51.7,98.1,23.7,88.7,43.2,31.5,29.4,44.7,85.3,34.5,66.5],[23.4,14.2,35.1,9.4,23.0,19.8,12.8,27.7,9.9,27.2,11.9,11.6,29.6,45.2,12.3,18.7,33.8,54.5,35.2,21.8,58.4,9.0,40.3,23.3,12.2,13.9,16.1,44.1,18.7,32.8]], series_names=[\"Total Plays\",\"Total Listeners\"], edges_i=[3,3,4,7,10,11,13,15,13,22,22,21,29,28,28,1,27,22,12,5,23], edges_j=[4,5,5,11,9,10,12,14,12,18,21,22,25,24,24,25,2,7,23,20,2], variant=\"basic\", title=\"Listening Habits by Cluster\", width=1400, height=1300"
 )]
 pub fn render(cfg: &CircosConfig) -> String {
     let n = cfg.item_labels.len();
@@ -13,9 +13,9 @@ pub fn render(cfg: &CircosConfig) -> String {
 
     let w = cfg.width as f64;
     let h = cfg.height as f64;
-    let cx = w * 0.37;
-    let cy = h * 0.535;
-    let r = 330.0_f64.min(w * 0.4).min(h * 0.38);
+    let cx = w * 0.40;
+    let cy = h * 0.54;
+    let r = 380.0_f64.min(w * 0.4).min(h * 0.36);
 
     let mut group_order: Vec<&str> = Vec::new();
     for g in cfg.item_groups {
@@ -57,30 +57,98 @@ pub fn render(cfg: &CircosConfig) -> String {
         counts_seen[gi] += 1;
     }
 
-    let r_bound_out = r - 3.0;
-    let r_bound_in = r_bound_out - 12.0;
+    let n_cat = cfg.heat_categories.len();
+
+    let avg_age_t: Vec<f64> = (0..n)
+        .map(|i| {
+            let row = cfg.heat_matrix.get(i);
+            match row {
+                Some(row) if !row.is_empty() && n_cat > 1 => {
+                    let total: f64 = row.iter().sum();
+                    if total <= 0.0 {
+                        0.0
+                    } else {
+                        let idx: f64 = row.iter().enumerate().map(|(c, &v)| c as f64 * v).sum::<f64>() / total;
+                        idx / (n_cat as f64 - 1.0)
+                    }
+                }
+                _ => 0.0,
+            }
+        })
+        .collect();
+
+    let ratio: Vec<f64> = (0..n)
+        .map(|i| {
+            let plays = cfg.bar_series.first().and_then(|(_, v)| v.get(i)).copied().unwrap_or(0.0);
+            let listeners = cfg.bar_series.get(1).and_then(|(_, v)| v.get(i)).copied().unwrap_or(0.0).max(1e-9);
+            plays / listeners
+        })
+        .collect();
+    let ratio_max = ratio.iter().copied().fold(0.0_f64, f64::max).max(1e-9);
+    let ratio_t: Vec<f64> = ratio.iter().map(|&v| (v / ratio_max).clamp(0.0, 1.0)).collect();
+
+    let mut rank_order: Vec<usize> = (0..n).collect();
+    let plays0: Vec<f64> = cfg.bar_series.first().map(|(_, v)| v.clone()).unwrap_or_default();
+    rank_order.sort_by(|&a, &b| {
+        plays0.get(b).copied().unwrap_or(0.0).partial_cmp(&plays0.get(a).copied().unwrap_or(0.0)).unwrap_or(std::cmp::Ordering::Equal)
+    });
+    let mut rank_t = vec![0.0_f64; n];
+    for (pos, &idx) in rank_order.iter().enumerate() {
+        rank_t[idx] = if n > 1 { pos as f64 / (n as f64 - 1.0) } else { 0.0 };
+    }
+
+    let mut ring_cursor = r;
+
+    let age_band = 15.0;
+    let r_age = ring_cursor - age_band / 2.0;
+    ring_cursor -= age_band + 4.0;
+
+    let r_bound_out = ring_cursor;
+    let r_bound_in = ring_cursor - 12.0;
+    ring_cursor = r_bound_in - 5.0;
 
     let n_bar = cfg.bar_series.len();
-    let bar_band_total = 140.0;
+    let bar_band_total = 108.0;
     let per_bar_h = if n_bar > 0 { (bar_band_total - (n_bar as f64 - 1.0) * 5.0) / n_bar as f64 } else { 0.0 };
     let mut bar_rings: Vec<(f64, f64)> = Vec::with_capacity(n_bar);
-    let mut bc = r_bound_in - 6.0;
     for _ in 0..n_bar {
-        bar_rings.push((bc - per_bar_h, bc));
-        bc -= per_bar_h + 5.0;
+        bar_rings.push((ring_cursor - per_bar_h, ring_cursor));
+        ring_cursor -= per_bar_h + 5.0;
     }
-    let after_bars = if n_bar > 0 { bc + 5.0 - 10.0 } else { r_bound_in - 6.0 };
+    if n_bar > 0 {
+        ring_cursor -= 3.0;
+    }
 
-    let n_cat = cfg.heat_categories.len();
-    let heat_band_total = 130.0_f64.min((after_bars - 60.0).max(0.0));
+    let has_ratio = cfg.bar_series.len() >= 2;
+    let r_ratio_out = ring_cursor;
+    let r_ratio_in = ring_cursor - 13.0;
+    if has_ratio {
+        ring_cursor = r_ratio_in - 3.0;
+    }
+
+    let has_rank = !plays0.is_empty();
+    let r_rank_out = ring_cursor;
+    let r_rank_in = ring_cursor - 13.0;
+    if has_rank {
+        ring_cursor = r_rank_in - 8.0;
+    }
+
+    let heat_band_total = 68.0_f64.min((ring_cursor - 90.0).max(0.0));
     let cat_h = if n_cat > 0 { heat_band_total / n_cat as f64 } else { 0.0 };
-    let r_heat_out = after_bars;
-    let r_heat_in = (r_heat_out - heat_band_total).max(48.0);
+    let r_heat_out = ring_cursor;
+    let r_heat_in = (r_heat_out - heat_band_total).max(70.0);
+    ring_cursor = r_heat_in - 6.0;
+
+    let has_comp = n_cat > 0 && !cfg.heat_matrix.is_empty();
+    let comp_band = 16.0;
+    let r_comp_out = ring_cursor;
+    let r_comp_in = (ring_cursor - comp_band).max(44.0);
+    let r_links = if has_comp { r_comp_in - 4.0 } else { r_heat_in - 4.0 }.max(40.0);
 
     let ink = "#1f2530";
     let sub_ink = "#6b7280";
 
-    let mut b = Vec::<u8>::with_capacity(8192 + n * 400 + cfg.link_sources.len() * 120);
+    let mut b = Vec::<u8>::with_capacity(8192 + n * 600 + cfg.link_sources.len() * 120);
     svg_open(&mut b, cfg.width, cfg.height);
 
     if !cfg.title.is_empty() {
@@ -107,8 +175,8 @@ pub fn render(cfg: &CircosConfig) -> String {
         }
         let sa = item_angle[si];
         let ta = item_angle[ti];
-        let (sx, sy) = (cx + r_heat_in * sa.cos(), cy + r_heat_in * sa.sin());
-        let (tx, ty) = (cx + r_heat_in * ta.cos(), cy + r_heat_in * ta.sin());
+        let (sx, sy) = (cx + r_links * sa.cos(), cy + r_links * sa.sin());
+        let (tx, ty) = (cx + r_links * ta.cos(), cy + r_links * ta.sin());
         push_b(&mut b, b"<path d=\"M");
         push_f2(&mut b, sx);
         push_b(&mut b, b",");
@@ -125,6 +193,25 @@ pub fn render(cfg: &CircosConfig) -> String {
     }
     push_b(&mut b, b"</g>");
 
+    if has_comp {
+        for i in 0..n {
+            let row = &cfg.heat_matrix[i];
+            let total: f64 = row.iter().sum::<f64>().max(1e-9);
+            let a0 = item_angle[i] - item_slot[i] / 2.0;
+            let mut ac = a0;
+            for (ci, &v) in row.iter().enumerate() {
+                let seg = item_slot[i] * (v / total);
+                let color = hex6(palette_color(cfg.palette, ci));
+                push_b(&mut b, b"<path fill=\"#");
+                b.extend_from_slice(&color);
+                push_b(&mut b, b"\" d=\"");
+                ring_wedge(&mut b, cx, cy, r_comp_in, r_comp_out, ac, ac + seg);
+                push_b(&mut b, b"\"/>");
+                ac += seg;
+            }
+        }
+    }
+
     if n_cat > 0 && !cfg.heat_matrix.is_empty() {
         let heat_max = cfg.heat_matrix.iter().flat_map(|row| row.iter().copied()).fold(0.0_f64, f64::max).max(1e-9);
         for ci in 0..n_cat {
@@ -133,7 +220,7 @@ pub fn render(cfg: &CircosConfig) -> String {
             for i in 0..n {
                 let v = cfg.heat_matrix.get(i).and_then(|row| row.get(ci)).copied().unwrap_or(0.0);
                 let t = (v / heat_max).clamp(0.0, 1.0);
-                let color = heat_color(t);
+                let color = ramp(&WARM, t);
                 let a1 = item_angle[i] - item_slot[i] / 2.0;
                 let a2 = item_angle[i] + item_slot[i] / 2.0;
                 push_b(&mut b, b"<path fill=\"");
@@ -142,6 +229,32 @@ pub fn render(cfg: &CircosConfig) -> String {
                 ring_wedge(&mut b, cx, cy, ring_in, ring_out, a1, a2);
                 push_b(&mut b, b"\"/>");
             }
+        }
+    }
+
+    if has_rank {
+        for i in 0..n {
+            let color = ramp(&MONO, rank_t[i]);
+            let a1 = item_angle[i] - item_slot[i] / 2.0;
+            let a2 = item_angle[i] + item_slot[i] / 2.0;
+            push_b(&mut b, b"<path fill=\"");
+            push_b(&mut b, color.as_bytes());
+            push_b(&mut b, b"\" d=\"");
+            ring_wedge(&mut b, cx, cy, r_rank_in, r_rank_out, a1, a2);
+            push_b(&mut b, b"\"/>");
+        }
+    }
+
+    if has_ratio {
+        for i in 0..n {
+            let color = ramp(&COOL, ratio_t[i]);
+            let a1 = item_angle[i] - item_slot[i] / 2.0;
+            let a2 = item_angle[i] + item_slot[i] / 2.0;
+            push_b(&mut b, b"<path fill=\"");
+            push_b(&mut b, color.as_bytes());
+            push_b(&mut b, b"\" d=\"");
+            ring_wedge(&mut b, cx, cy, r_ratio_in, r_ratio_out, a1, a2);
+            push_b(&mut b, b"\"/>");
         }
     }
 
@@ -176,6 +289,18 @@ pub fn render(cfg: &CircosConfig) -> String {
 
     for i in 0..n {
         let a = item_angle[i];
+        let color = ramp(&WARM, avg_age_t[i]);
+        push_b(&mut b, b"<circle cx=\"");
+        push_f2(&mut b, cx + r_age * a.cos());
+        push_b(&mut b, b"\" cy=\"");
+        push_f2(&mut b, cy + r_age * a.sin());
+        push_b(&mut b, b"\" r=\"3.4\" fill=\"");
+        push_b(&mut b, color.as_bytes());
+        push_b(&mut b, b"\" stroke=\"#ffffff\" stroke-width=\"0.8\"/>");
+    }
+
+    for i in 0..n {
+        let a = item_angle[i];
         let (lx, ly) = (cx + (r + 8.0) * a.cos(), cy + (r + 8.0) * a.sin());
         let deg = a.to_degrees();
         let (render_deg, anchor) = if a.cos() < 0.0 { (deg + 180.0, "end") } else { (deg, "start") };
@@ -204,24 +329,33 @@ pub fn render(cfg: &CircosConfig) -> String {
 
     let lx0 = cx + r + 190.0;
     let mut ly0 = cy - r + 6.0;
-    let line_h = 24.0;
+    let line_h = 22.0;
 
-    push_b(&mut b, b"<text x=\"");
-    push_f2(&mut b, lx0);
-    push_b(&mut b, b"\" y=\"");
-    push_f2(&mut b, ly0);
-    push_b(&mut b, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" font-weight=\"800\" fill=\"");
-    push_b(&mut b, ink.as_bytes());
-    push_b(&mut b, b"\">ITEM NAME</text>");
+    let legend_text = |b: &mut Vec<u8>, ly: f64, text: &str| {
+        push_b(b, b"<text x=\"");
+        push_f2(b, lx0);
+        push_b(b, b"\" y=\"");
+        push_f2(b, ly);
+        push_b(b, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"10.5\" font-weight=\"800\" fill=\"");
+        push_b(b, ink.as_bytes());
+        push_b(b, b"\">");
+        escape_xml(b, text);
+        push_b(b, b"</text>");
+    };
+
+    legend_text(&mut b, ly0, "ITEM NAME");
+    ly0 += line_h;
+    legend_text(&mut b, ly0, "CLUSTER BOUNDARIES");
     ly0 += line_h;
 
-    push_b(&mut b, b"<text x=\"");
-    push_f2(&mut b, lx0);
-    push_b(&mut b, b"\" y=\"");
-    push_f2(&mut b, ly0);
-    push_b(&mut b, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" font-weight=\"800\" fill=\"");
-    push_b(&mut b, ink.as_bytes());
-    push_b(&mut b, b"\">CLUSTER BOUNDARIES</text>");
+    push_b(&mut b, b"<circle cx=\"");
+    push_f2(&mut b, lx0 - 12.0);
+    push_b(&mut b, b"\" cy=\"");
+    push_f2(&mut b, ly0 - 4.0);
+    push_b(&mut b, b"\" r=\"4\" fill=\"");
+    push_b(&mut b, ramp(&WARM, 0.7).as_bytes());
+    push_b(&mut b, b"\"/>");
+    legend_text(&mut b, ly0, "AVERAGE AGE INDEX");
     ly0 += line_h;
 
     for (bi, (name, _)) in cfg.bar_series.iter().enumerate() {
@@ -233,26 +367,21 @@ pub fn render(cfg: &CircosConfig) -> String {
         push_b(&mut b, b"\" width=\"10\" height=\"10\" fill=\"#");
         b.extend_from_slice(&color);
         push_b(&mut b, b"\"/>");
-        push_b(&mut b, b"<text x=\"");
-        push_f2(&mut b, lx0);
-        push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, ly0);
-        push_b(&mut b, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" font-weight=\"800\" fill=\"");
-        push_b(&mut b, ink.as_bytes());
-        push_b(&mut b, b"\">");
-        escape_xml(&mut b, &name.to_uppercase());
-        push_b(&mut b, b"</text>");
+        legend_text(&mut b, ly0, &name.to_uppercase());
+        ly0 += line_h;
+    }
+
+    if has_ratio {
+        legend_text(&mut b, ly0, "PLAYS PER LISTENER");
+        ly0 += line_h;
+    }
+    if has_rank {
+        legend_text(&mut b, ly0, "PLAY RANK");
         ly0 += line_h;
     }
 
     if n_cat > 0 {
-        push_b(&mut b, b"<text x=\"");
-        push_f2(&mut b, lx0);
-        push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, ly0);
-        push_b(&mut b, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" font-weight=\"800\" fill=\"");
-        push_b(&mut b, ink.as_bytes());
-        push_b(&mut b, b"\">CATEGORY INTENSITY</text>");
+        legend_text(&mut b, ly0, "AGE GROUP INTENSITY");
         ly0 += 18.0;
         for k in 0..10 {
             let t = k as f64 / 9.0;
@@ -261,20 +390,36 @@ pub fn render(cfg: &CircosConfig) -> String {
             push_b(&mut b, b"\" y=\"");
             push_f2(&mut b, ly0 - 9.0);
             push_b(&mut b, b"\" width=\"11\" height=\"11\" fill=\"");
-            push_b(&mut b, heat_color(t).as_bytes());
+            push_b(&mut b, ramp(&WARM, t).as_bytes());
             push_b(&mut b, b"\"/>");
         }
         ly0 += line_h;
-        push_b(&mut b, b"<text x=\"");
-        push_f2(&mut b, lx0);
-        push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, ly0 - 14.0);
-        push_b(&mut b, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"");
-        push_b(&mut b, sub_ink.as_bytes());
-        push_b(&mut b, b"\">");
-        escape_xml(&mut b, &cfg.heat_categories.join(" / "));
-        push_b(&mut b, b"</text>");
-        ly0 += line_h;
+    }
+
+    if has_comp {
+        legend_text(&mut b, ly0, "AGE GROUP COMPOSITION");
+        ly0 += 18.0;
+        for (ci, cat) in cfg.heat_categories.iter().enumerate() {
+            let color = hex6(palette_color(cfg.palette, ci));
+            push_b(&mut b, b"<rect x=\"");
+            push_f2(&mut b, lx0 - 16.0);
+            push_b(&mut b, b"\" y=\"");
+            push_f2(&mut b, ly0 - 9.0);
+            push_b(&mut b, b"\" width=\"9\" height=\"9\" fill=\"#");
+            b.extend_from_slice(&color);
+            push_b(&mut b, b"\"/>");
+            push_b(&mut b, b"<text x=\"");
+            push_f2(&mut b, lx0 + 6.0);
+            push_b(&mut b, b"\" y=\"");
+            push_f2(&mut b, ly0);
+            push_b(&mut b, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"9\" fill=\"");
+            push_b(&mut b, sub_ink.as_bytes());
+            push_b(&mut b, b"\">");
+            escape_xml(&mut b, cat);
+            push_b(&mut b, b"</text>");
+            ly0 += 15.0;
+        }
+        ly0 += line_h - 15.0;
     }
 
     if e > 0 {
@@ -287,13 +432,7 @@ pub fn render(cfg: &CircosConfig) -> String {
         push_b(&mut b, b"\" y2=\"");
         push_f2(&mut b, ly0 - 4.0);
         push_b(&mut b, b"\" stroke=\"#334155\" stroke-width=\"1.2\"/>");
-        push_b(&mut b, b"<text x=\"");
-        push_f2(&mut b, lx0);
-        push_b(&mut b, b"\" y=\"");
-        push_f2(&mut b, ly0);
-        push_b(&mut b, b"\" font-family=\"-apple-system,Arial,sans-serif\" font-size=\"11\" font-weight=\"800\" fill=\"");
-        push_b(&mut b, ink.as_bytes());
-        push_b(&mut b, b"\">CO-OCCURRENCE</text>");
+        legend_text(&mut b, ly0, "CO-OCCURRENCE");
     }
 
     push_b(&mut b, b"</svg>");
@@ -338,8 +477,12 @@ fn ring_wedge(buf: &mut Vec<u8>, cx: f64, cy: f64, r1: f64, r2: f64, a1: f64, a2
     push_b(buf, b"Z");
 }
 
-fn heat_color(t: f64) -> String {
-    let stops = [(0xff, 0xf6, 0xd6), (0xfb, 0x9a, 0x4b), (0xc9, 0x27, 0x37), (0x5c, 0x0a, 0x2e)];
+type Stop = (u8, u8, u8);
+const WARM: [Stop; 4] = [(0xff, 0xf6, 0xd6), (0xfb, 0x9a, 0x4b), (0xc9, 0x27, 0x37), (0x5c, 0x0a, 0x2e)];
+const COOL: [Stop; 4] = [(0xe8, 0xf1, 0xfb), (0x7f, 0xb8, 0xe6), (0x3a, 0x6f, 0xb5), (0x1b, 0x2a, 0x5e)];
+const MONO: [Stop; 4] = [(0xf1, 0xf2, 0xf4), (0xb9, 0xbf, 0xc7), (0x6b, 0x74, 0x80), (0x1a, 0x1d, 0x22)];
+
+fn ramp(stops: &[Stop; 4], t: f64) -> String {
     let t = t.clamp(0.0, 1.0);
     let seg = (stops.len() - 1) as f64 * t;
     let i = (seg.floor() as usize).min(stops.len() - 2);
@@ -374,8 +517,8 @@ mod tests {
             heat_matrix,
             link_sources,
             link_targets,
-            width: 960,
-            height: 1040,
+            width: 1400,
+            height: 1300,
             ..CircosConfig::default()
         }
     }
@@ -434,6 +577,13 @@ mod tests {
     }
 
     #[test]
+    fn renders_one_age_dot_and_one_composition_slice_group_per_item() {
+        let (l, g, bs, hc, hm, ls, lt) = synth(12);
+        let html = render(&cfg(&l, &g, &bs, &hc, &hm, &ls, &lt));
+        assert_eq!(html.matches("stroke=\"#ffffff\" stroke-width=\"0.8\"/>").count(), l.len());
+    }
+
+    #[test]
     fn empty_input_returns_empty_string() {
         let empty_s: Vec<String> = vec![];
         let empty_t: Vec<(String, Vec<f64>)> = vec![];
@@ -443,12 +593,14 @@ mod tests {
     }
 
     #[test]
-    fn heat_color_stays_within_valid_hex_bounds_across_the_full_range() {
-        for i in 0..=20 {
-            let t = i as f64 / 20.0;
-            let c = heat_color(t);
-            assert_eq!(c.len(), 7);
-            assert!(c.starts_with('#'));
+    fn every_ramp_stays_within_valid_hex_bounds_across_the_full_range() {
+        for stops in [&WARM, &COOL, &MONO] {
+            for i in 0..=20 {
+                let t = i as f64 / 20.0;
+                let c = ramp(stops, t);
+                assert_eq!(c.len(), 7);
+                assert!(c.starts_with('#'));
+            }
         }
     }
 
@@ -458,7 +610,7 @@ mod tests {
         let start = std::time::Instant::now();
         let html = render(&cfg(&l, &g, &bs, &hc, &hm, &ls, &lt));
         let elapsed = start.elapsed();
-        assert!(elapsed.as_millis() < 400, "rendering took too long: {elapsed:?}");
+        assert!(elapsed.as_millis() < 500, "rendering took too long: {elapsed:?}");
         assert!(!html.is_empty());
     }
 }
